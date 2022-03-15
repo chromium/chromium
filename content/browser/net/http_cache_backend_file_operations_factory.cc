@@ -13,6 +13,14 @@ namespace content {
 
 namespace {
 
+using OpenFileFlags = network::mojom::HttpCacheBackendOpenFileFlags;
+static_assert(static_cast<uint32_t>(OpenFileFlags::kOpenAndRead) ==
+                  (base::File::FLAG_OPEN | base::File::FLAG_READ),
+              "kOpenAndRead");
+static_assert(static_cast<uint32_t>(OpenFileFlags::kCreateAndWrite) ==
+                  (base::File::FLAG_CREATE | base::File::FLAG_WRITE),
+              "kCreateAndWrite");
+
 class HttpCacheBackendFileOperations final
     : public network::mojom::HttpCacheBackendFileOperations {
  public:
@@ -48,17 +56,19 @@ class HttpCacheBackendFileOperations final
   }
 
   void OpenFile(const base::FilePath& path,
-                uint32_t flags,
+                network::mojom::HttpCacheBackendOpenFileFlags flags,
                 OpenFileCallback callback) override {
+    // `flags` has already been checked in the deserializer.
     if (!IsValid(path, "OpenFile")) {
       std::move(callback).Run(base::File(),
                               base::File::FILE_ERROR_ACCESS_DENIED);
       return;
     }
 
-    base::File file(path, flags);
+    auto flags_to_pass = static_cast<uint32_t>(flags);
+    base::File file(path, flags_to_pass);
     base::File::Error error = file.error_details();
-    DVLOG(1) << "OpenFile: path = " << path << ", flags = " << flags
+    DVLOG(1) << "OpenFile: path = " << path << ", flags = " << flags_to_pass
              << " => file.IsValid() = " << file.IsValid();
     std::move(callback).Run(std::move(file), error);
   }

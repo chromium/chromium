@@ -9,6 +9,14 @@ import "mojo/public/mojom/base/file_error.mojom";
 import "mojo/public/mojom/base/file_info.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 
+
+// Flags for HttpCacheBackendFileOperations.OpenFile. Flag values must be
+// aligned with base::File::Flags.
+enum HttpCacheBackendOpenFileFlags {
+  kOpenAndRead = 0x21,
+  kCreateAndWrite = 0x42,
+};
+
 // An interface to provide file operations so that the HTTP cache works in
 // a sandboxed network service.
 // All the paths must be absolute paths.
@@ -21,7 +29,8 @@ interface HttpCacheBackendFileOperations {
 
   // Opens a file with the given path and flags. Returns the opened file and
   // the error information.
-  [Sync] OpenFile(mojo_base.mojom.FilePath path, uint32 flags) =>
+  [Sync] OpenFile(
+      mojo_base.mojom.FilePath path, HttpCacheBackendOpenFileFlags flags) =>
       (mojo_base.mojom.File? file, mojo_base.mojom.FileError error);
 
   // Deletes a file with the given path and returns whether that succeeded.

@@ -30,7 +30,9 @@ base::File MojoBackendFileOperations::OpenFile(const base::FilePath& path,
                                                uint32_t flags) {
   base::File file;
   base::File::Error error;
-  remote_->OpenFile(path, flags, &file, &error);
+  // The value will be checked in the message receiver side.
+  auto flags_to_pass = static_cast<mojom::HttpCacheBackendOpenFileFlags>(flags);
+  remote_->OpenFile(path, flags_to_pass, &file, &error);
   if (error != base::File::FILE_OK) {
     return base::File(error);
   }
