@@ -349,10 +349,11 @@ void SigninViewControllerDelegateViews::DisplayModal() {
       modal_signin_widget_ = constrained_window::CreateWebModalDialogViews(
           this, host_web_contents);
       if (should_show_close_button_) {
-        GetBubbleFrameView()->SetBubbleBorder(
-            std::make_unique<views::BubbleBorder>(
-                views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW,
-                SK_ColorWHITE));
+        auto bubble_border = std::make_unique<views::BubbleBorder>(
+            views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW,
+            gfx::kPlaceholderColor);
+        bubble_border->set_use_theme_background_color(true);
+        GetBubbleFrameView()->SetBubbleBorder(std::move(bubble_border));
       }
       constrained_window::ShowModalDialog(
           modal_signin_widget_->GetNativeWindow(), host_web_contents);

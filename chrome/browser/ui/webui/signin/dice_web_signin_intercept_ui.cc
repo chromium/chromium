@@ -52,7 +52,7 @@ CreateSampleBubbleParameters() {
   primary_account.hosted_domain = kNoHostedDomainFound;
 
   return {DiceWebSigninInterceptor::SigninInterceptionType::kMultiUser,
-          intercepted_account, primary_account, SkColors::kMagenta.toSkColor()};
+          intercepted_account, primary_account, SK_ColorMAGENTA};
 }
 
 }  // namespace
