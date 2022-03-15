@@ -1277,61 +1277,57 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
 
   mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>
       header_client;
-  // `frame_tree_node` may be null in some unit test environments.
-  if (frame_tree_node) {
-    DCHECK(frame_tree_node->navigation_request());
+  DCHECK(frame_tree_node);
+  DCHECK(frame_tree_node->navigation_request());
 
-    // Initialize proxied factory remote/receiver if necessary.
-    // This also populates `bypass_redirect_checks_`.
-    GetContentClient()
-        ->browser()
-        ->RegisterNonNetworkNavigationURLLoaderFactories(
-            frame_tree_node_id_,
-            ukm::SourceIdObj::FromInt64(frame_tree_node->navigation_request()
-                                            ->GetNextPageUkmSourceId()),
-            &non_network_url_loader_factories_);
+  // Initialize proxied factory remote/receiver if necessary.
+  // This also populates `bypass_redirect_checks_`.
+  GetContentClient()->browser()->RegisterNonNetworkNavigationURLLoaderFactories(
+      frame_tree_node_id_,
+      ukm::SourceIdObj::FromInt64(
+          frame_tree_node->navigation_request()->GetNextPageUkmSourceId()),
+      &non_network_url_loader_factories_);
 
-    // The embedder may want to proxy all network-bound URLLoaderFactory
-    // receivers that it can. If it elects to do so, those proxies will be
-    // connected when loader is created if the request type supports proxying.
-    mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_factory;
-    auto factory_receiver = pending_factory.InitWithNewPipeAndPassReceiver();
-    // Here we give nullptr for `factory_override`, because CORS is no-op for
-    // navigations.
-    bool use_proxy = GetContentClient()->browser()->WillCreateURLLoaderFactory(
-        browser_context_, frame_tree_node->current_frame_host(),
-        frame_tree_node->current_frame_host()->GetProcess()->GetID(),
-        ContentBrowserClient::URLLoaderFactoryType::kNavigation, url::Origin(),
-        frame_tree_node->navigation_request()->GetNavigationId(),
-        ukm::SourceIdObj::FromInt64(
-            frame_tree_node->navigation_request()->GetNextPageUkmSourceId()),
-        &factory_receiver, &header_client, &bypass_redirect_checks_,
-        /*disable_secure_dns=*/nullptr, /*factory_override=*/nullptr);
-    if (devtools_instrumentation::WillCreateURLLoaderFactory(
-            frame_tree_node->current_frame_host(), /*is_navigation=*/true,
-            /*is_download=*/false, &factory_receiver,
-            /*factory_override=*/nullptr)) {
-      use_proxy = true;
-    }
-    if (use_proxy) {
-      proxied_factory_receiver_ = std::move(factory_receiver);
-      proxied_factory_remote_ = std::move(pending_factory);
-    }
-
-    const std::string storage_domain;
-    // TODO(https://crbug.com/1264405): Determine if we should deprecate
-    // navigation in filesystem: URLs entirely or in 3p contexts; alter the
-    // below as necessary. NOTE: while the logic below is appropriate for
-    // browser-initiated navigations, it is likely incorrect to always use
-    // first-party StorageKeys for renderer-initiated navigations.
-    non_network_url_loader_factories_.emplace(
-        url::kFileSystemScheme,
-        CreateFileSystemURLLoaderFactory(
-            ChildProcessHost::kInvalidUniqueID,
-            frame_tree_node->frame_tree_node_id(),
-            storage_partition_->GetFileSystemContext(), storage_domain,
-            blink::StorageKey(url::Origin::Create(url_))));
+  // The embedder may want to proxy all network-bound URLLoaderFactory
+  // receivers that it can. If it elects to do so, those proxies will be
+  // connected when loader is created if the request type supports proxying.
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_factory;
+  auto factory_receiver = pending_factory.InitWithNewPipeAndPassReceiver();
+  // Here we give nullptr for `factory_override`, because CORS is no-op for
+  // navigations.
+  bool use_proxy = GetContentClient()->browser()->WillCreateURLLoaderFactory(
+      browser_context_, frame_tree_node->current_frame_host(),
+      frame_tree_node->current_frame_host()->GetProcess()->GetID(),
+      ContentBrowserClient::URLLoaderFactoryType::kNavigation, url::Origin(),
+      frame_tree_node->navigation_request()->GetNavigationId(),
+      ukm::SourceIdObj::FromInt64(
+          frame_tree_node->navigation_request()->GetNextPageUkmSourceId()),
+      &factory_receiver, &header_client, &bypass_redirect_checks_,
+      /*disable_secure_dns=*/nullptr, /*factory_override=*/nullptr);
+  if (devtools_instrumentation::WillCreateURLLoaderFactory(
+          frame_tree_node->current_frame_host(), /*is_navigation=*/true,
+          /*is_download=*/false, &factory_receiver,
+          /*factory_override=*/nullptr)) {
+    use_proxy = true;
   }
+  if (use_proxy) {
+    proxied_factory_receiver_ = std::move(factory_receiver);
+    proxied_factory_remote_ = std::move(pending_factory);
+  }
+
+  const std::string storage_domain;
+  // TODO(https://crbug.com/1264405): Determine if we should deprecate
+  // navigation in filesystem: URLs entirely or in 3p contexts; alter the
+  // below as necessary. NOTE: while the logic below is appropriate for
+  // browser-initiated navigations, it is likely incorrect to always use
+  // first-party StorageKeys for renderer-initiated navigations.
+  non_network_url_loader_factories_.emplace(
+      url::kFileSystemScheme,
+      CreateFileSystemURLLoaderFactory(
+          ChildProcessHost::kInvalidUniqueID,
+          frame_tree_node->frame_tree_node_id(),
+          storage_partition_->GetFileSystemContext(), storage_domain,
+          blink::StorageKey(url::Origin::Create(url_))));
 
   non_network_url_loader_factories_.emplace(url::kAboutScheme,
                                             AboutURLLoaderFactory::Create());
