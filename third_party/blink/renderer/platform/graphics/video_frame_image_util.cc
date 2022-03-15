@@ -272,6 +272,10 @@ bool DrawVideoFrameIntoResourceProvider(
   if (frame->HasGpuMemoryBuffer() && !frame->IsMappable() &&
       !resource_provider->IsAccelerated()) {
     frame = media::ConvertToMemoryMappedFrame(std::move(frame));
+    if (!frame) {
+      DLOG(ERROR) << "Failed to map VideoFrame.";
+      return false;
+    }
   }
 
   video_renderer->Paint(
