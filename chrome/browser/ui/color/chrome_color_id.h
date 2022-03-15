@@ -164,6 +164,8 @@
     ThemeProperties::COLOR_OMNIBOX_SECURITY_CHIP_SECURE) \
   E(kColorOmniboxText, ThemeProperties::COLOR_OMNIBOX_TEXT) \
   E(kColorOmniboxTextDimmed, ThemeProperties::COLOR_OMNIBOX_TEXT_DIMMED) \
+  /* Overlay colors. */ \
+  E_CPONLY(kColorOverlayWindowBackgroundColor) \
   /* Payments colors. */ \
   E_CPONLY(kColorPaymentRequestRowBackgroundHighlighted) \
   /* QR code colors. */ \

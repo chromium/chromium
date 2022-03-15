@@ -4,11 +4,6 @@
 
 #include "chrome/browser/ui/views/overlay/document_overlay_window_views.h"
 
-#include "content/public/browser/document_picture_in_picture_window_controller.h"
-#include "content/public/browser/picture_in_picture_window_controller.h"
-#include "content/public/browser/web_contents.h"
-#include "ui/views/controls/webview/webview.h"
-
 #include <memory>
 #include <string>
 
@@ -26,6 +21,7 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/toolbar/chrome_location_bar_model_delegate.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/overlay/back_to_tab_image_button.h"
@@ -35,17 +31,21 @@
 #include "components/omnibox/browser/location_bar_model_impl.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/document_picture_in_picture_window_controller.h"
+#include "content/public/browser/picture_in_picture_window_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_constants.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_util.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/resize_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -87,6 +87,25 @@ T* AddChildView(std::vector<std::unique_ptr<views::View>>* views,
   views->push_back(std::move(child));
   return static_cast<T*>(views->back().get());
 }
+
+class WindowBackgroundView : public views::View {
+ public:
+  METADATA_HEADER(WindowBackgroundView);
+
+  WindowBackgroundView() = default;
+  WindowBackgroundView(const WindowBackgroundView&) = delete;
+  WindowBackgroundView& operator=(const WindowBackgroundView&) = delete;
+  ~WindowBackgroundView() override = default;
+
+  void OnThemeChanged() override {
+    views::View::OnThemeChanged();
+    layer()->SetColor(
+        GetColorProvider()->GetColor(kColorOverlayWindowBackgroundColor));
+  }
+};
+
+BEGIN_METADATA(WindowBackgroundView, views::View)
+END_METADATA
 
 }  // namespace
 
@@ -296,10 +315,10 @@ void DocumentOverlayWindowViews::SetUpViews() {
   DVLOG(2) << __func__ << ": content WebView=" << web_view.get();
   web_view->SetWebContents(pip_contents);
 
-  // views::View that is displayed when WebView is hidden. ---------------------
+  // View that is displayed when WebView is hidden. ----------------------------
   // Adding an extra pixel to width/height makes sure controls background cover
   // entirely window when platform has fractional scale applied.
-  auto window_background_view = std::make_unique<views::View>();
+  auto window_background_view = std::make_unique<WindowBackgroundView>();
 
   auto controls_container_view = std::make_unique<views::View>();
 
@@ -334,7 +353,6 @@ void DocumentOverlayWindowViews::SetUpViews() {
 
   window_background_view->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
   window_background_view->layer()->SetName("WindowBackgroundView");
-  window_background_view->layer()->SetColor(SK_ColorBLACK);
 
   // view::View that holds the WebView. ---------------------------------------
   web_view->SetPaintToLayer(ui::LAYER_TEXTURED);

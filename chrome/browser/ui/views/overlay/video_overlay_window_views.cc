@@ -18,6 +18,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/overlay/back_to_tab_image_button.h"
 #include "chrome/browser/ui/views/overlay/back_to_tab_label_button.h"
 #include "chrome/browser/ui/views/overlay/close_image_button.h"
@@ -36,6 +37,8 @@
 #include "media/base/video_util.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/color_palette.h"
@@ -97,6 +100,25 @@ T* AddChildView(std::vector<std::unique_ptr<views::View>>* views,
   views->push_back(std::move(child));
   return static_cast<T*>(views->back().get());
 }
+
+class WindowBackgroundView : public views::View {
+ public:
+  METADATA_HEADER(WindowBackgroundView);
+
+  WindowBackgroundView() = default;
+  WindowBackgroundView(const WindowBackgroundView&) = delete;
+  WindowBackgroundView& operator=(const WindowBackgroundView&) = delete;
+  ~WindowBackgroundView() override = default;
+
+  void OnThemeChanged() override {
+    views::View::OnThemeChanged();
+    layer()->SetColor(
+        GetColorProvider()->GetColor(kColorOverlayWindowBackgroundColor));
+  }
+};
+
+BEGIN_METADATA(WindowBackgroundView, views::View)
+END_METADATA
 
 }  // namespace
 
@@ -196,10 +218,10 @@ views::View* VideoOverlayWindowViews::GetControlsContainerView() const {
 }
 
 void VideoOverlayWindowViews::SetUpViews() {
-  // views::View that is displayed when video is hidden. ----------------------
+  // View that is displayed when video is hidden. ------------------------------
   // Adding an extra pixel to width/height makes sure controls background cover
   // entirely window when platform has fractional scale applied.
-  auto window_background_view = std::make_unique<views::View>();
+  auto window_background_view = std::make_unique<WindowBackgroundView>();
   auto video_view = std::make_unique<views::View>();
   auto controls_scrim_view = std::make_unique<views::View>();
   auto controls_container_view = std::make_unique<views::View>();
@@ -291,7 +313,6 @@ void VideoOverlayWindowViews::SetUpViews() {
 
   window_background_view->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
   window_background_view->layer()->SetName("WindowBackgroundView");
-  window_background_view->layer()->SetColor(SK_ColorBLACK);
 
   // view::View that holds the video. -----------------------------------------
   video_view->SetPaintToLayer(ui::LAYER_TEXTURED);
