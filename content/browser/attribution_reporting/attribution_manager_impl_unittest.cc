@@ -100,7 +100,9 @@ class MockAttributionObserver : public AttributionObserver {
 
   MOCK_METHOD(void,
               OnReportSent,
-              (const AttributionReport& report, const SendResult& info),
+              (const AttributionReport& report,
+               bool is_debug_report,
+               const SendResult& info),
               (override));
 
   MOCK_METHOD(void,
@@ -708,9 +710,12 @@ TEST_F(AttributionManagerImplTest, QueuedReportSent_ObserversNotified) {
       &observer);
   observation.Observe(attribution_manager_.get());
 
-  EXPECT_CALL(observer, OnReportSent(ReportSourceIs(SourceEventIdIs(1u)), _));
-  EXPECT_CALL(observer, OnReportSent(ReportSourceIs(SourceEventIdIs(2u)), _));
-  EXPECT_CALL(observer, OnReportSent(ReportSourceIs(SourceEventIdIs(3u)), _));
+  EXPECT_CALL(observer, OnReportSent(ReportSourceIs(SourceEventIdIs(1u)),
+                                     /*is_debug_report=*/false, _));
+  EXPECT_CALL(observer, OnReportSent(ReportSourceIs(SourceEventIdIs(2u)),
+                                     /*is_debug_report=*/false, _));
+  EXPECT_CALL(observer, OnReportSent(ReportSourceIs(SourceEventIdIs(3u)),
+                                     /*is_debug_report=*/false, _));
 
   attribution_manager_->HandleSource(
       SourceBuilder().SetSourceEventId(1).SetExpiry(kImpressionExpiry).Build());
@@ -1285,8 +1290,9 @@ TEST_F(AttributionManagerImplTest, EmbedderDisallowsReporting_ReportNotSent) {
       &observer);
   observation.Observe(attribution_manager_.get());
 
-  EXPECT_CALL(observer, OnReportSent(_, Field(&SendResult::status,
-                                              SendResult::Status::kDropped)));
+  EXPECT_CALL(observer, OnReportSent(_, /*is_debug_report=*/false,
+                                     Field(&SendResult::status,
+                                           SendResult::Status::kDropped)));
 
   task_environment_.FastForwardBy(kFirstReportingWindow);
 
@@ -1645,6 +1651,13 @@ TEST_F(AttributionManagerImplTest, DebugReport_SentImmediately) {
   };
 
   for (const auto& test_case : kTestCases) {
+    MockAttributionObserver observer;
+    base::ScopedObservation<AttributionManager, AttributionObserver>
+        observation(&observer);
+    observation.Observe(attribution_manager_.get());
+    EXPECT_CALL(observer, OnReportSent(_, /*is_debug_report=*/true, _))
+        .Times(test_case.send_expected);
+
     attribution_manager_->HandleSource(
         SourceBuilder()
             .SetReportingOrigin(reporting_origin)
@@ -1670,12 +1683,17 @@ TEST_F(AttributionManagerImplTest, DebugReport_SentImmediately) {
               ReportSourceIs(SourceDebugKeyIs(test_case.source_debug_key)),
               TriggerDebugKeyIs(test_case.trigger_debug_key))))
           << test_case.name;
+
+      report_sender_->RunCallbacksAndReset(
+          {SendResult::Status::kTransientFailure});
     } else {
       EXPECT_THAT(report_sender_->debug_calls(), IsEmpty());
     }
 
     attribution_manager_->ClearData(base::Time::Min(), base::Time::Max(),
                                     base::NullCallback(), base::DoNothing());
+
+    ::testing::Mock::VerifyAndClear(&observer);
   }
 }
 

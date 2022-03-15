@@ -86,6 +86,7 @@ void ForwardSourcesToWebUI(
 
 mojom::WebUIAttributionReportPtr WebUIAttributionReport(
     const AttributionReport& report,
+    bool is_debug_report,
     int http_response_code,
     mojom::WebUIAttributionReport::Status status) {
   const auto* data =
@@ -95,7 +96,7 @@ mojom::WebUIAttributionReportPtr WebUIAttributionReport(
   return mojom::WebUIAttributionReport::New(
       data->id,
       attribution_info.source.common_info().ConversionDestination().Serialize(),
-      report.ReportURL(),
+      report.ReportURL(is_debug_report),
       /*trigger_time=*/attribution_info.time.ToJsTime(),
       /*report_time=*/report.report_time().ToJsTime(), data->priority,
       SerializeAttributionJson(report.ReportBody(), /*pretty_print=*/true),
@@ -112,7 +113,7 @@ void ForwardReportsToWebUI(
   web_ui_reports.reserve(pending_reports.size());
   for (const AttributionReport& report : pending_reports) {
     web_ui_reports.push_back(WebUIAttributionReport(
-        report, /*http_response_code=*/0,
+        report, /*is_debug_report=*/false, /*http_response_code=*/0,
         mojom::WebUIAttributionReport::Status::kPending));
   }
 
@@ -265,6 +266,7 @@ void AttributionInternalsHandlerImpl::OnSourceHandled(
 
 void AttributionInternalsHandlerImpl::OnReportSent(
     const AttributionReport& report,
+    bool is_debug_report,
     const SendResult& info) {
   // TODO(crbug.com/1285317): Show aggregatable reports in internal page.
   if (!absl::holds_alternative<AttributionReport::EventLevelData>(
@@ -282,16 +284,16 @@ void AttributionInternalsHandlerImpl::OnReportSent(
           mojom::WebUIAttributionReport::Status::kProhibitedByBrowserPolicy;
       break;
     case SendResult::Status::kFailure:
+    case SendResult::Status::kTransientFailure:
       status = mojom::WebUIAttributionReport::Status::kNetworkError;
       break;
-    case SendResult::Status::kTransientFailure:
     case SendResult::Status::kFailedToAssemble:
       NOTREACHED();
       return;
   }
 
-  auto web_report =
-      WebUIAttributionReport(report, info.http_response_code, status);
+  auto web_report = WebUIAttributionReport(report, is_debug_report,
+                                           info.http_response_code, status);
 
   for (auto& observer : observers_) {
     observer->OnReportSent(web_report.Clone());
@@ -344,6 +346,7 @@ void AttributionInternalsHandlerImpl::OnTriggerHandled(
 
   DCHECK_EQ(result.dropped_reports().size(), 1u);
   auto report = WebUIAttributionReport(result.dropped_reports().front(),
+                                       /*is_debug_report=*/false,
                                        /*http_response_code=*/0, status);
 
   for (auto& observer : observers_) {

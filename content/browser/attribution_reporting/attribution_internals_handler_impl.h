@@ -74,6 +74,7 @@ class AttributionInternalsHandlerImpl
   void OnSourceHandled(const StorableSource& source,
                        StorableSource::Result result) override;
   void OnReportSent(const AttributionReport& report,
+                    bool is_debug_report,
                     const SendResult& info) override;
   void OnTriggerHandled(const CreateReportResult& result) override;
 

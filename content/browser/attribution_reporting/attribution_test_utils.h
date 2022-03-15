@@ -307,6 +307,7 @@ class MockAttributionManager : public AttributionManager {
   void NotifySourceHandled(const StorableSource& source,
                            StorableSource::Result result);
   void NotifyReportSent(const AttributionReport& report,
+                        bool is_debug_report,
                         const SendResult& info);
   void NotifyTriggerHandled(const CreateReportResult& result);
 

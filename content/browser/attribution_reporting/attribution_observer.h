@@ -39,6 +39,7 @@ class AttributionObserver : public base::CheckedObserver {
   // Called when a report is sent, regardless of success, but not for attempts
   // that will be retried.
   virtual void OnReportSent(const AttributionReport& report,
+                            bool is_debug_report,
                             const SendResult& info) {}
 
   // Called when a trigger is registered, regardless of success.

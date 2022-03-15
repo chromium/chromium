@@ -358,9 +358,10 @@ void MockAttributionManager::NotifySourceHandled(
 }
 
 void MockAttributionManager::NotifyReportSent(const AttributionReport& report,
+                                              bool is_debug_report,
                                               const SendResult& info) {
   for (auto& observer : observers_)
-    observer.OnReportSent(report, info);
+    observer.OnReportSent(report, is_debug_report, info);
 }
 
 void MockAttributionManager::NotifyTriggerHandled(

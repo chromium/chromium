@@ -513,9 +513,11 @@ void AttributionManagerImpl::MaybeSendDebugReport(AttributionReport&& report) {
   DCHECK(absl::holds_alternative<AttributionReport::EventLevelData>(
       report.data()));
 
-  // We don't fire observer callbacks or delete from storage for debug reports.
+  // We don't delete from storage for debug reports.
   PrepareToSendReport(std::move(report), /*is_debug_report=*/true,
-                      base::DoNothing());
+                      base::BindOnce(&AttributionManagerImpl::NotifyReportSent,
+                                     weak_factory_.GetWeakPtr(),
+                                     /*is_debug_report=*/true));
 }
 
 void AttributionManagerImpl::GetActiveSourcesForWebUI(
@@ -742,8 +744,14 @@ void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
     return;
   }
 
+  NotifyReportSent(/*is_debug_report=*/false, std::move(report), info);
+}
+
+void AttributionManagerImpl::NotifyReportSent(bool is_debug_report,
+                                              AttributionReport report,
+                                              SendResult info) {
   for (auto& observer : observers_)
-    observer.OnReportSent(report, info);
+    observer.OnReportSent(report, /*is_debug_report=*/is_debug_report, info);
 }
 
 void AttributionManagerImpl::AssembleAggregatableReport(

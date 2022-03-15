@@ -376,6 +376,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
           .SetReportTime(now + base::Hours(3))
           .Build(),
+      /*is_debug_report=*/false,
       SendResult(SendResult::Status::kSent,
                  /*http_response_code=*/200));
   manager_.NotifyReportSent(
@@ -384,6 +385,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           .SetReportTime(now + base::Hours(4))
           .SetPriority(-1)
           .Build(),
+      /*is_debug_report=*/false,
       SendResult(SendResult::Status::kDropped,
                  /*http_response_code=*/0));
   manager_.NotifyReportSent(
@@ -392,8 +394,19 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           .SetReportTime(now + base::Hours(5))
           .SetPriority(-2)
           .Build(),
+      /*is_debug_report=*/false,
       SendResult(SendResult::Status::kFailure,
                  /*http_response_code=*/0));
+  manager_.NotifyReportSent(
+      ReportBuilder(
+          AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
+          .SetReportTime(now + base::Hours(11))
+          .SetPriority(-8)
+          .Build(),
+      /*is_debug_report=*/true,
+      SendResult(SendResult::Status::kTransientFailure,
+                 /*http_response_code=*/0));
+
   ON_CALL(manager_, GetPendingReportsForInternalUse)
       .WillByDefault(InvokeCallback<std::vector<AttributionReport>>(
           {ReportBuilder(AttributionInfoBuilder(
@@ -483,7 +496,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     static constexpr char wait_script[] = R"(
       let table = document.querySelector("#report-table-wrapper tbody");
       let obs = new MutationObserver(() => {
-        if (table.children.length === 11 &&
+        if (table.children.length === 12 &&
             table.children[0].children[2].innerText === "https://conversion.test" &&
             table.children[0].children[3].innerText ===
               "https://report.test/.well-known/attribution-reporting/report-event-attribution" &&
@@ -503,7 +516,9 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
             table.children[7].children[8].innerText === "Dropped due to excessive reporting origins" &&
             table.children[8].children[8].innerText === "Deduplicated" &&
             table.children[9].children[8].innerText === "No report capacity for destination site" &&
-            table.children[10].children[8].innerText === "Internal error") {
+            table.children[10].children[8].innerText === "Internal error" &&
+            table.children[11].children[3].innerText ===
+              "https://report.test/.well-known/attribution-reporting/debug/report-event-attribution") {
           document.title = $1;
         }
       });
@@ -519,27 +534,29 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     static constexpr char wait_script[] = R"(
       let table = document.querySelector("#report-table-wrapper tbody");
       let obs = new MutationObserver(() => {
-        if (table.children.length === 11 &&
-            table.children[10].children[2].innerText === "https://conversion.test" &&
-            table.children[10].children[3].innerText ===
+        if (table.children.length === 12 &&
+            table.children[11].children[2].innerText === "https://conversion.test" &&
+            table.children[11].children[3].innerText ===
               "https://report.test/.well-known/attribution-reporting/report-event-attribution" &&
-            table.children[10].children[6].innerText === "13" &&
-            table.children[10].children[7].innerText === "yes" &&
-            table.children[10].children[8].innerText === "Pending" &&
-            table.children[9].children[6].innerText === "12" &&
-            table.children[9].children[8].innerText === "Dropped for noise" &&
-            table.children[8].children[6].innerText === "11" &&
-            table.children[8].children[8].innerText === "Dropped due to low priority" &&
-            table.children[7].children[6].innerText === "0" &&
-            table.children[7].children[7].innerText === "no" &&
-            table.children[7].children[8].innerText === "Sent: HTTP 200" &&
-            table.children[6].children[8].innerText === "Prohibited by browser policy" &&
-            table.children[5].children[8].innerText === "Network error" &&
-            table.children[4].children[8].innerText === "Dropped due to excessive attributions" &&
-            table.children[3].children[8].innerText === "Dropped due to excessive reporting origins" &&
-            table.children[2].children[8].innerText === "Deduplicated" &&
-            table.children[1].children[8].innerText === "No report capacity for destination site" &&
-            table.children[0].children[8].innerText === "Internal error") {
+            table.children[11].children[6].innerText === "13" &&
+            table.children[11].children[7].innerText === "yes" &&
+            table.children[11].children[8].innerText === "Pending" &&
+            table.children[10].children[6].innerText === "12" &&
+            table.children[10].children[8].innerText === "Dropped for noise" &&
+            table.children[9].children[6].innerText === "11" &&
+            table.children[9].children[8].innerText === "Dropped due to low priority" &&
+            table.children[8].children[6].innerText === "0" &&
+            table.children[8].children[7].innerText === "no" &&
+            table.children[8].children[8].innerText === "Sent: HTTP 200" &&
+            table.children[7].children[8].innerText === "Prohibited by browser policy" &&
+            table.children[6].children[8].innerText === "Network error" &&
+            table.children[5].children[8].innerText === "Dropped due to excessive attributions" &&
+            table.children[4].children[8].innerText === "Dropped due to excessive reporting origins" &&
+            table.children[3].children[8].innerText === "Deduplicated" &&
+            table.children[2].children[8].innerText === "No report capacity for destination site" &&
+            table.children[1].children[8].innerText === "Internal error" &&
+            table.children[0].children[3].innerText ===
+              "https://report.test/.well-known/attribution-reporting/debug/report-event-attribution") {
           document.title = $1;
         }
       });
@@ -557,7 +574,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     static constexpr char wait_script[] = R"(
       let table = document.querySelector("#report-table-wrapper tbody");
       let obs = new MutationObserver(() => {
-        if (table.children.length === 11 &&
+        if (table.children.length === 12 &&
             table.children[0].children[2].innerText === "https://conversion.test" &&
             table.children[0].children[3].innerText ===
               "https://report.test/.well-known/attribution-reporting/report-event-attribution" &&
@@ -577,7 +594,9 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
             table.children[7].children[8].innerText === "Dropped due to excessive reporting origins" &&
             table.children[8].children[8].innerText === "Deduplicated" &&
             table.children[9].children[8].innerText === "No report capacity for destination site" &&
-            table.children[10].children[8].innerText === "Internal error") {
+            table.children[10].children[8].innerText === "Internal error" &&
+            table.children[11].children[3].innerText ===
+              "https://report.test/.well-known/attribution-reporting/debug/report-event-attribution") {
           document.title = $1;
         }
       });
@@ -611,8 +630,10 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       .WillOnce(InvokeCallback<std::vector<AttributionReport>>({report}));
 
   report.set_report_time(report.report_time() + base::Hours(1));
-  manager_.NotifyReportSent(report, SendResult(SendResult::Status::kSent,
-                                               /*http_response_code=*/200));
+  manager_.NotifyReportSent(report,
+                            /*is_debug_report=*/false,
+                            SendResult(SendResult::Status::kSent,
+                                       /*http_response_code=*/200));
 
   EXPECT_CALL(manager_, ClearData)
       .WillOnce([](base::Time delete_begin, base::Time delete_end,
