@@ -108,6 +108,7 @@ bundle_data("sql_unittests_bundle_data") {
 
 test("sql_unittests") {
   sources = [
+    "database_options_unittest.cc",
     "database_unittest.cc",
     "error_metrics_unittest.cc",
     "meta_table_unittest.cc",
