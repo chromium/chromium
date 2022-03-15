@@ -1454,36 +1454,61 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FilesTooltip, /* files_tooltip.js */
     FilesAppBrowserTest,
-    ::testing::Values(TestCase("filesTooltipFocus"),
-                      TestCase("filesTooltipLabelChange"),
-                      TestCase("filesTooltipMouseOver"),
-                      TestCase("filesTooltipClickHides"),
-                      TestCase("filesTooltipHidesOnWindowResize"),
-                      TestCase("filesCardTooltipClickHides"),
-                      TestCase("filesTooltipHidesOnDeleteDialogClosed")));
+    ::testing::Values(
+        TestCase("filesTooltipFocus"),
+        TestCase("filesTooltipFocus").FilesSwa(),
+        TestCase("filesTooltipLabelChange"),
+        TestCase("filesTooltipLabelChange").FilesSwa(),
+        TestCase("filesTooltipMouseOver"),
+        TestCase("filesTooltipMouseOver").FilesSwa(),
+        TestCase("filesTooltipClickHides"),
+        TestCase("filesTooltipClickHides").FilesSwa(),
+        TestCase("filesTooltipHidesOnWindowResize"),
+        // TODO(b/189173190): Add SWA OnWindowResize test using window.resizeTo.
+        TestCase("filesCardTooltipClickHides"),
+        TestCase("filesCardTooltipClickHides").FilesSwa(),
+        TestCase("filesTooltipHidesOnDeleteDialogClosed"),
+        TestCase("filesTooltipHidesOnDeleteDialogClosed").FilesSwa()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FileList, /* file_list.js */
     FilesAppBrowserTest,
-    ::testing::Values(TestCase("fileListAriaAttributes"),
-                      TestCase("fileListFocusFirstItem"),
-                      TestCase("fileListSelectLastFocusedItem"),
-                      TestCase("fileListKeyboardSelectionA11y"),
-                      TestCase("fileListMouseSelectionA11y"),
-                      TestCase("fileListDeleteMultipleFiles"),
-                      TestCase("fileListDeleteMultipleFiles").EnableTrash(),
-                      TestCase("fileListRenameSelectedItem"),
-                      TestCase("fileListRenameFromSelectAll")));
+    ::testing::Values(
+        TestCase("fileListAriaAttributes"),
+        TestCase("fileListAriaAttributes").FilesSwa(),
+        TestCase("fileListFocusFirstItem"),
+        TestCase("fileListFocusFirstItem").FilesSwa(),
+        TestCase("fileListSelectLastFocusedItem"),
+        TestCase("fileListSelectLastFocusedItem").FilesSwa(),
+        TestCase("fileListKeyboardSelectionA11y"),
+        TestCase("fileListKeyboardSelectionA11y").FilesSwa(),
+        TestCase("fileListMouseSelectionA11y"),
+        TestCase("fileListMouseSelectionA11y").FilesSwa(),
+        TestCase("fileListDeleteMultipleFiles"),
+        TestCase("fileListDeleteMultipleFiles").FilesSwa(),
+        TestCase("fileListDeleteMultipleFiles").EnableTrash(),
+        TestCase("fileListDeleteMultipleFiles").EnableTrash().FilesSwa(),
+        TestCase("fileListRenameSelectedItem"),
+        TestCase("fileListRenameSelectedItem").FilesSwa(),
+        TestCase("fileListRenameFromSelectAll"),
+        TestCase("fileListRenameFromSelectAll").FilesSwa()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Crostini, /* crostini.js */
     FilesAppBrowserTest,
-    ::testing::Values(TestCase("mountCrostini"),
-                      TestCase("enableDisableCrostini"),
-                      TestCase("sharePathWithCrostini"),
-                      TestCase("pluginVmDirectoryNotSharedErrorDialog"),
-                      TestCase("pluginVmFileOnExternalDriveErrorDialog"),
-                      TestCase("pluginVmFileDropFailErrorDialog")));
+    ::testing::Values(
+        TestCase("mountCrostini"),
+        TestCase("mountCrostini").FilesSwa(),
+        TestCase("enableDisableCrostini"),
+        TestCase("enableDisableCrostini").FilesSwa(),
+        TestCase("sharePathWithCrostini"),
+        TestCase("sharePathWithCrostini").FilesSwa(),
+        TestCase("pluginVmDirectoryNotSharedErrorDialog"),
+        TestCase("pluginVmDirectoryNotSharedErrorDialog").FilesSwa(),
+        TestCase("pluginVmFileOnExternalDriveErrorDialog"),
+        TestCase("pluginVmFileOnExternalDriveErrorDialog").FilesSwa(),
+        TestCase("pluginVmFileDropFailErrorDialog"),
+        TestCase("pluginVmFileDropFailErrorDialog").FilesSwa()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     MyFiles, /* my_files.js */
