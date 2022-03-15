@@ -88,6 +88,8 @@ bool ConditionValueMatches(
     const apps::mojom::ConditionValuePtr& condition_value);
 
 // Return true if |intent| matches with any of the values in |condition|.
+// TODO(crbug.com/1253250): Remove this function after migrating to non-mojo
+// AppService.
 bool IntentMatchesCondition(const apps::mojom::IntentPtr& intent,
                             const apps::mojom::ConditionPtr& condition);
 

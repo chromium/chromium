@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/files/safe_base_name.h"
+#include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -23,6 +24,14 @@ struct IntentFile {
   IntentFile(const IntentFile&) = delete;
   IntentFile& operator=(const IntentFile&) = delete;
   ~IntentFile();
+
+  // Returns true if match `condition_value`, otherwise, returns false.
+  bool MatchConditionValue(const ConditionValuePtr& condition_value);
+
+  // Returns true if matches any condition in `condition_values`, otherwise,
+  // returns false.
+  bool MatchAnyConditionValue(
+      const std::vector<ConditionValuePtr>& condition_values);
 
   // The URL of the file to share. Normally has the filesystem: scheme, but
   // could be externalfile: or a different scheme, depending on the source.
@@ -50,9 +59,20 @@ using IntentFilePtr = std::unique_ptr<IntentFile>;
 // components/services/app_service/public/cpp/intent_util.*
 struct Intent {
   explicit Intent(const std::string& action);
+  explicit Intent(const GURL& url);
   Intent(const Intent&) = delete;
   Intent& operator=(const Intent&) = delete;
   ~Intent();
+
+  // Gets the field that need to be checked/matched based on `condition_type`.
+  absl::optional<std::string> GetIntentConditionValueByType(
+      ConditionType condition_type);
+
+  // Returns true if match the file `condition`, otherwise, returns false.
+  bool MatchFileCondition(const ConditionPtr& condition);
+
+  // Returns true if match `condition`, otherwise, returns false.
+  bool MatchCondition(const ConditionPtr& condition);
 
   // Intent action. e.g. view, send.
   std::string action;

@@ -45,6 +45,8 @@ const char kMimeTypeInodeDirectory[] = "inode/directory";
 
 // Get the field from the |intent| that need to be checked/matched based on
 // |condition_type|.
+// TODO(crbug.com/1253250): Remove this function after migrating to non-mojo
+// AppService.
 absl::optional<std::string> GetIntentConditionValueByType(
     apps::mojom::ConditionType condition_type,
     const apps::mojom::IntentPtr& intent) {

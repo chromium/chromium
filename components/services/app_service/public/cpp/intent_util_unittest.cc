@@ -16,7 +16,18 @@ const char kFilterUrl[] = "https://www.google.com/";
 
 class IntentUtilTest : public testing::Test {
  protected:
-  apps::mojom::ConditionPtr CreateMultiConditionValuesCondition() {
+  apps::ConditionPtr CreateMultiConditionValuesCondition() {
+    std::vector<apps::ConditionValuePtr> condition_values;
+    condition_values.push_back(std::make_unique<apps::ConditionValue>(
+        "https", apps::PatternMatchType::kNone));
+    condition_values.push_back(std::make_unique<apps::ConditionValue>(
+        "http", apps::PatternMatchType::kNone));
+    auto condition = std::make_unique<apps::Condition>(
+        apps::ConditionType::kScheme, std::move(condition_values));
+    return condition;
+  }
+
+  apps::mojom::ConditionPtr CreateMultiMojomConditionValuesCondition() {
     std::vector<apps::mojom::ConditionValuePtr> condition_values;
     condition_values.push_back(apps_util::MakeConditionValue(
         "https", apps::mojom::PatternMatchType::kNone));
@@ -96,18 +107,34 @@ TEST_F(IntentUtilTest, IntentDoesnotHaveValueToMatch) {
 
 // Test ConditionMatch with more then one condition values.
 
-TEST_F(IntentUtilTest, OneConditionValueMatch) {
-  auto condition = CreateMultiConditionValuesCondition();
+// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
+TEST_F(IntentUtilTest, OneMojomConditionValueMatch) {
+  auto condition = CreateMultiMojomConditionValuesCondition();
   GURL test_url = GURL("https://www.google.com/");
   auto intent = apps_util::CreateIntentFromUrl(test_url);
   EXPECT_TRUE(apps_util::IntentMatchesCondition(intent, condition));
 }
 
-TEST_F(IntentUtilTest, NoneConditionValueMathc) {
+TEST_F(IntentUtilTest, OneConditionValueMatch) {
   auto condition = CreateMultiConditionValuesCondition();
+  GURL test_url("https://www.google.com/");
+  auto intent = std::make_unique<apps::Intent>(test_url);
+  EXPECT_TRUE(intent->MatchCondition(condition));
+}
+
+// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
+TEST_F(IntentUtilTest, NoneMojomConditionValueMatch) {
+  auto condition = CreateMultiMojomConditionValuesCondition();
   GURL test_url = GURL("tel://www.google.com/");
   auto intent = apps_util::CreateIntentFromUrl(test_url);
   EXPECT_FALSE(apps_util::IntentMatchesCondition(intent, condition));
+}
+
+TEST_F(IntentUtilTest, NoneConditionValueMatch) {
+  auto condition = CreateMultiConditionValuesCondition();
+  GURL test_url("tel://www.google.com/");
+  auto intent = std::make_unique<apps::Intent>(test_url);
+  EXPECT_FALSE(intent->MatchCondition(condition));
 }
 
 // Test Condition Value match with different pattern match type.
