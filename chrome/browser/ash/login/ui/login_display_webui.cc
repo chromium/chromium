@@ -67,11 +67,6 @@ void LoginDisplayWebUI::Login(const UserContext& user_context,
     delegate_->Login(user_context, specifics);
 }
 
-void LoginDisplayWebUI::ShowKioskAutolaunchScreen() {
-  if (delegate_)
-    delegate_->OnStartKioskAutolaunchScreen();
-}
-
 bool LoginDisplayWebUI::IsSigninInProgress() const {
   return delegate_->IsSigninInProgress();
 }

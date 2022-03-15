@@ -55,9 +55,6 @@ class SigninScreenHandlerDelegate {
   // Returns true if sign in is in progress.
   virtual bool IsSigninInProgress() const = 0;
 
-  // Shows Reset screen.
-  virtual void ShowKioskAutolaunchScreen() = 0;
-
   // --------------- Rest of the methods.
 
   // Whether user sign in has completed.
@@ -134,11 +131,7 @@ class SigninScreenHandler
   // WebUI message handlers.
   void HandleLaunchIncognito();
   void HandleOfflineLogin();
-  void HandleToggleEnrollmentScreen();
-  void HandleToggleResetScreen();
-  void HandleToggleKioskAutolaunchScreen();
 
-  void HandleLoginUIStateChanged(const std::string& source, bool active);
   void HandleShowLoadingTimeoutError();
 
   // Returns true if current visible screen is the Gaia sign-in page.

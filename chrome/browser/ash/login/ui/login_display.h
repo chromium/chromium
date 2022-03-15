@@ -35,9 +35,6 @@ class LoginDisplay {
     // Called when the user requests kiosk enable screen.
     virtual void OnStartKioskEnableScreen() = 0;
 
-    // Called when the owner permission for kiosk app auto launch is requested.
-    virtual void OnStartKioskAutolaunchScreen() = 0;
-
     // Restarts the auto-login timer if it is running.
     virtual void ResetAutoLoginTimer() = 0;
 

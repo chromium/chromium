@@ -15,7 +15,6 @@
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_test_api.h"
-#include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -39,6 +38,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
+#include "chrome/browser/ash/login/login_wizard.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
@@ -72,7 +72,6 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/speech/extension_api/tts_engine_extension_api.h"
-#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -685,11 +684,10 @@ class KioskTest : public OobeBaseTest {
 
   void EnableConsumerKioskMode() {
     bool locked = false;
-    scoped_refptr<content::MessageLoopRunner> runner =
-        new content::MessageLoopRunner;
+    base::RunLoop loop;
     KioskAppManager::Get()->EnableConsumerKioskAutoLaunch(base::BindOnce(
-        &ConsumerKioskModeAutoStartLockCheck, &locked, runner->QuitClosure()));
-    runner->Run();
+        &ConsumerKioskModeAutoStartLockCheck, &locked, loop.QuitClosure()));
+    loop.Run();
     EXPECT_TRUE(locked);
   }
 
@@ -1147,20 +1145,37 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, DISABLED_LaunchAppUserCancel) {
             KioskAppLaunchError::Get());
 }
 
-IN_PROC_BROWSER_TEST_F(KioskTest, AutolaunchWarningCancel) {
+class KioskConsumerTest : public KioskTest {
+ public:
+  KioskConsumerTest() { login_manager_.AppendRegularUsers(1); }
+
+  // KioskTest:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    KioskTest::SetUpCommandLine(command_line);
+    // Postpone login screen creation.
+    command_line->RemoveSwitch(switches::kForceLoginManagerInTests);
+  }
+  void SetUpInProcessBrowserTestFixture() override {
+    KioskTest::SetUpInProcessBrowserTestFixture();
+    // Postpone login screen creation.
+    base::CommandLine::ForCurrentProcess()->RemoveSwitch(
+        switches::kForceLoginManagerInTests);
+  }
+
+  bool ShouldWaitForOobeUI() override { return false; }
+
+ private:
+  LoginManagerMixin login_manager_{&mixin_host_};
+};
+
+IN_PROC_BROWSER_TEST_F(KioskConsumerTest, AutolaunchWarningCancel) {
   EnableConsumerKioskMode();
-
-  WizardController::SkipPostLoginScreensForTesting();
-  auto* wizard_controller = WizardController::default_controller();
-  ASSERT_TRUE(wizard_controller);
-
-  // Start login screen after configuring auto launch app since the warning
-  // is triggered when switching to login screen.
-  wizard_controller->AdvanceToScreen(WelcomeView::kScreenId);
   ReloadAutolaunchKioskApps();
   EXPECT_FALSE(KioskAppManager::Get()->GetAutoLaunchApp().empty());
   EXPECT_FALSE(KioskAppManager::Get()->IsAutoLaunchEnabled());
-  wizard_controller->SkipToLoginForTesting();
+
+  ShowLoginWizard(OobeScreen::SCREEN_UNKNOWN);
+  OobeScreenWaiter(KioskAutolaunchScreenView::kScreenId).Wait();
 
   // Wait for the auto launch warning come up.
   WaitForAutoLaunchWarning(/*visibility=*/true);
@@ -1172,20 +1187,14 @@ IN_PROC_BROWSER_TEST_F(KioskTest, AutolaunchWarningCancel) {
   EXPECT_FALSE(KioskAppManager::Get()->IsAutoLaunchEnabled());
 }
 
-IN_PROC_BROWSER_TEST_F(KioskTest, AutolaunchWarningConfirm) {
+IN_PROC_BROWSER_TEST_F(KioskConsumerTest, AutolaunchWarningConfirm) {
   EnableConsumerKioskMode();
-
-  WizardController::SkipPostLoginScreensForTesting();
-  auto* wizard_controller = WizardController::default_controller();
-  ASSERT_TRUE(wizard_controller);
-
-  // Start login screen after configuring auto launch app since the warning
-  // is triggered when switching to login screen.
-  wizard_controller->AdvanceToScreen(WelcomeView::kScreenId);
   ReloadAutolaunchKioskApps();
   EXPECT_FALSE(KioskAppManager::Get()->GetAutoLaunchApp().empty());
   EXPECT_FALSE(KioskAppManager::Get()->IsAutoLaunchEnabled());
-  wizard_controller->SkipToLoginForTesting();
+
+  ShowLoginWizard(OobeScreen::SCREEN_UNKNOWN);
+  OobeScreenWaiter(KioskAutolaunchScreenView::kScreenId).Wait();
 
   // Wait for the auto launch warning come up.
   WaitForAutoLaunchWarning(/*visibility=*/true);
@@ -1329,16 +1338,12 @@ IN_PROC_BROWSER_TEST_F(KioskTest, MAYBE_DoNotLaunchWhenUntrusted) {
 
 // Verifies that a consumer device does not auto-launch kiosk mode when cros
 // settings are untrusted.
-IN_PROC_BROWSER_TEST_F(KioskTest, NoConsumerAutoLaunchWhenUntrusted) {
+IN_PROC_BROWSER_TEST_F(KioskConsumerTest, NoConsumerAutoLaunchWhenUntrusted) {
   EnableConsumerKioskMode();
-
-  // Wait for and confirm the auto-launch warning.
-  WizardController::SkipPostLoginScreensForTesting();
-  auto* wizard_controller = WizardController::default_controller();
-  ASSERT_TRUE(wizard_controller);
-  wizard_controller->AdvanceToScreen(WelcomeView::kScreenId);
   ReloadAutolaunchKioskApps();
-  wizard_controller->SkipToLoginForTesting();
+  ShowLoginWizard(OobeScreen::SCREEN_UNKNOWN);
+  OobeScreenWaiter(KioskAutolaunchScreenView::kScreenId).Wait();
+
   WaitForAutoLaunchWarning(/*visibility=*/true);
 
   // Make cros settings untrusted.
@@ -2773,73 +2778,6 @@ IN_PROC_BROWSER_TEST_F(KioskVirtualKeyboardTest, MAYBE_RestrictFeatures) {
   StartAppLaunchFromLoginScreen(
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
-}
-
-// Specialized test fixture for testing kiosk mode on the
-// hidden WebUI initialization flow for slow hardware.
-class KioskHiddenWebUITest : public KioskTest,
-                             public WallpaperControllerObserver {
- public:
-  KioskHiddenWebUITest() = default;
-
-  KioskHiddenWebUITest(const KioskHiddenWebUITest&) = delete;
-  KioskHiddenWebUITest& operator=(const KioskHiddenWebUITest&) = delete;
-
-  // KioskTest:
-  void SetUpOnMainThread() override {
-    LoginDisplayHostWebUI::DisableRestrictiveProxyCheckForTest();
-
-    KioskTest::SetUpOnMainThread();
-    WallpaperControllerClientImpl::Get()->AddObserver(this);
-  }
-  void TearDownOnMainThread() override {
-    WallpaperControllerClientImpl::Get()->RemoveObserver(this);
-    KioskTest::TearDownOnMainThread();
-  }
-
-  void WaitForWallpaper() {
-    if (!wallpaper_loaded_) {
-      runner_ = new content::MessageLoopRunner;
-      runner_->Run();
-    }
-  }
-
-  bool wallpaper_loaded() const { return wallpaper_loaded_; }
-
-  // WallpaperControllerObserver:
-  void OnWallpaperChanged() override {
-    wallpaper_loaded_ = true;
-    if (runner_.get())
-      runner_->Quit();
-  }
-
- private:
-  bool wallpaper_loaded_ = false;
-  scoped_refptr<content::MessageLoopRunner> runner_;
-};
-
-IN_PROC_BROWSER_TEST_F(KioskHiddenWebUITest, AutolaunchWarning) {
-  // Set kiosk app to autolaunch.
-  EnableConsumerKioskMode();
-  WizardController::SkipPostLoginScreensForTesting();
-  auto* wizard_controller = WizardController::default_controller();
-  ASSERT_TRUE(wizard_controller);
-
-  // Start login screen after configuring auto launch app since the warning
-  // is triggered when switching to login screen.
-  wizard_controller->AdvanceToScreen(WelcomeView::kScreenId);
-  ReloadAutolaunchKioskApps();
-  wizard_controller->SkipToLoginForTesting();
-
-  EXPECT_FALSE(KioskAppManager::Get()->GetAutoLaunchApp().empty());
-  EXPECT_FALSE(KioskAppManager::Get()->IsAutoLaunchEnabled());
-
-  // Wait for the auto launch warning come up.
-  WaitForAutoLaunchWarning(/*visibility=*/true);
-
-  // Wait for the wallpaper to load.
-  WaitForWallpaper();
-  EXPECT_TRUE(wallpaper_loaded());
 }
 
 class KioskAutoLaunchViewsTest : public OobeBaseTest,

@@ -149,10 +149,6 @@ bool LoginDisplayMojo::IsSigninInProgress() const {
   return false;
 }
 
-void LoginDisplayMojo::ShowKioskAutolaunchScreen() {
-  NOTIMPLEMENTED();
-}
-
 bool LoginDisplayMojo::IsUserSigninCompleted() const {
   return is_signin_completed();
 }

@@ -286,14 +286,13 @@ void ChromeSessionManager::Initialize(
     return;
   }
 
-  if (parsed_command_line.HasSwitch(switches::kLoginManager) &&
-      (!is_running_test || force_login_screen_in_test)) {
-    VLOG(1) << "Starting Chrome with login/oobe screen.";
+  if (parsed_command_line.HasSwitch(switches::kLoginManager)) {
     oobe_configuration_->CheckConfiguration();
+    if (is_running_test && !force_login_screen_in_test)
+      return;
+    VLOG(1) << "Starting Chrome with login/oobe screen.";
     StartLoginOobeSession();
     return;
-  } else if (is_running_test) {
-    oobe_configuration_->CheckConfiguration();
   }
 
   VLOG(1) << "Starting Chrome with a user session.";

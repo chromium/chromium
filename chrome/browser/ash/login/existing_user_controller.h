@@ -99,7 +99,6 @@ class ExistingUserController : public LoginDisplay::Delegate,
   void Login(const UserContext& user_context,
              const SigninSpecifics& specifics) override;
   void OnStartKioskEnableScreen() override;
-  void OnStartKioskAutolaunchScreen() override;
   void ResetAutoLoginTimer() override;
 
   void CompleteLogin(const UserContext& user_context);
@@ -211,9 +210,6 @@ class ExistingUserController : public LoginDisplay::Delegate,
 
   // Shows kiosk feature enable screen.
   void ShowKioskEnableScreen();
-
-  // Shows "kiosk auto-launch permission" screen.
-  void ShowKioskAutolaunchScreen();
 
   // Shows "filesystem encryption migration" screen.
   void ShowEncryptionMigrationScreen(const UserContext& user_context,

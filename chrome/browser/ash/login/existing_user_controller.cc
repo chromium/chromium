@@ -686,10 +686,6 @@ void ExistingUserController::OnStartKioskEnableScreen() {
       weak_factory_.GetWeakPtr()));
 }
 
-void ExistingUserController::OnStartKioskAutolaunchScreen() {
-  ShowKioskAutolaunchScreen();
-}
-
 void ExistingUserController::SetDisplayEmail(const std::string& email) {
   display_email_ = email;
 }
@@ -727,10 +723,6 @@ void ExistingUserController::OnConsumerKioskAutoLaunchCheckCompleted(
 
 void ExistingUserController::ShowKioskEnableScreen() {
   GetLoginDisplayHost()->StartWizard(KioskEnableScreenView::kScreenId);
-}
-
-void ExistingUserController::ShowKioskAutolaunchScreen() {
-  GetLoginDisplayHost()->StartWizard(KioskAutolaunchScreenView::kScreenId);
 }
 
 void ExistingUserController::ShowEncryptionMigrationScreen(

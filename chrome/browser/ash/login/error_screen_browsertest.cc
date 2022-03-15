@@ -77,6 +77,7 @@ class NetworkErrorScreenTest : public InProcessBrowserTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(
         switches::kDisableOOBEChromeVoxHintTimerForTesting);
+    command_line->AppendSwitch(switches::kLoginManager);
   }
 
   void ShowErrorScreenWithNetworkList() {

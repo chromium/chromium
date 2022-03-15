@@ -88,9 +88,9 @@
 -InitialEnrollmentTest.*
 -InterruptedAutoStartEnrollmentTest.*
 -InvalidPendingScreenTest.*
+-KioskConsumerTest.*
 -KioskEnrollmentTest.*
 -KioskEnterpriseTest.*
--KioskHiddenWebUITest.*
 -KioskTest.*
 -KioskUpdateTest.*
 -KioskVirtualKeyboardTest.*

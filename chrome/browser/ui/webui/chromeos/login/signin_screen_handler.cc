@@ -255,10 +255,6 @@ void SigninScreenHandler::RegisterMessages() {
   AddCallback("launchIncognito", &SigninScreenHandler::HandleLaunchIncognito);
   AddCallback("offlineLogin", &SigninScreenHandler::HandleOfflineLogin);
 
-  // TODO(crbug.com/1168114): This is also called by GAIA screen,
-  // but might not be needed anymore
-  AddCallback("loginUIStateChanged",
-              &SigninScreenHandler::HandleLoginUIStateChanged);
   AddCallback("showLoadingTimeoutError",
               &SigninScreenHandler::HandleShowLoadingTimeoutError);
 }
@@ -508,28 +504,6 @@ void SigninScreenHandler::HandleOfflineLogin() {
   HideOfflineMessage(NetworkStateInformer::OFFLINE,
                      NetworkError::ERROR_REASON_NONE);
   LoginDisplayHost::default_host()->StartWizard(OfflineLoginView::kScreenId);
-}
-
-void SigninScreenHandler::HandleToggleKioskAutolaunchScreen() {
-  if (delegate_ && !webui::IsEnterpriseManaged())
-    delegate_->ShowKioskAutolaunchScreen();
-}
-
-void SigninScreenHandler::HandleLoginUIStateChanged(const std::string& source,
-                                                    bool active) {
-  VLOG(0) << "Login WebUI >> active: " << active << ", "
-            << "source: " << source;
-
-  if (!KioskAppManager::Get()->GetAutoLaunchApp().empty() &&
-      KioskAppManager::Get()->IsAutoLaunchRequested()) {
-    VLOG(0) << "Showing auto-launch warning";
-    // On slow devices, the wallpaper animation is not shown initially, so we
-    // must explicitly load the wallpaper. This is also the case for the
-    // account-picker and gaia-signin UI states.
-    LoginDisplayHost::default_host()->LoadSigninWallpaper();
-    HandleToggleKioskAutolaunchScreen();
-    return;
-  }
 }
 
 void SigninScreenHandler::HandleShowLoadingTimeoutError() {

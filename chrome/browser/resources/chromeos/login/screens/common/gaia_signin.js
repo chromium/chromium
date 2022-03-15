@@ -537,8 +537,6 @@ class GaiaSigninElement extends GaiaSigninElementBase {
    * @param {Object} data Screen init payload
    */
   onBeforeShow(data) {
-    chrome.send('loginUIStateChanged', ['gaia-signin', true]);
-
     // Re-enable navigation in case it was disabled before refresh.
     this.navigationEnabled_ = true;
 
@@ -586,7 +584,6 @@ class GaiaSigninElement extends GaiaSigninElementBase {
    * Event handler that is invoked just before the screen is hidden.
    */
   onBeforeHide() {
-    chrome.send('loginUIStateChanged', ['gaia-signin', false]);
     this.isShown_ = false;
   }
 
