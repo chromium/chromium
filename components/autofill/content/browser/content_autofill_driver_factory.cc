@@ -143,8 +143,8 @@ void ContentAutofillDriverFactory::RenderFrameDeleted(
   // may actually be shown by the AutofillExternalDelegate of an ancestor
   // frame, which is not notified about |render_frame_host|'s destruction
   // and therefore won't close the popup.
-  if (render_frame_host->GetParent() &&
-      router_.last_queried_source() == driver) {
+  bool is_iframe = !driver->IsInAnyMainFrame();
+  if (is_iframe && router_.last_queried_source() == driver) {
     DCHECK_NE(content::RenderFrameHost::LifecycleState::kPrerendering,
               render_frame_host->GetLifecycleState());
     router_.HidePopup(driver);
