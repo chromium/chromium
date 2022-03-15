@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/policy/messaging_layer/upload/test_util.h"
+#include "chrome/browser/policy/messaging_layer/util/test.h"
 
 #include <string>
 #include "base/json/json_reader.h"
