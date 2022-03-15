@@ -249,20 +249,27 @@ TEST_F(RecentDiskSourceTest, GetImageFiles) {
   ASSERT_TRUE(CreateEmptyFile("4.mp3", base::Time::FromJavaTime(4000)));
   ASSERT_TRUE(CreateEmptyFile("5.gif", base::Time::FromJavaTime(5000)));
   ASSERT_TRUE(CreateEmptyFile("6.webm", base::Time::FromJavaTime(6000)));
+  // RAW images are supported
+  ASSERT_TRUE(CreateEmptyFile("7.dng", base::Time::FromJavaTime(7000)));
+  ASSERT_TRUE(CreateEmptyFile("8.nef", base::Time::FromJavaTime(8000)));
   // Newest
 
   std::vector<RecentFile> files =
-      GetRecentFiles(6, base::Time(), RecentSource::FileType::kImage);
+      GetRecentFiles(8, base::Time(), RecentSource::FileType::kImage);
 
   std::sort(files.begin(), files.end(), RecentFileComparator());
 
-  ASSERT_EQ(3u, files.size());
-  EXPECT_EQ("5.gif", files[0].url().path().BaseName().value());
-  EXPECT_EQ(base::Time::FromJavaTime(5000), files[0].last_modified());
-  EXPECT_EQ("3.png", files[1].url().path().BaseName().value());
-  EXPECT_EQ(base::Time::FromJavaTime(3000), files[1].last_modified());
-  EXPECT_EQ("1.jpg", files[2].url().path().BaseName().value());
-  EXPECT_EQ(base::Time::FromJavaTime(1000), files[2].last_modified());
+  ASSERT_EQ(5u, files.size());
+  EXPECT_EQ("8.nef", files[0].url().path().BaseName().value());
+  EXPECT_EQ(base::Time::FromJavaTime(8000), files[0].last_modified());
+  EXPECT_EQ("7.dng", files[1].url().path().BaseName().value());
+  EXPECT_EQ(base::Time::FromJavaTime(7000), files[1].last_modified());
+  EXPECT_EQ("5.gif", files[2].url().path().BaseName().value());
+  EXPECT_EQ(base::Time::FromJavaTime(5000), files[2].last_modified());
+  EXPECT_EQ("3.png", files[3].url().path().BaseName().value());
+  EXPECT_EQ(base::Time::FromJavaTime(3000), files[3].last_modified());
+  EXPECT_EQ("1.jpg", files[4].url().path().BaseName().value());
+  EXPECT_EQ(base::Time::FromJavaTime(1000), files[4].last_modified());
 }
 
 TEST_F(RecentDiskSourceTest, GetVideoFiles) {

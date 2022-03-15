@@ -17,6 +17,9 @@ export function FileType() {}
 
 export {FileExtensionType};
 
+// All supported file types are now defined in
+// ui/file_manager/base/gn/file_types.json5.
+
 /**
  * A special type for directory.
  * @type{!FileExtensionType}
