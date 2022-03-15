@@ -453,11 +453,11 @@ bool AssistiveSuggester::Suggest(const std::u16string& text,
       (cursor_pos == len || base::IsAsciiWhitespace(text[cursor_pos])) &&
       (base::IsAsciiWhitespace(text[cursor_pos - 1]) || IsSuggestionShown())) {
     if (IsSuggestionShown()) {
-      return current_suggester_->Suggest(text, cursor_pos, anchor_pos);
+      return current_suggester_->Suggest(text, cursor_pos);
     }
     if (IsAssistPersonalInfoEnabled() &&
         suggester_switch_->IsPersonalInfoSuggestionAllowed() &&
-        personal_info_suggester_.Suggest(text, cursor_pos, anchor_pos)) {
+        personal_info_suggester_.Suggest(text, cursor_pos)) {
       current_suggester_ = &personal_info_suggester_;
       if (personal_info_suggester_.IsFirstShown()) {
         RecordAssistiveCoverage(current_suggester_->GetProposeActionType());
@@ -466,7 +466,7 @@ bool AssistiveSuggester::Suggest(const std::u16string& text,
     } else if (IsEmojiSuggestAdditionEnabled() &&
                !IsEnhancedEmojiSuggestEnabled() &&
                suggester_switch_->IsEmojiSuggestionAllowed() &&
-               emoji_suggester_.Suggest(text, cursor_pos, anchor_pos)) {
+               emoji_suggester_.Suggest(text, cursor_pos)) {
       current_suggester_ = &emoji_suggester_;
       RecordAssistiveCoverage(current_suggester_->GetProposeActionType());
       return true;

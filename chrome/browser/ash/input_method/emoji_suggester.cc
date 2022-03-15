@@ -221,9 +221,7 @@ bool EmojiSuggester::ShouldShowSuggestion(const std::u16string& text) {
   return false;
 }
 
-bool EmojiSuggester::Suggest(const std::u16string& text,
-                             size_t cursor_pos,
-                             size_t anchor_pos) {
+bool EmojiSuggester::Suggest(const std::u16string& text, size_t cursor_pos) {
   if (emoji_map_.empty() || text[text.length() - 1] != kSpaceChar)
     return false;
   std::string last_word =

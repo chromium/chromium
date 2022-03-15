@@ -34,9 +34,7 @@ class Suggester : public SuggestionsSource {
 
   // Check if suggestion should be displayed according to the surrounding text
   // information.
-  virtual bool Suggest(const std::u16string& text,
-                       size_t cursor_pos,
-                       size_t anchor_pos) = 0;
+  virtual bool Suggest(const std::u16string& text, size_t cursor_pos) = 0;
 
   // Accepts the suggestion at a given index, index can be made default if
   // unnecessary. Returns true if suggestion is accepted successfully.

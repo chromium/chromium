@@ -205,8 +205,7 @@ SuggestionStatus MultiWordSuggester::HandleKeyEvent(const ui::KeyEvent& event) {
 }
 
 bool MultiWordSuggester::Suggest(const std::u16string& text,
-                                 size_t cursor_pos,
-                                 size_t anchor_pos) {
+                                 size_t cursor_pos) {
   return state_.IsSuggestionShowing();
 }
 
