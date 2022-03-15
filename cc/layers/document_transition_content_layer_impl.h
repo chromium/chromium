@@ -18,7 +18,8 @@ class CC_EXPORT DocumentTransitionContentLayerImpl : public LayerImpl {
   static std::unique_ptr<DocumentTransitionContentLayerImpl> Create(
       LayerTreeImpl* tree_impl,
       int id,
-      const viz::SharedElementResourceId& resource_id);
+      const viz::SharedElementResourceId& resource_id,
+      bool is_live_content_layer);
 
   DocumentTransitionContentLayerImpl(
       const DocumentTransitionContentLayerImpl&) = delete;
@@ -33,16 +34,23 @@ class CC_EXPORT DocumentTransitionContentLayerImpl : public LayerImpl {
   void AppendQuads(viz::CompositorRenderPass* render_pass,
                    AppendQuadsData* append_quads_data) override;
 
+  void NotifyKnownResourceIdsBeforeAppendQuads(
+      const base::flat_set<viz::SharedElementResourceId>& known_resource_ids)
+      override;
+
  protected:
   DocumentTransitionContentLayerImpl(
       LayerTreeImpl* tree_impl,
       int id,
-      const viz::SharedElementResourceId& resource_id);
+      const viz::SharedElementResourceId& resource_id,
+      bool is_live_content_layer);
 
  private:
   const char* LayerTypeAsString() const override;
 
   const viz::SharedElementResourceId resource_id_;
+  const bool is_live_content_layer_;
+  bool skip_unseen_resource_quads_ = false;
 };
 
 }  // namespace cc

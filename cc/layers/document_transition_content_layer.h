@@ -18,7 +18,8 @@ namespace cc {
 class CC_EXPORT DocumentTransitionContentLayer : public Layer {
  public:
   static scoped_refptr<DocumentTransitionContentLayer> Create(
-      const viz::SharedElementResourceId& resource_id);
+      const viz::SharedElementResourceId& resource_id,
+      bool is_live_content_layer);
 
   DocumentTransitionContentLayer(const DocumentTransitionContentLayer&) =
       delete;
@@ -33,12 +34,14 @@ class CC_EXPORT DocumentTransitionContentLayer : public Layer {
 
  protected:
   explicit DocumentTransitionContentLayer(
-      const viz::SharedElementResourceId& resource_id);
+      const viz::SharedElementResourceId& resource_id,
+      bool is_live_content_layer);
 
  private:
   ~DocumentTransitionContentLayer() override;
 
   const viz::SharedElementResourceId resource_id_;
+  const bool is_live_content_layer_;
 };
 
 }  // namespace cc

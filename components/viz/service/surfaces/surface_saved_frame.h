@@ -96,6 +96,8 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
   // For testing functionality that ensures that we have a valid frame.
   void CompleteSavedFrameForTesting();
 
+  base::flat_set<SharedElementResourceId> GetEmptyResourceIds() const;
+
  private:
   enum class ResultType { kRoot, kShared };
 

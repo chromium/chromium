@@ -16,7 +16,7 @@ TEST(DocumentTransitionRequestTest, PrepareRequest) {
   auto callback = base::BindLambdaForTesting([&called]() { called = true; });
 
   auto request = DocumentTransitionRequest::CreateCapture(
-      /*document_tag=*/0, /*shared_element_count=*/0, std::move(callback));
+      /*document_tag=*/0, /*shared_element_count=*/0, {}, std::move(callback));
 
   EXPECT_FALSE(called);
   request->TakeFinishedCallback().Run();

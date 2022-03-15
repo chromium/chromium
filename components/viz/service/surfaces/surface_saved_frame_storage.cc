@@ -26,7 +26,8 @@ constexpr base::TimeDelta kExpiryTime = base::Seconds(5);
 SurfaceSavedFrameStorage::SurfaceSavedFrameStorage() = default;
 SurfaceSavedFrameStorage::~SurfaceSavedFrameStorage() = default;
 
-void SurfaceSavedFrameStorage::ProcessSaveDirective(
+base::flat_set<SharedElementResourceId>
+SurfaceSavedFrameStorage::ProcessSaveDirective(
     const CompositorFrameTransitionDirective& directive,
     SurfaceSavedFrame::TransitionDirectiveCompleteCallback
         directive_finished_callback) {
@@ -50,6 +51,8 @@ void SurfaceSavedFrameStorage::ProcessSaveDirective(
       &SurfaceSavedFrameStorage::ExpireSavedFrame, base::Unretained(this)));
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, expiry_closure_.callback(), kExpiryTime);
+
+  return saved_frame_->GetEmptyResourceIds();
 }
 
 std::unique_ptr<SurfaceSavedFrame> SurfaceSavedFrameStorage::TakeSavedFrame() {

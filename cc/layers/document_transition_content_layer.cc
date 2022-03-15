@@ -14,13 +14,17 @@ namespace cc {
 
 scoped_refptr<DocumentTransitionContentLayer>
 DocumentTransitionContentLayer::Create(
-    const viz::SharedElementResourceId& resource_id) {
-  return base::WrapRefCounted(new DocumentTransitionContentLayer(resource_id));
+    const viz::SharedElementResourceId& resource_id,
+    bool is_live_content_layer) {
+  return base::WrapRefCounted(
+      new DocumentTransitionContentLayer(resource_id, is_live_content_layer));
 }
 
 DocumentTransitionContentLayer::DocumentTransitionContentLayer(
-    const viz::SharedElementResourceId& resource_id)
-    : resource_id_(resource_id) {}
+    const viz::SharedElementResourceId& resource_id,
+    bool is_live_content_layer)
+    : resource_id_(resource_id),
+      is_live_content_layer_(is_live_content_layer) {}
 
 DocumentTransitionContentLayer::~DocumentTransitionContentLayer() = default;
 
@@ -31,8 +35,8 @@ DocumentTransitionContentLayer::DocumentTransitionResourceId() const {
 
 std::unique_ptr<LayerImpl> DocumentTransitionContentLayer::CreateLayerImpl(
     LayerTreeImpl* tree_impl) const {
-  return DocumentTransitionContentLayerImpl::Create(tree_impl, id(),
-                                                    resource_id_);
+  return DocumentTransitionContentLayerImpl::Create(
+      tree_impl, id(), resource_id_, is_live_content_layer_);
 }
 
 }  // namespace cc

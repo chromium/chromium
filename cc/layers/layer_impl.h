@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "cc/base/region.h"
@@ -457,6 +458,9 @@ class CC_EXPORT LayerImpl {
   std::string DebugName() const;
 
   virtual gfx::ContentColorUsage GetContentColorUsage() const;
+
+  virtual void NotifyKnownResourceIdsBeforeAppendQuads(
+      const base::flat_set<viz::SharedElementResourceId>& known_resource_ids) {}
 
  protected:
   // When |will_always_push_properties| is true, the layer will not itself set

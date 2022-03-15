@@ -375,7 +375,8 @@ bool SurfaceAnimationManager::ProcessSaveDirective(
   // We need to be in the idle state in order to save.
   if (state_ != State::kIdle)
     return false;
-  storage->ProcessSaveDirective(directive, sequence_id_finished_callback_);
+  empty_resource_ids_ =
+      storage->ProcessSaveDirective(directive, sequence_id_finished_callback_);
   return true;
 }
 
@@ -1219,6 +1220,9 @@ bool SurfaceAnimationManager::FilterSharedElementsWithRenderPassOrResource(
       return true;
     }
   }
+
+  if (empty_resource_ids_.count(shared_element_quad.resource_id) > 0)
+    return true;
 
 #if DCHECK_IS_ON()
   LOG(ERROR) << "Content not found for shared element: "

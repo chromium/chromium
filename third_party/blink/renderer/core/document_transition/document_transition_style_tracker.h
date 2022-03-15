@@ -109,6 +109,10 @@ class DocumentTransitionStyleTracker
 
   bool IsSharedElement(Element* element) const;
 
+  std::vector<viz::SharedElementResourceId> TakeCaptureResourceIds() {
+    return std::move(capture_resource_ids_);
+  }
+
  private:
   class ImageWrapperPseudoElement;
 
@@ -167,6 +171,10 @@ class DocumentTransitionStyleTracker
   int set_element_sequence_id_ = 0;
   HeapHashMap<Member<Element>, HashSet<std::pair<AtomicString, int>>>
       pending_shared_element_tags_;
+
+  // This vector is passed as constructed to cc's document transition request,
+  // so this uses the std::vector for that reason, instead of WTF::Vector.
+  std::vector<viz::SharedElementResourceId> capture_resource_ids_;
 };
 
 }  // namespace blink

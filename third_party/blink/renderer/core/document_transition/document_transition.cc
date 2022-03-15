@@ -197,6 +197,7 @@ ScriptPromise DocumentTransition::start(ScriptState* script_state,
   state_ = State::kCapturing;
   pending_request_ = DocumentTransitionRequest::CreateCapture(
       document_tag_, style_tracker_->CapturedTagCount(),
+      style_tracker_->TakeCaptureResourceIds(),
       ConvertToBaseOnceCallback(CrossThreadBindOnce(
           &DocumentTransition::NotifyCaptureFinished,
           WrapCrossThreadWeakPersistent(this), last_prepare_sequence_id_)));

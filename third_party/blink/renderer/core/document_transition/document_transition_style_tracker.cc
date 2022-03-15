@@ -242,8 +242,10 @@ bool DocumentTransitionStyleTracker::Capture() {
     auto& snapshot_id =
         element_snapshot_ids.insert(element, viz::SharedElementResourceId())
             .stored_value->value;
-    if (!snapshot_id.IsValid())
+    if (!snapshot_id.IsValid()) {
       snapshot_id = viz::SharedElementResourceId::Generate();
+      capture_resource_ids_.push_back(snapshot_id);
+    }
 
     auto* element_data = MakeGarbageCollected<ElementData>();
     element_data->target_element = element;
@@ -440,9 +442,19 @@ PseudoElement* DocumentTransitionStyleTracker::CreatePseudoElement(
                                    : element_data->cached_border_box_size;
         snapshot_id = element_data->old_snapshot_id;
       }
+      // Note that we say that this layer is not a live content
+      // layer, even though it may currently be displaying live contents. The
+      // reason is that we want to avoid updating this value later, which
+      // involves propagating the update all the way to cc. However, this means
+      // that we have to have the save directive come in the same frame as the
+      // first frame that displays this content. Otherwise, we risk DCHECK. This
+      // is currently the behavior as specced, but this is subtle.
+      // TODO(vmpstr): Maybe we should just use HasLiveNewContent() here, and
+      // update it when the value changes.
       auto* pseudo_element =
           MakeGarbageCollected<DocumentTransitionContentElement>(
-              parent, pseudo_id, document_transition_tag, snapshot_id);
+              parent, pseudo_id, document_transition_tag, snapshot_id,
+              /*is_live_content_element=*/false);
       pseudo_element->SetIntrinsicSize(size);
       return pseudo_element;
     }
@@ -459,7 +471,8 @@ PseudoElement* DocumentTransitionStyleTracker::CreatePseudoElement(
       }
       auto* pseudo_element =
           MakeGarbageCollected<DocumentTransitionContentElement>(
-              parent, pseudo_id, document_transition_tag, snapshot_id);
+              parent, pseudo_id, document_transition_tag, snapshot_id,
+              /*is_live_content_element=*/true);
       pseudo_element->SetIntrinsicSize(size);
       return pseudo_element;
     }
@@ -767,7 +780,7 @@ const String& DocumentTransitionStyleTracker::UAStyleSheet() {
       builder.AppendFormat(
           R"CSS(
           html::page-transition-container(%s) {
-            animation: page-transition-container-anim-%s 0.25s forwards
+            animation: page-transition-container-anim-%s 0.25s both
           }
           )CSS",
           document_transition_tag.c_str(), document_transition_tag.c_str());

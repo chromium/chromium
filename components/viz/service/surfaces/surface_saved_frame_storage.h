@@ -28,8 +28,9 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrameStorage {
 
   // Processes the save directive from a compositor frame. This interfaces with
   // the Surface to append copy output requests, so it should only be called
-  // after the surface with the save directive has been activated.
-  void ProcessSaveDirective(
+  // after the surface with the save directive has been activated. Returns a set
+  // of resource ids that were deemed to be "empty".
+  base::flat_set<SharedElementResourceId> ProcessSaveDirective(
       const CompositorFrameTransitionDirective& directive,
       SurfaceSavedFrame::TransitionDirectiveCompleteCallback
           directive_finished_callback);

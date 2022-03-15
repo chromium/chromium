@@ -297,6 +297,8 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager {
   std::vector<SharedAnimationState> shared_animations_;
 
   base::TimeTicks latest_time_;
+
+  base::flat_set<SharedElementResourceId> empty_resource_ids_;
 };
 
 }  // namespace viz

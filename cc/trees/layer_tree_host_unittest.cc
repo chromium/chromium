@@ -9866,7 +9866,7 @@ class LayerTreeHostTestDocumentTransitionsPropagatedToMetadata
   void BeginTest() override {
     layer_tree_host()->AddDocumentTransitionRequest(
         DocumentTransitionRequest::CreateCapture(
-            /*document_tag=*/0, /*shared_element_count=*/0,
+            /*document_tag=*/0, /*shared_element_count=*/0, {},
             base::BindLambdaForTesting([this]() { CommitLambdaCalled(); })));
   }
 

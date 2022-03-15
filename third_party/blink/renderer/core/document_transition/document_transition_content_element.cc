@@ -12,11 +12,13 @@ DocumentTransitionContentElement::DocumentTransitionContentElement(
     Element* parent,
     PseudoId pseudo_id,
     const AtomicString& document_transition_tag,
-    viz::SharedElementResourceId resource_id)
+    viz::SharedElementResourceId resource_id,
+    bool is_live_content_element)
     : DocumentTransitionPseudoElementBase(parent,
                                           pseudo_id,
                                           document_transition_tag),
-      resource_id_(resource_id) {
+      resource_id_(resource_id),
+      is_live_content_element_(is_live_content_element) {
   DCHECK(resource_id_.IsValid());
 }
 

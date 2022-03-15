@@ -41,11 +41,13 @@ uint32_t DocumentTransitionRequest::s_next_sequence_id_ = 1;
 
 // static
 std::unique_ptr<DocumentTransitionRequest>
-DocumentTransitionRequest::CreateCapture(uint32_t document_tag,
-                                         uint32_t shared_element_count,
-                                         base::OnceClosure commit_callback) {
+DocumentTransitionRequest::CreateCapture(
+    uint32_t document_tag,
+    uint32_t shared_element_count,
+    std::vector<viz::SharedElementResourceId> capture_ids,
+    base::OnceClosure commit_callback) {
   return base::WrapUnique(new DocumentTransitionRequest(
-      Type::kSave, document_tag, shared_element_count,
+      Type::kSave, document_tag, shared_element_count, std::move(capture_ids),
       std::move(commit_callback)));
 }
 
@@ -53,26 +55,28 @@ DocumentTransitionRequest::CreateCapture(uint32_t document_tag,
 std::unique_ptr<DocumentTransitionRequest>
 DocumentTransitionRequest::CreateAnimateRenderer(uint32_t document_tag) {
   return base::WrapUnique(new DocumentTransitionRequest(
-      Type::kAnimateRenderer, document_tag, 0u, base::DoNothing()));
+      Type::kAnimateRenderer, document_tag, 0u, {}, base::DoNothing()));
 }
 
 // static
 std::unique_ptr<DocumentTransitionRequest>
 DocumentTransitionRequest::CreateRelease(uint32_t document_tag) {
   return base::WrapUnique(new DocumentTransitionRequest(
-      Type::kRelease, document_tag, 0u, base::DoNothing()));
+      Type::kRelease, document_tag, 0u, {}, base::DoNothing()));
 }
 
 DocumentTransitionRequest::DocumentTransitionRequest(
     Type type,
     uint32_t document_tag,
     uint32_t shared_element_count,
+    std::vector<viz::SharedElementResourceId> capture_ids,
     base::OnceClosure commit_callback)
     : type_(type),
       document_tag_(document_tag),
       shared_element_count_(shared_element_count),
       commit_callback_(std::move(commit_callback)),
-      sequence_id_(s_next_sequence_id_++) {}
+      sequence_id_(s_next_sequence_id_++),
+      capture_resource_ids_(std::move(capture_ids)) {}
 
 DocumentTransitionRequest::~DocumentTransitionRequest() = default;
 
@@ -82,6 +86,7 @@ DocumentTransitionRequest::ConstructDirective(
         shared_element_render_pass_id_map) const {
   std::vector<viz::CompositorFrameTransitionDirective::SharedElement>
       shared_elements(shared_element_count_);
+  auto capture_resource_ids = capture_resource_ids_;
   for (uint32_t i = 0; i < shared_elements.size(); ++i) {
     auto it = std::find_if(
         shared_element_render_pass_id_map.begin(),
@@ -94,7 +99,22 @@ DocumentTransitionRequest::ConstructDirective(
       continue;
     shared_elements[i].render_pass_id = it->second.render_pass_id;
     shared_elements[i].shared_element_resource_id = it->second.resource_id;
+
+    // Remove the resource id from our capture ids, since we just want to have
+    // "empty" resource ids left -- the ones that don't have a render pass
+    // associated with them.
+    capture_resource_ids.erase(
+        std::remove(capture_resource_ids.begin(), capture_resource_ids.end(),
+                    it->second.resource_id),
+        capture_resource_ids.end());
   }
+
+  // Add invalid render pass id for each empty resource id left in capture ids.
+  for (auto& empty_resource_id : capture_resource_ids) {
+    shared_elements.emplace_back();
+    shared_elements.back().shared_element_resource_id = empty_resource_id;
+  }
+
   // TODO(vmpstr): Clean up the directive parameters.
   return viz::CompositorFrameTransitionDirective(
       sequence_id_, type_, /*is_renderer_driven_animation=*/true,

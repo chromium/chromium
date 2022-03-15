@@ -21,6 +21,7 @@
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
@@ -1249,6 +1250,7 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
   // crbug.com/805673.
   active_tree_->ResetHandleVisibilityChanged();
 
+  base::flat_set<viz::SharedElementResourceId> known_resource_ids;
   // Create the render passes in dependency order.
   size_t render_surface_list_size = frame->render_surface_list->size();
   for (size_t i = 0; i < render_surface_list_size; ++i) {
@@ -1263,6 +1265,11 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
         render_surface->CopyOfOutputRequired();
     if (should_draw_into_render_pass)
       frame->render_passes.push_back(render_surface->CreateRenderPass());
+    if (render_surface->OwningEffectNode()
+            ->shared_element_resource_id.IsValid()) {
+      known_resource_ids.insert(
+          render_surface->OwningEffectNode()->shared_element_resource_id);
+    }
   }
 
   // Damage rects for non-root passes aren't meaningful, so set them to be
@@ -1357,7 +1364,7 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
           num_of_layers_with_videos++;
           frame->may_contain_video = true;
         }
-
+        layer->NotifyKnownResourceIdsBeforeAppendQuads(known_resource_ids);
         layer->AppendQuads(target_render_pass, &append_quads_data);
         if (settings_.allow_de_jelly_effect) {
           de_jelly_state_.UpdateSharedQuadState(active_tree_.get(),

@@ -73,6 +73,15 @@ SurfaceSavedFrame::~SurfaceSavedFrame() {
     std::move(directive_finished_callback_).Run(directive_.sequence_id());
 }
 
+base::flat_set<SharedElementResourceId> SurfaceSavedFrame::GetEmptyResourceIds()
+    const {
+  base::flat_set<SharedElementResourceId> result;
+  for (auto& shared_element : directive_.shared_elements())
+    if (shared_element.render_pass_id.is_null())
+      result.insert(shared_element.shared_element_resource_id);
+  return result;
+}
+
 bool SurfaceSavedFrame::IsValid() const {
   bool result = valid_result_count_ == ExpectedResultCount();
   // If this saved frame is valid, then we should have a frame result.
