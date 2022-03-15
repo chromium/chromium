@@ -110,11 +110,6 @@ struct Config {
   // show on prominent UI surfaces.
   float content_visibility_threshold = 0.7;
 
-  // Returns the min page topics model version to honor the visibility score
-  // for.
-  int64_t min_page_topics_model_version_to_use_content_visibility_from =
-      INT64_MAX;
-
   // Whether to hide single-visit clusters on prominent UI surfaces.
   bool should_hide_single_visit_clusters_on_prominent_ui_surfaces = true;
 

@@ -93,7 +93,6 @@ class OnDeviceClusteringWithoutContentBackendTest : public ::testing::Test {
   OnDeviceClusteringWithoutContentBackendTest() {
     config_.content_clustering_enabled = false;
     config_.should_dedupe_similar_visits = false;
-    config_.min_page_topics_model_version_to_use_content_visibility_from = 125;
     config_.should_include_categories_in_keywords = true;
     config_.should_exclude_keywords_from_noisy_visits = false;
     config_.split_clusters_at_search_visits = false;
@@ -551,7 +550,6 @@ TEST_F(OnDeviceClusteringWithAllTheBackendsTest,
   // Visit2 has the same search URL as Visit1.
   history::AnnotatedVisit visit = testing::CreateDefaultAnnotatedVisit(
       1, GURL("http://default-engine.com/?q=foo&otherstuff"));
-  visit.content_annotations.model_annotations.page_topics_model_version = 123;
   visit.content_annotations.model_annotations.visibility_score = 0.5;
   visits.push_back(visit);
 
@@ -561,7 +559,6 @@ TEST_F(OnDeviceClusteringWithAllTheBackendsTest,
       history::VisitContentModelAnnotations::Category("foo", 50),
       history::VisitContentModelAnnotations::Category("nometadata", 30),
   };
-  visit2.content_annotations.model_annotations.page_topics_model_version = 127;
   visit2.content_annotations.model_annotations.visibility_score = 0.5;
   visits.push_back(visit2);
 
@@ -573,7 +570,6 @@ TEST_F(OnDeviceClusteringWithAllTheBackendsTest,
   visit3.content_annotations.search_terms = u"nometadata";
   visit3.content_annotations.search_normalized_url =
       GURL("http://non-default-engine.com/?q=nometadata");
-  visit3.content_annotations.model_annotations.page_topics_model_version = 127;
   visit3.content_annotations.model_annotations.visibility_score = 0.5;
   visits.push_back(visit3);
 
@@ -614,7 +610,7 @@ TEST_F(OnDeviceClusteringWithAllTheBackendsTest,
                   .duplicate_visits.at(0)
                   .annotated_visit.content_annotations.model_annotations
                   .visibility_score,
-              FloatEq(-1));
+              FloatEq(0.5));
 
   history::Cluster cluster2 = result_clusters.at(1);
   ASSERT_EQ(cluster2.visits.size(), 1u);
@@ -649,7 +645,6 @@ class EngagementCacheOnDeviceClusteringWithoutContentBackendTest
   EngagementCacheOnDeviceClusteringWithoutContentBackendTest() {
     config_.content_clustering_enabled = false;
     config_.should_dedupe_similar_visits = false;
-    config_.min_page_topics_model_version_to_use_content_visibility_from = 125;
     config_.should_include_categories_in_keywords = true;
     config_.should_exclude_keywords_from_noisy_visits = false;
     SetConfigForTesting(config_);
@@ -721,7 +716,6 @@ class BatchedClusteringTaskOnDeviceClusteringWithoutContentBackendTest
   BatchedClusteringTaskOnDeviceClusteringWithoutContentBackendTest() {
     config_.content_clustering_enabled = false;
     config_.should_dedupe_similar_visits = false;
-    config_.min_page_topics_model_version_to_use_content_visibility_from = 125;
     config_.should_include_categories_in_keywords = true;
     config_.should_exclude_keywords_from_noisy_visits = false;
     config_.clustering_tasks_batch_size = 1;

@@ -322,16 +322,6 @@ void OnDeviceClusteringBackend::ProcessBatchOfVisits(
           }
         }
       }
-      if (visit.content_annotations.model_annotations
-              .page_topics_model_version <
-          GetConfig()
-              .min_page_topics_model_version_to_use_content_visibility_from) {
-        // Override the visibility score to be as if the model was not evaluated
-        // if the version of the model being used does not exceed the min
-        // version that was not a random model.
-        cluster_visit.annotated_visit.content_annotations.model_annotations
-            .visibility_score = -1.0;
-      }
     }
 
     cluster_visits.push_back(cluster_visit);

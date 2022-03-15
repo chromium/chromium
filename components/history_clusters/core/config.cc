@@ -111,20 +111,6 @@ Config::Config() {
   DCHECK_GE(content_visibility_threshold, 0.0f);
   DCHECK_LE(content_visibility_threshold, 1.0f);
 
-  std::string
-      min_page_topics_model_version_to_use_content_visibility_from_value_as_string =
-          GetFieldTrialParamValueByFeature(
-              features::kOnDeviceClustering,
-              "min_page_topics_model_version_for_visibility");
-  int64_t value_as_int = 0;
-  if (!base::StringToInt64(
-          min_page_topics_model_version_to_use_content_visibility_from_value_as_string,
-          &value_as_int)) {
-    min_page_topics_model_version_to_use_content_visibility_from = INT64_MAX;
-  } else {
-    min_page_topics_model_version_to_use_content_visibility_from = value_as_int;
-  }
-
   should_hide_single_visit_clusters_on_prominent_ui_surfaces =
       GetFieldTrialParamByFeatureAsBool(
           features::kOnDeviceClustering,
