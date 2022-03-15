@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/test_password_store.h"
@@ -327,6 +328,71 @@ TEST_F(SavedPasswordsPresenterTest, EditOnlyPassword) {
       metrics_util::PasswordEditUpdatedValues::kPassword, 1);
 
   presenter().RemoveObserver(&observer);
+}
+
+TEST_F(SavedPasswordsPresenterTest, EditOnlyNoteFirstTime) {
+  PasswordForm form =
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
+
+  store().AddLogin(form);
+  RunUntilIdle();
+  std::vector<PasswordForm> forms = {form};
+
+  const std::u16string kNewNoteValue = u"new note";
+
+  EXPECT_TRUE(presenter().EditSavedPasswords(
+      forms, form.username_value, form.password_value, kNewNoteValue));
+  RunUntilIdle();
+
+  PasswordForm expected_updated_form = form;
+  expected_updated_form.note = PasswordNote(kNewNoteValue, base::Time::Now());
+  EXPECT_THAT(
+      store().stored_passwords(),
+      ElementsAre(Pair(form.signon_realm, ElementsAre(expected_updated_form))));
+}
+
+TEST_F(SavedPasswordsPresenterTest, EditOnlyNoteSecondTime) {
+  PasswordNote kExistingNote =
+      PasswordNote(u"existing note", base::Time::Now());
+  PasswordForm form =
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
+  form.note = kExistingNote;
+
+  store().AddLogin(form);
+  RunUntilIdle();
+  std::vector<PasswordForm> forms = {form};
+
+  const std::u16string kNewNoteValue = u"new note";
+
+  EXPECT_TRUE(presenter().EditSavedPasswords(
+      forms, form.username_value, form.password_value, kNewNoteValue));
+  RunUntilIdle();
+
+  PasswordForm expected_updated_form = form;
+  expected_updated_form.note.value = kNewNoteValue;
+  EXPECT_THAT(
+      store().stored_passwords(),
+      ElementsAre(Pair(form.signon_realm, ElementsAre(expected_updated_form))));
+}
+
+TEST_F(SavedPasswordsPresenterTest, EditNoteAsEmpty) {
+  PasswordForm form =
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
+  form.note = PasswordNote(u"existing note", base::Time::Now());
+  std::vector<PasswordForm> forms = {form};
+
+  store().AddLogin(form);
+  RunUntilIdle();
+
+  EXPECT_TRUE(presenter().EditSavedPasswords(forms, form.username_value,
+                                             form.password_value, u""));
+  RunUntilIdle();
+
+  PasswordForm expected_updated_form = form;
+  expected_updated_form.note.value = u"";
+  EXPECT_THAT(
+      store().stored_passwords(),
+      ElementsAre(Pair(form.signon_realm, ElementsAre(expected_updated_form))));
 }
 
 TEST_F(SavedPasswordsPresenterTest, EditUsernameAndPassword) {

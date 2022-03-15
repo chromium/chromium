@@ -19,6 +19,8 @@ namespace metrics_util {
 
 using IsUsernameChanged = base::StrongAlias<class IsUsernameChangedTag, bool>;
 using IsPasswordChanged = base::StrongAlias<class IsPasswordChangedTag, bool>;
+using IsPasswordNoteChanged =
+    base::StrongAlias<class IsPasswordNoteChangedTag, bool>;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
