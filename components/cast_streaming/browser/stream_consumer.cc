@@ -142,9 +142,8 @@ void StreamConsumer::OnFramesReady(int next_frame_buffer_size) {
       openscreen::cast::EncodedFrame::Dependency::KEY_FRAME;
 
   base::TimeDelta playout_time =
-      base::Microseconds(encoded_frame.rtp_timestamp
-                             .ToTimeSinceOrigin<std::chrono::microseconds>(
-                                 receiver_->rtp_timebase())
+      base::Microseconds(std::chrono::duration_cast<std::chrono::microseconds>(
+                             encoded_frame.reference_time.time_since_epoch())
                              .count());
 
   // Some senders do not send an initial playout time of 0. To work around this,
