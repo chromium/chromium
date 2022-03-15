@@ -271,11 +271,14 @@ export async function selectWallpaper(
   store.endBatchUpdate();
 }
 
-export async function setCustomWallpaperLayout(
+export async function setCurrentWallpaperLayout(
     layout: WallpaperLayout, provider: WallpaperProviderInterface,
     store: PersonalizationStore): Promise<void> {
   const image = store.data.wallpaper.currentSelected;
-  assert(image && image.type === WallpaperType.kCustomized);
+  assert(
+      image &&
+      ((image.type === WallpaperType.kCustomized) ||
+       (image.type === WallpaperType.kGooglePhotos)));
   assert(
       layout === WallpaperLayout.kCenter ||
       layout === WallpaperLayout.kCenterCropped);
@@ -285,7 +288,7 @@ export async function setCustomWallpaperLayout(
   }
 
   store.dispatch(action.beginLoadSelectedImageAction());
-  await provider.setCustomWallpaperLayout(layout);
+  await provider.setCurrentWallpaperLayout(layout);
 }
 
 export async function setDailyRefreshCollectionId(

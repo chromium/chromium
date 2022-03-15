@@ -427,6 +427,20 @@ TEST_P(PersonalizationAppWallpaperProviderImplTest,
             current->url);
 }
 
+TEST_P(PersonalizationAppWallpaperProviderImplTest, SetCurrentWallpaperLayout) {
+  auto* ctrl = test_wallpaper_controller();
+
+  EXPECT_EQ(ctrl->update_current_wallpaper_layout_count(), 0);
+  EXPECT_EQ(ctrl->update_current_wallpaper_layout_layout(), absl::nullopt);
+
+  auto layout = ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER;
+  wallpaper_provider_remote()->get()->SetCurrentWallpaperLayout(layout);
+  wallpaper_provider_remote()->FlushForTesting();
+
+  EXPECT_EQ(ctrl->update_current_wallpaper_layout_count(), 1);
+  EXPECT_EQ(ctrl->update_current_wallpaper_layout_layout(), layout);
+}
+
 class PersonalizationAppWallpaperProviderImplGooglePhotosTest
     : public PersonalizationAppWallpaperProviderImplTest {
  protected:

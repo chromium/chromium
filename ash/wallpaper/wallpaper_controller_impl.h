@@ -286,8 +286,8 @@ class ASH_EXPORT WallpaperControllerImpl
                               const gfx::ImageSkia& image) override;
   void ConfirmPreviewWallpaper() override;
   void CancelPreviewWallpaper() override;
-  void UpdateCustomWallpaperLayout(const AccountId& account_id,
-                                   WallpaperLayout layout) override;
+  void UpdateCurrentWallpaperLayout(const AccountId& account_id,
+                                    WallpaperLayout layout) override;
   void ShowUserWallpaper(const AccountId& account_id) override;
   void ShowSigninWallpaper() override;
   void ShowOneShotWallpaper(const gfx::ImageSkia& image) override;

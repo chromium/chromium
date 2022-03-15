@@ -22,7 +22,7 @@ import {Paths} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {getWallpaperLayoutEnum, hasHttpScheme, removeHighResolutionSuffix} from '../utils.js';
 
-import {getDailyRefreshCollectionId, setCustomWallpaperLayout, setDailyRefreshCollectionId, updateDailyRefreshWallpaper} from './wallpaper_controller.js';
+import {getDailyRefreshCollectionId, setCurrentWallpaperLayout, setDailyRefreshCollectionId, updateDailyRefreshWallpaper} from './wallpaper_controller.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 
 export class WallpaperSelected extends WithPersonalizationStore {
@@ -231,8 +231,11 @@ export class WallpaperSelected extends WithPersonalizationStore {
 
   private computeShowWallpaperOptions_(
       image: CurrentWallpaper|null, path: string): boolean {
-    return !!image && image.type === WallpaperType.kCustomized &&
-        path === Paths.LocalCollection;
+    return !!image &&
+        ((image.type === WallpaperType.kCustomized &&
+              path === Paths.LocalCollection ||
+          (image.type === WallpaperType.kGooglePhotos &&
+           path === Paths.GooglePhotosCollection)));
   }
 
   private computeShowCollectionOptions_(path: string): boolean {
@@ -265,7 +268,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
   private onClickLayoutIcon_(event: Event) {
     const eventTarget = event.currentTarget as HTMLElement;
     const layout = getWallpaperLayoutEnum(eventTarget.dataset['layout']!);
-    setCustomWallpaperLayout(layout, this.wallpaperProvider_, this.getStore());
+    setCurrentWallpaperLayout(layout, this.wallpaperProvider_, this.getStore());
   }
 
   private computeDailyRefreshIcon_(

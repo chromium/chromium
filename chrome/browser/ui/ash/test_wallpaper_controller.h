@@ -51,6 +51,13 @@ class TestWallpaperController : public ash::WallpaperController {
   const absl::optional<ash::WallpaperInfo>& wallpaper_info() const {
     return wallpaper_info_;
   }
+  int update_current_wallpaper_layout_count() const {
+    return update_current_wallpaper_layout_count_;
+  }
+  const absl::optional<ash::WallpaperLayout>&
+  update_current_wallpaper_layout_layout() const {
+    return update_current_wallpaper_layout_layout_;
+  }
 
   // ash::WallpaperController:
   void SetClient(ash::WallpaperControllerClient* client) override;
@@ -92,8 +99,8 @@ class TestWallpaperController : public ash::WallpaperController {
                               const gfx::ImageSkia& image) override;
   void ConfirmPreviewWallpaper() override;
   void CancelPreviewWallpaper() override;
-  void UpdateCustomWallpaperLayout(const AccountId& account_id,
-                                   ash::WallpaperLayout layout) override;
+  void UpdateCurrentWallpaperLayout(const AccountId& account_id,
+                                    ash::WallpaperLayout layout) override;
   void ShowUserWallpaper(const AccountId& account_id) override;
   void ShowSigninWallpaper() override;
   void ShowOneShotWallpaper(const gfx::ImageSkia& image) override;
@@ -133,6 +140,8 @@ class TestWallpaperController : public ash::WallpaperController {
   int remove_always_on_top_wallpaper_count_ = 0;
   std::string collection_id_;
   absl::optional<ash::WallpaperInfo> wallpaper_info_;
+  int update_current_wallpaper_layout_count_ = 0;
+  absl::optional<ash::WallpaperLayout> update_current_wallpaper_layout_layout_;
 
   base::ObserverList<ash::WallpaperControllerObserver>::Unchecked observers_;
 

@@ -182,12 +182,13 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   // called in preview mode.
   virtual void CancelPreviewWallpaper() = 0;
 
-  // Updates the layout for the user's custom wallpaper and reloads the
-  // wallpaper with the new layout.
+  // Updates the layout for the user's current wallpaper and reloads the
+  // wallpaper with the new layout. Note that only custom and Google Photos
+  // wallpaper types are currently supported.
   // |account_id|: The user's account id.
   // |layout|: The new layout of the wallpaper.
-  virtual void UpdateCustomWallpaperLayout(const AccountId& account_id,
-                                           WallpaperLayout layout) = 0;
+  virtual void UpdateCurrentWallpaperLayout(const AccountId& account_id,
+                                            WallpaperLayout layout) = 0;
 
   // Shows the user's wallpaper, which is determined in the following order:
   // 1) Use device policy wallpaper if it exists AND we are at the login screen.

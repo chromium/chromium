@@ -125,7 +125,7 @@ void FakePersonalizationAppWallpaperProvider::SelectLocalImage(
   std::move(callback).Run(/*success=*/true);
 }
 
-void FakePersonalizationAppWallpaperProvider::SetCustomWallpaperLayout(
+void FakePersonalizationAppWallpaperProvider::SetCurrentWallpaperLayout(
     ash::WallpaperLayout layout) {
   return;
 }

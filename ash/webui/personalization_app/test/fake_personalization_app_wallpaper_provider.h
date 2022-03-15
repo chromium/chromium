@@ -82,7 +82,7 @@ class FakePersonalizationAppWallpaperProvider
                         bool preview_mode,
                         SelectLocalImageCallback callback) override;
 
-  void SetCustomWallpaperLayout(ash::WallpaperLayout layout) override;
+  void SetCurrentWallpaperLayout(ash::WallpaperLayout layout) override;
 
   void SetDailyRefreshCollectionId(const std::string& collection_id) override;
 

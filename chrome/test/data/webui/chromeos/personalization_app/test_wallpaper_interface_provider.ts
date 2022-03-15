@@ -26,7 +26,7 @@ export class TestWallpaperProvider extends
       'selectGooglePhotosPhoto',
       'selectWallpaper',
       'selectLocalImage',
-      'setCustomWallpaperLayout',
+      'setCurrentWallpaperLayout',
       'setDailyRefreshCollectionId',
       'getDailyRefreshCollectionId',
       'updateDailyRefreshWallpaper',
@@ -216,8 +216,8 @@ export class TestWallpaperProvider extends
     return Promise.resolve({success: this.selectLocalImageResponse});
   }
 
-  setCustomWallpaperLayout(layout: WallpaperLayout) {
-    this.methodCalled('setCustomWallpaperLayout', layout);
+  setCurrentWallpaperLayout(layout: WallpaperLayout) {
+    this.methodCalled('setCurrentWallpaperLayout', layout);
   }
 
   setDailyRefreshCollectionId(collectionId: string) {

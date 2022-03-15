@@ -424,11 +424,11 @@ void WallpaperControllerClientImpl::CancelPreviewWallpaper() {
   wallpaper_controller_->CancelPreviewWallpaper();
 }
 
-void WallpaperControllerClientImpl::UpdateCustomWallpaperLayout(
+void WallpaperControllerClientImpl::UpdateCurrentWallpaperLayout(
     const AccountId& account_id,
     ash::WallpaperLayout layout) {
   if (IsKnownUser(account_id))
-    wallpaper_controller_->UpdateCustomWallpaperLayout(account_id, layout);
+    wallpaper_controller_->UpdateCurrentWallpaperLayout(account_id, layout);
 }
 
 void WallpaperControllerClientImpl::ShowUserWallpaper(

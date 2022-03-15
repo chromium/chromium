@@ -453,7 +453,7 @@ WallpaperPrivateSetCustomWallpaperLayoutFunction::Run() {
   ash::WallpaperLayout new_layout = wallpaper_api_util::GetLayoutEnum(
       wallpaper_base::ToString(params->layout));
   wallpaper_api_util::RecordCustomWallpaperLayout(new_layout);
-  WallpaperControllerClientImpl::Get()->UpdateCustomWallpaperLayout(
+  WallpaperControllerClientImpl::Get()->UpdateCurrentWallpaperLayout(
       user_manager::UserManager::Get()->GetActiveUser()->GetAccountId(),
       new_layout);
   return RespondNow(NoArguments());

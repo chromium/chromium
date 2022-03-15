@@ -1371,7 +1371,7 @@ void WallpaperControllerImpl::CancelPreviewWallpaper() {
     observer.OnWallpaperPreviewEnded();
 }
 
-void WallpaperControllerImpl::UpdateCustomWallpaperLayout(
+void WallpaperControllerImpl::UpdateCurrentWallpaperLayout(
     const AccountId& account_id,
     WallpaperLayout layout) {
   // This method has a very specific use case: the user should be active and
@@ -1381,8 +1381,10 @@ void WallpaperControllerImpl::UpdateCustomWallpaperLayout(
 
   WallpaperInfo info;
   if (!GetUserWallpaperInfo(account_id, &info) ||
-      info.type != WallpaperType::kCustomized)
+      ((info.type != WallpaperType::kCustomized) &&
+       (info.type != WallpaperType::kGooglePhotos))) {
     return;
+  }
   if (info.layout == layout)
     return;
 

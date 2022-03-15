@@ -462,9 +462,9 @@ void PersonalizationAppWallpaperProviderImpl::SelectGooglePhotosPhoto(
                      backend_weak_ptr_factory_.GetWeakPtr()));
 }
 
-void PersonalizationAppWallpaperProviderImpl::SetCustomWallpaperLayout(
+void PersonalizationAppWallpaperProviderImpl::SetCurrentWallpaperLayout(
     ash::WallpaperLayout layout) {
-  WallpaperController::Get()->UpdateCustomWallpaperLayout(
+  WallpaperController::Get()->UpdateCurrentWallpaperLayout(
       GetAccountId(profile_), layout);
 }
 

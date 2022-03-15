@@ -29,6 +29,8 @@ void TestWallpaperController::ClearCounts() {
   remove_user_wallpaper_count_ = 0;
   collection_id_ = std::string();
   wallpaper_info_ = absl::nullopt;
+  update_current_wallpaper_layout_count_ = 0;
+  update_current_wallpaper_layout_layout_ = absl::nullopt;
 }
 
 void TestWallpaperController::SetClient(
@@ -133,10 +135,11 @@ void TestWallpaperController::CancelPreviewWallpaper() {
   NOTIMPLEMENTED();
 }
 
-void TestWallpaperController::UpdateCustomWallpaperLayout(
+void TestWallpaperController::UpdateCurrentWallpaperLayout(
     const AccountId& account_id,
     ash::WallpaperLayout layout) {
-  NOTIMPLEMENTED();
+  ++update_current_wallpaper_layout_count_;
+  update_current_wallpaper_layout_layout_ = layout;
 }
 
 void TestWallpaperController::ShowUserWallpaper(const AccountId& account_id) {

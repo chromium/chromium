@@ -2044,7 +2044,7 @@ TEST_P(WallpaperControllerTest, ReloadWallpaper) {
   EXPECT_EQ(1, GetWallpaperCount());
 }
 
-TEST_P(WallpaperControllerTest, UpdateCustomWallpaperLayout) {
+TEST_P(WallpaperControllerTest, UpdateCurrentWallpaperLayout) {
   SetBypassDecode();
   gfx::ImageSkia image = CreateImage(640, 480, kSmallCustomWallpaperColor);
   WallpaperLayout layout = WALLPAPER_LAYOUT_STRETCH;
@@ -2069,13 +2069,48 @@ TEST_P(WallpaperControllerTest, UpdateCustomWallpaperLayout) {
   // Now change to a different layout. Verify that the layout is updated for
   // both the current wallpaper and the saved wallpaper info.
   ClearWallpaperCount();
-  controller_->UpdateCustomWallpaperLayout(account_id_1, new_layout);
+  controller_->UpdateCurrentWallpaperLayout(account_id_1, new_layout);
   RunAllTasksUntilIdle();
   EXPECT_EQ(1, GetWallpaperCount());
   EXPECT_EQ(controller_->GetWallpaperLayout(), new_layout);
   EXPECT_TRUE(controller_->GetUserWallpaperInfo(account_id_1, &wallpaper_info));
   expected_custom_wallpaper_info.layout = new_layout;
   EXPECT_EQ(wallpaper_info, expected_custom_wallpaper_info);
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatures(
+        {ash::features::kWallpaperWebUI,
+         ash::features::kWallpaperGooglePhotosIntegration},
+        {});
+
+    // Now set a Google Photos wallpaper. Verify that it's set successfully and
+    // the wallpaper info is updated.
+    ClearWallpaperCount();
+    controller_->SetGooglePhotosWallpaper(
+        GooglePhotosWallpaperParams(account_id_1, "id", layout),
+        base::DoNothing());
+    RunAllTasksUntilIdle();
+    EXPECT_EQ(1, GetWallpaperCount());
+    EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kGooglePhotos);
+    EXPECT_EQ(controller_->GetWallpaperLayout(), layout);
+    EXPECT_TRUE(
+        controller_->GetUserWallpaperInfo(account_id_1, &wallpaper_info));
+    EXPECT_EQ(wallpaper_info, WallpaperInfo(GooglePhotosWallpaperParams(
+                                  account_id_1, "id", layout)));
+
+    // Now change to a different layout. Verify that the layout is updated for
+    // both the current wallpaper and the saved wallpaper info.
+    ClearWallpaperCount();
+    controller_->UpdateCurrentWallpaperLayout(account_id_1, new_layout);
+    RunAllTasksUntilIdle();
+    EXPECT_EQ(1, GetWallpaperCount());
+    EXPECT_EQ(controller_->GetWallpaperLayout(), new_layout);
+    EXPECT_TRUE(
+        controller_->GetUserWallpaperInfo(account_id_1, &wallpaper_info));
+    EXPECT_EQ(wallpaper_info, WallpaperInfo(GooglePhotosWallpaperParams(
+                                  account_id_1, "id", new_layout)));
+  }
 
   // Now set an online wallpaper. Verify that it's set successfully and the
   // wallpaper info is updated.
@@ -2102,7 +2137,7 @@ TEST_P(WallpaperControllerTest, UpdateCustomWallpaperLayout) {
 
   // Now change the layout of the online wallpaper. Verify that it's a no-op.
   ClearWallpaperCount();
-  controller_->UpdateCustomWallpaperLayout(account_id_1, new_layout);
+  controller_->UpdateCurrentWallpaperLayout(account_id_1, new_layout);
   RunAllTasksUntilIdle();
   // The wallpaper is not updated.
   EXPECT_EQ(0, GetWallpaperCount());

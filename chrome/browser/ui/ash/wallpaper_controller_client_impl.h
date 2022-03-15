@@ -123,8 +123,8 @@ class WallpaperControllerClientImpl
                               const gfx::ImageSkia& image);
   void ConfirmPreviewWallpaper();
   void CancelPreviewWallpaper();
-  void UpdateCustomWallpaperLayout(const AccountId& account_id,
-                                   ash::WallpaperLayout layout);
+  void UpdateCurrentWallpaperLayout(const AccountId& account_id,
+                                    ash::WallpaperLayout layout);
   void ShowUserWallpaper(const AccountId& account_id);
   void ShowSigninWallpaper();
   void ShowAlwaysOnTopWallpaper(const base::FilePath& image_path);
