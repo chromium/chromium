@@ -10,6 +10,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/highlight_border.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ash/wm/window_cycle/window_cycle_item_view.h"
 #include "base/bind.h"
@@ -17,6 +18,7 @@
 #include "base/cxx17_backports.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window.h"
@@ -35,6 +37,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/views/background.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view.h"
@@ -44,7 +47,7 @@ namespace ash {
 namespace {
 
 // Shield rounded corner radius.
-constexpr gfx::RoundedCornersF kBackgroundCornerRadius{16.f};
+constexpr int kBackgroundCornerRadius = 16;
 
 // Shield horizontal inset.
 constexpr int kBackgroundHorizontalInsetDp = 8;
@@ -100,15 +103,17 @@ WindowCycleView::WindowCycleView(aura::Window* root_window,
 
   // The layer for |this| is responsible for showing color, background blur
   // and fading in.
-  SetPaintToLayer(ui::LAYER_SOLID_COLOR);
+  SetPaintToLayer(ui::LAYER_TEXTURED);
   ui::Layer* layer = this->layer();
-  SkColor background_color = AshColorProvider::Get()->GetBaseLayerColor(
-      AshColorProvider::BaseLayerType::kTransparent80);
-  layer->SetColor(background_color);
+  layer->SetFillsBoundsOpaquely(false);
   layer->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
   layer->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
   layer->SetName("WindowCycleView");
   layer->SetMasksToBounds(true);
+  SetBackground(views::CreateRoundedRectBackground(
+      AshColorProvider::Get()->GetBaseLayerColor(
+          AshColorProvider::BaseLayerType::kTransparent80),
+      kBackgroundCornerRadius));
 
   // |mirror_container_| may be larger than |this|. In this case, it will be
   // shifted along the x-axis when the user tabs through. It is a container
@@ -464,7 +469,8 @@ void WindowCycleView::Layout() {
   // work properly.
   if (first_layout) {
     mirror_container_->SizeToPreferredSize();
-    layer()->SetRoundedCornerRadius(kBackgroundCornerRadius);
+    layer()->SetRoundedCornerRadius(
+        gfx::RoundedCornersF{kBackgroundCornerRadius});
   }
 
   gfx::RectF target_bounds;
@@ -587,6 +593,18 @@ void WindowCycleView::OnImplicitAnimationsCompleted() {
     // calling SetBounds() to prevent the mirror container from animating.
     GetWidget()->SetBounds(GetTargetBounds());
     defer_widget_bounds_update_ = false;
+  }
+}
+
+void WindowCycleView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  background()->SetNativeControlColor(
+      AshColorProvider::Get()->GetBaseLayerColor(
+          AshColorProvider::BaseLayerType::kTransparent80));
+  if (chromeos::features::IsDarkLightModeEnabled()) {
+    SetBorder(std::make_unique<HighlightBorder>(
+        kBackgroundCornerRadius, HighlightBorder::Type::kHighlightBorder1,
+        /*use_light_colors=*/false));
   }
 }
 
