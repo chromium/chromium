@@ -189,6 +189,10 @@ const base::Feature kNavigationPredictor {
 #endif
 };
 
+// Anchor Element Interaction
+const base::Feature kAnchorElementInteraction{
+    "AnchorElementInteraction", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable browser-initiated dedicated worker script loading
 // (PlzDedicatedWorker). https://crbug.com/906991
 const base::Feature kPlzDedicatedWorker{"PlzDedicatedWorker",

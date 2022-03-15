@@ -102,11 +102,14 @@
 #include "third_party/blink/renderer/core/editing/suggestion/text_suggestion_controller.h"
 #include "third_party/blink/renderer/core/editing/surrounding_text.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
+#include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/execution_context/window_agent.h"
 #include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_handler.h"
 #include "third_party/blink/renderer/core/frame/ad_tracker.h"
+#include "third_party/blink/renderer/core/frame/anchor_element_interaction_tracker.h"
 #include "third_party/blink/renderer/core/frame/attribution_src_loader.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/event_handler_registry.h"
@@ -395,6 +398,7 @@ void LocalFrame::Trace(Visitor* visitor) const {
   visitor->Trace(console_);
   visitor->Trace(smooth_scroll_sequencer_);
   visitor->Trace(content_capture_manager_);
+  visitor->Trace(anchor_element_interaction_tracker_);
   visitor->Trace(system_clipboard_);
   visitor->Trace(virtual_keyboard_overlay_changed_observers_);
   visitor->Trace(pause_handle_receivers_);
@@ -704,6 +708,10 @@ void LocalFrame::DidAttachDocument() {
   // appendChild()), the drag source will detach and stop firing drag events
   // even after the frame reattaches.
   GetEventHandler().Clear();
+  if (AnchorElementInteractionTracker::IsFeatureEnabled() && !IsProvisional()) {
+    anchor_element_interaction_tracker_ =
+        MakeGarbageCollected<AnchorElementInteractionTracker>(*document);
+  }
   Selection().DidAttachDocument(document);
   notified_color_scheme_ = false;
 }
