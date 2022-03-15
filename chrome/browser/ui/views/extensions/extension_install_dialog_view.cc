@@ -481,7 +481,6 @@ void ExtensionInstallDialogView::AddedToWidget() {
         prompt_->GetUserCount(), CONTEXT_DIALOG_BODY_TEXT_SMALL,
         views::style::STYLE_SECONDARY);
     user_count->SetAutoColorReadabilityEnabled(false);
-    user_count->SetEnabledColor(SK_ColorGRAY);
     user_count->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     webstore_data_container->AddChildView(std::move(user_count));
 
@@ -601,16 +600,27 @@ void ExtensionInstallDialogView::CreateContents() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   const ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
-  auto extension_info_container = std::make_unique<CustomScrollableView>(this);
+  auto extension_info_and_justification_container =
+      std::make_unique<CustomScrollableView>(this);
   const gfx::Insets content_insets = provider->GetDialogInsetsForContentType(
       views::DialogContentType::kControl, views::DialogContentType::kControl);
-  extension_info_container->SetBorder(views::CreateEmptyBorder(
-      0, content_insets.left(), 0, content_insets.right()));
+  extension_info_and_justification_container->SetBorder(
+      views::CreateEmptyBorder(0, content_insets.left(), 0,
+                               content_insets.right()));
+  extension_info_and_justification_container->SetLayoutManager(
+      std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kVertical, gfx::Insets(),
+          provider->GetDistanceMetric(
+              views::DISTANCE_UNRELATED_CONTROL_VERTICAL)));
+  const int content_width =
+      GetPreferredSize().width() -
+      extension_info_and_justification_container->GetInsets().width();
+  auto* extension_info_container =
+      extension_info_and_justification_container->AddChildView(
+          std::make_unique<views::View>());
   extension_info_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL)));
-  const int content_width = GetPreferredSize().width() -
-                            extension_info_container->GetInsets().width();
 
   std::vector<ExtensionInfoSection> sections;
   if (prompt_->ShouldShowPermissions()) {
@@ -675,19 +685,16 @@ void ExtensionInstallDialogView::CreateContents() {
   // the |sections| vector since it is later referenced to extract the textfield
   // string.
   if (is_justification_field_enabled) {
-    std::unique_ptr<views::Separator> separator =
-        std::make_unique<views::Separator>();
-    separator->SetColor(SK_ColorTRANSPARENT);
-    extension_info_container->AddChildView(std::move(separator));
-
-    justification_view_ = extension_info_container->AddChildView(
-        std::make_unique<ExtensionJustificationView>(this));
+    justification_view_ =
+        extension_info_and_justification_container->AddChildView(
+            std::make_unique<ExtensionJustificationView>(this));
   }
 
   scroll_view_ = new views::ScrollView();
   scroll_view_->SetHorizontalScrollBarMode(
       views::ScrollView::ScrollBarMode::kDisabled);
-  scroll_view_->SetContents(std::move(extension_info_container));
+  scroll_view_->SetContents(
+      std::move(extension_info_and_justification_container));
   scroll_view_->ClipHeightTo(
       0, provider->GetDistanceMetric(
              views::DISTANCE_DIALOG_SCROLLABLE_AREA_MAX_HEIGHT));
