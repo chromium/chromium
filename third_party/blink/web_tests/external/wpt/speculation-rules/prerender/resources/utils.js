@@ -179,13 +179,21 @@ function createFrame(url) {
     });
 }
 
-async function create_prerendered_page(t) {
+async function create_prerendered_page(t, opt = {}) {
+  const baseUrl = '/speculation-rules/prerender/resources/exec.py';
   const init_uuid = token();
   const prerender_uuid = token();
+  const discard_uuid = token();
   const init_remote = new RemoteContext(init_uuid);
   const prerender_remote = new RemoteContext(prerender_uuid);
-  window.open(`/speculation-rules/prerender/resources/exec.html?uuid=${init_uuid}&init`, '_blank', 'noopener');
-  const url = `/speculation-rules/prerender/resources/exec.html?uuid=${prerender_uuid}&prerender`;
+  const discard_remote = new RemoteContext(discard_uuid);
+  window.open(`${baseUrl}?uuid=${init_uuid}&init`, '_blank', 'noopener');
+  const params = new URLSearchParams(baseUrl.search);
+  params.set('uuid', prerender_uuid);
+  params.set('discard_uuid', discard_uuid);
+  for (const p in opt)
+    params.set(p, opt[p]);
+  const url = `${baseUrl}?${params.toString()}`;
 
   await init_remote.execute_script(url => {
       const a = document.createElement('a');
@@ -198,37 +206,48 @@ async function create_prerendered_page(t) {
       document.head.appendChild(rules);
   }, [url]);
 
-  await prerender_remote.execute_script(() => {
-      window.import_script_to_prerendered_page = src => {
-        const script = document.createElement('script');
-        script.src = src;
-        document.head.appendChild(script);
-        return new Promise(resolve => script.addEventListener('load', resolve));
-      }
-  });
+  await Promise.any([
+    prerender_remote.execute_script(() => {
+        window.import_script_to_prerendered_page = src => {
+            const script = document.createElement('script');
+            script.src = src;
+            document.head.appendChild(script);
+            return new Promise(resolve => script.addEventListener('load', resolve));
+        }
+    }), new Promise(r => t.step_timeout(r, 3000))
+    ]);
 
   t.add_cleanup(() => {
     init_remote.execute_script(() => window.close());
+    discard_remote.execute_script(() => window.close());
     prerender_remote.execute_script(() => window.close());
   });
 
-  async function activate() {
-    const prerendering = prerender_remote.execute_script(() => new Promise(resolve =>
-      document.addEventListener('prerenderingchange', () => {
-        resolve(document.prerendering);
-      })));
+  async function tryToActivate() {
+    const prerendering = prerender_remote.execute_script(() => new Promise(resolve => {
+        if (!document.prerendering)
+            resolve('activated');
+        else document.addEventListener('prerenderingchange', () => resolve('activated'));
+    }));
+
+    const discarded = discard_remote.execute_script(() => Promise.resolve('discarded'));
 
     init_remote.execute_script(url => {
-      location.href = url;
+        location.href = url;
     }, [url]);
+    return Promise.any([prerendering, discarded]);
+  }
 
-    if (await prerendering)
+  async function activate() {
+    const prerendering = await tryToActivate();
+    if (prerendering !== 'activated')
       throw new Error('Should not be prerendering at this point')
   }
 
   return {
     exec: (fn, args) => prerender_remote.execute_script(fn, args),
-    activate
+    activate,
+    tryToActivate
   };
 }
 
