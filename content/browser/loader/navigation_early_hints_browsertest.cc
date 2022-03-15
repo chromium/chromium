@@ -98,6 +98,9 @@ const char kHintedStylesheetBody[] = "/*empty*/";
 const char kEmptyPagePath[] = "/empty.html";
 const char kEmptyPageBody[] = "<html></html>";
 
+const char kRedirectedPagePath[] = "/redirected.html";
+const char kRedirectedPageBody[] = "<script src=\"/hinted.js\"></script>";
+
 // Listens to sockets on an EmbeddedTestServer for preconnect tests. Created
 // on the UI thread. EmbeddedTestServerConnectionListener methods are called
 // from a different thread than the UI thread.
@@ -249,6 +252,12 @@ class NavigationEarlyHintsTest : public ContentBrowserTest {
     RegisterResponse(hinted_script_entry);
   }
 
+  void RegisterRedirectedPage() {
+    ResponseEntry entry(kRedirectedPagePath, net::HTTP_OK);
+    entry.body = kRedirectedPageBody;
+    RegisterResponse(entry);
+  }
+
   ResponseEntry CreatePageEntryWithHintedScript(
       net::HttpStatusCode status_code) {
     RegisterHintedScriptResource();
@@ -297,9 +306,15 @@ class NavigationEarlyHintsTest : public ContentBrowserTest {
   }
 
   bool NavigateToURLAndWaitTitle(const GURL& url, const std::string& title) {
+    return NavigateToURLAndWaitTitleWithCommitURL(url, url, title);
+  }
+
+  bool NavigateToURLAndWaitTitleWithCommitURL(const GURL& url,
+                                              const GURL& expected_commit_url,
+                                              const std::string& title) {
     std::u16string title16 = base::ASCIIToUTF16(title);
     TitleWatcher title_watcher(shell()->web_contents(), title16);
-    if (!NavigateToURL(shell(), url))
+    if (!NavigateToURL(shell(), url, expected_commit_url))
       return false;
     return title16 == title_watcher.WaitAndGetTitle();
   }
@@ -352,7 +367,7 @@ class NavigationEarlyHintsTest : public ContentBrowserTest {
       const net::test_server::HttpRequest& request) {
     GURL relative_url = request.base_url.Resolve(request.relative_url);
 
-    if (relative_url.path() == "/empty.html") {
+    if (relative_url.path() == kEmptyPagePath) {
       auto response = std::make_unique<net::test_server::BasicHttpResponse>();
       response->set_code(net::HTTP_OK);
       response->set_content_type("text/html");
@@ -360,13 +375,21 @@ class NavigationEarlyHintsTest : public ContentBrowserTest {
       return std::move(response);
     }
 
-    if (relative_url.path() != "/hinted.js")
+    if (relative_url.path() == kRedirectedPagePath) {
+      auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+      response->set_code(net::HTTP_OK);
+      response->set_content_type("text/html");
+      response->set_content(kRedirectedPageBody);
+      return std::move(response);
+    }
+
+    if (relative_url.path() != kHintedScriptPath)
       return nullptr;
 
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();
     response->set_code(net::HTTP_OK);
     response->set_content_type("application/javascript");
-    response->set_content("/*empty*/");
+    response->set_content(kHintedScriptBody);
 
     std::string query = relative_url.query();
     if (query == "corp-cross-origin") {
@@ -481,15 +504,41 @@ IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsTest, NavigationServerError) {
   EXPECT_TRUE(preloads.empty());
 }
 
-IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsTest, Redirect) {
+IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsTest, RedirectSameOrigin) {
+  RegisterRedirectedPage();
+
   ResponseEntry entry = CreatePageEntryWithHintedScript(net::HTTP_FOUND);
-  entry.headers["location"] = "/";
+  entry.headers["location"] = kRedirectedPagePath;
   entry.body = "";
   RegisterResponse(entry);
 
-  EXPECT_TRUE(NavigateToURL(
-      shell(), net::QuicSimpleTestServer::GetFileURL(kPageWithHintedScriptPath),
-      net::QuicSimpleTestServer::GetFileURL("/")));
+  EXPECT_TRUE(NavigateToURLAndWaitTitleWithCommitURL(
+      net::QuicSimpleTestServer::GetFileURL(kPageWithHintedScriptPath),
+      net::QuicSimpleTestServer::GetFileURL(kRedirectedPagePath), "Done"));
+
+  PreloadedResources preloads = WaitForPreloadedResources();
+  EXPECT_EQ(preloads.size(), 1UL);
+
+  GURL preloaded_url = net::QuicSimpleTestServer::GetFileURL(kHintedScriptPath);
+  auto it = preloads.find(preloaded_url);
+  ASSERT_TRUE(it != preloads.end());
+  ASSERT_FALSE(it->second.was_canceled);
+  ASSERT_TRUE(it->second.error_code.has_value());
+  EXPECT_EQ(it->second.error_code.value(), net::OK);
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsTest, RedirectCrossOrigin) {
+  const GURL kRedirectedUrl = cross_origin_server().GetURL(kRedirectedPagePath);
+
+  ResponseEntry entry = CreatePageEntryWithHintedScript(net::HTTP_FOUND);
+  entry.headers["location"] = kRedirectedUrl.spec();
+  entry.body = "";
+  RegisterResponse(entry);
+
+  EXPECT_TRUE(NavigateToURLAndWaitTitleWithCommitURL(
+      net::QuicSimpleTestServer::GetFileURL(kPageWithHintedScriptPath),
+      kRedirectedUrl, "Done"));
+
   PreloadedResources preloads = WaitForPreloadedResources();
   EXPECT_TRUE(preloads.empty());
 }

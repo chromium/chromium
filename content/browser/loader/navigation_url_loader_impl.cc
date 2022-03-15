@@ -342,6 +342,14 @@ void LogAcceptCHFrameStatus(AcceptCHFrameRestart status) {
   base::UmaHistogramEnumeration("ClientHints.AcceptCHFrame", status);
 }
 
+bool IsSameOriginRedirect(const std::vector<GURL>& url_chain) {
+  if (url_chain.size() < 2)
+    return false;
+
+  auto previous_origin = url::Origin::Create(url_chain[url_chain.size() - 2]);
+  return previous_origin.IsSameOriginWith(url_chain[url_chain.size() - 1]);
+}
+
 }  // namespace
 
 // TODO(kinuko): Fix the method ordering and move these methods after the ctor.
@@ -472,10 +480,9 @@ void NavigationURLLoaderImpl::CreateInterceptors(
 }
 
 void NavigationURLLoaderImpl::Restart() {
-  // Cancel all inflight early hints preloads.
-  // TODO(https://crbug.com/671310): Consider preserving `early_hints_manager_`
-  // on same-origin redirects.
-  early_hints_manager_.reset();
+  // Cancel all inflight early hints preloads except for same origin redirects.
+  if (!IsSameOriginRedirect(url_chain_))
+    early_hints_manager_.reset();
 
   // Clear `url_loader_` if it's not the default one (network). This allows
   // the restarted request to use a new loader, instead of, e.g., reusing the
