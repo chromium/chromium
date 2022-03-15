@@ -153,7 +153,11 @@
     }
   }
 
-  if (scenario != MenuScenario::kTabGridSearchResult &&
+  // Thumb strip and search results menus don't support tab selection.
+  BOOL scenarioDisablesSelection =
+      scenario == MenuScenario::kTabGridSearchResult ||
+      scenario == MenuScenario::kThumbStrip;
+  if (!scenarioDisablesSelection &&
       [self.contextMenuDelegate respondsToSelector:@selector(selectTabs)]) {
     [menuElements addObject:[actionFactory actionToSelectTabsWithBlock:^{
                     [self.contextMenuDelegate selectTabs];

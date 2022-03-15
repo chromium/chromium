@@ -73,6 +73,7 @@ const char* GetActionsHistogramName(MenuScenario scenario) {
     case MenuScenario::kContextMenuLink:
       return KContextMenuLinkActionsHistogram;
     case MenuScenario::kTabGridEntry:
+    case MenuScenario::kThumbStrip:
       return kTabGridActionsHistogram;
     case MenuScenario::kTabGridAddTo:
       return kTabGridAddToActionsHistogram;

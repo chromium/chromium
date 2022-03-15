@@ -657,9 +657,16 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
   GridCell* cell = base::mac::ObjCCastStrict<GridCell>(
       [self.collectionView cellForItemAtIndexPath:indexPath]);
-  MenuScenario scenario = _mode == TabGridModeSearch
-                              ? MenuScenario::kTabGridSearchResult
-                              : MenuScenario::kTabGridEntry;
+
+  MenuScenario scenario;
+  if (_mode == TabGridModeSearch) {
+    scenario = MenuScenario::kTabGridSearchResult;
+  } else if (self.currentLayout == self.horizontalLayout) {
+    scenario = MenuScenario::kThumbStrip;
+  } else {
+    scenario = MenuScenario::kTabGridEntry;
+  }
+
   return [self.menuProvider contextMenuConfigurationForGridCell:cell
                                                    menuScenario:scenario];
 }
@@ -1760,7 +1767,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   _thumbStripEnabled = NO;
 }
 
-#pragma mark-- Thumbstrip tap dismiss handling
+#pragma mark - Thumbstrip tap dismiss handling
 
 - (void)handleThumbStripBackgroundTapGesture:(UIGestureRecognizer*)recognizer {
   if (recognizer.state != UIGestureRecognizerStateEnded)
