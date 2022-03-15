@@ -7381,21 +7381,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="PerformanceHints.Observer.HintForURLResult"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="PerformanceMonitor" separator=".">
-  <suffix name="BrowserProcess" label=""/>
-  <suffix name="GPUProcess" label=""/>
-  <suffix name="NetworkProcess" label=""/>
-  <suffix name="PluginProcess" label=""/>
-  <suffix name="PPAPIProcess" label=""/>
-  <suffix name="RendererExtensionEventProcess" label=""/>
-  <suffix name="RendererExtensionPersistentProcess" label=""/>
-  <suffix name="RendererProcess" label=""/>
-  <suffix name="Total" label=""/>
-  <suffix name="UtilityProcess" label=""/>
-  <suffix name="WorkerProcess" label=""/>
-  <affected-histogram name="PerformanceMonitor.AverageCPU"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="PermissionRequestGesture" separator=".">
   <suffix name="Gesture" label="With user gesture"/>
   <suffix name="NoGesture" label="Without user gesture"/>
