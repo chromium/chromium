@@ -4727,9 +4727,46 @@ TEST_F(URLLoaderTest, AllowAllCookies) {
   EXPECT_TRUE(url_loader->AllowCookies(third_party_url, site_for_cookies));
 }
 
+namespace {
+
+enum class TestMode {
+  kCredentialsModeOmit,
+  kCredentialsModeOmitWorkaround,
+  kCredentialsModeOmitWithFeatureFix,
+};
+
+}  // namespace
+
+class URLLoaderParameterTest : public URLLoaderTest,
+                               public ::testing::WithParamInterface<TestMode> {
+ public:
+  ~URLLoaderParameterTest() override = default;
+
+ private:
+  void SetUp() override {
+    URLLoaderTest::SetUp();
+    if (GetParam() == TestMode::kCredentialsModeOmitWithFeatureFix) {
+      scoped_feature_list.InitAndEnableFeature(features::kOmitCorsClientCert);
+    } else {
+      scoped_feature_list.InitAndDisableFeature(features::kOmitCorsClientCert);
+    }
+  }
+  base::test::ScopedFeatureList scoped_feature_list;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    URLLoaderParameterTest,
+    testing::Values(TestMode::kCredentialsModeOmit,
+                    TestMode::kCredentialsModeOmitWorkaround,
+                    TestMode::kCredentialsModeOmitWithFeatureFix));
+
 // Tests that a request with CredentialsMode::kOmit still sends client
-// certificates. This should be removed when crbug.com/775438 is fixed.
-TEST_F(URLLoaderTest, CredentialsModeOmit) {
+// certificates when features::kOmitCorsClientCert is disabled, and when the
+// feature is enabled client certificates are not sent. Also test that when
+// CredentialsMode::kOmitBug_775438_Workaround is used client certificates are
+// not sent as well. This should be removed when crbug.com/775438 is fixed.
+TEST_P(URLLoaderParameterTest, CredentialsModeOmitRequireClientCert) {
   // Set up a server that requires certificates.
   net::SSLServerConfig ssl_config;
   ssl_config.client_cert_type =
@@ -4756,7 +4793,12 @@ TEST_F(URLLoaderTest, CredentialsModeOmit) {
 
   ResourceRequest request =
       CreateResourceRequest("GET", test_server.GetURL("/simple_page.html"));
-  request.credentials_mode = mojom::CredentialsMode::kOmit;
+  if (GetParam() == TestMode::kCredentialsModeOmitWorkaround) {
+    request.credentials_mode =
+        mojom::CredentialsMode::kOmitBug_775438_Workaround;
+  } else {
+    request.credentials_mode = mojom::CredentialsMode::kOmit;
+  }
 
   base::RunLoop delete_run_loop;
   mojo::Remote<mojom::URLLoader> loader;
@@ -4776,68 +4818,20 @@ TEST_F(URLLoaderTest, CredentialsModeOmit) {
 
   client()->RunUntilComplete();
   delete_run_loop.Run();
-
-  EXPECT_EQ(net::OK, client()->completion_status().error_code);
+  if (GetParam() == TestMode::kCredentialsModeOmitWithFeatureFix ||
+      GetParam() == TestMode::kCredentialsModeOmitWorkaround) {
+    EXPECT_EQ(0, client_cert_observer.on_certificate_requested_counter());
+    EXPECT_NE(net::OK, client()->completion_status().error_code);
+  } else {
+    EXPECT_EQ(1, client_cert_observer.on_certificate_requested_counter());
+    EXPECT_EQ(net::OK, client()->completion_status().error_code);
+  }
 }
 
-// Tests that a request with CredentialsMode::kOmitBug_775438_Workaround
-// doesn't send client certificates.
-TEST_F(URLLoaderTest, CredentialsModeOmitWorkaround) {
-  // Set up a server that requires certificates.
-  net::SSLServerConfig ssl_config;
-  ssl_config.client_cert_type =
-      net::SSLServerConfig::ClientCertType::REQUIRE_CLIENT_CERT;
-  net::EmbeddedTestServer test_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  test_server.SetSSLConfig(net::EmbeddedTestServer::CERT_OK, ssl_config);
-  test_server.AddDefaultHandlers(
-      base::FilePath(FILE_PATH_LITERAL("services/test/data")));
-  ASSERT_TRUE(test_server.Start());
-
-  // Make sure the client has valid certificates.
-  std::unique_ptr<net::FakeClientCertIdentity> identity =
-      net::FakeClientCertIdentity::CreateFromCertAndKeyFiles(
-          net::GetTestCertsDirectory(), "client_1.pem", "client_1.pk8");
-  ASSERT_TRUE(identity);
-  scoped_refptr<TestSSLPrivateKey> private_key =
-      base::MakeRefCounted<TestSSLPrivateKey>(identity->ssl_private_key());
-
-  ClientCertAuthObserver client_cert_observer;
-  client_cert_observer.set_certificate_response(
-      ClientCertAuthObserver::CertificateResponse::VALID_CERTIFICATE_SIGNATURE);
-  client_cert_observer.set_private_key(private_key);
-  client_cert_observer.set_certificate(identity->certificate());
-
-  ResourceRequest request =
-      CreateResourceRequest("GET", test_server.GetURL("/simple_page.html"));
-  request.credentials_mode = mojom::CredentialsMode::kOmitBug_775438_Workaround;
-
-  base::RunLoop delete_run_loop;
-  mojo::Remote<mojom::URLLoader> loader;
-  std::unique_ptr<URLLoader> url_loader;
-  context().mutable_factory_params().process_id = kProcessId;
-  context().mutable_factory_params().is_corb_enabled = false;
-  url_loader = std::make_unique<URLLoader>(
-      context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
-      loader.BindNewPipeAndPassReceiver(), mojom::kURLLoadOptionNone, request,
-      client()->CreateRemote(), nullptr /* sync_url_loader_client */,
-      TRAFFIC_ANNOTATION_FOR_TESTS, 0 /* request_id */,
-      0 /* keepalive_request_size */, nullptr, nullptr /* trust_token_helper */,
-      mojo::NullRemote() /* cookie_observer */,
-      client_cert_observer.Bind() /* url_loader_network_observer */,
-      /*devtools_observer=*/mojo::NullRemote(),
-      /*accept_ch_frame_observer=*/mojo::NullRemote());
-
-  client()->RunUntilComplete();
-  delete_run_loop.Run();
-
-  EXPECT_EQ(0, client_cert_observer.on_certificate_requested_counter());
-  EXPECT_NE(net::OK, client()->completion_status().error_code);
-}
-
-// Tests that a request with CredentialsMode::kOmitBug_775438_Workaround
-// doesn't send client certificates with a server that optionally requires
-// certificates.
-TEST_F(URLLoaderTest, CredentialsModeOmitWorkaroundWithOptionalCerts) {
+// Tests that a request with CredentialsMode::kOmitBug_775438_Workaround, and
+// CredentialsMode::kOmit when features::kOmitCorsClientCert is enabled doesn't
+// send client certificates with a server that optionally requires certificates.
+TEST_P(URLLoaderParameterTest, CredentialsModeOmitOptionalClientCert) {
   // Set up a server that requires certificates.
   net::SSLServerConfig ssl_config;
   ssl_config.client_cert_type =
@@ -4864,7 +4858,12 @@ TEST_F(URLLoaderTest, CredentialsModeOmitWorkaroundWithOptionalCerts) {
 
   ResourceRequest request =
       CreateResourceRequest("GET", test_server.GetURL("/simple_page.html"));
-  request.credentials_mode = mojom::CredentialsMode::kOmitBug_775438_Workaround;
+  if (GetParam() == TestMode::kCredentialsModeOmitWorkaround) {
+    request.credentials_mode =
+        mojom::CredentialsMode::kOmitBug_775438_Workaround;
+  } else {
+    request.credentials_mode = mojom::CredentialsMode::kOmit;
+  }
 
   base::RunLoop delete_run_loop;
   mojo::Remote<mojom::URLLoader> loader;
@@ -4884,10 +4883,15 @@ TEST_F(URLLoaderTest, CredentialsModeOmitWorkaroundWithOptionalCerts) {
 
   client()->RunUntilComplete();
   delete_run_loop.Run();
-
-  EXPECT_EQ(0, client_cert_observer.on_certificate_requested_counter());
+  if (GetParam() == TestMode::kCredentialsModeOmitWithFeatureFix ||
+      GetParam() == TestMode::kCredentialsModeOmitWorkaround) {
+    EXPECT_EQ(0, client_cert_observer.on_certificate_requested_counter());
+  } else {
+    EXPECT_EQ(1, client_cert_observer.on_certificate_requested_counter());
+  }
   EXPECT_EQ(net::OK, client()->completion_status().error_code);
 }
+
 #endif  // !BUILDFLAG(IS_IOS)
 
 TEST_F(URLLoaderTest, CookieReporting) {

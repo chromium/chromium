@@ -4424,6 +4424,11 @@
     "expiry_milestone": 86
   },
   {
+    "name": "omit-cors-client-cert",
+    "owners": [ "toyoshim", "loading-dev" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "omnibox-active-search-engines",
     "owners": [ "yoangela", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 105

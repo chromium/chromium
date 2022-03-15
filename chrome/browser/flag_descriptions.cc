@@ -1709,6 +1709,13 @@ const char kNotificationsSystemFlagDescription[] =
     "Enable support for using the system notification toasts and notification "
     "center on platforms where these are available.";
 
+const char kOmitCorsClientCertName[] =
+    "Omit TLS client certificates if credential mode disallows";
+const char kOmitCorsClientCertDescription[] =
+    "Strictly conform the Fetch spec to omit TLS client certificates if "
+    "credential mode disallows. Without this flag enabled, Chrome will always "
+    "try sending client certificates regardless of the credential mode.";
+
 const char kOmniboxActiveSearchEnginesName[] =
     "Active Search Engines section on settings page";
 const char kOmniboxActiveSearchEnginesDescription[] =

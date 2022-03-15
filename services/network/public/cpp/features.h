@@ -113,6 +113,9 @@ extern const base::Feature kFasterSetCookie;
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kBatchSimpleURLLoader;
 
+COMPONENT_EXPORT(NETWORK_CPP)
+extern const base::Feature kOmitCorsClientCert;
+
 }  // namespace features
 }  // namespace network
 

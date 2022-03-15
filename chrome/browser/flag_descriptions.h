@@ -980,6 +980,9 @@ extern const char kNotificationsSystemFlagDescription[];
 extern const char kOriginAgentClusterDefaultName[];
 extern const char kOriginAgentClusterDefaultDescription[];
 
+extern const char kOmitCorsClientCertName[];
+extern const char kOmitCorsClientCertDescription[];
+
 extern const char kOmniboxActiveSearchEnginesName[];
 extern const char kOmniboxActiveSearchEnginesDescription[];
 

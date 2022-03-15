@@ -377,9 +377,18 @@ bool ShouldAllowCredentials(mojom::CredentialsMode credentials_mode) {
 bool ShouldSendClientCertificates(mojom::CredentialsMode credentials_mode) {
   switch (credentials_mode) {
     case mojom::CredentialsMode::kInclude:
-    case mojom::CredentialsMode::kOmit:
     case mojom::CredentialsMode::kSameOrigin:
       return true;
+
+    // TODO(https://crbug.com/775438): Due to a bug, the default behavior does
+    // not properly correspond to Fetch's "credentials mode", in that client
+    // certificates will be sent if available, or the handshake will be aborted
+    // to allow selecting a client cert.
+    // With the feature kOmitCorsClientCert enabled, the correct
+    // behavior is done; omit all client certs and continue the handshake
+    // without sending one if requested.
+    case mojom::CredentialsMode::kOmit:
+      return !base::FeatureList::IsEnabled(features::kOmitCorsClientCert);
 
     case mojom::CredentialsMode::kOmitBug_775438_Workaround:
       return false;

@@ -8357,6 +8357,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebSQLAccessDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kWebSQLAccess)},
 
+    {"omit-cors-client-cert", flag_descriptions::kOmitCorsClientCertName,
+     flag_descriptions::kOmitCorsClientCertDescription, kOsAll,
+     FEATURE_VALUE_TYPE(network::features::kOmitCorsClientCert)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
