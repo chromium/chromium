@@ -54,8 +54,8 @@ from update import (CHROMIUM_DIR, CLANG_REVISION, CLANG_SUB_REVISION,
                     LLVM_BUILD_DIR, GetDefaultHostOs, RmTree, UpdatePackage)
 import build
 
-# Trunk on 2/28/2022
-RUST_REVISION = '6343ed'
+# Trunk on 3/11/2022
+RUST_REVISION = '2c6a29'
 RUST_SUB_REVISION = 1
 
 # Hash of src/stage0.json, which itself contains the stage0 toolchain hashes.
@@ -182,10 +182,9 @@ def RunXPy(sub, args, gcc_toolchain_path, verbose):
   # We use these flags to avoid linking with the system libstdc++.
   gcc_toolchain_flag = (f'--gcc-toolchain={gcc_toolchain_path}'
                         if gcc_toolchain_path else '')
-  static_libstdcpp_flag = '-static-libstdc++'
   # These affect how C/C++ files are compiled, but not Rust libs/exes.
   RUSTENV['CFLAGS'] += f' {gcc_toolchain_flag}'
-  RUSTENV['LDFLAGS'] += f' {gcc_toolchain_flag} {static_libstdcpp_flag}'
+  RUSTENV['LDFLAGS'] += f' {gcc_toolchain_flag}'
   # These affect how Rust crates are built. A `-Clink-arg=<foo>` arg passes foo
   # to the clang invocation used to link.
   #
@@ -198,7 +197,7 @@ def RunXPy(sub, args, gcc_toolchain_path, verbose):
   RUSTENV['RUSTFLAGS_BOOTSTRAP'] = (
       f'-Clinker={clang_path} -Clink-arg=-fuse-ld=lld '
       f'-Clink-arg=-Wl,--no-gc-sections -Clink-arg={gcc_toolchain_flag} '
-      f'-Clink-arg={static_libstdcpp_flag}')
+      f'-L native={gcc_toolchain_path}/lib64')
   RUSTENV['RUSTFLAGS_NOT_BOOTSTRAP'] = RUSTENV['RUSTFLAGS_BOOTSTRAP']
   os.chdir(RUST_SRC_DIR)
   cmd = [sys.executable, 'x.py', sub]
