@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/json/json_string_value_serializer.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/values_test_util.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -64,6 +65,7 @@ bool RequestsAreEqual(
          lhs.clear_profile_list() == rhs.clear_profile_list();
 }
 
+const char kDmToken[] = "token";
 const char kFakeObjectPath[] = "object-path";
 const char kFakeEid[] = "12";
 const char kEuiccStatusUploadResultHistogram[] =
@@ -138,11 +140,27 @@ class EuiccStatusUploaderTest : public testing::Test {
     EuiccStatusUploader::RegisterLocalStatePrefs(local_state_.registry());
     helper_->RegisterPrefs(nullptr, local_state_.registry());
     helper_->InitializePrefs(nullptr, &local_state_);
+    SetPolicyClientIsRegistered(/*is_registered=*/true);
   }
 
-  std::unique_ptr<EuiccStatusUploader> CreateStatusUploader() {
-    return std::make_unique<EuiccStatusUploader>(&cloud_policy_client_,
-                                                 &local_state_);
+  std::unique_ptr<EuiccStatusUploader> CreateStatusUploader(
+      bool is_policy_fetched = true) {
+    auto status_uploader = base::WrapUnique(new EuiccStatusUploader(
+        &cloud_policy_client_, &local_state_,
+        base::BindRepeating(&EuiccStatusUploaderTest::is_device_active,
+                            base::Unretained(this))));
+    if (is_policy_fetched) {
+      SetPolicyFetched(status_uploader.get());
+    }
+    return status_uploader;
+  }
+
+  void SetPolicyClientIsRegistered(bool is_registered) {
+    cloud_policy_client_.dm_token_ = is_registered ? kDmToken : std::string();
+  }
+
+  void SetPolicyFetched(EuiccStatusUploader* status_uploader) {
+    status_uploader->OnPolicyFetched(&cloud_policy_client_);
   }
 
   void SetServerSuccessStatus(bool success) {
@@ -167,13 +185,18 @@ class EuiccStatusUploaderTest : public testing::Test {
     status_uploader->FireRetryTimerIfExistsForTesting();
   }
 
+  void SetupEuicc(int euicc_id = 0) {
+    chromeos::HermesManagerClient::Get()->GetTestInterface()->AddEuicc(
+        dbus::ObjectPath(base::StringPrintf("%s%d", kFakeObjectPath, euicc_id)),
+        base::StringPrintf("%s%d", kFakeEid, euicc_id), /*is_active=*/true,
+        euicc_id);
+  }
+
   void SetUpDeviceProfiles(const EuiccTestData& data, bool add_to_onc = true) {
     // Create |data.euicc_count| fake EUICCs.
     chromeos::HermesManagerClient::Get()->GetTestInterface()->ClearEuiccs();
     for (int euicc_id = 0; euicc_id < data.euicc_count; euicc_id++) {
-      chromeos::HermesManagerClient::Get()->GetTestInterface()->AddEuicc(
-          dbus::ObjectPath(kFakeObjectPath), kFakeEid, /*is_active=*/true,
-          euicc_id);
+      SetupEuicc(euicc_id);
     }
 
     ash::ShillServiceClient::TestInterface* shill_service_client =
@@ -261,7 +284,12 @@ class EuiccStatusUploaderTest : public testing::Test {
                                         /*expected_count=*/failed_count);
   }
 
+  void SetIsDeviceActive(bool value) { is_device_active_ = value; }
+
  private:
+  bool is_device_active() { return is_device_active_; }
+
+  bool is_device_active_ = true;
   content::BrowserTaskEnvironment task_environment_;
   FakeCloudPolicyClient cloud_policy_client_;
   TestingPrefServiceSimple local_state_;
@@ -271,34 +299,79 @@ class EuiccStatusUploaderTest : public testing::Test {
 
 TEST_F(EuiccStatusUploaderTest, EmptySetup) {
   auto status_uploader = CreateStatusUploader();
-  // Initial upload request.
-  EXPECT_EQ(GetRequestCount(), 1);
+  EXPECT_EQ(GetRequestCount(), 0);
   // No value is uploaded yet.
   EXPECT_EQ("{}", GetStoredPrefString());
-  CheckHistogram(/*total_count=*/1, /*success_count=*/0, /*failed_count=*/1);
 
   // Make server accept requests.
   SetServerSuccessStatus(true);
   UpdateUploader(status_uploader.get());
-  EXPECT_EQ(GetRequestCount(), 2);
-  // Verify that last uploaded configuration is stored.
-  ValidateUploadedStatus(kEmptyEuiccStatus, /*clear_profile_list=*/false);
-  CheckHistogram(/*total_count=*/2, /*success_count=*/1, /*failed_count=*/1);
+  // Verify that no status is uploaded if there is no EUICC.
+  EXPECT_EQ(GetRequestCount(), 0);
+  CheckHistogram(/*total_count=*/0, /*success_count=*/0, /*failed_count=*/0);
+}
+
+TEST_F(EuiccStatusUploaderTest, InactiveDevice) {
+  SetIsDeviceActive(false);
+  auto status_uploader = CreateStatusUploader();
+  EXPECT_EQ(GetRequestCount(), 0);
+  // No value is uploaded yet.
+  EXPECT_EQ("{}", GetStoredPrefString());
+
+  // Make server accept requests.
+  SetServerSuccessStatus(true);
+  UpdateUploader(status_uploader.get());
+  // Verify that no status is uploaded if the device is inactive.
+  EXPECT_EQ(GetRequestCount(), 0);
+  CheckHistogram(/*total_count=*/0, /*success_count=*/0, /*failed_count=*/0);
+}
+
+TEST_F(EuiccStatusUploaderTest, ClientNotRegistered) {
+  SetupEuicc();
+  base::RunLoop().RunUntilIdle();
+  SetPolicyClientIsRegistered(/*is_registered=*/false);
+
+  auto status_uploader = CreateStatusUploader();
+  EXPECT_EQ(GetRequestCount(), 0);
+  // No value is uploaded yet.
+  EXPECT_EQ("{}", GetStoredPrefString());
+
+  UpdateUploader(status_uploader.get());
+  // Verify that no requests are made if client is not registered.
+  EXPECT_EQ(GetRequestCount(), 0);
+  EXPECT_EQ("{}", GetStoredPrefString());
+  CheckHistogram(/*total_count=*/0, /*success_count=*/0, /*failed_count=*/0);
 }
 
 TEST_F(EuiccStatusUploaderTest, ServerError) {
+  SetupEuicc();
+  base::RunLoop().RunUntilIdle();
   auto status_uploader = CreateStatusUploader();
-  // Initial upload request.
-  EXPECT_EQ(GetRequestCount(), 1);
-  // No value is uploaded yet.
-  EXPECT_EQ("{}", GetStoredPrefString());
-  CheckHistogram(/*total_count=*/1, /*success_count=*/0, /*failed_count=*/1);
-
   UpdateUploader(status_uploader.get());
   EXPECT_EQ(GetRequestCount(), 2);
   // Nothing is stored when requests fail.
   EXPECT_EQ("{}", GetStoredPrefString());
   CheckHistogram(/*total_count=*/2, /*success_count=*/0, /*failed_count=*/2);
+}
+
+TEST_F(EuiccStatusUploaderTest, WaitForPolicyFetch) {
+  SetUpDeviceProfiles(kSetupOneEsimProfile);
+
+  auto status_uploader = CreateStatusUploader(/*is_policy_fetched=*/false);
+  EXPECT_EQ(GetRequestCount(), 0);
+  // No value is uploaded yet.
+  EXPECT_EQ("{}", GetStoredPrefString());
+
+  // Verify that no requests are made when policy has not been fetched.
+  SetServerSuccessStatus(true);
+  UpdateUploader(status_uploader.get());
+  EXPECT_EQ(GetRequestCount(), 0);
+
+  // Verify that status is uploaded correctly when policy is fetched.
+  SetPolicyFetched(status_uploader.get());
+  ValidateUploadedStatus(kEuiccStatusWithOneProfile,
+                         /*clear_profile_list=*/false);
+  CheckHistogram(/*total_count=*/1, /*success_count=*/1, /*failed_count=*/0);
 }
 
 TEST_F(EuiccStatusUploaderTest, Basic) {

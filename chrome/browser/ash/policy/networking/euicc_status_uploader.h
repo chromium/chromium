@@ -8,9 +8,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chromeos/dbus/hermes/hermes_euicc_client.h"
+#include "chromeos/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/network/network_policy_observer.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
+#include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "net/base/backoff_entry.h"
 
 class PrefService;
@@ -26,13 +28,13 @@ class UploadEuiccInfoRequest;
 
 namespace policy {
 
-class CloudPolicyClient;
-
 // Class responsible for uploading the information about the current ESim
 // profiles to DMServer.
 class EuiccStatusUploader : public chromeos::NetworkPolicyObserver,
                             public chromeos::NetworkStateHandlerObserver,
-                            public chromeos::HermesEuiccClient::Observer {
+                            public chromeos::HermesManagerClient::Observer,
+                            public chromeos::HermesEuiccClient::Observer,
+                            public CloudPolicyClient::Observer {
  public:
   EuiccStatusUploader(CloudPolicyClient* client, PrefService* local_state);
   ~EuiccStatusUploader() override;
@@ -41,6 +43,13 @@ class EuiccStatusUploader : public chromeos::NetworkPolicyObserver,
 
  private:
   friend class EuiccStatusUploaderTest;
+
+  // Callback used in tests to mock out check for device provisioning state.
+  using IsDeviceActiveCallback = base::RepeatingCallback<bool()>;
+
+  EuiccStatusUploader(CloudPolicyClient* client,
+                      PrefService* local_state,
+                      IsDeviceActiveCallback is_device_managed_callback);
 
   // A local state preference that stores the last uploaded Euicc status in such
   // format:
@@ -70,10 +79,20 @@ class EuiccStatusUploader : public chromeos::NetworkPolicyObserver,
   void NetworkListChanged() override;
   void OnShuttingDown() override;
 
+  // CloudPolicyClient::Observer:
+  void OnRegistrationStateChanged(CloudPolicyClient* client) override;
+  void OnPolicyFetched(CloudPolicyClient* client) override;
+  void OnClientError(CloudPolicyClient* client) override {}
+  void OnServiceAccountSet(CloudPolicyClient* client,
+                           const std::string& account_email) override {}
+
+  // chromeos::HermesManagerClient:
+  void OnAvailableEuiccListChanged() override;
+
   // chromeos::HermesEuiccClient:
   void OnEuiccReset(const dbus::ObjectPath& euicc_path) override;
 
-  base::Value GetCurrentEuiccStatus();
+  base::Value GetCurrentEuiccStatus() const;
   void MaybeUploadStatus();
   void MaybeUploadStatusWithDelay();
   void UploadStatus(base::Value status);
@@ -89,10 +108,21 @@ class EuiccStatusUploader : public chromeos::NetworkPolicyObserver,
   bool currently_uploading_ = false;
   // The status that is being uploaded right now.
   base::Value attempted_upload_status_{base::Value::Type::DICTIONARY};
+  bool is_policy_fetched_ = false;
+  IsDeviceActiveCallback is_device_managed_callback_;
 
   // Timer which will try to reupload the status after a while.
   std::unique_ptr<base::OneShotTimer> retry_timer_;
   net::BackoffEntry retry_entry_;
+
+  base::ScopedObservation<chromeos::HermesManagerClient,
+                          chromeos::HermesManagerClient::Observer>
+      hermes_manager_observation_{this};
+  base::ScopedObservation<chromeos::HermesEuiccClient,
+                          chromeos::HermesEuiccClient::Observer>
+      hermes_euicc_observation_{this};
+  base::ScopedObservation<CloudPolicyClient, CloudPolicyClient::Observer>
+      cloud_policy_client_observation_{this};
 
   chromeos::NetworkHandler* network_handler_ = nullptr;
 
