@@ -1373,6 +1373,35 @@ TEST_F(PrivacySandboxServiceTest, DialogActionsUMAActions) {
                    "Settings.PrivacySandbox.Consent.ClosedNoInteraction"));
 }
 
+TEST_F(PrivacySandboxServiceTest, Block3PCookieNoDialog) {
+  // Confirm that when 3P cookies are blocked, that no dialog is shown.
+  prefs()->SetUserPref(
+      prefs::kCookieControlsMode,
+      std::make_unique<base::Value>(static_cast<int>(
+          content_settings::CookieControlsMode::kBlockThirdParty)));
+  EXPECT_EQ(PrivacySandboxService::DialogType::kNone,
+            privacy_sandbox_service()->GetRequiredDialogType());
+
+  // This should persist even if 3P cookies become allowed.
+  prefs()->SetUserPref(prefs::kCookieControlsMode,
+                       std::make_unique<base::Value>(static_cast<int>(
+                           content_settings::CookieControlsMode::kOff)));
+  EXPECT_EQ(PrivacySandboxService::DialogType::kNone,
+            privacy_sandbox_service()->GetRequiredDialogType());
+}
+
+TEST_F(PrivacySandboxServiceTest, BlockAllCookiesNoDialog) {
+  // Confirm that when all cookies are blocked, that no dialog is shown.
+  cookie_settings()->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(PrivacySandboxService::DialogType::kNone,
+            privacy_sandbox_service()->GetRequiredDialogType());
+
+  // This should persist even if cookies become allowed.
+  cookie_settings()->SetDefaultCookieSetting(CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(PrivacySandboxService::DialogType::kNone,
+            privacy_sandbox_service()->GetRequiredDialogType());
+}
+
 class PrivacySandboxRestrictedTest : public PrivacySandboxServiceTest {
   void InitializeBeforeStart() override {
     prefs()->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, true);
@@ -2169,20 +2198,22 @@ TEST_F(PrivacySandboxServiceDialogTest, RestrictedDialog) {
   EXPECT_CALL(*privacy_sandbox_settings(), IsPrivacySandboxRestricted())
       .Times(1)
       .WillOnce(testing::Return(true));
-  EXPECT_EQ(PrivacySandboxService::DialogType::kNone,
-            PrivacySandboxService::GetRequiredDialogTypeInternal(
-                prefs(), profile_metrics::BrowserProfileType::kRegular,
-                privacy_sandbox_settings()));
+  EXPECT_EQ(
+      PrivacySandboxService::DialogType::kNone,
+      PrivacySandboxService::GetRequiredDialogTypeInternal(
+          prefs(), profile_metrics::BrowserProfileType::kRegular,
+          privacy_sandbox_settings(), /*third_party_cookies_blocked=*/false));
 
   // After being restricted, even if the restriction is removed, no dialog
-  // should be shown.
+  // should be shown. No call should even need to be made to see if the
+  // sandbox is still restricted.
   EXPECT_CALL(*privacy_sandbox_settings(), IsPrivacySandboxRestricted())
-      .Times(1)
-      .WillOnce(testing::Return(false));
-  EXPECT_EQ(PrivacySandboxService::DialogType::kNone,
-            PrivacySandboxService::GetRequiredDialogTypeInternal(
-                prefs(), profile_metrics::BrowserProfileType::kRegular,
-                privacy_sandbox_settings()));
+      .Times(0);
+  EXPECT_EQ(
+      PrivacySandboxService::DialogType::kNone,
+      PrivacySandboxService::GetRequiredDialogTypeInternal(
+          prefs(), profile_metrics::BrowserProfileType::kRegular,
+          privacy_sandbox_settings(), /*third_party_cookies_blocked=*/false));
 }
 
 TEST_F(PrivacySandboxServiceDialogTest, ManagedNoDialog) {
@@ -2190,17 +2221,19 @@ TEST_F(PrivacySandboxServiceDialogTest, ManagedNoDialog) {
   // shown.
   prefs()->SetManagedPref(prefs::kPrivacySandboxApisEnabledV2,
                           base::Value(true));
-  EXPECT_EQ(PrivacySandboxService::DialogType::kNone,
-            PrivacySandboxService::GetRequiredDialogTypeInternal(
-                prefs(), profile_metrics::BrowserProfileType::kRegular,
-                privacy_sandbox_settings()));
+  EXPECT_EQ(
+      PrivacySandboxService::DialogType::kNone,
+      PrivacySandboxService::GetRequiredDialogTypeInternal(
+          prefs(), profile_metrics::BrowserProfileType::kRegular,
+          privacy_sandbox_settings(), /*third_party_cookies_blocked=*/false));
 
   // This should persist even if the preference becomes unmanaged.
   prefs()->RemoveManagedPref(prefs::kPrivacySandboxApisEnabledV2);
-  EXPECT_EQ(PrivacySandboxService::DialogType::kNone,
-            PrivacySandboxService::GetRequiredDialogTypeInternal(
-                prefs(), profile_metrics::BrowserProfileType::kRegular,
-                privacy_sandbox_settings()));
+  EXPECT_EQ(
+      PrivacySandboxService::DialogType::kNone,
+      PrivacySandboxService::GetRequiredDialogTypeInternal(
+          prefs(), profile_metrics::BrowserProfileType::kRegular,
+          privacy_sandbox_settings(), /*third_party_cookies_blocked=*/false));
 }
 
 class PrivacySandboxServiceDeathTest
@@ -2227,21 +2260,23 @@ TEST_P(PrivacySandboxServiceDeathTest, GetRequiredDialogType) {
     EXPECT_DCHECK_DEATH(
         PrivacySandboxService::GetRequiredDialogTypeInternal(
             prefs(), profile_metrics::BrowserProfileType::kRegular,
-            privacy_sandbox_settings());
+            privacy_sandbox_settings(), /*third_party_cookies_blocked=*/false);
 
     );
     return;
   }
 
   // Returned dialog type should never change between successive calls.
-  EXPECT_EQ(test_case.expected_output.dialog_type,
-            PrivacySandboxService::GetRequiredDialogTypeInternal(
-                prefs(), profile_metrics::BrowserProfileType::kRegular,
-                privacy_sandbox_settings()));
-  EXPECT_EQ(test_case.expected_output.dialog_type,
-            PrivacySandboxService::GetRequiredDialogTypeInternal(
-                prefs(), profile_metrics::BrowserProfileType::kRegular,
-                privacy_sandbox_settings()));
+  EXPECT_EQ(
+      test_case.expected_output.dialog_type,
+      PrivacySandboxService::GetRequiredDialogTypeInternal(
+          prefs(), profile_metrics::BrowserProfileType::kRegular,
+          privacy_sandbox_settings(), /*third_party_cookies_blocked=*/false));
+  EXPECT_EQ(
+      test_case.expected_output.dialog_type,
+      PrivacySandboxService::GetRequiredDialogTypeInternal(
+          prefs(), profile_metrics::BrowserProfileType::kRegular,
+          privacy_sandbox_settings(), /*third_party_cookies_blocked=*/false));
 
   EXPECT_EQ(test_case.expected_output.new_api_pref,
             prefs()->GetBoolean(prefs::kPrivacySandboxApisEnabledV2));

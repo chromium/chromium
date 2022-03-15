@@ -169,8 +169,18 @@ PrivacySandboxService::~PrivacySandboxService() = default;
 
 PrivacySandboxService::DialogType
 PrivacySandboxService::GetRequiredDialogType() {
+  const auto cookie_controls_mode =
+      static_cast<content_settings::CookieControlsMode>(
+          pref_service_->GetInteger(prefs::kCookieControlsMode));
+  const auto default_content_setting =
+      cookie_settings_->GetDefaultCookieSetting(/*provider_id=*/nullptr);
+  const auto third_party_cookies_blocked =
+      default_content_setting == ContentSetting::CONTENT_SETTING_BLOCK ||
+      cookie_controls_mode ==
+          content_settings::CookieControlsMode::kBlockThirdParty;
   return GetRequiredDialogTypeInternal(pref_service_, profile_type_,
-                                       privacy_sandbox_settings_);
+                                       privacy_sandbox_settings_,
+                                       third_party_cookies_blocked);
 }
 
 void PrivacySandboxService::DialogActionOccurred(
@@ -743,7 +753,8 @@ void PrivacySandboxService::SetTopicAllowed(
 PrivacySandboxService::GetRequiredDialogTypeInternal(
     PrefService* pref_service,
     profile_metrics::BrowserProfileType profile_type,
-    privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings) {
+    privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
+    bool third_party_cookies_blocked) {
   // If the dialog is disabled for testing, never show it.
   if (g_dialog_diabled_for_tests)
     return DialogType::kNone;
@@ -766,35 +777,11 @@ PrivacySandboxService::GetRequiredDialogTypeInternal(
   if (privacy_sandbox::kPrivacySandboxSettings3ForceShowNoticeForTesting.Get())
     return DialogType::kNotice;
 
-  // If the Privacy Sandbox is restricted, no dialog is shown.
-  if (privacy_sandbox_settings->IsPrivacySandboxRestricted()) {
-    pref_service->SetBoolean(
-        prefs::kPrivacySandboxNoConfirmationSandboxRestricted, true);
-    return DialogType::kNone;
-  }
-
-  // If a user wasn't shown a confirmation because the sandbox was previously
-  // restricted, do not attempt to show them one. The user will be able to
-  // enable the Sandbox on the settings page.
-  if (pref_service->GetBoolean(
-          prefs::kPrivacySandboxNoConfirmationSandboxRestricted)) {
-    return DialogType::kNone;
-  }
-
-  // If the Privacy Sandbox is managed, no dialog is shown.
-  if (pref_service->FindPreference(prefs::kPrivacySandboxApisEnabledV2)
-          ->IsManaged()) {
-    pref_service->SetBoolean(prefs::kPrivacySandboxNoConfirmationSandboxManaged,
-                             true);
-    return DialogType::kNone;
-  }
-
-  // If a user wasn't shown a dialog previously because the Privacy Sandbox
-  // was managed, do not show them one.
-  if (pref_service->GetBoolean(
-          prefs::kPrivacySandboxNoConfirmationSandboxManaged)) {
-    return DialogType::kNone;
-  }
+  // Start by checking for any previous decision about the dialog, such as
+  // it already having been shown, or not having been shown for some reason.
+  // These checks for previous decisions occur in advance of their corresponding
+  // decisions later in this function, so that changes to profile state to not
+  // appear to impact previous decisions.
 
   // If a user wasn't shown a confirmation because they previously turned the
   // Privacy Sandbox off, we do not attempt to re-show one.
@@ -810,6 +797,50 @@ PrivacySandboxService::GetRequiredDialogTypeInternal(
   // If only a notice is required, and has been shown, no dialog is required.
   if (!privacy_sandbox::kPrivacySandboxSettings3ConsentRequired.Get() &&
       pref_service->GetBoolean(prefs::kPrivacySandboxNoticeDisplayed)) {
+    return DialogType::kNone;
+  }
+
+  // If a user wasn't shown a confirmation because the sandbox was previously
+  // restricted, do not attempt to show them one. The user will be able to
+  // enable the Sandbox on the settings page.
+  if (pref_service->GetBoolean(
+          prefs::kPrivacySandboxNoConfirmationSandboxRestricted)) {
+    return DialogType::kNone;
+  }
+
+  // If a user wasn't shown a dialog previously because the Privacy Sandbox
+  // was managed, do not show them one.
+  if (pref_service->GetBoolean(
+          prefs::kPrivacySandboxNoConfirmationSandboxManaged)) {
+    return DialogType::kNone;
+  }
+
+  // If a user wasn't shown a confirmation because they block third party
+  // cookies, we do not attempt to re-show one.
+  if (pref_service->GetBoolean(
+          prefs::kPrivacySandboxNoConfirmationThirdPartyCookiesBlocked)) {
+    return DialogType::kNone;
+  }
+
+  // If the Privacy Sandbox is restricted, no dialog is shown.
+  if (privacy_sandbox_settings->IsPrivacySandboxRestricted()) {
+    pref_service->SetBoolean(
+        prefs::kPrivacySandboxNoConfirmationSandboxRestricted, true);
+    return DialogType::kNone;
+  }
+
+  // If the Privacy Sandbox is managed, no dialog is shown.
+  if (pref_service->FindPreference(prefs::kPrivacySandboxApisEnabledV2)
+          ->IsManaged()) {
+    pref_service->SetBoolean(prefs::kPrivacySandboxNoConfirmationSandboxManaged,
+                             true);
+    return DialogType::kNone;
+  }
+
+  // If the user blocks third party cookies, then no dialog is shown.
+  if (third_party_cookies_blocked) {
+    pref_service->SetBoolean(
+        prefs::kPrivacySandboxNoConfirmationThirdPartyCookiesBlocked, true);
     return DialogType::kNone;
   }
 

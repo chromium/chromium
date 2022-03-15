@@ -382,11 +382,14 @@ class PrivacySandboxService : public KeyedService,
 
   // Contains the logic which powers GetRequiredDialogType(). Static to allow
   // EXPECT_DCHECK_DEATH testing, which does not work well with many of the
-  // other dependencies of this service.
+  // other dependencies of this service. It is also for this reason the 3P
+  // cookie block state is passed in, as CookieSettings cannot be used in
+  // death tests.
   static PrivacySandboxService::DialogType GetRequiredDialogTypeInternal(
       PrefService* pref_service,
       profile_metrics::BrowserProfileType profile_type,
-      privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings);
+      privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
+      bool third_party_cookies_blocked);
 
  private:
   raw_ptr<privacy_sandbox::PrivacySandboxSettings> privacy_sandbox_settings_;
