@@ -96,8 +96,8 @@ class AwSettings : public content::WebContentsObserver {
 
   void PopulateWebPreferences(blink::web_pref::WebPreferences* web_prefs);
   bool GetAllowFileAccess();
-  bool IsDarkMode(JNIEnv* env,
-                       const base::android::JavaParamRef<jobject>& obj);
+  bool IsForceDarkApplied(JNIEnv* env,
+                          const base::android::JavaParamRef<jobject>& obj);
 
  private:
   AwRenderViewHostExt* GetAwRenderViewHostExt();

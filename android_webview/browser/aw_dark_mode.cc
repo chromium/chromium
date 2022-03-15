@@ -77,14 +77,14 @@ void AwDarkMode::PopulateWebPreferences(
       prefers_dark_from_theme_ ? blink::mojom::PreferredColorScheme::kDark
                                : blink::mojom::PreferredColorScheme::kLight;
   web_prefs->force_dark_mode_enabled = false;
-  is_dark_mode_ = false;
+  is_force_dark_applied_ = false;
   if (IsForceDarkEnabled(web_contents())) {
-    is_dark_mode_ = true;
+    is_force_dark_applied_ = true;
     web_prefs->force_dark_mode_enabled = true;
     web_prefs->preferred_color_scheme =
         blink::mojom::PreferredColorScheme::kDark;
   } else if (prefers_dark_from_theme_) {
-    is_dark_mode_ = algorithmic_darkening_allowed;
+    is_force_dark_applied_ = algorithmic_darkening_allowed;
     web_prefs->force_dark_mode_enabled = algorithmic_darkening_allowed;
   }
 }
@@ -96,22 +96,22 @@ void AwDarkMode::PopulateWebPreferencesForPreT(
   prefers_dark_from_theme_ = false;
   switch (force_dark_mode) {
     case AwSettings::ForceDarkMode::FORCE_DARK_OFF:
-      is_dark_mode_ = false;
+      is_force_dark_applied_ = false;
       break;
     case AwSettings::ForceDarkMode::FORCE_DARK_ON:
-      is_dark_mode_ = true;
+      is_force_dark_applied_ = true;
       break;
     case AwSettings::ForceDarkMode::FORCE_DARK_AUTO: {
-      is_dark_mode_ = IsForceDarkEnabled(web_contents());
-      if (!is_dark_mode_)
+      is_force_dark_applied_ = IsForceDarkEnabled(web_contents());
+      if (!is_force_dark_applied_)
         prefers_dark_from_theme_ = IsAppUsingDarkTheme();
       break;
     }
   }
   web_prefs->preferred_color_scheme =
-      is_dark_mode_ ? blink::mojom::PreferredColorScheme::kDark
-                    : blink::mojom::PreferredColorScheme::kLight;
-  if (is_dark_mode_) {
+      is_force_dark_applied_ ? blink::mojom::PreferredColorScheme::kDark
+                             : blink::mojom::PreferredColorScheme::kLight;
+  if (is_force_dark_applied_) {
     switch (force_dark_behavior) {
       case AwSettings::ForceDarkBehavior::FORCE_DARK_ONLY: {
         web_prefs->preferred_color_scheme =
@@ -144,7 +144,7 @@ void AwDarkMode::PopulateWebPreferencesForPreT(
     if (base::FeatureList::IsEnabled(
             android_webview::features::kWebViewForceDarkModeMatchTheme)) {
       web_prefs->force_dark_mode_enabled = true;
-      is_dark_mode_ = true;
+      is_force_dark_applied_ = true;
     }
   } else {
     web_prefs->preferred_color_scheme =

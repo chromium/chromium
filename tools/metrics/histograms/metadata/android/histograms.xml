@@ -3300,8 +3300,8 @@ chromium-metrics-reviews@google.com.
   <owner>michaelbai@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
-    Records if WebView is in dark mode on each main frame navigation entry
-    committed.
+    Records if WebView applies the algorithmic darkening on each main frame
+    navigation entry committed.
   </summary>
 </histogram>
 
@@ -3310,8 +3310,8 @@ chromium-metrics-reviews@google.com.
   <owner>michaelbai@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
-    Records if the application has light theme and if WebView is in dark mode on
-    each main frame navigation entry committed.
+    Records if the application has light theme and if WebView applies the
+    algorithmic darkening on each main frame navigation entry committed.
   </summary>
 </histogram>
 
@@ -3320,8 +3320,8 @@ chromium-metrics-reviews@google.com.
   <owner>michaelbai@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
-    Records if the application is in the night mode and if WebView is in dark
-    mode on each main frame navigation entry committed.
+    Records if the application is in the night mode and if WebView applies the
+    algorithmic darkening on each main frame navigation entry committed.
   </summary>
 </histogram>
 

@@ -51,29 +51,33 @@ public class AwWebContentsMetricsRecorder extends WebContentsObserver {
 
         int nightMode = DarkModeHelper.getNightMode(context);
         int lightTheme = DarkModeHelper.getLightTheme(context);
-        boolean isDarkMode = awSettings.isDarkMode();
+        boolean isForceDarkApplied = awSettings.isForceDarkApplied();
         int forceDarkMode = awSettings.getForceDarkMode();
         int forceDarkBehavior = awSettings.getForceDarkBehavior();
         int textLuminance = DarkModeHelper.getPrimaryTextLuminace(context);
-        recordDarkModeMetrics(
-                nightMode, lightTheme, isDarkMode, forceDarkMode, forceDarkBehavior, textLuminance);
+        recordDarkModeMetrics(nightMode, lightTheme, isForceDarkApplied, forceDarkMode,
+                forceDarkBehavior, textLuminance);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public static void recordDarkModeMetrics(int nightMode, int lightTheme, boolean isDarkMode,
-            int forceDarkMode, int forceDarkBehavior, int textLuminance) {
+    public static void recordDarkModeMetrics(int nightMode, int lightTheme,
+            boolean isForceDarkApplied, int forceDarkMode, int forceDarkBehavior,
+            int textLuminance) {
         RecordHistogram.recordEnumeratedHistogram("Android.WebView.DarkMode.ForceDarkBehavior",
                 forceDarkBehavior, AwSettings.FORCE_DARK_STRATEGY_COUNT);
         RecordHistogram.recordEnumeratedHistogram("Android.WebView.DarkMode.ForceDarkMode",
                 forceDarkMode, AwSettings.FORCE_DARK_MODES_COUNT);
-        RecordHistogram.recordBooleanHistogram("Android.WebView.DarkMode.InDarkMode", isDarkMode);
+        RecordHistogram.recordBooleanHistogram(
+                "Android.WebView.DarkMode.InDarkMode", isForceDarkApplied);
         // Refer to WebViewInDarkModeVsLightTheme in enums.xml.
         RecordHistogram.recordEnumeratedHistogram("Android.WebView.DarkMode.InDarkModeVsLightTheme",
-                (isDarkMode ? 0 : 1) * DarkModeHelper.LightTheme.LIGHT_THEME_COUNT + lightTheme,
+                (isForceDarkApplied ? 0 : 1) * DarkModeHelper.LightTheme.LIGHT_THEME_COUNT
+                        + lightTheme,
                 2 * DarkModeHelper.LightTheme.LIGHT_THEME_COUNT);
         // Refer to WebViewInDarkModeVsNightMode in enums.xml.
         RecordHistogram.recordEnumeratedHistogram("Android.WebView.DarkMode.InDarkModeVsNightMode",
-                (isDarkMode ? 0 : 1) * DarkModeHelper.NightMode.NIGHT_MODE_COUNT + nightMode,
+                (isForceDarkApplied ? 0 : 1) * DarkModeHelper.NightMode.NIGHT_MODE_COUNT
+                        + nightMode,
                 2 * DarkModeHelper.NightMode.NIGHT_MODE_COUNT);
         RecordHistogram.recordEnumeratedHistogram("Android.WebView.DarkMode.LightTheme", lightTheme,
                 DarkModeHelper.LightTheme.LIGHT_THEME_COUNT);

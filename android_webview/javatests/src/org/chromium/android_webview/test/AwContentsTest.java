@@ -234,7 +234,7 @@ public class AwContentsTest {
             Assert.assertEquals(awContents.getEffectiveBackgroundColorForTesting(), Color.WHITE);
 
             awSettings.setForceDarkMode(AwSettings.FORCE_DARK_ON);
-            Assert.assertTrue(awSettings.isDarkMode());
+            Assert.assertTrue(awSettings.isForceDarkApplied());
             Assert.assertEquals(awContents.getEffectiveBackgroundColorForTesting(), Color.BLACK);
 
             awContents.setBackgroundColor(Color.RED);

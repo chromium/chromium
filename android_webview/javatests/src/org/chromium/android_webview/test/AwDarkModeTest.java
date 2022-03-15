@@ -242,7 +242,7 @@ public class AwDarkModeTest {
         return TestThreadUtils.runOnUiThreadBlocking(new Callable<Boolean>() {
             @Override
             public Boolean call() {
-                return mAwContents.getSettings().isDarkMode();
+                return mAwContents.getSettings().isForceDarkApplied();
             }
         });
     }

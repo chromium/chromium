@@ -2301,9 +2301,10 @@ public class AwContents implements SmartClipProvider {
         if (isDestroyed(NO_WARN)) {
             return mBaseBackgroundColor;
         } else if (!mContentsClient.isCachedRendererBackgroundColorValid()) {
-            // In force dark mode, if background color not set, this cause a white flash,
-            // just show black background.
-            if (mSettings.isDarkMode() && !mDidInitBackground) {
+            // In force dark mode or the dark style preferred , if background color not set,
+            // this cause a white flash, just show black background.
+            // TODO(crbug.com/1253990): Check if dark style is preferred.
+            if (mSettings.isForceDarkApplied() && !mDidInitBackground) {
                 return Color.BLACK;
             }
             return mBaseBackgroundColor;
