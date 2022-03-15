@@ -10,7 +10,7 @@ use crate::values::ValueSlotRef;
 use crate::values_deserialization::ValueVisitor;
 use cxx::CxxString;
 use serde::de::Deserializer;
-use serde_jsonrc::de::SliceRead;
+use serde_json_lenient::de::SliceRead;
 use std::pin::Pin;
 
 // UTF8 byte order mark.
@@ -97,7 +97,7 @@ impl JsonOptions {
 ///
 /// It always strips a UTF8 BOM from the start of the string, if one is found.
 ///
-/// Return: a serde_jsonrc::Error or Ok.
+/// Return: a serde_json_lenient::Error or Ok.
 ///
 /// It is be desirable in future to expose this API to other Rust code inside
 /// and outside //base. TODO(crbug/1287209): work out API norms and then add
@@ -106,12 +106,12 @@ pub fn decode_json(
     json: &[u8],
     options: JsonOptions,
     value_slot: ValueSlotRef,
-) -> Result<(), serde_jsonrc::Error> {
+) -> Result<(), serde_json_lenient::Error> {
     let mut to_parse = json;
     if to_parse.len() >= 3 && to_parse[0..3] == UTF8_BOM {
         to_parse = &to_parse[3..];
     }
-    let mut deserializer = serde_jsonrc::Deserializer::new(SliceRead::new(
+    let mut deserializer = serde_json_lenient::Deserializer::new(SliceRead::new(
         &to_parse,
         options.replace_invalid_characters,
         options.allow_control_chars,

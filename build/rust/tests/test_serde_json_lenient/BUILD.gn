@@ -5,19 +5,19 @@
 import("//build/rust/rust_static_library.gni")
 import("//testing/test.gni")
 
-rust_static_library("test_serde_jsonrc_rs") {
+rust_static_library("test_serde_json_lenient_rs") {
   crate_root = "lib.rs"
   sources = [ "lib.rs" ]
   cxx_bindings = [ "lib.rs" ]
-  deps = [ "//third_party/rust/serde_jsonrc/v0_1:lib" ]
+  deps = [ "//third_party/rust/serde_json_lenient/v0_1:lib" ]
 }
 
 # TODO(https://crbug.com/1278030) - convert to a pure-
 # Rust unit test when that's supported on all platforms.
-test("test_serde_jsonrc") {
+test("test_serde_json_lenient") {
   sources = [ "unittests.cc" ]
   deps = [
-    ":test_serde_jsonrc_rs",
+    ":test_serde_json_lenient_rs",
     "//base",
     "//base/test:run_all_unittests",
     "//testing/gmock",

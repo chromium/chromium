@@ -64,7 +64,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "test_serde_jsonrc",
+        "name": "test_serde_json_lenient",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -74,8 +74,8 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "test_serde_jsonrc",
-        "test_id_prefix": "ninja://build/rust/tests/test_serde_jsonrc:test_serde_jsonrc/"
+        "test": "test_serde_json_lenient",
+        "test_id_prefix": "ninja://build/rust/tests/test_serde_json_lenient:test_serde_json_lenient/"
       }
     ]
   },
@@ -142,7 +142,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "test_serde_jsonrc",
+        "name": "test_serde_json_lenient",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -152,8 +152,8 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "test_serde_jsonrc",
-        "test_id_prefix": "ninja://build/rust/tests/test_serde_jsonrc:test_serde_jsonrc/"
+        "test": "test_serde_json_lenient",
+        "test_id_prefix": "ninja://build/rust/tests/test_serde_json_lenient:test_serde_json_lenient/"
       }
     ]
   },
@@ -206,13 +206,13 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "test_serde_jsonrc",
+        "name": "test_serde_json_lenient",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "test_serde_jsonrc",
-        "test_id_prefix": "ninja://build/rust/tests/test_serde_jsonrc:test_serde_jsonrc/"
+        "test": "test_serde_json_lenient",
+        "test_id_prefix": "ninja://build/rust/tests/test_serde_json_lenient:test_serde_json_lenient/"
       }
     ],
     "isolated_scripts": [
@@ -295,13 +295,13 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "test_serde_jsonrc",
+        "name": "test_serde_json_lenient",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "test_serde_jsonrc",
-        "test_id_prefix": "ninja://build/rust/tests/test_serde_jsonrc:test_serde_jsonrc/"
+        "test": "test_serde_json_lenient",
+        "test_id_prefix": "ninja://build/rust/tests/test_serde_json_lenient:test_serde_json_lenient/"
       }
     ],
     "isolated_scripts": [
@@ -384,13 +384,13 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "test_serde_jsonrc",
+        "name": "test_serde_json_lenient",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "test_serde_jsonrc",
-        "test_id_prefix": "ninja://build/rust/tests/test_serde_jsonrc:test_serde_jsonrc/"
+        "test": "test_serde_json_lenient",
+        "test_id_prefix": "ninja://build/rust/tests/test_serde_json_lenient:test_serde_json_lenient/"
       }
     ],
     "isolated_scripts": [

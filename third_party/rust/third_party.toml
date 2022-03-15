@@ -37,9 +37,12 @@
 cxxbridge-cmd = "1"
 cxx = "1"
 serde = "1"
-serde_jsonrc = { version="0.1", features=["unbounded_depth"] }
 autocxx = "0.16"
 autocxx-gen = "0.16"
+
+[dependencies.serde_json_lenient]
+version = "0.1"
+features = [ "unbounded_depth", "float_roundtrip" ]
 
 [dependencies.bindgen]
 version = "0.59"

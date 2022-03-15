@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Demo library to ensure that serde_jsonrc is working independently of
+// Demo library to ensure that serde_json_lenient is working independently of
 // its integration with Chromium.
 
-use serde_jsonrc::{Result, Value};
+use serde_json_lenient::{Result, Value};
 
 #[cxx::bridge]
 mod ffi {
@@ -24,6 +24,6 @@ fn parses_ok() -> Result<bool> {
             "name": "Slartibartfast",
             "planets": [ "Magrathea" ]
         }"#;
-    let v: Value = serde_jsonrc::from_str(data)?;
+    let v: Value = serde_json_lenient::from_str(data)?;
     Ok(v["name"] == "Slartibartfast" && v["planets"][0] == "Magrathea")
 }

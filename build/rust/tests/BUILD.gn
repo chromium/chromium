@@ -35,7 +35,7 @@ group("deps") {
       "test_rlib_crate:target1",
       "test_rlib_crate:target2",
       "test_rust_static_library",
-      "test_serde_jsonrc",
+      "test_serde_json_lenient",
     ]
     if (rustc_can_link) {
       deps += [

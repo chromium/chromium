@@ -1447,7 +1447,7 @@ mixed_component("base") {
     rs_configs = [ ":todo_buildflag_build_rust_json_parser" ]
     rs_deps = [
       "//third_party/rust/serde/v1:lib",
-      "//third_party/rust/serde_jsonrc/v0_1:lib",
+      "//third_party/rust/serde_json_lenient/v0_1:lib",
     ]
     rs_sources += [
       "json/json_parser.rs",

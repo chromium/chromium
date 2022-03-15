@@ -5,7 +5,7 @@
 import("//build/rust/cargo_crate.gni")
 
 cargo_crate("lib") {
-  crate_name = "serde_jsonrc"
+  crate_name = "serde_json_lenient"
   epoch = "0.1"
   crate_type = "rlib"
   crate_root = "crate/src/lib.rs"
@@ -20,7 +20,10 @@ cargo_crate("lib") {
     "//third_party/rust/serde/v1:lib",
   ]
   features = [
+    "float_roundtrip",
     "std",
     "unbounded_depth",
   ]
+  build_root = "crate/build.rs"
+  build_sources = [ "crate/build.rs" ]
 }
