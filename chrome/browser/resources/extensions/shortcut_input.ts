@@ -97,7 +97,7 @@ export class ExtensionsShortcutInputElement extends
   private readonly_: boolean;
   private pendingShortcut_: string;
 
-  ready() {
+  override ready() {
     super.ready();
 
     const node = this.$.input;

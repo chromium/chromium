@@ -106,11 +106,11 @@ export class ExtensionsDetailViewElement extends
   fromActivityLog: boolean;
   private size_: string;
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
   }
 
-  ready() {
+  override ready() {
     super.ready();
     this.addEventListener('view-enter-start', this.onViewEnterStart_);
   }

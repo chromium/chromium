@@ -37,12 +37,12 @@ export class ExtensionsSidebarElement extends PolymerElement {
 
   enableEnhancedSiteControls: boolean;
 
-  ready() {
+  override ready() {
     super.ready();
     this.setAttribute('role', 'navigation');
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     const page = navigation.getCurrentPage().page;

@@ -34,7 +34,7 @@ class ExtensionsInstallWarningsDialogElement extends PolymerElement {
 
   installWarnings: Array<string>;
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.$.dialog.showModal();
   }

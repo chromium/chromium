@@ -230,7 +230,7 @@ export class ActivityLogHistoryElement extends PolymerElement {
     this.rawActivities_ = '';
   }
 
-  ready() {
+  override ready() {
     super.ready();
     this.addEventListener('delete-activity-log-item', e => this.deleteItem_(e));
   }
@@ -246,7 +246,7 @@ export class ActivityLogHistoryElement extends PolymerElement {
     return this.dataFetchedResolver_!.promise;
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.dataFetchedResolver_ = new PromiseResolver();
     this.refreshActivities_();

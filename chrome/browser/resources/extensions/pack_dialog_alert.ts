@@ -47,7 +47,7 @@ export class ExtensionsPackDialogAlertElement extends PolymerElement {
     return this.$.dialog.getNative().returnValue;
   }
 
-  ready() {
+  override ready() {
     super.ready();
 
     // Initialize button label values for initial html binding.
@@ -73,7 +73,7 @@ export class ExtensionsPackDialogAlertElement extends PolymerElement {
     }
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.$.dialog.showModal();
   }

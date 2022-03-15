@@ -111,7 +111,7 @@ export class ActivityLogStreamElement extends PolymerElement {
     this.listenerInstance_ = () => {};
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     // Since this component is not restamped, this will only be called once

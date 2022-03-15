@@ -97,7 +97,7 @@ export class ExtensionsActivityLogElement extends
   selectedSubpage_: ActivityLogSubpage;
   private tabNames_: string[];
 
-  ready() {
+  override ready() {
     super.ready();
     this.addEventListener('view-enter-start', this.onViewEnterStart_);
     this.addEventListener('view-exit-finish', this.onViewExitFinish_);

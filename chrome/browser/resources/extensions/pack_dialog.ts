@@ -73,7 +73,7 @@ export class ExtensionsPackDialogElement extends PolymerElement {
   private keyFile_: string;
   private lastResponse_: chrome.developerPrivate.PackDirectoryResponse|null;
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.$.dialog.showModal();
   }

@@ -107,7 +107,7 @@ export class ExtensionsRuntimeHostsDialogElement extends PolymerElement {
   private site_: string;
   private inputInvalid_: boolean;
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     if (this.currentSite !== null && this.currentSite !== undefined) {

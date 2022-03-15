@@ -125,7 +125,7 @@ export class ExtensionsErrorPageElement extends ExtensionsErrorPageElementBase {
   private selectedEntry_: number;
   private selectedStackFrame_: chrome.developerPrivate.StackFrame|null;
 
-  ready() {
+  override ready() {
     super.ready();
     this.addEventListener('view-enter-start', this.onViewEnterStart_);
     FocusOutlineManager.forDocument(document);

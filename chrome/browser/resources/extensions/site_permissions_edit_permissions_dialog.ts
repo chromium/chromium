@@ -69,7 +69,7 @@ export class SitePermissionsEditPermissionsDialogElement extends
   site: string;
   private siteSet_: chrome.developerPrivate.UserSiteSet;
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.siteSet_ = this.originalSiteSet;
   }

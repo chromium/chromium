@@ -51,7 +51,7 @@ export const SiteSettingsMixin = dedupingMixin(
         protected permittedSites: string[];
         protected restrictedSites: string[];
 
-        ready() {
+        override ready() {
           super.ready();
           if (this.enableEnhancedSiteControls) {
             this.delegate.getUserSiteSettings().then(

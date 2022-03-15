@@ -91,7 +91,7 @@ export class SitePermissionsEditUrlDialogElement extends PolymerElement {
   private site_: string;
   private inputValid_: boolean;
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     if (this.siteToEdit !== null) {

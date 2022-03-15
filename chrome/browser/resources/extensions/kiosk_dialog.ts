@@ -67,7 +67,7 @@ export class ExtensionsKioskDialogElement extends
   private canEditBailout_: boolean;
   private errorAppId_: string|null;
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.kioskBrowserProxy_.initializeKioskAppSettings()

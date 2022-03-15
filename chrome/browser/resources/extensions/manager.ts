@@ -247,7 +247,7 @@ export class ExtensionsManagerElement extends PolymerElement {
     this.navigationListener_ = null;
   }
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.addEventListener('load-error', this.onLoadError_);
@@ -285,7 +285,7 @@ export class ExtensionsManagerElement extends PolymerElement {
     // </if>
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     document.documentElement.classList.remove('loading');
@@ -297,7 +297,7 @@ export class ExtensionsManagerElement extends PolymerElement {
     });
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
     assert(this.navigationListener_);
     assert(navigation.removeListener(this.navigationListener_));
