@@ -404,6 +404,8 @@ class FormStructure {
 
   FormGlobalId global_id() const { return {host_frame_, unique_renderer_id_}; }
 
+  FormVersion version() const { return version_; }
+
   bool ShouldSkipFieldVisibleForTesting(const FormFieldData& field) const {
     return ShouldSkipField(field);
   }
@@ -679,6 +681,10 @@ class FormStructure {
   // A unique identifier of the containing frame.
   // This value must not be leaked to other renderer processes.
   LocalFrameToken host_frame_;
+
+  // A monotonically increasing counter that indicates the generation of the
+  // form.
+  FormVersion version_;
 
   // An identifier of the form that is unique among the forms from the same
   // frame.

@@ -1767,7 +1767,7 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
 
     // TODO(crbug/1203667#c9): Skip if the form has changed in the meantime,
     // which may happen with refills.
-    if (!form_structure->field(i)->SameFieldAs(result.fields[i]))
+    if (form_structure->field(i)->global_id() != result.fields[i].global_id())
       continue;
 
     AutofillField* cached_field = form_structure->field(i);

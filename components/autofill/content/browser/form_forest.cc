@@ -552,8 +552,10 @@ const FormData& FormForest::GetBrowserFormOfRendererForm(
 
   // For calling non-const-qualified getters.
   FormForest& mutable_this = *const_cast<FormForest*>(this);
-  const FormData* form = mutable_this.GetRoot(renderer_form.global_id()).form;
+  FormData* form = mutable_this.GetRoot(renderer_form.global_id()).form;
   AFCHECK(form, return renderer_form);
+  DCHECK_LE(form->version, renderer_form.version);
+  form->version = renderer_form.version;
   return *form;
 }
 

@@ -649,6 +649,7 @@ FormStructure::FormStructure(const FormData& form)
       all_fields_are_passwords_(!form.fields.empty()),
       form_parsed_timestamp_(AutofillTickClock::NowTicks()),
       host_frame_(form.host_frame),
+      version_(form.version),
       unique_renderer_id_(form.unique_renderer_id) {
   // Copy the form fields.
   for (const FormFieldData& field : form.fields) {
@@ -1673,6 +1674,7 @@ FormData FormStructure::ToFormData() const {
   data.is_form_tag = is_form_tag_;
   data.unique_renderer_id = unique_renderer_id_;
   data.host_frame = host_frame_;
+  data.version = version_;
 
   for (const auto& field : fields_) {
     data.fields.push_back(*field);

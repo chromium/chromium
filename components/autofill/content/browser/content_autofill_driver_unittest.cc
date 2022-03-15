@@ -529,6 +529,21 @@ TEST_P(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfForm_AboutScheme) {
   EXPECT_TRUE(form.url.is_empty());
 }
 
+TEST_P(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfForm_Version) {
+  NavigateAndCommit(GURL("about:blank"));
+  ASSERT_TRUE(main_rfh()->GetLastCommittedURL().IsAboutBlank());
+
+  FormData form1;
+  ContentAutofillDriverTestApi(driver_.get())
+      .SetFrameAndFormMetaData(form1, nullptr);
+
+  FormData form2;
+  ContentAutofillDriverTestApi(driver_.get())
+      .SetFrameAndFormMetaData(form2, nullptr);
+
+  EXPECT_LT(form1.version, form2.version);
+}
+
 // Test that forms in "about:" subframes inherit the URL of their next
 // non-"about:" ancestor in FormData::url.
 TEST_P(ContentAutofillDriverTest,

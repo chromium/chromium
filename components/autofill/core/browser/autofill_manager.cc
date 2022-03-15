@@ -43,6 +43,9 @@ AutofillField* FindAutofillFillField(const FormStructure& form,
 // Returns true if |live_form| does not match |cached_form|.
 bool CachedFormNeedsUpdate(const FormData& live_form,
                            const FormStructure& cached_form) {
+  if (cached_form.version() > live_form.version)
+    return false;
+
   if (live_form.fields.size() != cached_form.field_count())
     return true;
 

@@ -709,6 +709,10 @@ void ContentAutofillDriver::UnsetKeyPressHandlerImpl() {
 void ContentAutofillDriver::SetFrameAndFormMetaData(
     FormData& form,
     FormFieldData* optional_field) const {
+  static FormVersion version_counter;
+  ++*version_counter;
+  form.version = version_counter;
+
   form.host_frame =
       LocalFrameToken(render_frame_host_->GetFrameToken().value());
 
