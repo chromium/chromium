@@ -54,29 +54,6 @@ void EnableEsbAndShowSettings(content::WebContents* web_contents) {
       chrome::FindBrowserWithWebContents(web_contents));
 }
 
-class CircleImageSource : public gfx::CanvasImageSource {
- public:
-  CircleImageSource(int size, SkColor color)
-      : gfx::CanvasImageSource(gfx::Size(size, size)), color_(color) {}
-
-  CircleImageSource(const CircleImageSource&) = delete;
-  CircleImageSource& operator=(const CircleImageSource&) = delete;
-
-  ~CircleImageSource() override = default;
-
-  void Draw(gfx::Canvas* canvas) override {
-    float radius = size().width() / 2.0f;
-    cc::PaintFlags flags;
-    flags.setStyle(cc::PaintFlags::kFill_Style);
-    flags.setAntiAlias(true);
-    flags.setColor(color_);
-    canvas->DrawCircle(gfx::PointF(radius, radius), radius, flags);
-  }
-
- private:
-  SkColor color_;
-};
-
 class SuperimposedOffsetImageSource : public gfx::CanvasImageSource {
  public:
   SuperimposedOffsetImageSource(const gfx::ImageSkia& first,
@@ -168,11 +145,14 @@ void TailoredSecurityUnconsentedModal::AddedToWidget() {
       gfx::ImageSkiaOperations::CreateResizedImage(
           avatar_image, skia::ImageOperations::RESIZE_BEST,
           gfx::Size(kAvatarSize, kAvatarSize));
+  // The color used in `circle_mask` is irrelevant as long as it's opaque; only
+  // the alpha channel matters.
+  gfx::ImageSkia circle_mask =
+      gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
+          kAvatarSize / 2, SK_ColorWHITE, gfx::ImageSkia());
   gfx::ImageSkia cropped_avatar_image =
-      gfx::ImageSkiaOperations::CreateMaskedImage(
-          sized_avatar_image,
-          gfx::CanvasImageSource::MakeImageSkia<CircleImageSource>(
-              sized_avatar_image.width(), SK_ColorWHITE));
+      gfx::ImageSkiaOperations::CreateMaskedImage(sized_avatar_image,
+                                                  circle_mask);
   ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
   gfx::ImageSkia header_image =
       *bundle.GetImageSkiaNamed(IDR_TAILORED_SECURITY_UNCONSENTED);
