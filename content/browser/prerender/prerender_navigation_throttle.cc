@@ -22,9 +22,14 @@ namespace {
 
 // Returns true if a the response code is disallowed for pre-rendering (e.g 404,
 // etc), and false otherwise.
-// TODO(crbug.com/1167592): This should be eventually synced with the outcome
-// of https://github.com/jeremyroman/alternate-loading-modes/issues/30.
+// TODO(crbug.com/1299316): Sync with
+// https://github.com/WICG/nav-speculation/issues/138 once it's settled down.
 bool IsDisallowedHttpResponseCode(int response_code) {
+  // Disallow status code 204 and 205 because all error statuses should abandon
+  // prerendering as a default behavior.
+  if (response_code == 204 || response_code == 205) {
+    return true;
+  }
   return response_code < 100 || response_code > 399;
 }
 
