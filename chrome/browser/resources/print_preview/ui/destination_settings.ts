@@ -211,7 +211,7 @@ export class PrintPreviewDestinationSettingsElement extends
   private lastUser_: string = '';
   private tracker_: EventTracker = new EventTracker();
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.destinationStore_ =
@@ -243,7 +243,7 @@ export class PrintPreviewDestinationSettingsElement extends
     // </if>
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
 
     this.destinationStore_!.resetTracker();

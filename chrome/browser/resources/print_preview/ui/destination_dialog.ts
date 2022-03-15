@@ -103,12 +103,12 @@ export class PrintPreviewDestinationDialogElement extends
   private tracker_: EventTracker = new EventTracker();
   private initialized_: boolean = false;
 
-  ready() {
+  override ready() {
     super.ready();
     this.addEventListener('keydown', (e: KeyboardEvent) => this.onKeydown_(e));
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
 
     this.tracker_.removeAll();

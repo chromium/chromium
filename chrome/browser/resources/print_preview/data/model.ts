@@ -569,7 +569,7 @@ export class PrintPreviewModelElement extends PolymerElement {
   private policySettings_: PolicySettings|null = null;
   private lastDestinationCapabilities_: Cdd|null = null;
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     assert(!instance);
@@ -577,7 +577,7 @@ export class PrintPreviewModelElement extends PolymerElement {
     whenReadyResolver.resolve();
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
 
     instance = null;

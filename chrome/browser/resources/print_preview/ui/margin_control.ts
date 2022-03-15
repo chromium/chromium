@@ -126,14 +126,14 @@ export class PrintPreviewMarginControlElement extends
     ];
   }
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.addEventListener('input-change', e => this.onInputChange_(e));
   }
 
   /** @return The input element for InputBehavior. */
-  getInput(): HTMLInputElement {
+  override getInput(): HTMLInputElement {
     return this.$.input;
   }
 

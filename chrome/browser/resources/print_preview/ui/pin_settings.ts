@@ -85,14 +85,14 @@ export class PrintPreviewPinSettingsElement extends
   private inputValid_: boolean;
   private pinEnabled_: boolean;
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.addEventListener('input-change', e => this.onInputChange_(e));
   }
 
   /** @return The cr-input field element for InputMixin. */
-  getInput() {
+  override getInput() {
     return this.$.pinValue;
   }
 

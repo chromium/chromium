@@ -150,13 +150,13 @@ export class PrintPreviewDestinationDialogCrosElement extends
   private initialized_: boolean = false;
   private printServerStore_: PrintServerStore|null = null;
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
 
     this.tracker_.removeAll();
   }
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.addEventListener('keydown', e => this.onKeydown_(e as KeyboardEvent));

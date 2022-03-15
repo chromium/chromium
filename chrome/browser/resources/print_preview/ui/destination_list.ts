@@ -89,14 +89,14 @@ export class PrintPreviewDestinationListElement extends
     ];
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.boundUpdateHeight_ = () => this.updateHeight_();
     window.addEventListener('resize', this.boundUpdateHeight_);
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
 
     window.removeEventListener('resize', this.boundUpdateHeight_!);

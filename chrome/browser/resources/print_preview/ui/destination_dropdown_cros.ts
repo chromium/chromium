@@ -103,19 +103,19 @@ export class PrintPreviewDestinationDropdownCrosElement extends
   private opened_: boolean = false;
   private dropdownRefitPending_: boolean = false;
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.addEventListener('mousemove', e => this.onMouseMove_(e));
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.updateTabIndex_();
   }
 
-  focus() {
+  override focus() {
     this.$.destinationDropdown.focus();
   }
 

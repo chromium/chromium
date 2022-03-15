@@ -166,13 +166,13 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
     }
   }
 
-  ready() {
+  override ready() {
     super.ready();
 
     FocusOutlineManager.forDocument(document);
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     document.documentElement.classList.remove('loading');
@@ -194,7 +194,7 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
         PrintPreviewInitializationEvents.FUNCTION_INITIATED);
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
 
     this.tracker_.removeAll();

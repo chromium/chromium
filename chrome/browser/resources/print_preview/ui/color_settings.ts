@@ -57,7 +57,7 @@ export class PrintPreviewColorSettingsElement extends
   }
 
   /** @param value The new select value. */
-  onProcessSelectChange(value: string) {
+  override onProcessSelectChange(value: string) {
     this.setSetting('color', value === 'color');
   }
 }

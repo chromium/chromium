@@ -88,7 +88,7 @@ export class PrintPreviewDuplexSettingsElement extends
     this.setSetting('duplex', this.$.duplex.checked);
   }
 
-  onProcessSelectChange(value: string) {
+  override onProcessSelectChange(value: string) {
     this.setSetting(
         'duplexShortEdge', value === DuplexMode.SHORT_EDGE.toString());
   }

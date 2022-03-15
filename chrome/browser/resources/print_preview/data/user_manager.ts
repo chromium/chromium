@@ -59,7 +59,7 @@ export class PrintPreviewUserManagerElement extends
   private initialized_: boolean = false;
   private tracker_: EventTracker = new EventTracker();
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
 
     this.tracker_.removeAll();

@@ -36,7 +36,7 @@ export const InputMixin = dedupingMixin(
         /** Timeout used to delay processing of the input, in ms. */
         private timeout_: number|null = null;
 
-        connectedCallback() {
+        override connectedCallback() {
           super.connectedCallback();
           this.getInput().addEventListener('input', () => this.resetTimeout_());
           this.getInput().addEventListener(

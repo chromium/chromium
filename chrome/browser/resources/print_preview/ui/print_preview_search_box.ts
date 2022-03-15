@@ -57,21 +57,21 @@ export class PrintPreviewSearchBoxElement extends
     };
   }
 
-  autofocus: boolean;
+  override autofocus: boolean;
   searchQuery: RegExp|null;
   private lastQuery_: string = '';
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.addEventListener('search-changed', e => this.onSearchChanged_(e));
   }
 
-  getSearchInput(): CrInputElement {
+  override getSearchInput(): CrInputElement {
     return this.$.searchInput;
   }
 
-  focus() {
+  override focus() {
     this.$.searchInput.focus();
   }
 

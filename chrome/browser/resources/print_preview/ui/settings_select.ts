@@ -40,7 +40,7 @@ export class PrintPreviewSettingsSelectElement extends
     };
   }
 
-  ariaLabel: string;
+  override ariaLabel: string;
   capability: CapabilityWithReset&{option: SelectOption[]};
   settingName: string;
   disabled: boolean;
@@ -79,7 +79,7 @@ export class PrintPreviewSettingsSelectElement extends
     return displayName || option.name || '';
   }
 
-  onProcessSelectChange(value: string) {
+  override onProcessSelectChange(value: string) {
     let newValue = null;
     try {
       newValue = JSON.parse(value);

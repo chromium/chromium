@@ -91,7 +91,7 @@ export class PrintPreviewDestinationSelectElement extends
     this.meta_ = new IronMeta({type: 'iconset', value: undefined});
   }
 
-  focus() {
+  override focus() {
     this.shadowRoot!.querySelector<HTMLElement>('.md-select')!.focus();
   }
 
@@ -159,7 +159,7 @@ export class PrintPreviewDestinationSelectElement extends
     return getSelectDropdownBackground(iconset, iconSetAndIcon[1], this);
   }
 
-  onProcessSelectChange(value: string) {
+  override onProcessSelectChange(value: string) {
     this.dispatchEvent(new CustomEvent(
         'selected-option-change',
         {bubbles: true, composed: true, detail: value}));

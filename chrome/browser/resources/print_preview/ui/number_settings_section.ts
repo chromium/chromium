@@ -87,14 +87,14 @@ export class PrintPreviewNumberSettingsSectionElement extends
   private inputString_: string;
   private errorMessage_: string;
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.addEventListener('input-change', e => this.onInputChangeEvent_(e));
   }
 
   /** @return The cr-input field element for InputBehavior. */
-  getInput() {
+  override getInput() {
     return this.$.userValue;
   }
 

@@ -67,13 +67,13 @@ export class PrintPreviewAdvancedSettingsDialogElement extends
   private bubbles_: Map<HTMLElement, number> = new Map();
   private metrics_: MetricsContext = MetricsContext.printSettingsUi();
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.addEventListener('keydown', e => this.onKeydown_(e as KeyboardEvent));
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.metrics_.record(PrintSettingsUiBucket.ADVANCED_SETTINGS_DIALOG_SHOWN);

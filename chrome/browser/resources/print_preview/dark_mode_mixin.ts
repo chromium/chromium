@@ -24,7 +24,7 @@ export const DarkModeMixin = dedupingMixin(
           };
         }
 
-        connectedCallback() {
+        override connectedCallback() {
           super.connectedCallback();
           if (!this.boundOnChange_) {
             this.boundOnChange_ = () => this.onChange_();
@@ -32,7 +32,7 @@ export const DarkModeMixin = dedupingMixin(
           prefersDark.addListener(this.boundOnChange_);
         }
 
-        disconnectedCallback() {
+        override disconnectedCallback() {
           super.disconnectedCallback();
           prefersDark.removeListener(this.boundOnChange_);
           this.boundOnChange_ = null;

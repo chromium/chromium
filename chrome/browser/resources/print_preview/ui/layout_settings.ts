@@ -41,7 +41,7 @@ export class PrintPreviewLayoutSettingsElement extends
     this.selectedValue = newValue ? 'landscape' : 'portrait';
   }
 
-  onProcessSelectChange(value: string) {
+  override onProcessSelectChange(value: string) {
     this.setSetting('layout', value === 'landscape');
   }
 }

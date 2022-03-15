@@ -46,7 +46,7 @@ export class PrintPreviewPagesPerSheetSettingsElement extends
     this.selectedValue = newValue.toString();
   }
 
-  onProcessSelectChange(value: string) {
+  override onProcessSelectChange(value: string) {
     this.setSetting('pagesPerSheet', parseInt(value, 10));
   }
 }

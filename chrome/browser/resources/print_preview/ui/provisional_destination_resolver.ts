@@ -82,7 +82,7 @@ export class PrintPreviewProvisionalDestinationResolverElement extends
   private state_: ResolverState;
   private promiseResolver_: PromiseResolver<Destination>|null = null;
 
-  ready() {
+  override ready() {
     super.ready();
     this.addEventListener('keydown', (e: KeyboardEvent) => this.onKeydown_(e));
   }

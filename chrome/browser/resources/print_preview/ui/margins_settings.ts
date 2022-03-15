@@ -93,7 +93,7 @@ export class PrintPreviewMarginsSettingsElement extends
     this.selectedValue = newValue.toString();
   }
 
-  onProcessSelectChange(value: string) {
+  override onProcessSelectChange(value: string) {
     this.setSetting('margins', parseInt(value, 10));
   }
 

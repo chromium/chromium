@@ -133,7 +133,7 @@ export class PrintPreviewPreviewAreaElement extends
   private pluginProxy_: PluginProxy = PluginProxyImpl.getInstance();
   private keyEventCallback_: ((e: KeyboardEvent) => void)|null = null;
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.nativeLayer_ = NativeLayerImpl.getInstance();

@@ -107,7 +107,7 @@ export class PrintPreviewScalingSettingsElement extends
    */
   private userSelectedCustomScaling_: boolean = false;
 
-  onProcessSelectChange(value: string) {
+  override onProcessSelectChange(value: string) {
     const isCustom = value === ScalingType.CUSTOM.toString();
     if (isCustom && !this.customScalingSettingSet_) {
       this.userSelectedCustomScaling_ = true;

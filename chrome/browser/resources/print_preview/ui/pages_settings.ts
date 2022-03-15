@@ -159,7 +159,7 @@ export class PrintPreviewPagesSettingsElement extends
    */
   private resorationValue_: PagesValue = PagesValue.ALL;
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.addEventListener('input-change', e => this.onInputChange_(e));
@@ -169,14 +169,14 @@ export class PrintPreviewPagesSettingsElement extends
    * Initialize |selectedValue| in connectedCallback() since this doesn't
    * observe settings.pages, because settings.pages is not sticky.
    */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.selectedValue = PagesValue.ALL.toString();
   }
 
   /** The cr-input field element for InputMixin. */
-  getInput() {
+  override getInput() {
     return this.$.pageSettingsCustomInput;
   }
 
@@ -193,7 +193,7 @@ export class PrintPreviewPagesSettingsElement extends
     this.inputString_ = e.detail;
   }
 
-  onProcessSelectChange(value: string) {
+  override onProcessSelectChange(value: string) {
     this.selection_ = parseInt(value, 10);
   }
 

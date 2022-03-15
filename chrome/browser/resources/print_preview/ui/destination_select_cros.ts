@@ -110,7 +110,7 @@ export class PrintPreviewDestinationSelectCrosElement extends
   private isCurrentDestinationCrosLocal_: boolean;
   private isDarkModeActive_: boolean;
 
-  focus() {
+  override focus() {
     this.shadowRoot!.querySelector(
                         'print-preview-destination-dropdown-cros')!.focus();
   }
@@ -177,7 +177,7 @@ export class PrintPreviewDestinationSelectCrosElement extends
         {bubbles: true, composed: true, detail: value}));
   }
 
-  onProcessSelectChange(value: string) {
+  override onProcessSelectChange(value: string) {
     this.fireSelectedOptionChange_(value);
   }
 

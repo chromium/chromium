@@ -104,8 +104,7 @@ export class PrintPreviewDocumentInfoElement extends
   printableArea: PrintableArea;
   private isInitialized_: boolean = false;
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.addWebUIListener(
