@@ -62,7 +62,7 @@ class NET_EXPORT_PRIVATE MappedFile : public File {
 #endif
   void* buffer_;  // Address of the memory mapped buffer.
   size_t view_size_;  // Size of the memory pointed by buffer_.
-#if BUILDFLAG(POSIX_AVOID_MMAP)
+#if BUILDFLAG(POSIX_BYPASS_MMAP)
   raw_ptr<void>
       snapshot_;  // Copy of the buffer taken when it was last flushed.
 #endif
