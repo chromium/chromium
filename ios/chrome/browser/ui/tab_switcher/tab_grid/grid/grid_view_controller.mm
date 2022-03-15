@@ -338,23 +338,35 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
         NSIndexSet* allSectionsIndexSet =
             [NSIndexSet indexSetWithIndexesInRange:allSectionsRange];
         [strongSelf.collectionView reloadSections:allSectionsIndexSet];
-        if (mode == TabGridModeNormal) {
-          // After transition from other modes to the normal mode, the
-          // selection border doesn't show around the selection item. The
-          // collection view needs to be updated with the selected item again
-          // for it to appear correctly.
-          [self.collectionView
-              selectItemAtIndexPath:CreateIndexPath(self.selectedIndex)
-                           animated:NO
-                     scrollPosition:UICollectionViewScrollPositionTop];
+        // Scroll to the selected item here, so the animation of reloading and
+        // scrolling happens at once.
+        NSUInteger selectedIndex = strongSelf.selectedIndex;
+        if (mode == TabGridModeNormal && selectedIndex != NSNotFound) {
+          [strongSelf.collectionView
+              scrollToItemAtIndexPath:CreateIndexPath(selectedIndex)
+                     atScrollPosition:UICollectionViewScrollPositionTop
+                             animated:NO];
         }
       }
                completion:nil];
 
-  // Clear items when exiting selection mode.
   if (mode == TabGridModeNormal) {
+    // Clear items when exiting selection mode.
     [self.selectedEditingItemIDs removeAllObjects];
     [self.selectedSharableEditingItemIDs removeAllObjects];
+
+    // After transition from other modes to the normal mode, the
+    // selection border doesn't show around the selection item. The
+    // collection view needs to be updated with the selected item again
+    // for it to appear correctly.
+    NSUInteger selectedIndex = self.selectedIndex;
+    if (selectedIndex != NSNotFound) {
+      [self.collectionView
+          selectItemAtIndexPath:CreateIndexPath(selectedIndex)
+                       animated:NO
+                 scrollPosition:UICollectionViewScrollPositionNone];
+      [self updateFractionVisibleOfLastItem];
+    }
     if (IsTabsSearchEnabled())
       self.searchText = nil;
   }
@@ -997,7 +1009,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       [self updateSearchResultsHeader];
     [self.collectionView
         setContentOffset:CGPointMake(
-                             0, -self.collectionView.adjustedContentInset.top)
+                             -self.collectionView.adjustedContentInset.left,
+                             -self.collectionView.adjustedContentInset.top)
                 animated:NO];
   }
 }

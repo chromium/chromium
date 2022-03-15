@@ -642,6 +642,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   TabGridMode previousMode = _tabGridMode;
   _tabGridMode = mode;
 
+  // Updating toolbars first before the controllers so when they set their
+  // content they will account for the updated insets of the toolbars.
+  self.topToolbar.mode = self.tabGridMode;
+  self.bottomToolbar.mode = self.tabGridMode;
+
   // Resetting search state when leaving the search mode should happen before
   // changing the mode in the controllers so when they do the cleanup for the
   // new mode they will have the correct items (tabs).
@@ -653,11 +658,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     [self.incognitoTabsDelegate resetToAllItems];
     [self hideScrim];
   }
-
-  self.bottomToolbar.mode = self.tabGridMode;
+  [self setInsetForGridViews];
   self.regularTabsViewController.mode = self.tabGridMode;
   self.incognitoTabsViewController.mode = self.tabGridMode;
-  self.topToolbar.mode = self.tabGridMode;
 
   self.scrollView.scrollEnabled = (self.tabGridMode == TabGridModeNormal);
   if (mode == TabGridModeSelection)
