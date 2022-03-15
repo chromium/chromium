@@ -20,6 +20,8 @@ public class AwJsContext implements AutoCloseable {
     /** Used to report the results of the JS evaluation. */
     public interface ExecutionCallback {
         void reportResult(String result);
+
+        void reportError(String error);
     }
 
     AwJsContext(IJsSandboxContext jsContextStub) {
@@ -41,6 +43,11 @@ public class AwJsContext implements AutoCloseable {
             @Override
             public void reportResult(String result) {
                 callback.reportResult(result);
+            }
+
+            @Override
+            public void reportError(String error) {
+                callback.reportError(error);
             }
         };
         try {

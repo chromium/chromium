@@ -10,4 +10,5 @@ package org.chromium.android_webview.js.common;
  */
 oneway interface IJsSandboxContextCallback {
     void reportResult(in String result);
+    void reportError(in String error);
 }

@@ -21,10 +21,17 @@ public class JsSandboxServiceTest {
     private class TestExecutionCallback implements AwJsContext.ExecutionCallback {
         public CallbackHelper helper = new CallbackHelper();
         public String result;
+        public String error;
 
         @Override
         public void reportResult(String result) {
             this.result = result;
+            helper.notifyCalled();
+        }
+
+        @Override
+        public void reportError(String error) {
+            this.error = error;
             helper.notifyCalled();
         }
     }
@@ -66,5 +73,21 @@ public class JsSandboxServiceTest {
 
         callback.helper.waitForCallback("Timed out waiting for reportResult() to be called", 0);
         Assert.assertEquals(expected, callback.result);
+    }
+
+    @Test
+    @MediumTest
+    public void testJsEvaluationError() throws Throwable {
+        final String smallCase = "ERROR";
+        final String expected = "There has been an error.";
+        TestExecutionCallback callback = new TestExecutionCallback();
+
+        AwJsSandbox.newConnectedInstance(jsSandbox -> {
+            AwJsContext jsContext = jsSandbox.createContext();
+            jsContext.evaluateJavascript(smallCase, callback);
+        });
+
+        callback.helper.waitForCallback("Timed out waiting for reportResult() to be called", 0);
+        Assert.assertEquals(expected, callback.error);
     }
 }

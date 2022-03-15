@@ -21,18 +21,27 @@ public class JsSandboxContext extends IJsSandboxContext.Stub {
     private boolean mIsClosed = false;
 
     @Override
-    public void evaluateJavascript(String serialisedJS, IJsSandboxContextCallback callback) {
+    public void evaluateJavascript(String code, IJsSandboxContextCallback callback) {
         if (mIsClosed) {
             throw new IllegalStateException("evaluateJavascript() called after close()");
         }
         // Just posting to the mainLooper for now.
         Handler handler = new Handler(Looper.getMainLooper());
         handler.postDelayed(() -> {
-            String result = serialisedJS.toUpperCase();
-            try {
-                callback.reportResult(result);
-            } catch (RemoteException e) {
-                Log.e(TAG, "reporting result failed", e);
+            // Currently just hardcoded to return error string when it encounters "ERROR" as input.
+            if (code.equals("ERROR")) {
+                try {
+                    callback.reportError("There has been an error.");
+                } catch (RemoteException e) {
+                    Log.e(TAG, "reporting result failed", e);
+                }
+            } else {
+                String result = code.toUpperCase();
+                try {
+                    callback.reportResult(result);
+                } catch (RemoteException e) {
+                    Log.e(TAG, "reporting result failed", e);
+                }
             }
         }, 100);
     }
