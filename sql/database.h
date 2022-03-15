@@ -232,7 +232,8 @@ class COMPONENT_EXPORT(SQL) Database {
   // The callback will never be called after the Database instance is destroyed.
   using ErrorCallback = base::RepeatingCallback<void(int, Statement*)>;
   void set_error_callback(ErrorCallback callback) {
-    DCHECK(error_callback_.is_null() || callback.is_null())
+    DCHECK(!callback.is_null()) << "Use reset_error_callback() explicitly";
+    DCHECK(error_callback_.is_null())
         << "Overwriting previously set error callback";
     error_callback_ = std::move(callback);
   }
