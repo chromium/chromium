@@ -228,6 +228,7 @@ if (enable_pdf) {
 
     deps = [
       "//base",
+      "//skia",
       "//ui/gfx/geometry",
     ]
   }

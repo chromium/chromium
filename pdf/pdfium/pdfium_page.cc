@@ -31,6 +31,9 @@
 #include "third_party/pdfium/public/cpp/fpdf_scopers.h"
 #include "third_party/pdfium/public/fpdf_annot.h"
 #include "third_party/pdfium/public/fpdf_catalog.h"
+#include "third_party/skia/include/core/SkImageInfo.h"
+#include "third_party/skia/include/core/SkPixmap.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
@@ -683,6 +686,7 @@ std::vector<AccessibilityImageInfo> PDFiumPage::GetImageInfo(
     cur_info.bounds =
         gfx::RectF(image.bounding_rect.x(), image.bounding_rect.y(),
                    image.bounding_rect.width(), image.bounding_rect.height());
+    cur_info.image_data = image.image_data;
     image_info.push_back(std::move(cur_info));
   }
   return image_info;
@@ -1160,6 +1164,7 @@ void PDFiumPage::CalculateImages() {
       continue;
 
     Image image;
+    image.page_object_index = i;
     image.bounding_rect = PageToScreen(gfx::Point(), 1.0, left, top, right,
                                        bottom, PageOrientation::kOriginal);
 
@@ -1182,6 +1187,33 @@ void PDFiumPage::CalculateImages() {
 
   if (!marked_content_id_image_map.empty())
     PopulateImageAltText(marked_content_id_image_map);
+
+  if (!features::IsPdfOcrEnabled())
+    return;
+
+  // If requested by the user, we store the raw image data so that the OCR
+  // service can try and retrieve textual and layout information from the image.
+  // This is because alt text might be empty, or the PDF might simply be
+  // untagged for accessibility.
+  for (Image& image : images_) {
+    if (!image.alt_text.empty())
+      continue;
+
+    FPDF_PAGEOBJECT page_object =
+        FPDFPage_GetObject(page, image.page_object_index);
+    ScopedFPDFBitmap bitmap(
+        FPDFImageObj_GetRenderedBitmap(engine_->doc(), page, page_object));
+    if (!bitmap)
+      continue;
+
+    SkImageInfo info = SkImageInfo::Make(
+        FPDFBitmap_GetWidth(bitmap.get()), FPDFBitmap_GetHeight(bitmap.get()),
+        kBGRA_8888_SkColorType, kOpaque_SkAlphaType);
+    const size_t row_bytes = FPDFBitmap_GetStride(bitmap.get());
+    SkPixmap pixels(info, FPDFBitmap_GetBuffer(bitmap.get()), row_bytes);
+    if (image.image_data.tryAllocPixels(info, row_bytes))
+      image.image_data.writePixels(pixels);
+  }
 }
 
 void PDFiumPage::PopulateImageAltText(

@@ -13,6 +13,7 @@ include_rules = [
   "+pdf/pdf_view_web_plugin.h",
   "+printing/buildflags/buildflags.h",
   "+third_party/blink/public",
+  "+third_party/skia/include/core",
   "+ui/accessibility",
   "+ui/base",
 ]

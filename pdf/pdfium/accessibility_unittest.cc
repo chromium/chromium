@@ -114,9 +114,9 @@ TEST_F(AccessibilityTest, GetAccessibilityPage) {
 
 TEST_F(AccessibilityTest, GetAccessibilityImageInfo) {
   static const AccessibilityImageInfo kExpectedImageInfo[] = {
-      {"Image 1", 0, {380, 78, 67, 68}},
-      {"Image 2", 0, {380, 385, 27, 28}},
-      {"Image 3", 0, {380, 678, 1, 1}}};
+      {"Image 1", 0, {380, 78, 67, 68}, {}},
+      {"Image 2", 0, {380, 385, 27, 28}, {}},
+      {"Image 3", 0, {380, 678, 1, 1}, {}}};
 
   TestClient client;
   std::unique_ptr<PDFiumEngine> engine =

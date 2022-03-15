@@ -21,6 +21,7 @@
 #include "third_party/pdfium/public/fpdf_doc.h"
 #include "third_party/pdfium/public/fpdf_formfill.h"
 #include "third_party/pdfium/public/fpdf_text.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -75,8 +76,11 @@ class PDFiumPage {
   // bounding boxes.
   std::vector<AccessibilityLinkInfo> GetLinkInfo(
       const std::vector<AccessibilityTextRunInfo>& text_runs);
-
-  // For all the images on the page, get their alt texts and bounding boxes.
+  // For all the images on the page, get their alt texts and bounding boxes. If
+  // the alt text is empty or unavailable, and if the user has requested that
+  // the OCR service tag the PDF so that it is made accessible, transfer the raw
+  // image pixels in the `image_data` field. Otherwise do not populate the
+  // `image_data` field.
   std::vector<AccessibilityImageInfo> GetImageInfo(uint32_t text_run_count);
 
   // For all the highlights on the page, get their underlying text ranges and
@@ -220,6 +224,7 @@ class PDFiumPage {
   FRIEND_TEST_ALL_PREFIXES(PDFiumPageHighlightTest, PopulateHighlights);
   FRIEND_TEST_ALL_PREFIXES(PDFiumPageImageTest, CalculateImages);
   FRIEND_TEST_ALL_PREFIXES(PDFiumPageImageTest, ImageAltText);
+  FRIEND_TEST_ALL_PREFIXES(PDFiumPageImageDataTest, ImageData);
   FRIEND_TEST_ALL_PREFIXES(PDFiumPageLinkTest, AnnotLinkGeneration);
   FRIEND_TEST_ALL_PREFIXES(PDFiumPageLinkTest, GetLinkTarget);
   FRIEND_TEST_ALL_PREFIXES(PDFiumPageLinkTest, LinkGeneration);
@@ -256,9 +261,13 @@ class PDFiumPage {
     Image(const Image& other);
     ~Image();
 
-    gfx::Rect bounding_rect;
-    // Alt text is available only for tagged PDFs.
+    int page_object_index;
+    // Alt text is available only for PDFs that are tagged for accessibility.
     std::string alt_text;
+    gfx::Rect bounding_rect;
+    // Image data is only stored if the user has requested that the OCR service
+    // try to retrieve textual and layout information from this image.
+    SkBitmap image_data;
   };
 
   // Represents a highlight within the page.

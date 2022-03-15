@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -130,18 +131,25 @@ struct AccessibilityImageInfo {
   AccessibilityImageInfo();
   AccessibilityImageInfo(const std::string& alt_text,
                          uint32_t text_run_index,
-                         const gfx::RectF& bounds);
+                         const gfx::RectF& bounds,
+                         const SkBitmap& image_data);
   AccessibilityImageInfo(const AccessibilityImageInfo& other);
   ~AccessibilityImageInfo();
 
   // Alternate text for the image provided by PDF.
   std::string alt_text;
+
   // We anchor the image to a char index, this denotes the text run before
   // which the image should be inserted in the accessibility tree. The text run
   // at this index should contain the anchor char index.
   uint32_t text_run_index = 0;
+
   // Bounding box of the image.
   gfx::RectF bounds;
+
+  // Only populated if `alt_text` is empty or unavailable, and if the user has
+  // requested that the OCR service tag the PDF so that it is made accessible.
+  SkBitmap image_data;
 };
 
 struct AccessibilityHighlightInfo {

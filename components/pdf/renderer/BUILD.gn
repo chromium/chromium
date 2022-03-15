@@ -39,6 +39,7 @@ static_library("renderer") {
     "//pdf:features",
     "//pdf:pdf_view_web_plugin",
     "//printing/buildflags",
+    "//skia",
     "//third_party/blink/public:blink",
     "//third_party/blink/public/strings:accessibility_strings",
     "//third_party/icu",

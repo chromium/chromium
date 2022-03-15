@@ -1,5 +1,6 @@
 include_rules = [
   "+components/services/font/public/cpp",
   "+third_party/pdfium/public",
+  "+ui/accessibility",
   "+ui/gfx/codec",
 ]

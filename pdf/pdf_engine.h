@@ -391,7 +391,10 @@ class PDFEngine {
       int page_index,
       const std::vector<AccessibilityTextRunInfo>& text_runs) = 0;
   // For all the images in page `page_index`, get their alt texts and bounding
-  // boxes.
+  // boxes. If the alt text is empty or unavailable, and if the user has
+  // requested that the OCR service tag the PDF so that it is made accessible,
+  // transfer the raw image pixels in the `image_data` field. Otherwise do not
+  // populate the `image_data` field.
   virtual std::vector<AccessibilityImageInfo> GetImageInfo(
       int page_index,
       uint32_t text_run_count) = 0;
