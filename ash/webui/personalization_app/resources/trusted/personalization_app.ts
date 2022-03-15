@@ -9,7 +9,6 @@
  */
 
 import '/strings.m.js';
-import './ambient/album_item_element.js';
 import './ambient/album_list_element.js';
 import './ambient/albums_subpage_element.js';
 import './ambient/animation_theme_item_element.js';

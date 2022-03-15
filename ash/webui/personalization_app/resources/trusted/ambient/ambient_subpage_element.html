@@ -1,7 +1,4 @@
 <style>
-  #mainSettings[hidden] {
-    display: none;
-  }
   #mainSettings {
     display: grid;
     grid-template-areas:
@@ -43,6 +40,18 @@
     grid-area: weather;
     margin: 0 8px;
   }
+  #albumsSubpage {
+    display: grid;
+    grid-template-areas:
+      '. . albums-subpage . .';
+    grid-template-columns: 1fr 16px minmax(568px, 920px) 16px 1fr;
+    grid-template-rows: auto;
+    position: relative;
+    width: 100%;
+  }
+  albums-subpage {
+    grid-area: albums-subpage;
+  }
 </style>
 <div id="container">
   <template is="dom-if" if="[[shouldShowMainSettings_(path)]]">
@@ -79,9 +88,11 @@
     </div>
   </template>
   <template is="dom-if" if="[[shouldShowAlbums_(path, ambientModeEnabled_)]]">
-    <albums-subpage disabled="[[disabled_]]" path="[[path]]"
-        topic-source="[[getTopicSource_(queryParams)]]"
-        albums="[[getAlbums_(albums_, queryParams)]]">
-    </albums-subpage>
+    <div id="albumsSubpage">
+      <albums-subpage disabled="[[disabled_]]" path="[[path]]"
+          topic-source="[[getTopicSource_(queryParams)]]"
+          albums="[[getAlbums_(albums_, queryParams)]]">
+      </albums-subpage>
+    </div>
   </template>
 </div>

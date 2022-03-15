@@ -22,7 +22,7 @@ import {AmbientModeAlbum, TopicSource} from '../personalization_app.mojom-webui.
 import {Paths, PersonalizationRouter} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
-import {AlbumSelectedChangedEvent} from './album_item_element.js';
+import {AlbumSelectedChangedEvent} from './album_list_element.js';
 import {setAlbumSelected} from './ambient_controller.js';
 import {getAmbientProvider} from './ambient_interface_provider.js';
 
@@ -62,7 +62,7 @@ export class AlbumsSubpage extends WithPersonalizationStore {
 
   private showArtAlbumDialog_: boolean;
 
-  ready() {
+  override ready() {
     super.ready();
     this.addEventListener(
         'album_selected_changed', this.onAlbumSelectedChanged_.bind(this));

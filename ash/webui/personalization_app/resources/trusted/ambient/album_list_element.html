@@ -1,6 +1,6 @@
-<style include="cr-shared-style">
+<style include="trusted-style common-style">
   :host {
-    display: block;
+    overflow: hidden
   }
 
   paper-spinner-lite {
@@ -10,15 +10,23 @@
     width: 28px;
   }
 
-  iron-list > :focus {
-    background-color: var(--cr-focused-item-color);
+  iron-list {
+    height: 100%;
+    width: 100%;
   }
 </style>
-<iron-list scroll-target="document" grid items="[[albums]]">
+
+<iron-list id="grid" items="[[albums]]" as="album" grid>
   <template>
-    <album-item album="[[item]]" checked="{{item.checked}}"
-        topic-source="[[topicSource]]" tabindex$="[[tabIndex]]"
-        role="checkbox">
-    </album-item>
+    <wallpaper-grid-item
+      class="album"
+      image-src="[[album.url.url]]"
+      on-click="onAlbumSelected_"
+      on-keypress="onAlbumSelected_"
+      primary-text="[[album.title]]"
+      secondary-text="[[getSecondaryText_(album, topicSource)]]"
+      selected$="[[isAlbumSelected_(album, albums)]]"
+      tabindex$="[[tabIndex]]">
+    </wallpaper-grid-item>
   </template>
 </iron-list>
