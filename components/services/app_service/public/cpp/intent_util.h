@@ -108,6 +108,20 @@ bool IsShareIntent(const apps::mojom::IntentPtr& intent);
 // https://android.googlesource.com/platform/frameworks/base.git/+/e93165456c3c28278f275566bd90bfbcf1a0e5f7/core/java/android/os/PatternMatcher.java#186
 bool MatchGlob(const std::string& value, const std::string& pattern);
 
+// TODO(crbug.com/1092784): Handle file path with extension with mime type.
+// Unlike Android mime type matching logic, if the intent mime type has *, it
+// can only match with *, not anything. The reason for this is the way we find
+// the common mime type for multiple files. It uses * to represent more than one
+// types in the list, which will cause an issue if we treat that as we want to
+// match with any filter. e.g. If we select a .zip, .jep and a .txt, the common
+// mime type will be */*, with Android matching logic, it will match with filter
+// that has mime type video, which is not what we expected.
+bool MimeTypeMatched(const std::string& intent_mime_type,
+                     const std::string& filter_mime_type);
+
+bool ExtensionMatched(const std::string& file_name,
+                      const std::string& filter_extension);
+
 // Check if the intent only mean to share to Google Drive.
 bool OnlyShareToDrive(const apps::mojom::IntentPtr& intent);
 

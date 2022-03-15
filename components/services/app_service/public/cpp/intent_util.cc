@@ -80,74 +80,6 @@ bool ComponentMatched(const std::string& intent_component,
          intent_component == filter_component;
 }
 
-// TODO(crbug.com/1092784): Handle file path with extension with mime type.
-// Unlike Android mime type matching logic, if the intent mime type has *, it
-// can only match with *, not anything. The reason for this is the way we find
-// the common mime type for multiple files. It uses * to represent more than one
-// types in the list, which will cause an issue if we treat that as we want to
-// match with any filter. e.g. If we select a .zip, .jep and a .txt, the common
-// mime type will be */*, with Android matching logic, it will match with filter
-// that has mime type video, which is not what we expected.
-bool MimeTypeMatched(const std::string& intent_mime_type,
-                     const std::string& filter_mime_type) {
-  std::vector<std::string> intent_components =
-      base::SplitString(intent_mime_type, kMimeTypeSeparator,
-                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-
-  std::vector<std::string> filter_components =
-      base::SplitString(filter_mime_type, kMimeTypeSeparator,
-                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-
-  if (intent_components.size() > kMimeTypeComponentSize ||
-      filter_components.size() > kMimeTypeComponentSize ||
-      intent_components.size() == 0 || filter_components.size() == 0) {
-    return false;
-  }
-
-  // If the filter component only contain main mime type, check if main type
-  // matches.
-  if (filter_components.size() == 1) {
-    return ComponentMatched(intent_components[0], filter_components[0]);
-  }
-
-  // If the intent component only contain main mime type, complete the
-  // mime type.
-  if (intent_components.size() == 1) {
-    intent_components.push_back(kWildCardAny);
-  }
-
-  // Both intent and intent filter can use wildcard for mime type.
-  for (size_t i = 0; i < kMimeTypeComponentSize; i++) {
-    if (!ComponentMatched(intent_components[i], filter_components[i])) {
-      return false;
-    }
-  }
-  return true;
-}
-
-bool ExtensionMatched(const std::string& file_name,
-                      const std::string& filter_extension) {
-  if (filter_extension == kWildCardAny)
-    return true;
-
-  // Normalise to have a preceding ".".
-  std::string normalised_extension = filter_extension;
-  if (filter_extension.length() > 0 && filter_extension[0] != '.') {
-    normalised_extension = '.' + normalised_extension;
-  }
-  base::FilePath::StringType handler_extension =
-      base::FilePath::FromUTF8Unsafe(normalised_extension).Extension();
-
-  base::FilePath file_path = base::FilePath::FromUTF8Unsafe(file_name);
-
-  // Accept files whose extension or combined extension (e.g. ".tar.gz")
-  // match the filter extension.
-  return base::FilePath::CompareEqualIgnoreCase(handler_extension,
-                                                file_path.Extension()) ||
-         base::FilePath::CompareEqualIgnoreCase(handler_extension,
-                                                file_path.FinalExtension());
-}
-
 }  // namespace
 
 namespace apps_util {
@@ -525,6 +457,66 @@ bool MatchGlob(const std::string& value, const std::string& pattern) {
   return false;
 
 #undef GET_CHAR
+}
+
+bool MimeTypeMatched(const std::string& intent_mime_type,
+                     const std::string& filter_mime_type) {
+  std::vector<std::string> intent_components =
+      base::SplitString(intent_mime_type, kMimeTypeSeparator,
+                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+  std::vector<std::string> filter_components =
+      base::SplitString(filter_mime_type, kMimeTypeSeparator,
+                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+  if (intent_components.size() > kMimeTypeComponentSize ||
+      filter_components.size() > kMimeTypeComponentSize ||
+      intent_components.size() == 0 || filter_components.size() == 0) {
+    return false;
+  }
+
+  // If the filter component only contain main mime type, check if main type
+  // matches.
+  if (filter_components.size() == 1) {
+    return ComponentMatched(intent_components[0], filter_components[0]);
+  }
+
+  // If the intent component only contain main mime type, complete the
+  // mime type.
+  if (intent_components.size() == 1) {
+    intent_components.push_back(kWildCardAny);
+  }
+
+  // Both intent and intent filter can use wildcard for mime type.
+  for (size_t i = 0; i < kMimeTypeComponentSize; i++) {
+    if (!ComponentMatched(intent_components[i], filter_components[i])) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool ExtensionMatched(const std::string& file_name,
+                      const std::string& filter_extension) {
+  if (filter_extension == kWildCardAny)
+    return true;
+
+  // Normalise to have a preceding ".".
+  std::string normalised_extension = filter_extension;
+  if (filter_extension.length() > 0 && filter_extension[0] != '.') {
+    normalised_extension = '.' + normalised_extension;
+  }
+  base::FilePath::StringType handler_extension =
+      base::FilePath::FromUTF8Unsafe(normalised_extension).Extension();
+
+  base::FilePath file_path = base::FilePath::FromUTF8Unsafe(file_name);
+
+  // Accept files whose extension or combined extension (e.g. ".tar.gz")
+  // match the filter extension.
+  return base::FilePath::CompareEqualIgnoreCase(handler_extension,
+                                                file_path.Extension()) ||
+         base::FilePath::CompareEqualIgnoreCase(handler_extension,
+                                                file_path.FinalExtension());
 }
 
 bool OnlyShareToDrive(const apps::mojom::IntentPtr& intent) {
