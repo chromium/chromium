@@ -48,14 +48,14 @@ class GIN_EXPORT ShellRunner : public Runner {
   // context by creating an instance of Runner::Scope on the stack.
 
   // Runner overrides:
-  void Run(const std::string& source,
-           const std::string& resource_name) override;
+  v8::MaybeLocal<v8::Value> Run(const std::string& source,
+                                const std::string& resource_name) override;
   ContextHolder* GetContextHolder() override;
 
  private:
   friend class Scope;
 
-  void Run(v8::Local<v8::Script> script);
+  v8::MaybeLocal<v8::Value> Run(v8::Local<v8::Script> script);
 
   raw_ptr<ShellRunnerDelegate> delegate_;
 

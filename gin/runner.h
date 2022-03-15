@@ -25,8 +25,8 @@ class GIN_EXPORT Runner {
 
   // Before running script in this context, you'll need to enter the runner's
   // context by creating an instance of Runner::Scope on the stack.
-  virtual void Run(const std::string& source,
-                   const std::string& resource_name) = 0;
+  virtual v8::MaybeLocal<v8::Value> Run(const std::string& source,
+                                        const std::string& resource_name) = 0;
   virtual ContextHolder* GetContextHolder() = 0;
 
   v8::Local<v8::Object> global() {

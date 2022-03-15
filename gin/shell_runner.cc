@@ -62,8 +62,8 @@ ShellRunner::ShellRunner(ShellRunnerDelegate* delegate, Isolate* isolate)
 
 ShellRunner::~ShellRunner() = default;
 
-void ShellRunner::Run(const std::string& source,
-                      const std::string& resource_name) {
+v8::MaybeLocal<v8::Value> ShellRunner::Run(const std::string& source,
+                                           const std::string& resource_name) {
   v8::Isolate* isolate = GetContextHolder()->isolate();
   TryCatch try_catch(isolate);
   v8::ScriptOrigin origin(isolate, StringToV8(isolate, resource_name));
@@ -72,27 +72,27 @@ void ShellRunner::Run(const std::string& source,
   v8::Local<Script> script;
   if (!maybe_script.ToLocal(&script)) {
     delegate_->UnhandledException(this, try_catch);
-    return;
+    return v8::MaybeLocal<v8::Value>();
   }
 
-  Run(script);
+  return Run(script);
 }
 
 ContextHolder* ShellRunner::GetContextHolder() {
   return context_holder_.get();
 }
 
-void ShellRunner::Run(v8::Local<Script> script) {
+v8::MaybeLocal<v8::Value> ShellRunner::Run(v8::Local<Script> script) {
   TryCatch try_catch(GetContextHolder()->isolate());
   delegate_->WillRunScript(this);
 
   auto maybe = script->Run(GetContextHolder()->context());
 
   delegate_->DidRunScript(this);
-  v8::Local<v8::Value> result;
-  if (!maybe.ToLocal(&result)) {
+  if (maybe.IsEmpty()) {
     delegate_->UnhandledException(this, try_catch);
   }
+  return maybe;
 }
 
 }  // namespace gin
