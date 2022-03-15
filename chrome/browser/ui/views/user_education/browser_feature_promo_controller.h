@@ -89,7 +89,7 @@ class BrowserFeaturePromoController : public FeaturePromoControllerCommon {
   // accelerator to focus the help bubble.
   std::u16string GetFocusHelpBubbleScreenReaderHint(
       FeaturePromoSpecification::PromoType promo_type,
-      const ui::TrackedElement* anchor_element,
+      ui::TrackedElement* anchor_element,
       bool is_critical_promo) const override;
 
  private:

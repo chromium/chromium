@@ -254,7 +254,7 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   // accelerator to focus the help bubble.
   virtual std::u16string GetFocusHelpBubbleScreenReaderHint(
       FeaturePromoSpecification::PromoType promo_type,
-      const ui::TrackedElement* anchor_element,
+      ui::TrackedElement* anchor_element,
       bool is_critical_promo) const = 0;
 
   FeaturePromoRegistry* registry() { return registry_; }

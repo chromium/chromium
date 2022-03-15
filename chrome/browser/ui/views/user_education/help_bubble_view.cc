@@ -546,14 +546,17 @@ HelpBubbleView::HelpBubbleView(views::View* anchor_view,
       views::FlexSpecification(button_layout.GetDefaultFlexRule()));
 
   // Want a consistent initial focused view if one is available.
-  if (close_button)
-    SetInitiallyFocusedView(close_button);
-  else if (!button_container->children().empty())
+  if (!button_container->children().empty()) {
     SetInitiallyFocusedView(button_container->children()[0]);
+  } else if (close_button) {
+    SetInitiallyFocusedView(close_button);
+  }
 
   set_margins(gfx::Insets());
   set_title_margins(gfx::Insets());
   SetButtons(ui::DIALOG_BUTTON_NONE);
+  set_close_on_deactivate(false);
+  set_focus_traversable_from_anchor_view(false);
 
   views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(this);
 

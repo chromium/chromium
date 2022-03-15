@@ -100,6 +100,7 @@
 #include "ui/views/cascading_property.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/masked_targeter_delegate.h"
 #include "ui/views/mouse_watcher_view_host.h"
@@ -2063,6 +2064,8 @@ void TabStrip::ShiftTabRelative(Tab* tab, int offset) {
         // isn't the tab we just added.
         AnnounceTabAddedToGroup(target_group.value());
         controller_->AddTabToGroup(start_index, target_group.value());
+        views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
+            kTabGroupedCustomEventId, tab);
         return;
       }
     }

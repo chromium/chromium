@@ -11,8 +11,10 @@
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/accessible_pane_view.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view.h"
+#include "ui/views/view_utils.h"
 
 BrowserFeaturePromoController::BrowserFeaturePromoController(
     BrowserView* browser_view,
@@ -88,7 +90,7 @@ std::u16string BrowserFeaturePromoController::GetDismissButtonText() const {
 std::u16string
 BrowserFeaturePromoController::GetFocusHelpBubbleScreenReaderHint(
     FeaturePromoSpecification::PromoType promo_type,
-    const ui::TrackedElement* anchor_element,
+    ui::TrackedElement* anchor_element,
     bool is_critical_promo) const {
   // No message is required as this is a background bubble with a
   // screen reader-specific prompt and will dismiss itself.
@@ -105,7 +107,9 @@ BrowserFeaturePromoController::GetFocusHelpBubbleScreenReaderHint(
 
   // Present the user with the full help bubble navigation shortcut.
   auto* const anchor_view = anchor_element->AsA<views::TrackedElementViews>();
-  if (anchor_view && anchor_view->view()->IsAccessibilityFocusable()) {
+  if (anchor_view &&
+      (anchor_view->view()->IsAccessibilityFocusable() ||
+       views::IsViewClass<views::AccessiblePaneView>(anchor_view->view()))) {
     return l10n_util::GetStringFUTF16(IDS_FOCUS_HELP_BUBBLE_TOGGLE_DESCRIPTION,
                                       accelerator_text);
   }
