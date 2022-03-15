@@ -297,6 +297,12 @@
         'goma': 'chromeos_amd64-generic_use_fake_dbus_clients_goma',
         'reclient': 'chromeos_amd64-generic_use_fake_dbus_clients_reclient',
       },
+      'GPU FYI Win x64 Builder (reclient shadow)': 'gpu_fyi_tests_release_trybot_reclient',
+      'GPU FYI Win x64 Builder (dbg) (reclient shadow)': 'gpu_fyi_tests_debug_trybot_reclient',
+      'GPU FYI Win x64 DX12 Vulkan Builder (reclient shadow)': 'gpu_fyi_tests_dx12vk_release_trybot_reclient',
+      'GPU FYI Win x64 DX12 Vulkan Builder (dbg) (reclient shadow)': 'gpu_fyi_tests_dx12vk_debug_trybot_reclient',
+      'GPU FYI XR Win x64 Builder (reclient shadow)': 'gpu_fyi_tests_release_trybot_reclient',
+      'GPU Win x64 Builder (dbg) (reclient shadow)': 'gpu_tests_debug_bot_reclient',
       'Libfuzzer Upload Chrome OS ASan': 'libfuzzer_chromeos_asan_release_bot',
       'Libfuzzer Upload Linux ASan': 'libfuzzer_asan_release_bot',
       'Libfuzzer Upload Linux ASan (reclient)': 'libfuzzer_asan_release_bot_reclient',
@@ -2348,8 +2354,16 @@
       'gpu_fyi_tests', 'dx12vk', 'debug_bot', 'disable_nacl',
     ],
 
+    'gpu_fyi_tests_dx12vk_debug_trybot_reclient': [
+      'gpu_fyi_tests', 'dx12vk', 'debug_bot_reclient', 'disable_nacl',
+    ],
+
     'gpu_fyi_tests_dx12vk_release_trybot': [
       'gpu_fyi_tests', 'dx12vk', 'release_trybot_minimal_symbols', 'disable_nacl',
+    ],
+
+    'gpu_fyi_tests_dx12vk_release_trybot_reclient': [
+      'gpu_fyi_tests', 'dx12vk', 'release_trybot_minimal_symbols_reclient', 'disable_nacl',
     ],
 
     'gpu_fyi_tests_release_trybot': [
