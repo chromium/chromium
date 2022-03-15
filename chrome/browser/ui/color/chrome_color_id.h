@@ -339,6 +339,8 @@
       ThemeProperties::COLOR_ACCENT_BORDER_INACTIVE) \
     E_CPONLY(kColorCaptionButtonForegroundActive) \
     E_CPONLY(kColorCaptionButtonForegroundInactive) \
+    E_CPONLY(kColorCaptionCloseButtonBackgroundHovered) \
+    E_CPONLY(kColorCaptionCloseButtonForegroundHovered) \
     E_CPONLY(kColorCaptionForegroundActive) \
     E_CPONLY(kColorCaptionForegroundInactive)
 #else

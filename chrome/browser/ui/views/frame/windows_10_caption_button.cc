@@ -96,7 +96,8 @@ void Windows10CaptionButton::OnPaintBackground(gfx::Canvas* canvas) {
   SkColor base_color;
   SkAlpha hovered_alpha, pressed_alpha;
   if (button_type_ == VIEW_ID_CLOSE_BUTTON) {
-    base_color = SkColorSetRGB(0xE8, 0x11, 0x23);
+    base_color =
+        GetColorProvider()->GetColor(kColorCaptionCloseButtonBackgroundHovered);
     hovered_alpha = SK_AlphaOPAQUE;
     pressed_alpha = 0x98;
   } else {
@@ -184,6 +185,8 @@ void DrawRect(gfx::Canvas* canvas,
 
 void Windows10CaptionButton::PaintSymbol(gfx::Canvas* canvas) {
   SkColor symbol_color = GetBaseForegroundColor();
+  const SkColor hovered_color =
+      GetColorProvider()->GetColor(kColorCaptionCloseButtonForegroundHovered);
   if (!GetEnabled() ||
       (!frame_view_->ShouldPaintAsActive() && GetState() != STATE_HOVERED &&
        GetState() != STATE_PRESSED)) {
@@ -193,10 +196,10 @@ void Windows10CaptionButton::PaintSymbol(gfx::Canvas* canvas) {
   } else if (button_type_ == VIEW_ID_CLOSE_BUTTON &&
              hover_animation().is_animating()) {
     symbol_color = gfx::Tween::ColorValueBetween(
-        hover_animation().GetCurrentValue(), symbol_color, SK_ColorWHITE);
+        hover_animation().GetCurrentValue(), symbol_color, hovered_color);
   } else if (button_type_ == VIEW_ID_CLOSE_BUTTON &&
              (GetState() == STATE_HOVERED || GetState() == STATE_PRESSED)) {
-    symbol_color = SK_ColorWHITE;
+    symbol_color = hovered_color;
   }
 
   gfx::ScopedCanvas scoped_canvas(canvas);
@@ -249,7 +252,7 @@ void Windows10CaptionButton::PaintSymbol(gfx::Canvas* canvas) {
       // When the X is white, the transparent pixels need to be a bit brighter
       // to be visible.
       const float stroke_halo =
-          stroke_width * (symbol_color == SK_ColorWHITE ? 0.1f : 0.05f);
+          stroke_width * (symbol_color == hovered_color ? 0.1f : 0.05f);
       flags.setStrokeWidth(stroke_width + stroke_halo);
 
       // TODO(bsep): This sometimes draws misaligned at fractional device scales

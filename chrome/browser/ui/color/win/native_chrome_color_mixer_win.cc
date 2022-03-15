@@ -235,6 +235,9 @@ void AddNativeChromeColorMixer(ui::ColorProvider* provider,
       GetCaptionForegroundColor(kColorWindowControlButtonBackgroundActive);
   mixer[kColorCaptionButtonForegroundInactive] =
       GetCaptionForegroundColor(kColorWindowControlButtonBackgroundInactive);
+  mixer[kColorCaptionCloseButtonBackgroundHovered] = {
+      SkColorSetRGB(0xE8, 0x11, 0x23)};
+  mixer[kColorCaptionCloseButtonForegroundHovered] = {SK_ColorWHITE};
   mixer[kColorCaptionForegroundActive] =
       GetCaptionForegroundColor(ui::kColorFrameActive);
   mixer[kColorCaptionForegroundInactive] =
