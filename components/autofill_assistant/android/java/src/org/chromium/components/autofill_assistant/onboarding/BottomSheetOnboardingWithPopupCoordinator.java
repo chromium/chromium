@@ -91,25 +91,33 @@ public class BottomSheetOnboardingWithPopupCoordinator extends BottomSheetOnboar
     public void updateViews() {
         assert mView != null;
 
+        ButtonCompat bottomSheetYesButton = mView.findViewById(R.id.button_init_ok);
         if (mStringMap.containsKey(SPLIT_ONBOARDING_SHOW_DIALOG_KEY)) {
-            ButtonCompat bottomSheetYesButton = mView.findViewById(R.id.button_init_ok);
             bottomSheetYesButton.setText(mStringMap.get(SPLIT_ONBOARDING_SHOW_DIALOG_KEY));
+        } else {
+            bottomSheetYesButton.setText(mContext.getApplicationContext().getString(
+                    R.string.autofill_assistant_split_onboarding_show_dialog));
         }
+        ButtonCompat bottomSheetNoButton = mView.findViewById(R.id.button_init_not_ok);
         if (mStringMap.containsKey(SPLIT_ONBOARDING_CLOSE_BOTTOMSHEET_KEY)) {
-            ButtonCompat bottomSheetNoButton = mView.findViewById(R.id.button_init_not_ok);
             bottomSheetNoButton.setText(mStringMap.get(SPLIT_ONBOARDING_CLOSE_BOTTOMSHEET_KEY));
+        } else {
+            bottomSheetNoButton.setText(mContext.getApplicationContext().getString(
+                    R.string.autofill_assistant_split_onboarding_close_bottomsheet));
         }
         TextView titleView = mView.findViewById(R.id.onboarding_try_assistant);
         if (mStringMap.containsKey(SPLIT_ONBOARDING_TITLE_KEY)) {
             titleView.setText(mStringMap.get(SPLIT_ONBOARDING_TITLE_KEY));
         } else {
-            updateTitleView(titleView);
+            titleView.setText(mContext.getApplicationContext().getString(
+                    R.string.autofill_assistant_split_onboarding_title));
         }
         TextView subtitleView = mView.findViewById(R.id.onboarding_subtitle);
         if (mStringMap.containsKey(SPLIT_ONBOARDING_SUBTITLE_KEY)) {
             subtitleView.setText(mStringMap.get(SPLIT_ONBOARDING_SUBTITLE_KEY));
         } else {
-            updateSubtitleView(subtitleView);
+            subtitleView.setText(mContext.getApplicationContext().getString(
+                    R.string.autofill_assistant_split_onboarding_subtitle));
         }
     }
 
@@ -129,9 +137,12 @@ public class BottomSheetOnboardingWithPopupCoordinator extends BottomSheetOnboar
         termsView.setLineSpacing(/* add = */ 0.0f, /* mult = */ TERMS_LINE_SPACING_MULTIPLIER);
 
         // Update dialog strings from string map.
+        TextView termsTitleView = dialogView.findViewById(R.id.onboarding_try_assistant);
         if (mStringMap.containsKey(SPLIT_ONBOARDING_TERMS_TITLE_KEY)) {
-            TextView termsTitleView = dialogView.findViewById(R.id.onboarding_try_assistant);
             termsTitleView.setText(mStringMap.get(SPLIT_ONBOARDING_TERMS_TITLE_KEY));
+        } else {
+            termsTitleView.setText(mContext.getApplicationContext().getString(
+                    R.string.autofill_assistant_split_onboarding_terms_title));
         }
         updateTermsAndConditionsView(dialogView.findViewById(R.id.google_terms_message));
 

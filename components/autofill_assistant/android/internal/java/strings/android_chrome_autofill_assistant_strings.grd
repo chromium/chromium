@@ -251,6 +251,21 @@
       <message name="IDS_AUTOFILL_ASSISTANT_OVERFLOW_OPTIONS" desc="Content description for the overflow icon displayed in the first prompt, which will open a popup menu with additional options.">
         Preferences
       </message>
+      <message name="IDS_AUTOFILL_ASSISTANT_SPLIT_ONBOARDING_TERMS_TITLE" desc="The title of the terms and conditions popup dialog.">
+        Google Assistant needs your permission
+      </message>
+      <message name="IDS_AUTOFILL_ASSISTANT_SPLIT_ONBOARDING_CLOSE_BOTTOMSHEET" desc="The button text to close the bottomsheet, declining the flow.">
+        No thanks
+      </message>
+      <message name="IDS_AUTOFILL_ASSISTANT_SPLIT_ONBOARDING_SHOW_DIALOG" desc="The button text to start the flow in split onboarding.">
+        Fast checkout
+      </message>
+      <message name="IDS_AUTOFILL_ASSISTANT_SPLIT_ONBOARDING_TITLE" desc="The title shown in the split onboarding. The Assistant offers users help/assistance to buy movie tickets.">
+        Hi, I can help you buy tickets in just a few taps
+      </message>
+      <message name="IDS_AUTOFILL_ASSISTANT_SPLIT_ONBOARDING_SUBTITLE" desc="The subtitle shown in the split onboarding. The Assistant will facilitate movie ticket checkout for users by using the user's securely stored user data.">
+        Your Google Assistant makes it easier to buy movie tickets using your securely stored details
+      </message>
     </messages>
   </release>
 </grit>

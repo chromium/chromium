@@ -87,6 +87,9 @@ import java.util.Map;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 public class BottomSheetOnboardingCoordinatorTest {
+    private static final int SPLIT_ONBOARDING_EXPERIMENT_VARIANT_A = 4702489;
+    private static final int SPLIT_ONBOARDING_EXPERIMENT_VARIANT_B = 4702490;
+
     @Rule
     public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
 
@@ -415,7 +418,9 @@ public class BottomSheetOnboardingCoordinatorTest {
         AutofillAssistantPreferencesUtil.setInitialPreferences(true);
 
         HashMap<String, String> parameters = new HashMap<>();
-        BaseOnboardingCoordinator coordinator = createCoordinator("4702489", parameters);
+
+        BaseOnboardingCoordinator coordinator = createCoordinator(
+                String.valueOf(SPLIT_ONBOARDING_EXPERIMENT_VARIANT_A), parameters);
 
         String expectedTitle = "Title";
         String expectedMessage = "Message";
@@ -491,11 +496,52 @@ public class BottomSheetOnboardingCoordinatorTest {
 
     @Test
     @MediumTest
+    public void testSplitBottomSheetOnboardingVariantAFallbackStrings() {
+        AutofillAssistantPreferencesUtil.setInitialPreferences(true);
+
+        HashMap<String, String> parameters = new HashMap<>();
+        BaseOnboardingCoordinator coordinator = createCoordinator(
+                String.valueOf(SPLIT_ONBOARDING_EXPERIMENT_VARIANT_A), parameters);
+        showOnboardingAndWait(coordinator, mCallback);
+
+        onView(withId(R.id.onboarding_try_assistant))
+                .check(matches(withText(R.string.autofill_assistant_split_onboarding_title)));
+        onView(withId(R.id.onboarding_subtitle))
+                .check(matches(withText(R.string.autofill_assistant_split_onboarding_subtitle)));
+        onView(withId(R.id.google_terms_message)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.onboarding_separator)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.button_init_ok))
+                .check(matches(withText(R.string.autofill_assistant_split_onboarding_show_dialog)));
+        onView(withId(R.id.button_init_not_ok))
+                .check(matches(
+                        withText(R.string.autofill_assistant_split_onboarding_close_bottomsheet)));
+
+        onView(withText(R.string.autofill_assistant_split_onboarding_show_dialog)).perform(click());
+        waitUntilViewMatchesCondition(withId(R.id.google_terms_message), isDisplayed());
+
+        onView(withId(R.id.onboarding_try_assistant))
+                .inRoot(withDecorView(not(mActivity.getWindow().getDecorView())))
+                .check(matches(allOf(isDisplayed(),
+                        withText(R.string.autofill_assistant_split_onboarding_terms_title))));
+        onView(withId(R.id.onboarding_subtitle))
+                .inRoot(withDecorView(not(mActivity.getWindow().getDecorView())))
+                .check(matches(not(isDisplayed())));
+        onView(allOf(withText(R.string.init_ok), isDisplayed()))
+                .inRoot(withDecorView(not(mActivity.getWindow().getDecorView())))
+                .check(matches(isDisplayed()));
+        onView(allOf(withText(R.string.cancel), isDisplayed()))
+                .inRoot(withDecorView(not(mActivity.getWindow().getDecorView())))
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
     public void testSplitBottomSheetOnboardingVariantB() {
         AutofillAssistantPreferencesUtil.setInitialPreferences(true);
 
         HashMap<String, String> parameters = new HashMap<>();
-        BaseOnboardingCoordinator coordinator = createCoordinator("4702490", parameters);
+        BaseOnboardingCoordinator coordinator = createCoordinator(
+                String.valueOf(SPLIT_ONBOARDING_EXPERIMENT_VARIANT_B), parameters);
 
         String expectedTitle = "Title";
         String expectedMessage = "Message";
@@ -572,5 +618,49 @@ public class BottomSheetOnboardingCoordinatorTest {
                 .inRoot(withDecorView(not(mActivity.getWindow().getDecorView())))
                 .perform(scrollTo(), click());
         verify(mCallback).onResult(AssistantOnboardingResult.ACCEPTED);
+    }
+
+    @Test
+    @MediumTest
+    public void testSplitBottomSheetOnboardingVariantBFallbackStrings() {
+        AutofillAssistantPreferencesUtil.setInitialPreferences(true);
+
+        HashMap<String, String> parameters = new HashMap<>();
+        BaseOnboardingCoordinator coordinator = createCoordinator(
+                String.valueOf(SPLIT_ONBOARDING_EXPERIMENT_VARIANT_B), parameters);
+        showOnboardingAndWait(coordinator, mCallback);
+
+        // Subtitle is shown in the text bubble, not in the bottom sheet.
+        onView(withId(R.id.onboarding_subtitle)).check(matches(not(isDisplayed())));
+        onView(withText(R.string.autofill_assistant_split_onboarding_subtitle))
+                .inRoot(withDecorView(not(mActivity.getWindow().getDecorView())))
+                .check(matches(isDisplayed()));
+
+        onView(withId(R.id.onboarding_try_assistant))
+                .check(matches(withText(R.string.autofill_assistant_split_onboarding_title)));
+        onView(withId(R.id.google_terms_message)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.onboarding_separator)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.button_init_ok))
+                .check(matches(withText(R.string.autofill_assistant_split_onboarding_show_dialog)));
+        onView(withId(R.id.button_init_not_ok))
+                .check(matches(
+                        withText(R.string.autofill_assistant_split_onboarding_close_bottomsheet)));
+
+        onView(withText(R.string.autofill_assistant_split_onboarding_show_dialog)).perform(click());
+        waitUntilViewMatchesCondition(withId(R.id.google_terms_message), isDisplayed());
+
+        onView(withId(R.id.onboarding_try_assistant))
+                .inRoot(withDecorView(not(mActivity.getWindow().getDecorView())))
+                .check(matches(allOf(isDisplayed(),
+                        withText(R.string.autofill_assistant_split_onboarding_terms_title))));
+        onView(withId(R.id.onboarding_subtitle))
+                .inRoot(withDecorView(not(mActivity.getWindow().getDecorView())))
+                .check(matches(not(isDisplayed())));
+        onView(allOf(withText(R.string.init_ok), isDisplayed()))
+                .inRoot(withDecorView(not(mActivity.getWindow().getDecorView())))
+                .check(matches(isDisplayed()));
+        onView(allOf(withText(R.string.cancel), isDisplayed()))
+                .inRoot(withDecorView(not(mActivity.getWindow().getDecorView())))
+                .check(matches(isDisplayed()));
     }
 }
