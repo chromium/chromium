@@ -62,6 +62,7 @@ import "chromeos/crosapi/mojom/url_handler.mojom";
 import "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom";
 import "chromeos/crosapi/mojom/video_capture.mojom";
 import "chromeos/crosapi/mojom/kiosk_session_service.mojom";
+import "chromeos/crosapi/mojom/web_app_service.mojom";
 import "chromeos/crosapi/mojom/web_page_info.mojom";
 import "mojo/public/mojom/base/big_string.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
@@ -99,8 +100,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 69
-// Next method id: 72
+// Next version: 70
+// Next method id: 73
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -466,10 +467,17 @@ interface Crosapi {
   BindWebPageInfoFactory@39(pending_receiver<WebPageInfoFactory> receiver);
 
   // Binds the web app publisher service to allow web app publishing from
-  // lacros-chrome.
+  // lacros-chrome to the App Service in ash-chrome.
   // Added in M92.
   [MinVersion=22]
   BindWebAppPublisher@27(pending_receiver<AppPublisher> receiver);
+
+  // Binds the service to allow web-app-related queries and actions between
+  // lacros-chrome and ash-chrome. This is a web-app-specific interface,
+  // independent of the App Service.
+  // Added in M101.
+  [MinVersion=69]
+  BindWebAppService@72(pending_receiver<WebAppService> receiver);
 
   // Passes generic browser information such as version, etc into ash in
   // |browser_info| during startup.

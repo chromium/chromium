@@ -68,6 +68,7 @@ mojom("mojom") {
     "tts.mojom",
     "url_handler.mojom",
     "video_capture.mojom",
+    "web_app_service.mojom",
     "web_app_types.mojom",
     "web_page_info.mojom",
   ]

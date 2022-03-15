@@ -70,6 +70,7 @@
 #include "chrome/browser/ash/crosapi/time_zone_service_ash.h"
 #include "chrome/browser/ash/crosapi/url_handler_ash.h"
 #include "chrome/browser/ash/crosapi/video_capture_device_factory_ash.h"
+#include "chrome/browser/ash/crosapi/web_app_service_ash.h"
 #include "chrome/browser/ash/crosapi/web_page_info_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/sync/sync_service_ash.h"
@@ -185,6 +186,7 @@ CrosapiAsh::CrosapiAsh()
       structured_metrics_service_ash_(
           std::make_unique<StructuredMetricsServiceAsh>()),
       system_display_ash_(std::make_unique<SystemDisplayAsh>()),
+      web_app_service_ash_(std::make_unique<WebAppServiceAsh>()),
       web_page_info_factory_ash_(std::make_unique<WebPageInfoFactoryAsh>()),
       task_manager_ash_(std::make_unique<TaskManagerAsh>()),
       time_zone_service_ash_(std::make_unique<TimeZoneServiceAsh>()),
@@ -476,6 +478,11 @@ void CrosapiAsh::BindKioskSessionService(
 
 void CrosapiAsh::BindTts(mojo::PendingReceiver<mojom::Tts> receiver) {
   tts_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindWebAppService(
+    mojo::PendingReceiver<mojom::WebAppService> receiver) {
+  web_app_service_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindWebPageInfoFactory(

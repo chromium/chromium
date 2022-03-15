@@ -71,6 +71,7 @@ class SystemDisplayAsh;
 class TaskManagerAsh;
 class TimeZoneServiceAsh;
 class TtsAsh;
+class WebAppServiceAsh;
 class WebPageInfoFactoryAsh;
 class UrlHandlerAsh;
 class VideoCaptureDeviceFactoryAsh;
@@ -210,6 +211,8 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::SyncService> receiver) override;
   void BindSystemDisplay(
       mojo::PendingReceiver<mojom::SystemDisplay> receiver) override;
+  void BindWebAppService(
+      mojo::PendingReceiver<mojom::WebAppService> receiver) override;
   void BindWebPageInfoFactory(
       mojo::PendingReceiver<mojom::WebPageInfoFactory> receiver) override;
   void BindTaskManager(
@@ -260,6 +263,8 @@ class CrosapiAsh : public mojom::Crosapi {
   SearchProviderAsh* search_provider_ash() {
     return search_provider_ash_.get();
   }
+
+  WebAppServiceAsh* web_app_service_ash() { return web_app_service_ash_.get(); }
 
   WebPageInfoFactoryAsh* web_page_info_factory_ash() {
     return web_page_info_factory_ash_.get();
@@ -354,6 +359,7 @@ class CrosapiAsh : public mojom::Crosapi {
       stable_video_decoder_factory_ash_;
   std::unique_ptr<StructuredMetricsServiceAsh> structured_metrics_service_ash_;
   std::unique_ptr<SystemDisplayAsh> system_display_ash_;
+  std::unique_ptr<WebAppServiceAsh> web_app_service_ash_;
   std::unique_ptr<WebPageInfoFactoryAsh> web_page_info_factory_ash_;
   std::unique_ptr<TaskManagerAsh> task_manager_ash_;
   std::unique_ptr<TimeZoneServiceAsh> time_zone_service_ash_;

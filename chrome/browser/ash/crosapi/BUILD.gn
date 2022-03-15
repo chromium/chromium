@@ -169,6 +169,8 @@ source_set("crosapi") {
     "video_capture_device_factory_ash.h",
     "video_frame_handler_ash.cc",
     "video_frame_handler_ash.h",
+    "web_app_service_ash.cc",
+    "web_app_service_ash.h",
     "web_page_info_ash.cc",
     "web_page_info_ash.h",
     "window_util.cc",

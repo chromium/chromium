@@ -1,0 +1,43 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+import "chromeos/crosapi/mojom/web_app_types.mojom";
+
+// Implemented in lacros-chrome. Allows ash-chrome to modify web app state in
+// lacros-chrome.
+// Next version: 1
+// Next method id: 2
+[Stable, Uuid="84eb46eb-76fe-439c-9fcb-3388492e141d"]
+interface WebAppProviderBridge {
+  // Called when a web app described by |info| is installed in ARC (Android
+  // package containing web app metadata) and installs this web app in the
+  // primary profile of Lacros.
+  // See |web_app::WebAppInstallManager::InstallWebAppFromInfo|.
+  WebAppInstalledInArc@0(ArcWebAppInstallInfo info)
+    => (string app_id, WebAppInstallResultCode install_result);
+
+  // Removes ARC as an install source from the app specified by |app_id|, and
+  // uninstalls the app from the primary profile of Lacros if no other sources
+  // are left.
+  // See |web_app::WebAppInstallFinalizer::UninstallExternalWebApp|.
+  WebAppUninstalledInArc@1(string app_id)
+    => (WebAppUninstallResultCode uninstall_result);
+};
+
+// An interface implemented in ash-chrome. Allows lacros-chrome:
+// 1) to query web-app-related information in ash-chrome,
+// 2) to register its own |crosapi::mojom::WebAppProviderBridge| to let
+//    ash-chrome to modify or query WebAppProvider in lacros-chrome.
+//
+// Next version: 1
+// Next method id: 2
+[Stable, Uuid="dfa7b3f8-236f-4706-861b-98068aa5fc8f"]
+interface WebAppService {
+  // Register a web app provider bridge that lets ash-chrome to update or query
+  // WebAppProvider in lacros-chrome.
+  RegisterWebAppProviderBridge@0(
+    pending_remote<WebAppProviderBridge> web_app_provider_bridge);
+};
