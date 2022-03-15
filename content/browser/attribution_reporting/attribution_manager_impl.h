@@ -46,7 +46,6 @@ class AttributionCookieChecker;
 class AttributionDataHostManager;
 class AttributionStorage;
 class AttributionStorageDelegate;
-class BrowserContext;
 class CreateReportResult;
 class StoragePartitionImpl;
 
@@ -58,24 +57,17 @@ struct SendResult;
 // partition.
 class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
  public:
-  using IsReportAllowedCallback =
-      base::RepeatingCallback<bool(const AttributionReport&)>;
-
-  static IsReportAllowedCallback DefaultIsReportAllowedCallback(
-      BrowserContext*);
-
   // Configures underlying storage to be setup in memory, rather than on
   // disk. This speeds up initialization to avoid timeouts in test environments.
   static void RunInMemoryForTesting();
 
   static std::unique_ptr<AttributionManagerImpl> CreateForTesting(
-      IsReportAllowedCallback is_report_allowed_callback,
       const base::FilePath& user_data_directory,
       scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
       std::unique_ptr<AttributionStorageDelegate> storage_delegate,
       std::unique_ptr<AttributionCookieChecker> cookie_checker,
       std::unique_ptr<AttributionReportSender> report_sender,
-      StoragePartitionImpl* storage_partition = nullptr);
+      StoragePartitionImpl* storage_partition);
 
   AttributionManagerImpl(
       StoragePartitionImpl* storage_partition,
@@ -120,7 +112,6 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
 
   AttributionManagerImpl(
       StoragePartitionImpl* storage_partition,
-      IsReportAllowedCallback is_report_allowed_callback,
       const base::FilePath& user_data_directory,
       scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
       std::unique_ptr<AttributionStorageDelegate> storage_delegate,
@@ -171,16 +162,15 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   void NotifyReportsChanged();
   void NotifySourceDeactivated(const DeactivatedSource& source);
 
+  bool IsReportAllowed(const AttributionReport&);
+
   // Friend to expose the AttributionStorage for certain tests.
   friend std::vector<AttributionReport> GetAttributionReportsForTesting(
       AttributionManagerImpl* manager,
       base::Time max_report_time);
 
-  // Might be `nullptr` for testing.
-  raw_ptr<StoragePartitionImpl> storage_partition_;
-
-  // Internally holds a non-owning pointer to `BrowserContext`.
-  IsReportAllowedCallback is_report_allowed_callback_;
+  // Never null.
+  const raw_ptr<StoragePartitionImpl> storage_partition_;
 
   // Holds pending sources and triggers in the order they were received by the
   // browser. For the time being, they must be processed in this order in order

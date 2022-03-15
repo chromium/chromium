@@ -207,30 +207,19 @@ void AttributionManagerImpl::RunInMemoryForTesting() {
   AttributionStorageSql::RunInMemoryForTesting();
 }
 
-// static
-AttributionManagerImpl::IsReportAllowedCallback
-AttributionManagerImpl::DefaultIsReportAllowedCallback(
-    BrowserContext* browser_context) {
-  return base::BindRepeating(
-      [](BrowserContext* browser_context, const AttributionReport& report) {
-        const CommonSourceInfo& common_info =
-            report.attribution_info().source.common_info();
-        return GetContentClient()
-            ->browser()
-            ->IsConversionMeasurementOperationAllowed(
-                browser_context,
-                ContentBrowserClient::ConversionMeasurementOperation::kReport,
-                &common_info.impression_origin(),
-                &common_info.conversion_origin(),
-                &common_info.reporting_origin());
-      },
-      browser_context);
+bool AttributionManagerImpl::IsReportAllowed(const AttributionReport& report) {
+  const CommonSourceInfo& common_info =
+      report.attribution_info().source.common_info();
+  return GetContentClient()->browser()->IsConversionMeasurementOperationAllowed(
+      storage_partition_->browser_context(),
+      ContentBrowserClient::ConversionMeasurementOperation::kReport,
+      &common_info.impression_origin(), &common_info.conversion_origin(),
+      &common_info.reporting_origin());
 }
 
 // static
 std::unique_ptr<AttributionManagerImpl>
 AttributionManagerImpl::CreateForTesting(
-    IsReportAllowedCallback is_report_allowed_callback,
     const base::FilePath& user_data_directory,
     scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
     std::unique_ptr<AttributionStorageDelegate> storage_delegate,
@@ -238,8 +227,7 @@ AttributionManagerImpl::CreateForTesting(
     std::unique_ptr<AttributionReportSender> report_sender,
     StoragePartitionImpl* storage_partition) {
   return absl::WrapUnique(new AttributionManagerImpl(
-      storage_partition, std::move(is_report_allowed_callback),
-      user_data_directory, std::move(special_storage_policy),
+      storage_partition, user_data_directory, std::move(special_storage_policy),
       std::move(storage_delegate), std::move(cookie_checker),
       std::move(report_sender),
       /*data_host_manager=*/nullptr));
@@ -251,7 +239,6 @@ AttributionManagerImpl::AttributionManagerImpl(
     scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy)
     : AttributionManagerImpl(
           storage_partition,
-          DefaultIsReportAllowedCallback(storage_partition->browser_context()),
           user_data_directory,
           std::move(special_storage_policy),
           MakeStorageDelegate(),
@@ -263,7 +250,6 @@ AttributionManagerImpl::AttributionManagerImpl(
 
 AttributionManagerImpl::AttributionManagerImpl(
     StoragePartitionImpl* storage_partition,
-    IsReportAllowedCallback is_report_allowed_callback,
     const base::FilePath& user_data_directory,
     scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
     std::unique_ptr<AttributionStorageDelegate> storage_delegate,
@@ -271,7 +257,6 @@ AttributionManagerImpl::AttributionManagerImpl(
     std::unique_ptr<AttributionReportSender> report_sender,
     std::unique_ptr<AttributionDataHostManager> data_host_manager)
     : storage_partition_(storage_partition),
-      is_report_allowed_callback_(std::move(is_report_allowed_callback)),
       attribution_storage_(base::SequenceBound<AttributionStorageSql>(
           g_storage_task_runner.Get(),
           user_data_directory,
@@ -284,7 +269,7 @@ AttributionManagerImpl::AttributionManagerImpl(
       cookie_checker_(std::move(cookie_checker)),
       report_sender_(std::move(report_sender)),
       weak_factory_(this) {
-  DCHECK(is_report_allowed_callback_);
+  DCHECK(storage_partition_);
   DCHECK(cookie_checker_);
   DCHECK(report_sender_);
 }
@@ -488,7 +473,7 @@ void AttributionManagerImpl::MaybeSendDebugReport(AttributionReport&& report) {
   const AttributionInfo& attribution_info = report.attribution_info();
   if (!attribution_info.debug_key ||
       !attribution_info.source.common_info().debug_key() ||
-      !is_report_allowed_callback_.Run(report)) {
+      !IsReportAllowed(report)) {
     return;
   }
 
@@ -603,7 +588,7 @@ void AttributionManagerImpl::SendReports(std::vector<AttributionReport> reports,
       continue;
     }
 
-    if (!is_report_allowed_callback_.Run(report)) {
+    if (!IsReportAllowed(report)) {
       // If measurement is disallowed, just drop the report on the floor. We
       // need to make sure we forward that the report was "sent" to ensure it is
       // deleted from storage, etc. This simulates sending the report through a
@@ -733,10 +718,8 @@ void AttributionManagerImpl::AssembleAggregatableReport(
     AttributionReport report,
     bool is_debug_report,
     ReportSentCallback callback) {
-  AggregationServiceImpl* aggregation_service = nullptr;
-  if (storage_partition_)
-    aggregation_service = storage_partition_->GetAggregationService();
-
+  AggregationServiceImpl* aggregation_service =
+      storage_partition_->GetAggregationService();
   if (!aggregation_service) {
     RecordAssembleAggregatableReportStatus(
         AssembleAggregatableReportStatus::kAggregationServiceUnavailable);

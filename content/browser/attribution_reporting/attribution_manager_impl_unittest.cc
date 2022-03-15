@@ -279,8 +279,6 @@ class AttributionManagerImplTest : public testing::Test {
     report_sender_ = report_sender.get();
 
     attribution_manager_ = AttributionManagerImpl::CreateForTesting(
-        AttributionManagerImpl::DefaultIsReportAllowedCallback(
-            browser_context_.get()),
         dir_.GetPath(), mock_storage_policy_, std::move(storage_delegate),
         std::move(cookie_checker), std::move(report_sender),
         static_cast<StoragePartitionImpl*>(

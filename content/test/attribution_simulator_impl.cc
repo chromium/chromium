@@ -34,7 +34,9 @@
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/attribution_reporting/stored_source.h"
+#include "content/browser/storage_partition_impl.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_browser_context.h"
 #include "content/test/attribution_simulator_input_parser.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -270,6 +272,7 @@ base::Value RunAttributionSimulation(
   // Prerequisites for using an environment with mock time.
   content::BrowserTaskEnvironment task_environment(
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+  TestBrowserContext browser_context;
 
   absl::optional<AttributionSimulationEventAndValues> events =
       ParseAttributionSimulationInput(std::move(input), base::Time::Now(),
@@ -281,9 +284,6 @@ base::Value RunAttributionSimulation(
 
   // Avoid creating an on-disk sqlite DB.
   content::AttributionManagerImpl::RunInMemoryForTesting();
-
-  auto always_allow_reports_callback =
-      base::BindRepeating([](const AttributionReport&) { return true; });
 
   // This isn't needed because the DB is completely in memory for testing.
   const base::FilePath user_data_directory;
@@ -300,7 +300,7 @@ base::Value RunAttributionSimulation(
   base::Value::ListStorage debug_reports;
 
   auto manager = AttributionManagerImpl::CreateForTesting(
-      std::move(always_allow_reports_callback), user_data_directory,
+      user_data_directory,
       /*special_storage_policy=*/nullptr,
       AttributionStorageDelegateImpl::CreateForTesting(
           options.noise_mode, options.delay_mode, std::move(rng),
@@ -308,7 +308,9 @@ base::Value RunAttributionSimulation(
       std::make_unique<AlwaysSetCookieChecker>(),
       std::make_unique<SentReportAccumulator>(reports, debug_reports,
                                               options.remove_report_ids,
-                                              options.report_time_format));
+                                              options.report_time_format),
+      static_cast<StoragePartitionImpl*>(
+          browser_context.GetDefaultStoragePartition()));
 
   base::Value::ListStorage rejected_sources;
   base::Value::ListStorage rejected_triggers;

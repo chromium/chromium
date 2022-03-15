@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <iostream>
+#include <memory>
 #include <string>
 
 #include "base/command_line.h"
@@ -12,13 +13,14 @@
 #include "base/strings/abseil_string_number_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
-#include "base/test/test_timeouts.h"
 #include "base/values.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/attribution_reporting.h"
-#include "content/public/browser/network_service_instance.h"
+#include "content/public/common/network_service_util.h"
 #include "content/public/test/attribution_simulator.h"
-#include "services/network/test/test_network_connection_tracker.h"
+#include "content/public/test/content_test_suite_base.h"
+#include "content/public/test/test_content_client_initializer.h"
+#include "mojo/core/embedder/embedder.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -381,6 +383,24 @@ int ProcessJsonString(const std::string& json_input,
   return true;
 }
 
+// Required for setting up the test environment.
+class TestSuite : public content::ContentTestSuiteBase {
+ public:
+  TestSuite(int argc, char** argv) : content::ContentTestSuiteBase(argc, argv) {
+    Initialize();
+    content::ForceInProcessNetworkService(true);
+    // This initialization depends on the call to `Initialize()`, so we use a
+    // `unique_ptr` to defer initialization instead of storing the field
+    // directly.
+    test_content_initializer_ =
+        std::make_unique<content::TestContentClientInitializer>();
+  }
+
+ private:
+  std::unique_ptr<content::TestContentClientInitializer>
+      test_content_initializer_;
+};
+
 }  // namespace
 
 int main(int argc, char* argv[]) {
@@ -511,15 +531,9 @@ int main(int argc, char* argv[]) {
       .report_time_format = report_time_format,
   });
 
-  // Required for using mock time in the simulator. Must be initialized exactly
-  // once.
-  TestTimeouts::Initialize();
-
-  // Ensure that the manager always thinks the browser is online.
-  auto network_connection_tracker =
-      network::TestNetworkConnectionTracker::CreateInstance();
-  content::SetNetworkConnectionTrackerForTesting(
-      network_connection_tracker.get());
+  // Required for setting up the test environment.
+  TestSuite test_suite(argc, argv);
+  mojo::core::Init();
 
   switch (input_mode) {
     case InputMode::kSingle: {
