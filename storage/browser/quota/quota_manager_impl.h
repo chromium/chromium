@@ -444,6 +444,12 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
     bootstrap_disabled_for_testing_ = disable;
   }
 
+  bool is_bootstrapping_database_for_testing() {
+    return is_bootstrapping_database_;
+  }
+
+  bool is_db_disabled_for_testing() { return db_disabled_; }
+
  protected:
   ~QuotaManagerImpl() override;
   void SetQuotaChangeCallbackForTesting(
@@ -617,7 +623,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   void DidGetStorageCapacity(
       const std::tuple<int64_t, int64_t>& total_and_available);
 
-  void DidDatabaseWork(bool success);
+  void DidDatabaseWork(bool success, bool is_bootstrap_work = false);
+  void DidRazeForReBootstrap(QuotaError raze_and_reopen_result);
   void OnComplete(QuotaError result);
 
   void DidGetBucket(base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback,
@@ -675,12 +682,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
       GetVolumeInfoFn get_volume_info_fn,
       const base::FilePath& path);
   static std::tuple<int64_t, int64_t> GetVolumeInfo(const base::FilePath& path);
-
-  bool is_bootstrapping_database_for_testing() {
-    return is_bootstrapping_database_;
-  }
-
-  bool is_db_disabled_for_testing() { return db_disabled_; }
 
   const bool is_incognito_;
   const base::FilePath profile_path_;

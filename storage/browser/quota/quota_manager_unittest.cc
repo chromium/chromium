@@ -650,6 +650,74 @@ TEST_F(QuotaManagerImplTest, QuotaDatabaseBootstrap) {
   ASSERT_TRUE(bucket.ok());
 }
 
+TEST_F(QuotaManagerImplTest, CorruptionRecovery) {
+  // Setup clients with both unmigrated and migrated data. Before corruption the
+  // bucket data will be used, while after corruption recovery data should be
+  // migrated again.
+  static const ClientBucketData kData1[] = {
+      {"http://foo.com/", kDefaultBucketName, kTemp, 10},
+      {"http://foo.com:8080/", kDefaultBucketName, kTemp, 15},
+  };
+  static const UnmigratedStorageKeyData kUnmigratedData1[] = {
+      {"http://foo.com/", kTemp, 10},
+      {"http://foo.com:8080/", kTemp, 15},
+  };
+  static const ClientBucketData kData2[] = {
+      {"https://foo.com/", kDefaultBucketName, kTemp, 30},
+      {"https://foo.com:8081/", kDefaultBucketName, kTemp, 35},
+  };
+  static const UnmigratedStorageKeyData kUnmigratedData2[] = {
+      {"https://foo.com/", kTemp, 30},
+      {"https://foo.com:8081/", kTemp, 35},
+  };
+  MockQuotaClient* fs_client = CreateAndRegisterClient(
+      QuotaClientType::kFileSystem, {kTemp, kPerm}, kUnmigratedData1);
+  MockQuotaClient* database_client = CreateAndRegisterClient(
+      QuotaClientType::kDatabase, {kTemp, kPerm}, kUnmigratedData2);
+  RegisterClientBucketData(fs_client, kData1);
+  RegisterClientBucketData(database_client, kData2);
+
+  // Basic sanity checks, make sure setup worked correctly.
+  auto bucket =
+      GetBucket(ToStorageKey("http://foo.com/"), kDefaultBucketName, kTemp);
+  ASSERT_TRUE(bucket.ok());
+  bucket = GetBucket(ToStorageKey("http://foo.com:8080/"), kDefaultBucketName,
+                     kTemp);
+  ASSERT_TRUE(bucket.ok());
+  bucket = GetBucket(ToStorageKey("https://foo.com:8081/"), kDefaultBucketName,
+                     kTemp);
+  ASSERT_TRUE(bucket.ok());
+
+  // Corrupt the database to make bucket lookup fail.
+  QuotaError corruption_error = CorruptDatabaseForTesting(
+      base::BindOnce([](const base::FilePath& db_path) {
+        ASSERT_TRUE(
+            sql::test::CorruptIndexRootPage(db_path, "buckets_by_storage_key"));
+      }));
+  ASSERT_EQ(QuotaError::kNone, corruption_error);
+
+  // Try to lookup a bucket, this should fail until the error threshold is
+  // reached.
+  for (int i = 0; i < QuotaManagerImpl::kThresholdOfErrorsToDisableDatabase;
+       ++i) {
+    EXPECT_FALSE(quota_manager_impl_->is_db_disabled_for_testing());
+    EXPECT_FALSE(is_db_bootstrapping());
+
+    bucket =
+        GetBucket(ToStorageKey("http://foo.com/"), kDefaultBucketName, kTemp);
+    ASSERT_FALSE(bucket.ok());
+    EXPECT_EQ(QuotaError::kDatabaseError, bucket.error());
+  }
+
+  // The last lookup attempt should have started another bootstrap attempt.
+  EXPECT_TRUE(is_db_bootstrapping());
+
+  // And with that bucket lookup should be working again.
+  bucket =
+      GetBucket(ToStorageKey("http://foo.com/"), kDefaultBucketName, kTemp);
+  ASSERT_TRUE(bucket.ok());
+}
+
 TEST_F(QuotaManagerImplTest, GetUsageInfo) {
   static const ClientBucketData kData1[] = {
       {"http://foo.com/", kDefaultBucketName, kTemp, 10},

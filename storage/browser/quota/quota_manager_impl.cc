@@ -1837,7 +1837,8 @@ void QuotaManagerImpl::DidGetStorageKeysForBootstrap(
 
 void QuotaManagerImpl::DidBootstrapDatabase(QuotaError error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DidDatabaseWork(error != QuotaError::kDatabaseError);
+  DidDatabaseWork(error != QuotaError::kDatabaseError,
+                  /*is_bootstrap_work=*/true);
 
   PostTaskAndReplyWithResultForDBThread(
       base::BindOnce(&SetDatabaseBootstrappedOnDBThread),
@@ -1851,7 +1852,8 @@ void QuotaManagerImpl::DidSetDatabaseBootstrapped(QuotaError error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(is_bootstrapping_database_);
   is_bootstrapping_database_ = false;
-  DidDatabaseWork(error != QuotaError::kDatabaseError);
+  DidDatabaseWork(error != QuotaError::kDatabaseError,
+                  /*is_bootstrap_work=*/true);
 
   RunDatabaseCallbacks();
   StartEviction();
@@ -2637,14 +2639,58 @@ void QuotaManagerImpl::DidGetStorageCapacity(
   DetermineStoragePressure(total_space, available_space);
 }
 
-void QuotaManagerImpl::DidDatabaseWork(bool success) {
+void QuotaManagerImpl::DidDatabaseWork(bool success, bool is_bootstrap_work) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (success)
     return;
 
+  // Ignore any errors that happen while a new bootstrap attempt is already in
+  // progress or queued.
+  if (is_bootstrapping_database_)
+    return;
+
   db_error_count_++;
-  if (db_error_count_ >= QuotaManagerImpl::kThresholdOfErrorsToDisableDatabase)
-    db_disabled_ = true;
+
+  if (db_error_count_ >=
+      QuotaManagerImpl::kThresholdOfErrorsToDisableDatabase) {
+    if (bootstrap_disabled_for_testing_ || is_bootstrap_work) {
+      // If we got an error during bootstrapping there is no point in
+      // immediately trying again. Disable the database instead.
+      db_disabled_ = true;
+      return;
+    }
+
+    // Start another bootstrapping process. Pause eviction while bootstrapping
+    // is in progress. When bootstrapping finishes a new Evictor will be
+    // created.
+    is_bootstrapping_database_ = true;
+    temporary_storage_evictor_ = nullptr;
+    db_error_count_ = 0;
+
+    // Wipe the database before triggering another bootstrap.
+    base::PostTaskAndReplyWithResult(
+        db_runner_.get(), FROM_HERE,
+        base::BindOnce(&QuotaDatabase::RazeAndReopen,
+                       base::Unretained(database_.get())),
+        base::BindOnce(&QuotaManagerImpl::DidRazeForReBootstrap,
+                       weak_factory_.GetWeakPtr()));
+  }
+}
+
+void QuotaManagerImpl::DidRazeForReBootstrap(
+    QuotaError raze_and_reopen_result) {
+  if (raze_and_reopen_result == QuotaError::kNone) {
+    BootstrapDatabase();
+    return;
+  }
+
+  // Deleting the database failed. Disable the database and hope we'll recover
+  // after Chrome restarts instead.
+  db_disabled_ = true;
+  is_bootstrapping_database_ = false;
+  RunDatabaseCallbacks();
+  // No reason to restart eviction here. Without a working database there is
+  // nothing to evict.
 }
 
 void QuotaManagerImpl::OnComplete(QuotaError result) {

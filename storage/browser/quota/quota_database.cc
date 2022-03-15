@@ -718,6 +718,22 @@ QuotaError QuotaDatabase::SetIsBootstrapped(bool bootstrap_flag) {
              : QuotaError::kDatabaseError;
 }
 
+QuotaError QuotaDatabase::RazeAndReopen() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(db_);
+
+  // Abort the long-running transaction.
+  db_->RollbackTransaction();
+
+  // Raze and close the database. Reset `db_` to nullptr so EnsureOpened will
+  // recreate the database.
+  if (!db_->Raze())
+    return QuotaError::kDatabaseError;
+  db_ = nullptr;
+
+  return EnsureOpened(EnsureOpenedMode::kCreateIfNotFound);
+}
+
 QuotaError QuotaDatabase::CorruptForTesting(
     base::OnceCallback<void(const base::FilePath&)> corrupter) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
