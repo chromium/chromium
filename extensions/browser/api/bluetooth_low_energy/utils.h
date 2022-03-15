@@ -17,12 +17,11 @@ namespace bluetooth_low_energy {
 // TODO(armansito): Remove these functions once the described bug is fixed.
 // (See crbug.com/368368)
 
-// Converts a Characteristic to a base::Value. This function is necessary as
-// json_schema_compiler::util::AddItemToList has no template specialization for
-// user defined enums, which get treated as integers. This is because
+// Converts a Characteristic to a base::Value::Dict. This function is necessary
+// as json_schema_compiler::util::AddItemToList has no template specialization
+// for user defined enums, which get treated as integers. This is because
 // Characteristic contains a list of enum CharacteristicProperty.
-std::unique_ptr<base::DictionaryValue> CharacteristicToValue(
-    Characteristic* from);
+base::Value::Dict CharacteristicToValue(Characteristic* from);
 
 // Converts a Descriptor to a base::Value. This function is necessary as a
 // Descriptor embeds a Characteristic and that needs special handling as

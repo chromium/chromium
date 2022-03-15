@@ -1061,8 +1061,8 @@ void BluetoothLowEnergyEventRouter::GattCharacteristicValueChanged(
   apibtle::Characteristic api_characteristic;
   PopulateCharacteristic(characteristic, &api_characteristic);
   std::vector<base::Value> args;
-  args.push_back(base::Value::FromUniquePtrValue(
-      apibtle::CharacteristicToValue(&api_characteristic)));
+  args.push_back(
+      base::Value(apibtle::CharacteristicToValue(&api_characteristic)));
 
   DispatchEventToExtensionsWithPermission(
       events::BLUETOOTH_LOW_ENERGY_ON_CHARACTERISTIC_VALUE_CHANGED,

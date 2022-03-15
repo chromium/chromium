@@ -588,8 +588,8 @@ void BluetoothLowEnergyGetCharacteristicFunction::DoWork() {
   // Manually construct the result instead of using
   // apibtle::GetCharacteristic::Result::Create as it doesn't convert lists of
   // enums correctly.
-  Respond(OneArgument(base::Value::FromUniquePtrValue(
-      apibtle::CharacteristicToValue(&characteristic))));
+  Respond(OneArgument(
+      base::Value(apibtle::CharacteristicToValue(&characteristic))));
 }
 
 BluetoothLowEnergyGetCharacteristicsFunction::
@@ -626,11 +626,11 @@ void BluetoothLowEnergyGetCharacteristicsFunction::DoWork() {
   // Manually construct the result instead of using
   // apibtle::GetCharacteristics::Result::Create as it doesn't convert lists of
   // enums correctly.
-  std::unique_ptr<base::ListValue> result(new base::ListValue());
+  base::Value::List result;
   for (apibtle::Characteristic& characteristic : characteristic_list)
-    result->Append(apibtle::CharacteristicToValue(&characteristic));
+    result.Append(apibtle::CharacteristicToValue(&characteristic));
 
-  Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
+  Respond(OneArgument(base::Value(std::move(result))));
 }
 
 BluetoothLowEnergyGetIncludedServicesFunction::
@@ -792,8 +792,8 @@ void BluetoothLowEnergyReadCharacteristicValueFunction::SuccessCallback() {
   // Manually construct the result instead of using
   // apibtle::GetCharacteristic::Result::Create as it doesn't convert lists of
   // enums correctly.
-  Respond(OneArgument(base::Value::FromUniquePtrValue(
-      apibtle::CharacteristicToValue(&characteristic))));
+  Respond(OneArgument(
+      base::Value(apibtle::CharacteristicToValue(&characteristic))));
 }
 
 void BluetoothLowEnergyReadCharacteristicValueFunction::ErrorCallback(

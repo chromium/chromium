@@ -218,10 +218,11 @@ EventsEventAddRulesFunction::RunAsyncOnCorrectThread() {
   if (!error.empty())
     return Error(error);
 
-  auto rules_value = std::make_unique<base::ListValue>();
+  base::Value::List rules_value;
+  rules_value.reserve(rules_out.size());
   for (const auto* rule : rules_out)
-    rules_value->Append(rule->ToValue());
-  return OneArgument(base::Value::FromUniquePtrValue(std::move(rules_value)));
+    rules_value.Append(base::Value::FromUniquePtrValue(rule->ToValue()));
+  return OneArgument(base::Value(std::move(rules_value)));
 }
 
 void EventsEventAddRulesFunction::RecordUMA(
@@ -305,10 +306,11 @@ EventsEventGetRulesFunction::RunAsyncOnCorrectThread() {
     rules_registry_->GetAllRules(extension_id(), &rules);
   }
 
-  auto rules_value = std::make_unique<base::ListValue>();
+  base::Value::List rules_value;
+  rules_value.reserve(rules.size());
   for (const auto* rule : rules)
-    rules_value->Append(rule->ToValue());
-  return OneArgument(base::Value::FromUniquePtrValue(std::move(rules_value)));
+    rules_value.Append(base::Value::FromUniquePtrValue(rule->ToValue()));
+  return OneArgument(base::Value(std::move(rules_value)));
 }
 
 void EventsEventGetRulesFunction::RecordUMA(

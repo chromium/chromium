@@ -78,14 +78,14 @@ class EventListenerMapTest : public ExtensionsTest {
 
   std::unique_ptr<DictionaryValue> CreateHostSuffixFilter(
       const std::string& suffix) {
-    auto filter_dict = std::make_unique<DictionaryValue>();
-    filter_dict->Set("hostSuffix", std::make_unique<Value>(suffix));
+    base::Value::Dict filter_dict;
+    filter_dict.Set("hostSuffix", suffix);
 
-    auto filter_list = std::make_unique<ListValue>();
-    filter_list->Append(std::move(filter_dict));
+    base::Value::List filter_list;
+    filter_list.Append(std::move(filter_dict));
 
     auto filter = std::make_unique<DictionaryValue>();
-    filter->Set("url", std::move(filter_list));
+    filter->GetDict().Set("url", base::Value(std::move(filter_list)));
     return filter;
   }
 

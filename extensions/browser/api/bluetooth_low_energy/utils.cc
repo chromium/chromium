@@ -27,15 +27,13 @@ base::Value CharacteristicPropertiesToValue(
 
 }  // namespace
 
-std::unique_ptr<base::DictionaryValue> CharacteristicToValue(
-    Characteristic* from) {
+base::Value::Dict CharacteristicToValue(Characteristic* from) {
   // Copy the properties. Use Characteristic::ToValue to generate the result
   // dictionary without the properties, to prevent json_schema_compiler from
   // failing.
-  std::vector<CharacteristicProperty> properties = from->properties;
-  from->properties.clear();
-  std::unique_ptr<base::DictionaryValue> to = from->ToValue();
-  to->SetKey("properties", CharacteristicPropertiesToValue(properties));
+  std::vector<CharacteristicProperty> properties = std::move(from->properties);
+  base::Value::Dict to = std::move(from->ToValue()->GetDict());
+  to.Set("properties", CharacteristicPropertiesToValue(properties));
   return to;
 }
 
