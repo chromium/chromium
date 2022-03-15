@@ -81,7 +81,8 @@
             hidden="[[!showManagedByPolicy_]]">
         </cr-policy-indicator>
         <cr-toggle checked="{{item.checked}}"
-            disabled="[[moduleToggleDisabled_(show_, showManagedByPolicy_)]]">
+            disabled="[[moduleToggleDisabled_(show_, showManagedByPolicy_)]]"
+            title="[[item.name]]">
         </cr-toggle>
       </div>
       <!-- Discount toggle is a workaround for crbug.com/1199465 and will be
@@ -94,7 +95,8 @@
           <div class="toggle-name">
             $i18n{modulesCartDiscountConsentAccept}
           </div>
-          <cr-toggle checked="{{discountToggle_.enabled}}"></cr-toggle>
+          <cr-toggle checked="{{discountToggle_.enabled}}"
+              title="$i18n{modulesCartDiscountConsentAccept}"></cr-toggle>
         </div>
       </template>
     </div>
