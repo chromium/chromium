@@ -108,9 +108,9 @@ class PowerButtonMenuScreenView::PowerButtonMenuBackgroundView
   // views::View:
   void OnThemeChanged() override {
     views::View::OnThemeChanged();
-    layer()->SetColor(DeprecatedGetShieldLayerColor(
-        AshColorProvider::ShieldLayerType::kShield40,
-        kPowerButtonMenuFullscreenShieldColor));
+    layer()->SetColor(
+        DeprecatedGetBaseLayerColor(AshColorProvider::BaseLayerType::kOpaque,
+                                    kPowerButtonMenuFullscreenShieldColor));
   }
 
   // A callback for when the animation that shows the power menu has finished.
