@@ -398,9 +398,10 @@ chromium-metrics-reviews@google.com.
   <owner>dpenning@chromium.org</owner>
   <owner>dfried@chromium.org</owner>
   <summary>
-    When {TutorialId} is aborted, the step at which the tutorial was aborted.
+    When {TutorialID} is aborted, the step at which the tutorial was aborted.
     Only logged on desktop platforms. Logged each time a tutorial is aborted.
   </summary>
+  <token key="TutorialID" variants="TutorialID"/>
 </histogram>
 
 <histogram name="Tutorial{TutorialID}.Completion" enum="BooleanSuccess"
@@ -408,9 +409,10 @@ chromium-metrics-reviews@google.com.
   <owner>dpenning@chromium.org</owner>
   <owner>dfried@chromium.org</owner>
   <summary>
-    When {TutorialId} is ended, whether the tutorial was completed or aborted.
+    When {TutorialID} is ended, whether the tutorial was completed or aborted.
     Only logged on desktop platforms. Logged each time a tutorial is ended.
   </summary>
+  <token key="TutorialID" variants="TutorialID"/>
 </histogram>
 
 <histogram name="Tutorial{TutorialID}.IPHLinkClicked" enum="BooleanSuccess"
@@ -418,10 +420,11 @@ chromium-metrics-reviews@google.com.
   <owner>dpenning@chromium.org</owner>
   <owner>dfried@chromium.org</owner>
   <summary>
-    When {TutorialId} button is shown from an IPHLink, whether the user clicks
+    When {TutorialID} button is shown from an IPHLink, whether the user clicks
     to start the tutorial. Only logged on desktop platforms when the user either
     clicks or dismisses the FeaturePromo.
   </summary>
+  <token key="TutorialID" variants="TutorialID"/>
 </histogram>
 
 </histograms>
