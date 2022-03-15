@@ -5,12 +5,29 @@
 #ifndef CHROME_BROWSER_SIGNIN_SIGNIN_MANAGER_H_
 #define CHROME_BROWSER_SIGNIN_SIGNIN_MANAGER_H_
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_member.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+
+namespace base {
+class FilePath;
+}
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+namespace signin {
+class ConsistencyCookieManager;
+}
+
+class AccountProfileMapper;
+class WebSigninHelperLacros;
+#endif
 
 class PrefService;
 
@@ -18,10 +35,17 @@ class SigninManager : public KeyedService,
                       public signin::IdentityManager::Observer {
  public:
   SigninManager(PrefService* prefs, signin::IdentityManager* identity_manger);
+  ~SigninManager() override;
+
   SigninManager(const SigninManager&) = delete;
   SigninManager& operator=(const SigninManager&) = delete;
 
-  ~SigninManager() override;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  void StartWebSigninFlow(
+      const base::FilePath& profile_path,
+      AccountProfileMapper* account_profile_mapper,
+      signin::ConsistencyCookieManager* consistency_cookie_manager);
+#endif
 
  private:
   // Updates the cached version of unconsented primary account and notifies the
@@ -63,6 +87,10 @@ class SigninManager : public KeyedService,
 
   void OnSigninAllowedPrefChanged();
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  void OnWebSigninHelperLacrosComplete();
+#endif
+
   raw_ptr<PrefService> prefs_;
   raw_ptr<signin::IdentityManager> identity_manager_;
   base::ScopedObservation<signin::IdentityManager,
@@ -71,6 +99,10 @@ class SigninManager : public KeyedService,
 
   // Helper object to listen for changes to the signin allowed preference.
   BooleanPrefMember signin_allowed_;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  std::unique_ptr<WebSigninHelperLacros> web_signin_helper_lacros_;
+#endif
 
   base::WeakPtrFactory<SigninManager> weak_ptr_factory_{this};
 };

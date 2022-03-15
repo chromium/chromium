@@ -4,13 +4,16 @@
 
 #include "chrome/browser/signin/signin_manager.h"
 
-#include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
+#include "base/bind.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/account_manager/web_signin_helper_lacros.h"
+#endif
 
 SigninManager::SigninManager(PrefService* prefs,
                              signin::IdentityManager* identity_manager)
@@ -25,6 +28,27 @@ SigninManager::SigninManager(PrefService* prefs,
 }
 
 SigninManager::~SigninManager() = default;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void SigninManager::StartWebSigninFlow(
+    const base::FilePath& profile_path,
+    AccountProfileMapper* account_profile_mapper,
+    signin::ConsistencyCookieManager* consistency_cookie_manager) {
+  if (web_signin_helper_lacros_) {
+    // There is already a signin flow in progress.
+    // TODO(https://crbug.com/1260291): Activate the profile picker if it's
+    // already open.
+    return;
+  }
+
+  web_signin_helper_lacros_ = std::make_unique<WebSigninHelperLacros>(
+      profile_path, account_profile_mapper, identity_manager_,
+      consistency_cookie_manager,
+      // Using `base::Unretained()` is fine because this owns the helper.
+      base::BindOnce(&SigninManager::OnWebSigninHelperLacrosComplete,
+                     base::Unretained(this)));
+}
+#endif
 
 void SigninManager::UpdateUnconsentedPrimaryAccount() {
   // Only update the unconsented primary account only after accounts are loaded.
@@ -218,3 +242,9 @@ void SigninManager::OnErrorStateOfRefreshTokenUpdatedForAccount(
 void SigninManager::OnSigninAllowedPrefChanged() {
   UpdateUnconsentedPrimaryAccount();
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void SigninManager::OnWebSigninHelperLacrosComplete() {
+  web_signin_helper_lacros_.reset();
+}
+#endif
