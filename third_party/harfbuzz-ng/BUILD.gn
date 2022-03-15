@@ -91,6 +91,7 @@ if (use_system_harfbuzz) {
       "src/src/hb-buffer-deserialize-json.hh",
       "src/src/hb-buffer-deserialize-text.hh",
       "src/src/hb-buffer-serialize.cc",
+      "src/src/hb-buffer-verify.cc",
       "src/src/hb-buffer.cc",
       "src/src/hb-buffer.hh",
       "src/src/hb-cache.hh",
@@ -118,7 +119,6 @@ if (use_system_harfbuzz) {
       "src/src/hb-map.cc",
       "src/src/hb-map.hh",
       "src/src/hb-meta.hh",
-      "src/src/hb-ms-feature-ranges.cc",
       "src/src/hb-ms-feature-ranges.hh",
       "src/src/hb-mutex.hh",
       "src/src/hb-null.hh",
@@ -256,6 +256,8 @@ if (use_system_harfbuzz) {
       "src/src/hb-subset-input.hh",
       "src/src/hb-subset-plan.cc",
       "src/src/hb-subset-plan.hh",
+      "src/src/hb-subset-repacker.cc",
+      "src/src/hb-subset-repacker.h",
       "src/src/hb-subset.cc",
       "src/src/hb-subset.hh",
       "src/src/hb-ucd-table.hh",
@@ -312,17 +314,21 @@ if (use_system_harfbuzz) {
       # that is part of HarfBuzz.
       "HB_NO_UCD",
 
-      # TODO(https://crbug.com/992390): Don't use the HarfBuzz metrics
-      # implementation, as we're retrieving metrics from Skia. Consider using this
-      # implementation at least for vertical metrics.
-      "HB_NO_METRICS",
-
       # Disable .fon file support, not needed for Chrome, and code behind this
       # flag produces warnings in Clang. Compare https://crbug.com/1002945.
       "HB_NO_WIN1256",
 
       # TODO(https://crbug.com/949962): Remove once this is fixed upstream.
       "U_DISABLE_VERSION_SUFFIX=0",
+
+      # No experimental font format extensions yet.
+      "HB_NO_BORING_EXPANSION",
+
+      # Buffer verification not used in production build.
+      "HB_NO_BUFFER_VERIFY",
+
+      # We're not using HarfBuzz' drawing functions or debug tools in this build.
+      "HB_NO_DRAW",
 
       # Letting HarfBuzz enable warnings through pragmas can block compiler
       # upgrades in situations where say a ToT compiler build adds a new
@@ -352,15 +358,17 @@ if (use_system_harfbuzz) {
         defines += [ "HB_EXTERN=__declspec (dllexport)" ]
       } else {
         defines += [ "HB_EXTERN=__attribute__((visibility(\"default\")))" ]
-
         # Exposing symbols in component builds can cause a mixture of system
         # harfbuzz symbols and //third_party harfbuzz symbols to be loaded at
         # the same time.  This can cause issues for libraries that indirectly
-        # load harfbuzz like pango (see https://crbug.com/1146397), so include
-        # metrics symbols to prevent pango from using the system library.
+        # load harfbuzz like pango (see https://crbug.com/1146397), so we need
+        # to include metrics symbols (i.e. have HB_NO_METRICS undefined) to
+        # prevent pango from using the system library. Currently, HB_NO_METRICS
+        # is always disabled, due to
+        # https://github.com/harfbuzz/harfbuzz/issues/3482 - if that changes
+        # "HB_NO_METRICS" needs to be removed from the defines list here.
         # TODO(https://crbug.com/1148459): Remove this workaround once bug
         # 1148459 is fixed.
-        defines -= [ "HB_NO_METRICS" ]
       }
     }
 
