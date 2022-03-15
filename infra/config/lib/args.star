@@ -145,6 +145,9 @@ def listify(*args):
     wrap_in_ignore_default = False
     l = []
     for a in args:
+        should_ignore_default, a = _should_ignore_default(a)
+        if should_ignore_default:
+            wrap_in_ignore_default = True
         if type(a) != type([]):
             a = [a]
         for e in a:
