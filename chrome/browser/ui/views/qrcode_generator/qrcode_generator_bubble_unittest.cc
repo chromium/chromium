@@ -56,10 +56,10 @@ TEST_F(QRCodeGeneratorBubbleTest, GeneratedCodeHasQuietZone) {
 
   EXPECT_EQ(SK_ColorRED, base_image.bitmap()->getColor(0, 0));
 
-  EXPECT_EQ(SK_ColorWHITE, image.bitmap()->getColor(0, 0));
-  EXPECT_EQ(SK_ColorWHITE,
+  EXPECT_EQ(SK_ColorTRANSPARENT, image.bitmap()->getColor(0, 0));
+  EXPECT_EQ(SK_ColorTRANSPARENT,
             image.bitmap()->getColor(kQuietZoneDip, kQuietZoneDip - 1));
-  EXPECT_EQ(SK_ColorWHITE,
+  EXPECT_EQ(SK_ColorTRANSPARENT,
             image.bitmap()->getColor(kQuietZoneDip - 1, kQuietZoneDip));
   EXPECT_EQ(SK_ColorRED,
             image.bitmap()->getColor(kQuietZoneDip, kQuietZoneDip));

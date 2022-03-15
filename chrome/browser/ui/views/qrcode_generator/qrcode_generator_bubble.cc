@@ -71,7 +71,7 @@ constexpr bool IsSquare(gfx::Size size) {
 gfx::ImageSkia CreateBackgroundImageSkia(const gfx::Size& size) {
   SkBitmap bitmap;
   bitmap.allocN32Pixels(size.width(), size.height());
-  bitmap.eraseColor(SK_ColorWHITE);
+  bitmap.eraseColor(SK_ColorTRANSPARENT);
   return gfx::ImageSkia::CreateFromBitmap(bitmap, 1.0f);
 }
 
