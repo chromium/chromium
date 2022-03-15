@@ -656,9 +656,6 @@ void ShellSurfaceBase::SetGeometry(const gfx::Rect& geometry) {
     DLOG(WARNING) << "Surface geometry must be non-empty";
     return;
   }
-  if (!widget_) {
-    initial_size_ = gfx::Size(geometry.width(), geometry.height());
-  }
   pending_geometry_ = geometry;
 }
 
@@ -666,7 +663,7 @@ void ShellSurfaceBase::SetWindowBounds(const gfx::Rect& bounds) {
   TRACE_EVENT1("exo", "ShellSurfaceBase::SetWindowBounds", "bounds",
                bounds.ToString());
   if (!widget_) {
-    // TODO(crbug.com/1261321): Handle initial bounds.
+    initial_bounds_.emplace(bounds);
     return;
   }
   // TODO(crbug.com/1261321): This will not work if the full server side
@@ -1202,6 +1199,10 @@ void ShellSurfaceBase::OnWindowActivated(ActivationReason reason,
 bool ShellSurfaceBase::IsDragged() const {
   if (in_extended_drag_)
     return true;
+
+  if (!widget_)
+    return false;
+
   ash::WindowState* window_state =
       ash::WindowState::Get(widget_->GetNativeWindow());
   return window_state->is_dragged();
@@ -1277,7 +1278,10 @@ void ShellSurfaceBase::CreateShellSurfaceWidget(
   } else {
     params.parent = ash::Shell::GetContainer(root_window, container_);
   }
-  params.bounds = gfx::Rect(origin_, gfx::Size());
+  if (initial_bounds_)
+    params.bounds = *initial_bounds_;
+  else
+    params.bounds = gfx::Rect(origin_, gfx::Size());
 
   WMHelper::AppPropertyResolver::Params property_resolver_params;
   if (application_id_)
@@ -1692,6 +1696,10 @@ void ShellSurfaceBase::CommitWidget() {
   // while waiting for content.
   bool should_show =
       !host_window()->bounds().IsEmpty() && !widget_->IsMinimized();
+
+  // Do not center if the initial bounds is set.
+  if (initial_bounds_)
+    needs_layout_on_show_ = false;
 
   // Show widget if needed.
   if (pending_show_widget_ && should_show) {

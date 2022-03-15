@@ -2190,4 +2190,35 @@ TEST_F(ShellSurfaceTest, ScreenCoordinates) {
             display::Screen::GetScreen()->GetPrimaryDisplay().work_area());
 }
 
+TEST_F(ShellSurfaceTest, InitialBounds) {
+  {
+    gfx::Size size(20, 30);
+    auto shell_surface =
+        test::ShellSurfaceBuilder(size).SetNoCommit().BuildShellSurface();
+
+    EXPECT_FALSE(shell_surface->GetWidget());
+    gfx::Rect bounds(gfx::Point(35, 135), size);
+    shell_surface->SetWindowBounds(bounds);
+    shell_surface->root_surface()->Commit();
+
+    ASSERT_TRUE(shell_surface->GetWidget());
+    EXPECT_EQ(bounds, shell_surface->GetWidget()->GetWindowBoundsInScreen());
+  }
+  {
+    // Requesting larger than display work area bounds should not be allowed.
+    gfx::Size size(2000, 3000);
+    auto shell_surface =
+        test::ShellSurfaceBuilder(size).SetNoCommit().BuildShellSurface();
+
+    EXPECT_FALSE(shell_surface->GetWidget());
+    gfx::Rect bounds(gfx::Point(35, 135), size);
+    shell_surface->SetWindowBounds(bounds);
+    shell_surface->root_surface()->Commit();
+
+    ASSERT_TRUE(shell_surface->GetWidget());
+    EXPECT_EQ(display::Screen::GetScreen()->GetPrimaryDisplay().work_area(),
+              shell_surface->GetWidget()->GetWindowBoundsInScreen());
+  }
+}
+
 }  // namespace exo
