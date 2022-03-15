@@ -313,7 +313,8 @@ void PagedAppsGridView::UpdateOpacity(bool restore_opacity,
     // opacity (the layers will be deleted when they are no longer needed).
     if (ItemViewsRequireLayers()) {
       for (const auto& entry : view_model()->entries()) {
-        if (!IsViewHiddenForDrag(entry.view) && entry.view->layer())
+        if (!IsViewHiddenForDrag(entry.view) &&
+            !IsViewHiddenForFolderReorder(entry.view) && entry.view->layer())
           entry.view->layer()->SetOpacity(1.0f);
       }
       return;

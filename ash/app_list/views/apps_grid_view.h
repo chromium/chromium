@@ -300,6 +300,11 @@ class ASH_EXPORT AppsGridView : public views::View,
   // example, the drag view for which a drag icon proxy has been created).
   bool IsViewHiddenForDrag(const views::View* view) const;
 
+  // Whether `view` is the folder view that is animating out and in as part of
+  // folder reorder animation that runs after folder is closed if the folder
+  // position within the grid changed.
+  bool IsViewHiddenForFolderReorder(const views::View* view) const;
+
   // Returns true if the apps grid is under the reorder animation process. This
   // function is public for testing.
   bool IsUnderReorderAnimation() const;
@@ -906,6 +911,17 @@ class ASH_EXPORT AppsGridView : public views::View,
   // `item_id` is the folder items app list model ID.
   void FolderHidden(const std::string& item_id);
 
+  // When folder item view position in the grid changes while the folder view
+  // was shown for the item, the folder item view animates out in old location,
+  // and animate in in the new location upon folder view closure. This methods
+  // schedules folder item fade-in animation, and schedule bounds animations for
+  // other item views in the grid.
+  void AnimateFolderItemViewIn();
+
+  // Called when the folder view closes, and optional folder item view "position
+  // change" animation completes.
+  void OnFolderHideAnimationDone();
+
   class ScopedModelUpdate;
 
   AppListModel* model_ = nullptr;         // Owned by AppListView.
@@ -1050,6 +1066,11 @@ class ASH_EXPORT AppsGridView : public views::View,
   // behind a folder when the gird item list changes (e.g. if another item gets
   // added by sync, or the folder item moves as a result of folder rename).
   absl::optional<OpenFolderInfo> open_folder_info_;
+
+  // Folder item view that is being animated into it's target position. The
+  // animation runs after a folder gets closed if the folder intended position
+  // in the grid changed while the folder was open.
+  absl::optional<views::View*> reordering_folder_view_;
 
   std::unique_ptr<AppsGridContextMenu> context_menu_;
 

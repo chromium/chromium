@@ -56,6 +56,7 @@
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/gfx/animation/animation.h"
+#include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -106,6 +107,24 @@ constexpr base::TimeDelta kFadeInAnimationDuration = base::Milliseconds(400);
 
 // The time duration of the fade out animation used for apps grid reorder.
 constexpr base::TimeDelta kFadeOutAnimationDuration = base::Milliseconds(100);
+
+// Constants for folder item view relocation animation - the animation runs
+// after closing a folder view if the shown folder item view location within the
+// apps grid changed while the folder view was open.
+// The folder view animates in the old folder item location, then the folder
+// item view animates out at the old location, other items move into their
+// correct spot, and after a delay, the folder item view animates into its new
+// location.
+//
+// The duration of the folder item view fade out animation.
+constexpr base::TimeDelta kFolderItemFadeOutDuration = base::Milliseconds(100);
+
+// The duraction of the folder item view fade in animation.
+constexpr base::TimeDelta kFolderItemFadeInDuration = base::Milliseconds(300);
+
+// The delay for starting the folder item view fade in after the item view was
+// faded out.
+constexpr base::TimeDelta kFolderItemFadeInDelay = base::Milliseconds(300);
 
 // RowMoveAnimationDelegate is used when moving an item into a different row.
 // Before running the animation, the item's layer is re-created and kept in
@@ -343,7 +362,7 @@ AppsGridView::AppsGridView(AppListA11yAnnouncer* a11y_announcer,
   bounds_animator_ = std::make_unique<views::BoundsAnimator>(
       items_container_, /*use_transforms=*/true);
   bounds_animator_->AddObserver(this);
-
+  bounds_animator_->SetAnimationDuration(base::Milliseconds(300));
   if (features::IsProductivityLauncherEnabled()) {
     GetViewAccessibility().OverrideRole(ax::mojom::Role::kGroup);
     GetViewAccessibility().OverrideName(
@@ -885,15 +904,91 @@ void AppsGridView::ShowFolderForView(AppListItemView* folder_view,
 }
 
 void AppsGridView::FolderHidden(const std::string& item_id) {
-  if (open_folder_info_ && open_folder_info_->item_id == item_id) {
-    open_folder_info_.reset();
-    AnimateToIdealBounds();
-    // Drag updates get throttled while folder is closing during reparent drag -
-    // handle cached drag update if reparent drag is in progress.
-    if (IsDraggingForReparentInRootLevelGridView()) {
-      MaybeStartCardifiedView();
-      UpdateDrag(drag_pointer_, last_drag_point_);
+  if (!open_folder_info_ || open_folder_info_->item_id != item_id)
+    return;
+
+  // Find the folder item location in the app list model to determine whether
+  // the item view location changed while the folder was closed (in which case
+  // the folder location change should be animated).
+  AppListItemView* item_view = nullptr;
+  int model_index = -1;
+  for (int i = 0; i < view_model_.view_size(); ++i) {
+    AppListItemView* view = view_model_.view_at(i);
+    if (view == drag_view_)
+      continue;
+
+    ++model_index;
+    if (view->item()->id() == item_id) {
+      item_view = view;
+      break;
     }
+  }
+
+  // If the item view is gone, or the location in the grid did not change,
+  // the folder item should not be animated - immediately update apps grid state
+  // for folder hide.
+  if (!item_view || view_structure_.GetIndexFromModelIndex(model_index) ==
+                        open_folder_info_->grid_index) {
+    open_folder_info_.reset();
+    OnFolderHideAnimationDone();
+    return;
+  }
+
+  // When folder animates out, remaining items will animate to their ideal
+  // bounds - ensure their layers are created (and marked not to fill bounds
+  // opaquely).
+  for (int i = 0; i < view_model_.view_size(); ++i)
+    view_model_.view_at(i)->EnsureLayer();
+
+  // Animate the folder item view out from its original location.
+  reordering_folder_view_ = item_view;
+  views::AnimationBuilder animation;
+  animation.OnEnded(base::BindOnce(&AppsGridView::AnimateFolderItemViewIn,
+                                   weak_factory_.GetWeakPtr()));
+  animation.OnAborted(base::BindOnce(&AppsGridView::AnimateFolderItemViewIn,
+                                     weak_factory_.GetWeakPtr()));
+
+  gfx::Transform scale;
+  scale.Scale(0.5, 0.5);
+  scale = gfx::TransformAboutPivot(item_view->GetLocalBounds().CenterPoint(),
+                                   scale);
+  animation.Once()
+      .SetDuration(kFolderItemFadeOutDuration)
+      .SetTransform(item_view->layer(), scale, gfx::Tween::FAST_OUT_LINEAR_IN)
+      .SetOpacity(item_view->layer(), 0.0f, gfx::Tween::FAST_OUT_LINEAR_IN);
+}
+
+void AppsGridView::AnimateFolderItemViewIn() {
+  // Once folder item view fades out, animate remaining items into their target
+  // location, and schedule the folder item view fade-in (note that
+  // `AnimateToIdealBounds()` updates `reordering_folder_view_` bounds without
+  // animation).
+  open_folder_info_.reset();
+  AnimateToIdealBounds();
+
+  if (!reordering_folder_view_)
+    return;
+
+  views::AnimationBuilder()
+      .OnEnded(base::BindOnce(&AppsGridView::OnFolderHideAnimationDone,
+                              weak_factory_.GetWeakPtr()))
+      .OnAborted(base::BindOnce(&AppsGridView::OnFolderHideAnimationDone,
+                                weak_factory_.GetWeakPtr()))
+      .Once()
+      .At(kFolderItemFadeInDelay)
+      .SetDuration(kFolderItemFadeInDuration)
+      .SetTransform(reordering_folder_view_.value()->layer(), gfx::Transform(),
+                    gfx::Tween::ACCEL_LIN_DECEL_100_3)
+      .SetOpacity(reordering_folder_view_.value()->layer(), 1.0f,
+                  gfx::Tween::ACCEL_LIN_DECEL_100_3);
+}
+
+void AppsGridView::OnFolderHideAnimationDone() {
+  reordering_folder_view_.reset();
+  OnBoundsAnimatorDone(nullptr);
+  if (IsDraggingForReparentInRootLevelGridView()) {
+    MaybeStartCardifiedView();
+    UpdateDrag(drag_pointer_, last_drag_point_);
   }
 }
 
@@ -1021,6 +1116,9 @@ void AppsGridView::ViewHierarchyChanged(
       if (last_ghost_view_ == details.child)
         last_ghost_view_ = nullptr;
     }
+
+    if (reordering_folder_view_ && *reordering_folder_view_ == details.child)
+      reordering_folder_view_.reset();
 
     bounds_animator_->StopAnimatingView(details.child);
   }
@@ -1311,8 +1409,9 @@ void AppsGridView::AnimateToIdealBounds() {
     const gfx::Rect& current = view->bounds();
     const bool current_visible = visible_bounds.Intersects(current);
     const bool target_visible = visible_bounds.Intersects(target);
-    const bool visible =
-        !IsViewHiddenForDrag(view) && (current_visible || target_visible);
+    const bool visible = !IsViewHiddenForFolderReorder(view) &&
+                         !IsViewHiddenForDrag(view) &&
+                         (current_visible || target_visible);
 
     const int y_diff = target.y() - current.y();
     const int tile_size_height =
@@ -2554,6 +2653,11 @@ bool AppsGridView::ItemViewsRequireLayers() const {
   if (IsUnderReorderAnimation())
     return true;
 
+  // Folder position is changing after folder closure - this involves animating
+  // folder item view layer out and in, and changing other view's bounds.
+  if (reordering_folder_view_)
+    return true;
+
   return false;
 }
 
@@ -2599,6 +2703,10 @@ gfx::Rect AppsGridView::GetExpectedTileBounds(const GridIndex& index) const {
 
 bool AppsGridView::IsViewHiddenForDrag(const views::View* view) const {
   return drag_view_hider_ && drag_view_hider_->drag_view() == view;
+}
+
+bool AppsGridView::IsViewHiddenForFolderReorder(const views::View* view) const {
+  return reordering_folder_view_ && *reordering_folder_view_ == view;
 }
 
 bool AppsGridView::IsUnderReorderAnimation() const {

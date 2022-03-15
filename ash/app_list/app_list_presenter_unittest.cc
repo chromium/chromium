@@ -72,6 +72,7 @@
 #include "ash/shell.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/layer_animation_stopped_waiter.h"
 #include "ash/test/test_window_builder.h"
 #include "ash/wallpaper/wallpaper_controller_test_api.h"
 #include "ash/wm/mru_window_tracker.h"
@@ -806,6 +807,75 @@ TEST_P(ProductivityLauncherTest, SortingClosesOpenFolderView) {
   EXPECT_FALSE(AppListIsInFolderView());
 }
 
+// Tests that folder item view does not animate out and in after folder is
+// closed (and the folder item location in apps grid did not change while the
+// folder was shown).
+TEST_P(ProductivityLauncherTest, FolderItemViewNotAnimatingAfterClosingFolder) {
+  app_list_test_model_->PopulateApps(2);
+  AppListFolderItem* const folder_item =
+      app_list_test_model_->CreateAndPopulateFolderWithApps(3);
+  const std::string folder_id = folder_item->id();
+  app_list_test_model_->PopulateApps(3);
+
+  // Setup tablet/clamshell mode and show launcher.
+  EnableTabletMode(tablet_mode_param());
+  EnsureLauncherShown();
+  SetupGridTestApi();
+
+  ui::ScopedAnimationDurationScaleMode scope_duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Cache the initial folder item bounds.
+  const gfx::Rect original_folder_item_bounds =
+      apps_grid_view_->GetItemViewAt(2)->GetBoundsInScreen();
+
+  grid_test_api_->PressItemAt(2);
+  EXPECT_TRUE(AppListIsInFolderView());
+  GetAppListTestHelper()->WaitForFolderAnimation();
+  AppListFolderView* const folder_view = GetFolderView();
+
+  AppListItemView* const folder_item_view = apps_grid_view_->GetItemViewAt(2);
+  ASSERT_TRUE(folder_item_view);
+  ASSERT_TRUE(folder_item_view->is_folder());
+  EXPECT_EQ(original_folder_item_bounds, folder_item_view->GetBoundsInScreen());
+
+  // Close the folder view.
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(
+      GetFolderView()->GetBoundsInScreen().right_center() +
+      gfx::Vector2d(10, 0));
+  event_generator->ClickLeftButton();
+
+  EXPECT_TRUE(folder_view->IsAnimationRunning());
+  EXPECT_EQ(original_folder_item_bounds, folder_item_view->GetBoundsInScreen());
+
+  base::RunLoop folder_animation_waiter;
+  // Once folder completes hiding, the folder item view should be moved to
+  // target location.
+  folder_view->SetAnimationDoneTestCallback(base::BindLambdaForTesting([&]() {
+    folder_animation_waiter.Quit();
+
+    EXPECT_EQ(original_folder_item_bounds,
+              folder_item_view->GetBoundsInScreen());
+
+    // The folder item position did not change, so the item view should not
+    // start fading out when the folder view hides.
+    EXPECT_FALSE(folder_item_view->layer());
+  }));
+  folder_animation_waiter.Run();
+
+  EXPECT_FALSE(AppListIsInFolderView());
+
+  // Verify that the folder is visible, and positioned in its final bounds.
+  EXPECT_EQ(original_folder_item_bounds, folder_item_view->GetBoundsInScreen());
+
+  // No item layers are expected to be created.
+  for (int i = 0; i < apps_grid_view_->view_model()->view_size(); ++i) {
+    views::View* item_view = apps_grid_view_->view_model()->view_at(i);
+    EXPECT_FALSE(item_view->layer()) << "at " << i;
+  }
+}
+
 // Tests that folder view bounds do not change if an item gets added to app list
 // model while the folder view is visible (even if it changes the folder item
 // view position in the root apps grid).
@@ -875,16 +945,50 @@ TEST_P(ProductivityLauncherTest,
   EXPECT_TRUE(folder_view->IsAnimationRunning());
   EXPECT_EQ(original_folder_item_bounds, folder_item_view->GetBoundsInScreen());
 
+  base::RunLoop folder_animation_waiter;
   // Once folder completes hiding, the folder item view should be moved to
   // target location.
-  GetAppListTestHelper()->WaitForFolderAnimation();
-  apps_grid_view_->GetWidget()->LayoutRootViewIfNecessary();
-  grid_test_api_->WaitForItemMoveAnimationDone();
+  folder_view->SetAnimationDoneTestCallback(base::BindLambdaForTesting([&]() {
+    folder_animation_waiter.Quit();
+
+    EXPECT_EQ(original_folder_item_bounds,
+              folder_item_view->GetBoundsInScreen());
+
+    // The folder item should start fading out in it's current position.
+    ASSERT_TRUE(folder_item_view->layer());
+    EXPECT_EQ(0.0f, folder_item_view->layer()->GetTargetOpacity());
+  }));
+
+  folder_animation_waiter.Run();
+
   EXPECT_FALSE(AppListIsInFolderView());
 
+  // Wait for the folder item to fade out.
+  if (folder_item_view->layer()) {
+    LayerAnimationStoppedWaiter animation_waiter;
+    animation_waiter.Wait(folder_item_view->layer());
+  }
+
+  grid_test_api_->WaitForItemMoveAnimationDone();
+
+  // Make sure the folder item view fade in animation is done.
+  if (folder_item_view->layer()) {
+    LayerAnimationStoppedWaiter animation_waiter;
+    animation_waiter.Wait(folder_item_view->layer());
+  }
+
+  // Verify that the folder is visible, and positioned in its final bounds.
   EXPECT_EQ(final_folder_item_bounds, folder_item_view->GetBoundsInScreen());
+  EXPECT_FALSE(folder_item_view->layer());
+
   EXPECT_EQ(original_folder_item_bounds,
             apps_grid_view_->GetItemViewAt(2)->GetBoundsInScreen());
+
+  // Verify that item view layers have been deleted.
+  for (int i = 0; i < apps_grid_view_->view_model()->view_size(); ++i) {
+    views::View* item_view = apps_grid_view_->view_model()->view_at(i);
+    EXPECT_FALSE(item_view->layer()) << "at " << i;
+  }
 }
 
 // Tests that folder view bounds do not change if position of the original
@@ -956,17 +1060,41 @@ TEST_P(ProductivityLauncherTest,
   EXPECT_TRUE(folder_view->IsAnimationRunning());
   EXPECT_EQ(original_folder_item_bounds, folder_item_view->GetBoundsInScreen());
 
+  base::RunLoop folder_animation_waiter;
   // Once folder completes hiding, the folder item view should be moved to
   // target location.
-  GetAppListTestHelper()->WaitForFolderAnimation();
-  apps_grid_view_->GetWidget()->LayoutRootViewIfNecessary();
-  grid_test_api_->WaitForItemMoveAnimationDone();
+  folder_view->SetAnimationDoneTestCallback(base::BindLambdaForTesting([&]() {
+    folder_animation_waiter.Quit();
+
+    EXPECT_EQ(original_folder_item_bounds,
+              folder_item_view->GetBoundsInScreen());
+
+    // The folder item should start fading out in it's current position.
+    ASSERT_TRUE(folder_item_view->layer());
+    EXPECT_EQ(0.0f, folder_item_view->layer()->GetTargetOpacity());
+  }));
+
+  folder_animation_waiter.Run();
+
   EXPECT_FALSE(AppListIsInFolderView());
 
-  EXPECT_EQ(final_folder_item_bounds, folder_item_view->GetBoundsInScreen());
+  // Wait for the folder item to fade out.
+  if (folder_item_view->layer()) {
+    LayerAnimationStoppedWaiter animation_waiter;
+    animation_waiter.Wait(folder_item_view->layer());
+  }
 
-  EXPECT_EQ(original_folder_item_bounds,
-            apps_grid_view_->GetItemViewAt(2)->GetBoundsInScreen());
+  grid_test_api_->WaitForItemMoveAnimationDone();
+
+  // Make sure the folder item view fade in animation is done.
+  if (folder_item_view->layer()) {
+    LayerAnimationStoppedWaiter animation_waiter;
+    animation_waiter.Wait(folder_item_view->layer());
+  }
+
+  // Verify that the folder is visible, and positioned in its final bounds.
+  EXPECT_EQ(final_folder_item_bounds, folder_item_view->GetBoundsInScreen());
+  EXPECT_FALSE(folder_item_view->layer());
 
   // The item at slot 1 should be remain in place.
   EXPECT_EQ(original_item_1_bounds,
@@ -974,6 +1102,12 @@ TEST_P(ProductivityLauncherTest,
   // The item at slot 2 in the model should move into original folder item slot.
   EXPECT_EQ(original_folder_item_bounds,
             apps_grid_view_->GetItemViewAt(2)->GetBoundsInScreen());
+
+  // Verify that item view layers have been deleted.
+  for (int i = 0; i < apps_grid_view_->view_model()->view_size(); ++i) {
+    views::View* item_view = apps_grid_view_->view_model()->view_at(i);
+    EXPECT_FALSE(item_view->layer()) << "at " << i;
+  }
 }
 
 // Tests that folder view bounds do not change if position of the original
@@ -1045,17 +1179,41 @@ TEST_P(ProductivityLauncherTest,
   EXPECT_TRUE(folder_view->IsAnimationRunning());
   EXPECT_EQ(original_folder_item_bounds, folder_item_view->GetBoundsInScreen());
 
+  base::RunLoop folder_animation_waiter;
   // Once folder completes hiding, the folder item view should be moved to
   // target location.
-  GetAppListTestHelper()->WaitForFolderAnimation();
-  apps_grid_view_->GetWidget()->LayoutRootViewIfNecessary();
-  grid_test_api_->WaitForItemMoveAnimationDone();
+  folder_view->SetAnimationDoneTestCallback(base::BindLambdaForTesting([&]() {
+    folder_animation_waiter.Quit();
+
+    EXPECT_EQ(original_folder_item_bounds,
+              folder_item_view->GetBoundsInScreen());
+
+    // The folder item should start fading out in it's current position.
+    ASSERT_TRUE(folder_item_view->layer());
+    EXPECT_EQ(0.0f, folder_item_view->layer()->GetTargetOpacity());
+  }));
+
+  folder_animation_waiter.Run();
+
   EXPECT_FALSE(AppListIsInFolderView());
 
-  EXPECT_EQ(final_folder_item_bounds, folder_item_view->GetBoundsInScreen());
+  // Wait for the folder item to fade out.
+  if (folder_item_view->layer()) {
+    LayerAnimationStoppedWaiter animation_waiter;
+    animation_waiter.Wait(folder_item_view->layer());
+  }
 
-  EXPECT_EQ(original_folder_item_bounds,
-            apps_grid_view_->GetItemViewAt(2)->GetBoundsInScreen());
+  grid_test_api_->WaitForItemMoveAnimationDone();
+
+  // Make sure the folder item view fade in animation is done.
+  if (folder_item_view->layer()) {
+    LayerAnimationStoppedWaiter animation_waiter;
+    animation_waiter.Wait(folder_item_view->layer());
+  }
+
+  // Verify that the folder is visible, and positioned in its final bounds.
+  EXPECT_EQ(final_folder_item_bounds, folder_item_view->GetBoundsInScreen());
+  EXPECT_FALSE(folder_item_view->layer());
 
   // The item at slot 2 in the model should move into original folder item slot.
   EXPECT_EQ(original_folder_item_bounds,
@@ -1063,6 +1221,12 @@ TEST_P(ProductivityLauncherTest,
   // The item at slot 3 in the model should move into new position.
   EXPECT_EQ(original_item_3_bounds,
             apps_grid_view_->GetItemViewAt(3)->GetBoundsInScreen());
+
+  // Verify that item view layers have been deleted.
+  for (int i = 0; i < apps_grid_view_->view_model()->view_size(); ++i) {
+    views::View* item_view = apps_grid_view_->view_model()->view_at(i);
+    EXPECT_FALSE(item_view->layer()) << "at " << i;
+  }
 }
 
 // Tests that folder item deletion during folder view hide animation is handled
@@ -1140,11 +1304,18 @@ TEST_P(ProductivityLauncherTest, ReorderedFolderItemDeletionDuringFolderClose) {
             apps_grid_view_->GetItemViewAt(2)->GetBoundsInScreen());
   EXPECT_EQ(original_item_3_bounds,
             apps_grid_view_->GetItemViewAt(3)->GetBoundsInScreen());
+
+  // Verify that item view layers have been deleted.
+  for (int i = 0; i < apps_grid_view_->view_model()->view_size(); ++i) {
+    views::View* item_view = apps_grid_view_->view_model()->view_at(i);
+    EXPECT_FALSE(item_view->layer()) << "at " << i;
+  }
 }
 
 // Tests that folder item deletion just after folder gets hidden (while item
 // bounds are still animating to final positions) gets handled well.
-TEST_P(ProductivityLauncherTest, ReorderedFolderItemDeletionAfterFolderClose) {
+TEST_P(ProductivityLauncherTest,
+       ReorderedFolderItemDeletionDuringFolderItemFadeOut) {
   app_list_test_model_->PopulateApps(2);
   AppListFolderItem* const folder_item =
       app_list_test_model_->CreateAndPopulateFolderWithApps(3);
@@ -1204,11 +1375,22 @@ TEST_P(ProductivityLauncherTest, ReorderedFolderItemDeletionAfterFolderClose) {
                                gfx::Vector2d(10, 0));
   event_generator->ClickLeftButton();
 
-  GetAppListTestHelper()->WaitForFolderAnimation();
+  EXPECT_TRUE(folder_view->IsAnimationRunning());
+  EXPECT_EQ(original_folder_item_bounds, folder_item_view->GetBoundsInScreen());
 
-  // Delete the folder item while items are animating into their final
-  // positions.
-  DeleteFolderItemChildren(folder_item);
+  base::RunLoop folder_animation_waiter;
+  // Once folder completes hiding, the folder item view should be moved to
+  // target location.
+  folder_view->SetAnimationDoneTestCallback(base::BindLambdaForTesting([&]() {
+    folder_animation_waiter.Quit();
+
+    // Delete the folder item while items are animating into their final
+    // positions.
+    DeleteFolderItemChildren(folder_item);
+  }));
+
+  folder_animation_waiter.Run();
+
   apps_grid_view_->GetWidget()->LayoutRootViewIfNecessary();
   grid_test_api_->WaitForItemMoveAnimationDone();
   EXPECT_FALSE(AppListIsInFolderView());
@@ -1220,6 +1402,109 @@ TEST_P(ProductivityLauncherTest, ReorderedFolderItemDeletionAfterFolderClose) {
             apps_grid_view_->GetItemViewAt(2)->GetBoundsInScreen());
   EXPECT_EQ(original_item_3_bounds,
             apps_grid_view_->GetItemViewAt(3)->GetBoundsInScreen());
+
+  // Verify that item view layers have been deleted.
+  for (int i = 0; i < apps_grid_view_->view_model()->view_size(); ++i) {
+    views::View* item_view = apps_grid_view_->view_model()->view_at(i);
+    EXPECT_FALSE(item_view->layer()) << "at " << i;
+  }
+}
+
+// Tests that folder item deletion just after folder gets hidden (while item
+// bounds are still animating to final positions) gets handled well.
+TEST_P(ProductivityLauncherTest,
+       ReorderedFolderItemDeletionAfterFolderItemFadeOut) {
+  app_list_test_model_->PopulateApps(2);
+  AppListFolderItem* const folder_item =
+      app_list_test_model_->CreateAndPopulateFolderWithApps(3);
+  const std::string folder_id = folder_item->id();
+  app_list_test_model_->PopulateApps(3);
+
+  // Setup tablet/clamshell mode and show launcher.
+  EnableTabletMode(tablet_mode_param());
+  EnsureLauncherShown();
+  SetupGridTestApi();
+
+  ui::ScopedAnimationDurationScaleMode scope_duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  grid_test_api_->PressItemAt(2);
+  EXPECT_TRUE(AppListIsInFolderView());
+  GetAppListTestHelper()->WaitForFolderAnimation();
+  AppListFolderView* folder_view = GetFolderView();
+
+  // Cache the initial folder bounds.
+  const gfx::Rect folder_bounds = folder_view->GetBoundsInScreen();
+  const gfx::Rect original_folder_item_bounds =
+      apps_grid_view_->GetItemViewAt(2)->GetBoundsInScreen();
+  const gfx::Rect original_item_1_bounds =
+      apps_grid_view_->GetItemViewAt(1)->GetBoundsInScreen();
+  const gfx::Rect original_item_3_bounds =
+      apps_grid_view_->GetItemViewAt(3)->GetBoundsInScreen();
+
+  // Move the folder item to the last position in the model.
+  app_list_test_model_->RequestPositionUpdate(
+      folder_id,
+      app_list_test_model_->top_level_item_list()
+          ->item_at(0)
+          ->position()
+          .CreateBefore(),
+      RequestPositionUpdateReason::kMoveItem);
+
+  // Verify that the folder view location did not actually change.
+  EXPECT_EQ(folder_bounds, folder_view->GetBoundsInScreen());
+
+  AppListItemView* const folder_item_view = apps_grid_view_->GetItemViewAt(0);
+  ASSERT_TRUE(folder_item_view);
+  ASSERT_TRUE(folder_item_view->is_folder());
+  EXPECT_EQ(original_folder_item_bounds, folder_item_view->GetBoundsInScreen());
+
+  // The item at slot 3 in the model did not change, so it should remain in
+  // place.
+  EXPECT_EQ(original_item_3_bounds,
+            apps_grid_view_->GetItemViewAt(3)->GetBoundsInScreen());
+  // The item at slot 2 in the model should remain in the old position (slot 1).
+  EXPECT_EQ(original_item_1_bounds,
+            apps_grid_view_->GetItemViewAt(2)->GetBoundsInScreen());
+
+  // Close the folder view.
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(folder_view->GetBoundsInScreen().right_center() +
+                               gfx::Vector2d(10, 0));
+  event_generator->ClickLeftButton();
+
+  EXPECT_TRUE(folder_view->IsAnimationRunning());
+  EXPECT_EQ(original_folder_item_bounds, folder_item_view->GetBoundsInScreen());
+
+  GetAppListTestHelper()->WaitForFolderAnimation();
+
+  // Wait for the folder item to fade out.
+  if (folder_item_view->layer()) {
+    LayerAnimationStoppedWaiter animation_waiter;
+    animation_waiter.Wait(folder_item_view->layer());
+  }
+
+  // Delete the folder item while items are animating into their final
+  // positions.
+  DeleteFolderItemChildren(folder_item);
+  apps_grid_view_->GetWidget()->LayoutRootViewIfNecessary();
+
+  grid_test_api_->WaitForItemMoveAnimationDone();
+  EXPECT_FALSE(AppListIsInFolderView());
+
+  // Verify remaining items are moved into correct slots.
+  EXPECT_EQ(original_item_1_bounds,
+            apps_grid_view_->GetItemViewAt(1)->GetBoundsInScreen());
+  EXPECT_EQ(original_folder_item_bounds,
+            apps_grid_view_->GetItemViewAt(2)->GetBoundsInScreen());
+  EXPECT_EQ(original_item_3_bounds,
+            apps_grid_view_->GetItemViewAt(3)->GetBoundsInScreen());
+
+  // Verify that item view layers have been deleted.
+  for (int i = 0; i < apps_grid_view_->view_model()->view_size(); ++i) {
+    views::View* item_view = apps_grid_view_->view_model()->view_at(i);
+    EXPECT_FALSE(item_view->layer()) << "at " << i;
+  }
 }
 
 // Tests that folder item deletion while the folder is shown gets handled well.
