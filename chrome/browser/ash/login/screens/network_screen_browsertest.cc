@@ -152,11 +152,8 @@ IN_PROC_BROWSER_TEST_F(NetworkScreenTest, CanConnect) {
   // EXPECT_FALSE(view_->IsContinueEnabled());
   network_screen()->UpdateStatus();
 
-  // Expecting 2 calls: one to decide if the device should
-  // `StopWaitingForConnection`; and one to decide if it should automatically
-  // continue (in case of zero-touch hands-off enrollment).
   EXPECT_CALL(*network_state_helper(), IsConnected())
-      .Times(2)
+      .Times(AnyNumber())
       .WillRepeatedly(Return(true));
   // TODO(nkostylev): Add integration with WebUI view http://crosbug.com/22570
   // EXPECT_FALSE(view_->IsContinueEnabled());
@@ -173,11 +170,8 @@ IN_PROC_BROWSER_TEST_F(NetworkScreenTest, Timeout) {
   // EXPECT_FALSE(view_->IsContinueEnabled());
   network_screen()->UpdateStatus();
 
-  // Expecting 2 calls: one to decide if the device should automatically
-  // continue (in case of zero-touch hands-off enrollment); and one to decide if
-  // it should show the error bubble.
   EXPECT_CALL(*network_state_helper(), IsConnected())
-      .Times(2)
+      .Times(AnyNumber())
       .WillRepeatedly(Return(false));
   // TODO(nkostylev): Add integration with WebUI view http://crosbug.com/22570
   // EXPECT_FALSE(view_->IsContinueEnabled());
@@ -192,7 +186,7 @@ IN_PROC_BROWSER_TEST_F(NetworkScreenTest, Timeout) {
 
 // The network screen should be skipped if the device can connect and it's using
 // zero-touch hands-off enrollment.
-IN_PROC_BROWSER_TEST_F(NetworkScreenTest, HandsOffCanConnect) {
+IN_PROC_BROWSER_TEST_F(NetworkScreenTest, HandsOffCanConnect_Skipped) {
   // Configure the UI to use Hands-Off Enrollment flow. This cannot be done in
   // the `SetUpCommandLine` method, because the welcome screen would also be
   // skipped, causing the network screen to be shown before we could set up this
@@ -206,12 +200,8 @@ IN_PROC_BROWSER_TEST_F(NetworkScreenTest, HandsOffCanConnect) {
 
   network_screen()->UpdateStatus();
 
-  // Expecting 3 calls: one to decide if the device should
-  // `StopWaitingForConnection`; one to decide if it should automatically
-  // continue (in case of zero-touch hands-off enrollment); and one to decide if
-  // this screens should `NotifyOnConnection`.
   EXPECT_CALL(*network_state_helper(), IsConnected())
-      .Times(3)
+      .Times(AnyNumber())
       .WillRepeatedly(Return(true));
 
   network_screen()->UpdateStatus();
@@ -222,7 +212,7 @@ IN_PROC_BROWSER_TEST_F(NetworkScreenTest, HandsOffCanConnect) {
 
 // The network screen should NOT be skipped if the connection times out, even if
 // it's using zero-touch hands-off enrollment.
-IN_PROC_BROWSER_TEST_F(NetworkScreenTest, HandsOffTimeout) {
+IN_PROC_BROWSER_TEST_F(NetworkScreenTest, HandsOffTimeout_NotSkipped) {
   // Configure the UI to use Hands-Off Enrollment flow. This cannot be done in
   // the `SetUpCommandLine` method, because the welcome screen would also be
   // skipped, causing the network screen to be shown before we could set up this
@@ -236,20 +226,21 @@ IN_PROC_BROWSER_TEST_F(NetworkScreenTest, HandsOffTimeout) {
 
   network_screen()->UpdateStatus();
 
-  // Expecting 2 calls: one to decide if the device should automatically
-  // continue (in case of zero-touch hands-off enrollment); and one to decide if
-  // it should show the error bubble.
   EXPECT_CALL(*network_state_helper(), IsConnected())
-      .Times(2)
+      .Times(AnyNumber())
       .WillRepeatedly(Return(false));
 
   network_screen()->OnConnectionTimeout();
 }
 
-IN_PROC_BROWSER_TEST_F(NetworkScreenTest, SkippedEthernetConnected) {
+IN_PROC_BROWSER_TEST_F(NetworkScreenTest, EthernetConnection_Skipped) {
+  EXPECT_CALL(*network_state_helper(), IsConnected())
+      .Times(AnyNumber())
+      .WillRepeatedly(Return(true));
   EXPECT_CALL(*network_state_helper(), IsConnectedToEthernet())
       .Times(AnyNumber())
       .WillRepeatedly((Return(true)));
+
   ShowNetworkScreen();
   WaitForScreenExit();
 
@@ -271,6 +262,33 @@ IN_PROC_BROWSER_TEST_F(NetworkScreenTest, SkippedEthernetConnected) {
       histogram_tester_.GetAllSamples("OOBE.StepShownStatus.Network-selection"),
       ElementsAre(base::Bucket(
           static_cast<int>(WizardController::ScreenShownStatus::kSkipped), 1)));
+  // Showing screen again to test skip doesn't work now.
+  ShowNetworkScreen();
+  WaitForScreenShown();
+}
+
+IN_PROC_BROWSER_TEST_F(NetworkScreenTest, DelayedEthernetConnection_Skipped) {
+  ShowNetworkScreen();
+
+  EXPECT_CALL(*network_state_helper(), IsConnecting()).WillOnce((Return(true)));
+
+  network_screen()->UpdateStatus();
+
+  EXPECT_CALL(*network_state_helper(), IsConnected())
+      .Times(AnyNumber())
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*network_state_helper(), IsConnectedToEthernet())
+      .Times(AnyNumber())
+      .WillRepeatedly((Return(true)));
+
+  network_screen()->UpdateStatus();
+  WaitForScreenExit();
+
+  if (chromeos::features::IsOobeConsolidatedConsentEnabled())
+    CheckResult(NetworkScreen::Result::CONNECTED_REGULAR_CONSOLIDATED_CONSENT);
+  else
+    CheckResult(NetworkScreen::Result::CONNECTED_REGULAR);
+
   // Showing screen again to test skip doesn't work now.
   ShowNetworkScreen();
   WaitForScreenShown();

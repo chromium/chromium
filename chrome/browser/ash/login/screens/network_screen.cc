@@ -77,20 +77,9 @@ void NetworkScreen::OnViewDestroyed(NetworkScreenView* view) {
 }
 
 bool NetworkScreen::MaybeSkip(WizardContext* context) {
-  if (!first_time_shown_)
-    return false;
-  first_time_shown_ = false;
-
-  if (features::IsOobeNetworkScreenSkipEnabled() &&
-      network_state_helper_->IsConnectedToEthernet()) {
-    if (chromeos::features::IsOobeConsolidatedConsentEnabled())
-      exit_callback_.Run(Result::NOT_APPLICABLE_CONSOLIDATED_CONSENT);
-    else
-      exit_callback_.Run(Result::NOT_APPLICABLE);
-    return true;
-  }
-
-  return false;
+  // Skip this screen if the device is connected to Ethernet for the first time
+  // in this session.
+  return UpdateStatusIfConnectedToEthernet();
 }
 
 void NetworkScreen::ShowImpl() {
@@ -211,6 +200,11 @@ void NetworkScreen::StopWaitingForConnection(const std::u16string& network_id) {
 
   network_id_ = network_id;
 
+  // Automatically continue if the device is connected to Ethernet for the first
+  // time in this session.
+  if (UpdateStatusIfConnectedToEthernet())
+    return;
+
   // Automatically continue if we are using Zero-Touch Hands-Off Enrollment.
   if (is_connected && continue_attempts_ == 0 &&
       WizardController::IsZeroTouchHandsOffOobeFlow()) {
@@ -252,4 +246,36 @@ void NetworkScreen::OnContinueButtonClicked() {
   continue_pressed_ = true;
   WaitForConnection(network_id_);
 }
+
+bool NetworkScreen::UpdateStatusIfConnectedToEthernet() {
+  if (!features::IsOobeNetworkScreenSkipEnabled())
+    return false;
+
+  if (!first_ethernet_connection_)
+    return false;
+
+  if (!network_state_helper_->IsConnectedToEthernet())
+    return false;
+
+  first_ethernet_connection_ = false;
+
+  if (is_hidden()) {
+    // Screen not shown yet: skipping it.
+    if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+      exit_callback_.Run(Result::NOT_APPLICABLE_CONSOLIDATED_CONSENT);
+    } else {
+      exit_callback_.Run(Result::NOT_APPLICABLE);
+    }
+  } else {
+    // Screen already shown: automatically continuing.
+    if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+      exit_callback_.Run(Result::CONNECTED_REGULAR_CONSOLIDATED_CONSENT);
+    } else {
+      exit_callback_.Run(Result::CONNECTED_REGULAR);
+    }
+  }
+
+  return true;
+}
+
 }  // namespace ash

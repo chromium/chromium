@@ -69,8 +69,10 @@ class NetworkScreen : public BaseScreen, public NetworkStateHandlerObserver {
   friend class DemoSetupTest;
   FRIEND_TEST_ALL_PREFIXES(NetworkScreenTest, CanConnect);
   FRIEND_TEST_ALL_PREFIXES(NetworkScreenTest, Timeout);
-  FRIEND_TEST_ALL_PREFIXES(NetworkScreenTest, HandsOffCanConnect);
-  FRIEND_TEST_ALL_PREFIXES(NetworkScreenTest, HandsOffTimeout);
+  FRIEND_TEST_ALL_PREFIXES(NetworkScreenTest, HandsOffCanConnect_Skipped);
+  FRIEND_TEST_ALL_PREFIXES(NetworkScreenTest, HandsOffTimeout_NotSkipped);
+  FRIEND_TEST_ALL_PREFIXES(NetworkScreenTest,
+                           DelayedEthernetConnection_Skipped);
   FRIEND_TEST_ALL_PREFIXES(NetworkScreenUnitTest, ContinuesAutomatically);
   FRIEND_TEST_ALL_PREFIXES(NetworkScreenUnitTest, ContinuesOnlyOnce);
 
@@ -120,6 +122,10 @@ class NetworkScreen : public BaseScreen, public NetworkStateHandlerObserver {
   // Called when continue button is clicked.
   void OnContinueButtonClicked();
 
+  // Skip this screen or automatically continue if the device is connected to
+  // Ethernet for the first time in this session.
+  bool UpdateStatusIfConnectedToEthernet();
+
   // True if subscribed to network change notification.
   bool is_network_subscribed_ = false;
 
@@ -136,8 +142,9 @@ class NetworkScreen : public BaseScreen, public NetworkStateHandlerObserver {
   // Indicates that we should proceed with OOBE as soon as we are connected.
   bool continue_pressed_ = false;
 
-  // Indicates whether screen has been shown already or not.
-  bool first_time_shown_ = true;
+  // Indicates whether the device has already been connected to Ethernet in this
+  // session or not.
+  bool first_ethernet_connection_ = true;
 
   // Timer for connection timeout.
   base::OneShotTimer connection_timer_;
