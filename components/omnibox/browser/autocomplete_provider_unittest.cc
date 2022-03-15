@@ -543,6 +543,7 @@ void AutocompleteProviderTest::ResetControllerWithKeywordProvider() {
   data.SetShortName(u"foo.com");
   data.SetKeyword(u"foo.com");
   data.SetURL("http://foo.com/{searchTerms}");
+  data.is_active = TemplateURLData::ActiveStatus::kTrue;
   TemplateURL* keyword_turl =
       turl_model->Add(std::make_unique<TemplateURL>(data));
   ASSERT_NE(0, keyword_turl->id());
@@ -552,6 +553,7 @@ void AutocompleteProviderTest::ResetControllerWithKeywordProvider() {
   data.SetShortName(u"f");
   data.SetKeyword(u"f");
   data.SetURL("http://f.com/{searchTerms}");
+  data.is_active = TemplateURLData::ActiveStatus::kTrue;
   keyword_turl = turl_model->Add(std::make_unique<TemplateURL>(data));
   ASSERT_NE(0, keyword_turl->id());
 
@@ -559,6 +561,7 @@ void AutocompleteProviderTest::ResetControllerWithKeywordProvider() {
   data.SetShortName(u"bar.com");
   data.SetKeyword(u"bar.com");
   data.SetURL("http://bar.com/{searchTerms}");
+  data.is_active = TemplateURLData::ActiveStatus::kTrue;
   keyword_turl = turl_model->Add(std::make_unique<TemplateURL>(data));
   ASSERT_NE(0, keyword_turl->id());
 

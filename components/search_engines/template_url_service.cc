@@ -1553,6 +1553,8 @@ void TemplateURLService::Init(const Initializer* initializers,
       data.SetShortName(base::UTF8ToUTF16(initializers[i].content));
       data.SetKeyword(base::UTF8ToUTF16(initializers[i].keyword));
       data.SetURL(initializers[i].url);
+      // Set all to active by default for testing purposes.
+      data.is_active = TemplateURLData::ActiveStatus::kTrue;
       Add(std::make_unique<TemplateURL>(data));
 
       // Set the first provided identifier to be the default.
