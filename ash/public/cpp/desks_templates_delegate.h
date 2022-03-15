@@ -46,13 +46,17 @@ class ASH_PUBLIC_EXPORT DesksTemplatesDelegate {
  public:
   virtual ~DesksTemplatesDelegate() = default;
 
-  // Returns the app launch data that's associated with a particular `window` in
-  // order to construct a desk template. Return nullptr if no such app launch
-  // data can be constructed, which can happen if the `window` does not have
-  // an app id associated with it, or we're not in the primary active user
-  // session.
-  virtual std::unique_ptr<app_restore::AppLaunchInfo>
-  GetAppLaunchDataForDeskTemplate(aura::Window* window) const = 0;
+  using GetAppLaunchDataCallback =
+      base::OnceCallback<void(std::unique_ptr<app_restore::AppLaunchInfo>)>;
+  // Gathers the app launch data associated with `window` in order to construct
+  // a desk template.  The data is returned via the `callback` that can be
+  // called either synchronously or asynchronously, depending on the app.  The
+  // callback may receive nullptr if no such app launch data can be constructed,
+  // which can happen if the `window` does not have an app id associated with
+  // it, or we're not in the primary active user session.
+  virtual void GetAppLaunchDataForDeskTemplate(
+      aura::Window* window,
+      GetAppLaunchDataCallback callback) const = 0;
 
   // Returns either the local desk storage backend or Chrome sync desk storage
   // backend depending on the feature flag DeskTemplateSync.

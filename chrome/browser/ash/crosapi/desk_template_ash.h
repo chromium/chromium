@@ -30,7 +30,7 @@ class DeskTemplateAsh : public mojom::DeskTemplate {
   // Forwarded to Lacros.
   void GetTabStripModelUrls(
       const std::string& window_unique_id,
-      mojom::DeskTemplateClient::GetTabStripModelUrlsCallback callback);
+      base::OnceCallback<void(crosapi::mojom::DeskTemplateStatePtr)> callback);
 
   // crosapi::mojom::DeskTemplate:
   void AddDeskTemplateClient(
@@ -44,17 +44,18 @@ class DeskTemplateAsh : public mojom::DeskTemplate {
     Call(uint32_t serial,
          const std::string& window_unique_id,
          uint32_t remote_count,
-         mojom::DeskTemplateClient::GetTabStripModelUrlsCallback callback);
+         base::OnceCallback<void(crosapi::mojom::DeskTemplateStatePtr)>
+             callback);
     ~Call();
 
     // Serial number of this call.
     uint32_t serial;
     // Unique ID of the window this call is made for.
     std::string window_unique_id;
-    // How many remotes existed at the moment whe the call was registered.
+    // How many remotes existed at the moment when the call was registered.
     uint32_t remote_count;
     // The receiver for the data.
-    mojom::DeskTemplateClient::GetTabStripModelUrlsCallback callback;
+    base::OnceCallback<void(crosapi::mojom::DeskTemplateStatePtr)> callback;
   };
 
   // Receives the response from the single remote.  If the response contains

@@ -10,10 +10,6 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/desks_templates_delegate.h"
 
-namespace app_restore {
-struct AppLaunchInfo;
-}
-
 namespace aura {
 class Window;
 }
@@ -48,8 +44,9 @@ class ASH_PUBLIC_EXPORT TestDesksTemplatesDelegate
   }
 
   // DesksTemplatesDelegate:
-  std::unique_ptr<app_restore::AppLaunchInfo> GetAppLaunchDataForDeskTemplate(
-      aura::Window* window) const override;
+  void GetAppLaunchDataForDeskTemplate(
+      aura::Window* window,
+      GetAppLaunchDataCallback callback) const override;
   desks_storage::DeskModel* GetDeskModel() override;
   bool IsIncognitoWindow(aura::Window* window) const override;
   absl::optional<gfx::ImageSkia> MaybeRetrieveIconForSpecialIdentifier(

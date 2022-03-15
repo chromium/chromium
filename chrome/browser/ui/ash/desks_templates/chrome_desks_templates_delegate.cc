@@ -18,6 +18,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/icon_standardizer.h"
+#include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -189,19 +190,25 @@ ChromeDesksTemplatesDelegate::ChromeDesksTemplatesDelegate() = default;
 
 ChromeDesksTemplatesDelegate::~ChromeDesksTemplatesDelegate() = default;
 
-std::unique_ptr<app_restore::AppLaunchInfo>
-ChromeDesksTemplatesDelegate::GetAppLaunchDataForDeskTemplate(
-    aura::Window* window) const {
+void ChromeDesksTemplatesDelegate::GetAppLaunchDataForDeskTemplate(
+    aura::Window* window,
+    GetAppLaunchDataCallback callback) const {
+  DCHECK(callback);
+
   const user_manager::User* active_user =
       user_manager::UserManager::Get()->GetActiveUser();
   DCHECK(active_user);
   Profile* user_profile =
       ash::ProfileHelper::Get()->GetProfileByUser(active_user);
-  if (!user_profile)
-    return nullptr;
+  if (!user_profile) {
+    std::move(callback).Run({});
+    return;
+  }
 
-  if (!IsWindowSupportedForDeskTemplate(window))
-    return nullptr;
+  if (!IsWindowSupportedForDeskTemplate(window)) {
+    std::move(callback).Run({});
+    return;
+  }
 
   // Get `full_restore_data` from FullRestoreSaveHandler which contains all
   // restoring information for all apps running on the device.
@@ -216,11 +223,7 @@ ChromeDesksTemplatesDelegate::GetAppLaunchDataForDeskTemplate(
   const int32_t window_id = window->GetProperty(app_restore::kWindowIdKey);
   std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info =
       std::make_unique<app_restore::AppLaunchInfo>(app_id, window_id);
-  auto* tab_strip_model = GetTabstripModelForWindowIfAny(window);
-  if (tab_strip_model) {
-    app_launch_info->urls = GetURLsIfApplicable(tab_strip_model);
-    app_launch_info->active_tab_index = tab_strip_model->active_index();
-  }
+
   const std::string* app_name =
       window->GetProperty(app_restore::kBrowserAppNameKey);
   if (app_name)
@@ -247,17 +250,33 @@ ChromeDesksTemplatesDelegate::GetAppLaunchDataForDeskTemplate(
           ->AppRegistryCache();
   const apps::mojom::AppType app_type = app_registry_cache.GetAppType(app_id);
   if (app_id != app_constants::kChromeAppId &&
+      app_id != app_constants::kLacrosAppId &&
       (app_type == apps::mojom::AppType::kChromeApp ||
        app_type == apps::mojom::AppType::kWeb)) {
     // If these values are not present, we will not be able to restore the
     // application. See http://crbug.com/1232520 for more information.
     if (!app_launch_info->container.has_value() ||
         !app_launch_info->disposition.has_value()) {
-      return nullptr;
+      std::move(callback).Run({});
+      return;
     }
   }
 
-  return app_launch_info;
+  auto* tab_strip_model = GetTabstripModelForWindowIfAny(window);
+  if (tab_strip_model) {
+    app_launch_info->urls = GetURLsIfApplicable(tab_strip_model);
+    app_launch_info->active_tab_index = tab_strip_model->active_index();
+    std::move(callback).Run(std::move(app_launch_info));
+  } else {
+    const std::string* lacros_window_id =
+        window->GetProperty(app_restore::kLacrosWindowId);
+    if (!lacros_window_id) {
+      std::move(callback).Run(std::move(app_launch_info));
+      return;
+    }
+    const_cast<ChromeDesksTemplatesDelegate*>(this)->GetLacrosChromeUrls(
+        std::move(callback), *lacros_window_id, std::move(app_launch_info));
+  }
 }
 
 desks_storage::DeskModel* ChromeDesksTemplatesDelegate::GetDeskModel() {
@@ -391,4 +410,32 @@ std::string ChromeDesksTemplatesDelegate::GetAppShortName(
       app_id,
       [&name](const apps::AppUpdate& update) { name = update.ShortName(); });
   return name;
+}
+
+void ChromeDesksTemplatesDelegate::OnLacrosChromeUrlsReturned(
+    GetAppLaunchDataCallback callback,
+    std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info,
+    crosapi::mojom::DeskTemplateStatePtr state) {
+  app_launch_info->urls = state->urls;
+  app_launch_info->active_tab_index = state->active_index;
+  std::move(callback).Run(std::move(app_launch_info));
+}
+
+void ChromeDesksTemplatesDelegate::GetLacrosChromeUrls(
+    GetAppLaunchDataCallback callback,
+    const std::string& window_unique_id,
+    std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info) {
+  crosapi::BrowserManager* browser_manager = crosapi::BrowserManager::Get();
+  if (!browser_manager || !browser_manager->IsRunning()) {
+    LOG(WARNING)
+        << "The browser manager is not running.  Cannot request browser state.";
+    std::move(callback).Run({});
+    return;
+  }
+
+  browser_manager->GetTabStripModelUrls(
+      window_unique_id,
+      base::BindOnce(&ChromeDesksTemplatesDelegate::OnLacrosChromeUrlsReturned,
+                     base::Unretained(this), std::move(callback),
+                     std::move(app_launch_info)));
 }

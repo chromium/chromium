@@ -10,7 +10,7 @@ DeskTemplateAsh::Call::Call(
     uint32_t serial,
     const std::string& window_unique_id,
     uint32_t remote_count,
-    mojom::DeskTemplateClient::GetTabStripModelUrlsCallback callback)
+    base::OnceCallback<void(crosapi::mojom::DeskTemplateStatePtr)> callback)
     : serial(serial),
       window_unique_id(window_unique_id),
       remote_count(remote_count),
@@ -28,7 +28,7 @@ void DeskTemplateAsh::BindReceiver(
 
 void DeskTemplateAsh::GetTabStripModelUrls(
     const std::string& window_unique_id,
-    mojom::DeskTemplateClient::GetTabStripModelUrlsCallback callback) {
+    base::OnceCallback<void(crosapi::mojom::DeskTemplateStatePtr)> callback) {
   const auto current_serial = serial_++;
   calls_.emplace_back(current_serial, window_unique_id, remotes_.size(),
                       std::move(callback));
@@ -65,7 +65,7 @@ void DeskTemplateAsh::OnGetTabStripModelUrlsFromRemote(
   DCHECK(call.remote_count > 0);
   --call.remote_count;
   if (call.remote_count == 0 || !state.is_null()) {
-    std::move(call.callback).Run(serial, window_unique_id, std::move(state));
+    std::move(call.callback).Run(std::move(state));
     calls_.erase(call_it);
   }
 }

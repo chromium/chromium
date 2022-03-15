@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/desks_templates_delegate.h"
 #include "base/callback_forward.h"
+#include "chromeos/crosapi/mojom/desk_template.mojom-forward.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 
@@ -29,8 +30,9 @@ class ChromeDesksTemplatesDelegate : public ash::DesksTemplatesDelegate {
   ~ChromeDesksTemplatesDelegate() override;
 
   // ash::DesksTemplatesDelegate:
-  std::unique_ptr<app_restore::AppLaunchInfo> GetAppLaunchDataForDeskTemplate(
-      aura::Window* window) const override;
+  void GetAppLaunchDataForDeskTemplate(
+      aura::Window* window,
+      GetAppLaunchDataCallback callback) const override;
   desks_storage::DeskModel* GetDeskModel() override;
   bool IsIncognitoWindow(aura::Window* window) const override;
   absl::optional<gfx::ImageSkia> MaybeRetrieveIconForSpecialIdentifier(
@@ -51,6 +53,21 @@ class ChromeDesksTemplatesDelegate : public ash::DesksTemplatesDelegate {
   void OpenFeedbackDialog(const std::string& extra_diagnostics) override;
   std::string GetAppShortName(const std::string& app_id) override;
   bool IsAppAvailable(const std::string& app_id) const override;
+
+ private:
+  // Receives the state of the tabstrip from the Lacros window.
+  void OnLacrosChromeUrlsReturned(
+      GetAppLaunchDataCallback callback,
+      std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info,
+      crosapi::mojom::DeskTemplateStatePtr state);
+
+  // Asynchronously requests the state of the tabstrip from the Lacros window
+  // with `window_unique_id`.  The response is handled by
+  // OnLacrosChromeUrlsReturned().
+  void GetLacrosChromeUrls(
+      GetAppLaunchDataCallback callback,
+      const std::string& window_unique_id,
+      std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_DESKS_TEMPLATES_CHROME_DESKS_TEMPLATES_DELEGATE_H_

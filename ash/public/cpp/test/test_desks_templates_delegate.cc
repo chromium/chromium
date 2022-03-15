@@ -18,10 +18,10 @@ TestDesksTemplatesDelegate::TestDesksTemplatesDelegate() = default;
 
 TestDesksTemplatesDelegate::~TestDesksTemplatesDelegate() = default;
 
-std::unique_ptr<app_restore::AppLaunchInfo>
-TestDesksTemplatesDelegate::GetAppLaunchDataForDeskTemplate(
-    aura::Window* window) const {
-  return nullptr;
+void TestDesksTemplatesDelegate::GetAppLaunchDataForDeskTemplate(
+    aura::Window* window,
+    GetAppLaunchDataCallback callback) const {
+  std::move(callback).Run({});
 }
 
 desks_storage::DeskModel* TestDesksTemplatesDelegate::GetDeskModel() {
