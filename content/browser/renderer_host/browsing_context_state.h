@@ -232,7 +232,7 @@ class CONTENT_EXPORT BrowsingContextState
   void WriteIntoTrace(perfetto::TracedValue ctx) const;
   void WriteIntoTrace(
       perfetto::TracedProto<perfetto::protos::pbzero::BrowsingContextState>
-          proto);
+          proto) const;
 
  protected:
   friend class base::RefCounted<BrowsingContextState>;

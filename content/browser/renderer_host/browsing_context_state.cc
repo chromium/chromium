@@ -372,8 +372,8 @@ void BrowsingContextState::WriteIntoTrace(perfetto::TracedValue ctx) const {
 }
 
 void BrowsingContextState::WriteIntoTrace(
-    perfetto::TracedProto<perfetto::protos::pbzero::BrowsingContextState>
-        proto) {
+    perfetto::TracedProto<perfetto::protos::pbzero::BrowsingContextState> proto)
+    const {
   if (browsing_instance_id_.has_value())
     proto->set_browsing_instance_id(browsing_instance_id_.value().value());
 }
