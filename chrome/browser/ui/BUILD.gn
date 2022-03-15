@@ -2935,6 +2935,8 @@ static_library("ui") {
       "webui/signin/inline_login_handler_modal_delegate.h",
       "webui/signin/signin_helper_chromeos.cc",
       "webui/signin/signin_helper_chromeos.h",
+      "webui/signin/user_cloud_signin_restriction_policy_fetcher_chromeos.cc",
+      "webui/signin/user_cloud_signin_restriction_policy_fetcher_chromeos.h",
       "window_sizer/window_sizer_chromeos.cc",
       "window_sizer/window_sizer_chromeos.h",
     ]
