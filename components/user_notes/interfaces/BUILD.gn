@@ -4,9 +4,14 @@
 
 source_set("interfaces") {
   sources = [
+    "user_note_storage.h",
     "user_notes_ui.h",
     "user_notes_ui_delegate.h",
   ]
 
-  deps = [ "//ui/gfx/geometry:geometry" ]
+  deps = [
+    "//components/user_notes/model",
+    "//ui/gfx/geometry:geometry",
+    "//url",
+  ]
 }
