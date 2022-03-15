@@ -11,7 +11,7 @@
 class SidePanelEntryObserver : public base::CheckedObserver {
  public:
   // Called when a SidePanelEntry is shown.
-  virtual void OnEntryShown(SidePanelEntry::Id id) {}
+  virtual void OnEntryShown(SidePanelEntry* entry) {}
 
  protected:
   ~SidePanelEntryObserver() override = default;

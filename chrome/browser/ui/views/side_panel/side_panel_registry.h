@@ -9,35 +9,53 @@
 #include <vector>
 
 #include "base/observer_list.h"
+#include "base/supports_user_data.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 class SidePanelRegistryObserver;
 
 // This class is used for storing SidePanelEntries specific to a context. This
 // context can be one per tab or one per window. See also SidePanelCoordinator.
-class SidePanelRegistry final : public SidePanelEntryObserver {
+class SidePanelRegistry final : public base::SupportsUserData::Data,
+                                public SidePanelEntryObserver {
  public:
   SidePanelRegistry();
   SidePanelRegistry(const SidePanelRegistry&) = delete;
   SidePanelRegistry& operator=(const SidePanelRegistry&) = delete;
   ~SidePanelRegistry() override;
 
+  // Gets the contextual registry for the tab associated with |web_contents|.
+  // Can return null for non-tab contents.
+  static SidePanelRegistry* Get(content::WebContents* web_contents);
+
+  SidePanelEntry* GetEntryForId(SidePanelEntry::Id entry_id);
+  void ResetActiveEntry();
+
   void AddObserver(SidePanelRegistryObserver* observer);
   void RemoveObserver(SidePanelRegistryObserver* observer);
 
   void Register(std::unique_ptr<SidePanelEntry> entry);
+  void Deregister(SidePanelEntry::Id id);
 
-  absl::optional<SidePanelEntry::Id> last_active_entry() {
-    return last_active_entry_;
-  }
+  absl::optional<SidePanelEntry*> active_entry() { return active_entry_; }
   std::vector<std::unique_ptr<SidePanelEntry>>& entries() { return entries_; }
 
   // SidePanelEntryObserver:
-  void OnEntryShown(SidePanelEntry::Id id) override;
+  void OnEntryShown(SidePanelEntry* id) override;
 
  private:
-  absl::optional<SidePanelEntry::Id> last_active_entry_;
+  void RemoveEntry(SidePanelEntry* entry);
+
+  // The last active entry hosted in the side panel used to determine what entry
+  // should be visible. This is reset by the coordinator when the panel is
+  // closed. When there are multiple registries, this may not be the entry
+  // currently visible in the side panel.
+  absl::optional<SidePanelEntry*> active_entry_;
 
   std::vector<std::unique_ptr<SidePanelEntry>> entries_;
 

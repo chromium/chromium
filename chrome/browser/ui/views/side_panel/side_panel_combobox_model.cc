@@ -33,6 +33,27 @@ void SidePanelComboboxModel::AddItem(SidePanelEntry* entry) {
             [](const auto& a, const auto& b) { return a.id < b.id; });
 }
 
+void SidePanelComboboxModel::AddItems(
+    const std::vector<std::unique_ptr<SidePanelEntry>>& entries) {
+  for (auto const& entry : entries) {
+    entries_.emplace_back(SidePanelComboboxModel::Item(
+        entry->id(), entry->name(), entry->icon()));
+  }
+  std::sort(entries_.begin(), entries_.end(),
+            [](const auto& a, const auto& b) { return a.id < b.id; });
+}
+
+void SidePanelComboboxModel::RemoveItems(
+    const std::vector<std::unique_ptr<SidePanelEntry>>& entries) {
+  for (auto const& current_entry : entries) {
+    SidePanelEntry::Id id = current_entry.get()->id();
+    auto position = std::find_if(entries_.begin(), entries_.end(),
+                                 [id](auto entry) { return entry.id == id; });
+    if (position != entries_.end())
+      entries_.erase(position);
+  }
+}
+
 SidePanelEntry::Id SidePanelComboboxModel::GetIdAt(int index) const {
   return entries_[index].id;
 }

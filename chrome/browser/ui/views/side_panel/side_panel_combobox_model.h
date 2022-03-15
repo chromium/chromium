@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_COMBOBOX_MODEL_H_
 #define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_COMBOBOX_MODEL_H_
 
+#include <memory>
 #include <string>
+#include <vector>
 
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "ui/base/models/combobox_model.h"
@@ -36,6 +38,8 @@ class SidePanelComboboxModel : public ui::ComboboxModel {
   ~SidePanelComboboxModel() override;
 
   void AddItem(SidePanelEntry* entry);
+  void AddItems(const std::vector<std::unique_ptr<SidePanelEntry>>& entries);
+  void RemoveItems(const std::vector<std::unique_ptr<SidePanelEntry>>& entries);
   SidePanelEntry::Id GetIdAt(int index) const;
 
   // Returns the index for the given side panel entry id, if the id doesn't

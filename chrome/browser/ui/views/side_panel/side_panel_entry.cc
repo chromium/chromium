@@ -28,7 +28,7 @@ std::unique_ptr<views::View> SidePanelEntry::CreateContent() {
 
 void SidePanelEntry::OnEntryShown() {
   for (SidePanelEntryObserver& observer : observers_)
-    observer.OnEntryShown(id_);
+    observer.OnEntryShown(this);
 }
 
 void SidePanelEntry::AddObserver(SidePanelEntryObserver* observer) {
