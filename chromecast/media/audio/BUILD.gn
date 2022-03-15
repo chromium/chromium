@@ -100,6 +100,16 @@ cast_source_set("resampler") {
   ]
 }
 
+cast_source_set("channel_mixer") {
+  sources = [ "cast_channel_mixer_impl.cc" ]
+  deps = [
+    "//base",
+    "//chromecast/media/api",
+    "//chromecast/media/cma/base",
+    "//media",
+  ]
+}
+
 cast_source_set("audio_renderer") {
   sources = [
     "cast_audio_renderer.cc",
