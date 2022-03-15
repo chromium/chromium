@@ -44,7 +44,7 @@ class ArcContentFileSystemFileStreamWriter : public storage::FileStreamWriter {
 
   // storage::FileStreamWriter override:
   int Write(net::IOBuffer* buffer,
-            int bufffer_length,
+            int buffer_length,
             net::CompletionOnceCallback callback) override;
   int Cancel(net::CompletionOnceCallback callback) override;
   int Flush(net::CompletionOnceCallback callback) override;

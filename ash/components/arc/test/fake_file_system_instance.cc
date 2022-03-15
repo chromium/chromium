@@ -50,7 +50,7 @@ mojom::RootPtr MakeRoot(const FakeFileSystemInstance::Root& in_root) {
   return root;
 }
 
-// Generates unique document ID on each calls.
+// Generates unique document ID on each call.
 std::string GenerateDocumentId() {
   static int count = 0;
   std::ostringstream ss;
@@ -58,11 +58,16 @@ std::string GenerateDocumentId() {
   return ss.str();
 }
 
+// Generates unique URL ID on each call.
+std::string GenerateUrlId() {
+  static int count = 0;
+  std::ostringstream ss;
+  ss << "url_" << count++;
+  return ss.str();
+}
+
 // Maximum size in bytes to read FD from PIPE.
 constexpr size_t kMaxBytesToReadFromPipe = 8 * 1024;  // 8KB;
-
-// URL ID used by OpenFileSessionToWrite() and OpenFileSessionToRead().
-constexpr char kUrlId[] = "url_id";
 
 }  // namespace
 
@@ -444,12 +449,13 @@ void FakeFileSystemInstance::OpenFileSessionToWrite(
                                                   base::File::Flags::FLAG_WRITE)
           : CreateStreamFileDescriptorToWrite(file.url);
   DCHECK(fd.is_valid());
-  AddOpenSession(kUrlId, fd.get());
+  std::string url_id = GenerateUrlId();
+  AddOpenSession(url_id, fd.get());
   mojo::ScopedHandle wrapped_handle =
       mojo::WrapPlatformHandle(mojo::PlatformHandle(std::move(fd)));
   DCHECK(wrapped_handle.is_valid());
   mojom::FileSessionPtr file_session = mojom::FileSession::New();
-  file_session->url_id = kUrlId;
+  file_session->url_id = std::move(url_id);
   file_session->fd = std::move(wrapped_handle);
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(file_session)));
@@ -473,12 +479,13 @@ void FakeFileSystemInstance::OpenFileSessionToRead(
                                                   base::File::Flags::FLAG_READ)
           : CreateStreamFileDescriptorToRead(file.content);
   DCHECK(fd.is_valid());
-  AddOpenSession(kUrlId, fd.get());
+  std::string url_id = GenerateUrlId();
+  AddOpenSession(url_id, fd.get());
   mojo::ScopedHandle wrapped_handle =
       mojo::WrapPlatformHandle(mojo::PlatformHandle(std::move(fd)));
   DCHECK(wrapped_handle.is_valid());
   mojom::FileSessionPtr file_session = mojom::FileSession::New();
-  file_session->url_id = kUrlId;
+  file_session->url_id = std::move(url_id);
   file_session->fd = std::move(wrapped_handle);
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(file_session)));
