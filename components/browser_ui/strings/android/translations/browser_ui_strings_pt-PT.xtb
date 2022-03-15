@@ -54,7 +54,7 @@
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2379925928934107488">Aplique o tema escuro aos sites quando o Chrome utiliza o tema escuro, quando possível</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
-<translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e mais <ph name="NUM_MORE" /> permitidas.}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, and <ph name="NUM_MORE" /> more allowed}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e mais <ph name="NUM_MORE" /> permitidas.}}</translation>
+<translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e mais <ph name="NUM_MORE" /> permitidas.}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e mais <ph name="NUM_MORE" /> permitidas.}}</translation>
 <translation id="2434158240863470628">Transferência concluída: <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2442870161001914531">Peça sempre o site para computador</translation>
 <translation id="2482878487686419369">Notificações</translation>
@@ -62,7 +62,7 @@
 <translation id="2490684707762498678">Gerido por <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Ajuda e comentários</translation>
 <translation id="2501278716633472235">Voltar</translation>
-<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 cookie bloqueado}one{# cookie(s) bloqueado(s)}other{# cookies bloqueados}}</translation>
+<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 cookie bloqueado}other{# cookies bloqueados}}</translation>
 <translation id="2570922361219980984">O acesso à localização também está desativado para este dispositivo. Ative-o nas <ph name="BEGIN_LINK" />Definições do Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Expandido. Clique para reduzir.</translation>
 <translation id="2586657967955657006">Área de transferência</translation>
@@ -164,7 +164,7 @@
 <translation id="5335288049665977812">Permitir que os sites executem JavaScript (recomendado)</translation>
 <translation id="534295439873310000">Dispositivos NFC</translation>
 <translation id="5354152178998424783">Esta ação eliminará <ph name="DATASIZE" /> de dados e cookies armazenados pelos sites.</translation>
-<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(mais 1)}one{(mais #)}other{(mais #)}}</translation>
+<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(mais 1)}other{(mais #)}}</translation>
 <translation id="5403592356182871684">Nomes</translation>
 <translation id="5438097262470833822">Esta opção repõe as autorizações de <ph name="WEBSITE" /></translation>
 <translation id="5489227211564503167">Tempo decorrido: <ph name="ELAPSED_TIME" /> de <ph name="TOTAL_TIME" />.</translation>
@@ -214,7 +214,7 @@
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6527303717912515753">Partilhar</translation>
 <translation id="6545864417968258051">Procura de Bluetooth</translation>
-<translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e mais <ph name="NUM_MORE" /> bloqueadas.}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, and <ph name="NUM_MORE" /> more blocked}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e mais <ph name="NUM_MORE" /> bloqueadas.}}</translation>
+<translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e mais <ph name="NUM_MORE" /> bloqueadas.}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e mais <ph name="NUM_MORE" /> bloqueadas.}}</translation>
 <translation id="6554732001434021288">Última visita há <ph name="NUM_DAYS" /> dias</translation>
 <translation id="6561560012278703671">Utilizar mensagens mais discretas (impede interrupções de pedidos de notificação)</translation>
 <translation id="6593061639179217415">Site para computador</translation>
@@ -238,7 +238,7 @@
 <translation id="7000754031042624318">Desativada nas Definições do Android</translation>
 <translation id="7016516562562142042">Permitido para o motor de pesquisa atual</translation>
 <translation id="7053983685419859001">Bloquear</translation>
-<translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 selecionado}one{# selecionados}other{# selecionados}}</translation>
+<translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 selecionado}other{# selecionados}}</translation>
 <translation id="7070090581017165256">Acerca deste site</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> selecionado(s). Opções disponíveis junto à parte superior do ecrã.</translation>
 <translation id="7141896414559753902">Impedir que os sites apresentem pop-ups e redirecionamentos (recomendado).</translation>
@@ -299,7 +299,7 @@
 <translation id="8441146129660941386">Procurar para trás</translation>
 <translation id="8444433999583714703">Para permitir que a app <ph name="APP_NAME" /> aceda à sua localização, ative também a localização nas <ph name="BEGIN_LINK" />Definições do Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Revogar autorização do dispositivo</translation>
-<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 cookie em utilização}one{# cookie(s) em utilização}other{# cookies em utilização}}</translation>
+<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 cookie em utilização}other{# cookies em utilização}}</translation>
 <translation id="8487700953926739672">Disponível offline</translation>
 <translation id="848952951823693243">Peça sempre o site para dispositivos móveis</translation>
 <translation id="851751545965956758">Impedir a ligação de sites a dispositivos</translation>
@@ -327,7 +327,7 @@
 <translation id="8986362086234534611">Esquecer</translation>
 <translation id="9019902583201351841">Gerido pelos teus pais</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e mais <ph name="NUM_MORE" />.}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, and <ph name="NUM_MORE" /> more}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e mais <ph name="NUM_MORE" />.}}</translation>
+<translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e mais <ph name="NUM_MORE" />.}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e mais <ph name="NUM_MORE" />.}}</translation>
 <translation id="913657688200966289">Ative as autorizações para a app <ph name="APP_NAME" /> nas <ph name="BEGIN_LINK" />Definições do Android<ph name="END_LINK" />.</translation>
 <translation id="9162462602695099906">Esta página é perigosa</translation>
 <translation id="930525582205581608">Pretende esquecer este site?</translation>

@@ -24,7 +24,7 @@
 <translation id="1050038467049342496">Itxi beste aplikazio batzuk</translation>
 <translation id="1055184225775184556">&amp;Desegin gehitzea</translation>
 <translation id="1056898198331236512">Abisua</translation>
-<translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />: sakatu tabuladorea eta, ondoren, sakatu Sartu tekla Chrome-ko Dino jokoan aritzeko</translation>
+<translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />: sakatu tabuladorea eta, ondoren, sakatu "Sartu" tekla Chrome-ko Dino jokoan aritzeko</translation>
 <translation id="1058479211578257048">Txartelak gordetzen…</translation>
 <translation id="10614374240317010">Sekula gorde gabeak</translation>
 <translation id="1062160989074299343">Prc10 (gutun-azala)</translation>
@@ -38,7 +38,7 @@
 <translation id="1088860948719068836">Gehitu titularra</translation>
 <translation id="1089439967362294234">Aldatu pasahitza</translation>
 <translation id="1096545575934602868">Eremu honek ez lituzke <ph name="MAX_ITEMS_LIMIT" /> sarrera baino gehiago izan behar. Baztertu egingo dira gainerako sarrerak.</translation>
-<translation id="1100782917270858593">Bilaketa-ibilbideari berrekiteko botoia: sakatu Sartu tekla bilaketa-ibilbideari berrekiteko eta Chrome-ko historian dauden erlazionatutako jarduerak ikusteko</translation>
+<translation id="1100782917270858593">Bilaketa-ibilbideari berrekiteko botoia: sakatu "Sartu" tekla bilaketa-ibilbideari berrekiteko eta Chrome-ko historian dauden erlazionatutako jarduerak ikusteko</translation>
 <translation id="1101672080107056897">Errore-ekintza</translation>
 <translation id="1103523840287552314">Itzuli <ph name="LANGUAGE" /> beti</translation>
 <translation id="1110994991967754504">Hautatu honetarako baimena: <ph name="PERMISSION_NAME" /></translation>
@@ -150,7 +150,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1384725838384960382">Ordainketa seguruetarako kredentzialak autentifikatzeko orria</translation>
 <translation id="1386623374109090026">Oharpenak</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> webguneak ez du bidali daturik.</translation>
-<translation id="1403196654932095242"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />: sakatu tabuladorea eta, ondoren, sakatu Sartu tekla ikerketari berrekiteko eta Chrome-ko historian dauden erlazionatutako jarduerak ikusteko.</translation>
+<translation id="1403196654932095242"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />: sakatu tabuladorea eta, ondoren, sakatu "Sartu" tekla ikerketari berrekiteko eta Chrome-ko historian dauden erlazionatutako jarduerak ikusteko.</translation>
 <translation id="1405567553485452995">Berde argia</translation>
 <translation id="1407135791313364759">Ireki guztiak</translation>
 <translation id="1408787208417187241">Hiru grapa goian</translation>
@@ -321,7 +321,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1919345977826869612">Iragarkiak</translation>
 <translation id="1919367280705858090">Lortu errore-mezu jakin bati buruzko laguntza</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Bat ere ez}=1{1 webgune}other{# webgune}}</translation>
-<translation id="1923390796829649802">Erabilerraztasun-ezarpenak kudeatzeko botoia: sakatu Sartu tekla Chrome OS-n ezarpenetan erabilerraztasun-tresnak pertsonalizatzeko</translation>
+<translation id="1923390796829649802">Erabilerraztasun-ezarpenak kudeatzeko botoia: sakatu "Sartu" tekla Chrome OS-n ezarpenetan erabilerraztasun-tresnak pertsonalizatzeko</translation>
 <translation id="1924727005275031552">Berriak</translation>
 <translation id="1927439593081478069">Chrome-ren segurtasun-egiaztapena egiteko botoia: sakatu "Sartu" tekla Chrome-ren ezarpenetan segurtasun-egiaztapena egiteko</translation>
 <translation id="1939175642807587452">Jakinarazpenak bidaltzea eska dezake</translation>
@@ -633,7 +633,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3013291976881901233">MIDI gailuak</translation>
 <translation id="301521992641321250">Automatikoki blokeatuta</translation>
 <translation id="3016780570757425217">Ezagutu zure kokapena</translation>
-<translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />: sakatu tabuladorea eta Sartu tekla iradokizuna kentzeko.</translation>
+<translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />: sakatu tabuladorea eta "Sartu" tekla iradokizuna kentzeko.</translation>
 <translation id="3023071826883856138">You4 (gutun-azala)</translation>
 <translation id="3024663005179499861">Gidalerro mota okerra</translation>
 <translation id="3037605927509011580">Hutsegite bat izan da.</translation>
@@ -949,7 +949,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">Proxy-konfigurazioa .pac scripteko URLa erabiltzeko dago ezarrita, ez proxy-zerbitzari finkoak.</translation>
 <translation id="4082393374666368382">Ezarpenak - Kudeaketa</translation>
-<translation id="4084120443451129199">Bilaketa moduan zaudela, sakatu Sartu tekla "<ph name="KEYWORD_SUFFIX" />" bilatzeko</translation>
+<translation id="4084120443451129199">Bilaketa moduan zaudela, sakatu "Sartu" tekla "<ph name="KEYWORD_SUFFIX" />" bilatzeko</translation>
 <translation id="4087296516249690906">Gertaera bat sortzeko botoia: sakatu "Sartu", Google Calendar-en gertaera bat bizkor sortzeko</translation>
 <translation id="4088981014127559358">1. aldeko irudia Y ardatzaren arabera aldatuta</translation>
 <translation id="4089152113577680600">14. erretilua</translation>
@@ -1752,7 +1752,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6688775486821967877">Txartel birtuala ez dago erabilgarri une honetan. Saiatu berriro geroago.</translation>
 <translation id="6689249931105087298">Erlatiboa, puntu beltzen konprimaketarekin</translation>
 <translation id="6689271823431384964">Saioa hasita duzunez, txartelak Google-ko kontuan gordetzeko aukera ematen dizu Chrome-k. Aukera hori aldatzeko, joan Ezarpenak atalera. Txartelaren titularraren izena kontutik hartu da.</translation>
-<translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />: sakatu tabuladorea eta, ondoren, sakatu Sartu tekla zure gailua Google-ko kontuan bilatzeko</translation>
+<translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />: sakatu tabuladorea eta, ondoren, sakatu "Sartu" tekla zure gailua Google-ko kontuan bilatzeko</translation>
 <translation id="6696588630955820014">Fitxa partekatzeko botoia: sakatu "Sartu" tekla fitxa partekatzeko. Modu askotara partekatu ahal izango duzu: esteka partekatuta, QR kode bat sortuta, fitxa igorrita, etab.</translation>
 <translation id="6698381487523150993">Sortze-data:</translation>
 <translation id="6702919718839027939">Aurkeztu</translation>
@@ -1847,7 +1847,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="7029809446516969842">Pasahitzak</translation>
 <translation id="7030436163253143341">Ziurtagiriak ez du balio</translation>
 <translation id="7031646650991750659">Instalatuta dauzkazun Google Play-ko aplikazioak.</translation>
-<translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />: sakatu tabuladorea eta, ondoren, sakatu Sartu tekla Google-ko kontuaren pribatutasun-ezarpenak kudeatzeko.</translation>
+<translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />: sakatu tabuladorea eta, ondoren, sakatu "Sartu" tekla Google-ko kontuaren pribatutasun-ezarpenak kudeatzeko.</translation>
 <translation id="7050187094878475250"><ph name="DOMAIN" /> atzitzen saiatu zara, baina zerbitzariak balio-epe luzeegia duen ziurtagiri bat aurkeztu du eta ez da fidagarria.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Ezin da gorde txartela une honetan}other{Ezin dira gorde txartelak une honetan}}</translation>
 <translation id="7053983685419859001">Blokeatu</translation>
