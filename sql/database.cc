@@ -352,11 +352,17 @@ void Database::CloseInternal(bool forced) {
               std::move(memory_dump_provider_));
     }
 
-    int rc = sqlite3_close(db_);
-    if (rc != SQLITE_OK)
-      DLOG(DCHECK) << "sqlite3_close failed: " << GetErrorMessage();
+    int sqlite_result_code = sqlite3_close(db_);
+
+    DCHECK_NE(sqlite_result_code, SQLITE_BUSY)
+        << "sqlite3_close() called while prepared statements are still alive";
+    DCHECK_EQ(sqlite_result_code, SQLITE_OK)
+        << "sqlite3_close() failed in an unexpected way: " << GetErrorMessage();
+
+    // The reset must happen after the DCHECKs above. GetErrorMessage() needs a
+    // valid `db_` value.
+    db_ = nullptr;
   }
-  db_ = nullptr;
 }
 
 void Database::Close() {
