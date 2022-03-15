@@ -8,15 +8,6 @@
 const SEARCH_PARAMS = new URLSearchParams(window.location.search);
 const REFERRER_POLICY = SEARCH_PARAMS.get("referrer-policy");
 
-async function fetch_script(url) {
-    return new Promise((resolve) => {
-        const el = document.createElement("script");
-        el.src = url;
-        el.onload = resolve;
-        document.body.appendChild(el);
-    });
-}
-
 async function get_fetch_timing_and_headers(url_string) {
     const url = new URL(url_string);
     const id = url.searchParams.get("id");
@@ -50,15 +41,13 @@ function get_expected_referrer(is_same_origin) {
 }
 
 async function check_referrer(url, expected_referrer) {
-    await fetch_script(url);
+    await fetchScript(url);
 
     const { headers } = await get_fetch_timing_and_headers(url);
     assert_equals(headers["referer"], expected_referrer);
 
     const name = new URL(url, window.location);
-    const entries = performance.getEntriesByName(name);
-    assert_equals(entries.length, 1);
-    assert_equals(entries[0].initiatorType, "early-hints");
+    assert_true(isPreloadedByEarlyHints(name));
 }
 
 promise_test(async (t) => {
