@@ -42,9 +42,6 @@ BulkLeakCheckService::MetricsReporter::~MetricsReporter() {
     base::UmaHistogramCounts1000(
         "PasswordManager.BulkCheck.CheckedCredentialsOnErrorOrCanceled",
         credential_count_);
-    base::UmaHistogramCounts100(
-        "PasswordManager.BulkCheck.LeaksFoundOnErrorOrCanceled",
-        leaked_credential_count_);
   } else {
     base::UmaHistogramMediumTimes("PasswordManager.BulkCheck.Time",
                                   timer_since_start_.Elapsed());

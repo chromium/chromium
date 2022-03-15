@@ -993,6 +993,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.BulkCheck.LeaksFoundOnErrorOrCanceled"
     units="credentials" expires_after="2022-04-24">
+  <obsolete>
+    Removed in M101.
+  </obsolete>
   <owner>vasilii@chromium.org</owner>
   <owner>vsemeniuk@google.com</owner>
   <summary>

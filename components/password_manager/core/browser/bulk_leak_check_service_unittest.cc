@@ -240,7 +240,6 @@ TEST_F(BulkLeakCheckServiceTest, FailedToCreateCheckWithError) {
   expected_counts
       ["PasswordManager.BulkCheck.CheckedCredentialsOnErrorOrCanceled"] = 1;
   expected_counts["PasswordManager.BulkCheck.Error"] = 1;
-  expected_counts["PasswordManager.BulkCheck.LeaksFoundOnErrorOrCanceled"] = 1;
   EXPECT_THAT(
       histogram_tester().GetTotalCountsForPrefix("PasswordManager.BulkCheck"),
       expected_counts);
@@ -288,8 +287,6 @@ TEST_F(BulkLeakCheckServiceTest, CancelSomething) {
   EXPECT_EQ(0u, service().GetPendingChecksCount());
   histogram_tester().ExpectUniqueSample(
       "PasswordManager.BulkCheck.CanceledTime", kMockElapsedTime, 1);
-  histogram_tester().ExpectUniqueSample(
-      "PasswordManager.BulkCheck.LeaksFoundOnErrorOrCanceled", 1, 1);
   histogram_tester().ExpectUniqueSample(
       "PasswordManager.BulkCheck.CheckedCredentialsOnErrorOrCanceled",
       TestCredentials().size(), 1);
@@ -446,7 +443,6 @@ TEST_F(BulkLeakCheckServiceTest, CheckFinishedWithError) {
   expected_counts
       ["PasswordManager.BulkCheck.CheckedCredentialsOnErrorOrCanceled"] = 1;
   expected_counts["PasswordManager.BulkCheck.Error"] = 1;
-  expected_counts["PasswordManager.BulkCheck.LeaksFoundOnErrorOrCanceled"] = 1;
   EXPECT_THAT(
       histogram_tester().GetTotalCountsForPrefix("PasswordManager.BulkCheck"),
       expected_counts);
@@ -478,7 +474,6 @@ TEST_F(BulkLeakCheckServiceTest, CheckFinishedWithQuotaLimit) {
   expected_counts
       ["PasswordManager.BulkCheck.CheckedCredentialsOnErrorOrCanceled"] = 1;
   expected_counts["PasswordManager.BulkCheck.Error"] = 1;
-  expected_counts["PasswordManager.BulkCheck.LeaksFoundOnErrorOrCanceled"] = 1;
   EXPECT_THAT(
       histogram_tester().GetTotalCountsForPrefix("PasswordManager.BulkCheck"),
       expected_counts);
