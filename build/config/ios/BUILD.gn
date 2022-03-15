@@ -127,11 +127,17 @@ config("runtime_library") {
   # libclang_rt.iossim.a for arm64 simulator builds. This can be
   # removed when an arm64 slice is added to upstream Clang.
   if (target_environment == "simulator" && current_cpu == "arm64") {
-    assert(1300 <= xcode_version_int && xcode_version_int <= 1321)
+    if (xcode_version_int >= 1300 && xcode_version_int <= 1321) {
+      _xcode_clang_version = "13.0.0"
+    } else if (xcode_version_int == 1330) {
+      _xcode_clang_version = "13.1.6"
+    } else {
+      assert(false)
+    }
     ldflags += [
       "-lSystem",
-      rebase_path("$ios_toolchains_path/usr/lib/clang/13.0.0/" +
-                      "lib/darwin/libclang_rt.iossim.a",
+      rebase_path("$ios_toolchains_path/usr/lib/clang/" + _xcode_clang_version +
+                      "/lib/darwin/libclang_rt.iossim.a",
                   root_build_dir),
       "-nodefaultlibs",
     ]
