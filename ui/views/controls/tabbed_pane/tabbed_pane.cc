@@ -138,6 +138,7 @@ gfx::Size Tab::CalculatePreferredSize() const {
 void Tab::GetAccessibleNodeData(ui::AXNodeData* data) {
   data->role = ax::mojom::Role::kTab;
   data->SetName(title_->GetText());
+  data->SetNameFrom(ax::mojom::NameFrom::kContents);
   data->AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, selected());
 }
 

@@ -637,7 +637,6 @@ bool content::IsNSRange(id value) {
       {NSAccessibilitySortDirectionAttribute, @"sortDirection"},
       {NSAccessibilitySubroleAttribute, @"subrole"},
       {NSAccessibilityTabsAttribute, @"tabs"},
-      {NSAccessibilityTitleAttribute, @"title"},
       {NSAccessibilityTopLevelUIElementAttribute, @"window"},
       {NSAccessibilityValueAttribute, @"value"},
       {NSAccessibilityValueAutofillAvailableAttribute,
@@ -1523,36 +1522,6 @@ bool content::IsNSRange(id value) {
   }
 
   return tabSubtree;
-}
-
-- (NSString*)AXTitle {
-  return [self title];
-}
-- (NSString*)title {
-  if (![self instanceActive])
-    return nil;
-  // Mac OS X wants static text exposed in AXValue.
-  if (ui::IsNameExposedInAXValueForRole([self internalRole]))
-    return @"";
-
-  if ([self isNameFromLabel])
-    return @"";
-
-  // If we're exposing the title in TitleUIElement, don't also redundantly
-  // expose it in AXDescription.
-  if ([self titleUIElement])
-    return @"";
-
-  ax::mojom::NameFrom nameFrom = static_cast<ax::mojom::NameFrom>(
-      _owner->GetIntAttribute(ax::mojom::IntAttribute::kNameFrom));
-
-  // On Mac OS X, cell titles are "" if it it came from content.
-  NSString* role = [self role];
-  if ([role isEqualToString:NSAccessibilityCellRole] &&
-      nameFrom == ax::mojom::NameFrom::kContents)
-    return @"";
-
-  return base::SysUTF8ToNSString(_owner->GetName());
 }
 
 - (id)AXValue {
@@ -2492,7 +2461,6 @@ bool content::IsNSRange(id value) {
                        NSAccessibilitySizeAttribute,
                        NSAccessibilityStartTextMarkerAttribute,
                        NSAccessibilitySubroleAttribute,
-                       NSAccessibilityTitleAttribute,
                        NSAccessibilityTopLevelUIElementAttribute,
                        NSAccessibilityValueAttribute,
                        NSAccessibilityWindowAttribute, nil];

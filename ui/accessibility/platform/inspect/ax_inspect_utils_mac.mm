@@ -78,6 +78,7 @@ bool IsValidAXAttribute(const std::string& attribute) {
        NSAccessibilityPopupValueAttribute,
        NSAccessibilityRequiredAttributeChrome,
        NSAccessibilityRoleDescriptionAttribute,
+       NSAccessibilityTitleAttribute,
        NSAccessibilityTitleUIElementAttribute,
        NSAccessibilityURLAttribute,
        NSAccessibilityVisitedAttribute},

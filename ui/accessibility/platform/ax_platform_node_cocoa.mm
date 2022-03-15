@@ -500,8 +500,12 @@ bool IsAXSetter(SEL selector) {
       break;
   }
 
-  // VoiceOver computes the wrong description for a link.
+  // No label for windows.
   ax::mojom::Role role = _node->GetRole();
+  if (ui::IsWindow(role))
+    return false;
+
+  // VoiceOver computes the wrong description for a link.
   if (ui::IsLink(role))
     return true;
 
@@ -1474,10 +1478,7 @@ bool IsAXSetter(SEL selector) {
 }
 
 - (NSString*)AXTitle {
-  if (ui::IsNameExposedInAXValueForRole(_node->GetRole()))
-    return @"";
-
-  return [self getName];
+  return [self accessibilityTitle];
 }
 
 - (id)AXTitleUIElement {
@@ -1638,7 +1639,7 @@ bool IsAXSetter(SEL selector) {
 
 - (NSString*)description {
   return [NSString stringWithFormat:@"%@ - %@ (%@)", [super description],
-                                    [self AXTitle], [self AXRole]];
+                                    [self accessibilityTitle], [self AXRole]];
 }
 
 //
@@ -1737,7 +1738,29 @@ bool IsAXSetter(SEL selector) {
 }
 
 - (NSString*)accessibilityTitle {
-  return [self AXTitle];
+  if (![self instanceActive])
+    return nil;
+
+  if (ui::IsNameExposedInAXValueForRole(_node->GetRole()))
+    return @"";
+
+  if ([self isNameFromLabel])
+    return @"";
+
+  // If we're exposing the title in TitleUIElement, don't also redundantly
+  // expose it in AXDescription.
+  if ([self titleUIElement])
+    return @"";
+
+  // On macOS cell titles are empty if they came from content.
+  ax::mojom::NameFrom nameFrom = _node->GetNameFrom();
+  if (nameFrom == ax::mojom::NameFrom::kContents) {
+    NSString* role = [self accessibilityRole];
+    if ([role isEqualToString:NSAccessibilityCellRole])
+      return @"";
+  }
+
+  return [self getName];
 }
 
 - (id)accessibilityValue {

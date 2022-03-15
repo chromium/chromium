@@ -903,6 +903,15 @@ bool IsUIAEmbeddedObject(ax::mojom::Role role) {
   }
 }
 
+bool IsWindow(ax::mojom::Role role) {
+  switch (role) {
+    case ax::mojom::Role::kWindow:
+      return true;
+    default:
+      return false;
+  }
+}
+
 bool ShouldHaveReadonlyStateByDefault(const ax::mojom::Role role) {
   switch (role) {
     case ax::mojom::Role::kArticle:

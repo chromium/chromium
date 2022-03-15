@@ -214,6 +214,9 @@ AX_BASE_EXPORT bool IsTextField(ax::mojom::Role role);
 // objects. See the method definition for more details.
 AX_BASE_EXPORT bool IsUIAEmbeddedObject(ax::mojom::Role role);
 
+// Returns true if the provided role represents a window.
+AX_BASE_EXPORT bool IsWindow(const ax::mojom::Role role);
+
 // Returns true if the node should be read only by default
 AX_BASE_EXPORT bool ShouldHaveReadonlyStateByDefault(
     const ax::mojom::Role role);
