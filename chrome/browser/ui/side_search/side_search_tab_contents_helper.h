@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_UI_SIDE_SEARCH_SIDE_SEARCH_TAB_CONTENTS_HELPER_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/ui/side_search/side_search_config.h"
 #include "chrome/browser/ui/side_search/side_search_side_contents_helper.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -26,6 +28,7 @@ class SideSearchConfig;
 class SideSearchTabContentsHelper
     : public SideSearchSideContentsHelper::Delegate,
       public content::WebContentsObserver,
+      public SideSearchConfig::Observer,
       public content::WebContentsUserData<SideSearchTabContentsHelper> {
  public:
   class Delegate {
@@ -65,6 +68,9 @@ class SideSearchTabContentsHelper
   // content::WebContentsObserver:
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
+
+  // SideSearchConfig::Observer:
+  void OnSideSearchConfigChanged() override;
 
   // Gets the `side_panel_contents_` for the tab. Creates one if it does not
   // currently exist.
@@ -110,6 +116,9 @@ class SideSearchTabContentsHelper
   // Should only be called when `side_contents_active_`.
   void UpdateSideContentsNavigation();
 
+  // Closes the side panel and resets all helper state.
+  void ClearHelperState();
+
   // Makes a HEAD request for the side search Google SRP to test for the page's
   // availability and sets `is_side_panel_srp_available_` accordingly.
   void TestSRPAvailability();
@@ -142,6 +151,9 @@ class SideSearchTabContentsHelper
   // Used to test if the side panel SRP for `last_search_url_` is currently
   // available. Reset every time `TestSRPAvailability()` is called.
   std::unique_ptr<network::SimpleURLLoader> simple_loader_;
+
+  base::ScopedObservation<SideSearchConfig, SideSearchConfig::Observer>
+      config_observation_{this};
 
   base::WeakPtrFactory<SideSearchTabContentsHelper> weak_ptr_factory_{this};
 

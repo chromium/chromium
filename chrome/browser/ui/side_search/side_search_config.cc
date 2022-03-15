@@ -155,6 +155,22 @@ void SideSearchConfig::SetGenerateSideSearchURLCallback(
   generate_side_search_url_callack_ = std::move(callback);
 }
 
+void SideSearchConfig::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void SideSearchConfig::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+void SideSearchConfig::ResetStateAndNotifyConfigChanged() {
+  // Reset the availabiliy bit before propagating notifications.
+  is_side_panel_srp_available_ = false;
+
+  for (auto& observer : observers_)
+    observer.OnSideSearchConfigChanged();
+}
+
 void SideSearchConfig::ApplyGoogleSearchConfigurationForTesting() {
   ApplyGoogleSearchConfiguration(*this);
 }

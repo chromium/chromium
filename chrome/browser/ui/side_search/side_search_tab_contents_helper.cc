@@ -78,6 +78,10 @@ void SideSearchTabContentsHelper::DidFinishNavigation(
   }
 }
 
+void SideSearchTabContentsHelper::OnSideSearchConfigChanged() {
+  ClearHelperState();
+}
+
 void SideSearchTabContentsHelper::SidePanelProcessGone() {
   ClearSidePanelContents();
   // For state-per-tab we want to toggle the helper closed to ensure its toggled
@@ -105,7 +109,8 @@ void SideSearchTabContentsHelper::ClearSidePanelContents() {
 
 bool SideSearchTabContentsHelper::CanShowSidePanelForCommittedNavigation() {
   const GURL& url = web_contents()->GetLastCommittedURL();
-  return last_search_url_ && GetConfig()->CanShowSidePanelForURL(url);
+  return last_search_url_ && GetConfig()->CanShowSidePanelForURL(url) &&
+         GetConfig()->is_side_panel_srp_available();
 }
 
 void SideSearchTabContentsHelper::SetDelegate(
@@ -125,6 +130,7 @@ SideSearchTabContentsHelper::SideSearchTabContentsHelper(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<SideSearchTabContentsHelper>(*web_contents) {
+  config_observation_.Observe(GetConfig());
 }
 
 SideSearchSideContentsHelper*
@@ -159,6 +165,22 @@ void SideSearchTabContentsHelper::UpdateSideContentsNavigation() {
     GetSideContentsHelper()->LoadURL(last_search_url_.value());
     side_search::MaybeSaveSideSearchTabSessionData(web_contents());
   }
+}
+
+void SideSearchTabContentsHelper::ClearHelperState() {
+  toggled_open_ = false;
+  simple_loader_.reset();
+  last_search_url_.reset();
+  returned_to_previous_srp_ = false;
+  toggled_open_ = false;
+
+  // Notify the side panel after resetting the above state but before clearing
+  // away the side panel WebContents. This will close the side panel if it's
+  // currently open.
+  if (delegate_)
+    delegate_->SidePanelAvailabilityChanged(true);
+
+  ClearSidePanelContents();
 }
 
 void SideSearchTabContentsHelper::TestSRPAvailability() {

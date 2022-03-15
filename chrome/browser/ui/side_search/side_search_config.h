@@ -6,6 +6,9 @@
 #define CHROME_BROWSER_UI_SIDE_SEARCH_SIDE_SEARCH_CONFIG_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/supports_user_data.h"
 
 namespace content {
@@ -20,6 +23,14 @@ class SideSearchConfig : public base::SupportsUserData::Data {
  public:
   using URLTestConditionCallback = base::RepeatingCallback<bool(const GURL&)>;
   using GenerateURLCallback = base::RepeatingCallback<GURL(const GURL&)>;
+
+  // Config clients subclass this to be notified to changes in side search
+  // config state.
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called after a change to the config's state.
+    virtual void OnSideSearchConfigChanged() = 0;
+  };
 
   explicit SideSearchConfig(Profile* profile);
   SideSearchConfig(const SideSearchConfig&) = delete;
@@ -52,6 +63,13 @@ class SideSearchConfig : public base::SupportsUserData::Data {
     is_side_panel_srp_available_ = is_side_panel_srp_available;
   }
 
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
+  // Resets any local config state and notifies observers when the configuration
+  // changes.
+  void ResetStateAndNotifyConfigChanged();
+
   // TODO(crbug.com/1304513): Allow tests to specify the Google Search
   // configuration on all supported platforms until tests are fully migrated.
   void ApplyGoogleSearchConfigurationForTesting();
@@ -61,7 +79,9 @@ class SideSearchConfig : public base::SupportsUserData::Data {
   // available or not.
   bool is_side_panel_srp_available_ = false;
 
-  Profile* const profile_;
+  raw_ptr<Profile> const profile_;
+
+  base::ObserverList<Observer> observers_;
 
   URLTestConditionCallback should_navigate_in_side_panel_callback_;
   URLTestConditionCallback can_show_side_panel_for_url_callback_;

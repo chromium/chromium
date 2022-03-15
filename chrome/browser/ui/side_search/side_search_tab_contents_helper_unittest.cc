@@ -44,7 +44,7 @@ class SideSearchTabContentsHelperTest : public ::testing::Test {
     // Basic configuration for testing that allows navigations to URLs matching
     // `kSearchMatchUrl1` and `kSearchMatchUrl2` to proceed within the side
     // panel and only allows showing the side panel on non-matching pages.
-    auto* config = SideSearchConfig::Get(&profile_);
+    auto* config = GetConfig();
     config->SetShouldNavigateInSidePanelCallback(
         base::BindRepeating(IsSearchURLMatch));
     config->SetCanShowSidePanelForURLCallback(base::BindRepeating(
@@ -98,6 +98,8 @@ class SideSearchTabContentsHelperTest : public ::testing::Test {
   SideSearchTabContentsHelper* helper() {
     return SideSearchTabContentsHelper::FromWebContents(web_contents_.get());
   }
+
+  SideSearchConfig* GetConfig() { return SideSearchConfig::Get(&profile_); }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -183,6 +185,29 @@ TEST_F(SideSearchTabContentsHelperTest,
        SidePanelProcessGoneResetsSideContents) {
   EXPECT_NE(nullptr, helper()->side_panel_contents_for_testing());
   helper()->SidePanelProcessGone();
+  EXPECT_EQ(nullptr, helper()->side_panel_contents_for_testing());
+}
+
+TEST_F(SideSearchTabContentsHelperTest, ClearsInternalStateWhenConfigChanges) {
+  // When a tab is first opened there should be no last encountered search URL.
+  EXPECT_FALSE(helper()->last_search_url().has_value());
+  EXPECT_TRUE(!GetLastCommittedSideContentsEntry() ||
+              GetLastCommittedSideContentsEntry()->IsInitialEntry());
+
+  // Navigate to a search URL.
+  LoadURL(kSearchMatchUrl1);
+  EXPECT_EQ(kSearchMatchUrl1, helper()->last_search_url());
+  EXPECT_EQ(kSearchMatchUrl1, GetLastCommittedSideContentsEntry()->GetURL());
+
+  // Set the toggled bit to true.
+  helper()->set_toggled_open(true);
+
+  // Reset config state and notify observers that the config has changed.
+  GetConfig()->ResetStateAndNotifyConfigChanged();
+
+  // Check to make sure state has been reset.
+  EXPECT_FALSE(helper()->last_search_url().has_value());
+  EXPECT_FALSE(helper()->toggled_open());
   EXPECT_EQ(nullptr, helper()->side_panel_contents_for_testing());
 }
 
