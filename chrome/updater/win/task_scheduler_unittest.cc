@@ -128,9 +128,7 @@ class TaskSchedulerTests : public ::testing::Test {
     return command_line;
   }
 
-  static void SetUpTestCase() {
-    InitLogging(GetTestScope(), FILE_PATH_LITERAL("updater.log"));
-  }
+  static void SetUpTestCase() { InitLogging(GetTestScope()); }
 
  protected:
   std::unique_ptr<TaskScheduler> task_scheduler_;

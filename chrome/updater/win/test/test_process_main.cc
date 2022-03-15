@@ -27,8 +27,7 @@ int main(int, char**) {
   if (command_line->HasSwitch(updater::kEnableLoggingSwitch)) {
     InitLogging(command_line->HasSwitch(updater::kSystemSwitch)
                     ? updater::UpdaterScope::kSystem
-                    : updater::UpdaterScope::kUser,
-                FILE_PATH_LITERAL("updater.log"));
+                    : updater::UpdaterScope::kUser);
   }
 
   updater::NotifyInitializationDoneForTesting();

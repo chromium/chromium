@@ -126,8 +126,7 @@ std::string GetInstallDataIndexFromAppArgs(const std::string& app_id);
 bool PathOwnedByUser(const base::FilePath& path);
 
 // Initializes logging for an executable.
-void InitLogging(UpdaterScope updater_scope,
-                 const base::FilePath::StringType& filename);
+void InitLogging(UpdaterScope updater_scope);
 
 // Wraps the 'command_line' to be executed in an elevated context.
 // On macOS this is done with 'sudo'.

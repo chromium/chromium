@@ -590,7 +590,7 @@ int KSAdminAppMain(int argc, const char* argv[]) {
   base::CommandLine::Init(argc, argv);
   std::map<std::string, std::string> command_line =
       ParseCommandLine(argc, argv);
-  updater::InitLogging(Scope(command_line), FILE_PATH_LITERAL("updater.log"));
+  updater::InitLogging(Scope(command_line));
   base::SingleThreadTaskExecutor main_task_executor(base::MessagePumpType::UI);
   return base::MakeRefCounted<KSAdminApp>(command_line)->Run();
 }

@@ -111,7 +111,7 @@ int KSInstallMain(int argc, char* argv[]) {
   base::AtExitManager exit_manager;
 
   base::CommandLine::Init(argc, argv);
-  updater::InitLogging(GetUpdaterScope(), FILE_PATH_LITERAL("updater.log"));
+  updater::InitLogging(GetUpdaterScope());
 
   base::SingleThreadTaskExecutor main_task_executor(base::MessagePumpType::UI);
   return MakeKSInstallApp(argc, argv)->Run();
