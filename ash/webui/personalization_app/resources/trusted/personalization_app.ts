@@ -21,6 +21,7 @@ import './ambient/ambient_weather_element.js';
 import './ambient/toggle_row_element.js';
 import './ambient/topic_source_item_element.js';
 import './ambient/topic_source_list_element.js';
+import './ambient/zero_state_element.js';
 import './personalization_router_element.js';
 import './personalization_test_api.js';
 import './personalization_toast_element.js';

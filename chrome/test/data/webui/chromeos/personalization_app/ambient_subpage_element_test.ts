@@ -53,12 +53,13 @@ export function AmbientSubpageTest() {
 
   async function displayMainSettings(
       topicSource: TopicSource|null, temperatureUnit: TemperatureUnit|null,
+      ambientModeEnabled: boolean,
       animationTheme = AnimationTheme.kSlideshow): Promise<AmbientSubpage> {
     personalizationStore.data.ambient.albums = ambientProvider.albums;
     personalizationStore.data.ambient.animationTheme = animationTheme;
     personalizationStore.data.ambient.topicSource = topicSource;
     personalizationStore.data.ambient.temperatureUnit = temperatureUnit;
-    personalizationStore.data.ambient.ambientModeEnabled = false;
+    personalizationStore.data.ambient.ambientModeEnabled = ambientModeEnabled;
     const ambientSubpage =
         initElement(AmbientSubpage, {path: Paths.Ambient, queryParams: {}});
     personalizationStore.notifyObservers();
@@ -67,7 +68,9 @@ export function AmbientSubpageTest() {
   }
 
   test('displays content', async () => {
-    ambientSubpageElement = await displayMainSettings(null, null);
+    ambientSubpageElement = await displayMainSettings(
+        /*topicSource=*/ null, /*temperatureUnit=*/ null,
+        /*ambientModeEnabled=*/ false);
 
     const toggleRow =
         ambientSubpageElement.shadowRoot!.querySelector('toggle-row');
@@ -75,6 +78,10 @@ export function AmbientSubpageTest() {
     const toggleButton = toggleRow!.shadowRoot!.querySelector('cr-toggle');
     assertTrue(!!toggleButton, 'cr-toggle element exists');
     assertFalse(toggleButton!.checked);
+
+    personalizationStore.data.ambient.ambientModeEnabled = true;
+    personalizationStore.notifyObservers();
+    await waitAfterNextRender(ambientSubpageElement);
 
     let spinner =
         ambientSubpageElement.shadowRoot!.querySelector('paper-spinner-lite');
@@ -106,7 +113,8 @@ export function AmbientSubpageTest() {
     personalizationStore.expectAction(
         AmbientActionName.SET_AMBIENT_MODE_ENABLED);
     ambientSubpageElement = await displayMainSettings(
-        TopicSource.kArtGallery, TemperatureUnit.kFahrenheit);
+        TopicSource.kArtGallery, TemperatureUnit.kFahrenheit,
+        /*ambientModeEnabled=*/ false);
 
     await ambientProvider.whenCalled('setAmbientObserver');
     ambientProvider.updateAmbientObserver();
@@ -136,10 +144,8 @@ export function AmbientSubpageTest() {
 
   test('sets ambient mode enabled when toggle row clicked', async () => {
     ambientSubpageElement = await displayMainSettings(
-        TopicSource.kArtGallery, TemperatureUnit.kFahrenheit);
-    personalizationStore.data.ambient.ambientModeEnabled = true;
-    personalizationStore.notifyObservers();
-    await waitAfterNextRender(ambientSubpageElement);
+        TopicSource.kArtGallery, TemperatureUnit.kFahrenheit,
+        /*ambientModeEnabled=*/ true);
 
     const toggleRow =
         ambientSubpageElement.shadowRoot!.querySelector('toggle-row');
@@ -172,10 +178,8 @@ export function AmbientSubpageTest() {
 
   test('sets ambient mode enabled when toggle button clicked', async () => {
     ambientSubpageElement = await displayMainSettings(
-        TopicSource.kArtGallery, TemperatureUnit.kFahrenheit);
-    personalizationStore.data.ambient.ambientModeEnabled = true;
-    personalizationStore.notifyObservers();
-    await waitAfterNextRender(ambientSubpageElement);
+        TopicSource.kArtGallery, TemperatureUnit.kFahrenheit,
+        /*ambientModeEnabled=*/ true);
 
     const toggleRow =
         ambientSubpageElement.shadowRoot!.querySelector('toggle-row');
@@ -218,7 +222,8 @@ export function AmbientSubpageTest() {
       'sets animation theme when animation theme item is clicked', async () => {
         loadTimeData.overrideValues({isAmbientModeAnimationEnabled: true});
         ambientSubpageElement = await displayMainSettings(
-            TopicSource.kArtGallery, TemperatureUnit.kFahrenheit);
+            TopicSource.kArtGallery, TemperatureUnit.kFahrenheit,
+            /*ambientModeEnabled=*/ true);
 
         const animationThemeList =
             ambientSubpageElement.shadowRoot!.querySelector(
@@ -269,7 +274,8 @@ export function AmbientSubpageTest() {
 
   test('sets topic source when topic source item clicked', async () => {
     ambientSubpageElement = await displayMainSettings(
-        TopicSource.kArtGallery, TemperatureUnit.kFahrenheit);
+        TopicSource.kArtGallery, TemperatureUnit.kFahrenheit,
+        /*ambientModeEnabled=*/ true);
 
     const topicSourceList =
         ambientSubpageElement.shadowRoot!.querySelector('topic-source-list');
@@ -314,7 +320,8 @@ export function AmbientSubpageTest() {
 
   test('sets temperature unit when temperature unit item clicked', async () => {
     ambientSubpageElement = await displayMainSettings(
-        TopicSource.kArtGallery, TemperatureUnit.kFahrenheit);
+        TopicSource.kArtGallery, TemperatureUnit.kFahrenheit,
+        /*ambientModeEnabled=*/ true);
 
     const weatherUnit =
         ambientSubpageElement.shadowRoot!.querySelector('ambient-weather-unit');
@@ -597,7 +604,8 @@ export function AmbientSubpageTest() {
     personalizationStore.expectAction(AmbientActionName.SET_ALBUMS);
 
     ambientSubpageElement = await displayMainSettings(
-        TopicSource.kArtGallery, TemperatureUnit.kFahrenheit);
+        TopicSource.kArtGallery, TemperatureUnit.kFahrenheit,
+        /*ambientModeEnabled=*/ true);
 
     await ambientProvider.whenCalled('setAmbientObserver');
     ambientProvider.updateAmbientObserver();
@@ -619,5 +627,31 @@ export function AmbientSubpageTest() {
         ambientPreview.shadowRoot!.getElementById('albumTitle');
     assertTrue(!!previewAlbumTitle);
     assertEquals('2', previewAlbumTitle.innerText.replace(/\s/g, ''));
+  });
+
+  test('displays zero state when ambient mode is disabled', async () => {
+    ambientSubpageElement = await displayMainSettings(
+        TopicSource.kArtGallery, TemperatureUnit.kFahrenheit,
+        /*ambientModeEnabled=*/ false);
+
+    // Preview image should be absent.
+    assertEquals(
+        ambientSubpageElement.shadowRoot!.querySelector('ambient-preview'),
+        null);
+
+    // Topic source list should be absent.
+    assertEquals(
+        ambientSubpageElement.shadowRoot!.querySelector('topic-source-list'),
+        null);
+
+    // Weather unit should be absent.
+    assertEquals(
+        ambientSubpageElement.shadowRoot!.querySelector('ambient-weather-unit'),
+        null);
+
+    // Zero state should be present.
+    const zeroState =
+        ambientSubpageElement.shadowRoot!.querySelector('ambient-zero-state');
+    assertTrue(!!zeroState);
   });
 }

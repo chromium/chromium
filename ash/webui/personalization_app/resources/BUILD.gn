@@ -78,6 +78,7 @@ polymer_js_files = [
   "trusted/ambient/toggle_row_element.ts",
   "trusted/ambient/topic_source_item_element.ts",
   "trusted/ambient/topic_source_list_element.ts",
+  "trusted/ambient/zero_state_element.ts",
   "trusted/personalization_main_element.ts",
   "trusted/personalization_router_element.ts",
   "trusted/personalization_theme_element.ts",
@@ -110,6 +111,8 @@ polymer_js_files = [
 static_resource_files = [
   "icon_192.png",
 
+  "common/ambient_mode_disabled.svg",
+  "common/ambient_mode_disabled_dark.svg",
   "common/base.css",
   "common/feel_the_breeze.png",
   "common/float_on_by.png",

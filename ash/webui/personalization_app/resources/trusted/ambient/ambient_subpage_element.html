@@ -6,6 +6,7 @@
     display: grid;
     grid-template-areas:
       '. . toggles   . .'
+      '. . zeroState . .'
       '. . spinner   . .'
       '. . preview   . .'
       '. . animation . .'
@@ -17,6 +18,9 @@
   toggle-row {
     grid-area: toggles;
     margin: 0 8px;
+  }
+  ambient-zero-state {
+    grid-area: zeroState;
   }
   paper-spinner-lite {
     grid-area: spinner;
@@ -46,27 +50,31 @@
       <toggle-row checked="[[ambientModeEnabled_]]"
           on-click="onClickAmbientModeButton_" on-change="onToggleStateChanged_">
       </toggle-row>
-
-      <template is="dom-if" if="[[loadingSettings_]]">
-        <!-- TODO(b/217311018): Add loading state -->
-        <paper-spinner-lite active></paper-spinner-lite>
-      </template>
-
-      <template is="dom-if" if="[[!loadingSettings_]]">
-        <ambient-preview></ambient-preview>
-        <template is="dom-if" if="[[isAmbientModeAnimationEnabled_()]]">
-          <animation-theme-list selected-animation-theme="[[animationTheme_]]"
-              disabled$="[[disabled_]]">
-          </animation-theme-list>
+      <template is="dom-if" if="[[ambientModeEnabled_]]">
+        <template is="dom-if" if="[[loadingSettings_]]">
+          <!-- TODO(b/217311018): Add loading state -->
+          <paper-spinner-lite active></paper-spinner-lite>
         </template>
-        <topic-source-list selected-topic-source="[[topicSource_]]"
-            has-google-photos-albums="[[hasGooglePhotosAlbums_(albums_)]]"
-            disabled="[[disabled_]]">
-        </topic-source-list>
-        <ambient-weather-unit
-            selected-temperature-unit="[[temperatureUnitToString_(temperatureUnit_)]]"
-            disabled="[[disabled_]]">
-        </ambient-weather-unit>
+
+        <template is="dom-if" if="[[!loadingSettings_]]">
+          <ambient-preview></ambient-preview>
+          <template is="dom-if" if="[[isAmbientModeAnimationEnabled_()]]">
+            <animation-theme-list selected-animation-theme="[[animationTheme_]]"
+                disabled$="[[disabled_]]">
+            </animation-theme-list>
+          </template>
+          <topic-source-list selected-topic-source="[[topicSource_]]"
+              has-google-photos-albums="[[hasGooglePhotosAlbums_(albums_)]]"
+              disabled="[[disabled_]]">
+          </topic-source-list>
+          <ambient-weather-unit
+              selected-temperature-unit="[[temperatureUnitToString_(temperatureUnit_)]]"
+              disabled="[[disabled_]]">
+          </ambient-weather-unit>
+        </template>
+      </template>
+      <template is="dom-if" if="[[!ambientModeEnabled_]]">
+        <ambient-zero-state id="zeroState"></ambient-zero-state>
       </template>
     </div>
   </template>
