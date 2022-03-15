@@ -226,8 +226,6 @@ class SystemFeaturesPolicyTest : public PolicyTest {
     EXPECT_EQ(base::UTF8ToUTF16(app_title), GetWebUITitle(app_url, true));
   }
 
-  // TODO(b/204827405): remove this when we resolve multidevice_handler check
-  // failed or Eche be enabled.
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
