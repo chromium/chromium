@@ -33,6 +33,7 @@ import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageIdentifier;
+import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
@@ -887,7 +888,8 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         mNotificationIds.remove(contentId);
     }
 
-    private void onPrimaryAction(ContentId itemId, final OfflineItemSchedule schedule) {
+    private @PrimaryActionClickBehavior int onPrimaryAction(
+            ContentId itemId, final OfflineItemSchedule schedule) {
         OfflineItem offlineItem = mTrackedItems.remove(itemId);
         removeNotification(itemId);
         if (itemId != null && schedule != null) {
@@ -905,6 +907,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
                     getOTRProfileIDForTrackedItems(), DownloadOpenSource.DOWNLOAD_PROGRESS_MESSAGE);
             recordLinkClicked(false /*openItem*/);
         }
+        return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
     }
 
     private OTRProfileID getOTRProfileIDForTrackedItems() {

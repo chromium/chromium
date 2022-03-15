@@ -23,6 +23,7 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageIdentifier;
+import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.annotation.Retention;
@@ -87,9 +88,11 @@ class MerchantTrustMessageViewModel {
                 .with(MessageBannerProperties.ON_DISMISSED,
                         (reason) -> actionsHandler.onMessageDismissed(reason, messageAssociatedUrl))
                 .with(MessageBannerProperties.ON_PRIMARY_ACTION,
-                        ()
-                                -> actionsHandler.onMessagePrimaryAction(
-                                        trustSignals, messageAssociatedUrl))
+                        () -> {
+                            actionsHandler.onMessagePrimaryAction(
+                                    trustSignals, messageAssociatedUrl);
+                            return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
+                        })
                 .build();
     }
 
