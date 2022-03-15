@@ -327,9 +327,10 @@ void BreadcrumbPersistentStorageManager::WriteEvents() {
   if (time_delta_since_last_write < kMinDelayBetweenWrites) {
     // If an event was just written, delay writing the event to disk in order to
     // limit overhead.
-    write_timer_.Start(FROM_HERE,
-                       kMinDelayBetweenWrites - time_delta_since_last_write,
-                       this, &BreadcrumbPersistentStorageManager::WriteEvents);
+    write_timer_.Start(
+        FROM_HERE, kMinDelayBetweenWrites - time_delta_since_last_write,
+        base::BindOnce(&BreadcrumbPersistentStorageManager::WriteEvents,
+                       weak_ptr_factory_.GetWeakPtr()));
   } else {
     // If the event does not fit within |kPersistedFilesizeInBytes|, rewrite the
     // file to trim old events.
