@@ -258,6 +258,7 @@ suite('PrivacySandboxSettings3', function() {
     page = /** @type {!PrivacySandboxAppElement} */
         (document.createElement('privacy-sandbox-app'));
     document.body.appendChild(page);
+    page.prefs = {privacy_sandbox: {apis_enabled_v2: {value: true}}};
 
     return flushTasks();
   });

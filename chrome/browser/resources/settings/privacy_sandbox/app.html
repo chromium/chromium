@@ -278,7 +278,10 @@
           </div>
           <div slot="body">
             <div class="dialog-description">
-              $i18n{privacySandboxAdPersonalizationDialogDescription}
+              [[getAdPersonalizationDialogDescription_(
+                    prefs.privacy_sandbox.apis_enabled_v2.value,
+                    topTopics_.length,
+                    joiningSites_.length)]]
             </div>
             <div class="ad-personalization-section-title">
               $i18n{privacySandboxAdPersonalizationDialogTopicsTitle}
@@ -415,7 +418,8 @@
           <div slot="title">$i18n{privacySandboxAdMeasurementDialogTitle}</div>
           <div slot="body">
             <div class="dialog-description">
-              $i18n{privacySandboxAdMeasurementDialogDescription}
+              [[getAdMeasurementDialogDescription_(
+                    prefs.privacy_sandbox.apis_enabled_v2.value)]]
             </div>
             <div id="adMeasurementDialogControlMeasurement"
                 class="dialog-description">
@@ -430,7 +434,8 @@
           <div slot="title">$i18n{privacySandboxSpamAndFraudDialogTitle}</div>
           <div slot="body">
             <div class="dialog-description">
-              $i18n{privacySandboxSpamAndFraudDialogDescription1}
+              [[getSpamAndFraudDialogDescription1_(
+                    prefs.privacy_sandbox.apis_enabled_v2.value)]]
             </div>
             <div class="dialog-description">
               $i18n{privacySandboxSpamAndFraudDialogDescription2}

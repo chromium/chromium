@@ -203,6 +203,18 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
         PrivacySandboxSettingsView.AD_PERSONALIZATION_DIALOG;
   }
 
+  private getAdPersonalizationDialogDescription_(): string {
+    const enabled = this.getPref('privacy_sandbox.apis_enabled_v2').value;
+    if (enabled) {
+      return loadTimeData.getString(
+          this.topTopics_.length || this.joiningSites_.length ?
+              'privacySandboxAdPersonalizationDialogDescription' :
+              'privacySandboxAdPersonalizationDialogDescriptionListsEmpty');
+    }
+    return loadTimeData.getString(
+        'privacySandboxAdPersonalizationDialogDescriptionTrialsOff');
+  }
+
   private onAdPersonalizationRemovedRowClick_() {
     this.metricsBrowserProxy_.recordAction(
         'Settings.PrivacySandbox.RemovedInterests.Opened');
@@ -222,11 +234,25 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
         PrivacySandboxSettingsView.AD_MEASUREMENT_DIALOG;
   }
 
+  private getAdMeasurementDialogDescription_(): string {
+    const enabled = this.getPref('privacy_sandbox.apis_enabled_v2').value;
+    return loadTimeData.getString(
+        enabled ? 'privacySandboxAdMeasurementDialogDescription' :
+                  'privacySandboxAdMeasurementDialogDescriptionTrialsOff');
+  }
+
   private onSpamAndFraudRowClick_() {
     this.metricsBrowserProxy_.recordAction(
         'Settings.PrivacySandbox.SpamFraud.Opened');
     this.privacySandboxSettingsView_ =
         PrivacySandboxSettingsView.SPAM_AND_FRAUD_DIALOG;
+  }
+
+  private getSpamAndFraudDialogDescription1_(): string {
+    const enabled = this.getPref('privacy_sandbox.apis_enabled_v2').value;
+    return loadTimeData.getString(
+        enabled ? 'privacySandboxSpamAndFraudDialogDescription1' :
+                  'privacySandboxSpamAndFraudDialogDescription1TrialsOff');
   }
 
   private showInterestsList_(interests: PrivacySandboxInterest[]): boolean {

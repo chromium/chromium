@@ -1502,8 +1502,11 @@
   <message name="IDS_SETTINGS_PRIVACY_SANDBOX_SPAM_AND_FRAUD_DIALOG_TITLE" translateable="false" desc="Title of the 'spam and fraud reduction' dialog.">
     Spam and fraud reduction
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_SPAM_AND_FRAUD_DIALOG_DESCRIPTION1" translateable="false" desc="First description of the 'spam and fraud reduction' dialog.">
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_SPAM_AND_FRAUD_DIALOG_DESCRIPTION1" translateable="false" desc="Version of the first description of the 'spam and fraud reduction' dialog when privacy sandbox trials are on.">
     Spam &#38; fraud reduction relies on trust tokens to help sites fight fraud and distinguish bots from people.
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_SPAM_AND_FRAUD_DIALOG_DESCRIPTION1_TRIALS_OFF" translateable="false" desc="Version of the first description of the 'spam and fraud reduction' dialog when privacy sandbox trials are off.">
+    When trials are on, Spam &#38; fraud reduction relies on trust tokens to help sites fight fraud and distinguish bots from people.
   </message>
   <message name="IDS_SETTINGS_PRIVACY_SANDBOX_SPAM_AND_FRAUD_DIALOG_DESCRIPTION2" translateable="false" desc="Second description of the 'spam and fraud reduction' dialog.">
     Based on your interaction with a site, like regularly signing in to an account, that site can issue a trust token to your browser. Later, if other sites you visit check for and find a valid trust token, they're more likely to treat you like a person and not a bot.

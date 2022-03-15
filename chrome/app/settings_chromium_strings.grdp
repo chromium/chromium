@@ -175,8 +175,14 @@
   <message name="IDS_SETTINGS_PRIVACY_SANDBOX_LEARN_MORE_DIALOG_FLEDGE_DATA_USAGE" translateable="false" desc="Description for Fledge's data usage subsection of the dialog to learn more about ad personalization.">
     Sites can store information with Chromium about your interests. For example, if you visit a site to buy shoes for a marathon, the site might define your interest as running marathons. Later, if you visit a different site to register for a race, that site can see this interest and show you content and ads for running shoes.
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_DESCRIPTION" translateable="false" desc="Description of the main page of the 'ad personalization' dialog.">
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_DESCRIPTION" translateable="false" desc="Description of the main page of the 'ad personalization' dialog when the privacy sandbox trials are on.">
     Your browsing history affects the ads you see and the interests as estimated below. To protect your privacy, Chromium auto-deletes your interests on a rolling basis each month. Interests can refresh unless you remove them.
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_DESCRIPTION_TRIALS_OFF" translateable="false" desc="Description of the main page of the 'ad personalization' dialog when the privacy sandbox trials are off.">
+    When trials are on and if Chromium has randomly placed you in an active trial, your browsing history affects the ads you see and the interests as estimated below. To protect your privacy, Chromium deletes your interests on a rolling basis each month.
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_DESCRIPTION_LISTS_EMPTY" translateable="false" desc="Description of the main page of the 'ad personalization' dialog when the privacy sandbox trials are on but the topics and fledge list items have all been deleted.">
+    If Chromium has randomly placed you in an active trial, your browsing history affects the ads you see and the interests as estimated below. To protect your privacy, Chromium deletes your interests on a rolling basis each month. Interests refresh unless you remove them.
   </message>
   <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_TOPICS_TITLE" translateable="false" desc="Title of the browser-based interests section of the 'ad personalization' dialog.">
     Your interests as estimated by Chromium
@@ -193,8 +199,11 @@
   <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_FLEDGE_LEARN_MORE_1" translateable="false" desc="First learn more description of the website-based interests section of the 'ad personalization' dialog.">
     It's common for sites you visit to remember things you're interested in, to personalize your experience. Sites can also store information with Chromium about your interests.
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_MEASUREMENT_DIALOG_DESCRIPTION" translateable="false" desc="Main description of the 'ad measurement' dialog.">
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_MEASUREMENT_DIALOG_DESCRIPTION" translateable="false" desc="Main description of the 'ad measurement' dialog when privacy sandbox trials are on.">
     Ad measurement allows sites you visit to request information from Chromium that helps the site measure the performance of their ads. Ad measurement restricts cross-site tracking by transferring as little information as possible between sites.
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_MEASUREMENT_DIALOG_DESCRIPTION_TRIALS_OFF" translateable="false" desc="Main description of the 'ad measurement' dialog when privacy sandbox trials are off.">
+    When trials are on, Ad measurement allows sites you visit to request information from Chromium that helps the site measure the performance of their ads. Ad measurement restricts cross-site tracking by transferring as little information as possible between sites.
   </message>
 
   <!-- Safety check -->
