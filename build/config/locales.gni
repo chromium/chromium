@@ -122,7 +122,6 @@ if (is_ios) {
 
 # Chrome locales not on Windows, Mac, or Linux
 extended_locales = [
-  "af",
   "as",
   "az",
   "be",
@@ -146,7 +145,6 @@ extended_locales = [
   "si",
   "sq",
   "sr-Latn",
-  "ur",
   "uz",
   "zh-HK",
   "zu",
@@ -162,12 +160,13 @@ if (!is_android) {
 # Add or subtract platform specific locales below.
 if (is_chromeos_ash || is_chromeos_lacros) {
   platform_pak_locales += [
-    "af",
     "is",
     "zu",
   ]
+  platform_pak_locales -= [ "ur" ]
 } else if (is_ios) {
   platform_pak_locales -= [
+    "af",
     "am",
     "bn",
     "et",
@@ -181,6 +180,7 @@ if (is_chromeos_ash || is_chromeos_lacros) {
     "sw",
     "ta",
     "te",
+    "ur",
   ]
 }
 

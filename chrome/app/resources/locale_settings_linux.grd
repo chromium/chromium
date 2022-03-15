@@ -5,7 +5,6 @@
       <emit emit_type='prepend'></emit>
     </output>
     <if expr="is_android">
-      <output filename="platform_locale_settings_af.pak" type="data_package" lang="af" />
       <output filename="platform_locale_settings_as.pak" type="data_package" lang="as" />
       <output filename="platform_locale_settings_az.pak" type="data_package" lang="az" />
       <output filename="platform_locale_settings_be.pak" type="data_package" lang="be" />
@@ -29,11 +28,11 @@
       <output filename="platform_locale_settings_si.pak" type="data_package" lang="si" />
       <output filename="platform_locale_settings_sq.pak" type="data_package" lang="sq" />
       <output filename="platform_locale_settings_sr-Latn.pak" type="data_package" lang="sr-Latn" />
-      <output filename="platform_locale_settings_ur.pak" type="data_package" lang="ur" />
       <output filename="platform_locale_settings_uz.pak" type="data_package" lang="uz" />
       <output filename="platform_locale_settings_zh-HK.pak" type="data_package" lang="zh-HK" />
       <output filename="platform_locale_settings_zu.pak" type="data_package" lang="zu" />
     </if>
+    <output filename="platform_locale_settings_af.pak" type="data_package" lang="af" />
     <output filename="platform_locale_settings_am.pak" type="data_package" lang="am" />
     <output filename="platform_locale_settings_ar.pak" type="data_package" lang="ar" />
     <output filename="platform_locale_settings_bg.pak" type="data_package" lang="bg" />
@@ -86,6 +85,7 @@
     <output filename="platform_locale_settings_th.pak" type="data_package" lang="th" />
     <output filename="platform_locale_settings_tr.pak" type="data_package" lang="tr" />
     <output filename="platform_locale_settings_uk.pak" type="data_package" lang="uk" />
+    <output filename="platform_locale_settings_ur.pak" type="data_package" lang="ur" />
     <output filename="platform_locale_settings_vi.pak" type="data_package" lang="vi" />
     <output filename="platform_locale_settings_zh-CN.pak" type="data_package" lang="zh-CN" />
     <output filename="platform_locale_settings_zh-TW.pak" type="data_package" lang="zh-TW" />
