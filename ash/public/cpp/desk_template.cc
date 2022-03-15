@@ -62,6 +62,7 @@ std::unique_ptr<DeskTemplate> DeskTemplate::Clone() const {
     desk_template->set_updated_time(updated_time_);
   if (desk_restore_data_)
     desk_template->set_desk_restore_data(desk_restore_data_->Clone());
+  desk_template->set_launch_id(launch_id_);
   return desk_template;
 }
 

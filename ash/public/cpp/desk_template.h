@@ -74,6 +74,9 @@ class ASH_PUBLIC_EXPORT DeskTemplate {
     desk_restore_data_ = std::move(restore_data);
   }
 
+  void set_launch_id(int32_t launch_id) { launch_id_ = launch_id; }
+  int32_t launch_id() const { return launch_id_; }
+
   // Used in cases where copies of a DeskTemplate are needed to be made.
   // This specifically used in the DeskSyncBridge which requires a map
   // of DeskTemplate unique pointers to be valid and needs to pass
@@ -116,6 +119,10 @@ class ASH_PUBLIC_EXPORT DeskTemplate {
   base::Time updated_time_;
 
   std::u16string template_name_;
+
+  // The id associated with a particular launch of this template. Must be
+  // positive when launching.
+  int32_t launch_id_ = 0;
 
   // Contains the app launching and window information that can be used to
   // create a new desk instance with the same set of apps/windows specified in
