@@ -4,8 +4,6 @@ include_rules = [
   "+chromeos/dbus/rmad",
   "+chromeos/dbus/update_engine",
   "+chromeos/dbus/util",
-  "+chromeos/login/login_state",
-  "+chromeos/services/network_config",
   "+ui/resources",
   "+ui/web_dialogs",
   "+ui/chromeos/strings",

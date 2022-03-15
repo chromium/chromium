@@ -12,7 +12,6 @@
 
 #include "ash/webui/shimless_rma/backend/shimless_rma_delegate.h"
 #include "ash/webui/shimless_rma/mojom/shimless_rma.mojom.h"
-#include "base/callback_helpers.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -20,12 +19,8 @@
 #include "chromeos/dbus/rmad/fake_rmad_client.h"
 #include "chromeos/dbus/rmad/rmad_client.h"
 #include "chromeos/dbus/update_engine/update_engine.pb.h"
-#include "chromeos/login/login_state/login_state.h"
-#include "chromeos/network/managed_network_configuration_handler.h"
 #include "chromeos/network/network_configuration_handler.h"
-#include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_test_helper.h"
-#include "chromeos/network/network_type_pattern.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -92,7 +87,11 @@ class ShimlessRmaServiceTest : public testing::Test {
 
   void SetUp() override {
     chromeos::DBusThreadManager::Initialize();
-    SetupFakeNetwork();
+    cros_network_config_test_helper_ =
+        std::make_unique<network_config::CrosNetworkConfigTestHelper>(false);
+    cros_network_config_test_helper().Initialize(nullptr);
+    NetworkHandler::Initialize();
+
     FakeRmadClientForTest::Initialize();
     rmad_client_ = chromeos::RmadClient::Get();
     // ShimlessRmaService has to be created after RmadClient or there will be a
@@ -112,30 +111,7 @@ class ShimlessRmaServiceTest : public testing::Test {
     chromeos::RmadClient::Shutdown();
     NetworkHandler::Shutdown();
     cros_network_config_test_helper_.reset();
-    chromeos::LoginState::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
-  }
-
-  void SetupFakeNetwork() {
-    chromeos::LoginState::Initialize();
-
-    cros_network_config_test_helper_ =
-        std::make_unique<network_config::CrosNetworkConfigTestHelper>(false);
-    network_configuration_handler_ =
-        NetworkConfigurationHandler::InitializeForTest(
-            network_state_helper().network_state_handler(),
-            cros_network_config_test_helper().network_device_handler());
-    managed_network_configuration_handler_ =
-        ManagedNetworkConfigurationHandler::InitializeForTesting(
-            /*network_state_handler=*/nullptr,
-            /*network_profile_handler=*/nullptr,
-            /*network_device_handler=*/nullptr,
-            network_configuration_handler_.get(),
-            /*ui_proxy_config_service=*/nullptr);
-    cros_network_config_test_helper().Initialize(
-        managed_network_configuration_handler_.get());
-
-    NetworkHandler::Initialize();
   }
 
   rmad::RmadState* CreateState(rmad::RmadState::StateCase state_case) {
@@ -239,13 +215,6 @@ class ShimlessRmaServiceTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  void GetCurrentlyConfiguredWifiNetworks(
-      NetworkStateHandler::NetworkStateList* list) {
-    network_state_handler()->GetNetworkListByType(
-        NetworkTypePattern::WiFi(), /*configured_only=*/true,
-        /*visible_only=*/true, /*no_limit=*/0, list);
-  }
-
  protected:
   network_config::CrosNetworkConfigTestHelper&
   cros_network_config_test_helper() {
@@ -256,19 +225,12 @@ class ShimlessRmaServiceTest : public testing::Test {
     return cros_network_config_test_helper_->network_state_helper();
   }
 
-  chromeos::NetworkStateHandler* network_state_handler() {
-    return network_state_helper().network_state_handler();
-  }
-
   std::unique_ptr<ShimlessRmaService> shimless_rma_provider_;
   chromeos::RmadClient* rmad_client_ = nullptr;  // Unowned convenience pointer.
 
  private:
   std::unique_ptr<network_config::CrosNetworkConfigTestHelper>
       cros_network_config_test_helper_;
-  std::unique_ptr<ManagedNetworkConfigurationHandler>
-      managed_network_configuration_handler_;
-  std::unique_ptr<NetworkConfigurationHandler> network_configuration_handler_;
   base::test::TaskEnvironment task_environment_;
 };
 
@@ -455,68 +417,6 @@ TEST_F(ShimlessRmaServiceTest, ChooseNetworkHasNoNetworkConnection) {
         run_loop.Quit();
       }));
   run_loop.Run();
-}
-
-TEST_F(ShimlessRmaServiceTest, ConfiguredNetworksKeepExistingNetworks) {
-  const std::vector<rmad::GetStateReply> fake_states = {
-      CreateStateReply(rmad::RmadState::kRepairComplete, rmad::RMAD_ERROR_OK)};
-  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
-
-  base::RunLoop run_loop;
-  shimless_rma_provider_->GetCurrentState(base::DoNothing());
-  run_loop.RunUntilIdle();
-
-  // Simulate 2 saved networks existing before the start of RMA.
-  SetupWiFiNetwork("WiFi 1");
-  SetupWiFiNetwork("WiFi 2");
-  NetworkStateHandler::NetworkStateList configured_networks;
-  GetCurrentlyConfiguredWifiNetworks(&configured_networks);
-  EXPECT_EQ(2u, configured_networks.size());
-
-  // Snapshot the saved networks before connecting to a network during RMA.
-  shimless_rma_provider_->TrackConfiguredNetworks();
-  run_loop.RunUntilIdle();
-
-  // End RMA and expect no networks to be removed from the saved networks.
-  shimless_rma_provider_->EndRmaAndReboot(base::DoNothing());
-  run_loop.RunUntilIdle();
-
-  GetCurrentlyConfiguredWifiNetworks(&configured_networks);
-  EXPECT_EQ(2u, configured_networks.size());
-}
-
-TEST_F(ShimlessRmaServiceTest, ConfiguredNetworksDropNewNetworks) {
-  const std::vector<rmad::GetStateReply> fake_states = {
-      CreateStateReply(rmad::RmadState::kRepairComplete, rmad::RMAD_ERROR_OK)};
-  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
-
-  base::RunLoop run_loop;
-  shimless_rma_provider_->GetCurrentState(base::DoNothing());
-  run_loop.RunUntilIdle();
-
-  // Simulate a saved network existing before the start of RMA.
-  const std::string saved_network_guid = "WiFi 1";
-  SetupWiFiNetwork(saved_network_guid);
-  NetworkStateHandler::NetworkStateList configured_networks;
-  GetCurrentlyConfiguredWifiNetworks(&configured_networks);
-  EXPECT_EQ(1u, configured_networks.size());
-
-  // Snapshot the saved networks before connecting to a network during RMA.
-  shimless_rma_provider_->TrackConfiguredNetworks();
-  run_loop.RunUntilIdle();
-
-  // Simulate connecting to a new network on the RMA `kConfigureNetwork` page.
-  SetupWiFiNetwork("WiFi 2");
-  GetCurrentlyConfiguredWifiNetworks(&configured_networks);
-  EXPECT_EQ(2u, configured_networks.size());
-
-  // End RMA and expect the new network to be removed from the saved networks.
-  shimless_rma_provider_->EndRmaAndReboot(base::DoNothing());
-  run_loop.RunUntilIdle();
-
-  GetCurrentlyConfiguredWifiNetworks(&configured_networks);
-  EXPECT_EQ(1u, configured_networks.size());
-  EXPECT_EQ(saved_network_guid, configured_networks[0]->guid());
 }
 
 // TODO(gavindodd): Add tests of transitions back from rmad states through

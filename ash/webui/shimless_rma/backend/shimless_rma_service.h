@@ -7,14 +7,12 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "ash/webui/shimless_rma/backend/version_updater.h"
 #include "ash/webui/shimless_rma/mojom/shimless_rma.mojom.h"
 #include "chromeos/dbus/rmad/rmad.pb.h"
 #include "chromeos/dbus/rmad/rmad_client.h"
 #include "chromeos/dbus/update_engine/update_engine.pb.h"
-#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -43,7 +41,6 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
 
   void BeginFinalization(BeginFinalizationCallback callback) override;
 
-  void TrackConfiguredNetworks();
   void NetworkSelectionComplete(
       NetworkSelectionCompleteCallback callback) override;
 
@@ -210,23 +207,6 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   void OsUpdateOrNextRmadStateCallback(TransitionStateCallback callback,
                                        const std::string& version);
 
-  // Saves existing configured networks to `existing_saved_networks_`.
-  void OnTrackConfiguredNetworks(
-      std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
-          networks);
-
-  // Fetches the list of configured networks on RMA completion/exit.
-  void ForgetNewNetworkConnections();
-
-  // Compares the saved and current list of configured networks and attempts to
-  // drop any new network configurations.
-  void OnForgetNewNetworkConnections(
-      std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
-          networks);
-
-  // Confirms if the network was dropped.
-  void OnForgetNetwork(const std::string& guid, bool success);
-
   rmad::RmadState state_proto_;
   bool can_abort_ = false;
   bool can_go_back_ = false;
@@ -258,14 +238,6 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   mojo::Remote<mojom::FinalizationObserver> finalization_observer_;
   mojo::Remote<mojom::UpdateRoFirmwareObserver> update_ro_firmware_observer_;
   mojo::Receiver<mojom::ShimlessRmaService> receiver_{this};
-
-  // Remote for sending requests to the CrosNetworkConfig service.
-  mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
-      remote_cros_network_config_;
-
-  // The GUIDs of the saved network configurations prior to starting RMA. Needed
-  // to track network connections added during RMA.
-  std::vector<std::string> existing_saved_network_guids_;
 
   VersionUpdater version_updater_;
   base::OnceCallback<void(const std::string& version)> check_os_callback_;
