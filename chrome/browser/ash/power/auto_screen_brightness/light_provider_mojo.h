@@ -34,7 +34,7 @@ class LightProviderMojo
       public chromeos::sensors::mojom::SensorHalClient,
       public chromeos::sensors::mojom::SensorServiceNewDevicesObserver {
  public:
-  LightProviderMojo(AlsReader* als_reader, bool has_several_light_sensors);
+  explicit LightProviderMojo(AlsReader* als_reader);
   LightProviderMojo(const LightProviderMojo&) = delete;
   LightProviderMojo& operator=(const LightProviderMojo&) = delete;
   ~LightProviderMojo() override;
@@ -97,8 +97,6 @@ class LightProviderMojo
   void GetNameLocationCallback(
       int32_t id,
       const std::vector<absl::optional<std::string>>& values);
-  void GetNameCallback(int32_t id,
-                       const std::vector<absl::optional<std::string>>& values);
 
   // Ignores the light with |id| due to some errors of it's attributes.
   void IgnoreLight(int32_t id);
@@ -111,10 +109,6 @@ class LightProviderMojo
 
   void DetermineLightSensor(int32_t id);
   void SetupLightSamplesObserver();
-
-  // Needs cros-ec-light on the lid if true; prefer cros-ec-light than acpi-als
-  // if false.
-  bool has_several_light_sensors_;
 
   // The Mojo channel connecting to Sensor Hal Dispatcher.
   mojo::Receiver<chromeos::sensors::mojom::SensorHalClient> sensor_hal_client_{

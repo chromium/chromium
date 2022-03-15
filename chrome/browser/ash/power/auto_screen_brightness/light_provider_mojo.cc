@@ -30,10 +30,8 @@ namespace ash {
 namespace power {
 namespace auto_screen_brightness {
 
-LightProviderMojo::LightProviderMojo(AlsReader* als_reader,
-                                     bool has_several_light_sensors)
-    : LightProviderInterface(als_reader),
-      has_several_light_sensors_(has_several_light_sensors) {
+LightProviderMojo::LightProviderMojo(AlsReader* als_reader)
+    : LightProviderInterface(als_reader) {
   RegisterSensorClient();
 }
 
@@ -63,15 +61,10 @@ void LightProviderMojo::SetUpChannel(
     DCHECK(!light.ignored);
     DCHECK(light.name.has_value());
 
-    if (has_several_light_sensors_) {
-      // The used sensor is cros-ec-light on the lid.
-      DCHECK(light.name.value().compare(kCrosECLightName) == 0);
-      DCHECK(light.on_lid);
+    if (light.name.value().compare(kCrosECLightName) == 0 &&
+        light.on_lid.value_or(false)) {
       return;
     }
-
-    if (light.name.value().compare(kCrosECLightName) == 0)
-      return;
   }
 
   sensor_service_remote_->RegisterNewDevicesObserver(
@@ -228,18 +221,11 @@ void LightProviderMojo::RegisterLightWithId(int32_t id) {
 
   light.remote = GetSensorDeviceRemote(id);
 
-  if (has_several_light_sensors_) {
-    light.remote->GetAttributes(
-        std::vector<std::string>{chromeos::sensors::mojom::kDeviceName,
-                                 chromeos::sensors::mojom::kLocation},
-        base::BindOnce(&LightProviderMojo::GetNameLocationCallback,
-                       weak_ptr_factory_.GetWeakPtr(), id));
-  } else {
-    light.remote->GetAttributes(
-        std::vector<std::string>{chromeos::sensors::mojom::kDeviceName},
-        base::BindOnce(&LightProviderMojo::GetNameCallback,
-                       weak_ptr_factory_.GetWeakPtr(), id));
-  }
+  light.remote->GetAttributes(
+      std::vector<std::string>{chromeos::sensors::mojom::kDeviceName,
+                               chromeos::sensors::mojom::kLocation},
+      base::BindOnce(&LightProviderMojo::GetNameLocationCallback,
+                     weak_ptr_factory_.GetWeakPtr(), id));
 }
 
 void LightProviderMojo::GetNameLocationCallback(
@@ -249,9 +235,14 @@ void LightProviderMojo::GetNameLocationCallback(
   DCHECK_NE(light_device_id_.value_or(-1), id);
 
   if (light_device_id_.has_value()) {
-    // Already has the cros-ec-light on the lid. Ignoring other light sensors.
-    IgnoreLight(id);
-    return;
+    auto& orig_light = lights_[light_device_id_.value()];
+    if (orig_light.name.has_value() &&
+        orig_light.name.value().compare(kCrosECLightName) == 0 &&
+        orig_light.on_lid.value_or(false)) {
+      // Already has the cros-ec-light on the lid. Ignoring other light sensors.
+      IgnoreLight(id);
+      return;
+    }
   }
 
   if (values.size() < 2) {
@@ -270,63 +261,37 @@ void LightProviderMojo::GetNameLocationCallback(
   DCHECK(light.remote.is_bound());
 
   light.name = values[0];
-  if (!light.name.has_value() ||
-      light.name.value().compare(kCrosECLightName) != 0) {
-    LOG(ERROR) << "Not " << kCrosECLightName
-               << ", sensor name: " << light.name.value_or("");
-    IgnoreLight(id);
-    return;
-  }
-
   light.on_lid =
       values[1].has_value() &&
       (values[1].value().compare(chromeos::sensors::mojom::kLocationLid) == 0);
 
-  if (!light.on_lid.value()) {
-    IgnoreLight(id);
-    return;
-  }
-
-  DetermineLightSensor(id);
-  new_devices_observer_.reset();  // Don't need new light sensors anymore.
-}
-
-void LightProviderMojo::GetNameCallback(
-    int32_t id,
-    const std::vector<absl::optional<std::string>>& values) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_NE(light_device_id_.value_or(-1), id);
-
-  if (light_device_id_.has_value()) {
-    auto& orig_light = lights_[light_device_id_.value()];
-    if (orig_light.name.has_value() &&
-        orig_light.name.value().compare(kCrosECLightName) == 0) {
-      // Already has the cros-ec-light. Ignoring other light sensors.
-      IgnoreLight(id);
-      return;
-    }
-  }
-
-  if (values.empty()) {
-    LOG(ERROR) << "Sensor values doesn't contain the name attribute";
-    IgnoreLight(id);
-    return;
-  }
-
-  if (values.size() != 1) {
-    LOG(WARNING) << "Sensor values contain more than the name attribute. Size: "
-                 << values.size();
-  }
-
-  auto& light = lights_[id];
-  DCHECK(light.remote.is_bound());
-
-  light.name = values[0];
   if (light.name.has_value() &&
       light.name.value().compare(kCrosECLightName) == 0) {
-    // If an acpi-als was chosen, migrate to this cros-ec-light light sensor.
+    if (light.on_lid.value_or(false)) {
+      // If a light sensor was chosen, migrate to this cros-ec-light light
+      // sensor.
+      DetermineLightSensor(id);
+      new_devices_observer_.reset();  // Don't need new light sensors anymore.
+      return;
+    }
+
+    if (light_device_id_.has_value()) {
+      auto& orig_light = lights_[light_device_id_.value()];
+      if (orig_light.name.has_value() &&
+          orig_light.name.value().compare(kCrosECLightName) == 0) {
+        // Already has the cros-ec-light. Ignoring other non-lid cros-ec-light.
+        IgnoreLight(id);
+        return;
+      }
+    }
+
+    // Choose the current non-lid cros-ec-light.
     DetermineLightSensor(id);
-    new_devices_observer_.reset();  // Don't need new light sensors anymore.
+  }
+
+  if (light_device_id_.has_value()) {
+    // Use the current light sensor over the current non cros-ec-light.
+    IgnoreLight(id);
     return;
   }
 
@@ -335,13 +300,7 @@ void LightProviderMojo::GetNameCallback(
     LOG(WARNING) << "Unexpected light name: " << light.name.value_or("");
   }
 
-  if (light_device_id_.has_value()) {
-    LOG(WARNING) << "Already have another light sensor with name: "
-                 << lights_[light_device_id_.value()].name.value_or("");
-    IgnoreLight(id);
-    return;
-  }
-
+  // Choose the current acpi-als.
   DetermineLightSensor(id);
 }
 

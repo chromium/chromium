@@ -27,7 +27,6 @@ constexpr int32_t kFakeBaseLightId = 2;
 constexpr int32_t kFakeLidLightId = 3;
 
 constexpr int64_t kFakeSampleData = 50;
-const char kWrongLocation[5] = "lidd";
 
 constexpr char kCrosECLightName[] = "cros-ec-light";
 constexpr char kAcpiAlsName[] = "acpi-als";
@@ -50,9 +49,8 @@ class LightProviderMojoTest : public testing::Test {
     chromeos::sensors::SensorHalDispatcher::Shutdown();
   }
 
-  void SetProvider(bool has_several_light_sensors) {
-    provider_ = std::make_unique<LightProviderMojo>(als_reader_.get(),
-                                                    has_several_light_sensors);
+  void SetProvider() {
+    provider_ = std::make_unique<LightProviderMojo>(als_reader_.get());
   }
 
   void AddDevice(int32_t iio_device_id,
@@ -114,20 +112,8 @@ class LightProviderMojoTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment;
 };
 
-TEST_F(LightProviderMojoTest, GetSamplesWithOneSensor) {
-  SetProvider(/*has_several_light_sensors=*/false);
-  AddDevice(kFakeAcpiAlsId, kAcpiAlsName, absl::nullopt);
-
-  StartConnection();
-
-  // Wait until a sample is received.
-  base::RunLoop().RunUntilIdle();
-
-  CheckValues(kFakeAcpiAlsId);
-}
-
 TEST_F(LightProviderMojoTest, AssumingAcpiAlsWithoutDeviceNameWithOneSensor) {
-  SetProvider(/*has_several_light_sensors=*/false);
+  SetProvider();
   AddDevice(kFakeAcpiAlsId, absl::nullopt, absl::nullopt);
 
   StartConnection();
@@ -138,8 +124,8 @@ TEST_F(LightProviderMojoTest, AssumingAcpiAlsWithoutDeviceNameWithOneSensor) {
   CheckValues(kFakeAcpiAlsId);
 }
 
-TEST_F(LightProviderMojoTest, PreferCrosECLightWithOneSensor) {
-  SetProvider(/*has_several_light_sensors=*/false);
+TEST_F(LightProviderMojoTest, PreferCrosECLight) {
+  SetProvider();
   AddDevice(kFakeAcpiAlsId, kAcpiAlsName, absl::nullopt);
   AddDevice(kFakeLidLightId, kCrosECLightName, absl::nullopt);
 
@@ -151,28 +137,8 @@ TEST_F(LightProviderMojoTest, PreferCrosECLightWithOneSensor) {
   CheckValues(kFakeLidLightId);
 }
 
-TEST_F(LightProviderMojoTest, InvalidLocationWithSeveralLightSensors) {
-  SetProvider(/*has_several_light_sensors=*/true);
-  AddDevice(kFakeLidLightId, kCrosECLightName, kWrongLocation);
-
-  StartConnection();
-
-  // Wait until all tasks are done.
-  base::RunLoop().RunUntilIdle();
-
-  // Simulate the timeout so that the initialization fails.
-  TriggerNewDevicesTimeout();
-
-  // Wait until the mojo connection of SensorService is reset.
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_FALSE(sensor_hal_server_->GetSensorService()->HasReceivers());
-  EXPECT_EQ(fake_observer_.status(),
-            AlsReader::AlsInitStatus::kIncorrectConfig);
-}
-
-TEST_F(LightProviderMojoTest, GetSamplesFromLidLightsSeveralLightSensors) {
-  SetProvider(/*has_several_light_sensors=*/true);
+TEST_F(LightProviderMojoTest, GetSamplesFromLidLights) {
+  SetProvider();
   AddDevice(kFakeAcpiAlsId, kAcpiAlsName, absl::nullopt);
   AddDevice(kFakeBaseLightId, kCrosECLightName,
             chromeos::sensors::mojom::kLocationBase);
@@ -211,9 +177,8 @@ TEST_F(LightProviderMojoTest, GetSamplesFromLidLightsSeveralLightSensors) {
   CheckValues(kFakeLidLightId);
 }
 
-TEST_F(LightProviderMojoTest, PreferLateCrosECLightWithOneSensor) {
-  provider_ = std::make_unique<LightProviderMojo>(als_reader_.get(),
-                                                  /*has_two_sensors=*/false);
+TEST_F(LightProviderMojoTest, PreferLateCrosECLight) {
+  SetProvider();
   StartConnection();
 
   // Wait until all tasks are done.
@@ -244,9 +209,8 @@ TEST_F(LightProviderMojoTest, PreferLateCrosECLightWithOneSensor) {
   CheckValues(kFakeLidLightId);
 }
 
-TEST_F(LightProviderMojoTest, GetSamplesFromLateLidLightsWithTwoSensors) {
-  provider_ = std::make_unique<LightProviderMojo>(als_reader_.get(),
-                                                  /*has_two_sensors=*/true);
+TEST_F(LightProviderMojoTest, GetSamplesFromLateLidLights) {
+  SetProvider();
   StartConnection();
 
   // Wait until all tasks are done.
@@ -261,7 +225,7 @@ TEST_F(LightProviderMojoTest, GetSamplesFromLateLidLightsWithTwoSensors) {
   // Wait until all tasks are done.
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_FALSE(fake_observer_.has_status());
+  CheckValues(kFakeBaseLightId);
 
   AddDevice(kFakeLidLightId, kCrosECLightName,
             chromeos::sensors::mojom::kLocationLid);
@@ -278,8 +242,8 @@ TEST_F(LightProviderMojoTest, GetSamplesFromLateLidLightsWithTwoSensors) {
   CheckValues(kFakeLidLightId);
 }
 
-TEST_F(LightProviderMojoTest, DeviceRemovedWithOneSensor) {
-  SetProvider(/*has_several_light_sensors=*/false);
+TEST_F(LightProviderMojoTest, DeviceRemoved) {
+  SetProvider();
   AddDevice(kFakeAcpiAlsId, kAcpiAlsName, absl::nullopt);
   AddDevice(kFakeBaseLightId, kCrosECLightName,
             chromeos::sensors::mojom::kLocationBase);
@@ -291,7 +255,8 @@ TEST_F(LightProviderMojoTest, DeviceRemovedWithOneSensor) {
   // Wait until a sample is received.
   base::RunLoop().RunUntilIdle();
 
-  CheckValues(kFakeBaseLightId);
+  // cros-ec-light on lid is the highest priority.
+  CheckValues(kFakeLidLightId);
 
   sensor_devices_[kFakeAcpiAlsId]->ClearReceiversWithReason(
       chromeos::sensors::mojom::SensorDeviceDisconnectReason::DEVICE_REMOVED,
@@ -306,11 +271,11 @@ TEST_F(LightProviderMojoTest, DeviceRemovedWithOneSensor) {
   // Wait until samples are received.
   base::RunLoop().RunUntilIdle();
 
-  sensor_devices_[kFakeBaseLightId]->ClearReceiversWithReason(
+  sensor_devices_[kFakeLidLightId]->ClearReceiversWithReason(
       chromeos::sensors::mojom::SensorDeviceDisconnectReason::DEVICE_REMOVED,
       "Device was removed");
   // Overwrite the lid light sensor in the iioservice.
-  AddDevice(kFakeBaseLightId, "", absl::nullopt);
+  AddDevice(kFakeLidLightId, "", absl::nullopt);
 
   // Wait until the disconnection and LightProviderMojo::ResetStates are done.
   base::RunLoop().RunUntilIdle();
@@ -321,7 +286,7 @@ TEST_F(LightProviderMojoTest, DeviceRemovedWithOneSensor) {
   // Wait until all tasks are done.
   base::RunLoop().RunUntilIdle();
 
-  CheckValues(kFakeLidLightId);
+  CheckValues(kFakeBaseLightId);
 }
 
 }  // namespace auto_screen_brightness

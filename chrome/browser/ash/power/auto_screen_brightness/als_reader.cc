@@ -64,6 +64,9 @@ void AlsReader::Init() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!blocking_task_runner_);
 
+#if BUILDFLAG(USE_IIOSERVICE)
+  provider_ = std::make_unique<LightProviderMojo>(this);
+#else   // !BUILDFLAG(USE_IIOSERVICE)
   blocking_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
@@ -72,6 +75,7 @@ void AlsReader::Init() {
       blocking_task_runner_.get(), FROM_HERE, base::BindOnce(&GetNumAls),
       base::BindOnce(&AlsReader::OnNumAlsRetrieved,
                      weak_ptr_factory_.GetWeakPtr()));
+#endif  // BUILDFLAG(USE_IIOSERVICE)
 }
 
 void AlsReader::AddObserver(Observer* const observer) {
@@ -88,6 +92,7 @@ void AlsReader::RemoveObserver(Observer* const observer) {
   observers_.RemoveObserver(observer);
 }
 
+#if !BUILDFLAG(USE_IIOSERVICE)
 void AlsReader::OnNumAlsRetrieved(int num_als) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (num_als <= 0) {
@@ -95,15 +100,11 @@ void AlsReader::OnNumAlsRetrieved(int num_als) {
     return;
   }
 
-#if BUILDFLAG(USE_IIOSERVICE)
-  blocking_task_runner_.reset();
-  provider_ = std::make_unique<LightProviderMojo>(this, num_als > 1);
-#else   // !BUILDFLAG(USE_IIOSERVICE)
   auto provider = std::make_unique<AlsFileReader>(this);
   provider->Init(std::move(blocking_task_runner_));
   provider_ = std::move(provider);
-#endif  // BUILDFLAG(USE_IIOSERVICE)
 }
+#endif  // !BUILDFLAG(USE_IIOSERVICE)
 
 void AlsReader::SetLux(int lux) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
