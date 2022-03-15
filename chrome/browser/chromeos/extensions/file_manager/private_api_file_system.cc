@@ -633,7 +633,7 @@ FileManagerPrivateGetSizeStatsFunction::Run() {
       volume_manager->FindVolumeById(params->volume_id);
   if (!volume.get())
     return RespondNow(
-        Error("GetSizeStats: volume with ID %s not found", params->volume_id));
+        Error("GetSizeStats: volume with ID * not found", params->volume_id));
 
   if (volume->type() == file_manager::VOLUME_TYPE_MTP) {
     // Resolve storage_name.
@@ -794,7 +794,7 @@ FileManagerPrivateFormatVolumeFunction::Run() {
       volume_manager->FindVolumeById(params->volume_id);
   if (!volume)
     return RespondNow(
-        Error("FormatVolume: volume with ID %s not found", params->volume_id));
+        Error("FormatVolume: volume with ID * not found", params->volume_id));
 
   DiskMountManager::GetInstance()->FormatMountedDevice(
       volume->mount_path().AsUTF8Unsafe(),
@@ -855,7 +855,7 @@ FileManagerPrivateRenameVolumeFunction::Run() {
       volume_manager->FindVolumeById(params->volume_id);
   if (!volume)
     return RespondNow(
-        Error("RenameVolume: volume with ID %s not found", params->volume_id));
+        Error("RenameVolume: volume with ID * not found", params->volume_id));
 
   DiskMountManager::GetInstance()->RenameMountedDevice(
       volume->mount_path().AsUTF8Unsafe(), params->new_name);
