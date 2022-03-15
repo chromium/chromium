@@ -972,6 +972,14 @@ public class Tab {
                 mActionModeCallback.onActionItemClicked(actionModeItemType, selectedString);
             }
         }
+
+        @Override
+        public void onVerticalOverscroll(float accumulatedOverscrollY) {
+            StrictModeWorkaround.apply();
+            for (TabCallback callback : mCallbacks) {
+                callback.onVerticalOverscroll(accumulatedOverscrollY);
+            }
+        }
     }
 
     private static final class ErrorPageCallbackClientImpl extends IErrorPageCallbackClient.Stub {

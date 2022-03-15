@@ -21,6 +21,10 @@ class SizeF;
 class PointF;
 }  // namespace gfx
 
+namespace ui {
+struct DidOverscrollParams;
+}
+
 namespace content {
 
 class NavigationHandle;
@@ -54,6 +58,7 @@ class CONTENT_EXPORT GestureListenerManager : public RenderWidgetHostConnector {
                        blink::mojom::InputEventResultState ack_result);
   void DidStopFlinging();
   bool FilterInputEvent(const blink::WebInputEvent& event);
+  void DidOverscroll(const ui::DidOverscrollParams& params);
 
   // All sizes and offsets are in CSS pixels (except |top_show_pix|)
   // as cached by the renderer.

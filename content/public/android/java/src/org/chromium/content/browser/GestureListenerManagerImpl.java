@@ -309,6 +309,14 @@ public class GestureListenerManagerImpl
         return false;
     }
 
+    @CalledByNative
+    private void didOverscroll(float accumulatedOverscrollX, float accumulatedOverscrollY) {
+        for (mIterator.rewind(); mIterator.hasNext();) {
+            GestureStateListener listener = mIterator.next();
+            listener.didOverscroll(accumulatedOverscrollX, accumulatedOverscrollY);
+        }
+    }
+
     @SuppressWarnings("unused")
     @CalledByNative
     private void updateScrollInfo(float scrollOffsetX, float scrollOffsetY, float pageScaleFactor,

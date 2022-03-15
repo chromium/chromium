@@ -81,6 +81,14 @@ public abstract class GestureStateListener {
     public void onLongPress() {}
 
     /**
+     * Called on overscroll. This happens when user tries to scroll beyond scroll bounds, or when
+     * a fling animation hits scroll bounds.
+     * @param accumulatedOverscrollX see `ui::DidOverscrollParams::accumulated_overscroll`.
+     * @param accumulatedOverscrollY see `ui::DidOverscrollParams::accumulated_overscroll`.
+     */
+    public void didOverscroll(float accumulatedOverscrollX, float accumulatedOverscrollY) {}
+
+    /**
      * Called when the gesture source is being destroyed.
      */
     public void onDestroyed() {}

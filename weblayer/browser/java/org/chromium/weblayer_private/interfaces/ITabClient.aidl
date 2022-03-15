@@ -47,4 +47,7 @@ interface ITabClient {
       in IObjectWrapper linkText, in IObjectWrapper titleOrAltText,
       in IObjectWrapper srcUrl, in boolean isImage, in boolean isVideo, in boolean canDownload,
       in IContextMenuParams contextMenuParams) = 13;
+
+  // Added in M101.
+  void onVerticalOverscroll(float accumulatedOverscrollY) = 14;
 }

@@ -50,6 +50,7 @@ import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.webapps.AddToHomescreenCoordinator;
 import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.content_public.browser.GestureListenerManager;
+import org.chromium.content_public.browser.GestureStateListener;
 import org.chromium.content_public.browser.GestureStateListenerWithScroll;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -314,6 +315,20 @@ public final class TabImpl extends ITab.Stub {
 
         mMediaSessionHelper = new MediaSessionHelper(
                 mWebContents, MediaSessionManager.createMediaSessionHelperDelegate(this));
+
+        GestureListenerManager.fromWebContents(mWebContents)
+                .addListener(new GestureStateListener() {
+                    @Override
+                    public void didOverscroll(
+                            float accumulatedOverscrollX, float accumulatedOverscrollY) {
+                        if (WebLayerFactoryImpl.getClientMajorVersion() < 101) return;
+                        try {
+                            mClient.onVerticalOverscroll(accumulatedOverscrollY);
+                        } catch (RemoteException e) {
+                            throw new APICallException(e);
+                        }
+                    }
+                });
     }
 
     private void doInitAfterSettingContainerView() {

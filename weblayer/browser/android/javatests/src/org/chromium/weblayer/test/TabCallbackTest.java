@@ -7,6 +7,7 @@ package org.chromium.weblayer.test;
 import android.net.Uri;
 import android.os.Build;
 import android.support.test.InstrumentationRegistry;
+import android.view.View;
 
 import androidx.test.filters.SmallTest;
 
@@ -422,5 +423,44 @@ public class TabCallbackTest {
         Assert.assertEquals(
                 ScrollNotificationType.DIRECTION_CHANGED_UP, (int) notificationTypes[0]);
         Assert.assertTrue(scrollRatio[0] < 0.5);
+    }
+
+    @Test
+    @SmallTest
+    @MinWebLayerVersion(101)
+    public void testOnVerticalOverscroll() throws TimeoutException {
+        InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl("about:blank");
+
+        float overscrollY[] = new float[1];
+        CallbackHelper callbackHelper = new CallbackHelper();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Tab tab = activity.getTab();
+            TabCallback callback = new TabCallback() {
+                @Override
+                public void onVerticalOverscroll(float accumulatedOverscrollY) {
+                    overscrollY[0] = accumulatedOverscrollY;
+                    callbackHelper.notifyCalled();
+                    tab.unregisterTabCallback(this);
+                }
+            };
+            tab.registerTabCallback(callback);
+        });
+
+        View decorView[] = new View[1];
+        int dimension[] = new int[2];
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            decorView[0] = activity.getWindow().getDecorView();
+            dimension[0] = decorView[0].getWidth();
+            dimension[1] = decorView[0].getHeight();
+        });
+
+        int x = dimension[0] / 2;
+        int fromY = dimension[1] / 3;
+        int toY = dimension[1] / 3 * 2;
+
+        TestTouchUtils.dragCompleteView(InstrumentationRegistry.getInstrumentation(), decorView[0],
+                /*fromX=*/x, /*toX=*/x, fromY, toY, /*stepCount=*/10);
+        callbackHelper.waitForFirst();
+        Assert.assertThat(overscrollY[0], Matchers.lessThan(0f));
     }
 }
