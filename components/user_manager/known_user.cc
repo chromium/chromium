@@ -346,15 +346,20 @@ void KnownUser::SetIntegerPref(const AccountId& account_id,
   SetPath(account_id, path, base::Value(in_value));
 }
 
-bool KnownUser::GetPref(const AccountId& account_id,
-                        const std::string& path,
-                        const base::Value** out_value) {
+bool KnownUser::GetPrefForTest(const AccountId& account_id,
+                               const std::string& path,
+                               const base::Value** out_value) {
+  *out_value = FindPath(account_id, path);
+  return *out_value != nullptr;
+}
+
+const base::Value* KnownUser::FindPath(const AccountId& account_id,
+                                       const std::string& path) const {
   const base::Value* user_pref_dict = FindPrefs(account_id);
   if (!user_pref_dict)
-    return false;
+    return nullptr;
 
-  *out_value = user_pref_dict->FindPath(path);
-  return *out_value != nullptr;
+  return user_pref_dict->FindPath(path);
 }
 
 void KnownUser::RemovePref(const AccountId& account_id,
@@ -598,8 +603,8 @@ void KnownUser::SetChallengeResponseKeys(const AccountId& account_id,
 }
 
 base::Value KnownUser::GetChallengeResponseKeys(const AccountId& account_id) {
-  const base::Value* value = nullptr;
-  if (!GetPref(account_id, kChallengeResponseKeys, &value) || !value->is_list())
+  const base::Value* value = FindPath(account_id, kChallengeResponseKeys);
+  if (!value || !value->is_list())
     return base::Value();
   return value->Clone();
 }
@@ -610,8 +615,8 @@ void KnownUser::SetLastOnlineSignin(const AccountId& account_id,
 }
 
 base::Time KnownUser::GetLastOnlineSignin(const AccountId& account_id) {
-  const base::Value* value = nullptr;
-  if (!GetPref(account_id, kLastOnlineSignin, &value))
+  const base::Value* value = FindPath(account_id, kLastOnlineSignin);
+  if (!value)
     return base::Time();
   absl::optional<base::Time> time = base::ValueToTime(value);
   if (!time)
@@ -632,11 +637,7 @@ void KnownUser::SetOfflineSigninLimit(
 
 absl::optional<base::TimeDelta> KnownUser::GetOfflineSigninLimit(
     const AccountId& account_id) {
-  const base::Value* value = nullptr;
-  if (!GetPref(account_id, kOfflineSigninLimit, &value))
-    return absl::nullopt;
-  absl::optional<base::TimeDelta> time_delta = base::ValueToTimeDelta(value);
-  return time_delta;
+  return base::ValueToTimeDelta(FindPath(account_id, kOfflineSigninLimit));
 }
 
 void KnownUser::SetIsEnterpriseManaged(const AccountId& account_id,
@@ -794,16 +795,6 @@ void KnownUser::RegisterPrefs(PrefRegistrySimple* registry) {
 
 // --- Legacy interface ---
 namespace known_user {
-
-bool GetPref(const AccountId& account_id,
-             const std::string& path,
-             const base::Value** out_value) {
-  PrefService* local_state = GetLocalStateLegacy();
-  // Local State may not be initialized in tests.
-  if (!local_state)
-    return false;
-  return KnownUser(local_state).GetPref(account_id, path, out_value);
-}
 
 AccountId GetAccountId(const std::string& user_email,
                        const std::string& id,

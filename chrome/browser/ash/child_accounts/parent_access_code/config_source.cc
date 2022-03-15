@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/values.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
@@ -41,12 +42,11 @@ ConfigSource::~ConfigSource() = default;
 void ConfigSource::LoadConfigForUser(const user_manager::User* user) {
   DCHECK(user->IsChild());
 
-  const base::Value* dictionary = nullptr;
-  if (!user_manager::known_user::GetPref(
-          user->GetAccountId(), prefs::kKnownUserParentAccessCodeConfig,
-          &dictionary)) {
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  const base::Value* dictionary = known_user.FindPath(
+      user->GetAccountId(), prefs::kKnownUserParentAccessCodeConfig);
+  if (!dictionary)
     return;
-  }
 
   // Clear old authenticators for that user.
   config_map_[user->GetAccountId()].clear();

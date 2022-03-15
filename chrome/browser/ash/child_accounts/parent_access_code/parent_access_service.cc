@@ -14,6 +14,7 @@
 #include "base/no_destructor.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -58,11 +59,10 @@ bool IsDeviceOwnedByChild() {
 bool IsParentCodeConfigAvailable() {
   const user_manager::UserList& users =
       user_manager::UserManager::Get()->GetUsers();
-  const base::Value* dictionary = nullptr;
+  user_manager::KnownUser known_user(g_browser_process->local_state());
   for (const auto* user : users) {
-    if (user_manager::known_user::GetPref(
-            user->GetAccountId(), prefs::kKnownUserParentAccessCodeConfig,
-            &dictionary)) {
+    if (known_user.FindPath(user->GetAccountId(),
+                            prefs::kKnownUserParentAccessCodeConfig)) {
       return true;
     }
   }

@@ -638,7 +638,7 @@ struct PrefTypeInfoValue {
   using PrefTypeForReading = const base::Value*;
 
   static constexpr auto SetFunc = &KnownUser::SetPath;
-  static constexpr auto GetFunc = &KnownUser::GetPref;
+  static constexpr auto GetFunc = &KnownUser::GetPrefForTest;
 
   static PrefType CreatePrefValue() { return base::Value("test"); }
   static bool CheckPrefValue(PrefTypeForReading read_value) {
@@ -712,7 +712,7 @@ TYPED_TEST_P(KnownUserWithPrefTypeTest, ReadExistingPrefAsValue) {
                                    TypeParam::CreatePrefValue());
 
   const base::Value* read_result;
-  bool read_success = known_user.GetPref(kUser, kPrefName, &read_result);
+  bool read_success = known_user.GetPrefForTest(kUser, kPrefName, &read_result);
   EXPECT_TRUE(read_success);
   ASSERT_TRUE(read_result);
   TypeParam::CheckPrefValueAsBaseValue(*read_result);

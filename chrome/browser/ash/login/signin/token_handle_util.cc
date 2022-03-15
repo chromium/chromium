@@ -118,11 +118,11 @@ bool TokenHandleUtil::HasToken(const AccountId& account_id) {
 
 // static
 bool TokenHandleUtil::IsRecentlyChecked(const AccountId& account_id) {
-  const base::Value* value;
-  if (!user_manager::known_user::GetPref(account_id,
-                                         kTokenHandleLastCheckedPref, &value)) {
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  const base::Value* value =
+      known_user.FindPath(account_id, kTokenHandleLastCheckedPref);
+  if (!value)
     return false;
-  }
 
   absl::optional<base::Time> last_checked = base::ValueToTime(value);
   if (!last_checked.has_value()) {

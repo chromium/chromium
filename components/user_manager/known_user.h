@@ -105,9 +105,12 @@ class USER_MANAGER_EXPORT KnownUser final {
 
   // Returns true if |account_id| preference by |path| does exist,
   // fills in |out_value|. Otherwise returns false.
-  bool GetPref(const AccountId& account_id,
-               const std::string& path,
-               const base::Value** out_value);
+  bool GetPrefForTest(const AccountId& account_id,
+                      const std::string& path,
+                      const base::Value** out_value);
+
+  const base::Value* FindPath(const AccountId& account_id,
+                              const std::string& path) const;
 
   // Removes user's identified by |account_id| preference |path|.
   void RemovePref(const AccountId& account_id, const std::string& path);
@@ -289,13 +292,6 @@ class USER_MANAGER_EXPORT KnownUser final {
 // TODO(https://crbug.com/1150434): Migrate callers and remove this.
 namespace known_user {
 // Methods for storage/retrieval of per-user properties in Local State.
-
-// Returns true if |account_id| preference by |path| does exist,
-// fills in |out_value|. Otherwise returns false.
-// TODO(https://crbug.com/1150434): Deprecated, use KnownUser::GetPref instead.
-bool USER_MANAGER_EXPORT GetPref(const AccountId& account_id,
-                                 const std::string& path,
-                                 const base::Value** out_value);
 
 // Returns the list of known AccountIds.
 // TODO(https://crbug.com/1150434): Deprecated, use
