@@ -1345,6 +1345,11 @@ void VTVideoDecodeAccelerator::DecodeTaskHEVC(
           return;
         }
         seen_pps_[pps_id].assign(nalu.data, nalu.data + nalu.size);
+        // Pass PPS as data to the platform decoder, it helps in cases
+        // when there are more than one PPS, Video Toolbox is smart enough
+        // to find and recognize them there.
+        nalus.push_back(nalu);
+        data_size += kNALUHeaderLength + nalu.size;
         break;
       }
 
