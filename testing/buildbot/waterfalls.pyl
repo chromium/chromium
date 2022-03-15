@@ -5526,6 +5526,19 @@
     'name': 'chromium.rust',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
+      'android-rust-arm-dbg': {
+        'additional_compile_targets': [
+          'mojo_rust',
+          'rust_build_tests',
+        ],
+        'mixins': [ 'marshmallow' ],
+        'test_suites': {
+          'gtest_tests': 'rust_gtests',
+          # Currently `can_build_rust_unit_tests` is false on Android (because
+          # `rustc_can_link` is false).
+          # TODO(https://crbug.com/1260120): Cover `rust_native_tests` here.
+        },
+      },
       'android-rust-arm-rel': {
         'additional_compile_targets': [
           'mojo_rust',
@@ -5540,6 +5553,17 @@
         },
       },
       'linux-rust-intree-x64-rel' : {
+        'additional_compile_targets': [
+          'mojo_rust',
+          'mojo_rust_tests',
+          'rust_build_tests',
+        ],
+        'test_suites': {
+          'gtest_tests': 'rust_gtests',
+          'isolated_scripts': 'rust_native_tests',
+        },
+      },
+      'linux-rust-x64-dbg' : {
         'additional_compile_targets': [
           'mojo_rust',
           'mojo_rust_tests',

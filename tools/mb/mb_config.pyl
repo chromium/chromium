@@ -637,7 +637,9 @@
     },
 
     'chromium.rust': {
+      'linux-rust-x64-dbg': 'debug_bot_rust_linux_x64',
       'linux-rust-x64-rel': 'release_rust_linux_x64',
+      'android-rust-arm-dbg': 'debug_bot_rust_android_arm_reclient',
       'android-rust-arm-rel': 'release_rust_android_arm_reclient',
     },
 
@@ -1200,8 +1202,10 @@
     },
 
     'tryserver.chromium.rust': {
+      'linux-rust-x64-dbg': 'debug_bot_rust_linux_x64',
       'linux-rust-x64-rel': 'release_rust_linux_x64',
       'linux-rust-intree-x64-rel': 'release_rust_intree_linux_x64',
+      'android-rust-arm-dbg': 'debug_bot_rust_android_arm',
       'android-rust-arm-rel': 'release_rust_android_arm',
     },
 
@@ -2305,6 +2309,18 @@
 
     'debug_bot_paeverywhere_x64': [
       'debug_bot', 'paeverywhere', 'x64',
+    ],
+
+    'debug_bot_rust_android_arm': [
+      'debug_bot', 'enable_rust', 'android', 'arm',
+    ],
+
+    'debug_bot_rust_android_arm_reclient': [
+      'debug_bot_reclient', 'enable_rust', 'android', 'arm',
+    ],
+
+    'debug_bot_rust_linux_x64': [
+      'debug_bot', 'enable_rust', 'x64',
     ],
 
     'debug_bot_x86': [

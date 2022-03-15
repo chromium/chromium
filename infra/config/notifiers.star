@@ -29,6 +29,14 @@ luci.notifier(
 )
 
 luci.notifier(
+    name = "chrome-rust-experiments",
+    on_status_change = True,
+    notify_emails = [
+        "chrome-rust-experiments+bots@google.com",
+    ],
+)
+
+luci.notifier(
     name = "chrome-memory-sheriffs",
     on_status_change = True,
     notify_emails = [
