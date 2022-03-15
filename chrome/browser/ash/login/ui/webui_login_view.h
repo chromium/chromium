@@ -117,8 +117,6 @@ class WebUILoginView : public views::View,
 
   void set_is_hidden(bool hidden) { is_hidden_ = hidden; }
 
-  bool webui_visible() const { return webui_visible_; }
-
   // Let suppress emission of this signal.
   void set_should_emit_login_prompt_visible(bool emit) {
     should_emit_login_prompt_visible_ = emit;
