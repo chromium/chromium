@@ -97,6 +97,7 @@ struct Config {
 
   // Until we get the new list contents API working, keep using FeedQuery.
   // TODO(crbug/1152592): remove this when new endpoint is tested enough.
+  // Set using snippets-internals, or the --webfeed-legacy-feedquery switch.
   bool use_feed_query_requests_for_web_feeds = false;
 
   // Set of optional capabilities included in requests. See
