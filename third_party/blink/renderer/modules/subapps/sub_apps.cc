@@ -72,7 +72,9 @@ void OnListSubApp(ScriptPromiseResolver* resolver,
 // static
 const char SubApps::kSupplementName[] = "SubApps";
 
-SubApps::SubApps(Navigator& navigator) : Supplement<Navigator>(navigator) {}
+SubApps::SubApps(Navigator& navigator)
+    : Supplement<Navigator>(navigator),
+      service_(navigator.GetExecutionContext()) {}
 
 // static
 SubApps* SubApps::subApps(Navigator& navigator) {
@@ -87,19 +89,25 @@ SubApps* SubApps::subApps(Navigator& navigator) {
 void SubApps::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   Supplement<Navigator>::Trace(visitor);
+  visitor->Trace(service_);
 }
 
-mojo::Remote<mojom::blink::SubAppsService>& SubApps::GetService() {
+HeapMojoRemote<mojom::blink::SubAppsService>& SubApps::GetService() {
   if (!service_.is_bound()) {
-    GetSupplementable()
-        ->GetExecutionContext()
-        ->GetBrowserInterfaceBroker()
-        .GetInterface(service_.BindNewPipeAndPassReceiver());
+    auto* context = GetSupplementable()->GetExecutionContext();
+    context->GetBrowserInterfaceBroker().GetInterface(
+        service_.BindNewPipeAndPassReceiver(
+            context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
     // In case the other endpoint gets disconnected, we want to reset our end of
     // the pipe as well so that we don't remain connected to a half-open pipe.
-    service_.reset_on_disconnect();
+    service_.set_disconnect_handler(
+        WTF::Bind(&SubApps::OnConnectionError, WrapWeakPersistent(this)));
   }
   return service_;
+}
+
+void SubApps::OnConnectionError() {
+  service_.reset();
 }
 
 ScriptPromise SubApps::add(ScriptState* script_state,

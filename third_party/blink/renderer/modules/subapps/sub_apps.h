@@ -5,9 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SUBAPPS_SUB_APPS_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SUBAPPS_SUB_APPS_H_
 
-#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/subapps/sub_apps_service.mojom-blink.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
@@ -37,10 +37,11 @@ class SubApps : public ScriptWrappable, public Supplement<Navigator> {
   ScriptPromise list(ScriptState*, ExceptionState&);
 
  private:
-  mojo::Remote<mojom::blink::SubAppsService>& GetService();
+  HeapMojoRemote<mojom::blink::SubAppsService>& GetService();
+  void OnConnectionError();
   bool CheckPreconditionsMaybeThrow(ExceptionState&);
 
-  mojo::Remote<mojom::blink::SubAppsService> service_;
+  HeapMojoRemote<mojom::blink::SubAppsService> service_;
 };
 
 }  // namespace blink
