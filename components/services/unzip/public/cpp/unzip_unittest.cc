@@ -32,28 +32,25 @@ base::FilePath GetArchivePath(const base::StringPiece archive_name) {
       .AppendASCII(archive_name);
 }
 
-// Sets the number of files under |dir| in |file_count| and if
-// |some_files_empty| is not null, sets it to true if at least one of the files
-// is empty.
-void CountFiles(const base::FilePath& dir,
-                int64_t* file_count,
-                bool* some_files_empty) {
-  ASSERT_TRUE(file_count);
-  *file_count = 0;
+// Counts the number of files under |dir|. If |some_files_empty| is not null,
+// sets it to true if at least one of the files is empty.
+int CountFiles(const base::FilePath& dir, bool* some_files_empty = nullptr) {
+  int file_count = 0;
   base::FileEnumerator file_enumerator(dir, /*recursive=*/true,
                                        base::FileEnumerator::FILES);
   for (base::FilePath path = file_enumerator.Next(); !path.empty();
        path = file_enumerator.Next()) {
-    if (some_files_empty) {
-      int64_t file_size = 0;
-      ASSERT_TRUE(base::GetFileSize(path, &file_size));
-      if (file_size == 0) {
-        *some_files_empty = true;
-        some_files_empty = nullptr;  // So we don't check files again.
-      }
+    if (int64_t file_size; some_files_empty != nullptr &&
+                           base::GetFileSize(path, &file_size) &&
+                           file_size == 0) {
+      *some_files_empty = true;
+      some_files_empty = nullptr;  // So we don't check files again.
     }
-    (*file_count)++;
+
+    file_count++;
   }
+
+  return file_count;
 }
 
 class UnzipTest : public testing::Test {
@@ -123,18 +120,21 @@ TEST_F(UnzipTest, UnzipAbsentArchive) {
   EXPECT_FALSE(DoUnzip(GetArchivePath("absent_archive.zip"), unzip_dir_));
 
   // No files should have been extracted.
-  int64_t file_count = -1;
-  CountFiles(unzip_dir_, &file_count, /*some_files_empty=*/nullptr);
-  EXPECT_EQ(0, file_count);
+  EXPECT_EQ(0, CountFiles(unzip_dir_));
 }
 
 TEST_F(UnzipTest, UnzipBadArchive) {
   EXPECT_FALSE(DoUnzip(GetArchivePath("bad_archive.zip"), unzip_dir_));
 
   // No files should have been extracted.
-  int64_t file_count = -1;
-  CountFiles(unzip_dir_, &file_count, /*some_files_empty=*/nullptr);
-  EXPECT_EQ(0, file_count);
+  EXPECT_EQ(0, CountFiles(unzip_dir_));
+}
+
+TEST_F(UnzipTest, UnzipWrongCrc) {
+  EXPECT_FALSE(DoUnzip(GetArchivePath("Wrong CRC.zip"), unzip_dir_));
+
+  // No files should have been extracted.
+  EXPECT_EQ(0, CountFiles(unzip_dir_));
 }
 
 TEST_F(UnzipTest, UnzipGoodArchive) {
@@ -142,10 +142,8 @@ TEST_F(UnzipTest, UnzipGoodArchive) {
 
   // Sanity check that the right number of files have been extracted and that
   // they are not empty.
-  int64_t file_count = -1;
   bool some_files_empty = false;
-  CountFiles(unzip_dir_, &file_count, /*some_files_empty=*/&some_files_empty);
-  EXPECT_EQ(8, file_count);
+  EXPECT_EQ(8, CountFiles(unzip_dir_, &some_files_empty));
   EXPECT_FALSE(some_files_empty);
 }
 
@@ -156,10 +154,8 @@ TEST_F(UnzipTest, UnzipWithFilter) {
                       })));
 
   // It should only have kept the 2 text files from the archive.
-  int64_t file_count = -1;
   bool some_files_empty = false;
-  CountFiles(unzip_dir_, &file_count, /*some_files_empty=*/&some_files_empty);
-  EXPECT_EQ(2, file_count);
+  EXPECT_EQ(2, CountFiles(unzip_dir_, &some_files_empty));
   EXPECT_FALSE(some_files_empty);
 }
 
