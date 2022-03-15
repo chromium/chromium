@@ -235,8 +235,10 @@ bool FeaturePromoControllerCommon::CloseBubble(
   const bool was_open = promo_bubble_ && promo_bubble_->is_open();
   if (promo_bubble_)
     promo_bubble_->Close();
-  if (iph_feature_bypassing_tracker_ == &iph_feature)
+  if (!continuing_after_bubble_closed_ &&
+      iph_feature_bypassing_tracker_ == &iph_feature) {
     iph_feature_bypassing_tracker_ = nullptr;
+  }
   return was_open;
 }
 
