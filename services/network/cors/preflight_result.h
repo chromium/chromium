@@ -95,11 +95,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightResult final {
   bool HasAuthorizationCoveredByWildcard(
       const net::HttpRequestHeaders& headers) const;
 
-  // Refers the cache expiry time.
+  // Returns the cache expiry time.
   base::TimeTicks absolute_expiry_time() const { return absolute_expiry_time_; }
 
-  // Create a param for NetLog.
-  base::Value NetLogParams();
+  // Returns params for the `CORS_PREFLIGHT_RESULT` and
+  // `CORS_PREFLIGHT_CACHED_RESULT` net log events.
+  base::Value NetLogParams() const;
 
  protected:
   explicit PreflightResult(const mojom::CredentialsMode credentials_mode);

@@ -102,6 +102,12 @@ bool ParseAccessControlAllowList(const absl::optional<std::string>& string,
   return true;
 }
 
+// Joins the strings in the given `set ` with commas.
+std::string JoinSet(const base::flat_set<std::string>& set) {
+  std::vector<base::StringPiece> values(set.begin(), set.end());
+  return base::JoinString(values, ",");
+}
+
 }  // namespace
 
 // static
@@ -270,14 +276,10 @@ bool PreflightResult::HasAuthorizationCoveredByWildcard(
          !headers_.contains(kAuthorization);
 }
 
-base::Value PreflightResult::NetLogParams() {
+base::Value PreflightResult::NetLogParams() const {
   base::Value dict(base::Value::Type::DICTIONARY);
-  std::vector<std::string> methods(methods_.begin(), methods_.end());
-  std::vector<std::string> headers(headers_.begin(), headers_.end());
-  dict.SetStringKey("access-control-allow-methods",
-                    base::JoinString(methods, ","));
-  dict.SetStringKey("access-control-allow-headers",
-                    base::JoinString(headers, ","));
+  dict.SetStringKey("access-control-allow-methods", JoinSet(methods_));
+  dict.SetStringKey("access-control-allow-headers", JoinSet(headers_));
   return dict;
 }
 

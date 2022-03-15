@@ -338,15 +338,15 @@ std::unique_ptr<PreflightResult> CreatePreflightResult(
 }
 
 absl::optional<CorsErrorStatus> CheckPreflightResult(
-    PreflightResult* result,
+    const PreflightResult& result,
     const ResourceRequest& original_request,
     NonWildcardRequestHeadersSupport non_wildcard_request_headers_support) {
   absl::optional<CorsErrorStatus> status =
-      result->EnsureAllowedCrossOriginMethod(original_request.method);
+      result.EnsureAllowedCrossOriginMethod(original_request.method);
   if (status)
     return status;
 
-  return result->EnsureAllowedCrossOriginHeaders(
+  return result.EnsureAllowedCrossOriginHeaders(
       original_request.headers, original_request.is_revalidating,
       non_wildcard_request_headers_support);
 }
@@ -471,9 +471,8 @@ class PreflightController::PreflightLoader final {
 
       // Preflight succeeded. Check `original_request_` with `result`.
       DCHECK(!detected_error_status);
-      detected_error_status =
-          CheckPreflightResult(result.get(), original_request_,
-                               non_wildcard_request_headers_support_);
+      detected_error_status = CheckPreflightResult(
+          *result, original_request_, non_wildcard_request_headers_support_);
       has_authorization_covered_by_wildcard =
           result->HasAuthorizationCoveredByWildcard(original_request_.headers);
     }

@@ -4025,6 +4025,22 @@ EVENT_TYPE(CHECK_CORS_PREFLIGHT_CACHE)
 //  }
 EVENT_TYPE(CORS_PREFLIGHT_RESULT)
 
+// This event is logged when PreflightController detects a failed CORS
+// preflight.
+//
+// It contains the following parameters:
+//  {
+//    "error: <A string representing the network error for the failure.
+//            "ERR_FAILED" for CORS errors.>,
+//    "cors-error": <Optional. An integer representing the more granular reason
+//                  for the CORS error, if any. Values map to
+//                  `network::mojom::CorsError`.>,
+//    "failed-parameter": <Optional, absent if `cors-error` is absent. A string
+//                        representing the parameter that failed validation,
+//                        e.g. a forbidden header.>,
+//  }
+EVENT_TYPE(CORS_PREFLIGHT_ERROR)
+
 // This event identifies the NetLogSource() for a URLRequest of the preflight
 // request.
 EVENT_TYPE(CORS_PREFLIGHT_URL_REQUEST)

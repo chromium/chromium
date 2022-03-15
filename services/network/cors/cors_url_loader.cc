@@ -4,6 +4,9 @@
 
 #include "services/network/cors/cors_url_loader.h"
 
+#include <sstream>
+#include <utility>
+
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
@@ -120,6 +123,23 @@ base::Value NetLogPreflightRequiredParams(
     dict.SetStringKey("preflight_required_reason",
                       preflight_required_reason_param);
   }
+  return dict;
+}
+
+// Returns net log params for the `CORS_PREFLIGHT_ERROR` event type.
+base::Value::Dict NetLogPreflightErrorParams(
+    int net_error,
+    const absl::optional<CorsErrorStatus>& status) {
+  base::Value::Dict dict;
+
+  dict.Set("error", net::ErrorToShortString(net_error));
+  if (status) {
+    dict.Set("cors-error", static_cast<int>(status->cors_error));
+    if (!status->failed_parameter.empty()) {
+      dict.Set("failed-parameter", status->failed_parameter);
+    }
+  }
+
   return dict;
 }
 
@@ -743,6 +763,10 @@ absl::optional<URLLoaderCompletionStatus> CorsURLLoader::ConvertPreflightResult(
     DCHECK(!status) << *status;
     return absl::nullopt;
   }
+
+  net_log_.AddEvent(net::NetLogEventType::CORS_PREFLIGHT_ERROR, [&] {
+    return base::Value(NetLogPreflightErrorParams(net_error, status));
+  });
 
   // `kInvalidResponse` is never returned by the preflight controller, so we use
   // it to record the case where there was a net error and no CORS error.

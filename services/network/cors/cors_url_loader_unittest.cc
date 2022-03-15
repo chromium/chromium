@@ -60,11 +60,15 @@ namespace cors {
 
 namespace {
 
+using ::testing::Contains;
 using ::testing::ElementsAre;
+using ::testing::Eq;
 using ::testing::IsEmpty;
+using ::testing::IsNull;
 using ::testing::IsSupersetOf;
 using ::testing::Optional;
 using ::testing::Pair;
+using ::testing::Pointee;
 
 const uint32_t kRendererProcessId = 573;
 
@@ -77,6 +81,29 @@ constexpr char kPreflightWarningHistogramName[] =
 base::Bucket MakeBucket(mojom::CorsError error,
                         base::HistogramBase::Count count) {
   return base::Bucket(static_cast<base::HistogramBase::Sample>(error), count);
+}
+
+// Returns a view of the types of the given entries, in the exact same order.
+std::vector<net::NetLogEventType> GetTypesOfNetLogEntries(
+    const std::vector<net::NetLogEntry>& entries) {
+  std::vector<net::NetLogEventType> types;
+  for (const auto& entry : entries) {
+    types.push_back(entry.type);
+  }
+  return types;
+}
+
+// Returns a pointer to the first entry in `entries` with the given `type`.
+// Returns nullptr if none can be found.
+const net::NetLogEntry* FindEntryByType(
+    const std::vector<net::NetLogEntry>& entries,
+    net::NetLogEventType type) {
+  for (const auto& entry : entries) {
+    if (entry.type == type) {
+      return &entry;
+    }
+  }
+  return nullptr;
 }
 
 class TestURLLoaderFactory : public mojom::URLLoaderFactory {
@@ -476,13 +503,14 @@ class CorsURLLoaderTest : public testing::Test {
   std::vector<net::NetLogEntry> GetEntries() const {
     std::vector<net::NetLogEntry> entries, filtered;
     entries = net_log_observer_.GetEntries();
-    for (const auto& entry : entries) {
+    for (auto& entry : entries) {
       if (entry.type == net::NetLogEventType::CORS_REQUEST ||
           entry.type == net::NetLogEventType::CHECK_CORS_PREFLIGHT_REQUIRED ||
           entry.type == net::NetLogEventType::CHECK_CORS_PREFLIGHT_CACHE ||
           entry.type == net::NetLogEventType::CORS_PREFLIGHT_RESULT ||
-          entry.type == net::NetLogEventType::CORS_PREFLIGHT_CACHED_RESULT) {
-        filtered.push_back(entry.Clone());
+          entry.type == net::NetLogEventType::CORS_PREFLIGHT_CACHED_RESULT ||
+          entry.type == net::NetLogEventType::CORS_PREFLIGHT_ERROR) {
+        filtered.push_back(std::move(entry));
       }
     }
     return filtered;
@@ -2904,6 +2932,110 @@ TEST_F(CorsURLLoaderTest, NetLogCrossOriginSimpleRequest) {
     return;
   }
   ADD_FAILURE() << "Log entry not found.";
+}
+
+TEST_F(CorsURLLoaderTest, NetLogPreflightMissingAllowOrigin) {
+  auto initiator = url::Origin::Create(GURL("https://foo.example"));
+  ResetFactory(initiator, mojom::kBrowserProcessId);
+
+  ResourceRequest request;
+  request.method = "PUT";
+  request.mode = mojom::RequestMode::kCors;
+  request.url = GURL("https://example.com/");
+  request.request_initiator = initiator;
+
+  CreateLoaderAndStart(request);
+  RunUntilCreateLoaderAndStartCalled();
+  NotifyLoaderClientOnReceiveResponse();
+  NotifyLoaderClientOnComplete(net::OK);
+  RunUntilComplete();
+
+  std::vector<net::NetLogEntry> entries = GetEntries();
+  std::vector<net::NetLogEventType> types = GetTypesOfNetLogEntries(entries);
+  EXPECT_THAT(types,
+              Contains(net::NetLogEventType::CORS_PREFLIGHT_RESULT).Times(0));
+  ASSERT_THAT(types,
+              Contains(net::NetLogEventType::CORS_PREFLIGHT_ERROR).Times(1));
+
+  const net::NetLogEntry* entry =
+      FindEntryByType(entries, net::NetLogEventType::CORS_PREFLIGHT_ERROR);
+  const base::Value::Dict* params = entry->params.GetIfDict();
+  ASSERT_TRUE(params);
+  EXPECT_THAT(params->FindString("error"), Pointee(Eq("ERR_FAILED")));
+  EXPECT_THAT(params->FindInt("cors-error"),
+              Optional(Eq(static_cast<int>(
+                  mojom::CorsError::kPreflightMissingAllowOriginHeader))));
+  EXPECT_THAT(params->FindString("failed-parameter"), IsNull());
+}
+
+TEST_F(CorsURLLoaderTest, NetLogPreflightMethodDisallowed) {
+  auto initiator = url::Origin::Create(GURL("https://foo.example"));
+  ResetFactory(initiator, mojom::kBrowserProcessId);
+
+  ResourceRequest request;
+  request.method = "PUT";
+  request.mode = mojom::RequestMode::kCors;
+  request.url = GURL("https://example.com/");
+  request.request_initiator = initiator;
+
+  CreateLoaderAndStart(request);
+  RunUntilCreateLoaderAndStartCalled();
+  NotifyLoaderClientOnReceiveResponse({
+      {"Access-Control-Allow-Origin", "https://foo.example"},
+      {"Access-Control-Allow-Methods", "GET"},
+      {"Access-Control-Allow-Credentials", "true"},
+  });
+  NotifyLoaderClientOnComplete(net::OK);
+  RunUntilComplete();
+
+  std::vector<net::NetLogEntry> entries = GetEntries();
+  std::vector<net::NetLogEventType> types = GetTypesOfNetLogEntries(entries);
+  ASSERT_THAT(types,
+              Contains(net::NetLogEventType::CORS_PREFLIGHT_RESULT).Times(1));
+  ASSERT_THAT(types,
+              Contains(net::NetLogEventType::CORS_PREFLIGHT_ERROR).Times(1));
+
+  const net::NetLogEntry* entry =
+      FindEntryByType(entries, net::NetLogEventType::CORS_PREFLIGHT_RESULT);
+  ASSERT_EQ(entry->params.type(), base::Value::Type::DICT);
+  EXPECT_THAT(
+      entry->params.GetDict().FindString("access-control-allow-methods"),
+      Pointee(Eq("GET")));
+
+  entry = FindEntryByType(entries, net::NetLogEventType::CORS_PREFLIGHT_ERROR);
+  const base::Value::Dict* params = entry->params.GetIfDict();
+  ASSERT_TRUE(params);
+  EXPECT_THAT(params->FindString("error"), Pointee(Eq("ERR_FAILED")));
+  EXPECT_THAT(params->FindInt("cors-error"),
+              Optional(Eq(static_cast<int>(
+                  mojom::CorsError::kMethodDisallowedByPreflightResponse))));
+  EXPECT_THAT(params->FindString("failed-parameter"), Pointee(Eq("PUT")));
+}
+
+TEST_F(CorsURLLoaderTest, NetLogPreflightNetError) {
+  auto initiator = url::Origin::Create(GURL("https://foo.example"));
+  ResetFactory(initiator, mojom::kBrowserProcessId);
+
+  ResourceRequest request;
+  request.method = "PUT";
+  request.mode = mojom::RequestMode::kCors;
+  request.url = GURL("https://example.com/");
+  request.request_initiator = initiator;
+
+  CreateLoaderAndStart(request);
+  RunUntilCreateLoaderAndStartCalled();
+  NotifyLoaderClientOnComplete(net::ERR_INVALID_ARGUMENT);
+  RunUntilComplete();
+
+  std::vector<net::NetLogEntry> entries = GetEntries();
+  const auto type = net::NetLogEventType::CORS_PREFLIGHT_ERROR;
+  ASSERT_THAT(GetTypesOfNetLogEntries(entries), Contains(type).Times(1));
+
+  const net::NetLogEntry* entry = FindEntryByType(entries, type);
+  const base::Value::Dict* params = entry->params.GetIfDict();
+  EXPECT_THAT(params->FindString("error"), Pointee(Eq("ERR_INVALID_ARGUMENT")));
+  EXPECT_THAT(params->FindInt("cors-error"), Eq(absl::nullopt));
+  EXPECT_THAT(params->FindString("failed-parameter"), IsNull());
 }
 
 TEST_F(CorsURLLoaderTest, PreflightMissingAllowOrigin) {
