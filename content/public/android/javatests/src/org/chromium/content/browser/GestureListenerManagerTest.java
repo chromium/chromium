@@ -43,7 +43,7 @@ public class GestureListenerManagerTest {
             "<html><body style='height: 10000px'><script>"
             + "window.addEventListener('load', () => { document.title = 'loaded'; });</script>");
 
-    private static final class GestureStateListenerImpl implements GestureStateListenerWithScroll {
+    private static final class GestureStateListenerImpl extends GestureStateListenerWithScroll {
         private int mNumOnScrollOffsetOrExtentChangedCalls;
         public CallbackHelper mCallbackHelper = new CallbackHelper();
         private boolean mGotStarted;

@@ -35,8 +35,6 @@ import org.chromium.components.autofill_assistant.AssistantBrowserControlsFactor
 import org.chromium.components.autofill_assistant.R;
 import org.chromium.components.autofill_assistant.overlay.AssistantOverlayModel.AssistantOverlayRect;
 import org.chromium.content.browser.RenderCoordinatesImpl;
-import org.chromium.content_public.browser.GestureListenerManager;
-import org.chromium.content_public.browser.GestureStateListenerWithScroll;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.interpolators.BakedBezierInterpolator;
 
@@ -55,12 +53,8 @@ import java.util.List;
  *
  * <p>While scrolling, it keeps track of the current scrolling offset and avoids drawing on top of
  * the top bar which is can be, during animations, just drawn on top of the compositor.
- *
- * <p>This must implement and add itself as a {@link GestureStateListenerWithScroll} such that the
- * {@link RenderCoordinatesImpl} receive proper updates when scrolling.
  */
-class AssistantOverlayDrawable extends Drawable
-        implements AssistantBrowserControls.Observer, GestureStateListenerWithScroll {
+class AssistantOverlayDrawable extends Drawable implements AssistantBrowserControls.Observer {
     private static final int FADE_DURATION_MS = 250;
 
     /** '…' in UTF-8. */
@@ -190,9 +184,6 @@ class AssistantOverlayDrawable extends Drawable
 
     void destroy() {
         mBrowserControls.destroy();
-        if (mWebContents != null) {
-            GestureListenerManager.fromWebContents(mWebContents).removeListener(this);
-        }
     }
 
     /**
@@ -217,11 +208,7 @@ class AssistantOverlayDrawable extends Drawable
     }
 
     void setWebContents(@NonNull WebContents webContents) {
-        if (mWebContents != null) {
-            GestureListenerManager.fromWebContents(mWebContents).removeListener(this);
-        }
         mWebContents = webContents;
-        GestureListenerManager.fromWebContents(mWebContents).addListener(this);
         invalidateSelf();
     }
 
@@ -399,11 +386,6 @@ class AssistantOverlayDrawable extends Drawable
     public void onBottomControlsHeightChanged(
             int bottomControlsHeight, int bottomControlsMinHeight) {
         invalidateSelf();
-    }
-
-    @Override
-    public void onScrollOffsetOrExtentChanged(int scrollOffsetY, int scrollExtentY) {
-        // TODO(b/195482173): call invalidateSelf once the visual viewport is removed.
     }
 
     /**

@@ -17,8 +17,6 @@ import org.chromium.components.autofill_assistant.AssistantBrowserControls;
 import org.chromium.components.autofill_assistant.AssistantBrowserControlsFactory;
 import org.chromium.components.autofill_assistant.overlay.AssistantOverlayModel.AssistantOverlayRect;
 import org.chromium.content.browser.RenderCoordinatesImpl;
-import org.chromium.content_public.browser.GestureListenerManager;
-import org.chromium.content_public.browser.GestureStateListenerWithScroll;
 import org.chromium.content_public.browser.WebContents;
 
 import java.lang.annotation.Retention;
@@ -30,12 +28,8 @@ import java.util.List;
 
 /**
  * Filters gestures that happen on the overlay.
- *
- * <p>This must implement and add itself as a {@link GestureStateListenerWithScroll} such that the
- * {@link RenderCoordinatesImpl} receive proper updates when scrolling.
  */
-class AssistantOverlayEventFilter
-        extends GestureDetector implements GestureStateListenerWithScroll {
+class AssistantOverlayEventFilter extends GestureDetector {
     /** A mode that describes what's happening to the current gesture. */
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({GestureMode.NONE, GestureMode.TRACKING, GestureMode.FORWARDING})
@@ -149,9 +143,6 @@ class AssistantOverlayEventFilter
 
     void destroy() {
         cleanupCurrentGestureBuffer();
-        if (mWebContents != null) {
-            GestureListenerManager.fromWebContents(mWebContents).removeListener(this);
-        }
     }
 
     /** Resets tap times and current gestures. */
@@ -198,11 +189,7 @@ class AssistantOverlayEventFilter
 
     /** Sets the current {@link WebContents}. */
     void setWebContents(@NonNull WebContents webContents) {
-        if (mWebContents != null) {
-            GestureListenerManager.fromWebContents(mWebContents).removeListener(this);
-        }
         mWebContents = webContents;
-        GestureListenerManager.fromWebContents(mWebContents).addListener(this);
     }
 
     @Override

@@ -21,7 +21,7 @@ import org.chromium.content_public.browser.GestureStateListenerWithScroll;
  * A Gesture listener that implements scroll-to-hide for the assistant bottomsheet when in FULL
  * state.
  */
-public class ScrollToHideGestureListener implements GestureStateListenerWithScroll {
+public class ScrollToHideGestureListener extends GestureStateListenerWithScroll {
     /** Base duration of the animation of the sheet. 218 ms is a spec for material design. */
     private static final int BASE_ANIMATION_DURATION_MS = 218;
 

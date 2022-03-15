@@ -137,7 +137,7 @@ public class ContextualSearchSelectionController {
     /** Whether a drag of the selection handles is in progress. */
     private boolean mAreSelectionHandlesBeingDragged;
 
-    private class ContextualSearchGestureStateListener implements GestureStateListener {
+    private class ContextualSearchGestureStateListener extends GestureStateListener {
         @Override
         public void onScrollStarted(int scrollOffsetY, int scrollExtentY) {
             mHandler.handleScrollStart();

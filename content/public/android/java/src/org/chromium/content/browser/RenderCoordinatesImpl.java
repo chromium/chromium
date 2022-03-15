@@ -12,7 +12,7 @@ import org.chromium.content_public.browser.WebContents;
  * Cached copy of all positions and scales (CSS-to-DIP-to-physical pixels)
  * reported from the renderer.
  * Provides wrappers and a utility class to help with coordinate transforms on the client side.
- * Provides the internally-visible set of update methods (called from GestureListenerManagerImpl).
+ * Provides the internally-visible set of update methods.
  *
  * Unless stated otherwise, all coordinates are in CSS (document) coordinate space.
  */
