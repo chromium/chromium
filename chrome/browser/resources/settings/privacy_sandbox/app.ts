@@ -95,16 +95,6 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
           return [];
         },
       },
-
-      showTopicsTooltip_: {
-        type: Boolean,
-        value: false,
-      },
-
-      showFledgeTooltip_: {
-        type: Boolean,
-        value: false,
-      },
     };
   }
 
@@ -123,8 +113,6 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
   private blockedTopics_: Array<PrivacySandboxInterest>;
   private joiningSites_: Array<PrivacySandboxInterest>;
   private blockedSites_: Array<PrivacySandboxInterest>;
-  private showTopicsTooltip_: boolean;
-  private showFledgeTooltip_: boolean;
 
   override ready() {
     super.ready();
@@ -325,16 +313,9 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
   private onShowTooltip_(e: Event) {
     assert(e.target instanceof HTMLElement);
     const target = e.target! as HTMLElement;
-    let tooltip: PaperTooltipElement;
-    if (target.id === 'topicsTooltipIcon') {
-      tooltip = this.shadowRoot!.querySelector<PaperTooltipElement>(
-          '#topicsTooltip')!;
-      this.showTopicsTooltip_ = true;
-    } else {
-      tooltip = this.shadowRoot!.querySelector<PaperTooltipElement>(
-          '#fledgeTooltip')!;
-      this.showFledgeTooltip_ = true;
-    }
+    const tooltip = this.shadowRoot!.querySelector<PaperTooltipElement>(
+        target.id === 'topicsTooltipIcon' ? '#topicsTooltip' :
+                                            '#fledgeTooltip')!;
 
     const hide = () => {
       tooltip.hide();
@@ -342,8 +323,6 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
       target.removeEventListener('blur', hide);
       target.removeEventListener('click', hide);
       tooltip.removeEventListener('mouseenter', hide);
-      this.showTopicsTooltip_ = false;
-      this.showFledgeTooltip_ = false;
     };
     target.addEventListener('mouseleave', hide);
     target.addEventListener('blur', hide);

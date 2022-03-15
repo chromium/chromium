@@ -145,7 +145,7 @@
   }
 
   paper-tooltip {
-    --paper-tooltip-background: white;
+    --paper-tooltip-background: var(--cr-card-background-color);
     --paper-tooltip-delay-in: 300;
     --paper-tooltip-duration-in: 300;
     --paper-tooltip-opacity: 1;
@@ -154,13 +154,12 @@
      * third_party)
      */
     --paper-tooltip: {
-      border: 4px solid white;
       border-radius: 4px;
-      box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
-      font-family: inherit;
-      font-size: 0.875rem; /* 14px */
+      box-shadow: var(--cr-elevation-2);
+      font-family: Roboto, Arial, sans-serif;
+      font-size: inherit;
       font-weight: 400;
-      line-height: normal;
+      line-height: 154%;  /* 20px. */
       margin: 0 4px;
     };
   }
@@ -288,8 +287,7 @@
                   on-focus="onShowTooltip_" on-mouseenter="onShowTooltip_">
               </iron-icon>
               <paper-tooltip id="topicsTooltip" for="topicsTooltipIcon"
-                  hidden="[[!showTopicsTooltip_]]" position="bottom" manual-mode
-                  fit-to-visible-bounds>
+                  position="bottom" manual-mode fit-to-visible-bounds>
                 <div class="dialog-description">
                   $i18n{privacySandboxAdPersonalizationDialogTopicsLearnMore1}
                 </div>
@@ -329,8 +327,7 @@
                   on-focus="onShowTooltip_" on-mouseenter="onShowTooltip_">
               </iron-icon>
               <paper-tooltip id="fledgeTooltip" for="fledgeTooltipIcon"
-                  hidden="[[!showFledgeTooltip_]]" position="top" manual-mode
-                  fit-to-visible-bounds>
+                  position="top" manual-mode fit-to-visible-bounds>
                 <div class="dialog-description">
                   $i18n{privacySandboxAdPersonalizationDialogFledgeLearnMore1}
                 </div>
