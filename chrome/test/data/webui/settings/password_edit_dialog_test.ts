@@ -705,6 +705,16 @@ suite('PasswordEditDialog', function() {
         !!passwordDialog.shadowRoot!.querySelector<CrInputElement>('#note'));
   });
 
+  test('addDialogDoesntHaveNotes', async function() {
+    loadTimeData.overrideValues({enablePasswordNotes: true});
+    const existingEntry = createMultiStorePasswordEntry(
+        {url: 'website.com', username: 'username', accountId: 0});
+    const addDialog =
+        elementFactory.createPasswordEditDialog(null, [existingEntry]);
+    assertAddDialogParts(addDialog);
+    assertFalse(!!addDialog.shadowRoot!.querySelector('#note'));
+  });
+
   // <if expr="not chromeos_ash and not chromeos_lacros">
   // On ChromeOS/Lacros the behavior is different (on failure we request token
   // and retry).
