@@ -19,6 +19,7 @@ MockDlpWarnNotifier::MockDlpWarnNotifier(bool should_proceed)
       .WillByDefault([this](OnDlpRestrictionCheckedCallback callback,
                             DlpWarnDialog::DlpWarnDialogOptions options) {
         std::move(callback).Run(should_proceed_);
+        return nullptr;
       });
 }
 

@@ -34,6 +34,8 @@ class DlpContentManagerTestHelper {
 
   void DestroyWebContents(content::WebContents* web_contents);
 
+  void CheckRunningScreenShares();
+
   void SetWarnNotifierForTesting(std::unique_ptr<DlpWarnNotifier> notifier);
 
   void ResetWarnNotifierForTesting();

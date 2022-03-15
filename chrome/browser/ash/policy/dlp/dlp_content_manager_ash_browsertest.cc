@@ -873,6 +873,78 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
+                       CheckRunningScreenSharesIgnoredIfStillRestricted) {
+  SetupReporting();
+  NotificationDisplayServiceTester display_service_tester(browser()->profile());
+  DlpContentManagerAsh* manager =
+      static_cast<DlpContentManagerAsh*>(helper_->GetContentManager());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  aura::Window* root_window =
+      browser()->window()->GetNativeWindow()->GetRootWindow();
+  const auto media_id = content::DesktopMediaID::RegisterNativeWindow(
+      content::DesktopMediaID::TYPE_SCREEN, root_window);
+
+  manager->CheckScreenShareRestriction(media_id, u"example.com",
+                                       base::DoNothing());
+  EXPECT_FALSE(display_service_tester.GetNotification(
+      kScreenShareBlockedNotificationId));
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenShareBlockedUMA, false, 1);
+
+  manager->OnScreenShareStarted(kLabel, {media_id}, kApplicationTitle,
+                                /*stop_callback=*/base::DoNothing(),
+                                /*state_change_callback=*/base::DoNothing(),
+                                /*source_callback=*/base::DoNothing());
+
+  helper_->ChangeConfidentiality(web_contents, kScreenShareRestricted);
+  // Add an additional restriction check to mimic the situations in which one
+  // user action causes multiple checks of the running screen shares.
+  helper_->CheckRunningScreenShares();
+  // Since there's no change in the level or the contents there should be only
+  // one reporting event and UMA datapoint.
+  CheckEvents(DlpRulesManager::Restriction::kScreenShare,
+              DlpRulesManager::Level::kBlock, 1u);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenSharePausedOrResumedUMA, true, 1);
+
+  helper_->ChangeConfidentiality(web_contents, kEmptyRestrictionSet);
+}
+
+IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
+                       CheckRunningScreenSharesIgnoredIfStillWarned) {
+  SetupReporting();
+  NotificationDisplayServiceTester display_service_tester(browser()->profile());
+  DlpContentManagerAsh* manager =
+      static_cast<DlpContentManagerAsh*>(helper_->GetContentManager());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  aura::Window* root_window =
+      browser()->window()->GetNativeWindow()->GetRootWindow();
+  const auto media_id = content::DesktopMediaID::RegisterNativeWindow(
+      content::DesktopMediaID::TYPE_SCREEN, root_window);
+
+  manager->OnScreenShareStarted(kLabel, {media_id}, kApplicationTitle,
+                                /*stop_callback=*/base::DoNothing(),
+                                /*state_change_callback=*/base::DoNothing(),
+                                /*source_callback=*/base::DoNothing());
+
+  helper_->ChangeConfidentiality(web_contents, kScreenShareWarned);
+  // Add an additional restriction check to mimic the situations in which one
+  // user action causes multiple checks of the running screen shares.
+  helper_->CheckRunningScreenShares();
+  // Since there's no change in the level or the contents there should be only
+  // one reporting event and one warning created.
+  CheckEvents(DlpRulesManager::Restriction::kScreenShare,
+              DlpRulesManager::Level::kWarn, 1u);
+  EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 1);
+
+  helper_->ChangeConfidentiality(web_contents, kEmptyRestrictionSet);
+}
+
+IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
                        ScreenSharePausedWhenConfidentialTabMoved) {
   SetupReporting();
   DlpContentManagerAsh* manager =

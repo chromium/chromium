@@ -6,10 +6,12 @@
 #define CHROME_BROWSER_CHROMEOS_POLICY_DLP_MOCK_DLP_WARN_NOTIFIER_H_
 
 #include "base/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_contents.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_warn_dialog.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_warn_notifier.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/views/widget/widget.h"
 
 using ::testing::Mock;
 
@@ -24,7 +26,7 @@ class MockDlpWarnNotifier : public DlpWarnNotifier {
   MockDlpWarnNotifier& operator=(const MockDlpWarnNotifier& other) = delete;
   ~MockDlpWarnNotifier() override;
 
-  MOCK_METHOD(void,
+  MOCK_METHOD(base::WeakPtr<views::Widget>,
               ShowDlpWarningDialog,
               (OnDlpRestrictionCheckedCallback callback,
                DlpWarnDialog::DlpWarnDialogOptions options),

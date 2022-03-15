@@ -60,6 +60,11 @@ void DlpContentManagerTestHelper::DestroyWebContents(
   manager_->OnWebContentsDestroyed(web_contents);
 }
 
+void DlpContentManagerTestHelper::CheckRunningScreenShares() {
+  DCHECK(manager_);
+  manager_->CheckRunningScreenShares();
+}
+
 void DlpContentManagerTestHelper::SetWarnNotifierForTesting(
     std::unique_ptr<DlpWarnNotifier> notifier) {
   DCHECK(manager_);

@@ -67,6 +67,15 @@ class DlpConfidentialContents {
   DlpConfidentialContents& operator=(const DlpConfidentialContents& other);
   ~DlpConfidentialContents();
 
+  friend bool operator==(const DlpConfidentialContents& a,
+                         const DlpConfidentialContents& b) {
+    return a.contents_ == b.contents_;
+  }
+  friend bool operator!=(const DlpConfidentialContents& a,
+                         const DlpConfidentialContents& b) {
+    return !(a == b);
+  }
+
   // Returns a reference to the underlying content container.
   base::flat_set<DlpConfidentialContent>& GetContents();
 

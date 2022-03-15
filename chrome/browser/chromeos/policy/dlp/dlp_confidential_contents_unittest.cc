@@ -136,6 +136,27 @@ TEST_F(DlpConfidentialContentsTest, UnionShouldAddUniqueItems) {
   EXPECT_TRUE(Contains(contents1, web_contents3.get()));
 }
 
+TEST_F(DlpConfidentialContentsTest, EqualityDoesNotDependOnOrder) {
+  DlpConfidentialContents contents1;
+  DlpConfidentialContents contents2;
+
+  auto web_contents1 = CreateWebContents(title1, url1);
+  auto web_contents2 = CreateWebContents(title2, url2);
+  auto web_contents3 = CreateWebContents(title3, url3);
+
+  contents1.Add(web_contents1.get());
+  contents1.Add(web_contents2.get());
+  contents2.Add(web_contents2.get());
+  contents2.Add(web_contents1.get());
+  EXPECT_TRUE(contents1 == contents2);
+
+  contents1.Add(web_contents3.get());
+  EXPECT_TRUE(contents1 != contents2);
+
+  contents1 = contents2;
+  EXPECT_TRUE(contents1 == contents2);
+}
+
 TEST_F(DlpConfidentialContentsTest, CacheEvictsAfterTimeout) {
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner =
       base::MakeRefCounted<base::TestMockTimeTaskRunner>();

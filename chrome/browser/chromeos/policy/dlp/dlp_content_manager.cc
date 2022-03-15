@@ -14,6 +14,7 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_contents.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager_observer.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
@@ -30,6 +31,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
+#include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
 namespace policy {
@@ -268,6 +270,33 @@ void DlpContentManager::ScreenShareInfo::MaybeUpdateNotifications() {
 void DlpContentManager::ScreenShareInfo::HideNotifications() {
   UpdatePausedNotification(/*show=*/false);
   UpdateResumedNotification(/*show=*/false);
+}
+
+const RestrictionLevelAndUrl&
+DlpContentManager::ScreenShareInfo::GetLatestRestriction() const {
+  return latest_confidential_contents_info_.restriction_info;
+}
+
+const DlpConfidentialContents&
+DlpContentManager::ScreenShareInfo::GetConfidentialContents() const {
+  return latest_confidential_contents_info_.confidential_contents;
+}
+
+void DlpContentManager::ScreenShareInfo::SetConfidentialContentsInfo(
+    ConfidentialContentsInfo confidential_contents_info) {
+  latest_confidential_contents_info_ = confidential_contents_info;
+}
+
+void DlpContentManager::ScreenShareInfo::MaybeCloseDialogWidget() {
+  if (dialog_widget_) {
+    dialog_widget_->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
+  }
+}
+
+void DlpContentManager::ScreenShareInfo::SetDialogWidget(
+    base::WeakPtr<views::Widget> dialog_widget) {
+  DCHECK(!dialog_widget_ || dialog_widget_->IsClosed());
+  dialog_widget_ = dialog_widget;
 }
 
 base::WeakPtr<DlpContentManager::ScreenShareInfo>
@@ -528,6 +557,19 @@ void DlpContentManager::CheckRunningScreenShares() {
   for (auto& screen_share : running_screen_shares_) {
     ConfidentialContentsInfo info = GetScreenShareConfidentialContentsInfo(
         screen_share->GetMediaId(), screen_share->GetWebContents().get());
+
+    if (screen_share->GetLatestRestriction() == info.restriction_info &&
+        screen_share->GetConfidentialContents() == info.confidential_contents) {
+      // No change in restrictions that apply to this screen share.
+      continue;
+    }
+
+    if (IsWarn(screen_share->GetLatestRestriction())) {
+      // Close previously opened dialog, if any.
+      screen_share->MaybeCloseDialogWidget();
+    }
+    screen_share->SetConfidentialContentsInfo(info);
+
     if (IsBlocked(info.restriction_info)) {
       if (screen_share->IsRunning()) {
         screen_share->Pause();
@@ -536,8 +578,9 @@ void DlpContentManager::CheckRunningScreenShares() {
         DlpBooleanHistogram(dlp::kScreenSharePausedOrResumedUMA, true);
         screen_share->MaybeUpdateNotifications();
       }
-      return;
+      continue;
     }
+
     if (IsWarn(info.restriction_info)) {
       // Check which of the contents were already allowed and don't warn for
       // those.
@@ -549,7 +592,7 @@ void DlpContentManager::CheckRunningScreenShares() {
           screen_share->Resume();
           screen_share->MaybeUpdateNotifications();
         }
-        return;
+        continue;
       }
       if (screen_share->IsRunning()) {
         screen_share->Pause();
@@ -561,13 +604,15 @@ void DlpContentManager::CheckRunningScreenShares() {
 
       // base::Unretained(this) is safe here because DlpContentManager is
       // initialized as a singleton that's always available in the system.
-      warn_notifier_->ShowDlpScreenShareWarningDialog(
-          base::BindOnce(&DlpContentManager::OnDlpScreenShareWarnDialogReply,
-                         base::Unretained(this), info,
-                         screen_share->GetWeakPtr()),
-          info.confidential_contents, screen_share->GetApplicationTitle());
-      return;
+      screen_share->SetDialogWidget(
+          warn_notifier_->ShowDlpScreenShareWarningDialog(
+              base::BindOnce(
+                  &DlpContentManager::OnDlpScreenShareWarnDialogReply,
+                  base::Unretained(this), info, screen_share->GetWeakPtr()),
+              info.confidential_contents, screen_share->GetApplicationTitle()));
+      continue;
     }
+
     // No restrictions apply, only resume if necessary.
     if (!screen_share->IsRunning()) {
       screen_share->Resume();

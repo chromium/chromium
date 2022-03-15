@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_contents.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager_observer.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "content/public/browser/media_stream_request.h"
+#include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -110,6 +112,13 @@ class DlpContentManager : public DlpContentObserver,
       std::unique_ptr<DlpWarnNotifier> warn_notifier);
   void ResetWarnNotifierForTesting();
 
+  // Structure that relates a list of confidential contents to the
+  // corresponding restriction level.
+  struct ConfidentialContentsInfo {
+    RestrictionLevelAndUrl restriction_info;
+    DlpConfidentialContents confidential_contents;
+  };
+
   // Used to keep track of running screen shares.
   class ScreenShareInfo {
    public:
@@ -149,6 +158,23 @@ class DlpContentManager : public DlpContentObserver,
     // share.
     void HideNotifications();
 
+    // Returns the restriction information that was the last enforced on this
+    // screen share.
+    const RestrictionLevelAndUrl& GetLatestRestriction() const;
+    // Returns the confidential contents that caused the latest restriction.
+    const DlpConfidentialContents& GetConfidentialContents() const;
+    // Saves |confidential_contents_info| as the latest information on the
+    // restriction and causing contents.
+    void SetConfidentialContentsInfo(
+        ConfidentialContentsInfo confidential_contents_info);
+    // If currently opened, closes the associated DlpWarnDialog widget.
+    void MaybeCloseDialogWidget();
+    // Saves the |dialog_widget| as the current dialog handle.
+    // Assumes that the previous widget is closed or not set. It's
+    // responsibility of the called to ensure that the restriction level is
+    // WARN.
+    void SetDialogWidget(base::WeakPtr<views::Widget> dialog_widget);
+
     base::WeakPtr<ScreenShareInfo> GetWeakPtr();
 
    private:
@@ -177,18 +203,16 @@ class DlpContentManager : public DlpContentObserver,
     State state_ = State::kRunning;
     NotificationState notification_state_ =
         NotificationState::kNotShowingNotification;
+    // Information on the latest restriction enforced.
+    ConfidentialContentsInfo latest_confidential_contents_info_;
+    // Pointer to the associated DlpWarnDialog widget.
+    // Not null only while the dialog is opened.
+    base::WeakPtr<views::Widget> dialog_widget_ = nullptr;
 
     // Set only for tab shares.
     base::WeakPtr<content::WebContents> web_contents_;
 
     base::WeakPtrFactory<ScreenShareInfo> weak_factory_{this};
-  };
-
-  // Structure that relates a list of confidential contents to the
-  // corresponding restriction level.
-  struct ConfidentialContentsInfo {
-    RestrictionLevelAndUrl restriction_info;
-    DlpConfidentialContents confidential_contents;
   };
 
   DlpContentManager();

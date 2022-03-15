@@ -56,21 +56,21 @@ void DlpWarnNotifier::ShowDlpVideoCaptureWarningDialog(
           DlpWarnDialog::Restriction::kVideoCapture, confidential_contents));
 }
 
-void DlpWarnNotifier::ShowDlpScreenShareWarningDialog(
+base::WeakPtr<views::Widget> DlpWarnNotifier::ShowDlpScreenShareWarningDialog(
     OnDlpRestrictionCheckedCallback callback,
     const DlpConfidentialContents& confidential_contents,
     const std::u16string& application_title) {
-  ShowDlpWarningDialog(std::move(callback),
-                       DlpWarnDialog::DlpWarnDialogOptions(
-                           DlpWarnDialog::Restriction::kScreenShare,
-                           confidential_contents, application_title));
+  return ShowDlpWarningDialog(std::move(callback),
+                              DlpWarnDialog::DlpWarnDialogOptions(
+                                  DlpWarnDialog::Restriction::kScreenShare,
+                                  confidential_contents, application_title));
 }
 
 int DlpWarnNotifier::ActiveWarningDialogsCountForTesting() const {
   return widgets_.size();
 }
 
-void DlpWarnNotifier::ShowDlpWarningDialog(
+base::WeakPtr<views::Widget> DlpWarnNotifier::ShowDlpWarningDialog(
     OnDlpRestrictionCheckedCallback callback,
     DlpWarnDialog::DlpWarnDialogOptions options) {
   views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
@@ -86,6 +86,7 @@ void DlpWarnNotifier::ShowDlpWarningDialog(
   widget->GetNativeWindow()->SetCapture();
   widget->AddObserver(this);
   widgets_.push_back(widget);
+  return widget->GetWeakPtr();
 }
 
 void DlpWarnNotifier::RemoveWidget(views::Widget* widget) {

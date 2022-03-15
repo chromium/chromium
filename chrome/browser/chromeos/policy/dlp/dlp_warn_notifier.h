@@ -51,7 +51,8 @@ class DlpWarnNotifier : public views::WidgetObserver {
   // Shows a warning dialog that informs the user that screen sharing is not
   // recommended due to |confidential_contents| visible. Calls |callback| and
   // passes user's choice of whether to proceed or not.
-  void ShowDlpScreenShareWarningDialog(
+  // Returns a pointer to the widget that owns the created dialog.
+  base::WeakPtr<views::Widget> ShowDlpScreenShareWarningDialog(
       OnDlpRestrictionCheckedCallback callback,
       const DlpConfidentialContents& confidential_contents,
       const std::u16string& application_title);
@@ -64,7 +65,7 @@ class DlpWarnNotifier : public views::WidgetObserver {
  private:
   // Helper method to create and show a warning dialog for a given
   // |restriction|.
-  virtual void ShowDlpWarningDialog(
+  virtual base::WeakPtr<views::Widget> ShowDlpWarningDialog(
       OnDlpRestrictionCheckedCallback callback,
       DlpWarnDialog::DlpWarnDialogOptions options);
 
