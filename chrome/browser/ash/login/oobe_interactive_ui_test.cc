@@ -96,12 +96,14 @@ std::string ArcStateToString(ArcState arc_state) {
 }
 
 void RunWelcomeScreenChecks() {
+  test::OobeJS()
+      .CreateFocusWaiter({"connect", "welcomeScreen", "getStarted"})
+      ->Wait();
+
   test::OobeJS().ExpectVisiblePath({"connect", "welcomeScreen"});
   test::OobeJS().ExpectHiddenPath({"connect", "accessibilityScreen"});
   test::OobeJS().ExpectHiddenPath({"connect", "languageScreen"});
   test::OobeJS().ExpectHiddenPath({"connect", "timezoneScreen"});
-
-  test::OobeJS().ExpectFocused({"connect", "welcomeScreen", "getStarted"});
 
   EXPECT_TRUE(LoginScreenTestApi::IsShutdownButtonShown());
   EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());

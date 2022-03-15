@@ -23,6 +23,7 @@
 #include "chrome/browser/ash/login/ui/login_display_host_common.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
+#include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
@@ -56,7 +57,8 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
                               public ui::InputDeviceEventObserver,
                               public views::WidgetRemovalsObserver,
                               public views::WidgetObserver,
-                              public MultiUserWindowManagerObserver {
+                              public MultiUserWindowManagerObserver,
+                              public OobeUI::Observer {
  public:
   LoginDisplayHostWebUI();
 
@@ -156,6 +158,12 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   // MultiUserWindowManagerObserver:
   void OnUserSwitchAnimationFinished() override;
 
+  // OobeUI::Observer:
+  void OnCurrentScreenChanged(OobeScreenId current_screen,
+                              OobeScreenId new_screen) override;
+  void OnDestroyingOobeUI() override;
+
+  // LoginDisplayHostCommon:
   bool IsOobeUIDialogVisible() const override;
 
  private:

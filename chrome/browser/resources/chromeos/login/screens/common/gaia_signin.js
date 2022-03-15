@@ -539,11 +539,6 @@ class GaiaSigninElement extends GaiaSigninElementBase {
   onBeforeShow(data) {
     chrome.send('loginUIStateChanged', ['gaia-signin', true]);
 
-    // Ensure that GAIA signin (or loading UI) is actually visible.
-    window.requestAnimationFrame(function() {
-      chrome.send('loginVisible', ['gaia-loading']);
-    });
-
     // Re-enable navigation in case it was disabled before refresh.
     this.navigationEnabled_ = true;
 
@@ -783,7 +778,6 @@ class GaiaSigninElement extends GaiaSigninElementBase {
    */
   onLoginUIVisible_() {
     chrome.send('loginWebuiReady');
-    chrome.send('loginVisible', ['gaia-signin']);
   }
 
   /**

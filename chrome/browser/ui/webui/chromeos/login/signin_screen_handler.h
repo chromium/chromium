@@ -138,7 +138,6 @@ class SigninScreenHandler
   void HandleToggleResetScreen();
   void HandleToggleKioskAutolaunchScreen();
 
-  void HandleLoginVisible(const std::string& source);
   void HandleLoginUIStateChanged(const std::string& source, bool active);
   void HandleShowLoadingTimeoutError();
 
@@ -165,9 +164,6 @@ class SigninScreenHandler
 
   // Network state informer used to keep signin screen up.
   scoped_refptr<NetworkStateInformer> network_state_informer_;
-
-  // Set to true once `LOGIN_WEBUI_VISIBLE` notification is observed.
-  bool webui_visible_ = false;
 
   ErrorScreen* error_screen_ = nullptr;
 
