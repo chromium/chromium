@@ -29,7 +29,8 @@ enum LinkGenerationError {
   kIFrame = 10,
   kTimeout = 11,
   kBlockList = 12,
-  kNoRemoteConnection = 13
+  kNoRemoteConnection = 13,
+  kNotGenerated = 14
 };
 
 // TextFragmentReceiver is used for requesting renderer to perform text fragment
