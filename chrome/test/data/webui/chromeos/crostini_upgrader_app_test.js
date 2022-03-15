@@ -177,6 +177,28 @@ suite('<crostini-upgrader-app>', () => {
     expectEquals(fakeBrowserProxy.handler.getCallCount('onPageClosed'), 1);
   });
 
+  test('upgradeFlowFailureShowsLogs', async () => {
+    // Uncheck backup box
+    app.$$('#backup-checkbox > cr-checkbox').click();
+    await clickAction();
+
+    const kMaxUpgradeAttempts = 3;
+    for (let i = 0; i < kMaxUpgradeAttempts; i++) {
+      fakeBrowserProxy.page.precheckStatus(
+          chromeos.crostiniUpgrader.mojom.UpgradePrecheckStatus.OK);
+      await flushTasks();
+      expectEquals(fakeBrowserProxy.handler.getCallCount('upgrade'), i + 1);
+      fakeBrowserProxy.page.onUpgradeProgress(['foo', 'bar']);
+      fakeBrowserProxy.page.onUpgradeFailed();
+      await flushTasks();
+    }
+
+    const single = 'foo\nbar';
+    expectFalse(app.$$('#upgrade-error-message').hidden);
+    expectEquals(
+        app.$$('#error-log').innerHTML, single + '\n' + single + '\n' + single);
+  });
+
   test('upgradeFlowFailureOffersRestore', async () => {
     expectFalse(getProgressMessage().hidden);
     expectEquals(fakeBrowserProxy.handler.getCallCount('backup'), 0);

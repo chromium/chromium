@@ -74,7 +74,6 @@ Polymer({
     /** @private */
     progressMessages_: {
       type: Array,
-      value: [],
     },
 
     /** @private */
@@ -121,6 +120,13 @@ Polymer({
       type: Object,
       value: State,
     },
+  },
+
+  /** @override */
+  created() {
+    // Must be set here rather then in the defaults above because arrays are
+    // mutable objects and every instance of the element needs its own array.
+    this.progressMessages_ = [];
   },
 
   /** @override */
