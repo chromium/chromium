@@ -622,8 +622,6 @@ void GpuWatchdogThread::DeliberatelyTerminateToRecoverFromHang() {
   base::debug::Alias(&less_than_full_thread_time_after_capped_);
 #endif
 
-  GpuWatchdogHistogram(GpuWatchdogThreadEvent::kGpuWatchdogKill);
-
   crash_keys::gpu_watchdog_crashed_in_gpu_init.Set(
       in_gpu_initialization_ ? "1" : "0");
 
@@ -645,12 +643,18 @@ void GpuWatchdogThread::DeliberatelyTerminateToRecoverFromHang() {
   // Create a crash dump first
   base::debug::DumpWithoutCrashing();
 
+  // A kKill event is triggered and DumpWithoutCrashing() is called in the
+  // watchdog timeout routine OnWatchdogTimeout(). If it turns out
+  // gpu does not hang after the crash dump, another histogram
+  // kNoKillForGpuProgressDuringCrashDumping will be recorded later.
+  GpuWatchdogTimeoutHistogram(GpuWatchdogTimeoutEvent::kKill);
+
   // Final check after the crash dump. If the watched thread makes a progress
   // (disarmed) during generating crash dump, no need to crash the GPU process.
   bool gpu_hang = IsArmed();
   if (gpu_hang) {
-    // Still armed without any progress. GPU possibly hangs.
-    GpuWatchdogTimeoutHistogram(GpuWatchdogTimeoutEvent::kKill);
+    // Still armed without any progress. The GPU process is now killed.
+    GpuWatchdogHistogram(GpuWatchdogThreadEvent::kGpuWatchdogKill);
 #if BUILDFLAG(IS_WIN)
     if (less_than_full_thread_time_after_capped_)
       GpuWatchdogTimeoutHistogram(
