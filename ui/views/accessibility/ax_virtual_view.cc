@@ -494,6 +494,15 @@ bool AXVirtualView::HandleAccessibleActionInOwnerView(
   return GetOwnerView()->HandleAccessibleAction(forwarded_action_data);
 }
 
+void AXVirtualView::set_cache(AXAuraObjCache* cache) {
+#if defined(USE_AURA)
+  if (ax_aura_obj_cache_ && cache)
+    ax_aura_obj_cache_->Remove(this);
+#endif
+
+  ax_aura_obj_cache_ = cache;
+}
+
 View* AXVirtualView::GetOwnerView() const {
   if (parent_view_)
     return parent_view_->view();

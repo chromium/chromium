@@ -61,6 +61,7 @@ class AXVirtualViewTest : public ViewsTestBase {
     widget_->Init(std::move(params));
     button_ = new TestButton;
     button_->SetSize(gfx::Size(20, 20));
+    button_->SetAccessibleName(u"Button");
     widget_->GetContentsView()->AddChildView(button_.get());
     virtual_label_ = new AXVirtualView;
     virtual_label_->GetCustomData().role = ax::mojom::Role::kStaticText;
@@ -95,6 +96,12 @@ class AXVirtualViewTest : public ViewsTestBase {
     return static_cast<ViewAXPlatformNodeDelegate*>(
         &button_->GetViewAccessibility());
   }
+
+#if defined(USE_AURA)
+  void SetCache(AXVirtualView& virtual_view, AXAuraObjCache& cache) const {
+    virtual_view.set_cache(&cache);
+  }
+#endif  // defined(USE_AURA)
 
   void ExpectReceivedAccessibilityEvents(
       const std::vector<std::pair<const ui::AXPlatformNodeDelegate*,
@@ -188,6 +195,36 @@ TEST_F(AXVirtualViewTest, RemoveFromParentView) {
   EXPECT_EQ(nullptr, removed_child_1->GetParent());
   EXPECT_EQ(0, removed_label->GetChildCount());
 }
+
+#if defined(USE_AURA)
+TEST_F(AXVirtualViewTest, MultipleCaches) {
+  // This test ensures that AXVirtualView objects remove themselves from an
+  // existing cache (if present) when |set_cache| is called.
+  std::unique_ptr<AXAuraObjCache> cache = std::make_unique<AXAuraObjCache>();
+  std::unique_ptr<AXAuraObjCache> second_cache =
+      std::make_unique<AXAuraObjCache>();
+  // Store |virtual_label_| in |cache|.
+  SetCache(*virtual_label_, *cache);
+
+  AXVirtualViewWrapper* wrapper =
+      virtual_label_->GetOrCreateWrapper(cache.get());
+  EXPECT_NE(wrapper, nullptr);
+  EXPECT_NE(wrapper->GetUniqueId(), ui::kInvalidAXNodeID);
+  EXPECT_NE(wrapper->GetParent(), nullptr);
+  EXPECT_NE(cache->GetID(virtual_label_.get()), ui::kInvalidAXNodeID);
+
+  // Store |virtual_label_| in |second_cache|.
+  SetCache(*virtual_label_, *second_cache);
+  AXVirtualViewWrapper* second_wrapper =
+      virtual_label_->GetOrCreateWrapper(second_cache.get());
+  EXPECT_NE(second_wrapper, nullptr);
+  EXPECT_NE(second_wrapper->GetUniqueId(), ui::kInvalidAXNodeID);
+
+  // |virtual_label_| should only exist in |second_cache|.
+  EXPECT_NE(second_cache->GetID(virtual_label_.get()), ui::kInvalidAXNodeID);
+  EXPECT_EQ(cache->GetID(virtual_label_.get()), ui::kInvalidAXNodeID);
+}
+#endif  // defined(USE_AURA)
 
 TEST_F(AXVirtualViewTest, AddingAndRemovingVirtualChildren) {
   ASSERT_EQ(0, virtual_label_->GetChildCount());

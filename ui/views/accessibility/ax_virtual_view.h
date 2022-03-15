@@ -41,6 +41,10 @@ class View;
 class ViewAccessibility;
 class ViewAXPlatformNodeDelegate;
 
+namespace test {
+class AXVirtualViewTest;
+}  // namespace test
+
 // Implements a virtual view that is used only for accessibility.
 //
 // Some composite widgets such as tree and table views may utilize lightweight
@@ -189,13 +193,14 @@ class VIEWS_EXPORT AXVirtualView : public ui::AXPlatformNodeDelegateBase {
   // track when an AXVirtualViewWrapper is deleted.
   friend class AXAuraObjCache;
   friend class AXVirtualViewWrapper;
+  friend class views::test::AXVirtualViewTest;
 
   // Internal class name.
   static const char kViewClassName[];
 
   // The AXAuraObjCache associated with our wrapper, if any. This is
   // called by friend classes AXAuraObjCache and AXVirtualViewWrapper.
-  void set_cache(AXAuraObjCache* cache) { ax_aura_obj_cache_ = cache; }
+  void set_cache(AXAuraObjCache* cache);
 
   // Sets the parent ViewAccessibility if the parent is a real View and not an
   // AXVirtualView. It is invalid to set both |parent_view_| and
