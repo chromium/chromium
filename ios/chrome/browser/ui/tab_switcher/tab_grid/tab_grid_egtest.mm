@@ -268,6 +268,19 @@ id<GREYMatcher> SearchSuggestedActionsSectionWithHistoryMatchesCount(
   web::test::SetUpSimpleHttpServer(responses);
 }
 
+- (void)tearDown {
+  [super tearDown];
+  // Ensure that pref set in testTabGridItemContextMenuAddToBookmarkGreyed is
+  // reset even if the test failed.
+  if ([self isRunningTest:@selector
+            (testTabGridItemContextMenuAddToBookmarkGreyed)]) {
+    [ChromeEarlGreyAppInterface
+        setBoolValue:YES
+         forUserPref:base::SysUTF8ToNSString(
+                         bookmarks::prefs::kEditBookmarksEnabled)];
+  }
+}
+
 // Tests entering and leaving the tab grid.
 - (void)testEnteringAndLeavingTabGrid {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
