@@ -5,5 +5,5 @@
 
 def get_class():
     """Returns the subclass of |model.CodeSignConfig| to use."""
-    from unbranded_config import UnbrandedCodeSignConfig
+    from .unbranded_config import UnbrandedCodeSignConfig
     return UnbrandedCodeSignConfig
