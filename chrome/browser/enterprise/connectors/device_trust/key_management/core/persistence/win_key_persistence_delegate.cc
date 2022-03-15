@@ -14,6 +14,10 @@ namespace enterprise_connectors {
 
 WinKeyPersistenceDelegate::~WinKeyPersistenceDelegate() = default;
 
+bool WinKeyPersistenceDelegate::CheckRotationPermissions() {
+  return true;
+}
+
 bool WinKeyPersistenceDelegate::StoreKeyPair(
     KeyPersistenceDelegate::KeyTrustLevel trust_level,
     std::vector<uint8_t> wrapped) {

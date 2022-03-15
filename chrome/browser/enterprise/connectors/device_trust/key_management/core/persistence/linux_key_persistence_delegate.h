@@ -15,6 +15,7 @@ class LinuxKeyPersistenceDelegate : public KeyPersistenceDelegate {
   ~LinuxKeyPersistenceDelegate() override;
 
   // KeyPersistenceDelegate:
+  bool CheckRotationPermissions() override;
   bool StoreKeyPair(KeyPersistenceDelegate::KeyTrustLevel trust_level,
                     std::vector<uint8_t> wrapped) override;
   KeyPersistenceDelegate::KeyInfo LoadKeyPair() override;

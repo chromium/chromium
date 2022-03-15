@@ -96,6 +96,8 @@ TEST_P(KeyRotationManagerTest, RotateWithAdminRights_Tpm_WithKey) {
   // The mocked delegate is already set-up to return a working TPM key and
   // provider.
   EXPECT_CALL(*mock_persistence_delegate, LoadKeyPair());
+  EXPECT_CALL(*mock_persistence_delegate, CheckRotationPermissions())
+      .WillOnce(Return(true));
   EXPECT_CALL(*mock_persistence_delegate, GetTpmBackedKeyProvider()).Times(2);
   EXPECT_CALL(
       *mock_persistence_delegate,
@@ -149,6 +151,8 @@ TEST_P(KeyRotationManagerTest, RotateWithAdminRights_Tpm_NoKey) {
   // provider. Force it to not return a key.
   EXPECT_CALL(*mock_persistence_delegate, LoadKeyPair())
       .WillOnce(Return(CreateEmptyKeyPair()));
+  EXPECT_CALL(*mock_persistence_delegate, CheckRotationPermissions())
+      .WillOnce(Return(true));
   EXPECT_CALL(*mock_persistence_delegate, GetTpmBackedKeyProvider());
   EXPECT_CALL(*mock_persistence_delegate,
               StoreKeyPair(BPKUR::CHROME_BROWSER_TPM_KEY, _))
@@ -179,6 +183,8 @@ TEST_P(KeyRotationManagerTest, RotateWithAdminRights_NoTpm_NoKey) {
       std::make_unique<MockKeyPersistenceDelegate>();
   EXPECT_CALL(*mock_persistence_delegate, LoadKeyPair())
       .WillOnce(Return(CreateEmptyKeyPair()));
+  EXPECT_CALL(*mock_persistence_delegate, CheckRotationPermissions())
+      .WillOnce(Return(true));
   EXPECT_CALL(*mock_persistence_delegate, GetTpmBackedKeyProvider());
   EXPECT_CALL(*mock_persistence_delegate,
               StoreKeyPair(BPKUR::CHROME_BROWSER_OS_KEY, _))
@@ -217,6 +223,9 @@ TEST_P(KeyRotationManagerTest,
   // provider. Force it to not return a key.
   EXPECT_CALL(*mock_persistence_delegate, LoadKeyPair())
       .WillOnce(Return(CreateEmptyKeyPair()));
+
+  EXPECT_CALL(*mock_persistence_delegate, CheckRotationPermissions())
+      .WillOnce(Return(true));
 
   EXPECT_CALL(*mock_persistence_delegate, GetTpmBackedKeyProvider());
   EXPECT_CALL(*mock_persistence_delegate,
@@ -266,6 +275,9 @@ TEST_P(
   EXPECT_CALL(*mock_persistence_delegate, LoadKeyPair())
       .WillOnce(Return(CreateEmptyKeyPair()));
 
+  EXPECT_CALL(*mock_persistence_delegate, CheckRotationPermissions())
+      .WillOnce(Return(true));
+
   EXPECT_CALL(*mock_persistence_delegate, GetTpmBackedKeyProvider());
   EXPECT_CALL(*mock_persistence_delegate,
               StoreKeyPair(BPKUR::CHROME_BROWSER_TPM_KEY, _))
@@ -305,6 +317,8 @@ TEST_P(KeyRotationManagerTest, RotateWithAdminRights_NoTpm_WithKey) {
   auto mock_persistence_delegate = scoped_factory_.CreateMockedECDelegate();
 
   EXPECT_CALL(*mock_persistence_delegate, LoadKeyPair());
+  EXPECT_CALL(*mock_persistence_delegate, CheckRotationPermissions())
+      .WillOnce(Return(true));
   EXPECT_CALL(*mock_persistence_delegate, GetTpmBackedKeyProvider());
   EXPECT_CALL(*mock_persistence_delegate,
               StoreKeyPair(BPKUR::CHROME_BROWSER_OS_KEY, _))
@@ -337,6 +351,8 @@ TEST_P(KeyRotationManagerTest,
   auto original_key_wrapped = scoped_factory_.ec_wrapped_key();
 
   EXPECT_CALL(*mock_persistence_delegate, LoadKeyPair());
+  EXPECT_CALL(*mock_persistence_delegate, CheckRotationPermissions())
+      .WillOnce(Return(true));
   EXPECT_CALL(*mock_persistence_delegate, GetTpmBackedKeyProvider());
   EXPECT_CALL(
       *mock_persistence_delegate,
@@ -369,6 +385,8 @@ TEST_P(KeyRotationManagerTest,
   auto original_key_wrapped = scoped_factory_.ec_wrapped_key();
 
   EXPECT_CALL(*mock_persistence_delegate, LoadKeyPair());
+  EXPECT_CALL(*mock_persistence_delegate, CheckRotationPermissions())
+      .WillOnce(Return(true));
   EXPECT_CALL(*mock_persistence_delegate, GetTpmBackedKeyProvider());
   EXPECT_CALL(
       *mock_persistence_delegate,
@@ -410,6 +428,8 @@ TEST_P(KeyRotationManagerTest,
   InSequence s;
 
   EXPECT_CALL(*mock_persistence_delegate, LoadKeyPair());
+  EXPECT_CALL(*mock_persistence_delegate, CheckRotationPermissions())
+      .WillOnce(Return(true));
   EXPECT_CALL(*mock_persistence_delegate, GetTpmBackedKeyProvider());
   EXPECT_CALL(
       *mock_persistence_delegate,
@@ -436,6 +456,41 @@ TEST_P(KeyRotationManagerTest,
   histogram_tester.ExpectUniqueSample(
       status_histogram_name(),
       RotationStatus::FAILURE_CANNOT_UPLOAD_KEY_TRIES_EXHAUSTED, 1);
+  histogram_tester.ExpectTotalCount(opposite_status_histogram_name(), 0);
+}
+
+// Tests a success key rotation flow when incorrect permissions were set
+// on the signing key file.
+TEST_P(KeyRotationManagerTest,
+       RotateWithAdminRights_StoreFailed_InvalidFilePermissions) {
+  base::HistogramTester histogram_tester;
+
+  auto mock_persistence_delegate =
+      std::make_unique<MockKeyPersistenceDelegate>();
+  EXPECT_CALL(*mock_persistence_delegate, CheckRotationPermissions())
+      .WillOnce(Return(false));
+  EXPECT_CALL(*mock_persistence_delegate, LoadKeyPair());
+  EXPECT_CALL(*mock_persistence_delegate, GetTpmBackedKeyProvider()).Times(0);
+  EXPECT_CALL(*mock_persistence_delegate,
+              StoreKeyPair(BPKUR::CHROME_BROWSER_OS_KEY, _))
+      .Times(0);
+
+  GURL dm_server_url(kDmServerUrl);
+  auto mock_network_delegate = std::make_unique<MockKeyNetworkDelegate>();
+  EXPECT_CALL(*mock_network_delegate,
+              SendPublicKeyToDmServerSync(dm_server_url, kDmToken, _))
+      .Times(0);
+
+  auto manager = KeyRotationManager::CreateForTesting(
+      std::move(mock_network_delegate), std::move(mock_persistence_delegate));
+
+  EXPECT_FALSE(
+      manager->RotateWithAdminRights(dm_server_url, kDmToken, nonce()));
+
+  // Should expect one successful attempt to rotate a key.
+  histogram_tester.ExpectUniqueSample(
+      status_histogram_name(),
+      RotationStatus::FAILURE_INCORRECT_FILE_PERMISSIONS, 1);
   histogram_tester.ExpectTotalCount(opposite_status_histogram_name(), 0);
 }
 

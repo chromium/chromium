@@ -18,6 +18,7 @@ class MockKeyPersistenceDelegate : public KeyPersistenceDelegate {
   ~MockKeyPersistenceDelegate() override;
 
   // KeyPersistenceDelegate:
+  MOCK_METHOD(bool, CheckRotationPermissions, (), (override));
   MOCK_METHOD(bool,
               StoreKeyPair,
               (KeyPersistenceDelegate::KeyTrustLevel, std::vector<uint8_t>),

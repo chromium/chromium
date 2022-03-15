@@ -21896,6 +21896,9 @@ Called by update_debug_scenarios.py.-->
   <int value="7"
       label="Unable to upload new signing key to server after maximum retries
              and failed to restore old key"/>
+  <int value="8"
+      label="Unable to store the signing key due to signing key file
+             permissions failure."/>
 </enum>
 
 <enum name="DevToolsAction">

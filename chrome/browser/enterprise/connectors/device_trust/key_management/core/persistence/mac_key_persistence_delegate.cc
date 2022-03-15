@@ -10,6 +10,11 @@ namespace enterprise_connectors {
 
 MacKeyPersistenceDelegate::~MacKeyPersistenceDelegate() = default;
 
+bool MacKeyPersistenceDelegate::CheckRotationPermissions() {
+  NOTIMPLEMENTED();
+  return false;
+}
+
 bool MacKeyPersistenceDelegate::StoreKeyPair(KeyTrustLevel trust_level,
                                              std::vector<uint8_t> wrapped) {
   NOTIMPLEMENTED();

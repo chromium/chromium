@@ -87,6 +87,9 @@ class RotateUtilTest : public testing::Test {
 
 // Tests when the chrome management services key rotation was successful.
 TEST_F(RotateUtilTest, RotateDTKeySuccess) {
+  EXPECT_CALL(*mock_persistence_delegate_, CheckRotationPermissions())
+      .WillOnce(Return(true));
+
   EXPECT_CALL(*mock_persistence_delegate_, StoreKeyPair(_, _))
       .WillOnce(Return(true));
 
@@ -96,15 +99,6 @@ TEST_F(RotateUtilTest, RotateDTKeySuccess) {
       .WillOnce(testing::Return(kSuccessCode));
 
   EXPECT_TRUE(RotateDeviceTrustKey(
-      std::move(key_rotation_manager_),
-      GetCommandLine(kEncodedFakeDMToken, kEncodedNonce, kFakeDmServerUrl),
-      version_info::Channel::STABLE));
-}
-
-// Tests when the chrome management services key rotation failed due to
-// incorrect signing key file permissions.
-TEST_F(RotateUtilTest, RotateDTKeyFailure_IncorrectPermissions) {
-  EXPECT_FALSE(RotateDeviceTrustKey(
       std::move(key_rotation_manager_),
       GetCommandLine(kEncodedFakeDMToken, kEncodedNonce, kFakeDmServerUrl),
       version_info::Channel::STABLE));
@@ -147,8 +141,23 @@ TEST_F(RotateUtilTest, RotateDTKeyFailure_InvalidCommand) {
 }
 
 // Tests when the chrome management services key rotation failed due to
+// incorrect signing key permissions.
+TEST_F(RotateUtilTest, RotateDTKeyFailure_PermissionsFailed) {
+  EXPECT_CALL(*mock_persistence_delegate_, CheckRotationPermissions())
+      .WillOnce(Return(false));
+
+  EXPECT_FALSE(RotateDeviceTrustKey(
+      std::move(key_rotation_manager_),
+      GetCommandLine(kEncodedFakeDMToken, kEncodedNonce, kFakeDmServerUrl),
+      version_info::Channel::STABLE));
+}
+
+// Tests when the chrome management services key rotation failed due to
 // an store key failure.
 TEST_F(RotateUtilTest, RotateDTKeyFailure_StoreKeyFailed) {
+  EXPECT_CALL(*mock_persistence_delegate_, CheckRotationPermissions())
+      .WillOnce(Return(true));
+
   EXPECT_CALL(*mock_persistence_delegate_, StoreKeyPair(_, _))
       .WillOnce(Return(false));
 
@@ -161,6 +170,9 @@ TEST_F(RotateUtilTest, RotateDTKeyFailure_StoreKeyFailed) {
 // Tests when the chrome management services key rotation failed due to
 // an upload key failure.
 TEST_F(RotateUtilTest, RotateDTKeyFailure_UploadKeyFailed) {
+  EXPECT_CALL(*mock_persistence_delegate_, CheckRotationPermissions())
+      .WillOnce(Return(true));
+
   EXPECT_CALL(*mock_persistence_delegate_, StoreKeyPair(_, _))
       .Times(2)
       .WillRepeatedly(Return(true));

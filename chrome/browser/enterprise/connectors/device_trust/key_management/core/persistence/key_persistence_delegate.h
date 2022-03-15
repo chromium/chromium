@@ -22,6 +22,10 @@ class KeyPersistenceDelegate {
   using KeyInfo = std::pair<KeyTrustLevel, std::vector<uint8_t>>;
   virtual ~KeyPersistenceDelegate() = default;
 
+  // Validates that the current context has sufficient permissions to perform a
+  // key rotation operation.
+  virtual bool CheckRotationPermissions() = 0;
+
   // Stores the trust level and wrapped key in a platform specific location.
   // This method requires elevation since it writes to a location that is
   // shared by all OS users of the device.  Returns true on success.

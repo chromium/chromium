@@ -4,15 +4,20 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/linux_key_persistence_delegate.h"
 
+#include <grp.h>
+#include <sys/stat.h>
+
 #include <string>
 #include <vector>
 
 #include "base/base64.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/notreached.h"
+#include "base/syslog_logging.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/shared_command_constants.h"
@@ -26,6 +31,12 @@ namespace enterprise_connectors {
 
 namespace {
 
+// Mode the signing key file should have.
+constexpr int kFileMode = 0664;
+
+// Group name the signing key file should have.
+constexpr char kGroupName[] = "chromemgmt";
+
 // Path to the signing key file differs based on chrome/chromium build.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 base::FilePath::CharType kDirPolicyPath[] =
@@ -35,13 +46,50 @@ base::FilePath::CharType kDirPolicyPath[] =
     FILE_PATH_LITERAL("/etc/chromium/policies");
 #endif
 
-// Returns the created signing key file with the specified file `flags`.
-base::File OpenSigningKeyFile(uint32_t flags) {
+base::FilePath GetSigningKeyFilePath() {
   base::FilePath path(kDirPolicyPath);
-  return base::File(path.Append(constants::kSigningKeyFilePath), flags);
+  return path.Append(constants::kSigningKeyFilePath);
+}
+
+base::File OpenSigningKeyFile(uint32_t flags) {
+  return base::File(GetSigningKeyFilePath(), flags);
 }
 
 }  // namespace
+
+bool LinuxKeyPersistenceDelegate::CheckRotationPermissions() {
+  auto signing_key_path = GetSigningKeyFilePath();
+  auto file = base::File(signing_key_path,
+                         base::File::FLAG_OPEN | base::File::FLAG_WRITE);
+
+  if (!file.IsValid() ||
+      (file.Lock(base::File::LockMode::kExclusive) != base::File::FILE_OK)) {
+    SYSLOG(ERROR) << "Device trust key rotation failed. Could not acquire a "
+                     "lock on the signing key storage.";
+    return false;
+  }
+
+  int mode;
+  if (!base::GetPosixFilePermissions(signing_key_path, &mode)) {
+    SYSLOG(ERROR)
+        << "Device trust key rotation failed. Could not get permissions "
+           "for the signing key storage.";
+    return false;
+  }
+
+  struct stat st;
+  stat(signing_key_path.value().c_str(), &st);
+  gid_t signing_key_file_gid = st.st_gid;
+  struct group* chrome_mgmt_group = getgrnam(kGroupName);
+
+  if (!chrome_mgmt_group || signing_key_file_gid != chrome_mgmt_group->gr_gid ||
+      mode != kFileMode) {
+    SYSLOG(ERROR) << "Device trust key rotation failed. Incorrect permissions "
+                     "for signing key storage.";
+    return false;
+  }
+  return true;
+}
 
 LinuxKeyPersistenceDelegate::~LinuxKeyPersistenceDelegate() = default;
 const int kMaxBufferSize = 2048;
