@@ -228,10 +228,18 @@ class CastAudioDecoderImpl : public CastAudioDecoder {
       output_config_.samples_per_second = decoded->sample_rate();
     }
 
-    if (decoded->channel_count() != output_config_.channel_number) {
+    ChannelLayout decoded_channel_layout =
+        DecoderConfigAdapter::ToChannelLayout(decoded->channel_layout());
+    if (decoded->channel_count() != output_config_.channel_number ||
+        decoded_channel_layout != output_config_.channel_layout) {
       LOG(WARNING) << "channel_count changed to " << decoded->channel_count()
-                   << " from " << output_config_.channel_number;
+                   << " from " << output_config_.channel_number
+                   << ", channel_layout changed to "
+                   << static_cast<int>(decoded_channel_layout) << " from "
+                   << static_cast<int>(output_config_.channel_layout);
       output_config_.channel_number = decoded->channel_count();
+      output_config_.channel_layout =
+          DecoderConfigAdapter::ToChannelLayout(decoded->channel_layout());
       decoded_bus_.reset();
     }
 
