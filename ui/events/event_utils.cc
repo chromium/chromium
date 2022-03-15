@@ -11,7 +11,11 @@
 #include "base/check.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/trace_event/trace_id_helper.h"
+#include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
+#include "third_party/perfetto/include/perfetto/tracing/string_helpers.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
@@ -31,6 +35,25 @@ int g_custom_event_types = ET_LAST;
 #define UMA_HISTOGRAM_EVENT_LATENCY_TIMES(name, sample)           \
   UMA_HISTOGRAM_CUSTOM_TIMES(name, sample, base::Milliseconds(1), \
                              base::Minutes(1), 50)
+
+// Record a trace if the `current_time` - `time_stamp` is above a threshold.
+// `name` must be a static string so that the trace is not privacy filtered.
+void RecordEventLatencyTrace(perfetto::StaticString name,
+                             base::TimeTicks time_stamp,
+                             base::TimeTicks current_time) {
+  // 20 msec will catch the 90th percentile of most events on most platforms,
+  // the 95th percentile of a few (eg. touch events on Windows, mouse events on
+  // Mac).
+  constexpr base::TimeDelta kMinJank = base::Milliseconds(20);
+  if (current_time - time_stamp >= kMinJank) {
+    // Nest the event in the current process, using the global trace id only for
+    // uniqueness.
+    const perfetto::Track track(base::trace_event::GetNextGlobalTraceId(),
+                                perfetto::ProcessTrack::Current());
+    TRACE_EVENT_BEGIN("latency", name, track, time_stamp);
+    TRACE_EVENT_END("latency", track, current_time);
+  }
+}
 
 }  // namespace
 
@@ -123,12 +146,14 @@ void ComputeEventLatencyOS(EventType type,
           "Event.Latency.OS.MOUSE_WHEEL",
           base::saturated_cast<int>(delta.InMicroseconds()), 1, 1000000, 50);
       UMA_HISTOGRAM_EVENT_LATENCY_TIMES("Event.Latency.OS2.MOUSE_WHEEL", delta);
+      // Do not record traces for wheel events to avoid spam.
       return;
     case ET_TOUCH_MOVED:
       UMA_HISTOGRAM_CUSTOM_COUNTS(
           "Event.Latency.OS.TOUCH_MOVED",
           base::saturated_cast<int>(delta.InMicroseconds()), 1, 1000000, 50);
       UMA_HISTOGRAM_EVENT_LATENCY_TIMES("Event.Latency.OS2.TOUCH_MOVED", delta);
+      // Do not record traces for move events to avoid spam.
       return;
     case ET_TOUCH_PRESSED:
       UMA_HISTOGRAM_CUSTOM_COUNTS(
@@ -136,6 +161,8 @@ void ComputeEventLatencyOS(EventType type,
           base::saturated_cast<int>(delta.InMicroseconds()), 1, 1000000, 50);
       UMA_HISTOGRAM_EVENT_LATENCY_TIMES("Event.Latency.OS2.TOUCH_PRESSED",
                                         delta);
+      RecordEventLatencyTrace("InputEventLatency.TOUCH_PRESSED", time_stamp,
+                              current_time);
       return;
     case ET_TOUCH_RELEASED:
       UMA_HISTOGRAM_CUSTOM_COUNTS(
@@ -143,6 +170,8 @@ void ComputeEventLatencyOS(EventType type,
           base::saturated_cast<int>(delta.InMicroseconds()), 1, 1000000, 50);
       UMA_HISTOGRAM_EVENT_LATENCY_TIMES("Event.Latency.OS2.TOUCH_RELEASED",
                                         delta);
+      RecordEventLatencyTrace("InputEventLatency.TOUCH_RELEASED", time_stamp,
+                              current_time);
       return;
     case ET_TOUCH_CANCELLED:
       UMA_HISTOGRAM_CUSTOM_COUNTS(
@@ -150,12 +179,16 @@ void ComputeEventLatencyOS(EventType type,
           base::saturated_cast<int>(delta.InMicroseconds()), 1, 1000000, 50);
       UMA_HISTOGRAM_EVENT_LATENCY_TIMES("Event.Latency.OS2.TOUCH_CANCELLED",
                                         delta);
+      RecordEventLatencyTrace("InputEventLatency.TOUCH_CANCELLED", time_stamp,
+                              current_time);
       return;
     case ET_KEY_PRESSED:
       UMA_HISTOGRAM_CUSTOM_COUNTS(
           "Event.Latency.OS.KEY_PRESSED",
           base::saturated_cast<int>(delta.InMicroseconds()), 1, 1000000, 50);
       UMA_HISTOGRAM_EVENT_LATENCY_TIMES("Event.Latency.OS2.KEY_PRESSED", delta);
+      RecordEventLatencyTrace("InputEventLatency.KEY_PRESSED", time_stamp,
+                              current_time);
       return;
     case ET_MOUSE_PRESSED:
       UMA_HISTOGRAM_CUSTOM_COUNTS(
@@ -163,6 +196,8 @@ void ComputeEventLatencyOS(EventType type,
           base::saturated_cast<int>(delta.InMicroseconds()), 1, 1000000, 50);
       UMA_HISTOGRAM_EVENT_LATENCY_TIMES("Event.Latency.OS2.MOUSE_PRESSED",
                                         delta);
+      RecordEventLatencyTrace("InputEventLatency.MOUSE_PRESSED", time_stamp,
+                              current_time);
       return;
     default:
       return;
