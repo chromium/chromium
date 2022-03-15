@@ -84781,6 +84781,79 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="20" label="SQLITE_IOERR_SHMLOCK">Unused</int>
 </enum>
 
+<enum name="SqliteLoggedResultCode">
+  <summary>SQLite result codes mapped to logging-friendly values.</summary>
+  <int value="0" label="kNoError">Success result codes: OK, DONE, ROW</int>
+  <int value="1" label="kUnusedSqlite">
+    Codes that SQLite should never return, like SQLITE_INTERNAL
+  </int>
+  <int value="2" label="kUnusedChrome">
+    Codes that SQLite should never return, given Chrome's usage pattern
+  </int>
+  <int value="3" label="kGeneric">SQLITE_ERROR</int>
+  <int value="4" label="kPermission">SQLITE_PERM</int>
+  <int value="5" label="kAbort">SQLITE_ABORT</int>
+  <int value="6" label="kBusy">SQLITE_BUSY</int>
+  <int value="7" label="kReadOnly">SQLITE_READONLY</int>
+  <int value="8" label="kIo">SQLITE_IOERR</int>
+  <int value="9" label="kCorrupt">SQLITE_CORRUPT</int>
+  <int value="10" label="kFullDisk">SQLITE_FULL</int>
+  <int value="11" label="kCantOpen">SQLITE_CANTOPEN</int>
+  <int value="12" label="kLockingProtocol">SQLITE_PROTOCOL</int>
+  <int value="13" label="kSchemaChanged">SQLITE_SCHEMA</int>
+  <int value="14" label="kTooBig">SQLITE_TOOBIG</int>
+  <int value="15" label="kConstraint">SQLITE_CONSTRAINT</int>
+  <int value="16" label="kTypeMismatch">SQLITE_MISMATCH</int>
+  <int value="17" label="kNoLargeFileSupport">SQLITE_NOLFS</int>
+  <int value="18" label="kNotADatabase">SQLITE_NOTADB</int>
+  <int value="19" label="kBusyRecovery">SQLITE_BUSY_RECOVERY</int>
+  <int value="20" label="kReadOnlyRecovery">SQLITE_READONLY_RECOVERY</int>
+  <int value="21" label="kIoRead">SQLITE_IOERR_READ</int>
+  <int value="22" label="kConstraintCheck">SQLITE_CONSTRAINT_CHECK</int>
+  <int value="23" label="kAbortRollback">SQLITE_ABORT_ROLLBACK</int>
+  <int value="24" label="kBusySnapshot">SQLITE_BUSY_SNAPSHOT</int>
+  <int value="25" label="kReadOnlyCantLock">SQLITE_READONLY_CANTLOCK</int>
+  <int value="26" label="kIoShortRead">SQLITE_IOERR_SHORT_READ</int>
+  <int value="27" label="kCorruptSequence">SQLITE_CORRUPT_SEQUENCE</int>
+  <int value="28" label="kCantOpenIsDir">SQLITE_CANTOPEN_ISDIR</int>
+  <int value="29" label="kReadOnlyRollback">SQLITE_READONLY_ROLLBACK</int>
+  <int value="30" label="kIoWrite">SQLITE_IOERR_WRITE</int>
+  <int value="31" label="kCorruptIndex">SQLITE_CORRUPT_INDEX</int>
+  <int value="32" label="kConstraintForeignKey">
+    SQLITE_CONSTRAINT_FOREIGN_KEY
+  </int>
+  <int value="33" label="kReadOnlyDbMoved">SQLITE_READONLY_DBMOVED</int>
+  <int value="34" label="kIoFsync">SQLITE_IOERR_FSYNC</int>
+  <int value="35" label="kIoDirFsync">SQLITE_IOERR_DIR_FSYNC</int>
+  <int value="36" label="kConstraintNotNull">SQLITE_CONSTRAINT_NOTNULL</int>
+  <int value="37" label="kReadOnlyDirectory">SQLITE_READONLY_DIRECTORY</int>
+  <int value="38" label="kIoTruncate">SQLITE_IOERR_TRUNCATE</int>
+  <int value="39" label="kConstraintPrimaryKey">
+    SQLITE_CONSTRAINT_PRIMARYKEY
+  </int>
+  <int value="40" label="kIoFstat">SQLITE_IOERR_FSTAT</int>
+  <int value="41" label="kIoUnlock">SQLITE_IOERR_UNLOCK</int>
+  <int value="42" label="kConstraintUnique">SQLITE_CONSTRAINT_UNIQUE</int>
+  <int value="43" label="kIoReadLock">SQLITE_IOERR_RDLOCK</int>
+  <int value="44" label="kIoDelete">SQLITE_IOERR_DELETE</int>
+  <int value="45" label="kConstraintRowId">SQLITE_CONSTRAINT_ROWID</int>
+  <int value="46" label="kConstraintDataType">SQLITE_CONSTRAINT_DATATYPE</int>
+  <int value="47" label="kIoAccess">SQLITE_IOERR_ACCESS</int>
+  <int value="48" label="kIoCheckReservedLock">
+    SQLITE_IOERR_CHECKRESERVEDLOCK
+  </int>
+  <int value="49" label="kIoLock">SQLITE_IOERR_LOCK</int>
+  <int value="50" label="kIoClose">SQLITE_IOERR_CLOSE</int>
+  <int value="51" label="kIoSeek">SQLITE_IOERR_SEEK</int>
+  <int value="52" label="kIoDeleteNoEntry">SQLITE_IOERR_DELETE_NOENT</int>
+  <int value="53" label="kIoMemoryMapping">SQLITE_IOERR_MMAP</int>
+  <int value="54" label="kIoGetTemporaryPath">SQLITE_IOERR_GETTEMPPATH</int>
+  <int value="55" label="kIoBeginAtomic">SQLITE_IOERR_BEGIN_ATOMIC</int>
+  <int value="56" label="kIoCommitAtomic">SQLITE_IOERR_COMMIT_ATOMIC</int>
+  <int value="57" label="kIoRollbackAtomic">SQLITE_IOERR_ROLLBACK_ATOMIC</int>
+  <int value="58" label="kIoCorruptFileSystem">SQLITE_IOERR_CORRUPTFS</int>
+</enum>
+
 <enum name="SqliteRecoveryEventEnum">
   <summary>
     Track successful completion or failure of sql::Recovery implementation.

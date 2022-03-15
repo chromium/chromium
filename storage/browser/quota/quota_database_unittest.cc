@@ -21,6 +21,7 @@
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/cpp/buckets/constants.h"
 #include "sql/database.h"
+#include "sql/error_metrics.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"
 #include "sql/test/scoped_error_expecter.h"
@@ -923,6 +924,45 @@ TEST_F(QuotaDatabaseTest, OpenCorruptedDatabase) {
   histograms.ExpectTotalCount("Quota.QuotaDatabaseReset", 1);
   histograms.ExpectBucketCount("Quota.QuotaDatabaseReset",
                                DatabaseResetReason::kCreateSchema, 1);
+
+  EXPECT_GE(histograms.GetTotalSum("Quota.QuotaDatabaseError"), 1);
+  EXPECT_GE(histograms.GetBucketCount("Quota.QuotaDatabaseError",
+                                      sql::SqliteLoggedResultCode::kCorrupt),
+            1);
+}
+
+TEST_F(QuotaDatabaseTest, GetOrCreateBucket_CorruptedDatabase) {
+  QuotaDatabase db(DbPath());
+  StorageKey storage_key =
+      StorageKey::CreateFromStringForTesting("http://google/");
+  std::string bucket_name = "google_bucket";
+
+  {
+    QuotaErrorOr<BucketInfo> result =
+        db.GetOrCreateBucket(storage_key, bucket_name);
+    ASSERT_TRUE(result.ok()) << "Failed to create bucket to be used in test";
+  }
+
+  // Bucket lookup uses the `buckets_by_storage_key` index.
+  QuotaError corruption_error =
+      db.CorruptForTesting(base::BindOnce([](const base::FilePath& db_path) {
+        ASSERT_TRUE(
+            sql::test::CorruptIndexRootPage(db_path, "buckets_by_storage_key"));
+      }));
+  ASSERT_EQ(QuotaError::kNone, corruption_error)
+      << "Failed to corrupt the database";
+
+  {
+    base::HistogramTester histograms;
+
+    QuotaErrorOr<BucketInfo> result =
+        db.GetOrCreateBucket(storage_key, bucket_name);
+    EXPECT_FALSE(result.ok());
+
+    histograms.ExpectTotalCount("Quota.QuotaDatabaseError", 1);
+    histograms.ExpectBucketCount("Quota.QuotaDatabaseError",
+                                 sql::SqliteLoggedResultCode::kCorrupt, 1);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

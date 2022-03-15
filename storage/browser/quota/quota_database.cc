@@ -20,6 +20,7 @@
 #include "components/services/storage/public/cpp/buckets/constants.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "sql/database.h"
+#include "sql/error_metrics.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
@@ -805,9 +806,12 @@ QuotaError QuotaDatabase::EnsureOpened(EnsureOpenedMode mode) {
 
   db_->set_histogram_tag("Quota");
 
-  // Don't crash on database errors in DCHECK builds.
-  db_->set_error_callback(base::BindRepeating(
-      [](int sqlite_error, sql::Statement* statement) { return; }));
+  // UMA logging and don't crash on database errors in DCHECK builds.
+  db_->set_error_callback(
+      base::BindRepeating([](int sqlite_error_code, sql::Statement* statement) {
+        sql::UmaHistogramSqliteResult("Quota.QuotaDatabaseError",
+                                      sqlite_error_code);
+      }));
 
   if (!OpenDatabase() || !EnsureDatabaseVersion()) {
     LOG(ERROR) << "Could not open the quota database, resetting.";
