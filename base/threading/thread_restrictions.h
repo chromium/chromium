@@ -184,6 +184,7 @@ class PepperPrintSettingsManagerImpl;
 class RenderProcessHostImpl;
 class RenderProcessHost;
 class RenderWidgetHostViewMac;
+class RendererBlinkPlatformImpl;
 class RTCVideoDecoder;
 class SandboxHostLinux;
 class ScopedAllowWaitForDebugURL;
@@ -569,6 +570,7 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitives {
   friend class chrome_cleaner::SystemReportComponent;
   friend class content::BrowserMainLoop;
   friend class content::BrowserProcessIOThread;
+  friend class content::RendererBlinkPlatformImpl;
   friend class content::DWriteFontCollectionProxy;
   friend class content::ServiceWorkerContextClient;
   friend class device::UsbContext;

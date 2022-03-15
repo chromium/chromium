@@ -278,8 +278,6 @@ class CONTENT_EXPORT RenderThreadImpl
   // has been lost.
   gpu::GpuChannelHost* GetGpuChannel();
 
-  base::PlatformThreadId GetIOPlatformThreadId() const;
-
   // Returns a SingleThreadTaskRunner instance corresponding to the message loop
   // of the thread on which media operations should be run. Must be called
   // on the renderer's main thread.

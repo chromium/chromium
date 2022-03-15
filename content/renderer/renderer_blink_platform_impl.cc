@@ -27,6 +27,7 @@
 #include "base/task/post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -207,10 +208,31 @@ RendererBlinkPlatformImpl::RendererBlinkPlatformImpl(
     GetBrowserInterfaceBroker()->GetInterface(
         code_cache_host_remote_.InitWithNewPipeAndPassReceiver());
   }
+
+  auto io_task_runner = GetIOTaskRunner();
+  if (io_task_runner) {
+    io_task_runner->PostTask(
+        FROM_HERE, base::BindOnce(
+                       [](base::PlatformThreadId* id,
+                          base::WaitableEvent* io_thread_id_ready_event) {
+                         *id = base::PlatformThread::CurrentId();
+                         io_thread_id_ready_event->Signal();
+                       },
+                       &io_thread_id_, &io_thread_id_ready_event_));
+  } else {
+    // Match the `Wait` in destructor even if there is no IO runner.
+    io_thread_id_ready_event_.Signal();
+  }
 }
 
 RendererBlinkPlatformImpl::~RendererBlinkPlatformImpl() {
   main_thread_scheduler_->SetTopLevelBlameContext(nullptr);
+  {
+    base::ScopedAllowBaseSyncPrimitives allow;
+    // Ensure task posted to IO thread is finished because it contains
+    // pointers to fields of `this`.
+    io_thread_id_ready_event_.Wait();
+  }
 }
 
 void RendererBlinkPlatformImpl::Shutdown() {}
@@ -1116,9 +1138,16 @@ void RendererBlinkPlatformImpl::AppendContentSecurityPolicy(
 }
 
 base::PlatformThreadId RendererBlinkPlatformImpl::GetIOThreadId() const {
-  return RenderThreadImpl::current()
-             ? RenderThreadImpl::current()->GetIOPlatformThreadId()
-             : base::kInvalidThreadId;
+  auto io_task_runner = GetIOTaskRunner();
+  if (!io_task_runner)
+    return base::kInvalidThreadId;
+  // Cannot be called from IO thread due to potential deadlock.
+  CHECK(!io_task_runner->BelongsToCurrentThread());
+  {
+    base::ScopedAllowBaseSyncPrimitives allow;
+    io_thread_id_ready_event_.Wait();
+  }
+  return io_thread_id_;
 }
 
 }  // namespace content
