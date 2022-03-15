@@ -26,6 +26,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/arc.mojom-forward.h"
+#endif
+
 class GURL;
 class Profile;
 struct WebAppInstallInfo;
@@ -232,6 +236,19 @@ class WebAppInstallTask : content::WebContentsObserver {
       bool skip_page_favicons,
       const std::string& intent,
       bool should_intent_to_store);
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Called when the asynchronous check for whether an intent to the Play Store
+  // should be made returns (Lacros adapter that calls
+  // |OnDidCheckForIntentToPlayStore| based on |result|).
+  void OnDidCheckForIntentToPlayStoreLacros(
+      std::unique_ptr<WebAppInstallInfo> web_app_info,
+      std::vector<GURL> icon_urls,
+      ForInstallableSite for_installable_site,
+      bool skip_page_favicons,
+      const std::string& intent,
+      crosapi::mojom::IsInstallableResult result);
+#endif
 
   void OnIconsRetrieved(
       std::unique_ptr<WebAppInstallInfo> web_app_info,
