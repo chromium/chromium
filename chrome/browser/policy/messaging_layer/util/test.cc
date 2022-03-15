@@ -78,22 +78,24 @@ RequestContainingRecordMatcher::RequestContainingRecordMatcher(
 
 bool RequestContainingRecordMatcher::MatchAndExplain(
     const base::Value::Dict& arg,
-    std::ostream* os) const {
+    MatchResultListener* listener) const {
   const auto* record_list = arg.FindList("encryptedRecord");
   if (record_list == nullptr) {
-    *os << "No key named \"encryptedRecord\" in the argument or the value is "
+    *listener
+        << "No key named \"encryptedRecord\" in the argument or the value is "
            "not a list.";
     return false;
   }
 
   const auto matched_record = base::JSONReader::Read(matched_record_json_);
   if (!matched_record.has_value()) {
-    *os << "The specified record cannot be parsed as a JSON object.";
+    *listener << "The specified record cannot be parsed as a JSON object.";
     return false;
   }
   const auto* matched_record_dict = matched_record->GetIfDict();
   if (matched_record_dict == nullptr) {
-    *os << "The specified record must be a Dict itself because each record "
+    *listener
+        << "The specified record must be a Dict itself because each record "
            "is a Dict.";
     return false;
   }
@@ -112,7 +114,7 @@ bool RequestContainingRecordMatcher::MatchAndExplain(
     }
   }
 
-  *os << "The specified record is not found in the argument.";
+  *listener << "The specified record is not found in the argument.";
   return false;
 }
 

@@ -53,7 +53,8 @@ class RequestContainingRecordMatcher {
 
   explicit RequestContainingRecordMatcher(
       base::StringPiece matched_record_json);
-  bool MatchAndExplain(const base::Value::Dict& arg, std::ostream* os) const;
+  bool MatchAndExplain(const base::Value::Dict& arg,
+                       MatchResultListener* os) const;
   void DescribeTo(std::ostream* os) const;
   void DescribeNegationTo(std::ostream* os) const;
 
