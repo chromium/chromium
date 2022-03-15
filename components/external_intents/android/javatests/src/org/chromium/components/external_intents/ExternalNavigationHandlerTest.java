@@ -2354,6 +2354,9 @@ public class ExternalNavigationHandlerTest {
 
         mDelegate.setShouldAvoidDisambiguationDialog(true);
         checkUrl(YOUTUBE_URL).expecting(OverrideUrlLoadingResultType.NO_OVERRIDE, IGNORE);
+        checkUrl(INTENT_URL_WITH_FALLBACK_URL)
+                .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT,
+                        START_OTHER_ACTIVITY);
     }
 
     @Test

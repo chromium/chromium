@@ -223,7 +223,7 @@ public interface ExternalNavigationDelegate {
 
     /**
      * Whether the Activity launch should be aborted if the disambiguation prompt is going to be
-     * shown.
+     * shown and Chrome is able to handle the navigation.
      */
     boolean shouldAvoidDisambiguationDialog(Intent intent);
 }
