@@ -78,41 +78,7 @@ PasswordForm PasswordFromEntityChange(const syncer::EntityChange& entity_change,
   DCHECK(entity_change.data().specifics.has_password());
   const sync_pb::PasswordSpecificsData& password_data =
       entity_change.data().specifics.password().client_only_encrypted_data();
-
-  PasswordForm password;
-  password.scheme = static_cast<PasswordForm::Scheme>(password_data.scheme());
-  password.signon_realm = password_data.signon_realm();
-  password.url = GURL(password_data.origin());
-  password.action = GURL(password_data.action());
-  password.username_element =
-      base::UTF8ToUTF16(password_data.username_element());
-  password.password_element =
-      base::UTF8ToUTF16(password_data.password_element());
-  password.username_value = base::UTF8ToUTF16(password_data.username_value());
-  password.password_value = base::UTF8ToUTF16(password_data.password_value());
-  if (password_data.has_date_last_used()) {
-    password.date_last_used = ConvertToBaseTime(password_data.date_last_used());
-  } else if (password_data.preferred()) {
-    // For legacy passwords that don't have the |date_last_used| field set, we
-    // should it similar to the logic in login database migration.
-    password.date_last_used =
-        base::Time::FromDeltaSinceWindowsEpoch(base::Days(1));
-  }
-  password.date_password_modified = ConvertToBaseTime(
-      password_data.has_date_password_modified_windows_epoch_micros()
-          ? password_data.date_password_modified_windows_epoch_micros()
-          : password_data.date_created());
-  password.date_created = ConvertToBaseTime(password_data.date_created());
-  password.blocked_by_user = password_data.blacklisted();
-  password.type = static_cast<PasswordForm::Type>(password_data.type());
-  password.times_used = password_data.times_used();
-  password.display_name = base::UTF8ToUTF16(password_data.display_name());
-  password.icon_url = GURL(password_data.avatar_url());
-  password.federation_origin =
-      url::Origin::Create(GURL(password_data.federation_url()));
-  password.password_issues = PasswordIssuesMapFromProto(password_data);
-
-  return password;
+  return PasswordFromSpecifics(password_data);
 }
 
 std::unique_ptr<syncer::EntityData> CreateEntityData(const PasswordForm& form) {
