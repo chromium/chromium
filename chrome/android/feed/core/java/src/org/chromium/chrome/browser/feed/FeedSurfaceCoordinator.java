@@ -86,7 +86,7 @@ public class FeedSurfaceCoordinator
                    BackToTopBubbleScrollListener.ResultHandler, SurfaceCoordinator,
                    FeedAutoplaySettingsDelegate, FeedReliabilityLoggingSignals {
     private static final String TAG = "FeedSurfaceCoordinator";
-    private static final long DELAY_FEED_HEADER_IPH_MS = 5;
+    private static final long DELAY_FEED_HEADER_IPH_MS = 50;
 
     protected final Activity mActivity;
     private final SnackbarManager mSnackbarManager;

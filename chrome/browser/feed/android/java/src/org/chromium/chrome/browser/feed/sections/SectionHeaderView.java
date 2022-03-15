@@ -403,7 +403,6 @@ public class SectionHeaderView extends LinearLayout {
                 R.string.feature_notification_guide_tooltip_message_ntp_suggestion_card,
                 R.string.feature_notification_guide_tooltip_message_ntp_suggestion_card)
                                       .setAnchorView(mTitleView)
-                                      .setDismissOnTouch(false)
                                       .build());
     }
 

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.feature_guide.notifications;
 
 import android.content.Intent;
+import android.os.Handler;
 import android.text.TextUtils;
 
 import androidx.annotation.StringRes;
@@ -20,6 +21,7 @@ import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoD
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
+import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.prefs.PrefService;
@@ -51,9 +53,13 @@ public final class FeatureNotificationUtils {
                 IntentUtils.safeGetIntExtra(intent, EXTRA_FEATURE_TYPE, FeatureType.INVALID);
         if (featureType == FeatureType.INVALID) return;
 
-        Tracker tracker = TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile());
-        tracker.setPriorityNotification(
-                FeatureNotificationUtils.getIPHFeatureForNotificationFeatureType(featureType));
+        TextBubble.dismissBubbles();
+        new Handler().post(() -> {
+            Tracker tracker =
+                    TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile());
+            tracker.setPriorityNotification(
+                    FeatureNotificationUtils.getIPHFeatureForNotificationFeatureType(featureType));
+        });
     }
 
     /**
