@@ -294,6 +294,8 @@ void ServiceWorkerDevToolsAgentHost::WorkerStarted(int worker_process_id,
 void ServiceWorkerDevToolsAgentHost::WorkerStopped() {
   DCHECK_NE(WORKER_TERMINATED, state_);
   state_ = WORKER_TERMINATED;
+  worker_process_id_ = content::ChildProcessHost::kInvalidUniqueID;
+  worker_route_id_ = MSG_ROUTING_NONE;
   for (auto* inspector : protocol::InspectorHandler::ForAgentHost(this))
     inspector->TargetCrashed();
   GetRendererChannel()->SetRenderer(mojo::NullRemote(), mojo::NullReceiver(),
@@ -331,6 +333,10 @@ void ServiceWorkerDevToolsAgentHost::RenderProcessHostDestroyed(
 
 void ServiceWorkerDevToolsAgentHost::UpdateLoaderFactories(
     base::OnceClosure callback) {
+  if (state_ == WORKER_TERMINATED) {
+    std::move(callback).Run();
+    return;
+  }
   RenderProcessHost* rph = RenderProcessHost::FromID(worker_process_id_);
   if (!rph) {
     std::move(callback).Run();
@@ -352,6 +358,12 @@ void ServiceWorkerDevToolsAgentHost::UpdateLoaderFactories(
         coep_reporter_for_subresource_loader.InitWithNewPipeAndPassReceiver());
   }
 
+  auto* version = context_wrapper_->GetLiveVersion(version_id_);
+  if (!version) {
+    std::move(callback).Run();
+    return;
+  }
+
   auto script_bundle = EmbeddedWorkerInstance::CreateFactoryBundle(
       rph, worker_route_id_, origin, client_security_state_.Clone(),
       std::move(coep_reporter_for_script_loader),
@@ -363,9 +375,6 @@ void ServiceWorkerDevToolsAgentHost::UpdateLoaderFactories(
       ContentBrowserClient::URLLoaderFactoryType::kServiceWorkerSubResource,
       GetId());
 
-  auto* version = context_wrapper_->GetLiveVersion(version_id_);
-  if (!version)
-    return;
   version->embedded_worker()->UpdateLoaderFactories(
       std::move(script_bundle), std::move(subresource_bundle));
 

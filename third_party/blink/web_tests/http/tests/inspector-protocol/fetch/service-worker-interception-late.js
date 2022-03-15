@@ -9,7 +9,6 @@
       {autoAttach: true, waitForDebuggerOnStart: false, flatten: true});
   dp.Target.onAttachedToTarget(async event => {
     serviceWorkerSession = session.createChild(event.params.sessionId);
-
   });
 
   await dp.ServiceWorker.enable();
@@ -23,9 +22,10 @@
       const result = await dp.ServiceWorker.onceWorkerVersionUpdated();
       versions = result.params.versions;
     } while (!versions.length || versions[0].status !== phase);
+    return versions[0];
   }
 
-  await waitForServiceWorkerPhase("installing");
+  const version = await waitForServiceWorkerPhase("installing");
 
   const url = 'fetch-data.txt';
   let content = await session.evaluateAsync(`fetch("${url}").then(r => r.text())`);
@@ -63,5 +63,14 @@
   content = await session.evaluateAsync(`fetch("${url}").then(r => r.text())`);
   testRunner.log(`Response after interception enabled: ${content}`);
 
+  // Stop worker and wait till it stopped, to make sure worker shutdown
+  // is covered (see https://crbug.com/1306006).
+  dp.ServiceWorker.stopWorker({versionId: version.versionId});
+  await dp.ServiceWorker.onceWorkerVersionUpdated(
+      e => e.params.versions.length && e.params.versions[0].runningStatus === "stopped"),
+
+  testRunner.log("Stopped service worker");
+  await serviceWorkerSession.disconnect();
+  testRunner.log("Disconnected from service worker");
   testRunner.completeTest();
 })
