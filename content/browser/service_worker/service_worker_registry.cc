@@ -201,11 +201,7 @@ void ServiceWorkerRegistry::CreateNewRegistrationWithBucketInfo(
     const blink::StorageKey& key,
     NewRegistrationCallback callback,
     storage::QuotaErrorOr<storage::BucketInfo> result) {
-  // Return nullptr if GetOrCreateBucket fails.
-  if (!result.ok()) {
-    std::move(callback).Run(nullptr);
-    return;
-  }
+  DCHECK(result.ok());
   CreateInvokerAndStartRemoteCall(
       &storage::mojom::ServiceWorkerStorageControl::GetNewRegistrationId,
       base::BindOnce(&ServiceWorkerRegistry::DidGetNewRegistrationId,
