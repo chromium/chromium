@@ -285,7 +285,8 @@ export class NamingController {
     try {
       input.validation_ = true;
       await validateEntryName(
-          entry, newName, false, volumeInfo, isRemovableRoot);
+          entry, newName, this.fileFilter_.isHiddenFilesVisible(), volumeInfo,
+          isRemovableRoot);
     } catch (error) {
       await this.alertDialog_.showAsync(/** @type {string} */ (error.message));
 
