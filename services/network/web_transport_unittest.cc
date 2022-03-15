@@ -680,9 +680,10 @@ class WebTransportWithCustomCertificateTest : public WebTransportTest {
       ADD_FAILURE() << "No certificates found in " << cert_path;
       return nullptr;
     }
-    auto chain = quic::QuicReferenceCountedPointer<quic::ProofSource::Chain>(
-        new quic::ProofSource::Chain(
-            std::vector<std::string>{pem_tokenizer.data()}));
+    auto chain =
+        quiche::QuicheReferenceCountedPointer<quic::ProofSource::Chain>(
+            new quic::ProofSource::Chain(
+                std::vector<std::string>{pem_tokenizer.data()}));
     std::unique_ptr<quic::CertificatePrivateKey> key =
         quic::CertificatePrivateKey::LoadFromDer(key_raw);
     if (!key) {

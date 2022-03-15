@@ -1179,7 +1179,7 @@ size_t QuicChromiumClientSession::WriteHeadersOnHeadersStream(
     spdy::Http2HeaderBlock headers,
     bool fin,
     const spdy::SpdyStreamPrecedence& precedence,
-    quic::QuicReferenceCountedPointer<quic::QuicAckListenerInterface>
+    quiche::QuicheReferenceCountedPointer<quic::QuicAckListenerInterface>
         ack_listener) {
   spdy::SpdyStreamId parent_stream_id = 0;
   int weight = 0;

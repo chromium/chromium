@@ -30,7 +30,6 @@
 #include "net/log/test_net_log_util.h"
 #include "net/quic/address_utils.h"
 #include "net/quic/mock_crypto_client_stream_factory.h"
-#include "net/quic/platform/impl/quic_test_impl.h"
 #include "net/quic/quic_chromium_alarm_factory.h"
 #include "net/quic/quic_chromium_connection_helper.h"
 #include "net/quic/quic_chromium_packet_reader.h"

@@ -105,7 +105,7 @@ class MockQuicClientSessionBase : public quic::QuicSpdyClientSessionBase {
       spdy::Http2HeaderBlock headers,
       bool fin,
       const spdy::SpdyStreamPrecedence& precedence,
-      quic::QuicReferenceCountedPointer<quic::QuicAckListenerInterface>
+      quiche::QuicheReferenceCountedPointer<quic::QuicAckListenerInterface>
           ack_listener) override {
     return WriteHeadersOnHeadersStreamMock(id, headers, fin, precedence,
                                            std::move(ack_listener));
@@ -115,7 +115,7 @@ class MockQuicClientSessionBase : public quic::QuicSpdyClientSessionBase {
                       const spdy::Http2HeaderBlock& headers,
                       bool fin,
                       const spdy::SpdyStreamPrecedence& precedence,
-                      const quic::QuicReferenceCountedPointer<
+                      const quiche::QuicheReferenceCountedPointer<
                           quic::QuicAckListenerInterface>& ack_listener));
   MOCK_METHOD1(OnHeadersHeadOfLineBlocking, void(quic::QuicTime::Delta delta));
 

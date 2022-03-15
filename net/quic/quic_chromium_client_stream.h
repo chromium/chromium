@@ -85,7 +85,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
     int WriteHeaders(
         spdy::Http2HeaderBlock header_block,
         bool fin,
-        quic::QuicReferenceCountedPointer<quic::QuicAckListenerInterface>
+        quiche::QuicheReferenceCountedPointer<quic::QuicAckListenerInterface>
             ack_notifier_delegate);
 
     // Writes |data| to the peer. Closes the write side if |fin| is true.
@@ -251,7 +251,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
   size_t WriteHeaders(
       spdy::Http2HeaderBlock header_block,
       bool fin,
-      quic::QuicReferenceCountedPointer<quic::QuicAckListenerInterface>
+      quiche::QuicheReferenceCountedPointer<quic::QuicAckListenerInterface>
           ack_listener) override;
 
   // While the server's set_priority shouldn't be called externally, the creator

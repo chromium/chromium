@@ -98,7 +98,7 @@ class SignatureSaver : public quic::ProofSource::Callback {
   ~SignatureSaver() override {}
 
   void Run(bool /*ok*/,
-           const quic::QuicReferenceCountedPointer<
+           const quiche::QuicheReferenceCountedPointer<
                quic::ProofSource::Chain>& /*chain*/,
            const quic::QuicCryptoProof& proof,
            std::unique_ptr<quic::ProofSource::Details> /*details*/) override {

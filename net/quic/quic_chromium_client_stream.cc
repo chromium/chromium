@@ -233,7 +233,7 @@ int QuicChromiumClientStream::Handle::ReadTrailingHeaders(
 int QuicChromiumClientStream::Handle::WriteHeaders(
     spdy::Http2HeaderBlock header_block,
     bool fin,
-    quic::QuicReferenceCountedPointer<quic::QuicAckListenerInterface>
+    quiche::QuicheReferenceCountedPointer<quic::QuicAckListenerInterface>
         ack_notifier_delegate) {
   if (!stream_)
     return 0;
@@ -610,7 +610,7 @@ void QuicChromiumClientStream::OnCanWrite() {
 size_t QuicChromiumClientStream::WriteHeaders(
     spdy::Http2HeaderBlock header_block,
     bool fin,
-    quic::QuicReferenceCountedPointer<quic::QuicAckListenerInterface>
+    quiche::QuicheReferenceCountedPointer<quic::QuicAckListenerInterface>
         ack_listener) {
   if (!session()->OneRttKeysAvailable()) {
     auto entry = header_block.find(":method");

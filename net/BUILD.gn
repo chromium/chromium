@@ -782,7 +782,6 @@ component("net") {
     "quic/platform/impl/quic_hostname_utils_impl.h",
     "quic/platform/impl/quic_iovec_impl.h",
     "quic/platform/impl/quic_prefetch_impl.h",
-    "quic/platform/impl/quic_reference_counted_impl.h",
     "quic/platform/impl/quic_server_stats_impl.h",
     "quic/platform/impl/quic_sleep_impl.h",
     "quic/platform/impl/quic_stack_trace_impl.h",
@@ -2588,12 +2587,14 @@ source_set("spdy_test_tools") {
 source_set("quiche_test_tools") {
   testonly = true
   sources = [
+    "quiche/common/platform/impl/quiche_test_helpers_impl.cc",
     "quiche/common/platform/impl/quiche_test_helpers_impl.h",
     "quiche/common/platform/impl/quiche_test_impl.cc",
     "quiche/common/platform/impl/quiche_test_impl.h",
   ]
   deps = [
     ":net",
+    ":quic_test_flags_utils",
     ":test_support",
     "//testing/gmock",
     "//testing/gtest",
@@ -2629,8 +2630,6 @@ source_set("quic_test_tools") {
     "quic/platform/impl/quic_epoll_test_tools_impl.h",
     "quic/platform/impl/quic_expect_bug_impl.h",
     "quic/platform/impl/quic_mock_log_impl.h",
-    "quic/platform/impl/quic_test_impl.cc",
-    "quic/platform/impl/quic_test_impl.h",
     "quic/platform/impl/quic_test_loopback_impl.cc",
     "quic/platform/impl/quic_test_loopback_impl.h",
     "quic/platform/impl/quic_test_output_impl.cc",
@@ -4297,8 +4296,6 @@ test("net_unittests") {
     "http/transport_security_state_unittest.cc",
     "http/url_security_manager_unittest.cc",
     "http/webfonts_histogram_unittest.cc",
-    "http2/platform/impl/http2_test_helpers_impl.cc",
-    "http2/platform/impl/http2_test_helpers_impl.h",
     "log/file_net_log_observer_unittest.cc",
     "log/net_log_capture_mode_unittest.cc",
     "log/net_log_unittest.cc",

@@ -663,7 +663,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
       spdy::Http2HeaderBlock headers,
       bool fin,
       const spdy::SpdyStreamPrecedence& precedence,
-      quic::QuicReferenceCountedPointer<quic::QuicAckListenerInterface>
+      quiche::QuicheReferenceCountedPointer<quic::QuicAckListenerInterface>
           ack_listener) override;
   void UnregisterStreamPriority(quic::QuicStreamId id, bool is_static) override;
   void UpdateStreamPriority(

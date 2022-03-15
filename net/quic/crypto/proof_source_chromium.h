@@ -44,7 +44,7 @@ class NET_EXPORT_PRIVATE ProofSourceChromium : public quic::ProofSource {
                 absl::string_view chlo_hash,
                 std::unique_ptr<Callback> callback) override;
 
-  quic::QuicReferenceCountedPointer<Chain> GetCertChain(
+  quiche::QuicheReferenceCountedPointer<Chain> GetCertChain(
       const quic::QuicSocketAddress& server_address,
       const quic::QuicSocketAddress& client_address,
       const std::string& hostname,
@@ -71,12 +71,13 @@ class NET_EXPORT_PRIVATE ProofSourceChromium : public quic::ProofSource {
       const std::string& server_config,
       quic::QuicTransportVersion quic_version,
       absl::string_view chlo_hash,
-      quic::QuicReferenceCountedPointer<quic::ProofSource::Chain>* out_chain,
+      quiche::QuicheReferenceCountedPointer<quic::ProofSource::Chain>*
+          out_chain,
       quic::QuicCryptoProof* proof);
 
   std::unique_ptr<crypto::RSAPrivateKey> private_key_;
   CertificateList certs_in_file_;
-  quic::QuicReferenceCountedPointer<quic::ProofSource::Chain> chain_;
+  quiche::QuicheReferenceCountedPointer<quic::ProofSource::Chain> chain_;
   std::string signed_certificate_timestamp_;
   std::unique_ptr<TicketCrypter> ticket_crypter_;
 };

@@ -2,82 +2,83 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NET_QUIC_PLATFORM_IMPL_QUIC_REFERENCE_COUNTED_IMPL_H_
-#define NET_QUIC_PLATFORM_IMPL_QUIC_REFERENCE_COUNTED_IMPL_H_
+#ifndef NET_THIRD_PARTY_QUICHE_OVERRIDES_QUICHE_PLATFORM_IMPL_QUICHE_REFERENCE_COUNTED_IMPL_H_
+#define NET_THIRD_PARTY_QUICHE_OVERRIDES_QUICHE_PLATFORM_IMPL_QUICHE_REFERENCE_COUNTED_IMPL_H_
 
 #include "base/memory/ref_counted.h"
 #include "net/third_party/quiche/src/quic/platform/api/quic_export.h"
 
-namespace quic {
+namespace quiche {
 
-class QUIC_EXPORT_PRIVATE QuicReferenceCountedImpl
-    : public base::RefCountedThreadSafe<QuicReferenceCountedImpl> {
+class QUIC_EXPORT_PRIVATE QuicheReferenceCountedImpl
+    : public base::RefCountedThreadSafe<QuicheReferenceCountedImpl> {
  public:
-  QuicReferenceCountedImpl() {}
+  QuicheReferenceCountedImpl() = default;
 
  protected:
-  virtual ~QuicReferenceCountedImpl() {}
+  virtual ~QuicheReferenceCountedImpl() = default;
 
  private:
-  friend class base::RefCountedThreadSafe<QuicReferenceCountedImpl>;
+  friend class base::RefCountedThreadSafe<QuicheReferenceCountedImpl>;
 };
 
 template <class T>
-class QuicReferenceCountedPointerImpl {
+class QuicheReferenceCountedPointerImpl {
  public:
-  QuicReferenceCountedPointerImpl() = default;
+  QuicheReferenceCountedPointerImpl() = default;
 
   // Constructor from raw pointer |p|. This guarantees that the reference count
   // of *p is 1. This should be only called when a new object is created,
   // calling this on an already existent object does not increase its reference
   // count.
-  explicit QuicReferenceCountedPointerImpl(T* p) : refptr_(p) {}
+  explicit QuicheReferenceCountedPointerImpl(T* p) : refptr_(p) {}
 
   // Allows implicit conversion from nullptr.
-  QuicReferenceCountedPointerImpl(std::nullptr_t)  // NOLINT
+  QuicheReferenceCountedPointerImpl(std::nullptr_t)  // NOLINT
       : refptr_(nullptr) {}
 
   // Copy and copy conversion constructors. It does not take the reference away
   // from |other| and they each end up with their own reference.
   template <typename U>
-  QuicReferenceCountedPointerImpl(  // NOLINT
-      const QuicReferenceCountedPointerImpl<U>& other)
+  QuicheReferenceCountedPointerImpl(  // NOLINT
+      const QuicheReferenceCountedPointerImpl<U>& other)
       : refptr_(other.refptr()) {}
-  QuicReferenceCountedPointerImpl(const QuicReferenceCountedPointerImpl& other)
+  QuicheReferenceCountedPointerImpl(
+      const QuicheReferenceCountedPointerImpl& other)
       : refptr_(other.refptr()) {}
 
   // Move constructors. After move, it adopts the reference from |other|.
   template <typename U>
-  QuicReferenceCountedPointerImpl(  // NOLINT
-      QuicReferenceCountedPointerImpl<U>&& other)
+  QuicheReferenceCountedPointerImpl(  // NOLINT
+      QuicheReferenceCountedPointerImpl<U>&& other)
       : refptr_(std::move(other.refptr())) {}
-  QuicReferenceCountedPointerImpl(QuicReferenceCountedPointerImpl&& other)
+  QuicheReferenceCountedPointerImpl(QuicheReferenceCountedPointerImpl&& other)
       : refptr_(std::move(other.refptr())) {}
 
-  ~QuicReferenceCountedPointerImpl() = default;
+  ~QuicheReferenceCountedPointerImpl() = default;
 
   // Copy assignments.
-  QuicReferenceCountedPointerImpl& operator=(
-      const QuicReferenceCountedPointerImpl& other) {
+  QuicheReferenceCountedPointerImpl& operator=(
+      const QuicheReferenceCountedPointerImpl& other) {
     refptr_ = other.refptr();
     return *this;
   }
   template <typename U>
-  QuicReferenceCountedPointerImpl<T>& operator=(
-      const QuicReferenceCountedPointerImpl<U>& other) {
+  QuicheReferenceCountedPointerImpl<T>& operator=(
+      const QuicheReferenceCountedPointerImpl<U>& other) {
     refptr_ = other.refptr();
     return *this;
   }
 
   // Move assignments.
-  QuicReferenceCountedPointerImpl& operator=(
-      QuicReferenceCountedPointerImpl&& other) {
+  QuicheReferenceCountedPointerImpl& operator=(
+      QuicheReferenceCountedPointerImpl&& other) {
     refptr_ = std::move(other.refptr());
     return *this;
   }
   template <typename U>
-  QuicReferenceCountedPointerImpl<T>& operator=(
-      QuicReferenceCountedPointerImpl<U>&& other) {
+  QuicheReferenceCountedPointerImpl<T>& operator=(
+      QuicheReferenceCountedPointerImpl<U>&& other) {
     refptr_ = std::move(other.refptr());
     return *this;
   }
@@ -90,7 +91,7 @@ class QuicReferenceCountedPointerImpl {
   // this on an already existent object is undefined behavior according to the
   // API contract (even though the underlying implementation might have a
   // well-defined behavior).
-  QuicReferenceCountedPointerImpl<T>& operator=(T* p) {
+  QuicheReferenceCountedPointerImpl<T>& operator=(T* p) {
     refptr_ = p;
     return *this;
   }
@@ -112,6 +113,6 @@ class QuicReferenceCountedPointerImpl {
   scoped_refptr<T> refptr_;
 };
 
-}  // namespace quic
+}  // namespace quiche
 
-#endif  // NET_QUIC_PLATFORM_IMPL_QUIC_REFERENCE_COUNTED_IMPL_H_
+#endif  // NET_THIRD_PARTY_QUICHE_OVERRIDES_QUICHE_PLATFORM_IMPL_QUICHE_REFERENCE_COUNTED_IMPL_H_

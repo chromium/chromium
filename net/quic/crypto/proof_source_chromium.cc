@@ -78,7 +78,7 @@ bool ProofSourceChromium::GetProofInner(
     const string& server_config,
     quic::QuicTransportVersion quic_version,
     absl::string_view chlo_hash,
-    quic::QuicReferenceCountedPointer<quic::ProofSource::Chain>* out_chain,
+    quiche::QuicheReferenceCountedPointer<quic::ProofSource::Chain>* out_chain,
     quic::QuicCryptoProof* proof) {
   DCHECK(proof != nullptr);
   DCHECK(private_key_.get()) << " this: " << this;
@@ -137,7 +137,7 @@ void ProofSourceChromium::GetProof(const quic::QuicSocketAddress& server_addr,
                                    std::unique_ptr<Callback> callback) {
   // As a transitional implementation, just call the synchronous version of
   // GetProof, then invoke the callback with the results and destroy it.
-  quic::QuicReferenceCountedPointer<quic::ProofSource::Chain> chain;
+  quiche::QuicheReferenceCountedPointer<quic::ProofSource::Chain> chain;
   string signature;
   string leaf_cert_sct;
   quic::QuicCryptoProof out_proof;
@@ -147,7 +147,7 @@ void ProofSourceChromium::GetProof(const quic::QuicSocketAddress& server_addr,
   callback->Run(ok, chain, out_proof, nullptr /* details */);
 }
 
-quic::QuicReferenceCountedPointer<quic::ProofSource::Chain>
+quiche::QuicheReferenceCountedPointer<quic::ProofSource::Chain>
 ProofSourceChromium::GetCertChain(const quic::QuicSocketAddress& server_address,
                                   const quic::QuicSocketAddress& client_address,
                                   const std::string& hostname,
