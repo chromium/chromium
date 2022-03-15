@@ -31,6 +31,8 @@ extern const char kDeviceAnnotatedLocation[];
 // * ${DEVICE_ASSET_ID} - Asset ID assigned by administrator.
 // * ${DEVICE_ANNOTATED_LOCATION} - Location assigned by administrator.
 //
+// DEVICE_* variables are treated as absent for non-affiliated users.
+//
 // Variables can be chained by ":" to indicate fallback variables to be used
 // when values are absent. In other words, a variable chain is replaced by the
 // first value in the chain that is not empty.

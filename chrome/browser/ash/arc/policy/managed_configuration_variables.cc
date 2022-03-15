@@ -18,8 +18,10 @@
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_attributes.h"
 #include "chrome/browser/ash/policy/core/device_attributes_impl.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chromeos/system/statistics_provider.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -84,10 +86,21 @@ std::string DeviceSerialNumber() {
 typedef base::flat_map<std::string, base::RepeatingCallback<std::string()>>
     VariableResolver;
 
+bool IsAffiliatedUser(const Profile* profile) {
+  const user_manager::User* user =
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
+  return user && user->IsAffiliated();
+}
+
 // Build a |VariableResolver| from all known variables.
 const VariableResolver BuildVariableResolver(
     const Profile* profile,
     policy::DeviceAttributes* attributes) {
+  // Use |empty_string_getter| for device attributes if user is not affiliated.
+  const bool is_affiliated = IsAffiliatedUser(profile);
+  const auto empty_string_getter =
+      base::BindRepeating([]() { return std::string(); });
+
   return VariableResolver{
       {kUserEmail,
        base::BindRepeating(
@@ -103,23 +116,30 @@ const VariableResolver BuildVariableResolver(
                                return EmailDomain(SignedInUserEmail(profile));
                              },
                              profile)},
-      {kDeviceDirectoryId, base::BindRepeating(
-                               [](policy::DeviceAttributes* attributes) {
-                                 return DeviceDirectoryId(attributes);
-                               },
-                               attributes)},
-      {kDeviceSerialNumber, base::BindRepeating(&DeviceSerialNumber)},
-      {kDeviceAssetId, base::BindRepeating(
-                           [](policy::DeviceAttributes* attributes) {
-                             return DeviceAssetId(attributes);
-                           },
-                           attributes)},
-      {kDeviceAnnotatedLocation, base::BindRepeating(
+      {kDeviceDirectoryId, is_affiliated
+                               ? base::BindRepeating(
                                      [](policy::DeviceAttributes* attributes) {
-                                       return DeviceAnnotatedLocation(
-                                           attributes);
+                                       return DeviceDirectoryId(attributes);
                                      },
-                                     attributes)},
+                                     attributes)
+                               : empty_string_getter},
+      {kDeviceSerialNumber, is_affiliated
+                                ? base::BindRepeating(&DeviceSerialNumber)
+                                : empty_string_getter},
+      {kDeviceAssetId, is_affiliated
+                           ? base::BindRepeating(
+                                 [](policy::DeviceAttributes* attributes) {
+                                   return DeviceAssetId(attributes);
+                                 },
+                                 attributes)
+                           : empty_string_getter},
+      {kDeviceAnnotatedLocation,
+       is_affiliated ? base::BindRepeating(
+                           [](policy::DeviceAttributes* attributes) {
+                             return DeviceAnnotatedLocation(attributes);
+                           },
+                           attributes)
+                     : empty_string_getter},
   };
 }
 
