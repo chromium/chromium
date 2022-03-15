@@ -8,6 +8,7 @@
 
 #import "base/notreached.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/list_model/list_model.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -64,7 +65,8 @@ const CGFloat kBadgeCornerRadius = 5.0;
         break;
       case BadgeType::kBadgeTypeSaveAddressProfile:
         _actionIdentifier = PopupMenuActionShowSaveAddressProfileOptions;
-        _title = @"Save Address";
+        _title =
+            l10n_util::GetNSString(IDS_IOS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE);
         break;
       case BadgeType::kBadgeTypeSaveCard:
         _actionIdentifier = PopupMenuActionShowSaveCardOptions;

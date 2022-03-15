@@ -115,8 +115,9 @@
       break;
     }
     case PopupMenuActionShowSaveAddressProfileOptions: {
-      // TODO(crbug.com/1167062): Record this event.
-
+      UMA_HISTOGRAM_ENUMERATION(
+          kInfobarOverflowMenuTappedHistogram,
+          MobileMessagesInfobarType::AutofillSaveAddressProfile);
       [self addModalRequestForInfobarType:
                 InfobarType::kInfobarTypeSaveAutofillAddressProfile];
       break;
