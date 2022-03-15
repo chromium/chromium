@@ -14,6 +14,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/events/event.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -180,6 +181,10 @@ const gfx::VectorIcon& PageActionIconView::GetVectorIconBadge() const {
   return gfx::kNoneIcon;
 }
 
+ui::ImageModel PageActionIconView::GetSizedIconImage(int size) const {
+  return ui::ImageModel();
+}
+
 void PageActionIconView::OnTouchUiChanged() {
   UpdateIconImage();
   IconLabelBubbleView::OnTouchUiChanged();
@@ -229,9 +234,18 @@ void PageActionIconView::UpdateIconImage() {
   if (!GetWidget())
     return;
 
+  // Use the provided icon image if available.
+  const int icon_size = delegate_->GetPageActionIconSize();
+  const auto icon_image = GetSizedIconImage(icon_size);
+  if (!icon_image.IsEmpty()) {
+    DCHECK_EQ(icon_image.Size(), gfx::Size(icon_size, icon_size));
+    SetImageModel(icon_image);
+    return;
+  }
+
+  // Fall back to the vector icon if no icon image was provided.
   const SkColor icon_color =
       active_ ? views::GetCascadingAccentColor(this) : icon_color_;
-  const int icon_size = delegate_->GetPageActionIconSize();
   const gfx::ImageSkia image = gfx::CreateVectorIconWithBadge(
       GetVectorIcon(), icon_size, icon_color, GetVectorIconBadge());
   if (!image.isNull())

@@ -139,6 +139,11 @@ class PageActionIconView : public IconLabelBubbleView {
   // Provides the badge to be shown on top of the vector icon, if any.
   virtual const gfx::VectorIcon& GetVectorIconBadge() const;
 
+  // Gives subclasses the opportunity to supply a non-vector icon for the page
+  // action icon view. If this returns an empty image the implementation will
+  // fall-back to using the vector icon.
+  virtual ui::ImageModel GetSizedIconImage(int size) const;
+
   // IconLabelBubbleView:
   void OnTouchUiChanged() override;
 
