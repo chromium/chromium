@@ -90,6 +90,14 @@ enum WindowControlsOverlayNSViewType {
 // The interface through which a NativeWidgetMac may interact with an NSWindow
 // (possibly in a process separate from the browser process).
 interface NativeWidgetNSWindow {
+  // Enable fullscreen control through NativeWidgetNSWindowFullscreenController.
+  // This is done via a method instead of using a base::Feature because the app
+  // shim process does not synchronize its base::Features with the browser
+  // process.
+  // TODO(https://crbug.com/1302857): Remove this once FullscreenControllerMac
+  // is on by default.
+  CreateFullscreenController();
+
   // Create and set the NSWindow for the bridge.
   CreateWindow(CreateWindowParams params);
 
@@ -173,7 +181,17 @@ interface NativeWidgetNSWindow {
 
   // Called by NativeWidgetMac to initiate a transition to the specified target
   // fullscreen state.
+  // TODO(https://crbug.com/1302857): Remove this once FullscreenControllerMac
+  // is on by default.
   SetFullscreen(bool fullscreen);
+
+  // Initiate a transition to fullscreen on the specified display.  If
+  // `target_display_id` is invalid, then fullscreen should be entered on the
+  // current display.
+  EnterFullscreen(int64 target_display_id);
+
+  // Initiate a transition out of fullscreen.
+  ExitFullscreen();
 
   // Called by NativeWidgetMac; sets whether the window can share fullscreen
   // windows' spaces by changing the NSWindow's collectionBehavior.

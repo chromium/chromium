@@ -228,6 +228,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   base::TimeDelta PreCommitTimeout() override;
 
   // remote_cocoa::mojom::NativeWidgetNSWindow:
+  void CreateFullscreenController() override;
   void CreateWindow(mojom::CreateWindowParamsPtr params) override;
   void SetParent(uint64_t parent_id) override;
   void CreateSelectFileDialog(
@@ -257,8 +258,8 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
       remote_cocoa::mojom::VisibilityTransition transitions) override;
   void SetVisibleOnAllSpaces(bool always_visible) override;
   void SetFullscreen(bool fullscreen) override;
-  void EnterFullscreen(int64_t target_display_id);
-  void ExitFullscreen();
+  void EnterFullscreen(int64_t target_display_id) override;
+  void ExitFullscreen() override;
   void SetCanAppearInExistingFullscreenSpaces(
       bool can_appear_in_existing_fullscreen_spaces) override;
   void SetMiniaturized(bool miniaturized) override;

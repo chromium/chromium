@@ -37,6 +37,7 @@
 #import "ui/views/cocoa/drag_drop_client_mac.h"
 #import "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 #include "ui/views/cocoa/text_input_host.h"
+#include "ui/views/views_features.h"
 #include "ui/views/widget/drop_helper.h"
 #include "ui/views/widget/native_widget_delegate.h"
 #include "ui/views/widget/widget_aura_utils.h"
@@ -216,6 +217,10 @@ void NativeWidgetMac::InitNativeWidget(Widget::InitParams params) {
         [CreateNSWindow(create_window_params.get()) retain]);
     ns_window_host_->CreateInProcessNSWindowBridge(std::move(window));
   }
+  // TODO(https://crbug.com/1302857): Remove this once FullscreenControllerMac
+  // is on by default.
+  if (base::FeatureList::IsEnabled(features::kFullscreenControllerMac))
+    GetNSWindowMojo()->CreateFullscreenController();
   ns_window_host_->SetParent(parent_host);
   ns_window_host_->InitWindow(params,
                               ConvertBoundsToScreenIfNeeded(params.bounds));
@@ -641,15 +646,20 @@ bool NativeWidgetMac::IsMinimized() const {
 void NativeWidgetMac::Restore() {
   if (!GetNSWindowMojo())
     return;
-  GetNSWindowMojo()->SetFullscreen(false);
+  if (base::FeatureList::IsEnabled(features::kFullscreenControllerMac)) {
+    GetNSWindowMojo()->ExitFullscreen();
+  } else {
+    GetNSWindowMojo()->SetFullscreen(false);
+  }
   GetNSWindowMojo()->SetMiniaturized(false);
 }
 
 void NativeWidgetMac::SetFullscreen(bool fullscreen,
-                                    const base::TimeDelta& delay) {
+                                    const base::TimeDelta& delay,
+                                    int64_t target_display_id) {
   if (!ns_window_host_)
     return;
-  ns_window_host_->SetFullscreen(fullscreen, delay);
+  ns_window_host_->SetFullscreen(fullscreen, delay, target_display_id);
 }
 
 bool NativeWidgetMac::IsFullscreen() const {

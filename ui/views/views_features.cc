@@ -23,5 +23,14 @@ const base::Feature kEnablePlatformHighContrastInkDrop{
 const base::Feature kEnableViewPaintOptimization{
     "EnableViewPaintOptimization", base::FEATURE_DISABLED_BY_DEFAULT};
 
+#if BUILDFLAG(IS_MAC)
+// Pushing of fullscreen control from the cross-platform Widget level down to
+// the native NativeWidgetMac level and below. Once this lands and all bugs and
+// flakes are mopped up, this feature will be removed.
+// https://crbug.com/1302857
+const base::Feature kFullscreenControllerMac{"FullscreenControllerMac",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 }  // namespace features
 }  // namespace views

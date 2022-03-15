@@ -24,6 +24,7 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/color/color_provider_source.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/events/event_source.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
@@ -714,7 +715,12 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // fullscreen state and then post a delayed task to request the actual window
   // transition, in order to handle some platform-specific quirks in specific
   // fullscreen scenarios. See crbug.com/1210548 and crbug.com/1034783.
-  void SetFullscreen(bool fullscreen, base::TimeDelta delay = {});
+  // The `target_display_id` may only be specified if `fullscreen` is true, and
+  // indicates a specific display to become fullscreen on (note that this may
+  // move a fullscreen widget from one display to another).
+  void SetFullscreen(bool fullscreen,
+                     base::TimeDelta delay = {},
+                     int64_t target_display_id = display::kInvalidDisplayId);
   bool IsFullscreen() const;
 
   // macOS: Sets whether the window can share fullscreen windows' spaces.

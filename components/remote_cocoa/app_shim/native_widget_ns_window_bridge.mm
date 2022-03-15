@@ -423,6 +423,12 @@ void NativeWidgetNSWindowBridge::ShowEmojiPanel() {
   ui::ShowEmojiPanel();
 }
 
+void NativeWidgetNSWindowBridge::CreateFullscreenController() {
+  DCHECK(!fullscreen_controller_);
+  fullscreen_controller_ =
+      std::make_unique<NativeWidgetNSWindowFullscreenController>(this);
+}
+
 void NativeWidgetNSWindowBridge::CreateWindow(
     mojom::CreateWindowParamsPtr params) {
   SetWindow(CreateNSWindow(params.get()));

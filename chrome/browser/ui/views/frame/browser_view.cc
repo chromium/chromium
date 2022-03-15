@@ -228,6 +228,7 @@
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/grid_layout.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/views_features.h"
 #include "ui/views/widget/native_widget.h"
 #include "ui/views/widget/root_view.h"
 #include "ui/views/widget/widget.h"
@@ -3750,9 +3751,14 @@ void BrowserView::ProcessFullscreen(bool fullscreen,
   // TODO(crbug.com/1034783): Implement at lower layers to avoid transitions.
 #if BUILDFLAG(IS_MAC)
   bool entering_cross_screen_fullscreen = false;
+  const bool fullscreen_controller_mac_enabled =
+      base::FeatureList::IsEnabled(views::features::kFullscreenControllerMac);
+#else   // BUILDFLAG(IS_MAC)
+  const bool fullscreen_controller_mac_enabled = false;
 #endif  // BUILDFLAG(IS_MAC)
   bool swapping_screens_during_fullscreen = false;
-  if (fullscreen && display_id != display::kInvalidDisplayId) {
+  if (fullscreen && display_id != display::kInvalidDisplayId &&
+      !fullscreen_controller_mac_enabled) {
     display::Screen* screen = display::Screen::GetScreen();
     display::Display display;
     display::Display current_display =
@@ -3817,7 +3823,10 @@ void BrowserView::ProcessFullscreen(bool fullscreen,
     delay = base::Milliseconds(1000);
   else if (entering_cross_screen_fullscreen)
     delay = base::Milliseconds(1);
-  frame_->SetFullscreen(fullscreen, delay);
+  frame_->SetFullscreen(fullscreen, delay,
+                        fullscreen_controller_mac_enabled
+                            ? display_id
+                            : display::kInvalidDisplayId);
 #else   // BUILDFLAG(IS_MAC)
   frame_->SetFullscreen(fullscreen);
   // On Mac, the pre-fullscreen bounds must be restored after an asynchronous
