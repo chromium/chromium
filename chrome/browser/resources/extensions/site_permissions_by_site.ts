@@ -7,9 +7,10 @@ import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import './shared_style.js';
 
 import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {navigation, Page} from './navigation_helper.js';
+import {getTemplate} from './site_permissions_by_site.html.js';
 
 export interface ExtensionsSitePermissionsBySiteElement {
   $: {
@@ -23,7 +24,7 @@ export class ExtensionsSitePermissionsBySiteElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   private onCloseButtonClick_() {

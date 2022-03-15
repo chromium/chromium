@@ -15,7 +15,8 @@ import {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_
 import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {listenOnce} from 'chrome://resources/js/util.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getTemplate} from './toolbar.html.js';
 
 export interface ToolbarDelegate {
   /**
@@ -53,7 +54,7 @@ export class ExtensionsToolbarElement extends ExtensionsToolbarElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

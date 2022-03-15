@@ -10,7 +10,8 @@ import './toggle_row.js';
 import './shared_style.js';
 import './strings.m.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getTemplate} from './host_permissions_toggle_list.html.js';
 
 import {ItemDelegate} from './item.js';
 import {UserAction} from './item_util.js';
@@ -29,7 +30,7 @@ export class ExtensionsHostPermissionsToggleListElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

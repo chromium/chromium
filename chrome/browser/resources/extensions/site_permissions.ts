@@ -11,9 +11,10 @@ import './shared_vars.js';
 import './site_permissions_list.js';
 
 import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {navigation, Page} from './navigation_helper.js';
+import {getTemplate} from './site_permissions.html.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
 
 export interface ExtensionsSitePermissionsElement {
@@ -31,7 +32,7 @@ export class ExtensionsSitePermissionsElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

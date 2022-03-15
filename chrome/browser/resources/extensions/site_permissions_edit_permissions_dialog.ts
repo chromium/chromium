@@ -12,8 +12,9 @@ import './strings.m.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getTemplate} from './site_permissions_edit_permissions_dialog.html.js';
 import {SiteSettingsDelegate} from './site_settings_mixin.js';
 
 export interface SitePermissionsEditPermissionsDialogElement {
@@ -33,7 +34,7 @@ export class SitePermissionsEditPermissionsDialogElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

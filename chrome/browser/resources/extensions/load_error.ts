@@ -11,9 +11,10 @@ import './strings.m.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ExtensionsCodeSectionElement} from './code_section.js';
+import {getTemplate} from './load_error.html.js';
 
 export interface LoadErrorDelegate {
   /**
@@ -35,7 +36,7 @@ export class ExtensionsLoadErrorElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

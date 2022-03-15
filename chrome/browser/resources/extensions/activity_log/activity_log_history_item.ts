@@ -9,7 +9,8 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import '../shared_style.js';
 import '../shared_vars.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getTemplate} from './activity_log_history_item.html.js';
 
 export type ActivityGroup = {
   activityIds: Set<string>,
@@ -35,7 +36,7 @@ export class ActivityLogHistoryItemElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

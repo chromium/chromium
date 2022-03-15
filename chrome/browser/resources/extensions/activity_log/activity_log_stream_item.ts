@@ -8,7 +8,8 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import '../shared_style.js';
 import '../shared_vars.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getTemplate} from './activity_log_stream_item.html.js';
 
 export type StreamItem = {
   name?: string,
@@ -52,7 +53,7 @@ export class ActivityLogStreamItemElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
