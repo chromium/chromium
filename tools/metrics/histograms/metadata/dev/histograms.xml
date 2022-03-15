@@ -276,7 +276,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.LinearMemoryInspector.RevealedFrom"
-    enum="DevToolsLinearMemoryInspectorRevealedFrom" expires_after="2022-07-01">
+    enum="DevToolsLinearMemoryInspectorRevealedFrom" expires_after="2022-09-11">
   <owner>yangguo@chromium.org</owner>
   <owner>kimanh@chromium.org</owner>
   <summary>
@@ -285,7 +285,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.LinearMemoryInspector.Target"
-    enum="DevToolsLinearMemoryInspectorTarget" expires_after="2022-07-01">
+    enum="DevToolsLinearMemoryInspectorTarget" expires_after="2022-09-11">
   <owner>yangguo@chromium.org</owner>
   <owner>kimanh@chromium.org</owner>
   <summary>
@@ -363,7 +363,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.SidebarPaneShown" enum="DevToolsSidebarPane"
-    expires_after="2022-07-01">
+    expires_after="2022-09-11">
   <owner>changhaohan@chromium.org</owner>
   <owner>yangguo@chromium.org</owner>
   <owner>bmeurer@chromium.org</owner>

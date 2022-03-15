@@ -48,7 +48,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.BandwidthOverallBytesPerSecond2" units="bytes/second"
-    expires_after="2022-07-11">
+    expires_after="2022-09-11">
   <owner>qinmin@chromium.org</owner>
   <owner>xingliu@chromium.org</owner>
   <summary>
@@ -132,7 +132,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.DangerousFile.DownloadValidatedByType"
-    enum="SBClientDownloadExtensions" expires_after="2022-07-03">
+    enum="SBClientDownloadExtensions" expires_after="2022-09-11">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@chromium.org</owner>
   <summary>
@@ -535,7 +535,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Download.NetworkConnectionType.Complete"
-    enum="NetworkConnectionType" expires_after="2022-07-03">
+    enum="NetworkConnectionType" expires_after="2022-09-11">
 <!-- Name completed by histogram_suffixes name="DownloadSource" -->
 
   <owner>dtrainor@chromium.org</owner>
@@ -544,7 +544,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Download.NetworkConnectionType.StartNew"
-    enum="NetworkConnectionType" expires_after="2022-07-03">
+    enum="NetworkConnectionType" expires_after="2022-09-11">
 <!-- Name completed by histogram_suffixes name="DownloadSource" -->
 
   <owner>dtrainor@chromium.org</owner>
@@ -1121,7 +1121,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.ShowedDownloadWarning" enum="DownloadItem.DangerType"
-    expires_after="2022-07-11">
+    expires_after="2022-09-11">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@chromium.org</owner>
   <summary>
@@ -1172,7 +1172,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.UserValidatedDangerousDownload"
-    enum="DownloadItem.DangerType" expires_after="2022-07-11">
+    enum="DownloadItem.DangerType" expires_after="2022-09-11">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-team@chromium.org</owner>
   <summary>

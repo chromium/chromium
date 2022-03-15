@@ -393,7 +393,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.ApmCaptureOutputLevelAverageRms"
-    units="dBFS (negated)" expires_after="2022-07-11">
+    units="dBFS (negated)" expires_after="2022-09-11">
   <owner>peah@chromium.org</owner>
   <summary>
     This histogram reports the average RMS of the signal in the output of
@@ -405,7 +405,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.ApmCaptureOutputLevelPeakRms"
-    units="dBFS (negated)" expires_after="2022-07-11">
+    units="dBFS (negated)" expires_after="2022-09-11">
   <owner>peah@chromium.org</owner>
   <summary>
     This histogram reports the peak RMS of the signal in the output of WebRTC's
@@ -1120,7 +1120,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.DataChannelAggregateType"
-    enum="DataChannelAggregateType" expires_after="2022-06-30">
+    enum="DataChannelAggregateType" expires_after="2022-09-11">
   <owner>orphis@chromium.org</owner>
   <owner>toprice@chromium.org</owner>
   <summary>
@@ -1130,7 +1130,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.DataChannelCounters" enum="DataChannelCounters"
-    expires_after="2022-06-30">
+    expires_after="2022-09-11">
   <owner>orphis@chromium.org</owner>
   <owner>toprice@chromium.org</owner>
   <summary>
@@ -1164,7 +1164,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.DataChannelSctpErrorCode"
-    enum="DataChannelSctpErrorCode" expires_after="2022-06-30">
+    enum="DataChannelSctpErrorCode" expires_after="2022-09-11">
   <owner>orphis@chromium.org</owner>
   <owner>toprice@chromium.org</owner>
   <summary>
@@ -1691,7 +1691,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.SdpFormatReceivedAnswer"
-    enum="PeerConnectionSdpFormatReceived" expires_after="2022-07-03">
+    enum="PeerConnectionSdpFormatReceived" expires_after="2022-09-11">
   <owner>steveanton@chromium.org</owner>
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
@@ -1703,7 +1703,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.SdpSemanticNegotiated"
-    enum="PeerConnectionSdpSemanticNegotiated" expires_after="2022-07-03">
+    enum="PeerConnectionSdpSemanticNegotiated" expires_after="2022-09-11">
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
@@ -1716,7 +1716,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.SdpSemanticRequested"
-    enum="PeerConnectionSdpSemanticRequested" expires_after="2022-07-03">
+    enum="PeerConnectionSdpSemanticRequested" expires_after="2022-09-11">
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
@@ -4010,7 +4010,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRtcTextLogging.UploadFailureReason"
-    enum="WebRtcLoggingUploadFailureReason" expires_after="2022-07-03">
+    enum="WebRtcLoggingUploadFailureReason" expires_after="2022-09-11">
   <owner>toprice@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
