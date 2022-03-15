@@ -197,6 +197,28 @@ const base::FeatureParam<bool> kDisplaySleepAndAppHideDetection{
 }
 
 - (void)notifyUpdateWebContentsVisibility {
+  // https://crbug.com/1300929 covers a crash where a webcontents gets added to
+  // a window, triggering an update to its visibility state. A visibility state
+  // observer creates a bubble, and that bubble triggers a call to
+  // -notifyUpdateWebContentsVisibility. -notifyUpdateWebContentsVisibility goes
+  // on to update the occlusion status of all all windows, which triggers the
+  // visibility state observer a second time, leading to another bubble
+  // creation, another call to -notifyUpdateWebContentsVisibility, and then a
+  // crash. We could prevent -notifyUpdateWebContentsVisibility from being
+  // reentered but that could still result in a visibility state observer
+  // entering its observer code twice (as happened in the bug). By making the
+  // occlusion status update occur away from the notification we can avoid the
+  // reentrancy problems with visibility observers.
+  [NSObject cancelPreviousPerformRequestsWithTarget:self
+                                           selector:@selector
+                                           (_notifyUpdateWebContentsVisibility)
+                                             object:nil];
+  [self performSelector:@selector(_notifyUpdateWebContentsVisibility)
+             withObject:nil
+             afterDelay:0];
+}
+
+- (void)_notifyUpdateWebContentsVisibility {
   for (NSWindow* window in [[NSApplication sharedApplication] orderedWindows]) {
     [self updateWebContentsVisibilityInWindow:window];
   }
