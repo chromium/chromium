@@ -1556,7 +1556,7 @@ std::vector<GURL> ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
       GURL(ash::multidevice::kChromeUIProximityAuthURL),
       GURL(chrome::kOsUIRestartURL), GURL(chrome::kChromeUIScanningAppURL),
       GURL(chrome::kOsUIScanningAppURL), GURL(chrome::kChromeUISetTimeURL),
-      GURL(chrome::kChromeUIOSSettingsURL), GURL(chrome::kChromeUISettingsURL),
+      GURL(chrome::kChromeUIOSSettingsURL), GURL(chrome::kOsUISettingsURL),
       GURL(chrome::kOsUISettingsURL), GURL(chrome::kOsUISignInInternalsURL),
       GURL(chrome::kChromeUISlowURL), GURL(chrome::kChromeUISmbShareURL),
       GURL(chrome::kOsUISyncInternalsURL), GURL(chrome::kOsUISysInternalsUrl),
