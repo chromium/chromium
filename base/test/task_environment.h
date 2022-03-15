@@ -423,7 +423,7 @@ class TaskEnvironment {
   // TimeSource::SYSTEM_TIME mode.
   std::unique_ptr<MockTimeDomain> mock_time_domain_;
 
-  // Overrides Time/TimeTicks::Now() under TimeSource::MOCK_TIME_AND_NOW mode.
+  // Overrides Time/TimeTicks::Now() under TimeSource::MOCK_TIME mode.
   // Null in other modes.
   std::unique_ptr<subtle::ScopedTimeClockOverrides> time_overrides_;
 
