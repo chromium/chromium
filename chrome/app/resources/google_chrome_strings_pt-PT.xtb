@@ -31,7 +31,7 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="1674870198290878346">Abrir link numa janela de nave&amp;gação anónima do Chrome</translation>
 <translation id="1682634494516646069">O Google Chrome não consegue ler e escrever no respetivo diretório de dados: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1698376642261615901">O Google Chrome é um navegador de internet que executa páginas Web e aplicações de forma extremamente rápida. É rápido, estável e fácil de utilizar. Navegue na Web com mais segurança com proteção contra phishing e programas maliciosos incorporada no Google Chrome.</translation>
-<translation id="1713301662689114961">{0,plural, =1{O Chrome será reiniciado dentro de uma hora}one{O Chrome será reiniciado dentro de # hora(s)}other{O Chrome será reiniciado dentro de # horas}}</translation>
+<translation id="1713301662689114961">{0,plural, =1{O Chrome será reiniciado dentro de uma hora}other{O Chrome será reiniciado dentro de # horas}}</translation>
 <translation id="1734234790201236882">O Chrome vai guardar esta palavra-passe na sua Conta Google. Não tem de a memorizar.</translation>
 <translation id="174539241580958092">O Google Chrome não conseguiu sincronizar os dados devido a um erro no início de sessão.</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -108,7 +108,7 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="3149510190863420837">Apps do Chrome</translation>
 <translation id="3245429137663807393">Se também partilhar relatórios de utilização do Chrome, esses relatórios incluem os URLs que visita</translation>
 <translation id="3360895254066713204">Ajudante do Chrome</translation>
-<translation id="3379938682270551431">{0,plural, =0{O Chrome será reiniciado agora}=1{O Chrome será reiniciado dentro de 1 segundo}one{O Chrome será reiniciado dentro de # segundo(s)}other{O Chrome será reiniciado dentro de # segundos}}</translation>
+<translation id="3379938682270551431">{0,plural, =0{O Chrome será reiniciado agora}=1{O Chrome será reiniciado dentro de 1 segundo}other{O Chrome será reiniciado dentro de # segundos}}</translation>
 <translation id="3395323229510056640">Obter ajuda relacionada com o Chrome OS</translation>
 <translation id="3396977131400919238">Ocorreu um erro no sistema operativo durante a instalação. Descarregue de novo o Google Chrome.</translation>
 <translation id="3428747202529429621">Mantém a sua segurança no Chrome e pode ser utilizado para melhorar a sua segurança noutras apps Google quando tem sessão iniciada.</translation>
@@ -122,7 +122,7 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="3576528680708590453">O administrador do seu sistema configurou o Google Chrome para abrir um navegador alternativo, de modo a aceder a <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="3582634744482121096">Opcional: ajude a melhorar as funcionalidades e o desempenho do CloudReady 2.0 ao enviar automaticamente dados de diagnóstico e utilização para a Google.</translation>
 <translation id="3582972582564653026">Sincronizar e personalizar o Chrome em todos os dispositivos</translation>
-<translation id="3596080736082218006">{COUNT,plural, =0{O seu administrador necessita que reinicie o Chrome para aplicar uma atualização.}=1{O seu administrador necessita que reinicie o Chrome para aplicar uma atualização. Não é possível reabrir a sua janela de navegação anónima.}one{O seu administrador necessita que reinicie o Chrome para aplicar uma atualização. Não é possível reabrir a(s) sua(s) # janela(s) de navegação anónima.}other{O seu administrador necessita que reinicie o Chrome para aplicar uma atualização. Não é possível reabrir as suas # janelas de navegação anónima.}}</translation>
+<translation id="3596080736082218006">{COUNT,plural, =0{O seu administrador necessita que reinicie o Chrome para aplicar uma atualização.}=1{O seu administrador necessita que reinicie o Chrome para aplicar uma atualização. Não é possível reabrir a sua janela de navegação anónima.}other{O seu administrador necessita que reinicie o Chrome para aplicar uma atualização. Não é possível reabrir as suas # janelas de navegação anónima.}}</translation>
 <translation id="3622797965165704966">Agora é mais fácil utilizar o Chrome com a sua Conta Google e em computadores partilhados.</translation>
 <translation id="3673813398384385993">O Chrome encontrou software malicioso na extensão "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="3718181793972440140">Esta ação elimina 1 item deste dispositivo. Para recuperar os seus dados mais tarde, inicie sessão no Chrome como <ph name="USER_EMAIL" />.</translation>
@@ -139,7 +139,7 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="4110895483821904099">Configure o seu novo perfil do Chrome</translation>
 <translation id="4147555960264124640">Está a iniciar sessão com uma conta gerida e a permitir que o gestor controle o seu perfil do Google Chrome. Os seus dados do Chrome, como aplicações, marcadores, histórico, palavras-passe e outras definições, ficarão associados definitivamente a <ph name="USER_NAME" />. Poderá eliminar estes dados através do Painel de Controlo das Contas Google, mas não poderá associá-los a outra conta. <ph name="LEARN_MORE" /></translation>
 <translation id="4149882025268051530">Houve uma falha no programa de instalação ao descompactar o arquivo. Descarregue de novo o Google Chrome.</translation>
-<translation id="4191857738314598978">{0,plural, =1{Reinicie o Chrome dentro de um dia}one{Reinicie o Chrome dentro de # dia(s)}other{Reinicie o Chrome dentro de # dias}}</translation>
+<translation id="4191857738314598978">{0,plural, =1{Reinicie o Chrome dentro de um dia}other{Reinicie o Chrome dentro de # dias}}</translation>
 <translation id="4205939740494406371">O Chrome não consegue verificar as suas palavras-passe. Tente novamente após 24 horas ou <ph name="BEGIN_LINK" />verifique as palavras-passe na sua Conta Google<ph name="END_LINK" />.</translation>
 <translation id="4218613300505264589">Sistema CloudReady 2.0</translation>
 <translation id="4242034826641750751">O Chrome necessita das autorizações da câmara e do microfone para este site</translation>
@@ -193,12 +193,12 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="556024056938947818">O Google Chrome está a tentar mostrar palavras-passe.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> pode ser perigoso, por isso o Chrome bloqueou-o.</translation>
-<translation id="5678190148303298925">{COUNT,plural, =0{O seu administrador solicita-lhe que reinicie o Chrome para aplicar esta atualização.}=1{O seu administrador solicita-lhe que reinicie o Chrome para aplicar esta atualização. Não é possível reabrir a sua janela de navegação anónima.}one{O seu administrador solicita-lhe que reinicie o Chrome para aplicar esta atualização. Não é possível reabrir a(s) sua(s) # janela(s) de navegação anónima.}other{O seu administrador solicita-lhe que reinicie o Chrome para aplicar esta atualização. Não é possível reabrir as suas # janelas de navegação anónima.}}</translation>
+<translation id="5678190148303298925">{COUNT,plural, =0{O seu administrador solicita-lhe que reinicie o Chrome para aplicar esta atualização.}=1{O seu administrador solicita-lhe que reinicie o Chrome para aplicar esta atualização. Não é possível reabrir a sua janela de navegação anónima.}other{O seu administrador solicita-lhe que reinicie o Chrome para aplicar esta atualização. Não é possível reabrir as suas # janelas de navegação anónima.}}</translation>
 <translation id="5685161537284117504">A criação do CloudReady 2.0 foi possível devido a <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" /> adicional.</translation>
 <translation id="5686916850681061684">Personalize e controle o Google Chrome. É necessária a sua atenção – clique para obter detalhes.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5706272942857408234">O CloudReady 2.0 não conseguiu sincronizar os dados devido a um erro de início de sessão.</translation>
-<translation id="5715063361988620182">{SECONDS,plural, =1{O Google Chrome será reiniciado dentro de 1 segundo}one{Google Chrome will restart in # seconds}other{O Google Chrome será reiniciado dentro de # segundos}}</translation>
+<translation id="5715063361988620182">{SECONDS,plural, =1{O Google Chrome será reiniciado dentro de 1 segundo}other{O Google Chrome será reiniciado dentro de # segundos}}</translation>
 <translation id="5736850870166430177">Se um site tentar roubar a sua palavra-passe, ou quando transferir um ficheiro prejudicial, o Chrome também pode enviar URLs, incluindo bits de conteúdo das páginas, para a Navegação segura</translation>
 <translation id="573759479754913123">Acerca do Chrome OS</translation>
 <translation id="5756509061973259733">Já existe um perfil do Chrome com esta conta neste dispositivo.</translation>
@@ -252,7 +252,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="7088681679121566888">O Chrome está atualizado.</translation>
 <translation id="7098166902387133879">O Google Chrome está a utilizar o microfone.</translation>
 <translation id="7106741999175697885">Gestor de tarefas - Google Chrome</translation>
-<translation id="7140653346177713799">{COUNT,plural, =0{Está disponível uma atualização para o Chrome que será aplicada logo que o reinicie.}=1{Está disponível uma atualização para o Chrome que será aplicada logo que o reinicie. Não é possível reabrir a sua janela de navegação anónima.}one{Está disponível uma atualização para o Chrome que será aplicada logo que o reinicie. Não é possível reabrir a(s) sua(s) # janela(s) de navegação anónima.}other{Está disponível uma atualização para o Chrome que será aplicada logo que o reinicie. Não é possível reabrir as suas # janelas de navegação anónima.}}</translation>
+<translation id="7140653346177713799">{COUNT,plural, =0{Está disponível uma atualização para o Chrome que será aplicada logo que o reinicie.}=1{Está disponível uma atualização para o Chrome que será aplicada logo que o reinicie. Não é possível reabrir a sua janela de navegação anónima.}other{Está disponível uma atualização para o Chrome que será aplicada logo que o reinicie. Não é possível reabrir as suas # janelas de navegação anónima.}}</translation>
 <translation id="7155997830309522122">Em caso afirmativo, edite a sua palavra-passe guardada no Chrome para que corresponda à nova palavra-passe.</translation>
 <translation id="7161904924553537242">Bem-vindo ao Google Chrome</translation>
 <translation id="7242029209006116544">Está a iniciar sessão com uma conta gerida e a permitir que o gestor controle o seu perfil do Google Chrome. Os seus dados do Chrome, como aplicações, marcadores, histórico, palavras-passe e outras definições, ficarão associados definitivamente a <ph name="USER_NAME" />. Poderá eliminar estes dados através do Painel de Controlo das Contas Google, mas não poderá associá-los a outra conta. Opcionalmente, pode criar um perfil novo para manter os seus dados atuais do Chrome em separado. <ph name="LEARN_MORE" /></translation>
@@ -313,7 +313,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="8571790202382503603">Com os perfis do Chrome, pode separar todos os seus itens do Chrome. Desta forma, é mais fácil alternar entre o trabalho e o lazer.</translation>
 <translation id="8614913330719544658">O Google Chrome não responde. Reiniciar agora?</translation>
 <translation id="861702415419836452">O Chrome necessita de autorização de acesso à câmara para criar um mapa 3D do ambiente à sua volta.</translation>
-<translation id="8625237574518804553">{0,plural, =1{O Chrome será reiniciado dentro de 1 minuto}one{O Chrome será reiniciado dentro de # minuto(s)}other{O Chrome será reiniciado dentro de # minutos}}</translation>
+<translation id="8625237574518804553">{0,plural, =1{O Chrome será reiniciado dentro de 1 minuto}other{O Chrome será reiniciado dentro de # minutos}}</translation>
 <translation id="8629311577791198377">Quando fecha todas as janelas do Chrome, os cookies e os dados de sites são automaticamente limpos</translation>
 <translation id="8641606876632989680">O Chrome envia-lhe uma notificação quando iniciar sessão com uma palavra-passe comprometida.</translation>
 <translation id="8669527147644353129">Ajudante do Google Chrome</translation>
@@ -329,7 +329,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="8922193594870374009">Para enviar um número de <ph name="ORIGIN" /> para o seu telemóvel Android, inicie sessão no Chrome em ambos os dispositivos.</translation>
 <translation id="8983720963221508955">Ativou a Navegação segura melhorada na sua conta. Agora, ative-a para o Chrome.</translation>
 <translation id="8986207147630327271">Está a adicionar um perfil de trabalho a este navegador e a conceder ao seu administrador controlo apenas sobre o perfil de trabalho.</translation>
-<translation id="8999208279178790196">{0,plural, =0{Está disponível uma atualização do Chrome}=1{Está disponível uma atualização do Chrome}one{Está disponível uma atualização do Chrome há # dia(s)}other{Está disponível uma atualização do Chrome há # dias}}</translation>
+<translation id="8999208279178790196">{0,plural, =0{Está disponível uma atualização do Chrome}=1{Está disponível uma atualização do Chrome}other{Está disponível uma atualização do Chrome há # dias}}</translation>
 <translation id="9026991721384951619">O Chrome OS não conseguiu sincronizar os dados porque os detalhes de início de sessão da sua conta estão desatualizados.</translation>
 <translation id="9067395829937117663">O Google Chrome requer o Windows 7 ou superior.</translation>
 <translation id="911206726377975832">Eliminar também os seus dados de navegação?</translation>

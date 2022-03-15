@@ -553,7 +553,7 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1545177026077493356">Mode Kios Otomatis</translation>
 <translation id="1545749641540134597">Pindai Kode QR</translation>
 <translation id="1545775234664667895">Tema "<ph name="THEME_NAME" />" telah terinstal</translation>
-<translation id="1546280085599573572">Ekstensi ini telah mengubah halaman apa yang ditampilkan saat Anda mengeklik tombol Beranda.</translation>
+<translation id="1546280085599573572">Ekstensi ini telah mengubah halaman apa yang ditampilkan saat Anda mengklik tombol Beranda.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> ingin menginstal <ph name="EXTENSION_TYPE" /> yang dapat:</translation>
 <translation id="1547808936554660006">Saya memahami bahwa profil eSIM yang diinstal tidak akan dihapus dengan Powerwash</translation>
 <translation id="1549275686094429035">ARC Aktif</translation>
@@ -1433,7 +1433,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2357330829548294574">Hapus <ph name="USER_NAME" /></translation>
 <translation id="2358561147588818967">Situs dapat menggunakan JavaScript</translation>
 <translation id="2359071692152028734">Aplikasi Linux dapat menjadi tidak responsif.</translation>
-<translation id="2359345697448000899">Kelola ekstensi Anda dengan mengeklik Ekstensi pada menu Alat.</translation>
+<translation id="2359345697448000899">Kelola ekstensi Anda dengan mengklik Ekstensi pada menu Alat.</translation>
 <translation id="2359556993567737338">Hubungkan perangkat Bluetooth</translation>
 <translation id="2359808026110333948">Lanjutkan</translation>
 <translation id="2361100938102002520">Anda menambahkan profil terkelola ke browser ini. Administrator memiliki kontrol terhadap profil dan dapat mengakses datanya.</translation>
@@ -1638,7 +1638,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2571655996835834626">Mengubah setelan yang mengontrol akses situs ke fitur seperti cookie, JavaScript, plugin, geolokasi, mikrofon, kamera, dll.</translation>
 <translation id="2572032849266859634">Akses hanya baca ke <ph name="VOLUME_NAME" /> telah diberikan.</translation>
 <translation id="2573831315551295105">Tetapkan tombol akses untuk “<ph name="ACTION" />”</translation>
-<translation id="2575247648642144396">Ikon ini akan terlihat saat ekstensi dapat berperan di halaman aktif. Gunakan ekstensi ini dengan mengeklik ikon atau dengan menekan <ph name="EXTENSION_SHORTCUT" />.</translation>
+<translation id="2575247648642144396">Ikon ini akan terlihat saat ekstensi dapat berperan di halaman aktif. Gunakan ekstensi ini dengan mengklik ikon atau dengan menekan <ph name="EXTENSION_SHORTCUT" />.</translation>
 <translation id="2575441894380764255">Tidak diizinkan menampilkan iklan yang mengganggu atau menyesatkan</translation>
 <translation id="257779572837908839">Siapkan sebagai Chromebox untuk meeting</translation>
 <translation id="2580889980133367162">Selalu izinkan <ph name="HOST" /> untuk mendownload beberapa file</translation>
@@ -1698,7 +1698,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2640549051766135490">Album <ph name="TITLE" /> <ph name="DESC" /> dipilih</translation>
 <translation id="264083724974021997">Hubungkan ke ponsel Anda - Dialog</translation>
 <translation id="2642111877055905627">Bola sepak</translation>
-<translation id="2643698698624765890">Kelola ekstensi Anda dengan mengeklik Ekstensi pada menu Window.</translation>
+<translation id="2643698698624765890">Kelola ekstensi Anda dengan mengklik Ekstensi pada menu Window.</translation>
 <translation id="2645047101481282803">Perangkat Anda dikelola oleh <ph name="PROFILE_NAME" /></translation>
 <translation id="2649045351178520408">ASCII bersandiaksara Base64, rantai sertifikat</translation>
 <translation id="2653033005692233957">Penelusuran gagal</translation>
@@ -3552,7 +3552,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4501530680793980440">Konfirmasi Penghapusan</translation>
 <translation id="4502423230170890588">Hapus dari perangkat ini</translation>
 <translation id="4504374760782163539">{COUNT,plural, =0{Cookie diizinkan}=1{Cookie diizinkan, 1 pengecualian}other{Cookie diizinkan, {COUNT} pengecualian}}</translation>
-<translation id="4504940961672722399">Gunakan ekstensi ini dengan mengeklik ikon ini atau menekan <ph name="EXTENSION_SHORTCUT" />.</translation>
+<translation id="4504940961672722399">Gunakan ekstensi ini dengan mengklik ikon ini atau menekan <ph name="EXTENSION_SHORTCUT" />.</translation>
 <translation id="450552327874992444">Kata telah ditambahkan</translation>
 <translation id="4507128560633489176">Data dihapus.</translation>
 <translation id="4508765956121923607">Lihat S&amp;umber</translation>
@@ -4131,7 +4131,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5111692334209731439">Pengelola &amp;Bookmark</translation>
 <translation id="5112577000029535889">Alat &amp;Pengembang</translation>
 <translation id="511313294362309725">Nyalakan Sambungan Cepat</translation>
-<translation id="5113739826273394829">Jika mengeklik ikon ini, <ph name="DEVICE_TYPE" /> akan dikunci secara manual. Selanjutnya, Anda perlu mengetikkan sandi untuk masuk.</translation>
+<translation id="5113739826273394829">Jika mengklik ikon ini, <ph name="DEVICE_TYPE" /> akan dikunci secara manual. Selanjutnya, Anda perlu mengetikkan sandi untuk masuk.</translation>
 <translation id="51143538739122961">Masukkan kunci keamanan Anda, lalu sentuh</translation>
 <translation id="5115309401544567011">Harap colokkan perangkat <ph name="DEVICE_TYPE" /> ke sumber listrik.</translation>
 <translation id="5115338116365931134">SSO</translation>
@@ -4161,7 +4161,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5139955368427980650">&amp;Buka</translation>
 <translation id="5141421572306659464">Akun Utama</translation>
 <translation id="5142793792982256885">Kecepatan scroll touchpad</translation>
-<translation id="5143374789336132547">Ekstensi "<ph name="EXTENSION_NAME" />" telah mengubah halaman apa yang ditampilkan saat Anda mengeklik tombol Beranda.</translation>
+<translation id="5143374789336132547">Ekstensi "<ph name="EXTENSION_NAME" />" telah mengubah halaman apa yang ditampilkan saat Anda mengklik tombol Beranda.</translation>
 <translation id="5143612243342258355">File ini berbahaya</translation>
 <translation id="5143712164865402236">Masuk Layar Penuh</translation>
 <translation id="514575469079499857">Gunakan alamat IP untuk menentukan lokasi (default)</translation>
@@ -4633,7 +4633,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5624120631404540903">Kelola sandi</translation>
 <translation id="5625225435499354052">Edit di Google Pay</translation>
 <translation id="5626134646977739690">Nama:</translation>
-<translation id="5627086634964711283">Juga mengontrol apa yang ditampilkan halaman saat Anda mengeklik tombol Beranda.</translation>
+<translation id="5627086634964711283">Juga mengontrol apa yang ditampilkan halaman saat Anda mengklik tombol Beranda.</translation>
 <translation id="5627676517703583263">Akses cerdas menggunakan Chrome</translation>
 <translation id="5627832140542566187">Orientasi tampilan</translation>
 <translation id="5628393161682339323">Saat Saya Mengklik Ekstensi</translation>
@@ -4970,7 +4970,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="595959584676692139">Muat ulang halaman untuk menggunakan ekstensi ini</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> maksimal)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Buka semua di &amp;jendela baru}=1{Buka di &amp;jendela baru}other{Buka semua ({COUNT}) di &amp;jendela baru}}</translation>
-<translation id="5965661248935608907">Juga mengontrol apa yang ditampilkan halaman saat Anda mengeklik tombol Beranda atau menelusuri dari Omnibox.</translation>
+<translation id="5965661248935608907">Juga mengontrol apa yang ditampilkan halaman saat Anda mengklik tombol Beranda atau menelusuri dari Omnibox.</translation>
 <translation id="5968022600320704045">Tidak ada hasil penelusuran</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> dapat melihat file dalam <ph name="FOLDERNAME" /></translation>
 <translation id="5969728632630673489">Notifikasi pintasan keyboard ditutup</translation>
@@ -7267,7 +7267,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8271268254812352141">Dapatkan definisi, terjemahan, atau konversi unit saat Anda mengklik kanan atau menyentuh lama teks. Sesuaikan bahasa terjemahan di <ph name="LINK_BEGIN" />Bahasa situs<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Bapak/Ibu, beberapa langkah selanjutnya adalah untuk Anda. Anda dapat menyerahkan <ph name="DEVICE_TYPE" /> kembali ke anak setelah penyiapan akun selesai.</translation>
 <translation id="8272194309885535896">Download Gambar</translation>
-<translation id="8272443605911821513">Kelola ekstensi Anda dengan mengeklik Ekstensi pada menu "Fitur lainnya".</translation>
+<translation id="8272443605911821513">Kelola ekstensi Anda dengan mengklik Ekstensi pada menu "Fitur lainnya".</translation>
 <translation id="8274332263553132018">Transmisikan file</translation>
 <translation id="8274921654076766238">Kaca pembesar mengikuti fokus keyboard</translation>
 <translation id="8274924778568117936">Jangan menonaktifkan atau menutup <ph name="DEVICE_TYPE" /> Anda sampai proses update selesai. <ph name="DEVICE_TYPE" /> Anda akan dimulai ulang setelah proses instal selesai.</translation>
@@ -7680,7 +7680,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8731629443331803108"><ph name="SITE_NAME" /> ingin: <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">Nomor port</translation>
 <translation id="8731851055419582926">Sandi yang telah diperiksa</translation>
-<translation id="8732030010853991079">Gunakan ekstensi ini dengan mengeklik ikon ini.</translation>
+<translation id="8732030010853991079">Gunakan ekstensi ini dengan mengklik ikon ini.</translation>
 <translation id="8732212173949624846">Membaca dan mengubah histori penjelajahan Anda di semua perangkat tempat Anda masuk</translation>
 <translation id="8732844209475700754">Setelan lain yang berkaitan dengan privasi, keamanan, dan pengumpulan data</translation>
 <translation id="8734073480934656039">Dengan mengaktifkan setelan ini, Anda memungkinkan aplikasi kios diluncurkan secara otomatis saat memulai.</translation>

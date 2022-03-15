@@ -43,7 +43,7 @@
 <translation id="1413240736185167732">Hutsegitea - Iragazkiak huts egin du</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Gako pare bat dut</translation>
-<translation id="1435763214710588005">Datuen erabilera automatikoki berrezartzen du hilabeteko hautatutako egunean</translation>
+<translation id="1435763214710588005">Datu-erabilera automatikoki berrezartzen du hilabeteko hautatutako egunean</translation>
 <translation id="1442433966118452622">Irudiaren iturburua</translation>
 <translation id="1451536289672181509">Gailua teklatu bat da.</translation>
 <translation id="1459693405370120464">Eguraldia</translation>
@@ -58,7 +58,7 @@
 <translation id="1565038567006703504">Ezin da eguneratu <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">Albumak</translation>
 <translation id="1572585716423026576">Ezarri horma-paper gisa</translation>
-<translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> ezkeroko datuen erabilera</translation>
+<translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> ezkeroko datu-erabilera</translation>
 <translation id="1621067168122174824">Abiarazi kargatzeko prozesuaren proba</translation>
 <translation id="1639239467298939599">Kargatzen</translation>
 <translation id="1641857168437328880">Dokumentu-elikatzailea (alde bakarrekoa)</translation>
@@ -212,7 +212,7 @@
 <translation id="3858860766373142691">Izena</translation>
 <translation id="3865414814144988605">Bereizmena</translation>
 <translation id="387301095347517405">Bateriak kargatze-ziklo osoa zenbat aldiz egin duen</translation>
-<translation id="3923184630988645767">Datuen erabilera</translation>
+<translation id="3923184630988645767">Datu-erabilera</translation>
 <translation id="3924044641767672375">Konponketa-prozesua errazteko, wifira konektatzea gomendatzen da. Sarea gorde egingo da.</translation>
 <translation id="3932043219784172185">Ez dago gailurik konektatuta</translation>
 <translation id="3941014780699102620">Ezin izan da ebatzi ostalaria</translation>
@@ -419,7 +419,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Ez dago eskanerrik erabilgarri</translation>
 <translation id="6232017090690406397">Bateria</translation>
-<translation id="6235460611964961764">Berrezarri datuen erabilera eskuz</translation>
+<translation id="6235460611964961764">Berrezarri datu-erabilera eskuz</translation>
 <translation id="6243280677745499710">Ezarrita dagoena</translation>
 <translation id="6278428485366576908">Gaia</translation>
 <translation id="6280912520669706465">ARC</translation>

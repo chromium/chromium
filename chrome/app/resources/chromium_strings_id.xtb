@@ -98,7 +98,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="370962675267501463">{COUNT,plural, =0{Administrator meminta Anda meluncurkan kembali Chromium untuk menerapkan update ini}=1{Administrator meminta Anda meluncurkan kembali Chromium untuk menerapkan update ini. Jendela Samaran Anda tidak akan dibuka kembali.}other{Administrator meminta Anda meluncurkan kembali Chromium untuk menerapkan update ini. # jendela Samaran Anda tidak akan dibuka kembali.}}</translation>
 <translation id="3713809861844741608">Buka link di &amp;tab Chromium baru</translation>
 <translation id="3728336900324680424">Chromium akan mengakses Drive Anda untuk membuat saran di kolom URL</translation>
-<translation id="378917192836375108">Chromium memungkinkan Anda mengeklik nomor telepon pada web dan menghubunginya melalui Skype!</translation>
+<translation id="378917192836375108">Chromium memungkinkan Anda mengklik nomor telepon pada web dan menghubunginya melalui Skype!</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="388648406173476553">Sesuaikan dan kontrol Chromium. Ada sesuatu yang memerlukan perhatian Anda - klik untuk melihat detailnya.</translation>
 <translation id="3889543394854987837">Klik nama Anda untuk membuka Chromium dan mulai menjelajah.</translation>
@@ -287,7 +287,7 @@ Chromium tidak dapat memulihkan setelan Anda.</translation>
 <translation id="8821041990367117597">Chromium tidak dapat menyinkronkan data karena detail proses masuk Anda sebelum diperbarui.</translation>
 <translation id="8862326446509486874">Anda tidak memiliki hak yang diperlukan untuk pemasangan tingkat sistem. Coba jalankan lagi pemasang saat login sebagai Administrator.</translation>
 <translation id="8880203542552872219">Jika ya, edit sandi Anda yang tersimpan di Chromium agar cocok dengan sandi baru Anda.</translation>
-<translation id="8897323336392112261">Juga mengontrol halaman apa yang ditampilkan saat Anda memulai Chromium atau mengeklik tombol Beranda.</translation>
+<translation id="8897323336392112261">Juga mengontrol halaman apa yang ditampilkan saat Anda memulai Chromium atau mengklik tombol Beranda.</translation>
 <translation id="8907580949721785412">Chromium mencoba menampilkan sandi. Ketik sandi Windows untuk mengizinkannya.</translation>
 <translation id="8941642502866065432">Tidak dapat mengupdate Chromium</translation>
 <translation id="8974095189086268230">OS Chromium terwujud karena <ph name="BEGIN_LINK_CROS_OSS" />software sumber terbuka<ph name="END_LINK_CROS_OSS" /> tambahan.</translation>

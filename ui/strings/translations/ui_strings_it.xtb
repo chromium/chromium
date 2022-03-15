@@ -3,9 +3,9 @@
 <translationbundle lang="it">
 <translation id="1028699632127661925">Invio a <ph name="DEVICE_NAME" />…</translation>
 <translation id="111910763555783249">Impostazioni di notifica</translation>
-<translation id="1127811143501539442">{DAYS,plural, =1{1 giorno fa}one{# days ago}other{# giorni fa}}</translation>
-<translation id="1156623771253174079">{SECONDS,plural, =1{1 minuto fa}one{# minutes ago}other{# minuti fa}}</translation>
-<translation id="1169783199079129864">{MINUTES,plural, =1{1 m}one{#m}other{# m}}</translation>
+<translation id="1127811143501539442">{DAYS,plural, =1{1 giorno fa}other{# giorni fa}}</translation>
+<translation id="1156623771253174079">{SECONDS,plural, =1{1 minuto fa}other{# minuti fa}}</translation>
+<translation id="1169783199079129864">{MINUTES,plural, =1{1 m}other{# m}}</translation>
 <translation id="1243314992276662751">Carica</translation>
 <translation id="1266864766717917324">Impossibile condividere <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269641567813814718">Win</translation>
@@ -15,16 +15,16 @@
 <translation id="1383876407941801731">Cerca</translation>
 <translation id="1398853756734560583">Ingrandisci</translation>
 <translation id="1450753235335490080">Impossibile condividere <ph name="CONTENT_TYPE" /></translation>
-<translation id="1591184457164800433">{MINUTES,plural, =1{1 minuto e }one{# minutes and }other{# minuti e }}</translation>
+<translation id="1591184457164800433">{MINUTES,plural, =1{1 minuto e }other{# minuti e }}</translation>
 <translation id="1643823602425662293">Notifica</translation>
 <translation id="169515659049020177">Maiusc</translation>
 <translation id="1710340000377843106">ora</translation>
-<translation id="1752946267035950200">{MINUTES,plural, =1{1 minuto}one{# minutes}other{# minuti}}</translation>
+<translation id="1752946267035950200">{MINUTES,plural, =1{1 minuto}other{# minuti}}</translation>
 <translation id="1761785978543082658"><ph name="QUANTITY" /> B</translation>
 <translation id="1801827354178857021">Periodo</translation>
-<translation id="1803208670097017349">{MONTHS,plural, =1{1 mese}one{# months}other{# mesi}}</translation>
+<translation id="1803208670097017349">{MONTHS,plural, =1{1 mese}other{# mesi}}</translation>
 <translation id="1809410197924942083"><ph name="QUANTITY" /> MB/s</translation>
-<translation id="1830179671306812954">{HOURS,plural, =1{1 ora e }one{# hours and }other{# ore e }}</translation>
+<translation id="1830179671306812954">{HOURS,plural, =1{1 ora e }other{# ore e }}</translation>
 <translation id="1859234291848436338">Direzione di scrittura</translation>
 <translation id="1860796786778352021">Chiusura notifica</translation>
 <translation id="186476001994626254">Contenuti di Web Smart Paste</translation>
@@ -34,7 +34,7 @@
 <translation id="19085484004813472">Questa funzionalità è nuova</translation>
 <translation id="2006524834898217237">Assicurati che questo dispositivo sia connesso a Internet.</translation>
 <translation id="208586643495776849">Riprova</translation>
-<translation id="2141853158323869627">{DAYS,plural, =1{1 g}one{#d}other{# gg}}</translation>
+<translation id="2141853158323869627">{DAYS,plural, =1{1 g}other{# gg}}</translation>
 <translation id="2148716181193084225">Oggi</translation>
 <translation id="2161656808144014275">Testo</translation>
 <translation id="2168039046890040389">Pagina su</translation>
@@ -56,16 +56,16 @@
 <translation id="2522350507219695259">Calibrazione completata</translation>
 <translation id="252373100621549798">Display sconosciuto</translation>
 <translation id="2545651323591713692">Posticipa</translation>
-<translation id="2573731672208488250">{HOURS,plural, =1{tra 1 h}one{tra # h}other{tra # h}}</translation>
+<translation id="2573731672208488250">{HOURS,plural, =1{tra 1 h}other{tra # h}}</translation>
 <translation id="2583543531130364912">Calibra il touchscreen</translation>
 <translation id="2586657967955657006">Appunti</translation>
 <translation id="2666092431469916601">In alto</translation>
 <translation id="2701330563083355633">Condivisione da <ph name="DEVICE_NAME" /></translation>
 <translation id="271033894570825754">Nuovo</translation>
 <translation id="2743387203779672305">Copia negli appunti</translation>
-<translation id="2824719307700604149">{YEARS,plural, =1{1 anno fa}one{# years ago}other{# anni fa}}</translation>
+<translation id="2824719307700604149">{YEARS,plural, =1{1 anno fa}other{# anni fa}}</translation>
 <translation id="2878511608894704031">Elimina tutto</translation>
-<translation id="2907671656515444832">{DAYS,plural, =1{tra 1 g}one{tra # g}other{tra # g}}</translation>
+<translation id="2907671656515444832">{DAYS,plural, =1{tra 1 g}other{tra # g}}</translation>
 <translation id="2922712708897119705">Colonna <ph name="COLUMN_NAME" /> ordinata in ordine decrescente.</translation>
 <translation id="3036649622769666520">Apri file</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
@@ -74,13 +74,13 @@
 <translation id="3157931365184549694">Ripristina</translation>
 <translation id="3183922693828471536">Scorri fino a qui</translation>
 <translation id="3234408098842461169">Freccia GIÙ</translation>
-<translation id="3291688615589870984">{DAYS,plural, =1{1 giorno}one{# days}other{# giorni}}</translation>
+<translation id="3291688615589870984">{DAYS,plural, =1{1 giorno}other{# giorni}}</translation>
 <translation id="3295886253693811851">Chiama da</translation>
 <translation id="3306688585798492231">Display incorporato</translation>
 <translation id="335581015389089642">Voce</translation>
 <translation id="3389286852084373014">Il testo è troppo grande</translation>
 <translation id="3406306243914553062">Contenuti HTML</translation>
-<translation id="3600566671520689681">{DAYS,plural, =1{1 giorno rimanente}one{# days left}other{# giorni rimanenti}}</translation>
+<translation id="3600566671520689681">{DAYS,plural, =1{1 giorno rimanente}other{# giorni rimanenti}}</translation>
 <translation id="3600969208114796418">File <ph name="SAVEAS_EXTENSION_TYPE" /></translation>
 <translation id="3608915363409716668"><ph name="MAXIMUM_VALUE" />+</translation>
 <translation id="3618849550573277856">Cerca "<ph name="LOOKUP_STRING" />"</translation>
@@ -96,9 +96,9 @@
 <translation id="3909791450649380159">T&amp;aglia</translation>
 <translation id="3990502903496589789">Margine destro</translation>
 <translation id="3994749195054421561">Colonna <ph name="COLUMN_NAME" /> ordinata in ordine crescente.</translation>
-<translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 notifica da leggere}one{# notifiche da leggere}other{# notifiche da leggere}}</translation>
+<translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 notifica da leggere}other{# notifiche da leggere}}</translation>
 <translation id="4250229828105606438">Screenshot</translation>
-<translation id="4266252015790371705">{MONTHS,plural, =1{1 mese fa}one{# months ago}other{# mesi fa}}</translation>
+<translation id="4266252015790371705">{MONTHS,plural, =1{1 mese fa}other{# mesi fa}}</translation>
 <translation id="4289300219472526559">Avvia comandi vocali</translation>
 <translation id="4289540628985791613">Panoramica</translation>
 <translation id="4306392492252714209">Rimuovi dagli appunti.</translation>
@@ -107,9 +107,9 @@
 <translation id="4588090240171750605">Scorri a destra</translation>
 <translation id="4724120544754982507">Centro notifiche, <ph name="UNREAD_NOTIFICATION_COUNT" /> notifiche da leggere</translation>
 <translation id="4746179598275229723">Estensione sbloccata</translation>
-<translation id="4788285488841504513">{MONTHS,plural, =1{1 mese rimasto}one{# months left}other{# mesi rimasti}}</translation>
+<translation id="4788285488841504513">{MONTHS,plural, =1{1 mese rimasto}other{# mesi rimasti}}</translation>
 <translation id="4888938634149558681">Chiama</translation>
-<translation id="4968171027979920686">{SECONDS,plural, =1{1 secondo}one{# seconds}other{# secondi}}</translation>
+<translation id="4968171027979920686">{SECONDS,plural, =1{1 secondo}other{# secondi}}</translation>
 <translation id="4971687151119236543">Traccia precedente contenuti multimediali</translation>
 <translation id="5046499563572181734">Tocca qui</translation>
 <translation id="5076340679995252485">&amp;Incolla</translation>
@@ -122,16 +122,16 @@
 <translation id="5574202486608032840">Sistema <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5613020302032141669">Freccia sinistra</translation>
-<translation id="5754277640426581776">{MINUTES,plural, =1{1 min}one{# mins}other{# min}}</translation>
-<translation id="5763338081255973061">{DAYS,plural, =0{Ultima attività: oggi}=1{Ultima attività: 1 giorno fa}one{Ultima attività: # giorni fa}other{Ultima attività: # giorni fa}}</translation>
-<translation id="5768079895599174203">{DAYS,plural, =1{1 giorno e }one{# days and }other{# giorni e }}</translation>
+<translation id="5754277640426581776">{MINUTES,plural, =1{1 min}other{# min}}</translation>
+<translation id="5763338081255973061">{DAYS,plural, =0{Ultima attività: oggi}=1{Ultima attività: 1 giorno fa}other{Ultima attività: # giorni fa}}</translation>
+<translation id="5768079895599174203">{DAYS,plural, =1{1 giorno e }other{# giorni e }}</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5843690142429128814">Immagine.</translation>
-<translation id="5866104238061687188">{YEARS,plural, =1{tra 1 a}one{tra # a}other{tra # a}}</translation>
+<translation id="5866104238061687188">{YEARS,plural, =1{tra 1 a}other{tra # a}}</translation>
 <translation id="588258955323874662">Schermo intero</translation>
-<translation id="5906667377645263094">{SECONDS,plural, =1{1 secondo rimanente}one{# seconds left}other{# secondi rimanenti}}</translation>
+<translation id="5906667377645263094">{SECONDS,plural, =1{1 secondo rimanente}other{# secondi rimanenti}}</translation>
 <translation id="5941711191222866238">Riduci a icona</translation>
-<translation id="5943826764092288734">{HOURS,plural, =1{1 ora}one{# hours}other{# ore}}</translation>
+<translation id="5943826764092288734">{HOURS,plural, =1{1 ora}other{# ore}}</translation>
 <translation id="6007284015834422026">Estensione bloccata</translation>
 <translation id="6040143037577758943">Chiudi</translation>
 <translation id="6117103120090651229">Pulsante centrale</translation>
@@ -143,9 +143,9 @@
 <translation id="6364916375976753737">Scorri a sinistra</translation>
 <translation id="6394627529324717982">Virgola</translation>
 <translation id="6397363302884558537">Interrompi comandi vocali</translation>
-<translation id="6404817160109697034">{SECONDS,plural, =1{1 sec fa}one{# secs ago}other{# sec fa}}</translation>
+<translation id="6404817160109697034">{SECONDS,plural, =1{1 sec fa}other{# sec fa}}</translation>
 <translation id="6430678249303439055">Blocca tutte le notifiche da questa app</translation>
-<translation id="6483402905448010557">{SECONDS,plural, =1{1 secondo fa}one{# seconds ago}other{# secondi fa}}</translation>
+<translation id="6483402905448010557">{SECONDS,plural, =1{1 secondo fa}other{# secondi fa}}</translation>
 <translation id="6503257047630241175">Contenuti RTF</translation>
 <translation id="6539092367496845964">Si è verificato un problema. Riprova più tardi.</translation>
 <translation id="654149438358937226">Blocca tutte le notifiche</translation>
@@ -154,21 +154,21 @@
 <translation id="6699343763173986273">Traccia successiva contenuti multimediali</translation>
 <translation id="6808150112686056157">Interrompi contenuti multimediali</translation>
 <translation id="6845383723252244143">Seleziona cartella</translation>
-<translation id="6863590663815976734">{HOURS,plural, =1{1 ora rimanente}one{# hours left}other{# ore rimanenti}}</translation>
+<translation id="6863590663815976734">{HOURS,plural, =1{1 ora rimanente}other{# ore rimanenti}}</translation>
 <translation id="688711909580084195">Pagina web senza titolo</translation>
 <translation id="6902419395050653510">Contenuti HTML.</translation>
 <translation id="6907759265145635167"><ph name="QUANTITY" /> PB/s</translation>
-<translation id="6917971086528278418">{YEARS,plural, =1{1 anno rimasto}one{# years left}other{# anni rimasti}}</translation>
+<translation id="6917971086528278418">{YEARS,plural, =1{1 anno rimasto}other{# anni rimasti}}</translation>
 <translation id="6945221475159498467">Seleziona</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6974053822202609517">Da destra a sinistra</translation>
 <translation id="7052633198403197513">F1</translation>
 <translation id="7170202025028120564">Le impostazioni di visualizzazione dell'applicazione verranno applicate dopo il prossimo riavvio.</translation>
 <translation id="7222373446505536781">F11</translation>
-<translation id="7238427729722629793">{MINUTES,plural, =1{1 min rimanente}one{# mins left}other{# min rimanenti}}</translation>
-<translation id="7365057348334984696">{MINUTES,plural, =1{1 min fa}one{# mins ago}other{# min fa}}</translation>
+<translation id="7238427729722629793">{MINUTES,plural, =1{1 min rimanente}other{# min rimanenti}}</translation>
+<translation id="7365057348334984696">{MINUTES,plural, =1{1 min fa}other{# min fa}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
-<translation id="7410957453383678442">{MINUTES,plural, =1{1 minuto rimanente}one{# minutes left}other{# minuti rimanenti}}</translation>
+<translation id="7410957453383678442">{MINUTES,plural, =1{1 minuto rimanente}other{# minuti rimanenti}}</translation>
 <translation id="7437971918971306061">Colonna <ph name="COLUMN_NAME" /> non ordinata.</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7507604095951736240">Emoji</translation>
@@ -179,12 +179,12 @@
 <translation id="7879499977785298635">Non bloccare</translation>
 <translation id="7907591526440419938">Apri file</translation>
 <translation id="7969046989155602842">Comando</translation>
-<translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{Più di 1 notifica da leggere}one{Più di # notifiche da leggere}other{Più di # notifiche da leggere}}</translation>
-<translation id="8086866675552927481">{MINUTES,plural, =1{tra 1 m}one{tra # m}other{tra # m}}</translation>
+<translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{Più di 1 notifica da leggere}other{Più di # notifiche da leggere}}</translation>
+<translation id="8086866675552927481">{MINUTES,plural, =1{tra 1 m}other{tra # m}}</translation>
 <translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" /> + <ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8090736967111090568">Numero da <ph name="ORIGIN" /></translation>
-<translation id="8106081041558092062">{HOURS,plural, =1{1 ora fa}one{# hours ago}other{# ore fa}}</translation>
-<translation id="8131263257437993507">{SECONDS,plural, =1{1 sec rimanente}one{# secs left}other{# sec rimanenti}}</translation>
+<translation id="8106081041558092062">{HOURS,plural, =1{1 ora fa}other{# ore fa}}</translation>
+<translation id="8131263257437993507">{SECONDS,plural, =1{1 sec rimanente}other{# sec rimanenti}}</translation>
 <translation id="8134065097954893699">Ricaricare questa pagina</translation>
 <translation id="815598010540052116">Scorri verso il basso</translation>
 <translation id="8179976553408161302">Invio</translation>
@@ -194,15 +194,15 @@
 <translation id="8259556432390118667">Valore del colore esadecimale</translation>
 <translation id="8328145009876646418">Margine sinistro</translation>
 <translation id="8331626408530291785">Scorri verso l'alto</translation>
-<translation id="8352146631962686268">{YEARS,plural, =1{1 anno}one{# years}other{# anni}}</translation>
+<translation id="8352146631962686268">{YEARS,plural, =1{1 anno}other{# anni}}</translation>
 <translation id="8393700583063109961">Invia messaggio</translation>
 <translation id="8394908167088220973">Play/Pausa contenuti multimediali</translation>
-<translation id="8458811141851741261">{YEARS,plural, =1{1 a}one{#y}other{# a}}</translation>
+<translation id="8458811141851741261">{YEARS,plural, =1{1 a}other{# a}}</translation>
 <translation id="8602707065186045623">File <ph name="SAVEAS_EXTENSION_TYPE" /> (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> kB/s</translation>
 <translation id="8725488761726303204">+ altre <ph name="NUMBER" /></translation>
 <translation id="8730621377337864115">Fine</translation>
-<translation id="8772073294905169192">{HOURS,plural, =1{1 h}one{#h}other{# h}}</translation>
+<translation id="8772073294905169192">{HOURS,plural, =1{1 h}other{# h}}</translation>
 <translation id="8798099450830957504">Predefinito</translation>
 <translation id="883911313571074303">Annota immagine</translation>
 <translation id="8841375032071747811">Pulsante Indietro</translation>
@@ -210,7 +210,7 @@
 <translation id="8876215549894133151">Formato:</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> kB</translation>
 <translation id="8996630695507351249">Assicurati che il dispositivo <ph name="TARGET_DEVICE_NAME" /> sia connesso a Internet.</translation>
-<translation id="9044832324875206639">{SECONDS,plural, =1{1 sec}one{# secs}other{# sec}}</translation>
+<translation id="9044832324875206639">{SECONDS,plural, =1{1 sec}other{# sec}}</translation>
 <translation id="9059834730836941392">Comprimi la notifica</translation>
 <translation id="9170848237812810038">&amp;Annulla</translation>
 <translation id="932327136139879170">Home page</translation>

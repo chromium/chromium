@@ -161,7 +161,7 @@
 <translation id="3102119246920354026">Cache</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">O dispositivo está ligado.</translation>
-<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Pretende remover a página?}=1{Pretende remover a página {PAGE_NUMBER}?}one{Remove page {PAGE_NUMBER}?}other{Pretende remover a página {PAGE_NUMBER}?}}</translation>
+<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Pretende remover a página?}=1{Pretende remover a página {PAGE_NUMBER}?}other{Pretende remover a página {PAGE_NUMBER}?}}</translation>
 <translation id="315116470104423982">Dados móveis</translation>
 <translation id="3156846309055100599">A digitalizar a página <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">Portal cativo detetado</translation>
@@ -172,7 +172,7 @@
 <translation id="3226405216343213872">A procurar leitores…</translation>
 <translation id="3246869037381808805">As tarefas de impressão com mais de um 1 dia serão removidas.</translation>
 <translation id="3268178239013324452">Falha – Porta aberta</translation>
-<translation id="3283504360622356314">{0,plural, =1{Editar ficheiro}one{Editar ficheiro}other{Editar ficheiros}}</translation>
+<translation id="3283504360622356314">{0,plural, =1{Editar ficheiro}other{Editar ficheiros}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">Direção da chave</translation>
 <translation id="3310640316857623290">Latência de DNS significativamente acima do limite permitido.</translation>
@@ -301,7 +301,7 @@
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> selecionado. Prima Enter para selecionar álbuns do <ph name="TOPIC_SOURCE" />.</translation>
 <translation id="484790837831576105">(Android) Resolução de DNS</translation>
 <translation id="4848429997038228357">EM EXECUÇÃO</translation>
-<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} tentativa restante.}one{<ph name="ERROR_MESSAGE" /> {0} tentativa(s) restante(s).}other{<ph name="ERROR_MESSAGE" /> {0} tentativas restantes.}}</translation>
+<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} tentativa restante.}other{<ph name="ERROR_MESSAGE" /> {0} tentativas restantes.}}</translation>
 <translation id="4873827928179867585">Algoritmo de autenticação</translation>
 <translation id="4880328057631981605">Nome do ponto de acesso</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
@@ -363,7 +363,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="5431318178759467895">Cor</translation>
 <translation id="5457599981699367932">Navegar como convidado</translation>
 <translation id="54609108002486618">Geridos</translation>
-<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} tentativa restante.}one{{0} tentativa(s) restante(s).}other{{0} tentativas restantes.}}</translation>
+<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} tentativa restante.}other{{0} tentativas restantes.}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Não foi possível concluir a digitalização</translation>
 <translation id="5502931783115429516">O Android não está a funcionar</translation>
@@ -390,7 +390,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5916084858004523819">Proibido</translation>
 <translation id="5916664084637901428">Ativado</translation>
-<translation id="5921506667911082617">{COUNT,plural, =1{O seu ficheiro foi digitalizado com êxito e guardado em <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{O(s) seu(s) ficheiro(s) foi(foram) digitalizado(s) com êxito e guardado(s) em <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Os seus ficheiros foram digitalizados com êxito e guardados em <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
+<translation id="5921506667911082617">{COUNT,plural, =1{O seu ficheiro foi digitalizado com êxito e guardado em <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Os seus ficheiros foram digitalizados com êxito e guardados em <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Ficheiro não encontrado</translation>
 <translation id="5939518447894949180">Repor</translation>
 <translation id="594552776027197022">Gerar par de chaves aleatório</translation>
@@ -435,7 +435,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Fraca (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6456394469623773452">Boa</translation>
-<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Pretende digitalizar novamente a página?}=1{Pretende digitalizar novamente a página {PAGE_NUMBER}?}one{Rescan page {PAGE_NUMBER}?}other{Pretende digitalizar novamente a página {PAGE_NUMBER}?}}</translation>
+<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Pretende digitalizar novamente a página?}=1{Pretende digitalizar novamente a página {PAGE_NUMBER}?}other{Pretende digitalizar novamente a página {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">PUU</translation>
 <translation id="6480327114083866287">Gerido por <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Parada – Encravamento de papel</translation>
@@ -486,7 +486,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Falha – A autorização falhou</translation>
 <translation id="7103252855940681301">Dispositivo <ph name="INDEX" /> de <ph name="COUNT" /> designado <ph name="NAME" />.</translation>
-<translation id="7134436342991564651">{0,plural, =1{Servidor de nomes}one{Servidor(es) de nomes}other{Servidores de nomes}}</translation>
+<translation id="7134436342991564651">{0,plural, =1{Servidor de nomes}other{Servidores de nomes}}</translation>
 <translation id="7143207342074048698">A ligar</translation>
 <translation id="7144878232160441200">Tentar novamente</translation>
 <translation id="714876143603641390">Conetividade de LAN</translation>
@@ -511,7 +511,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="741244894080940828">conversão</translation>
 <translation id="7415801143053185905">Latência muito elevada de HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
-<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Digitalização concluída. 1 página digitalizada}one{Digitalização concluída. {NUMBER_OF_PAGES} página(s) digitalizada(s)}other{Digitalização concluída. {NUMBER_OF_PAGES} páginas digitalizadas}}</translation>
+<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Digitalização concluída. 1 página digitalizada}other{Digitalização concluída. {NUMBER_OF_PAGES} páginas digitalizadas}}</translation>
 <translation id="7469648432129124067">Portal detetado</translation>
 <translation id="7487067081878637334">Tecnologia</translation>
 <translation id="7490813197707563893">Endereço MAC</translation>
@@ -641,7 +641,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="8968751544471797276">Velocidade de carregamento</translation>
 <translation id="8970109610781093811">Executar novamente</translation>
 <translation id="8983038754672563810">HSPA</translation>
-<translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Analisar}=1{Analisar página {NUMBER_OF_PAGES}}one{Scan page {NUMBER_OF_PAGES}}other{Analisar página {NUMBER_OF_PAGES}}}</translation>
+<translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Analisar}=1{Analisar página {NUMBER_OF_PAGES}}other{Analisar página {NUMBER_OF_PAGES}}}</translation>
 <translation id="8997710128084572139">O dispositivo tem <ph name="BATTERY_PERCENTAGE" />% de bateria.</translation>
 <translation id="9003704114456258138">Frequência</translation>
 <translation id="9039663905644212491">PEAP</translation>

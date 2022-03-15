@@ -13,7 +13,7 @@
 <translation id="151962892725702025">Impossibile sincronizzare i dati in Chromium OS perché la sincronizzazione non è disponibile per il tuo dominio.</translation>
 <translation id="1524282610922162960">Condividi una scheda di Chromium</translation>
 <translation id="1553461853655228091">Chromium ha bisogno dell'autorizzazione ad accedere alla fotocamera per creare una mappa 3D dell'ambiente circostante</translation>
-<translation id="1607715478322902680">{COUNT,plural, =0{L'amministratore richiede il riavvio di Chromium per installare un aggiornamento}=1{L'amministratore richiede il riavvio di Chromium per installare un aggiornamento. La finestra di navigazione in incognito non verrà riaperta.}one{L'amministratore richiede il riavvio di Chromium per installare un aggiornamento. Le # finestre di navigazione in incognito non verranno riaperte.}other{L'amministratore richiede il riavvio di Chromium per installare un aggiornamento. Le # finestre di navigazione in incognito non verranno riaperte.}}</translation>
+<translation id="1607715478322902680">{COUNT,plural, =0{L'amministratore richiede il riavvio di Chromium per installare un aggiornamento}=1{L'amministratore richiede il riavvio di Chromium per installare un aggiornamento. La finestra di navigazione in incognito non verrà riaperta.}other{L'amministratore richiede il riavvio di Chromium per installare un aggiornamento. Le # finestre di navigazione in incognito non verranno riaperte.}}</translation>
 <translation id="1625909126243026060">Esamina i controlli per la privacy e la sicurezza più importanti in Chromium</translation>
 <translation id="1632539827495546968">Se vuoi utilizzare questo account solo una volta, puoi utilizzare la <ph name="GUEST_LINK_BEGIN" />modalità Ospite<ph name="GUEST_LINK_END" /> del browser Chromium. Se vuoi aggiungere un account per qualcun altro, <ph name="LINK_BEGIN" />aggiungi una nuova persona<ph name="LINK_END" /> a <ph name="DEVICE_TYPE" />.
 
@@ -92,10 +92,10 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="3509308970982693815">Chiudi tutte le finestre di Chromium e riprova.</translation>
 <translation id="3575459661164320785">È stato rilevato software dannoso sul tuo computer. Chromium può rimuoverlo, ripristinare le tue impostazioni e disattivare le estensioni per ristabilire il normale funzionamento del browser.</translation>
 <translation id="3639635944603682591">I dati di navigazione di questa persona verranno eliminati dal dispositivo. Per recuperare i dati, accedi a Chromium con il nome utente <ph name="USER_EMAIL" />.</translation>
-<translation id="364817392622123556">{COUNT,plural, =0{È disponibile un nuovo aggiornamento di Chromium che verrà installato appena eseguirai il riavvio.}=1{È disponibile un nuovo aggiornamento di Chromium che verrà installato appena eseguirai il riavvio. La finestra di navigazione in incognito non verrà riaperta.}one{È disponibile un nuovo aggiornamento di Chromium che verrà installato appena eseguirai il riavvio. Le # finestre di navigazione in incognito non verranno riaperte.}other{È disponibile un nuovo aggiornamento di Chromium che verrà installato appena eseguirai il riavvio. Le # finestre di navigazione in incognito non verranno riaperte.}}</translation>
+<translation id="364817392622123556">{COUNT,plural, =0{È disponibile un nuovo aggiornamento di Chromium che verrà installato appena eseguirai il riavvio.}=1{È disponibile un nuovo aggiornamento di Chromium che verrà installato appena eseguirai il riavvio. La finestra di navigazione in incognito non verrà riaperta.}other{È disponibile un nuovo aggiornamento di Chromium che verrà installato appena eseguirai il riavvio. Le # finestre di navigazione in incognito non verranno riaperte.}}</translation>
 <translation id="3651803019964686660">Per inviare un numero da <ph name="ORIGIN" /> al tuo telefono Android, accedi a Chromium su entrambi i dispositivi.</translation>
 <translation id="3685209450716071127">Chromium non può controllare le tue password. Prova a controllare la connessione a Internet.</translation>
-<translation id="370962675267501463">{COUNT,plural, =0{L'amministratore richiede il riavvio di Chromium per installare questo aggiornamento}=1{L'amministratore richiede il riavvio di Chromium per installare questo aggiornamento. La finestra di navigazione in incognito non verrà riaperta.}one{L'amministratore richiede il riavvio di Chromium per installare questo aggiornamento. Le # finestre di navigazione in incognito non verranno riaperte.}other{L'amministratore richiede il riavvio di Chromium per installare questo aggiornamento. Le # finestre di navigazione in incognito non verranno riaperte.}}</translation>
+<translation id="370962675267501463">{COUNT,plural, =0{L'amministratore richiede il riavvio di Chromium per installare questo aggiornamento}=1{L'amministratore richiede il riavvio di Chromium per installare questo aggiornamento. La finestra di navigazione in incognito non verrà riaperta.}other{L'amministratore richiede il riavvio di Chromium per installare questo aggiornamento. Le # finestre di navigazione in incognito non verranno riaperte.}}</translation>
 <translation id="3713809861844741608">Apri link in una nuova &amp;scheda di Chromium</translation>
 <translation id="3728336900324680424">Chromium accederà al tuo Drive per inserire suggerimenti nella barra degli indirizzi</translation>
 <translation id="378917192836375108">Chromium ti consente di fare clic su un numero di telefono sul Web e di chiamarlo con Skype.</translation>
@@ -150,7 +150,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="549669000822060376">Attendi mentre Chromium installa gli aggiornamenti di sistema più recenti.</translation>
 <translation id="5496810170689441661">Chromium sta cercando di modificare le password. Per consentire la modifica, digita la tua password Windows.</translation>
 <translation id="5527463683072221100">Apri PDF in Chromium</translation>
-<translation id="5623402015214259806">{0,plural, =0{È disponibile un aggiornamento di Chromium}=1{È disponibile un aggiornamento di Chromium}one{È disponibile un aggiornamento di Chromium da # giorni}other{È disponibile un aggiornamento di Chromium da # giorni}}</translation>
+<translation id="5623402015214259806">{0,plural, =0{È disponibile un aggiornamento di Chromium}=1{È disponibile un aggiornamento di Chromium}other{È disponibile un aggiornamento di Chromium da # giorni}}</translation>
 <translation id="5634636535844844681">Chromium richiede Windows 7 o versioni successive.</translation>
 <translation id="5653831366781983928">Riavvia subito Chromium</translation>
 <translation id="5698481217667032250">Visualizza Chromium in questa lingua</translation>
@@ -174,7 +174,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6145820983052037069">Puoi passare da un profilo Chromium all'altro qui</translation>
 <translation id="6183079672144801177">Assicurati di aver effettuato l'accesso a Chromium sul tuo dispositivo <ph name="TARGET_DEVICE_NAME" /> e prova a ripetere l'invio.</translation>
 <translation id="6212496753309875659">Questo computer ha già una versione più recente di Chromium. Se il software non funziona, disinstalla Chromium e riprova.</translation>
-<translation id="6219195342503754812">{0,plural, =0{Chromium verrà riavviato ora}=1{Chromium verrà riavviato tra 1 secondo}one{Chromium verrà riavviato tra # secondi}other{Chromium verrà riavviato tra # secondi}}</translation>
+<translation id="6219195342503754812">{0,plural, =0{Chromium verrà riavviato ora}=1{Chromium verrà riavviato tra 1 secondo}other{Chromium verrà riavviato tra # secondi}}</translation>
 <translation id="6241367896540709610">Chromium deve avere l'autorizzazione di accesso allo spazio di archiviazione per poter scaricare file</translation>
 <translation id="6245734527075554892">Controlla gli URL confrontandoli con un elenco di siti non sicuri memorizzato in Chromium</translation>
 <translation id="6248213926982192922">Imposta Chromium come browser predefinito</translation>
@@ -190,7 +190,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6403826409255603130">Chromium è un browser web che esegue le pagine web e le applicazioni alla velocità della luce. È veloce, stabile e facile da utilizzare. Naviga su Internet in modo più sicuro grazie alla protezione da malware e phishing integrata in Chromium.</translation>
 <translation id="6434250628340475518">Sistema Chromium OS</translation>
 <translation id="6455857529632101747">Ti diamo il benvenuto nei profili Chromium</translation>
-<translation id="6457450909262716557">{SECONDS,plural, =1{Chromium si riavvierà tra 1 secondo}one{Chromium will restart in # seconds}other{Chromium si riavvierà tra # secondi}}</translation>
+<translation id="6457450909262716557">{SECONDS,plural, =1{Chromium si riavvierà tra 1 secondo}other{Chromium si riavvierà tra # secondi}}</translation>
 <translation id="6475912303565314141">Controlla anche la pagina visualizzata all'avvio di Chromium.</translation>
 <translation id="6510925080656968729">Disinstalla Chromium</translation>
 <translation id="6542839706527980775">Ogni profilo dispone delle proprie informazioni di Chromium, come preferiti, cronologia, password e altro</translation>
@@ -236,7 +236,7 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="7451052299415159299">Per questo sito Chromium ha bisogno dell'autorizzazione ad accedere alla fotocamera</translation>
 <translation id="7467949745582939695">Vuoi riavviare Chromium?</translation>
 <translation id="7483335560992089831">Impossibile installare una versione di Chromium uguale a quella in esecuzione. Chiudi Chromium e riprova.</translation>
-<translation id="753534427205733210">{0,plural, =1{Chromium verrà riavviato tra 1 minuto}one{Chromium verrà riavviato tra # minuti}other{Chromium verrà riavviato tra # minuti}}</translation>
+<translation id="753534427205733210">{0,plural, =1{Chromium verrà riavviato tra 1 minuto}other{Chromium verrà riavviato tra # minuti}}</translation>
 <translation id="7549178288319965365">Informazioni su Chromium OS</translation>
 <translation id="7561906087460245826">Cancella anche i dati di Chromium (<ph name="URL" />)</translation>
 <translation id="7585853947355360626">Se un'impostazione non viene mostrata in questa pagina, cercala nelle <ph name="LINK_BEGIN" />impostazioni del sistema operativo Chromium<ph name="LINK_END" />.</translation>
@@ -267,7 +267,7 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="8330519371938183845">Accedi per sincronizzare e personalizzare Chromium sui tuoi dispositivi</translation>
 <translation id="8340674089072921962">L'indirizzo <ph name="USER_EMAIL_ADDRESS" /> utilizzava in precedenza Chromium</translation>
 <translation id="8357820681460164151">Per accedere ai tuoi contenuti del browser Chromium su tutti i tuoi dispositivi, accedi e attiva la sincronizzazione</translation>
-<translation id="8417404458978023919">{0,plural, =1{Riavvia Chromium entro un giorno}one{Riavvia Chromium entro # giorni}other{Riavvia Chromium entro # giorni}}</translation>
+<translation id="8417404458978023919">{0,plural, =1{Riavvia Chromium entro un giorno}other{Riavvia Chromium entro # giorni}}</translation>
 <translation id="8453117565092476964">L'archivio di installazione è danneggiato o non valido. Scarica di nuovo Chromium.</translation>
 <translation id="8493179195440786826">Chromium non è aggiornato</translation>
 <translation id="8550334526674375523">Questo profilo di lavoro è completamente separato dal tuo profilo personale.</translation>
@@ -292,7 +292,7 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="8986207147630327271">Stai per aggiungere a questo browser un profilo di lavoro che sarà controllato dal tuo amministratore.</translation>
 <translation id="9019929317751753759">Per rendere Chromium più sicuro, abbiamo disattivato la seguente estensione non presente nel <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> che potrebbe essere stata aggiunta a tua insaputa.</translation>
 <translation id="9089354809943900324">Chromium non è aggiornato</translation>
-<translation id="9093206154853821181">{0,plural, =1{Chromium verrà riavviato tra un'ora}one{Chromium verrà riavviato tra # ore}other{Chromium verrà riavviato tra # ore}}</translation>
+<translation id="9093206154853821181">{0,plural, =1{Chromium verrà riavviato tra un'ora}other{Chromium verrà riavviato tra # ore}}</translation>
 <translation id="91086099826398415">Apri link in una nuova &amp;scheda di Chromium</translation>
 <translation id="911206726377975832">Eliminare anche i tuoi dati di navigazione?</translation>
 <translation id="9158494823179993217">L'amministratore di sistema ha configurato Chromium per l'apertura di un browser alternativo per accedere a <ph name="TARGET_URL_HOSTNAME" />.</translation>

@@ -102,7 +102,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1503394326855300303">Questo account proprietario deve essere il primo account registrato in una sessione con accesso simultaneo.</translation>
 <translation id="1510238584712386396">Avvio app</translation>
 <translation id="1516740043221086139">La modalità Non disturbare è attiva.</translation>
-<translation id="1520303207432623762">{NUM_APPS,plural, =1{Mostra impostazioni di notifica. Le notifiche sono disattivate per un'app}one{Show notification settings. Notifications are off for # apps}other{Mostra impostazioni di notifica. Le notifiche sono disattivate per # app}}</translation>
+<translation id="1520303207432623762">{NUM_APPS,plural, =1{Mostra impostazioni di notifica. Le notifiche sono disattivate per un'app}other{Mostra impostazioni di notifica. Le notifiche sono disattivate per # app}}</translation>
 <translation id="1525508553941733066">IGNORA</translation>
 <translation id="1528259147807435347">Modificato la settimana scorsa</translation>
 <translation id="1536604384701784949">Per usare l'account <ph name="USER_EMAIL_ADDRESS" />, devi prima uscire da tutti gli account. A tale scopo, seleziona Annulla per tornare indietro. Dopodiché seleziona l'ora per aprire l'area di stato e poi Esci. Quindi accedi di nuovo all'account <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
@@ -341,7 +341,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="316086887565479535">App non supportate nel modello</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> sta eseguendo il rollback di <ph name="DEVICE_TYPE" />. Il dispositivo verrà reimpostato e tutti i dati verranno eliminati.</translation>
 <translation id="3181441307743005334">Il riavvio potrebbe richiedere un po' di tempo</translation>
-<translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Connesso a un dispositivo}one{Connected to # devices}other{Connesso a # dispositivi}}</translation>
+<translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Connesso a un dispositivo}other{Connesso a # dispositivi}}</translation>
 <translation id="320207200541803018">Imposta il timer</translation>
 <translation id="3203405173652969239">Funzionalità Switch Access attiva</translation>
 <translation id="3207953481422525583">Impostazioni utente</translation>
@@ -398,7 +398,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
         <ph name="NOTIFICATION" />,
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
-<translation id="352245152354538528">{0,plural, =1{Aggiorna il dispositivo entro 1 minuto}one{Aggiorna il dispositivo entro # minuto}other{Aggiorna il dispositivo entro # minuti}}</translation>
+<translation id="352245152354538528">{0,plural, =1{Aggiorna il dispositivo entro 1 minuto}other{Aggiorna il dispositivo entro # minuti}}</translation>
 <translation id="353086728817903341">Connessione stabilita con <ph name="NUM_DEVICES" /> dispositivi</translation>
 <translation id="3542066395059568317">Vedrai consigli per poter continuare dal punto in cui avevi interrotto. Puoi fare clic con il tasto destro del mouse sui consigli per rimuoverli.</translation>
 <translation id="3552189655002856821">Il Wi-Fi non è attivo</translation>
@@ -469,7 +469,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3899995891769452915">Input vocale</translation>
 <translation id="3900355044994618856">La sessione terminerà tra <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Connessione a: <ph name="NAME" /></translation>
-<translation id="3922427723338465344">{0,plural, =1{Ripristina la versione precedente del dispositivo entro 1 minuto}one{Ripristina la versione precedente del dispositivo entro # minuto}other{Ripristina la versione precedente del dispositivo entro # minuti}}</translation>
+<translation id="3922427723338465344">{0,plural, =1{Ripristina la versione precedente del dispositivo entro 1 minuto}other{Ripristina la versione precedente del dispositivo entro # minuti}}</translation>
 <translation id="3923494859158167397">Nessuna rete mobile configurata</translation>
 <translation id="3932043219784172185">Nessun dispositivo connesso</translation>
 <translation id="3943857333388298514">Incolla</translation>
@@ -490,7 +490,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Stai condividendo lo schermo</translation>
 <translation id="4057003836560082631">Scheda del browser <ph name="INDEX" /> di <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
-<translation id="4065525899979931964">{NUM_APPS,plural, =1{Off per un'app}one{Off for # apps}other{Off per # app}}</translation>
+<translation id="4065525899979931964">{NUM_APPS,plural, =1{Off per un'app}other{Off per # app}}</translation>
 <translation id="4066027111132117168">On, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Segnale medio</translation>
 <translation id="4095366824370681039">Penna stilografica</translation>
@@ -502,7 +502,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="4146833061457621061">Fammi ascoltare musica</translation>
 <translation id="4165275524535002941">Il cavo potrebbe non supportare i display</translation>
 <translation id="4173958948577803258">G</translation>
-<translation id="4177913004758410636">{0,plural, =1{Aggiorna il dispositivo entro 1 giorno}one{Aggiorna il dispositivo entro # giorno}other{Aggiorna il dispositivo entro # giorni}}</translation>
+<translation id="4177913004758410636">{0,plural, =1{Aggiorna il dispositivo entro 1 giorno}other{Aggiorna il dispositivo entro # giorni}}</translation>
 <translation id="4181841719683918333">Lingue</translation>
 <translation id="4192112279662688596">oppure</translation>
 <translation id="4195814663415092787">Continuare dal punto in cui avevi interrotto</translation>
@@ -555,13 +555,13 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="4430019312045809116">Volume</translation>
 <translation id="4441283832827406317">Le app sono ordinate per nome</translation>
 <translation id="4445159312344259901">Accedi per sbloccare</translation>
-<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 notifica importante}one{# notifiche importanti}other{# notifiche importanti}}</translation>
+<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 notifica importante}other{# notifiche importanti}}</translation>
 <translation id="4450893287417543264">Non mostrare più</translation>
 <translation id="4451374464530248585">La scorciatoia da tastiera Alt + Freccia giù è cambiata. Per usare il tasto Pagina giù, premi il tasto <ph name="LAUNCHER_KEY_NAME" /> + Freccia giù.</translation>
 <translation id="445864333228800152">Buonasera,</translation>
 <translation id="4458688154122353284">Interrompi registrazione dello schermo</translation>
 <translation id="4471354919263203780">Download dei file di riconoscimento vocale… <ph name="PERCENT" />%</translation>
-<translation id="4471432286288241507">{0,plural, =0{Aggiorna ora il dispositivo}=1{Aggiorna il dispositivo entro 1 secondo}one{Aggiorna il dispositivo entro # secondo}other{Aggiorna il dispositivo entro # secondi}}</translation>
+<translation id="4471432286288241507">{0,plural, =0{Aggiorna ora il dispositivo}=1{Aggiorna il dispositivo entro 1 secondo}other{Aggiorna il dispositivo entro # secondi}}</translation>
 <translation id="4472575034687746823">Come iniziare</translation>
 <translation id="4477350412780666475">Traccia successiva</translation>
 <translation id="4477892968187500306">Questo dispositivo potrebbe contenere app che non sono state verificate da Google.</translation>
@@ -593,7 +593,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="4623167406982293031">Verifica account</translation>
 <translation id="4628757576491864469">Dispositivi</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, valutazione a stelle <ph name="RATING_SCORE" /></translation>
-<translation id="4633185660152240791">{0,plural, =1{Ripristina la versione precedente del dispositivo entro un giorno}one{Ripristina la versione precedente del dispositivo entro # giorno}other{Ripristina la versione precedente del dispositivo entro # giorni}}</translation>
+<translation id="4633185660152240791">{0,plural, =1{Ripristina la versione precedente del dispositivo entro un giorno}other{Ripristina la versione precedente del dispositivo entro # giorni}}</translation>
 <translation id="4642092649622328492">Acquisisce lo screenshot parziale</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, consiglio applicazione</translation>
 <translation id="4659419629803378708">ChromeVox attivato</translation>
@@ -671,7 +671,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> eventi</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> combinata con <ph name="IN_PLACE_APP" /> per creare una nuova cartella.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
-<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 altra notifica}one{altre # notifiche}other{altre # notifiche}}</translation>
+<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 altra notifica}other{altre # notifiche}}</translation>
 <translation id="5207949376430453814">Evidenzia il cursore di testo</translation>
 <translation id="5208059991603368177">On</translation>
 <translation id="5222676887888702881">Esci</translation>
@@ -870,7 +870,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 Nuova installazione</translation>
 <translation id="6559976592393364813">Rivolgiti all'amministratore</translation>
 <translation id="6565007273808762236">Connessione eSIM non disponibile</translation>
-<translation id="6570831796530454248">{0,plural, =1{Aggiorna il dispositivo entro 1 ora}one{Aggiorna il dispositivo entro # ora}other{Aggiorna il dispositivo entro # ore}}</translation>
+<translation id="6570831796530454248">{0,plural, =1{Aggiorna il dispositivo entro 1 ora}other{Aggiorna il dispositivo entro # ore}}</translation>
 <translation id="6570902864550063460">Carica tramite USB</translation>
 <translation id="6574587113394758819">Le notifiche di <ph name="APP_TITLE" /> sono nascoste perché è attiva la protezione di visualizzazione</translation>
 <translation id="6574622320167699133">Sbloccato dal tuo telefono. Tocca o fai clic per accedere.</translation>
@@ -922,7 +922,7 @@ Nuova installazione</translation>
 <translation id="6852052252232534364">Fai clic per attivare</translation>
 <translation id="6855029042976311970">Modificato poco fa</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sec</translation>
-<translation id="685782768769951078">{NUM_DIGITS,plural, =1{Manca una cifra}one{Mancano # cifre}other{Mancano # cifre}}</translation>
+<translation id="685782768769951078">{NUM_DIGITS,plural, =1{Manca una cifra}other{Mancano # cifre}}</translation>
 <translation id="6867938213751067702">Download di <ph name="FILENAME" /> sospeso</translation>
 <translation id="6878400149835617132">Scorciatoia disattivata</translation>
 <translation id="6880133753431418782">Hai cercato questa query in precedenza. Se elimini questa ricerca dalla cronologia, verrà rimossa in modo definitivo dal tuo Account Google su tutti i tuoi dispositivi.</translation>
@@ -1055,7 +1055,7 @@ Nuova installazione</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Aggiungi una nuova rete mobile</translation>
 <translation id="7720410380936703141">RIPROVA</translation>
-<translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notifica}one{# notifications}other{# notifiche}}</translation>
+<translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notifica}other{# notifiche}}</translation>
 <translation id="7724603315864178912">Taglia</translation>
 <translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Mostra app nella barra delle app</translation>
@@ -1079,7 +1079,7 @@ Nuova installazione</translation>
 <translation id="7872195908557044066">Il tuo amministratore sta reimpostando l'eSIM. Attendi qualche minuto.</translation>
 <translation id="7872786842639831132">Off</translation>
 <translation id="7875575368831396199">Sembra che il Bluetooth sia disattivato su <ph name="DEVICE_TYPE" />. Attiva il Bluetooth per utilizzare Phone Hub.</translation>
-<translation id="7877557217297072640">{0,plural, =0{Ripristina la versione precedente del dispositivo ora}=1{Ripristina la versione precedente del dispositivo entro 1 secondo}one{Ripristina la versione precedente del dispositivo entro # secondo}other{Ripristina la versione precedente del dispositivo entro # secondi}}</translation>
+<translation id="7877557217297072640">{0,plural, =0{Ripristina la versione precedente del dispositivo ora}=1{Ripristina la versione precedente del dispositivo entro 1 secondo}other{Ripristina la versione precedente del dispositivo entro # secondi}}</translation>
 <translation id="7886169021410746335">Modificare le impostazioni sulla privacy</translation>
 <translation id="7886277072580235377">La sessione Internet verrà cancellata al momento dell'uscita dall'account. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Invia un'email</translation>
@@ -1145,7 +1145,7 @@ Nuova installazione</translation>
 <translation id="8255234195843591763">Reimposta per aggiornare</translation>
 <translation id="826107067893790409">Premi INVIO per sbloccare per <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Elimina</translation>
-<translation id="8270450402312105425">{0,plural, =1{Ripristina la versione precedente del dispositivo entro un'ora}one{Ripristina la versione precedente del dispositivo entro # ora}other{Ripristina la versione precedente del dispositivo entro # ore}}</translation>
+<translation id="8270450402312105425">{0,plural, =1{Ripristina la versione precedente del dispositivo entro un'ora}other{Ripristina la versione precedente del dispositivo entro # ore}}</translation>
 <translation id="8284362522226889623">Scorri verso sinistra con quattro dita per passare alla scrivania precedente</translation>
 <translation id="828708037801473432">Off</translation>
 <translation id="8297006494302853456">Debole</translation>

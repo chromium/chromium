@@ -161,7 +161,7 @@
 <translation id="3102119246920354026">Cache</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Il dispositivo è collegato.</translation>
-<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Rimuovere la pagina?}=1{Rimuovere pagina {PAGE_NUMBER}?}one{Remove page {PAGE_NUMBER}?}other{Rimuovere pagina {PAGE_NUMBER}?}}</translation>
+<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Rimuovere la pagina?}=1{Rimuovere pagina {PAGE_NUMBER}?}other{Rimuovere pagina {PAGE_NUMBER}?}}</translation>
 <translation id="315116470104423982">Dati mobili</translation>
 <translation id="3156846309055100599">Scansione pagina <ph name="PAGE_NUMBER" /> in corso…</translation>
 <translation id="315738237743207937">Captive portal rilevato</translation>
@@ -172,7 +172,7 @@
 <translation id="3226405216343213872">Ricerca di scanner in corso…</translation>
 <translation id="3246869037381808805">I processi di stampa risalenti a oltre 1 giorno fa verranno rimossi</translation>
 <translation id="3268178239013324452">Operazione non riuscita - Sportello aperto</translation>
-<translation id="3283504360622356314">{0,plural, =1{Modifica file}one{Modifica file}other{Modifica file}}</translation>
+<translation id="3283504360622356314">{0,plural, =1{Modifica file}other{Modifica file}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">Direzione chiave</translation>
 <translation id="3310640316857623290">la latenza DNS è sostanzialmente al di sopra della soglia consentita</translation>
@@ -301,7 +301,7 @@
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> selezionato, premi Invio per selezionare gli album <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">(Android) risoluzione DNS</translation>
 <translation id="4848429997038228357">IN ESECUZIONE</translation>
-<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} tentativo rimanente}one{<ph name="ERROR_MESSAGE" /> {0} tentativi rimanenti}other{<ph name="ERROR_MESSAGE" /> {0} tentativi rimanenti}}</translation>
+<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} tentativo rimanente}other{<ph name="ERROR_MESSAGE" /> {0} tentativi rimanenti}}</translation>
 <translation id="4873827928179867585">Algoritmo di autenticazione</translation>
 <translation id="4880328057631981605">Nome punto di accesso</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
@@ -363,7 +363,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="5431318178759467895">A colori</translation>
 <translation id="5457599981699367932">Esplora come ospite</translation>
 <translation id="54609108002486618">Gestito</translation>
-<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} tentativo rimanente}one{{0} tentativi rimanenti}other{{0} tentativi rimanenti}}</translation>
+<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} tentativo rimanente}other{{0} tentativi rimanenti}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Impossibile completare la scansione</translation>
 <translation id="5502931783115429516">Android non funziona</translation>
@@ -390,7 +390,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="5895138241574237353">Riavvia</translation>
 <translation id="5916084858004523819">Non consentito</translation>
 <translation id="5916664084637901428">On</translation>
-<translation id="5921506667911082617">{COUNT,plural, =1{Il file è stato scansionato correttamente e salvato in <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{I file sono stati scansionati correttamente e salvati in <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{I file sono stati scansionati correttamente e salvati in <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
+<translation id="5921506667911082617">{COUNT,plural, =1{Il file è stato scansionato correttamente e salvato in <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{I file sono stati scansionati correttamente e salvati in <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">File non trovato</translation>
 <translation id="5939518447894949180">Reimposta</translation>
 <translation id="594552776027197022">Genera coppia di chiavi casuale</translation>
@@ -435,7 +435,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Debole (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6456394469623773452">Accettabile</translation>
-<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Scansionare di nuovo la pagina?}=1{Scansionare di nuovo pagina {PAGE_NUMBER}?}one{Rescan page {PAGE_NUMBER}?}other{Scansionare di nuovo pagina {PAGE_NUMBER}?}}</translation>
+<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Scansionare di nuovo la pagina?}=1{Scansionare di nuovo pagina {PAGE_NUMBER}?}other{Scansionare di nuovo pagina {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Gestito da <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Operazione interrotta - Fogli bloccati nella stampante</translation>
@@ -486,7 +486,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Stampa non riuscita - Autorizzazione negata</translation>
 <translation id="7103252855940681301">Il nome del dispositivo <ph name="INDEX" /> di <ph name="COUNT" /> è: <ph name="NAME" />.</translation>
-<translation id="7134436342991564651">{0,plural, =1{Server dei nomi}one{Server dei nomi}other{Server dei nomi}}</translation>
+<translation id="7134436342991564651">{0,plural, =1{Server dei nomi}other{Server dei nomi}}</translation>
 <translation id="7143207342074048698">Connessione</translation>
 <translation id="7144878232160441200">Riprova</translation>
 <translation id="714876143603641390">Connettività LAN</translation>
@@ -511,7 +511,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="741244894080940828">conversione</translation>
 <translation id="7415801143053185905">Latenza HTTP molto elevata</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
-<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Scansione completata. 1 pagina scansionata.}one{Scansione completata. {NUMBER_OF_PAGES} pagine scansionate.}other{Scansione completata. {NUMBER_OF_PAGES} pagine scansionate.}}</translation>
+<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Scansione completata. 1 pagina scansionata.}other{Scansione completata. {NUMBER_OF_PAGES} pagine scansionate.}}</translation>
 <translation id="7469648432129124067">Portale rilevato</translation>
 <translation id="7487067081878637334">Tecnologia</translation>
 <translation id="7490813197707563893">Indirizzo MAC</translation>
@@ -641,7 +641,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="8968751544471797276">Velocità di ricarica</translation>
 <translation id="8970109610781093811">Esegui di nuovo</translation>
 <translation id="8983038754672563810">HSPA</translation>
-<translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Scansiona}=1{Scansiona pagina {NUMBER_OF_PAGES}}one{Scan page {NUMBER_OF_PAGES}}other{Scansiona pagina {NUMBER_OF_PAGES}}}</translation>
+<translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Scansiona}=1{Scansiona pagina {NUMBER_OF_PAGES}}other{Scansiona pagina {NUMBER_OF_PAGES}}}</translation>
 <translation id="8997710128084572139">Percentuale di batteria del dispositivo a <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="9003704114456258138">Frequenza</translation>
 <translation id="9039663905644212491">PEAP</translation>

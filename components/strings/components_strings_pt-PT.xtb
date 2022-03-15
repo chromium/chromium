@@ -264,7 +264,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1699570257714336246">Informações em falta</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">Níveis de zoom</translation>
-<translation id="1706954506755087368">{1,plural, =1{Este servidor não conseguiu provar que é <ph name="DOMAIN" />; o seu certificado de segurança é supostamente de amanhã. Isto pode ser o resultado de uma configuração incorreta ou de um invasor a intercetar a sua ligação.}one{This server could not prove that it is <ph name="DOMAIN" />; its security certificate is supposedly from # days in the future. This may be caused by a misconfiguration or an attacker intercepting your connection.}other{Este servidor não conseguiu provar que é <ph name="DOMAIN" />; a data do seu certificado de segurança é supostamente daqui a # dias. Isto pode ser o resultado de uma configuração incorreta ou de um invasor a intercetar a sua ligação.}}</translation>
+<translation id="1706954506755087368">{1,plural, =1{Este servidor não conseguiu provar que é <ph name="DOMAIN" />; o seu certificado de segurança é supostamente de amanhã. Isto pode ser o resultado de uma configuração incorreta ou de um invasor a intercetar a sua ligação.}other{Este servidor não conseguiu provar que é <ph name="DOMAIN" />; a data do seu certificado de segurança é supostamente daqui a # dias. Isto pode ser o resultado de uma configuração incorreta ou de um invasor a intercetar a sua ligação.}}</translation>
 <translation id="1710259589646384581">SO</translation>
 <translation id="1711234383449478798">Ignorada porque a política <ph name="POLICY_NAME" /> não está definida como <ph name="VALUE" />.</translation>
 <translation id="1712552549805331520"><ph name="URL" /> pretende armazenar permanentemente os dados no seu computador local.</translation>
@@ -330,7 +330,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1883255238294161206">Fechar lista</translation>
 <translation id="1890171020361705182">Jogo Dino. Um dinossauro pixelizado desvia-se de catos e de pterodáctilos enquanto corre numa paisagem deserta. Quando ouvir uma pista de áudio, toque para saltar sobre os obstáculos.</translation>
 <translation id="1898423065542865115">Filtragem</translation>
-<translation id="1901443836186977402">{1,plural, =1{Este servidor não conseguiu provar que é o domínio <ph name="DOMAIN" />. O respetivo certificado de segurança expirou no último dia. Isto pode ser o resultado de uma configuração incorreta ou de um utilizador mal-intencionado que intercetou a sua ligação. O relógio do seu computador está atualmente definido para <ph name="CURRENT_DATE" />. Esta hora parece-lhe correta? Em caso negativo, corrija o relógio do sistema e, em seguida, atualize esta página.}one{Este servidor não conseguiu provar que é o domínio <ph name="DOMAIN" />. O respetivo certificado de segurança expirou há # dia(s). Isto pode ser o resultado de uma configuração incorreta ou de um invasor a intercetar a sua ligação. Atualmente, o relógio do computador está definido para <ph name="CURRENT_DATE" />. Esta hora parece-lhe correta? Em caso negativo, corrija o relógio do sistema e, em seguida, atualize esta página.}other{Este servidor não conseguiu provar que é o domínio <ph name="DOMAIN" />. O respetivo certificado de segurança expirou há # dias. Isto pode ser o resultado de uma configuração incorreta ou de um utilizador mal-intencionado que intercetou a sua ligação. O relógio do seu computador está atualmente definido para <ph name="CURRENT_DATE" />. Esta hora parece-lhe correta? Em caso negativo, corrija o relógio do sistema e, em seguida, atualize esta página.}}</translation>
+<translation id="1901443836186977402">{1,plural, =1{Este servidor não conseguiu provar que é o domínio <ph name="DOMAIN" />. O respetivo certificado de segurança expirou no último dia. Isto pode ser o resultado de uma configuração incorreta ou de um utilizador mal-intencionado que intercetou a sua ligação. O relógio do seu computador está atualmente definido para <ph name="CURRENT_DATE" />. Esta hora parece-lhe correta? Em caso negativo, corrija o relógio do sistema e, em seguida, atualize esta página.}other{Este servidor não conseguiu provar que é o domínio <ph name="DOMAIN" />. O respetivo certificado de segurança expirou há # dias. Isto pode ser o resultado de uma configuração incorreta ou de um utilizador mal-intencionado que intercetou a sua ligação. O relógio do seu computador está atualmente definido para <ph name="CURRENT_DATE" />. Esta hora parece-lhe correta? Em caso negativo, corrija o relógio do sistema e, em seguida, atualize esta página.}}</translation>
 <translation id="1902576642799138955">Período de validade</translation>
 <translation id="1906155288650175567">Botão Criar nota, prima Enter para criar rapidamente uma nova nota no Google Keep</translation>
 <translation id="1908217026282415406">Utilização e movimento da câmara</translation>
@@ -340,7 +340,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1916770123977586577">Para aplicar as definições atualizadas a este site, atualize esta página</translation>
 <translation id="1919345977826869612">Anúncios</translation>
 <translation id="1919367280705858090">Obter ajuda relativamente a uma mensagem de erro específica</translation>
-<translation id="192020519938775529">{COUNT,plural, =0{Nenhum}=1{1 site}one{# sites}other{# sites}}</translation>
+<translation id="192020519938775529">{COUNT,plural, =0{Nenhum}=1{1 site}other{# sites}}</translation>
 <translation id="1923390796829649802">Botão Gerir definições de acessibilidade, Enter para personalizar as ferramentas de acessibilidade nas definições do Chrome OS</translation>
 <translation id="1924727005275031552">Novo</translation>
 <translation id="1927439593081478069">Botão Executar verificação de segurança do Chrome, prima Enter para executar a verificação de segurança nas definições do Chrome</translation>
@@ -359,7 +359,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1988881251331415125">Se a ortografia estiver correta, <ph name="BEGIN_LINK" />experimente executar o Diagnóstico de conetividade<ph name="END_LINK" />.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> pretende armazenar permanentemente dados de grandes dimensões no seu computador local.</translation>
-<translation id="2001146170449793414">{COUNT,plural, =1{e mais 1}one{and # more}other{e mais #}}</translation>
+<translation id="2001146170449793414">{COUNT,plural, =1{e mais 1}other{e mais #}}</translation>
 <translation id="2003709556000175978">Repor a palavra-passe agora</translation>
 <translation id="2003775180883135320">Perfuração quádrupla na parte superior</translation>
 <translation id="201174227998721785">Faça a gestão das autorizações e dos dados armazenados em sites nas Definições do Chrome.</translation>
@@ -374,9 +374,9 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2042213636306070719">Tabuleiro 7</translation>
 <translation id="204357726431741734">Iniciar sessão para utilizar palavras-passe guardadas na sua Conta Google</translation>
 <translation id="2053111141626950936">As páginas em <ph name="LANGUAGE" /> não serão traduzidas.</translation>
-<translation id="2053373601901562871">{NUM_DAYS,plural, =0{Quando este controlo está ativado e o estado está ativo, o Chrome determina a que grupo alargado de pessoas, ou "coorte", a sua atividade de navegação recente é mais semelhante. Os anunciantes podem selecionar anúncios para o grupo e a sua atividade de navegação permanece privada no seu dispositivo. O seu grupo é atualizado todos os dias.}=1{Quando este controlo está ativado e o estado está ativo, o Chrome determina a que grupo alargado de pessoas, ou "coorte", a sua atividade de navegação recente é mais semelhante. Os anunciantes podem selecionar anúncios para o grupo e a sua atividade de navegação permanece privada no seu dispositivo. O seu grupo é atualizado todos os dias.}one{Quando este controlo está ativado e o estado está ativo, o Chrome determina a que grupo alargado de pessoas, ou "coorte", a sua atividade de navegação recente é mais semelhante. Os anunciantes podem selecionar anúncios para o grupo e a sua atividade de navegação permanece privada no seu dispositivo. O seu grupo é atualizado a cada {NUM_DAYS} dia(s).}other{Quando este controlo está ativado e o estado está ativo, o Chrome determina a que grupo alargado de pessoas, ou "coorte", a sua atividade de navegação recente é mais semelhante. Os anunciantes podem selecionar anúncios para o grupo e a sua atividade de navegação permanece privada no seu dispositivo. O seu grupo é atualizado a cada {NUM_DAYS} dias.}}</translation>
+<translation id="2053373601901562871">{NUM_DAYS,plural, =0{Quando este controlo está ativado e o estado está ativo, o Chrome determina a que grupo alargado de pessoas, ou "coorte", a sua atividade de navegação recente é mais semelhante. Os anunciantes podem selecionar anúncios para o grupo e a sua atividade de navegação permanece privada no seu dispositivo. O seu grupo é atualizado todos os dias.}=1{Quando este controlo está ativado e o estado está ativo, o Chrome determina a que grupo alargado de pessoas, ou "coorte", a sua atividade de navegação recente é mais semelhante. Os anunciantes podem selecionar anúncios para o grupo e a sua atividade de navegação permanece privada no seu dispositivo. O seu grupo é atualizado todos os dias.}other{Quando este controlo está ativado e o estado está ativo, o Chrome determina a que grupo alargado de pessoas, ou "coorte", a sua atividade de navegação recente é mais semelhante. Os anunciantes podem selecionar anúncios para o grupo e a sua atividade de navegação permanece privada no seu dispositivo. O seu grupo é atualizado a cada {NUM_DAYS} dias.}}</translation>
 <translation id="2053553514270667976">Código postal</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{1 sugestão}one{# suggestions}other{# sugestões}}</translation>
+<translation id="2064691555167957331">{COUNT,plural, =1{1 sugestão}other{# sugestões}}</translation>
 <translation id="2071156619270205202">Este cartão não é elegível para um número de cartão virtual.</translation>
 <translation id="2071692954027939183">As notificações foram automaticamente bloqueadas porque, geralmente, não as permite.</translation>
 <translation id="2079545284768500474">Anular</translation>
@@ -418,7 +418,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2169984857010174799">Kaku2 (Envelope)</translation>
 <translation id="2181821976797666341">Políticas</translation>
 <translation id="2183608646556468874">Número de telefone</translation>
-<translation id="2184405333245229118">{COUNT,plural, =1{1 endereço}one{# addresses}other{# endereços}}</translation>
+<translation id="2184405333245229118">{COUNT,plural, =1{1 endereço}other{# endereços}}</translation>
 <translation id="2187317261103489799">Detetar (predefinição)</translation>
 <translation id="2188375229972301266">Perfuração múltipla na parte inferior</translation>
 <translation id="2188852899391513400">A palavra-passe que acabou de utilizar foi encontrada numa violação de dados. Para proteger as suas contas, o Gestor de palavras-passe da Google recomenda que a altere agora e, em seguida, verifique as suas palavras-passe guardadas.</translation>
@@ -470,7 +470,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2355395290879513365">Os atacantes podem ver as imagens que está a visualizar neste site e enganá-lo ao modificá-las.</translation>
 <translation id="2356070529366658676">Perguntar</translation>
 <translation id="2357481397660644965">O seu dispositivo é gerido por <ph name="DEVICE_MANAGER" /> e a sua conta é gerida por <ph name="ACCOUNT_MANAGER" />.</translation>
-<translation id="2359347814217202136">{NUM_DAYS,plural, =0{Em menos de 1 dia}=1{Dentro de 1 dia}one{Dentro de {NUM_DAYS} dia(s)}other{Dentro de {NUM_DAYS} dias}}</translation>
+<translation id="2359347814217202136">{NUM_DAYS,plural, =0{Em menos de 1 dia}=1{Dentro de 1 dia}other{Dentro de {NUM_DAYS} dias}}</translation>
 <translation id="2359629602545592467">Várias</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="236340516568226369">Menu de interruptores de redimensionamento</translation>
@@ -520,7 +520,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2524461107774643265">Adicionar mais informações</translation>
 <translation id="2529899080962247600">Este campo não deve ter mais de <ph name="MAX_ITEMS_LIMIT" /> entradas. Todas as restantes entradas serão ignoradas.</translation>
 <translation id="2535585790302968248">Abra um novo separador de navegação anónima para navegar em privado</translation>
-<translation id="2535659140340599600">{COUNT,plural, =1{e mais 1}one{e mais #}other{e mais #}}</translation>
+<translation id="2535659140340599600">{COUNT,plural, =1{e mais 1}other{e mais #}}</translation>
 <translation id="2536110899380797252">Adicionar endereço</translation>
 <translation id="2539524384386349900">Detetar</translation>
 <translation id="2540701853218677861">Histórico de início/fim de sessão do dispositivo, incluindo data/hora e tentativas falhadas</translation>
@@ -565,7 +565,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="2659491813326907275">Personalize as ferramentas de acessibilidade nas definições do Chrome OS</translation>
 <translation id="2660779039299703961">Evento</translation>
-<translation id="2664887757054927933">{COUNT,plural, =0{Nenhuma}=1{1 palavra-passe (de <ph name="DOMAIN_LIST" />)}=2{2 palavras-passe (de <ph name="DOMAIN_LIST" />)}one{# palavra(s)-passe (de <ph name="DOMAIN_LIST" />)}other{# palavras-passe (de <ph name="DOMAIN_LIST" />)}}</translation>
+<translation id="2664887757054927933">{COUNT,plural, =0{Nenhuma}=1{1 palavra-passe (de <ph name="DOMAIN_LIST" />)}=2{2 palavras-passe (de <ph name="DOMAIN_LIST" />)}other{# palavras-passe (de <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Parte superior</translation>
 <translation id="2666117266261740852">Fechar outros separadores ou aplicações</translation>
 <translation id="2672201172023654893">O seu navegador não é gerido.</translation>
@@ -638,7 +638,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2922350208395188000">Não é possível verificar o certificado do servidor.</translation>
 <translation id="2925673989565098301">Método de fornecimento</translation>
 <translation id="2928905813689894207">Endereço de faturação</translation>
-<translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
+<translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930577230479659665">Cortar no fim de cada cópia</translation>
 <translation id="2932085390869194046">Sugerir palavra-passe…</translation>
 <translation id="2934466151127459956">Government-Letter</translation>
@@ -695,7 +695,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />Experimente executar o Diagnóstico de conetividade<ph name="END_LINK" />.</translation>
 <translation id="3121994479408824897">Ir para <ph name="DOMAIN" /></translation>
-<translation id="3137507986424712703">{COUNT,plural, =0{Sem}=1{dados de início de sessão para 1 conta}one{sign-in data for # accounts}other{dados de início de sessão para # contas}}</translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{Sem}=1{dados de início de sessão para 1 conta}other{dados de início de sessão para # contas}}</translation>
 <translation id="3145945101586104090">Falha ao descodificar resposta</translation>
 <translation id="3150653042067488994">Erro temporário do servidor</translation>
 <translation id="3154506275960390542">Esta página inclui um formulário que pode não ser enviado em segurança. Os dados que enviar podem ser vistos por outros utilizadores em trânsito ou podem ser modificados por um utilizador mal intencionado para alterar o que é recebido pelo servidor.</translation>
@@ -829,7 +829,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3518941727116570328">Processamento de vários objetos</translation>
 <translation id="3528171143076753409">O certificado do servidor não é fidedigno.</translation>
 <translation id="3528485271872257980">Castanho-escuro</translation>
-<translation id="3530944546672790857">{COUNT,plural, =0{Pelo menos 1 item em dispositivos sincronizados}=1{1 item (e mais em dispositivos sincronizados)}one{# itens (e mais em dispositivos sincronizados)}other{# itens (e mais em dispositivos sincronizados)}}</translation>
+<translation id="3530944546672790857">{COUNT,plural, =0{Pelo menos 1 item em dispositivos sincronizados}=1{1 item (e mais em dispositivos sincronizados)}other{# itens (e mais em dispositivos sincronizados)}}</translation>
 <translation id="3531780078352352885">Folhas da tarefa</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> pretende utilizar o seu microfone.</translation>
 <translation id="3533328374079021623">Caixa de correio 5</translation>
@@ -847,7 +847,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3586931643579894722">Ocultar detalhes</translation>
 <translation id="3587738293690942763">Central</translation>
 <translation id="3592413004129370115">Italian (Envelope)</translation>
-<translation id="3595699422137460894">{NUM_DAYS,plural, =0{Pode repor o grupo em qualquer altura. A adesão a um novo grupo demora cerca de um dia.}=1{Pode repor o grupo em qualquer altura. A adesão a um novo grupo demora cerca de um dia.}one{Pode repor o grupo em qualquer altura. A adesão a um novo grupo demora cerca de {NUM_DAYS} dia(s).}other{Pode repor o grupo em qualquer altura. A adesão a um novo grupo demora cerca de {NUM_DAYS} dias.}}</translation>
+<translation id="3595699422137460894">{NUM_DAYS,plural, =0{Pode repor o grupo em qualquer altura. A adesão a um novo grupo demora cerca de um dia.}=1{Pode repor o grupo em qualquer altura. A adesão a um novo grupo demora cerca de um dia.}other{Pode repor o grupo em qualquer altura. A adesão a um novo grupo demora cerca de {NUM_DAYS} dias.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">App bloqueada pelo seu administrador</translation>
 <translation id="3608932978122581043">Guiar a orientação</translation>
@@ -965,7 +965,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3962859241508114581">Faixa anterior</translation>
 <translation id="3963721102035795474">Modo de leitor</translation>
 <translation id="3963837677003247395">Pretende continuar manualmente?</translation>
-<translation id="3964661563329879394">{COUNT,plural, =0{Nenhum}=1{De 1 site }one{De # sites }other{De # sites }}</translation>
+<translation id="3964661563329879394">{COUNT,plural, =0{Nenhum}=1{De 1 site }other{De # sites }}</translation>
 <translation id="3969052498612555048">Não consegue encontrar o seu código? <ph name="BEGIN_LINK" />Obtenha um novo código<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">A calcular...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> está bloqueado</translation>
@@ -976,7 +976,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
     a todos os pedidos, mas, de momento, não é possível aplicar essa política.</translation>
 <translation id="4009243425692662128">O conteúdo das páginas que imprime é enviado para o Google Cloud ou terceiros para análise. Por exemplo, pode ser analisado quanto a dados confidenciais.</translation>
 <translation id="4010758435855888356">Pretende permitir o acesso ao armazenamento?</translation>
-<translation id="4014128326099193693">{COUNT,plural, =1{Documento PDF com {COUNT} página}one{Documento PDF com {COUNT} página(s)}other{Documento PDF com {COUNT} páginas}}</translation>
+<translation id="4014128326099193693">{COUNT,plural, =1{Documento PDF com {COUNT} página}other{Documento PDF com {COUNT} páginas}}</translation>
 <translation id="4023431997072828269">Uma vez que este formulário está a ser enviado através de uma ligação insegura, as suas informações vão ficar visíveis para outras pessoas.</translation>
 <translation id="4025913568718019429">Botão Gerir definições de privacidade do Google, prima Enter para visitar as definições de privacidade da sua Conta Google</translation>
 <translation id="4030383055268325496">&amp;Anular adição</translation>
@@ -1010,14 +1010,14 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4121428309786185360">Expira em</translation>
 <translation id="4123572138124678573">Perfuração tripla na parte inferior</translation>
 <translation id="4127575959421463246">Está à procura das sinalizações do Chrome OS? Visite</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{1 outro}one{# others}other{# outros}}</translation>
+<translation id="4129401438321186435">{COUNT,plural, =1{1 outro}other{# outros}}</translation>
 <translation id="4130226655945681476">Verificar os cabos de rede, o modem e o router</translation>
 <translation id="4134123981501319574">Criar documento</translation>
 <translation id="413544239732274901">Saiba mais</translation>
 <translation id="4142935452406587478">Tabuleiro 10</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4151403195736952345">Utilizar predefinição global (Detetar)</translation>
-<translation id="4152318981910038897">{COUNT,plural, =1{Página 1}one{Página {COUNT}}other{Página {COUNT}}}</translation>
+<translation id="4152318981910038897">{COUNT,plural, =1{Página 1}other{Página {COUNT}}}</translation>
 <translation id="4154664944169082762">Impressões digitais</translation>
 <translation id="4159784952369912983">Roxo</translation>
 <translation id="4165986682804962316">Definições de sites</translation>
@@ -1025,7 +1025,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4172051516777682613">Mostrar sempre</translation>
 <translation id="4173315687471669144">Foolscap</translation>
-<translation id="4173827307318847180">{MORE_ITEMS,plural, =1{Mais <ph name="ITEM_COUNT" /> item}one{Mais <ph name="ITEM_COUNT" /> item}other{Mais <ph name="ITEM_COUNT" /> itens}}</translation>
+<translation id="4173827307318847180">{MORE_ITEMS,plural, =1{Mais <ph name="ITEM_COUNT" /> item}other{Mais <ph name="ITEM_COUNT" /> itens}}</translation>
 <translation id="4176463684765177261">Desativado</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4194250254487269611">Não é possível guardar o seu cartão neste momento.</translation>
@@ -1077,7 +1077,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4275830172053184480">Reiniciar o dispositivo</translation>
 <translation id="4277028893293644418">Repor palavra-passe</translation>
 <translation id="4278390842282768270">Permitido</translation>
-<translation id="428639260510061158">{NUM_CARDS,plural, =1{Este cartão foi guardado na sua Conta Google.}one{Este(s) cartão(ões) foi/foram guardado(s) na sua Conta Google.}other{Estes cartões foram guardados na sua Conta Google.}}</translation>
+<translation id="428639260510061158">{NUM_CARDS,plural, =1{Este cartão foi guardado na sua Conta Google.}other{Estes cartões foram guardados na sua Conta Google.}}</translation>
 <translation id="4287885627794386150">Elegível para avaliação, mas não ativa</translation>
 <translation id="4297502707443874121">Miniatura da página <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="42981349822642051">Expandir</translation>
@@ -1235,7 +1235,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4764776831041365478">A página Web em <ph name="URL" /> poderá estar temporariamente inactiva ou poderá ter sido movida permanentemente para um novo endereço Web.</translation>
 <translation id="4766713847338118463">Agrafo duplo na parte inferior</translation>
 <translation id="4771973620359291008">Ocorreu um erro desconhecido.</translation>
-<translation id="477945296921629067">{NUM_POPUPS,plural, =1{Pop-up bloqueado}one{# pop-ups blocked}other{# pop-ups bloqueados}}</translation>
+<translation id="477945296921629067">{NUM_POPUPS,plural, =1{Pop-up bloqueado}other{# pop-ups bloqueados}}</translation>
 <translation id="4780366598804516005">Caixa de correio 1</translation>
 <translation id="4785376858512657294">Gerir Conta Google</translation>
 <translation id="4785689107224900852">Mudar para este separador</translation>
@@ -1266,7 +1266,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4866506163384898554">Prima |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| para mostrar o cursor</translation>
 <translation id="4876188919622883022">Vista simplificada</translation>
 <translation id="4876305945144899064">Sem nome de utilizador</translation>
-<translation id="4877083676943085827">{COUNT,plural, =0{Nenhuma}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}one{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
+<translation id="4877083676943085827">{COUNT,plural, =0{Nenhuma}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831">Pesquisa de <ph name="TEXT" /></translation>
 <translation id="4879491255372875719">Automático (predefinição)</translation>
 <translation id="4880827082731008257">Pesquisar histórico</translation>
@@ -1323,12 +1323,12 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5040262127954254034">Privacidade</translation>
 <translation id="5043480802608081735">Link que copiou</translation>
 <translation id="5045550434625856497">Palavra-passe incorrecta</translation>
-<translation id="5056425809654826431">{NUM_FILES,plural, =1{Para enviar este ficheiro através da funcionalidade Partilhar na proximidade, liberte espaço (<ph name="DISK_SPACE_SIZE" />) no seu dispositivo}one{Para enviar este(s) ficheiro(s) através da funcionalidade Partilhar na proximidade, liberte espaço (<ph name="DISK_SPACE_SIZE" />) no seu dispositivo}other{Para enviar estes ficheiros através da funcionalidade Partilhar na proximidade, liberte espaço (<ph name="DISK_SPACE_SIZE" />) no seu dispositivo}}</translation>
+<translation id="5056425809654826431">{NUM_FILES,plural, =1{Para enviar este ficheiro através da funcionalidade Partilhar na proximidade, liberte espaço (<ph name="DISK_SPACE_SIZE" />) no seu dispositivo}other{Para enviar estes ficheiros através da funcionalidade Partilhar na proximidade, liberte espaço (<ph name="DISK_SPACE_SIZE" />) no seu dispositivo}}</translation>
 <translation id="5056549851600133418">Artigos para si</translation>
 <translation id="5061227663725596739">Será que quis dizer <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Histórico de impressão</translation>
 <translation id="5068524481479508725">A10</translation>
-<translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(1 em utilização)}one{(# em utilização)}other{(# em utilização)}}</translation>
+<translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(1 em utilização)}other{(# em utilização)}}</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />Verificar o endereço proxy<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">Décimo rolo</translation>
 <translation id="507130231501693183">Caixa de correio 4</translation>
@@ -1455,7 +1455,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5452270690849572955">Não é possível encontrar esta página de <ph name="HOST_NAME" /></translation>
 <translation id="5455374756549232013">Carimbo de data/hora da política incorreto</translation>
 <translation id="5457113250005438886">Inválido</translation>
-<translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
+<translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="5463625433003343978">A localizar dispositivos…</translation>
 <translation id="5469868506864199649">Italiano</translation>
 <translation id="5470861586879999274">&amp;Refazer edição</translation>
@@ -1534,9 +1534,9 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5720705177508910913">Utilizador atual</translation>
 <translation id="5728056243719941842">C5 (Envelope)</translation>
 <translation id="5730040223043577876">O Chrome recomenda a reposição da palavra-passe se a tiver reutilizado noutros sites.</translation>
-<translation id="5737183892635480227">{NUM_CARDS,plural, =1{Guardar o cartão na sua Conta Google}one{Guardar o(s) cartão(ões) na sua Conta Google}other{Guardar os cartões na sua Conta Google}}</translation>
+<translation id="5737183892635480227">{NUM_CARDS,plural, =1{Guardar o cartão na sua Conta Google}other{Guardar os cartões na sua Conta Google}}</translation>
 <translation id="5745733273847572235">Pode solicitar a sua localização</translation>
-<translation id="5745980000221562234">{NUM_CARDS,plural, =1{Utilize um número virtual para este cartão}one{Selecione um cartão}other{Selecione um cartão}}</translation>
+<translation id="5745980000221562234">{NUM_CARDS,plural, =1{Utilize um número virtual para este cartão}other{Selecione um cartão}}</translation>
 <translation id="5759751709240058861">Utilizar e mover a sua câmara</translation>
 <translation id="5763042198335101085">Introduza um endereço de email válido</translation>
 <translation id="5765072501007116331">Para ver os métodos de fornecimento e os requisitos, selecione um endereço</translation>
@@ -1556,7 +1556,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5812947184178430888">Quando o Chrome sinaliza eventos de segurança, são enviados dados relevantes acerca dos eventos ao seu administrador. Estes podem incluir os URLs das páginas que visita no Chrome, os metadados ou os nomes de ficheiros e o nome de utilizador que utiliza para iniciar sessão nas aplicações baseadas na Web, no dispositivo e no Chrome.</translation>
 <translation id="5813119285467412249">&amp;Refazer adição</translation>
 <translation id="5817918615728894473">Sincronizar</translation>
-<translation id="5824687817967109979">{NUM_CARDS,plural, =1{Será efetuada uma cobrança neste cartão quando pagar, mas o respetivo número verdadeiro não será partilhado com este site. Como medida de segurança adicional, será gerado um CVC temporário.}one{Será efetuada uma cobrança no cartão que selecionar quando pagar, mas o respetivo número verdadeiro não será partilhado com este site. Como medida de segurança adicional, será gerado um CVC temporário.}other{Será efetuada uma cobrança no cartão que selecionar quando pagar, mas o respetivo número verdadeiro não será partilhado com este site. Como medida de segurança adicional, será gerado um CVC temporário.}}</translation>
+<translation id="5824687817967109979">{NUM_CARDS,plural, =1{Será efetuada uma cobrança neste cartão quando pagar, mas o respetivo número verdadeiro não será partilhado com este site. Como medida de segurança adicional, será gerado um CVC temporário.}other{Será efetuada uma cobrança no cartão que selecionar quando pagar, mas o respetivo número verdadeiro não será partilhado com este site. Como medida de segurança adicional, será gerado um CVC temporário.}}</translation>
 <translation id="5826507051599432481">Nome comum (CN)</translation>
 <translation id="5830698870816298009">utilização e movimento da câmara</translation>
 <translation id="5838278095973806738">Não deve introduzir informações confidenciais neste site (por exemplo, palavras-passe ou números de cartões de crédito), porque podem ser roubadas por atacantes.</translation>
@@ -1579,7 +1579,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sincronizados)</translation>
 <translation id="59174027418879706">Ativada</translation>
 <translation id="5919090499915321845">B10</translation>
-<translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 em utilização}one{# in use}other{# em utilização}}</translation>
+<translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 em utilização}other{# em utilização}}</translation>
 <translation id="5921185718311485855">Ativado</translation>
 <translation id="5921639886840618607">Pretende guardar o cartão na Conta Google?</translation>
 <translation id="5922853866070715753">Estamos quase a terminar</translation>
@@ -1692,7 +1692,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6290238015253830360">Os seus artigos sugeridos são apresentados aqui</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">Código de segurança:</translation>
-<translation id="6300452962057769623">{0,plural, =0{O seu dispositivo será reiniciado agora}=1{O seu dispositivo será reiniciado dentro de 1 segundo}one{O seu dispositivo será reiniciado dentro de # segundo(s)}other{O seu dispositivo será reiniciado dentro de # segundos}}</translation>
+<translation id="6300452962057769623">{0,plural, =0{O seu dispositivo será reiniciado agora}=1{O seu dispositivo será reiniciado dentro de 1 segundo}other{O seu dispositivo será reiniciado dentro de # segundos}}</translation>
 <translation id="6302269476990306341">Paragem do Assistente Google no Chrome</translation>
 <translation id="6305205051461490394"><ph name="URL" /> está inacessível.</translation>
 <translation id="6312113039770857350">Página Web não disponível</translation>
@@ -1706,7 +1706,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6337534724793800597">Filtrar políticas pelo nome</translation>
 <translation id="6340739886198108203">A política do administrador não recomenda fazer capturas de ecrã nem gravações quando existe conteúdo confidencial visível:</translation>
 <translation id="6349101878882523185">Instale a aplicação <ph name="APP_NAME" /></translation>
-<translation id="6353505687280762741">{COUNT,plural, =0{Nenhuma}=1{1 palavra-passe (de <ph name="DOMAIN_LIST" />, sincronizada)}=2{2 palavras-passe (de <ph name="DOMAIN_LIST" />, sincronizadas)}one{# palavra(s)-passe (de <ph name="DOMAIN_LIST" />, sincronizada(s))}other{# palavras-passe (de <ph name="DOMAIN_LIST" />, sincronizadas)}}</translation>
+<translation id="6353505687280762741">{COUNT,plural, =0{Nenhuma}=1{1 palavra-passe (de <ph name="DOMAIN_LIST" />, sincronizada)}=2{2 palavras-passe (de <ph name="DOMAIN_LIST" />, sincronizadas)}other{# palavras-passe (de <ph name="DOMAIN_LIST" />, sincronizadas)}}</translation>
 <translation id="6355392890578844978">Este navegador não é gerido por uma empresa ou outra entidade. A atividade neste dispositivo pode ser gerida fora do Chromium. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="6358450015545214790">O que significam?</translation>
 <translation id="6361757823711327522">B7</translation>
@@ -1715,7 +1715,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6377268785556383139">1 resultado para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">Possíveis cobranças se prosseguir.</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{1 outra sugestão}one{# other suggestions}other{# outras sugestões}}</translation>
+<translation id="6386120369904791316">{COUNT,plural, =1{1 outra sugestão}other{# outras sugestões}}</translation>
 <translation id="6387645831795005740">Por vezes, os atacantes imitam sites ao efetuarem alterações pequenas e difíceis de detetar no URL.</translation>
 <translation id="6389470377220713856">Nome no cartão</translation>
 <translation id="6390200185239044127">Dobrar metade em Z</translation>
@@ -1789,7 +1789,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Limpar</translation>
 <translation id="6645291930348198241">Aceder aos cookies e dados de sites.</translation>
-<translation id="6646269444027925224">{COUNT,plural, =0{Nenhum}=1{De 1 site (a sessão na sua Conta Google não é terminada).}one{From # sites (you won't be signed out of your Google Account)}other{De # sites (a sessão na sua Conta Google não é terminada).}}</translation>
+<translation id="6646269444027925224">{COUNT,plural, =0{Nenhum}=1{De 1 site (a sessão na sua Conta Google não é terminada).}other{De # sites (a sessão na sua Conta Google não é terminada).}}</translation>
 <translation id="6648459603387803038">O administrador pode alterar a configuração do navegador remotamente. A atividade neste dispositivo também pode ser gerida fora do Chrome.</translation>
 <translation id="6648524591329069940">Tipo de letra Serif</translation>
 <translation id="6651270836885078973">Gerido por:</translation>
@@ -1903,7 +1903,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="7031646650991750659">As apps do Google Play que instalou.</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para gerir as definições de privacidade da sua Conta Google</translation>
 <translation id="7050187094878475250">Tentou aceder a <ph name="DOMAIN" />, mas o servidor apresentou um certificado cujo período de validade é demasiado longo para ser fidedigno.</translation>
-<translation id="705310974202322020">{NUM_CARDS,plural, =1{De momento, não é possível guardar este cartão.}one{De momento, não é possível guardar este(s) cartão(ões).}other{De momento, não é possível guardar estes cartões.}}</translation>
+<translation id="705310974202322020">{NUM_CARDS,plural, =1{De momento, não é possível guardar este cartão.}other{De momento, não é possível guardar estes cartões.}}</translation>
 <translation id="7053983685419859001">Bloquear</translation>
 <translation id="7058163556978339998">O <ph name="BROWSER" /> confirmou que a <ph name="ISSUER" /> emitiu o certificado deste Website.</translation>
 <translation id="7062635574500127092">Azul esverdeado</translation>
@@ -1940,12 +1940,12 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="7139892792842608322">Tabuleiro principal</translation>
 <translation id="714064300541049402">Turno X da imagem 2 lateral</translation>
 <translation id="7152423860607593928">Number-14 (Envelope)</translation>
-<translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
+<translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">Lilás</translation>
 <translation id="7156870133441232244">É necessário atualizar o servidor para a versão TLS 1.2 ou posterior.</translation>
 <translation id="717330890047184534">ID Gaia:</translation>
 <translation id="7174545416324379297">Unida</translation>
-<translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
+<translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="7179323680825933600">Guardar e preencher métodos de pagamento</translation>
 <translation id="7180611975245234373">Atualizar</translation>
 <translation id="7181261019481237103">Abrir janela de navegação anónima</translation>
@@ -2017,7 +2017,7 @@ Detalhes adicionais:
 <translation id="7378627244592794276">Não</translation>
 <translation id="7378810950367401542">/</translation>
 <translation id="7386364858855961704">Não aplicável</translation>
-<translation id="7388594495505979117">{0,plural, =1{O seu dispositivo será reiniciado dentro de 1 minuto}one{O seu dispositivo será reiniciado dentro de # minuto(s)}other{O seu dispositivo será reiniciado dentro de # minutos}}</translation>
+<translation id="7388594495505979117">{0,plural, =1{O seu dispositivo será reiniciado dentro de 1 minuto}other{O seu dispositivo será reiniciado dentro de # minutos}}</translation>
 <translation id="7390545607259442187">Confirmar cartão</translation>
 <translation id="7392089738299859607">Atualize o endereço</translation>
 <translation id="7399802613464275309">Verificação de segurança</translation>
@@ -2106,7 +2106,7 @@ Detalhes adicionais:
 <translation id="762844065391966283">Um item de cada vez</translation>
 <translation id="7633909222644580952">Dados de desempenho e relatórios de falhas</translation>
 <translation id="7637571805876720304">Remover o cartão de crédito do Chromium?</translation>
-<translation id="7637586430889951925">{COUNT,plural, =0{Nenhuma}=1{1 palavra-passe na sua conta (para <ph name="DOMAIN_LIST" />)}one{# palavra(s)-passe na sua conta (para <ph name="DOMAIN_LIST" />)}other{# palavras-passe na sua conta (para <ph name="DOMAIN_LIST" />)}}</translation>
+<translation id="7637586430889951925">{COUNT,plural, =0{Nenhuma}=1{1 palavra-passe na sua conta (para <ph name="DOMAIN_LIST" />)}other{# palavras-passe na sua conta (para <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">Portas de série</translation>
 <translation id="7639968568612851608">Cinzento-escuro</translation>
 <translation id="7647206758853451655">Qualidade de impressão</translation>
@@ -2122,7 +2122,7 @@ Detalhes adicionais:
 <translation id="7667346355482952095">O símbolo da política devolvido está vazio ou não corresponde ao símbolo atual</translation>
 <translation id="7668654391829183341">Dispositivo desconhecido</translation>
 <translation id="7669271284792375604">Os utilizadores mal intencionados neste site podem tentar enganá-lo para instalar programas que são prejudiciais para a sua experiência de navegação (por exemplo, ao alterar a sua página inicial ou ao mostrar anúncios adicionais em sites que visita).</translation>
-<translation id="7669907849388166732">{COUNT,plural, =1{Ações tomadas com dados sinalizados como confidenciais (1 ação desde o início de sessão). <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" />}one{Ações tomadas com dados sinalizados como confidenciais (# ação(ões) desde o início de sessão). <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" />}other{Ações tomadas com dados sinalizados como confidenciais (# ações desde o início de sessão). <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" />}}</translation>
+<translation id="7669907849388166732">{COUNT,plural, =1{Ações tomadas com dados sinalizados como confidenciais (1 ação desde o início de sessão). <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" />}other{Ações tomadas com dados sinalizados como confidenciais (# ações desde o início de sessão). <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">Caixa de correio 6</translation>
 <translation id="7676643023259824263">Pesquisar texto da área de transferência, <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">Veja e faça a gestão do histórico de navegação nas definições do Chrome</translation>
@@ -2174,7 +2174,7 @@ Detalhes adicionais:
 <translation id="7815407501681723534">Encontrados <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> para "<ph name="SEARCH_STRING" />"</translation>
 <translation id="782886543891417279">A rede Wi-Fi que está a utilizar (<ph name="WIFI_NAME" />) pode exigir que visite a respetiva página de início de sessão.</translation>
 <translation id="7836231406687464395">Postfix (Envelope)</translation>
-<translation id="7844689747373518809">{COUNT,plural, =0{Nenhuma}=1{1 aplicação (<ph name="EXAMPLE_APP_1" />)}=2{2 aplicações (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# aplicação(ões) (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# aplicações (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
+<translation id="7844689747373518809">{COUNT,plural, =0{Nenhuma}=1{1 aplicação (<ph name="EXAMPLE_APP_1" />)}=2{2 aplicações (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# aplicações (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7862185352068345852">Pretende sair do site?</translation>
 <translation id="7865448901209910068">A melhor velocidade</translation>
@@ -2222,7 +2222,7 @@ Detalhes adicionais:
 <translation id="7998269595945679889">Botão Abrir separador de navegação anónima; prima Enter para abrir um novo separador de navegação anónima para navegar em privado</translation>
 <translation id="800218591365569300">Experimente fechar outros separadores ou programas para libertar memória.</translation>
 <translation id="8004582292198964060">Navegador</translation>
-<translation id="8012116502927253373">{NUM_CARDS,plural, =1{Este cartão e o respetivo endereço de faturação serão guardados. Pode utilizá-lo quando tiver sessão iniciada em <ph name="USER_EMAIL" />.}one{Este(s) cartão(ões) e o(s) respetivo(s) endereço(s) de faturação serão guardados. Pode utilizá-lo(s) quando tiver sessão iniciada em <ph name="USER_EMAIL" />.}other{Estes cartões e os respetivos endereços de faturação serão guardados. Pode utilizá-los quando tiver sessão iniciada em <ph name="USER_EMAIL" />.}}</translation>
+<translation id="8012116502927253373">{NUM_CARDS,plural, =1{Este cartão e o respetivo endereço de faturação serão guardados. Pode utilizá-lo quando tiver sessão iniciada em <ph name="USER_EMAIL" />.}other{Estes cartões e os respetivos endereços de faturação serão guardados. Pode utilizá-los quando tiver sessão iniciada em <ph name="USER_EMAIL" />.}}</translation>
 <translation id="8025119109950072390">Os utilizadores mal intencionados neste site podem enganá-lo no sentido de fazer algo perigoso como instalar software ou revelar as suas informações pessoais (por exemplo, palavras-passe, números de telefone ou cartões de crédito).</translation>
 <translation id="8026334261755873520">Limpar dados de navegação</translation>
 <translation id="8027077570865220386">Tabuleiro 15</translation>
@@ -2360,7 +2360,7 @@ Detalhes adicionais:
 <translation id="8449836157089738489">Abrir tudo num novo grupo de separadores</translation>
 <translation id="8457125768502047971">Indefinida</translation>
 <translation id="8461694314515752532">Encriptar dados sincronizados com a sua própria frase de acesso de sincronização</translation>
-<translation id="8466379296835108687">{COUNT,plural, =1{1 cartão de crédito}one{# credit cards}other{# cartões de crédito}}</translation>
+<translation id="8466379296835108687">{COUNT,plural, =1{1 cartão de crédito}other{# cartões de crédito}}</translation>
 <translation id="8473863474539038330">Endereços e mais</translation>
 <translation id="8474910779563686872">Mostrar detalhes do programador</translation>
 <translation id="8479754468255770962">Agrafo na parte inferior esquerda</translation>
@@ -2383,7 +2383,7 @@ Detalhes adicionais:
 <translation id="8542014550340843547">Agrafo triplo na parte inferior</translation>
 <translation id="8543181531796978784">Pode <ph name="BEGIN_ERROR_LINK" />comunicar um problema de deteção<ph name="END_ERROR_LINK" /> ou, se compreende os riscos para a sua segurança, <ph name="BEGIN_LINK" />aceda a este site não seguro<ph name="END_LINK" />.</translation>
 <translation id="8554010658308662631">Carregar mais</translation>
-<translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Repor autorização}one{Repor autorização(ões)}other{Repor autorizações}}</translation>
+<translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Repor autorização}other{Repor autorizações}}</translation>
 <translation id="8555010941760982128">Utilize este código no pagamento</translation>
 <translation id="8557066899867184262">O Código de Segurança/CVC está localizado no verso do cartão.</translation>
 <translation id="8559762987265718583">Não é possível estabelecer uma ligação privada a <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, porque a data e a hora do seu dispositivo (<ph name="DATE_AND_TIME" />) estão incorretas.</translation>
@@ -2598,7 +2598,7 @@ Detalhes adicionais:
 <translation id="962484866189421427">Este conteúdo poderá tentar instalar aplicações fraudulentas que se fazem passar por algo diferente ou que recolhem dados que podem ser utilizados para o monitorizar. <ph name="BEGIN_LINK" />Mostrar, mesmo assim<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Compilação oficial</translation>
 <translation id="973773823069644502">Adicionar endereço de entrega</translation>
-<translation id="975560348586398090">{COUNT,plural, =0{Nenhum}=1{1 item}one{# itens}other{# itens}}</translation>
+<translation id="975560348586398090">{COUNT,plural, =0{Nenhum}=1{1 item}other{# itens}}</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="984275831282074731">Métodos de pagamento</translation>
 <translation id="985199708454569384">&lt;p&gt;Este erro é apresentado se a data e a hora do computador ou do dispositivo móvel estiverem erradas.&lt;/p&gt;
