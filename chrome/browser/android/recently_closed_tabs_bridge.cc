@@ -11,6 +11,8 @@
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
+#include "chrome/browser/ui/android/tab_model/android_live_tab_context.h"
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "components/sessions/core/live_tab.h"
 #include "components/sessions/core/tab_restore_service.h"
@@ -23,8 +25,21 @@ using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
+using base::android::ScopedJavaLocalRef;
 
 namespace {
+
+bool TabEntryWithIdExists(const sessions::TabRestoreService::Entries& entries,
+                          SessionID session_id) {
+  for (const auto& entry : entries) {
+    DCHECK_EQ(entry->type, sessions::TabRestoreService::TAB);
+    if (entry->type == sessions::TabRestoreService::TAB &&
+        entry->id == session_id) {
+      return true;
+    }
+  }
+  return false;
+}
 
 void JNI_RecentlyClosedBridge_AddTabToList(
     JNIEnv* env,
@@ -91,55 +106,52 @@ jboolean RecentlyClosedTabsBridge::GetRecentlyClosedTabs(
 jboolean RecentlyClosedTabsBridge::OpenRecentlyClosedTab(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& jtab,
-    jint recent_tab_id,
+    const JavaParamRef<jobject>& jtab_model,
+    jint tab_session_id,
     jint j_disposition) {
   if (!tab_restore_service_)
     return false;
 
-  // Find and remove the corresponding tab entry from TabRestoreService.
-  // We take ownership of the returned tab.
-  std::unique_ptr<sessions::TabRestoreService::Tab> tab_entry(
-      tab_restore_service_->RemoveTabEntryById(
-          SessionID::FromSerializedValue(recent_tab_id)));
-  if (!tab_entry)
+  SessionID entry_id = SessionID::FromSerializedValue(tab_session_id);
+  // Ensure the corresponding tab entry from TabRestoreService is a tab.
+  if (!TabEntryWithIdExists(tab_restore_service_->entries(), entry_id)) {
     return false;
+  }
 
-  TabAndroid* tab_android = TabAndroid::GetNativeTab(env, jtab);
-  if (!tab_android)
+  auto* model = TabModelList::FindNativeTabModelForJavaObject(
+      ScopedJavaLocalRef<jobject>(env, jtab_model.obj()));
+  if (model == nullptr) {
     return false;
-  content::WebContents* web_contents = tab_android->web_contents();
-  if (!web_contents)
-    return false;
+  }
 
-  // RestoreForeignSessionTab needs a SessionTab.
-  sessions::SessionTab session_tab;
-  session_tab.current_navigation_index = tab_entry->current_navigation_index;
-  session_tab.navigations = tab_entry->navigations;
-
-  WindowOpenDisposition disposition =
-      static_cast<WindowOpenDisposition>(j_disposition);
-  SessionRestore::RestoreForeignSessionTab(web_contents,
-                                           session_tab,
-                                           disposition);
-  return true;
+  std::vector<sessions::LiveTab*> restored_tabs =
+      tab_restore_service_->RestoreEntryById(
+          model->GetLiveTabContext(), entry_id,
+          static_cast<WindowOpenDisposition>(j_disposition));
+  return !restored_tabs.empty();
 }
 
 jboolean RecentlyClosedTabsBridge::OpenMostRecentlyClosedTab(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj) {
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& obj,
+    const JavaParamRef<jobject>& jtab_model) {
   EnsureTabRestoreService();
-  if (!tab_restore_service_ || TabModelList::models().empty() ||
-      tab_restore_service_->entries().empty())
+  if (!tab_restore_service_ || tab_restore_service_->entries().empty()) {
     return false;
+  }
+
+  auto* model = TabModelList::FindNativeTabModelForJavaObject(
+      ScopedJavaLocalRef<jobject>(env, jtab_model.obj()));
+  if (model == nullptr) {
+    return false;
+  }
 
   // Passing nullptr here because LiveTabContext will be determined later by
   // a call to AndroidLiveTabContext::FindLiveTabContextWithID in
   // ChromeTabRestoreServiceClient.
-  std::vector<sessions::LiveTab*> restored_tab =
-      tab_restore_service_->RestoreMostRecentEntry(nullptr);
-
-  return !restored_tab.empty();
+  std::vector<sessions::LiveTab*> restored_tabs =
+      tab_restore_service_->RestoreMostRecentEntry(model->GetLiveTabContext());
+  return !restored_tabs.empty();
 }
 
 void RecentlyClosedTabsBridge::ClearRecentlyClosedTabs(

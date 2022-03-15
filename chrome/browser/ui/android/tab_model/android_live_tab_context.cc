@@ -8,6 +8,7 @@
 
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "components/sessions/content/content_live_tab.h"
@@ -22,8 +23,7 @@ AndroidLiveTabContext::AndroidLiveTabContext(TabModel* tab_model)
     : tab_model_(tab_model) {}
 
 // Called in tab restore service, but expected to do nothing on Android.
-void AndroidLiveTabContext::ShowBrowserWindow() {
-}
+void AndroidLiveTabContext::ShowBrowserWindow() {}
 
 SessionID AndroidLiveTabContext::GetSessionID() const {
   return tab_model_->GetSessionId();
@@ -136,8 +136,8 @@ sessions::LiveTab* AndroidLiveTabContext::AddRestoredTab(
 
   // Prepare navigation history.
   std::vector<std::unique_ptr<content::NavigationEntry>> nav_entries =
-        sessions::ContentSerializedNavigationBuilder::ToNavigationEntries(
-            navigations, profile);
+      sessions::ContentSerializedNavigationBuilder::ToNavigationEntries(
+          navigations, profile);
 
   // Restore web contents with navigation history.
   std::unique_ptr<content::WebContents> web_contents =
@@ -153,7 +153,6 @@ sessions::LiveTab* AndroidLiveTabContext::AddRestoredTab(
   return sessions::ContentLiveTab::GetForWebContents(raw_web_contents);
 }
 
-// Currently does nothing.
 sessions::LiveTab* AndroidLiveTabContext::ReplaceRestoredTab(
     const std::vector<sessions::SerializedNavigationEntry>& navigations,
     absl::optional<tab_groups::TabGroupId> group,
@@ -162,8 +161,17 @@ sessions::LiveTab* AndroidLiveTabContext::ReplaceRestoredTab(
     const sessions::PlatformSpecificTabData* tab_platform_data,
     const sessions::SerializedUserAgentOverride& user_agent_override,
     const std::map<std::string, std::string>& extra_data) {
-  NOTIMPLEMENTED();
-  return nullptr;
+  // Prepare navigation history.
+  sessions::SessionTab session_tab;
+  session_tab.current_navigation_index = selected_navigation;
+  session_tab.navigations = navigations;
+
+  // This is called only on replacement of the current tab.
+  content::WebContents* web_contents = tab_model_->GetActiveWebContents();
+  web_contents = SessionRestore::RestoreForeignSessionTab(
+      web_contents, session_tab, WindowOpenDisposition::CURRENT_TAB);
+  web_contents->GetController().LoadIfNecessary();
+  return sessions::ContentLiveTab::GetForWebContents(web_contents);
 }
 
 // Currently does nothing.

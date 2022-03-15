@@ -133,8 +133,9 @@ class MockTabRestoreServiceClient : public sessions::TabRestoreServiceClient {
   MockTabRestoreServiceClient() = default;
   ~MockTabRestoreServiceClient() override = default;
 
-  MOCK_METHOD6(CreateLiveTabContext,
+  MOCK_METHOD7(CreateLiveTabContext,
                sessions::LiveTabContext*(
+                   sessions::LiveTabContext* existing_context,
                    const std::string& app_name,
                    const gfx::Rect& bounds,
                    ui::WindowShowState show_state,

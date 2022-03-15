@@ -46,6 +46,7 @@ class SESSIONS_EXPORT TabRestoreServiceClient {
   // return nullptr (e.g., if the embedder does not support LiveTabContext
   // functionality).
   virtual LiveTabContext* CreateLiveTabContext(
+      LiveTabContext* existing_context,
       const std::string& app_name,
       const gfx::Rect& bounds,
       ui::WindowShowState show_state,

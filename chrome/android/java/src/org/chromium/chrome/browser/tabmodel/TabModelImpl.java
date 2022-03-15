@@ -871,7 +871,7 @@ public class TabModelImpl extends TabModelJniBridge {
 
         // If there are no pending closures in the rewound list,
         // then try to restore the tab from the native tab restore service.
-        mRecentlyClosedBridge.openRecentlyClosedTab();
+        mRecentlyClosedBridge.openMostRecentlyClosedTab(this);
         // If there is only one tab, select it.
         if (getCount() == 1) setIndex(0, TabSelectionType.FROM_NEW, false);
     }

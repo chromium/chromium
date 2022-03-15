@@ -35,6 +35,7 @@ ChromeTabRestoreServiceClient::ChromeTabRestoreServiceClient(Profile* profile)
 ChromeTabRestoreServiceClient::~ChromeTabRestoreServiceClient() {}
 
 sessions::LiveTabContext* ChromeTabRestoreServiceClient::CreateLiveTabContext(
+    sessions::LiveTabContext* existing_context,
     const std::string& app_name,
     const gfx::Rect& bounds,
     ui::WindowShowState show_state,
@@ -42,9 +43,10 @@ sessions::LiveTabContext* ChromeTabRestoreServiceClient::CreateLiveTabContext(
     const std::string& user_title,
     const std::map<std::string, std::string>& extra_data) {
 #if BUILDFLAG(IS_ANDROID)
-  // Android does not support creating a LiveTabContext here.
-  NOTREACHED();
-  return nullptr;
+  // Android does not support creating a LiveTabContext here. Return the
+  // existing context instead.
+  DCHECK(existing_context);
+  return existing_context;
 #else
   return BrowserLiveTabContext::Create(profile_, app_name, bounds, show_state,
                                        workspace, user_title, extra_data);

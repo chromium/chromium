@@ -1487,9 +1487,8 @@ std::vector<LiveTab*> TabRestoreServiceImpl::RestoreMostRecentEntry(
   return helper_.RestoreMostRecentEntry(context);
 }
 
-std::unique_ptr<TabRestoreService::Tab>
-TabRestoreServiceImpl::RemoveTabEntryById(SessionID id) {
-  return helper_.RemoveTabEntryById(id);
+void TabRestoreServiceImpl::RemoveTabEntryById(SessionID id) {
+  helper_.RemoveTabEntryById(id);
 }
 
 std::vector<LiveTab*> TabRestoreServiceImpl::RestoreEntryById(

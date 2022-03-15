@@ -84,5 +84,4 @@ class AndroidLiveTabContext : public sessions::LiveTabContext {
   raw_ptr<TabModel> tab_model_;
 };
 
-
 #endif  // CHROME_BROWSER_UI_ANDROID_TAB_MODEL_ANDROID_LIVE_TAB_CONTEXT_H_

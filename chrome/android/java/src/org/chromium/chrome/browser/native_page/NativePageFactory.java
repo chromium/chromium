@@ -196,7 +196,7 @@ public class NativePageFactory {
         }
 
         protected NativePage buildRecentTabsPage(Tab tab) {
-            RecentTabsManager recentTabsManager = new RecentTabsManager(tab,
+            RecentTabsManager recentTabsManager = new RecentTabsManager(tab, mTabModelSelector,
                     Profile.fromWebContents(tab.getWebContents()), mActivity,
                     ()
                             -> HistoryManagerUtils.showHistoryManager(

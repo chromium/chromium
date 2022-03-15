@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 
+#include <jni.h>
+
+#include "base/android/jni_android.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
@@ -92,6 +95,18 @@ TabModel* TabModelList::FindTabModelWithId(SessionID desired_id) {
   for (TabModel* model : models()) {
     if (model->GetSessionId() == desired_id)
       return model;
+  }
+
+  return nullptr;
+}
+
+TabModel* TabModelList::FindNativeTabModelForJavaObject(
+    const base::android::ScopedJavaLocalRef<jobject>& jtab_model) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  for (TabModel* model : models()) {
+    if (env->IsSameObject(jtab_model.obj(), model->GetJavaObject().obj())) {
+      return model;
+    }
   }
 
   return nullptr;

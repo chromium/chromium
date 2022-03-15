@@ -246,8 +246,8 @@ class SESSIONS_EXPORT TabRestoreService : public KeyedService {
   virtual std::vector<LiveTab*> RestoreMostRecentEntry(
       LiveTabContext* context) = 0;
 
-  // Removes the Tab with id |id| from the list and returns it.
-  virtual std::unique_ptr<Tab> RemoveTabEntryById(SessionID id) = 0;
+  // Removes the Entry with id |id| if it is a Tab entry.
+  virtual void RemoveTabEntryById(SessionID id) = 0;
 
   // Restores an entry by id. If there is no entry with an id matching |id|,
   // this does nothing. If |context| is NULL, this creates a new window for the

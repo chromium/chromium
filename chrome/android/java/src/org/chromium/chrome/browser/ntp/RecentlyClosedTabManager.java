@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.ntp;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 
 import java.util.List;
 
@@ -30,18 +30,21 @@ public interface RecentlyClosedTabManager {
      * Opens a recently closed tab in the current tab or a new tab. If opened in the current tab,
      * the current tab's entire history is replaced.
      *
-     * @param tab The current Tab.
+     * @param tabModel The {@link TabModel} to open the tab into.
      * @param recentTab The RecentlyClosedTab to open.
      * @param windowOpenDisposition The WindowOpenDisposition value specifying whether to open in
-     *         the current tab or a new tab.
+     *         the current tab or a new tab. The current tab is found in native.
      * @return Whether the tab was successfully opened.
      */
-    boolean openRecentlyClosedTab(Tab tab, RecentlyClosedTab recentTab, int windowOpenDisposition);
+    boolean openRecentlyClosedTab(
+            TabModel tabModel, RecentlyClosedTab recentTab, int windowOpenDisposition);
 
     /**
      * Opens the most recently closed tab in a new tab.
+     *
+     * @param tabModel The {@link TabModel} to open the tab into.
      */
-    void openRecentlyClosedTab();
+    void openMostRecentlyClosedTab(TabModel tabModel);
 
     /**
      * Clears all recently closed tabs.

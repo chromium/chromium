@@ -129,9 +129,7 @@ TabRestoreServiceHelper::TabRestoreServiceHelper(
       time_factory_(time_factory) {
   DCHECK(tab_restore_service_);
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
-      this,
-      "TabRestoreServiceHelper",
-      base::ThreadTaskRunnerHandle::Get());
+      this, "TabRestoreServiceHelper", base::ThreadTaskRunnerHandle::Get());
 }
 
 void TabRestoreServiceHelper::SetHelperObserver(Observer* observer) {
@@ -145,8 +143,7 @@ TabRestoreServiceHelper::~TabRestoreServiceHelper() {
       this);
 }
 
-void TabRestoreServiceHelper::AddObserver(
-    TabRestoreServiceObserver* observer) {
+void TabRestoreServiceHelper::AddObserver(TabRestoreServiceObserver* observer) {
   observer_list_.AddObserver(observer);
 }
 
@@ -440,19 +437,13 @@ std::vector<LiveTab*> TabRestoreServiceHelper::RestoreMostRecentEntry(
                           WindowOpenDisposition::UNKNOWN);
 }
 
-std::unique_ptr<TabRestoreService::Tab>
-TabRestoreServiceHelper::RemoveTabEntryById(SessionID id) {
+void TabRestoreServiceHelper::RemoveTabEntryById(SessionID id) {
   auto it = GetEntryIteratorById(id);
-  if (it == entries_.end())
-    return nullptr;
+  if (it == entries_.end() || (*it)->type != TabRestoreService::TAB)
+    return;
 
-  if ((*it)->type != TabRestoreService::TAB)
-    return nullptr;
-
-  auto tab = std::unique_ptr<Tab>(static_cast<Tab*>(it->release()));
   entries_.erase(it);
   NotifyTabsChanged();
-  return tab;
 }
 
 std::vector<LiveTab*> TabRestoreServiceHelper::RestoreEntryById(
@@ -498,8 +489,8 @@ std::vector<LiveTab*> TabRestoreServiceHelper::RestoreEntryById(
       // restored.
       if (entry_id_matches_restore_id || !window.app_name.empty()) {
         context = client_->CreateLiveTabContext(
-            window.app_name, window.bounds, window.show_state, window.workspace,
-            window.user_title, window.extra_data);
+            context, window.app_name, window.bounds, window.show_state,
+            window.workspace, window.user_title, window.extra_data);
 
         base::flat_map<tab_groups::TabGroupId, tab_groups::TabGroupId>
             new_group_ids;
@@ -755,13 +746,12 @@ bool TabRestoreServiceHelper::OnMemoryDump(
     return true;
   }
 
-  std::string entries_dump_name = base::StringPrintf(
-      "tab_restore/service_helper_0x%" PRIXPTR "/entries",
-      reinterpret_cast<uintptr_t>(this));
+  std::string entries_dump_name =
+      base::StringPrintf("tab_restore/service_helper_0x%" PRIXPTR "/entries",
+                         reinterpret_cast<uintptr_t>(this));
   pmd->CreateAllocatorDump(entries_dump_name)
       ->AddScalar(MemoryAllocatorDump::kNameObjectCount,
-                  MemoryAllocatorDump::kUnitsObjects,
-                  entries_.size());
+                  MemoryAllocatorDump::kUnitsObjects, entries_.size());
 
   for (const auto& entry : entries_) {
     const char* type_string = "";
@@ -778,9 +768,7 @@ bool TabRestoreServiceHelper::OnMemoryDump(
     }
 
     std::string entry_dump_name = base::StringPrintf(
-        "%s/%s_0x%" PRIXPTR,
-        entries_dump_name.c_str(),
-        type_string,
+        "%s/%s_0x%" PRIXPTR, entries_dump_name.c_str(), type_string,
         reinterpret_cast<uintptr_t>(entry.get()));
     auto* entry_dump = pmd->CreateAllocatorDump(entry_dump_name);
 
@@ -789,8 +777,7 @@ bool TabRestoreServiceHelper::OnMemoryDump(
                           entry->EstimateMemoryUsage());
 
     auto age = base::Time::Now() - entry->timestamp;
-    entry_dump->AddScalar("age",
-                          MemoryAllocatorDump::kUnitsObjects,
+    entry_dump->AddScalar("age", MemoryAllocatorDump::kUnitsObjects,
                           age.InSeconds());
 
     if (system_allocator_name)
@@ -891,8 +878,8 @@ LiveTabContext* TabRestoreServiceHelper::RestoreTab(
       tab_index = tab.tabstrip_index;
     } else {
       context = client_->CreateLiveTabContext(
-          std::string(), gfx::Rect(), ui::SHOW_STATE_NORMAL, std::string(),
-          std::string(), std::map<std::string, std::string>());
+          context, std::string(), gfx::Rect(), ui::SHOW_STATE_NORMAL,
+          std::string(), std::string(), std::map<std::string, std::string>());
       if (tab.browser_id)
         UpdateTabBrowserIDs(tab.browser_id, context->GetSessionID());
     }

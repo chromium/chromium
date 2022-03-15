@@ -20,6 +20,8 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
 import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
@@ -53,9 +55,11 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
     private static RecentlyClosedTabManager sRecentlyClosedTabManagerForTests;
 
     private final Profile mProfile;
-    private final Tab mTab;
+    private final Tab mActiveTab;
+    private final TabModelSelector mTabModelSelector;
     private final Runnable mShowHistoryManager;
 
+    private TabModel mTabModel;
     private @SyncPromoState int mPromoState = SyncPromoState.NO_PROMO;
     private FaviconHelper mFaviconHelper;
     private ForeignSessionHelper mForeignSessionHelper;
@@ -75,14 +79,16 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
      * Create an RecentTabsManager to be used with RecentTabsPage and RecentTabsRowAdapter.
      *
      * @param tab The Tab that is showing this recent tabs page.
+     * @param tabModelSelector The TabModelSelector that contains or will contain {@code tab}.
      * @param profile Profile that is associated with the current session.
      * @param context the Android context this manager will work in.
      * @param showHistoryManager Runnable showing history manager UI.
      */
-    public RecentTabsManager(
-            Tab tab, Profile profile, Context context, Runnable showHistoryManager) {
+    public RecentTabsManager(Tab tab, TabModelSelector tabModelSelector, Profile profile,
+            Context context, Runnable showHistoryManager) {
         mProfile = profile;
-        mTab = tab;
+        mActiveTab = tab;
+        mTabModelSelector = tabModelSelector;
         mShowHistoryManager = showHistoryManager;
         mForeignSessionHelper = new ForeignSessionHelper(profile);
         mPrefs = new RecentTabsPagePrefs(profile);
@@ -132,7 +138,6 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
         mRecentlyClosedTabManager.destroy();
         mRecentlyClosedTabManager = null;
 
-
         mUpdatedCallback = null;
 
         mPrefs.destroy();
@@ -180,7 +185,7 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
             int windowDisposition) {
         if (mIsDestroyed) return;
         RecordUserAction.record("MobileRecentTabManagerTabFromOtherDeviceOpened");
-        mForeignSessionHelper.openForeignSessionTab(mTab, session, tab, windowDisposition);
+        mForeignSessionHelper.openForeignSessionTab(mActiveTab, session, tab, windowDisposition);
     }
 
     /**
@@ -193,7 +198,8 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
     public void openRecentlyClosedTab(RecentlyClosedTab tab, int windowDisposition) {
         if (mIsDestroyed) return;
         RecordUserAction.record("MobileRecentTabManagerRecentTabOpened");
-        mRecentlyClosedTabManager.openRecentlyClosedTab(mTab, tab, windowDisposition);
+        // Window disposition will select which tab to open.
+        mRecentlyClosedTabManager.openRecentlyClosedTab(getTabModel(), tab, windowDisposition);
     }
 
     /**
@@ -209,7 +215,7 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
      * @return the tab instance being managed by this object.
      */
     public Tab activeTab() {
-        return mTab;
+        return mActiveTab;
     }
 
     /**
@@ -413,6 +419,18 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
         if (mIsDestroyed) return;
         updateForeignSessions();
         onUpdateDone();
+    }
+
+    private TabModel getTabModel() {
+        // When RecentTabsManager is created for a new tab then {@link mActiveTab} is being
+        // created and will not be present in a {@link TabModel} of {@link mTabModelSelector}.
+        // Defer finding the {@link TabModel} until the first time it is needed after the
+        // constructor has finished.
+        if (mTabModel != null) return mTabModel;
+
+        mTabModel = mTabModelSelector.getModelForTabId(mActiveTab.getId());
+        assert mTabModel != null;
+        return mTabModel;
     }
 
     @VisibleForTesting

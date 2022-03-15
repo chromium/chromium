@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.ntp;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,12 +35,12 @@ public class FakeRecentlyClosedTabManager implements RecentlyClosedTabManager {
 
     @Override
     public boolean openRecentlyClosedTab(
-            Tab tab, RecentlyClosedTab recentTab, int windowOpenDisposition) {
+            TabModel tabModel, RecentlyClosedTab recentTab, int windowOpenDisposition) {
         return false;
     }
 
     @Override
-    public void openRecentlyClosedTab() {}
+    public void openMostRecentlyClosedTab(TabModel tabModel) {}
 
     @Override
     public void clearRecentlyClosedTabs() {
