@@ -23,6 +23,7 @@ import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.MessageScopeType;
+import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -95,9 +96,10 @@ public class LinkToTextIPHController {
                 model, tab.getWebContents(), MessageScopeType.NAVIGATION, false);
     }
 
-    private void onMessageButtonClicked() {
+    private @PrimaryActionClickBehavior int onMessageButtonClicked() {
         onOpenInChrome(LinkToTextHelper.SHARED_HIGHLIGHTING_SUPPORT_URL);
         mTracker.dismissed(FEATURE_NAME);
+        return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
     }
 
     private void onMessageDismissed(Integer dismissReason) {

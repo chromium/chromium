@@ -18,6 +18,7 @@ import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.MessageScopeType;
+import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.components.webapps.WebappsIconUtils;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -91,9 +92,10 @@ public class InstantAppsMessageDelegate {
     /**
      * Open the Instant App when the message primary button is clicked.
      */
-    private void handlePrimaryAction() {
+    private @PrimaryActionClickBehavior int handlePrimaryAction() {
         InstantAppsMessageDelegateJni.get().onPrimaryAction(mData.isInstantAppDefault());
         InstantAppsHandler.getInstance().launchFromBanner(mData);
+        return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
     }
 
     /**

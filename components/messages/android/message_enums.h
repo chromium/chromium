@@ -105,6 +105,15 @@ enum class MessageIdentifier {
   COUNT
 };
 
+// The behavior the message should follow when the primary button is clicked,
+// after running the primary action callback.
+//
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.messages
+enum class PrimaryActionClickBehavior {
+  DO_NOT_DISMISS = 0,
+  DISMISS_IMMEDIATELY = 1
+};
+
 }  // namespace messages
 
 #endif  // COMPONENTS_MESSAGES_ANDROID_MESSAGE_ENUMS_H_

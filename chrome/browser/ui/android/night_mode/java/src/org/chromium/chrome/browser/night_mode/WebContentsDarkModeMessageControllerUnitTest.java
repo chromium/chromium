@@ -106,7 +106,7 @@ public class WebContentsDarkModeMessageControllerUnitTest {
         }
 
         private void clickButton() {
-            mShownMessageModel.get(MessageBannerProperties.ON_PRIMARY_ACTION).run();
+            mShownMessageModel.get(MessageBannerProperties.ON_PRIMARY_ACTION).get();
         }
     }
 
