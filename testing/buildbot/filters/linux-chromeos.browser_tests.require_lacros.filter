@@ -11,9 +11,10 @@ Dictation*
 SelectToSpeak*
 SwitchAccess*
 # TODO(crbug.com/1245416) Enable more accessibility tests.
--ChromeVoxBackgroundTest.*
--ChromeVoxEditingTest.*
--ChromeVoxOutputE2ETest.*
+-ChromeVoxBackgroundTest.SwipeLeftRight4ByContainers
+-ChromeVoxBackgroundTest.TabSwitchAndRefreshRecovery
+-ChromeVoxBackgroundTest.TextSelectionAndLiveRegion
+-ChromeVoxBackgroundTest.TouchEditingState
 -ChromeVoxDesktopAutomationHandlerTest.TaskManagerTableView
 -ChromeVoxISearchTest.Simple
 -ChromeVoxPanelTest.FormControlsMenu
@@ -28,6 +29,11 @@ SwitchAccess*
 -SwitchAccessItemScanManagerTest.*
 -SwitchAccessPointScanManagerTest.PointScanLeftClick
 # Flaky (crbug.com/1268842).
--ChromeVoxLiveRegionsTest.LiveRegionRemoveElement
--ChromeVoxLiveRegionsTest.LiveRegionAddElement
+-ChromeVoxBackgroundTest.GestureOnPopUpButton
+-ChromeVoxBackgroundTest.HitTestOnExoSurface
+-ChromeVoxEditingTest.JumpCommandsSyncSelection
+-ChromeVoxBackgroundTest.ListBoxItemsNavigation
 -ChromeVoxLiveRegionsTest.FocusThenLiveRegion
+-ChromeVoxLiveRegionsTest.LiveRegionAddElement
+-ChromeVoxLiveRegionsTest.LiveRegionRemoveElement
+-ChromeVoxUserActionMonitorTest.Gestures

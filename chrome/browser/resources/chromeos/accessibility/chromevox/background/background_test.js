@@ -2088,15 +2088,26 @@ TEST_F('ChromeVoxBackgroundTest', 'EventFromAction', function() {
 
 TEST_F('ChromeVoxBackgroundTest', 'EventFromUser', function() {
   const site = '<button>ok</button><button>cancel</button>';
-  this.runWithLoadedTree(site, function(root) {
-    const button = root.findAll({role: RoleType.BUTTON})[1];
-    button.addEventListener(EventType.FOCUS, this.newCallback(function(evt) {
-      assertEquals(RoleType.BUTTON, evt.target.role);
-      assertEquals('user', evt.eventFrom);
-      assertEquals('cancel', evt.target.name);
-    }));
+  this.runWithLoadedTree(site, async function(root) {
+    const buttons = root.findAll({role: RoleType.BUTTON});
+    const okButton = buttons[0];
+    const cancelButton = buttons[1];
+
+    await new Promise(r => {
+      if (okButton.state.focused) {
+        r();
+      } else {
+        okButton.addEventListener('focus', r);
+      }
+    });
 
     press(KeyCode.TAB)();
+
+    const evt =
+        await new Promise(r => cancelButton.addEventListener('focus', r));
+    assertEquals(RoleType.BUTTON, evt.target.role);
+    assertEquals('user', evt.eventFrom);
+    assertEquals('cancel', evt.target.name);
   });
 });
 

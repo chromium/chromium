@@ -220,23 +220,11 @@ E2ETestBase = class extends testing.Test {
 
                     // This populates the address bar as if we typed the url.
                     focus.setValue(url);
-
-                    // Next, wait until the auto completion shows up.
-                    const clickAutocomplete = () => {
-                      focus.removeEventListener(
-                          'controlsChanged', clickAutocomplete);
-
-                      // The text field relates to the auto complete list box
-                      // via controlledBy. The |controls| node structure here
-                      // nests several levels until the listBoxOption we want.
-                      const autoCompleteListBoxOption =
-                          focus.controls[0].firstChild.firstChild;
-                      assertEquals(
-                          'listBoxOption', autoCompleteListBoxOption.role);
-                      autoCompleteListBoxOption.doDefault();
+                    const onValueChanged = e => {
+                      focus.removeEventListener('valueChanged', onValueChanged);
+                      EventGenerator.sendKeyPress(KeyCode.RETURN);
                     };
-                    focus.addEventListener(
-                        'controlsChanged', clickAutocomplete);
+                    focus.addEventListener('valueChanged', onValueChanged);
                   }
                 });
                 return;
@@ -266,6 +254,10 @@ E2ETestBase = class extends testing.Test {
             if (!hasLacrosChromePath) {
               const createParams = {active: true, url};
               chrome.tabs.create(createParams);
+            } else {
+              chrome.automation.getFocus(f => {
+                listener({target: f});
+              });
             }
           });
     });
