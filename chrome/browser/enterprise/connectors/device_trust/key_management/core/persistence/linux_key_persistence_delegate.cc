@@ -15,6 +15,7 @@
 #include "base/notreached.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/shared_command_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -23,36 +24,44 @@ using BPKUP = enterprise_management::BrowserPublicKeyUploadResponse;
 
 namespace enterprise_connectors {
 
+namespace {
+
+// Path to the signing key file differs based on chrome/chromium build.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+base::FilePath::CharType kDirPolicyPath[] =
+    FILE_PATH_LITERAL("/etc/opt/chrome/policies");
+#else
+base::FilePath::CharType kDirPolicyPath[] =
+    FILE_PATH_LITERAL("/etc/chromium/policies");
+#endif
+
+// Returns the created signing key file with the specified file `flags`.
+base::File OpenSigningKeyFile(uint32_t flags) {
+  base::FilePath path(kDirPolicyPath);
+  return base::File(path.Append(constants::kSigningKeyFilePath), flags);
+}
+
+}  // namespace
+
 LinuxKeyPersistenceDelegate::~LinuxKeyPersistenceDelegate() = default;
 const int kMaxBufferSize = 2048;
 const char kSigningKeyName[] = "signingKey";
 const char kSigningKeyTrustLevel[] = "trustLevel";
 
-// Path to the signing key file differs based on chrome/chromium build.
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-base::FilePath::CharType kSigningKeyFilePath[] = FILE_PATH_LITERAL(
-    "/etc/opt/chrome/policies/enrollment/DeviceTrustSigningKey");
-#else
-base::FilePath::CharType kSigningKeyFilePath[] = FILE_PATH_LITERAL(
-    "/etc/chromium/policies/enrollment/DeviceTrustSigningKey");
-#endif
-
 bool LinuxKeyPersistenceDelegate::StoreKeyPair(
     KeyPersistenceDelegate::KeyTrustLevel trust_level,
     std::vector<uint8_t> wrapped) {
-  base::File file;
-  base::FilePath filepath(kSigningKeyFilePath);
-
   if (trust_level == BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED) {
     DCHECK_EQ(wrapped.size(), 0u);
-    file = base::File(filepath, base::File::FLAG_OPEN_TRUNCATED);
+    base::File file = OpenSigningKeyFile(base::File::FLAG_OPEN_TRUNCATED |
+                                         base::File::FLAG_WRITE);
     return file.error_details() == base::File::FILE_OK;
   }
 
-  file = base::File(filepath, base::File::FLAG_OPEN | base::File::FLAG_WRITE);
-  if (!file.IsValid()) {
+  base::File file =
+      OpenSigningKeyFile(base::File::FLAG_OPEN | base::File::FLAG_WRITE);
+  if (!file.IsValid())
     return false;
-  }
 
   // Storing key and trust level information.
   base::Value keyinfo(base::Value::Type::DICTIONARY);
@@ -69,10 +78,8 @@ bool LinuxKeyPersistenceDelegate::StoreKeyPair(
 }
 
 KeyPersistenceDelegate::KeyInfo LinuxKeyPersistenceDelegate::LoadKeyPair() {
-  base::File file;
-  base::FilePath filepath(kSigningKeyFilePath);
-
-  file = base::File(filepath, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  base::File file =
+      OpenSigningKeyFile(base::File::FLAG_OPEN | base::File::FLAG_READ);
   if (!file.IsValid()) {
     return invalid_key_info();
   }

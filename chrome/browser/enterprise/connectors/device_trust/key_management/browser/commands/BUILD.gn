@@ -36,7 +36,7 @@ source_set("commands") {
       "linux_key_rotation_command.h",
     ]
     deps += [
-      "//chrome/browser/enterprise/connectors/device_trust/key_management/common:constants",
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/core:constants",
       "//services/device/public/mojom",
       "//services/network/public/cpp",
       "//services/network/public/mojom",
@@ -90,7 +90,7 @@ source_set("unit_tests") {
       ":test_support",
       "//base",
       "//base/test:test_support",
-      "//chrome/browser/enterprise/connectors/device_trust/key_management/common:constants",
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/core:constants",
       "//services/network:test_support",
       "//testing/gtest",
     ]

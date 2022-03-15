@@ -1,0 +1,45 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (is_linux) {
+  source_set("management_service") {
+    public = [ "rotate_util.h" ]
+
+    sources = [ "rotate_util.cc" ]
+
+    public_deps = [
+      "//base",
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/installer:elevated_rotation",
+      "//components/version_info",
+    ]
+
+    deps = [
+      "//build:branding_buildflags",
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/core:constants",
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/core/network",
+      "//chrome/common:channel_info",
+      "//third_party/abseil-cpp:absl",
+      "//url",
+    ]
+  }
+
+  source_set("unit_tests") {
+    testonly = true
+
+    sources = [ "rotate_util_unittest.cc" ]
+
+    deps = [
+      ":management_service",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/core:constants",
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/core/network:test_support",
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence:test_support",
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/installer:elevated_rotation",
+      "//components/policy/proto",
+      "//components/version_info",
+      "//testing/gtest",
+    ]
+  }
+}

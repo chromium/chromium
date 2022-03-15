@@ -15,7 +15,7 @@
 #include "base/test/multiprocess_test.h"
 #include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
-#include "chrome/browser/enterprise/connectors/device_trust/key_management/common/chrome_management_service_constants.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/shared_command_constants.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -42,11 +42,8 @@ constexpr char kFakeDmServerUrl[] =
 
 static constexpr const char* kSwitches[] = {
 
-    chrome_management_service::switches::kRotateDTKey,
-    chrome_management_service::switches::kDmServerUrl,
-    chrome_management_service::switches::kPipeName,
-    chrome_management_service::switches::kNonce,
-    mojo::PlatformChannel::kHandleSwitch};
+    switches::kRotateDTKey, switches::kDmServerUrl, switches::kPipeName,
+    switches::kNonce, mojo::PlatformChannel::kHandleSwitch};
 
 }  // namespace
 
@@ -123,9 +120,8 @@ MULTIPROCESS_TEST_MAIN(MojoInvitation) {
       mojo::PlatformChannel::RecoverPassedEndpointFromCommandLine(command_line);
   auto incoming_invitation =
       mojo::IncomingInvitation::Accept(std::move(channel_endpoint));
-  auto pipe =
-      incoming_invitation.ExtractMessagePipe(command_line.GetSwitchValueNative(
-          chrome_management_service::switches::kPipeName));
+  auto pipe = incoming_invitation.ExtractMessagePipe(
+      command_line.GetSwitchValueNative(switches::kPipeName));
   mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory(
       mojo::PendingRemote<network::mojom::URLLoaderFactory>(std::move(pipe),
                                                             0));
@@ -142,13 +138,10 @@ MULTIPROCESS_TEST_MAIN(MojoInvitation) {
   base::Base64Encode(kNonce, &nonce_base64);
 
   EXPECT_EQ(token_base64,
-            command_line.GetSwitchValueNative(
-                chrome_management_service::switches::kRotateDTKey));
+            command_line.GetSwitchValueNative(switches::kRotateDTKey));
   EXPECT_EQ(kFakeDmServerUrl,
-            command_line.GetSwitchValueNative(
-                chrome_management_service::switches::kDmServerUrl));
-  EXPECT_EQ(nonce_base64, command_line.GetSwitchValueNative(
-                              chrome_management_service::switches::kNonce));
+            command_line.GetSwitchValueNative(switches::kDmServerUrl));
+  EXPECT_EQ(nonce_base64, command_line.GetSwitchValueNative(switches::kNonce));
 
   return testing::Test::HasFailure();
 }
@@ -159,7 +152,7 @@ TEST_F(LinuxKeyRotationCommandTest, MojoAcceptInvitation) {
 
 // Tests for a key rotation when the chrome management service succeeded.
 MULTIPROCESS_TEST_MAIN(Success) {
-  return chrome_management_service::kSuccess;
+  return kSuccess;
 }
 
 TEST_F(LinuxKeyRotationCommandTest, RotateSuccess) {
@@ -168,7 +161,7 @@ TEST_F(LinuxKeyRotationCommandTest, RotateSuccess) {
 
 // Tests for a key rotation failure when the chrome management service failed.
 MULTIPROCESS_TEST_MAIN(Failure) {
-  return chrome_management_service::kFailure;
+  return kFailure;
 }
 
 TEST_F(LinuxKeyRotationCommandTest, RotateFailure) {

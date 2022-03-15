@@ -22,7 +22,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
-#include "chrome/browser/enterprise/connectors/device_trust/key_management/common/chrome_management_service_constants.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/shared_command_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
@@ -33,8 +33,6 @@ namespace enterprise_connectors {
 
 namespace {
 
-constexpr char kBinaryFileName[] = "chrome-management-service";
-
 // Builds the command line needed to launch the service. The  `params` specify
 // `the needed KeyRotationCommandParams. pipe_name` is the name of the pipe to
 //  connect to.
@@ -43,7 +41,7 @@ base::CommandLine GetCommandLine(const KeyRotationCommand::Params& params,
   base::FilePath exe_path;
   auto success = base::PathService::Get(base::DIR_EXE, &exe_path);
   DCHECK(success);
-  exe_path = exe_path.Append(kBinaryFileName);
+  exe_path = exe_path.Append(constants::kBinaryFileName);
 
   base::CommandLine command_line(exe_path);
   std::string token_base64;
@@ -51,14 +49,10 @@ base::CommandLine GetCommandLine(const KeyRotationCommand::Params& params,
   std::string nonce_base64;
   base::Base64Encode(params.nonce, &nonce_base64);
 
-  command_line.AppendSwitchNative(
-      chrome_management_service::switches::kRotateDTKey, token_base64);
-  command_line.AppendSwitchNative(
-      chrome_management_service::switches::kDmServerUrl, params.dm_server_url);
-  command_line.AppendSwitchNative(chrome_management_service::switches::kNonce,
-                                  nonce_base64);
-  command_line.AppendSwitchASCII(chrome_management_service::switches::kPipeName,
-                                 pipe_name);
+  command_line.AppendSwitchNative(switches::kRotateDTKey, token_base64);
+  command_line.AppendSwitchNative(switches::kDmServerUrl, params.dm_server_url);
+  command_line.AppendSwitchNative(switches::kNonce, nonce_base64);
+  command_line.AppendSwitchASCII(switches::kPipeName, pipe_name);
   return command_line;
 }
 
@@ -129,9 +123,9 @@ void LinuxKeyRotationCommand::Trigger(const Params& params, Callback callback) {
               return KeyRotationCommand::Status::TIMED_OUT;
             }
 
-            if (exit_code == chrome_management_service::kSuccess) {
+            if (exit_code == kSuccess) {
               return KeyRotationCommand::Status::SUCCEEDED;
-            } else if (exit_code != chrome_management_service::kFailure) {
+            } else if (exit_code != kFailure) {
               SYSLOG(ERROR)
                   << "Device trust key rotation failed with exit code: "
                   << exit_code;

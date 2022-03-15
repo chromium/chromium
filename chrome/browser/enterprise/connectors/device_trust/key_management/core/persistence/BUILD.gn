@@ -39,6 +39,7 @@ source_set("persistence") {
     ]
     deps += [
       "//build:branding_buildflags",
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/core:constants",
       "//third_party/abseil-cpp:absl",
     ]
   }

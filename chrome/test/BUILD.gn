@@ -7835,6 +7835,10 @@ test("unit_tests") {
       "../browser/enterprise/remote_commands/rotate_attestation_credential_job_unittest.cc",
     ]
 
+    if (is_linux) {
+      deps += [ "../browser/enterprise/connectors/device_trust/key_management/installer/management_service:unit_tests" ]
+    }
+
     deps += [
       "../browser/enterprise/connectors/device_trust/key_management/browser",
       "../browser/enterprise/connectors/device_trust/key_management/browser:test_support",

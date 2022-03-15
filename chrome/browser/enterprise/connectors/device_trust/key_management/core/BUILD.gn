@@ -22,6 +22,11 @@ source_set("core") {
   ]
 }
 
+source_set("constants") {
+  public = [ "shared_command_constants.h" ]
+  sources = [ "shared_command_constants.cc" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
