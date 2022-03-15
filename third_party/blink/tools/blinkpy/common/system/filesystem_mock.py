@@ -488,8 +488,6 @@ class WritableBinaryFileObject(object):
 class WritableTextFileObject(WritableBinaryFileObject):
     def __init__(self, fs, path, append=False):
         super(WritableTextFileObject, self).__init__(fs, path, append)
-        if path not in self.fs.files or not append:
-            self.setup_path(path)
 
     def write(self, string):
         WritableBinaryFileObject.write(self, string)
@@ -509,6 +507,13 @@ class ReadableBinaryFileObject(object):
         self.closed = False
         self.data = data
         self.offset = 0
+        try:
+            # Maintain a text version if possible to
+            # support readline.
+            data_str = data.decode('utf8', 'replace')
+            self.text = StringIO(data_str)
+        except:
+            pass
 
     def __enter__(self):
         return self
@@ -525,6 +530,12 @@ class ReadableBinaryFileObject(object):
         start = self.offset
         self.offset += num_bytes
         return self.data[start:self.offset]
+
+    def readline(self, length=None):
+        return self.text.readline(length).encode('utf8', 'replace')
+
+    def readlines(self):
+        return self.text.readlines().encode('utf8', 'replace')
 
     def seek(self, offset, whence=os.SEEK_SET):
         if whence == os.SEEK_SET:

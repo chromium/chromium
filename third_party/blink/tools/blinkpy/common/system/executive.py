@@ -223,7 +223,8 @@ class Executive(object):
                                           stdout=self.PIPE,
                                           stderr=self.PIPE)
             stdout, _ = tasklist_process.communicate()
-            stdout_reader = csv.reader(stdout.splitlines())
+            stdout_reader = csv.reader(
+                stdout.decode('utf8', 'replace').splitlines())
             for line in stdout_reader:
                 processes.append([column for column in line])
         else:

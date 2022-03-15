@@ -98,6 +98,6 @@ class PrintWebTestTimesTest(unittest.TestCase):
 
     def test_path_to_file(self):
         # Tests that we can use a custom file rather than the port's default.
-        self.check(['/tmp/times_ms.json'],
+        self.check([b'/tmp/times_ms.json'],
                    'foo/bar.html 1\n',
-                   files={'/tmp/times_ms.json': '{"foo":{"bar.html": 1}}'})
+                   files={b'/tmp/times_ms.json': b'{"foo":{"bar.html": 1}}'})
