@@ -2468,23 +2468,6 @@
             ]
         }
     ],
-    "DesktopBookmarksBarAppShortcut": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AppsShortcutDefaultOff"
-                    ]
-                }
-            ]
-        }
-    ],
     "DesktopNtpModules": [
         {
             "platforms": [
