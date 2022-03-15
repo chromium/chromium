@@ -13,7 +13,7 @@ def Clean(start_dir, attr_pattern, file_pattern):
 
     removed = False
 
-    for key, val in json_dict.items():
+    for key, val in list(json_dict.items()):
       if isinstance(val, dict):
         if _remove_attrs(val, attr_pattern):
           removed = True
