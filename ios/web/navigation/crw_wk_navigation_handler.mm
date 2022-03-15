@@ -881,10 +881,24 @@ const web::CertVerificationErrorsCacheType::size_type kMaxCertErrorsCount = 100;
       context->SetUrl(currentWKItemURL);
     }
 
-    if (context->GetError()) {
-      [self loadErrorPageForNavigationItem:item
-                         navigationContext:navigation
-                                   webView:webView];
+    NSError* error = context->GetError();
+    if (error) {
+      if (web::features::IsLoadSimulatedRequestAPIEnabled()) {
+        self.webStateImpl->OnNavigationFinished(context);
+
+        [self.delegate navigationHandler:self
+              didCompleteLoadWithSuccess:NO
+                              forContext:context];
+
+        NSString* failingURLString =
+            error.userInfo[NSURLErrorFailingURLStringErrorKey];
+        GURL failingURL(base::SysNSStringToUTF8(failingURLString));
+        self.webStateImpl->OnPageLoaded(failingURL, NO);
+      } else {
+        [self loadErrorPageForNavigationItem:item
+                           navigationContext:navigation
+                                     webView:webView];
+      }
     }
   }
 
@@ -1753,6 +1767,10 @@ const web::CertVerificationErrorsCacheType::size_type kMaxCertErrorsCount = 100;
     if (itemURL != failingURL)
       item->SetVirtualURL(failingURL);
 
+    // Saves original context before, as the original context can be deleted
+    // before the callback is called.
+    __block std::unique_ptr<web::NavigationContextImpl> originalContext =
+        [self.navigationStates removeNavigation:navigation];
     web::GetWebClient()->PrepareErrorPage(
         self.webStateImpl, failingURL, contextError,
         navigationContext->IsPost(),
@@ -1766,8 +1784,6 @@ const web::CertVerificationErrorsCacheType::size_type kMaxCertErrorsCount = 100;
               WKNavigation* errorNavigation =
                   [webView loadSimulatedRequest:URL
                              responseHTMLString:errorHTML];
-              std::unique_ptr<web::NavigationContextImpl> originalContext =
-                  [self.navigationStates removeNavigation:navigation];
               originalContext->SetLoadingErrorPage(true);
               [self.navigationStates setContext:std::move(originalContext)
                                   forNavigation:errorNavigation];
