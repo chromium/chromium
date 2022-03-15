@@ -476,10 +476,17 @@ void PageContentAnnotationsService::RunBatchAnnotationValidation() {
       "OptimizationGuide.PageContentAnnotationsService.ValidationRun",
       dummy_inputs.size());
 
-  BatchAnnotate(base::DoNothing(), dummy_inputs,
-                features::BatchAnnotationsValidationUsePageTopics()
-                    ? AnnotationType::kPageTopics
-                    : AnnotationType::kContentVisibility);
+  if (!features::BatchAnnotationsValidationUsePageTopics()) {
+    BatchAnnotate(base::DoNothing(), dummy_inputs,
+                  AnnotationType::kContentVisibility);
+    return;
+  }
+
+  std::vector<GURL> urls;
+  for (const std::string& domain : dummy_inputs) {
+    urls.emplace_back(GURL("https://" + domain));
+  }
+  BatchAnnotatePageTopics(base::DoNothing(), urls);
 }
 
 // static
