@@ -156547,6 +156547,32 @@
        {}
       ]
      ],
+     "replaced-aspect-ratio-intrinsic-size-001.html": [
+      "8c1f213dec9b200ad874e449aca38deb46d6bd91",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "replaced-aspect-ratio-intrinsic-size-002.html": [
+      "daf6f36022d9cbda58fe7d758863617c5acf646f",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "replaced-aspect-ratio-stretch-fit-001.html": [
       "0653c8284a4ad029f5fb6d21f706559a24e5bf72",
       [
@@ -247276,10 +247302,6 @@
       "9d1fbaaf47b97cb82dc3003ffd2d46268100774e",
       []
      ],
-     "idlharness-expected.txt": [
-      "fda5da9e18277deb767a4abaf1479863dbac771b",
-      []
-     ],
      "js": {
       "CSS-supports-CSSStyleDeclaration-expected.txt": [
        "2e621a2f0ec3509e414ecdf7693d621c4de5c361",
@@ -306126,7 +306148,7 @@
      []
     ],
     "css-conditional.idl": [
-     "16f25583be97cfce8d4178fa68f43518e51195d2",
+     "d87f305fddf9e7c3f0151d51a595ae7140dce908",
      []
     ],
     "css-counter-styles.idl": [
@@ -307214,7 +307236,7 @@
     "early-hints": {
      "resources": {
       "early-hints-helpers.sub.js": [
-       "72cebf9540ca0240a3360feb1cb5ce47e8b5838d",
+       "5c1b2198eaee880fe6cd0a97684619788fd07b8c",
        []
       ],
       "early-hints-test-loader.h2.py": [
@@ -307226,7 +307248,7 @@
        []
       ],
       "empty.js.headers": [
-       "175cdf80464a658981a55d09d788dee26bf1e1a0",
+       "74b688d1dcefad4376e4176eb4c023aecea1a632",
        []
       ],
       "fetch-and-record-js.h2.py": [
@@ -307238,7 +307260,19 @@
        []
       ],
       "preload-initiator-type.html": [
-       "39b0db0f89534c1f012985f9e7e86b715dccf6a9",
+       "0fdeb2b9037be8785880f71045a9facbc85fb394",
+       []
+      ],
+      "redirect-cross-origin.html": [
+       "39b37f81300bd722381de0b47e2d998a7c976574",
+       []
+      ],
+      "redirect-same-origin.html": [
+       "6a2246a2acd8cd0b035c04d9b18be7bff82811e0",
+       []
+      ],
+      "redirect-with-early-hints.h2.py": [
+       "e501d85a6b5c22469bec8133b846a9ff445e4f0d",
        []
       ],
       "referrer-policy-test-loader.h2.py": [
@@ -307246,7 +307280,7 @@
        []
       ],
       "referrer-policy-test.html": [
-       "af4f393d56f13ce62e9a436d60f97eb3749f40f7",
+       "d0389c2e11cce36ae0ed0ddee454809e7360b539",
        []
       ],
       "utils.py": [
@@ -460411,6 +460445,15 @@
          {}
         ]
        ],
+       "modal-dialog-selection.html": [
+        "ab8dc4fd9842aaa6509a0bcae22df0b305fc3c6b",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
        "multiple-centered-dialogs.html": [
         "f9a62c5503c62aa019e6345a9080e0097af75faa",
         [
@@ -473192,6 +473235,42 @@
        "loading/early-hints/preload-initiator-type.h2.window.html",
        {
         "script_metadata": [
+         [
+          "script",
+          "resources/early-hints-helpers.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "redirect-cross-origin.h2.window.js": [
+      "548759b19cc8441f3defbf6b412cce5e7b224179",
+      [
+       "loading/early-hints/redirect-cross-origin.h2.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/early-hints-helpers.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "redirect-same-origin.h2.window.js": [
+      "88d64f399a77f975cc11ebc380e400b801fc06b3",
+      [
+       "loading/early-hints/redirect-same-origin.h2.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ],
          [
           "script",
           "resources/early-hints-helpers.sub.js"
