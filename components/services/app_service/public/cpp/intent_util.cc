@@ -185,6 +185,33 @@ apps::mojom::IntentPtr CreateIntentForActivity(const std::string& activity,
   return intent;
 }
 
+bool ConditionValueMatches(const std::string& value,
+                           const apps::ConditionValuePtr& condition_value) {
+  switch (condition_value->match_type) {
+    // Fallthrough as kNone and kLiteral has same matching type.
+    case apps::PatternMatchType::kNone:
+    case apps::PatternMatchType::kLiteral:
+      return value == condition_value->value;
+    case apps::PatternMatchType::kPrefix:
+      return base::StartsWith(value, condition_value->value,
+                              base::CompareCase::INSENSITIVE_ASCII);
+    case apps::PatternMatchType::kSuffix:
+      return base::EndsWith(value, condition_value->value,
+                            base::CompareCase::INSENSITIVE_ASCII);
+    case apps::PatternMatchType::kGlob:
+      return MatchGlob(value, condition_value->value);
+    case apps::PatternMatchType::kMimeType:
+      // kMimeType as a match for kFile is handled in FileMatchesConditionValue.
+      return MimeTypeMatched(value, condition_value->value);
+    case apps::PatternMatchType::kFileExtension:
+    case apps::PatternMatchType::kIsDirectory: {
+      // Handled in FileMatchesConditionValue.
+      NOTREACHED();
+      return false;
+    }
+  }
+}
+
 bool ConditionValueMatches(
     const std::string& value,
     const apps::mojom::ConditionValuePtr& condition_value) {

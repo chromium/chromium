@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -75,6 +76,13 @@ apps::mojom::IntentPtr CreateIntentForActivity(const std::string& activity,
 
 // Return true if |value| matches with the |condition_value|, based on the
 // pattern match type in the |condition_value|.
+bool ConditionValueMatches(const std::string& value,
+                           const apps::ConditionValuePtr& condition_value);
+
+// Return true if |value| matches with the |condition_value|, based on the
+// pattern match type in the |condition_value|.
+// TODO(crbug.com/1253250): Remove this function after migrating to non-mojo
+// AppService.
 bool ConditionValueMatches(
     const std::string& value,
     const apps::mojom::ConditionValuePtr& condition_value);
