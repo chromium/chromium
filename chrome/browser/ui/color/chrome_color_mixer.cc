@@ -226,7 +226,7 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       kColorToolbarButtonIcon, kColorDownloadShelfBackground, 0x3A);
   mixer[kColorDownloadShelfForeground] = {kColorToolbarText};
   mixer[kColorDownloadToolbarButtonActive] = {ui::kColorThrobber};
-  mixer[kColorDownloadToolbarButtonInactive] = {ui::kColorMidground};
+  mixer[kColorDownloadToolbarButtonInactive] = {kColorToolbarButtonIcon};
   mixer[kColorDownloadToolbarButtonRingBackground] = {
       SkColorSetA(kColorDownloadToolbarButtonInactive, 0x33)};
   mixer[kColorEyedropperBoundary] = {SK_ColorDKGRAY};
