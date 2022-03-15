@@ -173,7 +173,6 @@ new_tab_page::mojom::ThemePtr MakeTheme(
   theme->most_visited = std::move(most_visited);
 
   auto search_box = realbox::mojom::SearchBoxTheme::New();
-  search_box->ntp_bg = color_provider.GetColor(kColorNewTabPageBackground);
   search_box->bg =
       GetOmniboxColor(theme_provider, OmniboxPart::LOCATION_BAR_BACKGROUND);
   search_box->bg_hovered =
@@ -182,6 +181,8 @@ new_tab_page::mojom::ThemePtr MakeTheme(
   search_box->icon = GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_ICON);
   search_box->icon_selected = GetOmniboxColor(
       theme_provider, OmniboxPart::RESULTS_ICON, OmniboxPartState::SELECTED);
+  search_box->is_dark = !color_utils::IsDark(text_color);
+  search_box->ntp_bg = color_provider.GetColor(kColorNewTabPageBackground);
   search_box->placeholder =
       GetOmniboxColor(theme_provider, OmniboxPart::LOCATION_BAR_TEXT_DIMMED);
   search_box->results_bg =

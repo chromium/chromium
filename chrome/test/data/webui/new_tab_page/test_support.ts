@@ -97,6 +97,7 @@ export function createTheme(): Theme {
     bgHovered: {value: 0xff00000e},
     icon: {value: 0xff000001},
     iconSelected: {value: 0xff000002},
+    isDark: false,
     ntpBg: {value: 0xff00000e},
     placeholder: {value: 0xff000003},
     resultsBg: {value: 0xff000004},

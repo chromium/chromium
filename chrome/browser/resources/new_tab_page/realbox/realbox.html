@@ -8,6 +8,10 @@
     height: var(--ntp-realbox-height);
   }
 
+  :host([is-dark]) {
+    --ntp-realbox-shadow: 0 2px 6px 0 rgba(23, 23, 23, 0.32);
+  }
+
   @media (forced-colors: active) {
     :host {
       border: 1px solid ActiveBorder;
@@ -25,12 +29,20 @@
   }
 
   :host([match-searchbox]:not([matches-are-visible])) {
-    border: 1px solid var(--ntp-border-color);
+    border: 1px solid var(--google-grey-300);
   }
 
-  :host([match-searchbox]:not([matches-are-visible]):hover)  {
+  :host([match-searchbox][is-dark]:not([matches-are-visible])) {
+    border: 1px solid transparent;
+  }
+
+  :host([match-searchbox]:not([matches-are-visible]):hover) {
     border: 1px solid var(--search-box-bg-hovered, white);
     box-shadow: var(--ntp-realbox-shadow);
+  }
+
+  :host([match-searchbox][is-dark]:not([matches-are-visible]):hover) {
+    border: 1px solid transparent;
   }
 
   #inputWrapper {

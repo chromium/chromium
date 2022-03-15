@@ -57,6 +57,13 @@ export class RealboxElement extends PolymerElement {
       // Public properties
       //========================================================================
 
+      /** Whether the theme is dark. */
+      isDark: {
+        type: Boolean,
+        computed: `computeIsDark_(theme)`,
+        reflectToAttribute: true,
+      },
+
       /** Whether matches are currently visible. */
       matchesAreVisible: {
         type: Boolean,
@@ -173,6 +180,7 @@ export class RealboxElement extends PolymerElement {
     };
   }
 
+  isDark: boolean;
   matchesAreVisible: boolean;
   matchSearchbox: boolean;
   theme: SearchBoxTheme;
@@ -644,6 +652,13 @@ export class RealboxElement extends PolymerElement {
   //============================================================================
   // Helpers
   //============================================================================
+
+  private computeIsDark_(): boolean {
+    if (!this.theme) {
+      return false;
+    }
+    return this.theme.isDark;
+  }
 
   private computeSelectedMatch_(): AutocompleteMatch|null {
     if (!this.result_ || !this.result_.matches) {
