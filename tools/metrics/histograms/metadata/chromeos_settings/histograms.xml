@@ -150,9 +150,9 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.LoadCompletedTime" units="ms"
-    expires_after="2022-04-01">
-  <owner>khorimoto@chromium.org</owner>
-  <owner>cros-system-services@google.com</owner>
+    expires_after="2023-04-01">
+  <owner>xiaohuic@chromium.org</owner>
+  <owner>assistive-eng@google.com</owner>
   <summary>
     The amount of time between the render frame host StartProvisionalLoad event
     and the render frame DocumentOnLoadCompleted event for the Chrome OS
@@ -161,9 +161,9 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.LoadDocumentTime" units="ms"
-    expires_after="2022-04-01">
-  <owner>khorimoto@chromium.org</owner>
-  <owner>cros-system-services@google.com</owner>
+    expires_after="2023-04-01">
+  <owner>xiaohuic@chromium.org</owner>
+  <owner>assistive-eng@google.com</owner>
   <summary>
     The amount of time between the render frame host StartProvisionalLoad and
     DidFinishDocumentLoad events for the Chrome OS settings page.
@@ -239,9 +239,9 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.PathVisited" enum="WebUISettingsPathHashes"
-    expires_after="2022-04-10">
-  <owner>khorimoto@chromium.org</owner>
-  <owner>cros-customization@google.com</owner>
+    expires_after="2023-04-10">
+  <owner>xiaohuic@chromium.org</owner>
+  <owner>assistive-eng@google.com</owner>
   <summary>
     Paths visited within chrome://os-settings. For evaluating popularity and
     priorities for OS Settings UI.
@@ -282,10 +282,9 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.SearchRequests"
-    enum="OsSettingSearchRequestTypes" expires_after="2022-04-17">
-  <owner>khorimoto@chromium.org</owner>
-  <owner>hsuregan@chromium.org</owner>
-  <owner>cros-customization@google.com</owner>
+    enum="OsSettingSearchRequestTypes" expires_after="2023-04-17">
+  <owner>xiaohuic@chromium.org</owner>
+  <owner>assistive-eng@google.com</owner>
   <summary>
     The number of search requests made to the Settings Search Mojo API. For
     search requests that succeeded with a response, the number of search
@@ -296,10 +295,9 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.SearchRequestsPerSession"
-    units="mojo search requests" expires_after="2022-09-01">
-  <owner>khorimoto@chromium.org</owner>
-  <owner>hsuregan@chromium.org</owner>
-  <owner>cros-customization@google.com</owner>
+    units="mojo search requests" expires_after="2023-04-17">
+  <owner>xiaohuic@chromium.org</owner>
+  <owner>assistive-eng@google.com</owner>
   <summary>
     The number of search requests made to the Settings Search Mojo API in one
     session of the settings app.
@@ -307,40 +305,36 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.SearchResultSectionSelected"
-    enum="OsSettingsSection" expires_after="2022-04-17">
-  <owner>khorimoto@chromium.org</owner>
-  <owner>hsuregan@chromium.org</owner>
-  <owner>cros-customization@google.com</owner>
+    enum="OsSettingsSection" expires_after="2023-04-17">
+  <owner>xiaohuic@chromium.org</owner>
+  <owner>assistive-eng@google.com</owner>
   <summary>
     Section search results clicked by user in the OS settings search box.
   </summary>
 </histogram>
 
 <histogram name="ChromeOS.Settings.SearchResultSettingSelected"
-    enum="OsSetting" expires_after="2022-09-01">
-  <owner>khorimoto@chromium.org</owner>
-  <owner>hsuregan@chromium.org</owner>
-  <owner>cros-customization@google.com</owner>
+    enum="OsSetting" expires_after="2023-04-17">
+  <owner>xiaohuic@chromium.org</owner>
+  <owner>assistive-eng@google.com</owner>
   <summary>
     Setting search results clicked by user in the OS settings search box.
   </summary>
 </histogram>
 
 <histogram name="ChromeOS.Settings.SearchResultSubpageSelected"
-    enum="OsSettingsSubpage" expires_after="2022-04-24">
-  <owner>khorimoto@chromium.org</owner>
-  <owner>hsuregan@chromium.org</owner>
-  <owner>cros-customization@google.com</owner>
+    enum="OsSettingsSubpage" expires_after="2023-04-17">
+  <owner>xiaohuic@chromium.org</owner>
+  <owner>assistive-eng@google.com</owner>
   <summary>
     Subpage search results clicked by user in the OS settings search box.
   </summary>
 </histogram>
 
 <histogram name="ChromeOS.Settings.SearchResultTypeSelected"
-    enum="OsSettingsSearchResultType" expires_after="2022-04-24">
-  <owner>khorimoto@chromium.org</owner>
-  <owner>hsuregan@chromium.org</owner>
-  <owner>cros-customization@google.com</owner>
+    enum="OsSettingsSearchResultType" expires_after="2023-04-17">
+  <owner>xiaohuic@google.com</owner>
+  <owner>assistive-eng@chromium.org</owner>
   <summary>
     Type of search results clicked by user in the OS settings search box.
   </summary>
