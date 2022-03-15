@@ -203,6 +203,8 @@ class ClosePromoButton : public views::ImageButton {
   void OnThemeChanged() override {
     views::ImageButton::OnThemeChanged();
 
+    constexpr float kCloseButtonFocusRingHaloThickness = 1.25f;
+
     const auto* theme_provider = GetThemeProvider();
     SetImage(views::ImageButton::STATE_NORMAL,
              gfx::CreateVectorIcon(
@@ -211,6 +213,10 @@ class ClosePromoButton : public views::ImageButton {
                      ThemeProperties::COLOR_FEATURE_PROMO_BUBBLE_FOREGROUND)));
     views::InkDrop::Get(this)->SetBaseColor(theme_provider->GetColor(
         ThemeProperties::COLOR_FEATURE_PROMO_BUBBLE_CLOSE_BUTTON_INK_DROP));
+    views::FocusRing::Get(this)->SetColor(theme_provider->GetColor(
+        ThemeProperties::COLOR_FEATURE_PROMO_BUBBLE_FOREGROUND));
+    views::FocusRing::Get(this)->SetHaloThickness(
+        kCloseButtonFocusRingHaloThickness);
   }
 };
 
