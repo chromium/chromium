@@ -546,6 +546,13 @@
        {}
       ]
      ],
+     "out-of-flow-in-new-column-crash.html": [
+      "0571af7a9793abdd5a2b317c51d91de30df0bebf",
+      [
+       null,
+       {}
+      ]
+     ],
      "resumed-float-and-inline-block-crash.html": [
       "c86034c3723c3dc8cb89a5383b4dcfdf9abb94d9",
       [
@@ -79750,6 +79757,71 @@
         {}
        ]
       ],
+      "multi-line-column-flex-fragmentation-012.html": [
+       "7552a741857a07e94878e495da1118438725110e",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "multi-line-column-flex-fragmentation-013.html": [
+       "ed739947e3d754b2f331d3a9a3dae6f327f559f4",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "multi-line-column-flex-fragmentation-014.html": [
+       "bcc32dd9ba9a10fb71ac2ea51a78c6d983993d09",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "multi-line-column-flex-fragmentation-015.html": [
+       "563f3663c38259aea6e245c53e24077f6e6d45ef",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "multi-line-column-flex-fragmentation-016.html": [
+       "e81ad10e037e4bc4208bfdf3eae72ea9b98b8adc",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "multi-line-row-flex-fragmentation-001.html": [
        "ba6b0103e447994a2778cbd9ea356a490f62b8fb",
        [
@@ -79946,7 +80018,7 @@
        ]
       ],
       "multi-line-row-flex-fragmentation-016.html": [
-       "7b690f11237f271affc8486c72305e2cdb553568",
+       "fbd557cc3c3749b26847eefb34ce2d3e7e253452",
        [
         null,
         [
@@ -100561,6 +100633,19 @@
        [
         [
          "/css/css-flexbox/fieldset-as-item-overflow-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "fieldset-baseline-alignment.html": [
+      "d3fdba3d7f476cff486e765791f9c9d8f5de7b06",
+      [
+       null,
+       [
+        [
+         "/css/css-flexbox/fieldset-baseline-alignment-ref.html",
          "=="
         ]
        ],
@@ -208671,6 +208756,19 @@
        {}
       ]
      ],
+     "filters-drop-shadow-003.html": [
+      "2dda6d0140b12f89fae372d2af01190d5346e78c",
+      [
+       null,
+       [
+        [
+         "/css/filter-effects/reference/filters-drop-shadow-003-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "filters-grayscale-001-test.html": [
       "40e49b60bea249d54280ea9e74a5cd5cbf5e31a5",
       [
@@ -217066,6 +217164,19 @@
        ]
       },
       "the-fieldset-and-legend-elements": {
+       "fieldset-baseline.html": [
+        "23f5ad76f3eb302cd17f3a17d44ca37028cf98dc",
+        [
+         null,
+         [
+          [
+           "/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/fieldset-baseline-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "fieldset-border-gap-negative-margin.html": [
         "563a2aa68d833175767c2fe6507e460c25378d8e",
         [
@@ -247342,7 +247453,7 @@
       []
      ],
      "contain-size-fieldset-004-ref.html": [
-      "198e8e12acc247b3230460c39ce606d25e7bd119",
+      "59f7c7e2a78d5a859da92ddd1828e2af90bf50ba",
       []
      ],
      "contain-size-flex-001-ref.html": [
@@ -249641,6 +249752,10 @@
      ],
      "fieldset-as-item-overflow-ref.html": [
       "94e64dd1b829f68a935679ee6c26659437b730a7",
+      []
+     ],
+     "fieldset-baseline-alignment-ref.html": [
+      "d68e033342fa6bdcce44f70c4fa24eb9cb4ae88c",
       []
      ],
      "fixed-table-layout-with-percentage-width-in-flex-item-ref.html": [
@@ -280118,6 +280233,10 @@
        "4227e8cb140e13cbb88a6b1cc366b32b57c2f923",
        []
       ],
+      "filters-drop-shadow-003-ref.html": [
+       "94c265066b12ec9d5e7e9f11187b8da970ea1569",
+       []
+      ],
       "filters-opacity-001-ref.html": [
        "17d891ee707c36b7d404d9836060d7bb9275e841",
        []
@@ -298079,6 +298198,10 @@
        ],
        "META.yml": [
         "f5b533c377160c77541187a301647e174069bd6d",
+        []
+       ],
+       "fieldset-baseline-ref.html": [
+        "ff583435a662a6c2c635619d8e4ecbbdf9f8a05f",
         []
        ],
        "fieldset-border-gap-position-relative-ref.html": [
@@ -359519,7 +359642,7 @@
      ]
     ],
     "fedcm-revoke.https.html": [
-     "84a20b03267301d35ae49ef0c6ad0bfbb5bc811c",
+     "f0c3e5eb2d20e8f1992f56fe75d5291c0900e6b1",
      [
       null,
       {}
@@ -362717,6 +362840,13 @@
      ],
      "all-prop-revert-layer-noop.html": [
       "66aa2b9c736c1fc2a101c000340e3a9855378f77",
+      [
+       null,
+       {}
+      ]
+     ],
+     "all-prop-revert-noop.html": [
+      "696f498421e54d469f8304d46f34d9c39f81a4ef",
       [
        null,
        {}
