@@ -2429,23 +2429,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   void DidChangeReferrerPolicy(network::mojom::ReferrerPolicy referrer_policy);
 
-  class CheckOnDeleteRef {
-   public:
-    CheckOnDeleteRef(const CheckOnDeleteRef&) = delete;
-    CheckOnDeleteRef& operator=(const CheckOnDeleteRef&) = delete;
-    ~CheckOnDeleteRef();
-
-   private:
-    friend class RenderFrameHostImpl;
-
-    explicit CheckOnDeleteRef(RenderFrameHostImpl* host);
-
-    RenderFrameHostImpl* host_;
-  };
-
-  // TODO(https://crbug.com/1262098): used to track down crash.
-  std::unique_ptr<CheckOnDeleteRef> EnableCheckIfDeleted();
-
   // TODO: While FencedFrame shadow DOM implementation exists and is dependent
   // on the effective frame policy in BrowsingContextState, fenced frame status
   // is dependent on FrameTreeNode being initialized and associated with a
@@ -4148,8 +4131,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   BackForwardCacheDisablingFeaturesCallback
       back_forward_cache_disabling_features_callback_for_testing_;
-
-  int check_if_deleted_request_count_ = 0;
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Manages the snapshot processing by Screen AI, if enabled.
