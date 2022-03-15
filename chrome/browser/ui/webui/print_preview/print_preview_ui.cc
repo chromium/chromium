@@ -279,8 +279,6 @@ void AddPrintPreviewStrings(content::WebUIDataSource* source) {
     {"printToPDF", IDS_PRINT_PREVIEW_PRINT_TO_PDF},
     {"printing", IDS_PRINT_PREVIEW_PRINTING},
     {"recentDestinationsTitle", IDS_PRINT_PREVIEW_RECENT_DESTINATIONS_TITLE},
-    {"registerPrinterInformationMessage",
-     IDS_CLOUD_PRINT_REGISTER_PRINTER_INFORMATION},
     {"resolveExtensionUSBDialogTitle",
      IDS_PRINT_PREVIEW_RESOLVE_EXTENSION_USB_DIALOG_TITLE},
     {"resolveExtensionUSBErrorMessage",
