@@ -520,7 +520,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
     return needs_visual_overflow_recalc_;
   }
   void SetNeedsVisualOverflowRecalc();
-  void SetNeedsCompositingInputsUpdate(bool mark_ancestor_flags = true);
+  void SetNeedsCompositingInputsUpdate();
 
   void UpdateAncestorScrollContainerLayer(
       const PaintLayer* ancestor_scroll_container_layer) {
