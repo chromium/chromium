@@ -24,10 +24,6 @@ class FollowProvider {
   // Returns true if the website with |followSiteInfo| has been followed.
   virtual bool GetFollowStatus(FollowSiteInfo* followSiteInfo);
 
-  // TODO(crbug.com/1296745): Deprecated function.
-  // Returns a list of followed websites.
-  virtual NSArray<FollowSiteInfo*>* GetFollowedChannels();
-
   // Returns a list of followed web channels.
   virtual NSArray<FollowedWebChannel*>* GetFollowedWebChannels();
 
