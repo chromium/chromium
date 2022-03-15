@@ -122,6 +122,10 @@ class CONTENT_EXPORT MediaStreamManager
       base::RepeatingCallback<void(const std::string& label,
                                    const blink::MediaStreamDevice& device)>;
 
+  using GetOpenDeviceCallback = base::OnceCallback<void(
+      blink::mojom::MediaStreamRequestResult result,
+      absl::optional<blink::mojom::GetOpenDeviceResponse> response)>;
+
   // Callback for testing.
   using GenerateStreamTestCallback =
       base::OnceCallback<bool(const blink::StreamControls&)>;

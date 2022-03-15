@@ -107,6 +107,8 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
                                 CropCallback callback,
                                 bool crop_id_passed_validation);
 #endif
+  void GetOpenDevice(const base::UnguessableToken& session_id,
+                     GetOpenDeviceCallback callback) override;
 
   void DoGenerateStream(
       int32_t request_id,

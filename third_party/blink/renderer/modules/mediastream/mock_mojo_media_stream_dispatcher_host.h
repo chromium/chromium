@@ -59,6 +59,8 @@ class MockMojoMediaStreamDispatcherHost
                     uint32_t,
                     CropCallback));
 #endif
+  MOCK_METHOD2(GetOpenDevice,
+               void(const base::UnguessableToken&, GetOpenDeviceCallback));
 
   void ResetSessionId() { session_id_ = base::UnguessableToken::Create(); }
   void DoNotRunCallback() { do_not_run_cb_ = true; }

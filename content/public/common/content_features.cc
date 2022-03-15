@@ -543,6 +543,10 @@ const base::Feature kMediaDevicesSystemMonitorCache {
 const base::Feature kMediaLicenseBackend{"MediaLicenseBackend",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Allow cross-context transfer of MediaStreamTracks.
+const base::Feature kMediaStreamTrackTransfer{
+    "MediaStreamTrackTransfer", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled Mojo uses a dedicated background thread to listen for incoming
 // IPCs. Otherwise it's configured to use Content's IO thread for that purpose.
 const base::Feature kMojoDedicatedThread{"MojoDedicatedThread",

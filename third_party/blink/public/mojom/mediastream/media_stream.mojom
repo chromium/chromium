@@ -121,6 +121,13 @@ struct StreamControls {
   bool request_pan_tilt_zoom_permission;
 };
 
+// Results returned by a successful GetOpenDevice call.
+struct GetOpenDeviceResponse {
+  string label;
+  MediaStreamDevice device;
+  bool pan_tilt_zoom_allowed;
+};
+
 // Per-frame renderer-side interface that receives device stopped/change
 // notifications or pause requests from the browser process.
 interface MediaStreamDeviceObserver {
@@ -212,6 +219,16 @@ interface MediaStreamDispatcherHost {
        mojo_base.mojom.Token crop_id,
        uint32 crop_version)
     => (media.mojom.CropRequestResult crop_result);
+
+  // Get a MediaStreamDevice metadata object which refers to the same flow of
+  // media backing an existing MediaStreamDevice.
+  //
+  // This allows for example transferring of MediaStreamTracks between
+  // contexts: the receiving context calls GetOpenDevice with the session id
+  // of the MediaStreamDevice created by the original context.
+  // Response is null if and only if result != OK.
+  GetOpenDevice(mojo_base.mojom.UnguessableToken session_id)
+    => (MediaStreamRequestResult result, GetOpenDeviceResponse? response);
 };
 
 // Browser-side interface that is used by the renderer process to notify the

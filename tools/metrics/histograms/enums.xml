@@ -8619,6 +8619,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="269" label="RFH_UNLOAD_HANDLER_NOT_ALLOWED_IN_FENCED_FRAME"/>
   <int value="270"
       label="RFH_BEFOREUNLOAD_HANDLER_NOT_ALLOWED_IN_FENCED_FRAME"/>
+  <int value="271" label="MSDH_GET_OPEN_DEVICE_USE_WITHOUT_FEATURE"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">
