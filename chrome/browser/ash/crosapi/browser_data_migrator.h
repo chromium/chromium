@@ -178,6 +178,19 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
       const std::string& user_id_hash,
       crosapi::browser_util::PolicyInitState policy_init_state);
 
+  // Very similar to `MaybeRestartToMigrate`, but this checks the disk space in
+  // addition, and reports an error if out of disk space case.
+  // |callback| will be called on completion.
+  // On success, the first argument of the |callback| will be true, and the
+  // second argument should be ignored.
+  // On error, the first argument of the |callback| will be false. If the error
+  // is caused by out-of-disk, the required size to be freed up is passed
+  // to the second argument. Otherwise the second argument is nullopt.
+  static void MaybeRestartToMigrateWithDiskCheck(
+      const AccountId& account_id,
+      const std::string& user_id_hash,
+      base::OnceCallback<void(bool, const absl::optional<uint64_t>&)> callback);
+
   // `BrowserDataMigrator` methods.
   void Migrate(MigrateCallback callback) override;
   void Cancel() override;
@@ -199,6 +212,20 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
                            MigrateOutOfDiskForMove);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorRestartTest,
                            MaybeRestartToMigrateWithMigrationStep);
+
+  // The common implementation of `MaybeRestartToMigrate` and
+  // `MaybeRestartToMigrateWithDiskCheck`.
+  static bool MaybeRestartToMigrateInternal(
+      const AccountId& account_id,
+      const std::string& user_id_hash,
+      crosapi::browser_util::PolicyInitState policy_init_state);
+
+  // A part of `MaybeRestartToMigrateWithDiskCheck`, runs after the disk check.
+  static void MaybeRestartToMigrateWithDiskCheckAfterDiskCheck(
+      const AccountId& account_id,
+      const std::string& user_id_hash,
+      base::OnceCallback<void(bool, const absl::optional<uint64_t>&)> callback,
+      uint64_t required_size);
 
   // Sets the value of `kMigrationStep` in Local State.
   static void SetMigrationStep(PrefService* local_state, MigrationStep step);

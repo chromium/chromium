@@ -13,12 +13,17 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/path_service.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/copy_migrator.h"
 #include "chrome/browser/ash/crosapi/move_migrator.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/common/chrome_paths.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -33,6 +38,30 @@ const char kBrowserDataMigrationForceSkip[] = "force-skip";
 const char kBrowserDataMigrationForceMigration[] = "force-migration";
 
 base::RepeatingClosure* g_attempt_restart = nullptr;
+
+// Checks if the disk space is enough to run profile migration.
+// Returns the bytes required to be freed. Specifically, on success
+// returns 0.
+uint64_t DiskCheck(const base::FilePath& profile_data_dir) {
+  using browser_data_migrator_util::GetTargetItems;
+  using browser_data_migrator_util::ItemType;
+  using browser_data_migrator_util::TargetItems;
+  TargetItems lacros_items =
+      GetTargetItems(profile_data_dir, ItemType::kLacros);
+  TargetItems need_copy_items =
+      GetTargetItems(profile_data_dir, ItemType::kNeedCopy);
+  TargetItems deletable_items =
+      GetTargetItems(profile_data_dir, ItemType::kDeletable);
+
+  int64_t required_size = need_copy_items.total_size;
+  if (!base::FeatureList::IsEnabled(kLacrosMoveProfileMigration))
+    required_size += lacros_items.total_size;
+  required_size -= deletable_items.total_size;
+
+  return browser_data_migrator_util::ExtraBytesRequiredToBeFreed(
+      required_size, profile_data_dir);
+}
+
 }  // namespace
 
 ScopedRestartAttemptForTesting::ScopedRestartAttemptForTesting(
@@ -73,9 +102,68 @@ bool BrowserDataMigratorImpl::MaybeRestartToMigrate(
     const AccountId& account_id,
     const std::string& user_id_hash,
     crosapi::browser_util::PolicyInitState policy_init_state) {
+  if (!MaybeRestartToMigrateInternal(account_id, user_id_hash,
+                                     policy_init_state)) {
+    return false;
+  }
+  return RestartToMigrate(account_id, user_id_hash,
+                          user_manager::UserManager::Get()->GetLocalState());
+}
+
+void BrowserDataMigratorImpl::MaybeRestartToMigrateWithDiskCheck(
+    const AccountId& account_id,
+    const std::string& user_id_hash,
+    base::OnceCallback<void(bool, const absl::optional<uint64_t>&)> callback) {
+  if (!MaybeRestartToMigrateInternal(
+          account_id, user_id_hash,
+          crosapi::browser_util::PolicyInitState::kAfterInit)) {
+    std::move(callback).Run(false, absl::nullopt);
+    return;
+  }
+
+  base::FilePath user_data_dir;
+  if (!base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir)) {
+    LOG(DFATAL) << "Could not get the original user data dir path.";
+    std::move(callback).Run(false, absl::nullopt);
+    return;
+  }
+
+  const base::FilePath profile_data_dir =
+      user_data_dir.Append(ProfileHelper::GetUserProfileDir(user_id_hash));
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+       base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+      base::BindOnce(&DiskCheck, profile_data_dir),
+      base::BindOnce(&BrowserDataMigratorImpl::
+                         MaybeRestartToMigrateWithDiskCheckAfterDiskCheck,
+                     account_id, user_id_hash, std::move(callback)));
+}
+
+void BrowserDataMigratorImpl::MaybeRestartToMigrateWithDiskCheckAfterDiskCheck(
+    const AccountId& account_id,
+    const std::string& user_id_hash,
+    base::OnceCallback<void(bool, const absl::optional<uint64_t>&)> callback,
+    uint64_t required_size) {
+  if (required_size > 0) {
+    LOG(ERROR) << "Failed due to out of disk: " << required_size;
+    std::move(callback).Run(false, required_size);
+    return;
+  }
+
+  bool result =
+      RestartToMigrate(account_id, user_id_hash,
+                       user_manager::UserManager::Get()->GetLocalState());
+  std::move(callback).Run(result, absl::nullopt);
+}
+
+bool BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
+    const AccountId& account_id,
+    const std::string& user_id_hash,
+    crosapi::browser_util::PolicyInitState policy_init_state) {
   // TODO(crbug.com/1277848): Once `BrowserDataMigrator` stabilises, remove this
   // log message.
-  LOG(WARNING) << "MaybeRestartToMigrate() is called.";
+  LOG(WARNING) << "MaybeRestartToMigrateInternal() is called.";
 
   auto* user_manager = user_manager::UserManager::Get();
   auto* local_state = user_manager->GetLocalState();
@@ -120,7 +208,7 @@ bool BrowserDataMigratorImpl::MaybeRestartToMigrate(
     return false;
   if (force_migration_switch == kBrowserDataMigrationForceMigration) {
     LOG(WARNING) << "`kBrowserDataMigrationForceMigration` switch is present.";
-    return RestartToMigrate(account_id, user_id_hash, local_state);
+    return true;
   }
 
   const user_manager::User* user =
@@ -195,7 +283,7 @@ bool BrowserDataMigratorImpl::MaybeRestartToMigrate(
         << "Restarting to run profile migration since data wipe is required.";
     // If data wipe is required, no need for a further check to determine if
     // lacros data dir exists or not.
-    return RestartToMigrate(account_id, user_id_hash, local_state);
+    return true;
   }
 
   if (crosapi::browser_util::IsProfileMigrationCompletedForUser(local_state,
@@ -206,7 +294,7 @@ bool BrowserDataMigratorImpl::MaybeRestartToMigrate(
     return false;
   }
 
-  return RestartToMigrate(account_id, user_id_hash, local_state);
+  return true;
 }
 
 // static

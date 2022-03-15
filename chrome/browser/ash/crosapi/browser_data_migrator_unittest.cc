@@ -262,6 +262,7 @@ class BrowserDataMigratorRestartTest : public ::testing::Test {
  private:
   ash::FakeChromeUserManager user_manager_;
   FakeSessionManagerClient session_manager_;
+  base::test::TaskEnvironment task_environment;
 };
 
 TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateWithMigrationStep) {
@@ -309,6 +310,88 @@ TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateWithCommandLine) {
     EXPECT_TRUE(BrowserDataMigratorImpl::MaybeRestartToMigrate(
         AccountId::FromUserEmail("fake@gmail.com"), "abcde",
         crosapi::browser_util::PolicyInitState::kAfterInit));
+  }
+}
+
+TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateWithDiskCheck) {
+  bool restart_called = false;
+  ScopedRestartAttemptForTesting scoped_restart_attempt(
+      base::BindLambdaForTesting(
+          [&restart_called]() { restart_called = true; }));
+
+  // If MaybeRestartToMigrate will skip the restarting, WithDiskCheck variation
+  // also skips it.
+  {
+    restart_called = false;
+    base::test::ScopedCommandLine command_line;
+    command_line.GetProcessCommandLine()->AppendSwitchASCII(
+        switches::kForceBrowserDataMigrationForTesting, "force-skip");
+    absl::optional<bool> result;
+    BrowserDataMigratorImpl::MaybeRestartToMigrateWithDiskCheck(
+        AccountId::FromUserEmail("fake@gmail.com"), "abcde",
+        base::BindLambdaForTesting(
+            [&out_result = result](bool result,
+                                   const absl::optional<uint64_t>& size) {
+              out_result = result;
+            }));
+    EXPECT_TRUE(result.has_value());
+    EXPECT_FALSE(result.value());
+    EXPECT_FALSE(restart_called);
+  }
+
+  // If MaybeRestartToMigrate will trigger the restarting, WithDiskCheck
+  // variation will see additional disk size check.
+  {
+    restart_called = false;
+    base::test::ScopedCommandLine command_line;
+    command_line.GetProcessCommandLine()->AppendSwitchASCII(
+        switches::kForceBrowserDataMigrationForTesting, "force-migration");
+    // Inject the behavior that the disk does not have enough space.
+    browser_data_migrator_util::ScopedExtraBytesRequiredToBeFreedForTesting
+        scoped_extra_bytes(1024 * 1024);
+
+    absl::optional<bool> result;
+    absl::optional<uint64_t> out_size;
+    base::RunLoop run_loop;
+    BrowserDataMigratorImpl::MaybeRestartToMigrateWithDiskCheck(
+        AccountId::FromUserEmail("fake@gmail.com"), "abcde",
+        base::BindLambdaForTesting(
+            [&out_result = result, &out_size, &run_loop](
+                bool result, const absl::optional<uint64_t>& size) {
+              run_loop.Quit();
+              out_result = result;
+              out_size = size;
+            }));
+    run_loop.Run();
+    ASSERT_TRUE(result.has_value());
+    EXPECT_FALSE(result.value());
+    EXPECT_EQ(1024 * 1024, out_size);
+    EXPECT_FALSE(restart_called);
+  }
+
+  {
+    restart_called = false;
+    base::test::ScopedCommandLine command_line;
+    command_line.GetProcessCommandLine()->AppendSwitchASCII(
+        switches::kForceBrowserDataMigrationForTesting, "force-migration");
+    // Inject the behavior that the disk has enough space for the migration.
+    browser_data_migrator_util::ScopedExtraBytesRequiredToBeFreedForTesting
+        scoped_extra_bytes(0);
+
+    absl::optional<bool> result;
+    base::RunLoop run_loop;
+    BrowserDataMigratorImpl::MaybeRestartToMigrateWithDiskCheck(
+        AccountId::FromUserEmail("fake@gmail.com"), "abcde",
+        base::BindLambdaForTesting(
+            [&out_result = result, &run_loop](
+                bool result, const absl::optional<uint64_t>& size) {
+              run_loop.Quit();
+              out_result = result;
+            }));
+    run_loop.Run();
+    ASSERT_TRUE(result.has_value());
+    EXPECT_TRUE(result.value());
+    EXPECT_TRUE(restart_called);
   }
 }
 
