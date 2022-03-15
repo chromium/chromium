@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
+#include "third_party/blink/renderer/core/css/style_color.h"
 
 namespace blink {
 
@@ -84,12 +85,24 @@ StyleRuleFontPaletteValues::GetOverrideColorsAsVector() const {
         To<CSSPrimitiveValue>(override_pair.First());
     DCHECK(palette_index.IsInteger());
 
-    cssvalue::CSSColor override_color =
-        To<cssvalue::CSSColor>(override_pair.Second());
+    const cssvalue::CSSColor* override_color;
+    if (override_pair.Second().IsIdentifierValue()) {
+      const CSSIdentifierValue& color_identifier =
+          To<CSSIdentifierValue>(override_pair.Second());
+      // The value won't be a system color according to parsing, so we can pass
+      // a fixed color scheme here.
+      override_color = cssvalue::CSSColor::Create(
+          StyleColor::ColorFromKeyword(color_identifier.GetValueID(),
+                                       mojom::blink::ColorScheme::kLight)
+              .Rgb());
+    } else {
+      override_color = DynamicTo<cssvalue::CSSColor>(override_pair.Second());
+      DCHECK(override_color);
+    }
 
     FontPalette::FontPaletteOverride palette_override{
         palette_index.GetIntValue(),
-        static_cast<SkColor>(override_color.Value())};
+        static_cast<SkColor>(override_color->Value())};
     return_overrides.push_back(palette_override);
   }
 
