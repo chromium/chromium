@@ -944,7 +944,9 @@ void AshNotificationView::OnThemeChanged() {
   SkColor secondary_text_color = AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorSecondary);
   header_row()->SetColor(secondary_text_color);
-  message_label()->SetEnabledColor(secondary_text_color);
+  if (message_label()) {
+    message_label()->SetEnabledColor(secondary_text_color);
+  }
 
   if (control_buttons_view_) {
     control_buttons_view_->SetButtonIconColors(

@@ -111,16 +111,20 @@ class AshNotificationViewTest : public AshTestBase, public views::ViewObserver {
   // Create a test notification that is used in the view.
   std::unique_ptr<Notification> CreateTestNotification(
       bool has_image = false,
-      bool show_snooze_button = false) {
+      bool show_snooze_button = false,
+      bool has_message = true,
+      message_center::NotificationType notification_type =
+          message_center::NOTIFICATION_TYPE_BASE_FORMAT) {
     message_center::RichNotificationData data;
     data.settings_button_handler =
         message_center::SettingsButtonHandler::INLINE;
     data.should_show_snooze_button = show_snooze_button;
 
+    std::u16string message = has_message ? u"message" : u"";
+
     std::unique_ptr<Notification> notification = std::make_unique<Notification>(
-        message_center::NOTIFICATION_TYPE_BASE_FORMAT,
-        base::NumberToString(current_id_++), u"title", u"message",
-        CreateTestImage(80, 80), u"display source", GURL(),
+        notification_type, base::NumberToString(current_id_++), u"title",
+        message, CreateTestImage(80, 80), u"display source", GURL(),
         message_center::NotifierId(message_center::NotifierType::APPLICATION,
                                    "extension_id"),
         data, delegate_);
@@ -919,6 +923,25 @@ TEST_F(AshNotificationViewTest, RecordExpandButtonClickAction) {
   histograms.ExpectBucketCount(
       "Ash.NotificationView.ExpandButton.ClickAction",
       metrics_utils::ExpandButtonClickAction::COLLAPSE_GROUP, 1);
+}
+
+TEST_F(AshNotificationViewTest, OnThemeChangedWithoutMessageLabel) {
+  EXPECT_NE(nullptr, GetMessageLabel(notification_view()));
+
+  std::unique_ptr<Notification> notification = CreateTestNotification(
+      /*has_image=*/false, /*show_snooze_button=*/false, /*has_message=*/true,
+      message_center::NOTIFICATION_TYPE_PROGRESS);
+  notification_view()->UpdateWithNotification(*notification);
+  EXPECT_EQ(nullptr, GetMessageLabel(notification_view()));
+
+  notification = CreateTestNotification(
+      /*has_image=*/false, /*show_snooze_button=*/false, /*has_message=*/false);
+  notification_view()->UpdateWithNotification(*notification);
+  EXPECT_EQ(nullptr, GetMessageLabel(notification_view()));
+
+  // Verify OnThemeChanged doesn't break with a null message_label()
+  notification_view()->OnThemeChanged();
+  EXPECT_EQ(nullptr, GetMessageLabel(notification_view()));
 }
 
 }  // namespace ash
