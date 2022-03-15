@@ -820,73 +820,72 @@ export const ENTRIES = {
     type: EntryType.FILE,
     sourceFileName: 'text.docx',
     targetPath: 'text.docx',
-    mimeType: `application/vnd.openxmlformats-officedocument.wordprocessingml\
-.document`,
+    mimeType: 'application/vnd.openxmlformats-officedocument' +
+        '.wordprocessingml.document',
     lastModifiedTime: 'Jan 4, 2019, 10:57 AM',
     nameText: 'text.docx',
     sizeText: '8.7 KB',
     typeText: 'Office document',
-    alternateUrl: 'https://drive.google.com/open?id=smalldocxid&\
-usp=drive_fs',
+    alternateUrl: 'https://drive.google.com/open?id=smalldocxid&usp=drive_fs',
   }),
 
   smallDocxHosted: new TestEntryInfo({
     type: EntryType.FILE,
     sourceFileName: 'text.docx',
     targetPath: 'synced.docx',
-    mimeType: `application/vnd.openxmlformats-officedocument.wordprocessingml\
-.document`,
+    mimeType: 'application/vnd.openxmlformats-officedocument' +
+        '.wordprocessingml.document',
     lastModifiedTime: 'Jan 4, 2019, 10:57 AM',
     nameText: 'synced.docx',
     sizeText: '8.7 KB',
     typeText: 'Office document',
-    alternateUrl: 'https://docs.google.com/document/d/smalldocxid?rtpof=true&\
-usp=drive_fs',
+    alternateUrl: 'https://docs.google.com/document/d/smalldocxid' +
+        '?rtpof=true&usp=drive_fs',
   }),
 
   smallDocxPinned: new TestEntryInfo({
     type: EntryType.FILE,
     sourceFileName: 'text.docx',
     targetPath: 'pinned.docx',
-    mimeType: `application/vnd.openxmlformats-officedocument.wordprocessingml\
-.document`,
+    mimeType: 'application/vnd.openxmlformats-officedocument' +
+        '.wordprocessingml.document',
     lastModifiedTime: 'Jan 4, 2019, 10:57 AM',
     nameText: 'pinned.docx',
     sizeText: '8.7 KB',
     typeText: 'Office document',
     pinned: true,
-    alternateUrl: 'https://docs.google.com/document/d/pinneddocxid?rtpof=true&\
-usp=drive_fs',
+    alternateUrl: 'https://docs.google.com/document/d/pinneddocxid' +
+        '?rtpof=true&usp=drive_fs',
   }),
 
   smallXlsxPinned: new TestEntryInfo({
     type: EntryType.FILE,
     sourceFileName: 'sheet.xlsx',
     targetPath: 'pinned.xlsx',
-    mimeType: `application/vnd.openxmlformats-officedocument.spreadsheetml\
-.sheet`,
+    mimeType: 'application/vnd.openxmlformats-officedocument' +
+        '.spreadsheetml.sheet',
     lastModifiedTime: 'Jan 10, 2020, 11:58 PM',
     nameText: 'pinned.xlsx',
     sizeText: '5.7 KB',
     typeText: 'Office spreadsheet',
     pinned: true,
-    alternateUrl: 'https://docs.google.com/document/d/pinnedxlsxid?rtpof=true&\
-usp=drive_fs',
+    alternateUrl: 'https://docs.google.com/document/d/pinnedxlsxid' +
+        '?rtpof=true&usp=drive_fs',
   }),
 
   smallPptxPinned: new TestEntryInfo({
     type: EntryType.FILE,
     sourceFileName: 'presentation.pptx',
     targetPath: 'pinned.pptx',
-    mimeType: `application/vnd.openxmlformats-officedocument.presentationml\
-.presentation`,
+    mimeType: 'application/vnd.openxmlformats-officedocument' +
+        '.presentationml.presentation',
     lastModifiedTime: 'Jan 14, 2020, 10:15 AM',
     nameText: 'pinned.pptx',
     sizeText: '35.2 KB',
     typeText: 'Office document',
     pinned: true,
-    alternateUrl: 'https://docs.google.com/document/d/pinnedpptxid?rtpof=true&\
-usp=drive_fs',
+    alternateUrl: 'https://docs.google.com/document/d/pinnedpptxid' +
+        '?rtpof=true&usp=drive_fs',
   }),
 
   pinned: new TestEntryInfo({
