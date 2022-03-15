@@ -670,11 +670,17 @@
   <message name="IDS_FILE_BROWSER_FILE_COPIED" desc="File Manager status message. 'Item' is used here as a generic term for file or directory.">
     <ph name="FILE_NAME">$1<ex>big.xz</ex></ph> copied.
   </message>
+  <message name="IDS_FILE_BROWSER_FILE_EXTRACTED" desc="File Manager status message. 'Item' is used here as a generic term for file or directory.">
+    <ph name="FILE_NAME">$1<ex>big.xz</ex></ph> extracted.
+  </message>
   <message name="IDS_FILE_BROWSER_FILE_ITEMS" desc="File Manager status message. 'Item' is used here as a generic term for file or directory.">
     <ph name="NUMBER_OF_ITEMS">$1<ex>3</ex></ph> items
   </message>
   <message name="IDS_FILE_BROWSER_FILE_ITEMS_COPIED" desc="File Manager status message. 'Item' is used here as a generic term for file or directory.">
     <ph name="NUMBER_OF_ITEMS">$1<ex>3</ex></ph> items copied.
+  </message>
+  <message name="IDS_FILE_BROWSER_FILE_ITEMS_EXTRACTED" desc="File Manager status message. 'Item' is used here as a generic term for file or directory.">
+    <ph name="NUMBER_OF_ITEMS">$1<ex>3</ex></ph> items extracted.
   </message>
   <message name="IDS_FILE_BROWSER_FILE_ITEMS_MOVED" desc="File Manager status message. 'Item' is used here as a generic term for file or directory.">
     <ph name="NUMBER_OF_ITEMS">$1<ex>3</ex></ph> items moved.
