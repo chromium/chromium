@@ -1490,6 +1490,7 @@ crbug.com/591099 external/wpt/css/css-flexbox/percentage-padding-002.html [ Cras
 crbug.com/591099 external/wpt/css/css-sizing/replaced-aspect-ratio-stretch-fit-001.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-sizing/replaced-aspect-ratio-stretch-fit-002.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-sizing/replaced-aspect-ratio-stretch-fit-003.html [ Failure ]
+crbug.com/1135287 external/wpt/css/css-sizing/replaced-aspect-ratio-intrinsic-size-001.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-sizing/aspect-ratio/abspos-020.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-sizing/aspect-ratio/block-aspect-ratio-035.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-typed-om/idlharness.html [ Failure ]

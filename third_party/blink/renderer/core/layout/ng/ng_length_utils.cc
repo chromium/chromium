@@ -997,7 +997,10 @@ LogicalSize ComputeReplacedSize(const NGBlockNode& node,
       size = InlineSizeFromAspectRatio(border_padding, aspect_ratio, box_sizing,
                                        *replaced_block);
     } else if (natural_size) {
-      size = natural_size->inline_size;
+      DCHECK_NE(mode, ReplacedSizeMode::kIgnoreInlineLengths);
+      size = ComputeReplacedSize(node, space, border_padding,
+                                 ReplacedSizeMode::kIgnoreInlineLengths)
+                 .inline_size;
     } else {
       // We don't have a natural size - default to stretching.
       size = StretchFit();
