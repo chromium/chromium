@@ -899,31 +899,70 @@ bool PartitionBucket<thread_safe>::SetNewActiveSlotSpan() {
 
   SlotSpanMetadata<thread_safe>* next_slot_span;
 
+  // The goal here is to find a suitable slot span in the active list. Suitable
+  // slot spans are |is_active()|, i.e. they either have (a) freelist entries,
+  // or (b) unprovisioned free space. The first case is preferable, since it
+  // doesn't cost a system call, and doesn't cause new memory to become dirty.
+  //
+  // While looking for a new slot span, active list maintenance is performed,
+  // that is:
+  // - Empty and decommitted slot spans are moved to their respective lists.
+  // - Full slot spans are removed from the active list but are not moved
+  //   anywhere. They could be tracked in a separate list, but this would
+  //   increase cost non trivially. Indeed, a full slot span is likely to become
+  //   non-full at some point (due to a free() hitting it). Since we only have
+  //   space in the metadata for a single linked list pointer, removing the
+  //   newly-non-full slot span from the "full" list would require walking it
+  //   (to know what's before it in the full list).
+  //
+  // Since we prefer slot spans with provisioned freelist entries, maintenance
+  // happens in two stages:
+  // 1. Walk the list to find candidates. Each of the skipped slot span is moved
+  //    to either:
+  //   - one of the long-lived lists: empty, decommitted
+  //   - the temporary "active slots spans with no freelist entry" list
+  //   - Nowhere for full slot spans.
+  // 2. Once we have a candidate:
+  //   - Set it as the new active list head
+  //   - Reattach the temporary list
+  //
+  // Note that in most cases, the whole list will not be walked and maintained
+  // at this stage.
+
+  SlotSpanMetadata<thread_safe>* to_provision_head = nullptr;
+  SlotSpanMetadata<thread_safe>* to_provision_tail = nullptr;
+
   for (; slot_span; slot_span = next_slot_span) {
     next_slot_span = slot_span->next_slot_span;
     PA_DCHECK(slot_span->bucket == this);
     PA_DCHECK(slot_span != empty_slot_spans_head);
     PA_DCHECK(slot_span != decommitted_slot_spans_head);
 
-    if (LIKELY(slot_span->is_active())) {
-      // This slot span is usable because it has freelist entries, or has
-      // unprovisioned slots we can create freelist entries from.
-      active_slot_spans_head = slot_span;
-      return true;
-    }
-
-    // Deal with empty and decommitted slot spans.
-    if (LIKELY(slot_span->is_empty())) {
+    if (slot_span->is_active()) {
+      // Has provisioned slots.
+      if (slot_span->get_freelist_head()) {
+        // Will use this slot span, no need to go further.
+        break;
+      } else {
+        // Keeping head and tail because we don't want to reverse the list.
+        if (!to_provision_head)
+          to_provision_head = slot_span;
+        if (to_provision_tail)
+          to_provision_tail->next_slot_span = slot_span;
+        to_provision_tail = slot_span;
+        slot_span->next_slot_span = nullptr;
+      }
+    } else if (slot_span->is_empty()) {
       slot_span->next_slot_span = empty_slot_spans_head;
       empty_slot_spans_head = slot_span;
     } else if (LIKELY(slot_span->is_decommitted())) {
       slot_span->next_slot_span = decommitted_slot_spans_head;
       decommitted_slot_spans_head = slot_span;
     } else {
-      // If we get here, we found a full slot span. Skip over it too, and also
-      // mark it as full. We need it marked so that free'ing can tell, and move
-      // it back into the active list.
       PA_DCHECK(slot_span->is_full());
+      // Move this slot span... nowhere, and also mark it as full. We need it
+      // marked so that free'ing can tell, and move it back into the active
+      // list.
       slot_span->marked_full = 1;
       ++num_full_slot_spans;
       // num_full_slot_spans is a uint16_t for efficient packing so guard
@@ -935,9 +974,29 @@ bool PartitionBucket<thread_safe>::SetNewActiveSlotSpan() {
     }
   }
 
-  active_slot_spans_head =
-      SlotSpanMetadata<thread_safe>::get_sentinel_slot_span();
-  return false;
+  bool usable_active_list_head = false;
+  // Found an active slot span with provisioned entries on the freelist.
+  if (slot_span) {
+    usable_active_list_head = true;
+    // We have active slot spans with unprovisioned entries. Re-attach them into
+    // the active list, past the span with freelist entries.
+    if (to_provision_head) {
+      auto* next = slot_span->next_slot_span;
+      slot_span->next_slot_span = to_provision_head;
+      to_provision_tail->next_slot_span = next;
+    }
+    active_slot_spans_head = slot_span;
+  } else if (to_provision_head) {
+    usable_active_list_head = true;
+    // Need to provision new slots.
+    active_slot_spans_head = to_provision_head;
+  } else {
+    // Active list is now empty.
+    active_slot_spans_head =
+        SlotSpanMetadata<thread_safe>::get_sentinel_slot_span();
+  }
+
+  return usable_active_list_head;
 }
 
 template <bool thread_safe>

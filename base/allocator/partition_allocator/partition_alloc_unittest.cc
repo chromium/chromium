@@ -726,6 +726,83 @@ TEST_P(PartitionAllocTest, SlotSpanTransitions) {
   allocator.root()->Free(ptr);
 }
 
+TEST_P(PartitionAllocTest, PreferSlotSpansWithProvisionedEntries) {
+  size_t size = base::SystemPageSize() - kExtraAllocSize;
+  size_t real_size = size + kExtraAllocSize;
+  size_t bucket_index =
+      allocator.root()->SizeToBucketIndex(real_size, GetParam());
+  PartitionRoot<ThreadSafe>::Bucket* bucket =
+      &allocator.root()->buckets[bucket_index];
+  ASSERT_EQ(bucket->slot_size, real_size);
+  size_t slots_per_span = bucket->num_system_pages_per_slot_span;
+
+  // Make 10 full slot spans.
+  constexpr int kSpans = 10;
+  std::vector<std::vector<void*>> allocated_memory_spans(kSpans);
+  for (int span_index = 0; span_index < kSpans; span_index++) {
+    for (size_t i = 0; i < slots_per_span; i++) {
+      allocated_memory_spans[span_index].push_back(
+          allocator.root()->Alloc(size, ""));
+    }
+  }
+
+  // Reverse ordering, since a newly non-full span is placed at the head of the
+  // active list.
+  for (int span_index = kSpans - 1; span_index >= 0; span_index--) {
+    allocator.root()->Free(allocated_memory_spans[span_index].back());
+    allocated_memory_spans[span_index].pop_back();
+  }
+
+  // Since slot spans are large enough and we freed memory from the end, the
+  // slot spans become partially provisioned after PurgeMemory().
+  allocator.root()->PurgeMemory(PurgeFlags::kDecommitEmptySlotSpans |
+                                PurgeFlags::kDiscardUnusedSystemPages);
+  std::vector<SlotSpanMetadata<ThreadSafe>*> active_slot_spans;
+  for (auto* span = bucket->active_slot_spans_head; span;
+       span = span->next_slot_span) {
+    active_slot_spans.push_back(span);
+    ASSERT_EQ(span->num_unprovisioned_slots, 1u);
+    // But no freelist entries.
+    ASSERT_FALSE(span->get_freelist_head());
+  }
+
+  // Free one entry in the middle span, creating a freelist entry.
+  constexpr size_t kSpanIndex = 5;
+  allocator.root()->Free(allocated_memory_spans[kSpanIndex].back());
+  allocated_memory_spans[kSpanIndex].pop_back();
+
+  ASSERT_TRUE(active_slot_spans[kSpanIndex]->get_freelist_head());
+  ASSERT_FALSE(bucket->active_slot_spans_head->get_freelist_head());
+
+  // It must come from the middle slot span even though the first one has
+  // unprovisioned space.
+  void* new_ptr = allocator.root()->Alloc(size, "");
+
+  // Comes from the middle slot span, since it has a freelist entry.
+  auto* new_active_slot_span = active_slot_spans[kSpanIndex];
+  ASSERT_FALSE(new_active_slot_span->get_freelist_head());
+
+  // The middle slot span was moved to the front.
+  active_slot_spans.erase(active_slot_spans.begin() + kSpanIndex);
+  active_slot_spans.insert(active_slot_spans.begin(), new_active_slot_span);
+
+  // Check slot span ordering.
+  int index = 0;
+  for (auto* span = bucket->active_slot_spans_head; span;
+       span = span->next_slot_span) {
+    EXPECT_EQ(span, active_slot_spans[index]);
+    index++;
+  }
+  EXPECT_EQ(index, kSpans);
+
+  allocator.root()->Free(new_ptr);
+  for (int span_index = 0; span_index < kSpans; span_index++) {
+    for (void* ptr : allocated_memory_spans[span_index]) {
+      allocator.root()->Free(ptr);
+    }
+  }
+}
+
 // Test some corner cases relating to slot span transitions in the internal
 // free slot span list metadata bucket.
 TEST_P(PartitionAllocTest, FreeSlotSpanListSlotSpanTransitions) {
