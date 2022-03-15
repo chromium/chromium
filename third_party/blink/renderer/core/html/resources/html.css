@@ -1388,6 +1388,7 @@ dialog:-internal-modal {
     /* 6px + 2em = border + padding, as by default box-sizing is content-box. */
     max-width: calc(100% - 6px - 2em);
     max-height: calc(100% - 6px - 2em);
+    user-select: text;
 }
 
 /* TODO(foolip): In the Fullscreen spec, there's a ::backdrop block with the
