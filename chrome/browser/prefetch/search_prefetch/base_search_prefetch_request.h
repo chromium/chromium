@@ -48,8 +48,9 @@ enum class SearchPrefetchStatus {
 // updating |current_status_|.
 class BaseSearchPrefetchRequest {
  public:
-  BaseSearchPrefetchRequest(const GURL& prefetch_url,
-                            base::OnceClosure report_error_callback);
+  BaseSearchPrefetchRequest(
+      const GURL& prefetch_url,
+      base::OnceCallback<void(bool)> report_error_callback);
   virtual ~BaseSearchPrefetchRequest();
 
   BaseSearchPrefetchRequest(const BaseSearchPrefetchRequest&) = delete;
@@ -91,7 +92,7 @@ class BaseSearchPrefetchRequest {
       Profile* profile,
       std::unique_ptr<network::ResourceRequest> resource_request,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
-      base::OnceClosure report_error_callback) = 0;
+      base::OnceCallback<void(bool)> report_error_callback) = 0;
 
   // Stops the on-going prefetch and should mark |current_status_|
   // appropriately.
@@ -112,7 +113,7 @@ class BaseSearchPrefetchRequest {
   GURL prefetch_url_;
 
   // Called when there is a network/server error on the prefetch request.
-  base::OnceClosure report_error_callback_;
+  base::OnceCallback<void(bool)> report_error_callback_;
 };
 
 #endif  // CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_BASE_SEARCH_PREFETCH_REQUEST_H_

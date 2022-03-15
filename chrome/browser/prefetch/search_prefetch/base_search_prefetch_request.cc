@@ -109,7 +109,7 @@ std::string GetUserAgentValue(const net::HttpRequestHeaders& headers) {
 
 BaseSearchPrefetchRequest::BaseSearchPrefetchRequest(
     const GURL& prefetch_url,
-    base::OnceClosure report_error_callback)
+    base::OnceCallback<void(bool)> report_error_callback)
     : prefetch_url_(prefetch_url),
       report_error_callback_(std::move(report_error_callback)) {}
 

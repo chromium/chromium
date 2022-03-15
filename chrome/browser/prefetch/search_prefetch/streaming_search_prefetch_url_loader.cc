@@ -54,7 +54,7 @@ StreamingSearchPrefetchURLLoader::StreamingSearchPrefetchURLLoader(
     Profile* profile,
     std::unique_ptr<network::ResourceRequest> resource_request,
     const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
-    base::OnceClosure report_error_callback)
+    base::OnceCallback<void(bool)> report_error_callback)
     : streaming_prefetch_request_(streaming_prefetch_request),
       report_error_callback_(std::move(report_error_callback)),
       profile_(profile),
@@ -181,10 +181,12 @@ void StreamingSearchPrefetchURLLoader::OnReceiveResponse(
     return;
   }
 
+  bool can_serve_response = CanServePrefetchRequest(head->headers);
+  std::move(report_error_callback_).Run(!can_serve_response);
+
   // If there is an error, either cancel the request or fallback depending on
   // whether we still have a parent pointer.
-  if (!CanServePrefetchRequest(head->headers)) {
-    std::move(report_error_callback_).Run();
+  if (!can_serve_response) {
     if (SearchPrefetchBlockBeforeHeadersIsEnabled() &&
         !streaming_prefetch_request_) {
       Fallback();

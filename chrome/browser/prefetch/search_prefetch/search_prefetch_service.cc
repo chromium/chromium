@@ -183,7 +183,7 @@ bool SearchPrefetchService::MaybePrefetchURL(const GURL& url) {
 
   std::unique_ptr<BaseSearchPrefetchRequest> prefetch_request =
       std::make_unique<StreamingSearchPrefetchRequest>(
-          url, base::BindOnce(&SearchPrefetchService::ReportError,
+          url, base::BindOnce(&SearchPrefetchService::ReportFetchResult,
                               base::Unretained(this)));
 
   DCHECK(prefetch_request);
@@ -381,7 +381,10 @@ void SearchPrefetchService::DeletePrefetch(std::u16string search_terms) {
   prefetch_expiry_timers_.erase(search_terms);
 }
 
-void SearchPrefetchService::ReportError() {
+void SearchPrefetchService::ReportFetchResult(bool error) {
+  UMA_HISTOGRAM_BOOLEAN("Omnibox.SearchPrefetch.FetchResult", !error);
+  if (!error)
+    return;
   last_error_time_ticks_ = base::TimeTicks::Now();
 }
 

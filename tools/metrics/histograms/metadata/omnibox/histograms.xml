@@ -702,6 +702,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Omnibox.SearchPrefetch.FetchResult" enum="BooleanSuccess"
+    expires_after="2022-08-07">
+  <owner>ryansturm@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    Whether a prefetch request finished with a success status or a status that
+    could not be served. Recorded whenever a prefetch request receives headers.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.SearchPrefetch.PrefetchEligibilityReason"
     enum="SearchPrefetchEligibilityReason" expires_after="2022-08-07">
   <owner>ryansturm@chromium.org</owner>

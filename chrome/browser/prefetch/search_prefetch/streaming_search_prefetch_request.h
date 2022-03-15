@@ -25,8 +25,9 @@ class StreamingSearchPrefetchURLLoader;
 // more easily.
 class StreamingSearchPrefetchRequest : public BaseSearchPrefetchRequest {
  public:
-  StreamingSearchPrefetchRequest(const GURL& prefetch_url,
-                                 base::OnceClosure report_error_callback);
+  StreamingSearchPrefetchRequest(
+      const GURL& prefetch_url,
+      base::OnceCallback<void(bool)> report_error_callback);
   ~StreamingSearchPrefetchRequest() override;
 
   StreamingSearchPrefetchRequest(const StreamingSearchPrefetchRequest&) =
@@ -39,7 +40,7 @@ class StreamingSearchPrefetchRequest : public BaseSearchPrefetchRequest {
       Profile* profile,
       std::unique_ptr<network::ResourceRequest> resource_request,
       const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
-      base::OnceClosure report_error_callback) override;
+      base::OnceCallback<void(bool)> report_error_callback) override;
   void StopPrefetch() override;
   std::unique_ptr<SearchPrefetchURLLoader> TakeSearchPrefetchURLLoader()
       override;

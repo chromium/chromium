@@ -137,8 +137,9 @@ class SearchPrefetchService : public KeyedService,
   // Removes the prefetch and prefetch timers associated with |search_terms|.
   void DeletePrefetch(std::u16string search_terms);
 
-  // Records the current time to prevent prefetches for a set duration.
-  void ReportError();
+  // Records metrics around the error rate of prefetches. When |error| is true,
+  // records the current time to prevent prefetches for a set duration.
+  void ReportFetchResult(bool error);
 
   // If the navigation URL matches with a prefetch that can be served, this
   // function marks that prefetch as clicked to prevent deletion when omnibox

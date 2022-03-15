@@ -41,7 +41,7 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
       Profile* profile,
       std::unique_ptr<network::ResourceRequest> resource_request,
       const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
-      base::OnceClosure report_error_callback);
+      base::OnceCallback<void(bool)> report_error_callback);
 
   ~StreamingSearchPrefetchURLLoader() override;
 
@@ -198,7 +198,7 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
 
   // Whenever an error is reported, it needs to be reported to the service via
   // this callback.
-  base::OnceClosure report_error_callback_;
+  base::OnceCallback<void(bool)> report_error_callback_;
 
   // Track if the request has already been marked as servable, and if so, don't
   // report it again.
