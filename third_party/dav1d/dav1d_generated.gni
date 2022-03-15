@@ -12,6 +12,7 @@ x86_asm_sources = [
   "libdav1d/src/x86/cdef_sse.asm",
   "libdav1d/src/x86/cpuid.asm",
   "libdav1d/src/x86/filmgrain16_avx2.asm",
+  "libdav1d/src/x86/filmgrain16_avx512.asm",
   "libdav1d/src/x86/filmgrain16_sse.asm",
   "libdav1d/src/x86/filmgrain_avx2.asm",
   "libdav1d/src/x86/filmgrain_avx512.asm",
