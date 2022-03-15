@@ -47,6 +47,12 @@ const base::Feature kOddHeightMultiPlanarBuffers {
 };
 
 const base::Feature kOddWidthMultiPlanarBuffers{
-    "OddWidthMultiPlanarBuffers", base::FEATURE_DISABLED_BY_DEFAULT};
+  "OddWidthMultiPlanarBuffers",
+#if BUILDFLAG(IS_MAC)
+      base::FEATURE_ENABLED_BY_DEFAULT
+#else
+      base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+};
 
 }  // namespace features
