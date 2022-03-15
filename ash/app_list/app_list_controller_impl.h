@@ -152,6 +152,8 @@ class ASH_EXPORT AppListControllerImpl : public AppListController,
   AppListNotifier* GetNotifier() override;
   void StartAssistant() override;
   void StartSearch(const std::u16string& raw_query) override;
+  void StartZeroStateSearch(base::OnceClosure callback,
+                            base::TimeDelta timeout) override;
   void OpenSearchResult(const std::string& result_id,
                         int event_flags,
                         AppListLaunchedFrom launched_from,

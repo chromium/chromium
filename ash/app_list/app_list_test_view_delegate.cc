@@ -30,6 +30,11 @@ bool AppListTestViewDelegate::KeyboardTraversalEngaged() {
   return true;
 }
 
+void AppListTestViewDelegate::StartZeroStateSearch(base::OnceClosure callback,
+                                                   base::TimeDelta timeout) {
+  std::move(callback).Run();
+}
+
 void AppListTestViewDelegate::OpenSearchResult(
     const std::string& result_id,
     int event_flags,

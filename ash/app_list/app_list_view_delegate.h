@@ -49,6 +49,13 @@ class ASH_PUBLIC_EXPORT AppListViewDelegate {
   // box by the user.
   virtual void StartSearch(const std::u16string& raw_query) = 0;
 
+  // Starts zero state search to load suggested content shown in productivity
+  // launcher. Called when the tablet mode productivity launcher visibility
+  // starts changing to visible. `callback` is called when the zero state search
+  // completes, or times out (i.e. takes more time than `timeout`).
+  virtual void StartZeroStateSearch(base::OnceClosure callback,
+                                    base::TimeDelta timeout) = 0;
+
   // Invoked to open the search result and log a click. If the result is
   // represented by a SuggestedChipView or is a zero state result,
   // |suggested_index| is the index of the view in the list of suggestions.

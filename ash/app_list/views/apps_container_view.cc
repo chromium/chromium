@@ -139,6 +139,10 @@ constexpr int kSeparatorWidth = 240;
 // `scrollable_container_`.
 constexpr int kDefaultFadeoutMaskHeight = 16;
 
+// Max amount of time to wait for zero state results when refreshing recent apps
+// and continue section when launcher becomes visible.
+constexpr base::TimeDelta kZeroStateSearchTimeout = base::Milliseconds(16);
+
 }  // namespace
 
 // A view that contains continue section, recent apps and a separator view,
@@ -498,6 +502,17 @@ void AppsContainerView::ReparentDragEnded() {
     return;
   DCHECK_EQ(SHOW_ITEM_REPARENT, show_state_);
   show_state_ = AppsContainerView::SHOW_APPS;
+}
+
+void AppsContainerView::OnAppListVisibilityWillChange(bool visible) {
+  // Start zero state search to refresh contents of the continue section and
+  // recent apps (which are only shown for productivity launcher).
+  if (visible && features::IsProductivityLauncherEnabled()) {
+    contents_view_->GetAppListMainView()->view_delegate()->StartZeroStateSearch(
+        base::BindOnce(&AppsContainerView::UpdateRecentApps,
+                       weak_ptr_factory_.GetWeakPtr()),
+        kZeroStateSearchTimeout);
+  }
 }
 
 void AppsContainerView::OnAppListVisibilityChanged(bool shown) {

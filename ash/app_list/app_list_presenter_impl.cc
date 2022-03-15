@@ -300,6 +300,7 @@ void AppListPresenterImpl::Dismiss(base::TimeTicks event_time_stamp) {
 void AppListPresenterImpl::SetViewVisibility(bool visible) {
   if (!view_)
     return;
+  view_->OnAppListVisibilityWillChange(visible);
   view_->SetVisible(visible);
   view_->search_box_view()->SetVisible(visible);
 }

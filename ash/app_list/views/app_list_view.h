@@ -410,6 +410,7 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   void UpdateWindowTitle();
 
   // Called when app list visibility changed.
+  void OnAppListVisibilityWillChange(bool visible);
   void OnAppListVisibilityChanged(bool shown);
 
  private:

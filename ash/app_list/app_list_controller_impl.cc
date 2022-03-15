@@ -1196,6 +1196,12 @@ void AppListControllerImpl::StartSearch(const std::u16string& raw_query) {
   }
 }
 
+void AppListControllerImpl::StartZeroStateSearch(base::OnceClosure callback,
+                                                 base::TimeDelta timeout) {
+  if (client_)
+    client_->StartZeroStateSearch(std::move(callback), timeout);
+}
+
 void AppListControllerImpl::OpenSearchResult(const std::string& result_id,
                                              int event_flags,
                                              AppListLaunchedFrom launched_from,

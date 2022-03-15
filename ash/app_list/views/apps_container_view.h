@@ -183,6 +183,12 @@ class ASH_EXPORT AppsContainerView
   void OnTemporarySortOrderChanged(
       const absl::optional<AppListSortOrder>& new_order);
 
+  // Called by app list controller when the app list visibility is about to
+  // change - when the app list is about to be shown, initiates zero state
+  // search in order to update set of apps shown in recent apps and continue
+  // section contents.
+  void OnAppListVisibilityWillChange(bool visible);
+
   // Updates the nudge in `toast_container_` when app list visibility changes.
   void OnAppListVisibilityChanged(bool shown);
 

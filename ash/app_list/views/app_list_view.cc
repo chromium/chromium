@@ -1706,6 +1706,10 @@ void AppListView::UpdateWindowTitle() {
   }
 }
 
+void AppListView::OnAppListVisibilityWillChange(bool visible) {
+  GetAppsContainerView()->OnAppListVisibilityWillChange(visible);
+}
+
 void AppListView::OnAppListVisibilityChanged(bool shown) {
   GetAppsContainerView()->OnAppListVisibilityChanged(shown);
 }
