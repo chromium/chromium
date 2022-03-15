@@ -54,6 +54,12 @@ class CONTENT_EXPORT BrowsingDataRemoverImpl
               const base::Time& delete_end,
               uint64_t remove_mask,
               uint64_t origin_type_mask) override;
+  void RemoveWithFilter(
+      const base::Time& delete_begin,
+      const base::Time& delete_end,
+      uint64_t remove_mask,
+      uint64_t origin_type_mask,
+      std::unique_ptr<BrowsingDataFilterBuilder> filter_builder) override;
   void RemoveAndReply(const base::Time& delete_begin,
                       const base::Time& delete_end,
                       uint64_t remove_mask,

@@ -61,6 +61,8 @@
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/browsing_data_filter_builder.h"
+#include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/common/content_features.h"
@@ -1778,6 +1780,19 @@ void SiteSettingsHandler::RemoveNonTreeModelData(
                                         ContentSettingsType::CLIENT_HINTS,
                                         base::Value());
   }
+  // Remove interest groups
+  content::BrowsingDataRemover* remover = profile_->GetBrowsingDataRemover();
+  std::unique_ptr<content::BrowsingDataFilterBuilder> filter =
+      content::BrowsingDataFilterBuilder::Create(
+          content::BrowsingDataFilterBuilder::Mode::kDelete);
+  for (const auto& origin : origins) {
+    filter->AddOrigin(origin);
+  }
+  remover->RemoveWithFilter(
+      base::Time::Min(), base::Time::Max(),
+      content::BrowsingDataRemover::DATA_TYPE_INTEREST_GROUPS,
+      content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
+      std::move(filter));
 }
 
 void SiteSettingsHandler::SetCookiesTreeModelForTesting(

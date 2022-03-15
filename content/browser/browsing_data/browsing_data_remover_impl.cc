@@ -181,6 +181,16 @@ void BrowsingDataRemoverImpl::Remove(const base::Time& delete_begin,
                  std::unique_ptr<BrowsingDataFilterBuilder>(), nullptr);
 }
 
+void BrowsingDataRemoverImpl::RemoveWithFilter(
+    const base::Time& delete_begin,
+    const base::Time& delete_end,
+    uint64_t remove_mask,
+    uint64_t origin_type_mask,
+    std::unique_ptr<BrowsingDataFilterBuilder> filter_builder) {
+  RemoveInternal(delete_begin, delete_end, remove_mask, origin_type_mask,
+                 std::move(filter_builder), nullptr);
+}
+
 void BrowsingDataRemoverImpl::RemoveAndReply(const base::Time& delete_begin,
                                              const base::Time& delete_end,
                                              uint64_t remove_mask,
@@ -413,6 +423,10 @@ void BrowsingDataRemoverImpl::RemoveImpl(
   if (remove_mask & DATA_TYPE_AGGREGATION_SERVICE) {
     storage_partition_remove_mask |=
         StoragePartition::REMOVE_DATA_MASK_AGGREGATION_SERVICE;
+  }
+  if (remove_mask & DATA_TYPE_INTEREST_GROUPS) {
+    storage_partition_remove_mask |=
+        StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS;
   }
 
   StoragePartition* storage_partition = GetStoragePartition();

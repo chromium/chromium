@@ -116,8 +116,13 @@ class BrowsingDataRemover {
     // persistent storage.
     DATA_TYPE_AGGREGATION_SERVICE = 1 << 18,
 
+    // Interest groups are stored as part of the Interest Group API experiment
+    // Public explainer here:
+    // https://github.com/WICG/turtledove/blob/main/FLEDGE.md
+    DATA_TYPE_INTEREST_GROUPS = 1 << 19,
+
     // Embedders can add more datatypes beyond this point.
-    DATA_TYPE_CONTENT_END = DATA_TYPE_AGGREGATION_SERVICE,
+    DATA_TYPE_CONTENT_END = DATA_TYPE_INTEREST_GROUPS,
   };
 
   enum OriginType : uint64_t {
@@ -177,6 +182,15 @@ class BrowsingDataRemover {
                       const base::Time& delete_end,
                       uint64_t remove_mask,
                       uint64_t origin_type_mask) = 0;
+
+  // A version of the above that applies only removes entries that match the
+  // provided filter.
+  virtual void RemoveWithFilter(
+      const base::Time& delete_begin,
+      const base::Time& delete_end,
+      uint64_t remove_mask,
+      uint64_t origin_type_mask,
+      std::unique_ptr<BrowsingDataFilterBuilder> filter_builder) = 0;
 
   // A version of the above that in addition informs the |observer| when the
   // removal task is finished.
