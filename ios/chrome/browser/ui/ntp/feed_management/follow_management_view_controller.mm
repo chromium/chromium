@@ -128,15 +128,35 @@ typedef NS_ENUM(NSInteger, ItemType) {
       base::mac::ObjCCastStrict<FollowedWebChannelItem>(
           [self.tableViewModel itemAtIndexPath:indexPath]);
 
+  // TODO(crbug.com/1296745): Start spinner.
+
+  __weak FollowManagementViewController* weakSelf = self;
   item.followedWebChannel.unfollowRequestBlock(^(BOOL success) {
     if (success) {
       // TODO(crbug.com/1296745): Show success snackbar
-      // with undo button. Also remove row.
+      // with undo button.
+      [weakSelf deleteItemAtIndexPath:indexPath];
     } else {
       // TODO(crbug.com/1296745): Show failure snackbar
-      // with try again button.
+      // with try again button. Stop spinner.
     }
   });
+}
+
+#pragma mark - Helpers
+
+// Deletes item at |indexPath| from both model and UI.
+- (void)deleteItemAtIndexPath:(NSIndexPath*)indexPath {
+  TableViewModel* model = self.tableViewModel;
+  NSInteger sectionID =
+      [model sectionIdentifierForSectionIndex:indexPath.section];
+  NSInteger itemType = [model itemTypeForIndexPath:indexPath];
+  NSUInteger index = [model indexInItemTypeForIndexPath:indexPath];
+  [model removeItemWithType:itemType
+      fromSectionWithIdentifier:sectionID
+                        atIndex:index];
+  [self.tableView deleteRowsAtIndexPaths:@[ indexPath ]
+                        withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
 @end
