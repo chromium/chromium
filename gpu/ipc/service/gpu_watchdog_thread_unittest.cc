@@ -40,6 +40,13 @@ constexpr auto kExtraGPUJobTimeForTesting = base::Milliseconds(500);
 [[maybe_unused]] constexpr auto kExtraGPUJobTimeForTestingSlow =
     base::Milliseconds(1000);
 
+// For Fuchsia in which GpuWatchdogTest.GpuInitializationAndRunningTasks test
+// is flaky.
+[[maybe_unused]] constexpr auto kGpuWatchdogTimeoutForTestingSlowest =
+    base::Milliseconds(1000);
+[[maybe_unused]] constexpr auto kExtraGPUJobTimeForTestingSlowest =
+    base::Milliseconds(4000);
+
 // On Windows, the gpu watchdog check if the main thread has used the full
 // thread time. We want to detect the case in which the main thread is swapped
 // out by the OS scheduler. The task on windows is simiulated by reading
@@ -105,12 +112,19 @@ class GpuWatchdogPowerTest : public GpuWatchdogTest {
 void GpuWatchdogTest::SetUp() {
   ASSERT_TRUE(base::ThreadTaskRunnerHandle::IsSet());
   ASSERT_TRUE(base::CurrentThread::IsSet());
-  bool use_slow_timeout = false;
+
+  enum TimeOutType {
+    kNormal,
+    kSlow,
+    kSlowest,
+  };
+
+  TimeOutType timeout_type = kNormal;
 
 #if BUILDFLAG(IS_WIN)
   // Win7
   if (base::win::GetVersion() < base::win::Version::WIN10) {
-    use_slow_timeout = true;
+    timeout_type = kSlow;
   }
 
 #elif BUILDFLAG(IS_MAC)
@@ -119,8 +133,10 @@ void GpuWatchdogTest::SetUp() {
   int os_version = base::mac::internal::MacOSVersion();
 
   if (os_version <= 1100) {
-    use_slow_timeout = true;
+    // Check MacOS version.
+    timeout_type = kSlow;
   } else {
+    // Check Mac machine model version.
     std::string model_str = base::SysInfo::HardwareModelName();
     size_t found_position = model_str.find("MacBookPro");
     constexpr size_t model_version_pos = 10;
@@ -132,7 +148,7 @@ void GpuWatchdogTest::SetUp() {
       int major_model_ver = std::atoi(model_ver_str.c_str());
       // For version < 14,1
       if (major_model_ver < 14) {
-        use_slow_timeout = true;
+        timeout_type = kSlow;
       }
     }
   }
@@ -146,16 +162,19 @@ void GpuWatchdogTest::SetUp() {
 
   // For Android version < Android Pie (Version 9)
   if (major_version < 9) {
-    use_slow_timeout = true;
+    timeout_type = kSlow;
   }
 
 #elif BUILDFLAG(IS_FUCHSIA)
-  use_slow_timeout = true;
+  timeout_type = kSlowest;
 #endif
 
-  if (use_slow_timeout) {
+  if (timeout_type == kSlow) {
     timeout_ = kGpuWatchdogTimeoutForTestingSlow;
     extra_gpu_job_time_ = kExtraGPUJobTimeForTestingSlow;
+  } else if (timeout_type == kSlowest) {
+    timeout_ = kGpuWatchdogTimeoutForTestingSlowest;
+    extra_gpu_job_time_ = kExtraGPUJobTimeForTestingSlowest;
   }
 
 #if BUILDFLAG(IS_WIN)
