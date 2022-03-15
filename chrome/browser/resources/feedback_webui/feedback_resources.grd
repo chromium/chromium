@@ -32,7 +32,7 @@
                file="images/2x/button_butter_bar_close_hover.png" type="BINDATA" />
       <include name="IDR_FEEDBACK_BUTTON_BUTTER_BAR_CLOSE_PRESSED_2X_PNG"
                file="images/2x/button_butter_bar_close_pressed.png" type="BINDATA" />
-      <include name="IDR_FEEDBACK_SYSINFO_HTML" file="html/sys_info.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
+      <include name="IDR_FEEDBACK_SYSINFO_HTML" file="html/sys_info.html" type="BINDATA" />
       <include name="IDR_FEEDBACK_SYSINFO_JS" file="js/sys_info.js" type="BINDATA" />
       <include name="IDR_FEEDBACK_SYSINFO_CSS" file="css/sys_info.css" type="BINDATA" />
       <if expr="chromeos">

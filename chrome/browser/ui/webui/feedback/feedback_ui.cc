@@ -7,6 +7,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/browser_resources.h"
 #include "chrome/grit/feedback_resources.h"
 #include "chrome/grit/feedback_resources_map.h"
 #include "chrome/grit/generated_resources.h"
@@ -71,7 +72,13 @@ content::WebUIDataSource* CreateFeedbackHTMLSource(const Profile* profile) {
       content::WebUIDataSource::Create(chrome::kChromeUIFeedbackHost);
   source->AddResourcePaths(
       base::make_span(kFeedbackResources, kFeedbackResourcesSize));
+
   source->AddResourcePath("", IDR_FEEDBACK_DEFAULT_HTML);
+
+  // Register the CSS file from chrome://system manually as that style is
+  // re-used by chrome://feedback/html/sys_info.html.
+  source->AddResourcePath("css/about_sys.css", IDR_ABOUT_SYS_CSS);
+
   source->UseStringsJs();
 
   AddStringResources(source, profile);
