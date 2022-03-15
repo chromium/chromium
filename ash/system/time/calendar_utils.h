@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_TIME_CALENDAR_UTILS_H_
 #define ASH_SYSTEM_TIME_CALENDAR_UTILS_H_
 
+#include "ash/ash_export.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -24,6 +25,9 @@ namespace calendar_utils {
 
 // Number of days in one week.
 constexpr int kDateInOneWeek = 7;
+
+// Milliseconds per minute.
+constexpr int kMillisecondsPerMinute = 60000;
 
 // The padding in each date cell view.
 constexpr int kDateVerticalPadding = 13;
@@ -96,6 +100,10 @@ base::Time GetStartOfNextMonthUTC(base::Time date);
 
 // Returns true if it's a regular user or the user session is not blocked.
 bool IsActiveUser();
+
+// Get the time difference to UTC time based on the time passed in and the
+// system timezone. Daylight saving is considered.
+ASH_EXPORT int GetTimeDifferenceInMinutes(base::Time date);
 
 }  // namespace calendar_utils
 

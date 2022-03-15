@@ -52,6 +52,12 @@ class ASH_EXPORT CalendarViewController {
   // Updates the `currently_shown_date_`.
   void UpdateMonth(const base::Time current_month_first_date);
 
+  // When rendering a view based on a certain date, the time difference might
+  // change due to daylight savings time. This method will compare the current
+  // `time_difference_minutes_` with the new time difference and make an update
+  // if there's a change.
+  void MaybeUpdateTimeDifference(base::Time date);
+
   // Gets the first day of the `currently_shown_date_`'s month, in local time.
   base::Time GetOnScreenMonthFirstDayLocal() const;
 

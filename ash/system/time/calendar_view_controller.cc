@@ -5,7 +5,6 @@
 #include "ash/system/time/calendar_view_controller.h"
 
 #include <stdlib.h>
-#include <codecvt>
 #include <cstddef>
 
 #include "ash/calendar/calendar_client.h"
@@ -16,10 +15,7 @@
 #include "ash/system/time/calendar_metrics.h"
 #include "ash/system/time/calendar_utils.h"
 #include "base/check.h"
-#include "base/i18n/time_formatting.h"
-#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -29,27 +25,7 @@ CalendarViewController::CalendarViewController()
     : currently_shown_date_(base::Time::Now()),
       calendar_open_time_(base::TimeTicks::Now()),
       month_dwell_time_(base::TimeTicks::Now()) {
-  // Using the local time format to get the local `base::Time`, which is used to
-  // generate the exploded everywhere, since the LocalExplode doesn't use the
-  // manually set timezone.
-  std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> converter;
-  base::Time local_time;
-  bool result = base::Time::FromString(
-      converter
-          .to_bytes(base::TimeFormatWithPattern(currently_shown_date_,
-                                                "MMMMdyyyy HH:mm") +
-                    u" GMT")
-          .c_str(),
-      &local_time);
-  DCHECK(result);
-  int difference_in_minutes = (local_time - currently_shown_date_).InMinutes();
-  // Gives it an extra 1 minute to consider the processing time. Adjust the
-  // mintes by using the remainder of 15, since there're half an hour and 45
-  // minutes timezone.
-  difference_in_minutes += difference_in_minutes > 0 ? 1 : (-1);
-  time_difference_minutes_ = difference_in_minutes - difference_in_minutes % 15;
-  Shell::Get()->system_tray_model()->calendar_model()->RedistributeEvents(
-      time_difference_minutes_);
+  MaybeUpdateTimeDifference(currently_shown_date_);
 }
 
 CalendarViewController::~CalendarViewController() {
@@ -95,6 +71,19 @@ void CalendarViewController::UpdateMonth(
     observer.OnMonthChanged(
         calendar_utils::GetExplodedLocal(current_month_first_date));
   }
+}
+
+void CalendarViewController::MaybeUpdateTimeDifference(base::Time date) {
+  // Set the time difference, which is used to generate the exploded everywhere,
+  // since the LocalExplode doesn't use the manually set timezone.
+  int const new_time_difference =
+      calendar_utils::GetTimeDifferenceInMinutes(date);
+  if (time_difference_minutes_ == new_time_difference)
+    return;
+
+  time_difference_minutes_ = new_time_difference;
+  Shell::Get()->system_tray_model()->calendar_model()->RedistributeEvents(
+      time_difference_minutes_);
 }
 
 base::Time CalendarViewController::GetOnScreenMonthFirstDayLocal() const {
