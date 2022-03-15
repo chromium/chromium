@@ -123,7 +123,7 @@ TEST_F(OAuthHttpFetcherTest, ExecuteGetRequest_MultipleCalls) {
         ASSERT_EQ(result->http_response_error(),
                   net::HTTP_INTERNAL_SERVER_ERROR);
       }));
-#if defined(DCHECK_ALWAYS_ON)
+#if DCHECK_IS_ON()
   EXPECT_DEATH(
       http_fetcher_->ExecuteGetRequest(GURL(kTestUrl), base::DoNothing()), "");
 #else
@@ -169,7 +169,7 @@ TEST_F(OAuthHttpFetcherTest, ExecuteGetRequest_NoIdentityManager) {
   ON_CALL(*browser_delegate_, GetIdentityManager())
       .WillByDefault(testing::Return(nullptr));
 
-#if defined(DCHECK_ALWAYS_ON)
+#if DCHECK_IS_ON()
   EXPECT_DEATH(
       http_fetcher_->ExecuteGetRequest(GURL(kTestUrl), base::DoNothing()), "");
 #else
@@ -185,7 +185,7 @@ TEST_F(OAuthHttpFetcherTest, ExecuteGetRequest_NoIdentityManager) {
 
 TEST_F(OAuthHttpFetcherTest, ExecuteGetRequest_MultipleRaceCondition) {
   http_fetcher_->ExecuteGetRequest(GURL(kTestUrl), base::DoNothing());
-#if defined(DCHECK_ALWAYS_ON)
+#if DCHECK_IS_ON()
   EXPECT_DEATH(
       http_fetcher_->ExecuteGetRequest(GURL(kTestUrl), base::DoNothing()), "");
 #else
