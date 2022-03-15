@@ -11,7 +11,6 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/canvas.h"
-#include "ui/lottie/animation.h"
 #include "ui/views/widget/widget.h"
 
 namespace views {
@@ -49,7 +48,14 @@ void AnimatedImageView::SetAnimatedImage(
   SchedulePaint();
 }
 
-void AnimatedImageView::Play() {
+void AnimatedImageView::Play(lottie::Animation::Style style) {
+  DCHECK(animated_image_);
+  Play(base::TimeDelta(), animated_image_->GetAnimationDuration(), style);
+}
+
+void AnimatedImageView::Play(base::TimeDelta start_offset,
+                             base::TimeDelta duration,
+                             lottie::Animation::Style style) {
   DCHECK(animated_image_);
   if (state_ == State::kPlaying)
     return;
@@ -58,7 +64,7 @@ void AnimatedImageView::Play() {
 
   SetCompositorFromWidget();
 
-  animated_image_->Start();
+  animated_image_->StartSubsection(start_offset, duration, style);
 }
 
 void AnimatedImageView::Stop() {

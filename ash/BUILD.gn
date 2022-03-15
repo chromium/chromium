@@ -170,6 +170,8 @@ component("ash") {
     "ambient/model/ambient_slideshow_photo_config.h",
     "ambient/resources/ambient_animation_resource_constants.h",
     "ambient/resources/ambient_animation_static_resources.h",
+    "ambient/ui/ambient_animation_player.cc",
+    "ambient/ui/ambient_animation_player.h",
     "ambient/ui/ambient_animation_resizer.cc",
     "ambient/ui/ambient_animation_resizer.h",
     "ambient/ui/ambient_animation_shield_controller.cc",

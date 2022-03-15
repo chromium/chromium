@@ -9,9 +9,11 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/compositor_animation_observer.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/lottie/animation.h"
 #include "ui/views/controls/image_view_base.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/views_export.h"
@@ -61,7 +63,11 @@ class VIEWS_EXPORT AnimatedImageView : public ImageViewBase,
 
   // Plays the animation in loop and must only be called when this view has
   // access to a widget.
-  void Play();
+  void Play(lottie::Animation::Style style = lottie::Animation::Style::kLoop);
+  // Version of the above that mirrors lottie::Animation::StartSubsection().
+  void Play(base::TimeDelta start_offset,
+            base::TimeDelta duration,
+            lottie::Animation::Style style = lottie::Animation::Style::kLoop);
 
   // Stops any animation and resets it to the start frame.
   void Stop();

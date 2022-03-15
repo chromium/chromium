@@ -29,6 +29,7 @@ class BoxLayoutView;
 namespace ash {
 
 class AmbientAnimationAttributionProvider;
+class AmbientAnimationPlayer;
 class AmbientAnimationStaticResources;
 class AmbientAnimationShieldController;
 class AmbientViewDelegate;
@@ -50,11 +51,11 @@ class ASH_EXPORT AmbientAnimationView : public views::View,
  private:
   void Init(AmbientViewDelegate* view_delegate);
 
-  void AnimationWillStartPlaying(const lottie::Animation* animation) override;
   void AnimationCycleEnded(const lottie::Animation* animation) override;
 
   void OnViewBoundsChanged(View* observed_view) override;
 
+  void StartPlayingAnimation();
   void StartThroughputTracking();
   void RestartThroughputTracking();
   void ApplyJitter();
@@ -71,6 +72,7 @@ class ASH_EXPORT AmbientAnimationView : public views::View,
   views::BoxLayoutView* glanceable_info_container_ = nullptr;
   views::BoxLayoutView* media_string_container_ = nullptr;
   std::unique_ptr<AmbientAnimationShieldController> shield_view_controller_;
+  std::unique_ptr<AmbientAnimationPlayer> animation_player_;
   base::ScopedObservation<View, ViewObserver> animated_image_view_observer_{
       this};
   base::ScopedObservation<lottie::Animation, lottie::AnimationObserver>

@@ -14,6 +14,7 @@
 #include "ash/ambient/model/ambient_backend_model.h"
 #include "ash/ambient/model/ambient_photo_config.h"
 #include "ash/ambient/resources/ambient_animation_static_resources.h"
+#include "ash/ambient/ui/ambient_animation_player.h"
 #include "ash/ambient/ui/ambient_animation_resizer.h"
 #include "ash/ambient/ui/ambient_animation_shield_controller.h"
 #include "ash/ambient/ui/ambient_view_delegate.h"
@@ -260,12 +261,6 @@ void AmbientAnimationView::Init(AmbientViewDelegate* view_delegate) {
   media_string_view->SetVisible(false);
 }
 
-void AmbientAnimationView::AnimationWillStartPlaying(
-    const lottie::Animation* animation) {
-  event_handler_->OnMarkerHit(AmbientPhotoConfig::Marker::kUiStartRendering);
-  last_jitter_timestamp_ = base::TimeTicks::Now();
-}
-
 void AmbientAnimationView::AnimationCycleEnded(
     const lottie::Animation* animation) {
   event_handler_->OnMarkerHit(AmbientPhotoConfig::Marker::kUiCycleEnded);
@@ -302,13 +297,26 @@ void AmbientAnimationView::OnViewBoundsChanged(View* observed_view) {
       << animated_image_view_->animated_image()->GetOriginalSize().ToString()
       << " from " << previous_animation_bounds.ToString() << " to "
       << animated_image_view_->GetImageBounds().ToString();
-  animated_image_view_->Play();
+  StartPlayingAnimation();
   if (!throughput_tracker_restart_timer_.IsRunning()) {
     RestartThroughputTracking();
     throughput_tracker_restart_timer_.Start(
         FROM_HERE, kThroughputTrackerRestartPeriod, this,
         &AmbientAnimationView::RestartThroughputTracking);
   }
+}
+
+void AmbientAnimationView::StartPlayingAnimation() {
+  // There should only be one active AmbientAnimationPlayer at any given time,
+  // otherwise multiple active players can lead to confusing simultaneous state
+  // changes. So destroy the existing player first before creating a new one.
+  animation_player_.reset();
+  // |animated_image_view_| is owned by the base |View| class and outlives the
+  // |animation_player_|, so it's safe to pass a raw ptr here.
+  animation_player_ =
+      std::make_unique<AmbientAnimationPlayer>(animated_image_view_);
+  event_handler_->OnMarkerHit(AmbientPhotoConfig::Marker::kUiStartRendering);
+  last_jitter_timestamp_ = base::TimeTicks::Now();
 }
 
 void AmbientAnimationView::RestartThroughputTracking() {
