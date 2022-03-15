@@ -27,7 +27,7 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.components.browser_ui.widget.R;
+import org.chromium.components.browser_ui.widget.test.R;
 
 /**
  * Tests the utility methods for highlighting of a view.

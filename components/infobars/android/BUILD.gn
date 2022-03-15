@@ -108,7 +108,7 @@ android_library("javatests") {
     ":java",
     "//base:base_java",
     "//base:base_java_test_support",
-    "//components/browser_ui/styles/android:java_resources",
+    "//components/browser_ui/theme/android:java_resources",
     "//components/browser_ui/widget/android:java",
     "//third_party/android_support_test_runner:rules_java",
     "//third_party/android_support_test_runner:runner_java",
@@ -117,4 +117,5 @@ android_library("javatests") {
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit:junit",
   ]
+  resources_package = "org.chromium.components.infobars.test"
 }

@@ -20,6 +20,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.components.infobars.InfoBarControlLayout.ControlLayoutParams;
+import org.chromium.components.infobars.test.R;
 
 /**
  * Tests for InfoBarControlLayout.  This suite doesn't check for specific details, like margins

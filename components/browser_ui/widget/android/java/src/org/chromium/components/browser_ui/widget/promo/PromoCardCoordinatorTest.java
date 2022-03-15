@@ -56,8 +56,8 @@ public class PromoCardCoordinatorTest {
         //  is based on material theme. For now we need the theme wrapper to inflate the layout;
         //  because we are not setting our theme overlay for the test apk
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ContextThemeWrapper wrapperTheme = new ContextThemeWrapper(mContext,
-                    org.chromium.components.browser_ui.widget.R.style.Theme_BrowserUI_DayNight);
+            ContextThemeWrapper wrapperTheme =
+                    new ContextThemeWrapper(mContext, R.style.Theme_BrowserUI_DayNight);
             mPromoCardCoordinator =
                     new PromoCardCoordinator(wrapperTheme, mModel, "test-feature", layoutStyle);
             mView = (PromoCardView) mPromoCardCoordinator.getView();

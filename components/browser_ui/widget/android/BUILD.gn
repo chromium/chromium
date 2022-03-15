@@ -265,7 +265,6 @@ android_resources("java_resources") {
     "java/res/values/drawables.xml",
     "java/res/values/ids.xml",
     "java/res/values/styles.xml",
-    "java/res/values/themes.xml",
     "java/res/values/values.xml",
   ]
   deps = [
@@ -324,6 +323,7 @@ android_library("javatests") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//components/browser_ui/test/android:test_support_java",
+    "//components/browser_ui/theme/android:java_resources",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_support_test_runner:rules_java",
     "//third_party/android_support_test_runner:runner_java",
