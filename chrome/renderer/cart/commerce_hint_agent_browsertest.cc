@@ -468,13 +468,6 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, AddToCartByURL_XHR) {
 }
 
 IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, VisitCart) {
-  // The test is flaky with same-site back/forward cache, presumably because it
-  // doesn't expect a RenderView change on same-site navigations.
-  // TODO(https://crbug.com/1302902): Investigate and fix this.
-  content::DisableBackForwardCacheForTesting(
-      web_contents(),
-      content::BackForwardCache::TEST_ASSUMES_NO_RENDER_FRAME_CHANGE);
-
   // Cannot use dummy page with zero products, or the cart would be deleted.
   NavigateToURL("https://www.guitarcenter.com/cart.html");
 
@@ -1003,6 +996,13 @@ class CommerceHintCartPatternTest : public CommerceHintAgentTest {
 };
 
 IN_PROC_BROWSER_TEST_F(CommerceHintCartPatternTest, VisitCart) {
+  // The test is flaky with same-site back/forward cache, presumably because it
+  // doesn't expect a RenderView change on same-site navigations.
+  // TODO(https://crbug.com/1302902): Investigate and fix this.
+  content::DisableBackForwardCacheForTesting(
+      web_contents(),
+      content::BackForwardCache::TEST_ASSUMES_NO_RENDER_FRAME_CHANGE);
+
   NavigateToURL("https://www.guitarcenter.com/SpecialLoL");
   WaitForUmaCount("Commerce.Carts.VisitCart", 1);
 
