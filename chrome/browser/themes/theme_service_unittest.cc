@@ -807,8 +807,8 @@ TEST_F(ThemeServiceTest, PolicyThemeColorSet) {
   EXPECT_TRUE(registry_->GetInstalledExtension(scoper.extension_id()));
 }
 
-// TODO(crbug.com/1056953): Enable on Fuchsia, and Linux GTK.
-#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(USE_GTK)
+// TODO(crbug.com/1056953): Enable on Linux GTK.
+#if BUILDFLAG(USE_GTK)
 #define MAYBE_GetColor DISABLED_GetColor
 #else
 #define MAYBE_GetColor GetColor
