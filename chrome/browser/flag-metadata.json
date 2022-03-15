@@ -3367,12 +3367,12 @@
   },
   {
     "name": "files-archivemount",
-    "owners": [ "fdegros", "nigeltao" ],
+    "owners": [ "fdegros", "nigeltao", "msalomao" ],
     "expiry_milestone": 112
   },
   {
     "name": "files-archivemount2",
-    "owners": [ "fdegros", "nigeltao" ],
+    "owners": [ "fdegros", "nigeltao", "msalomao" ],
     "expiry_milestone": 112
   },
   {
