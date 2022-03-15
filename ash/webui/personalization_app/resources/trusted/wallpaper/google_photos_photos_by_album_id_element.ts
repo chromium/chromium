@@ -66,7 +66,7 @@ export class GooglePhotosPhotosByAlbumId extends WithPersonalizationStore {
   albumId: string|undefined;
 
   /** Whether or not this element is currently hidden. */
-  hidden: boolean;
+  override hidden: boolean;
 
   /** The list of photos for the currently selected album id. */
   private album_: GooglePhotosPhoto[]|null|undefined;
@@ -87,7 +87,7 @@ export class GooglePhotosPhotosByAlbumId extends WithPersonalizationStore {
   private wallpaperProvider_: WallpaperProviderInterface =
       getWallpaperProvider();
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.watch<GooglePhotosPhotosByAlbumId['currentSelected_']>(

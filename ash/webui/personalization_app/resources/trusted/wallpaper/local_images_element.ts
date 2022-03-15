@@ -73,7 +73,7 @@ export class LocalImages extends WithPersonalizationStore {
     return ['onImageLoaded_(imageData_, imageDataLoading_)'];
   }
 
-  public hidden: boolean;
+  override hidden: boolean;
 
   private wallpaperProvider_: WallpaperProviderInterface;
   private images_: FilePath[]|null;
@@ -88,7 +88,7 @@ export class LocalImages extends WithPersonalizationStore {
     this.wallpaperProvider_ = getWallpaperProvider();
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.watch<LocalImages['images_']>(
         'images_', state => state.wallpaper.local.images);

@@ -50,7 +50,7 @@ export class UserPreview extends WithPersonalizationStore {
   private info_: UserInfo|null;
   private imageUrl_: Url|null;
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     UserImageObserver.initUserImageObserverIfNeeded();
     this.watch<UserPreview['info_']>('info_', state => state.user.info);

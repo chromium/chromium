@@ -77,7 +77,7 @@ export class PersonalizationRouter extends PolymerElement {
     window.location.replace(Paths.Ambient);
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     // Force the user onto the wallpaper subpage if personalization hub feature
     // is not enabled, and the user is not already on a wallpaper page.

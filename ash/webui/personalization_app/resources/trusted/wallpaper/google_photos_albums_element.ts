@@ -47,7 +47,7 @@ export class GooglePhotosAlbums extends WithPersonalizationStore {
   }
 
   /** Whether or not this element is currently hidden. */
-  hidden: boolean;
+  override hidden: boolean;
 
   /** The list of albums. */
   private albums_: GooglePhotosAlbum[]|null|undefined;
@@ -55,7 +55,7 @@ export class GooglePhotosAlbums extends WithPersonalizationStore {
   /** Whether the list of albums is currently loading. */
   private albumsLoading_: boolean;
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.watch<GooglePhotosAlbums['albums_']>(

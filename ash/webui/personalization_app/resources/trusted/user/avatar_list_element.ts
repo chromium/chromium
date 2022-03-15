@@ -63,7 +63,7 @@ export class AvatarList extends WithPersonalizationStore {
   private image_: UserImage|null;
   private lastExternalUserImageUrl_: Url|null;
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.watch<AvatarList['defaultUserImages_']>(
         'defaultUserImages_', state => state.user.defaultUserImages);

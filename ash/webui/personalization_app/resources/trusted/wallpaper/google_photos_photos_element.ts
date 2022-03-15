@@ -87,7 +87,7 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
   }
 
   /** Whether or not this element is currently hidden. */
-  hidden: boolean;
+  override hidden: boolean;
 
   /** The currently selected wallpaper. */
   private currentSelected_: CurrentWallpaper|null;
@@ -123,7 +123,7 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
   private wallpaperProvider_: WallpaperProviderInterface =
       getWallpaperProvider();
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.addEventListener('iron-resize', this.onResized_.bind(this));

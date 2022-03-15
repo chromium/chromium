@@ -67,7 +67,7 @@ export class AmbientSubpage extends WithPersonalizationStore {
   private temperatureUnit_: TemperatureUnit|null = null;
   private topicSource_: TopicSource|null = null;
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     AmbientObserver.initAmbientObserverIfNeeded();
     this.watch<AmbientSubpage['albums_']>(

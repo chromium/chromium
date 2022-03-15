@@ -42,7 +42,7 @@ export class PersonalizationToastElement extends WithPersonalizationStore {
   private isLoading_: boolean;
   private showError_: boolean;
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.watch('error_', state => state.error);
     this.watch(

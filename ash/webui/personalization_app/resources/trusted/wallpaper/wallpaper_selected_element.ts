@@ -152,7 +152,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
     this.wallpaperProvider_ = getWallpaperProvider();
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.watch('error_', state => state.error);
     this.watch('image_', state => state.wallpaper.currentSelected);

@@ -174,7 +174,7 @@ export class WallpaperImages extends WithPersonalizationStore {
     };
   }
 
-  hidden: boolean;
+  override hidden: boolean;
   collectionId: string;
   private collections_: WallpaperCollection[]|null;
   private collectionsLoading_: boolean;
@@ -192,7 +192,7 @@ export class WallpaperImages extends WithPersonalizationStore {
     ];
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.watch<WallpaperImages['images_']>(
         'images_', state => state.wallpaper.backdrop.images);

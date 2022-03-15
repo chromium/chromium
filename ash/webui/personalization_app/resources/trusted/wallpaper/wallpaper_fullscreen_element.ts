@@ -78,7 +78,7 @@ export class WallpaperFullscreen extends WithPersonalizationStore {
   }
 
   /** Add override when tsc is updated to 4.3+. */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.$.container.addEventListener(
         'fullscreenchange', this.onFullscreenChange_.bind(this));

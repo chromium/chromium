@@ -106,7 +106,7 @@ export class WallpaperCollections extends WithPersonalizationStore {
     };
   }
 
-  hidden: boolean;
+  override hidden: boolean;
   private collections_: WallpaperCollection[];
   private collectionsLoading_: boolean;
   private googlePhotos_: GooglePhotosPhoto[]|null;
@@ -142,7 +142,7 @@ export class WallpaperCollections extends WithPersonalizationStore {
     this.didSendLocalImageData_ = false;
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.watch('collections_', state => state.wallpaper.backdrop.collections);
     this.watch(

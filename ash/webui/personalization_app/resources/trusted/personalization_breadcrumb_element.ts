@@ -100,7 +100,7 @@ export class PersonalizationBreadcrumb extends WithPersonalizationStore {
   private googlePhotosAlbums_: GooglePhotosAlbum[]|null;
   private showBackButton_: boolean;
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.watch('collections_', state => state.wallpaper.backdrop.collections);
     this.watch(

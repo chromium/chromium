@@ -49,12 +49,12 @@ export class AmbientPreview extends WithPersonalizationStore {
   private topicSource_: TopicSource|null;
   private previewAlbum_: AmbientModeAlbum|null;
 
-  ready() {
+  override ready() {
     super.ready();
     AmbientObserver.initAmbientObserverIfNeeded();
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.watch('albums_', state => state.ambient.albums);
     this.watch('topicSource_', state => state.ambient.topicSource);

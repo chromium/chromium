@@ -35,7 +35,7 @@ export class PersonalizationThemeElement extends WithPersonalizationStore {
 
   private darkModeEnabled_: boolean;
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     ThemeObserver.initThemeObserverIfNeeded();
     this.watch<PersonalizationThemeElement['darkModeEnabled_']>(

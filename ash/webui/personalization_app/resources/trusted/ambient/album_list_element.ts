@@ -52,7 +52,7 @@ export class AlbumList extends WithPersonalizationStore {
   topicSource: TopicSource;
   albums: AmbientModeAlbum[]|null;
 
-  ready() {
+  override ready() {
     super.ready();
     /** When element is ready, force rendering iron-list */
     afterNextRender(this, () => this.$.grid.fire('iron-resize'));

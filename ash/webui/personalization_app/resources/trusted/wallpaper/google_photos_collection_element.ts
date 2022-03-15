@@ -69,7 +69,7 @@ export class GooglePhotosCollection extends WithPersonalizationStore {
   albumId: string|undefined;
 
   /** Whether or not this element is currently hidden. */
-  hidden: boolean;
+  override hidden: boolean;
 
   /** The list of albums. */
   private albums_: GooglePhotosAlbum[]|null|undefined;
@@ -84,7 +84,7 @@ export class GooglePhotosCollection extends WithPersonalizationStore {
   private wallpaperProvider_: WallpaperProviderInterface =
       getWallpaperProvider();
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.watch<GooglePhotosCollection['albums_']>(

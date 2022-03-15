@@ -56,7 +56,7 @@ export class WallpaperPreview extends WithPersonalizationStore {
     this.wallpaperProvider_ = getWallpaperProvider();
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.watch('image_', state => state.wallpaper.currentSelected);
     this.watch(

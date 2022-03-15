@@ -62,9 +62,9 @@ export class TopicSourceItem extends WithPersonalizationStore {
   checked: boolean;
   topicSource: TopicSource;
   hasGooglePhotosAlbums: boolean|null;
-  ariaLabel: string;
+  override ariaLabel: string;
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.addEventListener('click', this.onItemSelected_.bind(this));

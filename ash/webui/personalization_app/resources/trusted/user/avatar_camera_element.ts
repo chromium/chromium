@@ -107,12 +107,12 @@ export class AvatarCamera extends WithPersonalizationStore {
   private pngBinary_: Uint8Array|null;
   private previewBlobUrl_: string|null;
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.startCamera_();
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
     this.stopCamera_();
   }
