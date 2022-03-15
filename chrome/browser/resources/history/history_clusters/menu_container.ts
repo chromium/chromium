@@ -10,9 +10,8 @@ import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu
 import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Annotation, URLVisit} from './history_clusters.mojom-webui.js';
+import {URLVisit} from './history_clusters.mojom-webui.js';
 import {getTemplate} from './menu_container.html.js';
-import {MetricsProxyImpl, VisitAction, VisitType} from './metrics_proxy.js';
 
 /**
  * @fileoverview This file provides a custom element displaying an action menu.
@@ -45,22 +44,6 @@ class MenuContainerElement extends PolymerElement {
   static get properties() {
     return {
       /**
-       * The index of the cluster this menu belongs to.
-       */
-      clusterIndex: {
-        type: Number,
-        value: -1,  // Initialized to an invalid value.
-      },
-
-      /**
-       * The index of the visit in the cluster.
-       */
-      visitIndex: {
-        type: Number,
-        value: -1,  // Initialized to an invalid value.
-      },
-
-      /**
        * The visit associated with this menu.
        */
       visit: Object,
@@ -71,8 +54,6 @@ class MenuContainerElement extends PolymerElement {
   // Properties
   //============================================================================
 
-  clusterIndex: number;
-  visitIndex: number;
   visit: URLVisit;
 
   //============================================================================
@@ -117,23 +98,6 @@ class MenuContainerElement extends PolymerElement {
     }));
 
     this.$.actionMenu.get().close();
-
-    MetricsProxyImpl.getInstance().recordVisitAction(
-        VisitAction.DELETED, this.visitIndex, this.getVisitType_());
-  }
-
-  //============================================================================
-  // Helper methods
-  //============================================================================
-
-  /**
-   * Returns the VisitType based on whether this is a visit to the default
-   * search provider's results page.
-   */
-  private getVisitType_(): VisitType {
-    return this.visit.annotations.includes(Annotation.kSearchResultsPage) ?
-        VisitType.SRP :
-        VisitType.NON_SRP;
   }
 }
 

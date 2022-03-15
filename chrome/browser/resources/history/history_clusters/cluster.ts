@@ -17,7 +17,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {BrowserProxyImpl} from './browser_proxy.js';
 import {getTemplate} from './cluster.html.js';
 import {Cluster, PageCallbackRouter, URLVisit} from './history_clusters.mojom-webui.js';
-import {ClusterAction, MetricsProxyImpl} from './metrics_proxy.js';
+import {ClusterAction, MetricsProxyImpl, VisitAction} from './metrics_proxy.js';
 
 /**
  * @fileoverview This file provides a custom element displaying a cluster.
@@ -138,9 +138,14 @@ class HistoryClusterElement extends PolymerElement {
         ClusterAction.RELATED_SEARCH_CLICKED, this.index);
   }
 
-  private onVisitClicked_() {
+  private onVisitClicked_(event: CustomEvent<URLVisit>) {
     MetricsProxyImpl.getInstance().recordClusterAction(
         ClusterAction.VISIT_CLICKED, this.index);
+
+    const visit = event.detail;
+    MetricsProxyImpl.getInstance().recordVisitAction(
+        VisitAction.CLICKED, this.getVisitIndex_(visit),
+        MetricsProxyImpl.getVisitType(visit));
   }
 
   private onOpenAllVisits_() {
@@ -156,6 +161,21 @@ class HistoryClusterElement extends PolymerElement {
 
     MetricsProxyImpl.getInstance().recordClusterAction(
         ClusterAction.OPENED_IN_TAB_GROUP, this.index);
+  }
+
+  private onRemoveVisits_(event: CustomEvent<Array<URLVisit>>) {
+    // The actual removal is handled at in clusters.ts. This is just a good
+    // place to record the metric.
+    const visitsToBeRemoved = event.detail;
+
+    // To match the historic semantics, we only record this metric when a single
+    // visit is requested to be removed by the user.
+    if (visitsToBeRemoved.length === 1) {
+      const visit = visitsToBeRemoved[0];
+      MetricsProxyImpl.getInstance().recordVisitAction(
+          VisitAction.DELETED, this.getVisitIndex_(visit),
+          MetricsProxyImpl.getVisitType(visit));
+    }
   }
 
   private onToggleButtonKeyDown_(e: KeyboardEvent) {
@@ -221,6 +241,9 @@ class HistoryClusterElement extends PolymerElement {
         composed: true,
         detail: this.index,
       }));
+
+      MetricsProxyImpl.getInstance().recordClusterAction(
+          ClusterAction.DELETED, this.index);
     } else {
       // Reconstitute the cluster by setting the top visit with the
       // `remainingVisits` as its related visits.
@@ -260,11 +283,20 @@ class HistoryClusterElement extends PolymerElement {
   }
 
   /**
-   * Returns the index of `relatedVisit` among the visits in the cluster.
+   * Returns the index of `visit` among the visits in the cluster. Returns -1
+   * if the visit is not found in the cluster at all.
    */
-  private getVisitIndex_(relatedVisit: URLVisit): number {
-    // Index 0 represents the top visit.
-    return this.cluster.visit.relatedVisits.indexOf(relatedVisit) + 1;
+  private getVisitIndex_(visit: URLVisit): number {
+    if (visit === this.cluster.visit) {
+      return 0;
+    }
+
+    const relatedVisitIndex = this.cluster.visit.relatedVisits.indexOf(visit);
+    if (relatedVisitIndex === -1) {
+      return -1;
+    }
+    // Add one, because the "top visit" is the 0th visit.
+    return relatedVisitIndex + 1;
   }
 }
 

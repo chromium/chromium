@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {Annotation, URLVisit} from './history_clusters.mojom-webui.js';
+
 /**
  * @fileoverview This file provides an abstraction layer for logging metrics for
  * mocking in tests.
@@ -69,6 +71,16 @@ export class MetricsProxyImpl implements MetricsProxy {
 
   static setInstance(obj: MetricsProxy) {
     instance = obj;
+  }
+
+  /**
+   * Returns the VisitType based on whether this is a visit to the default
+   * search provider's results page.
+   */
+  static getVisitType(visit: URLVisit): VisitType {
+    return visit.annotations.includes(Annotation.kSearchResultsPage) ?
+        VisitType.SRP :
+        VisitType.NON_SRP;
   }
 }
 

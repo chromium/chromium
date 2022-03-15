@@ -101,7 +101,8 @@
   }
 </style>
 <div id="container" on-visit-clicked="onVisitClicked_"
-    on-open-all-visits="onOpenAllVisits_">
+    on-open-all-visits="onOpenAllVisits_"
+    on-remove-visits="onRemoveVisits_">
   <div id="label-row" hidden="[[!cluster.label]]">
     <div id="label">[[cluster.label]]</div>
     <div class="timestamp-and-menu">
@@ -110,22 +111,17 @@
       </menu-container>
     </div>
   </div>
-  <url-visit visit="[[cluster.visit]]" index="0"
-      is-top-visit$="[[!cluster.label]]">
+  <url-visit visit="[[cluster.visit]]" is-top-visit$="[[!cluster.label]]">
   </url-visit>
   <template is="dom-repeat" items="[[visibleRelatedVisits_]]">
-    <url-visit visit="[[item]]"
-        index="[[getVisitIndex_(item, cluster.visit.relatedVisits.*)]]"
-        indented$="[[!cluster.label]]">
+    <url-visit visit="[[item]]" indented$="[[!cluster.label]]">
     </url-visit>
   </template>
   <!-- Disable animation on iron-collapse, as the parent iron-list can't
        easily handle it. -->
   <iron-collapse opened="[[expanded_]]" no-animation>
     <template is="dom-repeat" items="[[hiddenRelatedVisits_]]">
-      <url-visit visit="[[item]]"
-          index="[[getVisitIndex_(item, cluster.visit.relatedVisits.*)]]"
-          indented$="[[!cluster.label]]">
+      <url-visit visit="[[item]]" indented$="[[!cluster.label]]">
       </url-visit>
     </template>
   </iron-collapse>

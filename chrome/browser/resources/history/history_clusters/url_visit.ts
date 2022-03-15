@@ -12,7 +12,6 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Annotation, URLVisit} from './history_clusters.mojom-webui.js';
-import {MetricsProxyImpl, VisitAction, VisitType} from './metrics_proxy.js';
 import {OpenWindowProxyImpl} from './open_window_proxy.js';
 import {getTemplate} from './url_visit.html.js';
 
@@ -57,14 +56,6 @@ class VisitRowElement extends PolymerElement {
       },
 
       /**
-       * The index of the visit in the cluster.
-       */
-      index: {
-        type: Number,
-        value: -1,  // Initialized to an invalid value.
-      },
-
-      /**
        * The visit to display.
        */
       visit: Object,
@@ -91,7 +82,6 @@ class VisitRowElement extends PolymerElement {
   // Properties
   //============================================================================
 
-  index: number;
   visit: URLVisit;
 
   //============================================================================
@@ -99,13 +89,11 @@ class VisitRowElement extends PolymerElement {
   //============================================================================
 
   private onAuxClick_() {
-    MetricsProxyImpl.getInstance().recordVisitAction(
-        VisitAction.CLICKED, this.index, this.getVisitType_());
-
     // Notify the parent <history-cluster> element of this event.
     this.dispatchEvent(new CustomEvent('visit-clicked', {
       bubbles: true,
       composed: true,
+      detail: this.visit,
     }));
   }
 
@@ -172,16 +160,6 @@ class VisitRowElement extends PolymerElement {
     } catch (err) {
       return '';
     }
-  }
-
-  /**
-   * Returns the VisitType based on whether this is a visit to the default
-   * search provider's results page.
-   */
-  private getVisitType_(): VisitType {
-    return this.visit.annotations.includes(Annotation.kSearchResultsPage) ?
-        VisitType.SRP :
-        VisitType.NON_SRP;
   }
 }
 
