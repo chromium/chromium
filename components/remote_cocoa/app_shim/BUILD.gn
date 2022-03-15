@@ -40,6 +40,8 @@ component("app_shim") {
     "native_widget_mac_nswindow.mm",
     "native_widget_ns_window_bridge.h",
     "native_widget_ns_window_bridge.mm",
+    "native_widget_ns_window_fullscreen_controller.h",
+    "native_widget_ns_window_fullscreen_controller.mm",
     "native_widget_ns_window_host_helper.h",
     "ns_view_ids.h",
     "ns_view_ids.mm",

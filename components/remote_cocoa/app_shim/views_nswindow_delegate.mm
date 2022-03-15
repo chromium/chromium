@@ -10,6 +10,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #import "components/remote_cocoa/app_shim/bridged_content_view.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
+#include "components/remote_cocoa/app_shim/native_widget_ns_window_fullscreen_controller.h"
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_host_helper.h"
 #include "components/remote_cocoa/common/native_widget_ns_window_host.mojom.h"
 #include "ui/gfx/geometry/resize_utils.h"
@@ -204,15 +205,24 @@
 }
 
 - (void)windowWillEnterFullScreen:(NSNotification*)notification {
-  _parent->OnFullscreenTransitionStart(true);
+  if (_parent->fullscreen_controller())
+    _parent->fullscreen_controller()->OnWindowWillEnterFullscreen();
+  else
+    _parent->OnFullscreenTransitionStart(true);
 }
 
 - (void)windowDidEnterFullScreen:(NSNotification*)notification {
-  _parent->OnFullscreenTransitionComplete(true);
+  if (_parent->fullscreen_controller())
+    _parent->fullscreen_controller()->OnWindowDidEnterFullscreen();
+  else
+    _parent->OnFullscreenTransitionComplete(true);
 }
 
 - (void)windowWillExitFullScreen:(NSNotification*)notification {
-  _parent->OnFullscreenTransitionStart(false);
+  if (_parent->fullscreen_controller())
+    _parent->fullscreen_controller()->OnWindowWillExitFullscreen();
+  else
+    _parent->OnFullscreenTransitionStart(false);
 }
 
 - (void)windowDidExitFullScreen:(NSNotification*)notification {
@@ -227,7 +237,10 @@
                                     afterDelay:0];
   }
 
-  _parent->OnFullscreenTransitionComplete(false);
+  if (_parent->fullscreen_controller())
+    _parent->fullscreen_controller()->OnWindowDidExitFullscreen();
+  else
+    _parent->OnFullscreenTransitionComplete(false);
 }
 
 // Allow non-resizable windows (without NSResizableWindowMask) to fill the

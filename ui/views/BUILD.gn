@@ -1284,6 +1284,7 @@ test("views_unittests") {
       "cocoa/bridged_native_widget_unittest.mm",
       "cocoa/cocoa_mouse_capture_unittest.mm",
       "cocoa/drag_drop_client_mac_unittest.mm",
+      "cocoa/fullscreen_controller_unittest.cc",
       "controls/menu/menu_closure_animation_mac_unittest.cc",
       "controls/menu/menu_runner_cocoa_unittest.mm",
       "controls/native/native_view_host_mac_unittest.mm",
