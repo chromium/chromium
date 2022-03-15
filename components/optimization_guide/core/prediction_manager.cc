@@ -487,7 +487,8 @@ void PredictionManager::UpdatePredictionModels(
       if (prediction_model_download_manager_) {
         GURL download_url(model.model().download_url());
         if (download_url.is_valid()) {
-          prediction_model_download_manager_->StartDownload(download_url);
+          prediction_model_download_manager_->StartDownload(
+              download_url, model.model_info().optimization_target());
         }
         base::UmaHistogramBoolean(
             "OptimizationGuide.PredictionManager.IsDownloadUrlValid." +

@@ -109,14 +109,17 @@ PredictionModelDownloadManager::PredictionModelDownloadManager(
 
 PredictionModelDownloadManager::~PredictionModelDownloadManager() = default;
 
-void PredictionModelDownloadManager::StartDownload(const GURL& download_url) {
+void PredictionModelDownloadManager::StartDownload(
+    const GURL& download_url,
+    proto::OptimizationTarget optimization_target) {
   download::DownloadParams download_params;
   download_params.client =
       download::DownloadClient::OPTIMIZATION_GUIDE_PREDICTION_MODELS;
   download_params.guid = base::GenerateGUID();
   download_params.callback =
       base::BindRepeating(&PredictionModelDownloadManager::OnDownloadStarted,
-                          ui_weak_ptr_factory_.GetWeakPtr());
+                          ui_weak_ptr_factory_.GetWeakPtr(),
+                          optimization_target, base::TimeTicks::Now());
   download_params.traffic_annotation = net::MutableNetworkTrafficAnnotationTag(
       kOptimizationGuidePredictionModelsTrafficAnnotation);
   // The downloaded models are all Google-generated, so bypass the safety
@@ -139,6 +142,11 @@ void PredictionModelDownloadManager::StartDownload(const GURL& download_url) {
       download::SchedulingParams::BatteryRequirements::BATTERY_INSENSITIVE;
   download_params.scheduling_params.network_requirements =
       download::SchedulingParams::NetworkRequirements::NONE;
+  base::UmaHistogramEnumeration(
+      "OptimizationGuide.PredictionModelDownloadManager.State." +
+          optimization_guide::GetStringNameForOptimizationTarget(
+              optimization_target),
+      PredictionModelDownloadManager::PredictionModelDownloadState::kRequested);
 
   download_service_->StartDownload(std::move(download_params));
 }
@@ -181,10 +189,24 @@ void PredictionModelDownloadManager::OnDownloadServiceUnavailable() {
 }
 
 void PredictionModelDownloadManager::OnDownloadStarted(
+    proto::OptimizationTarget optimization_target,
+    base::TimeTicks download_requested_time,
     const std::string& guid,
     download::DownloadParams::StartResult start_result) {
-  if (start_result == download::DownloadParams::StartResult::ACCEPTED)
+  if (start_result == download::DownloadParams::StartResult::ACCEPTED) {
     pending_download_guids_.insert(guid);
+    base::UmaHistogramEnumeration(
+        "OptimizationGuide.PredictionModelDownloadManager.State." +
+            optimization_guide::GetStringNameForOptimizationTarget(
+                optimization_target),
+        PredictionModelDownloadManager::PredictionModelDownloadState::kStarted);
+    base::UmaHistogramLongTimes(
+        "OptimizationGuide.PredictionModelDownloadManager."
+        "DownloadStartLatency." +
+            optimization_guide::GetStringNameForOptimizationTarget(
+                optimization_target),
+        base::TimeTicks::Now() - download_requested_time);
+  }
 }
 
 void PredictionModelDownloadManager::OnDownloadSucceeded(

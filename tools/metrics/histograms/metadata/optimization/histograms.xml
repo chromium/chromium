@@ -866,6 +866,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="OptimizationGuide.PredictionModelDownloadManager.DownloadStartLatency.{OptimizationTarget}"
+    units="ms" expires_after="M106">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the time duration it took for the model download to be started by
+    the download service for {OptimizationTarget} from the time it was requested
+    by the optimization guide. Recorded once per model download when model
+    download starts successfully.
+  </summary>
+  <token key="OptimizationTarget" variants="OptimizationTarget"/>
+</histogram>
+
+<histogram
     name="OptimizationGuide.PredictionModelDownloadManager.DownloadStatus"
     enum="OptimizationGuidePredictionModelDownloadStatus" expires_after="M106">
   <owner>sophiechang@chromium.org</owner>
@@ -897,6 +911,18 @@ chromium-metrics-reviews@google.com.
     where the model is moved from the scratch directory to its final location.
     Recorded every time a {OptimizationTarget} model file is downloaded and
     being processed for storage.
+  </summary>
+  <token key="OptimizationTarget" variants="OptimizationTarget"/>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.PredictionModelDownloadManager.State.{OptimizationTarget}"
+    enum="OptimizationGuidePredictionModelDownloadState" expires_after="M106">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    The state of a model download. Recorded multiple times per model file
+    download, as the state is changed.
   </summary>
   <token key="OptimizationTarget" variants="OptimizationTarget"/>
 </histogram>

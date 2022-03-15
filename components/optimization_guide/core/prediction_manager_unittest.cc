@@ -116,11 +116,17 @@ class FakePredictionModelDownloadManager
                                        task_runner) {}
   ~FakePredictionModelDownloadManager() override = default;
 
-  void StartDownload(const GURL& url) override {
+  void StartDownload(const GURL& url,
+                     proto::OptimizationTarget optimization_target) override {
     last_requested_download_ = url;
+    last_requested_optimization_target_ = optimization_target;
   }
 
   GURL last_requested_download() const { return last_requested_download_; }
+
+  proto::OptimizationTarget last_requested_optimization_target() const {
+    return last_requested_optimization_target_;
+  }
 
   void CancelAllPendingDownloads() override { cancel_downloads_called_ = true; }
   bool cancel_downloads_called() const { return cancel_downloads_called_; }
@@ -132,6 +138,7 @@ class FakePredictionModelDownloadManager
 
  private:
   GURL last_requested_download_;
+  proto::OptimizationTarget last_requested_optimization_target_;
   bool cancel_downloads_called_ = false;
   bool is_available_ = true;
 };
@@ -960,6 +967,9 @@ TEST_F(PredictionManagerTest, UpdateModelWithDownloadUrl) {
 
   EXPECT_EQ(prediction_model_download_manager()->last_requested_download(),
             GURL("https://example.com/model"));
+  EXPECT_EQ(
+      prediction_model_download_manager()->last_requested_optimization_target(),
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
 }
 
 TEST_F(PredictionManagerTest, UpdateModelForUnregisteredTargetOnModelReady) {

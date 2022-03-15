@@ -67626,6 +67626,14 @@ Called by update_net_trust_anchors.py.-->
   </int>
 </enum>
 
+<enum name="OptimizationGuidePredictionModelDownloadState">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Requested">Model was requested to be downloaded.</int>
+  <int value="2" label="Started">
+    Download service started the model download.
+  </int>
+</enum>
+
 <enum name="OptimizationGuidePredictionModelDownloadStatus">
   <int value="0" label="Unknown"/>
   <int value="1" label="Success">

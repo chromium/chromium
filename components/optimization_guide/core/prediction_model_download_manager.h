@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/download/public/background_service/download_params.h"
+#include "components/optimization_guide/proto/models.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace download {
@@ -30,8 +31,21 @@ class PredictionModel;
 }  // namespace proto
 
 // Manages the downloads of prediction models.
+// Keep in sync with OptimizationGuidePredictionModelDownloadState in enums.xml.
 class PredictionModelDownloadManager {
  public:
+  // The different states a predition model download goes through.
+  enum class PredictionModelDownloadState {
+    kUnknown = 0,
+    // Model was requested to be downloaded.
+    kRequested = 1,
+    // Download service started the model download.
+    kStarted = 2,
+
+    // Add new values above this line.
+    kMaxValue = kStarted,
+  };
+
   PredictionModelDownloadManager(
       download::BackgroundDownloadService* download_service,
       const base::FilePath& models_dir_path,
@@ -43,7 +57,8 @@ class PredictionModelDownloadManager {
       const PredictionModelDownloadManager&) = delete;
 
   // Starts a download for |download_url|.
-  virtual void StartDownload(const GURL& download_url);
+  virtual void StartDownload(const GURL& download_url,
+                             proto::OptimizationTarget optimization_target);
 
   // Cancels all pending downloads.
   virtual void CancelAllPendingDownloads();
@@ -76,8 +91,11 @@ class PredictionModelDownloadManager {
   void OnDownloadServiceUnavailable();
 
   // Invoked when the download has been accepted and persisted by the
-  // BackgroundDownloadService.
-  void OnDownloadStarted(const std::string& guid,
+  // BackgroundDownloadService. The download was requested at
+  // |download_requested_time| for |optimization_target|.
+  void OnDownloadStarted(proto::OptimizationTarget optimization_target,
+                         base::TimeTicks download_requested_time,
+                         const std::string& guid,
                          download::DownloadParams::StartResult start_result);
 
   // Invoked when the download as specified by |downloaded_guid| succeeded.

@@ -267,6 +267,7 @@ TEST_F(PredictionModelDownloadManagerTest, DownloadServiceReadyPersistsGuids) {
 }
 
 TEST_F(PredictionModelDownloadManagerTest, StartDownloadRestrictedDownloading) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList features;
   features.InitWithFeaturesAndParameters(
       {
@@ -278,7 +279,8 @@ TEST_F(PredictionModelDownloadManagerTest, StartDownloadRestrictedDownloading) {
   download::DownloadParams download_params;
   EXPECT_CALL(*download_service(), StartDownload_(_))
       .WillOnce(MoveArg<0>(&download_params));
-  download_manager()->StartDownload(GURL("someurl"));
+  download_manager()->StartDownload(
+      GURL("someurl"), proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
 
   // Validate parameters - basically that we attach the correct client, just do
   // a passthrough of the URL, and attach the API key.
@@ -297,9 +299,30 @@ TEST_F(PredictionModelDownloadManagerTest, StartDownloadRestrictedDownloading) {
   EXPECT_EQ(download_params.scheduling_params.network_requirements,
             download::SchedulingParams::NetworkRequirements::NONE);
 
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PredictionModelDownloadManager.State.PainfulPageLoad",
+      PredictionModelDownloadManager::PredictionModelDownloadState::kRequested,
+      1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PredictionModelDownloadManager.DownloadStartLatency."
+      "PainfulPageLoad",
+      0);
+
   // Now invoke start callback.
   std::move(download_params.callback)
       .Run("someguid", download::DownloadParams::StartResult::ACCEPTED);
+
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PredictionModelDownloadManager.State.PainfulPageLoad",
+      2);
+  histogram_tester.ExpectBucketCount(
+      "OptimizationGuide.PredictionModelDownloadManager.State.PainfulPageLoad",
+      PredictionModelDownloadManager::PredictionModelDownloadState::kStarted,
+      1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PredictionModelDownloadManager.DownloadStartLatency."
+      "PainfulPageLoad",
+      1);
 
   // Now cancel all downloads to ensure that callback persisted pending GUID.
   EXPECT_CALL(*download_service(), CancelDownload(Eq("someguid")));
@@ -308,6 +331,7 @@ TEST_F(PredictionModelDownloadManagerTest, StartDownloadRestrictedDownloading) {
 
 TEST_F(PredictionModelDownloadManagerTest,
        StartDownloadUnrestrictedDownloading) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList features;
   features.InitWithFeaturesAndParameters(
       {
@@ -319,7 +343,8 @@ TEST_F(PredictionModelDownloadManagerTest,
   download::DownloadParams download_params;
   EXPECT_CALL(*download_service(), StartDownload_(_))
       .WillOnce(MoveArg<0>(&download_params));
-  download_manager()->StartDownload(GURL("someurl"));
+  download_manager()->StartDownload(
+      GURL("someurl"), proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
 
   // Validate parameters - basically that we attach the correct client, just do
   // a passthrough of the URL, and attach the API key.
@@ -337,10 +362,29 @@ TEST_F(PredictionModelDownloadManagerTest,
       download::SchedulingParams::BatteryRequirements::BATTERY_INSENSITIVE);
   EXPECT_EQ(download_params.scheduling_params.network_requirements,
             download::SchedulingParams::NetworkRequirements::NONE);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PredictionModelDownloadManager.State.PainfulPageLoad",
+      PredictionModelDownloadManager::PredictionModelDownloadState::kRequested,
+      1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PredictionModelDownloadManager.DownloadStartLatency."
+      "PainfulPageLoad",
+      0);
 
   // Now invoke start callback.
   std::move(download_params.callback)
       .Run("someguid", download::DownloadParams::StartResult::ACCEPTED);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PredictionModelDownloadManager.State.PainfulPageLoad",
+      2);
+  histogram_tester.ExpectBucketCount(
+      "OptimizationGuide.PredictionModelDownloadManager.State.PainfulPageLoad",
+      PredictionModelDownloadManager::PredictionModelDownloadState::kStarted,
+      1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PredictionModelDownloadManager.DownloadStartLatency."
+      "PainfulPageLoad",
+      1);
 
   // Now cancel all downloads to ensure that callback persisted pending GUID.
   EXPECT_CALL(*download_service(), CancelDownload(Eq("someguid")));
@@ -348,18 +392,28 @@ TEST_F(PredictionModelDownloadManagerTest,
 }
 
 TEST_F(PredictionModelDownloadManagerTest, StartDownloadFailedToSchedule) {
+  base::HistogramTester histogram_tester;
   download::DownloadParams download_params;
   EXPECT_CALL(*download_service(), StartDownload_(_))
       .WillOnce(MoveArg<0>(&download_params));
-  download_manager()->StartDownload(GURL("someurl"));
+  download_manager()->StartDownload(
+      GURL("someurl"), proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
 
   // Now invoke start callback.
   std::move(download_params.callback)
       .Run("someguid", download::DownloadParams::StartResult::INTERNAL_ERROR);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PredictionModelDownloadManager.State.PainfulPageLoad",
+      PredictionModelDownloadManager::PredictionModelDownloadState::kRequested,
+      1);
 
   // Now cancel all downloads to ensure that bad GUID was not accepted.
   EXPECT_CALL(*download_service(), CancelDownload(_)).Times(0);
   download_manager()->CancelAllPendingDownloads();
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PredictionModelDownloadManager.DownloadStartLatency."
+      "PainfulPageLoad",
+      0);
 }
 
 TEST_F(PredictionModelDownloadManagerTest, IsAvailableForDownloads) {

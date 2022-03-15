@@ -32,6 +32,7 @@
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_test_util.h"
 #include "components/optimization_guide/core/prediction_manager.h"
+#include "components/optimization_guide/core/prediction_model_download_manager.h"
 #include "components/optimization_guide/core/store_update_data.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/prefs/pref_service.h"
@@ -604,6 +605,22 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
       &histogram_tester,
       "OptimizationGuide.PredictionModelDownloadManager.DownloadStatus", 1);
 
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PredictionModelDownloadManager.State.PainfulPageLoad",
+      2);
+  histogram_tester.ExpectBucketCount(
+      "OptimizationGuide.PredictionModelDownloadManager.State.PainfulPageLoad",
+      PredictionModelDownloadManager::PredictionModelDownloadState::kRequested,
+      1);
+  histogram_tester.ExpectBucketCount(
+      "OptimizationGuide.PredictionModelDownloadManager.State.PainfulPageLoad",
+      PredictionModelDownloadManager::PredictionModelDownloadState::kStarted,
+      1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PredictionModelDownloadManager.DownloadStartLatency."
+      "PainfulPageLoad",
+      1);
+
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PredictionModelDownloadManager.DownloadStatus",
       PredictionModelDownloadStatus::kFailedCrxVerification, 1);
@@ -747,8 +764,7 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
 
 // Flaky on multiple ASAN bots. See https://crbug.com/1266318
 #if defined(ADDRESS_SANITIZER)
-#define MAYBE_TestSwitchProfileDoesntCrash \
-  DISABLED_TestSwitchProfileDoesntCrash
+#define MAYBE_TestSwitchProfileDoesntCrash DISABLED_TestSwitchProfileDoesntCrash
 #else
 #define MAYBE_TestSwitchProfileDoesntCrash TestSwitchProfileDoesntCrash
 #endif
