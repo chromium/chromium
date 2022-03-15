@@ -8,6 +8,15 @@
     background-color: lightskyblue;
   }
 
+  :host([disabled]) #componentButton {
+    opacity: 0.38;
+  }
+
+  :host([disabled]) #componentName,
+                    #componentIdentifier {
+    color: var(--cros-text-color-disabled);
+  }
+
   #componentButton {
     --vertical-padding: 24px;
     border-radius: 8px;
