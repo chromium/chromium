@@ -52,6 +52,7 @@
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
@@ -1014,6 +1015,7 @@ PasswordStoreChangeList LoginDatabase::AddLogin(const PasswordForm& form,
       UpdateInsecureCredentials(primary_key,
                                 form_with_encrypted_password.password_issues);
     }
+    UpdatePasswordNote(primary_key, form.note);
     list.emplace_back(PasswordStoreChange::ADD,
                       std::move(form_with_encrypted_password), primary_key,
                       /*password_changed=*/false);
@@ -1042,6 +1044,7 @@ PasswordStoreChangeList LoginDatabase::AddLogin(const PasswordForm& form,
       insecure_changed = UpdateInsecureCredentials(
           primary_key, form_with_encrypted_password.password_issues);
     }
+    UpdatePasswordNote(primary_key, form_with_encrypted_password.note);
     list.emplace_back(PasswordStoreChange::ADD,
                       std::move(form_with_encrypted_password),
                       FormPrimaryKey(db_.GetLastInsertRowId()),
@@ -1132,7 +1135,8 @@ PasswordStoreChangeList LoginDatabase::UpdateLogin(const PasswordForm& form,
   }
 
   // If no rows changed due to this command, it means that there was no row to
-  // update, so there is no point trying to update insecure credentials data.
+  // update, so there is no point trying to update insecure credentials data or
+  // the notes table.
   if (db_.GetLastChangeCount() == 0) {
     if (error) {
       *error = UpdateLoginError::kNoUpdatedRecords;
@@ -1157,6 +1161,8 @@ PasswordStoreChangeList LoginDatabase::UpdateLogin(const PasswordForm& form,
   InsecureCredentialsChanged insecure_changed = UpdateInsecureCredentials(
       FormPrimaryKey(old_primary_key_password.primary_key),
       form_with_encrypted_password.password_issues);
+  UpdatePasswordNote(FormPrimaryKey(old_primary_key_password.primary_key),
+                     form.note);
 
   PasswordStoreChangeList list;
   FillFormInStore(&form_with_encrypted_password);
@@ -1382,6 +1388,7 @@ LoginDatabase::EncryptionResult LoginDatabase::InitPasswordFormFromStatement(
   form->date_password_modified = base::Time::FromDeltaSinceWindowsEpoch(
       base::Microseconds(s.ColumnInt64(COLUMN_DATE_PASSWORD_MODIFIED)));
   PopulateFormWithPasswordIssues(FormPrimaryKey(*primary_key), form);
+  PopulateFormWithNote(FormPrimaryKey(*primary_key), form);
 
   return ENCRYPTION_RESULT_SUCCESS;
 }
@@ -1987,6 +1994,26 @@ InsecureCredentialsChanged LoginDatabase::UpdateInsecureCredentials(
     }
   }
   return InsecureCredentialsChanged(changed);
+}
+
+void LoginDatabase::PopulateFormWithNote(FormPrimaryKey primary_key,
+                                         PasswordForm* form) const {
+  if (!base::FeatureList::IsEnabled(features::kPasswordNotes))
+    return;
+  absl::optional<PasswordNote> note =
+      password_notes_table_.GetPasswordNote(primary_key);
+  form->note = note ? note.value() : PasswordNote();
+}
+
+void LoginDatabase::UpdatePasswordNote(FormPrimaryKey primary_key,
+                                       PasswordNote note) {
+  if (!base::FeatureList::IsEnabled(features::kPasswordNotes))
+    return;
+  if (note.value.empty()) {
+    password_notes_table_.RemovePasswordNote(primary_key);
+    return;
+  }
+  password_notes_table_.InsertOrReplace(primary_key, note);
 }
 
 }  // namespace password_manager

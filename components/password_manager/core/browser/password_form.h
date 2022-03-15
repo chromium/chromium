@@ -62,6 +62,24 @@ struct InsecurityMetadata {
 
 bool operator==(const InsecurityMetadata& lhs, const InsecurityMetadata& rhs);
 
+// Represents a note attached to a particular credential.
+struct PasswordNote {
+  PasswordNote();
+  PasswordNote(std::u16string value, base::Time date_created);
+  PasswordNote(const PasswordNote& rhs);
+  PasswordNote(PasswordNote&& rhs);
+  PasswordNote& operator=(const PasswordNote& rhs);
+  PasswordNote& operator=(PasswordNote&& rhs);
+  ~PasswordNote();
+
+  // The value of the note.
+  std::u16string value;
+  // The date when the note was created.
+  base::Time date_created;
+};
+
+bool operator==(const PasswordNote& lhs, const PasswordNote& rhs);
+
 // The PasswordForm struct encapsulates information about a login form,
 // which can be an HTML form or a dialog with username/password text fields.
 //
@@ -376,6 +394,9 @@ struct PasswordForm {
   // A mapping from the credential insecurity type (e.g. leaked, phished),
   // to its metadata (e.g. time it was discovered, whether alerts are muted).
   base::flat_map<InsecureType, InsecurityMetadata> password_issues;
+
+  // Attached note to the credential.
+  PasswordNote note;
 
   // Return true if we consider this form to be a signup form. It's based on
   // local heuristics and may be inaccurate.

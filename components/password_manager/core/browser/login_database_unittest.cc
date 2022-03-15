@@ -2346,6 +2346,88 @@ TEST_F(LoginDatabaseTest, RetrievesInsecureDataWithLogins) {
   EXPECT_THAT(result, UnorderedElementsAre(Pointee(form)));
 }
 
+TEST_F(LoginDatabaseTest, RetrievesNoteWithLogin) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kPasswordNotes);
+
+  PasswordForm form = GenerateExamplePasswordForm();
+  std::ignore = db().AddLogin(form);
+  PasswordNote note(u"example note", base::Time::Now());
+  db().password_notes_table().InsertOrReplace(FormPrimaryKey(1), note);
+
+  std::vector<std::unique_ptr<PasswordForm>> results;
+  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form),
+                             /* should_PSL_matching_apply */ true, &results));
+
+  PasswordForm expected_form = form;
+  expected_form.note = note;
+  EXPECT_THAT(results, UnorderedElementsAre(Pointee(expected_form)));
+}
+
+TEST_F(LoginDatabaseTest, AddLoginWithNotePersistsThem) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kPasswordNotes);
+
+  PasswordForm form = GenerateExamplePasswordForm();
+  PasswordNote note(u"example note", base::Time::Now());
+  form.note = note;
+
+  std::ignore = db().AddLogin(form);
+
+  EXPECT_EQ(db().password_notes_table().GetPasswordNote(FormPrimaryKey(1)),
+            note);
+}
+
+TEST_F(LoginDatabaseTest, AddLoginWithEmptyNoteDeletesTheNote) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kPasswordNotes);
+
+  PasswordForm form = GenerateExamplePasswordForm();
+  form.note = PasswordNote(std::u16string(), base::Time::Now());
+
+  std::ignore = db().AddLogin(form);
+
+  EXPECT_THAT(db().password_notes_table().GetPasswordNote(FormPrimaryKey(1)),
+              absl::nullopt);
+}
+
+TEST_F(LoginDatabaseTest, UpdateLoginWithEmptyNoteDeletesExistingNote) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kPasswordNotes);
+
+  PasswordForm form = GenerateExamplePasswordForm();
+  PasswordNote note = PasswordNote(u"example note", base::Time::Now());
+  form.note = note;
+
+  std::ignore = db().AddLogin(form);
+  EXPECT_EQ(db().password_notes_table().GetPasswordNote(FormPrimaryKey(1)),
+            note);
+
+  form.note = PasswordNote(u"", base::Time::Now());
+  std::ignore = db().UpdateLogin(form);
+
+  EXPECT_EQ(db().password_notes_table().GetPasswordNote(FormPrimaryKey(1)),
+            absl::nullopt);
+}
+
+TEST_F(LoginDatabaseTest, RemoveLoginRemovesNoteAttachedToTheLogin) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kPasswordNotes);
+
+  PasswordForm form = GenerateExamplePasswordForm();
+  PasswordNote note = PasswordNote(u"example note", base::Time::Now());
+  form.note = note;
+  std::ignore = db().AddLogin(form);
+
+  EXPECT_EQ(db().password_notes_table().GetPasswordNote(FormPrimaryKey(1)),
+            note);
+
+  PasswordStoreChangeList list;
+  EXPECT_TRUE(db().RemoveLogin(form, &list));
+  EXPECT_EQ(db().password_notes_table().GetPasswordNote(FormPrimaryKey(1)),
+            absl::nullopt);
+}
+
 TEST_F(LoginDatabaseTest, RemovingLoginRemovesInsecureCredentials) {
   PasswordForm form = GenerateExamplePasswordForm();
 

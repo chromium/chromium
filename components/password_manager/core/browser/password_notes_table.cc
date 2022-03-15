@@ -46,25 +46,6 @@ std::map<FormPrimaryKey, PasswordNote> StatementToPasswordNotes(
 
 }  // namespace
 
-PasswordNote::PasswordNote() = default;
-
-PasswordNote::PasswordNote(std::u16string value, base::Time date_created)
-    : value(std::move(value)), date_created(std::move(date_created)) {}
-
-PasswordNote::PasswordNote(const PasswordNote& rhs) = default;
-
-PasswordNote::PasswordNote(PasswordNote&& rhs) = default;
-
-PasswordNote& PasswordNote::operator=(const PasswordNote& rhs) = default;
-
-PasswordNote& PasswordNote::operator=(PasswordNote&& rhs) = default;
-
-PasswordNote::~PasswordNote() = default;
-
-bool operator==(const PasswordNote& lhs, const PasswordNote& rhs) {
-  return lhs.value == rhs.value && lhs.date_created == rhs.date_created;
-}
-
 const char PasswordNotesTable::kTableName[] = "password_notes";
 
 void PasswordNotesTable::Init(sql::Database* db) {

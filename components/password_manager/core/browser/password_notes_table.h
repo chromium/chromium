@@ -17,24 +17,6 @@ class Database;
 
 namespace password_manager {
 
-// Represents a note attached to a particular credential.
-struct PasswordNote {
-  PasswordNote();
-  PasswordNote(std::u16string value, base::Time date_created);
-  PasswordNote(const PasswordNote& rhs);
-  PasswordNote(PasswordNote&& rhs);
-  PasswordNote& operator=(const PasswordNote& rhs);
-  PasswordNote& operator=(PasswordNote&& rhs);
-  ~PasswordNote();
-
-  // The value of the note.
-  std::u16string value;
-  // The date when the note was created.
-  base::Time date_created;
-};
-
-bool operator==(const PasswordNote& lhs, const PasswordNote& rhs);
-
 // Represents the 'password_notes' table in the Login Database.
 class PasswordNotesTable {
  public:

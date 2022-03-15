@@ -329,6 +329,16 @@ class LoginDatabase : public PasswordStoreSync::MetadataStore {
       FormPrimaryKey primary_key,
       const base::flat_map<InsecureType, InsecurityMetadata>& password_issues);
 
+  // Reads the `password_notes` table for the note with `primary_key` and fills
+  // the `form->note` field. If there are no notes for `primary_key`, the form
+  // is set to empty note.
+  void PopulateFormWithNote(FormPrimaryKey primary_key,
+                            PasswordForm* form) const;
+
+  // Updates the `password_notes` table if `note.value` changed for
+  // `primary_key`.
+  void UpdatePasswordNote(FormPrimaryKey primary_key, PasswordNote note);
+
   const base::FilePath db_path_;
   const IsAccountStore is_account_store_;
 
