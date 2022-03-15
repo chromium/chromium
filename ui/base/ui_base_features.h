@@ -217,6 +217,11 @@ extern const base::Feature kEnableVariableRefreshRate;
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 bool IsVariableRefreshRateEnabled();
 
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+extern const base::Feature kWaylandScreenCoordinatesEnabled;
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+bool IsWaylandScreenCoordinatesEnabled();
+
 }  // namespace features
 
 #endif  // UI_BASE_UI_BASE_FEATURES_H_

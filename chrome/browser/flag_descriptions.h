@@ -3194,6 +3194,9 @@ extern const char kLacrosNonSyncingProfilesDescription[];
 
 extern const char kLacrosResourcesFileSharingName[];
 extern const char kLacrosResourcesFileSharingDescription[];
+
+extern const char kLacrosScreenCoordinatesEnabledName[];
+extern const char kLacrosScreenCoordinatesEnabledDescription[];
 #endif  // #if BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)

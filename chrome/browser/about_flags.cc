@@ -8205,6 +8205,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLacrosResourcesFileSharingName,
      flag_descriptions::kLacrosResourcesFileSharingDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kLacrosResourcesFileSharing)},
+
+    {"lacros-screen-coordinates-enabled",
+     flag_descriptions::kLacrosScreenCoordinatesEnabledName,
+     flag_descriptions::kLacrosScreenCoordinatesEnabledDescription,
+     kOsCrOS | kOsLinux,
+     FEATURE_VALUE_TYPE(features::kWaylandScreenCoordinatesEnabled)},
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

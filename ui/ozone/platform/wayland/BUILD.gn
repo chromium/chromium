@@ -245,6 +245,7 @@ source_set("wayland") {
     "//ui/base",
     "//ui/base:buildflags",
     "//ui/base:data_exchange",
+    "//ui/base:features",
     "//ui/base/cursor",
     "//ui/base/cursor:theme_manager",
     "//ui/base/cursor/mojom:cursor_type",

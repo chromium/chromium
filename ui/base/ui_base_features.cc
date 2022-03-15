@@ -380,4 +380,11 @@ bool IsVariableRefreshRateEnabled() {
   return base::FeatureList::IsEnabled(kEnableVariableRefreshRate);
 }
 
+const base::Feature kWaylandScreenCoordinatesEnabled{
+    "WaylandScreenCoordinatesEnabled", base::FEATURE_DISABLED_BY_DEFAULT};
+
+bool IsWaylandScreenCoordinatesEnabled() {
+  return base::FeatureList::IsEnabled(kWaylandScreenCoordinatesEnabled);
+}
+
 }  // namespace features

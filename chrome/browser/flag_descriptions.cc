@@ -5550,6 +5550,17 @@ const char kLacrosResourcesFileSharingDescription[] =
     "generate two additional paks for resources.pak, chrome_100_percent.pak "
     "and chrome_200_percent.pak. Additional paks are mapping table and "
     "fallback resources.";
+
+const char kLacrosScreenCoordinatesEnabledName[] =
+    "Enable screen coordinates system in lacros-chrome";
+const char kLacrosScreenCoordinatesEnabledDescription[] =
+    "Enabling this will allow lacros to control the window position in screen "
+    "coordinates. This is required for features such as the Javascript APIs "
+    "moveBy, moveTo or session restore.";
+
+extern const char kLacrosScreenCoordinatesName[];
+extern const char kLacrosScreenCoordinatesDescription[];
+
 #endif  // #if BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)

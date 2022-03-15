@@ -24,9 +24,6 @@ const base::Feature kWaylandSurfaceSubmissionInPixelCoordinates{
 #endif
 };
 
-const base::Feature kWaylandScreenCoordinatesEnabled{
-    "WaylandScreenCoordinatesEnabled", base::FEATURE_DISABLED_BY_DEFAULT};
-
 bool IsWaylandSurfaceSubmissionInPixelCoordinatesEnabled() {
   return base::FeatureList::IsEnabled(
       kWaylandSurfaceSubmissionInPixelCoordinates);
@@ -34,10 +31,6 @@ bool IsWaylandSurfaceSubmissionInPixelCoordinatesEnabled() {
 
 bool IsWaylandOverlayDelegationEnabled() {
   return base::FeatureList::IsEnabled(kWaylandOverlayDelegation);
-}
-
-bool IsWaylandScreenCoordinatesEnabled() {
-  return base::FeatureList::IsEnabled(kWaylandScreenCoordinatesEnabled);
 }
 
 }  // namespace ui
