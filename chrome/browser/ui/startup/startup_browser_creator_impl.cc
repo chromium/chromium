@@ -26,6 +26,8 @@
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/infobars/simple_alert_infobar_creator.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_io_data.h"
 #include "chrome/browser/sessions/app_session_service.h"
@@ -373,10 +375,18 @@ StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
   const bool whats_new_enabled =
       promotional_tabs_enabled && whats_new::ShouldShowForState(local_state);
 
+  auto* privacy_sandbox_serivce =
+      PrivacySandboxServiceFactory::GetForProfile(profile_);
+  const bool privacy_sandbox_confirmation_required =
+      privacy_sandbox_serivce &&
+      privacy_sandbox_serivce->GetRequiredDialogType() !=
+          PrivacySandboxService::DialogType::kNone;
+
   auto result = DetermineStartupTabs(
       StartupTabProviderImpl(), process_startup, is_incognito_or_guest,
       is_post_crash_launch, has_incompatible_applications,
-      promotional_tabs_enabled, welcome_enabled, whats_new_enabled);
+      promotional_tabs_enabled, welcome_enabled, whats_new_enabled,
+      privacy_sandbox_confirmation_required);
   StartupTabs tabs = std::move(result.tabs);
 
   // Return immediately if we start an async restore, since the remainder of
@@ -445,7 +455,8 @@ StartupBrowserCreatorImpl::DetermineStartupTabs(
     bool has_incompatible_applications,
     bool promotional_tabs_enabled,
     bool welcome_enabled,
-    bool whats_new_enabled) {
+    bool whats_new_enabled,
+    bool privacy_sandbox_confirmation_required) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   {
     // If URLs are passed via crosapi, forcibly opens those tabs.
@@ -539,6 +550,14 @@ StartupBrowserCreatorImpl::DetermineStartupTabs(
     // URLs from preferences are explicitly meant to override showing the NTP.
     if (onboarding_tabs.empty() && prefs_tabs.empty())
       AppendTabs(provider.GetNewTabPageTabs(command_line_, profile_), &tabs);
+
+    // Potentially add a tab appropriate to display the Privacy Sandbox
+    // confirmaton dialog on top of. Ideally such a tab will already exist
+    // in |tabs|, and no additional tab will be required.
+    if (onboarding_tabs.empty() && privacy_sandbox_confirmation_required &&
+        launch_result == LaunchResult::kNormally) {
+      AppendTabs(provider.GetPrivacySandboxTabs(profile_, tabs), &tabs);
+    }
   }
 
   // Maybe add any tabs which the user has previously pinned.

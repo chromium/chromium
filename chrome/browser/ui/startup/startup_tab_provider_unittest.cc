@@ -23,6 +23,12 @@
 #include "chromeos/lacros/lacros_service.h"
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "extensions/browser/extension_registry.h"
+#include "extensions/common/extension_builder.h"
+#include "extensions/common/value_builder.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 using StandardOnboardingTabsParams =
     StartupTabProviderImpl::StandardOnboardingTabsParams;
 
@@ -511,3 +517,71 @@ TEST(StartupTabProviderTest, GetCrosapiTabs) {
   }
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+#if !BUILDFLAG(IS_ANDROID)
+
+class StartupTabProviderPrivacySandboxTest : public testing::Test {
+ protected:
+  extensions::ExtensionRegistry* registry() {
+    return extensions::ExtensionRegistry::Get(&profile_);
+  }
+  TestingProfile* profile() { return &profile_; }
+
+ private:
+  content::BrowserTaskEnvironment task_environment_;
+  TestingProfile profile_;
+};
+
+TEST_F(StartupTabProviderPrivacySandboxTest, GetPrivacySandboxTabsForState) {
+  // If no suitable tabs are available, and the profile does not have a custom
+  // NTP, a generic new tab URL should be returned.
+  auto output = StartupTabProviderImpl::GetPrivacySandboxTabsForState(
+      registry(), GURL(chrome::kChromeUINewTabPageURL),
+      {{StartupTab(GURL("https://www.unrelated.com"))}});
+  ASSERT_EQ(1U, output.size());
+  EXPECT_EQ(GURL(chrome::kChromeUINewTabURL), output[0].url);
+}
+
+TEST_F(StartupTabProviderPrivacySandboxTest,
+       GetPrivacySandboxTabsForState_SuitableTabAlready) {
+  // If there is already a suitable tab available for the Privacy Sandbox
+  // dialog, no additional tab should be added.
+  auto output = StartupTabProviderImpl::GetPrivacySandboxTabsForState(
+      registry(), GURL(chrome::kChromeUINewTabPageURL),
+      {{StartupTab(GURL("chrome://newtab"))}});
+  ASSERT_EQ(0U, output.size());
+}
+
+TEST_F(StartupTabProviderPrivacySandboxTest,
+       GetPrivacySandboxTabsForState_ExtensionControlledNtp) {
+  // Create an extension which overrides the NTP url. Even if a new tab is
+  // available as part of the startup tabs, an additional about:blank should be
+  // returned.
+  scoped_refptr<const extensions::Extension> extension =
+      extensions::ExtensionBuilder("1")
+          .SetManifestKey("chrome_url_overrides",
+                          extensions::DictionaryBuilder()
+                              .Set("newtab", "custom_tab.html")
+                              .Build())
+          .Build();
+  registry()->AddEnabled(extension);
+  auto output = StartupTabProviderImpl::GetPrivacySandboxTabsForState(
+      registry(), GURL(chrome::kChromeUINewTabPageURL),
+      {StartupTab(GURL(chrome::kChromeUINewTabURL))});
+  ASSERT_EQ(1U, output.size());
+  EXPECT_EQ(GURL(url::kAboutBlankURL), output[0].url);
+}
+
+TEST_F(StartupTabProviderPrivacySandboxTest,
+       GetPrivacySandboxTabsForState_DseControlledNtp) {
+  // If the user's DSE is changing the newtab such that it is no longer Chrome
+  // controlled, and the user has no other suitable startup tab, about:blank
+  // should be used.
+  auto output = StartupTabProviderImpl::GetPrivacySandboxTabsForState(
+      registry(), GURL("https://wwww.example.com/newtab"),
+      {StartupTab(GURL(chrome::kChromeUINewTabURL))});
+  ASSERT_EQ(1U, output.size());
+  EXPECT_EQ(GURL(url::kAboutBlankURL), output[0].url);
+}
+
+#endif  // !BUILDFLAG(IS_ANDROID)

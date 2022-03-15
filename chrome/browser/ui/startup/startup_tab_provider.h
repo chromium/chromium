@@ -22,6 +22,10 @@ namespace base {
 class CommandLine;
 }  // namespace base
 
+namespace extensions {
+class ExtensionRegistry;
+}  // namespace extensions
+
 // Provides the sets of tabs to be shown at startup for given sets of policy.
 // For instance, this class answers the question, "which tabs, if any, need to
 // be shown for first run/onboarding?" Provided as a virtual interface to allow
@@ -96,6 +100,13 @@ class StartupTabProvider {
 #if !BUILDFLAG(IS_ANDROID)
   // Returns tabs related to the What's New UI (if applicable).
   virtual StartupTabs GetNewFeaturesTabs(bool whats_new_enabled) const = 0;
+
+  // Returns tabs required for the Privacy Sandbox confirmation dialog. If a
+  // suitable tab is present in |other_startup_tabs| no tab is returned,
+  // otherwise a suitable tab based on |profile| is returned.
+  virtual StartupTabs GetPrivacySandboxTabs(
+      Profile* profile,
+      const StartupTabs& other_startup_tabs) const = 0;
 #endif  // !BUILDFLAG(IS_ANDROID)
 };
 
@@ -171,6 +182,14 @@ class StartupTabProviderImpl : public StartupTabProvider {
 #if !BUILDFLAG(IS_ANDROID)
   // Determines if the what's new page should be shown.
   static StartupTabs GetNewFeaturesTabsForState(bool whats_new_enabled);
+
+  // Determines whether an additional tab to display the Privacy Sandbox
+  // confirmation dialog over is required, and if so, the URL of that tab.
+  // |ntp_url| must be the final NTP location, and not the generic new tab url.
+  static StartupTabs GetPrivacySandboxTabsForState(
+      extensions::ExtensionRegistry* extension_registry,
+      const GURL& ntp_url,
+      const StartupTabs& other_startup_tabs);
 #endif
 
   // Gets the URL for the Welcome page. If |use_later_run_variant| is true, a
@@ -222,6 +241,9 @@ class StartupTabProviderImpl : public StartupTabProvider {
 
 #if !BUILDFLAG(IS_ANDROID)
   StartupTabs GetNewFeaturesTabs(bool whats_new_enabled) const override;
+  StartupTabs GetPrivacySandboxTabs(
+      Profile* profile,
+      const StartupTabs& other_startup_tabs) const override;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
  private:
