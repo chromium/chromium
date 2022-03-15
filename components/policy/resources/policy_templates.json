@@ -8284,7 +8284,7 @@
       'owners': ['tluk@chromium.org', 'chrome-cros@google.com'],
       'type': 'main',
       'schema' : {'type': 'boolean'},
-      'supported_on': ['chrome_os:96-'],
+      'supported_on': ['chrome_os:96-', 'chrome.*:101-'],
       'example_value': False,
       'features':{
         'dynamic_refresh': False,
@@ -8293,20 +8293,20 @@
       'items': [
         {
           'value': True,
-          'caption': 'Enable showing <ph name="GOOGLE_SEARCH_PRODUCT_NAME">Google Search</ph> results in a Browser side panel.',
+          'caption': 'Enable showing default search engine results pages in a Browser side panel.',
         },
         {
           'value': False,
-          'caption': 'Disable showing <ph name="GOOGLE_SEARCH_PRODUCT_NAME">Google Search</ph> results in a Browser side panel.',
+          'caption': 'Disable showing default search engine results pages in a Browser side panel.',
         },
       ],
       'id': 906,
       'default': True,
-      'caption': '''Allow showing the most recent <ph name="GOOGLE_SEARCH_PRODUCT_NAME">Google Search</ph> results in a Browser side panel''',
+      'caption': '''Allow showing the most recent default search engine results page in a Browser side panel''',
       'tags': [],
-      'desc': '''Setting the policy to Enabled or leaving the policy unset means that users can bring up their most recent <ph name="GOOGLE_SEARCH_PRODUCT_NAME">Google Search</ph> results in a side panel via toggling an icon in the toolbar.
+      'desc': '''Setting the policy to Enabled or leaving the policy unset means that users can bring up their most recent default search engine results page in a side panel via toggling an icon in the toolbar.
 
-      Setting the policy to Disabled removes the icon from the toolbar that opens the side panel with the <ph name="GOOGLE_SEARCH_PRODUCT_NAME">Google Search</ph> results.''',
+      Setting the policy to Disabled removes the icon from the toolbar that opens the side panel with the default search engine results page.''',
     },
     {
       'name': 'InsecurePrivateNetworkRequestsAllowed',
