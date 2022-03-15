@@ -564,6 +564,11 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 
 // Tests that tapping the fake omnibox moves the collection.
 - (void)testTapFakeOmniboxScroll {
+  // Disable the test on iOS 15.3 due to build failure.
+  // TODO(crbug.com/1306515): enable the test with fix.
+  if (@available(iOS 15.3, *)) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 15.3.");
+  }
   // Get the collection and its layout.
   UICollectionView* collectionView = [NewTabPageAppInterface collectionView];
 
@@ -598,6 +603,11 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 // Tests that tapping the fake omnibox then unfocusing it moves the collection
 // back to where it was.
 - (void)testTapFakeOmniboxScrollScrolled {
+  // Disable the test on iOS 15.3 due to build failure.
+  // TODO(crbug.com/1306515): enable the test with fix.
+  if (@available(iOS 15.3, *)) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 15.3.");
+  }
   // Get the collection and its layout.
   UICollectionView* collectionView = [NewTabPageAppInterface collectionView];
 
