@@ -48,6 +48,7 @@ class CORE_EXPORT NGFlexItemIterator {
 
  private:
   NGFlexItem* FindNextItem(const NGBlockBreakToken* item_break_token = nullptr);
+  void AdjustItemIndexForNewLine();
 
   NGFlexItem* next_unstarted_item_ = nullptr;
   const HeapVector<NGFlexLine>& flex_lines_;

@@ -128,10 +128,7 @@ NGFlexItem* NGFlexItemIterator::FindNextItem(
       break;
 
     flex_line_idx_++;
-    if (flex_line_idx_ < next_item_idx_for_line_.size())
-      flex_item_idx_ = next_item_idx_for_line_[flex_line_idx_];
-    else
-      flex_item_idx_ = 0;
+    AdjustItemIndexForNewLine();
   }
 
   // We handle break tokens for all columns before moving to the unprocessed
@@ -152,8 +149,15 @@ void NGFlexItemIterator::NextLine() {
   if (flex_item_idx_ == 0)
     return;
   flex_line_idx_++;
-  flex_item_idx_ = 0;
+  AdjustItemIndexForNewLine();
   next_unstarted_item_ = FindNextItem();
+}
+
+void NGFlexItemIterator::AdjustItemIndexForNewLine() {
+  if (flex_line_idx_ < next_item_idx_for_line_.size())
+    flex_item_idx_ = next_item_idx_for_line_[flex_line_idx_];
+  else
+    flex_item_idx_ = 0;
 }
 
 }  // namespace blink
