@@ -105,6 +105,7 @@ enum FieldTypeGroupForMetrics {
   GROUP_ADDRESS_HOME_ADDRESS_WITH_NAME,
   GROUP_ADDRESS_HOME_FLOOR,
   GROUP_UNKNOWN_TYPE,
+  GROUP_BIRTHDATE,
   // Add new entries here and update enums.xml.
   NUM_FIELD_TYPE_GROUPS_FOR_METRICS
 };
@@ -420,6 +421,9 @@ int GetFieldTypeGroupPredictionQualityMetric(
         case NAME_LAST_SECOND:
         case NAME_HONORIFIC_PREFIX:
         case NAME_FULL_WITH_HONORIFIC_PREFIX:
+        case BIRTHDATE_DAY:
+        case BIRTHDATE_MONTH:
+        case BIRTHDATE_YEAR_4_DIGITS:
         case MAX_VALID_FIELD_TYPE:
           NOTREACHED() << field_type << " type is not in that group.";
           group = GROUP_AMBIGUOUS;
@@ -434,6 +438,10 @@ int GetFieldTypeGroupPredictionQualityMetric(
     case FieldTypeGroup::kPhoneHome:
     case FieldTypeGroup::kPhoneBilling:
       group = GROUP_PHONE;
+      break;
+
+    case FieldTypeGroup::kBirthdateField:
+      group = GROUP_BIRTHDATE;
       break;
 
     case FieldTypeGroup::kCreditCard:

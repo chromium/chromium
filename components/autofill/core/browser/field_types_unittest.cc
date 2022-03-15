@@ -105,6 +105,9 @@ TEST(FieldTypesTest, IsValidServerFieldType) {
       ADDRESS_HOME_ADDRESS_WITH_NAME,
       ADDRESS_HOME_FLOOR,
       NAME_FULL_WITH_HONORIFIC_PREFIX,
+      BIRTHDATE_DAY,
+      BIRTHDATE_MONTH,
+      BIRTHDATE_YEAR_4_DIGITS,
   };
   ServerFieldType kInvalidValue = static_cast<ServerFieldType>(123456);
   ASSERT_FALSE(kValidFieldTypes.count(kInvalidValue));

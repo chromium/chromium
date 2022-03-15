@@ -6802,6 +6802,16 @@ others/histograms.xml -->
   <int value="6663" label="Unfillable: False Positive (Empty)"/>
   <int value="6664" label="Unfillable: False Negative (Mismatch)"/>
   <int value="6665" label="Unfillable: False Negative (Unknown)"/>
+  <int value="9216" label="Birthdate: True Positive"/>
+  <int value="9217" label="Birthdate: True Negative (Ambiguous)"/>
+  <int value="9218" label="Birthdate: True Negative (Unknown)"/>
+  <int value="9219" label="Birthdate: True Negative (Empty)"/>
+  <int value="9220" label="Birthdate: False Positive (Mismatch)"/>
+  <int value="9221" label="Birthdate: False Positive (Ambiguous)"/>
+  <int value="9222" label="Birthdate: False Positive (Unknown)"/>
+  <int value="9223" label="Birthdate: False Positive (Empty)"/>
+  <int value="9224" label="Birthdate: False Negative (Mismatch)"/>
+  <int value="9225" label="Birthdate: False Negative (Unknown)"/>
 </enum>
 
 <enum name="AutofillFormDynamicity">

@@ -140,6 +140,11 @@ FieldTypeGroup GroupTypeOfServerFieldType(ServerFieldType field_type) {
     case USERNAME:
       return FieldTypeGroup::kUsernameField;
 
+    case BIRTHDATE_DAY:
+    case BIRTHDATE_MONTH:
+    case BIRTHDATE_YEAR_4_DIGITS:
+      return FieldTypeGroup::kBirthdateField;
+
     case PRICE:
     case SEARCH_TERM:
       return FieldTypeGroup::kUnfillable;

@@ -239,9 +239,14 @@ enum ServerFieldType {
   // The full name including the honorific prefix.
   NAME_FULL_WITH_HONORIFIC_PREFIX = 117,
 
+  // Types to represent a birthdate.
+  BIRTHDATE_DAY = 118,
+  BIRTHDATE_MONTH = 119,
+  BIRTHDATE_YEAR_4_DIGITS = 120,
+
   // No new types can be added without a corresponding change to the Autofill
   // server.
-  MAX_VALID_FIELD_TYPE = 118,
+  MAX_VALID_FIELD_TYPE = 121,
 };
 
 // The list of all HTML autocomplete field type hints supported by Chrome.
@@ -347,7 +352,8 @@ enum class FieldTypeGroup {
   kTransaction,
   kUsernameField,
   kUnfillable,
-  kMaxValue = kUnfillable,
+  kBirthdateField,
+  kMaxValue = kBirthdateField,
 };
 
 using ServerFieldTypeSet = DenseSet<ServerFieldType, MAX_VALID_FIELD_TYPE>;

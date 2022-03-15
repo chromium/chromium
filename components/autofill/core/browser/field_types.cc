@@ -158,6 +158,9 @@ bool IsFillableFieldType(ServerFieldType field_type) {
     case MERCHANT_EMAIL_SIGNUP:
     case PRICE:
     case SEARCH_TERM:
+    case BIRTHDATE_DAY:
+    case BIRTHDATE_MONTH:
+    case BIRTHDATE_YEAR_4_DIGITS:
     case UNKNOWN_TYPE:
     case MAX_VALID_FIELD_TYPE:
       return false;
@@ -272,6 +275,12 @@ base::StringPiece FieldTypeToStringPiece(ServerFieldType type) {
       return "ADDRESS_BILLING_ZIP";
     case ADDRESS_BILLING_COUNTRY:
       return "ADDRESS_BILLING_COUNTRY";
+    case BIRTHDATE_DAY:
+      return "BIRTHDATE_DAY";
+    case BIRTHDATE_MONTH:
+      return "BIRTHDATE_MONTH";
+    case BIRTHDATE_YEAR_4_DIGITS:
+      return "BIRTHDATE_YEAR_4_DIGITS";
     case CREDIT_CARD_NAME_FULL:
       return "CREDIT_CARD_NAME_FULL";
     case CREDIT_CARD_NAME_FIRST:

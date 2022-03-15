@@ -517,6 +517,7 @@ PopupType BrowserAutofillManager::GetPopupType(const FormData& form,
     case FieldTypeGroup::kCompany:
     case FieldTypeGroup::kPhoneHome:
     case FieldTypeGroup::kPhoneBilling:
+    case FieldTypeGroup::kBirthdateField:
       return FormHasAddressField(form) ? PopupType::kAddresses
                                        : PopupType::kPersonalInformation;
 
@@ -2809,6 +2810,7 @@ FormEventLoggerBase* BrowserAutofillManager::GetEventFormLogger(
     case FieldTypeGroup::kAddressBilling:
     case FieldTypeGroup::kPhoneHome:
     case FieldTypeGroup::kPhoneBilling:
+    case FieldTypeGroup::kBirthdateField:
       return address_form_event_logger_.get();
     case FieldTypeGroup::kCreditCard:
       return credit_card_form_event_logger_.get();
