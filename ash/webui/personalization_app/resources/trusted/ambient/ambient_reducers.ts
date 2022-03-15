@@ -39,6 +39,17 @@ export function ambientModeEnabledReducer(
   }
 }
 
+export function animationThemeReducer(
+    state: AmbientState['animationTheme'], action: Actions,
+    _: PersonalizationState): AmbientState['animationTheme'] {
+  switch (action.name) {
+    case AmbientActionName.SET_ANIMATION_THEME:
+      return action.animationTheme;
+    default:
+      return state;
+  }
+}
+
 export function temperatureUnitReducer(
     state: AmbientState['temperatureUnit'], action: Actions,
     _: PersonalizationState): AmbientState['temperatureUnit'] {
@@ -65,6 +76,7 @@ export const ambientReducers:
     {[K in keyof AmbientState]: ReducerFunction<AmbientState[K]>} = {
       albums: albumsReducer,
       ambientModeEnabled: ambientModeEnabledReducer,
+      animationTheme: animationThemeReducer,
       temperatureUnit: temperatureUnitReducer,
       topicSource: topicSourceReducer,
     };

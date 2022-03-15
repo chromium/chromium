@@ -5,16 +5,18 @@
   #mainSettings {
     display: grid;
     grid-template-areas:
-      '. . toggles . .'
-      '. . spinner . .'
-      '. . preview . .'
-      '. . sources . .'
-      '. . weather . .';
-    grid-template-columns: 1fr 24px minmax(568px, 920px) 24px 1fr;
+      '. . toggles   . .'
+      '. . spinner   . .'
+      '. . preview   . .'
+      '. . animation . .'
+      '. . sources   . .'
+      '. . weather   . .';
+    grid-template-columns: 1fr 16px minmax(568px, 920px) 16px 1fr;
     grid-template-rows: auto;
   }
   toggle-row {
     grid-area: toggles;
+    margin: 0 8px;
   }
   paper-spinner-lite {
     grid-area: spinner;
@@ -24,13 +26,18 @@
   }
   ambient-preview {
     grid-area: preview;
-    margin-top: 20px;
+    margin: 20px 8px 0 8px;
+  }
+  animation-theme-list {
+    grid-area: animation;
   }
   topic-source-list {
     grid-area: sources;
+    margin: 0 8px;
   }
   ambient-weather-unit {
     grid-area: weather;
+    margin: 0 8px;
   }
 </style>
 <div id="container">
@@ -47,6 +54,11 @@
 
       <template is="dom-if" if="[[!loadingSettings_]]">
         <ambient-preview></ambient-preview>
+        <template is="dom-if" if="[[isAmbientModeAnimationEnabled_()]]">
+          <animation-theme-list selected-animation-theme="[[animationTheme_]]"
+              disabled$="[[disabled_]]">
+          </animation-theme-list>
+        </template>
         <topic-source-list selected-topic-source="[[topicSource_]]"
             has-google-photos-albums="[[hasGooglePhotosAlbums_(albums_)]]"
             disabled="[[disabled_]]">

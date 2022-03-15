@@ -368,6 +368,14 @@ interface UserProvider {
   SelectLastExternalUserImage();
 };
 
+// The animation theme for screen saver. Should be kept in sync with
+// |ash::AmbientAnimationTheme|.
+enum AnimationTheme {
+  kSlideshow = 0,
+  kFeelTheBreeze = 1,
+  kFloatOnBy = 2,
+};
+
 // The source of the screensaver images come from.
 enum TopicSource {
   // Google Photos.
@@ -411,6 +419,9 @@ interface AmbientObserver {
   // Retrieves information whether ambient mode is enabled.
   OnAmbientModeEnabledChanged(bool ambient_mode_enabled);
 
+  // Notifies the JS side the current state of AnimationTheme.
+  OnAnimationThemeChanged(AnimationTheme animation_theme);
+
   // Notifies the JS side about the current state of TopicSource.
   OnTopicSourceChanged(TopicSource topic_source);
 
@@ -432,6 +443,9 @@ interface AmbientProvider {
 
   // Binds a listener to start receiving updates on ambient mode pref changes.
   SetAmbientObserver(pending_remote<AmbientObserver> observer);
+
+  // Sets the ambient animation theme.
+  SetAnimationTheme(AnimationTheme animation_theme);
 
   // Sets the ambient mode topic source.
   SetTopicSource(TopicSource topic_source);

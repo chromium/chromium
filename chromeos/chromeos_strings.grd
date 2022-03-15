@@ -2231,6 +2231,18 @@ Try tapping the mic to ask me anything.
       <message name="IDS_PERONSONALIZATION_APP_AMBIENT_MODE_ART_ALBUM_DIALOG_CLOSE_BUTTON_LABEL" desc="Label on the close button in the art album dialog.">
         Got it
       </message>
+      <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_ANIMATION_TITLE" desc="Label for the ambient mode animation section.">
+        Screensaver animation
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_ANIMATION_SLIDESHOW_LABEL" desc="Label for the ambient mode slideshow animation.">
+        Slide show
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_ANIMATION_FEEL_THE_BREEZE_LABEL" desc="Label for the ambient mode feel the breeze animation.">
+        Feel the breeze
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_ANIMATION_FLOAT_ON_BY_LABEL" desc="Label for the ambient mode float on by animation.">
+        Float on by
+      </message>
 
       <!-- Traffic Counters UI -->
       <message name="IDS_TRAFFIC_COUNTERS_UNKNOWN" desc="Traffic counters related to an unknown source">

@@ -4,7 +4,7 @@
 
 import {Action} from 'chrome://resources/js/cr/ui/store.js';
 
-import {AmbientModeAlbum, TemperatureUnit, TopicSource} from '../personalization_app.mojom-webui.js';
+import {AmbientModeAlbum, AnimationTheme, TemperatureUnit, TopicSource} from '../personalization_app.mojom-webui.js';
 
 /**
  * @fileoverview Defines the actions to change ambient state.
@@ -14,12 +14,14 @@ export enum AmbientActionName {
   SET_ALBUMS = 'set_albums',
   SET_ALBUM_SELECTED = 'set_album_selected',
   SET_AMBIENT_MODE_ENABLED = 'set_ambient_mode_enabled',
+  SET_ANIMATION_THEME = 'set_animation_theme',
   SET_TEMPERATURE_UNIT = 'set_temperature_unit',
   SET_TOPIC_SOURCE = 'set_topic_source',
 }
 
-export type AmbientActions = SetAlbumsAction|SetAlbumSelectedAction|
-    SetAmbientModeEnabledAction|SetTopicSourceAction|SetTemperatureUnitAction;
+export type AmbientActions =
+    SetAlbumsAction|SetAlbumSelectedAction|SetAmbientModeEnabledAction|
+    SetAnimationThemeAction|SetTopicSourceAction|SetTemperatureUnitAction;
 
 export type SetAlbumsAction = Action&{
   name: AmbientActionName.SET_ALBUMS;
@@ -34,6 +36,11 @@ export type SetAmbientModeEnabledAction = Action&{
   name: AmbientActionName.SET_AMBIENT_MODE_ENABLED;
   enabled: boolean;
 };
+
+export type SetAnimationThemeAction = Action&{
+  name: AmbientActionName.SET_ANIMATION_THEME;
+  animationTheme: AnimationTheme;
+}
 
 export type SetTemperatureUnitAction = Action&{
   name: AmbientActionName.SET_TEMPERATURE_UNIT;
@@ -62,6 +69,14 @@ export function setAlbumSelectedAction(): SetAlbumSelectedAction {
 export function setAmbientModeEnabledAction(enabled: boolean):
     SetAmbientModeEnabledAction {
   return {name: AmbientActionName.SET_AMBIENT_MODE_ENABLED, enabled};
+}
+
+/**
+ * Sets the current value of the animation theme.
+ */
+export function setAnimationThemeAction(animationTheme: AnimationTheme):
+    SetAnimationThemeAction {
+  return {name: AmbientActionName.SET_ANIMATION_THEME, animationTheme};
 }
 
 /**

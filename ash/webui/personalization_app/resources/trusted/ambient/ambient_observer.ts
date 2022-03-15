@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AmbientModeAlbum, AmbientObserverInterface, AmbientObserverReceiver, AmbientProviderInterface, TemperatureUnit, TopicSource} from '../personalization_app.mojom-webui.js';
+import {AmbientModeAlbum, AmbientObserverInterface, AmbientObserverReceiver, AmbientProviderInterface, AnimationTheme, TemperatureUnit, TopicSource} from '../personalization_app.mojom-webui.js';
 import {PersonalizationStore} from '../personalization_store.js';
 
-import {setAlbumsAction, setAmbientModeEnabledAction, setTemperatureUnitAction, setTopicSourceAction} from './ambient_actions.js';
+import {setAlbumsAction, setAmbientModeEnabledAction, setAnimationThemeAction, setTemperatureUnitAction, setTopicSourceAction} from './ambient_actions.js';
 import {getAmbientProvider} from './ambient_interface_provider.js';
 
 /** @fileoverview listens for updates on color mode changes. */
@@ -41,6 +41,11 @@ export class AmbientObserver implements AmbientObserverInterface {
   onAmbientModeEnabledChanged(ambientModeEnabled: boolean) {
     const store = PersonalizationStore.getInstance();
     store.dispatch(setAmbientModeEnabledAction(ambientModeEnabled));
+  }
+
+  onAnimationThemeChanged(animationTheme: AnimationTheme): void {
+    const store = PersonalizationStore.getInstance();
+    store.dispatch(setAnimationThemeAction(animationTheme));
   }
 
   onTopicSourceChanged(topicSource: TopicSource) {
