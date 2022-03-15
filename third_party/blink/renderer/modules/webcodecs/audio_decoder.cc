@@ -48,6 +48,17 @@ bool IsValidConfig(const AudioDecoderConfig& config,
     return true;
   }
 
+  // https://www.w3.org/TR/webcodecs-flac-codec-registration
+  // https://www.w3.org/TR/webcodecs-vorbis-codec-registration
+  bool description_required = false;
+  if (config.codec() == "flac" || config.codec() == "vorbis")
+    description_required = true;
+
+  if (description_required && !config.hasDescription()) {
+    out_console_message = "Description is required.";
+    return false;
+  }
+
   media::AudioCodec codec = media::AudioCodec::kUnknown;
   bool is_codec_ambiguous = true;
   const bool parse_succeeded = ParseAudioCodecString(
