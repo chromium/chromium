@@ -144,15 +144,16 @@ export class ChromeCartModuleElement extends I18nMixin
     this.eventTracker_.add(
         this, 'discount-consent-dismissed',
         () => this.onDiscountConsentDismissed_());
+    this.eventTracker_.add(
+        this, 'discount-consent-continued',
+        () => this.onDiscountConsentContinued_());
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
     this.intersectionObserver_!.disconnect();
 
-    this.eventTracker_.remove(this, 'discount-consent-accepted');
-    this.eventTracker_.remove(this, 'discount-consent-rejected');
-    this.eventTracker_.remove(this, 'discount-consent-dismissed');
+    this.eventTracker_.removeAll();
   }
 
   private computeFirstThreeCartItems_(cartItems: MerchantCart[]):
@@ -420,7 +421,12 @@ export class ChromeCartModuleElement extends I18nMixin
   private onDiscountConsentDismissed_() {
     this.showDiscountConsent = false;
     ChromeCartProxy.getHandler().onDiscountConsentDismissed();
-    // TODO(crbug.com/1298116): Record user dismiss action.
+    chrome.metricsPrivate.recordUserAction(
+        'NewTabPage.Carts.DismissDiscountConsent');
+  }
+
+  private onDiscountConsentContinued_() {
+    ChromeCartProxy.getHandler().onDiscountConsentContinued();
   }
 
   private onConfirmDiscountConsentClick_() {

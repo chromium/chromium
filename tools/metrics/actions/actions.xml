@@ -20293,6 +20293,17 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="NewTabPage.Carts.DismissDiscountConsent">
+  <owner>meiliang@chromium.org</owner>
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    The 'x' button is clicked in the discount consent card to hide the consent
+    card, or the 'x' button is clicked in the discount consent dialog to hide
+    the dialog.
+  </description>
+</action>
+
 <action name="NewTabPage.Carts.DismissLastCartHidesModule">
   <owner>wychen@chromium.org</owner>
   <owner>yuezhanggg@chromium.org</owner>
@@ -20369,6 +20380,15 @@ should be able to be added at any place in this file.
   <description>
     The scroll button on the right side of the module is clicked in order to see
     carts on the right.
+  </description>
+</action>
+
+<action name="NewTabPage.Carts.ShowInterestInDiscountConsent">
+  <owner>meiliang@chromium.org</owner>
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    The 'continue' button is clicked in the discount consent step 1.
   </description>
 </action>
 

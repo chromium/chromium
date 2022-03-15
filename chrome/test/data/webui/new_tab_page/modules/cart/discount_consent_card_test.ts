@@ -8,6 +8,8 @@ import {DiscountConsentCard} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/test_util.js';
+
+import {fakeMetricsPrivate} from '../../metrics_test_support.js';
 import {assertStyle} from '../../test_support.js';
 
 suite('NewTabPageDiscountConsentCartTest', () => {
@@ -81,6 +83,36 @@ suite('NewTabPageDiscountConsentCartTest', () => {
         'Selected content step should have id as step2');
   });
 
+  test('Verify clicking continue button logs user action', () => {
+    const metrics = fakeMetricsPrivate();
+    assertEquals(
+        0, metrics.count('NewTabPage.Carts.ShowIntereseInDiscountConsent'),
+        'Continue count should be 0 before clicking');
+    const contentSelectedPage =
+        discountConsentCard.shadowRoot!.querySelectorAll(
+            '#contentSteps .iron-selected');
+    contentSelectedPage[0]!.querySelector<HTMLElement>(
+                               '.action-button')!.click();
+    assertEquals(
+        1, metrics.count('NewTabPage.Carts.ShowInterestInDiscountConsent'),
+        'Continue count should be 1 after clicking');
+  });
+
+  test(
+      'Verify "Continue" button emits discount-consent-continued event', () => {
+        var capturedEvent = false;
+        discountConsentCard.addEventListener(
+            'discount-consent-continued', () => capturedEvent = true);
+
+        const contentSelectedPage =
+            discountConsentCard.shadowRoot!.querySelectorAll(
+                '#contentSteps .iron-selected');
+        contentSelectedPage[0]!.querySelector<HTMLElement>(
+                                   '.action-button')!.click();
+        assertTrue(
+            capturedEvent, '\'discount-consent-continued\' should be emitted');
+      });
+
   test(
       'Verify "Get discounts" button emits discount-consent-accepted event',
       () => {
@@ -125,7 +157,7 @@ suite('NewTabPageDiscountConsentCartTest', () => {
         contentSelectedPage[0]!.querySelector<HTMLElement>(
                                    '.cancel-button')!.click();
         assertTrue(
-            capturedEvent, '\'discount-consent-rejected\' should be emitted');
+            capturedEvent, '"discount-consent-rejected" should be emitted');
       });
 
   function buildFaviconUrl(merchantUrl: string): string {

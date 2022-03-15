@@ -96,6 +96,9 @@ class CartService : public history::HistoryServiceObserver,
   void AcknowledgeDiscountConsent(bool should_enable);
   // Gets called when user has dismissed the discount consent in cart module.
   void DismissedDiscountConsent();
+  // Gets called when user has click the 'Continue' button in the discount
+  // consent.
+  void InterestedInDiscountConsent();
   // Decides whether to show the consent card in module for rule-based discount,
   // and returns it in the callback.
   void ShouldShowDiscountConsent(base::OnceCallback<void(bool)> callback);
@@ -131,6 +134,7 @@ class CartService : public history::HistoryServiceObserver,
  private:
   friend class CartServiceFactory;
   friend class CartServiceTest;
+  friend class CartServiceDiscountConsentV2Test;
   friend class CartServiceDiscountTest;
   friend class CartServiceBrowserDiscountTest;
   friend class CartServiceDiscountFetchTest;
@@ -212,6 +216,8 @@ class CartService : public history::HistoryServiceObserver,
   void OnCartFeaturesChanged(const std::string& pref_name);
   // Get if cart and discount feature are both enabled.
   bool IsCartAndDiscountEnabled();
+  // Get calls when Cart module loads.
+  void RecordDiscountConsentStatusAtLoad(bool should_show_consent);
 
   raw_ptr<Profile> profile_;
   std::unique_ptr<CartDB> cart_db_;

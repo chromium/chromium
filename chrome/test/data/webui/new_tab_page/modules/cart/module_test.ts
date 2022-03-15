@@ -1251,6 +1251,10 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
       test(
           'Verify clicking close button in step 1 hides consent card',
           async () => {
+            // Arrange.
+            assertEquals(
+                0, metrics.count('NewTabPage.Carts.DismissDiscountConsent'),
+                'Dismissed count should be 0 before clicking');
             // Act.
             clickCloseButton(consentCard);
             await flushTasks();
@@ -1258,6 +1262,9 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
             // Assert.
             assertEquals(false, isVisible(consentCard));
             assertEquals(1, handler.getCallCount('onDiscountConsentDismissed'));
+            assertEquals(
+                1, metrics.count('NewTabPage.Carts.DismissDiscountConsent'),
+                'Dismissed count should be 1 after clicking');
           });
 
       test(

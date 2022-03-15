@@ -190,6 +190,58 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.Carts.DiscountConsentStatusAtLoad.{ConsentState}"
+    enum="CartDiscountConsentVariation" expires_after="2022-08-21">
+  <owner>meiliang@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Logged when the cart module is created and if there is at least one
+    abandoned cart. It {ConsentState}. Only logged on the 1P NTP. Note that even
+    if the user has Google as their default search engine, Incognito and Guest
+    mode NTPs are not considered 1P and don't log this histogram.
+  </summary>
+  <token key="ConsentState">
+    <variant name="AcceptedIn"
+        summary="keeps track of which variation the user has accepted the
+                 consent in."/>
+    <variant name="DismissedIn"
+        summary="keeps track of which variation the user has rejected the
+                 consent in. Only the Inline and Dialog variation has an
+                 option to dismiss the consent."/>
+    <variant name="IgnoredIn"
+        summary="keeps track of which variation the user has ignored the
+                 consent in. Ignored means when the user has seen the consent
+                 but they did not accept/reject/dismiss it, or did not show
+                 any interests(click the continue button, but no following
+                 action)."/>
+    <variant name="InterestedButNoActionIn"
+        summary="keeps track of which variation the user has shown interest
+                 but no further action in (e.g. tapped &quot;Continue&quot;
+                 in the 2-step NTP consent.) Only the Inline and Dialog
+                 variation applies."/>
+    <variant name="NeverShownIn"
+        summary="keeps track of which variation the consent has never shown
+                 in. Never shown means the user has never seen the consent
+                 before"/>
+    <variant name="NoShowHasFinalized"
+        summary="keeps track if the user has accepted or rejected the consent
+                 before in another variation, hence no show when the cart is
+                 loaded. Finalized means user has accepted or rejected the
+                 consent in another variation."/>
+    <variant name="NoShowIn"
+        summary="keeps track of which variation the consent is not showing.
+                 No show means the user has seen the consent before but did
+                 not accept/reject the consent, and the consent is not
+                 showing now."/>
+    <variant name="RejectedIn"
+        summary="Keeps track of which variation the user has rejected the
+                 consent in."/>
+    <variant name="ShownIn"
+        summary="Keeps track of which variation is shown. This is recorded
+                 when consent is shown."/>
+  </token>
+</histogram>
+
 <histogram name="NewTabPage.Carts.DiscountCountAtLoad" units="count"
     expires_after="2022-06-19">
   <owner>meiliang@chromium.org</owner>

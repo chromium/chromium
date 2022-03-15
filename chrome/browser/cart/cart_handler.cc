@@ -124,6 +124,10 @@ void CartHandler::OnDiscountConsentDismissed() {
   cart_service_->DismissedDiscountConsent();
 }
 
+void CartHandler::OnDiscountConsentContinued() {
+  cart_service_->InterestedInDiscountConsent();
+}
+
 void CartHandler::GetDiscountEnabled(GetDiscountEnabledCallback callback) {
   std::move(callback).Run(cart_service_->IsCartDiscountEnabled());
 }

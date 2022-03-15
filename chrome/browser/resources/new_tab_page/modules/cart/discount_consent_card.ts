@@ -48,6 +48,8 @@ interface Step {
  *   * Inline has two steps.
  */
 export enum DiscountConsentVariation {
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   Default = 0,
   StringChange = 1,
   Inline = 2,
@@ -138,7 +140,10 @@ export class DiscountConsentCard extends I18nMixin
           } else {
             this.showDiscountConsentDialog_ = true;
           }
-          // TODO(crbug.com/1298116): Record user click on this button.
+          chrome.metricsPrivate.recordUserAction(
+              'NewTabPage.Carts.ShowInterestInDiscountConsent');
+          this.dispatchEvent(
+              new CustomEvent('discount-consent-continued', {composed: true}));
         },
       }
     });
