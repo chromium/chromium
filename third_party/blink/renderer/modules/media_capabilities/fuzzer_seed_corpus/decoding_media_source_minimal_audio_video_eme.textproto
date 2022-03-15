@@ -1,4 +1,4 @@
-type: MEDIA_SOURCE
+type: DECODING_MEDIA_SOURCE
 video {
     content_type: 'video/webm; codecs="vp09.00.10.08"'
     width: 800

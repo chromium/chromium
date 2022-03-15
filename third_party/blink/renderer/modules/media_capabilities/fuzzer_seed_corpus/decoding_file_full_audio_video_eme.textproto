@@ -1,4 +1,4 @@
-type: FILE
+type: DECODING_FILE
 video {
     content_type: 'video/mp4; codecs="avc1.4d401e"'
     width: 800

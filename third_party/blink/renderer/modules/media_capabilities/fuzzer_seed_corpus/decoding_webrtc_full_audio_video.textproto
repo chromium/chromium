@@ -1,0 +1,12 @@
+type: DECODING_WEBRTC
+video {
+    content_type: 'video/VP9'
+    width: 1280
+    height: 720
+    bitrate: 3000
+    framerate: "24"
+    spatialScalability: true
+  }
+audio {
+    content_type: 'audio/opus'
+  }

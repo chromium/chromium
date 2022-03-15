@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_key_system_track_configuration.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_capabilities_key_system_configuration.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_decoding_configuration.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_encoding_configuration.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
@@ -27,17 +28,17 @@
 namespace blink {
 
 String MediaKeysRequirementToString(
-    mc_fuzzer::MediaDecodingConfigProto_KeySystemConfig_MediaKeysRequirement
+    mc_fuzzer::MediaConfigProto_KeySystemConfig_MediaKeysRequirement
         proto_requirement) {
   switch (proto_requirement) {
     case mc_fuzzer::
-        MediaDecodingConfigProto_KeySystemConfig_MediaKeysRequirement_REQUIRED:
+        MediaConfigProto_KeySystemConfig_MediaKeysRequirement_REQUIRED:
       return "required";
     case mc_fuzzer::
-        MediaDecodingConfigProto_KeySystemConfig_MediaKeysRequirement_NOT_REQUIRED:
+        MediaConfigProto_KeySystemConfig_MediaKeysRequirement_NOT_REQUIRED:
       return "optional";
     case mc_fuzzer::
-        MediaDecodingConfigProto_KeySystemConfig_MediaKeysRequirement_NOT_ALLOWED:
+        MediaConfigProto_KeySystemConfig_MediaKeysRequirement_NOT_ALLOWED:
       return "not-allowed";
   }
   return "";
@@ -50,11 +51,11 @@ Vector<String> MediaSessionTypeToVector(
     String session_type;
     switch (proto_session_type) {
       case mc_fuzzer::
-          MediaDecodingConfigProto_KeySystemConfig_MediaKeySessionType_TEMPORARY:
+          MediaConfigProto_KeySystemConfig_MediaKeySessionType_TEMPORARY:
         session_type = "temporary";
         break;
       case mc_fuzzer::
-          MediaDecodingConfigProto_KeySystemConfig_MediaKeySessionType_PERSISTENT_LICENSE:
+          MediaConfigProto_KeySystemConfig_MediaKeySessionType_PERSISTENT_LICENSE:
         session_type = "persistent-license";
         break;
     }
@@ -63,10 +64,9 @@ Vector<String> MediaSessionTypeToVector(
   return result;
 }
 
-MediaDecodingConfiguration* MakeConfiguration(
-    const mc_fuzzer::MediaDecodingConfigProto& proto) {
-  Persistent<MediaDecodingConfiguration> config =
-      MediaDecodingConfiguration::Create();
+template <class T>
+T* MakeConfiguration(const mc_fuzzer::MediaConfigProto& proto) {
+  Persistent<T> config = T::Create();
   if (proto.has_video()) {
     config->setVideo(VideoConfiguration::Create());
     config->video()->setContentType(proto.video().content_type().c_str());
@@ -74,6 +74,9 @@ MediaDecodingConfiguration* MakeConfiguration(
     config->video()->setHeight(proto.video().height());
     config->video()->setBitrate(proto.video().bitrate());
     config->video()->setFramerate(proto.video().framerate());
+    config->video()->setSpatialScalability(proto.video().spatial_scalability());
+    config->video()->setScalabilityMode(
+        proto.video().scalability_mode().c_str());
   }
 
   if (proto.has_audio()) {
@@ -85,13 +88,22 @@ MediaDecodingConfiguration* MakeConfiguration(
   }
 
   switch (proto.type()) {
-    case mc_fuzzer::MediaDecodingConfigProto_MediaDecodingType_FILE:
+    case mc_fuzzer::MediaConfigProto_MediaType_DECODING_FILE:
       config->setType("file");
       break;
-    case mc_fuzzer::MediaDecodingConfigProto_MediaDecodingType_MEDIA_SOURCE:
+    case mc_fuzzer::MediaConfigProto_MediaType_DECODING_MEDIA_SOURCE:
       config->setType("media-source");
       break;
+    case mc_fuzzer::MediaConfigProto_MediaType_DECODING_WEBRTC:
+    case mc_fuzzer::MediaConfigProto_MediaType_ENCODING_WEBRTC:
+      config->setType("webrtc");
+      break;
   }
+  return config;
+}
+
+void AddDecodingSpecificConfiguration(const mc_fuzzer::MediaConfigProto& proto,
+                                      MediaDecodingConfiguration* config) {
   if (proto.has_key_system_config()) {
     config->setKeySystemConfiguration(
         MediaCapabilitiesKeySystemConfiguration::Create());
@@ -127,10 +139,9 @@ MediaDecodingConfiguration* MakeConfiguration(
                                .c_str()));
     }
   }
-  return config;
 }
 
-DEFINE_TEXT_PROTO_FUZZER(const mc_fuzzer::MediaDecodingConfigProto& proto) {
+DEFINE_TEXT_PROTO_FUZZER(const mc_fuzzer::MediaConfigProto& proto) {
   static BlinkFuzzerTestSupport test_support = BlinkFuzzerTestSupport();
   static DummyPageHolder* page_holder = []() {
     auto page_holder = std::make_unique<DummyPageHolder>();
@@ -138,16 +149,28 @@ DEFINE_TEXT_PROTO_FUZZER(const mc_fuzzer::MediaDecodingConfigProto& proto) {
     return page_holder.release();
   }();
 
-  MediaDecodingConfiguration* config = MakeConfiguration(proto);
-
   ScriptState* script_state =
       ToScriptStateForMainWorld(&page_holder->GetFrame());
   ScriptState::Scope scope(script_state);
 
   auto* media_capabilities = MediaCapabilities::mediaCapabilities(
       *page_holder->GetFrame().DomWindow()->navigator());
-  media_capabilities->decodingInfo(script_state, config,
-                                   IGNORE_EXCEPTION_FOR_TESTING);
+
+  switch (proto.type()) {
+    case mc_fuzzer::MediaConfigProto_MediaType_DECODING_FILE:
+    case mc_fuzzer::MediaConfigProto_MediaType_DECODING_MEDIA_SOURCE:
+    case mc_fuzzer::MediaConfigProto_MediaType_DECODING_WEBRTC: {
+      auto* config = MakeConfiguration<MediaDecodingConfiguration>(proto);
+      AddDecodingSpecificConfiguration(proto, config);
+      media_capabilities->decodingInfo(script_state, config,
+                                       IGNORE_EXCEPTION_FOR_TESTING);
+    } break;
+    case mc_fuzzer::MediaConfigProto_MediaType_ENCODING_WEBRTC: {
+      auto* config = MakeConfiguration<MediaEncodingConfiguration>(proto);
+      media_capabilities->encodingInfo(script_state, config,
+                                       IGNORE_EXCEPTION_FOR_TESTING);
+    } break;
+  }
 
   // Request a V8 GC. Oilpan will be invoked by the GC epilogue.
   //
