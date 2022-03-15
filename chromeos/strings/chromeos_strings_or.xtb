@@ -20,6 +20,7 @@
 <translation id="1181037720776840403">କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="1195447618553298278">ଅଜ୍ଞାତ ତୃଟି ।</translation>
 <translation id="1196959502276349371">ସଂସ୍କରଣ <ph name="VERSION" /></translation>
+<translation id="1199355487114804640">ଚଲାନ୍ତୁ/ବିରତ କରନ୍ତୁ</translation>
 <translation id="1201402288615127009">ପରବର୍ତ୍ତୀ</translation>
 <translation id="1204296502688602597">DNS ଲାଟେନ୍ସି</translation>
 <translation id="123124571410524056">ପୋର୍ଟାଲକୁ ସନ୍ଦେହ କରାଯାଇଛି</translation>
@@ -43,6 +44,7 @@
 <translation id="1413240736185167732">ବିଫଳ ହୋଇଛି - ଫିଲ୍ଟର୍ ବିଫଳ ହୋଇଛି</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">ମୋ ପାଖରେ ଏକ କୀପେୟାର ଅଛି</translation>
+<translation id="1423591390236870726"><ph name="KEY_NAME" /> କୀ'କୁ ଦବାଯାଇନାହିଁ</translation>
 <translation id="1435763214710588005">ପ୍ରତି ମାସ ଚୟନ କରାଯାଇଥିବା ଗୋଟିଏ ଦିନରେ ସ୍ୱଚାଳିତ ଭାବରେ ଡାଟା ବ୍ୟବହାର ରିସେଟ ହୁଏ</translation>
 <translation id="1442433966118452622">ଇମେଜ ସୋର୍ସ</translation>
 <translation id="1451536289672181509">ଡିଭାଇସଟି ଏକ କୀବୋର୍ଡ ଅଟେ।</translation>
@@ -84,6 +86,7 @@
 <translation id="1827738518074806965">ଆର୍ଟ ଗ୍ୟାଲେରୀ</translation>
 <translation id="1851218745569890714">ଭିଡିଓ କନଫରେନସିଂ</translation>
 <translation id="1852934301711881861">ChromeOS Flexକୁ ଇନଷ୍ଟଲ କରନ୍ତୁ</translation>
+<translation id="1856388568474281774">ତଳ ତୀର</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">ହାର୍ଡୱେୟାର୍ ପୁନରାବୃତ୍ତି</translation>
 <translation id="1905710495812624430">ସର୍ବାଧିକ ଅନୁମୋଦିତ ପ୍ରଚେଷ୍ଟା ସୀମା ଅତିକ୍ରମ କଲା।</translation>
@@ -98,6 +101,7 @@
 <translation id="2016697457005847575">ଟ୍ରବୁଲସୁଟିଂ ଷ୍ଟେପଗୁଡ଼ିକୁ ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">ଅଧିକ ସେଟିଂ</translation>
+<translation id="2085089206770112532">ଡିସପ୍ଲେର ଉଜ୍ଜ୍ୱଳତା କମ୍ କରନ୍ତୁ</translation>
 <translation id="2104796393919810494">ମରାମତି ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଯାଇଛି</translation>
 <translation id="2105810540595158374">ଡିଭାଇସଟି ଏକ ଗେମ କଣ୍ଟ୍ରୋଲର ଅଟେ।</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, ସଂସ୍କରଣ <ph name="MILESTONE_VERSION" /></translation>
@@ -116,6 +120,7 @@
 <translation id="222447520299472966">ଅତି କମରେ ଏକ ଆର୍ଟ ଗ୍ୟାଲେରୀ ଆଲବମ୍ ଚୟନ କରାଯିବା ଆବଶ୍ୟକ</translation>
 <translation id="2230005943220647148">ସେଲସିୟସ୍</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2240366984605217732">ଲେଆଉଟ ସ୍ୱିଚ</translation>
 <translation id="225692081236532131">ସକ୍ରିୟକରଣ ସ୍ଥିତି</translation>
 <translation id="2287186687001756809">କୌଣସି ଇମେଜ ଉପଲବ୍ଧ ନାହିଁ। ଫଟୋଗୁଡ଼ିକୁ ଯୋଗ କରିବା ପାଇଁ <ph name="LINK" />କୁ ଯାଆନ୍ତୁ</translation>
 <translation id="2307344026739914387">ବର୍ତ୍ତମାନର କୀପେୟାର ବ୍ୟବହାର କରନ୍ତୁ</translation>
@@ -207,9 +212,11 @@
 <translation id="357889014807611375">ମିଟର୍ ହୋଇଥିବା ୱାଇ-ଫାଇ</translation>
 <translation id="3583278742022654445">ସିଗନାଲ କ୍ଷମତା ଦୁର୍ବଳ ଅଟେ। ୱାଇ-ଫାଇ ସିଗନାଲ ସୋର୍ସ ନିକଟକୁ ଯାଇ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="3595596368722241419">ବ୍ୟାଟେରୀ ପୂର୍ଣ୍ଣ</translation>
+<translation id="3600339377155080675">ସ୍କ୍ରିନ ମିରର</translation>
 <translation id="3603829704940252505">ଅବତାର</translation>
 <translation id="360565022852130722">ଦୁର୍ବଳ ପ୍ରୋଟୋକଲ୍ WEP 802.1x ବ୍ୟବହାର କରି ୱାଇଫାଇ ନେଟୱାର୍କକୁ ସୁରକ୍ଷିତ କରାଯାଇଛି</translation>
 <translation id="3606583719724308068">HTTPS ୱେବସାଇଟଗୁଡ଼ିକ ପାଇଁ ଲାଟେନ୍ସି ଅଧିକ ଅଛି</translation>
+<translation id="3632579075709132555">ଗୋପନୀୟତା ସ୍କ୍ରିନ ଟୋଗଲ</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> ଟେଷ୍ଟ</translation>
 <translation id="370665806235115550">ଲୋଡ୍ କରୁଛି...</translation>
 <translation id="3708186454126126312">ପୂର୍ବରୁ ସଂଯୋଗ କରାଯାଇଛି</translation>
@@ -263,6 +270,7 @@
 <translation id="4289540628985791613">ଅବଲୋକନ</translation>
 <translation id="4297501883039923494">ବନ୍ଦ ହୋଇଯାଇଛି - ଅଜଣା ତ୍ରୁଟି</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" />ଟି ଛବି</translation>
+<translation id="4333390807948134856"><ph name="KEY_NAME" /> କୀ'କୁ ଦବାଯାଇଛି</translation>
 <translation id="4378373042927530923">ଚାଲୁନାହିଁ</translation>
 <translation id="4378551569595875038">ସଂଯୋଗ କରୁଛି...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -278,6 +286,7 @@
 <translation id="4479639480957787382">ଇଥର୍‌ନେଟ୍‌</translation>
 <translation id="4483049906298469269">ଡିଫଲ୍ଟ-ନଥିବା ନେଟୱାର୍କ ଗେଟୱେକୁ ପିଙ୍ଗ୍ କରିବାରେ ବିଫଳ ହୋଇଛି</translation>
 <translation id="4485626319513081846">ଯଦି ଡିଭାଇସଟି ଜଣେ ନୂଆ ଗ୍ରାହକଙ୍କୁ ବିତରଣ କରିବା ପାଇଁ ରିଷ୍ଟକ କିମ୍ବା ରିଫର୍ବିସ କରାଯାଉଥାଏ, ତେବେ ଏହି ବିକଳ୍ପକୁ ଚୟନ କରନ୍ତୁ।</translation>
+<translation id="4503223151711056411">ବାମ ତୀର</translation>
 <translation id="4511264077854731334">ପୋର୍ଟାଲ୍</translation>
 <translation id="4521826082652183069">ସବଜେକ୍ଟ ଅଲଟରନେଟିଭ୍ ନେମ୍ ସହ ମେଳ</translation>
 <translation id="4536864596629708641">IP କନଫିଗର୍ କରନ୍ତୁ</translation>
@@ -289,10 +298,12 @@
 <translation id="4562494484721939086">କୌଣସି ସେବା ନାହିଁ</translation>
 <translation id="458794348635939462">ହୋଷ୍ଟ ସମ୍ବନ୍ଧିତ ସମସ୍ତ ସମସ୍ୟାର ସମାଧାନ କରିବାରେ ବିଫଳ ହୋଇଛି</translation>
 <translation id="4593212453765072419">ପ୍ରକ୍ସି ପ୍ରାମାଣିକତା ଆବଶ୍ୟକ</translation>
+<translation id="4609350030397390689">କୀବୋର୍ଡର ଉଜ୍ଜ୍ୱଳତା କମ୍ କରନ୍ତୁ</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" />ଟି ମଧ୍ୟରୁ <ph name="PRINTED_PAGE_NUMBER" /> ନମ୍ବର ପୃଷ୍ଠା। ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟ ବାତିଲ୍ କରିବାକୁ Enter ଦବାନ୍ତୁ।</translation>
 <translation id="4627645661474370390">ରିମୋଟ ପରିଚୟ</translation>
 <translation id="463791356324567266">ସ୍କାନିଂ ବାତିଲ୍ କରାଯାଉଛି...</translation>
 <translation id="4646949265910132906">ସୁରକ୍ଷିତ ୱାଇଫାଇ ସଂଯୋଗ</translation>
+<translation id="4650608062294027130">ଡାହାଣ Shift</translation>
 <translation id="4654549501020883054">ଦୈନିକ ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="4665014895760275686">ଉତ୍ପାଦକ</translation>
 <translation id="467510802200863975">ପାସ୍‌ୱାର୍ଡ ମେଳ ହେଉ ନାହିଁ</translation>
@@ -391,8 +402,10 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">ପୁଣି ସ୍କାନ୍ କରନ୍ତୁ</translation>
 <translation id="5583640892426849032">ପଶ୍ଚାତ୍</translation>
+<translation id="5600027863942488546"><ph name="KEY_NAME" /> କୀ'କୁ ପରୀକ୍ଷା କରାଯାଇଛି</translation>
 <translation id="5620281292257375798">କେବଳ ଇଣ୍ଟର୍ନଲ୍</translation>
 <translation id="5649768706273821470">ଶୁଣନ୍ତୁ</translation>
+<translation id="5655283760733841251">କୀବୋର୍ଡର ଉଜ୍ଜ୍ୱଳତା ବଢ଼ାନ୍ତୁ</translation>
 <translation id="5669267381087807207">ସକ୍ରିୟ ହେଉଛି</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">ଫ୍ୟାମିଲି</translation>
@@ -400,6 +413,7 @@
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" />ରୁ <ph name="CURRENT_PAGE" /></translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" />କୁ ଅପଡେଟ କରନ୍ତୁ</translation>
 <translation id="5760715441271661976">ପୋର୍ଟାଲ୍ ସ୍ଥିତି</translation>
+<translation id="576835345334454681">ଡିସପ୍ଲେର ଉଜ୍ଜ୍ୱଳତା ବଢ଼ାନ୍ତୁ</translation>
 <translation id="57838592816432529">ମ୍ୟୁଟ୍‌</translation>
 <translation id="5784136236926853061">HTTPର ଅଧିକ ଲାଟେନ୍ସି</translation>
 <translation id="5832805196449965646">ଲୋକଙ୍କୁ ଯୋଗ କରନ୍ତୁ</translation>
@@ -430,6 +444,7 @@
 <translation id="6104112872696127344">ସ୍କାନିଂ ବାତିଲ୍ କରାଯାଇଛି</translation>
 <translation id="6106186594183574873">ସମ୍ପୂର୍ଣ୍ଣ କରିବା ପାଇଁ, ଆପଣଙ୍କର ପୁରୁଣା ପାସ୍‍ୱାର୍ଡ ଲେଖନ୍ତୁ</translation>
 <translation id="6108689792487843350">ଗେଟୱେ ସହିତ ସଂଯୋଗ କରାଯାଇପାରିବ ନାହିଁ</translation>
+<translation id="6113701710518389813">ଉପର ତୀର</translation>
 <translation id="6122191549521593678">ଅନ୍‌ଲାଇନ୍</translation>
 <translation id="6137767437444130246">ଉପଯୋଗକର୍ତ୍ତାଙ୍କ ସାର୍ଟିଫିକେଟ୍‌</translation>
 <translation id="6146993107019042706">ସମ୍ପୂର୍ଣ୍ଣ କରିବା ପାଇଁ, ଆପଣଙ୍କର ନୂଆ ପାସ୍‍ୱାର୍ଡ ଲେଖନ୍ତୁ</translation>
@@ -443,6 +458,7 @@
 <translation id="6232017090690406397">ବ୍ୟାଟେରୀ</translation>
 <translation id="6235460611964961764">ଡାଟା ବ୍ୟବହାରକୁ ମାନୁଆଲୀ ରିସେଟ କରନ୍ତୁ</translation>
 <translation id="6243280677745499710">ବର୍ତ୍ତମାନ ସେଟ୍ ହୋଇଛି</translation>
+<translation id="6275224645089671689">ଡାହାଣ ତୀର</translation>
 <translation id="6278428485366576908">ଥିମ୍</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> ଟେଷ୍ଟକୁ ବାତିଲ୍ କରାଯାଇଛି</translation>
@@ -478,6 +494,7 @@
 <translation id="6620487321149975369">ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟଗୁଡ଼ିକୁ ମାନୁଆଲୀ କାଢ଼ି ନଦିଆଯିବା ପର୍ଯ୍ୟନ୍ତ ସେଗୁଡ଼ିକ ଇତିହାସରେ ଦେଖାଯିବ</translation>
 <translation id="6643016212128521049">ଖାଲି କରନ୍ତୁ</translation>
 <translation id="6647510110698214773">ଏନକ୍ରିପସନ ଆଲଗୋରିଦମ</translation>
+<translation id="6650062777702288430">କାନା/ଆଲଫାନ୍ୟୁମେରିକ ସ୍ୱିଚ</translation>
 <translation id="6657585470893396449">ପାସ୍‌ୱର୍ଡ</translation>
 <translation id="6659594942844771486">ଟାବ୍</translation>
 <translation id="6692996468359469499">ଆପଣଙ୍କ ଚୟନ ସମ୍ବନ୍ଧିତ ସୂଚନା ପାଆନ୍ତୁ</translation>
@@ -690,6 +707,7 @@
 <translation id="9122602430962285795">ପୁଣି ସଂଯୋଗ କରିବାକୁ, ସେଟିଂସକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="9126720536733509015">ଗୋଟିଏ PDFରେ ଏକାଧିକ ପୃଷ୍ଠା ସେଭ୍ କରନ୍ତୁ</translation>
 <translation id="9137526406337347448">Google ସେବାଗୁଡ଼ିକ</translation>
+<translation id="9138630967333032450">ବାମପଟ Shift</translation>
 <translation id="9149391708638971077">ମେମୋରୀ ଟେଷ୍ଟ ଚଲାନ୍ତୁ</translation>
 <translation id="9173638680043580060">ଗୋଟିଏ ମିନିଟରୁ କମ୍ ସମୟ ବାକି ଅଛି</translation>
 <translation id="917720651393141712">ପରୀକ୍ଷା କରନ୍ତୁ</translation>

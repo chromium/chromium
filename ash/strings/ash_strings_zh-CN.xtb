@@ -194,6 +194,7 @@
 <translation id="2132302418721800944">录制整个屏幕</translation>
 <translation id="2135456203358955318">停靠的放大镜</translation>
 <translation id="2148716181193084225">今天</translation>
+<translation id="2159930836979502091">前往此标签页</translation>
 <translation id="2170530631236737939">若要退出“概览”模式，请用三根手指向下滑动</translation>
 <translation id="219905428774326614">启动器，所有应用</translation>
 <translation id="2201071101391734388">近期照片中的第 <ph name="INDEX" /> 张，共 <ph name="TOTAL_COUNT" /> 张。</translation>
@@ -560,6 +561,7 @@
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 条重要通知}other{# 条重要通知}}</translation>
 <translation id="4450893287417543264">不再显示</translation>
 <translation id="4451374464530248585">键盘快捷键“Alt + 向下键”已更改。若要使用 Page Down 键，请按<ph name="LAUNCHER_KEY_NAME" />键 + 向下键。</translation>
+<translation id="4455051983450390249">在 <ph name="DEVICE_TYPE" /> 上查看手机中收到的通知</translation>
 <translation id="445864333228800152">晚上好！</translation>
 <translation id="4458688154122353284">停止屏幕录制</translation>
 <translation id="4471354919263203780">正在下载语音识别文件... <ph name="PERCENT" />%</translation>
@@ -767,6 +769,7 @@
 <translation id="583281660410589416">未知</translation>
 <translation id="5837036133683224804">停止将“<ph name="ROUTE_TITLE" />”投射至“<ph name="RECEIVER_NAME" />”</translation>
 <translation id="584525477304726060">按住即可最大化</translation>
+<translation id="5856638668464565213">尚未启用“<ph name="NETWORK_NAME" />”。</translation>
 <translation id="5860033963881614850">关闭</translation>
 <translation id="5860491529813859533">启用</translation>
 <translation id="5867217927013474703">正在收集网络信息</translation>
@@ -798,6 +801,7 @@
 <translation id="602472752137106327">显示所有桌面中的窗口，已选中单选按钮</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />，<ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />，由您的管理员管理</translation>
 <translation id="6027518778343897451"><ph name="CURRENT_MONTH_DAY" />没有任何活动。按一下 Enter 键即可在浏览器中打开 Google 日历。</translation>
+<translation id="6027952026115023659">在 <ph name="DEVICE_TYPE" /> 上查看手机中用过的即时通讯应用</translation>
 <translation id="6030495522958826102">菜单已移至屏幕的左下角。</translation>
 <translation id="6032620807120418574">点击任意位置即可录制整个屏幕</translation>
 <translation id="6040071906258664830">麦克风录音功能已<ph name="STATE" /></translation>
@@ -941,6 +945,7 @@
 <translation id="6961121602502368900">工作资料不支持“将手机设为静音”功能</translation>
 <translation id="6961840794482373852">键盘快捷键“Alt + 向上键”已更改。若要使用 Page Up 键，请按<ph name="LAUNCHER_KEY_NAME" />键 + 向上键。</translation>
 <translation id="6965382102122355670">确定</translation>
+<translation id="6967933908874208731">在 <ph name="DEVICE_TYPE" /> 上查看手机中近期拍摄的照片、播放的媒体、收到的通知和用过的即时通讯应用</translation>
 <translation id="6972754398087986839">开始使用</translation>
 <translation id="6979158407327259162">Google 云端硬盘</translation>
 <translation id="6981982820502123353">无障碍</translation>

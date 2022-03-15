@@ -1328,6 +1328,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2278562042389100163">Otvaranje prozora pregledača</translation>
 <translation id="2278668501808246459">Pokreće se menadžer kontejnera</translation>
 <translation id="2280486287150724112">Desna margina</translation>
+<translation id="2281863813036651454">Klik na levi taster miša</translation>
 <translation id="2282146716419988068">GPU proces</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{Otvori sve u &amp;novoj grupi kartica}=1{Otvori u &amp;novoj grupi kartica}one{Otvori sve ({COUNT}) u &amp;novoj grupi kartica}few{Otvori sve ({COUNT}) u &amp;novoj grupi kartica}other{Otvori sve ({COUNT}) u &amp;novoj grupi kartica}}</translation>
 <translation id="2285942871162473373">Nismo uspeli da prepoznamo otisak prsta. Probajte ponovo.</translation>
@@ -3959,10 +3960,6 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="4918086044614829423">Prihvati</translation>
 <translation id="4918134162946436591">Prikaži preklopni savet</translation>
 <translation id="4921348630401250116">Pretvaranje teksta u govor</translation>
-<translation id="4921809350408880559">Nedavni i predloženi dokumenti vam se prikazuju na osnovu prethodnih aktivnosti pomoću Google diska.
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        Saznajte više o podacima koje Google disk prikuplja i razlozima za njihovo prikupljanje <ph name="BEGIN_LINK" />ovde<ph name="END_LINK" />.</translation>
 <translation id="492299503953721473">Ukloni Android aplikacije</translation>
 <translation id="492363500327720082">Deinstalira se <ph name="APP_NAME" />…</translation>
 <translation id="4924002401726507608">Pošaljite povratne informacije</translation>
@@ -5148,6 +5145,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6129938384427316298">Komentar Netscape sertifikata</translation>
 <translation id="6129953537138746214">Razmak</translation>
 <translation id="6130692320435119637">Dodaj WiFi</translation>
+<translation id="6130887916931372608">Taster tastature</translation>
 <translation id="6136114942382973861">Zatvori traku sa preuzimanjima</translation>
 <translation id="6136287496450963112">Bezbednosni ključ nije zaštićen PIN-om. Da biste upravljali otiscima prstiju, prvo napravite PIN.</translation>
 <translation id="6138680304137685902">Potpis X9.62 ECDSA putem SHA-384</translation>
@@ -6181,7 +6179,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="7191159667348037">Nepoznat štampač (USB)</translation>
 <translation id="7193051357671784796">Ovu aplikaciju je dodala vaša organizacija. Ponovo je pokrenite da biste završili instalaciju.</translation>
 <translation id="7193374945610105795">Nijedna lozinka nije sačuvana za <ph name="ORIGIN" /></translation>
-<translation id="7196020411877309443">Zašto vidim ovo?</translation>
 <translation id="7196913789568937443">Pravite rezervne kopije na Google disku. Lako vraćajte podatke ili menjajte uređaje u bilo kom trenutku. Rezervna kopija obuhvata podatke aplikacija. Rezervne kopije se otpremaju na Google i šifruju pomoću lozinke za Google nalog. <ph name="BEGIN_LINK1" />Saznajte više<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Dobijte Google pretragu i Google pametne funkcije svaki put kada pregledate</translation>
 <translation id="719791532916917144">Tasterska prečica</translation>
@@ -6763,6 +6760,7 @@ Pritisnite dodeljeni prekidač ili taster da biste uklonili dodelu.</translation
 <translation id="7768770796815395237">Promenite</translation>
 <translation id="7768784765476638775">Izaberite za govor</translation>
 <translation id="7770406201819593386">Pokrenite Chrome OS Flex dijagnostičke testove.</translation>
+<translation id="7770450735129978837">Klik na desni taster miša</translation>
 <translation id="7770612696274572992">Slika je kopirana sa nekog drugog uređaja</translation>
 <translation id="7771452384635174008">Raspored</translation>
 <translation id="7772032839648071052">Potvrdi pristupnu frazu</translation>
@@ -7347,10 +7345,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8338952601723052325">Veb-sajt programera</translation>
 <translation id="8339059274628563283">Lokalno sačuvani podaci sa sajta <ph name="SITE" /></translation>
 <translation id="833986336429795709">Izaberite aplikaciju da biste otvorili ovaj link</translation>
-<translation id="8340768003824753944">Ovde se prikazuju vaše uspomene iz Google slika. Samo ih vi vidite svaki put kada ste prijavljeni.
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        Upravljajte sadržajem koji vidite u uspomenama na <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" />.</translation>
 <translation id="8342221978608739536">Nisam pokušao/la</translation>
 <translation id="8342861492835240085">Izaberite kolekciju</translation>
 <translation id="8347227221149377169">Zadaci štampanja</translation>

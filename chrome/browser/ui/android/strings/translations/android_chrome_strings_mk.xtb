@@ -196,7 +196,6 @@
 <translation id="2141396931810938595">Според користењето</translation>
 <translation id="214888715418183969">Изберете какви податоци за користењето сакате да споделувате со Chrome. Метриката што ја споделувате ќе се користи за подобрување на функциите, изведбата и стабилноста на Chrome.</translation>
 <translation id="2149973817440762519">Измени Обележувач</translation>
-<translation id="2154484045852737596">Уредете ја картичката</translation>
 <translation id="2157851137955077194">За да споделите нешто од телефонот на друг уред, вклучете ја синхронизацијата во поставките за Chrome на двата уреди</translation>
 <translation id="2158408438301413340">Chrome не може да ги провери сите лозинки</translation>
 <translation id="2169830938017475061">Сега</translation>
@@ -686,6 +685,7 @@
 <translation id="4988526792673242964">Страници</translation>
 <translation id="5001388021414335527">Следете го сајтов тука</translation>
 <translation id="5004416275253351869">Контроли на активноста на Google</translation>
+<translation id="5005141133360250920">Реакцијата е избришана</translation>
 <translation id="5005498671520578047">Копирање лозинка</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> сака да се поврзе</translation>
 <translation id="5016205925109358554">Serif</translation>
@@ -694,7 +694,6 @@
 <translation id="5054455334322721892"><ph name="BEGIN_LINK1" />Други форми на активност<ph name="END_LINK1" /> може да се зачувуваат во вашата сметка на Google кога сте најавени. Може да ги избришете во секое време.</translation>
 <translation id="5061533557687621530">За да го проверите времето, допрете го микрофонот и кажете „What’s the weather today?“ (Какво е времето денес?)</translation>
 <translation id="506254248375231072">Нема картички</translation>
-<translation id="5087580092889165836">Додај картичка</translation>
 <translation id="5091199029769593641">Наскоро ќе гледате стории од <ph name="SITE_NAME" /> при отворање нова картичка. Сајтовите што ги следите се зачувуваат во сметката на Google. Може да управувате со нив во поставките за Discover.</translation>
 <translation id="5091249083535528968">Проширени податоци за користењето</translation>
 <translation id="509429900233858213">Настана грешка.</translation>
@@ -742,6 +741,7 @@
 <translation id="5368227114232678694">За приватно пребарување на уредов, испробајте го „Инкогнито“</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> отворена ка​ртичка, допрете за да се префрлите помеѓу картичките}one{<ph name="OPEN_TABS_MANY" /> отворена ка​ртичка, допрете за да се префрлите помеѓу картичките}other{<ph name="OPEN_TABS_MANY" /> отворени ка​ртички, допрете за да се префрлите помеѓу картичките}}</translation>
 <translation id="5375577065097716013">Пребарај слика со Google Lens <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
+<translation id="5376898820269806588">Реакцијата се промени</translation>
 <translation id="5403644198645076998">Дозволи само одредени сајтови</translation>
 <translation id="5409881200985013443">Да се испрати <ph name="ONE_TIME_CODE" /> на <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Се проверува…</translation>
@@ -1075,6 +1075,7 @@
 <translation id="718926126787620637">Список со папки за обележувачи отворени на цел екран</translation>
 <translation id="7191430249889272776">Отворена е картичка во заднина.</translation>
 <translation id="7196215469483532480">Објаснувањето за водичот за приватност е отворено на цел екран</translation>
+<translation id="7208109991155904980">Реакцијата се премести</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 преземање чека на ред}one{# преземање чека на ред}other{# преземања чекаат на ред}}</translation>
 <translation id="7237045078887540010">Ако користите Chrome, се согласувате со <ph name="BEGIN_TOS_LINK" />Условите за користење на Google<ph name="END_TOS_LINK" /> и <ph name="BEGIN_ATOS_LINK" />Дополнителните услови за користење на Google Chrome и Chrome OS<ph name="END_ATOS_LINK" />. Важи и <ph name="BEGIN_PRIVACY_LINK" />Политиката за приватност<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="7242755609445462077">Стилизирано нагласување <ph name="CURRENT_DATE" /></translation>
@@ -1389,6 +1390,7 @@
 <translation id="8881973373982641723">Ја брише историјата, вклучително и во полето за пребарување.</translation>
 <translation id="889338405075704026">Одете во „Поставки за Chrome“</translation>
 <translation id="8898822736010347272">Испраќа URL-адреси до Google од некои страници што ги посетувате, како и ограничени податоци за системот и некои содржини од страниците за да помогне да се откријат нови закани и да се заштитат сите на интернет.</translation>
+<translation id="8906502871739599113">Реакцијата е дуплирана</translation>
 <translation id="8909135823018751308">Сподели…</translation>
 <translation id="8912362522468806198">Сметка на Google</translation>
 <translation id="8920114477895755567">Се чекаат детали за родителите.</translation>
@@ -1408,6 +1410,7 @@
 <translation id="8970887620466824814">Нешто тргна наопаку.</translation>
 <translation id="8972098258593396643">Дали да се преземе во стандардната папка?</translation>
 <translation id="8987641763863173640">Управувајте со поставките за преглед на видео</translation>
+<translation id="898854820045159673">Реакцијата е додадена</translation>
 <translation id="8993760627012879038">Отворете нова картичка во режим инкогнито</translation>
 <translation id="8996847606757455498">Изберете друг одредувач</translation>
 <translation id="8998729206196772491">Се најавувате со сметка управувана од <ph name="MANAGED_DOMAIN" /> и му давате контрола над податоците на Chrome на нејзиниот администратор. Вашите податоци ќе бидат трајно врзани за оваа сметка. Одјавувањето од Chrome ќе ги избрише податоците од уредов, но тие ќе останат зачувани на сметката на Google.</translation>
@@ -1443,6 +1446,7 @@
 <translation id="9158770349521403363">Сподели само содржини</translation>
 <translation id="916446198114569890">URL-адресите што ги посетувате се зачувуваат во вашата сметка на Google</translation>
 <translation id="9169507124922466868">Историјата на навигација е отворена до половина екран</translation>
+<translation id="9187955620966010988">Реакцијата е приспособена</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Проверено пред 1 минута}one{Проверено пред # минута}other{Проверено пред # минути}}</translation>
 <translation id="9204836675896933765">Преостанува 1 датотека</translation>
 <translation id="9205933215779845960">Не може да се најде таа страница. Проверете го правописот или пробајте да пребарувате на <ph name="SEARCH_ENGINE" />.</translation>

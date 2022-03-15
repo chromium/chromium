@@ -824,6 +824,7 @@
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> audioa</translation>
 <translation id="8045462269890919536">Errumaniarra</translation>
 <translation id="8049184478152619004">Idatzi desblokeatzeko gako pertsonala (PUKa)</translation>
+<translation id="807187749540895545"><ph name="FILE_NAME" /> ateratzen…</translation>
 <translation id="8079530767338315840">Errepikatu</translation>
 <translation id="8087576439476816834">Deskargatu, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Nirekin partekatutakoak</translation>
@@ -875,6 +876,7 @@
 <translation id="8484284835977497781">Aukeratu azkenaldiko argazki bat.</translation>
 <translation id="8487700953926739672">Konexiorik gabe erabilgarri</translation>
 <translation id="8492972329130824181">Ez dago erabilgarri etxeko sarea. Datu-ibiltaritzak gaituta egon behar du konektatu ahal izateko.</translation>
+<translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> elementu ateratzen…</translation>
 <translation id="8521441079177373948">Erresuma Batukoa</translation>
 <translation id="8525306231823319788">Pantaila osoa</translation>
 <translation id="853494022971700746">Frantsesa (Frantzia)</translation>

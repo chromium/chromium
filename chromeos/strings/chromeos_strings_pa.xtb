@@ -20,6 +20,7 @@
 <translation id="1181037720776840403">ਹਟਾਓ</translation>
 <translation id="1195447618553298278">ਅਗਿਆਤ ਗੜਬੜ।</translation>
 <translation id="1196959502276349371">ਵਰਜਨ <ph name="VERSION" /></translation>
+<translation id="1199355487114804640">ਚਲਾਓ/ਰੋਕੋ</translation>
 <translation id="1201402288615127009">ਅੱਗੇ</translation>
 <translation id="1204296502688602597">DNS ਵਿਲੰਬਤਾ</translation>
 <translation id="123124571410524056">ਪੋਰਟਲ 'ਤੇ ਸ਼ੱਕ ਹੈ</translation>
@@ -43,6 +44,7 @@
 <translation id="1413240736185167732">ਅਸਫਲ ਰਹੀ - ਫਿਲਟਰ ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">ਮੇਰੇ ਕੋਲ ਕੁੰਜੀਆਂ ਦਾ ਜੋੜਾ ਹੈ</translation>
+<translation id="1423591390236870726"><ph name="KEY_NAME" /> ਕੁੰਜੀ ਨਹੀਂ ਦਬਾਈ ਗਈ</translation>
 <translation id="1435763214710588005">ਚੁਣੇ ਹੋਏ ਦਿਨ 'ਤੇ, ਹਰ ਮਹੀਨੇ ਡਾਟਾ ਵਰਤੋਂ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਰੀਸੈੱਟ ਹੋ ਜਾਂਦੀ ਹੈ</translation>
 <translation id="1442433966118452622">ਚਿੱਤਰ ਸਰੋਤ</translation>
 <translation id="1451536289672181509">ਡੀਵਾਈਸ ਇੱਕ ਕੀ-ਬੋਰਡ ਹੈ।</translation>
@@ -84,6 +86,7 @@
 <translation id="1827738518074806965">ਕਲਾ ਗੈਲਰੀ</translation>
 <translation id="1851218745569890714">ਵੀਡੀਓ ਕਾਨਫਰੰਸਿੰਗ</translation>
 <translation id="1852934301711881861">ChromeOS Flex ਸਥਾਪਤ ਕਰੋ</translation>
+<translation id="1856388568474281774">ਹੇਠਾਂ ਤੀਰ</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">ਹਾਰਡਵੇਅਰ ਸੰਸ਼ੋਧਨ</translation>
 <translation id="1905710495812624430">ਅਧਿਕਤਮ ਮਨਜ਼ੂਰ ਕੀਤੀਆਂ ਕੋਸ਼ਿਸ਼ਾਂ ਵਧੀਆਂ।</translation>
@@ -98,6 +101,7 @@
 <translation id="2016697457005847575">ਸਮੱਸਿਆਵਾਂ ਦੇ ਨਿਪਟਾਰੇ ਸੰਬੰਧੀ ਪੜਾਅ ਵਰਤ ਕੇ ਦੇਖੋ</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">ਹੋਰ ਸੈਟਿੰਗਾਂ</translation>
+<translation id="2085089206770112532">ਡਿਸਪਲੇ ਦੀ ਚਮਕ ਘਟਾਉਣ ਵਾਲੀ ਕੁੰਜੀ</translation>
 <translation id="2104796393919810494">ਮੁਰੰਮਤ ਪੂਰੀ ਹੋਈ</translation>
 <translation id="2105810540595158374">ਡੀਵਾਈਸ ਇੱਕ ਗੇਮ ਕੰਟਰੋਲਰ ਹੈ।</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, ਵਰਜਨ <ph name="MILESTONE_VERSION" /></translation>
@@ -116,6 +120,7 @@
 <translation id="222447520299472966">ਘੱਟੋ-ਘੱਟ ਇੱਕ ਕਲਾ ਗੈਲਰੀ ਐਲਬਮ ਨੂੰ ਚੁਣਨ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="2230005943220647148">ਸੈਲਸੀਅਸ</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2240366984605217732">ਖਾਕਾ ਸਵਿੱਚ ਕਰਨ ਵਾਲੀ ਕੁੰਜੀ</translation>
 <translation id="225692081236532131">ਕਿਰਿਆਸ਼ੀਲਤਾ ਸਥਿਤੀ</translation>
 <translation id="2287186687001756809">ਕੋਈ ਚਿੱਤਰ ਉਪਲਬਧ ਨਹੀਂ ਹੈ। ਫ਼ੋਟੋਆਂ ਸ਼ਾਮਲ ਕਰਨ ਲਈ, <ph name="LINK" /> ’ਤੇ ਜਾਓ</translation>
 <translation id="2307344026739914387">ਮੌਜੂਦਾ ਕੁੰਜੀਆਂ ਦਾ ਜੋੜਾ ਵਰਤੋ</translation>
@@ -207,9 +212,11 @@
 <translation id="357889014807611375">ਮੀਟਰਡ ਵਾਈ-ਫਾਈ</translation>
 <translation id="3583278742022654445">ਸਿਗਨਲ ਦੀ ਕਮਜ਼ੋਰ ਤੀਬਰਤਾ। ਵਾਈ-ਫਾਈ ਸਿਗਨਲ ਸਰੋਤ ਦੇ ਨਜ਼ਦੀਕ ਜਾ ਕੇ ਦੇਖੋ।</translation>
 <translation id="3595596368722241419">ਬੈਟਰੀ ਪੂਰੀ</translation>
+<translation id="3600339377155080675">ਸਕ੍ਰੀਨ ਪ੍ਰਤਿਬਿੰਬ ਕਰਨ ਵਾਲੀ ਕੁੰਜੀ</translation>
 <translation id="3603829704940252505">ਅਵਤਾਰ</translation>
 <translation id="360565022852130722">ਵਾਈ-ਫਾਈ ਨੈੱਟਵਰਕ ਕਮਜ਼ੋਰ ਪ੍ਰੋਟੋਕੋਲ WEP 802.1x ਨਾਲ ਸੁਰੱਖਿਅਤ ਹੈ</translation>
 <translation id="3606583719724308068">HTTPS ਵੈੱਬਸਾਈਟਾਂ ਲਈ ਉੱਚ ਵਿਲੰਬਤਾ</translation>
+<translation id="3632579075709132555">ਪਰਦੇਦਾਰੀ ਸਕ੍ਰੀਨ ਨੂੰ ਟੌਗਲ ਕਰਨ ਵਾਲੀ ਕੁੰਜੀ</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> ਟੈਸਟ</translation>
 <translation id="370665806235115550">ਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="3708186454126126312">ਪਹਿਲਾਂ ਤੋਂ ਕਨੈਕਟ ਕੀਤੇ</translation>
@@ -263,6 +270,7 @@
 <translation id="4289540628985791613">ਓਵਰਵਿਊ</translation>
 <translation id="4297501883039923494">ਬੰਦ ਹੋ ਗਿਆ - ਅਗਿਆਤ ਗੜਬੜ</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ਚਿੱਤਰ</translation>
+<translation id="4333390807948134856"><ph name="KEY_NAME" /> ਕੁੰਜੀ ਦਬਾਈ ਗਈ</translation>
 <translation id="4378373042927530923">ਨੈੱਟਵਰਕ ਤਸ਼ਖੀਸ ਨਹੀਂ ਚੱਲੀ</translation>
 <translation id="4378551569595875038">ਕਨੈਕਟ ਕਰ ਰਿਹਾ ਹੈ...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -278,6 +286,7 @@
 <translation id="4479639480957787382">ਈਥਰਨੈਟ</translation>
 <translation id="4483049906298469269">ਗੈਰ-ਪੂਰਵ-ਨਿਰਧਾਰਤ ਨੈੱਟਵਰਕ ਗੇਟਵੇ ਨੂੰ ਪਿੰਗ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="4485626319513081846">ਨਵੇਂ ਗਾਹਕ ਲਈ ਡੀਵਾਈਸ ਨੂੰ ਵੰਡਣ ਵਾਸਤੇ ਮੁੜ-ਸਟਾਕ ਵਿੱਚ ਲਿਆਉਣ ਜਾਂ ਠੀਕ ਕੀਤੇ ਜਾਣ 'ਤੇ ਇਹ ਵਿਕਲਪ ਚੁਣੋ।</translation>
+<translation id="4503223151711056411">ਖੱਬਾ ਤੀਰ</translation>
 <translation id="4511264077854731334">ਪੋਰਟਲ</translation>
 <translation id="4521826082652183069">ਵਿਸ਼ੇ ਸੰਬੰਧੀ ਵਿਕਲਪਿਕ ਨਾਮ ਦਾ ਮਿਲਾਨ</translation>
 <translation id="4536864596629708641">IP ਸੰਰੂਪਣ</translation>
@@ -289,10 +298,12 @@
 <translation id="4562494484721939086">ਕੋਈ ਸੇਵਾ ਨਹੀਂ</translation>
 <translation id="458794348635939462">ਸਾਰੇ ਹੋਸਟਾਂ ਨੂੰ ਹੱਲ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="4593212453765072419">ਪ੍ਰੌਕਸੀ ਪ੍ਰਮਾਣੀਕਰਨ ਦੀ ਲੋੜ ਹੈ</translation>
+<translation id="4609350030397390689">ਕੀ-ਬੋਰਡ ਦੀ ਚਮਕ ਘਟਾਉਣ ਵਾਲੀ ਕੁੰਜੀ</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" /> ਵਿੱਚੋਂ <ph name="PRINTED_PAGE_NUMBER" />। ਪ੍ਰਿੰਟ ਜੌਬ ਨੂੰ ਰੱਦ ਕਰਨ ਲਈ Enter ਦਬਾਓ।</translation>
 <translation id="4627645661474370390">ਰਿਮੋਟ ਪਛਾਣ</translation>
 <translation id="463791356324567266">ਸਕੈਨਿੰਗ ਰੱਦ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...</translation>
 <translation id="4646949265910132906">ਸੁਰੱਖਿਅਤ ਵਾਈ-ਫਾਈ ਕਨੈਕਸ਼ਨ</translation>
+<translation id="4650608062294027130">ਸੱਜੀ Shift ਕੁੰਜੀ</translation>
 <translation id="4654549501020883054">ਰੋਜ਼ਾਨਾ ਬਦਲੋ</translation>
 <translation id="4665014895760275686">ਨਿਰਮਾਤਾ</translation>
 <translation id="467510802200863975">ਪਾਸਵਰਡ ਮੇਲ ਨਹੀਂ ਖਾਂਦੇ</translation>
@@ -390,8 +401,10 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">ਮੁੜ-ਸਕੈਨ ਕਰੋ</translation>
 <translation id="5583640892426849032">ਬੈਕਸਪੇਸ</translation>
+<translation id="5600027863942488546"><ph name="KEY_NAME" /> ਕੁੰਜੀ ਦੀ ਜਾਂਚ ਕੀਤੀ ਗਈ</translation>
 <translation id="5620281292257375798">ਸਿਰਫ਼ ਅੰਦਰੂਨੀ</translation>
 <translation id="5649768706273821470">ਸੁਣਿਆ</translation>
+<translation id="5655283760733841251">ਕੀ-ਬੋਰਡ ਦੀ ਚਮਕ ਵਧਾਉਣ ਵਾਲੀ ਕੁੰਜੀ</translation>
 <translation id="5669267381087807207">ਸਕਿਰਿਆ ਕਰ ਰਿਹਾ ਹੈ</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">ਪਰਿਵਾਰ</translation>
@@ -399,6 +412,7 @@
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" /> ਵਿੱਚੋਂ <ph name="CURRENT_PAGE" /></translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ</translation>
 <translation id="5760715441271661976">ਪੋਰਟਲ ਸਥਿਤੀ</translation>
+<translation id="576835345334454681">ਡਿਸਪਲੇ ਦੀ ਚਮਕ ਵਧਾਉਣ ਵਾਲੀ ਕੁੰਜੀ</translation>
 <translation id="57838592816432529">ਮਿਊਟ ਕਰੋ</translation>
 <translation id="5784136236926853061">ਜ਼ਿਆਦਾ HTTP ਵਿਲੰਬਤਾ</translation>
 <translation id="5832805196449965646">ਵਿਅਕਤੀ ਜੋੜੋ</translation>
@@ -429,6 +443,7 @@
 <translation id="6104112872696127344">ਸਕੈਨਿੰਗ ਰੱਦ ਕੀਤੀ ਗਈ</translation>
 <translation id="6106186594183574873">ਪੂਰਾ ਕਰਨ ਲਈ, ਆਪਣਾ ਪੁਰਾਣਾ ਪਾਸਵਰਡ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="6108689792487843350">ਗੇਟਵੇ ਪਹੁੰਚਯੋਗ ਨਹੀਂ ਹੈ</translation>
+<translation id="6113701710518389813">ਉੱਪਰ ਤੀਰ</translation>
 <translation id="6122191549521593678">ਆਨਲਾਈਨ</translation>
 <translation id="6137767437444130246">ਵਰਤੋਂਕਾਰ ਪ੍ਰਮਾਣ-ਪੱਤਰ</translation>
 <translation id="6146993107019042706">ਪੂਰਾ ਕਰਨ ਲਈ, ਆਪਣਾ ਨਵਾਂ ਪਾਸਵਰਡ ਦਾਖਲ ਕਰੋ</translation>
@@ -442,6 +457,7 @@
 <translation id="6232017090690406397">ਬੈਟਰੀ</translation>
 <translation id="6235460611964961764">ਡਾਟਾ ਵਰਤੋਂ ਨੂੰ ਹੱਥੀਂ ਰੀਸੈੱਟ ਕਰੋ</translation>
 <translation id="6243280677745499710">ਇਸ ਵੇਲੇ ਸੈੱਟ ਹੈ</translation>
+<translation id="6275224645089671689">ਸੱਜਾ ਤੀਰ</translation>
 <translation id="6278428485366576908">ਥੀਮ</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> ਟੈਸਟ ਨੂੰ ਰੱਦ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ</translation>
@@ -477,6 +493,7 @@
 <translation id="6620487321149975369">ਪ੍ਰਿੰਟ ਜੌਬਾਂ ਉਦੋਂ ਤੱਕ ਇਤਿਹਾਸ ਵਿੱਚ ਦਿਸਣਗੀਆਂ, ਜਦੋਂ ਤੱਕ ਉਹਨਾਂ ਨੂੰ ਹੱਥੀਂ ਨਹੀਂ ਹਟਾਇਆ ਜਾਂਦਾ</translation>
 <translation id="6643016212128521049">ਹਟਾਓ</translation>
 <translation id="6647510110698214773">ਇਨਕ੍ਰਿਪਸ਼ਨ ਐਲਗੋਰਿਦਮ</translation>
+<translation id="6650062777702288430">ਕਾਨਾ/ਵਰਨਅੰਕੀ 'ਤੇ ਸਵਿੱਚ ਕਰਨ ਵਾਲੀ ਕੁੰਜੀ</translation>
 <translation id="6657585470893396449">ਪਾਸਵਰਡ</translation>
 <translation id="6659594942844771486">ਟੈਬ</translation>
 <translation id="6692996468359469499">ਆਪਣੀ ਚੋਣ ਨਾਲ ਸੰਬੰਧਿਤ ਜਾਣਕਾਰੀ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
@@ -689,6 +706,7 @@
 <translation id="9122602430962285795">ਮੁੜ-ਕਨੈਕਟ ਕਰਨ ਲਈ, ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ</translation>
 <translation id="9126720536733509015">ਇੱਕ ਤੋਂ ਵੱਧ ਪੰਨਿਆਂ ਨੂੰ ਇੱਕੋ PDF ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="9137526406337347448">Google ਸੇਵਾਵਾਂ</translation>
+<translation id="9138630967333032450">ਖੱਬੀ Shift ਕੁੰਜੀ</translation>
 <translation id="9149391708638971077">ਮੈਮੋਰੀ ਟੈਸਟ ਚਲਾਓ</translation>
 <translation id="9173638680043580060">ਇੱਕ ਮਿੰਟ ਤੋਂ ਘੱਟ ਸਮਾਂ ਬਾਕੀ</translation>
 <translation id="917720651393141712">ਜਾਂਚ</translation>

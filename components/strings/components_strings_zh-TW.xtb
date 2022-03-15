@@ -454,6 +454,7 @@
 <translation id="2310021320168182093">Chou2 (信封)</translation>
 <translation id="2316887270356262533">釋出不到 1 MB。下次造訪部分網站時，載入速度可能會變慢。</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> 要求提供使用者名稱和密碼。</translation>
+<translation id="2318594867107319532">上次政策時間戳記：</translation>
 <translation id="2328651992442742497">允許 (預設)</translation>
 <translation id="2329182534073751090">放置視窗</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />，到期日：<ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -1652,6 +1653,7 @@
 <translation id="6157754950574419155">移除歷史記錄中的所有項目</translation>
 <translation id="6157877588268064908">如要查看運送方式和相關規定，請選取一個地址</translation>
 <translation id="6165508094623778733">瞭解詳情</translation>
+<translation id="6167577165590485365">上次擷取時間：</translation>
 <translation id="6169916984152623906">現在，你可以進行私密瀏覽了。共用這部裝置的其他使用者不會看到你的活動，不過，你下載的內容和新增的書籤仍會保留在裝置上。</translation>
 <translation id="6177128806592000436">你與這個網站的連線不安全</translation>
 <translation id="6180316780098470077">重試間隔</translation>
@@ -2083,6 +2085,7 @@
 <translation id="7569983096843329377">黑色</translation>
 <translation id="7575207903026901870">移除建議按鈕，按下 Enter 鍵即可移除這項建議</translation>
 <translation id="7578104083680115302">在不同的裝置上透過各個網站和應用程式消費時，使用您讓 Google 儲存的信用卡資料即可快速付款。</translation>
+<translation id="7579442726219254162">在「<ph name="APPLICATION_ID" />」受管理設定中的未知變數「<ph name="VARIABLE" />」。</translation>
 <translation id="7581199239021537589">側邊 2 圖片 Y 批次</translation>
 <translation id="7582602800368606489">在 Google 日曆中快速建立新活動</translation>
 <translation id="7591288787774558753">要分享機密內容嗎？</translation>

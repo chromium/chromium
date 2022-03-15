@@ -194,6 +194,7 @@
 <translation id="2132302418721800944">ሙሉ ማያ ገጽን ቅረጽ</translation>
 <translation id="2135456203358955318">የተተከለ ማጉያ</translation>
 <translation id="2148716181193084225">ዛሬ</translation>
+<translation id="2159930836979502091">ወደዚህ ትር ይሂዱ</translation>
 <translation id="2170530631236737939">ከአጠቃላይ ዕይታ ለመውጣት በሦስት ጣቶች ወደ ታች ያንሸራትቱ</translation>
 <translation id="219905428774326614">ማስጀመሪያ፣ ሁሉም መተግበሪያዎች</translation>
 <translation id="2201071101391734388">የቅርብ ጊዜ ፎቶ <ph name="INDEX" /> ከ<ph name="TOTAL_COUNT" />።</translation>
@@ -560,6 +561,7 @@
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 አስፈላጊ ማሳወቂያ}one{# አስፈላጊ ማሳወቂያዎች}other{# አስፈላጊ ማሳወቂያዎች}}</translation>
 <translation id="4450893287417543264">ዳግም አታሳይ</translation>
 <translation id="4451374464530248585">የAlt + የታች ቀስት ቁልፍ ሰሌዳ አቋራጭ ተለውጧል። የገጽ የታች ቁልፍን ለመጠቀም የ<ph name="LAUNCHER_KEY_NAME" /> ቁልፉን + የታች ቀስት ይጫኑ።</translation>
+<translation id="4455051983450390249">የስልክዎን ማሳወቂያዎች በእርስዎ <ph name="DEVICE_TYPE" /> ላይ ይመልከቱ</translation>
 <translation id="445864333228800152">ደህን አመሹ ፣</translation>
 <translation id="4458688154122353284">የማያ ገጽ ቀረጻን አቁም</translation>
 <translation id="4471354919263203780">የንግግር ማወቂያ ፋይሎችን በማውረድ ላይ... <ph name="PERCENT" />%</translation>
@@ -767,6 +769,7 @@
 <translation id="583281660410589416">ያልታወቀ </translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> ላይ <ph name="ROUTE_TITLE" />ን አስቁም</translation>
 <translation id="584525477304726060">ለማስፋት ይያዙ</translation>
+<translation id="5856638668464565213"><ph name="NETWORK_NAME" /> ገቢር አልተደረገም።</translation>
 <translation id="5860033963881614850">አጥፋ</translation>
 <translation id="5860491529813859533">አብራ</translation>
 <translation id="5867217927013474703">የአውታረ መረብ መረጃን በመሰብሰብ ላይ</translation>
@@ -798,6 +801,7 @@
 <translation id="602472752137106327">ከሁሉም ዴስኮች መስኮችን አሳይ፣ የራዲዮ አዝራር ተመርጧል</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />፣ <ph name="CONNECTION_STATUS" />፣ የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />፣ በአስተዳዳሪዎ የሚቀናበር</translation>
 <translation id="6027518778343897451"><ph name="CURRENT_MONTH_DAY" /> ላይ ምንም ክስተት የለም። በአሳሹ ውስጥ Google ቀን መቁጠሪያ ለመክፈት አስገባን ይጫኑ።</translation>
+<translation id="6027952026115023659">የስልክዎን መልዕክት መላኪያ መተግበሪያዎች በእርስዎ <ph name="DEVICE_TYPE" /> ላይ ይድረሱ</translation>
 <translation id="6030495522958826102">ምናሌ ወደ የማያ ገጹ የታችኛው ግራ ጥግ ተወስዷል።</translation>
 <translation id="6032620807120418574">ሙሉ ማያ ገጽን ለመቅዳት በማንኛውም ቦታ ላይ ጠቅ ያድርጉ</translation>
 <translation id="6040071906258664830">ማይክሮፎን ይቅዱ <ph name="STATE" /></translation>
@@ -941,6 +945,7 @@
 <translation id="6961121602502368900">በሥራ መገለጫ ላይ የስልክ ድምጽን ማጥፋት አይገኝም</translation>
 <translation id="6961840794482373852">የAlt + የላይ ቀስት ቁልፍ ሰሌዳ አቋራጭ ተለውጧል። የገጽ የላይ ቁልፍ ለመጠቀም የ<ph name="LAUNCHER_KEY_NAME" /> ቁልፍ + የላይ ቀስት ይጫኑ።</translation>
 <translation id="6965382102122355670">እሺ</translation>
+<translation id="6967933908874208731">በእርስዎ <ph name="DEVICE_TYPE" /> ላይ ያሉ የስልክዎን የቅርብ ጊዜ ፎቶዎች፣ ሚዲያ፣ ማሳወቂያዎች እና የመልዕክት መላኪያ መተግበሪያዎችን ይመልከቱ</translation>
 <translation id="6972754398087986839">አስጀማሪ መመሪያ</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">ተደራሽነት</translation>

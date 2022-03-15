@@ -3958,10 +3958,6 @@
 <translation id="4918086044614829423">સ્વીકારો</translation>
 <translation id="4918134162946436591">હિન્ટ ઓવરલે બતાવો</translation>
 <translation id="4921348630401250116">ટેક્સ્ટ-ટુ-સ્પિચ</translation>
-<translation id="4921809350408880559">Google Drive વડે કરેલી તમારી અગાઉની પ્રવૃત્તિના આધારે, તમને તમારા તાજેતરના અને સુઝાવ આપેલા દસ્તાવેજો જોવા મળી રહ્યાં છે.
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        Google Drive કયો ડેટા અને તે શા માટે એકત્ર કરે છે, તે વિશે <ph name="BEGIN_LINK" />અહીં<ph name="END_LINK" /> જાણો.</translation>
 <translation id="492299503953721473">Android ઍપ્લિકેશનો દૂર કરો</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" />ને અનઇન્સ્ટૉલ કરી રહ્યાં છીએ...</translation>
 <translation id="4924002401726507608">પ્રતિસાદ સબમિટ કરો</translation>
@@ -6182,7 +6178,6 @@ USB ડિવાઇસ</translation>
 <translation id="7191159667348037">અજાણ્યું પ્રિન્ટર (USB)</translation>
 <translation id="7193051357671784796">આ ઍપ તમારી સંસ્થા દ્વારા ઉમેરવામાં આવી છે. ઍપને ઇન્સ્ટૉલ કરવાનું સમાપ્ત કરવા માટે તેને ફરી શરૂ કરો.</translation>
 <translation id="7193374945610105795"><ph name="ORIGIN" /> માટે કોઈ પાસવર્ડ સાચવેલા નથી</translation>
-<translation id="7196020411877309443">હું આ કેમ જોઇ રહ્યો(હી) છું?</translation>
 <translation id="7196913789568937443">Google ડ્રાઇવમાં બૅકઅપ લો. કોઈપણ સમયે તમારો ડેટા સરળતાથી પાછો મેળવો અથવા ડિવાઇસ સ્વિચ કરો. તમારા બૅકઅપમાં ઍપનો ડેટા શામેલ હોય છે. તમારું બૅકઅપ Google પર અપલોડ કરવામાં આવે છે અને તમારા Google એકાઉન્ટ પાસવર્ડનો ઉપયોગ કરીને એન્ક્રિપ્ટ કરવામાં આવે છે. <ph name="BEGIN_LINK1" />વધુ જાણો<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">તમે બ્રાઉઝ કરો તે દર વખતે Google Search અને Google સ્માર્ટ મેળવો</translation>
 <translation id="719791532916917144">કીબોર્ડ શૉર્ટકટ</translation>
@@ -7343,10 +7338,6 @@ USB ડિવાઇસ</translation>
 <translation id="8338952601723052325">વિકાસકર્તા વેબસાઇટ</translation>
 <translation id="8339059274628563283"><ph name="SITE" /> એ સ્થાનિક રીતે સ્ટોર કરેલો ડેટા</translation>
 <translation id="833986336429795709">આ લિંક ખોલવા માટે, એક ઍપ પસંદ કરો</translation>
-<translation id="8340768003824753944">Google Photosમાંની તમારી યાદગીરીઓ અહીં બતાવવામાં આવે છે. જ્યારે પણ તમે સાઇન ઇન થયેલા હો, ત્યારે માત્ર તમને જ તે દેખાશે.
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> પર તમે તમારી યાદગીરીઓમાં શું જોઈ શકો, તે અહીં મેનેજ કરો.</translation>
 <translation id="8342221978608739536">પ્રયાસ કર્યો ન હતો</translation>
 <translation id="8342861492835240085">સંગ્રહ પસંદ કરો</translation>
 <translation id="8347227221149377169">પ્રિન્ટ કરવાના કામો</translation>

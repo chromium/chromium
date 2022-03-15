@@ -1338,6 +1338,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2278562042389100163">Åpne nettleservindu</translation>
 <translation id="2278668501808246459">Starter beholderbehandling</translation>
 <translation id="2280486287150724112">Høyremarg</translation>
+<translation id="2281863813036651454">Venstre museknapp</translation>
 <translation id="2282146716419988068">GPU-prosess</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{Åpne alle i &amp;ny fanegruppe}=1{Åpne i &amp;ny fanegruppe}other{Åpne alle ({COUNT}) i &amp;ny fanegruppe}}</translation>
 <translation id="2285942871162473373">Gjenkjente ikke fingeravtrykket ditt. Prøv igjen.</translation>
@@ -3967,10 +3968,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4918086044614829423">Godta</translation>
 <translation id="4918134162946436591">Vis hintoverlegg</translation>
 <translation id="4921348630401250116">Tekst til tale</translation>
-<translation id="4921809350408880559">Du ser nylige og foreslåtte dokumenter basert på tidligere aktivitet i Google Disk.
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        Finn ut hvilke data Google Disk samler inn, og hvorfor, <ph name="BEGIN_LINK" />her<ph name="END_LINK" />.</translation>
 <translation id="492299503953721473">Fjern Android-appene</translation>
 <translation id="492363500327720082">Avinstallerer <ph name="APP_NAME" /> …</translation>
 <translation id="4924002401726507608">Send inn tilbakemelding</translation>
@@ -5155,6 +5152,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6129938384427316298">Kommentar til Netscape-sertifikat</translation>
 <translation id="6129953537138746214">Mellomrom</translation>
 <translation id="6130692320435119637">Legg til Wi-Fi</translation>
+<translation id="6130887916931372608">Tastaturtast</translation>
 <translation id="6136114942382973861">Lukk nedlastingsraden</translation>
 <translation id="6136287496450963112">Sikkerhetsnøkkelen din er ikke beskyttet med PIN-kode. For å administrere fingeravtrykk må du opprette en PIN-kode først.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA-signatur med SHA-384</translation>
@@ -6188,7 +6186,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="7191159667348037">Ukjent skriver (USB)</translation>
 <translation id="7193051357671784796">Denne appen er lagt til av organisasjonen din. Start appen på nytt for å fullføre installasjonen.</translation>
 <translation id="7193374945610105795">Ingen passord er lagret for <ph name="ORIGIN" /></translation>
-<translation id="7196020411877309443">Hvorfor vises dette?</translation>
 <translation id="7196913789568937443">Sikkerhetskopiér til Google Disk. Gjenopprett data eller bytt enhet når som helst – helt enkelt. Sikkerhetskopiene dine lastes opp til Google og krypteres med passordet for Google-kontoen din. <ph name="BEGIN_LINK1" />Finn ut mer<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Få Google Søk og smarte funksjoner fra Google hver gang du surfer på nettet</translation>
 <translation id="719791532916917144">Hurtigtast</translation>
@@ -6770,6 +6767,7 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7768770796815395237">Endre</translation>
 <translation id="7768784765476638775">Tekstopplesing</translation>
 <translation id="7770406201819593386">Kjør diagnostikktester for ChromeOS Flex.</translation>
+<translation id="7770450735129978837">Høyre museknapp</translation>
 <translation id="7770612696274572992">Et bilde er kopiert fra en annen enhet</translation>
 <translation id="7771452384635174008">Layout</translation>
 <translation id="7772032839648071052">Bekreft passord</translation>
@@ -7354,10 +7352,6 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8338952601723052325">Utviklernettsted</translation>
 <translation id="8339059274628563283">Data lagret lokalt på <ph name="SITE" /></translation>
 <translation id="833986336429795709">For å åpne denne linken, velg en app</translation>
-<translation id="8340768003824753944">Minnene dine fra Google Foto vises her. De er kun synlige for deg, når du er logget på.
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        Administrer det du ser i minnene dine, på <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" />.</translation>
 <translation id="8342221978608739536">Prøvde ikke</translation>
 <translation id="8342861492835240085">Velg en samling</translation>
 <translation id="8347227221149377169">Utskriftsjobber</translation>

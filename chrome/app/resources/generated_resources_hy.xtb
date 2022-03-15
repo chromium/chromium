@@ -3962,10 +3962,6 @@
 <translation id="4918086044614829423">Ընդունել</translation>
 <translation id="4918134162946436591">Ցույց տալ հուշումի վրադրումը</translation>
 <translation id="4921348630401250116">Տեքստի հնչեցում</translation>
-<translation id="4921809350408880559">Վերջին և առաջարկվող փաստաթղթերը ցուցադրվում են ձեզ Google Drive-ում նախկինում ձեր կատարած գործողությունների հիման վրա։
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        Սեղմեք <ph name="BEGIN_LINK" />այստեղ<ph name="END_LINK" />՝ իմանալու, թե ինչ տվյալներ է Google Drive-ը հավաքում և ինչ նպատակով։</translation>
 <translation id="492299503953721473">Հեռացնել Android հավելվածները</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" /> հավելվածը հեռացվում է…</translation>
 <translation id="4924002401726507608">Կարծիք հայտնել</translation>
@@ -6186,7 +6182,6 @@
 <translation id="7191159667348037">Անհայտ տպիչ (USB)</translation>
 <translation id="7193051357671784796">Այս հավելվածն ավելացվել է ձեր կազմակերպության կողմից: Վերագործարկեք հավելվածը՝ տեղադրումն ավարտելու համար:</translation>
 <translation id="7193374945610105795"><ph name="ORIGIN" /> կայքի համար գաղտնաբառեր չեն պահվել</translation>
-<translation id="7196020411877309443">Ինչո՞ւ է սա ցուցադրվում:</translation>
 <translation id="7196913789568937443">Կրկնօրինակ Google Drive-ում։ Արագ վերականգնեք ձեր տվյալները կամ տեղափոխեք այլ սարք: Կրկնօրինակները ներառում են հավելվածների տվյալները։ Կրկնօրինակները վերբեռնվում են Google և գաղտնագրվում ձեր Google հաշվի գաղտնաբառի միջոցով։ <ph name="BEGIN_LINK1" />Իմանալ ավելին<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Օգնեք Որոնմանը և Google-ի մյուս ծառայություններին ավելի լավ ճանաչել ձեզ</translation>
 <translation id="719791532916917144">Ստեղնային դյուրանցում</translation>
@@ -6950,6 +6945,7 @@
 <translation id="7946586320617670168">Սկզբնաղբյուրը պետք է անվտանգ լինի</translation>
 <translation id="794676567536738329">Թույլտվությունների հաստատում</translation>
 <translation id="7947962633355574091">Պատճենել տեսանյութի հասցեն</translation>
+<translation id="7947964080535614577">Կայքերը սովորաբար գովազդ են ցուցադրում, որպեսզի կարողանան անվճար բովանդակություն և ծառայություններ տրամադրել։ Սակայն որոշ կայքեր ցուցադրում են հոգնեցնող կամ մոլորեցնող գովազդ։</translation>
 <translation id="7948407723851303488"><ph name="DOMAIN_NAME" /> տիրույթի բոլոր էջերը</translation>
 <translation id="7951265006188088697">Google Pay-ում վճարման եղանակներ ավելացնելու կամ դրանք կառավարելու համար անցեք ձեր <ph name="BEGIN_LINK" />Google հաշիվ<ph name="END_LINK" /></translation>
 <translation id="7952708427581814389">Կայքերը կարող են սեղմատախտակին պատճենված տեքստն ու պատկերները դիտելու թույլտվություն խնդրել</translation>
@@ -7349,10 +7345,6 @@
 <translation id="8338952601723052325">Մշակողի վեբկայքը</translation>
 <translation id="8339059274628563283"><ph name="SITE" />-ի՝ սարքում պահված տվյալները</translation>
 <translation id="833986336429795709">Հղումը բացելու համար ընտրեք հավելված</translation>
-<translation id="8340768003824753944">Այստեղ ցուցադրվում են Google Լուսանկարների ձեր հիշողությունները։ Դրանք տեսանելի են միայն ձեզ, երբ դուք հաշիվ եք մտնում։
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        Թե որ հիշողությունները պետք է ցուցադրվեն, կարող եք ընտրել <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> էջում։</translation>
 <translation id="8342221978608739536">Չեմ փորձել</translation>
 <translation id="8342861492835240085">Ընտրել հավաքածու</translation>
 <translation id="8347227221149377169">Տպելու առաջադրանքներ</translation>

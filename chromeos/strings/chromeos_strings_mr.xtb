@@ -20,6 +20,7 @@
 <translation id="1181037720776840403">काढून टाका</translation>
 <translation id="1195447618553298278">अज्ञात एरर.</translation>
 <translation id="1196959502276349371">आवृत्ती <ph name="VERSION" /></translation>
+<translation id="1199355487114804640">प्ले करा/थांबवा</translation>
 <translation id="1201402288615127009">पुढील</translation>
 <translation id="1204296502688602597">DNS लेटन्सी</translation>
 <translation id="123124571410524056">पोर्टल असल्याची शक्यता आहे</translation>
@@ -43,6 +44,7 @@
 <translation id="1413240736185167732">अयशस्वी झाले - फिल्टर अयशस्वी झाले</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">माझ्याकडे कीपेअर आहे</translation>
+<translation id="1423591390236870726"><ph name="KEY_NAME" /> की दाबलेली नाही</translation>
 <translation id="1435763214710588005">निवडलेल्या तारखेला प्रत्येक महिन्यात डेटा वापर आपोआप रीसेट करते</translation>
 <translation id="1442433966118452622">इमेजचा स्रोत</translation>
 <translation id="1451536289672181509">डिव्हाइस हे कीबोर्ड आहे.</translation>
@@ -84,6 +86,7 @@
 <translation id="1827738518074806965">आर्ट गॅलरी</translation>
 <translation id="1851218745569890714">व्हिडिओ कॉंफरन्सिंग</translation>
 <translation id="1852934301711881861">ChromeOS Flex इंस्टॉल करा</translation>
+<translation id="1856388568474281774">डाउन अ‍ॅरो</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">हार्डवेअर पुनरावृत्ती</translation>
 <translation id="1905710495812624430">कमाल अनुमती असलेले प्रयत्न ओलांडले.</translation>
@@ -98,6 +101,7 @@
 <translation id="2016697457005847575">ट्रबलशूटिंगच्या पायऱ्या वापरून पहा</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">अधिक सेटिंग्ज</translation>
+<translation id="2085089206770112532">डिस्प्लेचा ब्राइटनेस कमी करा</translation>
 <translation id="2104796393919810494">निराकरण करणे पूर्ण झाले आहे</translation>
 <translation id="2105810540595158374">डिव्हाइस हे गेम नियंत्रक आहे.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, आवृत्ती <ph name="MILESTONE_VERSION" /></translation>
@@ -116,6 +120,7 @@
 <translation id="222447520299472966">किमान एक आर्ट गॅलरी अल्बम निवडणे आवश्यक आहे</translation>
 <translation id="2230005943220647148">सेल्सियस</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2240366984605217732">लेआउट स्विच</translation>
 <translation id="225692081236532131">सक्रियन स्थिती</translation>
 <translation id="2287186687001756809">इमेज उपलब्ध नाही. फोटो जोडण्यासाठी, <ph name="LINK" /> वर जा</translation>
 <translation id="2307344026739914387">सध्याचे कीपेअर वापरा</translation>
@@ -207,9 +212,11 @@
 <translation id="357889014807611375">मर्यादित वाय-फाय</translation>
 <translation id="3583278742022654445">सिग्नलची क्षमता कमकुवत आहे. वाय-फाय सिग्नल स्रोताच्या जवळ जाण्याचा प्रयत्न करा.</translation>
 <translation id="3595596368722241419">बॅटरी पूर्ण चार्ज</translation>
+<translation id="3600339377155080675">स्क्रीन मिरर करा</translation>
 <translation id="3603829704940252505">अवतार</translation>
 <translation id="360565022852130722">वायफाय नेटवर्क कमकुवत प्रोटोकॉल WEP 802.1x सह सुरक्षित केले गेले आहे</translation>
 <translation id="3606583719724308068">HTTPS वेबसाइटवर लेटन्सी जास्त आहे</translation>
+<translation id="3632579075709132555">गोपनीयता स्क्रीन टॉगल करा</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> चाचणी</translation>
 <translation id="370665806235115550">लोड करीत आहे...</translation>
 <translation id="3708186454126126312">यापूर्वी कनेक्ट केलेली</translation>
@@ -263,6 +270,7 @@
 <translation id="4289540628985791613">विहंगावलोकन</translation>
 <translation id="4297501883039923494">थांबले - अज्ञात एरर</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> इमेज</translation>
+<translation id="4333390807948134856"><ph name="KEY_NAME" /> की दाबली</translation>
 <translation id="4378373042927530923">रन झाले नाही</translation>
 <translation id="4378551569595875038">कनेक्ट होतय...</translation>
 <translation id="4382484599443659549">पीडीएफ</translation>
@@ -278,6 +286,7 @@
 <translation id="4479639480957787382">इथरनेट</translation>
 <translation id="4483049906298469269">डीफॉल्ट नसलेला नेटवर्क गेटवे पिंग करता आला नाही</translation>
 <translation id="4485626319513081846">डिव्हाइस हे पुन्हा स्टॉक केले जात असल्यास किंवा नवीन ग्राहकाला देण्यासाठी त्याचे नूतनीकरण केले जात असल्यास, हा पर्याय निवडा.</translation>
+<translation id="4503223151711056411">लेफ्ट अ‍ॅरो</translation>
 <translation id="4511264077854731334">पोर्टल</translation>
 <translation id="4521826082652183069">विषयाच्या पर्यायी नावाची जुळणी</translation>
 <translation id="4536864596629708641">आयपी कॉंफिगरेशन</translation>
@@ -289,10 +298,12 @@
 <translation id="4562494484721939086">सेवा नाही</translation>
 <translation id="458794348635939462">सर्व होस्टचे निराकरण करता आले नाही</translation>
 <translation id="4593212453765072419">प्रॉक्सी प्रमाणीकरण आवश्यक</translation>
+<translation id="4609350030397390689">कीबोर्डचा ब्राइटनेस कमी करा</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" /> पैकी <ph name="PRINTED_PAGE_NUMBER" />. प्रिंट कार्य रद्द करण्यासाठी एंटर दाबा.</translation>
 <translation id="4627645661474370390">रिमोट आयडेंटिटी</translation>
 <translation id="463791356324567266">स्कॅनिंग रद्द करत आहे...</translation>
 <translation id="4646949265910132906">सुरक्षित वायफाय कनेक्शन</translation>
+<translation id="4650608062294027130">उजवीकडे शिफ्ट करा</translation>
 <translation id="4654549501020883054">दररोज बदला</translation>
 <translation id="4665014895760275686">निर्माता</translation>
 <translation id="467510802200863975">पासवर्ड जुळत नाहीत</translation>
@@ -391,8 +402,10 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">पुन्हा स्कॅन करा</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5600027863942488546"><ph name="KEY_NAME" /> की तपासली</translation>
 <translation id="5620281292257375798">फक्त अंतर्गत</translation>
 <translation id="5649768706273821470">ऐका</translation>
+<translation id="5655283760733841251">कीबोर्डचा ब्राइटनेस वाढवा</translation>
 <translation id="5669267381087807207">सक्रिय करत आहे</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">कुटुंब</translation>
@@ -400,6 +413,7 @@
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" /> पैकी <ph name="CURRENT_PAGE" /></translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> अपडेट करा</translation>
 <translation id="5760715441271661976">पोर्टलची स्थिती</translation>
+<translation id="576835345334454681">डिस्प्लेचा ब्राइटनेस वाढवा</translation>
 <translation id="57838592816432529">म्यूट करा</translation>
 <translation id="5784136236926853061">उच्च HTTP लेटन्सी</translation>
 <translation id="5832805196449965646">व्यक्ती जोडा</translation>
@@ -430,6 +444,7 @@
 <translation id="6104112872696127344">स्कॅनिंग रद्द केले गेले</translation>
 <translation id="6106186594183574873">पूर्ण करण्यासाठी, तुमचा जुना पासवर्ड एंटर करा</translation>
 <translation id="6108689792487843350">गेटवेशी कनेक्ट करू शकत नाही</translation>
+<translation id="6113701710518389813">अप अ‍ॅरो</translation>
 <translation id="6122191549521593678">ऑनलाइन</translation>
 <translation id="6137767437444130246">वापरकर्ता सर्टिफिकेट</translation>
 <translation id="6146993107019042706">पूर्ण करण्यासाठी, तुमचा नवीन पासवर्ड एंटर करा</translation>
@@ -443,6 +458,7 @@
 <translation id="6232017090690406397">बॅटरी</translation>
 <translation id="6235460611964961764">डेटा वापर मॅन्युअली रीसेट करा</translation>
 <translation id="6243280677745499710">सध्या सेट केला आहे</translation>
+<translation id="6275224645089671689">राइट अ‍ॅरो</translation>
 <translation id="6278428485366576908">थीम</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> चाचणी रद्द करण्यात आली आहे</translation>
@@ -478,6 +494,7 @@
 <translation id="6620487321149975369">प्रिंट जॉब मॅन्‍युअली काढून टाकेपर्यंत इतिहासामध्ये दिसतील</translation>
 <translation id="6643016212128521049">साफ करा</translation>
 <translation id="6647510110698214773">एंक्रिप्शन अल्गोरिदम</translation>
+<translation id="6650062777702288430">काना/वर्णांक स्विच</translation>
 <translation id="6657585470893396449">पासवर्ड</translation>
 <translation id="6659594942844771486">टॅब</translation>
 <translation id="6692996468359469499">तुमच्या निवडीशी संबंधित माहिती मिळवा</translation>
@@ -690,6 +707,7 @@
 <translation id="9122602430962285795">पुन्हा कनेक्ट करण्यासाठी सेटिंग्ज वर जा</translation>
 <translation id="9126720536733509015">एका PDF मध्ये एकाहून अधिक पेज सेव्ह करा</translation>
 <translation id="9137526406337347448">Google सेवा</translation>
+<translation id="9138630967333032450">डावीकडे शिफ्ट करा</translation>
 <translation id="9149391708638971077">मेमरी चाचणी रन करा</translation>
 <translation id="9173638680043580060">एका मिनिटापेक्षा कमी वेळ शिल्लक आहे</translation>
 <translation id="917720651393141712">चाचणी करा</translation>

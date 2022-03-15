@@ -824,6 +824,7 @@
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> აუდიო</translation>
 <translation id="8045462269890919536">რუმინული</translation>
 <translation id="8049184478152619004">შეიყვანეთ განბლოკვის პერსონალური გასაღები (PUK)</translation>
+<translation id="807187749540895545">მიმდინარეობს „<ph name="FILE_NAME" />“-ის ამოღება...</translation>
 <translation id="8079530767338315840">გამეორება</translation>
 <translation id="8087576439476816834">ჩამოტვირთვა, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">ჩემთვის გაზიარებული</translation>
@@ -875,6 +876,7 @@
 <translation id="8484284835977497781">აირჩიეთ თქვენი ბოლოდროინდელი ფოტოებიდან.</translation>
 <translation id="8487700953926739672">ოფლაინში ხელმისაწვდომი</translation>
 <translation id="8492972329130824181">სახლის ქსელი მიუწვდომელია. დასაკავშირებლად საჭიროა მობილური ინტერნეტის როუმინგის ჩართვა.</translation>
+<translation id="8499098729323186194">მიმდინარეობს <ph name="NUMBER_OF_ITEMS" /> ერთეულის ამოღება...</translation>
 <translation id="8521441079177373948">დიდი ბრიტანეთი</translation>
 <translation id="8525306231823319788">მთელ ეკრანზე</translation>
 <translation id="853494022971700746">ფრანგული (საფრანგეთი)</translation>

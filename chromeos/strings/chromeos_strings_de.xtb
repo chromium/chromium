@@ -20,6 +20,7 @@
 <translation id="1181037720776840403">Entfernen</translation>
 <translation id="1195447618553298278">Unbekannter Fehler.</translation>
 <translation id="1196959502276349371">Version <ph name="VERSION" /></translation>
+<translation id="1199355487114804640">Wiedergabe/Pause</translation>
 <translation id="1201402288615127009">Weiter</translation>
 <translation id="1204296502688602597">DNS-Latenz</translation>
 <translation id="123124571410524056">Verdacht auf Portal</translation>
@@ -43,6 +44,7 @@
 <translation id="1413240736185167732">Fehlgeschlagen – Filter funktioniert nicht</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Ich habe ein Schlüsselpaar</translation>
+<translation id="1423591390236870726">Die Taste „<ph name="KEY_NAME" />“ ist nicht gedrückt</translation>
 <translation id="1435763214710588005">Setzt die Datennutzung jeden Monat automatisch am ausgewählten Tag zurück</translation>
 <translation id="1442433966118452622">Bildquelle</translation>
 <translation id="1451536289672181509">Das Gerät ist eine Tastatur.</translation>
@@ -84,6 +86,7 @@
 <translation id="1827738518074806965">Kunstgalerie</translation>
 <translation id="1851218745569890714">Videokonferenz</translation>
 <translation id="1852934301711881861">Chrome OS Flex installieren</translation>
+<translation id="1856388568474281774">Abwärtspfeil</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Hardware-Version</translation>
 <translation id="1905710495812624430">Die maximal zulässige Anzahl an Versuchen wurde überschritten.</translation>
@@ -98,6 +101,7 @@
 <translation id="2016697457005847575">Schritte zur Fehlerbehebung ausprobieren</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Weitere Einstellungen</translation>
+<translation id="2085089206770112532">Displayhelligkeit verringern</translation>
 <translation id="2104796393919810494">Reparatur abgeschlossen</translation>
 <translation id="2105810540595158374">Das Gerät ist ein Controller.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, Version <ph name="MILESTONE_VERSION" /></translation>
@@ -116,6 +120,7 @@
 <translation id="222447520299472966">Es muss mindestens ein Art Gallery-Album ausgewählt werden</translation>
 <translation id="2230005943220647148">Celsius</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2240366984605217732">Layout</translation>
 <translation id="225692081236532131">Aktivierungsstatus</translation>
 <translation id="2287186687001756809">Kein Bild verfügbar. Sie können Fotos unter <ph name="LINK" /> hinzufügen.</translation>
 <translation id="2307344026739914387">Aktuelles Schlüsselpaar verwenden</translation>
@@ -207,9 +212,11 @@
 <translation id="357889014807611375">Kostenpflichtiges WLAN</translation>
 <translation id="3583278742022654445">Schwaches Signal. Gehen Sie näher an die Quelle des WLAN-Signals heran.</translation>
 <translation id="3595596368722241419">Akku voll</translation>
+<translation id="3600339377155080675">Display spiegeln</translation>
 <translation id="3603829704940252505">Avatar</translation>
 <translation id="360565022852130722">Das WLAN ist mit dem schwachen Protokoll WEP 802.1x gesichert</translation>
 <translation id="3606583719724308068">Hohe Latenz zu HTTPS-Websites</translation>
+<translation id="3632579075709132555">Privatsphärefunktion</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> – Test</translation>
 <translation id="370665806235115550">Wird geladen...</translation>
 <translation id="3708186454126126312">Zuletzt verbundene Geräte</translation>
@@ -263,6 +270,7 @@
 <translation id="4289540628985791613">Übersicht</translation>
 <translation id="4297501883039923494">Angehalten – Unbekannter Fehler</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Bilder</translation>
+<translation id="4333390807948134856">Die Taste „<ph name="KEY_NAME" />“ wird gedrückt</translation>
 <translation id="4378373042927530923">Nicht ausgeführt</translation>
 <translation id="4378551569595875038">Verbindung...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -278,6 +286,7 @@
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Das nicht standardmäßige Netzwerk-Gateway konnte nicht kontaktiert werden</translation>
 <translation id="4485626319513081846">Wählen Sie diese Option aus, wenn das Gerät in den Lagerbestand zurückkehrt oder aufgearbeitet wird, damit es an einen neuen Kunden weitergegeben werden kann.</translation>
+<translation id="4503223151711056411">Linkspfeil</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Alternativer Name für Betreff stimmt überein</translation>
 <translation id="4536864596629708641">IP-Konfiguration</translation>
@@ -289,10 +298,12 @@
 <translation id="4562494484721939086">Dienst nicht verfügbar</translation>
 <translation id="458794348635939462">Es konnten nicht alle Hosts aufgelöst werden</translation>
 <translation id="4593212453765072419">Proxy-Authentifizierung erforderlich</translation>
+<translation id="4609350030397390689">Tastaturhelligkeit verringern</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> von <ph name="TOTAL_PAGE_NUMBER" />. Wenn Sie den Druckauftrag abbrechen möchten, drücken Sie die Eingabetaste.</translation>
 <translation id="4627645661474370390">Remote-Identität</translation>
 <translation id="463791356324567266">Scannen wird abgebrochen…</translation>
 <translation id="4646949265910132906">Sichere WLAN-Verbindung</translation>
+<translation id="4650608062294027130">Umschalttaste rechts</translation>
 <translation id="4654549501020883054">Täglich ändern</translation>
 <translation id="4665014895760275686">Hersteller</translation>
 <translation id="467510802200863975">Die Passwörter stimmen nicht überein</translation>
@@ -391,8 +402,10 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Neu scannen</translation>
 <translation id="5583640892426849032">Rücktaste</translation>
+<translation id="5600027863942488546">Die Taste „<ph name="KEY_NAME" />“ wurde getestet</translation>
 <translation id="5620281292257375798">Nur zur internen Nutzung</translation>
 <translation id="5649768706273821470">Anhören</translation>
+<translation id="5655283760733841251">Tastaturhelligkeit erhöhen</translation>
 <translation id="5669267381087807207">Wird aktiviert</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Familie</translation>
@@ -400,6 +413,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> von <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">„<ph name="DEVICE_NAME" />“ aktualisieren</translation>
 <translation id="5760715441271661976">Portal-Status</translation>
+<translation id="576835345334454681">Displayhelligkeit erhöhen</translation>
 <translation id="57838592816432529">Stummschalten</translation>
 <translation id="5784136236926853061">Hohe HTTP-Latenz</translation>
 <translation id="5832805196449965646">Person hinzufügen</translation>
@@ -430,6 +444,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="6104112872696127344">Scannen wurde abgebrochen</translation>
 <translation id="6106186594183574873">Geben Sie zum Schluss Ihr altes Passwort ein</translation>
 <translation id="6108689792487843350">Gateway nicht erreichbar</translation>
+<translation id="6113701710518389813">Aufwärtspfeil</translation>
 <translation id="6122191549521593678">Online</translation>
 <translation id="6137767437444130246">Nutzerzertifikat</translation>
 <translation id="6146993107019042706">Geben Sie zum Schluss Ihr neues Passwort ein</translation>
@@ -443,6 +458,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="6232017090690406397">Akku</translation>
 <translation id="6235460611964961764">Datennutzung manuell zurücksetzen</translation>
 <translation id="6243280677745499710">Derzeit festgelegt</translation>
+<translation id="6275224645089671689">Rechtspfeil</translation>
 <translation id="6278428485366576908">Design</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515">Test „<ph name="TEST_NAME" />“ wurde abgebrochen</translation>
@@ -478,6 +494,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="6620487321149975369">Druckaufträge erscheinen im Verlauf, solange sie nicht manuell gelöscht werden</translation>
 <translation id="6643016212128521049">Löschen</translation>
 <translation id="6647510110698214773">Verschlüsselungsalgorithmus</translation>
+<translation id="6650062777702288430">Kana/alphanumerische Zeichen</translation>
 <translation id="6657585470893396449">Passwort</translation>
 <translation id="6659594942844771486">Tab</translation>
 <translation id="6692996468359469499">Informationen zu Ihrer Auswahl erhalten</translation>
@@ -690,6 +707,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="9122602430962285795">Gehen Sie zu den Einstellungen, um die Verbindung wiederherzustellen</translation>
 <translation id="9126720536733509015">Mehrere Seiten in einem PDF speichern</translation>
 <translation id="9137526406337347448">Google-Dienste</translation>
+<translation id="9138630967333032450">Umschalttaste links</translation>
 <translation id="9149391708638971077">Speichertest ausführen</translation>
 <translation id="9173638680043580060">Nur noch wenige Sekunden</translation>
 <translation id="917720651393141712">Testen</translation>

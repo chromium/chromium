@@ -825,6 +825,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="8042602468072383151">Zvuk <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">Rumunčina</translation>
 <translation id="8049184478152619004">Zadajte PUK</translation>
+<translation id="807187749540895545">Extrahuje sa súbor <ph name="FILE_NAME" />…</translation>
 <translation id="8079530767338315840">Opakovať</translation>
 <translation id="8087576439476816834">Stiahnuť, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Zdieľané so mnou</translation>
@@ -876,6 +877,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="8484284835977497781">Vyberte z nedávnych fotiek.</translation>
 <translation id="8487700953926739672">K dispozícii offline</translation>
 <translation id="8492972329130824181">Domáca sieť nie je k dispozícii. Ak sa chcete pripojiť, musíte zapnúť mobilný dátový roaming.</translation>
+<translation id="8499098729323186194">Extrahujú sa položky (<ph name="NUMBER_OF_ITEMS" />)…</translation>
 <translation id="8521441079177373948">Anglická klávesnica</translation>
 <translation id="8525306231823319788">Celá obrazovka</translation>
 <translation id="853494022971700746">Francúzska (Francúzsko) klávesnica</translation>

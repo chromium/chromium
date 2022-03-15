@@ -825,6 +825,7 @@
 <translation id="8042602468072383151">Аудио датотека <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">румунски</translation>
 <translation id="8049184478152619004">Унесите личну шифру за откључавање (PUK)</translation>
+<translation id="807187749540895545">Издваја се <ph name="FILE_NAME" />...</translation>
 <translation id="8079530767338315840">Пусти поново</translation>
 <translation id="8087576439476816834">Преузмите, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Дељено са мном</translation>
@@ -876,6 +877,7 @@
 <translation id="8484284835977497781">Одаберите неку од недавних слика.</translation>
 <translation id="8487700953926739672">Доступно ван мреже</translation>
 <translation id="8492972329130824181">Кућна мрежа није доступна. Пренос података у ромингу мора да буде омогућен ради повезивања.</translation>
+<translation id="8499098729323186194">Издвајају се ставке (<ph name="NUMBER_OF_ITEMS" />)...</translation>
 <translation id="8521441079177373948">УК</translation>
 <translation id="8525306231823319788">Цео екран</translation>
 <translation id="853494022971700746">француски (Француска)</translation>

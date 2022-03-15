@@ -3977,10 +3977,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4918086044614829423">Tanggapin</translation>
 <translation id="4918134162946436591">Ipakita ang hint overlay</translation>
 <translation id="4921348630401250116">Text-to-speech</translation>
-<translation id="4921809350408880559">Nakikita mo ang iyong mga kamakailan at iminumungkahing dokumento batay sa nakaraang aktibidad mo gamit ang Google Drive.
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        Matuto tungkol sa data na kinokolekta ng Google Drive at kung bakit ito kinokolekta ng Google Drive <ph name="BEGIN_LINK" />dito<ph name="END_LINK" />.</translation>
 <translation id="492299503953721473">Alisin ang mga Android app</translation>
 <translation id="492363500327720082">Ina-uninstall ang <ph name="APP_NAME" />...</translation>
 <translation id="4924002401726507608">Magsumite ng Feedback</translation>
@@ -6199,7 +6195,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="7191159667348037">Hindi Alam na Printer (USB)</translation>
 <translation id="7193051357671784796">Idinagdag ng iyong organisasyon ang app na ito. I-restart ang app para tapusin ang pag-install nito.</translation>
 <translation id="7193374945610105795">Walang naka-save na password para sa <ph name="ORIGIN" /></translation>
-<translation id="7196020411877309443">Bakit ko nakikita ito?</translation>
 <translation id="7196913789568937443">Mag-back up sa Google Drive. Madaling i-restore ang iyong data o magpalit ng device anumang oras. Kabilang sa iyong backup ang data ng app. Ina-upload sa Google ang iyong mga backup at ine-encrypt gamit ang password ng Google Account mo. <ph name="BEGIN_LINK1" />Matuto Pa<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Makakuha ng Google Search at Google smarts sa tuwing magba-browse ka</translation>
 <translation id="719791532916917144">Keyboard shortcut</translation>
@@ -7366,10 +7361,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8338952601723052325">Website ng developer</translation>
 <translation id="8339059274628563283">Lokal na naka-store na data ng <ph name="SITE" /></translation>
 <translation id="833986336429795709">Para buksan ang link na ito, pumili ng app</translation>
-<translation id="8340768003824753944">Dito ipinapakita ang iyong mga alaala mula sa Google Photos. Ikaw lang ang nakakakita ng mga ito sa tuwing naka-sign in ka.
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        Pamahalaan kung ano ang nakikita mo sa iyong mga alaala sa <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" />.</translation>
 <translation id="8342221978608739536">Hindi sinubukan</translation>
 <translation id="8342861492835240085">Pumili ng koleksyon</translation>
 <translation id="8347227221149377169">Mga pag-print</translation>

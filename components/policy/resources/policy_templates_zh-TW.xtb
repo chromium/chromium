@@ -2007,6 +2007,16 @@
       如果將這項政策設為 Disabled，第三方軟體將可在 <ph name="PRODUCT_NAME" /> 的處理程序中置入這類程式碼。</translation>
 <translation id="3182503302060513467">如果有中間版位公告，新分頁就會加以顯示</translation>
 <translation id="3184161739683646075">控管 DNS-over-HTTPS 的模式</translation>
+<translation id="3184638144755436350">Chrome 會封鎖在沙箱 iframe 中瀏覽外部通訊協定的作業，詳情請參閱 https://chromestatus.com/features/5680742077038592。
+
+      如果將這項政策設為 True，就代表允許 Chrome 封鎖這類瀏覽作業。
+
+      如果將這項政策設為 False，則表示禁止 Chrome 封鎖這類瀏覽作業。
+
+      本政策預設為 True，也就是啟用安全性功能。
+
+      如果管理員需要更多時間更新受此新限制影響的內部網站，就可以採用這項設定。這項 Enterprise 政策僅是暫時性措施，預計將於 <ph name="PRODUCT_NAME" /> 第 117 版之後移除。
+      </translation>
 <translation id="3185009703220253572">自第 <ph name="SINCE_VERSION" /> 版起</translation>
 <translation id="3185895671618336039">設定 <ph name="PRODUCT_NAME" /> 的瀏覽資料生命週期。管理員可以透過這項政策設定瀏覽器刪除資料 (依資料類型) 的時間點。這很適合需要處理敏感客戶資料的客戶。這項政策只有在 <ph name="SYNC_DISABLED_POLICY_NAME" /> 設為 True 時才會生效。
 
@@ -4642,6 +4652,12 @@
       如果將這項政策設為停用或不予設定，系統一律不會顯示浮動式無障礙選單。</translation>
 <translation id="6424485010103067949"><ph name="OMA_URI" />：</translation>
 <translation id="6424486395812679373">對所有下載檔案執行安全瀏覽檢查</translation>
+<translation id="6435570845618943258">如果啟用這項設定，<ph name="PRODUCT_NAME" /> 將使用內建的憑證驗證器執行伺服器憑證驗證作業。
+      如果停用這項設定，<ph name="PRODUCT_NAME" /> 將使用平台提供的舊版憑證驗證器執行伺服器憑證驗證作業。
+      如果不進行設定，系統可能會使用內建或舊版的憑證驗證器。
+
+      我們計劃將這項政策從適用於 <ph name="MAC_OS_NAME" /> 107 版的 <ph name="PRODUCT_NAME" /> 中移除，屆時也將停止支援 <ph name="MAC_OS_NAME" /> 的舊版憑證驗證器。
+      </translation>
 <translation id="6436052172226685535">LBS 的預設行為。</translation>
 <translation id="6438364096042399634">你可以透過這項政策來定義 USB 裝置清單，使用者可以從核心驅動程式中卸除這份清單中的 USB 裝置，並且直接透過 chrome.usb API 在網頁應用程式中使用。輸入項目為可識別特定硬體的 USB 供應商 ID 和產品 ID 組合。
 

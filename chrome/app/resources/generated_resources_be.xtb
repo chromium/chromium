@@ -3962,8 +3962,6 @@
 <translation id="4918086044614829423">Прыняць</translation>
 <translation id="4918134162946436591">Паказваць падказкі</translation>
 <translation id="4921348630401250116">Сінтэз маўлення</translation>
-<translation id="4921809350408880559">Нядаўнія і прапанаваныя дакументы паказваюцца вам на падставе вашых папярэдніх дзеянняў з Google Дыскам.
-        <ph name="BREAK" /><ph name="BREAK" />Даведацца пра тое, якія даныя Google Дыск збірае і чаму, можна <ph name="BEGIN_LINK" />тут<ph name="END_LINK" />.</translation>
 <translation id="492299503953721473">Выдаліць праграмы Android</translation>
 <translation id="492363500327720082">Ідзе выдаленне праграмы <ph name="APP_NAME" />...</translation>
 <translation id="4924002401726507608">Адправіць водгук</translation>
@@ -6182,7 +6180,6 @@
 <translation id="7191159667348037">Невядомы прынтар (USB)</translation>
 <translation id="7193051357671784796">Гэта праграма была дададзена вашай арганізацыяй. Каб завяршыць усталяванне праграмы, перазапусціце яе.</translation>
 <translation id="7193374945610105795">Няма захаваных пароляў для <ph name="ORIGIN" /></translation>
-<translation id="7196020411877309443">Чаму я бачу гэта?</translation>
 <translation id="7196913789568937443">Рэзервовае капіраванне на Дыск Google. Лёгка аднаўляйце даныя і пераносьце іх на іншыя прылады. Стварайце рэзервовыя копіі даных праграм. Рэзервовыя копіі запампоўваюцца ў Google і шыфруюцца пад паролем ад вашага Уліковага запісу Google. <ph name="BEGIN_LINK1" />Даведацца больш<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Карыстайцеся Google Пошукам і разумнымі сэрвісамі Google адразу ў браўзеры</translation>
 <translation id="719791532916917144">Спалучэнне клавіш</translation>
@@ -6947,6 +6944,7 @@
 <translation id="7946586320617670168">Крыніца павінна быць бяспечнай</translation>
 <translation id="794676567536738329">Пацвярджэнне дазволаў</translation>
 <translation id="7947962633355574091">К&amp;апіраваць адрас відэа</translation>
+<translation id="7947964080535614577">Сайты звычайна паказваюць рэкламу, каб мець магчымасць прапаноўваць змесціва або паслугі бясплатна. Аднак некаторыя сайты паказваюць назойлівую рэкламу або рэкламу, якая ўводзіць у зман.</translation>
 <translation id="7948407723851303488">Усе старонкі дамена <ph name="DOMAIN_NAME" /></translation>
 <translation id="7951265006188088697">Каб дадаць спосабы аплаты Google Pay або кіраваць імі, перайдзіце ў свой <ph name="BEGIN_LINK" />Уліковы запіс Google<ph name="END_LINK" /></translation>
 <translation id="7952708427581814389">Сайты могуць запытваць дазвол на прагляд тэксту і відарысаў у буферы абмену</translation>
@@ -7346,10 +7344,6 @@
 <translation id="8338952601723052325">Вэб-сайт распрацоўшчыка</translation>
 <translation id="8339059274628563283">Захаваныя лакальна даныя сайта <ph name="SITE" /></translation>
 <translation id="833986336429795709">Каб адкрыць гэту спасылку, выберыце праграму</translation>
-<translation id="8340768003824753944">Успаміны з Google Фота будуць адлюстроўвацца тут. Праглядаць іх можаце толькі вы, выканаўшы ўваход.
-        <ph name="BREAK" />
-<ph name="BREAK" />
-Вы можаце кіраваць сваімі ўспамінамі на старонцы <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" />.</translation>
 <translation id="8342221978608739536">Не давялося праверыць</translation>
 <translation id="8342861492835240085">Выберыце калекцыю</translation>
 <translation id="8347227221149377169">Заданні друку</translation>

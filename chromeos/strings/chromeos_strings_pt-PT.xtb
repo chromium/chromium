@@ -20,6 +20,7 @@
 <translation id="1181037720776840403">Remover</translation>
 <translation id="1195447618553298278">Erro desconhecido.</translation>
 <translation id="1196959502276349371">Versão <ph name="VERSION" /></translation>
+<translation id="1199355487114804640">Reproduzir/pausar</translation>
 <translation id="1201402288615127009">Seguinte</translation>
 <translation id="1204296502688602597">Latência de DNS</translation>
 <translation id="123124571410524056">Portal suspeito</translation>
@@ -43,6 +44,7 @@
 <translation id="1413240736185167732">Falha – Falha no filtro</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Tenho um par de chaves</translation>
+<translation id="1423591390236870726">Tecla <ph name="KEY_NAME" /> não premida</translation>
 <translation id="1435763214710588005">Repõe automaticamente a utilização de dados todos os meses no dia selecionado</translation>
 <translation id="1442433966118452622">Fonte da imagem</translation>
 <translation id="1451536289672181509">O dispositivo é um teclado.</translation>
@@ -84,6 +86,7 @@
 <translation id="1827738518074806965">Galeria de arte</translation>
 <translation id="1851218745569890714">Videoconferências</translation>
 <translation id="1852934301711881861">Instalar ChromeOS Flex</translation>
+<translation id="1856388568474281774">Seta para baixo</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Revisão de hardware</translation>
 <translation id="1905710495812624430">Foi excedido o número máximo de tentativas permitidas.</translation>
@@ -98,6 +101,7 @@
 <translation id="2016697457005847575">Experimente passos de resolução de problemas</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Mais definições</translation>
+<translation id="2085089206770112532">Diminuir o brilho do ecrã</translation>
 <translation id="2104796393919810494">Reparação concluída</translation>
 <translation id="2105810540595158374">O dispositivo é um comando de jogos.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versão <ph name="MILESTONE_VERSION" /></translation>
@@ -116,6 +120,7 @@
 <translation id="222447520299472966">É necessário selecionar, pelo menos, um álbum da galeria de arte.</translation>
 <translation id="2230005943220647148">Celsius</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2240366984605217732">Interruptor do esquema</translation>
 <translation id="225692081236532131">Estado da ativação</translation>
 <translation id="2287186687001756809">Nenhuma imagem disponível. Para adicionar fotos, aceda a <ph name="LINK" /></translation>
 <translation id="2307344026739914387">Utilizar par de chaves atual</translation>
@@ -171,7 +176,7 @@
 <translation id="3102119246920354026">Cache</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">O dispositivo está ligado.</translation>
-<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Pretende remover a página?}=1{Pretende remover a página {PAGE_NUMBER}?}one{Remove page {PAGE_NUMBER}?}other{Pretende remover a página {PAGE_NUMBER}?}}</translation>
+<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Pretende remover a página?}=1{Pretende remover a página {PAGE_NUMBER}?}other{Pretende remover a página {PAGE_NUMBER}?}}</translation>
 <translation id="315116470104423982">Dados móveis</translation>
 <translation id="3156846309055100599">A digitalizar a página <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">Portal cativo detetado</translation>
@@ -182,7 +187,7 @@
 <translation id="3226405216343213872">A procurar leitores…</translation>
 <translation id="3246869037381808805">As tarefas de impressão com mais de um 1 dia serão removidas.</translation>
 <translation id="3268178239013324452">Falha – Porta aberta</translation>
-<translation id="3283504360622356314">{0,plural, =1{Editar ficheiro}one{Editar ficheiro}other{Editar ficheiros}}</translation>
+<translation id="3283504360622356314">{0,plural, =1{Editar ficheiro}other{Editar ficheiros}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3291996639387199448">Direção da chave</translation>
 <translation id="3310640316857623290">Latência de DNS significativamente acima do limite permitido.</translation>
@@ -207,9 +212,11 @@
 <translation id="357889014807611375">Wi-Fi com acesso limitado</translation>
 <translation id="3583278742022654445">Intensidade do sinal fraca. Experimente aproximar-se da fonte de sinal de Wi-Fi.</translation>
 <translation id="3595596368722241419">Bateria carregada</translation>
+<translation id="3600339377155080675">Espelhamento do ecrã</translation>
 <translation id="3603829704940252505">Avatar</translation>
 <translation id="360565022852130722">A rede WiFi está protegida com um protocolo pouco seguro WEP 802.1x.</translation>
 <translation id="3606583719724308068">Latência elevada para Websites HTTPS</translation>
+<translation id="3632579075709132555">Botão do ecrã de privacidade</translation>
 <translation id="3689839747745352263">Teste <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">A carregar...</translation>
 <translation id="3708186454126126312">Ligados anteriormente</translation>
@@ -263,6 +270,7 @@
 <translation id="4289540628985791613">Vista geral</translation>
 <translation id="4297501883039923494">Parada – Erro desconhecido</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imagens</translation>
+<translation id="4333390807948134856">Tecla <ph name="KEY_NAME" /> premida</translation>
 <translation id="4378373042927530923">Não foi executada.</translation>
 <translation id="4378551569595875038">A ligar...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -278,6 +286,7 @@
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Falha ao enviar ping ao gateway da rede não predefinida.</translation>
 <translation id="4485626319513081846">Selecione esta opção se o stock do dispositivo está a ser reposto ou se o dispositivo está a ser recondicionado para distribuição a um novo cliente.</translation>
+<translation id="4503223151711056411">Seta para a esquerda</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Correspondência do nome alternativo do assunto</translation>
 <translation id="4536864596629708641">Configuração de IP</translation>
@@ -289,10 +298,12 @@
 <translation id="4562494484721939086">Sem serviço</translation>
 <translation id="458794348635939462">Falha ao resolver todos os anfitriões.</translation>
 <translation id="4593212453765072419">Autenticação proxy necessária</translation>
+<translation id="4609350030397390689">Diminuir o brilho do teclado</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> de <ph name="TOTAL_PAGE_NUMBER" />. Prima Enter para cancelar a tarefa de impressão.</translation>
 <translation id="4627645661474370390">Identidade remota</translation>
 <translation id="463791356324567266">A cancelar a digitalização…</translation>
 <translation id="4646949265910132906">Ligação segura ao Wi-Fi</translation>
+<translation id="4650608062294027130">Shift do lado direito</translation>
 <translation id="4654549501020883054">Alterar diariamente</translation>
 <translation id="4665014895760275686">Fabricante</translation>
 <translation id="467510802200863975">As palavras-passe não correspondem.</translation>
@@ -318,7 +329,7 @@
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> selecionado. Prima Enter para selecionar álbuns do <ph name="TOPIC_SOURCE" />.</translation>
 <translation id="484790837831576105">(Android) Resolução de DNS</translation>
 <translation id="4848429997038228357">EM EXECUÇÃO</translation>
-<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} tentativa restante.}one{<ph name="ERROR_MESSAGE" /> {0} tentativa(s) restante(s).}other{<ph name="ERROR_MESSAGE" /> {0} tentativas restantes.}}</translation>
+<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} tentativa restante.}other{<ph name="ERROR_MESSAGE" /> {0} tentativas restantes.}}</translation>
 <translation id="4873827928179867585">Algoritmo de autenticação</translation>
 <translation id="4880328057631981605">Nome do ponto de acesso</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
@@ -382,7 +393,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="5431318178759467895">Cor</translation>
 <translation id="5457599981699367932">Navegar como convidado</translation>
 <translation id="54609108002486618">Geridos</translation>
-<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} tentativa restante.}one{{0} tentativa(s) restante(s).}other{{0} tentativas restantes.}}</translation>
+<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} tentativa restante.}other{{0} tentativas restantes.}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Não foi possível concluir a digitalização</translation>
 <translation id="5502931783115429516">O Android não está a funcionar</translation>
@@ -391,8 +402,10 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Ler novamente</translation>
 <translation id="5583640892426849032">Retrocesso</translation>
+<translation id="5600027863942488546">Tecla <ph name="KEY_NAME" /> testada</translation>
 <translation id="5620281292257375798">Apenas interno</translation>
 <translation id="5649768706273821470">Ouvir</translation>
+<translation id="5655283760733841251">Aumentar o brilho do teclado</translation>
 <translation id="5669267381087807207">A activar</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Família</translation>
@@ -400,6 +413,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> de <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Atualizar <ph name="DEVICE_NAME" /></translation>
 <translation id="5760715441271661976">Estado do portal</translation>
+<translation id="576835345334454681">Aumentar o brilho do ecrã</translation>
 <translation id="57838592816432529">Desativar som</translation>
 <translation id="5784136236926853061">Latência elevada de HTTP</translation>
 <translation id="5832805196449965646">Adicionar pessoa</translation>
@@ -412,7 +426,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5916084858004523819">Proibido</translation>
 <translation id="5916664084637901428">Ativado</translation>
-<translation id="5921506667911082617">{COUNT,plural, =1{O seu ficheiro foi digitalizado com êxito e guardado em <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{O(s) seu(s) ficheiro(s) foi(foram) digitalizado(s) com êxito e guardado(s) em <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Os seus ficheiros foram digitalizados com êxito e guardados em <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
+<translation id="5921506667911082617">{COUNT,plural, =1{O seu ficheiro foi digitalizado com êxito e guardado em <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Os seus ficheiros foram digitalizados com êxito e guardados em <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Ficheiro não encontrado</translation>
 <translation id="5939518447894949180">Repor</translation>
 <translation id="594552776027197022">Gerar par de chaves aleatório</translation>
@@ -430,6 +444,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="6104112872696127344">A digitalização foi cancelada.</translation>
 <translation id="6106186594183574873">Para terminar, introduza a palavra-passe antiga</translation>
 <translation id="6108689792487843350">Não é possível alcançar o gateway.</translation>
+<translation id="6113701710518389813">Seta para cima</translation>
 <translation id="6122191549521593678">Online</translation>
 <translation id="6137767437444130246">Certificado do utilizador</translation>
 <translation id="6146993107019042706">Para terminar, introduza a nova palavra-passe.</translation>
@@ -443,6 +458,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="6232017090690406397">Bateria</translation>
 <translation id="6235460611964961764">Repor utilização de dados manualmente</translation>
 <translation id="6243280677745499710">Definida atualmente</translation>
+<translation id="6275224645089671689">Seta para a direita</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515">O teste <ph name="TEST_NAME" /> foi cancelado.</translation>
@@ -458,7 +474,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Fraca (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6456394469623773452">Boa</translation>
-<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Pretende digitalizar novamente a página?}=1{Pretende digitalizar novamente a página {PAGE_NUMBER}?}one{Rescan page {PAGE_NUMBER}?}other{Pretende digitalizar novamente a página {PAGE_NUMBER}?}}</translation>
+<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Pretende digitalizar novamente a página?}=1{Pretende digitalizar novamente a página {PAGE_NUMBER}?}other{Pretende digitalizar novamente a página {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">PUU</translation>
 <translation id="6480327114083866287">Gerido por <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Parada – Encravamento de papel</translation>
@@ -478,6 +494,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="6620487321149975369">As tarefas de impressão serão apresentadas no histórico, exceto se forem removidas manualmente.</translation>
 <translation id="6643016212128521049">Limpar</translation>
 <translation id="6647510110698214773">Algoritmo de encriptação</translation>
+<translation id="6650062777702288430">Interruptor de teclado kana/alfanumérico</translation>
 <translation id="6657585470893396449">Palavra-passe</translation>
 <translation id="6659594942844771486">Separador</translation>
 <translation id="6692996468359469499">Obtenha informações relacionadas com a sua seleção</translation>
@@ -513,7 +530,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Falha – A autorização falhou</translation>
 <translation id="7103252855940681301">Dispositivo <ph name="INDEX" /> de <ph name="COUNT" /> designado <ph name="NAME" />.</translation>
-<translation id="7134436342991564651">{0,plural, =1{Servidor de nomes}one{Servidor(es) de nomes}other{Servidores de nomes}}</translation>
+<translation id="7134436342991564651">{0,plural, =1{Servidor de nomes}other{Servidores de nomes}}</translation>
 <translation id="7143207342074048698">A ligar</translation>
 <translation id="7144878232160441200">Tentar novamente</translation>
 <translation id="714876143603641390">Conetividade de LAN</translation>
@@ -539,7 +556,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="741244894080940828">conversão</translation>
 <translation id="7415801143053185905">Latência muito elevada de HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
-<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Digitalização concluída. 1 página digitalizada}one{Digitalização concluída. {NUMBER_OF_PAGES} página(s) digitalizada(s)}other{Digitalização concluída. {NUMBER_OF_PAGES} páginas digitalizadas}}</translation>
+<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Digitalização concluída. 1 página digitalizada}other{Digitalização concluída. {NUMBER_OF_PAGES} páginas digitalizadas}}</translation>
 <translation id="7469648432129124067">Portal detetado</translation>
 <translation id="7481312909269577407">Avançar</translation>
 <translation id="7487067081878637334">Tecnologia</translation>
@@ -672,7 +689,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="8968751544471797276">Velocidade de carregamento</translation>
 <translation id="8970109610781093811">Executar novamente</translation>
 <translation id="8983038754672563810">HSPA</translation>
-<translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Analisar}=1{Analisar página {NUMBER_OF_PAGES}}one{Scan page {NUMBER_OF_PAGES}}other{Analisar página {NUMBER_OF_PAGES}}}</translation>
+<translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Analisar}=1{Analisar página {NUMBER_OF_PAGES}}other{Analisar página {NUMBER_OF_PAGES}}}</translation>
 <translation id="8997710128084572139">O dispositivo tem <ph name="BATTERY_PERCENTAGE" />% de bateria.</translation>
 <translation id="9003704114456258138">Frequência</translation>
 <translation id="9039663905644212491">PEAP</translation>
@@ -690,6 +707,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="9122602430962285795">Para restabelecer ligação, aceda a Definições</translation>
 <translation id="9126720536733509015">Guardar várias páginas num PDF</translation>
 <translation id="9137526406337347448">Serviços Google</translation>
+<translation id="9138630967333032450">Shift do lado esquerdo</translation>
 <translation id="9149391708638971077">Executar teste de memória</translation>
 <translation id="9173638680043580060">Falta menos de um minuto</translation>
 <translation id="917720651393141712">Testar</translation>

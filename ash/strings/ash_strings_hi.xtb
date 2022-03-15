@@ -31,6 +31,7 @@
 <translation id="1150989369772528668">कैलेंडर</translation>
 <translation id="1153356358378277386">युग्‍मित डिवाइस</translation>
 <translation id="1165712434476988950">अपडेट लागू करने के लिए डिवाइस को रीस्टार्ट करना ज़रूरी है.</translation>
+<translation id="1171742223880403396">हो सकता है कि आपकी यूएसबी-सी केबल, डिसप्ले के साथ ठीक तरह से कनेक्ट न हो पाए</translation>
 <translation id="1175572348579024023">स्क्रोल करें</translation>
 <translation id="1178581264944972037">रोकें</translation>
 <translation id="1181037720776840403">हटाएं</translation>
@@ -124,8 +125,10 @@
 <translation id="1668469839109562275">पहले से मौजूद वीपीएन</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> बाकी</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> कनेक्ट नहीं है.</translation>
+<translation id="1677582821739292812">कोई व्यक्ति आपकी स्क्रीन देख रहा है</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> टाइमर · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 पता: <ph name="ADDRESS" /></translation>
+<translation id="1703117532528082099">चालू विंडो को बाईं तरफ़ डॉक किया गया है.</translation>
 <translation id="1708345662127501511">डेस्क: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">नेटवर्क सेटिंग</translation>
 <translation id="1715293566947629045">प्रोफ़ाइल बंद की जा रही है. थोड़ा इंतज़ार करें.</translation>
@@ -197,6 +200,7 @@
 <translation id="2132302418721800944">फ़ुल स्क्रीन रिकॉर्ड करें</translation>
 <translation id="2135456203358955318">सामग्री को बड़ा दिखाने की डॉक की गई सुविधा</translation>
 <translation id="2148716181193084225">आज</translation>
+<translation id="2159930836979502091">इस टैब पर जाएं</translation>
 <translation id="2170530631236737939">खास जानकारी बंद करने के लिए, स्क्रीन पर तीन उंगलियों से नीचे की ओर स्वाइप करें</translation>
 <translation id="219905428774326614">लॉन्चर, सभी ऐप्लिकेशन</translation>
 <translation id="2201071101391734388"><ph name="TOTAL_COUNT" /> में से <ph name="INDEX" /> हाल ही की फ़ोटो.</translation>
@@ -274,6 +278,7 @@
 <translation id="2727977024730340865">कम-शक्ति वाले चार्जर में प्लग इन करें. बैटरी चार्ज करना संभवत: विश्वसनीय नहीं होगा.</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"मिटाएं"</translation>
+<translation id="2750941250130734256">चालू विंडो को अनडॉक किया गया है.</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> को <ph name="MANAGER" /> मैनेज करता है</translation>
 <translation id="2782591952652094792">कैप्चर मोड बंद करें</translation>
 <translation id="2791421900609674576">जहां पिछली बार छोड़ा था वहीं से इस्तेमाल शुरू करने के लिए, आपको सुझाव दिखेंगे.  दबाकर रखने से, इन सुझावों को बंद किया जा सकता है.</translation>
@@ -564,6 +569,7 @@
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 ज़रूरी सूचना}one{# ज़रूरी सूचना}other{# ज़रूरी सूचनाएं}}</translation>
 <translation id="4450893287417543264">फिर से न दिखाएं</translation>
 <translation id="4451374464530248585">Alt + डाउन ऐरो कीबोर्ड शॉर्टकट बदल गया है. Page Down बटन का इस्तेमाल करने के लिए, <ph name="LAUNCHER_KEY_NAME" /> बटन + डाउन ऐरो को दबाएं.</translation>
+<translation id="4455051983450390249">फ़ोन पर मिलने वाली सूचनाएं <ph name="DEVICE_TYPE" /> पर देखें</translation>
 <translation id="445864333228800152">गुड ईवनिंग,</translation>
 <translation id="4458688154122353284">स्क्रीन को रिकॉर्ड करना बंद करें</translation>
 <translation id="4471354919263203780">बोली पहचानने वाली फाइलें डाउनलोड हो रही हैं... <ph name="PERCENT" />%</translation>
@@ -771,6 +777,7 @@
 <translation id="583281660410589416">अज्ञात</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> पर <ph name="ROUTE_TITLE" /> बंद करें</translation>
 <translation id="584525477304726060">बड़ा करने के लिए होल्ड करें</translation>
+<translation id="5856638668464565213"><ph name="NETWORK_NAME" /> ऐक्टिवेट नहीं किया गया है.</translation>
 <translation id="5860033963881614850">बंद</translation>
 <translation id="5860491529813859533">चालू करें</translation>
 <translation id="5867217927013474703">नेटवर्क की जानकारी इकट्ठा की जा रही है</translation>
@@ -785,6 +792,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">चालू है</translation>
 <translation id="5920710855273935292">माइक म्यूट है.</translation>
+<translation id="5924838240953214369">कैप्चर मोड में, <ph name="SOURCE" /> <ph name="TYPE" /> डिफ़ॉल्ट के तौर पर सेट है. कैमरा इनपुट को <ph name="CAMERA_NAME" /> पर सेट किया गया है. झलक देखने की सुविधा चालू है. कीबोर्ड नेविगेशन के लिए, Tab दबाएं.</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> चालू है.</translation>
 <translation id="5947494881799873997">वापस लाएं</translation>
 <translation id="595202126637698455">निष्पादन ट्रेसिंग सक्षम है</translation>
@@ -802,6 +810,7 @@
 <translation id="602472752137106327">सभी डेस्क से विंडो देखें, रेडियो बटन चुना गया</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />, आपका एडमिन प्रबंधित करता है</translation>
 <translation id="6027518778343897451"><ph name="CURRENT_MONTH_DAY" /> को कोई इवेंट नहीं है. ब्राउज़र में Google Calendar खोलने के लिए, Enter दबाएं.</translation>
+<translation id="6027952026115023659">अपने फ़ोन के मैसेजिंग ऐप्लिकेशन <ph name="DEVICE_TYPE" /> पर ऐक्सेस करें</translation>
 <translation id="6030495522958826102">मेन्यू, स्क्रीन के सबसे नीचे बाएं कोने में चला गया है.</translation>
 <translation id="6032620807120418574">फ़ुल स्क्रीन को रिकॉर्ड करने के लिए कहीं पर भी क्लिक करें</translation>
 <translation id="6040071906258664830">माइक्रोफ़ोन से ऑडियो रिकॉर्ड <ph name="STATE" /></translation>
@@ -945,6 +954,7 @@
 <translation id="6961121602502368900">वर्क प्रोफ़ाइल में, फ़ोन को साइलेंट रखने की सुविधा उपलब्ध नहीं है</translation>
 <translation id="6961840794482373852">Alt + अप ऐरो कीबोर्ड शॉर्टकट बदल गया है. Page Up बटन का इस्तेमाल करने के लिए, <ph name="LAUNCHER_KEY_NAME" /> बटन + अप ऐरो दबाएं.</translation>
 <translation id="6965382102122355670">ठीक है</translation>
+<translation id="6967933908874208731">फ़ोन में मौजूद हाल ही की फ़ोटो, मीडिया, सूचनाएं, और मैसेजिंग ऐप्लिकेशन <ph name="DEVICE_TYPE" /> पर देखें</translation>
 <translation id="6972754398087986839">शुरू करें</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">सुलभता</translation>
@@ -1040,6 +1050,7 @@
 <translation id="7564874036684306347">विंडो को किसी दूसरे डेस्कटॉप पर ले जाने से अनचाहा बर्ताव हो सकता है. इसके बाद की सूचनाएं, विंडो और संवाद डेस्कटॉप के बीच बंट सकती हैं.</translation>
 <translation id="7569509451529460200">ब्रेल और ChromeVox सक्षम हैं</translation>
 <translation id="7569983096843329377">काला</translation>
+<translation id="7573585051776738856">चालू विंडो को दाईं तरफ़ डॉक किया गया है.</translation>
 <translation id="7579778809502851308">स्क्रीन कैप्चर</translation>
 <translation id="7590883480672980941">इनपुट सेटिंग</translation>
 <translation id="7593891976182323525">Search या Shift</translation>

@@ -196,6 +196,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2132302418721800944">Tallenna koko näyttö</translation>
 <translation id="2135456203358955318">Kiinnitetty suurennus</translation>
 <translation id="2148716181193084225">Tänään</translation>
+<translation id="2159930836979502091">Siirry tälle välilehdelle</translation>
 <translation id="2170530631236737939">Poistu Viimeisimmät-osiosta pyyhkäisemällä kolmella sormella alaspäin</translation>
 <translation id="219905428774326614">Käynnistysohjelma, kaikki sovellukset</translation>
 <translation id="2201071101391734388">Viimeisin kuva <ph name="INDEX" />/<ph name="TOTAL_COUNT" />.</translation>
@@ -562,6 +563,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 tärkeä ilmoitus}other{# tärkeää ilmoitusta}}</translation>
 <translation id="4450893287417543264">Älä näytä uudelleen</translation>
 <translation id="4451374464530248585">Pikanäppäinyhdistelmä Alt + alanuoli on muuttunut. Jos haluat käyttää Page Down ‑näppäintä, paina <ph name="LAUNCHER_KEY_NAME" /> + alanuoli.</translation>
+<translation id="4455051983450390249">Katso puhelimen ilmoituksia tällä laitteella: <ph name="DEVICE_TYPE" /></translation>
 <translation id="445864333228800152">Hyvää iltaa</translation>
 <translation id="4458688154122353284">Lopeta näytön tallennus</translation>
 <translation id="4471354919263203780">Ladataan puheentunnistustiedostoja… <ph name="PERCENT" /> %</translation>
@@ -733,6 +735,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Poista äänipalaute käytöstä painamalla Ctrl+Alt+Z.</translation>
 <translation id="5601503069213153581">PIN-koodi</translation>
+<translation id="5618148318840095371">Olemme yhdistäneet laitteesi parempaan verkkoon</translation>
 <translation id="5619862035903135339">Järjestelmänvalvojakäytäntö poistaa kuvakaappauksen käytöstä</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Mikrofoniliitäntä</translation>
@@ -768,6 +771,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="583281660410589416">Tuntematon</translation>
 <translation id="5837036133683224804">Lopeta <ph name="ROUTE_TITLE" /> – <ph name="RECEIVER_NAME" /></translation>
 <translation id="584525477304726060">Suurenna painamalla pitkään</translation>
+<translation id="5856638668464565213"><ph name="NETWORK_NAME" /> ei ole aktiivinen.</translation>
 <translation id="5860033963881614850">Pois päältä</translation>
 <translation id="5860491529813859533">Ota käyttöön</translation>
 <translation id="5867217927013474703">Verkkotietoja kerätään</translation>
@@ -799,6 +803,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="602472752137106327">Näytä ikkunat kaikilta työpöydiltä, valintanappi valittu</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" />, järjestelmänvalvojan hallinnoima</translation>
 <translation id="6027518778343897451">Ei tapahtumia <ph name="CURRENT_MONTH_DAY" />. Avaa Google Kalenteri selaimessa painamalla Enter.</translation>
+<translation id="6027952026115023659">Käytä puhelimen viestisovelluksia tällä laitteella: <ph name="DEVICE_TYPE" /></translation>
 <translation id="6030495522958826102">Valikko siirretty näytön vasempaan alanurkkaan</translation>
 <translation id="6032620807120418574">Ota kuvakaappaus koko näytöstä klikkaamalla minne tahansa</translation>
 <translation id="6040071906258664830">Mikrofonin tallentaminen <ph name="STATE" /></translation>
@@ -942,6 +947,7 @@ Uusi asennus</translation>
 <translation id="6961121602502368900">Puhelimen hiljentäminen ei ole käytettävissä työprofiililla</translation>
 <translation id="6961840794482373852">Pikanäppäinyhdistelmä Alt + ylänuoli on muuttunut. Jos haluat käyttää Page Up ‑näppäintä, paina <ph name="LAUNCHER_KEY_NAME" /> + ylänuoli.</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6967933908874208731">Katso puhelimesi viimeisimpiä kuvia, mediaa, ilmoituksia ja viestisovelluksia tällä laitteella: <ph name="DEVICE_TYPE" /></translation>
 <translation id="6972754398087986839">Aloitusopas</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">Esteettömyys</translation>

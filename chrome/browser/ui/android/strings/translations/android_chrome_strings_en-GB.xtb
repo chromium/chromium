@@ -139,6 +139,7 @@
 <translation id="1810845389119482123">Initial sync setup not finished</translation>
 <translation id="1829244130665387512">Find in page</translation>
 <translation id="1832459821645506983">Yes, I’m in</translation>
+<translation id="1849863543394887018">You can disable notifications by visiting settings</translation>
 <translation id="1877026089748256423">Chrome is out of date</translation>
 <translation id="1883903952484604915">My files</translation>
 <translation id="189358972401248634">Other languages</translation>
@@ -195,7 +196,6 @@ Tap any word to search. To refine your search, touch and hold to select more or 
 <translation id="2141396931810938595">Based on your usage</translation>
 <translation id="214888715418183969">Choose what you’re comfortable sharing with Chrome. The metrics that you share will be used to help improve Chrome’s features, performance and stability.</translation>
 <translation id="2149973817440762519">Edit Bookmark</translation>
-<translation id="2154484045852737596">Edit card</translation>
 <translation id="2157851137955077194">To share something from your phone to another device, turn on sync in Chrome settings on both devices</translation>
 <translation id="2158408438301413340">Chrome couldn’t check all passwords</translation>
 <translation id="2169830938017475061">Now</translation>
@@ -694,7 +694,6 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5054455334322721892"><ph name="BEGIN_LINK1" />Other forms of activity<ph name="END_LINK1" /> may be saved in your Google Account when you’re signed in. You can delete them at any time.</translation>
 <translation id="5061533557687621530">To check the weather, tap the mic and say 'What’s the weather today?'</translation>
 <translation id="506254248375231072">No tabs</translation>
-<translation id="5087580092889165836">Add card</translation>
 <translation id="5091199029769593641">Soon, you’ll see stories from <ph name="SITE_NAME" /> when you open a new tab. The sites that you follow are saved in your Google Account. You can manage them in Discover settings.</translation>
 <translation id="5091249083535528968">Extended usage data</translation>
 <translation id="509429900233858213">An error occurred.</translation>
@@ -1206,6 +1205,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7926975587469166629">Card nickname</translation>
 <translation id="7929962904089429003">Opening the menu</translation>
 <translation id="7930998711684428189">Warns you if passwords are exposed in a data breach.</translation>
+<translation id="7937772386706786623">Manage media controls, incognito tabs and more with notifications</translation>
 <translation id="7939485076072265087">Create stylised card with highlight</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> is out of date.</translation>
 <translation id="7944772052836377867">Sync needs to verify that it's you</translation>
@@ -1390,6 +1390,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8881973373982641723">Clears history, including in the search box.</translation>
 <translation id="889338405075704026">Go to Chrome settings</translation>
 <translation id="8898822736010347272">Sends URLs of some pages that you visit, limited system information and some page content to Google, to help discover new threats and protect everyone on the web.</translation>
+<translation id="8906502871739599113">Reaction duplicated</translation>
 <translation id="8909135823018751308">Share…</translation>
 <translation id="8912362522468806198">Google Account</translation>
 <translation id="8920114477895755567">Waiting for details of parents.</translation>
@@ -1409,6 +1410,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8970887620466824814">Something went wrong.</translation>
 <translation id="8972098258593396643">Download to default folder?</translation>
 <translation id="8987641763863173640">Manage video preview settings</translation>
+<translation id="898854820045159673">Reaction added</translation>
 <translation id="8993760627012879038">Open a new tab in Incognito mode</translation>
 <translation id="8996847606757455498">Choose another provider</translation>
 <translation id="8998729206196772491">You are signing in with an account managed by <ph name="MANAGED_DOMAIN" /> and giving its administrator control over your Chrome data. Your data will become permanently tied to this account. Signing out of Chrome will delete your data from this device, but it will remain stored in your Google Account.</translation>
@@ -1444,6 +1446,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="9158770349521403363">Share content only</translation>
 <translation id="916446198114569890">The URLs that you visit are saved to your Google Account</translation>
 <translation id="9169507124922466868">Navigation history is half-opened</translation>
+<translation id="9187955620966010988">Reaction adjusted</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Checked 1 minute ago}other{Checked # minutes ago}}</translation>
 <translation id="9204836675896933765">1 file left</translation>
 <translation id="9205933215779845960">Can’t find that page. Check your spelling or try a search on <ph name="SEARCH_ENGINE" />.</translation>

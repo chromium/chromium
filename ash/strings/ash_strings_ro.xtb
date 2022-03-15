@@ -31,6 +31,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1150989369772528668">Calendar</translation>
 <translation id="1153356358378277386">Dispozitive asociate</translation>
 <translation id="1165712434476988950">Pentru aplicarea actualizării este necesară repornirea dispozitivului.</translation>
+<translation id="1171742223880403396">Cablul USB-C poate să nu se conecteze corespunzător la ecrane</translation>
 <translation id="1175572348579024023">Derulează</translation>
 <translation id="1178581264944972037">Întrerupe</translation>
 <translation id="1181037720776840403">Elimină</translation>
@@ -197,6 +198,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2132302418721800944">Înregistrează ecranul complet</translation>
 <translation id="2135456203358955318">Lupă andocată</translation>
 <translation id="2148716181193084225">Astăzi</translation>
+<translation id="2159930836979502091">Accesează fila</translation>
 <translation id="2170530631236737939">Glisează în jos cu trei degete pentru a ieși din modul Prezentare generală</translation>
 <translation id="219905428774326614">Lansator, toate aplicațiile</translation>
 <translation id="2201071101391734388">Fotografia recentă <ph name="INDEX" /> din <ph name="TOTAL_COUNT" />.</translation>
@@ -563,6 +565,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 notificare importantă}few{# notificări importante}other{# de notificări importante}}</translation>
 <translation id="4450893287417543264">Nu mai afișa</translation>
 <translation id="4451374464530248585">Comanda rapidă de la tastatură Alt + săgeată în jos s-a schimbat. Ca să folosești tasta Page Down, apasă tasta <ph name="LAUNCHER_KEY_NAME" /> + săgeata în jos.</translation>
+<translation id="4455051983450390249">Afișează notificările telefonului pe <ph name="DEVICE_TYPE" /></translation>
 <translation id="445864333228800152">Bună seara!</translation>
 <translation id="4458688154122353284">Oprește înregistrarea ecranului</translation>
 <translation id="4471354919263203780">Se descarcă fișierele pentru recunoașterea vocală... <ph name="PERCENT" /> %</translation>
@@ -770,6 +773,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="583281660410589416">Necunoscut</translation>
 <translation id="5837036133683224804">Întrerupe <ph name="ROUTE_TITLE" /> pe <ph name="RECEIVER_NAME" /></translation>
 <translation id="584525477304726060">Apasă lung pentru a maximiza</translation>
+<translation id="5856638668464565213">Rețeaua <ph name="NETWORK_NAME" /> nu este activată.</translation>
 <translation id="5860033963881614850">Dezactivat</translation>
 <translation id="5860491529813859533">Activează</translation>
 <translation id="5867217927013474703">Se colectează informații despre rețea</translation>
@@ -801,6 +805,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="602472752137106327">Se afișează ferestrele de pe toate desktopurile, buton radio selectat</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" />, gestionată de administratorul tău</translation>
 <translation id="6027518778343897451">Nu există evenimente pe <ph name="CURRENT_MONTH_DAY" />. Apasă pe Enter pentru a deschide Google Calendar în browser.</translation>
+<translation id="6027952026115023659">Accesează aplicațiile pentru mesaje ale telefonului pe <ph name="DEVICE_TYPE" /></translation>
 <translation id="6030495522958826102">Meniul a fost mutat în colțul din stânga jos al ecranului.</translation>
 <translation id="6032620807120418574">Dă clic oriunde pentru a înregistra ecranul complet</translation>
 <translation id="6040071906258664830">Înregistrare audio <ph name="STATE" /></translation>
@@ -944,6 +949,7 @@ Instalare nouă</translation>
 <translation id="6961121602502368900">Dezactivarea sunetului telefonului nu este disponibilă în profilul de serviciu</translation>
 <translation id="6961840794482373852">Comanda rapidă de la tastatură Alt + săgeată în sus s-a schimbat. Ca să folosești tasta Page Up, apasă tasta <ph name="LAUNCHER_KEY_NAME" /> + săgeata în sus.</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6967933908874208731">Afișează fotografiile, elementele media, notificările și aplicațiile pentru mesaje recente de pe <ph name="DEVICE_TYPE" /></translation>
 <translation id="6972754398087986839">Începe</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">Accesibilitate</translation>

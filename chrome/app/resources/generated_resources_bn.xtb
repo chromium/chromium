@@ -3975,10 +3975,6 @@
 <translation id="4918086044614829423">স্বীকার</translation>
 <translation id="4918134162946436591">ইঙ্গিতের ওভারলে দেখুন</translation>
 <translation id="4921348630401250116">টেক্সট-টু-স্পিচ</translation>
-<translation id="4921809350408880559">আগে Google Drive ব্যবহার করার সময় আপনার অ্যাক্টিভিটির উপর নির্ভর করে আপনাকে সাম্প্রতিক ও সাজেস্ট করা ডকুমেন্ট দেখানো হচ্ছে।
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        Google Drive কোন ডেটা কেন সংগ্রহ করে তা <ph name="BEGIN_LINK" />এখান<ph name="END_LINK" /> থেকে জানুন।</translation>
 <translation id="492299503953721473">Android অ্যাপ্লিকেশানগুলি সরান</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" /> আনইনস্টল করা হচ্ছে...</translation>
 <translation id="4924002401726507608">মতামত জানান</translation>
@@ -6198,7 +6194,6 @@
 <translation id="7191159667348037">অজানা প্রিন্টার (USB)</translation>
 <translation id="7193051357671784796">আপনার সংস্থা এই অ্যাপ যোগ করেছে। ইনস্টল করা সম্পূর্ণ করতে অ্যাপটি আবার চালু করুন।</translation>
 <translation id="7193374945610105795"><ph name="ORIGIN" /> এর জন্য কোনও পাসওয়ার্ড সেভ করা হয়নি</translation>
-<translation id="7196020411877309443">আমি এটা কেন দেখছি?</translation>
 <translation id="7196913789568937443">Google ড্রাইভে ব্যাক-আপ নিন। যেকোনও সময় সহজেই আপনার ডেটা ফিরিয়ে আনুন বা ডিভাইস পাল্টান। আপনার ব্যাক-আপে অ্যাপ ডেটা থাকে। আপনার ব্যাক-আপ ডেটা Google-এ আপলোড করা হয় এবং আপনার Google অ্যাকাউন্টের পাসওয়ার্ড ব্যবহার করে সেগুলিকে এনক্রিপ্ট করা হয়। <ph name="BEGIN_LINK1" />আরও জানুন<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">প্রত্যেকবার ব্রাউজ করার সময় Google সার্চ ও Google স্মার্ট পান</translation>
 <translation id="719791532916917144">কীবোর্ড শর্টকাট</translation>
@@ -6963,6 +6958,7 @@
 <translation id="7946586320617670168">ওয়েবসাইটটি নিরাপদ হতে হবে</translation>
 <translation id="794676567536738329">অনুমতিগুলি নিশ্চিত করুন</translation>
 <translation id="7947962633355574091">ভি&amp;ডিও ঠিকানা কপি করুন</translation>
+<translation id="7947964080535614577">সাইট সাধারণত বিজ্ঞাপন দেখায় যাতে সেগুলি কোনও পেমেন্ট ছাড়াই কন্টেন্ট অথবা পরিষেবা প্রদান করতে পারে। কিন্তু ব্যাঘাত সৃষ্টিকারী অথবা বিভ্রান্তিকর বিজ্ঞাপন দেখায় বলে কিছু সাইটের বদনাম আছে।</translation>
 <translation id="7948407723851303488"><ph name="DOMAIN_NAME" />-এর সব পৃষ্ঠা</translation>
 <translation id="7951265006188088697">Google Pay পেমেন্ট পদ্ধতি যোগ বা পরিচালনা করতে, আপনার <ph name="BEGIN_LINK" />Google অ্যাকাউন্ট<ph name="END_LINK" />-এ যান</translation>
 <translation id="7952708427581814389">আপনার ক্লিপবোর্ডে টেক্সট ও ছবি দেখতে, সাইট অনুমতি চাইতে পারে</translation>
@@ -7363,10 +7359,6 @@
 <translation id="8338952601723052325">ডেভেলপার ওয়েবসাইট</translation>
 <translation id="8339059274628563283"><ph name="SITE" /> স্থানীয়ভাবে ডেটা সংরক্ষণ করেছে</translation>
 <translation id="833986336429795709">এই লিঙ্কটি খুলতে, একটি অ্যাপ বেছে নিন</translation>
-<translation id="8340768003824753944">Google Photos থেকে আপনার স্মৃতি এখানে দেখানো হয়েছে। এগুলি শুধু আপনিই সাইন-ইন করা অবস্থায় দেখতে পান।
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> লিঙ্ক থেকে আপনার স্মৃতিতে কী দেখতে পাবেন সেটি ম্যানেজ করুন।</translation>
 <translation id="8342221978608739536">ব্যবহার করিনি</translation>
 <translation id="8342861492835240085">একটি সংগ্রহ বেছে নিন</translation>
 <translation id="8347227221149377169">প্রিন্ট করার কাজগুলি</translation>

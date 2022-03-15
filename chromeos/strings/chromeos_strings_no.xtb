@@ -20,6 +20,7 @@
 <translation id="1181037720776840403">Fjern</translation>
 <translation id="1195447618553298278">Ukjent feil.</translation>
 <translation id="1196959502276349371">Versjon <ph name="VERSION" /></translation>
+<translation id="1199355487114804640">Spill av / sett på pause</translation>
 <translation id="1201402288615127009">Neste</translation>
 <translation id="1204296502688602597">DNS-tidsforsinkelse</translation>
 <translation id="123124571410524056">Mistanke om portal</translation>
@@ -43,6 +44,7 @@
 <translation id="1413240736185167732">Mislykket – filtersvikt</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Jeg har et nøkkelpar</translation>
+<translation id="1423591390236870726"><ph name="KEY_NAME" />-tasten er ikke trykket på</translation>
 <translation id="1435763214710588005">Tilbakestiller automatisk databruken hver måned på den valgte dagen</translation>
 <translation id="1442433966118452622">Bildekilde</translation>
 <translation id="1451536289672181509">Enheten er et tastatur.</translation>
@@ -84,6 +86,7 @@
 <translation id="1827738518074806965">Kunstgalleri</translation>
 <translation id="1851218745569890714">Videokonferanser</translation>
 <translation id="1852934301711881861">Installer ChromeOS Flex</translation>
+<translation id="1856388568474281774">Nedoverpil</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Maskinvareversjon</translation>
 <translation id="1905710495812624430">Du har overskredet maksimumsgrensen for antall forsøk.</translation>
@@ -98,6 +101,7 @@
 <translation id="2016697457005847575">Prøv feilsøkingstrinn</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Flere innstillinger</translation>
+<translation id="2085089206770112532">Skjermlysstyrke ned</translation>
 <translation id="2104796393919810494">Reparasjonen er fullført</translation>
 <translation id="2105810540595158374">Enheten er en spillkontroller.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versjon <ph name="MILESTONE_VERSION" /></translation>
@@ -116,6 +120,7 @@
 <translation id="222447520299472966">Minst ett Kunst-gallerialbum må velges</translation>
 <translation id="2230005943220647148">Celsius</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2240366984605217732">Oppsettsbytte</translation>
 <translation id="225692081236532131">Aktiveringsstatus</translation>
 <translation id="2287186687001756809">Ingen bilder er tilgjengelige. For å legge til bilder, gå til <ph name="LINK" /></translation>
 <translation id="2307344026739914387">Bruk nåværende nøkkelpar</translation>
@@ -207,9 +212,11 @@
 <translation id="357889014807611375">Wi-Fi med datamåling</translation>
 <translation id="3583278742022654445">Svakt signal. Prøv å flytte deg nærmere Wi-Fi-signalkilden.</translation>
 <translation id="3595596368722241419">Batteriet er fullt</translation>
+<translation id="3600339377155080675">Skjermspeiling</translation>
 <translation id="3603829704940252505">Brukerbilde</translation>
 <translation id="360565022852130722">Wi-Fi-nettverket er sikret med den svake protokollen WEP 802.1x</translation>
 <translation id="3606583719724308068">Høy tidsforsinkelse til HTTPS-nettsteder</translation>
+<translation id="3632579075709132555">Personvernskjerm av/på</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" />test</translation>
 <translation id="370665806235115550">Laster inn ...</translation>
 <translation id="3708186454126126312">Tidligere tilkoblet</translation>
@@ -263,6 +270,7 @@
 <translation id="4289540628985791613">Oversikt</translation>
 <translation id="4297501883039923494">Stoppet – ukjent feil</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> bilder</translation>
+<translation id="4333390807948134856"><ph name="KEY_NAME" />-tasten trykkes på</translation>
 <translation id="4378373042927530923">Ikke kjørt</translation>
 <translation id="4378551569595875038">Kobler til …</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -278,6 +286,7 @@
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Kunne ikke pinge gatewayen for ikke-standardnettverket</translation>
 <translation id="4485626319513081846">Velg dette alternativet hvis enheten skal lagerføres på nytt eller overhales for distribusjon til en ny kunde.</translation>
+<translation id="4503223151711056411">Venstrepil</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Samsvarende alternativt emnenavn</translation>
 <translation id="4536864596629708641">IP-konfigurasjon</translation>
@@ -289,10 +298,12 @@
 <translation id="4562494484721939086">Ingen tjeneste</translation>
 <translation id="458794348635939462">Kunne ikke finne tilknytning til alle vertene</translation>
 <translation id="4593212453765072419">Godkjenning av mellomtjener kreves</translation>
+<translation id="4609350030397390689">Tastaturlysstyrke ned</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> av <ph name="TOTAL_PAGE_NUMBER" />. Trykk på Enter for å avbryte utskriftsjobben.</translation>
 <translation id="4627645661474370390">Ekstern identitet</translation>
 <translation id="463791356324567266">Avbryter skanningen …</translation>
 <translation id="4646949265910132906">Sikker Wi-Fi-tilkobling</translation>
+<translation id="4650608062294027130">Høyre Shift</translation>
 <translation id="4654549501020883054">Endre daglig</translation>
 <translation id="4665014895760275686">Produsent</translation>
 <translation id="467510802200863975">Passordene er ikke like</translation>
@@ -391,8 +402,10 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Skann på nytt</translation>
 <translation id="5583640892426849032">Tilbake-tasten</translation>
+<translation id="5600027863942488546"><ph name="KEY_NAME" />-tasten er testet</translation>
 <translation id="5620281292257375798">Bare internt</translation>
 <translation id="5649768706273821470">Lytt</translation>
+<translation id="5655283760733841251">Tastaturlysstyrke opp</translation>
 <translation id="5669267381087807207">Aktiverer</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Familie</translation>
@@ -400,6 +413,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> av <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Oppdater <ph name="DEVICE_NAME" /></translation>
 <translation id="5760715441271661976">Portaltilstand</translation>
+<translation id="576835345334454681">Skjermlysstyrke opp</translation>
 <translation id="57838592816432529">Kutt lyden</translation>
 <translation id="5784136236926853061">Høy HTTP-tidsforsinkelse</translation>
 <translation id="5832805196449965646">Legg til person</translation>
@@ -430,6 +444,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="6104112872696127344">Skanningen er avbrutt</translation>
 <translation id="6106186594183574873">For å fullføre passordendringen, skriv inn det gamle passordet</translation>
 <translation id="6108689792487843350">Gatewayen er utilgjengelig</translation>
+<translation id="6113701710518389813">Oppoverpil</translation>
 <translation id="6122191549521593678">Pålogget</translation>
 <translation id="6137767437444130246">Brukersertifikat</translation>
 <translation id="6146993107019042706">For å fullføre passordendringen, skriv inn det nye passordet</translation>
@@ -443,6 +458,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="6232017090690406397">Batteri</translation>
 <translation id="6235460611964961764">Tilbakestill databruken manuelt</translation>
 <translation id="6243280677745499710">Nåværende bakgrunn</translation>
+<translation id="6275224645089671689">Høyrepil</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />testen er avbrutt</translation>
@@ -478,6 +494,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="6620487321149975369">Utskriftsjobber vises i loggen med mindre de fjernes manuelt</translation>
 <translation id="6643016212128521049">Tøm</translation>
 <translation id="6647510110698214773">Algoritme for kryptering</translation>
+<translation id="6650062777702288430">Kana/alfanumerisk-bytte</translation>
 <translation id="6657585470893396449">Passord</translation>
 <translation id="6659594942844771486">Fane</translation>
 <translation id="6692996468359469499">Få informasjon tilknyttet det du har merket</translation>
@@ -690,6 +707,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="9122602430962285795">For å koble til på nytt, gå til Innstillinger</translation>
 <translation id="9126720536733509015">Lagre flere sider som én PDF-fil</translation>
 <translation id="9137526406337347448">Google-tjenester</translation>
+<translation id="9138630967333032450">Venstre Shift</translation>
 <translation id="9149391708638971077">Kjør minnetest</translation>
 <translation id="9173638680043580060">Mindre enn et minutt igjen</translation>
 <translation id="917720651393141712">Test</translation>

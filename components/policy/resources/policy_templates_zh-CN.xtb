@@ -2003,6 +2003,16 @@
       如果此政策已停用，系统会允许第三方软件将此类代码注入到 <ph name="PRODUCT_NAME" /> 进程中。</translation>
 <translation id="3182503302060513467">“新标签页”页面将会显示中间槽通知（若有）</translation>
 <translation id="3184161739683646075">控制 DNS-over-HTTPS 模式</translation>
+<translation id="3184638144755436350">Chrome 会阻止从沙盒化 iframe 内导航到外部协议。请参阅 https://chromestatus.com/features/5680742077038592。
+
+      如果此政策设为 True，Chrome 会阻止此类导航。
+
+      如果此政策设为 False，Chrome 将无法阻止此类导航。
+
+      此政策默认设为 True：安全功能已启用。
+
+      如果管理员需要更多时间来更新受这项新限制影响的内部网站，则可以使用此政策。这项企业政策只是暂时性政策，预计将于 <ph name="PRODUCT_NAME" /> 117 版之后移除。
+      </translation>
 <translation id="3185009703220253572">从版本 <ph name="SINCE_VERSION" /> 开始</translation>
 <translation id="3185895671618336039">为 <ph name="PRODUCT_NAME" /> 配置浏览数据生命周期设置。此政策让管理员能够（按数据类型）配置浏览器对数据的删除时间点。这对需要处理敏感客户数据的客户非常有用。仅当 <ph name="SYNC_DISABLED_POLICY_NAME" /> 设为 true 时，此政策才会生效。
 
@@ -4659,6 +4669,12 @@
       如果此政策设为停用或未设置，系统将始终不显示悬浮无障碍功能菜单。</translation>
 <translation id="6424485010103067949"><ph name="OMA_URI" />：</translation>
 <translation id="6424486395812679373">对所有下载的文件执行安全浏览检查</translation>
+<translation id="6435570845618943258">如果此设置已启用，<ph name="PRODUCT_NAME" /> 将会使用内置的证书验证程序来验证服务器证书。
+      如果此设置已停用，<ph name="PRODUCT_NAME" /> 将会使用平台提供的旧版证书验证程序来验证服务器证书。
+      如果此设置未配置，系统既可能会使用内置的证书验证程序，也可能会使用旧版证书验证程序。
+
+      按照我们的计划，此政策将会从适用于 <ph name="MAC_OS_NAME" /> 107 版的 <ph name="PRODUCT_NAME" /> 中移除，该版本将不再支持在 <ph name="MAC_OS_NAME" /> 上使用旧版证书验证程序。
+      </translation>
 <translation id="6436052172226685535">LBS 的默认行为。</translation>
 <translation id="6438364096042399634">通过设置此政策，您可以指定一个 USB 设备列表，在其中列出用户可从内核驱动程序分离以便直接在 Web 应用内通过 chrome.usb API 使用的 USB 设备。列表中的条目是成对的用于标识特定硬件的 USB 供应商标识符和产品标识符。
 

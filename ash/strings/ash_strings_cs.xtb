@@ -197,6 +197,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2132302418721800944">Zaznamenat celou obrazovku</translation>
 <translation id="2135456203358955318">Zabudovaná lupa</translation>
 <translation id="2148716181193084225">Dnes</translation>
+<translation id="2159930836979502091">Přejít na tuto kartu</translation>
 <translation id="2170530631236737939">Přehled ukončíte přejetím třemi prsty dolů</translation>
 <translation id="219905428774326614">Spouštěč, všechny aplikace</translation>
 <translation id="2201071101391734388">Nedávná fotka <ph name="INDEX" /> z <ph name="TOTAL_COUNT" />.</translation>
@@ -563,6 +564,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 důležité oznámení}few{# důležitá oznámení}many{# důležitého oznámení}other{# důležitých oznámení}}</translation>
 <translation id="4450893287417543264">Tuto zprávu již nezobrazovat</translation>
 <translation id="4451374464530248585">Klávesová zkratka Alt + šipka dolů se změnila. Pokud chcete použít klávesu Page Down, stiskněte <ph name="LAUNCHER_KEY_NAME" /> + šipku dolů.</translation>
+<translation id="4455051983450390249">Zobrazovat v zařízení <ph name="DEVICE_TYPE" /> oznámení z telefonu</translation>
 <translation id="445864333228800152">Dobrý večer,</translation>
 <translation id="4458688154122353284">Zastavit nahrávání obrazovky</translation>
 <translation id="4471354919263203780">Stahování souborů k rozpoznávání řeči… <ph name="PERCENT" /> %</translation>
@@ -734,6 +736,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Hlasovou odezvu vypnete stisknutím kláves Ctrl + Alt + Z.</translation>
 <translation id="5601503069213153581">PIN</translation>
+<translation id="5618148318840095371">Připojili jsme vás k lepší síti</translation>
 <translation id="5619862035903135339">Zásady administrátora záznam obrazovky zakazují</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Konektor mikrofonu</translation>
@@ -769,6 +772,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="583281660410589416">Neznámé</translation>
 <translation id="5837036133683224804">Zastavit <ph name="ROUTE_TITLE" /> na přijímači <ph name="RECEIVER_NAME" /></translation>
 <translation id="584525477304726060">Podržením maximalizujete</translation>
+<translation id="5856638668464565213">Síť <ph name="NETWORK_NAME" /> není aktivována.</translation>
 <translation id="5860033963881614850">Vypnuto</translation>
 <translation id="5860491529813859533">Zapnout</translation>
 <translation id="5867217927013474703">Shromažďování informací o síti</translation>
@@ -800,6 +804,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="602472752137106327">Zobrazit okna ze všech ploch, je vybrán přepínač</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, síla signálu: <ph name="SIGNAL_STRENGTH" />, spravováno administrátorem</translation>
 <translation id="6027518778343897451">Na den <ph name="CURRENT_MONTH_DAY" /> není naplánována žádná událost. Stisknutím klávesy Enter otevřete Kalendář Google v prohlížeči.</translation>
+<translation id="6027952026115023659">Používat v zařízení <ph name="DEVICE_TYPE" /> aplikace na odesílání zpráv z telefonu</translation>
 <translation id="6030495522958826102">Nabídka byla přesunuta do levého dolního rohu obrazovky.</translation>
 <translation id="6032620807120418574">Kliknutím kamkoliv spustíte záznam celé obrazovky</translation>
 <translation id="6040071906258664830">Záznam mikrofonu <ph name="STATE" /></translation>
@@ -943,6 +948,7 @@ Nová instalace</translation>
 <translation id="6961121602502368900">Ztlumení telefonu v pracovním profilu není k dispozici</translation>
 <translation id="6961840794482373852">Klávesová zkratka Alt + šipka nahoru se změnila. Pokud chcete použít klávesu Page Up, stiskněte <ph name="LAUNCHER_KEY_NAME" /> + šipku nahoru.</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6967933908874208731">Zobrazovat na zařízení <ph name="DEVICE_TYPE" /> nejnovější fotky, média, oznámení a aplikace na odesílání zpráv z telefonu</translation>
 <translation id="6972754398087986839">Začínáme</translation>
 <translation id="6979158407327259162">Disk Google</translation>
 <translation id="6981982820502123353">Usnadnění</translation>

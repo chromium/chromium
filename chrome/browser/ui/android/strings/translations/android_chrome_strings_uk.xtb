@@ -117,7 +117,7 @@
 <translation id="1670399744444387456">Основні параметри</translation>
 <translation id="1671236975893690980">Очікується завантаження…</translation>
 <translation id="1672586136351118594">Більше не показувати</translation>
-<translation id="1680919990519905526">Купівля через Об'єктив <ph name="BEGIN_NEW" />Нове<ph name="END_NEW" /></translation>
+<translation id="1680919990519905526">Купити через Об'єктив <ph name="BEGIN_NEW" />Нове<ph name="END_NEW" /></translation>
 <translation id="1682195225331129001">Спробувати</translation>
 <translation id="1697284962337958118">Додати в</translation>
 <translation id="1702543251015153180">Змінити налаштування темної теми?</translation>
@@ -196,7 +196,6 @@
 <translation id="2141396931810938595">На основі даних про використання</translation>
 <translation id="214888715418183969">Виберіть, до яких даних надати доступ веб-переглядачу Chrome. Ми використовуватимемо їх, щоб покращувати функції, продуктивність і стабільність Chrome.</translation>
 <translation id="2149973817440762519">Редагувати закладку</translation>
-<translation id="2154484045852737596">Редагувати картку</translation>
 <translation id="2157851137955077194">Щоб файли з вашого телефона були доступними на іншому вашому пристрої, увімкніть синхронізацію в налаштуваннях Chrome на обох пристроях</translation>
 <translation id="2158408438301413340">Chrome не вдалося перевірити всі паролі</translation>
 <translation id="2169830938017475061">Зараз</translation>
@@ -694,7 +693,6 @@
 <translation id="5054455334322721892">Коли ви входите в обліковий запис Google, у ньому можуть зберігатися <ph name="BEGIN_LINK1" />дані про інші дії<ph name="END_LINK1" />. Ви можете будь-коли видалити їх.</translation>
 <translation id="5061533557687621530">Щоб дізнатися погоду, торкніться значка мікрофона й скажіть "Яка сьогодні погода?"</translation>
 <translation id="506254248375231072">Немає вкладок</translation>
-<translation id="5087580092889165836">Додати картку</translation>
 <translation id="5091199029769593641">Незабаром, відкривши нову вкладку, ви будете бачити історії із сайту <ph name="SITE_NAME" />. Сайти, на які ви підписалися, зберігаються в обліковому записі Google. Керувати ними можна в налаштуваннях рекомендацій.</translation>
 <translation id="5091249083535528968">Розширені дані про використання</translation>
 <translation id="509429900233858213">Сталася помилка.</translation>
@@ -741,7 +739,7 @@
 <translation id="5355191726083956201">Покращений захист увімкнено</translation>
 <translation id="5368227114232678694">Щоб працювати на цьому пристрої в Інтернеті приватно, спробуйте анонімний режим</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> відкрита вкладка: натисніть, щоб перейти на іншу вкладку}one{<ph name="OPEN_TABS_MANY" /> відкрита вкладка: натисніть, щоб перейти на іншу вкладку}few{<ph name="OPEN_TABS_MANY" /> відкриті вкладки: натисніть, щоб перейти на іншу вкладку}many{<ph name="OPEN_TABS_MANY" /> відкритих вкладок: натисніть, щоб перейти на іншу вкладку}other{<ph name="OPEN_TABS_MANY" /> відкритої вкладки: натисніть, щоб перейти на іншу вкладку}}</translation>
-<translation id="5375577065097716013">Пошук через Об'єктив <ph name="BEGIN_NEW" />Нове<ph name="END_NEW" /></translation>
+<translation id="5375577065097716013">Шукати через Об'єктив <ph name="BEGIN_NEW" />Нове<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Дозволити лише певні сайти</translation>
 <translation id="5409881200985013443">Надіслати код <ph name="ONE_TIME_CODE" /> на пристрій "<ph name="CLIENT_NAME" />"?</translation>
 <translation id="5414836363063783498">Підтвердження…</translation>
@@ -1133,7 +1131,7 @@
 <translation id="7514365320538308">Завантажити</translation>
 <translation id="751961395872307827">Немає з’єднання із сайтом</translation>
 <translation id="752220631458524187">Коли завершите, відключіть телефон</translation>
-<translation id="7523960634226602883">Пошук за допомогою камери через Google Об'єктив</translation>
+<translation id="7523960634226602883">Пошук за допомогою камери через Google Об’єктив</translation>
 <translation id="753225086557513863">Заплановано на пізніше</translation>
 <translation id="7562080006725997899">Очищення даних веб-перегляду</translation>
 <translation id="756809126120519699">Дані Chrome видалено</translation>

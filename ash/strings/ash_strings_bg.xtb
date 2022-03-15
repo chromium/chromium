@@ -197,6 +197,7 @@
 <translation id="2132302418721800944">Записване на целия екран</translation>
 <translation id="2135456203358955318">Лупа в прикрепен режим</translation>
 <translation id="2148716181193084225">Днес</translation>
+<translation id="2159930836979502091">Към този раздел</translation>
 <translation id="2170530631236737939">Прекарайте три пръста надолу, за да затворите общия преглед</translation>
 <translation id="219905428774326614">Стартов панел, всички приложения</translation>
 <translation id="2201071101391734388">Скорошна снимка <ph name="INDEX" /> от <ph name="TOTAL_COUNT" />.</translation>
@@ -563,6 +564,7 @@
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 важно известие}other{# важни известия}}</translation>
 <translation id="4450893287417543264">Да не се показва отново</translation>
 <translation id="4451374464530248585">Клавишната комбинация Alt + стрелка надолу се промени. За да използвате клавиша Page Down, натиснете клавиша „<ph name="LAUNCHER_KEY_NAME" />“ + стрелката надолу.</translation>
+<translation id="4455051983450390249">Преглед на известията от телефона ви на вашия <ph name="DEVICE_TYPE" /></translation>
 <translation id="445864333228800152">Добър вечер,</translation>
 <translation id="4458688154122353284">Спиране на записа на екрана</translation>
 <translation id="4471354919263203780">Файловете за разпознаване на говор се изтеглят... <ph name="PERCENT" />%</translation>
@@ -770,6 +772,7 @@
 <translation id="583281660410589416">Неизвестно</translation>
 <translation id="5837036133683224804">Спиране на предаването на <ph name="ROUTE_TITLE" /> към „<ph name="RECEIVER_NAME" />“</translation>
 <translation id="584525477304726060">Задръжте за увеличаване</translation>
+<translation id="5856638668464565213"><ph name="NETWORK_NAME" /> не е активирана.</translation>
 <translation id="5860033963881614850">Изключено</translation>
 <translation id="5860491529813859533">Включване</translation>
 <translation id="5867217927013474703">Събира се информация за мрежата</translation>
@@ -801,6 +804,7 @@
 <translation id="602472752137106327">Показват се прозорците от всички работни кътове, активиран е бутон за избор</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />, управлява се от администратора ви</translation>
 <translation id="6027518778343897451">Няма събития на <ph name="CURRENT_MONTH_DAY" />. Натиснете Enter, за да отворите Google Календар в браузъра.</translation>
+<translation id="6027952026115023659">Достъп до приложенията за съобщения от телефона ви на вашия <ph name="DEVICE_TYPE" /></translation>
 <translation id="6030495522958826102">Менюто е преместено в долния ляв ъгъл на екрана.</translation>
 <translation id="6032620807120418574">Кликнете върху произволно място, за да се записва целият екран</translation>
 <translation id="6040071906258664830">Записването от микрофона е <ph name="STATE" /></translation>
@@ -944,6 +948,7 @@
 <translation id="6961121602502368900">Функцията за заглушаване на телефона не е налице в служебни потребителски профили</translation>
 <translation id="6961840794482373852">Клавишната комбинация Alt + стрелка нагоре се промени. За да използвате клавиша Page Up, натиснете клавиша „<ph name="LAUNCHER_KEY_NAME" />“ + стрелката нагоре.</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6967933908874208731">Преглед на скорошните снимки, мултимедийни файлове, известия и приложения за съобщения от телефона ви на вашия <ph name="DEVICE_TYPE" /></translation>
 <translation id="6972754398087986839">Първи стъпки</translation>
 <translation id="6979158407327259162">Google Диск</translation>
 <translation id="6981982820502123353">Достъпност</translation>

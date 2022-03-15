@@ -825,6 +825,7 @@
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" />-lyd</translation>
 <translation id="8045462269890919536">Rumensk</translation>
 <translation id="8049184478152619004">Skriv inn PUK-kode</translation>
+<translation id="807187749540895545">Pakker ut <ph name="FILE_NAME" /> …</translation>
 <translation id="8079530767338315840">Gjenta</translation>
 <translation id="8087576439476816834">Last ned, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Delt med meg</translation>
@@ -876,6 +877,7 @@
 <translation id="8484284835977497781">Velg blant nylige bilder.</translation>
 <translation id="8487700953926739672">Tilgjengelig utenfor nettet</translation>
 <translation id="8492972329130824181">Hjemmenettverket er ikke tilgjengelig. Mobildata-roaming må være påslått for at du skal kunne koble til.</translation>
+<translation id="8499098729323186194">Pakker ut <ph name="NUMBER_OF_ITEMS" /> elementer …</translation>
 <translation id="8521441079177373948">Britisk</translation>
 <translation id="8525306231823319788">Full skjerm</translation>
 <translation id="853494022971700746">Fransk (Frankrike)</translation>

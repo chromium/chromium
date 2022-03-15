@@ -1344,6 +1344,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2278562042389100163">Maak blaaiervenster oop</translation>
 <translation id="2278668501808246459">Begin tans die houerbestuurder</translation>
 <translation id="2280486287150724112">Regterkantlyn</translation>
+<translation id="2281863813036651454">Linkermuisklik</translation>
 <translation id="2282146716419988068">GPU-proses</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{Maak almal in &amp;nuwe oortjiegroep oop}=1{Maak in &amp;nuwe oortjiegroep oop}other{Maak almal ({COUNT}) in &amp;nuwe oortjiegroep oop}}</translation>
 <translation id="2285942871162473373">Kon nie jou vingerafdruk herken nie. Probeer weer.</translation>
@@ -3976,10 +3977,6 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="4918086044614829423">Aanvaar</translation>
 <translation id="4918134162946436591">Wys wenkoorlegger</translation>
 <translation id="4921348630401250116">Teks-na-spraak</translation>
-<translation id="4921809350408880559">Jy sien tans jou onlangse en voorgestelde dokumente gegrond op jou vorige aktiwiteit met Google Drive.
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        Kom <ph name="BEGIN_LINK" />hier<ph name="END_LINK" /> meer te wete oor die data wat Google Drive insamel, en hoekom.</translation>
 <translation id="492299503953721473">Verwyder Android-programme</translation>
 <translation id="492363500327720082">Deïnstalleer tans <ph name="APP_NAME" /> …</translation>
 <translation id="4924002401726507608">Dien terugvoer in</translation>
@@ -5166,6 +5163,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6129938384427316298">Netscape-sertifikaatkommentaar</translation>
 <translation id="6129953537138746214">Spasie</translation>
 <translation id="6130692320435119637">Voeg Wi-Fi by</translation>
+<translation id="6130887916931372608">Sleutelbordsleutel</translation>
 <translation id="6136114942382973861">Maak aflaaibalk toe</translation>
 <translation id="6136287496450963112">Jou sekuriteitsleutel word nie met 'n PIN beskerm nie. As jy vingerafdrukke wil bestuur, moet jy eers 'n PIN skep.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA-handtekening met SHA-384</translation>
@@ -6199,7 +6197,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7191159667348037">Onbekende drukker (USB)</translation>
 <translation id="7193051357671784796">Hierdie program is deur jou organisasie bygevoeg. Herbegin die program om installering te voltooi.</translation>
 <translation id="7193374945610105795">Geen wagwoorde vir <ph name="ORIGIN" /> is gestoor nie</translation>
-<translation id="7196020411877309443">Hoekom sien ek dit?</translation>
 <translation id="7196913789568937443">Rugsteun in Google Drive. Stel jou data maklik terug of wissel enige tyd tussen toestelle. Jou rugsteun sluit programdata in. Jou rugsteune word in Google opgelaai en met jou Google-rekeningwagwoord geënkripteer. <ph name="BEGIN_LINK1" />Kom meer te wete<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Kry Google Search en Google-slimhede elke keer wanneer jy blaai</translation>
 <translation id="719791532916917144">Sleutelbordkortpad</translation>
@@ -6781,6 +6778,7 @@ Druk 'n toegewese skakelaar of sleutel om toewysing te verwyder.</translation>
 <translation id="7768770796815395237">Verander</translation>
 <translation id="7768784765476638775">Hardoplees</translation>
 <translation id="7770406201819593386">Laat loop diagnostiese toetse vir Chrome OS Flex.</translation>
+<translation id="7770450735129978837">Regtermuisklik</translation>
 <translation id="7770612696274572992">Prent is van ander toestel af gekopieer</translation>
 <translation id="7771452384635174008">Uitleg</translation>
 <translation id="7772032839648071052">Bevestig wagfrase</translation>
@@ -7365,10 +7363,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8338952601723052325">Ontwikkelaarwebwerf</translation>
 <translation id="8339059274628563283"><ph name="SITE" /> se data wat plaaslik geberg is</translation>
 <translation id="833986336429795709">Kies 'n program om hierdie skakel oop te maak</translation>
-<translation id="8340768003824753944">Jou herinneringe van Google Foto's af word hier gewys. Net jy kan hulle sien, wanneer ook al jy aangemeld is.
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        Bestuur wat jy in jou herinneringe sien by <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" />.</translation>
 <translation id="8342221978608739536">Het nie probeer nie</translation>
 <translation id="8342861492835240085">Kies 'n versameling</translation>
 <translation id="8347227221149377169">Druktake</translation>

@@ -3977,10 +3977,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4918086044614829423">Accepter</translation>
 <translation id="4918134162946436591">Vis overlejring med hint</translation>
 <translation id="4921348630401250116">Oplæsning</translation>
-<translation id="4921809350408880559">Du ser dine seneste og foreslåede dokumenter på baggrund af din tidligere aktivitet i Google Drev.
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        Få flere oplysninger om de data, Google Drev indsamler, og hvorfor Google Drev indsamler dem, <ph name="BEGIN_LINK" />her<ph name="END_LINK" />.</translation>
 <translation id="492299503953721473">Fjern Android-apps</translation>
 <translation id="492363500327720082">Afinstallerer <ph name="APP_NAME" />…</translation>
 <translation id="4924002401726507608">Indsend feedback</translation>
@@ -6199,7 +6195,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="7191159667348037">Ukendt printer (USB)</translation>
 <translation id="7193051357671784796">Din app blev tilføjet af din organisation. Genstart appen for at afslutte installationen.</translation>
 <translation id="7193374945610105795">Der er ikke gemt nogen adgangskoder til <ph name="ORIGIN" /></translation>
-<translation id="7196020411877309443">Hvorfor får jeg vist dette?</translation>
 <translation id="7196913789568937443">Sikkerhedskopiér til Google Drev. Du kan til enhver tid gendanne dine data eller skifte til en anden enhed. Backups omfatter appdata og uploades til Google og krypteres ved hjælp af adgangskoden til din Google-konto. <ph name="BEGIN_LINK1" />Få flere oplysninger<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Få adgang til Google Søgning og Google-intelligens, hver gang du browser</translation>
 <translation id="719791532916917144">Tastaturgenvej</translation>
@@ -6964,6 +6959,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7946586320617670168">Oprindelsen skal være sikker</translation>
 <translation id="794676567536738329">Bekræft tilladelser</translation>
 <translation id="7947962633355574091">K&amp;opiér webadressen til videoen</translation>
+<translation id="7947964080535614577">Websites viser normalt annoncer, så de kan levere indhold eller tjenester uden omkostninger. Nogle websites er dog kendt for at vise påtrængende eller vildledende annoncer.</translation>
 <translation id="7948407723851303488">Alle sider på <ph name="DOMAIN_NAME" /></translation>
 <translation id="7951265006188088697">Gå til din <ph name="BEGIN_LINK" />Google-konto<ph name="END_LINK" /> for at tilføje eller administrere Google Pay-betalingsmetoder</translation>
 <translation id="7952708427581814389">Websites kan anmode om tilladelse til at se tekst og billeder i din udklipsholder</translation>
@@ -7364,10 +7360,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8338952601723052325">Udviklerens website</translation>
 <translation id="8339059274628563283">Data fra <ph name="SITE" />, der er gemt lokalt</translation>
 <translation id="833986336429795709">Vælg en app for at åbne dette link</translation>
-<translation id="8340768003824753944">Dine minder fra Google Fotos vises her. De kan kun ses af dig, og kun når du er logget ind.
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        Administrer, hvilke minder der skal vises, på <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" />.</translation>
 <translation id="8342221978608739536">Jeg prøvede ikke</translation>
 <translation id="8342861492835240085">Vælg en samling</translation>
 <translation id="8347227221149377169">Udskriftsjobs</translation>

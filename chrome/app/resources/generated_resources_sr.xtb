@@ -1328,6 +1328,7 @@
 <translation id="2278562042389100163">Отварање прозора прегледача</translation>
 <translation id="2278668501808246459">Покреће се менаџер контејнера</translation>
 <translation id="2280486287150724112">Десна маргина</translation>
+<translation id="2281863813036651454">Клик на леви тастер миша</translation>
 <translation id="2282146716419988068">GPU процес</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{Отвори све у &amp;новој групи картица}=1{Отвори у &amp;новој групи картица}one{Отвори све ({COUNT}) у &amp;новој групи картица}few{Отвори све ({COUNT}) у &amp;новој групи картица}other{Отвори све ({COUNT}) у &amp;новој групи картица}}</translation>
 <translation id="2285942871162473373">Нисмо успели да препознамо отисак прста. Пробајте поново.</translation>
@@ -3959,10 +3960,6 @@
 <translation id="4918086044614829423">Прихвати</translation>
 <translation id="4918134162946436591">Прикажи преклопни савет</translation>
 <translation id="4921348630401250116">Претварање текста у говор</translation>
-<translation id="4921809350408880559">Недавни и предложени документи вам се приказују на основу претходних активности помоћу Google диска.
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        Сазнајте више о подацима које Google диск прикупља и разлозима за њихово прикупљање <ph name="BEGIN_LINK" />овде<ph name="END_LINK" />.</translation>
 <translation id="492299503953721473">Уклони Android апликације</translation>
 <translation id="492363500327720082">Деинсталира се <ph name="APP_NAME" />…</translation>
 <translation id="4924002401726507608">Пошаљите повратне информације</translation>
@@ -5148,6 +5145,7 @@
 <translation id="6129938384427316298">Коментар Netscape сертификата</translation>
 <translation id="6129953537138746214">Размак</translation>
 <translation id="6130692320435119637">Додај WiFi</translation>
+<translation id="6130887916931372608">Тастер тастатуре</translation>
 <translation id="6136114942382973861">Затвори траку са преузимањима</translation>
 <translation id="6136287496450963112">Безбедносни кључ није заштићен PIN-ом. Да бисте управљали отисцима прстију, прво направите PIN.</translation>
 <translation id="6138680304137685902">Потпис X9.62 ECDSA путем SHA-384</translation>
@@ -6181,7 +6179,6 @@
 <translation id="7191159667348037">Непознат штампач (USB)</translation>
 <translation id="7193051357671784796">Ову апликацију је додала ваша организација. Поново је покрените да бисте завршили инсталацију.</translation>
 <translation id="7193374945610105795">Ниједна лозинка није сачувана за <ph name="ORIGIN" /></translation>
-<translation id="7196020411877309443">Зашто видим ово?</translation>
 <translation id="7196913789568937443">Правите резервне копије на Google диску. Лако враћајте податке или мењајте уређаје у било ком тренутку. Резервна копија обухвата податке апликација. Резервне копије се отпремају на Google и шифрују помоћу лозинке за Google налог. <ph name="BEGIN_LINK1" />Сазнајте више<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Добијте Google претрагу и Google паметне функције сваки пут када прегледате</translation>
 <translation id="719791532916917144">Тастерска пречица</translation>
@@ -6763,6 +6760,7 @@
 <translation id="7768770796815395237">Промените</translation>
 <translation id="7768784765476638775">Изаберите за говор</translation>
 <translation id="7770406201819593386">Покрените Chrome OS Flex дијагностичке тестове.</translation>
+<translation id="7770450735129978837">Клик на десни тастер миша</translation>
 <translation id="7770612696274572992">Слика је копирана са неког другог уређаја</translation>
 <translation id="7771452384635174008">Распоред</translation>
 <translation id="7772032839648071052">Потврди приступну фразу</translation>
@@ -7347,10 +7345,6 @@
 <translation id="8338952601723052325">Веб-сајт програмера</translation>
 <translation id="8339059274628563283">Локално сачувани подаци са сајта <ph name="SITE" /></translation>
 <translation id="833986336429795709">Изаберите апликацију да бисте отворили овај линк</translation>
-<translation id="8340768003824753944">Овде се приказују ваше успомене из Google слика. Само их ви видите сваки пут када сте пријављени.
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        Управљајте садржајем који видите у успоменама на <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" />.</translation>
 <translation id="8342221978608739536">Нисам покушао/ла</translation>
 <translation id="8342861492835240085">Изаберите колекцију</translation>
 <translation id="8347227221149377169">Задаци штампања</translation>

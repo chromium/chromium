@@ -454,6 +454,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2310021320168182093">Chou2 (Envelope)</translation>
 <translation id="2316887270356262533">Esta acción libera menos de 1 MB. Es posible que algunos sitios se carguen más lento en tu próxima visita.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> requiere un nombre de usuario y una contraseña.</translation>
+<translation id="2318594867107319532">Marca de tiempo de la última política:</translation>
 <translation id="2328651992442742497">Se permite (predeterminado).</translation>
 <translation id="2329182534073751090">ubicación de ventanas</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, fecha de vencimiento: <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -1653,6 +1654,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6157754950574419155">Quitar todo del historial</translation>
 <translation id="6157877588268064908">Para ver los requisitos y métodos de envío, selecciona una dirección</translation>
 <translation id="6165508094623778733">Más información</translation>
+<translation id="6167577165590485365">Último intento de recuperación:</translation>
 <translation id="6169916984152623906">Ahora puedes navegar con privacidad. Si otras personas usan este dispositivo, no verán tu actividad. Sin embargo, se guardarán las descargas y los favoritos.</translation>
 <translation id="6177128806592000436">Tu conexión con este sitio no es segura</translation>
 <translation id="6180316780098470077">Intervalo entre reintentos</translation>

@@ -197,6 +197,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2132302418721800944">Grava la pantalla completa</translation>
 <translation id="2135456203358955318">Lupa acoblada</translation>
 <translation id="2148716181193084225">Avui</translation>
+<translation id="2159930836979502091">Ves a aquesta pestanya</translation>
 <translation id="2170530631236737939">Fes lliscar tres dits cap avall per sortir de Visió general</translation>
 <translation id="219905428774326614">Menú d'aplicacions, totes les aplicacions</translation>
 <translation id="2201071101391734388">Foto recent <ph name="INDEX" /> de <ph name="TOTAL_COUNT" />.</translation>
@@ -563,6 +564,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 notificació important}other{# notificacions importants}}</translation>
 <translation id="4450893287417543264">No ho tornis a mostrar</translation>
 <translation id="4451374464530248585">La tecla de drecera Alt+fletxa avall ha canviat. Per fer servir la tecla d'avançar pàgina, prem la tecla <ph name="LAUNCHER_KEY_NAME" />+fletxa avall.</translation>
+<translation id="4455051983450390249">Consulta les notificacions del telèfon al teu <ph name="DEVICE_TYPE" /></translation>
 <translation id="445864333228800152">Bon vespre,</translation>
 <translation id="4458688154122353284">Atura la gravació de pantalla</translation>
 <translation id="4471354919263203780">S'estan baixant els fitxers de reconeixement de parla... <ph name="PERCENT" />%</translation>
@@ -734,6 +736,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Prem Ctrl+Alt+Z per desactivar els avisos de veu.</translation>
 <translation id="5601503069213153581">PIN</translation>
+<translation id="5618148318840095371">T'hem canviat a una xarxa millor</translation>
 <translation id="5619862035903135339">La política de l'administrador desactiva la captura de pantalla</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Connector per al micròfon</translation>
@@ -769,6 +772,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="583281660410589416">Desconegut</translation>
 <translation id="5837036133683224804">Atura <ph name="ROUTE_TITLE" /> a <ph name="RECEIVER_NAME" /></translation>
 <translation id="584525477304726060">Mantén premut per maximitzar</translation>
+<translation id="5856638668464565213"><ph name="NETWORK_NAME" /> no s'ha activat.</translation>
 <translation id="5860033963881614850">Desactivat</translation>
 <translation id="5860491529813859533">Activa</translation>
 <translation id="5867217927013474703">S'està recollint informació de les xarxes</translation>
@@ -800,6 +804,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="602472752137106327">Mostra les finestres de tots els escriptoris amb el botó d'opció seleccionat</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" /> d'intensitat del senyal, gestionada per l'administrador</translation>
 <translation id="6027518778343897451">El dia <ph name="CURRENT_MONTH_DAY" /> no hi ha cap esdeveniment. Prem Retorn per obrir Google Calendar al navegador.</translation>
+<translation id="6027952026115023659">Accedeix a les aplicacions de missatgeria del telèfon al teu <ph name="DEVICE_TYPE" /></translation>
 <translation id="6030495522958826102">El menú s'ha mogut a l'extrem inferior esquerre de la pantalla.</translation>
 <translation id="6032620807120418574">Fes clic en qualsevol lloc per gravar la pantalla completa</translation>
 <translation id="6040071906258664830">Grava el micròfon <ph name="STATE" /></translation>
@@ -943,6 +948,7 @@ Instal·lació nova</translation>
 <translation id="6961121602502368900">Silencia el telèfon no està disponible al perfil de treball</translation>
 <translation id="6961840794482373852">La tecla de drecera Alt+fletxa amunt ha canviat. Per fer servir la tecla de retrocedir pàgina, prem la tecla <ph name="LAUNCHER_KEY_NAME" />+fletxa amunt.</translation>
 <translation id="6965382102122355670">D'acord</translation>
+<translation id="6967933908874208731">Consulta les aplicacions de missatgeria, les notificacions, els fitxers multimèdia i les fotos recents del telèfon al teu <ph name="DEVICE_TYPE" /></translation>
 <translation id="6972754398087986839">Comença</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">Accessibilitat</translation>

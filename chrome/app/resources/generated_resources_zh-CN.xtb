@@ -40,6 +40,7 @@
 <translation id="1041175011127912238">该页面未响应</translation>
 <translation id="1041263367839475438">可用的设备</translation>
 <translation id="1042174272890264476">您的计算机还内置了 <ph name="SHORT_PRODUCT_NAME" /> 的 RLZ 库。RLZ 会指定非唯一、非个人身份识别代码来衡量某推广活动所带来的搜索量和 <ph name="SHORT_PRODUCT_NAME" /> 使用量。这些标签有时会显示在 <ph name="PRODUCT_NAME" /> 的 Google 搜索查询中。</translation>
+<translation id="1043505821207197890">出了点问题。Linux 可能只能完成部分升级。请查看日志了解详情。日志已保存在“文件”&gt;“我的文件”&gt;“<ph name="LOG_FILE" />”中</translation>
 <translation id="1043818413152647937">要一并清除以下应用内的数据吗？</translation>
 <translation id="1043824690776631483">您需获得许可才能访问此网站，因为它可能含有不当内容。</translation>
 <translation id="104710386808485638">重启 Linux？</translation>
@@ -270,6 +271,7 @@
 <translation id="1258491128795710625">新变化</translation>
 <translation id="1259152067760398571">昨天运行过安全检查</translation>
 <translation id="1260451001046713751">始终允许 <ph name="HOST" /> 显示弹出式窗口和进行重定向</translation>
+<translation id="1260810365552581339">Linux 可能没有足够的磁盘可用空间。您可在<ph name="LINK_START" />设置<ph name="LINK_END" />中增加 Linux 磁盘可用空间并再次尝试恢复。</translation>
 <translation id="1261380933454402672">小改</translation>
 <translation id="126156426083987769">演示模式设备许可出问题了。</translation>
 <translation id="1263231323834454256">阅读清单</translation>
@@ -612,6 +614,7 @@
 <translation id="1603411913360944381">清除“<ph name="DEVICE_NAME" />”</translation>
 <translation id="1603914832182249871">（无痕）</translation>
 <translation id="1604432177629086300">无法打印。请检查打印机，然后重试。</translation>
+<translation id="1604774728851271529">您需要连接到网络才能升级 Linux。请连接到互联网，然后重试。</translation>
 <translation id="1605744057217831567">查看所有网站数据和权限</translation>
 <translation id="1606077700029460857">更改鼠标设置</translation>
 <translation id="1606566847233779212">移除您添加的特定网站？</translation>
@@ -1026,6 +1029,7 @@
 <translation id="1989903373608997757">始终使用</translation>
 <translation id="1990046457226896323">实时字幕文件已下载完毕</translation>
 <translation id="1990512225220753005">不在本页上显示快捷方式</translation>
+<translation id="1990727803345673966">正在恢复您备份的 Linux 文件和应用</translation>
 <translation id="199191324030140441">关闭“勿扰”模式</translation>
 <translation id="1992397118740194946">未设置</translation>
 <translation id="1992924914582925289">从设备中移除</translation>
@@ -1100,6 +1104,7 @@
 <translation id="2071393345806050157">没有本地日志文件。</translation>
 <translation id="2071692954027939183">由于您通常不允许显示通知，系统已自动屏蔽通知</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{点击即可安装该扩展程序}other{点击即可安装这些扩展程序}}</translation>
+<translation id="2073496667646280609">您的设备或所选备份位置可能没有足够的可用存储空间。请尝试释放一些空间，或者改为备份到别处。</translation>
 <translation id="2073505299004274893">字符数不得超过 <ph name="CHARACTER_LIMIT" /> 个</translation>
 <translation id="2075474481720804517">电池电量：<ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="2075959085554270910">可让您启用/停用“点按即点击”功能和“点按拖动”功能</translation>
@@ -1627,6 +1632,7 @@
 <translation id="2568774940984945469">信息栏容器</translation>
 <translation id="2571655996835834626">更改您用于控制以下权限的设置：网站对 Cookie、JavaScript、插件、地理位置信息、麦克风、摄像头等功能的使用权限。</translation>
 <translation id="2572032849266859634">已授予对 <ph name="VOLUME_NAME" />的只读权限。</translation>
+<translation id="2573417407488272418">在升级之前，将应用和文件备份到“文件”&gt;“我的文件”。</translation>
 <translation id="2573831315551295105">为“<ph name="ACTION" />”操作分配开关</translation>
 <translation id="2575247648642144396">仅当此扩展程序能够对当前网页采取操作时，该图标才会显示。要使用此扩展程序，请点击该图标或按 <ph name="EXTENSION_SHORTCUT" />。</translation>
 <translation id="2575441894380764255">不允许展示侵扰性或误导性广告</translation>
@@ -1942,6 +1948,7 @@
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> 将立即重新启动并重置</translation>
 <translation id="2885378588091291677">任务管理器</translation>
 <translation id="2885729872133513017">对服务器响应进行解码时出问题了。</translation>
+<translation id="2886119409731773154">此过程最多可能需要 30 分钟</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692">设备“<ph name="DEVICE" />”以及另外 <ph name="NUMBER_OF_DEVICES" /> 部</translation>
 <translation id="2889064240420137087">链接打开方式...</translation>
@@ -2204,6 +2211,7 @@
 <translation id="3151562827395986343">清除浏览记录、Cookie、缓存及其他数据</translation>
 <translation id="3151616662954589507">自拍摄像头</translation>
 <translation id="3151786313568798007">方向</translation>
+<translation id="3152356229013609796">查看、关闭和回复手机中收到的通知</translation>
 <translation id="3154429428035006212">离线超过 1 个月</translation>
 <translation id="3157387275655328056">添加到阅读清单</translation>
 <translation id="3157931365184549694">恢复</translation>
@@ -2887,6 +2895,7 @@
 <translation id="3831436149286513437">Google 云端硬盘搜索建议</translation>
 <translation id="3834728400518755610">您必须关闭 Linux 才能更改麦克风设置。请关闭 Linux 以继续操作。</translation>
 <translation id="3834775135533257713">无法添加应用“<ph name="TO_INSTALL_APP_NAME" />”，因为它与“<ph name="INSTALLED_APP_NAME" />”冲突。</translation>
+<translation id="3835904559946595746">无法恢复 Linux 备份</translation>
 <translation id="383669374481694771">这是关于此设备及其使用情况（例如电池电量、系统与应用活动以及错误）的一般信息。我们会使用这些数据来改善 Android，部分汇总信息还会有助于改善 Google 应用，并会协助我们的合作伙伴（例如 Android 开发者）改善其应用和产品。</translation>
 <translation id="3838085852053358637">未能成功加载扩展程序</translation>
 <translation id="3838486795898716504">更多“<ph name="PAGE_TITLE" />”</translation>
@@ -3595,6 +3604,7 @@
 <translation id="4562155214028662640">添加指纹</translation>
 <translation id="4563210852471260509">初始输入语言是中文</translation>
 <translation id="4563880231729913339">手指 3</translation>
+<translation id="4564245002465020751">在手机上完成设置</translation>
 <translation id="4565377596337484307">隐藏密码</translation>
 <translation id="4565917129334815774">存储系统日志</translation>
 <translation id="4566417217121906555">将麦克风静音</translation>
@@ -3766,6 +3776,7 @@
 <translation id="474609389162964566">说“Ok Google”即可启动 Google 助理</translation>
 <translation id="4746351372139058112">信息</translation>
 <translation id="4748783296226936791">网站通常会连接到 HID 设备以实现某些需要使用非标准键盘、游戏控制器和其他设备的功能</translation>
+<translation id="4750185073185658673">请在您的手机上查看另外几项权限。确保手机已开启蓝牙和 Wi-Fi。</translation>
 <translation id="4750394297954878236">建议</translation>
 <translation id="475088594373173692">第 1 位用户</translation>
 <translation id="4756378406049221019">停止/重新加载</translation>
@@ -3937,10 +3948,6 @@
 <translation id="4918086044614829423">接受</translation>
 <translation id="4918134162946436591">显示提示叠加层</translation>
 <translation id="4921348630401250116">文字转语音</translation>
-<translation id="4921809350408880559">您的最新文档和建议文档是系统根据您之前使用 Google 云端硬盘的活动记录向您显示的。
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        如需了解 Google 云端硬盘会收集哪些数据及相应原因，请访问<ph name="BEGIN_LINK" />此处<ph name="END_LINK" />。</translation>
 <translation id="492299503953721473">移除 Android 应用</translation>
 <translation id="492363500327720082">正在卸载 <ph name="APP_NAME" />…</translation>
 <translation id="4924002401726507608">提交反馈</translation>
@@ -4952,6 +4959,7 @@
 <translation id="5957987129450536192">点按您的个人资料图片附近的“随选朗读”图标，然后选择您想听到的内容。</translation>
 <translation id="5959471481388474538">网络不可用</translation>
 <translation id="595959584676692139">如果您想使用该扩展程序，请先重新加载网页</translation>
+<translation id="5960410286721553511">查看手机中近期拍摄的照片和播放的媒体</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> 个（峰值：<ph name="NUM_KILOBYTES_LIVE" />）</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{在新窗口中打开全部书签(&amp;N)}=1{在新窗口中打开(&amp;N)}other{在新窗口中打开全部（{COUNT} 个）书签(&amp;N)}}</translation>
 <translation id="5965661248935608907">它还能够控制您点击“主页”按钮后或通过多功能框进行搜索时系统显示的页面。</translation>
@@ -5528,6 +5536,7 @@
 <translation id="6541638731489116978">此网站已被禁止使用您的移动传感器。</translation>
 <translation id="6545665334409411530">重复速度</translation>
 <translation id="6545867563032584178">已在 Mac 系统偏好设置中关闭麦克风</translation>
+<translation id="6546856949879953071">如需了解详细的升级信息，请参阅“文件”&gt;“我的文件”&gt;“<ph name="LOG_FILE" />”中的已存日志</translation>
 <translation id="6547354035488017500">请至少释放 512 MB 的空间，否则您的设备将无响应。要释放空间，请将文件从设备存储空间中删除。</translation>
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />Google 的位置信息服务会使用 WLAN、移动网络和传感器等来源协助估测您设备所在的位置。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />您随时可在此设备上关闭 Android 位置信息，方法是依次转到“设置”&gt;“应用”&gt;“Google Play 商店”&gt;“管理 Android 偏好设置”&gt;“安全性和位置信息”&gt;“位置信息”。您还可在同一菜单中关闭“Google 位置信息精确度”，以禁止使用 WLAN、移动网络和传感器获取 Android 位置信息。<ph name="END_PARAGRAPH2" /></translation>
@@ -5542,6 +5551,7 @@
 <translation id="655384502888039633"><ph name="USER_COUNT" /> 位用户</translation>
 <translation id="655483977608336153">重试</translation>
 <translation id="6555432686520421228">删除所有用户帐号并重置您的 <ph name="IDS_SHORT_PRODUCT_NAME" /> 设备，使其焕然一新。</translation>
+<translation id="6555604601707417276">已恢复 Linux 备份</translation>
 <translation id="6555810572223193255">目前无法进行清理</translation>
 <translation id="6556477848444788999">该 PIN 码或密码会保护您在此 <ph name="DEVICE_TYPE" /> 上的数据，包括您从手机流式传输的所有内容。</translation>
 <translation id="6556866813142980365">重做</translation>
@@ -5647,6 +5657,7 @@
 <translation id="6663190258859265334">对您的 <ph name="DEVICE_TYPE" /> 执行 Powerwash 操作，使其还原到先前的版本。</translation>
 <translation id="6664237456442406323">很遗憾，您的计算机配置了格式错误的硬件 ID。这导致 Chrome 操作系统无法使用最新的安全修正程序进行更新，以致您的计算机<ph name="BEGIN_BOLD" />很容易遭到恶意攻击<ph name="END_BOLD" />。</translation>
 <translation id="6664774537677393800">打开您的个人资料时出了点问题。请先退出，然后重新登录。</translation>
+<translation id="6666559645296300656">正在取消 Linux 升级</translation>
 <translation id="666731172850799929">在 <ph name="APP_NAME" />中打开</translation>
 <translation id="6670142487971298264">现在可以使用“<ph name="APP_NAME" />”了</translation>
 <translation id="6670767097276846646">某些扩展程序可以向 Chrome 添加搜索引擎</translation>
@@ -5683,6 +5694,7 @@
 <translation id="6700480081846086223">投射 <ph name="HOST_NAME" /></translation>
 <translation id="6701535245008341853">无法获取个人资料。</translation>
 <translation id="6702639462873609204">修改(&amp;E)...</translation>
+<translation id="6703254819490889819">恢复备份</translation>
 <translation id="6706210727756204531">范围</translation>
 <translation id="6707389671160270963">SSL 客户端证书</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> 及另外 1 个标签页}other{<ph name="PAGE_TITLE" /> 及另外 # 个标签页}}</translation>
@@ -5864,6 +5876,7 @@
 <translation id="6883319974225028188">糟糕！系统未能保存设备配置。</translation>
 <translation id="6884474387073389421">确定要删除所选登录数据吗？</translation>
 <translation id="6885771755599377173">系统信息预览</translation>
+<translation id="6886380424988777998">无法升级 Linux</translation>
 <translation id="6886871292305414135">在新标签页中打开链接(&amp;T)</translation>
 <translation id="6889957081990109136">尚未分配开关</translation>
 <translation id="689007770043972343">尝试将其他已打开的标签页拖到您的分组中</translation>
@@ -6006,6 +6019,7 @@
 <translation id="7017219178341817193">添加新网页</translation>
 <translation id="7017354871202642555">无法在创建窗口后设置模式。</translation>
 <translation id="7018275672629230621">读取和更改您的浏览记录</translation>
+<translation id="7019546817926942979">您的设备需要接通电源。升级 Linux 可能会非常耗电。请将您的设备连接到充电器，然后重试。</translation>
 <translation id="7019805045859631636">快</translation>
 <translation id="7022562585984256452">您的主页已设置。</translation>
 <translation id="7025082428878635038">欢迎了解全新的手势导航</translation>
@@ -6059,6 +6073,7 @@
 <translation id="7072010813301522126">快捷方式名称</translation>
 <translation id="7075513071073410194">PKCS #1，带有 RSA 加密的 MD5</translation>
 <translation id="7075625805486468288">管理 HTTPS/SSL 证书和设置</translation>
+<translation id="7076875098323397992">无法开始升级</translation>
 <translation id="7077829361966535409">使用当前代理设置无法加载登录页面。请<ph name="GAIA_RELOAD_LINK_START" />尝试重新登录<ph name="GAIA_RELOAD_LINK_END" />，或者使用不同的<ph name="PROXY_SETTINGS_LINK_START" />代理设置<ph name="PROXY_SETTINGS_LINK_END" />。</translation>
 <translation id="7078120482318506217">所有网络</translation>
 <translation id="708060913198414444">复制音频地址(&amp;O)</translation>
@@ -6151,7 +6166,6 @@
 <translation id="7191159667348037">未知打印机 (USB)</translation>
 <translation id="7193051357671784796">此应用由您所属的组织添加。请重启此应用以完成安装。</translation>
 <translation id="7193374945610105795">未保存任何用于登录 <ph name="ORIGIN" /> 的密码</translation>
-<translation id="7196020411877309443">为何会出现这个窗口？</translation>
 <translation id="7196913789568937443">备份到 Google 云端硬盘。您随时都能轻松地恢复数据或更换设备。您的备份内容会包含应用数据、会上传到 Google 并会使用您的 Google 帐号密码进行加密。<ph name="BEGIN_LINK1" />了解详情<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">每次浏览时都可畅享 Google 搜索功能和 Google 智能工具</translation>
 <translation id="719791532916917144">键盘快捷键</translation>
@@ -6322,6 +6336,7 @@
 <translation id="7377481913241237033">利用代码连接</translation>
 <translation id="7378611153938412599">安全系数低的密码容易被人猜到。请务必设置安全系数高的密码。<ph name="BEGIN_LINK" />查看更多安全提示<ph name="END_LINK" />。</translation>
 <translation id="73786666777299047">打开 Chrome 网上应用店</translation>
+<translation id="7380459290951585794">请确保您的手机就在附近、处于解锁状态，且已开启蓝牙和 Wi-Fi</translation>
 <translation id="7380622428988553498">设备名称包含无效字符</translation>
 <translation id="7380768571499464492">已更新<ph name="PRINTER_NAME" /></translation>
 <translation id="73843634555824551">输入法和键盘</translation>
@@ -6625,6 +6640,7 @@
 <translation id="7668002322287525834">{NUM_WEEKS,plural, =1{请在 {NUM_WEEKS} 周内退还 <ph name="DEVICE_TYPE" />}other{请在 {NUM_WEEKS} 周内退还 <ph name="DEVICE_TYPE" />}}</translation>
 <translation id="7668423670802040666">在 <ph name="ACCOUNT" /> 的 Google 密码管理器中</translation>
 <translation id="7669825497510425694">{NUM_ATTEMPTS,plural, =1{PIN 码不正确。您还剩 1 次尝试机会。}other{PIN 码不正确。您还剩 # 次尝试机会。}}</translation>
+<translation id="7670434942695515800">为了获得最佳性能，请升级到最新版本。建议您备份文件，以防无法完成升级。一旦开始升级，Linux 即会关闭。请先保存已打开的文件，然后再继续。<ph name="LINK_START" />了解详情<ph name="LINK_END" /></translation>
 <translation id="7671130400130574146">使用系统标题栏和边框</translation>
 <translation id="767127784612208024">轻触以确认重置</translation>
 <translation id="767147716926917172">自动向 Google 发送诊断数据和使用情况数据</translation>
@@ -6886,6 +6902,7 @@
 <translation id="7920363873148656176"><ph name="ORIGIN" /> 可以查看“<ph name="FILENAME" />”的内容</translation>
 <translation id="7920482456679570420">添加您想让“拼写检查”功能跳过的字词</translation>
 <translation id="7922935920104868876">显示在无痕模式下屏蔽第三方 Cookie 的有关详情</translation>
+<translation id="7923564237306226146">Linux 升级完毕</translation>
 <translation id="7924358170328001543">转发端口时出错</translation>
 <translation id="7925108652071887026">自动填充数据</translation>
 <translation id="792514962475806987">停靠的放大镜的缩放级别：</translation>
@@ -7063,6 +7080,7 @@
 <translation id="8084510406207562688">恢复所有标签页(&amp;E)</translation>
 <translation id="8086015605808120405">正在配置<ph name="PRINTER_NAME" />…</translation>
 <translation id="8086442853986205778">设置<ph name="PRINTER_NAME" /></translation>
+<translation id="8086610718778464681">无法备份 Linux 应用和文件</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{这个文件已加密。请让它的所有者进行解密。}other{这些文件中的部分文件已加密。请让它们的所有者进行解密。}}</translation>
 <translation id="808894953321890993">更改密码</translation>
 <translation id="8090234456044969073">读取您最常访问的网站列表</translation>
@@ -7313,10 +7331,6 @@
 <translation id="8338952601723052325">开发者网站</translation>
 <translation id="8339059274628563283"><ph name="SITE" /> 本地存储的数据</translation>
 <translation id="833986336429795709">要打开此链接，请选择一个应用</translation>
-<translation id="8340768003824753944">此处会显示您的 Google 相册中的“回忆”集锦。只有您可以看到它们，前提是您已登录。
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        您可在 <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> 上管理“回忆”集锦显示的内容。</translation>
 <translation id="8342221978608739536">没试过</translation>
 <translation id="8342861492835240085">选择一个集合</translation>
 <translation id="8347227221149377169">打印任务</translation>
@@ -8245,6 +8259,7 @@
 <translation id="992778845837390402">正在进行 Linux 备份</translation>
 <translation id="993540765962421562">正在安装</translation>
 <translation id="994289308992179865">循环(&amp;L)</translation>
+<translation id="995571563161129624">请注意，如果您关闭 Chromebook 上的通知，手机上的相应通知也会被关闭</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">正在建立安全连接...</translation>
 <translation id="996803490569799917">查看与亲朋好友相聚时刻的回忆集锦</translation>

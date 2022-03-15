@@ -3966,10 +3966,6 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4918086044614829423">Qabul qilish</translation>
 <translation id="4918134162946436591">Ustki bildirgini chiqarish</translation>
 <translation id="4921348630401250116">Matndan nutqqa</translation>
-<translation id="4921809350408880559">Oxirgi va taklif etilgan hujjatlar Google Drive xizmatidagi oldingi harakatlaringiz asosida chiqariladi.
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        Google Drive qaysi axborotlarni olishda davom etishi va buning sababini <ph name="BEGIN_LINK" />shu yerdan<ph name="END_LINK" /> bilib olish mumkin.</translation>
 <translation id="492299503953721473">Android ilovarni olib tashlash</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" /> oʻchirilmoqda...</translation>
 <translation id="4924002401726507608">Fikr-mulohaza yuborish</translation>
@@ -6195,7 +6191,6 @@ maqsadlarida foydalanishi mumkin. Bu ruxsatni myaccount.google.com/activitycontr
 <translation id="7191159667348037">Notanish printer (USB)</translation>
 <translation id="7193051357671784796">Bu ilova tashkilotingiz tomonidan kiritildi. Ilova oʻrnatilishini yakunlash uchun uni oʻchirib yoqing.</translation>
 <translation id="7193374945610105795"><ph name="ORIGIN" /> uchun birorta ham parol saqlanmagan</translation>
-<translation id="7196020411877309443">Bu nima?</translation>
 <translation id="7196913789568937443">Google Drive xizmatiga zaxiralash. Axborotlaringizni osongina tiklashingiz yoki qurilmangizni xohlagan vaqtda almashtirishingiz mumkin. Zaxira ichida ilova ma’lumotlari ham bor. Zaxiralar Google serverlariga yuklanadi va Google hisobingiz paroli bilan shifrlanadi. <ph name="BEGIN_LINK1" />Batafsil axborot<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Qidiruv va boshqa Google xizmatlariga oʻzingizni yaxshiroq tanishtiring</translation>
 <translation id="719791532916917144">Tezkor tugma</translation>
@@ -7362,10 +7357,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8338952601723052325">Dasturchi sayti</translation>
 <translation id="8339059274628563283"><ph name="SITE" /> saytining mahalliy ma’lumotlari</translation>
 <translation id="833986336429795709">Havolani ochish uchun ilova tanlang</translation>
-<translation id="8340768003824753944">Google Photos xizmatidagi Xotiralaringiz shu yerda chiqadi. Hisobingizga kirsangiz, u faqat sizga koʻrinadi.
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        Xotiralarda qaysi rasmlar chiqishini <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> sahifasi orqali boshqarish mumkin.</translation>
 <translation id="8342221978608739536">Sinab koʻrmadim</translation>
 <translation id="8342861492835240085">To‘plamni tanlang</translation>
 <translation id="8347227221149377169">Chop etish vazifalari</translation>

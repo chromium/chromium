@@ -20,6 +20,7 @@
 <translation id="1181037720776840403">Silin</translation>
 <translation id="1195447618553298278">Naməlum xəta.</translation>
 <translation id="1196959502276349371">Versiya <ph name="VERSION" /></translation>
+<translation id="1199355487114804640">Oxudun/Durdurun</translation>
 <translation id="1201402288615127009">Növbəti</translation>
 <translation id="1204296502688602597">DNS Gecikməsi</translation>
 <translation id="123124571410524056">Portal şübhəsi var</translation>
@@ -43,6 +44,7 @@
 <translation id="1413240736185167732">Alınmadı - Filtr xətası</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Açar cütüm var</translation>
+<translation id="1423591390236870726"><ph name="KEY_NAME" /> düyməsi basılmayıb</translation>
 <translation id="1435763214710588005">Hər ay seçilmiş gündə data istifadəsini avtomatik sıfırlayır</translation>
 <translation id="1442433966118452622">Şəkil mənbəyi</translation>
 <translation id="1451536289672181509">Cihaz klaviaturadır.</translation>
@@ -84,6 +86,7 @@
 <translation id="1827738518074806965">İncəsənət qalereyası</translation>
 <translation id="1851218745569890714">Video Konfrans</translation>
 <translation id="1852934301711881861">ChromeOS Flex'i quraşdırın</translation>
+<translation id="1856388568474281774">Aşağı ox</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Avadanlıq versiyası</translation>
 <translation id="1905710495812624430">Maksimum icazə verilən cəhdlər bitdi</translation>
@@ -98,6 +101,7 @@
 <translation id="2016697457005847575">Nasazlıqların aradan qaldırılması addımlarını sınayın</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Digər ayarlar</translation>
+<translation id="2085089206770112532">Displey parlaqlığını azaldın</translation>
 <translation id="2104796393919810494">Təmir tamamlanıb</translation>
 <translation id="2105810540595158374">Cihaz oyun nizamlayıcısıdır.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versiya <ph name="MILESTONE_VERSION" /></translation>
@@ -116,6 +120,7 @@
 <translation id="222447520299472966">Ən azı bir İncəsənət qalereyası albomu seçilməlidir</translation>
 <translation id="2230005943220647148">Selsi</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2240366984605217732">Düzən keçiricisi</translation>
 <translation id="225692081236532131">Aktivləşdirmə statusu</translation>
 <translation id="2287186687001756809">Əlçatan şəkil yoxdur. Foto əlavə etmək üçün <ph name="LINK" /> ünvanına keçin</translation>
 <translation id="2307344026739914387">Cari açar cütündən istifadə edin</translation>
@@ -207,9 +212,11 @@
 <translation id="357889014807611375">limitli Wi-Fi</translation>
 <translation id="3583278742022654445">Siqnal gücü zəifdir. Wi-Fi siqnal mənbəyinə yaxınlaşmağa çalışın.</translation>
 <translation id="3595596368722241419">Batareya doludur</translation>
+<translation id="3600339377155080675">Ekran əks olunması</translation>
 <translation id="3603829704940252505">Avatar</translation>
 <translation id="360565022852130722">WiFi şəbəkəsi zəif protokol WEP 802.1x ilə qorunur</translation>
 <translation id="3606583719724308068">HTTPS veb saytlarında yüksək gecikmə</translation>
+<translation id="3632579075709132555">Məxfilik ekranı keçiricisi</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> testi</translation>
 <translation id="370665806235115550">Yüklənir...</translation>
 <translation id="3708186454126126312">Öncə qoşulmuş cihazlar</translation>
@@ -263,6 +270,7 @@
 <translation id="4289540628985791613">Baxış</translation>
 <translation id="4297501883039923494">Dayanıb - Naməlum xəta</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> şəkil</translation>
+<translation id="4333390807948134856"><ph name="KEY_NAME" /> düyməsi basılıb</translation>
 <translation id="4378373042927530923">İşə salınmayıb</translation>
 <translation id="4378551569595875038">Qoşulur...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -278,6 +286,7 @@
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Qeyri-defolt şəbəkə girişini yoxlamaq alınmadı</translation>
 <translation id="4485626319513081846">Cihaz yeni müştəriyə verilmək üçün ehtiyatda saxlansa və ya yenilənsə, bu seçimi edin.</translation>
+<translation id="4503223151711056411">Sol ox</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Subyektin alternativ adının uyğunluğu</translation>
 <translation id="4536864596629708641">İP Konfiqurasiyası</translation>
@@ -289,10 +298,12 @@
 <translation id="4562494484721939086">Xidmət yoxdur</translation>
 <translation id="458794348635939462">Bütün hostları həll etmək alınmadı</translation>
 <translation id="4593212453765072419">Proksi doğrulama tələb olunur</translation>
+<translation id="4609350030397390689">Klaviatura parlaqlığını azaldın</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />. Çap işini ləğv etmək üçün Enter düyməsinə basın.</translation>
 <translation id="4627645661474370390">Məsafədən kimlik</translation>
 <translation id="463791356324567266">Skanlama ləğv edilir...</translation>
 <translation id="4646949265910132906">Güvənli WiFi Bağlantısı</translation>
+<translation id="4650608062294027130">Sağ shift</translation>
 <translation id="4654549501020883054">Gündəlik dəyişdirin</translation>
 <translation id="4665014895760275686">İstehsalçı</translation>
 <translation id="467510802200863975">Parollar üst-üstə düşmür</translation>
@@ -390,8 +401,10 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Yenidən skan edin</translation>
 <translation id="5583640892426849032">Geri silmə</translation>
+<translation id="5600027863942488546"><ph name="KEY_NAME" /> düyməsi test edilib</translation>
 <translation id="5620281292257375798">Yalnız daxili</translation>
 <translation id="5649768706273821470">Dinləyin</translation>
+<translation id="5655283760733841251">Klaviatura parlaqlığını artırın</translation>
 <translation id="5669267381087807207">Aktivləşir</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Ailə</translation>
@@ -399,6 +412,7 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> cihazını güncəlləyin</translation>
 <translation id="5760715441271661976">Portal Vəziyyəti</translation>
+<translation id="576835345334454681">Displey parlaqlığını artırın</translation>
 <translation id="57838592816432529">Səssiz</translation>
 <translation id="5784136236926853061">Yüksək HTTP gecikməsi</translation>
 <translation id="5832805196449965646">Şəxs əlavə edin</translation>
@@ -429,6 +443,7 @@
 <translation id="6104112872696127344">Skanlama ləğv edilib</translation>
 <translation id="6106186594183574873">Tamamlamaq üçün köhnə parolu yazın</translation>
 <translation id="6108689792487843350">Giriş ilə əlaqə saxlamaq olmur</translation>
+<translation id="6113701710518389813">Yuxarı ox</translation>
 <translation id="6122191549521593678">Onlayn</translation>
 <translation id="6137767437444130246">İstifadəçi sertifikatı</translation>
 <translation id="6146993107019042706">Tamamlamaq üçün yeni parolu daxil edin</translation>
@@ -442,6 +457,7 @@
 <translation id="6232017090690406397">Batareya</translation>
 <translation id="6235460611964961764">Data istifadəsini manual olaraq sıfırlayın</translation>
 <translation id="6243280677745499710">Hazırda ayarlanıb</translation>
+<translation id="6275224645089671689">Sağ ox</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> testi ləğv edilib</translation>
@@ -477,6 +493,7 @@
 <translation id="6620487321149975369">Manual olaraq silinməsə, çap işləri tarixçədə görünəcək</translation>
 <translation id="6643016212128521049">Silin</translation>
 <translation id="6647510110698214773">Şifrələmə alqoritmi</translation>
+<translation id="6650062777702288430">Kana/hərf-rəqəm keçiricisi</translation>
 <translation id="6657585470893396449">Parol</translation>
 <translation id="6659594942844771486">Panel</translation>
 <translation id="6692996468359469499">Seçiminizlə bağlı məlumat əldə edin</translation>
@@ -689,6 +706,7 @@
 <translation id="9122602430962285795">Yenidən qoşulmaq üçün Ayarlara keçin</translation>
 <translation id="9126720536733509015">Birdən çox səhifəni bir PDF-də saxlayın</translation>
 <translation id="9137526406337347448">Google Xidmətləri</translation>
+<translation id="9138630967333032450">Sol shift</translation>
 <translation id="9149391708638971077">Yaddaş Testi icra edin</translation>
 <translation id="9173638680043580060">Bir dəqiqədən az qalıb</translation>
 <translation id="917720651393141712">Test</translation>

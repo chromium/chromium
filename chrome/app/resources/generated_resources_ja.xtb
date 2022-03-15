@@ -3950,10 +3950,6 @@
 <translation id="4918086044614829423">同意する</translation>
 <translation id="4918134162946436591">ヒントをオーバーレイ表示する</translation>
 <translation id="4921348630401250116">テキスト読み上げ</translation>
-<translation id="4921809350408880559">最近使用したドキュメントやおすすめのドキュメントは、Google ドライブでの過去のアクティビティに基づいて表示されています。
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        Google ドライブが収集するデータの詳細や理由については、<ph name="BEGIN_LINK" />こちら<ph name="END_LINK" />をご覧ください。</translation>
 <translation id="492299503953721473">Android アプリを削除</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" /> をアンインストールしています...</translation>
 <translation id="4924002401726507608">フィードバックを送信</translation>
@@ -6165,7 +6161,6 @@
 <translation id="7191159667348037">不明なプリンタ（USB）</translation>
 <translation id="7193051357671784796">このアプリは組織によって追加されました。インストールを完了するにはアプリを再起動してください。</translation>
 <translation id="7193374945610105795"><ph name="ORIGIN" /> 用に保存されているパスワードはありません</translation>
-<translation id="7196020411877309443">このウィンドウが表示される理由</translation>
 <translation id="7196913789568937443">Google ドライブにバックアップします。これにより、いつでも簡単にデータを復元したりデバイスを切り替えたりできます。バックアップ対象にはアプリのデータが含まれます。バックアップ データは Google にアップロードされ、Google アカウントのパスワードを使って暗号化されます。<ph name="BEGIN_LINK1" />詳細<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Google 検索や Google の最先端技術をブラウジングで活用できます</translation>
 <translation id="719791532916917144">キーボード ショートカット</translation>
@@ -7330,10 +7325,6 @@
 <translation id="8338952601723052325">デベロッパーのウェブサイト</translation>
 <translation id="8339059274628563283"><ph name="SITE" /> によりデータがローカルに保存されました</translation>
 <translation id="833986336429795709">このリンクを開くにはアプリを選択します</translation>
-<translation id="8340768003824753944">Google フォトの「思い出」の写真がここに表示されます。ログインすれば常に、自分にのみ表示されます。
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        「思い出」に表示される写真は、<ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> で管理できます。</translation>
 <translation id="8342221978608739536">試していない</translation>
 <translation id="8342861492835240085">コレクションを選択</translation>
 <translation id="8347227221149377169">印刷ジョブ</translation>

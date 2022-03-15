@@ -197,6 +197,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2132302418721800944">Regjistro ekranin e plotë</translation>
 <translation id="2135456203358955318">Zmadhuesi i stacionuar</translation>
 <translation id="2148716181193084225">Sot</translation>
+<translation id="2159930836979502091">Shko te kjo skedë</translation>
 <translation id="2170530631236737939">Rrëshqit shpejt poshtë me tre gishta për të dalë nga "Përmbledhja"</translation>
 <translation id="219905428774326614">Launcher, të gjitha aplikacionet</translation>
 <translation id="2201071101391734388">Fotografia e fundit <ph name="INDEX" /> nga <ph name="TOTAL_COUNT" />.</translation>
@@ -563,6 +564,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 njoftim i rëndësishëm}other{# njoftime të rëndësishme}}</translation>
 <translation id="4450893287417543264">Mos e shfaq përsëri</translation>
 <translation id="4451374464530248585">Shkurtorja për Alt + Shigjeta poshtë është ndryshuar. Për të përdorur tastin Page Down, shtyp tastin <ph name="LAUNCHER_KEY_NAME" /> + Shigjeta poshtë.</translation>
+<translation id="4455051983450390249">Shiko njoftimet e telefonit tënd në <ph name="DEVICE_TYPE" /></translation>
 <translation id="445864333228800152">Mirëmbrëma,</translation>
 <translation id="4458688154122353284">Ndalo regjistrimin e ekranit</translation>
 <translation id="4471354919263203780">Po shkarkon skedarët e njohjes së ligjërimit... <ph name="PERCENT" />%</translation>
@@ -734,6 +736,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Shtyp Ctrl + Alt + Z për të çaktivizuar komentet me zë.</translation>
 <translation id="5601503069213153581">Kodi PIN</translation>
+<translation id="5618148318840095371">Të kemi kaluar në një rrjet më të mirë</translation>
 <translation id="5619862035903135339">Politika e administratorit çaktivizon regjistrimin e ekranit</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Fisha e mikrofonit</translation>
@@ -769,6 +772,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="583281660410589416">E panjohur</translation>
 <translation id="5837036133683224804">Ndalo <ph name="ROUTE_TITLE" /> në <ph name="RECEIVER_NAME" /></translation>
 <translation id="584525477304726060">Mbaj për të maksimizuar</translation>
+<translation id="5856638668464565213"><ph name="NETWORK_NAME" /> nuk është aktivizuar.</translation>
 <translation id="5860033963881614850">Çaktivizuar</translation>
 <translation id="5860491529813859533">Aktivizo</translation>
 <translation id="5867217927013474703">Po mblidhet informacioni i rrjetit</translation>
@@ -800,6 +804,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="602472752137106327">Shfaq dritaret nga të gjitha tavolinat e punës, butoni i radios i zgjedhur</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />, menaxhuar nga administratori yt</translation>
 <translation id="6027518778343897451">Nuk ka asnjë ngjarje në <ph name="CURRENT_MONTH_DAY" />. Shtyp tastin Enter për të hapur kalendarin e Google në shfletues.</translation>
+<translation id="6027952026115023659">Qasu te aplikacionet e mesazheve të telefonit tënd në <ph name="DEVICE_TYPE" /></translation>
 <translation id="6030495522958826102">Menyja u zhvendos në këndin poshtë majtas të ekranit.</translation>
 <translation id="6032620807120418574">Kliko diku për të regjistruar ekranin e plotë</translation>
 <translation id="6040071906258664830">Regjistro me mikrofonin: <ph name="STATE" /></translation>
@@ -943,6 +948,7 @@ Instalim i ri</translation>
 <translation id="6961121602502368900">"Vendose telefonin në heshtje" nuk ofrohet në profilin e punës</translation>
 <translation id="6961840794482373852">Shkurtorja e tastierës për Alt + Shigjeta lart është ndryshuar. Për të përdorur tastin Page Up, shtyp tastin <ph name="LAUNCHER_KEY_NAME" /> + Shigjeta lart.</translation>
 <translation id="6965382102122355670">Në rregull</translation>
+<translation id="6967933908874208731">Shiko fotografitë, mediat, njoftimet dhe aplikacionet e fundit të mesazheve të telefonit tënd në <ph name="DEVICE_TYPE" /></translation>
 <translation id="6972754398087986839">Fillo</translation>
 <translation id="6979158407327259162">Disku i Google</translation>
 <translation id="6981982820502123353">Qasja</translation>

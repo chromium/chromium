@@ -1328,6 +1328,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2278562042389100163">Brauzer pəncərəsini açın</translation>
 <translation id="2278668501808246459">Konteyner meneceri başladılır</translation>
 <translation id="2280486287150724112">Sağ kənar boşluq</translation>
+<translation id="2281863813036651454">Mausun sol düyməsinə tıklama</translation>
 <translation id="2282146716419988068">GPU Prosesi</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{Hamısını &amp;yeni tab qrupunda açın}=1{&amp;Yeni tab qrupunda açın}other{Hamısını ({COUNT}) &amp;yeni tab qrupunda açın}}</translation>
 <translation id="2285942871162473373">Barmaq izinizi tanımaq mümkün olmadı. Təkrar cəhd edin.</translation>
@@ -3956,10 +3957,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4918086044614829423">Qəbul edin</translation>
 <translation id="4918134162946436591">İpucu düzənini göstərin</translation>
 <translation id="4921348630401250116">Mətndən nitqə</translation>
-<translation id="4921809350408880559">Google Disk istifadə edərək əvvəlki fəaliyyətinizə əsasən son və təklif olunan sənədlərinizi görürsünüz.
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        Google Disk'in hansı datanı və niyə topladığını <ph name="BEGIN_LINK" />buradan<ph name="END_LINK" /> öyrənə bilərsiniz.</translation>
 <translation id="492299503953721473">Android tətbiqlərini silin</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" /> tətbiqinin quraşdırılması ləğv edilir...</translation>
 <translation id="4924002401726507608">Rəy göndərin</translation>
@@ -5143,6 +5140,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6129938384427316298">Netscape Sertifikat Şərhi</translation>
 <translation id="6129953537138746214">Boşluq</translation>
 <translation id="6130692320435119637">Wi-Fi əlavə edin</translation>
+<translation id="6130887916931372608">Klaviatura düyməsi</translation>
 <translation id="6136114942382973861">Endirilənlər panelini bağlayın</translation>
 <translation id="6136287496450963112">Təhlükəsizlik açarınız PIN ilə qorunmur. Barmaq izlərini idarə etmək üçün əvvəlcə PIN yaradın.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA SHA-384 ilə imza</translation>
@@ -6176,7 +6174,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="7191159667348037">Naməlum Printer (USB)</translation>
 <translation id="7193051357671784796">Bu tətbiqi təşkilatınız əlavə edib. Quraşdırmanı tamamlamaq üçün tətbiqi yenidən başladın.</translation>
 <translation id="7193374945610105795"><ph name="ORIGIN" /> ünvanında heç bir parol yadda saxlanmadı</translation>
-<translation id="7196020411877309443">Nəyə görə bunu görürəm?</translation>
 <translation id="7196913789568937443">Google Diskə yedəkləyin. İstənilən vaxt asanlıqla datanı bərpa edin və ya cihazı dəyişin. Yedəkləməyə tətbiq datası daxildir. Yedəkləmələr Google'a yüklənir və Google Hesab parolu ilə şifrələnir. <ph name="BEGIN_LINK1" />Ətraflı Məlumat<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">İstənilən vaxt axtarış etmək üçün Google Axtarış və Google yenilikləri əldə edin</translation>
 <translation id="719791532916917144">Klaviatura qısayolu</translation>
@@ -6758,6 +6755,7 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7768770796815395237">Dəyişin</translation>
 <translation id="7768784765476638775">Seç və Dinlə</translation>
 <translation id="7770406201819593386">ChromeOS Flex diaqnostik testlərini işə salın.</translation>
+<translation id="7770450735129978837">Mausun sağ düyməsinə tıklama</translation>
 <translation id="7770612696274572992">Şəkil başqa cihazdan kopyalanıb</translation>
 <translation id="7771452384635174008">Düzüm</translation>
 <translation id="7772032839648071052">Parolu təsdiq edin</translation>
@@ -7341,10 +7339,6 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8338952601723052325">Developer veb saytı</translation>
 <translation id="8339059274628563283"><ph name="SITE" /> yerli saxlanılan data</translation>
 <translation id="833986336429795709">Bu linki açmaq üçün tətbiq seçin</translation>
-<translation id="8340768003824753944">Google Foto'dan xatirələriniz burada göstərilir. Daxil olduğunuz zaman onlar yalnız sizə görünür.
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        Xatirələrinizdə gördüklərinizi burada idarə edin: <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" />.</translation>
 <translation id="8342221978608739536">Sınaqdan keçirilmədi</translation>
 <translation id="8342861492835240085">Kolleksiya seçin</translation>
 <translation id="8347227221149377169">Çap işləri</translation>

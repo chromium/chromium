@@ -40,6 +40,7 @@
 <translation id="1041175011127912238">Cette page ne répond pas</translation>
 <translation id="1041263367839475438">Appareils accessibles</translation>
 <translation id="1042174272890264476">Votre ordinateur est fourni avec la bibliothèque RLZ de <ph name="SHORT_PRODUCT_NAME" />. RLZ attribue une étiquette non unique et qui ne permet pas d'identifier des internautes afin de mesurer les recherches et l'utilisation de <ph name="SHORT_PRODUCT_NAME" /> générées par une campagne de promotion particulière. Ces étiquettes s'affichent parfois dans les requêtes de recherche Google dans <ph name="PRODUCT_NAME" />.</translation>
+<translation id="1043505821207197890">Un problème est survenu. La mise à niveau de Linux pourrait ne pas être complète. Consultez les journaux pour en savoir plus. Les journaux ont été enregistrés dans Fichiers &gt; Mes fichiers <ph name="LOG_FILE" /></translation>
 <translation id="1043818413152647937">Effacer également les données issues de ces applications?</translation>
 <translation id="1043824690776631483">Vous devez avoir l'autorisation de consulter ce site. Le contenu peut-être inapproprié.</translation>
 <translation id="104710386808485638">Redémarrer Linux?</translation>
@@ -271,6 +272,7 @@
 <translation id="1258491128795710625">Nouveautés</translation>
 <translation id="1259152067760398571">La vérification de sécurité s'est exécutée hier</translation>
 <translation id="1260451001046713751">Toujours autoriser les fenêtres contextuelles et les redirections de <ph name="HOST" /></translation>
+<translation id="1260810365552581339">L'espace disque du système Linux est peut-être insuffisant. Vous pouvez augmenter l'espace disque de votre système Linux et réessayer la restauration dans <ph name="LINK_START" />Paramètres<ph name="LINK_END" />.</translation>
 <translation id="1261380933454402672">Modérée</translation>
 <translation id="126156426083987769">Un problème avec les licences d'appareils en mode démo est survenu.</translation>
 <translation id="1263231323834454256">Liste de lecture</translation>
@@ -618,6 +620,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1603411913360944381">Dissocier l'appareil <ph name="DEVICE_NAME" /></translation>
 <translation id="1603914832182249871">(Mode privé)</translation>
 <translation id="1604432177629086300">Impossible d'imprimer le fichier. Vérifiez l'imprimante, puis réessayez.</translation>
+<translation id="1604774728851271529">Vous avez besoin d'une connexion réseau pour mettre à niveau Linux. Connectez-vous à Internet et réessayez.</translation>
 <translation id="1605744057217831567">Afficher toutes les autorisations et les données relatives aux sites</translation>
 <translation id="1606077700029460857">Modifier les paramètres de la souris</translation>
 <translation id="1606566847233779212">Voulez-vous retirer les sites que vous avez ajoutés?</translation>
@@ -1034,6 +1037,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1989903373608997757">Toujours utiliser</translation>
 <translation id="1990046457226896323">Les fichiers de synthèse textuelle ont été téléchargés</translation>
 <translation id="1990512225220753005">Ne pas afficher les raccourcis sur cette page</translation>
+<translation id="1990727803345673966">Vos applications et vos fichiers Linux sauvegardés sont en cours de restauration</translation>
 <translation id="199191324030140441">Désactiver la fonctionnalité Ne pas déranger</translation>
 <translation id="1992397118740194946">Non défini</translation>
 <translation id="1992924914582925289">Retirer de l'appareil</translation>
@@ -1108,6 +1112,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2071393345806050157">Pas de journal local.</translation>
 <translation id="2071692954027939183">Les notifications ont été bloquées automatiquement parce que vous ne les autorisez généralement pas</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{Cliquer pour installer l'extension}one{Cliquer pour installer cette extension}other{Cliquer pour installer ces extensions}}</translation>
+<translation id="2073496667646280609">L'espace de stockage de votre appareil ou de l'emplacement de sauvegarde sélectionné est peut-être insuffisant. Essayez de libérer de l'espace ou de choisir un autre emplacement.</translation>
 <translation id="2073505299004274893">Utilisez un maximum de <ph name="CHARACTER_LIMIT" /> caractères</translation>
 <translation id="2075474481720804517">Pile à <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="2075959085554270910">Permet d'activer/de désactiver la fonction Toucher pour cliquer et le déplacement tactile</translation>
@@ -1637,6 +1642,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2568774940984945469">Conteneur de barres d'information</translation>
 <translation id="2571655996835834626">Modifiez les paramètres qui contrôlent l'accès des sites Web aux éléments comme les témoins, le code JavaScript, les plugiciels, la géolocalisation, le microphone, l'appareil photo, etc.</translation>
 <translation id="2572032849266859634">L'accès en lecture seule à <ph name="VOLUME_NAME" /> a été accordé.</translation>
+<translation id="2573417407488272418">Sauvegardez les applications et les fichiers dans Fichiers &gt; Mes fichiers avant la mise à niveau.</translation>
 <translation id="2573831315551295105">Attribuer le commutateur à l'action suivante : « <ph name="ACTION" /> »</translation>
 <translation id="2575247648642144396">Cette icône s'affiche lorsque l'extension peut être utilisée dans la page affichée. Pour utiliser cette extension, cliquez sur l'icône ou appuyez sur <ph name="EXTENSION_SHORTCUT" />.</translation>
 <translation id="2575441894380764255">Non autorisés à afficher des annonces intrusives ou trompeuses</translation>
@@ -1953,6 +1959,7 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> va redémarrer et être réinitialisé dans un instant</translation>
 <translation id="2885378588091291677">Moniteur d'activité</translation>
 <translation id="2885729872133513017">Un problème est survenu lors du décodage de la réponse du serveur.</translation>
+<translation id="2886119409731773154">Cela peut prendre jusqu'à 30 minutes.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692"><ph name="DEVICE" /> et <ph name="NUMBER_OF_DEVICES" /> autres</translation>
 <translation id="2889064240420137087">Ouvrir le lien avec...</translation>
@@ -2215,6 +2222,7 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="3151562827395986343">Effacez l'historique, les témoins, le cache et plus encore</translation>
 <translation id="3151616662954589507">Appareil photo utilisé pour prendre un égoportrait</translation>
 <translation id="3151786313568798007">Orientation</translation>
+<translation id="3152356229013609796">Affichez et ignorez les notifications de votre téléphone, et répondez-y</translation>
 <translation id="3154429428035006212">Hors ligne depuis plus d'un mois</translation>
 <translation id="3157387275655328056">Ajouter à la liste de lecture</translation>
 <translation id="3157931365184549694">Restaurer</translation>
@@ -2898,6 +2906,7 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="3831436149286513437">Suggestions de recherche dans Google Disque</translation>
 <translation id="3834728400518755610">Pour que la modification apportée au microphone soit appliquée, Linux doit être éteint. Éteignez Linux pour continuer.</translation>
 <translation id="3834775135533257713">Impossible d'ajouter l'application « <ph name="TO_INSTALL_APP_NAME" /> », car elle crée un conflit avec « <ph name="INSTALLED_APP_NAME" /> ».</translation>
+<translation id="3835904559946595746">Impossible de restaurer la sauvegarde de Linux</translation>
 <translation id="383669374481694771">Ces données d'ordre général concernent votre appareil et son utilisation (comme le niveau de la pile, les erreurs, ainsi que l'activité du système et des applications). Elles serviront à améliorer la plateforme Android. Certaines données collectées aideront également nos partenaires, tels que les développeurs Android, à améliorer leurs applications et leurs produits.</translation>
 <translation id="3838085852053358637">Échec du chargement de l'extension</translation>
 <translation id="3838486795898716504">Pages suivantes pour <ph name="PAGE_TITLE" /></translation>
@@ -3609,6 +3618,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4562155214028662640">Ajouter une empreinte digitale</translation>
 <translation id="4563210852471260509">Le chinois est la langue d'entrée initiale</translation>
 <translation id="4563880231729913339">Doigt 3</translation>
+<translation id="4564245002465020751">Terminer la configuration sur votre téléphone</translation>
 <translation id="4565377596337484307">Masquer le mot de passe</translation>
 <translation id="4565917129334815774">Stocker les journaux système</translation>
 <translation id="4566417217121906555">Désactiver le microphone</translation>
@@ -3780,6 +3790,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="474609389162964566">Accédez à votre Assistant avec la commande rapide « Ok Google »</translation>
 <translation id="4746351372139058112">Messages</translation>
 <translation id="4748783296226936791">Les sites se connectent généralement aux appareils HID pour accéder aux fonctionnalités permettant d'utiliser des claviers peu courants, des manettes de jeu et d'autres appareils</translation>
+<translation id="4750185073185658673">Accédez à votre téléphone pour passer en revue quelques autorisations supplémentaires. Assurez-vous que le Bluetooth et le Wi-Fi de votre téléphone sont activés.</translation>
 <translation id="4750394297954878236">Suggestions</translation>
 <translation id="475088594373173692">Premier utilisateur</translation>
 <translation id="4756378406049221019">Arrêter/Actualiser</translation>
@@ -3951,10 +3962,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4918086044614829423">Accepter</translation>
 <translation id="4918134162946436591">Afficher la superposition des conseils</translation>
 <translation id="4921348630401250116">Transcription de la voix</translation>
-<translation id="4921809350408880559">Vous voyez vos documents récents et suggérés en fonction de vos activités précédentes sur Google Disque.
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        Pour découvrir quelles données Google Disque collecte et pourquoi, consultez <ph name="BEGIN_LINK" />cette page<ph name="END_LINK" />.</translation>
 <translation id="492299503953721473">Supprimer les applications Android</translation>
 <translation id="492363500327720082">Désinstallation de <ph name="APP_NAME" /> en cours…</translation>
 <translation id="4924002401726507608">Envoyer des commentaires</translation>
@@ -4966,6 +4973,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5957987129450536192">Appuyez sur l'icône Sélectionner pour énoncer à côté de votre image de profil, puis sélectionnez ce que vous voulez entendre.</translation>
 <translation id="5959471481388474538">Le réseau n'est pas accessible</translation>
 <translation id="595959584676692139">Recharger la page pour utiliser cette extension</translation>
+<translation id="5960410286721553511">Affichez les photos et les fichiers multimédias récents de votre téléphone</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (pointe : <ph name="NUM_KILOBYTES_LIVE" />)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Tout ouvrir dans une &amp;nouvelle fenêtre}=1{Ouvrir dans une &amp;nouvelle fenêtre}one{Tout ouvrir ({COUNT}) dans une &amp;nouvelle fenêtre}other{Tout ouvrir ({COUNT}) dans une &amp;nouvelle fenêtre}}</translation>
 <translation id="5965661248935608907">Elle définit également quelle page s'affiche lorsque vous cliquez sur le bouton Accueil ou que vous effectuez une recherche dans l'omnibox.</translation>
@@ -5542,6 +5550,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6541638731489116978">Ce site a été bloqué : il ne peut pas accéder à vos capteurs de mouvement.</translation>
 <translation id="6545665334409411530">Fréquence de répétition</translation>
 <translation id="6545867563032584178">Le microphone est désactivé dans les Préférences Système du Mac</translation>
+<translation id="6546856949879953071">Pour obtenir des informations détaillées sur la mise à niveau, consultez les journaux enregistrés dans Fichiers &gt; Mes fichiers &gt; <ph name="LOG_FILE" /></translation>
 <translation id="6547354035488017500">Libérez au moins 512 Mo d'espace de stockage ou votre appareil ne répondra plus. Pour libérer de l'espace, supprimez des fichiers de l'espace de stockage de votre appareil.</translation>
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />Le service de localisation de Google utilise des sources, comme le Wi-Fi, les réseaux cellulaires et les capteurs de l'appareil, pour vous aider à estimer la position de votre appareil.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Vous pouvez désactiver les données de localisation d'Android sur votre appareil en tout temps en accédant à Paramètres &gt; Applications &gt; Google Play Store &gt; Gérer les préférences Android &gt; Sécurité et localisation &gt; Localisation. Vous pouvez également désactiver l'utilisation des réseaux Wi‑Fi, des réseaux cellulaires et des capteurs pour la localisation d'Android en désactivant « Précision de la localisation Google » dans le même menu.<ph name="END_PARAGRAPH2" /></translation>
@@ -5556,6 +5565,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="655384502888039633"><ph name="USER_COUNT" /> utilisateurs</translation>
 <translation id="655483977608336153">Réessayer</translation>
 <translation id="6555432686520421228">Supprime tous les comptes utilisateur et réinitialise votre appareil <ph name="IDS_SHORT_PRODUCT_NAME" /> qui devient comme neuf.</translation>
+<translation id="6555604601707417276">Sauvegarde Linux restaurée</translation>
 <translation id="6555810572223193255">Le nettoyage n'est pas accessible pour le moment.</translation>
 <translation id="6556477848444788999">Ce NIP ou ce mot de passe protège vos données sur cet <ph name="DEVICE_TYPE" />, y compris le contenu que vous diffusez à partir de votre téléphone.</translation>
 <translation id="6556866813142980365">Rétablir</translation>
@@ -5661,6 +5671,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6663190258859265334">Utilisez la fonction Powerwash sur votre <ph name="DEVICE_TYPE" /> et revenez à la version précédente.</translation>
 <translation id="6664237456442406323">Malheureusement, votre ordinateur est configuré avec un identifiant de matériel invalide, ce qui empêche l'installation des derniers correctifs de sécurité pour Chrome OS. Votre ordinateur <ph name="BEGIN_BOLD" />peut ainsi être vulnérable aux attaques malveillantes<ph name="END_BOLD" />.</translation>
 <translation id="6664774537677393800">Un problème est survenu lors de l'ouverture de votre profil. Veuillez vous déconnecter, puis vous reconnecter.</translation>
+<translation id="6666559645296300656">Annulation de la mise à niveau Linux en cours…</translation>
 <translation id="666731172850799929">Ouvrir dans <ph name="APP_NAME" /></translation>
 <translation id="6670142487971298264">L'application <ph name="APP_NAME" /> est maintenant accessible</translation>
 <translation id="6670767097276846646">Certaines extensions peuvent ajouter des moteurs de recherche à Chrome</translation>
@@ -5697,6 +5708,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6700480081846086223">Envoyer le contenu de <ph name="HOST_NAME" /></translation>
 <translation id="6701535245008341853">Échec de chargement du profil.</translation>
 <translation id="6702639462873609204">&amp;Modifier...</translation>
+<translation id="6703254819490889819">Restaurer la sauvegarde</translation>
 <translation id="6706210727756204531">Portée</translation>
 <translation id="6707389671160270963">Certificat de client SSL</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> et 1 autre onglet}one{<ph name="PAGE_TITLE" /> et # autre onglet}other{<ph name="PAGE_TITLE" /> et # autres onglets}}</translation>
@@ -5878,6 +5890,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6883319974225028188">Oups! Le système n'a pas réussi à enregistrer la configuration de l'appareil.</translation>
 <translation id="6884474387073389421">Voulez-vous vraiment supprimer les données de connexion sélectionnées?</translation>
 <translation id="6885771755599377173">Aperçu des données du système</translation>
+<translation id="6886380424988777998">Impossible de mettre à niveau Linux</translation>
 <translation id="6886871292305414135">Ouvrir le lien dans un nouvel ongle&amp;t</translation>
 <translation id="6889957081990109136">Aucun commutateur n'a été attribué</translation>
 <translation id="689007770043972343">Essayez de faire glisser d'autres onglets ouverts vers votre groupe</translation>
@@ -6020,6 +6033,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="7017219178341817193">Ajouter une nouvelle page</translation>
 <translation id="7017354871202642555">Impossible de définir le mode une fois la fenêtre créée.</translation>
 <translation id="7018275672629230621">Accéder à votre historique de navigation et le modifier</translation>
+<translation id="7019546817926942979">Votre appareil doit être branché. La mise à niveau de Linux peut épuiser considérablement la pile. Veuillez connecter votre appareil à un chargeur et réessayer.</translation>
 <translation id="7019805045859631636">Rapide</translation>
 <translation id="7022562585984256452">Votre page d'accueil a été définie.</translation>
 <translation id="7025082428878635038">Les gestes vous offrent une nouvelle façon de naviguer</translation>
@@ -6073,6 +6087,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="7072010813301522126">Nom du raccourci</translation>
 <translation id="7075513071073410194">PKCS n° 1 MD5 avec chiffrement RSA</translation>
 <translation id="7075625805486468288">Gérer les certificats et paramètres HTTPS/SSL</translation>
+<translation id="7076875098323397992">Impossible de démarrer la mise à niveau</translation>
 <translation id="7077829361966535409">Échec du chargement de la page de connexion avec les paramètres de mandataire actuels. Veuillez <ph name="GAIA_RELOAD_LINK_START" />essayer de vous reconnecter<ph name="GAIA_RELOAD_LINK_END" /> ou utiliser d'autres <ph name="PROXY_SETTINGS_LINK_START" />paramètres de mandataire<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Tous les réseaux</translation>
 <translation id="708060913198414444">C&amp;opier l'adresse de l'audio</translation>
@@ -6165,7 +6180,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="7191159667348037">Imprimante inconnue (USB)</translation>
 <translation id="7193051357671784796">Cette application a été ajoutée par votre organisation Redémarrez-la pour terminer l'installation.</translation>
 <translation id="7193374945610105795">Aucun mot de passe enregistré pour <ph name="ORIGIN" /></translation>
-<translation id="7196020411877309443">Pourquoi vois-je cela?</translation>
 <translation id="7196913789568937443">Sauvegarder sur Google Disque. Restaurez vos données aisément ou changez d'appareil à tout moment. Votre sauvegarde comprend les données des applications. Vos sauvegardes sont téléversées dans les serveurs de Google et sont chiffrées en utilisant le mot de passe de votre compte Google. <ph name="BEGIN_LINK1" />En savoir plus<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Obtenez la recherche Google et les fonctionnalités intelligentes de Google chaque fois que vous naviguez</translation>
 <translation id="719791532916917144">Raccourci-clavier</translation>
@@ -6336,6 +6350,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="7377481913241237033">Connecter avec un code</translation>
 <translation id="7378611153938412599">Les mots de passe faibles sont faciles à deviner. Assurez-vous de créer des mots de passe forts. <ph name="BEGIN_LINK" />Consultez plus d'astuces de sécurité.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Ouvrir la boutique en ligne Chrome Web Store</translation>
+<translation id="7380459290951585794">Assurez-vous que votre téléphone est à proximité, qu'il est déverrouillé et que le Bluetooth et le Wi-Fi sont activés</translation>
 <translation id="7380622428988553498">Le nom de l'appareil contient des caractères incorrects</translation>
 <translation id="7380768571499464492">L'imprimante <ph name="PRINTER_NAME" /> a été mise à jour</translation>
 <translation id="73843634555824551">Méthodes d'entrée et claviers</translation>
@@ -6639,6 +6654,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="7668002322287525834">{NUM_WEEKS,plural, =1{Retournez l'appareil <ph name="DEVICE_TYPE" /> d'ici {NUM_WEEKS} semaine}one{Retournez l'appareil <ph name="DEVICE_TYPE" /> d'ici {NUM_WEEKS} semaine}other{Retournez l'appareil <ph name="DEVICE_TYPE" /> d'ici {NUM_WEEKS} semaines}}</translation>
 <translation id="7668423670802040666">Dans le gestionnaire de mots de passe Google pour <ph name="ACCOUNT" /></translation>
 <translation id="7669825497510425694">{NUM_ATTEMPTS,plural, =1{NIP incorrect. Il vous reste une tentative.}one{NIP incorrect. Il vous reste # tentative.}other{NIP incorrect. Il vous reste # tentatives.}}</translation>
+<translation id="7670434942695515800">Pour une performance optimale, effectuez une mise à niveau vers la dernière version. La sauvegarde de vos fichiers est recommandée au cas où la mise à niveau ne pourrait pas être terminée. Une fois la mise à niveau commencée, Linux s'éteindra. Enregistrez les fichiers ouverts avant de continuer. <ph name="LINK_START" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="7671130400130574146">Utiliser la barre de titre et les bordures de fenêtre du système</translation>
 <translation id="767127784612208024">Touchez pour confirmer la réinitialisation</translation>
 <translation id="767147716926917172">Envoie automatiquement les données de diagnostic et d'utilisation à Google</translation>
@@ -6901,6 +6917,7 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7920363873148656176"><ph name="ORIGIN" /> peut consulter <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Ajoutez les termes que le correcteur orthographique doit ignorer</translation>
 <translation id="7922935920104868876">Afficher les détails sur le blocage des témoins tiers en navigation privée</translation>
+<translation id="7923564237306226146">Mise à niveau Linux terminée</translation>
 <translation id="7924358170328001543">Une erreur s'est produite lors du transfert du port</translation>
 <translation id="7925108652071887026">Données de remplissage automatique</translation>
 <translation id="792514962475806987">Niveau de zoom en mode ancré :</translation>
@@ -6928,6 +6945,7 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7946586320617670168">L'origine doit être sécuritaire</translation>
 <translation id="794676567536738329">Confirmer les autorisations</translation>
 <translation id="7947962633355574091">C&amp;opier l'adresse de la vidéo</translation>
+<translation id="7947964080535614577">Les sites affichent généralement des annonces afin de pouvoir proposer des contenus ou des services gratuits. Toutefois, certains sites sont connus pour afficher des annonces intrusives ou trompeuses.</translation>
 <translation id="7948407723851303488">Toutes les pages de <ph name="DOMAIN_NAME" /></translation>
 <translation id="7951265006188088697">Pour ajouter un mode de paiement ou pour gérer vos modes de paiement existants, accédez à votre <ph name="BEGIN_LINK" />compte Google<ph name="END_LINK" /></translation>
 <translation id="7952708427581814389">Les sites peuvent demander à voir le texte et les images de votre presse-papiers</translation>
@@ -7076,6 +7094,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8084510406207562688">R&amp;estaurer tous les onglets</translation>
 <translation id="8086015605808120405">Configuration de <ph name="PRINTER_NAME" /> en cours</translation>
 <translation id="8086442853986205778">Configurer <ph name="PRINTER_NAME" /></translation>
+<translation id="8086610718778464681">Impossible de sauvegarder les applications et les fichiers Linux</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Ce fichier est chiffré. Demandez à son propriétaire de le déchiffrer.}one{Ce fichier est chiffré. Demandez à son propriétaire de le déchiffrer.}other{Certains de ces fichiers sont chiffrés. Demandez à leur propriétaire de les déchiffrer.}}</translation>
 <translation id="808894953321890993">Changer le mot de passe</translation>
 <translation id="8090234456044969073">Lire une liste des sites Web que vous visitez le plus</translation>
@@ -7326,10 +7345,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8338952601723052325">Site Web du développeur</translation>
 <translation id="8339059274628563283">Données du site <ph name="SITE" /> stockées localement</translation>
 <translation id="833986336429795709">Pour ouvrir ce lien, choisissez une application</translation>
-<translation id="8340768003824753944">Vos souvenirs de Google Photos s'affichent ici. Lorsque vous êtes connecté, vous êtes le seul utilisateur à pouvoir les consulter.
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        Gérez ce qui s'affiche dans vos souvenirs à l'adresse <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" />.</translation>
 <translation id="8342221978608739536">Je n'ai pas essayé</translation>
 <translation id="8342861492835240085">Sélectionner une collection</translation>
 <translation id="8347227221149377169">Tâches d'impression</translation>
@@ -8259,6 +8274,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="992778845837390402">Sauvegarde Linux en cours…</translation>
 <translation id="993540765962421562">Installation en cours…</translation>
 <translation id="994289308992179865">Bouc&amp;le</translation>
+<translation id="995571563161129624">N'oubliez pas que les notifications ignorées sur votre Chromebook seront également ignorées sur votre téléphone</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">Établissement de la connexion sécurisée...</translation>
 <translation id="996803490569799917">Découvrez des souvenirs de vos personnes préférées et plus encore</translation>

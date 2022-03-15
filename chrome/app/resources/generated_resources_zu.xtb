@@ -1343,6 +1343,7 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="2278562042389100163">Vula iwindi lesiphequluli</translation>
 <translation id="2278668501808246459">Iqalisa umphathi wesiqukathi</translation>
 <translation id="2280486287150724112">Imajini engakwesokudla</translation>
+<translation id="2281863813036651454">Chofoza kwesobunxele ku-mouse</translation>
 <translation id="2282146716419988068">Inqubo ye-GPU</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{Vula konke eqenjini lethebhu &amp;entsha}=1{Vula eqenjini lethebhu &amp;entsha}one{Vula konke okungu-({COUNT}) eqenjini lethebhu &amp;entsha}other{Vula konke okungu-({COUNT}) eqenjini lethebhu &amp;entsha}}</translation>
 <translation id="2285942871162473373">Izigxivizo zakho zeminwe azikwazanga ukubonwa. Zama futhi.</translation>
@@ -3975,10 +3976,6 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="4918086044614829423">Yamukela</translation>
 <translation id="4918134162946436591">Veza imbondela yokubonisa</translation>
 <translation id="4921348630401250116">Umbhalo wezwi</translation>
-<translation id="4921809350408880559">Ubona amadokhumenti akho akamuva naphakanyisiwe asuselwa kumsebenzi wakho wangaphambilini usebenzisa i-Google Drive.
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        Funda kabanzi ngedatha eqoqwa yi-Google Drive nokuthi kungani <ph name="BEGIN_LINK" />lapha<ph name="END_LINK" />.</translation>
 <translation id="492299503953721473">Susa izinhlelo zokusebenza ze-Android</translation>
 <translation id="492363500327720082">Ikhipha i-<ph name="APP_NAME" />...</translation>
 <translation id="4924002401726507608">Hambisa impendulo</translation>
@@ -5168,6 +5165,7 @@ Qiniseka ukuthi awuvezi noma yiluphi ulwazi olubucayi.</translation>
 <translation id="6129938384427316298">Amazwana wesitifiketi se-Netscape</translation>
 <translation id="6129953537138746214">Isikhala</translation>
 <translation id="6130692320435119637">Engeza i-Wi-Fi</translation>
+<translation id="6130887916931372608">Ukhiye wekhibhodi</translation>
 <translation id="6136114942382973861">Vala ibha yokulanda</translation>
 <translation id="6136287496450963112">Ukhiye wakho wokuqinisekisa ubunikazi awuvunyelwe ngephinikhodi. Ukuze uphathe izinsalela zeminwe, qala udale iphinikhodi.</translation>
 <translation id="6138680304137685902">Isiginesha ye-X9.62 ECDSA ne-SHA-384</translation>
@@ -6201,7 +6199,6 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="7191159667348037">Iphrinta engaziwa (USB)</translation>
 <translation id="7193051357671784796">Lolu hlelo lokusebenza lungezwe inhlangano yakho. Qala kabusha uhlelo lokusebenza ukuze uqedele ukulifaka.</translation>
 <translation id="7193374945610105795">Awekho amaphasiwedi alondolozelwe i-<ph name="ORIGIN" /></translation>
-<translation id="7196020411877309443">Kungani ngibona lokhu?</translation>
 <translation id="7196913789568937443">Ukwenza isipele ku-Google Drayivu. Buyisa kalula idatha yakho noma shintsha idivayisi noma kunini. Isipele sakho sibandakanya idatha yohlelo lokusebenza. Izipele zakho zilayishwa ku-Google futhi zibethelwe kusetshenziswa iphasiwedi ye-akhawunti yakho ku-Google. <ph name="BEGIN_LINK1" />Funda kabanzi<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Thola usesho lwe-Google ne-Google smarts ngaso sonke isikhathi uphequlula</translation>
 <translation id="719791532916917144">Isinqamuleli sekhibhodi</translation>
@@ -6783,6 +6780,7 @@ Cindezela iswishi enikeziwe noma ukhiye ukuze ususe umsebenzi ozokwenziwa</trans
 <translation id="7768770796815395237">Shintsha</translation>
 <translation id="7768784765476638775">Khetha ukuze ukhulume</translation>
 <translation id="7770406201819593386">Qalisa ukuhlolwa kokuxilongwa kwe-ChromeOS Flex</translation>
+<translation id="7770450735129978837">Chofoza kwesokudla ku-mouse</translation>
 <translation id="7770612696274572992">Isithombe sikopishwe kusuka kwenye idivayisi</translation>
 <translation id="7771452384635174008">Isakhiwo</translation>
 <translation id="7772032839648071052">Qinisekisa umushwana wokungena</translation>
@@ -7366,10 +7364,6 @@ Gcina ifayela lakho elingukhiye endaweni evikelekile. Uzolidinga ukuze udale izi
 <translation id="8338952601723052325">Iwebhusayithi yonjiniyela</translation>
 <translation id="8339059274628563283"><ph name="SITE" /> idatha egcinwe endaweni</translation>
 <translation id="833986336429795709">Ukuze uvule lesi sixhumanisi, khetha uhlelo lokusebenza</translation>
-<translation id="8340768003824753944">Izinkumbulo zakho ezivela ku-Google Photos ziboniswa lapha. Zibonakala kuwe kuphela, noma kunini lapho ungene khona ngemvume.
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        Phatha lokho okubonayo kwizinkumbulo zakho ku-<ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" />.</translation>
 <translation id="8342221978608739536">Ayizamanga</translation>
 <translation id="8342861492835240085">Khetha iqoqo</translation>
 <translation id="8347227221149377169">Imisebenzi yokuphrinta</translation>

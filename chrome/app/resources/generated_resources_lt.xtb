@@ -3979,10 +3979,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4918086044614829423">Priimti</translation>
 <translation id="4918134162946436591">Rodyti nurodymo perdangą</translation>
 <translation id="4921348630401250116">Tekstas į kalbą</translation>
-<translation id="4921809350408880559">Jūsų pastarieji ir siūlomi dokumentai rodomi atsižvelgiant į jūsų ankstesnę veiklą naudojant „Google“ diską.
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        Sužinokite, kokius duomenis „Google“ diskas renka ir kodėl, apsilankę <ph name="BEGIN_LINK" />čia<ph name="END_LINK" />.</translation>
 <translation id="492299503953721473">Pašalinti „Android“ programas</translation>
 <translation id="492363500327720082">Pašalinama programa „<ph name="APP_NAME" />“...</translation>
 <translation id="4924002401726507608">Pateikti atsiliepimą</translation>
@@ -6202,7 +6198,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="7191159667348037">Nežinomas spausdintuvas (USB)</translation>
 <translation id="7193051357671784796">Šią programą pridėjo jūsų organizacija. Paleiskite programą iš naujo, kad baigtumėte ją diegti.</translation>
 <translation id="7193374945610105795">Nėra išsaugotų <ph name="ORIGIN" /> slaptažodžių</translation>
-<translation id="7196020411877309443">Kodėl tai matau?</translation>
 <translation id="7196913789568937443">Sukurkite atsarginę kopiją „Google“ diske. Lengvai bet kada atkurkite duomenis arba perjunkite įrenginį. Į atsarginę kopiją įtraukiami programų duomenys. Atsarginės kopijos įkeliamos į sistemą „Google“ ir šifruojamos naudojant „Google“ paskyros slaptažodį. <ph name="BEGIN_LINK1" />Sužinokite daugiau<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Naudokitės „Google“ paieška ir „Google“ išmaniosiomis funkcijomis kiekvieną kartą naršydami</translation>
 <translation id="719791532916917144">Spartieji klavišai</translation>
@@ -7369,10 +7364,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8338952601723052325">Kūrėjo svetainė</translation>
 <translation id="8339059274628563283"><ph name="SITE" /> vietinėje atmintinėje išsaugojo duomenų</translation>
 <translation id="833986336429795709">Kad atidarytumėte šią nuorodą, pasirinkite programą</translation>
-<translation id="8340768003824753944">Jūsų „Google“ nuotraukų prisiminimai rodomi čia. Jie matomi tik jums, kai esate prisijungę.
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        Ką galite matyti prisiminimuose, valdykite adresu <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" />.</translation>
 <translation id="8342221978608739536">Nebandžiau</translation>
 <translation id="8342861492835240085">Pasirinkti kolekciją</translation>
 <translation id="8347227221149377169">Spausdinimo užduotys</translation>

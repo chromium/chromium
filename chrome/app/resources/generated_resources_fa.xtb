@@ -3974,10 +3974,6 @@
 <translation id="4918086044614829423">می‌پذیرم</translation>
 <translation id="4918134162946436591">نمایش همپوشانی خوانایاری</translation>
 <translation id="4921348630401250116">نوشتار به گفتار</translation>
-<translation id="4921809350408880559">‏اسناد اخیر و پیشنهادی که می‌بینید براساس فعالیت قبلی شما هنگام استفاده از Google Drive است.
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        در <ph name="BEGIN_LINK" />اینجا<ph name="END_LINK" /> درباره داده‌هایی که Google Drive جمع‌آوری می‌کند و علت آن اطلاعات بیشتری دریافت کنید.</translation>
 <translation id="492299503953721473">‏حذف برنامه‌های Android</translation>
 <translation id="492363500327720082">درحال حذف نصب <ph name="APP_NAME" />...</translation>
 <translation id="4924002401726507608">ارسال بازخورد</translation>
@@ -6197,7 +6193,6 @@
 <translation id="7191159667348037">‏چاپگر ناشناس (USB)</translation>
 <translation id="7193051357671784796">این برنامه توسط سازمانتان اضافه شده است. برای تکمیل نصب، برنامه را بازراه‌اندازی کنید.</translation>
 <translation id="7193374945610105795">هیچ گذرواژه‌ای برای <ph name="ORIGIN" /> ذخیره نشده است</translation>
-<translation id="7196020411877309443">چرا من این را می‌بینم؟</translation>
 <translation id="7196913789568937443">‏پشتیبان‌گیری در Google Drive. هرزمان خواستید داده‌هایتان را به‌آسانی بازیابی کنید یا دستگاهتان را عوض کنید. نسخه پشتیبان شما حاوی داده‌های برنامه است. داده‌های پشتیبان در Google بارگذاری می‌شود و با استفاده از گذرواژه حساب Google رمزگذاری می‌شود. <ph name="BEGIN_LINK1" />بیشتر بدانید<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">‏دریافت «جستجوی Google» و هوشمندی‌های Google هنگام مرور</translation>
 <translation id="719791532916917144">میان‌بر صفحه‌کلید</translation>
@@ -7363,10 +7358,6 @@
 <translation id="8338952601723052325">وب‌سایت برنامه‌نویس</translation>
 <translation id="8339059274628563283">داده‌های ذخیره‌شده محلی <ph name="SITE" /></translation>
 <translation id="833986336429795709">برای باز کردن این پیوند، برنامه‌ای انتخاب کنید</translation>
-<translation id="8340768003824753944">‏خاطرات ذخیره‌شده در Google Photos اینجا نشان داده می‌شود. هر وقت به سیستم وارد شدید، این خاطرات فقط به شما نشان داده می‌شود.
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        چیزهایی را که در خاطرات خود می‌بینید در<ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> مدیریت کنید.</translation>
 <translation id="8342221978608739536">امتحان نکرده‌ام</translation>
 <translation id="8342861492835240085">انتخاب مجموعه</translation>
 <translation id="8347227221149377169">کارهای چاپی</translation>

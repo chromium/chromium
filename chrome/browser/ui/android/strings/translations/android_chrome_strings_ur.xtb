@@ -30,6 +30,7 @@
 <translation id="114825011539563458">ایک ہی مقام پر انتہائی اہم رازداری اور سیکیورٹی کنٹرولز</translation>
 <translation id="1149401351239820326">میعاد کے اختتام کا مہینہ</translation>
 <translation id="1154704303112745282">صفحہ آف لائن غیر دستیاب ہے: <ph name="VIOLATED_URL" /></translation>
+<translation id="1166688006062225587">منتخب کیے جانے والے اکاؤنٹس کی فہرست۔</translation>
 <translation id="1171770572613082465">"سر فہرست سائٹس" بٹن پر تھپتھپا کر مقبول ویب سائٹس دیکھیں</translation>
 <translation id="1173894706177603556">نام بدلیں</translation>
 <translation id="1177863135347784049">حسب ضرورت</translation>
@@ -195,7 +196,6 @@
 <translation id="2141396931810938595">آپ کے استعمال کی بنیاد پر</translation>
 <translation id="214888715418183969">‏منتخب کریں کہ Chrome کے ساتھ کون سی معلومات کا اشتراک کرنے کے لیے آپ مطمئن ہیں۔ آپ کی اشتراک کی جانے والی میٹرکس کا استعمال Chrome کی خصوصیات، کارکردگی اور استحکام کو بہتر بنانے کے لئے کیا جائے گا۔</translation>
 <translation id="2149973817440762519">بک مارک میں ترمیم کریں</translation>
-<translation id="2154484045852737596">کارڈ میں ترمیم کریں</translation>
 <translation id="2157851137955077194">‏اپنے فون سے کسی دوسرے آلہ پر کسی چیز کا اشتراک کرنے کے لیے، دونوں آلات پر Chrome کی ترتیبات میں مطابقت پذیری کو آن کریں</translation>
 <translation id="2158408438301413340">‏Chrome سبھی پاس ورڈز چیک نہیں کر سکا</translation>
 <translation id="2169830938017475061">ابھی</translation>
@@ -693,7 +693,6 @@
 <translation id="5054455334322721892">‏سائن ان ہونے پر آپ کے Google اکاؤنٹ میں <ph name="BEGIN_LINK1" />سرگرمی کی دیگر اقسام<ph name="END_LINK1" /> محفوظ ہو سکتی ہیں۔ آپ انہیں کسی بھی وقت حذف کر سکتے ہیں۔</translation>
 <translation id="5061533557687621530">موسم چیک کرنے کے لیے، مائیک پر تھپتھپائیں اور کہیں "آج موسم کیسا ہے؟"</translation>
 <translation id="506254248375231072">کوئی ٹیب نہیں ہے</translation>
-<translation id="5087580092889165836">کارڈ شامل کریں</translation>
 <translation id="5091199029769593641">‏جلد ہی، نیا ٹیب کھولنے پر آپ کو <ph name="SITE_NAME" /> سے کہانیاں دکھائی دیں گی۔ آپ جن سائٹس کی پیروی کرتے ہیں انہیں آپ کے Google اکاؤنٹ میں محفوظ کیا جاتا ہے۔ آپ Discover کی ترتیبات میں ان کا نظم کر سکتے ہیں۔</translation>
 <translation id="5091249083535528968">توسیع کردہ استعمال کا ڈیٹا</translation>
 <translation id="509429900233858213">ایک خرابی پیش آگئی۔</translation>
@@ -789,6 +788,7 @@
 <translation id="5665379678064389456"><ph name="APP_NAME" /> میں ایونٹ بنائیں</translation>
 <translation id="5683547024293500885">‏Chrome اپ ڈیٹس چیک نہیں کر سکتا ہے</translation>
 <translation id="5686790454216892815">فائل کا نام کافی بڑا ہے</translation>
+<translation id="5692329390578659217">جاری رکھنے کے لیے، <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> اس سائٹ کے ساتھ آپ کے نام، ای میل، پتہ، اور پروفائل کی تصویر کا اشتراک کرے گا۔ اس سائٹ کی <ph name="BEGIN_LINK1" />رازداری کی پالیسی<ph name="END_LINK1" /> اور <ph name="BEGIN_LINK2" />سروس کی شرائط<ph name="END_LINK2" /> دیکھیں۔</translation>
 <translation id="569536719314091526">مزید اختیارات کے بٹن سے کسی بھی زبان میں اس صفحہ کا ترجمہ کریں</translation>
 <translation id="5696597120588531049">‏Chrome آپ کو ڈیٹا کی خلاف ورزیوں، غیر محفوظ ویب سائٹوں اور مزید بہت کچھ سے محفوظ رکھنے میں مدد کر سکتا ہے</translation>
 <translation id="5697688514913266141">آپ کی فائل <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" /> میں محفوظ کر دی جائے گی۔ <ph name="BEGIN_LINK2" />ترمیم کریں<ph name="END_LINK2" />۔</translation>
@@ -897,6 +897,7 @@
 <translation id="6277522088822131679">صفحہ کو پرنٹ کرنے میں ایک مسئلہ تھا۔ براہ کرم دوبارہ کوشش کریں۔</translation>
 <translation id="6277722725779679269">قیمت ٹریک کریں کو اپ ڈیٹ نہیں کیا جا سکا</translation>
 <translation id="6278428485366576908">تھیم</translation>
+<translation id="6293443105724342169">منتخب کیے جانے والے اکاؤنٹس کی فہرست آدھی اونچائی پر کھلی ہوئی ہے۔</translation>
 <translation id="6294610283659775533">‏آپ اسی Google اکاؤنٹ کے ساتھ سائن ان کردہ آلات کے درمیان ٹیبز بھیج سکتے ہیں</translation>
 <translation id="6297765934698848803">آپ کے آلہ کا نظم کرنے والی تنظیم نے آپ کا کیمرا آف کر دیا ہے۔</translation>
 <translation id="6301525844455696527">اپنی پڑھنے کی فہرست دیکھیں</translation>
@@ -1116,6 +1117,7 @@
 <translation id="7474822150871987353">صفحہ کو چھوڑے بغیر ویب سائٹس پر موجود عنوانات کے بارے میں جانیں۔ صفحے پر ایک یا مزید الفاظ منتخب کریں تاکہ انہیں تلاش کر سکیں۔</translation>
 <translation id="7475192538862203634">اگر یہ آپ کو اکثر نظر آتا ہے تو ان <ph name="BEGIN_LINK" />تجاویز<ph name="END_LINK" /> کو آزمائیں۔</translation>
 <translation id="7475688122056506577">‏SD کارڈ نہیں ملا۔ آپ کی کچھ فائلیں ہو سکتا ہے موجود نہ ہوں۔</translation>
+<translation id="7477262822945323753">جاری رکھنے کے لیے، <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> اس سائٹ کے ساتھ آپ کے نام، ای میل، پتہ، اور پروفائل کی تصویر کا اشتراک کرے گا۔ اس سائٹ کی <ph name="BEGIN_LINK1" />راز داری کی پالیسی<ph name="END_LINK1" /> دیکھیں۔</translation>
 <translation id="7479104141328977413">ٹیب مینیجمنٹ</translation>
 <translation id="7481312909269577407">فارورڈ کریں</translation>
 <translation id="7482656565088326534">پیش منظر ٹیب</translation>
@@ -1289,6 +1291,7 @@
 <translation id="8394720698884623075">‏Chrome میں اسٹور کردہ غیر محفوظ سائٹس کی فہرست کے URLs چیک کرتا ہے</translation>
 <translation id="8410695015584479363">قیمتیں ٹریک کریں</translation>
 <translation id="8413126021676339697">مکمل سرگزشت دکھائیں</translation>
+<translation id="8414396119627470038"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> کے ساتھ <ph name="SITE_ETLD_PLUS_ONE" /> میں سائن ان کریں</translation>
 <translation id="8419244640277402268">شامل کریں</translation>
 <translation id="8424781820952413435">‏صفحہ بھیج دیا گیا۔ اس کو دیکھنے کے لیے، اپنے <ph name="DEVICE_TYPE" /> پر Chrome کھولیں</translation>
 <translation id="8427875596167638501">پیش منظر ٹیب آدھا کھلا ہے</translation>
@@ -1304,6 +1307,7 @@
 <translation id="8461694314515752532">اپنے ذاتی مطابقت پذیر پاس فریز کے ساتھ مطابقت پذیر کردہ ڈیٹا کی مرموزکاری کریں</translation>
 <translation id="8466613982764129868">یہ یقینی بنائیں کہ <ph name="TARGET_DEVICE_NAME" /> انٹرنیٹ سے منسلک ہے</translation>
 <translation id="8473863474539038330">پتے وغیرہ</translation>
+<translation id="847656914027543776">منتخب کیے جانے والے اکاؤنٹس کی فہرست بند ہے۔</translation>
 <translation id="8481921391193215807">‏آن ہونے پر، سائٹس اپنے مواد اور سروسز کو فراہم کرنے کے لیے یہاں دکھائی گئی رازداری کے تحفظ کی تکنیکوں کا استعمال کر سکتی ہیں۔ ان میں کراس سائٹ ٹریکنگ کے متبادلات شامل ہیں۔ آنے والے وقت میں مزید ٹرائلز شامل کئے جا سکتے ہیں۔
 
 <ph name="BEGIN_LIST_ITEM1" />مشتہرین اور ناشرین FLoC کا استعمال کر سکتے ہیں۔<ph name="END_LIST_ITEM1" />
@@ -1430,6 +1434,7 @@
 <translation id="9108312223223904744">سیکیورٹی کلید سپورٹ کے بطور فون</translation>
 <translation id="9108808586816295166">‏ممکن ہے کہ محفوظ DNS ہر وقت دستیاب نہ ہو</translation>
 <translation id="9133397713400217035">آف لائن دریافت کریں</translation>
+<translation id="9133523398139146080">منتخب کیے جانے والے اکاؤنٹس کی فہرست مکمل اونچائی پر کھلی ہوئی ہے۔</translation>
 <translation id="9137013805542155359">اصل دکھائیں</translation>
 <translation id="9148126808321036104">دوبارہ سائن ان کریں</translation>
 <translation id="9155898266292537608">آپ کسی لفظ پر فوری تھپتھپاہٹ سے بھی تلاش کر سکتے ہیں</translation>

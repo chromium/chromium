@@ -31,6 +31,7 @@
 <translation id="1150989369772528668">कॅलेंडर</translation>
 <translation id="1153356358378277386">जोडलेली डिव्हाइस</translation>
 <translation id="1165712434476988950">अपडेट लागू करण्यासाठी डिव्हाइस रीस्टार्ट करणे आवश्यक आहे.</translation>
+<translation id="1171742223880403396">तुमची USB-C केबल ही कदाचित डिस्प्लेना योग्यरीत्या कनेक्ट होणार नाही</translation>
 <translation id="1175572348579024023">स्क्रोल करा</translation>
 <translation id="1178581264944972037">विराम द्या</translation>
 <translation id="1181037720776840403">काढून टाका</translation>
@@ -126,6 +127,7 @@
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> कनेक्ट केलेले नाही.</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> टायमर· <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 पत्ता: <ph name="ADDRESS" /></translation>
+<translation id="1703117532528082099">अ‍ॅक्टिव्ह विंडो डावीकडे डॉक केली आहे.</translation>
 <translation id="1708345662127501511">डेस्‍क: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">नेटवर्क सेटिंग्ज</translation>
 <translation id="1715293566947629045">प्रोफाइल बंद करत आहे. काही मिनिटे प्रतीक्षा करा.</translation>
@@ -197,6 +199,7 @@
 <translation id="2132302418721800944">फुल स्क्रीन रेकॉर्ड करा</translation>
 <translation id="2135456203358955318">डॉक केलेले भिंग</translation>
 <translation id="2148716181193084225">आज</translation>
+<translation id="2159930836979502091">या टॅबवर जा</translation>
 <translation id="2170530631236737939">अवलोकन मधून बाहेर पडण्यासाठी तीन बोटांनी खाली स्वाइप करा</translation>
 <translation id="219905428774326614">लाँचर, सर्व अ‍ॅप्स</translation>
 <translation id="2201071101391734388"><ph name="TOTAL_COUNT" /> पैकी <ph name="INDEX" /> अलीकडील फोटो.</translation>
@@ -274,6 +277,7 @@
 <translation id="2727977024730340865">एका निम्न-उर्जेच्या चार्जरवर प्लग इन केले. बॅटरी चार्जिंग विश्वसनीय असू शकत नाही.</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"हटवा"</translation>
+<translation id="2750941250130734256">अ‍ॅक्टिव्ह विंडो अनडॉक केली आहे.</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> हे <ph name="MANAGER" /> द्वारे व्यवस्थापित केले आहे</translation>
 <translation id="2782591952652094792">कॅप्चर मोडमधून बाहेर पडा</translation>
 <translation id="2791421900609674576">तुम्हाला शिफारशी दिसतील, जेणेकरून तुम्ही जिथे सोडले होते तेथून सुरू ठेवू शकता. तुम्ही शिफारशी काढून टाकण्यासाठी स्पर्श करून धरून ठेवू शकता.</translation>
@@ -563,6 +567,7 @@
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{एक महत्त्वाची सूचना}other{# महत्त्वाच्या सूचना}}</translation>
 <translation id="4450893287417543264">पुन्हा दाखवू नका</translation>
 <translation id="4451374464530248585">Alt + Down Arrow कीबोर्ड शॉर्टकट बदलला आहे. पेज डाउन की वापरण्यासाठी, <ph name="LAUNCHER_KEY_NAME" /> की + डाउन अ‍ॅरो वापरा.</translation>
+<translation id="4455051983450390249">तुमच्या <ph name="DEVICE_TYPE" /> वर फोनमधील सूचना पहा</translation>
 <translation id="445864333228800152">शुभ संध्याकाळ,</translation>
 <translation id="4458688154122353284">स्क्रीन रेकॉर्डिंग थांबवा</translation>
 <translation id="4471354919263203780">स्पीच रेकग्निशन फाइल डाउनलोड करत आहे... <ph name="PERCENT" />%</translation>
@@ -770,6 +775,7 @@
 <translation id="583281660410589416">अज्ञात</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> वर <ph name="ROUTE_TITLE" /> थांबवा</translation>
 <translation id="584525477304726060">मोठे करण्यासाठी धरून ठेवा</translation>
+<translation id="5856638668464565213"><ph name="NETWORK_NAME" /> अ‍ॅक्टिव्ह केलेले नाही.</translation>
 <translation id="5860033963881614850">बंद</translation>
 <translation id="5860491529813859533">सुरू करा</translation>
 <translation id="5867217927013474703">नेटवर्कसंबंधित माहिती गोळा करत आहे</translation>
@@ -784,6 +790,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">सुरू</translation>
 <translation id="5920710855273935292">माइक म्यूट केलेला आहे.</translation>
+<translation id="5924838240953214369">कॅप्चर मोड, <ph name="SOURCE" /> <ph name="TYPE" /> हा डीफॉल्ट आहे. कॅमेरा इनपुट <ph name="CAMERA_NAME" /> वर सेट केले आहे, पूर्वावलोकन सुरू आहे. कीबोर्ड नेव्हिगेशनसाठी टॅब दाबा.</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> सुरू आहे.</translation>
 <translation id="5947494881799873997">परत करा</translation>
 <translation id="595202126637698455">कार्यप्रदर्शन ट्रेसिंग सक्षम केले</translation>
@@ -801,6 +808,7 @@
 <translation id="602472752137106327">सर्व डेस्कवरील विंडो दाखवा, रेडिओ बटण निवडले</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />, तुमच्या अ‍ॅडमिनिस्ट्रेटरने व्यवस्थापित केलेले</translation>
 <translation id="6027518778343897451"><ph name="CURRENT_MONTH_DAY" /> ला कोणताही इव्‍हेंट नाही. ब्राउझरमध्ये Google Calendar उघडण्यासाठी एंटर दाबा.</translation>
+<translation id="6027952026115023659">तुमच्या <ph name="DEVICE_TYPE" /> वर फोनमधील मेसेजिंग ॲप्स अ‍ॅक्सेस करा</translation>
 <translation id="6030495522958826102">मेनू स्क्रीनच्या तळाशी डाव्या कोपर्‍यात हलवला.</translation>
 <translation id="6032620807120418574">फुल स्क्रीन रेकॉर्ड करण्यासाठी कुठेही क्लिक करा</translation>
 <translation id="6040071906258664830">मायक्रोफोनद्वारे रेकॉर्ड करा <ph name="STATE" /></translation>
@@ -944,6 +952,7 @@
 <translation id="6961121602502368900">कार्य प्रोफाइलवर सायलन्स फोन उपलब्ध नाही</translation>
 <translation id="6961840794482373852">Alt + Up Arrow कीबोर्ड शॉर्टकट बदलला आहे. पेज अप की वापरण्यासाठी, <ph name="LAUNCHER_KEY_NAME" /> की + अप अ‍ॅरो दाबा.</translation>
 <translation id="6965382102122355670">ठीक आहे</translation>
+<translation id="6967933908874208731">तुमच्या <ph name="DEVICE_TYPE" /> वर, तुमच्या फोनमधील अलीकडील फोटो, मीडिया, सूचना आणि मेसेजिंग ॲप्स पहा</translation>
 <translation id="6972754398087986839">सुरू करा</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">ॲक्सेसिबिलिटी</translation>
@@ -1039,6 +1048,7 @@
 <translation id="7564874036684306347">दुसऱ्या डेस्कटॉपवर विंडो हलवण्याने अनपेक्षित वर्तन घडू शकते. नंतर येणाऱ्या सूचना, विंडो आणि डायलॉग हे डेस्कटॉपच्या दरम्यान विभाजित केले जाऊ शकतात.</translation>
 <translation id="7569509451529460200">ब्रेल आणि ChromeVox सुरू केलेले आहेत</translation>
 <translation id="7569983096843329377">काळा</translation>
+<translation id="7573585051776738856">अ‍ॅक्टिव्ह विंडो उजवीकडे डॉक केली आहे.</translation>
 <translation id="7579778809502851308">स्‍क्रीन कॅप्‍चर</translation>
 <translation id="7590883480672980941">इनपुट सेटिंग्ज</translation>
 <translation id="7593891976182323525">Search किंवा Shift</translation>

@@ -197,6 +197,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="2132302418721800944">Rekodi skrini nzima</translation>
 <translation id="2135456203358955318">Kikuzaji kilichofungwa</translation>
 <translation id="2148716181193084225">Leo</translation>
+<translation id="2159930836979502091">Nenda kwenye kichupo hiki</translation>
 <translation id="2170530631236737939">Telezesha vidole vitatu chini ili ufunge Muhtasari</translation>
 <translation id="219905428774326614">Kifungua Programu, programu zote</translation>
 <translation id="2201071101391734388">Picha ya hivi majuzi ya <ph name="INDEX" /> kati ya <ph name="TOTAL_COUNT" />.</translation>
@@ -563,6 +564,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{Arifa moja muhimu}other{Arifa # muhimu}}</translation>
 <translation id="4450893287417543264">Usionyeshe tena</translation>
 <translation id="4451374464530248585">Mikato ya kibodi ya Alt + Kishale cha Chini imebadilika. Ili utumie kitufe cha Page Down, bonyeza kitufe cha <ph name="LAUNCHER_KEY_NAME" /> pamoja na Kishale cha Chini.</translation>
+<translation id="4455051983450390249">Tazama arifa za simu yako kwenye <ph name="DEVICE_TYPE" /> yako</translation>
 <translation id="445864333228800152">Habari za jioni,</translation>
 <translation id="4458688154122353284">Acha kunasa skrini</translation>
 <translation id="4471354919263203780">Inapakua faili za utambuzi wa matamshi... <ph name="PERCENT" />%</translation>
@@ -734,6 +736,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Bonyeza Ctrl + Alt + Z ili uzime kipengele cha maelezo yanayotamkwa.</translation>
 <translation id="5601503069213153581">PIN</translation>
+<translation id="5618148318840095371">Tumekuhamishia kwenye mtandao bora</translation>
 <translation id="5619862035903135339">Sera ya msimamizi huzuia kurekodi skrini</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Pini ya maikrofoni</translation>
@@ -769,6 +772,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="583281660410589416">Haijulikani</translation>
 <translation id="5837036133683224804">Komesha <ph name="ROUTE_TITLE" /> kwenye <ph name="RECEIVER_NAME" /></translation>
 <translation id="584525477304726060">Shikilia ili upanue dirisha</translation>
+<translation id="5856638668464565213">Mtandao wa <ph name="NETWORK_NAME" /> haujawashwa.</translation>
 <translation id="5860033963881614850">Kimezimwa</translation>
 <translation id="5860491529813859533">Washa</translation>
 <translation id="5867217927013474703">Inakusanya maelezo ya mtandao</translation>
@@ -800,6 +804,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="602472752137106327">Onyesha madirisha yaliyo kwenye maeneokazi yote, umechagua kitufe cha mviringo</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Uthabiti wa Mtandao <ph name="SIGNAL_STRENGTH" />, Unadhibitiwa na Msimamizi wako</translation>
 <translation id="6027518778343897451">Hakuna tukio <ph name="CURRENT_MONTH_DAY" />. Bonyeza ingia ili ufungue kalenda ya Google katika kivinjari.</translation>
+<translation id="6027952026115023659">Fikia programu za simu yako za kutuma ujumbe kwenye <ph name="DEVICE_TYPE" /> yako</translation>
 <translation id="6030495522958826102">Menyu imehamishiwa kwenye kona ya chini kushoto mwa skrini.</translation>
 <translation id="6032620807120418574">Bofya popote ili urekodi skrini nzima</translation>
 <translation id="6040071906258664830">Hali ya kurekodi maikrofoni <ph name="STATE" /></translation>
@@ -943,6 +948,7 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="6961121602502368900">Kipengele cha kuzima mlio wa simu hakipatikani kwenye wasifu wa kazini</translation>
 <translation id="6961840794482373852">Mikato ya kibodi ya Alt + Kishale cha Juu imebadilika. Ili utumie kitufe cha Page Up, bonyeza kitufe cha <ph name="LAUNCHER_KEY_NAME" /> pamoja na Kishale cha Juu.</translation>
 <translation id="6965382102122355670">Sawa</translation>
+<translation id="6967933908874208731">Tazama picha za hivi karibuni, maudhui, arifa na programu za simu yako za kutuma ujumbe kwenye <ph name="DEVICE_TYPE" /> yako</translation>
 <translation id="6972754398087986839">Anza</translation>
 <translation id="6979158407327259162">Hifadhi ya Google</translation>
 <translation id="6981982820502123353">Ufikivu</translation>

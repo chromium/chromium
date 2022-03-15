@@ -197,6 +197,7 @@
 <translation id="2132302418721800944">فُل اسکرین ریکارڈ کریں</translation>
 <translation id="2135456203358955318">ڈاک کردہ مکبّر</translation>
 <translation id="2148716181193084225">آج</translation>
+<translation id="2159930836979502091">اس ٹیب پر جائیں</translation>
 <translation id="2170530631236737939">مجموعی جائزے سے باہر نکلنے کے لیے تین انگلیوں سے نیچے سوائپ کریں</translation>
 <translation id="219905428774326614">لانچر، سبھی ایپس</translation>
 <translation id="2201071101391734388"><ph name="TOTAL_COUNT" /> میں سے حالیہ تصویر <ph name="INDEX" />۔</translation>
@@ -563,6 +564,7 @@
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 اہم اطلاع}other{# اہم اطلاعات}}</translation>
 <translation id="4450893287417543264">دوبارہ نہ دکھائیں</translation>
 <translation id="4451374464530248585">‏Alt + 'نیچے تیر کا نشان' کی بورڈ شارٹ کٹ تبدیل ہو گیا ہے۔ Page Down کلید کا استعمال کرنے کیلئے <ph name="LAUNCHER_KEY_NAME" /> کلید + 'نیچے تیر کا نشان' کو دبائیں۔</translation>
+<translation id="4455051983450390249">اپنے <ph name="DEVICE_TYPE" /> پر اپنے فون کی اطلاعات دیکھیں</translation>
 <translation id="445864333228800152">شام بخیر،</translation>
 <translation id="4458688154122353284">اسکرین ریکارڈنگ روکیں</translation>
 <translation id="4471354919263203780">اسپیچ شناخت کی فائلز ڈاؤن لوڈ ہو رہی ہیں... %<ph name="PERCENT" /></translation>
@@ -770,6 +772,7 @@
 <translation id="583281660410589416">نامعلوم</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> پر <ph name="ROUTE_TITLE" /> کو روکیں</translation>
 <translation id="584525477304726060">بڑا کرنے کیلئے ہولڈ کریں</translation>
+<translation id="5856638668464565213"><ph name="NETWORK_NAME" /> فعال نہیں ہے۔</translation>
 <translation id="5860033963881614850">آف</translation>
 <translation id="5860491529813859533">آن کریں</translation>
 <translation id="5867217927013474703">نیٹ ورک کی معلومات جمع کی جا رہی ہیں</translation>
@@ -801,6 +804,7 @@
 <translation id="602472752137106327">تمام ڈیسکس سے ونڈوز دکھائیں، ریڈیو بٹن کا انتخاب کیا گیا</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />، <ph name="CONNECTION_STATUS" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />، آپ کے منتظم کے زیر انتظام ہے</translation>
 <translation id="6027518778343897451">‏<ph name="CURRENT_MONTH_DAY" /> کو کوئی بھی ایونٹ نہیں ہے۔ براؤزر میں Google کیلنڈر کھولنے کے لیے انٹر دبائیں۔</translation>
+<translation id="6027952026115023659">اپنے <ph name="DEVICE_TYPE" /> پر اپنے فون کی پیغام رسانی ایپ تک رسائی حاصل کریں</translation>
 <translation id="6030495522958826102">مینو کو اسکرین کو نچلے بائیں کونے میں منتقل کر دیا گیا۔</translation>
 <translation id="6032620807120418574">فُل اسکرین ریکارڈ کرنے کے لیے کہیں بھی کلک کریں</translation>
 <translation id="6040071906258664830">مائیکروفون کے ذریعے ریکارڈ کریں <ph name="STATE" /></translation>
@@ -943,6 +947,7 @@
 <translation id="6961121602502368900">دفتری پروفائل پر فون کو خاموش کرنے کی خصوصیت دستیاب نہیں ہے</translation>
 <translation id="6961840794482373852">‏Alt + 'اوپر تیر کا نشان' کی بورڈ شارٹ کٹ تبدیل ہو گیا۔ Page Up کلید کا استعمال کرنے کیلئے <ph name="LAUNCHER_KEY_NAME" /> کلید + 'اوپر تیر کا نشان' کو دبائیں۔</translation>
 <translation id="6965382102122355670">ٹھیک ہے</translation>
+<translation id="6967933908874208731">اپنے <ph name="DEVICE_TYPE" /> پر اپنے فون کی حالیہ تصاویر، میڈیا، اطلاعات اور پیغام رسانی ایپ دیکھیں</translation>
 <translation id="6972754398087986839">شروع کریں</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">ایکسیسبیلٹی</translation>

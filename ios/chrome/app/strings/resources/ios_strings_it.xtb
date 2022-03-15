@@ -425,7 +425,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="4808744395915275922">Aggiornamenti</translation>
 <translation id="4818522717893377262">Aggiungi lingua…</translation>
 <translation id="481968316161811770">Cookie, dati dei siti</translation>
-<translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} e 1 altra}one{{domain} e altre {count}}other{{domain} e altre {count}}}</translation>
+<translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} e 1 altra}other{{domain} e altre {count}}}</translation>
 <translation id="4826218269716039351">Blocca i cookie di terze parti</translation>
 <translation id="4826726074642088322">Condividi evidenziazione</translation>
 <translation id="48274138579728272">Contrassegna come letto</translation>
@@ -511,7 +511,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5659593005791499971">Email</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Versione <ph name="PRODUCT_VERSION" /></translation>
-<translation id="5690398455483874150">{count,plural, =1{1 finestra di Chrome visualizzata}one{{count} finestre di Chrome visualizzate}other{{count} finestre di Chrome visualizzate}}</translation>
+<translation id="5690398455483874150">{count,plural, =1{1 finestra di Chrome visualizzata}other{{count} finestre di Chrome visualizzate}}</translation>
 <translation id="5704908597376970822">Impossibile eseguire l'accesso.</translation>
 <translation id="5706552126692816153">Attivo 1 giorno fa</translation>
 <translation id="5711039611392265845">Per altre impostazioni relative a privacy, sicurezza e raccolta dei dati, consulta la sezione <ph name="BEGIN_LINK" />Sincronizzazione e servizi Google<ph name="END_LINK" />.</translation>
@@ -581,7 +581,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6187302354554850004">Ultima sincronizzazione: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6189413832092199491">Da leggere</translation>
 <translation id="6196207969502475924">Ricerca vocale</translation>
-<translation id="6202364442240589072">{COUNT,plural, =1{Chiudi {COUNT} scheda}one{Chiudi {COUNT} schede}other{Chiudi {COUNT} schede}}</translation>
+<translation id="6202364442240589072">{COUNT,plural, =1{Chiudi {COUNT} scheda}other{Chiudi {COUNT} schede}}</translation>
 <translation id="6219688215832490856">Non tradurre mai</translation>
 <translation id="6223816392543092032">Trova i tuoi preferiti, la cronologia, le password e altre impostazioni su tutti i tuoi dispositivi.</translation>
 <translation id="6231782223312638214">Suggerito</translation>
@@ -779,7 +779,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Esporta password...</translation>
 <translation id="794799177247607889">Interrompi logging</translation>
-<translation id="7953440832920792856">{COUNT,plural, =0{Nessuna password compromessa}=1{{COUNT} password compromessa}one{{COUNT} password compromesse}other{{COUNT} password compromesse}}</translation>
+<translation id="7953440832920792856">{COUNT,plural, =0{Nessuna password compromessa}=1{{COUNT} password compromessa}other{{COUNT} password compromesse}}</translation>
 <translation id="7961015016161918242">Mai</translation>
 <translation id="7966516440812255683">I siti possono utilizzare i cookie per migliorare la tua esperienza di navigazione, ad esempio per mantenere l'accesso o memorizzare gli articoli aggiunti al carrello.
 
@@ -865,7 +865,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8668210798914567634">Questa pagina è stata salvata nel tuo Elenco di lettura.</translation>
 <translation id="8680787084697685621">I dati di accesso dell'account sono obsoleti.</translation>
 <translation id="8691262314411702087">Scegli che cosa sincronizzare</translation>
-<translation id="8693663554456874301">{count,plural, =1{Chiudi scheda}one{Chiudi scheda}other{Chiudi schede}}</translation>
+<translation id="8693663554456874301">{count,plural, =1{Chiudi scheda}other{Chiudi schede}}</translation>
 <translation id="8706588385081740091">Password</translation>
 <translation id="8717864919010420084">Copia link</translation>
 <translation id="8721297211384281569">Menu Strumenti</translation>
@@ -884,7 +884,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8840513115188359703">Non verrai disconnesso dal tuo Account Google.</translation>
 <translation id="8843129975935593190">La tua organizzazione limita ciò che puoi sincronizzare.</translation>
 <translation id="8849001918648564819">Nascosto</translation>
-<translation id="8868471676553493380">{count,plural, =1{{count} scheda}one{{count} scheda}other{{count} schede}}</translation>
+<translation id="8868471676553493380">{count,plural, =1{{count} scheda}other{{count} schede}}</translation>
 <translation id="8870413625673593573">Chiusi di recente</translation>
 <translation id="8876882697946675716">Mantieni sincronizzati i tuoi dispositivi</translation>
 <translation id="8881801611828450202">Cerca questa immagine su <ph name="SEARCH_ENGINE" /></translation>

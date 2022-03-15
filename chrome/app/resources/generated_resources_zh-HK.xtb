@@ -3977,10 +3977,6 @@
 <translation id="4918086044614829423">接受</translation>
 <translation id="4918134162946436591">重疊顯示提示</translation>
 <translation id="4921348630401250116">文字轉語音</translation>
-<translation id="4921809350408880559">系統根據您以前使用「Google 雲端硬碟」的活動顯示最近和建議的文件。
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        如要瞭解「Google 雲端硬碟」收集的資料和收集原因，請前往<ph name="BEGIN_LINK" />此處<ph name="END_LINK" />。</translation>
 <translation id="492299503953721473">移除 Android 應用程式</translation>
 <translation id="492363500327720082">正在解除安裝 <ph name="APP_NAME" />…</translation>
 <translation id="4924002401726507608">提交意見</translation>
@@ -6200,7 +6196,6 @@
 <translation id="7191159667348037">不明打印機 (USB)</translation>
 <translation id="7193051357671784796">此應用程式由您的機構新增。重新啟動應用程式即可完成安裝。</translation>
 <translation id="7193374945610105795"><ph name="ORIGIN" /> 沒有密碼可供儲存</translation>
-<translation id="7196020411877309443">為何出現這個對話方塊？</translation>
 <translation id="7196913789568937443">備份至「Google 雲端硬碟」。您可隨時輕鬆還原資料或轉用其他裝置。備份包含應用程式資料。您的備份會上載至 Google，並透過您的 Google 帳戶密碼加密。<ph name="BEGIN_LINK1" />瞭解詳情<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">每次瀏覽都能善用「Google 搜尋」和 Google 智能功能</translation>
 <translation id="719791532916917144">鍵盤快速鍵</translation>
@@ -7368,10 +7363,6 @@
 <translation id="8338952601723052325">開發人員網站</translation>
 <translation id="8339059274628563283"><ph name="SITE" /> 儲存在本機上的資料</translation>
 <translation id="833986336429795709">如要開啟此連結，請選擇應用程式</translation>
-<translation id="8340768003824753944">您的「Google 相片回憶」會在此顯示。只有您在登入後能看到相片回憶。
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        請在 <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> 管理在回憶中顯示的內容。</translation>
 <translation id="8342221978608739536">沒有試過</translation>
 <translation id="8342861492835240085">選取相片集</translation>
 <translation id="8347227221149377169">列印工作</translation>

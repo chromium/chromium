@@ -20,6 +20,7 @@
 <translation id="1181037720776840403">আঁতৰাওক</translation>
 <translation id="1195447618553298278">অজ্ঞাত আসোঁৱাহ।</translation>
 <translation id="1196959502276349371">সংস্কৰণ <ph name="VERSION" /></translation>
+<translation id="1199355487114804640">প্লে’/পজ কৰক</translation>
 <translation id="1201402288615127009">পৰৱৰ্তী</translation>
 <translation id="1204296502688602597">DNS বিলম্বতা</translation>
 <translation id="123124571410524056">প’ৰ্টেলৰ সন্দেহ কৰা হৈছে</translation>
@@ -43,6 +44,7 @@
 <translation id="1413240736185167732">বিফল হৈছে - ফিল্টাৰ বিফল হৈছে</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">মোৰ এটা কী পেয়াৰ আছে</translation>
+<translation id="1423591390236870726"><ph name="KEY_NAME" /> কীটো টিপা নাই</translation>
 <translation id="1435763214710588005">প্ৰতি মাহৰ এটা নিৰ্দিষ্ট তাৰিখত ডেটাৰ ব্যৱহাৰ স্বয়ংক্ৰিয়ভাৱে ৰিছেট হয়</translation>
 <translation id="1442433966118452622">প্ৰতিচ্ছবিৰ উৎস</translation>
 <translation id="1451536289672181509">ডিভাইচটো এখন কীব’ৰ্ড।</translation>
@@ -84,6 +86,7 @@
 <translation id="1827738518074806965">আর্ট গেলাৰী</translation>
 <translation id="1851218745569890714">ভিডিঅ’ কনফাৰেন্সিং</translation>
 <translation id="1852934301711881861">ChromeOS Flex ইনষ্টল কৰক</translation>
+<translation id="1856388568474281774">ডাউন এৰ’</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">হাৰ্ডৱেৰৰ পুনৰীক্ষণ</translation>
 <translation id="1905710495812624430">চেষ্টা কৰাৰ সৰ্বাধিক সীমা অতিক্ৰম কৰিছে।</translation>
@@ -98,6 +101,7 @@
 <translation id="2016697457005847575">সমস্যা নিবাৰণৰ পদক্ষেপসমূহ কাৰ্যকৰী কৰি চাওক</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">অধিক ছেটিং</translation>
+<translation id="2085089206770112532">ডিছপ্লে’ৰ উজ্জ্বলতা ডাউন</translation>
 <translation id="2104796393919810494">মেৰামতি সম্পূৰ্ণ হৈছে</translation>
 <translation id="2105810540595158374">ডিভাইচটো এটা গে’ম নিয়ন্ত্ৰক।</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, সংস্কৰণ <ph name="MILESTONE_VERSION" /></translation>
@@ -116,6 +120,7 @@
 <translation id="222447520299472966">কমেও এটা আৰ্ট গেলাৰীৰ এলবাম বাছনি কৰিব লাগিব</translation>
 <translation id="2230005943220647148">চেলছিয়াছ</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2240366984605217732">লে’আউট ছুইচ</translation>
 <translation id="225692081236532131">সক্ৰিয়কৰণৰ স্থিতি</translation>
 <translation id="2287186687001756809">কোনো প্ৰতিচ্ছবি উপলব্ধ নহয়। ফট’ যোগ দিবলৈ, <ph name="LINK" />লৈ যাওক</translation>
 <translation id="2307344026739914387">বৰ্তমানৰ কী পেয়াৰ ব্যৱহাৰ কৰক</translation>
@@ -207,9 +212,11 @@
 <translation id="357889014807611375">নিৰিখ-নিৰ্দিষ্ট ৱাই-ফাই</translation>
 <translation id="3583278742022654445">ছিগনেলৰ ক্ষমতা দুৰ্বল। ৱাই-ফাইৰ ছিগনেলৰ উৎসটোৰ ওচৰলৈ গৈ চাওক।</translation>
 <translation id="3595596368722241419">বেটাৰী চ্চাৰ্জ সম্পূৰ্ণ হৈছে</translation>
+<translation id="3600339377155080675">স্ক্ৰীন প্ৰতিবিম্বিত কৰা ম’ড</translation>
 <translation id="3603829704940252505">অৱতাৰ</translation>
 <translation id="360565022852130722">ৱাই-ফাই নেটৱৰ্কটো দুৰ্বল প্ৰট’কল WEP 802.1xৰ দ্বাৰা সুৰক্ষিত</translation>
 <translation id="3606583719724308068">HTTPS ৱেবছাইটলৈ অধিক বিলম্বতা</translation>
+<translation id="3632579075709132555">গোপনীয়তাৰ স্ক্ৰীন ট’গল কৰা</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> পৰীক্ষা</translation>
 <translation id="370665806235115550">ল'ড হৈ আছে...</translation>
 <translation id="3708186454126126312">আগতে সংযোগ কৰা</translation>
@@ -263,6 +270,7 @@
 <translation id="4289540628985791613">ৰূপৰেখা</translation>
 <translation id="4297501883039923494">বন্ধ হৈছে - অজ্ঞাত আসোঁৱাহ</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> খন প্ৰতিচ্ছবি</translation>
+<translation id="4333390807948134856"><ph name="KEY_NAME" /> কীটো টিপিছে</translation>
 <translation id="4378373042927530923">নাই চলা</translation>
 <translation id="4378551569595875038">সংযোগ হৈছে...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -278,6 +286,7 @@
 <translation id="4479639480957787382">ইথাৰনেট</translation>
 <translation id="4483049906298469269">ডিফ’ল্ট হিচাপে নথকা নেটৱৰ্কৰ গে’টৱে’টোক পিং কৰাত বিফল হ'ল</translation>
 <translation id="4485626319513081846">যদি ডিভাইচটো এগৰাকী নতুন গ্ৰাহকক বিতৰণ কৰিবলৈ পুনৰ ষ্টক কৰা হৈছে অথবা পুনৰায় ভাল অৱস্থালৈ অনা হৈছে, তেন্তে এই বিকল্পটো বাছনি কৰক।</translation>
+<translation id="4503223151711056411">লেফ্ট এৰ’</translation>
 <translation id="4511264077854731334">প’ৰ্টেল</translation>
 <translation id="4521826082652183069">বিষয়ৰ বিকল্প নামৰ সৈতে মিলা</translation>
 <translation id="4536864596629708641">আইপি কনফিগাৰেশ্বন</translation>
@@ -289,10 +298,12 @@
 <translation id="4562494484721939086">কোনো সেৱা নাই</translation>
 <translation id="458794348635939462">হ’ষ্ট সম্পৰ্কীয় সকলো সমস্যা সমাধান কৰাত বিফল হ'ল</translation>
 <translation id="4593212453765072419">প্ৰ’ক্সী বিশ্বাসযোগ্যতাৰ প্ৰমাণীকৰণৰ আৱশ্যক</translation>
+<translation id="4609350030397390689">কীব’ৰ্ডৰ উজ্জ্বলতা ডাউন</translation>
 <translation id="4627232916386272576"><ph name="TOTAL_PAGE_NUMBER" />ৰ ভিতৰত <ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />। প্ৰিণ্টৰ কাৰ্যটো বাতিল কৰিবলৈ এণ্টাৰ টিপক।</translation>
 <translation id="4627645661474370390">ৰিম’ট পৰিচয়</translation>
 <translation id="463791356324567266">স্কেন বাতিল কৰি থকা হৈছে…</translation>
 <translation id="4646949265910132906">সুৰক্ষিত ৱাই-ফাই সংযোগ</translation>
+<translation id="4650608062294027130">ৰাইট শ্বিফ্ট</translation>
 <translation id="4654549501020883054">দৈনিক সলনি কৰক</translation>
 <translation id="4665014895760275686">উৎপাদনকাৰী</translation>
 <translation id="467510802200863975">পাছৱৰ্ডসমূহ মিলা নাই</translation>
@@ -391,8 +402,10 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">পুনৰ স্কেন কৰক</translation>
 <translation id="5583640892426849032">বেকস্পেচ</translation>
+<translation id="5600027863942488546"><ph name="KEY_NAME" /> কী পৰীক্ষা কৰা হৈছে</translation>
 <translation id="5620281292257375798">কেৱল অভ্যন্তৰীণ</translation>
 <translation id="5649768706273821470">শুনক</translation>
+<translation id="5655283760733841251">কীব’ৰ্ডৰ উজ্জ্বলতা আপ</translation>
 <translation id="5669267381087807207">সক্ৰিয় কৰা হৈছে</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">পৰিয়াল</translation>
@@ -400,6 +413,7 @@
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" />ৰ <ph name="CURRENT_PAGE" /></translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> আপডে’ট কৰক</translation>
 <translation id="5760715441271661976">প’ৰ্টেল ষ্টে’ট</translation>
+<translation id="576835345334454681">ডিছপ্লে’ৰ উজ্জ্বলতা আপ</translation>
 <translation id="57838592816432529">মিউট কৰক</translation>
 <translation id="5784136236926853061">HTTPৰ উচ্চ বিলম্বতা</translation>
 <translation id="5832805196449965646">অন্য লোক যোগ কৰক</translation>
@@ -430,6 +444,7 @@
 <translation id="6104112872696127344">স্কেনিং বাতিল কৰা হৈছে</translation>
 <translation id="6106186594183574873">সম্পূর্ণ কৰিবলৈ আপোনাৰ পুৰণি পাছৱর্ড দিয়ক</translation>
 <translation id="6108689792487843350">গেইটৱে'টো পাব পৰা অৱস্থাত নাই</translation>
+<translation id="6113701710518389813">আপ এৰ’</translation>
 <translation id="6122191549521593678">অনলাইন</translation>
 <translation id="6137767437444130246">ব্যৱহাৰকাৰীৰ প্ৰমাণপত্ৰ</translation>
 <translation id="6146993107019042706">সম্পূর্ণ কৰিবলৈ আপোনাৰ নতুন পাছৱর্ড দিয়ক</translation>
@@ -443,6 +458,7 @@
 <translation id="6232017090690406397">বেটাৰী</translation>
 <translation id="6235460611964961764">ডেটাৰ ব্যৱহাৰ মেনুৱেলভাৱে ৰিছেট কৰক</translation>
 <translation id="6243280677745499710">বর্তমান ছেট কৰা ৱালপেপাৰ</translation>
+<translation id="6275224645089671689">ৰাইট এৰ’</translation>
 <translation id="6278428485366576908">থীম</translation>
 <translation id="6280912520669706465">এআৰচি</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> পৰীক্ষাটো বাতিল কৰা হৈছে</translation>
@@ -478,6 +494,7 @@
 <translation id="6620487321149975369">প্ৰিণ্টিঙৰ কামসমূহ মেনুৱেলভাৱে আঁতৰাই নিদিয়ালৈকে সেইসমূহ ইতিহাসত দেখা পোৱা যাব</translation>
 <translation id="6643016212128521049">মচক</translation>
 <translation id="6647510110698214773">এনক্ৰিপশ্বনৰ এলগ’ৰিডম</translation>
+<translation id="6650062777702288430">কানা/আলফানিউমেৰিক ছুইচ</translation>
 <translation id="6657585470893396449">পাছৱৰ্ড</translation>
 <translation id="6659594942844771486">টেব</translation>
 <translation id="6692996468359469499">আপুনি বাছনি সম্পর্কীয় তথ্য পাওক</translation>
@@ -690,6 +707,7 @@
 <translation id="9122602430962285795">পুনৰ সংযোগ কৰিবলৈ, ছেটিঙলৈ যাওক</translation>
 <translation id="9126720536733509015">একেটা PDFত একাধিক পৃষ্ঠা ছেভ কৰক</translation>
 <translation id="9137526406337347448">Google সেৱা</translation>
+<translation id="9138630967333032450">লেফ্ট শ্বিফ্ট</translation>
 <translation id="9149391708638971077">মেম’ৰি পৰীক্ষা চলাওক</translation>
 <translation id="9173638680043580060">এক মিনিটতকৈ কম সময় বাকী আছে</translation>
 <translation id="917720651393141712">পৰীক্ষা কৰক</translation>

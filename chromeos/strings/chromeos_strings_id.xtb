@@ -20,6 +20,7 @@
 <translation id="1181037720776840403">Hapus</translation>
 <translation id="1195447618553298278">Kesalahan tak dikenal.</translation>
 <translation id="1196959502276349371">Versi <ph name="VERSION" /></translation>
+<translation id="1199355487114804640">Putar/Jeda</translation>
 <translation id="1201402288615127009">Berikutnya</translation>
 <translation id="1204296502688602597">Latensi DNS</translation>
 <translation id="123124571410524056">Portal dicurigai</translation>
@@ -43,6 +44,7 @@
 <translation id="1413240736185167732">Gagal - Filter gagal</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Saya memiliki pasangan kunci</translation>
+<translation id="1423591390236870726">Tombol <ph name="KEY_NAME" /> tidak ditekan</translation>
 <translation id="1435763214710588005">Otomatis mereset penggunaan data setiap bulan pada tanggal yang dipilih</translation>
 <translation id="1442433966118452622">Sumber gambar</translation>
 <translation id="1451536289672181509">Perangkat adalah keyboard.</translation>
@@ -84,6 +86,7 @@
 <translation id="1827738518074806965">Galeri seni</translation>
 <translation id="1851218745569890714">Konferensi Video</translation>
 <translation id="1852934301711881861">Instal ChromeOS Flex</translation>
+<translation id="1856388568474281774">Panah bawah</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Revisi hardware</translation>
 <translation id="1905710495812624430">Melebihi batas percobaan maksimum yang diizinkan.</translation>
@@ -98,6 +101,7 @@
 <translation id="2016697457005847575">Coba langkah-langkah pemecahan masalah</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Setelan lain</translation>
+<translation id="2085089206770112532">Kurangi kecerahan layar</translation>
 <translation id="2104796393919810494">Perbaikan selesai</translation>
 <translation id="2105810540595158374">Perangkat adalah pengontrol game.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versi <ph name="MILESTONE_VERSION" /></translation>
@@ -116,6 +120,7 @@
 <translation id="222447520299472966">Minimal satu album Galeri seni harus dipilih</translation>
 <translation id="2230005943220647148">Celsius</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2240366984605217732">Beralih tata letak</translation>
 <translation id="225692081236532131">Status aktivasi</translation>
 <translation id="2287186687001756809">Foto tidak tersedia. Untuk menambahkan foto, buka <ph name="LINK" /></translation>
 <translation id="2307344026739914387">Gunakan pasangan kunci saat ini</translation>
@@ -207,9 +212,11 @@
 <translation id="357889014807611375">Wi-Fi berbayar</translation>
 <translation id="3583278742022654445">Kekuatan sinyal lemah. Coba mendekat ke sumber sinyal Wi-Fi.</translation>
 <translation id="3595596368722241419">Baterai penuh</translation>
+<translation id="3600339377155080675">Pencerminan layar</translation>
 <translation id="3603829704940252505">Avatar</translation>
 <translation id="360565022852130722">Jaringan Wi-Fi diamankan dengan protokol WEP 802.1x yang lemah</translation>
 <translation id="3606583719724308068">Latensi tinggi untuk situs HTTPS</translation>
+<translation id="3632579075709132555">Beralih layar privasi</translation>
 <translation id="3689839747745352263">Uji <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Memuat...</translation>
 <translation id="3708186454126126312">Terhubung sebelumnya</translation>
@@ -263,6 +270,7 @@
 <translation id="4289540628985791613">Ikhtisar</translation>
 <translation id="4297501883039923494">Dihentikan - Error tidak diketahui</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Gambar</translation>
+<translation id="4333390807948134856">Tombol <ph name="KEY_NAME" /> ditekan</translation>
 <translation id="4378373042927530923">Tidak Berjalan</translation>
 <translation id="4378551569595875038">Menghubungkan...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -278,6 +286,7 @@
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Gagal melakukan ping ke gateway jaringan non-default</translation>
 <translation id="4485626319513081846">Pilih opsi ini jika perangkat sedang di-stok ulang atau di-refurbished untuk dikirimkan kepada pelanggan baru.</translation>
+<translation id="4503223151711056411">Panah kiri</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Kecocokan nama alternatif subjek</translation>
 <translation id="4536864596629708641">Konfigurasi IP</translation>
@@ -289,10 +298,12 @@
 <translation id="4562494484721939086">Tidak ada layanan</translation>
 <translation id="458794348635939462">Gagal me-resolve semua host</translation>
 <translation id="4593212453765072419">Autentikasi Proxy dibutuhkan</translation>
+<translation id="4609350030397390689">Kurangi kecerahan keyboard</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> dari <ph name="TOTAL_PAGE_NUMBER" />. Tekan enter untuk membatalkan tugas pencetakan.</translation>
 <translation id="4627645661474370390">Identitas jarak jauh</translation>
 <translation id="463791356324567266">Membatalkan pemindaian ...</translation>
 <translation id="4646949265910132906">Koneksi Wi-Fi aman</translation>
+<translation id="4650608062294027130">Shift kanan</translation>
 <translation id="4654549501020883054">Ubah Tiap Hari</translation>
 <translation id="4665014895760275686">Produsen</translation>
 <translation id="467510802200863975">Sandi tidak cocok</translation>
@@ -391,8 +402,10 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Pindai ulang</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5600027863942488546">Tombol <ph name="KEY_NAME" /> diuji</translation>
 <translation id="5620281292257375798">Khusus internal</translation>
 <translation id="5649768706273821470">Dengar</translation>
+<translation id="5655283760733841251">Tingkatkan kecerahan keyboard</translation>
 <translation id="5669267381087807207">Mengaktifkan</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Keluarga</translation>
@@ -400,6 +413,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> dari <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Update <ph name="DEVICE_NAME" /></translation>
 <translation id="5760715441271661976">Status Portal</translation>
+<translation id="576835345334454681">Tingkatkan kecerahan layar</translation>
 <translation id="57838592816432529">Bisukan</translation>
 <translation id="5784136236926853061">Latensi HTTP tinggi</translation>
 <translation id="5832805196449965646">Tambahkan Pengguna</translation>
@@ -430,6 +444,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="6104112872696127344">Pemindaian telah dibatalkan</translation>
 <translation id="6106186594183574873">Untuk menyelesaikan, masukkan sandi yang lama</translation>
 <translation id="6108689792487843350">Gateway tidak dapat dijangkau</translation>
+<translation id="6113701710518389813">Panah atas</translation>
 <translation id="6122191549521593678">Online</translation>
 <translation id="6137767437444130246">Sertifikat pengguna</translation>
 <translation id="6146993107019042706">Untuk menyelesaikan, masukkan sandi yang baru</translation>
@@ -443,6 +458,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="6232017090690406397">Baterai</translation>
 <translation id="6235460611964961764">Reset penggunaan data secara manual</translation>
 <translation id="6243280677745499710">Yang disetel saat ini</translation>
+<translation id="6275224645089671689">Panah kanan</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515">Pengujian <ph name="TEST_NAME" /> telah dibatalkan</translation>
@@ -478,6 +494,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="6620487321149975369">Tugas pencetakan akan muncul di histori, kecuali dihapus secara manual</translation>
 <translation id="6643016212128521049">Hapus</translation>
 <translation id="6647510110698214773">Algoritme enkripsi</translation>
+<translation id="6650062777702288430">Beralih kana/alfanumerik</translation>
 <translation id="6657585470893396449">Sandi</translation>
 <translation id="6659594942844771486">Tab</translation>
 <translation id="6692996468359469499">Dapatkan info terkait pilihan Anda</translation>
@@ -690,6 +707,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="9122602430962285795">Untuk menghubungkan kembali, buka Setelan</translation>
 <translation id="9126720536733509015">Simpan beberapa halaman ke satu PDF</translation>
 <translation id="9137526406337347448">Layanan Google</translation>
+<translation id="9138630967333032450">Shift kiri</translation>
 <translation id="9149391708638971077">Jalankan pengujian Memori</translation>
 <translation id="9173638680043580060">Kurang dari satu menit lagi</translation>
 <translation id="917720651393141712">Uji</translation>

@@ -31,6 +31,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1150989369772528668">Kalendarz</translation>
 <translation id="1153356358378277386">Sparowane urządzenia</translation>
 <translation id="1165712434476988950">Aby zastosować aktualizację, musisz ponownie uruchomić urządzenie.</translation>
+<translation id="1171742223880403396">Kabel USB-C może nie łączyć się prawidłowo z wyświetlaczami</translation>
 <translation id="1175572348579024023">Przewijanie</translation>
 <translation id="1178581264944972037">Wstrzymaj</translation>
 <translation id="1181037720776840403">Usuń</translation>
@@ -126,6 +127,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1677507110654891115">Funkcja <ph name="FEATURE_NAME" /> nie ma połączenia.</translation>
 <translation id="1698080062160024910">Minutnik <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">Adres IPv6: <ph name="ADDRESS" /></translation>
+<translation id="1703117532528082099">Aktywne okno zadokowano po lewej.</translation>
 <translation id="1708345662127501511">Biurko: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Ustawienia sieci</translation>
 <translation id="1715293566947629045">Wyłączam profil. Zaczekaj kilka minut.</translation>
@@ -197,6 +199,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2132302418721800944">Nagraj cały ekran</translation>
 <translation id="2135456203358955318">Lupa zadokowana</translation>
 <translation id="2148716181193084225">Dzisiaj</translation>
+<translation id="2159930836979502091">Przejdź do tej karty</translation>
 <translation id="2170530631236737939">Aby zamknąć Przegląd, przesuń 3 palcami w dół</translation>
 <translation id="219905428774326614">Menu ze wszystkimi aplikacjami</translation>
 <translation id="2201071101391734388">Najnowsze zdjęcie <ph name="INDEX" /> z <ph name="TOTAL_COUNT" />.</translation>
@@ -274,6 +277,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2727977024730340865">Podłączono ładowarkę o małej mocy. Ładowanie baterii może być nieprawidłowe.</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">„Usuń”</translation>
+<translation id="2750941250130734256">Aktywne okno zostało oddokowane.</translation>
 <translation id="2778650143428714839">Urządzenie <ph name="DEVICE_TYPE" /> zarządzane przez <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Zamknij tryb przechwytywania</translation>
 <translation id="2791421900609674576">Zobaczysz rekomendacje, dzięki którym możesz kontynuować od ostatniego miejsca. Aby je usunąć, naciśnij i przytrzymaj.</translation>
@@ -563,6 +567,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 ważne powiadomienie}few{# ważne powiadomienia}many{# ważnych powiadomień}other{# ważnego powiadomienia}}</translation>
 <translation id="4450893287417543264">Nie pokazuj ponownie</translation>
 <translation id="4451374464530248585">Skrót klawiszowy Alt + strzałka w dół został zmieniony. Aby użyć klawisza Page Down, naciśnij klawisz <ph name="LAUNCHER_KEY_NAME" /> + strzałka w dół.</translation>
+<translation id="4455051983450390249">Zobacz powiadomienia z telefonu na urządzeniu <ph name="DEVICE_TYPE" /></translation>
 <translation id="445864333228800152">Dobry wieczór,</translation>
 <translation id="4458688154122353284">Zatrzymaj nagrywanie ekranu</translation>
 <translation id="4471354919263203780">Pobieram pliki rozpoznawania mowy... <ph name="PERCENT" />%</translation>
@@ -770,6 +775,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="583281660410589416">Nieznany</translation>
 <translation id="5837036133683224804">Zatrzymaj usługę <ph name="ROUTE_TITLE" /> na urządzeniu <ph name="RECEIVER_NAME" /></translation>
 <translation id="584525477304726060">Przytrzymaj, aby zmaksymalizować</translation>
+<translation id="5856638668464565213">Sieć <ph name="NETWORK_NAME" /> nie została aktywowana.</translation>
 <translation id="5860033963881614850">Wyłączone</translation>
 <translation id="5860491529813859533">Włącz</translation>
 <translation id="5867217927013474703">Zbieram informacje o sieci</translation>
@@ -784,6 +790,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Włączone</translation>
 <translation id="5920710855273935292">Mikrofon jest wyciszony.</translation>
+<translation id="5924838240953214369">Tryb przechwytywania, domyślny to <ph name="SOURCE" /> <ph name="TYPE" />. Tłumaczenie tekstu ze zdjęć ustawiono na kamerę <ph name="CAMERA_NAME" />, podgląd włączony. Aby poruszać się za pomocą klawiatury, naciśnij Tab.</translation>
 <translation id="5946788582095584774">Funkcja <ph name="FEATURE_NAME" /> jest włączona.</translation>
 <translation id="5947494881799873997">Przywróć</translation>
 <translation id="595202126637698455">Śledzenie wydajności jest włączone</translation>
@@ -801,6 +808,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="602472752137106327">Wybrano opcję Pokaż okna ze wszystkich biurek</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />, zarządzana przez administratora</translation>
 <translation id="6027518778343897451">Brak wydarzeń na <ph name="CURRENT_MONTH_DAY" />. Naciśnij Enter, aby otworzyć Kalendarz Google w przeglądarce.</translation>
+<translation id="6027952026115023659">Otwórz komunikatory z telefonu na urządzeniu <ph name="DEVICE_TYPE" /></translation>
 <translation id="6030495522958826102">Menu zostało przeniesione w lewy dolny róg ekranu.</translation>
 <translation id="6032620807120418574">Aby zrobić zrzut całego ekranu, kliknij w dowolnym miejscu</translation>
 <translation id="6040071906258664830">Nagrywanie z mikrofonu <ph name="STATE" /></translation>
@@ -943,6 +951,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="6961121602502368900">Funkcja Wyciszenie telefonu jest niedostępna w profilu służbowym</translation>
 <translation id="6961840794482373852">Skrót klawiszowy Alt + strzałka w górę został zmieniony. Aby użyć klawisza Page Up, naciśnij klawisz <ph name="LAUNCHER_KEY_NAME" /> + strzałka w górę.</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6967933908874208731">Wyświetlaj najnowsze zdjęcia, pliki multimedialne, powiadomienia i komunikatory z telefonu na urządzeniu <ph name="DEVICE_TYPE" /></translation>
 <translation id="6972754398087986839">Rozpocznij</translation>
 <translation id="6979158407327259162">Dysk Google</translation>
 <translation id="6981982820502123353">Ułatwienia dostępu</translation>
@@ -1038,6 +1047,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="7564874036684306347">Przenoszenie okien na inny pulpit może spowodować nieoczekiwane zachowanie. Kolejne powiadomienia, okna i okna dialogowe mogą pojawiać się na różnych pulpitach.</translation>
 <translation id="7569509451529460200">Włączono Braille'a i ChromeVox</translation>
 <translation id="7569983096843329377">Czarny</translation>
+<translation id="7573585051776738856">Aktywne okno zadokowano po prawej.</translation>
 <translation id="7579778809502851308">Zrzut ekranu</translation>
 <translation id="7590883480672980941">Ustawienia wprowadzania</translation>
 <translation id="7593891976182323525">Szukaj lub Shift</translation>

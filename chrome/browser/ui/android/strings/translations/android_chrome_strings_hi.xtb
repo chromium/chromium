@@ -30,6 +30,7 @@
 <translation id="114825011539563458">निजता और सुरक्षा की सबसे अहम सेटिंग, एक जगह पर</translation>
 <translation id="1149401351239820326">समाप्ति माह</translation>
 <translation id="1154704303112745282">यह पेज ऑफ़लाइन उपलब्ध नहीं है: <ph name="VIOLATED_URL" /></translation>
+<translation id="1166688006062225587">चुने जाने वाली खातों की सूची.</translation>
 <translation id="1171770572613082465">"मुख्य साइटें" बटन पर टैप करके लोकप्रिय साइटें देखें</translation>
 <translation id="1173894706177603556">नाम बदलें</translation>
 <translation id="1177863135347784049">कस्टम</translation>
@@ -195,7 +196,6 @@
 <translation id="2141396931810938595">आपके इस्तेमाल करने के हिसाब से</translation>
 <translation id="214888715418183969">चुनें कि Chrome के साथ आपकी क्या जानकारी शेयर की जाए. आप जो मेट्रिक शेयर करते हैं उसका इस्तेमाल, Chrome की सुविधाओं और परफ़ॉर्मेंस को बेहतर बनाने में किया जाएगा. साथ ही, इसका इस्तेमाल क्रैश होने जैसी दिक्कतों को ठीक करने में भी होगा.</translation>
 <translation id="2149973817440762519">बुकमार्क में बदलाव करें</translation>
-<translation id="2154484045852737596">कार्ड में बदलाव करें</translation>
 <translation id="2157851137955077194">अपने फ़ोन से किसी दूसरे डिवाइस पर कुछ शेयर करने के लिए, दोनों डिवाइस पर Chrome की सेटिंग में जाकर सिंक की सुविधा चालू करें</translation>
 <translation id="2158408438301413340">Chrome सभी पासवर्ड की जांच नहीं कर सका</translation>
 <translation id="2169830938017475061">अभी</translation>
@@ -685,6 +685,7 @@
 <translation id="4988526792673242964">पेज</translation>
 <translation id="5001388021414335527">इस साइट को यहां फ़ॉलो करें</translation>
 <translation id="5004416275253351869">Google गतिविधि नियंत्रण</translation>
+<translation id="5005141133360250920">प्रतिक्रिया मिटाई गई</translation>
 <translation id="5005498671520578047">पासवर्ड कॉपी करें</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> कनेक्ट करना चाहती है</translation>
 <translation id="5016205925109358554">Serif</translation>
@@ -693,7 +694,6 @@
 <translation id="5054455334322721892">जब आप साइन इन रहते हैं, तब हो सकता है कि <ph name="BEGIN_LINK1" />अन्य तरह की गतिविधियां<ph name="END_LINK1" /> आपके Google खाते में सेव हो जाएं. आप किसी भी समय उन्हें मिटा सकते हैं.</translation>
 <translation id="5061533557687621530">मौसम की जानकारी के लिए, माइक पर टैप करें और “आज मौसम कैसा है?” कहें</translation>
 <translation id="506254248375231072">कोई टैब नहीं है</translation>
-<translation id="5087580092889165836">कार्ड जोड़ें</translation>
 <translation id="5091199029769593641">जल्द ही, कोई भी नया टैब खोलते ही आपको <ph name="SITE_NAME" /> से जुड़ी जानकारी दिखेगी. आप जिन साइटों को फ़ॉलो करते हैं वे आपके Google खाते में सेव हो जाती हैं. आप उन्हें डिस्कवर की सेटिंग में मैनेज कर सकते हैं.</translation>
 <translation id="5091249083535528968">इस्तेमाल के बारे में ज़्यादा डेटा</translation>
 <translation id="509429900233858213">कोई गड़बड़ी हुई.</translation>
@@ -741,6 +741,7 @@
 <translation id="5368227114232678694">इस डिवाइस पर निजी रूप से ब्राउज़ करने के लिए, गुप्त टैब का इस्तेमाल करें</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> टैब खुला है, एक टैब से दूसरे टैब पर जाने के लिए टैप करें}one{<ph name="OPEN_TABS_MANY" /> टैब खुले हैं, एक टैब से दूसरे टैब पर जाने के लिए टैप करें}other{<ph name="OPEN_TABS_MANY" /> टैब खुले हैं, एक टैब से दूसरे टैब पर जाने के लिए टैप करें}}</translation>
 <translation id="5375577065097716013">Google Lens से इमेज खोजें <ph name="BEGIN_NEW" />नया<ph name="END_NEW" /></translation>
+<translation id="5376898820269806588">प्रतिक्रिया बदली गई</translation>
 <translation id="5403644198645076998">सिर्फ़ कुछ निश्चित साइटों को ही अनुमति दें</translation>
 <translation id="5409881200985013443">क्या आप <ph name="CLIENT_NAME" /> पर <ph name="ONE_TIME_CODE" /> सबमिट करना चाहते हैं?</translation>
 <translation id="5414836363063783498">सत्यापन हो रहा है...</translation>
@@ -789,6 +790,7 @@
 <translation id="5665379678064389456"><ph name="APP_NAME" /> में इवेंट बनाएं</translation>
 <translation id="5683547024293500885">Chrome, अपडेट की जांच नहीं कर सकता</translation>
 <translation id="5686790454216892815">फ़ाइल का नाम बहुत लंबा है</translation>
+<translation id="5692329390578659217">जारी रखने के लिए, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> इस साइट के साथ आपका नाम, ईमेल, पता, और प्रोफ़ाइल फ़ोटो शेयर करेगा. इस साइट की <ph name="BEGIN_LINK1" />निजता नीति<ph name="END_LINK1" /> और <ph name="BEGIN_LINK2" />सेवा की शर्तें<ph name="END_LINK2" /> देखें.</translation>
 <translation id="569536719314091526">'ज़्यादा विकल्प' बटन से इस पेज का अनुवाद किसी भी भाषा में करें</translation>
 <translation id="5696597120588531049">Chrome आपको डेटा के गलत इस्तेमाल, नुकसान पहुंचाने वाली वेबसाइटों वगैरह से सुरक्षित रहने में मदद कर सकता है</translation>
 <translation id="5697688514913266141">आपकी फ़ाइल <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" /> में सेव की जाएगी. <ph name="BEGIN_LINK2" />बदलाव करें<ph name="END_LINK2" />.</translation>
@@ -897,6 +899,7 @@
 <translation id="6277522088822131679">पेज को प्रिंट करने में समस्या थी. कृपया फिर से प्रयास करें.</translation>
 <translation id="6277722725779679269">ट्रैक की गई कीमत अपडेट नहीं हो सकी</translation>
 <translation id="6278428485366576908">थीम</translation>
+<translation id="6293443105724342169">चुने जाने वाले खातों की सूची आधी स्क्रीन पर खुलेगी.</translation>
 <translation id="6294610283659775533">आप उन डिवाइसों के बीच टैब शेयर कर सकते हैं जिन पर एक ही Google खाते से साइन इन किया हो</translation>
 <translation id="6297765934698848803">आपके डिवाइस काे प्रबंधित करने वाले संगठन ने आपका कैमरा बंद कर दिया है.</translation>
 <translation id="6301525844455696527">पढ़ने की चीज़ों की सूची में आपके लिए बहुत कुछ नया है</translation>
@@ -1072,6 +1075,7 @@
 <translation id="718926126787620637">बुकमार्क फ़ोल्डर वाली सूची, पूरी स्क्रीन पर खोली गई</translation>
 <translation id="7191430249889272776">पृष्ठभूमि में टैब खोला गया.</translation>
 <translation id="7196215469483532480">निजता गाइड के बारे में जानकारी देने वाली शीट, पूरी स्क्रीन पर खुली है</translation>
+<translation id="7208109991155904980">प्रतिक्रिया दूसरी जगह ले जाई गई</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 डाउनलोड बाकी है}one{# डाउनलोड बाकी हैं}other{# डाउनलोड बाकी हैं}}</translation>
 <translation id="7237045078887540010">Chrome इस्तेमाल करने का मतलब है कि आप <ph name="BEGIN_TOS_LINK" />Google की सेवा की शर्तों<ph name="END_TOS_LINK" /> के साथ-साथ <ph name="BEGIN_ATOS_LINK" />Google Chrome और Chrome OS की सेवा की अन्य शर्तों<ph name="END_ATOS_LINK" /> से सहमत हैं. <ph name="BEGIN_PRIVACY_LINK" />निजता नीति<ph name="END_PRIVACY_LINK" /> भी लागू होगी.</translation>
 <translation id="7242755609445462077">बेहतर बनाई गई हाइलाइट <ph name="CURRENT_DATE" /></translation>
@@ -1116,6 +1120,7 @@
 <translation id="7474822150871987353">पेज को बंद किए बिना, वेबसाइटों पर दिए गए विषयों के बारे में जानें. खोजने के लिए, पेज पर एक या उससे ज़्यादा शब्द चुनें.</translation>
 <translation id="7475192538862203634">अगर आपको यह बार-बार दिखाई दे रहा हो, तो इन <ph name="BEGIN_LINK" />सुझावों<ph name="END_LINK" /> को आज़माएं.</translation>
 <translation id="7475688122056506577">SD कार्ड नहीं मिला. हो सकता है कि आपकी कुछ फ़ाइलें उपलब्ध न हों.</translation>
+<translation id="7477262822945323753">जारी रखने के लिए, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> इस साइट के साथ आपका नाम, ईमेल, पता, और प्रोफ़ाइल फ़ोटो शेयर करेगा. इस साइट की <ph name="BEGIN_LINK1" />निजता नीति<ph name="END_LINK1" /> देखें.</translation>
 <translation id="7479104141328977413">टैब प्रबंधन</translation>
 <translation id="7481312909269577407">आगे जाएं</translation>
 <translation id="7482656565088326534">झलक टैब</translation>
@@ -1289,6 +1294,7 @@
 <translation id="8394720698884623075">Chrome में पहले से सेव की गई असुरक्षित साइटों की सूची का इस्तेमाल करके, यूआरएल की जांच की जाती है</translation>
 <translation id="8410695015584479363">कीमतें ट्रैक करें</translation>
 <translation id="8413126021676339697">पूरा इतिहास दिखाएं</translation>
+<translation id="8414396119627470038"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> की मदद से, <ph name="SITE_ETLD_PLUS_ONE" /> में साइन इन करें</translation>
 <translation id="8419244640277402268">शामिल करें</translation>
 <translation id="8424781820952413435">पेज भेजा गया. इसे देखने के लिए, अपने <ph name="DEVICE_TYPE" /> पर Chrome खोलें</translation>
 <translation id="8427875596167638501">'झलक' टैब आधी स्क्रीन में खुला हुआ है</translation>
@@ -1304,6 +1310,7 @@
 <translation id="8461694314515752532">सिंक किए गए डेटा को अपने खुद के सिंक लंबे पासवर्ड से सुरक्षित करें</translation>
 <translation id="8466613982764129868">पक्का करें कि <ph name="TARGET_DEVICE_NAME" /> को इंटरनेट से कनेक्ट किया गया है</translation>
 <translation id="8473863474539038330">पते वगैरह</translation>
+<translation id="847656914027543776">चुने जाने वाले खातों की सूची बंद है.</translation>
 <translation id="8481921391193215807">इसे चालू करने पर, साइटें अपना कॉन्टेंट और सेवाएं उपलब्ध कराने के लिए, यहां दिखाई गई 'निजता की सुरक्षा से जुड़ी तकनीकें' इस्तेमाल कर सकती हैं. इनमें ऐसे तरीके शामिल हैं जिन्हें क्रॉस-साइट ट्रैकिंग की जगह इस्तेमाल किया जा सकता है. बाद में, मुफ़्त में आज़माने की सुविधा ज़्यादा बार दी जा सकती है.
 
 <ph name="BEGIN_LIST_ITEM1" />विज्ञापन देने वाले और प्रकाशक, FLoC इस्तेमाल कर सकते हैं.<ph name="END_LIST_ITEM1" />
@@ -1383,6 +1390,7 @@
 <translation id="8881973373982641723">ब्राउज़िंग का इतिहास मिटाता है और इसमें खोज बॉक्स का ब्राउज़िंग इतिहास भी शामिल है.</translation>
 <translation id="889338405075704026">Chrome की सेटिंग में जाएं</translation>
 <translation id="8898822736010347272">आप जिन पेजों पर जाते हैं उनमें से कुछ के यूआरएल, सिस्टम की सीमित जानकारी, और पेज की कुछ सामग्री को यह Google को भेजता है. ऐसा इसलिए जिससे कि नए खतरों को खोजा जा सके और वेब पर सभी सुरक्षित रहें.</translation>
+<translation id="8906502871739599113">प्रतिक्रिया डुप्लीकेट है</translation>
 <translation id="8909135823018751308">शेयर करें…</translation>
 <translation id="8912362522468806198">Google खाता</translation>
 <translation id="8920114477895755567">अभिभावकों के विवरण की प्रतीक्षा कर रहे हैं.</translation>
@@ -1402,6 +1410,7 @@
 <translation id="8970887620466824814">कुछ गड़बड़ी हुई.</translation>
 <translation id="8972098258593396643">डिफ़ॉल्ट फ़ोल्डर में डाउनलोड करें?</translation>
 <translation id="8987641763863173640">वीडियो की झलक की सेटिंग मैनेज करें</translation>
+<translation id="898854820045159673">प्रतिक्रिया जोड़ी गई</translation>
 <translation id="8993760627012879038">गुप्त मोड में नया टैब खोलें</translation>
 <translation id="8996847606757455498">सेवा देने वाली कोई और कंपनी चुनें</translation>
 <translation id="8998729206196772491">आप <ph name="MANAGED_DOMAIN" /> से प्रबंधित खाते में साइन इन कर रहे हैं और उसके एडमिन को अपने Chrome डेटा पर नियंत्रण दे रहे हैं. आपका डेटा इस खाते से स्थायी रूप से जुड़ जाएगा. Chrome से साइन आउट करने से आपका डेटा इस डिवाइस से मिट जाएगा, लेकिन वह आपके Google खाते में बना रहेगा.</translation>
@@ -1430,12 +1439,14 @@
 <translation id="9108312223223904744">फ़ोन को सुरक्षा कुंजी के तौर पर इस्तेमाल करें</translation>
 <translation id="9108808586816295166">हो सकता है कि सुरक्षित डीएनएस हर समय उपलब्ध न हो</translation>
 <translation id="9133397713400217035">ऑफ़लाइन सामग्री देखें</translation>
+<translation id="9133523398139146080">चुने जाने वाले खातों की सूची पूरी स्क्रीन पर खुलेगी.</translation>
 <translation id="9137013805542155359">मूल दिखाएं</translation>
 <translation id="9148126808321036104">फिर से साइन इन करें</translation>
 <translation id="9155898266292537608">आप किसी शब्द पर बस एक टैप करके भी खोज सकते हैं</translation>
 <translation id="9158770349521403363">सिर्फ़ कॉन्टेंट शेयर करें</translation>
 <translation id="916446198114569890">आप जिन यूआरएल पर जाते हैं वे आपके Google खाते में सेव हो जाते हैं</translation>
 <translation id="9169507124922466868">नेविगेशन का इतिहास आधी स्क्रीन में खुला हुआ है</translation>
+<translation id="9187955620966010988">प्रतिक्रिया में बदलाव किया गया</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{जांच 1 मिनट पहले की गई}one{जांच # मिनट पहले की गई}other{जांच # मिनट पहले की गई}}</translation>
 <translation id="9204836675896933765">1 फ़ाइल बची है</translation>
 <translation id="9205933215779845960">वह पेज नहीं मिला. स्पेलिंग की जांच करें या <ph name="SEARCH_ENGINE" /> पर खोजें.</translation>

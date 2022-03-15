@@ -3973,10 +3973,6 @@
 <translation id="4918086044614829423">လက်ခံရန်</translation>
 <translation id="4918134162946436591">အရိပ်အမြွက်ထပ်ပိုးလွှာ ပြပါ</translation>
 <translation id="4921348630401250116">စာသားမှ စကားပြော</translation>
-<translation id="4921809350408880559">Google Drive အသုံးပြုထားသော သင်၏ ယခင်ကလုပ်ဆောင်ချက်အပေါ် အခြေခံပြီး လတ်တလောနှင့် အကြံပြုထားသော မှတ်တမ်းဖိုင်များကို မြင်ရခြင်းဖြစ်ပါသည်။
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        Google Drive စုဆောင်းသည့် ဒေတာများအကြောင်းနှင့် မည်သည့်အတွက်ကြောင့် စုဆောင်းကြောင်း <ph name="BEGIN_LINK" />ဤနေရာ<ph name="END_LINK" /> တွင် လေ့လာပါ။</translation>
 <translation id="492299503953721473">Android အက်ပ်များကို ဖယ်ရှားပါ</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" /> ကို ဖယ်ရှားနေသည်...</translation>
 <translation id="4924002401726507608">အကြံပြုချက် ပို့ရန်</translation>
@@ -6193,7 +6189,6 @@
 <translation id="7191159667348037">အမျိုးအမည်မသိ ပရင်တာ (USB)</translation>
 <translation id="7193051357671784796">ဤအက်ပ်ကို သင့်အဖွဲ့အစည်းက ထည့်ထားပါသည်။ အက်ပ်စနစ်ထည့်သွင်းမှု အပြီးသတ်ရန် ၎င်းကိုပြန်စတင်ပါ။</translation>
 <translation id="7193374945610105795"><ph name="ORIGIN" /> အတွက် မည်သည့်စကားဝှက်မျှ သိမ်းမထားပါ</translation>
-<translation id="7196020411877309443">ကျွန်ုပ် ဒါကို မြင်နေရတာ ဘာကြောင့်လဲ?</translation>
 <translation id="7196913789568937443">Google Drive သို့ အရန်သိမ်းပါ။ သင့်ဒေတာများကို ပြန်ယူခြင်း (သို့) စက်ပစ္စည်းပြောင်းခြင်းတို့ အချိန်မရွေး လွယ်ကူစွာပြုလုပ်နိုင်သည်။ သင့်အရန်တွင် အက်ပ်ဒေတာများ ပါဝင်သည်။ သင်၏ Google အကောင့်စကားဝှက် အသုံးပြု၍ ၎င်းတို့ကို Google သို့ အပ်လုဒ်လုပ်ပြီး အသွင်ဝှက်ထားပါသည်။<ph name="BEGIN_LINK1" />ပိုမိုလေ့လာရန်<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">သင်အသုံးပြုသည့်အခါတိုင်း Google Search Google smarts တို့ကို ရယူပါ</translation>
 <translation id="719791532916917144">လက်ကွက်ဖြတ်လမ်းများ</translation>
@@ -7359,10 +7354,6 @@
 <translation id="8338952601723052325">ရေးသားသူ ဝက်ဆိုက်</translation>
 <translation id="8339059274628563283"><ph name="SITE" /> အတွင်း သိမ်းဆည်းထားသည့် ဒေတာများ</translation>
 <translation id="833986336429795709">ဤလင့်ခ်ကို ဖွင့်ရန် အက်ပ်တစ်ခုကို ရွေးပါ</translation>
-<translation id="8340768003824753944">Google Photos မှ သင်၏အမှတ်တရများကို ဤနေရာတွင် ပြထားသည်။ သင်လက်မှတ်ထိုးဝင်တိုင်း ၎င်းတို့ကို သင်သာလျှင်မြင်ရမည်။
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        အမှတ်တရများတွင် မြင်ရသည်များကို <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> တွင်စီမံနိုင်သည်။</translation>
 <translation id="8342221978608739536">စမ်းမထားပါ</translation>
 <translation id="8342861492835240085">သိမ်းဆည်းထားသည်များကို ရွေးရန်</translation>
 <translation id="8347227221149377169">ပရင့်ထုတ်ရန် ဖိုင်များ</translation>

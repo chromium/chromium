@@ -824,6 +824,7 @@
 <translation id="8042602468072383151">Аудио: <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">романски</translation>
 <translation id="8049184478152619004">Внесете личен клуч за одблокирање (PUK)</translation>
+<translation id="807187749540895545">Се извлекува <ph name="FILE_NAME" />…</translation>
 <translation id="8079530767338315840">Повтори</translation>
 <translation id="8087576439476816834">Преземање, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Споделено со мене</translation>
@@ -875,6 +876,7 @@
 <translation id="8484284835977497781">Изберете од вашите неодамнешни фотографии.</translation>
 <translation id="8487700953926739672">Достапно е исклучено од линија</translation>
 <translation id="8492972329130824181">Домашната мрежа не е достапна. Мора да се овозможи интернет-роаминг за да се поврзете.</translation>
+<translation id="8499098729323186194">Се извлекуваат <ph name="NUMBER_OF_ITEMS" /> ставки…</translation>
 <translation id="8521441079177373948">UK</translation>
 <translation id="8525306231823319788">Цел екран</translation>
 <translation id="853494022971700746">француски (Франција)</translation>

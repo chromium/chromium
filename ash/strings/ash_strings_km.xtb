@@ -126,6 +126,7 @@
 <translation id="1677507110654891115">មិនបានភ្ជាប់ <ph name="FEATURE_NAME" /> ទេ។</translation>
 <translation id="1698080062160024910">កម្មវិធីកំណត់ម៉ោង <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">អាសយដ្ឋាន IPv6 ៖ <ph name="ADDRESS" /></translation>
+<translation id="1703117532528082099">បានភ្ជាប់វិនដូ​សកម្មនៅផ្នែក​ខាងឆ្វេង។</translation>
 <translation id="1708345662127501511">តុ៖ <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">ការកំណត់បណ្ដាញ</translation>
 <translation id="1715293566947629045">កំពុងបិទកម្រងព័ត៌មាន។ សូមរង់ចាំមួយភ្លែត។</translation>
@@ -197,6 +198,7 @@
 <translation id="2132302418721800944">ថតវីដេអូ​ពេញអេក្រង់</translation>
 <translation id="2135456203358955318">កែវ​ពង្រីក​ដាក់​ខាង​លើ​បំផុត</translation>
 <translation id="2148716181193084225">ថ្ងៃនេះ</translation>
+<translation id="2159930836979502091">ចូលទៅកាន់ផ្ទាំងនេះ</translation>
 <translation id="2170530631236737939">អូសចុះក្រោម​ដោយប្រើ​ម្រាមដៃបី ដើម្បីចាកចេញពី​ទិដ្ឋភាពរួម</translation>
 <translation id="219905428774326614">កម្មវិធី​ចាប់ផ្តើម កម្មវិធីទាំងអស់</translation>
 <translation id="2201071101391734388">រូបថតថ្មីៗ <ph name="INDEX" /> សន្លឹកក្នុងចំណោម <ph name="TOTAL_COUNT" /> សន្លឹក។</translation>
@@ -274,6 +276,7 @@
 <translation id="2727977024730340865">បានដោតទៅឆ្នាំងសាកថាមពលខ្សោយ។ ការសាកថ្មប្រហែលជាមិនអាចជឿជាក់បានទេ។</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"លុប"</translation>
+<translation id="2750941250130734256">បានផ្ដាច់វិនដូ​សកម្ម។</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> ស្ថិតក្រោម​ការគ្រប់គ្រងរបស់ <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">ចាកចេញពីមុខងារថត</translation>
 <translation id="2791421900609674576">អ្នកនឹងមើលឃើញការណែនាំ ដើម្បីឱ្យអ្នកអាចបន្តត្រង់ចំណុចដែលអ្នកបានចាកចេញ។ អ្នកអាចចុចឱ្យជាប់ ដើម្បីដកការណែនាំចេញ។</translation>
@@ -563,6 +566,7 @@
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{ការជូនដំណឹងសំខាន់ 1}other{ការជូនដំណឹង​សំខាន់ #}}</translation>
 <translation id="4450893287417543264">កុំបង្ហាញម្ដងទៀត</translation>
 <translation id="4451374464530248585">បានប្ដូរ​ផ្លូវកាត់ក្ដារចុច Alt + ព្រួញចុះក្រោម។ ដើម្បីប្រើគ្រាប់ចុច Page Down សូមចុចគ្រាប់ចុច <ph name="LAUNCHER_KEY_NAME" /> + ព្រួញចុះក្រោម។</translation>
+<translation id="4455051983450390249">មើលការជូនដំណឹងរបស់ទូរសព្ទអ្នកនៅលើ <ph name="DEVICE_TYPE" /> របស់អ្នក</translation>
 <translation id="445864333228800152">សាយណ្ហ​សួស្ដី</translation>
 <translation id="4458688154122353284">បញ្ឈប់​ការថត​អេក្រង់</translation>
 <translation id="4471354919263203780">កំពុងទាញយក​ឯកសារ​សម្គាល់ការនិយាយ... <ph name="PERCENT" />%</translation>
@@ -770,6 +774,7 @@
 <translation id="583281660410589416">មិនស្គាល់</translation>
 <translation id="5837036133683224804">បញ្ឈប់ <ph name="ROUTE_TITLE" /> នៅលើ <ph name="RECEIVER_NAME" /></translation>
 <translation id="584525477304726060">សង្កត់ឱ្យជាប់​ដើម្បីពង្រីក</translation>
+<translation id="5856638668464565213"><ph name="NETWORK_NAME" /> មិនត្រូវបានបើកដំណើរការទេ។</translation>
 <translation id="5860033963881614850">បិទ</translation>
 <translation id="5860491529813859533">បើក</translation>
 <translation id="5867217927013474703">កំពុងប្រមូល​ព័ត៌មានបណ្ដាញ</translation>
@@ -784,6 +789,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">បើក</translation>
 <translation id="5920710855273935292">បានបិទសំឡេងមីក្រូហ្វូន។</translation>
+<translation id="5924838240953214369">មុខងារថត, លំនាំដើមគឺ <ph name="TYPE" /><ph name="SOURCE" />។ បានកំណត់​ការបញ្ចូលពីកាមេរ៉ាទៅ <ph name="CAMERA_NAME" />, ការមើលសាកល្បង​ត្រូវបានបើក។ ចុច tab សម្រាប់ការរុករកដោយប្រើក្ដារចុច។</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> បាន​បើក។</translation>
 <translation id="5947494881799873997">ត្រលប់ក្រោយ</translation>
 <translation id="595202126637698455">ការតាមដានប្រតិបត្តិការបានបើកដំណើរការ</translation>
@@ -801,6 +807,7 @@
 <translation id="602472752137106327">បង្ហាញ​វិនដូពីតុទាំងអស់ បានជ្រើសរើស​ប៊ូតុង​មូល</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, កម្លាំងរលកសញ្ញា <ph name="SIGNAL_STRENGTH" />, គ្រប់គ្រងដោយ​អ្នកគ្រប់គ្រង​របស់អ្នក</translation>
 <translation id="6027518778343897451">គ្មានព្រឹត្តិការណ៍នៅថ្ងៃទី <ph name="CURRENT_MONTH_DAY" /> ទេ។ ចុច "enter" ដើម្បីបើកប្រតិទិន Google នៅក្នុងកម្មវិធីរុករកតាមអ៊ីនធឺណិត។</translation>
+<translation id="6027952026115023659">ចូលប្រើកម្មវិធីផ្ញើសាររបស់ទូរសព្ទអ្នកនៅលើ <ph name="DEVICE_TYPE" /> របស់អ្នក</translation>
 <translation id="6030495522958826102">ម៉ឺនុយ​ត្រូវបានផ្លាស់ទី​ទៅ​ជ្រុងខាងក្រោម​ផ្នែកខាងឆ្វេង​នៃអេក្រង់​។</translation>
 <translation id="6032620807120418574">ចុចកន្លែង​ណាមួយ ដើម្បីថត​អេក្រង់ពេញ</translation>
 <translation id="6040071906258664830">ថតសំឡេង​ដោយ​ប្រើ​មីក្រូហ្វូន <ph name="STATE" /></translation>
@@ -944,6 +951,7 @@
 <translation id="6961121602502368900">មិនអាចប្រើមុខងារបិទសំឡេងទូរសព្ទនៅលើកម្រងព័ត៌មានការងារបានទេ</translation>
 <translation id="6961840794482373852">បានប្ដូរផ្លូវកាត់ក្ដារចុច Alt + ព្រួញឡើងលើ។ ដើម្បីប្រើគ្រាប់ចុច Page Up សូមចុចគ្រាប់ចុច <ph name="LAUNCHER_KEY_NAME" /> + ព្រួញឡើងលើ។</translation>
 <translation id="6965382102122355670">យល់ព្រម</translation>
+<translation id="6967933908874208731">មើលរូបថត មេឌៀ ការជូនដំណឹង និងកម្មវិធីផ្ញើសារថ្មីៗរបស់ទូរសព្ទអ្នកនៅលើ <ph name="DEVICE_TYPE" /> របស់អ្នក</translation>
 <translation id="6972754398087986839">ចាប់ផ្ដើម</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">លទ្ធភាពប្រើប្រាស់</translation>
@@ -1039,6 +1047,7 @@
 <translation id="7564874036684306347">ការផ្លាស់ទីវិនដូទៅកុំព្យូទ័រ​ផ្សេងទៀតអាចបណ្តាលឱ្យមានសកម្មភាពខុសប្រក្រតី។ ការជូនដំណឹងបន្តបន្ទាប់ វិនដូ និងប្រអប់បញ្ចូលអាចត្រូវបានបំបែកពីកុំព្យូទ័រនីមួយៗ។</translation>
 <translation id="7569509451529460200">បានបើកប្រ៊ែល និង ChromeVox</translation>
 <translation id="7569983096843329377">ខ្មៅ</translation>
+<translation id="7573585051776738856">បានភ្ជាប់វិនដូ​សកម្មនៅផ្នែក​ខាងស្ដាំ។</translation>
 <translation id="7579778809502851308">ការថត​អេក្រង់</translation>
 <translation id="7590883480672980941">ការកំណត់ការបញ្ចូល</translation>
 <translation id="7593891976182323525">ស្វែងរក ឬ Shift</translation>

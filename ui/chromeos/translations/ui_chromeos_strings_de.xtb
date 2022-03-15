@@ -825,6 +825,7 @@
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" />-Audio</translation>
 <translation id="8045462269890919536">Rumänisch</translation>
 <translation id="8049184478152619004">PIN-Entsperrschlüssel (PUK) eingeben</translation>
+<translation id="807187749540895545"><ph name="FILE_NAME" /> wird extrahiert...</translation>
 <translation id="8079530767338315840">Wiederholen</translation>
 <translation id="8087576439476816834">Herunterladen, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Für mich freigegeben</translation>
@@ -876,6 +877,7 @@
 <translation id="8484284835977497781">Wählen Sie aus Ihren aktuellen Fotos.</translation>
 <translation id="8487700953926739672">Offline verfügbar</translation>
 <translation id="8492972329130824181">Heimnetzwerk ist nicht verfügbar. Mobiles Daten-Roaming muss aktiviert sein, um eine Verbindung herzustellen.</translation>
+<translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> Elemente werden extrahiert...</translation>
 <translation id="8521441079177373948">UK</translation>
 <translation id="8525306231823319788">Vollbildmodus</translation>
 <translation id="853494022971700746">Französisch (Frankreich)</translation>

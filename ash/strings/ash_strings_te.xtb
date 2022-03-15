@@ -31,6 +31,7 @@
 <translation id="1150989369772528668">క్యాలెండర్</translation>
 <translation id="1153356358378277386">జత చేసిన పరికరాలు</translation>
 <translation id="1165712434476988950">అప్‌డేట్‌ను వర్తింపజేయడానికి పరికరాన్ని రీస్టార్ట్ చేయాలి.</translation>
+<translation id="1171742223880403396">మీ USB-C కేబుల్, డిస్‌ప్లేలకు సరిగ్గా కనెక్ట్ కాకపోవచ్చు</translation>
 <translation id="1175572348579024023">స్క్రోల్ చేస్తుంది</translation>
 <translation id="1178581264944972037">పాజ్ చేయి</translation>
 <translation id="1181037720776840403">తీసివేయి</translation>
@@ -197,6 +198,7 @@
 <translation id="2132302418721800944">ఫుల్ స్క్రీన్‌ను రికార్డ్ చేయండి</translation>
 <translation id="2135456203358955318">డాక్ చేయబడిన మాగ్నిఫైయర్</translation>
 <translation id="2148716181193084225">ఈ రోజు</translation>
+<translation id="2159930836979502091">ఈ ట్యాబ్‌కు వెళ్లండి</translation>
 <translation id="2170530631236737939">ఓవర్‌వ్యూ నుండి నిష్క్రమించడానికి మూడు వేళ్లతో కిందకు స్వైప్ చేయండి</translation>
 <translation id="219905428774326614">లాంచర్, అన్ని యాప్‌లు</translation>
 <translation id="2201071101391734388">తాజా ఫోటోలలో <ph name="TOTAL_COUNT" />లో <ph name="INDEX" />వది.</translation>
@@ -564,6 +566,7 @@
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 ముఖ్యమైన నోటిఫికేషన్}other{# ముఖ్యమైన నోటిఫికేషన్‌లు}}</translation>
 <translation id="4450893287417543264">మళ్లీ చూపవద్దు</translation>
 <translation id="4451374464530248585">Alt + కింది వైపు బాణం కీబోర్డ్ షార్ట్‌కట్ మార్చబడింది. పేజీ కింది కీని ఉపయోగించడానికి, <ph name="LAUNCHER_KEY_NAME" /> కీ + కింది వైపు బాణం కీను నొక్కండి.</translation>
+<translation id="4455051983450390249">మీ ఫోన్‌లోని నోటిఫికేషన్‌లను మీ <ph name="DEVICE_TYPE" />లో చూడండి</translation>
 <translation id="445864333228800152">గుడ్ ఈవెనింగ్,</translation>
 <translation id="4458688154122353284">స్క్రీన్ రికార్డింగ్‌ను ఆపివేయి</translation>
 <translation id="4471354919263203780">స్పీచ్ రికగ్నిషన్ ఫైళ్లు డౌన్‌లోడ్ అవుతున్నాయి... <ph name="PERCENT" />%</translation>
@@ -771,6 +774,7 @@
 <translation id="583281660410589416">తెలియని</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />లో <ph name="ROUTE_TITLE" /> ఆపివేయి</translation>
 <translation id="584525477304726060">పెద్దదిగా చేయడానికి నొక్కి, ఉంచండి</translation>
+<translation id="5856638668464565213"><ph name="NETWORK_NAME" /> యాక్టివేట్ చేసి లేదు.</translation>
 <translation id="5860033963881614850">ఆఫ్ అయ్యింది</translation>
 <translation id="5860491529813859533">ఆన్ చేయండి</translation>
 <translation id="5867217927013474703">నెట్‌వర్క్ సమాచారాన్ని సేకరిస్తోంది</translation>
@@ -802,6 +806,7 @@
 <translation id="602472752137106327">అన్ని డెస్క్‌ల నుండి విండోలను చూపండి, అనే రేడియో బటన్ ఎంచుకోబడింది</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />, మీ అడ్మినిస్ట్రేటర్ ద్వారా నిర్వహించబడుతోంది</translation>
 <translation id="6027518778343897451"><ph name="CURRENT_MONTH_DAY" />న ఈవెంట్ ఏదీ లేదు. బ్రౌజర్‌లో Google Calendarను తెరవడానికి Enterను నొక్కండి.</translation>
+<translation id="6027952026115023659">మీ ఫోన్‌లోని మెసేజింగ్ యాప్‌లను మీ <ph name="DEVICE_TYPE" />లో చూడండి</translation>
 <translation id="6030495522958826102">స్క్రీన్‌లో కింద ఎడమ వైపు మూలకు మెనూ తరలించబడింది.</translation>
 <translation id="6032620807120418574">ఫుల్ స్క్రీన్‌ను రికార్డ్ చేయడానికి ఎక్కడైనా క్లిక్ చేయండి</translation>
 <translation id="6040071906258664830">మైక్రోఫోన్‌తో రికార్డ్ చేయడం <ph name="STATE" />లో ఉంది</translation>
@@ -945,6 +950,7 @@
 <translation id="6961121602502368900">వర్క్ ప్రొఫైల్‌లో ఫోన్‌ను సైలెంట్‌లో పెట్టే ఫీచర్ అందుబాటులో లేదు</translation>
 <translation id="6961840794482373852">Alt +పై వైపు బాణం కీబోర్డ్ షార్ట్‌కట్ మార్చబడింది. పేజీ పై కీని ఉపయోగించడానికి, <ph name="LAUNCHER_KEY_NAME" /> కీ + పై వైపు బాణం కీను నొక్కండి.</translation>
 <translation id="6965382102122355670">సరే</translation>
+<translation id="6967933908874208731">మీ ఫోన్‌లోని తాజా ఫోటోలు, మీడియా, నోటిఫికేషన్‌లు, మెసేజింగ్ యాప్‌లను మీ <ph name="DEVICE_TYPE" />లో చూడండి</translation>
 <translation id="6972754398087986839">ప్రారంభించండి</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">యాక్సెసిబిలిటీ</translation>

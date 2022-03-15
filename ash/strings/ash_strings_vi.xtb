@@ -197,6 +197,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2132302418721800944">Ghi toàn màn hình</translation>
 <translation id="2135456203358955318">Phóng to ở vị trí cố định</translation>
 <translation id="2148716181193084225">Hôm nay</translation>
+<translation id="2159930836979502091">Chuyển sang thẻ này</translation>
 <translation id="2170530631236737939">Vuốt xuống bằng 3 ngón tay để thoát khỏi chế độ Tổng quan</translation>
 <translation id="219905428774326614">Trình khởi chạy, tất cả ứng dụng</translation>
 <translation id="2201071101391734388">Ảnh gần đây <ph name="INDEX" /> trong tổng số <ph name="TOTAL_COUNT" />.</translation>
@@ -563,6 +564,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 thông báo quan trọng}other{# thông báo quan trọng}}</translation>
 <translation id="4450893287417543264">Không hiện lại</translation>
 <translation id="4451374464530248585">Phím tắt Alt + Mũi tên xuống đã thay đổi. Để sử dụng phím Page Down, hãy nhấn tổ hợp phím <ph name="LAUNCHER_KEY_NAME" /> + Mũi tên xuống.</translation>
+<translation id="4455051983450390249">Xem thông báo của điện thoại trên <ph name="DEVICE_TYPE" /></translation>
 <translation id="445864333228800152">Xin chào!</translation>
 <translation id="4458688154122353284">Dừng ghi màn hình</translation>
 <translation id="4471354919263203780">Đang tải các tệp nhận dạng lời nói xuống... <ph name="PERCENT" />%</translation>
@@ -734,6 +736,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Nhấn Ctrl + Alt + Z để tắt phản hồi bằng giọng nói.</translation>
 <translation id="5601503069213153581">Mã PIN</translation>
+<translation id="5618148318840095371">Chúng tôi đã chuyển bạn sang một mạng tốt hơn</translation>
 <translation id="5619862035903135339">Tính năng chụp ảnh màn hình bị tắt theo chính sách của quản trị viên</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Giắc cắm micrô</translation>
@@ -769,6 +772,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="583281660410589416">Không xác định</translation>
 <translation id="5837036133683224804">Dừng <ph name="ROUTE_TITLE" /> trên <ph name="RECEIVER_NAME" /></translation>
 <translation id="584525477304726060">Giữ để phóng to tối đa</translation>
+<translation id="5856638668464565213"><ph name="NETWORK_NAME" /> chưa được kích hoạt.</translation>
 <translation id="5860033963881614850">Tắt</translation>
 <translation id="5860491529813859533">Bật</translation>
 <translation id="5867217927013474703">Đang thu thập thông tin mạng</translation>
@@ -800,6 +804,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="602472752137106327">Hiển thị cửa sổ từ tất cả không gian làm việc, đã chọn nút chọn</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />, Do quản trị viên của bạn quản lý</translation>
 <translation id="6027518778343897451">Không có sự kiện nào vào <ph name="CURRENT_MONTH_DAY" />. Nhấn Enter để mở Lịch Google trên trình duyệt này.</translation>
+<translation id="6027952026115023659">Truy cập ứng dụng tin nhắn của điện thoại trên <ph name="DEVICE_TYPE" /></translation>
 <translation id="6030495522958826102">Đã di chuyển trình đơn vào góc dưới cùng bên trái màn hình.</translation>
 <translation id="6032620807120418574">Nhấp vào vị trí bất kỳ để chụp toàn màn hình</translation>
 <translation id="6040071906258664830">Ghi âm <ph name="STATE" /></translation>
@@ -943,6 +948,7 @@ Mới cài đặt</translation>
 <translation id="6961121602502368900">Bạn không dùng được tính năng Tắt tiếng điện thoại trên hồ sơ công việc</translation>
 <translation id="6961840794482373852">Phím tắt Alt + Mũi tên lên đã thay đổi. Để sử dụng phím Page Up, hãy nhấn tổ hợp phím <ph name="LAUNCHER_KEY_NAME" /> + Mũi tên lên.</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6967933908874208731">Xem ảnh, nội dung phương tiện, thông báo mới đây và ứng dụng tin nhắn của điện thoại trên <ph name="DEVICE_TYPE" /></translation>
 <translation id="6972754398087986839">Bắt đầu</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">Hỗ trợ tiếp cận</translation>

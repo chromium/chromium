@@ -3979,10 +3979,6 @@
 <translation id="4918086044614829423">Прийняти</translation>
 <translation id="4918134162946436591">Показати накладання коректива</translation>
 <translation id="4921348630401250116">Синтез мовлення</translation>
-<translation id="4921809350408880559">Останні та пропоновані документи показано вам на основі ваших попередніх дій на Google Диску.
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        Докладну інформацію про те, які дані збирає Google Диск і чому, наведено <ph name="BEGIN_LINK" />на цій сторінці<ph name="END_LINK" />.</translation>
 <translation id="492299503953721473">Видалити додатки Android</translation>
 <translation id="492363500327720082">Видалення додатка <ph name="APP_NAME" />…</translation>
 <translation id="4924002401726507608">Надіслати відгук</translation>
@@ -6201,7 +6197,6 @@
 <translation id="7191159667348037">Невідомий принтер (USB)</translation>
 <translation id="7193051357671784796">Цей додаток вніс адміністратор вашої організації. Щоб завершити встановлення, перезапустіть його.</translation>
 <translation id="7193374945610105795">Немає збережених паролів для <ph name="ORIGIN" /></translation>
-<translation id="7196020411877309443">Чому відображається це повідомлення?</translation>
 <translation id="7196913789568937443">Створення резервних копій на Google Диску. Легко відновлюйте дані та переносьте їх на інші пристрої. Резервна копія містить дані додатків. Ваші резервні копії завантажуються в Google і шифруються за допомогою пароля облікового запису Google. <ph name="BEGIN_LINK1" />Докладніше<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Отримуйте результати пошуку й розумні функції від Google під час перегляду сторінок</translation>
 <translation id="719791532916917144">Комбінація клавіш</translation>
@@ -7368,10 +7363,6 @@
 <translation id="8338952601723052325">Веб-сайт розробника</translation>
 <translation id="8339059274628563283">Локально збережені дані сайту <ph name="SITE" /></translation>
 <translation id="833986336429795709">Виберіть додаток, щоб відкрити посилання</translation>
-<translation id="8340768003824753944">Тут показуються ваші спогади з Google Фото. Їх можете бачити лише ви після входу в обліковий запис.
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        Керуйте контентом у своїх спогадах на сторінці <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" />.</translation>
 <translation id="8342221978608739536">Не доводилося перевіряти</translation>
 <translation id="8342861492835240085">Виберіть колекцію</translation>
 <translation id="8347227221149377169">Завдання друку</translation>

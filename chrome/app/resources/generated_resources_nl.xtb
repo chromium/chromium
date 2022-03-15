@@ -1329,6 +1329,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2278562042389100163">Browservenster openen</translation>
 <translation id="2278668501808246459">Containerbeheer starten</translation>
 <translation id="2280486287150724112">Marge rechts</translation>
+<translation id="2281863813036651454">Klik met linkermuisknop</translation>
 <translation id="2282146716419988068">GPU-proces</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{Alles openen in &amp;nieuwe tabbladgroep}=1{Openen in &amp;nieuwe tabbladgroep}other{Alles ({COUNT}) openen in &amp;nieuwe tabbladgroep}}</translation>
 <translation id="2285942871162473373">Je vingerafdruk kan niet worden herkend. Probeer het opnieuw.</translation>
@@ -3959,8 +3960,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4918086044614829423">Accepteren</translation>
 <translation id="4918134162946436591">Hintoverlay tonen</translation>
 <translation id="4921348630401250116">Tekst-naar-spraak</translation>
-<translation id="4921809350408880559">Je krijgt je recente en voorgestelde documenten te zien op basis van je eerdere activiteit bij het gebruik van Google Drive.
-        <ph name="BREAK" /><ph name="BREAK" />Je vindt <ph name="BEGIN_LINK" />hier<ph name="END_LINK" /> meer informatie over de gegevens die Google Drive verzamelt en waarom.</translation>
 <translation id="492299503953721473">Android-apps verwijderen</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" /> verwijderen…</translation>
 <translation id="4924002401726507608">Feedback sturen</translation>
@@ -5146,6 +5145,7 @@ Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="6129938384427316298">Opmerking van Netscape-certificaat</translation>
 <translation id="6129953537138746214">Spatie</translation>
 <translation id="6130692320435119637">Wifi toevoegen</translation>
+<translation id="6130887916931372608">Toetsenbordtoets</translation>
 <translation id="6136114942382973861">Downloadbalk sluiten</translation>
 <translation id="6136287496450963112">Je beveiligingssleutel is niet beveiligd met een pincode. Maak eerst een pincode als je vingerafdrukken wilt beheren.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA-handtekening met SHA-384</translation>
@@ -6179,7 +6179,6 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="7191159667348037">Onbekende printer (USB)</translation>
 <translation id="7193051357671784796">Deze app is toegevoegd door je organisatie. Start de app opnieuw om de installatie te voltooien.</translation>
 <translation id="7193374945610105795">Geen wachtwoorden opgeslagen voor <ph name="ORIGIN" /></translation>
-<translation id="7196020411877309443">Waarom zie ik dit venster?</translation>
 <translation id="7196913789568937443">Een back-up maken in Google Drive. Gemakkelijk je gegevens herstellen of op elk gewenst moment van apparaat wisselen. Je back-up omvat app-gegevens. Je back-ups worden geüpload naar Google en versleuteld met het wachtwoord van je Google-account. <ph name="BEGIN_LINK1" />Meer informatie<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Google Zoeken en slimme Google-functies standaard instellen voor browsen</translation>
 <translation id="719791532916917144">Sneltoets</translation>
@@ -6761,6 +6760,7 @@ Druk op een toegewezen schakelaar of toets om de toewijzing te verwijderen.</tra
 <translation id="7768770796815395237">Wijzigen</translation>
 <translation id="7768784765476638775">Selecteer om uitgesproken te worden</translation>
 <translation id="7770406201819593386">Diagnostische tests voor Chrome OS Flex uitvoeren.</translation>
+<translation id="7770450735129978837">Klik met rechtermuisknop</translation>
 <translation id="7770612696274572992">Afbeelding gekopieerd vanaf ander apparaat</translation>
 <translation id="7771452384635174008">Opmaak</translation>
 <translation id="7772032839648071052">Bevestig de wachtwoordzin</translation>
@@ -7344,10 +7344,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8338952601723052325">Website van ontwikkelaar</translation>
 <translation id="8339059274628563283">Lokaal opgeslagen gegevens voor <ph name="SITE" /></translation>
 <translation id="833986336429795709">Kies een app om deze link te openen</translation>
-<translation id="8340768003824753944">Je ziet hier je herinneringen uit Google Foto's. Deze zijn alleen voor jou zichtbaar, overal waar je bent ingelogd.
-        <ph name="BREAK" />
-<ph name="BREAK" />
-Je kunt beheren wat je ziet in je herinneringen via <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" />.</translation>
 <translation id="8342221978608739536">Niet geprobeerd</translation>
 <translation id="8342861492835240085">Een verzameling selecteren</translation>
 <translation id="8347227221149377169">Afdruktaken</translation>

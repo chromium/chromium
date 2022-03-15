@@ -2040,6 +2040,17 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       Si inhabilitas la política, este software podrá insertar el código mencionado en los procesos de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3182503302060513467">La página Nueva pestaña mostrará la notificación del espacio del medio (si está disponible)</translation>
 <translation id="3184161739683646075">Controla el modo de DNS sobre HTTPS</translation>
+<translation id="3184638144755436350">Chrome bloqueará la navegación a protocolos externos dentro del
+      iframe de la zona de pruebas. Consulta https://chromestatus.com/features/5680742077038592.
+
+      Si estableces esta política como verdadera, Chrome bloqueará la navegación a esos protocolos.
+
+      Si la estableces como falsa, Chrome no bloqueará la navegación a esos protocolos.
+
+      Esta política se establece de forma predeterminada como verdadera: se habilita la función de seguridad.
+
+      Es útil para los administradores que necesitan más tiempo para actualizar sus sitios web internos afectados por esta nueva restricción. Esta política empresarial es temporal; se planea quitarla después de la versión 117 de <ph name="PRODUCT_NAME" />.
+      </translation>
 <translation id="3185009703220253572">desde la versión <ph name="SINCE_VERSION" /></translation>
 <translation id="3185895671618336039">Establece la configuración de la duración de los datos de navegación para <ph name="PRODUCT_NAME" />. Esta política les permite a los administradores configurar (por tipo de datos) cuándo el navegador borra los datos. Esto es útil para los clientes que trabajan con datos sensibles de clientes. La política solo tendrá efecto si se establece <ph name="SYNC_DISABLED_POLICY_NAME" /> como verdadera.
 
@@ -4744,6 +4755,12 @@ principal del string usuario-agente en 99.
       Si esta política se configura como habilitada o no se configura, nunca se mostrará el menú de accesibilidad flotante.</translation>
 <translation id="6424485010103067949"><ph name="OMA_URI" />:</translation>
 <translation id="6424486395812679373">Realiza las verificaciones de la Navegación segura en todos los archivos descargados</translation>
+<translation id="6435570845618943258">Si habilitas esta configuración, <ph name="PRODUCT_NAME" /> verificará los certificados de servidores mediante el verificador de certificados integrado.
+      Si se inhabilita, <ph name="PRODUCT_NAME" /> verificará los certificados de servidores mediante el verificador de certificados heredado que incluye la plataforma.
+      Si no se establece, podrán utilizarse el verificador de certificados integrado o el heredado.
+
+      Se planea quitar esta política en la versión 107 de <ph name="PRODUCT_NAME" /> para <ph name="MAC_OS_NAME" /> cuando se quite la compatibilidad con el verificador de certificados heredado de <ph name="MAC_OS_NAME" />.
+      </translation>
 <translation id="6436052172226685535">Comportamiento predeterminado de LBS</translation>
 <translation id="6438364096042399634">Si estableces la política, se definirá la lista de dispositivos USB que el usuario puede desconectar del controlador de kernel para usarlos a través de la API chrome.usb directamente en una aplicación web. Las entradas son pares formados por el identificador del producto y el identificador del proveedor USB que permiten reconocer hardware específico.
 

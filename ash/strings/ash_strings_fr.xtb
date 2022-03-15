@@ -197,6 +197,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2132302418721800944">Enregistrer tout l'écran</translation>
 <translation id="2135456203358955318">Loupe ancrée</translation>
 <translation id="2148716181193084225">Aujourd'hui</translation>
+<translation id="2159930836979502091">Accéder à cet onglet</translation>
 <translation id="2170530631236737939">Balayez l'écran vers le bas avec trois doigts pour quitter l'Aperçu</translation>
 <translation id="219905428774326614">Lanceur d'applications, toutes les applications</translation>
 <translation id="2201071101391734388">Photo récente <ph name="INDEX" /> sur <ph name="TOTAL_COUNT" />.</translation>
@@ -563,6 +564,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 notification importante}one{# notification importante}other{# notifications importantes}}</translation>
 <translation id="4450893287417543264">Ne plus afficher</translation>
 <translation id="4451374464530248585">Le raccourci clavier Alt+Flèche vers le bas a été modifié. Pour utiliser la touche Page suivante, appuyez sur la touche du <ph name="LAUNCHER_KEY_NAME" />+Flèche vers le bas.</translation>
+<translation id="4455051983450390249">Afficher les notifications de votre téléphone sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="445864333228800152">Bonsoir,</translation>
 <translation id="4458688154122353284">Arrêter l'enregistrement de l'écran</translation>
 <translation id="4471354919263203780">Téléchargement des fichiers de reconnaissance vocale… <ph name="PERCENT" /> %</translation>
@@ -734,6 +736,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" /> <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Appuyez sur Ctrl+Alt+Z pour désactiver les commentaires audio.</translation>
 <translation id="5601503069213153581">Code d'accès</translation>
+<translation id="5618148318840095371">Nous vous avons connecté à un meilleur réseau</translation>
 <translation id="5619862035903135339">Une règle définie par l'administrateur a désactivé la capture d'écran</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Connecteur micro</translation>
@@ -769,6 +772,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="583281660410589416">Inconnu</translation>
 <translation id="5837036133683224804">Arrêter <ph name="ROUTE_TITLE" /> vers <ph name="RECEIVER_NAME" /></translation>
 <translation id="584525477304726060">Maintenez pour agrandir</translation>
+<translation id="5856638668464565213"><ph name="NETWORK_NAME" /> n'est pas activé.</translation>
 <translation id="5860033963881614850">Désactivé</translation>
 <translation id="5860491529813859533">Activer</translation>
 <translation id="5867217927013474703">Récupération des infos du réseau</translation>
@@ -800,6 +804,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="602472752137106327">Afficher toutes les fenêtres du bureau, case d'option cochée</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" />, géré par votre administrateur</translation>
 <translation id="6027518778343897451">Aucun événement le <ph name="CURRENT_MONTH_DAY" />. Appuyez sur Entrée pour ouvrir Google Agenda dans le navigateur.</translation>
+<translation id="6027952026115023659">Afficher les applis de messagerie de votre téléphone sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="6030495522958826102">Le menu a été déplacé dans l'angle inférieur gauche de l'écran.</translation>
 <translation id="6032620807120418574">Cliquez n'importe où pour capturer tout l'écran</translation>
 <translation id="6040071906258664830">Enregistrement via le micro <ph name="STATE" /></translation>
@@ -943,6 +948,7 @@ Nouvelle installation</translation>
 <translation id="6961121602502368900">Couper le son du téléphone n'est pas disponible dans le profil professionnel</translation>
 <translation id="6961840794482373852">Le raccourci clavier Alt+Flèche vers le haut a été modifié. Pour utiliser la touche Page précédente, appuyez sur la touche du <ph name="LAUNCHER_KEY_NAME" />+Flèche vers le haut.</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6967933908874208731">Afficher les photos, notifications, applis de messagerie et contenus multimédias récents de votre téléphone sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="6972754398087986839">Démarrer</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6981982820502123353">Accessibilité</translation>

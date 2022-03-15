@@ -3974,10 +3974,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4918086044614829423">수락</translation>
 <translation id="4918134162946436591">힌트 오버레이 표시</translation>
 <translation id="4921348630401250116">TTS(텍스트 음성 변환)</translation>
-<translation id="4921809350408880559">과거의 Google Drive 이용 활동을 바탕으로 표시되는 최근 문서와 추천 문서입니다.
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        Google Drive에서 수집하는 데이터와 수집 목적을 알아보려면 <ph name="BEGIN_LINK" />여기<ph name="END_LINK" />를 클릭하세요.</translation>
 <translation id="492299503953721473">Android 앱 삭제</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" /> 제거 중…</translation>
 <translation id="4924002401726507608">의견 제출</translation>
@@ -6197,7 +6193,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7191159667348037">알 수 없는 프린터(USB)</translation>
 <translation id="7193051357671784796">조직에서 추가한 앱입니다. 설치를 완료하려면 앱을 다시 시작하세요.</translation>
 <translation id="7193374945610105795"><ph name="ORIGIN" />의 비밀번호가 저장되지 않음</translation>
-<translation id="7196020411877309443">이 메시지가 표시되는 이유</translation>
 <translation id="7196913789568937443">Google Drive에 백업합니다. 언제든지 간편하게 데이터를 복원하거나 다른 기기로 전환하세요. 백업에는 앱 데이터가 포함됩니다. 백업 항목은 Google에 업로드되며 내 Google 계정 비밀번호를 사용하여 암호화됩니다. <ph name="BEGIN_LINK1" />자세히 알아보기<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Google 검색을 비롯한 Google 제품으로 스마트하게 탐색하세요</translation>
 <translation id="719791532916917144">단축키</translation>
@@ -6964,6 +6959,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7946586320617670168">출처가 안전해야 합니다.</translation>
 <translation id="794676567536738329">권한 확인</translation>
 <translation id="7947962633355574091">동영상 주소 복사(&amp;O)</translation>
+<translation id="7947964080535614577">사이트에서는 일반적으로 콘텐츠나 서비스를 무료로 제공하기 위해 광고를 표시합니다. 그러나 일부 사이트는 방해가 되거나 사용자를 현혹하는 광고를 표시하는 것으로 알려져 있습니다.</translation>
 <translation id="7948407723851303488"><ph name="DOMAIN_NAME" />의 모든 페이지</translation>
 <translation id="7951265006188088697">Google Pay 결제 수단을 추가하거나 관리하려면 <ph name="BEGIN_LINK" />Google 계정<ph name="END_LINK" />을 방문하세요.</translation>
 <translation id="7952708427581814389">사이트에서 클립보드의 텍스트와 이미지를 확인하도록 요청할 수 있음</translation>
@@ -7364,10 +7360,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8338952601723052325">개발자 웹사이트</translation>
 <translation id="8339059274628563283"><ph name="SITE" />에 로컬 저장된 데이터</translation>
 <translation id="833986336429795709">이 링크를 열려면 앱을 선택하세요.</translation>
-<translation id="8340768003824753944">Google 포토에 담긴 내 추억이 여기 표시됩니다. 이 사진들은 내가 로그인했을 때 나에게만 표시됩니다.
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" />에서 표시될 사진을 관리하세요.</translation>
 <translation id="8342221978608739536">사용해 보지 않음</translation>
 <translation id="8342861492835240085">컬렉션 선택</translation>
 <translation id="8347227221149377169">인쇄 작업</translation>

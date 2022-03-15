@@ -454,6 +454,7 @@
 <translation id="2310021320168182093">Enveloppe Chou2</translation>
 <translation id="2316887270356262533">Libère moins de 1 Mo d'espace. Certains sites peuvent être plus longs à charger lors de votre prochaine visite.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> requiert un nom d'utilisateur et un mot de passe.</translation>
+<translation id="2318594867107319532">Estampille temporelle de la dernière politique :</translation>
 <translation id="2328651992442742497">Autorisée (par défaut)</translation>
 <translation id="2329182534073751090">Position des fenêtres</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, expire le <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -1652,6 +1653,7 @@
 <translation id="6157754950574419155">Retirer tous les éléments de l'historique</translation>
 <translation id="6157877588268064908">Pour voir les exigences et les modes de livraison, sélectionnez une adresse</translation>
 <translation id="6165508094623778733">En savoir plus</translation>
+<translation id="6167577165590485365">Dernière tentative de récupération :</translation>
 <translation id="6169916984152623906">Vous pouvez maintenant naviguer de façon privée, et les autres personnes qui utilisent cet appareil ne verront pas votre activité. Cependant, les téléchargements et les favoris seront sauvegardés.</translation>
 <translation id="6177128806592000436">Votre connexion à ce site n'est pas sécurisée</translation>
 <translation id="6180316780098470077">Intervalle entre les nouveaux essais</translation>

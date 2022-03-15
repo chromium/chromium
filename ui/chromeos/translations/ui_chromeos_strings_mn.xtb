@@ -822,6 +822,7 @@
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> аудио</translation>
 <translation id="8045462269890919536">Румын</translation>
 <translation id="8049184478152619004">Хувийн блокоос гаргах түлхүүр (PUK)-ийг оруулна уу</translation>
+<translation id="807187749540895545">Гаргаж байна <ph name="FILE_NAME" />...</translation>
 <translation id="8079530767338315840">Давтах</translation>
 <translation id="8087576439476816834">Татах, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Надтай хуваалцсан</translation>
@@ -873,6 +874,7 @@
 <translation id="8484284835977497781">Саяхны зургаасаа сонгоно уу.</translation>
 <translation id="8487700953926739672">Сүлжээнд холбогдоогүй байна</translation>
 <translation id="8492972329130824181">Гэрийн сүлжээ боломжгүй байна. Холбогдохын тулд мобайл дата роумингийг идэвхжүүлсэн байх ёстой.</translation>
+<translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" />-г гаргаж байна...</translation>
 <translation id="8521441079177373948">Их Британи</translation>
 <translation id="8525306231823319788">Бүтэн дэлгэц</translation>
 <translation id="853494022971700746">Франц (Франц)</translation>

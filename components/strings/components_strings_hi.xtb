@@ -459,6 +459,7 @@
 <translation id="2310021320168182093">शू2 (एन्वेलप)</translation>
 <translation id="2316887270356262533">1 MB से भी कम जगह खाली करता है. जब आप अगली बार विज़िट करेंगे तो, कुछ साइटें लोड होने में ज़्यादा समय ले सकती हैं.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> के लिए उपयोगकर्ता नाम और पासवर्ड आवश्यक है.</translation>
+<translation id="2318594867107319532">पिछली बार नीति को रीफ़्रेश करने का टाइमस्टैंप:</translation>
 <translation id="2328651992442742497">अनुमति है (डिफ़ॉल्ट रूप से)</translation>
 <translation id="2329182534073751090">विंडो प्लेसमेंट</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, <ph name="EXPIRATION_DATE_ABBR" /> को खत्म होने वाला है</translation>
@@ -1661,6 +1662,7 @@
 <translation id="6157754950574419155">इतिहास से सभी आइटम हटाएं</translation>
 <translation id="6157877588268064908">शिपिंग के तरीके और ज़रूरतें देखने केे लिए, कोई पता चुनें</translation>
 <translation id="6165508094623778733">ज़्यादा जानें</translation>
+<translation id="6167577165590485365">पिछली बार फ़ेच करने का समय:</translation>
 <translation id="6169916984152623906">अब आप निजी रूप से ब्राउज़ कर सकते हैं और इस डिवाइस का उपयोग करने वाले दूसरे लोगों को आपकी गतिविधि दिखाई नहीं देगी. लेकिन डाउनलोड और बुकमार्क सेव होंगे.</translation>
 <translation id="6177128806592000436">इस साइट से आपका कनेक्‍शन सुरक्षित नहीं है</translation>
 <translation id="6180316780098470077">बार-बार कोशिश किए जाने के बीच का समय</translation>
@@ -2092,6 +2094,7 @@
 <translation id="7569983096843329377">काला</translation>
 <translation id="7575207903026901870">सुझाव बटन हटाएं, इस सुझाव को हटाने के लिए Enter दबाएं</translation>
 <translation id="7578104083680115302">Google के साथ सहेजे गए कार्ड का उपयोग करके डिवाइसों में मौजूद साइटों और ऐप्‍स पर तुरंत भुगतान करें.</translation>
+<translation id="7579442726219254162">"<ph name="APPLICATION_ID" />" के मैनेज किए जा रहे कॉन्फ़िगरेशन में अज्ञात वैरिएबल "<ph name="VARIABLE" />".</translation>
 <translation id="7581199239021537589">साइड 2 इमेज Y शिफ़्ट</translation>
 <translation id="7582602800368606489">Google Calendar में जल्दी से नया इवेंट बनाएं</translation>
 <translation id="7591288787774558753">क्या गोपनीय कॉन्टेंट शेयर करना है?</translation>
