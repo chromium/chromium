@@ -51,6 +51,11 @@ constexpr char kData[] = "abcdefghijklmnopqrstuvwxyz";
 
 constexpr char kMimeType[] = "application/octet-stream";
 
+// Non-zero read offsets used in unit tests.
+constexpr size_t kOffset5 = 5;
+constexpr size_t kOffset10 = 10;
+constexpr size_t kOffset15 = 15;
+
 // Reads data from the reader to fill the buffer.
 bool ReadData(ArcContentFileSystemFileStreamReader* reader,
               net::IOBufferWithSize* buffer) {
@@ -139,16 +144,57 @@ TEST_F(ArcContentFileSystemFileStreamReaderTest, ReadRegularFile) {
 }
 
 TEST_F(ArcContentFileSystemFileStreamReaderTest, ReadRegularFileWithOffset) {
-  constexpr size_t kOffset = 10;
   auto buffer =
-      base::MakeRefCounted<net::IOBufferWithSize>(strlen(kData) - kOffset);
+      base::MakeRefCounted<net::IOBufferWithSize>(strlen(kData) - kOffset10);
   {
-    ArcContentFileSystemFileStreamReader reader(GURL(kArcUrlFile), kOffset);
+    ArcContentFileSystemFileStreamReader reader(GURL(kArcUrlFile), kOffset10);
     EXPECT_TRUE(ReadData(&reader, buffer.get()));
   }
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(base::StringPiece(kData + kOffset, strlen(kData) - kOffset),
+  EXPECT_EQ(base::StringPiece(kData + kOffset10, strlen(kData) - kOffset10),
             base::StringPiece(buffer->data(), buffer->size()));
+}
+
+TEST_F(ArcContentFileSystemFileStreamReaderTest, ReadRegularFileWithOffsets) {
+  auto buffer1 =
+      base::MakeRefCounted<net::IOBufferWithSize>(kOffset15 - kOffset5);
+  auto buffer2 = base::MakeRefCounted<net::IOBufferWithSize>(
+      strlen(kData) - kOffset5 - kOffset15);
+  {
+    ArcContentFileSystemFileStreamReader reader1(GURL(kArcUrlFile), kOffset5);
+    EXPECT_TRUE(ReadData(&reader1, buffer1.get()));
+    ArcContentFileSystemFileStreamReader reader2(GURL(kArcUrlFile), kOffset15);
+    EXPECT_TRUE(ReadData(&reader2, buffer2.get()));
+  }
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(base::StringPiece(kData + kOffset5, kOffset15 - kOffset5),
+            base::StringPiece(buffer1->data(), buffer1->size()));
+  EXPECT_EQ(base::StringPiece(kData + kOffset15,
+                              strlen(kData) - kOffset5 - kOffset15),
+            base::StringPiece(buffer2->data(), buffer2->size()));
+}
+
+TEST_F(ArcContentFileSystemFileStreamReaderTest,
+       ReadRegularFileWithOffsets_CloseWithWait) {
+  auto buffer1 =
+      base::MakeRefCounted<net::IOBufferWithSize>(kOffset15 - kOffset5);
+  auto buffer2 = base::MakeRefCounted<net::IOBufferWithSize>(
+      strlen(kData) - kOffset5 - kOffset15);
+  {
+    ArcContentFileSystemFileStreamReader reader1(GURL(kArcUrlFile), kOffset5);
+    EXPECT_TRUE(ReadData(&reader1, buffer1.get()));
+  }
+  base::RunLoop().RunUntilIdle();
+  {
+    ArcContentFileSystemFileStreamReader reader2(GURL(kArcUrlFile), kOffset15);
+    EXPECT_TRUE(ReadData(&reader2, buffer2.get()));
+  }
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(base::StringPiece(kData + kOffset5, kOffset15 - kOffset5),
+            base::StringPiece(buffer1->data(), buffer1->size()));
+  EXPECT_EQ(base::StringPiece(kData + kOffset15,
+                              strlen(kData) - kOffset5 - kOffset15),
+            base::StringPiece(buffer2->data(), buffer2->size()));
 }
 
 TEST_F(ArcContentFileSystemFileStreamReaderTest, ReadPipe) {
@@ -164,16 +210,56 @@ TEST_F(ArcContentFileSystemFileStreamReaderTest, ReadPipe) {
 }
 
 TEST_F(ArcContentFileSystemFileStreamReaderTest, ReadPipeWithOffset) {
-  constexpr size_t kOffset = 10;
   auto buffer =
-      base::MakeRefCounted<net::IOBufferWithSize>(strlen(kData) - kOffset);
+      base::MakeRefCounted<net::IOBufferWithSize>(strlen(kData) - kOffset10);
   {
-    ArcContentFileSystemFileStreamReader reader(GURL(kArcUrlPipe), kOffset);
+    ArcContentFileSystemFileStreamReader reader(GURL(kArcUrlPipe), kOffset10);
     EXPECT_TRUE(ReadData(&reader, buffer.get()));
   }
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(base::StringPiece(kData + kOffset, strlen(kData) - kOffset),
+  EXPECT_EQ(base::StringPiece(kData + kOffset10, strlen(kData) - kOffset10),
             base::StringPiece(buffer->data(), buffer->size()));
+}
+
+TEST_F(ArcContentFileSystemFileStreamReaderTest, ReadPipeWithOffsets) {
+  auto buffer1 =
+      base::MakeRefCounted<net::IOBufferWithSize>(kOffset15 - kOffset5);
+  auto buffer2 = base::MakeRefCounted<net::IOBufferWithSize>(
+      strlen(kData) - kOffset5 - kOffset15);
+  {
+    ArcContentFileSystemFileStreamReader reader1(GURL(kArcUrlPipe), kOffset5);
+    EXPECT_TRUE(ReadData(&reader1, buffer1.get()));
+    ArcContentFileSystemFileStreamReader reader2(GURL(kArcUrlPipe), kOffset15);
+    EXPECT_TRUE(ReadData(&reader2, buffer2.get()));
+  }
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(base::StringPiece(kData + kOffset5, kOffset15 - kOffset5),
+            base::StringPiece(buffer1->data(), buffer1->size()));
+  EXPECT_EQ(base::StringPiece(kData + kOffset15,
+                              strlen(kData) - kOffset5 - kOffset15),
+            base::StringPiece(buffer2->data(), buffer2->size()));
+}
+
+TEST_F(ArcContentFileSystemFileStreamReaderTest,
+       ReadPipeWithOffsets_CloseWithoutWait) {
+  auto buffer1 =
+      base::MakeRefCounted<net::IOBufferWithSize>(kOffset15 - kOffset5);
+  auto buffer2 = base::MakeRefCounted<net::IOBufferWithSize>(
+      strlen(kData) - kOffset5 - kOffset15);
+  {
+    ArcContentFileSystemFileStreamReader reader1(GURL(kArcUrlPipe), kOffset5);
+    EXPECT_TRUE(ReadData(&reader1, buffer1.get()));
+  }
+  {
+    ArcContentFileSystemFileStreamReader reader2(GURL(kArcUrlPipe), kOffset15);
+    EXPECT_TRUE(ReadData(&reader2, buffer2.get()));
+  }
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(base::StringPiece(kData + kOffset5, kOffset15 - kOffset5),
+            base::StringPiece(buffer1->data(), buffer1->size()));
+  EXPECT_EQ(base::StringPiece(kData + kOffset15,
+                              strlen(kData) - kOffset5 - kOffset15),
+            base::StringPiece(buffer2->data(), buffer2->size()));
 }
 
 TEST_F(ArcContentFileSystemFileStreamReaderTest, GetLength) {
