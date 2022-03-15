@@ -767,14 +767,6 @@ bool LocalFrame::IsTransientAllowFullscreenActive() const {
   return transient_allow_fullscreen_.IsActive();
 }
 
-bool LocalFrame::IsPaymentRequestTokenActive() const {
-  return payment_request_token_.IsActive();
-}
-
-bool LocalFrame::ConsumePaymentRequestToken() {
-  return payment_request_token_.ConsumeIfActive();
-}
-
 void LocalFrame::Reload(WebFrameLoadType load_type) {
   DCHECK(IsReloadLoadType(load_type));
   if (!loader_.GetDocumentLoader()->GetHistoryItem())
@@ -3011,20 +3003,15 @@ void LocalFrame::PostMessageEvent(
     ports = MessagePort::EntanglePorts(*GetDocument()->GetExecutionContext(),
                                        std::move(message.ports));
   }
+
+  // The |message.user_activation| only conveys the sender |Frame|'s user
+  // activation state to receiver JS.  This is never used for activating the
+  // receiver (or any other) |Frame|.
   UserActivation* user_activation = nullptr;
   if (message.user_activation) {
     user_activation = MakeGarbageCollected<UserActivation>(
         message.user_activation->has_been_active,
         message.user_activation->was_active);
-  }
-
-  if (GetDocument() &&
-      RuntimeEnabledFeatures::CapabilityDelegationPaymentRequestEnabled(
-          GetDocument()->GetExecutionContext()) &&
-      message.delegate_payment_request) {
-    UseCounter::Count(GetDocument(),
-                      WebFeature::kCapabilityDelegationOfPaymentRequest);
-    payment_request_token_.Activate();
   }
 
   message_event->initMessageEvent(

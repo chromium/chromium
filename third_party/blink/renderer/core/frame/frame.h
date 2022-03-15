@@ -508,6 +508,13 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
 
   // The user activation state of the current frame.  See |UserActivationState|
   // for details on how this state is maintained.
+  //
+  // TODO(https://crbug.com/1087963): Ideally this should be a state of
+  // |LocalDOMWindow| because user activation state never outlives JS Window
+  // object.  See related discussion on browser-side states in
+  // https://crbug.com/905448.  However, a legacy code relying on the user
+  // activation state of a |RemoteFrame| prevents us from moving this state to
+  // |LocalDOMWindow|.
   UserActivationState user_activation_state_;
 
   // The sticky user activation state of the current frame before eTLD+1
