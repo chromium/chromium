@@ -127,7 +127,7 @@ class BanRule:
 
 
 # Format: Sequence of BanRule:
-_BANNED_JAVA_IMPORTS = (
+_BANNED_JAVA_IMPORTS : Sequence[BanRule] = (
     BanRule(
       'import java.net.URI;',
       (
@@ -176,7 +176,7 @@ _BANNED_JAVA_IMPORTS = (
 )
 
 # Format: Sequence of BanRule:
-_BANNED_JAVA_FUNCTIONS = (
+_BANNED_JAVA_FUNCTIONS : Sequence[BanRule] = (
     BanRule(
       'StrictMode.allowThreadDiskReads()',
       (
@@ -193,7 +193,7 @@ _BANNED_JAVA_FUNCTIONS = (
       ),
       False,
     ),
-    (
+    BanRule(
       '.waitForIdleSync()',
       (
        'Do not use waitForIdleSync as it masks underlying issues. There is '
@@ -204,7 +204,7 @@ _BANNED_JAVA_FUNCTIONS = (
 )
 
 # Format: Sequence of BanRule:
-_BANNED_OBJC_FUNCTIONS = (
+_BANNED_OBJC_FUNCTIONS : Sequence[BanRule] = (
     BanRule(
       'addTrackingRect:',
       (
@@ -329,7 +329,7 @@ _BANNED_IOS_OBJC_FUNCTIONS = (
 )
 
 # Format: Sequence of BanRule:
-_BANNED_IOS_EGTEST_FUNCTIONS = (
+_BANNED_IOS_EGTEST_FUNCTIONS : Sequence[BanRule] = (
     BanRule(
       r'/\bEXPECT_OCMOCK_VERIFY\b',
       (
@@ -341,7 +341,7 @@ _BANNED_IOS_EGTEST_FUNCTIONS = (
 )
 
 # Format: Sequence of BanRule:
-_BANNED_CPP_FUNCTIONS = (
+_BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
     BanRule(
       r'/\busing namespace ',
       (
@@ -1011,7 +1011,7 @@ _BANNED_CPP_FUNCTIONS = (
 # Format: Sequence of tuples containing:
 # * String pattern or, if starting with a slash, a regular expression.
 # * Sequence of strings to show when the pattern matches.
-_DEPRECATED_MOJO_TYPES = (
+_DEPRECATED_MOJO_TYPES : Sequence[BanRule] = (
     BanRule(
       r'/\bmojo::AssociatedInterfacePtrInfo\b',
       (
