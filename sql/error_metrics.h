@@ -218,6 +218,12 @@ enum class SqliteLoggedResultCode {
 COMPONENT_EXPORT(SQL)
 SqliteLoggedResultCode CreateSqliteLoggedResultCode(int sqlite_result_code);
 
+// Called by unit tests.
+//
+// DCHECKs the representation invariants of the mapping table used to convert
+// SQLite result codes to logging-friendly values.
+COMPONENT_EXPORT(SQL) void CheckSqliteLoggedResultCodeForTesting();
+
 }  // namespace sql
 
 #endif  // SQL_ERROR_METRICS_H_

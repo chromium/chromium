@@ -62,21 +62,13 @@ TEST(ErrorMetricsTest, CreateSqliteLoggedResultCode_SqliteInternalError) {
 #endif
 }
 
-// TODO(crbug.com/1306382): Fails when dcheck_always_on = false.
-#if !DCHECK_IS_ON()
-#define MAYBE_CreateSqliteLoggedResultCode_ChromeBugError \
-  DISABLED_CreateSqliteLoggedResultCode_ChromeBugError
-#else
-#define MAYBE_CreateSqliteLoggedResultCode_ChromeBugError \
-  CreateSqliteLoggedResultCode_ChromeBugError
-#endif  // DCHECK_IS_ON()
-TEST(ErrorMetricsTest, MAYBE_CreateSqliteLoggedResultCode_ChromeBugError) {
+TEST(ErrorMetricsTest, CreateSqliteLoggedResultCode_ChromeBugError) {
 #if DCHECK_IS_ON()
   EXPECT_DCHECK_DEATH_WITH(
       CreateSqliteLoggedResultCode(SQLITE_NOTFOUND),
       "SQLite reported code that should never show up in Chrome: 12");
 #else
-  EXPECT_EQ(SqliteLoggedResultCode::kUnusedSqlite,
+  EXPECT_EQ(SqliteLoggedResultCode::kUnusedChrome,
             CreateSqliteLoggedResultCode(SQLITE_NOTFOUND));
 #endif
 }
@@ -103,6 +95,10 @@ TEST(ErrorMetricsTest, UmaHistogramSqliteResult_ExtendedErrorCode) {
   histogram_tester.ExpectTotalCount("Sql.ResultTest", 1);
   histogram_tester.ExpectBucketCount("Sql.ResultTest",
                                      SqliteLoggedResultCode::kCorruptIndex, 1);
+}
+
+TEST(ErrorMetricsTest, CheckMapping) {
+  CheckSqliteLoggedResultCodeForTesting();
 }
 
 }  // namespace
