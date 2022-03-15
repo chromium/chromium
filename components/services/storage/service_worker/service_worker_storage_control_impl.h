@@ -155,6 +155,9 @@ class ServiceWorkerStorageControlImpl
       ApplyPolicyUpdatesCallback callback) override;
   void GetPurgingResourceIdsForTest(
       GetPurgingResourceIdsForTestCallback callback) override;
+  void GetPurgingResourceIdsForLiveVersionForTest(
+      int64_t version_id,
+      GetPurgingResourceIdsForTestCallback callback) override;
   void GetPurgeableResourceIdsForTest(
       GetPurgeableResourceIdsForTestCallback callback) override;
   void GetUncommittedResourceIdsForTest(
@@ -180,6 +183,7 @@ class ServiceWorkerStorageControlImpl
       std::unique_ptr<std::vector<ResourceList>> resources_list);
   void DidStoreRegistration(
       StoreRegistrationCallback callback,
+      int64_t stored_version_id,
       mojom::ServiceWorkerDatabaseStatus status,
       int64_t deleted_version_id,
       uint64_t deleted_resources_size,
@@ -198,6 +202,14 @@ class ServiceWorkerStorageControlImpl
 
   void MaybePurgeResources(int64_t version_id,
                            const std::vector<int64_t>& purgeable_resources);
+
+  // Cancels resource purging on successfull registration.
+  // This is necessary when resurrecting an uninstalling registration
+  // in the unregistration + registration case because unregistration could've
+  // scheduled resources purging yet registration will try to reuse them which
+  // leads to potential use of doomed resources once the current version is
+  // marked as no longer alive.
+  void MaybeCancelPurgeResources(int64_t version_id);
 
   const std::unique_ptr<ServiceWorkerStorage> storage_;
 

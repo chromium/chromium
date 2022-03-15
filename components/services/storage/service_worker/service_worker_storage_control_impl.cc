@@ -62,6 +62,8 @@ class ServiceWorkerLiveVersionRefImpl
     purgeable_resources_ = purgeable_resources;
   }
 
+  void clear_purgeable_resources() { purgeable_resources_.clear(); }
+
   const std::vector<int64_t>& purgeable_resources() const {
     return purgeable_resources_;
   }
@@ -193,10 +195,12 @@ void ServiceWorkerStorageControlImpl::StoreRegistration(
     mojom::ServiceWorkerRegistrationDataPtr registration,
     std::vector<mojom::ServiceWorkerResourceRecordPtr> resources,
     StoreRegistrationCallback callback) {
+  int64_t version_id = registration->version_id;
   storage_->StoreRegistrationData(
       std::move(registration), std::move(resources),
       base::BindOnce(&ServiceWorkerStorageControlImpl::DidStoreRegistration,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     version_id));
 }
 
 void ServiceWorkerStorageControlImpl::DeleteRegistration(
@@ -374,6 +378,21 @@ void ServiceWorkerStorageControlImpl::GetPurgingResourceIdsForTest(
   storage_->GetPurgingResourceIdsForTest(std::move(callback));  // IN-TEST
 }
 
+void ServiceWorkerStorageControlImpl::
+    GetPurgingResourceIdsForLiveVersionForTest(
+        int64_t version_id,
+        GetPurgeableResourceIdsForTestCallback callback) {
+  auto it = live_versions_.find(version_id);
+  if (it == live_versions_.end()) {
+    std::move(callback).Run(ServiceWorkerDatabase::Status::kErrorNotFound,
+                            std::vector<int64_t>{});
+    return;
+  }
+
+  std::move(callback).Run(ServiceWorkerDatabase::Status::kOk,
+                          it->second->purgeable_resources());
+}
+
 void ServiceWorkerStorageControlImpl::GetPurgeableResourceIdsForTest(
     GetPurgeableResourceIdsForTestCallback callback) {
   storage_->GetPurgeableResourceIdsForTest(std::move(callback));  // IN-TEST
@@ -442,11 +461,13 @@ void ServiceWorkerStorageControlImpl::DidGetRegistrationsForStorageKey(
 
 void ServiceWorkerStorageControlImpl::DidStoreRegistration(
     StoreRegistrationCallback callback,
+    int64_t stored_version_id,
     mojom::ServiceWorkerDatabaseStatus status,
     int64_t deleted_version_id,
     uint64_t deleted_resources_size,
     const std::vector<int64_t>& newly_purgeable_resources) {
   MaybePurgeResources(deleted_version_id, newly_purgeable_resources);
+  MaybeCancelPurgeResources(stored_version_id);
   std::move(callback).Run(status, deleted_resources_size);
 }
 
@@ -507,6 +528,15 @@ void ServiceWorkerStorageControlImpl::MaybePurgeResources(
   } else {
     storage_->PurgeResources(std::move(purgeable_resources));
   }
+}
+
+void ServiceWorkerStorageControlImpl::MaybeCancelPurgeResources(
+    int64_t version_id) {
+  auto it = live_versions_.find(version_id);
+  if (it == live_versions_.end())
+    return;
+
+  it->second->clear_purgeable_resources();
 }
 
 }  // namespace storage

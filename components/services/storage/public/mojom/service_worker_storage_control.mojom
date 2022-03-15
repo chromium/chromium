@@ -299,9 +299,16 @@ interface ServiceWorkerStorageControl {
   ApplyPolicyUpdates(array<StoragePolicyUpdate> policy_updates) =>
       (ServiceWorkerDatabaseStatus status);
 
-  // Get resource ids which are scheduled to purge.
+  // Gets resource ids which are scheduled to purge.
   GetPurgingResourceIdsForTest() => (ServiceWorkerDatabaseStatus status,
                                      array<int64> resource_ids);
+
+  // Gets resource ids which will be scheduled to purge once the version with
+  // the given id is no longer alive.
+  GetPurgingResourceIdsForLiveVersionForTest(int64 version_id) =>
+      (ServiceWorkerDatabaseStatus status,
+      array<int64> resource_ids);
+
   // Gets resource ids which are purgeable.
   GetPurgeableResourceIdsForTest() => (ServiceWorkerDatabaseStatus status,
                                        array<int64> resource_ids);

@@ -17,8 +17,10 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
+#include "components/services/storage/service_worker/service_worker_database.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
@@ -213,6 +215,15 @@ class ServiceWorkerJobTest : public testing::Test {
   scoped_refptr<ServiceWorkerRegistration> CreateRegistrationWithControllee(
       const GURL& script_url,
       const GURL& scope_url);
+  std::vector<int64_t> GetPurgingResourceIdsForLiveVersion(int64_t version_id) {
+    base::test::TestFuture<storage::ServiceWorkerDatabase::Status,
+                           std::vector<int64_t>>
+        future;
+    context()->GetStorageControl()->GetPurgingResourceIdsForLiveVersionForTest(
+        version_id, future.GetCallback<storage::ServiceWorkerDatabase::Status,
+                                       const std::vector<int64_t>&>());
+    return future.Get<1>();
+  }
 
   BrowserTaskEnvironment task_environment_;
   std::unique_ptr<EmbeddedWorkerTestHelper> helper_;
@@ -965,6 +976,100 @@ TEST_F(ServiceWorkerJobTest,
   EXPECT_EQ(ServiceWorkerVersion::REDUNDANT, version->status());
 }
 
+TEST_F(ServiceWorkerJobTest, RegisterSameWhileUninstalling) {
+  GURL script("https://www.example.com/service_worker.js");
+  blink::mojom::ServiceWorkerRegistrationOptions options;
+  options.scope = GURL("https://www.example.com/one/");
+  blink::StorageKey key(url::Origin::Create(options.scope));
+
+  scoped_refptr<ServiceWorkerRegistration> registration =
+      RunRegisterJob(script, key, options);
+  // Wait until the worker becomes active.
+  base::RunLoop().RunUntilIdle();
+  auto runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
+  registration->SetTaskRunnerForTest(runner);
+
+  // Add a controllee and queue an unregister to force the uninstalling state.
+  ServiceWorkerContainerHost* container_host = CreateControllee();
+  scoped_refptr<ServiceWorkerVersion> version = registration->active_version();
+  version->AddControllee(container_host);
+  RunUnregisterJob(options.scope, key);
+  // Make sure the registration is deleted and purgable resources
+  // set for purging once the version goes dead.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_NE(0u, GetPurgingResourceIdsForLiveVersion(
+                    registration->active_version()->version_id())
+                    .size());
+
+  // Register same script again.
+  EXPECT_EQ(registration, RunRegisterJob(script, key, options));
+  // Wait until the worker becomes installed.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(0u, GetPurgingResourceIdsForLiveVersion(
+                    registration->active_version()->version_id())
+                    .size());
+
+  EXPECT_EQ(version, registration->active_version());
+  EXPECT_FALSE(registration->is_uninstalling());
+  EXPECT_FALSE(registration->is_uninstalled());
+  EXPECT_EQ(nullptr, registration->installing_version());
+  EXPECT_EQ(nullptr, registration->waiting_version());
+  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+  EXPECT_EQ(ServiceWorkerVersion::ACTIVATED, version->status());
+}
+
+TEST_F(ServiceWorkerJobTest, RegisterSameWhileUninstallingAndUnregister) {
+  GURL script("https://www.example.com/service_worker.js");
+  blink::mojom::ServiceWorkerRegistrationOptions options;
+  options.scope = GURL("https://www.example.com/one/");
+  blink::StorageKey key(url::Origin::Create(options.scope));
+
+  scoped_refptr<ServiceWorkerRegistration> registration =
+      RunRegisterJob(script, key, options);
+  // Wait until the worker becomes active.
+  base::RunLoop().RunUntilIdle();
+  auto runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
+  registration->SetTaskRunnerForTest(runner);
+
+  // Add a controllee and queue an unregister to force the uninstalling state.
+  ServiceWorkerContainerHost* container_host = CreateControllee();
+  scoped_refptr<ServiceWorkerVersion> version = registration->active_version();
+  version->AddControllee(container_host);
+  RunUnregisterJob(options.scope, key);
+  // Make sure the registration is deleted and purgable resources
+  // set for purging once the version goes dead.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_NE(0u, GetPurgingResourceIdsForLiveVersion(
+                    registration->active_version()->version_id())
+                    .size());
+
+  // Register same script again.
+  EXPECT_EQ(registration, RunRegisterJob(script, key, options));
+  // Wait until the worker becomes installed.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(0u, GetPurgingResourceIdsForLiveVersion(
+                    registration->active_version()->version_id())
+                    .size());
+
+  EXPECT_EQ(version, registration->active_version());
+  EXPECT_FALSE(registration->is_uninstalling());
+  EXPECT_FALSE(registration->is_uninstalled());
+  EXPECT_EQ(nullptr, registration->installing_version());
+  EXPECT_EQ(nullptr, registration->waiting_version());
+  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+  EXPECT_EQ(ServiceWorkerVersion::ACTIVATED, version->status());
+
+  // Unregister again and make sure its resources will be purged despite
+  // purge being cancelled previously.
+  RunUnregisterJob(options.scope, key);
+  // Make sure the registration is deleted and purgable resources
+  // set for purging once the version goes dead.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_NE(0u, GetPurgingResourceIdsForLiveVersion(
+                    registration->active_version()->version_id())
+                    .size());
+}
+
 TEST_F(ServiceWorkerJobTest, RegisterWhileUninstalling) {
   GURL script1("https://www.example.com/service_worker.js");
   GURL script2("https://www.example.com/service_worker.js?new");
@@ -1115,8 +1220,19 @@ TEST_F(ServiceWorkerJobTest, RegisterSameScriptMultipleTimesWhileUninstalling) {
   RunUnregisterJob(options.scope, key);
 
   EXPECT_TRUE(registration->is_uninstalling());
+  // Make sure it's deleted.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_NE(
+      0u,
+      GetPurgingResourceIdsForLiveVersion(new_version->version_id()).size());
 
   EXPECT_EQ(registration, RunRegisterJob(script2, key, options));
+
+  // Make sure it's installed and nothing will get purged.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(
+      0u,
+      GetPurgingResourceIdsForLiveVersion(new_version->version_id()).size());
 
   EXPECT_FALSE(registration->is_uninstalling());
   EXPECT_EQ(new_version, registration->waiting_version());
