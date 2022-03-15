@@ -92,11 +92,6 @@ struct StructTraits<network::mojom::DnsConfigOverridesDataView,
   static network::mojom::DnsConfigOverrides_Tristate
   allow_dns_over_https_upgrade(const net::DnsConfigOverrides& overrides);
 
-  static const absl::optional<std::vector<std::string>>&
-  disabled_upgrade_providers(const net::DnsConfigOverrides& overrides) {
-    return overrides.disabled_upgrade_providers;
-  }
-
   static bool clear_hosts(const net::DnsConfigOverrides& overrides) {
     return overrides.clear_hosts;
   }

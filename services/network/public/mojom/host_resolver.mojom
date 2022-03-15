@@ -93,10 +93,6 @@ struct DnsConfigOverrides {
   // Whether automatic upgrade to DNS over HTTPS servers is permitted.
   Tristate allow_dns_over_https_upgrade = Tristate.NO_OVERRIDE;
 
-  // List of providers to exclude from upgrade mapping. See the
-  // mapping in net/dns/dns_util.cc for provider ids.
-  array<string>? disabled_upgrade_providers;
-
   // Whether to clear data read from the system HOSTS file.
   bool clear_hosts = false;
 };

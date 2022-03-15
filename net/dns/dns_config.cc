@@ -62,8 +62,7 @@ bool DnsConfig::EqualsIgnoreHosts(const DnsConfig& d) const {
          (rotate == d.rotate) && (use_local_ipv6 == d.use_local_ipv6) &&
          (doh_config == d.doh_config) &&
          (secure_dns_mode == d.secure_dns_mode) &&
-         (allow_dns_over_https_upgrade == d.allow_dns_over_https_upgrade) &&
-         (disabled_upgrade_providers == d.disabled_upgrade_providers);
+         (allow_dns_over_https_upgrade == d.allow_dns_over_https_upgrade);
 }
 
 void DnsConfig::CopyIgnoreHosts(const DnsConfig& d) {
@@ -82,7 +81,6 @@ void DnsConfig::CopyIgnoreHosts(const DnsConfig& d) {
   doh_config = d.doh_config;
   secure_dns_mode = d.secure_dns_mode;
   allow_dns_over_https_upgrade = d.allow_dns_over_https_upgrade;
-  disabled_upgrade_providers = d.disabled_upgrade_providers;
 }
 
 base::Value DnsConfig::ToValue() const {
@@ -112,11 +110,6 @@ base::Value DnsConfig::ToValue() const {
   dict.SetKey("doh_config", doh_config.ToValue());
   dict.SetIntKey("secure_dns_mode", static_cast<int>(secure_dns_mode));
   dict.SetBoolKey("allow_dns_over_https_upgrade", allow_dns_over_https_upgrade);
-
-  list = base::Value(base::Value::Type::LIST);
-  for (const auto& provider : disabled_upgrade_providers)
-    list.Append(provider);
-  dict.SetKey("disabled_upgrade_providers", std::move(list));
 
   return dict;
 }

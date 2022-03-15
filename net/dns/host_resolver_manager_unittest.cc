@@ -15,6 +15,7 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -66,6 +67,7 @@
 #include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/dns_protocol.h"
 #include "net/dns/public/dns_query_type.h"
+#include "net/dns/public/doh_provider_entry.h"
 #include "net/dns/public/mdns_listener_update_type.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/dns/public/secure_dns_mode.h"
@@ -506,6 +508,17 @@ void TestBothLoopbackIPs(const std::string& host) {
   EXPECT_EQ(2u, addresses.size());
   EXPECT_TRUE(HasAddress(IPAddress::IPv4Localhost(), addresses));
   EXPECT_TRUE(HasAddress(IPAddress::IPv6Localhost(), addresses));
+}
+
+// Returns the DoH provider entry in `DohProviderEntry::GetList()` that matches
+// `provider`. Crashes if there is no matching entry.
+const DohProviderEntry& GetDohProviderEntryForTesting(
+    base::StringPiece provider) {
+  auto provider_list = DohProviderEntry::GetList();
+  auto it =
+      base::ranges::find(provider_list, provider, &DohProviderEntry::provider);
+  CHECK(it != provider_list.end());
+  return **it;
 }
 
 }  // namespace
@@ -3808,23 +3821,35 @@ DnsConfig CreateUpgradableDnsConfig() {
   DnsConfig config;
   config.secure_dns_mode = SecureDnsMode::kAutomatic;
   config.allow_dns_over_https_upgrade = true;
+
+  auto ProviderHasAddr = [](base::StringPiece provider, const IPAddress& addr) {
+    return base::Contains(GetDohProviderEntryForTesting(provider).ip_addresses,
+                          addr);
+  };
+
   // Cloudflare upgradeable IPs
   IPAddress dns_ip0(1, 0, 0, 1);
   IPAddress dns_ip1;
   EXPECT_TRUE(dns_ip1.AssignFromIPLiteral("2606:4700:4700::1111"));
-  // SafeBrowsing family filter upgradeable IP
+  EXPECT_TRUE(ProviderHasAddr("Cloudflare", dns_ip0));
+  EXPECT_TRUE(ProviderHasAddr("Cloudflare", dns_ip1));
+  // CleanBrowsingFamily upgradeable IP
   IPAddress dns_ip2;
   EXPECT_TRUE(dns_ip2.AssignFromIPLiteral("2a0d:2a00:2::"));
-  // SafeBrowsing security filter upgradeable IP
+  EXPECT_TRUE(ProviderHasAddr("CleanBrowsingFamily", dns_ip2));
+  // CleanBrowsingSecure upgradeable IP
   IPAddress dns_ip3(185, 228, 169, 9);
+  EXPECT_TRUE(ProviderHasAddr("CleanBrowsingSecure", dns_ip3));
   // Non-upgradeable IP
   IPAddress dns_ip4(1, 2, 3, 4);
 
-  config.nameservers.push_back(IPEndPoint(dns_ip0, dns_protocol::kDefaultPort));
-  config.nameservers.push_back(IPEndPoint(dns_ip1, dns_protocol::kDefaultPort));
-  config.nameservers.push_back(IPEndPoint(dns_ip2, 54));
-  config.nameservers.push_back(IPEndPoint(dns_ip3, dns_protocol::kDefaultPort));
-  config.nameservers.push_back(IPEndPoint(dns_ip4, dns_protocol::kDefaultPort));
+  config.nameservers = {
+      IPEndPoint(dns_ip0, dns_protocol::kDefaultPort),
+      IPEndPoint(dns_ip1, dns_protocol::kDefaultPort),
+      IPEndPoint(dns_ip2, 54),
+      IPEndPoint(dns_ip3, dns_protocol::kDefaultPort),
+      IPEndPoint(dns_ip4, dns_protocol::kDefaultPort),
+  };
   EXPECT_TRUE(config.IsValid());
   return config;
 }
@@ -8018,8 +8043,6 @@ TEST_F(HostResolverManagerDnsTest, SetDnsConfigOverrides) {
   const SecureDnsMode secure_dns_mode = SecureDnsMode::kSecure;
   overrides.secure_dns_mode = secure_dns_mode;
   overrides.allow_dns_over_https_upgrade = true;
-  const std::vector<std::string> disabled_upgrade_providers = {"provider_name"};
-  overrides.disabled_upgrade_providers = disabled_upgrade_providers;
   overrides.clear_hosts = true;
 
   // This test is expected to test overriding all fields.
@@ -8043,8 +8066,6 @@ TEST_F(HostResolverManagerDnsTest, SetDnsConfigOverrides) {
   EXPECT_EQ(doh_config, overridden_config->doh_config);
   EXPECT_EQ(secure_dns_mode, overridden_config->secure_dns_mode);
   EXPECT_TRUE(overridden_config->allow_dns_over_https_upgrade);
-  EXPECT_EQ(disabled_upgrade_providers,
-            overridden_config->disabled_upgrade_providers);
   EXPECT_THAT(overridden_config->hosts, testing::IsEmpty());
 
   base::RunLoop().RunUntilIdle();  // Notifications are async.
@@ -8378,12 +8399,16 @@ TEST_F(HostResolverManagerDnsTest, DohMappingWithExclusion) {
   DnsClient* client_ptr = client.get();
   resolver_->SetDnsClientForTesting(std::move(client));
 
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{}, /*disabled_features=*/{
+          GetDohProviderEntryForTesting("CleanBrowsingSecure").feature,
+          GetDohProviderEntryForTesting("Cloudflare").feature});
+
   // Create a DnsConfig containing IP addresses associated with Cloudflare,
   // SafeBrowsing family filter, SafeBrowsing security filter, and other IPs
   // not associated with hardcoded DoH services.
   DnsConfig original_config = CreateUpgradableDnsConfig();
-  original_config.disabled_upgrade_providers = {"CleanBrowsingSecure",
-                                                "Cloudflare", "Unexpected"};
   ChangeDnsConfig(original_config);
 
   // A DoH upgrade should be attempted on the DNS servers in the config, but

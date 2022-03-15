@@ -107,10 +107,6 @@ struct NET_EXPORT DnsConfig {
   // to use DoH server(s) operated by the same provider(s) when the user is
   // in AUTOMATIC mode and has not pre-specified DoH servers.
   bool allow_dns_over_https_upgrade;
-
-  // List of providers to exclude from upgrade mapping. See the
-  // mapping in net/dns/dns_util.cc for provider ids.
-  std::vector<std::string> disabled_upgrade_providers;
 };
 
 }  // namespace net

@@ -59,7 +59,6 @@ struct NET_EXPORT DnsConfigOverrides {
   absl::optional<DnsOverHttpsConfig> dns_over_https_config;
   absl::optional<SecureDnsMode> secure_dns_mode;
   absl::optional<bool> allow_dns_over_https_upgrade;
-  absl::optional<std::vector<std::string>> disabled_upgrade_providers;
 
   // |hosts| is not supported for overriding except to clear it.
   bool clear_hosts = false;

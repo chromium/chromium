@@ -62,10 +62,8 @@ void UpdateConfigForDohUpgrade(DnsConfig* config) {
     // If we're in strict mode on Android, only attempt to upgrade the
     // specified DoT hostname.
     if (!config->dns_over_tls_hostname.empty()) {
-      config->doh_config =
-          DnsOverHttpsConfig(GetDohUpgradeServersFromDotHostname(
-              config->dns_over_tls_hostname,
-              config->disabled_upgrade_providers));
+      config->doh_config = DnsOverHttpsConfig(
+          GetDohUpgradeServersFromDotHostname(config->dns_over_tls_hostname));
       has_doh_servers = !config->doh_config.servers().empty();
       UMA_HISTOGRAM_BOOLEAN("Net.DNS.UpgradeConfig.DotUpgradeSucceeded",
                             has_doh_servers);
@@ -80,9 +78,8 @@ void UpdateConfigForDohUpgrade(DnsConfig* config) {
       UMA_HISTOGRAM_BOOLEAN("Net.DNS.UpgradeConfig.HasPublicInsecureNameserver",
                             !all_local);
 
-      config->doh_config =
-          DnsOverHttpsConfig(GetDohUpgradeServersFromNameservers(
-              config->nameservers, config->disabled_upgrade_providers));
+      config->doh_config = DnsOverHttpsConfig(
+          GetDohUpgradeServersFromNameservers(config->nameservers));
       has_doh_servers = !config->doh_config.servers().empty();
       UMA_HISTOGRAM_BOOLEAN("Net.DNS.UpgradeConfig.InsecureUpgradeSucceeded",
                             has_doh_servers);

@@ -11,14 +11,28 @@
 
 #include "base/big_endian.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "net/dns/dns_test_util.h"
 #include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/dns_protocol.h"
+#include "net/dns/public/doh_provider_entry.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
+
+namespace {
+// Returns the DoH provider entry in `DohProviderEntry::GetList()` that matches
+// `provider`. Crashes if there is no matching entry.
+const DohProviderEntry& GetDohProviderEntry(base::StringPiece provider) {
+  auto provider_list = DohProviderEntry::GetList();
+  auto it =
+      base::ranges::find(provider_list, provider, &DohProviderEntry::provider);
+  CHECK(it != provider_list.end());
+  return **it;
+}
+}  // namespace
 
 using testing::Eq;
 
@@ -441,22 +455,24 @@ TEST_F(DNSUtilTest, GetURLFromTemplateWithoutParameters) {
 
 TEST_F(DNSUtilTest, GetDohUpgradeServersFromDotHostname) {
   std::vector<DnsOverHttpsServerConfig> doh_servers =
-      GetDohUpgradeServersFromDotHostname("", std::vector<std::string>());
+      GetDohUpgradeServersFromDotHostname("");
   EXPECT_EQ(0u, doh_servers.size());
 
-  doh_servers = GetDohUpgradeServersFromDotHostname("unrecognized",
-                                                    std::vector<std::string>());
+  doh_servers = GetDohUpgradeServersFromDotHostname("unrecognized");
   EXPECT_EQ(0u, doh_servers.size());
 
   doh_servers = GetDohUpgradeServersFromDotHostname(
-      "family-filter-dns.cleanbrowsing.org", std::vector<std::string>());
+      "family-filter-dns.cleanbrowsing.org");
   EXPECT_EQ(1u, doh_servers.size());
   EXPECT_EQ("https://doh.cleanbrowsing.org/doh/family-filter{?dns}",
             doh_servers[0].server_template());
 
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{}, /*disabled_features=*/{
+          GetDohProviderEntry("CleanBrowsingFamily").feature});
   doh_servers = GetDohUpgradeServersFromDotHostname(
-      "family-filter-dns.cleanbrowsing.org",
-      std::vector<std::string>({"CleanBrowsingFamily"}));
+      "family-filter-dns.cleanbrowsing.org");
   EXPECT_EQ(0u, doh_servers.size());
 }
 
@@ -474,28 +490,30 @@ TEST_F(DNSUtilTest, GetDohUpgradeServersFromNameservers) {
   // None-upgradeable IP
   IPAddress dns_ip4(1, 2, 3, 4);
 
-  nameservers.push_back(IPEndPoint(dns_ip0, dns_protocol::kDefaultPort));
-  nameservers.push_back(IPEndPoint(dns_ip1, dns_protocol::kDefaultPort));
-  nameservers.push_back(IPEndPoint(dns_ip2, 54));
-  nameservers.push_back(IPEndPoint(dns_ip3, dns_protocol::kDefaultPort));
-  nameservers.push_back(IPEndPoint(dns_ip4, dns_protocol::kDefaultPort));
+  nameservers.emplace_back(dns_ip0, dns_protocol::kDefaultPort);
+  nameservers.emplace_back(dns_ip1, dns_protocol::kDefaultPort);
+  nameservers.emplace_back(dns_ip2, 54);
+  nameservers.emplace_back(dns_ip3, dns_protocol::kDefaultPort);
+  nameservers.emplace_back(dns_ip4, dns_protocol::kDefaultPort);
 
   std::vector<DnsOverHttpsServerConfig> doh_servers =
-      GetDohUpgradeServersFromNameservers(std::vector<IPEndPoint>(),
-                                          std::vector<std::string>());
+      GetDohUpgradeServersFromNameservers(std::vector<IPEndPoint>());
   EXPECT_EQ(0u, doh_servers.size());
 
-  doh_servers = GetDohUpgradeServersFromNameservers(nameservers,
-                                                    std::vector<std::string>());
+  doh_servers = GetDohUpgradeServersFromNameservers(nameservers);
   auto expected_config = *DnsOverHttpsConfig::FromStrings(
       {"https://chrome.cloudflare-dns.com/dns-query",
        "https://doh.cleanbrowsing.org/doh/family-filter{?dns}",
        "https://doh.cleanbrowsing.org/doh/security-filter{?dns}"});
   EXPECT_EQ(expected_config.servers(), doh_servers);
 
-  doh_servers = GetDohUpgradeServersFromNameservers(
-      nameservers, std::vector<std::string>(
-                       {"CleanBrowsingSecure", "Cloudflare", "Unexpected"}));
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{GetDohProviderEntry("CleanBrowsingSecure").feature,
+                             GetDohProviderEntry("Cloudflare").feature});
+
+  doh_servers = GetDohUpgradeServersFromNameservers(nameservers);
   EXPECT_THAT(doh_servers,
               testing::ElementsAre(*DnsOverHttpsServerConfig::FromString(
                   "https://doh.cleanbrowsing.org/doh/family-filter{?dns}")));

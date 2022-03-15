@@ -164,8 +164,6 @@ bool StructTraits<DnsConfigOverridesDataView, net::DnsConfigOverrides>::Read(
 
   out->allow_dns_over_https_upgrade =
       FromTristate(data.allow_dns_over_https_upgrade());
-  if (!data.ReadDisabledUpgradeProviders(&out->disabled_upgrade_providers))
-    return false;
 
   out->clear_hosts = data.clear_hosts();
 

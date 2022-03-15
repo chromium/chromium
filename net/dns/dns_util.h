@@ -27,7 +27,7 @@ class BigEndianReader;
 namespace net {
 
 // DNSDomainFromDot - convert a domain string to DNS format. From DJB's
-// public domain DNS library. |dotted| may include only characters a-z, A-Z,
+// public domain DNS library. `dotted` may include only characters a-z, A-Z,
 // 0-9, -, and _.
 //
 //   dotted: a string in dotted form: "www.google.com"
@@ -37,7 +37,7 @@ NET_EXPORT bool DNSDomainFromDot(const base::StringPiece& dotted,
 
 // DNSDomainFromUnrestrictedDot - convert a domain string to DNS format. Adapted
 // from DJB's public domain DNS library. No validation of the characters in
-// |dotted| is performed.
+// `dotted` is performed.
 //
 //   dotted: a string in dotted form: "Foo Printer._tcp.local"
 //   out: a result in DNS form: "\x0bFoo Printer\x04_tcp\x05local\x00"
@@ -64,7 +64,7 @@ NET_EXPORT_PRIVATE bool IsValidUnrestrictedDNSDomain(
 //
 // TODO(crbug.com/1065133): In the future, when we can remove support for
 // invalid names, this can be a private implementation detail of
-// |DNSDomainFromDot|, and need not be NET_EXPORT_PRIVATE.
+// `DNSDomainFromDot`, and need not be NET_EXPORT_PRIVATE.
 NET_EXPORT_PRIVATE bool IsValidHostLabelCharacter(char c, bool is_first_char);
 
 // Converts a domain in DNS format to a dotted string. Excludes the dot at the
@@ -96,9 +96,9 @@ base::TimeDelta GetTimeDeltaForConnectionTypeFromFieldTrialOrDefault(
 
 // Creates a 2-byte string that represents the name pointer defined in Section
 // 4.1.1 of RFC 1035 for the given offset. The first two bits in the first byte
-// of the name pointer are ones, and the rest 14 bits are given to |offset|,
+// of the name pointer are ones, and the rest 14 bits are given to `offset`,
 // which specifies an offset from the start of the message for the pointed name.
-// Note that |offset| must be less than 2^14 - 1 by definition.
+// Note that `offset` must be less than 2^14 - 1 by definition.
 NET_EXPORT std::string CreateNamePointer(uint16_t offset);
 
 // Convert a DnsQueryType enum to the wire format integer representation.
@@ -107,30 +107,26 @@ NET_EXPORT_PRIVATE uint16_t DnsQueryTypeToQtype(DnsQueryType dns_query_type);
 NET_EXPORT DnsQueryType
 AddressFamilyToDnsQueryType(AddressFamily address_family);
 
-// Uses the hardcoded upgrade mapping to discover DoH service(s) associated
-// with a DoT hostname. Providers listed in |excluded_providers| are not
-// eligible for upgrade.
+// Uses the hardcoded upgrade mapping to discover DoH service(s) associated with
+// a DoT hostname. Providers with a disabled `base::Feature` are not eligible
+// for upgrade.
 NET_EXPORT_PRIVATE std::vector<DnsOverHttpsServerConfig>
-GetDohUpgradeServersFromDotHostname(
-    const std::string& dot_server,
-    const std::vector<std::string>& excluded_providers);
+GetDohUpgradeServersFromDotHostname(const std::string& dot_server);
 
-// Uses the hardcoded upgrade mapping to discover DoH service(s) associated
-// with a list of insecure DNS servers. Server ordering is preserved across
-// the mapping. Providers listed in |excluded_providers| are not
-// eligible for upgrade.
+// Uses the hardcoded upgrade mapping to discover DoH service(s) associated with
+// a list of insecure DNS servers. Server ordering is preserved across the
+// mapping. Providers with a disabled `base::Feature` are not eligible for
+// upgrade.
 NET_EXPORT_PRIVATE std::vector<DnsOverHttpsServerConfig>
-GetDohUpgradeServersFromNameservers(
-    const std::vector<IPEndPoint>& dns_servers,
-    const std::vector<std::string>& excluded_providers);
+GetDohUpgradeServersFromNameservers(const std::vector<IPEndPoint>& dns_servers);
 
 // Returns the provider id to use in UMA histogram names. If there is no
-// provider id that matches |doh_server|, returns "Other".
+// provider id that matches `doh_server`, returns "Other".
 NET_EXPORT_PRIVATE std::string GetDohProviderIdForHistogramFromServerConfig(
     const DnsOverHttpsServerConfig& doh_server);
 
 // Returns the provider id to use in UMA histogram names. If there is no
-// provider id that matches |nameserver|, returns "Other".
+// provider id that matches `nameserver`, returns "Other".
 NET_EXPORT_PRIVATE std::string GetDohProviderIdForHistogramFromNameserver(
     const IPEndPoint& nameserver);
 

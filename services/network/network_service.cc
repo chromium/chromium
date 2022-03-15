@@ -545,16 +545,6 @@ void NetworkService::ConfigureStubHostResolver(
   overrides.secure_dns_mode = secure_dns_mode;
   overrides.allow_dns_over_https_upgrade =
       base::FeatureList::IsEnabled(features::kDnsOverHttpsUpgrade);
-  // Instruct HostResolverManager not to auto-upgrade any DoH providers whose
-  // features are disabled.
-  std::vector<std::string> disabled_providers;
-  for (const net::DohProviderEntry* provider :
-       net::DohProviderEntry::GetList()) {
-    if (!base::FeatureList::IsEnabled(provider->feature))
-      disabled_providers.push_back(provider->provider);
-  }
-  if (!disabled_providers.empty())
-    overrides.disabled_upgrade_providers.emplace(std::move(disabled_providers));
 
   host_resolver_manager_->SetDnsConfigOverrides(overrides);
 }

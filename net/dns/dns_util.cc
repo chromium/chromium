@@ -15,6 +15,7 @@
 
 #include "base/big_endian.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
@@ -100,18 +101,15 @@ bool DNSDomainFromDot(const base::StringPiece& dotted,
 }
 
 DohProviderEntry::List GetDohProviderEntriesFromNameservers(
-    const std::vector<IPEndPoint>& dns_servers,
-    const std::vector<std::string>& excluded_providers) {
+    const std::vector<IPEndPoint>& dns_servers) {
   const DohProviderEntry::List& providers = DohProviderEntry::GetList();
   DohProviderEntry::List entries;
 
   for (const auto& server : dns_servers) {
     for (const auto* entry : providers) {
-      if (base::Contains(excluded_providers, entry->provider))
-        continue;
-
       // DoH servers should only be added once.
-      if (base::Contains(entry->ip_addresses, server.address()) &&
+      if (base::FeatureList::IsEnabled(entry->feature) &&
+          base::Contains(entry->ip_addresses, server.address()) &&
           !base::Contains(entries, entry)) {
         entries.push_back(entry);
       }
@@ -283,29 +281,24 @@ DnsQueryType AddressFamilyToDnsQueryType(AddressFamily address_family) {
 }
 
 std::vector<DnsOverHttpsServerConfig> GetDohUpgradeServersFromDotHostname(
-    const std::string& dot_server,
-    const std::vector<std::string>& excluded_providers) {
+    const std::string& dot_server) {
   std::vector<DnsOverHttpsServerConfig> doh_servers;
 
   if (dot_server.empty())
     return doh_servers;
 
   for (const auto* entry : DohProviderEntry::GetList()) {
-    if (base::Contains(excluded_providers, entry->provider))
-      continue;
-
-    if (base::Contains(entry->dns_over_tls_hostnames, dot_server)) {
-      doh_servers.emplace_back(entry->doh_server_config);
+    if (base::FeatureList::IsEnabled(entry->feature) &&
+        base::Contains(entry->dns_over_tls_hostnames, dot_server)) {
+      doh_servers.push_back(entry->doh_server_config);
     }
   }
   return doh_servers;
 }
 
 std::vector<DnsOverHttpsServerConfig> GetDohUpgradeServersFromNameservers(
-    const std::vector<IPEndPoint>& dns_servers,
-    const std::vector<std::string>& excluded_providers) {
-  const auto entries =
-      GetDohProviderEntriesFromNameservers(dns_servers, excluded_providers);
+    const std::vector<IPEndPoint>& dns_servers) {
+  const auto entries = GetDohProviderEntriesFromNameservers(dns_servers);
   std::vector<DnsOverHttpsServerConfig> doh_servers;
   doh_servers.reserve(entries.size());
   std::transform(entries.begin(), entries.end(),
@@ -326,7 +319,7 @@ std::string GetDohProviderIdForHistogramFromServerConfig(
 
 std::string GetDohProviderIdForHistogramFromNameserver(
     const IPEndPoint& nameserver) {
-  const auto entries = GetDohProviderEntriesFromNameservers({nameserver}, {});
+  const auto entries = GetDohProviderEntriesFromNameservers({nameserver});
   return entries.empty() ? "Other" : entries[0]->provider;
 }
 

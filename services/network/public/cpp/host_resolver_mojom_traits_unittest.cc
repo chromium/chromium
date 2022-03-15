@@ -41,7 +41,6 @@ TEST(HostResolverMojomTraitsTest, DnsConfigOverridesRoundtrip_FullySpecified) {
       *net::DnsOverHttpsConfig::FromString("https://example.com/");
   original.secure_dns_mode = net::SecureDnsMode::kSecure;
   original.allow_dns_over_https_upgrade = true;
-  original.disabled_upgrade_providers.emplace({std::string("provider_name")});
   original.clear_hosts = true;
 
   net::DnsConfigOverrides deserialized;

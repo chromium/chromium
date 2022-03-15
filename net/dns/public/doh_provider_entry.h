@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/strings/string_piece.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_export.h"
 #include "net/dns/public/dns_over_https_server_config.h"
