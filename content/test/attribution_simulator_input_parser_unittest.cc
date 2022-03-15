@@ -379,7 +379,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        R"(["sources"][0]["reporting_origin"]: must be a valid origin)",
+        R"(["sources"][0]["reporting_origin"]: must be a valid, secure origin)",
         R"json({"sources": [{
           "source_type": "navigation",
           "source_time": 1643235574,
@@ -391,7 +391,20 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        R"(["sources"][0]["source_origin"]: must be a valid origin)",
+        R"(["sources"][0]["reporting_origin"]: must be a valid, secure origin)",
+        R"json({"sources": [{
+          "source_type": "navigation",
+          "source_time": 1643235574,
+          "source_origin": "https://a.s.test",
+          "reporting_origin": "http://r.test",
+          "registration_config": {
+            "source_event_id": "123",
+            "destination": "https://a.d.test"
+          }
+        }]})json",
+    },
+    {
+        R"(["sources"][0]["source_origin"]: must be a valid, secure origin)",
         R"json({"sources": [{
           "source_type": "navigation",
           "source_time": 1643235574,
@@ -434,7 +447,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        R"(["sources"][0]["registration_config"]["destination"]: must be a valid origin)",
+        R"(["sources"][0]["registration_config"]["destination"]: must be a valid, secure origin)",
         R"json({"sources": [{
           "source_type": "navigation",
           "source_time": 1643235574,
@@ -575,7 +588,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        R"(["triggers"][0]["destination"]: must be a valid origin)",
+        R"(["triggers"][0]["destination"]: must be a valid, secure origin)",
         R"json({"triggers": [{
           "trigger_time": 1643235576,
           "reporting_origin": "https://a.r.test",
@@ -583,7 +596,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        R"(["triggers"][0]["reporting_origin"]: must be a valid origin)",
+        R"(["triggers"][0]["reporting_origin"]: must be a valid, secure origin)",
         R"json({"triggers": [{
           "trigger_time": 1643235576,
           "destination": " https://a.d1.test",

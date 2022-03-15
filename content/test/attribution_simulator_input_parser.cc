@@ -21,6 +21,7 @@
 #include "base/values.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_source.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
+#include "content/browser/attribution_reporting/attribution_host_utils.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
@@ -302,8 +303,8 @@ class AttributionSimulatorInputParser {
     if (const std::string* v = dict.FindStringKey(key))
       origin = url::Origin::Create(GURL(*v));
 
-    if (origin.opaque())
-      *Error() << "must be a valid origin";
+    if (!attribution_host_utils::IsOriginTrustworthyForAttributions(origin))
+      *Error() << "must be a valid, secure origin";
 
     return origin;
   }
