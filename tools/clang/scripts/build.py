@@ -443,6 +443,8 @@ def VerifyZlibSupport():
     sys.exit(1)
 
 
+# TODO(https://crbug.com/1286289): remove once Chrome targets don't rely on
+# libstdc++.so existing in the clang package.
 def CopyLibstdcpp(args, build_dir):
   if not args.gcc_toolchain:
     return
@@ -453,33 +455,8 @@ def CopyLibstdcpp(args, build_dir):
   ],
                                       universal_newlines=True).rstrip()
 
-  # Copy libstdc++.so.6 into the build dir so that the built binaries can find
-  # it. Binaries get their rpath set to $origin/../lib/. For clang, lld,
-  # etc. that live in the bin/ directory, this means they expect to find the .so
-  # in their neighbouring lib/ dir.
-  # For unit tests we pass -Wl,-rpath to the linker pointing to the lib64 dir
-  # in the gcc toolchain, via LLVM_LOCAL_RPATH below.
-  # The two fuzzer tests are weird in that they copy the fuzzer binary from bin/
-  # into the test tree under a different name. To make the relative rpath in
-  # them work, copy libstdc++ to the copied location for now.
-  # There is also a compiler-rt test that copies llvm-symbolizer out of bin/.
-  # TODO(thakis): Instead, make the upstream lit.local.cfg.py for these 2 tests
-  # check if the binary contains an rpath and if so disable the tests.
-  for d in ['lib',
-            'test/tools/llvm-isel-fuzzer/lib',
-            'test/tools/llvm-opt-fuzzer/lib']:
-    EnsureDirExists(os.path.join(build_dir, d))
-    CopyFile(libstdcpp, os.path.join(build_dir, d))
-
-  sanitizer_common_tests = os.path.join(build_dir,
-                                 'projects/compiler-rt/test/sanitizer_common')
-  if os.path.exists(sanitizer_common_tests):
-    for d in ['asan-i386-Linux', 'asan-x86_64-Linux', 'lsan-i386-Linux',
-              'lsan-x86_64-Linux', 'msan-x86_64-Linux', 'tsan-x86_64-Linux',
-              'ubsan-i386-Linux', 'ubsan-x86_64-Linux']:
-      libpath = os.path.join(sanitizer_common_tests, d, 'Output', 'lib')
-      EnsureDirExists(libpath)
-      CopyFile(libstdcpp, libpath)
+  EnsureDirExists(os.path.join(build_dir, 'lib'))
+  CopyFile(libstdcpp, os.path.join(build_dir, 'lib'))
 
 
 def gn_arg(v):
@@ -683,7 +660,16 @@ def main():
       print('Invalid --gcc-toolchain: ' + args.gcc_toolchain)
       return 1
     base_cmake_args += [
-        '-DLLVM_LOCAL_RPATH=' + os.path.join(args.gcc_toolchain, 'lib64')
+        '-DLLVM_STATIC_LINK_CXX_STDLIB=ON',
+        # Force compiler-rt tests to use our gcc toolchain
+        # because the one on the host may be too old.
+        # Even with -static-libstdc++ the compiler-rt tests add -lstdc++
+        # which adds a DT_NEEDED to libstdc++.so so we need to add RPATHs
+        # to the gcc toolchain.
+        '-DCOMPILER_RT_TEST_COMPILER_CFLAGS=--gcc-toolchain=' +
+        args.gcc_toolchain + ' -Wl,-rpath,' +
+        os.path.join(args.gcc_toolchain, 'lib64') + ' -Wl,-rpath,' +
+        os.path.join(args.gcc_toolchain, 'lib32')
     ]
 
   if sys.platform == 'darwin':
@@ -694,15 +680,6 @@ def main():
         '-DLIBCXX_INCLUDE_TESTS=OFF',
         '-DLIBCXX_ENABLE_EXPERIMENTAL_LIBRARY=OFF',
     ])
-
-  if args.gcc_toolchain:
-    # Force compiler-rt tests to use our gcc toolchain (including libstdc++.so)
-    # because the one on the host may be too old.
-    base_cmake_args.append(
-        '-DCOMPILER_RT_TEST_COMPILER_CFLAGS=--gcc-toolchain=' +
-        args.gcc_toolchain + ' -Wl,-rpath,' +
-        os.path.join(args.gcc_toolchain, 'lib64') + ' -Wl,-rpath,' +
-        os.path.join(args.gcc_toolchain, 'lib32'))
 
   if sys.platform == 'win32':
     base_cmake_args.append('-DLLVM_USE_CRT_RELEASE=MT')
@@ -799,8 +776,6 @@ def main():
     if lld is not None: bootstrap_args.append('-DCMAKE_LINKER=' + lld)
     RunCommand(['cmake'] + bootstrap_args + [os.path.join(LLVM_DIR, 'llvm')],
                msvc_arch='x64')
-    CopyLibstdcpp(args, LLVM_BOOTSTRAP_DIR)
-    CopyLibstdcpp(args, LLVM_BOOTSTRAP_INSTALL_DIR)
     RunCommand(['ninja'], msvc_arch='x64')
     if args.run_tests:
       test_targets = ['check-all']
@@ -861,7 +836,6 @@ def main():
 
     RunCommand(['cmake'] + instrument_args + [os.path.join(LLVM_DIR, 'llvm')],
                msvc_arch='x64')
-    CopyLibstdcpp(args, LLVM_INSTRUMENTED_DIR)
     RunCommand(['ninja'], msvc_arch='x64')
     print('Instrumented compiler built.')
 
