@@ -42,6 +42,8 @@
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
+#import "ios/public/provider/chrome/browser/follow/follow_provider.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -287,12 +289,17 @@ PopupMenuCommandType CommandTypeFromPopupType(PopupMenuType type) {
           overlayPresenter;
       self.overflowMenuMediator.browserPolicyConnector =
           GetApplicationContext()->GetBrowserPolicyConnector();
-      self.overflowMenuMediator.followActionState =
-          IsWebChannelsEnabled()
-              ? GetFollowActionState(
-                    self.browser->GetWebStateList()->GetActiveWebState(),
-                    self.browser->GetBrowserState())
-              : FollowActionStateHidden;
+
+      if (IsWebChannelsEnabled()) {
+        self.overflowMenuMediator.followActionState = GetFollowActionState(
+            self.browser->GetWebStateList()->GetActiveWebState(),
+            self.browser->GetBrowserState());
+        ios::GetChromeBrowserProvider()
+            .GetFollowProvider()
+            ->SetFollowEventDelegate(self.browser);
+      } else {
+        self.overflowMenuMediator.followActionState = FollowActionStateHidden;
+      }
 
       self.contentBlockerMediator.consumer = self.overflowMenuMediator;
 

@@ -21,3 +21,5 @@ NSArray<FollowedWebChannel*>* FollowProvider::GetFollowedWebChannels() {
 }
 
 void FollowProvider::UpdateFollowStatus(FollowSiteInfo* site, bool state) {}
+
+void FollowProvider::SetFollowEventDelegate(Browser* browser) {}

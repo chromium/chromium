@@ -104,6 +104,7 @@ source_set("popup_menu") {
     "//ios/chrome/common/ui/colors",
     "//ios/components/webui:url_constants",
     "//ios/public/provider/chrome/browser",
+    "//ios/public/provider/chrome/browser/follow",
     "//ios/public/provider/chrome/browser/text_zoom:text_zoom_api",
     "//ios/public/provider/chrome/browser/user_feedback",
     "//ios/web",

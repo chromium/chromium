@@ -9,6 +9,7 @@
 
 @class FollowSiteInfo;
 @class FollowedWebChannel;
+class Browser;
 
 // FollowProvider provides and updates the following status of websites and
 // provides information related to these.
@@ -32,6 +33,10 @@ class FollowProvider {
 
   // Updates the following status of |site| to |state|.
   virtual void UpdateFollowStatus(FollowSiteInfo* site, bool state);
+
+  // Sets the follow event delegate to discover feed with |browser|.
+  // This method must be called before any follow action needs to be handled.
+  virtual void SetFollowEventDelegate(Browser* browser);
 };
 
 #endif  // IOS_PUBLIC_PROVIDER_CHROME_BROWSER_FOLLOW_FOLLOW_PROVIDER_H_
