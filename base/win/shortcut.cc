@@ -11,6 +11,7 @@
 #include <wrl/client.h>
 
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -72,6 +73,12 @@ bool CreateOrUpdateShortcutLink(const FilePath& shortcut_path,
                                 ShortcutOperation operation) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
 
+  // Make sure the parent directories exist when creating the shortcut.
+  if (operation == ShortcutOperation::kCreateAlways &&
+      !base::CreateDirectory(shortcut_path.DirName())) {
+    DLOG(ERROR) << "CreateDirectory " << shortcut_path.DirName() << " failed";
+    return false;
+  }
   // A target is required unless |operation| is kUpdateExisting.
   if (operation != ShortcutOperation::kUpdateExisting &&
       !(properties.options & ShortcutProperties::PROPERTIES_TARGET)) {

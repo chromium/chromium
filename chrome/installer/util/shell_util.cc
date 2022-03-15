@@ -1783,10 +1783,6 @@ bool ShellUtil::GetShortcutPath(ShortcutLocation location,
       dir_key = (level == CURRENT_USER) ? base::DIR_USER_STARTUP
                                         : base::DIR_COMMON_STARTUP;
       break;
-
-    default:
-      NOTREACHED();
-      return false;
   }
 
   if (!base::PathService::Get(dir_key, path) || path->empty()) {
@@ -1849,23 +1845,23 @@ bool ShellUtil::MoveExistingShortcut(ShortcutLocation old_location,
   return result;
 }
 
-bool ShellUtil::CreateOrUpdateShortcut(ShortcutLocation location,
-                                       const ShortcutProperties& properties,
-                                       ShortcutOperation operation) {
+bool ShellUtil::TranslateShortcutCreationOrUpdateInfo(
+    ShortcutLocation location,
+    const ShortcutProperties& properties,
+    ShortcutOperation operation,
+    base::win::ShortcutOperation& base_operation,
+    base::win::ShortcutProperties& base_properties,
+    bool& should_install_shortcut,
+    base::FilePath& shortcut_path) {
   // Explicitly allow locations to which this is applicable.
   if (location != SHORTCUT_LOCATION_DESKTOP &&
       location != SHORTCUT_LOCATION_QUICK_LAUNCH &&
       location != SHORTCUT_LOCATION_START_MENU_ROOT &&
       location != SHORTCUT_LOCATION_START_MENU_CHROME_DIR_DEPRECATED &&
       location != SHORTCUT_LOCATION_START_MENU_CHROME_APPS_DIR) {
-    NOTREACHED();
+    DLOG(ERROR) << "Invalid shortcut location " << location;
     return false;
   }
-
-  // |pin_to_taskbar| is only acknowledged when first creating the shortcut.
-  DCHECK(!properties.pin_to_taskbar ||
-         operation == SHELL_SHORTCUT_CREATE_ALWAYS ||
-         operation == SHELL_SHORTCUT_CREATE_IF_NO_SYSTEM_LEVEL);
 
   base::FilePath user_shortcut_path;
   base::FilePath system_shortcut_path;
@@ -1873,7 +1869,8 @@ bool ShellUtil::CreateOrUpdateShortcut(ShortcutLocation location,
     // There is no system-level shortcut for Quick Launch.
     DCHECK_EQ(properties.level, CURRENT_USER);
   } else if (!GetShortcutPath(location, SYSTEM_LEVEL, &system_shortcut_path)) {
-    NOTREACHED();
+    DLOG(ERROR) << "Failed to get path for system-level shortcut at location "
+                << location;
     return false;
   }
 
@@ -1881,7 +1878,7 @@ bool ShellUtil::CreateOrUpdateShortcut(ShortcutLocation location,
   system_shortcut_path = system_shortcut_path.Append(shortcut_name);
 
   base::FilePath* chosen_path;
-  bool should_install_shortcut = true;
+  should_install_shortcut = true;
   if (properties.level == SYSTEM_LEVEL) {
     // Install the system-level shortcut if requested.
     chosen_path = &system_shortcut_path;
@@ -1889,10 +1886,11 @@ bool ShellUtil::CreateOrUpdateShortcut(ShortcutLocation location,
              system_shortcut_path.empty() ||
              !base::PathExists(system_shortcut_path)) {
     // Otherwise install the user-level shortcut, unless the system-level
-    // variant of this shortcut is present on the machine and |operation| states
+    // variant of this shortcut is present on the machine and `operation` states
     // not to create a user-level shortcut in that case.
     if (!GetShortcutPath(location, CURRENT_USER, &user_shortcut_path)) {
-      NOTREACHED();
+      DLOG(ERROR) << "Failed to get path for user-level shortcut at location "
+                  << location;
       return false;
     }
     user_shortcut_path = user_shortcut_path.Append(shortcut_name);
@@ -1906,37 +1904,44 @@ bool ShellUtil::CreateOrUpdateShortcut(ShortcutLocation location,
     should_install_shortcut = false;
   }
 
-  if (chosen_path == nullptr || chosen_path->empty()) {
-    NOTREACHED();
+  base_operation = TranslateShortcutOperation(operation);
+  base_properties = TranslateShortcutProperties(properties);
+  shortcut_path = *chosen_path;
+
+  return true;
+}
+
+bool ShellUtil::CreateOrUpdateShortcut(ShortcutLocation location,
+                                       const ShortcutProperties& properties,
+                                       ShortcutOperation operation) {
+  // |pin_to_taskbar| is only acknowledged when first creating the shortcut.
+  DCHECK(!properties.pin_to_taskbar ||
+         operation == SHELL_SHORTCUT_CREATE_ALWAYS ||
+         operation == SHELL_SHORTCUT_CREATE_IF_NO_SYSTEM_LEVEL);
+
+  base::win::ShortcutProperties shortcut_properties;
+  base::win::ShortcutOperation shortcut_operation;
+  base::FilePath shortcut_path;
+  bool should_install_shortcut;
+  if (!TranslateShortcutCreationOrUpdateInfo(
+          location, properties, operation, shortcut_operation,
+          shortcut_properties, should_install_shortcut, shortcut_path)) {
+    return false;
+  }
+  if (should_install_shortcut &&
+      !base::win::CreateOrUpdateShortcutLink(shortcut_path, shortcut_properties,
+                                             shortcut_operation)) {
     return false;
   }
 
-  base::win::ShortcutOperation shortcut_operation =
-      TranslateShortcutOperation(operation);
-  bool success = true;
-  if (should_install_shortcut) {
-    // Make sure the parent directories exist when creating the shortcut.
-    if (shortcut_operation == base::win::ShortcutOperation::kCreateAlways &&
-        !base::CreateDirectory(chosen_path->DirName())) {
-      NOTREACHED();
-      return false;
-    }
-
-    base::win::ShortcutProperties shortcut_properties(
-        TranslateShortcutProperties(properties));
-    success = base::win::CreateOrUpdateShortcutLink(
-        *chosen_path, shortcut_properties, shortcut_operation);
-  }
-
-  if (success &&
-      shortcut_operation == base::win::ShortcutOperation::kCreateAlways &&
+  if (shortcut_operation == base::win::ShortcutOperation::kCreateAlways &&
       properties.pin_to_taskbar && base::win::CanPinShortcutToTaskbar()) {
-    bool pinned = base::win::PinShortcutToTaskbar(*chosen_path);
+    bool pinned = base::win::PinShortcutToTaskbar(shortcut_path);
     LOG_IF(ERROR, !pinned) << "Failed to pin to taskbar "
-                           << chosen_path->value();
+                           << shortcut_path.value();
   }
 
-  return success;
+  return true;
 }
 
 std::wstring ShellUtil::FormatIconLocation(const base::FilePath& icon_path,
@@ -2554,7 +2559,7 @@ void ShellUtil::RemoveAllShortcuts(
   // Delete and unpin all shortcuts that point to |target_paths| from all
   // ShellUtil::ShortcutLocations for the given |level|.
   for (int location = SHORTCUT_LOCATION_FIRST;
-       location < NUM_SHORTCUT_LOCATIONS; ++location) {
+       location <= SHORTCUT_LOCATION_LAST; ++location) {
     RemoveShortcuts(static_cast<ShortcutLocation>(location), level,
                     target_paths);
   }

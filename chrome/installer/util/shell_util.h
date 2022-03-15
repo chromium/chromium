@@ -33,6 +33,12 @@ class RegistryEntry;
 namespace base {
 class AtomicFlag;
 class CommandLine;
+
+namespace win {
+enum class ShortcutOperation;
+struct ShortcutProperties;
+
+}  // namespace win
 }  // namespace base
 
 // This is a utility class that provides common shell integration methods
@@ -75,7 +81,8 @@ class ShellUtil {
     SHORTCUT_LOCATION_TASKBAR_PINS,   // base::win::Version::WIN7 +
     SHORTCUT_LOCATION_APP_SHORTCUTS,  // base::win::Version::WIN8 +
     SHORTCUT_LOCATION_STARTUP,
-    NUM_SHORTCUT_LOCATIONS
+    // Update this if a new ShortcutLocation is added.
+    SHORTCUT_LOCATION_LAST = SHORTCUT_LOCATION_STARTUP,
   };
 
   enum ShortcutOperation {
@@ -382,6 +389,22 @@ class ShellUtil {
   static bool MoveExistingShortcut(ShortcutLocation old_location,
                                    ShortcutLocation new_location,
                                    const ShortcutProperties& properties);
+
+  // This converts ShellUtil's `location`, `properties`, and `operation` into
+  // their base::win equivalents so callers can get the behavior of
+  // CreateOrUpdateShortcut, but handle the actual shortcut creation themselves,
+  // e.g., update the shortcut out-of-process. If `should_install_shortcut` is
+  // set to false, caller should not create or update the shortcut, but may try
+  // to pin an existing shortcut, as long as the function returns true.
+  // This functions returns false in unexpected error conditions.
+  static bool TranslateShortcutCreationOrUpdateInfo(
+      ShortcutLocation location,
+      const ShortcutProperties& properties,
+      ShortcutOperation operation,
+      base::win::ShortcutOperation& base_operation,
+      base::win::ShortcutProperties& base_properties,
+      bool& should_install_shortcut,
+      base::FilePath& shortcut_path);
 
   // Updates shortcut in |location| (or creates it if |options| specify
   // SHELL_SHORTCUT_CREATE_ALWAYS).

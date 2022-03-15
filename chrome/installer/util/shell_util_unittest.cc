@@ -298,6 +298,28 @@ TEST_F(ShellUtilShortcutTest, MoveExistingShortcut) {
   ASSERT_FALSE(base::PathExists(old_shortcut_path.DirName()));
 }
 
+// Test the basic mechanism of TranslateShortcutCreationOrUpdateInfo.
+// Other tests that call ShellUtil::CreateOrUpdateShortcut exercise its
+// complete functionality.
+TEST_F(ShellUtilShortcutTest, TranslateShortcutCreateOrUpdateInfo) {
+  ShellUtil::ShortcutLocation location = ShellUtil::SHORTCUT_LOCATION_DESKTOP;
+  test_properties_.set_target(chrome_exe_);
+  ShellUtil::ShortcutOperation operation =
+      ShellUtil::SHELL_SHORTCUT_CREATE_ALWAYS;
+  base::win::ShortcutOperation base_operation;
+  base::win::ShortcutProperties base_properties;
+  base::FilePath base_shortcut_path;
+  bool should_install_shortcut = false;
+  EXPECT_TRUE(ShellUtil::TranslateShortcutCreationOrUpdateInfo(
+      location, test_properties_, operation, base_operation, base_properties,
+      should_install_shortcut, base_shortcut_path));
+  EXPECT_EQ(base_operation, base::win::ShortcutOperation::kCreateAlways);
+  EXPECT_EQ(base_properties.target, chrome_exe_);
+  EXPECT_TRUE(should_install_shortcut);
+  EXPECT_EQ(base_shortcut_path,
+            GetExpectedShortcutPath(location, test_properties_));
+}
+
 TEST_F(ShellUtilShortcutTest, CreateChromeExeShortcutWithDefaultProperties) {
   ShellUtil::ShortcutProperties properties(ShellUtil::CURRENT_USER);
   ShellUtil::AddDefaultShortcutProperties(chrome_exe_, &properties);

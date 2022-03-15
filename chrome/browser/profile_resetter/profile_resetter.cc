@@ -65,7 +65,7 @@ void ResetShortcutsOnBlockingThread() {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   for (int location = ShellUtil::SHORTCUT_LOCATION_FIRST;
-       location < ShellUtil::NUM_SHORTCUT_LOCATIONS; ++location) {
+       location <= ShellUtil::SHORTCUT_LOCATION_LAST; ++location) {
     ShellUtil::ShortcutListMaybeRemoveUnknownArgs(
         static_cast<ShellUtil::ShortcutLocation>(location),
         ShellUtil::CURRENT_USER, chrome_exe, true, nullptr, nullptr);
@@ -388,7 +388,7 @@ std::vector<ShortcutCommand> GetChromeLaunchShortcuts(
     return std::vector<ShortcutCommand>();
   std::vector<ShortcutCommand> shortcuts;
   for (int location = ShellUtil::SHORTCUT_LOCATION_FIRST;
-       location < ShellUtil::NUM_SHORTCUT_LOCATIONS; ++location) {
+       location <= ShellUtil::SHORTCUT_LOCATION_LAST; ++location) {
     if (cancel.get() && cancel->data.IsSet())
       break;
     ShellUtil::ShortcutListMaybeRemoveUnknownArgs(

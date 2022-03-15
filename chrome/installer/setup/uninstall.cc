@@ -199,7 +199,7 @@ void RetargetUserShortcutsWithArgs(const InstallerState& installer_state,
   // ShellUtil::ShortcutLocations.
   VLOG(1) << "Retargeting shortcuts.";
   for (int location = ShellUtil::SHORTCUT_LOCATION_FIRST;
-       location < ShellUtil::NUM_SHORTCUT_LOCATIONS; ++location) {
+       location <= ShellUtil::SHORTCUT_LOCATION_LAST; ++location) {
     if (!ShellUtil::RetargetShortcutsWithArgs(
             static_cast<ShellUtil::ShortcutLocation>(location), install_level,
             old_target_exe, new_target_exe)) {
