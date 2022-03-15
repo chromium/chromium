@@ -101,6 +101,7 @@ class MessageService : public BrowserContextKeyedAPI,
                         const PortId& source_port_id,
                         int tab_id,
                         int frame_id,
+                        const std::string& document_id,
                         const std::string& extension_id,
                         const std::string& channel_name);
 

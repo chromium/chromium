@@ -13,6 +13,17 @@ MessageTarget MessageTarget::ForTab(int tab_id, int frame_id) {
   return target;
 }
 
+MessageTarget MessageTarget::ForTab(int tab_id,
+                                    int frame_id,
+                                    const std::string& document_id) {
+  MessageTarget target(TAB);
+  target.tab_id = tab_id;
+  target.frame_id = frame_id;
+  if (!document_id.empty())
+    target.document_id = document_id;
+  return target;
+}
+
 MessageTarget MessageTarget::ForExtension(const ExtensionId& extension_id) {
   MessageTarget target(EXTENSION);
   target.extension_id = extension_id;

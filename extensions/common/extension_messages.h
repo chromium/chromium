@@ -159,6 +159,9 @@ IPC_STRUCT_BEGIN(ExtensionMsg_TabTargetConnectionInfo)
   // Frame ID of the destination. -1 for all frames, 0 for main frame and
   // positive if the destination is a specific child frame.
   IPC_STRUCT_MEMBER(int, frame_id)
+
+  // The unique ID of the document of the target frame.
+  IPC_STRUCT_MEMBER(std::string, document_id)
 IPC_STRUCT_END()
 
 IPC_STRUCT_TRAITS_BEGIN(extensions::MessagingEndpoint)

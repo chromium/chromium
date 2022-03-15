@@ -69,6 +69,7 @@ enum ParseOptionsFlags {
 struct MessageOptions {
   std::string channel_name;
   int frame_id = kNoFrameId;
+  std::string document_id;
 };
 
 // Parses and returns the options parameter for sendMessage or connect.

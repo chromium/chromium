@@ -35,7 +35,8 @@ std::unique_ptr<MessagePort> MessagingDelegate::CreateReceiverForTab(
     const std::string& extension_id,
     const PortId& receiver_port_id,
     content::WebContents* receiver_contents,
-    int receiver_frame_id) {
+    int receiver_frame_id,
+    const std::string& receiver_document_id) {
   NOTIMPLEMENTED();
   return nullptr;
 }

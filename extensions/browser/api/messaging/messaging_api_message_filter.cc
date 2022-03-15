@@ -324,7 +324,7 @@ void MessagingAPIMessageFilter::OnOpenChannelToTab(
                                   source_context);
   MessageService::Get(browser_context_)
       ->OpenChannelToTab(source_endpoint, port_id, info.tab_id, info.frame_id,
-                         extension_id, channel_name);
+                         info.document_id, extension_id, channel_name);
 }
 
 void MessagingAPIMessageFilter::OnOpenMessagePort(const PortContext& source,

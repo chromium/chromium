@@ -219,6 +219,15 @@ MessageOptions ParseMessageOptions(v8::Local<v8::Context> context,
       // backwards compatibility, we do the same here.
       options.frame_id = frame_id < 0 ? -1 : frame_id;
     }
+
+    v8::Local<v8::Value> v8_document_id;
+    success = options_dict.Get("documentId", &v8_document_id);
+    DCHECK(success);
+
+    if (!v8_document_id->IsUndefined()) {
+      DCHECK(v8_document_id->IsString());
+      options.document_id = gin::V8ToString(isolate, v8_document_id);
+    }
   }
 
   // Note: the options object may also include an includeTlsChannelId property.

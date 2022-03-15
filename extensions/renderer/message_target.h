@@ -32,6 +32,9 @@ struct MessageTarget {
   };
 
   static MessageTarget ForTab(int tab_id, int frame_id);
+  static MessageTarget ForTab(int tab_id,
+                              int frame_id,
+                              const std::string& document_id);
   static MessageTarget ForExtension(const ExtensionId& extension_id);
   static MessageTarget ForNativeApp(const std::string& native_app_name);
 
@@ -47,6 +50,7 @@ struct MessageTarget {
   // Only valid for Type::TAB.
   absl::optional<int> tab_id;
   absl::optional<int> frame_id;
+  absl::optional<std::string> document_id;
 
   bool operator==(const MessageTarget& other) const;
 

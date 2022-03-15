@@ -182,6 +182,62 @@ chrome.test.getConfig(function(config) {
         'Could not establish connection. Receiving end does not exist.'));
     },
 
+    // connect with a valid documentId should trigger onConnect in that specific
+    // document only.
+    function sendMessageToDocumentInTab() {
+      chrome.webNavigation.getAllFrames({
+        tabId: testTab.id
+      }, function(details) {
+        var frames = details.filter(function(frame) {
+          return /\?testSendMessageFromFrame1$/.test(frame.url);
+        });
+        chrome.test.assertEq(1, frames.length);
+        connectToTabWithDocumentId(frames[0].documentId, ['from_1']);
+      });
+    },
+
+    // connect with a valid frameId and documentId should trigger onConnect in
+    // that specific document only.
+    function sendMessageToDocumentInTab() {
+      chrome.webNavigation.getAllFrames({
+        tabId: testTab.id
+      }, function(details) {
+        var frames = details.filter(function(frame) {
+          return /\?testSendMessageFromFrame1$/.test(frame.url);
+        });
+        chrome.test.assertEq(1, frames.length);
+        connectToTabWithOptions({documentId: frames[0].documentId,
+                                 frameId: frames[0].frameId
+                                }, ['from_1']);
+      });
+    },
+
+    // sendMessage with a valid documentId but invalid frameId should fail.
+    function sendMessageToInvalidDocumentFrameIdInTab() {
+      chrome.webNavigation.getAllFrames({
+        tabId: testTab.id
+      }, function(details) {
+        var frames = details.filter(function(frame) {
+          return /\?testSendMessageFromFrame1$/.test(frame.url);
+        });
+        chrome.test.assertEq(1, frames.length);
+        chrome.tabs.sendMessage(testTab.id, {}, {
+          documentId: frames[0].documentId,
+          // Some (hopefully) invalid frameId.
+          frameId: 999999999
+        }, chrome.test.callbackFail(
+          'Could not establish connection. Receiving end does not exist.'));
+      });
+    },
+
+    // sendMessage with an invalid documentId should fail.
+    function sendMessageToInvalidDocumentInTab() {
+      chrome.tabs.sendMessage(testTab.id, {}, {
+        documentId: '0123456789ABCDEF' // A truncated documentId.
+      }, chrome.test.callbackFail(
+        'Could not establish connection. Receiving end does not exist.'));
+    },
+
     // Tests error handling when sending a request from a content script to an
     // invalid extension.
     function sendMessageFromTabError() {
@@ -388,16 +444,15 @@ chrome.test.getConfig(function(config) {
   ]);
 });
 
-function connectToTabWithFrameId(frameId, expectedMessages) {
-  var port = chrome.tabs.connect(testTab.id, {
-    frameId: frameId
-  });
+function connectToTabWithOptions(options, expectedMessages) {
+  var port = chrome.tabs.connect(testTab.id, options);
   var messages = [];
   var isDone = false;
   port.onMessage.addListener(function(message) {
     if (isDone) { // Should not get any messages after completing the test.
       chrome.test.fail(
-          'Unexpected message from port to frame ' + frameId + ': ' + message);
+          'Unexpected message from port to frame ' + JSON.stringify(options) +
+          ': ' + message);
       return;
     }
 
@@ -410,10 +465,24 @@ function connectToTabWithFrameId(frameId, expectedMessages) {
   });
   port.onDisconnect.addListener(function() {
     if (!isDone) // The event should never be triggered when we expect messages.
-      chrome.test.fail('Unexpected disconnect from port to frame ' + frameId);
+    chrome.test.fail('Unexpected disconnect from port to frame ' +
+                     JSON.stringify(options));
   });
   port.postMessage({testSendMessageToFrame: true});
-  chrome.test.log('connectToTabWithFrameId: port to frame ' + frameId);
+  chrome.test.log('connectToTabWithOptions: port to frame ' +
+                  JSON.stringify(options));
+}
+
+function connectToTabWithFrameId(frameId, expectedMessages) {
+  connectToTabWithOptions({
+    frameId: frameId
+  }, expectedMessages);
+}
+
+function connectToTabWithDocumentId(documentId, expectedMessages) {
+  connectToTabWithOptions({
+    documentId: documentId
+  }, expectedMessages);
 }
 
 // Listens to |event| and returns a callback to run to stop listening. While

@@ -142,7 +142,8 @@ RequestResult TabsHooksDelegate::HandleSendMessage(
     response_callback = arguments[3].As<v8::Function>();
 
   v8::Local<v8::Promise> promise = messaging_service_->SendOneTimeMessage(
-      script_context, MessageTarget::ForTab(tab_id, options.frame_id),
+      script_context,
+      MessageTarget::ForTab(tab_id, options.frame_id, options.document_id),
       messaging_util::kSendMessageChannel, *message, parse_result.async_type,
       response_callback);
   DCHECK_EQ(parse_result.async_type == binding::AsyncResponseType::kPromise,
@@ -174,7 +175,8 @@ RequestResult TabsHooksDelegate::HandleConnect(
   }
 
   gin::Handle<GinPort> port = messaging_service_->Connect(
-      script_context, MessageTarget::ForTab(tab_id, options.frame_id),
+      script_context,
+      MessageTarget::ForTab(tab_id, options.frame_id, options.document_id),
       options.channel_name,
       messaging_util::GetSerializationFormat(*script_context));
   DCHECK(!port.IsEmpty());
