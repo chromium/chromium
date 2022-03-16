@@ -409,7 +409,7 @@ testcase.recentVideosDownloadsAndDrive = async () => {
 testcase.recentsFilterResetToAll = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
-  navigateToRecent(appId, RecentFilterType.AUDIO);
+  await navigateToRecent(appId, RecentFilterType.AUDIO);
   // Clicks the active "Audio" filter button.
   await remoteCall.waitAndClickElement(
       appId, ['[file-type-filter="audio"].active']);
@@ -418,5 +418,5 @@ testcase.recentsFilterResetToAll = async () => {
   const focusedElement =
       await remoteCall.callRemoteTestUtil('getActiveElement', appId, []);
   chrome.test.assertEq('all', focusedElement.attributes['file-type-filter']);
-  verifyCurrentEntries(appId, RECENT_ENTRY_SET);
+  await verifyCurrentEntries(appId, RECENT_ENTRY_SET);
 };
