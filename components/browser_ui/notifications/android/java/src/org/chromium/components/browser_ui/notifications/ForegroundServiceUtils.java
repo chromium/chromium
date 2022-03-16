@@ -20,6 +20,7 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.compat.ApiHelperForQ;
+import org.chromium.base.compat.ApiHelperForS;
 import org.chromium.ui.permissions.PermissionConstants;
 import org.chromium.ui.permissions.PermissionPrefs;
 
@@ -75,7 +76,9 @@ public class ForegroundServiceUtils {
         // If android fail to build the notification, do nothing.
         if (notification == null) return;
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            ApiHelperForS.startForeground(service, id, notification, foregroundServiceType);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             ApiHelperForQ.startForeground(service, id, notification, foregroundServiceType);
         } else {
             service.startForeground(id, notification);

@@ -5,8 +5,11 @@
 package org.chromium.base.compat;
 
 import android.Manifest;
+import android.app.ForegroundServiceStartNotAllowedException;
+import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.PictureInPictureParams;
+import android.app.Service;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.Context;
@@ -24,6 +27,7 @@ import androidx.annotation.RequiresApi;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Log;
 
 /**
  * Utility class to use new APIs that were added in S (API level 31). These need to exist in a
@@ -109,5 +113,17 @@ public final class ApiHelperForS {
      */
     public static int getPendingIntentMutableFlag() {
         return PendingIntent.FLAG_MUTABLE;
+    }
+
+    /** See {@link Service#startForegroung(int, Notification, int) }. */
+    public static void startForeground(
+            Service service, int id, Notification notification, int foregroundServiceType) {
+        try {
+            service.startForeground(id, notification, foregroundServiceType);
+        } catch (ForegroundServiceStartNotAllowedException e) {
+            Log.e(TAG,
+                    "Cannot run service as foreground: " + e + " for notification channel "
+                            + notification.getChannelId() + " notification id " + id);
+        }
     }
 }
