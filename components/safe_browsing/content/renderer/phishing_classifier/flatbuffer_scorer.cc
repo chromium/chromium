@@ -192,7 +192,6 @@ void FlatBufferModelScorer::ApplyVisualTfLiteModel(
     base::OnceCallback<void(std::vector<double>)> callback) {
   DCHECK(content::RenderThread::IsMainThread());
   if (visual_tflite_model_ && visual_tflite_model_->IsValid()) {
-    base::Time start_post_task_time = base::Time::Now();
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE,
         {base::TaskPriority::BEST_EFFORT, base::WithBaseSyncPrimitives()},
@@ -202,9 +201,6 @@ void FlatBufferModelScorer::ApplyVisualTfLiteModel(
                        std::move(visual_tflite_model_)),
         base::BindOnce(&FlatBufferModelScorer::OnVisualTfLiteModelComplete,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-    base::UmaHistogramTimes(
-        "SBClientPhishing.TfLiteModelLoadTime.FlatbufferScorer",
-        base::Time::Now() - start_post_task_time);
   } else {
     std::move(callback).Run(std::vector<double>());
   }
