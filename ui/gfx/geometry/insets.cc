@@ -6,9 +6,17 @@
 
 #include "ui/gfx/geometry/insets_conversions.h"
 #include "ui/gfx/geometry/insets_f.h"
+#include "ui/gfx/geometry/outsets.h"
 #include "ui/gfx/geometry/vector2d.h"
 
 namespace gfx {
+
+Outsets Insets::ToOutsets() const {
+  // Conversion from Insets to Outsets negates all components.
+  return Outsets()
+      .set_left_right(-left(), -right())
+      .set_top_bottom(-top(), -bottom());
+}
 
 void Insets::Offset(const gfx::Vector2d& vector) {
   set_left_right(base::ClampAdd(left(), vector.x()),

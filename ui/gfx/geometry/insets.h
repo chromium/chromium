@@ -12,6 +12,7 @@
 
 namespace gfx {
 
+class Outsets;
 class Vector2d;
 
 // This can be used to represent a space within a rectangle, by "shrinking" the
@@ -34,6 +35,9 @@ class GEOMETRY_EXPORT Insets : public InsetsOutsetsBase<Insets> {
     set_left_right(left, right);
     set_top_bottom(top, bottom);
   }
+
+  // Conversion from Insets to Outsets negates all components.
+  Outsets ToOutsets() const;
 
   // Avoid this method in blink code because it's easy to make mistakes in the
   // order of the parameters. Use set_*() methods instead.

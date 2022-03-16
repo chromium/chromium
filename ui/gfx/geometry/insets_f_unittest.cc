@@ -5,6 +5,7 @@
 #include "ui/gfx/geometry/insets_f.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/outsets_f.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
@@ -222,6 +223,17 @@ TEST(InsetsFTest, SetToMax) {
       InsetsF().set_left(-2).set_right(-4).set_top(-1).set_bottom(-3);
   insets1.SetToMax(InsetsF());
   EXPECT_EQ(InsetsF(), insets1);
+}
+
+TEST(InsetsFTest, ConversionFromToOutsetsF) {
+  InsetsF insets =
+      InsetsF().set_left(2.5f).set_right(4.5f).set_top(-1.25f).set_bottom(
+          -2.5f);
+  EXPECT_EQ(
+      OutsetsF().set_left(-2.5f).set_right(-4.5f).set_top(1.25f).set_bottom(
+          2.5f),
+      insets.ToOutsets());
+  EXPECT_EQ(insets, insets.ToOutsets().ToInsets());
 }
 
 }  // namespace gfx

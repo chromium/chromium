@@ -19,6 +19,7 @@ component("geometry") {
     "insets.h",
     "insets_conversions.cc",
     "insets_conversions.h",
+    "insets_f.cc",
     "insets_f.h",
     "insets_outsets_base.h",
     "insets_outsets_f_base.h",

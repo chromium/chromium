@@ -10,6 +10,8 @@
 
 namespace gfx {
 
+class OutsetsF;
+
 // A floating point version of gfx::Insets.
 class GEOMETRY_EXPORT InsetsF : public InsetsOutsetsFBase<InsetsF> {
  public:
@@ -30,6 +32,9 @@ class GEOMETRY_EXPORT InsetsF : public InsetsOutsetsFBase<InsetsF> {
     set_bottom(bottom);
     set_right(right);
   }
+
+  // Conversion from InsetsF to OutsetsF negates all components.
+  OutsetsF ToOutsets() const;
 
   // Avoid this method in blink code because it's easy to make mistakes in the
   // order of the parameters. Use the setter methods instead.

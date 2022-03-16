@@ -6,6 +6,7 @@
 #define UI_GFX_GEOMETRY_OUTSETS_F_H_
 
 #include "ui/gfx/geometry/geometry_export.h"
+#include "ui/gfx/geometry/insets_f.h"
 #include "ui/gfx/geometry/insets_outsets_f_base.h"
 
 namespace gfx {
@@ -14,6 +15,15 @@ namespace gfx {
 class GEOMETRY_EXPORT OutsetsF : public InsetsOutsetsFBase<OutsetsF> {
  public:
   using InsetsOutsetsFBase::InsetsOutsetsFBase;
+
+  // Conversion from OutsetsF to InsetsF negates all components.
+  InsetsF ToInsets() const {
+    return InsetsF()
+        .set_left(-left())
+        .set_right(-right())
+        .set_top(-top())
+        .set_bottom(-bottom());
+  }
 };
 
 inline OutsetsF operator+(OutsetsF lhs, const OutsetsF& rhs) {
