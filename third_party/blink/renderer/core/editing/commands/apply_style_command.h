@@ -27,6 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_COMMANDS_APPLY_STYLE_COMMAND_H_
 
 #include "mojo/public/mojom/base/text_direction.mojom-blink-forward.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/commands/composite_edit_command.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 

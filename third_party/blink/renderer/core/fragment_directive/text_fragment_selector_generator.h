@@ -7,6 +7,7 @@
 
 #include "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/fragment_directive/same_block_word_iterator.h"
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_finder.h"

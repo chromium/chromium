@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_EVENTS_ADD_EVENT_LISTENER_OPTIONS_RESOLVED_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_add_event_listener_options.h"
+#include "third_party/blink/renderer/core/core_export.h"
 
 namespace blink {
 

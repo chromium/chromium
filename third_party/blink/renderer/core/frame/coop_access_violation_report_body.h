@@ -8,6 +8,7 @@
 #include "services/network/public/mojom/cross_origin_opener_policy.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/location_report_body.h"
 
 namespace blink {

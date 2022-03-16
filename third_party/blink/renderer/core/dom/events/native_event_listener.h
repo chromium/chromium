@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_EVENTS_NATIVE_EVENT_LISTENER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_EVENTS_NATIVE_EVENT_LISTENER_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event_listener.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 

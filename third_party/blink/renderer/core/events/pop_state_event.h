@@ -29,6 +29,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_pop_state_event_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/world_safe_v8_reference.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 

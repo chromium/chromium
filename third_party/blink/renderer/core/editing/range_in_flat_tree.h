@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_RANGE_IN_FLAT_TREE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_RANGE_IN_FLAT_TREE_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/relocatable_position.h"
 

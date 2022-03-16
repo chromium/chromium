@@ -7,6 +7,7 @@
 
 #include "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
 #include "third_party/blink/public/mojom/link_to_text/link_to_text.mojom-blink.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_selector_generator.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 

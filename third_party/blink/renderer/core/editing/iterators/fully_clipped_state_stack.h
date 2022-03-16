@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_ITERATORS_FULLY_CLIPPED_STATE_STACK_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_ITERATORS_FULLY_CLIPPED_STATE_STACK_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/editing_strategy.h"
 #include "third_party/blink/renderer/core/editing/iterators/bit_stack.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
