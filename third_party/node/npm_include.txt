@@ -1,4 +1,10 @@
 @types/chai/index.d.ts
+@types/d3/index.d.ts
+@types/d3-drag/index.d.ts
+@types/d3-force/index.d.ts
+@types/d3-scale-chromatic/index.d.ts
+@types/d3-selection/index.d.ts
+@types/d3-transition/index.d.ts
 @types/dom-mediacapture-record
 @types/dom-mediacapture-record/*.d.ts
 @types/dom-speech-recognition/index.d.ts
