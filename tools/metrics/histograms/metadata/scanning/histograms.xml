@@ -133,7 +133,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scanning.NumPagesScanned" units="pages"
-    expires_after="2022-04-10">
+    expires_after="2023-04-10">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>Records the number of pages scanned in a successful scan.</summary>
