@@ -288,8 +288,6 @@ public abstract class ChromeFeatureList {
     public static final String CONTEXTUAL_SEARCH_DELAYED_INTELLIGENCE =
             "ContextualSearchDelayedIntelligence";
     public static final String CONTEXTUAL_SEARCH_FORCE_CAPTION = "ContextualSearchForceCaption";
-    public static final String CONTEXTUAL_SEARCH_LITERAL_SEARCH_TAP =
-            "ContextualSearchLiteralSearchTap";
     public static final String CONTEXTUAL_SEARCH_ML_TAP_SUPPRESSION =
             "ContextualSearchMlTapSuppression";
     public static final String CONTEXTUAL_SEARCH_NEW_SETTINGS = "ContextualSearchNewSettings";

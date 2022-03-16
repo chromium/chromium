@@ -152,8 +152,7 @@ class ContextualSearchPolicy {
      * This only checks the gesture, not privacy status -- {@see #shouldPreviousGestureResolve}.
      */
     boolean isResolvingGesture() {
-        return (mSelectionController.getSelectionType() == SelectionType.TAP
-                       && !isLiteralSearchTapEnabled())
+        return mSelectionController.getSelectionType() == SelectionType.TAP
                 || mSelectionController.getSelectionType() == SelectionType.RESOLVING_LONG_PRESS;
     }
 
@@ -306,14 +305,6 @@ class ContextualSearchPolicy {
         int selectionType = mSelectionController.getSelectionType();
         return (mSelectionController.getSelectedText() != null
                 && (selectionType == SelectionType.LONG_PRESS || !shouldPreviousGestureResolve()));
-    }
-
-    /**
-     * @return whether the experiment that causes a tap gesture to trigger a literal search for the
-     *         selection (rather than sending context to resolve a search term) is enabled.
-     */
-    boolean isLiteralSearchTapEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_SEARCH_LITERAL_SEARCH_TAP);
     }
 
     /**

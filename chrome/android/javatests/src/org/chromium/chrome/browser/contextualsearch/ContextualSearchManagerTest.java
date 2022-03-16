@@ -190,7 +190,7 @@ public class ContextualSearchManagerTest {
     private static final ImmutableMap<String, Boolean> ENABLE_NONE = ImmutableMap.of();
 
     /**
-     * This represents the Translations addition to the Longpress with LiteralTap configuration.
+     * This represents the Translations addition to the Longpress configuration.
      * This is likely the best launch candidate.
      */
     private static final ImmutableMap<String, Boolean> ENABLE_TRANSLATIONS =
