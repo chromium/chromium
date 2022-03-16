@@ -614,13 +614,6 @@ class BuildConfigGenerator extends DefaultTask {
                 sb.append('  # https://crbug.com/989505\n')
                 sb.append('  jar_excluded_patterns = ["META-INF/proguard/*"]\n')
                 break
-            case 'androidx_annotation_annotation_experimental':
-                sb.append('''\
-                |  # https://crbug.com/1213876
-                |  deps =
-                |      [ "//third_party/android_deps:org_jetbrains_kotlin_kotlin_stdlib_java" ]
-                |'''.stripMargin())
-                break
             case 'androidx_core_core':
                 sb.with {
                     append('\n')
