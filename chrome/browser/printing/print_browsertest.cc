@@ -85,6 +85,8 @@
 
 namespace printing {
 
+using testing::_;
+
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
 using ErrorCheckCallback =
     base::RepeatingCallback<void(mojom::ResultCode result)>;
@@ -442,13 +444,12 @@ class SetPrintingEnabledInterceptor
     return nullptr;
   }
 
-  void OverrideBinderForTesting(content::RenderFrameHost* render_frame_host,
-                                SetPrintingEnabledInterceptor* interceptor) {
+  void OverrideBinderForTesting(content::RenderFrameHost* render_frame_host) {
     render_frame_host->GetRemoteAssociatedInterfaces()
         ->OverrideBinderForTesting(
             mojom::PrintRenderFrame::Name_,
             base::BindRepeating(&SetPrintingEnabledInterceptor::BindReceiver,
-                                base::Unretained(interceptor)));
+                                base::Unretained(this)));
   }
 
   void BindReceiver(mojo::ScopedInterfaceEndpointHandle handle) {
@@ -1832,8 +1833,7 @@ IN_PROC_BROWSER_TEST_F(PrintPrerenderBrowserTest,
 IN_PROC_BROWSER_TEST_F(PrintPrerenderBrowserTest,
                        SetPrintingEnabledShouldNotBeCalledInPrerendering) {
   SetPrintingEnabledInterceptor interceptor;
-  interceptor.OverrideBinderForTesting(web_contents()->GetMainFrame(),
-                                       &interceptor);
+  interceptor.OverrideBinderForTesting(web_contents()->GetMainFrame());
 
   // Clear `print_render_frames_` to use the overridden binder.
   auto* print_view_manager =
@@ -1844,7 +1844,7 @@ IN_PROC_BROWSER_TEST_F(PrintPrerenderBrowserTest,
   // SetPrintingEnabled() should be called third times from the initial page
   // loading, triggering UpdatePrintingEnabled() through changing
   // kPrintingEnabled prefs, and activating the prerender page.
-  EXPECT_CALL(interceptor, SetPrintingEnabled(testing::_)).Times(3);
+  EXPECT_CALL(interceptor, SetPrintingEnabled(_)).Times(3);
 
   // Navigate to an initial page.
   const GURL kEmptyUrl(embedded_test_server()->GetURL("/empty.html"));
@@ -1857,10 +1857,9 @@ IN_PROC_BROWSER_TEST_F(PrintPrerenderBrowserTest,
   content::RenderFrameHost* prerender_rfh =
       prerender_helper_.GetPrerenderedMainFrameHost(host_id);
   SetPrintingEnabledInterceptor prerendered_interceptor;
-  prerendered_interceptor.OverrideBinderForTesting(prerender_rfh,
-                                                   &prerendered_interceptor);
+  prerendered_interceptor.OverrideBinderForTesting(prerender_rfh);
   // SetPrintingEnabled() is only called once by activating the prerender.
-  EXPECT_CALL(prerendered_interceptor, SetPrintingEnabled(testing::_)).Times(1);
+  EXPECT_CALL(prerendered_interceptor, SetPrintingEnabled(_)).Times(1);
 
   // Trigger to call PrintViewManagerBase::UpdatePrintingEnabled() to check if
   // SetPrintingEnabled() is not called in prerendering.
@@ -1992,8 +1991,7 @@ IN_PROC_BROWSER_TEST_P(PrintFencedFrameBrowserTest,
     return;
 
   SetPrintingEnabledInterceptor interceptor;
-  interceptor.OverrideBinderForTesting(web_contents()->GetMainFrame(),
-                                       &interceptor);
+  interceptor.OverrideBinderForTesting(web_contents()->GetMainFrame());
 
   // Clear `print_render_frames_` to use the overridden binder.
   auto* print_view_manager =
@@ -2004,7 +2002,7 @@ IN_PROC_BROWSER_TEST_P(PrintFencedFrameBrowserTest,
   // SetPrintingEnabled() should be called twice from the initial page loading
   // and triggering UpdatePrintingEnabled() through changing kPrintingEnabled
   // prefs.
-  EXPECT_CALL(interceptor, SetPrintingEnabled(testing::_)).Times(2);
+  EXPECT_CALL(interceptor, SetPrintingEnabled(_)).Times(2);
 
   // Navigate to an initial page.
   const GURL kEmptyUrl(embedded_test_server()->GetURL("/empty.html"));
@@ -2020,10 +2018,8 @@ IN_PROC_BROWSER_TEST_P(PrintFencedFrameBrowserTest,
 
   // The fenced frame should not call SetPrintingEnabled().
   SetPrintingEnabledInterceptor fenced_frame_interceptor;
-  fenced_frame_interceptor.OverrideBinderForTesting(fenced_frame_host,
-                                                    &fenced_frame_interceptor);
-  EXPECT_CALL(fenced_frame_interceptor, SetPrintingEnabled(testing::_))
-      .Times(0);
+  fenced_frame_interceptor.OverrideBinderForTesting(fenced_frame_host);
+  EXPECT_CALL(fenced_frame_interceptor, SetPrintingEnabled(_)).Times(0);
 
   // Trigger to call PrintViewManagerBase::UpdatePrintingEnabled() to check if
   // SetPrintingEnabled() is not called on the fenced frame.
