@@ -193,8 +193,6 @@ String NativeSourceType(AXTextSource native_source) {
   switch (native_source) {
     case kAXTextFromNativeSVGDescElement:
       return SourceType::Description;
-    case kAXTextFromNativeHTMLFigcaption:
-      return SourceType::Figcaption;
     case kAXTextFromNativeHTMLLabel:
       return SourceType::Label;
     case kAXTextFromNativeHTMLLabelFor:

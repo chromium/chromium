@@ -642,6 +642,8 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
     *text_underline_style = ax::mojom::blink::TextDecorationStyle::kNone;
   }
 
+  virtual AXObject* GetChildFigcaption() const;
+
   virtual AXObjectVector RadioButtonsInGroup() const {
     return AXObjectVector();
   }

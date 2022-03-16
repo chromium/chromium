@@ -141,6 +141,8 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   AXObject* InPageLinkTarget() const override;
   AccessibilityOrientation Orientation() const override;
 
+  AXObject* GetChildFigcaption() const override;
+
   // Used to compute kRadioGroupIds, which is only used on Mac.
   // TODO(accessibility) Consider computing on browser side and removing here.
   AXObjectVector RadioButtonsInGroup() const override;

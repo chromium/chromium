@@ -1460,6 +1460,16 @@ void AXObject::SerializeOtherScreenReaderAttributes(
   DCHECK_NE(node_data->role, ax::mojom::blink::Role::kUnknown);
   DCHECK_NE(node_data->role, ax::mojom::blink::Role::kNone);
 
+  if (node_data->role == ax::mojom::blink::Role::kFigure) {
+    AXObject* fig_caption = GetChildFigcaption();
+    if (fig_caption) {
+      std::vector<int32_t> ids;
+      ids.push_back(GetChildFigcaption()->AXObjectID());
+      node_data->AddIntListAttribute(
+          ax::mojom::blink::IntListAttribute::kDetailsIds, ids);
+    }
+  }
+
   if (ui::IsPlatformDocument(node_data->role) && !IsLoaded())
     node_data->AddBoolAttribute(ax::mojom::blink::BoolAttribute::kBusy, true);
 
@@ -3861,6 +3871,8 @@ AccessibilityOrientation AXObject::Orientation() const {
   // horizontal to undefined.
   return kAccessibilityOrientationUndefined;
 }
+
+AXObject* AXObject::GetChildFigcaption() const { return nullptr; }
 
 void AXObject::LoadInlineTextBoxes() {}
 

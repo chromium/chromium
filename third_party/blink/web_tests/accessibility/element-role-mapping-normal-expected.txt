@@ -219,7 +219,7 @@ element
                 AXRole: AXCell "Cell2"
                     AXRole: AXStaticText "Cell2"
                         AXRole: AXInlineTextBox "Cell2"
-    AXRole: AXFigure "Fig1. - Blue Box"
+    AXRole: AXFigure
         AXRole: AXImage "blue"
         AXRole: AXFigcaption
             AXRole: AXStaticText "Fig1. - Blue Box"

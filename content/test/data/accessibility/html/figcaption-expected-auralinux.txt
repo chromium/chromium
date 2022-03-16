@@ -1,5 +1,5 @@
 [document web]
-++[panel] name='Fig.1 - A green Box' labelled-by
+++[panel] details
 ++++[image] name='This is a green box.'
-++++[caption] label-for
+++++[caption] details-for
 ++++++[static] name='Fig.1 - A green Box'

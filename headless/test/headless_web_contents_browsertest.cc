@@ -575,7 +575,6 @@ const char kExpectedFigureOnlyStructTreeJSON[] = R"({
    "lang": "en",
    "type": "Document",
    "~children": [ {
-      "alt": "Figure 1: The caption",
       "type": "Figure",
       "~children": [ {
          "alt": "Sample SVG image",

@@ -14,10 +14,6 @@ Tests name sources in images and figures.
                 type : attribute
             }
             [2] : {
-                nativeSource : figcaption
-                type : relatedElement
-            }
-            [3] : {
                 attribute : title
                 type : attribute
             }
@@ -49,10 +45,6 @@ Tests name sources in images and figures.
                 type : attribute
             }
             [2] : {
-                nativeSource : figcaption
-                type : relatedElement
-            }
-            [3] : {
                 attribute : title
                 type : attribute
                 value : {
@@ -75,10 +67,6 @@ Tests name sources in images and figures.
 }
 {
     childIds : <object>
-    description : {
-        type : computedString
-        value : figure3-title
-    }
     domNode : figure#figure3
     ignored : false
     name : {
@@ -92,25 +80,7 @@ Tests name sources in images and figures.
                 type : attribute
             }
             [2] : {
-                nativeSource : figcaption
-                nativeSourceValue : {
-                    relatedNodes : [
-                        [0] : {
-                            backendDOMNodeId : <number>
-                            text : figcaption3
-                        }
-                    ]
-                    type : nodeList
-                }
-                type : relatedElement
-                value : {
-                    type : computedString
-                    value : figcaption3
-                }
-            }
-            [3] : {
                 attribute : title
-                superseded : true
                 type : attribute
                 value : {
                     type : computedString
@@ -119,21 +89,21 @@ Tests name sources in images and figures.
             }
         ]
         type : computedString
-        value : figcaption3
+        value : figure3-title
     }
     nodeId : <string>
     parentId : <string>
     properties : [
         [0] : {
-            name : labelledby
+            name : details
             value : {
                 relatedNodes : [
                     [0] : {
                         nodeResult : figcaption
-                        text : figcaption3
                     }
                 ]
-                type : nodeList
+                type : idrefList
+                value : 
             }
         }
     ]
@@ -169,24 +139,6 @@ Tests name sources in images and figures.
                 }
             }
             [2] : {
-                nativeSource : figcaption
-                nativeSourceValue : {
-                    relatedNodes : [
-                        [0] : {
-                            backendDOMNodeId : <number>
-                            text : figcaption4
-                        }
-                    ]
-                    type : nodeList
-                }
-                superseded : true
-                type : relatedElement
-                value : {
-                    type : computedString
-                    value : figcaption4
-                }
-            }
-            [3] : {
                 attribute : title
                 superseded : true
                 type : attribute
@@ -202,6 +154,18 @@ Tests name sources in images and figures.
     nodeId : <string>
     parentId : <string>
     properties : [
+        [0] : {
+            name : details
+            value : {
+                relatedNodes : [
+                    [0] : {
+                        nodeResult : figcaption
+                    }
+                ]
+                type : idrefList
+                value : 
+            }
+        }
     ]
     role : {
         type : role
@@ -251,24 +215,6 @@ Tests name sources in images and figures.
                 }
             }
             [2] : {
-                nativeSource : figcaption
-                nativeSourceValue : {
-                    relatedNodes : [
-                        [0] : {
-                            backendDOMNodeId : <number>
-                            text : figcaption5
-                        }
-                    ]
-                    type : nodeList
-                }
-                superseded : true
-                type : relatedElement
-                value : {
-                    type : computedString
-                    value : figcaption5
-                }
-            }
-            [3] : {
                 attribute : title
                 superseded : true
                 type : attribute
@@ -285,6 +231,18 @@ Tests name sources in images and figures.
     parentId : <string>
     properties : [
         [0] : {
+            name : details
+            value : {
+                relatedNodes : [
+                    [0] : {
+                        nodeResult : figcaption
+                    }
+                ]
+                type : idrefList
+                value : 
+            }
+        }
+        [1] : {
             name : labelledby
             value : {
                 relatedNodes : [

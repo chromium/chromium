@@ -30,7 +30,7 @@ test(function(t) {
 </script>
 
 <div class="container">
-  <figure id="figure3" title="figure3-title">
+  <figure id="figure3">
     <figcaption>figcaption3</figcaption>
     <img src="resources/cake.png" alt="cake">
   </figure>
@@ -39,9 +39,9 @@ test(function(t) {
 <script>
 test(function(t) {
     var axFigure3 = accessibilityController.accessibleElementById("figure3");
-    assert_equals(axFigure3.name, "figcaption3");
-    assert_equals(axFigure3.nameFrom, "relatedElement");
-}, "Figure element with figcaption and title");
+    assert_equals(axFigure3.name, "");
+    assert_equals(axFigure3.nameFrom, "");
+}, "Figure element with figcaption and no title");
 </script>
 
 <div class="container">

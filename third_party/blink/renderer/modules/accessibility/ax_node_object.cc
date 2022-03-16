@@ -2123,6 +2123,22 @@ AccessibilityOrientation AXNodeObject::Orientation() const {
   }
 }
 
+// According to the standard, the figcaption should only be the first or
+// last child: https://html.spec.whatwg.org/#the-figcaption-element
+AXObject* AXNodeObject::GetChildFigcaption() const {
+  AXObject* child = FirstChildIncludingIgnored();
+  if (!child)
+    return nullptr;
+  if (child->RoleValue() == ax::mojom::blink::Role::kFigcaption)
+    return child;
+
+  child = LastChildIncludingIgnored();
+  if (child->RoleValue() == ax::mojom::blink::Role::kFigcaption)
+    return child;
+
+  return nullptr;
+}
+
 AXObject::AXObjectVector AXNodeObject::RadioButtonsInGroup() const {
   AXObjectVector radio_buttons;
   if (!node_ || RoleValue() != ax::mojom::blink::Role::kRadioButton)
@@ -4742,22 +4758,6 @@ AXObject* AXNodeObject::ErrorMessage() const {
   return AXObjectCache().ValidationMessageObjectIfInvalid(true);
 }
 
-// According to the standard, the figcaption should only be the first or
-// last child: https://html.spec.whatwg.org/#the-figcaption-element
-static Element* GetChildFigcaption(const Node& node) {
-  Element* element = ElementTraversal::FirstChild(node);
-  if (!element)
-    return nullptr;
-  if (element->HasTagName(html_names::kFigcaptionTag))
-    return element;
-
-  element = ElementTraversal::LastChild(node);
-  if (element->HasTagName(html_names::kFigcaptionTag))
-    return element;
-
-  return nullptr;
-}
-
 // Based on
 // http://rawgit.com/w3c/aria/master/html-aam/html-aam.html#accessible-name-and-description-calculation
 String AXNodeObject::NativeTextAlternative(
@@ -5021,43 +5021,6 @@ String AXNodeObject::NativeTextAlternative(
       }
     }
 
-    return text_alternative;
-  }
-
-  // 5.7 figure and figcaption Elements
-  if (GetNode()->HasTagName(html_names::kFigureTag)) {
-    // figcaption
-    name_from = ax::mojom::blink::NameFrom::kRelatedElement;
-    if (name_sources) {
-      name_sources->push_back(NameSource(*found_text_alternative));
-      name_sources->back().type = name_from;
-      name_sources->back().native_source = kAXTextFromNativeHTMLFigcaption;
-    }
-    Element* figcaption = GetChildFigcaption(*(GetNode()));
-    if (figcaption) {
-      AXObject* figcaption_ax_object = AXObjectCache().GetOrCreate(figcaption);
-      if (figcaption_ax_object) {
-        text_alternative =
-            RecursiveTextAlternative(*figcaption_ax_object, nullptr, visited);
-
-        if (related_objects) {
-          local_related_objects.push_back(
-              MakeGarbageCollected<NameSourceRelatedObject>(
-                  figcaption_ax_object, text_alternative));
-          *related_objects = local_related_objects;
-          local_related_objects.clear();
-        }
-
-        if (name_sources) {
-          NameSource& source = name_sources->back();
-          source.related_objects = *related_objects;
-          source.text = text_alternative;
-          *found_text_alternative = true;
-        } else {
-          return text_alternative;
-        }
-      }
-    }
     return text_alternative;
   }
 

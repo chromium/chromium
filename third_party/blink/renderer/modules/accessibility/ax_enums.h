@@ -92,7 +92,6 @@ enum AccessibilityOptionalBool {
 // https://w3c.github.io/html-aam/#accessible-name-and-description-computation
 enum AXTextSource {
   kAXTextFromNativeSourceUninitialized = -1,
-  kAXTextFromNativeHTMLFigcaption,
   kAXTextFromNativeHTMLLabel,
   kAXTextFromNativeHTMLLabelFor,
   kAXTextFromNativeHTMLLabelWrapped,
