@@ -18,12 +18,12 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -1391,8 +1391,18 @@ void MTPDeviceDelegateImplLinux::RunTask(PendingTaskInfo task_info) {
     }
   }
 
-  base::PostTask(task_info.location, {task_info.thread_id},
-                 std::move(task_info.task));
+  switch (task_info.thread_id) {
+    case content::BrowserThread::UI:
+      content::GetUIThreadTaskRunner({})->PostTask(task_info.location,
+                                                   std::move(task_info.task));
+      break;
+    case content::BrowserThread::IO:
+      content::GetIOThreadTaskRunner({})->PostTask(task_info.location,
+                                                   std::move(task_info.task));
+      break;
+    case content::BrowserThread::ID_COUNT:
+      NOTREACHED();
+  }
 }
 
 void MTPDeviceDelegateImplLinux::WriteDataIntoSnapshotFile(
