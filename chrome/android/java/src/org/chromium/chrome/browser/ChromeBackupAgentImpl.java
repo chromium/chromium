@@ -96,7 +96,6 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
             ChromePreferenceKeys.FIRST_RUN_CACHED_TOS_ACCEPTED,
             ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE,
             ChromePreferenceKeys.FIRST_RUN_LIGHTWEIGHT_FLOW_COMPLETE,
-            ChromePreferenceKeys.FIRST_RUN_FLOW_SIGNIN_SETUP,
             ChromePreferenceKeys.PRIVACY_METRICS_REPORTING,
     };
 

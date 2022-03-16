@@ -344,8 +344,8 @@ public final class ChromePreferenceKeys {
     public static final String FIRST_RUN_FLOW_COMPLETE = "first_run_flow";
     public static final String FIRST_RUN_FLOW_SIGNIN_ACCOUNT_NAME = "first_run_signin_account_name";
     public static final String FIRST_RUN_FLOW_SIGNIN_COMPLETE = "first_run_signin_complete";
-    // Needed by ChromeBackupAgent
     public static final String FIRST_RUN_FLOW_SIGNIN_SETUP = "first_run_signin_setup";
+    // Needed by ChromeBackupAgent
     public static final String FIRST_RUN_LIGHTWEIGHT_FLOW_COMPLETE = "lightweight_first_run_flow";
     public static final String FIRST_RUN_SKIP_WELCOME_PAGE = "skip_welcome_page";
     public static final String FIRST_RUN_SKIPPED_BY_POLICY = "Chrome.FirstRun.SkippedByPolicy";
