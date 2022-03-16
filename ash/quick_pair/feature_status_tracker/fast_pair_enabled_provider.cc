@@ -58,7 +58,7 @@ FastPairEnabledProvider::FastPairEnabledProvider(
 FastPairEnabledProvider::~FastPairEnabledProvider() = default;
 
 bool FastPairEnabledProvider::AreSubProvidersEnabled() {
-  QP_LOG(VERBOSE)
+  QP_LOG(INFO)
       << __func__
       << ": Flag:" << base::FeatureList::IsEnabled(features::kFastPair)
       << " Policy Pref:" << fast_pair_pref_enabled_provider_->is_enabled()
