@@ -108,18 +108,11 @@ class MacPort(base.Port):
     #
 
     def path_to_apache(self):
-        # use system httpd on mac10.12, mac10.13. The httpd from cipd does not work on
-        # these platforms as that is compiled toward newer version of mac.
-        if self.host.platform.os_version in ['mac10.12', 'mac10.13']:
-            return '/usr/sbin/httpd'
         return self._path_from_chromium_base(
             'third_party', 'apache-mac', 'bin', 'httpd')
 
     def path_to_apache_config_file(self):
-        if self.host.platform.os_version in ['mac10.12']:
-            config_file_basename = 'apache2-httpd-%s.conf' % (self._apache_version(),)
-        else:
-            config_file_basename = 'apache2-httpd-%s-php7.conf' % (self._apache_version(),)
+        config_file_basename = 'apache2-httpd-%s-php7.conf' % (self._apache_version(),)
         return self._filesystem.join(self.apache_config_directory(), config_file_basename)
 
     def _path_to_driver(self, target=None):

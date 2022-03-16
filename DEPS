@@ -527,7 +527,7 @@ deps = {
     'packages': [
       {
         'package': 'infra/3pp/tools/httpd-php/${{platform}}',
-        'version': 'version:2@httpd2.4.38.php7.3.31.chromium.1',
+        'version': 'version:2@httpd2.4.38.php7.3.31.chromium.2',
       },
     ],
     'dep_type': 'cipd',
