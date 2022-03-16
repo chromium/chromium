@@ -123,7 +123,7 @@ FastPairNotDiscoverableScannerImpl::~FastPairNotDiscoverableScannerImpl() =
 
 void FastPairNotDiscoverableScannerImpl::OnDeviceFound(
     device::BluetoothDevice* device) {
-  QP_LOG(INFO) << __func__ << ": " << device->GetNameForDisplay();
+  QP_LOG(VERBOSE) << __func__ << ": " << device->GetNameForDisplay();
 
   const std::vector<uint8_t>* fast_pair_service_data =
       device->GetServiceDataForUUID(kFastPairBluetoothUuid);
