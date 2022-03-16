@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/first_run/signin/signin_screen_mediator.h"
+#import "ios/chrome/browser/ui/first_run/legacy_signin/legacy_signin_screen_mediator.h"
 
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
@@ -10,14 +10,14 @@
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/logging/first_run_signin_logger.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/logging/user_signin_logger.h"
-#import "ios/chrome/browser/ui/first_run/signin/signin_screen_consumer.h"
+#import "ios/chrome/browser/ui/first_run/legacy_signin/legacy_signin_screen_consumer.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-@interface SigninScreenMediator () <ChromeAccountManagerServiceObserver> {
+@interface LegacySigninScreenMediator () <ChromeAccountManagerServiceObserver> {
   std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
       _accountManagerServiceObserver;
 }
@@ -31,7 +31,7 @@
 
 @end
 
-@implementation SigninScreenMediator
+@implementation LegacySigninScreenMediator
 
 - (instancetype)initWithAccountManagerService:
                     (ChromeAccountManagerService*)accountManagerService
@@ -109,7 +109,7 @@
   [self updateConsumer];
 }
 
-- (void)setConsumer:(id<SigninScreenConsumer>)consumer {
+- (void)setConsumer:(id<LegacySigninScreenConsumer>)consumer {
   if (consumer == _consumer)
     return;
   _consumer = consumer;
@@ -151,6 +151,5 @@
                              avatar:avatar];
   }
 }
-
 
 @end

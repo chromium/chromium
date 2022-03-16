@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/first_run/signin/signin_screen_mediator.h"
+#import "ios/chrome/browser/ui/first_run/legacy_signin/legacy_signin_screen_mediator.h"
 
 #include "base/run_loop.h"
 #import "base/test/ios/wait_util.h"
@@ -15,7 +15,7 @@
 #import "ios/chrome/browser/signin/signin_util.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow_performer.h"
-#import "ios/chrome/browser/ui/first_run/signin/signin_screen_consumer.h"
+#import "ios/chrome/browser/ui/first_run/legacy_signin/legacy_signin_screen_consumer.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #include "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
@@ -36,7 +36,8 @@ using base::test::ios::kWaitForActionTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
 
 // Fake implementing the consumer protocol.
-@interface FakeSigninScreenConsumer : NSObject <SigninScreenConsumer>
+@interface FakeLegacySigninScreenConsumer
+    : NSObject <LegacySigninScreenConsumer>
 
 @property(nonatomic, assign) BOOL hidden;
 @property(nonatomic, copy) NSString* userName;
@@ -47,7 +48,7 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 
 @end
 
-@implementation FakeSigninScreenConsumer
+@implementation FakeLegacySigninScreenConsumer
 
 - (void)noIdentityAvailable {
   self.hidden = YES;
@@ -69,7 +70,7 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 
 @end
 
-class SigninScreenMediatorTest : public PlatformTest {
+class LegacySigninScreenMediatorTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
@@ -82,14 +83,14 @@ class SigninScreenMediatorTest : public PlatformTest {
             &AuthenticationServiceFake::CreateAuthenticationService));
 
     browser_state_ = builder.Build();
-    mediator_ = [[SigninScreenMediator alloc]
+    mediator_ = [[LegacySigninScreenMediator alloc]
         initWithAccountManagerService:ChromeAccountManagerServiceFactory::
                                           GetForBrowserState(
                                               browser_state_.get())
                 authenticationService:AuthenticationServiceFactory::
                                           GetForBrowserState(
                                               browser_state_.get())];
-    consumer_ = [[FakeSigninScreenConsumer alloc] init];
+    consumer_ = [[FakeLegacySigninScreenConsumer alloc] init];
     identity_ = [FakeChromeIdentity identityWithEmail:@"test@email.com"
                                                gaiaID:@"gaiaID"
                                                  name:@"Test Name"];
@@ -116,16 +117,17 @@ class SigninScreenMediatorTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
 
-  SigninScreenMediator* mediator_;
+  LegacySigninScreenMediator* mediator_;
   std::unique_ptr<ChromeBrowserState> browser_state_;
   ios::FakeChromeIdentityService* identity_service_;
-  FakeSigninScreenConsumer* consumer_;
+  FakeLegacySigninScreenConsumer* consumer_;
   FakeChromeIdentity* identity_;
 };
 
 // Tests that setting the consumer after the selected identity is set is
 // correctly notifying the consumer.
-TEST_F(SigninScreenMediatorTest, TestSettingConsumerWithExistingIdentity) {
+TEST_F(LegacySigninScreenMediatorTest,
+       TestSettingConsumerWithExistingIdentity) {
   mediator_.selectedIdentity = identity_;
   mediator_.consumer = consumer_;
 
@@ -141,7 +143,7 @@ TEST_F(SigninScreenMediatorTest, TestSettingConsumerWithExistingIdentity) {
 
 // Tests that the consumer is correctly updated when the selected identity is
 // updated.
-TEST_F(SigninScreenMediatorTest, TestUpdatingSelectedIdentity) {
+TEST_F(LegacySigninScreenMediatorTest, TestUpdatingSelectedIdentity) {
   mediator_.consumer = consumer_;
 
   EXPECT_EQ(nil, consumer_.email);
@@ -164,7 +166,7 @@ TEST_F(SigninScreenMediatorTest, TestUpdatingSelectedIdentity) {
 }
 
 // Tests IdentityService observations of the identity list.
-TEST_F(SigninScreenMediatorTest, TestIdentityListChanged) {
+TEST_F(LegacySigninScreenMediatorTest, TestIdentityListChanged) {
   mediator_.consumer = consumer_;
 
   EXPECT_EQ(nil, consumer_.email);
@@ -200,7 +202,7 @@ TEST_F(SigninScreenMediatorTest, TestIdentityListChanged) {
 }
 
 // Tests BrowserProvider observation of the identity service.
-TEST_F(SigninScreenMediatorTest, TestProfileUpdate) {
+TEST_F(LegacySigninScreenMediatorTest, TestProfileUpdate) {
   mediator_.selectedIdentity = identity_;
   mediator_.consumer = consumer_;
 
@@ -251,7 +253,7 @@ TEST_F(SigninScreenMediatorTest, TestProfileUpdate) {
 }
 
 // Tests Signing In the selected identity.
-TEST_F(SigninScreenMediatorTest, TestSignIn) {
+TEST_F(LegacySigninScreenMediatorTest, TestSignIn) {
   mediator_.selectedIdentity = identity_;
   identity_service_->AddIdentity(identity_);
   mediator_.consumer = consumer_;

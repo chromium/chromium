@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/first_run/signin/signin_screen_coordinator.h"
+#import "ios/chrome/browser/ui/first_run/legacy_signin/legacy_signin_screen_coordinator.h"
 
 #import "base/metrics/histogram_functions.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
@@ -28,9 +28,9 @@
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_delegate.h"
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
-#import "ios/chrome/browser/ui/first_run/signin/signin_screen_consumer.h"
-#import "ios/chrome/browser/ui/first_run/signin/signin_screen_mediator.h"
-#import "ios/chrome/browser/ui/first_run/signin/signin_screen_view_controller.h"
+#import "ios/chrome/browser/ui/first_run/legacy_signin/legacy_signin_screen_consumer.h"
+#import "ios/chrome/browser/ui/first_run/legacy_signin/legacy_signin_screen_mediator.h"
+#import "ios/chrome/browser/ui/first_run/legacy_signin/legacy_signin_screen_view_controller.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/unified_consent/unified_consent_service_factory.h"
@@ -39,10 +39,11 @@
 #error "This file requires ARC support."
 #endif
 
-@interface SigninScreenCoordinator () <EnterprisePromptCoordinatorDelegate,
-                                       IdentityChooserCoordinatorDelegate,
-                                       PolicyWatcherBrowserAgentObserving,
-                                       SigninScreenViewControllerDelegate> {
+@interface LegacySigninScreenCoordinator () <
+    EnterprisePromptCoordinatorDelegate,
+    IdentityChooserCoordinatorDelegate,
+    PolicyWatcherBrowserAgentObserving,
+    LegacySigninScreenViewControllerDelegate> {
   // Observer for the sign-out policy changes.
   std::unique_ptr<PolicyWatcherBrowserAgentObserverBridge>
       _policyWatcherObserverBridge;
@@ -51,9 +52,9 @@
 // First run screen delegate.
 @property(nonatomic, weak) id<FirstRunScreenDelegate> delegate;
 // Sign-in screen view controller.
-@property(nonatomic, strong) SigninScreenViewController* viewController;
+@property(nonatomic, strong) LegacySigninScreenViewController* viewController;
 // Sign-in screen mediator.
-@property(nonatomic, strong) SigninScreenMediator* mediator;
+@property(nonatomic, strong) LegacySigninScreenMediator* mediator;
 // Coordinator handling choosing the account to sign in with.
 @property(nonatomic, strong)
     IdentityChooserCoordinator* identityChooserCoordinator;
@@ -74,7 +75,7 @@
 
 @end
 
-@implementation SigninScreenCoordinator
+@implementation LegacySigninScreenCoordinator
 
 @synthesize baseNavigationController = _baseNavigationController;
 
@@ -124,7 +125,7 @@
   PolicyWatcherBrowserAgent::FromBrowser(self.browser)
       ->AddObserver(_policyWatcherObserverBridge.get());
 
-  self.viewController = [[SigninScreenViewController alloc] init];
+  self.viewController = [[LegacySigninScreenViewController alloc] init];
   self.viewController.delegate = self;
   PrefService* prefService = browserState->GetPrefs();
   self.viewController.enterpriseSignInRestrictions =
@@ -133,7 +134,7 @@
   self.accountManagerService =
       ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
 
-  self.mediator = [[SigninScreenMediator alloc]
+  self.mediator = [[LegacySigninScreenMediator alloc]
       initWithAccountManagerService:self.accountManagerService
               authenticationService:authenticationService];
 
@@ -177,7 +178,7 @@
   self.enterprisePromptCoordinator = nil;
 }
 
-#pragma mark - SigninScreenViewControllerDelegate
+#pragma mark - LegacySigninScreenViewControllerDelegate
 
 - (void)showAccountPickerFromPoint:(CGPoint)point {
   self.identityChooserCoordinator = [[IdentityChooserCoordinator alloc]

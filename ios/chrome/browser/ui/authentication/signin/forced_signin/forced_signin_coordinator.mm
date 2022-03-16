@@ -15,7 +15,7 @@
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator+protected.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_delegate.h"
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
-#import "ios/chrome/browser/ui/first_run/signin/signin_screen_coordinator.h"
+#import "ios/chrome/browser/ui/first_run/legacy_signin/legacy_signin_screen_coordinator.h"
 #import "ios/chrome/browser/ui/screen/screen_provider.h"
 #import "ios/chrome/browser/ui/screen/screen_type.h"
 
@@ -110,7 +110,7 @@
     (ScreenType)type {
   switch (type) {
     case kSignIn:
-      return [[SigninScreenCoordinator alloc]
+      return [[LegacySigninScreenCoordinator alloc]
           initWithBaseNavigationController:self.navigationController
                                    browser:self.browser
                                   delegate:self];

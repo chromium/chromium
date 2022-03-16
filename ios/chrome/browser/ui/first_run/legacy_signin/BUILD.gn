@@ -2,16 +2,16 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("signin") {
+source_set("legacy_signin") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "signin_screen_coordinator.h",
-    "signin_screen_coordinator.mm",
-    "signin_screen_mediator.h",
-    "signin_screen_mediator.mm",
+    "legacy_signin_screen_coordinator.h",
+    "legacy_signin_screen_coordinator.mm",
+    "legacy_signin_screen_mediator.h",
+    "legacy_signin_screen_mediator.mm",
   ]
   deps = [
-    ":signin_ui",
+    ":legacy_signin_ui",
     "//components/prefs",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/browser",
@@ -37,12 +37,12 @@ source_set("signin") {
   ]
 }
 
-source_set("signin_ui") {
+source_set("legacy_signin_ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "signin_screen_consumer.h",
-    "signin_screen_view_controller.h",
-    "signin_screen_view_controller.mm",
+    "legacy_signin_screen_consumer.h",
+    "legacy_signin_screen_view_controller.h",
+    "legacy_signin_screen_view_controller.mm",
   ]
   deps = [
     "//ios/chrome/app/strings",
@@ -50,8 +50,8 @@ source_set("signin_ui") {
     "//ios/chrome/browser/ui/authentication/views",
     "//ios/chrome/browser/ui/elements:elements_internal",
     "//ios/chrome/browser/ui/first_run:constants",
-    "//ios/chrome/browser/ui/first_run/resources:forced_signin_screen_banner",
-    "//ios/chrome/browser/ui/first_run/resources:signin_screen_banner",
+    "//ios/chrome/browser/ui/first_run/resources:legacy_forced_signin_screen_banner",
+    "//ios/chrome/browser/ui/first_run/resources:legacy_signin_screen_banner",
     "//ios/chrome/browser/ui/settings/elements:constants",
     "//ios/chrome/browser/ui/settings/elements:enterprise_info_popover_view_controller",
     "//ios/chrome/common",
@@ -66,10 +66,10 @@ source_set("signin_ui") {
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources = [ "signin_screen_mediator_unittest.mm" ]
+  sources = [ "legacy_signin_screen_mediator_unittest.mm" ]
   deps = [
-    ":signin",
-    ":signin_ui",
+    ":legacy_signin",
+    ":legacy_signin_ui",
     "//base",
     "//base/test:test_support",
     "//components/prefs",

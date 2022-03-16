@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/first_run/signin/signin_screen_view_controller.h"
+#import "ios/chrome/browser/ui/first_run/legacy_signin/legacy_signin_screen_view_controller.h"
 
 #include "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/ui/authentication/views/identity_button_control.h"
@@ -36,7 +36,7 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
 
 }  // namespace
 
-@interface SigninScreenViewController () <UITextViewDelegate>
+@interface LegacySigninScreenViewController () <UITextViewDelegate>
 
 // Button controlling the display of the selected identity.
 @property(nonatomic, strong) IdentityButtonControl* identityControl;
@@ -58,7 +58,7 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
 
 @end
 
-@implementation SigninScreenViewController
+@implementation LegacySigninScreenViewController
 @dynamic delegate;
 
 #pragma mark - Public
@@ -111,9 +111,9 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
   bool signinRestricted =
       self.enterpriseSignInRestrictions || forceSignInEnabled;
 
-  self.bannerImage =
-      [UIImage imageNamed:signinRestricted ? @"forced_signin_screen_banner"
-                                           : @"signin_screen_banner"];
+  self.bannerImage = [UIImage
+      imageNamed:signinRestricted ? @"legacy_forced_signin_screen_banner"
+                                  : @"legacy_signin_screen_banner"];
   // Only add "Don't Sign In" button when signin is not required.
   if (!forceSignInEnabled) {
     self.secondaryActionString =
@@ -223,7 +223,7 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
   return _learnMoreTextView;
 }
 
-#pragma mark - SignInScreenConsumer
+#pragma mark - LegacySigninScreenConsumer
 
 - (void)setSelectedIdentityUserName:(NSString*)userName
                               email:(NSString*)email

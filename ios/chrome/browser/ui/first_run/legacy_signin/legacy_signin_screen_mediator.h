@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_FIRST_RUN_SIGNIN_SIGNIN_SCREEN_MEDIATOR_H_
-#define IOS_CHROME_BROWSER_UI_FIRST_RUN_SIGNIN_SIGNIN_SCREEN_MEDIATOR_H_
+#ifndef IOS_CHROME_BROWSER_UI_FIRST_RUN_LEGACY_SIGNIN_LEGACY_SIGNIN_SCREEN_MEDIATOR_H_
+#define IOS_CHROME_BROWSER_UI_FIRST_RUN_LEGACY_SIGNIN_LEGACY_SIGNIN_SCREEN_MEDIATOR_H_
 
 #import <Foundation/Foundation.h>
 
@@ -13,10 +13,10 @@
 class AuthenticationService;
 class ChromeAccountManagerService;
 @class ChromeIdentity;
-@protocol SigninScreenConsumer;
+@protocol LegacySigninScreenConsumer;
 
 // Mediator that handles the sign-in operation.
-@interface SigninScreenMediator : NSObject
+@interface LegacySigninScreenMediator : NSObject
 
 // The designated initializer.
 - (instancetype)initWithAccountManagerService:
@@ -28,7 +28,7 @@ class ChromeAccountManagerService;
 - (instancetype)init NS_UNAVAILABLE;
 
 // Consumer for this mediator.
-@property(nonatomic, weak) id<SigninScreenConsumer> consumer;
+@property(nonatomic, weak) id<LegacySigninScreenConsumer> consumer;
 
 // The identity currently selected.
 @property(nonatomic, strong) ChromeIdentity* selectedIdentity;
@@ -46,4 +46,4 @@ class ChromeAccountManagerService;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_FIRST_RUN_SIGNIN_SIGNIN_SCREEN_MEDIATOR_H_
+#endif  // IOS_CHROME_BROWSER_UI_FIRST_RUN_LEGACY_SIGNIN_LEGACY_SIGNIN_SCREEN_MEDIATOR_H_

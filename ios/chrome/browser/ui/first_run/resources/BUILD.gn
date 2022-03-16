@@ -36,23 +36,23 @@ imageset("default_browser_screen_banner") {
   ]
 }
 
-imageset("signin_screen_banner") {
+imageset("legacy_signin_screen_banner") {
   sources = [
-    "signin_screen_banner.imageset/Contents.json",
-    "signin_screen_banner.imageset/signin_screen_banner_dark@2x.png",
-    "signin_screen_banner.imageset/signin_screen_banner_dark@3x.png",
-    "signin_screen_banner.imageset/signin_screen_banner_light@2x.png",
-    "signin_screen_banner.imageset/signin_screen_banner_light@3x.png",
+    "legacy_signin_screen_banner.imageset/Contents.json",
+    "legacy_signin_screen_banner.imageset/legacy_signin_screen_banner_dark@2x.png",
+    "legacy_signin_screen_banner.imageset/legacy_signin_screen_banner_dark@3x.png",
+    "legacy_signin_screen_banner.imageset/legacy_signin_screen_banner_light@2x.png",
+    "legacy_signin_screen_banner.imageset/legacy_signin_screen_banner_light@3x.png",
   ]
 }
 
-imageset("forced_signin_screen_banner") {
+imageset("legacy_forced_signin_screen_banner") {
   sources = [
-    "forced_signin_screen_banner.imageset/Contents.json",
-    "forced_signin_screen_banner.imageset/forced_signin_screen_banner_dark@2x.png",
-    "forced_signin_screen_banner.imageset/forced_signin_screen_banner_dark@3x.png",
-    "forced_signin_screen_banner.imageset/forced_signin_screen_banner_light@2x.png",
-    "forced_signin_screen_banner.imageset/forced_signin_screen_banner_light@3x.png",
+    "legacy_forced_signin_screen_banner.imageset/Contents.json",
+    "legacy_forced_signin_screen_banner.imageset/legacy_forced_signin_screen_banner_dark@2x.png",
+    "legacy_forced_signin_screen_banner.imageset/legacy_forced_signin_screen_banner_dark@3x.png",
+    "legacy_forced_signin_screen_banner.imageset/legacy_forced_signin_screen_banner_light@2x.png",
+    "legacy_forced_signin_screen_banner.imageset/legacy_forced_signin_screen_banner_light@3x.png",
   ]
 }
 

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_FIRST_RUN_SIGNIN_SIGNIN_SCREEN_CONSUMER_H_
-#define IOS_CHROME_BROWSER_UI_FIRST_RUN_SIGNIN_SIGNIN_SCREEN_CONSUMER_H_
+#ifndef IOS_CHROME_BROWSER_UI_FIRST_RUN_LEGACY_SIGNIN_LEGACY_SIGNIN_SCREEN_CONSUMER_H_
+#define IOS_CHROME_BROWSER_UI_FIRST_RUN_LEGACY_SIGNIN_LEGACY_SIGNIN_SCREEN_CONSUMER_H_
 
 #import <UIKit/UIKit.h>
 
 // Handles sign-in screen UI updates.
-@protocol SigninScreenConsumer <NSObject>
+@protocol LegacySigninScreenConsumer <NSObject>
 
 // Sets the |userName|, |email|, |givenName| and |avatar| of the selected
 // identity. The |userName| and |givenName| can be nil. Notifies the UI that an
@@ -27,4 +27,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_FIRST_RUN_SIGNIN_SIGNIN_SCREEN_CONSUMER_H_
+#endif  // IOS_CHROME_BROWSER_UI_FIRST_RUN_LEGACY_SIGNIN_LEGACY_SIGNIN_SCREEN_CONSUMER_H_
