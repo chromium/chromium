@@ -312,7 +312,7 @@ export function str(id) {
   try {
     return loadTimeData.getString(id);
   } catch (e) {
-    console.warn('Failed to get string for ', id);
+    console.warn('Failed to get string for', id);
     return id;
   }
 }
@@ -364,42 +364,6 @@ util.addIsFocusedMethod = () => {
   };
 };
 
-/**
- * Checks, if the Files app's window is in a full screen mode.
- *
- * @param {chrome.app.window.AppWindow} appWindow App window to be maximized.
- * @return {boolean} True if the full screen mode is enabled.
- */
-util.isFullScreen = appWindow => {
-  if (appWindow) {
-    return appWindow.isFullscreen();
-  } else {
-    console.error(
-        'App window not passed. Unable to check status of the full screen ' +
-        'mode.');
-    return false;
-  }
-};
-
-/**
- * Toggles the full screen mode.
- *
- * @param {chrome.app.window.AppWindow} appWindow App window to be maximized.
- * @param {boolean} enabled True for enabling, false for disabling.
- */
-util.toggleFullScreen = (appWindow, enabled) => {
-  if (appWindow) {
-    if (enabled) {
-      appWindow.fullscreen();
-    } else {
-      appWindow.restore();
-    }
-    return;
-  }
-
-  console.error(
-      'App window not passed. Unable to toggle the full screen mode.');
-};
 
 /**
  * The type of a file operation.
@@ -982,7 +946,7 @@ util.URLsToEntries = (urls, opt_callback) => {
           opt_callback(result.entries, result.failureUrls);
         })
         .catch(error => {
-          console.error(
+          console.warn(
               'util.URLsToEntries is failed.',
               error.stack ? error.stack : error);
         });
@@ -1282,7 +1246,7 @@ util.addEventListenerToBackgroundComponent = (target, type, handler) => {
  */
 util.checkAPIError = () => {
   if (chrome.runtime.lastError) {
-    console.error(chrome.runtime.lastError.message);
+    console.warn(chrome.runtime.lastError.message);
   }
 };
 

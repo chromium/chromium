@@ -85,7 +85,7 @@ AsyncUtil.ConcurrentQueue = class {
    */
   run(closure) {
     if (this.isCancelled_) {
-      console.error('Queue is cancelled. Cannot add a new task.');
+      console.warn('Queue is cancelled. Cannot add a new task.');
       return;
     }
 
