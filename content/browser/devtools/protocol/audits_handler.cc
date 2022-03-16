@@ -45,7 +45,7 @@ void SendStoredIssuesForFrameToAgent(RenderFrameHostImpl* rfh,
                                      protocol::AuditsHandler* handler) {
   // Check the storage first. No need to do any work in case its empty.
   DevToolsIssueStorage* issue_storage =
-      DevToolsIssueStorage::GetForPage(rfh->GetPage());
+      DevToolsIssueStorage::GetForPage(rfh->GetOutermostMainFrame()->GetPage());
   if (!issue_storage)
     return;
   auto issues = issue_storage->FindIssuesForAgentOf(rfh);

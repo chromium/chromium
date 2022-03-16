@@ -18,7 +18,10 @@ static const unsigned kMaxIssueCount = 1000;
 PAGE_USER_DATA_KEY_IMPL(DevToolsIssueStorage);
 
 DevToolsIssueStorage::DevToolsIssueStorage(Page& page)
-    : PageUserData<DevToolsIssueStorage>(page) {}
+    : PageUserData<DevToolsIssueStorage>(page) {
+  // DevToolsIssueStorage is only created for outermost pages.
+  DCHECK(!page.GetMainDocument().GetParentOrOuterDocument());
+}
 DevToolsIssueStorage::~DevToolsIssueStorage() = default;
 
 void DevToolsIssueStorage::AddInspectorIssue(

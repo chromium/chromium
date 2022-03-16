@@ -23,6 +23,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
@@ -256,4 +257,48 @@ IN_PROC_BROWSER_TEST_F(DevToolsIssueStorageWithPrerenderBrowserTest,
   // 6) Verify we have received the SameSite issue on the main target.
   WaitForDummyIssueNotification();
 }
+
+class DevToolsIssueStorageFencedFrameTest
+    : public DevToolsIssueStorageBrowserTest {
+ public:
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_helper_;
+  }
+
+ protected:
+  content::test::FencedFrameTestHelper fenced_frame_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(DevToolsIssueStorageFencedFrameTest,
+                       DeleteFencedFrameWithIssue) {
+  // 1) Navigate to a page.
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL test_url = embedded_test_server()->GetURL("/title1.html");
+  EXPECT_TRUE(NavigateToURL(shell(), test_url));
+
+  // 2) Create a fenced frame.
+  GURL fenced_frame_url =
+      embedded_test_server()->GetURL("/fenced_frames/title1.html");
+  content::RenderFrameHostImpl* fenced_frame_rfh =
+      static_cast<RenderFrameHostImpl*>(
+          fenced_frame_test_helper().CreateFencedFrame(
+              web_contents()->GetMainFrame(), fenced_frame_url));
+  EXPECT_NE(nullptr, fenced_frame_rfh);
+
+  // 3) Report an empty SameSite cookie issue in the fenced frame.
+  ReportDummyIssue(fenced_frame_rfh);
+
+  // 4) Delete the fenced frame from the page. This should cause the issue to be
+  // re-assigned to the primary root frame.
+  EXPECT_TRUE(ExecJs(shell()->web_contents(),
+                     "document.querySelector('fencedframe').remove()"));
+
+  // 5) Open DevTools and enable Audits domain.
+  Attach();
+  SendCommand("Audits.enable", std::make_unique<base::DictionaryValue>());
+
+  // 6) Verify we have received the SameSite issue on the main target.
+  WaitForDummyIssueNotification();
+}
+
 }  // namespace content

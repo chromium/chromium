@@ -1250,7 +1250,8 @@ void AddIssueToIssueStorage(
   // We only utilize a central storage on the page. Each issue is still
   // associated with the originating |RenderFrameHost| though.
   DevToolsIssueStorage* issue_storage =
-      DevToolsIssueStorage::GetOrCreateForPage(rfh->GetPage());
+      DevToolsIssueStorage::GetOrCreateForPage(
+          rfh->GetOutermostMainFrame()->GetPage());
 
   issue_storage->AddInspectorIssue(rfh, std::move(issue));
 }
