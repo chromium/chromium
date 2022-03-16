@@ -204,7 +204,9 @@ class TestPageTextObserver : public PageTextObserver {
     // Intentionally do nothing so that subframes can be added in tests.
   }
 
-  void CallDidFinishLoad() { PageTextObserver::DidFinishLoad(nullptr, GURL()); }
+  void CallDidFinishLoad() {
+    PageTextObserver::DidFinishLoad(web_contents()->GetMainFrame(), GURL());
+  }
 
  private:
   std::map<content::RenderFrameHost*, bool> oopif_overrides_;
