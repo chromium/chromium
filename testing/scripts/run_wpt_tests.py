@@ -115,7 +115,10 @@ class WPTTestAdapter(wpt_common.BaseWptScriptAdapter):
 
         if self.options.test_filter:
           for pattern in self.options.test_filter.split(":"):
-            rest_args.extend(["--include", pattern])
+            rest_args.extend([
+              "--include",
+              wpt_common.strip_wpt_root_prefix(pattern),
+            ])
 
         return rest_args
 

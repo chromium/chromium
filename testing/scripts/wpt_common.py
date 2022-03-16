@@ -5,6 +5,7 @@
 import base64
 import json
 import os
+import posixpath
 import sys
 import time
 
@@ -19,6 +20,7 @@ DEFAULT_ISOLATED_SCRIPT_TEST_OUTPUT = os.path.join(OUT_DIR, "results.json")
 TYP_DIR = os.path.join(CATAPULT_DIR, 'third_party', 'typ')
 WEB_TESTS_DIR = os.path.normpath(
     os.path.join(BLINK_TOOLS_DIR, os.pardir, 'web_tests'))
+_WPT_ROOT_FRAGMENT = posixpath.join('external', 'wpt', '')
 TESTS_ROOT_DIR = os.path.join(WEB_TESTS_DIR, 'external', 'wpt')
 
 if BLINK_TOOLS_DIR not in sys.path:
@@ -35,6 +37,23 @@ from blinkpy.web_tests.models import test_failures
 from typ.artifacts import Artifacts
 from typ.json_results import Result
 from typ.result_sink import ResultSinkReporter
+
+
+def strip_wpt_root_prefix(path):
+    """Remove a redundant prefix from a WPT path.
+
+    ResultDB identifies WPTs as web tests with the prefix "external/wpt", but
+    wptrunner expects paths relative to the WPT root, which already ends in
+    "external/wpt". This function transforms a general web test path into a
+    WPT path.
+
+    WPT paths are always POSIX-style.
+    """
+    if path.startswith(_WPT_ROOT_FRAGMENT):
+        return posixpath.relpath(path, _WPT_ROOT_FRAGMENT)
+    # Path is absolute or does not start with the prefix.
+    # Assume the path already points to a valid WPT and pass through.
+    return path
 
 
 class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
@@ -368,8 +387,7 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
         """
         # When looking into the WPT manifest, we omit "external/wpt" from the
         # test name, since that part of the path is only in Chromium.
-        wpt_test_name = test_name.replace(
-            os.path.join("external", "wpt", ""), "")
+        wpt_test_name = strip_wpt_root_prefix(test_name)
         test_file_subpath = self.wpt_manifest.file_path_for_test_url(
             wpt_test_name)
         if not test_file_subpath:
@@ -494,8 +512,7 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
             # When comparing the test name to the image URL, we omit
             # "external/wpt" from the test name, since that part of the path is
             # only in Chromium.
-            wpt_test_name = test_name.replace(
-                os.path.join("external", "wpt", ""), "")
+            wpt_test_name = strip_wpt_root_prefix(test_name)
             if wpt_test_name == url:
                 screenshot_key = "actual_image"
                 file_suffix = test_failures.FILENAME_SUFFIX_ACTUAL

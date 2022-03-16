@@ -158,7 +158,10 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
 
     if self.options.test_filter:
       for pattern in self.options.test_filter.split(':'):
-        rest_args.extend(['--include', pattern])
+        rest_args.extend([
+          '--include',
+          wpt_common.strip_wpt_root_prefix(pattern),
+        ])
 
     rest_args.extend(self.pass_through_wpt_args)
 
