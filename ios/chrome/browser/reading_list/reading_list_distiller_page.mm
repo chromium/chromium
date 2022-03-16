@@ -290,7 +290,9 @@ bool ReadingListDistillerPage::IsWikipediaPage() {
 
 void ReadingListDistillerPage::HandleWikipediaPage() {
   web::WebFrame* web_frame = web::GetMainFrame(CurrentWebState());
-
+  if (!web_frame) {
+    return;
+  }
   web_frame->ExecuteJavaScript(
       kWikipediaWorkaround,
       BindOnce(&ReadingListDistillerPage::OnHandleWikipediaPageResult,
