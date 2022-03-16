@@ -5650,11 +5650,13 @@ void RenderFrameImpl::CreateAudioInputStream(
     uint32_t shared_memory_count,
     blink::CrossVariantMojoReceiver<
         media::mojom::AudioProcessorControlsInterfaceBase> controls_receiver,
-    const media::AudioProcessingSettings& settings) {
+    const media::AudioProcessingSettings* settings) {
+  DCHECK_EQ(!!settings, !!controls_receiver);
   media::mojom::AudioProcessingConfigPtr processing_config;
   if (controls_receiver) {
+    DCHECK(settings);
     processing_config = media::mojom::AudioProcessingConfig::New(
-        std::move(controls_receiver), settings);
+        std::move(controls_receiver), *settings);
   }
 
   GetAudioInputStreamFactory()->CreateStream(

@@ -733,7 +733,7 @@ class BLINK_EXPORT WebLocalFrameClient {
       uint32_t shared_memory_count,
       CrossVariantMojoReceiver<
           media::mojom::AudioProcessorControlsInterfaceBase> controls_receiver,
-      const media::AudioProcessingSettings& settings) {}
+      const media::AudioProcessingSettings* settings) {}
   virtual void AssociateInputAndOutputForAec(
       const base::UnguessableToken& input_stream_id,
       const std::string& output_device_id) {}

@@ -36,13 +36,14 @@ void CreateMojoAudioInputStreamOnMainThread(
     const media::AudioParameters& params,
     bool automatic_gain_control,
     uint32_t total_segments) {
+  DCHECK_EQ(source_params.processing.has_value(), !!controls_receiver);
   if (auto* web_frame = static_cast<WebLocalFrame*>(
           blink::WebFrame::FromFrameToken(frame_token))) {
     web_frame->Client()->CreateAudioInputStream(
         std::move(client), source_params.session_id, params,
         automatic_gain_control, total_segments, std::move(controls_receiver),
-        source_params.processing ? source_params.processing->settings
-                                 : media::AudioProcessingSettings());
+        source_params.processing ? &source_params.processing->settings
+                                 : nullptr);
   }
 }
 
