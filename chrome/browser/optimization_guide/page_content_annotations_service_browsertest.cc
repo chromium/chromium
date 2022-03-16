@@ -161,6 +161,120 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceValidationBrowserTest,
                          browser()->profile()));
 }
 
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+class PageContentAnnotationsServicePageTopicsBrowserTest
+    : public InProcessBrowserTest {
+ public:
+  PageContentAnnotationsServicePageTopicsBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kOptimizationHints, features::kPageContentAnnotations}, {});
+  }
+  ~PageContentAnnotationsServicePageTopicsBrowserTest() override = default;
+
+  void LoadModel() {
+    proto::Any any_metadata;
+    any_metadata.set_type_url(
+        "type.googleapis.com/com.foo.PageTopicsModelMetadata");
+    proto::PageTopicsModelMetadata page_topics_model_metadata;
+    page_topics_model_metadata.set_version(123);
+    page_topics_model_metadata.add_supported_output(
+        proto::PAGE_TOPICS_SUPPORTED_OUTPUT_CATEGORIES);
+    auto* output_params =
+        page_topics_model_metadata.mutable_output_postprocessing_params();
+    auto* category_params = output_params->mutable_category_params();
+    category_params->set_max_categories(5);
+    category_params->set_min_none_weight(0.8);
+    category_params->set_min_category_weight(0.1);
+    category_params->set_min_normalized_weight_within_top_n(0.1);
+    page_topics_model_metadata.SerializeToString(any_metadata.mutable_value());
+    base::FilePath source_root_dir;
+    base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root_dir);
+    base::FilePath model_file_path =
+        source_root_dir.AppendASCII("components")
+            .AppendASCII("test")
+            .AppendASCII("data")
+            .AppendASCII("optimization_guide")
+            .AppendASCII("page_topics_128_model.tflite");
+
+    base::HistogramTester histogram_tester;
+
+    OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+        ->OverrideTargetModelForTesting(
+            proto::OPTIMIZATION_TARGET_PAGE_TOPICS_V2,
+            optimization_guide::TestModelInfoBuilder()
+                .SetModelFilePath(model_file_path)
+                .SetModelMetadata(any_metadata)
+                .Build());
+
+    RetryForHistogramUntilCountReached(
+        &histogram_tester,
+        "OptimizationGuide.ModelExecutor.ModelFileUpdated.PageTopicsV2", 1);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServicePageTopicsBrowserTest,
+                       E2EWithGoldenTestData) {
+  PageContentAnnotationsService* service =
+      PageContentAnnotationsServiceFactory::GetForProfile(browser()->profile());
+  ASSERT_TRUE(service);
+
+  service->RequestAndNotifyWhenModelAvailable(AnnotationType::kPageTopics,
+                                              base::DoNothing());
+
+  LoadModel();
+
+  std::vector<BatchAnnotationResult> results;
+  base::RunLoop run_loop;
+  service->BatchAnnotatePageTopics(
+      base::BindOnce(
+          [](base::RunLoop* run_loop,
+             std::vector<BatchAnnotationResult>* out_results,
+             const std::vector<BatchAnnotationResult>& results) {
+            *out_results = results;
+            run_loop->Quit();
+          },
+          &run_loop, &results),
+      std::vector<GURL>{
+          GURL("https://www.youtube.com/"),
+          GURL("https://www.chrome.com/"),
+          GURL("https://music.youtube.com/"),
+      });
+  run_loop.Run();
+
+  ASSERT_EQ(results.size(), 3U);
+
+  EXPECT_EQ(results[0].input(), "youtube com");
+  EXPECT_EQ(results[0].type(), AnnotationType::kPageTopics);
+  ASSERT_TRUE(results[0].topics());
+  EXPECT_THAT(*results[0].topics(), testing::ElementsAreArray({
+                                        WeightedIdentifier(250, 0.601997),
+                                        WeightedIdentifier(43, 0.915914),
+                                    }));
+
+  EXPECT_EQ(results[1].input(), "chrome com");
+  EXPECT_EQ(results[1].type(), AnnotationType::kPageTopics);
+  ASSERT_TRUE(results[1].topics());
+  EXPECT_THAT(*results[1].topics(), testing::ElementsAreArray({
+                                        WeightedIdentifier(223, 0.209933),
+                                        WeightedIdentifier(43, 0.474946),
+                                        WeightedIdentifier(148, 0.881723),
+                                    }));
+
+  EXPECT_EQ(results[2].input(), "music youtube com");
+  EXPECT_EQ(results[2].type(), AnnotationType::kPageTopics);
+  ASSERT_TRUE(results[2].topics());
+  EXPECT_THAT(*results[2].topics(), testing::ElementsAreArray({
+                                        WeightedIdentifier(250, 0.450154),
+                                        WeightedIdentifier(1, 0.518014),
+                                        WeightedIdentifier(43, 0.596481),
+                                        WeightedIdentifier(23, 0.827426),
+                                    }));
+}
+#endif
+
 class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
  public:
   PageContentAnnotationsServiceBrowserTest() {
