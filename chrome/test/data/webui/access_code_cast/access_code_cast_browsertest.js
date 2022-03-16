@@ -7,6 +7,7 @@
 // Polymer BrowserTest fixture.
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
+GEN('#include "build/build_config.h"');
 GEN('#include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"');
 GEN('#include "chrome/browser/profiles/profile.h"');
 GEN('#include "chrome/browser/ui/browser.h"');
@@ -52,7 +53,12 @@ var AccessCodeCastAppTest = class extends AccessCodeCastBrowserTest {
  * This browsertest acts as a thin wrapper to run the unit tests found
  * at access_code_cast_test.js
  */
-TEST_F('AccessCodeCastAppTest', 'All', function() {
+GEN('#if BUILDFLAG(IS_MAC)');
+GEN('#define MAYBE_All DISABLED_All');
+GEN('#else');
+GEN('#define MAYBE_All All');
+GEN('#endif');
+TEST_F('AccessCodeCastAppTest', 'MAYBE_All', function() {
   mocha.run();
 });
 
