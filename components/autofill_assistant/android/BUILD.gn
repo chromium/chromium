@@ -328,7 +328,6 @@ android_library("autofill_assistant_public_impl_java") {
   deps = [
     ":animated_poodle_resources",
     "//base:base_java",
-    "//chrome/android:chrome_java",
     "//third_party/android_deps:android_support_v7_appcompat_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//ui/android:ui_java",

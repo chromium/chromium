@@ -6,6 +6,7 @@ package org.chromium.components.autofill_assistant;
 
 import android.app.Activity;
 import android.view.View;
+import android.view.ViewGroup;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -43,7 +44,12 @@ public interface AssistantDependencies extends AssistantStaticDependencies {
 
     ApplicationViewportInsetSupplier getBottomInsetProvider();
 
+    // TODO(b/224910639): Due to legacy reasons root view and root view group are not the same
+    // object here (compositor view vs coordinator view). However, this can most likely be
+    // reconciled.
     View getRootView();
+
+    ViewGroup getRootViewGroup();
 
     AssistantSnackbarFactory getSnackbarFactory();
 

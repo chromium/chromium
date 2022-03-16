@@ -6,6 +6,7 @@ package org.chromium.components.autofill_assistant;
 
 import android.app.Activity;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -34,6 +35,7 @@ public class AssistantCoordinator {
             @Nullable AssistantOverlayCoordinator overlayCoordinator,
             AssistantKeyboardCoordinator.Delegate keyboardCoordinatorDelegate,
             @NonNull KeyboardVisibilityDelegate keyboardDelegate, @NonNull View rootView,
+            ViewGroup rootViewGroup,
             @NonNull AssistantBrowserControlsFactory browserControlsFactory,
             @NonNull ApplicationViewportInsetSupplier applicationBottomInsetProvider,
             AccessibilityUtil accessibilityUtil, AssistantInfoPageUtil infoPageUtil,
@@ -52,8 +54,8 @@ public class AssistantCoordinator {
 
         mBottomBarCoordinator = new AssistantBottomBarCoordinator(activity, mModel,
                 mOverlayCoordinator, controller, applicationBottomInsetProvider, tabObscuringUtil,
-                browserControlsFactory, accessibilityUtil, infoPageUtil, profileImageUtil,
-                imageFetcher, editorFactory, windowAndroid, settingsUtil);
+                rootViewGroup, browserControlsFactory, accessibilityUtil, infoPageUtil,
+                profileImageUtil, imageFetcher, editorFactory, windowAndroid, settingsUtil);
         mKeyboardCoordinator = new AssistantKeyboardCoordinator(activity, keyboardDelegate,
                 rootView, mModel, keyboardCoordinatorDelegate, controller);
     }

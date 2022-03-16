@@ -84,8 +84,9 @@ public class AutofillAssistantUiController {
         mCoordinator = new AssistantCoordinator(mActivity, dependencies.getBottomSheetController(),
                 tabObscuringUtil, overlayCoordinator, this::safeNativeOnKeyboardVisibilityChanged,
                 dependencies.getKeyboardVisibilityDelegate(), dependencies.getRootView(),
-                dependencies.createBrowserControlsFactory(), dependencies.getBottomInsetProvider(),
-                dependencies.getAccessibilityUtil(), dependencies.createInfoPageUtil(),
+                dependencies.getRootViewGroup(), dependencies.createBrowserControlsFactory(),
+                dependencies.getBottomInsetProvider(), dependencies.getAccessibilityUtil(),
+                dependencies.createInfoPageUtil(),
                 dependencies.createProfileImageUtilOrNull(
                         mActivity, R.dimen.autofill_assistant_profile_size),
                 dependencies.createImageFetcher(), dependencies.createEditorFactory(),

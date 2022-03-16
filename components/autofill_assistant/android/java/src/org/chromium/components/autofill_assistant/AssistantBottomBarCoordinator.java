@@ -97,7 +97,7 @@ class AssistantBottomBarCoordinator implements AssistantPeekHeightCoordinator.De
     AssistantBottomBarCoordinator(Activity activity, AssistantModel model,
             AssistantOverlayCoordinator overlayCoordinator, BottomSheetController controller,
             ApplicationViewportInsetSupplier applicationViewportInsetSupplier,
-            @Nullable AssistantTabObscuringUtil tabObscuringUtil,
+            @Nullable AssistantTabObscuringUtil tabObscuringUtil, ViewGroup rootViewGroup,
             @NonNull AssistantBrowserControlsFactory browserControlsFactory,
             AccessibilityUtil accessibilityUtil, AssistantInfoPageUtil infoPageUtil,
             @Nullable AssistantProfileImageUtil profileImageUtil, ImageFetcher imageFetcher,
@@ -135,8 +135,7 @@ class AssistantBottomBarCoordinator implements AssistantPeekHeightCoordinator.De
         // TODO(crbug.com/806868): We should only animate our BottomSheetContent instead of the root
         // view. However, it looks like doing that is not well supported by the BottomSheet, so the
         // BottomSheet offset is wrong during the animation.
-        ViewGroup rootView = (ViewGroup) activity.findViewById(R.id.coordinator);
-        setupAnimations(model, rootView);
+        setupAnimations(model, rootViewGroup);
 
         // Instantiate child components.
         mHeaderCoordinator = new AssistantHeaderCoordinator(activity, model.getHeaderModel(),
@@ -297,7 +296,7 @@ class AssistantBottomBarCoordinator implements AssistantPeekHeightCoordinator.De
         return mActionsCoordinator;
     }
 
-    private void setupAnimations(AssistantModel model, ViewGroup rootView) {
+    private void setupAnimations(AssistantModel model, ViewGroup rootViewGroup) {
         model.getHeaderModel().addObserver((source, propertyKey) -> {
             if (propertyKey == AssistantHeaderModel.CHIPS_VISIBLE
                     || propertyKey == AssistantHeaderModel.CHIPS) {
@@ -306,39 +305,41 @@ class AssistantBottomBarCoordinator implements AssistantPeekHeightCoordinator.De
                 // same needs to be done for the corresponding animations.
                 // TODO(b/164389932): Figure out a better fix that doesn't require issuing the
                 // change in the following UI iteration.
-                PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> animateChildren(rootView));
+                PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> animateChildren(rootViewGroup));
             }
         });
 
         // Animate when info box changes.
-        model.getInfoBoxModel().addObserver((source, propertyKey) -> animateChildren(rootView));
+        model.getInfoBoxModel().addObserver(
+                (source, propertyKey) -> animateChildren(rootViewGroup));
 
         // Animate when details change.
-        model.getDetailsModel().addObserver((source, propertyKey) -> animateChildren(rootView));
+        model.getDetailsModel().addObserver(
+                (source, propertyKey) -> animateChildren(rootViewGroup));
 
         // Animate when a PR section is expanded.
         model.getCollectUserDataModel().addObserver((source, propertyKey) -> {
             if (propertyKey == AssistantCollectUserDataModel.EXPANDED_SECTION) {
-                animateChildren(rootView);
+                animateChildren(rootViewGroup);
             }
         });
 
         // Animate when form inputs change.
         model.getFormModel().addObserver((source, propertyKey) -> {
             if (AssistantFormModel.INPUTS == propertyKey) {
-                animateChildren(rootView);
+                animateChildren(rootViewGroup);
             }
         });
 
         model.getGenericUiModel().addObserver((source, propertyKey) -> {
             if (AssistantGenericUiModel.VIEW == propertyKey) {
-                animateChildren(rootView);
+                animateChildren(rootViewGroup);
             }
         });
     }
 
-    private void animateChildren(ViewGroup rootView) {
-        TransitionManager.beginDelayedTransition(rootView, mLayoutTransition);
+    private void animateChildren(ViewGroup rootViewGroup) {
+        TransitionManager.beginDelayedTransition(rootViewGroup, mLayoutTransition);
     }
 
     private void maybeShowHeaderChips() {

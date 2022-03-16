@@ -46,7 +46,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.autofill_assistant.AssistantCoordinator;
-import org.chromium.components.autofill_assistant.AssistantStaticDependencies;
+import org.chromium.components.autofill_assistant.AssistantDependencies;
 import org.chromium.components.autofill_assistant.R;
 import org.chromium.components.autofill_assistant.carousel.AssistantActionsCarouselCoordinator;
 import org.chromium.components.autofill_assistant.carousel.AssistantCarouselModel;
@@ -106,27 +106,22 @@ public class AutofillAssistantUiTest {
     }
 
     private AssistantCoordinator createAndShowAssistantCoordinator() {
-        AssistantStaticDependencies staticDependencies = new AssistantStaticDependenciesChrome();
         return TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            AssistantDependencies dependencies = new AssistantDependenciesChrome(getActivity());
             AssistantCoordinator coordinator = new AssistantCoordinator(getActivity(),
                     initializeBottomSheet(),
-                    staticDependencies.getTabObscuringUtilOrNull(getActivity().getWindowAndroid()),
+                    dependencies.getTabObscuringUtilOrNull(getActivity().getWindowAndroid()),
                     /* overlayCoordinator= */ null,
                     /* keyboardCoordinatorDelegate= */ null,
-                    getActivity().getWindowAndroid().getKeyboardDelegate(),
+                    dependencies.getKeyboardVisibilityDelegate(),
                     getActivity().getCompositorViewHolderForTesting(),
-                    ()
-                            -> new AssistantBrowserControlsChrome(
-                                    getActivity().getBrowserControlsManager()),
-                    getActivity().getWindowAndroid().getApplicationBottomInsetProvider(),
-                    staticDependencies.getAccessibilityUtil(),
-                    staticDependencies.createInfoPageUtil(),
-                    staticDependencies.createProfileImageUtilOrNull(
+                    dependencies.getRootViewGroup(), dependencies.createBrowserControlsFactory(),
+                    dependencies.getBottomInsetProvider(), dependencies.getAccessibilityUtil(),
+                    dependencies.createInfoPageUtil(),
+                    dependencies.createProfileImageUtilOrNull(
                             getActivity(), R.dimen.autofill_assistant_profile_size),
-                    staticDependencies.createImageFetcher(),
-                    staticDependencies.createEditorFactory(),
-                    staticDependencies.createDependencies(getActivity()).getWindowAndroid(),
-                    staticDependencies.createSettingsUtil());
+                    dependencies.createImageFetcher(), dependencies.createEditorFactory(),
+                    dependencies.getWindowAndroid(), dependencies.createSettingsUtil());
             coordinator.show();
             return coordinator;
         });

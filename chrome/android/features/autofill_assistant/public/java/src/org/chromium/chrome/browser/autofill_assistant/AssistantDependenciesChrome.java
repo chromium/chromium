@@ -6,11 +6,13 @@ package org.chromium.chrome.browser.autofill_assistant;
 
 import android.app.Activity;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
 
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -102,6 +104,11 @@ public class AssistantDependenciesChrome
     @Override
     public View getRootView() {
         return mRootView;
+    }
+
+    @Override
+    public ViewGroup getRootViewGroup() {
+        return (ViewGroup) mActivity.findViewById(R.id.coordinator);
     }
 
     @Override
