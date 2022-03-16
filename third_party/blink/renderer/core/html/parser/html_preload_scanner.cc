@@ -42,7 +42,6 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/viewport_data.h"
-#include "third_party/blink/renderer/core/html/blocking_attribute.h"
 #include "third_party/blink/renderer/core/html/client_hints_util.h"
 #include "third_party/blink/renderer/core/html/cross_origin_attribute.h"
 #include "third_party/blink/renderer/core/html/html_dimension.h"
@@ -341,11 +340,7 @@ class TokenPreloadScanner::StartTagScanner {
     RenderBlockingBehavior render_blocking_behavior =
         RenderBlockingBehavior::kUnset;
     if (request_type == PreloadRequest::kRequestTypeLinkRelPreload) {
-      render_blocking_behavior =
-          blocking_attribute_value_ &&
-                  BlockingAttribute::IsRenderBlocking(blocking_attribute_value_)
-              ? RenderBlockingBehavior::kBlocking
-              : RenderBlockingBehavior::kNonBlocking;
+      render_blocking_behavior = RenderBlockingBehavior::kNonBlocking;
     } else if (is_script &&
                (is_module || defer_ == FetchParameters::kLazyLoad)) {
       render_blocking_behavior =
@@ -534,9 +529,6 @@ class TokenPreloadScanner::StartTagScanner {
       scopes_attribute_value_ = AtomicString(attribute_value);
     } else if (Match(attribute_name, html_names::kResourcesAttr)) {
       resources_attribute_value_ = AtomicString(attribute_value);
-    } else if (RuntimeEnabledFeatures::BlockingAttributeEnabled() &&
-               Match(attribute_name, html_names::kBlockingAttr)) {
-      blocking_attribute_value_ = AtomicString(attribute_value);
     }
   }
 
@@ -795,7 +787,6 @@ class TokenPreloadScanner::StartTagScanner {
   String language_attribute_value_;
   AtomicString scopes_attribute_value_;
   AtomicString resources_attribute_value_;
-  AtomicString blocking_attribute_value_;
   bool nomodule_attribute_value_ = false;
   float source_size_ = 0;
   bool source_size_set_ = false;

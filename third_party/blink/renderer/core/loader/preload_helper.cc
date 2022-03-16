@@ -333,9 +333,7 @@ Resource* PreloadHelper::PreloadIfNeeded(
   FetchParameters link_fetch_params(std::move(resource_request), options);
   link_fetch_params.SetCharset(document.Encoding());
   link_fetch_params.SetRenderBlockingBehavior(
-      params.blocking && params.blocking->IsRenderBlocking()
-          ? RenderBlockingBehavior::kBlocking
-          : RenderBlockingBehavior::kNonBlocking);
+      RenderBlockingBehavior::kNonBlocking);
 
   if (params.cross_origin != kCrossOriginAttributeNotSet) {
     link_fetch_params.SetCrossOriginAccessControl(
@@ -714,6 +712,10 @@ Resource* PreloadHelper::StartPreload(ResourceType type,
       break;
     case ResourceType::kFont:
       resource = FontResource::Fetch(params, resource_fetcher, nullptr);
+      if (document.GetRenderBlockingResourceManager()) {
+        document.GetRenderBlockingResourceManager()->FontPreloadingStarted(
+            To<FontResource>(resource));
+      }
       break;
     case ResourceType::kAudio:
     case ResourceType::kVideo:
@@ -733,17 +735,6 @@ Resource* PreloadHelper::StartPreload(ResourceType type,
       break;
     default:
       NOTREACHED();
-  }
-
-  if (params.IsLinkPreload() && document.GetRenderBlockingResourceManager()) {
-    if (RuntimeEnabledFeatures::BlockingAttributeEnabled() &&
-        params.GetRenderBlockingBehavior() ==
-            RenderBlockingBehavior::kBlocking) {
-      document.GetRenderBlockingResourceManager()->AddPendingPreload(resource);
-    } else if (type == ResourceType::kFont) {
-      document.GetRenderBlockingResourceManager()->FontPreloadingStarted(
-          To<FontResource>(resource));
-    }
   }
 
   return resource;
