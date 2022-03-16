@@ -150,6 +150,9 @@ tast_disabled_tests_from_chrome_all = [
   "policy.URLCheck.whitelist",  # nocheck
   "policy.URLCheck.blacklist",  # nocheck
   "policy.UserNativePrintersAllowed",  # nocheck
+
+  # https://crbug.com/1306441
+  "policy.UserAvatarImage",
 ]
 
 # To disable a specific test in lacros_all_tast_tests, add it the following
