@@ -17,6 +17,7 @@
 #include "base/command_line.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_nsobject.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/sys_string_conversions.h"
@@ -56,6 +57,7 @@
 #include "chrome/browser/ui/webui/welcome/helpers.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -69,11 +71,13 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/common/extension.h"
 #include "extensions/test/extension_test_message_listener.h"
+#include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/features.h"
 #import "ui/events/test/cocoa_test_event_utils.h"
@@ -1205,6 +1209,63 @@ IN_PROC_BROWSER_TEST_F(AppControllerHandoffBrowserTest, TestHandoffURLs) {
   Browser* browser1 = active_browser_list->get(0);
   browser1->window()->Show();
   EXPECT_EQ(g_handoff_url, test_url2);
+}
+
+class AppControllerHandoffPrerenderBrowserTest
+    : public AppControllerHandoffBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    host_resolver()->AddRule("*", "127.0.0.1");
+    embedded_test_server()->ServeFilesFromDirectory(
+        base::PathService::CheckedGet(chrome::DIR_TEST_DATA));
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  content::WebContents* GetActiveWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  content::test::PrerenderTestHelper& prerender_helper() {
+    return prerender_helper_;
+  }
+
+ protected:
+  AppControllerHandoffPrerenderBrowserTest()
+      : prerender_helper_(base::BindRepeating(
+            &AppControllerHandoffPrerenderBrowserTest::GetActiveWebContents,
+            // Unretained is safe here, as this class owns PrerenderTestHelper
+            // object, which holds the callback being constructed here, so the
+            // callback will be destructed before this class.
+            base::Unretained(this))) {}
+
+ private:
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+// Tests that as a user switches from main page to prerendered page, the correct
+// URL is being passed to the Handoff.
+IN_PROC_BROWSER_TEST_F(AppControllerHandoffPrerenderBrowserTest,
+                       TestHandoffURLs) {
+  // Navigate to an initial page.
+  GURL url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
+
+  // Start a prerender.
+  GURL prerender_url = embedded_test_server()->GetURL("/simple.html");
+  prerender_helper().AddPrerender(prerender_url);
+  EXPECT_EQ(g_handoff_url, url);
+
+  // Activate.
+  content::TestActivationManager navigation_manager(GetActiveWebContents(),
+                                                    prerender_url);
+  ASSERT_TRUE(
+      content::ExecJs(GetActiveWebContents()->GetMainFrame(),
+                      content::JsReplace("location = $1", prerender_url)));
+  navigation_manager.WaitForNavigationFinished();
+  EXPECT_TRUE(navigation_manager.was_activated());
+  EXPECT_TRUE(navigation_manager.was_successful());
+  EXPECT_EQ(g_handoff_url, prerender_url);
 }
 
 }  // namespace
