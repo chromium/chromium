@@ -16,6 +16,7 @@
 #include "base/types/pass_key.h"
 #include "chrome/browser/touch_to_fill/touch_to_fill_view.h"
 #include "chrome/browser/touch_to_fill/touch_to_fill_view_factory.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/device_reauth/biometric_authenticator.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/gfx/native_widget_types.h"
@@ -70,7 +71,7 @@ class TouchToFillController {
   // Instructs the controller to show the provided |credentials| to the user.
   void Show(base::span<const password_manager::UiCredential> credentials,
             base::WeakPtr<password_manager::PasswordManagerDriver> driver,
-            bool ready_for_submission);
+            autofill::mojom::SubmissionReadinessState submission_readiness);
 
   // Informs the controller that the user has made a selection. Invokes both
   // FillSuggestion() and TouchToFillDismissed() on |driver_|. No-op if invoked

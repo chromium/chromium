@@ -33,6 +33,7 @@ namespace {
 
 using ShowVirtualKeyboard =
     password_manager::PasswordManagerDriver::ShowVirtualKeyboard;
+using autofill::mojom::SubmissionReadinessState;
 using device_reauth::BiometricsAvailability;
 using password_manager::PasswordManagerDriver;
 using password_manager::UiCredential;
@@ -50,6 +51,26 @@ std::vector<UiCredential> SortCredentials(
   });
 
   return result;
+}
+
+// Infers whether a form should be submitted based on the feature's state and
+// the form's structure (submission_readiness).
+bool ShouldTriggerSubmission(SubmissionReadinessState submission_readiness) {
+  // TODO(crbug.com/1299394): Add a feature's variation for the conservative
+  // launch (SubmissionReadinessState::kTwoFields).
+  switch (submission_readiness) {
+    case SubmissionReadinessState::kNoInformation:
+    case SubmissionReadinessState::kError:
+    case SubmissionReadinessState::kNoUsernameField:
+    case SubmissionReadinessState::kFieldBetweenUsernameAndPassword:
+    case SubmissionReadinessState::kFieldAfterPasswordField:
+      return false;
+    case SubmissionReadinessState::kEmptyFields:
+    case SubmissionReadinessState::kMoreThanTwoFields:
+    case SubmissionReadinessState::kTwoFields:
+      return base::FeatureList::IsEnabled(
+          password_manager::features::kTouchToFillPasswordSubmission);
+  }
 }
 
 }  // namespace
@@ -74,19 +95,22 @@ TouchToFillController::~TouchToFillController() {
   }
 }
 
-void TouchToFillController::Show(base::span<const UiCredential> credentials,
-                                 base::WeakPtr<PasswordManagerDriver> driver,
-                                 bool ready_for_submission) {
+void TouchToFillController::Show(
+    base::span<const UiCredential> credentials,
+    base::WeakPtr<PasswordManagerDriver> driver,
+    SubmissionReadinessState submission_readiness) {
   DCHECK(!driver_ || driver_.get() == driver.get());
   driver_ = std::move(driver);
-  trigger_submission_ =
-      ready_for_submission &&
-      base::FeatureList::IsEnabled(
-          password_manager::features::kTouchToFillPasswordSubmission);
+
+  trigger_submission_ = ShouldTriggerSubmission(submission_readiness);
+  base::UmaHistogramEnumeration(
+      "PasswordManager.TouchToFill.SubmissionReadiness", submission_readiness);
+  ukm::builders::TouchToFill_SubmissionReadiness(source_id_)
+      .SetSubmissionReadiness(static_cast<int64_t>(submission_readiness))
+      .Record(ukm::UkmRecorder::Get());
 
   base::UmaHistogramCounts100("PasswordManager.TouchToFill.NumCredentialsShown",
                               credentials.size());
-
   if (credentials.empty()) {
     // Ideally this should never happen. However, in case we do end up invoking
     // Show() without credentials, we should not show Touch To Fill to the user

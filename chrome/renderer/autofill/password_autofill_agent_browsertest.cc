@@ -1776,7 +1776,9 @@ TEST_F(PasswordAutofillAgentTest, TryToShowTouchToFillUsername) {
 
 // TODO(crbug.com/1299430): Consider to disable |ShowTouchToFill| on Desktop.
 #if BUILDFLAG(IS_ANDROID)
-  EXPECT_CALL(fake_driver_, ShowTouchToFill(true));
+  EXPECT_CALL(
+      fake_driver_,
+      ShowTouchToFill(autofill::mojom::SubmissionReadinessState::kEmptyFields));
 #else
   EXPECT_CALL(fake_driver_, ShowTouchToFill);
 #endif
@@ -1793,13 +1795,16 @@ TEST_F(PasswordAutofillAgentTest, TryToShowTouchToFillPassword) {
 
 // TODO(crbug.com/1299430): Consider to disable |ShowTouchToFill| on Desktop.
 #if BUILDFLAG(IS_ANDROID)
-  EXPECT_CALL(fake_driver_, ShowTouchToFill(true));
+  EXPECT_CALL(
+      fake_driver_,
+      ShowTouchToFill(autofill::mojom::SubmissionReadinessState::kEmptyFields));
 #else
   EXPECT_CALL(fake_driver_, ShowTouchToFill);
 #endif
   base::RunLoop().RunUntilIdle();
 }
 
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(PasswordAutofillAgentTest, TryToShowTouchToFillButDontEnableSubmission) {
   LoadHTML(kPasswordChangeFormHTML);
   UpdateUrlForHTML(kPasswordChangeFormHTML);
@@ -1813,11 +1818,13 @@ TEST_F(PasswordAutofillAgentTest, TryToShowTouchToFillButDontEnableSubmission) {
   EXPECT_EQ(WebAutofillState::kPreviewed, password_element_.GetAutofillState());
 
   // As there are other input fields, don't enable automatic submission.
-  EXPECT_CALL(fake_driver_, ShowTouchToFill(/*trigger_submission=*/false));
+  EXPECT_CALL(
+      fake_driver_,
+      ShowTouchToFill(
+          autofill::mojom::SubmissionReadinessState::kFieldAfterPasswordField));
   base::RunLoop().RunUntilIdle();
 }
 
-#if BUILDFLAG(IS_ANDROID)
 TEST_F(PasswordAutofillAgentTest, TouchToFillSuppressesPopups) {
   SimulateOnFillPasswordForm(fill_data_);
   SimulateSuggestionChoice(username_element_);
@@ -1860,6 +1867,102 @@ TEST_F(PasswordAutofillAgentTest, TouchToFillClosed) {
   EXPECT_EQ(WebAutofillState::kPreviewed, password_element_.GetAutofillState());
 
   EXPECT_CALL(fake_driver_, ShowTouchToFill);
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(PasswordAutofillAgentTest, SubmissionReadiness_NoUsernameField) {
+  LoadHTML(kVisibleFormWithNoUsernameHTML);
+  UpdateUrlForHTML(kVisibleFormWithNoUsernameHTML);
+  UpdateOnlyPasswordElement();
+  SimulateOnFillPasswordForm(fill_data_);
+
+  EXPECT_TRUE(
+      password_autofill_agent_->TryToShowTouchToFill(password_element_));
+
+  EXPECT_CALL(fake_driver_,
+              ShowTouchToFill(
+                  autofill::mojom::SubmissionReadinessState::kNoUsernameField));
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(PasswordAutofillAgentTest, SubmissionReadiness_FieldsInBetween) {
+  // Parse the "random_field" as username. Then, the "username" field should
+  // block a submission.
+  WebDocument document = GetMainFrame()->GetDocument();
+  WebElement element =
+      document.GetElementById(WebString::FromUTF16(u"random_field"));
+  ASSERT_FALSE(element.IsNull());
+  username_element_ = element.To<WebInputElement>();
+  UpdateRendererIDs();
+
+  SimulateOnFillPasswordForm(fill_data_);
+
+  EXPECT_TRUE(
+      password_autofill_agent_->TryToShowTouchToFill(password_element_));
+
+  EXPECT_CALL(fake_driver_,
+              ShowTouchToFill(autofill::mojom::SubmissionReadinessState::
+                                  kFieldBetweenUsernameAndPassword));
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(PasswordAutofillAgentTest, SubmissionReadiness_FieldAfterPassword) {
+  LoadHTML(kPasswordChangeFormHTML);
+  UpdateUrlForHTML(kPasswordChangeFormHTML);
+  UpdateUsernameAndPasswordElements();
+  SimulateOnFillPasswordForm(fill_data_);
+
+  EXPECT_TRUE(
+      password_autofill_agent_->TryToShowTouchToFill(password_element_));
+
+  EXPECT_CALL(
+      fake_driver_,
+      ShowTouchToFill(
+          autofill::mojom::SubmissionReadinessState::kFieldAfterPasswordField));
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(PasswordAutofillAgentTest, SubmissionReadiness_EmptyFields) {
+  SimulateOnFillPasswordForm(fill_data_);
+
+  EXPECT_TRUE(
+      password_autofill_agent_->TryToShowTouchToFill(password_element_));
+
+  EXPECT_CALL(
+      fake_driver_,
+      ShowTouchToFill(autofill::mojom::SubmissionReadinessState::kEmptyFields));
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(PasswordAutofillAgentTest, SubmissionReadiness_MoreThanTwoFields) {
+  SimulateOnFillPasswordForm(fill_data_);
+  WebInputElement surname_element = GetInputElementByID("random_field");
+  ASSERT_FALSE(surname_element.IsNull());
+  SimulateUserInputChangeForElement(&surname_element, "Smith");
+
+  EXPECT_TRUE(
+      password_autofill_agent_->TryToShowTouchToFill(password_element_));
+
+  EXPECT_CALL(
+      fake_driver_,
+      ShowTouchToFill(
+          autofill::mojom::SubmissionReadinessState::kMoreThanTwoFields));
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(PasswordAutofillAgentTest, SubmissionReadiness_TwoFields) {
+  LoadHTML(kSimpleWebpage);
+  UpdateUrlForHTML(kSimpleWebpage);
+  UpdateUsernameAndPasswordElements();
+
+  SimulateOnFillPasswordForm(fill_data_);
+
+  EXPECT_TRUE(
+      password_autofill_agent_->TryToShowTouchToFill(password_element_));
+
+  EXPECT_CALL(
+      fake_driver_,
+      ShowTouchToFill(autofill::mojom::SubmissionReadinessState::kTwoFields));
   base::RunLoop().RunUntilIdle();
 }
 #endif

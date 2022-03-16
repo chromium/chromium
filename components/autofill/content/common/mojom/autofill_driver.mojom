@@ -137,9 +137,9 @@ interface PasswordManagerDriver {
                           mojo_base.mojom.String16 typed_username,
                           int32 options, gfx.mojom.RectF bounds);
 
-  // Instructs the browser to show the Touch To Fill UI and whether form
-  // submission should be triggered after filling.
-  ShowTouchToFill(bool trigger_submission);
+  // Instructs the browser to show the Touch To Fill UI and whether the form is
+  // ready for submission after filling.
+  ShowTouchToFill(SubmissionReadinessState submission_readiness);
 
   // Checks the safe browsing reputation of the website where the focused
   // username/password field is on.

@@ -18699,12 +18699,29 @@ be describing additional metrics about the same event.
 <event name="TouchToFill.Shown">
   <owner>kazinova@google.com</owner>
   <owner>fhorschig@chromium.org</owner>
+  <owner>kolos@chromium.org</owner>
   <summary>
-    Recorded when the Touch To Fill sheet is shown to the user.
+    Recorded when a user takes an action on the Touch To Fill sheet.
   </summary>
   <metric name="UserAction" enum="TouchToFill.UserAction">
     <summary>
       The action a user took when interacting with the Touch To Fill sheet.
+    </summary>
+  </metric>
+</event>
+
+<event name="TouchToFill.SubmissionReadiness">
+  <owner>kolos@chromium.org</owner>
+  <owner>fhorschig@chromium.org</owner>
+  <summary>
+    Recorded when the Touch To Fill sheet is shown to the user.
+  </summary>
+  <metric name="SubmissionReadiness" enum="TouchToFill.SubmissionReadiness">
+    <summary>
+      A given form's state (e.g. there are empty fields in the form, or there
+      are only two fields and they both are filled by Chrome) that indicates
+      whether the form is ready for submission. Recorded when a Touch To Fill
+      sheet is shown for that form.
     </summary>
   </metric>
 </event>

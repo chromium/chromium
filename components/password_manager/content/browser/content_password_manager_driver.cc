@@ -395,11 +395,12 @@ void ContentPasswordManagerDriver::ShowPasswordSuggestions(
       TransformToRootCoordinates(render_frame_host_, bounds));
 }
 
-void ContentPasswordManagerDriver::ShowTouchToFill(bool trigger_submission) {
+void ContentPasswordManagerDriver::ShowTouchToFill(
+    autofill::mojom::SubmissionReadinessState submission_readiness) {
   if (!password_manager::bad_message::CheckFrameNotPrerendering(
           render_frame_host_))
     return;
-  client_->ShowTouchToFill(this, trigger_submission);
+  client_->ShowTouchToFill(this, submission_readiness);
 }
 
 void ContentPasswordManagerDriver::CheckSafeBrowsingReputation(

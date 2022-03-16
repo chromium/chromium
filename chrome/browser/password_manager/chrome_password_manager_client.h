@@ -124,8 +124,9 @@ class ChromePasswordManagerClient
       std::vector<std::unique_ptr<password_manager::PasswordForm>> local_forms,
       const url::Origin& origin,
       CredentialsCallback callback) override;
-  void ShowTouchToFill(password_manager::PasswordManagerDriver* driver,
-                       bool trigger_submission) override;
+  void ShowTouchToFill(
+      password_manager::PasswordManagerDriver* driver,
+      autofill::mojom::SubmissionReadinessState submission_readiness) override;
 
 #if BUILDFLAG(IS_ANDROID)
   // Notifies `PasswordReuseDetectionManager` about passwords selected from

@@ -446,16 +446,61 @@ void FillNonTypedOrFilledPropertiesMasks(std::vector<FormFieldData>* fields,
 }
 
 #if BUILDFLAG(IS_ANDROID)
+size_t GetIndexOfElement(const FormData& form_data,
+                         const WebInputElement& element) {
+  for (size_t i = 0; i < form_data.fields.size(); ++i) {
+    if (form_data.fields[i].unique_renderer_id.value() ==
+        element.UniqueRendererFormControlId())
+      return i;
+  }
+  return form_data.fields.size();
+}
+
 // Returns a prediction whether the form that contains |username_element| and
-// password_element will be ready for submission after filling these two
+// |password_element| will be ready for submission after filling these two
 // elements.
-bool IsReadyForSubmissionAfterCredentialFilling(
+mojom::SubmissionReadinessState CalculateSubmissionReadiness(
+    const FormData& form_data,
     WebInputElement& username_element,
     WebInputElement& password_element) {
-  if (password_element.IsNull() || !password_element.IsLastInputElementInForm())
-    return false;
-  // TODO(crbug.com/1299394): Add additional checks and metrics for them.
-  return true;
+  DCHECK(!password_element.IsNull());
+
+  if (username_element.IsNull())
+    return mojom::SubmissionReadinessState::kNoUsernameField;
+
+  size_t username_index = GetIndexOfElement(form_data, username_element);
+  size_t password_index = GetIndexOfElement(form_data, password_element);
+  size_t number_of_elements = form_data.fields.size();
+  if (username_index == number_of_elements ||
+      password_index == number_of_elements) {
+    // This is unexpected. |form_data| is supposed to contain username and
+    // password elements.
+    return mojom::SubmissionReadinessState::kError;
+  }
+
+  for (size_t i = username_index + 1; i < password_index; ++i) {
+    if (form_data.fields[i].IsVisible())
+      return mojom::SubmissionReadinessState::kFieldBetweenUsernameAndPassword;
+  }
+
+  if (!password_element.IsLastInputElementInForm())
+    return mojom::SubmissionReadinessState::kFieldAfterPasswordField;
+
+  size_t number_of_visible_elements = 0;
+  for (size_t i = 0; i < number_of_elements; ++i) {
+    if (form_data.fields[i].IsVisible()) {
+      if (username_index != i && password_index != i &&
+          form_data.fields[i].value.empty()) {
+        return mojom::SubmissionReadinessState::kEmptyFields;
+      }
+      number_of_visible_elements++;
+    }
+  }
+
+  if (number_of_visible_elements > 2)
+    return mojom::SubmissionReadinessState::kMoreThanTwoFields;
+
+  return mojom::SubmissionReadinessState::kTwoFields;
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -534,9 +579,10 @@ class PasswordAutofillAgent::DeferringPasswordManagerDriver
     DeferMsg(&mojom::PasswordManagerDriver::ShowPasswordSuggestions,
              text_direction, typed_username, options, bounds);
   }
-  void ShowTouchToFill(bool ready_for_submission) override {
+  void ShowTouchToFill(
+      autofill::mojom::SubmissionReadinessState submission_readiness) override {
     DeferMsg(&mojom::PasswordManagerDriver::ShowTouchToFill,
-             ready_for_submission);
+             submission_readiness);
   }
   void CheckSafeBrowsingReputation(const GURL& form_action,
                                    const GURL& frame_url) override {
@@ -1002,11 +1048,15 @@ bool PasswordAutofillAgent::TryToShowTouchToFill(
 // TODO(crbug.com/1299430): Consider to disable |TryToShowTouchToFill| and
 // |ShowTouchToFill| on Desktop.
 #if BUILDFLAG(IS_ANDROID)
-  GetPasswordManagerDriver().ShowTouchToFill(
-      IsReadyForSubmissionAfterCredentialFilling(username_element,
-                                                 password_element));
+  WebFormElement form = password_element.Form();
+  std::unique_ptr<FormData> form_data =
+      form.IsNull() ? GetFormDataFromUnownedInputElements()
+                    : GetFormDataFromWebForm(form);
+  GetPasswordManagerDriver().ShowTouchToFill(CalculateSubmissionReadiness(
+      *form_data, username_element, password_element));
 #else
-  GetPasswordManagerDriver().ShowTouchToFill(/*ready_for_submission*/ false);
+  GetPasswordManagerDriver().ShowTouchToFill(
+      mojom::SubmissionReadinessState::kNoInformation);
 #endif
 
   touch_to_fill_state_ = TouchToFillState::kIsShowing;
@@ -1507,10 +1557,9 @@ void PasswordAutofillAgent::TriggerFormSubmission() {
   DCHECK(input.IsPasswordFieldForAutofill())
       << "Form submission attempt for a non-password element";
 
-  // TODO(crbug.com/1283004): Ideally,
-  // |IsReadyForSubmissionAfterCredentialFilling| should be called to check
-  // all criteria. Use the DCHECK just for a sanity check now and remove it
-  // later.
+  // TODO(crbug.com/1283004): Ideally, |CalculateSubmissionReadiness| should be
+  // called to check all criteria. Use the DCHECK just for a sanity check now
+  // and remove it later.
   DCHECK(input.IsLastInputElementInForm())
       << "Form is not ready for submission";
   input.DispatchSimulatedEnter();

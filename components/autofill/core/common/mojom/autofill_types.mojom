@@ -67,6 +67,43 @@ enum ButtonTitleType {
   SPAN = 7                         // e.g. <span name='btn'>
 };
 
+// Describes various criteria (e.g. there are empty fields in the form) that
+// affect whether a form is ready for submission. Don't change IDs as they are
+// used for metrics.
+// TODO(crbug.com/1299394): Which criteria will be used for the actual launch
+// is a subject to change. For now, we collect metrics to test two versions:
+// - |kFieldAfterPasswordField| is the criterion to enable submission in the
+//   regular launch.
+// - |kTwoFields| is the criterion to enable submission in the conservative
+//   launch.
+// After the launch, passing the state to the browser will be useless.
+// Therefore, the enum will be removed.
+enum SubmissionReadinessState {
+  // No information received. Supposed to be unused on Android.
+  kNoInformation = 0,
+  // Error occurred while assessing submission readiness. Ideally, Chrome
+  // should not report such votes. Otherwise, |CalculateSubmissionReadiness|
+  // should be corrected.
+  kError = 1,
+
+  // Various blockers of forms submission.
+  // The username field is not found.
+  kNoUsernameField = 2,
+  // There are fields between username and password fields.
+  kFieldBetweenUsernameAndPassword = 3,
+  // There is a field right after the password field by focus traversal.
+  kFieldAfterPasswordField = 4,
+  // There are other empty fields. If the |kFieldBetweenUsernameAndPassword| or
+  // |kFieldAfterPasswordField| criteria are matched, they should be reported,
+  // not this one.
+  kEmptyFields = 5,
+  // No empty fields and there are more than two visible fields.
+  kMoreThanTwoFields = 6,
+
+  // The most conservative criterion for submission.
+  // There are only two visible fields: username and password.
+  kTwoFields = 7,
+};
 
 // autofill::FrameToken
 struct FrameToken {

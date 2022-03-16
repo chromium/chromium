@@ -2618,6 +2618,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.TouchToFill.SubmissionReadiness"
+    enum="TouchToFill.SubmissionReadiness" expires_after="2022-08-21">
+  <owner>kolos@chromium.org</owner>
+  <owner>fhorschig@chromium.org</owner>
+  <summary>
+    A given form's state (e.g. there are empty fields in the form, or there are
+    only two fields and they both are filled by Chrome) that indicates whether
+    the form is ready for submission. Recorded when a Touch To Fill sheet is
+    shown for that form.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.TouchToFill.UserAction"
     enum="TouchToFill.UserAction" expires_after="M92">
   <owner>ioanap@chromium.org</owner>

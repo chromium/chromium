@@ -4324,7 +4324,10 @@ class MockPrerenderPasswordManagerDriver
                int options,
                const gfx::RectF& bounds),
               (override));
-  MOCK_METHOD(void, ShowTouchToFill, (bool), (override));
+  MOCK_METHOD(void,
+              ShowTouchToFill,
+              (autofill::mojom::SubmissionReadinessState),
+              (override));
   MOCK_METHOD(void,
               CheckSafeBrowsingReputation,
               (const GURL& form_action, const GURL& frame_url),
@@ -4391,8 +4394,9 @@ class MockPrerenderPasswordManagerDriver
                                          options, bounds);
         });
     ON_CALL(*this, ShowTouchToFill)
-        .WillByDefault([this](bool trigger_submission) {
-          impl_->ShowTouchToFill(trigger_submission);
+        .WillByDefault([this](autofill::mojom::SubmissionReadinessState
+                                  submission_readiness) {
+          impl_->ShowTouchToFill(submission_readiness);
         });
     ON_CALL(*this, CheckSafeBrowsingReputation)
         .WillByDefault([this](const GURL& form_action, const GURL& frame_url) {
