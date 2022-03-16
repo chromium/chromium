@@ -11,7 +11,6 @@ import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-import android.os.Build.VERSION_CODES;
 import android.support.test.InstrumentationRegistry;
 import android.util.Pair;
 
@@ -782,13 +781,14 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    public void testPopupsBlocked() {
+    public void testPopupsBlocked() throws TimeoutException {
         new TwoStatePermissionTestCase(
                 "Popups", SiteSettingsCategory.Type.POPUPS, ContentSettingsType.POPUPS, false)
                 .run();
 
         // Test that the popup doesn't open.
         mPermissionRule.setUpUrl("/chrome/test/data/android/popup.html");
+        mPermissionRule.runJavaScriptCodeInCurrentTab("openPopup();");
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         Assert.assertEquals(1, getTabCount());
@@ -799,15 +799,15 @@ public class SiteSettingsTest {
      */
     @Test
     @SmallTest
-    @DisableIf.Build(message = "https://crbug.com/1300979", sdk_is_less_than = VERSION_CODES.N)
     @Feature({"Preferences"})
-    public void testPopupsNotBlocked() {
+    public void testPopupsNotBlocked() throws TimeoutException {
         new TwoStatePermissionTestCase(
                 "Popups", SiteSettingsCategory.Type.POPUPS, ContentSettingsType.POPUPS, true)
                 .run();
 
         // Test that a popup opens.
         mPermissionRule.setUpUrl("/chrome/test/data/android/popup.html");
+        mPermissionRule.runJavaScriptCodeInCurrentTab("openPopup();");
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         Assert.assertEquals(2, getTabCount());
