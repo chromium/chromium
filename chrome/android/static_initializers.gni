@@ -46,4 +46,8 @@ if (current_toolchain == default_toolchain &&
     # SPVRemapper.cpp (initializer offset 0xcf2924 size 0x64)
     expected_static_initializer_count += 2
   }
+  if (use_clang_coverage) {
+    # InstrProfilingRuntime.cpp, Only in coverage builds, not production.
+    expected_static_initializer_count += 1
+  }
 }
