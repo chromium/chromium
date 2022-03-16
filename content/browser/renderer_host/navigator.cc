@@ -734,7 +734,7 @@ void Navigator::RequestOpenURL(
   // subframe in the current tab.  We'll assume it's for the main frame
   // (possibly of a new or different WebContents) otherwise.
   if (disposition == WindowOpenDisposition::CURRENT_TAB &&
-      render_frame_host->GetParent()) {
+      render_frame_host->GetParentOrOuterDocument()) {
     frame_tree_node_id =
         render_frame_host->frame_tree_node()->frame_tree_node_id();
   }
