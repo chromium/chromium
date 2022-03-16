@@ -86,9 +86,8 @@ Children classes should specify these attributes:
 
 All pages in the rendering benchmark need to use [RenderingSharedState](https://cs.chromium.org/chromium/src/tools/perf/page_sets/rendering/rendering_shared_state.py?dr&g=0) as the shared_page_state_class, since this has to be consistent across pages in a page set. Individual pages can also specify `extra_browser_args`, in order to set specific flags.
 
-After adding the page, record it and upload it to cloud storage using:
-
-`./tools/perf/record_wpr rendering_desktop --browser=system --story-tag-filter=<tag name> --upload`
+After adding the page, record it and upload it to cloud storage using
+[these instructions](https://source.chromium.org/chromium/chromium/src/+/main:tools/perf/recording_benchmarks.md).
 
 This will modify the [data/rendering_desktop.json](https://cs.chromium.org/chromium/src/tools/perf/page_sets/data/rendering_desktop.json?type=cs&q=rendering_deskt&g=0&l=1) or [data/rendering_mobile.json](https://cs.chromium.org/chromium/src/tools/perf/page_sets/data/rendering_mobile.json?type=cs&g=0) files and generate .sha1 files, which should be included in the CL.
 

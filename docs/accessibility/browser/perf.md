@@ -44,19 +44,7 @@ or command-line help for tools/perf/run_benchmark.
 ### Capture web page replay for new or modified stories
 
 You should capture web page replay information whenever you add or modify a
-story. The following command captures the web page replay for all accessibility
-stories:
-
-```shell
-tools/perf/record_wpr desktop_system_health_story_set \
-  --story-filter="accessibility.*" \
-  --browser canary
-```
-
-Running this will upload the web page replay data captured and modify
-[tools/perf/page_sets/data/system_health_desktop.json](https://cs.chromium.org/chromium/src/tools/perf/page_sets/data/system_health_desktop.json),
-which should be submitted as part of your changelist. For more information, see
-[Record a page set](https://sites.google.com/a/chromium.org/dev/developers/telemetry/record_a_page_set).
+story. To do so, see [here](../../../tools/perf/recording_benchmarks.md).
 
 ## Blink Perf
 

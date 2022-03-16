@@ -105,13 +105,5 @@ self.AddStories(
   traffic_settings=[traffic_setting_module.2G, traffic_setting_module.3G])
 ```
 
-After adding the new page, record it and upload the page archive to cloud
-storage with:
-
-```
-$ ./tools/perf/record_wpr loading_desktop --browser=system \
-  --story-filter=wiki_cats --upload
-```
-
-If the extra story was added to `loading.mobile`, replace `loading_desktop` in
-the command above with `loading_mobile`.
+After adding the new page, record and upload it by following
+[these instructions](https://source.chromium.org/chromium/chromium/src/+/main:tools/perf/recording_benchmarks.md).
