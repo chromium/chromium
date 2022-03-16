@@ -32,16 +32,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Geolocation.AuthorizationActionNewUser"
-    enum="GeolocationAuthorizationAction" expires_after="2022-04-10">
-  <owner>mattreynolds@chromium.org</owner>
-  <owner>device-dev@chromium.org</owner>
-  <summary>
-    Records the action performed by a new user when prompted to authorize the
-    use of location by Chrome.
-  </summary>
-</histogram>
-
 <histogram base="true" name="Geolocation.Header.LocationAge" units="seconds"
     expires_after="M85">
   <owner>kcarattini@chromium.org</owner>
