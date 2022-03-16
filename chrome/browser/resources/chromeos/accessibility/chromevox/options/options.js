@@ -7,6 +7,8 @@
  *
  */
 
+import {TtsBackground} from '../common/tts_background.js';
+
 /** @const {string} */
 const GOOGLE_TTS_EXTENSION_ID = 'gjjabgpgjpampikjhjpfhneeoapjbjaf';
 

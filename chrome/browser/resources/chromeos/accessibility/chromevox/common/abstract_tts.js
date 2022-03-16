@@ -181,7 +181,7 @@ AbstractTts = class {
    *    acronym / abbreviation.
    *
    * @param {string} text A text string to be spoken.
-   * @param {Object= } properties Out parameter populated with how to speak the
+   * @param {Object=} properties Out parameter populated with how to speak the
    *     string.
    * @return {string} The text formatted in a way that will sound better by
    *     most speech engines.

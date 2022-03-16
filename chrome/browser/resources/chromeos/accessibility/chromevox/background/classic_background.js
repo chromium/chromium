@@ -5,6 +5,9 @@
 /**
  * @fileoverview Script that runs on the background page.
  */
+
+import {TtsBackground} from '../common/tts_background.js';
+
 import {InjectedScriptLoader} from './injected_script_loader.js';
 
 /**

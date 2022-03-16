@@ -12,8 +12,10 @@ GEN_INCLUDE(['../testing/chromevox_e2e_test_base.js']);
  */
 ChromeVoxTtsBackgroundTest = class extends ChromeVoxE2ETest {
   /** @override */
-  setUp() {
+  async setUpDeferred() {
+    await importModule('TtsBackground', '/chromevox/common/tts_background.js');
     window.tts = new TtsBackground();
+    await super.setUpDeferred();
   }
 
   expectUtteranceQueueIsLike(expectedObjects) {

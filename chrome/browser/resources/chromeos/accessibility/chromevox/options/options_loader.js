@@ -8,10 +8,10 @@
 
 goog.require('AbstractTts');
 goog.require('BluetoothBrailleDisplayUI');
+goog.require('ChromeTtsBase');
 goog.require('ConsoleTts');
 goog.require('Msgs');
 goog.require('PanelCommand');
-goog.require('TtsBackground');
 goog.require('BrailleTable');
 goog.require('BrailleTranslatorManager');
 goog.require('ChromeVox');
