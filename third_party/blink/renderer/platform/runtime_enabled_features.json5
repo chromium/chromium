@@ -1329,7 +1329,7 @@
     {
       name: "LayoutNGBlockInInline",
       depends_on: ["LayoutNG"],
-      status: "stable",
+      status: "test",
     },
     {
       // Block fragmentation support in the flex layout algorithm.
