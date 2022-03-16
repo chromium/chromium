@@ -99,7 +99,7 @@ class WebEngineIntegrationUserAgentTest : public WebEngineIntegrationTest {
     // TODO(crbug.com/1225812): Replace "X11; " appropriately and the version
     // with <majorVersion>.0.0.0.
     constexpr char kDefaultUserAgentStringWithVersionPlaceholder[] =
-        "Mozilla/5.0 (X11; Fuchsia) AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Mozilla/5.0 (Fuchsia) AppleWebKit/537.36 (KHTML, like Gecko) "
         "Chrome/%s Safari/537.36";
 
     std::string expected_ua =

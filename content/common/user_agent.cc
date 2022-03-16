@@ -33,16 +33,14 @@ std::string GetUserAgentPlatform() {
   return "";
 #elif BUILDFLAG(IS_MAC)
   return "Macintosh; ";
-#elif defined(USE_OZONE)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   return "X11; ";  // strange, but that's what Firefox uses
 #elif BUILDFLAG(IS_ANDROID)
   return "Linux; ";
 #elif BUILDFLAG(IS_FUCHSIA)
-  // TODO(https://crbug.com/1225812): Determine what to report for Fuchsia,
-  // considering both backwards compatibility and User-Agent Reduction.
-  return "X11; ";
-#elif BUILDFLAG(IS_POSIX)
-  return "Unknown; ";
+  return "";
+#else
+#error Unsupported platform
 #endif
 }
 

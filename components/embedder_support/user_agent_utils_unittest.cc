@@ -199,9 +199,8 @@ void CheckUserAgentStringOrdering(bool mobile_device) {
   }
 #elif BUILDFLAG(IS_FUCHSIA)
   // X11; Fuchsia
-  ASSERT_EQ(2u, pieces.size());
-  ASSERT_EQ("X11", pieces[0]);
-  ASSERT_EQ("Fuchsia", pieces[1]);
+  ASSERT_EQ(1u, pieces.size());
+  ASSERT_EQ("Fuchsia", pieces[0]);
 #else
 #error Unsupported platform
 #endif
