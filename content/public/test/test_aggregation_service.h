@@ -11,6 +11,7 @@
 
 #include "base/callback_forward.h"
 #include "base/values.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "url/origin.h"
 
 class GURL;
@@ -50,7 +51,7 @@ class TestAggregationService {
   // Represents a request to assemble an aggregatable report.
   struct AssembleRequest {
     AssembleRequest(Operation operation,
-                    int bucket,
+                    absl::uint128 bucket,
                     int value,
                     AggregationMode aggregation_mode,
                     url::Origin reporting_origin,
@@ -64,7 +65,7 @@ class TestAggregationService {
     // Specifies the operation for the aggregation.
     Operation operation;
     // Specifies the bucket key of the histogram contribution.
-    int bucket;
+    absl::uint128 bucket;
     // Specifies the bucket value of the histogram contribution.
     int value;
     // Specifies the aggregation mode to use.

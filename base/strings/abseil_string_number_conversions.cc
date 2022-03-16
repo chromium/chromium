@@ -10,6 +10,10 @@
 
 namespace base {
 
+bool StringToUint128(StringPiece input, absl::uint128* output) {
+  return internal::StringToIntImpl(input, *output);
+}
+
 bool HexStringToUInt128(StringPiece input, absl::uint128* output) {
   return internal::HexStringToIntImpl(input, *output);
 }

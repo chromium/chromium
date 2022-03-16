@@ -15,7 +15,11 @@ class uint128;
 namespace base {
 
 // Best effort conversion, see `base::StringToInt()` for restrictions.
-// Will only successfully parse hex values that will fit into |output|.
+// Will only successfully parse values that will fit into `output`.
+BASE_EXPORT bool StringToUint128(StringPiece input, absl::uint128* output);
+
+// Best effort conversion, see `base::StringToInt()` for restrictions.
+// Will only successfully parse hex values that will fit into `output`.
 // The string is not required to start with 0x.
 BASE_EXPORT bool HexStringToUInt128(StringPiece input, absl::uint128* output);
 

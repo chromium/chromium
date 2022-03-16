@@ -9,13 +9,14 @@
 #include "base/memory/scoped_refptr.h"
 #include "content/test/test_aggregation_service_impl.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "url/gurl.h"
 
 namespace content {
 
 TestAggregationService::AssembleRequest::AssembleRequest(
     Operation operation,
-    int bucket,
+    absl::uint128 bucket,
     int value,
     AggregationMode aggregation_mode,
     url::Origin reporting_origin,

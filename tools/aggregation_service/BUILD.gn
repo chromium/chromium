@@ -23,6 +23,7 @@ executable("aggregation_service_tool") {
     "//services/network:network_service",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
+    "//third_party/abseil-cpp:absl",
     "//url",
   ]
 }

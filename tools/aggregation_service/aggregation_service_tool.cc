@@ -16,12 +16,14 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
+#include "base/strings/abseil_string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/default_clock.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "content/public/test/test_aggregation_service.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -144,13 +146,13 @@ base::Value::DictStorage AggregationServiceTool::AssembleReport(
     return result;
   }
 
-  int bucket = 0;
-  if (!base::StringToInt(bucket_str, &bucket) || bucket < 0) {
+  absl::uint128 bucket;
+  if (!base::StringToUint128(bucket_str, &bucket)) {
     LOG(ERROR) << "Invalid bucket: " << bucket_str;
     return result;
   }
 
-  int value = 0;
+  int value;
   if (!base::StringToInt(value_str, &value) || value < 0) {
     LOG(ERROR) << "Invalid value: " << value_str;
     return result;
