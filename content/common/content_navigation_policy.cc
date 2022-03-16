@@ -71,18 +71,11 @@ bool IsSameSiteBackForwardCacheEnabled() {
   if (!IsBackForwardCacheEnabled())
     return false;
 
-  // Same-site back-forward cache is enabled through kBackForwardCache's
-  // "enable_same_site" param.
+  // Same-site back-forward cache is enabled by default, but can be disabled
+  // through kBackForwardCache's "enable_same_site" param.
   static constexpr base::FeatureParam<bool> enable_same_site_back_forward_cache(
-      &features::kBackForwardCache, "enable_same_site", false);
-  if (enable_same_site_back_forward_cache.Get())
-    return true;
-
-  // Additionally, same-site back-forward cache might be enabled through the
-  // BackForwardCacheSameSiteForBots feature flag (only by trybots) due to
-  // https://crbug.com/1211818.
-  return base::FeatureList::IsEnabled(
-      features::kBackForwardCacheSameSiteForBots);
+      &features::kBackForwardCache, "enable_same_site", true);
+  return enable_same_site_back_forward_cache.Get();
 }
 
 bool ShouldSkipSameSiteBackForwardCacheForPageWithUnload() {

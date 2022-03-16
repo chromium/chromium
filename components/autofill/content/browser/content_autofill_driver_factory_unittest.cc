@@ -240,9 +240,10 @@ TEST_P(ContentAutofillDriverFactoryTest_WithOrWithoutBfCacheAndIframes,
 
   NavigateMainFrame("https://a.com/after-navigation");
 
-  ASSERT_EQ(orig_rfh, main_rfh());
   EXPECT_EQ(factory_test_api().GetDriver(orig_rfh), orig_driver);
-  EXPECT_EQ(factory_test_api().num_drivers(), 1u);
+  // If BFCache is enabled, there will be 2 drivers as the old document is still
+  // around.
+  EXPECT_EQ(factory_test_api().num_drivers(), use_bfcache() ? 2u : 1u);
 }
 
 // Tests that that a driver is removed and replaced with a fresh one after a

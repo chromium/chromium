@@ -95,12 +95,6 @@ const base::Feature kBackForwardCache{"BackForwardCache",
 const base::Feature kBackForwardCacheMediaSessionService{
     "BackForwardCacheMediaSessionService", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enable same-site back-forward cache for trybots. This is here because of
-// https://crbug.com/1211818 and should only used for trybots. For normal use
-// cases, please set BackForwardCache's enable_same_site param to true.
-const base::Feature kBackForwardCacheSameSiteForBots{
-    "BackForwardCacheSameSiteForBots", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enable back/forward cache for screen reader users. This flag should be
 // removed once the https://crbug.com/1271450 is resolved.
 const base::Feature kEnableBackForwardCacheForScreenReader{
