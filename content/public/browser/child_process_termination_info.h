@@ -33,6 +33,7 @@ struct CONTENT_EXPORT ChildProcessTerminationInfo {
   // posix, from GetExitCodeProcess on Windows).
   int exit_code = RESULT_CODE_NORMAL_EXIT;
 
+#if BUILDFLAG(IS_ANDROID)
   // Populated only for renderer process. True if there are any visible
   // clients at the time of process death.
   bool renderer_has_visible_clients = false;
@@ -42,7 +43,6 @@ struct CONTENT_EXPORT ChildProcessTerminationInfo {
   // the same as not having main frames.
   bool renderer_was_subframe = false;
 
-#if BUILDFLAG(IS_ANDROID)
   // True if child service has strong or moderate binding at time of death.
   base::android::ChildBindingState binding_state =
       base::android::ChildBindingState::UNBOUND;

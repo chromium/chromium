@@ -899,7 +899,12 @@ class CONTENT_EXPORT RenderProcessHostImpl
       SiteInstanceImpl* site_instance);
 
   void NotifyRendererOfLockedStateUpdate();
+
+#if BUILDFLAG(IS_ANDROID)
+  // Populates the ChildProcessTerminationInfo fields that are strictly related
+  // to renderer (This struct is also used for other child processes).
   void PopulateTerminationInfoRendererFields(ChildProcessTerminationInfo* info);
+#endif  // BUILDFLAG(IS_ANDROID)
 
   static void OnMojoError(int render_process_id, const std::string& error);
 
