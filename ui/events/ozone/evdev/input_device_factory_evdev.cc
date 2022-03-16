@@ -28,6 +28,7 @@
 #include "ui/events/ozone/evdev/stylus_button_event_converter_evdev.h"
 #include "ui/events/ozone/evdev/switches.h"
 #include "ui/events/ozone/evdev/tablet_event_converter_evdev.h"
+#include "ui/events/ozone/evdev/touch_evdev_types.h"
 #include "ui/events/ozone/evdev/touch_event_converter_evdev.h"
 #include "ui/events/ozone/features.h"
 #include "ui/events/ozone/gamepad/gamepad_provider_ozone.h"
@@ -208,8 +209,7 @@ InputDeviceFactoryEvdev::InputDeviceFactoryEvdev(
       dispatcher_(std::move(dispatcher)) {
 }
 
-InputDeviceFactoryEvdev::~InputDeviceFactoryEvdev() {
-}
+InputDeviceFactoryEvdev::~InputDeviceFactoryEvdev() = default;
 
 void InputDeviceFactoryEvdev::AddInputDevice(int id,
                                              const base::FilePath& path) {
@@ -261,6 +261,20 @@ void InputDeviceFactoryEvdev::AttachInputDevice(
         base::FeatureList::IsEnabled(kEnablePalmSuppression)) {
       converter->SetPalmSuppressionCallback(
           base::BindRepeating(&InputDeviceFactoryEvdev::EnablePalmSuppression,
+                              base::Unretained(this)));
+    }
+
+    if (converter->type() == InputDeviceType::INPUT_DEVICE_INTERNAL &&
+        converter->HasPen()) {
+      converter->SetReportStylusStateCallback(
+          base::BindRepeating(&InputDeviceFactoryEvdev::SetLatestStylusState,
+                              base::Unretained(this)));
+    }
+
+    if (converter->type() == InputDeviceType::INPUT_DEVICE_INTERNAL &&
+        converter->HasTouchscreen() && !converter->HasPen()) {
+      converter->SetGetLatestStylusStateCallback(
+          base::BindRepeating(&InputDeviceFactoryEvdev::GetLatestStylusState,
                               base::Unretained(this)));
     }
 
@@ -697,6 +711,42 @@ void InputDeviceFactoryEvdev::EnableDevices() {
   // ApplyInputDeviceSettings() instead of this function.
   for (const auto& it : converters_)
     it.second->SetEnabled(IsDeviceEnabled(it.second.get()));
+}
+
+void InputDeviceFactoryEvdev::SetLatestStylusState(
+    const InProgressTouchEvdev& event,
+    const int32_t x_res,
+    const int32_t y_res,
+    const base::TimeTicks& timestamp) {
+  // TODO(alanlxl): Copy happens here. This function may be called very
+  // frequently because the firmware reports stylus status every few ms.
+  // Comments it out for the timebeing until it's really used.
+  // latest_stylus_state_.stylus_event = event;
+
+  if (x_res <= 0) {
+    VLOG(1) << "Invalid resolution " << x_res;
+    latest_stylus_state_.x_res = 1;
+  } else {
+    latest_stylus_state_.x_res = x_res;
+  }
+
+  if (y_res <= 0) {
+    VLOG(1) << "Invalid resolution " << y_res;
+    latest_stylus_state_.y_res = 1;
+  } else {
+    latest_stylus_state_.y_res = y_res;
+  }
+
+  if (timestamp < latest_stylus_state_.timestamp) {
+    VLOG(1) << "Unexpected decreased timestamp received.";
+  }
+
+  latest_stylus_state_.timestamp = timestamp;
+}
+
+void InputDeviceFactoryEvdev::GetLatestStylusState(
+    const InProgressStylusState** stylus_state) const {
+  *stylus_state = &latest_stylus_state_;
 }
 
 }  // namespace ui

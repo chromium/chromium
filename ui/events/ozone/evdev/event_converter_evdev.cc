@@ -48,8 +48,7 @@ EventConverterEvdev::EventConverterEvdev(int fd,
   input_device_.enabled = false;
 }
 
-EventConverterEvdev::~EventConverterEvdev() {
-}
+EventConverterEvdev::~EventConverterEvdev() = default;
 
 void EventConverterEvdev::ApplyDeviceSettings(
     const InputDeviceSettingsEvdev& settings) {}
@@ -84,17 +83,13 @@ bool EventConverterEvdev::IsEnabled() const {
   return input_device_.enabled;
 }
 
-void EventConverterEvdev::OnStopped() {
-}
+void EventConverterEvdev::OnStopped() {}
 
-void EventConverterEvdev::OnEnabled() {
-}
+void EventConverterEvdev::OnEnabled() {}
 
-void EventConverterEvdev::OnDisabled() {
-}
+void EventConverterEvdev::OnDisabled() {}
 
-void EventConverterEvdev::DumpTouchEventLog(const char* filename) {
-}
+void EventConverterEvdev::DumpTouchEventLog(const char* filename) {}
 
 void EventConverterEvdev::OnFileCanWriteWithoutBlocking(int fd) {
   NOTREACHED();
@@ -219,11 +214,16 @@ void EventConverterEvdev::SetCapsLockLed(bool enabled) {
   }
 }
 
-void EventConverterEvdev::SetTouchEventLoggingEnabled(bool enabled) {
-}
+void EventConverterEvdev::SetTouchEventLoggingEnabled(bool enabled) {}
 
 void EventConverterEvdev::SetPalmSuppressionCallback(
     const base::RepeatingCallback<void(bool)>& callback) {}
+
+void EventConverterEvdev::SetReportStylusStateCallback(
+    const ReportStylusStateCallback& callback) {}
+
+void EventConverterEvdev::SetGetLatestStylusStateCallback(
+    const GetLatestStylusStateCallback& callback) {}
 
 base::TimeTicks EventConverterEvdev::TimeTicksFromInputEvent(
     const input_event& event) {

@@ -77,6 +77,14 @@ class COMPONENT_EXPORT(EVDEV) TouchEventConverterEvdev
   void SetPalmSuppressionCallback(
       const base::RepeatingCallback<void(bool)>& callback) override;
 
+  // Sets callback to report the latest stylus state.
+  void SetReportStylusStateCallback(
+      const ReportStylusStateCallback& callback) override;
+
+  // Sets callback to get the latest stylus state.
+  void SetGetLatestStylusStateCallback(
+      const GetLatestStylusStateCallback& callback) override;
+
   // Unsafe part of initialization.
   virtual void Initialize(const EventDeviceInfo& info);
 
@@ -157,6 +165,10 @@ class COMPONENT_EXPORT(EVDEV) TouchEventConverterEvdev
   int tilt_y_min_;
   int tilt_y_range_;
 
+  // Resolution of x and y, used to normalize stylus x and y coord.
+  int x_res_;
+  int y_res_;
+
   // Input range for x-axis.
   float x_min_tuxels_;
   float x_num_tuxels_;
@@ -213,6 +225,12 @@ class COMPONENT_EXPORT(EVDEV) TouchEventConverterEvdev
 
   // Callback to enable/disable palm suppression.
   base::RepeatingCallback<void(bool)> enable_palm_suppression_callback_;
+
+  // Callback to report latest stylus state, set only when HasPen.
+  ReportStylusStateCallback report_stylus_state_callback_;
+
+  // Callback to get latest stylus state, set only when HasMultitouch.
+  GetLatestStylusStateCallback get_latest_stylus_state_callback_;
 
   // Do we mark a touch as palm when touch_major is the max?
   bool palm_on_touch_major_max_;

@@ -20,6 +20,7 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -28,6 +29,7 @@
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/event_switches.h"
 #include "ui/events/ozone/evdev/device_event_dispatcher_evdev.h"
+#include "ui/events/ozone/evdev/event_converter_evdev.h"
 #include "ui/events/ozone/evdev/event_device_test_util.h"
 #include "ui/events/ozone/evdev/touch_evdev_types.h"
 #include "ui/events/ozone/evdev/touch_filter/false_touch_finder.h"
@@ -1680,6 +1682,11 @@ class EventTypeTouchNoiseFilter : public TouchFilter {
   std::map<EventType, size_t> counts_;
 };
 
+MATCHER_P2(VeirfyInProgressTouchEvdev, x, y, "") {
+  // ReportStylusStateCallback is called only when !cancelled.
+  return !arg.cancelled && arg.x == x && arg.y == y;
+}
+
 }  // namespace
 
 class TouchEventConverterEvdevTouchNoiseTest
@@ -1707,6 +1714,18 @@ TEST_F(TouchEventConverterEvdevTest, ActiveStylusTouchAndRelease) {
   EventDeviceInfo devinfo;
   EXPECT_TRUE(CapabilitiesToDeviceInfo(kEveStylus, &devinfo));
   dev->Initialize(devinfo);
+
+  base::MockCallback<EventConverterEvdev::ReportStylusStateCallback>
+      mock_report_callback;
+  // The 1st and 2nd SYN_REPORTs share the same x and y.
+  EXPECT_CALL(mock_report_callback, Run(VeirfyInProgressTouchEvdev(9170, 3658),
+                                        100, 100, base::TimeTicks()))
+      .Times(2);
+  // The 3rd and 4th SYN_REPORTs share the same x and y.
+  EXPECT_CALL(mock_report_callback, Run(VeirfyInProgressTouchEvdev(9173, 3906),
+                                        100, 100, base::TimeTicks()))
+      .Times(2);
+  dev->SetReportStylusStateCallback(mock_report_callback.Get());
 
   struct input_event mock_kernel_queue[]{
       {{0, 0}, EV_KEY, BTN_TOOL_PEN, 1},
@@ -1750,6 +1769,9 @@ TEST_F(TouchEventConverterEvdevTest, ActiveStylusTouchAndRelease) {
   EXPECT_EQ(0.f, up_event.pointer_details.force);
   EXPECT_EQ(30, up_event.pointer_details.tilt_x);
   EXPECT_EQ(50, up_event.pointer_details.tilt_y);
+
+  DestroyDevice();
+  ::testing::Mock::VerifyAndClearExpectations(&mock_report_callback);
 }
 
 TEST_F(TouchEventConverterEvdevTest, ActiveStylusMotion) {

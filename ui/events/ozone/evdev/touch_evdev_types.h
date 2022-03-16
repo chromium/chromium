@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include "base/component_export.h"
+#include "base/time/time.h"
 #include "ui/events/event_constants.h"
 
 namespace ui {
@@ -68,6 +69,21 @@ struct COMPONENT_EXPORT(EVDEV) InProgressTouchEvdev {
   float tilt_y = 0;
   ui::EventPointerType reported_tool_type = ui::EventPointerType::kTouch;
   bool stylus_button = false;
+};
+
+// Contains information about stylus event, the useful relate ddevice info and
+// the timestamp.
+struct COMPONENT_EXPORT(EVDEV) InProgressStylusState {
+  InProgressStylusState();
+  InProgressStylusState(const InProgressStylusState& other);
+  ~InProgressStylusState();
+
+  InProgressTouchEvdev stylus_event;
+  // Stylus x and y resolution, used for normalization.
+  int x_res = 1;
+  int y_res = 1;
+
+  base::TimeTicks timestamp = base::TimeTicks();
 };
 
 }  // namespace ui

@@ -6,12 +6,18 @@
 
 namespace ui {
 
-InProgressTouchEvdev::InProgressTouchEvdev() {
-}
+InProgressTouchEvdev::InProgressTouchEvdev() = default;
 
 InProgressTouchEvdev::InProgressTouchEvdev(const InProgressTouchEvdev& other) =
     default;
 
-InProgressTouchEvdev::~InProgressTouchEvdev() {}
+InProgressTouchEvdev::~InProgressTouchEvdev() = default;
+
+InProgressStylusState::InProgressStylusState() = default;
+
+InProgressStylusState::InProgressStylusState(
+    const InProgressStylusState& other) = default;
+
+InProgressStylusState::~InProgressStylusState() = default;
 
 }  // namespace ui
