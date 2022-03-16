@@ -524,8 +524,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Cryptohome.TimeToInitPkcs11" units="ms"
-    expires_after="2021-10-24">
+<histogram name="Cryptohome.TimeToInitPkcs11" units="ms" expires_after="M112">
   <owner>apronin@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
