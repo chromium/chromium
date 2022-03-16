@@ -27,6 +27,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/common/page_type.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
@@ -226,6 +227,13 @@ IN_PROC_BROWSER_TEST_F(ProjectorNavigationThrottleTest,
 
   // URL remains unchanged.
   EXPECT_EQ(tab->GetVisibleURL().spec(), url);
+  // Verify the document language. We must use the deprecated
+  // ExecuteScriptAndExtract*() instead of EvalJs() due to CSP.
+  std::string lang;
+  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
+      tab, "domAutomationController.send(document.documentElement.lang)",
+      &lang));
+  EXPECT_EQ(lang, "en-US");
 }
 
 // Verifies that navigating to chrome://projector/app/ does not redirect.

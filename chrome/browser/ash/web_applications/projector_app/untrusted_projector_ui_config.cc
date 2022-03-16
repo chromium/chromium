@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/projector/projector_utils.h"
 #include "chrome/common/channel_info.h"
@@ -25,6 +26,7 @@ void ChromeUntrustedProjectorUIDelegate::PopulateLoadTimeData(
                      ash::features::IsProjectorExcludeTranscriptEnabled());
   source->AddBoolean("isTutorialVideoViewEnabled",
                      ash::features::IsProjectorTutorialVideoViewEnabled());
+  source->AddString("appLocale", g_browser_process->GetApplicationLocale());
 }
 
 UntrustedProjectorUIConfig::UntrustedProjectorUIConfig()
