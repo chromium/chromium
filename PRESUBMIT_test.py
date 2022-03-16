@@ -2591,6 +2591,28 @@ class BannedTypeCheckTest(unittest.TestCase):
     self.assertTrue('third_party/blink/ok/file3.cc' not in results[0].message)
     self.assertTrue('content/renderer/ok/file3.cc' not in results[0].message)
 
+  def testBannedMojomPatterns(self):
+    input_api = MockInputApi()
+    input_api.files = [
+      MockFile('bad.mojom',
+               ['struct Bad {',
+                '  handle<shared_buffer> buffer;',
+                '};']),
+      MockFile('good.mojom',
+               ['struct  Good {',
+                '  mojo_base.mojom.ReadOnlySharedMemoryRegion region1;',
+                '  mojo_base.mojom.WritableSharedMemoryRegion region2;',
+                '  mojo_base.mojom.UnsafeSharedMemoryRegion region3;',
+                '};']),
+    ]
+
+    results = PRESUBMIT.CheckNoBannedFunctions(input_api, MockOutputApi())
+
+    # warnings are results[0], errors are results[1]
+    self.assertEqual(1, len(results))
+    self.assertTrue('bad.mojom' in results[0].message)
+    self.assertTrue('good.mojom' not in results[0].message)
+
   def testDeprecatedMojoTypes(self):
     ok_paths = ['components/arc']
     warning_paths = ['some/cpp']

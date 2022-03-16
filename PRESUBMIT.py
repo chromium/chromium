@@ -126,7 +126,6 @@ class BanRule:
   excluded_paths: Optional[Sequence[str]] = None
 
 
-# Format: Sequence of BanRule:
 _BANNED_JAVA_IMPORTS : Sequence[BanRule] = (
     BanRule(
       'import java.net.URI;',
@@ -175,7 +174,6 @@ _BANNED_JAVA_IMPORTS : Sequence[BanRule] = (
     ),
 )
 
-# Format: Sequence of BanRule:
 _BANNED_JAVA_FUNCTIONS : Sequence[BanRule] = (
     BanRule(
       'StrictMode.allowThreadDiskReads()',
@@ -203,7 +201,6 @@ _BANNED_JAVA_FUNCTIONS : Sequence[BanRule] = (
     ),
 )
 
-# Format: Sequence of BanRule:
 _BANNED_OBJC_FUNCTIONS : Sequence[BanRule] = (
     BanRule(
       'addTrackingRect:',
@@ -305,7 +302,6 @@ _BANNED_OBJC_FUNCTIONS : Sequence[BanRule] = (
     ),
 )
 
-# Format: Sequence of BanRule:
 _BANNED_IOS_OBJC_FUNCTIONS = (
     BanRule(
       r'/\bTEST[(]',
@@ -328,7 +324,6 @@ _BANNED_IOS_OBJC_FUNCTIONS = (
     ),
 )
 
-# Format: Sequence of BanRule:
 _BANNED_IOS_EGTEST_FUNCTIONS : Sequence[BanRule] = (
     BanRule(
       r'/\bEXPECT_OCMOCK_VERIFY\b',
@@ -340,7 +335,6 @@ _BANNED_IOS_EGTEST_FUNCTIONS : Sequence[BanRule] = (
     ),
 )
 
-# Format: Sequence of BanRule:
 _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
     BanRule(
       r'/\busing namespace ',
@@ -1005,6 +999,19 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       (
           r'^base[\\/]win[\\/]scoped_winrt_initializer\.cc$',
       ),
+    ),
+)
+
+_BANNED_MOJOM_PATTERNS : Sequence[BanRule] = (
+    BanRule(
+        'handle<shared_buffer>',
+        (
+         'Please use one of the more specific shared memory types instead:',
+         '  mojo_base.mojom.ReadOnlySharedMemoryRegion',
+         '  mojo_base.mojom.WritableSharedMemoryRegion',
+         '  mojo_base.mojom.UnsafeSharedMemoryRegion',
+        ),
+        True,
     ),
 )
 
@@ -1682,6 +1689,13 @@ def CheckNoBannedFunctions(input_api, output_api):
         for line_num, line in f.ChangedContents():
             for ban_rule in _BANNED_CPP_FUNCTIONS:
                 CheckForMatch(f, line_num, line, ban_rule)
+
+    file_filter = lambda f: f.LocalPath().endswith(('.mojom'))
+    for f in input_api.AffectedFiles(file_filter=file_filter):
+        for line_num, line in f.ChangedContents():
+            for ban_rule in _BANNED_MOJOM_PATTERNS:
+                CheckForMatch(f, line_num, line, ban_rule)
+
 
     result = []
     if (warnings):
