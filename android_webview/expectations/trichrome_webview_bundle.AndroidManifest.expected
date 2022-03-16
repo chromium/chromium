@@ -10,6 +10,7 @@
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
   <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
   <uses-permission android:name="android.permission.INTERNET"/>
+  <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
   <uses-sdk android:minSdkVersion="29" android:targetSdkVersion="31"/>
   <application
       android:name="org.chromium.android_webview.nonembedded.WebViewApkApplication"

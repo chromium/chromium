@@ -4,6 +4,7 @@
 
 package org.chromium.android_webview.test.devui;
 
+import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -18,23 +19,33 @@ import static androidx.test.espresso.intent.matcher.UriMatchers.hasPath;
 import static androidx.test.espresso.intent.matcher.UriMatchers.hasScheme;
 import static androidx.test.espresso.matcher.ViewMatchers.hasTextColor;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
 import android.app.Instrumentation.ActivityResult;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.provider.Settings;
 import android.support.test.InstrumentationRegistry;
+import android.view.View;
+import android.widget.ListView;
 
+import androidx.test.espresso.DataInteraction;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.espresso.intent.matcher.IntentMatchers;
 import androidx.test.filters.MediumTest;
 
+import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Assume;
 import org.junit.Rule;
@@ -45,7 +56,6 @@ import org.chromium.android_webview.devui.MainActivity;
 import org.chromium.android_webview.devui.R;
 import org.chromium.android_webview.test.AwJUnit4ClassRunner;
 import org.chromium.base.test.BaseActivityTestRule;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 
 /**
@@ -53,7 +63,6 @@ import org.chromium.base.test.util.Feature;
  * have their own test class.
  */
 @RunWith(AwJUnit4ClassRunner.class)
-@Batch(Batch.PER_CLASS)
 public class DeveloperUiTest {
     // The package name of the test shell. This is acting both as the client app and the WebView
     // provider.
@@ -61,7 +70,8 @@ public class DeveloperUiTest {
     public static final String TEST_WEBVIEW_APPLICATION_LABEL = "AwShellApplication";
 
     @Rule
-    public BaseActivityTestRule mRule = new BaseActivityTestRule<MainActivity>(MainActivity.class);
+    public BaseActivityTestRule<MainActivity> mRule =
+            new BaseActivityTestRule<>(MainActivity.class);
 
     private void launchHomeFragment() {
         mRule.launchActivity(null);
@@ -79,6 +89,9 @@ public class DeveloperUiTest {
     public void tearDown() throws Exception {
         // Activity is launched, i.e the test is not skipped.
         if (mRule.getActivity() != null) {
+            // Clear the stored preferences
+            mRule.getActivity().getPreferences(Context.MODE_PRIVATE).edit().clear().apply();
+
             // Tests are responsible for verifying every Intent they trigger.
             assertNoUnverifiedIntents();
             Intents.release();
@@ -249,5 +262,99 @@ public class DeveloperUiTest {
         onView(withText("Components")).perform(click());
 
         onView(withId(R.id.fragment_components_list)).check(matches(isDisplayed()));
+    }
+
+    private void switchToFlagsUi() {
+        onView(withId(R.id.navigation_flags_ui)).perform(click());
+    }
+
+    private void checkFlagSpinnersEnabledState(boolean shouldBeEnabled) {
+        // Check that all spinners are enabled
+        // Test assumes that the first element in the list is the text.
+        ListView flagsList = mRule.getActivity().findViewById(R.id.flags_list);
+        int flagCount = flagsList.getCount();
+        DataInteraction flags = onData(anything()).inAdapterView(withId(R.id.flags_list));
+
+        Matcher<View> criteria = shouldBeEnabled ? isEnabled() : not(isEnabled());
+
+        for (int i = 1; i < flagCount; i++) {
+            flags.atPosition(i).onChildView(withId(R.id.flag_toggle)).check(matches(criteria));
+        }
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testPostNotificationPermissions_preT() throws Throwable {
+        launchHomeFragment();
+        MainActivity activity = mRule.getActivity();
+        activity.setIsAtLeastTBuildForTesting(false);
+
+        assertFalse(activity.needToRequestPostNotificationPermission());
+
+        switchToFlagsUi();
+
+        checkFlagSpinnersEnabledState(true);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testPostNotificationPermissions_T_notYetRequested() throws Throwable {
+        launchHomeFragment();
+        MainActivity activity = mRule.getActivity();
+        activity.setIsAtLeastTBuildForTesting(true);
+
+        assertTrue(activity.needToRequestPostNotificationPermission());
+
+        switchToFlagsUi();
+
+        // Check that the popup is visible, and then dismiss it
+        onView(withText(MainActivity.NOTIFICATION_PERMISSION_REQUEST_MESSAGE))
+                .check(matches(isDisplayed()));
+        onView(withText("Cancel")).check(matches(isDisplayed())).perform(click());
+
+        checkFlagSpinnersEnabledState(false);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testPostNotificationPermissions_T_alreadyRequested() throws Throwable {
+        launchHomeFragment();
+        MainActivity activity = mRule.getActivity();
+
+        activity.setIsAtLeastTBuildForTesting(true);
+        SharedPreferences preferences = activity.getPreferences(Context.MODE_PRIVATE);
+        preferences.edit()
+                .putBoolean(MainActivity.POST_NOTIFICATIONS_PERMISSION_REQUESTED_KEY, true)
+                .apply();
+
+        assertFalse(activity.needToRequestPostNotificationPermission());
+
+        switchToFlagsUi();
+        checkFlagSpinnersEnabledState(true);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testPostNotificationPermissions_T_permissionGranted() throws Throwable {
+        launchHomeFragment();
+        MainActivity activity = mRule.getActivity();
+
+        activity.setIsAtLeastTBuildForTesting(true);
+        activity.runOnUiThread(() -> {
+            // Need to run on the UI thread as it directly changes the view
+            activity.onRequestPermissionsResult(
+                    0, new String[] {"android.permission.POST_NOTIFICATIONS"}, new int[] {0});
+        });
+
+        // Getting the permission result should have switched us to fragment_flags
+        onView(withId(R.id.fragment_flags)).check(matches(isDisplayed()));
+        checkFlagSpinnersEnabledState(true);
+
+        assertFalse("We should no longer need to ask for permission",
+                activity.needToRequestPostNotificationPermission());
     }
 }

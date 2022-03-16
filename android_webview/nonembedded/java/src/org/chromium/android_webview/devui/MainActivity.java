@@ -3,7 +3,11 @@
 // found in the LICENSE file.
 package org.chromium.android_webview.devui;
 
+import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
@@ -18,12 +22,16 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.BuildInfo;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
 
@@ -40,6 +48,9 @@ public class MainActivity extends FragmentActivity {
     private boolean mDifferentPackageErrorVisible;
     private boolean mSwitchFragmentOnResume;
     final Map<Integer, Integer> mFragmentIdMap = new HashMap<>();
+
+    // Store in a variable to allow for replacement during test
+    private boolean mIsAtLeastTBuild = BuildInfo.isAtLeastT();
 
     // Keep in sync with DeveloperUiService.java
     public static final String FRAGMENT_ID_INTENT_EXTRA = "fragment-id";
@@ -80,6 +91,17 @@ public class MainActivity extends FragmentActivity {
         int COMPONENTS_LIST_FRAGMENT = 3;
         int COUNT = 4;
     }
+
+    // TODO: Replace with Manifest.permission.POST_NOTIFICATIONS once Android T is released
+    private static final String POST_NOTIFICATIONS = "android.permission.POST_NOTIFICATIONS";
+    private static final int NOTIFICATION_PERMISSION_REQUEST_CODE = 0;
+    @VisibleForTesting
+    public static final String POST_NOTIFICATIONS_PERMISSION_REQUESTED_KEY =
+            "POST_NOTIFICATIONS_PERMISSION_REQUESTED";
+    @VisibleForTesting
+    public static final String NOTIFICATION_PERMISSION_REQUEST_MESSAGE =
+            "WebView DevTools requires permission to show notifications "
+            + "in order to manage flags.";
 
     /**
      * Logs a navigation to a fragment. Requires a suffix from histograms.xml ("AnyMethod",
@@ -174,7 +196,13 @@ public class MainActivity extends FragmentActivity {
                 fragment = new CrashesListFragment();
                 break;
             case FRAGMENT_ID_FLAGS:
-                fragment = new FlagsFragment();
+                boolean needPermissionCheck = needToRequestPostNotificationPermission();
+                if (needPermissionCheck) {
+                    // Spawn the request permission check on top of the new fragment
+                    requestPostNotificationPermission();
+                }
+                // Enable the UI if we don't need a permission check
+                fragment = new FlagsFragment(!needPermissionCheck);
                 break;
             case FRAGMENT_ID_COMPONENTS:
                 fragment = new ComponentsListFragment();
@@ -311,5 +339,57 @@ public class MainActivity extends FragmentActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @VisibleForTesting
+    public boolean needToRequestPostNotificationPermission() {
+        if (mIsAtLeastTBuild) {
+            // Check if we already requested the permission. If we did, we don't need to request
+            // it again, even if no permission was given.
+            SharedPreferences preferences = getPreferences(Context.MODE_PRIVATE);
+            boolean alreadyRequestedPermission =
+                    preferences.getBoolean(POST_NOTIFICATIONS_PERMISSION_REQUESTED_KEY, false);
+            return !alreadyRequestedPermission;
+        }
+        return false;
+    }
+
+    private void requestPostNotificationPermission() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(NOTIFICATION_PERMISSION_REQUEST_MESSAGE);
+        builder.setPositiveButton("Ok", (dialogInterface, i) -> {
+            ActivityCompat.requestPermissions(
+                    this, new String[] {POST_NOTIFICATIONS}, NOTIFICATION_PERMISSION_REQUEST_CODE);
+        });
+        builder.setNegativeButton("Cancel", (dialogInterface, i) -> {});
+        builder.create().show();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(
+            int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == NOTIFICATION_PERMISSION_REQUEST_CODE && grantResults.length > 0) {
+            // We don't actually care about the result, just that we got a result.
+            // The service will still work.
+            // Save the fact that we have received the permission callback.
+            SharedPreferences preferences = getPreferences(Context.MODE_PRIVATE);
+            Editor editor = preferences.edit();
+            editor.putBoolean(POST_NOTIFICATIONS_PERMISSION_REQUESTED_KEY, true);
+            editor.apply();
+            // Reset the UI to enable input fields.
+            switchFragment(FRAGMENT_ID_FLAGS);
+        }
+    }
+
+    /**
+     * Override whether or not the Activity is running on a T+ build of Android.
+     *
+     * This method has been introduced to avoid mocking out {@link BuildInfo#isAtLeastT()}.
+     * @param isAtLeastT Whether the running Android version is at least T.
+     */
+    @VisibleForTesting
+    public void setIsAtLeastTBuildForTesting(boolean isAtLeastT) {
+        mIsAtLeastTBuild = isAtLeastT;
     }
 }

@@ -74,6 +74,8 @@ public class FlagsFragment extends DevUiBaseFragment {
             STATE_ENABLED,
     };
 
+    private final boolean mEnabled;
+
     private Map<String, Boolean> mOverriddenFlags = new HashMap<>();
     private FlagsListAdapter mListAdapter;
 
@@ -81,6 +83,10 @@ public class FlagsFragment extends DevUiBaseFragment {
     private EditText mSearchBar;
 
     private static volatile @Nullable Runnable sFilterListener;
+
+    public FlagsFragment(boolean enabled) {
+        mEnabled = enabled;
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -374,6 +380,7 @@ public class FlagsFragment extends DevUiBaseFragment {
             TextView flagName = view.findViewById(R.id.flag_name);
             TextView flagDescription = view.findViewById(R.id.flag_description);
             Spinner flagToggle = view.findViewById(R.id.flag_toggle);
+            flagToggle.setEnabled(mEnabled);
 
             String label = flag.getName();
             if (flag.getEnabledStateValue() != null) {

@@ -23,6 +23,9 @@
 
     <!-- Required by WebView Developer UI only -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <!-- Required to run the foreground service-->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
 
     <application android:label="{{ application_label|default('Android System WebView') }}"
                  android:icon="@{{manifest_package|default('com.android.webview')}}:drawable/icon_webview"
