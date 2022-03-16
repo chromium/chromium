@@ -661,7 +661,7 @@ button {
     text-align: center;
     cursor: default;
     padding: 1px 6px;
-    border: 2px outset -internal-light-dark(#767676, #858585);
+    border: 2px outset ButtonBorder;
     box-sizing: border-box;
     background-color: -internal-light-dark(#efefef, #3B3B3B);
     color: -internal-light-dark(black, white);
@@ -800,7 +800,7 @@ input[type="color" i] {
     width: 50px;
     height: 27px;
     /* Same as native_theme_base. */
-    border: 1px solid -internal-light-dark(#767676, #858585);
+    border: 1px solid ButtonBorder;
     padding: 1px 2px;
     cursor: default;
     box-sizing: border-box;

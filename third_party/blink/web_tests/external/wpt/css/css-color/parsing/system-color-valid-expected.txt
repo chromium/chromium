@@ -1,5 +1,6 @@
 This is a testharness.js-based test.
 PASS e.style['color'] = "ActiveText" should set the property value
+PASS e.style['color'] = "ButtonBorder" should set the property value
 PASS e.style['color'] = "ButtonFace" should set the property value
 PASS e.style['color'] = "ButtonText" should set the property value
 PASS e.style['color'] = "Canvas" should set the property value

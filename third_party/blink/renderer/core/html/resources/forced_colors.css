@@ -116,7 +116,7 @@
   input[type="file"]::-webkit-file-upload-button {
     background-color: ButtonFace;
     -internal-forced-background-color: ButtonFace;
-    -internal-forced-border-color: ButtonText;
+    -internal-forced-border-color: ButtonBorder;
     -internal-forced-color: ButtonText;
   }
 

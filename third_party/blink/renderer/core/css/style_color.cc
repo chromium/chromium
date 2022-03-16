@@ -73,13 +73,14 @@ bool StyleColor::IsSystemColorIncludingDeprecated(CSSValueID id) {
 
 bool StyleColor::IsSystemColor(CSSValueID id) {
   switch (id) {
-    // ButtonBorder, SelectedItem, SelectedItemText, Mark, MarkText not
+    // SelectedItem, SelectedItemText, Mark, MarkText not
     // understood yet.
     case CSSValueID::kCanvas:
     case CSSValueID::kCanvastext:
     case CSSValueID::kLinktext:
     case CSSValueID::kVisitedtext:
     case CSSValueID::kActivetext:
+    case CSSValueID::kButtonborder:
     case CSSValueID::kButtonface:
     case CSSValueID::kButtontext:
     case CSSValueID::kField:

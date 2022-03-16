@@ -1998,9 +1998,11 @@ crbug.com/1068610 [ Win ] external/wpt/css/css-color/t425-hsla-onscreen-b.xht [ 
 crbug.com/1068610 external/wpt/css/css-color/at-color-profile-001.html [ Failure ]
 
 # Some CSS System Colors need to be deprecated
+crbug.com/1299441 external/wpt/css/css-color/deprecated-sameas-001.html [ Failure ]
 crbug.com/1299441 external/wpt/css/css-color/deprecated-sameas-002.html [ Failure ]
 crbug.com/1299441 external/wpt/css/css-color/deprecated-sameas-004.html [ Failure ]
 crbug.com/1299441 external/wpt/css/css-color/deprecated-sameas-006.html [ Failure ]
+crbug.com/1299441 external/wpt/css/css-color/deprecated-sameas-008.html [ Failure ]
 crbug.com/1299441 external/wpt/css/css-color/deprecated-sameas-010.html [ Failure ]
 crbug.com/1299441 external/wpt/css/css-color/deprecated-sameas-011.html [ Failure ]
 crbug.com/1299441 external/wpt/css/css-color/deprecated-sameas-013.html [ Failure ]
@@ -2010,8 +2012,10 @@ crbug.com/1299441 external/wpt/css/css-color/deprecated-sameas-018.html [ Failur
 crbug.com/1299441 external/wpt/css/css-color/deprecated-sameas-019.html [ Failure ]
 crbug.com/1299441 external/wpt/css/css-color/deprecated-sameas-020.html [ Failure ]
 crbug.com/1299441 external/wpt/css/css-color/deprecated-sameas-022.html [ Failure ]
+crbug.com/1299441 virtual/system-color-compute/external/wpt/css/css-color/deprecated-sameas-001.html [ Failure ]
 crbug.com/1299441 virtual/system-color-compute/external/wpt/css/css-color/deprecated-sameas-002.html [ Failure ]
 crbug.com/1299441 virtual/system-color-compute/external/wpt/css/css-color/deprecated-sameas-004.html [ Failure ]
+crbug.com/1299441 virtual/system-color-compute/external/wpt/css/css-color/deprecated-sameas-008.html [ Failure ]
 crbug.com/1299441 [ Mac11 ] virtual/system-color-compute/external/wpt/css/css-color/deprecated-sameas-006.html [ Failure Timeout ]
 crbug.com/1299441 [ Linux ] virtual/system-color-compute/external/wpt/css/css-color/deprecated-sameas-006.html [ Failure ]
 crbug.com/1299441 [ Mac10.12 ] virtual/system-color-compute/external/wpt/css/css-color/deprecated-sameas-006.html [ Failure ]

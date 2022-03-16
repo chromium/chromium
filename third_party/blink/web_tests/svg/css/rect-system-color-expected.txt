@@ -19,6 +19,9 @@ PASS computedStyleText.stroke is computedStyleDiv.get('color').toString()
 Testing system colorBackground
 PASS computedStyleText.fill is computedStyleDiv.get('color').toString()
 PASS computedStyleText.stroke is computedStyleDiv.get('color').toString()
+Testing system colorButtonBorder
+PASS computedStyleText.fill is computedStyleDiv.get('color').toString()
+PASS computedStyleText.stroke is computedStyleDiv.get('color').toString()
 Testing system colorButtonFace
 PASS computedStyleText.fill is computedStyleDiv.get('color').toString()
 PASS computedStyleText.stroke is computedStyleDiv.get('color').toString()
