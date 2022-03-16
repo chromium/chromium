@@ -36,20 +36,16 @@ public class JsSandboxServiceTest {
         }
     }
 
-    // Test sending data to the service and retrieving it back.
-    // TODO(crbug.com/1297672): Currently this test only checks if evaluateJavascript() can convert
-    // the input string to uppercase. This needs to be modified to test the actual
-    // behaviour of the evaluateJavascript() method once implemented.
     @Test
     @MediumTest
-    public void testJsEvaluation() throws Throwable {
-        final String smallCase = "helloworld";
-        final String expected = "HELLOWORLD";
+    public void testSimpleJsEvaluation() throws Throwable {
+        final String code = "'PASS'";
+        final String expected = "PASS";
         TestExecutionCallback callback = new TestExecutionCallback();
 
-        AwJsSandbox.newConnectedInstance(jsSandbox -> {
+        AwJsSandbox.newConnectedInstance((AwJsSandbox jsSandbox) -> {
             AwJsContext jsContext = jsSandbox.createContext();
-            jsContext.evaluateJavascript(smallCase, callback);
+            jsContext.evaluateJavascript(code, callback);
         });
 
         callback.helper.waitForCallback("Timed out waiting for reportResult() to be called", 0);
@@ -58,21 +54,95 @@ public class JsSandboxServiceTest {
 
     @Test
     @MediumTest
-    public void testClosingOneContextBeforeExecutingOther() throws Throwable {
-        final String smallCase = "helloworld";
-        final String expected = "HELLOWORLD";
+    public void testClosingOneContext() throws Throwable {
+        final String code = "'PASS'";
+        final String expected = "PASS";
         TestExecutionCallback callback = new TestExecutionCallback();
 
-        AwJsSandbox.newConnectedInstance(jsSandbox -> {
+        AwJsSandbox.newConnectedInstance((AwJsSandbox jsSandbox) -> {
             AwJsContext jsContext1 = jsSandbox.createContext();
             AwJsContext jsContext2 = jsSandbox.createContext();
             jsContext1.close();
-            jsContext2.evaluateJavascript(smallCase, callback);
+            jsContext2.evaluateJavascript(code, callback);
             jsContext2.close();
         });
 
         callback.helper.waitForCallback("Timed out waiting for reportResult() to be called", 0);
         Assert.assertEquals(expected, callback.result);
+    }
+
+    @Test
+    @MediumTest
+    public void testEvaluationInTwoContexts() throws Throwable {
+        final String code1 = "this.x = 'PASS';\n";
+        final String expected1 = "PASS";
+        final String code2 = "this.x = 'SUPER_PASS';\n";
+        final String expected2 = "SUPER_PASS";
+        TestExecutionCallback callback1 = new TestExecutionCallback();
+        TestExecutionCallback callback2 = new TestExecutionCallback();
+
+        AwJsSandbox.newConnectedInstance((AwJsSandbox jsSandbox) -> {
+            AwJsContext jsContext1 = jsSandbox.createContext();
+            jsContext1.evaluateJavascript(code1, callback1);
+            AwJsContext jsContext2 = jsSandbox.createContext();
+            jsContext2.evaluateJavascript(code2, callback2);
+        });
+        callback1.helper.waitForCallback(
+                "Timed out waiting for reportResult() to be called for first case", 0);
+        callback2.helper.waitForCallback(
+                "Timed out waiting for reportResult() to be called for second case", 0);
+
+        Assert.assertEquals(expected1, callback1.result);
+        Assert.assertEquals(expected2, callback2.result);
+    }
+
+    @Test
+    @MediumTest
+    public void testTwoContextsDoNotShareEnvironment() throws Throwable {
+        final String code1 = "this.y = 'PASS';\n";
+        final String expected1 = "PASS";
+        final String code2 = "this.y = this.y + ' PASS';\n";
+        final String expected2 = "undefined PASS";
+        TestExecutionCallback callback1 = new TestExecutionCallback();
+        TestExecutionCallback callback2 = new TestExecutionCallback();
+
+        AwJsSandbox.newConnectedInstance((AwJsSandbox jsSandbox) -> {
+            AwJsContext jsContext1 = jsSandbox.createContext();
+            jsContext1.evaluateJavascript(code1, callback1);
+            AwJsContext jsContext2 = jsSandbox.createContext();
+            jsContext2.evaluateJavascript(code2, callback2);
+        });
+        callback1.helper.waitForCallback(
+                "Timed out waiting for reportResult() to be called for first case", 0);
+        callback2.helper.waitForCallback(
+                "Timed out waiting for reportResult() to be called for second case", 0);
+
+        Assert.assertEquals(expected1, callback1.result);
+        Assert.assertEquals(expected2, callback2.result);
+    }
+
+    @Test
+    @MediumTest
+    public void testTwoExecutionsShareEnvironment() throws Throwable {
+        final String code1 = "this.z = 'PASS';\n";
+        final String expected1 = "PASS";
+        final String code2 = "this.z = this.z + ' PASS';\n";
+        final String expected2 = "PASS PASS";
+        TestExecutionCallback callback1 = new TestExecutionCallback();
+        TestExecutionCallback callback2 = new TestExecutionCallback();
+
+        AwJsSandbox.newConnectedInstance((AwJsSandbox jsSandbox) -> {
+            AwJsContext jsContext1 = jsSandbox.createContext();
+            jsContext1.evaluateJavascript(code1, callback1);
+            jsContext1.evaluateJavascript(code2, callback2);
+        });
+        callback1.helper.waitForCallback(
+                "Timed out waiting for reportResult() to be called for first case", 0);
+        callback2.helper.waitForCallback(
+                "Timed out waiting for reportResult() to be called for second case", 0);
+
+        Assert.assertEquals(expected1, callback1.result);
+        Assert.assertEquals(expected2, callback2.result);
     }
 
     @Test

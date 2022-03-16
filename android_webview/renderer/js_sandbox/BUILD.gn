@@ -1,0 +1,23 @@
+# Copyright 2019 The Chromium Authors.All rights reserved.
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+source_set("js_sandbox") {
+  sources = [
+    "js_sandbox_context.cc",
+    "js_sandbox_context.h",
+  ]
+
+  deps = [
+    "//android_webview:browser_jni_headers",
+    "//android_webview:js_sandbox_jni_headers",
+    "//android_webview/common",
+    "//base",
+    "//gin",
+  ]
+
+  configs += [
+    "//tools/v8_context_snapshot:use_v8_context_snapshot",
+    "//v8:external_startup_data",
+  ]
+}

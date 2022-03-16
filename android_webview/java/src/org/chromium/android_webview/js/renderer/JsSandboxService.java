@@ -10,11 +10,10 @@ import android.os.IBinder;
 
 import org.chromium.android_webview.js.common.IJsSandboxContext;
 import org.chromium.android_webview.js.common.IJsSandboxService;
+import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.base.library_loader.LibraryProcessType;
 
-/**
- * Service that creates a context for Javascript execution. TODO(crbug.com/1297672): Currently this
- * is just meant to be a tracer to define the end to end flow and does not do anything useful.
- */
+/** Service that creates a context for Javascript execution. */
 public class JsSandboxService extends Service {
     private static final String TAG = "JsSandboxService";
 
@@ -28,5 +27,19 @@ public class JsSandboxService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         return mBinder;
+    }
+
+    @Override
+    public void onCreate() {
+        ensureNativeInitialized();
+        JsSandboxContext.initializeEnvironment();
+    }
+
+    private void ensureNativeInitialized() {
+        if (LibraryLoader.getInstance().isInitialized()) {
+            return;
+        }
+        LibraryLoader.getInstance().setLibraryProcessType(LibraryProcessType.PROCESS_WEBVIEW_CHILD);
+        LibraryLoader.getInstance().ensureInitialized();
     }
 }

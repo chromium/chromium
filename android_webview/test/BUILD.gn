@@ -515,6 +515,7 @@ source_set("webview_instrumentation_test_native_jni_impl") {
     ":webview_instrumentation_test_native_jni",
     "//android_webview/browser",
     "//android_webview/browser/metrics",
+    "//android_webview/renderer/js_sandbox",
     "//base",
     "//base/test:test_support",
     "//components/component_updater/android:embedded_component_loader",

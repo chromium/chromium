@@ -10,46 +10,79 @@ import android.os.RemoteException;
 
 import org.chromium.android_webview.js.common.IJsSandboxContext;
 import org.chromium.android_webview.js.common.IJsSandboxContextCallback;
+import org.chromium.base.Callback;
 import org.chromium.base.Log;
+import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 
-/**
- * Service that provides a method for Javascript execution. TODO(crbug.com/1297672): Currently this
- * is just meant to be a tracer to define the end to end flow and does not do anything useful.
- */
+import javax.annotation.concurrent.GuardedBy;
+
+/** Service that provides methods for Javascript execution. */
+@JNINamespace("android_webview")
 public class JsSandboxContext extends IJsSandboxContext.Stub {
     private static final String TAG = "JsSandboxContext";
-    private boolean mIsClosed = false;
+    private final Object mLock = new Object();
+
+    @GuardedBy("mLock")
+    private long mJsSandboxContext;
+
+    JsSandboxContext() {
+        mJsSandboxContext = JsSandboxContextJni.get().createNativeJsSandboxIsolateWrapper();
+    }
 
     @Override
     public void evaluateJavascript(String code, IJsSandboxContextCallback callback) {
-        if (mIsClosed) {
-            throw new IllegalStateException("evaluateJavascript() called after close()");
-        }
-        // Just posting to the mainLooper for now.
-        Handler handler = new Handler(Looper.getMainLooper());
-        handler.postDelayed(() -> {
-            // Currently just hardcoded to return error string when it encounters "ERROR" as input.
-            if (code.equals("ERROR")) {
-                try {
-                    callback.reportError("There has been an error.");
-                } catch (RemoteException e) {
-                    Log.e(TAG, "reporting result failed", e);
-                }
-            } else {
-                String result = code.toUpperCase();
-                try {
-                    callback.reportResult(result);
-                } catch (RemoteException e) {
-                    Log.e(TAG, "reporting result failed", e);
-                }
+        synchronized (mLock) {
+            if (mJsSandboxContext == 0) {
+                throw new IllegalStateException("evaluateJavascript() called after close()");
             }
-        }, 100);
+            if (code.equals("ERROR")) {
+                Handler handler = new Handler(Looper.getMainLooper());
+                handler.postDelayed(() -> {
+                    try {
+                        callback.reportError("There has been an error.");
+                    } catch (RemoteException e) {
+                        Log.e(TAG, "reporting result failed", e);
+                    }
+                }, 100);
+            } else {
+                JsSandboxContextJni.get().evaluateJavascript(
+                        mJsSandboxContext, this, code, (result) -> {
+                            try {
+                                callback.reportResult(result);
+                            } catch (RemoteException e) {
+                                Log.e(TAG, "reporting result failed", e);
+                            }
+                        });
+            }
+        }
     }
 
     @Override
     public void close() {
-        mIsClosed = true;
-        // Do nothing for now. Eventually this should stop the execution and destroy the
-        // context in native.
+        synchronized (mLock) {
+            if (mJsSandboxContext == 0) {
+                return;
+            }
+            JsSandboxContextJni.get().destroyNative(mJsSandboxContext, this);
+            mJsSandboxContext = 0;
+        }
+    }
+
+    public static void initializeEnvironment() {
+        JsSandboxContextJni.get().initializeEnvironment();
+    }
+
+    @NativeMethods
+    public interface Natives {
+        long createNativeJsSandboxIsolateWrapper();
+
+        void initializeEnvironment();
+
+        // The calling code must not call any methods after it called destroyNative().
+        void destroyNative(long nativeJsSandboxContext, JsSandboxContext caller);
+
+        boolean evaluateJavascript(long nativeJsSandboxContext, JsSandboxContext caller,
+                String script, Callback<String> finishedCallback);
     }
 }
