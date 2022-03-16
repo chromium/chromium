@@ -51,19 +51,6 @@ class HistoryDatabase : public DownloadDatabase,
                         public VisitAnnotationsDatabase,
                         public VisitSegmentDatabase {
  public:
-  // A simple class for scoping a history database transaction. This does not
-  // support rollback since the history database doesn't, either.
-  class TransactionScoper {
-   public:
-    explicit TransactionScoper(HistoryDatabase* db) : db_(db) {
-      db_->BeginTransaction();
-    }
-    ~TransactionScoper() { db_->CommitTransaction(); }
-
-   private:
-    raw_ptr<HistoryDatabase> db_;
-  };
-
   // Must call Init() to complete construction. Although it can be created on
   // any thread, it must be destructed on the history thread for proper
   // database cleanup.
