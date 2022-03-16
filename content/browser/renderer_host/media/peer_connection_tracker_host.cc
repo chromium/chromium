@@ -13,10 +13,10 @@
 #include "base/power_monitor/power_monitor.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/post_task.h"
-#include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 
 namespace content {

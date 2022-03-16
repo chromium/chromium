@@ -4,7 +4,8 @@
 
 #include "content/browser/net/browser_online_state_observer.h"
 
-#include "content/browser/renderer_host/render_process_host_impl.h"
+#include "content/common/renderer.mojom.h"
+#include "content/public/browser/render_process_host.h"
 
 namespace content {
 

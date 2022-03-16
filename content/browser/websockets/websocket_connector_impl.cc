@@ -5,7 +5,7 @@
 #include "content/browser/websockets/websocket_connector_impl.h"
 
 #include "base/containers/contains.h"
-#include "content/browser/renderer_host/render_process_host_impl.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
