@@ -24,6 +24,11 @@ PasswordSyncControllerDelegateBridgeImpl::
 PasswordSyncControllerDelegateBridgeImpl::
     ~PasswordSyncControllerDelegateBridgeImpl() = default;
 
+void PasswordSyncControllerDelegateBridgeImpl::SetConsumer(
+    base::WeakPtr<Consumer> consumer) {
+  consumer_ = consumer;
+}
+
 void PasswordSyncControllerDelegateBridgeImpl::
     NotifyCredentialManagerWhenSyncing() {
   if (java_object_) {
@@ -42,14 +47,13 @@ void PasswordSyncControllerDelegateBridgeImpl::
 
 void PasswordSyncControllerDelegateBridgeImpl::OnCredentialManagerNotified(
     JNIEnv* env) {
-  // TODO(crbug/1297615): Record success metrics.
+  consumer_->OnCredentialManagerNotified();
 }
 
 void PasswordSyncControllerDelegateBridgeImpl::OnCredentialManagerError(
     JNIEnv* env,
     jint error_code,
     jint api_error_code) {
-  // TODO(crbug/1297615): Record failure metrics.
-  // TODO(crbug/1297615): Record API errors metrcis when the API is actually
-  // implemented.
+  AndroidBackendError error{static_cast<AndroidBackendErrorType>(error_code)};
+  consumer_->OnCredentialManagerError(error, static_cast<int>(api_error_code));
 }

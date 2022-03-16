@@ -23,7 +23,8 @@ class ModelTypeControllerDelegate;
 namespace password_manager {
 
 class PasswordSyncControllerDelegateAndroid
-    : public syncer::ModelTypeControllerDelegate {
+    : public syncer::ModelTypeControllerDelegate,
+      public PasswordSyncControllerDelegateBridge::Consumer {
  public:
   PasswordSyncControllerDelegateAndroid(
       std::unique_ptr<PasswordSyncControllerDelegateBridge> bridge,
@@ -47,6 +48,11 @@ class PasswordSyncControllerDelegateAndroid
       base::OnceCallback<void(const syncer::TypeEntitiesCount&)> callback)
       const override;
   void RecordMemoryUsageAndCountsHistograms() override;
+
+  // PasswordStoreAndroidBackendBridge::Consumer implementation.
+  void OnCredentialManagerNotified() override;
+  void OnCredentialManagerError(const AndroidBackendError& error,
+                                int api_error_code) override;
 
   // Notifies CredentialManager to use syncing account.
   void NotifyCredentialManagerWhenSyncing();

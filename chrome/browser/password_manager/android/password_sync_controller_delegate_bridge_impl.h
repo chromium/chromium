@@ -23,6 +23,7 @@ class PasswordSyncControllerDelegateBridgeImpl
   ~PasswordSyncControllerDelegateBridgeImpl() override;
 
   // PasswordSyncControllerDelegateBridge implementation.
+  void SetConsumer(base::WeakPtr<Consumer> consumer) override;
   void NotifyCredentialManagerWhenSyncing() override;
   void NotifyCredentialManagerWhenNotSyncing() override;
 
@@ -36,6 +37,10 @@ class PasswordSyncControllerDelegateBridgeImpl
                                 jint api_error_code);
 
  private:
+  // Weak reference to the `Consumer` that is notified when a job completes. It
+  // is guaranteed to outlive this bridge.
+  base::WeakPtr<Consumer> consumer_ = nullptr;
+
   // This object is an instance of PasswordSyncControllerDelegateBridge, i.e.
   // the Java counterpart to this class.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;

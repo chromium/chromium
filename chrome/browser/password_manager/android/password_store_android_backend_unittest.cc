@@ -213,6 +213,7 @@ class PasswordStoreAndroidBackendTest : public testing::Test {
     auto unique_delegate_bridge = std::make_unique<
         StrictMock<MockPasswordSyncControllerDelegateBridge>>();
     sync_controller_delegate_bridge_ = unique_delegate_bridge.get();
+    EXPECT_CALL(*sync_controller_delegate_bridge_, SetConsumer);
     return std::make_unique<PasswordSyncControllerDelegateAndroid>(
         std::move(unique_delegate_bridge), sync_delegate_);
   }

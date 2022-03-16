@@ -7,11 +7,36 @@
 
 #include <jni.h>
 
+#include "base/memory/weak_ptr.h"
+
+namespace password_manager {
+struct AndroidBackendError;
+}  // namespace password_manager
+
 // Interface for the native side of PasswordSyncControllerDelegate JNI bridge.
 // Simplifies mocking in tests.
 class PasswordSyncControllerDelegateBridge {
  public:
+  // Each bridge is created with a consumer that will be called when a job is
+  // completed.
+  class Consumer {
+   public:
+    virtual ~Consumer() = default;
+
+    // Asynchronous response called when CredentialManager API calls are
+    // executed successfully.
+    virtual void OnCredentialManagerNotified() = 0;
+
+    // Asynchronous response called when CredentialManager API calls fail.
+    virtual void OnCredentialManagerError(
+        const password_manager::AndroidBackendError& error,
+        int api_error_code) = 0;
+  };
+
   virtual ~PasswordSyncControllerDelegateBridge() = default;
+
+  // Sets the `consumer` that is notified on job completion.
+  virtual void SetConsumer(base::WeakPtr<Consumer> consumer) = 0;
 
   // Triggers an asynchronous request to notify credential manager of
   // the currently syncyng account. `OnCredentialManagerNotified` is called

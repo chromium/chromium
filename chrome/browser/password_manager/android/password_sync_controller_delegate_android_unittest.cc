@@ -6,7 +6,9 @@
 
 #include <memory>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/password_manager/android/android_backend_error.h"
 #include "chrome/browser/password_manager/android/mock_password_sync_controller_delegate_bridge.h"
 #include "components/password_manager/core/browser/mock_password_store_backend.h"
 #include "components/sync/engine/data_type_activation_response.h"
@@ -42,12 +44,16 @@ class PasswordSyncControllerDelegateAndroidTest : public testing::Test {
   PasswordSyncControllerDelegateAndroid* sync_controller_delegate() {
     return sync_controller_delegate_.get();
   }
+  PasswordSyncControllerDelegateBridge::Consumer& consumer() {
+    return *sync_controller_delegate_;
+  }
 
  private:
   std::unique_ptr<PasswordSyncControllerDelegateBridge> CreateBridge() {
     auto unique_delegate_bridge = std::make_unique<
         StrictMock<MockPasswordSyncControllerDelegateBridge>>();
     bridge_ = unique_delegate_bridge.get();
+    EXPECT_CALL(*bridge_, SetConsumer);
     return unique_delegate_bridge;
   }
 
@@ -104,6 +110,44 @@ TEST_F(PasswordSyncControllerDelegateAndroidTest, OnSyncStoppingPermanently) {
   sync_controller_delegate()->OnSyncStopping(syncer::CLEAR_METADATA);
 
   RunUntilIdle();
+}
+
+TEST_F(PasswordSyncControllerDelegateAndroidTest,
+       MetrcisWhenCredentialManagerNotificationSucceeds) {
+  base::HistogramTester histogram_tester;
+
+  // Imitate credential manager notification success and check recorded metrics.
+  consumer().OnCredentialManagerNotified();
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.SyncControllerDelegateNotifiesCredentialManager.Success",
+      true, 1);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.SyncControllerDelegateNotifiesCredentialManager.Success",
+      1);
+}
+
+TEST_F(PasswordSyncControllerDelegateAndroidTest,
+       MetrcisWhenCredentialManagerNotificationFails) {
+  base::HistogramTester histogram_tester;
+
+  // Imitate failure and check recorded metrics.
+  AndroidBackendError expected_error(AndroidBackendErrorType::kUncategorized);
+  consumer().OnCredentialManagerError(expected_error, 0);
+
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.SyncControllerDelegateNotifiesCredentialManager.Success",
+      false, 1);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.SyncControllerDelegateNotifiesCredentialManager.Success",
+      1);
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.SyncControllerDelegateNotifiesCredentialManager."
+      "ErrorCode",
+      expected_error.type, 1);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.SyncControllerDelegateNotifiesCredentialManager."
+      "ErrorCode",
+      1);
 }
 
 }  // namespace password_manager

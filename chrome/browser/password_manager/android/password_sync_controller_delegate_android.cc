@@ -5,6 +5,8 @@
 #include "chrome/browser/password_manager/android/password_sync_controller_delegate_android.h"
 
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
+#include "chrome/browser/password_manager/android/android_backend_error.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/model_type_controller_delegate.h"
 #include "components/sync/model/proxy_model_type_controller_delegate.h"
@@ -12,10 +14,23 @@
 
 namespace password_manager {
 
+namespace {
+
+std::string BuildCredentialManagerNotificationMetricName(
+    const std::string& suffix) {
+  return "PasswordManager.SyncControllerDelegateNotifiesCredentialManager." +
+         suffix;
+}
+
+}  // namespace
+
 PasswordSyncControllerDelegateAndroid::PasswordSyncControllerDelegateAndroid(
     std::unique_ptr<PasswordSyncControllerDelegateBridge> bridge,
     PasswordStoreBackend::SyncDelegate* sync_delegate)
-    : bridge_(std::move(bridge)), sync_delegate_(sync_delegate) {}
+    : bridge_(std::move(bridge)), sync_delegate_(sync_delegate) {
+  DCHECK(bridge_);
+  bridge_->SetConsumer(weak_ptr_factory_.GetWeakPtr());
+}
 
 PasswordSyncControllerDelegateAndroid::
     ~PasswordSyncControllerDelegateAndroid() = default;
@@ -123,6 +138,22 @@ void PasswordSyncControllerDelegateAndroid::
   // This is not implemented because it's not worth the hassle. Password sync
   // module on Android doesn't hold any password. Instead passwords are
   // requested on demand from the GMS Core.
+}
+
+void PasswordSyncControllerDelegateAndroid::OnCredentialManagerNotified() {
+  base::UmaHistogramBoolean(
+      BuildCredentialManagerNotificationMetricName("Success"), 1);
+}
+
+void PasswordSyncControllerDelegateAndroid::OnCredentialManagerError(
+    const AndroidBackendError& error,
+    int api_error_code) {
+  base::UmaHistogramBoolean(
+      BuildCredentialManagerNotificationMetricName("Success"), 0);
+  base::UmaHistogramEnumeration(
+      BuildCredentialManagerNotificationMetricName("ErrorCode"), error.type);
+  // TODO(crbug/1297615): Record API errors when the API is actually
+  // implemented.
 }
 
 void PasswordSyncControllerDelegateAndroid::UpdateSyncStatusOnStartUp() {
