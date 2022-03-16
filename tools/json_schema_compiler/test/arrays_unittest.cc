@@ -83,7 +83,7 @@ TEST(JsonSchemaCompilerArrayTest, EnumArrayReference) {
 
   // Test ToValue.
   std::unique_ptr<base::Value> as_value(enum_array_reference.ToValue());
-  EXPECT_TRUE(value.Equals(as_value.get())) << value << " != " << *as_value;
+  EXPECT_EQ(value, *as_value);
 }
 
 TEST(JsonSchemaCompilerArrayTest, EnumArrayMixed) {
@@ -125,7 +125,7 @@ TEST(JsonSchemaCompilerArrayTest, EnumArrayMixed) {
 
   // Test ToValue.
   std::unique_ptr<base::Value> as_value(enum_array_mixed.ToValue());
-  EXPECT_TRUE(value.Equals(as_value.get())) << value << " != " << *as_value;
+  EXPECT_EQ(value, *as_value.get());
 }
 
 TEST(JsonSchemaCompilerArrayTest, OptionalEnumArrayType) {

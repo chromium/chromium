@@ -50,7 +50,7 @@ TEST(JsonSchemaCompilerCrossrefTest, CrossrefTypePopulateAndToValue) {
   std::unique_ptr<base::DictionaryValue> crossref_value =
       crossref_type.ToValue();
   ASSERT_TRUE(crossref_value);
-  EXPECT_TRUE(crossref_orig.Equals(crossref_value.get()));
+  EXPECT_EQ(crossref_orig, *crossref_value);
 }
 
 TEST(JsonSchemaCompilerCrossrefTest, TestTypeOptionalParamCreate) {
@@ -61,8 +61,7 @@ TEST(JsonSchemaCompilerCrossrefTest, TestTypeOptionalParamCreate) {
           params_value->GetListDeprecated()));
   EXPECT_TRUE(params.get());
   EXPECT_TRUE(params->test_type.get());
-  EXPECT_TRUE(
-      CreateTestTypeValue()->Equals(params->test_type->ToValue().get()));
+  EXPECT_EQ(*CreateTestTypeValue(), *params->test_type->ToValue());
 }
 
 TEST(JsonSchemaCompilerCrossrefTest, TestTypeOptionalParamFail) {
@@ -102,8 +101,8 @@ TEST(JsonSchemaCompilerCrossrefTest, TestTypeInObjectParamsCreate) {
     EXPECT_TRUE(params.get());
     EXPECT_TRUE(params->param_object.test_type.get());
     EXPECT_TRUE(params->param_object.boolean);
-    EXPECT_TRUE(CreateTestTypeValue()->Equals(
-        params->param_object.test_type->ToValue().get()));
+    EXPECT_EQ(*CreateTestTypeValue(),
+              *params->param_object.test_type->ToValue());
   }
   {
     auto params_value = std::make_unique<base::ListValue>();

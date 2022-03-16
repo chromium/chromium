@@ -45,8 +45,7 @@ TEST(JsonSchemaCompilerAdditionalPropertiesTest,
   std::unique_ptr<ap::AdditionalProperties::Params> params(
       ap::AdditionalProperties::Params::Create(params_value));
   EXPECT_TRUE(params.get());
-  EXPECT_TRUE(params->param_object.additional_properties.Equals(
-      param_object_value.get()));
+  EXPECT_EQ(params->param_object.additional_properties, *param_object_value);
 }
 
 TEST(JsonSchemaCompilerAdditionalPropertiesTest,

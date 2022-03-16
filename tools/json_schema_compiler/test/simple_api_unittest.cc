@@ -160,7 +160,7 @@ TEST(JsonSchemaCompilerSimpleTest, TestTypePopulate) {
     EXPECT_EQ(1.1, test_type->number);
     EXPECT_EQ(4, test_type->integer);
     EXPECT_EQ(true, test_type->boolean);
-    EXPECT_TRUE(value->Equals(test_type->ToValue().get()));
+    EXPECT_EQ(*value, *test_type->ToValue());
   }
   {
     auto test_type = std::make_unique<simple_api::TestType>();
@@ -178,7 +178,7 @@ TEST(JsonSchemaCompilerSimpleTest, GetTestType) {
     std::vector<base::Value> results =
         simple_api::GetTestType::Results::Create(*test_type);
     ASSERT_EQ(1u, results.size());
-    EXPECT_TRUE(results[0].Equals(value.get()));
+    EXPECT_EQ(results[0], *value);
   }
 }
 
