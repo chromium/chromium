@@ -14,18 +14,24 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 class IncognitoReauthMediator {
     private final TabModelSelector mTabModelSelector;
     // The entity responsible for actually calling the underlying system re-authentication.
-    private final IncognitoReauthManager mIncognitoReauthManager = new IncognitoReauthManager();
+    private final IncognitoReauthManager mIncognitoReauthManager;
     // The callback that would be fired after an authentication attempt.
     private IncognitoReauthCallback mIncognitoReauthCallback;
 
     /**
      * @param tabModelSelector The {@link TabModelSelector} which helps to switch to regular
      *        {@link TabModel}.
+     * @param incognitoReauthCallback incognitoReauthCallback The {@link IncognitoReauthCallback}
+     *                               which would be executed after an authentication attempt.
+     * @param incognitoReauthManager The {@link IncognitoReauthManager} instance which would be
+     *                               used to initiate re-authentication.
      */
     IncognitoReauthMediator(@NonNull TabModelSelector tabModelSelector,
-            @NonNull IncognitoReauthCallback incognitoReauthCallback) {
+            @NonNull IncognitoReauthCallback incognitoReauthCallback,
+            @NonNull IncognitoReauthManager incognitoReauthManager) {
         mTabModelSelector = tabModelSelector;
         mIncognitoReauthCallback = incognitoReauthCallback;
+        mIncognitoReauthManager = incognitoReauthManager;
     }
 
     void onUnlockIncognitoButtonClicked() {

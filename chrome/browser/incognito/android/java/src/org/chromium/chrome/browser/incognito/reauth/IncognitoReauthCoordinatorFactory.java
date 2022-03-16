@@ -18,6 +18,7 @@ public class IncognitoReauthCoordinatorFactory {
     private final @NonNull Context mContext;
     private final @NonNull TabModelSelector mTabModelSelector;
     private final @NonNull ModalDialogManager mModalDialogManager;
+    private final @NonNull IncognitoReauthManager mIncognitoReauthManager;
 
     /**
      * @param context The {@link Context} to use for inflating the Incognito re-auth view.
@@ -32,12 +33,13 @@ public class IncognitoReauthCoordinatorFactory {
         mContext = context;
         mTabModelSelector = tabModelSelector;
         mModalDialogManager = modalDialogManager;
+        mIncognitoReauthManager = new IncognitoReauthManager();
     }
 
     IncognitoReauthCoordinator createIncognitoReauthCoordinator(
             @NonNull IncognitoReauthManager.IncognitoReauthCallback incognitoReauthCallback,
             boolean showFullScreen) {
         return new IncognitoReauthCoordinator(mContext, mTabModelSelector, mModalDialogManager,
-                incognitoReauthCallback, showFullScreen);
+                incognitoReauthCallback, mIncognitoReauthManager, showFullScreen);
     }
 }

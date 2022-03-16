@@ -45,18 +45,20 @@ class IncognitoReauthCoordinator {
      *         containing the Incognito re-auth view.
      * @param incognitoReauthCallback The {@link IncognitoReauthCallback} which would be executed
      *         after an authentication attempt.
+     * @param incognitoReauthManager The {@link IncognitoReauthManager} instance which would be used
+     *                               to initiate re-authentication.
      * @param showFullScreen Whether to show a fullscreen / tab based re-auth dialog.
      */
     public IncognitoReauthCoordinator(@NonNull Context context,
             @NonNull TabModelSelector tabModelSelector,
             @NonNull ModalDialogManager modalDialogManager,
             @NonNull IncognitoReauthManager.IncognitoReauthCallback incognitoReauthCallback,
-            boolean showFullScreen) {
+            @NonNull IncognitoReauthManager incognitoReauthManager, boolean showFullScreen) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
         mShowFullScreen = showFullScreen;
-        mIncognitoReauthMediator =
-                new IncognitoReauthMediator(tabModelSelector, incognitoReauthCallback);
+        mIncognitoReauthMediator = new IncognitoReauthMediator(
+                tabModelSelector, incognitoReauthCallback, incognitoReauthManager);
     }
 
     private void destroy() {
