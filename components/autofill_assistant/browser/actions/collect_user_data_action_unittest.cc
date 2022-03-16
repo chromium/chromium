@@ -3551,13 +3551,13 @@ TEST_F(CollectUserDataActionTest, LogUkmSuccess) {
   collect_user_data_proto->set_show_terms_as_checkbox(false);
   collect_user_data_proto->set_terms_require_review_text("terms review");
 
+  base::OnceCallback<void(UserData*, const UserModel*)> confirm_callback;
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault([&](CollectUserDataOptions* collect_user_data_options) {
         user_data_.terms_and_conditions_ = ACCEPTED;
-        TimeTicksOverride::now_ticks_ += base::Seconds(4);
 
-        std::move(collect_user_data_options->confirm_callback)
-            .Run(&user_data_, &user_model_);
+        confirm_callback =
+            std::move(collect_user_data_options->confirm_callback);
       });
 
   EXPECT_CALL(
@@ -3565,6 +3565,12 @@ TEST_F(CollectUserDataActionTest, LogUkmSuccess) {
       Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
   CollectUserDataAction action(&mock_action_delegate_, action_proto);
   action.ProcessAction(callback_.Get());
+
+  // We start counting the "wait time" after CollecUserData is called, so we
+  // need to increase the timer and call the callback at this point.
+  TimeTicksOverride::now_ticks_ += base::Seconds(4);
+  ASSERT_TRUE(confirm_callback);
+  std::move(confirm_callback).Run(&user_data_, &user_model_);
 
   EXPECT_THAT(
       GetUkmCollectUserDataResult(ukm_recorder_),
@@ -3628,10 +3634,12 @@ TEST_F(CollectUserDataActionTest, LogUkmFailure) {
     CollectUserDataAction action(&mock_action_delegate_, action_proto);
     ON_CALL(mock_action_delegate_, CollectUserData(_))
         .WillByDefault([&](CollectUserDataOptions* collect_user_data_options) {
-          TimeTicksOverride::now_ticks_ += base::Seconds(3);
           // The continue button is never pressed.
         });
     action.ProcessAction(callback_.Get());
+    // We start counting the "wait time" after CollecUserData is called, so we
+    // need to increase the timer at this point.
+    TimeTicksOverride::now_ticks_ += base::Seconds(3);
 
     // The CollectUserDataAction destructor is called, this simulates the user
     // closing the bottom sheet or the tab.
