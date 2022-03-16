@@ -390,4 +390,61 @@ testcase.zipExtractSelectionMenus = async () => {
 
   // Check: the Zip selection menu item should be hidden.
   await remoteCall.waitForElement(appId, '[command="#zip-selection"][hidden]');
+
+  // Click the main dialog area to hide the context menu.
+  chrome.test.assertTrue(
+      !!await remoteCall.callRemoteTestUtil(
+          'fakeMouseClick', appId, ['.dialog-main']),
+      'fakeMouseClick failed');
+
+  // Select the first and second file (ENTRIES.hello, ENTRIES.world).
+  await remoteCall.waitAndClickElement(
+      appId, '#file-list [file-name="world.ogv"]');
+  await remoteCall.waitAndClickElement(
+      appId, '#file-list [file-name="hello.txt"]', {shift: true});
+
+  // Right-click the selected file.
+  chrome.test.assertTrue(
+      !!await remoteCall.callRemoteTestUtil(
+          'fakeMouseRightClick', appId, ['.table-row[selected]']),
+      'fakeMouseRightClick failed');
+
+  // Check: the context menu should appear.
+  await remoteCall.waitForElement(appId, '#file-context-menu:not([hidden])');
+
+  // Check: the Extract all menu item should be hidden.
+  await remoteCall.waitForElement(appId, '[command="#extract-all"][hidden]');
+
+  // Check: the Zip selection menu item should be visible.
+  await remoteCall.waitForElement(
+      appId, '[command="#zip-selection"]:not([hidden])');
+
+  // Click the main dialog area to hide the context menu.
+  chrome.test.assertTrue(
+      !!await remoteCall.callRemoteTestUtil(
+          'fakeMouseClick', appId, ['.dialog-main']),
+      'fakeMouseClick failed');
+
+  // Select the first and third file (ENTRIES.hello, ENTRIES.zipArchive).
+  await remoteCall.waitAndClickElement(
+      appId, '#file-list [file-name="archive.zip"]');
+  await remoteCall.waitAndClickElement(
+      appId, '#file-list [file-name="hello.txt"]', {shift: true});
+
+  // Right-click the selected file.
+  chrome.test.assertTrue(
+      !!await remoteCall.callRemoteTestUtil(
+          'fakeMouseRightClick', appId, ['.table-row[selected]']),
+      'fakeMouseRightClick failed');
+
+  // Check: the context menu should appear.
+  await remoteCall.waitForElement(appId, '#file-context-menu:not([hidden])');
+
+  // Check: the Extract all menu item should be visible.
+  await remoteCall.waitForElement(
+      appId, '[command="#extract-all"]:not([hidden])');
+
+  // Check: the Zip selection menu item should be visible.
+  await remoteCall.waitForElement(
+      appId, '[command="#zip-selection"]:not([hidden])');
 };
