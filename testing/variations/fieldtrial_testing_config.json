@@ -5586,6 +5586,21 @@
             ]
         }
     ],
+    "ProductivityLauncherStudy": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithContinueSection",
+                    "enable_features": [
+                        "ProductivityLauncher"
+                    ]
+                }
+            ]
+        }
+    ],
     "PushMessagingDisallowSenderIDs": [
         {
             "platforms": [
