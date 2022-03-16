@@ -1036,6 +1036,7 @@ junit_binary("chrome_junit_tests") {
     "//chrome/browser/tab_group:junit",
     "//chrome/browser/tabmodel:factory_java",
     "//chrome/browser/tabmodel:java",
+    "//chrome/browser/tabmodel:junit",
     "//chrome/browser/tabmodel/internal:java",
     "//chrome/browser/tabpersistence:junit",
     "//chrome/browser/thumbnail:java",
