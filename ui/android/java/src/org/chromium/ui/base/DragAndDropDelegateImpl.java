@@ -8,6 +8,7 @@ import android.content.ClipData;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build.VERSION_CODES;
 import android.os.SystemClock;
@@ -16,12 +17,14 @@ import android.util.Pair;
 import android.view.DragEvent;
 import android.view.View;
 import android.view.View.DragShadowBuilder;
+import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityManager;
 import android.widget.ImageView;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.ContextUtils;
@@ -183,16 +186,32 @@ class DragAndDropDelegateImpl implements ViewAndroidDelegate.DragAndDropDelegate
     protected View.DragShadowBuilder createDragShadowBuilder(
             Context context, Bitmap shadowImage, boolean isImage) {
         ImageView imageView = new ImageView(context);
-        imageView.setImageBitmap(shadowImage);
-
         if (isImage) {
-            Pair<Integer, Integer> widthHeight =
-                    getWidthHeightForScaleDragShadow(context, shadowImage);
-            mShadowWidth = widthHeight.first;
-            mShadowHeight = widthHeight.second;
+            // If drag shadow image is an 1*1 image, it is not considered as a valid drag shadow.
+            // In such cases, use a globe icon as placeholder instead. See
+            // https://crbug.com/1304433.
+            if (shadowImage.getHeight() <= 1 && shadowImage.getWidth() <= 1) {
+                Drawable globeIcon =
+                        AppCompatResources.getDrawable(context, R.drawable.ic_globe_24dp);
+                assert globeIcon != null;
+
+                final int minSize = getDragShadowMinWidth(context.getResources());
+                mShadowWidth = minSize;
+                mShadowHeight = minSize;
+                imageView.setLayoutParams(new ViewGroup.LayoutParams(minSize, minSize));
+                imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                imageView.setImageDrawable(globeIcon);
+            } else {
+                Pair<Integer, Integer> widthHeight =
+                        getWidthHeightForScaleDragShadow(context, shadowImage);
+                mShadowWidth = widthHeight.first;
+                mShadowHeight = widthHeight.second;
+                imageView.setImageBitmap(shadowImage);
+            }
         } else {
             mShadowWidth = shadowImage.getWidth();
             mShadowHeight = shadowImage.getHeight();
+            imageView.setImageBitmap(shadowImage);
         }
         imageView.layout(0, 0, mShadowWidth, mShadowHeight);
 
@@ -214,7 +233,7 @@ class DragAndDropDelegateImpl implements ViewAndroidDelegate.DragAndDropDelegate
         height *= resizeRatio;
 
         // Scale the image up if it fell short than the min width.
-        final int minWidthPx = resources.getDimensionPixelSize(R.dimen.drag_shadow_min_width);
+        final int minWidthPx = getDragShadowMinWidth(resources);
         if (width < minWidthPx) {
             float scaleUpRatio = minWidthPx / width;
             height *= scaleUpRatio;
@@ -285,6 +304,10 @@ class DragAndDropDelegateImpl implements ViewAndroidDelegate.DragAndDropDelegate
             // TODO(https://crbug.com/1289393): Handle link dragging.
             return DragTargetType.INVALID;
         }
+    }
+
+    private static int getDragShadowMinWidth(Resources resources) {
+        return resources.getDimensionPixelSize(R.dimen.drag_shadow_min_width);
     }
 
     private void reset() {

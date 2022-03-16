@@ -184,7 +184,6 @@ android_resources("java_resources") {
     "java/res/drawable/ic_file_download_36dp.xml",
     "java/res/drawable/ic_flash_on_24dp.xml",
     "java/res/drawable/ic_folder_blue_24dp.xml",
-    "java/res/drawable/ic_globe_24dp.xml",
     "java/res/drawable/ic_google_24dp.xml",
     "java/res/drawable/ic_help_and_feedback.xml",
     "java/res/drawable/ic_info_outline_grey_16dp.xml",
