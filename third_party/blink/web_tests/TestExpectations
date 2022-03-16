@@ -7715,3 +7715,6 @@ crbug.com/1295980 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/user-act
 crbug.com/1280537 virtual/first-party-sets/http/tests/inspector-protocol/network/blocked-cookie-same-site-lax.js [ Failure Pass Timeout ]
 crbug.com/1277877 virtual/partitioned-cookies-first-party-sets/http/tests/inspector-protocol/network/blocked-cookie-same-site-strict.js [ Failure Pass Timeout ]
 crbug.com/1298633 http/tests/inspector-protocol/network/cross-origin-isolation/coep-load-error-reporting-worker.js [ Pass Timeout ]
+
+# Sheriff 2022-03-16
+crbug.com/1306770 virtual/partitioned-cookies-first-party-sets/http/tests/inspector-protocol/network/interception-download.js [ Failure Pass ]
