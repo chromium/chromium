@@ -163,6 +163,7 @@ void FastPairRepositoryImpl::RetryCheckAccountKeys(
     const AccountKeyFilter& account_key_filter,
     CheckAccountKeysCallback callback,
     absl::optional<nearby::fastpair::UserReadDevicesResponse> user_devices) {
+  QP_LOG(INFO) << __func__;
   if (!user_devices) {
     std::move(callback).Run(absl::nullopt);
     return;
