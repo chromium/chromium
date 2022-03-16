@@ -318,9 +318,13 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
 
   NGTextPainter text_painter(context, font, fragment_paint_info, visual_rect,
                              text_origin, physical_box, is_horizontal);
+  NGTextDecorationPainter decoration_painter(text_painter, text_item,
+                                             paint_info, style, text_style,
+                                             rotated_box, selection);
   NGHighlightPainter highlight_painter(
-      text_painter, paint_info, cursor_, *cursor_.CurrentItem(),
-      physical_box.offset, style, selection, is_printing);
+      fragment_paint_info, text_painter, decoration_painter, paint_info,
+      cursor_, *cursor_.CurrentItem(), physical_box.offset, style, selection,
+      is_printing);
 
   if (svg_inline_text) {
     NGTextPainter::SvgTextPaintState& svg_state = text_painter.SetSvgState(
@@ -370,10 +374,6 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
     }
   }
 
-  NGTextDecorationPainter decoration_painter(
-      text_painter, text_item, paint_info, style, text_style, rotated_box,
-      highlight_painter.Selection());
-
   // 2. Now paint the foreground, including text and decorations.
   // TODO(dazabani@igalia.com): suppress text proper where one or more highlight
   // overlays are active, but paint shadows in full <https://crbug.com/1147859>
@@ -395,41 +395,61 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
   const unsigned start_offset = fragment_paint_info.from;
   const unsigned end_offset = fragment_paint_info.to;
 
-  if (LIKELY(!highlight_painter.Selection())) {
+  if (LIKELY(!highlight_painter.Selection() &&
+             (!RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled() ||
+              highlight_painter.Layers().size() == 1))) {
+    // Fast path: just paint the text, including its shadows.
     decoration_painter.Begin(NGTextDecorationPainter::kOriginating);
     decoration_painter.PaintExceptLineThrough();
     text_painter.Paint(start_offset, end_offset, length, text_style, node_id,
                        auto_dark_mode);
     decoration_painter.PaintOnlyLineThrough();
-  } else if (!highlight_painter.Selection()->ShouldPaintSelectedTextOnly()) {
+  } else if (!RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled() &&
+             !highlight_painter.Selection()->ShouldPaintSelectedTextOnly()) {
+    // Old slow path: paint suppressing text proper where ::selection active.
     decoration_painter.Begin(NGTextDecorationPainter::kOriginating);
     decoration_painter.PaintExceptLineThrough();
     highlight_painter.Selection()->PaintSuppressingTextProperWhereSelected(
         text_painter, start_offset, end_offset, length, text_style, node_id,
         auto_dark_mode);
     decoration_painter.PaintOnlyLineThrough();
+  } else if (!highlight_painter.Selection() ||
+             !highlight_painter.Selection()->ShouldPaintSelectedTextOnly()) {
+    DCHECK(RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled());
+    // New slow path: paint suppressing text proper where highlighted, then
+    // paint each highlight overlay, suppressing unless topmost highlight.
+    // TODO(crbug.com/1147859) suppress for ::selection too (regression)
+    decoration_painter.Begin(NGTextDecorationPainter::kOriginating);
+    decoration_painter.PaintExceptLineThrough();
+    highlight_painter.PaintOriginatingText(text_style, node_id, auto_dark_mode);
+    decoration_painter.PaintOnlyLineThrough();
+
+    highlight_painter.PaintHighlightOverlays(
+        text_style, node_id, auto_dark_mode, paint_marker_backgrounds,
+        rotation);
   }
 
-  // 3. Paint CSS highlight overlays, such as ::selection and ::target-text.
-  // For each overlay, we paint its background, then its shadows, then the text
-  // with any decorations it defines, and all of the ::selection overlay parts
-  // are painted over any ::target-text overlay parts, and so on. The text
-  // proper (as opposed to shadows) is only painted by the topmost overlay
-  // applying to a piece of text (if any), and suppressed everywhere else.
-  // TODO(dazabani@igalia.com): implement this for the other highlight pseudos
-  if (UNLIKELY(highlight_painter.Selection())) {
+  // Paint ::selection background.
+  if (UNLIKELY(!RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled() &&
+               highlight_painter.Selection())) {
     if (paint_marker_backgrounds) {
       highlight_painter.Selection()->PaintSelectionBackground(
           context, node, document, style, rotation);
     }
   }
 
+  // Paint foregrounds for document markers that don’t participate in the CSS
+  // highlight overlay system, such as composition highlights.
   if (paint_info.phase == PaintPhase::kForeground) {
     highlight_painter.Paint(NGHighlightPainter::kForeground);
   }
 
-  if (UNLIKELY(highlight_painter.Selection())) {
-    // Paint only the text that is selected.
+  // Paint ::selection foreground only (for selection drag image only, unless
+  // HighlightOverlayPainting is disabled).
+  if (UNLIKELY(
+          highlight_painter.Selection() &&
+          (!RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled() ||
+           highlight_painter.Selection()->ShouldPaintSelectedTextOnly()))) {
     decoration_painter.Begin(NGTextDecorationPainter::kSelection);
     decoration_painter.PaintExceptLineThrough();
     highlight_painter.Selection()->PaintSelectedText(

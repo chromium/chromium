@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/editing/markers/document_marker.h"
 #include "third_party/blink/renderer/core/layout/api/selection_state.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
+#include "third_party/blink/renderer/core/paint/ng/ng_highlight_overlay.h"
 #include "third_party/blink/renderer/core/paint/text_paint_style.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
@@ -24,9 +25,11 @@ class FrameSelection;
 class LayoutObject;
 class NGFragmentItem;
 class NGTextPainter;
+class NGTextDecorationPainter;
 class NGInlineCursor;
 class Node;
 struct LayoutSelectionStatus;
+struct NGTextFragmentPaintInfo;
 struct PaintInfo;
 struct PhysicalOffset;
 
@@ -116,22 +119,38 @@ class CORE_EXPORT NGHighlightPainter {
     bool paint_selected_text_only_;
   };
 
-  explicit NGHighlightPainter(NGTextPainter& text_painter,
-                              const PaintInfo& paint_info,
-                              const NGInlineCursor& cursor,
-                              const NGFragmentItem& fragment_item,
-                              const PhysicalOffset& box_origin,
-                              const ComputedStyle& style,
-                              SelectionPaintState*,
-                              bool is_printing);
+  NGHighlightPainter(const NGTextFragmentPaintInfo& fragment_paint_info,
+                     NGTextPainter& text_painter,
+                     NGTextDecorationPainter& decoration_painter,
+                     const PaintInfo& paint_info,
+                     const NGInlineCursor& cursor,
+                     const NGFragmentItem& fragment_item,
+                     const PhysicalOffset& box_origin,
+                     const ComputedStyle& style,
+                     SelectionPaintState*,
+                     bool is_printing);
 
   enum Phase { kBackground, kForeground };
   void Paint(Phase phase);
 
+  // HighlightOverlayPainting feature only
+  void PaintOriginatingText(const TextPaintStyle&,
+                            DOMNodeId,
+                            const AutoDarkMode&);
+  void PaintHighlightOverlays(const TextPaintStyle&,
+                              DOMNodeId,
+                              const AutoDarkMode&,
+                              bool paint_marker_backgrounds,
+                              absl::optional<AffineTransform> rotation);
+  const Vector<NGHighlightOverlay::HighlightLayer>& Layers() { return layers_; }
+  const Vector<NGHighlightOverlay::HighlightPart>& Parts() { return parts_; }
+
   SelectionPaintState* Selection() { return selection_; }
 
  private:
+  const NGTextFragmentPaintInfo& fragment_paint_info_;
   NGTextPainter& text_painter_;
+  NGTextDecorationPainter& decoration_painter_;
   const PaintInfo& paint_info_;
   const NGInlineCursor& cursor_;
   const NGFragmentItem& fragment_item_;
@@ -141,6 +160,12 @@ class CORE_EXPORT NGHighlightPainter {
   const LayoutObject* layout_object_;
   Node* node_;
   const DocumentMarkerVector markers_;
+  DocumentMarkerVector target_;
+  DocumentMarkerVector spelling_;
+  DocumentMarkerVector grammar_;
+  DocumentMarkerVector custom_;
+  Vector<NGHighlightOverlay::HighlightLayer> layers_;
+  Vector<NGHighlightOverlay::HighlightPart> parts_;
   const bool skip_backgrounds_;
 };
 

@@ -1053,6 +1053,15 @@
     "args": ["--blink-settings=preferredColorScheme=0", "--enable-features=SystemColorChooser"]
   },
   {
+    "prefix": "css-highlight-overlay-painting",
+    "bases": [
+      "external/wpt/css/css-pseudo",
+      "wpt_internal/css/css-pseudo",
+      "external/wpt/css/css-highlight-api"
+    ],
+    "args": ["--enable-blink-features=HighlightOverlayPainting"]
+  },
+  {
     "prefix": "no-forced-frame-updates",
     "bases": ["external/wpt/html/dom/render-blocking"],
     "args": ["--enable-features=NoForcedFrameUpdatesForWebTests"]

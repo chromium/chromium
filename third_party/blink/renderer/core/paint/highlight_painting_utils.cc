@@ -91,6 +91,8 @@ Color HighlightThemeForegroundColor(const Document& document,
     case kPseudoIdTargetText:
       return LayoutTheme::GetTheme().PlatformTextSearchColor(
           false /* active match */, style.UsedColorScheme());
+    case kPseudoIdSpellingError:
+    case kPseudoIdGrammarError:
     case kPseudoIdHighlight:
       // TODO(crbug.com/1147859): Unstyled custom highlights should not be
       // painted, so here we make the color default to transparent. When the
@@ -115,6 +117,8 @@ Color HighlightThemeBackgroundColor(const Document& document,
                        style.UsedColorScheme());
     case kPseudoIdTargetText:
       return Color(shared_highlighting::kFragmentTextBackgroundColorARGB);
+    case kPseudoIdSpellingError:
+    case kPseudoIdGrammarError:
     case kPseudoIdHighlight:
       return Color::kTransparent;
     default:
