@@ -84,22 +84,26 @@ void JavaScriptContentWorld::AddFeature(const JavaScriptFeature* feature) {
     return;
   }
 
-  // Ensure |feature| supports this content world.
-  if (content_world_) {
-    JavaScriptFeature::ContentWorld incompatible_world_value;
-    if (content_world_ == WKContentWorld.pageWorld) {
-      // A feature specifying kIsolatedWorldOnly must not be added to the page
-      // content world.
-      incompatible_world_value =
-          JavaScriptFeature::ContentWorld::kIsolatedWorldOnly;
-    } else {
-      // A feature specifying kPageContentWorld must not be added to an
-      // isolated world.
-      incompatible_world_value =
-          JavaScriptFeature::ContentWorld::kPageContentWorld;
+#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
+  if (@available(iOS 14, *)) {
+    // Ensure |feature| supports this content world.
+    if (content_world_) {
+      JavaScriptFeature::ContentWorld incompatible_world_value;
+      if (content_world_ == WKContentWorld.pageWorld) {
+        // A feature specifying kIsolatedWorldOnly must not be added to the page
+        // content world.
+        incompatible_world_value =
+            JavaScriptFeature::ContentWorld::kIsolatedWorldOnly;
+      } else {
+        // A feature specifying kPageContentWorld must not be added to an
+        // isolated world.
+        incompatible_world_value =
+            JavaScriptFeature::ContentWorld::kPageContentWorld;
+      }
+      DCHECK_NE(feature->GetSupportedContentWorld(), incompatible_world_value);
     }
-    DCHECK_NE(feature->GetSupportedContentWorld(), incompatible_world_value);
   }
+#endif  // defined(__IPHONE14_0)
 
   features_.insert(feature);
 
@@ -119,20 +123,27 @@ void JavaScriptContentWorld::AddFeature(const JavaScriptFeature* feature) {
         feature_script.GetTargetFrames() !=
         JavaScriptFeature::FeatureScript::TargetFrames::kAllFrames;
 
-    if (content_world_) {
-      WKUserScript* user_script =
-          [[WKUserScript alloc] initWithSource:feature_script.GetScriptString()
-                                 injectionTime:injection_time
-                              forMainFrameOnly:main_frame_only
-                                inContentWorld:content_world_];
-      [user_content_controller_ addUserScript:user_script];
-    } else {
-      WKUserScript* user_script =
+    WKUserScript* user_script = nil;
+#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
+    if (@available(iOS 14, *)) {
+      if (content_world_) {
+        user_script = [[WKUserScript alloc]
+              initWithSource:feature_script.GetScriptString()
+               injectionTime:injection_time
+            forMainFrameOnly:main_frame_only
+              inContentWorld:content_world_];
+      }
+    }
+#endif  // defined(__IPHONE14_0)
+
+    if (!user_script) {
+      user_script =
           [[WKUserScript alloc] initWithSource:feature_script.GetScriptString()
                                  injectionTime:injection_time
                               forMainFrameOnly:main_frame_only];
-      [user_content_controller_ addUserScript:user_script];
     }
+
+    [user_content_controller_ addUserScript:user_script];
   }
 
   // Setup Javascript message callback.
@@ -145,13 +156,20 @@ void JavaScriptContentWorld::AddFeature(const JavaScriptFeature* feature) {
         base::SysUTF8ToNSString(optional_handler_name.value());
 
     std::unique_ptr<ScopedWKScriptMessageHandler> script_message_handler;
-    if (content_world_) {
-      script_message_handler = std::make_unique<ScopedWKScriptMessageHandler>(
-          user_content_controller_, handler_name, content_world_,
-          base::BindRepeating(&JavaScriptContentWorld::ScriptMessageReceived,
-                              weak_factory_.GetWeakPtr(), handler.value(),
-                              browser_state_));
-    } else {
+
+#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
+    if (@available(iOS 14, *)) {
+      if (content_world_) {
+        script_message_handler = std::make_unique<ScopedWKScriptMessageHandler>(
+            user_content_controller_, handler_name, content_world_,
+            base::BindRepeating(&JavaScriptContentWorld::ScriptMessageReceived,
+                                weak_factory_.GetWeakPtr(), handler.value(),
+                                browser_state_));
+      }
+    }
+#endif  // defined(__IPHONE14_0)
+
+    if (!script_message_handler.get()) {
       script_message_handler = std::make_unique<ScopedWKScriptMessageHandler>(
           user_content_controller_, handler_name,
           base::BindRepeating(&JavaScriptContentWorld::ScriptMessageReceived,
