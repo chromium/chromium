@@ -26,6 +26,7 @@
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
+#include "ui/message_center/public/cpp/notifier_id.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
@@ -161,9 +162,11 @@ Notification* MessageCenterImpl::FindParentNotification(
   // For a notification to have a parent notification, they must have identical
   // origin urls and profile_ids. To make sure that the notifications come from
   // the same website for the same user. If either fields are empty there can
-  // not be a parent notification.
+  // not be a parent notification. Also make sure to only group notifications
+  // from web pages.
   if (notification->origin_url().is_empty() ||
-      notification->notifier_id().profile_id.empty()) {
+      notification->notifier_id().profile_id.empty() ||
+      notification->notifier_id().type != NotifierType::WEB_PAGE) {
     return nullptr;
   }
 

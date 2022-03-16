@@ -84,6 +84,7 @@ class MessageCenterMetricsUtilsTest : public AshTestBase {
         message_center::SettingsButtonHandler::INLINE;
     message_center::NotifierId notifier_id;
     notifier_id.profile_id = "a@b.com";
+    notifier_id.type = message_center::NotifierType::WEB_PAGE;
     return std::make_unique<Notification>(
         message_center::NOTIFICATION_TYPE_BASE_FORMAT,
         base::NumberToString(current_id_++), u"title", u"message", gfx::Image(),

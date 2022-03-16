@@ -944,9 +944,9 @@ void AshNotificationView::OnThemeChanged() {
   SkColor secondary_text_color = AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorSecondary);
   header_row()->SetColor(secondary_text_color);
-  if (message_label()) {
+
+  if (message_label())
     message_label()->SetEnabledColor(secondary_text_color);
-  }
 
   if (control_buttons_view_) {
     control_buttons_view_->SetButtonIconColors(
@@ -954,9 +954,8 @@ void AshNotificationView::OnThemeChanged() {
             AshColorProvider::ContentLayerType::kIconColorPrimary));
   }
 
-  if (message_label_in_expanded_state_) {
+  if (message_label_in_expanded_state_)
     message_label_in_expanded_state_->SetEnabledColor(secondary_text_color);
-  }
 
   views::FocusRing::Get(this)->SetColor(
       AshColorProvider::Get()->GetControlsLayerColor(
