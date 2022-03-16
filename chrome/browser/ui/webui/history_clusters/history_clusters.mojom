@@ -60,10 +60,6 @@ struct URLVisit {
   // Annotations for this visit.
   array<Annotation> annotations;
 
-  // Search queries related to this visit or one of its related visits, if
-  // applicable; typically the highest scoring one.
-  array<SearchQuery> related_searches;
-
   // Related visits to this visit; starting with the highest scoring one, if
   // applicable. Only prominently featured visits have related visits.
   array<URLVisit> related_visits;
@@ -90,6 +86,9 @@ struct Cluster {
   // An optional label for the whole cluster. If this is not defined or empty,
   // `visit` should be displayed prominently instead.
   string? label;
+
+  // Search queries related to this cluster's visits.
+  array<SearchQuery> related_searches;
 };
 
 // Represents a set of Clusters returned by the browser in response to a request

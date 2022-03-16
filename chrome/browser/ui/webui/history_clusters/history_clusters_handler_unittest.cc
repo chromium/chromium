@@ -154,13 +154,13 @@ TEST_F(HistoryClustersHandlerTest, QueryClustersResultToMojom_RelatedSearches) {
 
   ASSERT_EQ(mojom_result->clusters.size(), 1u);
   EXPECT_EQ(mojom_result->clusters[0]->id, 4);
-  const auto& top_visit = mojom_result->clusters[0]->visit;
-  ASSERT_EQ(top_visit->related_searches.size(), 5u);
-  EXPECT_EQ(top_visit->related_searches[0]->query, "one");
-  EXPECT_EQ(top_visit->related_searches[1]->query, "two");
-  EXPECT_EQ(top_visit->related_searches[2]->query, "three");
-  EXPECT_EQ(top_visit->related_searches[3]->query, "four");
-  EXPECT_EQ(top_visit->related_searches[4]->query, "five");
+  const auto& cluster_mojom = mojom_result->clusters[0];
+  ASSERT_EQ(cluster_mojom->related_searches.size(), 5u);
+  EXPECT_EQ(cluster_mojom->related_searches[0]->query, "one");
+  EXPECT_EQ(cluster_mojom->related_searches[1]->query, "two");
+  EXPECT_EQ(cluster_mojom->related_searches[2]->query, "three");
+  EXPECT_EQ(cluster_mojom->related_searches[3]->query, "four");
+  EXPECT_EQ(cluster_mojom->related_searches[4]->query, "five");
 }
 
 // TODO(manukh) Add a test case for `VisitToMojom`.

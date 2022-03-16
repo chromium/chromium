@@ -165,16 +165,15 @@ mojom::QueryResultPtr QueryClustersResultToMojom(
         top_visit_mojom->related_visits.push_back(std::move(visit_mojom));
       }
 
-      // Coalesce the unique related searches of this visit into the top visit
+      // Coalesce the unique related searches of this visit into the cluster
       // until the cap is reached.
-      const auto& top_visit_mojom = cluster_mojom->visit;
       for (const auto& search_query :
            visit.annotated_visit.content_annotations.related_searches) {
-        if (top_visit_mojom->related_searches.size() >= kMaxRelatedSearches) {
+        if (cluster_mojom->related_searches.size() >= kMaxRelatedSearches) {
           break;
         }
 
-        if (base::Contains(top_visit_mojom->related_searches, search_query,
+        if (base::Contains(cluster_mojom->related_searches, search_query,
                            [](const mojom::SearchQueryPtr& search_query_mojom) {
                              return search_query_mojom->query;
                            })) {
@@ -183,7 +182,7 @@ mojom::QueryResultPtr QueryClustersResultToMojom(
 
         auto search_query_mojom = SearchQueryToMojom(profile, search_query);
         if (search_query_mojom) {
-          top_visit_mojom->related_searches.emplace_back(
+          cluster_mojom->related_searches.emplace_back(
               std::move(*search_query_mojom));
         }
       }

@@ -125,12 +125,12 @@
       </url-visit>
     </template>
   </iron-collapse>
-  <div id="related-searches" hidden="[[!cluster.visit.relatedSearches.length]]">
+  <div id="related-searches" hidden="[[!cluster.relatedSearches.length]]">
     <div id="related-searches-label">$i18n{relatedSearchesHeader}</div>
     <div id="search-queries" role="list" 
         aria-labelledby="related-searches-label"
         on-related-search-clicked="onRelatedSearchClicked_">
-      <template is="dom-repeat" items="[[cluster.visit.relatedSearches]]">
+      <template is="dom-repeat" items="[[cluster.relatedSearches]]">
         <search-query search-query="[[item]]" index="[[index]]" role="listitem">
         </search-query>
       </template>
