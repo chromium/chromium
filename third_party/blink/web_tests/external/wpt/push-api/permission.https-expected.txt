@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Query "push" powerful feature promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'query' on 'Permissions': Push Permission without userVisibleOnly:true isn't supported yet."
+Harness: the test ran to completion.
+
