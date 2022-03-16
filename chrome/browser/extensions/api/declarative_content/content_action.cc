@@ -78,7 +78,7 @@ class ShowExtensionAction : public ContentAction {
   static std::unique_ptr<ContentAction> Create(
       content::BrowserContext* browser_context,
       const Extension* extension,
-      const base::DictionaryValue* dict,
+      const base::Value::Dict* dict,
       std::string* error) {
     // TODO(devlin): We should probably throw an error if the extension has no
     // action specified in the manifest. Currently, this is allowed since
@@ -133,7 +133,7 @@ class SetIcon : public ContentAction {
   static std::unique_ptr<ContentAction> Create(
       content::BrowserContext* browser_context,
       const Extension* extension,
-      const base::DictionaryValue* dict,
+      const base::Value::Dict* dict,
       std::string* error);
 
   // Implementation of ContentAction:
@@ -197,7 +197,7 @@ struct ContentActionFactory {
   using FactoryMethod = std::unique_ptr<ContentAction> (*)(
       content::BrowserContext* /* browser_context */,
       const Extension* /* extension */,
-      const base::DictionaryValue* /* dict */,
+      const base::Value::Dict* /* dict */,
       std::string* /* error */);
   // Maps the name of a declarativeContent action type to the factory
   // function creating it.
@@ -240,7 +240,7 @@ RequestContentScript::ScriptData::~ScriptData() {}
 std::unique_ptr<ContentAction> RequestContentScript::Create(
     content::BrowserContext* browser_context,
     const Extension* extension,
-    const base::DictionaryValue* dict,
+    const base::Value::Dict* dict,
     std::string* error) {
   ScriptData script_data;
   if (!InitScriptData(dict, error, &script_data))
@@ -253,11 +253,11 @@ std::unique_ptr<ContentAction> RequestContentScript::Create(
 }
 
 // static
-bool RequestContentScript::InitScriptData(const base::DictionaryValue* dict,
+bool RequestContentScript::InitScriptData(const base::Value::Dict* dict,
                                           std::string* error,
                                           ScriptData* script_data) {
-  const base::Value* css = dict->FindKey(declarative_content_constants::kCss);
-  const base::Value* js = dict->FindKey(declarative_content_constants::kJs);
+  const base::Value* css = dict->Find(declarative_content_constants::kCss);
+  const base::Value* js = dict->Find(declarative_content_constants::kJs);
 
   if (!css && !js) {
     *error = base::StringPrintf(kMissingParameter, "css or js");
@@ -278,14 +278,14 @@ bool RequestContentScript::InitScriptData(const base::DictionaryValue* dict,
     }
   }
   if (const base::Value* all_frames_val =
-          dict->FindKey(declarative_content_constants::kAllFrames)) {
+          dict->Find(declarative_content_constants::kAllFrames)) {
     if (!all_frames_val->is_bool())
       return false;
 
     script_data->all_frames = all_frames_val->GetBool();
   }
   if (const base::Value* match_about_blank_val =
-          dict->FindKey(declarative_content_constants::kMatchAboutBlank)) {
+          dict->Find(declarative_content_constants::kMatchAboutBlank)) {
     if (!match_about_blank_val->is_bool())
       return false;
 
@@ -399,7 +399,7 @@ void RequestContentScript::OnUserScriptLoaderDestroyed(
 std::unique_ptr<ContentAction> SetIcon::Create(
     content::BrowserContext* browser_context,
     const Extension* extension,
-    const base::DictionaryValue* dict,
+    const base::Value::Dict* dict,
     std::string* error) {
   // We can't set a page or action's icon if the extension doesn't have one.
   if (!ActionInfo::GetExtensionActionInfo(extension)) {
@@ -408,10 +408,16 @@ std::unique_ptr<ContentAction> SetIcon::Create(
   }
 
   gfx::ImageSkia icon;
-  const base::Value* canvas_set = dict->FindDictKey("imageData");
-  if (canvas_set && ExtensionAction::ParseIconFromCanvasDictionary(
-                        base::Value::AsDictionaryValue(*canvas_set), &icon) !=
-                        ExtensionAction::IconParseResult::kSuccess) {
+  // TODO(crbug.com/1187011): When removing base::DictionaryValue from
+  // ParseIconFromCanvasDictionary, |canvas_set| should be changed to
+  // base::Value::Dict and checking for base::Value::Type::DICTIONARY should be
+  // removed. This is a temporary solution to prevent content_action base::Value
+  // migration from expanding across too many locations.
+  const base::Value* canvas_set = dict->Find("imageData");
+  if (canvas_set && canvas_set->type() == base::Value::Type::DICTIONARY &&
+      ExtensionAction::ParseIconFromCanvasDictionary(
+          base::Value::AsDictionaryValue(*canvas_set), &icon) !=
+          ExtensionAction::IconParseResult::kSuccess) {
     *error = kInvalidIconDictionary;
     return nullptr;
   }
@@ -445,22 +451,24 @@ std::unique_ptr<ContentAction> ContentAction::Create(
     const base::Value& json_action,
     std::string* error) {
   error->clear();
-  const base::DictionaryValue* action_dict = NULL;
-  std::string instance_type;
-  if (!(json_action.GetAsDictionary(&action_dict) &&
-        action_dict->GetString(declarative_content_constants::kInstanceType,
-                               &instance_type))) {
+  // TODO(crbug.com/1306708) Refactor ContentAction::Create to take in a
+  // base::Value::Dict instead of base::Value.
+  const base::Value::Dict* action_dict = json_action.GetIfDict();
+  const std::string* instance_type = nullptr;
+  if (!action_dict || !(instance_type = action_dict->FindString(
+                            declarative_content_constants::kInstanceType))) {
     *error = kMissingInstanceTypeError;
     return nullptr;
   }
 
   ContentActionFactory& factory = g_content_action_factory.Get();
-  auto factory_method_iter = factory.factory_methods.find(instance_type);
+  auto factory_method_iter = factory.factory_methods.find(*instance_type);
   if (factory_method_iter != factory.factory_methods.end())
-    return (*factory_method_iter->second)(
-        browser_context, extension, action_dict, error);
+    return (*factory_method_iter->second)(browser_context, extension,
+                                          action_dict, error);
 
-  *error = base::StringPrintf(kInvalidInstanceTypeError, instance_type.c_str());
+  *error =
+      base::StringPrintf(kInvalidInstanceTypeError, instance_type->c_str());
   return nullptr;
 }
 
