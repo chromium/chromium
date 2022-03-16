@@ -220,11 +220,35 @@ E2ETestBase = class extends testing.Test {
 
                     // This populates the address bar as if we typed the url.
                     focus.setValue(url);
-                    const onValueChanged = e => {
-                      focus.removeEventListener('valueChanged', onValueChanged);
-                      EventGenerator.sendKeyPress(KeyCode.RETURN);
-                    };
-                    focus.addEventListener('valueChanged', onValueChanged);
+
+                    // We have two choices to confirm navigation.
+                    if (!this.navigateLacrosWithAutoComplete) {
+                      // 1. (default), hit enter.
+                      const onValueChanged = e => {
+                        focus.removeEventListener(
+                            'valueChanged', onValueChanged);
+                        EventGenerator.sendKeyPress(KeyCode.RETURN);
+                      };
+                      focus.addEventListener('valueChanged', onValueChanged);
+                    } else {
+                      // 2. use the auto completion.
+                      // Wait until the auto completion shows up.
+                      const clickAutocomplete = () => {
+                        focus.removeEventListener(
+                            'controlsChanged', clickAutocomplete);
+
+                        // The text field relates to the auto complete list box
+                        // via controlledBy. The |controls| node structure here
+                        // nests several levels until the listBoxOption we want.
+                        const autoCompleteListBoxOption =
+                            focus.controls[0].firstChild.firstChild;
+                        assertEquals(
+                            'listBoxOption', autoCompleteListBoxOption.role);
+                        autoCompleteListBoxOption.doDefault();
+                      };
+                      focus.addEventListener(
+                          'controlsChanged', clickAutocomplete);
+                    }
                   }
                 });
                 return;

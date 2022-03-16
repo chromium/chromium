@@ -11,22 +11,30 @@ GEN_INCLUDE(['../../common/testing/mock_accessibility_private.js']);
 AutoclickE2ETest = class extends E2ETestBase {
   constructor() {
     super();
+    this.navigateLacrosWithAutoComplete = true;
+  }
+
+  async setUpDeferred() {
     this.mockAccessibilityPrivate = MockAccessibilityPrivate;
     chrome.accessibilityPrivate = this.mockAccessibilityPrivate;
 
     window.RoleType = chrome.automation.RoleType;
 
+    const module =
+        await import('/accessibility_common/accessibility_common_loader.js');
+
     // Re-initialize AccessibilityCommon with mock AccessibilityPrivate API.
-    const reinit = module => {
-      accessibilityCommon = new module.AccessibilityCommon();
+    accessibilityCommon = new module.AccessibilityCommon();
+
+    await new Promise(r => {
       chrome.accessibilityFeatures.autoclick.get({}, () => {
         // Turn off focus ring blinking for test after autoclick is initialized.
         accessibilityCommon.getAutoclickForTest().setNoBlinkFocusRingsForTest();
+        r();
       });
-    };
+    });
 
-// TODO: Clang-format does this and below wrong.
-import('/accessibility_common/accessibility_common_loader.js').then(reinit);
+    await super.setUpDeferred();
   }
 
   /** @override */
