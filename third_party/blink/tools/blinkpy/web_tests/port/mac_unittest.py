@@ -77,11 +77,3 @@ class MacPortTest(port_testcase.PortTestCase):
             port.path_to_apache_config_file(),
             '/mock-checkout/third_party/blink/tools/apache_config/apache2-httpd-2.4-php7.conf'
         )
-
-    def test_path_to_apache_config_file_on_10_15(self):
-        port = self.make_port(os_version='mac10.15', port_name='mac')
-        port._apache_version = lambda: '2.4'  # pylint: disable=protected-access
-        self.assertEqual(
-            port.path_to_apache_config_file(),
-            '/mock-checkout/third_party/blink/tools/apache_config/apache2-httpd-2.4-php7-prefork.conf'
-        )

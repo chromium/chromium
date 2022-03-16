@@ -28,6 +28,10 @@
 /androidx/libs/
 /angle
 /angle_dx11
+/apache-mac/LICENSE
+/apache-mac/bin/*
+/apache-mac/lib/*
+/apache-mac/libexec/*
 /apache-portable-runtime/src
 /apache-win32/bin/*.exe
 /apache-win32/bin/*.dll

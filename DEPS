@@ -524,6 +524,17 @@ deps = {
     'condition': '(host_os == "linux")',
   },
 
+  'src/third_party/apache-mac': {
+    'packages': [
+      {
+        'package': 'infra/3pp/tools/httpd-php/${{platform}}',
+        'version': 'version:2@httpd2.4.38.php7.3.31.chromium.1',
+      },
+    ],
+    'dep_type': 'cipd',
+    'condition': '(host_os == "mac")',
+  },
+
   'src/android_webview/tools/cts_archive': {
       'packages': [
           {

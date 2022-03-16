@@ -121,13 +121,11 @@ class ApacheHTTP(server_base.ServerBase):
             '-c', 'TypesConfig "%s"' % mime_types_path,
             '-c', 'CustomLog "%s" common' % self._access_log_path,
             '-c', 'ErrorLog "%s"' % self._error_log_path,
+            '-c', 'PHPINIDir "%s"' % php_ini_dir,
             '-c', 'PidFile %s' % self._pid_file,
             '-c', 'SSLCertificateFile "%s"' % cert_file,
             '-c', 'DefaultType None',
         ]
-        if not self._port_obj.host.platform.is_mac_monterey():
-            start_cmd += ['-c', 'PHPINIDir "%s"' % php_ini_dir]
-
         # yapf: enable
 
         if self._is_win:
