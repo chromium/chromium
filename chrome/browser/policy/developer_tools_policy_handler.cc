@@ -56,8 +56,8 @@ PolicyCheckResult CheckDeveloperToolsDisabled(
 // does not have a valid value, returns |nullopt|.
 absl::optional<Availability> GetValueFromDeveloperToolsDisabledPolicy(
     const PolicyMap& policies) {
-  const base::Value* developer_tools_disabled =
-      policies.GetValue(key::kDeveloperToolsDisabled);
+  const base::Value* developer_tools_disabled = policies.GetValue(
+      key::kDeveloperToolsDisabled, base::Value::Type::BOOLEAN);
 
   if (CheckDeveloperToolsDisabled(developer_tools_disabled,
                                   nullptr /*error*/) !=
@@ -109,7 +109,7 @@ PolicyCheckResult CheckDeveloperToolsAvailability(
 absl::optional<Availability> GetValueFromDeveloperToolsAvailabilityPolicy(
     const PolicyMap& policies) {
   const base::Value* developer_tools_availability =
-      policies.GetValue(key::kDeveloperToolsAvailability);
+      policies.GetValueUnsafe(key::kDeveloperToolsAvailability);
 
   if (CheckDeveloperToolsAvailability(developer_tools_availability,
                                       nullptr /*error*/) !=
@@ -148,13 +148,13 @@ bool DeveloperToolsPolicyHandler::CheckPolicySettings(
     policy::PolicyErrorMap* errors) {
   // Deprecated boolean policy DeveloperToolsDisabled.
   const base::Value* developer_tools_disabled =
-      policies.GetValue(key::kDeveloperToolsDisabled);
+      policies.GetValueUnsafe(key::kDeveloperToolsDisabled);
   PolicyCheckResult developer_tools_disabled_result =
       CheckDeveloperToolsDisabled(developer_tools_disabled, errors);
 
   // Enumerated policy DeveloperToolsAvailability
   const base::Value* developer_tools_availability =
-      policies.GetValue(key::kDeveloperToolsAvailability);
+      policies.GetValueUnsafe(key::kDeveloperToolsAvailability);
   PolicyCheckResult developer_tools_availability_result =
       CheckDeveloperToolsAvailability(developer_tools_availability, errors);
 

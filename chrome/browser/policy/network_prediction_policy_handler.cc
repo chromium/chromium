@@ -21,10 +21,10 @@ bool NetworkPredictionPolicyHandler::CheckPolicySettings(
     PolicyErrorMap* errors) {
   // Deprecated boolean preference.
   const base::Value* network_prediction_enabled =
-      policies.GetValue(key::kDnsPrefetchingEnabled);
+      policies.GetValueUnsafe(key::kDnsPrefetchingEnabled);
   // New enumerated preference.
   const base::Value* network_prediction_options =
-      policies.GetValue(key::kNetworkPredictionOptions);
+      policies.GetValueUnsafe(key::kNetworkPredictionOptions);
 
   if (network_prediction_enabled && !network_prediction_enabled->is_bool()) {
     errors->AddError(key::kDnsPrefetchingEnabled, IDS_POLICY_TYPE_ERROR,
@@ -48,18 +48,18 @@ bool NetworkPredictionPolicyHandler::CheckPolicySettings(
 void NetworkPredictionPolicyHandler::ApplyPolicySettings(
     const PolicyMap& policies,
     PrefValueMap* prefs) {
-  const base::Value* network_prediction_options =
-      policies.GetValue(key::kNetworkPredictionOptions);
-  if (network_prediction_options && network_prediction_options->is_int()) {
+  const base::Value* network_prediction_options = policies.GetValue(
+      key::kNetworkPredictionOptions, base::Value::Type::INTEGER);
+  if (network_prediction_options) {
     prefs->SetInteger(prefetch::prefs::kNetworkPredictionOptions,
                       network_prediction_options->GetInt());
     return;
   }
 
   // Observe deprecated policy setting for compatibility.
-  const base::Value* network_prediction_enabled =
-      policies.GetValue(key::kDnsPrefetchingEnabled);
-  if (network_prediction_enabled && network_prediction_enabled->is_bool()) {
+  const base::Value* network_prediction_enabled = policies.GetValue(
+      key::kDnsPrefetchingEnabled, base::Value::Type::BOOLEAN);
+  if (network_prediction_enabled) {
     prefetch::NetworkPredictionOptions setting =
         network_prediction_enabled->GetBool()
             ? prefetch::NetworkPredictionOptions::kWifiOnlyDeprecated

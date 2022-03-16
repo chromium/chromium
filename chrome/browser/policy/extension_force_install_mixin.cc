@@ -346,9 +346,9 @@ void UpdatePolicyViaMockPolicyProvider(
           .Clone();
   policy::PolicyMap::Entry* const existing_entry =
       policy_map.GetMutable(policy::key::kExtensionInstallForcelist);
-  if (existing_entry) {
+  if (existing_entry && existing_entry->value(base::Value::Type::LIST)) {
     // Append to the existing policy.
-    existing_entry->value()->Append(policy_item_value);
+    existing_entry->value(base::Value::Type::LIST)->Append(policy_item_value);
   } else {
     // Set the new policy value.
     base::Value policy_value(base::Value::Type::LIST);

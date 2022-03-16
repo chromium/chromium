@@ -78,10 +78,10 @@ void UserNetworkConfigurationUpdaterAsh::SetClientCertificateImporterForTest(
 // static
 bool UserNetworkConfigurationUpdaterAsh::
     PolicyHasWebTrustedAuthorityCertificate(const PolicyMap& policy_map) {
-  const base::Value* policy_value =
-      policy_map.GetValue(key::kOpenNetworkConfiguration);
+  const base::Value* policy_value = policy_map.GetValue(
+      key::kOpenNetworkConfiguration, base::Value::Type::STRING);
 
-  if (!policy_value || policy_value->type() != base::Value::Type::STRING)
+  if (!policy_value)
     return false;
 
   base::ListValue certificates_value;

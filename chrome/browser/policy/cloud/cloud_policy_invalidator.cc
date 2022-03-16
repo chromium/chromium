@@ -476,9 +476,9 @@ void CloudPolicyInvalidator::Unregister() {
 
 void CloudPolicyInvalidator::UpdateMaxFetchDelay(const PolicyMap& policy_map) {
   // Try reading the delay from the policy.
-  const base::Value* delay_policy_value =
-      policy_map.GetValue(key::kMaxInvalidationFetchDelay);
-  if (delay_policy_value && delay_policy_value->is_int()) {
+  const base::Value* delay_policy_value = policy_map.GetValue(
+      key::kMaxInvalidationFetchDelay, base::Value::Type::INTEGER);
+  if (delay_policy_value) {
     set_max_fetch_delay(delay_policy_value->GetInt());
     return;
   }

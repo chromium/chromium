@@ -21,8 +21,9 @@ BrowsingHistoryPolicyHandler::~BrowsingHistoryPolicyHandler() {}
 void BrowsingHistoryPolicyHandler::ApplyPolicySettings(
     const PolicyMap& policies,
     PrefValueMap* prefs) {
-  const base::Value* value = policies.GetValue(policy_name());
-  if (value && value->is_bool() && !value->GetBool()) {
+  const base::Value* value =
+      policies.GetValue(policy_name(), base::Value::Type::BOOLEAN);
+  if (value && !value->GetBool()) {
     prefs->SetBoolean(browsing_data::prefs::kDeleteBrowsingHistory, false);
     prefs->SetBoolean(browsing_data::prefs::kDeleteBrowsingHistoryBasic, false);
     prefs->SetBoolean(browsing_data::prefs::kDeleteDownloadHistory, false);

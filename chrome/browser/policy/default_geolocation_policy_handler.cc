@@ -20,7 +20,8 @@ DefaultGeolocationPolicyHandler::~DefaultGeolocationPolicyHandler() {}
 
 void DefaultGeolocationPolicyHandler::ApplyPolicySettings(
     const PolicyMap& policies, PrefValueMap* prefs) {
-  const base::Value* const value = policies.GetValue(policy_name());
+  const base::Value* const value =
+      policies.GetValue(policy_name(), base::Value::Type::INTEGER);
   int value_in_range;
   if (value && EnsureInRange(value, &value_in_range, nullptr)
       && value_in_range == CONTENT_SETTING_BLOCK) {

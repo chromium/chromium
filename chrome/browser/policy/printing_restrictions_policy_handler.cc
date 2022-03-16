@@ -299,11 +299,11 @@ bool PrintPdfAsImageDefaultPolicyHandler::CheckPolicySettings(
   // Platforms which require a policy to enable the "Print as image" option
   // should have that policy specified with availability enabled before trying
   // to specify a default behavior for the option.
-  if (policies.GetValue(key::kPrintPdfAsImageDefault)) {
-    const base::Value* option_availability =
-        policies.GetValue(key::kPrintPdfAsImageAvailability);
-    if (!option_availability || !option_availability->is_bool() ||
-        !option_availability->GetBool()) {
+  if (policies.GetValue(key::kPrintPdfAsImageDefault,
+                        base::Value::Type::BOOLEAN)) {
+    const base::Value* option_availability = policies.GetValue(
+        key::kPrintPdfAsImageAvailability, base::Value::Type::BOOLEAN);
+    if (!option_availability || !option_availability->GetBool()) {
       errors->AddError(key::kPrintPdfAsImageDefault,
                        IDS_POLICY_DEPENDENCY_ERROR,
                        key::kPrintPdfAsImageAvailability, "Enabled");
@@ -317,8 +317,8 @@ bool PrintPdfAsImageDefaultPolicyHandler::CheckPolicySettings(
 void PrintPdfAsImageDefaultPolicyHandler::ApplyPolicySettings(
     const PolicyMap& policies,
     PrefValueMap* prefs) {
-  const base::Value* option_default_value =
-      policies.GetValue(key::kPrintPdfAsImageDefault);
+  const base::Value* option_default_value = policies.GetValue(
+      key::kPrintPdfAsImageDefault, base::Value::Type::BOOLEAN);
   if (option_default_value) {
     prefs->SetValue(prefs::kPrintPdfAsImageDefault,
                     option_default_value->Clone());

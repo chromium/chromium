@@ -52,8 +52,9 @@ std::string BrowserDMTokenStorageAndroid::InitEnrollmentToken() {
       g_browser_process->browser_policy_connector()
           ->GetPolicyService()
           ->GetPolicies(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
-          .GetValue(key::kCloudManagementEnrollmentToken);
-  return value && value->is_string() ? value->GetString() : std::string();
+          .GetValue(key::kCloudManagementEnrollmentToken,
+                    base::Value::Type::STRING);
+  return value ? value->GetString() : std::string();
 }
 
 std::string BrowserDMTokenStorageAndroid::InitDMToken() {

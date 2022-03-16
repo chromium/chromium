@@ -22,9 +22,9 @@ JavascriptPolicyHandler::~JavascriptPolicyHandler() {}
 bool JavascriptPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
                                                   PolicyErrorMap* errors) {
   const base::Value* javascript_enabled =
-      policies.GetValue(key::kJavascriptEnabled);
+      policies.GetValueUnsafe(key::kJavascriptEnabled);
   const base::Value* default_setting =
-      policies.GetValue(key::kDefaultJavaScriptSetting);
+      policies.GetValueUnsafe(key::kDefaultJavaScriptSetting);
 
   if (javascript_enabled && !javascript_enabled->is_bool()) {
     errors->AddError(key::kJavascriptEnabled, IDS_POLICY_TYPE_ERROR,
@@ -48,16 +48,15 @@ bool JavascriptPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
 void JavascriptPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
                                                   PrefValueMap* prefs) {
   int setting = CONTENT_SETTING_DEFAULT;
-  const base::Value* default_setting =
-      policies.GetValue(key::kDefaultJavaScriptSetting);
+  const base::Value* default_setting = policies.GetValue(
+      key::kDefaultJavaScriptSetting, base::Value::Type::INTEGER);
 
-  if (default_setting && default_setting->is_int()) {
+  if (default_setting) {
     setting = default_setting->GetInt();
   } else {
     const base::Value* javascript_enabled =
-        policies.GetValue(key::kJavascriptEnabled);
-    if (javascript_enabled && javascript_enabled->is_bool() &&
-        !javascript_enabled->GetBool()) {
+        policies.GetValue(key::kJavascriptEnabled, base::Value::Type::BOOLEAN);
+    if (javascript_enabled && !javascript_enabled->GetBool()) {
       setting = CONTENT_SETTING_BLOCK;
     }
   }

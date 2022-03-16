@@ -205,10 +205,11 @@ IN_PROC_BROWSER_TEST_F(PrimaryUserPoliciesProxiedTest,
           ->GetPolicyService();
 
   // Sanity check default state without a policy active.
-  EXPECT_FALSE(device_wide_policy_service
-                   ->GetPolicies(PolicyNamespace(
-                       POLICY_DOMAIN_CHROME, std::string() /* component_id */))
-                   .GetValue(key::kAudioOutputAllowed));
+  EXPECT_FALSE(
+      device_wide_policy_service
+          ->GetPolicies(PolicyNamespace(POLICY_DOMAIN_CHROME,
+                                        std::string() /* component_id */))
+          .GetValue(key::kAudioOutputAllowed, base::Value::Type::BOOLEAN));
   const PrefService::Preference* pref =
       g_browser_process->local_state()->FindPreference(
           chromeos::prefs::kAudioOutputAllowed);
@@ -229,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(PrimaryUserPoliciesProxiedTest,
       device_wide_policy_service
           ->GetPolicies(PolicyNamespace(POLICY_DOMAIN_CHROME,
                                         std::string() /* component_id */))
-          .GetValue(key::kAudioOutputAllowed);
+          .GetValue(key::kAudioOutputAllowed, base::Value::Type::BOOLEAN);
   ASSERT_TRUE(policy_value);
   EXPECT_FALSE(policy_value->GetBool());
 

@@ -175,7 +175,7 @@ void NetworkConfigurationUpdater::ParseCurrentPolicy(
     base::ListValue* certificates) {
   const PolicyMap& policies = policy_service_->GetPolicies(
       PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()));
-  const base::Value* policy_value = policies.GetValue(policy_key_);
+  const base::Value* policy_value = policies.GetValueUnsafe(policy_key_);
 
   if (!policy_value)
     VLOG(2) << LogHeader() << " is not set.";

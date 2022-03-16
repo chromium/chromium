@@ -41,7 +41,7 @@ WebHidDevicePolicyHandler::~WebHidDevicePolicyHandler() = default;
 
 bool WebHidDevicePolicyHandler::CheckPolicySettings(const PolicyMap& policies,
                                                     PolicyErrorMap* errors) {
-  const base::Value* value = policies.GetValue(policy_name());
+  const base::Value* value = policies.GetValueUnsafe(policy_name());
   if (!value)
     return true;
 

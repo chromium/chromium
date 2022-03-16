@@ -413,7 +413,8 @@ IN_PROC_BROWSER_TEST_F(CloudPolicyTest, EnsureDefaultPoliciesSet) {
   GetExpectedDefaultPolicy(&default_policy);
   // Make sure the expected policy has at least one of the policies we're
   // expecting.
-  EXPECT_TRUE(default_policy.GetValue(key::kEasyUnlockAllowed));
+  EXPECT_TRUE(default_policy.GetValue(key::kEasyUnlockAllowed,
+                                      base::Value::Type::BOOLEAN));
 
   // Now make sure that these default policies are actually getting injected.
   EXPECT_TRUE(default_policy.Equals(policy_service->GetPolicies(

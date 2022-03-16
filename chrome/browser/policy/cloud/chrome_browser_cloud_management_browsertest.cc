@@ -762,7 +762,8 @@ IN_PROC_BROWSER_TEST_P(MachineLevelUserCloudPolicyPolicyFetchTest, Test) {
   if (dm_token() != kInvalidDMToken) {
     EXPECT_EQ(1u, policy_map.size());
     EXPECT_EQ(base::Value(true),
-              *(policy_map.Get(key::kSavingBrowserHistoryDisabled)->value()));
+              *(policy_map.Get(key::kSavingBrowserHistoryDisabled)
+                    ->value(base::Value::Type::BOOLEAN)));
 
     // The token in storage should be valid.
     DMToken token = retrieve_dm_token();
@@ -902,7 +903,8 @@ IN_PROC_BROWSER_TEST_F(MachineLevelUserCloudPolicyRobotAuthTest, MAYBE_Test) {
 
   EXPECT_EQ(1u, policy_map.size());
   EXPECT_EQ(base::Value(true),
-            *(policy_map.Get(key::kSavingBrowserHistoryDisabled)->value()));
+            *(policy_map.Get(key::kSavingBrowserHistoryDisabled)
+                  ->value(base::Value::Type::BOOLEAN)));
 
   // The token in storage should be valid.
   DMToken token = retrieve_dm_token();
