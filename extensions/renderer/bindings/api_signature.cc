@@ -221,8 +221,7 @@ class BaseValueArgumentParser : public ArgumentParser {
                        signature,
                        arguments,
                        type_refs,
-                       promises_allowed),
-        list_value_(std::make_unique<base::ListValue>()) {}
+                       promises_allowed) {}
 
   BaseValueArgumentParser(const BaseValueArgumentParser&) = delete;
   BaseValueArgumentParser& operator=(const BaseValueArgumentParser&) = delete;
@@ -230,9 +229,7 @@ class BaseValueArgumentParser : public ArgumentParser {
   APISignature::JSONParseResult ParseArguments(bool signature_has_callback);
 
  private:
-  void AddNull() override {
-    list_value_->Append(std::make_unique<base::Value>());
-  }
+  void AddNull() override { list_value_.Append(base::Value()); }
   void AddNullCallback() override {
     // The base::Value conversion doesn't include the callback directly, so we
     // don't add a null parameter here.
@@ -243,14 +240,13 @@ class BaseValueArgumentParser : public ArgumentParser {
     // The corresponding base::Value is expected to have been stored in
     // |last_arg_| already.
     DCHECK(last_arg_);
-    list_value_->Append(std::move(last_arg_));
-    last_arg_.reset();
+    list_value_.Append(base::Value::FromUniquePtrValue(std::move(last_arg_)));
   }
   void SetCallback(v8::Local<v8::Function> callback) override {
     callback_ = callback;
   }
 
-  std::unique_ptr<base::ListValue> list_value_;
+  base::Value::List list_value_;
   std::unique_ptr<base::Value> last_arg_;
   v8::Local<v8::Function> callback_;
 };
@@ -441,7 +437,8 @@ APISignature::JSONParseResult BaseValueArgumentParser::ParseArguments(
   if (!ParseArgumentsImpl(signature_has_callback)) {
     result.error = TakeError();
   } else {
-    result.arguments_list = std::move(list_value_);
+    result.arguments_list =
+        std::make_unique<base::Value>(std::move(list_value_));
     result.callback = callback_;
     result.async_type = async_type();
   }
