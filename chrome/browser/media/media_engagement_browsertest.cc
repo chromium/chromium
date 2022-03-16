@@ -42,10 +42,18 @@
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/no_state_prefetch/common/no_state_prefetch_final_status.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
+#include "content/public/test/prerender_test_util.h"
 #include "media/base/media_switches.h"
+#include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/mojom/autoplay/autoplay.mojom-test-utils.h"
+#include "third_party/blink/public/mojom/autoplay/autoplay.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/sessions/session_service_factory.h"
@@ -873,4 +881,199 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementSessionRestoreBrowserTest,
   new_browser->tab_strip_model()->CloseAllTabs();
 
   ExpectScores(new_service, url, 2, 2);
+}
+
+class MockAutoplayConfigurationClient
+    : public blink::mojom::AutoplayConfigurationClientInterceptorForTesting {
+ public:
+  MockAutoplayConfigurationClient() = default;
+  ~MockAutoplayConfigurationClient() override = default;
+
+  MockAutoplayConfigurationClient(const MockAutoplayConfigurationClient&) =
+      delete;
+  MockAutoplayConfigurationClient& operator=(
+      const MockAutoplayConfigurationClient&) = delete;
+
+  AutoplayConfigurationClient* GetForwardingInterface() override {
+    return this;
+  }
+
+  void BindReceiver(mojo::ScopedInterfaceEndpointHandle handle) {
+    receiver_.reset();
+    receiver_.Bind(
+        mojo::PendingAssociatedReceiver<
+            blink::mojom::AutoplayConfigurationClient>(std::move(handle)));
+  }
+
+  MOCK_METHOD2(AddAutoplayFlags, void(const url::Origin&, const int32_t));
+
+ private:
+  mojo::AssociatedReceiver<blink::mojom::AutoplayConfigurationClient> receiver_{
+      this};
+};
+
+class MediaEngagementContentsObserverMPArchBrowserTest
+    : public MediaEngagementBrowserTest {
+ public:
+  MediaEngagementContentsObserverMPArchBrowserTest() = default;
+  ~MediaEngagementContentsObserverMPArchBrowserTest() override = default;
+  MediaEngagementContentsObserverMPArchBrowserTest(
+      const MediaEngagementContentsObserverMPArchBrowserTest&) = delete;
+
+  MediaEngagementContentsObserverMPArchBrowserTest& operator=(
+      const MediaEngagementContentsObserverMPArchBrowserTest&) = delete;
+
+  void OverrideInterface(content::RenderFrameHost* render_frame_host,
+                         MockAutoplayConfigurationClient* client) {
+    render_frame_host->GetRemoteAssociatedInterfaces()
+        ->OverrideBinderForTesting(
+            blink::mojom::AutoplayConfigurationClient::Name_,
+            base::BindRepeating(&MockAutoplayConfigurationClient::BindReceiver,
+                                base::Unretained(client)));
+  }
+
+  void SetScores(const url::Origin& origin, int visits, int media_playbacks) {
+    MediaEngagementScore score = GetService()->CreateEngagementScore(origin);
+    score.SetVisits(visits);
+    score.SetMediaPlaybacks(media_playbacks);
+    score.Commit();
+  }
+};
+
+class MediaEngagementContentsObserverPrerenderBrowserTest
+    : public MediaEngagementContentsObserverMPArchBrowserTest {
+ public:
+  MediaEngagementContentsObserverPrerenderBrowserTest() = default;
+  ~MediaEngagementContentsObserverPrerenderBrowserTest() override = default;
+
+  void SetUpOnMainThread() override {
+    prerender_helper_->SetUp(embedded_test_server());
+    MediaEngagementContentsObserverMPArchBrowserTest::SetUpOnMainThread();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    MediaEngagementContentsObserverMPArchBrowserTest::SetUpCommandLine(
+        command_line);
+    // |prerender_helper_| has a ScopedFeatureList so we needed to delay its
+    // creation until now because MediaEngagementBrowserTest also uses a
+    // ScopedFeatureList and initialization order matters.
+    prerender_helper_ = std::make_unique<
+        content::test::PrerenderTestHelper>(base::BindRepeating(
+        &MediaEngagementContentsObserverPrerenderBrowserTest::GetWebContents,
+        base::Unretained(this)));
+  }
+
+  content::test::PrerenderTestHelper& prerender_helper() {
+    return *prerender_helper_;
+  }
+
+ private:
+  std::unique_ptr<content::test::PrerenderTestHelper> prerender_helper_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(MediaEngagementContentsObserverPrerenderBrowserTest,
+                       DoNotSendEngagementLevelToRenderFrameInPrerendering) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  MockAutoplayConfigurationClient client;
+  OverrideInterface(GetWebContents()->GetMainFrame(), &client);
+
+  const GURL& initial_url = embedded_test_server()->GetURL("/empty.html");
+  SetScores(url::Origin::Create(initial_url), 24, 20);
+
+  // AddAutoplayFlags should be called once after navigating |initial_url| in
+  // the main frame.
+  EXPECT_CALL(client, AddAutoplayFlags(testing::_, testing::_)).Times(1);
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+
+  // Loads a page in a prerendered page.
+  GURL prerender_url = embedded_test_server()->GetURL("/title1.html");
+  const int host_id = prerender_helper().AddPrerender(prerender_url);
+  content::RenderFrameHost* prerender_rfh =
+      prerender_helper().GetPrerenderedMainFrameHost(host_id);
+  MockAutoplayConfigurationClient prerendered_client;
+  OverrideInterface(prerender_rfh, &prerendered_client);
+  // AddAutoplayFlags should not be called in prerendering, but it should be
+  // called when the prerendered page is activated.
+  EXPECT_CALL(prerendered_client, AddAutoplayFlags(testing::_, testing::_))
+      .Times(1);
+
+  // Activate the prerendered page.
+  prerender_helper().NavigatePrimaryPage(prerender_url);
+
+  base::RunLoop().RunUntilIdle();
+}
+
+class MediaEngagementContentsObserverFencedFrameBrowserTest
+    : public MediaEngagementContentsObserverMPArchBrowserTest {
+ public:
+  MediaEngagementContentsObserverFencedFrameBrowserTest() = default;
+  ~MediaEngagementContentsObserverFencedFrameBrowserTest() override = default;
+  MediaEngagementContentsObserverFencedFrameBrowserTest(
+      const MediaEngagementContentsObserverFencedFrameBrowserTest&) = delete;
+
+  MediaEngagementContentsObserverFencedFrameBrowserTest& operator=(
+      const MediaEngagementContentsObserverFencedFrameBrowserTest&) = delete;
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    MediaEngagementContentsObserverMPArchBrowserTest::SetUpOnMainThread();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    MediaEngagementBrowserTest::SetUpCommandLine(command_line);
+    // |fenced_frame_helper_| has a ScopedFeatureList so we needed to delay its
+    // creation until now because MediaEngagementBrowserTest also uses a
+    // ScopedFeatureList and initialization order matters.
+    fenced_frame_helper_ =
+        std::make_unique<content::test::FencedFrameTestHelper>();
+  }
+
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return *fenced_frame_helper_;
+  }
+
+ private:
+  std::unique_ptr<content::test::FencedFrameTestHelper> fenced_frame_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(MediaEngagementContentsObserverFencedFrameBrowserTest,
+                       SendEngagementLevelToRenderFrameOnFencedFrame) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  MockAutoplayConfigurationClient client;
+  OverrideInterface(GetWebContents()->GetMainFrame(), &client);
+
+  const GURL& initial_url =
+      embedded_test_server()->GetURL("a.com", "/empty.html");
+  SetScores(url::Origin::Create(initial_url), 24, 20);
+
+  // AddAutoplayFlags should be called on the primary main frame.
+  EXPECT_CALL(client, AddAutoplayFlags(testing::_, testing::_)).Times(1);
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+
+  // Create a fenced frame.
+  GURL fenced_frame_url =
+      embedded_test_server()->GetURL("b.com", "/fenced_frames/title1.html");
+  content::RenderFrameHost* fenced_frame_host =
+      fenced_frame_test_helper().CreateFencedFrame(
+          GetWebContents()->GetMainFrame(), fenced_frame_url);
+  EXPECT_NE(nullptr, fenced_frame_host);
+
+  // AddAutoplayFlags should be called on the fenced frame.
+  MockAutoplayConfigurationClient fenced_frame_client;
+  OverrideInterface(fenced_frame_host, &fenced_frame_client);
+  GURL fenced_frame_navigate_url =
+      embedded_test_server()->GetURL("b.com", "/fenced_frames/title2.html");
+  EXPECT_CALL(fenced_frame_client,
+              AddAutoplayFlags(url::Origin::Create(fenced_frame_navigate_url),
+                               testing::_))
+      .Times(1);
+  fenced_frame_test_helper().NavigateFrameInFencedFrameTree(
+      fenced_frame_host, fenced_frame_navigate_url);
 }
