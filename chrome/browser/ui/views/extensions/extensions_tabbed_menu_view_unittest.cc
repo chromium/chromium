@@ -523,6 +523,7 @@ TEST_F(ExtensionsTabbedMenuViewUnitTest,
       installed_item->view_controller()));
 }
 
+// TODO(crbug.com/1304959): Test is flaky.
 TEST_F(ExtensionsTabbedMenuViewUnitTest,
        InstalledTab_AddAndRemoveExtensionWhenMenuIsOpen) {
   constexpr char kExtensionA[] = "A Extension";
@@ -738,6 +739,7 @@ TEST_F(ExtensionsTabbedMenuViewUnitTest,
   EXPECT_EQ(requests_access_items().size(), 0u);
 }
 
+// TODO(crbug.com/1304951): Test is flaky.
 TEST_F(
     ExtensionsTabbedMenuViewUnitTest,
     SiteAccessTab_ExtensionInCorrectSiteAccessSectionAfterChangingSiteAccessUsingCombobox) {
@@ -780,6 +782,7 @@ TEST_F(
             kOnClickComboboxIndex);
 }
 
+// TODO(crbug.com/1304951): Test is flaky.
 TEST_F(
     ExtensionsTabbedMenuViewUnitTest,
     SiteAccessTab_ExtensionInCorrectSiteAccessSectionAfterChangingSiteAccessUsingContextMenu) {
@@ -844,6 +847,7 @@ TEST_F(
             kOnClickComboboxIndex);
 }
 
+// TODO(crbug.com/1304951): Test is flaky.
 TEST_F(
     ExtensionsTabbedMenuViewUnitTest,
     SiteAccessTab_ExtensionsInCorrectSiteAccessSectionAfterClickingOnAction) {
@@ -884,6 +888,7 @@ TEST_F(
             kOnClickComboboxIndex);
 }
 
+// TODO(crbug.com/1304959): Test is flaky.
 TEST_F(ExtensionsTabbedMenuViewUnitTest,
        SiteAccessTab_AddAndRemoveExtensionWhenMenuIsOpen) {
   constexpr char kExtensionA[] = "A Extension";
