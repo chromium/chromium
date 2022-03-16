@@ -67833,6 +67833,16 @@ Called by update_net_trust_anchors.py.-->
   </int>
 </enum>
 
+<enum name="OrbBlockingDecisionReason">
+  <int value="0" label="Invalid"/>
+  <int value="1" label="Never-sniffed MIME type"/>
+  <int value="2" label="`nosniff` header"/>
+  <int value="3" label="Unexpected range response"/>
+  <int value="4" label="Sniffed as HTML"/>
+  <int value="5" label="Sniffed as XML"/>
+  <int value="6" label="Sniffed as JSON"/>
+</enum>
+
 <enum name="OriginAgentClusterEndResult">
   <int value="0" label="Not requested and not origin-keyed"/>
   <int value="1" label="Not requested but origin-keyed"/>

@@ -70,6 +70,8 @@ class ComparingAnalyzer : public ResponseAnalyzer {
         DCHECK_EQ(Decision::kAllow, corb_decision_);
         DCHECK_EQ(Decision::kBlock, orb_decision_);
         comparison = Comparison::kOrbBlocksAndCorbDoesnt;
+
+        orb_analyzer_->ReportOrbBlockedAndCorbDidnt();
       }
     } else {
       if (corb_decision_ == orb_decision_) {
@@ -135,8 +137,9 @@ class ComparingAnalyzer : public ResponseAnalyzer {
     return is_orb_enabled_ ? orb_decision_ : corb_decision_;
   }
 
-  const std::unique_ptr<ResponseAnalyzer> corb_analyzer_;
-  const std::unique_ptr<ResponseAnalyzer> orb_analyzer_;
+  const std::unique_ptr<CrossOriginReadBlocking::CorbResponseAnalyzer>
+      corb_analyzer_;
+  const std::unique_ptr<OpaqueResponseBlockingAnalyzer> orb_analyzer_;
   const bool is_orb_enabled_ = false;
 
   Decision corb_decision_ = Decision::kSniffMore;

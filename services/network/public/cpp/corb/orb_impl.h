@@ -21,7 +21,7 @@
 namespace network {
 namespace corb {
 
-class COMPONENT_EXPORT(NETWORK_CPP) OpaqueResponseBlockingAnalyzer
+class COMPONENT_EXPORT(NETWORK_CPP) OpaqueResponseBlockingAnalyzer final
     : public ResponseAnalyzer {
  public:
   explicit OpaqueResponseBlockingAnalyzer(PerFactoryState& state);
@@ -40,6 +40,26 @@ class COMPONENT_EXPORT(NETWORK_CPP) OpaqueResponseBlockingAnalyzer
   Decision Sniff(base::StringPiece data) override;
   Decision HandleEndOfSniffableResponseBody() override;
   bool ShouldReportBlockedResponse() const override;
+
+  // TODO(https://crbug.com/1178928): Remove this once we gather enough
+  // DumpWithoutCrashing data.
+  void ReportOrbBlockedAndCorbDidnt() const;
+
+  // Each `return Decision::kBlock` in the implementation of
+  // OpaqueResponseBlockingAnalyzer has a corresponding enum value below.
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class BlockingDecisionReason {
+    kInvalid = 0,
+    kNeverSniffedMimeType = 1,
+    kNoSniffHeader = 2,
+    kUnexpectedRangeResponse = 3,
+    kSniffedAsHtml = 4,
+    kSniffedAsXml = 5,
+    kSniffedAsJson = 6,
+    kMaxValue = kSniffedAsJson,  // For UMA histograms.
+  };
 
  private:
   void StoreAllowedAudioVideoRequest(const GURL& media_url);
@@ -66,6 +86,12 @@ class COMPONENT_EXPORT(NETWORK_CPP) OpaqueResponseBlockingAnalyzer
   // TODO(lukasza): Replace with raw_ref<T> or nonnull_raw_ptr<T> once
   // available.
   raw_ptr<PerFactoryState> per_factory_state_;
+
+  // TODO(https://crbug.com/1178928): Remove this once we gather enough
+  // DumpWithoutCrashing data.
+  int http_status_code_ = 0;
+  BlockingDecisionReason blocking_decision_reason_ =
+      BlockingDecisionReason::kInvalid;
 };
 
 }  // namespace corb

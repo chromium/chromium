@@ -821,6 +821,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SiteIsolation.ORB.BlockingReason"
+    enum="OrbBlockingDecisionReason" expires_after="M106">
+  <owner>creis@chromium.org</owner>
+  <owner>lukasza@chromium.org</owner>
+  <summary>
+    Logs why ORB has reached a blocking decision.
+
+    Logged for each response processed by OpaqueResponseBlockingAnalyzer.
+  </summary>
+</histogram>
+
 <histogram name="SiteIsolation.ORB.CorbVsOrb" enum="CorbVsOrb"
     expires_after="M106">
   <owner>creis@chromium.org</owner>
@@ -832,6 +843,18 @@ chromium-metrics-reviews@google.com.
     Logged at the end of lifetime of the ResponseAnalyzer (i.e. after processing
     each response that is subject to CORB - most NetworkService responses, but
     also CORB-covered web bundles).
+  </summary>
+</histogram>
+
+<histogram name="SiteIsolation.ORB.CorbVsOrb.OrbBlockedAndCorbDidnt.Reason"
+    enum="OrbBlockingDecisionReason" expires_after="M106">
+  <owner>creis@chromium.org</owner>
+  <owner>lukasza@chromium.org</owner>
+  <summary>
+    Logs why ORB has reached a blocking decision.
+
+    Logged when it turned out that CORB wouldn't have blocked the response, but
+    ORB blocked the response.
   </summary>
 </histogram>
 

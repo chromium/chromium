@@ -72,7 +72,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
 
   // An instance for tracking the state of analyzing a single response
   // and deciding whether CORB should block the response.
-  class COMPONENT_EXPORT(NETWORK_CPP) CorbResponseAnalyzer
+  class COMPONENT_EXPORT(NETWORK_CPP) CorbResponseAnalyzer final
       : public network::corb::ResponseAnalyzer {
    public:
     // Categorizes the resource MIME type for CORB protection logging.
