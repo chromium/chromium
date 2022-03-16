@@ -1203,6 +1203,23 @@
           'gtest_tests': 'cronet_gtests',
         },
       },
+      'android-nougat-x86-rel': {
+        'mixins': [
+          'has_native_resultdb_integration',
+          'isolate_profile_data',
+          'nougat-x86-emulator',
+          'emulator-4-cores',
+          'linux-xenial-or-bionic',
+          'x86-64',
+        ],
+        'os_type': 'android',
+        'test_suites': {
+          'gtest_tests': 'android_nougat_emulator_gtests',
+          'junit_tests': 'chromium_junit_tests',
+          'isolated_scripts': 'nougat_isolated_scripts',
+          'scripts': 'chromium_android_scripts',
+        },
+      },
       'android-pie-arm64-wpt-rel-non-cq': {
         'mixins': [
           'has_native_resultdb_integration',

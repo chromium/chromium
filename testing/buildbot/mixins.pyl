@@ -950,6 +950,29 @@
       },
     },
   },
+  'nougat-x86-emulator': {
+    '$mixin_append': {
+      'args': [
+        '--avd-config=../../tools/android/avd/proto/generic_android25.textpb',
+      ],
+    },
+    'swarming': {
+      # soft affinity so that bots with caches will be picked first
+      'optional_dimensions': {
+        '60': [
+          {
+            'caches': 'generic_android25',
+          }
+        ],
+      },
+      'named_caches': [
+        {
+          'name': 'generic_android25',
+          'path': '.android_emulator/generic_android25',
+        },
+      ]
+    },
+  },
   'nougat_generic': {
     'swarming': {
       'dimensions': {

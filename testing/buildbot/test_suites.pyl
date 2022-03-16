@@ -5541,6 +5541,22 @@
       'weblayer_gtests',
     ],
 
+    'android_nougat_emulator_gtests': [
+      'android_emulator_specific_chrome_public_tests',
+      'android_monochrome_smoke_tests',
+      'android_smoke_tests',
+      'android_specific_chromium_gtests',  # Already includes gl_gtests.
+      'android_wpr_record_replay_tests',
+      'chromium_gtests',
+      'chromium_gtests_for_devices_with_graphical_output',
+      'linux_flavor_specific_chromium_gtests',
+      'system_webview_shell_instrumentation_tests', # Not an experimental test
+      'weblayer_android_gtests',
+      'weblayer_gtests',
+      'webview_cts_tests_gtest',
+      'webview_ui_instrumentation_tests',
+    ],
+
     'android_nougat_gtests': [
       'android_ar_gtests',
       'android_ddready_vr_gtests',
@@ -6584,6 +6600,14 @@
 
     'network_service_extra_gtests': [
       'network_service_fyi_gtests',
+    ],
+
+    'nougat_isolated_scripts': [
+      'android_isolated_scripts',
+      'components_perftests_isolated_scripts',
+      'monochrome_public_apk_checker_isolated_script',
+      'telemetry_android_minidump_unittests_isolated_scripts',
+      'telemetry_perf_unittests_isolated_scripts_android',
     ],
 
     'paeverywhere_mac_gtests': [
