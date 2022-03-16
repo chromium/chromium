@@ -40,6 +40,10 @@ enum class BrokenNTPHierarchyRelationship {
 // header menu.
 - (void)recordHeaderMenuLearnMoreTapped;
 
+// Record metrics for when the user selects the 'Manage' item in the feed header
+// menu.
+- (void)recordHeaderMenuManageTapped;
+
 // Record metrics for when the user selects the 'Manage Activity' item in the
 // feed header menu.
 - (void)recordHeaderMenuManageActivityTapped;

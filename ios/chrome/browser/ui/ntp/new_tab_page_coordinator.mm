@@ -1096,6 +1096,7 @@ namespace {
 }
 
 - (void)handleFeedManageTapped {
+  [self.feedMetricsRecorder recordHeaderMenuManageTapped];
   [self.feedManagementCoordinator stop];
   self.feedManagementCoordinator = nil;
 
