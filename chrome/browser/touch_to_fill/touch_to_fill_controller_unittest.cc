@@ -585,6 +585,33 @@ TEST_P(TouchToFillControllerTestWithSubmissionReadinessVariationTest,
 }
 
 TEST_P(TouchToFillControllerTestWithSubmissionReadinessVariationTest,
+       SubmissionReadiness_ConservativeHeuristics) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      password_manager::features::kTouchToFillPasswordSubmission,
+      {{password_manager::features::
+            kTouchToFillPasswordSubmissionWithConservativeHeuristics,
+        "true"}});
+  SubmissionReadinessState submission_readiness = GetParam();
+
+  UiCredential credentials[] = {
+      MakeUiCredential({.username = "alice", .password = "p4ssw0rd"})};
+
+  // Submit the form iff there is only two fields.
+  bool submission_expected =
+      submission_readiness == SubmissionReadinessState::kTwoFields;
+
+  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+                           ElementsAreArray(credentials),
+                           /*trigger_submission=*/submission_expected));
+  touch_to_fill_controller().Show(credentials, driver().AsWeakPtr(),
+                                  submission_readiness);
+
+  EXPECT_CALL(driver(), TouchToFillClosed(ShowVirtualKeyboard(true)));
+  touch_to_fill_controller().OnDismiss();
+}
+
+TEST_P(TouchToFillControllerTestWithSubmissionReadinessVariationTest,
        SubmissionReadinessMetrics) {
   SubmissionReadinessState submission_readiness = GetParam();
 

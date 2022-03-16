@@ -281,6 +281,12 @@ const char kPasswordChangeWithForcedDialogAfterEverySuccessfulSubmission[] =
 const char kPasswordChangeInSettingsWithForcedWarningForEverySite[] =
     "should_force_warning_for_every_site_in_settings";
 
+#if BUILDFLAG(IS_ANDROID)
+// Enables using conservative heuristics to calculate submission readiness.
+const char kTouchToFillPasswordSubmissionWithConservativeHeuristics[] =
+    "should_use_conservative_heuristics";
+#endif  // IS_ANDROID
+
 bool IsPasswordScriptsFetchingEnabled() {
   return base::FeatureList::IsEnabled(kPasswordScriptsFetching) ||
          base::FeatureList::IsEnabled(kPasswordDomainCapabilitiesFetching);

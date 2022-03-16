@@ -8,6 +8,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/check.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/types/pass_key.h"
@@ -56,8 +57,16 @@ std::vector<UiCredential> SortCredentials(
 // Infers whether a form should be submitted based on the feature's state and
 // the form's structure (submission_readiness).
 bool ShouldTriggerSubmission(SubmissionReadinessState submission_readiness) {
-  // TODO(crbug.com/1299394): Add a feature's variation for the conservative
-  // launch (SubmissionReadinessState::kTwoFields).
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kTouchToFillPasswordSubmission)) {
+    return false;
+  }
+
+  bool use_conservative_heuristics = base::GetFieldTrialParamByFeatureAsBool(
+      password_manager::features::kTouchToFillPasswordSubmission,
+      password_manager::features::
+          kTouchToFillPasswordSubmissionWithConservativeHeuristics,
+      false);
   switch (submission_readiness) {
     case SubmissionReadinessState::kNoInformation:
     case SubmissionReadinessState::kError:
@@ -65,11 +74,13 @@ bool ShouldTriggerSubmission(SubmissionReadinessState submission_readiness) {
     case SubmissionReadinessState::kFieldBetweenUsernameAndPassword:
     case SubmissionReadinessState::kFieldAfterPasswordField:
       return false;
+
     case SubmissionReadinessState::kEmptyFields:
     case SubmissionReadinessState::kMoreThanTwoFields:
+      return !use_conservative_heuristics;
+
     case SubmissionReadinessState::kTwoFields:
-      return base::FeatureList::IsEnabled(
-          password_manager::features::kTouchToFillPasswordSubmission);
+      return true;
   }
 }
 

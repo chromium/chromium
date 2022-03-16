@@ -107,6 +107,11 @@ extern const char
     kPasswordChangeWithForcedDialogAfterEverySuccessfulSubmission[];
 extern const char kPasswordChangeInSettingsWithForcedWarningForEverySite[];
 
+#if BUILDFLAG(IS_ANDROID)
+// Touch To Fill submission feature's variations.
+extern const char kTouchToFillPasswordSubmissionWithConservativeHeuristics[];
+#endif  // IS_ANDROID
+
 // Returns true if any of the password script fetching related flags are
 // enabled.
 bool IsPasswordScriptsFetchingEnabled();

@@ -2494,6 +2494,20 @@ const FeatureEntry::FeatureVariation kPasswordChangeFeatureVariations[] = {
      std::size(
          kPasswordChangeVariationWithForcedDialogAfterEverySuccessfulSubmission),
      nullptr}};
+
+// The variations of --touch-to-fill-password-submission.
+const FeatureEntry::FeatureParam
+    kTouchToFillPasswordSubmissionWithConservativeHeuristics[] = {
+        {password_manager::features::
+             kTouchToFillPasswordSubmissionWithConservativeHeuristics,
+         "true"}};
+
+const FeatureEntry::FeatureVariation
+    kTouchToFillPasswordSubmissionVariations[] = {
+        {"Use conservative heuristics",
+         kTouchToFillPasswordSubmissionWithConservativeHeuristics,
+         std::size(kTouchToFillPasswordSubmissionWithConservativeHeuristics),
+         nullptr}};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -7653,9 +7667,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"touch-to-fill-password-submission",
      flag_descriptions::kTouchToFillPasswordSubmissionName,
      flag_descriptions::kTouchToFillPasswordSubmissionDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kTouchToFillPasswordSubmission)},
-
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         password_manager::features::kTouchToFillPasswordSubmission,
+         kTouchToFillPasswordSubmissionVariations,
+         "TouchToFillPasswordSubmission")},
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
