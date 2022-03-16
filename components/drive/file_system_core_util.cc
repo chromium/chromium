@@ -42,16 +42,15 @@ std::string ReadStringFromGDocFile(const base::FilePath& file_path,
     return std::string();
   }
 
-  base::DictionaryValue* dictionary_value = nullptr;
-  std::string result;
-  if (!root_value->GetAsDictionary(&dictionary_value) ||
-      !dictionary_value->GetString(key, &result)) {
-    LOG(WARNING) << "No value for the given key is stored in "
-                 << file_path.value() << ". key = " << key;
-    return std::string();
+  if (const auto* dict = root_value->GetIfDict()) {
+    const std::string* result = dict->FindString(key);
+    if (result) {
+      return *result;
+    }
   }
-
-  return result;
+  LOG(WARNING) << "No value for the given key is stored in "
+               << file_path.value() << ". key = " << key;
+  return std::string();
 }
 
 }  // namespace
