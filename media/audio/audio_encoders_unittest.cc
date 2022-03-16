@@ -199,6 +199,14 @@ class AudioEncodersTest : public ::testing::TestWithParam<TestAudioParams> {
     auto audio_bus = AudioBus::Create(options_.channels, num_frames);
     audio_source_.OnMoreData(base::TimeDelta(), timestamp, 0, audio_bus.get());
 
+    DoEncode(std::move(audio_bus), timestamp, std::move(done_cb));
+
+    return num_frames;
+  }
+
+  void DoEncode(std::unique_ptr<AudioBus> audio_bus,
+                base::TimeTicks timestamp,
+                AudioEncoder::EncoderStatusCB done_cb = base::NullCallback()) {
     if (!done_cb) {
       pending_callback_results_.emplace_back();
       done_cb = base::BindLambdaForTesting([&](EncoderStatus error) {
@@ -213,10 +221,25 @@ class AudioEncodersTest : public ::testing::TestWithParam<TestAudioParams> {
       });
     }
 
+    int num_frames = audio_bus->frames();
+
     encoder_->Encode(std::move(audio_bus), timestamp, std::move(done_cb));
     expected_output_duration_ +=
         AudioTimestampHelper::FramesToTime(num_frames, options_.sample_rate);
-    return num_frames;
+  }
+
+  void FlushAndVerifyStatus(
+      EncoderStatus::Codes status_code = EncoderStatus::Codes::kOk) {
+    bool flush_done = false;
+    auto flush_done_cb = base::BindLambdaForTesting([&](EncoderStatus error) {
+      if (error.code() != status_code)
+        FAIL() << "Expected " << EncoderStatusCodeToString(status_code)
+               << " but got " << EncoderStatusCodeToString(error.code());
+      flush_done = true;
+    });
+    encoder()->Flush(std::move(flush_done_cb));
+    RunLoop();
+    EXPECT_TRUE(flush_done);
   }
 
   void ValidateDoneCallbacksRun() {
@@ -299,34 +322,13 @@ TEST_P(AudioEncodersTest, EncodeWithoutInitialize) {
 }
 
 TEST_P(AudioEncodersTest, FlushWithoutInitialize) {
-  bool called_flush = false;
-  auto flush_cb = base::BindLambdaForTesting([&](EncoderStatus error) {
-    if (error.code() != EncoderStatus::Codes::kEncoderInitializeNeverCompleted)
-      FAIL() << "Expected kEncoderInitializeNeverCompleted error but got "
-             << EncoderStatusCodeToString(error.code());
-    called_flush = true;
-  });
-
-  encoder()->Flush(std::move(flush_cb));
-
-  RunLoop();
-  EXPECT_TRUE(called_flush);
+  FlushAndVerifyStatus(EncoderStatus::Codes::kEncoderInitializeNeverCompleted);
 }
 
 TEST_P(AudioEncodersTest, FlushWithNoInput) {
   InitializeEncoder();
-  bool called_flush = false;
-  auto flush_cb = base::BindLambdaForTesting([&](EncoderStatus error) {
-    if (error.code() != EncoderStatus::Codes::kOk)
-      FAIL() << "Expected kOk but got "
-             << EncoderStatusCodeToString(error.code());
-    called_flush = true;
-  });
 
-  encoder()->Flush(std::move(flush_cb));
-
-  RunLoop();
-  EXPECT_TRUE(called_flush);
+  FlushAndVerifyStatus();
 }
 
 TEST_P(AudioEncodersTest, EncodeAndFlush) {
@@ -338,18 +340,8 @@ TEST_P(AudioEncodersTest, EncodeAndFlush) {
   ProduceAudioAndEncode();
   ProduceAudioAndEncode();
 
-  bool called_flush = false;
-  auto flush_cb = base::BindLambdaForTesting([&](EncoderStatus error) {
-    if (error.code() != EncoderStatus::Codes::kOk)
-      FAIL() << "Expected kOk but got "
-             << EncoderStatusCodeToString(error.code());
-    called_flush = true;
-  });
+  FlushAndVerifyStatus();
 
-  encoder()->Flush(std::move(flush_cb));
-
-  RunLoop();
-  EXPECT_TRUE(called_flush);
   ValidateDoneCallbacksRun();
   ValidateOutputDuration();
 }
@@ -431,18 +423,8 @@ TEST_P(AudioEncodersTest, ProvideInputAfterDoneCb) {
   RunLoop();
   EXPECT_TRUE(called_done);
 
-  bool called_flush = false;
-  auto flush_cb = base::BindLambdaForTesting([&](EncoderStatus error) {
-    if (error.code() != EncoderStatus::Codes::kOk)
-      FAIL() << "Expected kOk but got "
-             << EncoderStatusCodeToString(error.code());
-    called_flush = true;
-  });
+  FlushAndVerifyStatus();
 
-  encoder()->Flush(std::move(flush_cb));
-
-  RunLoop();
-  EXPECT_TRUE(called_flush);
   ValidateOutputDuration();
 }
 
@@ -486,18 +468,9 @@ TEST_P(AudioEncodersTest, Timestamps) {
       current_timestamp += duration;
     }
 
-    bool flush_done = false;
-    AudioEncoder::EncoderStatusCB done_cb =
-        base::BindLambdaForTesting([&](EncoderStatus error) {
-          if (!error.is_ok())
-            FAIL() << error.message();
-          flush_done = true;
-        });
-    encoder()->Flush(std::move(done_cb));
-    RunLoop();
+    FlushAndVerifyStatus();
 
     ValidateDoneCallbacksRun();
-    EXPECT_TRUE(flush_done);
     EXPECT_EQ(expected_outputs, timestamps.size());
 
     // We must use an `AudioTimestampHelper` to verify the returned timestamps
@@ -550,18 +523,8 @@ TEST_P(AudioEncodersTest, TimeContinuityBreak) {
   auto ts2 = ts1 + buffer_duration_;
   ProduceAudioAndEncode(current_timestamp);
 
-  bool called_flush_cb = false;
-  AudioEncoder::EncoderStatusCB flush_cb =
-      base::BindLambdaForTesting([&](EncoderStatus error) {
-        called_flush_cb = true;
-        if (!error.is_ok())
-          FAIL() << error.message();
-      });
+  FlushAndVerifyStatus();
 
-  encoder()->Flush(std::move(flush_cb));
-  RunLoop();
-
-  EXPECT_TRUE(called_flush_cb);
   ASSERT_EQ(3u, timestamps.size());
   EXPECT_TRUE(TimesAreNear(ts0, timestamps[0], base::Microseconds(1)));
   EXPECT_TRUE(TimesAreNear(ts1, timestamps[1], base::Microseconds(1)));
@@ -577,16 +540,8 @@ TEST_P(AudioEncodersTest, TimeContinuityBreak) {
   auto ts4 = current_timestamp;
   ProduceAudioAndEncode(current_timestamp);
 
-  called_flush_cb = false;
-  flush_cb = base::BindLambdaForTesting([&](EncoderStatus error) {
-    called_flush_cb = true;
-    if (!error.is_ok())
-      FAIL() << error.message();
-  });
-  encoder()->Flush(std::move(flush_cb));
-  RunLoop();
+  FlushAndVerifyStatus();
 
-  EXPECT_TRUE(called_flush_cb);
   ASSERT_EQ(5u, timestamps.size());
   EXPECT_TRUE(TimesAreNear(ts3, timestamps[3], base::Microseconds(1)));
   EXPECT_TRUE(TimesAreNear(ts4, timestamps[4], base::Microseconds(1)));
@@ -691,16 +646,54 @@ TEST_P(AudioOpusEncoderTest, FullCycleEncodeDecode) {
   // Flushing should trigger the encode callback and we should be able to decode
   // the resulting encoded frames.
   if (needs_flushing) {
-    encoder()->Flush(base::BindOnce([](EncoderStatus error) {
-      if (!error.is_ok())
-        FAIL() << error.message();
-    }));
-    RunLoop();
+    FlushAndVerifyStatus();
+
     EXPECT_EQ(2, encode_callback_count);
   }
 
   opus_decoder_destroy(opus_decoder);
   opus_decoder = nullptr;
+}
+
+TEST_P(AudioOpusEncoderTest, VariableChannelCounts) {
+  constexpr int kTestToneFrequency = 440;
+  SineWaveAudioSource sources[] = {
+      SineWaveAudioSource(1, kTestToneFrequency, options_.sample_rate),
+      SineWaveAudioSource(2, kTestToneFrequency, options_.sample_rate),
+      SineWaveAudioSource(3, kTestToneFrequency, options_.sample_rate)};
+
+  const int num_frames = options_.sample_rate * buffer_duration_.InSecondsF();
+
+  auto generate_audio = [&sources, &num_frames](
+                            int channel_count,
+                            base::TimeTicks current_timestamp) {
+    auto audio_bus = AudioBus::Create(channel_count, num_frames);
+    sources[channel_count - 1].OnMoreData(base::TimeDelta(), current_timestamp,
+                                          0, audio_bus.get());
+    return audio_bus;
+  };
+
+  // Superpermutation of {1, 2, 3}, covering all transitions between upmixing,
+  // downmixing and not mixing.
+  const int kChannelCountSequence[] = {1, 2, 3, 1, 2, 2, 1, 3, 2, 1};
+
+  // Override |GetParam().channels|, to ensure that we can both upmix and
+  // downmix.
+  options_.channels = 2;
+
+  auto empty_output_cb =
+      base::BindLambdaForTesting([&](EncodedAudioBuffer output, MaybeDesc) {});
+
+  InitializeEncoder(std::move(empty_output_cb));
+
+  base::TimeTicks current_timestamp;
+  for (const int& ch : kChannelCountSequence) {
+    // Encode, using a different number of channels each time.
+    DoEncode(generate_audio(ch, current_timestamp), current_timestamp);
+    current_timestamp += buffer_duration_;
+  }
+
+  FlushAndVerifyStatus();
 }
 
 INSTANTIATE_TEST_SUITE_P(Opus,
@@ -722,18 +715,8 @@ TEST_P(MFAudioEncoderTest, FlushWithTooLittleInput) {
   InitializeEncoder(base::DoNothing());
   ProduceAudioAndEncode();
 
-  bool called_flush = false;
-  auto flush_cb = base::BindLambdaForTesting([&](EncoderStatus error) {
-    if (error.code() != EncoderStatus::Codes::kEncoderFailedFlush)
-      FAIL() << "Expected kEncoderFailedFlush but got "
-             << EncoderStatusCodeToString(error.code());
-    called_flush = true;
-  });
+  FlushAndVerifyStatus(EncoderStatus::Codes::kEncoderFailedFlush);
 
-  encoder()->Flush(std::move(flush_cb));
-
-  RunLoop();
-  EXPECT_TRUE(called_flush);
   ValidateDoneCallbacksRun();
 }
 

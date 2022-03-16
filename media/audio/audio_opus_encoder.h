@@ -17,6 +17,8 @@
 
 namespace media {
 
+class ChannelMixer;
+
 using OpusEncoderDeleterType = void (*)(OpusEncoder* encoder_ptr);
 using OwnedOpusEncoder = std::unique_ptr<OpusEncoder, OpusEncoderDeleterType>;
 
@@ -54,6 +56,9 @@ class MEDIA_EXPORT AudioOpusEncoder : public AudioEncoder {
 
   EncoderStatus::Or<OwnedOpusEncoder> CreateOpusEncoder();
 
+  std::unique_ptr<AudioBus> EnsureExpectedChannelCount(
+      std::unique_ptr<AudioBus> audio_bus);
+
   AudioParameters input_params_;
 
   // Output parameters after audio conversion. This may differ from the input
@@ -72,6 +77,11 @@ class MEDIA_EXPORT AudioOpusEncoder : public AudioEncoder {
   // converter.
   // Note: Must be destroyed before |converter_|.
   std::unique_ptr<InputFramesFifo> fifo_;
+
+  // Used to mix incoming Encode() buffers to match the expect input channel
+  // count.
+  std::unique_ptr<ChannelMixer> mixer_;
+  AudioParameters mixer_input_params_;
 
   // This is the destination AudioBus where the |converter_| teh audio into.
   std::unique_ptr<AudioBus> converted_audio_bus_;

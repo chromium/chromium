@@ -12,6 +12,7 @@
 #include "base/numerics/checked_math.h"
 #include "base/strings/stringprintf.h"
 #include "media/base/bind_to_current_loop.h"
+#include "media/base/channel_mixer.h"
 #include "media/base/encoder_status.h"
 #include "media/base/timestamp_constants.h"
 
@@ -272,6 +273,31 @@ AudioOpusEncoder::CodecDescription AudioOpusEncoder::PrepareExtraData() {
   return extra_data;
 }
 
+std::unique_ptr<AudioBus> AudioOpusEncoder::EnsureExpectedChannelCount(
+    std::unique_ptr<AudioBus> audio_bus) {
+  // No mixing required.
+  if (audio_bus->channels() == input_params_.channels())
+    return audio_bus;
+
+  const int& incoming_channels = audio_bus->channels();
+  if (!mixer_ || mixer_input_params_.channels() != incoming_channels) {
+    // Both the format and the sample rate are unused for mixing, but we still
+    // need to pass a value below.
+    mixer_input_params_.Reset(input_params_.format(),
+                              GuessChannelLayout(incoming_channels),
+                              incoming_channels, input_params_.sample_rate());
+
+    mixer_ = std::make_unique<ChannelMixer>(mixer_input_params_, input_params_);
+  }
+
+  auto mixed_bus =
+      AudioBus::Create(input_params_.channels(), audio_bus->frames());
+
+  mixer_->Transform(audio_bus.get(), mixed_bus.get());
+
+  return mixed_bus;
+}
+
 void AudioOpusEncoder::Encode(std::unique_ptr<AudioBus> audio_bus,
                               base::TimeTicks capture_time,
                               EncoderStatusCB done_cb) {
@@ -286,12 +312,11 @@ void AudioOpusEncoder::Encode(std::unique_ptr<AudioBus> audio_bus,
   }
 
   DCHECK(timestamp_tracker_);
-  DCHECK_EQ(audio_bus->channels(), input_params_.channels());
 
   if (timestamp_tracker_->base_timestamp() == kNoTimestamp)
     timestamp_tracker_->SetBaseTimestamp(capture_time - base::TimeTicks());
 
-  fifo_->Push(std::move(audio_bus));
+  fifo_->Push(EnsureExpectedChannelCount(std::move(audio_bus)));
 
   while (fifo_->frames() >= min_input_frames_needed_ && current_done_cb_)
     OnEnoughInputFrames();
