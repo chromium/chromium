@@ -498,6 +498,10 @@ _FUCHSIA_SHERLOCK_PERF_FYI_BENCHMARK_CONFIGS = PerfSuite([
 ])
 _FUCHSIA_ATLAS_PERF_FYI_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('system_health.common_desktop'),
+    _GetBenchmarkConfig('speedometer'),
+    _GetBenchmarkConfig('speedometer2'),
+    _GetBenchmarkConfig('jetstream'),
+    _GetBenchmarkConfig('jetstream2'),
 ])
 _LINUX_PERF_CALIBRATION_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('speedometer2'),
