@@ -239,7 +239,9 @@ struct FormData {
   // globally anymore.
   FormVersion version;
 
-  // A vector of all frames in the form.
+  // A vector of all frames in the form, where currently 'frames' only refers
+  // to iframes and not fenced frames. It can only be iframes because those are
+  // the only frames with cross frame form filling.
   std::vector<FrameTokenWithPredecessor> child_frames;
 
   // The type of the event that was taken as an indication that this form is
