@@ -1,6 +1,6 @@
 {
   // chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai
-  "manifest_version": 3,
+  "manifest_version": 2,
   "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDN6hM0rsDYGbzQPQfOygqlRtQgKUXMfnSjhIBL7LnReAVBEd7ZmKtyN2qmSasMl4HZpMhVe2rPWVVwBDl6iyNE/Kok6E6v6V3vCLGsOpQAuuNVye/3QxzIldzG/jQAdWZiyXReRVapOhZtLjGfywCvlWq7Sl/e3sbc0vWybSDI2QIDAQAB",
   "name": "<NAME>",
   "version": "1",
@@ -18,8 +18,6 @@
   "mime_types": [
     "application/pdf"
   ],
-  "mime_types_handler": "index.html",
-  "content_security_policy": {
-    "extension_pages" : "script-src 'self' 'wasm-eval' blob: filesystem: chrome://resources; object-src * blob: externalfile: file: filesystem: data:"
-  }
+  "content_security_policy": "script-src 'self' 'wasm-eval' blob: filesystem: chrome://resources; object-src * blob: externalfile: file: filesystem: data:",
+  "mime_types_handler": "index.html"
 }
