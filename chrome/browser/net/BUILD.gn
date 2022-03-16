@@ -12,6 +12,13 @@ proto_library("probe_message_proto") {
   sources = [ "probe_message.proto" ]
 }
 
+proto_library("key_pinning_proto") {
+  sources = [
+    "key_pinning.proto",
+    "kp_timestamp.proto",
+  ]
+}
+
 if (is_android) {
   java_cpp_enum("secure_dns_management_mode_generated_enum") {
     sources = [ "secure_dns_config.h" ]

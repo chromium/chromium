@@ -17,6 +17,7 @@ import "mojo/public/mojom/base/values.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 import "services/network/public/mojom/host_resolver.mojom";
 import "services/network/public/mojom/http_raw_headers.mojom";
+import "services/network/public/mojom/key_pinning.mojom";
 import "services/network/public/mojom/mutable_network_traffic_annotation_tag.mojom";
 import "services/network/public/mojom/net_log.mojom";
 import "services/network/public/mojom/network_change_manager.mojom";
@@ -358,6 +359,11 @@ interface NetworkService {
   // Disables or enables CT Enforcement.
   [EnableIf=is_ct_supported]
   SetCtEnforcementEnabled(bool enabled);
+
+  // Updates the key pinnning pin list. `update_time` should contain the
+  // timestamp that the pins list was considered fresh/current, in order to
+  // ensure that key pinning is not enforced if the list is too out of date.
+  UpdateKeyPinsList(PinList pin_list, mojo_base.mojom.Time update_time);
 
   // Calls base::debug::DumpWithoutCrashing for the network process.
   // TODO(http://crbug.com/934317): Remove this once done debugging renderer

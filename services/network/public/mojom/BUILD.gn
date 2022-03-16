@@ -894,6 +894,7 @@ mojom("mojom") {
     "dhcp_wpad_url_client.mojom",
     "digitally_signed.mojom",
     "host_resolver.mojom",
+    "key_pinning.mojom",
     "mdns_responder.mojom",
     "net_log.mojom",
     "network_context.mojom",

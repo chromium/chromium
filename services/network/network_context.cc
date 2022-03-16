@@ -2591,6 +2591,12 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
         certificate_report_sender_.get());
   }
 
+  if (network_service_->pins_list_updated()) {
+    result.url_request_context->transport_security_state()->UpdatePinList(
+        network_service_->pinsets(), network_service_->host_pins(),
+        network_service_->pins_list_update_time());
+  }
+
 #if BUILDFLAG(IS_ANDROID)
   result.url_request_context->set_check_cleartext_permitted(
       params_->check_clear_text_permitted);

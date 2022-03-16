@@ -158,4 +158,9 @@ const base::FeatureParam<int> kLargeFaviconFromGoogleSizeInDip{
 const base::Feature kObserverBasedPostProfileInit{
     "ObserverBasedPostProfileInit", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether the static key pinning list can be updated via component
+// updater.
+const base::Feature kKeyPinningComponentUpdater{
+    "KeyPinningComponentUpdater", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features

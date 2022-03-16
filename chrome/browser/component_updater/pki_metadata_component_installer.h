@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "components/component_updater/component_installer.h"
+#include "third_party/protobuf/src/google/protobuf/repeated_field.h"
 
 namespace component_updater {
 
@@ -24,6 +25,11 @@ class PKIMetadataComponentInstallerPolicy : public ComponentInstallerPolicy {
   PKIMetadataComponentInstallerPolicy operator=(
       const PKIMetadataComponentInstallerPolicy&) = delete;
   ~PKIMetadataComponentInstallerPolicy() override;
+
+  // Converts a protobuf repeated bytes array to an array of uint8_t arrays.
+  // Exposed for testing.
+  static std::vector<std::vector<uint8_t>> BytesArrayFromProtoBytes(
+      google::protobuf::RepeatedPtrField<std::string> proto_bytes);
 
  private:
   // ComponentInstallerPolicy methods:
@@ -43,9 +49,13 @@ class PKIMetadataComponentInstallerPolicy : public ComponentInstallerPolicy {
   std::string GetName() const override;
   update_client::InstallerAttributes GetInstallerAttributes() const override;
 
-  // Updates the network service with the component delivered data.
+  // Updates the network service CT list with the component delivered data.
   // |ct_config_bytes| should be a serialized CTLogList proto message.
-  void UpdateNetworkServiceOnUI(const std::string& ct_config_bytes);
+  void UpdateNetworkServiceCTListOnUI(const std::string& ct_config_bytes);
+
+  // Updates the network service pins list with the component delivered data.
+  // |kp_config_bytes| should be a serialized KPConfig proto message.
+  void UpdateNetworkServiceKPListOnUI(const std::string& kp_config_bytes);
 };
 
 void MaybeRegisterPKIMetadataComponent(ComponentUpdateService* cus);

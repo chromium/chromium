@@ -1380,6 +1380,26 @@ TransportSecurityState::ExpectCTStateIterator::ExpectCTStateIterator(
 TransportSecurityState::ExpectCTStateIterator::~ExpectCTStateIterator() =
     default;
 
+TransportSecurityState::PinSet::PinSet(
+    std::string name,
+    std::vector<std::vector<uint8_t>> static_spki_hashes,
+    std::vector<std::vector<uint8_t>> bad_static_spki_hashes,
+    std::string report_uri)
+    : name_(std::move(name)),
+      static_spki_hashes_(std::move(static_spki_hashes)),
+      bad_static_spki_hashes_(std::move(bad_static_spki_hashes)),
+      report_uri_(std::move(report_uri)) {}
+
+TransportSecurityState::PinSet::PinSet(const PinSet& other) = default;
+TransportSecurityState::PinSet::~PinSet() = default;
+
+TransportSecurityState::PinSetInfo::PinSetInfo(std::string hostname,
+                                               std::string pinset_name,
+                                               bool include_subdomains)
+    : hostname_(std::move(hostname)),
+      pinset_name_(std::move(pinset_name)),
+      include_subdomains_(std::move(include_subdomains)) {}
+
 bool TransportSecurityState::PKPState::CheckPublicKeyPins(
     const HashValueVector& hashes,
     std::string* failure_log) const {

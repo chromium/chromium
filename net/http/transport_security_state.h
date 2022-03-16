@@ -334,6 +334,32 @@ class NET_EXPORT TransportSecurityState {
     virtual ~ExpectCTReporter() {}
   };
 
+  class NET_EXPORT PinSet {
+   public:
+    PinSet(std::string name,
+           std::vector<std::vector<uint8_t>> static_spki_hashes,
+           std::vector<std::vector<uint8_t>> bad_static_spki_hashes,
+           std::string report_uri);
+    PinSet(const PinSet& other);
+    ~PinSet();
+
+   private:
+    std::string name_;
+    std::vector<std::vector<uint8_t>> static_spki_hashes_;
+    std::vector<std::vector<uint8_t>> bad_static_spki_hashes_;
+    std::string report_uri_;
+  };
+
+  struct NET_EXPORT PinSetInfo {
+    std::string hostname_;
+    std::string pinset_name_;
+    bool include_subdomains_;
+
+    PinSetInfo(std::string hostname,
+               std::string pinset_name,
+               bool include_subdomains);
+  };
+
   // Indicates whether or not a public key pin check should send a
   // report if a violation is detected.
   enum PublicKeyPinReportStatus { ENABLE_PIN_REPORTS, DISABLE_PIN_REPORTS };
@@ -452,6 +478,15 @@ class NET_EXPORT TransportSecurityState {
   }
 
   void SetCTLogListUpdateTime(base::Time update_time);
+
+  // TODO(crbug.com/1286121): This method is currently not implemented, it
+  // should update the key pins list used for enforcement.
+  // |pinsets| should include all known pinsets, |host_pins| the information
+  // related to each hostname's pin, and |update_time| the time at which this
+  // list was known to be up to date.
+  void UpdatePinList(const std::vector<PinSet>& pinsets,
+                     const std::vector<PinSetInfo>& host_pins,
+                     base::Time update_time) {}
 
   // Clears all dynamic data (e.g. HSTS and HPKP data).
   //

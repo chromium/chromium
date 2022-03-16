@@ -30,6 +30,7 @@
 #include "net/dns/host_resolver.h"
 #include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/secure_dns_mode.h"
+#include "net/http/transport_security_state.h"
 #include "net/log/net_log.h"
 #include "net/log/trace_net_log_observer.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -39,6 +40,7 @@
 #include "services/network/network_quality_estimator_manager.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
+#include "services/network/public/mojom/key_pinning.mojom.h"
 #include "services/network/public/mojom/net_log.mojom.h"
 #include "services/network/public/mojom/network_change_manager.mojom.h"
 #include "services/network/public/mojom/network_quality_estimator_manager.mojom.h"
@@ -202,6 +204,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   void SetCtEnforcementEnabled(bool enabled) override;
 #endif
 
+  void UpdateKeyPinsList(mojom::PinListPtr pin_list,
+                         base::Time update_time) override;
+
 #if BUILDFLAG(IS_ANDROID)
   void DumpWithoutCrashing(base::Time dump_request_time) override;
 #endif
@@ -279,6 +284,19 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
     return ct_log_list_update_time_;
   }
 #endif
+
+  bool pins_list_updated() const { return pins_list_updated_; }
+
+  const std::vector<net::TransportSecurityState::PinSet>& pinsets() const {
+    return pinsets_;
+  }
+
+  const std::vector<net::TransportSecurityState::PinSetInfo>& host_pins()
+      const {
+    return host_pins_;
+  }
+
+  base::Time pins_list_update_time() const { return pins_list_update_time_; }
 
   mojom::URLLoaderNetworkServiceObserver*
   GetDefaultURLLoaderNetworkServiceObserver();
@@ -401,6 +419,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
 
   base::Time ct_log_list_update_time_;
 #endif
+
+  bool pins_list_updated_ = false;
+
+  std::vector<net::TransportSecurityState::PinSet> pinsets_;
+
+  std::vector<net::TransportSecurityState::PinSetInfo> host_pins_;
+
+  base::Time pins_list_update_time_;
 
   // Map from a renderer process id, to the set of plugin origins embedded by
   // that renderer process (the renderer will proxy requests from PPAPI - such
