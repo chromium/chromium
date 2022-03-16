@@ -16,6 +16,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -109,10 +110,21 @@ public class ChromeBackupAgentTest {
     private final CoreAccountInfo mAccountInfo =
             CoreAccountInfo.createFromEmailAndGaiaId("user1", "gaia_id_user1");
 
+    private static final String PREFERENCE_KEY_NOT_BACKED_UP = "not_backed_up";
+
     private void setUpTestPrefs(SharedPreferences prefs) {
         SharedPreferences.Editor editor = prefs.edit();
+        // In production some of these prefs can't be present in SharedPreferences at the same time,
+        // but ChromeBackupAgentImpl is agnostic to that. The focus of these tests is making sure
+        // that all the allowlisted prefs are backed up, and none other.
         editor.putBoolean(ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE, true);
         editor.putBoolean(ChromePreferenceKeys.FIRST_RUN_FLOW_SIGNIN_SETUP, false);
+        editor.putBoolean(ChromePreferenceKeys.FIRST_RUN_CACHED_TOS_ACCEPTED, false);
+        editor.putBoolean(ChromePreferenceKeys.FIRST_RUN_LIGHTWEIGHT_FLOW_COMPLETE, false);
+        editor.putBoolean(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING, false);
+
+        editor.putBoolean(PREFERENCE_KEY_NOT_BACKED_UP, false);
+
         doReturn(mAccountInfo).when(mIdentityManagerMock).getPrimaryAccountInfo(anyInt());
         editor.apply();
     }
@@ -183,27 +195,47 @@ public class ChromeBackupAgentTest {
         verify(backupData)
                 .writeEntityHeader(
                         "AndroidDefault." + ChromePreferenceKeys.FIRST_RUN_FLOW_SIGNIN_SETUP, 1);
-        verify(backupData).writeEntityData(new byte[] {0}, 1);
+        verify(backupData)
+                .writeEntityHeader(
+                        "AndroidDefault." + ChromePreferenceKeys.FIRST_RUN_CACHED_TOS_ACCEPTED, 1);
+        verify(backupData)
+                .writeEntityHeader("AndroidDefault."
+                                + ChromePreferenceKeys.FIRST_RUN_LIGHTWEIGHT_FLOW_COMPLETE,
+                        1);
+        verify(backupData)
+                .writeEntityHeader(
+                        "AndroidDefault." + ChromePreferenceKeys.PRIVACY_METRICS_REPORTING, 1);
+        verify(backupData, times(4)).writeEntityData(new byte[] {0}, 1);
         byte[] unameBytes = ApiCompatibilityUtils.getBytesUtf8(mAccountInfo.getEmail());
         verify(backupData)
                 .writeEntityHeader("AndroidDefault." + ChromeBackupAgentImpl.SIGNED_IN_ACCOUNT_KEY,
                         unameBytes.length);
         verify(backupData).writeEntityData(unameBytes, unameBytes.length);
 
+        verify(backupData, times(0))
+                .writeEntityHeader(eq("AndroidDefault." + PREFERENCE_KEY_NOT_BACKED_UP), anyInt());
+
         newState.close();
 
         // Check that the state was saved correctly
         ObjectInputStream newStateStream = new ObjectInputStream(new FileInputStream(stateFile1));
         ArrayList<String> names = (ArrayList<String>) newStateStream.readObject();
-        assertThat(names.size(), equalTo(4));
+        assertThat(names.size(), equalTo(7));
         assertThat(names, hasItem("native.pref1"));
         assertThat(
                 names, hasItem("AndroidDefault." + ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE));
         assertThat(names,
                 hasItem("AndroidDefault." + ChromePreferenceKeys.FIRST_RUN_FLOW_SIGNIN_SETUP));
+        assertThat(names,
+                hasItem("AndroidDefault." + ChromePreferenceKeys.FIRST_RUN_CACHED_TOS_ACCEPTED));
+        assertThat(names,
+                hasItem("AndroidDefault."
+                        + ChromePreferenceKeys.FIRST_RUN_LIGHTWEIGHT_FLOW_COMPLETE));
+        assertThat(
+                names, hasItem("AndroidDefault." + ChromePreferenceKeys.PRIVACY_METRICS_REPORTING));
         assertThat(names, hasItem("AndroidDefault." + ChromeBackupAgentImpl.SIGNED_IN_ACCOUNT_KEY));
         ArrayList<byte[]> values = (ArrayList<byte[]>) newStateStream.readObject();
-        assertThat(values.size(), equalTo(4));
+        assertThat(values.size(), equalTo(7));
         assertThat(values, hasItem(unameBytes));
         assertThat(values, hasItem(new byte[] {0}));
         assertThat(values, hasItem(new byte[] {1}));
@@ -239,8 +271,8 @@ public class ChromeBackupAgentTest {
         mAgent.onBackup(null, backupData, newState);
 
         // Minimal check on first backup, this isn't the test here.
-        verify(backupData, times(4)).writeEntityHeader(anyString(), anyInt());
-        verify(backupData, times(4)).writeEntityData(any(byte[].class), anyInt());
+        verify(backupData, times(7)).writeEntityHeader(anyString(), anyInt());
+        verify(backupData, times(7)).writeEntityData(any(byte[].class), anyInt());
 
         newState.close();
 
@@ -299,8 +331,8 @@ public class ChromeBackupAgentTest {
         mAgent.onBackup(null, backupData, newState);
 
         // Minimal check on first backup, this isn't the test here.
-        verify(backupData, times(4)).writeEntityHeader(anyString(), anyInt());
-        verify(backupData, times(4)).writeEntityData(any(byte[].class), anyInt());
+        verify(backupData, times(7)).writeEntityHeader(anyString(), anyInt());
+        verify(backupData, times(7)).writeEntityData(any(byte[].class), anyInt());
 
         newState.close();
 
@@ -315,11 +347,12 @@ public class ChromeBackupAgentTest {
         editor.apply();
 
         // Do a second backup.
+        reset(backupData);
         mAgent.onBackup(oldState, backupData, newState);
 
         // Check that the second backup wrote something.
-        verify(backupData, times(8)).writeEntityHeader(anyString(), anyInt());
-        verify(backupData, times(8)).writeEntityData(any(byte[].class), anyInt());
+        verify(backupData, times(7)).writeEntityHeader(anyString(), anyInt());
+        verify(backupData, times(7)).writeEntityData(any(byte[].class), anyInt());
 
         oldState.close();
         newState.close();
