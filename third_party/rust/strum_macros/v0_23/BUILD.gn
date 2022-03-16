@@ -22,7 +22,7 @@ cargo_crate("lib") {
     "//third_party/rust/heck/v0_3:lib",
     "//third_party/rust/proc_macro2/v1:lib",
     "//third_party/rust/quote/v1:lib",
-    "//third_party/rust/rustversion/v1:lib($host_toolchain)",
+    "//third_party/rust/rustversion/v1:lib",
     "//third_party/rust/syn/v1:lib",
   ]
 }

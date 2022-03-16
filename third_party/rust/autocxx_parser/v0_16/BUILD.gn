@@ -23,7 +23,7 @@ cargo_crate("lib") {
     "//third_party/rust/proc_macro2/v1:lib",
     "//third_party/rust/quote/v1:lib",
     "//third_party/rust/serde/v1:lib",
-    "//third_party/rust/serde_derive/v1:lib($host_toolchain)",
+    "//third_party/rust/serde_derive/v1:lib",
     "//third_party/rust/syn/v1:lib",
   ]
   features = [

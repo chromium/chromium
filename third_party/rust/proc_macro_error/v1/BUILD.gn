@@ -20,7 +20,7 @@ cargo_crate("lib") {
   edition = "2018"
   deps = [
     "//third_party/rust/proc_macro2/v1:lib",
-    "//third_party/rust/proc_macro_error_attr/v1:lib($host_toolchain)",
+    "//third_party/rust/proc_macro_error_attr/v1:lib",
     "//third_party/rust/quote/v1:lib",
     "//third_party/rust/syn/v1:lib",
   ]

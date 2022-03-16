@@ -15,9 +15,9 @@ cargo_crate("lib") {
   sources = [ "crate/src/lib.rs" ]
   edition = "2021"
   deps = [
-    "//third_party/rust/aquamarine/v0_1:lib($host_toolchain)",
+    "//third_party/rust/aquamarine/v0_1:lib",
     "//third_party/rust/autocxx_engine/v0_16:lib",
-    "//third_party/rust/autocxx_macro/v0_16:lib($host_toolchain)",
+    "//third_party/rust/autocxx_macro/v0_16:lib",
     "//third_party/rust/cxx/v1:lib",
     "//third_party/rust/moveit/v0_4:lib",
   ]
