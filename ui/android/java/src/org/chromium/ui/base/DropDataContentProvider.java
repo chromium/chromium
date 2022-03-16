@@ -28,19 +28,18 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 
 /** ContentProvider for image data of Drag and Drop. */
-// TODO(crbug.com/1302386): Make DropDataContentProvider thread safety.
 public class DropDataContentProvider extends ContentProvider {
     /**
      * Implement {@link ContentProvider.PipeDataWriter} to be used by {@link
      * ContentProvider#openPipeHelper}, in order to stream image data to drop target.
      */
-    private static class DropPipeDataWriter implements ContentProvider.PipeDataWriter<Void> {
+    private static class DropPipeDataWriter implements ContentProvider.PipeDataWriter<byte[]> {
         @Override
-        public void writeDataToPipe(
-                ParcelFileDescriptor output, Uri uri, String mimeType, Bundle opts, Void unused) {
+        public void writeDataToPipe(ParcelFileDescriptor output, Uri uri, String mimeType,
+                Bundle opts, byte[] imageBytes) {
             try (OutputStream out = new FileOutputStream(output.getFileDescriptor())) {
-                if (sImageBytes != null) {
-                    out.write(sImageBytes);
+                if (imageBytes != null) {
+                    out.write(imageBytes);
                 } else {
                     // TODO: add error handle here
                 }
@@ -56,9 +55,13 @@ public class DropDataContentProvider extends ContentProvider {
 
     private static final String[] COLUMNS = {OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE};
     private static final String URI_AUTHORITY_SUFFIX = ".DropDataProvider";
+    private static final Object LOCK = new Object();
+
+    // All these static objects must be accessed in a synchronized block:
     private static int sClearCachedDataIntervalMs = DEFAULT_CLEAR_CACHED_DATA_INTERVAL_MS;
     private static byte[] sImageBytes;
     private static String sEncodingFormat;
+    private static String sMimeType;
     /** The URI handled by this content provider. */
     private static Uri sContentProviderUri;
     private static String sTimestamp;
@@ -69,43 +72,53 @@ public class DropDataContentProvider extends ContentProvider {
     private static long sLastUriClearedTimestamp;
     private static long sLastUriCreatedTimestamp;
     private static boolean sLastUriRecorded;
+
     private DropPipeDataWriter mDropPipeDataWriter;
 
     /**
      * Update the delayed time before clearing the image cache.
      */
     public static void setClearCachedDataIntervalMs(int milliseconds) {
-        sClearCachedDataIntervalMs = milliseconds;
+        synchronized (LOCK) {
+            sClearCachedDataIntervalMs = milliseconds;
+        }
     }
 
     /**
      * Cache the passed-in image data of Drag and Drop.
      */
     static Uri cache(byte[] imageBytes, String encodingFormat) {
-        // Clear out any old data.
-        clearCacheData();
-
-        // Set new data.
         long elapsedRealtime = SystemClock.elapsedRealtime();
-        if (sLastUriCreatedTimestamp > 0) {
-            long duration = elapsedRealtime - sLastUriCreatedTimestamp;
-            RecordHistogram.recordMediumTimesHistogram(
-                    "Android.DragDrop.Image.UriCreatedInterval", duration);
-        }
-        sLastUriCreatedTimestamp = elapsedRealtime;
-        sImageBytes = imageBytes;
-        sEncodingFormat = encodingFormat;
-        sTimestamp = String.valueOf(System.currentTimeMillis());
-        sDragEndTime = 0;
-        sOpenFileLastAccessTime = 0;
+        long lastUriCreatedTimestamp = sLastUriCreatedTimestamp;
+        String timestamp = String.valueOf(System.currentTimeMillis());
+        String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(encodingFormat);
         // TODO(crbug.com/1296795): Replace path with filename with extension
         Uri newUri = new Uri.Builder()
                              .scheme(ContentResolver.SCHEME_CONTENT)
                              .authority(ContextUtils.getApplicationContext().getPackageName()
                                      + URI_AUTHORITY_SUFFIX)
-                             .path(sTimestamp)
+                             .path(timestamp)
                              .build();
-        sContentProviderUri = newUri;
+
+        synchronized (LOCK) {
+            // Clear out any old data.
+            clearCacheData();
+            // Set new data.
+            sLastUriCreatedTimestamp = elapsedRealtime;
+            sImageBytes = imageBytes;
+            sEncodingFormat = encodingFormat;
+            sMimeType = mimeType;
+            sTimestamp = timestamp;
+            sDragEndTime = 0;
+            sOpenFileLastAccessTime = 0;
+            sContentProviderUri = newUri;
+        }
+
+        if (lastUriCreatedTimestamp > 0) {
+            long duration = elapsedRealtime - lastUriCreatedTimestamp;
+            RecordHistogram.recordMediumTimesHistogram(
+                    "Android.DragDrop.Image.UriCreatedInterval", duration);
+        }
         int sizeInKB = imageBytes.length / BYTES_PER_KILOBYTE;
         RecordHistogram.recordCustomCountHistogram(
                 "Android.DragDrop.Image.Size", sizeInKB, 1, 100_000, 50);
@@ -127,8 +140,10 @@ public class DropDataContentProvider extends ContentProvider {
             clearCache();
         } else {
             // Otherwise, clear it with a delay to allow asynchronous data transfer.
-            clearCacheWithDelay();
-            sDragEndTime = SystemClock.elapsedRealtime();
+            synchronized (LOCK) {
+                clearCacheWithDelay();
+                sDragEndTime = SystemClock.elapsedRealtime();
+            }
         }
     }
 
@@ -136,11 +151,13 @@ public class DropDataContentProvider extends ContentProvider {
      * Clear the image data of Drag and Drop and record histogram.
      */
     static void clearCache() {
-        clearCacheData();
-        if (sDragEndTime > 0 && sDragEndTime <= sOpenFileLastAccessTime) {
-            long duration = sOpenFileLastAccessTime - sDragEndTime;
-            RecordHistogram.recordMediumTimesHistogram(
-                    "Android.DragDrop.Image.OpenFileTime.LastAttempt", duration);
+        synchronized (LOCK) {
+            clearCacheData();
+            if (sDragEndTime > 0 && sDragEndTime <= sOpenFileLastAccessTime) {
+                long duration = sOpenFileLastAccessTime - sDragEndTime;
+                RecordHistogram.recordMediumTimesHistogram(
+                        "Android.DragDrop.Image.OpenFileTime.LastAttempt", duration);
+            }
         }
     }
 
@@ -150,6 +167,7 @@ public class DropDataContentProvider extends ContentProvider {
     private static void clearCacheData() {
         sImageBytes = null;
         sEncodingFormat = null;
+        sMimeType = null;
         if (sContentProviderUri != null) {
             sLastUri = sContentProviderUri;
             sLastUriClearedTimestamp = SystemClock.elapsedRealtime();
@@ -186,19 +204,23 @@ public class DropDataContentProvider extends ContentProvider {
 
     @Override
     public String getType(Uri uri) {
-        if (uri == null || !uri.equals(sContentProviderUri)) {
-            return null;
+        synchronized (LOCK) {
+            if (uri == null || !uri.equals(sContentProviderUri)) {
+                return null;
+            }
+            return sMimeType;
         }
-
-        return MimeTypeMap.getSingleton().getMimeTypeFromExtension(sEncodingFormat);
     }
 
     @Override
     public String[] getStreamTypes(Uri uri, String mimeTypeFilter) {
-        if (uri == null || !uri.equals(sContentProviderUri)) {
-            return null;
+        String mimeType;
+        synchronized (LOCK) {
+            if (uri == null || !uri.equals(sContentProviderUri)) {
+                return null;
+            }
+            mimeType = sMimeType;
         }
-        String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(sEncodingFormat);
         return matchMimeType(mimeType, mimeTypeFilter) ? new String[] {mimeType} : null;
     }
 
@@ -224,29 +246,40 @@ public class DropDataContentProvider extends ContentProvider {
         if (uri == null) {
             return null;
         }
-        if (!uri.equals(sContentProviderUri)) {
-            if (uri.equals(sLastUri)) {
-                long duration = SystemClock.elapsedRealtime() - sLastUriClearedTimestamp;
-                RecordHistogram.recordMediumTimesHistogram(
-                        "Android.DragDrop.Image.OpenFileTime.AllExpired", duration);
-                if (!sLastUriRecorded) {
+        byte[] imageBytes;
+        synchronized (LOCK) {
+            if (!uri.equals(sContentProviderUri)) {
+                if (uri.equals(sLastUri)) {
+                    long duration = SystemClock.elapsedRealtime() - sLastUriClearedTimestamp;
                     RecordHistogram.recordMediumTimesHistogram(
-                            "Android.DragDrop.Image.OpenFileTime.FirstExpired", duration);
-                    sLastUriRecorded = true;
+                            "Android.DragDrop.Image.OpenFileTime.AllExpired", duration);
+                    if (!sLastUriRecorded) {
+                        RecordHistogram.recordMediumTimesHistogram(
+                                "Android.DragDrop.Image.OpenFileTime.FirstExpired", duration);
+                        sLastUriRecorded = true;
+                    }
                 }
+                return null;
             }
-            return null;
+            sOpenFileLastAccessTime = SystemClock.elapsedRealtime();
+            imageBytes = sImageBytes;
         }
-        sOpenFileLastAccessTime = SystemClock.elapsedRealtime();
-        return openPipeHelper(
-                sContentProviderUri, getType(sContentProviderUri), null, null, mDropPipeDataWriter);
+        return openPipeHelper(uri, getType(uri), null, imageBytes, mDropPipeDataWriter);
     }
 
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
             String sortOrder) {
-        if (uri == null || !uri.equals(sContentProviderUri)) {
-            return new MatrixCursor(COLUMNS, 0);
+        String timestamp;
+        String encodingFormat;
+        byte[] imageBytes;
+        synchronized (LOCK) {
+            if (uri == null || !uri.equals(sContentProviderUri)) {
+                return new MatrixCursor(COLUMNS, 0);
+            }
+            timestamp = sTimestamp;
+            encodingFormat = sEncodingFormat;
+            imageBytes = sImageBytes;
         }
         if (projection == null) {
             projection = COLUMNS;
@@ -271,12 +304,12 @@ public class DropDataContentProvider extends ContentProvider {
         if (hasDisplayName) {
             cols[index] = OpenableColumns.DISPLAY_NAME;
             // TODO(crbug.com/1296795): Use the real file name from DropDataAndroid
-            values[index] = sTimestamp + "." + sEncodingFormat;
+            values[index] = timestamp + "." + encodingFormat;
             index++;
         }
         if (hasSize) {
             cols[index] = OpenableColumns.SIZE;
-            values[index] = sImageBytes.length;
+            values[index] = imageBytes.length;
         }
         MatrixCursor cursor = new MatrixCursor(cols, 1);
         cursor.addRow(values);
@@ -300,16 +333,22 @@ public class DropDataContentProvider extends ContentProvider {
 
     @VisibleForTesting
     static byte[] getImageBytesForTesting() {
-        return sImageBytes;
+        synchronized (LOCK) {
+            return sImageBytes;
+        }
     }
 
     @VisibleForTesting
     static Handler getHandlerForTesting() {
-        return sHandler;
+        synchronized (LOCK) {
+            return sHandler;
+        }
     }
 
     @VisibleForTesting
     static void clearLastUriCreatedTimestampForTesting() {
-        sLastUriCreatedTimestamp = 0;
+        synchronized (LOCK) {
+            sLastUriCreatedTimestamp = 0;
+        }
     }
 }
