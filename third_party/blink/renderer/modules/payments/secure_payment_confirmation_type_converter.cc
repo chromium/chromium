@@ -45,9 +45,14 @@ TypeConverter<payments::mojom::blink::SecurePaymentConfirmationRequestPtr,
   if (input->hasTimeout())
     output->timeout = base::Milliseconds(input->timeout());
 
+  // Before SecurePaymentConfirmationAPIV3, the iconMustBeShown behavior is
+  // true.
   output->instrument = blink::mojom::blink::PaymentCredentialInstrument::New(
       input->instrument()->displayName(),
-      blink::KURL(input->instrument()->icon()));
+      blink::KURL(input->instrument()->icon()),
+      blink::RuntimeEnabledFeatures::SecurePaymentConfirmationAPIV3Enabled()
+          ? input->instrument()->iconMustBeShown()
+          : true);
 
   output->payee_origin =
       blink::SecurityOrigin::CreateFromString(input->payeeOrigin());

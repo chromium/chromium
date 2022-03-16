@@ -277,16 +277,27 @@ void SecurePaymentConfirmationAppFactory::OnAppIcon(
   if (!request->delegate || !request->web_contents())
     return;
 
-  // In the case of a failed icon download/decode, we reject the show() promise
-  // without showing any user UX. To avoid a privacy leak here, we MUST do this
-  // check ahead of checking whether any credential matched, as otherwise an
-  // attacker could deliberately pass an invalid icon and do a timing attack to
-  // see if a credential matches.
   if (icon.drawsNothing()) {
-    request->delegate->OnPaymentAppCreationError(
-        errors::kInvalidIcon, AppCreationFailureReason::ICON_DOWNLOAD_FAILED);
-    request->delegate->OnDoneCreatingPaymentApps();
-    return;
+    // If the option iconMustBeShown is true, which it is by default, in the
+    // case of a failed icon download/decode, we reject the show() promise
+    // without showing any user UX. To avoid a privacy leak here, we MUST do
+    // this check ahead of checking whether any credential matched, as otherwise
+    // an attacker could deliberately pass an invalid icon and do a timing
+    // attack to see if a credential matches.
+    // Before SecurePaymentConfirmationAPIV3, the iconMustBeShown option is not
+    // available and we always reject in this case.
+    if (!base::FeatureList::IsEnabled(
+            features::kSecurePaymentConfirmationAPIV3) ||
+        request->mojo_request->instrument->iconMustBeShown) {
+      request->delegate->OnPaymentAppCreationError(
+          errors::kInvalidIcon, AppCreationFailureReason::ICON_DOWNLOAD_FAILED);
+      request->delegate->OnDoneCreatingPaymentApps();
+      return;
+    }
+
+    // Otherwise, we use a default icon and clear the icon URL to indicate this
+    // in the output.
+    request->mojo_request->instrument->icon = GURL();
   }
 
   if (!request->delegate->GetSpec() || !request->authenticator || !credential) {

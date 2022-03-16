@@ -14,6 +14,25 @@
  * @return {Array<PaymentMethodData>} - Secure payment confirmation method data.
  */
 function getTestMethodData(credentialIdentifier, iconUrl) {
+  return getTestMethodDataWithInstrument(
+    {
+      displayName: 'display_name_for_instrument',
+      icon: iconUrl ? iconUrl : window.location.origin + '/icon.png',
+    },
+    credentialIdentifier);
+}
+
+/**
+ * Creates and returns the first parameter to the PaymentRequest constructor for
+ * secure payment confirmation.
+ * @param {PaymentInstrument} paymentInstrument - Payment instrument details to
+ * be included in the request.
+ * @param {string} credentialIdentifier - An optional base64 encoded credential
+ * identifier. If not specified, then 'cred' is used instead.
+ * @return {Array<PaymentMethodData>} - Secure payment confirmation method data.
+ */
+function getTestMethodDataWithInstrument(
+  paymentInstrument, credentialIdentifier) {
   return [{
     supportedMethods: 'secure-payment-confirmation',
     data: {
@@ -22,10 +41,7 @@ function getTestMethodData(credentialIdentifier, iconUrl) {
           (credentialIdentifier ? atob(credentialIdentifier) : 'cred'),
           (c) => c.charCodeAt(0))],
       challenge: Uint8Array.from('challenge', (c) => c.charCodeAt(0)),
-      instrument: {
-        displayName: 'display_name_for_instrument',
-        icon: iconUrl ? iconUrl : window.location.origin + '/icon.png',
-      },
+      instrument: paymentInstrument,
       timeout: 60000,
       payeeOrigin: 'https://example-payee-origin.test',
       rpId: 'a.com',
@@ -56,6 +72,28 @@ async function getSecurePaymentConfirmationStatus(credentialIdentifier, iconUrl)
 async function getSecurePaymentConfirmationStatusAfterCanMakePayment() { // eslint-disable-line no-unused-vars, max-len
   return getStatusForMethodDataAfterCanMakePayment(
       getTestMethodData(), /* checkCanMakePaymentFirst = */true);
+}
+
+/**
+ * Returns the clientDataJSON's payment.instrument.icon value of the response to
+ * a secure payment confirmation request.
+ * @param {PaymentInstrument} paymentInstrument - Payment instrument details to
+ * be included in the request.
+ * @param {string} credentialIdentifier - base64 encoded credential identifier.
+ * @return {string} - Output instrument icon string.
+ */
+async function getSecurePaymentConfirmationResponseIconWithInstrument(paymentInstrument, credentialIdentifier) { // eslint-disable-line no-unused-vars, max-len
+  const methodData = getTestMethodDataWithInstrument(
+    paymentInstrument, credentialIdentifier);
+  const request = new PaymentRequest(
+    methodData,
+    {total: {label: 'TEST', amount: {currency: 'USD', value: '0.01'}}});
+
+  const response = await request.show();
+  await response.complete();
+  const clientData = JSON.parse(String.fromCharCode(...new Uint8Array(
+    response.details.response.clientDataJSON)));
+  return clientData.payment.instrument.icon;
 }
 
 /**

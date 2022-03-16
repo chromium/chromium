@@ -129,9 +129,7 @@ std::unique_ptr<views::Label> CreateSecurePaymentConfirmationTitleLabel(
 }
 
 std::unique_ptr<views::ImageView>
-CreateSecurePaymentConfirmationInstrumentIconView(const SkBitmap& bitmap) {
-  gfx::ImageSkia image = gfx::ImageSkia::CreateFrom1xBitmap(bitmap).DeepCopy();
-
+CreateSecurePaymentConfirmationInstrumentIconView(const gfx::ImageSkia& image) {
   std::unique_ptr<views::ImageView> icon_view =
       std::make_unique<views::ImageView>();
   icon_view->SetImage(image);

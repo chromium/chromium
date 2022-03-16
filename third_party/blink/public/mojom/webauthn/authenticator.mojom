@@ -323,6 +323,9 @@ struct PaymentCredentialInstrument {
   // URL for an icon to display alongside the display_name. The URL is secure,
   // not required to share the same origin with the current page.
   url.mojom.Url icon;
+
+  // Whether the icon is required to be shown in the UI.
+  bool iconMustBeShown;
 };
 
 // Parameters passed into calls to GetAssertion.

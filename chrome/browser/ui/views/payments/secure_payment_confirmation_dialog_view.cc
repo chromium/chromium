@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/payments/secure_payment_confirmation_dialog_view.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/payments/payment_request_views_util.h"
@@ -16,6 +17,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -331,9 +333,20 @@ std::unique_ptr<views::View> SecurePaymentConfirmationDialogView::CreateRowView(
     instrument_icon_generation_id_ =
         model_->instrument_icon()->getGenerationID();
 
-    std::unique_ptr<views::ImageView> icon_view =
-        CreateSecurePaymentConfirmationInstrumentIconView(
-            *model_->instrument_icon());
+    std::unique_ptr<views::ImageView> icon_view;
+    // The instrument icon may be empty, if it couldn't be downloaded/decoded
+    // and iconMustBeShown was set to false. In that case, use a default icon.
+    if (instrument_icon_->drawsNothing()) {
+      icon_view = CreateSecurePaymentConfirmationInstrumentIconView(
+          gfx::CreateVectorIcon(
+              kCreditCardIcon,
+              kSecurePaymentConfirmationInstrumentIconWidthPx));
+    } else {
+      icon_view = CreateSecurePaymentConfirmationInstrumentIconView(
+          gfx::ImageSkia::CreateFrom1xBitmap(*model_->instrument_icon())
+              .DeepCopy());
+    }
+
     icon_view->SetID(static_cast<int>(icon_id));
     row->AddChildView(std::move(icon_view));
   }
@@ -347,6 +360,20 @@ std::unique_ptr<views::View> SecurePaymentConfirmationDialogView::CreateRowView(
   row->AddChildView(std::move(value_text));
 
   return row;
+}
+
+void SecurePaymentConfirmationDialogView::OnThemeChanged() {
+  View::OnThemeChanged();
+  // If we're using the default credit card icon, it is able to respond
+  // to theme changes (e.g., dark mode). Caller-provided icons are not
+  // responsive.
+  if (instrument_icon_ && instrument_icon_->drawsNothing()) {
+    static_cast<views::ImageView*>(
+        GetViewByID(static_cast<int>(DialogViewID::INSTRUMENT_ICON)))
+        ->SetImage(gfx::CreateVectorIcon(
+            kCreditCardIcon, kSecurePaymentConfirmationInstrumentIconWidthPx,
+            GetColorProvider()->GetColor(ui::kColorDialogForeground)));
+  }
 }
 
 BEGIN_METADATA(SecurePaymentConfirmationDialogView, views::DialogDelegateView)

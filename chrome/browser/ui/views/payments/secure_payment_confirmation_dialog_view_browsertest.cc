@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -17,6 +18,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 
@@ -160,8 +162,17 @@ class SecurePaymentConfirmationDialogViewTest
         SecurePaymentConfirmationDialogView::DialogViewID::INSTRUMENT_VALUE);
 
     ASSERT_EQ(instrument_icon_.get(), model_.instrument_icon());
+    const SkBitmap* expected_icon =
+        instrument_icon_->drawsNothing()
+            ? gfx::CreateVectorIcon(
+                  kCreditCardIcon,
+                  kSecurePaymentConfirmationInstrumentIconWidthPx,
+                  test_delegate_->dialog_view()->GetColorProvider()->GetColor(
+                      ui::kColorDialogForeground))
+                  .bitmap()
+            : model_.instrument_icon();
     EXPECT_TRUE(cc::MatchesBitmap(
-        *model_.instrument_icon(),
+        *expected_icon,
         *(static_cast<views::ImageView*>(
               test_delegate_->dialog_view()->GetViewByID(
                   static_cast<int>(SecurePaymentConfirmationDialogView::
@@ -401,6 +412,21 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
                        InvokeUi_default) {
   ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
+                       DefaultInstrumentIcon) {
+  CreateModel();
+
+  instrument_icon_ = std::make_unique<SkBitmap>();
+  ASSERT_TRUE(instrument_icon_->drawsNothing());
+  model_.set_instrument_icon(instrument_icon_.get());
+
+  InvokeSecurePaymentConfirmationUI();
+
+  ExpectViewMatchesModel();
+
+  CloseDialogAndWait();
 }
 
 }  // namespace payments

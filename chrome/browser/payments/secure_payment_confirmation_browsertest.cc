@@ -992,6 +992,53 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
   ExpectJourneyLoggerEvent(/*spc_confirm_logged=*/true);
 }
 
+// Test allowing a failed icon download with iconMustBeShown option
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
+                       IconMustBeShownFalse) {
+  ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
+  test_controller()->SetHasAuthenticator(true);
+  confirm_payment_ = true;
+  NavigateTo("a.com", "/secure_payment_confirmation.html");
+
+  std::string credentialIdentifier =
+      content::EvalJs(
+          GetActiveWebContents(),
+          content::JsReplace("createCredentialAndReturnItsIdentifier($1)",
+                             GetDefaultIconURL()))
+          .ExtractString();
+
+  // First ensure the icon URL is successfully parsed from clientData for a
+  // valid icon.
+  std::string icon_data =
+      "data:image/"
+      "png;base64,"
+      "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEUAAACnej3aAAAAAXRS"
+      "TlMAQObYZgAAAApJREFUCNdjYAAAAAIAAeIhvDMAAAAASUVORK5CYII=";
+  EXPECT_EQ(icon_data,
+            content::EvalJs(
+                GetActiveWebContents(),
+                content::JsReplace(
+                    "getSecurePaymentConfirmationResponseIconWithInstrument({"
+                    "  displayName: 'display_name_for_instrument',"
+                    "  icon: $1,"
+                    "  iconMustBeShown: false,"
+                    "}, $2)",
+                    icon_data, credentialIdentifier)));
+
+  // Now verify that the icon string is cleared from clientData for an invalid
+  // icon.
+  EXPECT_EQ("",
+            content::EvalJs(
+                GetActiveWebContents(),
+                content::JsReplace(
+                    "getSecurePaymentConfirmationResponseIconWithInstrument({"
+                    "  displayName: 'display_name_for_instrument',"
+                    "  icon: 'https://example.com/invalid-icon.png',"
+                    "  iconMustBeShown: false,"
+                    "}, $1)",
+                    credentialIdentifier)));
+}
+
 class SecurePaymentConfirmationAPIV3DisabledTest
     : public SecurePaymentConfirmationTest {
  public:

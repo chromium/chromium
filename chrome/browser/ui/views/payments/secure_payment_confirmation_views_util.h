@@ -8,14 +8,16 @@
 #include <memory>
 #include <string>
 
-class SkBitmap;
-
 namespace views {
 class Label;
 class ProgressBar;
 class View;
 class ImageView;
 }  // namespace views
+
+namespace gfx {
+class ImageSkia;
+}
 
 namespace payments {
 
@@ -66,7 +68,7 @@ std::unique_ptr<views::Label> CreateSecurePaymentConfirmationTitleLabel(
 
 /// Creates the image view for the SPC instrument icon.
 std::unique_ptr<views::ImageView>
-CreateSecurePaymentConfirmationInstrumentIconView(const SkBitmap& bitmap);
+CreateSecurePaymentConfirmationInstrumentIconView(const gfx::ImageSkia& bitmap);
 
 }  // namespace payments
 
