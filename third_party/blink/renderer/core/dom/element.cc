@@ -2781,15 +2781,12 @@ void Element::DetachLayoutTree(bool performing_reattach) {
       data->ClearPseudoElements();
 
     if (ElementAnimations* element_animations = data->GetElementAnimations()) {
-      if (performing_reattach) {
-        // FIXME: restart compositor animations rather than pull back to the
-        // main thread
-        element_animations->RestartAnimationOnCompositor();
-      } else {
+      if (!performing_reattach) {
         DocumentLifecycle::DetachScope will_detach(GetDocument().Lifecycle());
         element_animations->CssAnimations().Cancel();
         element_animations->SetAnimationStyleChange(false);
       }
+      element_animations->RestartAnimationOnCompositor();
     }
   }
 
