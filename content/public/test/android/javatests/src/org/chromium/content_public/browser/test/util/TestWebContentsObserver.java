@@ -5,12 +5,10 @@
 package org.chromium.content_public.browser.test.util;
 
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.content_public.browser.LifecycleState;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageFinishedHelper;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageStartedHelper;
-import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnReceivedErrorHelper;
 import org.chromium.url.GURL;
 
 /**
@@ -20,14 +18,12 @@ import org.chromium.url.GURL;
 public class TestWebContentsObserver extends WebContentsObserver {
     private final OnPageStartedHelper mOnPageStartedHelper;
     private final OnPageFinishedHelper mOnPageFinishedHelper;
-    private final OnReceivedErrorHelper mOnReceivedErrorHelper;
     private final CallbackHelper mOnFirstVisuallyNonEmptyPaintHelper;
 
     public TestWebContentsObserver(WebContents webContents) {
         super(webContents);
         mOnPageStartedHelper = new OnPageStartedHelper();
         mOnPageFinishedHelper = new OnPageFinishedHelper();
-        mOnReceivedErrorHelper = new OnReceivedErrorHelper();
         mOnFirstVisuallyNonEmptyPaintHelper = new CallbackHelper();
     }
 
@@ -37,10 +33,6 @@ public class TestWebContentsObserver extends WebContentsObserver {
 
     public OnPageFinishedHelper getOnPageFinishedHelper() {
         return mOnPageFinishedHelper;
-    }
-
-    public OnReceivedErrorHelper getOnReceivedErrorHelper() {
-        return mOnReceivedErrorHelper;
     }
 
     public CallbackHelper getOnFirstVisuallyNonEmptyPaintHelper() {
@@ -63,13 +55,6 @@ public class TestWebContentsObserver extends WebContentsObserver {
     public void didStopLoading(GURL url, boolean isKnownValid) {
         super.didStopLoading(url, isKnownValid);
         mOnPageFinishedHelper.notifyCalled(url.getPossiblyInvalidSpec());
-    }
-
-    @Override
-    public void didFailLoad(boolean isInPrimaryMainFrame, int errorCode, GURL failingUrl,
-            @LifecycleState int frameLifecycleState) {
-        super.didFailLoad(isInPrimaryMainFrame, errorCode, failingUrl, frameLifecycleState);
-        mOnReceivedErrorHelper.notifyCalled(errorCode, "Error " + errorCode, failingUrl.getSpec());
     }
 
     @Override

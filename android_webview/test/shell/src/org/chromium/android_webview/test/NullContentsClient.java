@@ -173,10 +173,6 @@ public class NullContentsClient extends AwContentsClient {
     }
 
     @Override
-    public void onReceivedError(int errorCode, String description, String failingUrl) {
-    }
-
-    @Override
     public void onReceivedError2(AwWebResourceRequest request, AwWebResourceError error) {
     }
 

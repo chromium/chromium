@@ -23,7 +23,6 @@ import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageCommitVisibleHelper;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageFinishedHelper;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageStartedHelper;
-import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnReceivedErrorHelper;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,7 +41,6 @@ public class TestAwContentsClient extends NullContentsClient {
     private final OnPageStartedHelper mOnPageStartedHelper;
     private final OnPageFinishedHelper mOnPageFinishedHelper;
     private final OnPageCommitVisibleHelper mOnPageCommitVisibleHelper;
-    private final OnReceivedErrorHelper mOnReceivedErrorHelper;
     private final OnReceivedError2Helper mOnReceivedError2Helper;
     private final OnReceivedHttpErrorHelper mOnReceivedHttpErrorHelper;
     private final OnReceivedSslErrorHelper mOnReceivedSslErrorHelper;
@@ -68,7 +66,6 @@ public class TestAwContentsClient extends NullContentsClient {
         mOnPageStartedHelper = new OnPageStartedHelper();
         mOnPageFinishedHelper = new OnPageFinishedHelper();
         mOnPageCommitVisibleHelper = new OnPageCommitVisibleHelper();
-        mOnReceivedErrorHelper = new OnReceivedErrorHelper();
         mOnReceivedError2Helper = new OnReceivedError2Helper();
         mOnReceivedHttpErrorHelper = new OnReceivedHttpErrorHelper();
         mOnReceivedSslErrorHelper = new OnReceivedSslErrorHelper();
@@ -101,10 +98,6 @@ public class TestAwContentsClient extends NullContentsClient {
 
     public OnPageFinishedHelper getOnPageFinishedHelper() {
         return mOnPageFinishedHelper;
-    }
-
-    public OnReceivedErrorHelper getOnReceivedErrorHelper() {
-        return mOnReceivedErrorHelper;
     }
 
     public OnReceivedError2Helper getOnReceivedError2Helper() {
@@ -250,12 +243,6 @@ public class TestAwContentsClient extends NullContentsClient {
     public void onPageFinished(String url) {
         if (TRACE) Log.i(TAG, "onPageFinished " + url);
         mOnPageFinishedHelper.notifyCalled(url);
-    }
-
-    @Override
-    public void onReceivedError(int errorCode, String description, String failingUrl) {
-        if (TRACE) Log.i(TAG, "onReceivedError " + failingUrl);
-        mOnReceivedErrorHelper.notifyCalled(errorCode, description, failingUrl);
     }
 
     @Override

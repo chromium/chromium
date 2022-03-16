@@ -393,33 +393,12 @@ public abstract class AwContentsClient {
     public abstract void onPageCommitVisible(String url);
 
     public final void onReceivedError(AwWebResourceRequest request, AwWebResourceError error) {
-        // Only one of these callbacks actually reaches out the client code. The first callback
-        // is used on API versions up to and including L, the second on subsequent releases.
-        // Below is the calls diagram:
-        //
-        //                           Old (<= L) glue              Old (<= L) android.webkit API
-        //                             onReceivedError --------->   onReceivedError
-        //  AwContentsClient           onReceivedError2 ->X   /
-        //   abs. onReceivedError                            /
-        //   abs. onReceivedError2                          /
-        //                           New (M+) glue         /      New (M+) android.webkit API
-        //                             onReceivedError    /     ->  onReceviedError <new>
-        //   "->X" = "do nothing"        if (!<M API>) ---     /      if (isMainFrame) -\
-        //                               else ->X             /       else ->X          |
-        //                             onReceivedError2      /                          V
-        //                               if (<M API>) -------       onReceivedError <old>
-        //                               else ->X
-        if (request.isMainFrame) {
-            onReceivedError(error.errorCode, error.description, request.url);
-        }
         onReceivedError2(request, error);
 
         // Record UMA on error code distribution here.
         RecordHistogram.recordSparseHistogram(
                 "Android.WebView.onReceivedError.ErrorCode", error.errorCode);
     }
-
-    protected abstract void onReceivedError(int errorCode, String description, String failingUrl);
 
     protected abstract void onReceivedError2(
             AwWebResourceRequest request, AwWebResourceError error);

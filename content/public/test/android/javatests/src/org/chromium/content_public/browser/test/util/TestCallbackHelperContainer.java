@@ -79,33 +79,6 @@ public class TestCallbackHelperContainer {
     }
 
     /**
-     * CallbackHelper for OnReceivedError.
-     */
-    public static class OnReceivedErrorHelper extends CallbackHelper {
-        private int mErrorCode;
-        private String mDescription;
-        private String mFailingUrl;
-        public void notifyCalled(int errorCode, String description, String failingUrl) {
-            mErrorCode = errorCode;
-            mDescription = description;
-            mFailingUrl = failingUrl;
-            notifyCalled();
-        }
-        public int getErrorCode() {
-            assert getCallCount() > 0;
-            return mErrorCode;
-        }
-        public String getDescription() {
-            assert getCallCount() > 0;
-            return mDescription;
-        }
-        public String getFailingUrl() {
-            assert getCallCount() > 0;
-            return mFailingUrl;
-        }
-    }
-
-    /**
      * CallbackHelper for OnEvaluateJavaScriptResult.
      * This class wraps the evaluation of JavaScript code allowing test code to
      * synchronously evaluate JavaScript and then test the result.
@@ -178,10 +151,6 @@ public class TestCallbackHelperContainer {
 
     public OnPageFinishedHelper getOnPageFinishedHelper() {
         return mTestWebContentsObserver.getOnPageFinishedHelper();
-    }
-
-    public OnReceivedErrorHelper getOnReceivedErrorHelper() {
-        return mTestWebContentsObserver.getOnReceivedErrorHelper();
     }
 
     public CallbackHelper getOnFirstVisuallyNonEmptyPaintHelper() {

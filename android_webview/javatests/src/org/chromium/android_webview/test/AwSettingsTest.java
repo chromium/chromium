@@ -162,7 +162,7 @@ public class AwSettingsTest {
         protected void loadUrlSyncAndExpectError(String url) throws Throwable {
             mActivityTestRule.loadUrlSyncAndExpectError(mAwContents,
                     mContentViewClient.getOnPageFinishedHelper(),
-                    mContentViewClient.getOnReceivedErrorHelper(), url);
+                    mContentViewClient.getOnReceivedError2Helper(), url);
         }
 
         protected String executeJavaScriptAndWaitForResult(String script) throws Exception {
@@ -2799,7 +2799,7 @@ public class AwSettingsTest {
             final String urlNotInCache = webServer.setResponse(htmlNotInCachePath, "", null);
             mActivityTestRule.loadUrlSyncAndExpectError(awContents,
                     contentClient.getOnPageFinishedHelper(),
-                    contentClient.getOnReceivedErrorHelper(), urlNotInCache);
+                    contentClient.getOnReceivedError2Helper(), urlNotInCache);
             Assert.assertEquals(0, webServer.getRequestCount(htmlNotInCachePath));
         } finally {
             webServer.shutdown();
@@ -2829,25 +2829,25 @@ public class AwSettingsTest {
             final String url = webServer.setResponse(htmlPath, "response", null);
             mActivityTestRule.loadUrlSyncAndExpectError(awContents,
                     contentClient.getOnPageFinishedHelper(),
-                    contentClient.getOnReceivedErrorHelper(), url);
+                    contentClient.getOnReceivedError2Helper(), url);
             Assert.assertEquals(0, webServer.getRequestCount(htmlPath));
 
             awSettings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
             mActivityTestRule.loadUrlSyncAndExpectError(awContents,
                     contentClient.getOnPageFinishedHelper(),
-                    contentClient.getOnReceivedErrorHelper(), url);
+                    contentClient.getOnReceivedError2Helper(), url);
             Assert.assertEquals(0, webServer.getRequestCount(htmlPath));
 
             awSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
             mActivityTestRule.loadUrlSyncAndExpectError(awContents,
                     contentClient.getOnPageFinishedHelper(),
-                    contentClient.getOnReceivedErrorHelper(), url);
+                    contentClient.getOnReceivedError2Helper(), url);
             Assert.assertEquals(0, webServer.getRequestCount(htmlPath));
 
             awSettings.setCacheMode(WebSettings.LOAD_CACHE_ONLY);
             mActivityTestRule.loadUrlSyncAndExpectError(awContents,
                     contentClient.getOnPageFinishedHelper(),
-                    contentClient.getOnReceivedErrorHelper(), url);
+                    contentClient.getOnReceivedError2Helper(), url);
             Assert.assertEquals(0, webServer.getRequestCount(htmlPath));
         } finally {
             webServer.shutdown();

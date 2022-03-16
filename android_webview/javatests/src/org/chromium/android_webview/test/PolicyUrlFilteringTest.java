@@ -22,6 +22,7 @@ import org.junit.runner.RunWith;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.WebviewErrorCode;
 import org.chromium.android_webview.policy.AwPolicyProvider;
+import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedError2Helper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.policy.AbstractAppRestrictionsProvider;
 import org.chromium.components.policy.CombinedPolicyProvider;
@@ -89,7 +90,7 @@ public class PolicyUrlFilteringTest {
 
         navigateAndCheckOutcome(mFooTestUrl, 0 /* error count before */, 1 /* error count after */);
         Assert.assertEquals(WebviewErrorCode.ERROR_CONNECT,
-                mContentsClient.getOnReceivedErrorHelper().getErrorCode());
+                mContentsClient.getOnReceivedError2Helper().getError().errorCode);
     }
 
     // Tests getting a successful navigation with an allowlist.
@@ -108,7 +109,7 @@ public class PolicyUrlFilteringTest {
         // Make sure it goes through the blocklist
         navigateAndCheckOutcome(mBarTestUrl, 0 /* error count before */, 1 /* error count after */);
         Assert.assertEquals(WebviewErrorCode.ERROR_CONNECT,
-                mContentsClient.getOnReceivedErrorHelper().getErrorCode());
+                mContentsClient.getOnReceivedError2Helper().getError().errorCode);
     }
     // clang-format on
 
@@ -133,21 +134,20 @@ public class PolicyUrlFilteringTest {
             throw new IllegalArgumentException(
                     "The navigation error count can't decrease over time");
         }
-        TestCallbackHelperContainer.OnReceivedErrorHelper onReceivedErrorHelper =
-                mContentsClient.getOnReceivedErrorHelper();
+        OnReceivedError2Helper onReceivedError2Helper = mContentsClient.getOnReceivedError2Helper();
         TestCallbackHelperContainer.OnPageFinishedHelper onPageFinishedHelper =
                 mContentsClient.getOnPageFinishedHelper();
 
-        Assert.assertEquals(startingErrorCount, onReceivedErrorHelper.getCallCount());
+        Assert.assertEquals(startingErrorCount, onReceivedError2Helper.getCallCount());
 
         mActivityTestRule.loadUrlSync(mAwContents, onPageFinishedHelper, url);
         Assert.assertEquals(url, onPageFinishedHelper.getUrl());
 
         if (expectedErrorCount > startingErrorCount) {
-            onReceivedErrorHelper.waitForCallback(
+            onReceivedError2Helper.waitForCallback(
                     startingErrorCount, expectedErrorCount - startingErrorCount);
         }
-        Assert.assertEquals(expectedErrorCount, onReceivedErrorHelper.getCallCount());
+        Assert.assertEquals(expectedErrorCount, onReceivedError2Helper.getCallCount());
     }
 
     private void setFilteringPolicy(final AwPolicyProvider testProvider,
