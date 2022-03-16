@@ -152,6 +152,8 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
 
   ShowPopupCallback shown_callback_;
 
+  // Note: This must be reset *before* `host_`. See note in
+  // OnExtensionUnloaded().
   std::unique_ptr<ScopedDevToolsAgentHostObservation>
       scoped_devtools_observation_;
 };
