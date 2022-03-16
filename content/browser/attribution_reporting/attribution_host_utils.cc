@@ -24,10 +24,14 @@ namespace content {
 
 namespace attribution_host_utils {
 
-bool IsOriginTrustworthyForAttributions(const url::Origin& origin) {
+namespace {
+
+bool IsSourceOriginPotentiallyTrustworthy(const url::Origin& origin) {
   return IsAndroidAppOrigin(origin) ||
          network::IsOriginPotentiallyTrustworthy(origin);
 }
+
+}  // namespace
 
 void VerifyAndStoreImpression(AttributionSourceType source_type,
                               const url::Origin& impression_origin,
@@ -35,16 +39,17 @@ void VerifyAndStoreImpression(AttributionSourceType source_type,
                               AttributionManager& attribution_manager,
                               base::Time impression_time) {
   // Convert |impression| into a StorableImpression that can be forwarded to
-  // storage. If a reporting origin was not provided, default to the conversion
-  // destination for reporting.
+  // storage. If a reporting origin was not provided, default to the impression
+  // origin for reporting.
   const url::Origin& reporting_origin = !impression.reporting_origin
                                             ? impression_origin
                                             : *impression.reporting_origin;
 
   // Conversion measurement is only allowed in secure contexts.
-  if (!IsOriginTrustworthyForAttributions(impression_origin) ||
-      !IsOriginTrustworthyForAttributions(reporting_origin) ||
-      !IsOriginTrustworthyForAttributions(impression.conversion_destination)) {
+  if (!IsSourceOriginPotentiallyTrustworthy(impression_origin) ||
+      !network::IsOriginPotentiallyTrustworthy(reporting_origin) ||
+      !network::IsOriginPotentiallyTrustworthy(
+          impression.conversion_destination)) {
     return;
   }
 

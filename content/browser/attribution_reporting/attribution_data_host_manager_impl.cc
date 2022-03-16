@@ -12,12 +12,12 @@
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_source.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
-#include "content/browser/attribution_reporting/attribution_host_utils.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_reporting.pb.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/storable_source.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/attribution_reporting/constants.h"
 #include "url/origin.h"
@@ -61,6 +61,9 @@ AttributionDataHostManagerImpl::~AttributionDataHostManagerImpl() = default;
 void AttributionDataHostManagerImpl::RegisterDataHost(
     mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
     url::Origin context_origin) {
+  if (!network::IsOriginPotentiallyTrustworthy(context_origin))
+    return;
+
   receivers_.Add(this, std::move(data_host),
                  FrozenContext{.context_origin = std::move(context_origin),
                                .source_type = AttributionSourceType::kEvent});
@@ -79,16 +82,14 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
     return;
 
   const FrozenContext& context = receivers_.current_context();
+  DCHECK(network::IsOriginPotentiallyTrustworthy(context.context_origin));
+
   base::Time source_time = base::Time::Now();
   const url::Origin& reporting_origin = data->reporting_origin;
 
   // The API is only allowed in secure contexts.
-  if (!attribution_host_utils::IsOriginTrustworthyForAttributions(
-          context.context_origin) ||
-      !attribution_host_utils::IsOriginTrustworthyForAttributions(
-          reporting_origin) ||
-      !attribution_host_utils::IsOriginTrustworthyForAttributions(
-          data->destination)) {
+  if (!network::IsOriginPotentiallyTrustworthy(reporting_origin) ||
+      !network::IsOriginPotentiallyTrustworthy(data->destination)) {
     return;
   }
 
@@ -127,15 +128,13 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
     return;
 
   const FrozenContext& context = receivers_.current_context();
+  DCHECK(network::IsOriginPotentiallyTrustworthy(context.context_origin));
+
   const url::Origin& reporting_origin = data->reporting_origin;
 
   // The API is only allowed in secure contexts.
-  if (!attribution_host_utils::IsOriginTrustworthyForAttributions(
-          context.context_origin) ||
-      !attribution_host_utils::IsOriginTrustworthyForAttributions(
-          reporting_origin)) {
+  if (!network::IsOriginPotentiallyTrustworthy(reporting_origin))
     return;
-  }
 
   absl::optional<AttributionFilterData> filters =
       AttributionFilterData::FromTriggerFilterValues(

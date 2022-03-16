@@ -59,12 +59,8 @@ TEST_F(AttributionReporterTest, ValidImpression_Allowed) {
       kReportToUrl, 56789, time);
 }
 
-TEST_F(AttributionReporterTest, ValidImpression_Allowed_NoOptionals) {
-  EXPECT_CALL(
-      mock_manager_,
-      HandleSource(
-          AllOf(ImpressionOriginIs(OriginFromAndroidPackageName(kPackageName)),
-                SourceTypeIs(AttributionSourceType::kEvent))));
+TEST_F(AttributionReporterTest, ImpressionWithoutReportingOrigin_NotAllowed) {
+  EXPECT_CALL(mock_manager_, HandleSource).Times(0);
 
   attribution_reporter_android::ReportAppImpression(
       mock_manager_, nullptr, kPackageName, kEventId, kConversionUrl, "", 0,

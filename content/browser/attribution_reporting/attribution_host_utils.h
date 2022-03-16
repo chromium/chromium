@@ -31,10 +31,6 @@ class AttributionManager;
 
 namespace attribution_host_utils {
 
-// Checks if the origin is trustworthy or an android app origin.
-CONTENT_EXPORT bool IsOriginTrustworthyForAttributions(
-    const url::Origin& origin);
-
 // Performs required checks on an incoming impression's data (trustworthy
 // origins, etc), and if verified, generates a `StorableSource` and persists
 // it.

@@ -21,11 +21,11 @@
 #include "base/values.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_source.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
-#include "content/browser/attribution_reporting/attribution_host_utils.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/storable_source.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
@@ -302,7 +302,7 @@ class AttributionSimulatorInputParser {
     if (const std::string* v = dict.FindStringKey(key))
       origin = url::Origin::Create(GURL(*v));
 
-    if (!attribution_host_utils::IsOriginTrustworthyForAttributions(origin))
+    if (!network::IsOriginPotentiallyTrustworthy(origin))
       *Error() << "must be a valid, secure origin";
 
     return origin;
