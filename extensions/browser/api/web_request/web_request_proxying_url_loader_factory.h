@@ -119,7 +119,7 @@ class WebRequestProxyingURLLoaderFactory
                            OnHeadersReceivedCallback callback) override;
 
    private:
-    // The state of an InprogressRequest. This is reported via UMA and UKM
+    // The state of an InProgressRequest. This is reported via UMA and UKM
     // at the end of the request, so do not change enum values.
     enum State {
       kInProgress = 0,

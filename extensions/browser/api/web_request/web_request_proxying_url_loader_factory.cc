@@ -762,6 +762,7 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
     ContinueToBeforeSendHeadersWithOk() {
   ContinueToBeforeSendHeaders(State::kInvalid, net::OK);
 }
+
 void WebRequestProxyingURLLoaderFactory::InProgressRequest::
     ContinueToStartRequest(State state_on_error, int error_code) {
   TRACE_EVENT_WITH_FLOW2(
