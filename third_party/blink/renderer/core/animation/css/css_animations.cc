@@ -1970,6 +1970,8 @@ bool CSSAnimations::IsAnimationAffectingProperty(const CSSProperty& property) {
     case CSSPropertyID::kAnimationTimingFunction:
     case CSSPropertyID::kContentVisibility:
     case CSSPropertyID::kContain:
+    case CSSPropertyID::kContainerName:
+    case CSSPropertyID::kContainerType:
     case CSSPropertyID::kDirection:
     case CSSPropertyID::kDisplay:
     case CSSPropertyID::kTextCombineUpright:
