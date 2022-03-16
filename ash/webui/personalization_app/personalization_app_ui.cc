@@ -186,9 +186,6 @@ void AddBooleans(content::WebUIDataSource* source) {
 
   source->AddBoolean("isDarkLightModeEnabled",
                      features::IsDarkLightModeEnabled());
-
-  source->AddBoolean("isAmbientModeAnimationEnabled",
-                     features::IsAmbientModeAnimationEnabled());
 }
 
 }  // namespace

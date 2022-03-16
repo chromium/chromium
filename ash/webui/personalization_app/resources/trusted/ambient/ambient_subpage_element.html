@@ -67,11 +67,9 @@
 
         <template is="dom-if" if="[[!loadingSettings_]]">
           <ambient-preview></ambient-preview>
-          <template is="dom-if" if="[[isAmbientModeAnimationEnabled_()]]">
-            <animation-theme-list selected-animation-theme="[[animationTheme_]]"
-                disabled$="[[disabled_]]">
-            </animation-theme-list>
-          </template>
+          <animation-theme-list selected-animation-theme="[[animationTheme_]]"
+              disabled$="[[disabled_]]">
+          </animation-theme-list>
           <topic-source-list selected-topic-source="[[topicSource_]]"
               has-google-photos-albums="[[hasGooglePhotosAlbums_(albums_)]]"
               disabled="[[disabled_]]">

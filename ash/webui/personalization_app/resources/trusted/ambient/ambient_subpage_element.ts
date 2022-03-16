@@ -15,7 +15,6 @@ import './animation_theme_list_element.js';
 import './toggle_row_element.js';
 import './topic_source_list_element.js';
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AmbientModeAlbum, AnimationTheme, TemperatureUnit, TopicSource} from '../personalization_app.mojom-webui.js';
@@ -81,10 +80,6 @@ export class AmbientSubpage extends WithPersonalizationStore {
     this.watch<AmbientSubpage['topicSource_']>(
         'topicSource_', state => state.ambient.topicSource);
     this.updateFromStore();
-  }
-
-  private isAmbientModeAnimationEnabled_(): boolean {
-    return loadTimeData.getBoolean('isAmbientModeAnimationEnabled');
   }
 
   private onClickAmbientModeButton_(event: Event) {

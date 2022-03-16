@@ -13,7 +13,6 @@ import {Paths, PersonalizationRouter} from 'chrome://personalization/trusted/per
 import {emptyState} from 'chrome://personalization/trusted/personalization_state.js';
 import {WallpaperGridItem} from 'chrome://personalization/trusted/wallpaper/wallpaper_grid_item_element.js';
 import {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
@@ -220,7 +219,6 @@ export function AmbientSubpageTest() {
 
   test(
       'sets animation theme when animation theme item is clicked', async () => {
-        loadTimeData.overrideValues({isAmbientModeAnimationEnabled: true});
         ambientSubpageElement = await displayMainSettings(
             TopicSource.kArtGallery, TemperatureUnit.kFahrenheit,
             /*ambientModeEnabled=*/ true);
