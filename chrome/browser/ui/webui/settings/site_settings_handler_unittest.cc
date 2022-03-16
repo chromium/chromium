@@ -59,6 +59,7 @@
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -2848,6 +2849,27 @@ TEST_F(SiteSettingsHandlerTest, HandleGetUsageInfo) {
   handler()->HandleFetchUsageTotal(args.GetList());
   handler()->OnGetUsageInfo();
   ValidateUsageInfo("example.com", "", "1 cookie");
+}
+
+TEST_F(SiteSettingsHandlerTest, NonTreeModelDeletion) {
+  // Confirm that a BrowsingDataRemover task is started to remove Privacy
+  // Sandbox APIs that are not integrated with the tree model.
+  SetUpCookiesTreeModel();
+
+  base::Value args(base::Value::Type::LIST);
+  args.Append("google.com");
+  handler()->HandleClearEtldPlus1DataAndCookies(args.GetList());
+
+  auto* browsing_data_remover = profile()->GetBrowsingDataRemover();
+  EXPECT_EQ(content::BrowsingDataRemover::DATA_TYPE_INTEREST_GROUPS &
+                content::BrowsingDataRemover::DATA_TYPE_AGGREGATION_SERVICE &
+                content::BrowsingDataRemover::DATA_TYPE_CONVERSIONS &
+                content::BrowsingDataRemover::DATA_TYPE_TRUST_TOKENS,
+            browsing_data_remover->GetLastUsedRemovalMaskForTesting());
+  EXPECT_EQ(base::Time::Min(),
+            browsing_data_remover->GetLastUsedBeginTimeForTesting());
+  EXPECT_EQ(content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
+            browsing_data_remover->GetLastUsedOriginTypeMaskForTesting());
 }
 
 }  // namespace settings
