@@ -24,6 +24,7 @@ Note: This tool will make edits on files in your local repo. It will revert the
 import argparse
 import contextlib
 import dataclasses
+import functools
 import logging
 import os
 import pathlib
@@ -51,10 +52,9 @@ _AVD_SCRIPT = _EMULATOR_AVD_DIR / 'avd.py'
 _AVD_CONFIG_DIR = _EMULATOR_AVD_DIR / 'proto'
 _SECONDS_TO_POLL_FOR_EMULATOR = 30
 
-# Use API 28 as it's the highest API version that monochrome supports.
-_DEFAULT_EMULATOR = 'generic_android28.textpb'
 _SUPPORTED_EMULATORS = {
     'generic_android23.textpb': 'x86',
+    'generic_android25.textpb': 'x86',
     'generic_android27.textpb': 'x86',
     'generic_android28.textpb': 'x86',
     'generic_android29.textpb': 'x86',
@@ -189,6 +189,8 @@ def _backup_file(file_path: str):
         yield
     finally:
         shutil.move(file_backup_path, file_path)
+        # Update the timestamp so ninja knows to rebuild next time.
+        pathlib.Path(file_path).touch()
 
 
 @contextlib.contextmanager
@@ -234,26 +236,25 @@ def _poll_for_emulators(
 
 @contextlib.contextmanager
 def _emulator(emulator_avd_name):
+    logging.info(f'Starting emulator image: {emulator_avd_name}')
     _poll_for_emulators(lambda emulators: len(emulators) == 0,
                         expected='no running emulators')
     avd_config = _AVD_CONFIG_DIR / emulator_avd_name
-    is_debug = logging.getLogger().isEnabledFor(logging.DEBUG)
-    # Always start with --wipe-data to get consistent results. It takes around
-    # 20 seconds to finish starting from scratch.
-    cmd = [_AVD_SCRIPT, 'start', '--wipe-data', '--avd-config', avd_config]
-    if not is_debug:
+    is_verbose = logging.getLogger().isEnabledFor(logging.INFO)
+    cmd = [_AVD_SCRIPT, 'start', '--avd-config', avd_config]
+    if not is_verbose:
         cmd.append('-q')
-    logging.debug('Starting emulator with cmd: %s', cmd)
+    logging.debug('Running AVD cmd: %s', cmd)
     try:
-        subprocess.run(cmd, check=True, capture_output=not is_debug)
+        # Ensure that stdout goes to stderr so that timing output does not get
+        # mixed with logging output.
+        subprocess.run(cmd, check=True, stdout=sys.stderr)
     except subprocess.CalledProcessError:
-        print('Unable to start the emulator. Perhaps you need to install it:')
-        print(f'{_AVD_SCRIPT} install --avd-config {avd_config}')
+        logging.error(f'Unable to start the emulator {emulator_avd_name}')
         raise
     _poll_for_emulators(lambda emulators: len(emulators) == 1,
                         expected='exactly one emulator started successfully')
     device = _detect_emulators()[0]
-    logging.debug('Started: %s', device.serial)
     try:
         # Ensure the emulator and its disk are fully set up.
         device.WaitUntilFullyBooted(decrypt=True)
@@ -268,11 +269,13 @@ def _emulator(emulator_avd_name):
             else:
                 setting_name = 'hidden_api_policy'
             device.adb.Shell(f'settings put global {setting_name} 0')
+        logging.info('Started emulator: %s', device.serial)
         yield device
     finally:
         device.adb.Emu('kill')
         _poll_for_emulators(lambda emulators: len(emulators) == 0,
                             expected='no running emulators')
+        logging.info('Stopped emulator.')
 
 
 def _run_and_time_cmd(cmd: List[str]) -> float:
@@ -281,9 +284,12 @@ def _run_and_time_cmd(cmd: List[str]) -> float:
     try:
         # Since output can be verbose, only show it for debug/errors.
         show_output = logging.getLogger().isEnabledFor(logging.DEBUG)
+        # Ensure that stdout goes to stderr so that timing output does not get
+        # mixed with logging output.
         subprocess.run(cmd,
                        cwd=_SRC_ROOT,
                        capture_output=not show_output,
+                       stdout=sys.stderr if show_output else None,
                        check=True,
                        text=True)
     except subprocess.CalledProcessError as e:
@@ -313,67 +319,13 @@ def _run_install(out_dir: str, target: str, device_serial: str) -> float:
     return _run_and_time_cmd(cmd)
 
 
-def _remove_deleted_files(emulator: device_utils.DeviceUtils):
-    # This is necessary to terminate all non-chrome processes still holding
-    # file descriptors open for deleted chrome apk files. Otherwise the
-    # emulator will run out of space.
-    find_holders_of_deleted_fds_cmd = 'lsof | grep "(deleted)" | grep ".apk" | grep chrome | sed "s/  +/ /g"'
-    # Example output:
-    # COMMAND PID USER FD TYPE DEVICE SIZE/OFF NODE NAME
-    # gle.android.gms 2492 u0_a10 94r REG 252,1 652841428 172035 /data/app/org.chromium.chrome-UDsQx3j_rw_6nevertBVeQ==/base.apk (deleted)
-    # s.nexuslauncher 2679 u0_a7 64r REG 252,1 652841428 172035 /data/app/org.chromium.chrome-UDsQx3j_rw_6nevertBVeQ==/base.apk (deleted)
-    # chromium.chrome 7091 u0_a85 mem unknown /dev/ashmem/dalvik-classes8.dex extracted in memory from /data/app/org.chromium.chrome-tFnAbRy3utLLuLwXxXYtxw==/base.apk!classes8.dex (deleted)
-    # chromium.chrome 7091 u0_a85 mem unknown /dev/ashmem/dalvik-classes7.dex extracted in memory from /data/app/org.chromium.chrome-tFnAbRy3utLLuLwXxXYtxw==/base.apk!classes7.dex (deleted)
-    # chromium.chrome 7091 u0_a85 mem unknown /dev/ashmem/dalvik-classes6.dex extracted in memory from /data/app/org.chromium.chrome-tFnAbRy3utLLuLwXxXYtxw==/base.apk!classes6.dex (deleted)
-    # chromium.chrome 7091 u0_a85 mem unknown /dev/ashmem/dalvik-classes5.dex extracted in memory from /data/app/org.chromium.chrome-tFnAbRy3utLLuLwXxXYtxw==/base.apk!classes5.dex (deleted)
-    # chromium.chrome 7091 u0_a85 mem unknown /dev/ashmem/dalvik-classes4.dex extracted in memory from /data/app/org.chromium.chrome-tFnAbRy3utLLuLwXxXYtxw==/base.apk!classes4.dex (deleted)
-    # chromium.chrome 7091 u0_a85 mem unknown /dev/ashmem/dalvik-classes3.dex extracted in memory from /data/app/org.chromium.chrome-tFnAbRy3utLLuLwXxXYtxw==/base.apk!classes3.dex (deleted)
-    # chromium.chrome 7091 u0_a85 mem unknown /dev/ashmem/dalvik-classes2.dex extracted in memory from /data/app/org.chromium.chrome-tFnAbRy3utLLuLwXxXYtxw==/base.apk!classes2.dex (deleted)
-    # chromium.chrome 7091 u0_a85 mem unknown /dev/ashmem/dalvik-classes.dex extracted in memory from /data/app/org.chromium.chrome-tFnAbRy3utLLuLwXxXYtxw==/base.apk (deleted)
-    # dboxed_process0 7288 u0_i21 mem unknown /dev/ashmem/dalvik-classes2.dex extracted in memory from /data/app/org.chromium.chrome-tFnAbRy3utLLuLwXxXYtxw==/base.apk!classes2.dex (deleted)
-    # dboxed_process0 7288 u0_i21 mem unknown /dev/ashmem/dalvik-classes.dex extracted in memory from /data/app/org.chromium.chrome-tFnAbRy3utLLuLwXxXYtxw==/base.apk (deleted)
-    output = emulator.RunShellCommand(find_holders_of_deleted_fds_cmd,
-                                      shell=True,
-                                      as_root=True,
-                                      check_return=True)
-    pids = set()
-    for line in output:
-        command, pid, user, *_ = line.split()
-        # Avoid killing chrome or system processes as that can lead to pm failures like:
-        # Unexpected pm path output: 'cmd: Failure calling service package: Broken pipe (32)'
-        if 'chrome' in command or 'boxed_process' in command:
-            continue
-        if user == 'system':
-            continue
-        if pid in pids:
-            continue
-        logging.debug('Terminating command=%s pid=%s user=%s', command, pid,
-                      user)
-        pids.add(pid)
-    if pids:
-        emulator.RunShellCommand('kill ' + ' '.join(pids),
-                                 shell=True,
-                                 as_root=True,
-                                 check_return=True)
-
-
 def _run_and_maybe_install(out_dir: str, target: str,
                            emulator: Optional[device_utils.DeviceUtils]
                            ) -> float:
     total_time = _run_autoninja(out_dir, target)
     if emulator:
         total_time += _run_install(out_dir, target, emulator.serial)
-        _remove_deleted_files(emulator)
     return total_time
-
-
-def _maybe_uninstall(out_dir: str, target: str,
-                     emulator: Optional[device_utils.DeviceUtils]):
-    if emulator:
-        _run_and_time_cmd([
-            os.path.join(out_dir, 'bin', target), 'uninstall', '--device',
-            emulator.serial
-        ])
 
 
 def _run_incremental_benchmark(*, out_dir: str, target: str, from_string: str,
@@ -381,6 +333,7 @@ def _run_incremental_benchmark(*, out_dir: str, target: str, from_string: str,
                                emulator: Optional[device_utils.DeviceUtils]
                                ) -> Iterator[float]:
     # This ensures that the only change is the one that this script makes.
+    logging.info(f'Prepping incremental benchmark...')
     prep_time = _run_and_maybe_install(out_dir, target, emulator)
     logging.info(f'Took {prep_time:.1f}s to prep this test')
     change_file_path = os.path.join(_SRC_ROOT, change_file)
@@ -392,16 +345,7 @@ def _run_incremental_benchmark(*, out_dir: str, target: str, from_string: str,
             assert content != new_content, (
                 f'Need to update {from_string} in {change_file}')
             f.write(new_content)
-        yield _run_and_maybe_install(out_dir, target, emulator)
-    # Since we are restoring the original file, this is the same incremental
-    # change, just reversed, so do a second run to save on prep time. This
-    # ensures a minimum of two runs.
-    pathlib.Path(change_file_path).touch()
-    second_run_time = _run_and_maybe_install(out_dir, target, emulator)
-    # Ensure that we clean-up before the last yield so that the emulator does
-    # not run out of space for the next benchmark.
-    _maybe_uninstall(out_dir, target, emulator)
-    yield second_run_time
+        return _run_and_maybe_install(out_dir, target, emulator)
 
 
 def _run_benchmark(*, kind: str, emulator: Optional[device_utils.DeviceUtils],
@@ -446,13 +390,11 @@ def run_benchmarks(benchmarks: List[str], gn_args: List[str],
     out_dir = os.path.relpath(output_directory, _SRC_ROOT)
     args_gn_path = os.path.join(out_dir, 'args.gn')
     if emulator_avd_name is None:
-        emulator_ctx = contextlib.nullcontext()
+        emulator_ctx = contextlib.nullcontext
     else:
-        emulator_ctx = _emulator(emulator_avd_name)
-    server_ctx_func = _server if not no_server else contextlib.nullcontext
-    # Emulator startup and the initial install takes a long time, so use the
-    # same emulator for the entire run.
-    with _backup_file(args_gn_path), emulator_ctx as emulator:
+        emulator_ctx = functools.partial(_emulator, emulator_avd_name)
+    server_ctx = _server if not no_server else contextlib.nullcontext
+    with _backup_file(args_gn_path):
         with open(args_gn_path, 'w') as f:
             # Use newlines instead of spaces since autoninja.py uses regex to
             # determine whether use_goma is turned on or off.
@@ -465,14 +407,15 @@ def run_benchmarks(benchmarks: List[str], gn_args: List[str],
                 logging.info(f'Run number: {run_num + 1}')
                 # Run the fast local dev server fresh for each benchmark run
                 # to avoid later benchmarks being slower due to the server
-                # accumulating queued tasks.
-                with server_ctx_func():
-                    for elapsed in _run_benchmark(out_dir=out_dir,
-                                                  target=target,
-                                                  emulator=emulator,
-                                                  **benchmark.info):
-                        logging.info(f'Time: {elapsed:.1f}s')
-                        time_taken.append(elapsed)
+                # accumulating queued tasks. Start a fresh emulator for each
+                # benchmark to produce more consistent results.
+                with emulator_ctx() as emulator, server_ctx():
+                    elapsed = _run_benchmark(out_dir=out_dir,
+                                             target=target,
+                                             emulator=emulator,
+                                             **benchmark.info)
+                    logging.info(f'Time: {elapsed:.1f}s')
+                    time_taken.append(elapsed)
             logging.info(f'Completed {benchmark.name}')
             logging.info('Result: %s', _format_result(time_taken))
             yield benchmark.name, time_taken
@@ -517,10 +460,6 @@ def main():
         '-C',
         '--output-directory',
         help='If outdir is not provided, will attempt to guess.')
-    parser.add_argument(
-        '--use-emulator',
-        action='store_true',
-        help='Use an emulator to include install/launch timing.')
     parser.add_argument('--emulator',
                         choices=list(_SUPPORTED_EMULATORS.keys()),
                         help='Specify this to override the default emulator.')
@@ -547,13 +486,8 @@ def main():
     logging.basicConfig(
         level=level, format='%(levelname).1s %(relativeCreated)6d %(message)s')
 
-    if args.emulator:
-        args.use_emulator = True
-    elif args.use_emulator:
-        args.emulator = _DEFAULT_EMULATOR
-
     gn_args = _GN_ARGS
-    if args.use_emulator:
+    if args.emulator:
         devil_chromium.Initialize()
         logging.info('Using emulator %s', args.emulator)
         gn_args.append(f'target_cpu="{_SUPPORTED_EMULATORS[args.emulator]}"')
@@ -565,13 +499,14 @@ def main():
     results = run_benchmarks(args.benchmark, gn_args, out_dir, target,
                              args.repeat, args.no_server, args.emulator)
     server_str = f'{"not " if args.no_server else ""}using build server'
-    emulator_str = f'{"" if args.use_emulator else "not "}using emulator'
-    print(f'Summary ({server_str}; {emulator_str})')
+    print(f'Summary ({server_str})')
     print(f'emulator: {args.emulator}')
     print(f'gn args: {" ".join(gn_args)}')
     print(f'target: {target}')
     for name, result in results:
-        print(f'{name}: {_format_result(result)}')
+        # Flush helps when redirecting output to a file so that each resulting
+        # line can be seen immediately in the log file.
+        print(f'{name}: {_format_result(result)}', flush=True)
 
 
 if __name__ == '__main__':
