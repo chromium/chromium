@@ -202,11 +202,11 @@
 
   <div class="buttons-container">
     <template is="dom-if" if="[[isConsent_]]">
-      <cr-button id="declineButton" class="action-button"
+      <cr-button id="declineButton"
           on-click="onConsentDeclined_">
         $i18n{consentDeclineButton}
       </cr-button>
-      <cr-button id="confirmButton" class="action-button"
+      <cr-button id="confirmButton"
           on-click="onConsentAccepted_">
         $i18n{consentAcceptButton}
       </cr-button>
