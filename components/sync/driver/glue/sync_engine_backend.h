@@ -176,7 +176,9 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
   // Forwards an invalidation to the sync manager for all data types extracted
   // from the |payload|. This method is called for sync standalone
   // invalidations.
-  void DoOnInvalidationReceived(const std::string& payload);
+  void DoOnStandaloneInvalidationReceived(
+      const std::string& payload,
+      const ModelTypeSet& interested_data_types);
 
   // Returns a ListValue representing Nigori node.
   void GetNigoriNodeForDebugging(AllNodesCallback callback);
@@ -201,8 +203,9 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
 
   void LoadAndConnectNigoriController();
 
-  IncomingInvalidationStatus DoOnInvalidationReceivedImpl(
-      const std::string& payload);
+  IncomingInvalidationStatus DoOnStandaloneInvalidationReceivedImpl(
+      const std::string& payload,
+      const ModelTypeSet& interested_data_types);
 
   // Name used for debugging.
   const std::string name_;

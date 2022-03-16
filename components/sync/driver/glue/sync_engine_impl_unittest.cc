@@ -329,11 +329,11 @@ class SyncEngineImplWithSyncInvalidationsTest : public SyncEngineImplTest {
 
  protected:
   SyncInvalidationsService* GetSyncInvalidationsService() override {
-    return &mock_instance_id_driver_;
+    return &mock_sync_invalidations_service_;
   }
 
   base::test::ScopedFeatureList override_features_;
-  NiceMock<MockSyncInvalidationsService> mock_instance_id_driver_;
+  NiceMock<MockSyncInvalidationsService> mock_sync_invalidations_service_;
 };
 
 class SyncEngineImplWithSyncInvalidationsForWalletAndOfferTest
@@ -673,7 +673,9 @@ TEST_F(SyncEngineImplTest,
 
 TEST_F(SyncEngineImplWithSyncInvalidationsTest,
        ShouldInvalidateDataTypesOnIncomingInvalidation) {
-  EXPECT_CALL(mock_instance_id_driver_, AddListener(backend_.get()));
+  enabled_types_.PutAll({syncer::BOOKMARKS, syncer::PREFERENCES});
+
+  EXPECT_CALL(mock_sync_invalidations_service_, AddListener(backend_.get()));
   InitializeBackend(/*expect_success=*/true);
 
   sync_pb::SyncInvalidationsPayload payload;
@@ -686,10 +688,40 @@ TEST_F(SyncEngineImplWithSyncInvalidationsTest,
   preferences_invalidation->set_data_type_id(
       GetSpecificsFieldNumberFromModelType(ModelType::PREFERENCES));
 
+  EXPECT_CALL(mock_sync_invalidations_service_, GetInterestedDataTypes())
+      .WillOnce(Return(enabled_types_));
   backend_->OnInvalidationReceived(payload.SerializeAsString());
 
   fake_manager_->WaitForSyncThread();
   EXPECT_EQ(1, fake_manager_->GetInvalidationCount(ModelType::BOOKMARKS));
+  EXPECT_EQ(1, fake_manager_->GetInvalidationCount(ModelType::PREFERENCES));
+}
+
+TEST_F(SyncEngineImplWithSyncInvalidationsTest,
+       ShouldInvalidateOnlyEnabledDataTypes) {
+  enabled_types_.Remove(syncer::BOOKMARKS);
+  enabled_types_.Put(syncer::PREFERENCES);
+
+  EXPECT_CALL(mock_sync_invalidations_service_, AddListener(backend_.get()));
+  InitializeBackend(/*expect_success=*/true);
+  ConfigureDataTypes();
+
+  sync_pb::SyncInvalidationsPayload payload;
+  sync_pb::SyncInvalidationsPayload::DataTypeInvalidation*
+      bookmarks_invalidation = payload.add_data_type_invalidations();
+  bookmarks_invalidation->set_data_type_id(
+      GetSpecificsFieldNumberFromModelType(ModelType::BOOKMARKS));
+  sync_pb::SyncInvalidationsPayload::DataTypeInvalidation*
+      preferences_invalidation = payload.add_data_type_invalidations();
+  preferences_invalidation->set_data_type_id(
+      GetSpecificsFieldNumberFromModelType(ModelType::PREFERENCES));
+
+  EXPECT_CALL(mock_sync_invalidations_service_, GetInterestedDataTypes())
+      .WillOnce(Return(enabled_types_));
+  backend_->OnInvalidationReceived(payload.SerializeAsString());
+
+  fake_manager_->WaitForSyncThread();
+  EXPECT_EQ(0, fake_manager_->GetInvalidationCount(ModelType::BOOKMARKS));
   EXPECT_EQ(1, fake_manager_->GetInvalidationCount(ModelType::PREFERENCES));
 }
 

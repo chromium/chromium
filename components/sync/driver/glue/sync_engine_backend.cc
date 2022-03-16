@@ -471,17 +471,21 @@ void SyncEngineBackend::DoOnInvalidatorClientIdChange(
   sync_manager_->UpdateInvalidationClientId(client_id);
 }
 
-void SyncEngineBackend::DoOnInvalidationReceived(const std::string& payload) {
+void SyncEngineBackend::DoOnStandaloneInvalidationReceived(
+    const std::string& payload,
+    const ModelTypeSet& interested_data_types) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(base::FeatureList::IsEnabled(kSyncSendInterestedDataTypes) &&
          base::FeatureList::IsEnabled(kUseSyncInvalidations));
   const IncomingInvalidationStatus status =
-      DoOnInvalidationReceivedImpl(payload);
+      DoOnStandaloneInvalidationReceivedImpl(payload, interested_data_types);
   RecordIncomingInvalidationStatus(status);
 }
 
 SyncEngineBackend::IncomingInvalidationStatus
-SyncEngineBackend::DoOnInvalidationReceivedImpl(const std::string& payload) {
+SyncEngineBackend::DoOnStandaloneInvalidationReceivedImpl(
+    const std::string& payload,
+    const ModelTypeSet& interested_data_types) {
   sync_pb::SyncInvalidationsPayload payload_message;
   if (!payload_message.ParseFromString(payload)) {
     return IncomingInvalidationStatus::kPayloadParseFailed;
@@ -497,8 +501,12 @@ SyncEngineBackend::DoOnInvalidationReceivedImpl(const std::string& payload) {
       continue;
     }
 
+    if (!interested_data_types.Has(model_type)) {
+      // Filter out invalidations for unsubscribed data types.
+      continue;
+    }
+
     contains_valid_model_type = true;
-    // TODO(crbug.com/1119798): Use only enabled data types.
     RecordInvalidationPerModelType(model_type);
     std::unique_ptr<SyncInvalidation> inv_adapter =
         std::make_unique<SyncInvalidationAdapter>(payload_message.hint());

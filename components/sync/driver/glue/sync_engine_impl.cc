@@ -579,10 +579,15 @@ void SyncEngineImpl::OnInvalidatorClientIdChange(const std::string& client_id) {
 
 void SyncEngineImpl::OnInvalidationReceived(const std::string& payload) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/1082122): check that sync engine is fully initialized.
+  // TODO(crbug.com/1082122): check that sync engine is fully initialized and
+  // store incoming invalidations until then.
   sync_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&SyncEngineBackend::DoOnInvalidationReceived,
-                                backend_, payload));
+      FROM_HERE,
+      base::BindOnce(
+          &SyncEngineBackend::DoOnStandaloneInvalidationReceived, backend_,
+          payload,
+          sync_invalidations_service_->GetInterestedDataTypes().value_or(
+              ModelTypeSet())));
 }
 
 // static
