@@ -25,7 +25,7 @@ struct IntentFile {
   IntentFile& operator=(const IntentFile&) = delete;
   ~IntentFile();
 
-  // Returns true if match `condition_value`, otherwise, returns false.
+  // Returns true if matches `condition_value`, otherwise, returns false.
   bool MatchConditionValue(const ConditionValuePtr& condition_value);
 
   // Returns true if matches any condition in `condition_values`, otherwise,
@@ -68,11 +68,14 @@ struct Intent {
   absl::optional<std::string> GetIntentConditionValueByType(
       ConditionType condition_type);
 
-  // Returns true if match the file `condition`, otherwise, returns false.
+  // Returns true if matches the file `condition`, otherwise, returns false.
   bool MatchFileCondition(const ConditionPtr& condition);
 
-  // Returns true if match `condition`, otherwise, returns false.
+  // Returns true if matches with any of the values in `condition`.
   bool MatchCondition(const ConditionPtr& condition);
+
+  // Returns true if matches all existing conditions in the filter.
+  bool MatchFilter(const IntentFilterPtr& filter);
 
   // Intent action. e.g. view, send.
   std::string action;

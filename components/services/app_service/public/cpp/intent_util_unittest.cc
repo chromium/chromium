@@ -78,7 +78,8 @@ class IntentUtilTest : public testing::Test {
   }
 };
 
-TEST_F(IntentUtilTest, AllConditionMatches) {
+// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
+TEST_F(IntentUtilTest, AllConditionMatchesMojom) {
   GURL test_url = GURL("https://www.google.com/");
   auto intent = apps_util::CreateIntentFromUrl(test_url);
   auto intent_filter =
@@ -87,7 +88,16 @@ TEST_F(IntentUtilTest, AllConditionMatches) {
   EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, intent_filter));
 }
 
-TEST_F(IntentUtilTest, OneConditionDoesnotMatch) {
+TEST_F(IntentUtilTest, AllConditionMatches) {
+  GURL test_url("https://www.google.com/");
+  auto intent = std::make_unique<apps::Intent>(test_url);
+  auto intent_filter = apps_util::MakeIntentFilterForUrlScope(GURL(kFilterUrl));
+
+  EXPECT_TRUE(intent->MatchFilter(intent_filter));
+}
+
+// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
+TEST_F(IntentUtilTest, OneConditionDoesNotMatchMojom) {
   GURL test_url = GURL("https://www.abc.com/");
   auto intent = apps_util::CreateIntentFromUrl(test_url);
   auto intent_filter =
@@ -96,13 +106,30 @@ TEST_F(IntentUtilTest, OneConditionDoesnotMatch) {
   EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, intent_filter));
 }
 
-TEST_F(IntentUtilTest, IntentDoesnotHaveValueToMatch) {
+TEST_F(IntentUtilTest, OneConditionDoesNotMatch) {
+  GURL test_url("https://www.abc.com/");
+  auto intent = std::make_unique<apps::Intent>(test_url);
+  auto intent_filter = apps_util::MakeIntentFilterForUrlScope(GURL(kFilterUrl));
+
+  EXPECT_FALSE(intent->MatchFilter(intent_filter));
+}
+
+// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
+TEST_F(IntentUtilTest, IntentDoesNotHaveValueToMatchMojom) {
   GURL test_url = GURL("www.abc.com/");
   auto intent = apps_util::CreateIntentFromUrl(test_url);
   auto intent_filter =
       apps_util::CreateIntentFilterForUrlScope(GURL(kFilterUrl));
 
   EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, intent_filter));
+}
+
+TEST_F(IntentUtilTest, IntentDoesNotHaveValueToMatch) {
+  GURL test_url("www.abc.com/");
+  auto intent = std::make_unique<apps::Intent>(test_url);
+  auto intent_filter = apps_util::MakeIntentFilterForUrlScope(GURL(kFilterUrl));
+
+  EXPECT_FALSE(intent->MatchFilter(intent_filter));
 }
 
 // Test ConditionMatch with more then one condition values.
@@ -363,8 +390,9 @@ TEST_F(IntentUtilTest, FilterMatchLevel) {
               apps_util::GetFilterMatchLevel(filter_empty));
 }
 
-TEST_F(IntentUtilTest, ActionMatch) {
-  GURL test_url = GURL("https://www.google.com/");
+// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
+TEST_F(IntentUtilTest, ActionMatchMojom) {
+  GURL test_url("https://www.google.com/");
   auto intent = apps_util::CreateIntentFromUrl(test_url);
   auto intent_filter =
       apps_util::CreateIntentFilterForUrlScope(GURL(kFilterUrl));
@@ -379,6 +407,23 @@ TEST_F(IntentUtilTest, ActionMatch) {
   send_intent_filter->conditions[0]->condition_values[0]->value =
       apps_util::kIntentActionSend;
   EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, send_intent_filter));
+}
+
+TEST_F(IntentUtilTest, ActionMatch) {
+  GURL test_url("https://www.google.com/");
+  auto intent = std::make_unique<apps::Intent>(test_url);
+  auto intent_filter = apps_util::MakeIntentFilterForUrlScope(GURL(kFilterUrl));
+  EXPECT_TRUE(intent->MatchFilter(intent_filter));
+
+  auto send_intent = std::make_unique<apps::Intent>(test_url);
+  send_intent->action = apps_util::kIntentActionSend;
+  EXPECT_FALSE(send_intent->MatchFilter(intent_filter));
+
+  auto send_intent_filter =
+      apps_util::MakeIntentFilterForUrlScope(GURL(kFilterUrl));
+  send_intent_filter->conditions[0]->condition_values[0]->value =
+      apps_util::kIntentActionSend;
+  EXPECT_FALSE(intent->MatchFilter(send_intent_filter));
 }
 
 TEST_F(IntentUtilTest, MimeTypeMatch) {

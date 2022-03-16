@@ -67,6 +67,9 @@ void AddSingleValueCondition(apps::mojom::ConditionType condition_type,
 
 // TODO(crbug.com/1092784): Update/add all related unit tests to test with
 // action view.
+apps::IntentFilterPtr MakeIntentFilterForUrlScope(const GURL& url);
+
+// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
 apps::mojom::IntentFilterPtr CreateIntentFilterForUrlScope(const GURL& url);
 
 // Get the |intent_filter| match level. The higher the return value, the better

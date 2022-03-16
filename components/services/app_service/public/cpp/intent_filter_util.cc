@@ -115,6 +115,25 @@ void AddSingleValueCondition(apps::mojom::ConditionType condition_type,
   intent_filter->conditions.push_back(std::move(condition));
 }
 
+apps::IntentFilterPtr MakeIntentFilterForUrlScope(const GURL& url) {
+  auto intent_filter = std::make_unique<apps::IntentFilter>();
+
+  AddSingleValueCondition(apps::ConditionType::kAction,
+                          apps_util::kIntentActionView,
+                          apps::PatternMatchType::kNone, intent_filter);
+
+  AddSingleValueCondition(apps::ConditionType::kScheme, url.scheme(),
+                          apps::PatternMatchType::kNone, intent_filter);
+
+  AddSingleValueCondition(apps::ConditionType::kHost, url.host(),
+                          apps::PatternMatchType::kNone, intent_filter);
+
+  AddSingleValueCondition(apps::ConditionType::kPattern, url.path(),
+                          apps::PatternMatchType::kPrefix, intent_filter);
+
+  return intent_filter;
+}
+
 apps::mojom::IntentFilterPtr CreateIntentFilterForUrlScope(const GURL& url) {
   auto intent_filter = apps::mojom::IntentFilter::New();
 

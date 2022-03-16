@@ -42,7 +42,7 @@ bool IntentFile::MatchConditionValue(const ConditionValuePtr& condition_value) {
 }
 
 bool IntentFile::MatchAnyConditionValue(
-    const std::vector<apps::ConditionValuePtr>& condition_values) {
+    const std::vector<ConditionValuePtr>& condition_values) {
   return std::any_of(condition_values.begin(), condition_values.end(),
                      [this](const ConditionValuePtr& condition_value) {
                        return MatchConditionValue(condition_value);
@@ -57,27 +57,27 @@ Intent::Intent(const GURL& url)
 Intent::~Intent() = default;
 
 absl::optional<std::string> Intent::GetIntentConditionValueByType(
-    apps::ConditionType condition_type) {
+    ConditionType condition_type) {
   switch (condition_type) {
-    case apps::ConditionType::kAction: {
+    case ConditionType::kAction: {
       return action;
     }
-    case apps::ConditionType::kScheme: {
+    case ConditionType::kScheme: {
       return url.has_value() ? absl::optional<std::string>(url->scheme())
                              : absl::nullopt;
     }
-    case apps::ConditionType::kHost: {
+    case ConditionType::kHost: {
       return url.has_value() ? absl::optional<std::string>(url->host())
                              : absl::nullopt;
     }
-    case apps::ConditionType::kPattern: {
+    case ConditionType::kPattern: {
       return url.has_value() ? absl::optional<std::string>(url->path())
                              : absl::nullopt;
     }
-    case apps::ConditionType::kMimeType: {
+    case ConditionType::kMimeType: {
       return mime_type;
     }
-    case apps::ConditionType::kFile: {
+    case ConditionType::kFile: {
       // Handled in IntentMatchesFileCondition.
       NOTREACHED();
       return absl::nullopt;
@@ -115,6 +115,17 @@ bool Intent::MatchCondition(const ConditionPtr& condition) {
                        return apps_util::ConditionValueMatches(
                            value_to_match.value(), condition_value);
                      });
+}
+
+bool Intent::MatchFilter(const IntentFilterPtr& filter) {
+  // Intent matches with this intent filter when all of the existing conditions
+  // match.
+  for (const auto& condition : filter->conditions) {
+    if (!MatchCondition(condition)) {
+      return false;
+    }
+  }
+  return true;
 }
 
 IntentFilePtr ConvertMojomIntentFileToIntentFile(
