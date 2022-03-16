@@ -66,21 +66,34 @@ void DeviceActivityController::RegisterPrefs(PrefRegistrySimple* registry) {
                              unix_epoch);
 }
 
-DeviceActivityController::DeviceActivityController()
+DeviceActivityController::DeviceActivityController(
+    version_info::Channel chromeos_channel,
+    PrefService* local_state,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    base::TimeDelta start_delay)
     : statistics_provider_(
           chromeos::system::StatisticsProvider::GetInstance()) {
   DCHECK(!g_ash_device_activity_controller);
   g_ash_device_activity_controller = this;
+
+  // Uses a random minute between [0, 29] inclusive (30 buckets) to delay start.
+  // This will distribute the high qps during certain times, across 30 equally
+  // probable buckets.
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&device_activity::DeviceActivityController::Start,
+                     weak_factory_.GetWeakPtr(), chromeos_channel, local_state,
+                     url_loader_factory),
+      start_delay);
 }
 
 DeviceActivityController::~DeviceActivityController() {
   DCHECK_EQ(this, g_ash_device_activity_controller);
-  Stop(Trigger::kNetwork);
+  Stop();
   g_ash_device_activity_controller = nullptr;
 }
 
 void DeviceActivityController::Start(
-    Trigger trigger,
     version_info::Channel chromeos_channel,
     PrefService* local_state,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
@@ -89,12 +102,11 @@ void DeviceActivityController::Start(
   chromeos::SessionManagerClient::Get()->GetPsmDeviceActiveSecret(
       base::BindOnce(&device_activity::DeviceActivityController::
                          OnPsmDeviceActiveSecretFetched,
-                     weak_factory_.GetWeakPtr(), trigger, chromeos_channel,
-                     local_state, url_loader_factory));
+                     weak_factory_.GetWeakPtr(), chromeos_channel, local_state,
+                     url_loader_factory));
 }
 
 void DeviceActivityController::OnPsmDeviceActiveSecretFetched(
-    Trigger trigger,
     version_info::Channel chromeos_channel,
     PrefService* local_state,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -102,12 +114,11 @@ void DeviceActivityController::OnPsmDeviceActiveSecretFetched(
   // Continue when machine statistics are loaded, to avoid blocking.
   statistics_provider_->ScheduleOnMachineStatisticsLoaded(base::BindOnce(
       &device_activity::DeviceActivityController::OnMachineStatisticsLoaded,
-      weak_factory_.GetWeakPtr(), trigger, chromeos_channel, local_state,
+      weak_factory_.GetWeakPtr(), chromeos_channel, local_state,
       url_loader_factory, psm_device_active_secret));
 }
 
 void DeviceActivityController::OnMachineStatisticsLoaded(
-    Trigger trigger,
     version_info::Channel chromeos_channel,
     PrefService* local_state,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -120,17 +131,15 @@ void DeviceActivityController::OnMachineStatisticsLoaded(
   use_cases.push_back(std::make_unique<MonthlyUseCaseImpl>(
       psm_device_active_secret, chromeos_channel, local_state));
 
-  if (trigger == Trigger::kNetwork) {
-    da_client_network_ = std::make_unique<DeviceActivityClient>(
-        chromeos::NetworkHandler::Get()->network_state_handler(),
-        url_loader_factory, std::make_unique<PsmDelegateImpl>(),
-        std::make_unique<base::RepeatingTimer>(), kFresnelBaseUrl,
-        google_apis::GetFresnelAPIKey(), std::move(use_cases));
-  }
+  da_client_network_ = std::make_unique<DeviceActivityClient>(
+      chromeos::NetworkHandler::Get()->network_state_handler(),
+      url_loader_factory, std::make_unique<PsmDelegateImpl>(),
+      std::make_unique<base::RepeatingTimer>(), kFresnelBaseUrl,
+      google_apis::GetFresnelAPIKey(), std::move(use_cases));
 }
 
-void DeviceActivityController::Stop(Trigger trigger) {
-  if (trigger == Trigger::kNetwork && da_client_network_) {
+void DeviceActivityController::Stop() {
+  if (da_client_network_) {
     da_client_network_.reset();
   }
 }

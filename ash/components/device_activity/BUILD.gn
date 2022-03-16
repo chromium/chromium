@@ -63,6 +63,7 @@ source_set("unit_tests") {
     "//ash/constants:constants",
     "//base",
     "//base/test:test_support",
+    "//chromeos/dbus/session_manager:session_manager",
     "//chromeos/network",
     "//chromeos/network:test_support",
     "//chromeos/system:system",

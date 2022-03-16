@@ -45,6 +45,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
+#include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/system/sys_info.h"
@@ -1228,13 +1229,11 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
   // Branded builds are packaged with valid google chrome api keys.
   if (base::FeatureList::IsEnabled(features::kDeviceActiveClient)) {
     device_activity_controller_ =
-        std::make_unique<device_activity::DeviceActivityController>();
-
-    device_activity_controller_->Start(
-        device_activity::Trigger::kNetwork, chrome::GetChannel(),
-        g_browser_process->local_state(),
-        g_browser_process->system_network_context_manager()
-            ->GetSharedURLLoaderFactory());
+        std::make_unique<device_activity::DeviceActivityController>(
+            chrome::GetChannel(), g_browser_process->local_state(),
+            g_browser_process->system_network_context_manager()
+                ->GetSharedURLLoaderFactory(),
+            base::Minutes(base::RandInt(0, 29)));
   }
 #endif
 

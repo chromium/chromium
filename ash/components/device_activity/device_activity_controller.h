@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "ash/components/device_activity/trigger.h"
 #include "base/component_export.h"
 #include "chromeos/system/statistics_provider.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -33,30 +32,31 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityController {
   // Registers local state preferences.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
-  DeviceActivityController();
+  DeviceActivityController(
+      version_info::Channel chromeos_channel,
+      PrefService* local_state,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      base::TimeDelta start_delay);
   DeviceActivityController(const DeviceActivityController&) = delete;
   DeviceActivityController& operator=(const DeviceActivityController&) = delete;
   ~DeviceActivityController();
 
-  // Start Device Activity reporting for a trigger.
-  void Start(Trigger trigger,
-             version_info::Channel chromeos_channel,
+ private:
+  // Start Device Activity reporting.
+  void Start(version_info::Channel chromeos_channel,
              PrefService* local_state,
              scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
-  // Stop Device Activity reporting for a trigger.
-  void Stop(Trigger trigger);
+  // Stop Device Activity reporting.
+  void Stop();
 
- private:
   void OnPsmDeviceActiveSecretFetched(
-      Trigger trigger,
       version_info::Channel chromeos_channel,
       PrefService* local_state,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const std::string& psm_device_active_secret);
 
   void OnMachineStatisticsLoaded(
-      Trigger trigger,
       version_info::Channel chromeos_channel,
       PrefService* local_state,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
