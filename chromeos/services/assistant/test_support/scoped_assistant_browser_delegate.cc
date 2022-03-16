@@ -9,14 +9,6 @@ namespace assistant {
 
 namespace {
 
-constexpr base::TimeDelta kMockCallbackDelayTime = base::Milliseconds(250);
-
-std::unique_ptr<ui::AssistantTree> CreateTestAssistantTree() {
-  auto tree = std::make_unique<ui::AssistantTree>();
-  tree->nodes.emplace_back(std::make_unique<ui::AssistantNode>());
-  return tree;
-}
-
 }  // namespace
 
 ScopedAssistantBrowserDelegate::ScopedAssistantBrowserDelegate() = default;
@@ -39,20 +31,6 @@ void ScopedAssistantBrowserDelegate::RequestMediaControllerManager(
     media_controller_manager_receiver_->reset();
     media_controller_manager_receiver_->Bind(std::move(receiver));
   }
-}
-
-void ScopedAssistantBrowserDelegate::RequestAssistantStructure(
-    RequestAssistantStructureCallback callback) {
-  // Pretend to fetch structure asynchronously.
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](RequestAssistantStructureCallback callback) {
-            std::move(callback).Run(ax::mojom::AssistantExtra::New(),
-                                    CreateTestAssistantTree());
-          },
-          std::move(callback)),
-      kMockCallbackDelayTime);
 }
 
 }  // namespace assistant

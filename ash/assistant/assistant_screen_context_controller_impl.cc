@@ -7,22 +7,15 @@
 #include <utility>
 #include <vector>
 
-#include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/assistant/controller/assistant_screen_context_controller.h"
-#include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
-#include "chromeos/services/assistant/public/cpp/assistant_browser_delegate.h"
 #include "chromeos/ui/base/window_properties.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "ui/accessibility/ax_assistant_structure.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_tree_owner.h"
@@ -169,11 +162,6 @@ AssistantScreenContextControllerImpl::AssistantScreenContextControllerImpl() =
 AssistantScreenContextControllerImpl::~AssistantScreenContextControllerImpl() =
     default;
 
-void AssistantScreenContextControllerImpl::SetAssistant(
-    chromeos::assistant::Assistant* assistant) {
-  assistant_ = assistant;
-}
-
 void AssistantScreenContextControllerImpl::RequestScreenshot(
     const gfx::Rect& rect,
     RequestScreenshotCallback callback) {
@@ -198,22 +186,6 @@ void AssistantScreenContextControllerImpl::RequestScreenshot(
       root_layer, source_rect,
       base::BindOnce(&EncodeScreenshotAndRunCallback, std::move(callback),
                      std::move(layer_owner)));
-}
-
-void AssistantScreenContextControllerImpl::RequestScreenContext(
-    const gfx::Rect& region,
-    ScreenContextCallback callback) {
-  RequestScreenshot(
-      region,
-      base::BindOnce(
-          &AssistantScreenContextControllerImpl::OnRequestScreenshotCompleted,
-          weak_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void AssistantScreenContextControllerImpl::OnRequestScreenshotCompleted(
-    ScreenContextCallback callback,
-    const std::vector<uint8_t>& screenshot) {
-  std::move(callback).Run(/*assistant_structure=*/nullptr, screenshot);
 }
 
 std::unique_ptr<ui::LayerTreeOwner>

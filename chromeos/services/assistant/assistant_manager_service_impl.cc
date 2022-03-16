@@ -340,10 +340,9 @@ void AssistantManagerServiceImpl::StartEditReminderInteraction(
 }
 
 void AssistantManagerServiceImpl::StartScreenContextInteraction(
-    ax::mojom::AssistantStructurePtr assistant_structure,
     const std::vector<uint8_t>& assistant_screenshot) {
-  conversation_controller().StartScreenContextInteraction(
-      std::move(assistant_structure), assistant_screenshot);
+  conversation_controller().StartScreenContextInteraction(nullptr,
+                                                          assistant_screenshot);
 }
 
 void AssistantManagerServiceImpl::StartTextInteraction(

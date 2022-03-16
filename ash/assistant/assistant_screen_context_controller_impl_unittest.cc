@@ -62,23 +62,6 @@ class AssistantScreenContextControllerTest : public AssistantAshTestBase {
 
   AssistantScreenContextControllerImpl* controller() { return controller_; }
 
-  void WaitAndAssertScreenContext() {
-    base::RunLoop run_loop;
-    controller()->RequestScreenContext(
-        /*region=*/gfx::Rect(),
-        base::BindOnce(
-            [](base::RunLoop* run_loop,
-               ax::mojom::AssistantStructurePtr assistant_structure,
-               const std::vector<uint8_t>& screenshot) {
-              EXPECT_FALSE(assistant_structure);
-
-              run_loop->Quit();
-            },
-            &run_loop));
-
-    run_loop.Run();
-  }
-
  private:
   AssistantScreenContextControllerImpl* controller_ = nullptr;
 };
@@ -117,13 +100,6 @@ TEST_F(AssistantScreenContextControllerTest, Screenshot) {
       layer_owner->root(), base::BindRepeating([](ui::Layer* layer) {
         return layer->type() == ui::LayerType::LAYER_SOLID_COLOR;
       })));
-}
-
-// Verify that screen context request without Assistant structure is returned.
-TEST_F(AssistantScreenContextControllerTest,
-       ShouldCallCallbackForRequestScreenContextWithoutAssistantStructure) {
-  ShowAssistantUi(AssistantEntryPoint::kLongPressLauncher);
-  WaitAndAssertScreenContext();
 }
 
 }  // namespace ash

@@ -36,7 +36,6 @@
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/url_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -799,17 +798,15 @@ void AssistantInteractionControllerImpl::StartScreenContextInteraction(
       l10n_util::GetStringUTF8(IDS_ASH_ASSISTANT_CHIP_WHATS_ON_MY_SCREEN),
       query_source));
 
-  assistant_controller_->screen_context_controller()->RequestScreenContext(
+  assistant_controller_->screen_context_controller()->RequestScreenshot(
       region,
       base::BindOnce(
           [](const base::WeakPtr<AssistantInteractionControllerImpl>& self,
-             ax::mojom::AssistantStructurePtr assistant_structure,
              const std::vector<uint8_t>& screenshot) {
             if (!self)
               return;
 
-            self->assistant_->StartScreenContextInteraction(
-                std::move(assistant_structure), screenshot);
+            self->assistant_->StartScreenContextInteraction(screenshot);
           },
           screen_context_request_factory_.GetWeakPtr()));
 }

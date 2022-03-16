@@ -38,13 +38,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantBrowserDelegate {
 
   static AssistantBrowserDelegate* Get();
 
-  using RequestAssistantStructureCallback =
-      base::OnceCallback<void(ax::mojom::AssistantExtraPtr,
-                              std::unique_ptr<ui::AssistantTree>)>;
-  // Requests Assistant structure for the active browser or ARC++ app window.
-  virtual void RequestAssistantStructure(
-      RequestAssistantStructureCallback callback) = 0;
-
   // Notifies assistant client that assistant running status has changed.
   virtual void OnAssistantStatusChanged(AssistantStatus new_status) = 0;
 

@@ -28,7 +28,7 @@ class MockAssistant : public Assistant {
 
   MOCK_METHOD(void,
               StartScreenContextInteraction,
-              (ax::mojom::AssistantStructurePtr, const std::vector<uint8_t>&));
+              (const std::vector<uint8_t>&));
 
   MOCK_METHOD(void,
               StartTextInteraction,

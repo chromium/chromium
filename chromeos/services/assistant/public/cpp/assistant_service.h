@@ -79,7 +79,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) Assistant {
   // registered subscribers.
   // |assistant_screenshot| contains JPEG data.
   virtual void StartScreenContextInteraction(
-      ax::mojom::AssistantStructurePtr assistant_structure,
       const std::vector<uint8_t>& assistant_screenshot) = 0;
 
   // Starts a new Assistant text interaction. If |allow_tts| is true, the

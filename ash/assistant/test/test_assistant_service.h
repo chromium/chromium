@@ -89,7 +89,6 @@ class TestAssistantService : public chromeos::assistant::Assistant {
   // Assistant overrides:
   void StartEditReminderInteraction(const std::string& client_id) override;
   void StartScreenContextInteraction(
-      ax::mojom::AssistantStructurePtr assistant_structure,
       const std::vector<uint8_t>& assistant_screenshot) override;
   void StartTextInteraction(const std::string& query,
                             chromeos::assistant::AssistantQuerySource source,

@@ -74,7 +74,6 @@ void AssistantControllerImpl::SetAssistant(
   assistant_alarm_timer_controller_.SetAssistant(assistant);
   assistant_interaction_controller_.SetAssistant(assistant);
   assistant_notification_controller_.SetAssistant(assistant);
-  assistant_screen_context_controller_.SetAssistant(assistant);
   assistant_ui_controller_.SetAssistant(assistant);
 
   OnAccessibilityStatusChanged();

@@ -14,7 +14,6 @@
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/ash/assistant/assistant_context_util.h"
 #include "chrome/browser/ui/ash/assistant/assistant_setup.h"
 #include "chrome/browser/ui/ash/assistant/device_actions_delegate_impl.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
@@ -98,11 +97,6 @@ void AssistantBrowserDelegateImpl::Observe(
     return;
 
   chromeos::assistant::AssistantService::Get()->Shutdown();
-}
-
-void AssistantBrowserDelegateImpl::RequestAssistantStructure(
-    RequestAssistantStructureCallback callback) {
-  RequestAssistantStructureForActiveBrowserWindow(std::move(callback));
 }
 
 void AssistantBrowserDelegateImpl::OnAssistantStatusChanged(

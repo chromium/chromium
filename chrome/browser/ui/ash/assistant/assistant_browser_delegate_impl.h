@@ -48,9 +48,6 @@ class AssistantBrowserDelegateImpl
                const content::NotificationDetails& details) override;
 
   // chromeos::assistant::AssisantClient overrides:
-  void RequestAssistantStructure(
-      chromeos::assistant::AssistantBrowserDelegate::
-          RequestAssistantStructureCallback callback) override;
   void OnAssistantStatusChanged(
       chromeos::assistant::AssistantStatus new_status) override;
   void RequestAssistantVolumeControl(

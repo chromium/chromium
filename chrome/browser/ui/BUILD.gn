@@ -2129,8 +2129,6 @@ static_library("ui") {
       "ash/ash_web_view_impl.h",
       "ash/assistant/assistant_browser_delegate_impl.cc",
       "ash/assistant/assistant_browser_delegate_impl.h",
-      "ash/assistant/assistant_context_util.cc",
-      "ash/assistant/assistant_context_util.h",
       "ash/assistant/assistant_setup.cc",
       "ash/assistant/assistant_setup.h",
       "ash/assistant/assistant_state_client.cc",
