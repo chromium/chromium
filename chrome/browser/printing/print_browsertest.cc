@@ -49,6 +49,7 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -461,6 +462,34 @@ class SetPrintingEnabledInterceptor
 
  private:
   mojo::AssociatedReceiver<mojom::PrintRenderFrame> receiver_{this};
+};
+
+// Wrapper around `SetPrintingEnabledInterceptor` that performs the interception
+// for the first subframe created.
+class SubframeSetPrintingEnabledInterceptor
+    : public content::WebContentsObserver {
+ public:
+  explicit SubframeSetPrintingEnabledInterceptor(
+      content::WebContents* web_contents)
+      : WebContentsObserver(web_contents) {}
+  ~SubframeSetPrintingEnabledInterceptor() override = default;
+
+  // content::WebContentsObserver:
+  void RenderFrameCreated(
+      content::RenderFrameHost* render_frame_host) override {
+    if (intercepting_)
+      return;
+
+    intercepting_ = true;
+    interceptor_.OverrideBinderForTesting(render_frame_host);
+  }
+
+  bool intercepting() const { return intercepting_; }
+  SetPrintingEnabledInterceptor& interceptor() { return interceptor_; }
+
+ private:
+  bool intercepting_ = false;
+  SetPrintingEnabledInterceptor interceptor_;
 };
 
 }  // namespace
@@ -1748,6 +1777,39 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, WindowDotPrint) {
   print_preview_observer.WaitUntilPreviewIsReady();
 }
 
+IN_PROC_BROWSER_TEST_F(PrintBrowserTest, NoExtraSetPrintingEnabledCalls) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  SetPrintingEnabledInterceptor main_frame_interceptor;
+  main_frame_interceptor.OverrideBinderForTesting(web_contents->GetMainFrame());
+
+  // Clear `print_render_frames_` to use the overridden binder.
+  auto* print_view_manager =
+      TestPrintViewManager::FromWebContents(web_contents);
+  ASSERT_TRUE(print_view_manager);
+  print_view_manager->ClearPrintRenderFramesForTesting();
+
+  // SetPrintingEnabled() should be called only once per navigation.
+  EXPECT_CALL(main_frame_interceptor, SetPrintingEnabled(_)).Times(2);
+
+  // Navigate to an initial page.
+  const GURL kDomainAUrl(
+      embedded_test_server()->GetURL("a.com", "/printing/test1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kDomainAUrl));
+
+  // Navigate to a different site to a page with iframes. The subframe for the
+  // `kDomainAUrl` page should not ever get a SetPrintingEnabled() call.
+  SubframeSetPrintingEnabledInterceptor subframe_interceptor(web_contents);
+  EXPECT_CALL(subframe_interceptor.interceptor(), SetPrintingEnabled(_))
+      .Times(0);
+
+  const GURL kDomainBUrl(embedded_test_server()->GetURL(
+      "b.com", "/printing/content_with_same_site_iframe.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kDomainBUrl));
+  EXPECT_TRUE(subframe_interceptor.intercepting());
+}
+
 class PrintPrerenderBrowserTest : public PrintBrowserTest {
  public:
   PrintPrerenderBrowserTest()
@@ -1858,8 +1920,9 @@ IN_PROC_BROWSER_TEST_F(PrintPrerenderBrowserTest,
       prerender_helper_.GetPrerenderedMainFrameHost(host_id);
   SetPrintingEnabledInterceptor prerendered_interceptor;
   prerendered_interceptor.OverrideBinderForTesting(prerender_rfh);
-  // SetPrintingEnabled() is only called once by activating the prerender.
-  EXPECT_CALL(prerendered_interceptor, SetPrintingEnabled(_)).Times(1);
+  // SetPrintingEnabled() is not called when prerendering HTML (non-PDF)
+  // content.
+  EXPECT_CALL(prerendered_interceptor, SetPrintingEnabled(_)).Times(0);
 
   // Trigger to call PrintViewManagerBase::UpdatePrintingEnabled() to check if
   // SetPrintingEnabled() is not called in prerendering.

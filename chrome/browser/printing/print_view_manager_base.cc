@@ -716,8 +716,10 @@ void PrintViewManagerBase::RenderFrameHostStateChanged(
     content::RenderFrameHost* render_frame_host,
     content::RenderFrameHost::LifecycleState /*old_state*/,
     content::RenderFrameHost::LifecycleState new_state) {
-  if (new_state == content::RenderFrameHost::LifecycleState::kActive)
+  if (new_state == content::RenderFrameHost::LifecycleState::kActive &&
+      render_frame_host->GetProcess()->IsPdf()) {
     SendPrintingEnabled(printing_enabled_.GetValue(), render_frame_host);
+  }
 }
 
 void PrintViewManagerBase::DidStartLoading() {
