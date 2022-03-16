@@ -6256,6 +6256,48 @@
             ]
         }
     ],
+    "SideSearchDesktop": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "SideSearchDesktop",
+                    "params": {
+                        "availability": "any",
+                        "event_trigger": "name:side_search_iph_tgr;comparator:==0;window:90;storage:360",
+                        "event_used": "name:side_search_opened;comparator:==0;window:90;storage:360",
+                        "session_rate": "<3"
+                    },
+                    "enable_features": [
+                        "IPH_SideSearch",
+                        "SideSearch",
+                        "SideSearchDSESupport"
+                    ]
+                },
+                {
+                    "name": "SideSearchDesktopFeedback",
+                    "params": {
+                        "availability": "any",
+                        "event_trigger": "name:side_search_iph_tgr;comparator:==0;window:90;storage:360",
+                        "event_used": "name:side_search_opened;comparator:==0;window:90;storage:360",
+                        "session_rate": "<3"
+                    },
+                    "enable_features": [
+                        "IPH_SideSearch",
+                        "SideSearch",
+                        "SideSearchDSESupport",
+                        "SideSearchFeedback"
+                    ]
+                }
+            ]
+        }
+    ],
     "SideSearchGoogle": [
         {
             "platforms": [
