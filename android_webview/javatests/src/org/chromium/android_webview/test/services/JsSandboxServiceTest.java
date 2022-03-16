@@ -148,16 +148,16 @@ public class JsSandboxServiceTest {
     @Test
     @MediumTest
     public void testJsEvaluationError() throws Throwable {
-        final String smallCase = "ERROR";
-        final String expected = "There has been an error.";
+        final String code = ".";
+        final String contains = "SyntaxError";
         TestExecutionCallback callback = new TestExecutionCallback();
 
         AwJsSandbox.newConnectedInstance(jsSandbox -> {
             AwJsContext jsContext = jsSandbox.createContext();
-            jsContext.evaluateJavascript(smallCase, callback);
+            jsContext.evaluateJavascript(code, callback);
         });
 
-        callback.helper.waitForCallback("Timed out waiting for reportResult() to be called", 0);
-        Assert.assertEquals(expected, callback.error);
+        callback.helper.waitForCallback("Timed out waiting for reportError() to be called", 0);
+        Assert.assertTrue(callback.error.contains(contains));
     }
 }

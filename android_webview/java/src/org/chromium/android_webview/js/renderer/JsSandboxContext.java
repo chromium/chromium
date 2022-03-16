@@ -4,8 +4,6 @@
 
 package org.chromium.android_webview.js.renderer;
 
-import android.os.Handler;
-import android.os.Looper;
 import android.os.RemoteException;
 
 import org.chromium.android_webview.js.common.IJsSandboxContext;
@@ -36,25 +34,22 @@ public class JsSandboxContext extends IJsSandboxContext.Stub {
             if (mJsSandboxContext == 0) {
                 throw new IllegalStateException("evaluateJavascript() called after close()");
             }
-            if (code.equals("ERROR")) {
-                Handler handler = new Handler(Looper.getMainLooper());
-                handler.postDelayed(() -> {
-                    try {
-                        callback.reportError("There has been an error.");
-                    } catch (RemoteException e) {
-                        Log.e(TAG, "reporting result failed", e);
-                    }
-                }, 100);
-            } else {
-                JsSandboxContextJni.get().evaluateJavascript(
-                        mJsSandboxContext, this, code, (result) -> {
-                            try {
-                                callback.reportResult(result);
-                            } catch (RemoteException e) {
-                                Log.e(TAG, "reporting result failed", e);
-                            }
-                        });
-            }
+            JsSandboxContextJni.get().evaluateJavascript(mJsSandboxContext, this, code,
+                    (result)
+                            -> {
+                        try {
+                            callback.reportResult(result);
+                        } catch (RemoteException e) {
+                            Log.e(TAG, "reporting result failed", e);
+                        }
+                    },
+                    (error) -> {
+                        try {
+                            callback.reportError(error);
+                        } catch (RemoteException e) {
+                            Log.e(TAG, "reporting error failed", e);
+                        }
+                    });
         }
     }
 
@@ -83,6 +78,6 @@ public class JsSandboxContext extends IJsSandboxContext.Stub {
         void destroyNative(long nativeJsSandboxContext, JsSandboxContext caller);
 
         boolean evaluateJavascript(long nativeJsSandboxContext, JsSandboxContext caller,
-                String script, Callback<String> finishedCallback);
+                String script, Callback<String> successCallback, Callback<String> failureCallback);
     }
 }

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,8 +24,9 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "gin/array_buffer.h"
-#include "gin/converter.h"
 #include "gin/public/isolate_holder.h"
+#include "gin/shell_runner.h"
+#include "gin/try_catch.h"
 #include "gin/v8_initializer.h"
 
 using base::android::ConvertJavaStringToUTF8;
@@ -37,14 +38,33 @@ namespace {
 // TODO(crbug.com/1297672): This is what shows up as filename in errors. Revisit
 // this once error handling is in place.
 constexpr base::StringPiece resource_name = "<expression>";
+
+class SandboxRunnerDelegate : public gin::ShellRunnerDelegate {
+ public:
+  SandboxRunnerDelegate() {}
+  ~SandboxRunnerDelegate() override = default;
+
+  using FinishedCallback = base::OnceCallback<void(const std::string&)>;
+
+  void SetErrorCallback(FinishedCallback error_callback) {
+    error_callback_ = std::move(error_callback);
+  }
+
+  void UnhandledException(gin::ShellRunner* runner,
+                          gin::TryCatch& try_catch) override {
+    std::move(error_callback_).Run(try_catch.GetStackTrace());
+  }
+
+ private:
+  FinishedCallback error_callback_;
+};
 }  // namespace
 
 namespace android_webview {
-
 JsSandboxContext::JsSandboxContext() {
   // TODO(crbug.com/1297672): Currently we use the address of the object as a
-  // key for the context, we could allow users to specify a name for the context
-  // and use it as a key.
+  // key for the context, we could allow users to specify a name for the
+  // context and use it as a key.
   std::string thread_name =
       base::StringPrintf("js_context_%p", static_cast<const void*>(this));
   thread_ = std::make_unique<base::Thread>(thread_name);
@@ -64,11 +84,11 @@ void JsSandboxContext::DeleteSelf() {
 void JsSandboxContext::DestroyNative(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj) {
-  // TODO(crbug.com/1297672): Currently this only posts the deletion task to the
-  // task runner which ensures that the deletion happens after all the existing
-  // tasks are processed. We may also want to cancel any not-yet-started tasks
-  // rather than let them all run. And, ultimately, we'll want to forcibly abort
-  // execution in the V8 isolate.
+  // TODO(crbug.com/1297672): Currently this only posts the deletion task to
+  // the task runner which ensures that the deletion happens after all the
+  // existing tasks are processed. We may also want to cancel any
+  // not-yet-started tasks rather than let them all run. And, ultimately,
+  // we'll want to forcibly abort execution in the V8 isolate.
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&JsSandboxContext::DeleteSelf, base::Unretained(this)));
@@ -79,23 +99,24 @@ void JsSandboxContext::InitializeIsolateOnThread() {
       base::ThreadTaskRunnerHandle::Get(),
       gin::IsolateHolder::IsolateType::kUtility);
   v8::Isolate* isolate = isolate_holder_->isolate();
-  delegate_ = std::make_unique<gin::ShellRunnerDelegate>();
+  delegate_ = std::make_unique<SandboxRunnerDelegate>();
   runner_ = std::make_unique<gin::ShellRunner>(delegate_.get(), isolate);
 }
 
 void JsSandboxContext::EvaluateJavascriptOnThread(
     const std::string code,
-    FinishedCallback finished_callback) {
+    FinishedCallback success_callback,
+    FinishedCallback error_callback) {
+  delegate_->SetErrorCallback(std::move(error_callback));
   gin::Runner::Scope scope(runner_.get());
-  v8::MaybeLocal<v8::Value> maybe;
   std::string resource_string(resource_name.begin(), resource_name.end());
-  maybe = runner_->Run(code, resource_string);
+  v8::MaybeLocal<v8::Value> maybe = runner_->Run(code, resource_string);
   v8::Local<v8::Value> value;
-  // TODO(crbug.com/1297672): Write error handling in another CL.
-  if (!maybe.ToLocal(&value))
-    return;
-  std::string result = gin::V8ToString(isolate_holder_->isolate(), value);
-  std::move(finished_callback).Run(result);
+  if (maybe.ToLocal(&value)) {
+    std::string result =
+        gin::V8ToString(runner_->GetContextHolder()->isolate(), value);
+    std::move(success_callback).Run(result);
+  }
 }
 
 // A single thread is used to interact with the isolate and post tasks. This
@@ -107,7 +128,8 @@ jboolean JsSandboxContext::EvaluateJavascript(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj,
     const base::android::JavaParamRef<jstring>& jcode,
-    const base::android::JavaParamRef<jobject>& j_finished_callback) {
+    const base::android::JavaParamRef<jobject>& j_success_callback,
+    const base::android::JavaParamRef<jobject>& j_failure_callback) {
   std::string code = ConvertJavaStringToUTF8(env, jcode);
   task_runner_->PostTask(
       FROM_HERE,
@@ -115,7 +137,10 @@ jboolean JsSandboxContext::EvaluateJavascript(
                      base::Unretained(this), std::move(code),
                      base::BindOnce(&base::android::RunStringCallbackAndroid,
                                     base::android::ScopedJavaGlobalRef<jobject>(
-                                        j_finished_callback))));
+                                        j_success_callback)),
+                     base::BindOnce(&base::android::RunStringCallbackAndroid,
+                                    base::android::ScopedJavaGlobalRef<jobject>(
+                                        j_failure_callback))));
   return true;
 }
 

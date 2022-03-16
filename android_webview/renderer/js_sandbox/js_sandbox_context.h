@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,10 @@
 #include "base/threading/thread.h"
 #include "gin/public/isolate_holder.h"
 #include "gin/shell_runner.h"
+
+namespace {
+class SandboxRunnerDelegate;
+}
 
 namespace android_webview {
 
@@ -31,18 +35,20 @@ class JsSandboxContext {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jstring>& jcode,
-      const base::android::JavaParamRef<jobject>& j_finished_callback);
+      const base::android::JavaParamRef<jobject>& j_success_callback,
+      const base::android::JavaParamRef<jobject>& j_failure_callback);
 
  private:
   void DeleteSelf();
   void InitializeIsolateOnThread();
   void EvaluateJavascriptOnThread(const std::string code,
-                                  FinishedCallback finished_callback);
+                                  FinishedCallback success_callback,
+                                  FinishedCallback failure_callback);
 
   std::unique_ptr<base::Thread> thread_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   std::unique_ptr<gin::IsolateHolder> isolate_holder_;
-  std::unique_ptr<gin::ShellRunnerDelegate> delegate_;
+  std::unique_ptr<SandboxRunnerDelegate> delegate_;
   std::unique_ptr<gin::ShellRunner> runner_;
 };
 }  // namespace android_webview
