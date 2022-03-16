@@ -45,7 +45,7 @@ function validateColorSuggestionPickerArguments(args) {
 function handleArgumentsTimeout() {
   if (global.argumentsReceived)
     return;
-  var args = {values: DefaultColorPalette, otherColorLabel: 'Other...'};
+  const args = {values: DefaultColorPalette, otherColorLabel: 'Other...'};
   initialize(args);
 }
 
@@ -120,44 +120,44 @@ class ColorSuggestionPicker extends Picker {
   }
 
   _layout() {
-    var container = createElement('div', 'color-swatch-container');
+    const container = createElement('div', 'color-swatch-container');
     container.addEventListener(
         'click', this._handleSwatchClick.bind(this), false);
-    for (var i = 0; i < this._config.values.length; ++i) {
-      var swatch = createElement('button', 'color-swatch');
+    for (let i = 0; i < this._config.values.length; ++i) {
+      const swatch = createElement('button', 'color-swatch');
       swatch.dataset.index = i;
       swatch.dataset.value = this._config.values[i];
       swatch.title = this._config.values[i];
       swatch.style.backgroundColor = this._config.values[i];
       container.appendChild(swatch);
     }
-    var containerWidth = this.SwatchBorderBoxWidth * this.SwatchesPerRow;
+    let containerWidth = this.SwatchBorderBoxWidth * this.SwatchesPerRow;
     if (this._config.values.length > this.SwatchesPerRow * this.SwatchesMaxRow)
       containerWidth += this.ScrollbarWidth;
     container.style.width = containerWidth + 'px';
     container.style.maxHeight =
         this.SwatchBorderBoxHeight * this.SwatchesMaxRow + 'px';
     this._element.appendChild(container);
-    var otherButton =
+    const otherButton =
         createElement('button', 'other-color', this._config.otherColorLabel);
     otherButton.addEventListener(
         'click', this._onOtherButtonClick.bind(this), false);
     this._element.appendChild(otherButton);
     this._container = container;
     this._otherButton = otherButton;
-    var elementWidth = this._element.offsetWidth;
-    var elementHeight = this._element.offsetHeight;
+    const elementWidth = this._element.offsetWidth;
+    const elementHeight = this._element.offsetHeight;
     resizeWindow(elementWidth, elementHeight);
   }
 
   _onOtherButtonClick() {
-    var main = $('main');
+    const main = $('main');
     main.innerHTML = '';
     main.classList.remove('color-suggestion-picker-main');
     main.classList.add('color-picker-main');
     // Replace document.body with a deep clone to drop all event listeners.
-    var oldBody = document.body;
-    var newBody = oldBody.cloneNode(true);
+    const oldBody = document.body;
+    const newBody = oldBody.cloneNode(true);
     oldBody.parentElement.replaceChild(newBody, oldBody);
     initializeColorPicker();
   }
@@ -179,14 +179,14 @@ class ColorSuggestionPicker extends Picker {
   }
 
   _handleKeyDown(event) {
-    var key = event.key;
+    const key = event.key;
     if (key === 'Escape')
       this.handleCancel();
     else if (
         key == 'ArrowLeft' || key == 'ArrowUp' || key == 'ArrowRight' ||
         key == 'ArrowDown') {
-      var selectedElement = document.activeElement;
-      var index = 0;
+      const selectedElement = document.activeElement;
+      let index = 0;
       if (selectedElement.classList.contains('other-color')) {
         if (key != 'ArrowRight' && key != 'ArrowUp')
           return;

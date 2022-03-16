@@ -716,7 +716,7 @@ class VisualColorPicker extends HTMLElement {
    * @param {!Event} event
    */
   onMouseMove_ = (event) => {
-    var point = new Point(event.clientX, event.clientY);
+    const point = new Point(event.clientX, event.clientY);
     this.colorWell_.pointerMove(point);
     this.hueSlider_.pointerMove(point);
   }
@@ -755,7 +755,7 @@ class VisualColorPicker extends HTMLElement {
    * @param {!Event} event
    */
   onTouchMove_ = (event) => {
-    var point = new Point(Math.round(event.touches[0].clientX), Math.round(event.touches[0].clientY));
+    const point = new Point(Math.round(event.touches[0].clientX), Math.round(event.touches[0].clientY));
     this.colorWell_.pointerMove(point);
     this.hueSlider_.pointerMove(point);
   }

@@ -33,7 +33,7 @@
 /**
  * @enum {number}
  */
-var WeekDay = {
+const WeekDay = {
   Sunday: 0,
   Monday: 1,
   Tuesday: 2,
@@ -46,7 +46,7 @@ var WeekDay = {
 /**
  * @type {Object}
  */
-var global = {
+const global = {
   picker: null,
   params: {
     locale: 'en-US',
@@ -91,8 +91,8 @@ function getLocale() {
  * @return {!string} lowercase language code. e.g. "en"
  */
 function getLanguage() {
-  var locale = getLocale();
-  var result = locale.match(/^([a-z]+)/);
+  const locale = getLocale();
+  const result = locale.match(/^([a-z]+)/);
   if (!result)
     return 'en';
   return result[1];
@@ -143,7 +143,7 @@ function formatJapaneseImperialEra(year, month) {
 }
 
 function createUTCDate(year, month, date) {
-  var newDate = new Date(0);
+  const newDate = new Date(0);
   newDate.setUTCFullYear(year);
   newDate.setUTCMonth(month);
   newDate.setUTCDate(date);
@@ -155,10 +155,10 @@ function createUTCDate(year, month, date) {
  * @return {?Day|Week|Month}
  */
 function parseDateString(dateString) {
-  var month = Month.parse(dateString);
+  const month = Month.parse(dateString);
   if (month)
     return month;
-  var week = Week.parse(dateString);
+  const week = Week.parse(dateString);
   if (week)
     return week;
   return Day.parse(dateString);
@@ -168,25 +168,25 @@ function parseDateString(dateString) {
  * @const
  * @type {number}
  */
-var DaysPerWeek = 7;
+const DaysPerWeek = 7;
 
 /**
  * @const
  * @type {number}
  */
-var MonthsPerYear = 12;
+const MonthsPerYear = 12;
 
 /**
  * @const
  * @type {number}
  */
-var MillisecondsPerDay = 24 * 60 * 60 * 1000;
+const MillisecondsPerDay = 24 * 60 * 60 * 1000;
 
 /**
  * @const
  * @type {number}
  */
-var MillisecondsPerWeek = DaysPerWeek * MillisecondsPerDay;
+const MillisecondsPerWeek = DaysPerWeek * MillisecondsPerDay;
 
 // ----------------------------------------------------------------
 
@@ -208,7 +208,7 @@ class Day extends DateType {
    */
   constructor(year, month, date) {
     super();
-    var dateObject = createUTCDate(year, month, date);
+    const dateObject = createUTCDate(year, month, date);
     if (isNaN(dateObject.valueOf()))
       throw 'Invalid date';
     /**
@@ -236,12 +236,12 @@ class Day extends DateType {
    * @return {?Day}
    */
   static parse(str) {
-    var match = Day.ISOStringRegExp.exec(str);
+    const match = Day.ISOStringRegExp.exec(str);
     if (!match)
       return null;
-    var year = parseInt(match[1], 10);
-    var month = parseInt(match[2], 10) - 1;
-    var date = parseInt(match[3], 10);
+    const year = parseInt(match[1], 10);
+    const month = parseInt(match[2], 10) - 1;
+    const date = parseInt(match[3], 10);
     return new Day(year, month, date);
   }
 
@@ -276,7 +276,7 @@ class Day extends DateType {
    * @return {!Day}
    */
   static createFromToday() {
-    var now = new Date();
+    const now = new Date();
     return new Day(now.getFullYear(), now.getMonth(), now.getDate());
   }
 
@@ -337,8 +337,8 @@ class Day extends DateType {
    * @return {!Day}
    */
   thisRangeInMonth(month) {
-    var newDate = month.startDate();
-    var originalMonthInt = newDate.getUTCMonth();
+    const newDate = month.startDate();
+    const originalMonthInt = newDate.getUTCMonth();
     newDate.setUTCDate(this.date);
     if (newDate.getUTCMonth() != originalMonthInt) {
       newDate.setUTCDate(0);
@@ -415,7 +415,7 @@ class Day extends DateType {
    * @return {!string}
    */
   toString() {
-    var yearString = String(this.year);
+    let yearString = String(this.year);
     if (yearString.length < 4)
       yearString = ('000' + yearString).substr(-4, 4);
     return yearString + '-' + ('0' + (this.month + 1)).substr(-2, 2) + '-' +
@@ -473,7 +473,7 @@ class Week extends DateType {
     // Number of years per year is either 52 or 53.
     if (this.week < 1 ||
         (this.week > 52 && this.week > Week.numberOfWeeksInYear(this.year))) {
-      var normalizedWeek = Week.createFromDay(this.firstDay());
+      const normalizedWeek = Week.createFromDay(this.firstDay());
       this.year = normalizedWeek.year;
       this.week = normalizedWeek.week;
     }
@@ -496,11 +496,11 @@ class Week extends DateType {
    * @return {?Week}
    */
   static parse(str) {
-    var match = Week.ISOStringRegExp.exec(str);
+    const match = Week.ISOStringRegExp.exec(str);
     if (!match)
       return null;
-    var year = parseInt(match[1], 10);
-    var week = parseInt(match[2], 10);
+    const year = parseInt(match[1], 10);
+    const week = parseInt(match[2], 10);
     return new Week(year, week);
   }
 
@@ -519,7 +519,7 @@ class Week extends DateType {
   static createFromDate(date) {
     if (isNaN(date.valueOf()))
       throw 'Invalid date';
-    var year = date.getUTCFullYear();
+    let year = date.getUTCFullYear();
     if (year <= Week.Maximum.year &&
         Week.weekOneStartDateForYear(year + 1).getTime() <= date.getTime())
       year++;
@@ -527,7 +527,7 @@ class Week extends DateType {
         year > 1 &&
         Week.weekOneStartDateForYear(year).getTime() > date.getTime())
       year--;
-    var week = 1 +
+    const week = 1 +
         Week._numberOfWeeksSinceDate(Week.weekOneStartDateForYear(year), date);
     return new Week(year, week);
   }
@@ -537,13 +537,13 @@ class Week extends DateType {
    * @return {!Week}
    */
   static createFromDay(day) {
-    var year = day.year;
+    let year = day.year;
     if (year <= Week.Maximum.year &&
         Week.weekOneStartDayForYear(year + 1) <= day)
       year++;
     else if (year > 1 && Week.weekOneStartDayForYear(year) > day)
       year--;
-    var week = Math.floor(
+    const week = Math.floor(
         1 +
         (day.valueOf() - Week.weekOneStartDayForYear(year).valueOf()) /
             MillisecondsPerWeek);
@@ -554,7 +554,7 @@ class Week extends DateType {
    * @return {!Week}
    */
   static createFromToday() {
-    var now = new Date();
+    const now = new Date();
     return Week.createFromDate(
         createUTCDate(now.getFullYear(), now.getMonth(), now.getDate()));
   }
@@ -567,7 +567,7 @@ class Week extends DateType {
     if (year < 1)
       return createUTCDate(1, 0, 1);
     // The week containing January 4th is week one.
-    var yearStartDay = createUTCDate(year, 0, 4).getUTCDay();
+    const yearStartDay = createUTCDate(year, 0, 4).getUTCDay();
     return createUTCDate(year, 0, 4 - (yearStartDay + 6) % DaysPerWeek);
   }
 
@@ -579,7 +579,7 @@ class Week extends DateType {
     if (year < 1)
       return Day.Minimum;
     // The week containing January 4th is week one.
-    var yearStartDay = createUTCDate(year, 0, 4).getUTCDay();
+    const yearStartDay = createUTCDate(year, 0, 4).getUTCDay();
     return new Day(year, 0, 4 - (yearStartDay + 6) % DaysPerWeek);
   }
 
@@ -643,7 +643,7 @@ class Week extends DateType {
     // Go back weeks until we find the one that is the first week of a month. Do
     // that by finding the first day in the current week, then go back a day. We
     // want the first week of the month for that day.
-    var desiredDay = this.firstDay().previous();
+    const desiredDay = this.firstDay().previous();
     desiredDay.date = 1;
     return Week.createFromDay(desiredDay);
   }
@@ -655,7 +655,7 @@ class Week extends DateType {
     // Go forward weeks until we find the one that is the last week of a month. Do
     // that by finding the week containing the last day of the month for the day
     // following the last day included in the current week.
-    var desiredDay = this.lastDay().next();
+    let desiredDay = this.lastDay().next();
     desiredDay = new Day(desiredDay.year, desiredDay.month + 1, 1).previous();
     return Week.createFromDay(desiredDay);
   }
@@ -671,15 +671,15 @@ class Week extends DateType {
    * @return {!Week}
    */
   thisRangeInMonth(month) {
-    var firstDateInCurrentMonth = this.startDate();
+    const firstDateInCurrentMonth = this.startDate();
     firstDateInCurrentMonth.setUTCDate(1);
 
-    var offsetInOriginalMonth =
+    const offsetInOriginalMonth =
         Week._numberOfWeeksSinceDate(firstDateInCurrentMonth, this.startDate());
 
     // Determine the first Monday in the new month (the week control shows weeks
     // starting on Monday).
-    var firstWeekStartInNewMonth = month.startDate();
+    const firstWeekStartInNewMonth = month.startDate();
     firstWeekStartInNewMonth.setUTCDate(
         1 +
         ((DaysPerWeek + 1 - firstWeekStartInNewMonth.getUTCDay()) %
@@ -726,7 +726,7 @@ class Week extends DateType {
    * @return {!Date}
    */
   startDate() {
-    var weekStartDate = Week.weekOneStartDateForYear(this.year);
+    const weekStartDate = Week.weekOneStartDateForYear(this.year);
     weekStartDate.setUTCDate(weekStartDate.getUTCDate() + (this.week - 1) * 7);
     return weekStartDate;
   }
@@ -744,7 +744,7 @@ class Week extends DateType {
    * @return {!Day}
    */
   firstDay() {
-    var weekOneStartDay = Week.weekOneStartDayForYear(this.year);
+    const weekOneStartDay = Week.weekOneStartDayForYear(this.year);
     return weekOneStartDay.next((this.week - 1) * DaysPerWeek);
   }
 
@@ -775,7 +775,7 @@ class Week extends DateType {
    * @return {!string}
    */
   toString() {
-    var yearString = String(this.year);
+    let yearString = String(this.year);
     if (yearString.length < 4)
       yearString = ('000' + yearString).substr(-4, 4);
     return yearString + '-W' + ('0' + this.week).substr(-2, 2);
@@ -820,11 +820,11 @@ class Month extends DateType {
    * @return {?Month}
    */
   static parse(str) {
-    var match = Month.ISOStringRegExp.exec(str);
+    const match = Month.ISOStringRegExp.exec(str);
     if (!match)
       return null;
-    var year = parseInt(match[1], 10);
-    var month = parseInt(match[2], 10) - 1;
+    const year = parseInt(match[1], 10);
+    const month = parseInt(match[2], 10) - 1;
     return new Month(year, month);
   }
 
@@ -858,7 +858,7 @@ class Month extends DateType {
    * @return {!Month}
    */
   static createFromToday() {
-    var now = new Date();
+    const now = new Date();
     return new Month(now.getFullYear(), now.getMonth());
   }
 
@@ -959,7 +959,7 @@ class Month extends DateType {
    * @return {!string}
    */
   toString() {
-    var yearString = String(this.year);
+    let yearString = String(this.year);
     if (yearString.length < 4)
       yearString = ('000' + yearString).substr(-4, 4);
     return yearString + '-' + ('0' + (this.month + 1)).substr(-2, 2);
@@ -1001,7 +1001,7 @@ function handleMessage(event) {
  * @param {!Object} params
  */
 function setGlobalParams(params) {
-  var name;
+  let name;
   for (name in global.params) {
     if (typeof params[name] === 'undefined')
       console.warn('Missing argument: ' + name);
@@ -1025,7 +1025,7 @@ function initialize(args) {
 function closePicker() {
   if (global.picker)
     global.picker.cleanup();
-  var main = $('main');
+  const main = $('main');
   main.innerHTML = '';
   main.className = '';
 };
@@ -1050,7 +1050,7 @@ function openCalendarPicker() {
 };
 
 // Parameter t should be a number between 0 and 1.
-var AnimationTimingFunction = {
+const AnimationTimingFunction = {
   Linear: function(t) {
     return t;
   },
@@ -1116,7 +1116,7 @@ class AnimationManager extends EventEmitter {
 
   _animationFrameCallback(now) {
     if (this._runningAnimatorCount > 0) {
-      for (var id in this._runningAnimators) {
+      for (let id in this._runningAnimators) {
         this._runningAnimators[id].onAnimationFrame(now);
       }
     }
@@ -1318,7 +1318,7 @@ class FlingGestureAnimator extends Animator {
      * @protected
      */
     this._elapsedTime = 0;
-    var startVelocity = Math.abs(this.initialVelocity);
+    let startVelocity = Math.abs(this.initialVelocity);
     if (startVelocity > this._velocityAtTime(0))
       startVelocity = this._velocityAtTime(0);
     if (startVelocity < 0)
@@ -1390,7 +1390,7 @@ class FlingGestureAnimator extends Animator {
       this.stop();
       return;
     }
-    var position = this._valueAtTime(this._elapsedTime + this._timeOffset) -
+    let position = this._valueAtTime(this._elapsedTime + this._timeOffset) -
         this._positionOffset;
     if (this.initialVelocity < 0)
       position = -position;
@@ -1422,9 +1422,9 @@ class View extends EventEmitter {
    * @return {?Object}
    */
   offsetRelativeTo(ancestorElement) {
-    var x = 0;
-    var y = 0;
-    var element = this.element;
+    let x = 0;
+    let y = 0;
+    let element = this.element;
     while (element) {
       x += element.offsetLeft || 0;
       y += element.offsetTop || 0;
@@ -1450,12 +1450,12 @@ class View extends EventEmitter {
   }
 
   bindCallbackMethods() {
-    for (var methodName in this) {
+    for (let methodName in this) {
       if (!/^on[A-Z]/.test(methodName))
         continue;
       if (this.hasOwnProperty(methodName))
         continue;
-      var method = this[methodName];
+      let method = this[methodName];
       if (!(method instanceof Function))
         continue;
       this[methodName] = method.bind(this);
@@ -1548,7 +1548,7 @@ class ScrollView extends View {
    * @param {!Event} event
    */
   onTouchStart(event) {
-    var touch = event.touches[0];
+    const touch = event.touches[0];
     this._lastTouchPosition = touch.clientY;
     this._lastTouchVelocity = 0;
     this._lastTouchTimeStamp = event.timeStamp;
@@ -1562,9 +1562,9 @@ class ScrollView extends View {
    * @param {!Event} event
    */
   onWindowTouchMove(event) {
-    var touch = event.touches[0];
-    var deltaTime = event.timeStamp - this._lastTouchTimeStamp;
-    var deltaY = this._lastTouchPosition - touch.clientY;
+    const touch = event.touches[0];
+    const deltaTime = event.timeStamp - this._lastTouchTimeStamp;
+    const deltaY = this._lastTouchPosition - touch.clientY;
     this.scrollBy(deltaY, false);
     this._lastTouchVelocity = deltaY / deltaTime;
     this._lastTouchPosition = touch.clientY;
@@ -1707,9 +1707,9 @@ class ScrollView extends View {
   }
 
   _updateScrollContent() {
-    var newPartitionNumber =
+    const newPartitionNumber =
         Math.floor(this._contentOffset / ScrollView.PartitionHeight);
-    var partitionChanged = this._partitionNumber !== newPartitionNumber;
+    const partitionChanged = this._partitionNumber !== newPartitionNumber;
     this._partitionNumber = newPartitionNumber;
     this.contentElement.style.webkitTransform = 'translate(0, ' +
         -this.contentPositionForContentOffset(this._contentOffset) + 'px)';
@@ -1773,10 +1773,10 @@ class ListCell extends View {
 
   throwAway() {
     this.hide();
-    var limit = typeof this.constructor.RecycleBinLimit === 'undefined' ?
+    const limit = typeof this.constructor.RecycleBinLimit === 'undefined' ?
         ListCell.DefaultRecycleBinLimit :
         this.constructor.RecycleBinLimit;
-    var recycleBin = this._recycleBin();
+    const recycleBin = this._recycleBin();
     if (recycleBin.length < limit)
       recycleBin.push(this);
   }
@@ -1944,7 +1944,7 @@ class ListView extends View {
    * @return {!ListCell}
    */
   addCellIfNecessary(row) {
-    var cell = this._cells[row];
+    let cell = this._cells[row];
     if (cell)
       return cell;
     cell = this.prepareNewCell(row);
@@ -1953,8 +1953,8 @@ class ListView extends View {
     // chronological order.  This is needed for correct application of
     // the :hover selector for the week control, which spans across multiple
     // calendar rows.
-    var rowIndices = Object.keys(this._cells);
-    var shouldPrepend = (rowIndices.length) > 0 && (row < rowIndices[0]);
+    const rowIndices = Object.keys(this._cells);
+    const shouldPrepend = (rowIndices.length) > 0 && (row < rowIndices[0]);
     cell.attachTo(
         this.scrollView.contentElement,
         shouldPrepend ? this.scrollView.contentElement.firstElementChild :
@@ -2023,16 +2023,16 @@ class ListView extends View {
   }
 
   updateCells() {
-    var firstVisibleRow = this.firstVisibleRow();
-    var lastVisibleRow = this.lastVisibleRow();
+    const firstVisibleRow = this.firstVisibleRow();
+    const lastVisibleRow = this.lastVisibleRow();
     console.assert(firstVisibleRow <= lastVisibleRow);
-    for (var c in this._cells) {
-      var cell = this._cells[c];
+    for (let c in this._cells) {
+      const cell = this._cells[c];
       if (cell.row < firstVisibleRow || cell.row > lastVisibleRow)
         this.throwAwayCell(cell);
     }
-    for (var i = firstVisibleRow; i <= lastVisibleRow; ++i) {
-      var cell = this._cells[i];
+    for (let i = firstVisibleRow; i <= lastVisibleRow; ++i) {
+      const cell = this._cells[i];
       if (cell)
         cell.setPosition(this.scrollView.contentPositionForContentOffset(
             this.scrollOffsetForRow(cell.row)));
@@ -2057,7 +2057,7 @@ class ListView extends View {
       return;
     this._width = width;
     this.scrollView.setWidth(this._width);
-    for (var c in this._cells) {
+    for (let c in this._cells) {
       this._cells[c].setWidth(this._width);
     }
     this.element.style.width = this._width + 'px';
@@ -2082,11 +2082,11 @@ class ListView extends View {
    * @param {?Event} event
    */
   onClick(event) {
-    var clickedCellElement =
+    const clickedCellElement =
         enclosingNodeOrSelfWithClass(event.target, ListCell.ClassNameListCell);
     if (!clickedCellElement)
       return;
-    var clickedCell = clickedCellElement.$view;
+    const clickedCell = clickedCellElement.$view;
     if (clickedCell.row !== this.selectedRow)
       this.select(clickedCell.row);
   }
@@ -2101,7 +2101,7 @@ class ListView extends View {
     if (row === ListView.NoSelection)
       return;
     this.selectedRow = row;
-    var selectedCell = this._cells[this.selectedRow];
+    const selectedCell = this._cells[this.selectedRow];
     if (selectedCell)
       selectedCell.setSelected(true);
   }
@@ -2109,7 +2109,7 @@ class ListView extends View {
   deselect() {
     if (this.selectedRow === ListView.NoSelection)
       return;
-    var selectedCell = this._cells[this.selectedRow];
+    const selectedCell = this._cells[this.selectedRow];
     if (selectedCell)
       selectedCell.setSelected(false);
     this.selectedRow = ListView.NoSelection;
@@ -2194,7 +2194,7 @@ class ScrubbyScrollBar extends View {
    * @param {?Event} event
    */
   onTouchStart(event) {
-    var touch = event.touches[0];
+    const touch = event.touches[0];
     this._setThumbPositionFromEventPosition(touch.clientY);
     if (this._thumbStyleTopAnimator)
       this._thumbStyleTopAnimator.stop();
@@ -2212,7 +2212,7 @@ class ScrubbyScrollBar extends View {
    * @param {?Event} event
    */
   onWindowTouchMove(event) {
-    var touch = event.touches[0];
+    const touch = event.touches[0];
     this._setThumbPositionFromEventPosition(touch.clientY);
     event.stopPropagation();
     event.preventDefault();
@@ -2271,12 +2271,12 @@ class ScrubbyScrollBar extends View {
    * @param {number} position
    */
   _setThumbPositionFromEventPosition(position) {
-    var thumbMin = ScrubbyScrollBar.ThumbMargin;
-    var thumbMax =
+    const thumbMin = ScrubbyScrollBar.ThumbMargin;
+    const thumbMax =
         this._height - this._thumbHeight - ScrubbyScrollBar.ThumbMargin * 2;
-    var y = position - this.element.getBoundingClientRect().top -
+    const y = position - this.element.getBoundingClientRect().top -
         this.element.clientTop + this.element.scrollTop;
-    var thumbPosition = y - this._thumbHeight / 2;
+    let thumbPosition = y - this._thumbHeight / 2;
     thumbPosition = Math.max(thumbPosition, thumbMin);
     thumbPosition = Math.min(thumbPosition, thumbMax);
     this.thumb.style.top = thumbPosition + 'px';
@@ -2334,7 +2334,7 @@ class ScrubbyScrollBar extends View {
   }
 
   onScrollTimer() {
-    var scrollAmount = Math.pow(this._thumbPosition, 2) * 10;
+    let scrollAmount = Math.pow(this._thumbPosition, 2) * 10;
     if (this._thumbPosition > 0)
       scrollAmount = -scrollAmount;
     this.scrollView.scrollBy(scrollAmount, false);
@@ -2370,7 +2370,7 @@ function dateRangeManagerMixin(baseClass) {
       // nextAllowedValue is the time closest (looking forward) to value that is
       // within the interval specified by the step and the stepBase.  This may
       // be equal to value.
-      var nextAllowedValue =
+      const nextAllowedValue =
           (Math.ceil((value - this.config.stepBase) / this.config.step) *
            this.config.step) +
           this.config.stepBase;
@@ -2395,7 +2395,7 @@ function dateRangeManagerMixin(baseClass) {
      * @return {!boolean}
      */
     isValid(dayOrWeekOrMonth) {
-      var value = dayOrWeekOrMonth.valueOf();
+      const value = dayOrWeekOrMonth.valueOf();
       return dayOrWeekOrMonth instanceof this._dateTypeConstructor &&
           !this._outOfRange(value) && this._isValidForStep(value);
     }
@@ -2446,7 +2446,7 @@ function dateRangeManagerMixin(baseClass) {
      * @return {?DayOrWeekOrMonth}
      */
     getNearestValidRange(dayOrWeekOrMonth, lookForwardFirst) {
-      var result = null;
+      let result = null;
       if (lookForwardFirst) {
         if (!(result =
                   this.getNearestValidRangeLookingForward(dayOrWeekOrMonth))) {
@@ -2468,7 +2468,7 @@ function dateRangeManagerMixin(baseClass) {
      * @return {?DayOrWeekOrMonth}
      */
     getValidRangeNearestToDay(day, lookForwardFirst) {
-      var dayOrWeekOrMonth = this._dateTypeConstructor.createFromDay(day);
+      const dayOrWeekOrMonth = this._dateTypeConstructor.createFromDay(day);
       return this.getNearestValidRange(dayOrWeekOrMonth, lookForwardFirst);
     }
   }
@@ -2502,15 +2502,15 @@ class YearListCell extends ListCell {
      * @const
      */
     this.monthButtons = [];
-    var monthChooserElement =
+    const monthChooserElement =
         createElement('div', YearListCell.ClassNameMonthChooser);
-    for (var r = 0; r < YearListCell.ButtonRows; ++r) {
-      var buttonsRow =
+    for (let r = 0; r < YearListCell.ButtonRows; ++r) {
+      const buttonsRow =
           createElement('div', YearListCell.ClassNameMonthButtonsRow);
       buttonsRow.setAttribute('role', 'row');
-      for (var c = 0; c < YearListCell.ButtonColumns; ++c) {
-        var month = c + r * YearListCell.ButtonColumns;
-        var button = createElement(
+      for (let c = 0; c < YearListCell.ButtonColumns; ++c) {
+        const month = c + r * YearListCell.ButtonColumns;
+        const button = createElement(
             'div', YearListCell.ClassNameMonthButton, shortMonthLabels[month]);
         button.setAttribute('role', 'gridcell');
         button.dataset.month = month;
@@ -2570,7 +2570,7 @@ class YearListCell extends ListCell {
   reset(row) {
     this.row = row;
     this.label.textContent = row + 1;
-    for (var i = 0; i < this.monthButtons.length; ++i) {
+    for (let i = 0; i < this.monthButtons.length; ++i) {
       this.monthButtons[i].classList.remove(YearListCell.ClassNameHighlighted);
       this.monthButtons[i].classList.remove(YearListCell.ClassNameSelected);
       this.monthButtons[i].classList.remove(YearListCell.ClassNameToday);
@@ -2666,7 +2666,7 @@ class YearListView extends dateRangeManagerMixin(ListView) {
       this._setValidDateConfig(config);
 
       this._hadValidValueWhenOpened = false;
-      var initialSelection = parseDateString(config.currentValue);
+      const initialSelection = parseDateString(config.currentValue);
       if (initialSelection) {
         this._hadValidValueWhenOpened = this.isValid(initialSelection);
         this._selectedMonth = this.getNearestValidRange(
@@ -2730,16 +2730,16 @@ class YearListView extends dateRangeManagerMixin(ListView) {
    * @param {!YearListView.RowAnimationDirection} direction
    */
   _animateRow(row, direction) {
-    var fromValue = direction === YearListView.RowAnimationDirection.Closing ?
+    let fromValue = direction === YearListView.RowAnimationDirection.Closing ?
         YearListCell.GetSelectedHeight() :
         YearListCell.GetHeight();
-    var oldAnimator = this._runningAnimators[row];
+    const oldAnimator = this._runningAnimators[row];
     if (oldAnimator) {
       oldAnimator.stop();
       fromValue = oldAnimator.currentValue;
     }
-    var cell = this.cellAtRow(row);
-    var animator = new TransitionAnimator();
+    const cell = this.cellAtRow(row);
+    const animator = new TransitionAnimator();
     animator.step = this.onCellHeightAnimatorStep.bind(this);
     animator.setFrom(fromValue);
     animator.setTo(
@@ -2763,7 +2763,7 @@ class YearListView extends dateRangeManagerMixin(ListView) {
    */
   onCellHeightAnimatorDidStop(animator) {
     delete this._runningAnimators[animator.row];
-    var index = this._animatingRows.indexOf(animator.row);
+    const index = this._animatingRows.indexOf(animator.row);
     this._animatingRows.splice(index, 1);
   }
 
@@ -2771,7 +2771,7 @@ class YearListView extends dateRangeManagerMixin(ListView) {
    * @param {!Animator} animator
    */
   onCellHeightAnimatorStep(animator) {
-    var cell = this.cellAtRow(animator.row);
+    const cell = this.cellAtRow(animator.row);
     if (cell)
       cell.setHeight(animator.currentValue);
     this.updateCells();
@@ -2781,20 +2781,20 @@ class YearListView extends dateRangeManagerMixin(ListView) {
    * @param {?Event} event
    */
   onClick(event) {
-    var oldSelectedRow = this.selectedRow;
+    const oldSelectedRow = this.selectedRow;
     super.onClick(event);
-    var year = this.selectedRow + 1;
+    const year = this.selectedRow + 1;
     if (this.selectedRow !== oldSelectedRow) {
       // Always start with first month when changing the year.
       const month = new Month(year, 0);
       this.scrollView.scrollTo(
           this.selectedRow * YearListCell.GetHeight(), true);
     } else {
-      var monthButton = enclosingNodeOrSelfWithClass(
+      const monthButton = enclosingNodeOrSelfWithClass(
           event.target, YearListCell.ClassNameMonthButton);
       if (!monthButton || monthButton.getAttribute('aria-disabled') == 'true')
         return;
-      var month = parseInt(monthButton.dataset.month, 10);
+      const month = parseInt(monthButton.dataset.month, 10);
       this.dispatchEvent(
           YearListView.EventTypeYearListViewDidSelectMonth, this,
           new Month(year, month));
@@ -2807,17 +2807,17 @@ class YearListView extends dateRangeManagerMixin(ListView) {
    * @override
    */
   rowAtScrollOffset(scrollOffset) {
-    var remainingOffset = scrollOffset;
-    var lastAnimatingRow = 0;
-    var rowsWithIrregularHeight = this._animatingRows.slice();
+    let remainingOffset = scrollOffset;
+    let lastAnimatingRow = 0;
+    const rowsWithIrregularHeight = this._animatingRows.slice();
     if (this.selectedRow > -1 && !this._runningAnimators[this.selectedRow]) {
       rowsWithIrregularHeight.push(this.selectedRow);
       rowsWithIrregularHeight.sort();
     }
-    for (var i = 0; i < rowsWithIrregularHeight.length; ++i) {
-      var row = rowsWithIrregularHeight[i];
-      var animator = this._runningAnimators[row];
-      var rowHeight =
+    for (let i = 0; i < rowsWithIrregularHeight.length; ++i) {
+      const row = rowsWithIrregularHeight[i];
+      const animator = this._runningAnimators[row];
+      const rowHeight =
           animator ? animator.currentValue : YearListCell.GetSelectedHeight();
       if (remainingOffset <=
           (row - lastAnimatingRow) * YearListCell.GetHeight()) {
@@ -2840,12 +2840,12 @@ class YearListView extends dateRangeManagerMixin(ListView) {
    * @override
    */
   scrollOffsetForRow(row) {
-    var scrollOffset = row * YearListCell.GetHeight();
-    for (var i = 0; i < this._animatingRows.length; ++i) {
-      var animatingRow = this._animatingRows[i];
+    let scrollOffset = row * YearListCell.GetHeight();
+    for (let i = 0; i < this._animatingRows.length; ++i) {
+      const animatingRow = this._animatingRows[i];
       if (animatingRow >= row)
         break;
-      var animator = this._runningAnimators[animatingRow];
+      const animator = this._runningAnimators[animatingRow];
       scrollOffset += animator.currentValue - YearListCell.GetHeight();
     }
     if (this.selectedRow > -1 && this.selectedRow < row &&
@@ -2862,12 +2862,12 @@ class YearListView extends dateRangeManagerMixin(ListView) {
    * @override
    */
   prepareNewCell(row) {
-    var cell = YearListCell._recycleBin.pop() ||
+    const cell = YearListCell._recycleBin.pop() ||
         new YearListCell(global.params.shortMonthLabels);
     cell.reset(row);
     cell.setSelected(this.selectedRow === row);
-    for (var i = 0; i < cell.monthButtons.length; ++i) {
-      var month = new Month(row + 1, i);
+    for (let i = 0; i < cell.monthButtons.length; ++i) {
+      const month = new Month(row + 1, i);
       cell.monthButtons[i].id = month.toString();
       if (this.type === 'month') {
         cell.monthButtons[i].setAttribute(
@@ -2882,18 +2882,18 @@ class YearListView extends dateRangeManagerMixin(ListView) {
       cell.monthButtons[i].setAttribute('aria-selected', false);
     }
     if (this._selectedMonth && (this._selectedMonth.year - 1) === row) {
-      var monthButton = cell.monthButtons[this._selectedMonth.month];
+      const monthButton = cell.monthButtons[this._selectedMonth.month];
       monthButton.classList.add(YearListCell.ClassNameSelected);
       this.element.setAttribute('aria-activedescendant', monthButton.id);
       monthButton.setAttribute('aria-selected', true);
     }
     const todayMonth = Month.createFromToday();
     if ((todayMonth.year - 1) === row) {
-      var monthButton = cell.monthButtons[todayMonth.month];
+      const monthButton = cell.monthButtons[todayMonth.month];
       monthButton.classList.add(YearListCell.ClassNameToday);
     }
 
-    var animator = this._runningAnimators[row];
+    const animator = this._runningAnimators[row];
     if (animator)
       cell.setHeight(animator.currentValue);
     else if (row === this.selectedRow)
@@ -2907,16 +2907,16 @@ class YearListView extends dateRangeManagerMixin(ListView) {
    * @override
    */
   updateCells() {
-    var firstVisibleRow = this.firstVisibleRow();
-    var lastVisibleRow = this.lastVisibleRow();
+    const firstVisibleRow = this.firstVisibleRow();
+    const lastVisibleRow = this.lastVisibleRow();
     console.assert(firstVisibleRow <= lastVisibleRow);
-    for (var c in this._cells) {
-      var cell = this._cells[c];
+    for (let c in this._cells) {
+      const cell = this._cells[c];
       if (cell.row < firstVisibleRow || cell.row > lastVisibleRow)
         this.throwAwayCell(cell);
     }
-    for (var i = firstVisibleRow; i <= lastVisibleRow; ++i) {
-      var cell = this._cells[i];
+    for (let i = firstVisibleRow; i <= lastVisibleRow; ++i) {
+      const cell = this._cells[i];
       if (cell)
         cell.setPosition(this.scrollView.contentPositionForContentOffset(
             this.scrollOffsetForRow(cell.row)));
@@ -2932,7 +2932,7 @@ class YearListView extends dateRangeManagerMixin(ListView) {
   deselect() {
     if (this.selectedRow === ListView.NoSelection)
       return;
-    var selectedCell = this._cells[this.selectedRow];
+    const selectedCell = this._cells[this.selectedRow];
     if (selectedCell)
       selectedCell.setSelected(false);
     this._animateRow(
@@ -2944,7 +2944,7 @@ class YearListView extends dateRangeManagerMixin(ListView) {
   deselectWithoutAnimating() {
     if (this.selectedRow === ListView.NoSelection)
       return;
-    var selectedCell = this._cells[this.selectedRow];
+    const selectedCell = this._cells[this.selectedRow];
     if (selectedCell) {
       selectedCell.setSelected(false);
       selectedCell.setHeight(YearListCell.GetHeight());
@@ -2965,7 +2965,7 @@ class YearListView extends dateRangeManagerMixin(ListView) {
       return;
     this.selectedRow = row;
     if (this.selectedRow !== ListView.NoSelection) {
-      var selectedCell = this._cells[this.selectedRow];
+      const selectedCell = this._cells[this.selectedRow];
       this._animateRow(
           this.selectedRow, YearListView.RowAnimationDirection.Opening);
       if (selectedCell)
@@ -2985,7 +2985,7 @@ class YearListView extends dateRangeManagerMixin(ListView) {
       return;
     this.selectedRow = row;
     if (this.selectedRow !== ListView.NoSelection) {
-      var selectedCell = this._cells[this.selectedRow];
+      const selectedCell = this._cells[this.selectedRow];
       if (selectedCell) {
         selectedCell.setSelected(true);
         selectedCell.setHeight(YearListCell.GetSelectedHeight());
@@ -3001,8 +3001,8 @@ class YearListView extends dateRangeManagerMixin(ListView) {
   buttonForMonth(month) {
     if (!month)
       return null;
-    var row = month.year - 1;
-    var cell = this.cellAtRow(row);
+    const row = month.year - 1;
+    const cell = this.cellAtRow(row);
     if (!cell)
       return null;
     return cell.monthButtons[month.month];
@@ -3011,7 +3011,7 @@ class YearListView extends dateRangeManagerMixin(ListView) {
   dehighlightMonth() {
     if (!this.highlightedMonth)
       return;
-    var monthButton = this.buttonForMonth(this.highlightedMonth);
+    const monthButton = this.buttonForMonth(this.highlightedMonth);
     if (monthButton) {
       monthButton.classList.remove(YearListCell.ClassNameHighlighted);
     }
@@ -3029,7 +3029,7 @@ class YearListView extends dateRangeManagerMixin(ListView) {
     this.highlightedMonth = month;
     if (!this.highlightedMonth)
       return;
-    var monthButton = this.buttonForMonth(this.highlightedMonth);
+    const monthButton = this.buttonForMonth(this.highlightedMonth);
     if (monthButton) {
       monthButton.classList.add(YearListCell.ClassNameHighlighted);
       this.element.setAttribute('aria-activedescendant', monthButton.id);
@@ -3037,7 +3037,7 @@ class YearListView extends dateRangeManagerMixin(ListView) {
   }
 
   setSelectedMonth(month) {
-    var oldMonthButton = this.buttonForMonth(this._selectedMonth);
+    const oldMonthButton = this.buttonForMonth(this._selectedMonth);
     if (oldMonthButton) {
       oldMonthButton.classList.remove(YearListCell.ClassNameSelected);
       oldMonthButton.setAttribute('aria-selected', false);
@@ -3045,7 +3045,7 @@ class YearListView extends dateRangeManagerMixin(ListView) {
 
     this._selectedMonth = month;
 
-    var newMonthButton = this.buttonForMonth(this._selectedMonth);
+    const newMonthButton = this.buttonForMonth(this._selectedMonth);
     if (newMonthButton) {
       newMonthButton.classList.add(YearListCell.ClassNameSelected);
       this.element.setAttribute('aria-activedescendant', newMonthButton.id);
@@ -3062,7 +3062,7 @@ class YearListView extends dateRangeManagerMixin(ListView) {
   }
 
   showSelectedMonth() {
-    var monthButton = this.buttonForMonth(this._selectedMonth);
+    const monthButton = this.buttonForMonth(this._selectedMonth);
     if (monthButton) {
       monthButton.classList.add(YearListCell.ClassNameSelected);
     }
@@ -3097,18 +3097,18 @@ class YearListView extends dateRangeManagerMixin(ListView) {
    * @param {?Event} event
    */
   onKeyDown(event) {
-    var key = event.key;
-    var eventHandled = false;
+    const key = event.key;
+    let eventHandled = false;
     if (this._selectedMonth) {
       if (global.params.isLocaleRTL ? key == 'ArrowRight' :
                                       key == 'ArrowLeft') {
-        var newSelection = this.getNearestValidRangeLookingBackward(
+        const newSelection = this.getNearestValidRangeLookingBackward(
             this._selectedMonth.previous());
         if (newSelection) {
           this.setSelectedMonthAndUpdateView(newSelection);
         }
       } else if (key == 'ArrowUp') {
-        var newSelection = this.getNearestValidRangeLookingBackward(
+        const newSelection = this.getNearestValidRangeLookingBackward(
             this._selectedMonth.previous(YearListCell.ButtonColumns));
         if (newSelection) {
           this.setSelectedMonthAndUpdateView(newSelection);
@@ -3116,43 +3116,43 @@ class YearListView extends dateRangeManagerMixin(ListView) {
       } else if (
           global.params.isLocaleRTL ? key == 'ArrowLeft' :
                                       key == 'ArrowRight') {
-        var newSelection =
+        const newSelection =
             this.getNearestValidRangeLookingForward(this._selectedMonth.next());
         if (newSelection) {
           this.setSelectedMonthAndUpdateView(newSelection);
         }
       } else if (key == 'ArrowDown') {
-        var newSelection = this.getNearestValidRangeLookingForward(
+        const newSelection = this.getNearestValidRangeLookingForward(
             this._selectedMonth.next(YearListCell.ButtonColumns));
         if (newSelection) {
           this.setSelectedMonthAndUpdateView(newSelection);
         }
       } else if (key == 'PageUp') {
-        var newSelection = this.getNearestValidRangeLookingBackward(
+        const newSelection = this.getNearestValidRangeLookingBackward(
             this._selectedMonth.previous(MonthsPerYear));
         if (newSelection) {
           this.setSelectedMonthAndUpdateView(newSelection);
         }
       } else if (key == 'PageDown') {
-        var newSelection = this.getNearestValidRangeLookingForward(
+        const newSelection = this.getNearestValidRangeLookingForward(
             this._selectedMonth.next(MonthsPerYear));
         if (newSelection) {
           this.setSelectedMonthAndUpdateView(newSelection);
         }
       } else if (key == 'Home') {
-        var newMonth = this._selectedMonth.month === 0 ?
+        const newMonth = this._selectedMonth.month === 0 ?
             new Month(this._selectedMonth.year - 1, 0) :
             new Month(this._selectedMonth.year, 0);
-        var newSelection = this.getNearestValidRangeLookingBackward(newMonth);
+        const newSelection = this.getNearestValidRangeLookingBackward(newMonth);
         if (newSelection) {
           this.setSelectedMonthAndUpdateView(newSelection);
         }
       } else if (key == 'End') {
-        var lastMonthNum = MonthsPerYear - 1;
-        var newMonth = this._selectedMonth.month === lastMonthNum ?
+        const lastMonthNum = MonthsPerYear - 1;
+        const newMonth = this._selectedMonth.month === lastMonthNum ?
             new Month(this._selectedMonth.year + 1, lastMonthNum) :
             new Month(this._selectedMonth.year, lastMonthNum);
-        var newSelection = this.getNearestValidRangeLookingForward(newMonth);
+        const newSelection = this.getNearestValidRangeLookingForward(newMonth);
         if (newSelection) {
           this.setSelectedMonthAndUpdateView(newSelection);
         }
@@ -3304,8 +3304,8 @@ class MonthPopupButton extends View {
    */
   _shouldUseShortMonth(maxWidth) {
     document.body.appendChild(this.element);
-    var month = Month.Maximum;
-    for (var i = 0; i < MonthsPerYear; ++i) {
+    let month = Month.Maximum;
+    for (let i = 0; i < MonthsPerYear; ++i) {
       this.labelElement.textContent = month.toLocaleString();
       if (this.element.offsetWidth > maxWidth)
         return true;
@@ -3503,7 +3503,7 @@ class CalendarHeaderView extends View {
         CalendarPicker.EventTypeCurrentMonthChanged,
         this.onCurrentMonthChanged.bind(this));
 
-    var titleElement =
+    const titleElement =
         createElement('div', CalendarHeaderView.ClassNameCalendarTitle);
     this.element.appendChild(titleElement);
 
@@ -3851,14 +3851,14 @@ class CalendarTableHeaderView extends View {
   constructor(hasWeekNumberColumn) {
     super(createElement('div', 'calendar-table-header-view'));
     if (hasWeekNumberColumn) {
-      var weekNumberLabelElement =
+      const weekNumberLabelElement =
           createElement('div', 'week-number-label', global.params.weekLabel);
       weekNumberLabelElement.style.width = WeekNumberCell.Width + 'px';
       this.element.appendChild(weekNumberLabelElement);
     }
-    for (var i = 0; i < DaysPerWeek; ++i) {
-      var weekDayNumber = (global.params.weekStartDay + i) % DaysPerWeek;
-      var labelElement = createElement(
+    for (let i = 0; i < DaysPerWeek; ++i) {
+      const weekDayNumber = (global.params.weekStartDay + i) % DaysPerWeek;
+      const labelElement = createElement(
           'div', 'week-day-label', global.params.dayLabels[weekDayNumber]);
       labelElement.style.width = DayCell.GetWidth() + 'px';
       this.element.appendChild(labelElement);
@@ -3930,15 +3930,15 @@ class CalendarRowCell extends ListCell {
     this.row = row;
     this.calendarTableView = calendarTableView;
     if (this.calendarTableView.hasWeekNumberColumn) {
-      var middleDay = this.calendarTableView.dayAtColumnAndRow(3, row);
-      var week = Week.createFromDay(middleDay);
+      const middleDay = this.calendarTableView.dayAtColumnAndRow(3, row);
+      const week = Week.createFromDay(middleDay);
       this.weekNumberCell =
           this.calendarTableView.prepareNewWeekNumberCell(week);
       this.weekNumberCell.attachTo(this);
     }
-    var day = calendarTableView.dayAtColumnAndRow(0, row);
-    for (var i = 0; i < DaysPerWeek; ++i) {
-      var dayCell = this.calendarTableView.prepareNewDayCell(day);
+    let day = calendarTableView.dayAtColumnAndRow(0, row);
+    for (let i = 0; i < DaysPerWeek; ++i) {
+      const dayCell = this.calendarTableView.prepareNewDayCell(day);
       dayCell.attachTo(this);
       this._dayCells.push(dayCell);
       day = day.next();
@@ -3985,14 +3985,14 @@ class CalendarTableView extends ListView {
      * @const
      */
     this._dayCells = {};
-    var headerView = new CalendarTableHeaderView(this.hasWeekNumberColumn);
+    const headerView = new CalendarTableHeaderView(this.hasWeekNumberColumn);
     headerView.attachTo(this, this.scrollView);
 
     /**
      * @type {!ClearButton}
      * @const
      */
-    var clearButton = new ClearButton();
+    const clearButton = new ClearButton();
     clearButton.attachTo(this);
     clearButton.on(
         ClearButton.EventTypeButtonClick, this.onClearButtonClick.bind(this));
@@ -4003,7 +4003,7 @@ class CalendarTableView extends ListView {
      * @type {!CalendarNavigationButton}
      * @const
      */
-    var todayButton = new CalendarNavigationButton();
+    const todayButton = new CalendarNavigationButton();
     todayButton.attachTo(this);
     todayButton.on(
         CalendarNavigationButton.EventTypeButtonClick,
@@ -4078,20 +4078,20 @@ class CalendarTableView extends ListView {
    */
   onClick(event) {
     if (this.hasWeekNumberColumn) {
-      var weekNumberCellElement = enclosingNodeOrSelfWithClass(
+      const weekNumberCellElement = enclosingNodeOrSelfWithClass(
           event.target, WeekNumberCell.ClassNameWeekNumberCell);
       if (weekNumberCellElement) {
-        var weekNumberCell = weekNumberCellElement.$view;
+        const weekNumberCell = weekNumberCellElement.$view;
         this.calendarPicker.selectRangeContainingDay(
             weekNumberCell.week.firstDay());
         return;
       }
     }
-    var dayCellElement =
+    const dayCellElement =
         enclosingNodeOrSelfWithClass(event.target, DayCell.ClassNameDayCell);
     if (!dayCellElement)
       return;
-    var dayCell = dayCellElement.$view;
+    const dayCell = dayCellElement.$view;
     this.calendarPicker.selectRangeContainingDay(dayCell.day);
   }
 
@@ -4108,7 +4108,7 @@ class CalendarTableView extends ListView {
    * @return {!CalendarRowCell}
    */
   prepareNewCell(row) {
-    var cell = CalendarRowCell._recycleBin.pop() || new CalendarRowCell();
+    const cell = CalendarRowCell._recycleBin.pop() || new CalendarRowCell();
     cell.reset(row, this);
     return cell;
   }
@@ -4138,7 +4138,7 @@ class CalendarTableView extends ListView {
    * @param {!boolean} animate
    */
   scrollToMonth(month, animate) {
-    var rowForFirstDayInMonth = this.columnAndRowForDay(month.firstDay()).row;
+    const rowForFirstDayInMonth = this.columnAndRowForDay(month.firstDay()).row;
     this.scrollView.scrollTo(
         this.scrollOffsetForRow(rowForFirstDayInMonth), animate);
   }
@@ -4149,7 +4149,7 @@ class CalendarTableView extends ListView {
    * @return {!Day}
    */
   dayAtColumnAndRow(column, row) {
-    var daysSinceMinimum = row * DaysPerWeek + column +
+    const daysSinceMinimum = row * DaysPerWeek + column +
         global.params.weekStartDay - CalendarTableView._MinimumDayWeekDay;
     return Day.createFromValue(
         daysSinceMinimum * MillisecondsPerDay +
@@ -4164,22 +4164,22 @@ class CalendarTableView extends ListView {
    * @return {!Object} Object with properties column and row.
    */
   columnAndRowForDay(day) {
-    var daysSinceMinimum =
+    const daysSinceMinimum =
         (day.valueOf() - CalendarTableView._MinimumDayValue) /
         MillisecondsPerDay;
-    var offset = daysSinceMinimum + CalendarTableView._MinimumDayWeekDay -
+    const offset = daysSinceMinimum + CalendarTableView._MinimumDayWeekDay -
         global.params.weekStartDay;
-    var row = Math.floor(offset / DaysPerWeek);
-    var column = offset - row * DaysPerWeek;
+    const row = Math.floor(offset / DaysPerWeek);
+    const column = offset - row * DaysPerWeek;
     return {column: column, row: row};
   }
 
   updateCells() {
     super.updateCells();
 
-    var selection = this.calendarPicker.selection();
-    var firstDayInSelection;
-    var lastDayInSelection;
+    const selection = this.calendarPicker.selection();
+    let firstDayInSelection;
+    let lastDayInSelection;
     if (selection) {
       firstDayInSelection = selection.firstDay().valueOf();
       lastDayInSelection = selection.lastDay().valueOf();
@@ -4187,9 +4187,9 @@ class CalendarTableView extends ListView {
       firstDayInSelection = Infinity;
       lastDayInSelection = Infinity;
     }
-    var highlight = this.calendarPicker.highlight();
-    var firstDayInHighlight;
-    var lastDayInHighlight;
+    const highlight = this.calendarPicker.highlight();
+    let firstDayInHighlight;
+    let lastDayInHighlight;
     if (highlight) {
       firstDayInHighlight = highlight.firstDay().valueOf();
       lastDayInHighlight = highlight.lastDay().valueOf();
@@ -4197,15 +4197,15 @@ class CalendarTableView extends ListView {
       firstDayInHighlight = Infinity;
       lastDayInHighlight = Infinity;
     }
-    var currentMonth = this.calendarPicker.currentMonth();
-    var firstDayInCurrentMonth = currentMonth.firstDay().valueOf();
-    var lastDayInCurrentMonth = currentMonth.lastDay().valueOf();
-    var activeCell = null;
-    for (var dayString in this._dayCells) {
-      var dayCell = this._dayCells[dayString];
-      var day = dayCell.day;
+    const currentMonth = this.calendarPicker.currentMonth();
+    const firstDayInCurrentMonth = currentMonth.firstDay().valueOf();
+    const lastDayInCurrentMonth = currentMonth.lastDay().valueOf();
+    let activeCell = null;
+    for (let dayString in this._dayCells) {
+      const dayCell = this._dayCells[dayString];
+      const day = dayCell.day;
       dayCell.setIsToday(Day.createFromToday().equals(day));
-      var isSelected =
+      const isSelected =
           (day >= firstDayInSelection && day <= lastDayInSelection);
       dayCell.setSelected(isSelected);
       if (isSelected && firstDayInSelection == lastDayInSelection) {
@@ -4216,10 +4216,10 @@ class CalendarTableView extends ListView {
       dayCell.setDisabled(!this.calendarPicker.isValidDay(day));
     }
     if (this.hasWeekNumberColumn) {
-      for (var weekString in this._weekNumberCells) {
-        var weekNumberCell = this._weekNumberCells[weekString];
-        var week = weekNumberCell.week;
-        var isSelected = (selection && selection.equals(week));
+      for (let weekString in this._weekNumberCells) {
+        const weekNumberCell = this._weekNumberCells[weekString];
+        const week = weekNumberCell.week;
+        const isSelected = (selection && selection.equals(week));
         weekNumberCell.setSelected(isSelected);
         if (isSelected) {
           activeCell = weekNumberCell;
@@ -4241,7 +4241,7 @@ class CalendarTableView extends ListView {
    * @return {!DayCell}
    */
   prepareNewDayCell(day) {
-    var dayCell = DayCell.recycleOrCreate();
+    const dayCell = DayCell.recycleOrCreate();
     dayCell.reset(day);
     if (this.calendarPicker.type == 'month')
       dayCell.element.setAttribute(
@@ -4255,7 +4255,7 @@ class CalendarTableView extends ListView {
    * @return {!WeekNumberCell}
    */
   prepareNewWeekNumberCell(week) {
-    var weekNumberCell = WeekNumberCell.recycleOrCreate();
+    const weekNumberCell = WeekNumberCell.recycleOrCreate();
     weekNumberCell.reset(week);
     this._weekNumberCells[weekNumberCell.week.toString()] = weekNumberCell;
     return weekNumberCell;
@@ -4379,7 +4379,7 @@ class CalendarPicker extends dateRangeManagerMixin(View) {
 
     this._hadValidValueWhenOpened = false;
 
-    var initialSelection = parseDateString(config.currentValue);
+    const initialSelection = parseDateString(config.currentValue);
     if (initialSelection) {
       this.setCurrentMonth(
           Month.createFromDay(initialSelection.middleDay()),
@@ -4470,8 +4470,8 @@ class CalendarPicker extends dateRangeManagerMixin(View) {
    * @param {?MonthPopupButton} sender
    */
   onMonthPopupButtonClick(sender) {
-    var clientRect = this.calendarTableView.element.getBoundingClientRect();
-    var calendarTableRect = new Rectangle(
+    const clientRect = this.calendarTableView.element.getBoundingClientRect();
+    const calendarTableRect = new Rectangle(
         clientRect.left + document.body.scrollLeft,
         clientRect.top + document.body.scrollTop, clientRect.width,
         clientRect.height);
@@ -4514,18 +4514,12 @@ class CalendarPicker extends dateRangeManagerMixin(View) {
   }
 
   adjustHeight() {
-    var rowForFirstDayInMonth =
-        this.calendarTableView.columnAndRowForDay(this._currentMonth.firstDay())
-            .row;
-    var rowForLastDayInMonth =
-        this.calendarTableView.columnAndRowForDay(this._currentMonth.lastDay())
-            .row;
-    var numberOfRows = CalendarPicker.VisibleRows;
-    var calendarTableViewHeight = CalendarTableHeaderView.GetHeight() +
+    const numberOfRows = CalendarPicker.VisibleRows;
+    const calendarTableViewHeight = CalendarTableHeaderView.GetHeight() +
         numberOfRows * DayCell.GetHeight() +
         CalendarTableView.GetBorderWidth() * 2 +
         CalendarTableView.GetTodayButtonHeight();
-    var height = calendarTableViewHeight + CalendarHeaderView.Height +
+    const height = calendarTableViewHeight + CalendarHeaderView.Height +
         CalendarHeaderView.BottomMargin + CalendarPicker.Padding * 2 +
         CalendarPicker.BorderWidth * 2;
     this.setHeight(height);
@@ -4543,11 +4537,11 @@ class CalendarPicker extends dateRangeManagerMixin(View) {
    * @return {!Day}
    */
   firstVisibleDay() {
-    var firstVisibleRow =
+    const firstVisibleRow =
         this.calendarTableView
             .columnAndRowForDay(this.currentMonth().firstDay())
             .row;
-    var firstVisibleDay =
+    let firstVisibleDay =
         this.calendarTableView.dayAtColumnAndRow(0, firstVisibleRow);
     if (!firstVisibleDay)
       firstVisibleDay = Day.Minimum;
@@ -4558,14 +4552,14 @@ class CalendarPicker extends dateRangeManagerMixin(View) {
    * @return {!Day}
    */
   lastVisibleDay() {
-    var lastVisibleRow =
+    let lastVisibleRow =
         this.calendarTableView.columnAndRowForDay(this.currentMonth().lastDay())
             .row;
     lastVisibleRow = this.calendarTableView
                          .columnAndRowForDay(this.currentMonth().firstDay())
                          .row +
         CalendarPicker.VisibleRows - 1;
-    var lastVisibleDay = this.calendarTableView.dayAtColumnAndRow(
+    let lastVisibleDay = this.calendarTableView.dayAtColumnAndRow(
         DaysPerWeek - 1, lastVisibleRow);
     if (!lastVisibleDay)
       lastVisibleDay = Day.Maximum;
@@ -4576,7 +4570,7 @@ class CalendarPicker extends dateRangeManagerMixin(View) {
    * @param {?Day} day
    */
   selectRangeContainingDay(day) {
-    var selection = day ? this._dateTypeConstructor.createFromDay(day) : null;
+    const selection = day ? this._dateTypeConstructor.createFromDay(day) : null;
     this.setSelectionAndCommit(selection);
   }
 
@@ -4584,7 +4578,7 @@ class CalendarPicker extends dateRangeManagerMixin(View) {
    * @param {?Day} day
    */
   highlightRangeContainingDay(day) {
-    var highlight = day ? this._dateTypeConstructor.createFromDay(day) : null;
+    const highlight = day ? this._dateTypeConstructor.createFromDay(day) : null;
     this._setHighlight(highlight);
   }
 
@@ -4601,9 +4595,9 @@ class CalendarPicker extends dateRangeManagerMixin(View) {
       this._selection = null;
       return;
     }
-    var firstDayInSelection = dayOrWeekOrMonth.firstDay();
-    var lastDayInSelection = dayOrWeekOrMonth.lastDay();
-    var candidateCurrentMonth = Month.createFromDay(firstDayInSelection);
+    const firstDayInSelection = dayOrWeekOrMonth.firstDay();
+    const lastDayInSelection = dayOrWeekOrMonth.lastDay();
+    const candidateCurrentMonth = Month.createFromDay(firstDayInSelection);
     if (this.firstVisibleDay() > lastDayInSelection ||
         this.lastVisibleDay() < firstDayInSelection) {
       // Change current month if the selection is not visible at all.
@@ -4615,17 +4609,17 @@ class CalendarPicker extends dateRangeManagerMixin(View) {
         this.lastVisibleDay() > lastDayInSelection) {
       // If the selection is partly visible, only change the current month if
       // doing so will make the whole selection visible.
-      var firstVisibleRow =
+      const firstVisibleRow =
           this.calendarTableView
               .columnAndRowForDay(candidateCurrentMonth.firstDay())
               .row;
-      var firstVisibleDay =
+      const firstVisibleDay =
           this.calendarTableView.dayAtColumnAndRow(0, firstVisibleRow);
-      var lastVisibleRow =
+      const lastVisibleRow =
           this.calendarTableView
               .columnAndRowForDay(candidateCurrentMonth.lastDay())
               .row;
-      var lastVisibleDay = this.calendarTableView.dayAtColumnAndRow(
+      const lastVisibleDay = this.calendarTableView.dayAtColumnAndRow(
           DaysPerWeek - 1, lastVisibleRow);
       if (firstDayInSelection >= firstVisibleDay &&
           lastDayInSelection <= lastVisibleDay)
@@ -4660,7 +4654,7 @@ class CalendarPicker extends dateRangeManagerMixin(View) {
     if (this.type == 'datetime-local')
       return;
 
-    var value = this._selection.toString();
+    const value = this._selection.toString();
     if (CalendarPicker.commitDelayMs == 0) {
       // For testing.
       window.pagePopupController.setValueAndClosePopup(0, value);
@@ -4713,21 +4707,21 @@ class CalendarPicker extends dateRangeManagerMixin(View) {
     if (this._selection.isFullyContainedInMonth(this.currentMonth()))
       return;
 
-    var newSelection = null;
-    var currentRangeInNewMonth =
+    let newSelection = null;
+    const currentRangeInNewMonth =
         this._selection.thisRangeInMonth(this.currentMonth());
 
     if (this.isValid(currentRangeInNewMonth)) {
       newSelection = currentRangeInNewMonth;
     } else {
-      var validRangeLookingBackward =
+      const validRangeLookingBackward =
           this.getNearestValidRangeLookingBackward(currentRangeInNewMonth);
-      var validRangeLookingForward =
+      const validRangeLookingForward =
           this.getNearestValidRangeLookingForward(currentRangeInNewMonth);
       if (validRangeLookingBackward && validRangeLookingForward) {
-        var newMonthIsForwardOfSelection =
+        const newMonthIsForwardOfSelection =
             (currentRangeInNewMonth.firstDay() > this._selection.firstDay());
-        var [validRangeInDirectionOfAdvancement, validRangeAgainstDirectionOfAdvancement] =
+        const [validRangeInDirectionOfAdvancement, validRangeAgainstDirectionOfAdvancement] =
             newMonthIsForwardOfSelection ?
             [validRangeLookingForward, validRangeLookingBackward] :
             [validRangeLookingBackward, validRangeLookingForward];
@@ -4744,10 +4738,10 @@ class CalendarPicker extends dateRangeManagerMixin(View) {
         } else {
           // If both of the ranges are in the new month, select the closest one
           // to the target date in the new month.
-          var diffFromForwardRange = Math.abs(
+          const diffFromForwardRange = Math.abs(
               currentRangeInNewMonth.valueOf() -
               validRangeLookingForward.valueOf());
-          var diffFromBackwardRange = Math.abs(
+          const diffFromBackwardRange = Math.abs(
               currentRangeInNewMonth.valueOf() -
               validRangeLookingBackward.valueOf());
           if (diffFromForwardRange < diffFromBackwardRange) {
@@ -4791,14 +4785,12 @@ class CalendarPicker extends dateRangeManagerMixin(View) {
    * @param {?Event} event
    */
   onCalendarTableKeyDown(event) {
-    var key = event.key;
-    var offset = 0;
-
+    const key = event.key;
     if (!event.target.matches('.today-button, .clear-button') &&
         this._selection) {
       switch (key) {
         case 'PageUp':
-          var previousMonth = this.currentMonth().previous();
+          const previousMonth = this.currentMonth().previous();
           if (previousMonth && previousMonth >= this.config.minimumValue) {
             this.setCurrentMonth(
                 previousMonth, CalendarPicker.NavigationBehavior.WithAnimation);
@@ -4806,7 +4798,7 @@ class CalendarPicker extends dateRangeManagerMixin(View) {
           }
           break;
         case 'PageDown':
-          var nextMonth = this.currentMonth().next();
+          const nextMonth = this.currentMonth().next();
           if (nextMonth && nextMonth >= this.config.minimumValue) {
             this.setCurrentMonth(
                 nextMonth, CalendarPicker.NavigationBehavior.WithAnimation);
@@ -4817,19 +4809,19 @@ class CalendarPicker extends dateRangeManagerMixin(View) {
         case 'ArrowDown':
         case 'ArrowLeft':
         case 'ArrowRight':
-          var upOrDownArrowStepSize =
+          const upOrDownArrowStepSize =
               this.type === 'date' || this.type === 'datetime-local' ?
               DaysPerWeek :
               1;
           if (global.params.isLocaleRTL ? key == 'ArrowRight' :
                                           key == 'ArrowLeft') {
-            var newSelection = this.getNearestValidRangeLookingBackward(
+            const newSelection = this.getNearestValidRangeLookingBackward(
                 this._selection.previous());
             if (newSelection) {
               this.setSelection(newSelection);
             }
           } else if (key == 'ArrowUp') {
-            var newSelection = this.getNearestValidRangeLookingBackward(
+            const newSelection = this.getNearestValidRangeLookingBackward(
                 this._selection.previous(upOrDownArrowStepSize));
             if (newSelection) {
               this.setSelection(newSelection);
@@ -4837,33 +4829,35 @@ class CalendarPicker extends dateRangeManagerMixin(View) {
           } else if (
               global.params.isLocaleRTL ? key == 'ArrowLeft' :
                                           key == 'ArrowRight') {
-            var newSelection =
+            const newSelection =
                 this.getNearestValidRangeLookingForward(this._selection.next());
             if (newSelection) {
               this.setSelection(newSelection);
             }
           } else if (key == 'ArrowDown') {
-            var newSelection = this.getNearestValidRangeLookingForward(
+            const newSelection = this.getNearestValidRangeLookingForward(
                 this._selection.next(upOrDownArrowStepSize));
             if (newSelection) {
               this.setSelection(newSelection);
             }
           }
           break;
-        case 'Home':
-          var newSelection = this.getNearestValidRangeLookingBackward(
+        case 'Home': {
+          const newSelection = this.getNearestValidRangeLookingBackward(
               this._selection.nextHome());
           if (newSelection) {
             this.setSelection(newSelection);
           }
           break;
-        case 'End':
-          var newSelection = this.getNearestValidRangeLookingForward(
+        }
+        case 'End': {
+          const newSelection = this.getNearestValidRangeLookingForward(
               this._selection.nextEnd());
           if (newSelection) {
             this.setSelection(newSelection);
           }
           break;
+        }
       }
     }
     // else if there is no selection it must be the case that there are no
@@ -4919,8 +4913,7 @@ class CalendarPicker extends dateRangeManagerMixin(View) {
    * @param {?Event} event
    */
   onBodyKeyDown(event) {
-    var key = event.key;
-    var eventHandled = false;
+    const key = event.key;
     switch (key) {
       case 'Escape':
         // The datetime-local control handles submission/cancellation at
@@ -4979,10 +4972,6 @@ class CalendarPicker extends dateRangeManagerMixin(View) {
         }
         break;
     }
-    if (eventHandled) {
-      event.stopPropagation();
-      event.preventDefault();
-    }
   }
 }
 
@@ -5003,3 +4992,4 @@ window.DayCell = DayCell;
 window.Month = Month;
 window.Week = Week;
 window.WeekNumberCell = WeekNumberCell;
+window.global = global;

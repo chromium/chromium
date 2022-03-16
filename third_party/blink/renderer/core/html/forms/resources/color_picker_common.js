@@ -2,14 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var global = {argumentsReceived: false, params: null};
+const global = {
+  argumentsReceived: false,
+  params: null
+};
 
 // DefaultColor is used by ColorPicker when selectedColor is not provided.
-var DefaultColor = '#000000';
+const DefaultColor = '#000000';
 
 // DefaultColorPalette is used by ColorSuggestionPicker when the list of values
 // is empty.
-var DefaultColorPalette = [
+const DefaultColorPalette = [
   '#000000', '#404040', '#808080', '#c0c0c0', '#ffffff', '#980000', '#ff0000',
   '#ff9900', '#ffff00', '#00ff00', '#00ffff', '#4a86e8', '#0000ff', '#9900ff',
   '#ff00ff'
@@ -36,9 +39,9 @@ if (window.dialogArguments) {
  */
 function initialize(args) {
   global.params = args;
-  var main = $('main');
+  const main = $('main');
   main.innerHTML = '';
-  var errorString;
+  let errorString;
   if (global.params.shouldShowColorSuggestionPicker) {
     main.classList.add('color-suggestion-picker-main');
     if (global.params.isBorderTransparent) {
@@ -67,7 +70,7 @@ function handleArgumentsTimeout() {
   // When an argument timeout happens, we do not have enough information to
   // determine whether to show the color picker or color suggestion picker.
   // In this case, we just choose to show the color suggestion picker.
-  var args = {
+  const args = {
     values: DefaultColorPalette,
     otherColorLabel: 'Other...',
     shouldShowColorSuggestionPicker: true,
