@@ -493,7 +493,7 @@ const base::Feature kEnableDnsProxy{"EnableDnsProxy",
 // Enables displaying additional OpenVPN configuration values on the network
 // details page.
 const base::Feature kExtendedOpenVpnSettings{"ExtendedOpenVpnSettings",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
+                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables setting the device hostname.
 const base::Feature kEnableHostnameSetting{"EnableHostnameSetting",
