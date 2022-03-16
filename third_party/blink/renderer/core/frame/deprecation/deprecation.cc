@@ -293,18 +293,6 @@ const DeprecationInfo GetDeprecationInfo(const WebFeature feature) {
           "'HTMLVideoElement.webkitExitFullscreen()'",
           "'Document.exitFullscreen()'");
 
-    case WebFeature::kPrefixedVideoEnterFullScreen:
-      return DeprecationInfo::WithFeatureAndReplacement(
-          "PrefixedVideoEnterFullScreen", kUnknown,
-          "'HTMLVideoElement.webkitEnterFullScreen()'",
-          "'Element.requestFullscreen()'");
-
-    case WebFeature::kPrefixedVideoExitFullScreen:
-      return DeprecationInfo::WithFeatureAndReplacement(
-          "PrefixedVideoExitFullScreen", kUnknown,
-          "'HTMLVideoElement.webkitExitFullScreen()'",
-          "'Document.exitFullscreen()'");
-
     case WebFeature::kPrefixedRequestAnimationFrame:
       return DeprecationInfo::WithDetails(
           "PrefixedRequestAnimationFrame", kUnknown,
@@ -329,10 +317,6 @@ const DeprecationInfo GetDeprecationInfo(const WebFeature feature) {
           "Synchronous XMLHttpRequest on the main thread is deprecated because "
           "of its detrimental effects to the end user's experience. For more "
           "help, check https://xhr.spec.whatwg.org/.");
-
-    case WebFeature::kPrefixedWindowURL:
-      return DeprecationInfo::WithFeatureAndReplacement(
-          "PrefixedWindowURL", kUnknown, "'webkitURL'", "'URL'");
 
     case WebFeature::kRangeExpand:
       return DeprecationInfo::WithFeatureAndReplacement(
@@ -491,19 +475,6 @@ const DeprecationInfo GetDeprecationInfo(const WebFeature feature) {
           "Creating a MediaElementAudioSourceNode on an OfflineAudioContext",
           "5258622686724096");
 
-    case WebFeature::kMediaStreamDestinationOnOfflineContext:
-      return DeprecationInfo::WithFeatureAndChromeStatusID(
-          "MediaStreamAudioDestinationNode", kM71,
-          "Creating a MediaStreamAudioDestinationNode on an "
-          "OfflineAudioContext",
-          "5258622686724096");
-
-    case WebFeature::kMediaStreamSourceOnOfflineContext:
-      return DeprecationInfo::WithFeatureAndChromeStatusID(
-          "MediaStreamAudioSourceNode", kM71,
-          "Creating a MediaStreamAudioSourceNode on an OfflineAudioContext",
-          "5258622686724096");
-
     case WebFeature::kTextToSpeech_SpeakDisallowedByAutoplay:
       return DeprecationInfo::WithFeatureAndChromeStatusID(
           "TextToSpeech_DisallowedByAutoplay", kM71,
@@ -552,13 +523,6 @@ const DeprecationInfo GetDeprecationInfo(const WebFeature feature) {
                          "Please check with your partner to have this fixed.",
                          MilestoneString(kM81).Ascii().c_str()));
 
-    case WebFeature::kCssStyleSheetReplaceWithImport:
-      return DeprecationInfo::WithFeatureAndChromeStatusID(
-          "CssStyleSheetReplaceWithImport", kM84,
-          "Support for calls to CSSStyleSheet.replace() with stylesheet text "
-          "that includes @import",
-          "4735925877735424");
-
     case WebFeature::kV8SharedArrayBufferConstructedWithoutIsolation:
       return DeprecationInfo::WithDetails(
           "SharedArrayBufferConstructedWithoutIsolation", kM92,
@@ -602,8 +566,6 @@ const DeprecationInfo GetDeprecationInfo(const WebFeature feature) {
           "but this page may extend the deadline until the End Date of the "
           "'RTCPeerConnection Plan B SDP Semantics' deprecation trial.");
 
-    case WebFeature::kAddressSpaceUnknownNonSecureContextEmbeddedPrivate:
-    case WebFeature::kAddressSpaceUnknownNonSecureContextEmbeddedLocal:
     case WebFeature::kAddressSpacePublicNonSecureContextEmbeddedPrivate:
     case WebFeature::kAddressSpacePublicNonSecureContextEmbeddedLocal:
     case WebFeature::kAddressSpacePrivateNonSecureContextEmbeddedLocal:
@@ -656,11 +618,6 @@ const DeprecationInfo GetDeprecationInfo(const WebFeature feature) {
       return DeprecationInfo::WithDetails(
           "CrossOriginWindowAlert", kUnknown,
           "Triggering window.alert from cross origin iframes has been "
-          "deprecated and will be removed in the future.");
-    case WebFeature::kCrossOriginWindowPrompt:
-      return DeprecationInfo::WithDetails(
-          "CrossOriginWindowPrompt", kUnknown,
-          "Triggering window.prompt from cross origin iframes has been "
           "deprecated and will be removed in the future.");
     case WebFeature::kCrossOriginWindowConfirm:
       return DeprecationInfo::WithDetails(
