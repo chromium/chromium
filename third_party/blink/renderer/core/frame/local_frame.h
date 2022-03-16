@@ -40,7 +40,6 @@
 #include "services/device/public/mojom/device_posture_provider.mojom-blink-forward.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink-forward.h"
 #include "third_party/blink/public/common/frame/frame_ad_evidence.h"
-#include "third_party/blink/public/common/frame/payment_request_token.h"
 #include "third_party/blink/public/common/frame/transient_allow_fullscreen.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom-blink-forward.h"
@@ -680,12 +679,6 @@ class CORE_EXPORT LocalFrame final
     transient_allow_fullscreen_.Activate();
   }
 
-  // Returns the state of the |PaymentRequestToken| in the current |Frame|.
-  bool IsPaymentRequestTokenActive() const;
-
-  // Consumes the |PaymentRequestToken| of the current |Frame| if it was active.
-  bool ConsumePaymentRequestToken();
-
   LocalFrameToken GetLocalFrameToken() const;
 
   TextFragmentHandler* GetTextFragmentHandler() const {
@@ -935,8 +928,6 @@ class CORE_EXPORT LocalFrame final
 
   // Manages a transient affordance for this frame to enter fullscreen.
   TransientAllowFullscreen transient_allow_fullscreen_;
-
-  PaymentRequestToken payment_request_token_;
 
 #if !BUILDFLAG(IS_ANDROID)
   bool is_window_controls_overlay_visible_ = false;

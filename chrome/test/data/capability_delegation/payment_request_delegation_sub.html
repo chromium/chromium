@@ -29,7 +29,7 @@ found in the LICENSE file.
       // When show() is not allowed, the Promise above throws a "NotAllowedError"
       // right away.  Otherwise, the visible dialog is aborted after a short delay
       // below, which causes the Promise above to throw an "AbortError".
-      window.setTimeout(() => request.abort().catch(()=>{}), 0);
+      window.setTimeout(() => request.abort().catch(()=>{}), 50);
   }
 
   window.addEventListener("message", tryPaymentRequestAndReport);

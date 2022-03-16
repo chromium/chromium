@@ -20,6 +20,7 @@ class CapabilityDelegationBrowserTest
   CapabilityDelegationBrowserTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kCapabilityDelegationPaymentRequest,
+                              features::kPaymentRequestBasicCard,
                               features::kPaymentRequestRequiresUserActivation},
         /*disabled_features=*/{});
   }
@@ -44,7 +45,8 @@ class CapabilityDelegationBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(CapabilityDelegationBrowserTest, PaymentRequest) {
+IN_PROC_BROWSER_TEST_F(CapabilityDelegationBrowserTest,
+                       CrossOriginPaymentRequest) {
   // Navigate the top frame.
   GURL main_url(
       https_server()->GetURL("a.com", "/payment_request_delegation.html"));
@@ -95,6 +97,50 @@ IN_PROC_BROWSER_TEST_F(CapabilityDelegationBrowserTest, PaymentRequest) {
   // dialog is not allowed.
   EXPECT_EQ("SecurityError", content::EvalJs(active_web_contents,
                                              "sendRequestToSubframe(false)"));
+
+  // With both user activation and the delegation option, PaymentRequest dialog
+  // is shown and then successfully aborted by the script.
+  EXPECT_EQ("AbortError", content::EvalJs(active_web_contents,
+                                          "sendRequestToSubframe(true)"));
+}
+
+IN_PROC_BROWSER_TEST_F(CapabilityDelegationBrowserTest,
+                       SameOriginPaymentRequest) {
+  // Navigate the top frame.
+  GURL main_url(
+      https_server()->GetURL("a.com", "/payment_request_delegation.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+
+  // Navigate the sub-frame cross-site.
+  content::WebContents* active_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  GURL subframe_url(
+      https_server()->GetURL("a.com", "/payment_request_delegation_sub.html"));
+  EXPECT_TRUE(NavigateIframeToURL(active_web_contents, "iframe", subframe_url));
+
+  // Confirm that the subframe is same-process.
+  content::RenderFrameHost* frame_host =
+      ChildFrameAt(active_web_contents->GetMainFrame(), 0);
+  ASSERT_TRUE(frame_host);
+  EXPECT_EQ(subframe_url, frame_host->GetLastCommittedURL());
+  EXPECT_FALSE(frame_host->IsCrossProcessSubframe());
+
+  // Without either user activation or payment request token, PaymentRequest
+  // dialog is not allowed.
+  EXPECT_EQ("SecurityError",
+            content::EvalJs(active_web_contents, "sendRequestToSubframe(false)",
+                            content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  // Without user activation but with the delegation option, PaymentRequest
+  // dialog is not allowed.
+  EXPECT_EQ("SecurityError",
+            content::EvalJs(active_web_contents, "sendRequestToSubframe(true)",
+                            content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  // With user activation but without the delegation option, PaymentRequest
+  // dialog is shown and then successfully aborted by the script.
+  EXPECT_EQ("AbortError", content::EvalJs(active_web_contents,
+                                          "sendRequestToSubframe(false)"));
 
   // With both user activation and the delegation option, PaymentRequest dialog
   // is shown and then successfully aborted by the script.
