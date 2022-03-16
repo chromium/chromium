@@ -39,6 +39,7 @@ ToolNetworkInitializer::ToolNetworkInitializer() {
       network::mojom::URLLoaderFactoryParams::New();
   url_loader_factory_params->process_id = network::mojom::kBrowserProcessId;
   url_loader_factory_params->is_corb_enabled = false;
+  url_loader_factory_params->is_trusted = true;
   network_context_->CreateURLLoaderFactory(
       url_loader_factory_.BindNewPipeAndPassReceiver(),
       std::move(url_loader_factory_params));
