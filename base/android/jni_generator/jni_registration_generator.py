@@ -10,6 +10,7 @@ RegisterNonMainDexNatives(). Together, these will use manual JNI registration
 to register all native methods that exist within an application."""
 
 import argparse
+import collections
 import functools
 import multiprocessing
 import os
@@ -55,13 +56,23 @@ def _Generate(java_file_paths,
     header_path: If specified, generates a header file in this location.
     namespace: If specified, sets the namespace for the generated header file.
   """
+  # For JNI multiplexing, a 16-bit prefix is used to identify each individual
+  # java file path. This allows fewer multiplexed functions to resolve multiple
+  # different native functions with the same signature across the JNI boundary
+  # using switch statements. Should not exceed 65536 (2**16) number of paths.
+  assert len(java_file_paths) < 65536
+  java_path_prefix_tuples = [(path, index)
+                             for index, path in enumerate(java_file_paths)]
   # Without multiprocessing, script takes ~13 seconds for chrome_public_apk
   # on a z620. With multiprocessing, takes ~2 seconds.
   results = []
   with multiprocessing.Pool() as pool:
     for d in pool.imap_unordered(
-        functools.partial(_DictForPath, use_proxy_hash=proxy_opts.use_hash),
-        java_file_paths):
+        functools.partial(
+            _DictForPathAndPrefix,
+            use_proxy_hash=proxy_opts.use_hash,
+            enable_jni_multiplexing=proxy_opts.enable_jni_multiplexing),
+        java_path_prefix_tuples):
       if d:
         results.append(d)
 
@@ -71,6 +82,13 @@ def _Generate(java_file_paths,
   combined_dict = {}
   for key in MERGEABLE_KEYS:
     combined_dict[key] = ''.join(d.get(key, '') for d in results)
+  # PROXY_NATIVE_SIGNATURES will have duplicates for JNI multiplexing since
+  # all native methods with similar signatures map to the same proxy.
+  if proxy_opts.enable_jni_multiplexing:
+    proxy_signatures_list = sorted(
+        set(combined_dict['PROXY_NATIVE_SIGNATURES'].split('\n')))
+    combined_dict['PROXY_NATIVE_SIGNATURES'] = '\n'.join(
+        signature for signature in proxy_signatures_list)
 
   if header_path:
     combined_dict['HEADER_GUARD'] = \
@@ -102,7 +120,20 @@ def _Generate(java_file_paths,
             data=CreateProxyJavaFromDict(combined_dict, proxy_opts))
 
 
-def _DictForPath(path, use_proxy_hash=False):
+# A wrapper for imap_ordered to call with a tuple.
+def _DictForPathAndPrefix(path_prefix_tuple, use_proxy_hash,
+                          enable_jni_multiplexing):
+  path, switch_prefix = path_prefix_tuple
+  return _DictForPath(path,
+                      use_proxy_hash=use_proxy_hash,
+                      enable_jni_multiplexing=enable_jni_multiplexing,
+                      switch_prefix=switch_prefix)
+
+
+def _DictForPath(path,
+                 use_proxy_hash=False,
+                 enable_jni_multiplexing=False,
+                 switch_prefix=None):
   with open(path) as f:
     contents = jni_generator.RemoveComments(f.read())
     if '@JniIgnoreNatives' in contents:
@@ -122,8 +153,15 @@ def _DictForPath(path, use_proxy_hash=False):
   jni_params = jni_generator.JniParams(fully_qualified_class)
   jni_params.ExtractImportsAndInnerClasses(contents)
   is_main_dex = jni_generator.IsMainDexJavaClass(contents)
-  header_generator = HeaderGenerator(namespace, fully_qualified_class, natives,
-                                     jni_params, is_main_dex, use_proxy_hash)
+  header_generator = HeaderGenerator(
+      namespace,
+      fully_qualified_class,
+      natives,
+      jni_params,
+      is_main_dex,
+      use_proxy_hash,
+      enable_jni_multiplexing=enable_jni_multiplexing,
+      switch_prefix=switch_prefix)
   return header_generator.Generate()
 
 
@@ -313,8 +351,15 @@ ${REGISTER_NON_MAIN_DEX_NATIVES}
 class HeaderGenerator(object):
   """Generates an inline header file for JNI registration."""
 
-  def __init__(self, namespace, fully_qualified_class, natives, jni_params,
-               main_dex, use_proxy_hash):
+  def __init__(self,
+               namespace,
+               fully_qualified_class,
+               natives,
+               jni_params,
+               main_dex,
+               use_proxy_hash,
+               enable_jni_multiplexing=False,
+               switch_prefix=None):
     self.namespace = namespace
     self.natives = natives
     self.proxy_natives = [n for n in natives if n.is_proxy]
@@ -326,6 +371,10 @@ class HeaderGenerator(object):
     self.helper = jni_generator.HeaderFileGeneratorHelper(
         self.class_name, fully_qualified_class, use_proxy_hash, None)
     self.use_proxy_hash = use_proxy_hash
+    self.enable_jni_multiplexing = enable_jni_multiplexing
+    # Each java file path is assigned a 16-bit integer as a prefix to the
+    # switch number to ensure uniqueness across all native methods.
+    self.switch_prefix = switch_prefix
     self.registration_dict = None
 
   def Generate(self):
@@ -338,11 +387,19 @@ class HeaderGenerator(object):
     self._AddRegisterNativesFunctions()
 
     self.registration_dict['PROXY_NATIVE_SIGNATURES'] = (''.join(
-        _MakeProxySignature(n, self.use_proxy_hash)
-        for n in self.proxy_natives))
+        _MakeProxySignature(
+            native,
+            self.use_proxy_hash,
+            enable_jni_multiplexing=self.enable_jni_multiplexing)
+        for native in self.proxy_natives))
+    if self.enable_jni_multiplexing:
+      self._AssignSwitchNumberToNatives()
+
     if self.use_proxy_hash:
       self.registration_dict['FORWARDING_PROXY_METHODS'] = ('\n'.join(
-          _MakeForwardingProxy(n) for n in self.proxy_natives))
+          _MakeForwardingProxy(
+              native, enable_jni_multiplexing=self.enable_jni_multiplexing)
+          for native in self.proxy_natives))
 
     return self.registration_dict
 
@@ -536,17 +593,61 @@ ${NATIVES}\
       return self._SubstituteNativeMethods(template)
     return ''
 
+  def _AssignSwitchNumberToNatives(self):
+    # The switch number for a native method is a 32-bit integer and indicates
+    # which native implementation the method should be dispatched to across
+    # the JNI multiplexing boundary.
+    signature_to_methods = collections.defaultdict(list)
+    for native in self.proxy_natives:
+      same_signature_methods = signature_to_methods[native.return_and_signature]
+      # Should not exceed 65536 (2**16) methods with same proxy signature.
+      assert len(same_signature_methods) < 65536
 
-def _MakeForwardingProxy(proxy_native):
+      native.switch_num = self.switch_prefix * (2**16) + len(
+          same_signature_methods)
+      same_signature_methods.append(native.proxy_name)
+
+
+def _GetParamsListForMultiplex(params_list):
+  if not params_list:
+    return 'int switch_num'
+
+  # Parameters are named after their type, with a unique number per parameter
+  # type to make sure the names are unique, even within the same types.
+  params_type_count = collections.defaultdict(int)
+  params_with_types = []
+  for p in params_list:
+    params_type_count[p] += 1
+    params_with_types.append(
+        '%s %s_param%d' %
+        (p, p.replace('[]', '_array').lower(), params_type_count[p]))
+
+  return ', '.join(params_with_types) + ', int switch_num'
+
+
+def _GetMultiplexProxyName(return_type):
+  return 'resolve_for_' + return_type.replace('[]', '_array').lower()
+
+
+def _MakeForwardingProxy(proxy_native, enable_jni_multiplexing=False):
   template = string.Template("""
     public static ${RETURN_TYPE} ${METHOD_NAME}(${PARAMS_WITH_TYPES}) {
-        ${MAYBE_RETURN}${PROXY_CLASS}.${HASHED_NAME}($PARAM_NAMES);
+        ${MAYBE_RETURN}${PROXY_CLASS}.${PROXY_METHOD_NAME}(${PARAM_NAMES});
     }""")
 
   params_with_types = ', '.join(
       '%s %s' % (p.datatype, p.name) for p in proxy_native.params)
   param_names = ', '.join(p.name for p in proxy_native.params)
   proxy_class = jni_generator.ProxyHelpers.GetQualifiedClass(True)
+
+  if enable_jni_multiplexing:
+    if not param_names:
+      param_names = proxy_native.switch_num
+    else:
+      param_names += ', %s' % proxy_native.switch_num
+    proxy_method_name = _GetMultiplexProxyName(proxy_native.return_type)
+  else:
+    proxy_method_name = proxy_native.hashed_proxy_name
 
   return template.substitute({
       'RETURN_TYPE':
@@ -559,42 +660,57 @@ def _MakeForwardingProxy(proxy_native):
       '' if proxy_native.return_type == 'void' else 'return ',
       'PROXY_CLASS':
       proxy_class.replace('/', '.'),
-      'HASHED_NAME':
-      proxy_native.hashed_proxy_name,
+      'PROXY_METHOD_NAME':
+      proxy_method_name,
       'PARAM_NAMES':
       param_names,
   })
 
 
-def _MakeProxySignature(proxy_native, use_proxy_hash):
-  if use_proxy_hash:
-    signature_template = string.Template("""
-      // Original name: ${ALT_NAME}
-      public static native ${RETURN_TYPE} ${NAME}(${PARAMS_WITH_TYPES});""")
-  else:
-    signature_template = string.Template("""
-      // Hashed name: ${ALT_NAME}
-      public static native ${RETURN_TYPE} ${NAME}(${PARAMS_WITH_TYPES});""")
+def _MakeProxySignature(proxy_native,
+                        use_proxy_hash,
+                        enable_jni_multiplexing=False):
+  params_with_types = ', '.join('%s %s' % (p.datatype, p.name)
+                                for p in proxy_native.params)
+  native_method_line = """
+      public static native ${RETURN} ${PROXY_NAME}(${PARAMS_WITH_TYPES});"""
 
-  params_with_types = ', '.join(
-      '%s %s' % (p.datatype, p.name) for p in proxy_native.params)
-  args = {
-      'RETURN_TYPE': proxy_native.return_type,
-      'PARAMS_WITH_TYPES': params_with_types,
-  }
-  if use_proxy_hash:
-    args['NAME'] = proxy_native.hashed_proxy_name
-    args['ALT_NAME'] = proxy_native.proxy_name
+  if enable_jni_multiplexing:
+    # This has to be only one line and without comments because all the proxy
+    # signatures will be joined, then split on new lines with duplicates removed
+    # since multiple |proxy_native|s map to the same multiplexed signature.
+    signature_template = string.Template(native_method_line)
+
+    alt_name = None
+    return_type, params_list = proxy_native.return_and_signature
+    proxy_name = _GetMultiplexProxyName(return_type)
+    params_with_types = _GetParamsListForMultiplex(params_list)
+  elif use_proxy_hash:
+    signature_template = string.Template("""
+      // Original name: ${ALT_NAME}""" + native_method_line)
+
+    alt_name = proxy_native.proxy_name
+    proxy_name = proxy_native.hashed_proxy_name
   else:
-    args['NAME'] = proxy_native.proxy_name
-    args['ALT_NAME'] = proxy_native.hashed_proxy_name
-  return signature_template.substitute(args)
+    signature_template = string.Template("""
+      // Hashed name: ${ALT_NAME}""" + native_method_line)
+
+    alt_name = proxy_native.hashed_proxy_name
+    proxy_name = proxy_native.proxy_name
+
+  return signature_template.substitute({
+      'ALT_NAME': alt_name,
+      'RETURN': proxy_native.return_type,
+      'PROXY_NAME': proxy_name,
+      'PARAMS_WITH_TYPES': params_with_types,
+  })
 
 
 class ProxyOptions:
 
   def __init__(self, **kwargs):
     self.use_hash = kwargs.get('use_hash', False)
+    self.enable_jni_multiplexing = kwargs.get('enable_jni_multiplexing', False)
     self.enable_mocks = kwargs.get('enable_mocks', False)
     self.require_mocks = kwargs.get('require_mocks', False)
     # Can never require and disable.
@@ -646,6 +762,10 @@ def main(argv):
       action='store_true',
       help='Enables hashing of the native declaration for methods in '
       'an @JniNatives interface')
+  arg_parser.add_argument(
+      '--enable_jni_multiplexing',
+      action='store_true',
+      help='Enables JNI multiplexing for Java native methods')
   args = arg_parser.parse_args(build_utils.ExpandFileArgs(argv[1:]))
 
   if not args.enable_proxy_mocks and args.require_mocks:
@@ -656,6 +776,7 @@ def main(argv):
   sources_files = sorted(set(build_utils.ParseGnList(args.sources_files)))
   proxy_opts = ProxyOptions(
       use_hash=args.use_proxy_hash,
+      enable_jni_multiplexing=args.enable_jni_multiplexing,
       require_mocks=args.require_mocks,
       enable_mocks=args.enable_proxy_mocks)
 

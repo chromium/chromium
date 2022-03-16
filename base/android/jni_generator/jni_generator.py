@@ -141,6 +141,7 @@ class NativeMethod(object):
 
     self.proxy_name = kwargs.get('proxy_name', self.name)
     self.hashed_proxy_name = kwargs.get('hashed_proxy_name', None)
+    self.switch_num = None
 
     if self.params:
       assert type(self.params) is list
@@ -159,6 +160,8 @@ class NativeMethod(object):
     else:
       self.type = 'function'
     self.method_id_var_name = kwargs.get('method_id_var_name', None)
+    self.return_and_signature = (self.return_type,
+                                 tuple(p.datatype for p in self.params))
 
 
 class CalledByNative(object):
