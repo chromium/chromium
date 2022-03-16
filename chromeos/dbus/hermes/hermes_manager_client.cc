@@ -4,6 +4,8 @@
 
 #include "chromeos/dbus/hermes/hermes_manager_client.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -31,7 +33,7 @@ class HermesManagerClientImpl : public HermesManagerClient {
     dbus::ObjectPath hermes_manager_path(hermes::kHermesManagerPath);
     object_proxy_ =
         bus->GetObjectProxy(hermes::kHermesServiceName, hermes_manager_path);
-    properties_ = new Properties(
+    properties_ = std::make_unique<Properties>(
         object_proxy_,
         base::BindRepeating(&HermesManagerClientImpl::OnPropertyChanged,
                             weak_ptr_factory_.GetWeakPtr(),
@@ -81,7 +83,7 @@ class HermesManagerClientImpl : public HermesManagerClient {
   }
 
   dbus::ObjectProxy* object_proxy_;
-  Properties* properties_;
+  std::unique_ptr<Properties> properties_;
   base::WeakPtrFactory<HermesManagerClientImpl> weak_ptr_factory_{this};
 };
 
