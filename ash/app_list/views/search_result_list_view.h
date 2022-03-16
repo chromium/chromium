@@ -67,9 +67,12 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
     // kPlayStore contains suggested apps from the playstore that are not
     // currently installed.
     kPlayStore,
-    // kSearchAndAssistant contain suggestions from Search and Google Assistant.
+    // kSearchAndAssistant contains suggestions from Search and Google
+    // Assistant.
     kSearchAndAssistant,
-    kMaxValue = kSearchAndAssistant,
+    // kGames contains cloud game search results.
+    kGames,
+    kMaxValue = kGames,
   };
 
   SearchResultListView(

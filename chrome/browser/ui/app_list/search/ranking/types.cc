@@ -38,7 +38,8 @@ CategoriesList CreateAllCategories() {
                       {.category = Category::kSettings},
                       {.category = Category::kHelp},
                       {.category = Category::kPlayStore},
-                      {.category = Category::kSearchAndAssistant}});
+                      {.category = Category::kSearchAndAssistant},
+                      {.category = Category::kGames}});
   DCHECK_EQ(res.size(), static_cast<size_t>(Category::kMaxValue));
   return res;
 }

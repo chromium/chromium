@@ -31,6 +31,7 @@ Category ResultTypeToCategory(ResultType result_type) {
     case ResultType::kInstalledApp:
     case ResultType::kInstantApp:
     case ResultType::kInternalApp:
+    case ResultType::kGames:
       return Category::kApps;
     case ResultType::kArcAppShortcut:
       return Category::kAppShortcuts;

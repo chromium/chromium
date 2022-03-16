@@ -19,6 +19,7 @@ RankingItemType RankingItemTypeFromSearchResult(
   switch (result.result_type()) {
     case ash::AppListSearchResultType::kInstalledApp:
     case ash::AppListSearchResultType::kInternalApp:
+    case ash::AppListSearchResultType::kGames:
       return RankingItemType::kApp;
     case ash::AppListSearchResultType::kOmnibox:
       return RankingItemType::kOmniboxGeneric;

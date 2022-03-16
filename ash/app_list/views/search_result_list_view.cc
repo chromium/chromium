@@ -112,6 +112,8 @@ SearchResultListView::SearchResultListType CategoryToListType(
       return SearchResultListView::SearchResultListType::kPlayStore;
     case ash::AppListSearchResultCategory::kSearchAndAssistant:
       return SearchResultListView::SearchResultListType::kSearchAndAssistant;
+    case ash::AppListSearchResultCategory::kGames:
+      return SearchResultListView::SearchResultListType::kGames;
     case ash::AppListSearchResultCategory::kUnknown:
       NOTREACHED();
       return SearchResultListView::SearchResultListType::kUnified;
@@ -215,6 +217,10 @@ void SearchResultListView::SetListType(SearchResultListType list_type) {
       title_label_->SetText(l10n_util::GetStringUTF16(
           IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_SEARCH_AND_ASSISTANT));
       break;
+    case SearchResultListType::kGames:
+      title_label_->SetText(l10n_util::GetStringUTF16(
+          IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_GAMES));
+      break;
   }
 
   switch (list_type_.value()) {
@@ -233,6 +239,7 @@ void SearchResultListView::SetListType(SearchResultListType list_type) {
     case SearchResultListType::kHelp:
     case SearchResultListType::kPlayStore:
     case SearchResultListType::kSearchAndAssistant:
+    case SearchResultListType::kGames:
       title_label_->SetVisible(true);
       break;
   }
@@ -258,6 +265,7 @@ void SearchResultListView::SetListType(SearchResultListType list_type) {
     case SearchResultListType::kHelp:
     case SearchResultListType::kPlayStore:
     case SearchResultListType::kSearchAndAssistant:
+    case SearchResultListType::kGames:
       DCHECK(search_result_view_type_ ==
              SearchResultView::SearchResultViewType::kDefault);
       break;
@@ -281,7 +289,8 @@ SearchResultListView::GetAllListTypesForCategoricalSearch() {
       SearchResultListType::kSettings,
       SearchResultListType::kHelp,
       SearchResultListType::kPlayStore,
-      SearchResultListType::kSearchAndAssistant};
+      SearchResultListType::kSearchAndAssistant,
+      SearchResultListType::kGames};
   return categorical_search_types;
 }
 
@@ -609,6 +618,8 @@ SearchResult::Category SearchResultListView::GetSearchCategory() {
       return SearchResult::Category::kPlayStore;
     case SearchResultListType::kSearchAndAssistant:
       return SearchResult::Category::kSearchAndAssistant;
+    case SearchResultListType::kGames:
+      return SearchResult::Category::kGames;
   }
 }
 
@@ -640,6 +651,7 @@ std::vector<SearchResult*> SearchResultListView::GetCategorizedSearchResults() {
     case SearchResultListType::kHelp:
     case SearchResultListType::kPlayStore:
     case SearchResultListType::kSearchAndAssistant:
+    case SearchResultListType::kGames:
       SearchResult::Category search_category = GetSearchCategory();
       return SearchModel::FilterSearchResultsByFunction(
           results(),

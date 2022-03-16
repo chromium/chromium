@@ -22,6 +22,7 @@ bool IsAppListSearchResultAnApp(AppListSearchResultType result_type) {
     case AppListSearchResultType::kPlayStoreReinstallApp:
     case AppListSearchResultType::kArcAppShortcut:
     case AppListSearchResultType::kInstantApp:
+    case AppListSearchResultType::kGames:
       return true;
     case AppListSearchResultType::kUnknown:
     case AppListSearchResultType::kOmnibox:

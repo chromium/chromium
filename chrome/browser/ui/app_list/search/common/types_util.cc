@@ -54,6 +54,8 @@ std::string ResultTypeToString(const ash::AppListSearchResultType result_type) {
       return "Keyboard shortcut";
     case ash::AppListSearchResultType::kOpenTab:
       return "Open tab";
+    case ash::AppListSearchResultType::kGames:
+      return "Games";
   }
   NOTREACHED();
 }
@@ -158,6 +160,8 @@ std::string MetricsTypeToString(const ash::SearchResultType metrics_type) {
       return "OPEN_TAB";
     case ash::SearchResultType::NO_RESULT:
       return "NO_RESULT";
+    case ash::SearchResultType::GAME_SEARCH:
+      return "GAME_SEARCH";
     case ash::SearchResultType::SEARCH_RESULT_TYPE_BOUNDARY:
       return "SEARCH_RESULT_TYPE_BOUNDARY";
   }

@@ -343,8 +343,9 @@ enum class AppListSearchResultType {
   kDriveSearch,            // Drive file search results.
   kKeyboardShortcut,       // Keyboard shortcut search results.
   kOpenTab,                // Open tab search results.
+  kGames,                  // Game sarch results.
   // Add new values here.
-  kMaxValue = kOpenTab,
+  kMaxValue = kGames,
 };
 
 ASH_PUBLIC_EXPORT bool IsAppListSearchResultAnApp(
@@ -368,7 +369,8 @@ enum class AppListSearchResultCategory {
   kHelp = 6,
   kPlayStore = 7,
   kSearchAndAssistant = 8,
-  kMaxValue = kSearchAndAssistant,
+  kGames = 9,
+  kMaxValue = kGames,
 };
 
 // Which UI container(s) the result should be displayed in.
