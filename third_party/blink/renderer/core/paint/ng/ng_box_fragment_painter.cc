@@ -684,7 +684,7 @@ void NGBoxFragmentPainter::PaintBlockFlowContents(
   const LayoutObject* layout_object = fragment.GetLayoutObject();
   DCHECK(fragment.IsInlineFormattingContext());
 
-  if (To<LayoutBlockFlow>(layout_object)->IsShapingDeferred())
+  if (layout_object && layout_object->IsShapingDeferred())
     return;
 
   // When the layout-tree gets into a bad state, we can end up trying to paint

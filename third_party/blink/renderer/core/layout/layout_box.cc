@@ -3658,9 +3658,7 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
   // valid (see comment in `SetCachedLayoutResult`), don't return the fragment,
   // since it will be used to iteration the invalid children when running
   // simplified layout.
-  const auto* block_flow = DynamicTo<LayoutBlockFlow>(this);
-  bool was_shaping_deferred = block_flow && block_flow->IsShapingDeferred();
-  if ((!physical_fragment.ChildrenValid() || was_shaping_deferred) &&
+  if ((!physical_fragment.ChildrenValid() || IsShapingDeferred()) &&
       (size_cache_status == NGLayoutCacheStatus::kNeedsSimplifiedLayout ||
        cache_status == NGLayoutCacheStatus::kNeedsSimplifiedLayout))
     return nullptr;

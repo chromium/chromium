@@ -615,7 +615,7 @@ inline const NGLayoutResult* NGBlockLayoutAlgorithm::Layout(
   // We lay out children of a deferred IFC because we'd like to skip only
   // font shaping.
   if (Node().ChildLayoutBlockedByDisplayLock() &&
-      !To<LayoutBlockFlow>(Node().GetLayoutBox())->IsShapingDeferred())
+      !Node().GetLayoutBox()->IsShapingDeferred())
     child_iterator = NGBlockChildIterator(NGBlockNode(nullptr), nullptr);
 
   NGBlockNode ruby_text_child(nullptr);

@@ -5047,6 +5047,14 @@ void LayoutObject::MarkSelfPaintingLayerForVisualOverflowRecalc() {
 #endif
 }
 
+bool LayoutObject::IsShapingDeferred() const {
+  if (const auto* block_flow = DynamicTo<LayoutNGBlockFlow>(this)) {
+    return block_flow->HasNGInlineNodeData() &&
+           block_flow->GetNGInlineNodeData()->IsShapingDeferred();
+  }
+  return false;
+}
+
 bool IsMenuList(const LayoutObject* object) {
   if (!object)
     return false;

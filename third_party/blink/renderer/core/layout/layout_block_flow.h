@@ -539,7 +539,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   }
   virtual void WillCollectInlines() { NOT_DESTROYED(); }
 
-  bool IsShapingDeferred() const;
   void StopDeferringShaping() const;
 
 #if DCHECK_IS_ON()

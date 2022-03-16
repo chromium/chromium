@@ -2904,15 +2904,15 @@ scoped_refptr<ComputedStyle> Element::StyleForLayoutObject(
   if (UNLIKELY(context || !style->IsContentVisibilityVisible())) {
     if (!context)
       context = &EnsureDisplayLockContext();
-    const auto* block_flow = DynamicTo<LayoutBlockFlow>(GetLayoutObject());
-    bool is_shaping_deferred = block_flow && block_flow->IsShapingDeferred();
+    bool is_shaping_deferred =
+        GetLayoutObject() && GetLayoutObject()->IsShapingDeferred();
     // If shaping is deferred and |content-visibility| is |visible|, do nothing
     // in order to keep the "deferred" state.
     if (!is_shaping_deferred || !style->IsContentVisibilityVisible()) {
       // If shaping is deferred and |content-visibility| is not |visible|,
       // leave the "deferred" state.
       if (is_shaping_deferred)
-        block_flow->StopDeferringShaping();
+        To<LayoutBlockFlow>(GetLayoutObject())->StopDeferringShaping();
       context->SetRequestedState(style->ContentVisibility());
       context->AdjustElementStyle(style.get());
     }

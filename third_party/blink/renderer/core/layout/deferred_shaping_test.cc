@@ -11,9 +11,8 @@ namespace blink {
 class DeferredShapingTest : public RenderingTest {
  protected:
   bool IsDefer(const char* id_value) const {
-    const auto* block_flow =
-        DynamicTo<LayoutNGBlockFlow>(GetLayoutObjectByElementId(id_value));
-    return block_flow && block_flow->IsShapingDeferred();
+    const auto* layout_object = GetLayoutObjectByElementId(id_value);
+    return layout_object && layout_object->IsShapingDeferred();
   }
 
   bool IsLocked(const char* id_value) const {
