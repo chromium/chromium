@@ -50,7 +50,9 @@ bool CloudReportingFrequencyPolicyHandler::CheckPolicySettings(
 void CloudReportingFrequencyPolicyHandler::ApplyPolicySettings(
     const policy::PolicyMap& policies,
     PrefValueMap* prefs) {
-  const base::Value* value = policies.GetValue(policy_name());
+  // |GetValueUnsafe(...)| is used in order to differentiate between the policy
+  // value being unset vs being set with an incorrect type.
+  const base::Value* value = policies.GetValueUnsafe(policy_name());
   int value_in_range;
   if (value && EnsureInRange(value, &value_in_range, nullptr))
     prefs->SetValue(kCloudReportingUploadFrequency,

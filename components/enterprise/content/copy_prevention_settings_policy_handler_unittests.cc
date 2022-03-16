@@ -130,7 +130,8 @@ TEST_F(CopyPreventionSettingsPolicyHandlerTest, TestValidPolicy) {
   ASSERT_TRUE(prefs.GetValue(enterprise::content::kCopyPreventionSettings,
                              &value_in_pref));
 
-  const base::Value* value_in_map = policy_map.GetValue(kPolicyName);
+  const base::Value* value_in_map =
+      policy_map.GetValue(kPolicyName, base::Value::Type::DICT);
   ASSERT_TRUE(value_in_pref->Equals(value_in_map));
 }
 

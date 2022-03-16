@@ -29,7 +29,9 @@ CloudReportingPolicyHandler::~CloudReportingPolicyHandler() = default;
 bool CloudReportingPolicyHandler::CheckPolicySettings(
     const policy::PolicyMap& policies,
     policy::PolicyErrorMap* errors) {
-  if (!policies.GetValue(policy_name()))
+  // |GetValueUnsafe(...)| is used in order to differentiate between the policy
+  // value being unset vs being set with an incorrect type.
+  if (!policies.GetValueUnsafe(policy_name()))
     return true;
   if (!TypeCheckingPolicyHandler::CheckPolicySettings(policies, errors))
     return false;
@@ -47,7 +49,7 @@ void CloudReportingPolicyHandler::ApplyPolicySettings(
     const policy::PolicyMap& policies,
     PrefValueMap* prefs) {
   const base::Value* cloud_reporting_policy_value =
-      policies.GetValue(policy_name());
+      policies.GetValue(policy_name(), base::Value::Type::BOOLEAN);
 
   if (cloud_reporting_policy_value) {
     prefs->SetBoolean(kCloudReportingEnabled,

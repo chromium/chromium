@@ -21,8 +21,9 @@ AutofillCreditCardPolicyHandler::~AutofillCreditCardPolicyHandler() {}
 void AutofillCreditCardPolicyHandler::ApplyPolicySettings(
     const policy::PolicyMap& policies,
     PrefValueMap* prefs) {
-  const base::Value* value = policies.GetValue(policy_name());
-  if (value && value->is_bool() && !value->GetBool())
+  const base::Value* value =
+      policies.GetValue(policy_name(), base::Value::Type::BOOLEAN);
+  if (value && !value->GetBool())
     prefs->SetBoolean(autofill::prefs::kAutofillCreditCardEnabled, false);
 }
 

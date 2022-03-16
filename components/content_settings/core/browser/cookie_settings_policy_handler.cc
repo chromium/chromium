@@ -24,7 +24,7 @@ void CookieSettingsPolicyHandler::ApplyPolicySettings(
     const policy::PolicyMap& policies,
     PrefValueMap* prefs) {
   const base::Value* third_party_cookie_blocking =
-      policies.GetValue(policy_name());
+      policies.GetValue(policy_name(), base::Value::Type::BOOLEAN);
   if (third_party_cookie_blocking) {
     prefs->SetInteger(
         prefs::kCookieControlsMode,
@@ -43,9 +43,9 @@ void CookieSettingsPolicyHandler::ApplyPolicySettings(
   // If there is a Cookie BLOCK default content setting, then Privacy Sandbox
   // APIs should be disabled, regardless of whether they were enabled along
   // with third party cookies.
-  const base::Value* default_cookie_setting =
-      policies.GetValue(policy::key::kDefaultCookiesSetting);
-  if (default_cookie_setting && default_cookie_setting->is_int() &&
+  const base::Value* default_cookie_setting = policies.GetValue(
+      policy::key::kDefaultCookiesSetting, base::Value::Type::INTEGER);
+  if (default_cookie_setting &&
       static_cast<ContentSetting>(default_cookie_setting->GetInt()) ==
           CONTENT_SETTING_BLOCK) {
     prefs->SetBoolean(prefs::kPrivacySandboxApisEnabled, false);

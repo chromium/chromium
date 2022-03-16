@@ -46,7 +46,7 @@ void CloudProfileReportingPolicyHandler::ApplyPolicySettings(
     const policy::PolicyMap& policies,
     PrefValueMap* prefs) {
   const base::Value* cloud_profile_reporting_policy_value =
-      policies.GetValue(policy_name());
+      policies.GetValue(policy_name(), base::Value::Type::BOOLEAN);
 
   if (cloud_profile_reporting_policy_value) {
     prefs->SetBoolean(kCloudProfileReportingEnabled,

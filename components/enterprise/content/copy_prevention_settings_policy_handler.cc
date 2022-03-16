@@ -31,7 +31,9 @@ CopyPreventionSettingsPolicyHandler::~CopyPreventionSettingsPolicyHandler() =
 bool CopyPreventionSettingsPolicyHandler::CheckPolicySettings(
     const policy::PolicyMap& policies,
     policy::PolicyErrorMap* errors) {
-  const base::Value* value = policies.GetValue(policy_name());
+  // |GetValueUnsafe(...)| is used in order to differentiate between the policy
+  // value being unset vs being set with an incorrect type.
+  const base::Value* value = policies.GetValueUnsafe(policy_name());
   if (!value)
     return true;
 
@@ -70,7 +72,8 @@ bool CopyPreventionSettingsPolicyHandler::CheckPolicySettings(
 void CopyPreventionSettingsPolicyHandler::ApplyPolicySettings(
     const policy::PolicyMap& policies,
     PrefValueMap* prefs) {
-  const base::Value* value = policies.GetValue(policy_name());
+  const base::Value* value =
+      policies.GetValue(policy_name(), base::Value::Type::DICT);
   if (!value)
     return;
 

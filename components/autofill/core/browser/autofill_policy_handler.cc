@@ -21,20 +21,18 @@ AutofillPolicyHandler::~AutofillPolicyHandler() {}
 void AutofillPolicyHandler::ApplyPolicySettings(
     const policy::PolicyMap& policies,
     PrefValueMap* prefs) {
-  const base::Value* autofill_credit_card_policy_value =
-      policies.GetValue(policy::key::kAutofillCreditCardEnabled);
-  const base::Value* autofill_address_policy_value =
-      policies.GetValue(policy::key::kAutofillAddressEnabled);
+  const base::Value* autofill_credit_card_policy_value = policies.GetValue(
+      policy::key::kAutofillCreditCardEnabled, base::Value::Type::BOOLEAN);
+  const base::Value* autofill_address_policy_value = policies.GetValue(
+      policy::key::kAutofillAddressEnabled, base::Value::Type::BOOLEAN);
   // Ignore the old policy if either of the new fine-grained policies are set.
-  if ((autofill_credit_card_policy_value &&
-       autofill_credit_card_policy_value->is_bool()) ||
-      (autofill_address_policy_value &&
-       autofill_address_policy_value->is_bool())) {
+  if (autofill_credit_card_policy_value || autofill_address_policy_value) {
     return;
   }
 
-  const base::Value* value = policies.GetValue(policy_name());
-  if (value && value->is_bool() && !value->GetBool()) {
+  const base::Value* value =
+      policies.GetValue(policy_name(), base::Value::Type::BOOLEAN);
+  if (value && !value->GetBool()) {
     prefs->SetBoolean(autofill::prefs::kAutofillEnabledDeprecated, false);
     // Disable the fine-grained prefs if the main pref is disabled by policy.
     prefs->SetBoolean(autofill::prefs::kAutofillCreditCardEnabled, false);
