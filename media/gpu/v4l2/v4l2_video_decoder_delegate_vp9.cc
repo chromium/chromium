@@ -152,11 +152,6 @@ V4L2VideoDecoderDelegateVP9::V4L2VideoDecoderDelegateVP9(
   // This control was landed in v5.17 and is pretty much a marker that the
   // driver supports the stable API.
   DCHECK(device_->IsCtrlExposed(V4L2_CID_STATELESS_VP9_FRAME));
-
-  // TODO(mcasas): Not all drivers support this, e.g. RK3399 does but MTK8195
-  // doesn't. Remove this DCHECK() when the not-supporting platforms are
-  // brought up.
-  DCHECK(supports_compressed_header_);
 }
 
 V4L2VideoDecoderDelegateVP9::~V4L2VideoDecoderDelegateVP9() = default;
