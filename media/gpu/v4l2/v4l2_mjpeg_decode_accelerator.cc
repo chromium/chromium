@@ -885,7 +885,8 @@ bool V4L2MjpegDecodeAccelerator::ConvertOutputImage(
       VLOGF(1) << "Failed to create video frame mapper";
       return false;
     }
-    dst_frame = frame_mapper->Map(std::move(dst_frame));
+    dst_frame = frame_mapper->Map(std::move(dst_frame), PROT_READ | PROT_WRITE);
+
     if (!dst_frame) {
       VLOGF(1) << "Failed to map DMA-buf video frame";
       return false;

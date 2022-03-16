@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <sys/mman.h>
 #include <memory>
 
 #include "base/at_exit.h"
@@ -427,7 +428,7 @@ void JpegClient::VideoFrameReady(int32_t buffer_id, size_t hw_encoded_size) {
     // |hw_out_frame_| should only be mapped once.
     auto mapper =
         media::GenericDmaBufVideoFrameMapper::Create(hw_out_frame_->format());
-    hw_out_frame_ = mapper->Map(hw_out_frame_);
+    hw_out_frame_ = mapper->Map(hw_out_frame_, PROT_READ | PROT_WRITE);
   }
 
   size_t sw_encoded_size = 0;

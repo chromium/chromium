@@ -4,6 +4,8 @@
 
 #include "media/gpu/chromeos/gpu_memory_buffer_video_frame_mapper.h"
 
+#include <sys/mman.h>
+
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "media/gpu/macros.h"
@@ -21,9 +23,15 @@ GpuMemoryBufferVideoFrameMapper::GpuMemoryBufferVideoFrameMapper(
     : VideoFrameMapper(format) {}
 
 scoped_refptr<VideoFrame> GpuMemoryBufferVideoFrameMapper::Map(
-    scoped_refptr<const VideoFrame> video_frame) const {
+    scoped_refptr<const VideoFrame> video_frame,
+    int permissions) const {
   if (!video_frame) {
     LOG(ERROR) << "Video frame is nullptr";
+    return nullptr;
+  }
+
+  if (!(permissions & PROT_READ && permissions & PROT_WRITE)) {
+    LOG(ERROR) << "GPU Memory Buffer must be mapped read/write.";
     return nullptr;
   }
 

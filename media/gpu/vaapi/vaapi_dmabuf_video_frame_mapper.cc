@@ -4,6 +4,8 @@
 
 #include "media/gpu/vaapi/vaapi_dmabuf_video_frame_mapper.h"
 
+#include <sys/mman.h>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
@@ -171,10 +173,16 @@ VaapiDmaBufVideoFrameMapper::VaapiDmaBufVideoFrameMapper(
 VaapiDmaBufVideoFrameMapper::~VaapiDmaBufVideoFrameMapper() {}
 
 scoped_refptr<VideoFrame> VaapiDmaBufVideoFrameMapper::Map(
-    scoped_refptr<const VideoFrame> video_frame) const {
+    scoped_refptr<const VideoFrame> video_frame,
+    int permissions) const {
   DCHECK(vaapi_wrapper_);
   if (!video_frame) {
     LOG(ERROR) << "Video frame is nullptr";
+    return nullptr;
+  }
+
+  if (!(permissions & PROT_READ && permissions & PROT_WRITE)) {
+    LOG(ERROR) << "VAAPI DMA Buffer must be mapped read/write.";
     return nullptr;
   }
 

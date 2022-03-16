@@ -4,6 +4,8 @@
 
 #include "media/gpu/chromeos/libyuv_image_processor_backend.h"
 
+#include <sys/mman.h>
+
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
@@ -327,7 +329,11 @@ void LibYUVImageProcessorBackend::Process(
   if (input_frame->storage_type() == VideoFrame::STORAGE_DMABUFS ||
       input_frame->storage_type() == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
     DCHECK_NE(input_frame_mapper_.get(), nullptr);
-    input_frame = input_frame_mapper_->Map(std::move(input_frame));
+    int mapping_permissions = PROT_READ;
+    if (input_frame->storage_type() != VideoFrame::STORAGE_DMABUFS)
+      mapping_permissions |= PROT_WRITE;
+    input_frame =
+        input_frame_mapper_->Map(std::move(input_frame), mapping_permissions);
     if (!input_frame) {
       VLOGF(1) << "Failed to map input VideoFrame";
       error_cb_.Run();
@@ -341,7 +347,8 @@ void LibYUVImageProcessorBackend::Process(
   if (output_frame->storage_type() == VideoFrame::STORAGE_DMABUFS ||
       output_frame->storage_type() == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
     DCHECK_NE(output_frame_mapper_.get(), nullptr);
-    mapped_frame = output_frame_mapper_->Map(output_frame);
+    mapped_frame =
+        output_frame_mapper_->Map(output_frame, PROT_READ | PROT_WRITE);
     if (!mapped_frame) {
       VLOGF(1) << "Failed to map output VideoFrame";
       error_cb_.Run();

@@ -23,9 +23,12 @@ class MEDIA_GPU_EXPORT VideoFrameMapper {
   virtual ~VideoFrameMapper() = default;
 
   // Maps data referred by |video_frame| and creates a VideoFrame whose dtor
-  // unmap the mapped memory.
+  // unmap the mapped memory. The |permissions| parameter is a bitwise OR of the
+  // permissions the mapping needs if it uses mmap. Valid flags for this
+  // parameter are combinations of |PROT_READ| and |PROT_WRITE|.
   virtual scoped_refptr<VideoFrame> Map(
-      scoped_refptr<const VideoFrame> video_frame) const = 0;
+      scoped_refptr<const VideoFrame> video_frame,
+      int permissions) const = 0;
 
   // Returns the allowed pixel format of video frames on Map().
   VideoPixelFormat pixel_format() const { return format_; }

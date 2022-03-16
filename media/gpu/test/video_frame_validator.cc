@@ -4,6 +4,8 @@
 
 #include "media/gpu/test/video_frame_validator.h"
 
+#include <sys/mman.h>
+
 #include "base/bind.h"
 #include "base/cpu.h"
 #include "base/files/file.h"
@@ -167,7 +169,7 @@ void VideoFrameValidator::ProcessVideoFrameTask(
       ASSERT_TRUE(video_frame_mapper_) << "Failed to create VideoFrameMapper";
     }
 
-    frame = video_frame_mapper_->Map(std::move(frame));
+    frame = video_frame_mapper_->Map(std::move(frame), PROT_READ | PROT_WRITE);
     if (!frame) {
       LOG(ERROR) << "Failed to map video frame";
       return;

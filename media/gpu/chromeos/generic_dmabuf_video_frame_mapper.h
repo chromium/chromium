@@ -23,8 +23,8 @@ class MEDIA_GPU_EXPORT GenericDmaBufVideoFrameMapper : public VideoFrameMapper {
 
   ~GenericDmaBufVideoFrameMapper() override = default;
   // VideoFrameMapper implementation.
-  scoped_refptr<VideoFrame> Map(
-      scoped_refptr<const VideoFrame> video_frame) const override;
+  scoped_refptr<VideoFrame> Map(scoped_refptr<const VideoFrame> video_frame,
+                                int permissions) const override;
 
  private:
   explicit GenericDmaBufVideoFrameMapper(VideoPixelFormat format);

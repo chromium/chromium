@@ -29,8 +29,8 @@ class MEDIA_GPU_EXPORT VaapiDmaBufVideoFrameMapper : public VideoFrameMapper {
   ~VaapiDmaBufVideoFrameMapper() override;
 
   // VideoFrameMapper override.
-  scoped_refptr<VideoFrame> Map(
-      scoped_refptr<const VideoFrame> video_frame) const override;
+  scoped_refptr<VideoFrame> Map(scoped_refptr<const VideoFrame> video_frame,
+                                int permissions) const override;
 
  private:
   explicit VaapiDmaBufVideoFrameMapper(VideoPixelFormat format);

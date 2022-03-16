@@ -26,8 +26,8 @@ class MEDIA_GPU_EXPORT GpuMemoryBufferVideoFrameMapper
   ~GpuMemoryBufferVideoFrameMapper() override = default;
 
   // VideoFrameMapper implementation.
-  scoped_refptr<VideoFrame> Map(
-      scoped_refptr<const VideoFrame> video_frame) const override;
+  scoped_refptr<VideoFrame> Map(scoped_refptr<const VideoFrame> video_frame,
+                                int permissions) const override;
 
  private:
   explicit GpuMemoryBufferVideoFrameMapper(VideoPixelFormat format);

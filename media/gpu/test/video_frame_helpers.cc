@@ -4,6 +4,7 @@
 
 #include "media/gpu/test/video_frame_helpers.h"
 
+#include <sys/mman.h>
 #include <utility>
 #include <vector>
 
@@ -216,7 +217,8 @@ bool CopyVideoFrame(const VideoFrame* src_frame,
     auto video_frame_mapper = VideoFrameMapperFactory::CreateMapper(
         dst_frame->format(), VideoFrame::STORAGE_DMABUFS, true);
     ASSERT_TRUE_OR_RETURN(video_frame_mapper, false);
-    dst_frame = video_frame_mapper->Map(std::move(dst_frame));
+    dst_frame =
+        video_frame_mapper->Map(std::move(dst_frame), PROT_READ | PROT_WRITE);
     if (!dst_frame) {
       LOG(ERROR) << "Failed to map DMABuf video frame.";
       return false;
