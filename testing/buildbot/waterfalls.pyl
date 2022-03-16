@@ -1088,18 +1088,6 @@
           'all',
         ],
       },
-      'Android WebView P FYI (rel)': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          'pie_fleet',
-          'walleye',
-        ],
-        'test_suites': {
-          'gtest_tests': 'webview_bot_instrumentation_test_apk_gtest',
-        },
-        'use_swarming': True,
-        'os_type': 'android',
-      },
       'android-10-x86-fyi-rel-tests': {
         'mixins': [
           'has_native_resultdb_integration',

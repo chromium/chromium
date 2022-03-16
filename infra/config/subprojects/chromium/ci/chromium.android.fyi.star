@@ -117,17 +117,6 @@ ci.builder(
 )
 
 ci.builder(
-    name = "Android WebView P FYI (rel)",
-    console_view_entry = consoles.console_view_entry(
-        category = "webview",
-        short_name = "p-rel",
-    ),
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
-)
-
-ci.builder(
     name = "android-nougat-x86-rel",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(

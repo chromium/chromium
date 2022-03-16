@@ -3629,13 +3629,6 @@
       'android-marshmallow-arm64-rel',
     ],
     'modifications': {
-      # chromium.android.fyi
-      'Android WebView P FYI (rel)': {
-        'args': [
-          '--annotation',
-          'DisabledTest,FlakyTest' # Monitor status of disabled tests.
-        ],
-      },
       'Oreo Phone Tester': {
         # TODO(crbug.com/997362): Enable this once it's passing.
         # TODO(https://crbug.com/884413): Re-enable this once the tests are

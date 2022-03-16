@@ -119,7 +119,6 @@
     'chromium.android.fyi': {
       'Android ASAN (dbg) (reclient)': 'android_clang_asan_debug_bot_reclient',
       'Android arm64 Builder (dbg) (reclient)': 'android_webview_google_debug_static_bot_arm64_reclient',
-      'Android WebView P FYI (rel)': 'android_release_bot_minimal_symbols_arm64_webview_monochrome_reclient',
       'android-annotator-rel': 'android_release_bot_minimal_symbols_arm64_webview_google_reclient',
       'android-pie-arm64-wpt-rel-non-cq': 'android_release_bot_minimal_symbols_arm64_webview_monochrome_reclient',
       'android-chrome-pie-x86-wpt-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome_reclient',
