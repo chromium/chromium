@@ -5,6 +5,7 @@
 #include "chrome/browser/policy/messaging_layer/util/test.h"
 
 #include <string>
+
 #include "base/json/json_reader.h"
 
 namespace reporting {
@@ -22,99 +23,41 @@ static bool IsPositiveInteger(base::StringPiece s) {
   }
 }
 
-DataUploadRequestValidityMatcher::Settings&
-DataUploadRequestValidityMatcher::Settings::SetCheckRecordDetails(bool flag) {
-  check_record_details_ = flag;
-  return *this;
+// Get the record list. If it can't, print the message to listener and return a
+// null pointer.
+static const base::Value::List* GetRecordList(const base::Value::Dict& arg,
+                                              MatchResultListener* listener) {
+  const auto* const record_list = arg.FindList("encryptedRecord");
+  if (record_list == nullptr) {
+    *listener << "No key named \"encryptedRecord\" in the argument or the "
+                 "value is not a list.";
+    return nullptr;
+  }
+  return record_list;
 }
 
-DataUploadRequestValidityMatcher::Settings&
-DataUploadRequestValidityMatcher::Settings::SetCheckEncryptedRecord(bool flag) {
-  check_encrypted_record_ = flag;
-  return *this;
-}
-
-bool DataUploadRequestValidityMatcher::CheckRecord(
-    const base::Value& record,
-    MatchResultListener* listener) const {
-  const auto* record_dict = record.GetIfDict();
-  if (record_dict == nullptr) {
-    *listener << "Record " << record << " is not a dict.";
-    return false;
-  }
-
-  if (record_dict->FindString("encryptedWrappedRecord") == nullptr) {
-    *listener << "No key named \"encryptedWrappedRecord\" or the value "
-                 "is not a string in record "
-              << record << '.';
-    return false;
-  }
-
-  {  // sequence information
-    const auto* sequence_information =
-        record_dict->FindDict("sequenceInformation");
-    if (sequence_information == nullptr) {
-      *listener << "No key named \"sequenceInformation\" or the value is "
-                   "not a dict in record "
-                << record << '.';
-      return false;
-    }
-
-    if (!sequence_information->FindInt("priority").has_value()) {
-      *listener << "No key named \"sequenceInformation/priority\" or the "
-                   "value is not an integer in record "
-                << record << '.';
-      return false;
-    }
-
-    for (const char* id : {"sequencingId", "generationId"}) {
-      const auto* id_val = sequence_information->FindString(id);
-      if (id_val == nullptr) {
-        *listener << "No key named \"sequenceInformation/" << id
-                  << "\" or the value is not a string in record " << record
-                  << '.';
-        return false;
-      }
-      if (!IsPositiveInteger(*id_val)) {
-        *listener
-            << "The value of \"sequenceInformation/" << id
-            << "\" is not a properly formatted positive integer in record "
-            << record << '.';
-        return false;
-      }
-    }
-  }
-
-  return true;
-}
-
-DataUploadRequestValidityMatcher::DataUploadRequestValidityMatcher(
-    const Settings& settings)
-    : settings_(settings) {}
-
-bool DataUploadRequestValidityMatcher::MatchAndExplain(
+bool EncryptedRecordMatcher::MatchAndExplain(
     const base::Value::Dict& arg,
     MatchResultListener* listener) const {
-  if (settings_.check_encrypted_record_) {
-    const auto* record_list = arg.FindList("encryptedRecord");
-    if (record_list == nullptr) {
-      *listener
-          << "No key named \"encryptedRecord\" in the argument or the value is "
-             "not a list.";
-      return false;
-    }
+  const auto* const record_list = GetRecordList(arg, listener);
+  return record_list != nullptr;
+}
 
-    // examine each record
-    if (settings_.check_record_details_) {
-      for (const auto& record : *record_list) {
-        if (!CheckRecord(record, listener)) {
-          return false;
-        }
-      }
-    }
-  }
+void EncryptedRecordMatcher::DescribeTo(std::ostream* os) const {
+  *os << "has a valid encryptedRecord field.";
+}
 
-  const auto* request_id = arg.FindString("requestId");
+void EncryptedRecordMatcher::DescribeNegationTo(std::ostream* os) const {
+  *os << "has an invalid encryptedRecord field.";
+}
+
+std::string EncryptedRecordMatcher::Name() const {
+  return "encrypted-record-matcher";
+}
+
+bool RequestIdMatcher::MatchAndExplain(const base::Value::Dict& arg,
+                                       MatchResultListener* listener) const {
+  const auto* const request_id = arg.FindString("requestId");
   if (request_id == nullptr) {
     *listener << "No key named \"requestId\" in the argument or the value "
                  "is not a string.";
@@ -133,13 +76,111 @@ bool DataUploadRequestValidityMatcher::MatchAndExplain(
   return true;
 }
 
-void DataUploadRequestValidityMatcher::DescribeTo(std::ostream* os) const {
-  *os << "is valid.";
+void RequestIdMatcher::DescribeTo(std::ostream* os) const {
+  *os << "has a valid request ID.";
 }
 
-void DataUploadRequestValidityMatcher::DescribeNegationTo(
+void RequestIdMatcher::DescribeNegationTo(std::ostream* os) const {
+  *os << "has an invalid request ID.";
+}
+
+std::string RequestIdMatcher::Name() const {
+  return "request-id-matcher";
+}
+
+bool RecordMatcher::MatchAndExplain(const base::Value::Dict& arg,
+                                    MatchResultListener* listener) const {
+  const auto* record_list = GetRecordList(arg, listener);
+  if (record_list == nullptr) {
+    return false;
+  }
+
+  for (const auto& record : *record_list) {
+    const auto* record_dict = record.GetIfDict();
+    if (record_dict == nullptr) {
+      *listener << "Record " << record << " is not a dict.";
+      return false;
+    }
+    if (!this->MatchAndExplainRecord(*record_dict, listener)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool EncryptedWrappedRecordRecordMatcher::MatchAndExplainRecord(
+    const base::Value::Dict& record,
+    MatchResultListener* listener) const {
+  if (record.FindString("encryptedWrappedRecord") == nullptr) {
+    *listener << "No key named \"encryptedWrappedRecord\" or the value "
+                 "is not a string in record "
+              << record << '.';
+    return false;
+  }
+  return true;
+}
+
+void EncryptedWrappedRecordRecordMatcher::DescribeTo(std::ostream* os) const {
+  *os << "has valid encrypted wrapped records.";
+}
+
+void EncryptedWrappedRecordRecordMatcher::DescribeNegationTo(
     std::ostream* os) const {
-  *os << "is invalid.";
+  *os << "has at least one invalid encrypted wrapped records.";
+}
+
+std::string EncryptedWrappedRecordRecordMatcher::Name() const {
+  return "encrypted-wrapped-record-record-matcher";
+}
+
+bool SequenceInformationRecordMatcher::MatchAndExplainRecord(
+    const base::Value::Dict& record,
+    MatchResultListener* listener) const {
+  const auto* const sequence_information =
+      record.FindDict("sequenceInformation");
+  if (sequence_information == nullptr) {
+    *listener << "No key named \"sequenceInformation\" or the value is "
+                 "not a dict in record "
+              << record << '.';
+    return false;
+  }
+
+  if (!sequence_information->FindInt("priority").has_value()) {
+    *listener << "No key named \"sequenceInformation/priority\" or the "
+                 "value is not an integer in record "
+              << record << '.';
+    return false;
+  }
+
+  for (const char* id : {"sequencingId", "generationId"}) {
+    const auto* const id_val = sequence_information->FindString(id);
+    if (id_val == nullptr) {
+      *listener << "No key named \"sequenceInformation/" << id
+                << "\" or the value is not a string in record " << record
+                << '.';
+      return false;
+    }
+    if (!IsPositiveInteger(*id_val)) {
+      *listener << "The value of \"sequenceInformation/" << id
+                << "\" is not a properly formatted positive integer in record "
+                << record << '.';
+      return false;
+    }
+  }
+  return true;
+}
+
+void SequenceInformationRecordMatcher::DescribeTo(std::ostream* os) const {
+  *os << "has valid sequence information.";
+}
+
+void SequenceInformationRecordMatcher::DescribeNegationTo(
+    std::ostream* os) const {
+  *os << "has invalid sequence information.";
+}
+
+std::string SequenceInformationRecordMatcher::Name() const {
+  return "sequence-information-record-matcher";
 }
 
 bool RequestContainingRecordMatcher::IsSubDict(const base::Value::Dict& sub,
@@ -160,10 +201,8 @@ RequestContainingRecordMatcher::RequestContainingRecordMatcher(
 bool RequestContainingRecordMatcher::MatchAndExplain(
     const base::Value::Dict& arg,
     MatchResultListener* listener) const {
-  const auto* record_list = arg.FindList("encryptedRecord");
+  const auto* record_list = GetRecordList(arg, listener);
   if (record_list == nullptr) {
-    *listener << "No key named \"encryptedRecord\" in the argument or the "
-                 "value is not a list.";
     return false;
   }
 
