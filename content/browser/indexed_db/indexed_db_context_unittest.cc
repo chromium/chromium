@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
-
 #include "base/barrier_closure.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
-#include "base/test/bind.h"
-#include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/time/default_clock.h"
@@ -18,13 +14,10 @@
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
 #include "content/browser/indexed_db/indexed_db_factory_impl.h"
 #include "content/browser/indexed_db/mock_indexed_db_callbacks.h"
-#include "content/browser/indexed_db/mock_mojo_indexed_db_callbacks.h"
-#include "content/browser/indexed_db/mock_mojo_indexed_db_database_callbacks.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "storage/browser/test/mock_quota_manager.h"
 #include "storage/browser/test/mock_quota_manager_proxy.h"
 #include "storage/browser/test/quota_manager_proxy_sync.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
@@ -108,86 +101,6 @@ TEST_F(IndexedDBContextTest, DefaultBucketCreatedOnBindIndexedDB) {
   EXPECT_EQ(result->name, storage::kDefaultBucketName);
   EXPECT_EQ(result->storage_key, google_storage_key_);
   EXPECT_GT(result->id.value(), 0);
-}
-
-TEST_F(IndexedDBContextTest, GetDefaultBucketError) {
-  // Disable database so it will return errors when getting the default bucket.
-  quota_manager_->SetDisableDatabase(true);
-
-  mojo::Remote<blink::mojom::IDBFactory> example_remote;
-  indexed_db_context_->BindIndexedDB(
-      example_storage_key_, example_remote.BindNewPipeAndPassReceiver());
-
-  // IDBFactory::GetDatabaseInfo
-  base::RunLoop loop_1;
-  auto mock_callbacks =
-      std::make_unique<testing::StrictMock<MockMojoIndexedDBCallbacks>>();
-  EXPECT_CALL(*mock_callbacks,
-              Error(blink::mojom::IDBException::kUnknownError,
-                    std::u16string(
-                        u"Internal error retrieving bucket data directory.")))
-      .Times(1)
-      .WillOnce(base::test::RunClosure(loop_1.QuitClosure()));
-
-  example_remote->GetDatabaseInfo(mock_callbacks->CreateInterfacePtrAndBind());
-  loop_1.Run();
-
-  testing::Mock::VerifyAndClear(&mock_callbacks);
-
-  // IDBFactory::Open
-  base::RunLoop loop_2;
-  mock_callbacks =
-      std::make_unique<testing::StrictMock<MockMojoIndexedDBCallbacks>>();
-  auto database_callbacks =
-      std::make_unique<MockMojoIndexedDBDatabaseCallbacks>();
-  auto transaction_remote =
-      mojo::AssociatedRemote<blink::mojom::IDBTransaction>();
-  EXPECT_CALL(*mock_callbacks,
-              Error(blink::mojom::IDBException::kUnknownError,
-                    std::u16string(
-                        u"Internal error retrieving bucket data directory.")))
-      .Times(1)
-      .WillOnce(base::test::RunClosure(loop_2.QuitClosure()));
-
-  example_remote->Open(mock_callbacks->CreateInterfacePtrAndBind(),
-                       database_callbacks->CreateInterfacePtrAndBind(),
-                       u"database_name", /*version=*/1,
-                       transaction_remote.BindNewEndpointAndPassReceiver(),
-                       /*transaction_id=*/0);
-  loop_2.Run();
-
-  // IDBFactory::DeleteDatabase
-  base::RunLoop loop_3;
-  mock_callbacks =
-      std::make_unique<testing::StrictMock<MockMojoIndexedDBCallbacks>>();
-  EXPECT_CALL(*mock_callbacks,
-              Error(blink::mojom::IDBException::kUnknownError,
-                    std::u16string(
-                        u"Internal error retrieving bucket data directory.")))
-      .Times(1)
-      .WillOnce(base::test::RunClosure(loop_3.QuitClosure()));
-
-  example_remote->DeleteDatabase(mock_callbacks->CreateInterfacePtrAndBind(),
-                                 u"database_name", /*force_close=*/true);
-  loop_3.Run();
-
-  // IDBFactory::AbortTransactionsAndCompactDatabase
-  base::RunLoop loop_4;
-  example_remote->AbortTransactionsAndCompactDatabase(
-      base::BindLambdaForTesting([&](blink::mojom::IDBStatus status) {
-        EXPECT_EQ(status, blink::mojom::IDBStatus::NotFound);
-        loop_4.Quit();
-      }));
-  loop_4.Run();
-
-  // IDBFactory::AbortTransactionsForDatabase
-  base::RunLoop loop_5;
-  example_remote->AbortTransactionsForDatabase(
-      base::BindLambdaForTesting([&](blink::mojom::IDBStatus status) {
-        EXPECT_EQ(status, blink::mojom::IDBStatus::NotFound);
-        loop_5.Quit();
-      }));
-  loop_5.Run();
 }
 
 }  // namespace content
