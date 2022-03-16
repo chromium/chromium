@@ -106,6 +106,7 @@ TEST_F(ContentStabilityMetricsProviderTest,
                                      StabilityEventType::kUtilityCrash, 2);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(ContentStabilityMetricsProviderTest, NotificationObserver) {
   metrics::ContentStabilityMetricsProvider provider(prefs(), nullptr);
   content::TestBrowserContext browser_context;
@@ -150,6 +151,7 @@ TEST_F(ContentStabilityMetricsProviderTest, NotificationObserver) {
   EXPECT_EQ(1, system_profile.stability().renderer_failed_launch_count());
   EXPECT_EQ(0, system_profile.stability().extension_renderer_crash_count());
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Assertions for an extension related crash.
 // This test only works if extensions are enabled as there is a DCHECK in

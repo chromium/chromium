@@ -45,6 +45,7 @@ enum RendererType {
   RENDERER_TYPE_COUNT
 };
 
+#if !BUILDFLAG(IS_ANDROID)
 // Converts an exit code into something that can be inserted into our
 // histograms (which expect non-negative numbers less than MAX_INT).
 int MapCrashExitCodeForHistogram(int exit_code) {
@@ -63,6 +64,7 @@ void RecordChildKills(RendererType histogram_type) {
   base::UmaHistogramEnumeration("BrowserRenderProcessHost.ChildKills",
                                 histogram_type, RENDERER_TYPE_COUNT);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -213,6 +215,7 @@ void StabilityMetricsHelper::LogLoadStarted() {
   RecordStabilityEvent(StabilityEventType::kPageLoad);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 void StabilityMetricsHelper::LogRendererCrash(bool was_extension_process,
                                               base::TerminationStatus status,
                                               int exit_code) {
@@ -247,11 +250,6 @@ void StabilityMetricsHelper::LogRendererCrash(bool was_extension_process,
     case base::TERMINATION_STATUS_PROCESS_WAS_KILLED:
       RecordChildKills(histogram_type);
       break;
-#if BUILDFLAG(IS_ANDROID)
-    case base::TERMINATION_STATUS_OOM_PROTECTED:
-      // TODO(wfh): Check if this should be a Kill or a Crash on Android.
-      break;
-#endif
 #if BUILDFLAG(IS_CHROMEOS)
     case base::TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM:
       RecordChildKills(histogram_type);
@@ -289,6 +287,7 @@ void StabilityMetricsHelper::LogRendererCrash(bool was_extension_process,
       break;
   }
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void StabilityMetricsHelper::LogRendererLaunched(bool was_extension_process) {
   auto metric = was_extension_process

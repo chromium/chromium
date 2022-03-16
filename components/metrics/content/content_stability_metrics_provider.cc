@@ -114,9 +114,12 @@ void ContentStabilityMetricsProvider::OnRenderProcessHostCreated(
 void ContentStabilityMetricsProvider::RenderProcessExited(
     RenderProcessHost* host,
     const content::ChildProcessTerminationInfo& info) {
+  // On Android, the renderer crashes are recorded in `OnCrashDumpProcessed`.
+#if !BUILDFLAG(IS_ANDROID)
   bool was_extension_process =
       extensions_helper_ && extensions_helper_->IsExtensionProcess(host);
   helper_.LogRendererCrash(was_extension_process, info.status, info.exit_code);
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void ContentStabilityMetricsProvider::RenderProcessHostDestroyed(

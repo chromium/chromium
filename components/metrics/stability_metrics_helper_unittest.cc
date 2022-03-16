@@ -47,6 +47,7 @@ class StabilityMetricsHelperTest : public testing::Test {
 
 }  // namespace
 
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(StabilityMetricsHelperTest, LogRendererCrash) {
   StabilityMetricsHelper helper(prefs());
   base::HistogramTester histogram_tester;
@@ -100,6 +101,7 @@ TEST_F(StabilityMetricsHelperTest, LogRendererCrash) {
   histogram_tester.ExpectBucketCount(
       "BrowserRenderProcessHost.ChildLaunchFailureCodes", 1, 1);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Note: ENABLE_EXTENSIONS is set to false in Android
 #if BUILDFLAG(ENABLE_EXTENSIONS)
