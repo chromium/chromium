@@ -55,16 +55,10 @@ bool ShouldShowQuickAnswers() {
     return false;
 
   bool settings_enabled = QuickAnswersState::Get()->settings_enabled();
-  // Respect the managed settings.
-  if (QuickAnswersState::Get()->IsSettingsEnforced())
-    return settings_enabled;
-
-  if (settings_enabled)
-    return true;
 
   bool should_show_consent = QuickAnswersState::Get()->consent_status() ==
                              quick_answers::prefs::ConsentStatus::kUnknown;
-  return should_show_consent;
+  return settings_enabled || should_show_consent;
 }
 
 }  // namespace

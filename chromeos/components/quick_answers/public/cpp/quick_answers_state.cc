@@ -197,11 +197,6 @@ bool QuickAnswersState::ShouldUseQuickAnswersTextAnnotator() {
          use_text_annotator_for_testing_;
 }
 
-bool QuickAnswersState::IsSettingsEnforced() {
-  return pref_change_registrar_->prefs()->IsManagedPreference(
-      quick_answers::prefs::kQuickAnswersEnabled);
-}
-
 void QuickAnswersState::InitializeObserver(
     QuickAnswersStateObserver* observer) {
   if (prefs_initialized_)
@@ -209,8 +204,9 @@ void QuickAnswersState::InitializeObserver(
 }
 
 void QuickAnswersState::UpdateSettingsEnabled() {
-  auto settings_enabled =
-      pref_change_registrar_->prefs()->GetBoolean(kQuickAnswersEnabled);
+  auto* prefs = pref_change_registrar_->prefs();
+
+  auto settings_enabled = prefs->GetBoolean(kQuickAnswersEnabled);
   if (settings_enabled_ == settings_enabled) {
     return;
   }
@@ -219,8 +215,14 @@ void QuickAnswersState::UpdateSettingsEnabled() {
   // If the user turn on the Quick Answers in settings, set the consented status
   // to true.
   if (settings_enabled_) {
-    pref_change_registrar_->prefs()->SetInteger(kQuickAnswersConsentStatus,
-                                                ConsentStatus::kAccepted);
+    prefs->SetInteger(kQuickAnswersConsentStatus, ConsentStatus::kAccepted);
+  }
+
+  // If the feature is enforced off by the administrator policy, set the
+  // consented status to rejected.
+  if (!settings_enabled_ &&
+      prefs->IsManagedPreference(quick_answers::prefs::kQuickAnswersEnabled)) {
+    prefs->SetInteger(kQuickAnswersConsentStatus, ConsentStatus::kRejected);
   }
 
   for (auto& observer : observers_)
