@@ -176,6 +176,14 @@ component("web_engine_core") {
     "//ppapi/proxy/*",
     "//ppapi/shared_impl/*",
     "//ppapi/thunk/*",
+
+    # Although `enable_printing` is true for Fuchsia, no code should be linked.
+    # "//printing:metafile" is used by //third_party/blink/renderer/core and
+    # uses "//printing/common/*".
+    # "//printing/mojom/*" is allowed because Blink public APIs use its types.
+    "//printing:printing",
+    "//printing:printing_base",
+    "//printing/backend/*",
   ]
 
   # Technically the PAK files are only data dependencies, but specifying them

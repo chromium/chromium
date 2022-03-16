@@ -2465,10 +2465,6 @@ source_set("browser") {
     deps += [ "//content/browser/devtools:devtools_resources_extern" ]
   }
 
-  if (enable_basic_printing) {
-    deps += [ "//printing" ]
-  }
-
   if (is_mac) {
     frameworks += [ "AppKit.framework" ]
     sources += [
@@ -2681,6 +2677,9 @@ source_set("browser") {
       "//ppapi/proxy:ipc",
       "//ppapi/shared_impl",
     ]
+
+    assert(enable_basic_printing)
+    deps += [ "//printing" ]
 
     if (is_chromeos_ash) {
       sources += [
