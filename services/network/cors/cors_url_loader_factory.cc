@@ -473,13 +473,16 @@ bool CorsURLLoaderFactory::IsValidRequest(const ResourceRequest& request,
 
   // Depending on the type of request, compare either `request_initiator` or
   // `request.url` to `request_initiator_origin_lock_`.
-  InitiatorLockCompatibility initiator_lock_compatibility =
-      VerifyRequestInitiatorLockWithPluginCheck(
-          process_id_, request_initiator_origin_lock_, origin_to_validate);
+  InitiatorLockCompatibility initiator_lock_compatibility;
+  if (process_id_ == mojom::kBrowserProcessId) {
+    initiator_lock_compatibility = InitiatorLockCompatibility::kBrowserProcess;
+  } else {
+    initiator_lock_compatibility = VerifyRequestInitiatorLock(
+        request_initiator_origin_lock_, origin_to_validate);
+  }
   switch (initiator_lock_compatibility) {
     case InitiatorLockCompatibility::kCompatibleLock:
     case InitiatorLockCompatibility::kBrowserProcess:
-    case InitiatorLockCompatibility::kAllowedRequestInitiatorForPlugin:
       break;
 
     case InitiatorLockCompatibility::kNoLock:
@@ -606,27 +609,6 @@ bool CorsURLLoaderFactory::IsValidRequest(const ResourceRequest& request,
   // TODO(yhirano): If the request mode is "no-cors", the redirect mode should
   // be "follow".
   return true;
-}
-
-InitiatorLockCompatibility
-CorsURLLoaderFactory::VerifyRequestInitiatorLockWithPluginCheck(
-    uint32_t process_id,
-    const absl::optional<url::Origin>& request_initiator_origin_lock,
-    const absl::optional<url::Origin>& request_initiator) {
-  if (process_id == mojom::kBrowserProcessId)
-    return InitiatorLockCompatibility::kBrowserProcess;
-
-  InitiatorLockCompatibility result = VerifyRequestInitiatorLock(
-      request_initiator_origin_lock, request_initiator);
-
-  if (result == InitiatorLockCompatibility::kIncorrectLock &&
-      request_initiator.has_value() &&
-      context_->network_service()->IsInitiatorAllowedForPlugin(
-          process_id, request_initiator.value())) {
-    result = InitiatorLockCompatibility::kAllowedRequestInitiatorForPlugin;
-  }
-
-  return result;
 }
 
 bool CorsURLLoaderFactory::GetAllowAnyCorsExemptHeaderForBrowser() const {

@@ -618,16 +618,6 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // Forces the renderer process to crash ASAP.
   virtual void ForceCrash() {}
 
-  // Controls whether the destructor of RenderProcessHost*Impl* will end up
-  // cleaning the memory used by the exception added via
-  // RenderProcessHostImpl::AddAllowedRequestInitiatorForPlugin.
-  //
-  // TODO(lukasza): https://crbug.com/652474: This method shouldn't be part of
-  // the //content public API, because it shouldn't be called by anyone other
-  // than RenderProcessHostImpl (from underneath
-  // RenderProcessHostImpl::AddAllowedRequestInitiatorForPlugin).
-  virtual void CleanupNetworkServicePluginExceptionsUponDestruction() = 0;
-
   // Returns a string that contains information useful for debugging
   // crashes related to RenderProcessHost objects staying alive longer than
   // the BrowserContext they are associated with.

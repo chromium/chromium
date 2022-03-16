@@ -12,7 +12,6 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/cxx17_backports.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
@@ -662,33 +661,6 @@ void NetworkService::OnCertDBChanged() {
 
 void NetworkService::SetEncryptionKey(const std::string& encryption_key) {
   OSCrypt::SetRawEncryptionKey(encryption_key);
-}
-
-void NetworkService::AddAllowedRequestInitiatorForPlugin(
-    int32_t process_id,
-    const url::Origin& allowed_request_initiator) {
-  DCHECK_NE(mojom::kBrowserProcessId, process_id);
-  std::map<int, std::set<url::Origin>>& map = plugin_origins_;
-  map[process_id].insert(allowed_request_initiator);
-}
-
-void NetworkService::RemoveSecurityExceptionsForPlugin(int32_t process_id) {
-  DCHECK_NE(mojom::kBrowserProcessId, process_id);
-
-  std::map<int, std::set<url::Origin>>& map = plugin_origins_;
-  map.erase(process_id);
-}
-
-bool NetworkService::IsInitiatorAllowedForPlugin(
-    int process_id,
-    const url::Origin& request_initiator) {
-  const std::map<int, std::set<url::Origin>>& map = plugin_origins_;
-  const auto it = map.find(process_id);
-  if (it == map.end())
-    return false;
-
-  const std::set<url::Origin>& allowed_origins = it->second;
-  return base::Contains(allowed_origins, request_initiator);
 }
 
 void NetworkService::OnMemoryPressure(

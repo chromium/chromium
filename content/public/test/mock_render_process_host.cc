@@ -528,9 +528,6 @@ void MockRenderProcessHost::BindIndexedDB(
   idb_factory_receiver_ = std::move(receiver);
 }
 
-void MockRenderProcessHost::
-    CleanupNetworkServicePluginExceptionsUponDestruction() {}
-
 std::string
 MockRenderProcessHost::GetInfoForBrowserContextDestructionCrashReporting() {
   return std::string();

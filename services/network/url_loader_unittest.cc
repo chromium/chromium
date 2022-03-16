@@ -4172,46 +4172,6 @@ TEST_F(URLLoaderTest, HttpAuthResponseHeadersAvailable) {
   EXPECT_EQ(auth_required_headers->response_code(), 401);
 }
 
-// This simulates a renderer that _pretends_ to be proxying requests for PDF
-// plugin (when browser didn't _actually_ confirm that Flash or PDF are hosted
-// by the given process via AddAllowedRequestInitiatorForPlugin).  We should
-// still apply CORB in this case.
-TEST_F(URLLoaderTest, CorbEffectiveWithNoCorsWhenNoActualPlugin) {
-  int kResourceType = 1;
-  ResourceRequest request =
-      CreateResourceRequest("GET", test_server()->GetURL("/hello.html"));
-  request.resource_type = kResourceType;
-  request.mode = mojom::RequestMode::kNoCors;
-  request.request_initiator = url::Origin::Create(GURL("http://foo.com/"));
-
-  base::RunLoop delete_run_loop;
-  mojo::PendingRemote<mojom::URLLoader> loader;
-  std::unique_ptr<URLLoader> url_loader;
-  context().mutable_factory_params().process_id = 234;
-  // No call to NetworkService::AddAllowedRequestInitiatorForPlugin - this is
-  // what we primarily want to cover in this test.
-  url_loader = std::make_unique<URLLoader>(
-      context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
-      loader.InitWithNewPipeAndPassReceiver(), 0, request,
-      client()->CreateRemote(), nullptr /* sync_url_loader_client */,
-      TRAFFIC_ANNOTATION_FOR_TESTS, 0 /* request_id */,
-      0 /* keepalive_request_size */, nullptr, nullptr /* trust_token_helper */,
-      mojo::NullRemote() /* cookie_observer */,
-      mojo::NullRemote() /* url_loader_network_observer */,
-      /*devtools_observer=*/mojo::NullRemote(),
-      /*accept_ch_frame_observer=*/mojo::NullRemote());
-
-  client()->RunUntilResponseBodyArrived();
-  std::string body = ReadBody();
-
-  client()->RunUntilComplete();
-
-  delete_run_loop.Run();
-
-  // The request body should be blocked by CORB.
-  ASSERT_EQ(std::string(), body);
-}
-
 // Make sure the client can't call FollowRedirect if there's no pending
 // redirect.
 TEST_F(URLLoaderTest, FollowRedirectTwice) {

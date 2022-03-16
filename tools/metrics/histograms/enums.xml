@@ -78245,6 +78245,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="7" label="AllowedRequestInitiatorForPlugin">
     Requests from a renderer process that embeds a plugin (e.g. PDF) that needs
     to poke small, targeted holes in request_initiator_origin_lock enforcement.
+
+    Obsolete - this enum value was removed in Mar 2022 (M101).
   </int>
 </enum>
 

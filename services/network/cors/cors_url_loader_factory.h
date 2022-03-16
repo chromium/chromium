@@ -102,11 +102,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
 
   bool IsValidRequest(const ResourceRequest& request, uint32_t options);
 
-  InitiatorLockCompatibility VerifyRequestInitiatorLockWithPluginCheck(
-      uint32_t process_id,
-      const absl::optional<url::Origin>& request_initiator_origin_lock,
-      const absl::optional<url::Origin>& request_initiator);
-
   bool GetAllowAnyCorsExemptHeaderForBrowser() const;
 
   mojo::PendingRemote<mojom::DevToolsObserver> GetDevToolsObserver(

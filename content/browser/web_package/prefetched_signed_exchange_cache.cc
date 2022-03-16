@@ -75,9 +75,7 @@ bool IsValidRequestInitiator(const network::ResourceRequest& request,
                                           request.request_initiator);
   switch (initiator_lock_compatibility) {
     case network::InitiatorLockCompatibility::kBrowserProcess:
-    case network::InitiatorLockCompatibility::kAllowedRequestInitiatorForPlugin:
-      // kBrowserProcess and kAllowedRequestInitiatorForPlugin cannot happen
-      // outside of NetworkService.
+      // kBrowserProcess cannot happen outside of NetworkService.
       NOTREACHED();
       return false;
 

@@ -364,10 +364,8 @@ const TestScenario kScenarios[] = {
         0,                                          // verdict_packet
     },
     {
-        // Blocked, because the unit test doesn't make a call to
-        // NetworkService::AddAllowedRequestInitiatorForPlugin (simulating a
-        // behavior of a compromised renderer that only pretends to be hosting
-        // PDF).
+        // Blocked. (Simulating a behavior of a compromised renderer that only
+        // pretends to be hosting PDF).
         "Blocked: Cross-site fetch HTML from Flash without CORS",
         __LINE__,
         "http://www.b.com/plugin.html",  // target_url

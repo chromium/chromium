@@ -176,10 +176,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
       mojom::NetworkService::UpdateCRLSetCallback callback) override;
   void OnCertDBChanged() override;
   void SetEncryptionKey(const std::string& encryption_key) override;
-  void AddAllowedRequestInitiatorForPlugin(
-      int32_t process_id,
-      const url::Origin& allowed_request_initiator) override;
-  void RemoveSecurityExceptionsForPlugin(int32_t process_id) override;
   void OnMemoryPressure(base::MemoryPressureListener::MemoryPressureLevel
                             memory_pressure_level) override;
   void OnPeerToPeerConnectionsCountChange(uint32_t count) override;
@@ -225,9 +221,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
 
   bool quic_disabled() const { return quic_disabled_; }
   bool HasRawHeadersAccess(int32_t process_id, const GURL& resource_url) const;
-
-  bool IsInitiatorAllowedForPlugin(int process_id,
-                                   const url::Origin& request_initiator);
 
   net::NetworkQualityEstimator* network_quality_estimator() {
     return network_quality_estimator_manager_->GetNetworkQualityEstimator();
@@ -427,11 +420,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   std::vector<net::TransportSecurityState::PinSetInfo> host_pins_;
 
   base::Time pins_list_update_time_;
-
-  // Map from a renderer process id, to the set of plugin origins embedded by
-  // that renderer process (the renderer will proxy requests from PPAPI - such
-  // requests should have their initiator origin within the set stored here).
-  std::map<int, std::set<url::Origin>> plugin_origins_;
 
   // This is used only in tests. It avoids leaky SystemDnsConfigChangeNotifiers
   // leaking stale listeners between tests.

@@ -40,10 +40,7 @@ enum class InitiatorLockCompatibility {
   // - HTML Imports (see https://crbug.com/871827#c9).
   kIncorrectLock = 4,
 
-  // Covered by AddAllowedRequestInitiatorForPlugin.
-  kAllowedRequestInitiatorForPlugin = 7,
-
-  kMaxValue = kAllowedRequestInitiatorForPlugin,
+  kMaxValue = kIncorrectLock
 };
 
 // Verifies if |request.request_initiator| matches

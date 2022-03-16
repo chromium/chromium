@@ -291,7 +291,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
       const url::Origin& origin,
       mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver) override;
   void ForceCrash() override;
-  void CleanupNetworkServicePluginExceptionsUponDestruction() override;
   std::string GetInfoForBrowserContextDestructionCrashReporting() override;
   void WriteIntoTrace(perfetto::TracedValue context) override;
   void WriteIntoTrace(
@@ -667,16 +666,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
   void BindP2PSocketManager(
       net::NetworkIsolationKey isolation_key,
       mojo::PendingReceiver<network::mojom::P2PSocketManager> receiver);
-
-  // Allows |process_id| to use an additional |allowed_request_initiator|
-  // (bypassing |request_initiator_origin_lock| enforcement).
-  //
-  // The exception will be removed when the corresponding RenderProcessHostImpl
-  // is destroyed (see
-  // |cleanup_network_service_plugin_exceptions_upon_destruction_|).
-  static void AddAllowedRequestInitiatorForPlugin(
-      int process_id,
-      const url::Origin& allowed_request_initiator);
 
   using IpcSendWatcher = base::RepeatingCallback<void(const IPC::Message& msg)>;
   void SetIpcSendWatcherForTesting(IpcSendWatcher watcher) {
@@ -1160,8 +1149,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
 
   std::unique_ptr<mojo::Receiver<viz::mojom::CompositingModeReporter>>
       compositing_mode_reporter_;
-
-  bool cleanup_network_service_plugin_exceptions_upon_destruction_ = false;
 
   // Fields for recording MediaStream UMA.
   bool has_recorded_media_stream_frame_depth_metric_ = false;
