@@ -79,3 +79,6 @@ if (is_android && export_libcxxabi_from_executables) {
 
 libcxx_prefix = "//buildtools/third_party/libc++/trunk"
 libcxxabi_prefix = "//buildtools/third_party/libc++abi/trunk"
+
+assert(!(is_ios && libcxx_is_shared),
+       "Can't build libc++ as a shared library on iOS.")
