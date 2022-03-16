@@ -3434,6 +3434,14 @@ crbug.com/626703 [ Win ] external/wpt/wasm/serialization/arraybuffer/transfer.wi
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Linux ] external/wpt/css/css-backgrounds/background-clip/clip-text-flex.html [ Failure ]
+crbug.com/626703 [ Mac10.12 ] external/wpt/css/css-backgrounds/background-clip/clip-text-flex.html [ Failure ]
+crbug.com/626703 [ Mac10.13 ] external/wpt/css/css-backgrounds/background-clip/clip-text-flex.html [ Failure ]
+crbug.com/626703 [ Mac10.14 ] external/wpt/css/css-backgrounds/background-clip/clip-text-flex.html [ Failure ]
+crbug.com/626703 [ Mac10.15 ] external/wpt/css/css-backgrounds/background-clip/clip-text-flex.html [ Failure ]
+crbug.com/626703 [ Mac11 ] external/wpt/css/css-backgrounds/background-clip/clip-text-flex.html [ Failure ]
+crbug.com/626703 [ Win ] external/wpt/css/css-backgrounds/background-clip/clip-text-flex.html [ Failure ]
+crbug.com/626703 virtual/threaded/external/wpt/css/css-backgrounds/background-clip/clip-text-flex.html [ Failure ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-simulcast.https.html [ Timeout ]
 crbug.com/626703 [ Mac10.12 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/maxframes.https.html [ Timeout ]
 crbug.com/626703 [ Mac10.12 ] virtual/portals/external/wpt/portals/history/history-manipulation-inside-portal-with-subframes.html [ Timeout ]

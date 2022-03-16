@@ -71966,6 +71966,19 @@
         {}
        ]
       ],
+      "clip-text-flex.html": [
+       "618c8c1dbc5bd1a017b50c850b54263cf0828b68",
+       [
+        null,
+        [
+         [
+          "/css/css-backgrounds/background-clip/clip-text-flex-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "clip-text-multi-line.html": [
        "cd51b2ea0779e2a3cf7807f7f0eee5cb6a938acc",
        [
@@ -83519,6 +83532,19 @@
      ],
      "out-of-flow-in-multicolumn-082.html": [
       "64080738706a77085d2a40fd63a1a476dc2caa5f",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "out-of-flow-in-multicolumn-083.html": [
+      "d238720ad0c7954ba96901608db6454ba69da4b1",
       [
        null,
        [
@@ -111400,6 +111426,19 @@
        [
         [
          "/css/css-fonts/font-palette-34-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-palette-35.html": [
+      "bef0dcdd2d05b6dd89a2cec1e762f9393f0d5e70",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-palette-35-ref.html",
          "=="
         ]
        ],
@@ -244715,6 +244754,10 @@
        "6a4ef234b0bbd74ad6d43984c53eed24dc60b852",
        []
       ],
+      "clip-text-flex-ref.html": [
+       "0bcbc0bc13f6bb8a13adc256a728a7860f3e2d69",
+       []
+      ],
       "clip-text-multi-line-ref.html": [
        "3b45e919ad7295c0aef7d401325978cabb62298d",
        []
@@ -252236,6 +252279,10 @@
      ],
      "font-palette-34-ref.html": [
       "4fe9d815f8c5faf3c3f5027f22e50ea10ae8e5aa",
+      []
+     ],
+     "font-palette-35-ref.html": [
+      "45c5a9873ead0fade7465b0ab9a058800bc4ac6d",
       []
      ],
      "font-palette-4-notref.html": [
@@ -289061,7 +289108,7 @@
         ]
        },
        "events-expected.txt": [
-        "6dad05534728dc6a05db46b5c112a2fd9546e8ce",
+        "b8ce62d7455e3811966bd3053e501818bc290286",
         []
        ],
        "focus-expected.txt": [
@@ -313612,7 +313659,7 @@
      []
     ],
     "OWNERS": [
-     "906a5ce64186024a07fd71b98141230baba5e5fa",
+     "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
      []
     ],
     "resources": {
@@ -318214,7 +318261,7 @@
        []
       ],
       "deferred-promise-utils.js": [
-       "9a5cfb1bf11d5d784b466f7820059dd44aa5803b",
+       "19bc981a2ace513ce33f71d5f86aae292b3e8f1d",
        []
       ],
       "deprecated-broadcast-channel.py": [
@@ -318274,7 +318321,7 @@
        []
       ],
       "utils.js": [
-       "6952c3b9a327aac0c20d4de68dba9857761d35e2",
+       "0dc7e33185e84280f2cc6ecabc2bb094574a2d51",
        []
       ],
       "visibility-state-check.html": [
@@ -321196,7 +321243,7 @@
     "serialization": {
      "arraybuffer": {
       "transfer.window-expected.txt": [
-       "eb4cc5b0204d90217dd700a325b2b6d4d4bf3cb7",
+       "27c30dd51042690866eac243308b03259643c9b7",
        []
       ]
      },
