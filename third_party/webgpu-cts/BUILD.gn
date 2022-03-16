@@ -69,6 +69,10 @@ copy("copy_resources") {
 
 action("verify_gen_ts_dep_list") {
   script = "scripts/gen_ts_dep_lists.py"
+  inputs = [
+    "resource_files.txt",
+    "ts_sources.txt",
+  ]
   outputs = [ "$target_out_dir/run_$target_name.stamp" ]
   args = [
     "--check",
