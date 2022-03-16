@@ -7,7 +7,7 @@ import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 class TestElement extends CustomElement {
-  static get template() {
+  static override get template() {
     return '<div id="content"></div>';
   }
 }

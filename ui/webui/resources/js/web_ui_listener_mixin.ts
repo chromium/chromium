@@ -37,7 +37,7 @@ export const WebUIListenerMixin = dedupingMixin(
           this.webUIListeners_.push(addWebUIListener(eventName, callback));
         }
 
-        disconnectedCallback() {
+        override disconnectedCallback() {
           super.disconnectedCallback();
           while (this.webUIListeners_.length > 0) {
             removeWebUIListener(this.webUIListeners_.pop()!);

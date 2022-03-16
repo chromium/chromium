@@ -56,7 +56,7 @@ export class AppManagementFileHandlingItemElement extends
   app: App;
   showOverflowDialog: boolean;
 
-  ready() {
+  override ready() {
     super.ready();
     this.addEventListener('change', this.onChanged_);
   }

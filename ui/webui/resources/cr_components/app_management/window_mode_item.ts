@@ -34,7 +34,7 @@ export class AppManagementWindowModeElement extends PolymerElement {
   windowModeLabel: String;
   app: App;
 
-  ready() {
+  override ready() {
     super.ready();
     this.addEventListener('click', this.onClick_);
     this.addEventListener('change', this.toggleWindowMode_);

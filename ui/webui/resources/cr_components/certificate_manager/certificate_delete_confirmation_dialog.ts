@@ -49,7 +49,7 @@ export class CertificateDeleteConfirmationDialogElement extends
   model: CertificateSubnode;
   certificateType: CertificateType;
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.$.dialog.showModal();
   }

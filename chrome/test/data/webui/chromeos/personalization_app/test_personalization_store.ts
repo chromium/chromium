@@ -39,7 +39,7 @@ export class TestPersonalizationStore extends TestStore {
     return this.states_;
   }
 
-  replaceSingleton() {
+  override replaceSingleton() {
     PersonalizationStore.setInstance(this);
   }
 

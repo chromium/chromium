@@ -31,7 +31,7 @@ export class AppManagementMorePermissionsItemElement extends PolymerElement {
   app: App;
   morePermissionsLabel: string;
 
-  ready() {
+  override ready() {
     super.ready();
     this.addEventListener('click', this.onClick_);
   }

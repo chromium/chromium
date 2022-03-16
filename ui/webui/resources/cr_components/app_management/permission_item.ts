@@ -75,7 +75,7 @@ export class AppManagementPermissionItemElement extends PolymerElement {
   private disabled_: boolean;
 
 
-  ready() {
+  override ready() {
     super.ready();
     this.addEventListener('click', this.onClick_);
     this.addEventListener('change', this.togglePermission_);

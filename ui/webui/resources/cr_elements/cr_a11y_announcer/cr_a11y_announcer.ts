@@ -38,7 +38,7 @@ export class CrA11yAnnouncerElement extends PolymerElement {
   private currentTimeout_: number|null = null;
   private messages_: string[] = [];
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
     if (this.currentTimeout_ !== null) {
       clearTimeout(this.currentTimeout_);

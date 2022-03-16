@@ -90,11 +90,11 @@ class GraphTabElement extends PolymerElement {
    */
   private contentWindow_: Window|null = null;
 
-  connectedCallback() {
+  override connectedCallback() {
     this.graphDump_ = GraphDump.getRemote();
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     // TODO(siggi): Is there a way to tear down the binding explicitly?
     this.graphDump_ = null;
     this.changeListener_ = null;

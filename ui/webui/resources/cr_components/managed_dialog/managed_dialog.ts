@@ -44,7 +44,7 @@ export class ManagedDialogElement extends ManagedDialogElementBase {
     };
   }
 
-  title: string;
+  override title: string;
   body: string;
 
   private onOkClick_() {

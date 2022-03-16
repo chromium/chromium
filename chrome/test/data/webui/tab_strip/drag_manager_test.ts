@@ -53,23 +53,23 @@ class MockDataTransfer extends DataTransfer {
     };
   }
 
-  get dropEffect() {
+  override get dropEffect() {
     return this.dropEffect_;
   }
 
-  set dropEffect(effect) {
+  override set dropEffect(effect) {
     this.dropEffect_ = effect;
   }
 
-  get effectAllowed() {
+  override get effectAllowed() {
     return this.effectAllowed_;
   }
 
-  set effectAllowed(effect) {
+  override set effectAllowed(effect) {
     this.effectAllowed_ = effect;
   }
 
-  setDragImage(image: Element, offsetX: number, offsetY: number) {
+  override setDragImage(image: Element, offsetX: number, offsetY: number) {
     this.dragImageData.image = image;
     this.dragImageData.offsetX = offsetX;
     this.dragImageData.offsetY = offsetY;

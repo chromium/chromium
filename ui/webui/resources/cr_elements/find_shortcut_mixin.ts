@@ -86,14 +86,14 @@ export const FindShortcutMixin = dedupingMixin(
           FindShortcutMixinInterface {
         findShortcutListenOnAttach: boolean = true;
 
-        connectedCallback() {
+        override connectedCallback() {
           super.connectedCallback();
           if (this.findShortcutListenOnAttach) {
             this.becomeActiveFindShortcutListener();
           }
         }
 
-        disconnectedCallback() {
+        override disconnectedCallback() {
           super.disconnectedCallback();
           if (this.findShortcutListenOnAttach) {
             this.removeSelfAsFindShortcutListener();

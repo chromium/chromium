@@ -39,7 +39,7 @@ export class LauncherResultsTableElement extends PolymerElement {
   // formatting when the table is sorted.
   private selectedIds: Set<string> = new Set();
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.$.displayScoreHeader.addEventListener(
         'click',

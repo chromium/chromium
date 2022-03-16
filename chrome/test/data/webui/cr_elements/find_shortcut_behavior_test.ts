@@ -71,13 +71,13 @@ suite('find-shortcut', () => {
       this.hasFocus = false;
     }
 
-    handleFindShortcut(modalContextOpen: boolean) {
+    override handleFindShortcut(modalContextOpen: boolean) {
       assert(!resolved);
       wait.resolve({modalContextOpen, self: this});
       return true;
     }
 
-    searchInputHasFocus() {
+    override searchInputHasFocus() {
       return this.hasFocus;
     }
   }
@@ -102,13 +102,13 @@ suite('find-shortcut', () => {
       this.hasFocus = false;
     }
 
-    handleFindShortcut(modalContextOpen: boolean) {
+    override handleFindShortcut(modalContextOpen: boolean) {
       assert(!resolved);
       wait.resolve({modalContextOpen, self: this});
       return this.handledResponse;
     }
 
-    searchInputHasFocus() {
+    override searchInputHasFocus() {
       return this.hasFocus;
     }
   }

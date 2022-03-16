@@ -27,7 +27,7 @@ test('splitTerms', function() {
 test('searchWithSimilarTerms', function() {
   BrowserProxy.setInstance(new TestDownloadsProxy());
   class TestSearchService extends SearchService {
-    loadMore() { /* Remove call to backend. */
+    override loadMore() { /* Remove call to backend. */
     }
   }
 

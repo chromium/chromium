@@ -86,7 +86,7 @@ export class CustomizeThemesElement extends CustomizeThemesElementBase {
       CustomizeThemesBrowserProxyImpl.getInstance().callbackRouter();
   private setThemeListenerId_: number|null = null;
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.handler_.initializeTheme();
     this.handler_.getChromeThemes().then(({chromeThemes}) => {
@@ -99,7 +99,7 @@ export class CustomizeThemesElement extends CustomizeThemesElementBase {
         });
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     this.revertThemeChanges();
     this.callbackRouter_.removeListener(assert(this.setThemeListenerId_!));
     super.disconnectedCallback();

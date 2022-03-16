@@ -15,7 +15,7 @@ suite('toolbar tests', function() {
 
   setup(function() {
     class TestSearchService extends SearchService {
-      loadMore() { /* Prevent chrome.send(). */
+      override loadMore() { /* Prevent chrome.send(). */
       }
     }
 

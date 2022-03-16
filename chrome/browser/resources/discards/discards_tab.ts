@@ -105,7 +105,7 @@ class DiscardsTabElement extends DiscardsTabElementBase {
 
   private discardsDetailsProvider_: DetailsProviderRemote|null = null;
 
-  connectedCallback() {
+  override connectedCallback() {
     this.setSortKey('utilityRank');
     this.discardsDetailsProvider_ = getOrCreateDetailsProvider();
 

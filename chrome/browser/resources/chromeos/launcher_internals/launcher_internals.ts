@@ -43,13 +43,13 @@ class LauncherInternalsElement extends PolymerElement {
     this.router = BrowserProxy.getInstance().callbackRouter;
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.listenerIds.push(
         this.router.updateResults.addListener(this.updateResults.bind(this)));
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
     this.listenerIds.forEach(id => this.router.removeListener(id));
   }

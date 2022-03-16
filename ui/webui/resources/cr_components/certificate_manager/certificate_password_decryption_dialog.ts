@@ -50,7 +50,7 @@ export class CertificatePasswordDecryptionDialogElement extends
 
   private password_: string;
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.$.dialog.showModal();
   }

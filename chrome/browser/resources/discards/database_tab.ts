@@ -227,7 +227,7 @@ class DatabaseTabElement extends DatabaseTabElementBase {
   private requestedOrigins_: {[key: string]: boolean} = {};
   private siteDataProvider_: SiteDataProviderRemote|null = null;
 
-  connectedCallback() {
+  override connectedCallback() {
     this.setSortKey('origin');
     this.requestedOrigins_ = {};
     this.siteDataProvider_ = getOrCreateSiteDataProvider();
@@ -249,7 +249,7 @@ class DatabaseTabElement extends DatabaseTabElementBase {
         setInterval(this.updateDbSizes_.bind(this), UPDATE_INTERVAL_MS * 30);
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     // Clear the update timers to avoid memory leaks.
     clearInterval(this.updateTableTimer_);
     this.updateTableTimer_ = 0;

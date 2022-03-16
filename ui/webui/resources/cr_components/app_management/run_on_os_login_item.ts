@@ -34,7 +34,7 @@ export class AppManagementRunOnOsLoginItemElement extends PolymerElement {
   loginModeLabel: String;
   app: App;
 
-  ready() {
+  override ready() {
     super.ready();
     this.addEventListener('click', this.onClick_);
     this.addEventListener('change', this.toggleOsLoginMode_);

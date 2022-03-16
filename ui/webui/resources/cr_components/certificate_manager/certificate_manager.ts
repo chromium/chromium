@@ -159,7 +159,7 @@ export class CertificateManagerElement extends CertificateManagerElementBase {
   private isKiosk_: boolean;
 
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.addWebUIListener('certificates-changed', this.set.bind(this));
     this.addWebUIListener(
@@ -185,7 +185,7 @@ export class CertificateManagerElement extends CertificateManagerElementBase {
     return selectedIndex === tabIndex;
   }
 
-  ready() {
+  override ready() {
     super.ready();
     this.addEventListener(CertificateActionEvent, event => {
       this.dialogModel_ = event.detail.subnode;

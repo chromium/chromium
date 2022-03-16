@@ -62,7 +62,7 @@ export class ManagedFootnoteElement extends ManagedFootnoteElementBase {
   private isManaged_: boolean;
   showDeviceInfo: boolean;
 
-  ready() {
+  override ready() {
     super.ready();
     this.addWebUIListener('is-managed-changed', (managed: boolean) => {
       loadTimeData.overrideValues({isManaged: managed});

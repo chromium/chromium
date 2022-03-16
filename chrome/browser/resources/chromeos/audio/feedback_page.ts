@@ -20,7 +20,7 @@ export class FeedbackPage extends Page {
     this.registerButtons();
   }
 
-  showPage() {
+  override showPage() {
     super.showPage();
     this.updateAudioInfo();
     this.updateDownloadButton();

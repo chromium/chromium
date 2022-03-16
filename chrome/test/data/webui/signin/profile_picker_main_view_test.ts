@@ -21,12 +21,12 @@ class NavigationElement extends NavigationMixin
   changeCalled: boolean = false;
   route: string = '';
 
-  ready() {
+  override ready() {
     super.ready();
     this.reset();
   }
 
-  onRouteChange(route: Routes, _step: string) {
+  override onRouteChange(route: Routes, _step: string) {
     this.changeCalled = true;
     this.route = route;
   }

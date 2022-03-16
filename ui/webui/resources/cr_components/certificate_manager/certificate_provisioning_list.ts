@@ -94,7 +94,7 @@ export class CertificateProvisioningListElement extends
     }
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.addWebUIListener(
         'certificate-provisioning-processes-changed',
@@ -103,7 +103,7 @@ export class CertificateProvisioningListElement extends
         .refreshCertificateProvisioningProcesses();
   }
 
-  ready() {
+  override ready() {
     super.ready();
     this.addEventListener(
         CertificateProvisioningViewDetailsActionEvent, event => {

@@ -59,12 +59,12 @@ export class CaTrustEditDialogElement extends CaTrustEditDialogElementBase {
   private explanationText_: string;
   private browserProxy_: CertificatesBrowserProxy|null = null;
 
-  ready() {
+  override ready() {
     super.ready();
     this.browserProxy_ = CertificatesBrowserProxyImpl.getInstance();
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.explanationText_ = loadTimeData.getStringF(

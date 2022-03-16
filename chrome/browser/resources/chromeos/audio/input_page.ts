@@ -27,7 +27,7 @@ export class InputPage extends Page {
     this.setUpButtons();
   }
 
-  showPage() {
+  override showPage() {
     super.showPage();
     if (this.audioContext) {
       this.audioContext.resume();
@@ -36,7 +36,7 @@ export class InputPage extends Page {
     }
   }
 
-  hidePage() {
+  override hidePage() {
     super.hidePage();
     if (this.audioContext) {
       this.audioContext.suspend();

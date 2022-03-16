@@ -49,7 +49,7 @@ export class SupportToolElement extends PolymerElement {
   private selectedEmail_: string;
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.browserProxy_.getEmailAddresses().then((emails: string[]) => {

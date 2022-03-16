@@ -40,7 +40,7 @@ suite(select_mixin_test.suiteName, function() {
         `;
       }
 
-      onProcessSelectChange(value: string) {
+      override onProcessSelectChange(value: string) {
         settingValue = value;
         this.dispatchEvent(new CustomEvent(
             'process-select-change-called',

@@ -54,7 +54,7 @@ export const CrContainerShadowMixin = dedupingMixin(
             Map<CrContainerShadowSide, HTMLDivElement> = new Map();
         private sides_: CrContainerShadowSide[]|null = null;
 
-        connectedCallback() {
+        override connectedCallback() {
           super.connectedCallback();
 
           const hasBottomShadow =
@@ -88,7 +88,7 @@ export const CrContainerShadowMixin = dedupingMixin(
           this.enableShadowBehavior(true);
         }
 
-        disconnectedCallback() {
+        override disconnectedCallback() {
           super.disconnectedCallback();
 
           this.enableShadowBehavior(false);

@@ -32,7 +32,7 @@ class TestElement extends HTMLElement {
   }
 
   // Pass focus to child in shadowRoot b/c iron-list expects that.
-  focus() {
+  override focus() {
     const button = this.shadowRoot!.querySelector('button');
     assertTrue(!!button);
     button!.focus();

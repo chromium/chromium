@@ -17,7 +17,7 @@ type Constructor<T> = new (...args: any[]) => T;
 export const MouseHoverableMixin =
     dedupingMixin(<T extends Constructor<PolymerElement>>(superClass: T): T => {
       class MouseHoverableMixin extends superClass {
-        ready() {
+        override ready() {
           super.ready();
 
           this.addEventListener('pointerenter', (e) => {

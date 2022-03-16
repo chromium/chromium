@@ -44,9 +44,9 @@ type AllowedDefaultModePolicySetup = {
 };
 
 class PolicyTestPluralStringProxy extends TestPluralStringProxy {
-  text: string = '';
+  override text: string = '';
 
-  getPluralString(messageName: string, itemCount: number) {
+  override getPluralString(messageName: string, itemCount: number) {
     if (messageName === 'sheetsLimitErrorMessage') {
       this.methodCalled('getPluralString', {messageName, itemCount});
     }

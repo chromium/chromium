@@ -86,7 +86,7 @@ class TestSecurityKeysResetBrowserProxy extends TestSecurityKeysBrowserProxy
     ]);
   }
 
-  reset() {
+  override reset() {
     return this.handleMethod('reset');
   }
 

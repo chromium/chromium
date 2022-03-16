@@ -32,7 +32,7 @@ export class AppManagementToggleRowElement extends PolymerElement {
     };
   }
 
-  ready() {
+  override ready() {
     super.ready();
     this.addEventListener('click', this.onClick_);
   }

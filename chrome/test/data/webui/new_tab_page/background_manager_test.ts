@@ -12,7 +12,7 @@ import {createBackgroundImage} from './test_support.js';
 class FakeIFrameElement extends HTMLIFrameElement {
   url: string|null = null;
 
-  get contentWindow() {
+  override get contentWindow() {
     return {location: {replace: (url: string) => this.url = url}} as unknown as
         Window;
   }

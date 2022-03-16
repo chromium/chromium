@@ -25,27 +25,27 @@ suite('NavigationBehaviorTest', function() {
       };
     }
 
-    subtitle: string = 'My subtitle';
+    override subtitle: string = 'My subtitle';
     enterCalled: boolean = false;
     changeCalled: boolean = false;
     exitCalled: boolean = false;
 
-    ready() {
+    override ready() {
       super.ready();
       this.reset();
     }
 
-    onRouteEnter() {
+    override onRouteEnter() {
       this.enterCalled = true;
       callOrders.push('enter');
     }
 
-    onRouteChange() {
+    override onRouteChange() {
       this.changeCalled = true;
       callOrders.push('change');
     }
 
-    onRouteExit() {
+    override onRouteExit() {
       this.exitCalled = true;
       callOrders.push('exit');
     }
