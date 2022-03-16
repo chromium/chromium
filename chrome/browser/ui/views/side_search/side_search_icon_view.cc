@@ -7,6 +7,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/search/omnibox_utils.h"
 #include "chrome/browser/ui/side_search/side_search_tab_contents_helper.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -21,6 +22,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/view_class_properties.h"
 
 SideSearchIconView::SideSearchIconView(
     CommandUpdater* command_updater,
@@ -32,6 +34,7 @@ SideSearchIconView::SideSearchIconView(
                          icon_label_bubble_delegate,
                          page_action_icon_delegate),
       browser_(browser) {
+  SetProperty(views::kElementIdentifierKey, kSideSearchButtonElementId);
   // `template_url_service` may be null in tests.
   if (auto* template_url_service =
           TemplateURLServiceFactory::GetForProfile(browser->profile())) {

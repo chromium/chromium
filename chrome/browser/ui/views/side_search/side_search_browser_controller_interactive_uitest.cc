@@ -14,15 +14,18 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/side_search/side_search_config.h"
 #include "chrome/browser/ui/side_search/side_search_tab_contents_helper.h"
+#include "chrome/browser/ui/side_search/side_search_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -37,7 +40,9 @@
 #include "net/dns/mock_host_resolver.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/button_test_api.h"
+#include "ui/views/view_utils.h"
 
 namespace {
 
@@ -58,12 +63,20 @@ bool IsSearchURLMatch(const GURL& url) {
 
 }  // namespace
 
-class SideSearchBrowserControllerTest : public InProcessBrowserTest {
+class SideSearchBrowserControllerTest
+    : public InProcessBrowserTest,
+      public ::testing::WithParamInterface<bool> {
  public:
   // InProcessBrowserTest:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({features::kSideSearch},
-                                          {features::kSideSearchDSESupport});
+    const bool enable_dse_support = GetParam();
+    if (enable_dse_support) {
+      scoped_feature_list_.InitWithFeatures(
+          {features::kSideSearch, features::kSideSearchDSESupport}, {});
+    } else {
+      scoped_feature_list_.InitWithFeatures({features::kSideSearch},
+                                            {features::kSideSearchDSESupport});
+    }
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
     InProcessBrowserTest::SetUp();
   }
@@ -159,8 +172,27 @@ class SideSearchBrowserControllerTest : public InProcessBrowserTest {
     return BrowserView::GetBrowserViewForBrowser(browser);
   }
 
-  ToolbarButton* GetSidePanelButtonFor(Browser* browser) {
-    return BrowserViewFor(browser)->toolbar()->left_side_panel_button();
+  views::Button* GetSidePanelButtonFor(Browser* browser) {
+    views::View* button_view =
+        views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+            kSideSearchButtonElementId, browser->window()->GetElementContext());
+    return button_view ? views::AsViewClass<views::Button>(button_view)
+                       : nullptr;
+  }
+
+  // Extract the testing of the entrypoint when the side panel is open into its
+  // own method as this will vary depending on whether or not the DSE support
+  // flag is enabled. For e.g. when DSE support is enabled and the side panel is
+  // open the omnibox button is hidden while if DSE support is disabled the
+  // toolbar button is visible.
+  void TestSidePanelOpenEntrypointState(Browser* browser) {
+    // If the side panel is visible and DSE support is enabled then the
+    // entrypoint should be hidden. Otherwise the entrypoint should be visible.
+    if (side_search::IsDSESupportEnabled(browser->profile())) {
+      EXPECT_FALSE(GetSidePanelButtonFor(browser)->GetVisible());
+    } else {
+      EXPECT_TRUE(GetSidePanelButtonFor(browser)->GetVisible());
+    }
   }
 
   views::ImageButton* GetSideButtonClosePanelFor(Browser* browser) {
@@ -196,7 +228,7 @@ class SideSearchBrowserControllerTest : public InProcessBrowserTest {
     NavigateToMatchingAndNonMatchingSearchPage(browser);
 
     NotifyButtonClick(browser);
-    EXPECT_TRUE(GetSidePanelButtonFor(browser)->GetVisible());
+    TestSidePanelOpenEntrypointState(browser);
     EXPECT_TRUE(GetSidePanelFor(browser)->GetVisible());
     EXPECT_TRUE(
         content::WaitForLoadStop(GetActiveSidePanelWebContents(browser)));
@@ -231,6 +263,10 @@ class SideSearchBrowserControllerTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+INSTANTIATE_TEST_SUITE_P(All,
+                         SideSearchBrowserControllerTest,
+                         ::testing::Bool());
+
 // This interaction tests that pages in the tab frame opened from the side panel
 // are correctly marked as being non-skippable despite the tab frame not
 // receiving a user gesture.
@@ -239,7 +275,7 @@ class SideSearchBrowserControllerTest : public InProcessBrowserTest {
 //   3. B1 automatically redirects to B2 to attempt to trap the user.
 //   4. Navigating backwards from B2 should skip back to A.
 //   5. Navigating backwards from A should skip back to the tab's initial page.
-IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
+IN_PROC_BROWSER_TEST_P(SideSearchBrowserControllerTest,
                        SidePanelOpenedPagesInTheTabFrameAreNonSkippable) {
   // Start with the side panel in a toggled open state. The side panel will
   // intercept non-matching search URLs and redirect these to the tab contents.
@@ -302,7 +338,7 @@ IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
 //   3. Have the side panel open B in the tab.
 //   4. Navigating backwards from B should skip back to A2.
 //   5. Navigating backwards from A2 should skip back to the tab's initial page.
-IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
+IN_PROC_BROWSER_TEST_P(SideSearchBrowserControllerTest,
                        RedirectedPagesOpenedFromTheSidePanelAreSkippable) {
   // Start with the side panel in a toggled open state. The side panel will
   // intercept non-matching search URLs and redirect these to the tab contents.
@@ -358,7 +394,7 @@ IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
+IN_PROC_BROWSER_TEST_P(SideSearchBrowserControllerTest,
                        SidePanelButtonShowsCorrectlySingleTab) {
   // If no previous matched search page has been navigated to the button should
   // not be visible.
@@ -378,7 +414,7 @@ IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
       SideSearchAvailabilityChangeType::kBecomeAvailable, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
+IN_PROC_BROWSER_TEST_P(SideSearchBrowserControllerTest,
                        SidePanelButtonShowsCorrectlyMultipleTabs) {
   // The side panel button should never be visible on non-matching pages.
   AppendTab(browser(), GetNonMatchingUrl());
@@ -404,7 +440,7 @@ IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
   EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
+IN_PROC_BROWSER_TEST_P(SideSearchBrowserControllerTest,
                        SidePanelTogglesCorrectlySingleTab) {
   NavigateActiveTab(browser(), GetMatchingSearchUrl());
   EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
@@ -418,22 +454,22 @@ IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
 
   // Toggle the side panel.
   NotifyButtonClick(browser());
-  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  TestSidePanelOpenEntrypointState(browser());
   EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
   histogram_tester_.ExpectBucketCount(
       "SideSearch.OpenAction",
       SideSearchOpenActionType::kTapOnSideSearchToolbarButton, 1);
 
-  // Toggling the button again should close the side panel.
-  NotifyButtonClick(browser());
+  // Toggling the close button should close the side panel.
+  NotifyCloseButtonClick(browser());
   EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
   EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
   histogram_tester_.ExpectBucketCount(
       "SideSearch.CloseAction",
-      SideSearchCloseActionType::kTapOnSideSearchToolbarButton, 1);
+      SideSearchCloseActionType::kTapOnSideSearchCloseButton, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
+IN_PROC_BROWSER_TEST_P(SideSearchBrowserControllerTest,
                        CloseButtonClosesSidePanel) {
   // The close button should be visible in the toggled state.
   NavigateToMatchingSearchPageAndOpenSidePanel(browser());
@@ -444,7 +480,7 @@ IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
       SideSearchCloseActionType::kTapOnSideSearchCloseButton, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
+IN_PROC_BROWSER_TEST_P(SideSearchBrowserControllerTest,
                        SideSearchNotAvailableInOTR) {
   Browser* browser2 = CreateIncognitoBrowser();
   EXPECT_TRUE(browser2->profile()->IsOffTheRecord());
@@ -455,7 +491,7 @@ IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
   EXPECT_EQ(nullptr, GetSidePanelFor(browser2));
 }
 
-IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
+IN_PROC_BROWSER_TEST_P(SideSearchBrowserControllerTest,
                        SidePanelButtonIsNotShownWhenSRPIsUnavailable) {
   // Set the side panel SRP be unavailable.
   SetIsSidePanelSRPAvailableAt(browser(), 0, false);
@@ -475,7 +511,7 @@ IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
   EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
+IN_PROC_BROWSER_TEST_P(SideSearchBrowserControllerTest,
                        OpeningAndClosingTheSidePanelHandlesFocusCorrectly) {
   // Navigate to a matching search page and then a non-matched page. The side
   // panel will be available but closed.
@@ -499,13 +535,13 @@ IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
   EXPECT_TRUE(side_panel->Contains(focus_manager->GetFocusedView()));
 
   // Close the side panel. The contents view should have its focus restored.
-  NotifyButtonClick(browser());
+  NotifyCloseButtonClick(browser());
   EXPECT_FALSE(side_panel->GetVisible());
   EXPECT_TRUE(contents_view->HasFocus());
   EXPECT_FALSE(side_panel->Contains(focus_manager->GetFocusedView()));
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SideSearchBrowserControllerTest,
     SidePanelStatePreservedWhenMovingTabsAcrossBrowserWindows) {
   NavigateToMatchingSearchPageAndOpenSidePanel(browser());
@@ -523,11 +559,11 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
 
   ActivateTabAt(browser(), 0);
-  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  TestSidePanelOpenEntrypointState(browser());
   EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
+IN_PROC_BROWSER_TEST_P(SideSearchBrowserControllerTest,
                        SidePanelTogglesCorrectlyMultipleTabs) {
   // Navigate to a matching search URL followed by a non-matching URL in two
   // independent browser tabs such that both have the side panel ready. The
@@ -553,7 +589,7 @@ IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
   // Show the side panel on Tab 2 and switch to Tab 1. The side panel should
   // not be visible for Tab 1.
   NotifyButtonClick(browser());
-  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  TestSidePanelOpenEntrypointState(browser());
   EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
 
   ActivateTabAt(browser(), 0);
@@ -563,25 +599,25 @@ IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
   // Show the side panel on Tab 1 and switch to Tab 2. The side panel should be
   // still be visible for Tab 2, respecting its per-tab state.
   NotifyButtonClick(browser());
-  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  TestSidePanelOpenEntrypointState(browser());
   EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
 
   ActivateTabAt(browser(), 1);
-  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  TestSidePanelOpenEntrypointState(browser());
   EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
 
   // Close the side panel on Tab 2 and switch to Tab 1. The side panel should be
   // still be visible for Tab 1, respecting its per-tab state.
-  NotifyButtonClick(browser());
+  NotifyCloseButtonClick(browser());
   EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
   EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
 
   ActivateTabAt(browser(), 0);
-  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  TestSidePanelOpenEntrypointState(browser());
   EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
+IN_PROC_BROWSER_TEST_P(SideSearchBrowserControllerTest,
                        SwitchingTabsHandlesFocusCorrectly) {
   auto* browser_view = BrowserViewFor(browser());
   auto* side_panel = GetSidePanelFor(browser());
@@ -619,7 +655,7 @@ IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
   EXPECT_FALSE(contents_view->HasFocus());
 }
 
-IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
+IN_PROC_BROWSER_TEST_P(SideSearchBrowserControllerTest,
                        SidePanelTogglesClosedCorrectlyDuringNavigation) {
   // Navigate to a matching SRP and then a non-matched page. The side panel will
   // be available and open.
@@ -638,7 +674,7 @@ IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
   EXPECT_FALSE(side_panel->GetVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
+IN_PROC_BROWSER_TEST_P(SideSearchBrowserControllerTest,
                        SidePanelCrashesCloseSidePanel) {
   // Open two tabs with the side panel open.
   NavigateToMatchingSearchPageAndOpenSidePanel(browser());
@@ -703,7 +739,7 @@ class SideSearchExtensionsTest : public SideSearchBrowserControllerTest {
     NavigateActiveTab(browser(),
                       embedded_test_server()->GetURL("initial.example", "/"));
     NotifyButtonClick(browser());
-    EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+    TestSidePanelOpenEntrypointState(browser());
     EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
 
     // Wait for the side panel to finish loading the test URL.
@@ -724,7 +760,9 @@ class SideSearchExtensionsTest : public SideSearchBrowserControllerTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(SideSearchExtensionsTest,
+INSTANTIATE_TEST_SUITE_P(All, SideSearchExtensionsTest, ::testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(SideSearchExtensionsTest,
                        ContentScriptsExecuteInSidePanel) {
   const GURL first_url = embedded_test_server()->GetURL("first.example", "/");
   const GURL second_url = embedded_test_server()->GetURL("second.example", "/");
@@ -767,7 +805,7 @@ IN_PROC_BROWSER_TEST_F(SideSearchExtensionsTest,
   EXPECT_EQ("", content::EvalJs(side_contents, "document.body.innerText;"));
 }
 
-IN_PROC_BROWSER_TEST_F(SideSearchExtensionsTest,
+IN_PROC_BROWSER_TEST_P(SideSearchExtensionsTest,
                        WebRequestInterceptsSidePanelNavigations) {
   const GURL first_url = embedded_test_server()->GetURL("first.example", "/");
   const GURL second_url = embedded_test_server()->GetURL("second.example", "/");
@@ -824,7 +862,7 @@ IN_PROC_BROWSER_TEST_F(SideSearchExtensionsTest,
 #define MAYBE_DeclarativeNetRequestInterceptsSidePanelNavigations \
   DeclarativeNetRequestInterceptsSidePanelNavigations
 #endif
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SideSearchExtensionsTest,
     MAYBE_DeclarativeNetRequestInterceptsSidePanelNavigations) {
   const GURL first_url = embedded_test_server()->GetURL("first.example", "/");

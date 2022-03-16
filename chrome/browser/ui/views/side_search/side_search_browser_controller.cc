@@ -454,13 +454,16 @@ void SideSearchBrowserController::UpdateSidePanel() {
 
     // The toolbar button should remain visible in the toolbar as a side panel
     // can be shown for the active tab.
-    if (toolbar_button_->GetVisible() != can_show_side_panel_for_page) {
+    if (toolbar_button_->GetVisible() != can_show_side_panel_for_page)
       toolbar_button_->SetVisible(can_show_side_panel_for_page);
-      RecordSideSearchAvailabilityChanged(
-          can_show_side_panel_for_page
-              ? SideSearchAvailabilityChangeType::kBecomeAvailable
-              : SideSearchAvailabilityChangeType::kBecomeUnavailable);
-    }
+  }
+
+  if (was_side_panel_available_for_page_ != can_show_side_panel_for_page) {
+    RecordSideSearchAvailabilityChanged(
+        can_show_side_panel_for_page
+            ? SideSearchAvailabilityChangeType::kBecomeAvailable
+            : SideSearchAvailabilityChangeType::kBecomeUnavailable);
+    was_side_panel_available_for_page_ = can_show_side_panel_for_page;
   }
 
   // Once the anchor element is visible, maybe show promo.

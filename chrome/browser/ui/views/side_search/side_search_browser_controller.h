@@ -104,6 +104,12 @@ class SideSearchBrowserController
   raw_ptr<BrowserView> const browser_view_;
   raw_ptr<views::WebView> const web_view_;
 
+  // Used to test whether or not the side panel was available the last time
+  // `UpdateSidePanel()` was called. i.e. whether the ability for the user to
+  // open/close the side panel has changed. This is used for metrics collection
+  // purposes.
+  bool was_side_panel_available_for_page_ = false;
+
   // Tracks and stores the last focused view which is not the
   // `side_panel_` or any of its children. Used to restore focus once
   // the `side_panel_` is hidden.
