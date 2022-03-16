@@ -444,6 +444,12 @@ class AppListSortBrowserTest : public extensions::ExtensionBrowserTest {
       EXPECT_EQ(ash::AppListReorderAnimationStatus::kFadeInAnimation, status);
       saved_reorder_animation_stats_.push_back(
           AnimationTargetStatus::kCompleted);
+
+      // Verify that the toast container under the clamshell mode does not have
+      // a layer after reorder animation completes.
+      views::View* toast_container = app_list_test_api_.GetToastContainerView();
+      if (toast_container && !ash::Shell::Get()->IsInTabletMode())
+        EXPECT_FALSE(toast_container->layer());
     }
 
     // Callback can be registered without a running loop.
@@ -566,14 +572,14 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest, ClearPrefOrderByItemMove) {
                                    AnimationTargetStatus::kCompleted);
   EXPECT_EQ(GetAppIdsInOrdinalOrder(),
             std::vector<std::string>({app1_id_, app2_id_, app3_id_}));
-  EXPECT_TRUE(app_list_test_api_.GetFullscreenReorderUndoToastVisibility());
+  EXPECT_TRUE(app_list_test_api_.GetBubbleReorderUndoToastVisibility());
 
   std::string app4_id = LoadExtension(test_data_dir_.AppendASCII("app4"))->id();
   ASSERT_FALSE(app4_id.empty());
   EXPECT_EQ(GetAppIdsInOrdinalOrder({app1_id_, app2_id_, app3_id_, app4_id}),
             std::vector<std::string>({app1_id_, app2_id_, app3_id_, app4_id}));
 
-  EXPECT_FALSE(app_list_test_api_.GetFullscreenReorderUndoToastVisibility());
+  EXPECT_FALSE(app_list_test_api_.GetBubbleReorderUndoToastVisibility());
   EXPECT_EQ(ash::AppListSortOrder::kNameAlphabetical,
             GetPermanentSortingOrder());
 
@@ -978,6 +984,12 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest, UndoTemporarySortingClamshell) {
       reorder_undo_toast_button->GetBoundsInScreen().CenterPoint());
   event_generator_->ClickLeftButton();
 
+  // Verify that the toast is under animation.
+  EXPECT_TRUE(app_list_test_api_.GetToastContainerView()
+                  ->layer()
+                  ->GetAnimator()
+                  ->is_animating());
+
   WaitForReorderAnimation();
 
   // Wait for the metric data to be collected.
@@ -1039,6 +1051,12 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest, UndoTemporarySortingTablet) {
   event_generator_->MoveMouseTo(
       reorder_undo_toast_button->GetBoundsInScreen().CenterPoint());
   event_generator_->ClickLeftButton();
+
+  // Verify that the toast is under animation.
+  EXPECT_TRUE(app_list_test_api_.GetToastContainerView()
+                  ->layer()
+                  ->GetAnimator()
+                  ->is_animating());
 
   WaitForReorderAnimation();
 

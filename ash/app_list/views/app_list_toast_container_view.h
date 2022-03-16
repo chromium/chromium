@@ -77,6 +77,11 @@ class AppListToastContainerView : public views::View {
   void OnTemporarySortOrderChanged(
       const absl::optional<AppListSortOrder>& new_order);
 
+  // Returns the toast's target visibility for the specified sort order. If
+  // `order` is null, the temporary sort order is cleared.
+  bool GetVisibilityForSortOrder(
+      const absl::optional<AppListSortOrder>& order) const;
+
   // Fires an accessibility alert with the text of the sort order toast.
   void AnnounceSortOrder(AppListSortOrder new_order);
 

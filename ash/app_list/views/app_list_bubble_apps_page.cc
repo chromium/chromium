@@ -416,9 +416,26 @@ void AppListBubbleAppsPage::UpdateForNewSortingOrder(
   }
 
   update_position_closure_ = std::move(update_position_closure);
-  scrollable_apps_grid_view_->FadeOutVisibleItemsForReorder(base::BindRepeating(
-      &AppListBubbleAppsPage::OnAppsGridViewFadeOutAnimationEneded,
-      weak_factory_.GetWeakPtr(), new_order));
+  views::AnimationBuilder animation_builder =
+      scrollable_apps_grid_view_->FadeOutVisibleItemsForReorder(
+          base::BindRepeating(
+              &AppListBubbleAppsPage::OnAppsGridViewFadeOutAnimationEneded,
+              weak_factory_.GetWeakPtr(), new_order));
+
+  // Configure the toast fade out animation if the toast is going to be hidden.
+  const bool current_toast_visible = toast_container_->is_toast_visible();
+  const bool target_toast_visible =
+      toast_container_->GetVisibilityForSortOrder(new_order);
+  if (current_toast_visible && !target_toast_visible) {
+    // Because `toast_container_` does not have a layer before the fade in
+    // animation, create one.
+    DCHECK(!toast_container_->layer());
+    toast_container_->SetPaintToLayer();
+    toast_container_->layer()->SetFillsBoundsOpaquely(false);
+
+    animation_builder.GetCurrentSequence().SetOpacity(toast_container_->layer(),
+                                                      0.f);
+  }
 }
 
 bool AppListBubbleAppsPage::MaybeScrollToShowToast() {
@@ -595,12 +612,21 @@ void AppListBubbleAppsPage::OnAppsGridViewFadeOutAnimationEneded(
   const bool old_toast_visible = toast_container_->is_toast_visible();
 
   toast_container_->OnTemporarySortOrderChanged(new_order);
+  const bool target_toast_visible = toast_container_->is_toast_visible();
+
+  // If there is a layer created for fading out `toast_container_`, destroy
+  // the layer when the fade out animation ends. NOTE: when the reorder toast
+  // is faded out, it should not be faded in along with the apps grid fade in
+  // animation. Therefore destroy the layer when the fade out animation ends.
+  if (toast_container_->layer()) {
+    DCHECK(!target_toast_visible);
+    toast_container_->DestroyLayer();
+  }
 
   // Skip the fade in animation if the fade out animation is aborted.
   if (aborted)
     return;
 
-  const bool target_toast_visible = toast_container_->is_toast_visible();
   const bool toast_visibility_change =
       (old_toast_visible != target_toast_visible);
 

@@ -161,7 +161,7 @@ void AppListToastContainerView::UpdateVisibilityState(VisibilityState state) {
 void AppListToastContainerView::OnTemporarySortOrderChanged(
     const absl::optional<AppListSortOrder>& new_order) {
   // Remove `toast_view_` when the temporary sorting order is cleared.
-  if (!new_order || *new_order == AppListSortOrder::kCustom) {
+  if (!GetVisibilityForSortOrder(new_order)) {
     RemoveCurrentView();
     return;
   }
@@ -192,6 +192,11 @@ void AppListToastContainerView::OnTemporarySortOrderChanged(
           .Build());
   toast_view_->UpdateInteriorMargins(kReorderUndoInteriorMargin);
   current_toast_ = ToastType::kReorderUndo;
+}
+
+bool AppListToastContainerView::GetVisibilityForSortOrder(
+    const absl::optional<AppListSortOrder>& new_order) const {
+  return new_order && *new_order != AppListSortOrder::kCustom;
 }
 
 void AppListToastContainerView::AnnounceSortOrder(AppListSortOrder new_order) {

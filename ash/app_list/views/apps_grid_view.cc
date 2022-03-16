@@ -2081,7 +2081,7 @@ bool AppsGridView::IsTabletMode() const {
   return app_list_view_delegate_->IsInTabletMode();
 }
 
-void AppsGridView::FadeOutVisibleItemsForReorder(
+views::AnimationBuilder AppsGridView::FadeOutVisibleItemsForReorder(
     ReorderAnimationCallback done_callback) {
   // Abort the running reorder animation if any.
   MaybeAbortReorderAnimation();
@@ -2095,23 +2095,23 @@ void AppsGridView::FadeOutVisibleItemsForReorder(
   reorder_animation_tracker_->Start(metrics_util::ForSmoothness(
       base::BindRepeating(&ReportReorderAnimationSmoothness, IsTabletMode())));
 
-  {
-    views::AnimationBuilder animation_builder;
-    reorder_animation_abort_handle_ = animation_builder.GetAbortHandle();
-    animation_builder
-        .OnEnded(base::BindOnce(&AppsGridView::OnFadeOutAnimationEnded,
-                                weak_factory_.GetWeakPtr(), done_callback,
-                                /*abort=*/false))
-        .OnAborted(base::BindOnce(&AppsGridView::OnFadeOutAnimationEnded,
-                                  weak_factory_.GetWeakPtr(), done_callback,
-                                  /*abort=*/true))
-        .Once()
-        .SetDuration(kFadeOutAnimationDuration)
-        .SetOpacity(layer(), 0.f, gfx::Tween::LINEAR);
-  }
+  views::AnimationBuilder animation_builder;
+  reorder_animation_abort_handle_ = animation_builder.GetAbortHandle();
 
   if (fade_out_start_closure_for_test_)
-    std::move(fade_out_start_closure_for_test_).Run();
+    animation_builder.OnStarted(std::move(fade_out_start_closure_for_test_));
+
+  animation_builder
+      .OnEnded(base::BindOnce(&AppsGridView::OnFadeOutAnimationEnded,
+                              weak_factory_.GetWeakPtr(), done_callback,
+                              /*abort=*/false))
+      .OnAborted(base::BindOnce(&AppsGridView::OnFadeOutAnimationEnded,
+                                weak_factory_.GetWeakPtr(), done_callback,
+                                /*abort=*/true))
+      .Once()
+      .SetDuration(kFadeOutAnimationDuration)
+      .SetOpacity(layer(), 0.f, gfx::Tween::LINEAR);
+  return animation_builder;
 }
 
 views::AnimationBuilder AppsGridView::FadeInVisibleItemsForReorder(

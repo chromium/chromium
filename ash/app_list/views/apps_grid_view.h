@@ -287,9 +287,11 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // Fades out visible items when reordering happens. Runs `done_callback` when
   // the fade out animation ends. The callback carries a boolean value that
-  // is true if the animation is aborted.
+  // is true if the animation is aborted. Returns an animation builder and it
+  // can be used to tie other layer animations with scheduled item animaions.
   using ReorderAnimationCallback = base::RepeatingCallback<void(bool)>;
-  void FadeOutVisibleItemsForReorder(ReorderAnimationCallback done_callback);
+  views::AnimationBuilder FadeOutVisibleItemsForReorder(
+      ReorderAnimationCallback done_callback);
 
   // Fades in items for reordering. Returns an animation builder and it can be
   // used to tie other layer animations with scheduled item animaions.

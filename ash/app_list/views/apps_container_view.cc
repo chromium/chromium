@@ -736,9 +736,19 @@ void AppsContainerView::UpdateForNewSortingOrder(
     pagination_model->FinishAnimation();
 
   update_position_closure_ = std::move(update_position_closure);
-  apps_grid_view_->FadeOutVisibleItemsForReorder(base::BindRepeating(
-      &AppsContainerView::OnAppsGridViewFadeOutAnimationEneded,
-      weak_ptr_factory_.GetWeakPtr(), new_order));
+  views::AnimationBuilder animation_builder =
+      apps_grid_view_->FadeOutVisibleItemsForReorder(base::BindRepeating(
+          &AppsContainerView::OnAppsGridViewFadeOutAnimationEneded,
+          weak_ptr_factory_.GetWeakPtr(), new_order));
+
+  // Configure the toast fade out animation if the toast is going to be hidden.
+  const bool current_toast_visible = toast_container_->is_toast_visible();
+  const bool target_toast_visible =
+      toast_container_->GetVisibilityForSortOrder(new_order);
+  if (current_toast_visible && !target_toast_visible) {
+    animation_builder.GetCurrentSequence().SetOpacity(toast_container_->layer(),
+                                                      0.f);
+  }
 }
 
 ContinueSectionView* AppsContainerView::GetContinueSection() {

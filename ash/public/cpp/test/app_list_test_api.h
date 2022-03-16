@@ -115,6 +115,11 @@ class ASH_EXPORT AppListTestApi {
   void SetFolderViewAnimationCallback(
       base::OnceClosure folder_animation_done_callback);
 
+  // Returns the toast container view from either the bubble app list or the
+  // fullscreen app list depending on which app list is being used. This method
+  // assumes that the app list has been created.
+  views::View* GetToastContainerView();
+
   // Adds a callback that runs at the end of the app list reorder. The callback
   // carries:
   // (1) A boolean parameter that is true if the reorder is aborted.
