@@ -34,6 +34,7 @@ source_set("quiche") {
     "overrides/quiche_platform_impl/quic_flags_impl.cc",
     "overrides/quiche_platform_impl/quic_flags_impl.h",
     "overrides/quiche_platform_impl/quiche_bug_tracker_impl.h",
+    "overrides/quiche_platform_impl/quiche_client_stats_impl.h",
     "overrides/quiche_platform_impl/quiche_export_impl.h",
     "overrides/quiche_platform_impl/quiche_logging_impl.h",
     "overrides/quiche_platform_impl/quiche_mutex_impl.cc",
@@ -907,9 +908,10 @@ source_set("quiche_file_utils") {
 source_set("quic_test_tools_core") {
   testonly = true
   sources = [
+    "overrides/quiche_platform_impl/quiche_epoll_test_tools_impl.h",
+    "src/common/platform/api/quiche_epoll_test_tools.h",
     "src/quic/core/quic_trace_visitor.cc",
     "src/quic/core/quic_trace_visitor.h",
-    "src/quic/platform/api/quic_epoll_test_tools.h",
     "src/quic/platform/api/quic_expect_bug.h",
     "src/quic/platform/api/quic_mock_log.h",
     "src/quic/platform/api/quic_port_utils.h",
@@ -1043,6 +1045,7 @@ source_set("quic_test_tools_core") {
 
   deps = [
     ":quiche_file_utils",
+    ":quiche_test_tools_core",
     "//base",
     "//crypto:test_support",
     "//net",
@@ -1088,6 +1091,8 @@ source_set("quic_test_tools_core") {
 
 source_set("simple_quic_tools_core") {
   sources = [
+    "overrides/quiche_platform_impl/quiche_system_event_loop_impl.h",
+    "src/common/platform/api/quiche_system_event_loop.h",
     "src/quic/core/chlo_extractor.cc",
     "src/quic/core/chlo_extractor.h",
     "src/quic/core/http/quic_spdy_server_stream_base.cc",
@@ -1104,7 +1109,6 @@ source_set("simple_quic_tools_core") {
     "src/quic/core/tls_chlo_extractor.cc",
     "src/quic/core/tls_chlo_extractor.h",
     "src/quic/platform/api/quic_default_proof_providers.h",
-    "src/quic/platform/api/quic_system_event_loop.h",
     "src/quic/tools/fake_proof_verifier.h",
     "src/quic/tools/quic_backend_response.cc",
     "src/quic/tools/quic_backend_response.h",

@@ -4,6 +4,7 @@
 
 #include "net/quic/quic_connectivity_monitor.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 
 namespace net {

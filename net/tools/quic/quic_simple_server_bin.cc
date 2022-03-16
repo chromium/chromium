@@ -8,9 +8,9 @@
 #include <vector>
 
 #include "net/third_party/quiche/src/common/platform/api/quiche_command_line_flags.h"
+#include "net/third_party/quiche/src/common/platform/api/quiche_system_event_loop.h"
 #include "net/third_party/quiche/src/quic/core/quic_versions.h"
 #include "net/third_party/quiche/src/quic/platform/api/quic_flags.h"
-#include "net/third_party/quiche/src/quic/platform/api/quic_system_event_loop.h"
 #include "net/third_party/quiche/src/quic/tools/quic_simple_server_backend.h"
 #include "net/third_party/quiche/src/quic/tools/quic_toy_server.h"
 #include "net/tools/quic/quic_simple_server.h"
@@ -32,7 +32,7 @@ class QuicSimpleServerFactory : public quic::QuicToyServer::ServerFactory {
 };
 
 int main(int argc, char* argv[]) {
-  QuicSystemEventLoop event_loop("quic_server");
+  quiche::QuicheSystemEventLoop event_loop("quic_server");
   const char* usage = "Usage: quic_server [options]";
   std::vector<std::string> non_option_args =
       quiche::QuicheParseCommandLineFlags(usage, argc, argv);

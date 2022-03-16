@@ -39,12 +39,12 @@
 #include "net/base/net_errors.h"
 #include "net/quic/address_utils.h"
 #include "net/third_party/quiche/src/common/platform/api/quiche_command_line_flags.h"
+#include "net/third_party/quiche/src/common/platform/api/quiche_system_event_loop.h"
 #include "net/third_party/quiche/src/quic/core/quic_error_codes.h"
 #include "net/third_party/quiche/src/quic/core/quic_packets.h"
 #include "net/third_party/quiche/src/quic/core/quic_server_id.h"
 #include "net/third_party/quiche/src/quic/core/quic_versions.h"
 #include "net/third_party/quiche/src/quic/platform/api/quic_socket_address.h"
-#include "net/third_party/quiche/src/quic/platform/api/quic_system_event_loop.h"
 #include "net/third_party/quiche/src/quic/tools/quic_toy_client.h"
 #include "net/third_party/quiche/src/spdy/core/spdy_header_block.h"
 #include "net/tools/quic/quic_simple_client.h"
@@ -112,7 +112,7 @@ class QuicSimpleClientFactory : public quic::QuicToyClient::ClientFactory {
 }  // namespace
 
 int main(int argc, char* argv[]) {
-  QuicSystemEventLoop event_loop("quic_client");
+  quiche::QuicheSystemEventLoop event_loop("quic_client");
   const char* usage = "Usage: quic_client [options] <url>";
 
   // All non-flag arguments should be interpreted as URLs to fetch.
