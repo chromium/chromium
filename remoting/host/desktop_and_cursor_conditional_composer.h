@@ -5,6 +5,8 @@
 #ifndef REMOTING_HOST_DESKTOP_AND_CURSOR_CONDITIONAL_COMPOSER_H_
 #define REMOTING_HOST_DESKTOP_AND_CURSOR_CONDITIONAL_COMPOSER_H_
 
+#include <memory>
+
 #include "base/memory/weak_ptr.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_and_cursor_composer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
@@ -26,7 +28,7 @@ class DesktopAndCursorConditionalComposer : public webrtc::DesktopCapturer {
 
   void SetComposeEnabled(bool enabled);
 
-  void SetMouseCursor(webrtc::MouseCursor* mouse_cursor);
+  void SetMouseCursor(std::unique_ptr<webrtc::MouseCursor> mouse_cursor);
   void SetMouseCursorPosition(const webrtc::DesktopVector& position);
 
   // DesktopCapturer interface.

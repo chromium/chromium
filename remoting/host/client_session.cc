@@ -651,8 +651,11 @@ void ClientSession::SetComposeEnabled(bool enabled) {
 
 void ClientSession::OnMouseCursor(webrtc::MouseCursor* mouse_cursor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // This method should take ownership of |mouse_cursor|.
+  std::unique_ptr<webrtc::MouseCursor> owned_cursor(mouse_cursor);
   if (desktop_and_cursor_composer_)
-    desktop_and_cursor_composer_->SetMouseCursor(mouse_cursor);
+    desktop_and_cursor_composer_->SetMouseCursor(std::move(owned_cursor));
 }
 
 void ClientSession::OnMouseCursorPosition(

@@ -38,8 +38,8 @@ void DesktopAndCursorConditionalComposer::SetComposeEnabled(bool enabled) {
 }
 
 void DesktopAndCursorConditionalComposer::SetMouseCursor(
-    webrtc::MouseCursor* mouse_cursor) {
-  mouse_cursor_.reset(mouse_cursor);
+    std::unique_ptr<webrtc::MouseCursor> mouse_cursor) {
+  mouse_cursor_ = std::move(mouse_cursor);
   if (compose_enabled_)
     capturer_->OnMouseCursor(webrtc::MouseCursor::CopyOf(*mouse_cursor_));
 }
