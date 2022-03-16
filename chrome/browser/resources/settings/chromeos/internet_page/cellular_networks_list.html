@@ -85,7 +85,8 @@
         </div>
         <div id="inhibitedSubtext" class="header-row secondary-box-text"
             hidden="[[!isDeviceInhibited_]]" aria-live="assertive">
-          [[getInhibitedSubtextMessage_(isDeviceInhibited_)]]
+          [[getInhibitedSubtextMessage_(isDeviceInhibited_,
+              cellularDeviceState.*)]]
         </div>
       </div>
       <div id="alignEnd">

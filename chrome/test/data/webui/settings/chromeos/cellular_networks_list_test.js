@@ -536,4 +536,45 @@ suite('CellularNetworksList', function() {
     await flushAsync();
     assertFalse(!!getInhibitedSpinner());
   });
+
+  test(
+      'Inhibited subtext gets updated when inhibit reason changes',
+      async () => {
+        eSimManagerRemote.addEuiccForTest(0);
+        init();
+
+        // Put the device under the inhibited status with kRefreshingProfileList
+        // reason first.
+        cellularNetworkList.cellularDeviceState = {
+          type: mojom.NetworkType.kCellular,
+          deviceState: mojom.DeviceStateType.kEnabled,
+          inhibitReason: mojom.InhibitReason.kRefreshingProfileList
+        };
+        addESimSlot();
+        cellularNetworkList.canShowSpinner = true;
+        await flushAsync();
+
+        const inhibitedSubtext = cellularNetworkList.$$('#inhibitedSubtext');
+        const getInhibitedSpinner = () => {
+          return cellularNetworkList.$$('#inhibitedSpinner');
+        };
+        assertFalse(inhibitedSubtext.hidden);
+        assertTrue(
+            inhibitedSubtext.textContent.includes(cellularNetworkList.i18n(
+                'cellularNetworRefreshingProfileListProfile')));
+        assertTrue(getInhibitedSpinner().active);
+
+        // When device inhibit reason changes from kRefreshingProfileList to
+        // kInstallingProfile, the inhibited subtext should also get updated to
+        // reflect that.
+        cellularNetworkList.cellularDeviceState = {
+          inhibitReason: mojom.InhibitReason.kInstallingProfile
+        };
+        addESimSlot();
+        await flushAsync();
+        assertFalse(inhibitedSubtext.hidden);
+        assertTrue(inhibitedSubtext.textContent.includes(
+            cellularNetworkList.i18n('cellularNetworkInstallingProfile')));
+        assertTrue(getInhibitedSpinner().active);
+      });
 });
