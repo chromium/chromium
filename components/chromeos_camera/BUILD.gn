@@ -58,7 +58,10 @@ source_set("utils") {
     "//ui/gfx/geometry",
   ]
 
-  deps = [ "//mojo/public/cpp/system" ]
+  deps = [
+    "//media/gpu",
+    "//mojo/public/cpp/system",
+  ]
 }
 
 # TODO(crbug.com/960243): Don't compile these codes for build without vaapi/v4l2

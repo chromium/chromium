@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/dcheck_is_on.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
@@ -342,11 +343,17 @@ gfx::GpuMemoryBufferHandle CreateGpuMemoryBufferHandle(
       NOTREACHED() << "Unsupported storage type: "
                    << video_frame->storage_type();
   }
-  if (!handle.is_null() && handle.type == gfx::NATIVE_PIXMAP &&
-      !VerifyGpuMemoryBufferHandle(video_frame->format(),
-                                   video_frame->coded_size(), handle)) {
-    VLOGF(1) << "Created GpuMemoryBufferHandle is invalid";
-  }
+  CHECK_EQ(handle.type, gfx::NATIVE_PIXMAP);
+  if (video_frame->format() == PIXEL_FORMAT_MJPEG)
+    return handle;
+#if DCHECK_IS_ON()
+  const bool is_handle_valid =
+      !handle.is_null() &&
+      VerifyGpuMemoryBufferHandle(video_frame->format(),
+                                  video_frame->coded_size(), handle);
+  DLOG_IF(WARNING, !is_handle_valid)
+      << __func__ << "(): Created GpuMemoryBufferHandle is invalid";
+#endif  // DCHECK_IS_ON()
   return handle;
 }
 

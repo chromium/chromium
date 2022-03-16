@@ -66,6 +66,11 @@ bool VerifyGpuMemoryBufferHandle(
              << coded_size.ToString();
     return false;
   }
+  if (pixel_format != PIXEL_FORMAT_I420 && pixel_format != PIXEL_FORMAT_NV12 &&
+      pixel_format != PIXEL_FORMAT_P016LE) {
+    VLOGF(1) << "Unsupported: " << pixel_format;
+    return false;
+  }
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   const size_t num_planes = media::VideoFrame::NumPlanes(pixel_format);
   if (num_planes != gmb_handle.native_pixmap_handle.planes.size() ||
