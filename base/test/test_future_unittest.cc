@@ -20,8 +20,7 @@
 #include "testing/gtest/include/gtest/gtest-spi.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-namespace test {
+namespace base::test {
 
 namespace {
 
@@ -263,5 +262,47 @@ TEST_F(TestFutureTest, SetValueShouldAllowMultipleArguments) {
   EXPECT_EQ(expected_string_value, std::get<1>(actual));
 }
 
-}  // namespace test
-}  // namespace base
+TEST_F(TestFutureTest, ShouldSupportCvRefType) {
+  std::string expected_value = "value";
+  TestFuture<const std::string&> future;
+
+  base::OnceCallback<void(const std::string&)> callback = future.GetCallback();
+  std::move(callback).Run(expected_value);
+
+  // both get and take should compile, and take should return the decayed value.
+  const std::string& get_result = future.Get();
+  EXPECT_EQ(expected_value, get_result);
+
+  std::string take_result = future.Take();
+  EXPECT_EQ(expected_value, take_result);
+}
+
+TEST_F(TestFutureTest, ShouldSupportMultipleCvRefTypes) {
+  const int expected_first_value = 5;
+  std::string expected_second_value = "value";
+  const long expected_third_value = 10;
+  TestFuture<const int, std::string&, const long&> future;
+
+  base::OnceCallback<void(const int, std::string&, const long&)> callback =
+      future.GetCallback();
+  std::move(callback).Run(expected_first_value, expected_second_value,
+                          expected_third_value);
+
+  // both get and take should compile, and return the decayed value.
+  const std::tuple<int, std::string, long>& get_result = future.Get();
+  EXPECT_EQ(expected_first_value, std::get<0>(get_result));
+  EXPECT_EQ(expected_second_value, std::get<1>(get_result));
+  EXPECT_EQ(expected_third_value, std::get<2>(get_result));
+
+  // Get<i> should also work
+  EXPECT_EQ(expected_first_value, future.Get<0>());
+  EXPECT_EQ(expected_second_value, future.Get<1>());
+  EXPECT_EQ(expected_third_value, future.Get<2>());
+
+  std::tuple<int, std::string, long> take_result = future.Take();
+  EXPECT_EQ(expected_first_value, std::get<0>(take_result));
+  EXPECT_EQ(expected_second_value, std::get<1>(take_result));
+  EXPECT_EQ(expected_third_value, std::get<2>(take_result));
+}
+
+}  // namespace base::test

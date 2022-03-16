@@ -11,8 +11,7 @@
 #include "testing/gtest/include/gtest/gtest-spi.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-namespace test {
+namespace base::test {
 
 namespace {
 
@@ -238,5 +237,32 @@ TEST_F(RepeatingTestFutureTest,
   EXPECT_EQ(expected_string_value, std::get<1>(actual));
 }
 
-}  // namespace test
-}  // namespace base
+TEST_F(RepeatingTestFutureTest, ShouldSupportCvRefType) {
+  std::string expected_value = "value";
+  RepeatingTestFuture<const std::string&> future;
+
+  base::OnceCallback<void(const std::string&)> callback = future.GetCallback();
+  std::move(callback).Run(expected_value);
+
+  std::string actual = future.Take();
+  EXPECT_EQ(expected_value, actual);
+}
+
+TEST_F(RepeatingTestFutureTest, ShouldSupportMultipleCvRefType) {
+  const int expected_first_value = 5;
+  std::string expected_second_value = "value";
+  const long expected_third_value = 10;
+  RepeatingTestFuture<const int, std::string&, const long&> future;
+
+  base::OnceCallback<void(const int, std::string&, const long&)> callback =
+      future.GetCallback();
+  std::move(callback).Run(expected_first_value, expected_second_value,
+                          expected_third_value);
+
+  std::tuple<int, std::string, long> take_result = future.Take();
+  EXPECT_EQ(expected_first_value, std::get<0>(take_result));
+  EXPECT_EQ(expected_second_value, std::get<1>(take_result));
+  EXPECT_EQ(expected_third_value, std::get<2>(take_result));
+}
+
+}  // namespace base::test

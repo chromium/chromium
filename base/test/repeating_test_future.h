@@ -16,8 +16,7 @@
 #include "base/thread_annotations.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace base {
-namespace test {
+namespace base::test {
 
 // Related class to |base::test::TestFuture|, which allows its callback and
 // AddValue() method to be called multiple times.
@@ -78,9 +77,8 @@ namespace test {
 template <typename... Types>
 class RepeatingTestFuture {
  public:
-  // Helper type to make the SFINAE templates easier on the eyes.
-  using T = std::tuple<Types...>;
-  using FirstType = typename std::tuple_element<0, T>::type;
+  using TupleType = std::tuple<std::decay_t<Types>...>;
+  using FirstType = typename std::tuple_element<0, TupleType>::type;
 
   RepeatingTestFuture() = default;
   RepeatingTestFuture(const RepeatingTestFuture&) = delete;
@@ -162,7 +160,7 @@ class RepeatingTestFuture {
   // Wait for an element to arrive, and move its value out.
   //
   // Will DCHECK if a timeout happens.
-  template <typename U = T, internal::EnableIfSingleValue<U> = true>
+  template <typename T = TupleType, internal::EnableIfSingleValue<T> = true>
   FirstType Take() {
     return std::get<0>(TakeTuple());
   }
@@ -175,8 +173,8 @@ class RepeatingTestFuture {
   // Wait for an element to arrive, and move a tuple with its values out.
   //
   // Will DCHECK if a timeout happens.
-  template <typename U = T, internal::EnableIfMultiValue<U> = true>
-  std::tuple<Types...> Take() {
+  template <typename T = TupleType, internal::EnableIfMultiValue<T> = true>
+  TupleType Take() {
     return TakeTuple();
   }
 
@@ -197,7 +195,7 @@ class RepeatingTestFuture {
       run_loop_->Quit();
   }
 
-  std::tuple<Types...> TakeTuple() {
+  TupleType TakeTuple() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     // Ensure an element is available.
@@ -217,8 +215,7 @@ class RepeatingTestFuture {
     AddValue(std::forward<CallbackArgumentsTypes>(values)...);
   }
 
-  base::queue<std::tuple<Types...>> elements_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  base::queue<TupleType> elements_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Used by Wait() to know when AddValue() is called.
   absl::optional<base::RunLoop> run_loop_ GUARDED_BY_CONTEXT(sequence_checker_);
@@ -228,7 +225,6 @@ class RepeatingTestFuture {
   base::WeakPtrFactory<RepeatingTestFuture<Types...>> weak_ptr_factory_{this};
 };
 
-}  // namespace test
-}  // namespace base
+}  // namespace base::test
 
 #endif  // BASE_TEST_REPEATING_TEST_FUTURE_H_

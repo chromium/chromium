@@ -18,8 +18,7 @@
 #include "base/thread_annotations.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace base {
-namespace test {
+namespace base::test {
 
 // Helper class to test code that returns its result(s) asynchronously through a
 // callback:
@@ -83,9 +82,8 @@ namespace test {
 template <typename... Types>
 class TestFuture {
  public:
-  // Helper type to make the SFINAE templates easier on the eyes.
-  using T = std::tuple<Types...>;
-  using FirstType = typename std::tuple_element<0, T>::type;
+  using TupleType = std::tuple<std::decay_t<Types>...>;
+  using FirstType = typename std::tuple_element<0, TupleType>::type;
 
   TestFuture() = default;
   TestFuture(const TestFuture&) = delete;
@@ -130,7 +128,7 @@ class TestFuture {
   //   std::string second = future.Get<1>();
   //
   template <std::size_t I>
-  const typename std::tuple_element<I, std::tuple<Types...>>::type& Get() {
+  const typename std::tuple_element<I, TupleType>::type& Get() {
     return std::get<I>(GetTuple());
   }
 
@@ -183,7 +181,7 @@ class TestFuture {
   // Wait for the value to arrive, and returns its value.
   //
   // Will DCHECK if a timeout happens.
-  template <typename U = T, internal::EnableIfSingleValue<U> = true>
+  template <typename T = TupleType, internal::EnableIfSingleValue<T> = true>
   [[nodiscard]] const FirstType& Get() {
     return std::get<0>(GetTuple());
   }
@@ -191,7 +189,7 @@ class TestFuture {
   // Wait for the value to arrive, and move it out.
   //
   // Will DCHECK if a timeout happens.
-  template <typename U = T, internal::EnableIfSingleValue<U> = true>
+  template <typename T = TupleType, internal::EnableIfSingleValue<T> = true>
   [[nodiscard]] FirstType Take() {
     return std::get<0>(TakeTuple());
   }
@@ -203,16 +201,16 @@ class TestFuture {
   // Wait for the values to arrive, and returns a tuple with the values.
   //
   // Will DCHECK if a timeout happens.
-  template <typename U = T, internal::EnableIfMultiValue<U> = true>
-  [[nodiscard]] const std::tuple<Types...>& Get() {
+  template <typename T = TupleType, internal::EnableIfMultiValue<T> = true>
+  [[nodiscard]] const TupleType& Get() {
     return GetTuple();
   }
 
   // Wait for the values to arrive, and move a tuple with the values out.
   //
   // Will DCHECK if a timeout happens.
-  template <typename U = T, internal::EnableIfMultiValue<U> = true>
-  [[nodiscard]] std::tuple<Types...> Take() {
+  template <typename T = TupleType, internal::EnableIfMultiValue<T> = true>
+  [[nodiscard]] TupleType Take() {
     return TakeTuple();
   }
 
@@ -225,14 +223,14 @@ class TestFuture {
     SetValue(std::forward<CallbackArgumentsTypes>(values)...);
   }
 
-  [[nodiscard]] const std::tuple<Types...>& GetTuple() {
+  [[nodiscard]] const TupleType& GetTuple() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     bool success = Wait();
     DCHECK(success) << "Waiting for value timed out.";
     return values_.value();
   }
 
-  [[nodiscard]] std::tuple<Types...> TakeTuple() {
+  [[nodiscard]] TupleType TakeTuple() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     bool success = Wait();
     DCHECK(success) << "Waiting for value timed out.";
@@ -243,13 +241,11 @@ class TestFuture {
 
   base::RunLoop run_loop_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  absl::optional<std::tuple<Types...>> values_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  absl::optional<TupleType> values_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtrFactory<TestFuture<Types...>> weak_ptr_factory_{this};
 };
 
-}  // namespace test
-}  // namespace base
+}  // namespace base::test
 
 #endif  // BASE_TEST_TEST_FUTURE_H_
