@@ -33,7 +33,9 @@ public class SiteSettingsHelper {
         boolean isOfflinePage = OfflinePageUtils.getOfflinePage(webContents) != null;
         // TODO(crbug.com/1033178): dedupe the DomDistillerUrlUtils#getOriginalUrlFromDistillerUrl()
         // calls.
-        GURL url = DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(webContents.getVisibleUrl());
+        GURL url = webContents != null
+                ? DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(webContents.getVisibleUrl())
+                : null;
         return !isOfflinePage && url != null && UrlUtilities.isHttpOrHttps(url);
     }
 
