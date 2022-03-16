@@ -870,6 +870,7 @@ class PrepareFrameAndViewForPrint : public blink::WebViewClient,
   void CopySelection(const WebPreferences& preferences);
   void ComputeScalingAndPrintParams(blink::WebLocalFrame* frame,
                                     mojom::PrintParamsPtr& print_params,
+                                    std::string* selection,
                                     bool is_pdf,
                                     bool ignore_css_margins,
                                     bool fit_to_page);
@@ -916,8 +917,9 @@ PrepareFrameAndViewForPrint::PrepareFrameAndViewForPrint(
   } else {
     bool fit_to_page =
         ignore_css_margins && IsPrintScalingOptionFitToPage(*print_params);
-    ComputeScalingAndPrintParams(frame, print_params, source_is_pdf,
-                                 ignore_css_margins, fit_to_page);
+    ComputeScalingAndPrintParams(frame, print_params, /*selection=*/nullptr,
+                                 source_is_pdf, ignore_css_margins,
+                                 fit_to_page);
   }
 }
 
@@ -977,11 +979,11 @@ void PrepareFrameAndViewForPrint::CopySelectionIfNeeded(
 void PrepareFrameAndViewForPrint::CopySelection(
     const WebPreferences& preferences) {
   ResizeForPrinting();
-  ComputeScalingAndPrintParams(frame(), selection_only_print_params_,
+  std::string html;
+  ComputeScalingAndPrintParams(frame(), selection_only_print_params_, &html,
                                /*is_pdf=*/false,
                                /*ignore_css_margins=*/false,
                                /*fit_to_page=*/false);
-  std::string html = frame()->SelectionAsMarkup().Utf8();
   RestoreSize();
 
   // Create a new WebView with the same settings as the current display one.
@@ -1045,6 +1047,7 @@ void PrepareFrameAndViewForPrint::CopySelection(
 void PrepareFrameAndViewForPrint::ComputeScalingAndPrintParams(
     blink::WebLocalFrame* frame,
     mojom::PrintParamsPtr& print_params,
+    std::string* selection,
     bool is_pdf,
     bool ignore_css_margins,
     bool fit_to_page) {
@@ -1056,6 +1059,8 @@ void PrepareFrameAndViewForPrint::ComputeScalingAndPrintParams(
   print_params = CalculatePrintParamsForCss(frame, /*page_index=*/0,
                                             *print_params, ignore_css_margins,
                                             fit_to_page, &scale_factor);
+  if (selection)
+    *selection = frame->SelectionAsMarkup().Utf8();
   frame->PrintEnd();
   ComputeWebKitPrintParamsInDesiredDpi(*print_params, is_pdf,
                                        &web_print_params_);
