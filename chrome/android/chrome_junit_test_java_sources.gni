@@ -204,7 +204,6 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/survey/ChromeSurveyControllerFlowTest.java",
   "junit/src/org/chromium/chrome/browser/survey/ChromeSurveyControllerTest.java",
   "junit/src/org/chromium/chrome/browser/survey/SurveyHttpClientBridgeUnitTest.java",
-  "junit/src/org/chromium/chrome/browser/tab/HistoricalTabSaverUnitTest.java",
   "junit/src/org/chromium/chrome/browser/tab/RequestDesktopUtilsUnitTest.java",
   "junit/src/org/chromium/chrome/browser/tab/TabAttributesTest.java",
   "junit/src/org/chromium/chrome/browser/tab/TabBrowserControlsConstraintsHelperTest.java",

@@ -24,8 +24,21 @@ public class WebContentsStateBridge {
      */
     public static WebContents restoreContentsFromByteBuffer(
             WebContentsState webContentsState, boolean isHidden) {
+        return WebContentsStateBridge.restoreContentsFromByteBuffer(
+                webContentsState, isHidden, /*noRenderer=*/false);
+    }
+
+    /**
+     * Creates a WebContents from the buffer.
+     * @param isHidden Whether or not the tab initially starts hidden.
+     * @param noRenderer Explicitly request to create without a renderer. If false a renderer may or
+     *     may not be created.
+     * @return Pointer A WebContents object.
+     */
+    public static WebContents restoreContentsFromByteBuffer(
+            WebContentsState webContentsState, boolean isHidden, boolean noRenderer) {
         return WebContentsStateBridgeJni.get().restoreContentsFromByteBuffer(
-                webContentsState.buffer(), webContentsState.version(), isHidden);
+                webContentsState.buffer(), webContentsState.version(), isHidden, noRenderer);
     }
 
     /**
@@ -84,8 +97,8 @@ public class WebContentsStateBridge {
     @NativeMethods
     @VisibleForTesting
     public interface Natives {
-        WebContents restoreContentsFromByteBuffer(
-                ByteBuffer buffer, int savedStateVersion, boolean initiallyHidden);
+        WebContents restoreContentsFromByteBuffer(ByteBuffer buffer, int savedStateVersion,
+                boolean initiallyHidden, boolean noRenderer);
         ByteBuffer getContentsStateAsByteBuffer(WebContents webcontents);
         ByteBuffer deleteNavigationEntries(ByteBuffer state, int saveStateVersion, long predicate);
         ByteBuffer createSingleNavigationStateAsByteBuffer(String url, String referrerUrl,

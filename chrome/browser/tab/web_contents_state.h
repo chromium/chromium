@@ -53,7 +53,8 @@ class WebContentsState {
   RestoreContentsFromByteBuffer(JNIEnv* env,
                                 jobject state,
                                 jint saved_state_version,
-                                jboolean initially_hidden);
+                                jboolean initially_hidden,
+                                jboolean no_renderer);
 
   // Synthesizes a stub, single-navigation state for a tab that will be loaded
   // lazily.
