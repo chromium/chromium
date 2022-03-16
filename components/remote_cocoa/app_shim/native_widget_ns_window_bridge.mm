@@ -1291,6 +1291,10 @@ void NativeWidgetNSWindowBridge::FullscreenControllerTransitionStart(
 
 void NativeWidgetNSWindowBridge::FullscreenControllerTransitionComplete(
     bool is_fullscreen) {
+  DCHECK(!fullscreen_controller_->IsInFullscreenTransition());
+  UpdateWindowGeometry();
+  UpdateWindowDisplay();
+
   // Add any children that were skipped during the fullscreen transition.
   OrderChildren();
   host_->OnWindowFullscreenTransitionComplete(is_fullscreen);
@@ -1298,10 +1302,14 @@ void NativeWidgetNSWindowBridge::FullscreenControllerTransitionComplete(
 
 void NativeWidgetNSWindowBridge::FullscreenControllerSetFrame(
     const gfx::Rect& frame,
+    bool animate,
     base::TimeDelta& transition_time) {
   NSRect ns_frame = gfx::ScreenRectToNSRect(frame);
-  transition_time = base::Seconds([window_ animationResizeTime:ns_frame]);
-  [window_ setFrame:ns_frame display:NO animate:YES];
+  if (animate)
+    transition_time = base::Seconds([window_ animationResizeTime:ns_frame]);
+  else
+    transition_time = base::Seconds(0);
+  [window_ setFrame:ns_frame display:NO animate:animate];
 }
 
 void NativeWidgetNSWindowBridge::FullscreenControllerToggleFullscreen() {
@@ -1637,6 +1645,10 @@ void NativeWidgetNSWindowBridge::NotifyVisibilityChangeDown() {
 }
 
 void NativeWidgetNSWindowBridge::UpdateWindowGeometry() {
+  if (fullscreen_controller_ &&
+      fullscreen_controller_->IsInFullscreenTransition())
+    return;
+
   gfx::Rect window_in_screen = gfx::ScreenRectFromNSRect([window_ frame]);
   gfx::Rect content_in_screen = gfx::ScreenRectFromNSRect(
       [window_ contentRectForFrameRect:[window_ frame]]);
@@ -1655,6 +1667,10 @@ void NativeWidgetNSWindowBridge::UpdateWindowGeometry() {
 }
 
 void NativeWidgetNSWindowBridge::UpdateWindowDisplay() {
+  if (fullscreen_controller_ &&
+      fullscreen_controller_->IsInFullscreenTransition())
+    return;
+
   host_->OnWindowDisplayChanged(
       display::Screen::GetScreen()->GetDisplayNearestWindow(window_.get()));
 }

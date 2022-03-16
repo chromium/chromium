@@ -19,8 +19,8 @@ class MockClient : public NativeWidgetNSWindowFullscreenController::Client {
  public:
   MOCK_METHOD1(FullscreenControllerTransitionStart, void(bool));
   MOCK_METHOD1(FullscreenControllerTransitionComplete, void(bool));
-  MOCK_METHOD2(FullscreenControllerSetFrame,
-               void(const gfx::Rect&, base::TimeDelta&));
+  MOCK_METHOD3(FullscreenControllerSetFrame,
+               void(const gfx::Rect&, bool animate, base::TimeDelta&));
 
   MOCK_METHOD0(FullscreenControllerToggleFullscreen, void());
   MOCK_METHOD0(FullscreenControllerCloseWindow, void());
@@ -34,7 +34,7 @@ class MacFullscreenControllerTest : public testing::Test {
  public:
   void SetUp() override {
     EXPECT_CALL(mock_client_, FullscreenControllerToggleFullscreen()).Times(0);
-    EXPECT_CALL(mock_client_, FullscreenControllerSetFrame(_, _)).Times(0);
+    EXPECT_CALL(mock_client_, FullscreenControllerSetFrame(_, _, _)).Times(0);
     EXPECT_CALL(mock_client_, FullscreenControllerCloseWindow()).Times(0);
   }
 
@@ -243,7 +243,8 @@ TEST_F(MacFullscreenControllerTest, SimpleCrossScreen) {
   EXPECT_CALL(mock_client_, FullscreenControllerGetFrameForDisplay(kDisplay1Id))
       .Times(1)
       .WillOnce(Return(kDisplay1Frame));
-  EXPECT_CALL(mock_client_, FullscreenControllerSetFrame(kDisplay1Frame, _))
+  EXPECT_CALL(mock_client_,
+              FullscreenControllerSetFrame(kDisplay1Frame, true, _))
       .Times(1);
   EXPECT_CALL(mock_client_, FullscreenControllerToggleFullscreen())
       .WillOnce(Invoke(&controller_, &NativeWidgetNSWindowFullscreenController::
@@ -280,7 +281,7 @@ TEST_F(MacFullscreenControllerTest, SimpleCrossScreen) {
   EXPECT_FALSE(controller_.GetTargetFullscreenState());
 
   // Let the run loop run, it will restore the bounds.
-  EXPECT_CALL(mock_client_, FullscreenControllerSetFrame(kWindowRect, _))
+  EXPECT_CALL(mock_client_, FullscreenControllerSetFrame(kWindowRect, true, _))
       .Times(1);
   EXPECT_CALL(mock_client_, FullscreenControllerTransitionComplete(false))
       .Times(1);
@@ -330,7 +331,8 @@ TEST_F(MacFullscreenControllerTest, CrossScreenFromFullscreen) {
 
   // Execute the posted task to set the new frame. This will also re-toggle
   // fullscreen in the RunUntilIdle.
-  EXPECT_CALL(mock_client_, FullscreenControllerSetFrame(kDisplay1Frame, _))
+  EXPECT_CALL(mock_client_,
+              FullscreenControllerSetFrame(kDisplay1Frame, true, _))
       .Times(1);
   EXPECT_CALL(mock_client_, FullscreenControllerToggleFullscreen())
       .WillOnce(Invoke(&controller_, &NativeWidgetNSWindowFullscreenController::
@@ -355,7 +357,7 @@ TEST_F(MacFullscreenControllerTest, CrossScreenFromFullscreen) {
                                          OnWindowWillExitFullscreen));
   task_environment_.RunUntilIdle();
   controller_.OnWindowDidExitFullscreen();
-  EXPECT_CALL(mock_client_, FullscreenControllerSetFrame(kWindowRect, _))
+  EXPECT_CALL(mock_client_, FullscreenControllerSetFrame(kWindowRect, true, _))
       .Times(1);
   EXPECT_CALL(mock_client_, FullscreenControllerTransitionComplete(false))
       .Times(1);
@@ -436,7 +438,8 @@ TEST_F(MacFullscreenControllerTest, CrossScreenFromFullscreenFailEnter) {
       .Times(1)
       .WillOnce(Return(kDisplay1Frame));
   controller_.OnWindowDidExitFullscreen();
-  EXPECT_CALL(mock_client_, FullscreenControllerSetFrame(kDisplay1Frame, _))
+  EXPECT_CALL(mock_client_,
+              FullscreenControllerSetFrame(kDisplay1Frame, true, _))
       .Times(1);
   EXPECT_CALL(mock_client_, FullscreenControllerToggleFullscreen())
       .WillOnce(Invoke(&controller_, &NativeWidgetNSWindowFullscreenController::
@@ -454,7 +457,7 @@ TEST_F(MacFullscreenControllerTest, CrossScreenFromFullscreenFailEnter) {
   // This will cause us to restore the window's original frame, and then declare
   // the transition complete, with the final state after transition as being
   // windowed.
-  EXPECT_CALL(mock_client_, FullscreenControllerSetFrame(kWindowRect, _))
+  EXPECT_CALL(mock_client_, FullscreenControllerSetFrame(kWindowRect, true, _))
       .Times(1);
   EXPECT_CALL(mock_client_, FullscreenControllerTransitionComplete(false))
       .Times(1);
@@ -596,7 +599,8 @@ TEST_F(MacFullscreenControllerTest, EnterCrossScreenWhileExiting) {
   EXPECT_CALL(mock_client_, FullscreenControllerGetFrameForDisplay(kDisplay1Id))
       .Times(1)
       .WillOnce(Return(kDisplay1Frame));
-  EXPECT_CALL(mock_client_, FullscreenControllerSetFrame(kDisplay1Frame, _))
+  EXPECT_CALL(mock_client_,
+              FullscreenControllerSetFrame(kDisplay1Frame, true, _))
       .Times(1);
   EXPECT_CALL(mock_client_, FullscreenControllerToggleFullscreen())
       .WillOnce(Invoke(&controller_, &NativeWidgetNSWindowFullscreenController::
@@ -654,7 +658,8 @@ TEST_F(MacFullscreenControllerTest, EnterCrossScreenWhileEntering) {
   EXPECT_CALL(mock_client_, FullscreenControllerGetFrameForDisplay(kDisplay1Id))
       .Times(1)
       .WillOnce(Return(kDisplay1Frame));
-  EXPECT_CALL(mock_client_, FullscreenControllerSetFrame(kDisplay1Frame, _))
+  EXPECT_CALL(mock_client_,
+              FullscreenControllerSetFrame(kDisplay1Frame, true, _))
       .Times(1);
   EXPECT_CALL(mock_client_, FullscreenControllerToggleFullscreen())
       .WillOnce(Invoke(&controller_, &NativeWidgetNSWindowFullscreenController::
@@ -680,7 +685,7 @@ TEST_F(MacFullscreenControllerTest, EnterCrossScreenWhileEntering) {
   // Complete the transition to windowed mode. The frame frame should be reset.
   controller_.OnWindowDidExitFullscreen();
   EXPECT_TRUE(controller_.IsInFullscreenTransition());
-  EXPECT_CALL(mock_client_, FullscreenControllerSetFrame(kWindowRect, _))
+  EXPECT_CALL(mock_client_, FullscreenControllerSetFrame(kWindowRect, true, _))
       .Times(1);
   EXPECT_CALL(mock_client_, FullscreenControllerTransitionComplete(false))
       .Times(1);

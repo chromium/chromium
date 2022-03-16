@@ -14,6 +14,7 @@
 #include "base/run_loop.h"
 #include "base/task/current_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "ui/base/base_window.h"
 
 // Donates a testing implementation of [NSWindow toggleFullScreen:].
 @interface ToggleFullscreenDonorForWindow : NSObject
@@ -22,6 +23,8 @@
 namespace {
 
 ui::test::ScopedFakeNSWindowFullscreen::Impl* g_fake_fullscreen_impl = nullptr;
+
+uint64_t g_instance_count = 0;
 
 }  // namespace
 
@@ -194,10 +197,14 @@ ScopedFakeNSWindowFullscreen::ScopedFakeNSWindowFullscreen() {
   DCHECK(!g_fake_fullscreen_impl);
   impl_ = std::make_unique<Impl>();
   g_fake_fullscreen_impl = impl_.get();
+  g_instance_count += 1;
+  BaseWindow::SetFullscreenFakedForTesting(g_instance_count > 0);
 }
 
 ScopedFakeNSWindowFullscreen::~ScopedFakeNSWindowFullscreen() {
   g_fake_fullscreen_impl = nullptr;
+  g_instance_count -= 1;
+  BaseWindow::SetFullscreenFakedForTesting(g_instance_count > 0);
 }
 
 void ScopedFakeNSWindowFullscreen::FinishTransition() {

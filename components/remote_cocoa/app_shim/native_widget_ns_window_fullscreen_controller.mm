@@ -6,8 +6,17 @@
 
 #include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "ui/base/base_window.h"
 
 namespace remote_cocoa {
+
+namespace {
+
+bool IsFakeForTesting() {
+  return ui::BaseWindow::IsFullscreenFakedForTesting();
+}
+
+}  // namespace
 
 NativeWidgetNSWindowFullscreenController::
     NativeWidgetNSWindowFullscreenController(Client* client)
@@ -18,6 +27,23 @@ NativeWidgetNSWindowFullscreenController::
 
 void NativeWidgetNSWindowFullscreenController::EnterFullscreen(
     int64_t target_display_id) {
+  if (IsFakeForTesting()) {
+    if (state_ == State::kWindowed) {
+      state_ = State::kEnterFullscreenTransition;
+      client_->FullscreenControllerTransitionStart(true);
+
+      windowed_frame_ = client_->FullscreenControllerGetFrame();
+      const gfx::Rect kFakeFullscreenRect(0, 0, 1024, 768);
+      base::TimeDelta animation_time;
+      client_->FullscreenControllerSetFrame(kFakeFullscreenRect,
+                                            /*animate=*/false, animation_time);
+
+      state_ = State::kFullscreen;
+      client_->FullscreenControllerTransitionComplete(true);
+    }
+    return;
+  }
+
   // Early-out for no-ops.
   if (state_ == State::kFullscreen) {
     if (target_display_id == display::kInvalidDisplayId ||
@@ -41,6 +67,21 @@ void NativeWidgetNSWindowFullscreenController::EnterFullscreen(
 }
 
 void NativeWidgetNSWindowFullscreenController::ExitFullscreen() {
+  if (IsFakeForTesting()) {
+    if (state_ == State::kFullscreen) {
+      state_ = State::kExitFullscreenTransition;
+      client_->FullscreenControllerTransitionStart(false);
+
+      base::TimeDelta animation_time;
+      client_->FullscreenControllerSetFrame(windowed_frame_.value(),
+                                            /*animate=*/false, animation_time);
+
+      state_ = State::kWindowed;
+      client_->FullscreenControllerTransitionComplete(false);
+    }
+    return;
+  }
+
   // Early-out for no-ops.
   if (state_ == State::kWindowed)
     return;
@@ -64,7 +105,8 @@ void NativeWidgetNSWindowFullscreenController::
   base::TimeDelta animation_time;
   if (!display_frame.IsEmpty()) {
     restore_windowed_frame_ = true;
-    client_->FullscreenControllerSetFrame(display_frame, animation_time);
+    client_->FullscreenControllerSetFrame(display_frame, /*animate=*/true,
+                                          animation_time);
   }
 
   // Calling toggleFullscreen immediately after calling setFrame causes the
@@ -89,7 +131,7 @@ void NativeWidgetNSWindowFullscreenController::RestoreWindowedFrame() {
 
   base::TimeDelta animation_time;
   client_->FullscreenControllerSetFrame(windowed_frame_.value(),
-                                        animation_time);
+                                        /*animate=*/true, animation_time);
   restore_windowed_frame_ = false;
   windowed_frame_.reset();
 

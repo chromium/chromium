@@ -31,11 +31,13 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowFullscreenController {
     // If `is_fullscreen` is true, then the window is now fullscreen.
     virtual void FullscreenControllerTransitionComplete(bool is_fullscreen) = 0;
 
-    // Set the window's frame to the specified rectangle. Populate
-    // `transition_time` with the time that it will take for this transition
-    // to complete.
+    // Set the window's frame to the specified rectangle. If `animate` is true,
+    // then animate the transition and populate `transition_time` with the time
+    // that it will take for this transition to complete. If `animate` is false,
+    // then populate `transition_time` with zero.
     virtual void FullscreenControllerSetFrame(
         const gfx::Rect& frame,
+        bool animate,
         base::TimeDelta& transition_time) = 0;
 
     // Call -[NSWindow toggleFullscreen:].
