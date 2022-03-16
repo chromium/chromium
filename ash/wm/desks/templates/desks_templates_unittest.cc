@@ -1224,11 +1224,12 @@ TEST_F(DesksTemplatesTest, IconViewMultipleWindows) {
   EXPECT_EQ(u"+3", overflow_icon_view.count_label()->GetText());
 }
 
-// Tests that when an app has more than 9 windows, its label is changed to "9+".
-TEST_F(DesksTemplatesTest, IconViewMoreThan9Windows) {
-  // Create a `DeskTemplate` using which has 1 app with 11 windows.
+// Tests that when an app has more than 99 windows, its label is changed to
+// "+99".
+TEST_F(DesksTemplatesTest, IconViewMoreThan99Windows) {
+  // Create a `DeskTemplate` using which has 1 app with 101 windows.
   AddEntry(base::GUID::GenerateRandomV4(), "template_1", base::Time::Now(),
-           CreateRestoreData(std::vector<int>{11}));
+           CreateRestoreData(std::vector<int>{101}));
 
   // Enter overview and show the Desks Templates Grid.
   OpenOverviewAndShowTemplatesGrid();
@@ -1243,11 +1244,11 @@ TEST_F(DesksTemplatesTest, IconViewMoreThan9Windows) {
   // overflow.
   EXPECT_EQ(2u, icon_views.size());
 
-  // The app's icon view should have a "9+" label.
+  // The app's icon view should have a "+99" label.
   DesksTemplatesIconViewTestApi icon_view(icon_views[0]);
   EXPECT_TRUE(icon_view.icon_view());
   EXPECT_TRUE(icon_view.count_label());
-  EXPECT_EQ(u"9+", icon_view.count_label()->GetText());
+  EXPECT_EQ(u"+99", icon_view.count_label()->GetText());
 
   // The overflow counter should not be visible.
   EXPECT_FALSE(icon_views.back()->GetVisible());

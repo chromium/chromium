@@ -38,13 +38,13 @@ constexpr int kCountLabelInsetSize = 4;
 // resizing.
 constexpr int kAppIdImageSize = 64;
 
-// Return the formatted string for `count`. If `count` is <=9, the string will
-// be "+<count>". If `count` is >9, the string will be "9+". If `show_plus` is
-// true, the string will be just the count.
+// Return the formatted string for `count`. If `count` is <=99, the string will
+// be "+<count>". If `count` is >99, the string will be "+99". If `show_plus` is
+// false, the string will be just the count.
 std::u16string GetCountString(int count, bool show_plus) {
   if (show_plus) {
-    return base::UTF8ToUTF16(count > 9 ? "9+"
-                                       : base::StringPrintf("+%i", count));
+    return base::UTF8ToUTF16(count > 99 ? "+99"
+                                        : base::StringPrintf("+%i", count));
   }
   return base::NumberToString16(count);
 }
@@ -153,7 +153,9 @@ void DesksTemplatesIconView::UpdateCount(int count) {
 }
 
 gfx::Size DesksTemplatesIconView::CalculatePreferredSize() const {
-  return gfx::Size(count_ > 1 && icon_view_ ? 2 * kIconSize : kIconSize,
+  return gfx::Size(count_ > 1 && icon_view_ && count_label_
+                       ? count_label_->bounds().width() + kIconSize
+                       : kIconSize,
                    kIconSize);
 }
 
@@ -163,7 +165,8 @@ void DesksTemplatesIconView::Layout() {
 
   if (count_label_) {
     count_label_->SetBoundsRect(
-        gfx::Rect(icon_view_ ? kIconSize : 0, 0, kIconSize, kIconSize));
+        gfx::Rect(icon_view_ ? kIconSize : 0, 0,
+                  count_ > 9 ? 1.25 * kIconSize : kIconSize, kIconSize));
   }
 }
 
