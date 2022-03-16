@@ -60,9 +60,7 @@ class WebUsbDescriptorsTest : public ::testing::Test {};
 TEST_F(WebUsbDescriptorsTest, PlatformCapabilityDescriptor) {
   WebUsbPlatformCapabilityDescriptor descriptor;
 
-  ASSERT_TRUE(descriptor.ParseFromBosDescriptor(std::vector<uint8_t>(
-      kExampleBosDescriptor,
-      kExampleBosDescriptor + sizeof(kExampleBosDescriptor))));
+  ASSERT_TRUE(descriptor.ParseFromBosDescriptor(kExampleBosDescriptor));
   EXPECT_EQ(0x0100, descriptor.version);
   EXPECT_EQ(0x42, descriptor.vendor_code);
 }
@@ -72,8 +70,7 @@ TEST_F(WebUsbDescriptorsTest, ShortBosDescriptorHeader) {
   static const uint8_t kBuffer[] = {0x03, 0x0F, 0x03};
 
   WebUsbPlatformCapabilityDescriptor descriptor;
-  ASSERT_FALSE(descriptor.ParseFromBosDescriptor(
-      std::vector<uint8_t>(kBuffer, kBuffer + sizeof(kBuffer))));
+  ASSERT_FALSE(descriptor.ParseFromBosDescriptor(kBuffer));
 }
 
 TEST_F(WebUsbDescriptorsTest, LongBosDescriptorHeader) {
@@ -81,15 +78,12 @@ TEST_F(WebUsbDescriptorsTest, LongBosDescriptorHeader) {
   static const uint8_t kBuffer[] = {0x06, 0x0F, 0x05, 0x00, 0x01};
 
   WebUsbPlatformCapabilityDescriptor descriptor;
-  ASSERT_FALSE(descriptor.ParseFromBosDescriptor(
-      std::vector<uint8_t>(kBuffer, kBuffer + sizeof(kBuffer))));
+  ASSERT_FALSE(descriptor.ParseFromBosDescriptor(kBuffer));
 }
 
 TEST_F(WebUsbDescriptorsTest, InvalidBosDescriptor) {
   WebUsbPlatformCapabilityDescriptor descriptor;
-  ASSERT_FALSE(descriptor.ParseFromBosDescriptor(std::vector<uint8_t>(
-      kExampleUrlDescriptor1,
-      kExampleUrlDescriptor1 + sizeof(kExampleUrlDescriptor1))));
+  ASSERT_FALSE(descriptor.ParseFromBosDescriptor(kExampleUrlDescriptor1));
 }
 
 TEST_F(WebUsbDescriptorsTest, ShortBosDescriptor) {
@@ -98,8 +92,7 @@ TEST_F(WebUsbDescriptorsTest, ShortBosDescriptor) {
   static const uint8_t kBuffer[] = {0x05, 0x0F, 0x04, 0x00, 0x01};
 
   WebUsbPlatformCapabilityDescriptor descriptor;
-  ASSERT_FALSE(descriptor.ParseFromBosDescriptor(
-      std::vector<uint8_t>(kBuffer, kBuffer + sizeof(kBuffer))));
+  ASSERT_FALSE(descriptor.ParseFromBosDescriptor(kBuffer));
 }
 
 TEST_F(WebUsbDescriptorsTest, LongBosDescriptor) {
@@ -108,24 +101,21 @@ TEST_F(WebUsbDescriptorsTest, LongBosDescriptor) {
   static const uint8_t kBuffer[] = {0x05, 0x0F, 0x06, 0x00, 0x01};
 
   WebUsbPlatformCapabilityDescriptor descriptor;
-  ASSERT_FALSE(descriptor.ParseFromBosDescriptor(
-      std::vector<uint8_t>(kBuffer, kBuffer + sizeof(kBuffer))));
+  ASSERT_FALSE(descriptor.ParseFromBosDescriptor(kBuffer));
 }
 
 TEST_F(WebUsbDescriptorsTest, UnexpectedlyEmptyBosDescriptor) {
   // bNumDeviceCaps == 1 but there are no actual descriptors.
   static const uint8_t kBuffer[] = {0x05, 0x0F, 0x05, 0x00, 0x01};
   WebUsbPlatformCapabilityDescriptor descriptor;
-  ASSERT_FALSE(descriptor.ParseFromBosDescriptor(
-      std::vector<uint8_t>(kBuffer, kBuffer + sizeof(kBuffer))));
+  ASSERT_FALSE(descriptor.ParseFromBosDescriptor(kBuffer));
 }
 
 TEST_F(WebUsbDescriptorsTest, ShortCapabilityDescriptor) {
   // The single capability descriptor in the BOS descriptor is too short.
   static const uint8_t kBuffer[] = {0x05, 0x0F, 0x06, 0x00, 0x01, 0x02, 0x10};
   WebUsbPlatformCapabilityDescriptor descriptor;
-  ASSERT_FALSE(descriptor.ParseFromBosDescriptor(
-      std::vector<uint8_t>(kBuffer, kBuffer + sizeof(kBuffer))));
+  ASSERT_FALSE(descriptor.ParseFromBosDescriptor(kBuffer));
 }
 
 TEST_F(WebUsbDescriptorsTest, LongCapabilityDescriptor) {
@@ -134,8 +124,7 @@ TEST_F(WebUsbDescriptorsTest, LongCapabilityDescriptor) {
   static const uint8_t kBuffer[] = {0x05, 0x0F, 0x08, 0x00,
                                     0x01, 0x04, 0x10, 0x05};
   WebUsbPlatformCapabilityDescriptor descriptor;
-  ASSERT_FALSE(descriptor.ParseFromBosDescriptor(
-      std::vector<uint8_t>(kBuffer, kBuffer + sizeof(kBuffer))));
+  ASSERT_FALSE(descriptor.ParseFromBosDescriptor(kBuffer));
 }
 
 TEST_F(WebUsbDescriptorsTest, NotACapabilityDescriptor) {
@@ -144,8 +133,7 @@ TEST_F(WebUsbDescriptorsTest, NotACapabilityDescriptor) {
   static const uint8_t kBuffer[] = {0x05, 0x0F, 0x08, 0x00,
                                     0x01, 0x03, 0x0F, 0x05};
   WebUsbPlatformCapabilityDescriptor descriptor;
-  ASSERT_FALSE(descriptor.ParseFromBosDescriptor(
-      std::vector<uint8_t>(kBuffer, kBuffer + sizeof(kBuffer))));
+  ASSERT_FALSE(descriptor.ParseFromBosDescriptor(kBuffer));
 }
 
 TEST_F(WebUsbDescriptorsTest, NoPlatformCapabilityDescriptor) {
@@ -155,8 +143,7 @@ TEST_F(WebUsbDescriptorsTest, NoPlatformCapabilityDescriptor) {
                                     0x10, 0x2B, 0x49, 0x8E, 0x64, 0xFF, 0x01,
                                     0x0C, 0x7F, 0x94, 0xE1};
   WebUsbPlatformCapabilityDescriptor descriptor;
-  ASSERT_FALSE(descriptor.ParseFromBosDescriptor(
-      std::vector<uint8_t>(kBuffer, kBuffer + sizeof(kBuffer))));
+  ASSERT_FALSE(descriptor.ParseFromBosDescriptor(kBuffer));
 }
 
 TEST_F(WebUsbDescriptorsTest, ShortPlatformCapabilityDescriptor) {
@@ -165,8 +152,7 @@ TEST_F(WebUsbDescriptorsTest, ShortPlatformCapabilityDescriptor) {
       0x05, 0x0F, 0x18, 0x00, 0x01, 0x13, 0x10, 0x05, 0x00, 0x2A, 0xF9, 0xF6,
       0xC2, 0x98, 0x10, 0x2B, 0x49, 0x8E, 0x64, 0xFF, 0x01, 0x0C, 0x7F, 0x94};
   WebUsbPlatformCapabilityDescriptor descriptor;
-  ASSERT_FALSE(descriptor.ParseFromBosDescriptor(
-      std::vector<uint8_t>(kBuffer, kBuffer + sizeof(kBuffer))));
+  ASSERT_FALSE(descriptor.ParseFromBosDescriptor(kBuffer));
 }
 
 TEST_F(WebUsbDescriptorsTest, NoWebUsbCapabilityDescriptor) {
@@ -177,8 +163,7 @@ TEST_F(WebUsbDescriptorsTest, NoWebUsbCapabilityDescriptor) {
                                     0x10, 0x2B, 0x49, 0x8E, 0x64, 0xFF, 0x01,
                                     0x0C, 0x7F, 0x94, 0xE1};
   WebUsbPlatformCapabilityDescriptor descriptor;
-  ASSERT_FALSE(descriptor.ParseFromBosDescriptor(
-      std::vector<uint8_t>(kBuffer, kBuffer + sizeof(kBuffer))));
+  ASSERT_FALSE(descriptor.ParseFromBosDescriptor(kBuffer));
 }
 
 TEST_F(WebUsbDescriptorsTest, ShortWebUsbPlatformCapabilityDescriptor) {
@@ -188,8 +173,7 @@ TEST_F(WebUsbDescriptorsTest, ShortWebUsbPlatformCapabilityDescriptor) {
                                     0x09, 0xA0, 0x47, 0x8B, 0xFD, 0xA0, 0x76,
                                     0x88, 0x15, 0xB6, 0x65};
   WebUsbPlatformCapabilityDescriptor descriptor;
-  ASSERT_FALSE(descriptor.ParseFromBosDescriptor(
-      std::vector<uint8_t>(kBuffer, kBuffer + sizeof(kBuffer))));
+  ASSERT_FALSE(descriptor.ParseFromBosDescriptor(kBuffer));
 }
 
 TEST_F(WebUsbDescriptorsTest, WebUsbPlatformCapabilityDescriptorOutOfDate) {
@@ -199,17 +183,12 @@ TEST_F(WebUsbDescriptorsTest, WebUsbPlatformCapabilityDescriptorOutOfDate) {
                                     0x09, 0xA0, 0x47, 0x8B, 0xFD, 0xA0, 0x76,
                                     0x88, 0x15, 0xB6, 0x65, 0x90, 0x00, 0x01};
   WebUsbPlatformCapabilityDescriptor descriptor;
-  ASSERT_FALSE(descriptor.ParseFromBosDescriptor(
-      std::vector<uint8_t>(kBuffer, kBuffer + sizeof(kBuffer))));
+  ASSERT_FALSE(descriptor.ParseFromBosDescriptor(kBuffer));
 }
 
 TEST_F(WebUsbDescriptorsTest, UrlDescriptor) {
   GURL url;
-  ASSERT_TRUE(ParseWebUsbUrlDescriptor(
-      std::vector<uint8_t>(
-          kExampleUrlDescriptor1,
-          kExampleUrlDescriptor1 + sizeof(kExampleUrlDescriptor1)),
-      &url));
+  ASSERT_TRUE(ParseWebUsbUrlDescriptor(kExampleUrlDescriptor1, &url));
   EXPECT_EQ(GURL("https://example.com/index.html"), url);
 }
 
@@ -217,40 +196,35 @@ TEST_F(WebUsbDescriptorsTest, ShortUrlDescriptorHeader) {
   // The buffer is just too darn short.
   static const uint8_t kBuffer[] = {0x01};
   GURL url;
-  ASSERT_FALSE(ParseWebUsbUrlDescriptor(
-      std::vector<uint8_t>(kBuffer, kBuffer + sizeof(kBuffer)), &url));
+  ASSERT_FALSE(ParseWebUsbUrlDescriptor(kBuffer, &url));
 }
 
 TEST_F(WebUsbDescriptorsTest, ShortUrlDescriptor) {
   // bLength is too short.
   static const uint8_t kBuffer[] = {0x01, 0x03};
   GURL url;
-  ASSERT_FALSE(ParseWebUsbUrlDescriptor(
-      std::vector<uint8_t>(kBuffer, kBuffer + sizeof(kBuffer)), &url));
+  ASSERT_FALSE(ParseWebUsbUrlDescriptor(kBuffer, &url));
 }
 
 TEST_F(WebUsbDescriptorsTest, LongUrlDescriptor) {
   // bLength is too long.
   static const uint8_t kBuffer[] = {0x03, 0x03};
   GURL url;
-  ASSERT_FALSE(ParseWebUsbUrlDescriptor(
-      std::vector<uint8_t>(kBuffer, kBuffer + sizeof(kBuffer)), &url));
+  ASSERT_FALSE(ParseWebUsbUrlDescriptor(kBuffer, &url));
 }
 
 TEST_F(WebUsbDescriptorsTest, EmptyUrl) {
   // The URL in this descriptor set is the empty string.
   static const uint8_t kBuffer[] = {0x03, 0x03, 0x00};
   GURL url;
-  ASSERT_FALSE(ParseWebUsbUrlDescriptor(
-      std::vector<uint8_t>(kBuffer, kBuffer + sizeof(kBuffer)), &url));
+  ASSERT_FALSE(ParseWebUsbUrlDescriptor(kBuffer, &url));
 }
 
 TEST_F(WebUsbDescriptorsTest, InvalidUrl) {
   // The URL in this descriptor set is not a valid URL: "http://???"
   static const uint8_t kBuffer[] = {0x06, 0x03, 0x00, '?', '?', '?'};
   GURL url;
-  ASSERT_FALSE(ParseWebUsbUrlDescriptor(
-      std::vector<uint8_t>(kBuffer, kBuffer + sizeof(kBuffer)), &url));
+  ASSERT_FALSE(ParseWebUsbUrlDescriptor(kBuffer, &url));
 }
 
 TEST_F(WebUsbDescriptorsTest, ReadDescriptors) {

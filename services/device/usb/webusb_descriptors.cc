@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
 #include "components/device_event_log/device_event_log.h"
@@ -62,8 +63,7 @@ void OnReadLandingPage(uint8_t landing_page_id,
   }
 
   GURL url;
-  ParseWebUsbUrlDescriptor(
-      std::vector<uint8_t>(buffer->front(), buffer->front() + length), &url);
+  ParseWebUsbUrlDescriptor(base::make_span(buffer->front(), length), &url);
   std::move(callback).Run(url);
 }
 
@@ -80,7 +80,7 @@ void OnReadBosDescriptor(scoped_refptr<UsbDeviceHandle> device_handle,
 
   WebUsbPlatformCapabilityDescriptor descriptor;
   if (!descriptor.ParseFromBosDescriptor(
-          std::vector<uint8_t>(buffer->front(), buffer->front() + length))) {
+          base::make_span(buffer->front(), length))) {
     std::move(callback).Run(absl::nullopt);
     return;
   }
@@ -131,7 +131,7 @@ WebUsbPlatformCapabilityDescriptor::~WebUsbPlatformCapabilityDescriptor() =
     default;
 
 bool WebUsbPlatformCapabilityDescriptor::ParseFromBosDescriptor(
-    const std::vector<uint8_t>& bytes) {
+    base::span<const uint8_t> bytes) {
   if (bytes.size() < 5) {
     // Too short for the BOS descriptor header.
     return false;
@@ -215,7 +215,7 @@ bool WebUsbPlatformCapabilityDescriptor::ParseFromBosDescriptor(
 // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 // |     data[1]   |      ...
 // +-+-+-+-+-+-+-+-+-+-+-+------
-bool ParseWebUsbUrlDescriptor(const std::vector<uint8_t>& bytes, GURL* output) {
+bool ParseWebUsbUrlDescriptor(base::span<const uint8_t> bytes, GURL* output) {
   const uint8_t kDescriptorType = 0x03;
   const uint8_t kDescriptorMinLength = 3;
 
