@@ -645,7 +645,13 @@ class PageInfoBubbleViewHistoryDialogBrowserTest : public DialogBrowserTest {
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
 
+// Test is flaky on Mac and Win. https://crbug.com/1306408
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#define MAYBE_InvokeUi_History DISABLED_InvokeUi_History
+#else
+#define MAYBE_InvokeUi_History InvokeUi_History
+#endif
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewHistoryDialogBrowserTest,
-                       InvokeUi_History) {
+                       MAYBE_InvokeUi_History) {
   ShowAndVerifyUi();
 }
