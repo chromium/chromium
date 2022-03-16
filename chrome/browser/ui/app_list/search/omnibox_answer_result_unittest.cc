@@ -196,6 +196,71 @@ TEST_F(OmniboxAnswerResultTest, WeatherResult) {
   EXPECT_TRUE(details.GetTextTags().empty());
 }
 
+TEST_F(OmniboxAnswerResultTest, DictionaryResult) {
+  // This comes from SuggestionAnswer::AnswerType::ANSWER_TYPE_DICTIONARY.
+  const std::u16string kDictionaryType = u"1";
+
+  SuggestionAnswer answer;
+  std::string json =
+      "{ \"l\": ["
+      "  { \"il\": { \"t\": [{ \"t\": \"text one\", \"tt\": 8 }], "
+      "              \"at\": { \"t\": \"additional one\", \"tt\": 42 } } }, "
+      "  { \"il\": { \"t\": [{ \"t\": \"text two\", \"tt\": 8 }], "
+      "              \"at\": { \"t\": \"additional two\", \"tt\": 42 } } } "
+      "] }";
+  absl::optional<base::Value> value = base::JSONReader::Read(json);
+  ASSERT_TRUE(value && value->is_dict());
+  ASSERT_TRUE(SuggestionAnswer::ParseAnswer(value->GetDict(), kDictionaryType,
+                                            &answer));
+
+  AutocompleteMatch match;
+  match.answer = answer;
+  match.contents = u"contents";
+  match.description = u"description";
+
+  OmniboxAnswerResult result(nullptr, nullptr, nullptr, match, u"query");
+  EXPECT_EQ(result.display_type(), ash::SearchResultDisplayType::kAnswerCard);
+  EXPECT_EQ(result.result_type(), ash::AppListSearchResultType::kOmnibox);
+  EXPECT_EQ(result.metrics_type(), ash::OMNIBOX_ANSWER);
+
+  // All title fields should have the MATCH tag, and there should be a space
+  // delimiter added between each field.
+  const auto& title = result.title_text_vector();
+  ASSERT_EQ(title.size(), 3);
+  ASSERT_EQ(title[0].GetType(), ash::SearchResultTextItemType::kString);
+  EXPECT_EQ(title[0].GetText(), u"contents");
+  size_t length = title[0].GetText().length();
+  EXPECT_THAT(title[0].GetTextTags(), testing::UnorderedElementsAre(TagEquals(
+                                          Tag(Tag::Style::MATCH, 0, length))));
+
+  ASSERT_EQ(title[1].GetType(), ash::SearchResultTextItemType::kString);
+  EXPECT_EQ(title[1].GetText(), u" ");
+  length = title[1].GetText().length();
+  EXPECT_THAT(title[1].GetTextTags(), testing::UnorderedElementsAre(TagEquals(
+                                          Tag(Tag::Style::MATCH, 0, length))));
+
+  ASSERT_EQ(title[2].GetType(), ash::SearchResultTextItemType::kString);
+  EXPECT_EQ(title[2].GetText(), u"additional one");
+  length = title[2].GetText().length();
+  EXPECT_THAT(title[2].GetTextTags(), testing::UnorderedElementsAre(TagEquals(
+                                          Tag(Tag::Style::MATCH, 0, length))));
+
+  // Details text should not have tags.
+  const auto& details = result.details_text_vector();
+  ASSERT_EQ(details.size(), 3);
+  ASSERT_EQ(details[0].GetType(), ash::SearchResultTextItemType::kString);
+  EXPECT_EQ(details[0].GetText(), u"text two");
+  EXPECT_TRUE(details[0].GetTextTags().empty());
+
+  ASSERT_EQ(details[1].GetType(), ash::SearchResultTextItemType::kString);
+  EXPECT_EQ(details[1].GetText(), u" ");
+  EXPECT_TRUE(details[1].GetTextTags().empty());
+
+  ASSERT_EQ(details[2].GetType(), ash::SearchResultTextItemType::kString);
+  EXPECT_EQ(details[2].GetText(), u"additional two");
+  EXPECT_TRUE(details[2].GetTextTags().empty());
+}
+
 TEST_F(OmniboxAnswerResultTest, AnswerResult) {
   // This comes from SuggestionAnswer::AnswerType::ANSWER_TYPE_FINANCE.
   const std::u16string kWeatherType = u"2";

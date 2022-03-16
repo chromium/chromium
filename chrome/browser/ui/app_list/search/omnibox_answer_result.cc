@@ -238,16 +238,21 @@ void OmniboxAnswerResult::UpdateTitleAndDetails() {
     AppendAdditionalText(second_line, details_vector);
     SetDetailsTextVector(details_vector);
   } else {
-    const auto& second_line = match_.answer->second_line();
-    auto title_vector = ImageLineToTextVector(second_line);
-    AppendAdditionalText(second_line, title_vector);
-    SetTitleTextVector(title_vector);
-
-    const auto& first_line = match_.answer->first_line();
-    std::vector<TextItem> details_vector =
+    std::vector<TextItem> first_vector =
         MatchFieldsToTextVector(match_.contents, match_.contents_class);
-    AppendAdditionalText(first_line, details_vector);
-    SetDetailsTextVector(details_vector);
+    AppendAdditionalText(match_.answer->first_line(), first_vector);
+
+    const auto& second_line = match_.answer->second_line();
+    auto second_vector = ImageLineToTextVector(second_line);
+    AppendAdditionalText(second_line, second_vector);
+
+    if (IsDictionaryResult()) {
+      SetTitleTextVector(first_vector);
+      SetDetailsTextVector(second_vector);
+    } else {
+      SetTitleTextVector(second_vector);
+      SetDetailsTextVector(first_vector);
+    }
   }
 
   // Bold the title field.
@@ -308,6 +313,11 @@ void OmniboxAnswerResult::OnFetchComplete(const GURL& url,
 
 bool OmniboxAnswerResult::IsCalculatorResult() const {
   return match_.type == AutocompleteMatchType::CALCULATOR;
+}
+
+bool OmniboxAnswerResult::IsDictionaryResult() const {
+  return match_.answer.has_value() &&
+         match_.answer->type() == SuggestionAnswer::ANSWER_TYPE_DICTIONARY;
 }
 
 bool OmniboxAnswerResult::IsWeatherResult() const {
