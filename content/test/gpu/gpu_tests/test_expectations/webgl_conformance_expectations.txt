@@ -340,20 +340,6 @@ crbug.com/1282819 [ win amd-0x6613 angle-d3d11 passthrough ] conformance/canvas/
 # Bug where RelaxedPrecision applied to normalize() produces 0
 crbug.com/angleproject/6228 [ win intel angle-vulkan passthrough ] conformance/misc/shader-precision-format.html [ Failure ]
 
-# Passthrough command decoder
-crbug.com/1306810 [ win10 angle-swiftshader skia-renderer-gl passthrough ] conformance/textures/misc/mipmap-fbo.html [ Failure ]
-crbug.com/1306810 [ mac angle-swiftshader skia-renderer-gl passthrough ] conformance/textures/misc/mipmap-fbo.html [ Failure ]
-crbug.com/1306810 [ linux angle-swiftshader skia-renderer-gl passthrough ] conformance/textures/misc/mipmap-fbo.html [ Failure ]
-crbug.com/1306810 [ win10 angle-swiftshader skia-renderer-gl passthrough ] conformance/textures/misc/texture-mips.html [ Failure ]
-crbug.com/1306810 [ mac angle-swiftshader skia-renderer-gl passthrough ] conformance/textures/misc/texture-mips.html [ Failure ]
-crbug.com/1306810 [ linux angle-swiftshader skia-renderer-gl passthrough ] conformance/textures/misc/texture-mips.html [ Failure ]
-crbug.com/1306810 [ win10 angle-swiftshader skia-renderer-gl passthrough ] conformance/textures/misc/texture-size.html [ Failure ]
-crbug.com/1306810 [ mac angle-swiftshader skia-renderer-gl passthrough ] conformance/textures/misc/texture-size.html [ Failure ]
-crbug.com/1306810 [ linux angle-swiftshader skia-renderer-gl passthrough ] conformance/textures/misc/texture-size.html [ Failure ]
-crbug.com/1306810 [ win10 angle-swiftshader skia-renderer-gl passthrough ] conformance/textures/misc/texture-upload-size.html [ Failure ]
-crbug.com/1306810 [ mac angle-swiftshader skia-renderer-gl passthrough ] conformance/textures/misc/texture-upload-size.html [ Failure ]
-crbug.com/1306810 [ linux angle-swiftshader skia-renderer-gl passthrough ] conformance/textures/misc/texture-upload-size.html [ Failure ]
-
 ####################
 # Fuchsia failures #
 ####################
