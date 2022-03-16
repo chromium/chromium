@@ -11,7 +11,6 @@
 #include "base/files/scoped_file.h"
 #include "base/memory/page_size.h"
 #include "base/posix/safe_strerror.h"
-#include "base/task/post_task.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "chromeos/memory/userspace_swap/region.h"
 #include "chromeos/memory/userspace_swap/swap_storage.h"
@@ -114,8 +113,8 @@ void InitializeProcessNodeOnGraph(int render_process_host_id,
   const RenderProcessHostProxy& proxy =
       process_node->GetRenderProcessHostProxy();
 
-  base::PostTask(FROM_HERE, {content::BrowserThread::UI},
-                 base::BindOnce(&BindUserspaceSwapReceiverOnUIThread, proxy,
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&BindUserspaceSwapReceiverOnUIThread, proxy,
                                 remote.InitWithNewPipeAndPassReceiver()));
 
   // Wrap up the received userfaultfd into a UserfaultFD instance.

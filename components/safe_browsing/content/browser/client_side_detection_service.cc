@@ -16,7 +16,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
-#include "base/task/post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -291,8 +290,8 @@ void ClientSideDetectionService::StartClientReportPhishingRequest(
   // The following is to log this ClientPhishingRequest on any open
   // chrome://safe-browsing pages. If no such page is open, the request is
   // dropped and the |request| object deleted.
-  base::PostTask(
-      FROM_HERE, {content::BrowserThread::UI},
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(&WebUIInfoSingleton::AddToClientPhishingRequestsSent,
                      base::Unretained(WebUIInfoSingleton::GetInstance()),
                      std::move(request), access_token));
@@ -318,8 +317,8 @@ void ClientSideDetectionService::HandlePhishingVerdict(
     is_phishing = response.phishy();
   }
 
-  base::PostTask(
-      FROM_HERE, {content::BrowserThread::UI},
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(&WebUIInfoSingleton::AddToClientPhishingResponsesReceived,
                      base::Unretained(WebUIInfoSingleton::GetInstance()),
                      std::make_unique<ClientPhishingResponse>(response)));

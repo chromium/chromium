@@ -7,7 +7,6 @@
 #include "base/android/jni_android.h"
 #include "base/bind.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "chrome/android/features/start_surface/jni_headers/StartSurfaceConfiguration_jni.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
@@ -44,7 +43,7 @@ static void JNI_StartSurfaceConfiguration_WarmupRenderer(
       chrome::android::kStartSurfaceAndroid, "spare_renderer_delay_ms",
       SPARE_RENDERER_DELAY_MS);
 
-  base::PostDelayedTask(FROM_HERE, {content::BrowserThread::UI},
-                        base::BindOnce(&WarmUpRenderProcess, profile),
-                        base::Milliseconds(renderer_delay_ms));
+  content::GetUIThreadTaskRunner({})->PostDelayedTask(
+      FROM_HERE, base::BindOnce(&WarmUpRenderProcess, profile),
+      base::Milliseconds(renderer_delay_ms));
 }

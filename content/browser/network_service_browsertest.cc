@@ -12,7 +12,6 @@
 #include "base/json/values_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/post_task.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -21,6 +20,7 @@
 #include "build/build_config.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
@@ -473,8 +473,8 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest, SyncXHROnCrash) {
   http_server.RegisterRequestMonitor(base::BindLambdaForTesting(
       [&](const net::test_server::HttpRequest& request) {
         if (request.relative_url == "/hung") {
-          base::PostTask(
-              FROM_HERE, {BrowserThread::UI},
+          GetUIThreadTaskRunner({})->PostTask(
+              FROM_HERE,
               base::BindOnce(&BrowserTestBase::SimulateNetworkServiceCrash,
                              base::Unretained(this)));
         }

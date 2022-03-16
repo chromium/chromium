@@ -14,7 +14,6 @@
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "components/safe_browsing/core/common/fbs/client_model_generated.h"
@@ -169,8 +168,8 @@ void ClientSidePhishingModel::PopulateFromDynamicUpdate(
 
   if (model_valid || tflite_valid) {
     // Unretained is safe because this is a singleton.
-    base::PostTask(FROM_HERE, {content::BrowserThread::UI},
-                   base::BindOnce(&ClientSidePhishingModel::NotifyCallbacksOnUI,
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&ClientSidePhishingModel::NotifyCallbacksOnUI,
                                   base::Unretained(this)));
   }
 }
@@ -273,8 +272,8 @@ void ClientSidePhishingModel::OnGetOverridenModelData(
   VLOG(2) << "Model overriden successfully";
 
   // Unretained is safe because this is a singleton.
-  base::PostTask(FROM_HERE, {content::BrowserThread::UI},
-                 base::BindOnce(&ClientSidePhishingModel::NotifyCallbacksOnUI,
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&ClientSidePhishingModel::NotifyCallbacksOnUI,
                                 base::Unretained(this)));
 }
 

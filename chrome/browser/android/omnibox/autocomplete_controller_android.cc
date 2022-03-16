@@ -22,7 +22,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
-#include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/android/autocomplete/tab_matcher_android.h"
@@ -280,8 +279,8 @@ void AutocompleteControllerAndroid::OnOmniboxFocused(
         omnibox::kOmniboxSpareRenderer, "omnibox_spare_renderer_delay_ms",
         OMNIBOX_SPARE_RENDERER_DELAY_MS);
 
-    base::PostDelayedTask(
-        FROM_HERE, {content::BrowserThread::UI},
+    content::GetUIThreadTaskRunner({})->PostDelayedTask(
+        FROM_HERE,
         base::BindOnce(&AutocompleteControllerAndroid::WarmUpRenderProcess,
                        weak_ptr_factory_.GetWeakPtr()),
         base::Milliseconds(renderer_delay_ms));

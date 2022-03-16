@@ -13,7 +13,6 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "base/task/post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "chromecast/ui/display_settings_manager.h"
@@ -234,8 +233,8 @@ void AccessibilityServiceImpl::LoadChromeVoxExtension(
   chromevox_extension_ = extension_system->LoadExtension(
       kChromeVoxManifestFile, base::FilePath(ext_dir));
 
-  base::PostTask(FROM_HERE, {content::BrowserThread::UI},
-                 base::BindOnce(&AccessibilityServiceImpl::AnnounceChromeVox,
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&AccessibilityServiceImpl::AnnounceChromeVox,
                                 base::Unretained(this)));
 }
 #endif  // BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
