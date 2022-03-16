@@ -3,12 +3,33 @@
 // found in the LICENSE file.
 
 #include "components/autofill_assistant/browser/js_flow_util.h"
+#include "base/strings/strcat.h"
+#include "components/autofill_assistant/browser/web/web_controller_util.h"
 
 namespace autofill_assistant {
-namespace js_flow {
 
-bool ContainsOnlyPrimitveValues(const base::Value& value,
-                                std::string& out_error_message) {
+namespace {
+
+// Returns true for remote object types that flows are allowed to return. This
+// is mostly used to filter types like FUNCTION which would otherwise slip
+// through.
+bool IsAllowedRemoteType(runtime::RemoteObjectType type) {
+  switch (type) {
+    case runtime::RemoteObjectType::OBJECT:
+    case runtime::RemoteObjectType::NUMBER:
+    case runtime::RemoteObjectType::BOOLEAN:
+      return true;
+    default:
+      return false;
+  }
+}
+
+}  // namespace
+
+namespace js_flow_util {
+
+bool ContainsOnlyAllowedValues(const base::Value& value,
+                               std::string& out_error_message) {
   switch (value.type()) {
     case base::Value::Type::NONE:
     case base::Value::Type::BOOLEAN:
@@ -23,7 +44,7 @@ bool ContainsOnlyPrimitveValues(const base::Value& value,
       return false;
     case base::Value::Type::DICT: {
       for (const auto [key, nested_value] : *value.GetIfDict()) {
-        if (!ContainsOnlyPrimitveValues(nested_value, out_error_message)) {
+        if (!ContainsOnlyAllowedValues(nested_value, out_error_message)) {
           return false;
         }
       }
@@ -31,7 +52,7 @@ bool ContainsOnlyPrimitveValues(const base::Value& value,
     }
     case base::Value::Type::LIST: {
       for (const auto& entry : *value.GetIfList()) {
-        if (!ContainsOnlyPrimitveValues(entry, out_error_message)) {
+        if (!ContainsOnlyAllowedValues(entry, out_error_message)) {
           return false;
         }
       }
@@ -40,5 +61,49 @@ bool ContainsOnlyPrimitveValues(const base::Value& value,
   }
 }
 
-}  // namespace js_flow
+ClientStatus ExtractFlowReturnValue(
+    const DevtoolsClient::ReplyStatus& devtools_reply_status,
+    runtime::EvaluateResult* devtools_result,
+    std::unique_ptr<base::Value>& out_flow_result) {
+  ClientStatus status = CheckJavaScriptResult(
+      devtools_reply_status, devtools_result, __FILE__, __LINE__);
+  if (!status.ok()) {
+    return status;
+  }
+
+  const runtime::RemoteObject* remote_object = devtools_result->GetResult();
+  if (!remote_object->HasValue() &&
+      remote_object->GetType() == runtime::RemoteObjectType::UNDEFINED) {
+    // Special case: flows are allowed to return nothing.
+    return status;
+  }
+
+  if (!remote_object->HasValue() ||
+      !IsAllowedRemoteType(remote_object->GetType())) {
+    status.set_proto_status(INVALID_ACTION);
+    status.mutable_details()
+        ->mutable_unexpected_error_info()
+        ->set_devtools_error_message(
+            base::StrCat({"Invalid return value: only primitive non-string "
+                          "values are allowed, but got RemoteObject of type ",
+                          base::NumberToString(
+                              static_cast<int>(remote_object->GetType()))}));
+    return status;
+  }
+
+  std::string error_message;
+  if (!ContainsOnlyAllowedValues(*remote_object->GetValue(), error_message)) {
+    status.set_proto_status(INVALID_ACTION);
+    status.mutable_details()
+        ->mutable_unexpected_error_info()
+        ->set_devtools_error_message(error_message);
+    return status;
+  }
+
+  out_flow_result =
+      base::Value::ToUniquePtrValue(remote_object->GetValue()->Clone());
+  return OkClientStatus();
+}
+
+}  // namespace js_flow_util
 }  // namespace autofill_assistant

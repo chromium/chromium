@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "components/autofill_assistant/browser/features.h"
+#include "components/autofill_assistant/browser/js_flow_util.h"
 #include "components/autofill_assistant/browser/parse_jspb.h"
 #include "components/autofill_assistant/browser/web/web_controller_util.h"
 
@@ -333,11 +334,14 @@ void JsFlowExecutorImpl::OnFlowResumed(
 void JsFlowExecutorImpl::OnFlowFinished(
     const DevtoolsClient::ReplyStatus& reply_status,
     std::unique_ptr<runtime::EvaluateResult> result) {
-  // Note that the result is always serialized if available, not just if the
-  // flow was successful. In particular, this serializes exceptions.
-  RunCallback(
-      CheckJavaScriptResult(reply_status, result.get(), __FILE__, __LINE__),
-      (result != nullptr ? result->Serialize() : nullptr));
+  // Check and extract the return value. In case of exceptions, the sanitized
+  // stack trace will be part of the returned ClientStatus. Only primitive
+  // values are allowed (see js_flow_util::ExtractFlowReturnValue for details).
+  std::unique_ptr<base::Value> out_result_value;
+  ClientStatus status = js_flow_util::ExtractFlowReturnValue(
+      reply_status, result.get(), out_result_value);
+
+  RunCallback(status, std::move(out_result_value));
 }
 
 void JsFlowExecutorImpl::RunCallback(
