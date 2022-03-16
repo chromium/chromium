@@ -181,7 +181,6 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
     rest_args.extend(['run',
       self.wpt_product_name(),
       '--tests=' + wpt_common.TESTS_ROOT_DIR,
-      '--test-type=' + 'testharness',
       '--device-serial',
       self._device.serial,
       '--webdriver-binary',
@@ -422,6 +421,12 @@ class WebViewFinchTestCase(FinchTestCase):
   @classmethod
   def wpt_product_name(cls):
     return ANDROID_WEBVIEW
+
+  @property
+  def tests(self):
+    return super(WebViewFinchTestCase, self).tests + [
+        'svg/pservers/reftests/radialgradient-basic-002.svg',
+    ]
 
   @classmethod
   def finch_seed_download_args(cls):
