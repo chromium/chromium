@@ -242,24 +242,6 @@ export class SettingsAddressEditDialogElement extends
     this.countryCode_ = countrySelect!.value;
   }
 
-  /**
-   * Propagates focus to the <select> when country row is focused
-   * (e.g. using tab navigation).
-   */
-  private onCountryRowFocus_() {
-    this.shadowRoot!.querySelector('select')!.focus();
-  }
-
-  /**
-   * Prevents clicking random spaces within country row but outside of <select>
-   * from triggering focus.
-   */
-  private onCountryRowPointerDown_(e: Event) {
-    if ((e.composedPath()[0] as HTMLElement).tagName !== 'SELECT') {
-      e.preventDefault();
-    }
-  }
-
   createHonorificAddressComponentUI(
       address: chrome.autofillPrivate.AddressEntry): AddressComponentUI {
     return new AddressComponentUI(address, {

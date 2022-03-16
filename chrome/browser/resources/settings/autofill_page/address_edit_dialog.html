@@ -50,15 +50,13 @@
     <cr-dialog id="dialog" close-text="$i18n{close}">
       <div slot="title">[[title_]]</div>
       <div slot="body">
-        <div id="select-row" class="address-row" tabindex="0"
-            on-focus="onCountryRowFocus_"
-            on-pointerdown="onCountryRowPointerDown_">
+        <div id="select-row" class="address-row">
           <label id="select-label" class="cr-form-field-label">
             $i18n{addressCountry}
           </label>
           <select class="md-select" aria-labelledby="select-label"
               value="[[countryCode_]]" on-change="onCountryChange_"
-              tabindex="-1" autofocus>
+              autofocus>
             <option value=""></option>
             <template is="dom-repeat" items="[[countries_]]">
               <option value="[[getCode_(item)]]"
