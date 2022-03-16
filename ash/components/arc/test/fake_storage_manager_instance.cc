@@ -23,10 +23,4 @@ void FakeStorageManagerInstance::GetApplicationsSize(
   std::move(callback).Run(/*succeeded=*/true, std::move(size));
 }
 
-void FakeStorageManagerInstance::DeleteApplicationsCache(
-    DeleteApplicationsCacheCallback callback) {
-  ++num_delete_applications_cache_called_;
-  std::move(callback).Run();
-}
-
 }  // namespace arc

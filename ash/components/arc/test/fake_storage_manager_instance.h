@@ -23,9 +23,6 @@ class FakeStorageManagerInstance : public mojom::StorageManagerInstance {
   using GetApplicationsSizeCallback =
       base::OnceCallback<void(bool, mojom::ApplicationsSizePtr)>;
   void GetApplicationsSize(GetApplicationsSizeCallback callback) override;
-  using DeleteApplicationsCacheCallback = base::OnceCallback<void()>;
-  void DeleteApplicationsCache(
-      DeleteApplicationsCacheCallback callback) override;
 
   size_t num_open_private_volume_settings_called() const {
     return num_open_private_volume_settings_called_;

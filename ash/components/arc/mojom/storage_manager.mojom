@@ -31,8 +31,4 @@ interface StorageManagerInstance {
   [MinVersion=1] GetApplicationsSize@3()
       => (bool succeeded, ApplicationsSize? applications_size);
 
-  // Deletes all applications' cache files. Because this operation takes a
-  // little while, the callback function will be called when the operation is
-  // finished.
-  [MinVersion=2] DeleteApplicationsCache@4() => ();
 };

@@ -44,9 +44,6 @@ class ArcStorageManager : public KeyedService {
       base::OnceCallback<void(bool succeeded, mojom::ApplicationsSizePtr)>;
   bool GetApplicationsSize(GetApplicationsSizeCallback callback);
 
-  // Deletes all applications' cache files.
-  bool DeleteApplicationsCache(base::OnceCallback<void()> callback);
-
  private:
   ArcBridgeService* const arc_bridge_service_;
 };
