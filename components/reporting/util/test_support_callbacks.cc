@@ -4,13 +4,10 @@
 
 #include "components/reporting/util/test_support_callbacks.h"
 
-#include "base/run_loop.h"
-
 namespace reporting {
 namespace test {
 
-TestCallbackWaiter::TestCallbackWaiter()
-    : run_loop_(base::RunLoop::Type::kNestableTasksAllowed) {}
+TestCallbackWaiter::TestCallbackWaiter() = default;
 TestCallbackWaiter::~TestCallbackWaiter() = default;
 
 TestCallbackAutoWaiter::TestCallbackAutoWaiter() {

@@ -7,10 +7,18 @@
 
 #include <atomic>
 #include <tuple>
+#include <utility>
 
+#include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/sequence_checker.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 
 namespace reporting {
 namespace test {
@@ -27,11 +35,12 @@ namespace test {
 template <typename ResType>
 class TestEvent {
  public:
-  TestEvent() : run_loop_(base::RunLoop::Type::kNestableTasksAllowed) {}
-  ~TestEvent() = default;
+  TestEvent() = default;
+  ~TestEvent() { DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_); }
   TestEvent(const TestEvent& other) = delete;
   TestEvent& operator=(const TestEvent& other) = delete;
   ResType result() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     run_loop_.Run();
     return std::forward<ResType>(result_);
   }
@@ -42,17 +51,26 @@ class TestEvent {
   // when the caller requires it.
   // If the caller expects OnceCallback, result will be converted automatically.
   base::RepeatingCallback<void(ResType res)> cb() {
-    return base::BindRepeating(
-        [](base::RunLoop* run_loop, ResType* result, ResType res) {
-          *result = std::forward<ResType>(res);
-          run_loop->Quit();
-        },
-        base::Unretained(&run_loop_), base::Unretained(&result_));
+    return base::BindPostTask(
+        task_runner_.get(),
+        base::BindRepeating(
+            [](base::WeakPtr<TestEvent<ResType>> self, ResType res) {
+              CHECK(self);
+              self->result_ = std::forward<ResType>(res);
+              self->run_loop_.Quit();
+            },
+            weak_ptr_factory_.GetWeakPtr()));
   }
 
  private:
-  base::RunLoop run_loop_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_{
+      base::SequencedTaskRunnerHandle::Get()};
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
   ResType result_;
+
+  base::WeakPtrFactory<TestEvent<ResType>> weak_ptr_factory_{this};
 };
 
 // Usage (in tests only):
@@ -67,8 +85,8 @@ class TestEvent {
 template <typename... ResType>
 class TestMultiEvent {
  public:
-  TestMultiEvent() : run_loop_(base::RunLoop::Type::kNestableTasksAllowed) {}
-  ~TestMultiEvent() = default;
+  TestMultiEvent() = default;
+  ~TestMultiEvent() { DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_); }
   TestMultiEvent(const TestMultiEvent& other) = delete;
   TestMultiEvent& operator=(const TestMultiEvent& other) = delete;
   std::tuple<ResType...> result() {
@@ -78,18 +96,26 @@ class TestMultiEvent {
 
   // Completion callback to hand over to the processing method.
   base::RepeatingCallback<void(ResType... res)> cb() {
-    return base::BindRepeating(
-        [](base::RunLoop* run_loop, std::tuple<ResType...>* result,
-           ResType... res) {
-          *result = std::forward_as_tuple(res...);
-          run_loop->Quit();
-        },
-        base::Unretained(&run_loop_), base::Unretained(&result_));
+    return base::BindPostTask(
+        task_runner_.get(),
+        base::BindRepeating(
+            [](base::WeakPtr<TestMultiEvent<ResType...>> self, ResType... res) {
+              CHECK(self);
+              self->result_ = std::forward_as_tuple(res...);
+              self->run_loop_.Quit();
+            },
+            weak_ptr_factory_.GetWeakPtr()));
   }
 
  private:
-  base::RunLoop run_loop_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_{
+      base::SequencedTaskRunnerHandle::Get()};
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
   std::tuple<ResType...> result_;
+
+  base::WeakPtrFactory<TestMultiEvent<ResType...>> weak_ptr_factory_{this};
 };
 
 // Usage (in tests only):
@@ -137,7 +163,7 @@ class TestCallbackWaiter {
 
  private:
   std::atomic<size_t> counter_{1};  // Owned by constructor.
-  base::RunLoop run_loop_;
+  base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
 };
 
 // RAAI wrapper for TestCallbackWaiter.
