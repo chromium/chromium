@@ -80,6 +80,18 @@ bool WaylandOverlayManager::CanHandleCandidate(
                            kAssumedMaxDeviceScaleFactor) == 0)
     return false;
 
+  // Passing an empty surface size through wayland will actually clear the size
+  // restriction and display the buffer at full size. The function
+  // 'set_destination_size' in augmenter will accept empty sizes without
+  // protocol error but interprets this as a clear.
+  // TODO(https://crbug.com/1306230) : Move and generalize this fix in wayland
+  // host.
+  if (wl_fixed_from_double(candidate.display_rect.width() /
+                           kAssumedMaxDeviceScaleFactor) == 0 ||
+      wl_fixed_from_double(candidate.display_rect.height() /
+                           kAssumedMaxDeviceScaleFactor) == 0)
+    return false;
+
   if (candidate.transform == gfx::OVERLAY_TRANSFORM_INVALID)
     return false;
 
