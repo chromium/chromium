@@ -113,9 +113,6 @@ IN_PROC_BROWSER_TEST_F(ShareServiceBrowserTest, Text) {
                                      WebShareMethod::kShare, kRepeats);
 }
 
-// TODO(crbug.com/1225825): Support file sharing from Lacros.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-
 class SafeBrowsingShareServiceBrowserTest : public ShareServiceBrowserTest {
  public:
   SafeBrowsingShareServiceBrowserTest()
@@ -168,5 +165,3 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingShareServiceBrowserTest,
   EXPECT_EQ("share failed: NotAllowedError: Permission denied",
             content::EvalJs(contents, "share_pdf_file()"));
 }
-
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)

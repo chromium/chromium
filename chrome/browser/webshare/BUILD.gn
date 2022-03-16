@@ -30,11 +30,7 @@ if (is_chromeos || is_mac) {
 source_set("unit_tests") {
   testonly = true
 
-  # TODO(crbug.com/1225825): Support file sharing from Lacros.
-  sources = []
-  if (!is_chromeos_lacros) {
-    sources += [ "share_service_unittest.cc" ]
-  }
+  sources = [ "share_service_unittest.cc" ]
 
   if (is_chromeos || is_mac) {
     sources += [ "prepare_directory_task_unittest.cc" ]

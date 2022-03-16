@@ -125,6 +125,10 @@ mojom::DefaultPathsPtr EnvironmentProvider::GetDefaultPaths() {
   default_paths->removable_media =
       chromeos::CrosDisksClient::GetRemovableDiskMountPoint();
 
+  // Ash expects to find shared files in the share cache.
+  default_paths->share_cache =
+      file_manager::util::GetShareCacheFilePath(profile);
+
   return default_paths;
 }
 

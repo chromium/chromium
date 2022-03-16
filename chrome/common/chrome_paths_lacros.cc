@@ -25,6 +25,7 @@ struct DefaultPaths {
   base::FilePath android_files_dir;
   base::FilePath linux_files_dir;
   base::FilePath ash_resources_dir;
+  base::FilePath share_cache_dir;
 };
 
 DefaultPaths& GetDefaultPaths() {
@@ -40,7 +41,8 @@ void SetLacrosDefaultPaths(const base::FilePath& documents_dir,
                            const base::FilePath& removable_media_dir,
                            const base::FilePath& android_files_dir,
                            const base::FilePath& linux_files_dir,
-                           const base::FilePath& ash_resources_dir) {
+                           const base::FilePath& ash_resources_dir,
+                           const base::FilePath& share_cache_dir) {
   DCHECK(!documents_dir.empty());
   DCHECK(documents_dir.IsAbsolute());
   GetDefaultPaths().documents_dir = documents_dir;
@@ -54,6 +56,7 @@ void SetLacrosDefaultPaths(const base::FilePath& documents_dir,
   GetDefaultPaths().android_files_dir = android_files_dir;
   GetDefaultPaths().linux_files_dir = linux_files_dir;
   GetDefaultPaths().ash_resources_dir = ash_resources_dir;
+  GetDefaultPaths().share_cache_dir = share_cache_dir;
 }
 
 void SetLacrosDefaultPathsFromInitParams(
@@ -77,10 +80,14 @@ void SetLacrosDefaultPathsFromInitParams(
     base::FilePath ash_resources_dir;
     if (init_params->default_paths->ash_resources.has_value())
       ash_resources_dir = init_params->default_paths->ash_resources.value();
+    base::FilePath share_cache_dir;
+    if (init_params->default_paths->share_cache.has_value())
+      share_cache_dir = init_params->default_paths->share_cache.value();
+
     chrome::SetLacrosDefaultPaths(
         init_params->default_paths->documents,
         init_params->default_paths->downloads, drivefs_dir, removable_media_dir,
-        android_files_dir, linux_files_dir, ash_resources_dir);
+        android_files_dir, linux_files_dir, ash_resources_dir, share_cache_dir);
   }
 }
 
@@ -180,6 +187,13 @@ bool GetAshResourcesPath(base::FilePath* result) {
   if (GetDefaultPaths().ash_resources_dir.empty())
     return false;
   *result = GetDefaultPaths().ash_resources_dir;
+  return true;
+}
+
+bool GetShareCachePath(base::FilePath* result) {
+  if (GetDefaultPaths().share_cache_dir.empty())
+    return false;
+  *result = GetDefaultPaths().share_cache_dir;
   return true;
 }
 

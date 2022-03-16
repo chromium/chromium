@@ -120,10 +120,11 @@ void ChromeTestSuite::Initialize() {
   chrome::SetLacrosDefaultPaths(/*documents_dir=*/temp_path,
                                 /*downloads_dir=*/temp_path,
                                 /*drivefs=*/base::FilePath(),
-                                /*removable_media_dir*/ base::FilePath(),
-                                /*android_files_dir*/ base::FilePath(),
-                                /*linux_files_dir*/ base::FilePath(),
-                                /*ash_resources_dir*/ base::FilePath());
+                                /*removable_media_dir=*/base::FilePath(),
+                                /*android_files_dir=*/base::FilePath(),
+                                /*linux_files_dir=*/base::FilePath(),
+                                /*ash_resources_dir=*/base::FilePath(),
+                                /*share_cache_dir=*/temp_path);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 

@@ -18,7 +18,6 @@
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
-#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharesheet/sharesheet_metrics.h"
 #include "chrome/browser/visibility_timer_tab_helper.h"
@@ -36,11 +35,13 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/ui/lacros/window_utility.h"
+#include "chrome/common/chrome_paths_lacros.h"
 #include "chromeos/crosapi/mojom/app_service_types.mojom.h"
 #include "chromeos/crosapi/mojom/sharesheet.mojom.h"
 #include "chromeos/crosapi/mojom/sharesheet_mojom_traits.h"
 #include "chromeos/lacros/lacros_service.h"
 #else
+#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/sharesheet/sharesheet_service.h"
 #include "chrome/browser/sharesheet/sharesheet_service_factory.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -50,10 +51,12 @@ using content::WebContents;
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr base::FilePath::CharType kWebShareDirname[] =
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    FILE_PATH_LITERAL(".web_share");
+#else
     FILE_PATH_LITERAL(".WebShare");
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif
 
 constexpr char kDefaultShareName[] = "share";
 
@@ -104,6 +107,32 @@ void ScheduleSharedFileDirectoryDeletion(std::vector<base::FilePath> file_paths,
       std::move(file_paths), delay);
 }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+crosapi::mojom::IntentPtr CreateCrosapiShareIntentFromFiles(
+    const std::vector<base::FilePath>& file_paths,
+    const std::vector<std::string>& mime_types,
+    const std::string& share_text,
+    const std::string& share_title) {
+  DCHECK_EQ(file_paths.size(), mime_types.size());
+
+  std::vector<crosapi::mojom::IntentFilePtr> files;
+  files.reserve(file_paths.size());
+  for (size_t index = 0; index < file_paths.size(); ++index) {
+    files.push_back(
+        crosapi::mojom::IntentFile::New(file_paths[index], mime_types[index]));
+  }
+
+  const char* action = file_paths.size() <= 1
+                           ? apps_util::kIntentActionSend
+                           : apps_util::kIntentActionSendMultiple;
+  std::string mime_type = file_paths.empty()
+                              ? "text/plain"
+                              : apps_util::CalculateCommonMimeType(mime_types);
+  return crosapi::mojom::Intent::New(action,
+                                     /*url=*/absl::nullopt, mime_type,
+                                     share_text, share_title, std::move(files));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }  // namespace
 
 namespace webshare {
@@ -157,13 +186,20 @@ void SharesheetClient::Share(
   }
 
   current_share_ = CurrentShare();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   current_share_->files = std::move(files);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   current_share_->directory =
       file_manager::util::GetShareCacheFilePath(profile).Append(
           kWebShareDirname);
 #else
-  // TODO(crbug.com/1225825): Support file sharing from Lacros.
+  base::FilePath share_cache_dir;
+  if (chrome::GetShareCachePath(&share_cache_dir)) {
+    current_share_->directory = share_cache_dir.Append(kWebShareDirname);
+  } else {
+    LOG(ERROR) << "Share cache path not set";  // DO NOT LAND
+    VLOG(1) << "Share cache path not set";
+    current_share_->files.clear();
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   if (share_url.is_valid()) {
     if (text.empty())
@@ -305,20 +341,17 @@ void SharesheetClient::ShowSharesheet(
   DCHECK(profile);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(crbug.com/1225825): Support file sharing from Lacros.
-  apps::mojom::IntentPtr intent =
-      apps_util::CreateShareIntentFromText(text, title);
-
   auto* const service = chromeos::LacrosService::Get();
   if (!service || !service->IsAvailable<crosapi::mojom::Sharesheet>()) {
     std::move(delivered_callback).Run(sharesheet::SharesheetResult::kCancel);
     return;
   }
+  crosapi::mojom::IntentPtr intent =
+      CreateCrosapiShareIntentFromFiles(file_paths, content_types, text, title);
   service->GetRemote<crosapi::mojom::Sharesheet>()->ShowBubble(
       lacros_window_utility::GetRootWindowUniqueId(
           web_contents->GetTopLevelNativeWindow()),
-      sharesheet::LaunchSource::kWebShare,
-      apps_util::ConvertAppServiceToCrosapiIntent(intent, profile),
+      sharesheet::LaunchSource::kWebShare, std::move(intent),
       std::move(delivered_callback));
 #else
   apps::mojom::IntentPtr intent =
