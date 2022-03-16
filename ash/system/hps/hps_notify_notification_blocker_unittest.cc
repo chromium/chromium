@@ -303,8 +303,8 @@ TEST_F(HpsNotifyNotificationBlockerTest, SystemNotification) {
   // Regular notification disappears because it was already shown before the
   // snooper arrived.
   EXPECT_EQ(PositionInInfoPopupMessage(u"notifier-1"), std::u16string::npos);
-  // Title used for system popups is currently Web.
-  EXPECT_NE(PositionInInfoPopupMessage(u"Web"), std::u16string::npos);
+  // Check that the system notification is labled as such.
+  EXPECT_NE(PositionInInfoPopupMessage(u"System"), std::u16string::npos);
   EXPECT_EQ(VisibleNotificationCount(), 4u);
 }
 
