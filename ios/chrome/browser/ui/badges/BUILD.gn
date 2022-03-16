@@ -18,13 +18,19 @@ source_set("public") {
 source_set("util") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "badge_overflow_menu_util.h",
+    "badge_overflow_menu_util.mm",
     "badge_type_util.h",
     "badge_type_util.mm",
   ]
   deps = [
     ":public",
     "//base",
+    "//components/password_manager/core/common",
+    "//components/strings",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/infobars:public",
+    "//ui/base",
   ]
 }
 

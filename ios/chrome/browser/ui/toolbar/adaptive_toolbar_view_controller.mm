@@ -20,7 +20,6 @@
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tools_menu_button.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/browser/ui/util/animation_util.h"
 #import "ios/chrome/browser/ui/util/force_touch_long_press_gesture_recognizer.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
@@ -455,8 +454,7 @@ NSString* const kContextMenuActionIdentifier = @"kContextMenuActionIdentifier";
                 weakButton.menu =
                     [weakSelf.menuProvider menuForButtonOfType:buttonType];
               }];
-  [weakButton addAction:action
-       forControlEvents:UIControlEventMenuActionTriggered];
+  [button addAction:action forControlEvents:UIControlEventMenuActionTriggered];
 }
 
 @end

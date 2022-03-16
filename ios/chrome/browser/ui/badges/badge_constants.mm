@@ -68,3 +68,24 @@ NSString* const kBadgePopupMenuTableViewAccessibilityIdentifier =
 
 NSString* const kBadgeUnreadIndicatorAccessibilityIdentifier =
     @"badgeUnreadIndicatorAXID";
+
+NSString* const kBadgeButtonSavePasswordActionIdentifier =
+    @"badgeButtonSavePasswordActionIdentifier";
+
+NSString* const kBadgeButtonUpdatePasswordActionIdentifier =
+    @"badgeButtonUpdatePasswordActionIdentifier";
+
+NSString* const kBadgeButtonReadingListActionIdentifier =
+    @"badgeButtonReadingListActionIdentifier";
+
+NSString* const kBadgeButtonSaveAddressProfileActionIdentifier =
+    @"badgeButtonSaveAddressProfileActionIdentifier";
+
+NSString* const kBadgeButtonSaveCardActionIdentifier =
+    @"badgeButtonSaveCardActionIdentifier";
+
+NSString* const kBadgeButtonTranslateActionIdentifier =
+    @"badgeButtonTranslateActionIdentifier";
+
+NSString* const kBadgeButtonPermissionsActionIdentifier =
+    @"badgeButtonPermissionsActionIdentifier";

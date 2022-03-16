@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/badges/badge_popup_menu_coordinator.h"
 
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "ios/chrome/browser/infobars/infobar_ios.h"
 #include "ios/chrome/browser/infobars/infobar_manager_impl.h"
@@ -101,21 +101,21 @@
   [self dismissPopupMenu];
   switch (item.actionIdentifier) {
     case PopupMenuActionShowSavePasswordOptions: {
-      UMA_HISTOGRAM_ENUMERATION(kInfobarOverflowMenuTappedHistogram,
-                                MobileMessagesInfobarType::SavePassword);
+      base::UmaHistogramEnumeration(kInfobarOverflowMenuTappedHistogram,
+                                    MobileMessagesInfobarType::SavePassword);
       [self
           addModalRequestForInfobarType:InfobarType::kInfobarTypePasswordSave];
       break;
     }
     case PopupMenuActionShowUpdatePasswordOptions: {
-      UMA_HISTOGRAM_ENUMERATION(kInfobarOverflowMenuTappedHistogram,
-                                MobileMessagesInfobarType::UpdatePassword);
+      base::UmaHistogramEnumeration(kInfobarOverflowMenuTappedHistogram,
+                                    MobileMessagesInfobarType::UpdatePassword);
       [self addModalRequestForInfobarType:InfobarType::
                                               kInfobarTypePasswordUpdate];
       break;
     }
     case PopupMenuActionShowSaveAddressProfileOptions: {
-      UMA_HISTOGRAM_ENUMERATION(
+      base::UmaHistogramEnumeration(
           kInfobarOverflowMenuTappedHistogram,
           MobileMessagesInfobarType::AutofillSaveAddressProfile);
       [self addModalRequestForInfobarType:
@@ -123,20 +123,20 @@
       break;
     }
     case PopupMenuActionShowSaveCardOptions: {
-      UMA_HISTOGRAM_ENUMERATION(kInfobarOverflowMenuTappedHistogram,
-                                MobileMessagesInfobarType::SaveCard);
+      base::UmaHistogramEnumeration(kInfobarOverflowMenuTappedHistogram,
+                                    MobileMessagesInfobarType::SaveCard);
       [self addModalRequestForInfobarType:InfobarType::kInfobarTypeSaveCard];
       break;
     }
     case PopupMenuActionShowTranslateOptions: {
-      UMA_HISTOGRAM_ENUMERATION(kInfobarOverflowMenuTappedHistogram,
-                                MobileMessagesInfobarType::Translate);
+      base::UmaHistogramEnumeration(kInfobarOverflowMenuTappedHistogram,
+                                    MobileMessagesInfobarType::Translate);
       [self addModalRequestForInfobarType:InfobarType::kInfobarTypeTranslate];
       break;
     }
     case PopupMenuActionShowPermissionsOptions: {
-      UMA_HISTOGRAM_ENUMERATION(kInfobarOverflowMenuTappedHistogram,
-                                MobileMessagesInfobarType::Permissions);
+      base::UmaHistogramEnumeration(kInfobarOverflowMenuTappedHistogram,
+                                    MobileMessagesInfobarType::Permissions);
       [self addModalRequestForInfobarType:InfobarType::kInfobarTypePermissions];
       break;
     }

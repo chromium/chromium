@@ -122,6 +122,10 @@
 @implementation SCBadgeCoordinator
 @synthesize baseViewController = _baseViewController;
 
+- (NSArray<NSNumber*>*)badgeTypesForOverflowMenu {
+  return @[ @(kBadgeTypePasswordSave) ];
+}
+
 - (void)start {
   self.containerViewController = [[BadgeContainerViewController alloc] init];
   BadgeButtonFactory* buttonFactory = [[BadgeButtonFactory alloc] init];
@@ -163,6 +167,9 @@
   [self.badgePopupMenuCoordinator setBadgeItemsToShow:badgeItems];
   [self.badgePopupMenuCoordinator start];
   [self.consumer markDisplayedBadgeAsRead:YES];
+}
+
+- (void)showModalForBadgeType:(BadgeType)badgeType {
 }
 
 @end

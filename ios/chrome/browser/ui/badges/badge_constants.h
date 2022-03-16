@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-// A11y identifiers so that automation can tap on BadgeButtons
+// A11y identifiers so that automation can tap on BadgeButtons.
 extern NSString* const kBadgeButtonSavePasswordAccessibilityIdentifier;
 extern NSString* const kBadgeButtonSavePasswordAcceptedAccessibilityIdentifier;
 extern NSString* const kBadgeButtonUpdatePasswordAccessibilityIdentifier;
@@ -36,5 +36,14 @@ extern NSString* const kBadgePopupMenuTableViewAccessibilityIdentifier;
 
 // A11y identifier for the unread indicator above the displayed badge.
 extern NSString* const kBadgeUnreadIndicatorAccessibilityIdentifier;
+
+// Action identifiers for the new overflow menu.
+extern NSString* const kBadgeButtonSavePasswordActionIdentifier;
+extern NSString* const kBadgeButtonUpdatePasswordActionIdentifier;
+extern NSString* const kBadgeButtonReadingListActionIdentifier;
+extern NSString* const kBadgeButtonSaveAddressProfileActionIdentifier;
+extern NSString* const kBadgeButtonSaveCardActionIdentifier;
+extern NSString* const kBadgeButtonTranslateActionIdentifier;
+extern NSString* const kBadgeButtonPermissionsActionIdentifier;
 
 #endif  // IOS_CHROME_BROWSER_UI_BADGES_BADGE_CONSTANTS_H_

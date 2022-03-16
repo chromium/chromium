@@ -11,6 +11,8 @@
 #import "ios/chrome/browser/ui/badges/badge_button.h"
 #import "ios/chrome/browser/ui/badges/badge_constants.h"
 #import "ios/chrome/browser/ui/badges/badge_delegate.h"
+#import "ios/chrome/browser/ui/badges/badge_overflow_menu_util.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -20,6 +22,10 @@
 #endif
 
 namespace {
+// The identifier for the new popup menu action trigger.
+NSString* const kOverflowPopupMenuActionIdentifier =
+    @"kOverflowPopupMenuActionIdentifier";
+// The size of the symbol image in the badge button.
 const CGFloat kSymbolImagePointSize = 18;
 }  // namespace
 
@@ -156,6 +162,37 @@ const CGFloat kSymbolImagePointSize = 18;
   button.accessibilityIdentifier = kBadgeButtonOverflowAccessibilityIdentifier;
   button.accessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_OVERFLOW_BADGE_HINT);
+
+  // Configure new overflow popup menu if enabled.
+  if (ShouldUseUIKitPopupMenu()) {
+    button.showsMenuAsPrimaryAction = YES;
+
+    // Adds an empty menu so the event triggers the first time.
+    button.menu = [UIMenu menuWithChildren:@[]];
+    [button removeActionForIdentifier:kOverflowPopupMenuActionIdentifier
+                     forControlEvents:UIControlEventMenuActionTriggered];
+
+    // Configure actions that should be executed on each tap of the overflow
+    // badge button to make sure the right overflow menu items are showing up.
+    __weak UIButton* weakButton = button;
+    __weak BadgeButtonFactory* weakSelf = self;
+    void (^showModalFunction)(BadgeType) = ^(BadgeType badgeType) {
+      [weakSelf.delegate showModalForBadgeType:badgeType];
+    };
+    void (^buttonTapHandler)(UIAction*) = ^(UIAction* action) {
+      weakButton.menu = GetOverflowMenuFromBadgeTypes(
+          weakSelf.delegate.badgeTypesForOverflowMenu, showModalFunction);
+    };
+    UIAction* action =
+        [UIAction actionWithTitle:@""
+                            image:nil
+                       identifier:kOverflowPopupMenuActionIdentifier
+                          handler:buttonTapHandler];
+
+    // Attach the action to the button.
+    [button addAction:action
+        forControlEvents:UIControlEventMenuActionTriggered];
+  }
   return button;
 }
 
