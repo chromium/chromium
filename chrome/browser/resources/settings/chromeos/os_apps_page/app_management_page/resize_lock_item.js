@@ -70,8 +70,9 @@ Polymer({
         newState,
     );
     recordSettingChange();
-    const userAction = newState ? AppManagementUserAction.ResizeLockTurnedOn :
-                                  AppManagementUserAction.ResizeLockTurnedOff;
+    const userAction = newState ?
+        AppManagementUserAction.RESIZE_LOCK_TURNED_ON :
+        AppManagementUserAction.RESIZE_LOCK_TURNED_OFF;
     recordAppManagementUserAction(this.app.type, userAction);
   },
 

@@ -221,36 +221,37 @@ export class AppManagementPermissionItemElement extends PolymerElement {
       permissionType: PermissionTypeIndex): AppManagementUserAction {
     switch (permissionType) {
       case 'kNotifications':
-        return permissionValue ? AppManagementUserAction.NotificationsTurnedOn :
-                                 AppManagementUserAction.NotificationsTurnedOff;
+        return permissionValue ?
+            AppManagementUserAction.NOTIFICATIONS_TURNED_ON :
+            AppManagementUserAction.NOTIFICATIONS_TURNED_OFF;
 
       case 'kLocation':
-        return permissionValue ? AppManagementUserAction.LocationTurnedOn :
-                                 AppManagementUserAction.LocationTurnedOff;
+        return permissionValue ? AppManagementUserAction.LOCATION_TURNED_ON :
+                                 AppManagementUserAction.LOCATION_TURNED_OFF;
 
       case 'kCamera':
-        return permissionValue ? AppManagementUserAction.CameraTurnedOn :
-                                 AppManagementUserAction.CameraTurnedOff;
+        return permissionValue ? AppManagementUserAction.CAMERA_TURNED_ON :
+                                 AppManagementUserAction.CAMERA_TURNED_OFF;
 
       case 'kMicrophone':
-        return permissionValue ? AppManagementUserAction.MicrophoneTurnedOn :
-                                 AppManagementUserAction.MicrophoneTurnedOff;
+        return permissionValue ? AppManagementUserAction.MICROPHONE_TURNED_ON :
+                                 AppManagementUserAction.MICROPHONE_TURNED_OFF;
 
       case 'kContacts':
-        return permissionValue ? AppManagementUserAction.ContactsTurnedOn :
-                                 AppManagementUserAction.ContactsTurnedOff;
+        return permissionValue ? AppManagementUserAction.CONTACTS_TURNED_ON :
+                                 AppManagementUserAction.CONTACTS_TURNED_OFF;
 
       case 'kStorage':
-        return permissionValue ? AppManagementUserAction.StorageTurnedOn :
-                                 AppManagementUserAction.StorageTurnedOff;
+        return permissionValue ? AppManagementUserAction.STORAGE_TURNED_ON :
+                                 AppManagementUserAction.STORAGE_TURNED_OFF;
 
       case 'kPrinting':
-        return permissionValue ? AppManagementUserAction.PrintingTurnedOn :
-                                 AppManagementUserAction.PrintingTurnedOff;
+        return permissionValue ? AppManagementUserAction.PRINTING_TURNED_ON :
+                                 AppManagementUserAction.PRINTING_TURNED_OFF;
 
       default:
         assertNotReached();
-        return AppManagementUserAction.NotificationsTurnedOn;
+        return AppManagementUserAction.NOTIFICATIONS_TURNED_ON;
     }
   }
 }

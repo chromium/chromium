@@ -92,8 +92,8 @@ export class AppManagementRunOnOsLoginItemElement extends PolymerElement {
       const booleanRunOnOsLoginMode =
           this.getRunOnOsLoginModeBoolean(newRunOnOsLoginMode);
       const runOnOsLoginModeChangeAction = booleanRunOnOsLoginMode ?
-          AppManagementUserAction.RunOnOsLoginModeTurnedOn :
-          AppManagementUserAction.RunOnOsLoginModeTurnedOff;
+          AppManagementUserAction.RUN_ON_OS_LOGIN_MODE_TURNED_ON :
+          AppManagementUserAction.RUN_ON_OS_LOGIN_MODE_TURNED_OFF;
       recordAppManagementUserAction(this.app.type, runOnOsLoginModeChangeAction);
     }
   }

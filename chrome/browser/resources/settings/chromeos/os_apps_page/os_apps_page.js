@@ -272,7 +272,7 @@ Polymer({
   onClickAppManagement_() {
     chrome.metricsPrivate.recordEnumerationValue(
         AppManagementEntryPointsHistogramName,
-        AppManagementEntryPoint.OsSettingsMainPage,
+        AppManagementEntryPoint.OS_SETTINGS_MAIN_PAGE,
         Object.keys(AppManagementEntryPoint).length);
     Router.getInstance().navigateTo(routes.APP_MANAGEMENT);
   },

@@ -60,19 +60,19 @@ Polymer({
   getAppManagementEntryPoint_(appType) {
     switch (appType) {
       case AppType.kArc:
-        return AppManagementEntryPoint.MainViewArc;
+        return AppManagementEntryPoint.MAIN_VIEW_ARC;
       case AppType.kChromeApp:
       case AppType.kStandaloneBrowser:
       case AppType.kStandaloneBrowserChromeApp:
         // TODO(https://crbug.com/1225848): Figure out appropriate behavior for
         // Lacros-hosted chrome-apps.
-        return AppManagementEntryPoint.MainViewChromeApp;
+        return AppManagementEntryPoint.MAIN_VIEW_CHROME_APP;
       case AppType.kWeb:
-        return AppManagementEntryPoint.MainViewWebApp;
+        return AppManagementEntryPoint.MAIN_VIEW_WEB_APP;
       case AppType.kPluginVm:
-        return AppManagementEntryPoint.MainViewPluginVm;
+        return AppManagementEntryPoint.MAIN_VIEW_PLUGIN_VM;
       case AppType.kBorealis:
-        return AppManagementEntryPoint.MainViewBorealis;
+        return AppManagementEntryPoint.MAIN_VIEW_BOREALIS;
       default:
         assertNotReached();
     }

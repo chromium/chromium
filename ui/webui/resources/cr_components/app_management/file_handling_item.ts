@@ -104,7 +104,7 @@ export class AppManagementFileHandlingItemElement extends
     this.showOverflowDialog = true;
 
     recordAppManagementUserAction(
-        this.app.type, AppManagementUserAction.FileHandlingOverflowShown);
+        this.app.type, AppManagementUserAction.FILE_HANDLING_OVERFLOW_SHOWN);
   }
 
   private onCloseButtonClicked_() {
@@ -134,8 +134,8 @@ export class AppManagementFileHandlingItemElement extends
         enabled,
     );
     const fileHandlingChangeAction = enabled ?
-        AppManagementUserAction.FileHandlingTurnedOn :
-        AppManagementUserAction.FileHandlingTurnedOff;
+        AppManagementUserAction.FILE_HANDLING_TURNED_ON :
+        AppManagementUserAction.FILE_HANDLING_TURNED_OFF;
     recordAppManagementUserAction(this.app.type, fileHandlingChangeAction);
   }
 }

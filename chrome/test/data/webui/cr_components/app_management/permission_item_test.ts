@@ -41,6 +41,6 @@ suite('AppManagementPermissionItemTest', function() {
     assertEquals(data[1].value.tristateValue, TriState.kAllow);
 
     const metricData = await testProxy.whenCalled('recordEnumerationValue');
-    assertEquals(metricData[1], AppManagementUserAction.LocationTurnedOn);
+    assertEquals(metricData[1], AppManagementUserAction.LOCATION_TURNED_ON);
   });
 });

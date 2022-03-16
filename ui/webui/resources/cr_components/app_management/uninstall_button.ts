@@ -82,7 +82,7 @@ export class AppManamentUninstallButtonElement extends PolymerElement {
   private onClick_() {
     BrowserProxy.getInstance().handler.uninstall(this.app.id);
     recordAppManagementUserAction(
-        this.app.type, AppManagementUserAction.UninstallDialogLaunched);
+        this.app.type, AppManagementUserAction.UNINSTALL_DIALOG_LAUNCHED);
   }
 }
 

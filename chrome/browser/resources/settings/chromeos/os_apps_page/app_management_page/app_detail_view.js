@@ -129,7 +129,7 @@ Polymer({
   selectedAppIdChanged_(appId) {
     if (appId && this.app_) {
       recordAppManagementUserAction(
-          this.app_.type, AppManagementUserAction.ViewOpened);
+          this.app_.type, AppManagementUserAction.VIEW_OPENED);
     }
   },
 

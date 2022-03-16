@@ -97,8 +97,8 @@ Polymer({
     );
     recordSettingChange();
     const userAction = newStateBool ?
-        AppManagementUserAction.PinToShelfTurnedOn :
-        AppManagementUserAction.PinToShelfTurnedOff;
+        AppManagementUserAction.PIN_TO_SHELF_TURNED_ON :
+        AppManagementUserAction.PIN_TO_SHELF_TURNED_OFF;
     recordAppManagementUserAction(this.app.type, userAction);
   },
 

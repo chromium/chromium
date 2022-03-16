@@ -244,7 +244,7 @@ Polymer({
 
     recordSettingChange();
     recordAppManagementUserAction(
-        this.app.type, AppManagementUserAction.SupportedLinksListShown);
+        this.app.type, AppManagementUserAction.SUPPORTED_LINKS_LIST_SHOWN);
   },
 
   /**
@@ -282,7 +282,7 @@ Polymer({
       this.overlappingAppIds_ = overlappingAppIds;
       this.showOverlappingAppsDialog_ = true;
       recordAppManagementUserAction(
-          this.app.type, AppManagementUserAction.OverlappingAppsDialogShown);
+          this.app.type, AppManagementUserAction.OVERLAPPING_APPS_DIALOG_SHOWN);
       return;
     }
 
@@ -317,8 +317,9 @@ Polymer({
     BrowserProxy.getInstance().handler.setPreferredApp(this.app.id, newState);
 
     recordSettingChange();
-    const userAction = newState ? AppManagementUserAction.PreferredAppTurnedOn :
-                                  AppManagementUserAction.PreferredAppTurnedOff;
+    const userAction = newState ?
+        AppManagementUserAction.PREFERRED_APP_TURNED_ON :
+        AppManagementUserAction.PREFERRED_APP_TURNED_OFF;
     recordAppManagementUserAction(this.app.type, userAction);
   },
 });
