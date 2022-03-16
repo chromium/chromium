@@ -3455,16 +3455,6 @@ StyleRecalcChange Element::RecalcOwnStyle(
       // See http://crbug.com/1228058
       StyleAdjuster::AdjustStyleForCombinedText(*new_style);
     }
-    scoped_refptr<const ComputedStyle> layout_style(std::move(new_style));
-    if (auto* pseudo_element = DynamicTo<PseudoElement>(this)) {
-      if (layout_style->Display() == EDisplay::kContents) {
-        layout_style =
-            pseudo_element->LayoutStyleForDisplayContents(*layout_style);
-      }
-    } else if (auto* html_element = DynamicTo<HTMLHtmlElement>(this)) {
-      if (this == GetDocument().documentElement())
-        layout_style = html_element->LayoutStyleForElement(layout_style);
-    }
     // kEqual means that the computed style didn't change, but there are
     // additional flags in ComputedStyle which may have changed. For instance,
     // the AffectedBy* flags. We don't need to go through the visual
@@ -3474,6 +3464,23 @@ StyleRecalcChange Element::RecalcOwnStyle(
         diff == ComputedStyle::Difference::kEqual
             ? LayoutObject::ApplyStyleChanges::kNo
             : LayoutObject::ApplyStyleChanges::kYes;
+
+    scoped_refptr<const ComputedStyle> layout_style(std::move(new_style));
+    if (auto* pseudo_element = DynamicTo<PseudoElement>(this)) {
+      if (layout_style->Display() == EDisplay::kContents) {
+        layout_style =
+            pseudo_element->LayoutStyleForDisplayContents(*layout_style);
+      }
+    } else if (auto* html_element = DynamicTo<HTMLHtmlElement>(this)) {
+      if (this == GetDocument().documentElement()) {
+        layout_style = html_element->LayoutStyleForElement(layout_style);
+        // Always apply changes for html root, even if the ComputedStyle may be
+        // the same, propagation changes picked up from body style, or
+        // previously propagated styles from a removed body element, may still
+        // change the LayoutObject's style.
+        apply_changes = LayoutObject::ApplyStyleChanges::kYes;
+      }
+    }
     // TODO(crbug.com/1246826): Remove CompositablePaintAnimationChanged.
     if (RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled()) {
       if (layout_style->CompositablePaintAnimationChanged())
