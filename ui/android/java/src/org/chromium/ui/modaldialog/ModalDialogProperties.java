@@ -130,6 +130,10 @@ public class ModalDialogProperties {
     public static final WritableBooleanPropertyKey NEGATIVE_BUTTON_DISABLED =
             new WritableBooleanPropertyKey();
 
+    /** The message on the dialog footer. */
+    public static final WritableObjectPropertyKey<CharSequence> FOOTER_MESSAGE =
+            new WritableObjectPropertyKey<>();
+
     /** Whether the dialog should be dismissed on user tapping the scrim. */
     public static final WritableBooleanPropertyKey CANCEL_ON_TOUCH_OUTSIDE =
             new WritableBooleanPropertyKey();
@@ -176,6 +180,7 @@ public class ModalDialogProperties {
             TITLE, TITLE_MAX_LINES, TITLE_ICON, MESSAGE, CUSTOM_VIEW, POSITIVE_BUTTON_TEXT,
             POSITIVE_BUTTON_ICON, POSITIVE_BUTTON_CONTENT_DESCRIPTION, POSITIVE_BUTTON_DISABLED,
             NEGATIVE_BUTTON_TEXT, NEGATIVE_BUTTON_CONTENT_DESCRIPTION, NEGATIVE_BUTTON_DISABLED,
-            CANCEL_ON_TOUCH_OUTSIDE, FILTER_TOUCH_FOR_SECURITY, TOUCH_FILTERED_CALLBACK,
-            TITLE_SCROLLABLE, BUTTON_STYLES, FULLSCREEN_DIALOG, DIALOG_WHEN_LARGE, FOCUS_DIALOG};
+            FOOTER_MESSAGE, CANCEL_ON_TOUCH_OUTSIDE, FILTER_TOUCH_FOR_SECURITY,
+            TOUCH_FILTERED_CALLBACK, TITLE_SCROLLABLE, BUTTON_STYLES, FULLSCREEN_DIALOG,
+            DIALOG_WHEN_LARGE, FOCUS_DIALOG};
 }

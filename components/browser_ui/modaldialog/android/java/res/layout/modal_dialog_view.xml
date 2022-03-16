@@ -75,4 +75,20 @@
 
     </org.chromium.components.browser_ui.widget.DualControlLayout>
 
+    <LinearLayout
+        android:id="@+id/footer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/footer_message"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="@dimen/modal_dialog_footer_horizontal_padding"
+            android:paddingVertical="@dimen/modal_dialog_footer_vertical_padding" />
+
+    </LinearLayout>
+
 </org.chromium.components.browser_ui.modaldialog.ModalDialogView>

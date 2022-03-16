@@ -217,6 +217,25 @@ public class ModalDialogViewRenderTest extends BlankUiTestActivityTestCase {
         mRenderTestRule.render(mModalDialogView, "custom_view");
     }
 
+    @Test
+    @MediumTest
+    @Feature({"ModalDialog", "RenderTest"})
+    public void testRender_FooterMessage() throws IOException {
+        setUpViews(R.style.Theme_Chromium_ModalDialog_TextPrimaryButton);
+        createModel(
+                mModelBuilder.with(ModalDialogProperties.TITLE, mResources, R.string.title)
+                        .with(ModalDialogProperties.MESSAGE,
+                                TextUtils.join("\n", Collections.nCopies(100, "Message")))
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, mResources, R.string.ok)
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, true)
+                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, mResources,
+                                R.string.cancel)
+                        .with(ModalDialogProperties.FOOTER_MESSAGE,
+                                mResources.getString(
+                                        org.chromium.chrome.R.string.legal_information_summary)));
+        mRenderTestRule.render(mModalDialogView, "footer_message");
+    }
+
     private PropertyModel createModel(PropertyModel.Builder modelBuilder) {
         return ModalDialogTestUtils.createModel(modelBuilder, mModalDialogView);
     }

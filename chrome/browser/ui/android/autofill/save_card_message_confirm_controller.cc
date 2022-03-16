@@ -6,6 +6,7 @@
 
 #include "chrome/android/chrome_jni_headers/AutofillMessageConfirmFlowBridge_jni.h"
 
+#include "components/messages/android/messages_feature.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/view_android.h"
@@ -15,6 +16,16 @@
 using base::android::ScopedJavaLocalRef;
 
 namespace autofill {
+
+// Get the Save Card confirmation dialog title resource ID depending on the
+// version of the dialog. See crbug.com/1306294 for details.
+int GetSaveCardDialogTitleId() {
+  if (messages::IsSaveCardMessagesUiEnabled() &&
+      messages::UseDialogV2ForSaveCardMessage()) {
+    return IDS_AUTOFILL_MOBILE_SAVE_CARD_TO_CLOUD_CONFIRMATION_DIALOG_TITLE_V2;
+  }
+  return IDS_AUTOFILL_MOBILE_SAVE_CARD_TO_CLOUD_CONFIRMATION_DIALOG_TITLE;
+}
 
 SaveCardMessageConfirmController::SaveCardMessageConfirmController(
     SaveCardMessageConfirmDelegate* delegate,
@@ -38,9 +49,7 @@ void SaveCardMessageConfirmController::ConfirmSaveCard(
   Java_AutofillMessageConfirmFlowBridge_confirmSaveCard(
       env, GetOrCreateJavaObject(),
       base::android::ConvertUTF16ToJavaString(
-          env,
-          l10n_util::GetStringUTF16(
-              IDS_AUTOFILL_MOBILE_SAVE_CARD_TO_CLOUD_CONFIRMATION_DIALOG_TITLE)),
+          env, l10n_util::GetStringUTF16(GetSaveCardDialogTitleId())),
       base::android::ConvertUTF16ToJavaString(env, card_label),
       base::android::ConvertUTF16ToJavaString(
           env, l10n_util::GetStringUTF16(
@@ -57,9 +66,7 @@ void SaveCardMessageConfirmController::FixName(
   Java_AutofillMessageConfirmFlowBridge_fixName(
       env, GetOrCreateJavaObject(),
       base::android::ConvertUTF16ToJavaString(
-          env,
-          l10n_util::GetStringUTF16(
-              IDS_AUTOFILL_MOBILE_SAVE_CARD_TO_CLOUD_CONFIRMATION_DIALOG_TITLE)),
+          env, l10n_util::GetStringUTF16(GetSaveCardDialogTitleId())),
       base::android::ConvertUTF16ToJavaString(env, inferred_cardholder_name),
       base::android::ConvertUTF16ToJavaString(env, card_label),
       base::android::ConvertUTF16ToJavaString(
@@ -75,9 +82,7 @@ void SaveCardMessageConfirmController::FixDate(
   Java_AutofillMessageConfirmFlowBridge_fixDate(
       env, GetOrCreateJavaObject(),
       base::android::ConvertUTF16ToJavaString(
-          env,
-          l10n_util::GetStringUTF16(
-              IDS_AUTOFILL_MOBILE_SAVE_CARD_TO_CLOUD_CONFIRMATION_DIALOG_TITLE)),
+          env, l10n_util::GetStringUTF16(GetSaveCardDialogTitleId())),
       base::android::ConvertUTF16ToJavaString(env, card_label),
       base::android::ConvertUTF16ToJavaString(
           env, l10n_util::GetStringUTF16(

@@ -53,6 +53,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        tools:ignore="TextViewEdits" />
+        tools:ignore="TextViewEdits"
+        android:visibility="gone" />
 
 </LinearLayout>

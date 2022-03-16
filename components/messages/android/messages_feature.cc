@@ -57,6 +57,9 @@ constexpr base::FeatureParam<bool>
 constexpr base::FeatureParam<bool> kMessagesForAndroidSaveCard_UseGPayIcon{
     &kMessagesForAndroidSaveCard, "save_card_message_use_gpay_icon", true};
 
+constexpr base::FeatureParam<bool> kMessagesForAndroidSaveCard_UseDialogV2{
+    &kMessagesForAndroidSaveCard, "save_card_dialog_v2_enabled", false};
+
 const base::Feature kMessagesForAndroidSyncError{
     "MessagesForAndroidSyncError", base::FEATURE_ENABLED_BY_DEFAULT};
 
@@ -134,6 +137,10 @@ bool UseFollowupButtonTextForSaveCardMessage() {
 
 bool UseGPayIconForSaveCardMessage() {
   return kMessagesForAndroidSaveCard_UseGPayIcon.Get();
+}
+
+bool UseDialogV2ForSaveCardMessage() {
+  return kMessagesForAndroidSaveCard_UseDialogV2.Get();
 }
 
 }  // namespace messages

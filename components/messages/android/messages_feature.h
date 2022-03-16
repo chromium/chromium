@@ -98,6 +98,8 @@ bool UseFollowupButtonTextForSaveCardMessage();
 
 bool UseGPayIconForSaveCardMessage();
 
+bool UseDialogV2ForSaveCardMessage();
+
 }  // namespace messages
 
 #endif  // COMPONENTS_MESSAGES_ANDROID_MESSAGES_FEATURE_H_

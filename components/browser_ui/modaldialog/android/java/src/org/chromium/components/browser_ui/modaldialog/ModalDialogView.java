@@ -22,6 +22,7 @@ import androidx.annotation.IntDef;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.BoundedLinearLayout;
 import org.chromium.components.browser_ui.widget.FadingEdgeScrollView;
 import org.chromium.ui.UiUtils;
@@ -66,6 +67,8 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     private boolean mFilterTouchForSecurity;
     private boolean mFilteredTouchResultRecorded;
     private Runnable mOnTouchFilteredCallback;
+    private ViewGroup mFooterContainer;
+    private TextView mFooterMessageView;
 
     /**
      * Constructor for inflating from XML.
@@ -87,10 +90,15 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         mButtonBar = findViewById(R.id.button_bar);
         mPositiveButton = findViewById(R.id.positive_button);
         mNegativeButton = findViewById(R.id.negative_button);
+        mFooterContainer = findViewById(R.id.footer);
+        mFooterMessageView = findViewById(R.id.footer_message);
 
         mPositiveButton.setOnClickListener(this);
         mNegativeButton.setOnClickListener(this);
         mMessageView.setMovementMethod(LinkMovementMethod.getInstance());
+        mFooterMessageView.setMovementMethod(LinkMovementMethod.getInstance());
+        mFooterContainer.setBackgroundColor(
+                ChromeColors.getSurfaceColor(getContext(), R.dimen.default_elevation_1));
         updateContentVisibility();
         updateButtonVisibility();
 
@@ -333,18 +341,26 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         getButton(buttonType).setEnabled(enabled);
     }
 
+    /** @param message The message in the dialog footer. */
+    void setFooterMessage(CharSequence message) {
+        mFooterMessageView.setText(message);
+        updateContentVisibility();
+    }
+
     private void updateContentVisibility() {
         boolean titleVisible = !TextUtils.isEmpty(mTitleView.getText());
         boolean titleIconVisible = mTitleIcon.getDrawable() != null;
         boolean titleContainerVisible = titleVisible || titleIconVisible;
         boolean messageVisible = !TextUtils.isEmpty(mMessageView.getText());
         boolean scrollViewVisible = (mTitleScrollable && titleContainerVisible) || messageVisible;
+        boolean footerMessageVisible = !TextUtils.isEmpty(mFooterMessageView.getText());
 
         mTitleView.setVisibility(titleVisible ? View.VISIBLE : View.GONE);
         mTitleIcon.setVisibility(titleIconVisible ? View.VISIBLE : View.GONE);
         mTitleContainer.setVisibility(titleContainerVisible ? View.VISIBLE : View.GONE);
         mMessageView.setVisibility(messageVisible ? View.VISIBLE : View.GONE);
         mScrollView.setVisibility(scrollViewVisible ? View.VISIBLE : View.GONE);
+        mFooterContainer.setVisibility(footerMessageVisible ? View.VISIBLE : View.GONE);
     }
 
     private void updateButtonVisibility() {

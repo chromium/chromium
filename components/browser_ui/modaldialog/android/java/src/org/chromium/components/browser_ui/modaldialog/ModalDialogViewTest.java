@@ -327,6 +327,34 @@ public class ModalDialogViewTest {
         onView(withId(R.id.negative_button)).check(matches(not(touchFilterEnabled())));
     }
 
+    @Test
+    @MediumTest
+    @Feature({"ModalDialog"})
+    public void testFooterMessage() {
+        // Verify that the footer message set from builder is displayed.
+        String msg = sResources.getString(R.string.more);
+        PropertyModel model =
+                createModel(mModelBuilder.with(ModalDialogProperties.FOOTER_MESSAGE, msg));
+        onView(withId(R.id.footer)).check(matches(isDisplayed()));
+        onView(withId(R.id.footer_message))
+                .check(matches(allOf(isDisplayed(), withText(R.string.more))));
+
+        // Set an empty footer message and verify that footer message is not shown.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> model.set(ModalDialogProperties.FOOTER_MESSAGE, ""));
+        onView(withId(R.id.footer)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.footer_message)).check(matches(not(isDisplayed())));
+
+        // Use CharSequence for the footer message.
+        SpannableStringBuilder sb = new SpannableStringBuilder(msg);
+        sb.setSpan(new ForegroundColorSpan(0xffff0000), 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> model.set(ModalDialogProperties.FOOTER_MESSAGE, sb));
+        onView(withId(R.id.footer)).check(matches(isDisplayed()));
+        onView(withId(R.id.footer_message))
+                .check(matches(allOf(isDisplayed(), withText(R.string.more))));
+    }
+
     private static Matcher<View> touchFilterEnabled() {
         return new TypeSafeMatcher<View>() {
             @Override

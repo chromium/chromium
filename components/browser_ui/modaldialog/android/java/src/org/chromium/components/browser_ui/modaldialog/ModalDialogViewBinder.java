@@ -53,6 +53,8 @@ public class ModalDialogViewBinder
         } else if (ModalDialogProperties.NEGATIVE_BUTTON_DISABLED == propertyKey) {
             view.setButtonEnabled(ModalDialogProperties.ButtonType.NEGATIVE,
                     !model.get(ModalDialogProperties.NEGATIVE_BUTTON_DISABLED));
+        } else if (ModalDialogProperties.FOOTER_MESSAGE == propertyKey) {
+            view.setFooterMessage(model.get(ModalDialogProperties.FOOTER_MESSAGE));
         } else if (ModalDialogProperties.TITLE_SCROLLABLE == propertyKey) {
             view.setTitleScrollable(model.get(ModalDialogProperties.TITLE_SCROLLABLE));
         } else if (ModalDialogProperties.CONTROLLER == propertyKey) {

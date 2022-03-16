@@ -30,6 +30,8 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Base class for creating autofill save card prompts that support displaying legal message line.
  */
 public abstract class AutofillSaveCardPromptBase implements ModalDialogProperties.Controller {
+    private static final String DIALOG_V2_ENABLED_PARAM_NAME = "save_card_dialog_v2_enabled";
+
     private final AutofillSaveCardPromptBaseDelegate mBaseDelegate;
 
     protected PropertyModel mDialogModel;
@@ -81,10 +83,11 @@ public abstract class AutofillSaveCardPromptBase implements ModalDialogPropertie
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.MESSAGES_FOR_ANDROID_SAVE_CARD)
                 && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                         ChromeFeatureList.MESSAGES_FOR_ANDROID_SAVE_CARD,
-                        "save_card_dialog_explanation", false)) {
+                        DIALOG_V2_ENABLED_PARAM_NAME, false)) {
             TextView description = mDialogView.findViewById(R.id.description);
             description.setVisibility(View.VISIBLE);
-            description.setText(R.string.autofill_save_card_prompt_upload_explanation_v3);
+            description.setText(
+                    R.string.autofill_mobile_save_card_to_cloud_confirmation_dialog_explanation);
         }
 
         PropertyModel.Builder builder =
@@ -121,9 +124,17 @@ public abstract class AutofillSaveCardPromptBase implements ModalDialogPropertie
         if (activity == null || modalDialogManager == null) return;
 
         if (mSpannableStringBuilder != null) {
-            TextView legalMessage = mDialogView.findViewById(R.id.legal_message);
-            legalMessage.setText(mSpannableStringBuilder);
-            legalMessage.setMovementMethod(LinkMovementMethod.getInstance());
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.MESSAGES_FOR_ANDROID_SAVE_CARD)
+                    && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                            ChromeFeatureList.MESSAGES_FOR_ANDROID_SAVE_CARD,
+                            DIALOG_V2_ENABLED_PARAM_NAME, false)) {
+                mDialogModel.set(ModalDialogProperties.FOOTER_MESSAGE, mSpannableStringBuilder);
+            } else {
+                TextView legalMessage = mDialogView.findViewById(R.id.legal_message);
+                legalMessage.setText(mSpannableStringBuilder);
+                legalMessage.setVisibility(View.VISIBLE);
+                legalMessage.setMovementMethod(LinkMovementMethod.getInstance());
+            }
         }
 
         mContext = activity;
