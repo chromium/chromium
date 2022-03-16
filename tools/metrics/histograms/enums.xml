@@ -55656,6 +55656,7 @@ from previous Chrome versions.
   <int value="682916740" label="PdfUnseasoned:disabled"/>
   <int value="683013217" label="AllowPopupsDuringPageUnload:disabled"/>
   <int value="683433500" label="CommerceMerchantViewer:disabled"/>
+  <int value="684198422" label="UnifiedPasswordManagerDesktop:enabled"/>
   <int value="684806628" label="TranslateLanguageByULP:disabled"/>
   <int value="685406951" label="UseNotificationCompatBuilder:disabled"/>
   <int value="685916283" label="enable-zip-archiver-on-file-manager"/>
@@ -56873,6 +56874,7 @@ from previous Chrome versions.
   <int value="1531164533" label="SyncPseudoUSSFavicons:disabled"/>
   <int value="1531741496" label="DragFromShelfToHomeOrOverview:disabled"/>
   <int value="1532505461" label="HelpAppLauncherSearch:disabled"/>
+  <int value="1532621308" label="UnifiedPasswordManagerDesktop:disabled"/>
   <int value="1533004890" label="CrostiniEnableDlc:enabled"/>
   <int value="1533106740" label="LacrosTtsSupport:enabled"/>
   <int value="1534222388" label="EnableEphemeralFlashPermission:enabled"/>

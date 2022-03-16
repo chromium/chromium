@@ -7747,6 +7747,14 @@ const FeatureEntry kFeatureEntries[] = {
          "UnifiedPasswordManagerAndroid")},
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+    {"unified-password-manager-desktop",
+     flag_descriptions::kUnifiedPasswordManagerDesktopName,
+     flag_descriptions::kUnifiedPasswordManagerDesktopDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kUnifiedPasswordManagerDesktop)},
+#endif
+
     {"extension-workflow-justification",
      flag_descriptions::kExtensionWorkflowJustificationName,
      flag_descriptions::kExtensionWorkflowJustificationDescription, kOsDesktop,

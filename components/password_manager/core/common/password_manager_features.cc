@@ -219,6 +219,9 @@ const base::Feature kUnifiedPasswordManagerSyncUsingAndroidBackendOnly{
     base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
+const base::Feature kUnifiedPasswordManagerDesktop = {
+    "UnifiedPasswordManagerDesktop", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables support of sending votes on username first flow. The votes are sent
 // on single username forms and are based on user interaction with the save
 // prompt.
