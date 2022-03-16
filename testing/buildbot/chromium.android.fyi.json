@@ -7477,9 +7477,6 @@
     ],
     "junit_tests": [
       {
-        "args": [
-          "--avd-config=../../tools/android/avd/proto/generic_android25.textpb"
-        ],
         "isolate_profile_data": true,
         "name": "android_webview_junit_tests",
         "resultdb": {
@@ -7491,9 +7488,6 @@
         "test_id_prefix": "ninja://android_webview/test:android_webview_junit_tests/"
       },
       {
-        "args": [
-          "--avd-config=../../tools/android/avd/proto/generic_android25.textpb"
-        ],
         "isolate_profile_data": true,
         "name": "base_junit_tests",
         "resultdb": {
@@ -7505,9 +7499,6 @@
         "test_id_prefix": "ninja://base:base_junit_tests/"
       },
       {
-        "args": [
-          "--avd-config=../../tools/android/avd/proto/generic_android25.textpb"
-        ],
         "isolate_profile_data": true,
         "name": "chrome_java_test_pagecontroller_junit_tests",
         "resultdb": {
@@ -7519,9 +7510,6 @@
         "test_id_prefix": "ninja://chrome/test/android:chrome_java_test_pagecontroller_junit_tests/"
       },
       {
-        "args": [
-          "--avd-config=../../tools/android/avd/proto/generic_android25.textpb"
-        ],
         "isolate_profile_data": true,
         "name": "chrome_junit_tests",
         "resultdb": {
@@ -7533,9 +7521,6 @@
         "test_id_prefix": "ninja://chrome/android:chrome_junit_tests/"
       },
       {
-        "args": [
-          "--avd-config=../../tools/android/avd/proto/generic_android25.textpb"
-        ],
         "isolate_profile_data": true,
         "name": "components_junit_tests",
         "resultdb": {
@@ -7547,9 +7532,6 @@
         "test_id_prefix": "ninja://components:components_junit_tests/"
       },
       {
-        "args": [
-          "--avd-config=../../tools/android/avd/proto/generic_android25.textpb"
-        ],
         "isolate_profile_data": true,
         "name": "content_junit_tests",
         "resultdb": {
@@ -7561,9 +7543,6 @@
         "test_id_prefix": "ninja://content/public/android:content_junit_tests/"
       },
       {
-        "args": [
-          "--avd-config=../../tools/android/avd/proto/generic_android25.textpb"
-        ],
         "isolate_profile_data": true,
         "name": "device_junit_tests",
         "resultdb": {
@@ -7575,9 +7554,6 @@
         "test_id_prefix": "ninja://device:device_junit_tests/"
       },
       {
-        "args": [
-          "--avd-config=../../tools/android/avd/proto/generic_android25.textpb"
-        ],
         "isolate_profile_data": true,
         "name": "incremental_javac_junit_tests",
         "resultdb": {
@@ -7589,9 +7565,6 @@
         "test_id_prefix": "ninja://build/android/test:incremental_javac_junit_tests/"
       },
       {
-        "args": [
-          "--avd-config=../../tools/android/avd/proto/generic_android25.textpb"
-        ],
         "isolate_profile_data": true,
         "name": "junit_unit_tests",
         "resultdb": {
@@ -7603,9 +7576,6 @@
         "test_id_prefix": "ninja://testing/android/junit:junit_unit_tests/"
       },
       {
-        "args": [
-          "--avd-config=../../tools/android/avd/proto/generic_android25.textpb"
-        ],
         "isolate_profile_data": true,
         "name": "keyboard_accessory_junit_tests",
         "resultdb": {
@@ -7617,9 +7587,6 @@
         "test_id_prefix": "ninja://chrome/android/features/keyboard_accessory:keyboard_accessory_junit_tests/"
       },
       {
-        "args": [
-          "--avd-config=../../tools/android/avd/proto/generic_android25.textpb"
-        ],
         "isolate_profile_data": true,
         "name": "media_base_junit_tests",
         "resultdb": {
@@ -7631,9 +7598,6 @@
         "test_id_prefix": "ninja://media/base/android:media_base_junit_tests/"
       },
       {
-        "args": [
-          "--avd-config=../../tools/android/avd/proto/generic_android25.textpb"
-        ],
         "isolate_profile_data": true,
         "name": "module_installer_junit_tests",
         "resultdb": {
@@ -7645,9 +7609,6 @@
         "test_id_prefix": "ninja://components/module_installer/android:module_installer_junit_tests/"
       },
       {
-        "args": [
-          "--avd-config=../../tools/android/avd/proto/generic_android25.textpb"
-        ],
         "isolate_profile_data": true,
         "name": "net_junit_tests",
         "resultdb": {
@@ -7659,9 +7620,6 @@
         "test_id_prefix": "ninja://net/android:net_junit_tests/"
       },
       {
-        "args": [
-          "--avd-config=../../tools/android/avd/proto/generic_android25.textpb"
-        ],
         "isolate_profile_data": true,
         "name": "paint_preview_junit_tests",
         "resultdb": {
@@ -7673,9 +7631,6 @@
         "test_id_prefix": "ninja://components/paint_preview/player/android:paint_preview_junit_tests/"
       },
       {
-        "args": [
-          "--avd-config=../../tools/android/avd/proto/generic_android25.textpb"
-        ],
         "isolate_profile_data": true,
         "name": "password_check_junit_tests",
         "resultdb": {
@@ -7687,9 +7642,6 @@
         "test_id_prefix": "ninja://chrome/browser/password_check/android:password_check_junit_tests/"
       },
       {
-        "args": [
-          "--avd-config=../../tools/android/avd/proto/generic_android25.textpb"
-        ],
         "isolate_profile_data": true,
         "name": "password_manager_junit_tests",
         "resultdb": {
@@ -7701,9 +7653,6 @@
         "test_id_prefix": "ninja://chrome/browser/password_manager/android:password_manager_junit_tests/"
       },
       {
-        "args": [
-          "--avd-config=../../tools/android/avd/proto/generic_android25.textpb"
-        ],
         "isolate_profile_data": true,
         "name": "services_junit_tests",
         "resultdb": {
@@ -7715,9 +7664,6 @@
         "test_id_prefix": "ninja://services:services_junit_tests/"
       },
       {
-        "args": [
-          "--avd-config=../../tools/android/avd/proto/generic_android25.textpb"
-        ],
         "isolate_profile_data": true,
         "name": "touch_to_fill_junit_tests",
         "resultdb": {
@@ -7729,9 +7675,6 @@
         "test_id_prefix": "ninja://chrome/browser/touch_to_fill/android:touch_to_fill_junit_tests/"
       },
       {
-        "args": [
-          "--avd-config=../../tools/android/avd/proto/generic_android25.textpb"
-        ],
         "isolate_profile_data": true,
         "name": "ui_junit_tests",
         "resultdb": {
@@ -7743,9 +7686,6 @@
         "test_id_prefix": "ninja://ui/android:ui_junit_tests/"
       },
       {
-        "args": [
-          "--avd-config=../../tools/android/avd/proto/generic_android25.textpb"
-        ],
         "isolate_profile_data": true,
         "name": "webapk_client_junit_tests",
         "resultdb": {
@@ -7757,9 +7697,6 @@
         "test_id_prefix": "ninja://chrome/android/webapk/libs/client:webapk_client_junit_tests/"
       },
       {
-        "args": [
-          "--avd-config=../../tools/android/avd/proto/generic_android25.textpb"
-        ],
         "isolate_profile_data": true,
         "name": "webapk_shell_apk_h2o_junit_tests",
         "resultdb": {
@@ -7771,9 +7708,6 @@
         "test_id_prefix": "ninja://chrome/android/webapk/shell_apk:webapk_shell_apk_h2o_junit_tests/"
       },
       {
-        "args": [
-          "--avd-config=../../tools/android/avd/proto/generic_android25.textpb"
-        ],
         "isolate_profile_data": true,
         "name": "webapk_shell_apk_junit_tests",
         "resultdb": {
@@ -7785,9 +7719,6 @@
         "test_id_prefix": "ninja://chrome/android/webapk/shell_apk:webapk_shell_apk_junit_tests/"
       },
       {
-        "args": [
-          "--avd-config=../../tools/android/avd/proto/generic_android25.textpb"
-        ],
         "experiment_percentage": 100,
         "isolate_profile_data": true,
         "name": "weblayer_junit_tests",

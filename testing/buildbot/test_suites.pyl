@@ -113,7 +113,7 @@
         'resultdb': {
           'enable': True,
           'result_format': 'single'
-        }
+        },
       },
     },
 
@@ -995,29 +995,120 @@
     },
 
     'chromium_junit_tests': {
-      'android_webview_junit_tests': {},
-      'base_junit_tests': {},
-      'chrome_java_test_pagecontroller_junit_tests': {},
-      'chrome_junit_tests': {},
-      'components_junit_tests': {},
-      'content_junit_tests': {},
-      'device_junit_tests': {},
-      'incremental_javac_junit_tests':{},
-      'junit_unit_tests': {},
-      'keyboard_accessory_junit_tests': {},
-      'media_base_junit_tests': {},
-      'module_installer_junit_tests': {},
-      'net_junit_tests': {},
-      'paint_preview_junit_tests': {},
-      'password_check_junit_tests': {},
-      'password_manager_junit_tests': {},
-      'services_junit_tests': {},
-      'touch_to_fill_junit_tests': {},
-      'ui_junit_tests': {},
-      'webapk_client_junit_tests': {},
-      'webapk_shell_apk_h2o_junit_tests': {},
-      'webapk_shell_apk_junit_tests': {},
+      'android_webview_junit_tests': {
+        'remove_mixins': [
+          'nougat-x86-emulator',
+        ],
+      },
+      'base_junit_tests': {
+        'remove_mixins': [
+          'nougat-x86-emulator',
+        ],
+      },
+      'chrome_java_test_pagecontroller_junit_tests': {
+        'remove_mixins': [
+          'nougat-x86-emulator',
+        ],
+      },
+      'chrome_junit_tests': {
+        'remove_mixins': [
+          'nougat-x86-emulator',
+        ],
+      },
+      'components_junit_tests': {
+        'remove_mixins': [
+          'nougat-x86-emulator',
+        ],
+      },
+      'content_junit_tests': {
+        'remove_mixins': [
+          'nougat-x86-emulator',
+        ],
+      },
+      'device_junit_tests': {
+        'remove_mixins': [
+          'nougat-x86-emulator',
+        ],
+      },
+      'incremental_javac_junit_tests':{
+        'remove_mixins': [
+          'nougat-x86-emulator',
+        ],
+      },
+      'junit_unit_tests': {
+        'remove_mixins': [
+          'nougat-x86-emulator',
+        ],
+      },
+      'keyboard_accessory_junit_tests': {
+        'remove_mixins': [
+          'nougat-x86-emulator',
+        ],
+      },
+      'media_base_junit_tests': {
+        'remove_mixins': [
+          'nougat-x86-emulator',
+        ],
+      },
+      'module_installer_junit_tests': {
+        'remove_mixins': [
+          'nougat-x86-emulator',
+        ],
+      },
+      'net_junit_tests': {
+        'remove_mixins': [
+          'nougat-x86-emulator',
+        ],
+      },
+      'paint_preview_junit_tests': {
+        'remove_mixins': [
+          'nougat-x86-emulator',
+        ],
+      },
+      'password_check_junit_tests': {
+        'remove_mixins': [
+          'nougat-x86-emulator',
+        ],
+      },
+      'password_manager_junit_tests': {
+        'remove_mixins': [
+          'nougat-x86-emulator',
+        ],
+      },
+      'services_junit_tests': {
+        'remove_mixins': [
+          'nougat-x86-emulator',
+        ],
+      },
+      'touch_to_fill_junit_tests': {
+        'remove_mixins': [
+          'nougat-x86-emulator',
+        ],
+      },
+      'ui_junit_tests': {
+        'remove_mixins': [
+          'nougat-x86-emulator',
+        ],
+      },
+      'webapk_client_junit_tests': {
+        'remove_mixins': [
+          'nougat-x86-emulator',
+        ],
+      },
+      'webapk_shell_apk_h2o_junit_tests': {
+        'remove_mixins': [
+          'nougat-x86-emulator',
+        ],
+      },
+      'webapk_shell_apk_junit_tests': {
+        'remove_mixins': [
+          'nougat-x86-emulator',
+        ],
+      },
       'weblayer_junit_tests': {
+        'remove_mixins': [
+          'nougat-x86-emulator',
+        ],
         # Experimental until we're sure these are stable.
         'experiment_percentage': 100
       },
