@@ -5,11 +5,11 @@
 #include "chrome/browser/ui/views/overlay/close_image_button.h"
 
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/ui/views/overlay/constants.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/gfx/color_palette.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/vector_icons.h"
 
@@ -23,9 +23,10 @@ constexpr int kCloseButtonSize = 16;
 CloseImageButton::CloseImageButton(PressedCallback callback)
     : OverlayWindowImageButton(std::move(callback)) {
   SetSize(gfx::Size(kCloseButtonSize, kCloseButtonSize));
-  SetImage(views::Button::STATE_NORMAL,
-           gfx::CreateVectorIcon(views::kIcCloseIcon, kCloseButtonSize,
-                                 kPipWindowIconColor));
+  SetImageModel(
+      views::Button::STATE_NORMAL,
+      ui::ImageModel::FromVectorIcon(
+          views::kIcCloseIcon, kColorPipWindowForeground, kCloseButtonSize));
 
   // Accessibility.
   const std::u16string close_button_label(

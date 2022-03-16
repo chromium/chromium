@@ -4,13 +4,12 @@
 
 #include "chrome/browser/ui/views/overlay/back_to_tab_label_button.h"
 
-#include "chrome/browser/ui/views/overlay/constants.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/grit/generated_resources.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -30,8 +29,6 @@ constexpr int kBackToTabBorderThickness = 8;
 constexpr int kBackToTabBorderRadius =
     (kBackToTabButtonSize + (2 * kBackToTabBorderThickness)) / 2;
 
-constexpr SkColor kBackToTabBackgroundColor = SkColorSetA(SK_ColorBLACK, 0x60);
-
 }  // namespace
 
 BackToTabLabelButton::BackToTabLabelButton(PressedCallback callback)
@@ -45,26 +42,19 @@ BackToTabLabelButton::BackToTabLabelButton(PressedCallback callback)
   // Elide the origin at the front of the text.
   SetElideBehavior(gfx::ElideBehavior::ELIDE_HEAD);
 
-  SetImage(views::Button::STATE_NORMAL,
-           gfx::CreateVectorIcon(views::kLaunchIcon, kBackToTabImageSize,
-                                 kPipWindowIconColor));
+  SetImageModel(
+      views::Button::STATE_NORMAL,
+      ui::ImageModel::FromVectorIcon(
+          views::kLaunchIcon, kColorPipWindowForeground, kBackToTabImageSize));
 
   // Prevent DCHECKing for our non-opaque background.
   SetTextSubpixelRenderingEnabled(false);
 
-  // Leave the border transparent since the background will color it.
-  SetBorder(views::CreateRoundedRectBorder(
-      kBackToTabBorderThickness, kBackToTabBorderRadius, SK_ColorTRANSPARENT));
-
-  SetBackground(views::CreateRoundedRectBackground(kBackToTabBackgroundColor,
-                                                   kBackToTabBorderRadius));
+  SetBorder(views::CreateEmptyBorder(gfx::Insets(kBackToTabBorderThickness)));
 
   const std::u16string back_to_tab_button_label(l10n_util::GetStringUTF16(
       IDS_PICTURE_IN_PICTURE_BACK_TO_TAB_CONTROL_TEXT));
   SetText(back_to_tab_button_label);
-
-  SetEnabledTextColors(kPipWindowTextColor);
-  SetTextColor(views::Button::STATE_DISABLED, kPipWindowTextColor);
 
   // Accessibility.
   SetAccessibleName(back_to_tab_button_label);
@@ -75,6 +65,19 @@ BackToTabLabelButton::~BackToTabLabelButton() = default;
 
 gfx::NativeCursor BackToTabLabelButton::GetCursor(const ui::MouseEvent& event) {
   return views::GetNativeHandCursor();
+}
+
+void BackToTabLabelButton::OnThemeChanged() {
+  views::LabelButton::OnThemeChanged();
+
+  const auto* const color_provider = GetColorProvider();
+  SetBackground(views::CreateRoundedRectBackground(
+      color_provider->GetColor(kColorPipWindowBackToTabButtonBackground),
+      kBackToTabBorderRadius));
+  const SkColor foreground_color =
+      color_provider->GetColor(kColorPipWindowForeground);
+  SetEnabledTextColors(foreground_color);
+  SetTextColor(views::Button::STATE_DISABLED, foreground_color);
 }
 
 void BackToTabLabelButton::SetWindowSize(const gfx::Size& window_size) {

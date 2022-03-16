@@ -24,6 +24,7 @@ class SkipAdLabelButton : public views::LabelButton {
 
   // Overridden from views::View.
   void SetVisible(bool is_visible) override;
+  void OnThemeChanged() override;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OVERLAY_SKIP_AD_LABEL_BUTTON_H_

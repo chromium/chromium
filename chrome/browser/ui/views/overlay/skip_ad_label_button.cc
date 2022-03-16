@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/overlay/skip_ad_label_button.h"
 
-#include "chrome/browser/ui/views/overlay/constants.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -18,22 +18,13 @@ const int kSkipAdButtonWidth = 72;
 const int kSkipAdButtonHeight = 24;
 const int kSkipAdButtonMarginBottom = 48;
 
-constexpr SkColor kSkipAdButtonTextColor = kPipWindowIconColor;
-constexpr SkColor kSkipAdButtonBorderColor = kPipWindowIconColor;
-constexpr SkColor kSkipAdButtonBackgroundColor = gfx::kGoogleGrey700;
-
 }  // namespace
 
 SkipAdLabelButton::SkipAdLabelButton(PressedCallback callback)
     : views::LabelButton(std::move(callback),
                          l10n_util::GetStringUTF16(
                              IDS_PICTURE_IN_PICTURE_SKIP_AD_CONTROL_TEXT)) {
-  SetBackground(CreateBackgroundFromPainter(
-      views::Painter::CreateRoundRectWith1PxBorderPainter(
-          kSkipAdButtonBackgroundColor, kSkipAdButtonBorderColor, 1.f)));
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
-  SetEnabledTextColors(kSkipAdButtonTextColor);
-  SetTextColor(views::Button::STATE_DISABLED, kSkipAdButtonTextColor);
   SetSize(gfx::Size(kSkipAdButtonWidth, kSkipAdButtonHeight));
 
   // Accessibility.
@@ -54,6 +45,20 @@ void SkipAdLabelButton::SetVisible(bool visible) {
   views::LabelButton::SetVisible(visible);
   SetSize(visible ? gfx::Size(kSkipAdButtonWidth, kSkipAdButtonHeight)
                   : gfx::Size());
+}
+
+void SkipAdLabelButton::OnThemeChanged() {
+  views::LabelButton::OnThemeChanged();
+
+  const auto* const color_provider = GetColorProvider();
+  SetBackground(CreateBackgroundFromPainter(
+      views::Painter::CreateRoundRectWith1PxBorderPainter(
+          color_provider->GetColor(kColorPipWindowSkipAdButtonBackground),
+          color_provider->GetColor(kColorPipWindowSkipAdButtonBorder), 1.f)));
+  const SkColor foreground_color =
+      color_provider->GetColor(kColorPipWindowForeground);
+  SetEnabledTextColors(foreground_color);
+  SetTextColor(views::Button::STATE_DISABLED, foreground_color);
 }
 
 BEGIN_METADATA(SkipAdLabelButton, views::LabelButton)

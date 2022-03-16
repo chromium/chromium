@@ -13,6 +13,10 @@ namespace gfx {
 struct VectorIcon;
 }
 
+namespace ui {
+class ImageModel;
+}
+
 // A resizable previous/next track image button.
 class TrackImageButton : public OverlayWindowImageButton {
  public:
@@ -33,7 +37,7 @@ class TrackImageButton : public OverlayWindowImageButton {
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
  private:
-  const gfx::ImageSkia image_;
+  const ui::ImageModel image_;
 
   // Last visible size of the image button.
   gfx::Size last_visible_size_;

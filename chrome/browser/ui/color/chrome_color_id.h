@@ -164,10 +164,15 @@
     ThemeProperties::COLOR_OMNIBOX_SECURITY_CHIP_SECURE) \
   E(kColorOmniboxText, ThemeProperties::COLOR_OMNIBOX_TEXT) \
   E(kColorOmniboxTextDimmed, ThemeProperties::COLOR_OMNIBOX_TEXT_DIMMED) \
-  /* Overlay colors. */ \
-  E_CPONLY(kColorOverlayWindowBackgroundColor) \
   /* Payments colors. */ \
   E_CPONLY(kColorPaymentRequestRowBackgroundHighlighted) \
+  /* Picture-in-Picture window colors. */ \
+  E_CPONLY(kColorPipWindowBackToTabButtonBackground) \
+  E_CPONLY(kColorPipWindowBackground) \
+  E_CPONLY(kColorPipWindowForeground) \
+  E_CPONLY(kColorPipWindowHangUpButtonForeground) \
+  E_CPONLY(kColorPipWindowSkipAdButtonBackground) \
+  E_CPONLY(kColorPipWindowSkipAdButtonBorder) \
   /* QR code colors. */ \
   E_CPONLY(kColorQrCodeBackground) \
   E_CPONLY(kColorQrCodeBorder) \

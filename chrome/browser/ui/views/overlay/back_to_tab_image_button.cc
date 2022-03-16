@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ui/views/overlay/back_to_tab_image_button.h"
 
-#include "chrome/browser/ui/views/overlay/constants.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/gfx/color_palette.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/vector_icons.h"
 
@@ -20,9 +20,10 @@ const int kBackToTabImageSize = 14;
 
 BackToTabImageButton::BackToTabImageButton(PressedCallback callback)
     : OverlayWindowImageButton(std::move(callback)) {
-  SetImage(views::Button::STATE_NORMAL,
-           gfx::CreateVectorIcon(views::kLaunchIcon, kBackToTabImageSize,
-                                 kPipWindowIconColor));
+  SetImageModel(
+      views::Button::STATE_NORMAL,
+      ui::ImageModel::FromVectorIcon(
+          views::kLaunchIcon, kColorPipWindowForeground, kBackToTabImageSize));
 
   // Accessibility.
   const std::u16string back_to_tab_button_label(l10n_util::GetStringUTF16(

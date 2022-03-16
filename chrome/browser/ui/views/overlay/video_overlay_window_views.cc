@@ -112,8 +112,7 @@ class WindowBackgroundView : public views::View {
 
   void OnThemeChanged() override {
     views::View::OnThemeChanged();
-    layer()->SetColor(
-        GetColorProvider()->GetColor(kColorOverlayWindowBackgroundColor));
+    layer()->SetColor(GetColorProvider()->GetColor(kColorPipWindowBackground));
   }
 };
 

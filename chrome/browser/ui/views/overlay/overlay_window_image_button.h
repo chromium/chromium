@@ -22,6 +22,7 @@ class OverlayWindowImageButton : public views::ImageButton {
 
   // views::View:
   gfx::NativeCursor GetCursor(const ui::MouseEvent& event) override;
+  void OnThemeChanged() override;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OVERLAY_OVERLAY_WINDOW_IMAGE_BUTTON_H_

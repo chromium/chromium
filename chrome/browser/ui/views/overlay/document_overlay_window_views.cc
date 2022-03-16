@@ -99,8 +99,7 @@ class WindowBackgroundView : public views::View {
 
   void OnThemeChanged() override {
     views::View::OnThemeChanged();
-    layer()->SetColor(
-        GetColorProvider()->GetColor(kColorOverlayWindowBackgroundColor));
+    layer()->SetColor(GetColorProvider()->GetColor(kColorPipWindowBackground));
   }
 };
 
@@ -510,7 +509,7 @@ void DocumentOverlayWindowViews::UpdateResizeHandleBounds(
     //   |                web view                   |
     //   +-------------------------------------------+
     if (controls_container_view_->GetIndexOf(close_controls_view_) != 0) {
-      resize_handle_view_->SetImageForQuadrant(quadrant);
+      resize_handle_view_->SetQuadrant(quadrant);
       controls_container_view_->ReorderChildView(close_controls_view_, 0);
       controls_container_view_->ReorderChildView(back_to_tab_image_button_, 1);
       controls_container_view_->ReorderChildView(resize_handle_view_, -1);
@@ -526,7 +525,7 @@ void DocumentOverlayWindowViews::UpdateResizeHandleBounds(
     //   |                web view                   |
     //   +-------------------------------------------+
     if (controls_container_view_->GetIndexOf(resize_handle_view_) != 0) {
-      resize_handle_view_->SetImageForQuadrant(quadrant);
+      resize_handle_view_->SetQuadrant(quadrant);
       controls_container_view_->ReorderChildView(back_to_tab_image_button_, -1);
       controls_container_view_->ReorderChildView(close_controls_view_, -1);
       controls_container_view_->ReorderChildView(resize_handle_view_, 0);

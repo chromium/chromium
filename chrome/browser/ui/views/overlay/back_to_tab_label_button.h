@@ -21,6 +21,7 @@ class BackToTabLabelButton : public views::LabelButton {
 
   // views::View:
   gfx::NativeCursor GetCursor(const ui::MouseEvent& event) override;
+  void OnThemeChanged() override;
 
   // Updates the position of this button within the new bounds of the window.
   void SetWindowSize(const gfx::Size& window_size);

@@ -19,13 +19,18 @@ class ResizeHandleButton : public views::ImageButton {
   ResizeHandleButton& operator=(const ResizeHandleButton&) = delete;
   ~ResizeHandleButton() override;
 
+  void OnThemeChanged() override;
+
   void SetPosition(const gfx::Size& size,
                    OverlayWindowViews::WindowQuadrant quadrant);
   int GetHTComponent() const;
-  void SetImageForQuadrant(OverlayWindowViews::WindowQuadrant quadrant);
+  void SetQuadrant(OverlayWindowViews::WindowQuadrant quadrant);
 
  private:
-  absl::optional<OverlayWindowViews::WindowQuadrant> current_quadrant_;
+  void UpdateImageForQuadrant();
+
+  OverlayWindowViews::WindowQuadrant current_quadrant_ =
+      OverlayWindowViews::WindowQuadrant::kBottomRight;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OVERLAY_RESIZE_HANDLE_BUTTON_H_

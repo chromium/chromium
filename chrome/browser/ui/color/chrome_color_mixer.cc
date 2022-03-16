@@ -295,9 +295,16 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       ui::kColorButtonForeground};
   mixer[kColorOmniboxText] =
       ui::GetColorWithMaxContrast(kColorOmniboxBackground);
-  mixer[kColorOverlayWindowBackgroundColor] = {SK_ColorBLACK};
   mixer[kColorPaymentRequestRowBackgroundHighlighted] = {
       SkColorSetA(SK_ColorBLACK, 0x0D)};
+  mixer[kColorPipWindowBackToTabButtonBackground] = {
+      SkColorSetA(SK_ColorBLACK, 0x60)};
+  mixer[kColorPipWindowBackground] = {SK_ColorBLACK};
+  mixer[kColorPipWindowForeground] =
+      ui::GetColorWithMaxContrast(kColorPipWindowBackground);
+  mixer[kColorPipWindowHangUpButtonForeground] = {gfx::kGoogleRed300};
+  mixer[kColorPipWindowSkipAdButtonBackground] = {gfx::kGoogleGrey700};
+  mixer[kColorPipWindowSkipAdButtonBorder] = {kColorPipWindowForeground};
   mixer[kColorQrCodeBackground] = {SK_ColorWHITE};
   mixer[kColorQrCodeBorder] = {ui::kColorMidground};
   mixer[kColorReadLaterButtonHighlight] = {kColorAvatarButtonHighlightNormal};
