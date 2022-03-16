@@ -548,6 +548,12 @@ public final class WebLayerImpl extends IWebLayer.Stub {
     }
 
     @Override
+    public String getXClientDataHeader() {
+        StrictModeWorkaround.apply();
+        return WebLayerImplJni.get().getXClientDataHeader();
+    }
+
+    @Override
     public IObjectWrapper getApplicationContext() {
         return ObjectWrapper.wrap(ContextUtils.getApplicationContext());
     }
@@ -1038,6 +1044,7 @@ public final class WebLayerImpl extends IWebLayer.Stub {
         void setIsWebViewCompatMode(boolean value);
         String getUserAgentString();
         void registerExternalExperimentIDs(int[] experimentIDs);
+        String getXClientDataHeader();
         ComponentLoaderPolicyBridge[] getComponentLoaderPolicies();
     }
 }

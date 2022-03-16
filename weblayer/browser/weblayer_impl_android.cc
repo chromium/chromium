@@ -11,6 +11,7 @@
 #include "components/crash/core/common/crash_key.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/page_info/android/page_info_client.h"
+#include "components/variations/variations_ids_provider.h"
 #include "weblayer/browser/android/metrics/weblayer_metrics_service_client.h"
 #include "weblayer/browser/component_updater/registration.h"
 #include "weblayer/browser/devtools_server_android.h"
@@ -56,6 +57,18 @@ static void JNI_WebLayerImpl_RegisterExternalExperimentIDs(
 
   WebLayerMetricsServiceClient::GetInstance()->RegisterExternalExperiments(
       experiment_ids);
+}
+
+static base::android::ScopedJavaLocalRef<jstring>
+JNI_WebLayerImpl_GetXClientDataHeader(JNIEnv* env) {
+  std::string header;
+  auto headers =
+      variations::VariationsIdsProvider::GetInstance()->GetClientDataHeaders(
+          false /* is_signed_in */);
+  if (headers)
+    header =
+        headers->headers_map.at(variations::mojom::GoogleWebVisibility::ANY);
+  return base::android::ConvertUTF8ToJavaString(env, header);
 }
 
 std::u16string GetClientApplicationName() {
