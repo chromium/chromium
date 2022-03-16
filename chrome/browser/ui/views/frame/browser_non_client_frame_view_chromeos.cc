@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
@@ -82,10 +83,6 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace {
-
-// Color for the window title text.
-constexpr SkColor kNormalWindowTitleTextColor = SkColorSetRGB(40, 40, 40);
-constexpr SkColor kIncognitoWindowTitleTextColor = SK_ColorWHITE;
 
 // The indicator for teleported windows has 8 DIPs before and below it.
 constexpr int kProfileIndicatorPadding = 8;
@@ -544,9 +541,7 @@ views::View::Views BrowserNonClientFrameViewChromeOS::GetChildrenInZOrder() {
 }
 
 SkColor BrowserNonClientFrameViewChromeOS::GetTitleColor() {
-  return browser_view()->GetRegularOrGuestSession()
-             ? kNormalWindowTitleTextColor
-             : kIncognitoWindowTitleTextColor;
+  return GetColorProvider()->GetColor(kColorCaptionForeground);
 }
 
 SkColor BrowserNonClientFrameViewChromeOS::GetFrameHeaderColor(bool active) {

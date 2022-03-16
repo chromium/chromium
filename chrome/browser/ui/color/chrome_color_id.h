@@ -336,12 +336,17 @@
   E(kColorWindowControlButtonBackgroundInactive, \
     ThemeProperties::COLOR_WINDOW_CONTROL_BUTTON_BACKGROUND_INACTIVE)
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_CHROMEOS)
+#define CHROME_NATIVE_COLOR_IDS \
+    /* Caption colors. */ \
+    E_CPONLY(kColorCaptionForeground)
+#elif BUILDFLAG(IS_WIN)
 #define CHROME_NATIVE_COLOR_IDS \
     /* The colors of the 1px border around the window on Windows 10. */ \
     E(kColorAccentBorderActive, ThemeProperties::COLOR_ACCENT_BORDER_ACTIVE) \
     E(kColorAccentBorderInactive, \
       ThemeProperties::COLOR_ACCENT_BORDER_INACTIVE) \
+    /* Caption colors. */ \
     E_CPONLY(kColorCaptionButtonForegroundActive) \
     E_CPONLY(kColorCaptionButtonForegroundInactive) \
     E_CPONLY(kColorCaptionCloseButtonBackgroundHovered) \
