@@ -225,6 +225,7 @@ void NGInlineLayoutAlgorithm::CreateLine(
     const NGLineLayoutOpportunity& opportunity,
     NGLineInfo* line_info,
     NGLogicalLineItems* line_box,
+    NGLineBreaker* line_breaker,
     LayoutUnit* ruby_block_start_adjust) {
   // Needs MutableResults to move ShapeResult out of the NGLineInfo.
   NGInlineItemResults* line_items = line_info->MutableResults();
@@ -443,7 +444,7 @@ void NGInlineLayoutAlgorithm::CreateLine(
   if (has_floating_items) {
     DCHECK(!line_info->IsBlockInInline());
     PlaceFloatingObjects(*line_info, line_box_metrics, opportunity,
-                         *ruby_block_start_adjust, line_box);
+                         *ruby_block_start_adjust, line_box, line_breaker);
   }
 
   // Apply any relative positioned offsets to *items* which have relative
@@ -771,7 +772,8 @@ void NGInlineLayoutAlgorithm::PlaceFloatingObjects(
     const FontHeight& line_box_metrics,
     const NGLineLayoutOpportunity& opportunity,
     LayoutUnit ruby_block_start_adjust,
-    NGLogicalLineItems* line_box) {
+    NGLogicalLineItems* line_box,
+    NGLineBreaker* line_breaker) {
   DCHECK(line_info.IsEmptyLine() || !line_box_metrics.IsEmpty())
       << "Non-empty lines must have a valid set of linebox metrics.";
 
@@ -807,14 +809,14 @@ void NGInlineLayoutAlgorithm::PlaceFloatingObjects(
         NGBlockNode float_node(To<LayoutBox>(child.unpositioned_float.Get()));
         auto* break_before = NGBlockBreakToken::CreateBreakBefore(
             float_node, /* is_forced_break */ false);
-        context_->PropagateBreakToken(break_before);
+        line_breaker->PropagateBreakToken(break_before);
         continue;
       } else {
         // If the float broke inside, we need to propagate the break token to
         // the block container, so that we'll resume in the next fragmentainer.
         if (const NGBreakToken* token =
                 positioned_float.layout_result->PhysicalFragment().BreakToken())
-          context_->PropagateBreakToken(To<NGBlockBreakToken>(token));
+          line_breaker->PropagateBreakToken(To<NGBlockBreakToken>(token));
         child.layout_result = std::move(positioned_float.layout_result);
         child.bfc_offset = positioned_float.bfc_offset;
         child.unpositioned_float = nullptr;
@@ -1272,7 +1274,7 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
     PrepareBoxStates(line_info, break_token);
 
     LayoutUnit ruby_block_start_adjust;
-    CreateLine(line_opportunity, &line_info, line_box,
+    CreateLine(line_opportunity, &line_info, line_box, &line_breaker,
                &ruby_block_start_adjust);
     is_line_created = true;
 
