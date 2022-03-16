@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabActivityLifecycleUmaTrack
 import org.chromium.chrome.browser.customtabs.CustomTabBottomBarDelegate;
 import org.chromium.chrome.browser.customtabs.CustomTabCompositorContentInitializer;
 import org.chromium.chrome.browser.customtabs.CustomTabDelegateFactory;
+import org.chromium.chrome.browser.customtabs.CustomTabDownloadObserver;
 import org.chromium.chrome.browser.customtabs.CustomTabIncognitoManager;
 import org.chromium.chrome.browser.customtabs.CustomTabSessionHandler;
 import org.chromium.chrome.browser.customtabs.CustomTabStatusBarColorProvider;
@@ -53,6 +54,7 @@ public interface BaseCustomTabActivityComponent extends ChromeActivityComponent 
     CustomTabBottomBarDelegate resolveBottomBarDelegate();
     CustomTabCompositorContentInitializer resolveCompositorContentInitializer();
     CustomTabDelegateFactory resolveTabDelegateFactory();
+    CustomTabDownloadObserver resolveDownloadObserver();
     CustomTabIncognitoManager resolveCustomTabIncognitoManager();
     CustomTabIntentHandler resolveIntentHandler();
     CustomTabSessionHandler resolveSessionHandler();

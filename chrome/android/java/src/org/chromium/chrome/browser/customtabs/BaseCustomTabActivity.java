@@ -210,6 +210,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
         component.resolveCompositorContentInitializer();
         component.resolveTaskDescriptionHelper();
         component.resolveUmaTracker();
+        component.resolveDownloadObserver();
         CustomTabActivityClientConnectionKeeper connectionKeeper =
                 component.resolveConnectionKeeper();
         mNavigationController.setFinishHandler((reason) -> {

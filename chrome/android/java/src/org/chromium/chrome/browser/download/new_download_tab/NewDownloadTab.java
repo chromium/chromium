@@ -2,34 +2,35 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.new_download_tab;
+package org.chromium.chrome.browser.download.new_download_tab;
 
 import static org.chromium.chrome.browser.tab.TabViewProvider.Type.NEW_DOWNLOAD_TAB;
 
-import android.os.Build;
 import android.view.View;
-import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.UserData;
+import org.chromium.chrome.browser.app.download.DownloadInterstitialCoordinatorFactoryHelper;
+import org.chromium.chrome.browser.download.interstitial.DownloadInterstitialCoordinator;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabViewProvider;
 import org.chromium.ui.base.WindowAndroid;
 
-/**
- * Represents the page shown when a download is initiated from Chrome/CCT.
- */
-@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+/** Represents the page shown when a CCT is created to download a file. */
 public class NewDownloadTab extends EmptyTabObserver implements UserData, TabViewProvider {
     private static final Class<NewDownloadTab> USER_DATA_KEY = NewDownloadTab.class;
-    private final Tab mTab;
-    private View mView;
 
-    /** Creates a new instance of NewDownloadTab and attaches it to a tab. */
+    private final Tab mTab;
+    private final DownloadInterstitialCoordinator mCoordinator;
+
+    /**
+     * Checks if a NewDownloadTab exists for the given tab and creates one if not.
+     * @param tab The parent tab to contain the NewDownloadTab.
+     * @return The NewDownloadTab attached to the parent tab if present or a new instance of
+     *         NewDownloadTab attached to the parent tab otherwise.
+     */
     public static NewDownloadTab from(Tab tab) {
         assert tab.isInitialized();
         NewDownloadTab newDownloadTab = get(tab);
@@ -40,8 +41,12 @@ public class NewDownloadTab extends EmptyTabObserver implements UserData, TabVie
         return newDownloadTab;
     }
 
-    /** Returns the instance of NewDownloadTab currently attached to a given tab. */
-    public static NewDownloadTab get(Tab tab) {
+    /**
+     * Returns the instance of NewDownloadTab attached to a given tab.
+     * @param tab The parent tab containing the NewDownloadTab.
+     * @return The NewDownloadTab attached to the parent tab.
+     */
+    private static NewDownloadTab get(Tab tab) {
         return tab.getUserDataHost().getUserData(USER_DATA_KEY);
     }
 
@@ -56,7 +61,6 @@ public class NewDownloadTab extends EmptyTabObserver implements UserData, TabVie
     /** Removes the NewDownloadTab instance from its parent. */
     public void removeIfPresent() {
         mTab.getTabViewManager().removeTabViewProvider(this);
-        mView = null;
     }
 
     // TabObserver implementation.
@@ -73,6 +77,8 @@ public class NewDownloadTab extends EmptyTabObserver implements UserData, TabVie
     @Override
     public void destroy() {
         mTab.removeObserver(this);
+        mTab.getTabViewManager().removeTabViewProvider(this);
+        mCoordinator.destroy();
     }
 
     @Override
@@ -82,26 +88,24 @@ public class NewDownloadTab extends EmptyTabObserver implements UserData, TabVie
 
     @Override
     public View getView() {
-        return mView;
+        return mCoordinator.getView();
     }
 
-    @VisibleForTesting
-    boolean isViewAttached() {
-        return mView != null && mTab.getTabViewManager().isShowing(this);
+    @Override
+    public void onHidden() {
+        removeIfPresent();
     }
 
     private NewDownloadTab(Tab tab) {
         mTab = tab;
+        mCoordinator = DownloadInterstitialCoordinatorFactoryHelper.create(tab);
     }
 
-    private View createView() {
-        TextView view = new TextView(mTab.getContext());
-        return view;
+    private boolean isViewAttached() {
+        return mCoordinator.getView() != null && mTab.getTabViewManager().isShowing(this);
     }
 
     private void attachView() {
-        assert mView == null;
-        mView = createView();
         mTab.getTabViewManager().addTabViewProvider(this);
     }
 }
