@@ -2,3 +2,9 @@ include_rules = [
   "+extensions/components/native_app_window",
   "+third_party/securemessage",
 ]
+
+specific_include_rules = {
+  ".*_unittest\.cc": [
+    "+services/network/network_context.h",
+  ]
+}

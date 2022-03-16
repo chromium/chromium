@@ -1,11 +1,4 @@
 specific_include_rules = {
-  "arc_ash(\.cc|.h)": [
-    "+ash/components/arc/mojom",
-    "+components/arc/intent_helper",
-  ],
-  "browser_manager\.cc": [
-    "+components/crash/core/app",
-  ],
   "message_center_ash(\.cc|_unittest\.cc)": [
     # Provides a mojo interface around the message center, but lives in this
     # directory for consistency with other crosapi classes.
@@ -18,30 +11,14 @@ specific_include_rules = {
   ],
   "remoting_ash\.cc": [
     # For remote support functionality.
-    "+remoting/host/chromeos/remote_support_host_ash.h",
-    "+remoting/host/chromeos/remoting_service.h",
-  ],
-  "screen_manager_ash\.cc": [
-    # For window parenting.
-    "+ash/shell.h",
-    "+ash/wm/desks/desks_util.h",
+    "+remoting/host/chromeos",
   ],
   "select_file_ash\.cc": [
-    # For window parenting.
-    "+ash/shell.h",
-    "+ash/wm/desks/desks_util.h",
     # For Chrome OS-specific file manager parameters.
     "+chrome/browser/ui/views/select_file_dialog_extension.h",
   ],
   "test_controller_ash\.cc": [
-    # Glue for tests.
-    "+ash/shell.h",
-    "+ash/wm",
     # For Chrome OS-specific tab scrubbing tests.
-    "+chrome/browser/ash/crosapi/browser_manager.h",
     "+chrome/browser/ui/views/tabs/tab_scrubber_chromeos.h",
-  ],
-  "window_util\.cc":[
-    "+ash/shell.h",
   ],
 }

@@ -10,4 +10,17 @@ include_rules = [
 
   # Allow includes for remoting events reporting.
   "+remoting/host/chromeos",
+  "+remoting/host/mojom",
 ]
+
+specific_include_rules = {
+  "child_status_collector_browsertest.cc": [
+    "+mojo/core/embedder/embedder.h",
+  ],
+  "device_status_collector_browsertest.cc": [
+    "+mojo/core/embedder/embedder.h",
+  ],
+  "legacy_device_status_collector_browsertest.cc": [
+    "+mojo/core/embedder/embedder.h",
+  ],
+}
