@@ -8,16 +8,17 @@ spec will allow loading and only disallow playback.
 <meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="resources/utils.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/speculation-rules/prerender/resources/utils.js"></script>
 <body>
 <script>
 
-promise_test(async t => {
-  const bc = new BroadcastChannel('test-channel');
-  t.add_cleanup(_ => bc.close());
+function RunTest(type, description) {
+  promise_test(async t => {
+    const uid = token();
+    const bc = new PrerenderChannel('test-channel', uid);
+    t.add_cleanup(_ => bc.close());
 
-  const types = ['audio', 'video'];
-  for (let t = 0; t < types.length; t++) {
     const gotMessage = new Promise(resolve => {
       bc.addEventListener('message', e => {
         resolve(e.data);
@@ -26,7 +27,7 @@ promise_test(async t => {
       });
     });
 
-    const url = `resources/media-play.html?type=${types[t]}`;
+    const url = `resources/media-play.html?type=${type}&uid=${uid}`;
     window.open(url, '_blank', 'noopener');
 
     const result = await gotMessage;
@@ -49,15 +50,21 @@ promise_test(async t => {
       },
     ];
 
-    assert_equals(result.length, expected.length, `${types[t]}`);
+    assert_equals(result.length, expected.length, `${type}`);
     for (let i = 0; i < result.length; i++) {
       assert_equals(result[i].event, expected[i].event, `event${i}`);
       assert_equals(result[i].prerendering, expected[i].prerendering,
         `prerendering${i}`);
     }
-  }
-}, `play of the media should be deferred until the prerendered page is
-    activated`);
+
+    // Send a close signal to PrerenderEventCollector on the prerendered page.
+    new PrerenderChannel('close', uid).postMessage('');
+  }, description);
+}
+
+RunTest('audio', `play of the audio media should be deferred until the prerendered page is activated`);
+
+RunTest('video', `play of the video media should be deferred until the prerendered page is activated`);
 
 </script>
 </body>

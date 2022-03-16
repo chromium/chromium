@@ -55,6 +55,7 @@ class PrerenderEventCollector {
           const testChannel = new PrerenderChannel('test-channel');
           // Send the observed events back to the main test page.
           testChannel.postMessage(this.eventsSeen_);
+          testChannel.close();
         });
     document.addEventListener('prerenderingchange', () => {
       this.addEvent('prerendering change');
@@ -67,6 +68,7 @@ class PrerenderEventCollector {
       const prerenderChannel = new PrerenderChannel('prerender-channel');
       // Inform the initiator page that this page is ready to be activated.
       prerenderChannel.postMessage('readyToActivate');
+      prerenderChannel.close();
     }, 0);
   }
 }
