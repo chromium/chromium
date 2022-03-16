@@ -7,13 +7,17 @@
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
 GEN('#include "ash/constants/ash_features.h"');
-GEN('#include "ash/constants/ash_features.h"');
-GEN('#include "components/app_restore/features.h"');
-GEN('#include "chrome/common/buildflags.h"');
 GEN('#include "build/branding_buildflags.h"');
-GEN('#include "content/public/test/browser_test.h"');
-GEN('#include "chrome/common/chrome_features.h"');
+GEN('#include "chrome/browser/ash/crostini/crostini_pref_names.h"');
+GEN('#include "chrome/browser/ash/crostini/fake_crostini_features.h"');
 GEN('#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"');
+GEN('#include "chrome/browser/profiles/profile.h"');
+GEN('#include "chrome/browser/ui/browser.h"');
+GEN('#include "chrome/common/buildflags.h"');
+GEN('#include "chrome/common/chrome_features.h"');
+GEN('#include "components/app_restore/features.h"');
+GEN('#include "components/prefs/pref_service.h"');
+GEN('#include "content/public/test/browser_test.h"');
 
 /* eslint-disable no-var */
 
@@ -479,6 +483,14 @@ function registerTest(testName, module, caseName) {
       mocha.grep('PrivacePageTest_OfficialBuild').run();
     });
     GEN('#endif');
+  } else if (testName === 'CrostiniPage') {
+    TEST_F(className, caseName || 'All', () => {
+      GEN('browser()->profile()->GetPrefs()->SetBoolean(');
+      GEN('    crostini::prefs::kCrostiniEnabled, true);');
+      GEN('crostini::FakeCrostiniFeatures fake_crostini_features;');
+      GEN('fake_crostini_features.SetAll(true);');
+      mocha.run();
+    });
   } else {
     TEST_F(className, caseName || 'All', () => mocha.run());
   }
