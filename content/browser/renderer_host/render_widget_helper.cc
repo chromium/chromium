@@ -7,11 +7,8 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/lazy_instance.h"
-#include "base/posix/eintr_wrapper.h"
-#include "base/threading/thread.h"
-#include "base/threading/thread_restrictions.h"
-#include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 
 namespace content {
 namespace {
