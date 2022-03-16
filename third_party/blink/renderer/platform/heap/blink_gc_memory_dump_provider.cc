@@ -74,6 +74,20 @@ BlinkGCMemoryDumpProvider::~BlinkGCMemoryDumpProvider() {
       this);
 }
 
+namespace {
+
+template <typename Stats>
+size_t GetFragmentation(const Stats& stats) {
+  // Any memory that is not used by objects but part of the resident contributes
+  // to fragmentation.
+  return stats.resident_size_bytes == 0
+             ? 0
+             : 100 * (stats.resident_size_bytes - stats.used_size_bytes) /
+                   stats.resident_size_bytes;
+}
+
+}  // namespace
+
 bool BlinkGCMemoryDumpProvider::OnMemoryDump(
     const base::trace_event::MemoryDumpArgs& args,
     base::trace_event::ProcessMemoryDump* process_memory_dump) {
@@ -88,12 +102,16 @@ bool BlinkGCMemoryDumpProvider::OnMemoryDump(
 
   auto* heap_dump =
       process_memory_dump->CreateAllocatorDump(dump_base_name_ + "/heap");
+  heap_dump->AddScalar("committed_size",
+                       base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+                       stats.committed_size_bytes);
   heap_dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
                        base::trace_event::MemoryAllocatorDump::kUnitsBytes,
                        stats.resident_size_bytes);
   heap_dump->AddScalar("allocated_objects_size",
                        base::trace_event::MemoryAllocatorDump::kUnitsBytes,
                        stats.used_size_bytes);
+  heap_dump->AddScalar("fragmentation", "percent", GetFragmentation(stats));
 
   if (detail_level == ::cppgc::HeapStatistics::kBrief) {
     return true;
@@ -108,12 +126,17 @@ bool BlinkGCMemoryDumpProvider::OnMemoryDump(
        stats.space_stats) {
     auto* space_dump = process_memory_dump->CreateAllocatorDump(
         heap_dump->absolute_name() + "/" + space_stats.name);
+    space_dump->AddScalar("committed_size",
+                          base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+                          space_stats.committed_size_bytes);
     space_dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
                           base::trace_event::MemoryAllocatorDump::kUnitsBytes,
                           space_stats.resident_size_bytes);
     space_dump->AddScalar("allocated_objects_size",
                           base::trace_event::MemoryAllocatorDump::kUnitsBytes,
                           space_stats.used_size_bytes);
+    space_dump->AddScalar("fragmentation", "percent",
+                          GetFragmentation(space_stats));
 
     size_t page_count = 0;
     for (const ::cppgc::HeapStatistics::PageStatistics& page_stats :
@@ -130,6 +153,8 @@ bool BlinkGCMemoryDumpProvider::OnMemoryDump(
       page_dump->AddScalar("allocated_objects_size",
                            base::trace_event::MemoryAllocatorDump::kUnitsBytes,
                            page_stats.used_size_bytes);
+      page_dump->AddScalar("fragmentation", "percent",
+                           GetFragmentation(page_stats));
 
       const auto& object_stats = page_stats.object_statistics;
       for (size_t i = 0; i < object_stats.size(); i++) {

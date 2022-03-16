@@ -7862,6 +7862,14 @@ chromium-metrics-reviews@google.com.
   <suffix name="BlinkGC" label="Only counting Blink GC memory."/>
   <suffix name="BlinkGC.AllocatedObjects"
       label="Only counting objects allocated using Blink GC."/>
+  <suffix name="BlinkGC.Fragmentation"
+      label="Fragmentation of Blink GC."/>
+  <suffix name="BlinkGC.Main.Heap"
+      label="Only counting memory on Blink GC's main thread heap."/>
+  <suffix name="BlinkGC.Main.Heap.AllocatedObjects"
+      label="Only counting objects allocated in Blink GC's main thread heap."/>
+  <suffix name="BlinkGC.Main.Heap.Fragmentation"
+      label="Fragmentation of Blink GC's main thread heap."/>
   <suffix name="CommandBuffer"
       label="Only counting memory used by GL command buffers."/>
   <suffix name="Discardable"
