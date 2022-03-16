@@ -112,6 +112,8 @@ class ArcAccessibilityTreeTracker : public aura::EnvObserver {
 
   const TreeMap& trees_for_test() const { return trees_; }
 
+  bool is_native_chromevox_enabled() const { return native_chromevox_enabled_; }
+
  protected:
   // Start observing the given window.
   void TrackWindow(aura::Window* window);
@@ -122,6 +124,7 @@ class ArcAccessibilityTreeTracker : public aura::EnvObserver {
   class ArcInputMethodManagerServiceObserver;
   class MojoConnectionObserver;
   class ArcNotificationSurfaceManagerObserver;
+  class UmaRecorder;
 
   AXTreeSourceArc* GetFromKey(const TreeKey&);
   AXTreeSourceArc* CreateFromKey(TreeKey, aura::Window* window);
@@ -152,6 +155,8 @@ class ArcAccessibilityTreeTracker : public aura::EnvObserver {
   std::unique_ptr<MojoConnectionObserver> connection_observer_;
   std::unique_ptr<ArcNotificationSurfaceManagerObserver>
       notification_surface_observer_;
+
+  std::unique_ptr<UmaRecorder> uma_recorder_;
 
   base::ScopedObservation<aura::Env, aura::EnvObserver> env_observation_{this};
 

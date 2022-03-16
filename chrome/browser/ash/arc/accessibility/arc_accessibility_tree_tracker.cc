@@ -6,6 +6,9 @@
 
 #include <utility>
 
+#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/magnifier/docked_magnifier_controller.h"
+#include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/connection_observer.h"
@@ -14,10 +17,12 @@
 #include "ash/public/cpp/external_arc/message_center/arc_notification_surface_manager.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/shell.h"
 #include "base/bind.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_multi_source_observation.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_util.h"
@@ -34,6 +39,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_tracker.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/widget/widget.h"
 
@@ -266,6 +272,116 @@ class ArcAccessibilityTreeTracker::ArcNotificationSurfaceManagerObserver
   ArcAccessibilityTreeTracker* owner_;
 };
 
+class ArcAccessibilityTreeTracker::UmaRecorder {
+ public:
+  UmaRecorder(ArcAccessibilityTreeTracker* tree_tracker)
+      : tree_tracker_(tree_tracker) {}
+
+  void OnExitArcWindow() {
+    for (const auto& feature : start_time_)
+      RecordUsageTime(feature.first, feature.second);
+    start_time_.clear();
+  }
+
+  void UpdateEnabledFeatures() {
+    for (const auto& feature : kFeatures) {
+      if (isEnabled(feature)) {
+        start_time_.try_emplace(feature, ui::EventTimeForNow());
+      } else {
+        auto itr = start_time_.find(feature);
+        if (itr == start_time_.end())
+          continue;
+        RecordUsageTime(itr->first, itr->second);
+        start_time_.erase(itr);
+      }
+    }
+  }
+
+ private:
+  enum class Feature {
+    kDockedMagnifier,
+    kFocusHighlight,
+    kFullScreenMagnifier,
+    kSelectToSpeak,
+    kSpokenFeedback,
+    kSwitchAccess,
+    kTalkBack,
+  };
+
+  static constexpr Feature kFeatures[7] = {
+      Feature::kDockedMagnifier,
+      Feature::kFocusHighlight,
+      Feature::kFullScreenMagnifier,
+      Feature::kSelectToSpeak,
+      Feature::kSpokenFeedback,
+      Feature::kSwitchAccess,
+      Feature::kTalkBack,
+  };
+
+  static constexpr char kUmaPrefix[] = "Arc.Accessibility.ActiveTime.";
+
+  static std::string FromEnumToString(Feature feature) {
+    switch (feature) {
+      case Feature::kDockedMagnifier:
+        return "DockedMagnifier";
+      case Feature::kFocusHighlight:
+        return "FocusHighlight";
+      case Feature::kFullScreenMagnifier:
+        return "FullScreenMagnifier";
+      case Feature::kSelectToSpeak:
+        return "SelectToSpeak";
+      case Feature::kSpokenFeedback:
+        return "SpokenFeedback";
+      case Feature::kSwitchAccess:
+        return "SwitchAccess";
+      case Feature::kTalkBack:
+        return "TalkBack";
+    }
+  }
+
+  void RecordUsageTime(Feature feature, base::TimeTicks start_time) {
+    base::UmaHistogramLongTimes(kUmaPrefix + FromEnumToString(feature),
+                                ui::EventTimeForNow() - start_time);
+  }
+
+  bool isEnabled(Feature feature) const {
+    switch (feature) {
+      case Feature::kDockedMagnifier:
+        return ash::Shell::Get()->docked_magnifier_controller()->GetEnabled();
+      case Feature::kFocusHighlight:
+        return ash::Shell::Get()
+            ->accessibility_controller()
+            ->focus_highlight()
+            .enabled();
+      case Feature::kFullScreenMagnifier:
+        return ash::Shell::Get()
+            ->fullscreen_magnifier_controller()
+            ->IsEnabled();
+      case Feature::kSelectToSpeak:
+        return ash::Shell::Get()
+            ->accessibility_controller()
+            ->select_to_speak()
+            .enabled();
+      case Feature::kSpokenFeedback:
+        return ash::Shell::Get()
+                   ->accessibility_controller()
+                   ->spoken_feedback()
+                   .enabled() &&
+               tree_tracker_->is_native_chromevox_enabled();
+      case Feature::kSwitchAccess:
+        return ash::Shell::Get()
+            ->accessibility_controller()
+            ->switch_access()
+            .enabled();
+      case Feature::kTalkBack:
+        return !tree_tracker_->is_native_chromevox_enabled();
+    }
+  }
+
+  base::flat_map<Feature, base::TimeTicks> start_time_;
+  const ArcAccessibilityTreeTracker* tree_tracker_;
+};
+
 ArcAccessibilityTreeTracker::ArcAccessibilityTreeTracker(
     AXTreeSourceArc::Delegate* tree_source_delegate,
     Profile* const profile,
@@ -279,7 +395,8 @@ ArcAccessibilityTreeTracker::ArcAccessibilityTreeTracker(
           std::make_unique<ArcInputMethodManagerServiceObserver>(this,
                                                                  profile)),
       connection_observer_(
-          std::make_unique<MojoConnectionObserver>(this, arc_bridge_service)) {}
+          std::make_unique<MojoConnectionObserver>(this, arc_bridge_service)),
+      uma_recorder_(std::make_unique<UmaRecorder>(this)) {}
 
 ArcAccessibilityTreeTracker::~ArcAccessibilityTreeTracker() = default;
 
@@ -301,6 +418,11 @@ void ArcAccessibilityTreeTracker::OnWindowFocused(aura::Window* gained_focus,
   bool talkback_enabled = !native_chromevox_enabled_;
   if (talkback_enabled && lost_arc != gained_arc)
     DispatchCustomSpokenFeedbackToggled(gained_arc);
+
+  if (gained_arc)
+    uma_recorder_->UpdateEnabledFeatures();
+  if (lost_arc)
+    uma_recorder_->OnExitArcWindow();
 }
 
 void ArcAccessibilityTreeTracker::OnWindowDestroying(aura::Window* window) {
@@ -321,6 +443,10 @@ void ArcAccessibilityTreeTracker::Shutdown() {
 
 void ArcAccessibilityTreeTracker::OnEnabledFeatureChanged(
     arc::mojom::AccessibilityFilterType filter_type) {
+  aura::Window* focused_window = GetFocusedArcWindow();
+  if (focused_window && ShouldTrackWindow(focused_window))
+    uma_recorder_->UpdateEnabledFeatures();
+
   if (filter_type_ == filter_type)
     return;
 
@@ -500,6 +626,7 @@ void ArcAccessibilityTreeTracker::OnToggleNativeChromeVoxArcSupport(
   // This is dispatched from Android when ArcAccessibilityHelperService changes
   // the active screen reader on Android.
   native_chromevox_enabled_ = enabled;
+  uma_recorder_->UpdateEnabledFeatures();
   DispatchCustomSpokenFeedbackToggled(!enabled);
 
   // TODO(hirokisato): Don't we need to do something similar in

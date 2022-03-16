@@ -22,6 +22,16 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="ArcAccessibilityFeatures">
+  <variant name="DockedMagnifier"/>
+  <variant name="FocusHighlight"/>
+  <variant name="FullScreenMagnifier"/>
+  <variant name="SelectToSpeak"/>
+  <variant name="SpokenFeedback" summary="SpokenFeedback without Talkback"/>
+  <variant name="SwitchAccess"/>
+  <variant name="Talkback"/>
+</variants>
+
 <variants name="ArcPerformanceAppCategories">
   <variant name=".GachaClub" summary="Casual game 2: Gacha Club"/>
   <variant name=".GarenaFreeFire" summary="Shooter game: Garena Free Fire"/>
@@ -80,6 +90,18 @@ chromium-metrics-reviews@google.com.
     Records the number of failed attempts in trying to perform Primary Abi
     Migration.
   </summary>
+</histogram>
+
+<histogram name="Arc.Accessibility.ActiveTime.{ArcAccessibilityFeatures}"
+    units="ms" expires_after="2022-04-10">
+  <owner>sahok@chromium.org</owner>
+  <owner>arc-framework@google.com</owner>
+  <summary>
+    For each window, measure the time that the window is focused with
+    {ArcAccessibilityFeatures} enabled. This metric is recorded when the window
+    loses focus or the window is closed.
+  </summary>
+  <token key="ArcAccessibilityFeatures" variants="ArcAccessibilityFeatures"/>
 </histogram>
 
 <histogram name="Arc.AccessibilityWithTalkBack" enum="BooleanEnabled"
