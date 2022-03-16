@@ -212,7 +212,8 @@ TEST_F(ComponentLoaderTest, LoadAll) {
   EXPECT_EQ(default_count + 1, registry->enabled_extensions().size());
 }
 
-TEST_F(ComponentLoaderTest, AddOrReplace) {
+// Test is flaky. https://crbug.com/1306983
+TEST_F(ComponentLoaderTest, DISABLED_AddOrReplace) {
   ExtensionRegistry* registry = ExtensionRegistry::Get(&profile_);
   ExtensionUnloadedObserver unload_observer(registry);
   EXPECT_EQ(0u, component_loader_.registered_extensions_count());
