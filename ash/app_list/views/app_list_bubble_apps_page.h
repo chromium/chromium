@@ -166,6 +166,12 @@ class ASH_EXPORT AppListBubbleAppsPage : public views::View,
   // `aborted` indicates whether the fade in animation is aborted.
   void OnAppsGridViewFadeInAnimationEnded(bool aborted);
 
+  // Called at the end of the reorder animation. In detail, it is executed in
+  // the following scenarios:
+  // (1) At the end of the fade out animation when the fade out is aborted, or
+  // (2) At the end of the fade in animation.
+  void OnReorderAnimationEnded();
+
   // Animates `view` using a layer animation. Creates the layer if needed. The
   // layer is pushed down by `vertical_offset` at the start of the animation and
   // animates back to its original position with `duration`.

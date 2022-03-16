@@ -311,6 +311,9 @@ class ASH_EXPORT AppsGridView : public views::View,
   // function is public for testing.
   bool IsUnderReorderAnimation() const;
 
+  // Aborts the active reorder animation if any.
+  void MaybeAbortReorderAnimation();
+
   // Passes scroll information from a parent view, so that subclasses may scroll
   // or switch pages.
   virtual void HandleScrollFromParentView(const gfx::Vector2d& offset,
@@ -520,9 +523,6 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // Cancels any context menus showing for app items on the current page.
   void CancelContextMenusOnCurrentPage();
-
-  // Aborts the active reorder animation if any.
-  void MaybeAbortReorderAnimation();
 
   // views::BoundsAnimatorObserver:
   void OnBoundsAnimatorProgressed(views::BoundsAnimator* animator) override;

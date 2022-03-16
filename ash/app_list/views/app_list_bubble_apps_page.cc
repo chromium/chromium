@@ -415,7 +415,12 @@ void AppListBubbleAppsPage::UpdateForNewSortingOrder(
     return;
   }
 
+  // Abort the old reorder animation if any before closure update to avoid data
+  // races on the the closure.
+  scrollable_apps_grid_view_->MaybeAbortReorderAnimation();
+  DCHECK(!update_position_closure_);
   update_position_closure_ = std::move(update_position_closure);
+
   views::AnimationBuilder animation_builder =
       scrollable_apps_grid_view_->FadeOutVisibleItemsForReorder(
           base::BindRepeating(
@@ -624,8 +629,10 @@ void AppListBubbleAppsPage::OnAppsGridViewFadeOutAnimationEneded(
   }
 
   // Skip the fade in animation if the fade out animation is aborted.
-  if (aborted)
+  if (aborted) {
+    OnReorderAnimationEnded();
     return;
+  }
 
   const bool toast_visibility_change =
       (old_toast_visible != target_toast_visible);
@@ -672,6 +679,12 @@ void AppListBubbleAppsPage::OnAppsGridViewFadeOutAnimationEneded(
 void AppListBubbleAppsPage::OnAppsGridViewFadeInAnimationEnded(bool aborted) {
   // Destroy the layer created for the layer animation.
   toast_container_->DestroyLayer();
+
+  OnReorderAnimationEnded();
+}
+
+void AppListBubbleAppsPage::OnReorderAnimationEnded() {
+  update_position_closure_.Reset();
 }
 
 void AppListBubbleAppsPage::SlideViewIntoPosition(views::View* view,

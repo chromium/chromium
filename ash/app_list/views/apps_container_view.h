@@ -318,6 +318,12 @@ class ASH_EXPORT AppsContainerView
   // `aborted` indicates whether the fade in animation is aborted.
   void OnAppsGridViewFadeInAnimationEnded(bool aborted);
 
+  // Called at the end of the reorder animation. In detail, it is executed in
+  // the following scenarios:
+  // (1) At the end of the fade out animation when the fade out is aborted, or
+  // (2) At the end of the fade in animation.
+  void OnReorderAnimationEnded();
+
   // While true, the gradient mask will not be removed as a mask layer until
   // cardified state ends.
   bool keep_gradient_mask_for_cardified_state_ = false;

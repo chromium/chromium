@@ -2083,8 +2083,9 @@ bool AppsGridView::IsTabletMode() const {
 
 views::AnimationBuilder AppsGridView::FadeOutVisibleItemsForReorder(
     ReorderAnimationCallback done_callback) {
-  // Abort the running reorder animation if any.
-  MaybeAbortReorderAnimation();
+  // The caller of this function is responsible for aborting the old reorder
+  // process before starting a new one.
+  DCHECK(!IsUnderReorderAnimation());
 
   // Cancel the active bounds animations on item views if any.
   bounds_animator_->Cancel();
@@ -2451,20 +2452,6 @@ void AppsGridView::CancelContextMenusOnCurrentPage() {
     GetItemViewAt(i)->CancelContextMenu();
 }
 
-void AppsGridView::MaybeAbortReorderAnimation() {
-  switch (reorder_animation_status_) {
-    case AppListReorderAnimationStatus::kEmpty:
-    case AppListReorderAnimationStatus::kIntermediaryState:
-      // No active reorder animation so nothing to do.
-      break;
-    case AppListReorderAnimationStatus::kFadeOutAnimation:
-    case AppListReorderAnimationStatus::kFadeInAnimation:
-      DCHECK(reorder_animation_abort_handle_);
-      reorder_animation_abort_handle_.reset();
-      break;
-  }
-}
-
 void AppsGridView::DeleteItemViewAtIndex(int index) {
   AppListItemView* item_view = GetItemViewAt(index);
   view_model_.Remove(index);
@@ -2693,6 +2680,20 @@ bool AppsGridView::IsViewHiddenForFolderReorder(const views::View* view) const {
 
 bool AppsGridView::IsUnderReorderAnimation() const {
   return reorder_animation_status_ != AppListReorderAnimationStatus::kEmpty;
+}
+
+void AppsGridView::MaybeAbortReorderAnimation() {
+  switch (reorder_animation_status_) {
+    case AppListReorderAnimationStatus::kEmpty:
+    case AppListReorderAnimationStatus::kIntermediaryState:
+      // No active reorder animation so nothing to do.
+      break;
+    case AppListReorderAnimationStatus::kFadeOutAnimation:
+    case AppListReorderAnimationStatus::kFadeInAnimation:
+      DCHECK(reorder_animation_abort_handle_);
+      reorder_animation_abort_handle_.reset();
+      break;
+  }
 }
 
 AppListItemView* AppsGridView::GetViewDisplayedAtSlotOnCurrentPage(
