@@ -73,6 +73,15 @@ bool ShouldTriggerSubmission(SubmissionReadinessState submission_readiness) {
   }
 }
 
+// Returns whether there is at least one credential with a non-empty username.
+bool ContainsNonEmptyUsername(
+    const base::span<const UiCredential>& credentials) {
+  return std::any_of(credentials.begin(), credentials.end(),
+                     [](const UiCredential& credential) {
+                       return !credential.username().empty();
+                     });
+}
+
 }  // namespace
 
 TouchToFillController::TouchToFillController(
@@ -102,7 +111,8 @@ void TouchToFillController::Show(
   DCHECK(!driver_ || driver_.get() == driver.get());
   driver_ = std::move(driver);
 
-  trigger_submission_ = ShouldTriggerSubmission(submission_readiness);
+  trigger_submission_ = ShouldTriggerSubmission(submission_readiness) &&
+                        ContainsNonEmptyUsername(credentials);
   base::UmaHistogramEnumeration(
       "PasswordManager.TouchToFill.SubmissionReadiness", submission_readiness);
   ukm::builders::TouchToFill_SubmissionReadiness(source_id_)
@@ -214,7 +224,7 @@ void TouchToFillController::FillCredential(const UiCredential& credential) {
 
   driver_->FillSuggestion(credential.username(), credential.password());
 
-  if (trigger_submission_) {
+  if (trigger_submission_ && !credential.username().empty()) {
     driver_->TriggerFormSubmission();
   }
   driver_ = nullptr;

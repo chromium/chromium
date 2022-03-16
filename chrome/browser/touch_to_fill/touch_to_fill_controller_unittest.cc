@@ -251,6 +251,73 @@ TEST_F(TouchToFillControllerTest, Show_Fill_And_Dont_Submit) {
   controller_no_auth->OnCredentialSelected(credentials[0]);
 }
 
+TEST_F(TouchToFillControllerTest, Dont_Submit_With_Empty_Username) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kTouchToFillPasswordSubmission);
+
+  std::unique_ptr<TouchToFillController> controller_no_auth =
+      CreateNoAuthController();
+  std::unique_ptr<MockTouchToFillView> mock_view =
+      std::make_unique<MockTouchToFillView>();
+  MockTouchToFillView* weak_view = mock_view.get();
+  controller_no_auth->set_view(std::move(mock_view));
+
+  UiCredential credentials[] = {
+      MakeUiCredential({.username = "", .password = "p4ssw0rd"}),
+      MakeUiCredential({.username = "username", .password = "p4ssw0rd"})};
+
+  // As we don't know which credential will be selected, don't disable
+  // submission for now.
+  EXPECT_CALL(*weak_view, Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+                               ElementsAreArray(credentials),
+                               /*trigger_submission=*/true));
+  controller_no_auth->Show(
+      credentials, driver().AsWeakPtr(),
+      autofill::mojom::SubmissionReadinessState::kTwoFields);
+
+  // The user picks the credential with an empty username, submission should not
+  // be triggered.
+  EXPECT_CALL(driver(), TriggerFormSubmission()).Times(0);
+  EXPECT_CALL(driver(),
+              FillSuggestion(std::u16string(u""), std::u16string(u"p4ssw0rd")));
+  EXPECT_CALL(driver(), TouchToFillClosed(ShowVirtualKeyboard(false)));
+
+  controller_no_auth->OnCredentialSelected(credentials[0]);
+}
+
+TEST_F(TouchToFillControllerTest, Single_Credential_With_Empty_Username) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kTouchToFillPasswordSubmission);
+
+  std::unique_ptr<TouchToFillController> controller_no_auth =
+      CreateNoAuthController();
+  std::unique_ptr<MockTouchToFillView> mock_view =
+      std::make_unique<MockTouchToFillView>();
+  MockTouchToFillView* weak_view = mock_view.get();
+  controller_no_auth->set_view(std::move(mock_view));
+
+  UiCredential credentials[] = {
+      MakeUiCredential({.username = "", .password = "p4ssw0rd"})};
+
+  // Only one credential with empty username - submission is impossible.
+  EXPECT_CALL(*weak_view, Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+                               ElementsAreArray(credentials),
+                               /*trigger_submission=*/false));
+  controller_no_auth->Show(
+      credentials, driver().AsWeakPtr(),
+      autofill::mojom::SubmissionReadinessState::kTwoFields);
+
+  // Filling doesn't trigger submission.
+  EXPECT_CALL(driver(), TriggerFormSubmission()).Times(0);
+  EXPECT_CALL(driver(),
+              FillSuggestion(std::u16string(u""), std::u16string(u"p4ssw0rd")));
+  EXPECT_CALL(driver(), TouchToFillClosed(ShowVirtualKeyboard(false)));
+
+  controller_no_auth->OnCredentialSelected(credentials[0]);
+}
+
 TEST_F(TouchToFillControllerTest, Show_And_Fill_No_Auth_Available) {
   UiCredential credentials[] = {
       MakeUiCredential({.username = "alice", .password = "p4ssw0rd"})};
