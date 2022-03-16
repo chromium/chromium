@@ -413,6 +413,8 @@ void UnifiedMessageListView::Init() {
         notification->id(), message_center::DISPLAY_SOURCE_MESSAGE_CENTER);
     is_latest = false;
   }
+
+  ReverseChildrenFocusOrder();
   UpdateBorders(/*force_update=*/true);
   UpdateBounds();
 }
@@ -686,6 +688,7 @@ void UnifiedMessageListView::OnNotificationAdded(const std::string& id) {
   auto* view = CreateMessageView(*notification);
   view->SetExpanded(view->IsAutoExpandingAllowed());
   AddChildViewAt(new MessageViewContainer(view, this), index_to_insert);
+  ReverseChildrenFocusOrder();
   UpdateBorders(/*force_update=*/false);
   ResetBounds();
 }
@@ -960,6 +963,20 @@ void UnifiedMessageListView::DeleteRemovedNotifications() {
   }
 
   UpdateBorders(/*force_update=*/false);
+}
+
+void UnifiedMessageListView::ReverseChildrenFocusOrder() {
+  auto children_views = children();
+  if (children_views.size() > 1) {
+    views::View* first_child = children_views.front();
+    // Insert elements in reverse order since the last element should be the
+    // first focusable.
+    // Note that we are excluding the first element from the iteration.
+    for (int i = children_views.size() - 1; i > 0; i--) {
+      views::View* child = children_views[i];
+      child->InsertBeforeInFocusList(first_child);
+    }
+  }
 }
 
 void UnifiedMessageListView::StartAnimation() {

@@ -745,6 +745,13 @@ TEST_P(UnifiedMessageCenterViewTest, StackingCounterVisibility) {
   EXPECT_TRUE(GetNotificationBarClearAllButton()->GetVisible());
 }
 
+TEST_P(UnifiedMessageCenterViewTest, InitializesWithCorrectFocusOrder) {
+  CreateMessageCenterView();
+  std::vector<views::View*> expected_focus_list = {GetScroller(),
+                                                   GetNotificationBar()};
+  EXPECT_EQ(message_center_view()->GetChildrenFocusList(), expected_focus_list);
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          UnifiedMessageCenterViewInWidgetTest,
                          testing::Bool() /* IsNotificationsRefreshEnabled()

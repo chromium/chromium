@@ -233,6 +233,11 @@ class ASH_EXPORT UnifiedMessageListView
   // Deletes all the MessageViewContainer marked as |is_removed|.
   void DeleteRemovedNotifications();
 
+  // Reverses the focus order of all the children `MessageViewContainer`. The
+  // focus order needs to be reversed since the newest notifications are
+  // displayed last.
+  void ReverseChildrenFocusOrder();
+
   // Starts the animation for current |state_|.
   void StartAnimation();
 

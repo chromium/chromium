@@ -736,6 +736,54 @@ TEST_P(ParameterizedUnifiedMessageListViewTest,
   EXPECT_EQ(id3, GetMessageViewAt(4)->notification_id());
 }
 
+TEST_P(ParameterizedUnifiedMessageListViewTest,
+       InitializesWithReverseFocusOrder) {
+  AddNotification();
+  AddNotification();
+  AddNotification();
+  CreateMessageListView();
+
+  std::vector<views::View*> focus_list =
+      message_list_view()->GetChildrenFocusList();
+  std::vector<views::View*> children = message_list_view()->children();
+
+  EXPECT_EQ(3u, focus_list.size());
+  EXPECT_EQ(3u, children.size());
+
+  std::vector<views::View*> expected_focus_order = {children[2], children[1],
+                                                    children[0]};
+  EXPECT_EQ(focus_list, expected_focus_order);
+}
+
+TEST_P(ParameterizedUnifiedMessageListViewTest,
+       NewNotificationsAreAddedInTheRightFocusOrder) {
+  AddNotification();
+  AddNotification();
+  AddNotification();
+  CreateMessageListView();
+
+  std::vector<views::View*> focus_list_before =
+      message_list_view()->GetChildrenFocusList();
+  std::vector<views::View*> children_before = message_list_view()->children();
+
+  EXPECT_EQ(3u, focus_list_before.size());
+  EXPECT_EQ(3u, children_before.size());
+
+  AddNotification();
+
+  std::vector<views::View*> focus_list_after =
+      message_list_view()->GetChildrenFocusList();
+  std::vector<views::View*> children_after = message_list_view()->children();
+
+  EXPECT_EQ(4u, focus_list_after.size());
+  EXPECT_EQ(4u, children_after.size());
+
+  std::vector<views::View*> expected_focus_order = {
+      children_after[3], children_after[2], children_after[1],
+      children_after[0]};
+  EXPECT_EQ(focus_list_after, expected_focus_order);
+}
+
 // Tests only with NotificationsRefresh enabled.
 class RefreshedUnifiedMessageListView : public UnifiedMessageListViewTest {
  public:

@@ -103,8 +103,6 @@ UnifiedMessageCenterView::~UnifiedMessageCenterView() {
 void UnifiedMessageCenterView::Init() {
   message_list_view_->Init();
 
-  AddChildView(notification_bar_);
-
   // Need to set the transparent background explicitly, since ScrollView has
   // set the default opaque background color.
   // TODO(crbug.com/1247455): Be able to do
@@ -120,6 +118,11 @@ void UnifiedMessageCenterView::Init() {
         gfx::RoundedCornersF{kMessageCenterScrollViewCornerRadius});
   }
   AddChildView(scroller_);
+
+  // The `notification_bar_` needs to be placed after the `scroller_` since it
+  // should be the last element that the user focuses on before focusing out of
+  // the `UnifiedMessageCenterView`.
+  AddChildView(notification_bar_);
 
   notification_bar_->Update(
       message_list_view_->GetTotalNotificationCount(),
