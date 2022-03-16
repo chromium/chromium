@@ -191,9 +191,11 @@ View* FocusSearch::FindNextFocusableViewImpl(
   // First let's try the left child.
   if (can_go_down) {
     if (!starting_view->children().empty()) {
+      // This view might not be `IsFocusable` but the view is still passed
+      // down to evaluate if one of it's children `IsFocusable`.
+      View* view = starting_view->GetChildrenFocusList().front();
       View* v = FindNextFocusableViewImpl(
-          starting_view->children().front(),
-          StartingViewPolicy::kCheckStartingView, false, true,
+          view, StartingViewPolicy::kCheckStartingView, false, true,
           can_go_into_anchored_dialog, skip_group_id, seen_views,
           focus_traversable, focus_traversable_view);
       if (v || *focus_traversable)
@@ -311,7 +313,9 @@ View* FocusSearch::FindPreviousFocusableViewImpl(
     can_go_into_anchored_dialog =
         AnchoredDialogPolicy::kCanGoIntoAnchoredDialog;
     if (!starting_view->children().empty()) {
-      View* view = starting_view->children().back();
+      // This view might not be `IsFocusable` but the view is still passed
+      // down to evaluate if one of it's children `IsFocusable`.
+      View* view = starting_view->GetChildrenFocusList().back();
       View* v = FindPreviousFocusableViewImpl(
           view, StartingViewPolicy::kCheckStartingView, false, true,
           can_go_into_anchored_dialog, skip_group_id, seen_views,

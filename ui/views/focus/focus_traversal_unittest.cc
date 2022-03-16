@@ -204,7 +204,6 @@ class FocusTraversalTest : public FocusManagerTest {
     return nullptr;
   }
 
- protected:
   // Helper function to advance focus multiple times in a loop. |traversal_ids|
   // is an array of view ids of length |N|. |reverse| denotes the direction in
   // which focus should be advanced.
@@ -224,11 +223,48 @@ class FocusTraversalTest : public FocusManagerTest {
     }
   }
 
+  // Helper function that will recursively reverse the focus order of all the
+  // children of the provided |parent|.
+  void ReverseChildrenFocusOrder(View* parent) {
+    ReverseChildrenFocusOrderImpl(parent);
+  }
+
   raw_ptr<TabbedPane> style_tab_ = nullptr;
   raw_ptr<BorderView> search_border_view_ = nullptr;
   DummyComboboxModel combobox_model_;
   raw_ptr<PaneView> left_container_;
   raw_ptr<PaneView> right_container_;
+
+ private:
+  // Implementation of `ReverseChildrenFocusOrder`. |seen_views| should not be
+  // passed directly - it will be initialized when called and is used to make
+  // sure there is no cycle while traversing the children views.
+  void ReverseChildrenFocusOrderImpl(View* parent,
+                                     base::flat_set<View*> seen_views = {}) {
+    std::vector<View*> children_views = parent->children();
+    if (children_views.empty())
+      return;
+
+    View* first_child = children_views[0];
+    std::vector<View*> children_in_focus_order;
+
+    // Set each child to be before the first child in the focus list.  Do this
+    // in reverse so that the last child is the first focusable view.
+    for (int i = children_views.size() - 1; i >= 0; i--) {
+      views::View* child = children_views[i];
+      EXPECT_FALSE(seen_views.contains(child));
+
+      seen_views.insert(child);
+      children_in_focus_order.push_back(child);
+
+      if (child != first_child)
+        child->InsertBeforeInFocusList(first_child);
+
+      ReverseChildrenFocusOrderImpl(child, seen_views);
+    }
+
+    EXPECT_EQ(parent->GetChildrenFocusList(), children_in_focus_order);
+  }
 };
 
 FocusTraversalTest::FocusTraversalTest() = default;
@@ -810,6 +846,33 @@ TEST_F(FocusTraversalTest, PaneTraversal) {
   // Traverse in reverse order.
   FindViewByID(BROCCOLI_BUTTON_ID)->RequestFocus();
   AdvanceEntireFocusLoop(kRightTraversalIDs, true);
+}
+
+TEST_F(FocusTraversalTest, TraversesFocusInFocusOrder) {
+  View* parent = GetContentsView();
+
+  ReverseChildrenFocusOrder(parent);
+  const int kTraversalIDs[] = {
+      THUMBNAIL_CONTAINER_ID, THUMBNAIL_SUPER_STAR_ID, THUMBNAIL_STAR_ID,
+      // All views under SEARCH_CONTAINER_ID (SEARCH_TEXTFIELD_ID,
+      // SEARCH_BUTTON_ID, HELP_LINK_ID) will have their original order. This is
+      // because SEARCH_CONTAINER_ID is a NativeView and
+      // `ReverseChildrenFocusOrder` does not reverse the order of native
+      // children.
+      SEARCH_TEXTFIELD_ID, SEARCH_BUTTON_ID, HELP_LINK_ID, STYLE_TEXT_EDIT_ID,
+      STYLE_HELP_LINK_ID, UNDERLINED_CHECKBOX_ID, ITALIC_CHECKBOX_ID,
+      BOLD_CHECKBOX_ID, STYLE_CONTAINER_ID, HELP_BUTTON_ID, CANCEL_BUTTON_ID,
+      OK_BUTTON_ID, ASTERIX_LINK_ID, TAXI_LINK_ID, BRICE_DE_NICE_LINK_ID,
+      CAMPING_LINK_ID, JOYEUX_NOEL_LINK_ID, AMELIE_LINK_ID, VISITING_LINK_ID,
+      CLOSET_LINK_ID, RIDICULE_LINK_ID, DINER_GAME_LINK_ID,
+      STUPEUR_ET_TREMBLEMENT_LINK_ID, ROSETTA_LINK_ID, BROCCOLI_BUTTON_ID,
+      COMBOBOX_ID, FRUIT_CHECKBOX_ID, FRUIT_BUTTON_ID, KIWI_TEXTFIELD_ID,
+      BANANA_TEXTFIELD_ID, ORANGE_TEXTFIELD_ID, APPLE_TEXTFIELD_ID,
+      TOP_CHECKBOX_ID};
+
+  AdvanceEntireFocusLoop(kTraversalIDs, false);
+  GetFocusManager()->ClearFocus();
+  AdvanceEntireFocusLoop(kTraversalIDs, true);
 }
 
 class FocusTraversalNonFocusableTest : public FocusManagerTest {

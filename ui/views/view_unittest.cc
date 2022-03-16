@@ -5549,60 +5549,28 @@ TEST_F(ViewTest, RemoveAllChildViewsNullsFocusListPointers) {
   delete last;
 }
 
-namespace {
-
-// Traverses the focus list starting at |first| and returns the views in
-// order as a vector. Checks the consistency of the list as it goes.
-std::vector<View*> ViewsInFocusList(View* first) {
-  std::vector<View*> result;
-
-  // Tracks the views traversed so far. Used to check for cycles.
-  std::set<View*> seen_views;
-
-  View* cur = first;
-  while (cur != nullptr) {
-    // Check a cycle hasn't been found. If there is a cycle, return early.
-    const bool seen = base::Contains(seen_views, cur);
-    EXPECT_FALSE(seen);
-    if (seen)
-      return result;
-
-    seen_views.insert(cur);
-    result.push_back(cur);
-
-    View* const next = cur->GetNextFocusableView();
-    if (next)
-      EXPECT_EQ(next->GetPreviousFocusableView(), cur);
-    cur = next;
-  }
-
-  return result;
-}
-
-}  // namespace
-
 TEST_F(ViewTest, InsertBeforeInFocusList) {
   View parent;
   View* const v1 = parent.AddChildView(std::make_unique<View>());
   View* const v2 = parent.AddChildView(std::make_unique<View>());
   View* const v3 = parent.AddChildView(std::make_unique<View>());
 
-  EXPECT_THAT(ViewsInFocusList(v1), ElementsAre(v1, v2, v3));
+  EXPECT_THAT(parent.GetChildrenFocusList(), ElementsAre(v1, v2, v3));
 
   v2->InsertBeforeInFocusList(v1);
-  EXPECT_THAT(ViewsInFocusList(v2), ElementsAre(v2, v1, v3));
+  EXPECT_THAT(parent.GetChildrenFocusList(), ElementsAre(v2, v1, v3));
 
   v3->InsertBeforeInFocusList(v1);
-  EXPECT_THAT(ViewsInFocusList(v2), ElementsAre(v2, v3, v1));
+  EXPECT_THAT(parent.GetChildrenFocusList(), ElementsAre(v2, v3, v1));
 
   v1->InsertBeforeInFocusList(v2);
-  EXPECT_THAT(ViewsInFocusList(v1), ElementsAre(v1, v2, v3));
+  EXPECT_THAT(parent.GetChildrenFocusList(), ElementsAre(v1, v2, v3));
 
   v1->InsertBeforeInFocusList(v3);
-  EXPECT_THAT(ViewsInFocusList(v2), ElementsAre(v2, v1, v3));
+  EXPECT_THAT(parent.GetChildrenFocusList(), ElementsAre(v2, v1, v3));
 
   v1->InsertBeforeInFocusList(v3);
-  EXPECT_THAT(ViewsInFocusList(v2), ElementsAre(v2, v1, v3));
+  EXPECT_THAT(parent.GetChildrenFocusList(), ElementsAre(v2, v1, v3));
 }
 
 TEST_F(ViewTest, InsertAfterInFocusList) {
@@ -5611,25 +5579,25 @@ TEST_F(ViewTest, InsertAfterInFocusList) {
   View* const v2 = parent.AddChildView(std::make_unique<View>());
   View* const v3 = parent.AddChildView(std::make_unique<View>());
 
-  EXPECT_THAT(ViewsInFocusList(v1), ElementsAre(v1, v2, v3));
+  EXPECT_THAT(parent.GetChildrenFocusList(), ElementsAre(v1, v2, v3));
 
   v1->InsertAfterInFocusList(v2);
-  EXPECT_THAT(ViewsInFocusList(v2), ElementsAre(v2, v1, v3));
+  EXPECT_THAT(parent.GetChildrenFocusList(), ElementsAre(v2, v1, v3));
 
   v1->InsertAfterInFocusList(v3);
-  EXPECT_THAT(ViewsInFocusList(v2), ElementsAre(v2, v3, v1));
+  EXPECT_THAT(parent.GetChildrenFocusList(), ElementsAre(v2, v3, v1));
 
   v2->InsertAfterInFocusList(v1);
-  EXPECT_THAT(ViewsInFocusList(v3), ElementsAre(v3, v1, v2));
+  EXPECT_THAT(parent.GetChildrenFocusList(), ElementsAre(v3, v1, v2));
 
   v3->InsertAfterInFocusList(v2);
-  EXPECT_THAT(ViewsInFocusList(v1), ElementsAre(v1, v2, v3));
+  EXPECT_THAT(parent.GetChildrenFocusList(), ElementsAre(v1, v2, v3));
 
   v1->InsertAfterInFocusList(v3);
-  EXPECT_THAT(ViewsInFocusList(v2), ElementsAre(v2, v3, v1));
+  EXPECT_THAT(parent.GetChildrenFocusList(), ElementsAre(v2, v3, v1));
 
   v1->InsertAfterInFocusList(v3);
-  EXPECT_THAT(ViewsInFocusList(v2), ElementsAre(v2, v3, v1));
+  EXPECT_THAT(parent.GetChildrenFocusList(), ElementsAre(v2, v3, v1));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -1684,6 +1684,43 @@ void View::InsertAfterInFocusList(View* view) {
   previous_focusable_view_ = view;
 }
 
+View::Views View::GetChildrenFocusList() {
+  View* starting_focus_view = nullptr;
+
+  Views children_views = children();
+  for (View* child : children_views) {
+    if (child->GetPreviousFocusableView() == nullptr) {
+      starting_focus_view = child;
+      break;
+    }
+  }
+
+  if (starting_focus_view == nullptr)
+    return {};
+
+  Views result;
+
+  // Tracks the views traversed so far. Used to check for cycles.
+  base::flat_set<View*> seen_views;
+
+  View* cur = starting_focus_view;
+  while (cur != nullptr) {
+    // Views are not supposed to have focus cycles, but just in case, fail
+    // gracefully to avoid a crash.
+    if (seen_views.contains(cur)) {
+      LOG(ERROR) << "View focus cycle detected.";
+      return {};
+    }
+
+    seen_views.insert(cur);
+    result.push_back(cur);
+
+    cur = cur->GetNextFocusableView();
+  }
+
+  return result;
+}
+
 View::FocusBehavior View::GetFocusBehavior() const {
   return focus_behavior_;
 }
