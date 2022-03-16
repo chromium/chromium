@@ -146,7 +146,8 @@ public abstract class AutofillSaveCardPromptBase implements ModalDialogPropertie
         if (mSpannableStringBuilder == null) {
             mSpannableStringBuilder = new SpannableStringBuilder();
         } else {
-            mSpannableStringBuilder.append("\n");
+            // If this isn't the first line, append a new line before the legal message.
+            mSpannableStringBuilder.append("\n\n");
         }
         int offset = mSpannableStringBuilder.length();
         mSpannableStringBuilder.append(line.text);
