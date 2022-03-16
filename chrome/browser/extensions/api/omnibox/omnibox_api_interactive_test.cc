@@ -714,7 +714,14 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTestWithContextType,
   ASSERT_TRUE(RunExtensionTest(test_dir.UnpackedPath(), {}, {})) << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(OmniboxApiTestWithContextType, SetDefaultSuggestion) {
+// Flaky on Linux TSan. https://crbug.com/1304694
+#if (BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER))
+#define MAYBE_SetDefaultSuggestion DISABLED_SetDefaultSuggestion
+#else
+#define MAYBE_SetDefaultSuggestion SetDefaultSuggestion
+#endif
+IN_PROC_BROWSER_TEST_P(OmniboxApiTestWithContextType,
+                       MAYBE_SetDefaultSuggestion) {
   constexpr char kManifest[] =
       R"({
            "name": "SetDefaultSuggestion",
