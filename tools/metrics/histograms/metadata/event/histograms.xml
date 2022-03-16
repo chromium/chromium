@@ -364,7 +364,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Event.Latency.OS2" units="ms" expires_after="2022-08-14">
+<histogram name="Event.Latency.OS2.{EventType}" units="ms"
+    expires_after="2022-08-14">
   <owner>flackr@chromium.org</owner>
   <owner>joenotcharles@google.com</owner>
   <owner>input-dev@chromium.org</owner>
@@ -379,6 +380,14 @@ chromium-metrics-reviews@google.com.
     which usually come from the high-resolution clock when
     TimeTicks::IsHighResolution returns true.
   </summary>
+  <token key="EventType">
+    <variant name="KEY_PRESSED"/>
+    <variant name="MOUSE_PRESSED"/>
+    <variant name="MOUSE_WHEEL"/>
+    <variant name="TOUCH_MOVED"/>
+    <variant name="TOUCH_PRESSED"/>
+    <variant name="TOUCH_RELEASED"/>
+  </token>
 </histogram>
 
 <histogram name="Event.Latency.Scroll.Wheel.TimeToHandled2"

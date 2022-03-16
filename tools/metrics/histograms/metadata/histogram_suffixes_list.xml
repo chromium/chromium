@@ -2731,16 +2731,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="SiteEngagementService.EngagementScoreBucket"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="EventLatencyOS" separator=".">
-  <suffix name="KEY_PRESSED" label=""/>
-  <suffix name="MOUSE_PRESSED" label=""/>
-  <suffix name="MOUSE_WHEEL" label=""/>
-  <suffix name="TOUCH_MOVED" label=""/>
-  <suffix name="TOUCH_PRESSED" label=""/>
-  <suffix name="TOUCH_RELEASED" label=""/>
-  <affected-histogram name="Event.Latency.OS2"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="ExtensionsDatabaseRestore" separator=".">
   <suffix name="Rules" label="Rules backing stores"/>
   <suffix name="Settings" label="Settings backing stores"/>
