@@ -82,6 +82,5 @@ public class LightweightReactionsDialog extends DialogFragment {
                 mContentView.findViewById(R.id.lightweight_reactions_background);
         Drawable background = new BitmapDrawable(getResources(), mScreenshot);
         sceneBackground.setImageDrawable(background);
-        sceneBackground.setFocusable(false);
     }
 }

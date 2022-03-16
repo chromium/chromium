@@ -10,7 +10,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/default_scrim_color"
-    android:importantForAccessibility="yes">
+    android:importantForAccessibility="no">
     <ImageView
         tools:ignore="ContentDescription"
         android:id="@+id/lightweight_reactions_background"
