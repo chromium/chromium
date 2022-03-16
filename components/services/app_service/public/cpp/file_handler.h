@@ -58,6 +58,14 @@ struct FileHandler {
   // association icons in OS surfaces. The sizes in `downloaded_icons`, when
   // present, represent the actual size of a bitmap that was downloaded.
   std::vector<IconInfo> downloaded_icons;
+
+  // How the app should be launched in the case where there are multiple files
+  // being opened.
+  enum class LaunchType {
+    kSingleClient,
+    kMultipleClients,
+  };
+  LaunchType launch_type = LaunchType::kSingleClient;
 };
 using FileHandlers = std::vector<FileHandler>;
 

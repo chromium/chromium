@@ -297,6 +297,7 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
          "square_size_px": 48,
          "url": "https://example.com/image2.png"
       } ],
+      "launch_type": "kSingleClient",
       "name": "2591174840 file"
    }, {
       "accept": [ {
@@ -316,6 +317,7 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
          "square_size_px": 48,
          "url": "https://example.com/image2.png"
       } ],
+      "launch_type": "kSingleClient",
       "name": "2591174841 file"
    }, {
       "accept": [ {
@@ -335,6 +337,7 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
          "square_size_px": 48,
          "url": "https://example.com/image2.png"
       } ],
+      "launch_type": "kSingleClient",
       "name": "2591174842 file"
    }, {
       "accept": [ {
@@ -354,6 +357,7 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
          "square_size_px": 48,
          "url": "https://example.com/image2.png"
       } ],
+      "launch_type": "kSingleClient",
       "name": "2591174843 file"
    }, {
       "accept": [ {
@@ -373,6 +377,7 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
          "square_size_px": 48,
          "url": "https://example.com/image2.png"
       } ],
+      "launch_type": "kSingleClient",
       "name": "2591174844 file"
    } ],
    "handle_links": "kAuto",

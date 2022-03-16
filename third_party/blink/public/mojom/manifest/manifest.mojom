@@ -264,6 +264,16 @@ struct ManifestFileHandler {
   array<ManifestImageResource> icons;
   // A mapping of a MIME types to a corresponding list of file extensions.
   map<mojo_base.mojom.String16, array<mojo_base.mojom.String16>> accept;
+
+  // How the app should be launched when there are multiple files being opened.
+  // For `kSingleClient`, they'll all be passed in a single launch. For
+  // `kMultipleClients`, multiple launched app instances will each get a single
+  // file.
+  enum LaunchType {
+    kSingleClient,
+    kMultipleClients,
+  };
+  LaunchType launch_type;
 };
 
 // Represents how web app launches should be handled with regard to opening

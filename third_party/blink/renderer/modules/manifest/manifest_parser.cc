@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "url/url_constants.h"
 #include "url/url_util.h"
@@ -97,6 +98,15 @@ bool IsHostValidForUrlHandler(String host) {
 
 static bool IsCrLfOrTabChar(UChar c) {
   return c == '\n' || c == '\r' || c == '\t';
+}
+
+absl::optional<mojom::blink::ManifestFileHandler::LaunchType>
+FileHandlerLaunchTypeFromString(const std::string& launch_type) {
+  if (WTF::EqualIgnoringASCIICase(String(launch_type), "single-client"))
+    return mojom::blink::ManifestFileHandler::LaunchType::kSingleClient;
+  if (WTF::EqualIgnoringASCIICase(String(launch_type), "multiple-clients"))
+    return mojom::blink::ManifestFileHandler::LaunchType::kMultipleClients;
+  return absl::nullopt;
 }
 
 }  // anonymous namespace
@@ -1004,7 +1014,6 @@ ManifestParser::ParseShareTarget(const JSONObject* object) {
 
 Vector<mojom::blink::ManifestFileHandlerPtr> ManifestParser::ParseFileHandlers(
     const JSONObject* object) {
-
   if (!object->Get("file_handlers"))
     return {};
 
@@ -1057,6 +1066,14 @@ ManifestParser::ParseFileHandler(const JSONObject* file_handler) {
     AddErrorInfo("FileHandler ignored. Property 'accept' is invalid.");
     return absl::nullopt;
   }
+
+  entry->launch_type =
+      ParseFirstValidEnum<
+          absl::optional<mojom::blink::ManifestFileHandler::LaunchType>>(
+          file_handler, "launch_type", &FileHandlerLaunchTypeFromString,
+          /*invalid_value=*/absl::nullopt)
+          .value_or(
+              mojom::blink::ManifestFileHandler::LaunchType::kSingleClient);
 
   return entry;
 }

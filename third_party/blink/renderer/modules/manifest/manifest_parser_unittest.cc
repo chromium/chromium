@@ -2468,6 +2468,45 @@ TEST_F(ManifestParserTest, FileHandlerParseRules) {
     EXPECT_TRUE(accept_map.Contains(".graph3"));
     EXPECT_TRUE(accept_map.Contains(".graph4"));
   }
+
+  // Test `launch_type` parsing and default.
+  {
+    auto& manifest = ParseManifest(
+        R"({
+          "file_handlers": [
+            {
+              "action": "/files",
+              "accept": {
+                "image/png": ".png"
+              },
+              "launch_type": "multiple-clients"
+            },
+            {
+              "action": "/files2",
+              "accept": {
+                "image/jpeg": ".jpeg"
+              },
+              "launch_type": "single-client"
+            },
+            {
+              "action": "/files3",
+              "accept": {
+                "text/plain": ".txt"
+              }
+            }
+          ]
+        })");
+    EXPECT_FALSE(IsManifestEmpty(manifest));
+    EXPECT_FALSE(manifest->file_handlers.IsEmpty());
+    ASSERT_EQ(3U, manifest->file_handlers.size());
+    EXPECT_EQ(mojom::blink::ManifestFileHandler::LaunchType::kMultipleClients,
+              manifest->file_handlers[0]->launch_type);
+    EXPECT_EQ(mojom::blink::ManifestFileHandler::LaunchType::kSingleClient,
+              manifest->file_handlers[1]->launch_type);
+    EXPECT_EQ(mojom::blink::ManifestFileHandler::LaunchType::kSingleClient,
+              manifest->file_handlers[2]->launch_type);
+    EXPECT_EQ(0u, GetErrorCount());
+  }
 }
 
 TEST_F(ManifestParserTest, FileHandlerIconsParseRules) {

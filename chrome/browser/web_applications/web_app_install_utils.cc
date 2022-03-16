@@ -317,6 +317,16 @@ void PopulateFileHandlingIcons(WebAppInstallInfo* web_app_info,
   }
 }
 
+apps::FileHandler::LaunchType ToFileHandlerLaunchType(
+    blink::mojom::ManifestFileHandler::LaunchType launch_type) {
+  switch (launch_type) {
+    case blink::mojom::ManifestFileHandler::LaunchType::kSingleClient:
+      return apps::FileHandler::LaunchType::kSingleClient;
+    case blink::mojom::ManifestFileHandler::LaunchType::kMultipleClients:
+      return apps::FileHandler::LaunchType::kMultipleClients;
+  }
+}
+
 }  // namespace
 
 apps::FileHandlers CreateFileHandlersFromManifest(
@@ -330,6 +340,8 @@ apps::FileHandlers CreateFileHandlersFromManifest(
     apps::FileHandler web_app_file_handler;
     web_app_file_handler.action = manifest_file_handler->action;
     web_app_file_handler.display_name = manifest_file_handler->name;
+    web_app_file_handler.launch_type =
+        ToFileHandlerLaunchType(manifest_file_handler->launch_type);
 
     for (const auto& it : manifest_file_handler->accept) {
       apps::FileHandler::AcceptEntry web_app_accept_entry;

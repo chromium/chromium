@@ -29,6 +29,14 @@ message WebAppFileHandlerProto {
   repeated WebAppFileHandlerAcceptProto accept = 2;
   repeated sync_pb.WebAppIconInfo downloaded_icons = 3;
   optional string display_name = 4;
+
+  // This enum should be synced with `LaunchType` in `apps::FileHandler`.
+  enum LaunchType {
+    UNDEFINED = 0;
+    SINGLE_CLIENT = 1;
+    MULTIPLE_CLIENTS = 2;
+  }
+  required LaunchType launch_type = 5;
 }
 
 message WebAppProtocolHandler {

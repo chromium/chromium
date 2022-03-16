@@ -227,6 +227,28 @@ WebAppProto::OsIntegrationState OsIntegrationStateToProto(
   }
 }
 
+apps::FileHandler::LaunchType ProtoToLaunchType(
+    WebAppFileHandlerProto::LaunchType state) {
+  switch (state) {
+    case WebAppFileHandlerProto_LaunchType_SINGLE_CLIENT:
+      return apps::FileHandler::LaunchType::kSingleClient;
+    case WebAppFileHandlerProto_LaunchType_MULTIPLE_CLIENTS:
+      return apps::FileHandler::LaunchType::kMultipleClients;
+    case WebAppFileHandlerProto_LaunchType_UNDEFINED:
+      return apps::FileHandler::LaunchType::kSingleClient;
+  }
+}
+
+WebAppFileHandlerProto::LaunchType LaunchTypeToProto(
+    apps::FileHandler::LaunchType state) {
+  switch (state) {
+    case apps::FileHandler::LaunchType::kSingleClient:
+      return WebAppFileHandlerProto_LaunchType_SINGLE_CLIENT;
+    case apps::FileHandler::LaunchType::kMultipleClients:
+      return WebAppFileHandlerProto_LaunchType_MULTIPLE_CLIENTS;
+  }
+}
+
 }  // anonymous namespace
 
 WebAppDatabase::WebAppDatabase(AbstractWebAppDatabaseFactory* database_factory,
@@ -422,6 +444,8 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
     file_handler_proto->set_action(file_handler.action.spec());
     file_handler_proto->set_display_name(
         base::UTF16ToUTF8(file_handler.display_name));
+    file_handler_proto->set_launch_type(
+        LaunchTypeToProto(file_handler.launch_type));
 
     for (const auto& accept_entry : file_handler.accept) {
       WebAppFileHandlerAcceptProto* accept_entry_proto =
@@ -856,6 +880,9 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
       file_handler.display_name =
           base::UTF8ToUTF16(file_handler_proto.display_name());
     }
+
+    file_handler.launch_type =
+        ProtoToLaunchType(file_handler_proto.launch_type());
 
     for (const auto& accept_entry_proto : file_handler_proto.accept()) {
       apps::FileHandler::AcceptEntry accept_entry;

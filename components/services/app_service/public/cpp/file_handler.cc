@@ -42,6 +42,9 @@ base::Value FileHandler::AsDebugValue() const {
   for (const IconInfo& entry : downloaded_icons)
     icons_json.Append(entry.AsDebugValue());
   root.SetStringKey("name", display_name);
+  root.SetStringKey("launch_type", launch_type == LaunchType::kSingleClient
+                                       ? "kSingleClient"
+                                       : "kMultipleClients");
 
   return root;
 }
@@ -96,9 +99,9 @@ bool operator==(const FileHandler::AcceptEntry& accept_entry1,
 bool operator==(const FileHandler& file_handler1,
                 const FileHandler& file_handler2) {
   return std::tie(file_handler1.action, file_handler1.accept,
-                  file_handler1.display_name) ==
+                  file_handler1.display_name, file_handler1.launch_type) ==
          std::tie(file_handler2.action, file_handler2.accept,
-                  file_handler2.display_name);
+                  file_handler2.display_name, file_handler2.launch_type);
 }
 
 bool operator!=(const FileHandler::AcceptEntry& accept_entry1,
