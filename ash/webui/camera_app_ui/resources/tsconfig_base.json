@@ -12,7 +12,6 @@
       "w3c-css-typed-object-model-level-1",
       "w3c-image-capture"
     ],
-    "noImplicitOverride": true,
     "noUncheckedIndexedAccess": false
   },
   "exclude": [
