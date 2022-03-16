@@ -68,8 +68,7 @@ void ApplySpreadToShadowShape(FloatRoundedRect& shadow_shape, float spread) {
   if (spread == 0)
     return;
 
-  // TODO(crbug.com/1302642): Use the shadow-specific method.
-  shadow_shape.Outset(spread);
+  shadow_shape.OutsetForMarginOrShadow(spread);
   shadow_shape.ConstrainRadii();
 }
 

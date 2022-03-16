@@ -4549,10 +4549,6 @@ crbug.com/1160916 virtual/threaded/external/wpt/css/css-backgrounds/border-top-l
 crbug.com/1160916 external/wpt/css/css-backgrounds/border-top-left-radius-010.xht [ Failure Pass ]
 crbug.com/1160916 virtual/threaded/external/wpt/css/css-backgrounds/border-top-right-radius-010.xht [ Failure Pass ]
 crbug.com/1160916 external/wpt/css/css-backgrounds/border-top-right-radius-010.xht [ Failure Pass ]
-crbug.com/1160916 virtual/threaded/external/wpt/css/css-backgrounds/box-shadow-radius-000.html [ Failure ]
-crbug.com/1160916 external/wpt/css/css-backgrounds/box-shadow-radius-000.html [ Failure ]
-crbug.com/1160916 virtual/threaded/external/wpt/css/css-backgrounds/box-shadow-radius-001.html [ Failure ]
-crbug.com/1160916 external/wpt/css/css-backgrounds/box-shadow-radius-001.html [ Failure ]
 
 # [css-grid]
 crbug.com/1045599 external/wpt/css/css-grid/abspos/grid-abspos-staticpos-align-self-safe-001.html [ Failure ]
