@@ -139,9 +139,14 @@ sessions::LiveTab* AndroidLiveTabContext::AddRestoredTab(
       sessions::ContentSerializedNavigationBuilder::ToNavigationEntries(
           navigations, profile);
 
-  // Restore web contents with navigation history.
+  // Restore web contents with navigation history. This is used for background
+  // restore so start without a renderer.
+  auto params = content::WebContents::CreateParams(profile);
+  params.desired_renderer_state =
+      content::WebContents::CreateParams::kNoRendererProcess;
+  params.initially_hidden = true;
   std::unique_ptr<content::WebContents> web_contents =
-      content::WebContents::Create(content::WebContents::CreateParams(profile));
+      content::WebContents::Create(params);
   content::WebContents* raw_web_contents = web_contents.get();
   web_contents->GetController().Restore(
       selected_navigation, content::RestoreType::kRestored, &nav_entries);
@@ -149,7 +154,10 @@ sessions::LiveTab* AndroidLiveTabContext::AddRestoredTab(
   // Create new tab. Ownership is passed into java, which in turn creates a new
   // TabAndroid instance to own the WebContents.
   tab_model_->CreateTab(nullptr, web_contents.release());
-  raw_web_contents->GetController().LoadIfNecessary();
+  // Don't load the tab yet. This prevents a renderer from starting which keeps
+  // the tab restore lightweight as the tab is opened in the background only.
+  // The tab will be in a "renderer was lost" state. This is recovered from when
+  // the tab is made active.
   return sessions::ContentLiveTab::GetForWebContents(raw_web_contents);
 }
 

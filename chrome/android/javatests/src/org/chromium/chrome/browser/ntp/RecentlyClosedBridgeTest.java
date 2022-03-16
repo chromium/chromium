@@ -120,7 +120,11 @@ public class RecentlyClosedBridgeTest {
             final TabModel model = mActivity.getTabModelSelectorSupplier().get().getModel(false);
             final TabList list = model.getComprehensiveModel();
             Assert.assertEquals(2, list.getCount());
-            Assert.assertTrue(hasTabWithUrlAndTitle(list, getUrl(TEST_PAGE_A), titles[0]));
+            final Tab tab = findTabWithUrlAndTitle(list, getUrl(TEST_PAGE_A), titles[0]);
+            Assert.assertNotNull(tab);
+
+            // No Renderer for background tab.
+            Assert.assertNull(tab.getWebContents().getRenderWidgetHostView());
         });
     }
 
@@ -178,6 +182,8 @@ public class RecentlyClosedBridgeTest {
                             .getNavigationController()
                             .getNavigationHistory()
                             .getEntryCount());
+            // Has renderer for foreground tab.
+            Assert.assertNotNull(tabC.getWebContents().getRenderWidgetHostView());
         });
     }
 
@@ -223,20 +229,24 @@ public class RecentlyClosedBridgeTest {
             final TabModel model = mActivity.getTabModelSelectorSupplier().get().getModel(false);
             final TabList list = model.getComprehensiveModel();
             Assert.assertEquals(3, list.getCount());
-            Assert.assertTrue(hasTabWithUrlAndTitle(list, getUrl(TEST_PAGE_A), titles[0]));
+            final Tab tab = findTabWithUrlAndTitle(list, getUrl(TEST_PAGE_A), titles[0]);
+            Assert.assertNotNull(tab);
+
+            // No renderer for background tab.
+            Assert.assertNull(tab.getWebContents().getRenderWidgetHostView());
         });
     }
 
-    private boolean hasTabWithUrlAndTitle(TabList list, String url, String title) {
-        boolean foundRestoredTab = false;
+    private Tab findTabWithUrlAndTitle(TabList list, String url, String title) {
+        Tab targetTab = null;
         for (int i = 0; i < list.getCount(); ++i) {
             Tab tab = list.getTabAt(i);
             if (tab.getUrl().getSpec().equals(url) && tab.getTitle().equals(title)) {
-                foundRestoredTab = true;
+                targetTab = tab;
                 break;
             }
         }
-        return foundRestoredTab;
+        return targetTab;
     }
 
     private String getUrl(String relativeUrl) {

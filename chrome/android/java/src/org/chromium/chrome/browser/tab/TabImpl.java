@@ -892,6 +892,10 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
             }
 
             initWebContents(webContents);
+            // Avoid an empty title by updating the title here. This could happen if restoring from
+            // a WebContents that has no renderer and didn't force a reload. This happens on
+            // background tab creation from Recent Tabs (TabRestoreService).
+            updateTitle();
 
             if (!creatingWebContents && webContents.shouldShowLoadingUI()) {
                 didStartPageLoad(webContents.getVisibleUrl());
