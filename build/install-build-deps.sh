@@ -199,7 +199,6 @@ dev_list="\
   patch
   perl
   pkg-config
-  python-setuptools
   rpm
   ruby
   subversion
@@ -211,12 +210,6 @@ dev_list="\
   zip
   $chromeos_dev_list
 "
-
-if package_exists python-is-python2; then
-  dev_list="${dev_list} python-is-python2 python2-dev"
-else
-  dev_list="${dev_list} python python-dev"
-fi
 
 # 64-bit systems need a minimum set of 32-bit compat packages for the pre-built
 # NaCl binaries.
@@ -335,6 +328,8 @@ backwards_compatible_list="\
   libgtk2.0-dev
   mesa-common-dev
   msttcorefonts
+  python-dev
+  python-setuptools
   ttf-dejavu-core
   ttf-indic-fonts
   ttf-kochi-gothic
@@ -342,8 +337,31 @@ backwards_compatible_list="\
   ttf-mscorefonts-installer
   xfonts-mathml
 "
+
 if package_exists python-is-python2; then
-  backwards_compatible_list="${backwards_compatible_list} python-dev"
+  backwards_compatible_list="${backwards_compatible_list} python-is-python2 python2-dev"
+else
+  backwards_compatible_list="${backwards_compatible_list} python"
+fi
+
+if package_exists python-crypto; then
+  backwards_compatible_list="${backwards_compatible_list} python-crypto"
+fi
+
+if package_exists python-numpy; then
+  backwards_compatible_list="${backwards_compatible_list} python-numpy"
+fi
+
+if package_exists python-openssl; then
+  backwards_compatible_list="${backwards_compatible_list} python-openssl"
+fi
+
+if package_exists python-psutil; then
+  backwards_compatible_list="${backwards_compatible_list} python-psutil"
+fi
+
+if package_exists python-yaml; then
+  backwards_compatible_list="${backwards_compatible_list} python-yaml"
 fi
 
 case $distro_codename in
@@ -496,24 +514,6 @@ elif package_exists php8.0-cgi; then
   dev_list="${dev_list} php8.0-cgi libapache2-mod-php8.0"
 else
   dev_list="${dev_list} php5-cgi libapache2-mod-php5"
-fi
-
-# Most python 2 packages are removed in Ubuntu 20.10, but the build doesn't seem
-# to need them, so only install them if they're available.
-if package_exists python-crypto; then
-  dev_list="${dev_list} python-crypto"
-fi
-if package_exists python-numpy; then
-  dev_list="${dev_list} python-numpy"
-fi
-if package_exists python-openssl; then
-  dev_list="${dev_list} python-openssl"
-fi
-if package_exists python-psutil; then
-  dev_list="${dev_list} python-psutil"
-fi
-if package_exists python-yaml; then
-  dev_list="${dev_list} python-yaml"
 fi
 
 # Some packages are only needed if the distribution actually supports
