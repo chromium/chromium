@@ -63,13 +63,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Quota.DatabaseError" enum="SqliteLoggedResultCode"
-    expires_after="2023-03-14">
-  <owner>ayui@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>Errors reported by SQLite while using the quota database.</summary>
-</histogram>
-
 <histogram name="Quota.DiskspaceShortage" units="MB" expires_after="2022-08-21">
   <owner>jarrydg@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
@@ -194,6 +187,13 @@ chromium-metrics-reviews@google.com.
     Percentage of the storage device that is being use for temporary storage.
     Logged when collecting usage information.
   </summary>
+</histogram>
+
+<histogram name="Quota.QuotaDatabaseError" enum="SqliteLoggedResultCode"
+    expires_after="2023-03-14">
+  <owner>ayui@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>Errors reported by SQLite while using the quota database.</summary>
 </histogram>
 
 <histogram name="Quota.QuotaDatabaseReset" enum="QuotaDatabaseResetReason"
