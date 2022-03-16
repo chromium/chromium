@@ -11,7 +11,7 @@ PREFIX="$1"
 DEPS_PREFIX="$2"
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
-MAVEN_VERSION="3.8.4"
+MAVEN_VERSION="3.8.5"
 
 curl -O https://downloads.apache.org/maven/maven-3/$MAVEN_VERSION/binaries/apache-maven-$MAVEN_VERSION-bin.tar.gz
 tar xzf apache-maven-$MAVEN_VERSION-bin.tar.gz
