@@ -43,6 +43,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
@@ -260,6 +261,7 @@ public class AttributionIntentIntegrationTest {
     @Feature({"ConversionMeasurement"})
     @Features.EnableFeatures(ChromeFeatureList.APP_TO_WEB_ATTRIBUTION)
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
+    @DisabledTest(message = "Test is flaky. crbug.com/1306267")
     public void testConversionIntentEnabled_CCT_preload_differentUrl() {
         AttributionReporter.setInstanceForTesting(mAttributionReporter);
         CustomTabsConnection connection = CustomTabsTestUtils.setUpConnection();
