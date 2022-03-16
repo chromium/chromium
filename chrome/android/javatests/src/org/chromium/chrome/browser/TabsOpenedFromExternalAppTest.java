@@ -12,7 +12,6 @@ import android.provider.Browser;
 import android.support.test.InstrumentationRegistry;
 
 import androidx.test.filters.LargeTest;
-import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -22,26 +21,19 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.BaseSwitches;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.FlakyTest;
-import org.chromium.base.test.util.UrlUtils;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.chrome.test.util.browser.contextmenu.ContextMenuUtils;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -571,82 +563,5 @@ public class TabsOpenedFromExternalAppTest {
         Assert.assertEquals("Selected tab is not on the right URL.", url3,
                 ChromeTabUtils.getUrlStringOnUiThread(
                         mActivityTestRule.getActivity().getActivityTab()));
-    }
-
-    /**
-     * Catches regressions for https://crbug.com/495877.
-     */
-    @Test
-    @FlakyTest(message = "https://crbug.com/571030")
-    @MediumTest
-    @CommandLineFlags.Add(BaseSwitches.ENABLE_LOW_END_DEVICE_MODE)
-    public void testBackgroundSvelteTabIsSelectedAfterClosingExternalTab() throws Exception {
-        // Start up Chrome and immediately close its tab -- it gets in the way.
-        mActivityTestRule.startMainActivityOnBlankPage();
-        TestThreadUtils.runOnUiThreadBlocking(
-                (Runnable) ()
-                        -> TabModelUtils.closeTabByIndex(
-                                mActivityTestRule.getActivity().getCurrentTabModel(), 0));
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(
-                    mActivityTestRule.getActivity().getTabModelSelector().getTotalTabCount(),
-                    Matchers.is(0));
-        });
-
-        // Defines one gigantic link spanning the whole page that creates a new
-        // window with chrome/test/data/android/google.html.
-        final String hrefLink = UrlUtils.encodeHtmlDataUri("<html>"
-                + "  <head>"
-                + "    <title>href link page</title>"
-                + "    <meta name='viewport'"
-                + "        content='width=device-width initial-scale=0.5, maximum-scale=0.5'>"
-                + "    <style>"
-                + "      body {margin: 0em;} div {width: 100%; height: 100%; background: #011684;}"
-                + "    </style>"
-                + "  </head>"
-                + "  <body>"
-                + "    <a id='target' href='"
-                + mTestServer.getURL("/chrome/test/data/android/google.html")
-                + "' target='_blank'><div></div></a>"
-                + "  </body>"
-                + "</html>");
-
-        // Open a tab via an external application.
-        final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(hrefLink));
-        intent.setClassName(InstrumentationRegistry.getTargetContext().getPackageName(),
-                ChromeTabbedActivity.class.getName());
-        intent.putExtra(Browser.EXTRA_APPLICATION_ID, "com.legit.totes");
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        InstrumentationRegistry.getTargetContext().startActivity(intent);
-
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(
-                    mActivityTestRule.getActivity().getTabModelSelector().getTotalTabCount(),
-                    Matchers.is(1));
-        });
-        ChromeApplicationTestUtils.assertWaitForPageScaleFactorMatch(
-                mActivityTestRule.getActivity(), 0.5f);
-
-        // Open context menu and select the "open in new tab" option.
-        ContextMenuUtils.selectContextMenuItem(InstrumentationRegistry.getInstrumentation(),
-                mActivityTestRule.getActivity(), mActivityTestRule.getActivity().getActivityTab(),
-                "target", R.id.contextmenu_open_in_new_tab);
-
-        // The second tab should open in the background.
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(
-                    mActivityTestRule.getActivity().getTabModelSelector().getTotalTabCount(),
-                    Matchers.is(2));
-        });
-
-        // Hitting "back" should close the tab, minimize Chrome, and select the background tab.
-        // Confirm that the number of tabs is correct and that closing the tab didn't cause a crash.
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> mActivityTestRule.getActivity().onBackPressed());
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(
-                    mActivityTestRule.getActivity().getTabModelSelector().getTotalTabCount(),
-                    Matchers.is(1));
-        });
     }
 }
