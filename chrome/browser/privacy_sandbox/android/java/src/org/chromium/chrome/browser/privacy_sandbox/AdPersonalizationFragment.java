@@ -27,6 +27,7 @@ import java.util.List;
  */
 public class AdPersonalizationFragment
         extends PreferenceFragmentCompat implements Preference.OnPreferenceClickListener {
+    private static final String AD_PERSONALIZATION_DESCRIPTION = "ad_personalization_description";
     private static final String TOPICS_CATEGORY_PREFERENCE = "topic_interests";
     private static final String EMPTY_TOPICS_PREFERENCE = "empty_topics";
     private static final String REMOVE_TOPICS_PREFERENCE = "removed_topics";
@@ -36,6 +37,7 @@ public class AdPersonalizationFragment
     private PreferenceCategory mTopicsCategory;
     private Preference mEmptyTopicsPreference;
     private Preference mRemoveTopicsPreference;
+    private Preference mDescriptionPreference;
 
     public void setSnackbarManager(SnackbarManager snackbarManager) {
         mSnackbarManager = snackbarManager;
@@ -47,8 +49,10 @@ public class AdPersonalizationFragment
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
         getActivity().setTitle(R.string.privacy_sandbox_ad_personalization_title);
-
         SettingsUtils.addPreferencesFromResource(this, R.xml.ad_personalization_preference);
+
+        mDescriptionPreference = findPreference(AD_PERSONALIZATION_DESCRIPTION);
+        assert mDescriptionPreference != null;
         mTopicsCategory = findPreference(TOPICS_CATEGORY_PREFERENCE);
         assert mTopicsCategory != null;
         mEmptyTopicsPreference = findPreference(EMPTY_TOPICS_PREFERENCE);
@@ -75,6 +79,13 @@ public class AdPersonalizationFragment
     private void updatePreferences() {
         List<Topic> currentTopics = PrivacySandboxBridge.getCurrentTopTopics();
         List<Topic> blockedTopics = PrivacySandboxBridge.getBlockedTopics();
+
+        int description = PrivacySandboxBridge.isPrivacySandboxEnabled()
+                ? (!currentTopics.isEmpty()
+                                ? R.string.privacy_sandbox_ad_personalization_description_trials_on
+                                : R.string.privacy_sandbox_ad_personalization_description_no_items)
+                : R.string.privacy_sandbox_ad_personalization_description_trials_off;
+        mDescriptionPreference.setSummary(description);
 
         mTopicsCategory.removeAll();
         for (Topic topic : currentTopics) {

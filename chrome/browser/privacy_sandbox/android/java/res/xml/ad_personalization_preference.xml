@@ -7,7 +7,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <org.chromium.components.browser_ui.settings.LongSummaryTextMessagePreference
-        android:summary="@string/privacy_sandbox_ad_personalization_description"
+        android:key="ad_personalization_description"
         android:selectable="false"
         app:allowDividerBelow="false" />
 

@@ -14,6 +14,8 @@ import org.chromium.components.browser_ui.settings.SettingsUtils;
  * Settings fragment for privacy sandbox settings.
  */
 public class SpamFraudFragment extends PreferenceFragmentCompat {
+    private static final String SPAM_FRAUD_DESCRIPTION = "spam_fraud_description";
+
     /**
      * Initializes all the objects related to the preferences page.
      */
@@ -21,5 +23,9 @@ public class SpamFraudFragment extends PreferenceFragmentCompat {
     public void onCreatePreferences(Bundle bundle, String s) {
         getActivity().setTitle(R.string.privacy_sandbox_spam_fraud_title);
         SettingsUtils.addPreferencesFromResource(this, R.xml.spam_fraud_preference);
+        int description = PrivacySandboxBridge.isPrivacySandboxEnabled()
+                ? R.string.privacy_sandbox_spam_fraud_description_trials_on
+                : R.string.privacy_sandbox_spam_fraud_description_trials_off;
+        findPreference(SPAM_FRAUD_DESCRIPTION).setSummary(description);
     }
 }
