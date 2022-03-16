@@ -1914,7 +1914,6 @@ void LocalFrameView::PerformPostLayoutTasks(bool visual_viewport_size_changed) {
     for (auto& element : deferred_to_be_locked_) {
       auto& context = element->EnsureDisplayLockContext();
       context.SetRequestedState(EContentVisibility::kAuto);
-      context.NotifyChildLayoutWasBlocked();
     }
     deferred_to_be_locked_.resize(0);
   }

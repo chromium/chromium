@@ -583,6 +583,15 @@ void NGInlineNode::PrepareLayout(NGInlineNodeData* previous_data) const {
     ShapeTextIncludingFirstLine(
         NGInlineNodeData::kShapingDone, data,
         previous_data ? &previous_data->text_content : nullptr, nullptr);
+  } else if (previous_data && previous_data->IsShapingDeferred()) {
+    const auto* context = GetLayoutBox()->GetDisplayLockContext();
+    if (context && context->IsLocked()) {
+      ShapeTextIncludingFirstLine(NGInlineNodeData::kShapingDeferred, data,
+                                  &previous_data->text_content, nullptr);
+    } else {
+      ShapeTextIncludingFirstLine(NGInlineNodeData::kShapingDone, data, nullptr,
+                                  nullptr);
+    }
   }
   AssociateItemsWithInlines(data);
   DCHECK_EQ(data, MutableData());

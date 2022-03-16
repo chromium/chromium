@@ -308,7 +308,9 @@ bool DisplayLockContext::ShouldStyleChildren() const {
          forced_info_.is_forced(ForcedPhase::kStyleAndLayoutTree) ||
          (document_->GetDisplayLockDocumentState()
               .ActivatableDisplayLocksForced() &&
-          IsActivatable(DisplayLockActivationReason::kAny));
+          IsActivatable(DisplayLockActivationReason::kAny)) ||
+         (element_->GetLayoutObject() &&
+          element_->GetLayoutObject()->IsShapingDeferred());
 }
 
 void DisplayLockContext::DidStyleSelf() {
@@ -343,7 +345,9 @@ bool DisplayLockContext::ShouldLayoutChildren() const {
   return !is_locked_ || forced_info_.is_forced(ForcedPhase::kLayout) ||
          (document_->GetDisplayLockDocumentState()
               .ActivatableDisplayLocksForced() &&
-          IsActivatable(DisplayLockActivationReason::kAny));
+          IsActivatable(DisplayLockActivationReason::kAny)) ||
+         (element_->GetLayoutObject() &&
+          element_->GetLayoutObject()->IsShapingDeferred());
 }
 
 void DisplayLockContext::DidLayoutChildren() {
@@ -358,7 +362,9 @@ void DisplayLockContext::DidLayoutChildren() {
 }
 
 bool DisplayLockContext::ShouldPrePaintChildren() const {
-  return !is_locked_ || forced_info_.is_forced(ForcedPhase::kPrePaint);
+  return !is_locked_ || forced_info_.is_forced(ForcedPhase::kPrePaint) ||
+         (element_->GetLayoutObject() &&
+          element_->GetLayoutObject()->IsShapingDeferred());
 }
 
 bool DisplayLockContext::ShouldPaintChildren() const {
@@ -605,6 +611,7 @@ bool DisplayLockContext::MarkForLayoutIfNeeded() {
       DisplayLockContext* context_;
     } scoped_force(this);
 
+    auto* layout_object = element_->GetLayoutObject();
     if (child_layout_was_blocked_ || HasStashedScrollOffset()) {
       // We've previously blocked a child traversal when doing self-layout for
       // the locked element, so we're marking it with child-needs-layout so that
@@ -622,13 +629,15 @@ bool DisplayLockContext::MarkForLayoutIfNeeded() {
       // can reach DisplayLockContext::DidLayoutChildren where we restore the
       // offset. If performance becomes an issue, then we should think of a
       // different time / opportunity to restore the offset.
-      element_->GetLayoutObject()->SetChildNeedsLayout();
+      layout_object->SetChildNeedsLayout();
       child_layout_was_blocked_ = false;
     } else {
       // Since the dirty layout propagation stops at the locked element, we need
       // to mark its ancestors as dirty here so that it will be traversed to on
       // the next layout.
-      element_->GetLayoutObject()->MarkContainerChainForLayout();
+      layout_object->MarkContainerChainForLayout();
+      if (layout_object->IsShapingDeferred())
+        layout_object->SetChildNeedsLayout();
     }
     return true;
   }
@@ -724,7 +733,7 @@ bool DisplayLockContext::IsElementDirtyForStyleRecalc() const {
 bool DisplayLockContext::IsElementDirtyForLayout() const {
   if (auto* layout_object = element_->GetLayoutObject()) {
     return layout_object->NeedsLayout() || child_layout_was_blocked_ ||
-           HasStashedScrollOffset();
+           HasStashedScrollOffset() || layout_object->IsShapingDeferred();
   }
   return false;
 }

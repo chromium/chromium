@@ -611,11 +611,7 @@ inline const NGLayoutResult* NGBlockLayoutAlgorithm::Layout(
   // If this layout is blocked by a display-lock, then we pretend this node has
   // no children and that there are no break tokens. Due to this, we skip layout
   // on these children.
-  //
-  // We lay out children of a deferred IFC because we'd like to skip only
-  // font shaping.
-  if (Node().ChildLayoutBlockedByDisplayLock() &&
-      !Node().GetLayoutBox()->IsShapingDeferred())
+  if (Node().ChildLayoutBlockedByDisplayLock())
     child_iterator = NGBlockChildIterator(NGBlockNode(nullptr), nullptr);
 
   NGBlockNode ruby_text_child(nullptr);

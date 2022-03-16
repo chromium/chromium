@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node_data.h"
+#include "third_party/blink/renderer/core/paint/first_meaningful_paint_detector.h"
+#include "third_party/blink/renderer/core/paint/paint_timing.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
@@ -164,6 +166,33 @@ TEST_F(DeferredShapingTest, ListMarkerCrash) {
   GetElementById("target")->setTextContent("foobar");
   UpdateAllLifecyclePhasesForTest();
   // Pass if no crash.
+}
+
+TEST_F(DeferredShapingTest, UpdateTextInDeferred) {
+  SetBodyInnerHTML(R"HTML(
+<div style="height:1800px"></div>
+<p id="target">IFC</p>
+</ul>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(IsDefer("target"));
+  EXPECT_TRUE(IsLocked("target"));
+
+  // Force to mark FMP. It disables deferred shaping.
+  PaintTiming::From(GetDocument()).MarkFirstPaint();
+  PaintTiming::From(GetDocument()).MarkFirstContentfulPaint();
+  auto& fmp_detector = FirstMeaningfulPaintDetector::From(GetDocument());
+  fmp_detector.MarkNextPaintAsMeaningfulForTesting();
+  fmp_detector.NotifyPaint();
+  fmp_detector.OnNetwork2Quiet();
+  EXPECT_TRUE(fmp_detector.SeenFirstMeaningfulPaint());
+
+  // Re-layout the target while it was deferred but deferred shaping is
+  // disabled. We had an inconsistent state issue that the target was
+  // locked but not deferred.
+  GetElementById("target")->setTextContent("foobar");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(IsDefer("target"));
+  EXPECT_TRUE(IsLocked("target"));
 }
 
 }  // namespace blink
