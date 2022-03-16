@@ -12,17 +12,17 @@
 namespace gfx {
 class Vector2dF;
 class Rect;
-}
+}  // namespace gfx
 
 namespace ui {
 
 class COMPONENT_EXPORT(EVDEV) CursorDelegateEvdev {
  public:
-  virtual ~CursorDelegateEvdev() {}
+  virtual ~CursorDelegateEvdev() = default;
 
   // Move the cursor from the Evdev thread.
   virtual void MoveCursor(const gfx::Vector2dF& delta) = 0;
-  // Move the cursor from the UI or Evdev (e.g. on a tablet).
+  // Move the cursor from the UI thread.
   virtual void MoveCursorTo(gfx::AcceleratedWidget widget,
                             const gfx::PointF& location) = 0;
   // Move the cursor from the UI or Evdev thread.
