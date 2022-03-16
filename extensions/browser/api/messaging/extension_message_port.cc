@@ -152,7 +152,19 @@ ExtensionMessagePort::ExtensionMessagePort(
     // primary main frames.
     CHECK(rfh->IsInPrimaryMainFrame());
     rfh->ForEachRenderFrameHost(base::BindRepeating(
-        &ExtensionMessagePort::RegisterFrame, base::Unretained(this)));
+        [](content::WebContents* tab_web_contents,
+           ExtensionMessagePort* message_port, content::RenderFrameHost* rfh) {
+          // RegisterFrame should only be called for frames associated with
+          // `tab` and not any inner WebContents.
+          if (content::WebContents::FromRenderFrameHost(rfh) !=
+              tab_web_contents) {
+            return content::RenderFrameHost::FrameIterationAction::
+                kSkipChildren;
+          }
+          message_port->RegisterFrame(rfh);
+          return content::RenderFrameHost::FrameIterationAction::kContinue;
+        },
+        base::Unretained(tab), base::Unretained(this)));
   } else {
     RegisterFrame(rfh);
   }
