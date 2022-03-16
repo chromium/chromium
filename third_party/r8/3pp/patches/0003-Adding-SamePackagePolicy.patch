@@ -1,7 +1,7 @@
-From 0872badbc2bb59e8ea3f17320dd44a762aaa9a6c Mon Sep 17 00:00:00 2001
+From a9b15fae20d7d6950111568c5338d72ad7ec509d Mon Sep 17 00:00:00 2001
 From: Joseph Chao <josephchao@google.com>
-Date: Fri, 11 Feb 2022 17:45:00 +0000
-Subject: [PATCH 4/4] Adding SamePackagePolicy
+Date: Wed, 16 Mar 2022 18:33:19 +0000
+Subject: [PATCH 3/3] Adding SamePackagePolicy
 
 ---
  .../PolicyScheduler.java                      |  2 ++
@@ -31,7 +31,7 @@ index 5e76e2dc6..b4821aa85 100644
          new SameFeatureSplit(appView),
 diff --git a/src/main/java/com/android/tools/r8/horizontalclassmerging/policies/SamePackagePolicy.java b/src/main/java/com/android/tools/r8/horizontalclassmerging/policies/SamePackagePolicy.java
 new file mode 100644
-index 000000000..deae6e78f
+index 000000000..b05380e17
 --- /dev/null
 +++ b/src/main/java/com/android/tools/r8/horizontalclassmerging/policies/SamePackagePolicy.java
 @@ -0,0 +1,29 @@
@@ -48,7 +48,7 @@ index 000000000..deae6e78f
 +
 +  @Override
 +  public String getMergeKey(DexProgramClass clazz) {
-+    String packageName = clazz.getType().getPackageName();
++    String packageName = clazz.getType().toDescriptorString().replaceAll("\\$.*", "");
 +    if (isClassesInPackageEligibleForMerging(packageName)) {
 +      return packageName;
 +    }
@@ -65,5 +65,5 @@ index 000000000..deae6e78f
 +  }
 +}
 -- 
-2.35.1.265.g69c8d7142f-goog
+2.35.1.894.gb6a874cedc-goog
 
