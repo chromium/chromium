@@ -13,7 +13,7 @@
 @interface FollowedWebChannelItem : TableViewURLItem
 
 // Web channel associated with this table view item.
-@property(nonatomic, strong) FollowedWebChannel* followedWebChannel;
+@property(nonatomic, weak) FollowedWebChannel* followedWebChannel;
 
 @end
 
@@ -21,7 +21,7 @@
 @interface FollowedWebChannelCell : TableViewURLCell
 
 // Web channel associated with this cell.
-@property(nonatomic, strong) FollowedWebChannel* followedWebChannel;
+@property(nonatomic, weak) FollowedWebChannel* followedWebChannel;
 
 @end
 
