@@ -50,3 +50,14 @@ if (is_android) {
     sources = [ "proto/price_tracking.proto" ]
   }
 }
+
+if (!is_android) {
+  source_set("commerce_heuristics_data") {
+    sources = [
+      "commerce_heuristics_data.cc",
+      "commerce_heuristics_data.h",
+    ]
+
+    deps = [ "//base" ]
+  }
+}
