@@ -26,6 +26,16 @@
 namespace media_router {
 
 namespace {
+
+// Connect timeout value when opening a Cast socket.
+const int kConnectTimeoutInSeconds = 1;
+
+// Amount of idle time to wait before pinging the Cast device.
+const int kPingIntervalInSeconds = 1;
+
+// Amount of idle time to wait before disconnecting.
+const int kLivenessTimeoutInSeconds = 2;
+
 using SinkSource = CastDeviceCountMetrics::SinkSource;
 using ChannelOpenedCallback = base::OnceCallback<void(bool)>;
 constexpr char kLoggerComponent[] = "AccessCodeCastSinkService";
@@ -71,11 +81,11 @@ AccessCodeCastSinkService::AccessCodeCastSinkService(
       0.5,  // 50%
 
       // Maximum delay (in ms) during exponential backoff.
-      10 * 1000,  // 10 seconds
+      1 * 1000,  // 1 second
 
       // Time to keep an entry from being discarded even when it has no
-      // significant state, -1 to never discard. (Not applicable.)
-      -1,
+      // significant state, -1 to never discard.
+      1 * 1000,  // 1 second,
 
       // False means that initial_delay_ms is the first delay once we start
       // exponential backoff, i.e., there is no delay after subsequent
@@ -259,10 +269,21 @@ void AccessCodeCastSinkService::OpenChannelIfNecessary(
       mojom::LogCategory::kDiscovery, kLoggerComponent,
       "Attempting to open a cast channel.", sink.id(), "", "");
   cast_media_sink_service_impl_->task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&CastMediaSinkServiceImpl::OpenChannel,
-                                base::Unretained(cast_media_sink_service_impl_),
-                                sink, std::move(backoff_entry),
-                                SinkSource::kAccessCode, std::move(callback)));
+      FROM_HERE,
+      base::BindOnce(&CastMediaSinkServiceImpl::OpenChannel,
+                     base::Unretained(cast_media_sink_service_impl_), sink,
+                     std::move(backoff_entry), SinkSource::kAccessCode,
+                     std::move(callback), CreateCastSocketOpenParams(sink)));
+}
+
+cast_channel::CastSocketOpenParams
+AccessCodeCastSinkService::CreateCastSocketOpenParams(
+    const MediaSinkInternal& sink) {
+  return cast_channel::CastSocketOpenParams(
+      sink.cast_data().ip_endpoint, base::Seconds(kConnectTimeoutInSeconds),
+      base::Seconds(kLivenessTimeoutInSeconds),
+      base::Seconds(kPingIntervalInSeconds),
+      cast_channel::CastDeviceCapability::NONE);
 }
 
 void AccessCodeCastSinkService::Shutdown() {

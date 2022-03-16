@@ -206,7 +206,7 @@ TEST_F(AccessCodeCastSinkServiceTest, AddExistingSinkToMediaRouter) {
   MediaSinkInternal cast_sink1 = CreateCastSink(1);
 
   EXPECT_CALL(*mock_cast_media_sink_service_impl(),
-              OpenChannel(cast_sink1, _, SinkSource::kAccessCode, _))
+              OpenChannel(cast_sink1, _, SinkSource::kAccessCode, _, _))
       .Times(0);
   EXPECT_CALL(mock_callback, Run(true));
   access_code_cast_sink_service_->OpenChannelIfNecessary(
@@ -230,7 +230,7 @@ TEST_F(AccessCodeCastSinkServiceTest, AddExistingSinkToMediaRouterWithRoute) {
       .WillOnce(Return(std::vector<MediaRoute>{media_route_cast}));
   EXPECT_CALL(*router_, TerminateRoute(media_route_cast.media_route_id()));
   EXPECT_CALL(*mock_cast_media_sink_service_impl(),
-              OpenChannel(cast_sink1, _, SinkSource::kAccessCode, _))
+              OpenChannel(cast_sink1, _, SinkSource::kAccessCode, _, _))
       .Times(0);
 
   MockBoolCallback mock_callback;
@@ -256,7 +256,7 @@ TEST_F(AccessCodeCastSinkServiceTest, AddNewSinkToMediaRouter) {
   MediaSinkInternal cast_sink1 = CreateCastSink(1);
 
   EXPECT_CALL(*mock_cast_media_sink_service_impl(),
-              OpenChannel(cast_sink1, _, SinkSource::kAccessCode, _));
+              OpenChannel(cast_sink1, _, SinkSource::kAccessCode, _, _));
   EXPECT_CALL(mock_callback, Run(true)).Times(0);
   access_code_cast_sink_service_->OpenChannelIfNecessary(
       cast_sink1, mock_callback.Get(), false);

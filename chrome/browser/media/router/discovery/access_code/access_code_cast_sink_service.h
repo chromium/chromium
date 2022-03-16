@@ -98,6 +98,9 @@ class AccessCodeCastSinkService : public KeyedService {
                               ChannelOpenedCallback callback,
                               bool has_sink);
 
+  cast_channel::CastSocketOpenParams CreateCastSocketOpenParams(
+      const MediaSinkInternal& sink);
+
   // KeyedService.
   void Shutdown() override;
 

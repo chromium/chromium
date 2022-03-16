@@ -327,7 +327,8 @@ void CastMediaSinkServiceImpl::OpenChannels(
 
   for (const auto& cast_sink : cast_sinks) {
     known_ip_endpoints_.insert(cast_sink.cast_data().ip_endpoint);
-    OpenChannel(cast_sink, nullptr, sink_source, base::DoNothing());
+    OpenChannel(cast_sink, nullptr, sink_source, base::DoNothing(),
+                CreateCastSocketOpenParams(cast_sink));
   }
 
   StartTimer();
@@ -379,7 +380,7 @@ void CastMediaSinkServiceImpl::OnError(const cast_channel::CastSocket& socket,
         FROM_HERE,
         base::BindOnce(&CastMediaSinkServiceImpl::OpenChannel, GetWeakPtr(),
                        sink, nullptr, SinkSource::kConnectionRetryOnError,
-                       base::DoNothing()));
+                       base::DoNothing(), CreateCastSocketOpenParams(sink)));
   }
 }
 
@@ -467,7 +468,8 @@ void CastMediaSinkServiceImpl::OpenChannel(
     const MediaSinkInternal& cast_sink,
     std::unique_ptr<net::BackoffEntry> backoff_entry,
     SinkSource sink_source,
-    ChannelOpenedCallback callback) {
+    ChannelOpenedCallback callback,
+    cast_channel::CastSocketOpenParams open_params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const net::IPEndPoint& ip_endpoint = cast_sink.cast_data().ip_endpoint;
@@ -510,8 +512,6 @@ void CastMediaSinkServiceImpl::OpenChannel(
     return;
   }
 
-  cast_channel::CastSocketOpenParams open_params =
-      CreateCastSocketOpenParams(cast_sink);
   cast_socket_service_->OpenSocket(
       base::BindRepeating([] {
         DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -521,7 +521,8 @@ void CastMediaSinkServiceImpl::OpenChannel(
       open_params,
       base::BindOnce(&CastMediaSinkServiceImpl::OnChannelOpened, GetWeakPtr(),
                      cast_sink, std::move(backoff_entry), sink_source,
-                     clock_->Now(), std::move(callback)));
+                     clock_->Now(), std::move(callback),
+                     std::move(open_params)));
 }
 
 void CastMediaSinkServiceImpl::OnChannelOpened(
@@ -530,6 +531,7 @@ void CastMediaSinkServiceImpl::OnChannelOpened(
     SinkSource sink_source,
     base::Time start_time,
     ChannelOpenedCallback callback,
+    cast_channel::CastSocketOpenParams open_params,
     cast_channel::CastSocket* socket) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(socket);
@@ -545,7 +547,7 @@ void CastMediaSinkServiceImpl::OnChannelOpened(
   } else {
     OnChannelErrorMayRetry(cast_sink, std::move(backoff_entry),
                            socket->error_state(), sink_source,
-                           std::move(callback));
+                           std::move(callback), std::move(open_params));
   }
 }
 
@@ -554,7 +556,8 @@ void CastMediaSinkServiceImpl::OnChannelErrorMayRetry(
     std::unique_ptr<net::BackoffEntry> backoff_entry,
     cast_channel::ChannelError error_state,
     SinkSource sink_source,
-    ChannelOpenedCallback callback) {
+    ChannelOpenedCallback callback,
+    cast_channel::CastSocketOpenParams open_params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const MediaSink::Id& sink_id = cast_sink.sink().id();
@@ -580,7 +583,7 @@ void CastMediaSinkServiceImpl::OnChannelErrorMayRetry(
       FROM_HERE,
       base::BindOnce(&CastMediaSinkServiceImpl::OpenChannel, GetWeakPtr(),
                      cast_sink, std::move(backoff_entry), sink_source,
-                     std::move(callback)),
+                     std::move(callback), std::move(open_params)),
       delay);
 }
 
@@ -704,7 +707,8 @@ void CastMediaSinkServiceImpl::TryConnectDialDiscoveredSink(
     return;
   }
 
-  OpenChannel(sink, nullptr, SinkSource::kDial, base::DoNothing());
+  OpenChannel(sink, nullptr, SinkSource::kDial, base::DoNothing(),
+              CreateCastSocketOpenParams(sink));
 }
 
 bool CastMediaSinkServiceImpl::IsProbablyNonCastDevice(

@@ -58,7 +58,8 @@ class MockCastMediaSinkServiceImpl : public CastMediaSinkServiceImpl {
               (const MediaSinkInternal& cast_sink,
                std::unique_ptr<net::BackoffEntry> backoff_entry,
                SinkSource sink_source,
-               base::OnceCallback<void(bool)> callback),
+               ChannelOpenedCallback callback,
+               cast_channel::CastSocketOpenParams open_params),
               (override));
 
   OnSinksDiscoveredCallback sinks_discovered_cb() {

@@ -297,13 +297,15 @@ TEST_P(CastMediaSinkServiceImplTest, TestOpenChannelNoRetry) {
   EXPECT_CALL(*mock_cast_socket_service_, OpenSocket_(ip_endpoint, _)).Times(1);
   media_sink_service_impl_.OpenChannel(
       cast_sink, nullptr, CastMediaSinkServiceImpl::SinkSource::kMdns,
-      base::DoNothing());
+      base::DoNothing(),
+      media_sink_service_impl_.CreateCastSocketOpenParams(cast_sink));
 
   // One pending sink, the same as |cast_sink|
   EXPECT_CALL(*mock_cast_socket_service_, OpenSocket_(ip_endpoint, _)).Times(0);
   media_sink_service_impl_.OpenChannel(
       cast_sink, nullptr, CastMediaSinkServiceImpl::SinkSource::kMdns,
-      base::DoNothing());
+      base::DoNothing(),
+      media_sink_service_impl_.CreateCastSocketOpenParams(cast_sink));
 }
 
 TEST_P(CastMediaSinkServiceImplTest, TestOpenChannelRetryOnce) {
@@ -325,7 +327,8 @@ TEST_P(CastMediaSinkServiceImplTest, TestOpenChannelRetryOnce) {
 
   media_sink_service_impl_.OpenChannel(
       cast_sink, std::move(backoff_entry),
-      CastMediaSinkServiceImpl::SinkSource::kMdns, mock_callback.Get());
+      CastMediaSinkServiceImpl::SinkSource::kMdns, mock_callback.Get(),
+      media_sink_service_impl_.CreateCastSocketOpenParams(cast_sink));
 
   socket.SetErrorState(cast_channel::ChannelError::NONE);
   ExpectOpenSocket(&socket);
@@ -345,7 +348,8 @@ TEST_P(CastMediaSinkServiceImplTest, TestOpenChannelFails) {
       .WillRepeatedly(base::test::RunOnceCallback<1>(&socket));
   media_sink_service_impl_.OpenChannel(
       cast_sink, nullptr, CastMediaSinkServiceImpl::SinkSource::kMdns,
-      base::DoNothing());
+      base::DoNothing(),
+      media_sink_service_impl_.CreateCastSocketOpenParams(cast_sink));
 
   mock_time_task_runner_->FastForwardUntilNoTasksRemain();
   EXPECT_EQ(4,
@@ -388,7 +392,9 @@ TEST_P(CastMediaSinkServiceImplTest, TestMultipleOpenChannels) {
   EXPECT_CALL(observer_, OnSinkAddedOrUpdated(cast_sink2));
   media_sink_service_impl_.OnChannelOpened(
       cast_sink2, nullptr, CastMediaSinkServiceImpl::SinkSource::kMdns,
-      start_time, mock_callback.Get(), &socket2);
+      start_time, mock_callback.Get(),
+      media_sink_service_impl_.CreateCastSocketOpenParams(cast_sink2),
+      &socket2);
   tester.ExpectUniqueSample(CastAnalytics::kHistogramCastMdnsChannelOpenSuccess,
                             delta.InMilliseconds(), 1);
 
@@ -412,11 +418,15 @@ TEST_P(CastMediaSinkServiceImplTest, TestMultipleOpenChannels) {
   EXPECT_CALL(observer_, OnSinkAddedOrUpdated(cast_sink1));
   media_sink_service_impl_.OnChannelOpened(
       cast_sink1, nullptr, CastMediaSinkServiceImpl::SinkSource::kMdns,
-      start_time, mock_callback.Get(), &socket1);
+      start_time, mock_callback.Get(),
+      media_sink_service_impl_.CreateCastSocketOpenParams(cast_sink1),
+      &socket1);
   EXPECT_CALL(observer_, OnSinkAddedOrUpdated(cast_sink3));
   media_sink_service_impl_.OnChannelOpened(
       cast_sink3, nullptr, CastMediaSinkServiceImpl::SinkSource::kMdns,
-      start_time, mock_callback.Get(), &socket3);
+      start_time, mock_callback.Get(),
+      media_sink_service_impl_.CreateCastSocketOpenParams(cast_sink3),
+      &socket3);
 
   EXPECT_TRUE(mock_timer_->IsRunning());
   EXPECT_CALL(mock_sink_discovered_cb_,
@@ -1422,7 +1432,8 @@ TEST_P(CastMediaSinkServiceImplTest, TestDisconnectAndRemoveSink) {
   ExpectOpenSocket(&socket);
   media_sink_service_impl_.OpenChannel(
       cast_sink, nullptr, CastMediaSinkServiceImpl::SinkSource::kAccessCode,
-      base::DoNothing());
+      base::DoNothing(),
+      media_sink_service_impl_.CreateCastSocketOpenParams(cast_sink));
 
   // Simulate channel is successfully opened.
   EXPECT_CALL(observer_, OnSinkAddedOrUpdated(cast_sink));

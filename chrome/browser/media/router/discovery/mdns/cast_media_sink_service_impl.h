@@ -107,10 +107,13 @@ class CastMediaSinkServiceImpl : public MediaSinkServiceBase,
   // |cast_sink|: Cast sink created from mDNS service description or DIAL sink.
   // |backoff_entry|: backoff entry passed to |OnChannelOpened| callback.
   // |callback|: Callback that keeps track of the channel opening status.
+  // |open_params|: Holds parameters necessary to open a Cast channel
+  // (CastSocket) to a Cast device.
   virtual void OpenChannel(const MediaSinkInternal& cast_sink,
                            std::unique_ptr<net::BackoffEntry> backoff_entry,
                            SinkSource sink_source,
-                           ChannelOpenedCallback callback);
+                           ChannelOpenedCallback callback,
+                           cast_channel::CastSocketOpenParams open_params);
 
   // Check to see if the given cast sink exists the sinks_.
   bool HasSink(const MediaSink::Id& sink_id);
@@ -257,11 +260,14 @@ class CastMediaSinkServiceImpl : public MediaSinkServiceBase,
   // ownership of |socket|.
   // |callback|: Callback passed from OpenChannel that keeps track of the
   // channel opening status.
+  // |open_params|: Holds parameters necessary to open a Cast channel
+  // (CastSocket) to a Cast device.
   void OnChannelOpened(const MediaSinkInternal& cast_sink,
                        std::unique_ptr<net::BackoffEntry> backoff_entry,
                        SinkSource sink_source,
                        base::Time start_time,
                        ChannelOpenedCallback callback,
+                       cast_channel::CastSocketOpenParams open_params,
                        cast_channel::CastSocket* socket);
 
   // Invoked by |OnChannelOpened| if opening cast channel failed. It will retry
@@ -275,11 +281,14 @@ class CastMediaSinkServiceImpl : public MediaSinkServiceBase,
   // |error_state|: error encountered when opending cast channel.
   // |callback|: Callback passed from OpenChannel that keeps track of the
   // channel opening status.
+  // |open_params|: Holds parameters necessary to open a Cast channel
+  // (CastSocket) to a Cast device.
   void OnChannelErrorMayRetry(MediaSinkInternal cast_sink,
                               std::unique_ptr<net::BackoffEntry> backoff_entry,
                               cast_channel::ChannelError error_state,
                               SinkSource sink_source,
-                              ChannelOpenedCallback callback);
+                              ChannelOpenedCallback callback,
+                              cast_channel::CastSocketOpenParams open_params);
 
   // Invoked when opening cast channel succeeds.
   // |cast_sink|: Cast sink created from mDNS service description, DIAL sink, or
