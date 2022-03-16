@@ -955,13 +955,14 @@ void PrePaintTreeWalk::WalkLayoutObjectChildren(
   }
 }
 
-void PrePaintTreeWalk::WalkChildren(const LayoutObject& object,
-                                    const NGPhysicalBoxFragment* fragment,
-                                    PrePaintTreeWalkContext& context,
-                                    bool is_inside_fragment_child) {
+void PrePaintTreeWalk::WalkChildren(
+    const LayoutObject& object,
+    const NGPhysicalBoxFragment* traversable_fragment,
+    PrePaintTreeWalkContext& context,
+    bool is_inside_fragment_child) {
   const LayoutBox* box = DynamicTo<LayoutBox>(&object);
   if (box) {
-    if (fragment) {
+    if (traversable_fragment) {
       if (!box->IsLayoutFlowThread() && (!box->CanTraversePhysicalFragments() ||
                                          !box->PhysicalFragmentCount())) {
         // Leave LayoutNGBoxFragment-accompanied child LayoutObject traversal,
@@ -975,7 +976,7 @@ void PrePaintTreeWalk::WalkChildren(const LayoutObject& object,
             !box->FlowThreadContainingBlock() ||
             (box->GetNGPaginationBreakability() == LayoutBox::kForbidBreaks));
 
-        fragment = nullptr;
+        traversable_fragment = nullptr;
         context.oof_container_candidate_fragment = nullptr;
       }
     } else if (box->PhysicalFragmentCount()) {
@@ -996,15 +997,15 @@ void PrePaintTreeWalk::WalkChildren(const LayoutObject& object,
       DCHECK(!first_fragment->BreakToken());
       if (first_fragment->IsFragmentationContextRoot() &&
           box->CanTraversePhysicalFragments())
-        fragment = first_fragment;
+        traversable_fragment = first_fragment;
     }
 
     // Inline-contained OOFs are placed in the containing block of the
     // containing inline in NG, not an anonymous block that's part of a
     // continuation, if any. We need to know where these might be stored, so
     // that we eventually search the right ancestor fragment for them.
-    if (fragment && !box->IsAnonymousBlock())
-      context.oof_container_candidate_fragment = fragment;
+    if (traversable_fragment && !box->IsAnonymousBlock())
+      context.oof_container_candidate_fragment = traversable_fragment;
   }
 
   // Keep track of fragments that act as containers for OOFs, so that we can
@@ -1012,27 +1013,39 @@ void PrePaintTreeWalk::WalkChildren(const LayoutObject& object,
   if (object.CanContainAbsolutePositionObjects())
     UpdateContextForOOFContainer(object, context);
 
+  bool has_missable_children = false;
+  const NGPhysicalBoxFragment* fragment = traversable_fragment;
+  if (!fragment) {
+    // Even when we're not in fragment traversal mode, we need to look for
+    // missable child fragments. We may enter fragment traversal mode further
+    // down in the subtree, and there may be a node that's a direct child of
+    // |object|, fragment-wise, while it's further down in the tree, CSS
+    // box-tree-wise.
+    if (box && box->PhysicalFragmentCount()) {
+      DCHECK_EQ(box->PhysicalFragmentCount(), 1u);
+      fragment = box->GetPhysicalFragment(0);
+    }
+  }
   if (fragment) {
-    bool has_missable_children = false;
     // If we are at a block fragment, collect any missable children.
     DCHECK(!is_inside_fragment_child || !object.IsBox());
     if (!is_inside_fragment_child)
       has_missable_children = CollectMissableChildren(context, *fragment);
-
-    // We'll always walk the LayoutObject tree when possible, but if this is a
-    // fragmentation context root (such as a multicol container), we need to
-    // enter each fragmentainer child and then walk all the LayoutObject
-    // children.
-    if (fragment->IsFragmentationContextRoot())
-      WalkFragmentationContextRootChildren(object, *fragment, context);
-    else
-      WalkLayoutObjectChildren(object, fragment, context);
-
-    if (has_missable_children)
-      WalkMissedChildren(object, *fragment, context);
-  } else {
-    WalkLayoutObjectChildren(object, fragment, context);
   }
+
+  // We'll always walk the LayoutObject tree when possible, but if this is a
+  // fragmentation context root (such as a multicol container), we need to enter
+  // each fragmentainer child and then walk all the LayoutObject children.
+  if (traversable_fragment &&
+      traversable_fragment->IsFragmentationContextRoot()) {
+    WalkFragmentationContextRootChildren(object, *traversable_fragment,
+                                         context);
+  } else {
+    WalkLayoutObjectChildren(object, traversable_fragment, context);
+  }
+
+  if (has_missable_children)
+    WalkMissedChildren(object, *fragment, context);
 }
 
 void PrePaintTreeWalk::Walk(const LayoutObject& object,
@@ -1042,10 +1055,24 @@ void PrePaintTreeWalk::Walk(const LayoutObject& object,
   bool is_inside_fragment_child = false;
   if (pre_paint_info) {
     physical_fragment = &pre_paint_info->box_fragment;
-    if (physical_fragment && (physical_fragment->IsOutOfFlowPositioned() ||
-                              physical_fragment->IsFloating()))
-      pending_missables_.erase(physical_fragment);
     is_inside_fragment_child = pre_paint_info->is_inside_fragment_child;
+  }
+
+  // If we're visiting a missable fragment, remove it from the list.
+  if (physical_fragment) {
+    // If we're doing fragment traversal, both OOFs and floats are missable.
+    if (physical_fragment->IsOutOfFlowPositioned() ||
+        physical_fragment->IsFloating())
+      pending_missables_.erase(physical_fragment);
+  } else {
+    // If we're not doing fragment traversal, only OOFs are missable.
+    if (object.IsOutOfFlowPositioned()) {
+      const auto& box = To<LayoutBox>(object);
+      if (box.PhysicalFragmentCount()) {
+        DCHECK_EQ(box.PhysicalFragmentCount(), 1u);
+        pending_missables_.erase(box.GetPhysicalFragment(0));
+      }
+    }
   }
 
   bool needs_tree_builder_context_update =
