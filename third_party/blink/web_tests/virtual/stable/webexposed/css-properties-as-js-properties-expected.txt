@@ -37,6 +37,7 @@ backgroundRepeat
 backgroundRepeatX
 backgroundRepeatY
 backgroundSize
+basePalette
 baselineShift
 blockSize
 border
@@ -171,6 +172,7 @@ fontFamily
 fontFeatureSettings
 fontKerning
 fontOpticalSizing
+fontPalette
 fontSize
 fontStretch
 fontStyle
@@ -287,6 +289,7 @@ overflowClipMargin
 overflowWrap
 overflowX
 overflowY
+overrideColors
 overscrollBehavior
 overscrollBehaviorBlock
 overscrollBehaviorInline

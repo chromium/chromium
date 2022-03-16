@@ -456,6 +456,13 @@ interface CSSFontFaceRule : CSSRule
     attribute @@toStringTag
     getter style
     method constructor
+interface CSSFontPaletteValuesRule : CSSRule
+    attribute @@toStringTag
+    getter basePalette
+    getter fontFamily
+    getter name
+    getter overrideColors
+    method constructor
 interface CSSGroupingRule : CSSRule
     attribute @@toStringTag
     getter cssRules
