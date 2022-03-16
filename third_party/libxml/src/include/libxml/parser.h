@@ -996,13 +996,16 @@ XMLPUBFUN xmlParserCtxtPtr XMLCALL
 /*
  * Reading/setting optional parsing features.
  */
+XML_DEPRECATED
 XMLPUBFUN int XMLCALL
 		xmlGetFeaturesList	(int *len,
 					 const char **result);
+XML_DEPRECATED
 XMLPUBFUN int XMLCALL
 		xmlGetFeature		(xmlParserCtxtPtr ctxt,
 					 const char *name,
 					 void *result);
+XML_DEPRECATED
 XMLPUBFUN int XMLCALL
 		xmlSetFeature		(xmlParserCtxtPtr ctxt,
 					 const char *name,

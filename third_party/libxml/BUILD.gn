@@ -170,7 +170,6 @@ static_library("libxml") {
 
     #"src/debugXML.c",
     "src/dict.c",
-    "src/elfgcchack.h",
     "src/enc.h",
     "src/encoding.c",
     "src/entities.c",

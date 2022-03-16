@@ -185,6 +185,7 @@ xmlFuzzReadString(size_t *size) {
         return(out);
     }
 
+    *size = 0;
     return(NULL);
 }
 

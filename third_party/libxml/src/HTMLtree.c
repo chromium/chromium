@@ -12,13 +12,8 @@
 #ifdef LIBXML_HTML_ENABLED
 
 #include <string.h> /* for memset() only ! */
-
-#ifdef HAVE_CTYPE_H
 #include <ctype.h>
-#endif
-#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
-#endif
 
 #include <libxml/xmlmemory.h>
 #include <libxml/HTMLparser.h>
@@ -1195,6 +1190,4 @@ htmlSaveFileEnc(const char *filename, xmlDocPtr cur, const char *encoding) {
 
 #endif /* LIBXML_OUTPUT_ENABLED */
 
-#define bottom_HTMLtree
-#include "elfgcchack.h"
 #endif /* LIBXML_HTML_ENABLED */

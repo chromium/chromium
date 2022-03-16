@@ -25,21 +25,12 @@
 #include <limits.h>
 #include <string.h>
 #include <stddef.h>
+#include <math.h>
+#include <float.h>
+#include <ctype.h>
 
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
-#endif
-#ifdef HAVE_MATH_H
-#include <math.h>
-#endif
-#ifdef HAVE_FLOAT_H
-#include <float.h>
-#endif
-#ifdef HAVE_CTYPE_H
-#include <ctype.h>
-#endif
-#ifdef HAVE_SIGNAL_H
-#include <signal.h>
 #endif
 
 #include <libxml/xmlmemory.h>
@@ -14732,5 +14723,3 @@ xmlXPathRegisterAllFunctions(xmlXPathContextPtr ctxt)
 }
 
 #endif /* LIBXML_XPATH_ENABLED */
-#define bottom_xpath
-#include "elfgcchack.h"

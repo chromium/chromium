@@ -16,10 +16,9 @@
 
 #ifdef LIBXML_HTTP_ENABLED
 #include <string.h>
-
-#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
-#endif
+#include <errno.h>
+
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
@@ -47,9 +46,6 @@
 #ifdef HAVE_FCNTL_H
 #include <fcntl.h>
 #endif
-#ifdef HAVE_ERRNO_H
-#include <errno.h>
-#endif
 #ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
 #endif
@@ -59,9 +55,6 @@
 #endif
 #else
 #include <poll.h>
-#endif
-#ifdef HAVE_STRINGS_H
-#include <strings.h>
 #endif
 #ifdef LIBXML_ZLIB_ENABLED
 #include <zlib.h>
@@ -73,7 +66,7 @@
 #define XML_SOCKLEN_T unsigned int
 #endif
 
-#if defined(_WIN32) && !defined(__CYGWIN__)
+#if defined(_WIN32)
 #include <wsockcompat.h>
 #endif
 
@@ -1895,5 +1888,3 @@ int main(int argc, char **argv) {
 }
 #endif /* STANDALONE */
 #endif /* LIBXML_HTTP_ENABLED */
-#define bottom_nanohttp
-#include "elfgcchack.h"

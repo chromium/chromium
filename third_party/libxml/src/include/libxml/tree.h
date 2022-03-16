@@ -763,6 +763,7 @@ XMLPUBFUN xmlDtdPtr XMLCALL
 XMLPUBFUN void XMLCALL
 		xmlFreeDtd		(xmlDtdPtr cur);
 #ifdef LIBXML_LEGACY_ENABLED
+XML_DEPRECATED
 XMLPUBFUN xmlNsPtr XMLCALL
 		xmlNewGlobalNs		(xmlDocPtr doc,
 					 const xmlChar *href,
