@@ -343,14 +343,20 @@ void FileSelectHelper::PerformContentAnalysisIfNeeded(
           profile_, render_frame_host_->GetLastCommittedURL(), &data,
           enterprise_connectors::AnalysisConnector::FILE_ATTACHED)) {
     data.paths.reserve(list.size());
-    for (const auto& file : list)
-      data.paths.push_back(file->get_native_file()->file_path);
+    for (const auto& file : list) {
+      if (file && file->is_native_file())
+        data.paths.push_back(file->get_native_file()->file_path);
+    }
 
-    enterprise_connectors::ContentAnalysisDelegate::CreateForWebContents(
-        web_contents_, std::move(data),
-        base::BindOnce(&FileSelectHelper::ContentAnalysisCompletionCallback,
-                       this, std::move(list)),
-        safe_browsing::DeepScanAccessPoint::UPLOAD);
+    if (data.paths.empty()) {
+      NotifyListenerAndEnd(std::move(list));
+    } else {
+      enterprise_connectors::ContentAnalysisDelegate::CreateForWebContents(
+          web_contents_, std::move(data),
+          base::BindOnce(&FileSelectHelper::ContentAnalysisCompletionCallback,
+                         this, std::move(list)),
+          safe_browsing::DeepScanAccessPoint::UPLOAD);
+    }
   } else {
     NotifyListenerAndEnd(std::move(list));
   }
@@ -367,16 +373,25 @@ void FileSelectHelper::ContentAnalysisCompletionCallback(
   if (AbortIfWebContentsDestroyed())
     return;
 
-  DCHECK_EQ(data.text.size(), result.text_results.size());
+  DCHECK_EQ(data.text.size(), 0u);
+  DCHECK_EQ(result.text_results.size(), 0u);
   DCHECK_EQ(data.paths.size(), result.paths_results.size());
-  DCHECK_EQ(list.size(), result.paths_results.size());
+  DCHECK_GE(list.size(), result.paths_results.size());
 
-  // Remove any files that did not pass the deep scan.
+  // Remove any files that did not pass the deep scan. Non-native files are
+  // skipped.
   size_t i = 0;
-  for (auto it = list.begin(); it != list.end(); ++i) {
-    if (!result.paths_results[i]) {
-      it = list.erase(it);
+  for (auto it = list.begin(); it != list.end();) {
+    if ((*it)->is_native_file()) {
+      if (!result.paths_results[i]) {
+        it = list.erase(it);
+      } else {
+        ++it;
+      }
+      ++i;
     } else {
+      // Skip non-native files by incrementing the iterator without changing `i`
+      // so that no result is skipped.
       ++it;
     }
   }

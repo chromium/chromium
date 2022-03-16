@@ -363,6 +363,74 @@ TEST_F(FileSelectHelperTest, ContentAnalysisCompletionCallback_OKBadFiles) {
             files[0]->get_native_file()->file_path);
 }
 
+TEST_F(FileSelectHelperTest,
+       ContentAnalysisCompletionCallback_SystemFilesSkipped) {
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  scoped_refptr<FileSelectHelper> file_select_helper =
+      new FileSelectHelper(&profile);
+
+  std::vector<blink::mojom::FileChooserFileInfoPtr> files;
+  auto listener = base::MakeRefCounted<TestFileSelectListener>(&files);
+  file_select_helper->SetFileSelectListenerForTesting(std::move(listener));
+  file_select_helper->DontAbortOnMissingWebContentsForTesting();
+
+  std::vector<blink::mojom::FileChooserFileInfoPtr> orig_files;
+  enterprise_connectors::ContentAnalysisDelegate::Data data;
+  enterprise_connectors::ContentAnalysisDelegate::Result result;
+
+  for (int i = 0; i < 5; ++i) {
+    orig_files.push_back(blink::mojom::FileChooserFileInfo::NewFileSystem(
+        blink::mojom::FileSystemFileInfo::New()));
+  }
+
+  file_select_helper->AddRef();  // Normally called by RunFileChooser().
+  file_select_helper->ContentAnalysisCompletionCallback(std::move(orig_files),
+                                                        data, result);
+
+  ASSERT_EQ(5u, files.size());
+  for (int i = 0; i < 5; ++i)
+    EXPECT_TRUE(files[i]->is_file_system());
+}
+
+TEST_F(FileSelectHelperTest,
+       ContentAnalysisCompletionCallback_SystemOKBadFiles) {
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  scoped_refptr<FileSelectHelper> file_select_helper =
+      new FileSelectHelper(&profile);
+
+  std::vector<blink::mojom::FileChooserFileInfoPtr> files;
+  auto listener = base::MakeRefCounted<TestFileSelectListener>(&files);
+  file_select_helper->SetFileSelectListenerForTesting(std::move(listener));
+  file_select_helper->DontAbortOnMissingWebContentsForTesting();
+
+  std::vector<blink::mojom::FileChooserFileInfoPtr> orig_files;
+  enterprise_connectors::ContentAnalysisDelegate::Data data;
+  enterprise_connectors::ContentAnalysisDelegate::Result result;
+
+  // Add 1 non-native file at the start and end of the files list, which should
+  // be skipped.
+  orig_files.push_back(blink::mojom::FileChooserFileInfo::NewFileSystem(
+      blink::mojom::FileSystemFileInfo::New()));
+  PrepareContentAnalysisCompletionCallbackArgs(
+      {data_dir_.AppendASCII("foo.doc"), data_dir_.AppendASCII("bar.doc")},
+      {false, true}, &orig_files, &data, &result);
+  orig_files.push_back(blink::mojom::FileChooserFileInfo::NewFileSystem(
+      blink::mojom::FileSystemFileInfo::New()));
+
+  file_select_helper->AddRef();  // Normally called by RunFileChooser().
+  file_select_helper->ContentAnalysisCompletionCallback(std::move(orig_files),
+                                                        data, result);
+
+  ASSERT_EQ(3u, files.size());
+  EXPECT_TRUE(files[0]->is_file_system());
+  EXPECT_TRUE(files[1]->is_native_file());
+  EXPECT_EQ(data_dir_.AppendASCII("bar.doc"),
+            files[1]->get_native_file()->file_path);
+  EXPECT_TRUE(files[2]->is_file_system());
+}
+
 TEST_F(FileSelectHelperTest, GetFileTypesFromAcceptType) {
   content::BrowserTaskEnvironment task_environment;
   TestingProfile profile;

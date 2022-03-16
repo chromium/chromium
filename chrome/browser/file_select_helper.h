@@ -88,6 +88,11 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
                            ContentAnalysisCompletionCallback_TwoBadFiles);
   FRIEND_TEST_ALL_PREFIXES(FileSelectHelperTest,
                            ContentAnalysisCompletionCallback_OKBadFiles);
+  FRIEND_TEST_ALL_PREFIXES(
+      FileSelectHelperTest,
+      ContentAnalysisCompletionCallback_SystemFilesSkipped);
+  FRIEND_TEST_ALL_PREFIXES(FileSelectHelperTest,
+                           ContentAnalysisCompletionCallback_SystemOKBadFiles);
   FRIEND_TEST_ALL_PREFIXES(FileSelectHelperTest, GetFileTypesFromAcceptType);
   FRIEND_TEST_ALL_PREFIXES(FileSelectHelperTest, MultipleFileExtensionsForMime);
 
