@@ -26,6 +26,7 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
+#include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -276,35 +277,46 @@ Database::Database(DatabaseOptions options)
   DCHECK(!options_.mmap_alt_status_discouraged ||
          options_.enable_views_discouraged)
       << "mmap_alt_status requires views";
+
+  // It's valid to construct a database on a sequence and then pass it to a
+  // different sequence before usage.
+  DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
 Database::~Database() {
   Close();
 }
 
+// static
 void Database::DisableMmapByDefault() {
   enable_mmap_by_default_ = false;
 }
 
 bool Database::Open(const base::FilePath& path) {
-  DCHECK(!path.empty());
-
   std::string path_string = AsUTF8ForSQL(path);
+  TRACE_EVENT1("sql", "Database::Open", "path", path_string);
+
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!path.empty());
   DCHECK_NE(path_string, kSqliteOpenInMemoryPath)
       << "Path conflicts with SQLite magic identifier";
 
-  TRACE_EVENT1("sql", "Database::Open", "path", path_string);
   return OpenInternal(path_string, OpenMode::kRetryOnPoision);
 }
 
 bool Database::OpenInMemory() {
   TRACE_EVENT0("sql", "Database::OpenInMemory");
+
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   in_memory_ = true;
   return OpenInternal(kSqliteOpenInMemoryPath, OpenMode::kInMemory);
 }
 
 bool Database::OpenTemporary(base::PassKey<Recovery>) {
   TRACE_EVENT0("sql", "Database::OpenTemporary");
+
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return OpenInternal(std::string(), OpenMode::kTemporary);
 }
 
@@ -381,6 +393,7 @@ void Database::Close() {
 void Database::Preload() {
   TRACE_EVENT0("sql", "Database::Preload");
 
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!db_) {
     DCHECK(poisoned_) << "Cannot preload null db";
     return;
@@ -1311,6 +1324,7 @@ bool Database::Execute(const char* sql) {
 bool Database::ExecuteWithTimeout(const char* sql, base::TimeDelta timeout) {
   TRACE_EVENT0("sql", "Database::ExecuteWithTimeout");
 
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!db_) {
     DCHECK(poisoned_) << "Illegal use of Database without a db";
     return false;
@@ -1618,6 +1632,7 @@ const char* Database::GetErrorMessage() const {
 
 bool Database::OpenInternal(const std::string& db_file_path,
                             Database::OpenMode mode) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT1("sql", "Database::OpenInternal", "path", db_file_path);
 
   DCHECK(mode != OpenMode::kTemporary || db_file_path.empty())
@@ -1983,6 +1998,7 @@ std::string Database::GetDiagnosticInfo(int sqlite_error_code,
 }
 
 bool Database::FullIntegrityCheck(std::vector<std::string>* messages) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   messages->clear();
 
   // The PRAGMA below has the side effect of setting SQLITE_RecoveryMode, which
@@ -2068,6 +2084,7 @@ bool Database::UseWALMode() const {
 }
 
 bool Database::CheckpointDatabase() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   absl::optional<base::ScopedBlockingCall> scoped_blocking_call;
   InitScopedBlockingCall(FROM_HERE, &scoped_blocking_call);
 

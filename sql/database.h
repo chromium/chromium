@@ -187,8 +187,8 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
 
 // Handle to an open SQLite database.
 //
-// Instances of this class are thread-unsafe and DCHECK that they are accessed
-// on the same sequence.
+// Instances of this class are not thread-safe. After construction, a Database
+// instance should only be accessed from one sequence.
 //
 // When a Database instance goes out of scope, any uncommitted transactions are
 // rolled back.
@@ -855,6 +855,9 @@ class COMPONENT_EXPORT(SQL) Database {
   //
   // This method must only be called while the database is successfully opened.
   sqlite3_file* GetSqliteVfsFile();
+
+  // Will eventually be checked on all methods. See https://crbug.com/1306694
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // The actual sqlite database. Will be null before Init has been called or if
   // Init resulted in an error.
