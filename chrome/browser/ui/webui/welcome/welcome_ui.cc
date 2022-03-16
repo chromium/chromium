@@ -138,7 +138,7 @@ WelcomeUI::WelcomeUI(content::WebUI* web_ui, const GURL& url)
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   html_source->AddResourcePath("images/background_svgs/logo.svg",
-                               IDR_PRODUCT_LOGO_128PX_SVG);
+                               IDR_PRODUCT_LOGO_24PX_1X);
 #endif
 
 #if BUILDFLAG(IS_WIN)
