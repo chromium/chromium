@@ -4,6 +4,7 @@
 
 package org.chromium.android_webview.test;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.webkit.WebChromeClient;
 
@@ -143,7 +144,9 @@ public class AwFileChooserTest {
     @Test
     @SmallTest
     public void testAcceptTypes() throws Throwable {
-        final String expectedAcceptTypesString = ".txt,.png,.pdf";
+        final String[] expectedIntentExtraTypes = {"application/pdf", "text/plain", "image/png"};
+        final String expectedIntentType = expectedIntentExtraTypes[0];
+        final String expectedAcceptTypesString = ".pdf,.txt,.png";
         final String singleFileUploadPageHtml = CommonResources.makeHtmlPageFrom(
                 /*headers=*/"",
                 /*body=*/"<input type='file' accept='" + expectedAcceptTypesString + "' id='"
@@ -157,6 +160,13 @@ public class AwFileChooserTest {
         clickSelectFileButtonAndWaitForCallback("1");
         final FileChooserParamsImpl params = mShowFileChooserHelper.getFileParams();
         Assert.assertEquals(expectedAcceptTypesString, params.getAcceptTypesString());
+
+        // Testing FileChooserParamsImpl.createIntent API
+        // Verifies that the file choice type and the extra types are set properly
+        Intent i = params.createIntent();
+        Assert.assertEquals(
+                i.getStringArrayExtra(Intent.EXTRA_MIME_TYPES), expectedIntentExtraTypes);
+        Assert.assertEquals(i.getType(), expectedIntentType);
     }
 
     @Test
