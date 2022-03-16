@@ -214,9 +214,8 @@ static_assert(kDefaultDataPipeAllocationSize >= net::kMaxBytesToSniff,
 // static
 uint32_t GetDataPipeDefaultAllocationSize(DataPipeAllocationSize option) {
 #if BUILDFLAG(IS_CHROMEOS)
-  // TODO(crbug.com/1260751): It is unclear if the increased data pipe size
-  // is responsible for an increased CrOS crash rate, so the size is being
-  // reverted to the default while we investigate.
+  // TODO(crbug.com/1306998): ChromeOS experiences a much higher OOM crash
+  // rate if the larger data pipe size is used.
   return kDefaultDataPipeAllocationSize;
 #else
   // For low-memory devices, always use the (smaller) default buffer size.
