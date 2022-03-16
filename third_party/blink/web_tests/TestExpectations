@@ -3440,6 +3440,7 @@ crbug.com/626703 [ Mac10.13 ] external/wpt/css/css-backgrounds/background-clip/c
 crbug.com/626703 [ Mac10.14 ] external/wpt/css/css-backgrounds/background-clip/clip-text-flex.html [ Failure ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/css/css-backgrounds/background-clip/clip-text-flex.html [ Failure ]
 crbug.com/626703 [ Mac11 ] external/wpt/css/css-backgrounds/background-clip/clip-text-flex.html [ Failure ]
+crbug.com/626703 [ Mac11-arm64 ] external/wpt/css/css-backgrounds/background-clip/clip-text-flex.html [ Failure ]
 crbug.com/626703 [ Win ] external/wpt/css/css-backgrounds/background-clip/clip-text-flex.html [ Failure ]
 crbug.com/626703 virtual/threaded/external/wpt/css/css-backgrounds/background-clip/clip-text-flex.html [ Failure ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-simulcast.https.html [ Timeout ]
