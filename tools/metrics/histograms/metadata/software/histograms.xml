@@ -81,7 +81,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SoftwareReporter.Cleaner.TimeToCompleteDownload" units="ms"
-    expires_after="M100">
+    expires_after="2023-03-16">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -165,7 +165,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SoftwareReporter.LastUploadResult" enum="BooleanSuccess"
-    expires_after="M100">
+    expires_after="2023-03-16">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>The result of the most recent SRT log upload.</summary>
