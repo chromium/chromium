@@ -114,44 +114,44 @@ const CGFloat kBadgeCornerRadius = 5.0;
           ? @"password_key"
           : @"legacy_password_key";
   switch (self.badgeType) {
-    case BadgeType::kBadgeTypePasswordSave:
-    case BadgeType::kBadgeTypePasswordUpdate:
+    case kBadgeTypePasswordSave:
+    case kBadgeTypePasswordUpdate:
       badgeImage = [[UIImage imageNamed:imageName]
           imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
       break;
-    case BadgeType::kBadgeTypeSaveAddressProfile:
+    case kBadgeTypeSaveAddressProfile:
       badgeImage = [[UIImage imageNamed:@"ic_place"]
           imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
       break;
-    case BadgeType::kBadgeTypeSaveCard:
+    case kBadgeTypeSaveCard:
       badgeImage = [[UIImage imageNamed:@"infobar_save_card_icon"]
           imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
       break;
-    case BadgeType::kBadgeTypeTranslate:
+    case kBadgeTypeTranslate:
       badgeImage = [[UIImage imageNamed:@"infobar_translate_icon"]
           imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
       break;
-    case BadgeType::kBadgeTypeAddToReadingList:
+    case kBadgeTypeAddToReadingList:
       badgeImage = [[UIImage imageNamed:@"infobar_reading_list"]
           imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
       break;
-    case BadgeType::kBadgeTypePermissionsCamera:
+    case kBadgeTypePermissionsCamera:
       badgeImage = [[UIImage imageNamed:@"infobar_permissions_camera"]
           imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
       break;
-    case BadgeType::kBadgeTypePermissionsMicrophone:
+    case kBadgeTypePermissionsMicrophone:
       badgeImage = [[UIImage systemImageNamed:@"mic.fill"]
           imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
       break;
-    case BadgeType::kBadgeTypeIncognito:
+    case kBadgeTypeIncognito:
       NOTREACHED()
           << "A popup menu item should not be of type kBadgeTypeIncognito";
       break;
-    case BadgeType::kBadgeTypeOverflow:
+    case kBadgeTypeOverflow:
       NOTREACHED()
           << "A popup menu item should not be of type kBadgeTypeOverflow";
       break;
-    case BadgeType::kBadgeTypeNone:
+    case kBadgeTypeNone:
       NOTREACHED() << "A badge should not have kBadgeTypeNone";
   }
   [cell setBadgeImage:badgeImage];

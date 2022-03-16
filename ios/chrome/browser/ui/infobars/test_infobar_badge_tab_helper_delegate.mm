@@ -40,8 +40,8 @@
   std::map<InfobarType, BadgeState> badgeStatesForInfobarType =
       self.badgeTabHelper->GetInfobarBadgeStates();
   for (auto& infobarTypeBadgeStatePair : badgeStatesForInfobarType) {
-    BadgeTappableItem* item = [[BadgeTappableItem alloc]
-        initWithBadgeType:BadgeType::kBadgeTypePasswordSave];
+    BadgeTappableItem* item =
+        [[BadgeTappableItem alloc] initWithBadgeType:kBadgeTypePasswordSave];
     item.badgeState = infobarTypeBadgeStatePair.second;
     _badgeItems[infobarTypeBadgeStatePair.first] = item;
   }

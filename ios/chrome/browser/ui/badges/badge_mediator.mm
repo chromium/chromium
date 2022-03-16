@@ -93,8 +93,8 @@ const char kInfobarOverflowBadgeShownUserAction[] =
     DCHECK(browser);
     // Create the incognito badge if |browser| is off-the-record.
     if (browser->GetBrowserState()->IsOffTheRecord()) {
-      _offTheRecordBadge = [[BadgeStaticItem alloc]
-          initWithBadgeType:BadgeType::kBadgeTypeIncognito];
+      _offTheRecordBadge =
+          [[BadgeStaticItem alloc] initWithBadgeType:kBadgeTypeIncognito];
     }
     // Set up the OverlayPresenterObserver for the infobar banner presentation.
     _overlayPresenterObserver =
@@ -215,8 +215,8 @@ const char kInfobarOverflowBadgeShownUserAction[] =
       self.webState->GetStatesForAllPermissions();
   return permissionStates[@(web::PermissionMicrophone)].unsignedIntValue >
                  permissionStates[@(web::PermissionCamera)].unsignedIntValue
-             ? BadgeType::kBadgeTypePermissionsMicrophone
-             : BadgeType::kBadgeTypePermissionsCamera;
+             ? kBadgeTypePermissionsMicrophone
+             : kBadgeTypePermissionsCamera;
 }
 
 #pragma mark - Accessor helpers
@@ -230,8 +230,8 @@ const char kInfobarOverflowBadgeShownUserAction[] =
   BOOL shouldDisplayOverflowBadge = badges.count > 1;
   id<BadgeItem> displayedBadge = nil;
   if (shouldDisplayOverflowBadge) {
-    displayedBadge = [[BadgeTappableItem alloc]
-        initWithBadgeType:BadgeType::kBadgeTypeOverflow];
+    displayedBadge =
+        [[BadgeTappableItem alloc] initWithBadgeType:kBadgeTypeOverflow];
   } else {
     displayedBadge = [badges firstObject];
   }
@@ -252,36 +252,36 @@ const char kInfobarOverflowBadgeShownUserAction[] =
 
 - (void)addToReadingListBadgeButtonTapped:(id)sender {
   BadgeButton* badgeButton = base::mac::ObjCCastStrict<BadgeButton>(sender);
-  DCHECK_EQ(badgeButton.badgeType, BadgeType::kBadgeTypeAddToReadingList);
+  DCHECK_EQ(badgeButton.badgeType, kBadgeTypeAddToReadingList);
 
   [self handleTappedBadgeButton:badgeButton];
 }
 
 - (void)passwordsBadgeButtonTapped:(id)sender {
   BadgeButton* badgeButton = base::mac::ObjCCastStrict<BadgeButton>(sender);
-  DCHECK(badgeButton.badgeType == BadgeType::kBadgeTypePasswordSave ||
-         badgeButton.badgeType == BadgeType::kBadgeTypePasswordUpdate);
+  DCHECK(badgeButton.badgeType == kBadgeTypePasswordSave ||
+         badgeButton.badgeType == kBadgeTypePasswordUpdate);
 
   [self handleTappedBadgeButton:badgeButton];
 }
 
 - (void)saveAddressProfileBadgeButtonTapped:(id)sender {
   BadgeButton* badgeButton = base::mac::ObjCCastStrict<BadgeButton>(sender);
-  DCHECK_EQ(badgeButton.badgeType, BadgeType::kBadgeTypeSaveAddressProfile);
+  DCHECK_EQ(badgeButton.badgeType, kBadgeTypeSaveAddressProfile);
 
   [self handleTappedBadgeButton:badgeButton];
 }
 
 - (void)saveCardBadgeButtonTapped:(id)sender {
   BadgeButton* badgeButton = base::mac::ObjCCastStrict<BadgeButton>(sender);
-  DCHECK_EQ(badgeButton.badgeType, BadgeType::kBadgeTypeSaveCard);
+  DCHECK_EQ(badgeButton.badgeType, kBadgeTypeSaveCard);
 
   [self handleTappedBadgeButton:badgeButton];
 }
 
 - (void)translateBadgeButtonTapped:(id)sender {
   BadgeButton* badgeButton = base::mac::ObjCCastStrict<BadgeButton>(sender);
-  DCHECK_EQ(badgeButton.badgeType, BadgeType::kBadgeTypeTranslate);
+  DCHECK_EQ(badgeButton.badgeType, kBadgeTypeTranslate);
 
   [self handleTappedBadgeButton:badgeButton];
 }
@@ -322,7 +322,7 @@ const char kInfobarOverflowBadgeShownUserAction[] =
 #pragma mark - InfobarBadgeTabHelperDelegate
 
 - (BOOL)badgeSupportedForInfobarType:(InfobarType)infobarType {
-  return BadgeTypeForInfobarType(infobarType) != BadgeType::kBadgeTypeNone;
+  return BadgeTypeForInfobarType(infobarType) != kBadgeTypeNone;
 }
 
 - (void)updateBadgesShownForWebState:(web::WebState*)webState {
@@ -356,10 +356,10 @@ const char kInfobarOverflowBadgeShownUserAction[] =
   if (count > 1) {
     // If a badge's banner is being presented, then show that badge as the
     // displayed badge. Otherwise, show the overflow badge.
-    displayedBadge = presentingBadge
-                         ? presentingBadge
-                         : [[BadgeTappableItem alloc]
-                               initWithBadgeType:BadgeType::kBadgeTypeOverflow];
+    displayedBadge =
+        presentingBadge
+            ? presentingBadge
+            : [[BadgeTappableItem alloc] initWithBadgeType:kBadgeTypeOverflow];
   } else if (count == 1) {
     // Since there is only one non-fullscreen badge, it will be fixed as the
     // displayed badge, so mark it as read.
@@ -367,7 +367,7 @@ const char kInfobarOverflowBadgeShownUserAction[] =
     [self.dispatcher dismissBadgePopupMenu];
   }
 
-  if (displayedBadge.badgeType == BadgeType::kBadgeTypeOverflow) {
+  if (displayedBadge.badgeType == kBadgeTypeOverflow) {
     // Log that the overflow badge is being shown.
     base::RecordAction(
         base::UserMetricsAction(kInfobarOverflowBadgeShownUserAction));

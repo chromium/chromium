@@ -73,7 +73,7 @@ const CGFloat kSymbolImagePointSize = 18;
 
 - (BadgeButton*)passwordsSaveBadgeButton {
   BadgeButton* button = [self
-      createButtonForType:BadgeType::kBadgeTypePasswordSave
+      createButtonForType:kBadgeTypePasswordSave
                     image:[[UIImage imageNamed:[self passwordKeyAssetName]]
                               imageWithRenderingMode:
                                   UIImageRenderingModeAlwaysTemplate]];
@@ -89,7 +89,7 @@ const CGFloat kSymbolImagePointSize = 18;
 
 - (BadgeButton*)passwordsUpdateBadgeButton {
   BadgeButton* button = [self
-      createButtonForType:BadgeType::kBadgeTypePasswordUpdate
+      createButtonForType:kBadgeTypePasswordUpdate
                     image:[[UIImage imageNamed:[self passwordKeyAssetName]]
                               imageWithRenderingMode:
                                   UIImageRenderingModeAlwaysTemplate]];
@@ -105,7 +105,7 @@ const CGFloat kSymbolImagePointSize = 18;
 
 - (BadgeButton*)saveCardBadgeButton {
   BadgeButton* button =
-      [self createButtonForType:BadgeType::kBadgeTypeSaveCard
+      [self createButtonForType:kBadgeTypeSaveCard
                           image:[[UIImage imageNamed:@"infobar_save_card_icon"]
                                     imageWithRenderingMode:
                                         UIImageRenderingModeAlwaysTemplate]];
@@ -120,7 +120,7 @@ const CGFloat kSymbolImagePointSize = 18;
 
 - (BadgeButton*)translateBadgeButton {
   BadgeButton* button =
-      [self createButtonForType:BadgeType::kBadgeTypeTranslate
+      [self createButtonForType:kBadgeTypeTranslate
                           image:[[UIImage imageNamed:@"infobar_translate_icon"]
                                     imageWithRenderingMode:
                                         UIImageRenderingModeAlwaysTemplate]];
@@ -135,7 +135,7 @@ const CGFloat kSymbolImagePointSize = 18;
 
 - (BadgeButton*)incognitoBadgeButton {
   BadgeButton* button =
-      [self createButtonForType:BadgeType::kBadgeTypeIncognito
+      [self createButtonForType:kBadgeTypeIncognito
                           image:[[UIImage imageNamed:@"incognito_badge"]
                                     imageWithRenderingMode:
                                         UIImageRenderingModeAlwaysOriginal]];
@@ -152,7 +152,7 @@ const CGFloat kSymbolImagePointSize = 18;
 
 - (BadgeButton*)overflowBadgeButton {
   BadgeButton* button =
-      [self createButtonForType:BadgeType::kBadgeTypeOverflow
+      [self createButtonForType:kBadgeTypeOverflow
                           image:[[UIImage imageNamed:@"wrench_badge"]
                                     imageWithRenderingMode:
                                         UIImageRenderingModeAlwaysTemplate]];
@@ -198,7 +198,7 @@ const CGFloat kSymbolImagePointSize = 18;
 
 - (BadgeButton*)saveAddressProfileBadgeButton {
   BadgeButton* button =
-      [self createButtonForType:BadgeType::kBadgeTypeSaveAddressProfile
+      [self createButtonForType:kBadgeTypeSaveAddressProfile
                           image:[[UIImage imageNamed:@"ic_place"]
                                     imageWithRenderingMode:
                                         UIImageRenderingModeAlwaysTemplate]];
@@ -213,7 +213,7 @@ const CGFloat kSymbolImagePointSize = 18;
 
 - (BadgeButton*)readingListBadgeButton {
   BadgeButton* button =
-      [self createButtonForType:BadgeType::kBadgeTypeAddToReadingList
+      [self createButtonForType:kBadgeTypeAddToReadingList
                           image:[[UIImage imageNamed:@"infobar_reading_list"]
                                     imageWithRenderingMode:
                                         UIImageRenderingModeAlwaysTemplate]];
@@ -228,7 +228,7 @@ const CGFloat kSymbolImagePointSize = 18;
 
 - (BadgeButton*)permissionsCameraBadgeButton {
   BadgeButton* button = [self
-      createButtonForType:BadgeType::kBadgeTypePermissionsCamera
+      createButtonForType:kBadgeTypePermissionsCamera
                     image:[[UIImage imageNamed:@"infobar_permissions_camera"]
                               imageWithRenderingMode:
                                   UIImageRenderingModeAlwaysTemplate]];
@@ -244,7 +244,7 @@ const CGFloat kSymbolImagePointSize = 18;
 
 - (BadgeButton*)permissionsMicrophoneBadgeButton {
   BadgeButton* button =
-      [self createButtonForType:BadgeType::kBadgeTypePermissionsMicrophone
+      [self createButtonForType:kBadgeTypePermissionsMicrophone
                           image:[[UIImage systemImageNamed:@"mic.fill"]
                                     imageWithRenderingMode:
                                         UIImageRenderingModeAlwaysTemplate]];

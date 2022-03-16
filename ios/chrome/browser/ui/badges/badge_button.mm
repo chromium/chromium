@@ -84,38 +84,38 @@ const CGFloat kButtonCircularCornerRadiusDivisor = 2.0;
 
 - (NSString*)accessibilityIdentifierForAcceptedState:(BOOL)accepted {
   switch (self.badgeType) {
-    case BadgeType::kBadgeTypeNone:
+    case kBadgeTypeNone:
       NOTREACHED() << "A badge should not have kBadgeTypeNone";
       return nil;
-    case BadgeType::kBadgeTypePasswordSave:
+    case kBadgeTypePasswordSave:
       return accepted ? kBadgeButtonSavePasswordAcceptedAccessibilityIdentifier
                       : kBadgeButtonSavePasswordAccessibilityIdentifier;
-    case BadgeType::kBadgeTypePasswordUpdate:
+    case kBadgeTypePasswordUpdate:
       return accepted
                  ? kBadgeButtonUpdatePasswordAccpetedAccessibilityIdentifier
                  : kBadgeButtonUpdatePasswordAccessibilityIdentifier;
-    case BadgeType::kBadgeTypeIncognito:
+    case kBadgeTypeIncognito:
       return kBadgeButtonIncognitoAccessibilityIdentifier;
-    case BadgeType::kBadgeTypeOverflow:
+    case kBadgeTypeOverflow:
       return kBadgeButtonOverflowAccessibilityIdentifier;
-    case BadgeType::kBadgeTypeSaveCard:
+    case kBadgeTypeSaveCard:
       return accepted ? kBadgeButtonSaveCardAcceptedAccessibilityIdentifier
                       : kBadgeButtonSaveCardAccessibilityIdentifier;
-    case BadgeType::kBadgeTypeSaveAddressProfile:
+    case kBadgeTypeSaveAddressProfile:
       return accepted
                  ? kBadgeButtonSaveAddressProfileAcceptedAccessibilityIdentifier
                  : kBadgeButtonSaveAddressProfileAccessibilityIdentifier;
-    case BadgeType::kBadgeTypeTranslate:
+    case kBadgeTypeTranslate:
       return accepted ? kBadgeButtonTranslateAcceptedAccessibilityIdentifier
                       : kBadgeButtonTranslateAccessibilityIdentifier;
-    case BadgeType::kBadgeTypeAddToReadingList:
+    case kBadgeTypeAddToReadingList:
       return accepted ? kBadgeButtonReadingListAcceptedAccessibilityIdentifier
                       : kBadgeButtonReadingListAccessibilityIdentifier;
-    case BadgeType::kBadgeTypePermissionsCamera:
+    case kBadgeTypePermissionsCamera:
       return accepted
                  ? kBadgeButtonPermissionsCameraAccessibilityIdentifier
                  : kBadgeButtonPermissionsCameraAcceptedAccessibilityIdentifier;
-    case BadgeType::kBadgeTypePermissionsMicrophone:
+    case kBadgeTypePermissionsMicrophone:
       return accepted
                  ? kBadgeButtonPermissionsMicrophoneAccessibilityIdentifier
                  : kBadgeButtonPermissionsMicrophoneAcceptedAccessibilityIdentifier;
