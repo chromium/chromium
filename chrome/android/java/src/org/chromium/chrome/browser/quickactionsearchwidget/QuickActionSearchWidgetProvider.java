@@ -21,12 +21,9 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.browser.ui.quickactionsearchwidget.QuickActionSearchWidgetProviderDelegate;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager;
@@ -207,16 +204,6 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
      * This function is expected to be called exactly once after native libraries are initialized.
      */
     public static void initialize() {
-        PostTask.postTask(TaskTraits.BEST_EFFORT, () -> {
-            // Changing the widget enabled state, which is only required during the experimentation
-            // phase, can trigger disk access. This can be removed when the QuickActionSearchWidget
-            // launches.
-            setWidgetEnabled(
-                    ChromeFeatureList.isEnabled(ChromeFeatureList.QUICK_ACTION_SEARCH_WIDGET),
-                    ChromeFeatureList.isEnabled(
-                            ChromeFeatureList.QUICK_ACTION_SEARCH_WIDGET_DINO_VARIANT));
-        });
-
         QuickActionSearchWidgetProvider dinoWidget = new QuickActionSearchWidgetProviderDino();
         QuickActionSearchWidgetProvider smallWidget = new QuickActionSearchWidgetProviderSearch();
 
