@@ -173,9 +173,7 @@ class NET_EXPORT IsolationInfo {
   const absl::optional<url::Origin>& top_frame_origin() const {
     return top_frame_origin_;
   }
-  const absl::optional<url::Origin>& frame_origin() const {
-    return frame_origin_;
-  }
+  const absl::optional<url::Origin>& frame_origin() const;
 
   const NetworkIsolationKey& network_isolation_key() const {
     return network_isolation_key_;

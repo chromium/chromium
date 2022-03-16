@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #include "base/unguessable_token.h"
+#include "net/base/features.h"
 #include "net/base/isolation_info.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -49,6 +50,14 @@ bool IsConsistent(IsolationInfo::RequestType request_type,
     return request_type == IsolationInfo::RequestType::kOther &&
            !frame_origin && !nonce && site_for_cookies.IsNull() &&
            !party_context;
+  }
+
+  // if `kForceIsolationInfoFrameOriginToTopLevelFrame` is enabled the
+  // `top_frame_origin` should be equal to the `frame_origin`.
+  if (base::FeatureList::IsEnabled(
+          net::features::kForceIsolationInfoFrameOriginToTopLevelFrame) &&
+      top_frame_origin != frame_origin) {
+    return false;
   }
 
   // |frame_origin| may only be nullopt if |top_frame_origin| is as well.
@@ -165,7 +174,9 @@ IsolationInfo IsolationInfo::CreatePartial(
   url::Origin top_frame_origin =
       network_isolation_key.GetTopFrameSite()->site_as_origin_;
   url::Origin frame_origin;
-  if (network_isolation_key.GetFrameSite().has_value()) {
+  if (!base::FeatureList::IsEnabled(
+          net::features::kForceIsolationInfoFrameOriginToTopLevelFrame) &&
+      network_isolation_key.GetFrameSite().has_value()) {
     frame_origin = network_isolation_key.GetFrameSite()->site_as_origin_;
   } else if (request_type == RequestType::kMainFrame) {
     frame_origin = top_frame_origin;
@@ -215,6 +226,12 @@ IsolationInfo IsolationInfo::CreateForRedirect(
                        SiteForCookies::FromOrigin(new_origin),
                        nonce_.has_value() ? &nonce_.value() : nullptr,
                        party_context_);
+}
+
+const absl::optional<url::Origin>& IsolationInfo::frame_origin() const {
+  // TODO: @brgoldstein, add CHECK that
+  // `kForceIsolationInfoFrameOriginToTopLevelFrame` is not enabled.
+  return frame_origin_;
 }
 
 bool IsolationInfo::IsEqualForTesting(const IsolationInfo& other) const {
@@ -271,7 +288,11 @@ IsolationInfo::IsolationInfo(
     absl::optional<std::set<SchemefulSite>> party_context)
     : request_type_(request_type),
       top_frame_origin_(top_frame_origin),
-      frame_origin_(frame_origin),
+      frame_origin_(
+          base::FeatureList::IsEnabled(
+              net::features::kForceIsolationInfoFrameOriginToTopLevelFrame)
+              ? top_frame_origin
+              : frame_origin),
       network_isolation_key_(
           !top_frame_origin
               ? NetworkIsolationKey()

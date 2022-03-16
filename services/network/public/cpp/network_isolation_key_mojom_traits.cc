@@ -5,6 +5,7 @@
 #include "services/network/public/cpp/network_isolation_key_mojom_traits.h"
 
 #include "base/unguessable_token.h"
+#include "net/base/features.h"
 
 namespace mojo {
 
@@ -13,10 +14,15 @@ bool StructTraits<network::mojom::NetworkIsolationKeyDataView,
     Read(network::mojom::NetworkIsolationKeyDataView data,
          net::NetworkIsolationKey* out) {
   absl::optional<net::SchemefulSite> top_frame_site, frame_site;
-  if (!data.ReadTopFrameSite(&top_frame_site))
+  bool data_top_frame_site = data.ReadTopFrameSite(&top_frame_site);
+  if (!data_top_frame_site)
     return false;
-  if (!data.ReadFrameSite(&frame_site))
+  if (base::FeatureList::IsEnabled(
+          net::features::kForceIsolationInfoFrameOriginToTopLevelFrame)
+          ? !data_top_frame_site
+          : !data.ReadFrameSite(&frame_site)) {
     return false;
+  }
   // A key is either fully empty or fully populated.
   if (top_frame_site.has_value() != frame_site.has_value())
     return false;

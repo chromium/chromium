@@ -179,6 +179,12 @@ NET_EXPORT extern const base::Feature kSplitHostCacheByNetworkIsolationKey;
 NET_EXPORT extern const base::Feature
     kPartitionConnectionsByNetworkIsolationKey;
 
+// Forces the `frame_origin` value in IsolationInfo to the `top_level_origin`
+// value when an IsolationInfo instance is created. This is to enable
+// expirimenting with double keyed network partitions.
+NET_EXPORT extern const base::Feature
+    kForceIsolationInfoFrameOriginToTopLevelFrame;
+
 // Partitions HttpServerProperties based on the NetworkIsolationKey associated
 // with a request.
 NET_EXPORT extern const base::Feature

@@ -6,6 +6,7 @@
 
 #include "base/unguessable_token.h"
 #include "base/values.h"
+#include "net/base/features.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -34,7 +35,11 @@ NetworkIsolationKey::NetworkIsolationKey(SchemefulSite&& top_frame_site,
                                          SchemefulSite&& frame_site,
                                          const base::UnguessableToken* nonce)
     : top_frame_site_(std::move(top_frame_site)),
-      frame_site_(std::move(frame_site)),
+      frame_site_(
+          base::FeatureList::IsEnabled(
+              net::features::kForceIsolationInfoFrameOriginToTopLevelFrame)
+              ? top_frame_site_
+              : std::move(frame_site)),
       nonce_(nonce ? absl::make_optional(*nonce) : absl::nullopt) {
   DCHECK(!nonce || !nonce->is_empty());
 }
@@ -163,6 +168,12 @@ bool NetworkIsolationKey::FromValue(
   *network_isolation_key =
       NetworkIsolationKey(std::move(*top_frame_site), std::move(*frame_site));
   return true;
+}
+
+const absl::optional<SchemefulSite>& NetworkIsolationKey::GetFrameSite() const {
+  // TODO: @brgoldstein, add CHECK that
+  // `kForceIsolationInfoFrameOriginToTopLevelFrame` is not enabled.
+  return frame_site_;
 }
 
 bool NetworkIsolationKey::IsEmpty() const {

@@ -116,9 +116,7 @@ class NET_EXPORT NetworkIsolationKey {
   const absl::optional<SchemefulSite>& GetTopFrameSite() const {
     return top_frame_site_;
   }
-  const absl::optional<SchemefulSite>& GetFrameSite() const {
-    return frame_site_;
-  }
+  const absl::optional<SchemefulSite>& GetFrameSite() const;
 
   // Getter for the nonce.
   const absl::optional<base::UnguessableToken>& GetNonce() const {
