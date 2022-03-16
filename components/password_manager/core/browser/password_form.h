@@ -398,6 +398,11 @@ struct PasswordForm {
   // Attached note to the credential.
   PasswordNote note;
 
+  // Email address of the last sync account this password was associated with.
+  // This field is non empty only if the password is NOT currently associated
+  // with a syncing account AND it was associated with one in the past.
+  std::string previously_associated_sync_account_email;
+
   // Return true if we consider this form to be a signup form. It's based on
   // local heuristics and may be inaccurate.
   bool IsLikelySignupForm() const;

@@ -193,6 +193,9 @@ void PasswordFormToJSON(const PasswordForm& form, base::Value* target) {
   note_value.SetStringKey("note_value", form.note.value);
   note_value.SetKey("date_created", base::TimeToValue(form.note.date_created));
   target->SetKey("note", std::move(note_value));
+
+  target->SetStringKey("previously_associated_sync_account_email",
+                       form.previously_associated_sync_account_email);
 }
 
 }  // namespace
@@ -334,7 +337,9 @@ bool operator==(const PasswordForm& lhs, const PasswordForm& rhs) {
          lhs.is_new_password_reliable == rhs.is_new_password_reliable &&
          lhs.in_store == rhs.in_store &&
          lhs.moving_blocked_for_list == rhs.moving_blocked_for_list &&
-         lhs.password_issues == rhs.password_issues && lhs.note == rhs.note;
+         lhs.password_issues == rhs.password_issues && lhs.note == rhs.note &&
+         lhs.previously_associated_sync_account_email ==
+             rhs.previously_associated_sync_account_email;
 }
 
 bool operator!=(const PasswordForm& lhs, const PasswordForm& rhs) {

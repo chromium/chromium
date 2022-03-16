@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/sync/password_proto_utils.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/sync/protocol/list_passwords_result.pb.h"
 #include "components/sync/protocol/password_specifics.pb.h"
@@ -19,6 +20,16 @@ using testing::ElementsAre;
 using testing::Eq;
 
 constexpr time_t kIssuesCreationTime = 1337;
+constexpr char kTestOrigin[] = "https://www.origin.com/";
+constexpr char kTestAction[] = "https://www.action.com/";
+constexpr char kTestFormName[] = "login_form";
+const std::u16string kTestFormName16(u"login_form");
+constexpr char kTestUsernameElementName[] = "username_element";
+const std::u16string kTestUsernameElementName16(u"username_element");
+constexpr char kTestUsernameElementType[] = "text";
+constexpr char kTestPasswordElementName[] = "password_element";
+const std::u16string kTestPasswordElementName16(u"password_element");
+constexpr char kTestPasswordElementType[] = "password";
 
 sync_pb::PasswordSpecificsData_PasswordIssues CreateSpecificsDataIssues(
     const std::vector<InsecureType>& issue_types) {
@@ -112,17 +123,37 @@ TEST(PasswordProtoUtilsTest,
      ConvertPasswordWithLocalDataToFullPasswordFormAndBack) {
   sync_pb::PasswordWithLocalData password_data;
   *password_data.mutable_password_specifics_data() = CreateSpecificsData(
-      "http://www.origin.com/", "username_element", "username_value",
-      "password_element", "signon_realm", {InsecureType::kLeaked});
-
-  // TODO(crbug.com/1229654): Add and test password_data.local_chrome_data().
+      kTestOrigin, kTestUsernameElementName, "username_value",
+      kTestPasswordElementName, "signon_realm", {InsecureType::kLeaked});
+  (*password_data.mutable_local_data())
+      .set_previously_associated_sync_account_email("test@gmail.com");
+  std::string opaque_metadata =
+      "{\"form_data\":{\"action\":\"" + std::string(kTestAction) +
+      "\",\"fields\":[{\"form_control_type\":\"" + kTestUsernameElementType +
+      "\",\"name\":\"" + kTestUsernameElementName +
+      "\"},{\"form_control_type\":\"" + kTestPasswordElementType +
+      "\",\"name\":\"" + kTestPasswordElementName + "\"}],\"name\":\"" +
+      kTestFormName + "\",\"url\":\"" + kTestOrigin +
+      "\"},\"skip_zero_click\":false}";
+  (*password_data.mutable_local_data()).set_opaque_metadata(opaque_metadata);
 
   PasswordForm form = PasswordFromProtoWithLocalData(password_data);
-  EXPECT_THAT(form.url, Eq(GURL("http://www.origin.com/")));
-  EXPECT_THAT(form.username_element, Eq(u"username_element"));
+  EXPECT_THAT(form.url, Eq(GURL(kTestOrigin)));
+  EXPECT_THAT(form.username_element, Eq(kTestUsernameElementName16));
   EXPECT_THAT(form.username_value, Eq(u"username_value"));
-  EXPECT_THAT(form.password_element, Eq(u"password_element"));
+  EXPECT_THAT(form.password_element, Eq(kTestPasswordElementName16));
   EXPECT_THAT(form.signon_realm, Eq("signon_realm"));
+  EXPECT_FALSE(form.skip_zero_click);
+  EXPECT_EQ(form.form_data.url, GURL(kTestOrigin));
+  EXPECT_EQ(form.form_data.action, GURL(kTestAction));
+  EXPECT_EQ(form.form_data.name, kTestFormName16);
+  ASSERT_EQ(form.form_data.fields.size(), 2u);
+  EXPECT_EQ(form.form_data.fields[0].name, kTestUsernameElementName16);
+  EXPECT_EQ(form.form_data.fields[0].form_control_type,
+            kTestUsernameElementType);
+  EXPECT_EQ(form.form_data.fields[1].name, kTestPasswordElementName16);
+  EXPECT_EQ(form.form_data.fields[1].form_control_type,
+            kTestPasswordElementType);
 
   sync_pb::PasswordWithLocalData password_data_converted_back =
       PasswordWithLocalDataFromPassword(form);
