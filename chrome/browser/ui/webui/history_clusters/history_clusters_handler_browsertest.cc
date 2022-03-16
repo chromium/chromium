@@ -74,4 +74,21 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
             tab_strip_model->GetWebContentsAt(2)->GetVisibleURL());
 }
 
+IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
+                       OpenVisitUrlsInTabGroupHardCap) {
+  auto* tab_strip_model = browser()->tab_strip_model();
+  ASSERT_EQ(1, tab_strip_model->GetTabCount());
+
+  std::vector<mojom::URLVisitPtr> visits;
+  for (size_t i = 0; i < 50; ++i) {
+    auto visit = mojom::URLVisit::New();
+    visit->normalized_url = GURL("https://foo");
+    visits.push_back(std::move(visit));
+  }
+
+  // Verify that we open 32 at maximum. Including the NTP, that's 33 total.
+  handler_->OpenVisitUrlsInTabGroup(std::move(visits));
+  ASSERT_EQ(33, tab_strip_model->GetTabCount());
+}
+
 }  // namespace history_clusters
