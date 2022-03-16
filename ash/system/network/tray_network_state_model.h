@@ -74,6 +74,9 @@ class ASH_EXPORT TrayNetworkStateModel {
   }
   bool has_vpn() const { return has_vpn_; }
   VpnList* vpn_list() { return vpn_list_.get(); }
+  const chromeos::network_config::mojom::GlobalPolicy* global_policy() {
+    return global_policy_.get();
+  }
 
  private:
   void OnGetDeviceStateList(
@@ -88,7 +91,11 @@ class ASH_EXPORT TrayNetworkStateModel {
       std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
           networks);
 
+  void OnGetGlobalPolicy(
+      chromeos::network_config::mojom::GlobalPolicyPtr global_policy);
+
   void NotifyNetworkListChanged();
+  void NotifyGlobalPolicyChanged();
   void NotifyVpnProvidersChanged();
   void SendActiveNetworkStateChanged();
   void SendNetworkListChanged();
@@ -115,6 +122,7 @@ class ASH_EXPORT TrayNetworkStateModel {
       active_non_cellular_;
   chromeos::network_config::mojom::NetworkStatePropertiesPtr active_cellular_;
   chromeos::network_config::mojom::NetworkStatePropertiesPtr active_vpn_;
+  chromeos::network_config::mojom::GlobalPolicyPtr global_policy_;
   bool has_vpn_ = false;
   std::unique_ptr<VpnList> vpn_list_;
 };

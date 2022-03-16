@@ -22,6 +22,9 @@ class TrayNetworkStateObserver : public base::CheckedObserver {
 
   // The list of VPN providers changed.
   virtual void VpnProvidersChanged() {}
+
+  // The global policy object has changed.
+  virtual void GlobalPolicyChanged() {}
 };
 
 }  // namespace ash

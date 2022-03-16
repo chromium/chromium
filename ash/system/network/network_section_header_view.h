@@ -117,10 +117,9 @@ class MobileSectionHeaderView : public NetworkSectionHeaderView,
 
   // TrayNetworkStateObserver:
   void DeviceStateListChanged() override;
+  void GlobalPolicyChanged() override;
 
-  void PerformAddExtraButtons(
-      bool enabled,
-      chromeos::network_config::mojom::GlobalPolicyPtr global_policy);
+  void UpdateAddESimButtonVisibility();
 
   void AddCellularButtonPressed();
 
@@ -150,14 +149,15 @@ class MobileSectionHeaderView : public NetworkSectionHeaderView,
   base::WeakPtrFactory<MobileSectionHeaderView> weak_ptr_factory_{this};
 };
 
-class WifiSectionHeaderView : public NetworkSectionHeaderView {
+class WifiSectionHeaderView : public NetworkSectionHeaderView,
+                              public TrayNetworkStateObserver {
  public:
   WifiSectionHeaderView();
 
   WifiSectionHeaderView(const WifiSectionHeaderView&) = delete;
   WifiSectionHeaderView& operator=(const WifiSectionHeaderView&) = delete;
 
-  ~WifiSectionHeaderView() override = default;
+  ~WifiSectionHeaderView() override;
 
   // NetworkSectionHeaderView:
   void SetToggleState(bool toggle_enabled, bool is_on) override;
@@ -166,9 +166,14 @@ class WifiSectionHeaderView : public NetworkSectionHeaderView {
   const char* GetClassName() const override;
 
  private:
+  // TrayNetworkStateObserver:
+  void DeviceStateListChanged() override;
+  void GlobalPolicyChanged() override;
+
   // NetworkSectionHeaderView:
   void OnToggleToggled(bool is_on) override;
   void AddExtraButtons(bool enabled) override;
+  void UpdateJoinButtonVisibility();
 
   void JoinButtonPressed();
 

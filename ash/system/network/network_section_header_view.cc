@@ -32,6 +32,7 @@ using chromeos::network_config::IsInhibited;
 using chromeos::network_config::mojom::DeviceStateProperties;
 using chromeos::network_config::mojom::DeviceStateType;
 using chromeos::network_config::mojom::FilterType;
+using chromeos::network_config::mojom::GlobalPolicy;
 using chromeos::network_config::mojom::NetworkFilter;
 using chromeos::network_config::mojom::NetworkStateProperties;
 using chromeos::network_config::mojom::NetworkStatePropertiesPtr;
@@ -351,11 +352,20 @@ void MobileSectionHeaderView::AddExtraButtons(bool enabled) {
 
   // The button opens the eSIM setup flow, and should only be added if the
   // device is eSIM-capable.
-  if (IsESimSupported()) {
-    model()->cros_network_config()->GetGlobalPolicy(
-        base::BindOnce(&MobileSectionHeaderView::PerformAddExtraButtons,
-                       base::Unretained(this), enabled));
+  if (!IsESimSupported()) {
+    return;
   }
+
+  can_add_esim_button_be_enabled_ = enabled;
+  const gfx::VectorIcon& icon = base::i18n::IsRTL() ? kAddCellularNetworkRtlIcon
+                                                    : kAddCellularNetworkIcon;
+  add_esim_button_ = new IconButton(
+      base::BindRepeating(&MobileSectionHeaderView::AddCellularButtonPressed,
+                          base::Unretained(this)),
+      IconButton::Type::kSmall, &icon, GetAddESimTooltipMessageId());
+  add_esim_button_->SetEnabled(enabled && !IsCellularDeviceInhibited());
+  container()->AddView(TriView::Container::END, add_esim_button_);
+  UpdateAddESimButtonVisibility();
 }
 
 void MobileSectionHeaderView::DeviceStateListChanged() {
@@ -367,30 +377,26 @@ void MobileSectionHeaderView::DeviceStateListChanged() {
       l10n_util::GetStringUTF16(GetAddESimTooltipMessageId()));
 }
 
-void MobileSectionHeaderView::PerformAddExtraButtons(
-    bool enabled,
-    chromeos::network_config::mojom::GlobalPolicyPtr global_policy) {
+void MobileSectionHeaderView::GlobalPolicyChanged() {
+  UpdateAddESimButtonVisibility();
+}
+
+void MobileSectionHeaderView::UpdateAddESimButtonVisibility() {
+  if (!add_esim_button_) {
+    return;
+  }
+
+  const GlobalPolicy* global_policy = model()->global_policy();
+
   // Adding new cellular networks is disallowed when only policy cellular
   // networks are allowed by admin.
   if (ash::features::IsESimPolicyEnabled() &&
-      global_policy->allow_only_policy_cellular_networks) {
+      (!global_policy || global_policy->allow_only_policy_cellular_networks)) {
+    add_esim_button_->SetVisible(/*visible=*/false);
     return;
   }
-  can_add_esim_button_be_enabled_ = enabled;
-  const gfx::VectorIcon& icon = base::i18n::IsRTL() ? kAddCellularNetworkRtlIcon
-                                                    : kAddCellularNetworkIcon;
-  add_esim_button_ = new IconButton(
-      base::BindRepeating(&MobileSectionHeaderView::AddCellularButtonPressed,
-                          base::Unretained(this)),
-      IconButton::Type::kSmall, &icon, GetAddESimTooltipMessageId());
 
-  add_esim_button_->SetEnabled(enabled && !IsCellularDeviceInhibited());
-
-  // Because the toggle is added conditionally and the check is asynchronous, we
-  // need override the view index here in order for correct ordering of the
-  // toggle and the add cellular button.
-  container()->AddViewAt(TriView::Container::END, add_esim_button_,
-                         /*index=*/0);
+  add_esim_button_->SetVisible(/*visible=*/true);
 }
 
 void MobileSectionHeaderView::AddCellularButtonPressed() {
@@ -429,6 +435,19 @@ WifiSectionHeaderView::WifiSectionHeaderView()
   bool enabled =
       model()->GetDeviceState(NetworkType::kWiFi) == DeviceStateType::kEnabled;
   NetworkSectionHeaderView::Init(enabled);
+  model()->AddObserver(this);
+}
+
+WifiSectionHeaderView::~WifiSectionHeaderView() {
+  model()->RemoveObserver(this);
+}
+
+void WifiSectionHeaderView::DeviceStateListChanged() {
+  UpdateJoinButtonVisibility();
+}
+
+void WifiSectionHeaderView::GlobalPolicyChanged() {
+  UpdateJoinButtonVisibility();
 }
 
 void WifiSectionHeaderView::SetToggleState(bool toggle_enabled, bool is_on) {
@@ -453,6 +472,35 @@ void WifiSectionHeaderView::AddExtraButtons(bool enabled) {
   join_button->SetEnabled(enabled);
   container()->AddView(TriView::Container::END, join_button);
   join_button_ = join_button;
+  UpdateJoinButtonVisibility();
+}
+
+void WifiSectionHeaderView::UpdateJoinButtonVisibility() {
+  if (!join_button_) {
+    return;
+  }
+
+  const DeviceStateProperties* wifi_device =
+      model()->GetDevice(chromeos::network_config::mojom::NetworkType::kWiFi);
+  if (!wifi_device) {
+    join_button_->SetVisible(/*visible=*/false);
+    return;
+  }
+
+  const GlobalPolicy* global_policy = model()->global_policy();
+
+  // Adding new network config is disallowed when only policy wifi networks
+  // are allowed by admin or managed networks are available and corresponding
+  // settings is enabled.
+  if (!global_policy ||
+      global_policy->allow_only_policy_wifi_networks_to_connect ||
+      (global_policy->allow_only_policy_wifi_networks_to_connect_if_available &&
+       wifi_device->managed_network_available)) {
+    join_button_->SetVisible(/*visible=*/false);
+    return;
+  }
+
+  join_button_->SetVisible(/*visible=*/true);
 }
 
 void WifiSectionHeaderView::JoinButtonPressed() {
