@@ -2711,6 +2711,7 @@ if (!is_android) {
         "../browser/extensions/api/extension_action/test_extension_action_api_observer.h",
         "../browser/extensions/api/extension_action/test_icon_image_observer.cc",
         "../browser/extensions/api/extension_action/test_icon_image_observer.h",
+        "../browser/extensions/api/favicon/favicon_apitest.cc",
         "../browser/extensions/api/feedback_private/feedback_browsertest.cc",
         "../browser/extensions/api/file_system/file_system_apitest.cc",
         "../browser/extensions/api/font_settings/font_settings_apitest.cc",

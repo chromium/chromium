@@ -347,6 +347,12 @@
       "extension", "legacy_packaged_app", "hosted_app", "platform_app"
     ]
   },
+  "favicon": {
+    "channel": "canary",
+    "extension_types": [
+      "extension"
+    ]
+  },
   "fileBrowserHandler": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
