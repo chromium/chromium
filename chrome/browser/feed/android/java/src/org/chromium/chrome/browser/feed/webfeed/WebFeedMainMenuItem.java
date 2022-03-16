@@ -160,7 +160,7 @@ public class WebFeedMainMenuItem extends FrameLayout {
         mChipView = mFollowingChipView;
         showEnabledChipView(mFollowingChipView, mContext.getText(R.string.menu_following),
                 R.drawable.ic_check_googblue_24dp, (view) -> {
-                    WebFeedBridge.unfollow(webFeedId,
+                    WebFeedBridge.unfollow(webFeedId, /*isDurable=*/false,
                             (result)
                                     -> mWebFeedSnackbarController.showSnackbarForUnfollow(
                                             result.requestStatus, webFeedId, mUrl, mTitle));

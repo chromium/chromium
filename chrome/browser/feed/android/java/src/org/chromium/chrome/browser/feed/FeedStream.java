@@ -32,6 +32,8 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
+import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
+import org.chromium.chrome.browser.feed.webfeed.WebFeedSubscriptionRequestStatus;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -62,6 +64,7 @@ import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -205,6 +208,34 @@ public class FeedStream implements Stream {
             }
             FeedStreamJni.get().updateUserProfileOnLinkClick(
                     mNativeFeedStream, mMakeGURL.apply(url), entityArray);
+        }
+
+        @Override
+        public void updateWebFeedFollowState(WebFeedFollowUpdate update) {
+            byte[] webFeedId;
+            try {
+                webFeedId = update.webFeedName().getBytes("UTF8");
+            } catch (UnsupportedEncodingException e) {
+                Log.i(TAG, "Invalid webFeedName", e);
+                return;
+            }
+            if (update.isFollow()) {
+                WebFeedBridge.followFromId(webFeedId, update.isDurable(), results -> {
+                    WebFeedFollowUpdate.Callback callback = update.callback();
+                    if (callback != null) {
+                        callback.requestComplete(
+                                results.requestStatus == WebFeedSubscriptionRequestStatus.SUCCESS);
+                    }
+                });
+            } else {
+                WebFeedBridge.unfollow(webFeedId, update.isDurable(), results -> {
+                    WebFeedFollowUpdate.Callback callback = update.callback();
+                    if (callback != null) {
+                        callback.requestComplete(
+                                results.requestStatus == WebFeedSubscriptionRequestStatus.SUCCESS);
+                    }
+                });
+            }
         }
 
         private void openSuggestionUrl(String url, int disposition) {

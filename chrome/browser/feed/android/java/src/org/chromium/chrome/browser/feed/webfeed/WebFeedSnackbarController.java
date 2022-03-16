@@ -148,7 +148,7 @@ public class WebFeedSnackbarController {
                 super.onAction(actionData);
                 FeedServiceBridge.reportOtherUserAction(StreamKind.UNKNOWN,
                         FeedUserActionType.TAPPED_UNFOLLOW_TRY_AGAIN_ON_SNACKBAR);
-                WebFeedBridge.unfollow(followId, result -> {
+                WebFeedBridge.unfollow(followId, /*isDurable=*/false, result -> {
                     showSnackbarForUnfollow(result.requestStatus, followId, url, title);
                 });
             }
@@ -271,7 +271,7 @@ public class WebFeedSnackbarController {
                     showPostFollowHelp(mPinnedTab, result, mFollowId, mUrl, mTitle);
                 });
             } else {
-                WebFeedBridge.followFromId(mFollowId,
+                WebFeedBridge.followFromId(mFollowId, /*isDurable=*/false,
                         result -> showPostFollowHelp(mPinnedTab, result, mFollowId, mUrl, mTitle));
             }
         }

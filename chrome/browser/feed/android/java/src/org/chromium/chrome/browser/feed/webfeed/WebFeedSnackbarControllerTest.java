@@ -365,7 +365,7 @@ public final class WebFeedSnackbarControllerTest {
         verify(mWebFeedBridgeJniMock,
                 description(
                         "FollowFromId should be called on follow try again when ID is available."))
-                .followWebFeedById(eq(sFollowId), any());
+                .followWebFeedById(eq(sFollowId), /*isDurable=*/eq(false), any());
         verify(mFeedServideBridgeJniMock)
                 .reportOtherUserAction(
                         StreamKind.UNKNOWN, FeedUserActionType.TAPPED_FOLLOW_TRY_AGAIN_ON_SNACKBAR);
@@ -384,7 +384,7 @@ public final class WebFeedSnackbarControllerTest {
         // Click refollow button.
         snackbar.getController().onAction(null);
         verify(mWebFeedBridgeJniMock, description("Follow should be called on refollow."))
-                .followWebFeedById(eq(sFollowId), any());
+                .followWebFeedById(eq(sFollowId), /*isDurable=*/eq(false), any());
         verify(mFeedServideBridgeJniMock)
                 .reportOtherUserAction(StreamKind.UNKNOWN,
                         FeedUserActionType.TAPPED_REFOLLOW_AFTER_UNFOLLOW_ON_SNACKBAR);
@@ -404,7 +404,7 @@ public final class WebFeedSnackbarControllerTest {
         snackbar.getController().onAction(null);
         verify(mWebFeedBridgeJniMock,
                 description("Unfollow should be called on unfollow try again."))
-                .unfollowWebFeed(eq(sFollowId), any());
+                .unfollowWebFeed(eq(sFollowId), /*isDurable=*/eq(false), any());
         verify(mFeedServideBridgeJniMock)
                 .reportOtherUserAction(StreamKind.UNKNOWN,
                         FeedUserActionType.TAPPED_UNFOLLOW_TRY_AGAIN_ON_SNACKBAR);

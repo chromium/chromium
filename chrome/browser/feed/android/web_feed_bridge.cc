@@ -199,6 +199,7 @@ static void JNI_WebFeedBridge_FollowWebFeed(
 static void JNI_WebFeedBridge_FollowWebFeedById(
     JNIEnv* env,
     const base::android::JavaParamRef<jbyteArray>& webFeedId,
+    jboolean is_durable,
     const base::android::JavaParamRef<jobject>& j_callback) {
   WebFeedSubscriptions* subscriptions = GetSubscriptions();
   auto callback =
@@ -209,13 +210,14 @@ static void JNI_WebFeedBridge_FollowWebFeedById(
     return;
   }
   subscriptions->FollowWebFeed(ToNativeWebFeedId(env, webFeedId),
-                               /*is_durable_request=*/false,
+                               /*is_durable_request=*/is_durable,
                                std::move(callback));
 }
 
 static void JNI_WebFeedBridge_UnfollowWebFeed(
     JNIEnv* env,
     const base::android::JavaParamRef<jbyteArray>& webFeedId,
+    jboolean is_durable,
     const base::android::JavaParamRef<jobject>& j_callback) {
   WebFeedSubscriptions* subscriptions = GetSubscriptions();
   auto callback =
@@ -226,7 +228,7 @@ static void JNI_WebFeedBridge_UnfollowWebFeed(
     return;
   }
   subscriptions->UnfollowWebFeed(ToNativeWebFeedId(env, webFeedId),
-                                 /*is_durable_request=*/false,
+                                 /*is_durable_request=*/is_durable,
                                  std::move(callback));
 }
 

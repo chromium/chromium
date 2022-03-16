@@ -149,7 +149,9 @@ public class FollowManagementMediatorTest {
 
         mFollowManagementMediator.clickHandler(mModelList.get(0).model);
 
-        verify(mWebFeedBridgeJni).unfollowWebFeed(eq(ID1), mUnfollowCallbackCaptor.capture());
+        verify(mWebFeedBridgeJni)
+                .unfollowWebFeed(
+                        eq(ID1), /*isDurable=*/eq(false), mUnfollowCallbackCaptor.capture());
         mUnfollowCallbackCaptor.getValue().onResult(
                 new WebFeedBridge.UnfollowResults(WebFeedSubscriptionRequestStatus.FAILED_OFFLINE));
 
@@ -165,7 +167,9 @@ public class FollowManagementMediatorTest {
 
         mFollowManagementMediator.clickHandler(mModelList.get(0).model);
 
-        verify(mWebFeedBridgeJni).unfollowWebFeed(eq(ID1), mUnfollowCallbackCaptor.capture());
+        verify(mWebFeedBridgeJni)
+                .unfollowWebFeed(
+                        eq(ID1), /*isDurable=*/eq(false), mUnfollowCallbackCaptor.capture());
         mUnfollowCallbackCaptor.getValue().onResult(
                 new WebFeedBridge.UnfollowResults(WebFeedSubscriptionRequestStatus.SUCCESS));
 
@@ -193,7 +197,9 @@ public class FollowManagementMediatorTest {
 
         mFollowManagementMediator.clickHandler(mModelList.get(0).model);
 
-        verify(mWebFeedBridgeJni).followWebFeedById(eq(ID1), mFollowCallbackCaptor.capture());
+        verify(mWebFeedBridgeJni)
+                .followWebFeedById(
+                        eq(ID1), /*isDurable=*/eq(false), mFollowCallbackCaptor.capture());
         mFollowCallbackCaptor.getValue().onResult(new WebFeedBridge.FollowResults(
                 WebFeedSubscriptionRequestStatus.FAILED_UNKNOWN_ERROR, null));
 
@@ -210,7 +216,9 @@ public class FollowManagementMediatorTest {
 
         mFollowManagementMediator.clickHandler(mModelList.get(0).model);
 
-        verify(mWebFeedBridgeJni).followWebFeedById(eq(ID1), mFollowCallbackCaptor.capture());
+        verify(mWebFeedBridgeJni)
+                .followWebFeedById(
+                        eq(ID1), /*isDurable=*/eq(false), mFollowCallbackCaptor.capture());
         mFollowCallbackCaptor.getValue().onResult(
                 new WebFeedBridge.FollowResults(WebFeedSubscriptionRequestStatus.SUCCESS, null));
 

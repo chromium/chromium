@@ -155,7 +155,7 @@ class FollowManagementMediator {
             FeedServiceBridge.reportOtherUserAction(
                     StreamKind.UNKNOWN, FeedUserActionType.TAPPED_FOLLOW_ON_MANAGEMENT_SURFACE);
             // The lambda will set the item as subscribed if the follow operation succeeds.
-            WebFeedBridge.followFromId(id, results -> {
+            WebFeedBridge.followFromId(id, /*isDurable=*/false, results -> {
                 reportRequestStatus(results.requestStatus);
                 itemModel.set(FollowManagementItemProperties.SUBSCRIBED_KEY,
                         results.requestStatus == SUCCESS);
@@ -165,7 +165,7 @@ class FollowManagementMediator {
             FeedServiceBridge.reportOtherUserAction(
                     StreamKind.UNKNOWN, FeedUserActionType.TAPPED_UNFOLLOW_ON_MANAGEMENT_SURFACE);
             // The lambda will set the item as unsubscribed if the unfollow operation succeeds.
-            WebFeedBridge.unfollow(id, results -> {
+            WebFeedBridge.unfollow(id, /*isDurable=*/false, results -> {
                 reportRequestStatus(results.requestStatus);
                 itemModel.set(FollowManagementItemProperties.SUBSCRIBED_KEY,
                         results.requestStatus != SUCCESS);

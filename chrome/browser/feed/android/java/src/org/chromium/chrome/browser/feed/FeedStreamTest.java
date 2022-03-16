@@ -29,6 +29,7 @@ import android.util.ArrayMap;
 import android.util.TypedValue;
 import android.widget.FrameLayout;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.SmallTest;
@@ -57,6 +58,11 @@ import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
+import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
+import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge.FollowResults;
+import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge.UnfollowResults;
+import org.chromium.chrome.browser.feed.webfeed.WebFeedBridgeJni;
+import org.chromium.chrome.browser.feed.webfeed.WebFeedSubscriptionRequestStatus;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -66,6 +72,7 @@ import org.chromium.chrome.browser.xsurface.FeedActionsHandler;
 import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
 import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler;
+import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler.WebFeedFollowUpdate;
 import org.chromium.chrome.browser.xsurface.SurfaceScope;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -132,9 +139,17 @@ public class FeedStreamTest {
     private FeedLaunchReliabilityLogger mLaunchReliabilityLogger;
     @Mock
     private FeedActionDelegate mActionDelegate;
+    @Mock
+    WebFeedBridge.Natives mWebFeedBridgeJni;
 
     @Captor
     private ArgumentCaptor<Map<String, String>> mMapCaptor;
+    @Captor
+    private ArgumentCaptor<Callback<FollowResults>> mFollowResultsCallbackCaptor;
+    @Captor
+    private ArgumentCaptor<Callback<UnfollowResults>> mUnfollowResultsCallbackCaptor;
+    @Mock
+    private WebFeedFollowUpdate.Callback mWebFeedFollowUpdateCallback;
 
     @Rule
     public JniMocker mocker = new JniMocker();
@@ -159,6 +174,7 @@ public class FeedStreamTest {
         mocker.mock(FeedServiceBridge.getTestHooksForTesting(), mFeedServiceBridgeJniMock);
         mocker.mock(FeedReliabilityLoggingBridge.getTestHooksForTesting(),
                 mFeedReliabilityLoggingBridgeJniMock);
+        mocker.mock(WebFeedBridgeJni.TEST_HOOKS, mWebFeedBridgeJni);
         Profile.setLastUsedProfileForTesting(mProfileMock);
 
         when(mFeedServiceBridgeJniMock.getLoadMoreTriggerLookahead())
@@ -541,6 +557,186 @@ public class FeedStreamTest {
         handler.showBottomSheet(new AppCompatTextView(mActivity), null);
         mFeedStream.dismissBottomSheet();
         verify(mBottomSheetController).hideContent(any(), anyBoolean());
+    }
+
+    @Test
+    @SmallTest
+    public void testUpdateWebFeedFollowState_follow_success() throws Exception {
+        bindToView();
+        FeedStream.FeedSurfaceActionsHandler handler =
+                (FeedStream.FeedSurfaceActionsHandler) mContentManager.getContextValues(0).get(
+                        SurfaceActionsHandler.KEY);
+
+        handler.updateWebFeedFollowState(new WebFeedFollowUpdate() {
+            @Override
+            public String webFeedName() {
+                return "webFeed1";
+            }
+            @Override
+            @Nullable
+            public WebFeedFollowUpdate.Callback callback() {
+                return mWebFeedFollowUpdateCallback;
+            }
+        });
+
+        verify(mWebFeedBridgeJni)
+                .followWebFeedById(eq("webFeed1".getBytes("UTF8")), eq(false),
+                        mFollowResultsCallbackCaptor.capture());
+        mFollowResultsCallbackCaptor.getValue().onResult(
+                new FollowResults(WebFeedSubscriptionRequestStatus.SUCCESS, null));
+        verify(mWebFeedFollowUpdateCallback).requestComplete(eq(true));
+    }
+
+    @Test
+    @SmallTest
+    public void testUpdateWebFeedFollowState_follow_null_callback() throws Exception {
+        bindToView();
+        FeedStream.FeedSurfaceActionsHandler handler =
+                (FeedStream.FeedSurfaceActionsHandler) mContentManager.getContextValues(0).get(
+                        SurfaceActionsHandler.KEY);
+
+        handler.updateWebFeedFollowState(new WebFeedFollowUpdate() {
+            @Override
+            public String webFeedName() {
+                return "webFeed1";
+            }
+        });
+
+        verify(mWebFeedBridgeJni)
+                .followWebFeedById(any(), eq(false), mFollowResultsCallbackCaptor.capture());
+        // Just make sure no exception is thrown because there is no callback to call.
+        mFollowResultsCallbackCaptor.getValue().onResult(
+                new FollowResults(WebFeedSubscriptionRequestStatus.SUCCESS, null));
+    }
+
+    @Test
+    @SmallTest
+    public void testUpdateWebFeedFollowState_follow_durable_failure() throws Exception {
+        bindToView();
+        FeedStream.FeedSurfaceActionsHandler handler =
+                (FeedStream.FeedSurfaceActionsHandler) mContentManager.getContextValues(0).get(
+                        SurfaceActionsHandler.KEY);
+
+        handler.updateWebFeedFollowState(new WebFeedFollowUpdate() {
+            @Override
+            public String webFeedName() {
+                return "webFeed1";
+            }
+            @Override
+            public boolean isDurable() {
+                return true;
+            }
+            @Override
+            @Nullable
+            public WebFeedFollowUpdate.Callback callback() {
+                return mWebFeedFollowUpdateCallback;
+            }
+        });
+
+        verify(mWebFeedBridgeJni)
+                .followWebFeedById(eq("webFeed1".getBytes("UTF8")), eq(true),
+                        mFollowResultsCallbackCaptor.capture());
+        mFollowResultsCallbackCaptor.getValue().onResult(
+                new FollowResults(WebFeedSubscriptionRequestStatus.FAILED_OFFLINE, null));
+        verify(mWebFeedFollowUpdateCallback).requestComplete(eq(false));
+    }
+
+    @Test
+    @SmallTest
+    public void testUpdateWebFeedFollowState_unfollow_durable_success() throws Exception {
+        bindToView();
+        FeedStream.FeedSurfaceActionsHandler handler =
+                (FeedStream.FeedSurfaceActionsHandler) mContentManager.getContextValues(0).get(
+                        SurfaceActionsHandler.KEY);
+
+        handler.updateWebFeedFollowState(new WebFeedFollowUpdate() {
+            @Override
+            public String webFeedName() {
+                return "webFeed1";
+            }
+            @Override
+            @Nullable
+            public WebFeedFollowUpdate.Callback callback() {
+                return mWebFeedFollowUpdateCallback;
+            }
+            @Override
+            public boolean isFollow() {
+                return false;
+            }
+            @Override
+            public boolean isDurable() {
+                return true;
+            }
+        });
+
+        verify(mWebFeedBridgeJni)
+                .unfollowWebFeed(eq("webFeed1".getBytes("UTF8")), eq(true),
+                        mUnfollowResultsCallbackCaptor.capture());
+        mUnfollowResultsCallbackCaptor.getValue().onResult(
+                new UnfollowResults(WebFeedSubscriptionRequestStatus.SUCCESS));
+        // Just make sure no exception is thrown because there is no callback to call.
+        verify(mWebFeedFollowUpdateCallback).requestComplete(eq(true));
+    }
+
+    @Test
+    @SmallTest
+    public void testUpdateWebFeedFollowState_unfollow_null_callback() throws Exception {
+        bindToView();
+        FeedStream.FeedSurfaceActionsHandler handler =
+                (FeedStream.FeedSurfaceActionsHandler) mContentManager.getContextValues(0).get(
+                        SurfaceActionsHandler.KEY);
+
+        handler.updateWebFeedFollowState(new WebFeedFollowUpdate() {
+            @Override
+            public String webFeedName() {
+                return "webFeed1";
+            }
+            @Override
+            public boolean isFollow() {
+                return false;
+            }
+        });
+
+        verify(mWebFeedBridgeJni)
+                .unfollowWebFeed(any(), eq(false), mUnfollowResultsCallbackCaptor.capture());
+        mUnfollowResultsCallbackCaptor.getValue().onResult(
+                new UnfollowResults(WebFeedSubscriptionRequestStatus.SUCCESS));
+    }
+
+    @Test
+    @SmallTest
+    public void testUpdateWebFeedFollowState_unfollow_durable_failure() throws Exception {
+        bindToView();
+        FeedStream.FeedSurfaceActionsHandler handler =
+                (FeedStream.FeedSurfaceActionsHandler) mContentManager.getContextValues(0).get(
+                        SurfaceActionsHandler.KEY);
+
+        handler.updateWebFeedFollowState(new WebFeedFollowUpdate() {
+            @Override
+            public String webFeedName() {
+                return "webFeed1";
+            }
+            @Override
+            @Nullable
+            public WebFeedFollowUpdate.Callback callback() {
+                return mWebFeedFollowUpdateCallback;
+            }
+            @Override
+            public boolean isFollow() {
+                return false;
+            }
+            @Override
+            public boolean isDurable() {
+                return true;
+            }
+        });
+
+        verify(mWebFeedBridgeJni)
+                .unfollowWebFeed(eq("webFeed1".getBytes("UTF8")), eq(true),
+                        mUnfollowResultsCallbackCaptor.capture());
+        mUnfollowResultsCallbackCaptor.getValue().onResult(
+                new UnfollowResults(WebFeedSubscriptionRequestStatus.FAILED_OFFLINE));
+        verify(mWebFeedFollowUpdateCallback).requestComplete(eq(false));
     }
 
     @Test

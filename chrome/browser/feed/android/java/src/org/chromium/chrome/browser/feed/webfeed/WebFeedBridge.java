@@ -181,8 +181,9 @@ public class WebFeedBridge {
      * @param webFeedId The identifier of the Web Feed to be followed.
      * @param callback The callback to receive the follow results.
      */
-    public static void followFromId(byte[] webFeedId, Callback<FollowResults> callback) {
-        WebFeedBridgeJni.get().followWebFeedById(webFeedId, callback);
+    public static void followFromId(
+            byte[] webFeedId, boolean isDurable, Callback<FollowResults> callback) {
+        WebFeedBridgeJni.get().followWebFeedById(webFeedId, isDurable, callback);
     }
 
     /**
@@ -190,8 +191,9 @@ public class WebFeedBridge {
      * @param webFeedId The Web Feed identifier.
      * @param callback The callback to receive the unfollow result.
      */
-    public static void unfollow(byte[] webFeedId, Callback<UnfollowResults> callback) {
-        WebFeedBridgeJni.get().unfollowWebFeed(webFeedId, callback);
+    public static void unfollow(
+            byte[] webFeedId, boolean isDurable, Callback<UnfollowResults> callback) {
+        WebFeedBridgeJni.get().unfollowWebFeed(webFeedId, isDurable, callback);
     }
 
     /** This is deprecated, do not use. */
@@ -235,8 +237,10 @@ public class WebFeedBridge {
     @NativeMethods
     public interface Natives {
         void followWebFeed(WebFeedPageInformation pageInfo, Callback<FollowResults> callback);
-        void followWebFeedById(byte[] webFeedId, Callback<FollowResults> callback);
-        void unfollowWebFeed(byte[] webFeedId, Callback<UnfollowResults> callback);
+        void followWebFeedById(
+                byte[] webFeedId, boolean isDurable, Callback<FollowResults> callback);
+        void unfollowWebFeed(
+                byte[] webFeedId, boolean isDurable, Callback<UnfollowResults> callback);
         void findWebFeedInfoForPage(WebFeedPageInformation pageInfo,
                 @WebFeedPageInformationRequestReason int reason,
                 Callback<WebFeedMetadata> callback);
