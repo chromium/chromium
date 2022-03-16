@@ -850,6 +850,38 @@ chromium-metrics-reviews@google.com.
   <summary>Result of Data Leak Prevention evaluation for printing.</summary>
 </histogram>
 
+<histogram name="Enterprise.Dlp.PrintingWarned" enum="BooleanWarned"
+    expires_after="2022-12-01">
+  <owner>aidazolic@chromium.org</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Recorded when there is a &quot;warn&quot; level Data Leak Prevention
+    evaluation for printing.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Dlp.PrintingWarnProceeded" enum="Boolean"
+    expires_after="2022-12-01">
+  <owner>aidazolic@chromium.org</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Recorded when the user proceeded with (True) or canceled (False) the action
+    after a Data Leak Prevention warning for printing.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Dlp.PrintingWarnSilentProceeded" enum="Boolean"
+    expires_after="2022-12-01">
+  <owner>aidazolic@chromium.org</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Recorded when there is a &quot;warn&quot; level Data Leak Prevention
+    evaluation for a screen share, but it is caused by the content that the user
+    was already warned about and decided to proceed, so no new warning is shown
+    and printing is silently allowed.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.Dlp.PrivacyScreenEnforced" enum="BooleanForced"
     expires_after="2022-12-01">
   <owner>poromov@chromium.org</owner>

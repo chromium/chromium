@@ -81,10 +81,10 @@ const absl::optional<std::string> RestrictionToWarnProceededUMASuffix(
   switch (restriction) {
     case DlpRulesManager::Restriction::kScreenShare:
       return absl::make_optional(dlp::kScreenShareWarnProceededUMA);
-    case DlpRulesManager::Restriction::kScreenshot:
     case DlpRulesManager::Restriction::kPrinting:
-      // TODO(crbug.com/1304750, crbug.com/1304752): Add UMA stats for warning
-      // for printing and screenshots.
+      return absl::make_optional(dlp::kPrintingWarnProceededUMA);
+    case DlpRulesManager::Restriction::kScreenshot:
+      // TODO(crbug.com/1304750): Add UMA stats for warning for screenshots.
       return absl::nullopt;
     case DlpRulesManager::Restriction::kUnknownRestriction:
     case DlpRulesManager::Restriction::kClipboard:
@@ -123,6 +123,7 @@ void DlpContentManager::CheckPrintingRestriction(
       GetPrintingRestrictionInfo(web_contents);
   MaybeReportEvent(restriction_info, DlpRulesManager::Restriction::kPrinting);
   DlpBooleanHistogram(dlp::kPrintingBlockedUMA, IsBlocked(restriction_info));
+  DlpBooleanHistogram(dlp::kPrintingWarnedUMA, IsWarn(restriction_info));
   if (IsBlocked(restriction_info)) {
     ShowDlpPrintDisabledNotification();
     std::move(callback).Run(false);
@@ -136,6 +137,7 @@ void DlpContentManager::CheckPrintingRestriction(
       ReportWarningProceededEvent(restriction_info.url,
                                   DlpRulesManager::Restriction::kPrinting,
                                   reporting_manager_);
+      DlpBooleanHistogram(dlp::kPrintingWarnSilentProceededUMA, true);
       std::move(callback).Run(true);
       return;
     }

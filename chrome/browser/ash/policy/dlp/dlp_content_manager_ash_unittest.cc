@@ -494,6 +494,26 @@ class DlpContentManagerAshCheckRestrictionTest
     EXPECT_EQ(is_action_allowed_.value(), expected);
   }
 
+  // Checks that there is an expected number of blocked/not blocked and
+  // warned/not warned data points. Number of not blocked and not warned data
+  // points is the difference between |total_count| and |blocked_count| and
+  // |warned_count| respectfully.
+  void VerifyHistogramCounts(int blocked_count,
+                             int warned_count,
+                             int total_count,
+                             std::string blocked_suffix,
+                             std::string warned_suffix) {
+    histogram_tester_.ExpectBucketCount(
+        GetDlpHistogramPrefix() + blocked_suffix, true, blocked_count);
+    histogram_tester_.ExpectBucketCount(
+        GetDlpHistogramPrefix() + blocked_suffix, false,
+        total_count - blocked_count);
+    histogram_tester_.ExpectBucketCount(GetDlpHistogramPrefix() + warned_suffix,
+                                        true, warned_count);
+    histogram_tester_.ExpectBucketCount(GetDlpHistogramPrefix() + warned_suffix,
+                                        false, total_count - warned_count);
+  }
+
   absl::optional<bool> is_action_allowed_;
 };
 
@@ -514,10 +534,10 @@ TEST_F(DlpContentManagerAshCheckRestrictionTest, PrintingRestricted) {
       web_contents.get(),
       base::BindOnce(on_dlp_restriction_checked_callback, &is_action_allowed_));
   VerifyAndResetActionAllowed(true /*expected*/);
-  histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kPrintingBlockedUMA, true, 0);
-  histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kPrintingBlockedUMA, false, 1);
+  VerifyHistogramCounts(/*blocked_count=*/0, /*warned_count=*/0,
+                        /*total_count=*/1,
+                        /*blocked_suffix=*/dlp::kPrintingBlockedUMA,
+                        /*warned_suffix=*/dlp::kPrintingWarnedUMA);
 
   // Block restriction is enforced for web_contents: block.
   helper_.ChangeConfidentiality(web_contents.get(), kPrintingRestricted);
@@ -527,10 +547,10 @@ TEST_F(DlpContentManagerAshCheckRestrictionTest, PrintingRestricted) {
       web_contents.get(),
       base::BindOnce(on_dlp_restriction_checked_callback, &is_action_allowed_));
   VerifyAndResetActionAllowed(false /*expected*/);
-  histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kPrintingBlockedUMA, true, 1);
-  histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kPrintingBlockedUMA, false, 1);
+  VerifyHistogramCounts(/*blocked_count=*/1, /*warned_count=*/0,
+                        /*total_count=*/2,
+                        /*blocked_suffix=*/dlp::kPrintingBlockedUMA,
+                        /*warned_suffix=*/dlp::kPrintingWarnedUMA);
 
   EXPECT_EQ(events_.size(), 1u);
   EXPECT_THAT(events_[0],
@@ -546,13 +566,13 @@ TEST_F(DlpContentManagerAshCheckRestrictionTest, PrintingRestricted) {
       web_contents.get(),
       base::BindOnce(on_dlp_restriction_checked_callback, &is_action_allowed_));
   VerifyAndResetActionAllowed(true /*expected*/);
-  histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kPrintingBlockedUMA, true, 1);
-  histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kPrintingBlockedUMA, false, 2);
+  VerifyHistogramCounts(/*blocked_count=*/1, /*warned_count=*/0,
+                        /*total_count=*/3,
+                        /*blocked_suffix=*/dlp::kPrintingBlockedUMA,
+                        /*warned_suffix=*/dlp::kPrintingWarnedUMA);
 }
 
-TEST_F(DlpContentManagerAshCheckRestrictionTest, PrintingWarnedContinued) {
+TEST_F(DlpContentManagerAshCheckRestrictionTest, PrintingWarnedProceeded) {
   // Set the notifier to "Proceed" on the warning.
   MockDlpWarnNotifier* mock_dlp_warn_notifier =
       CreateAndSetDlpWarnNotifier(true /*should_proceed*/);
@@ -576,6 +596,10 @@ TEST_F(DlpContentManagerAshCheckRestrictionTest, PrintingWarnedContinued) {
   VerifyAndResetActionAllowed(true /*expected*/);
   EXPECT_FALSE(helper_.HasAnyContentCached());
   EXPECT_TRUE(events_.empty());
+  VerifyHistogramCounts(/*blocked_count=*/0, /*warned_count=*/0,
+                        /*total_count=*/1,
+                        /*blocked_suffix=*/dlp::kPrintingBlockedUMA,
+                        /*warned_suffix=*/dlp::kPrintingWarnedUMA);
 
   // Warn restriction is enforced: allow and remember that the user proceeded.
   helper_.ChangeConfidentiality(web_contents.get(), kPrintingWarned);
@@ -595,6 +619,12 @@ TEST_F(DlpContentManagerAshCheckRestrictionTest, PrintingWarnedContinued) {
   EXPECT_THAT(events_[1],
               IsDlpPolicyEvent(CreateDlpPolicyWarningProceededEvent(
                   kSrcPattern, DlpRulesManager::Restriction::kPrinting)));
+  VerifyHistogramCounts(/*blocked_count=*/0, /*warned_count=*/1,
+                        /*total_count=*/2,
+                        /*blocked_suffix=*/dlp::kPrintingBlockedUMA,
+                        /*warned_suffix=*/dlp::kPrintingWarnedUMA);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kPrintingWarnProceededUMA, true, 1);
 
   // Check again: allow based on cached user's response - no dialog is shown.
   GetManager()->CheckPrintingRestriction(
@@ -607,6 +637,14 @@ TEST_F(DlpContentManagerAshCheckRestrictionTest, PrintingWarnedContinued) {
   EXPECT_THAT(events_[2],
               IsDlpPolicyEvent(CreateDlpPolicyWarningProceededEvent(
                   kSrcPattern, DlpRulesManager::Restriction::kPrinting)));
+  VerifyHistogramCounts(/*blocked_count=*/0, /*warned_count=*/2,
+                        /*total_count=*/3,
+                        /*blocked_suffix=*/dlp::kPrintingBlockedUMA,
+                        /*warned_suffix=*/dlp::kPrintingWarnedUMA);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kPrintingWarnProceededUMA, true, 1);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kPrintingWarnSilentProceededUMA, true, 1);
 
   // Web contents are destroyed: allow, no dialog is shown.
   helper_.DestroyWebContents(web_contents.get());
@@ -617,6 +655,10 @@ TEST_F(DlpContentManagerAshCheckRestrictionTest, PrintingWarnedContinued) {
       base::BindOnce(on_dlp_restriction_checked_callback, &is_action_allowed_));
   VerifyAndResetActionAllowed(true /*expected*/);
   EXPECT_EQ(events_.size(), 3u);
+  VerifyHistogramCounts(/*blocked_count=*/0, /*warned_count=*/2,
+                        /*total_count=*/4,
+                        /*blocked_suffix=*/dlp::kPrintingBlockedUMA,
+                        /*warned_suffix=*/dlp::kPrintingWarnedUMA);
 }
 
 TEST_F(DlpContentManagerAshCheckRestrictionTest, PrintingWarnedCancelled) {
@@ -643,6 +685,10 @@ TEST_F(DlpContentManagerAshCheckRestrictionTest, PrintingWarnedCancelled) {
   VerifyAndResetActionAllowed(true /*expected*/);
   EXPECT_FALSE(helper_.HasAnyContentCached());
   EXPECT_TRUE(events_.empty());
+  VerifyHistogramCounts(/*blocked_count=*/0, /*warned_count=*/0,
+                        /*total_count=*/1,
+                        /*blocked_suffix=*/dlp::kPrintingBlockedUMA,
+                        /*warned_suffix=*/dlp::kPrintingWarnedUMA);
 
   // Warn restriction is enforced: reject since the user canceled.
   helper_.ChangeConfidentiality(web_contents.get(), kPrintingWarned);
@@ -658,6 +704,12 @@ TEST_F(DlpContentManagerAshCheckRestrictionTest, PrintingWarnedCancelled) {
               IsDlpPolicyEvent(CreateDlpPolicyEvent(
                   kSrcPattern, DlpRulesManager::Restriction::kPrinting,
                   DlpRulesManager::Level::kWarn)));
+  VerifyHistogramCounts(/*blocked_count=*/0, /*warned_count=*/1,
+                        /*total_count=*/2,
+                        /*blocked_suffix=*/dlp::kPrintingBlockedUMA,
+                        /*warned_suffix=*/dlp::kPrintingWarnedUMA);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kPrintingWarnProceededUMA, false, 1);
 
   // Check again: since the user previously cancelled, dialog is shown again.
   GetManager()->CheckPrintingRestriction(
@@ -670,6 +722,12 @@ TEST_F(DlpContentManagerAshCheckRestrictionTest, PrintingWarnedCancelled) {
               IsDlpPolicyEvent(CreateDlpPolicyEvent(
                   kSrcPattern, DlpRulesManager::Restriction::kPrinting,
                   DlpRulesManager::Level::kWarn)));
+  VerifyHistogramCounts(/*blocked_count=*/0, /*warned_count=*/2,
+                        /*total_count=*/3,
+                        /*blocked_suffix=*/dlp::kPrintingBlockedUMA,
+                        /*warned_suffix=*/dlp::kPrintingWarnedUMA);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kPrintingWarnProceededUMA, false, 2);
 
   // Web contents are destroyed: allow, no dialog is shown.
   helper_.DestroyWebContents(web_contents.get());
@@ -680,6 +738,10 @@ TEST_F(DlpContentManagerAshCheckRestrictionTest, PrintingWarnedCancelled) {
       base::BindOnce(on_dlp_restriction_checked_callback, &is_action_allowed_));
   VerifyAndResetActionAllowed(true /*expected*/);
   EXPECT_EQ(events_.size(), 2u);
+  VerifyHistogramCounts(/*blocked_count=*/0, /*warned_count=*/2,
+                        /*total_count=*/4,
+                        /*blocked_suffix=*/dlp::kPrintingBlockedUMA,
+                        /*warned_suffix=*/dlp::kPrintingWarnedUMA);
 }
 
 TEST_F(DlpContentManagerAshCheckRestrictionTest, CaptureModeInitRestricted) {
