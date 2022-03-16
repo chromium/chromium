@@ -2453,7 +2453,7 @@ Try tapping the mic to ask me anything.
       </message>
       <!-- Splash screen -->
       <message name="IDS_SHIMLESS_RMA_SPLASH_TITLE" translateable="false" desc="Message to display while waiting for RMA to initialize at boot.">
-        Chromebook repair
+        <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> repair
       </message>
       <message name="IDS_SHIMLESS_RMA_SPLASH_REMEMBERING" translateable="false" desc="Message that lets the user know that we are resuming repair.">
         Remembering where you left off...
@@ -2482,7 +2482,7 @@ Try tapping the mic to ask me anything.
       </message>
       <!-- Landing page -->
       <message name="IDS_SHIMLESS_RMA_LANDING_PAGE_TITLE" translateable="false" desc="Title for the landing page at the start of RMA.">
-        Chromebook repair
+        <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> repair
       </message>
       <message name="IDS_SHIMLESS_RMA_AUTHORIZED_TECH_ONLY_WARNING" translateable="false" desc="Warning that RMA is only for qualified technicians.">
         This repair process is intended for a trained repair technicians. Start only after replacing the malfunctioning components.
@@ -2552,7 +2552,7 @@ Try tapping the mic to ask me anything.
         Manually disable write-protect
       </message>
       <message name="IDS_SHIMLESS_RMA_MANUAL_WP_DISABLE_METHOD_DESCRIPTION" translateable="false" desc="Title for the page offering the options for disabling write protect on this device. Disabling write protection allows the new components to be calibrated and the system to be updated with information about them.">
-        Once you disable write-protect, you can immediately enable it again. You will see instructions for disabling write-protect on this Chromebook on the next screen.
+        Once you disable write-protect, you can immediately enable it again. You will see instructions for disabling write-protect on this <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> on the next screen.
       </message>
       <message name="IDS_SHIMLESS_RMA_RSU_WP_DISABLE_METHOD_OPTION"  translateable="false" desc="Title for the page offering the options for disabling write protect on this device. Disabling write protection allows the new components to be calibrated and the system to be updated with information about them.">
         Perform RMA Server Unlock (RSU)
@@ -2874,7 +2874,7 @@ Try tapping the mic to ask me anything.
       </message>
       <!-- Critical error page -->
       <message name="IDS_SHIMLESS_RMA_CRITICAL_ERROR_TITLE" translateable="false" desc="The title for the critical error page. Critical errors cause the RMA process to attempt to exit to login or reboot the device at users discretion. It will try to cancel RMA, but if that fails the next boot may also trigger an RMA critical error.">
-        Error
+        <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> repair error
       </message>
       <message name="IDS_SHIMLESS_RMA_CRITICAL_ERROR_MESSAGE" translateable="false" desc="The message for the critical error when Shimless RMA app is launched when not in RMA. This should never happen.">
         We're running into errors. Try rebooting or return to the login screen.

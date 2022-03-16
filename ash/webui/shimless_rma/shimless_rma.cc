@@ -22,6 +22,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "ui/chromeos/devicetype_utils.h"
 #include "ui/chromeos/strings/network_element_localized_strings_provider.h"
 #include "ui/resources/grit/webui_generated_resources.h"
 #include "ui/resources/grit/webui_resources.h"
@@ -70,7 +71,6 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
       {"componentKeyboard", IDS_SHIMLESS_RMA_COMPONENT_KEYBOARD},
       {"componentPowerButton", IDS_SHIMLESS_RMA_COMPONENT_POWER_BUTTON},
       // Splash screen
-      {"shimlessSplashTitle", IDS_SHIMLESS_RMA_SPLASH_TITLE},
       {"shimlessSplashRemembering", IDS_SHIMLESS_RMA_SPLASH_REMEMBERING},
       {"shimlessSplashLoading", IDS_SHIMLESS_RMA_SPLASH_LOADING},
       // Common buttons
@@ -81,7 +81,6 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
       {"okButtonLabel", IDS_SHIMLESS_RMA_OK_BUTTON},
       {"retryButtonLabel", IDS_SHIMLESS_RMA_RETRY_BUTTON},
       // Landing page
-      {"welcomeTitleText", IDS_SHIMLESS_RMA_LANDING_PAGE_TITLE},
       {"beginRmaWarningText", IDS_SHIMLESS_RMA_AUTHORIZED_TECH_ONLY_WARNING},
       {"validatingComponentsText", IDS_SHIMLESS_RMA_VALIDATING_COMPONENTS},
       {"validatedComponentsSuccessText",
@@ -136,8 +135,6 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
        IDS_SHIMLESS_RMA_CHOOSE_WP_DISABLE_METHOD_PAGE_TITLE},
       {"manualWpDisableMethodOptionText",
        IDS_SHIMLESS_RMA_MANUAL_WP_DISABLE_METHOD_OPTION},
-      {"manualWpDisableMethodDescriptionText",
-       IDS_SHIMLESS_RMA_MANUAL_WP_DISABLE_METHOD_DESCRIPTION},
       {"rsuWpDisableMethodOptionText",
        IDS_SHIMLESS_RMA_RSU_WP_DISABLE_METHOD_OPTION},
       {"rsuWpDisableMethodDescriptionText",
@@ -298,7 +295,6 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
       {"onboardingUpdatePermission",
        IDS_SHIMLESS_RMA_ONBOARDING_UPDATE_PERMISSION},
       // Critical error
-      {"criticalErrorTitleText", IDS_SHIMLESS_RMA_CRITICAL_ERROR_TITLE},
       {"criticalErrorMessageText", IDS_SHIMLESS_RMA_CRITICAL_ERROR_MESSAGE},
       {"criticalErrorExitText", IDS_SHIMLESS_RMA_CRITICAL_EXIT_BUTTON},
       {"criticalErrorRebootText", IDS_SHIMLESS_RMA_CRITICAL_REBOOT_BUTTON},
@@ -316,6 +312,22 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
 
   html_source->AddLocalizedStrings(kLocalizedStrings);
   html_source->UseStringsJs();
+}
+
+void AddDevicePlaceholderStrings(content::WebUIDataSource* html_source) {
+  html_source->AddString(
+      "shimlessSplashTitle",
+      ui::SubstituteChromeOSDeviceType(IDS_SHIMLESS_RMA_SPLASH_TITLE));
+  html_source->AddString(
+      "welcomeTitleText",
+      ui::SubstituteChromeOSDeviceType(IDS_SHIMLESS_RMA_LANDING_PAGE_TITLE));
+  html_source->AddString(
+      "manualWpDisableMethodDescriptionText",
+      ui::SubstituteChromeOSDeviceType(
+          IDS_SHIMLESS_RMA_MANUAL_WP_DISABLE_METHOD_DESCRIPTION));
+  html_source->AddString(
+      "criticalErrorTitleText",
+      ui::SubstituteChromeOSDeviceType(IDS_SHIMLESS_RMA_CRITICAL_ERROR_TITLE));
 }
 
 }  // namespace
@@ -370,6 +382,7 @@ ShimlessRMADialogUI::ShimlessRMADialogUI(
   SetUpWebUIDataSource(html_source, resources, IDR_ASH_SHIMLESS_RMA_INDEX_HTML);
 
   AddShimlessRmaStrings(html_source);
+  AddDevicePlaceholderStrings(html_source);
 
   ui::network_element::AddLocalizedStrings(html_source);
   ui::network_element::AddOncLocalizedStrings(html_source);

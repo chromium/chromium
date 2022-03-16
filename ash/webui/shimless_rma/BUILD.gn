@@ -23,6 +23,7 @@ static_library("shimless_rma") {
     "//chromeos/strings/",
     "//content/public/browser",
     "//dbus",
+    "//ui/chromeos:chromeos",
     "//ui/chromeos/strings:strings_provider",
     "//ui/resources",
     "//ui/web_dialogs",

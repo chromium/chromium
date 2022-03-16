@@ -6,6 +6,7 @@ include_rules = [
   "+chromeos/dbus/util",
   "+ui/resources",
   "+ui/web_dialogs",
+  "+ui/chromeos",
   "+ui/chromeos/strings",
   "+components/onc/onc_constants.h",
   "+components/onc/onc_pref_names.h",
