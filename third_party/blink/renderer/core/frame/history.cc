@@ -26,7 +26,6 @@
 #include "third_party/blink/renderer/core/frame/history.h"
 
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-shared.h"
-#include "third_party/blink/renderer/core/app_history/app_history.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/history_util.h"
@@ -36,6 +35,7 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/history_item.h"
+#include "third_party/blink/renderer/core/navigation_api/navigation_api.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -313,11 +313,11 @@ void History::StateObjectAdded(scoped_refptr<SerializedScriptValue> data,
     return;
   }
 
-  if (auto* app_history = AppHistory::navigation(*DomWindow())) {
-    if (app_history->DispatchNavigateEvent(
+  if (auto* navigation_api = NavigationApi::navigation(*DomWindow())) {
+    if (navigation_api->DispatchNavigateEvent(
             full_url, nullptr, NavigateEventType::kHistoryApi, type,
             UserNavigationInvolvement::kNone, data.get(),
-            nullptr) != AppHistory::DispatchResult::kContinue) {
+            nullptr) != NavigationApi::DispatchResult::kContinue) {
       return;
     }
   }

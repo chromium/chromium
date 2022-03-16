@@ -14,7 +14,7 @@ promise_test(async t => {
     finalExpectedEvent: "promise microtask"
   });
 
-  recorder.setUpAppHistoryListeners();
+  recorder.setUpNavigationAPIListeners();
 
   navigation.addEventListener("navigate", t.step_func(e => {
     e.preventDefault();

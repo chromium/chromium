@@ -8,5 +8,5 @@ promise_test(async t => {
   i.contentWindow.navigation.oncurrententrychange = t.unreached_func("currententrychange should not fire for cross-document navigations");
   i.contentWindow.navigation.reload();
   await new Promise(resolve => i.onload = resolve);
-}, "AppHistoryCurrentChangeEvent does not fire for cross-document navigation.reload()");
+}, "currententrychange does not fire for cross-document navigation.reload()");
 </script>

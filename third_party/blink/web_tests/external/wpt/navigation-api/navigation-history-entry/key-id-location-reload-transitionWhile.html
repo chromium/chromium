@@ -19,5 +19,5 @@ promise_test(async t => {
   assert_equals(i.contentWindow.navigation.currentEntry, original);
   assert_equals(i.contentWindow.navigation.currentEntry.key, key);
   assert_equals(i.contentWindow.navigation.currentEntry.id, id);
-}, "AppHistoryEntry's key and id after location.reload() intercepted by transitionWhile()");
+}, "NavigationHistoryEntry's key and id after location.reload() intercepted by transitionWhile()");
 </script>

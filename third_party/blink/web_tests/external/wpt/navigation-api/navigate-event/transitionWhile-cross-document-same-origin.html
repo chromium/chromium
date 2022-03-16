@@ -15,5 +15,5 @@ async_test(t => {
   });
 
   window.onload = t.step_func(() => location.href = target_url);
-}, "AppHistoryNavigateEvent's transitionWhile() intercepts a same-origin cross-document navigation");
+}, "event.transitionWhile() intercepts a same-origin cross-document navigation");
 </script>

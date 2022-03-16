@@ -10,5 +10,5 @@ async_test(t => {
     i.onload = t.step_func_done(() => assert_false(i_entry.sameDocument));
     i.contentWindow.location = "about:blank";
   });
-}, "AppHistoryEntry.sameDocument after cross-document navigation");
+}, "entry.sameDocument after cross-document navigation");
 </script>

@@ -23,7 +23,7 @@ export class Recorder {
     this.#finalExpectedEventCount = finalExpectedEventCount;
   }
 
-  setUpAppHistoryListeners() {
+  setUpNavigationAPIListeners() {
     navigation.addEventListener("navigate", e => {
       this.record("navigate");
 

@@ -4,13 +4,13 @@
 <script>
 test(() => {
   assert_throws_js(TypeError, () => {
-    new AppHistoryNavigateEvent("navigate");
+    new NavigateEvent("navigate");
   });
 }, "can't bypass required members by omitting the dictionary entirely");
 
 test(() => {
   assert_throws_js(TypeError, () => {
-    new AppHistoryNavigateEvent("navigate", {
+    new NavigateEvent("navigate", {
       navigationType: "push",
       canTransition: false,
       userInitiated: false,
@@ -23,10 +23,10 @@ test(() => {
 }, "destination is required");
 
 async_test(t => {
-  // We need to grab an AppHistoryDestination.
+  // We need to grab an NavigationDestination.
   navigation.onnavigate = t.step_func_done(e => {
     assert_throws_js(TypeError, () => {
-      new AppHistoryNavigateEvent("navigate", {
+      new NavigateEvent("navigate", {
         navigationType: "push",
         destination: e.destination,
         canTransition: false,
@@ -41,13 +41,13 @@ async_test(t => {
 }, "signal is required");
 
 async_test(t => {
-  // We need to grab an AppHistoryDestination.
+  // We need to grab an NavigationDestination.
   navigation.onnavigate = t.step_func_done(e => {
     const info = { some: "object with identity" };
     const formData = new FormData();
     const signal = (new AbortController()).signal;
 
-    const event = new AppHistoryNavigateEvent("navigate", {
+    const event = new NavigateEvent("navigate", {
       navigationType: "replace",
       destination: e.destination,
       canTransition: true,
@@ -71,9 +71,9 @@ async_test(t => {
 }, "all properties are reflected back");
 
 async_test(t => {
-  // We need to grab an AppHistoryDestination.
+  // We need to grab an NavigationDestination.
   navigation.onnavigate = t.step_func_done(e => {
-    const event = new AppHistoryNavigateEvent("navigate", {
+    const event = new NavigateEvent("navigate", {
       destination: e.destination,
       signal: (new AbortController()).signal
     });

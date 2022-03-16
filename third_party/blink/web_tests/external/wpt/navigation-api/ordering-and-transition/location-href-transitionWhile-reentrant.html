@@ -20,7 +20,7 @@ promise_test(async t => {
     finalExpectedEvent: "transition.finished fulfilled"
   });
 
-  recorder.setUpAppHistoryListeners();
+  recorder.setUpNavigationAPIListeners();
 
   navigation.addEventListener("navigate", e => {
     e.transitionWhile(new Promise(resolve => t.step_timeout(resolve, 2)));

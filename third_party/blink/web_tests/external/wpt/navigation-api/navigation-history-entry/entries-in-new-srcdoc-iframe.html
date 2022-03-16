@@ -11,5 +11,5 @@ promise_test(async t => {
   assert_array_equals(i.contentWindow.navigation.entries(), [i.contentWindow.navigation.currentEntry]);
 
   assert_equals(i.contentWindow.navigation.currentEntry.url, "about:srcdoc");
-}, "AppHistory entries() and currentEntry should be set in a new srcdoc iframe");
+}, "entries() and currentEntry should be set in a new srcdoc iframe");
 </script>

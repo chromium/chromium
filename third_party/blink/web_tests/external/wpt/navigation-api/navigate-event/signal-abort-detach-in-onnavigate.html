@@ -17,5 +17,5 @@ promise_test(async t => {
   await promise_rejects_dom(t, 'AbortError', iframe_constructor, i.contentWindow.navigation.navigate("#1").committed);
   assert_true(abort_signal.aborted);
   assert_true(onabort_called);
-}, "window detach inside AppHistoryNavigateEvent signals AppHistoryNavigateEvent.signal");
+}, "window detach inside a navigate event signals event.signal");
 </script>

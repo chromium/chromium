@@ -19,5 +19,5 @@ async_test(t => {
   assert_equals(location.hash, "#1");
   assert_equals(history.state, "update");
   assert_equals(history.length, start_length);
-}, "AppHistoryNavigateEvent's transitionWhile() should proceed if the given promise resolves");
+}, "event.transitionWhile() should proceed if the given promise resolves");
 </script>

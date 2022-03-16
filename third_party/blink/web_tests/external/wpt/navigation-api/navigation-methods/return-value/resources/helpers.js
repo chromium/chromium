@@ -33,7 +33,7 @@ window.assertBothFulfill = async (t, result, expected, w = window) => {
 
   assert_not_equals(committedValue, undefined, "committed must fulfill before finished");
   assert_equals(finishedValue, committedValue, "committed and finished must fulfill with the same value");
-  assert_true(finishedValue instanceof w.AppHistoryEntry, "fulfillment value must be an AppHistoryEntry");
+  assert_true(finishedValue instanceof w.NavigationHistoryEntry, "fulfillment value must be a NavigationHistoryEntry");
   assert_equals(finishedValue, expected);
 };
 
@@ -50,11 +50,11 @@ window.assertCommittedFulfillsFinishedRejectsExactly = async (t, result, expecte
   await promise_rejects_exactly(t, expectedRejection, result.finished);
 
   assert_not_equals(committedValue, undefined, "committed must fulfill before finished rejects");
-  assert_true(committedValue instanceof w.AppHistoryEntry, "fulfillment value must be an AppHistoryEntry");
+  assert_true(committedValue instanceof w.NavigationHistoryEntry, "fulfillment value must be a NavigationHistoryEntry");
   assert_equals(committedValue, expectedEntry);
 };
 
-window.assertCommittedFulfillsFinishedRejectsDOM = async (t, result, expectedEntry, expectedDOMExceptionCode, w = window, domExceptionConstructor = w.DOMException, appHistoryEntryConstuctor = w.AppHistoryEntry) => {
+window.assertCommittedFulfillsFinishedRejectsDOM = async (t, result, expectedEntry, expectedDOMExceptionCode, w = window, domExceptionConstructor = w.DOMException, navigationHistoryEntryConstuctor = w.NavigationHistoryEntry) => {
   assertReturnValue(result, w);
 
   // Don't use await here so that we can catch out-of-order settlements.
@@ -67,7 +67,7 @@ window.assertCommittedFulfillsFinishedRejectsDOM = async (t, result, expectedEnt
   await promise_rejects_dom(t, expectedDOMExceptionCode, domExceptionConstructor, result.finished);
 
   assert_not_equals(committedValue, undefined, "committed must fulfill before finished rejects");
-  assert_true(committedValue instanceof appHistoryEntryConstuctor, "fulfillment value must be an AppHistoryEntry");
+  assert_true(committedValue instanceof navigationHistoryEntryConstuctor, "fulfillment value must be an NavigationHistoryEntry");
   assert_equals(committedValue, expectedEntry);
 };
 

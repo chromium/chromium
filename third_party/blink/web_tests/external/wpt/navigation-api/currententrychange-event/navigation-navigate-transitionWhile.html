@@ -17,5 +17,5 @@ promise_test(async t => {
   let result = i.contentWindow.navigation.navigate("/common/blank.html?1");
   assert_true(oncurrententrychange_called);
   await result.committed;
-}, "AppHistoryCurrentChangeEvent fires for navigation.navigate() intercepted by transitionWhile");
+}, "currententrychange fires for navigation.navigate() intercepted by transitionWhile()");
 </script>

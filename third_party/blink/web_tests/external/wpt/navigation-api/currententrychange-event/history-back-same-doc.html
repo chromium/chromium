@@ -20,5 +20,5 @@ promise_test(async t => {
   assert_false(oncurrententrychange_called);
   await new Promise(resolve => window.onpopstate = resolve);
   assert_true(oncurrententrychange_called);
-}, "AppHistoryCurrentChangeEvent fires for history.back()");
+}, "currententrychange fires for history.back()");
 </script>

@@ -31,7 +31,7 @@ async_test(t => {
         assert_equals(i.contentWindow.location.href, start_url);
         assert_equals(i.contentWindow.navigation.currentEntry.key, start_key);
         assert_equals(i.contentWindow.navigation.currentEntry.id, start_id);
-        assert_equals(i.contentWindow.navigation.currentEntry.getState().key2, "value2", "current.getState() after teh reload");
+        assert_equals(i.contentWindow.navigation.currentEntry.getState().key2, "value2", "currentEntry.getState() after the reload");
         assert_not_equals(i.contentWindow.navigation.currentEntry.getState(), navState2);
       }));
     }));

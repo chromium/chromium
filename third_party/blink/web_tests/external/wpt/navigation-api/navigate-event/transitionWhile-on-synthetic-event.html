@@ -3,9 +3,9 @@
 <script src="/resources/testharnessreport.js"></script>
 <script>
 async_test(t => {
-  // We need to grab an AppHistoryDestination to construct the event.
+  // We need to grab an NavigationDestination to construct the event.
   navigation.onnavigate = t.step_func_done(e => {
-    const event = new AppHistoryNavigateEvent("navigate", {
+    const event = new NavigateEvent("navigate", {
       destination: e.destination,
       signal: (new AbortController()).signal
     });
@@ -13,5 +13,5 @@ async_test(t => {
     assert_throws_dom("SecurityError", () => event.transitionWhile(Promise.resolve()));
   });
   history.pushState(1, null, "#1");
-}, "AppHistoryNavigateEvent's transitionWhile() throws if invoked on a synthetic event");
+}, "event.transitionWhile() throws if invoked on a synthetic event");
 </script>

@@ -17,5 +17,5 @@ promise_test(async t => {
   let result = navigation.navigate("#foo");
   assert_true(oncurrententrychange_called);
   await result.committed;
-}, "AppHistoryCurrentChangeEvent fires for navigation.navigate()");
+}, "currententrychange fires for navigation.navigate()");
 </script>

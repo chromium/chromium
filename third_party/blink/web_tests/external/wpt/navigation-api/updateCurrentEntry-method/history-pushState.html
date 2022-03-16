@@ -7,5 +7,5 @@ test(() => {
   assert_equals(navigation.currentEntry.getState().data, "value");
   history.pushState(1, "", "#push");
   assert_equals(navigation.currentEntry.getState(), undefined);
-}, "appHistoryEntry.getState() after history.pushState()");
+}, "entry.getState() after history.pushState()");
 </script>

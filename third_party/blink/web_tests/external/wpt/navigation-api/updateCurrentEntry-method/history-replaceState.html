@@ -7,5 +7,5 @@ test(() => {
   assert_equals(navigation.currentEntry.getState().data, "value");
   history.replaceState(1, "", "#replace");
   assert_equals(navigation.currentEntry.getState(), undefined);
-}, "appHistoryEntry.getState() after history.replaceState()");
+}, "entry.getState() after history.replaceState()");
 </script>

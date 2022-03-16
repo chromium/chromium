@@ -20,5 +20,5 @@ async_test(t => {
     assert_true(onabort_called);
     assert_true(canceled_in_second_handler);
   });
-}, "window.stop() signals AppHistoryNavigateEvent.signal inside a navigate event handler");
+}, "window.stop() signals event.signal inside a navigate event handler");
 </script>

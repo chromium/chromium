@@ -1,0 +1,30 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://wicg.github.io/navigation-api/
+[
+  Exposed=Window,
+  RuntimeEnabled=AppHistory,
+  ImplementedAs=NavigationApi
+] interface Navigation : EventTarget {
+  readonly attribute NavigationHistoryEntry? currentEntry;
+  sequence<NavigationHistoryEntry> entries();
+  [RaisesException, MeasureAs=AppHistory] void updateCurrentEntry(NavigationUpdateCurrentEntryOptions options);
+  readonly attribute NavigationTransition? transition;
+
+  readonly attribute boolean canGoBack;
+  readonly attribute boolean canGoForward;
+
+  [CallWith=ScriptState, MeasureAs=AppHistory] NavigationResult navigate(USVString url, optional NavigationNavigateOptions options = {});
+  [CallWith=ScriptState, MeasureAs=AppHistory] NavigationResult reload(optional NavigationReloadOptions options = {});
+
+  [CallWith=ScriptState, MeasureAs=AppHistory] NavigationResult traverseTo(DOMString key, optional NavigationOptions options = {});
+  [CallWith=ScriptState, MeasureAs=AppHistory] NavigationResult back(optional NavigationOptions options = {});
+  [CallWith=ScriptState, MeasureAs=AppHistory] NavigationResult forward(optional NavigationOptions options = {});
+
+  attribute EventHandler onnavigate;
+  attribute EventHandler onnavigatesuccess;
+  attribute EventHandler onnavigateerror;
+  attribute EventHandler oncurrententrychange;
+};

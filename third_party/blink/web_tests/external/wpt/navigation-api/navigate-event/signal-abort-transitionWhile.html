@@ -14,5 +14,5 @@ promise_test(async t => {
   await navigation.navigate("?1").finished;
   assert_false(abort_signal.aborted);
   assert_false(onabort_called);
-}, "AppHistoryNavigateEvent's transitionWhile() does not signal AppHistoryNavigateEvent's signal");
+}, "event.transitionWhile() does not signal event.signal");
 </script>

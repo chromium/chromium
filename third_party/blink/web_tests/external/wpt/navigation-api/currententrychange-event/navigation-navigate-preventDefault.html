@@ -6,5 +6,5 @@ promise_test(async t => {
   navigation.oncurrententrychange = t.unreached_func("currententrychange should not fire");
   navigation.onnavigate = e => e.preventDefault();
   await promise_rejects_dom(t, "AbortError", navigation.navigate("#foo").committed);
-}, "AppHistoryCurrentChangeEvent does not fire when onnavigate preventDefault() is called");
+}, "currententrychange does not fire when onnavigate preventDefault() is called");
 </script>

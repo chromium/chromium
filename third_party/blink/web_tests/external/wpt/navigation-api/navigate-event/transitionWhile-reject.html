@@ -22,5 +22,5 @@ async_test(t => {
 
   location.href = "#1";
   assert_equals(location.hash, "#1");
-}, "AppHistoryNavigateEvent's transitionWhile() should abort if the given promise rejects");
+}, "event.transitionWhile() should abort if the given promise rejects");
 </script>

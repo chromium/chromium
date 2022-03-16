@@ -20,7 +20,7 @@ promise_test(async t => {
     finalExpectedEventCount: 2
   });
 
-  recorder.setUpAppHistoryListeners();
+  recorder.setUpNavigationAPIListeners();
 
   navigation.addEventListener("navigatesuccess", t.step_func(() => {
     if (location.hash === "#1") {

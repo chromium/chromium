@@ -50,7 +50,6 @@
 #include "third_party/blink/public/platform/web_content_security_policy_struct.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
-#include "third_party/blink/renderer/core/app_history/app_history.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"
 #include "third_party/blink/renderer/core/dom/document_parser.h"
@@ -88,6 +87,7 @@
 #include "third_party/blink/renderer/core/loader/progress_tracker.h"
 #include "third_party/blink/renderer/core/loader/subresource_filter.h"
 #include "third_party/blink/renderer/core/mobile_metrics/mobile_friendliness_checker.h"
+#include "third_party/blink/renderer/core/navigation_api/navigation_api.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
 #include "third_party/blink/renderer/core/page/frame_tree.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -815,7 +815,7 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
   probe::DidNavigateWithinDocument(frame_);
 
   // If transitionWhile() was called during this same-document navigation's
-  // AppHistoryNavigateEvent, the navigation will finish asynchronously, so
+  // NavigateEvent, the navigation will finish asynchronously, so
   // don't immediately call DidStopLoading() in that case.
   bool should_send_stop_notification =
       !was_loading &&
@@ -824,8 +824,8 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
   if (should_send_stop_notification)
     GetFrameLoader().Progress().ProgressCompleted();
 
-  if (auto* app_history = AppHistory::navigation(*frame_->DomWindow()))
-    app_history->UpdateForNavigation(*history_item_, type);
+  if (auto* navigation_api = NavigationApi::navigation(*frame_->DomWindow()))
+    navigation_api->UpdateForNavigation(*history_item_, type);
 
   // Aything except a history.pushState/replaceState is considered a new
   // navigation that resets whether the user has scrolled and fires popstate.
@@ -1334,7 +1334,7 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
 
   mojom::blink::SameDocumentNavigationType same_document_navigation_type =
       mojom::blink::SameDocumentNavigationType::kFragment;
-  if (auto* app_history = AppHistory::navigation(*frame_->DomWindow())) {
+  if (auto* navigation_api = NavigationApi::navigation(*frame_->DomWindow())) {
     UserNavigationInvolvement involvement = UserNavigationInvolvement::kNone;
     if (is_browser_initiated) {
       involvement = UserNavigationInvolvement::kBrowserUI;
@@ -1342,13 +1342,13 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
                mojom::blink::TriggeringEventInfo::kFromTrustedEvent) {
       involvement = UserNavigationInvolvement::kActivation;
     }
-    auto dispatch_result = app_history->DispatchNavigateEvent(
+    auto dispatch_result = navigation_api->DispatchNavigateEvent(
         url, nullptr, NavigateEventType::kFragment, frame_load_type,
         involvement, nullptr, history_item, is_browser_initiated,
         is_synchronously_committed);
-    if (dispatch_result == AppHistory::DispatchResult::kAbort)
+    if (dispatch_result == NavigationApi::DispatchResult::kAbort)
       return mojom::blink::CommitResult::Aborted;
-    if (dispatch_result == AppHistory::DispatchResult::kTransitionWhile)
+    if (dispatch_result == NavigationApi::DispatchResult::kTransitionWhile)
       return mojom::blink::CommitResult::Ok;
   }
 
@@ -2397,17 +2397,17 @@ void DocumentLoader::CommitNavigation() {
       document->SetBaseURLOverride(main_resource_url);
   }
 
-  // appHistory is not set on the initial about:blank document or opaque-origin
-  // documents.
+  // The navigation API is not initialized on the initial about:blank document
+  // or opaque-origin documents.
   if (commit_reason_ != CommitReason::kInitialization &&
       !frame_->DomWindow()->GetSecurityOrigin()->IsOpaque()) {
-    AppHistory::From(*frame_->DomWindow())
+    NavigationApi::From(*frame_->DomWindow())
         ->InitializeForNewWindow(*history_item_, load_type_, commit_reason_,
-                                 AppHistory::navigation(*previous_window),
+                                 NavigationApi::navigation(*previous_window),
                                  app_history_back_entries_,
                                  app_history_forward_entries_);
-    // Now that appHistory's entries array is initialized, we don't need to
-    // retain the state from which it was initialized.
+    // Now that the navigation API's entries array is initialized, we don't need
+    // to retain the state from which it was initialized.
     app_history_back_entries_.Clear();
     app_history_forward_entries_.Clear();
   }

@@ -62,7 +62,6 @@
 #include "third_party/blink/public/web/web_navigation_params.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
-#include "third_party/blink/renderer/core/app_history/app_history.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/ignore_opens_during_unload_count_incrementer.h"
@@ -92,6 +91,7 @@
 #include "third_party/blink/renderer/core/loader/frame_loader_types.h"
 #include "third_party/blink/renderer/core/loader/mixed_content_checker.h"
 #include "third_party/blink/renderer/core/loader/progress_tracker.h"
+#include "third_party/blink/renderer/core/navigation_api/navigation_api.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/frame_tree.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -430,12 +430,13 @@ void FrameLoader::DidFinishNavigation(NavigationFinishState state) {
   if (document_loader_) {
     // Only declare the whole frame finished if the committed navigation is done
     // and there is no provisional navigation in progress.
-    // appHistory may prevent a navigation from completing while waiting for a
-    // JS-provided promise to resolve, so check it as well.
+    // The navigation API may prevent a navigation from completing while waiting
+    // for a JS-provided promise to resolve, so check it as well.
     if (!document_loader_->SentDidFinishLoad() || HasProvisionalNavigation())
       return;
-    if (auto* app_history = AppHistory::navigation(*frame_->DomWindow())) {
-      if (app_history->HasOngoingNavigation())
+    if (auto* navigation_api =
+            NavigationApi::navigation(*frame_->DomWindow())) {
+      if (navigation_api->HasOngoingNavigation())
         return;
     }
   }
@@ -753,18 +754,18 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
     return;
   }
 
-  if (auto* app_history = AppHistory::navigation(*frame_->DomWindow())) {
+  if (auto* navigation_api = NavigationApi::navigation(*frame_->DomWindow())) {
     if (request.GetNavigationPolicy() == kNavigationPolicyCurrentTab &&
         (!origin_window || origin_window->GetSecurityOrigin()->CanAccess(
                                frame_->DomWindow()->GetSecurityOrigin()))) {
-      if (app_history->DispatchNavigateEvent(
+      if (navigation_api->DispatchNavigateEvent(
               url, request.Form(), NavigateEventType::kCrossDocument,
               frame_load_type,
               request.GetTriggeringEventInfo() ==
                       mojom::blink::TriggeringEventInfo::kFromTrustedEvent
                   ? UserNavigationInvolvement::kActivation
                   : UserNavigationInvolvement::kNone,
-              nullptr, nullptr) != AppHistory::DispatchResult::kContinue) {
+              nullptr, nullptr) != NavigationApi::DispatchResult::kContinue) {
         return;
       }
     }
@@ -998,16 +999,16 @@ void FrameLoader::CommitNavigation(
   if (!CancelProvisionalLoaderForNewNavigation())
     return;
 
-  if (auto* app_history = AppHistory::navigation(*frame_->DomWindow())) {
+  if (auto* navigation_api = NavigationApi::navigation(*frame_->DomWindow())) {
     if (navigation_params->frame_load_type == WebFrameLoadType::kBackForward) {
-      auto result = app_history->DispatchNavigateEvent(
+      auto result = navigation_api->DispatchNavigateEvent(
           navigation_params->url, nullptr, NavigateEventType::kCrossDocument,
           WebFrameLoadType::kBackForward,
           navigation_params->is_browser_initiated
               ? UserNavigationInvolvement::kBrowserUI
               : UserNavigationInvolvement::kNone,
           nullptr, navigation_params->history_item);
-      DCHECK_EQ(result, AppHistory::DispatchResult::kContinue);
+      DCHECK_EQ(result, NavigationApi::DispatchResult::kContinue);
       if (!document_loader_)
         return;
     }
@@ -1159,8 +1160,8 @@ void FrameLoader::StopAllLoaders(bool abort_client) {
   }
 
   frame_->GetDocument()->CancelParsing();
-  if (auto* app_history = AppHistory::navigation(*frame_->DomWindow()))
-    app_history->InformAboutCanceledNavigation();
+  if (auto* navigation_api = NavigationApi::navigation(*frame_->DomWindow()))
+    navigation_api->InformAboutCanceledNavigation();
   if (document_loader_)
     document_loader_->StopLoading();
   if (abort_client)
@@ -1483,8 +1484,9 @@ bool FrameLoader::ShouldClose(bool is_reload) {
         frame_->GetDocument());
     if (!frame_->GetDocument()->DispatchBeforeUnloadEvent(
             &page->GetChromeClient(), is_reload, did_allow_navigation)) {
-      if (auto* app_history = AppHistory::navigation(*frame_->DomWindow()))
-        app_history->InformAboutCanceledNavigation();
+      if (auto* navigation_api =
+              NavigationApi::navigation(*frame_->DomWindow()))
+        navigation_api->InformAboutCanceledNavigation();
       return false;
     }
 
@@ -1507,8 +1509,9 @@ bool FrameLoader::ShouldClose(bool is_reload) {
               descendant_frame->GetDocument());
       if (!descendant_frame->GetDocument()->DispatchBeforeUnloadEvent(
               &page->GetChromeClient(), is_reload, did_allow_navigation)) {
-        if (auto* app_history = AppHistory::navigation(*frame_->DomWindow()))
-          app_history->InformAboutCanceledNavigation();
+        if (auto* navigation_api =
+                NavigationApi::navigation(*frame_->DomWindow()))
+          navigation_api->InformAboutCanceledNavigation();
         return false;
       }
     }
@@ -1580,8 +1583,8 @@ void FrameLoader::ClearClientNavigation() {
 void FrameLoader::CancelClientNavigation() {
   if (!client_navigation_)
     return;
-  if (auto* app_history = AppHistory::navigation(*frame_->DomWindow()))
-    app_history->InformAboutCanceledNavigation();
+  if (auto* navigation_api = NavigationApi::navigation(*frame_->DomWindow()))
+    navigation_api->InformAboutCanceledNavigation();
   ResourceError error = ResourceError::CancelledError(client_navigation_->url);
   ClearClientNavigation();
   if (WebPluginContainerImpl* plugin = frame_->GetWebPluginContainer())

@@ -1,0 +1,8 @@
+dictionary NavigationTransitionWhileOptions {
+  NavigationFocusReset focusReset;
+};
+
+enum NavigationFocusReset {
+  "after-transition",
+  "manual"
+};

@@ -4,20 +4,20 @@
 <script>
 test(() => {
   assert_throws_js(TypeError, () => {
-    new AppHistoryCurrentChangeEvent("currententrychange");
+    new NavigationCurrentEntryChangeEvent("currententrychange");
   });
 }, "can't bypass required members by omitting the dictionary entirely");
 
 test(() => {
   assert_throws_js(TypeError, () => {
-    new AppHistoryCurrentChangeEvent("currententrychange", {
+    new NavigationCurrentEntryChangeEvent("currententrychange", {
       navigationType: "push"
     });
   });
 }, "from is required");
 
 test(() => {
-  const event = new AppHistoryCurrentChangeEvent("currententrychange", {
+  const event = new NavigationCurrentEntryChangeEvent("currententrychange", {
     navigationType: "replace",
     from: navigation.currentEntry
   });
@@ -26,7 +26,7 @@ test(() => {
 }, "all properties are reflected back");
 
 test(t => {
-  const event = new AppHistoryCurrentChangeEvent("currententrychange", { from: navigation.currentEntry });
+  const event = new NavigationCurrentEntryChangeEvent("currententrychange", { from: navigation.currentEntry });
   assert_equals(event.navigationType, null);
 }, "defaults are as expected");
 </script>

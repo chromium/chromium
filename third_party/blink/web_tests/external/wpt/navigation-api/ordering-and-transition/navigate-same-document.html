@@ -17,7 +17,7 @@ promise_test(async t => {
     finalExpectedEvent: "finished fulfilled"
   });
 
-  recorder.setUpAppHistoryListeners();
+  recorder.setUpNavigationAPIListeners();
 
   const result = navigation.navigate("#1");
   recorder.setUpResultListeners(result);

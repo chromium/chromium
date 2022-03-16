@@ -28,5 +28,5 @@ promise_test(async (t) => {
                 "/navigation-api/navigation-history-entry/resources/no-referrer-meta.html");
   assert_equals(new URL(i.contentWindow.navigation.entries()[1].url).pathname,
                 "/navigation-api/navigation-history-entry/resources/no-referrer-meta.html");
-}, "The url of a document with no-referrer referrer meta tag is censored in AppHistoryEntry");
+}, "The url of a document with no-referrer referrer meta tag is censored in NavigationHistoryEntry");
 </script>

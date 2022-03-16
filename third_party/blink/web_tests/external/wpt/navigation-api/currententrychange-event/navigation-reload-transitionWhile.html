@@ -17,5 +17,5 @@ promise_test(async t => {
   let result = i.contentWindow.navigation.reload();
   assert_true(oncurrententrychange_called);
   await result.committed;
-}, "AppHistoryCurrentChangeEvent fires for navigation.reload() intercepted by transitionWhile");
+}, "currententrychange fires for navigation.reload() intercepted by transitionWhile()");
 </script>

@@ -32,7 +32,7 @@ runBfcacheTest({
     assert_equals(entryData.length, 2);
 
     // Ensure that [1] has the proper url, and otherwise is initialized as
-    // a cross-document AppHistoryEntry ought to be.
+    // a cross-document NavigationHistoryEntry ought to be.
     assert_equals(entryData[0].url, pageA.url);
     assert_equals(entryData[1].url, pageB.url);
 

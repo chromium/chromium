@@ -1,0 +1,22 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://wicg.github.io/navigation-api/
+[
+  Exposed=Window,
+  RuntimeEnabled=AppHistory
+] interface NavigateEvent : Event {
+  [CallWith=ExecutionContext] constructor(DOMString type, NavigateEventInit eventInit);
+
+  readonly attribute NavigationNavigationType navigationType;
+  readonly attribute NavigationDestination destination;
+  readonly attribute boolean canTransition;
+  readonly attribute boolean userInitiated;
+  readonly attribute boolean hashChange;
+  readonly attribute AbortSignal signal;
+  readonly attribute FormData? formData;
+  readonly attribute any info;
+
+  [CallWith=ScriptState, RaisesException] void transitionWhile(Promise<void> newNavigationAction, optional NavigationTransitionWhileOptions options = {});
+};

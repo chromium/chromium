@@ -233,71 +233,6 @@ interface AnimationTimeline
     getter duration
     getter phase
     method constructor
-interface AppHistory : EventTarget
-    attribute @@toStringTag
-    getter canGoBack
-    getter canGoForward
-    getter currentEntry
-    getter oncurrententrychange
-    getter onnavigate
-    getter onnavigateerror
-    getter onnavigatesuccess
-    getter transition
-    method back
-    method constructor
-    method entries
-    method forward
-    method navigate
-    method reload
-    method traverseTo
-    method updateCurrentEntry
-    setter oncurrententrychange
-    setter onnavigate
-    setter onnavigateerror
-    setter onnavigatesuccess
-interface AppHistoryCurrentChangeEvent : Event
-    attribute @@toStringTag
-    getter from
-    getter navigationType
-    method constructor
-interface AppHistoryDestination
-    attribute @@toStringTag
-    getter id
-    getter index
-    getter key
-    getter sameDocument
-    getter url
-    method constructor
-    method getState
-interface AppHistoryEntry : EventTarget
-    attribute @@toStringTag
-    getter id
-    getter index
-    getter key
-    getter ondispose
-    getter sameDocument
-    getter url
-    method constructor
-    method getState
-    setter ondispose
-interface AppHistoryNavigateEvent : Event
-    attribute @@toStringTag
-    getter canTransition
-    getter destination
-    getter formData
-    getter hashChange
-    getter info
-    getter navigationType
-    getter signal
-    getter userInitiated
-    method constructor
-    method transitionWhile
-interface AppHistoryTransition
-    attribute @@toStringTag
-    getter finished
-    getter from
-    getter navigationType
-    method constructor
 interface Attr : Node
     attribute @@toStringTag
     getter localName
@@ -5804,6 +5739,65 @@ interface NativeIOFileManager
     method releaseCapacity
     method rename
     method requestCapacity
+interface NavigateEvent : Event
+    attribute @@toStringTag
+    getter canTransition
+    getter destination
+    getter formData
+    getter hashChange
+    getter info
+    getter navigationType
+    getter signal
+    getter userInitiated
+    method constructor
+    method transitionWhile
+interface Navigation : EventTarget
+    attribute @@toStringTag
+    getter canGoBack
+    getter canGoForward
+    getter currentEntry
+    getter oncurrententrychange
+    getter onnavigate
+    getter onnavigateerror
+    getter onnavigatesuccess
+    getter transition
+    method back
+    method constructor
+    method entries
+    method forward
+    method navigate
+    method reload
+    method traverseTo
+    method updateCurrentEntry
+    setter oncurrententrychange
+    setter onnavigate
+    setter onnavigateerror
+    setter onnavigatesuccess
+interface NavigationCurrentEntryChangeEvent : Event
+    attribute @@toStringTag
+    getter from
+    getter navigationType
+    method constructor
+interface NavigationDestination
+    attribute @@toStringTag
+    getter id
+    getter index
+    getter key
+    getter sameDocument
+    getter url
+    method constructor
+    method getState
+interface NavigationHistoryEntry : EventTarget
+    attribute @@toStringTag
+    getter id
+    getter index
+    getter key
+    getter ondispose
+    getter sameDocument
+    getter url
+    method constructor
+    method getState
+    setter ondispose
 interface NavigationPreloadManager
     attribute @@toStringTag
     method constructor
@@ -5811,6 +5805,12 @@ interface NavigationPreloadManager
     method enable
     method getState
     method setHeaderValue
+interface NavigationTransition
+    attribute @@toStringTag
+    getter finished
+    getter from
+    getter navigationType
+    method constructor
 interface Navigator
     attribute @@toStringTag
     getter appCodeName

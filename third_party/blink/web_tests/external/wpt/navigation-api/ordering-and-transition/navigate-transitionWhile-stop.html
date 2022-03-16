@@ -19,7 +19,7 @@ promise_test(async t => {
     finalExpectedEvent: "transition.finished rejected"
   });
 
-  recorder.setUpAppHistoryListeners();
+  recorder.setUpNavigationAPIListeners();
 
   navigation.addEventListener("navigate", e => {
     e.transitionWhile(Promise.resolve());

@@ -16,5 +16,5 @@ test(t => {
   // "Updating" the state to the current state should still fire currententrychange.
   navigation.updateCurrentEntry({ state: navigation.currentEntry.getState() });
   assert_equals(oncurrententrychange_count, 2);
-}, "AppHistoryCurrentChangeEvent fires for navigation.updateCurrentEntry()");
+}, "currententrychange fires for navigation.updateCurrentEntry()");
 </script>

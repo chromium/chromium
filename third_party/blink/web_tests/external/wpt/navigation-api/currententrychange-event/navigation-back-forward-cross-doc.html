@@ -16,5 +16,5 @@ promise_test(async t => {
   i.contentWindow.navigation.oncurrententrychange = t.unreached_func("currententrychange should not fire for cross-document navigations");
   i.contentWindow.navigation.forward();
   await new Promise(resolve => i.onload = resolve);
-}, "AppHistoryCurrentChangeEvent does not fire for cross-document navigation.back() and navigation.forward()");
+}, "currententrychange does not fire for cross-document navigation.back() and navigation.forward()");
 </script>

@@ -14,5 +14,5 @@ async_test(t => {
   });
 
   window.onload = t.step_func(() => location.href = get_host_info().HTTPS_REMOTE_ORIGIN);
-}, "AppHistoryNavigateEvent's transitionWhile() should throw if called for a cross origin navigation");
+}, "event.transitionWhile() should throw if called for a cross origin navigation");
 </script>

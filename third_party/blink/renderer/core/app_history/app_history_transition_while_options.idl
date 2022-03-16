@@ -1,8 +1,0 @@
-dictionary AppHistoryTransitionWhileOptions {
-  AppHistoryFocusReset focusReset;
-};
-
-enum AppHistoryFocusReset {
-  "after-transition",
-  "manual"
-};

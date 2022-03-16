@@ -17,7 +17,7 @@ promise_test(async () => {
   const transitionFinished1 = transition1.finished;
 
   assert_true(returnValueFinished1 instanceof i.contentWindow.Promise);
-  assert_true(transition1 instanceof i.contentWindow.AppHistoryTransition);
+  assert_true(transition1 instanceof i.contentWindow.NavigationTransition);
   assert_true(transitionFinished1 instanceof i.contentWindow.Promise);
 
   assert_not_equals(returnValueFinished1, transitionFinished1);

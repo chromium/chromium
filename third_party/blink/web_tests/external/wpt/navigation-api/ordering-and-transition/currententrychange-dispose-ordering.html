@@ -22,5 +22,5 @@ test(t => {
   navigation.navigate("#foo", { replace: true });
   assert_true(oncurrententrychange_called);
   assert_true(ondispose_called);
-}, "Ordering between AppHistoryCurrentChangeEvent and AppHistoryEntry dispose events");
+}, "Ordering between Navigation currententrychange and NavigationHistoryEntry dispose events");
 </script>

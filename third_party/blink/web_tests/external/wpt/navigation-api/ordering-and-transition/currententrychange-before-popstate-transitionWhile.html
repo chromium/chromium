@@ -44,5 +44,5 @@ promise_test(async t => {
   await forward_result.finished;
   assert_true(oncurrententrychange_back_called);
   assert_true(onpopstate_forward_called);
-}, "AppHistoryCurrentChangeEvent fires for navigation.back() and navigation.forward()");
+}, "currententrychange fires before popstate for navigation.back() and navigation.forward()");
 </script>

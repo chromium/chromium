@@ -19,5 +19,5 @@ promise_test(async t => {
   let result = navigation.navigate("#foo", { replace: true });
   assert_true(oncurrententrychange_called);
   await result.committed;
-}, "AppHistoryCurrentChangeEvent fires for navigation.navigate() with replace");
+}, "currententrychange fires for navigation.navigate() with replace");
 </script>
