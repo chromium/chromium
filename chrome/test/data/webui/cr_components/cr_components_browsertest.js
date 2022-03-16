@@ -113,3 +113,15 @@ var CrComponentsLocalizedLinkTest = class extends CrComponentsBrowserTest {
 TEST_F('CrComponentsLocalizedLinkTest', 'All', function() {
   mocha.run();
 });
+
+var CrComponentsAppManagementPermissionItemTest =
+    class extends CrComponentsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://test/test_loader.html?module=cr_components/app_management/permission_item_test.js&host=webui-test';
+  }
+};
+
+TEST_F('CrComponentsAppManagementPermissionItemTest', 'All', function() {
+  mocha.run();
+});

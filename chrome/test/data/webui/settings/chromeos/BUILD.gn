@@ -47,7 +47,6 @@ js_modulizer("modulize") {
     "app_management/dom_switch_test.js",
     "app_management/main_view_test.js",
     "app_management/pwa_detail_view_test.js",
-    "app_management/permission_item_test.js",
     "app_management/pin_to_shelf_item_test.js",
     "app_management/plugin_vm_detail_view_test.js",
     "app_management/managed_apps_test.js",

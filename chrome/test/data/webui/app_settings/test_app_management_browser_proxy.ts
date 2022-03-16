@@ -82,4 +82,8 @@ export class TestAppManagementBrowserProxy implements BrowserProxy {
     this.fakeHandler = new FakePageHandler(this.callbackRouterRemote, app);
     this.handler = this.fakeHandler;
   }
+
+  recordEnumerationValue(metricName: string, value: number, enumSize: number) {
+    chrome.metricsPrivate.recordEnumerationValue(metricName, value, enumSize);
+  }
 }

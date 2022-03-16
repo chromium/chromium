@@ -318,7 +318,6 @@ TEST_F('OSSettingsAppManagementAppDetailsV3Test', 'AllJsTests', () => {
  ['AppManagementMainView', 'main_view_test.m.js'],
  ['AppManagementManagedApp', 'managed_apps_test.m.js'],
  ['AppManagementPage', 'app_management_page_tests.m.js'],
- ['AppManagementPermissionItem', 'permission_item_test.m.js'],
  ['AppManagementPinToShelfItem', 'pin_to_shelf_item_test.m.js'],
  ['AppManagementPluginVmDetailView', 'plugin_vm_detail_view_test.m.js'],
  ['AppManagementPwaDetailView', 'pwa_detail_view_test.m.js'],
