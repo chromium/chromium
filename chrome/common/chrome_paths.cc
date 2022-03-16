@@ -368,7 +368,7 @@ bool PathProvider(int key, base::FilePath* result) {
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     case chrome::FILE_FALLBACK_RESOURCES_PACK:
-      if (!base::PathService::Get(base::DIR_ASSETS, &cur))
+      if (!GetDefaultUserDataDirectory(&cur))
         return false;
       cur = cur.Append(FILE_PATH_LITERAL("resources_fallback.pak"));
       break;
@@ -378,7 +378,7 @@ bool PathProvider(int key, base::FilePath* result) {
       cur = cur.Append("resources.pak");
       break;
     case chrome::FILE_RESOURCES_MAP:
-      if (!base::PathService::Get(base::DIR_ASSETS, &cur))
+      if (!GetDefaultUserDataDirectory(&cur))
         return false;
       cur = cur.Append(FILE_PATH_LITERAL("resources.map"));
       break;
