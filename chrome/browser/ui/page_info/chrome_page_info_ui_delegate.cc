@@ -162,9 +162,9 @@ bool ChromePageInfoUiDelegate::IsMultipleTabsOpen() {
   return count > 1;
 }
 
-void ChromePageInfoUiDelegate::ShowPrivacySandboxSettings() {
+void ChromePageInfoUiDelegate::ShowPrivacySandboxAdPersonalization() {
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
-  chrome::ShowPrivacySandboxSettings(browser);
+  chrome::ShowPrivacySandboxAdPersonalization(browser);
 }
 
 std::u16string ChromePageInfoUiDelegate::GetPermissionDetail(

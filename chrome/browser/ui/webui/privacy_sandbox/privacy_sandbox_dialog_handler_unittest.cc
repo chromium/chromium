@@ -22,7 +22,7 @@ class MockPrivacySandboxDialogView {
  public:
   MOCK_METHOD(void, Close, ());
   MOCK_METHOD(void, ResizeNativeView, (int));
-  MOCK_METHOD(void, OpenPrivacySandboxSettings, ());
+  MOCK_METHOD(void, OpenPrivacySandboxAdPersonalization, ());
 };
 
 class MockPrivacySandboxService : public PrivacySandboxService {
@@ -107,7 +107,7 @@ class PrivacySandboxConsentDialogHandlerTest
         base::BindOnce(&MockPrivacySandboxDialogView::ResizeNativeView,
                        dialog_mock()),
         base::BindOnce(
-            &MockPrivacySandboxDialogView::OpenPrivacySandboxSettings,
+            &MockPrivacySandboxDialogView::OpenPrivacySandboxAdPersonalization,
             dialog_mock()),
         PrivacySandboxService::DialogType::kConsent);
   }
@@ -217,7 +217,7 @@ class PrivacySandboxNoticeDialogHandlerTest
         base::BindOnce(&MockPrivacySandboxDialogView::ResizeNativeView,
                        dialog_mock()),
         base::BindOnce(
-            &MockPrivacySandboxDialogView::OpenPrivacySandboxSettings,
+            &MockPrivacySandboxDialogView::OpenPrivacySandboxAdPersonalization,
             dialog_mock()),
         PrivacySandboxService::DialogType::kNotice);
   }
@@ -242,7 +242,7 @@ TEST_F(PrivacySandboxNoticeDialogHandlerTest, HandleResizeDialog) {
 }
 
 TEST_F(PrivacySandboxNoticeDialogHandlerTest, HandleOpenSettings) {
-  EXPECT_CALL(*dialog_mock(), OpenPrivacySandboxSettings());
+  EXPECT_CALL(*dialog_mock(), OpenPrivacySandboxAdPersonalization());
   EXPECT_CALL(*dialog_mock(), Close());
   EXPECT_CALL(*mock_privacy_sandbox_service(),
               DialogActionOccurred(

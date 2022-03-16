@@ -443,9 +443,9 @@ void ShowWebStore(Browser* browser) {
       browser, extension_urls::GetWebstoreLaunchURL());
 }
 
-void ShowPrivacySandboxSettings(Browser* browser) {
+void ShowPrivacySandboxAdPersonalization(Browser* browser) {
   base::RecordAction(UserMetricsAction("Options_ShowPrivacySandbox"));
-  ShowSettingsSubPage(browser, kPrivacySandboxSubPage);
+  ShowSettingsSubPage(browser, kPrivacySandboxAdPersonalizationSubPage);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

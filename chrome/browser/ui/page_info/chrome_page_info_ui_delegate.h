@@ -54,8 +54,8 @@ class ChromePageInfoUiDelegate : public PageInfoUiDelegate {
   // extra details to the user concerning the granted permission.
   std::u16string GetPermissionDetail(ContentSettingsType type);
 
-  // Opens "Privacy Sandbox" settings page.
-  void ShowPrivacySandboxSettings();
+  // Opens Privacy Sandbox's "Ad Personalzation" settings page.
+  void ShowPrivacySandboxAdPersonalization();
 
   // PageInfoUiDelegate implementation
   bool IsBlockAutoPlayEnabled() override;

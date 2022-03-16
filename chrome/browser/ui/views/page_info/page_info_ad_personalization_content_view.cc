@@ -39,7 +39,7 @@ PageInfoAdPersonalizationContentView::PageInfoAdPersonalizationContentView(
             view->presenter_->RecordPageInfoAction(
                 PageInfo::PageInfoAction::
                     PAGE_INFO_AD_PERSONALIZATION_SETTINGS_OPENED);
-            view->ui_delegate_->ShowPrivacySandboxSettings();
+            view->ui_delegate_->ShowPrivacySandboxAdPersonalization();
           },
           this),
       PageInfoViewFactory::GetSiteSettingsIcon(),

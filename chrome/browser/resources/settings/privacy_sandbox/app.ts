@@ -152,6 +152,15 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
 
     HatsBrowserProxyImpl.getInstance().trustSafetyInteractionOccurred(
         TrustSafetyInteraction.OPENED_PRIVACY_SANDBOX);
+
+    const view = new URLSearchParams(window.location.search).get('view');
+    if (Object.values(PrivacySandboxSettingsView)
+            .includes(view as PrivacySandboxSettingsView)) {
+      this.privacySandboxSettingsView_ = view as PrivacySandboxSettingsView;
+    } else {
+      // If no view has been specified, then navigate to main page.
+      this.privacySandboxSettingsView_ = PrivacySandboxSettingsView.MAIN;
+    }
   }
 
   private onFlocChanged_() {
