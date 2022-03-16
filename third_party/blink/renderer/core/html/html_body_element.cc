@@ -251,7 +251,7 @@ Node::InsertionNotificationRequest HTMLBodyElement::InsertedInto(
   // update in case it stops being a viewport defining element.
   if (body == this) {
     if ((body = Traversal<HTMLBodyElement>::NextSibling(*body)))
-      GetDocument().GetStyleEngine().FirstBodyElementChanged(*body);
+      GetDocument().GetStyleEngine().FirstBodyElementChanged(body);
   }
   return kInsertionShouldCallDidNotifySubtreeInsertions;
 }
@@ -265,8 +265,8 @@ void HTMLBodyElement::RemovedFrom(ContainerNode& insertion_point) {
   // Mark remaining body for overflow update since it may change its used values
   // for scrolling due to viewport propagation if the removed body used to be
   // the viewport defining element.
-  if (HTMLBodyElement* body = GetDocument().FirstBodyElement())
-    GetDocument().GetStyleEngine().FirstBodyElementChanged(*body);
+  GetDocument().GetStyleEngine().FirstBodyElementChanged(
+      GetDocument().FirstBodyElement());
 }
 
 void HTMLBodyElement::DidNotifySubtreeInsertionsToDocument() {

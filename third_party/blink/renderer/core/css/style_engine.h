@@ -414,7 +414,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   }
   // Do necessary invalidations, which are not covered by a style recalc, for a
   // body element which changed between being the document.body element and not.
-  void FirstBodyElementChanged(HTMLBodyElement&);
+  void FirstBodyElementChanged(HTMLBodyElement*);
 
   unsigned StyleForElementCount() const { return style_for_element_count_; }
   void IncStyleForElementCount() { style_for_element_count_++; }

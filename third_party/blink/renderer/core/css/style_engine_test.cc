@@ -5758,4 +5758,30 @@ TEST_F(StyleEngineTest, MathDepthOverflow) {
             child3->GetComputedStyle()->MathDepth());
 }
 
+TEST_F(StyleEngineTest, RemovedBodyToHTMLPropagation) {
+  GetDocument().body()->SetInlineStyleProperty(CSSPropertyID::kWritingMode,
+                                               "vertical-lr");
+
+  UpdateAllLifecyclePhases();
+
+  Element* root = GetDocument().documentElement();
+  ASSERT_TRUE(root);
+  EXPECT_TRUE(root->ComputedStyleRef().IsHorizontalWritingMode())
+      << "body to html propagation does not affect computed value";
+  EXPECT_FALSE(root->GetLayoutObject()->StyleRef().IsHorizontalWritingMode())
+      << "body to html propagation affects used value";
+
+  // Make sure that recalculating style for the root element does not trigger a
+  // visual diff that requires layout. That is, we take the body -> root
+  // propagation of writing-mode into account before setting ComputedStyle on
+  // the root LayoutObject.
+  GetDocument().body()->remove();
+
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(root->ComputedStyleRef().IsHorizontalWritingMode())
+      << "body to html propagation does not affect computed value";
+  EXPECT_TRUE(root->GetLayoutObject()->StyleRef().IsHorizontalWritingMode())
+      << "No propagation from removed body";
+}
+
 }  // namespace blink

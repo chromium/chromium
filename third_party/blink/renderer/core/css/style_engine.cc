@@ -2801,7 +2801,7 @@ void StyleEngine::ViewportDefiningElementDidChange() {
   }
 }
 
-void StyleEngine::FirstBodyElementChanged(HTMLBodyElement& body) {
+void StyleEngine::FirstBodyElementChanged(HTMLBodyElement* body) {
   // If a body element changed status as being the first body element or not,
   // it might have changed its needs for scrollbars even if the style didn't
   // change. Marking it for recalc here will make sure a new ComputedStyle is
@@ -2809,12 +2809,21 @@ void StyleEngine::FirstBodyElementChanged(HTMLBodyElement& body) {
   // be updated in LayoutObject::SetStyle(). SetStyle cannot be called here
   // directly because SetStyle() relies on style information to be up-to-date,
   // otherwise scrollbar style update might crash.
-  LayoutObject* layout_object = body.GetLayoutObject();
-  if (layout_object && layout_object->IsLayoutBlock()) {
-    body.SetNeedsStyleRecalc(
-        kLocalStyleChange, StyleChangeReasonForTracing::Create(
-                               style_change_reason::kViewportDefiningElement));
+  //
+  // If the body parameter is null, it means the last body is removed. Removing
+  // an element does not cause a style recalc on its own, which means we need
+  // to force an update of the documentElement to remove used writing-mode and
+  // direction which was previously propagated from the removed body element.
+  Element* dirty_element = body ? body : GetDocument().documentElement();
+  DCHECK(dirty_element);
+  if (body) {
+    LayoutObject* layout_object = body->GetLayoutObject();
+    if (!layout_object || !layout_object->IsLayoutBlock())
+      return;
   }
+  dirty_element->SetNeedsStyleRecalc(
+      kLocalStyleChange, StyleChangeReasonForTracing::Create(
+                             style_change_reason::kViewportDefiningElement));
 }
 
 void StyleEngine::UpdateStyleInvalidationRoot(ContainerNode* ancestor,
