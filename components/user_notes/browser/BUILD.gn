@@ -13,10 +13,24 @@ static_library("browser") {
   ]
 
   deps = [
+    "//base",
     "//components/keyed_service/core",
     "//components/user_notes:features",
     "//components/user_notes/interfaces",
     "//components/user_notes/model",
     "//content/public/browser",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "user_note_service_unittest.cc" ]
+
+  deps = [
+    ":browser",
+    "//base/test:test_support",
+    "//components/user_notes:features",
+    "//content/public/browser",
+    "//testing/gtest",
   ]
 }

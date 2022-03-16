@@ -4,13 +4,21 @@
 
 #include "components/user_notes/browser/user_notes_manager.h"
 
+#include "base/memory/ptr_util.h"
 #include "components/user_notes/browser/user_note_instance.h"
 #include "content/public/browser/page.h"
 
 namespace user_notes {
 
+// static
+std::unique_ptr<UserNotesManager> UserNotesManager::CreateForTest(
+    content::Page& page,
+    base::SafeRef<UserNoteService> service) {
+  return base::WrapUnique(new UserNotesManager(page, service));
+}
+
 UserNotesManager::UserNotesManager(content::Page& page,
-                                   base::WeakPtr<UserNoteService> service)
+                                   base::SafeRef<UserNoteService> service)
     : PageUserData<UserNotesManager>(page), service_(service) {}
 
 UserNotesManager::~UserNotesManager() {

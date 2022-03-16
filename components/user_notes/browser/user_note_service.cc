@@ -14,6 +14,10 @@ UserNoteService::UserNoteService() = default;
 
 UserNoteService::~UserNoteService() = default;
 
+base::SafeRef<UserNoteService> UserNoteService::GetSafeRef() {
+  return weak_ptr_factory_.GetSafeRef();
+}
+
 void UserNoteService::OnNoteInstanceAddedToPage(const std::string& guid,
                                                 UserNotesManager* manager) {
   DCHECK(IsUserNotesEnabled());
@@ -60,6 +64,8 @@ void UserNoteService::OnNoteCreationCancelled(const std::string& guid) {
 
 UserNoteService::ModelMapEntry::ModelMapEntry(std::unique_ptr<UserNote> m)
     : model(std::move(m)) {}
+
+UserNoteService::ModelMapEntry::ModelMapEntry(ModelMapEntry&& other) = default;
 
 UserNoteService::ModelMapEntry::~ModelMapEntry() = default;
 

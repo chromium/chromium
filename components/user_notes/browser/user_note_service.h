@@ -11,8 +11,10 @@
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
-#include <utility>
 
+#include "base/gtest_prod_util.h"
+#include "base/memory/safe_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "components/user_notes/interfaces/user_notes_ui_delegate.h"
 #include "components/user_notes/model/user_note.h"
 
@@ -28,6 +30,8 @@ class UserNoteService : public KeyedService, public UserNotesUIDelegate {
   ~UserNoteService() override;
   UserNoteService(const UserNoteService&) = delete;
   UserNoteService& operator=(const UserNoteService&) = delete;
+
+  base::SafeRef<UserNoteService> GetSafeRef();
 
   // Called by |UserNotesManager| objects when a |UserNoteInstance| is added to
   // the page they're attached to. Updates the model map to add a ref to the
@@ -53,11 +57,15 @@ class UserNoteService : public KeyedService, public UserNotesUIDelegate {
     explicit ModelMapEntry(std::unique_ptr<UserNote> m);
     ~ModelMapEntry();
     ModelMapEntry(const ModelMapEntry&) = delete;
+    ModelMapEntry(ModelMapEntry&& other);
     ModelMapEntry& operator=(const ModelMapEntry&) = delete;
 
     std::unique_ptr<UserNote> model;
     std::unordered_set<UserNotesManager*> managers;
   };
+
+  friend class UserNoteServiceTest;
+  FRIEND_TEST_ALL_PREFIXES(UserNoteServiceTest, UserNoteServiceTest);
 
   // Source of truth for the in-memory note models. Any note currently being
   // displayed in a tab is stored in this data structure. Each entry also
@@ -66,6 +74,8 @@ class UserNoteService : public KeyedService, public UserNotesUIDelegate {
   // they're no longer in use and to remove notes from affected web pages when
   // they're deleted by the user.
   std::unordered_map<std::string, ModelMapEntry> model_map_;
+
+  base::WeakPtrFactory<UserNoteService> weak_ptr_factory_{this};
 };
 
 }  // namespace user_notes
