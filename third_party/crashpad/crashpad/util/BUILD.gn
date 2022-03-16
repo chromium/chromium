@@ -393,6 +393,8 @@ crashpad_static_library("util") {
       "ios/ios_system_data_collector.mm",
       "ios/raw_logging.cc",
       "ios/raw_logging.h",
+      "ios/scoped_background_task.h",
+      "ios/scoped_background_task.mm",
       "ios/scoped_vm_read.cc",
       "ios/scoped_vm_read.h",
     ]
@@ -474,9 +476,9 @@ crashpad_static_library("util") {
       "win/context_wrappers.h",
       "win/critical_section_with_debug_info.cc",
       "win/critical_section_with_debug_info.h",
+      "win/exception_codes.h",
       "win/exception_handler_server.cc",
       "win/exception_handler_server.h",
-      "win/exception_codes.h",
       "win/get_function.cc",
       "win/get_function.h",
       "win/get_module_information.cc",
@@ -589,6 +591,10 @@ crashpad_static_library("util") {
   if (crashpad_is_mac || crashpad_is_ios) {
     include_dirs += [ "$root_build_dir/gen" ]
     deps += [ ":mig_output" ]
+  }
+
+  if (crashpad_is_ios) {
+    deps += [ "../build:ios_enable_arc" ]
   }
 
   if (crashpad_is_mac && !crashpad_is_in_fuchsia) {

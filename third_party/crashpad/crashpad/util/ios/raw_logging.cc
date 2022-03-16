@@ -14,6 +14,8 @@
 
 #include "util/ios/raw_logging.h"
 
+#include <atomic>
+
 #include <string.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -23,12 +25,22 @@
 namespace crashpad {
 namespace internal {
 
+namespace {
+static_assert(std::atomic<FileHandle>::is_always_lock_free,
+              "std::atomic<FileHandle> may not be signal-safe");
+std::atomic<FileHandle> g_file_handle = STDERR_FILENO;
+}  // namespace
+
+void SetFileHandleForTesting(FileHandle file_handle) {
+  g_file_handle = file_handle;
+}
+
 void RawLogString(const char* message) {
   const size_t message_len = strlen(message);
   size_t bytes_written = 0;
   while (bytes_written < message_len) {
     int rv = HANDLE_EINTR(write(
-        STDERR_FILENO, message + bytes_written, message_len - bytes_written));
+        g_file_handle, message + bytes_written, message_len - bytes_written));
     if (rv < 0) {
       // Give up, nothing we can do now.
       break;
@@ -51,15 +63,15 @@ void RawLogInt(unsigned int number) {
 // Prints `path:linenum message:error` (with optional `:error`).
 void RawLog(const char* file, int line, const char* message, int error) {
   RawLogString(file);
-  HANDLE_EINTR(write(STDERR_FILENO, ":", 1));
+  HANDLE_EINTR(write(g_file_handle, ":", 1));
   RawLogInt(line);
-  HANDLE_EINTR(write(STDERR_FILENO, " ", 1));
+  HANDLE_EINTR(write(g_file_handle, " ", 1));
   RawLogString(message);
   if (error) {
     RawLogString(": ");
     RawLogInt(error);
   }
-  HANDLE_EINTR(write(STDERR_FILENO, "\n", 1));
+  HANDLE_EINTR(write(g_file_handle, "\n", 1));
 }
 
 }  // namespace internal

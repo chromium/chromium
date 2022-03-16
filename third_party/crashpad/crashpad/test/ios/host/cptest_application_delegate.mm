@@ -44,6 +44,7 @@
 #import "test/ios/host/cptest_shared_object.h"
 #import "test/ios/host/handler_forbidden_allocators.h"
 #include "util/file/filesystem.h"
+#include "util/ios/raw_logging.h"
 #include "util/thread/thread.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -63,12 +64,12 @@ base::FilePath GetDatabaseDir() {
   return database_dir.Append("crashpad");
 }
 
-base::FilePath GetStderrOutputFile() {
-  base::FilePath stderr_output([NSFileManager.defaultManager
-                                   URLsForDirectory:NSDocumentDirectory
-                                          inDomains:NSUserDomainMask]
-                                   .lastObject.path.UTF8String);
-  return stderr_output.Append("stderr_output.txt");
+base::FilePath GetRawLogOutputFile() {
+  base::FilePath document_directory([NSFileManager.defaultManager
+                                        URLsForDirectory:NSDocumentDirectory
+                                               inDomains:NSUserDomainMask]
+                                        .lastObject.path.UTF8String);
+  return document_directory.Append("raw_log_output.txt");
 }
 
 std::unique_ptr<crashpad::CrashReportDatabase> GetDatabase() {
@@ -114,21 +115,34 @@ GetProcessSnapshotMinidumpFromSinglePending() {
 
 @interface CPTestApplicationDelegate ()
 - (void)processIntermediateDumps;
-@property(copy, nonatomic) NSString* last_stderr_output;
+@property(copy, nonatomic) NSString* raw_log_output;
 @end
 
 @implementation CPTestApplicationDelegate {
   crashpad::CrashpadClient client_;
+  crashpad::ScopedFileHandle raw_logging_file_;
 }
 
 @synthesize window = _window;
 
 - (BOOL)application:(UIApplication*)application
     didFinishLaunchingWithOptions:(NSDictionary*)launchOptions {
+  base::FilePath raw_log_file_path = GetRawLogOutputFile();
+  NSString* path =
+      [NSString stringWithUTF8String:raw_log_file_path.value().c_str()];
+  self.raw_log_output =
+      [[NSString alloc] initWithContentsOfFile:path
+                                      encoding:NSUTF8StringEncoding
+                                         error:NULL];
+  raw_logging_file_.reset(
+      LoggingOpenFileForWrite(raw_log_file_path,
+                              crashpad::FileWriteMode::kTruncateOrCreate,
+                              crashpad::FilePermissions::kOwnerOnly));
+  crashpad::internal::SetFileHandleForTesting(raw_logging_file_.get());
+
   // Start up crashpad.
   std::map<std::string, std::string> annotations = {
       {"prod", "xcuitest"}, {"ver", "1"}, {"plat", "iOS"}, {"crashpad", "yes"}};
-
   NSArray<NSString*>* arguments = [[NSProcessInfo processInfo] arguments];
   if ([arguments containsObject:@"--alternate-client-annotations"]) {
     annotations = {{"prod", "some_app"},
@@ -136,16 +150,6 @@ GetProcessSnapshotMinidumpFromSinglePending() {
                    {"plat", "macOS"},
                    {"crashpad", "no"}};
   }
-
-  NSString* path =
-      [NSString stringWithUTF8String:GetStderrOutputFile().value().c_str()];
-  self.last_stderr_output =
-      [[NSString alloc] initWithContentsOfFile:path
-                                      encoding:NSUTF8StringEncoding
-                                         error:NULL];
-  crashpad::test::RemoveFileIfExists(GetStderrOutputFile());
-  CHECK(freopen(GetStderrOutputFile().value().c_str(), "a", stderr) != nullptr);
-
   if (client_.StartCrashpadInProcessHandler(
           GetDatabaseDir(), "", annotations)) {
     client_.ProcessIntermediateDumps();
@@ -451,10 +455,10 @@ class CrashThread : public crashpad::Thread {
   (void)malloc(10);
 }
 
-- (NSString*)stderrContents {
+- (NSString*)rawLogContents {
   CPTestApplicationDelegate* delegate =
       (CPTestApplicationDelegate*)UIApplication.sharedApplication.delegate;
-  return delegate.last_stderr_output;
+  return delegate.raw_log_output;
 }
 
 @end

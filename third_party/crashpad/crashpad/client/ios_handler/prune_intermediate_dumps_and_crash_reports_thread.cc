@@ -19,6 +19,7 @@
 #include "client/prune_crash_reports.h"
 #include "util/file/directory_reader.h"
 #include "util/file/filesystem.h"
+#include "util/ios/scoped_background_task.h"
 
 namespace crashpad {
 
@@ -115,6 +116,7 @@ void PruneIntermediateDumpsAndCrashReportsThread::Stop() {
 
 void PruneIntermediateDumpsAndCrashReportsThread::DoWork(
     const WorkerThread* thread) {
+  internal::ScopedBackgroundTask scoper("PruneThread");
   database_->CleanDatabase(60 * 60 * 24 * 3);
   PruneCrashReportDatabase(database_, condition_.get());
   if (!clean_old_intermediate_dumps_) {

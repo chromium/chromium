@@ -71,8 +71,7 @@ InProcessHandler::~InProcessHandler() {
 bool InProcessHandler::Initialize(
     const base::FilePath& database,
     const std::string& url,
-    const std::map<std::string, std::string>& annotations,
-    const IOSSystemDataCollector& system_data) {
+    const std::map<std::string, std::string>& annotations) {
   INITIALIZATION_STATE_SET_INITIALIZING(initialized_);
   annotations_ = annotations;
   database_ = CrashReportDatabase::Initialize(database);
@@ -80,7 +79,7 @@ bool InProcessHandler::Initialize(
     return false;
   }
   bundle_identifier_and_seperator_ =
-      system_data.BundleIdentifier() + kBundleSeperator;
+      system_data_.BundleIdentifier() + kBundleSeperator;
 
   if (!url.empty()) {
     // TODO(scottmg): options.rate_limit should be removed when we have a
@@ -109,7 +108,7 @@ bool InProcessHandler::Initialize(
       PruneCondition::GetDefault(),
       base_dir_,
       bundle_identifier_and_seperator_,
-      system_data.IsExtension()));
+      system_data_.IsExtension()));
   prune_thread_->Start();
 
   base::FilePath cached_writer_path = NewLockedFilePath();
@@ -126,10 +125,8 @@ bool InProcessHandler::Initialize(
   return true;
 }
 
-void InProcessHandler::DumpExceptionFromSignal(
-    const IOSSystemDataCollector& system_data,
-    siginfo_t* siginfo,
-    ucontext_t* context) {
+void InProcessHandler::DumpExceptionFromSignal(siginfo_t* siginfo,
+                                               ucontext_t* context) {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
   ScopedLockedWriter writer(GetCachedWriter(),
                             cached_writer_path_.c_str(),
@@ -138,13 +135,12 @@ void InProcessHandler::DumpExceptionFromSignal(
     CRASHPAD_RAW_LOG("Cannot DumpExceptionFromSignal without writer");
     return;
   }
-  ScopedReport report(writer.GetWriter(), system_data, annotations_);
+  ScopedReport report(writer.GetWriter(), system_data_, annotations_);
   InProcessIntermediateDumpHandler::WriteExceptionFromSignal(
-      writer.GetWriter(), system_data, siginfo, context);
+      writer.GetWriter(), system_data_, siginfo, context);
 }
 
 void InProcessHandler::DumpExceptionFromMachException(
-    const IOSSystemDataCollector& system_data,
     exception_behavior_t behavior,
     thread_t thread,
     exception_type_t exception,
@@ -166,7 +162,7 @@ void InProcessHandler::DumpExceptionFromMachException(
     mach_exception_callback_for_testing_();
   }
 
-  ScopedReport report(writer.GetWriter(), system_data, annotations_);
+  ScopedReport report(writer.GetWriter(), system_data_, annotations_);
   InProcessIntermediateDumpHandler::WriteExceptionFromMachException(
       writer.GetWriter(),
       behavior,
@@ -180,7 +176,6 @@ void InProcessHandler::DumpExceptionFromMachException(
 }
 
 void InProcessHandler::DumpExceptionFromNSExceptionWithContext(
-    const IOSSystemDataCollector& system_data,
     NativeCPUContext* context) {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
   // This does not use the cached writer. NSExceptionWithContext comes from
@@ -198,7 +193,7 @@ void InProcessHandler::DumpExceptionFromNSExceptionWithContext(
     return;
   }
 
-  ScopedReport report(writer.GetWriter(), system_data, annotations_);
+  ScopedReport report(writer.GetWriter(), system_data_, annotations_);
   InProcessIntermediateDumpHandler::WriteExceptionFromMachException(
       writer.GetWriter(),
       MACH_EXCEPTION_CODES,
@@ -212,7 +207,6 @@ void InProcessHandler::DumpExceptionFromNSExceptionWithContext(
 }
 
 void InProcessHandler::DumpExceptionFromNSExceptionWithFrames(
-    const IOSSystemDataCollector& system_data,
     const uint64_t* frames,
     const size_t num_frames) {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
@@ -225,23 +219,20 @@ void InProcessHandler::DumpExceptionFromNSExceptionWithFrames(
     return;
   }
   ScopedReport report(
-      writer.GetWriter(), system_data, annotations_, frames, num_frames);
+      writer.GetWriter(), system_data_, annotations_, frames, num_frames);
   InProcessIntermediateDumpHandler::WriteExceptionFromNSException(
       writer.GetWriter());
 }
 
 bool InProcessHandler::DumpExceptionFromSimulatedMachException(
-    const IOSSystemDataCollector& system_data,
     const NativeCPUContext* context,
     base::FilePath* path) {
   base::FilePath locked_path = NewLockedFilePath();
   *path = locked_path.RemoveFinalExtension();
-  return DumpExceptionFromSimulatedMachExceptionAtPath(
-      system_data, context, locked_path);
+  return DumpExceptionFromSimulatedMachExceptionAtPath(context, locked_path);
 }
 
 bool InProcessHandler::DumpExceptionFromSimulatedMachExceptionAtPath(
-    const IOSSystemDataCollector& system_data,
     const NativeCPUContext* context,
     const base::FilePath& path) {
   // This does not use the cached writer. It's expected that simulated
@@ -259,7 +250,7 @@ bool InProcessHandler::DumpExceptionFromSimulatedMachExceptionAtPath(
         "Cannot DumpExceptionFromSimulatedMachExceptionAtPath without writer");
     return false;
   }
-  ScopedReport report(writer.GetWriter(), system_data, annotations_);
+  ScopedReport report(writer.GetWriter(), system_data_, annotations_);
   InProcessIntermediateDumpHandler::WriteExceptionFromMachException(
       writer.GetWriter(),
       MACH_EXCEPTION_CODES,

@@ -36,8 +36,7 @@ class InProcessHandlerTest : public testing::Test {
   // testing::Test:
 
   void SetUp() override {
-    ASSERT_TRUE(
-        in_process_handler_.Initialize(temp_dir_.path(), "", {}, system_data_));
+    ASSERT_TRUE(in_process_handler_.Initialize(temp_dir_.path(), "", {}));
     pending_dir_ = temp_dir_.path().Append("pending-serialized-ios-dump");
     bundle_identifier_and_seperator_ = system_data_.BundleIdentifier() + "@";
   }

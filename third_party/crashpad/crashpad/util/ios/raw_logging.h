@@ -15,6 +15,8 @@
 #ifndef CRASHPAD_UTIL_IOS_EXCEPTION_LOGGING_H_
 #define CRASHPAD_UTIL_IOS_EXCEPTION_LOGGING_H_
 
+#include "util/file/file_io.h"
+
 namespace crashpad {
 namespace internal {
 
@@ -24,6 +26,11 @@ namespace internal {
 //!
 //! Note: RUNS-DURING-CRASH.
 void RawLog(const char* file, int line, const char* message, int error);
+
+//! \brief Direct RawLog to log to \a file_handle instead of stderr, so tests
+//!     can confirm certain error conditions during in-process crashes. Call
+//!     before before any Crashpad is run.
+void SetFileHandleForTesting(FileHandle file_handle);
 
 }  // namespace internal
 }  // namespace crashpad

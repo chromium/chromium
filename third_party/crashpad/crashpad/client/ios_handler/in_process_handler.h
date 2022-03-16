@@ -49,34 +49,28 @@ class InProcessHandler {
   //! \param[in] database The path to a Crashpad database.
   //! \param[in] url The URL of an upload server.
   //! \param[in] annotations Process annotations to set in each crash report.
-  //! \param[in] system_data An object containing various system data points.
   //! \return `true` if a handler to a pending intermediate dump could be
   //!     opened.
   bool Initialize(const base::FilePath& database,
                   const std::string& url,
-                  const std::map<std::string, std::string>& annotations,
-                  const IOSSystemDataCollector& system_data);
+                  const std::map<std::string, std::string>& annotations);
 
   //! \brief Generate an intermediate dump from a signal handler exception.
   //!      Writes the dump with the cached writer does not allow concurrent
   //!      exceptions to be written. It is expected the system will terminate
   //!      the application after this call.
   //!
-  //! \param[in] system_data An object containing various system data points.
   //! \param[in] siginfo A pointer to a `siginfo_t` object received by a signal
   //!     handler.
   //! \param[in] context A pointer to a `ucontext_t` object received by a
   //!     signal.
-  void DumpExceptionFromSignal(const IOSSystemDataCollector& system_data,
-                               siginfo_t* siginfo,
-                               ucontext_t* context);
+  void DumpExceptionFromSignal(siginfo_t* siginfo, ucontext_t* context);
 
   //! \brief Generate an intermediate dump from a mach exception. Writes the
   //!     dump with the cached writer does not allow concurrent exceptions to be
   //!     written. It is expected the system will terminate the application
   //!     after this call.
   //!
-  //! \param[in] system_data An object containing various system data points.
   //! \param[in] behavior
   //! \param[in] thread
   //! \param[in] exception
@@ -85,8 +79,7 @@ class InProcessHandler {
   //! \param[in,out] flavor
   //! \param[in] old_state
   //! \param[in] old_state_count
-  void DumpExceptionFromMachException(const IOSSystemDataCollector& system_data,
-                                      exception_behavior_t behavior,
+  void DumpExceptionFromMachException(exception_behavior_t behavior,
                                       thread_t thread,
                                       exception_type_t exception,
                                       const mach_exception_data_type_t* code,
@@ -100,11 +93,8 @@ class InProcessHandler {
   //!     exceptions is imperfect, uses a new writer for the intermediate dump,
   //!     as it is possible for further exceptions to happen.
   //!
-  //! \param[in] system_data An object containing various system data points.
   //! \param[in] context
-  void DumpExceptionFromNSExceptionWithContext(
-      const IOSSystemDataCollector& system_data,
-      NativeCPUContext* context);
+  void DumpExceptionFromNSExceptionWithContext(NativeCPUContext* context);
 
   //! \brief Generate an intermediate dump from an uncaught NSException.
   //!
@@ -116,38 +106,30 @@ class InProcessHandler {
   //! the system will terminate the application after this call.
 
   //!
-  //! \param[in] system_data An object containing various system data points.
   //! \param[in] frames An array of call stack frame addresses.
   //! \param[in] num_frames The number of frames in |frames|.
-  void DumpExceptionFromNSExceptionWithFrames(
-      const IOSSystemDataCollector& system_data,
-      const uint64_t* frames,
-      const size_t num_frames);
+  void DumpExceptionFromNSExceptionWithFrames(const uint64_t* frames,
+                                              const size_t num_frames);
 
   //! \brief Generate a simulated intermediate dump similar to a Mach exception
   //!     in the same base directory as other exceptions. Does not use the
   //!     cached writer.
   //!
-  //! \param[in] system_data An object containing various system data points.
   //! \param[in] context A pointer to a NativeCPUContext object for this
   //!     simulated exception.
   //! \param[out] path The path of the intermediate dump generated.
   //! \return `true` if the pending intermediate dump could be written.
-  bool DumpExceptionFromSimulatedMachException(
-      const IOSSystemDataCollector& system_data,
-      const NativeCPUContext* context,
-      base::FilePath* path);
+  bool DumpExceptionFromSimulatedMachException(const NativeCPUContext* context,
+                                               base::FilePath* path);
 
   //! \brief Generate a simulated intermediate dump similar to a Mach exception
   //!     at a specific path. Does not use the cached writer.
   //!
-  //! \param[in] system_data An object containing various system data points.
   //! \param[in] context A pointer to a NativeCPUContext object for this
   //!     simulated exception.
   //! \param[in] path Path to where the intermediate dump should be written.
   //! \return `true` if the pending intermediate dump could be written.
   bool DumpExceptionFromSimulatedMachExceptionAtPath(
-      const IOSSystemDataCollector& system_data,
       const NativeCPUContext* context,
       const base::FilePath& path);
 
@@ -259,6 +241,7 @@ class InProcessHandler {
   std::unique_ptr<PruneIntermediateDumpsAndCrashReportsThread> prune_thread_;
   std::unique_ptr<CrashReportDatabase> database_;
   std::string bundle_identifier_and_seperator_;
+  IOSSystemDataCollector system_data_;
   InitializationStateDcheck initialized_;
 };
 

@@ -108,9 +108,9 @@
 // that the handler forbidden allocator works.
 - (void)allocateWithForbiddenAllocators;
 
-// Return the contents of the stderr output from the previous run of the host
+// Return the contents of the RawLog output from the previous run of the host
 // application.
-- (NSString*)stderrContents;
+- (NSString*)rawLogContents;
 
 @end
 

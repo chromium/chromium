@@ -44,6 +44,10 @@
 #include "handler/mac/file_limit_annotation.h"
 #endif  // BUILDFLAG(IS_APPLE)
 
+#if BUILDFLAG(IS_IOS)
+#include "util/ios/scoped_background_task.h"
+#endif  // BUILDFLAG(IS_IOS)
+
 namespace crashpad {
 
 namespace {
@@ -97,6 +101,10 @@ void CrashReportUploadThread::Stop() {
 }
 
 void CrashReportUploadThread::ProcessPendingReports() {
+#if BUILDFLAG(IS_IOS)
+  internal::ScopedBackgroundTask scoper("CrashReportUploadThread");
+#endif  // BUILDFLAG(IS_IOS)
+
   std::vector<UUID> known_report_uuids = known_pending_report_uuids_.Drain();
   for (const UUID& report_uuid : known_report_uuids) {
     CrashReportDatabase::Report report;
@@ -175,7 +183,7 @@ void CrashReportUploadThread::ProcessPendingReport(
 #if BUILDFLAG(IS_IOS)
   if (ShouldRateLimitRetry(report))
     return;
-#endif
+#endif  // BUILDFLAG(IS_IOS)
 
   std::unique_ptr<const CrashReportDatabase::UploadReport> upload_report;
   CrashReportDatabase::OperationStatus status =

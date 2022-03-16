@@ -104,8 +104,8 @@
   XCTAssertTrue([rootObject_ pendingReportException:&report_exception]);
   XCTAssertEqual(report_exception.unsignedIntValue, exception);
 
-  NSString* stderrContents = [rootObject_ stderrContents];
-  XCTAssertFalse([stderrContents containsString:@"allocator used in handler."]);
+  NSString* rawLogContents = [rootObject_ rawLogContents];
+  XCTAssertFalse([rawLogContents containsString:@"allocator used in handler."]);
 }
 
 - (void)testEDO {
@@ -340,9 +340,9 @@
 
   XCTAssertEqual([rootObject_ pendingReportCount], 0);
 
-  NSString* stderrContents = [rootObject_ stderrContents];
+  NSString* rawLogContents = [rootObject_ rawLogContents];
   NSString* errmsg = @"Cannot DumpExceptionFromSignal without writer";
-  XCTAssertTrue([stderrContents containsString:errmsg]);
+  XCTAssertTrue([rawLogContents containsString:errmsg]);
 }
 
 - (void)testFailureWhenHandlerAllocates {
@@ -361,8 +361,8 @@
 
   XCTAssertEqual([rootObject_ pendingReportCount], 0);
 
-  NSString* stderrContents = [rootObject_ stderrContents];
-  XCTAssertTrue([stderrContents containsString:@"allocator used in handler."]);
+  NSString* rawLogContents = [rootObject_ rawLogContents];
+  XCTAssertTrue([rawLogContents containsString:@"allocator used in handler."]);
 }
 
 @end

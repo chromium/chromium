@@ -24,7 +24,6 @@
 #include "base/mac/scoped_mach_port.h"
 #include "client/ios_handler/exception_processor.h"
 #include "client/ios_handler/in_process_handler.h"
-#include "util/ios/ios_system_data_collector.h"
 #include "util/mach/exc_server_variants.h"
 #include "util/mach/exception_ports.h"
 #include "util/mach/mach_extensions.h"
@@ -74,8 +73,7 @@ class CrashHandler : public Thread,
                   const std::string& url,
                   const std::map<std::string, std::string>& annotations) {
     INITIALIZATION_STATE_SET_INITIALIZING(initialized_);
-    if (!in_process_handler_.Initialize(
-            database, url, annotations, system_data_) ||
+    if (!in_process_handler_.Initialize(database, url, annotations) ||
         !InstallMachExceptionHandler() ||
         // xnu turns hardware faults into Mach exceptions, so the only signal
         // left to register is SIGABRT, which never starts off as a hardware
@@ -128,8 +126,8 @@ class CrashHandler : public Thread,
   void DumpWithoutCrash(NativeCPUContext* context, bool process_dump) {
     INITIALIZATION_STATE_DCHECK_VALID(initialized_);
     base::FilePath path;
-    if (!in_process_handler_.DumpExceptionFromSimulatedMachException(
-            system_data_, context, &path)) {
+    if (!in_process_handler_.DumpExceptionFromSimulatedMachException(context,
+                                                                     &path)) {
       return;
     }
 
@@ -140,8 +138,8 @@ class CrashHandler : public Thread,
 
   void DumpWithoutCrashAtPath(NativeCPUContext* context,
                               const base::FilePath& path) {
-    in_process_handler_.DumpExceptionFromSimulatedMachExceptionAtPath(
-        system_data_, context, path);
+    in_process_handler_.DumpExceptionFromSimulatedMachExceptionAtPath(context,
+                                                                      path);
   }
 
   void StartProcessingPendingReports() {
@@ -278,8 +276,7 @@ class CrashHandler : public Thread,
                            thread_state_flavor_t flavor,
                            ConstThreadState old_state,
                            mach_msg_type_number_t old_state_count) {
-    in_process_handler_.DumpExceptionFromMachException(system_data_,
-                                                       behavior,
+    in_process_handler_.DumpExceptionFromMachException(behavior,
                                                        thread,
                                                        exception,
                                                        code,
@@ -291,8 +288,8 @@ class CrashHandler : public Thread,
 
   void HandleUncaughtNSException(const uint64_t* frames,
                                  const size_t num_frames) override {
-    in_process_handler_.DumpExceptionFromNSExceptionWithFrames(
-        system_data_, frames, num_frames);
+    in_process_handler_.DumpExceptionFromNSExceptionWithFrames(frames,
+                                                               num_frames);
     // After uncaught exceptions are reported, the system immediately triggers a
     // call to std::terminate()/abort(). Remove the abort handler so a second
     // dump isn't generated.
@@ -301,8 +298,7 @@ class CrashHandler : public Thread,
 
   void HandleUncaughtNSExceptionWithContext(
       NativeCPUContext* context) override {
-    in_process_handler_.DumpExceptionFromNSExceptionWithContext(system_data_,
-                                                                context);
+    in_process_handler_.DumpExceptionFromNSExceptionWithContext(context);
 
     // After uncaught exceptions are reported, the system immediately triggers a
     // call to std::terminate()/abort(). Remove the abort handler so a second
@@ -331,7 +327,7 @@ class CrashHandler : public Thread,
                               siginfo_t* siginfo,
                               ucontext_t* context,
                               struct sigaction* old_action) {
-    in_process_handler_.DumpExceptionFromSignal(system_data_, siginfo, context);
+    in_process_handler_.DumpExceptionFromSignal(siginfo, context);
 
     // Always call system handler.
     Signals::RestoreHandlerAndReraiseSignalOnReturn(siginfo, old_action);
@@ -341,7 +337,6 @@ class CrashHandler : public Thread,
   ExceptionPorts::ExceptionHandlerVector original_handlers_;
   struct sigaction old_action_ = {};
   internal::InProcessHandler in_process_handler_;
-  internal::IOSSystemDataCollector system_data_;
   static CrashHandler* instance_;
   bool mach_handler_running_ = false;
   InitializationStateDcheck initialized_;
