@@ -262,7 +262,9 @@ gfx::Point CalendarDateCellView::GetEventsPresentIndicatorCenterPosition() {
 }
 
 void CalendarDateCellView::MaybeDrawEventsIndicator(gfx::Canvas* canvas) {
-  if (grayed_out_)
+  // Not drawing the event dot if it's a grayed out cell or the user is not in
+  // an active session (without a vilid user account id).
+  if (grayed_out_ || !calendar_utils::IsActiveUser())
     return;
 
   if (GetEventNumber() == 0)

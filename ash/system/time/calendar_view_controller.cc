@@ -154,8 +154,8 @@ std::u16string CalendarViewController::GetPreviousMonthName() const {
   return calendar_utils::GetMonthName(GetPreviousMonthFirstDayLocal(1));
 }
 
-std::u16string CalendarViewController::GetNextMonthName() const {
-  return calendar_utils::GetMonthName(GetNextMonthFirstDayLocal(1));
+std::u16string CalendarViewController::GetNextMonthName(int num_months) const {
+  return calendar_utils::GetMonthName(GetNextMonthFirstDayLocal(num_months));
 }
 
 std::u16string CalendarViewController::GetOnScreenMonthName() const {
@@ -235,9 +235,10 @@ bool CalendarViewController::IsSelectedDateInCurrentMonth() {
     return false;
 
   base::Time::Exploded currently_shown_date_exploded =
-      calendar_utils::GetExplodedUTC(currently_shown_date_);
-  base::Time::Exploded selected_date_exploded =
-      calendar_utils::GetExplodedUTC(selected_date_.value());
+      calendar_utils::GetExplodedUTC(currently_shown_date_ +
+                                     base::Minutes(time_difference_minutes_));
+  base::Time::Exploded selected_date_exploded = calendar_utils::GetExplodedUTC(
+      selected_date_.value() + base::Minutes(time_difference_minutes_));
   return currently_shown_date_exploded.year == selected_date_exploded.year &&
          currently_shown_date_exploded.month == selected_date_exploded.month;
 }

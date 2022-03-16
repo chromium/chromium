@@ -53,10 +53,6 @@ constexpr int kLabelTextInBetweenPadding = 10;
 constexpr int kWeekRowHorizontalPadding =
     kContentHorizontalPadding - calendar_utils::kDateHorizontalPadding;
 
-// The pixel that will be applied to indicate that we can see this is the view's
-// bottom if there's this much pixel left.
-constexpr int kPrepareEndOfView = 30;
-
 // The percentage of a normal row height, which (percentage * row_height) will
 // be used as the `CalendarView` height when the `CalendarEventListView` is
 // expanded.
@@ -199,6 +195,11 @@ class CalendarView::MonthHeaderLabelView : public views::View {
       case NEXT:
         date_ = calendar_view_controller->GetNextMonthFirstDayLocal(1);
         month_name_ = calendar_view_controller->GetNextMonthName();
+        break;
+      case NEXTNEXT:
+        date_ = calendar_view_controller->GetNextMonthFirstDayLocal(2);
+        month_name_ =
+            calendar_view_controller->GetNextMonthName(/*num_months=*/2);
         break;
     }
     SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -513,6 +514,10 @@ void CalendarView::SetMonthViews() {
   next_label_ = AddLabelWithId(LabelType::NEXT);
   next_month_ =
       AddMonth(calendar_view_controller_->GetNextMonthFirstDayLocal(1));
+
+  next_next_label_ = AddLabelWithId(LabelType::NEXTNEXT);
+  next_next_month_ = AddMonth(
+      calendar_view_controller_->GetNextMonthFirstDayLocal(/*num_months=*/2));
 }
 
 int CalendarView::PositionOfCurrentMonth() const {
@@ -617,6 +622,8 @@ void CalendarView::ResetToToday() {
   content_view_->RemoveChildViewT(current_month_);
   content_view_->RemoveChildViewT(next_label_);
   content_view_->RemoveChildViewT(next_month_);
+  content_view_->RemoveChildViewT(next_next_label_);
+  content_view_->RemoveChildViewT(next_next_month_);
 
   // Before adding new label and month views, reset the `scroll_view_` to 0
   // position. Otherwise after all the views are deleted the 'scroll_view_`'s
@@ -703,12 +710,16 @@ void CalendarView::RestoreMonthStatus() {
   previous_label_->layer()->GetAnimator()->StopAnimating();
   next_label_->layer()->GetAnimator()->StopAnimating();
   next_month_->layer()->GetAnimator()->StopAnimating();
+  next_next_label_->layer()->GetAnimator()->StopAnimating();
+  next_next_month_->layer()->GetAnimator()->StopAnimating();
   ResetLayer(current_month_);
   ResetLayer(current_label_);
   ResetLayer(previous_label_);
   ResetLayer(previous_month_);
   ResetLayer(next_label_);
   ResetLayer(next_month_);
+  ResetLayer(next_next_label_);
+  ResetLayer(next_next_month_);
 
   if (!should_months_animate_)
     months_animation_restart_timer_.Reset();
@@ -786,6 +797,7 @@ void CalendarView::OnViewFocused(View* observed_view) {
   previous_month_->EnableFocus();
   current_month_->EnableFocus();
   next_month_->EnableFocus();
+  next_next_month_->EnableFocus();
 
   // If the event list is showing, focus on the first cell in the current row or
   // today's cell if today is in this row.
@@ -913,6 +925,7 @@ void CalendarView::OnEventsFetched(
   previous_month_->SchedulePaintChildren();
   current_month_->SchedulePaintChildren();
   next_month_->SchedulePaintChildren();
+  next_next_month_->SchedulePaintChildren();
 }
 
 void CalendarView::OpenEventList() {
@@ -999,6 +1012,8 @@ void CalendarView::OpenEventList() {
       .SetTransform(current_label_, month_moving, gfx::Tween::EASE_OUT_2)
       .SetTransform(next_label_, month_moving, gfx::Tween::EASE_OUT_2)
       .SetTransform(next_month_, month_moving, gfx::Tween::EASE_OUT_2)
+      .SetTransform(next_next_label_, month_moving, gfx::Tween::EASE_OUT_2)
+      .SetTransform(next_next_month_, month_moving, gfx::Tween::EASE_OUT_2)
       .At(base::Milliseconds(0))
       .SetDuration(kAnimationDurationForEventsMoving)
       .SetTransform(event_list_view_, std::move(list_view_moving),
@@ -1063,9 +1078,11 @@ void CalendarView::CloseEventList() {
 void CalendarView::ScrollUpOneMonth() {
   calendar_view_controller_->UpdateMonth(
       calendar_view_controller_->GetPreviousMonthFirstDayLocal(1));
-  content_view_->RemoveChildViewT(next_label_);
-  content_view_->RemoveChildViewT(next_month_);
+  content_view_->RemoveChildViewT(next_next_label_);
+  content_view_->RemoveChildViewT(next_next_month_);
 
+  next_next_label_ = next_label_;
+  next_next_month_ = next_month_;
   next_label_ = current_label_;
   next_month_ = current_month_;
   current_label_ = previous_label_;
@@ -1110,12 +1127,14 @@ void CalendarView::ScrollDownOneMonth() {
   previous_month_ = current_month_;
   current_label_ = next_label_;
   current_month_ = next_month_;
+  next_label_ = next_next_label_;
+  next_month_ = next_next_month_;
 
-  next_label_ = AddLabelWithId(LabelType::NEXT);
-  next_month_ =
-      AddMonth(calendar_view_controller_->GetNextMonthFirstDayLocal(1));
+  next_next_label_ = AddLabelWithId(LabelType::NEXTNEXT);
+  next_next_month_ = AddMonth(
+      calendar_view_controller_->GetNextMonthFirstDayLocal(/*num_months=*/2));
   if (IsDateCellViewFocused())
-    next_month_->EnableFocus();
+    next_next_month_->EnableFocus();
 
   // Same as adding previous views. We need to remove the height of the
   // deleted month to keep the current view's position.
@@ -1224,6 +1243,8 @@ void CalendarView::ScrollOneMonthWithAnimation(bool scroll_up) {
       .SetTransform(previous_label_, month_moving, gfx::Tween::EASE_OUT_2)
       .SetTransform(next_month_, month_moving, gfx::Tween::EASE_OUT_2)
       .SetTransform(next_label_, month_moving, gfx::Tween::EASE_OUT_2)
+      .SetTransform(next_next_month_, month_moving, gfx::Tween::EASE_OUT_2)
+      .SetTransform(next_next_label_, month_moving, gfx::Tween::EASE_OUT_2)
       .At(calendar_utils::kAnimationDurationForMoving)
       .SetDuration(calendar_utils::kAnimationDurationForMoving)
       .SetTransform(header_, std::move(header_moving), gfx::Tween::EASE_OUT_2)
@@ -1325,6 +1346,7 @@ void CalendarView::OnEvent(ui::Event* event) {
     current_month_->DisableFocus();
     previous_month_->DisableFocus();
     next_month_->DisableFocus();
+    next_next_month_->DisableFocus();
 
     TrayDetailedView::OnEvent(event);
 
@@ -1473,10 +1495,7 @@ void CalendarView::OnContentsScrolled() {
   // passing the top of the visible area.
   if (scroll_view_->GetVisibleRect().y() <= current_label_->y()) {
     ScrollUpOneMonth();
-  } else if (scroll_view_->GetVisibleRect().y() >= next_label_->y() ||
-             scroll_view_->GetVisibleRect().y() +
-                     scroll_view_->GetVisibleRect().height() >
-                 next_month_->y() + next_month_->height() - kPrepareEndOfView) {
+  } else if (scroll_view_->GetVisibleRect().y() >= next_label_->y()) {
     ScrollDownOneMonth();
   }
 }
@@ -1508,6 +1527,12 @@ void CalendarView::OnOpenEventListAnimationComplete() {
   // that the `current_month_`is updated to the next month.
   if (!calendar_view_controller_->IsSelectedDateInCurrentMonth())
     ScrollDownOneMonth();
+  // If still not in this month, it's in the `next_next_month_`. Doing this in a
+  // while loop may cause a potential infinite loop. For example when the time
+  // difference is not calculated or applied correctly, which may cause some
+  // dates cannot be found in the months.
+  if (!calendar_view_controller_->IsSelectedDateInCurrentMonth())
+    ScrollDownOneMonth();
   base::AutoReset<bool> is_resetting_scrolling(&is_resetting_scroll_, true);
   RestoreMonthStatus();
   scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(),
@@ -1530,6 +1555,7 @@ void CalendarView::OnOpenEventListAnimationComplete() {
     current_month_->DisableFocus();
     previous_month_->DisableFocus();
     next_month_->DisableFocus();
+    next_next_month_->DisableFocus();
     content_view_->SetFocusBehavior(FocusBehavior::ALWAYS);
   }
 }

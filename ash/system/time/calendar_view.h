@@ -151,8 +151,9 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   };
 
   // The types to create the `MonthHeaderLabelView` which are in corresponding
-  // to the 3 months: `previous_month_`, `current_month_` and `next_month_`.
-  enum LabelType { PREVIOUS, CURRENT, NEXT };
+  // to the 4 months: `previous_month_`, `current_month_`, `next_month_` and
+  // `next_next_month_`.
+  enum LabelType { PREVIOUS, CURRENT, NEXT, NEXTNEXT };
 
   friend class CalendarViewTest;
   friend class CalendarViewAnimationTest;
@@ -280,9 +281,11 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   views::View* current_label_ = nullptr;
   views::View* previous_label_ = nullptr;
   views::View* next_label_ = nullptr;
+  views::View* next_next_label_ = nullptr;
   CalendarMonthView* previous_month_ = nullptr;
   CalendarMonthView* current_month_ = nullptr;
   CalendarMonthView* next_month_ = nullptr;
+  CalendarMonthView* next_next_month_ = nullptr;
   CalendarHeaderView* header_ = nullptr;
   views::Button* reset_to_today_button_ = nullptr;
   views::Button* settings_button_ = nullptr;

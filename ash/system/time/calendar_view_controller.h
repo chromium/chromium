@@ -83,9 +83,9 @@ class ASH_EXPORT CalendarViewController {
   // Gets the month name of the `currently_shown_date_`'s month.
   std::u16string GetOnScreenMonthName() const;
 
-  // Gets the month name of the next month based on the
+  // Gets the month name of the next `num_months` month based on the
   // `currently_shown_date_`'s month.
-  std::u16string GetNextMonthName() const;
+  std::u16string GetNextMonthName(int num_months = 1) const;
 
   // Gets the month name of the previous month based `currently_shown_date_`'s
   // month.
