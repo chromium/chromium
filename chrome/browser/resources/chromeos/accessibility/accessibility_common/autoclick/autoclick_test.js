@@ -70,26 +70,32 @@ AutoclickE2ETest = class extends E2ETestBase {
   }
 };
 
-TEST_F('AutoclickE2ETest', 'HighlightsRootWebAreaIfNotScrollable', function() {
-  this.runWithLoadedTree(
-      'data:text/html;charset=utf-8,<p>Cats rock!</p>', async function(root) {
-        const node = root.find(
-            {role: RoleType.STATIC_TEXT, attributes: {name: 'Cats rock!'}});
-        await new Promise(resolve => {
-          this.mockAccessibilityPrivate.callOnScrollableBoundsForPointRequested(
-              // Offset slightly into the node to ensure the hittest
-              // happens within the node.
-              node.location.left + 1, node.location.top + 1, resolve);
-        });
-        const expected = node.root.location;
-        const focusRings = this.mockAccessibilityPrivate.getFocusRings();
-        this.assertSameRect(
-            this.mockAccessibilityPrivate.getScrollableBounds(), expected);
-        this.assertSameRect(focusRings[0].rects[0], expected);
-      });
-});
+// Test is flaky: https://crbug.com/1306728
+TEST_F(
+    'AutoclickE2ETest', 'DISABLED_HighlightsRootWebAreaIfNotScrollable',
+    function() {
+      this.runWithLoadedTree(
+          'data:text/html;charset=utf-8,<p>Cats rock!</p>',
+          async function(root) {
+            const node = root.find(
+                {role: RoleType.STATIC_TEXT, attributes: {name: 'Cats rock!'}});
+            await new Promise(resolve => {
+              this.mockAccessibilityPrivate
+                  .callOnScrollableBoundsForPointRequested(
+                      // Offset slightly into the node to ensure the hittest
+                      // happens within the node.
+                      node.location.left + 1, node.location.top + 1, resolve);
+            });
+            const expected = node.root.location;
+            const focusRings = this.mockAccessibilityPrivate.getFocusRings();
+            this.assertSameRect(
+                this.mockAccessibilityPrivate.getScrollableBounds(), expected);
+            this.assertSameRect(focusRings[0].rects[0], expected);
+          });
+    });
 
-TEST_F('AutoclickE2ETest', 'HighlightsScrollableDiv', function() {
+// Test is flaky: https://crbug.com/1306728
+TEST_F('AutoclickE2ETest', 'DISABLED_HighlightsScrollableDiv', function() {
   this.runWithLoadedTree(
       'data:text/html;charset=utf-8,' +
           '<div style="width:100px;height:100px;overflow:scroll">' +
@@ -117,7 +123,8 @@ TEST_F('AutoclickE2ETest', 'HighlightsScrollableDiv', function() {
       });
 });
 
-TEST_F('AutoclickE2ETest', 'RemovesAndAddsAutoclick', function() {
+// Test is flaky: https://crbug.com/1306728
+TEST_F('AutoclickE2ETest', 'DISABLED_RemovesAndAddsAutoclick', function() {
   this.runWithLoadedTree(
       'data:text/html;charset=utf-8,<p>Cats rock!</p>', async function(root) {
         // Turn on screen magnifier so that when we turn off autoclick, the
