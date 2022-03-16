@@ -2,17 +2,64 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/common/features.gni")
 import("//tools/grit/grit_rule.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+assert(!is_android)
+
+# Note: No need to pass these CSS files to preprocess_if_expr() for now.
+css_files = [
+  "css/feedback.css",
+  "css/feedback_shared_styles.css",
+  "css/feedback_shared_vars.css",
+  "css/sys_info.css",
+]
+
+if (is_chromeos_ash) {
+  css_files += [ "css/assistant_logs_info.css" ]
+}
+
+icon_files = [
+  "images/button_butter_bar_close.png",
+  "images/button_butter_bar_close_hover.png",
+  "images/button_butter_bar_close_pressed.png",
+  "images/2x/button_butter_bar_close.png",
+  "images/2x/button_butter_bar_close_hover.png",
+  "images/2x/button_butter_bar_close_pressed.png",
+]
 
 grit("resources") {
-  source = "feedback_resources.grd"
   defines = chrome_grit_defines
+
+  # These arguments are needed since the grd is generated at build time.
+  enable_input_discovery_for_gn_analyze = false
+  source = "$target_gen_dir/resources.grd"
+  deps = [ ":build_grd" ]
+
   outputs = [
-    "grit/feedback_resources.h",
-    "grit/feedback_resources_map.cc",
-    "grit/feedback_resources_map.h",
-    "feedback_resources.pak",
+    "grit/feedback_webui_resources.h",
+    "grit/feedback_webui_resources_map.cc",
+    "grit/feedback_webui_resources_map.h",
+    "feedback_webui_resources.pak",
   ]
   output_dir = "$root_gen_dir/chrome"
+}
+
+generate_grd("build_grd") {
+  grd_prefix = "feedback_webui"
+  out_grd = "$target_gen_dir/resources.grd"
+
+  input_files = css_files + icon_files
+  input_files_base_dir = rebase_path(".", "//")
+
+  deps = [
+    "html:build_grdp",
+    "js:build_grdp",
+  ]
+  grdp_files = [
+    "$target_gen_dir/js/resources.grdp",
+    "$target_gen_dir/html/resources.grdp",
+  ]
 }

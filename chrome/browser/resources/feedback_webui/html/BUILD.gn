@@ -1,0 +1,38 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+assert(!is_android)
+
+preprocess_folder = "$target_gen_dir/../preprocessed"
+
+html_files = [
+  "default.html",
+  "sys_info.html",
+]
+
+if (is_chromeos_ash) {
+  html_files += [
+    "assistant_logs_info.html",
+    "bluetooth_logs_info.html",
+  ]
+}
+
+preprocess_if_expr("preprocess") {
+  in_folder = "."
+  out_folder = "$preprocess_folder/html"
+  in_files = html_files
+}
+
+generate_grd("build_grdp") {
+  grd_prefix = "feedback_webui_html"
+  out_grd = "$target_gen_dir/resources.grdp"
+  input_files = html_files
+  input_files_base_dir = rebase_path("$preprocess_folder/html", root_build_dir)
+  resource_path_prefix = "html"
+  deps = [ ":preprocess" ]
+}

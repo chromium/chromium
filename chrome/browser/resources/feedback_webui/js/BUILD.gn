@@ -2,37 +2,43 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
+import("//build/config/chromeos/ui_mode.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
 
-js_type_check("closure_compile") {
-  deps = [
-    ":feedback",
-    ":feedback_util",
-    ":sys_info",
-    ":take_screenshot",
-  ]
+assert(!is_android)
+
+preprocess_folder = "$target_gen_dir/../preprocessed/js"
+
+ts_files = [
+  "feedback.js",
+  "feedback_util.js",
+  "questionnaire.js",
+  "sys_info.js",
+  "take_screenshot.js",
+]
+
+preprocess_if_expr("preprocess") {
+  in_folder = "."
+  out_folder = preprocess_folder
+  in_files = ts_files
 }
 
-js_library("feedback") {
-  deps = [
-    ":feedback_util",
-    ":take_screenshot",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:util.m",
-  ]
-  externs_list = [ "$externs_path/feedback_private.js" ]
+ts_library("build_ts") {
+  root_dir = preprocess_folder
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  in_files = ts_files
+
+  deps = [ "//ui/webui/resources:library" ]
+  extra_deps = [ ":preprocess" ]
 }
 
-js_library("feedback_util") {
-}
-
-js_library("sys_info") {
-  deps = [
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:util.m",
-  ]
-}
-
-js_library("take_screenshot") {
+generate_grd("build_grdp") {
+  grd_prefix = "feedback_webui_js"
+  out_grd = "$target_gen_dir/resources.grdp"
+  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+  resource_path_prefix = "js"
+  deps = [ ":build_ts" ]
 }

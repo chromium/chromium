@@ -149,7 +149,7 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/download_shelf_resources.pak",
         "$root_gen_dir/chrome/downloads_resources.pak",
         "$root_gen_dir/chrome/feed_resources.pak",
-        "$root_gen_dir/chrome/feedback_resources.pak",
+        "$root_gen_dir/chrome/feedback_webui_resources.pak",
         "$root_gen_dir/chrome/gaia_auth_host_resources.pak",
         "$root_gen_dir/chrome/history_resources.pak",
         "$root_gen_dir/chrome/image_editor_resources.pak",

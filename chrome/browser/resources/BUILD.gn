@@ -129,7 +129,6 @@ if (enable_js_type_check) {
     if (is_linux || is_chromeos || is_win || is_mac) {
       deps += [
         "bluetooth_internals:closure_compile",
-        "feedback_webui/js:closure_compile",
         "gaia_auth_host:closure_compile",
         "image_editor:closure_compile",
         "inline_login:closure_compile",
