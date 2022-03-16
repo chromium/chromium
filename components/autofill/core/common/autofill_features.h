@@ -141,6 +141,8 @@ extern const base::Feature kAutofillSectionUponRedundantNameInfo;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillServerCommunication;
 COMPONENT_EXPORT(AUTOFILL)
+extern const base::Feature kAutofillSharedAutofill;
+COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillShowTypePredictions;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillSilentProfileUpdateForInsufficientImport;

@@ -43,7 +43,6 @@ picture-in-picture
 publickey-credentials-get
 screen-wake-lock
 serial
-shared-autofill
 sync-xhr
 usb
 window-placement
