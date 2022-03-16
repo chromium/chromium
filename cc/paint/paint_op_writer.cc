@@ -983,14 +983,10 @@ void PaintOpWriter::Write(const PaintRecord* record,
   // converted to a fixed scale mode (hence |post_scale|), which means they are
   // first rendered offscreen via SkImage::MakeFromPicture. This inherently does
   // not support lcd text, so reflect that in the serialization options.
-  // Draw GrSlug with SkPictureRecorder canvas is not supported yet, so disable
-  // RawDraw here.
-  // TODO(penghuang): enable RawDraw when draw GrSlug is supported.
-  PaintOp::SerializeOptions lcd_and_rawdraw_disabled_options = options_;
-  lcd_and_rawdraw_disabled_options.can_use_lcd_text = false;
-  lcd_and_rawdraw_disabled_options.raw_draw = false;
+  PaintOp::SerializeOptions lcd_disabled_options = options_;
+  lcd_disabled_options.can_use_lcd_text = false;
   SimpleBufferSerializer serializer(memory_, remaining_bytes_,
-                                    lcd_and_rawdraw_disabled_options);
+                                    lcd_disabled_options);
   serializer.Serialize(record, playback_rect, post_scale);
 
   if (!serializer.valid()) {
