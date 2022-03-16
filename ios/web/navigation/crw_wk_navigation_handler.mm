@@ -1773,30 +1773,37 @@ const web::CertVerificationErrorsCacheType::size_type kMaxCertErrorsCount = 100;
         self.webStateImpl->GetBrowserState()->IsOffTheRecord(), SSLInfo,
         navigationContext->GetNavigationId(),
         base::BindOnce(^(NSString* errorHTML) {
-          if (errorHTML) {
+          if (@available(iOS 15, *)) {
+            NSBundle* bundleForHTMLFile = [NSBundle bundleForClass:CRWWKNavigationHandler.class];
+            NSString* path = [bundleForHTMLFile pathForResource:@"error_page_reloaded"
+                                                            ofType:@"html"];
+            // Script which reloads the error page if the error page is being
+            // served from the browser cache.
+            NSString* reloadPageHTMLTemplate =
+                [NSString stringWithContentsOfFile:path
+                                          encoding:NSUTF8StringEncoding
+                                             error:nil];
+
             NSURLRequest* URL = [NSURLRequest
                 requestWithURL:[NSURL URLWithString:failingURLString]];
-            if (@available(iOS 15, *)) {
-              NSBundle* bundleForHTMLFile = [NSBundle bundleForClass:CRWWKNavigationHandler.class];
-              NSString* path = [bundleForHTMLFile pathForResource:@"error_page_reloaded"
-                                                              ofType:@"html"];
-              // Script which reloads the error page if the error page is being
-              // served from the browser cache.
-              NSString* reloadPageHTMLTemplate =
-                  [NSString stringWithContentsOfFile:path
-                                            encoding:NSUTF8StringEncoding
-                                               error:nil];
+            WKNavigation* errorNavigation = nil;
+
+            if (errorHTML) {
               NSString* injectedHTML =
                   [errorHTML stringByAppendingString:reloadPageHTMLTemplate];
-              WKNavigation* errorNavigation =
+              errorNavigation = [webView loadSimulatedRequest:URL
+                                           responseHTMLString:injectedHTML];
+            } else {
+              errorNavigation =
                   [webView loadSimulatedRequest:URL
-                             responseHTMLString:injectedHTML];
-              std::unique_ptr<web::NavigationContextImpl> originalContext =
-                  [self.navigationStates removeNavigation:navigation];
-              originalContext->SetLoadingErrorPage(true);
-              [self.navigationStates setContext:std::move(originalContext)
-                                  forNavigation:errorNavigation];
+                             responseHTMLString:reloadPageHTMLTemplate];
             }
+
+            std::unique_ptr<web::NavigationContextImpl> originalContext =
+                [self.navigationStates removeNavigation:navigation];
+            originalContext->SetLoadingErrorPage(true);
+            [self.navigationStates setContext:std::move(originalContext)
+                                forNavigation:errorNavigation];
           }
         }));
   } else {
