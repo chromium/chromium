@@ -259,10 +259,10 @@
   'wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,memory_model,coherence:corr:memType="atomic_storage";*',
   'wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,memory_model,coherence:corr:memType="atomic_storage";testType="inter_workgroup"',
 
-  'wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,builtin,atan2:float_builtin_functions,atan2:storageClass="uniform";*',
-  'wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,builtin,atan2:float_builtin_functions,atan2:storageClass="uniform";vectorize="_undef_";*',
-  'wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,builtin,atan2:float_builtin_functions,atan2:storageClass="storage_r";*',
-  'wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,builtin,atan2:float_builtin_functions,atan2:storageClass="storage_r";vectorize="_undef_";*',
-  'wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,builtin,atan2:float_builtin_functions,atan2:storageClass="storage_rw";*',
-  'wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,builtin,atan2:float_builtin_functions,atan2:storageClass="storage_rw";vectorize="_undef_";*',
+  'wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,expression,call,builtin,atan2:f32:storageClass="uniform";*',
+  'wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,expression,call,builtin,atan2:f32:storageClass="uniform";vectorize="_undef_";*',
+  'wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,expression,call,builtin,atan2:f32:storageClass="storage_r";*',
+  'wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,expression,call,builtin,atan2:f32:storageClass="storage_r";vectorize="_undef_";*',
+  'wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,expression,call,builtin,atan2:f32:storageClass="storage_rw";*',
+  'wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,expression,call,builtin,atan2:f32:storageClass="storage_rw";vectorize="_undef_";*',
 ]

@@ -71,6 +71,9 @@ crbug.com/tint/1464 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader
 ### Untriaged timeouts
 ###
 
+# All cases take a while, and there are very many for splitting. Prefer to wait till the harness doesn't need manual splits.
+wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,canvas:color_space_conversion:* [ Timeout ]
+
 ###
 ### Test bugs
 ###
@@ -105,11 +108,11 @@ crbug.com/dawn/1003 wpt_internal/webgpu/cts.https.html?q=webgpu:util,texture,tex
 crbug.com/dawn/1003 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:util,texture,texel_data:unorm_texel_data_in_shader:format="rgb10a2unorm";* [ Failure ]
 crbug.com/dawn/1003 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:readMethod="Sample";format="rg11b10ufloat";* [ Failure ]
 crbug.com/dawn/1003 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:readMethod="Sample";format="rgb9e5ufloat";* [ Failure ]
-crbug.com/tint/1228 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,builtin,abs:float_builtin_functions,abs_float:* [ Failure ]
-crbug.com/tint/1228 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,builtin,abs:float_builtin_functions,abs_float:* [ Failure ]
-crbug.com/tint/1228 wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,builtin,log:float_builtin_functions,log:* [ Failure ]
-crbug.com/tint/1228 wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,builtin,log2:float_builtin_functions,log2:* [ Failure ]
-crbug.com/tint/1471 wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,builtin,ldexp:float_builtin_functions,ldexp:* [ Failure ]
+crbug.com/tint/1228 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,expression,call,builtin,abs:f32:* [ Failure ]
+crbug.com/tint/1228 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,expression,call,builtin,abs:f32:* [ Failure ]
+crbug.com/tint/1228 wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,expression,call,builtin,log:f32:* [ Failure ]
+crbug.com/tint/1228 wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,expression,call,builtin,log2:f32:* [ Failure ]
+crbug.com/tint/1471 wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,expression,call,builtin,ldexp:f32:* [ Failure ]
 
 # The copyTextureToTexture tests should allow information loss caused by some bit patterns having the same value.
 crbug.com/dawn/1047 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,command_buffer,copyTextureToTexture:color_textures,non_compressed,array:srcFormat="r8snorm";* [ Failure ]
@@ -408,7 +411,7 @@ crbug.com/1299319 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:web_platfo
 # Only on Mac Intel, baseVertex is always 0 for drawIndirect.
 crbug.com/dawn/722 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,rendering,draw:arguments:indirect=true;base_vertex=9;* [ Failure ]
 
-crbug.com/tint/1467 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,builtin,atan2:* [ Failure ]
+crbug.com/tint/1467 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,expression,call,builtin,atan2:* [ Failure ]
 
 # Only Mac Intel
 crbug.com/dawn/704 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,command_buffer,image_copy:offsets_and_sizes_copy_with_stencil_aspect:* [ Failure ]
@@ -511,10 +514,10 @@ crbug.com/dawn/1125 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,op
 crbug.com/dawn/1125 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,rendering,depth_clip_clamp:depth_test_input_clamped:clampDepth=false;* [ Failure ]
 
 # Fails on Linux Intel only
-crbug.com/tint/1367 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,builtin,countTrailingZeros:integer_builtin_functions,countTrailingZeros_signed:* [ Failure ]
-crbug.com/tint/1367 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,builtin,countTrailingZeros:integer_builtin_functions,countTrailingZeros_unsigned:* [ Failure ]
-crbug.com/tint/1367 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,builtin,firstTrailingBit:integer_builtin_functions,firstTrailingBit_signed:* [ Failure ]
-crbug.com/tint/1367 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,builtin,firstTrailingBit:integer_builtin_functions,firstTrailingBit_unsigned:* [ Failure ]
+crbug.com/tint/1367 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,expression,call,builtin,countTrailingZeros:i32:* [ Failure ]
+crbug.com/tint/1367 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,expression,call,builtin,countTrailingZeros:u32:* [ Failure ]
+crbug.com/tint/1367 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,expression,call,builtin,firstTrailingBit:i32:* [ Failure ]
+crbug.com/tint/1367 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,expression,call,builtin,firstTrailingBit:u32:* [ Failure ]
 
 ###
 ### Windows (D3D12) specific
@@ -566,6 +569,6 @@ crbug.com/dawn/1289 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,oper
 crbug.com/tint/1452 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,memory_model,barrier:workgroup_barrier_store_load:* [ Failure ]
 crbug.com/tint/1452 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,memory_model,weak:message_passing_workgroup_memory:* [ Failure ]
 
-crbug.com/tint/1452 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,builtin,insertBits:integer_builtin_functions,insertBits:* [ Failure ]
-crbug.com/tint/1452 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,builtin,extractBits:integer_builtin_functions,extractBits_unsigned:* [ Failure ]
-crbug.com/tint/1452 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,builtin,extractBits:integer_builtin_functions,extractBits_signed:* [ Failure ]
+crbug.com/tint/1452 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,expression,call,builtin,insertBits:integer:* [ Failure ]
+crbug.com/tint/1452 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,expression,call,builtin,extractBits:u32:* [ Failure ]
+crbug.com/tint/1452 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,expression,call,builtin,extractBits:i32:* [ Failure ]
