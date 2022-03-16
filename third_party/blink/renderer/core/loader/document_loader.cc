@@ -312,8 +312,8 @@ struct SameSizeAsDocumentLoader
   bool origin_agent_cluster;
   bool origin_agent_cluster_left_as_default;
   bool is_cross_site_cross_browsing_context_group;
-  WebVector<WebHistoryItem> app_history_back_entries;
-  WebVector<WebHistoryItem> app_history_forward_entries;
+  WebVector<WebHistoryItem> navigation_api_back_entries;
+  WebVector<WebHistoryItem> navigation_api_forward_entries;
   std::unique_ptr<CodeCacheHost> code_cache_host;
   HashSet<KURL> early_hints_preloaded_resources;
   absl::optional<Vector<KURL>> ad_auction_components;
@@ -414,8 +414,8 @@ DocumentLoader::DocumentLoader(
           params_->origin_agent_cluster_left_as_default),
       is_cross_site_cross_browsing_context_group_(
           params_->is_cross_site_cross_browsing_context_group),
-      app_history_back_entries_(params_->app_history_back_entries),
-      app_history_forward_entries_(params_->app_history_forward_entries),
+      navigation_api_back_entries_(params_->navigation_api_back_entries),
+      navigation_api_forward_entries_(params_->navigation_api_forward_entries),
       anonymous_(params_->anonymous) {
   DCHECK(frame_);
 
@@ -2404,12 +2404,12 @@ void DocumentLoader::CommitNavigation() {
     NavigationApi::From(*frame_->DomWindow())
         ->InitializeForNewWindow(*history_item_, load_type_, commit_reason_,
                                  NavigationApi::navigation(*previous_window),
-                                 app_history_back_entries_,
-                                 app_history_forward_entries_);
+                                 navigation_api_back_entries_,
+                                 navigation_api_forward_entries_);
     // Now that the navigation API's entries array is initialized, we don't need
     // to retain the state from which it was initialized.
-    app_history_back_entries_.Clear();
-    app_history_forward_entries_.Clear();
+    navigation_api_back_entries_.Clear();
+    navigation_api_forward_entries_.Clear();
   }
 
   if (commit_reason_ == CommitReason::kXSLT)

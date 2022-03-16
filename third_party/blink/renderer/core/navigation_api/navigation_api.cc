@@ -346,7 +346,7 @@ void NavigationApi::UpdateForNavigation(HistoryItem& item,
 }
 
 NavigationHistoryEntry* NavigationApi::GetEntryForRestore(
-    const mojom::blink::AppHistoryEntryPtr& entry) {
+    const mojom::blink::NavigationApiHistoryEntryPtr& entry) {
   const auto& it = keys_to_indices_.find(entry->key);
   if (it != keys_to_indices_.end()) {
     NavigationHistoryEntry* existing_entry = entries_[it->value];
@@ -376,7 +376,7 @@ void FireDisposeEventsAsync(
 }
 
 void NavigationApi::SetEntriesForRestore(
-    const mojom::blink::AppHistoryEntryArraysPtr& entry_arrays) {
+    const mojom::blink::NavigationApiHistoryEntryArraysPtr& entry_arrays) {
   // If this window HasEntriesAndEventsDisabled(), we shouldn't attempt to
   // restore anything.
   if (HasEntriesAndEventsDisabled())

@@ -1149,8 +1149,8 @@ void LocalFrameMojoHandler::GetCanonicalUrlForSharing(
 #endif
 }
 
-void LocalFrameMojoHandler::SetAppHistoryEntriesForRestore(
-    mojom::blink::AppHistoryEntryArraysPtr entry_arrays) {
+void LocalFrameMojoHandler::SetNavigationApiHistoryEntriesForRestore(
+    mojom::blink::NavigationApiHistoryEntryArraysPtr entry_arrays) {
   if (NavigationApi* navigation_api =
           NavigationApi::navigation(*frame_->DomWindow()))
     navigation_api->SetEntriesForRestore(entry_arrays);

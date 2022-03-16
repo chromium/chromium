@@ -188,8 +188,8 @@ void FakeLocalFrame::HandleRendererDebugURL(const GURL& url) {}
 void FakeLocalFrame::GetCanonicalUrlForSharing(
     base::OnceCallback<void(const absl::optional<GURL>&)> callback) {}
 
-void FakeLocalFrame::SetAppHistoryEntriesForRestore(
-    blink::mojom::AppHistoryEntryArraysPtr entry_arrays) {}
+void FakeLocalFrame::SetNavigationApiHistoryEntriesForRestore(
+    blink::mojom::NavigationApiHistoryEntryArraysPtr entry_arrays) {}
 
 void FakeLocalFrame::BindFrameHostReceiver(
     mojo::ScopedInterfaceEndpointHandle handle) {

@@ -32,7 +32,7 @@
 #include "services/network/public/mojom/source_location.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "third_party/blink/public/mojom/navigation/app_history_entry_arrays.mojom-forward.h"
+#include "third_party/blink/public/mojom/navigation/navigation_api_history_entry_arrays.mojom-forward.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
 
 namespace blink {
@@ -398,9 +398,9 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // |request| may be nullptr when getting entries for an iframe that is being
   // restored for back/forward cache (in that case, the iframe itself is not
   // navigated, so there is no NavigationRequest).
-  blink::mojom::AppHistoryEntryArraysPtr GetAppHistoryEntryVectors(
-      FrameTreeNode* node,
-      NavigationRequest* request);
+  blink::mojom::NavigationApiHistoryEntryArraysPtr
+  GetNavigationApiHistoryEntryVectors(FrameTreeNode* node,
+                                      NavigationRequest* request);
 
   // The appHistory API exposes the urls of some non-current same-origin
   // FrameNavigationEntries to the renderer. This helper checks whether the
@@ -729,16 +729,18 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // GetLastCommittedEntryIndex() and length is GetEntryCount().
   void BroadcastHistoryOffsetAndLength();
 
-  // Used by PopulateAppHistoryEntryVectors to initialize a single vector.
+  // Used by PopulateNavigationApiHistoryEntryVectors to initialize a single
+  // vector.
   enum class Direction { kForward, kBack };
-  std::vector<blink::mojom::AppHistoryEntryPtr>
-  PopulateSingleAppHistoryEntryVector(Direction direction,
-                                      int entry_index,
-                                      const url::Origin& pending_origin,
-                                      FrameTreeNode* node,
-                                      SiteInstance* site_instance,
-                                      int64_t pending_item_sequence_number,
-                                      int64_t pending_document_sequence_number);
+  std::vector<blink::mojom::NavigationApiHistoryEntryPtr>
+  PopulateSingleNavigationApiHistoryEntryVector(
+      Direction direction,
+      int entry_index,
+      const url::Origin& pending_origin,
+      FrameTreeNode* node,
+      SiteInstance* site_instance,
+      int64_t pending_item_sequence_number,
+      int64_t pending_document_sequence_number);
   // Helper for NavigateToAppHistoryKey(). Ensures that we only navigate to
   // |target_entry| if it matches |current_entry|'s origin and site instance, as
   // well as having |app_history_key| as its key.

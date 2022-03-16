@@ -431,10 +431,10 @@ struct BLINK_EXPORT WebNavigationParams {
   std::unique_ptr<WebPolicyContainer> policy_container;
 
   // These are used to construct a subset of the back/forward list for the
-  // appHistory API. They only have the attributes that are needed for
-  // appHistory.
-  WebVector<WebHistoryItem> app_history_back_entries;
-  WebVector<WebHistoryItem> app_history_forward_entries;
+  // window.navigation API. They only have the attributes that are needed for
+  // that API.
+  WebVector<WebHistoryItem> navigation_api_back_entries;
+  WebVector<WebHistoryItem> navigation_api_forward_entries;
 
   // List of URLs which are preloaded by HTTP Early Hints.
   WebVector<WebURL> early_hints_preloaded_resources;

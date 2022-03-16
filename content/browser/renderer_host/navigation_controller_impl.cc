@@ -3722,7 +3722,7 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
               network::mojom::WebClientHintsType>() /* enabled_client_hints */,
           false /* is_cross_browsing_instance */, nullptr /* old_page_info */,
           -1 /* http_response_code */,
-          blink::mojom::AppHistoryEntryArrays::New(),
+          blink::mojom::NavigationApiHistoryEntryArrays::New(),
           std::vector<GURL>() /* early_hints_preloaded_resources */,
           absl::nullopt /* ad_auction_components */,
           // This timestamp will be populated when the commit IPC is sent.
@@ -4308,8 +4308,8 @@ void NavigationControllerImpl::UpdateStateForFrame(
   NotifyEntryChanged(entry);
 }
 
-std::vector<blink::mojom::AppHistoryEntryPtr>
-NavigationControllerImpl::PopulateSingleAppHistoryEntryVector(
+std::vector<blink::mojom::NavigationApiHistoryEntryPtr>
+NavigationControllerImpl::PopulateSingleNavigationApiHistoryEntryVector(
     Direction direction,
     int entry_index,
     const url::Origin& pending_origin,
@@ -4317,7 +4317,7 @@ NavigationControllerImpl::PopulateSingleAppHistoryEntryVector(
     SiteInstance* site_instance,
     int64_t pending_item_sequence_number,
     int64_t pending_document_sequence_number) {
-  std::vector<blink::mojom::AppHistoryEntryPtr> entries;
+  std::vector<blink::mojom::NavigationApiHistoryEntryPtr> entries;
   if (GetLastCommittedEntry() && GetLastCommittedEntry()->IsInitialEntry()) {
     // Don't process the initial entry.
     DCHECK_EQ(GetEntryCount(), 1);
@@ -4330,9 +4330,10 @@ NavigationControllerImpl::PopulateSingleAppHistoryEntryVector(
     FrameNavigationEntry* frame_entry = GetEntryAtIndex(i)->GetFrameEntry(node);
     if (!frame_entry)
       break;
-    // An entry should only appear in appHistory entries if it is for the same
-    // origin as the document being committed. Check the committed origin, or if
-    // that is not available (during restore), check against the FNE's url.
+    // An entry should only appear in the navigation API entries if it is for
+    // the same origin as the document being committed. Check the committed
+    // origin, or if that is not available (during restore), check against the
+    // FNE's url.
     url::Origin frame_entry_origin =
         frame_entry->committed_origin().value_or(url::Origin::Resolve(
             frame_entry->url(),
@@ -4348,7 +4349,7 @@ NavigationControllerImpl::PopulateSingleAppHistoryEntryVector(
 
       // If the document represented by this FNE hid its full url from appearing
       // in a referrer via a "no-referrer" or "origin" referrer policy, censor
-      // the url in appHistory as well (unless we're navigating to that
+      // the url in the navigation API as well (unless we're navigating to that
       // document).
       std::u16string url;
       if (pending_document_sequence_number ==
@@ -4357,8 +4358,8 @@ NavigationControllerImpl::PopulateSingleAppHistoryEntryVector(
         url = frame_state.url_string.value_or(std::u16string());
       }
 
-      blink::mojom::AppHistoryEntryPtr entry =
-          blink::mojom::AppHistoryEntry::New(
+      blink::mojom::NavigationApiHistoryEntryPtr entry =
+          blink::mojom::NavigationApiHistoryEntry::New(
               frame_state.app_history_key.value_or(std::u16string()),
               frame_state.app_history_id.value_or(std::u16string()), url,
               frame_state.item_sequence_number,
@@ -4379,8 +4380,8 @@ NavigationControllerImpl::PopulateSingleAppHistoryEntryVector(
   return entries;
 }
 
-blink::mojom::AppHistoryEntryArraysPtr
-NavigationControllerImpl::GetAppHistoryEntryVectors(
+blink::mojom::NavigationApiHistoryEntryArraysPtr
+NavigationControllerImpl::GetNavigationApiHistoryEntryVectors(
     FrameTreeNode* node,
     NavigationRequest* request) {
   url::Origin pending_origin =
@@ -4418,17 +4419,18 @@ NavigationControllerImpl::GetAppHistoryEntryVectors(
     }
   }
 
-  auto entry_arrays = blink::mojom::AppHistoryEntryArrays::New();
-  entry_arrays->back_entries = PopulateSingleAppHistoryEntryVector(
+  auto entry_arrays = blink::mojom::NavigationApiHistoryEntryArrays::New();
+  entry_arrays->back_entries = PopulateSingleNavigationApiHistoryEntryVector(
       Direction::kBack, entry_index, pending_origin, node, site_instance.get(),
       pending_item_sequence_number, pending_document_sequence_number);
 
   // Don't populate forward entries if they will be truncated by a new entry.
   if (!will_create_new_entry) {
-    entry_arrays->forward_entries = PopulateSingleAppHistoryEntryVector(
-        Direction::kForward, entry_index, pending_origin, node,
-        site_instance.get(), pending_item_sequence_number,
-        pending_document_sequence_number);
+    entry_arrays->forward_entries =
+        PopulateSingleNavigationApiHistoryEntryVector(
+            Direction::kForward, entry_index, pending_origin, node,
+            site_instance.get(), pending_item_sequence_number,
+            pending_document_sequence_number);
   }
   return entry_arrays;
 }

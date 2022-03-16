@@ -21,7 +21,7 @@ import "third_party/blink/public/mojom/fetch/fetch_api_request.mojom";
 import "third_party/blink/public/mojom/frame/frame_policy.mojom";
 import "third_party/blink/public/mojom/loader/mixed_content.mojom";
 import "third_party/blink/public/mojom/loader/referrer.mojom";
-import "third_party/blink/public/mojom/navigation/app_history_entry_arrays.mojom";
+import "third_party/blink/public/mojom/navigation/navigation_api_history_entry_arrays.mojom";
 import "third_party/blink/public/mojom/navigation/navigation_policy.mojom";
 import "third_party/blink/public/mojom/navigation/prefetched_signed_exchange_info.mojom";
 import "third_party/blink/public/mojom/navigation/was_activated_option.mojom";
@@ -458,9 +458,9 @@ struct CommitNavigationParams {
   // received response headers.
   int32 http_response_code = -1;
 
-  // A same-origin subset of the back/forward list exposed by the appHistory
-  // API.
-  AppHistoryEntryArrays app_history_entry_arrays;
+  // A same-origin subset of the back/forward list exposed by the
+  // window.navigation API.
+  NavigationApiHistoryEntryArrays navigation_api_history_entry_arrays;
 
   array<url.mojom.Url> early_hints_preloaded_resources;
 

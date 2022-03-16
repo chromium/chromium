@@ -638,8 +638,8 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // BrowsingContextGroup.
   bool is_cross_site_cross_browsing_context_group_ = false;
 
-  WebVector<WebHistoryItem> app_history_back_entries_;
-  WebVector<WebHistoryItem> app_history_forward_entries_;
+  WebVector<WebHistoryItem> navigation_api_back_entries_;
+  WebVector<WebHistoryItem> navigation_api_forward_entries_;
 
   // This is the interface that handles generated code cache
   // requests to fetch code cache when loading resources.

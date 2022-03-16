@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_NAVIGATION_API_NAVIGATION_API_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "third_party/blink/public/mojom/navigation/app_history_entry_arrays.mojom-blink.h"
+#include "third_party/blink/public/mojom/navigation/navigation_api_history_entry_arrays.mojom-blink.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
 #include "third_party/blink/public/web/web_history_item.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -62,7 +62,8 @@ class CORE_EXPORT NavigationApi final : public EventTargetWithInlineData,
                               const WebVector<WebHistoryItem>& back_entries,
                               const WebVector<WebHistoryItem>& forward_entries);
   void UpdateForNavigation(HistoryItem&, WebFrameLoadType);
-  void SetEntriesForRestore(const mojom::blink::AppHistoryEntryArraysPtr&);
+  void SetEntriesForRestore(
+      const mojom::blink::NavigationApiHistoryEntryArraysPtr&);
 
   bool HasOngoingNavigation() const { return ongoing_navigation_signal_; }
 
@@ -125,7 +126,7 @@ class CORE_EXPORT NavigationApi final : public EventTargetWithInlineData,
   friend class NavigationApiNavigation;
   void CloneFromPrevious(NavigationApi&);
   NavigationHistoryEntry* GetEntryForRestore(
-      const mojom::blink::AppHistoryEntryPtr&);
+      const mojom::blink::NavigationApiHistoryEntryPtr&);
   void PopulateKeySet();
   void FinalizeWithAbortedNavigationError(ScriptState*,
                                           NavigationApiNavigation*);

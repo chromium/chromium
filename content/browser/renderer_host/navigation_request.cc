@@ -1166,7 +1166,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
           std::vector<network::mojom::WebClientHintsType>(),
           /*is_cross_browsing_instance=*/false,
           /*old_page_info=*/nullptr, /*http_response_code=*/-1,
-          blink::mojom::AppHistoryEntryArrays::New(),
+          blink::mojom::NavigationApiHistoryEntryArrays::New(),
           /*early_hints_preloaded_resources=*/
           std::vector<GURL>(), absl::nullopt /* ad_auction_components */,
           // This timestamp will be populated when the commit IPC is sent.
@@ -1289,7 +1289,8 @@ NavigationRequest::CreateForSynchronousRendererCommit(
           std::vector<
               network::mojom::WebClientHintsType>() /* enabled_client_hints */,
           false /* is_cross_browsing_instance */, nullptr /* old_page_info */,
-          http_response_code, blink::mojom::AppHistoryEntryArrays::New(),
+          http_response_code,
+          blink::mojom::NavigationApiHistoryEntryArrays::New(),
           std::vector<GURL>() /* early_hints_preloaded_resources */,
           absl::nullopt /* ad_auction_components */,
           // This timestamp will be populated when the commit IPC is sent.
@@ -4601,9 +4602,9 @@ void NavigationRequest::CommitNavigation() {
   }
 
   if (!IsSameDocument()) {
-    commit_params_->app_history_entry_arrays =
-        GetNavigationController()->GetAppHistoryEntryVectors(frame_tree_node_,
-                                                             this);
+    commit_params_->navigation_api_history_entry_arrays =
+        GetNavigationController()->GetNavigationApiHistoryEntryVectors(
+            frame_tree_node_, this);
   }
 
   if (early_hints_manager_) {
@@ -4672,10 +4673,10 @@ void NavigationRequest::CommitPageActivation() {
     if (!activated_entry)
       return;
 
-    // Restore appHistory entries, since they will probably have changed since
-    // the page entered bfcache. We must update all frames, not just the top
-    // frame, because it is possible (though unlikely) that an iframe's entries
-    // have changed, too.
+    // Restore navigation API entries, since they will probably have changed
+    // since the page entered bfcache. We must update all frames, not just the
+    // top frame, because it is possible (though unlikely) that an iframe's
+    // entries have changed, too.
     activated_entry->render_frame_host()->ForEachRenderFrameHost(
         base::BindRepeating(
             [](content::RenderFrameHost* navigating_rfh,
@@ -4683,14 +4684,17 @@ void NavigationRequest::CommitPageActivation() {
               RenderFrameHostImpl* rfhi =
                   static_cast<RenderFrameHostImpl*>(rfh);
               // |request| is given as a parameter to
-              // GetAppHistoryEntryVectors() only for the frame being committed
-              // (i.e., the top frame).
+              // GetNavigationApiHistoryEntryVectors() only for the frame being
+              // committed (i.e., the top frame).
               auto entry_arrays =
-                  rfhi->frame_tree()->controller().GetAppHistoryEntryVectors(
-                      rfhi->frame_tree_node(),
-                      navigating_rfh == rfh ? request : nullptr);
-              rfhi->GetAssociatedLocalFrame()->SetAppHistoryEntriesForRestore(
-                  std::move(entry_arrays));
+                  rfhi->frame_tree()
+                      ->controller()
+                      .GetNavigationApiHistoryEntryVectors(
+                          rfhi->frame_tree_node(),
+                          navigating_rfh == rfh ? request : nullptr);
+              rfhi->GetAssociatedLocalFrame()
+                  ->SetNavigationApiHistoryEntriesForRestore(
+                      std::move(entry_arrays));
               return content::RenderFrameHost::FrameIterationAction::kContinue;
             },
             activated_entry->render_frame_host(), this));
