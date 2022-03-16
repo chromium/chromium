@@ -24,6 +24,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
@@ -39,6 +40,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.ui.R;
 import org.chromium.ui.UiUtils;
+import org.chromium.ui.permissions.PermissionConstants;
 
 import java.io.File;
 import java.io.IOException;
@@ -267,6 +269,16 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
         boolean shouldUsePhotoPicker = shouldUsePhotoPicker();
         if (shouldUsePhotoPicker) {
             if (!window.hasPermission(storagePermission)) missingPermissions.add(storagePermission);
+            if (BuildInfo.targetsAtLeastT()) {
+                if (!window.hasPermission(PermissionConstants.READ_MEDIA_IMAGE)
+                        && shouldShowImageTypes()) {
+                    missingPermissions.add(PermissionConstants.READ_MEDIA_IMAGE);
+                }
+                if (!window.hasPermission(PermissionConstants.READ_MEDIA_VIDEO)
+                        && shouldShowVideoTypes()) {
+                    missingPermissions.add(PermissionConstants.READ_MEDIA_VIDEO);
+                }
+            }
         } else {
             if (((mSupportsImageCapture && shouldShowImageTypes())
                         || (mSupportsVideoCapture && shouldShowVideoTypes()))
@@ -307,9 +319,14 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
                             }
                         }
 
-                        if (shouldUsePhotoPicker && permissions[i].equals(storagePermission)) {
-                            onFileNotSelected();
-                            return;
+                        if (shouldUsePhotoPicker) {
+                            if (permissions[i].equals(storagePermission)
+                                    || permissions[i].equals(PermissionConstants.READ_MEDIA_IMAGE)
+                                    || permissions[i].equals(
+                                            PermissionConstants.READ_MEDIA_VIDEO)) {
+                                onFileNotSelected();
+                                return;
+                            }
                         }
                     }
                 }

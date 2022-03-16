@@ -11,4 +11,8 @@ public final class PermissionConstants {
     /** The permission string for notification permission. */
     // TODO(shaktisahu): Replace this with permission constant from {@link Manifest.permission}.
     public static final String NOTIFICATION_PERMISSION = "android.permission.POST_NOTIFICATIONS";
+
+    // TODO(finnur): Replace this with permission constant from {@link Manifest.permission}.
+    public static final String READ_MEDIA_IMAGE = "android.permission.READ_MEDIA_IMAGE";
+    public static final String READ_MEDIA_VIDEO = "android.permission.READ_MEDIA_VIDEO";
 }

@@ -121,7 +121,8 @@ class FileEnumWorkerTask extends AsyncTask<List<PickerBitmap>> {
 
         String whereClause = directoryColumnName + " LIKE ? OR " + directoryColumnName
                 + " LIKE ? OR " + directoryColumnName + " LIKE ? OR " + directoryColumnName
-                + " LIKE ? OR " + directoryColumnName + " LIKE ?";
+                + " LIKE ? OR " + directoryColumnName + " LIKE ? OR " + directoryColumnName
+                + " LIKE ?";
         String additionalClause = "";
         if (mIncludeImages) {
             additionalClause = MediaStore.Files.FileColumns.MEDIA_TYPE + "="
@@ -136,6 +137,7 @@ class FileEnumWorkerTask extends AsyncTask<List<PickerBitmap>> {
 
         String cameraDir = getCameraDirectory();
         String picturesDir = Environment.DIRECTORY_PICTURES;
+        String moviesDir = Environment.DIRECTORY_MOVIES;
         String downloadsDir = Environment.DIRECTORY_DOWNLOADS;
         // Files downloaded from the user's Google Photos library go to a Restored folder.
         String restoredDir = Environment.DIRECTORY_DCIM + "/Restored";
@@ -145,6 +147,7 @@ class FileEnumWorkerTask extends AsyncTask<List<PickerBitmap>> {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             cameraDir = Environment.getExternalStoragePublicDirectory(cameraDir).toString();
             picturesDir = Environment.getExternalStoragePublicDirectory(picturesDir).toString();
+            moviesDir = Environment.getExternalStoragePublicDirectory(moviesDir).toString();
             downloadsDir = Environment.getExternalStoragePublicDirectory(downloadsDir).toString();
             restoredDir = Environment.getExternalStoragePublicDirectory(restoredDir).toString();
             screenshotsDir =
@@ -155,6 +158,7 @@ class FileEnumWorkerTask extends AsyncTask<List<PickerBitmap>> {
                 // Include:
                 cameraDir + "%",
                 picturesDir + "%",
+                moviesDir + "%",
                 downloadsDir + "%",
                 restoredDir + "%",
                 screenshotsDir + "%",
