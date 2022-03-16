@@ -98,27 +98,25 @@ export async function fetchGooglePhotosAlbum(
 }
 
 /** Fetches the list of Google Photos albums and saves it to the store. */
-async function fetchGooglePhotosAlbums(
+export async function fetchGooglePhotosAlbums(
     provider: WallpaperProviderInterface,
     store: PersonalizationStore): Promise<void> {
   store.dispatch(action.beginLoadGooglePhotosAlbumsAction());
 
   let albums: Array<GooglePhotosAlbum>|null = [];
-  let resumeToken: string|null|undefined = null;
+  let resumeToken = store.data.wallpaper.googlePhotos.resumeTokens.albums;
 
-  // TODO(b/215179074): Support incremental load of albums as the user scrolls
-  // through their library as opposed to loading them all at once.
-  do {
-    const {response} = await provider.fetchGooglePhotosAlbums(resumeToken) as
-        {response: FetchGooglePhotosAlbumsResponse};
-    if (!Array.isArray(response.albums)) {
-      console.warn('Failed to fetch Google Photos albums');
-      albums = null;
-      break;
-    }
+  const {response} = await provider.fetchGooglePhotosAlbums(resumeToken) as
+      {response: FetchGooglePhotosAlbumsResponse};
+  if (Array.isArray(response.albums)) {
     albums.push(...response.albums);
-    resumeToken = response.resumeToken;
-  } while (resumeToken);
+    resumeToken = response.resumeToken ?? null;
+  } else {
+    console.warn('Failed to fetch Google Photos albums');
+    albums = null;
+    // NOTE: `resumeToken` is intentionally *not* modified so that the request
+    // which failed can be reattempted.
+  }
 
   // Impose max resolution.
   if (albums !== null) {
@@ -127,7 +125,7 @@ async function fetchGooglePhotosAlbums(
             ({...album, preview: appendMaxResolutionSuffix(album.preview)}));
   }
 
-  store.dispatch(action.setGooglePhotosAlbumsAction(albums));
+  store.dispatch(action.appendGooglePhotosAlbumsAction(albums, resumeToken));
 }
 
 /** Fetches the count of Google Photos photos and saves it to the store. */
@@ -356,12 +354,13 @@ export async function initializeGooglePhotosData(
   // to query the server for the list of albums/photos.
   const count = store.data.wallpaper.googlePhotos.count;
   if (count === 0 || count === null) {
-    const /** ?Array<undefined> */ result = count === 0 ? [] : null;
+    const result = count === 0 ? [] : null;
+    const resumeToken = null;
     store.beginBatchUpdate();
     store.dispatch(action.beginLoadGooglePhotosAlbumsAction());
     store.dispatch(action.beginLoadGooglePhotosPhotosAction());
-    store.dispatch(action.setGooglePhotosAlbumsAction(result));
-    store.dispatch(action.appendGooglePhotosPhotosAction(result, null));
+    store.dispatch(action.appendGooglePhotosAlbumsAction(result, resumeToken));
+    store.dispatch(action.appendGooglePhotosPhotosAction(result, resumeToken));
     store.endBatchUpdate();
     return;
   }

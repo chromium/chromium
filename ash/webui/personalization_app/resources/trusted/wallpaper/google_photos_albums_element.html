@@ -3,21 +3,26 @@
     overflow: hidden;
   }
 
+  iron-scroll-threshold,
   iron-list {
     height: 100%;
     width: 100%;
   }
 </style>
-<iron-list id="grid" items="[[albums_]]" as="album" grid>
-  <template>
-    <wallpaper-grid-item
-      class="album"
-      image-src="[[album.preview.url]]"
-      on-click="onAlbumSelected_"
-      on-keypress="onAlbumSelected_"
-      primary-text="[[album.title]]"
-      secondary-text="[[getSecondaryText_(album)]]"
-      tabindex$="[[tabIndex]]">
-    </wallpaper-grid-item>
-  </template>
-</iron-list>
+<iron-scroll-threshold id="gridScrollThreshold"
+  on-lower-threshold="onGridScrollThresholdReached_">
+  <iron-list id="grid" items="[[albumsForDisplay_]]" as="album" grid
+    scroll-target="gridScrollThreshold">
+    <template>
+      <wallpaper-grid-item
+        class="album"
+        image-src="[[album.preview.url]]"
+        on-click="onAlbumSelected_"
+        on-keypress="onAlbumSelected_"
+        primary-text="[[album.title]]"
+        secondary-text="[[getSecondaryText_(album)]]"
+        tabindex$="[[tabIndex]]">
+      </wallpaper-grid-item>
+    </template>
+  </iron-list>
+</iron-scroll-threshold>

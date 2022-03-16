@@ -248,12 +248,14 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
     const photosByRow = photosBySection.flatMap(section => section.rows);
 
     // Case: First batch of photos.
-    if (this.photosByRow_ === null) {
+    if (this.photosByRow_ === null || this.photosByRow_ === undefined) {
       this.photosByRow_ = photosByRow;
       return;
     }
 
     // Case: Subsequent batches of photos.
+    // NOTE: |photosByRow_| is updated in place to avoid resetting the scroll
+    // position of the grid.
     photosByRow.forEach((row, i) => {
       if (i < this.photosByRow_!.length) {
         this.set(`photosByRow_.${i}`, row);
