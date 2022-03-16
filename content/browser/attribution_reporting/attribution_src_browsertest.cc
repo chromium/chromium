@@ -39,11 +39,6 @@ using ::testing::Pair;
 using ::testing::Pointee;
 using ::testing::SizeIs;
 
-std::unique_ptr<MockDataHost> GetRegisteredDataHost(
-    mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host) {
-  return std::make_unique<MockDataHost>(std::move(data_host));
-}
-
 MATCHER_P(AggregatableKeyIs, matcher, "") {
   return ExplainMatchResult(matcher, arg.key, result_listener);
 }

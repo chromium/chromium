@@ -813,6 +813,54 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
   expected_report.WaitForReport();
 }
 
+IN_PROC_BROWSER_TEST_F(
+    AttributionsBrowserTest,
+    AttributionSrcSourceAndNonAttributionSrcTrigger_ReportSent) {
+  // Expected reports must be registered before the server starts.
+  ExpectedReportWaiter expected_report(
+      GURL("https://a.test/.well-known/attribution-reporting/"
+           "report-event-attribution"),
+      /*attribution_destination=*/"https://d.test",
+      /*source_event_id=*/"5", /*source_type=*/"event", /*trigger_data=*/"1",
+      https_server());
+  expected_report.trigger_debug_key = "789";
+  ASSERT_TRUE(https_server()->Start());
+
+  EXPECT_TRUE(NavigateToURL(
+      web_contents(),
+      https_server()->GetURL(
+          "a.test", "/set-cookie?ar_debug=1;HttpOnly;Secure;SameSite=None")));
+
+  EXPECT_TRUE(NavigateToURL(
+      web_contents(),
+      https_server()->GetURL(
+          "b.test",
+          "/attribution_reporting/page_with_impression_creator.html")));
+
+  EXPECT_TRUE(ExecJs(
+      web_contents(),
+      JsReplace("createAttributionSrcImg($1);",
+                https_server()->GetURL(
+                    "a.test",
+                    "/attribution_reporting/register_source_headers.html"))));
+
+  EXPECT_TRUE(NavigateToURL(
+      web_contents(),
+      https_server()->GetURL(
+          "d.test",
+          "/attribution_reporting/page_with_conversion_redirect.html")));
+
+  EXPECT_TRUE(ExecJs(
+      web_contents(),
+      JsReplace(
+          "createTrackingPixel($1);",
+          https_server()->GetURL("a.test",
+                                 "/attribution_reporting/"
+                                 "register_trigger_headers_all_params.html"))));
+
+  expected_report.WaitForReport();
+}
+
 IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
                        ImpressionConversionWithDedupKey_Deduped) {
   // Expected reports must be registered before the server starts.

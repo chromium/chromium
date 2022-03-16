@@ -16,7 +16,11 @@
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
-namespace blink::attribution_response_parsing {
+namespace blink {
+
+class ResourceResponse;
+
+namespace attribution_response_parsing {
 
 // Helper functions to parse response headers. See details in the explainer.
 // https://github.com/WICG/conversion-measurement-api/blob/main/EVENT.md
@@ -97,6 +101,13 @@ CORE_EXPORT bool ParseAttributionAggregatableValues(
     const AtomicString& json_string,
     WTF::HashMap<String, uint32_t>& values);
 
-}  // namespace blink::attribution_response_parsing
+// Returns the attribution trigger data parsed from the response. Returns
+// `nullptr` in case of error.
+mojom::blink::AttributionTriggerDataPtr ParseAttributionTriggerData(
+    const ResourceResponse& response);
+
+}  // namespace attribution_response_parsing
+
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_ATTRIBUTION_RESPONSE_PARSING_H_

@@ -16,6 +16,8 @@
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-blink.h"
 #include "third_party/blink/renderer/platform/json/json_parser.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
+#include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -433,6 +435,63 @@ bool ParseAttributionAggregatableValues(
   }
 
   return true;
+}
+
+mojom::blink::AttributionTriggerDataPtr ParseAttributionTriggerData(
+    const ResourceResponse& response) {
+  auto trigger_data = mojom::blink::AttributionTriggerData::New();
+
+  // Verify the current url is trustworthy and capable of registering triggers.
+  scoped_refptr<const SecurityOrigin> reporting_origin =
+      SecurityOrigin::Create(response.CurrentRequestUrl());
+  if (!reporting_origin->IsPotentiallyTrustworthy())
+    return nullptr;
+  trigger_data->reporting_origin = std::move(reporting_origin);
+
+  // Populate event triggers.
+  const AtomicString& event_triggers_json = response.HttpHeaderField(
+      http_names::kAttributionReportingRegisterEventTrigger);
+  if (!event_triggers_json.IsNull() &&
+      !attribution_response_parsing::ParseEventTriggerData(
+          event_triggers_json, trigger_data->event_triggers)) {
+    return nullptr;
+  }
+
+  trigger_data->filters = mojom::blink::AttributionFilterData::New();
+
+  const AtomicString& filter_json =
+      response.HttpHeaderField(http_names::kAttributionReportingFilters);
+  if (!filter_json.IsNull() && !attribution_response_parsing::ParseFilters(
+                                   filter_json, *trigger_data->filters)) {
+    return nullptr;
+  }
+
+  trigger_data->aggregatable_trigger =
+      mojom::blink::AttributionAggregatableTrigger::New();
+
+  const AtomicString& aggregatable_trigger_json = response.HttpHeaderField(
+      http_names::kAttributionReportingRegisterAggregatableTriggerData);
+  if (!aggregatable_trigger_json.IsNull() &&
+      !attribution_response_parsing::ParseAttributionAggregatableTriggerData(
+          aggregatable_trigger_json,
+          trigger_data->aggregatable_trigger->trigger_data)) {
+    return nullptr;
+  }
+
+  const AtomicString& aggregatable_values_json = response.HttpHeaderField(
+      http_names::kAttributionReportingRegisterAggregatableValues);
+  if (!aggregatable_values_json.IsNull() &&
+      !attribution_response_parsing::ParseAttributionAggregatableValues(
+          aggregatable_values_json,
+          trigger_data->aggregatable_trigger->values)) {
+    return nullptr;
+  }
+
+  trigger_data->debug_key =
+      attribution_response_parsing::ParseDebugKey(response.HttpHeaderField(
+          http_names::kAttributionReportingTriggerDebugKey));
+
+  return trigger_data;
 }
 
 }  // namespace blink::attribution_response_parsing

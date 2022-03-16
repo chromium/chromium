@@ -9,6 +9,7 @@
 
 #include <iosfwd>
 #include <limits>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -46,6 +47,13 @@
 #include "third_party/blink/public/common/attribution_reporting/constants.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
 #include "url/origin.h"
+
+namespace mojo {
+
+template <typename Interface>
+class PendingReceiver;
+
+}  // namespace mojo
 
 namespace content {
 
@@ -644,6 +652,9 @@ std::ostream& operator<<(
 std::vector<AttributionReport> GetAttributionReportsForTesting(
     AttributionManagerImpl* manager,
     base::Time max_report_time);
+
+std::unique_ptr<MockDataHost> GetRegisteredDataHost(
+    mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host);
 
 // Source matchers
 

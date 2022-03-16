@@ -22,6 +22,7 @@
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/attribution_reporting/rate_limit_result.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -1232,6 +1233,11 @@ std::vector<AttributionReport> GetAttributionReportsForTesting(
           })));
   run_loop.Run();
   return attribution_reports;
+}
+
+std::unique_ptr<MockDataHost> GetRegisteredDataHost(
+    mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host) {
+  return std::make_unique<MockDataHost>(std::move(data_host));
 }
 
 }  // namespace content

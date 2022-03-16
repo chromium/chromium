@@ -12,6 +12,7 @@
 #include "third_party/blink/public/common/security/address_space_feature.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_probes_inl.h"
+#include "third_party/blink/renderer/core/frame/attribution_src_loader.h"
 #include "third_party/blink/renderer/core/frame/deprecation.h"
 #include "third_party/blink/renderer/core/frame/frame_console.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -145,6 +146,10 @@ void ResourceLoadObserverForFrame::WillSendRequest(
     frame->Loader().Progress().WillStartLoading(request.InspectorId(),
                                                 request.Priority());
   }
+
+  frame->GetAttributionSrcLoader()->MaybeRegisterTrigger(request,
+                                                         redirect_response);
+
   probe::WillSendRequest(
       GetProbe(), document_loader_,
       fetcher_properties_->GetFetchClientSettingsObject().GlobalObjectUrl(),
@@ -247,6 +252,8 @@ void ResourceLoadObserverForFrame::DidReceiveResponse(
         response.CurrentRequestUrl(), true /* is_subresource */,
         resource->GetResourceRequest().IsAdResource());
   }
+
+  frame->GetAttributionSrcLoader()->MaybeRegisterTrigger(request, response);
 
   frame->Loader().Progress().IncrementProgress(identifier, response);
   probe::DidReceiveResourceResponse(GetProbe(), identifier, document_loader_,
