@@ -35,7 +35,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_html_embed_element.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_html_object_element.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/frame/deprecation.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/html_embed_element.h"
 #include "third_party/blink/renderer/core/html/html_object_element.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"

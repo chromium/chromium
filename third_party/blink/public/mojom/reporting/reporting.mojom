@@ -20,7 +20,7 @@ interface ReportingServiceProxy {
 
   // Attempts to queue a Deprecation report using the Reporting API.
   //
-  // (See //third_party/blink/renderer/core/frame/deprecation_report_body.h.)
+  // (See //third_party/blink/renderer/core/frame/deprecation/deprecation_report_body.h.)
   QueueDeprecationReport(url.mojom.Url url,
                          string id,
                          mojo_base.mojom.Time? anticipatedRemoval,

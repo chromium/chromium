@@ -10,7 +10,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/csp/csp_violation_report_body.h"
-#include "third_party/blink/renderer/core/frame/deprecation_report_body.h"
+#include "third_party/blink/renderer/core/frame/deprecation/deprecation_report_body.h"
 #include "third_party/blink/renderer/core/frame/document_policy_violation_report_body.h"
 #include "third_party/blink/renderer/core/frame/intervention_report_body.h"
 #include "third_party/blink/renderer/core/frame/permissions_policy_violation_report_body.h"

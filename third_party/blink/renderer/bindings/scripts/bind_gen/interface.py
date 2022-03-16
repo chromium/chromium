@@ -1373,8 +1373,9 @@ def make_report_deprecate_as(cg_context):
     _1 = name
     node = TextNode(_format(pattern, _1=_1))
     node.accumulate(
-        CodeGenAccumulator.require_include_headers(
-            ["third_party/blink/renderer/core/frame/deprecation.h"]))
+        CodeGenAccumulator.require_include_headers([
+            "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
+        ]))
     return node
 
 

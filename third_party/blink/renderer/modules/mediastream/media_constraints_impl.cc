@@ -47,7 +47,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_constraindoublerange_double.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_constrainlongrange_long.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/frame/deprecation.h"
+#include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/mediastream/media_error_state.h"

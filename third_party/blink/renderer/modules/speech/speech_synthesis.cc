@@ -38,7 +38,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_speech_synthesis_error_event_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_speech_synthesis_event_init.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/frame/deprecation.h"
+#include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/media/autoplay_policy.h"

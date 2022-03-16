@@ -118,7 +118,7 @@ class EventFactoryWriter(json5_generator.Writer):
     def _headers_header_includes(self, entries):
         includes = {
             'third_party/blink/renderer/core/execution_context/execution_context.h',
-            'third_party/blink/renderer/core/frame/deprecation.h',
+            'third_party/blink/renderer/core/frame/deprecation/deprecation.h',
             'third_party/blink/renderer/platform/instrumentation/use_counter.h',
             'third_party/blink/renderer/platform/runtime_enabled_features.h',
         }

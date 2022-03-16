@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/grid_track_sizing_algorithm.h"
 
-#include "third_party/blink/renderer/core/frame/deprecation.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/grid.h"
 #include "third_party/blink/renderer/core/layout/grid_layout_utils.h"
 #include "third_party/blink/renderer/core/layout/layout_grid.h"

@@ -27,7 +27,7 @@
 
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/frame/deprecation.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/modules/mediastream/focusable_media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track_event.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
