@@ -62,15 +62,14 @@ void BoxPainterBase::PaintFillLayers(const PaintInfo& paint_info,
 
 namespace {
 
+// TODO(crbug.com/682173): We should pass sides_to_include here, and exclude
+// the sides that should not be included from the outset.
 void ApplySpreadToShadowShape(FloatRoundedRect& shadow_shape, float spread) {
   if (spread == 0)
     return;
 
-  if (spread >= 0)
-    shadow_shape.ExpandRadii(spread);
-  else
-    shadow_shape.ShrinkRadii(-spread);
-
+  // TODO(crbug.com/1302642): Use the shadow-specific method.
+  shadow_shape.Outset(spread);
   shadow_shape.ConstrainRadii();
 }
 
@@ -175,7 +174,6 @@ void BoxPainterBase::PaintNormalBoxShadow(const PaintInfo& info,
 
     if (has_border_radius) {
       FloatRoundedRect rounded_fill_rect = border;
-      rounded_fill_rect.Inflate(shadow_spread);
       ApplySpreadToShadowShape(rounded_fill_rect, shadow_spread);
       context.FillRoundedRect(
           rounded_fill_rect, Color::kBlack,
@@ -277,20 +275,18 @@ void BoxPainterBase::PaintInsetBoxShadow(const PaintInfo& info,
                           : resolved_shadow_color;
 
     gfx::RectF inner_rect = bounds.Rect();
-    inner_rect.Inset(shadow.Spread());
-    if (inner_rect.IsEmpty()) {
+    AdjustInnerRectForSideClipping(inner_rect, shadow, sides_to_include);
+    FloatRoundedRect inner_rounded_rect(inner_rect, bounds.GetRadii());
+    ApplySpreadToShadowShape(inner_rounded_rect, -shadow.Spread());
+    if (inner_rounded_rect.IsEmpty()) {
       // |AutoDarkMode::Disabled()| is used because |shadow_color| has already
       // been adjusted for dark mode.
       context.FillRoundedRect(bounds, shadow_color, AutoDarkMode::Disabled());
       continue;
     }
-    AdjustInnerRectForSideClipping(inner_rect, shadow, sides_to_include);
-
-    FloatRoundedRect inner_rounded_rect(inner_rect, bounds.GetRadii());
     GraphicsContextStateSaver state_saver(context);
     if (bounds.IsRounded()) {
       context.ClipRoundedRect(bounds);
-      ApplySpreadToShadowShape(inner_rounded_rect, -shadow.Spread());
     } else {
       context.Clip(bounds.Rect());
     }
@@ -775,7 +771,7 @@ FloatRoundedRect BackgroundRoundedRectAdjustedForBleedAvoidance(
     const PhysicalRect& border_rect,
     bool object_has_multiple_boxes,
     PhysicalBoxSides sides_to_include,
-    FloatRoundedRect background_rounded_rect) {
+    const FloatRoundedRect& background_rounded_rect) {
   // TODO(fmalita): we should be able to fold these parameters into
   // BoxBorderInfo or BoxDecorationData and avoid calling getBorderEdgeInfo
   // redundantly here.
@@ -799,11 +795,9 @@ FloatRoundedRect BackgroundRoundedRectAdjustedForBleedAvoidance(
           .set_bottom(
               edges[static_cast<unsigned>(BoxSide::kBottom)].UsedWidth());
   insets.Scale(fractional_inset);
-  gfx::RectF inset_rect = background_rounded_rect.Rect();
-  inset_rect.Inset(insets);
-  FloatRoundedRect::Radii inset_radii(background_rounded_rect.GetRadii());
-  inset_radii.Shrink(insets);
-  return FloatRoundedRect(inset_rect, inset_radii);
+  FloatRoundedRect adjusted_rounded_rect = background_rounded_rect;
+  adjusted_rounded_rect.Inset(insets);
+  return adjusted_rounded_rect;
 }
 
 FloatRoundedRect RoundedBorderRectForClip(

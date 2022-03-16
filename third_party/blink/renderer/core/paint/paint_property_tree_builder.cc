@@ -1819,7 +1819,7 @@ static void AdjustRoundedClipForOverflowClipMargin(
   if (!overflow_clip_margin || !box.ShouldApplyOverflowClipMargin())
     return;
   layout_clip_rect.Outset(overflow_clip_margin.ToFloat());
-  paint_clip_rect.InflateAndReshape(overflow_clip_margin.ToFloat());
+  paint_clip_rect.OutsetForMarginOrShadow(overflow_clip_margin.ToFloat());
 }
 
 void FragmentPaintPropertyTreeBuilder::UpdateInnerBorderRadiusClip() {

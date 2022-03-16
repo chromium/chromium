@@ -74,10 +74,10 @@ TEST(FloatRoundedRectTest, zeroRadii) {
   EXPECT_FALSE(r.XInterceptsAtY(1, min_x_intercept, max_x_intercept));
   EXPECT_FALSE(r.XInterceptsAtY(7, min_x_intercept, max_x_intercept));
 
-  // The FloatRoundedRect::expandRadii() function doesn't change radii
-  // gfx::SizeFs that are <= zero. Same as RoundedRect::expandRadii().
-  r.ExpandRadii(20);
-  r.ShrinkRadii(10);
+  // The FloatRoundedRect::Outset() and Inset() don't change zero radii.
+  r.Outset(20);
+  EXPECT_TRUE(r.GetRadii().IsZero());
+  r.Inset(10);
   EXPECT_TRUE(r.GetRadii().IsZero());
 }
 
@@ -181,11 +181,8 @@ TEST(FloatRoundedRectTest, radiusCenterRect) {
 }
 
 TEST(FloatRoundedRectTest, IntersectsQuadIsInclusive) {
-  FloatRoundedRect::Radii corner_radii;
-  corner_radii.SetTopLeft(gfx::SizeF(5, 5));
-  corner_radii.SetTopRight(gfx::SizeF(5, 5));
-  corner_radii.SetBottomLeft(gfx::SizeF(5, 5));
-  corner_radii.SetBottomRight(gfx::SizeF(5, 5));
+  FloatRoundedRect::Radii corner_radii(5);
+
   // A rect at (10, 10) with dimensions 20x20 and radii of size 5x5.
   FloatRoundedRect r(gfx::RectF(10, 10, 20, 20), corner_radii);
 
@@ -277,6 +274,82 @@ TEST(FloatRoundedrectTest, ConstrainRadii) {
                       gfx::SizeF(85088.6, 21377.3));
   r7.ConstrainRadii();
   EXPECT_TRUE(r7.IsRenderable());
+}
+
+TEST(FloatRoundedRectTest, OutsetRect) {
+  FloatRoundedRect r(gfx::RectF(0, 0, 100, 100));
+  r.Outset(gfx::OutsetsF().set_top(1).set_right(2).set_bottom(3).set_left(4));
+  EXPECT_EQ(FloatRoundedRect(gfx::RectF(-4, -1, 106, 104)), r);
+  r.Outset(
+      gfx::OutsetsF().set_top(-1).set_right(-2).set_bottom(-3).set_left(-4));
+  EXPECT_EQ(FloatRoundedRect(gfx::RectF(0, 0, 100, 100)), r);
+}
+
+TEST(FloatRoundedRectTest, InsetRect) {
+  FloatRoundedRect r(gfx::RectF(0, 0, 100, 100));
+  r.Inset(gfx::InsetsF().set_top(1).set_right(2).set_bottom(3).set_left(4));
+  EXPECT_EQ(FloatRoundedRect(gfx::RectF(4, 1, 94, 96)), r);
+  r.Inset(gfx::InsetsF().set_top(-1).set_right(-2).set_bottom(-3).set_left(-4));
+  EXPECT_EQ(FloatRoundedRect(gfx::RectF(0, 0, 100, 100)), r);
+}
+
+TEST(FloatRoundedRectTest, OutsetWithRadii) {
+  FloatRoundedRect r(gfx::RectF(0, 0, 100, 100), gfx::SizeF(5, 10),
+                     gfx::SizeF(15, 20), gfx::SizeF(0, 30), gfx::SizeF(35, 0));
+  r.Outset(
+      gfx::OutsetsF().set_top(40).set_right(30).set_bottom(20).set_left(10));
+  // Zero components of radii should be kept unchanged to ensure sharp corners
+  // are still sharp.
+  EXPECT_EQ(FloatRoundedRect(gfx::RectF(-10, -40, 140, 160), gfx::SizeF(15, 50),
+                             gfx::SizeF(45, 60), gfx::SizeF(0, 50),
+                             gfx::SizeF(65, 0)),
+            r);
+}
+
+TEST(FloatRoundedRectTest, InsetWithRadii) {
+  FloatRoundedRect r(gfx::RectF(0, 0, 100, 100), gfx::SizeF(20, 30),
+                     gfx::SizeF(40, 50), gfx::SizeF(0, 60), gfx::SizeF(70, 0));
+  r.Inset(gfx::InsetsF().set_top(40).set_right(30).set_bottom(20).set_left(10));
+  EXPECT_EQ(FloatRoundedRect(gfx::RectF(10, 40, 60, 40), gfx::SizeF(10, 0),
+                             gfx::SizeF(10, 10), gfx::SizeF(0, 40),
+                             gfx::SizeF(40, 0)),
+            r);
+}
+
+// Outset() should keep zero components in radii to ensure sharp corners are
+// still sharp.
+TEST(FloatRoundedRectTest, InsetWithPartialZeroRadii) {
+  FloatRoundedRect r(gfx::RectF(0, 0, 100, 100), gfx::SizeF(5, 0),
+                     gfx::SizeF(0, 20), gfx::SizeF(0, 30), gfx::SizeF(35, 0));
+  r.Inset(10);
+  EXPECT_EQ(
+      FloatRoundedRect(gfx::RectF(10, 10, 80, 80), gfx::SizeF(0, 0),
+                       gfx::SizeF(0, 10), gfx::SizeF(0, 20), gfx::SizeF(25, 0)),
+      r);
+}
+
+TEST(FloatRoundedRectTest, OutsetForMarginOrShadow) {
+  FloatRoundedRect r(gfx::RectF(0, 0, 200, 200), gfx::SizeF(4, 8),
+                     gfx::SizeF(12, 16), gfx::SizeF(0, 32), gfx::SizeF(64, 0));
+  r.OutsetForMarginOrShadow(32);
+  EXPECT_EQ(FloatRoundedRect(
+                gfx::RectF(-32, -32, 264, 264), gfx::SizeF(14.5625f, 26.5f),
+                gfx::SizeF(36.1875f, 44), gfx::SizeF(0, 64), gfx::SizeF(96, 0)),
+            r);
+}
+
+TEST(FloatRoundedRectTest, InsetToBeNonRenderable) {
+  FloatRoundedRect pie(gfx::RectF(0, 0, 100, 100), gfx::SizeF(100, 100),
+                       gfx::SizeF(), gfx::SizeF(), gfx::SizeF());
+  EXPECT_TRUE(pie.IsRenderable());
+  FloatRoundedRect small_pie = pie;
+  small_pie.Inset(20);
+  EXPECT_EQ(FloatRoundedRect(gfx::RectF(20, 20, 60, 60), gfx::SizeF(80, 80),
+                             gfx::SizeF(), gfx::SizeF(), gfx::SizeF()),
+            small_pie);
+  EXPECT_FALSE(small_pie.IsRenderable());
+  small_pie.Outset(20);
+  EXPECT_EQ(pie, small_pie);
 }
 
 TEST(FloatRoundedRectTest, ToString) {

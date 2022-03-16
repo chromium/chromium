@@ -9,38 +9,28 @@
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect_outsets.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
 
 namespace {
 
 FloatRoundedRect::Radii CalcRadiiFor(const ComputedStyle& style,
-                                     gfx::SizeF size) {
+                                     gfx::SizeF size,
+                                     PhysicalBoxSides sides_to_include) {
   return FloatRoundedRect::Radii(
-      SizeForLengthSize(style.BorderTopLeftRadius(), size),
-      SizeForLengthSize(style.BorderTopRightRadius(), size),
-      SizeForLengthSize(style.BorderBottomLeftRadius(), size),
-      SizeForLengthSize(style.BorderBottomRightRadius(), size));
-}
-
-void ExcludeSides(PhysicalBoxSides sides_to_include,
-                  FloatRoundedRect::Radii* radii) {
-  if (!sides_to_include.left) {
-    radii->SetTopLeft(gfx::SizeF(0, radii->TopLeft().height()));
-    radii->SetBottomLeft(gfx::SizeF(0, radii->BottomLeft().height()));
-  }
-  if (!sides_to_include.right) {
-    radii->SetTopRight(gfx::SizeF(0, radii->TopRight().height()));
-    radii->SetBottomRight(gfx::SizeF(0, radii->BottomRight().height()));
-  }
-  if (!sides_to_include.top) {
-    radii->SetTopLeft(gfx::SizeF(radii->TopLeft().width(), 0));
-    radii->SetTopRight(gfx::SizeF(radii->TopRight().width(), 0));
-  }
-  if (!sides_to_include.bottom) {
-    radii->SetBottomLeft(gfx::SizeF(radii->BottomLeft().width(), 0));
-    radii->SetBottomRight(gfx::SizeF(radii->BottomRight().width(), 0));
-  }
+      sides_to_include.top && sides_to_include.left
+          ? SizeForLengthSize(style.BorderTopLeftRadius(), size)
+          : gfx::SizeF(),
+      sides_to_include.top && sides_to_include.right
+          ? SizeForLengthSize(style.BorderTopRightRadius(), size)
+          : gfx::SizeF(),
+      sides_to_include.bottom && sides_to_include.left
+          ? SizeForLengthSize(style.BorderBottomLeftRadius(), size)
+          : gfx::SizeF(),
+      sides_to_include.bottom && sides_to_include.right
+          ? SizeForLengthSize(style.BorderBottomRightRadius(), size)
+          : gfx::SizeF());
 }
 
 }  // anonymous namespace
@@ -50,9 +40,8 @@ FloatRoundedRect RoundedBorderGeometry::RoundedBorder(
     const PhysicalRect& border_rect) {
   FloatRoundedRect rounded_rect((gfx::RectF(border_rect)));
   if (style.HasBorderRadius()) {
-    FloatRoundedRect::Radii radii =
-        CalcRadiiFor(style, gfx::SizeF(border_rect.size));
-    rounded_rect.SetRadii(radii);
+    rounded_rect.SetRadii(
+        CalcRadiiFor(style, gfx::SizeF(border_rect.size), PhysicalBoxSides()));
     rounded_rect.ConstrainRadii();
   }
   return rounded_rect;
@@ -64,10 +53,8 @@ FloatRoundedRect RoundedBorderGeometry::PixelSnappedRoundedBorder(
     PhysicalBoxSides sides_to_include) {
   FloatRoundedRect rounded_rect(ToPixelSnappedRect(border_rect));
   if (style.HasBorderRadius()) {
-    FloatRoundedRect::Radii radii =
-        CalcRadiiFor(style, gfx::SizeF(border_rect.size));
-    ExcludeSides(sides_to_include, &radii);
-    rounded_rect.SetRadii(radii);
+    rounded_rect.SetRadii(
+        CalcRadiiFor(style, gfx::SizeF(border_rect.size), sides_to_include));
     rounded_rect.ConstrainRadii();
   }
   return rounded_rect;
@@ -76,43 +63,24 @@ FloatRoundedRect RoundedBorderGeometry::PixelSnappedRoundedBorder(
 FloatRoundedRect RoundedBorderGeometry::RoundedInnerBorder(
     const ComputedStyle& style,
     const PhysicalRect& border_rect) {
-  int left_width = style.BorderLeftWidth().ToInt();
-  int right_width = style.BorderRightWidth().ToInt();
-  int top_width = style.BorderTopWidth().ToInt();
-  int bottom_width = style.BorderBottomWidth().ToInt();
-
-  LayoutRectOutsets insets(-top_width, -right_width, -bottom_width,
-                           -left_width);
-
-  PhysicalRect inner_rect(border_rect);
-  inner_rect.Expand(insets);
-  inner_rect.size.ClampNegativeToZero();
-
-  FloatRoundedRect float_inner_rect((gfx::RectF(inner_rect)));
-
-  if (style.HasBorderRadius()) {
-    FloatRoundedRect::Radii radii =
-        RoundedBorder(style, border_rect).GetRadii();
-    radii.Shrink(gfx::InsetsF(insets));
-    float_inner_rect.SetRadii(radii);
-  }
-  return float_inner_rect;
+  FloatRoundedRect rounded_border = RoundedBorder(style, border_rect);
+  rounded_border.Inset(gfx::InsetsF()
+                           .set_top(style.BorderTopWidth().ToInt())
+                           .set_right(style.BorderRightWidth().ToInt())
+                           .set_bottom(style.BorderBottomWidth().ToInt())
+                           .set_left(style.BorderLeftWidth().ToInt()));
+  return rounded_border;
 }
 
 FloatRoundedRect RoundedBorderGeometry::PixelSnappedRoundedInnerBorder(
     const ComputedStyle& style,
     const PhysicalRect& border_rect,
     PhysicalBoxSides sides_to_include) {
-  int left_width = sides_to_include.left ? style.BorderLeftWidth().Floor() : 0;
-  int right_width =
-      sides_to_include.right ? style.BorderRightWidth().Floor() : 0;
-  int top_width = sides_to_include.top ? style.BorderTopWidth().Floor() : 0;
-  int bottom_width =
-      sides_to_include.bottom ? style.BorderBottomWidth().Floor() : 0;
-
   return PixelSnappedRoundedBorderWithOutsets(
       style, border_rect,
-      LayoutRectOutsets(-top_width, -right_width, -bottom_width, -left_width),
+      LayoutRectOutsets(
+          -style.BorderTopWidth().Floor(), -style.BorderRightWidth().Floor(),
+          -style.BorderBottomWidth().Floor(), -style.BorderLeftWidth().Floor()),
       sides_to_include);
 }
 
@@ -121,8 +89,13 @@ FloatRoundedRect RoundedBorderGeometry::PixelSnappedRoundedBorderWithOutsets(
     const PhysicalRect& border_rect,
     const LayoutRectOutsets& outsets,
     PhysicalBoxSides sides_to_include) {
+  LayoutRectOutsets adjusted_outsets(
+      sides_to_include.top ? outsets.Top() : LayoutUnit(),
+      sides_to_include.right ? outsets.Right() : LayoutUnit(),
+      sides_to_include.bottom ? outsets.Bottom() : LayoutUnit(),
+      sides_to_include.left ? outsets.Left() : LayoutUnit());
   PhysicalRect rect_with_outsets = border_rect;
-  rect_with_outsets.Expand(outsets);
+  rect_with_outsets.Expand(adjusted_outsets);
   rect_with_outsets.size.ClampNegativeToZero();
 
   // The standard LayoutRect::ToPixelSnappedRect() method will not
@@ -138,18 +111,10 @@ FloatRoundedRect RoundedBorderGeometry::PixelSnappedRoundedBorderWithOutsets(
                                             rect_with_outsets.Y()))));
 
   if (style.HasBorderRadius()) {
-    FloatRoundedRect::Radii radii =
-        PixelSnappedRoundedBorder(style, border_rect, sides_to_include)
-            .GetRadii();
-    if (outsets.Top() <= 0 && outsets.Bottom() <= 0 && outsets.Left() <= 0 &&
-        outsets.Right() <= 0) {
-      radii.Shrink(gfx::InsetsF(outsets));
-    } else {
-      // radii.Expand() will DCHECK if all values are >= 0.
-      radii.Expand(gfx::OutsetsF(outsets));
-    }
-    ExcludeSides(sides_to_include, &radii);
-    rounded_rect.SetRadii(radii);
+    FloatRoundedRect pixel_snapped_rounded_border =
+        PixelSnappedRoundedBorder(style, border_rect, sides_to_include);
+    pixel_snapped_rounded_border.Outset(gfx::OutsetsF(adjusted_outsets));
+    rounded_rect.SetRadii(pixel_snapped_rounded_border.GetRadii());
   }
   return rounded_rect;
 }
