@@ -1766,6 +1766,9 @@ bool Database::OpenInternal(const std::string& db_file_path,
     std::ignore = Execute("PRAGMA journal_mode=TRUNCATE");
   }
 
+  if (options_.flush_to_media)
+    std::ignore = Execute("PRAGMA fullfsync=1");
+
   if (options_.cache_size != 0) {
     const std::string cache_size_sql = base::StrCat(
         {"PRAGMA cache_size=", base::NumberToString(options_.cache_size)});

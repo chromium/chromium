@@ -11,6 +11,7 @@
 #include "sql/statement.h"
 #include "sql/test/scoped_error_expecter.h"
 #include "sql/test/test_helpers.h"
+#include "sql/transaction.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/sqlite/sqlite3.h"
 
@@ -71,6 +72,78 @@ class DatabaseOptionsTest : public testing::TestWithParam<OpenVariant> {
   base::ScopedTempDir temp_dir_;
   base::FilePath db_path_;
 };
+
+TEST_P(DatabaseOptionsTest, FlushToDisk_FalseByDefault) {
+  DatabaseOptions options = {
+      .exclusive_locking = exclusive_locking(),
+      .wal_mode = wal_mode(),
+  };
+  EXPECT_FALSE(options.flush_to_media) << "Invalid test assumption";
+
+  Database db(options);
+  OpenDatabase(db);
+
+  EXPECT_EQ("0", sql::test::ExecuteWithResult(&db, "PRAGMA fullfsync"));
+}
+
+TEST_P(DatabaseOptionsTest, FlushToDisk_True) {
+  Database db(DatabaseOptions{
+      .exclusive_locking = exclusive_locking(),
+      .wal_mode = wal_mode(),
+      .flush_to_media = true,
+  });
+  OpenDatabase(db);
+
+  EXPECT_EQ("1", sql::test::ExecuteWithResult(&db, "PRAGMA fullfsync"));
+}
+
+TEST_P(DatabaseOptionsTest, FlushToDisk_False_DoesNotCrash) {
+  Database db(DatabaseOptions{
+      .exclusive_locking = exclusive_locking(),
+      .wal_mode = wal_mode(),
+      .flush_to_media = false,
+  });
+  OpenDatabase(db);
+
+  EXPECT_EQ("0", sql::test::ExecuteWithResult(&db, "PRAGMA fullfsync"))
+      << "Invalid test setup";
+  {
+    Transaction rolled_back(&db);
+    ASSERT_TRUE(rolled_back.Begin());
+    ASSERT_TRUE(db.Execute("CREATE TABLE rows(id PRIMARY KEY NOT NULL)"));
+    rolled_back.Rollback();
+  }
+  {
+    Transaction committed(&db);
+    ASSERT_TRUE(committed.Begin());
+    ASSERT_TRUE(db.Execute("CREATE TABLE rows(id PRIMARY KEY NOT NULL)"));
+    ASSERT_TRUE(committed.Commit());
+  }
+}
+
+TEST_P(DatabaseOptionsTest, FlushToDisk_True_DoesNotCrash) {
+  Database db(DatabaseOptions{
+      .exclusive_locking = exclusive_locking(),
+      .wal_mode = wal_mode(),
+      .flush_to_media = true,
+  });
+  OpenDatabase(db);
+
+  EXPECT_EQ("1", sql::test::ExecuteWithResult(&db, "PRAGMA fullfsync"))
+      << "Invalid test setup";
+  {
+    Transaction rolled_back(&db);
+    ASSERT_TRUE(rolled_back.Begin());
+    ASSERT_TRUE(db.Execute("CREATE TABLE rows(id PRIMARY KEY NOT NULL)"));
+    rolled_back.Rollback();
+  }
+  {
+    Transaction committed(&db);
+    ASSERT_TRUE(committed.Begin());
+    ASSERT_TRUE(db.Execute("CREATE TABLE rows(id PRIMARY KEY NOT NULL)"));
+    ASSERT_TRUE(committed.Commit());
+  }
+}
 
 TEST_P(DatabaseOptionsTest, PageSize_Default) {
   static_assert(DatabaseOptions::kDefaultPageSize == 4096,

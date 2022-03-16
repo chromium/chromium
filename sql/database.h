@@ -94,6 +94,26 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
   bool wal_mode =
       base::FeatureList::IsEnabled(sql::features::kEnableWALModeByDefault);
 
+  // If true, transaction commit waits for data to reach persistent media.
+  //
+  // This is currently only meaningful on macOS. All other operating systems
+  // only support flushing directly to disk.
+  //
+  // If both `flush_to_media` and `wal_mode` are false, power loss can lead to
+  // database corruption.
+  //
+  // By default, SQLite considers that transactions commit when they reach the
+  // disk controller's memory. This guarantees durability in the event of
+  // software crashes, up to and including the operating system. In the event of
+  // power loss, SQLite may lose data. If `wal_mode` is false (SQLite uses a
+  // rollback journal), power loss can lead to database corruption.
+  //
+  // When this option is enabled, committing a transaction causes SQLite to wait
+  // until the data is written to the persistent media. This guarantees
+  // durability in the event of power loss, which is needed to guarantee the
+  // integrity of non-WAL databases.
+  bool flush_to_media = false;
+
   // Database page size.
   //
   // New Chrome features should set an explicit page size in their
