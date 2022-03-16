@@ -65,12 +65,6 @@ _DEFAULT_TARGETS = [
     '//tools/android/errorprone_plugin:errorprone_plugin_java',
 ]
 
-_EXCLUDED_PREBUILT_JARS = [
-    # Android Studio already provides Desugar runtime.
-    # Including it would cause linking error because of a duplicate class.
-    'lib.java/third_party/bazel/desugar/Desugar-runtime.jar'
-]
-
 
 def _TemplatePath(name):
   return os.path.join(_FILE_DIR, '{}.jinja'.format(name))
@@ -240,8 +234,7 @@ class _ProjectEntry:
     return self._java_files
 
   def PrebuiltJars(self):
-    all_jars = self.Gradle().get('dependent_prebuilt_jars', [])
-    return [i for i in all_jars if i not in _EXCLUDED_PREBUILT_JARS]
+    return self.Gradle().get('dependent_prebuilt_jars', [])
 
   def AllEntries(self):
     """Returns a list of all entries that the current entry depends on.
