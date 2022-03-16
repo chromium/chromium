@@ -5,6 +5,9 @@
 #ifndef COMPONENTS_DOWNLOAD_PUBLIC_BACKGROUND_SERVICE_DOWNLOAD_PARAMS_H_
 #define COMPONENTS_DOWNLOAD_PUBLIC_BACKGROUND_SERVICE_DOWNLOAD_PARAMS_H_
 
+#include <map>
+#include <string>
+
 #include "base/callback.h"
 #include "base/time/time.h"
 #include "components/download/public/background_service/clients.h"
@@ -126,6 +129,8 @@ struct RequestParams {
 // The |client| needs to be properly created and registered for this service for
 // the download to be accepted.
 struct DownloadParams {
+  using CustomData = std::map<std::string, std::string>;
+
   enum StartResult {
     // The download is accepted and persisted.
     ACCEPTED,
@@ -170,6 +175,11 @@ struct DownloadParams {
   // A callback that will be notified if this download has been accepted and
   // persisted by the DownloadService.
   StartCallback callback;
+
+  // Custom key value pair to store custom data for various purposes. Has a 1024
+  // bytes size limit for each key or value. Will be sent back to clients when
+  // download is completed or failed.
+  CustomData custom_data;
 
   // The parameters that determine under what device conditions this download
   // will occur.
