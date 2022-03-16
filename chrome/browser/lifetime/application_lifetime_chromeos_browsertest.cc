@@ -13,6 +13,7 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/dbus/update_engine/fake_update_engine_client.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
@@ -27,6 +28,9 @@ class ApplicationLifetimeTest : public InProcessBrowserTest,
  public:
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
+    fake_update_engine_client_ = new chromeos::FakeUpdateEngineClient;
+    chromeos::DBusThreadManager::GetSetterForTesting()->SetUpdateEngineClient(
+        std::unique_ptr<ash::UpdateEngineClient>(fake_update_engine_client_));
     BrowserList::AddObserver(this);
   }
 
@@ -40,6 +44,25 @@ class ApplicationLifetimeTest : public InProcessBrowserTest,
     quits_on_browser_closing_->Run();
   }
 
+ protected:
+  void FakePendingUpdate() {
+    update_engine::StatusResult update_status;
+    update_status.set_current_operation(
+        update_engine::Operation::UPDATED_NEED_REBOOT);
+    fake_update_engine_client_->set_default_status(update_status);
+
+    // Shutdown code in termination_notification.cc is only run once.
+    // Exit Chrome after reboot after update would have been sent to
+    // update_engine. Otherwise the browsertest framework wont be able to stop
+    // Chrome gracefully.
+    fake_update_engine_client_->set_reboot_after_update_callback(
+        base::BindOnce(&ExitIgnoreUnloadHandlers));
+  }
+
+  bool RequestedRebootAfterUpdate() {
+    return fake_update_engine_client_->reboot_after_update_call_count() > 0;
+  }
+
  private:
   void OnBrowserClosing(Browser* browser) override {
     if (quits_on_browser_closing_)
@@ -47,6 +70,7 @@ class ApplicationLifetimeTest : public InProcessBrowserTest,
   }
 
   absl::optional<base::RunLoop> quits_on_browser_closing_;
+  chromeos::FakeUpdateEngineClient* fake_update_engine_client_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(ApplicationLifetimeTest,
@@ -61,6 +85,32 @@ IN_PROC_BROWSER_TEST_F(ApplicationLifetimeTest,
   // No reboot requested.
   auto* fake_power_manager_client = chromeos::FakePowerManagerClient::Get();
   EXPECT_EQ(fake_power_manager_client->num_request_restart_calls(), 0);
+
+  // Restart flags are set.
+  PrefService* pref_service = g_browser_process->local_state();
+  EXPECT_TRUE(pref_service->GetBoolean(prefs::kWasRestarted));
+  EXPECT_TRUE(KeepAliveRegistry::GetInstance()->IsRestarting());
+
+  WaitForBrowserToClose();
+}
+
+IN_PROC_BROWSER_TEST_F(ApplicationLifetimeTest,
+                       AttemptRestartWithPendingUpdateReboots) {
+  FakePendingUpdate();
+
+  AttemptRestart();
+
+  // Session Manager is not going to stop session.
+  EXPECT_FALSE(IsAttemptingShutdown());
+  auto* fake_session_manager_client = chromeos::FakeSessionManagerClient::Get();
+  EXPECT_FALSE(fake_session_manager_client->session_stopped());
+
+  // No reboot requested via power manager.
+  auto* fake_power_manager_client = chromeos::FakePowerManagerClient::Get();
+  EXPECT_EQ(fake_power_manager_client->num_request_restart_calls(), 0);
+
+  // Reboot requested via update engine client.
+  EXPECT_TRUE(RequestedRebootAfterUpdate());
 
   // Restart flags are set.
   PrefService* pref_service = g_browser_process->local_state();

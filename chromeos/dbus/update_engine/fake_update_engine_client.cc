@@ -5,6 +5,7 @@
 #include "chromeos/dbus/update_engine/fake_update_engine_client.h"
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/threading/thread_task_runner_handle.h"
 
 namespace chromeos {
@@ -48,6 +49,9 @@ void FakeUpdateEngineClient::CanRollbackCheck(RollbackCheckCallback callback) {
 }
 
 void FakeUpdateEngineClient::RebootAfterUpdate() {
+  if (reboot_after_update_callback_) {
+    std::move(reboot_after_update_callback_).Run();
+  }
   reboot_after_update_call_count_++;
 }
 

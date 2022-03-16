@@ -21,6 +21,19 @@
 #endif
 
 namespace browser_shutdown {
+namespace {
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+chromeos::UpdateEngineClient* GetUpdateEngineClient() {
+  DCHECK(chromeos::DBusThreadManager::IsInitialized());
+  auto* update_engine_client =
+      chromeos::DBusThreadManager::Get()->GetUpdateEngineClient();
+  DCHECK(update_engine_client);
+  return update_engine_client;
+}
+#endif
+
+}  // namespace
 
 void NotifyAppTerminating() {
   static bool notified = false;
@@ -53,23 +66,29 @@ void NotifyAndTerminate(bool fast_path, RebootPolicy reboot_policy) {
   if (chromeos::PowerPolicyController::IsInitialized())
     chromeos::PowerPolicyController::Get()->NotifyChromeIsExiting();
 
-  if (chromeos::DBusThreadManager::IsInitialized()) {
-    // If we're on a ChromeOS device, reboot if an update has been applied,
-    // or else signal the session manager to log out.
-    chromeos::UpdateEngineClient* update_engine_client =
-        chromeos::DBusThreadManager::Get()->GetUpdateEngineClient();
-    if (update_engine_client->GetLastStatus().current_operation() ==
-            update_engine::Operation::UPDATED_NEED_REBOOT ||
-        reboot_policy == RebootPolicy::kForceReboot) {
-      update_engine_client->RebootAfterUpdate();
-    } else if (chrome::IsAttemptingShutdown()) {
-      // Don't ask SessionManager to stop session if the shutdown request comes
-      // from session manager.
-      ash::SessionTerminationManager::Get()->StopSession(
-          login_manager::SessionStopReason::REQUEST_FROM_SESSION_MANAGER);
-    }
+  // Reboot if an update has been applied.
+  if (UpdatePending() || reboot_policy == RebootPolicy::kForceReboot) {
+    GetUpdateEngineClient()->RebootAfterUpdate();
+    return;
+  }
+
+  // Signal session manager to stop the session if Chrome has initiated an
+  // attempt to do so.
+  if (chrome::IsAttemptingShutdown() && ash::SessionTerminationManager::Get()) {
+    ash::SessionTerminationManager::Get()->StopSession(
+        login_manager::SessionStopReason::REQUEST_FROM_SESSION_MANAGER);
   }
 #endif
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+bool UpdatePending() {
+  if (!chromeos::DBusThreadManager::IsInitialized())
+    return false;
+
+  return GetUpdateEngineClient()->GetLastStatus().current_operation() ==
+         update_engine::Operation::UPDATED_NEED_REBOOT;
+}
+#endif
 
 }  // namespace browser_shutdown

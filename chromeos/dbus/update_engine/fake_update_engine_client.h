@@ -8,6 +8,7 @@
 #include <map>
 #include <string>
 
+#include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/containers/queue.h"
 #include "base/observer_list.h"
@@ -79,6 +80,10 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_UPDATE_ENGINE) FakeUpdateEngineClient
   void set_update_check_result(
       const UpdateEngineClient::UpdateCheckResult& result);
 
+  void set_reboot_after_update_callback(base::OnceClosure callback) {
+    reboot_after_update_callback_ = std::move(callback);
+  }
+
   void set_can_rollback_check_result(bool result) {
     can_rollback_stub_result_ = result;
   }
@@ -123,6 +128,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_UPDATE_ENGINE) FakeUpdateEngineClient
   base::queue<update_engine::StatusResult> status_queue_;
   update_engine::StatusResult default_status_;
   UpdateCheckResult update_check_result_ = UPDATE_RESULT_SUCCESS;
+  base::OnceClosure reboot_after_update_callback_;
   bool can_rollback_stub_result_ = false;
   int reboot_after_update_call_count_ = 0;
   int request_update_check_call_count_ = 0;

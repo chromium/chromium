@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_LIFETIME_TERMINATION_NOTIFICATION_H_
 #define CHROME_BROWSER_LIFETIME_TERMINATION_NOTIFICATION_H_
 
+#include "build/chromeos_buildflags.h"
+
 namespace browser_shutdown {
 
 // Emits APP_TERMINATING notification. It is guaranteed that the
@@ -20,6 +22,10 @@ void NotifyAppTerminating();
 enum class RebootPolicy { kForceReboot, kOptionalReboot };
 void NotifyAndTerminate(bool fast_path);
 void NotifyAndTerminate(bool fast_path, RebootPolicy reboot_policy);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+bool UpdatePending();
+#endif
 
 }  // namespace browser_shutdown
 

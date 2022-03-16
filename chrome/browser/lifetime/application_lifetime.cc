@@ -173,6 +173,15 @@ void AttemptRestartInternal(IgnoreUnloadHandlers ignore_unload_handlers) {
   DCHECK(!g_send_stop_request_to_session_manager);
   // Make sure we don't send stop request to the session manager.
   g_send_stop_request_to_session_manager = false;
+
+  // If an update is pending NotifyAndTerminate() will trigger a system reboot,
+  // which in turn will send SIGTERM to Chrome, and that ends up processing
+  // unload handlers.
+  if (browser_shutdown::UpdatePending()) {
+    browser_shutdown::NotifyAndTerminate(true);
+    return;
+  }
+
   // Run exit process in clean stack.
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&ExitIgnoreUnloadHandlers));
