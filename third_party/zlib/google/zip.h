@@ -198,6 +198,7 @@ bool Unzip(const base::PlatformFile& zip_file,
            UnzipOptions options = {});
 
 // Unzips the contents of |zip_file| into |dest_dir|.
+// WARNING: This can overwrite existing files in |dest_dir|.
 bool Unzip(const base::FilePath& zip_file,
            const base::FilePath& dest_dir,
            UnzipOptions options = {});

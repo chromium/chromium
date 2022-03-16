@@ -29,7 +29,10 @@ bool IsHiddenFile(const base::FilePath& file_path) {
 // Creates a directory at |extract_dir|/|entry_path|, including any parents.
 bool CreateDirectory(const base::FilePath& extract_dir,
                      const base::FilePath& entry_path) {
-  return base::CreateDirectory(extract_dir.Append(entry_path));
+  const base::FilePath dir = extract_dir.Append(entry_path);
+  const bool ok = base::CreateDirectory(dir);
+  PLOG_IF(ERROR, !ok) << "Cannot create directory " << Redact(dir);
+  return ok;
 }
 
 // Creates a WriterDelegate that can write a file at |extract_dir|/|entry_path|.
@@ -172,8 +175,8 @@ bool Unzip(const base::FilePath& src_file,
            UnzipOptions options) {
   base::File file(src_file, base::File::FLAG_OPEN | base::File::FLAG_READ);
   if (!file.IsValid()) {
-    LOG(ERROR) << "Cannot open " << Redact(src_file) << ": "
-               << base::File::ErrorToString(file.error_details());
+    PLOG(ERROR) << "Cannot open " << Redact(src_file) << ": "
+                << base::File::ErrorToString(file.error_details());
     return false;
   }
 
@@ -209,8 +212,10 @@ bool Unzip(const base::PlatformFile& src_file,
 
     if (entry->is_directory) {
       // It's a directory.
-      if (!directory_creator.Run(entry->path))
+      if (!directory_creator.Run(entry->path)) {
+        LOG(ERROR) << "Cannot create directory " << Redact(entry->path);
         return false;
+      }
 
       continue;
     }
