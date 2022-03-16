@@ -5,6 +5,7 @@
 package org.chromium.chromecast.shell;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.PictureInPictureParams;
 import android.content.Context;
 import android.content.Intent;
@@ -250,9 +251,25 @@ public class CastWebContentsActivity extends Activity {
         }
     }
 
+    private static boolean isInLockTaskMode(Context context) {
+        ActivityManager activityManager = context.getSystemService(ActivityManager.class);
+        return activityManager.getLockTaskModeState() != ActivityManager.LOCK_TASK_MODE_NONE;
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     @Override
     public void onUserLeaveHint() {
+        if (DEBUG) Log.d(TAG, "onUserLeaveHint");
+        // If this device is in "lock task mode," then leaving the Activity will not return to the
+        // Home screen and there will be no affordance for the user to return to this Activity.
+        // When in this mode, leaving the Activity should tear down the Cast app.
+        Context ctx = getApplicationContext();
+        if (isInLockTaskMode(ctx)) {
+            CastWebContentsComponent.onComponentClosed(
+                    CastWebContentsIntentUtils.getSessionId(getIntent()));
+            mIsFinishingState.set("User exit while in lock task mode");
+            return;
+        }
         if (canUsePictureInPicture() && !canAutoEnterPictureInPicture()) {
             enterPictureInPictureMode(new PictureInPictureParams.Builder().build());
         }
