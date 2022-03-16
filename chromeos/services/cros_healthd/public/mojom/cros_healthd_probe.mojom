@@ -596,7 +596,7 @@ struct SystemInfo {
   string? product_serial_number@3;
   // The product model name.
   string? product_model_name@4;
-  // Contents of CrosConfig in /arc/build-properties/marketing-name.
+  // Contents of CrosConfig in /branding/marketing-name.
   string marketing_name@5;
   // The BIOS version.
   string? bios_version@6;
@@ -637,7 +637,7 @@ struct OsInfo {
   // searchable-key in metrics collection, it is not recommended to use this
   // property for creating model-specific behaviors.
   string code_name@0;
-  // Contents of CrosConfig in /arc/build-properties/marketing-name.
+  // Contents of CrosConfig in /branding/marketing-name.
   string? marketing_name@1;
   // The OS version of the system.
   OsVersion os_version@2;
