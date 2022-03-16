@@ -27,7 +27,9 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountAdditionResult {
     kNetworkError = 3,
     // Unexpected response (couldn't parse mojo struct).
     kUnexpectedResponse = 4,
-    kMaxValue = kUnexpectedResponse,
+    // The sign-in was blocked by policy for this user.
+    kBlockedByPolicy = 5,
+    kMaxValue = kBlockedByPolicy,
   };
 
   // Creates result with `status` different from `kSuccess` and `kNetworkError`.

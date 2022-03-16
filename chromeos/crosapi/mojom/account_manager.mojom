@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Next MinVersion: 10
+
 module crosapi.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
@@ -88,7 +90,7 @@ struct AccountAdditionOptions {
 [Stable]
 struct AccountAdditionResult {
   // The result of account addition request.
-  // Next value: 5.
+  // Next value: 6.
   [Stable, Extensible]
   enum Status {
     kSuccess = 0,
@@ -96,6 +98,7 @@ struct AccountAdditionResult {
     kCancelledByUser = 2,
     kNetworkError = 3,
     kUnexpectedResponse = 4,
+    [MinVersion = 9] kBlockedByPolicy = 5,
   };
 
   Status status@0;

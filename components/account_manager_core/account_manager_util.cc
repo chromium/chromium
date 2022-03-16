@@ -108,6 +108,8 @@ FromMojoAccountAdditionStatus(
     case cm::AccountAdditionResult::Status::kUnexpectedResponse:
       return account_manager::AccountAdditionResult::Status::
           kUnexpectedResponse;
+    case cm::AccountAdditionResult::Status::kBlockedByPolicy:
+      return account_manager::AccountAdditionResult::Status::kBlockedByPolicy;
     default:
       LOG(WARNING) << "Unknown crosapi::mojom::AccountAdditionResult::Status: "
                    << mojo_status;
@@ -128,6 +130,8 @@ crosapi::mojom::AccountAdditionResult::Status ToMojoAccountAdditionStatus(
       return cm::AccountAdditionResult::Status::kNetworkError;
     case account_manager::AccountAdditionResult::Status::kUnexpectedResponse:
       return cm::AccountAdditionResult::Status::kUnexpectedResponse;
+    case account_manager::AccountAdditionResult::Status::kBlockedByPolicy:
+      return cm::AccountAdditionResult::Status::kBlockedByPolicy;
   }
 }
 
@@ -288,6 +292,8 @@ FromMojoAccountAdditionResult(
     case account_manager::AccountAdditionResult::Status::kAlreadyInProgress:
     case account_manager::AccountAdditionResult::Status::kCancelledByUser:
     case account_manager::AccountAdditionResult::Status::kUnexpectedResponse:
+      return account_manager::AccountAdditionResult::FromStatus(status.value());
+    case account_manager::AccountAdditionResult::Status::kBlockedByPolicy:
       return account_manager::AccountAdditionResult::FromStatus(status.value());
   }
 }
