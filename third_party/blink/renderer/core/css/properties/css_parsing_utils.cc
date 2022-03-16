@@ -5253,6 +5253,8 @@ CSSValue* ConsumeSingleContainerName(CSSParserTokenRange& range,
   // TODO(crbug.com/1066390): ConsumeCustomIdent should not allow "default".
   if (range.Peek().Id() == CSSValueID::kDefault)
     return nullptr;
+  if (range.Peek().Id() == CSSValueID::kNone)
+    return nullptr;
   return ConsumeCustomIdent(range, context);
 }
 
