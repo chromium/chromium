@@ -696,7 +696,6 @@ TEST(EventTest, EventLatencyOSMouseWheelHistogram) {
   base::HistogramTester histogram_tester;
   CHROME_MSG event = {nullptr, WM_MOUSEWHEEL, 0, 0};
   MouseWheelEvent mouseWheelEvent(event);
-  histogram_tester.ExpectTotalCount("Event.Latency.OS.MOUSE_WHEEL", 1);
   histogram_tester.ExpectTotalCount("Event.Latency.OS2.MOUSE_WHEEL", 1);
 #endif
 }
@@ -990,9 +989,6 @@ TEST_F(EventLatencyTest, ComputeEventLatencyOSFromTickCount) {
                                         base::TimeTicks::Now());
     ComputeEventLatencyOSFromPOINTER_INFO(ET_TOUCH_PRESSED, pointer_info,
                                           base::TimeTicks::Now());
-    histogram_tester.ExpectUniqueSample("Event.Latency.OS.TOUCH_PRESSED",
-                                        base::Milliseconds(5).InMicroseconds(),
-                                        2);
     histogram_tester.ExpectUniqueTimeSample("Event.Latency.OS2.TOUCH_PRESSED",
                                             base::Milliseconds(5), 2);
   }
@@ -1008,9 +1004,6 @@ TEST_F(EventLatencyTest, ComputeEventLatencyOSFromTickCount) {
                                         base::TimeTicks::Now());
     ComputeEventLatencyOSFromPOINTER_INFO(ET_TOUCH_PRESSED, pointer_info,
                                           base::TimeTicks::Now());
-    histogram_tester.ExpectUniqueSample("Event.Latency.OS.TOUCH_PRESSED",
-                                        base::Milliseconds(15).InMicroseconds(),
-                                        2);
     histogram_tester.ExpectUniqueTimeSample("Event.Latency.OS2.TOUCH_PRESSED",
                                             base::Milliseconds(15), 2);
   }
@@ -1024,7 +1017,6 @@ TEST_F(EventLatencyTest, ComputeEventLatencyOSFromTickCount) {
                                         base::TimeTicks::Now());
     ComputeEventLatencyOSFromPOINTER_INFO(ET_TOUCH_PRESSED, pointer_info,
                                           base::TimeTicks::Now());
-    histogram_tester.ExpectUniqueSample("Event.Latency.OS.TOUCH_PRESSED", 0, 2);
     histogram_tester.ExpectUniqueTimeSample("Event.Latency.OS2.TOUCH_PRESSED",
                                             base::TimeDelta(), 2);
   }
@@ -1059,8 +1051,6 @@ TEST_F(EventLatencyTest, ComputeEventLatencyOSFromPerformanceCounter) {
     base::HistogramTester histogram_tester;
     ComputeEventLatencyOSFromPOINTER_INFO(ET_TOUCH_PRESSED, pointer_info,
                                           base::TimeTicks::Now());
-    histogram_tester.ExpectUniqueSample("Event.Latency.OS.TOUCH_PRESSED",
-                                        base::Seconds(1).InMicroseconds(), 1);
     histogram_tester.ExpectUniqueTimeSample("Event.Latency.OS2.TOUCH_PRESSED",
                                             base::Seconds(1), 1);
   }
@@ -1075,7 +1065,6 @@ TEST_F(EventLatencyTest, ComputeEventLatencyOSFromPerformanceCounter) {
     base::HistogramTester histogram_tester;
     ComputeEventLatencyOSFromPOINTER_INFO(ET_TOUCH_PRESSED, pointer_info,
                                           base::TimeTicks::Now());
-    histogram_tester.ExpectUniqueSample("Event.Latency.OS.TOUCH_PRESSED", 0, 1);
     histogram_tester.ExpectUniqueTimeSample("Event.Latency.OS2.TOUCH_PRESSED",
                                             base::TimeDelta(), 1);
   }
@@ -1090,7 +1079,6 @@ TEST_F(EventLatencyTest, ComputeEventLatencyOSFromPerformanceCounter) {
     base::HistogramTester histogram_tester;
     ComputeEventLatencyOSFromPOINTER_INFO(ET_TOUCH_PRESSED, pointer_info,
                                           base::TimeTicks::Now());
-    histogram_tester.ExpectUniqueSample("Event.Latency.OS.TOUCH_PRESSED", 0, 1);
     histogram_tester.ExpectUniqueTimeSample("Event.Latency.OS2.TOUCH_PRESSED",
                                             base::TimeDelta(), 1);
   }
@@ -1104,7 +1092,6 @@ TEST_F(EventLatencyTest, ComputeEventLatencyOSFromPerformanceCounter) {
     base::HistogramTester histogram_tester;
     ComputeEventLatencyOSFromPOINTER_INFO(ET_TOUCH_PRESSED, pointer_info,
                                           base::TimeTicks::Now());
-    histogram_tester.ExpectTotalCount("Event.Latency.OS.TOUCH_PRESSED", 0);
     histogram_tester.ExpectTotalCount("Event.Latency.OS2.TOUCH_PRESSED", 0);
   }
 
@@ -1122,8 +1109,6 @@ TEST_F(EventLatencyTest, ComputeEventLatencyOSFromPerformanceCounter) {
     base::HistogramTester histogram_tester;
     ComputeEventLatencyOSFromPOINTER_INFO(ET_TOUCH_PRESSED, pointer_info,
                                           base::TimeTicks::Now());
-    histogram_tester.ExpectUniqueSample("Event.Latency.OS.TOUCH_PRESSED",
-                                        base::Seconds(1).InMicroseconds(), 1);
     histogram_tester.ExpectUniqueTimeSample("Event.Latency.OS2.TOUCH_PRESSED",
                                             base::Seconds(1), 1);
   }

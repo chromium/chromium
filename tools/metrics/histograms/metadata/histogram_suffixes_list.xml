@@ -2738,7 +2738,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="TOUCH_MOVED" label=""/>
   <suffix name="TOUCH_PRESSED" label=""/>
   <suffix name="TOUCH_RELEASED" label=""/>
-  <affected-histogram name="Event.Latency.OS"/>
   <affected-histogram name="Event.Latency.OS2"/>
 </histogram_suffixes>
 

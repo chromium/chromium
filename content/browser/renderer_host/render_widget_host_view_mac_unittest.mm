@@ -1637,7 +1637,6 @@ TEST_F(RenderWidgetHostViewMacTest, EventLatencyOSMouseWheelHistogram) {
   events[0]->ToEvent()->CallCallback(
       blink::mojom::InputEventResultState::kConsumed);
 
-  histogram_tester.ExpectTotalCount("Event.Latency.OS.MOUSE_WHEEL", 1);
   histogram_tester.ExpectTotalCount("Event.Latency.OS2.MOUSE_WHEEL", 1);
 }
 

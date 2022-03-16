@@ -133,67 +133,43 @@ void ComputeEventLatencyOS(EventType type,
                            base::TimeTicks current_time) {
   base::TimeDelta delta = current_time - time_stamp;
 
-  // TODO(crbug.com/1189656): Remove the legacy Event.Latency.OS.* histograms
-  // after M92 (which introduced Event.Latency.OS2.*) has been replaced in the
-  // stable channel.
   switch (type) {
 #if BUILDFLAG(IS_APPLE)
     // On Mac, ET_SCROLL and ET_MOUSEWHEEL represent the same class of events.
     case ET_SCROLL:
 #endif
     case ET_MOUSEWHEEL:
-      UMA_HISTOGRAM_CUSTOM_COUNTS(
-          "Event.Latency.OS.MOUSE_WHEEL",
-          base::saturated_cast<int>(delta.InMicroseconds()), 1, 1000000, 50);
       UMA_HISTOGRAM_EVENT_LATENCY_TIMES("Event.Latency.OS2.MOUSE_WHEEL", delta);
       // Do not record traces for wheel events to avoid spam.
       return;
     case ET_TOUCH_MOVED:
-      UMA_HISTOGRAM_CUSTOM_COUNTS(
-          "Event.Latency.OS.TOUCH_MOVED",
-          base::saturated_cast<int>(delta.InMicroseconds()), 1, 1000000, 50);
       UMA_HISTOGRAM_EVENT_LATENCY_TIMES("Event.Latency.OS2.TOUCH_MOVED", delta);
       // Do not record traces for move events to avoid spam.
       return;
     case ET_TOUCH_PRESSED:
-      UMA_HISTOGRAM_CUSTOM_COUNTS(
-          "Event.Latency.OS.TOUCH_PRESSED",
-          base::saturated_cast<int>(delta.InMicroseconds()), 1, 1000000, 50);
       UMA_HISTOGRAM_EVENT_LATENCY_TIMES("Event.Latency.OS2.TOUCH_PRESSED",
                                         delta);
       RecordEventLatencyTrace("InputEventLatency.TOUCH_PRESSED", time_stamp,
                               current_time);
       return;
     case ET_TOUCH_RELEASED:
-      UMA_HISTOGRAM_CUSTOM_COUNTS(
-          "Event.Latency.OS.TOUCH_RELEASED",
-          base::saturated_cast<int>(delta.InMicroseconds()), 1, 1000000, 50);
       UMA_HISTOGRAM_EVENT_LATENCY_TIMES("Event.Latency.OS2.TOUCH_RELEASED",
                                         delta);
       RecordEventLatencyTrace("InputEventLatency.TOUCH_RELEASED", time_stamp,
                               current_time);
       return;
     case ET_TOUCH_CANCELLED:
-      UMA_HISTOGRAM_CUSTOM_COUNTS(
-          "Event.Latency.OS.TOUCH_CANCELLED",
-          base::saturated_cast<int>(delta.InMicroseconds()), 1, 1000000, 50);
       UMA_HISTOGRAM_EVENT_LATENCY_TIMES("Event.Latency.OS2.TOUCH_CANCELLED",
                                         delta);
       RecordEventLatencyTrace("InputEventLatency.TOUCH_CANCELLED", time_stamp,
                               current_time);
       return;
     case ET_KEY_PRESSED:
-      UMA_HISTOGRAM_CUSTOM_COUNTS(
-          "Event.Latency.OS.KEY_PRESSED",
-          base::saturated_cast<int>(delta.InMicroseconds()), 1, 1000000, 50);
       UMA_HISTOGRAM_EVENT_LATENCY_TIMES("Event.Latency.OS2.KEY_PRESSED", delta);
       RecordEventLatencyTrace("InputEventLatency.KEY_PRESSED", time_stamp,
                               current_time);
       return;
     case ET_MOUSE_PRESSED:
-      UMA_HISTOGRAM_CUSTOM_COUNTS(
-          "Event.Latency.OS.MOUSE_PRESSED",
-          base::saturated_cast<int>(delta.InMicroseconds()), 1, 1000000, 50);
       UMA_HISTOGRAM_EVENT_LATENCY_TIMES("Event.Latency.OS2.MOUSE_PRESSED",
                                         delta);
       RecordEventLatencyTrace("InputEventLatency.MOUSE_PRESSED", time_stamp,

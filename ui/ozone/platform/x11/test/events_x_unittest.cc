@@ -783,17 +783,14 @@ TEST_F(EventsXTest, EventLatencyOSTouchHistograms) {
   scoped_xevent.InitTouchEvent(0, x11::Input::DeviceEvent::TouchBegin, 5,
                                gfx::Point(10, 10), {});
   auto touch_begin = ui::BuildTouchEventFromXEvent(*scoped_xevent);
-  histogram_tester.ExpectTotalCount("Event.Latency.OS.TOUCH_PRESSED", 1);
   histogram_tester.ExpectTotalCount("Event.Latency.OS2.TOUCH_PRESSED", 1);
   scoped_xevent.InitTouchEvent(0, x11::Input::DeviceEvent::TouchUpdate, 5,
                                gfx::Point(20, 20), {});
   auto touch_update = ui::BuildTouchEventFromXEvent(*scoped_xevent);
-  histogram_tester.ExpectTotalCount("Event.Latency.OS.TOUCH_MOVED", 1);
   histogram_tester.ExpectTotalCount("Event.Latency.OS2.TOUCH_MOVED", 1);
   scoped_xevent.InitTouchEvent(0, x11::Input::DeviceEvent::TouchEnd, 5,
                                gfx::Point(30, 30), {});
   auto touch_end = ui::BuildTouchEventFromXEvent(*scoped_xevent);
-  histogram_tester.ExpectTotalCount("Event.Latency.OS.TOUCH_RELEASED", 1);
   histogram_tester.ExpectTotalCount("Event.Latency.OS2.TOUCH_RELEASED", 1);
 }
 
@@ -809,7 +806,6 @@ TEST_F(EventsXTest, EventLatencyOSMouseWheelHistogram) {
                  .detail = static_cast<x11::Button>(4),
              });
   auto mouse_ev = ui::BuildMouseWheelEventFromXEvent(native_event);
-  histogram_tester.ExpectTotalCount("Event.Latency.OS.MOUSE_WHEEL", 1);
   histogram_tester.ExpectTotalCount("Event.Latency.OS2.MOUSE_WHEEL", 1);
 }
 
