@@ -32,11 +32,9 @@ class MODULES_EXPORT WebrtcVideoPerfReporter {
   void StoreWebrtcVideoStats(const StatsCollector::StatsKey& stats_key,
                              const StatsCollector::VideoStats& video_stats);
 
- private:
-  void InitializeOnTaskRunner(
-      mojo::PendingRemote<media::mojom::blink::WebrtcVideoPerfRecorder>
-          perf_recorder);
+  void Shutdown();
 
+ private:
   void StoreWebrtcVideoStatsOnTaskRunner(
       const StatsCollector::StatsKey& stats_key,
       const StatsCollector::VideoStats& video_stats);
