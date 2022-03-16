@@ -34,6 +34,9 @@ per-file chrome_content_client_constants.h=*
 per-file chrome_content_client.h=*
 per-file chrome_content_client_unittest.cc=*
 
+# Lacros
+per-file *_lacros*=file://chromeos/LACROS_OWNERS
+
 # Pepper files.
 per-file pepper_*=raymes@chromium.org
 per-file pepper_*=dschuff@chromium.org
