@@ -4035,7 +4035,7 @@
     },
 
     'paeverywhere': {
-      'gn_args': 'use_allocator="partition"',
+      'gn_args': 'use_allocator="none" use_allocator_shim=false',
     },
 
     'backuprefptr': {
