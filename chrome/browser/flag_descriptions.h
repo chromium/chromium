@@ -70,7 +70,6 @@ extern const char kAnimatedImageResumeDescription[];
 extern const char kAriaElementReflectionName[];
 extern const char kAriaElementReflectionDescription[];
 
-extern const char kCOLRV1FontsName[];
 extern const char kCOLRV1FontsDescription[];
 
 extern const char kCSSCascadeLayersName[];

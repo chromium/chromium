@@ -330,7 +330,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"BiddingAndScoringDebugReportingAPI",
            blink::features::kBiddingAndScoringDebugReportingAPI},
           {"ClipboardCustomFormats", blink::features::kClipboardCustomFormats},
-          {"COLRV1Fonts", blink::features::kCOLRV1Fonts},
           {"CSSContainerQueries", blink::features::kCSSContainerQueries},
           {"ComputePressure", blink::features::kComputePressure,
            kSetOnlyIfOverridden},

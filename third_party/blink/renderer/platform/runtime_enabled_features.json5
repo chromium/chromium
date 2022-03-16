@@ -424,10 +424,6 @@
       status: "experimental",
     },
     {
-      name: "COLRV1Fonts",
-      status: "stable",
-    },
-    {
       name: "CompositeBGColorAnimation",
       status: "experimental",
     },

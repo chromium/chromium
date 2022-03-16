@@ -845,7 +845,7 @@
   {
     "name": "colr-v1-fonts",
     "owners": [ "drott", "layout-dev@chromium.org" ],
-    "expiry_milestone": 102
+    "expiry_milestone": 100
   },
   {
     "name": "compositor-threaded-scrollbar-scrolling",

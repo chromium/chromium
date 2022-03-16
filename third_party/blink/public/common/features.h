@@ -22,7 +22,6 @@ BLINK_COMMON_EXPORT extern const base::Feature
 BLINK_COMMON_EXPORT extern const base::Feature kBackForwardCacheDedicatedWorker;
 BLINK_COMMON_EXPORT extern const base::Feature
     kBlockingDownloadsInAdFrameWithoutUserActivation;
-BLINK_COMMON_EXPORT extern const base::Feature kCOLRV1Fonts;
 BLINK_COMMON_EXPORT extern const base::Feature kCSSContainerQueries;
 BLINK_COMMON_EXPORT extern const base::Feature kConversionMeasurement;
 BLINK_COMMON_EXPORT extern const base::Feature kExcludeLowEntropyImagesFromLCP;

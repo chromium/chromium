@@ -9,7 +9,6 @@
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/font_format_check.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 
@@ -58,16 +57,11 @@ bool WebFontTypefaceFactory::CreateTypeface(sk_sp<SkData> sk_data,
   }
 
   if (format_check.IsColrCpalColorFontV1()) {
-    if (RuntimeEnabledFeatures::COLRV1FontsEnabled()) {
-      typeface = FreeTypeFontManager()->makeFromStream(std::move(stream));
-      if (typeface) {
-        ReportInstantiationResult(InstantiationResult::kSuccessColrV1Font);
-      }
-      return typeface.get();
-    } else {
-      // Always reject COLRv1 fonts when the feature is off.
-      return false;
+    typeface = FreeTypeFontManager()->makeFromStream(std::move(stream));
+    if (typeface) {
+      ReportInstantiationResult(InstantiationResult::kSuccessColrV1Font);
     }
+    return typeface.get();
   }
 
   if (format_check.IsSbixColorFont()) {

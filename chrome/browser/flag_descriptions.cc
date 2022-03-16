@@ -83,10 +83,6 @@ const char kAriaElementReflectionDescription[] =
     "Enable setting ARIA relationship attributes that reference other elements "
     "directly without an IDREF";
 
-const char kCOLRV1FontsName[] = "COLR v1 Fonts";
-const char kCOLRV1FontsDescription[] =
-    "Display COLR v1 color gradient vector fonts.";
-
 const char kCSSCascadeLayersName[] = "Enable CSS Cascade Layers";
 const char kCSSCascadeLayersDescription[] =
     "Enables support for CSS @layer rules and layered @import syntax.";

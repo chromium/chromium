@@ -3037,9 +3037,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kExtensionsOnChromeUrlsDescription, kOsAll,
      SINGLE_VALUE_TYPE(extensions::switches::kExtensionsOnChromeURLs)},
 #endif  // ENABLE_EXTENSIONS
-    {"colr-v1-fonts", flag_descriptions::kCOLRV1FontsName,
-     flag_descriptions::kCOLRV1FontsDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kCOLRV1Fonts)},
     {"enable-container-queries", flag_descriptions::kCSSContainerQueriesName,
      flag_descriptions::kCSSContainerQueriesDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kCSSContainerQueries)},
