@@ -224,6 +224,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Settings.PrivacySandbox.DialogDisplayHost"
+    enum="SettingsPrivacySandboxDialogDisplayHostHash" expires_after="M104">
+  <owner>sauski@google.com</owner>
+  <owner>chrome-friendly-settings@google.com</owner>
+  <summary>
+    Records the host portion of the URL of the tab that the Privacy Sandbox
+    dialog was displayed over. As the Privacy Sandbox dialog is only shown over
+    chrome:// URLs (or about:blank), and we only record the host portion, this
+    will never include the user's browsing information (which may be present in
+    query parameters of chrome:// urls).
+  </summary>
+</histogram>
+
 <histogram name="Settings.PrivacySandbox.DialogLoadTime" units="ms"
     expires_after="M104">
   <owner>olesiamarukhno@google.com</owner>

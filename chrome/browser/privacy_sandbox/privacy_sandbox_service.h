@@ -112,10 +112,18 @@ class PrivacySandboxService : public KeyedService,
   // over. Only about:blank and certain chrome:// URLs are considered suitable.
   static bool IsUrlSuitableForDialog(const GURL& url);
 
-  // Informs the service that a Privacy Sandbox dialog has been opened for
-  // |browser|.
+  // Functions for coordinating the display of the Privacy Sandbox dialog
+  // across multiple browser windows. Only relevant for Desktop.
+
+  // Informs the service that a Privacy Sandbox dialog |view| has been opened
+  // or closed for |browser|.
   // Virtual to allow mocking in tests.
   virtual void DialogOpenedForBrowser(Browser* browser);
+  virtual void DialogClosedForBrowser(Browser* browser);
+
+  // Returns whether a Privacy Sandbox dialog is currently open for |browser|.
+  // Virtual to allow mocking in tests.
+  virtual bool IsDialogOpenForBrowser(Browser* browser);
 
   // Disables the display of the Privacy Sandbox dialog for testing. When
   // |disabled| is true, GetRequiredDialogType() will only ever return that no
@@ -412,6 +420,9 @@ class PrivacySandboxService : public KeyedService,
   // A manual record of whether policy_service_ is being observerd.
   // Unfortunately PolicyService does not support scoped observers.
   bool policy_service_observed_ = false;
+
+  // The set of Browser windows which have an open Privacy Sandbox dialog.
+  std::set<Browser*> browsers_with_open_dialogs_;
 
   // Fake implementation for current and blocked topics.
   std::set<privacy_sandbox::CanonicalTopic> fake_current_topics_ = {

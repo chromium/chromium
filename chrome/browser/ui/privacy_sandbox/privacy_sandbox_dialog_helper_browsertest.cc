@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -20,6 +21,9 @@
 
 namespace {
 
+const char kPrivacySandboxDialogDisplayHostHistogram[] =
+    "Settings.PrivacySandbox.DialogDisplayHost";
+
 class MockPrivacySandboxService : public PrivacySandboxService {
  public:
   MOCK_METHOD(PrivacySandboxService::DialogType,
@@ -27,6 +31,7 @@ class MockPrivacySandboxService : public PrivacySandboxService {
               (),
               (override));
   MOCK_METHOD(void, DialogOpenedForBrowser, (Browser*), (override));
+  MOCK_METHOD(bool, IsDialogOpenForBrowser, (Browser*), (override));
   MOCK_METHOD(void,
               DialogActionOccurred,
               (PrivacySandboxService::DialogAction),
@@ -74,6 +79,8 @@ class PrivacySandboxDialogHelperTest : public InProcessBrowserTest {
 
     ON_CALL(*mock_privacy_sandbox_service, GetRequiredDialogType())
         .WillByDefault(testing::Return(TestDialogType()));
+    ON_CALL(*mock_privacy_sandbox_service, IsDialogOpenForBrowser(testing::_))
+        .WillByDefault(testing::Return(false));
   }
 
   virtual PrivacySandboxService::DialogType TestDialogType() {
@@ -120,30 +127,44 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogHelperTestWithParam,
                        DialogOpensOnNtp) {
   // Check when a navigation to the Chrome controlled NTP occurs, which is a
   // suitable location, a dialog is shown.
+  base::HistogramTester histogram_tester;
   EXPECT_CALL(*mock_privacy_sandbox_service(),
               DialogOpenedForBrowser(browser()))
       .Times(1);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), GURL(chrome::kChromeUINewTabPageURL)));
   base::RunLoop().RunUntilIdle();
+  histogram_tester.ExpectUniqueSample(
+      kPrivacySandboxDialogDisplayHostHistogram,
+      static_cast<base::HistogramBase::Sample>(base::Hash("new-tab-page")), 1);
 }
 
 IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogHelperTestWithParam,
                        DialogOpensAboutBlank) {
   // Check when a navigation to about:blank occurs, which is a suitable
   // location, a dialog is shown.
+  base::HistogramTester histogram_tester;
   EXPECT_CALL(*mock_privacy_sandbox_service(),
               DialogOpenedForBrowser(browser()))
       .Times(1);
+  EXPECT_CALL(*mock_privacy_sandbox_service(),
+              IsDialogOpenForBrowser(browser()))
+      .Times(1)
+      .WillOnce(testing::Return(false));
+
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
   base::RunLoop().RunUntilIdle();
+  histogram_tester.ExpectUniqueSample(
+      kPrivacySandboxDialogDisplayHostHistogram,
+      static_cast<base::HistogramBase::Sample>(base::Hash("about:blank")), 1);
 }
 
 IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogHelperTestWithParam,
                        NoDialogNonDefaultNtp) {
   // Check that navigations to the generic chrome://newtab, when a non default
   // NTP is used, do not show a dialog.
+  base::HistogramTester histogram_tester;
   EXPECT_CALL(*mock_privacy_sandbox_service(),
               DialogOpenedForBrowser(browser()))
       .Times(0);
@@ -156,10 +177,13 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogHelperTestWithParam,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            GURL(chrome::kChromeUINewTabURL)));
   base::RunLoop().RunUntilIdle();
+  histogram_tester.ExpectTotalCount(kPrivacySandboxDialogDisplayHostHistogram,
+                                    0);
 }
 
 IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogHelperTestWithParam, NoDialogSync) {
   // Check when sync setup is in progress, that no dialog is shown.
+  base::HistogramTester histogram_tester;
   EXPECT_CALL(*mock_privacy_sandbox_service(),
               DialogOpenedForBrowser(browser()))
       .Times(0);
@@ -167,10 +191,13 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogHelperTestWithParam, NoDialogSync) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), GURL(chrome::kChromeUINewTabPageURL)));
   base::RunLoop().RunUntilIdle();
+  histogram_tester.ExpectTotalCount(kPrivacySandboxDialogDisplayHostHistogram,
+                                    0);
 }
 
 IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogHelperTestWithParam, UnsuitableUrl) {
   // Check that no dialog is shown for navigations to unsuitable URLs.
+  base::HistogramTester histogram_tester;
   EXPECT_CALL(*mock_privacy_sandbox_service(),
               DialogOpenedForBrowser(browser()))
       .Times(0);
@@ -181,6 +208,54 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogHelperTestWithParam, UnsuitableUrl) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_test_server()->GetURL("a.test", "/title1.html")));
   base::RunLoop().RunUntilIdle();
+  histogram_tester.ExpectTotalCount(kPrivacySandboxDialogDisplayHostHistogram,
+                                    0);
+}
+
+IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogHelperTestWithParam,
+                       SingleDialogPerBrowser) {
+  // Check that only a single dialog is opened per browser window at a time.
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(*mock_privacy_sandbox_service(),
+              DialogOpenedForBrowser(browser()))
+      .Times(1);
+  EXPECT_CALL(*mock_privacy_sandbox_service(),
+              IsDialogOpenForBrowser(browser()))
+      .WillOnce(testing::Return(false))
+      .WillRepeatedly(testing::Return(true));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUINewTabPageURL)));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUINewTabPageURL)));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUINewTabPageURL)));
+  base::RunLoop().RunUntilIdle();
+  histogram_tester.ExpectUniqueSample(
+      kPrivacySandboxDialogDisplayHostHistogram,
+      static_cast<base::HistogramBase::Sample>(base::Hash("new-tab-page")), 1);
+}
+
+IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogHelperTestWithParam,
+                       MultipleBrowserWindows) {
+  // Check that if multiple browser windows are opened, and navigated to
+  // appropriate tabs, two dialogs are opened.
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(*mock_privacy_sandbox_service(),
+              DialogOpenedForBrowser(testing::_))
+      .Times(2);
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::NEW_WINDOW,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(chrome::kChromeUINewTabPageURL),
+      WindowOpenDisposition::NEW_WINDOW,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  histogram_tester.ExpectBucketCount(
+      kPrivacySandboxDialogDisplayHostHistogram,
+      static_cast<base::HistogramBase::Sample>(base::Hash("new-tab-page")), 1);
+  histogram_tester.ExpectBucketCount(
+      kPrivacySandboxDialogDisplayHostHistogram,
+      static_cast<base::HistogramBase::Sample>(base::Hash("about:blank")), 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(PrivacySandboxDialogHelperTestWithParamInstance,

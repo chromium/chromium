@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/privacy_sandbox/privacy_sandbox_dialog_helper.h"
 
+#include "base/hash/hash.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -65,12 +67,26 @@ void PrivacySandboxDialogHelper::DidFinishNavigation(
 
   auto* browser =
       chrome::FindBrowserWithWebContents(navigation_handle->GetWebContents());
+
+  // If a Privacy Sandbox dialog already exists for this browser, do not attempt
+  // to open another one.
+  if (auto* privacy_sandbox_serivce =
+          PrivacySandboxServiceFactory::GetForProfile(profile())) {
+    if (privacy_sandbox_serivce->IsDialogOpenForBrowser(browser))
+      return;
+  }
+
+  // Record the URL that the dialog was displayed over.
+  uint32_t host_hash = base::Hash(navigation_handle->GetURL().IsAboutBlank()
+                                      ? "about:blank"
+                                      : navigation_handle->GetURL().host());
+  base::UmaHistogramSparse("Settings.PrivacySandbox.DialogDisplayHost",
+                           static_cast<base::HistogramBase::Sample>(host_hash));
+
   browser->tab_strip_model()->ActivateTabAt(
       browser->tab_strip_model()->GetIndexOfWebContents(
           navigation_handle->GetWebContents()));
 
-  // TODO(crbug.com/1286276): Record to metrics the URL the dialog was shown
-  // over.
   ShowPrivacySandboxDialog(browser, GetRequiredDialogType(profile()));
 }
 

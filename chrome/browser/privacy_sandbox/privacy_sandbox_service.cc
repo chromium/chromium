@@ -278,8 +278,17 @@ bool PrivacySandboxService::IsUrlSuitableForDialog(const GURL& url) {
 }
 
 void PrivacySandboxService::DialogOpenedForBrowser(Browser* browser) {
-  // TODO(crbug.com/1286276): Implement logic to record this and make available
-  // to the Privacy Sandbox helper.
+  DCHECK(!browsers_with_open_dialogs_.count(browser));
+  browsers_with_open_dialogs_.insert(browser);
+}
+
+void PrivacySandboxService::DialogClosedForBrowser(Browser* browser) {
+  DCHECK(browsers_with_open_dialogs_.count(browser));
+  browsers_with_open_dialogs_.erase(browser);
+}
+
+bool PrivacySandboxService::IsDialogOpenForBrowser(Browser* browser) {
+  return browsers_with_open_dialogs_.count(browser);
 }
 
 void PrivacySandboxService::SetDialogDisabledForTests(bool disabled) {
