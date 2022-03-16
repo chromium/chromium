@@ -2526,6 +2526,9 @@ message ProfileProto {
   map<int32, AutofillEntryProto> values = 2;
   // The identifier for this set of profile data.
   optional string identifier = 3;
+  // The token to edit this profile. This is only available for profiles
+  // originating from an address source.
+  optional bytes edit_token = 4;
 
   reserved 1;
 }
@@ -2552,6 +2555,8 @@ message PaymentInstrumentProto {
   map<int32, AutofillEntryProto> address_values = 3;
   // The identifier for this payment instrument (credit card + billing address).
   optional string identifier = 4;
+  // The token to edit this payment instrument.
+  optional bytes edit_token = 8;
 
   reserved 1;
 }

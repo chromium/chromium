@@ -49,7 +49,18 @@ public class AssistantPaymentInstrumentEditorGms implements AssistantPaymentInst
             }
         };
 
-        mGmsIntegrator.launchAddInstrumentIntent(
-                mAddInstrumentActionToken, mWindowAndroid, callback);
+        if (oldItem == null) {
+            mGmsIntegrator.launchAddInstrumentIntent(
+                    mAddInstrumentActionToken, mWindowAndroid, callback);
+        } else {
+            byte[] editToken = oldItem.getEditToken();
+            if (editToken == null) {
+                assert false; // Should never happen!
+                cancelCallback.onResult(oldItem);
+                return;
+            }
+
+            mGmsIntegrator.launchUpdateInstrumentIntent(editToken, mWindowAndroid, callback);
+        }
     }
 }

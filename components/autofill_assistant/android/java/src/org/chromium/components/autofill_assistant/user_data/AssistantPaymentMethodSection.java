@@ -127,7 +127,7 @@ public class AssistantPaymentMethodSection
 
     @Override
     protected boolean canEditOption(PaymentInstrumentModel model) {
-        return true;
+        return model.canEdit();
     }
 
     @Override

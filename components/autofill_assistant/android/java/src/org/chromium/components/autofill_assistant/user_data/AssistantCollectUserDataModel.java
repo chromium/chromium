@@ -346,23 +346,26 @@ public class AssistantCollectUserDataModel extends PropertyModel {
 
     @CalledByNative
     private void setSelectedShippingAddress(@Nullable AssistantAutofillProfile shippingAddress,
-            String fullDescription, String summaryDescription, String[] errors) {
+            String fullDescription, String summaryDescription, String[] errors,
+            @Nullable byte[] editToken) {
         set(SELECTED_SHIPPING_ADDRESS,
-                shippingAddress == null ? null
-                                        : new AddressModel(shippingAddress, fullDescription,
-                                                summaryDescription, Arrays.asList(errors)));
+                shippingAddress == null
+                        ? null
+                        : new AddressModel(shippingAddress, fullDescription, summaryDescription,
+                                Arrays.asList(errors), editToken));
     }
 
     @CalledByNative
     private void setSelectedPaymentInstrument(@Nullable AssistantAutofillCreditCard creditCard,
-            @Nullable AssistantAutofillProfile billingProfile, String[] errors) {
+            @Nullable AssistantAutofillProfile billingProfile, String[] errors,
+            @Nullable byte[] editToken) {
         @Nullable
         AssistantPaymentInstrument paymentInstrument =
                 createAssistantPaymentInstrument(creditCard, billingProfile);
         set(SELECTED_PAYMENT_INSTRUMENT,
-                paymentInstrument == null
-                        ? null
-                        : new PaymentInstrumentModel(paymentInstrument, Arrays.asList(errors)));
+                paymentInstrument == null ? null
+                                          : new PaymentInstrumentModel(paymentInstrument,
+                                                  Arrays.asList(errors), editToken));
     }
 
     @CalledByNative
@@ -493,9 +496,9 @@ public class AssistantCollectUserDataModel extends PropertyModel {
     @CalledByNative
     private static void addShippingAddress(List<AddressModel> addresses,
             AssistantAutofillProfile address, String fullDescription, String summaryDescription,
-            String[] errors) {
+            String[] errors, @Nullable byte[] editToken) {
         addresses.add(new AddressModel(
-                address, fullDescription, summaryDescription, Arrays.asList(errors)));
+                address, fullDescription, summaryDescription, Arrays.asList(errors), editToken));
     }
 
     @CalledByNative
@@ -525,12 +528,13 @@ public class AssistantCollectUserDataModel extends PropertyModel {
     }
 
     @CalledByNative
-    private static void addAutofillPaymentInstrument(
-            List<PaymentInstrumentModel> paymentInstruments, AssistantAutofillCreditCard creditCard,
-            @Nullable AssistantAutofillProfile billingProfile, String[] errors) {
+    private static void addPaymentInstrument(List<PaymentInstrumentModel> paymentInstruments,
+            AssistantAutofillCreditCard creditCard,
+            @Nullable AssistantAutofillProfile billingProfile, String[] errors,
+            @Nullable byte[] editToken) {
         paymentInstruments.add(new PaymentInstrumentModel(
-                createAssistantPaymentInstrument(creditCard, billingProfile),
-                Arrays.asList(errors)));
+                createAssistantPaymentInstrument(creditCard, billingProfile), Arrays.asList(errors),
+                editToken));
     }
 
     @CalledByNative

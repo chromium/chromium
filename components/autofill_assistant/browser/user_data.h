@@ -111,6 +111,9 @@ struct PaymentInstrument {
   absl::optional<std::string> identifier;
   std::unique_ptr<autofill::CreditCard> card;
   std::unique_ptr<autofill::AutofillProfile> billing_address;
+  // This field is only filled for payment instruments being sent from our own
+  // endpoint. It is absl::nullopt for Chrome Autofill data.
+  absl::optional<std::string> edit_token;
 };
 
 // Struct for holding a contact. This is a wrapper around AutofillProfile to
@@ -144,6 +147,9 @@ struct Address {
 
   absl::optional<std::string> identifier;
   std::unique_ptr<autofill::AutofillProfile> profile;
+  // This field is only filled for addresses being sent from our own endpoint.
+  // It is absl::nullopt for Chrome Autofill data.
+  absl::optional<std::string> edit_token;
 };
 
 // Struct for holding metrics data used by CollectUserDataAction.

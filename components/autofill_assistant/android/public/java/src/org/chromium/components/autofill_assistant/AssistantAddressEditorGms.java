@@ -48,7 +48,18 @@ public class AssistantAddressEditorGms implements AssistantAddressEditor {
             }
         };
 
-        mGmsIntegrator.launchAddressCollectionIntent(
-                mInitializeAddressCollectionParams, mWindowAndroid, callback);
+        if (oldItem == null) {
+            mGmsIntegrator.launchAddressCollectionIntent(
+                    mInitializeAddressCollectionParams, mWindowAndroid, callback);
+        } else {
+            byte[] editToken = oldItem.getEditToken();
+            if (editToken == null) {
+                assert false; // Should never happen!
+                cancelCallback.onResult(oldItem);
+                return;
+            }
+
+            mGmsIntegrator.launchAddressCollectionIntent(editToken, mWindowAndroid, callback);
+        }
     }
 }

@@ -30,6 +30,11 @@ public class GmsIntegrator {
         callback.onResult(false);
     }
 
+    public void launchUpdateInstrumentIntent(
+            byte[] actionToken, WindowAndroid windowAndroid, Callback<Boolean> callback) {
+        callback.onResult(false);
+    }
+
     public void launchAddressCollectionIntent(
             byte[] params, WindowAndroid windowAndroid, Callback<Boolean> callback) {
         callback.onResult(false);

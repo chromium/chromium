@@ -1496,6 +1496,7 @@ void CollectUserDataAction::UpdateUserDataFromProto(
       if (profile_data.has_identifier()) {
         address->identifier = profile_data.identifier();
       }
+      address->edit_token = profile_data.edit_token();
       user_data->available_addresses_.emplace_back(std::move(address));
     }
     if (proto_data.has_selected_shipping_address_identifier()) {
@@ -1568,6 +1569,7 @@ void CollectUserDataAction::UpdateUserDataFromProto(
       if (payment_data.has_identifier()) {
         payment_instrument->identifier = payment_data.identifier();
       }
+      payment_instrument->edit_token = payment_data.edit_token();
 
       user_data->available_payment_instruments_.emplace_back(
           std::move(payment_instrument));

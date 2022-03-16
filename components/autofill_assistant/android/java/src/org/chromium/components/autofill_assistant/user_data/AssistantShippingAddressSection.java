@@ -88,7 +88,7 @@ public class AssistantShippingAddressSection extends AssistantCollectUserDataSec
 
     @Override
     protected boolean canEditOption(AddressModel model) {
-        return true;
+        return model.canEdit();
     }
 
     @Override
