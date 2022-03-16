@@ -135,9 +135,18 @@ void SideSearchConfig::OnTemplateURLServiceChanged() {
       TemplateURLServiceFactory::GetForProfile(profile_)
           ->GetDefaultSearchProvider();
 
+  // If there is currently no default search engine set, but there was one set
+  // previously, reset `default_template_url_id_` and propagate the change.
+  if (!default_template_url &&
+      default_template_url_id_ != kInvalidTemplateURLID) {
+    default_template_url_id_ = kInvalidTemplateURLID;
+    ResetStateAndNotifyConfigChanged();
+  }
+
   // Propagate an update only if the current default search provider has
   // changed.
-  if (default_template_url->id() == default_template_url_id_)
+  if (!default_template_url ||
+      default_template_url->id() == default_template_url_id_)
     return;
   default_template_url_id_ = default_template_url->id();
   ResetStateAndNotifyConfigChanged();
