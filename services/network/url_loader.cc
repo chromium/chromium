@@ -448,7 +448,6 @@ URLLoader::URLLoader(
     mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
     mojo::PendingRemote<mojom::AcceptCHFrameObserver> accept_ch_frame_observer)
     : url_request_context_(context.GetUrlRequestContext()),
-      url_loader_factory_id_(context.GetFactoryId()),
       network_context_client_(context.GetNetworkContextClient()),
       delete_callback_(std::move(delete_callback)),
       options_(options),

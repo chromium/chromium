@@ -102,9 +102,6 @@ COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kURLLoaderSyncClient;
 
 COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::Feature kOptimizeUpdateLoadInfo;
-
-COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kCombineResponseBody;
 
 COMPONENT_EXPORT(NETWORK_CPP)

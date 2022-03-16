@@ -262,10 +262,6 @@ const base::Feature kCorsNonWildcardRequestHeadersSupport{
 const base::Feature kURLLoaderSyncClient{"URLLoaderSyncClient",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Optimize the implementation of calling URLLoaderFactory::UpdateLoadInfo().
-const base::Feature kOptimizeUpdateLoadInfo{"OptimizeUpdateLoadInfo",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Combine URLLoaderClient::OnReceiveResponse and OnStartLoadingResponseBody.
 const base::Feature kCombineResponseBody{"CombineResponseBody",
                                          base::FEATURE_DISABLED_BY_DEFAULT};

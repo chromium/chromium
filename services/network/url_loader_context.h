@@ -51,10 +51,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoaderContext {
   virtual net::URLRequestContext* GetUrlRequestContext() const = 0;
   virtual scoped_refptr<ResourceSchedulerClient> GetResourceSchedulerClient()
       const = 0;
-
-  // TODO(https://crbug.com/1276591): Remove GetFactoryId once
-  // kOptimizeUpdateLoadInfo is enabled.
-  virtual uintptr_t GetFactoryId() const = 0;
   virtual corb::PerFactoryState& GetMutableCorbState() = 0;
 
  protected:

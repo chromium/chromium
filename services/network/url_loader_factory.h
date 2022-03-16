@@ -82,7 +82,6 @@ class URLLoaderFactory : public mojom::URLLoaderFactory,
   net::URLRequestContext* GetUrlRequestContext() const override;
   scoped_refptr<ResourceSchedulerClient> GetResourceSchedulerClient()
       const override;
-  uintptr_t GetFactoryId() const override;
   corb::PerFactoryState& GetMutableCorbState() override;
 
   // Allows starting a URLLoader with a synchronous URLLoaderClient as an

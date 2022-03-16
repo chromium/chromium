@@ -260,8 +260,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
     return devtools_request_id_;
   }
 
-  uintptr_t url_loader_factory_id() const { return url_loader_factory_id_; }
-
   void SetEnableReportingRawHeaders(bool enable);
 
   mojom::LoadInfoPtr CreateLoadInfo();
@@ -446,10 +444,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   bool CoepAllowCredentials(const GURL& url);
 
   raw_ptr<net::URLRequestContext> url_request_context_;
-
-  // A helper for checking if `this` URLLoader came from the given
-  // URLLoaderFactory.
-  const uintptr_t url_loader_factory_id_ = 0;
 
   raw_ptr<mojom::NetworkContextClient> network_context_client_;
   DeleteCallback delete_callback_;

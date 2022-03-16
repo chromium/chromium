@@ -166,10 +166,6 @@ const cors::OriginAccessList& URLLoaderFactory::GetOriginAccessList() const {
   return context_->cors_origin_access_list();
 }
 
-uintptr_t URLLoaderFactory::GetFactoryId() const {
-  return reinterpret_cast<uintptr_t>(reinterpret_cast<const void*>(this));
-}
-
 corb::PerFactoryState& URLLoaderFactory::GetMutableCorbState() {
   return corb_state_;
 }
@@ -388,27 +384,13 @@ void URLLoaderFactory::UpdateLoadInfo() {
 
   SCOPED_UMA_HISTOGRAM_TIMER("NetworkService.URLLoaderFactory.UpdateLoadInfo");
 
-  if (base::FeatureList::IsEnabled(features::kOptimizeUpdateLoadInfo)) {
-    for (auto& loader : cors_url_loader_factory_->url_loaders()) {
-      if (!most_interesting ||
-          LoadInfoIsMoreInteresting(
-              loader->GetLoadState(), loader->GetUploadProgress().size(),
-              most_interesting->load_state, most_interesting->upload_size)) {
-        most_interesting = loader->CreateLoadInfo();
-        most_interesting_url_loader = loader.get();
-      }
-    }
-  } else {
-    for (auto* request : *context_->url_request_context()->url_requests()) {
-      auto* loader = URLLoader::ForRequest(*request);
-      if (!loader || loader->url_loader_factory_id() != GetFactoryId())
-        continue;
-      mojom::LoadInfoPtr load_info = loader->CreateLoadInfo();
-      if (!most_interesting ||
-          LoadInfoIsMoreInteresting(*load_info, *most_interesting)) {
-        most_interesting = std::move(load_info);
-        most_interesting_url_loader = loader;
-      }
+  for (auto& loader : cors_url_loader_factory_->url_loaders()) {
+    if (!most_interesting ||
+        LoadInfoIsMoreInteresting(
+            loader->GetLoadState(), loader->GetUploadProgress().size(),
+            most_interesting->load_state, most_interesting->upload_size)) {
+      most_interesting = loader->CreateLoadInfo();
+      most_interesting_url_loader = loader.get();
     }
   }
 
