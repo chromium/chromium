@@ -5,7 +5,7 @@
 #ifndef ASH_WEBUI_PERSONALIZATION_APP_TEST_FAKE_PERSONALIZATION_APP_AMBIENT_PROVIDER_H_
 #define ASH_WEBUI_PERSONALIZATION_APP_TEST_FAKE_PERSONALIZATION_APP_AMBIENT_PROVIDER_H_
 
-#include "ash/public/cpp/ambient/ambient_animation_theme.h"
+#include "ash/constants/ambient_animation_theme.h"
 #include "ash/webui/personalization_app/personalization_app_ambient_provider.h"
 
 #include <stdint.h>

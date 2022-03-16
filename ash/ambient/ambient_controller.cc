@@ -17,9 +17,9 @@
 #include "ash/ambient/ui/ambient_view_delegate.h"
 #include "ash/ambient/util/ambient_util.h"
 #include "ash/assistant/model/assistant_interaction_model.h"
+#include "ash/constants/ambient_animation_theme.h"
 #include "ash/constants/ash_features.h"
 #include "ash/login/ui/lock_screen.h"
-#include "ash/public/cpp/ambient/ambient_animation_theme.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/ambient/ambient_client.h"
 #include "ash/public/cpp/ambient/ambient_metrics.h"
@@ -756,13 +756,16 @@ AmbientPhotoConfig AmbientController::CreatePhotoConfigForCurrentTheme() {
       base::FeatureList::GetStateIfOverridden(
           features::kAmbientModeAnimationFeature);
   if (animation_experiment_enabled.has_value()) {
-    // TODO(esum): Remove this block of code once the web ui that allows the
-    // user to select the desired theme is ready. It is currently controlled by
-    // an experiment flag since the feature is under active development.
+    // Allows developers to enable the animation without having to depend on
+    // personalization hub by overriding the dedicated animation experiment.
     current_theme = animation_experiment_enabled.value()
-                        ? AmbientAnimationTheme::kFeelTheBreeze
-                        : AmbientAnimationTheme::kSlideshow;
-  } else {
+                        ? features::kAmbientModeAnimationThemeParam.Get()
+                        : kDefaultAmbientAnimationTheme;
+  } else if (features::IsPersonalizationHubEnabled()) {
+    // UX testers/dogfooders only have to enable the personalization hub to get
+    // the animation. They do not turn on the dedicated animation experiment
+    // flag as that is only intended for developers who want to bypass the hub.
+    // If the hub is disabled, fallback to the default theme.
     DCHECK(GetPrimaryUserPrefService());
     int current_theme_as_int = GetPrimaryUserPrefService()->GetInteger(
         ambient::prefs::kAmbientAnimationTheme);

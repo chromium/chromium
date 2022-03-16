@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-#include "ash/public/cpp/ambient/ambient_animation_theme.h"
+#include "ash/constants/ambient_animation_theme.h"
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
 #include "ash/public/cpp/default_user_image.h"
 #include "ash/public/cpp/personalization_app/user_display_info.h"

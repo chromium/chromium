@@ -83,11 +83,22 @@ constexpr base::FeatureParam<bool> kAmbientModeRssPhotosEnabled{
 constexpr base::FeatureParam<bool> kAmbientModeStreetArtAlbumEnabled{
     &kAmbientModeFeature, "StreetArtAlbumEnabled", false};
 
+// The "slideshow" theme is intentionally omitted here. For that, the developer
+// can just disable |kAmbientModeAnimationFeature| entirely.
+const base::FeatureParam<AmbientAnimationTheme>::Option
+    kAmbientModeAnimationThemeOptions[] = {
+        {AmbientAnimationTheme::kFeelTheBreeze, "feel_the_breeze"},
+        {AmbientAnimationTheme::kFloatOnBy, "float_on_by"}};
+
+// When |kAmbientModeAnimationFeature| is enabled, specifies which animation
+// theme to load. If |kAmbientModeAnimationFeature| is disabled, this is
+// unused.
+const base::FeatureParam<AmbientAnimationTheme> kAmbientModeAnimationThemeParam{
+    &kAmbientModeAnimationFeature, "animation_theme",
+    AmbientAnimationTheme::kFeelTheBreeze, &kAmbientModeAnimationThemeOptions};
+
 // Controls whether to launch the animated screensaver (as opposed to the
-// existing photo slideshow) when entering ambient mode. Currently, there is
-// only one animation theme available ("feel the breeze"), but a FeatureParam
-// will be introduced that allows the user to select a specific theme when more
-// become available.
+// existing photo slideshow) when entering ambient mode.
 const base::Feature kAmbientModeAnimationFeature{
     "ChromeOSAmbientModeAnimation", base::FEATURE_DISABLED_BY_DEFAULT};
 

@@ -23,8 +23,6 @@ component("cpp") {
     "accessibility_focus_ring_controller.h",
     "accessibility_focus_ring_info.cc",
     "accessibility_focus_ring_info.h",
-    "ambient/ambient_animation_theme.cc",
-    "ambient/ambient_animation_theme.h",
     "ambient/ambient_backend_controller.cc",
     "ambient/ambient_backend_controller.h",
     "ambient/ambient_client.cc",

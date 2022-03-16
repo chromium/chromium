@@ -5,7 +5,7 @@
 #include "ash/ambient/resources/ambient_animation_static_resources.h"
 
 #include "ash/ambient/resources/ambient_animation_resource_constants.h"
-#include "ash/public/cpp/ambient/ambient_animation_theme.h"
+#include "ash/constants/ambient_animation_theme.h"
 #include "base/json/json_reader.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -2616,9 +2616,6 @@ constexpr FeatureEntry::FeatureVariation
          std::size(kPlatformProvidedTrustTokenIssuance), nullptr}};
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#if BUILDFLAG(HAS_ASH_AMBIENT_ANIMATION_RESOURCES)
-constexpr char kAmbientModeAnimationInternalName[] = "ambient-mode-animation";
-#endif  // BUILDFLAG(HAS_ASH_AMBIENT_ANIMATION_RESOURCES)
 constexpr char kPersonalizationHubInternalName[] = "personalization-hub";
 constexpr char kWallpaperFullScreenPreviewInternalName[] =
     "wallpaper-fullscreen-preview";
@@ -8174,15 +8171,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableUpdateVirtualCardEnrollment)},
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#if BUILDFLAG(HAS_ASH_AMBIENT_ANIMATION_RESOURCES)
-    {kAmbientModeAnimationInternalName,
-     flag_descriptions::kAmbientModeAnimationName,
-     flag_descriptions::kAmbientModeAnimationDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kAmbientModeAnimationFeature)},
-#endif  // BUILDFLAG(HAS_ASH_AMBIENT_ANIMATION_RESOURCES)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     // TODO(b/180051795): Remove kOsLinux when lacros-chrome switches to
     // kOsCrOS.
@@ -8500,13 +8488,7 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
   }
 
   // Features that are only available for Unknown/Canary/Dev channels.
-  bool is_ambient_mode_animation_feature = false;
-#if BUILDFLAG(HAS_ASH_AMBIENT_ANIMATION_RESOURCES)
-  is_ambient_mode_animation_feature =
-      !strcmp(kAmbientModeAnimationInternalName, entry.internal_name);
-#endif  // BUILDFLAG(HAS_ASH_AMBIENT_ANIMATION_RESOURCES)
-  if ((!strcmp(kPersonalizationHubInternalName, entry.internal_name) ||
-       is_ambient_mode_animation_feature) &&
+  if (!strcmp(kPersonalizationHubInternalName, entry.internal_name) &&
       channel != version_info::Channel::DEV &&
       channel != version_info::Channel::CANARY &&
       channel != version_info::Channel::UNKNOWN) {

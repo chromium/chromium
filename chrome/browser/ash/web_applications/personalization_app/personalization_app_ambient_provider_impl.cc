@@ -9,8 +9,8 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ambient_animation_theme.h"
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/ambient/ambient_animation_theme.h"
 #include "ash/public/cpp/ambient/ambient_client.h"
 #include "ash/public/cpp/ambient/ambient_metrics.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"

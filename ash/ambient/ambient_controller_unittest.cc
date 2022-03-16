@@ -13,7 +13,8 @@
 #include "ash/ambient/ui/ambient_view_ids.h"
 #include "ash/assistant/assistant_interaction_controller_impl.h"
 #include "ash/assistant/model/assistant_interaction_model.h"
-#include "ash/public/cpp/ambient/ambient_animation_theme.h"
+#include "ash/constants/ambient_animation_theme.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/public/cpp/assistant/controller/assistant_interaction_controller.h"
@@ -22,6 +23,7 @@
 #include "ash/system/power/power_status.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/buildflag.h"
 #include "chromeos/assistant/buildflags.h"
@@ -1105,6 +1107,8 @@ TEST_P(AmbientControllerTestForAnyTheme,
 #define MAYBE_RendersCorrectView DISABLED_RendersCorrectView
 #endif  // BUILDFLAG(HAS_ASH_AMBIENT_ANIMATION_RESOURCES)
 TEST_F(AmbientControllerTest, MAYBE_RendersCorrectView) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kPersonalizationHub);
   SetAmbientAnimationTheme(AmbientAnimationTheme::kSlideshow);
 
   LockScreen();
