@@ -247,14 +247,21 @@ bool MallocDumpProvider::OnMemoryDump(const MemoryDumpArgs& args,
   outer_dump->AddScalar(MemoryAllocatorDump::kNameSize,
                         MemoryAllocatorDump::kUnitsBytes, resident_size);
 
-  outer_dump->AddScalar(MemoryAllocatorDump::kNameSize,
+  MemoryAllocatorDump* inner_dump = pmd->CreateAllocatorDump(kAllocatedObjects);
+  inner_dump->AddScalar(MemoryAllocatorDump::kNameSize,
                         MemoryAllocatorDump::kUnitsBytes,
                         allocated_objects_size);
   if (allocated_objects_count != 0) {
-    outer_dump->AddScalar(MemoryAllocatorDump::kNameObjectCount,
+    inner_dump->AddScalar(MemoryAllocatorDump::kNameObjectCount,
                           MemoryAllocatorDump::kUnitsObjects,
                           allocated_objects_count);
   }
+
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  base::trace_event::MemoryAllocatorDump* partitions_dump =
+      pmd->CreateAllocatorDump("malloc/partitions");
+  pmd->AddOwnershipEdge(inner_dump->guid(), partitions_dump->guid());
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
   int64_t waste = static_cast<int64_t>(resident_size) - allocated_objects_size;
 
