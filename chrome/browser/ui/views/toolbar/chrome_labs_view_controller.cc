@@ -50,7 +50,8 @@ enum class ChromeLabsSelectedLab {
   kSidePanelSelected = 4,
   kLensRegionSearchSelected = 5,
   kWebUITabStripSelected = 6,
-  kMaxValue = kWebUITabStripSelected,
+  kTabSearchMediaTabsSelected = 7,
+  kMaxValue = kTabSearchMediaTabsSelected,
 };
 
 void EmitToHistogram(const std::u16string& selected_lab_state,
@@ -83,6 +84,9 @@ void EmitToHistogram(const std::u16string& selected_lab_state,
     if (internal_name == flag_descriptions::kWebUITabStripFlagId)
       return ChromeLabsSelectedLab::kWebUITabStripSelected;
 #endif
+    if (internal_name == flag_descriptions::kTabSearchMediaTabsId)
+      return ChromeLabsSelectedLab::kTabSearchMediaTabsSelected;
+
     return ChromeLabsSelectedLab::kUnspecifiedSelected;
   };
 

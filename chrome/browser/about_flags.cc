@@ -1447,7 +1447,7 @@ const FeatureEntry::FeatureParam kAlsoShowMediaTabsinOpenTabsSection[] = {
      "true"}};
 
 const FeatureEntry::FeatureVariation kTabSearchMediaTabsVariations[] = {
-    {" - media tabs also shown in open tabs",
+    {" - media tabs also shown in open tabs section",
      kAlsoShowMediaTabsinOpenTabsSection,
      std::size(kAlsoShowMediaTabsinOpenTabsSection), nullptr}};
 
