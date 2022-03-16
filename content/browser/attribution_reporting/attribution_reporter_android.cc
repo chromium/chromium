@@ -8,7 +8,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "base/strings/strcat.h"
+#include "base/check.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_host.h"
 #include "content/browser/attribution_reporting/attribution_host_utils.h"
@@ -35,7 +35,6 @@ namespace content {
 namespace attribution_reporter_android {
 
 void ReportAppImpression(AttributionManager& attribution_manager,
-                         BrowserContext* context,
                          const std::string& source_package_name,
                          const std::string& source_event_id,
                          const std::string& destination,
@@ -104,8 +103,7 @@ void JNI_AttributionReporterImpl_ReportAppImpression(
                                    : base::Time::FromJavaTime(event_time);
 
   attribution_reporter_android::ReportAppImpression(
-      *attribution_manager, context,
-      ConvertJavaStringToUTF8(env, j_source_package_name),
+      *attribution_manager, ConvertJavaStringToUTF8(env, j_source_package_name),
       ConvertJavaStringToUTF8(env, j_source_event_id),
       ConvertJavaStringToUTF8(env, j_destination),
       j_report_to ? ConvertJavaStringToUTF8(env, j_report_to) : "", expiry,

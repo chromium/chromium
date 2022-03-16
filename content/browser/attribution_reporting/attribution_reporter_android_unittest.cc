@@ -54,25 +54,25 @@ TEST_F(AttributionReporterTest, ValidImpression_Allowed) {
                 SourceTypeIs(AttributionSourceType::kEvent),
                 ImpressionTimeIs(time))));
 
-  attribution_reporter_android::ReportAppImpression(
-      mock_manager_, nullptr, kPackageName, kEventId, kConversionUrl,
-      kReportToUrl, 56789, time);
+  attribution_reporter_android::ReportAppImpression(mock_manager_, kPackageName,
+                                                    kEventId, kConversionUrl,
+                                                    kReportToUrl, 56789, time);
 }
 
 TEST_F(AttributionReporterTest, ImpressionWithoutReportingOrigin_NotAllowed) {
   EXPECT_CALL(mock_manager_, HandleSource).Times(0);
 
-  attribution_reporter_android::ReportAppImpression(
-      mock_manager_, nullptr, kPackageName, kEventId, kConversionUrl, "", 0,
-      base::Time::Now());
+  attribution_reporter_android::ReportAppImpression(mock_manager_, kPackageName,
+                                                    kEventId, kConversionUrl,
+                                                    "", 0, base::Time::Now());
 }
 
 TEST_F(AttributionReporterTest, InvalidImpression) {
   EXPECT_CALL(mock_manager_, HandleSource).Times(0);
 
   attribution_reporter_android::ReportAppImpression(
-      mock_manager_, nullptr, kPackageName, kEventId, kInvalidUrl, kReportToUrl,
-      56789, base::Time::Now());
+      mock_manager_, kPackageName, kEventId, kInvalidUrl, kReportToUrl, 56789,
+      base::Time::Now());
 }
 
 }  // namespace
