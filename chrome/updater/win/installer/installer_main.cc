@@ -4,6 +4,8 @@
 
 #include <windows.h>
 
+#include <string>
+
 #include "chrome/updater/win/installer/installer.h"
 
 // http://blogs.msdn.com/oldnewthing/archive/2004/10/25/247180.aspx
@@ -15,6 +17,12 @@ int WINAPI wWinMain(HINSTANCE /* instance */,
                     int /* command_show */) {
   updater::ProcessExitResult result =
       updater::WMain(reinterpret_cast<HMODULE>(&__ImageBase));
+
+  if (result.exit_code != updater::SUCCESS_EXIT_CODE) {
+    std::wstring error = L"Updater error ";
+    error.append(std::to_wstring(result.exit_code));
+    ::MessageBoxEx(nullptr, error.c_str(), nullptr, 0, 0);
+  }
 
   return result.exit_code;
 }

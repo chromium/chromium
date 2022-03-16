@@ -282,6 +282,11 @@ ProcessExitResult RunSetup(const Configuration& configuration,
     }
   }
 
+  // If there is nothing but the executable (and quotes), return an error.
+  if (cmd_line.length() <= setup_exe.length() + 2) {
+    return ProcessExitResult(INVALID_OPTION);
+  }
+
   // Append logging-related arguments for debugging purposes, at least for
   // now.
   if (!cmd_line.append(
