@@ -45,7 +45,6 @@ void FakeWebAppRegistryController::SetUp(base::raw_ptr<Profile> profile) {
                                          /*icon_manager=*/nullptr);
   translation_manager_ = std::make_unique<WebAppTranslationManager>(
       profile, base::MakeRefCounted<TestFileUtils>());
-  translation_manager_->SetSubsystems(mutable_registrar_.get());
 
   fake_externally_managed_app_manager_ =
       std::make_unique<FakeExternallyManagedAppManager>(profile);
@@ -56,7 +55,8 @@ void FakeWebAppRegistryController::SetUp(base::raw_ptr<Profile> profile) {
                                  /*web_app_manager=*/nullptr,
                                  os_integration_manager_.get());
 
-  mutable_registrar_->SetSubsystems(policy_manager_.get());
+  mutable_registrar_->SetSubsystems(policy_manager_.get(),
+                                    translation_manager_.get());
   ON_CALL(processor(), IsTrackingMetadata())
       .WillByDefault(testing::Return(true));
 }

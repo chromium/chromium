@@ -473,7 +473,8 @@ apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
 #endif
 
   auto app = apps::AppPublisher::MakeApp(
-      app_type(), web_app->app_id(), readiness, web_app->name(),
+      app_type(), web_app->app_id(), readiness,
+      provider_->registrar().GetAppShortName(web_app->app_id()),
       apps::ConvertMojomInstallReasonToInstallReason(
           GetHighestPriorityInstallReason(web_app)),
       apps::ConvertMojomInstallSourceToInstallSource(
@@ -481,7 +482,8 @@ apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
               provider_->registrar().GetAppInstallSourceForMetrics(
                   web_app->app_id()))));
 
-  app->description = web_app->description();
+  app->description =
+      provider_->registrar().GetAppDescription(web_app->app_id());
   app->additional_search_terms = web_app->additional_search_terms();
 
   // Web App's publisher_id the start url.
@@ -573,7 +575,8 @@ apps::mojom::AppPtr WebAppPublisherHelper::ConvertWebApp(
   auto install_reason = GetHighestPriorityInstallReason(web_app);
   apps::mojom::AppPtr app = apps::PublisherBase::MakeApp(
       apps::ConvertAppTypeToMojomAppType(app_type()), web_app->app_id(),
-      readiness, web_app->name(), install_reason);
+      readiness, provider_->registrar().GetAppShortName(web_app->app_id()),
+      install_reason);
 
   app->install_source = ConvertInstallSourceToMojom(
       provider_->registrar().GetAppInstallSourceForMetrics(web_app->app_id()));
@@ -595,7 +598,8 @@ apps::mojom::AppPtr WebAppPublisherHelper::ConvertWebApp(
   DCHECK_EQ(web_app->IsSystemApp(),
             app->install_reason == apps::mojom::InstallReason::kSystem);
 
-  app->description = web_app->description();
+  app->description =
+      provider_->registrar().GetAppDescription(web_app->app_id());
   app->additional_search_terms = web_app->additional_search_terms();
   app->last_launch_time = web_app->last_launch_time();
   app->install_time = web_app->install_time();

@@ -29,10 +29,6 @@ class WebAppTranslationManagerTest : public WebAppTest {
 
     controller().Init();
     InitWebAppProvider();
-
-    translation_manager_ =
-        std::make_unique<WebAppTranslationManager>(profile(), file_utils_);
-    translation_manager_->SetSubsystems(registrar());
   }
 
  protected:
@@ -89,9 +85,9 @@ class WebAppTranslationManagerTest : public WebAppTest {
   WebAppInstallManager& install_manager() { return *install_manager_; }
 
   FakeWebAppProvider& provider() { return *provider_; }
-  WebAppRegistrar* registrar() { return &controller().registrar(); }
+  WebAppRegistrar& registrar() { return controller().registrar(); }
   WebAppTranslationManager& translation_manager() {
-    return *translation_manager_;
+    return controller().translation_manager();
   }
   TestFileUtils& file_utils() {
     DCHECK(file_utils_);
@@ -101,7 +97,6 @@ class WebAppTranslationManagerTest : public WebAppTest {
  private:
   std::unique_ptr<FakeWebAppRegistryController> fake_registry_controller_;
   std::unique_ptr<WebAppInstallManager> install_manager_;
-  std::unique_ptr<WebAppTranslationManager> translation_manager_;
   scoped_refptr<TestFileUtils> file_utils_;
   web_app::FakeWebAppProvider* provider_;
   base::test::ScopedFeatureList features_{
@@ -156,21 +151,34 @@ TEST_F(WebAppTranslationManagerTest, WriteReadAndDelete) {
     EXPECT_EQ(cache.find(app_id1)->second, item1);
     EXPECT_EQ(cache.find(app_id2)->second, item3);
 
-    EXPECT_EQ(translation_manager().GetName(app_id1), item1.name);
-    EXPECT_EQ(translation_manager().GetDescription(app_id1), item1.description);
+    EXPECT_EQ(translation_manager().GetTranslatedName(app_id1), item1.name);
+    EXPECT_EQ(translation_manager().GetTranslatedDescription(app_id1),
+              item1.description);
 
-    EXPECT_EQ(translation_manager().GetName(app_id2), "App2 name");
-    EXPECT_EQ(translation_manager().GetDescription(app_id2), "");
+    EXPECT_EQ(registrar().GetAppShortName(app_id1), item1.name);
+    EXPECT_EQ(registrar().GetAppDescription(app_id1), item1.description);
+
+    EXPECT_EQ(translation_manager().GetTranslatedName(app_id2), "");
+    EXPECT_EQ(translation_manager().GetTranslatedDescription(app_id2), "");
+
+    EXPECT_EQ(registrar().GetAppShortName(app_id2), "App2 name");
+    EXPECT_EQ(registrar().GetAppDescription(app_id2), "");
   }
 
   // Delete translations for web_app1.
   AwaitDeleteTranslations(app_id1);
 
-  EXPECT_EQ(translation_manager().GetName(app_id1), "App1 name");
-  EXPECT_EQ(translation_manager().GetDescription(app_id1), "");
+  EXPECT_EQ(translation_manager().GetTranslatedName(app_id1), "");
+  EXPECT_EQ(translation_manager().GetTranslatedDescription(app_id1), "");
 
-  EXPECT_EQ(translation_manager().GetName(app_id2), "App2 name");
-  EXPECT_EQ(translation_manager().GetDescription(app_id2), "");
+  EXPECT_EQ(registrar().GetAppShortName(app_id1), "App1 name");
+  EXPECT_EQ(registrar().GetAppDescription(app_id1), "");
+
+  EXPECT_EQ(translation_manager().GetTranslatedName(app_id2), "");
+  EXPECT_EQ(translation_manager().GetTranslatedDescription(app_id2), "");
+
+  EXPECT_EQ(registrar().GetAppShortName(app_id2), "App2 name");
+  EXPECT_EQ(registrar().GetAppDescription(app_id2), "");
 
   // Read translations to ensure web_app1 deleted.
   {
@@ -206,15 +214,23 @@ TEST_F(WebAppTranslationManagerTest, UpdateTranslations) {
   AwaitWriteTranslations(app_id1, translations1);
 
   // Check the translations set correctly.
-  EXPECT_EQ(translation_manager().GetName(app_id1), item1.name);
-  EXPECT_EQ(translation_manager().GetDescription(app_id1), item1.description);
+  EXPECT_EQ(translation_manager().GetTranslatedName(app_id1), item1.name);
+  EXPECT_EQ(translation_manager().GetTranslatedDescription(app_id1),
+            item1.description);
+
+  EXPECT_EQ(registrar().GetAppShortName(app_id1), item1.name);
+  EXPECT_EQ(registrar().GetAppDescription(app_id1), item1.description);
 
   // Update the translations for the app.
   AwaitWriteTranslations(app_id1, translations2);
 
   // Check the translations have correctly updated.
-  EXPECT_EQ(translation_manager().GetName(app_id1), item2.name);
-  EXPECT_EQ(translation_manager().GetDescription(app_id1), item2.description);
+  EXPECT_EQ(translation_manager().GetTranslatedName(app_id1), item2.name);
+  EXPECT_EQ(translation_manager().GetTranslatedDescription(app_id1),
+            item2.description);
+
+  EXPECT_EQ(registrar().GetAppShortName(app_id1), item2.name);
+  EXPECT_EQ(registrar().GetAppDescription(app_id1), item2.description);
 }
 
 TEST_F(WebAppTranslationManagerTest, InstallAndUninstall) {
@@ -238,13 +254,15 @@ TEST_F(WebAppTranslationManagerTest, InstallAndUninstall) {
   AppId app_id = web_app::test::InstallWebApp(profile(), std::move(app_info));
 
   // Check translations are stored
-  EXPECT_EQ(provider().translation_manager().GetName(app_id), item1.name);
+  EXPECT_EQ(provider().translation_manager().GetTranslatedName(app_id),
+            item1.name);
 
   // Uninstall app
   web_app::test::UninstallWebApp(profile(), app_id);
 
   // Check translations were deleted
-  EXPECT_EQ(provider().translation_manager().GetName(app_id), std::string());
+  EXPECT_EQ(provider().translation_manager().GetTranslatedName(app_id),
+            std::string());
 }
 
 // TODO(crbug.com/1259777): Add a test for an app which is installed before the

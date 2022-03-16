@@ -136,11 +136,6 @@ WebAppTranslationManager::WebAppTranslationManager(
 
 WebAppTranslationManager::~WebAppTranslationManager() = default;
 
-void WebAppTranslationManager::SetSubsystems(
-    base::raw_ptr<WebAppRegistrar> registrar) {
-  registrar_ = registrar;
-}
-
 void WebAppTranslationManager::Start() {
   if (base::FeatureList::IsEnabled(
           blink::features::kWebAppEnableTranslations)) {
@@ -220,24 +215,21 @@ void WebAppTranslationManager::OnTranslationsRead(
   std::move(callback).Run(translation_cache_);
 }
 
-std::string WebAppTranslationManager::GetName(const AppId& app_id) {
+std::string WebAppTranslationManager::GetTranslatedName(const AppId& app_id) {
   auto it = translation_cache_.find(app_id);
   if (it != translation_cache_.end() && it->second.name) {
     return it->second.name.value();
   }
-
-  const WebApp* web_app = registrar_->GetAppById(app_id);
-  return web_app ? web_app->name() : std::string();
+  return std::string();
 }
 
-std::string WebAppTranslationManager::GetDescription(const AppId& app_id) {
+std::string WebAppTranslationManager::GetTranslatedDescription(
+    const AppId& app_id) {
   auto it = translation_cache_.find(app_id);
   if (it != translation_cache_.end() && it->second.description) {
     return it->second.description.value();
   }
-
-  const WebApp* web_app = registrar_->GetAppById(app_id);
-  return web_app ? web_app->description() : std::string();
+  return std::string();
 }
 
 }  // namespace web_app

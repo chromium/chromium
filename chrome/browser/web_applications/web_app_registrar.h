@@ -39,6 +39,7 @@ namespace web_app {
 class AppRegistrarObserver;
 class WebApp;
 class WebAppPolicyManager;
+class WebAppTranslationManager;
 
 using Registry = std::map<AppId, std::unique_ptr<WebApp>>;
 
@@ -68,7 +69,8 @@ class WebAppRegistrar : public ProfileManagerObserver {
   void Start();
   void Shutdown();
 
-  void SetSubsystems(WebAppPolicyManager* policy_manager);
+  void SetSubsystems(WebAppPolicyManager* policy_manager,
+                     WebAppTranslationManager* translation_manager);
 
   // Returns whether the app with |app_id| is currently listed in the registry.
   // ie. we have data for web app manifest and icons, and this |app_id| can be
@@ -417,6 +419,7 @@ class WebAppRegistrar : public ProfileManagerObserver {
  private:
   const raw_ptr<Profile> profile_;
   raw_ptr<WebAppPolicyManager> policy_manager_ = nullptr;
+  raw_ptr<WebAppTranslationManager> translation_manager_ = nullptr;
 
   base::ObserverList<AppRegistrarObserver, /*check_empty=*/true> observers_;
 

@@ -8,18 +8,22 @@
 #include <map>
 
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
 #include "chrome/browser/web_applications/proto/web_app_translations.pb.h"
 #include "chrome/browser/web_applications/web_app_id.h"
-#include "chrome/browser/web_applications/web_app_registrar.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 
 namespace web_app {
 
 using Locale = std::u16string;
 
+// Handles reading and writing web app translations data to disk and caching
+// the translations for the current browser locale.
 class WebAppTranslationManager {
  public:
   using ReadCallback = base::OnceCallback<void(
@@ -32,8 +36,6 @@ class WebAppTranslationManager {
   WebAppTranslationManager& operator=(const WebAppTranslationManager&) = delete;
   ~WebAppTranslationManager();
 
-  void SetSubsystems(base::raw_ptr<WebAppRegistrar> registrar);
-
   void Start();
 
   void WriteTranslations(
@@ -44,14 +46,19 @@ class WebAppTranslationManager {
   void DeleteTranslations(const AppId& app_id, WriteCallback callback);
   void ReadTranslations(ReadCallback callback);
 
-  std::string GetName(const AppId& app_id);
-  std::string GetDescription(const AppId& app_id);
+  // Returns the translated web app name, if available in the browser's locale,
+  // otherwise returns an empty string.
+  std::string GetTranslatedName(const AppId& app_id);
+
+  // Returns the translated web app description, if available in the browser's
+  // locale, otherwise returns an empty string.
+  std::string GetTranslatedDescription(const AppId& app_id);
+
   // TODO(crbug.com/1212519): Add a method to get the short_name.
 
  private:
   void OnTranslationsRead(ReadCallback callback, const AllTranslations& proto);
 
-  base::raw_ptr<WebAppRegistrar> registrar_;
   base::FilePath web_apps_directory_;
   scoped_refptr<FileUtilsWrapper> utils_;
   // Cache of the translations on disk for the current device language.

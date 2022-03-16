@@ -25,9 +25,11 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_prefs_utils.h"
+#include "chrome/browser/web_applications/web_app_translation_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/common/content_features.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace web_app {
 
@@ -434,8 +436,11 @@ void WebAppRegistrar::Shutdown() {
     g_browser_process->profile_manager()->RemoveObserver(this);
 }
 
-void WebAppRegistrar::SetSubsystems(WebAppPolicyManager* policy_manager) {
+void WebAppRegistrar::SetSubsystems(
+    WebAppPolicyManager* policy_manager,
+    WebAppTranslationManager* translation_manager) {
   policy_manager_ = policy_manager;
+  translation_manager_ = translation_manager;
 }
 
 bool WebAppRegistrar::IsInstalled(const AppId& app_id) const {
@@ -524,11 +529,27 @@ int WebAppRegistrar::CountUserInstalledApps() const {
 }
 
 std::string WebAppRegistrar::GetAppShortName(const AppId& app_id) const {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kWebAppEnableTranslations)) {
+    std::string translated_name =
+        translation_manager_->GetTranslatedName(app_id);
+    if (!translated_name.empty()) {
+      return translated_name;
+    }
+  }
   auto* web_app = GetAppById(app_id);
   return web_app ? web_app->name() : std::string();
 }
 
 std::string WebAppRegistrar::GetAppDescription(const AppId& app_id) const {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kWebAppEnableTranslations)) {
+    std::string translated_description =
+        translation_manager_->GetTranslatedDescription(app_id);
+    if (!translated_description.empty()) {
+      return translated_description;
+    }
+  }
   auto* web_app = GetAppById(app_id);
   return web_app ? web_app->description() : std::string();
 }
