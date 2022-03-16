@@ -844,7 +844,13 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
  public:
   AutofillInteractiveTestBase()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-    feature_list_.InitAndEnableFeature(blink::features::kAutofillShadowDOM);
+    // Disable AutofillPageLanguageDetection because due to the little text in
+    // the HTML files, the detected language is flaky (e.g., it often detects
+    // "fr" instead of "en").
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{blink::features::kAutofillShadowDOM},
+        /*disabled_features=*/{
+            autofill::features::kAutofillPageLanguageDetection});
   }
   ~AutofillInteractiveTestBase() override = default;
 

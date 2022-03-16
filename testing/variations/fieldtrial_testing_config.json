@@ -963,6 +963,55 @@
             ]
         }
     ],
+    "AutofillPatternProvider": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_2022-01-05",
+                    "params": {
+                        "use_language_specific_patterns": "true",
+                        "use_patterns_retrieved_with_the_component_udpater": "false"
+                    },
+                    "enable_features": [
+                        "AutofillPageLanguageDetection",
+                        "AutofillParsingPatternProvider"
+                    ]
+                },
+                {
+                    "name": "Enabled_Only_Pattern_Provider_2022-01-05",
+                    "params": {
+                        "use_language_specific_patterns": "true",
+                        "use_patterns_retrieved_with_the_component_udpater": "false"
+                    },
+                    "enable_features": [
+                        "AutofillParsingPatternProvider"
+                    ],
+                    "disable_features": [
+                        "AutofillPageLanguageDetection"
+                    ]
+                },
+                {
+                    "name": "Enabled_Only_Page_Language_Detection_2022-01-05",
+                    "enable_features": [
+                        "AutofillPageLanguageDetection"
+                    ],
+                    "disable_features": [
+                        "AutofillParsingPatternProvider"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillRetrieveOverallPredictionsFromCache": [
         {
             "platforms": [
