@@ -92,8 +92,8 @@ std::vector<DomainInfo> UpdateEngagedSitesOnWorkerThread(
       continue;
     }
     // Ignore sites with an engagement score below threshold.
-    if (detail.total_score <
-        site_engagement::SiteEngagementScore::GetMediumEngagementBoundary()) {
+    if (!site_engagement::SiteEngagementService::IsEngagementAtLeast(
+            detail.total_score, blink::mojom::EngagementLevel::MEDIUM)) {
       continue;
     }
     const DomainInfo domain_info = GetDomainInfo(detail.origin);

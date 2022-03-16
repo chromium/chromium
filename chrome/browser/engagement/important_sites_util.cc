@@ -259,8 +259,10 @@ void PopulateInfoMapWithEngagement(
 
     (*engagement_map)[detail.origin] = detail.total_score;
 
-    if (!service->IsEngagementAtLeast(detail.origin, minimum_engagement))
+    if (!SiteEngagementService::IsEngagementAtLeast(detail.total_score,
+                                                    minimum_engagement)) {
       continue;
+    }
 
     std::string registerable_domain =
         ImportantSitesUtil::GetRegisterableDomainOrIP(detail.origin);
@@ -301,7 +303,6 @@ void PopulateInfoMapWithBookmarks(
     Profile* profile,
     const std::map<GURL, double>& engagement_map,
     std::map<std::string, ImportantDomainInfo>* output) {
-  SiteEngagementService* service = SiteEngagementService::Get(profile);
   BookmarkModel* model =
       BookmarkModelFactory::GetForBrowserContextIfExists(profile);
   if (!model)
@@ -312,13 +313,15 @@ void PopulateInfoMapWithBookmarks(
   // Process the bookmarks and optionally trim them if we have too many.
   std::vector<UrlAndTitle> result_bookmarks;
   if (untrimmed_bookmarks.size() > kMaxBookmarks) {
-    std::copy_if(untrimmed_bookmarks.begin(), untrimmed_bookmarks.end(),
-                 std::back_inserter(result_bookmarks),
-                 [service](const UrlAndTitle& entry) {
-                   return service->IsEngagementAtLeast(
-                       entry.url.DeprecatedGetOriginAsURL(),
-                       blink::mojom::EngagementLevel::LOW);
-                 });
+    std::copy_if(
+        untrimmed_bookmarks.begin(), untrimmed_bookmarks.end(),
+        std::back_inserter(result_bookmarks),
+        [&engagement_map](const UrlAndTitle& entry) {
+          auto it = engagement_map.find(entry.url.DeprecatedGetOriginAsURL());
+          double score = it == engagement_map.end() ? 0 : it->second;
+          return SiteEngagementService::IsEngagementAtLeast(
+              score, blink::mojom::EngagementLevel::LOW);
+        });
     // TODO(dmurph): Simplify this (and probably much more) once
     // SiteEngagementService::GetAllDetails lands (crbug/703848), as that will
     // allow us to remove most of these lookups and merging of signals.
@@ -584,8 +587,9 @@ void ImportantSitesUtil::MarkOriginAsImportantForTesting(Profile* profile,
       SiteEngagementService::Get(profile);
   site_engagement_service->ResetBaseScoreForURL(
       origin, SiteEngagementScore::GetMediumEngagementBoundary());
-  DCHECK(site_engagement_service->IsEngagementAtLeast(
-      origin, blink::mojom::EngagementLevel::MEDIUM));
+  double score = site_engagement_service->GetScore(origin);
+  DCHECK(SiteEngagementService::IsEngagementAtLeast(
+      score, blink::mojom::EngagementLevel::MEDIUM));
 }
 
 }  // namespace site_engagement

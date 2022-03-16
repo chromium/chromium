@@ -128,6 +128,10 @@ class SiteEngagementService : public KeyedService,
       base::Time now,
       scoped_refptr<HostContentSettingsMap> map);
 
+  // Returns whether |score| is at least the given |level| of engagement.
+  static bool IsEngagementAtLeast(double score,
+                                  blink::mojom::EngagementLevel level);
+
   explicit SiteEngagementService(content::BrowserContext* browser_context);
 
   SiteEngagementService(const SiteEngagementService&) = delete;
@@ -161,10 +165,6 @@ class SiteEngagementService : public KeyedService,
   // decisions. Clients should avoid using engagement in their heuristic until
   // this is true.
   bool IsBootstrapped() const;
-
-  // Returns whether |url| has at least the given |level| of engagement.
-  bool IsEngagementAtLeast(const GURL& url,
-                           blink::mojom::EngagementLevel level) const;
 
   // Resets the base engagement for |url| to |score|, clearing daily limits. Any
   // bonus engagement that |url| has acquired is not affected by this method, so
