@@ -12,6 +12,7 @@
 #include <set>
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/time/calendar_event_fetch.h"
 #include "ash/system/time/calendar_event_fetch_types.h"
 #include "base/observer_list.h"
@@ -30,12 +31,16 @@ class CalendarEventFetch;
 using SingleDayEventList = std::list<google_apis::calendar::CalendarEvent>;
 
 // Controller of the `CalendarView`.
-class ASH_EXPORT CalendarModel {
+class ASH_EXPORT CalendarModel : public SessionObserver {
  public:
   CalendarModel();
   CalendarModel(const CalendarModel& other) = delete;
   CalendarModel& operator=(const CalendarModel& other) = delete;
-  virtual ~CalendarModel();
+  ~CalendarModel() override;
+
+  // SessionObserver:
+  void OnSessionStateChanged(session_manager::SessionState state) override;
+  void OnActiveUserSessionChanged(const AccountId& account_id) override;
 
   // Number of months, before and after the month currently on-display, that we
   // cache-ahead.
@@ -58,6 +63,10 @@ class ASH_EXPORT CalendarModel {
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
+
+  // Completely, unconditionally clears out any cached events. Intended for when
+  // we log out or switch users.
+  void ClearAllCachedEvents();
 
   // Requests events that fall in |months|.
   void FetchEvents(const std::set<base::Time>& months);
@@ -147,8 +156,8 @@ class ASH_EXPORT CalendarModel {
       base::Time start_of_month,
       CalendarEventFetchInternalErrorCode error);
 
-  // Internal storage for fetched events, with each fetched month having a map
-  // of days to events.
+  // Internal storage for fetched events, with each fetched month having a
+  // map of days to events.
   MonthToEventsMap event_months_;
 
   // Months whose events we've fetched, that are eligible for pruning, in
@@ -160,6 +169,8 @@ class ASH_EXPORT CalendarModel {
 
   // Time difference between the UTC time and the local time in minutes.
   absl::optional<int> time_difference_minutes_;
+
+  ScopedSessionObserver session_observer_;
 
   base::ObserverList<Observer> observers_;
 

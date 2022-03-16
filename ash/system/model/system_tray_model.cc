@@ -39,10 +39,7 @@ SystemTrayModel::SystemTrayModel()
       network_state_model_(std::make_unique<TrayNetworkStateModel>()),
       active_network_icon_(
           std::make_unique<ActiveNetworkIcon>(network_state_model_.get())),
-      calendar_model_(std::make_unique<CalendarModel>()) {
-  calendar_model_->FetchEventsSurrounding(
-      CalendarModel::kNumSurroundingMonthsCached, base::Time::Now());
-}
+      calendar_model_(std::make_unique<CalendarModel>()) {}
 
 SystemTrayModel::~SystemTrayModel() = default;
 

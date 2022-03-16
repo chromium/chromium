@@ -8,6 +8,9 @@
 #include <string>
 #include <utility>
 
+#include "ash/public/cpp/session/session_controller.h"
+#include "ash/public/cpp/session/session_types.h"
+#include "ash/public/cpp/session/user_info.h"
 #include "ash/system/time/calendar_unittest_utils.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/test/ash_test_base.h"
@@ -247,6 +250,18 @@ class CalendarModelTest : public AshTestBase {
                        return event.id() == event_id;
                      });
     return it != events.end();
+  }
+
+  void UpdateSession(uint32_t session_id, const std::string& email) {
+    UserSession session;
+    session.session_id = session_id;
+    session.user_info.type = user_manager::USER_TYPE_REGULAR;
+    session.user_info.account_id = AccountId::FromUserEmail(email);
+    session.user_info.display_name = email;
+    session.user_info.display_email = email;
+    session.user_info.is_new_profile = false;
+
+    SessionController::Get()->UpdateUserSession(session);
   }
 
   static void SetFakeNow(base::Time fake_now) { fake_time_ = fake_now; }
@@ -981,6 +996,129 @@ TEST_F(CalendarModelTest, RecordFetchResultHistogram_Failure) {
   histogram_tester.ExpectBucketCount("Ash.Calendar.FetchEvents.Result",
                                      google_apis::PARSE_ERROR,
                                      /*expected_count=*/1);
+}
+
+TEST_F(CalendarModelTest, SessionStateChange) {
+  const char* kStartTime = "23 Oct 2009 11:30 GMT";
+  const char* kEndTime = "23 Oct 2009 12:30 GMT";
+  const char* kId = "id_0";
+  const char* kSummary = "summary_0";
+
+  // Current date is just `kStartTime`.
+  base::Time current_date;
+  bool result = base::Time::FromString(kStartTime, &current_date);
+  DCHECK(result);
+  SetFakeNow(current_date);
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &CalendarModelTest::FakeTimeNow,
+      /*time_ticks_override=*/nullptr,
+      /*thread_ticks_override=*/nullptr);
+
+  base::Time now = base::Time::Now();
+  std::set<base::Time> months = calendar_utils::GetSurroundingMonthsUTC(now, 1);
+  calendar_model_ = std::make_unique<TestableCalendarModel>();
+  calendar_model_->FetchEvents(months);
+
+  // Set up list of events to inject.
+  std::unique_ptr<google_apis::calendar::EventList> event_list =
+      std::make_unique<google_apis::calendar::EventList>();
+  event_list->set_time_zone("America/Los_Angeles");
+  std::unique_ptr<google_apis::calendar::CalendarEvent> event =
+      calendar_test_utils::CreateEvent(kId, kSummary, kStartTime, kEndTime);
+  SingleDayEventList events;
+
+  // Haven't injected anything yet, so no events on `kStartTime0`.
+  events.clear();
+  EXPECT_EQ(0, EventsNumberOfDay(kStartTime, &events));
+  EXPECT_TRUE(events.empty());
+
+  // Inject events (pretend the user just added them).
+  event_list->InjectItemForTesting(std::move(event));
+  calendar_model_->InjectEvents(std::move(event_list));
+
+  // Now fetch the events, which will get all events from the current month, as
+  // well as next/prev months.
+  calendar_model_->FetchEvents(months);
+
+  // Now we have an event on kStartTime0.
+  events.clear();
+  EXPECT_EQ(1, EventsNumberOfDay(kStartTime, &events));
+  EXPECT_FALSE(events.empty());
+  EXPECT_TRUE(events.size() == 1);
+
+  // Lets pretend the user locked the screen, which should clear all cached
+  // events.
+  SessionInfo session_info;
+  session_info.state = session_manager::SessionState::LOCKED;
+  SessionController::Get()->SetSessionInfo(session_info);
+  base::RunLoop().RunUntilIdle();
+  events.clear();
+  EXPECT_EQ(0, EventsNumberOfDay(kStartTime, &events));
+  EXPECT_TRUE(events.empty());
+}
+
+TEST_F(CalendarModelTest, ActiveUserChange) {
+  const char* kStartTime = "23 Oct 2009 11:30 GMT";
+  const char* kEndTime = "23 Oct 2009 12:30 GMT";
+  const char* kId = "id_0";
+  const char* kSummary = "summary_0";
+
+  // Set up two users, user1 is the active user.
+  UpdateSession(1u, "user1@test.com");
+  UpdateSession(2u, "user2@test.com");
+  std::vector<uint32_t> order = {1u, 2u};
+  SessionController::Get()->SetUserSessionOrder(order);
+  base::RunLoop().RunUntilIdle();
+
+  // Current date is just `kStartTime`.
+  base::Time current_date;
+  bool result = base::Time::FromString(kStartTime, &current_date);
+  DCHECK(result);
+  SetFakeNow(current_date);
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &CalendarModelTest::FakeTimeNow,
+      /*time_ticks_override=*/nullptr,
+      /*thread_ticks_override=*/nullptr);
+
+  base::Time now = base::Time::Now();
+  std::set<base::Time> months = calendar_utils::GetSurroundingMonthsUTC(now, 1);
+  calendar_model_ = std::make_unique<TestableCalendarModel>();
+  calendar_model_->FetchEvents(months);
+
+  // Set up list of events to inject.
+  std::unique_ptr<google_apis::calendar::EventList> event_list =
+      std::make_unique<google_apis::calendar::EventList>();
+  event_list->set_time_zone("America/Los_Angeles");
+  std::unique_ptr<google_apis::calendar::CalendarEvent> event =
+      calendar_test_utils::CreateEvent(kId, kSummary, kStartTime, kEndTime);
+  SingleDayEventList events;
+
+  // Haven't injected anything yet, so no events on `kStartTime0`.
+  events.clear();
+  EXPECT_EQ(0, EventsNumberOfDay(kStartTime, &events));
+  EXPECT_TRUE(events.empty());
+
+  // Inject events (pretend the user just added them).
+  event_list->InjectItemForTesting(std::move(event));
+  calendar_model_->InjectEvents(std::move(event_list));
+
+  // Now fetch the events, which will get all events from the current month, as
+  // well as next/prev months.
+  calendar_model_->FetchEvents(months);
+
+  // Now we have an event on kStartTime0.
+  events.clear();
+  EXPECT_EQ(1, EventsNumberOfDay(kStartTime, &events));
+  EXPECT_FALSE(events.empty());
+  EXPECT_TRUE(events.size() == 1);
+
+  // Make user2 the active user, and we should clear the cached events.
+  order = {2u, 1u};
+  SessionController::Get()->SetUserSessionOrder(order);
+  base::RunLoop().RunUntilIdle();
+  events.clear();
+  EXPECT_EQ(0, EventsNumberOfDay(kStartTime, &events));
+  EXPECT_TRUE(events.empty());
 }
 
 }  // namespace ash
