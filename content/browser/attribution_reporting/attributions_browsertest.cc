@@ -748,10 +748,10 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
   GURL register_url = https_server()->GetURL(
       "a.test", "/attribution_reporting/register_source_headers.html");
 
-  EXPECT_TRUE(ExecJs(
-      web_contents(),
-      JsReplace("window.attributionReporting.registerAttributionSource($1);",
-                register_url)));
+  EXPECT_TRUE(
+      ExecJs(web_contents(),
+             JsReplace("window.attributionReporting.registerSource($1);",
+                       register_url)));
 
   GURL conversion_url = https_server()->GetURL(
       "d.test", "/attribution_reporting/page_with_conversion_redirect.html");
@@ -956,10 +956,10 @@ IN_PROC_BROWSER_TEST_F(AttributionsPrerenderBrowserTest,
   GURL register_url = https_server()->GetURL(
       "a.test", "/attribution_reporting/register_source_headers.html");
 
-  EXPECT_TRUE(ExecJs(
-      web_contents(),
-      JsReplace("window.attributionReporting.registerAttributionSource($1);",
-                register_url)));
+  EXPECT_TRUE(
+      ExecJs(web_contents(),
+             JsReplace("window.attributionReporting.registerSource($1);",
+                       register_url)));
 
   // Navigate to a starting same origin page with the conversion url.
   const GURL kEmptyUrl = https_server()->GetURL("d.test", "/empty.html");
@@ -1017,10 +1017,10 @@ IN_PROC_BROWSER_TEST_F(AttributionsPrerenderBrowserTest,
   GURL register_url = https_server()->GetURL(
       "a.test", "/attribution_reporting/register_source_headers.html");
 
-  EXPECT_TRUE(ExecJs(
-      web_contents(),
-      JsReplace("window.attributionReporting.registerAttributionSource($1);",
-                register_url)));
+  EXPECT_TRUE(
+      ExecJs(web_contents(),
+             JsReplace("window.attributionReporting.registerSource($1);",
+                       register_url)));
 
   // Navigate to a starting same origin page with the conversion url.
   const GURL kEmptyUrl = https_server()->GetURL("d.test", "/empty.html");

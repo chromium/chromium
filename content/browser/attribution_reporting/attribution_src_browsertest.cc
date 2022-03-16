@@ -151,13 +151,12 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcBasicSourceRegisteredBrowserTest,
 }
 
 // Ensure that basic source registration works with both the img attributionsrc
-// attribute and the registerAttributionSource JS call.
+// attribute and the registerSource JS call.
 INSTANTIATE_TEST_SUITE_P(
     AttributionSrcSourceRegistrations,
     AttributionSrcBasicSourceRegisteredBrowserTest,
-    ::testing::Values(
-        "createAttributionSrcImg($1);",
-        "window.attributionReporting.registerAttributionSource($1);"));
+    ::testing::Values("createAttributionSrcImg($1);",
+                      "window.attributionReporting.registerSource($1);"));
 
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
                        AttributionSrcImg_SourceRegisteredWithOptionalParams) {

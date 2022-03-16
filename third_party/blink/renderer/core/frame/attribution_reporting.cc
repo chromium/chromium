@@ -69,7 +69,7 @@ void AttributionReporting::Trace(Visitor* visitor) const {
   Supplement<LocalDOMWindow>::Trace(visitor);
 }
 
-ScriptPromise AttributionReporting::registerAttributionSource(
+ScriptPromise AttributionReporting::registerSource(
     ScriptState* script_state,
     const String& url,
     ExceptionState& exception_state) {

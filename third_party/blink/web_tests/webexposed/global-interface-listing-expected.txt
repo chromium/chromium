@@ -312,7 +312,7 @@ interface Attr : Node
 interface AttributionReporting
     attribute @@toStringTag
     method constructor
-    method registerAttributionSource
+    method registerSource
 interface Audio
     attribute @@toStringTag
     method constructor

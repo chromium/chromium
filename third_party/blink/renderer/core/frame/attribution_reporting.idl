@@ -10,5 +10,5 @@
     RuntimeEnabled=ConversionMeasurement,
     SecureContext
 ] interface AttributionReporting {
-    [CallWith=ScriptState, RaisesException] Promise<void> registerAttributionSource(DOMString url);
+    [CallWith=ScriptState, RaisesException] Promise<void> registerSource(DOMString url);
 };

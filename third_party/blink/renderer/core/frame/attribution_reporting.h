@@ -31,9 +31,9 @@ class CORE_EXPORT AttributionReporting final
 
   void Trace(Visitor*) const override;
 
-  ScriptPromise registerAttributionSource(ScriptState* script_state,
-                                          const String& url,
-                                          ExceptionState& exception_state);
+  ScriptPromise registerSource(ScriptState* script_state,
+                               const String& url,
+                               ExceptionState& exception_state);
 };
 
 }  // namespace blink
