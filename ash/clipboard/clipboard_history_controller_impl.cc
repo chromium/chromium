@@ -419,6 +419,13 @@ void ClipboardHistoryControllerImpl::GetHistoryValuesWithEncodedPNGs(
   base::Value item_results(base::Value::Type::LIST);
   DCHECK(encoded_pngs);
 
+  // Check after asynchronous PNG encoding finishes to make sure we have not
+  // entered a state where clipboard history is disabled, e.g., a locked screen.
+  if (!ClipboardHistoryUtil::IsEnabledInCurrentMode()) {
+    std::move(callback).Run(std::move(item_results));
+    return;
+  }
+
   bool all_images_encoded = true;
   // Get the clipboard data for each clipboard history item.
   for (auto& item : clipboard_history_->GetItems()) {
@@ -596,7 +603,7 @@ void ClipboardHistoryControllerImpl::OnOperationConfirmed(bool copy) {
   }
 
   if (confirmed_operation_callback_for_test_)
-    confirmed_operation_callback_for_test_.Run();
+    confirmed_operation_callback_for_test_.Run(/*success=*/true);
 }
 
 void ClipboardHistoryControllerImpl::OnCachedImageModelUpdated(
@@ -676,10 +683,14 @@ void ClipboardHistoryControllerImpl::PasteClipboardHistoryItem(
     aura::Window* intended_window,
     ClipboardHistoryItem item,
     bool paste_plain_text) {
-  // It's possible that the window could change after posting the
-  // PasteClipboardHistoryItem task is scheduled.
-  if (!intended_window || intended_window != window_util::GetActiveWindow())
+  // It's possible that the window could change or we could enter a disabled
+  // mode after posting the `PasteClipboardHistoryItem()` task.
+  if (!intended_window || intended_window != window_util::GetActiveWindow() ||
+      !ClipboardHistoryUtil::IsEnabledInCurrentMode()) {
+    if (confirmed_operation_callback_for_test_)
+      confirmed_operation_callback_for_test_.Run(/*success=*/false);
     return;
+  }
 
   auto* clipboard = GetClipboard();
   std::unique_ptr<ui::ClipboardData> original_data;
