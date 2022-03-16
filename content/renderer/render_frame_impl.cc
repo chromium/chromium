@@ -993,12 +993,12 @@ WebHistoryItem NavigationApiHistoryEntryPtrToWebHistoryItem(
     const blink::mojom::NavigationApiHistoryEntry& entry) {
   WebHistoryItem item;
   item.Initialize();
-  item.SetAppHistoryKey(WebString::FromUTF16(entry.key));
-  item.SetAppHistoryId(WebString::FromUTF16(entry.id));
+  item.SetNavigationApiKey(WebString::FromUTF16(entry.key));
+  item.SetNavigationApiId(WebString::FromUTF16(entry.id));
   item.SetURLString(WebString::FromUTF16(entry.url));
   item.SetItemSequenceNumber(entry.item_sequence_number);
   item.SetDocumentSequenceNumber(entry.document_sequence_number);
-  item.SetAppHistoryState(
+  item.SetNavigationApiState(
       WebSerializedScriptValue::FromString(WebString::FromUTF16(entry.state)));
   return item;
 }
@@ -4706,7 +4706,7 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
 
   params->item_sequence_number = item.ItemSequenceNumber();
   params->document_sequence_number = item.DocumentSequenceNumber();
-  params->app_history_key = item.GetAppHistoryKey().Utf8();
+  params->navigation_api_key = item.GetNavigationApiKey().Utf8();
 
   // Note that the value of `referrer` will be overwritten in the browser with a
   // browser-calculated value in most cases. The exceptions are

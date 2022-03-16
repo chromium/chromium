@@ -48,8 +48,8 @@ static int64_t GenerateSequenceNumber() {
 HistoryItem::HistoryItem()
     : item_sequence_number_(GenerateSequenceNumber()),
       document_sequence_number_(GenerateSequenceNumber()),
-      app_history_key_(WTF::CreateCanonicalUUIDString()),
-      app_history_id_(WTF::CreateCanonicalUUIDString()) {}
+      navigation_api_key_(WTF::CreateCanonicalUUIDString()),
+      navigation_api_id_(WTF::CreateCanonicalUUIDString()) {}
 
 HistoryItem::~HistoryItem() = default;
 
@@ -155,9 +155,9 @@ EncodedFormData* HistoryItem::FormData() {
   return form_data_.get();
 }
 
-void HistoryItem::SetAppHistoryState(
+void HistoryItem::SetNavigationApiState(
     scoped_refptr<SerializedScriptValue> value) {
-  app_history_state_ = std::move(value);
+  navigation_api_state_ = std::move(value);
 }
 
 ResourceRequest HistoryItem::GenerateResourceRequest(

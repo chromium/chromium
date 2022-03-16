@@ -121,14 +121,14 @@ class WebHistoryItem {
   BLINK_EXPORT ScrollAnchorData GetScrollAnchorData() const;
   BLINK_EXPORT void SetScrollAnchorData(const ScrollAnchorData&);
 
-  BLINK_EXPORT WebString GetAppHistoryKey() const;
-  BLINK_EXPORT void SetAppHistoryKey(const WebString&);
+  BLINK_EXPORT WebString GetNavigationApiKey() const;
+  BLINK_EXPORT void SetNavigationApiKey(const WebString&);
 
-  BLINK_EXPORT WebString GetAppHistoryId() const;
-  BLINK_EXPORT void SetAppHistoryId(const WebString&);
+  BLINK_EXPORT WebString GetNavigationApiId() const;
+  BLINK_EXPORT void SetNavigationApiId(const WebString&);
 
-  BLINK_EXPORT WebSerializedScriptValue GetAppHistoryState() const;
-  BLINK_EXPORT void SetAppHistoryState(const WebSerializedScriptValue&);
+  BLINK_EXPORT WebSerializedScriptValue GetNavigationApiState() const;
+  BLINK_EXPORT void SetNavigationApiState(const WebSerializedScriptValue&);
 
 #if INSIDE_BLINK
   BLINK_EXPORT WebHistoryItem(HistoryItem*);

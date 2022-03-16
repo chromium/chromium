@@ -1708,7 +1708,7 @@ void NavigationControllerImpl::UpdateNavigationEntryDetails(
   std::vector<GURL> redirects;
   entry->AddOrUpdateFrameEntry(
       rfh->frame_tree_node(), update_policy, params.item_sequence_number,
-      params.document_sequence_number, params.app_history_key,
+      params.document_sequence_number, params.navigation_api_key,
       rfh->GetSiteInstance(), nullptr, params.url,
       GetCommittedOriginForFrameEntry(params, request),
       Referrer(*params.referrer),
@@ -1843,7 +1843,7 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
         GetLastCommittedEntry()->GetFrameEntry(rfh->frame_tree_node());
     auto frame_entry = base::MakeRefCounted<FrameNavigationEntry>(
         rfh->frame_tree_node()->unique_name(), params.item_sequence_number,
-        params.document_sequence_number, params.app_history_key,
+        params.document_sequence_number, params.navigation_api_key,
         rfh->GetSiteInstance(), nullptr, params.url,
         GetCommittedOriginForFrameEntry(params, request),
         Referrer(*params.referrer), initiator_origin,
@@ -1853,10 +1853,10 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
         request->GetSubresourceWebBundleNavigationInfo(),
         // We will set the document policies later in this function.
         nullptr /* policy_container_policies */,
-        // Try to preserve protect_url_in_app_history from the previous
+        // Try to preserve protect_url_in_navigation_api from the previous
         // FrameNavigationEntry.
         previous_frame_entry &&
-            previous_frame_entry->protect_url_in_app_history());
+            previous_frame_entry->protect_url_in_navigation_api());
 
     new_entry = GetLastCommittedEntry()->CloneAndReplace(
         frame_entry, true, request->frame_tree_node(), frame_tree_.root());
@@ -2147,25 +2147,25 @@ void NavigationControllerImpl::RendererDidNavigateNewSubframe(
   std::unique_ptr<PolicyContainerPolicies> policy_container_policies =
       ComputePolicyContainerPoliciesForFrameEntry(rfh, is_same_document,
                                                   request->GetURL());
-  bool protect_url_in_app_history = false;
+  bool protect_url_in_navigation_api = false;
   if (is_same_document) {
     FrameNavigationEntry* previous_frame_entry =
         GetLastCommittedEntry()->GetFrameEntry(rfh->frame_tree_node());
-    // Try to preserve protect_url_in_app_history from the previous
+    // Try to preserve protect_url_in_navigation_api from the previous
     // FrameNavigationEntry.
-    protect_url_in_app_history =
+    protect_url_in_navigation_api =
         previous_frame_entry &&
-        previous_frame_entry->protect_url_in_app_history();
+        previous_frame_entry->protect_url_in_navigation_api();
   } else {
-    protect_url_in_app_history =
+    protect_url_in_navigation_api =
         policy_container_policies &&
-        ShouldProtectUrlInAppHistory(
+        ShouldProtectUrlInNavigationApi(
             policy_container_policies->referrer_policy);
   }
 
   auto frame_entry = base::MakeRefCounted<FrameNavigationEntry>(
       rfh->frame_tree_node()->unique_name(), params.item_sequence_number,
-      params.document_sequence_number, params.app_history_key,
+      params.document_sequence_number, params.navigation_api_key,
       rfh->GetSiteInstance(), nullptr, params.url,
       GetCommittedOriginForFrameEntry(params, request),
       Referrer(*params.referrer), initiator_origin, request->GetRedirectChain(),
@@ -2175,7 +2175,7 @@ void NavigationControllerImpl::RendererDidNavigateNewSubframe(
           ? request->web_bundle_navigation_info()->Clone()
           : nullptr,
       request->GetSubresourceWebBundleNavigationInfo(),
-      std::move(policy_container_policies), protect_url_in_app_history);
+      std::move(policy_container_policies), protect_url_in_navigation_api);
 
   std::unique_ptr<NavigationEntryImpl> new_entry =
       GetLastCommittedEntry()->CloneAndReplace(
@@ -2698,7 +2698,7 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
         blob_url_loader_factory, nullptr /* web_bundle_navigation_info */,
         nullptr /* subresource_web_bundle_navigation_info */,
         nullptr /* policy_container_policies */,
-        false /* protect_url_in_app_history */);
+        false /* protect_url_in_navigation_api */);
   }
 
   LoadURLParams params(url);
@@ -4354,17 +4354,17 @@ NavigationControllerImpl::PopulateSingleNavigationApiHistoryEntryVector(
       std::u16string url;
       if (pending_document_sequence_number ==
               frame_entry->document_sequence_number() ||
-          !frame_entry->protect_url_in_app_history()) {
+          !frame_entry->protect_url_in_navigation_api()) {
         url = frame_state.url_string.value_or(std::u16string());
       }
 
       blink::mojom::NavigationApiHistoryEntryPtr entry =
           blink::mojom::NavigationApiHistoryEntry::New(
-              frame_state.app_history_key.value_or(std::u16string()),
-              frame_state.app_history_id.value_or(std::u16string()), url,
+              frame_state.navigation_api_key.value_or(std::u16string()),
+              frame_state.navigation_api_id.value_or(std::u16string()), url,
               frame_state.item_sequence_number,
               frame_state.document_sequence_number,
-              frame_state.app_history_state.value_or(std::u16string()));
+              frame_state.navigation_api_state.value_or(std::u16string()));
 
       DCHECK(entry->url.empty() ||
              pending_origin.CanBeDerivedFrom(GURL(entry->url)));
@@ -4436,10 +4436,10 @@ NavigationControllerImpl::GetNavigationApiHistoryEntryVectors(
 }
 
 NavigationControllerImpl::HistoryNavigationAction
-NavigationControllerImpl::ShouldNavigateToEntryForAppHistoryKey(
+NavigationControllerImpl::ShouldNavigateToEntryForNavigationApiKey(
     FrameNavigationEntry* current_entry,
     FrameNavigationEntry* target_entry,
-    const std::string& app_history_key) {
+    const std::string& navigation_api_key) {
   if (!target_entry || !target_entry->committed_origin())
     return HistoryNavigationAction::kStopLooking;
   if (current_entry->site_instance() != target_entry->site_instance())
@@ -4451,13 +4451,14 @@ NavigationControllerImpl::ShouldNavigateToEntryForAppHistoryKey(
 
   // NOTE: We don't actually care between kSameDocument and
   // kDifferentDocument, so always use kDifferentDocument by convention.
-  if (target_entry->app_history_key() == app_history_key)
+  if (target_entry->navigation_api_key() == navigation_api_key)
     return HistoryNavigationAction::kDifferentDocument;
   return HistoryNavigationAction::kKeepLooking;
 }
 
-void NavigationControllerImpl::NavigateToAppHistoryKey(FrameTreeNode* node,
-                                                       const std::string& key) {
+void NavigationControllerImpl::NavigateToNavigationApiKey(
+    FrameTreeNode* node,
+    const std::string& key) {
   FrameNavigationEntry* current_entry =
       GetLastCommittedEntry()->GetFrameEntry(node);
   if (!current_entry)
@@ -4467,7 +4468,7 @@ void NavigationControllerImpl::NavigateToAppHistoryKey(FrameTreeNode* node,
   // same-instance and same-origin. Check back first, then forward.
   // TODO(japhet): Link spec here once it exists.
   for (int i = GetCurrentEntryIndex() - 1; i >= 0; i--) {
-    auto result = ShouldNavigateToEntryForAppHistoryKey(
+    auto result = ShouldNavigateToEntryForNavigationApiKey(
         current_entry, GetEntryAtIndex(i)->GetFrameEntry(node), key);
     if (result == HistoryNavigationAction::kStopLooking)
       break;
@@ -4478,7 +4479,7 @@ void NavigationControllerImpl::NavigateToAppHistoryKey(FrameTreeNode* node,
     }
   }
   for (int i = GetCurrentEntryIndex() + 1; i < GetEntryCount(); i++) {
-    auto result = ShouldNavigateToEntryForAppHistoryKey(
+    auto result = ShouldNavigateToEntryForNavigationApiKey(
         current_entry, GetEntryAtIndex(i)->GetFrameEntry(node), key);
     if (result == HistoryNavigationAction::kStopLooking)
       break;
@@ -4490,7 +4491,7 @@ void NavigationControllerImpl::NavigateToAppHistoryKey(FrameTreeNode* node,
   }
 }
 
-bool NavigationControllerImpl::ShouldProtectUrlInAppHistory(
+bool NavigationControllerImpl::ShouldProtectUrlInNavigationApi(
     network::mojom::ReferrerPolicy referrer_policy) {
   return referrer_policy == network::mojom::ReferrerPolicy::kNever ||
          referrer_policy == network::mojom::ReferrerPolicy::kOrigin;

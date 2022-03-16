@@ -18,11 +18,11 @@ NavigationHistoryEntry::NavigationHistoryEntry(ExecutionContext* context,
     : ExecutionContextClient(context), item_(item) {}
 
 String NavigationHistoryEntry::key() const {
-  return DomWindow() ? item_->GetAppHistoryKey() : String();
+  return DomWindow() ? item_->GetNavigationApiKey() : String();
 }
 
 String NavigationHistoryEntry::id() const {
-  return DomWindow() ? item_->GetAppHistoryId() : String();
+  return DomWindow() ? item_->GetNavigationApiId() : String();
 }
 
 int64_t NavigationHistoryEntry::index() {
@@ -44,7 +44,7 @@ bool NavigationHistoryEntry::sameDocument() const {
 }
 
 ScriptValue NavigationHistoryEntry::getState() const {
-  SerializedScriptValue* state = item_->GetAppHistoryState();
+  SerializedScriptValue* state = item_->GetNavigationApiState();
   if (!DomWindow() || !state)
     return ScriptValue();
   v8::Isolate* isolate = DomWindow()->GetIsolate();

@@ -101,12 +101,13 @@ void GenerateFrameStateFromItem(const WebHistoryItem& item,
   state->scroll_anchor_offset = anchor.offset_;
   state->scroll_anchor_simhash = anchor.simhash_;
 
-  state->app_history_key =
-      WebString::ToOptionalString16(item.GetAppHistoryKey());
-  state->app_history_id = WebString::ToOptionalString16(item.GetAppHistoryId());
-  if (!item.GetAppHistoryState().IsNull()) {
-    state->app_history_state =
-        WebString::ToOptionalString16(item.GetAppHistoryState().ToString());
+  state->navigation_api_key =
+      WebString::ToOptionalString16(item.GetNavigationApiKey());
+  state->navigation_api_id =
+      WebString::ToOptionalString16(item.GetNavigationApiId());
+  if (!item.GetNavigationApiState().IsNull()) {
+    state->navigation_api_state =
+        WebString::ToOptionalString16(item.GetNavigationApiState().ToString());
   }
 }
 
@@ -144,14 +145,14 @@ void RecursivelyGenerateHistoryItem(const ExplodedFrameState& state,
     item.SetItemSequenceNumber(state.item_sequence_number);
   if (state.document_sequence_number)
     item.SetDocumentSequenceNumber(state.document_sequence_number);
-  if (state.app_history_key)
-    item.SetAppHistoryKey(WebString::FromUTF16(state.app_history_key));
-  if (state.app_history_id)
-    item.SetAppHistoryId(WebString::FromUTF16(state.app_history_id));
+  if (state.navigation_api_key)
+    item.SetNavigationApiKey(WebString::FromUTF16(state.navigation_api_key));
+  if (state.navigation_api_id)
+    item.SetNavigationApiId(WebString::FromUTF16(state.navigation_api_id));
 
-  if (state.app_history_state) {
-    item.SetAppHistoryState(WebSerializedScriptValue::FromString(
-        WebString::FromUTF16(*state.app_history_state)));
+  if (state.navigation_api_state) {
+    item.SetNavigationApiState(WebSerializedScriptValue::FromString(
+        WebString::FromUTF16(*state.navigation_api_state)));
   }
 
   item.SetHTTPContentType(

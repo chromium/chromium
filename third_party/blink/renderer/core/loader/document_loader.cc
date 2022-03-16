@@ -885,26 +885,26 @@ void DocumentLoader::SetHistoryItemStateForCommit(
   if (!old_item || IsBackForwardLoadType(load_type))
     return;
 
-  // The AppHistory key corresponds to a "slot" in the back/forward list, and
-  // should be shared for all replacing navigations so long as the navigation
-  // isn't cross-origin.
+  // The navigation API key corresponds to a "slot" in the back/forward list,
+  // and should be shared for all replacing navigations so long as the
+  // navigation isn't cross-origin.
   WebHistoryCommitType history_commit_type = LoadTypeToCommitType(load_type);
   if (history_commit_type == kWebHistoryInertCommit &&
       SecurityOrigin::Create(old_item->Url())
           ->CanAccess(SecurityOrigin::Create(history_item_->Url()).get())) {
-    history_item_->SetAppHistoryKey(old_item->GetAppHistoryKey());
+    history_item_->SetNavigationApiKey(old_item->GetNavigationApiKey());
   }
 
-  // The AppHistory id corresponds to a "session history entry", and so should
-  // be carried over across reloads.
+  // The navigation API id corresponds to a "session history entry", and so
+  // should be carried over across reloads.
   if (IsReloadLoadType(load_type))
-    history_item_->SetAppHistoryId(old_item->GetAppHistoryId());
+    history_item_->SetNavigationApiId(old_item->GetNavigationApiId());
 
-  // AppHistory's state is stickier than the legacy History state. It always
-  // propagates by default to a same-document navigation.
+  // The navigation API's state is stickier than the legacy History state. It
+  // always propagates by default to a same-document navigation.
   if (navigation_type == HistoryNavigationType::kFragment ||
       IsReloadLoadType(load_type)) {
-    history_item_->SetAppHistoryState(old_item->GetAppHistoryState());
+    history_item_->SetNavigationApiState(old_item->GetNavigationApiState());
   }
 
   // Don't propagate state from the old item if this is a different-document

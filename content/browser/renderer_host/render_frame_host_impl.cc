@@ -3346,12 +3346,12 @@ void RenderFrameHostImpl::DidChangeReferrerPolicy(
   if (!IsActive() || !frame_tree_->controller().GetLastCommittedEntry())
     return;
   // The FrameNavigationEntry may want to change whether to protect its url
-  // in the appHistory API when the referrer policy changes.
+  // in the navigation API when the referrer policy changes.
   if (FrameNavigationEntry* entry =
           frame_tree_->controller().GetLastCommittedEntry()->GetFrameEntry(
               frame_tree_node_)) {
-    entry->set_protect_url_in_app_history(
-        NavigationControllerImpl::ShouldProtectUrlInAppHistory(
+    entry->set_protect_url_in_navigation_api(
+        NavigationControllerImpl::ShouldProtectUrlInNavigationApi(
             referrer_policy));
   }
 }
@@ -5890,8 +5890,8 @@ void RenderFrameHostImpl::GoToEntryAtOffset(int32_t offset,
   }
 }
 
-void RenderFrameHostImpl::NavigateToAppHistoryKey(const std::string& key,
-                                                  bool has_user_gesture) {
+void RenderFrameHostImpl::NavigateToNavigationApiKey(const std::string& key,
+                                                     bool has_user_gesture) {
   // Non-user initiated navigations coming from the renderer should be ignored
   // if there is an ongoing browser-initiated navigation.
   // See https://crbug.com/879965.
@@ -5902,7 +5902,7 @@ void RenderFrameHostImpl::NavigateToAppHistoryKey(const std::string& key,
           frame_tree_->root()->navigation_request(), has_user_gesture)) {
     return;
   }
-  frame_tree_->controller().NavigateToAppHistoryKey(frame_tree_node(), key);
+  frame_tree_->controller().NavigateToNavigationApiKey(frame_tree_node(), key);
 }
 
 void RenderFrameHostImpl::HandleAccessibilityFindInPageResult(

@@ -41,7 +41,7 @@ class CONTENT_EXPORT FrameNavigationEntry
       const std::string& frame_unique_name,
       int64_t item_sequence_number,
       int64_t document_sequence_number,
-      const std::string& app_history_key,
+      const std::string& navigation_api_key,
       scoped_refptr<SiteInstanceImpl> site_instance,
       scoped_refptr<SiteInstanceImpl> source_site_instance,
       const GURL& url,
@@ -57,7 +57,7 @@ class CONTENT_EXPORT FrameNavigationEntry
       std::unique_ptr<SubresourceWebBundleNavigationInfo>
           subresource_web_bundle_navigation_info,
       std::unique_ptr<PolicyContainerPolicies> policy_container_policies,
-      bool protect_url_in_app_history);
+      bool protect_url_in_navigation_api);
 
   FrameNavigationEntry(const FrameNavigationEntry&) = delete;
   FrameNavigationEntry& operator=(const FrameNavigationEntry&) = delete;
@@ -71,7 +71,7 @@ class CONTENT_EXPORT FrameNavigationEntry
       const std::string& frame_unique_name,
       int64_t item_sequence_number,
       int64_t document_sequence_number,
-      const std::string& app_history_key,
+      const std::string& navigation_api_key,
       SiteInstanceImpl* site_instance,
       scoped_refptr<SiteInstanceImpl> source_site_instance,
       const GURL& url,
@@ -87,7 +87,7 @@ class CONTENT_EXPORT FrameNavigationEntry
       std::unique_ptr<SubresourceWebBundleNavigationInfo>
           subresource_web_bundle_navigation_info,
       std::unique_ptr<PolicyContainerPolicies> policy_container_policies,
-      bool protect_url_in_app_history);
+      bool protect_url_in_navigation_api);
 
   // The unique name of the frame this entry is for.  This is a stable name for
   // the frame based on its position in the tree and relation to other named
@@ -112,9 +112,10 @@ class CONTENT_EXPORT FrameNavigationEntry
   void set_document_sequence_number(int64_t document_sequence_number);
   int64_t document_sequence_number() const { return document_sequence_number_; }
 
-  // Identifies a "slot" in the frame's session history for the AppHistory API.
-  void set_app_history_key(const std::string& app_history_key);
-  const std::string& app_history_key() const { return app_history_key_; }
+  // Identifies a "slot" in the frame's session history for the
+  // window.navigation API.
+  void set_navigation_api_key(const std::string& navigation_api_key);
+  const std::string& navigation_api_key() const { return navigation_api_key_; }
 
   // The SiteInstance, as assigned at commit time, responsible for rendering
   // this frame.  All frames sharing a SiteInstance must live in the same
@@ -229,9 +230,11 @@ class CONTENT_EXPORT FrameNavigationEntry
   SubresourceWebBundleNavigationInfo* subresource_web_bundle_navigation_info()
       const;
 
-  bool protect_url_in_app_history() { return protect_url_in_app_history_; }
-  void set_protect_url_in_app_history(bool protect) {
-    protect_url_in_app_history_ = protect;
+  bool protect_url_in_navigation_api() {
+    return protect_url_in_navigation_api_;
+  }
+  void set_protect_url_in_navigation_api(bool protect) {
+    protect_url_in_navigation_api_ = protect;
   }
 
  private:
@@ -247,12 +250,12 @@ class CONTENT_EXPORT FrameNavigationEntry
   // See the accessors above for descriptions.
   std::string frame_unique_name_;
 
-  // sequence numbers and the app history key are also stored in |page_state_|.
-  // When SetPageState() is called as part of a restore, it also initializes
-  // these.
+  // sequence numbers and the navigation API key are also stored in
+  // |page_state_|. When SetPageState() is called as part of a restore, it also
+  // initializes these.
   int64_t item_sequence_number_;
   int64_t document_sequence_number_;
-  std::string app_history_key_;
+  std::string navigation_api_key_;
 
   scoped_refptr<SiteInstanceImpl> site_instance_;
   // This member is cleared at commit time and is not persisted.
@@ -293,8 +296,8 @@ class CONTENT_EXPORT FrameNavigationEntry
 
   // If the document represented by this FNE hid its full url from appearing
   // in a referrer via a "no-referrer" or "origin" referrer policy, this URL
-  // will be hidden from appHistory API entries as well.
-  bool protect_url_in_app_history_;
+  // will be hidden from navigation API history entries as well.
+  bool protect_url_in_navigation_api_;
 };
 
 }  // namespace content

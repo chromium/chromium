@@ -270,9 +270,9 @@ void NavigationApi::CloneFromPrevious(NavigationApi& previous) {
     new_item->SetItemSequenceNumber(old_item->ItemSequenceNumber());
     new_item->SetDocumentSequenceNumber(old_item->DocumentSequenceNumber());
     new_item->SetURL(old_item->Url());
-    new_item->SetAppHistoryKey(old_item->GetAppHistoryKey());
-    new_item->SetAppHistoryId(old_item->GetAppHistoryId());
-    new_item->SetAppHistoryState(old_item->GetAppHistoryState());
+    new_item->SetNavigationApiKey(old_item->GetNavigationApiKey());
+    new_item->SetNavigationApiId(old_item->GetNavigationApiId());
+    new_item->SetNavigationApiState(old_item->GetNavigationApiState());
     entries_.emplace_back(MakeGarbageCollected<NavigationHistoryEntry>(
         GetSupplementable(), new_item));
   }
@@ -295,8 +295,8 @@ void NavigationApi::UpdateForNavigation(HistoryItem& item,
     // If this is a same-document back/forward navigation, the new current
     // entry should already be present in entries_ and its key in
     // keys_to_indices_.
-    DCHECK(keys_to_indices_.Contains(item.GetAppHistoryKey()));
-    current_entry_index_ = keys_to_indices_.at(item.GetAppHistoryKey());
+    DCHECK(keys_to_indices_.Contains(item.GetNavigationApiKey()));
+    current_entry_index_ = keys_to_indices_.at(item.GetNavigationApiKey());
   } else if (type == WebFrameLoadType::kStandard) {
     // For a new back/forward entry, truncate any forward entries and prepare
     // to append.
@@ -360,9 +360,9 @@ NavigationHistoryEntry* NavigationApi::GetEntryForRestore(
   item->SetItemSequenceNumber(entry->item_sequence_number);
   item->SetDocumentSequenceNumber(entry->document_sequence_number);
   item->SetURLString(entry->url);
-  item->SetAppHistoryKey(entry->key);
-  item->SetAppHistoryId(entry->id);
-  item->SetAppHistoryState(SerializedScriptValue::Create(entry->state));
+  item->SetNavigationApiKey(entry->key);
+  item->SetNavigationApiId(entry->id);
+  item->SetNavigationApiState(SerializedScriptValue::Create(entry->state));
   return MakeGarbageCollected<NavigationHistoryEntry>(GetSupplementable(),
                                                       item);
 }
@@ -445,7 +445,7 @@ void NavigationApi::updateCurrentEntry(
   if (exception_state.HadException())
     return;
 
-  current_entry->GetItem()->SetAppHistoryState(std::move(serialized_state));
+  current_entry->GetItem()->SetNavigationApiState(std::move(serialized_state));
 
   auto* init = NavigationCurrentEntryChangeEventInit::Create();
   init->setFrom(current_entry);
@@ -510,7 +510,7 @@ NavigationResult* NavigationApi::reload(ScriptState* script_state,
         return result;
       }
     } else if (NavigationHistoryEntry* current_entry = currentEntry()) {
-      serialized_state = current_entry->GetItem()->GetAppHistoryState();
+      serialized_state = current_entry->GetItem()->GetNavigationApiState();
     }
   }
 
@@ -550,7 +550,7 @@ NavigationResult* NavigationApi::PerformNonTraverseNavigation(
   }
 
   if (SerializedScriptValue* state = navigation->TakeSerializedState()) {
-    currentEntry()->GetItem()->SetAppHistoryState(state);
+    currentEntry()->GetItem()->SetNavigationApiState(state);
   }
   return navigation->GetNavigationResult();
 }
@@ -582,8 +582,8 @@ NavigationResult* NavigationApi::traverseTo(ScriptState* script_state,
   GetSupplementable()
       ->GetFrame()
       ->GetLocalFrameHostRemote()
-      .NavigateToAppHistoryKey(key, LocalFrame::HasTransientUserActivation(
-                                        GetSupplementable()->GetFrame()));
+      .NavigateToNavigationApiKey(key, LocalFrame::HasTransientUserActivation(
+                                           GetSupplementable()->GetFrame()));
   return ongoing_navigation->GetNavigationResult();
 }
 
@@ -686,7 +686,7 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
 
   const KURL& current_url = GetSupplementable()->Url();
   const String& key =
-      destination_item ? destination_item->GetAppHistoryKey() : String();
+      destination_item ? destination_item->GetNavigationApiKey() : String();
   PromoteUpcomingNavigationToOngoing(key);
 
   if (HasEntriesAndEventsDisabled()) {
@@ -719,7 +719,7 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
 
   SerializedScriptValue* destination_state = nullptr;
   if (destination_item)
-    destination_state = destination_item->GetAppHistoryState();
+    destination_state = destination_item->GetNavigationApiState();
   else if (ongoing_navigation_)
     destination_state = ongoing_navigation_->GetSerializedState();
   NavigationDestination* destination =
@@ -729,8 +729,8 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
   if (type == WebFrameLoadType::kBackForward) {
     auto iter = keys_to_indices_.find(key);
     int index = iter == keys_to_indices_.end() ? 0 : iter->value;
-    destination->SetTraverseProperties(key, destination_item->GetAppHistoryId(),
-                                       index);
+    destination->SetTraverseProperties(
+        key, destination_item->GetNavigationApiId(), index);
   }
   init->setDestination(destination);
 

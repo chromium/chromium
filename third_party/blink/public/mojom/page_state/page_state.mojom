@@ -121,13 +121,13 @@ struct FrameState {
   HttpBody http_body@10;
   array<FrameState> children@11;
   [MinVersion=2] string? initiator_origin@12;
-  [MinVersion=3] mojo_base.mojom.String16? app_history_key@13;
-  [MinVersion=3] mojo_base.mojom.String16? app_history_id@14;
-  [MinVersion=4] mojo_base.mojom.String16? app_history_state@15;
-  // |protect_url_in_app_history| is persisted for later restore, so it has to
-  // be part of FrameState, but unlike the other values, it is never set or
+  [MinVersion=3] mojo_base.mojom.String16? navigation_api_key@13;
+  [MinVersion=3] mojo_base.mojom.String16? navigation_api_id@14;
+  [MinVersion=4] mojo_base.mojom.String16? navigation_api_state@15;
+  // |protect_url_in_navigation_api| is persisted for later restore, so it has
+  // to be part of FrameState, but unlike the other values, it is never set or
   // read by the renderer. It is used only in the browser process.
-  [MinVersion=5] bool protect_url_in_app_history@16;
+  [MinVersion=5] bool protect_url_in_navigation_api@16;
 };
 
 // Next Ordinal: 2

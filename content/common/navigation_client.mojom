@@ -58,10 +58,10 @@ struct DidCommitProvisionalLoadParams {
   // sequence number but the same document sequence number.
   int64 document_sequence_number = -1;
 
-  // Identifies a specific "slot" in the session history for the appHistory API.
-  // appHistory.goTo() is given a key, which matches against this to find the
-  // correct entry to navigate to.
-  string app_history_key;
+  // Identifies a specific "slot" in the session history for the
+  // window.navigation API. navigation.traverseTo() is given a key, which
+  // matches against this to find the correct entry to traverse to.
+  string navigation_api_key;
 
   // URL of the page being loaded.
   url.mojom.Url url;

@@ -247,7 +247,7 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
       UpdatePolicy update_policy,
       int64_t item_sequence_number,
       int64_t document_sequence_number,
-      const std::string& app_history_key,
+      const std::string& navigation_api_key,
       SiteInstanceImpl* site_instance,
       scoped_refptr<SiteInstanceImpl> source_site_instance,
       const GURL& url,

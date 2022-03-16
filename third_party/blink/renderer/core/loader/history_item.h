@@ -124,15 +124,15 @@ class CORE_EXPORT HistoryItem final : public GarbageCollected<HistoryItem> {
 
   ResourceRequest GenerateResourceRequest(mojom::FetchCacheMode);
 
-  const String& GetAppHistoryKey() const { return app_history_key_; }
-  void SetAppHistoryKey(const String& key) { app_history_key_ = key; }
+  const String& GetNavigationApiKey() const { return navigation_api_key_; }
+  void SetNavigationApiKey(const String& key) { navigation_api_key_ = key; }
 
-  const String& GetAppHistoryId() const { return app_history_id_; }
-  void SetAppHistoryId(const String& id) { app_history_id_ = id; }
+  const String& GetNavigationApiId() const { return navigation_api_id_; }
+  void SetNavigationApiId(const String& id) { navigation_api_id_ = id; }
 
-  void SetAppHistoryState(scoped_refptr<SerializedScriptValue>);
-  SerializedScriptValue* GetAppHistoryState() {
-    return app_history_state_.get();
+  void SetNavigationApiState(scoped_refptr<SerializedScriptValue>);
+  SerializedScriptValue* GetNavigationApiState() {
+    return navigation_api_state_.get();
   }
 
   void Trace(Visitor*) const;
@@ -175,9 +175,9 @@ class CORE_EXPORT HistoryItem final : public GarbageCollected<HistoryItem> {
   scoped_refptr<EncodedFormData> form_data_;
   AtomicString form_content_type_;
 
-  String app_history_key_;
-  String app_history_id_;
-  scoped_refptr<SerializedScriptValue> app_history_state_;
+  String navigation_api_key_;
+  String navigation_api_id_;
+  scoped_refptr<SerializedScriptValue> navigation_api_state_;
 };  // class HistoryItem
 
 }  // namespace blink
