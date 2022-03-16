@@ -172,6 +172,18 @@ IN_PROC_BROWSER_TEST_F(VirtualCardEnrollBubbleViewsInteractiveUiTest,
   EXPECT_TRUE(GetBubbleViews());
   EXPECT_TRUE(IsIconVisible());
 
+  // Ensure there is a non-empty image set if no card art image is present.
+  VirtualCardEnrollmentFields
+      upstream_virtual_card_enrollment_fields_no_card_art_image =
+          upstream_virtual_card_enrollment_fields();
+  upstream_virtual_card_enrollment_fields_no_card_art_image.card_art_image =
+      nullptr;
+  ShowBubbleAndWaitUntilShown(
+      upstream_virtual_card_enrollment_fields_no_card_art_image,
+      base::DoNothing(), base::DoNothing());
+  EXPECT_TRUE(GetBubbleViews()->NetworkIconNotEmptyForTesting());
+  EXPECT_TRUE(IsIconVisible());
+
   ShowBubbleAndWaitUntilShown(downstream_virtual_card_enrollment_fields(),
                                base::DoNothing(), base::DoNothing());
   EXPECT_TRUE(GetBubbleViews());
