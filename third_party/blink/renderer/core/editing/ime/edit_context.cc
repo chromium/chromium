@@ -112,8 +112,8 @@ bool EditContext::DispatchCompositionStartEvent(const String& text) {
 
 void EditContext::DispatchCharacterBoundsUpdateEvent(uint32_t range_start,
                                                      uint32_t range_end) {
-  auto* event =
-      MakeGarbageCollected<CharacterBoundsUpdateEvent>(range_start, range_end);
+  auto* event = MakeGarbageCollected<CharacterBoundsUpdateEvent>(
+      event_type_names::kCharacterboundsupdate, range_start, range_end);
   DispatchEvent(*event);
 }
 
@@ -123,8 +123,8 @@ void EditContext::DispatchTextUpdateEvent(const String& text,
                                           uint32_t new_selection_start,
                                           uint32_t new_selection_end) {
   TextUpdateEvent* event = MakeGarbageCollected<TextUpdateEvent>(
-      text, update_range_start, update_range_end, new_selection_start,
-      new_selection_end);
+      event_type_names::kTextupdate, text, update_range_start, update_range_end,
+      new_selection_start, new_selection_end);
   DispatchEvent(*event);
 }
 
@@ -184,8 +184,8 @@ void EditContext::DispatchTextFormatEvent(
                            underline_style, underline_thickness));
   }
 
-  TextFormatUpdateEvent* event =
-      MakeGarbageCollected<TextFormatUpdateEvent>(text_formats);
+  TextFormatUpdateEvent* event = MakeGarbageCollected<TextFormatUpdateEvent>(
+      event_type_names::kTextformatupdate, text_formats);
   DispatchEvent(*event);
 }
 

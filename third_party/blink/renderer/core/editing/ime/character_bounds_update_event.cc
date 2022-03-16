@@ -11,17 +11,20 @@
 namespace blink {
 
 CharacterBoundsUpdateEvent::CharacterBoundsUpdateEvent(
-    const CharacterBoundsUpdateEventInit* dict) {
-  if (dict->hasRangeStart())
-    range_start_ = dict->rangeStart();
+    const AtomicString& type,
+    const CharacterBoundsUpdateEventInit* initializer)
+    : Event(type, initializer) {
+  if (initializer->hasRangeStart())
+    range_start_ = initializer->rangeStart();
 
-  if (dict->hasRangeEnd())
-    range_end_ = dict->rangeEnd();
+  if (initializer->hasRangeEnd())
+    range_end_ = initializer->rangeEnd();
 }
 
-CharacterBoundsUpdateEvent::CharacterBoundsUpdateEvent(uint32_t range_start,
+CharacterBoundsUpdateEvent::CharacterBoundsUpdateEvent(const AtomicString& type,
+                                                       uint32_t range_start,
                                                        uint32_t range_end)
-    : Event(event_type_names::kCharacterboundsupdate,
+    : Event(type,
             Bubbles::kNo,
             Cancelable::kNo,
             ComposedMode::kComposed,
@@ -30,8 +33,9 @@ CharacterBoundsUpdateEvent::CharacterBoundsUpdateEvent(uint32_t range_start,
       range_end_(range_end) {}
 
 CharacterBoundsUpdateEvent* CharacterBoundsUpdateEvent::Create(
-    const CharacterBoundsUpdateEventInit* dict) {
-  return MakeGarbageCollected<CharacterBoundsUpdateEvent>(dict);
+    const AtomicString& type,
+    const CharacterBoundsUpdateEventInit* initializer) {
+  return MakeGarbageCollected<CharacterBoundsUpdateEvent>(type, initializer);
 }
 
 CharacterBoundsUpdateEvent::~CharacterBoundsUpdateEvent() = default;

@@ -13,7 +13,7 @@
     Exposed=Window,
     RuntimeEnabled=EditContext
 ] interface CharacterBoundsUpdateEvent : Event {
-    constructor(optional CharacterBoundsUpdateEventInit options = {});
+    constructor(DOMString type, optional CharacterBoundsUpdateEventInit options = {});
     readonly attribute unsigned long rangeStart;
     readonly attribute unsigned long rangeEnd;
 };

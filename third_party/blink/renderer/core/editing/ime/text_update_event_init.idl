@@ -7,7 +7,7 @@
 // Spec draft:
 // https://w3c.github.io/editing/docs/EditContext/index.html#textupdateevent
 
-dictionary TextUpdateEventInit {
+dictionary TextUpdateEventInit : EventInit {
     unsigned long updateRangeStart;
     unsigned long updateRangeEnd;
     DOMString updateText;

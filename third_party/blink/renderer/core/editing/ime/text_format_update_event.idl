@@ -13,7 +13,7 @@
     Exposed=Window,
     RuntimeEnabled=EditContext
 ] interface TextFormatUpdateEvent : Event {
-    constructor(optional TextFormatUpdateEventInit options = {});
+    constructor(DOMString type, optional TextFormatUpdateEventInit options = {});
 
     sequence<TextFormat> getTextFormats();
 };

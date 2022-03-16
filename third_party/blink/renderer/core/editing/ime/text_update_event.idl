@@ -15,7 +15,7 @@
     Exposed=Window,
     RuntimeEnabled=EditContext
 ] interface TextUpdateEvent : Event {
-    constructor(optional TextUpdateEventInit options = {});
+    constructor(DOMString type, optional TextUpdateEventInit options = {});
     readonly attribute unsigned long updateRangeStart;
     readonly attribute unsigned long updateRangeEnd;
     readonly attribute DOMString updateText;

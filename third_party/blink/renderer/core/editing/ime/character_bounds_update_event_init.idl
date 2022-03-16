@@ -7,7 +7,7 @@
 // Spec draft:
 // https://w3c.github.io/editing/docs/EditContext/index.html#characterboundsupdateevent
 
-dictionary CharacterBoundsUpdateEventInit {
+dictionary CharacterBoundsUpdateEventInit : EventInit {
     unsigned long rangeStart;
     unsigned long rangeEnd;
 };

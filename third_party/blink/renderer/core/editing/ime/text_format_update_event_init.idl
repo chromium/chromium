@@ -7,6 +7,6 @@
 // Spec draft:
 // https://w3c.github.io/editing/docs/EditContext/index.html#textformatupdateevent
 
-dictionary TextFormatUpdateEventInit {
+dictionary TextFormatUpdateEventInit : EventInit {
     sequence<TextFormat> textFormats;
 };
