@@ -5,9 +5,13 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_VIRTUAL_CARD_ENROLLMENT_METRICS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_VIRTUAL_CARD_ENROLLMENT_METRICS_H_
 
+#include <string>
+
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 
-#include <string>
+namespace base {
+class TimeDelta;
+}
 
 namespace autofill {
 
@@ -85,6 +89,12 @@ std::string VirtualCardEnrollmentBubbleSourceToMetricSuffix(
 // name suffix.
 const std::string VirtualCardEnrollmentSourceToMetricSuffix(
     VirtualCardEnrollmentSource source);
+
+// Latency Since Upstream metrics. Used to determine the time that it takes for
+// the server calls that need to be made between Save Card Bubble accept and
+// when the Virtual Card Enroll Bubble is shown.
+void LogVirtualCardEnrollBubbleLatencySinceUpstream(
+    const base::TimeDelta& latency);
 
 }  // namespace autofill
 

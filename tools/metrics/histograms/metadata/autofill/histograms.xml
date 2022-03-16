@@ -3542,6 +3542,21 @@ chromium-metrics-reviews@google.com.
   <token key="Dialog" variants="Autofill.SettingsPage.VirtualCardDialogType"/>
 </histogram>
 
+<histogram name="Autofill.VirtualCardEnrollBubble.LatencySinceUpstream"
+    units="ms" expires_after="2023-03-01">
+  <owner>vinnypersky@google.com</owner>
+  <owner>alexandertekle@google.com</owner>
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs the latency between Save Card Bubble accepted and the timestamp for
+    when the Virtual Card Enroll Bubble is shown. This metric is logged right
+    before the Virtual Card Enroll Bubble is shown, but if web contents are
+    unavailable it will be logged before waiting for web contents to become
+    available.
+  </summary>
+</histogram>
+
 <histogram
     name="Autofill.VirtualCardEnrollBubble.Result.{EnrollmentSource}.{ShowType}"
     enum="AutofillVirtualCardEnrollBubbleResult" expires_after="2023-04-01">

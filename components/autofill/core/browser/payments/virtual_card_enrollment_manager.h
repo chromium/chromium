@@ -154,6 +154,11 @@ class VirtualCardEnrollmentManager {
   void RemoveAllStrikesToBlockOfferingVirtualCardEnrollment(
       const std::string& guid);
 
+  // Sets |save_card_bubble_accepted_timestamp_|, which will be the start time
+  // for the LatencySinceUpstream metrics.
+  void SetSaveCardBubbleAcceptedTimestamp(
+      const base::Time& save_card_bubble_accepted_timestamp);
+
  protected:
   // Handles the response from the UpdateVirtualCardEnrollmentRequest. |type|
   // indicates the type of the request sent, i.e., enroll or unenroll.
@@ -270,6 +275,15 @@ class VirtualCardEnrollmentManager {
   // Used in scenarios where we do not have access to web contents, and need to
   // pass in a callback to the overloaded risk_util::LoadRiskData.
   RiskAssessmentFunction risk_assessment_function_;
+
+  // Used to track the latency metrics between SaveCardBubble accept and
+  // VirtualCardEnrollBubble show. Set in ChromeAutofillClient once
+  // SaveCardBubble is accepted for upload save, so that we can track the
+  // starting timestamp of the latency. Right before showing the
+  // VirtualCardEnrollBubble, we will take the difference between the current
+  // timestamp and |save_card_bubble_accepted_timestamp_| to log as the latency
+  // metric. |save_card_bubble_accepted_timestamp_| will then be reset.
+  absl::optional<base::Time> save_card_bubble_accepted_timestamp_;
 
   base::WeakPtrFactory<VirtualCardEnrollmentManager> weak_ptr_factory_{this};
 };

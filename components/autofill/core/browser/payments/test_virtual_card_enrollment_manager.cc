@@ -39,6 +39,7 @@ void TestVirtualCardEnrollmentManager::Reset() {
 
 void TestVirtualCardEnrollmentManager::ShowVirtualCardEnrollBubble() {
   bubble_shown_ = true;
+  VirtualCardEnrollmentManager::ShowVirtualCardEnrollBubble();
 }
 
 }  // namespace autofill

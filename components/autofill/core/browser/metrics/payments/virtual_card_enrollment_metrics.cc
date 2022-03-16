@@ -8,6 +8,7 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 
 namespace autofill {
@@ -120,6 +121,12 @@ std::string VirtualCardEnrollmentBubbleSourceToMetricSuffix(
         VIRTUAL_CARD_ENROLLMENT_SETTINGS_PAGE_SOURCE:
       return "SettingsPage";
   }
+}
+
+void LogVirtualCardEnrollBubbleLatencySinceUpstream(
+    const base::TimeDelta& latency) {
+  base::UmaHistogramTimes(
+      "Autofill.VirtualCardEnrollBubble.LatencySinceUpstream", latency);
 }
 
 }  // namespace autofill
