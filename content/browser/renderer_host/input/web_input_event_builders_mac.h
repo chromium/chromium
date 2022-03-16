@@ -19,15 +19,7 @@ namespace content {
 
 class CONTENT_EXPORT WebKeyboardEventBuilder {
  public:
-  // TODO(bokan): Temporarily added the |record_debug_uma| param to help debug
-  // https://crbug.com/1039833. This parameter controls whether
-  // Event.Latency.OS_NO_VALIDATION metrics are collected for the key event.
-  // The purpose is to limit this to only those events that are being handled
-  // synchronously from the OS message loop since we can reinject the same
-  // NSEvent back into the app multiple times; we want to record this stat only
-  // the first time the event was received.
-  static blink::WebKeyboardEvent Build(NSEvent* event,
-                                       bool record_debug_uma = false);
+  static blink::WebKeyboardEvent Build(NSEvent* event);
 };
 
 class CONTENT_EXPORT WebMouseEventBuilder {

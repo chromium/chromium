@@ -396,20 +396,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Event.Latency.OS_NO_VALIDATION.POSITIVE" units="ms"
-    expires_after="2021-08-09">
-  <owner>sullivan@chromium.org</owner>
-  <owner>input-dev@chromium.org</owner>
-  <summary>
-    For Mac, a version of Event.Latency.OS that has the positive values it would
-    contain if ValidateEventTimeClock() were not called on the timestamps.
-
-    This metric is intended to debug http://crbug.com/1039833 where very high
-    numbers are seen for PageLoad.InputDelay3. The units of this metric are the
-    same as PageLoad.InputDelay3 for consistency while debugging.
-  </summary>
-</histogram>
-
 <histogram name="Event.Latency.Scroll.Wheel.TimeToHandled2"
     units="microseconds" expires_after="2021-12-19">
   <owner>flackr@chromium.org</owner>

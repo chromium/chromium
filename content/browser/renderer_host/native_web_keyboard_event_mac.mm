@@ -97,23 +97,8 @@ NativeWebKeyboardEvent::NativeWebKeyboardEvent(
   [os_event eventRef];
 }
 
-// static
-NativeWebKeyboardEvent NativeWebKeyboardEvent::CreateForRenderer(
-    gfx::NativeEvent native_event) {
-  return NativeWebKeyboardEvent(native_event, true);
-}
-
-NativeWebKeyboardEvent::NativeWebKeyboardEvent(gfx::NativeEvent native_event,
-                                               bool record_debug_uma)
-    : WebKeyboardEvent(
-          WebKeyboardEventBuilder::Build(native_event, record_debug_uma)),
-      os_event([native_event retain]),
-      skip_in_browser(false) {}
-
 NativeWebKeyboardEvent::NativeWebKeyboardEvent(gfx::NativeEvent native_event)
-    : WebKeyboardEvent(
-          WebKeyboardEventBuilder::Build(native_event,
-                                         /*record_debug_uma=*/false)),
+    : WebKeyboardEvent(WebKeyboardEventBuilder::Build(native_event)),
       os_event([native_event retain]),
       skip_in_browser(false) {}
 
