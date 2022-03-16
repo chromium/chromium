@@ -90,7 +90,6 @@
   }
 
   .time-cell {
-    border: 1px solid transparent;
     color: #ffffff;
   }
 
@@ -103,6 +102,6 @@
   .time-cell.selected {
     background-color: #99C8FF;
     color: #3B3B3B;
-    border: 1px solid #FFFFFF;
+    border-color: #FFFFFF;
   }
 }
