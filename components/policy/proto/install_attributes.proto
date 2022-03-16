@@ -8,9 +8,6 @@ option optimize_for = LITE_RUNTIME;
 
 package cryptohome;
 
-// Note: Backwards-incompatible changes of this file might break rollback
-// (go/rollback-data-restore).
-
 message SerializedInstallAttributes {
   message Attribute {
     required string name = 1;
