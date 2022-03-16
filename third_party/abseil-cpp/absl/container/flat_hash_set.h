@@ -72,6 +72,10 @@ struct FlatHashSetPolicy;
 // absl/hash/hash.h for information on extending Abseil hashing to user-defined
 // types.
 //
+// Using `absl::flat_hash_set` at interface boundries in dynamically loaded
+// libraries (e.g. .dll, .so) is unsupported due to way `absl::Hash` values may
+// be randomized across dynamically loaded libraries.
+//
 // NOTE: A `flat_hash_set` stores its keys directly inside its implementation
 // array to avoid memory indirection. Because a `flat_hash_set` is designed to
 // move data when rehashed, set keys will not retain pointer stability. If you

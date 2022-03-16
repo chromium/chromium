@@ -115,6 +115,16 @@ class UnscaledCycleClock {
   friend class base_internal::UnscaledCycleClockWrapperForInitializeFrequency;
 };
 
+#if defined(__x86_64__)
+
+inline int64_t UnscaledCycleClock::Now() {
+  uint64_t low, high;
+  __asm__ volatile("rdtsc" : "=a"(low), "=d"(high));
+  return (high << 32) | low;
+}
+
+#endif
+
 }  // namespace base_internal
 ABSL_NAMESPACE_END
 }  // namespace absl

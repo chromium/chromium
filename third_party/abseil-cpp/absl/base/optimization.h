@@ -181,32 +181,21 @@
 #define ABSL_PREDICT_TRUE(x) (x)
 #endif
 
-// Platform and compilation mode dependent implementation of ABSL_ASSUME.
-#if !defined(NDEBUG)
-#define ABSL_INTERNAL_ASSUME(cond) assert(cond)
-#elif ABSL_HAVE_BUILTIN(__builtin_assume)
-#define ABSL_INTERNAL_ASSUME(cond) __builtin_assume(cond)
-#elif defined(__GNUC__) || ABSL_HAVE_BUILTIN(__builtin_unreachable)
-#define ABSL_INTERNAL_ASSUME(cond)        \
-  do {                                    \
-    if (!(cond)) __builtin_unreachable(); \
-  } while (0)
-#elif defined(_MSC_VER)
-#define ABSL_INTERNAL_ASSUME(cond) __assume(cond)
-#else
-#define ABSL_INTERNAL_ASSUME(cond)      \
-  do {                                  \
-    static_cast<void>(false && (cond)); \
-  } while (0)
-#endif
-
 // ABSL_ASSUME(cond)
+//
 // Informs the compiler that a condition is always true and that it can assume
-// it to be true for optimization purposes. The call has undefined behavior if
-// the condition is false.
+// it to be true for optimization purposes.
+//
+// WARNING: If the condition is false, the program can produce undefined and
+// potentially dangerous behavior.
+//
 // In !NDEBUG mode, the condition is checked with an assert().
+//
 // NOTE: The expression must not have side effects, as it may only be evaluated
-// in some compilation modes and not others.
+// in some compilation modes and not others. Some compilers may issue a warning
+// if the compiler cannot prove the expression has no side effects. For example,
+// the expression should not use a function call since the compiler cannot prove
+// that a function call does not have side effects.
 //
 // Example:
 //
@@ -216,7 +205,23 @@
 //   // assumption specified above.
 //   int y = x / 16;
 //
-#define ABSL_ASSUME(cond) ABSL_INTERNAL_ASSUME(cond)
+#if !defined(NDEBUG)
+#define ABSL_ASSUME(cond) assert(cond)
+#elif ABSL_HAVE_BUILTIN(__builtin_assume)
+#define ABSL_ASSUME(cond) __builtin_assume(cond)
+#elif defined(__GNUC__) || ABSL_HAVE_BUILTIN(__builtin_unreachable)
+#define ABSL_ASSUME(cond)                 \
+  do {                                    \
+    if (!(cond)) __builtin_unreachable(); \
+  } while (0)
+#elif defined(_MSC_VER)
+#define ABSL_ASSUME(cond) __assume(cond)
+#else
+#define ABSL_ASSUME(cond)               \
+  do {                                  \
+    static_cast<void>(false && (cond)); \
+  } while (0)
+#endif
 
 // ABSL_INTERNAL_UNIQUE_SMALL_NAME(cond)
 // This macro forces small unique name on a static file level symbols like

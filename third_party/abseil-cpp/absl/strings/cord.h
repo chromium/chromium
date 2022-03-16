@@ -768,6 +768,7 @@ class Cord {
     // Returns nullptr if holding bytes
     absl::cord_internal::CordRep* tree() const;
     absl::cord_internal::CordRep* as_tree() const;
+    const char* as_chars() const;
     // Returns non-null iff was holding a pointer
     absl::cord_internal::CordRep* clear();
     // Converts to pointer if necessary.
@@ -1092,6 +1093,11 @@ inline void Cord::InlineRep::Swap(Cord::InlineRep* rhs) {
 
 inline const char* Cord::InlineRep::data() const {
   return is_tree() ? nullptr : data_.as_chars();
+}
+
+inline const char* Cord::InlineRep::as_chars() const {
+  assert(!data_.is_tree());
+  return data_.as_chars();
 }
 
 inline absl::cord_internal::CordRep* Cord::InlineRep::as_tree() const {

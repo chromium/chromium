@@ -453,7 +453,6 @@ EXPORTS
     ?FormatTime@absl@@YA?AV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@Vstring_view@1@VTime@1@VTimeZone@1@@Z
     ?FormatUntyped@str_format_internal@absl@@YA_NVFormatRawSinkImpl@12@VUntypedFormatSpecImpl@12@V?$Span@$$CBVFormatArgImpl@str_format_internal@absl@@@2@@Z
     ?FprintF@str_format_internal@absl@@YAHPEAU_iobuf@@VUntypedFormatSpecImpl@12@V?$Span@$$CBVFormatArgImpl@str_format_internal@absl@@@2@@Z
-    ?Frequency@CycleClock@base_internal@absl@@SANXZ
     ?Frequency@UnscaledCycleClock@base_internal@absl@@CANXZ
     ?FromChrono@absl@@YA?AVTime@1@AEBV?$time_point@Vsystem_clock@chrono@__1@std@@V?$duration@_JV?$ratio@$00$0PECEA@@__1@std@@@234@@chrono@__1@std@@@Z
     ?FromTM@absl@@YA?AVTime@1@AEBUtm@@VTimeZone@1@@Z
@@ -604,7 +603,6 @@ EXPORTS
     ?NotFoundError@absl@@YA?AVStatus@1@Vstring_view@1@@Z
     ?Notify@Notification@absl@@QEAAXXZ
     ?Now@CycleClock@base_internal@absl@@SA_JXZ
-    ?Now@UnscaledCycleClock@base_internal@absl@@CA_JXZ
     ?Now@absl@@YA?AVTime@1@XZ
     ?NumCPUs@base_internal@absl@@YAHXZ
     ?OutOfRangeError@absl@@YA?AVStatus@1@Vstring_view@1@@Z
@@ -901,6 +899,7 @@ EXPORTS
     ?code@Status@absl@@QEBA?AW4StatusCode@2@XZ
     ?cord_btree_exhaustive_validation@cord_internal@absl@@3U?$atomic@_N@__1@std@@A
     ?cord_ring_buffer_enabled@cord_internal@absl@@3U?$atomic@_N@__1@std@@A
+    ?cycle_clock_source_@CycleClock@base_internal@absl@@0U?$atomic@P6A_JXZ@__1@std@@A
     ?day_difference@impl@detail@cctz@time_internal@absl@@YA_J_JCC0CC@Z
     ?description@time_zone@cctz@time_internal@absl@@QEBA?AV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@XZ
     ?destroy@?$allocator@UPayload@status_internal@absl@@@__1@std@@QEAAXPEAUPayload@status_internal@absl@@@Z

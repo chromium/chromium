@@ -613,10 +613,6 @@ class Status final {
   const status_internal::Payloads* GetPayloads() const;
   status_internal::Payloads* GetPayloads();
 
-  // Takes ownership of payload.
-  static uintptr_t NewRep(
-      absl::StatusCode code, absl::string_view msg,
-      std::unique_ptr<status_internal::Payloads> payload);
   static bool EqualsSlow(const absl::Status& a, const absl::Status& b);
 
   // MSVC 14.0 limitation requires the const.

@@ -49,12 +49,6 @@ double UnscaledCycleClock::Frequency() {
 
 #elif defined(__x86_64__)
 
-int64_t UnscaledCycleClock::Now() {
-  uint64_t low, high;
-  __asm__ volatile("rdtsc" : "=a"(low), "=d"(high));
-  return (high << 32) | low;
-}
-
 double UnscaledCycleClock::Frequency() {
   return base_internal::NominalCPUFrequency();
 }
