@@ -207,6 +207,9 @@ bool SharedImageBackingRawDraw::CreateBackendTextureAndFlushPaintOps(
   DCHECK(!backend_texture_.isValid());
   DCHECK(!promise_texture_);
 
+  if (context_state_->context_lost())
+    return false;
+
   auto mipmap = usage() & SHARED_IMAGE_USAGE_MIPMAP ? GrMipMapped::kYes
                                                     : GrMipMapped::kNo;
   auto sk_color = viz::ResourceFormatToClosestSkColorType(
@@ -225,6 +228,12 @@ bool SharedImageBackingRawDraw::CreateBackendTextureAndFlushPaintOps(
       context_state_->gr_context(), backend_texture_, surface_origin(),
       final_msaa_count_, sk_color, color_space().ToSkColorSpace(),
       &surface_props_);
+  if (!surface) {
+    DLOG(ERROR) << "SkSurface::MakeFromBackendTexture() failed! SkColorType:"
+                << sk_color;
+    DestroyBackendTexture();
+    return false;
+  }
 
   if (clear_color_)
     surface->getCanvas()->clear(*clear_color_);
