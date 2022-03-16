@@ -82,7 +82,7 @@ public class WarmupManager {
      */
     private class RenderProcessGoneObserver extends WebContentsObserver {
         @Override
-        public void renderProcessGone(boolean wasOomProtected) {
+        public void renderProcessGone() {
             long elapsed = SystemClock.elapsedRealtime() - mWebContentsCreationTimeMs;
             RecordHistogram.recordLongTimesHistogram(
                     "CustomTabs.SpareWebContents.TimeBeforeDeath", elapsed);

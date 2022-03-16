@@ -287,7 +287,7 @@ public class CustomTabsConnectionTest {
                     tabDestroyedHelper.notifyCalled();
                 }
             });
-            WebContentsUtils.simulateRendererKilled(speculationTab.getWebContents(), false);
+            WebContentsUtils.simulateRendererKilled(speculationTab.getWebContents());
         });
         tabDestroyedHelper.waitForCallback("The speculated tab was not destroyed", 0);
     }

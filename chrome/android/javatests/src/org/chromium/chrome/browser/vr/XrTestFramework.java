@@ -609,7 +609,7 @@ public abstract class XrTestFramework {
     public void simulateRendererKilled() {
         final Tab tab = getRule().getActivity().getActivityTab();
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> ChromeTabUtils.simulateRendererKilledForTesting(tab, true));
+                () -> ChromeTabUtils.simulateRendererKilledForTesting(tab));
 
         CriteriaHelper.pollUiThread(
                 () -> SadTab.isShowing(tab), "Renderer killed, but sad tab not shown");

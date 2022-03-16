@@ -805,9 +805,9 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
     }
 
     @VisibleForTesting
-    public void simulateRendererKilledForTesting(boolean wasOomProtected) {
+    public void simulateRendererKilledForTesting() {
         if (mObserverProxy != null) {
-            mObserverProxy.renderProcessGone(wasOomProtected);
+            mObserverProxy.renderProcessGone();
         }
     }
 

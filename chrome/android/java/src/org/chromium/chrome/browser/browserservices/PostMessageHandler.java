@@ -85,7 +85,7 @@ public class PostMessageHandler implements OriginVerificationListener {
             }
 
             @Override
-            public void renderProcessGone(boolean wasOomProtected) {
+            public void renderProcessGone() {
                 disconnectChannel();
             }
 

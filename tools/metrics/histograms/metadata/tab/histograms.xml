@@ -555,45 +555,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tab.RendererCrashStatus" enum="TabRendererCrashStatus"
-    expires_after="M85">
-  <owner>tedchoc@chromium.org</owner>
-  <owner>clank-team@google.com</owner>
-  <summary>
-    [Android] The status of a tab and an application when a renderer crashes.
-    This is recorded only for Android when a renderer crashes.
-  </summary>
-</histogram>
-
-<histogram name="Tab.RendererDetailedExitStatus"
-    enum="ProcessDetailedExitStatus" expires_after="M85">
-  <owner>wnwen@chromium.org</owner>
-  <summary>
-    [Android] Breakdown of renderer exit status for renderers that have strong
-    bindings. An extension of the counts in Tab.RendererExitStatus. Only
-    recorded on Android.
-  </summary>
-</histogram>
-
-<histogram name="Tab.RendererDetailedExitStatusUnbound"
-    enum="ProcessDetailedExitStatus" expires_after="M85">
-  <owner>wnwen@chromium.org</owner>
-  <summary>
-    [Android] Breakdown of renderer exit status for renderers that do not have
-    strong bindings. An extension of the counts in Tab.RendererExitStatus. Only
-    recorded on Android.
-  </summary>
-</histogram>
-
-<histogram name="Tab.RendererExitStatus" enum="TabRendererExitStatus"
-    expires_after="M85">
-  <owner>wnwen@chromium.org</owner>
-  <summary>
-    [Android] The status of a renderer when the browser notices that the process
-    has exited. Only recorded on Android.
-  </summary>
-</histogram>
-
 <histogram name="Tab.RendererTermination.AliveRenderersCount" units="renderers"
     expires_after="M106">
   <owner>ajuma@chromium.org</owner>

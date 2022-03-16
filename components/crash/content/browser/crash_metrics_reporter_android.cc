@@ -37,54 +37,6 @@ void ReportCrashCount(CrashMetricsReporter::ProcessedCrashCounts crash_type,
   counts->insert(crash_type);
 }
 
-void ReportLegacyCrashUma(const ChildExitObserver::TerminationInfo& info,
-                          bool has_valid_dump) {
-  // TODO(wnwen): If these numbers match up to TabWebContentsObserver's
-  //     TabRendererCrashStatus histogram, then remove that one as this is more
-  //     accurate with more detail.
-  if ((info.process_type == content::PROCESS_TYPE_RENDERER ||
-       info.process_type == content::PROCESS_TYPE_GPU) &&
-      info.app_state != base::android::APPLICATION_STATE_UNKNOWN) {
-    CrashMetricsReporter::ExitStatus exit_status;
-    bool is_running = (info.app_state ==
-                       base::android::APPLICATION_STATE_HAS_RUNNING_ACTIVITIES);
-    bool is_paused = (info.app_state ==
-                      base::android::APPLICATION_STATE_HAS_PAUSED_ACTIVITIES);
-    if (!has_valid_dump) {
-      if (is_running) {
-        exit_status = CrashMetricsReporter::EMPTY_MINIDUMP_WHILE_RUNNING;
-      } else if (is_paused) {
-        exit_status = CrashMetricsReporter::EMPTY_MINIDUMP_WHILE_PAUSED;
-      } else {
-        exit_status = CrashMetricsReporter::EMPTY_MINIDUMP_WHILE_BACKGROUND;
-      }
-    } else {
-      if (is_running) {
-        exit_status = CrashMetricsReporter::VALID_MINIDUMP_WHILE_RUNNING;
-      } else if (is_paused) {
-        exit_status = CrashMetricsReporter::VALID_MINIDUMP_WHILE_PAUSED;
-      } else {
-        exit_status = CrashMetricsReporter::VALID_MINIDUMP_WHILE_BACKGROUND;
-      }
-    }
-    if (info.process_type == content::PROCESS_TYPE_RENDERER) {
-      if (info.was_oom_protected_status) {
-        UMA_HISTOGRAM_ENUMERATION(
-            "Tab.RendererDetailedExitStatus", exit_status,
-            CrashMetricsReporter::ExitStatus::MINIDUMP_STATUS_COUNT);
-      } else {
-        UMA_HISTOGRAM_ENUMERATION(
-            "Tab.RendererDetailedExitStatusUnbound", exit_status,
-            CrashMetricsReporter::ExitStatus::MINIDUMP_STATUS_COUNT);
-      }
-    } else if (info.process_type == content::PROCESS_TYPE_GPU) {
-      UMA_HISTOGRAM_ENUMERATION(
-          "GPU.GPUProcessDetailedExitStatus", exit_status,
-          CrashMetricsReporter::ExitStatus::MINIDUMP_STATUS_COUNT);
-    }
-  }
-}
-
 void RecordSystemExitReason(
     base::ProcessHandle pid,
     const CrashMetricsReporter::ReportedCrashTypeSet& reported_counts) {
@@ -305,7 +257,6 @@ void CrashMetricsReporter::ChildProcessExited(
     }
   }
 
-  ReportLegacyCrashUma(info, crashed);
   RecordSystemExitReason(info.pid, reported_counts);
   NotifyObservers(info.process_host_id, reported_counts);
 }

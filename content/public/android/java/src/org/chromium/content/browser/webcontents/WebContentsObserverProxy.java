@@ -111,12 +111,12 @@ class WebContentsObserverProxy extends WebContentsObserver {
 
     @Override
     @CalledByNative
-    public void renderProcessGone(boolean wasOomProtected) {
+    public void renderProcessGone() {
         // Don't call handleObserverCall() and finishObserverCall() to explicitly allow a
         // WebContents to be destroyed while handling an this observer call. See
         // https://chromium-review.googlesource.com/c/chromium/src/+/2343269 for details
         for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
-            mObserversIterator.next().renderProcessGone(wasOomProtected);
+            mObserversIterator.next().renderProcessGone();
         }
     }
 

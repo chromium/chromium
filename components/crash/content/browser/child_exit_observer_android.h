@@ -76,13 +76,6 @@ class ChildExitObserver : public content::BrowserChildProcessObserver,
     bool was_killed_intentionally_by_browser = false;
     int best_effort_reverse_rank = -1;
 
-    // Note this is slightly different |has_oom_protection_bindings|.
-    // This is equivalent to status == TERMINATION_STATUS_NORMAL_TERMINATION,
-    // which historically also checked whether app is in foreground, using
-    // a slightly different implementation than
-    // ApplicationStatusListener::GetState.
-    bool was_oom_protected_status = false;
-
     // Applies to renderer process only. Generally means renderer is hosting
     // one or more visible tabs.
     bool renderer_has_visible_clients = false;

@@ -141,7 +141,7 @@ public class PictureInPictureControllerTest {
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     public void testExitOnCrash() throws Throwable {
-        testExitOn(() -> WebContentsUtils.simulateRendererKilled(getWebContents(), false));
+        testExitOn(() -> WebContentsUtils.simulateRendererKilled(getWebContents()));
     }
 
     /** Tests that PiP is left when a new Tab is created in the foreground. */

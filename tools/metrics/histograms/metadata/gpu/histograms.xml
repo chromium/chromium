@@ -894,14 +894,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.GPUProcessDetailedExitStatus"
-    enum="ProcessDetailedExitStatus" expires_after="2020-05-03">
-  <owner>wnwen@chromium.org</owner>
-  <summary>
-    Breakdown of exit status for gpu processes. Only recorded on Android.
-  </summary>
-</histogram>
-
 <histogram name="GPU.GPUProcessExitCode" enum="GPUProcessExitCode"
     expires_after="2022-08-28">
   <owner>zmo@chromium.org</owner>

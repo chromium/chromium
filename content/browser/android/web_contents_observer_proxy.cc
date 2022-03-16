@@ -88,10 +88,7 @@ void WebContentsObserverProxy::RenderFrameDeleted(
 void WebContentsObserverProxy::PrimaryMainFrameRenderProcessGone(
     base::TerminationStatus termination_status) {
   JNIEnv* env = AttachCurrentThread();
-  jboolean was_oom_protected =
-      termination_status == base::TERMINATION_STATUS_OOM_PROTECTED;
-  Java_WebContentsObserverProxy_renderProcessGone(env, java_observer_,
-                                                  was_oom_protected);
+  Java_WebContentsObserverProxy_renderProcessGone(env, java_observer_);
 }
 
 void WebContentsObserverProxy::DidStartLoading() {

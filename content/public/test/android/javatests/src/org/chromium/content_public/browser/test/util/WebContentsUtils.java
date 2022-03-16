@@ -56,12 +56,10 @@ public class WebContentsUtils {
      * Issues a fake notification about the renderer being killed.
      *
      * @param webContents The WebContents in use.
-     * @param wasOomProtected True if the renderer was protected from the OS out-of-memory killer
-     *                        (e.g. renderer for the currently selected tab)
      */
-    public static void simulateRendererKilled(WebContents webContents, boolean wasOomProtected) {
-        TestThreadUtils.runOnUiThreadBlocking(() ->
-            ((WebContentsImpl) webContents).simulateRendererKilledForTesting(wasOomProtected));
+    public static void simulateRendererKilled(WebContents webContents) {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> ((WebContentsImpl) webContents).simulateRendererKilledForTesting());
     }
 
     /**
@@ -142,7 +140,7 @@ public class WebContentsUtils {
         CallbackHelper callbackHelper = new CallbackHelper();
         WebContentsObserver observer = new WebContentsObserver() {
             @Override
-            public void renderProcessGone(boolean wasOoomProtected) {
+            public void renderProcessGone() {
                 callbackHelper.notifyCalled();
             }
         };

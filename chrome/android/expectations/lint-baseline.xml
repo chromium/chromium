@@ -7945,17 +7945,6 @@
 
     <issue
         id="WrongConstant"
-        message="Must be one of: TabRendererExitStatus.OOM_PROTECTED_IN_RUNNING_APP, TabRendererExitStatus.OOM_PROTECTED_IN_PAUSED_APP, TabRendererExitStatus.OOM_PROTECTED_IN_BACKGROUND_APP, TabRendererExitStatus.NOT_PROTECTED_IN_RUNNING_APP, TabRendererExitStatus.NOT_PROTECTED_IN_PAUSED_APP, TabRendererExitStatus.NOT_PROTECTED_IN_BACKGROUND_APP"
-        errorLine1="                    TabRendererExitStatus.NUM_ENTRIES);"
-        errorLine2="                                          ~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/tab/TabWebContentsObserver.java"
-            line="202"
-            column="43"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
         message="Must be one of: BringToFrontSource.ACTIVATE_TAB, BringToFrontSource.NOTIFICATION, BringToFrontSource.SEARCH_ACTIVITY"
         errorLine1="            return IntentHandler.BringToFrontSource.INVALID;"
         errorLine2="                                                    ~~~~~~~">

@@ -834,13 +834,11 @@ public class ChromeTabUtils {
      * Issues a fake notification about the renderer being killed.
      *
      * @param tab {@link Tab} instance where the target renderer resides.
-     * @param wasOomProtected True if the renderer was protected from the OS out-of-memory killer
-     *                        (e.g. renderer for the currently selected tab)
      */
-    public static void simulateRendererKilledForTesting(Tab tab, boolean wasOomProtected) {
+    public static void simulateRendererKilledForTesting(Tab tab) {
         TabWebContentsObserver observer = TabWebContentsObserver.get(tab);
         if (observer != null) {
-            observer.simulateRendererKilledForTesting(wasOomProtected);
+            observer.simulateRendererKilledForTesting();
         }
     }
 

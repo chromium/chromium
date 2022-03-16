@@ -89,8 +89,7 @@ public class PictureInPictureActivityTest {
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     public void testExitOnCrash() throws Throwable {
         PictureInPictureActivity activity = startPictureInPictureActivity();
-        testExitOn(
-                activity, () -> WebContentsUtils.simulateRendererKilled(getWebContents(), false));
+        testExitOn(activity, () -> WebContentsUtils.simulateRendererKilled(getWebContents()));
     }
 
     private WebContents getWebContents() {

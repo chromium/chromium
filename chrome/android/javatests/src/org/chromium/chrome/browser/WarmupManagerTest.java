@@ -190,7 +190,7 @@ public class WarmupManagerTest {
     @UiThreadTest
     public void testClearsDeadWebContents() {
         mWarmupManager.createSpareWebContents(!WarmupManager.FOR_CCT);
-        WebContentsUtils.simulateRendererKilled(mWarmupManager.mSpareWebContents, false);
+        WebContentsUtils.simulateRendererKilled(mWarmupManager.mSpareWebContents);
         Assert.assertNull(
                 mWarmupManager.takeSpareWebContents(false, false, !WarmupManager.FOR_CCT));
     }
@@ -222,7 +222,7 @@ public class WarmupManagerTest {
         mWarmupManager.createSpareWebContents(WarmupManager.FOR_CCT);
         Assert.assertEquals(2, createdDelta.getDelta());
         Assert.assertNotNull(mWarmupManager.mSpareWebContents);
-        WebContentsUtils.simulateRendererKilled(mWarmupManager.mSpareWebContents, false);
+        WebContentsUtils.simulateRendererKilled(mWarmupManager.mSpareWebContents);
         Assert.assertEquals(1, killedDelta.getDelta());
         Assert.assertNull(mWarmupManager.takeSpareWebContents(false, false, WarmupManager.FOR_CCT));
 

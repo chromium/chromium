@@ -44,7 +44,7 @@ public abstract class WebContentsObserver {
      */
     public void renderFrameDeleted(GlobalRenderFrameHostId id) {}
 
-    public void renderProcessGone(boolean wasOomProtected) {}
+    public void renderProcessGone() {}
 
     /**
      * Called when the browser process starts a navigation.

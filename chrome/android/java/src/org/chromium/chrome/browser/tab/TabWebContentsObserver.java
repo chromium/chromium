@@ -7,11 +7,9 @@ package org.chromium.chrome.browser.tab;
 import android.app.Activity;
 import android.os.Handler;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ActivityState;
-import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
@@ -37,9 +35,6 @@ import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.net.NetError;
 import org.chromium.url.GURL;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
 /**
  * WebContentsObserver used by Tab.
  */
@@ -51,31 +46,6 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
 
     /** Used for logging. */
     private static final String TAG = "TabWebContentsObs";
-
-    // TabRendererCrashStatus defined in tools/metrics/histograms/histograms.xml.
-    private static final int TAB_RENDERER_CRASH_STATUS_SHOWN_IN_FOREGROUND_APP = 0;
-    private static final int TAB_RENDERER_CRASH_STATUS_HIDDEN_IN_FOREGROUND_APP = 1;
-    private static final int TAB_RENDERER_CRASH_STATUS_HIDDEN_IN_BACKGROUND_APP = 2;
-    private static final int TAB_RENDERER_CRASH_STATUS_MAX = 3;
-
-    // TabRendererExitStatus defined in tools/metrics/histograms/histograms.xml.
-    // Designed to replace TabRendererCrashStatus if numbers line up.
-    @IntDef({TabRendererExitStatus.OOM_PROTECTED_IN_RUNNING_APP,
-            TabRendererExitStatus.OOM_PROTECTED_IN_PAUSED_APP,
-            TabRendererExitStatus.OOM_PROTECTED_IN_BACKGROUND_APP,
-            TabRendererExitStatus.NOT_PROTECTED_IN_RUNNING_APP,
-            TabRendererExitStatus.NOT_PROTECTED_IN_PAUSED_APP,
-            TabRendererExitStatus.NOT_PROTECTED_IN_BACKGROUND_APP})
-    @Retention(RetentionPolicy.SOURCE)
-    private @interface TabRendererExitStatus {
-        int OOM_PROTECTED_IN_RUNNING_APP = 0;
-        int OOM_PROTECTED_IN_PAUSED_APP = 1;
-        int OOM_PROTECTED_IN_BACKGROUND_APP = 2;
-        int NOT_PROTECTED_IN_RUNNING_APP = 3;
-        int NOT_PROTECTED_IN_PAUSED_APP = 4;
-        int NOT_PROTECTED_IN_BACKGROUND_APP = 5;
-        int NUM_ENTRIES = 6;
-    }
 
     private final TabImpl mTab;
     private final ObserverList<Callback<WebContents>> mInitObservers = new ObserverList<>();
@@ -151,8 +121,8 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
     }
 
     @VisibleForTesting
-    public void simulateRendererKilledForTesting(boolean wasOomProtected) {
-        if (mObserver != null) mObserver.renderProcessGone(wasOomProtected);
+    public void simulateRendererKilledForTesting() {
+        if (mObserver != null) mObserver.renderProcessGone();
     }
 
     private class Observer extends WebContentsObserver {
@@ -161,10 +131,9 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
         }
 
         @Override
-        public void renderProcessGone(boolean processWasOomProtected) {
+        public void renderProcessGone() {
             Log.i(TAG,
                     "renderProcessGone() for tab id: " + mTab.getId()
-                            + ", oom protected: " + Boolean.toString(processWasOomProtected)
                             + ", already needs reload: " + Boolean.toString(mTab.needsReload()));
             // Do nothing for subsequent calls that happen while the tab remains crashed. This
             // can occur when the tab is in the background and it shares the renderer with other
@@ -175,47 +144,14 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
             // potential background tabs that did not reload yet).
             if (mTab.needsReload() || SadTab.isShowing(mTab)) return;
 
-            // This will replace TabRendererCrashStatus if numbers line up.
-            int appState = ApplicationStatus.getStateForApplication();
-            boolean applicationRunning = (appState == ApplicationState.HAS_RUNNING_ACTIVITIES);
-            boolean applicationPaused = (appState == ApplicationState.HAS_PAUSED_ACTIVITIES);
-            @TabRendererExitStatus
-            int rendererExitStatus;
-            if (processWasOomProtected) {
-                if (applicationRunning) {
-                    rendererExitStatus = TabRendererExitStatus.OOM_PROTECTED_IN_RUNNING_APP;
-                } else if (applicationPaused) {
-                    rendererExitStatus = TabRendererExitStatus.OOM_PROTECTED_IN_PAUSED_APP;
-                } else {
-                    rendererExitStatus = TabRendererExitStatus.OOM_PROTECTED_IN_BACKGROUND_APP;
-                }
-            } else {
-                if (applicationRunning) {
-                    rendererExitStatus = TabRendererExitStatus.NOT_PROTECTED_IN_RUNNING_APP;
-                } else if (applicationPaused) {
-                    rendererExitStatus = TabRendererExitStatus.NOT_PROTECTED_IN_PAUSED_APP;
-                } else {
-                    rendererExitStatus = TabRendererExitStatus.NOT_PROTECTED_IN_BACKGROUND_APP;
-                }
-            }
-            RecordHistogram.recordEnumeratedHistogram("Tab.RendererExitStatus", rendererExitStatus,
-                    TabRendererExitStatus.NUM_ENTRIES);
-
             int activityState = ApplicationStatus.getStateForActivity(
                     mTab.getWindowAndroid().getActivity().get());
-            int rendererCrashStatus = TAB_RENDERER_CRASH_STATUS_MAX;
             if (mTab.isHidden() || activityState == ActivityState.PAUSED
                     || activityState == ActivityState.STOPPED
                     || activityState == ActivityState.DESTROYED) {
                 // The tab crashed in background or was killed by the OS out-of-memory killer.
                 mTab.setNeedsReload();
-                if (applicationRunning) {
-                    rendererCrashStatus = TAB_RENDERER_CRASH_STATUS_HIDDEN_IN_FOREGROUND_APP;
-                } else {
-                    rendererCrashStatus = TAB_RENDERER_CRASH_STATUS_HIDDEN_IN_BACKGROUND_APP;
-                }
             } else {
-                rendererCrashStatus = TAB_RENDERER_CRASH_STATUS_SHOWN_IN_FOREGROUND_APP;
                 // TODO(crbug.com/1074078): Remove the Handler and call SadTab directly when
                 // WebContentsObserverProxy observers' iterator concurrency issue is fixed.
                 // Showing the SadTab will cause the content view hosting WebContents to lose focus.
@@ -247,8 +183,6 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
                 // This is necessary to correlate histogram data with stability counts.
                 RecordHistogram.recordBooleanHistogram("Stability.Android.RendererCrash", true);
             }
-            RecordHistogram.recordEnumeratedHistogram(
-                    "Tab.RendererCrashStatus", rendererCrashStatus, TAB_RENDERER_CRASH_STATUS_MAX);
 
             mTab.handleTabCrash();
         }

@@ -33,8 +33,6 @@ void PopulateTerminationInfo(
   info->was_killed_intentionally_by_browser =
       content_info.was_killed_intentionally_by_browser;
   info->best_effort_reverse_rank = content_info.best_effort_reverse_rank;
-  info->was_oom_protected_status =
-      content_info.status == base::TERMINATION_STATUS_OOM_PROTECTED;
   info->renderer_has_visible_clients =
       content_info.renderer_has_visible_clients;
   info->renderer_was_subframe = content_info.renderer_was_subframe;

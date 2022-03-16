@@ -113,7 +113,7 @@ public class TabTest {
         // Stop the activity and simulate a killed renderer.
         ChromeApplicationTestUtils.fireHomeScreenIntent(InstrumentationRegistry.getTargetContext());
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> ChromeTabUtils.simulateRendererKilledForTesting(mTab, false));
+                () -> ChromeTabUtils.simulateRendererKilledForTesting(mTab));
 
         CriteriaHelper.pollUiThread(mTab::isHidden);
         Assert.assertTrue(mTab.needsReload());

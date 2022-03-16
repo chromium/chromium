@@ -599,7 +599,7 @@ public class StartSurfaceLayoutTest {
             Tab targetTab =
                     mActivityTestRule.getActivity().getCurrentTabModel().getTabAt(targetIndex);
             if (killBeforeSwitching) {
-                WebContentsUtils.simulateRendererKilled(targetTab.getWebContents(), false);
+                WebContentsUtils.simulateRendererKilled(targetTab.getWebContents());
             }
 
             if (switchToAnotherTab) {

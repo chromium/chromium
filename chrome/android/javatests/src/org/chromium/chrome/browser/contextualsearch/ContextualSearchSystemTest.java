@@ -194,7 +194,7 @@ public class ContextualSearchSystemTest extends ContextualSearchInstrumentationB
 
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
             ChromeTabUtils.simulateRendererKilledForTesting(
-                    sActivityTestRule.getActivity().getActivityTab(), true);
+                    sActivityTestRule.getActivity().getActivityTab());
         });
 
         // Give the panelState time to change
@@ -229,7 +229,7 @@ public class ContextualSearchSystemTest extends ContextualSearchInstrumentationB
         waitForPanelToPeek();
 
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
-                () -> { ChromeTabUtils.simulateRendererKilledForTesting(tab2, false); });
+                () -> { ChromeTabUtils.simulateRendererKilledForTesting(tab2); });
 
         waitForPanelToPeek();
     }
