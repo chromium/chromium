@@ -807,7 +807,7 @@ ScriptPromise PaymentRequest::show(ScriptState* script_state,
   bool has_transient_user_activation =
       LocalFrame::HasTransientUserActivation(local_frame);
   bool payment_request_token_active =
-      DomWindow()->IsPaymentRequestTokenActive();
+      local_frame->IsPaymentRequestTokenActive();
 
   if (!has_transient_user_activation) {
     Deprecation::CountDeprecation(
@@ -824,7 +824,7 @@ ScriptPromise PaymentRequest::show(ScriptState* script_state,
   if (RuntimeEnabledFeatures::CapabilityDelegationPaymentRequestEnabled(
           GetExecutionContext())) {
     payment_request_allowed |= payment_request_token_active;
-    DomWindow()->ConsumePaymentRequestToken();
+    local_frame->ConsumePaymentRequestToken();
   }
   if (RuntimeEnabledFeatures::PaymentRequestRequiresUserActivationEnabled(
           GetExecutionContext())) {

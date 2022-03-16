@@ -31,7 +31,6 @@
 
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "third_party/blink/public/common/frame/payment_request_token.h"
 #include "third_party/blink/public/common/metrics/post_message_counter.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
@@ -453,12 +452,6 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
 
   void DidReceiveUserActivation();
 
-  // Returns the state of the |PaymentRequestToken| in this document.
-  bool IsPaymentRequestTokenActive() const;
-
-  // Consumes the |PaymentRequestToken| if it was active in this document .
-  bool ConsumePaymentRequestToken();
-
   // Called when a network request buffered an additional `num_bytes` while this
   // frame is in back-forward cache.
   void DidBufferLoadWhileInBackForwardCache(size_t num_bytes);
@@ -537,10 +530,6 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
 
   HeapHashSet<WeakMember<EventListenerObserver>> event_listener_observers_;
   HeapHashSet<WeakMember<UserActivationObserver>> user_activation_observers_;
-
-  // Tracker for delegated PaymentRequest.  This is related to
-  // |Frame::user_activation_state_|.
-  PaymentRequestToken payment_request_token_;
 
   // https://dom.spec.whatwg.org/#window-current-event
   // We represent the "undefined" value as nullptr.

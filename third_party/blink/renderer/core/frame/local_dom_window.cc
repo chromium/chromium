@@ -1164,13 +1164,6 @@ void LocalDOMWindow::DispatchMessageEventWithOriginCheck(
     UMA_HISTOGRAM_ENUMERATION("BackForwardCache.SameSite.ActionAfterPagehide2",
                               ActionAfterPagehide::kReceivedPostMessage);
   }
-
-  if (RuntimeEnabledFeatures::CapabilityDelegationPaymentRequestEnabled(this) &&
-      event->delegatePaymentRequest()) {
-    UseCounter::Count(this, WebFeature::kCapabilityDelegationOfPaymentRequest);
-    payment_request_token_.Activate();
-  }
-
   DispatchEvent(*event);
 }
 
@@ -2244,14 +2237,6 @@ void LocalDOMWindow::DidReceiveUserActivation() {
   for (auto& it : user_activation_observers_) {
     it->DidReceiveUserActivation();
   }
-}
-
-bool LocalDOMWindow::IsPaymentRequestTokenActive() const {
-  return payment_request_token_.IsActive();
-}
-
-bool LocalDOMWindow::ConsumePaymentRequestToken() {
-  return payment_request_token_.ConsumeIfActive();
 }
 
 void LocalDOMWindow::SetIsInBackForwardCache(bool is_in_back_forward_cache) {
