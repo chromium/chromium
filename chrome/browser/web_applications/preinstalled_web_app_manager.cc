@@ -88,6 +88,29 @@ const base::FilePath* g_config_dir_for_testing = nullptr;
 const std::vector<base::Value>* g_configs_for_testing = nullptr;
 FileUtilsWrapper* g_file_utils_for_testing = nullptr;
 
+const char kHistogramMigrationDisabledReason[] =
+    "WebApp.Preinstalled.DisabledReason";
+
+// These values are reported to UMA, do not modify them.
+enum class DisabledReason {
+  kNotDisabled = 0,
+  kPreinstalledAppsNotEnabled = 1,
+  kUserTypeNotAllowed = 2,
+  kGatedFeatureNotEnabled = 3,
+  kGatedFeatureNotEnabledAndAppNotInstalled = 4,
+  kArcAvailable = 5,
+  kTabletFormFactor = 6,
+  kNotNewUserAndNotPreviouslyInstalled = 7,
+  kNotPreviouslyPreinstalled = 8,
+  kReplacingAppBlockedByPolicy = 9,
+  kReplacingAppForceInstalled = 10,
+  kReplacingAppStillInstalled = 11,
+  kDefaultAppAndAppsToReplaceUninstalled = 12,
+  kReplacingAppUninstalledByUser = 13,
+  kStylusRequired = 14,
+  kMaxValue = kStylusRequired
+};
+
 struct LoadedConfig {
   base::Value contents;
   base::FilePath file;
@@ -172,6 +195,8 @@ absl::optional<std::string> GetDisableReason(
   DCHECK(registrar);
 
   if (!preinstalled_apps_enabled_in_prefs) {
+    base::UmaHistogramEnumeration(kHistogramMigrationDisabledReason,
+                                  DisabledReason::kPreinstalledAppsNotEnabled);
     return options.install_url.spec() +
            " disabled by preinstalled_apps pref setting.";
   }
@@ -179,12 +204,16 @@ absl::optional<std::string> GetDisableReason(
   // Remove if not applicable to current user type.
   DCHECK_GT(options.user_type_allowlist.size(), 0u);
   if (!base::Contains(options.user_type_allowlist, user_type)) {
+    base::UmaHistogramEnumeration(kHistogramMigrationDisabledReason,
+                                  DisabledReason::kUserTypeNotAllowed);
     return options.install_url.spec() + " disabled for user type: " + user_type;
   }
 
   // Remove if gated on a disabled feature.
   if (options.gate_on_feature && !IsPreinstalledAppInstallFeatureEnabled(
                                      *options.gate_on_feature, *profile)) {
+    base::UmaHistogramEnumeration(kHistogramMigrationDisabledReason,
+                                  DisabledReason::kGatedFeatureNotEnabled);
     return options.install_url.spec() +
            " disabled because feature is disabled: " + *options.gate_on_feature;
   }
@@ -198,6 +227,9 @@ absl::optional<std::string> GetDisableReason(
         ExternallyInstalledWebAppPrefs(profile->GetPrefs())
             .LookupAppId(options.install_url);
     if (!app_id.has_value()) {
+      base::UmaHistogramEnumeration(
+          kHistogramMigrationDisabledReason,
+          DisabledReason::kGatedFeatureNotEnabledAndAppNotInstalled);
       return options.install_url.spec() + " disabled because the feature " +
              *options.gate_on_feature_or_installed +
              " is disabled and the app is not already installed";
@@ -207,12 +239,16 @@ absl::optional<std::string> GetDisableReason(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Remove if ARC is supported and app should be disabled.
   if (options.disable_if_arc_supported && arc::IsArcAvailable()) {
+    base::UmaHistogramEnumeration(kHistogramMigrationDisabledReason,
+                                  DisabledReason::kArcAvailable);
     return options.install_url.spec() + " disabled because ARC is available.";
   }
 
   // Remove if device is tablet and app should be disabled.
   if (options.disable_if_tablet_form_factor &&
       ash::switches::IsTabletFormFactor()) {
+    base::UmaHistogramEnumeration(kHistogramMigrationDisabledReason,
+                                  DisabledReason::kTabletFormFactor);
     return options.install_url.spec() + " disabled because device is tablet.";
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -225,6 +261,9 @@ absl::optional<std::string> GetDisableReason(
             .LookupAppId(options.install_url)
             .has_value();
     if (!was_previously_installed) {
+      base::UmaHistogramEnumeration(
+          kHistogramMigrationDisabledReason,
+          DisabledReason::kNotNewUserAndNotPreviouslyInstalled);
       return options.install_url.spec() +
              " disabled because user was not new when config was added.";
     }
@@ -244,6 +283,8 @@ absl::optional<std::string> GetDisableReason(
     }
 
     if (!was_previously_preinstalled) {
+      base::UmaHistogramEnumeration(kHistogramMigrationDisabledReason,
+                                    DisabledReason::kNotPreviouslyPreinstalled);
       return options.install_url.spec() +
              " disabled because was not previously preinstalled.";
     }
@@ -253,12 +294,18 @@ absl::optional<std::string> GetDisableReason(
   // policy.
   for (const AppId& app_id : options.uninstall_and_replace) {
     if (extensions::IsExtensionBlockedByPolicy(profile, app_id)) {
+      base::UmaHistogramEnumeration(
+          kHistogramMigrationDisabledReason,
+          DisabledReason::kReplacingAppBlockedByPolicy);
       return options.install_url.spec() +
              " disabled due to admin policy blocking replacement "
              "Extension.";
     }
     std::u16string reason;
     if (extensions::IsExtensionForceInstalled(profile, app_id, &reason)) {
+      base::UmaHistogramEnumeration(
+          kHistogramMigrationDisabledReason,
+          DisabledReason::kReplacingAppForceInstalled);
       return options.install_url.spec() +
              " disabled due to admin policy force installing replacement "
              "Extension: " +
@@ -269,6 +316,9 @@ absl::optional<std::string> GetDisableReason(
   // Keep if any apps to replace are installed.
   for (const AppId& app_id : options.uninstall_and_replace) {
     if (extensions::IsExtensionInstalled(profile, app_id)) {
+      base::UmaHistogramEnumeration(
+          kHistogramMigrationDisabledReason,
+          DisabledReason::kReplacingAppStillInstalled);
       return absl::nullopt;
     }
   }
@@ -285,6 +335,9 @@ absl::optional<std::string> GetDisableReason(
       if (!WasMigrationRun(profile, *options.gate_on_feature)) {
         if (extensions::IsPreinstalledAppId(app_id)) {
           MarkPreinstalledAppAsUninstalled(profile, app_id);
+          base::UmaHistogramEnumeration(
+              kHistogramMigrationDisabledReason,
+              DisabledReason::kDefaultAppAndAppsToReplaceUninstalled);
           return options.install_url.spec() +
                  "disabled because it's default app and apps to replace were "
                  "uninstalled.";
@@ -294,6 +347,9 @@ absl::optional<std::string> GetDisableReason(
         // uninstalled by user as the migration is already run, use the pref
         // saved in first migration.
         if (WasPreinstalledAppUninstalled(profile, app_id)) {
+          base::UmaHistogramEnumeration(
+              kHistogramMigrationDisabledReason,
+              DisabledReason::kDefaultAppAndAppsToReplaceUninstalled);
           return options.install_url.spec() +
                  "disabled because it's default app and apps to replace were "
                  "uninstalled.";
@@ -306,6 +362,9 @@ absl::optional<std::string> GetDisableReason(
   // Remove if any apps to replace were previously uninstalled.
   for (const AppId& app_id : options.uninstall_and_replace) {
     if (extensions::IsExternalExtensionUninstalled(profile, app_id)) {
+      base::UmaHistogramEnumeration(
+          kHistogramMigrationDisabledReason,
+          DisabledReason::kReplacingAppUninstalledByUser);
       return options.install_url.spec() +
              " disabled because apps to replace were uninstalled.";
     }
@@ -324,11 +383,15 @@ absl::optional<std::string> GetDisableReason(
       }
     }
     if (!have_touchscreen_with_stylus) {
+      base::UmaHistogramEnumeration(kHistogramMigrationDisabledReason,
+                                    DisabledReason::kStylusRequired);
       return options.install_url.spec() +
              " disabled because the device does not have a built-in "
              "touchscreen with stylus support.";
     }
   }
+  base::UmaHistogramEnumeration(kHistogramMigrationDisabledReason,
+                                DisabledReason::kNotDisabled);
 
   return absl::nullopt;
 }
