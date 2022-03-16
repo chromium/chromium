@@ -11,7 +11,6 @@ import plistlib
 import shutil
 import stat
 import subprocess
-import sys
 import tempfile
 
 from . import logger
@@ -128,18 +127,8 @@ def macos_version():
 
 def read_plist(path):
     """Loads Plist at |path| and returns it as a dictionary."""
-    if sys.version_info.major == 2:
-        fd, name = tempfile.mkstemp()
-        try:
-            subprocess.check_call(
-                ['plutil', '-convert', 'xml1', '-o', name, path])
-            with os.fdopen(fd, 'rb') as f:
-                return plistlib.readPlist(f)
-        finally:
-            os.unlink(name)
-    else:
-        with open(path, 'rb') as f:
-            return plistlib.load(f)
+    with open(path, 'rb') as f:
+        return plistlib.load(f)
 
 
 def write_plist(data, path, format):
@@ -150,22 +139,12 @@ def write_plist(data, path, format):
     # it does exist.
     if os.path.exists(path):
         os.unlink(path)
-    if sys.version_info.major == 2:
-        fd, name = tempfile.mkstemp()
-        try:
-            with os.fdopen(fd, 'wb') as f:
-                plistlib.writePlist(data, f)
-            subprocess.check_call(
-                ['plutil', '-convert', format, '-o', path, name])
-        finally:
-            os.unlink(name)
-    else:
-        with open(path, 'wb') as f:
-            plist_format = {
-                'binary1': plistlib.FMT_BINARY,
-                'xml1': plistlib.FMT_XML
-            }
-            plistlib.dump(data, f, fmt=plist_format[format])
+    with open(path, 'wb') as f:
+        plist_format = {
+            'binary1': plistlib.FMT_BINARY,
+            'xml1': plistlib.FMT_XML
+        }
+        plistlib.dump(data, f, fmt=plist_format[format])
 
 
 class PlistContext(object):
