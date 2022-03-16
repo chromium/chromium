@@ -176,12 +176,19 @@
 // Fetches the current tab's URL, configures activities and items, and shows
 // an activity view.
 - (void)shareCurrentPage {
+  web::WebState* currentWebState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+
+  // In some cases it seems that the share sheet is triggered while no tab is
+  // present (probably due to a timing issue).
+  if (!currentWebState)
+    return;
+
   // Retrieve the current page's URL.
   __weak __typeof(self) weakSelf = self;
-  activity_services::RetrieveCanonicalUrl(
-      self.browser->GetWebStateList()->GetActiveWebState(), ^(const GURL& url) {
-        [weakSelf sharePageWithCanonicalURL:url];
-      });
+  activity_services::RetrieveCanonicalUrl(currentWebState, ^(const GURL& url) {
+    [weakSelf sharePageWithCanonicalURL:url];
+  });
 }
 
 // Shares the current page using its |canonicalURL|.
