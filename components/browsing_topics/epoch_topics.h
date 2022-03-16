@@ -8,6 +8,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/browsing_topics/topic_and_domains.h"
+#include "components/browsing_topics/util.h"
 #include "url/origin.h"
 
 namespace browsing_topics {
@@ -44,10 +45,9 @@ class EpochTopics {
   // or when the candidate topic is filtered due to the context has not observed
   // the topic before. The `hmac_key` is the one used to hash the domains inside
   // `top_topics_and_observing_domains_` and `hashed_context_domain`.
-  absl::optional<Topic> TopicForSite(
-      const std::string& top_domain,
-      const HashedDomain& hashed_context_domain,
-      base::span<const uint8_t, 32> hmac_key) const;
+  absl::optional<Topic> TopicForSite(const std::string& top_domain,
+                                     const HashedDomain& hashed_context_domain,
+                                     ReadOnlyHmacKey hmac_key) const;
 
   bool HasValidTopics() const {
     return !top_topics_and_observing_domains_.empty();

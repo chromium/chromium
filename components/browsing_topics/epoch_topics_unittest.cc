@@ -14,7 +14,7 @@ namespace {
 
 const base::Time kCalculationTime =
     base::Time::FromDeltaSinceWindowsEpoch(base::Days(1));
-const std::array<uint8_t, 32> kTestKey = {1};
+const browsing_topics::HmacKey kTestKey = {1};
 const size_t kTaxonomySize = 349;
 const int kTaxonomyVersion = 1;
 const int kModelVersion = 2;

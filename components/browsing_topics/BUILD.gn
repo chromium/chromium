@@ -7,6 +7,8 @@ source_set("browsing_topics") {
     "browsing_topics_service.h",
     "browsing_topics_service_impl.cc",
     "browsing_topics_service_impl.h",
+    "browsing_topics_state.cc",
+    "browsing_topics_state.h",
     "epoch_topics.cc",
     "epoch_topics.h",
     "topic_and_domains.cc",
@@ -28,6 +30,7 @@ source_set("browsing_topics") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "browsing_topics_state_unittest.cc",
     "epoch_topics_unittest.cc",
     "topic_and_domains_unittest.cc",
     "util_unittest.cc",
@@ -39,5 +42,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/prefs:test_support",
     "//testing/gtest",
+    "//third_party/blink/public/common",
   ]
 }

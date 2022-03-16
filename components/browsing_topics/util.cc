@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/lazy_instance.h"
 #include "base/rand_util.h"
 #include "crypto/hmac.h"
 #include "crypto/sha2.h"
@@ -29,7 +30,7 @@ const char kEpochSwitchTimeDecisionPrefix[] =
 const char kContextDomainStoragePrefix[] = "TopicsV1_ContextDomainStorage|";
 const char kTopHostStoragePrefix[] = "TopicsV1_TopHostStorage|";
 
-uint64_t HmacHash(base::span<const uint8_t, 32> hmac_key,
+uint64_t HmacHash(ReadOnlyHmacKey hmac_key,
                   const std::string& use_case_prefix,
                   const std::string& data) {
   crypto::HMAC hmac(crypto::HMAC::SHA256);
@@ -42,17 +43,23 @@ uint64_t HmacHash(base::span<const uint8_t, 32> hmac_key,
   return result;
 }
 
+base::LazyInstance<browsing_topics::HmacKey>::Leaky
+    g_hmac_key_override_for_testing;
+
 }  // namespace
 
-std::array<uint8_t, 32> GenerateRandomHmacKey() {
-  std::array<uint8_t, 32> result = {};
+HmacKey GenerateRandomHmacKey() {
+  if (g_hmac_key_override_for_testing.IsCreated())
+    return g_hmac_key_override_for_testing.Get();
+
+  HmacKey result = {};
   base::RandBytes(result.data(), result.size());
 
   return result;
 }
 
 uint64_t HashTopDomainForRandomOrTopTopicDecision(
-    base::span<const uint8_t, 32> hmac_key,
+    ReadOnlyHmacKey hmac_key,
     base::Time epoch_calculation_time,
     const std::string& top_domain) {
   int64_t time_microseconds =
@@ -66,7 +73,7 @@ uint64_t HashTopDomainForRandomOrTopTopicDecision(
 }
 
 uint64_t HashTopDomainForRandomTopicIndexDecision(
-    base::span<const uint8_t, 32> hmac_key,
+    ReadOnlyHmacKey hmac_key,
     base::Time epoch_calculation_time,
     const std::string& top_domain) {
   int64_t time_microseconds =
@@ -80,7 +87,7 @@ uint64_t HashTopDomainForRandomTopicIndexDecision(
 }
 
 uint64_t HashTopDomainForTopTopicIndexDecision(
-    base::span<const uint8_t, 32> hmac_key,
+    ReadOnlyHmacKey hmac_key,
     base::Time epoch_calculation_time,
     const std::string& top_domain) {
   int64_t time_microseconds =
@@ -94,12 +101,12 @@ uint64_t HashTopDomainForTopTopicIndexDecision(
 }
 
 uint64_t HashTopDomainForEpochSwitchTimeDecision(
-    base::span<const uint8_t, 32> hmac_key,
+    ReadOnlyHmacKey hmac_key,
     const std::string& top_domain) {
   return HmacHash(hmac_key, kEpochSwitchTimeDecisionPrefix, top_domain);
 }
 
-HashedDomain HashContextDomainForStorage(base::span<const uint8_t, 32> hmac_key,
+HashedDomain HashContextDomainForStorage(ReadOnlyHmacKey hmac_key,
                                          const std::string& context_domain) {
   return HashedDomain(
       HmacHash(hmac_key, kContextDomainStoragePrefix, context_domain));
@@ -110,6 +117,11 @@ HashedHost HashTopHostForStorage(const std::string& top_host) {
   crypto::SHA256HashString(kTopHostStoragePrefix + top_host, &result,
                            sizeof(result));
   return HashedHost(result);
+}
+
+void OverrideHmacKeyForTesting(ReadOnlyHmacKey hmac_key) {
+  std::copy(hmac_key.begin(), hmac_key.end(),
+            g_hmac_key_override_for_testing.Get().begin());
 }
 
 }  // namespace browsing_topics

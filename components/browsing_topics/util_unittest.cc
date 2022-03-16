@@ -88,7 +88,7 @@ TEST_F(BrowsingTopicsUtilTest,
   base::Time epoch_calculation_time = base::Time::Now();
 
   CheckUniformRandom(base::BindLambdaForTesting([&]() {
-    std::array<uint8_t, 32> hmac_key = GenerateRandomHmacKey();
+    HmacKey hmac_key = GenerateRandomHmacKey();
 
     return HashTopDomainForRandomOrTopTopicDecision(
         hmac_key, epoch_calculation_time, top_domain);
@@ -97,7 +97,7 @@ TEST_F(BrowsingTopicsUtilTest,
 
 TEST_F(BrowsingTopicsUtilTest,
        HashTopDomainForRandomOrTopTopicDecision_VariableEpochCalculationTime) {
-  std::array<uint8_t, 32> hmac_key = GenerateRandomHmacKey();
+  HmacKey hmac_key = GenerateRandomHmacKey();
   std::string top_domain = GenerateRandomDomainOrHost();
   base::Time epoch_calculation_time = base::Time::Now();
 
@@ -111,7 +111,7 @@ TEST_F(BrowsingTopicsUtilTest,
 
 TEST_F(BrowsingTopicsUtilTest,
        HashTopDomainForRandomOrTopTopicDecision_VariableTopDomain) {
-  std::array<uint8_t, 32> hmac_key = GenerateRandomHmacKey();
+  HmacKey hmac_key = GenerateRandomHmacKey();
   base::Time epoch_calculation_time = base::Time::Now();
 
   CheckUniformRandom(base::BindLambdaForTesting([&]() {
@@ -128,7 +128,7 @@ TEST_F(BrowsingTopicsUtilTest,
   base::Time epoch_calculation_time = base::Time::Now();
 
   CheckUniformRandom(base::BindLambdaForTesting([&]() {
-    std::array<uint8_t, 32> hmac_key = GenerateRandomHmacKey();
+    HmacKey hmac_key = GenerateRandomHmacKey();
 
     return HashTopDomainForTopTopicIndexDecision(
         hmac_key, epoch_calculation_time, top_domain);
@@ -137,7 +137,7 @@ TEST_F(BrowsingTopicsUtilTest,
 
 TEST_F(BrowsingTopicsUtilTest,
        HashTopDomainForRandomTopicIndexDecision_VariableEpochCalculationTime) {
-  std::array<uint8_t, 32> hmac_key = GenerateRandomHmacKey();
+  HmacKey hmac_key = GenerateRandomHmacKey();
   std::string top_domain = GenerateRandomDomainOrHost();
   base::Time epoch_calculation_time = base::Time::Now();
 
@@ -151,7 +151,7 @@ TEST_F(BrowsingTopicsUtilTest,
 
 TEST_F(BrowsingTopicsUtilTest,
        HashTopDomainForRandomTopicIndexDecision_VariableTopDomain) {
-  std::array<uint8_t, 32> hmac_key = GenerateRandomHmacKey();
+  HmacKey hmac_key = GenerateRandomHmacKey();
   base::Time epoch_calculation_time = base::Time::Now();
 
   CheckUniformRandom(base::BindLambdaForTesting([&]() {
@@ -168,7 +168,7 @@ TEST_F(BrowsingTopicsUtilTest,
   base::Time epoch_calculation_time = base::Time::Now();
 
   CheckUniformRandom(base::BindLambdaForTesting([&]() {
-    std::array<uint8_t, 32> hmac_key = GenerateRandomHmacKey();
+    HmacKey hmac_key = GenerateRandomHmacKey();
 
     return HashTopDomainForRandomTopicIndexDecision(
         hmac_key, epoch_calculation_time, top_domain);
@@ -177,7 +177,7 @@ TEST_F(BrowsingTopicsUtilTest,
 
 TEST_F(BrowsingTopicsUtilTest,
        HashTopDomainForTopTopicIndexDecision_VariableEpochCalculationTime) {
-  std::array<uint8_t, 32> hmac_key = GenerateRandomHmacKey();
+  HmacKey hmac_key = GenerateRandomHmacKey();
   std::string top_domain = GenerateRandomDomainOrHost();
   base::Time epoch_calculation_time = base::Time::Now();
 
@@ -191,7 +191,7 @@ TEST_F(BrowsingTopicsUtilTest,
 
 TEST_F(BrowsingTopicsUtilTest,
        HashTopDomainForTopTopicIndexDecision_VariableTopDomain) {
-  std::array<uint8_t, 32> hmac_key = GenerateRandomHmacKey();
+  HmacKey hmac_key = GenerateRandomHmacKey();
   base::Time epoch_calculation_time = base::Time::Now();
 
   CheckUniformRandom(base::BindLambdaForTesting([&]() {
@@ -207,7 +207,7 @@ TEST_F(BrowsingTopicsUtilTest,
   std::string top_domain = GenerateRandomDomainOrHost();
 
   CheckUniformRandom(base::BindLambdaForTesting([&]() {
-    std::array<uint8_t, 32> hmac_key = GenerateRandomHmacKey();
+    HmacKey hmac_key = GenerateRandomHmacKey();
 
     return HashTopDomainForEpochSwitchTimeDecision(hmac_key, top_domain);
   }));
@@ -215,7 +215,7 @@ TEST_F(BrowsingTopicsUtilTest,
 
 TEST_F(BrowsingTopicsUtilTest,
        HashTopDomainForEpochSwitchTimeDecision_VariableContextDomain) {
-  std::array<uint8_t, 32> hmac_key = GenerateRandomHmacKey();
+  HmacKey hmac_key = GenerateRandomHmacKey();
 
   CheckUniformRandom(base::BindLambdaForTesting([&]() {
     std::string top_domain = GenerateRandomDomainOrHost();
@@ -228,7 +228,7 @@ TEST_F(BrowsingTopicsUtilTest, HashContextDomainForStorage_VariableHmacKey) {
   std::string context_domain = GenerateRandomDomainOrHost();
 
   CheckUniformRandom(base::BindLambdaForTesting([&]() {
-    std::array<uint8_t, 32> hmac_key = GenerateRandomHmacKey();
+    HmacKey hmac_key = GenerateRandomHmacKey();
 
     return static_cast<uint64_t>(
         HashContextDomainForStorage(hmac_key, context_domain).value());
@@ -237,7 +237,7 @@ TEST_F(BrowsingTopicsUtilTest, HashContextDomainForStorage_VariableHmacKey) {
 
 TEST_F(BrowsingTopicsUtilTest,
        HashContextDomainForStorage_VariableContextDomain) {
-  std::array<uint8_t, 32> hmac_key = GenerateRandomHmacKey();
+  HmacKey hmac_key = GenerateRandomHmacKey();
 
   CheckUniformRandom(base::BindLambdaForTesting([&]() {
     std::string context_domain = GenerateRandomDomainOrHost();

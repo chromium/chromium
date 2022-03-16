@@ -150,7 +150,7 @@ base::Value::Dict EpochTopics::ToDictValue() const {
 absl::optional<Topic> EpochTopics::TopicForSite(
     const std::string& top_domain,
     const HashedDomain& hashed_context_domain,
-    base::span<const uint8_t, 32> hmac_key) const {
+    ReadOnlyHmacKey hmac_key) const {
   // The topics calculation failed, or the topics has been cleared.
   if (!HasValidTopics())
     return absl::nullopt;
