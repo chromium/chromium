@@ -152,8 +152,7 @@ enum PlatformDownloadPathType {
 // platform_util::ShowItemInFolder / DownloadTargetDeterminer.
 //
 // How the platform path is determined is based on PlatformDownloadPathType.
-base::FilePath GetPlatformDownloadPath(Profile* profile,
-                                       const DownloadItem* download,
+base::FilePath GetPlatformDownloadPath(const DownloadItem* download,
                                        PlatformDownloadPathType path_type) {
   if (path_type == PLATFORM_TARGET_PATH)
     return download->GetTargetFilePath();
@@ -537,7 +536,7 @@ bool ChromeDownloadManagerDelegate::DetermineDownloadTarget(
                      weak_ptr_factory_.GetWeakPtr(), download->GetId(),
                      std::move(*callback));
   base::FilePath download_path =
-      GetPlatformDownloadPath(profile_, download, PLATFORM_TARGET_PATH);
+      GetPlatformDownloadPath(download, PLATFORM_TARGET_PATH);
   DownloadPathReservationTracker::FilenameConflictAction action =
       kDefaultPlatformConflictAction;
 #if BUILDFLAG(IS_ANDROID)
@@ -817,7 +816,7 @@ void ChromeDownloadManagerDelegate::SanitizeDownloadParameters(
 void ChromeDownloadManagerDelegate::OpenDownloadUsingPlatformHandler(
     DownloadItem* download) {
   base::FilePath platform_path(
-      GetPlatformDownloadPath(profile_, download, PLATFORM_TARGET_PATH));
+      GetPlatformDownloadPath(download, PLATFORM_TARGET_PATH));
   DCHECK(!platform_path.empty());
   platform_util::OpenItem(profile_, platform_path, platform_util::OPEN_FILE,
                           platform_util::OpenOperationCallback());
@@ -918,7 +917,7 @@ void ChromeDownloadManagerDelegate::ShowDownloadInShell(
   }
 
   base::FilePath platform_path(
-      GetPlatformDownloadPath(profile_, download, PLATFORM_CURRENT_PATH));
+      GetPlatformDownloadPath(download, PLATFORM_CURRENT_PATH));
   DCHECK(!platform_path.empty());
   platform_util::ShowItemInFolder(profile_, platform_path);
 }
