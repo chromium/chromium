@@ -73,10 +73,7 @@ class MockClientSocket;
 class SSLClientSocket;
 class StreamSocket;
 
-enum IoMode {
-  ASYNC,
-  SYNCHRONOUS
-};
+enum IoMode { ASYNC, SYNCHRONOUS };
 
 struct MockConnect {
   // Asynchronous connection success.
@@ -87,11 +84,13 @@ struct MockConnect {
   // |peer_addr| 192.0.2.33.
   MockConnect(IoMode io_mode, int r);
   MockConnect(IoMode io_mode, int r, IPEndPoint addr);
+  MockConnect(IoMode io_mode, int r, IPEndPoint addr, bool first_attempt_fails);
   ~MockConnect();
 
   IoMode mode;
   int result;
   IPEndPoint peer_addr;
+  bool first_attempt_fails = false;
 };
 
 struct MockConfirm {
@@ -117,17 +116,12 @@ struct MockConfirm {
 // is the data returned from the socket when MockTCPClientSocket::Read() is
 // attempted, while |data| in MockWrite is the expected data that should be
 // given in MockTCPClientSocket::Write().
-enum MockReadWriteType {
-  MOCK_READ,
-  MOCK_WRITE
-};
+enum MockReadWriteType { MOCK_READ, MOCK_WRITE };
 
 template <MockReadWriteType type>
 struct MockReadWrite {
   // Flag to indicate that the message loop should be terminated.
-  enum {
-    STOPLOOP = 1 << 31
-  };
+  enum { STOPLOOP = 1 << 31 };
 
   // Default
   MockReadWrite()
@@ -201,8 +195,8 @@ struct MockReadWrite {
   // For data providers that only allows reads to occur in a particular
   // sequence.  If a read occurs before the given |sequence_number| is reached,
   // an ERR_IO_PENDING is returned.
-  int sequence_number;    // The sequence number at which a read is allowed
-                          // to occur.
+  int sequence_number;  // The sequence number at which a read is allowed
+                        // to occur.
 };
 
 typedef MockReadWrite<MOCK_READ> MockRead;
