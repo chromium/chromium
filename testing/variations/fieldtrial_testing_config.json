@@ -990,14 +990,12 @@
                 {
                     "name": "Enabled_Only_Pattern_Provider_2022-01-05",
                     "params": {
-                        "use_language_specific_patterns": "true",
+                        "use_language_specific_patterns": "false",
                         "use_patterns_retrieved_with_the_component_udpater": "false"
                     },
                     "enable_features": [
+                        "AutofillPageLanguageDetection",
                         "AutofillParsingPatternProvider"
-                    ],
-                    "disable_features": [
-                        "AutofillPageLanguageDetection"
                     ]
                 },
                 {
