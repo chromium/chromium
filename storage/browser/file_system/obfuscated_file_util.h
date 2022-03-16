@@ -111,6 +111,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtil
   // deleted when one StorageKey/type pair is deleted.
   ObfuscatedFileUtil(scoped_refptr<SpecialStoragePolicy> special_storage_policy,
                      const base::FilePath& file_system_directory,
+                     const base::FilePath& bucket_base_path,
                      leveldb::Env* env_override,
                      GetTypeStringForURLCallback get_type_string_for_url,
                      const std::set<std::string>& known_type_strings,
@@ -236,6 +237,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtil
   static std::unique_ptr<ObfuscatedFileUtil> CreateForTesting(
       scoped_refptr<SpecialStoragePolicy> special_storage_policy,
       const base::FilePath& file_system_directory,
+      const base::FilePath& bucket_base_path,
       leveldb::Env* env_override,
       bool is_incognito);
 
@@ -331,6 +333,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtil
   std::unique_ptr<SandboxOriginDatabaseInterface> origin_database_;
   scoped_refptr<SpecialStoragePolicy> special_storage_policy_;
   base::FilePath file_system_directory_;
+  base::FilePath bucket_base_path_;
   raw_ptr<leveldb::Env> env_override_;
   bool is_incognito_;
 

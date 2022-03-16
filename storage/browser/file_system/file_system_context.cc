@@ -154,6 +154,7 @@ scoped_refptr<FileSystemContext> FileSystemContext::Create(
     std::vector<std::unique_ptr<FileSystemBackend>> additional_backends,
     const std::vector<URLRequestAutoMountHandler>& auto_mount_handlers,
     const base::FilePath& partition_path,
+    const base::FilePath& bucket_base_path,
     const FileSystemOptions& options) {
   bool force_override_incognito = base::FeatureList::IsEnabled(
       features::kIncognitoFileSystemContextForTesting);
@@ -168,8 +169,8 @@ scoped_refptr<FileSystemContext> FileSystemContext::Create(
       std::move(io_task_runner), std::move(file_task_runner),
       std::move(external_mount_points), std::move(special_storage_policy),
       std::move(quota_manager_proxy), std::move(additional_backends),
-      auto_mount_handlers, partition_path, maybe_overridden_options,
-      base::PassKey<FileSystemContext>());
+      auto_mount_handlers, partition_path, bucket_base_path,
+      maybe_overridden_options, base::PassKey<FileSystemContext>());
   context->Initialize();
   return context;
 }
@@ -183,6 +184,7 @@ FileSystemContext::FileSystemContext(
     std::vector<std::unique_ptr<FileSystemBackend>> additional_backends,
     const std::vector<URLRequestAutoMountHandler>& auto_mount_handlers,
     const base::FilePath& partition_path,
+    const base::FilePath& bucket_base_path,
     const FileSystemOptions& options,
     base::PassKey<FileSystemContext>)
     : base::RefCountedDeleteOnSequence<FileSystemContext>(io_task_runner),
@@ -200,6 +202,7 @@ FileSystemContext::FileSystemContext(
           quota_manager_proxy_.get(),
           default_file_task_runner_.get(),
           partition_path,
+          bucket_base_path,
           special_storage_policy,
           options,
           env_override_.get())),
@@ -208,6 +211,7 @@ FileSystemContext::FileSystemContext(
       plugin_private_backend_(std::make_unique<PluginPrivateFileSystemBackend>(
           default_file_task_runner_,
           partition_path,
+          bucket_base_path,
           std::move(special_storage_policy),
           options,
           env_override_.get())),
@@ -215,6 +219,7 @@ FileSystemContext::FileSystemContext(
       auto_mount_handlers_(auto_mount_handlers),
       external_mount_points_(std::move(external_mount_points)),
       partition_path_(partition_path),
+      bucket_base_path_(bucket_base_path),
       is_incognito_(options.is_incognito()),
       operation_runner_(std::make_unique<FileSystemOperationRunner>(
           base::PassKey<FileSystemContext>(),

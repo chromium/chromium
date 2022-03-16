@@ -67,7 +67,7 @@ class FileSystemContextTest : public testing::Test {
         storage_policy_, mock_quota_manager_->proxy(),
         std::vector<std::unique_ptr<FileSystemBackend>>(),
         std::vector<URLRequestAutoMountHandler>(), data_dir_.GetPath(),
-        CreateAllowFileAccessOptions());
+        data_dir_.GetPath(), CreateAllowFileAccessOptions());
   }
 
   // Verifies a *valid* filesystem url has expected values.

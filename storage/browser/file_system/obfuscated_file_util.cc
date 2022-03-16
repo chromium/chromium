@@ -272,6 +272,7 @@ class ObfuscatedStorageKeyEnumerator
 ObfuscatedFileUtil::ObfuscatedFileUtil(
     scoped_refptr<SpecialStoragePolicy> special_storage_policy,
     const base::FilePath& file_system_directory,
+    const base::FilePath& bucket_base_path,
     leveldb::Env* env_override,
     GetTypeStringForURLCallback get_type_string_for_url,
     const std::set<std::string>& known_type_strings,
@@ -279,6 +280,7 @@ ObfuscatedFileUtil::ObfuscatedFileUtil(
     bool is_incognito)
     : special_storage_policy_(std::move(special_storage_policy)),
       file_system_directory_(file_system_directory),
+      bucket_base_path_(bucket_base_path),
       env_override_(env_override),
       is_incognito_(is_incognito),
       db_flush_delay_seconds_(10 * 60),  // 10 mins.

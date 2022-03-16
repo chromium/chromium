@@ -82,6 +82,7 @@ class BlobRegistryImplTest : public testing::Test {
         /*quota_manager_proxy=*/nullptr,
         std::vector<std::unique_ptr<FileSystemBackend>>(),
         std::vector<URLRequestAutoMountHandler>(), data_dir_.GetPath(),
+        data_dir_.GetPath(),
         FileSystemOptions(FileSystemOptions::PROFILE_MODE_INCOGNITO,
                           /*force_in_memory=*/false,
                           std::vector<std::string>()));

@@ -182,6 +182,7 @@ SandboxFileSystemBackendDelegate::SandboxFileSystemBackendDelegate(
     scoped_refptr<QuotaManagerProxy> quota_manager_proxy,
     scoped_refptr<base::SequencedTaskRunner> file_task_runner,
     const base::FilePath& profile_path,
+    const base::FilePath& bucket_base_path,
     scoped_refptr<SpecialStoragePolicy> special_storage_policy,
     const FileSystemOptions& file_system_options,
     leveldb::Env* env_override)
@@ -191,6 +192,7 @@ SandboxFileSystemBackendDelegate::SandboxFileSystemBackendDelegate(
           std::make_unique<ObfuscatedFileUtil>(
               special_storage_policy,
               profile_path.Append(kFileSystemDirectory),
+              bucket_base_path,
               env_override,
               base::BindRepeating(&GetTypeStringForURL),
               GetKnownTypeStrings(),
@@ -675,11 +677,13 @@ SandboxFileSystemBackendDelegate::memory_file_util_delegate() {
 std::unique_ptr<ObfuscatedFileUtil> ObfuscatedFileUtil::CreateForTesting(
     scoped_refptr<SpecialStoragePolicy> special_storage_policy,
     const base::FilePath& file_system_directory,
+    const base::FilePath& bucket_base_path,
     leveldb::Env* env_override,
     bool is_incognito) {
   return std::make_unique<ObfuscatedFileUtil>(
-      std::move(special_storage_policy), file_system_directory, env_override,
-      base::BindRepeating(&GetTypeStringForURL), GetKnownTypeStrings(),
+      std::move(special_storage_policy), file_system_directory,
+      bucket_base_path, env_override, base::BindRepeating(&GetTypeStringForURL),
+      GetKnownTypeStrings(),
       /*sandbox_delegate=*/nullptr, is_incognito);
 }
 

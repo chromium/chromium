@@ -209,7 +209,7 @@ class MultiThreadFileSystemOperationRunnerTest : public testing::Test {
         base::MakeRefCounted<storage::MockSpecialStoragePolicy>(),
         /*quota_manager_proxy=*/nullptr,
         std::vector<std::unique_ptr<storage::FileSystemBackend>>(),
-        std::vector<storage::URLRequestAutoMountHandler>(), base_dir,
+        std::vector<storage::URLRequestAutoMountHandler>(), base_dir, base_dir,
         storage::CreateAllowFileAccessOptions());
 
     // Disallow IO on the main loop.

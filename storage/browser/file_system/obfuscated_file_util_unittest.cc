@@ -267,7 +267,7 @@ class ObfuscatedFileUtilTest : public testing::Test,
   std::unique_ptr<ObfuscatedFileUtil> CreateObfuscatedFileUtil(
       scoped_refptr<SpecialStoragePolicy> storage_policy) {
     return ObfuscatedFileUtil::CreateForTesting(
-        std::move(storage_policy), data_dir_path(),
+        std::move(storage_policy), data_dir_path(), data_dir_path(),
         is_incognito() ? incognito_leveldb_environment_.get() : nullptr,
         is_incognito());
   }

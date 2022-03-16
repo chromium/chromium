@@ -92,7 +92,7 @@ class SandboxFileSystemBackendTest
     incognito_env_override_ = leveldb_chrome::NewMemEnv("FileSystem");
     delegate_ = std::make_unique<SandboxFileSystemBackendDelegate>(
         /*quota_manager_proxy=*/nullptr, base::ThreadTaskRunnerHandle::Get(),
-        data_dir_.GetPath(),
+        data_dir_.GetPath(), data_dir_.GetPath(),
         /*special_storage_policy=*/nullptr, options,
         options.is_in_memory() ? incognito_env_override_.get() : nullptr);
   }
