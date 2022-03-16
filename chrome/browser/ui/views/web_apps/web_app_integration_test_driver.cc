@@ -1540,13 +1540,19 @@ void WebAppIntegrationTestDriver::CheckRunOnOSLoginEnabled(
       after_state_change_action_state_.get(), profile(), site_mode);
   ASSERT_TRUE(app_state);
   EXPECT_EQ(app_state->run_on_os_login_mode, apps::RunOnOsLoginMode::kWindowed);
-#if BUILDFLAG(IS_LINUX)
   base::ScopedAllowBlockingForTesting allow_blocking;
+#if BUILDFLAG(IS_LINUX)
   std::string shortcut_filename = "chrome-" + app_state->id + "-" +
                                   profile()->GetBaseName().value() + ".desktop";
 
   ASSERT_TRUE(base::PathExists(
       shortcut_override_->startup.GetPath().Append(shortcut_filename)));
+#elif BUILDFLAG(IS_WIN)
+  DCHECK(base::Contains(g_app_name_icon_color, app_state->name));
+  SkColor color = g_app_name_icon_color.find(app_state->name)->second;
+  ASSERT_TRUE(IsShortcutAndIconFoundForProfile(
+      profile(), app_state->name, shortcut_override_->startup.GetPath(),
+      color));
 #endif
   AfterStateCheckAction();
 }
@@ -1558,13 +1564,19 @@ void WebAppIntegrationTestDriver::CheckRunOnOSLoginDisabled(
       after_state_change_action_state_.get(), profile(), site_mode);
   ASSERT_TRUE(app_state);
   EXPECT_EQ(app_state->run_on_os_login_mode, apps::RunOnOsLoginMode::kNotRun);
-#if BUILDFLAG(IS_LINUX)
   base::ScopedAllowBlockingForTesting allow_blocking;
+#if BUILDFLAG(IS_LINUX)
   std::string shortcut_filename = "chrome-" + app_state->id + "-" +
                                   profile()->GetBaseName().value() + ".desktop";
 
   ASSERT_FALSE(base::PathExists(
       shortcut_override_->startup.GetPath().Append(shortcut_filename)));
+#elif BUILDFLAG(IS_WIN)
+  DCHECK(base::Contains(g_app_name_icon_color, app_state->name));
+  SkColor color = g_app_name_icon_color.find(app_state->name)->second;
+  ASSERT_FALSE(IsShortcutAndIconFoundForProfile(
+      profile(), app_state->name, shortcut_override_->startup.GetPath(),
+      color));
 #endif
   AfterStateCheckAction();
 }
