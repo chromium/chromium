@@ -405,4 +405,78 @@ TEST_F(PerUserStateManagerChromeOSTest,
   EXPECT_TRUE(GetPerUserStateManager()->is_log_store_set());
 }
 
+// Multi-user sessions are deprecated, but still need to be supported. This test
+// ensures that the primary user (user originally used to login) is used and all
+// other users are ignored.
+TEST_F(PerUserStateManagerChromeOSTest, MultiUserUsesPrimaryUser) {
+  auto* test_user1 =
+      RegisterUser(AccountId::FromUserEmailGaiaId("test1@example.com", "1"));
+  InitializeProfileState(/*user_id=*/"", /*metrics_consent=*/false,
+                         /*has_consented_to_metrics=*/true);
+  GetPerUserStateManager()->SetIsManaged(false);
+  GetPerUserStateManager()->SetDeviceMetricsConsent(true);
+
+  // Simulate user login.
+  LoginRegularUser(test_user1);
+
+  // User log store is created async. Ensure that the log store loading
+  // finishes.
+  RunUntilIdle();
+
+  GetPerUserStateManager()->SetCurrentUserMetricsConsent(true);
+
+  // User consent should be set to true since pref is true and device metrics
+  // consent is also true.
+  EXPECT_TRUE(
+      *GetPerUserStateManager()->GetCurrentUserReportingConsentIfApplicable());
+
+  EXPECT_TRUE(GetPerUserStateManager()->is_log_store_set());
+
+  // Create secondary user.
+  TestingProfile::Builder profile_builder;
+  sync_preferences::PrefServiceMockFactory factory;
+  auto registry = base::MakeRefCounted<user_prefs::PrefRegistrySyncable>();
+  RegisterUserProfilePrefs(registry.get());
+  std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs(
+      factory.CreateSyncable(registry.get()));
+  profile_builder.SetPrefService(std::move(prefs));
+  auto test_user2_profile = profile_builder.Build();
+  AccountId test_user2_account_id =
+      AccountId::FromUserEmailGaiaId("test2@example.com", "2");
+
+  // Add user.
+  user_manager::User* test_user2 =
+      test_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
+          test_user2_account_id, false, user_manager::USER_TYPE_REGULAR,
+          test_user2_profile.get());
+
+  // Explicitly set the user consent to false.
+  test_user2_profile->GetPrefs()->SetBoolean(prefs::kMetricsUserConsent, false);
+
+  // Simulate user login.
+  LoginRegularUser(test_user2);
+
+  // User log store is created async. Ensure that the log store loading
+  // finishes.
+  RunUntilIdle();
+
+  // User consent should still be true since that's the value of the primary
+  // user.
+  EXPECT_TRUE(
+      *GetPerUserStateManager()->GetCurrentUserReportingConsentIfApplicable());
+  EXPECT_TRUE(GetPerUserStateManager()->is_log_store_set());
+
+  // Enable user2's metrics consent and disable it.
+  test_user2_profile->GetPrefs()->SetBoolean(prefs::kMetricsUserConsent, true);
+  test_user2_profile->GetPrefs()->SetBoolean(prefs::kMetricsUserConsent, false);
+
+  // User consent should still be true since that's the value of the primary
+  // user.
+  EXPECT_TRUE(
+      *GetPerUserStateManager()->GetCurrentUserReportingConsentIfApplicable());
+
+  // Profiles must be destructed on the UI thread.
+  test_user2_profile.reset();
+}
+
 }  // namespace metrics

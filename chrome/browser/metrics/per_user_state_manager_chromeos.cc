@@ -301,7 +301,11 @@ bool PerUserStateManagerChromeOS::IsDeviceOwned() const {
 }
 
 void PerUserStateManagerChromeOS::ActiveUserChanged(user_manager::User* user) {
-  DCHECK_EQ(state_, State::CONSTRUCTED) << "User already detected.";
+  // Logged-in user is already detected. Do nothing since multi-user is
+  // deprecated and since the first user is the primary user.
+  if (state_ > State::CONSTRUCTED) {
+    return;
+  }
 
   state_ = State::USER_LOGIN;
 
