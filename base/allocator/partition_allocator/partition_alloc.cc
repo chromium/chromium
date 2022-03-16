@@ -82,8 +82,7 @@ namespace internal {
 
 template <bool thread_safe>
 PartitionAllocator<thread_safe>::~PartitionAllocator() {
-  PartitionAllocMemoryReclaimer::Instance()->UnregisterPartition(
-      &partition_root_);
+  MemoryReclaimer::Instance()->UnregisterPartition(&partition_root_);
 }
 
 template <bool thread_safe>
@@ -93,8 +92,7 @@ void PartitionAllocator<thread_safe>::init(PartitionOptions opts) {
       << "Cannot use a thread cache when PartitionAlloc is malloc().";
 #endif
   partition_root_.Init(opts);
-  PartitionAllocMemoryReclaimer::Instance()->RegisterPartition(
-      &partition_root_);
+  MemoryReclaimer::Instance()->RegisterPartition(&partition_root_);
 }
 
 template PartitionAllocator<internal::ThreadSafe>::~PartitionAllocator();

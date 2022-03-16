@@ -31,7 +31,7 @@ namespace blink {
 // Function defined in third_party/blink/public/web/blink.h.
 void DecommitFreeableMemory() {
   CHECK(IsMainThread());
-  base::PartitionAllocMemoryReclaimer::Instance()->ReclaimAll();
+  ::partition_alloc::MemoryReclaimer::Instance()->ReclaimAll();
 }
 
 // static
@@ -108,7 +108,7 @@ void MemoryPressureListenerRegistry::OnMemoryPressure(
   CHECK(IsMainThread());
   for (auto& client : clients_)
     client->OnMemoryPressure(level);
-  base::PartitionAllocMemoryReclaimer::Instance()->ReclaimAll();
+  ::partition_alloc::MemoryReclaimer::Instance()->ReclaimAll();
 }
 
 void MemoryPressureListenerRegistry::OnPurgeMemory() {
@@ -116,7 +116,7 @@ void MemoryPressureListenerRegistry::OnPurgeMemory() {
   for (auto& client : clients_)
     client->OnPurgeMemory();
   ImageDecodingStore::Instance().Clear();
-  base::PartitionAllocMemoryReclaimer::Instance()->ReclaimAll();
+  ::partition_alloc::MemoryReclaimer::Instance()->ReclaimAll();
 
   // Thread-specific data never issues a layout, so we are safe here.
   base::AutoLock lock(threads_lock_);

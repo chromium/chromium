@@ -581,4 +581,12 @@ ALWAYS_INLINE void ThreadCache::PutInBucket(Bucket& bucket,
 }  // namespace internal
 }  // namespace base
 
+namespace partition_alloc::internal {
+
+// TODO(https://crbug.com/1288247): Remove these 'using' declarations once
+// the migration to the new namespaces gets done.
+using ::base::internal::ThreadCache;
+
+}  // namespace partition_alloc::internal
+
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_THREAD_CACHE_H_

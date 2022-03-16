@@ -523,12 +523,14 @@ void EnablePartitionAllocMemoryReclaimer() {
   // memory. Thus, the registration to the memory reclaimer has to be done
   // some time later, when the main root is fully configured.
   // TODO(bartekn): Aligned allocator can use the regular initialization path.
-  PartitionAllocMemoryReclaimer::Instance()->RegisterPartition(Allocator());
+  ::partition_alloc::MemoryReclaimer::Instance()->RegisterPartition(
+      Allocator());
   auto* original_root = OriginalAllocator();
   if (original_root)
-    PartitionAllocMemoryReclaimer::Instance()->RegisterPartition(original_root);
+    ::partition_alloc::MemoryReclaimer::Instance()->RegisterPartition(
+        original_root);
   if (AlignedAllocator() != Allocator()) {
-    PartitionAllocMemoryReclaimer::Instance()->RegisterPartition(
+    ::partition_alloc::MemoryReclaimer::Instance()->RegisterPartition(
         AlignedAllocator());
   }
 }

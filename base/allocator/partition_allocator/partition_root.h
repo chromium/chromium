@@ -1943,12 +1943,21 @@ static_assert(offsetof(ThreadSafePartitionRoot, lock_) ==
 
 }  // namespace base
 
-namespace partition_alloc::internal {
+namespace partition_alloc {
+
+// TODO(https://crbug.com/1288247): Remove these 'using' declarations once
+// the migration to the new namespaces gets done.
+using ::base::PartitionOptions;
+using ::base::PurgeFlags;
+
+namespace internal {
 
 // TODO(https://crbug.com/1288247): Remove these 'using' declarations once
 // the migration to the new namespaces gets done.
 using ::base::internal::ScopedSyscallTimer;
 
-}  // namespace partition_alloc::internal
+}  // namespace internal
+
+}  // namespace partition_alloc
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ROOT_H_

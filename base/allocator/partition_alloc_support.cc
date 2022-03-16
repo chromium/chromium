@@ -156,10 +156,9 @@ void RunThreadCachePeriodicPurge() {
       FROM_HERE, BindOnce(RunThreadCachePeriodicPurge), delay);
 }
 
-void RunPartitionAllocMemoryReclaimer(
-    scoped_refptr<SequencedTaskRunner> task_runner) {
-  TRACE_EVENT0("base", "PartitionAllocMemoryReclaimer::Reclaim()");
-  auto* instance = PartitionAllocMemoryReclaimer::Instance();
+void RunMemoryReclaimer(scoped_refptr<SequencedTaskRunner> task_runner) {
+  TRACE_EVENT0("base", "partition_alloc::MemoryReclaimer::Reclaim()");
+  auto* instance = ::partition_alloc::MemoryReclaimer::Instance();
 
   {
     // Micros, since memory reclaiming should typically take at most a few ms.
@@ -170,8 +169,7 @@ void RunPartitionAllocMemoryReclaimer(
   TimeDelta delay =
       Microseconds(instance->GetRecommendedReclaimIntervalInMicroseconds());
   task_runner->PostDelayedTask(
-      FROM_HERE, BindOnce(RunPartitionAllocMemoryReclaimer, task_runner),
-      delay);
+      FROM_HERE, BindOnce(RunMemoryReclaimer, task_runner), delay);
 }
 
 }  // namespace
@@ -206,12 +204,11 @@ void StartMemoryReclaimer(scoped_refptr<SequencedTaskRunner> task_runner) {
   // seconds is useful. Since this is meant to run during idle time only, it is
   // a reasonable starting point balancing effectivenes vs cost. See
   // crbug.com/942512 for details and experimental results.
-  auto* instance = PartitionAllocMemoryReclaimer::Instance();
+  auto* instance = ::partition_alloc::MemoryReclaimer::Instance();
   TimeDelta delay =
       Microseconds(instance->GetRecommendedReclaimIntervalInMicroseconds());
   task_runner->PostDelayedTask(
-      FROM_HERE, BindOnce(RunPartitionAllocMemoryReclaimer, task_runner),
-      delay);
+      FROM_HERE, BindOnce(RunMemoryReclaimer, task_runner), delay);
 }
 
 std::map<std::string, std::string> ProposeSyntheticFinchTrials() {

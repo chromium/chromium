@@ -24,7 +24,7 @@
 // meaningless.
 #if !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
-namespace base {
+namespace partition_alloc {
 
 namespace {
 
@@ -34,14 +34,14 @@ void HandleOOM(size_t unused_size) {
 
 }  // namespace
 
-class PartitionAllocMemoryReclaimerTest : public ::testing::Test {
+class MemoryReclaimerTest : public ::testing::Test {
  public:
-  PartitionAllocMemoryReclaimerTest() = default;
+  MemoryReclaimerTest() = default;
 
  protected:
   void SetUp() override {
-    PartitionAllocGlobalInit(HandleOOM);
-    PartitionAllocMemoryReclaimer::Instance()->ResetForTesting();
+    base::PartitionAllocGlobalInit(HandleOOM);
+    MemoryReclaimer::Instance()->ResetForTesting();
     allocator_ = std::make_unique<PartitionAllocator>();
     allocator_->init({
         PartitionOptions::AlignedAlloc::kDisallowed,
@@ -56,11 +56,11 @@ class PartitionAllocMemoryReclaimerTest : public ::testing::Test {
 
   void TearDown() override {
     allocator_ = nullptr;
-    PartitionAllocMemoryReclaimer::Instance()->ResetForTesting();
-    PartitionAllocGlobalUninitForTesting();
+    MemoryReclaimer::Instance()->ResetForTesting();
+    base::PartitionAllocGlobalUninitForTesting();
   }
 
-  void Reclaim() { PartitionAllocMemoryReclaimer::Instance()->ReclaimNormal(); }
+  void Reclaim() { MemoryReclaimer::Instance()->ReclaimNormal(); }
 
   void AllocateAndFree() {
     void* data = allocator_->root()->Alloc(1, "");
@@ -70,7 +70,7 @@ class PartitionAllocMemoryReclaimerTest : public ::testing::Test {
   std::unique_ptr<PartitionAllocator> allocator_;
 };
 
-TEST_F(PartitionAllocMemoryReclaimerTest, FreesMemory) {
+TEST_F(MemoryReclaimerTest, FreesMemory) {
   PartitionRoot<internal::ThreadSafe>* root = allocator_->root();
 
   size_t committed_initially = root->get_total_size_of_committed_pages();
@@ -85,7 +85,7 @@ TEST_F(PartitionAllocMemoryReclaimerTest, FreesMemory) {
   EXPECT_LE(committed_initially, committed_after);
 }
 
-TEST_F(PartitionAllocMemoryReclaimerTest, Reclaim) {
+TEST_F(MemoryReclaimerTest, Reclaim) {
   PartitionRoot<internal::ThreadSafe>* root = allocator_->root();
   size_t committed_initially = root->get_total_size_of_committed_pages();
 
@@ -94,7 +94,7 @@ TEST_F(PartitionAllocMemoryReclaimerTest, Reclaim) {
 
     size_t committed_before = root->get_total_size_of_committed_pages();
     EXPECT_GT(committed_before, committed_initially);
-    PartitionAllocMemoryReclaimer::Instance()->ReclaimAll();
+    MemoryReclaimer::Instance()->ReclaimAll();
     size_t committed_after = root->get_total_size_of_committed_pages();
 
     EXPECT_LT(committed_after, committed_before);
@@ -113,7 +113,7 @@ NOINLINE void FreeForTest(void* data) {
 }
 }  // namespace
 
-TEST_F(PartitionAllocMemoryReclaimerTest, DoNotAlwaysPurgeThreadCache) {
+TEST_F(MemoryReclaimerTest, DoNotAlwaysPurgeThreadCache) {
   // Make sure the thread cache is enabled in the main partition.
   base::internal::PartitionAllocMalloc::Allocator()
       ->EnableThreadCacheIfSupported();
@@ -139,12 +139,13 @@ TEST_F(PartitionAllocMemoryReclaimerTest, DoNotAlwaysPurgeThreadCache) {
   Reclaim();
   EXPECT_GT(tcache->CachedMemory(), cached_size / 2);
 
-  PartitionAllocMemoryReclaimer::Instance()->ReclaimAll();
+  MemoryReclaimer::Instance()->ReclaimAll();
   EXPECT_LT(tcache->CachedMemory(), cached_size / 2);
 }
 
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
         // defined(PA_THREAD_CACHE_SUPPORTED)
 
-}  // namespace base
+}  // namespace partition_alloc
+
 #endif  // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)

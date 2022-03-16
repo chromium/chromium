@@ -12,8 +12,9 @@
 #include "base/allocator/partition_allocator/partition_lock.h"
 #include "base/no_destructor.h"
 #include "base/thread_annotations.h"
+#include "base/time/time.h"
 
-namespace base {
+namespace partition_alloc {
 
 // Posts and handles memory reclaim tasks for PartitionAlloc.
 //
@@ -24,13 +25,12 @@ namespace base {
 //
 // Singleton as this runs as long as the process is alive, and
 // having multiple instances would be wasteful.
-class BASE_EXPORT PartitionAllocMemoryReclaimer {
+class BASE_EXPORT MemoryReclaimer {
  public:
-  static PartitionAllocMemoryReclaimer* Instance();
+  static MemoryReclaimer* Instance();
 
-  PartitionAllocMemoryReclaimer(const PartitionAllocMemoryReclaimer&) = delete;
-  PartitionAllocMemoryReclaimer& operator=(
-      const PartitionAllocMemoryReclaimer&) = delete;
+  MemoryReclaimer(const MemoryReclaimer&) = delete;
+  MemoryReclaimer& operator=(const MemoryReclaimer&) = delete;
 
   // Internal. Do not use.
   // Registers a partition to be tracked by the reclaimer.
@@ -47,26 +47,34 @@ class BASE_EXPORT PartitionAllocMemoryReclaimer {
 
   // Returns a recommended interval to invoke ReclaimNormal.
   int64_t GetRecommendedReclaimIntervalInMicroseconds() {
-    return Seconds(4).InMicroseconds();
+    return base::Seconds(4).InMicroseconds();
   }
 
   // Triggers an explicit reclaim now reclaiming all free memory
   void ReclaimAll();
 
  private:
-  PartitionAllocMemoryReclaimer();
-  ~PartitionAllocMemoryReclaimer();
+  MemoryReclaimer();
+  ~MemoryReclaimer();
   // |flags| is an OR of base::PartitionPurgeFlags
   void Reclaim(int flags);
   void ReclaimAndReschedule();
   void ResetForTesting();
 
-  internal::PartitionLock lock_;
+  internal::Lock lock_;
   std::set<PartitionRoot<>*> partitions_ GUARDED_BY(lock_);
 
-  friend class NoDestructor<PartitionAllocMemoryReclaimer>;
-  friend class PartitionAllocMemoryReclaimerTest;
+  friend class base::NoDestructor<MemoryReclaimer>;
+  friend class MemoryReclaimerTest;
 };
+
+}  // namespace partition_alloc
+
+namespace base {
+
+// TODO(https://crbug.com/1288247): Remove these 'using' declarations once
+// the migration to the new namespaces gets done.
+using ::partition_alloc::MemoryReclaimer;
 
 }  // namespace base
 
