@@ -459,9 +459,10 @@ TEST_F(TemporaryAppListSortTest, ReparentingItemToRootResetsSortOrder) {
                                       "Item 1", "Item 7", "Item 8", "Item 9"}));
 }
 
-// Verifies that merging two items to form a folder resets the nominal app list
-// sort order (if the app list is sorted at the time).
-TEST_F(TemporaryAppListSortTest, MergingItemsResetsSortOrder) {
+// Verifies that merging two items to form a folder keeps the nominal app list
+// sort order (if the app list is sorted at the time) and positions the new
+// folder into sorted order.
+TEST_F(TemporaryAppListSortTest, MergingItemsKeepsSortOrder) {
   RemoveAllExistingItems();
 
   std::vector<scoped_refptr<extensions::Extension>> apps;
@@ -490,41 +491,27 @@ TEST_F(TemporaryAppListSortTest, MergingItemsResetsSortOrder) {
   const std::string folder_id =
       model_updater->model_for_test()->MergeItems(apps[8]->id(), apps[9]->id());
 
-  // Verify that the app list is no longer considered sorted - new items are
-  // added to the first position within the app list.
+  // Verify that the app list is still considered sorted, and that new installs
+  // keep getting added in the sorted order.
   EXPECT_FALSE(IsUnderTemporarySort());
-  EXPECT_EQ(ash::AppListSortOrder::kCustom, GetSortOrderFromPrefs());
+  EXPECT_EQ(ash::AppListSortOrder::kNameAlphabetical, GetSortOrderFromPrefs());
   std::vector<std::string> ordered_names = GetOrderedNamesFromSyncableService();
-  // Note that newly created folder will have the same position as the item it
-  // was created from, so order of the original item and the folder may not be
-  // deterministic (both [folder, item], and [item, folder] are acceptable
-  // orders). Remove the folder from the list, and later test that the folder
-  // position is the same as the original item.
-  EXPECT_EQ(1u, base::EraseIf(ordered_names, [](const std::string& item) {
-              return item == "";
-            }));
-  EXPECT_EQ(ordered_names,
-            std::vector<std::string>({"Item 0", "Item 1", "Item 2", "Item 3",
-                                      "Item 4", "Item 5", "Item 6", "Item 7",
-                                      "Item 8", "Item 9"}));
-  EXPECT_EQ(GetPositionFromSyncData(apps[8]->id()),
-            GetPositionFromSyncData(folder_id));
+  EXPECT_EQ(ordered_names, std::vector<std::string>(
+                               {"Item 0", "Item 1", "Item 2", "Item 3",
+                                "Item 4", "Item 5", "Item 6", "Item 7",
+                                "Item 8", "Item 9", "" /*"Unnamed" folder*/}));
 
   scoped_refptr<extensions::Extension> new_app = MakeApp(
       "Item 10", GenerateId("new_install"), extensions::Extension::NO_FLAGS);
   InstallExtension(new_app.get());
 
-  EXPECT_EQ(ash::AppListSortOrder::kCustom, GetSortOrderFromPrefs());
+  EXPECT_EQ(ash::AppListSortOrder::kNameAlphabetical, GetSortOrderFromPrefs());
   ordered_names = GetOrderedNamesFromSyncableService();
-  EXPECT_EQ(1u, base::EraseIf(ordered_names, [](const std::string& item) {
-              return item == "";
-            }));
   EXPECT_EQ(ordered_names,
-            std::vector<std::string>({"Item 10", "Item 0", "Item 1", "Item 2",
+            std::vector<std::string>({"Item 0", "Item 1", "Item 10", "Item 2",
                                       "Item 3", "Item 4", "Item 5", "Item 6",
-                                      "Item 7", "Item 8", "Item 9"}));
-  EXPECT_EQ(GetPositionFromSyncData(apps[8]->id()),
-            GetPositionFromSyncData(folder_id));
+                                      "Item 7", "Item 8", "Item 9",
+                                      "" /*"Unnamed" folder*/}));
 }
 
 // Verifies that moving an item from a folder to root apps grid resets the
@@ -820,10 +807,11 @@ TEST_F(TemporaryAppListSortTest, HandleItemMerge) {
 
   // Verify that:
   // (1) Temporary sort ends.
-  // (2) Sort order is cleared.
+  // (2) Sort order is committed.
   // (3) Local positions are committed.
   EXPECT_FALSE(IsUnderTemporarySort());
-  EXPECT_EQ(ash::AppListSortOrder::kCustom, GetSortOrderFromPrefs());
+  EXPECT_EQ(ash::AppListSortOrder::kNameReverseAlphabetical,
+            GetSortOrderFromPrefs());
   EXPECT_EQ(GetOrderedItemIdsFromSyncableService(),
             std::vector<std::string>(
                 {folder_item_id, kItemId4, kItemId3, kItemId2, kItemId1}));
@@ -898,16 +886,17 @@ TEST_F(TemporaryAppListSortTest, HandleFolderRename) {
 
   // Verify that:
   // (1) Temporary sort ends.
-  // (2) Sort order is cleared.
+  // (2) Sort order is commited.
   // (3) Local positions are committed.
   EXPECT_FALSE(IsUnderTemporarySort());
-  EXPECT_EQ(ash::AppListSortOrder::kCustom, GetSortOrderFromPrefs());
+  EXPECT_EQ(ash::AppListSortOrder::kNameReverseAlphabetical,
+            GetSortOrderFromPrefs());
   EXPECT_EQ(GetOrderedItemIdsFromSyncableService(),
             std::vector<std::string>(
-                {kFolderItemId, kItemId4, kItemId3, kItemId2, kItemId1}));
+                {kItemId4, kItemId3, kItemId2, kFolderItemId, kItemId1}));
   EXPECT_EQ(GetOrderedItemIdsFromModelUpdater(),
             std::vector<std::string>(
-                {kFolderItemId, kItemId4, kItemId3, kItemId2, kItemId1}));
+                {kItemId4, kItemId3, kItemId2, kFolderItemId, kItemId1}));
 }
 
 // Verifies that the app list under temporary sort works as expected when moving
