@@ -85,8 +85,10 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
 
   void SetThemeState(OmniboxPartState theme_state) {
     views::FocusRing::Get(this)->SchedulePaint();
+    if (theme_state_ == theme_state)
+      return;
     theme_state_ = theme_state;
-    UpdateBackgroundColor();
+    OnThemeChanged();
   }
 
   OmniboxPopupSelection selection() { return selection_; }
@@ -95,17 +97,18 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
     MdTextButton::OnThemeChanged();
     // We can't use colors from NativeTheme as the omnibox theme might be
     // different (for example, if the NTP colors are customized).
+    const auto* const theme_provider = GetThemeProvider();
     SkColor icon_color =
         icon_color_ != SK_ColorTRANSPARENT
             ? icon_color_
-            : GetOmniboxColor(GetThemeProvider(), OmniboxPart::RESULTS_ICON,
+            : GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_ICON,
                               theme_state_);
     SetImage(
         views::Button::STATE_NORMAL,
         gfx::CreateVectorIcon(*icon_, GetLayoutConstant(LOCATION_BAR_ICON_SIZE),
                               icon_color));
     SetEnabledTextColors(GetOmniboxColor(
-        GetThemeProvider(), OmniboxPart::RESULTS_TEXT_DEFAULT, theme_state_));
+        theme_provider, OmniboxPart::RESULTS_TEXT_DEFAULT, theme_state_));
   }
 
   void UpdateBackgroundColor() override {
