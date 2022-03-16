@@ -657,10 +657,8 @@ TEST_F(AccountTrackerServiceTest,
        TokenAvailable_AccountCapabilitiesFetcherDisabled) {
   account_fetcher()->EnableAccountCapabilitiesFetcherForTest(false);
   base::test::ScopedFeatureList scoped_feature_list;
-#if !BUILDFLAG(IS_IOS)
   scoped_feature_list.InitAndDisableFeature(
       switches::kEnableFetchingAccountCapabilities);
-#endif  // !BUILDFLAG(IS_IOS)
   SimulateTokenAvailable(kAccountKeyAlpha);
   EXPECT_TRUE(account_fetcher()->AreAllAccountCapabilitiesFetched());
   EXPECT_TRUE(CheckAccountTrackerEvents({}));

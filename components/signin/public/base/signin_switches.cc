@@ -29,16 +29,16 @@ const char kDisableSigninScopedDeviceId[] = "disable-signin-scoped-device-id";
 
 // Enables fetching account capabilities and populating AccountInfo with the
 // fetch result.
-// Not available on iOS because this platform doesn't have a compatible
+// Disabled on iOS because this platform doesn't have a compatible
 // `AccountCapabilitiesFetcher` implementation yet.
 // TODO(https://crbug.com/1305191): implement feature on iOS.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-const base::Feature kEnableFetchingAccountCapabilities{
-    "EnableFetchingAccountCapabilities", base::FEATURE_ENABLED_BY_DEFAULT};
-#elif !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_IOS)
 const base::Feature kEnableFetchingAccountCapabilities{
     "EnableFetchingAccountCapabilities", base::FEATURE_DISABLED_BY_DEFAULT};
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#else
+const base::Feature kEnableFetchingAccountCapabilities{
+    "EnableFetchingAccountCapabilities", base::FEATURE_ENABLED_BY_DEFAULT};
+#endif  // BUILDFLAG(IS_IOS)
 
 // This feature disables all extended sync promos.
 const base::Feature kForceDisableExtendedSyncPromos{

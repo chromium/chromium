@@ -251,12 +251,8 @@ bool AccountFetcherService::IsAccountCapabilitiesFetchingEnabled() {
   if (enable_account_capabilities_fetcher_for_test_)
     return true;
 
-#if !BUILDFLAG(IS_IOS)
   return base::FeatureList::IsEnabled(
       switches::kEnableFetchingAccountCapabilities);
-#else
-  return false;
-#endif
 }
 
 void AccountFetcherService::StartFetchingAccountCapabilities(
