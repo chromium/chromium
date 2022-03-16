@@ -56,6 +56,8 @@ namespace {
 
 constexpr char kFakeTestEmail[] = "fakeemail@personalization";
 constexpr char kTestGaiaId[] = "1234567890";
+// TODO(b/214577469): Remove response fields used to determine photo URL via
+// item ID once API change hits prod.
 constexpr char kGooglePhotosAlbumsFullResponse[] =
     "{"
     "   \"collection\": [ {"
@@ -647,6 +649,22 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
   auto response = JsonToDict(kGooglePhotosAlbumsFullResponse);
   valid_albums_vector.push_back(GooglePhotosAlbum::New(
       "albumId", "title", 1, GURL("https://www.google.com/")));
+  EXPECT_EQ(FetchGooglePhotosAlbumsResponse::New(
+                mojo::Clone(valid_albums_vector), kResumeToken),
+            google_photos_albums_fetcher->ParseResponse(&response));
+
+  // Parse a response whose album cover photo URL can be determined directly or
+  // by looking up a cover photo item ID.
+  auto* album = GetAlbumFromGooglePhotosAlbumsResponse(&response);
+  album->Set("coverItemServingUrl", "https://www.google.com/");
+  EXPECT_EQ(FetchGooglePhotosAlbumsResponse::New(
+                mojo::Clone(valid_albums_vector), kResumeToken),
+            google_photos_albums_fetcher->ParseResponse(&response));
+
+  // Parse a response whose album cover photo URL is directly specified but not
+  // determinable via a cover photo item ID.
+  album->Remove("coverItemId");
+  response.Remove("item");
   EXPECT_EQ(FetchGooglePhotosAlbumsResponse::New(
                 mojo::Clone(valid_albums_vector), kResumeToken),
             google_photos_albums_fetcher->ParseResponse(&response));
