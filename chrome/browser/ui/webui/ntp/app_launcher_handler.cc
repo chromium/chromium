@@ -745,8 +745,15 @@ void AppLauncherHandler::HandleGetApps(const base::ListValue* args) {
         extensions::InstallTracker::Get(profile));
     web_apps_observation_.Observe(&web_app_provider_->registrar());
     install_manager_observation_.Observe(&web_app_provider_->install_manager());
-  }
 
+    WebContents* web_contents = web_ui()->GetWebContents();
+    if (web_contents->GetLastCommittedURL() ==
+            GURL(chrome::kChromeUIAppsWithDeprecationDialogURL) &&
+        !deprecated_app_ids_.empty()) {
+      TabDialogs::FromWebContents(web_contents)
+          ->ShowDeprecatedAppsDialog(deprecated_app_ids_, web_contents);
+    }
+  }
   has_loaded_apps_ = true;
 }
 
@@ -1327,7 +1334,7 @@ AppLauncherHandler::CreateExtensionUninstallDialog() {
 
 void AppLauncherHandler::ExtensionRemoved(const Extension* extension,
                                           bool is_uninstall) {
-  // // If deprecated extension is deleted, remove from set for dialog.
+  // If deprecated extension is deleted, remove from set for dialog.
   if (deprecated_app_ids_.find(extension->id()) != deprecated_app_ids_.end()) {
     deprecated_app_ids_.erase(extension->id());
   }

@@ -133,7 +133,8 @@ bool OpenDeprecatedApplicationPrompt(Profile* profile,
   Browser::CreateParams create_params(profile, /*user_gesture=*/false);
   Browser* browser = Browser::Create(create_params);
 
-  NavigateParams params(browser, GURL(chrome::kChromeUIAppsURL),
+  NavigateParams params(browser,
+                        GURL(chrome::kChromeUIAppsWithDeprecationDialogURL),
                         ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   params.tabstrip_add_types = TabStripModel::ADD_ACTIVE;
@@ -141,7 +142,6 @@ bool OpenDeprecatedApplicationPrompt(Profile* profile,
 
   browser->window()->Show();
 
-  // TODO(crbug.com/1225779): Show the deprecated apps dialog.
   return true;
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||

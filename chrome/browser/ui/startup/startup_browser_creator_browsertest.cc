@@ -603,7 +603,8 @@ namespace {
 
 enum class ChromeAppDeprecationFeatureValue {
   kDefault,
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_FUCHSIA)
   kEnabled,
   kDisabled,
 #endif
@@ -611,7 +612,8 @@ enum class ChromeAppDeprecationFeatureValue {
 
 enum class ChromeAppsEnabledPrefValue {
   kDefault,
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_FUCHSIA)
   kEnabled,
   kDisabled,
 #endif
@@ -626,7 +628,8 @@ std::string ChromeAppDeprecationFeatureValueToString(
     case ChromeAppDeprecationFeatureValue::kDefault:
       result = "ChromeAppDeprecationFeatureDefault";
       break;
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_FUCHSIA)
     case ChromeAppDeprecationFeatureValue::kEnabled:
       result = "ChromeAppDeprecationFeatureEnabled";
       break;
@@ -640,7 +643,8 @@ std::string ChromeAppDeprecationFeatureValueToString(
     case ChromeAppsEnabledPrefValue::kDefault:
       result += "ChromeAppsEnabledPrefDefault";
       break;
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_FUCHSIA)
     case ChromeAppsEnabledPrefValue::kEnabled:
       result += "ChromeAppsEnabledPrefEnabled";
       break;
@@ -699,6 +703,11 @@ class StartupBrowserCreatorChromeAppShortcutTest
 
   void ExpectBlockLaunch() {
     ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_FUCHSIA)
+    views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                         "DeprecatedAppsDialogView");
+#endif
     // Should have opened the requested homepage about:blank in 1st window.
     TabStripModel* tab_strip = browser()->tab_strip_model();
     EXPECT_EQ(1, tab_strip->count());
@@ -713,12 +722,18 @@ class StartupBrowserCreatorChromeAppShortcutTest
     EXPECT_EQ(1, other_tab_strip->count());
     EXPECT_FALSE(other_browser->is_type_app());
     EXPECT_TRUE(other_browser->is_type_normal());
-    EXPECT_EQ(GURL(chrome::kChromeUIAppsURL),
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_FUCHSIA)
+    EXPECT_EQ(GURL(chrome::kChromeUIAppsWithDeprecationDialogURL),
               other_tab_strip->GetWebContentsAt(0)->GetVisibleURL());
+    // Verify that the Deprecated Apps Dialog View also shows up.
+    EXPECT_TRUE(waiter.WaitIfNeededAndGet() != nullptr);
+#endif
   }
 
   bool IsExpectedToAllowLaunch() {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_FUCHSIA)
     switch (std::get<1>(GetParam())) {
       case ChromeAppsEnabledPrefValue::kEnabled:
         return true;
