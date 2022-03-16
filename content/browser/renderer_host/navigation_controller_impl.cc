@@ -695,27 +695,12 @@ void NavigationControllerImpl::Restore(
   for (auto& entry : *entries) {
     if (entry->GetURL().is_empty()) {
       // We're trying to restore an entry with an empty URL (e.g. from
-      // persisting the initial NavigationEntry, which is no longer possible but
-      // some old persisted sessions might still contain it). Trying to restore
-      // and navigate to an entry with an empty URL will result in crashes, so
-      // change the URL to about:blank. See also https://crbug.com/1240138.
-      if (entries->size() != 1) {
-        SCOPED_CRASH_KEY_NUMBER("EmptyURLRestore", "restored_entries_size",
-                                entries->size());
-        SCOPED_CRASH_KEY_NUMBER("EmptyURLRestore", "current_entries_size",
-                                entries_.size());
-        SCOPED_CRASH_KEY_NUMBER("EmptyURLRestore", "empty_url_entry_index",
-                                index);
-        NavigationEntryImpl::TreeNode* root_node =
-            static_cast<NavigationEntryImpl*>(entry.get())->root_node();
-        SCOPED_CRASH_KEY_NUMBER("EmptyURLRestore", "root_children",
-                                root_node->children.size());
-        SCOPED_CRASH_KEY_STRING256("EmptyURLRestore", "root_origin",
-                                   root_node->frame_entry->committed_origin()
-                                       .value()
-                                       .GetDebugString());
-        base::debug::DumpWithoutCrashing();
-      }
+      // persisting the initial NavigationEntry [which is no longer possible but
+      // some old persisted sessions might still contain it] or when the
+      // serializer failed to write the URL because it's too long). Trying to
+      // restore and navigate to an entry with an empty URL will result in
+      // crashes, so change the URL to about:blank. See also
+      // https://crbug.com/1240138 and https://crbug.com/1299335.
       entry->SetURL(GURL(url::kAboutBlankURL));
     }
     entries_.push_back(
