@@ -118,7 +118,8 @@ class PaymentMethodManifestTable : public WebDatabaseTable {
   // copies.
   std::vector<std::unique_ptr<SecurePaymentConfirmationCredential>>
   GetSecurePaymentConfirmationCredentials(
-      std::vector<std::vector<uint8_t>> credential_ids);
+      std::vector<std::vector<uint8_t>> credential_ids,
+      const std::string& relying_party_id);
 };
 
 }  // namespace payments

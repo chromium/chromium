@@ -771,6 +771,10 @@ const base::Feature kSecurePaymentConfirmation {
 #endif
 };
 
+// Enables API V3 changes in Secure Payment Confirmation.
+const base::Feature kSecurePaymentConfirmationAPIV3{
+    "SecurePaymentConfirmationAPIV3", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Used to control whether to remove the restriction that PaymentCredential in
 // WebAuthn and secure payment confirmation method in PaymentRequest API must
 // use a user verifying platform authenticator. When enabled, this allows using

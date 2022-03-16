@@ -72,6 +72,7 @@ class PaymentManifestWebDataService : public WebDataServiceBase,
   // `std::move()` for `credential_ids` parameter to avoid extra copies.
   WebDataServiceBase::Handle GetSecurePaymentConfirmationCredentials(
       std::vector<std::vector<uint8_t>> credential_ids,
+      const std::string& relying_party_id,
       WebDataServiceConsumer* consumer);
 
   // Clears all of the the secure payment confirmation credential information
@@ -117,6 +118,7 @@ class PaymentManifestWebDataService : public WebDataServiceBase,
       WebDatabase* db);
   std::unique_ptr<WDTypedResult> GetSecurePaymentConfirmationCredentialsImpl(
       std::vector<std::vector<uint8_t>> credential_ids,
+      const std::string& relying_party_id,
       WebDatabase* db);
 
   std::map<WebDataServiceBase::Handle, base::OnceClosure>

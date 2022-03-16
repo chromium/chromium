@@ -55,6 +55,7 @@ class SecurePaymentConfirmationTest
   SecurePaymentConfirmationTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kSecurePaymentConfirmation,
+                              features::kSecurePaymentConfirmationAPIV3,
                               features::kSecurePaymentConfirmationDebug},
         /*disabled_features=*/{});
   }
@@ -142,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest,
               "getSecurePaymentConfirmationStatusAfterCanMakePayment()")));
 }
 
-IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest, PaymentSheetShowsApp) {
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest, WrongCredentialRpId) {
   test_controller()->SetHasAuthenticator(true);
   NavigateTo("a.com", "/secure_payment_confirmation.html");
   std::vector<uint8_t> credential_id = {'c', 'r', 'e', 'd'};
@@ -155,6 +156,32 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest, PaymentSheetShowsApp) {
               std::make_unique<SecurePaymentConfirmationCredential>(
                   std::move(credential_id), "relying-party.example",
                   std::move(user_id)),
+              /*consumer=*/this);
+
+  // getSecurePaymentConfirmationStatus creates a SPC credential with RP ID
+  // a.com, which doesn't match the stored credential's relying-party.example,
+  // so an error dialog will be displayed.
+  ResetEventWaiterForSingleEvent(TestEvent::kErrorDisplayed);
+  ExecuteScriptAsync(GetActiveWebContents(),
+                     "getSecurePaymentConfirmationStatus()");
+
+  WaitForObservedEvent();
+  EXPECT_TRUE(database_write_responded_);
+  EXPECT_TRUE(test_controller()->app_descriptions().empty());
+}
+
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest, PaymentSheetShowsApp) {
+  test_controller()->SetHasAuthenticator(true);
+  NavigateTo("a.com", "/secure_payment_confirmation.html");
+  std::vector<uint8_t> credential_id = {'c', 'r', 'e', 'd'};
+  std::vector<uint8_t> user_id = {'u', 's', 'e', 'r'};
+  webdata_services::WebDataServiceWrapperFactory::
+      GetPaymentManifestWebDataServiceForBrowserContext(
+          GetActiveWebContents()->GetBrowserContext(),
+          ServiceAccessType::EXPLICIT_ACCESS)
+          ->AddSecurePaymentConfirmationCredential(
+              std::make_unique<SecurePaymentConfirmationCredential>(
+                  std::move(credential_id), "a.com", std::move(user_id)),
               /*consumer=*/this);
   ResetEventWaiterForSingleEvent(TestEvent::kUIDisplayed);
   ExecuteScriptAsync(GetActiveWebContents(),
@@ -963,6 +990,47 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
 
   ExpectFunnelCount(SecurePaymentConfirmationSystemPromptResult::kAccepted, 1);
   ExpectJourneyLoggerEvent(/*spc_confirm_logged=*/true);
+}
+
+class SecurePaymentConfirmationAPIV3DisabledTest
+    : public SecurePaymentConfirmationTest {
+ public:
+  SecurePaymentConfirmationAPIV3DisabledTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kSecurePaymentConfirmation},
+        /*disabled_features=*/{features::kSecurePaymentConfirmationAPIV3});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Test that the APIV3 is forward-compatible, i.e. the feature still works as
+// expected with V3 disabled.
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationAPIV3DisabledTest,
+                       PaymentSheetShowsApp) {
+  test_controller()->SetHasAuthenticator(true);
+  NavigateTo("a.com", "/secure_payment_confirmation.html");
+  std::vector<uint8_t> credential_id = {'c', 'r', 'e', 'd'};
+  std::vector<uint8_t> user_id = {'u', 's', 'e', 'r'};
+  webdata_services::WebDataServiceWrapperFactory::
+      GetPaymentManifestWebDataServiceForBrowserContext(
+          GetActiveWebContents()->GetBrowserContext(),
+          ServiceAccessType::EXPLICIT_ACCESS)
+          ->AddSecurePaymentConfirmationCredential(
+              std::make_unique<SecurePaymentConfirmationCredential>(
+                  std::move(credential_id), "a.com", std::move(user_id)),
+              /*consumer=*/this);
+  ResetEventWaiterForSingleEvent(TestEvent::kUIDisplayed);
+  ExecuteScriptAsync(GetActiveWebContents(),
+                     "getSecurePaymentConfirmationStatus()");
+
+  WaitForObservedEvent();
+  EXPECT_TRUE(database_write_responded_);
+  ASSERT_FALSE(test_controller()->app_descriptions().empty());
+  EXPECT_EQ(1u, test_controller()->app_descriptions().size());
+  EXPECT_EQ("display_name_for_instrument",
+            test_controller()->app_descriptions().front().label);
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)

@@ -52,6 +52,12 @@ TypeConverter<payments::mojom::blink::SecurePaymentConfirmationRequestPtr,
   output->payee_origin =
       blink::SecurityOrigin::CreateFromString(input->payeeOrigin());
 
+  if (blink::RuntimeEnabledFeatures::SecurePaymentConfirmationAPIV3Enabled()) {
+    output->rp_id = input->rpId();
+  } else {
+    output->rp_id = "";
+  }
+
   return output;
 }
 

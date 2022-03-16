@@ -173,35 +173,44 @@ TEST_F(PaymentMethodManifestTableTest, AddAndGetMultipleManifest) {
 TEST_F(PaymentMethodManifestTableTest, GetNonExistingCredential) {
   PaymentMethodManifestTable* table =
       PaymentMethodManifestTable::FromWebDatabase(db_.get());
+  std::string relying_party_id("relying-party.example");
+  EXPECT_TRUE(table
+                  ->GetSecurePaymentConfirmationCredentials(
+                      CreateCredentialIdList(), relying_party_id)
+                  .empty());
+
   EXPECT_TRUE(
-      table->GetSecurePaymentConfirmationCredentials(CreateCredentialIdList())
+      table->GetSecurePaymentConfirmationCredentials({}, relying_party_id)
           .empty());
 
-  EXPECT_TRUE(table->GetSecurePaymentConfirmationCredentials({}).empty());
-
-  EXPECT_TRUE(
-      table->GetSecurePaymentConfirmationCredentials({std::vector<uint8_t>()})
-          .empty());
+  EXPECT_TRUE(table
+                  ->GetSecurePaymentConfirmationCredentials(
+                      {std::vector<uint8_t>()}, relying_party_id)
+                  .empty());
 }
 
 TEST_F(PaymentMethodManifestTableTest, AddAndGetOneValidCredential) {
   PaymentMethodManifestTable* table =
       PaymentMethodManifestTable::FromWebDatabase(db_.get());
 
+  std::string relying_party_id("relying-party.example");
   EXPECT_TRUE(table->AddSecurePaymentConfirmationCredential(
-      SecurePaymentConfirmationCredential(
-          CreateCredentialId(), "relying-party.example", CreateUserId())));
+      SecurePaymentConfirmationCredential(CreateCredentialId(),
+                                          relying_party_id, CreateUserId())));
 
-  auto credentials =
-      table->GetSecurePaymentConfirmationCredentials(CreateCredentialIdList());
+  auto credentials = table->GetSecurePaymentConfirmationCredentials(
+      CreateCredentialIdList(), relying_party_id);
 
-  ExpectOneValidCredential({0, 1, 2, 3}, "relying-party.example", {4, 5, 6, 7},
+  ExpectOneValidCredential({0, 1, 2, 3}, relying_party_id, {4, 5, 6, 7},
                            std::move(credentials));
 
-  EXPECT_TRUE(table->GetSecurePaymentConfirmationCredentials({}).empty());
   EXPECT_TRUE(
-      table->GetSecurePaymentConfirmationCredentials({std::vector<uint8_t>()})
+      table->GetSecurePaymentConfirmationCredentials({}, relying_party_id)
           .empty());
+  EXPECT_TRUE(table
+                  ->GetSecurePaymentConfirmationCredentials(
+                      {std::vector<uint8_t>()}, relying_party_id)
+                  .empty());
 }
 
 TEST_F(PaymentMethodManifestTableTest, AddingInvalidCredentialReturnsFalse) {
@@ -229,19 +238,20 @@ TEST_F(PaymentMethodManifestTableTest, AddingInvalidCredentialReturnsFalse) {
 TEST_F(PaymentMethodManifestTableTest, UpdatingCredentialReturnsTrue) {
   PaymentMethodManifestTable* table =
       PaymentMethodManifestTable::FromWebDatabase(db_.get());
+  std::string relying_party_id("relying-party.example");
   EXPECT_TRUE(table->AddSecurePaymentConfirmationCredential(
       SecurePaymentConfirmationCredential(CreateCredentialId(/*first_byte=*/0),
-                                          "relying-party.example",
+                                          relying_party_id,
                                           CreateUserId(/*first_byte=*/4))));
 
   EXPECT_TRUE(table->AddSecurePaymentConfirmationCredential(
       SecurePaymentConfirmationCredential(CreateCredentialId(/*first_byte=*/0),
-                                          "relying-party.example",
+                                          relying_party_id,
                                           CreateUserId(/*first_byte=*/4))));
 
   auto credentials = table->GetSecurePaymentConfirmationCredentials(
-      CreateCredentialIdList(/*first_byte=*/0));
-  ExpectOneValidCredential({0, 1, 2, 3}, "relying-party.example", {4, 5, 6, 7},
+      CreateCredentialIdList(/*first_byte=*/0), relying_party_id);
+  ExpectOneValidCredential({0, 1, 2, 3}, relying_party_id, {4, 5, 6, 7},
                            std::move(credentials));
 }
 
@@ -260,7 +270,7 @@ TEST_F(PaymentMethodManifestTableTest,
                                           CreateUserId(/*first_byte=*/5))));
 
   auto credentials = table->GetSecurePaymentConfirmationCredentials(
-      CreateCredentialIdList(/*first_byte=*/0));
+      CreateCredentialIdList(/*first_byte=*/0), "relying-party-1.example");
   ExpectOneValidCredential({0, 1, 2, 3}, "relying-party-1.example",
                            {4, 5, 6, 7}, std::move(credentials));
 }
@@ -268,35 +278,36 @@ TEST_F(PaymentMethodManifestTableTest,
 TEST_F(PaymentMethodManifestTableTest, RelyingPartyCanHaveMultipleCredentials) {
   PaymentMethodManifestTable* table =
       PaymentMethodManifestTable::FromWebDatabase(db_.get());
+  std::string relying_party_id("relying-party.example");
 
   EXPECT_TRUE(table->AddSecurePaymentConfirmationCredential(
       SecurePaymentConfirmationCredential(CreateCredentialId(/*first_byte=*/0),
-                                          "relying-party.example",
+                                          relying_party_id,
                                           CreateUserId(/*first_byte=*/4))));
 
   EXPECT_TRUE(table->AddSecurePaymentConfirmationCredential(
       SecurePaymentConfirmationCredential(CreateCredentialId(/*first_byte=*/4),
-                                          "relying-party.example",
+                                          relying_party_id,
                                           CreateUserId(/*first_byte=*/8))));
 
   auto credentials = table->GetSecurePaymentConfirmationCredentials(
-      CreateCredentialIdList(/*first_byte=*/0));
+      CreateCredentialIdList(/*first_byte=*/0), relying_party_id);
 
-  ExpectOneValidCredential({0, 1, 2, 3}, "relying-party.example", {4, 5, 6, 7},
+  ExpectOneValidCredential({0, 1, 2, 3}, relying_party_id, {4, 5, 6, 7},
                            std::move(credentials));
 
   credentials = table->GetSecurePaymentConfirmationCredentials(
-      CreateCredentialIdList(/*first_byte=*/4));
+      CreateCredentialIdList(/*first_byte=*/4), relying_party_id);
 
-  ExpectOneValidCredential({4, 5, 6, 7}, "relying-party.example",
-                           {8, 9, 10, 11}, std::move(credentials));
+  ExpectOneValidCredential({4, 5, 6, 7}, relying_party_id, {8, 9, 10, 11},
+                           std::move(credentials));
 
   std::vector<std::vector<uint8_t>> credential_ids;
   credential_ids.push_back(CreateCredentialId(/*first_byte=*/0));
   credential_ids.push_back(CreateCredentialId(/*first_byte=*/4));
 
-  credentials =
-      table->GetSecurePaymentConfirmationCredentials(std::move(credential_ids));
+  credentials = table->GetSecurePaymentConfirmationCredentials(
+      std::move(credential_ids), relying_party_id);
 
   ASSERT_EQ(2U, credentials.size());
 
@@ -321,34 +332,36 @@ TEST_F(PaymentMethodManifestTableTest,
        SameRelyingPartyAndUserIdOverwritesCredential) {
   PaymentMethodManifestTable* table =
       PaymentMethodManifestTable::FromWebDatabase(db_.get());
+  std::string relying_party_id("relying-party.example");
 
   EXPECT_TRUE(table->AddSecurePaymentConfirmationCredential(
       SecurePaymentConfirmationCredential(CreateCredentialId(/*first_byte=*/0),
-                                          "relying-party.example",
+                                          relying_party_id,
                                           CreateUserId(/*first_byte=*/4))));
 
   EXPECT_TRUE(table->AddSecurePaymentConfirmationCredential(
       SecurePaymentConfirmationCredential(CreateCredentialId(/*first_byte=*/4),
-                                          "relying-party.example",
+                                          relying_party_id,
                                           CreateUserId(/*first_byte=*/4))));
 
-  EXPECT_TRUE(table
-                  ->GetSecurePaymentConfirmationCredentials(
-                      CreateCredentialIdList(/*first_byte=*/0))
-                  .empty());
+  EXPECT_TRUE(
+      table
+          ->GetSecurePaymentConfirmationCredentials(
+              CreateCredentialIdList(/*first_byte=*/0), relying_party_id)
+          .empty());
 
   auto credentials = table->GetSecurePaymentConfirmationCredentials(
-      CreateCredentialIdList(/*first_byte=*/4));
+      CreateCredentialIdList(/*first_byte=*/4), relying_party_id);
 
-  ExpectOneValidCredential({4, 5, 6, 7}, "relying-party.example", {4, 5, 6, 7},
+  ExpectOneValidCredential({4, 5, 6, 7}, relying_party_id, {4, 5, 6, 7},
                            std::move(credentials));
 
   std::vector<std::vector<uint8_t>> credential_ids;
   credential_ids.push_back(CreateCredentialId(/*first_byte=*/0));
   credential_ids.push_back(CreateCredentialId(/*first_byte=*/4));
 
-  credentials =
-      table->GetSecurePaymentConfirmationCredentials(std::move(credential_ids));
+  credentials = table->GetSecurePaymentConfirmationCredentials(
+      std::move(credential_ids), relying_party_id);
 
   ASSERT_EQ(1U, credentials.size());
 
@@ -356,7 +369,7 @@ TEST_F(PaymentMethodManifestTableTest,
   ASSERT_TRUE(credentials.front()->IsValidNewCredential());
   std::vector<uint8_t> expected_credential_id = {4, 5, 6, 7};
   EXPECT_EQ(expected_credential_id, credentials.front()->credential_id);
-  EXPECT_EQ("relying-party.example", credentials.front()->relying_party_id);
+  EXPECT_EQ(relying_party_id, credentials.front()->relying_party_id);
   std::vector<uint8_t> expected_user_id = {4, 5, 6, 7};
   EXPECT_EQ(expected_user_id, credentials.front()->user_id);
 }
@@ -364,14 +377,15 @@ TEST_F(PaymentMethodManifestTableTest,
 TEST_F(PaymentMethodManifestTableTest, ClearCredentials) {
   PaymentMethodManifestTable* table =
       PaymentMethodManifestTable::FromWebDatabase(db_.get());
+  std::string relying_party_id("relying-party.example");
   EXPECT_TRUE(table->AddSecurePaymentConfirmationCredential(
       SecurePaymentConfirmationCredential(CreateCredentialId(/*first_byte=*/0),
-                                          "relying-party.example",
+                                          relying_party_id,
                                           CreateUserId(/*first_byte=*/4))));
 
   EXPECT_TRUE(table->AddSecurePaymentConfirmationCredential(
       SecurePaymentConfirmationCredential(CreateCredentialId(/*first_byte=*/1),
-                                          "relying-party.example",
+                                          relying_party_id,
                                           CreateUserId(/*first_byte=*/8))));
 
   table->ClearSecurePaymentConfirmationCredentials(
@@ -381,23 +395,25 @@ TEST_F(PaymentMethodManifestTableTest, ClearCredentials) {
   std::vector<std::vector<uint8_t>> credential_ids;
   credential_ids.push_back(CreateCredentialId(/*first_byte=*/0));
   credential_ids.push_back(CreateCredentialId(/*first_byte=*/1));
-  EXPECT_TRUE(
-      table->GetSecurePaymentConfirmationCredentials(std::move(credential_ids))
-          .empty());
+  EXPECT_TRUE(table
+                  ->GetSecurePaymentConfirmationCredentials(
+                      std::move(credential_ids), relying_party_id)
+                  .empty());
 }
 
 TEST_F(PaymentMethodManifestTableTest,
        ClearCredentials_NotDeleteOutOfTimeRange) {
   PaymentMethodManifestTable* table =
       PaymentMethodManifestTable::FromWebDatabase(db_.get());
+  std::string relying_party_id("relying-party.example");
   EXPECT_TRUE(table->AddSecurePaymentConfirmationCredential(
       SecurePaymentConfirmationCredential(CreateCredentialId(/*first_byte=*/0),
-                                          "relying-party.example",
+                                          relying_party_id,
                                           CreateUserId(/*first_byte=*/4))));
 
   EXPECT_TRUE(table->AddSecurePaymentConfirmationCredential(
       SecurePaymentConfirmationCredential(CreateCredentialId(/*first_byte=*/1),
-                                          "relying-party.example",
+                                          relying_party_id,
                                           CreateUserId(/*first_byte=*/8))));
 
   table->ClearSecurePaymentConfirmationCredentials(
@@ -406,10 +422,10 @@ TEST_F(PaymentMethodManifestTableTest,
   std::vector<std::vector<uint8_t>> credential_ids;
   credential_ids.push_back(CreateCredentialId(/*first_byte=*/0));
   credential_ids.push_back(CreateCredentialId(/*first_byte=*/1));
-  EXPECT_EQ(
-      2u,
-      table->GetSecurePaymentConfirmationCredentials(std::move(credential_ids))
-          .size());
+  EXPECT_EQ(2u, table
+                    ->GetSecurePaymentConfirmationCredentials(
+                        std::move(credential_ids), std::move(relying_party_id))
+                    .size());
 }
 
 TEST_F(PaymentMethodManifestTableTest,
@@ -486,10 +502,92 @@ TEST_F(PaymentMethodManifestTableTest, CredentialTableUserIdMigration) {
   std::vector<std::vector<uint8_t>> credential_ids;
   credential_ids.push_back(CreateCredentialId(/*first_byte=*/0));
   credential_ids.push_back(CreateCredentialId(/*first_byte=*/1));
-  EXPECT_EQ(
-      2u,
-      table->GetSecurePaymentConfirmationCredentials(std::move(credential_ids))
-          .size());
+  EXPECT_EQ(2u, table
+                    ->GetSecurePaymentConfirmationCredentials(
+                        std::move(credential_ids), "relying-party.example")
+                    .size());
 }
+
+// Tests where there's additional test expectations when SPC API V3 is enabled.
+// These are very similar to their equivalent PaymentMethodManifestTableTests,
+// just with some additional expectations at the end of each test.
+class PaymentMethodManifestTableSecurePaymentConfirmationAPIV3Test
+    : public PaymentMethodManifestTableTest {
+ public:
+  PaymentMethodManifestTableSecurePaymentConfirmationAPIV3Test() = default;
+  ~PaymentMethodManifestTableSecurePaymentConfirmationAPIV3Test() override =
+      default;
+
+  PaymentMethodManifestTableSecurePaymentConfirmationAPIV3Test(
+      const PaymentMethodManifestTableSecurePaymentConfirmationAPIV3Test&
+          other) = delete;
+  PaymentMethodManifestTableSecurePaymentConfirmationAPIV3Test& operator=(
+      const PaymentMethodManifestTableSecurePaymentConfirmationAPIV3Test&
+          other) = delete;
+
+ protected:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kSecurePaymentConfirmationAPIV3);
+    PaymentMethodManifestTableTest::SetUp();
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(PaymentMethodManifestTableSecurePaymentConfirmationAPIV3Test,
+       AddAndGetOneValidCredential) {
+  PaymentMethodManifestTable* table =
+      PaymentMethodManifestTable::FromWebDatabase(db_.get());
+
+  std::string relying_party_id("relying-party.example");
+  EXPECT_TRUE(table->AddSecurePaymentConfirmationCredential(
+      SecurePaymentConfirmationCredential(CreateCredentialId(),
+                                          relying_party_id, CreateUserId())));
+
+  auto credentials = table->GetSecurePaymentConfirmationCredentials(
+      CreateCredentialIdList(), relying_party_id);
+
+  ExpectOneValidCredential({0, 1, 2, 3}, relying_party_id, {4, 5, 6, 7},
+                           std::move(credentials));
+
+  EXPECT_TRUE(
+      table->GetSecurePaymentConfirmationCredentials({}, relying_party_id)
+          .empty());
+  EXPECT_TRUE(table
+                  ->GetSecurePaymentConfirmationCredentials(
+                      {std::vector<uint8_t>()}, relying_party_id)
+                  .empty());
+  EXPECT_TRUE(table
+                  ->GetSecurePaymentConfirmationCredentials(
+                      CreateCredentialIdList(), /*relying_party_id=*/"")
+                  .empty());
+}
+
+TEST_F(PaymentMethodManifestTableSecurePaymentConfirmationAPIV3Test,
+       DifferentRelyingPartiesCannotUseSameCredentialIdentifier) {
+  PaymentMethodManifestTable* table =
+      PaymentMethodManifestTable::FromWebDatabase(db_.get());
+  EXPECT_TRUE(table->AddSecurePaymentConfirmationCredential(
+      SecurePaymentConfirmationCredential(CreateCredentialId(/*first_byte=*/0),
+                                          "relying-party-1.example",
+                                          CreateUserId(/*first_byte=*/4))));
+
+  EXPECT_FALSE(table->AddSecurePaymentConfirmationCredential(
+      SecurePaymentConfirmationCredential(CreateCredentialId(/*first_byte=*/0),
+                                          "relying-party-2.example",
+                                          CreateUserId(/*first_byte=*/5))));
+
+  auto credentials = table->GetSecurePaymentConfirmationCredentials(
+      CreateCredentialIdList(/*first_byte=*/0), "relying-party-1.example");
+  ExpectOneValidCredential({0, 1, 2, 3}, "relying-party-1.example",
+                           {4, 5, 6, 7}, std::move(credentials));
+  EXPECT_TRUE(table
+                  ->GetSecurePaymentConfirmationCredentials(
+                      CreateCredentialIdList(/*first_byte=*/0),
+                      "relying-party-2.example")
+                  .empty());
+}
+
 }  // namespace
 }  // namespace payments

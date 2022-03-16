@@ -28,7 +28,9 @@ function getTestMethodData(credentialIdentifier, iconUrl) {
       },
       timeout: 60000,
       payeeOrigin: 'https://example-payee-origin.test',
-  }}];
+      rpId: 'a.com',
+    },
+  }];
 }
 
 /**

@@ -20,4 +20,8 @@ dictionary SecurePaymentConfirmationRequest {
     required PaymentCredentialInstrument instrument;
     unsigned long timeout;
     required USVString payeeOrigin;
+
+    // The relying party, which must be the relying party of a given credential
+    // ID for it to match.
+    [RuntimeEnabled=SecurePaymentConfirmationAPIV3] required USVString rpId;
 };

@@ -2111,6 +2111,10 @@
       status: "test",
     },
     {
+      name: "SecurePaymentConfirmationAPIV3",
+      status: "test",
+    },
+    {
       name: "SecurePaymentConfirmationDebug",
     },
     {

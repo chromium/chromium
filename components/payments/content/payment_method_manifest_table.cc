@@ -7,10 +7,12 @@
 #include <time.h>
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "components/payments/core/secure_payment_confirmation_credential.h"
 #include "components/webdata/common/web_database.h"
+#include "content/public/common/content_features.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
 
@@ -243,12 +245,20 @@ bool PaymentMethodManifestTable::AddSecurePaymentConfirmationCredential(
 
 std::vector<std::unique_ptr<SecurePaymentConfirmationCredential>>
 PaymentMethodManifestTable::GetSecurePaymentConfirmationCredentials(
-    std::vector<std::vector<uint8_t>> credential_ids) {
+    std::vector<std::vector<uint8_t>> credential_ids,
+    const std::string& relying_party_id) {
   std::vector<std::unique_ptr<SecurePaymentConfirmationCredential>> credentials;
   sql::Statement s(
-      db_->GetUniqueStatement("SELECT relying_party_id, user_id "
-                              "FROM secure_payment_confirmation_instrument "
-                              "WHERE credential_id=?"));
+      base::FeatureList::IsEnabled(features::kSecurePaymentConfirmationAPIV3)
+          ? db_->GetUniqueStatement(
+                "SELECT relying_party_id, user_id "
+                "FROM secure_payment_confirmation_instrument "
+                "WHERE credential_id=? "
+                "AND relying_party_id=?")
+          : db_->GetUniqueStatement(
+                "SELECT relying_party_id, user_id "
+                "FROM secure_payment_confirmation_instrument "
+                "WHERE credential_id=?"));
   // The `credential_id` temporary variable is not `const` because it is
   // std::move()'d into the credential below.
   for (auto& credential_id : credential_ids) {
@@ -257,6 +267,8 @@ PaymentMethodManifestTable::GetSecurePaymentConfirmationCredentials(
       continue;
 
     s.BindBlob(0, credential_id);
+    if (base::FeatureList::IsEnabled(features::kSecurePaymentConfirmationAPIV3))
+      s.BindString(1, relying_party_id);
 
     if (!s.Step())
       continue;

@@ -80,6 +80,14 @@ SecurePaymentConfirmationHelper::ParseSecurePaymentConfirmationData(
         "in the \"payeeOrigin\" field.");
     return nullptr;
   }
+  if (RuntimeEnabledFeatures::SecurePaymentConfirmationAPIV3Enabled()) {
+    if (request->rpId().IsEmpty()) {
+      exception_state.ThrowTypeError(
+          "The \"secure-payment-confirmation\" method requires a non-empty "
+          "\"rpId\" field.");
+      return nullptr;
+    }
+  }
 
   return mojo::ConvertTo<
       payments::mojom::blink::SecurePaymentConfirmationRequestPtr>(request);

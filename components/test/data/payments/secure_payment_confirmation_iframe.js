@@ -15,11 +15,12 @@
 async function requestPayment(credentialId) { // eslint-disable-line no-unused-vars, max-len
   try {
     const request = new PaymentRequest(
-        [{supportedMethods: 'secure-payment-confirmation',
+        [{
+          supportedMethods: 'secure-payment-confirmation',
           data: {
             action: 'authenticate',
-            credentialIds: [Uint8Array.from(atob(credentialId),
-                                            (b) => b.charCodeAt(0))],
+            credentialIds:
+                [Uint8Array.from(atob(credentialId), (b) => b.charCodeAt(0))],
             challenge: new TextEncoder().encode('hello world'),
             instrument: {
               displayName: 'Hello World',
@@ -27,7 +28,9 @@ async function requestPayment(credentialId) { // eslint-disable-line no-unused-v
             },
             timeout: 6000,
             payeeOrigin: 'https://example-payee-origin.test',
-          }}],
+            rpId: 'a.com',
+          },
+        }],
         {total: {label: 'TEST', amount: {currency: 'USD', value: '0.01'}}});
     const response = await request.show();
     await response.complete();

@@ -145,7 +145,8 @@ void SecurePaymentConfirmationAppFactory::
 
   WebDataServiceBase::Handle handle =
       request->web_data_service->GetSecurePaymentConfirmationCredentials(
-          std::move(request->mojo_request->credential_ids), this);
+          std::move(request->mojo_request->credential_ids),
+          std::move(request->mojo_request->rp_id), this);
   requests_[handle] = std::move(request);
 }
 
@@ -238,6 +239,7 @@ void SecurePaymentConfirmationAppFactory::OnWebDataServiceRequestDone(
           std::vector<std::unique_ptr<SecurePaymentConfirmationCredential>>>*>(
                         result.get())
                         ->GetValue();
+
   std::unique_ptr<SecurePaymentConfirmationCredential> credential;
 
   // For the pilot phase, arbitrarily use the first matching credential.

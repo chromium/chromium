@@ -15,15 +15,16 @@ test(() => {
   new PaymentRequest([{
     supportedMethods: 'secure-payment-confirmation',
     data: {
-       // All valid parameters.
-       credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
-       challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
-       payeeOrigin: window.location.origin,
-       timeout: 60000,
-       instrument: {
+      // All valid parameters.
+      credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
+      challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+      payeeOrigin: window.location.origin,
+      timeout: 60000,
+      instrument: {
         displayName: 'X',
         icon: 'https://example.test/icon.png',
-       },
+      },
+      rpId: 'relying-party.example',
     },
   }], details);
 }, 'Valid payment method data does not throw exceptions.');
@@ -32,14 +33,15 @@ test(() => {
   new PaymentRequest([{
     supportedMethods: 'secure-payment-confirmation',
     data: {
-       credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
-       challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
-       payeeOrigin: window.location.origin,
-       // Omitted timeout field.
-       instrument: {
-         displayName: 'X',
-         icon: 'https://example.test/icon.png',
-       },
+      credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
+      challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+      payeeOrigin: window.location.origin,
+      // Omitted timeout field.
+      instrument: {
+        displayName: 'X',
+        icon: 'https://example.test/icon.png',
+      },
+      rpId: 'relying-party.example',
     },
   }], details);
 }, 'The timeout field is optional.');
@@ -57,6 +59,7 @@ test(() => {
           displayName: 'X',
           icon: 'https://example.test/icon.png',
         },
+        rpId: 'relying-party.example',
       },
     }, {supportedMethods: 'basic-card'}], details);
   });
@@ -75,6 +78,7 @@ test(() => {
           displayName: 'X',
           icon: 'https://example.test/icon.png',
         },
+        rpId: 'relying-party.example',
       },
     }], details);
   });
@@ -93,6 +97,7 @@ test(() => {
           displayName: 'X',
           icon: 'https://example.test/icon.png',
         },
+        rpId: 'relying-party.example',
       },
     }], details);
   });
@@ -111,6 +116,7 @@ test(() => {
           displayName: 'X',
           icon: 'https://example.test/icon.png',
         },
+        rpId: 'relying-party.example',
       },
     }], details);
   });
@@ -131,6 +137,7 @@ test(() => {
           displayName: 'X',
           icon: 'https://example.test/icon.png',
         },
+        rpId: 'relying-party.example',
       },
     }], details);
   });
@@ -150,6 +157,7 @@ test(() => {
           displayName: 'X',
           icon: 'https://example.test/icon.png',
         },
+        rpId: 'relying-party.example',
       },
     }], details);
   });
@@ -169,6 +177,7 @@ test(() => {
           displayName: 'X',
           icon: 'https://example.test/icon.png',
         },
+        rpId: 'relying-party.example',
       },
     }], details);
   });
@@ -188,6 +197,7 @@ test(() => {
           displayName: 'X',
           icon: 'https://example.test/icon.png',
         },
+        rpId: 'relying-party.example',
       },
     }], details);
   });
@@ -208,6 +218,7 @@ test(() => {
           displayName: 'X',
           icon: 'https://example.test/icon.png',
         },
+        rpId: 'relying-party.example',
       },
     }], details);
   });
@@ -227,6 +238,7 @@ test(() => {
           displayName: 'X',
           icon: 'https://example.test/icon.png',
         },
+        rpId: 'relying-party.example',
       },
     }], details);
   });
@@ -241,6 +253,7 @@ test(() => {
         challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
         payeeOrigin: window.location.origin,
         timeout: 60000,
+        rpId: 'relying-party.example',
         // Omitted instrument field.
       },
     }], details);
@@ -260,6 +273,7 @@ test(() => {
           // Ommitted instrument display name.
           icon: 'https://example.test/icon.png',
         },
+        rpId: 'relying-party.example',
       },
     }], details);
   });
@@ -278,6 +292,7 @@ test(() => {
           displayName: 'X',
           // Ommitted instrument icon.
         },
+        rpId: 'relying-party.example',
       },
     }], details);
   });
@@ -296,9 +311,29 @@ test(() => {
           displayName: 'X',
           icon: 'https://example.test/icon.png',
         },
+        rpId: 'relying-party.example',
       },
     }], details);
   });
 }, 'Payee origin is required.');
+
+test(() => {
+  assert_throws_js(TypeError, () => {
+    new PaymentRequest([{
+      supportedMethods: 'secure-payment-confirmation',
+      data: {
+        credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
+        challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+        payeeOrigin: window.location.origin,
+        timeout: 60000,
+        instrument: {
+          displayName: 'X',
+          icon: 'https://example.test/icon.png',
+        },
+        // Omitted rpId.
+      },
+    }], details);
+  });
+}, 'rpId is required.');
 
 </script>
