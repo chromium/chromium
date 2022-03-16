@@ -38,12 +38,30 @@ class IntentUtilTest : public testing::Test {
     return condition;
   }
 
+  apps::IntentPtr CreateShareIntent(const std::string& mime_type) {
+    auto intent = std::make_unique<apps::Intent>(apps_util::kIntentActionSend);
+    intent->mime_type = mime_type;
+    return intent;
+  }
+
   // TODO(crbug.com/1092784): Add other things for a completed intent.
-  apps::mojom::IntentPtr CreateShareIntent(const std::string& mime_type) {
+  apps::mojom::IntentPtr CreateShareMojomIntent(const std::string& mime_type) {
     auto intent = apps::mojom::Intent::New();
     intent->action = apps_util::kIntentActionSend;
     intent->mime_type = mime_type;
     return intent;
+  }
+
+  std::vector<apps::IntentFilePtr> CreateIntentFiles(
+      const GURL& url,
+      absl::optional<std::string> mime_type,
+      absl::optional<bool> is_directory) {
+    auto file = std::make_unique<apps::IntentFile>(url);
+    file->mime_type = mime_type;
+    file->is_directory = is_directory;
+    std::vector<apps::IntentFilePtr> files;
+    files.push_back(std::move(file));
+    return files;
   }
 
   apps::mojom::IntentPtr CreateIntent(
@@ -426,7 +444,8 @@ TEST_F(IntentUtilTest, ActionMatch) {
   EXPECT_FALSE(intent->MatchFilter(send_intent_filter));
 }
 
-TEST_F(IntentUtilTest, MimeTypeMatch) {
+// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
+TEST_F(IntentUtilTest, MimeTypeMatchMojom) {
   std::string mime_type1 = "text/plain";
   std::string mime_type2 = "image/jpeg";
   std::string mime_type_sub_wildcard = "text/*";
@@ -434,12 +453,12 @@ TEST_F(IntentUtilTest, MimeTypeMatch) {
   std::string mime_type_only_main_type = "text";
   std::string mime_type_only_star = "*";
 
-  auto intent1 = CreateShareIntent(mime_type1);
-  auto intent2 = CreateShareIntent(mime_type2);
-  auto intent_sub_wildcard = CreateShareIntent(mime_type_sub_wildcard);
-  auto intent_all_wildcard = CreateShareIntent(mime_type_all_wildcard);
-  auto intent_only_main_type = CreateShareIntent(mime_type_only_main_type);
-  auto intent_only_star = CreateShareIntent(mime_type_only_star);
+  auto intent1 = CreateShareMojomIntent(mime_type1);
+  auto intent2 = CreateShareMojomIntent(mime_type2);
+  auto intent_sub_wildcard = CreateShareMojomIntent(mime_type_sub_wildcard);
+  auto intent_all_wildcard = CreateShareMojomIntent(mime_type_all_wildcard);
+  auto intent_only_main_type = CreateShareMojomIntent(mime_type_only_main_type);
+  auto intent_only_star = CreateShareMojomIntent(mime_type_only_star);
 
   auto filter1 = apps_util::CreateIntentFilterForMimeType(mime_type1);
 
@@ -516,7 +535,82 @@ TEST_F(IntentUtilTest, MimeTypeMatch) {
       apps_util::IntentMatchesFilter(intent_only_star, filter_only_star));
 }
 
-TEST_F(IntentUtilTest, CommonMimeTypeMatch) {
+TEST_F(IntentUtilTest, MimeTypeMatch) {
+  std::string mime_type1 = "text/plain";
+  std::string mime_type2 = "image/jpeg";
+  std::string mime_type_sub_wildcard = "text/*";
+  std::string mime_type_all_wildcard = "*/*";
+  std::string mime_type_only_main_type = "text";
+  std::string mime_type_only_star = "*";
+
+  auto intent1 = CreateShareIntent(mime_type1);
+  auto intent2 = CreateShareIntent(mime_type2);
+  auto intent_sub_wildcard = CreateShareIntent(mime_type_sub_wildcard);
+  auto intent_all_wildcard = CreateShareIntent(mime_type_all_wildcard);
+  auto intent_only_main_type = CreateShareIntent(mime_type_only_main_type);
+  auto intent_only_star = CreateShareIntent(mime_type_only_star);
+
+  auto filter1 = apps_util::MakeIntentFilterForMimeType(mime_type1);
+
+  EXPECT_TRUE(intent1->MatchFilter(filter1));
+  EXPECT_FALSE(intent2->MatchFilter(filter1));
+  EXPECT_FALSE(intent_sub_wildcard->MatchFilter(filter1));
+  EXPECT_FALSE(intent_all_wildcard->MatchFilter(filter1));
+  EXPECT_FALSE(intent_only_main_type->MatchFilter(filter1));
+  EXPECT_FALSE(intent_only_star->MatchFilter(filter1));
+
+  auto filter2 = apps_util::MakeIntentFilterForMimeType(mime_type2);
+
+  EXPECT_FALSE(intent1->MatchFilter(filter2));
+  EXPECT_TRUE(intent2->MatchFilter(filter2));
+  EXPECT_FALSE(intent_sub_wildcard->MatchFilter(filter2));
+  EXPECT_FALSE(intent_all_wildcard->MatchFilter(filter2));
+  EXPECT_FALSE(intent_only_main_type->MatchFilter(filter2));
+  EXPECT_FALSE(intent_only_star->MatchFilter(filter2));
+
+  auto filter_sub_wildcard =
+      apps_util::MakeIntentFilterForMimeType(mime_type_sub_wildcard);
+
+  EXPECT_TRUE(intent1->MatchFilter(filter_sub_wildcard));
+  EXPECT_FALSE(intent2->MatchFilter(filter_sub_wildcard));
+  EXPECT_TRUE(intent_sub_wildcard->MatchFilter(filter_sub_wildcard));
+  EXPECT_FALSE(intent_all_wildcard->MatchFilter(filter_sub_wildcard));
+  EXPECT_TRUE(intent_only_main_type->MatchFilter(filter_sub_wildcard));
+  EXPECT_FALSE(intent_only_star->MatchFilter(filter_sub_wildcard));
+
+  auto filter_all_wildcard =
+      apps_util::MakeIntentFilterForMimeType(mime_type_all_wildcard);
+
+  EXPECT_TRUE(intent1->MatchFilter(filter_all_wildcard));
+  EXPECT_TRUE(intent2->MatchFilter(filter_all_wildcard));
+  EXPECT_TRUE(intent_sub_wildcard->MatchFilter(filter_all_wildcard));
+  EXPECT_TRUE(intent_all_wildcard->MatchFilter(filter_all_wildcard));
+  EXPECT_TRUE(intent_only_main_type->MatchFilter(filter_all_wildcard));
+  EXPECT_TRUE(intent_only_star->MatchFilter(filter_all_wildcard));
+
+  auto filter_only_main_type =
+      apps_util::MakeIntentFilterForMimeType(mime_type_only_main_type);
+
+  EXPECT_TRUE(intent1->MatchFilter(filter_only_main_type));
+  EXPECT_FALSE(intent2->MatchFilter(filter_only_main_type));
+  EXPECT_TRUE(intent_sub_wildcard->MatchFilter(filter_only_main_type));
+  EXPECT_FALSE(intent_all_wildcard->MatchFilter(filter_only_main_type));
+  EXPECT_TRUE(intent_only_main_type->MatchFilter(filter_only_main_type));
+  EXPECT_FALSE(intent_only_star->MatchFilter(filter_only_main_type));
+
+  auto filter_only_star =
+      apps_util::MakeIntentFilterForMimeType(mime_type_only_star);
+
+  EXPECT_TRUE(intent1->MatchFilter(filter_only_star));
+  EXPECT_TRUE(intent2->MatchFilter(filter_only_star));
+  EXPECT_TRUE(intent_sub_wildcard->MatchFilter(filter_only_star));
+  EXPECT_TRUE(intent_all_wildcard->MatchFilter(filter_only_star));
+  EXPECT_TRUE(intent_only_main_type->MatchFilter(filter_only_star));
+  EXPECT_TRUE(intent_only_star->MatchFilter(filter_only_star));
+}
+
+// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
+TEST_F(IntentUtilTest, CommonMimeTypeMatchMojom) {
   std::string mime_type1 = "text/plain";
   std::string mime_type2 = "image/jpeg";
   std::string mime_type3 = "text/html";
@@ -595,7 +689,87 @@ TEST_F(IntentUtilTest, CommonMimeTypeMatch) {
   EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter_all_wildcard));
 }
 
-TEST_F(IntentUtilTest, CommonMimeTypeMatchMultiple) {
+TEST_F(IntentUtilTest, CommonMimeTypeMatch) {
+  std::string mime_type1 = "text/plain";
+  std::string mime_type2 = "image/jpeg";
+  std::string mime_type3 = "text/html";
+  std::string mime_type_sub_wildcard = "text/*";
+  std::string mime_type_all_wildcard = "*/*";
+
+  auto filter1 = apps_util::MakeIntentFilterForSend(mime_type1);
+  auto filter2 = apps_util::MakeIntentFilterForSend(mime_type2);
+  auto filter3 = apps_util::MakeIntentFilterForSend(mime_type3);
+  auto filter_sub_wildcard =
+      apps_util::MakeIntentFilterForSend(mime_type_sub_wildcard);
+  auto filter_all_wildcard =
+      apps_util::MakeIntentFilterForSend(mime_type_all_wildcard);
+  auto filter1_and_2 = apps_util::MakeIntentFilterForSend(mime_type1);
+  filter1_and_2->conditions[1]->condition_values.push_back(
+      std::make_unique<apps::ConditionValue>(
+          mime_type2, apps::PatternMatchType::kMimeType));
+
+  std::vector<GURL> urls;
+  std::vector<std::string> mime_types;
+
+  urls.emplace_back("abc");
+
+  // Test match with text/plain type.
+  mime_types.push_back(mime_type1);
+  auto intent = std::make_unique<apps::Intent>(urls, mime_types);
+  EXPECT_TRUE(intent->MatchFilter(filter1));
+  EXPECT_FALSE(intent->MatchFilter(filter2));
+  EXPECT_TRUE(intent->MatchFilter(filter1_and_2));
+  EXPECT_FALSE(intent->MatchFilter(filter3));
+  EXPECT_TRUE(intent->MatchFilter(filter_sub_wildcard));
+  EXPECT_TRUE(intent->MatchFilter(filter_all_wildcard));
+
+  // Test match with image/jpeg type.
+  mime_types.clear();
+  mime_types.push_back(mime_type2);
+  intent = std::make_unique<apps::Intent>(urls, mime_types);
+  EXPECT_FALSE(intent->MatchFilter(filter1));
+  EXPECT_TRUE(intent->MatchFilter(filter2));
+  EXPECT_TRUE(intent->MatchFilter(filter1_and_2));
+  EXPECT_FALSE(intent->MatchFilter(filter3));
+  EXPECT_FALSE(intent->MatchFilter(filter_sub_wildcard));
+  EXPECT_TRUE(intent->MatchFilter(filter_all_wildcard));
+
+  // Test match with text/html type.
+  mime_types.clear();
+  mime_types.push_back(mime_type3);
+  intent = std::make_unique<apps::Intent>(urls, mime_types);
+  EXPECT_FALSE(intent->MatchFilter(filter1));
+  EXPECT_FALSE(intent->MatchFilter(filter2));
+  EXPECT_FALSE(intent->MatchFilter(filter1_and_2));
+  EXPECT_TRUE(intent->MatchFilter(filter3));
+  EXPECT_TRUE(intent->MatchFilter(filter_sub_wildcard));
+  EXPECT_TRUE(intent->MatchFilter(filter_all_wildcard));
+
+  // Test match with text/* types.
+  mime_types.clear();
+  mime_types.push_back(mime_type_sub_wildcard);
+  intent = std::make_unique<apps::Intent>(urls, mime_types);
+  EXPECT_FALSE(intent->MatchFilter(filter1));
+  EXPECT_FALSE(intent->MatchFilter(filter2));
+  EXPECT_FALSE(intent->MatchFilter(filter1_and_2));
+  EXPECT_FALSE(intent->MatchFilter(filter3));
+  EXPECT_TRUE(intent->MatchFilter(filter_sub_wildcard));
+  EXPECT_TRUE(intent->MatchFilter(filter_all_wildcard));
+
+  // Test match with */* type.
+  mime_types.clear();
+  mime_types.push_back(mime_type_all_wildcard);
+  intent = std::make_unique<apps::Intent>(urls, mime_types);
+  EXPECT_FALSE(intent->MatchFilter(filter1));
+  EXPECT_FALSE(intent->MatchFilter(filter2));
+  EXPECT_FALSE(intent->MatchFilter(filter1_and_2));
+  EXPECT_FALSE(intent->MatchFilter(filter3));
+  EXPECT_FALSE(intent->MatchFilter(filter_sub_wildcard));
+  EXPECT_TRUE(intent->MatchFilter(filter_all_wildcard));
+}
+
+// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
+TEST_F(IntentUtilTest, CommonMimeTypeMatchMultipleMojom) {
   std::string mime_type1 = "text/plain";
   std::string mime_type2 = "image/jpeg";
   std::string mime_type3 = "text/html";
@@ -669,6 +843,80 @@ TEST_F(IntentUtilTest, CommonMimeTypeMatchMultiple) {
   EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter_all_wildcard));
 }
 
+TEST_F(IntentUtilTest, CommonMimeTypeMatchMultiple) {
+  std::string mime_type1 = "text/plain";
+  std::string mime_type2 = "image/jpeg";
+  std::string mime_type3 = "text/html";
+  std::string mime_type_sub_wildcard = "text/*";
+  std::string mime_type_all_wildcard = "*/*";
+
+  auto filter1 = apps_util::MakeIntentFilterForSendMultiple(mime_type1);
+  auto filter2 = apps_util::MakeIntentFilterForSendMultiple(mime_type2);
+  auto filter3 = apps_util::MakeIntentFilterForSendMultiple(mime_type3);
+  auto filter_sub_wildcard =
+      apps_util::MakeIntentFilterForSendMultiple(mime_type_sub_wildcard);
+  auto filter_all_wildcard =
+      apps_util::MakeIntentFilterForSendMultiple(mime_type_all_wildcard);
+  auto filter1_and_2 = apps_util::MakeIntentFilterForSendMultiple(mime_type1);
+  filter1_and_2->conditions[1]->condition_values.push_back(
+      std::make_unique<apps::ConditionValue>(
+          mime_type2, apps::PatternMatchType::kMimeType));
+
+  std::vector<GURL> urls;
+  std::vector<std::string> mime_types;
+
+  urls.emplace_back("abc");
+  urls.emplace_back("def");
+
+  // Test match with same mime types.
+  mime_types.push_back(mime_type1);
+  mime_types.push_back(mime_type1);
+  auto intent = std::make_unique<apps::Intent>(urls, mime_types);
+  EXPECT_TRUE(intent->MatchFilter(filter1));
+  EXPECT_TRUE(intent->MatchFilter(filter1_and_2));
+  EXPECT_FALSE(intent->MatchFilter(filter3));
+
+  // Test match with same main type and different sub type.
+  mime_types.clear();
+  mime_types.push_back(mime_type1);
+  mime_types.push_back(mime_type3);
+  intent = std::make_unique<apps::Intent>(urls, mime_types);
+  EXPECT_FALSE(intent->MatchFilter(filter1));
+  EXPECT_FALSE(intent->MatchFilter(filter1_and_2));
+  EXPECT_FALSE(intent->MatchFilter(filter3));
+  EXPECT_TRUE(intent->MatchFilter(filter_sub_wildcard));
+
+  // Test match with explicit type and wildcard sub type.
+  mime_types.clear();
+  mime_types.push_back(mime_type1);
+  mime_types.push_back(mime_type_sub_wildcard);
+  intent = std::make_unique<apps::Intent>(urls, mime_types);
+  EXPECT_FALSE(intent->MatchFilter(filter1));
+  EXPECT_FALSE(intent->MatchFilter(filter1_and_2));
+  EXPECT_TRUE(intent->MatchFilter(filter_sub_wildcard));
+
+  // Test match with different mime types.
+  mime_types.clear();
+  mime_types.push_back(mime_type1);
+  mime_types.push_back(mime_type2);
+  intent = std::make_unique<apps::Intent>(urls, mime_types);
+  EXPECT_FALSE(intent->MatchFilter(filter1));
+  EXPECT_FALSE(intent->MatchFilter(filter2));
+  EXPECT_FALSE(intent->MatchFilter(filter_sub_wildcard));
+  EXPECT_TRUE(intent->MatchFilter(filter1_and_2));
+  EXPECT_TRUE(intent->MatchFilter(filter_all_wildcard));
+
+  // Test match with explicit type and general wildcard type.
+  mime_types.clear();
+  mime_types.push_back(mime_type1);
+  mime_types.push_back(mime_type_all_wildcard);
+  intent = std::make_unique<apps::Intent>(urls, mime_types);
+  EXPECT_FALSE(intent->MatchFilter(filter1));
+  EXPECT_FALSE(intent->MatchFilter(filter1_and_2));
+  EXPECT_FALSE(intent->MatchFilter(filter_sub_wildcard));
+  EXPECT_TRUE(intent->MatchFilter(filter_all_wildcard));
+}
+
 GURL test_url(const std::string& file_name) {
   GURL url = GURL("filesystem:https://site.com/isolated/" + file_name);
   EXPECT_TRUE(url.is_valid());
@@ -689,7 +937,8 @@ std::vector<apps::mojom::IntentFilePtr> vectorise(
   return vector;
 }
 
-TEST_F(IntentUtilTest, FileExtensionMatch) {
+// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
+TEST_F(IntentUtilTest, FileExtensionMatchMojom) {
   std::string mime_type_mp3 = "audio/mp3";
   std::string file_ext_mp3 = "mp3";
   std::string mime_type_mpeg = "audio/mpeg";
@@ -741,7 +990,52 @@ TEST_F(IntentUtilTest, FileExtensionMatch) {
   EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, file_filter_dot));
 }
 
-TEST_F(IntentUtilTest, FileURLMatch) {
+TEST_F(IntentUtilTest, FileExtensionMatch) {
+  std::string mime_type_mp3 = "audio/mp3";
+  std::string file_ext_mp3 = "mp3";
+  std::string mime_type_mpeg = "audio/mpeg";
+
+  auto file_filter =
+      apps_util::MakeFileFilterForView(mime_type_mp3, file_ext_mp3, "label");
+
+  // Test match with the same mime type and the same file extension.
+  auto intent = std::make_unique<apps::Intent>(
+      CreateIntentFiles(test_url("abc.mp3"), mime_type_mp3, false));
+  EXPECT_TRUE(intent->MatchFilter(file_filter));
+
+  // Test match with different mime types and the same file extension.
+  intent = std::make_unique<apps::Intent>(
+      CreateIntentFiles(test_url("abc.mp3"), mime_type_mp3, false));
+  EXPECT_TRUE(intent->MatchFilter(file_filter));
+
+  // Test match with the same mime type and a different file extension.
+  intent = std::make_unique<apps::Intent>(
+      CreateIntentFiles(test_url("abc.png"), mime_type_mp3, false));
+  EXPECT_TRUE(intent->MatchFilter(file_filter));
+
+  // Test match with different mime types and a different file extension.
+  intent = std::make_unique<apps::Intent>(
+      CreateIntentFiles(test_url("abc.png"), mime_type_mpeg, false));
+  EXPECT_FALSE(intent->MatchFilter(file_filter));
+
+  std::string file_ext_dot_mp3 = ".mp3";
+  auto file_filter_dot = apps_util::MakeFileFilterForView(
+      mime_type_mp3, file_ext_dot_mp3, "label");
+
+  // The whole extension must match, not just the end.
+  intent = std::make_unique<apps::Intent>(
+      CreateIntentFiles(test_url("abc.extramp3"), mime_type_mpeg, false));
+  EXPECT_FALSE(intent->MatchFilter(file_filter));
+  EXPECT_FALSE(intent->MatchFilter(file_filter_dot));
+
+  // Check that the filter behaves the same with and without a leading ".".
+  intent = std::make_unique<apps::Intent>(
+      CreateIntentFiles(test_url("abc.mp3"), mime_type_mpeg, false));
+  EXPECT_TRUE(intent->MatchFilter(file_filter_dot));
+}
+
+// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
+TEST_F(IntentUtilTest, FileURLMatchMojom) {
   std::string mp3_url_pattern = R"(filesystem:chrome-extension://.*/.*\.mp3)";
 
   auto url_filter = apps_util::CreateURLFilterForView(mp3_url_pattern, "label");
@@ -795,7 +1089,58 @@ TEST_F(IntentUtilTest, FileURLMatch) {
   EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, ext_wild_filter));
 }
 
-TEST_F(IntentUtilTest, FileWithTitleText) {
+TEST_F(IntentUtilTest, FileURLMatch) {
+  std::string mp3_url_pattern = R"(filesystem:chrome-extension://.*/.*\.mp3)";
+
+  auto url_filter = apps_util::MakeURLFilterForView(mp3_url_pattern, "label");
+
+  // Test match with mp3 file extension.
+  auto intent = std::make_unique<apps::Intent>(
+      CreateIntentFiles(ext_test_url("abc.mp3"), "", false));
+  EXPECT_TRUE(intent->MatchFilter(url_filter));
+
+  // Test non-match with mp4 file extension.
+  intent = std::make_unique<apps::Intent>(
+      CreateIntentFiles(ext_test_url("abc.mp4"), "", false));
+  EXPECT_FALSE(intent->MatchFilter(url_filter));
+
+  // Test non-match with just the end of a file extension.
+  intent = std::make_unique<apps::Intent>(
+      CreateIntentFiles(ext_test_url("abc.testmp3"), "", false));
+  EXPECT_FALSE(intent->MatchFilter(url_filter));
+
+  std::string single_wild_url_pattern = "filesystem:chrome-extension://.*/.*";
+  auto wild_filter =
+      apps_util::MakeURLFilterForView(single_wild_url_pattern, "label");
+
+  // Test that mp3 matches with *
+  intent = std::make_unique<apps::Intent>(
+      CreateIntentFiles(ext_test_url("abc.mp3"), "", false));
+  EXPECT_TRUE(intent->MatchFilter(wild_filter));
+
+  // Test that no file extension matches with *
+  intent = std::make_unique<apps::Intent>(
+      CreateIntentFiles(ext_test_url("abc"), "", false));
+  EXPECT_TRUE(intent->MatchFilter(wild_filter));
+
+  std::string ext_wild_url_pattern =
+      R"(filesystem:chrome-extension://.*/.*\..*)";
+  auto ext_wild_filter =
+      apps_util::MakeURLFilterForView(ext_wild_url_pattern, "label");
+
+  // Test that mp3 matches with *.*
+  intent = std::make_unique<apps::Intent>(
+      CreateIntentFiles(ext_test_url("abc.mp3"), "", false));
+  EXPECT_TRUE(intent->MatchFilter(ext_wild_filter));
+
+  // Test that no file extension does not match with *.*
+  intent = std::make_unique<apps::Intent>(
+      CreateIntentFiles(ext_test_url("abc"), "", false));
+  EXPECT_FALSE(intent->MatchFilter(ext_wild_filter));
+}
+
+// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
+TEST_F(IntentUtilTest, FileWithTitleTextMojom) {
   const std::string mime_type = "image/jpeg";
   auto filter = apps_util::CreateIntentFilterForSend(mime_type);
 
@@ -828,7 +1173,41 @@ TEST_F(IntentUtilTest, FileWithTitleText) {
   EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter));
 }
 
-TEST_F(IntentUtilTest, TextMatch) {
+TEST_F(IntentUtilTest, FileWithTitleText) {
+  const std::string mime_type = "image/jpeg";
+  auto filter = apps_util::MakeIntentFilterForSend(mime_type);
+
+  const std::vector<GURL> urls{GURL("abc")};
+  const std::vector<std::string> mime_types{mime_type};
+
+  auto intent =
+      std::make_unique<apps::Intent>(urls, mime_types, "text", "title");
+  EXPECT_TRUE(intent->share_text.has_value());
+  EXPECT_EQ(intent->share_text.value(), "text");
+  EXPECT_TRUE(intent->share_title.has_value());
+  EXPECT_EQ(intent->share_title.value(), "title");
+  EXPECT_TRUE(intent->MatchFilter(filter));
+
+  intent = std::make_unique<apps::Intent>(urls, mime_types, "text", "");
+  EXPECT_TRUE(intent->share_text.has_value());
+  EXPECT_EQ(intent->share_text.value(), "text");
+  EXPECT_FALSE(intent->share_title.has_value());
+  EXPECT_TRUE(intent->MatchFilter(filter));
+
+  intent = std::make_unique<apps::Intent>(urls, mime_types, "", "title");
+  EXPECT_FALSE(intent->share_text.has_value());
+  EXPECT_TRUE(intent->share_title.has_value());
+  EXPECT_EQ(intent->share_title.value(), "title");
+  EXPECT_TRUE(intent->MatchFilter(filter));
+
+  intent = std::make_unique<apps::Intent>(urls, mime_types, "", "");
+  EXPECT_FALSE(intent->share_text.has_value());
+  EXPECT_FALSE(intent->share_title.has_value());
+  EXPECT_TRUE(intent->MatchFilter(filter));
+}
+
+// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
+TEST_F(IntentUtilTest, TextMatchMojom) {
   std::string mime_type1 = "text/plain";
   std::string mime_type2 = "image/jpeg";
   auto filter1 = apps_util::CreateIntentFilterForMimeType(mime_type1);
@@ -845,6 +1224,25 @@ TEST_F(IntentUtilTest, TextMatch) {
   intent = apps_util::CreateShareIntentFromText("text", "title");
   EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter1));
   EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter2));
+}
+
+TEST_F(IntentUtilTest, TextMatch) {
+  std::string mime_type1 = "text/plain";
+  std::string mime_type2 = "image/jpeg";
+  auto filter1 = apps_util::MakeIntentFilterForMimeType(mime_type1);
+  auto filter2 = apps_util::MakeIntentFilterForMimeType(mime_type2);
+
+  auto intent = std::make_unique<apps::Intent>("text", "");
+  EXPECT_TRUE(intent->MatchFilter(filter1));
+  EXPECT_FALSE(intent->MatchFilter(filter2));
+
+  intent = std::make_unique<apps::Intent>("", "title");
+  EXPECT_TRUE(intent->MatchFilter(filter1));
+  EXPECT_FALSE(intent->MatchFilter(filter2));
+
+  intent = std::make_unique<apps::Intent>("text", "title");
+  EXPECT_TRUE(intent->MatchFilter(filter1));
+  EXPECT_FALSE(intent->MatchFilter(filter2));
 }
 
 TEST_F(IntentUtilTest, Convert) {

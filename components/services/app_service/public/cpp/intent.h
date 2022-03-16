@@ -60,6 +60,25 @@ using IntentFilePtr = std::unique_ptr<IntentFile>;
 struct Intent {
   explicit Intent(const std::string& action);
   explicit Intent(const GURL& url);
+
+  // Creates an intent for sharing `filesystem_urls`. `filesystem_urls` must be
+  // co-indexed with `mime_types`.
+  Intent(const std::vector<GURL>& filesystem_urls,
+         const std::vector<std::string>& mime_types);
+
+  // Creates an intent with the list of `files`.
+  explicit Intent(std::vector<IntentFilePtr> files);
+
+  // Creates an intent for sharing `filesystem_urls`, along with `text` content
+  // and `title`. `filesystem_urls` must be co-indexed with  mime_types.
+  Intent(const std::vector<GURL>& filesystem_urls,
+         const std::vector<std::string>& mime_types,
+         const std::string& text,
+         const std::string& title);
+
+  // Creates an intent for sharing `text`, with `title`.
+  Intent(const std::string& text, const std::string& title);
+
   Intent(const Intent&) = delete;
   Intent& operator=(const Intent&) = delete;
   ~Intent();

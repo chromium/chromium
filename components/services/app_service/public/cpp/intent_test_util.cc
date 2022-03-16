@@ -12,6 +12,38 @@
 
 namespace {
 
+apps::IntentFilterPtr MakeIntentFilter(const std::string& action,
+                                       const std::string& mime_type,
+                                       const std::string& file_extension,
+                                       const std::string& url_pattern,
+                                       const std::string& activity_label) {
+  DCHECK(!mime_type.empty() || !file_extension.empty() || !url_pattern.empty());
+  auto intent_filter = std::make_unique<apps::IntentFilter>();
+
+  apps_util::AddSingleValueCondition(apps::ConditionType::kAction, action,
+                                     apps::PatternMatchType::kNone,
+                                     intent_filter);
+
+  apps::ConditionValues condition_values;
+  if (!mime_type.empty()) {
+    condition_values.push_back(std::make_unique<apps::ConditionValue>(
+        mime_type, apps::PatternMatchType::kMimeType));
+  }
+  if (!file_extension.empty()) {
+    condition_values.push_back(std::make_unique<apps::ConditionValue>(
+        file_extension, apps::PatternMatchType::kFileExtension));
+  }
+  if (!url_pattern.empty()) {
+    condition_values.push_back(std::make_unique<apps::ConditionValue>(
+        url_pattern, apps::PatternMatchType::kGlob));
+  }
+  intent_filter->conditions.push_back(std::make_unique<apps::Condition>(
+      apps::ConditionType::kFile, std::move(condition_values)));
+
+  intent_filter->activity_label = activity_label;
+  return intent_filter;
+}
+
 apps::mojom::IntentFilterPtr CreateIntentFilterForFiles(
     const std::string& action,
     const std::string& mime_type,
@@ -48,6 +80,49 @@ apps::mojom::IntentFilterPtr CreateIntentFilterForFiles(
 }  // namespace
 
 namespace apps_util {
+
+apps::IntentFilterPtr MakeIntentFilterForMimeType(
+    const std::string& mime_type) {
+  auto intent_filter = std::make_unique<apps::IntentFilter>();
+
+  apps_util::AddSingleValueCondition(
+      apps::ConditionType::kAction, kIntentActionSend,
+      apps::PatternMatchType::kNone, intent_filter);
+
+  std::vector<apps::ConditionValuePtr> condition_values;
+  condition_values.push_back(std::make_unique<apps::ConditionValue>(
+      mime_type, apps::PatternMatchType::kMimeType));
+  intent_filter->conditions.push_back(std::make_unique<apps::Condition>(
+      apps::ConditionType::kMimeType, std::move(condition_values)));
+
+  return intent_filter;
+}
+
+apps::IntentFilterPtr MakeIntentFilterForSend(
+    const std::string& mime_type,
+    const std::string& activity_label) {
+  return MakeIntentFilter(kIntentActionSend, mime_type, "", "", activity_label);
+}
+
+apps::IntentFilterPtr MakeIntentFilterForSendMultiple(
+    const std::string& mime_type,
+    const std::string& activity_label) {
+  return MakeIntentFilter(kIntentActionSendMultiple, mime_type, "", "",
+                          activity_label);
+}
+
+apps::IntentFilterPtr MakeFileFilterForView(const std::string& mime_type,
+                                            const std::string& file_extension,
+                                            const std::string& activity_label) {
+  return MakeIntentFilter(kIntentActionView, mime_type, file_extension, "",
+                          activity_label);
+}
+
+apps::IntentFilterPtr MakeURLFilterForView(const std::string& url_pattern,
+                                           const std::string& activity_label) {
+  return MakeIntentFilter(kIntentActionView, "", "", url_pattern,
+                          activity_label);
+}
 
 apps::mojom::IntentFilterPtr CreateSchemeOnlyFilter(const std::string& scheme) {
   std::vector<apps::mojom::ConditionValuePtr> condition_values;

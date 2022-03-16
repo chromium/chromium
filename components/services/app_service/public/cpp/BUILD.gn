@@ -264,6 +264,7 @@ source_set("test_support") {
   ]
 
   deps = [
+    ":app_types",
     ":intents",
     "//components/services/app_service/public/mojom",
   ]
