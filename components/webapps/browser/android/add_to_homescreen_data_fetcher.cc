@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -159,9 +160,11 @@ void AddToHomescreenDataFetcher::OnDidGetWebPageMetadata(
   }
 
   // Set the user-editable title to be the page's title.
-  shortcut_info_.user_title = web_page_metadata->application_name.empty()
-                                  ? web_contents_->GetTitle()
-                                  : web_page_metadata->application_name;
+  std::u16string app_name;
+  base::TrimWhitespace(web_page_metadata->application_name,
+                       base::TrimPositions::TRIM_ALL, &app_name);
+  shortcut_info_.user_title =
+      app_name.empty() ? web_contents_->GetTitle() : app_name;
   shortcut_info_.short_name = shortcut_info_.user_title;
   shortcut_info_.name = shortcut_info_.user_title;
 
