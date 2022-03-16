@@ -172,6 +172,7 @@ constexpr char kFakeVersionReleaseChannel[] = "stable-channel";
 // System V2 test values:
 constexpr char kFakeOsInfoCodeName[] = "OsInfo Code Name";
 constexpr char kFakeOSInfoMarketingName[] = "OsInfo Marketing Name";
+constexpr char kFakeOSInfoOemName[] = "OsInfo OEM Name";
 constexpr cros_healthd::BootMode kFakeOsInfoBootMode =
     cros_healthd::BootMode::kCrosSecure;
 constexpr em::BootInfo::BootMethod kFakeOsInfoBootMethod =
@@ -588,7 +589,7 @@ cros_healthd::SystemResultV2Ptr CreateSystemResultV2() {
               cros_healthd::OsVersion::New(
                   kFakeVersionMilestone, kFakeVersionBuildNumber,
                   kFakeVersionPatchNumber, kFakeVersionReleaseChannel),
-              kFakeOsInfoBootMode),
+              kFakeOsInfoBootMode, kFakeOSInfoOemName),
           cros_healthd::VpdInfo::New(kFakeSerialNumber, kFakeVpdInfoRegion,
                                      kFakeManufactureDate, kFakeFirstPowerDate,
                                      kFakeSkuNumber, kFakeModelName),

@@ -630,7 +630,7 @@ struct SystemInfoV2 {
 
 // The OS information.
 //
-// NextMinVersion: 1, NextIndex: 4
+// NextMinVersion: 2, NextIndex: 5
 struct OsInfo {
   // Google code name for the given model. While it is OK to use this string for
   // human-display purposes (such as in a debug log or help dialog), or for a
@@ -643,6 +643,8 @@ struct OsInfo {
   OsVersion os_version@2;
   // The boot flow used by the current boot.
   BootMode boot_mode@3;
+  // Contents of CrosConfig in /branding/oem-name.
+  [MinVersion=1] string? oem_name@4;
 };
 
 // Structure containing information about the operating system version of the
