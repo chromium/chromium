@@ -449,8 +449,8 @@ class EventRouter : public KeyedService,
                                int64_t service_worker_version_id);
 
   void RouteDispatchEvent(content::RenderProcessHost* rph,
-                          mojom::DispatchEventParamsPtr params,
-                          base::ListValue& event_args);
+                          const mojom::DispatchEventParamsPtr params,
+                          const base::ListValue& event_args);
 
   // static
   static void DoDispatchEventToSenderBookkeeping(
