@@ -24,7 +24,10 @@
 @property(nonatomic, assign) BOOL unavailable;
 
 // Used to request to unfollow this web channel.
-@property(nonatomic, copy) UnfollowRequestBlock unfollowRequestBlock;
+@property(nonatomic, copy) FollowRequestBlock unfollowRequestBlock;
+
+// Used to request to refollow this web channel, if it has been unfollowed.
+@property(nonatomic, copy) FollowRequestBlock refollowRequestBlock;
 
 @end
 

@@ -11,8 +11,8 @@
 // |success| is YES if the operation was successful.
 typedef void (^RequestCompletionBlock)(BOOL success);
 
-// Block to call for unfollowing a web channel.
+// Block to call for unfollowing or refollowing a web channel.
 // |completion| is called at completion of the request.
-typedef void (^UnfollowRequestBlock)(RequestCompletionBlock completion);
+typedef void (^FollowRequestBlock)(RequestCompletionBlock completion);
 
 #endif  // IOS_CHROME_BROWSER_UI_FOLLOW_FOLLOW_BLOCK_TYPES_H_
