@@ -115,7 +115,6 @@
 <translation id="1301324364792935241">‏تنظیمات DNS امن را بررسی کنید</translation>
 <translation id="1307966114820526988">ویژگی‌های منسوخ‌شده</translation>
 <translation id="1308113895091915999">پیشنهادهای موجود</translation>
-<translation id="1312803275555673949">چه شواهدی آن را تأیید می‌کند؟</translation>
 <translation id="1314311879718644478">مشاهده محتوای واقعیت افزوده</translation>
 <translation id="1314509827145471431">به‌هم چسباندن از راست</translation>
 <translation id="1318023360584041678">در گروه برگه ذخیره شد</translation>
@@ -740,7 +739,6 @@
 <translation id="324180406144491771">پیوندهای «<ph name="HOST_NAME" />» مسدود شده است</translation>
 <translation id="3249845759089040423">شیک</translation>
 <translation id="3252266817569339921">فرانسوی</translation>
-<translation id="3257954757204451555">چه کسی مسئول این اطلاعات است؟</translation>
 <translation id="3259648571731540213">‏<ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای ایجاد سریع رویداد جدید در «تقویم Google»، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
 <translation id="3261488570342242926">درباره کارت‌های مجازی بیشتر بدانید</translation>
 <translation id="3264837738038045344">‏دکمه «مدیریت تنظیمات Chrome»؛ برای رفتن به تنظیمات Chrome، کلید «ورود» را فشار دهید</translation>
@@ -1128,6 +1126,7 @@
 <translation id="4414515549596849729">کوکی‌ها و داده‌های سایت</translation>
 <translation id="4415426530740016218">نشانی تحویل گرفتن</translation>
 <translation id="4424024547088906515">‏این سرور نتوانست اثبات کند که این <ph name="DOMAIN" /> است؛ گواهی امنیتی آن مورداعتماد Chrome نیست. ممکن است علت این موضوع پیکربندی اشتباه باشد یا مهاجی اتصال شما را قطع کرده است.</translation>
+<translation id="4428065317363009941">شخصی‌سازی آگهی</translation>
 <translation id="443121186588148776">درگاه سریالی</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> گواهی ورود به سیستمتان را نپذیرفت یا ممکن است گواهی‌ای ارائه نشده باشد.</translation>
 <translation id="4432792777822557199">از این به بعد، صفحه‌های <ph name="SOURCE_LANGUAGE" />، به <ph name="TARGET_LANGUAGE" /> ترجمه خواهند شد</translation>
@@ -1260,7 +1259,6 @@
 <translation id="4838327282952368871">رؤیایی</translation>
 <translation id="4840250757394056958">‏مشاهده سابقه Chrome</translation>
 <translation id="484462545196658690">خودکار</translation>
-<translation id="4849865131988503897">صحت‌سنجی</translation>
 <translation id="4850886885716139402">نما</translation>
 <translation id="485316830061041779">آلمانی</translation>
 <translation id="4853901935952445031">‏این سایت بعداز فوریه ۲۰۲۲ نمی‌تواند از U2F API استفاده کند. اگر مالک این سایت هستید، باید تغییراتی اعمال کنید تا به‌جای آن از Web Authentication AP استفاده کند.</translation>
@@ -1447,6 +1445,7 @@
 <translation id="5398772614898833570">آگهی‌ها مسدود شدند</translation>
 <translation id="5400836586163650660">خاکستری</translation>
 <translation id="540969355065856584">این سرور نتوانست ثابت کند که <ph name="DOMAIN" /> است؛ در حال حاضر، گواهی امنیتی آن معتبر نیست. ممکن است این مشکل به دلیل پیکربندی نادرست یا قطع اتصال شما توسط حمله‌کننده ایجاد شده باشد.</translation>
+<translation id="5412236728747081950">‏این سایت علایقتان را از Chrome می‌گیرد تا آگهی‌های مرتبط‌تری به شما نشان دهد</translation>
 <translation id="541416427766103491">پشته‌ساز ۴</translation>
 <translation id="5421136146218899937">پاک کردن داده‌های مرور...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> می‌خواهد برایتان اعلان  ارسال کند</translation>
@@ -1963,7 +1962,6 @@
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> از استانداردهای امنیتی پیروی نمی‌کند.</translation>
 <translation id="7210993021468939304">‏فعالیت Linux در محتوی و می‌توانید برنامه‌های Linux را در محتوی نصب و اجرا کنید</translation>
 <translation id="721197778055552897">دربارهٔ این مشکل <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" />.</translation>
-<translation id="7215025035562547931">لحظه‌ای تأمل کنید و صحت اطلاعات را بسنجید</translation>
 <translation id="7217745192097460130">از «شناسه لمسی» برای تأیید و تکمیل خرید استفاده شود؟</translation>
 <translation id="7219179957768738017">اتصال از <ph name="SSL_VERSION" /> استفاده می‌کند.</translation>
 <translation id="7220786058474068424">درحال پردازش</translation>
@@ -2093,7 +2091,9 @@
 <translation id="7569952961197462199">‏کارت اعتباری از Chrome پاک شود؟</translation>
 <translation id="7569983096843329377">سیاه</translation>
 <translation id="7575207903026901870">‏برداشتن دکمه «پیشنهاد»، برای برداشتن این پیشنهاد، دکمه Enter را فشار دهید</translation>
+<translation id="7577900504646297215">مدیریت علایق</translation>
 <translation id="7578104083680115302">‏با استفاده از کارت‌هایی که با Google ذخیره کرده‌اید به‌سرعت در همه دستگاه‌هایتان پرداخت‌های سایت‌ها و برنامه‌ها را انجام دهید.</translation>
+<translation id="7579442726219254162">متغیر نامعلوم «<ph name="VARIABLE" />» در پیکربندی تحت‌مدیریت «<ph name="APPLICATION_ID" />».</translation>
 <translation id="7581199239021537589">‏روی ۲، تغییر جهت تصویر حول محور Y</translation>
 <translation id="7582602800368606489">‏ایجاد سریع رویداد جدید در «تقویم Google»</translation>
 <translation id="7591288787774558753">محتوای محرمانه هم‌رسانی شود؟</translation>
@@ -2213,7 +2213,6 @@
 <translation id="7966803981046576691">نوع حساب کار</translation>
 <translation id="79682505114836835">‏مقدار «<ph name="VALUE" />» رنگ hex نامعتبر است.</translation>
 <translation id="7968982339740310781">مشاهدهٔ جزئیات</translation>
-<translation id="7970392640816874403">منابع دیگر چه می‌گویند؟</translation>
 <translation id="7976214039405368314">تعداد درخواست‌ها بیش از حد است</translation>
 <translation id="7977538094055660992">دستگاه خروجی</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -2564,7 +2563,6 @@
 <translation id="9155211586651734179">لوازم جانبی صوتی متصل شد</translation>
 <translation id="9157595877708044936">در حال راه‌اندازی...</translation>
 <translation id="9158625974267017556">C6 (Envelope)</translation>
-<translation id="9164029392738894042">صحت‌سنجی</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">سایت‌ها بتوانند بررسی کنند روش پرداخت ذخیره‌شده‌ای دارید یا نه</translation>
 <translation id="9169664750068251925">همیشه مسدود در این سایت</translation>

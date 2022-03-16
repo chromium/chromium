@@ -115,7 +115,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1301324364792935241">DNS sozlamalar himoyasini tekshiring</translation>
 <translation id="1307966114820526988">Eskirgan funksiyalar</translation>
 <translation id="1308113895091915999">Mavjud takliflar</translation>
-<translation id="1312803275555673949">Buning qaysi isboti bor ekan?</translation>
 <translation id="1314311879718644478">Boyitilgan reallik kontentini ochish</translation>
 <translation id="1314509827145471431">Oʻng chekkasini belgilash</translation>
 <translation id="1318023360584041678">Varaqlar guruhiga saqlangan</translation>
@@ -737,7 +736,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” havolalari bloklangan</translation>
 <translation id="3249845759089040423">Jozibali</translation>
 <translation id="3252266817569339921">Fransuzcha</translation>
-<translation id="3257954757204451555">Bu axborot orqasida kim bor?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Taqvimda yangi tadbirni tez yaratish uchun avval Tab, keyin Enter tugmasini bosing</translation>
 <translation id="3261488570342242926">Virtual kartalar haqida batafsil</translation>
 <translation id="3264837738038045344">Chrome sozlamalarini boshqarish tugmasi, Chrome sozlamalarini ochish uchun Enter tugmasini bosing</translation>
@@ -1123,6 +1121,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4414515549596849729">cookie fayllari va sayt maʼlumotlari</translation>
 <translation id="4415426530740016218">Olib ketish manzili</translation>
 <translation id="4424024547088906515">Bu <ph name="DOMAIN" /> serveri ekanligini tasdiqlab bo‘lmadi. Uning havfsizlik sertifikati Chrome‘ga ishonchli tuyulmayapti. Balki, server noto‘g‘ri sozlangan yoki kimdir ma’lumotlaringizni o‘g‘rilashga urinayotgan bo‘lishi mumkin.</translation>
+<translation id="4428065317363009941">Reklamalarni moslashtirish</translation>
 <translation id="443121186588148776">Ketma-ket port</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> tizimga kirish sertifikatingizni qabul qilmadi. Sertifikat taqdim etilmagan bo‘lishi ham mumkin.</translation>
 <translation id="4432792777822557199"><ph name="SOURCE_LANGUAGE" /> tilidagi sahifalar hozirdan <ph name="TARGET_LANGUAGE" /> tiliga tarjima qilinadi</translation>
@@ -1255,7 +1254,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4838327282952368871">Xayolparast</translation>
 <translation id="4840250757394056958">Chrome tarixini koʻrish</translation>
 <translation id="484462545196658690">Avto</translation>
-<translation id="4849865131988503897">Aniqlik tekshiruvi</translation>
 <translation id="4850886885716139402">Ko‘rish</translation>
 <translation id="485316830061041779">Nemis</translation>
 <translation id="4853901935952445031">Bu saytda 2022-yilning fevral oyidan keyin U2F API taʼminoti toʻxtatiladi. Bu sizning saytingiz boʻlsa, undagi hisob tekshiruvini Web Authentication API taʼminotiga almashtiring.</translation>
@@ -1442,6 +1440,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5398772614898833570">Reklamalar bloklandi</translation>
 <translation id="5400836586163650660">Kulrang</translation>
 <translation id="540969355065856584">Bu <ph name="DOMAIN" /> serveri ekanligini tasdiqlab bo‘lmadi. Uning sertifikati ayni paytda yaroqsiz bo‘lishi mumkin. Balki, server noto‘g‘ri sozlangan yoki kimdir ma’lumotlaringizni o‘g‘rilashga urinayotgan bo‘lishi mumkin.</translation>
+<translation id="5412236728747081950">Bu sayt mos reklamalarni chiqarish uchun qiziqishlaringiz haqidagi Chrome maʼlumotlaridan foydalanadi.</translation>
 <translation id="541416427766103491">Taxlovchi 4</translation>
 <translation id="5421136146218899937">Brauzer tarixini tozalash...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> sayti bildirishnoma yuborishga ruxsat so‘ramoqda.</translation>
@@ -1957,7 +1956,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> sayti xavfsizlik standartlariga muvofiq kelmadi.</translation>
 <translation id="7210993021468939304">Konteyner ichidagi Linux jarayonlari va Linux ilovalarining konteyner ichida oʻrnatilishi va ishga tushirilishi</translation>
 <translation id="721197778055552897">Bu muammo haqidagi <ph name="BEGIN_LINK" />tafsilotlar<ph name="END_LINK" />.</translation>
-<translation id="7215025035562547931">Aniqlikka vaqt ajrating</translation>
 <translation id="7217745192097460130">Xaridlarni tasdiqlash va yakunlashda Touch ID ishlatilsinmi?</translation>
 <translation id="7219179957768738017">Bu ulanishda <ph name="SSL_VERSION" /> protokoli ishlatilmoqda.</translation>
 <translation id="7220786058474068424">Amalga oshirilmoqda</translation>
@@ -2087,6 +2085,7 @@ Batafsil axborot:
 <translation id="7569952961197462199">Bu kredit karta Chrome’dan o‘chirib tashlansinmi?</translation>
 <translation id="7569983096843329377">Qora</translation>
 <translation id="7575207903026901870">Taklifni olib tashlash tugmasi, bu taklifni olib tashlash uchun Enter tugmasini bosing</translation>
+<translation id="7577900504646297215">Qiziqishlarni sozlash</translation>
 <translation id="7578104083680115302">Google Payments xizmatiga saqlangan bank kartangiz yordamida turli sayt va ilovalardagi xaridlar uchun to‘lovni osongina amalga oshiring. Sozlamalar barcha qurilmalaringizda amal qiladi.</translation>
 <translation id="7579442726219254162">“<ph name="APPLICATION_ID" />” boshqariladigan konfiguratsiyasida “<ph name="VARIABLE" />” notanish qiymati bor.</translation>
 <translation id="7581199239021537589">Tasvirning orqa tomondagi Y oʻqidagi siljish</translation>
@@ -2208,7 +2207,6 @@ Batafsil axborot:
 <translation id="7966803981046576691">Vazifa bajarilayotgan hisob turi</translation>
 <translation id="79682505114836835">“<ph name="VALUE" />” qiymati hex formati uchun yaroqsiz.</translation>
 <translation id="7968982339740310781">Tafsilotlarni ko‘rish</translation>
-<translation id="7970392640816874403">Boshqa manbalarda nima yozilgan ekan?</translation>
 <translation id="7976214039405368314">Limitdan oshib ketdi</translation>
 <translation id="7977538094055660992">Chiqarish qurilmasi</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -2559,7 +2557,6 @@ Batafsil axborot:
 <translation id="9155211586651734179">Audio jihozlar biriktirildi</translation>
 <translation id="9157595877708044936">Sozlanmoqda...</translation>
 <translation id="9158625974267017556">C6 (Envelope)</translation>
-<translation id="9164029392738894042">Aniqlik tekshiruvi</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">Saytlarga saqlangan to‘lov usullari mavjudligini tekshirishga ruxsat berish</translation>
 <translation id="9169664750068251925">Bu saytda doim bloklansin</translation>

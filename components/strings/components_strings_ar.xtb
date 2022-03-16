@@ -115,7 +115,6 @@
 <translation id="1301324364792935241">التحقّق من إعدادات نظام أسماء النطاقات الآمن</translation>
 <translation id="1307966114820526988">الميزات المتوقفة</translation>
 <translation id="1308113895091915999">العرض متاح</translation>
-<translation id="1312803275555673949">ما الدليل الذي يؤيد ذلك؟</translation>
 <translation id="1314311879718644478">يمكنك عرض محتوى الواقع المعزّز.</translation>
 <translation id="1314509827145471431">التجليد من الناحية اليمنى</translation>
 <translation id="1318023360584041678">تم حفظ نتيجة البحث في مجموعة علامات تبويب</translation>
@@ -740,7 +739,6 @@
 <translation id="324180406144491771">تم حظر روابط "<ph name="HOST_NAME" />"</translation>
 <translation id="3249845759089040423">أنيق</translation>
 <translation id="3252266817569339921">الفرنسية</translation>
-<translation id="3257954757204451555">ما الجهة التي توفّر هذه المعلومات؟</translation>
 <translation id="3259648571731540213">‏<ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />: اضغط على مفتاح التبويب (Tab) ثم Enter لإنشاء حدث جديد في "تقويم Google" بسرعة.</translation>
 <translation id="3261488570342242926">تعرّف على البطاقات الافتراضية.</translation>
 <translation id="3264837738038045344">‏زر إدارة إعدادات Chrome: اضغط على مفتاح Enter للانتقال إلى إعدادات Chrome.</translation>
@@ -1129,6 +1127,7 @@
 <translation id="4414515549596849729">ملفات تعريف الارتباط وبيانات الموقع</translation>
 <translation id="4415426530740016218">عنوان الاستلام</translation>
 <translation id="4424024547088906515">‏هذا الخادم لم يتمكن من إثبات أن ذلك <ph name="DOMAIN" />؛ بل إنه شهادة أمان غير موثوقة من قبل Chrome. وربما يكون السبب في ذلك خطأ في التكوين أو مهاجمًا يعترض الاتصال.</translation>
+<translation id="4428065317363009941">تخصيص الإعلانات</translation>
 <translation id="443121186588148776">منفذ تسلسلي</translation>
 <translation id="4432688616882109544">لم يقبل <ph name="HOST_NAME" /> شهادة تسجيل الدخول أو من المحتمل ألا يكون قد تم تقديم واحدة.</translation>
 <translation id="4432792777822557199">ستتم ترجمة الصفحات باللغة <ph name="SOURCE_LANGUAGE" /> إلى اللغة <ph name="TARGET_LANGUAGE" /> من الآن فصاعدًا</translation>
@@ -1262,7 +1261,6 @@
 <translation id="4838327282952368871">جذّاب</translation>
 <translation id="4840250757394056958">‏عرض سجلّ Chrome</translation>
 <translation id="484462545196658690">تلقائي</translation>
-<translation id="4849865131988503897">التحقّق من دقّة البيانات</translation>
 <translation id="4850886885716139402">عرض</translation>
 <translation id="485316830061041779">الألمانية</translation>
 <translation id="4853901935952445031">‏لن يتمكّن هذا الموقع الإلكتروني من استخدام U2F API بعد شباط (فبراير) 2022. وإذا كنت تمتلك هذا الموقع الإلكتروني، عليك تغييره بحيث يستخدم Web Authentication API.</translation>
@@ -1449,6 +1447,7 @@
 <translation id="5398772614898833570">تم حظر الإعلانات</translation>
 <translation id="5400836586163650660">رمادي</translation>
 <translation id="540969355065856584">لم يتمكن هذا الخادم من إثبات أنه <ph name="DOMAIN" />؛ بل إن شهادة الأمان الخاصة به غير صالحة حاليًا. وربما يكون السبب في ذلك وجود خطأ في التكوين أو اعترض أحد المهاجمين للاتصال.</translation>
+<translation id="5412236728747081950">‏يتعرّف هذا الموقع الإلكتروني على اهتماماتك من خلال متصفّح Chrome ويعرض لك إعلانات تناسبك أكثر.</translation>
 <translation id="541416427766103491">المكدِّس 4</translation>
 <translation id="5421136146218899937">محو بيانات التصفّح...</translation>
 <translation id="5426179911063097041">يريد موقع <ph name="SITE" /> إرسال إشعارات إليك.</translation>
@@ -1965,7 +1964,6 @@
 <translation id="7210863904660874423">لا يلتزم <ph name="HOST_NAME" /> بمعايير الأمان.</translation>
 <translation id="7210993021468939304">‏نشاط نظام التشغيل Linux في الحاوية ويمكن تثبيت تطبيقات نظام التشغيل Linux وتشغيلها في الحاوية.</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /> حول هذه المشكلة.</translation>
-<translation id="7215025035562547931">الاطّلاع على مصدر المعلومات وموثوقيتها</translation>
 <translation id="7217745192097460130">‏هل تريد استخدام ميزة Touch ID لإكمال عملية الشراء؟</translation>
 <translation id="7219179957768738017">الاتصال يستخدم <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">جارٍ المعالجة</translation>
@@ -2095,6 +2093,7 @@
 <translation id="7569952961197462199">‏هل تريد إزالة بطاقة الائتمان من Chrome؟</translation>
 <translation id="7569983096843329377">أسود</translation>
 <translation id="7575207903026901870">‏إزالة زر "الاقتراحات"، اضغط على مفتاح Enter لإزالة هذا الاقتراح</translation>
+<translation id="7577900504646297215">إدارة الاهتمامات</translation>
 <translation id="7578104083680115302">‏الدفع سريعًا على المواقع والتطبيقات على جميع الأجهزة باستخدام البطاقات التي حفظتها في Google.</translation>
 <translation id="7579442726219254162">المتغير "<ph name="VARIABLE" />" غير معروف في إعدادات "<ph name="APPLICATION_ID" />" المُدارة.</translation>
 <translation id="7581199239021537589">‏طباعة الجانب الثاني image Y shift</translation>
@@ -2216,7 +2215,6 @@
 <translation id="7966803981046576691">نوع حساب المهمة</translation>
 <translation id="79682505114836835">القيمة "<ph name="VALUE" />" هي لون سداسي عشري غير صالح.</translation>
 <translation id="7968982339740310781">عرض التفاصيل</translation>
-<translation id="7970392640816874403">ماذا تعرض المصادر الأخرى؟</translation>
 <translation id="7976214039405368314">عدد الطلبات كبير جدًا.</translation>
 <translation id="7977538094055660992">جهاز إخراج</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -2570,7 +2568,6 @@
 <translation id="9155211586651734179">تم ربط أجهزة صوتية ملحقة.</translation>
 <translation id="9157595877708044936">جارٍ الإعداد...</translation>
 <translation id="9158625974267017556">‏C6 (مغلف)</translation>
-<translation id="9164029392738894042">التحقّق من دقّة البيانات</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">السماح للمواقع الإلكترونية بالتحقُّق ممّا إذا كانت لديك طرق دفع محفوظة أم لا</translation>
 <translation id="9169664750068251925">الحظر دومًا على هذا الموقع</translation>

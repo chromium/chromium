@@ -30,7 +30,6 @@
 <translation id="114825011539563458">Os controlos de privacidade e segurança mais importantes num só lugar</translation>
 <translation id="1149401351239820326">Mês de expiração</translation>
 <translation id="1154704303112745282">Página indisponível offline: <ph name="VIOLATED_URL" /></translation>
-<translation id="1166688006062225587">Lista de contas a selecionar.</translation>
 <translation id="1171770572613082465">Veja Websites populares ao tocar no botão "Principais sites"</translation>
 <translation id="1173894706177603556">Mudar nome</translation>
 <translation id="1177863135347784049">Personalizado</translation>
@@ -571,6 +570,7 @@ Toque sem soltar em qualquer palavra para pesquisar. Para refinar a sua pesquisa
 <translation id="4415276339145661267">Gerir a sua Conta Google</translation>
 <translation id="4425140285732600465">A monitorizar o preço. Obtenha alertas se o preço descer em qualquer site.</translation>
 <translation id="442518031075347249">Vai deixar de poder utilizar o seu cartão virtual com o Google Pay. <ph name="BEGIN_LINK1" />Saiba mais sobre cartões virtuais<ph name="END_LINK1" /></translation>
+<translation id="4428065317363009941">Personalização de anúncios</translation>
 <translation id="4450672886426705087">Resultados da pesquisa do Google.</translation>
 <translation id="4452411734226507615">Fechar o separador <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Adicionado aos marcadores em <ph name="FOLDER_NAME" /></translation>
@@ -899,7 +899,6 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="6277522088822131679">Ocorreu um problema ao imprimir a página. Tente novamente.</translation>
 <translation id="6277722725779679269">Não foi possível atualizar a opção Monitorizar preço</translation>
 <translation id="6278428485366576908">Tema</translation>
-<translation id="6293443105724342169">Lista de contas a selecionar que estão abertas a meia altura.</translation>
 <translation id="6294610283659775533">Pode enviar separadores entre dispositivos que têm sessão iniciada com a mesma Conta Google</translation>
 <translation id="6297765934698848803">A entidade que gere o seu dispositivo desativou a sua câmara.</translation>
 <translation id="6301525844455696527">Ponha a sua lista de leitura em dia</translation>
@@ -1310,7 +1309,6 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="8461694314515752532">Encriptar dados sincronizados com a sua própria frase de acesso de sincronização</translation>
 <translation id="8466613982764129868">Certifique-se de que o <ph name="TARGET_DEVICE_NAME" /> está ligado à Internet.</translation>
 <translation id="8473863474539038330">Endereços e mais</translation>
-<translation id="847656914027543776">A lista de contas a selecionar está fechada.</translation>
 <translation id="8481921391193215807">Quando esta opção está ativada, os sites podem utilizar as técnicas de preservação da privacidade mostradas aqui para fornecer o respetivo conteúdo e serviços. Estas incluem alternativas para a monitorização entre sites. Ao longo do tempo, podem ser adicionadas mais avaliações.
 
 <ph name="BEGIN_LIST_ITEM1" />Os anunciantes e os publicadores podem utilizar a APC.<ph name="END_LIST_ITEM1" />
@@ -1365,6 +1363,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="8683526617475118045">Vantagens</translation>
 <translation id="869891660844655955">Data de expiração</translation>
 <translation id="8699120352855309748">Não se disponibilizar para traduzir estes idiomas</translation>
+<translation id="8712637175834984815">Entendido</translation>
 <translation id="8725066075913043281">Tentar novamente</translation>
 <translation id="8730621377337864115">Concluído</translation>
 <translation id="8746155870861185046">Partilhar destaque</translation>
@@ -1437,7 +1436,6 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="9108312223223904744">Telemóvel como suporte de chave de segurança</translation>
 <translation id="9108808586816295166">O DNS seguro pode não estar sempre disponível.</translation>
 <translation id="9133397713400217035">Explorar offline</translation>
-<translation id="9133523398139146080">Lista de contas a selecionar que estão abertas à altura total.</translation>
 <translation id="9137013805542155359">Mostrar original</translation>
 <translation id="9148126808321036104">Iniciar sessão novamente</translation>
 <translation id="9155898266292537608">Também pode pesquisar ao tocar rapidamente numa palavra.</translation>

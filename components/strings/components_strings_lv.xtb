@@ -115,7 +115,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1301324364792935241">Pārbaudiet drošā DNS servera iestatījumus</translation>
 <translation id="1307966114820526988">Funkcijas, kuru darbība ir pārtraukta</translation>
 <translation id="1308113895091915999">Pieejams piedāvājums</translation>
-<translation id="1312803275555673949">Kāda informācija to pierāda?</translation>
 <translation id="1314311879718644478">Skatiet papildinātās realitātes saturu</translation>
 <translation id="1314509827145471431">Iesējums labajā pusē</translation>
 <translation id="1318023360584041678">Saglabāts ciļņu grupā</translation>
@@ -740,7 +739,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” saites ir bloķētas</translation>
 <translation id="3249845759089040423">Moderna</translation>
 <translation id="3252266817569339921">Franču valoda</translation>
-<translation id="3257954757204451555">Kas ir šīs informācijas avots?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai ātri izveidotu jaunu pasākumu Google kalendārā, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter.</translation>
 <translation id="3261488570342242926">Uzzināt vairāk par virtuālajām kartēm</translation>
 <translation id="3264837738038045344">Poga Chrome iestatījumu pārvaldībai, lai apmeklētu Chrome iestatījumus, nospiediet taustiņu Enter</translation>
@@ -1127,6 +1125,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4414515549596849729">sīkfaili un vietņu dati</translation>
 <translation id="4415426530740016218">Saņemšanas adrese</translation>
 <translation id="4424024547088906515">Šis serveris nevarēja pierādīt, ka šī ir vietne <ph name="DOMAIN" />; tās drošības sertifikāts netiek uzskatīts par uzticamu pārlūkā Chrome. Iespējams, tas ir nepareizas konfigurācijas dēļ vai arī kāds ir ļaunprātīgi izmantojis jūsu savienojumu.</translation>
+<translation id="4428065317363009941">Reklāmu personalizēšana</translation>
 <translation id="443121186588148776">Seriālais ports</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> nepieņēma jūsu pieteikšanās sertifikātu, vai arī pieteikšanās sertifikāts netika iesniegts.</translation>
 <translation id="4432792777822557199">Turpmāk lapas šādā valodā: <ph name="SOURCE_LANGUAGE" /> tiks tulkotas šādā valodā: <ph name="TARGET_LANGUAGE" />.</translation>
@@ -1259,7 +1258,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4838327282952368871">Mierīga</translation>
 <translation id="4840250757394056958">Skatīt Chrome vēsturi</translation>
 <translation id="484462545196658690">Autom.</translation>
-<translation id="4849865131988503897">Precizitātes pārbaude</translation>
 <translation id="4850886885716139402">Skatīt</translation>
 <translation id="485316830061041779">Vācu valoda</translation>
 <translation id="4853901935952445031">Pēc 2022. gada februāra šajā vietnē vairs nevarēs izmantot U2F API. Ja vietne pieder jums, veiciet izmaiņas, lai turpmāk tajā izmantotu Web Authentication API.</translation>
@@ -1446,6 +1444,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5398772614898833570">Reklāmu rādīšana bloķēta</translation>
 <translation id="5400836586163650660">Pelēka</translation>
 <translation id="540969355065856584">Šis serveris nevarēja pierādīt, ka šī ir vietne <ph name="DOMAIN" />; tā drošības sertifikāts šobrīd nav derīgs. Iespējams, tas ir nepareizas konfigurācijas dēļ vai arī kāds ļaunprātīgi izmanto jūsu savienojumu.</translation>
+<translation id="5412236728747081950">Šī vietne iegūst informāciju par jūsu interesēm no pārlūka Chrome, lai rādītu jums atbilstošākas reklāmas.</translation>
 <translation id="541416427766103491">4. izvades vieta</translation>
 <translation id="5421136146218899937">Notīrīt pārlūkošanas datus</translation>
 <translation id="5426179911063097041">No vietnes <ph name="SITE" /> tiek mēģināts nosūtīt paziņojumus.</translation>
@@ -1962,7 +1961,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> neatbilst drošības standartiem.</translation>
 <translation id="7210993021468939304">Linux darbība konteinerā; var instalēt un palaist Linux lietotnes konteinerā</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" /> par šo problēmu.</translation>
-<translation id="7215025035562547931">Veltiet brīdi laika, lai izvērtētu šīs informācijas patiesumu</translation>
 <translation id="7217745192097460130">Vai vēlaties izmantot Touch ID, lai verificētu un pabeigtu pirkumu?</translation>
 <translation id="7219179957768738017">Savienojums izmanto <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Notiek apstrāde</translation>
@@ -2092,6 +2090,7 @@ Papildu informācija:
 <translation id="7569952961197462199">Vai noņemt kredītkarti no pārlūka Chrome?</translation>
 <translation id="7569983096843329377">Melna</translation>
 <translation id="7575207903026901870">Ieteikuma noņemšanas poga, nospiediet ievadīšanas taustiņu, lai noņemtu šo ieteikumu</translation>
+<translation id="7577900504646297215">Pārvaldīt intereses</translation>
 <translation id="7578104083680115302">Ātri apmaksājiet pirkumus vietnēs un lietotnēs no dažādām ierīcēm, izmantojot kartes, ko esat saglabājis Google sistēmā.</translation>
 <translation id="7581199239021537589">2. puses attēla nobīde uz Y ass</translation>
 <translation id="7582602800368606489">Ātri izveidot jaunu pasākumu Google kalendārā</translation>
@@ -2212,7 +2211,6 @@ Papildu informācija:
 <translation id="7966803981046576691">Darba konta veids</translation>
 <translation id="79682505114836835">Vērtība “<ph name="VALUE" />” nav derīga krāsa heksadecimālajā sistēmā.</translation>
 <translation id="7968982339740310781">Skatīt detalizētu informāciju</translation>
-<translation id="7970392640816874403">Kāda informācija sniegta citos avotos?</translation>
 <translation id="7976214039405368314">Pārāk daudz pieprasījumu</translation>
 <translation id="7977538094055660992">Izvades ierīce</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -2564,7 +2562,6 @@ Papildu informācija:
 <translation id="9155211586651734179">Pievienotās perifērās audio ierīces</translation>
 <translation id="9157595877708044936">Notiek uzstādīšana...</translation>
 <translation id="9158625974267017556">C6 (aploksne)</translation>
-<translation id="9164029392738894042">Precizitātes pārbaude</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">Atļaut vietnēm pārbaudīt, vai jums ir saglabāti maksājumu veidi</translation>
 <translation id="9169664750068251925">Vienmēr bloķēt šajā vietnē</translation>

@@ -20,6 +20,7 @@
 <translation id="1181037720776840403">Xóa</translation>
 <translation id="1195447618553298278">Lỗi chưa biết.</translation>
 <translation id="1196959502276349371">Phiên bản <ph name="VERSION" /></translation>
+<translation id="1199355487114804640">Phát/tạm dừng</translation>
 <translation id="1201402288615127009">Tiếp theo</translation>
 <translation id="1204296502688602597">Độ trễ DNS</translation>
 <translation id="123124571410524056">Nghi là có cổng</translation>
@@ -43,6 +44,7 @@
 <translation id="1413240736185167732">Không thành công – Không lọc được</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Tôi có một cặp khóa</translation>
+<translation id="1423591390236870726">Chưa nhấn phím <ph name="KEY_NAME" /></translation>
 <translation id="1435763214710588005">Tự động đặt lại mức sử dụng dữ liệu mỗi tháng vào một ngày chọn sẵn</translation>
 <translation id="1442433966118452622">Nguồn hình ảnh</translation>
 <translation id="1451536289672181509">Thiết bị là bàn phím.</translation>
@@ -84,6 +86,7 @@
 <translation id="1827738518074806965">Phòng tranh</translation>
 <translation id="1851218745569890714">Hội nghị truyền hình</translation>
 <translation id="1852934301711881861">Cài đặt ChromeOS Flex</translation>
+<translation id="1856388568474281774">Mũi tên xuống</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Hiệu chỉnh phần cứng</translation>
 <translation id="1905710495812624430">Đã vượt quá số lần thử tối đa được phép.</translation>
@@ -98,6 +101,7 @@
 <translation id="2016697457005847575">Thử các bước khắc phục vấn đề</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Chế độ cài đặt khác</translation>
+<translation id="2085089206770112532">Giảm độ sáng màn hình</translation>
 <translation id="2104796393919810494">Đã hoàn tất quá trình sửa chữa</translation>
 <translation id="2105810540595158374">Thiết bị là tay điều khiển trò chơi.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, phiên bản <ph name="MILESTONE_VERSION" /></translation>
@@ -116,6 +120,7 @@
 <translation id="222447520299472966">Cần chọn tối thiểu một album trong Phòng tranh</translation>
 <translation id="2230005943220647148">Độ C</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2240366984605217732">Chuyển bố cục</translation>
 <translation id="225692081236532131">Trạng thái kích hoạt</translation>
 <translation id="2287186687001756809">Không có hình ảnh nào. Để thêm ảnh, hãy truy cập <ph name="LINK" /></translation>
 <translation id="2307344026739914387">Dùng cặp khóa hiện tại</translation>
@@ -207,9 +212,11 @@
 <translation id="357889014807611375">mạng Wi‑Fi có giới hạn dữ liệu</translation>
 <translation id="3583278742022654445">Cường độ tín hiệu yếu. Hãy thử di chuyển đến gần nguồn tín hiệu Wi-Fi hơn.</translation>
 <translation id="3595596368722241419">Pin đầy</translation>
+<translation id="3600339377155080675">Phản chiếu lên màn hình</translation>
 <translation id="3603829704940252505">Hình đại diện</translation>
 <translation id="360565022852130722">Mạng Wi-Fi được bảo mật bằng giao thức yếu WEP 802.1x</translation>
 <translation id="3606583719724308068">Đường kết nối đến các trang web HTTPS có độ trễ cao</translation>
+<translation id="3632579075709132555">Bật/tắt Màn hình bảo vệ quyền riêng tư</translation>
 <translation id="3689839747745352263">Kiểm tra <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Đang tải...</translation>
 <translation id="3708186454126126312">Từng được kết nối</translation>
@@ -263,6 +270,7 @@
 <translation id="4289540628985791613">Tổng quan</translation>
 <translation id="4297501883039923494">Đã dừng – Lỗi không xác định</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> hình ảnh</translation>
+<translation id="4333390807948134856">Đã nhấn phím <ph name="KEY_NAME" /></translation>
 <translation id="4378373042927530923">Không chạy</translation>
 <translation id="4378551569595875038">Đang kết nối…</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -278,6 +286,7 @@
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Không ping được cổng của mạng không phải mạng mặc định</translation>
 <translation id="4485626319513081846">Chọn lựa chọn này nếu thiết bị đang được bổ sung hoặc được tân trang lại để phân phối cho một khách hàng mới.</translation>
+<translation id="4503223151711056411">Mũi tên trái</translation>
 <translation id="4511264077854731334">Cổng</translation>
 <translation id="4521826082652183069">Khớp tên thay thế của tiêu đề</translation>
 <translation id="4536864596629708641">Cấu hình IP</translation>
@@ -289,10 +298,12 @@
 <translation id="4562494484721939086">Không có dịch vụ</translation>
 <translation id="458794348635939462">Không phân giải được một số máy chủ</translation>
 <translation id="4593212453765072419">Yêu cầu xác thực proxy</translation>
+<translation id="4609350030397390689">Giảm độ sáng đèn bàn phím</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />. Hãy nhấn để hủy lệnh in.</translation>
 <translation id="4627645661474370390">Thông tin nhận dạng từ xa</translation>
 <translation id="463791356324567266">Đang hủy quá trình quét...</translation>
 <translation id="4646949265910132906">Kết nối Wi-Fi an toàn</translation>
+<translation id="4650608062294027130">Nút Shift phải</translation>
 <translation id="4654549501020883054">Thay đổi hàng ngày</translation>
 <translation id="4665014895760275686">Nhà sản xuất</translation>
 <translation id="467510802200863975">Mật khẩu không khớp</translation>
@@ -391,8 +402,10 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Quét lại</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5600027863942488546">Đã thử phím <ph name="KEY_NAME" /></translation>
 <translation id="5620281292257375798">Chỉ sử dụng nội bộ</translation>
 <translation id="5649768706273821470">Nghe</translation>
+<translation id="5655283760733841251">Tăng độ sáng đèn bàn phím</translation>
 <translation id="5669267381087807207">Đang kích hoạt</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Gia đình</translation>
@@ -400,6 +413,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Cập nhật <ph name="DEVICE_NAME" /></translation>
 <translation id="5760715441271661976">Trạng thái trang xác thực</translation>
+<translation id="576835345334454681">Tăng độ sáng màn hình</translation>
 <translation id="57838592816432529">Tắt tiếng</translation>
 <translation id="5784136236926853061">Yêu cầu HTTP có độ trễ cao</translation>
 <translation id="5832805196449965646">Thêm người</translation>
@@ -430,6 +444,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="6104112872696127344">Đã hủy quá trình quét</translation>
 <translation id="6106186594183574873">Để hoàn tất, hãy nhập mật khẩu cũ của bạn</translation>
 <translation id="6108689792487843350">Không thể kết nối với cổng</translation>
+<translation id="6113701710518389813">Mũi tên lên</translation>
 <translation id="6122191549521593678">Trực tuyến</translation>
 <translation id="6137767437444130246">Chứng chỉ người dùng</translation>
 <translation id="6146993107019042706">Để hoàn tất, hãy nhập mật khẩu mới của bạn</translation>
@@ -443,6 +458,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="6232017090690406397">Pin</translation>
 <translation id="6235460611964961764">Đặt lại mức sử dụng dữ liệu theo cách thủ công</translation>
 <translation id="6243280677745499710">Hiện đã được đặt</translation>
+<translation id="6275224645089671689">Mũi tên phải</translation>
 <translation id="6278428485366576908">Chủ đề</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515">Đã hủy quá trình kiểm tra <ph name="TEST_NAME" /></translation>
@@ -478,6 +494,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="6620487321149975369">Lệnh in sẽ xuất hiện trong lịch sử in trừ phi bạn tự xóa</translation>
 <translation id="6643016212128521049">Xóa</translation>
 <translation id="6647510110698214773">Thuật toán mã hoá</translation>
+<translation id="6650062777702288430">Chuyển sang bàn phím Kana/ký tự chữ-số</translation>
 <translation id="6657585470893396449">Mật khẩu</translation>
 <translation id="6659594942844771486">Thẻ</translation>
 <translation id="6692996468359469499">Nhận thông tin liên quan đến lựa chọn của bạn</translation>
@@ -690,6 +707,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="9122602430962285795">Để kết nối lại, hãy chuyển đến phần Cài đặt</translation>
 <translation id="9126720536733509015">Lưu nhiều trang thành một tệp PDF</translation>
 <translation id="9137526406337347448">Dịch vụ của Google</translation>
+<translation id="9138630967333032450">Nút Shift trái</translation>
 <translation id="9149391708638971077">Chạy quá trình Kiểm tra bộ nhớ</translation>
 <translation id="9173638680043580060">Còn chưa đầy 1 phút</translation>
 <translation id="917720651393141712">Kiểm tra</translation>

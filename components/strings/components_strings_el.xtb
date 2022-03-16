@@ -115,7 +115,6 @@
 <translation id="1301324364792935241">Ελέγξτε τις ρυθμίσεις ασφαλούς DNS</translation>
 <translation id="1307966114820526988">Λειτουργίες που καταργήθηκαν</translation>
 <translation id="1308113895091915999">Υπάρχει διαθέσιμη προσφορά</translation>
-<translation id="1312803275555673949">Υπάρχουν αποδεικτικά στοιχεία;</translation>
 <translation id="1314311879718644478">Προβολή περιεχομένου επαυξημένης πραγματικότητας</translation>
 <translation id="1314509827145471431">Δέσιμο δεξιά</translation>
 <translation id="1318023360584041678">Αποθηκεύτηκε στην ομάδα καρτελών</translation>
@@ -741,7 +740,6 @@
 <translation id="3249845759089040423">Μοδάτο</translation>
 <translation id="3252266817569339921">Γαλλικά
 </translation>
-<translation id="3257954757204451555">Από πού προέρχονται αυτές οι πληροφορίες;</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για να δημιουργήσετε γρήγορα ένα νέο συμβάν στο Ημερολόγιο Google</translation>
 <translation id="3261488570342242926">Μάθετε σχετικά με τις εικονικές κάρτες</translation>
 <translation id="3264837738038045344">Κουμπί Διαχείριση των ρυθμίσεων Chrome, πατήστε το πλήκτρο Enter για να επισκεφτείτε τις ρυθμίσεις του Chrome.</translation>
@@ -1130,6 +1128,7 @@
 <translation id="4414515549596849729">cookie και δεδομένα ιστοτόπου</translation>
 <translation id="4415426530740016218">Διεύθυνση παραλαβής</translation>
 <translation id="4424024547088906515">Ο διακομιστής δεν μπόρεσε να αποδείξει ότι είναι <ph name="DOMAIN" />. Το πιστοποιητικό ασφαλείας του δεν θεωρείται έμπιστο από τον Chrome. Αυτό μπορεί να οφείλεται σε λανθασμένη ρύθμιση ή σε κάποιον τρίτο που επιτίθεται στη σύνδεσή σας.</translation>
+<translation id="4428065317363009941">Εξατομίκευση διαφημίσεων</translation>
 <translation id="443121186588148776">Σειριακή θύρα</translation>
 <translation id="4432688616882109544">Ο κεντρικός υπολογιστής <ph name="HOST_NAME" /> δεν αποδέχτηκε το πιστοποιητικό σύνδεσής σας ή μπορεί να μην διατέθηκε πιστοποιητικό σύνδεσης.</translation>
 <translation id="4432792777822557199">Από εδώ και στο εξής, οι σελίδες στα <ph name="SOURCE_LANGUAGE" /> θα μεταφράζονται στα <ph name="TARGET_LANGUAGE" /></translation>
@@ -1262,7 +1261,6 @@
 <translation id="4838327282952368871">Ονειρικό</translation>
 <translation id="4840250757394056958">Προβολή του ιστορικού Chrome</translation>
 <translation id="484462545196658690">Αυτόματα</translation>
-<translation id="4849865131988503897">Έλεγχος ακρίβειας</translation>
 <translation id="4850886885716139402">Προβολή</translation>
 <translation id="485316830061041779">Γερμανικά
 </translation>
@@ -1450,6 +1448,7 @@
 <translation id="5398772614898833570">Αποκλείστηκαν διαφημίσεις</translation>
 <translation id="5400836586163650660">Γκρι</translation>
 <translation id="540969355065856584">Αυτός ο διακομιστής δεν μπόρεσε να αποδείξει ότι είναι <ph name="DOMAIN" />. Το πιστοποιητικό ασφαλείας του δεν είναι έγκυρο αυτήν τη στιγμή. Αυτό μπορεί να οφείλεται σε εσφαλμένη ρύθμιση ή σε κάποιον εισβολέα που παρεμβαίνει στη σύνδεσή σας.</translation>
+<translation id="5412236728747081950">Αυτός ο ιστότοπος λαμβάνει πληροφορίες για τα ενδιαφέροντά σας από το Chrome για να εμφανίσει πιο συναφείς διαφημίσεις.</translation>
 <translation id="541416427766103491">Μονάδα στοίβαξης 4</translation>
 <translation id="5421136146218899937">Διαγραφή δεδομένων περιήγησης...</translation>
 <translation id="5426179911063097041">Η διεύθυνση <ph name="SITE" /> θέλει να σας στείλει ειδοποιήσεις</translation>
@@ -1967,7 +1966,6 @@
 <translation id="7210863904660874423">Ο κεντρικός υπολογιστής <ph name="HOST_NAME" /> δεν συμμορφώνεται με τα πρότυπα ασφάλειας.</translation>
 <translation id="7210993021468939304">Δραστηριότητα Linux εντός του κοντέινερ καθώς και δυνατότητα εγκατάστασης και εκτέλεσης εφαρμογών Linux εντός του κοντέινερ.</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /> σχετικά με αυτό το πρόβλημα.</translation>
-<translation id="7215025035562547931">Αφιερώστε ένα λεπτό για να εξετάσετε την ακρίβεια</translation>
 <translation id="7217745192097460130">Χρήση του Touch ID για επαλήθευση και ολοκλήρωση της αγοράς σας;</translation>
 <translation id="7219179957768738017">Στη σύνδεση χρησιμοποιείται <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Επεξεργασία</translation>
@@ -2097,7 +2095,9 @@
 <translation id="7569952961197462199">Κατάργηση πιστωτικής κάρτας από το Chrome;</translation>
 <translation id="7569983096843329377">Μαύρο</translation>
 <translation id="7575207903026901870">Κατάργηση κουμπιού Πρόταση, πατήστε Enter για κατάργηση αυτής της πρότασης.</translation>
+<translation id="7577900504646297215">Διαχείριση ενδιαφερόντων</translation>
 <translation id="7578104083680115302">Κάντε γρήγορες πληρωμές σε ιστότοπους και εφαρμογές σε διαφορετικές συσκευές χρησιμοποιώντας κάρτες που έχετε αποθηκεύσει στο Google.</translation>
+<translation id="7579442726219254162">Άγνωστη μεταβλητή <ph name="VARIABLE" /> στη διαχειριζόμενη διαμόρφωση της εφαρμογής <ph name="APPLICATION_ID" />.</translation>
 <translation id="7581199239021537589">Πλευρά 2 μετατόπιση εικόνας στον άξονα Y</translation>
 <translation id="7582602800368606489">Γρήγορη δημιουργία νέου συμβάντος στο Ημερολόγιο Google</translation>
 <translation id="7591288787774558753">Κοινοποίηση εμπιστευτικού περιεχομένου;</translation>
@@ -2217,7 +2217,6 @@
 <translation id="7966803981046576691">Τύπος λογαριασμού εργασίας</translation>
 <translation id="79682505114836835">Η τιμή <ph name="VALUE" /> δεν είναι ένας έγκυρος δεκαεξαδικός κωδικός χρώματος.</translation>
 <translation id="7968982339740310781">Προβολή λεπτομερειών</translation>
-<translation id="7970392640816874403">Τι λένε άλλες πηγές;</translation>
 <translation id="7976214039405368314">Πάρα πολλά αιτήματα</translation>
 <translation id="7977538094055660992">Συσκευή εξόδου</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -2571,7 +2570,6 @@
 <translation id="9155211586651734179">Τυχόν συνδεδεμένα περιφερειακά ήχου</translation>
 <translation id="9157595877708044936">Ρύθμιση...</translation>
 <translation id="9158625974267017556">C6 (Φάκελος)</translation>
-<translation id="9164029392738894042">Έλεγχος ακρίβειας</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">Να επιτρέπεται σε ιστοτόπους να ελέγχουν αν έχετε αποθηκεύσει τρόπους πληρωμής</translation>
 <translation id="9169664750068251925">Να γίνεται πάντα αποκλεισμός σε αυτόν τον ιστότοπο</translation>

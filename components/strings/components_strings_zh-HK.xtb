@@ -115,7 +115,6 @@
 <translation id="1301324364792935241">請檢查您的安全 DNS 設定</translation>
 <translation id="1307966114820526988">這些功能已被淘汰</translation>
 <translation id="1308113895091915999">適用優惠</translation>
-<translation id="1312803275555673949">有什麼證據證明資訊屬實？</translation>
 <translation id="1314311879718644478">查看擴張實境內容</translation>
 <translation id="1314509827145471431">釘裝 (右側)</translation>
 <translation id="1318023360584041678">已儲存至分頁群組</translation>
@@ -736,7 +735,6 @@
 <translation id="324180406144491771">已封鎖「<ph name="HOST_NAME" />」連結</translation>
 <translation id="3249845759089040423">型格</translation>
 <translation id="3252266817569339921">法文</translation>
-<translation id="3257954757204451555">這項資料是由誰提供？</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以喺 Google 日曆度快速建立新活動</translation>
 <translation id="3261488570342242926">瞭解虛擬卡</translation>
 <translation id="3264837738038045344">管理 Chrome 設定按鈕，㩒一下 Enter 鍵就可以前往 Chrome 設定</translation>
@@ -1118,6 +1116,7 @@
 <translation id="4414515549596849729">Cookie 和網站數據</translation>
 <translation id="4415426530740016218">取貨地址</translation>
 <translation id="4424024547088906515">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證未取得 Chrome 的信任。這可能是因為設定錯誤，或有攻擊者攔截您的連線。</translation>
+<translation id="4428065317363009941">廣告個人化</translation>
 <translation id="443121186588148776">序列連接埠</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> 不接受您的登入憑證，或您尚未提供登入憑證。</translation>
 <translation id="4432792777822557199">從現在開始，來源語言為<ph name="SOURCE_LANGUAGE" />的網頁一律會翻譯成<ph name="TARGET_LANGUAGE" /></translation>
@@ -1250,7 +1249,6 @@
 <translation id="4838327282952368871">夢幻</translation>
 <translation id="4840250757394056958">查看 Chrome 記錄</translation>
 <translation id="484462545196658690">自動</translation>
-<translation id="4849865131988503897">精確度檢查</translation>
 <translation id="4850886885716139402">檢視</translation>
 <translation id="485316830061041779">德文</translation>
 <translation id="4853901935952445031">2022 年 2 月後，此網站將不能使用 U2F API。如果您是網站擁有者，請為該網站改用 Web Authentication API。</translation>
@@ -1437,6 +1435,7 @@
 <translation id="5398772614898833570">已封鎖廣告</translation>
 <translation id="5400836586163650660">灰色</translation>
 <translation id="540969355065856584">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證目前無效。這可能是因為設定錯誤，或有攻擊者攔截您的連線。</translation>
+<translation id="5412236728747081950">此網站會從 Chrome 取得您的喜好，為您顯示更相關的廣告</translation>
 <translation id="541416427766103491">堆疊器 4</translation>
 <translation id="5421136146218899937">清除瀏覽數據…</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> 要求傳送通知給您</translation>
@@ -1953,7 +1952,6 @@
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> 沒有依循安全標準。</translation>
 <translation id="7210993021468939304">可查看容器中的 Linux 活動，並可在容器內安裝及執行 Linux 應用程式</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />進一步瞭解<ph name="END_LINK" />這個問題。</translation>
-<translation id="7215025035562547931">請抽空思考內容的正確性</translation>
 <translation id="7217745192097460130">要使用 Touch ID 驗證並完成購買嗎？</translation>
 <translation id="7219179957768738017">這個連線使用 <ph name="SSL_VERSION" />。</translation>
 <translation id="7220786058474068424">正在處理</translation>
@@ -2083,6 +2081,7 @@
 <translation id="7569952961197462199">要從 Chrome 中移除信用卡資料嗎？</translation>
 <translation id="7569983096843329377">黑色</translation>
 <translation id="7575207903026901870">移除建議按鈕，㩒一下 Enter 鍵就可以移除呢個建議</translation>
+<translation id="7577900504646297215">管理興趣</translation>
 <translation id="7578104083680115302">在不同的裝置上透過網站和應用程式消費時，使用您儲存在 Google 的信用卡即可快速付款。</translation>
 <translation id="7579442726219254162">受管理的「<ph name="APPLICATION_ID" />」設定中含有不明變數「<ph name="VARIABLE" />」。</translation>
 <translation id="7581199239021537589">側邊 2 圖片 Y 軸移動</translation>
@@ -2204,7 +2203,6 @@
 <translation id="7966803981046576691">工作帳戶類型</translation>
 <translation id="79682505114836835">「<ph name="VALUE" />」是無效的十六進制顏色值。</translation>
 <translation id="7968982339740310781">檢視詳情</translation>
-<translation id="7970392640816874403">其他資料來源提供了哪些資訊？</translation>
 <translation id="7976214039405368314">要求數量過多</translation>
 <translation id="7977538094055660992">輸出裝置</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -2555,7 +2553,6 @@
 <translation id="9155211586651734179">已連結的音訊周邊裝置</translation>
 <translation id="9157595877708044936">設定中…</translation>
 <translation id="9158625974267017556">C6 (信封)</translation>
-<translation id="9164029392738894042">精確度檢查</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">允許網站檢查您是否已儲存付款方法</translation>
 <translation id="9169664750068251925">永遠禁止在這個網站執行</translation>

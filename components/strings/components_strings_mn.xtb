@@ -115,7 +115,6 @@
 <translation id="1301324364792935241">Аюулгүй DNS тохиргоогоо шалгана уу</translation>
 <translation id="1307966114820526988">Хуучирсан онцлог</translation>
 <translation id="1308113895091915999">Боломжит саналууд</translation>
-<translation id="1312803275555673949">Үүнийг ямар нотолгоо дэмждэг вэ?</translation>
 <translation id="1314311879718644478">Өргөтгөсөн бодит орчны контентыг үзэх</translation>
 <translation id="1314509827145471431">Баруун ирмэг дагуу үдэж хавтаслах</translation>
 <translation id="1318023360584041678">Табын бүлэгт хадгалсан</translation>
@@ -741,7 +740,6 @@
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” холбоосууд блоклосон байна</translation>
 <translation id="3249845759089040423">Дэгжин</translation>
 <translation id="3252266817569339921">Франц</translation>
-<translation id="3257954757204451555">Энэ мэдээллийн ард хэн байгаа вэ?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Календарьт шинэ үйл явдал шуурхай үүсгэхийн тулд эхлээд Tab, дараа нь Enter дээр дарна уу</translation>
 <translation id="3261488570342242926">Виртуал картын талаар мэдэж авах</translation>
 <translation id="3264837738038045344">Chrome-н тохиргоог удирдах товчлуур, Chrome-н тохиргоондоо зочлохын тулд Enter дээр дарна уу</translation>
@@ -1129,6 +1127,7 @@
 <translation id="4414515549596849729">күүки болон сайтын өгөгдөл</translation>
 <translation id="4415426530740016218">Авах хаяг</translation>
 <translation id="4424024547088906515">Энэ сервер нь <ph name="DOMAIN" />-аа баталж чадсангүй; учир нь энэхүү сертификатыг Chrome хүлээн зөвшөөрдөггүй. Энэ нь тохиргоо буруу хийгдсэнээс эсвэл халдагч таны холболтонд саад учруулж байгаагаас шалтгаалж болох юм.</translation>
+<translation id="4428065317363009941">Сонирхсон зарын тохируулга</translation>
 <translation id="443121186588148776">Цуваа порт</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> таны нэвтрэх сертификатыг зөвшөөрөөгүй, эсвэл та сертификат олгоогүй байна.</translation>
 <translation id="4432792777822557199">Одооноос <ph name="SOURCE_LANGUAGE" /> хэл дээрх хуудсыг <ph name="TARGET_LANGUAGE" /> хэл рүү орчуулна</translation>
@@ -1261,7 +1260,6 @@
 <translation id="4838327282952368871">Зүүд шиг</translation>
 <translation id="4840250757394056958">Chrome-н түүхээ үзэх</translation>
 <translation id="484462545196658690">Автомат</translation>
-<translation id="4849865131988503897">Нарийвчлалын шалгалт</translation>
 <translation id="4850886885716139402">Харах</translation>
 <translation id="485316830061041779">Герман</translation>
 <translation id="4853901935952445031">Энэ сайт 2022 оны 2-р сараас хойш U2F API-г ашиглах боломжгүй болно. Хэрэв та энэ сайтыг өмчилдөг бол үүнийг Веб баталгаажуулалтын API-г ашигладаг болгон өөрчлөх хэрэгтэй.</translation>
@@ -1448,6 +1446,7 @@
 <translation id="5398772614898833570">Зарыг блоклосон</translation>
 <translation id="5400836586163650660">Саарал</translation>
 <translation id="540969355065856584">Энэ сервер нь <ph name="DOMAIN" /> гэдгээ баталж чадсангүй. Учир нь серверийн аюулгүй байдлын гэрчилгээ нь одоогоор хүчин төгөлдөр бус байна. Энэ алдаа нь тохиргоо буруу хийгдсэнээс, эсвэл халдагч таны холболтонд саад учруулж байгаагаас шалтгаалж болзошгүй.</translation>
+<translation id="5412236728747081950">Энэ сайт танд илүү хамааралтай зар харуулахын тулд таны сонирхлуудыг Chrome-с авдаг</translation>
 <translation id="541416427766103491">Гарах цаасыг зэрэгцүүлэх тавцан 4</translation>
 <translation id="5421136146218899937">Хайлт хийсэн тухай мэдээллийг арилгах...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> танд мэдэгдэл илгээх хүсэлтэй байна</translation>
@@ -1963,7 +1962,6 @@
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> нь аюулгүй байдлын стандартыг дагахгүй байна.</translation>
 <translation id="7210993021468939304">Контейнер дахь Linux-н үйл ажиллагаа болон Linux аппуудыг контейнерт суулгах болон ажиллуулах боломжтой</translation>
 <translation id="721197778055552897">Үүссэн асуудлын талаарх <ph name="BEGIN_LINK" />дэлгэрэнгүй<ph name="END_LINK" /> мэдээллийг эндээс авна уу.</translation>
-<translation id="7215025035562547931">Нарийвчлалыг анхаарч үзэхийн тулд хэсэг хугацаа зарцуулна уу</translation>
 <translation id="7217745192097460130">Худалдан авалтаа баталгаажуулж, дуусгахын тулд Touch ID-г ашиглах уу?</translation>
 <translation id="7219179957768738017">Холболт нь <ph name="SSL_VERSION" />-ыг ашигладаг.</translation>
 <translation id="7220786058474068424">Боловсруулж байна</translation>
@@ -2093,6 +2091,7 @@
 <translation id="7569952961197462199">Chrome-оос зээлийн карт устгах уу?</translation>
 <translation id="7569983096843329377">Хар</translation>
 <translation id="7575207903026901870">Зөвлөмж устгах товчлуур, энэ зөвлөмжийг устгахын тулд Enter дээр дарна уу</translation>
+<translation id="7577900504646297215">Сонирхлыг удирдах</translation>
 <translation id="7578104083680115302">Google-д хадгалсан карт ашиглан төхөөрөмжөөс апп, сайтад төлбөрөө цаг алдалгүйгээр төлөөрэй.</translation>
 <translation id="7579442726219254162">"<ph name="APPLICATION_ID" />"-н удирдаж буй тохиргоонд үл мэдэгдэх хувьсагч "<ph name="VARIABLE" />".</translation>
 <translation id="7581199239021537589">Хуудасны ар тал дээр Y тэнхлэгийн дагуу зураг шилжүүлэх</translation>
@@ -2214,7 +2213,6 @@
 <translation id="7966803981046576691">Ажилтай холбоотой бүртгэлийн төрөл</translation>
 <translation id="79682505114836835">"<ph name="VALUE" />" утга нь буруу арванзургаатын өнгө байна.</translation>
 <translation id="7968982339740310781">Дэлгэрэнгүй мэдээлэл харах</translation>
-<translation id="7970392640816874403">Бусад эх сурвалж юу гэж хэлж байна вэ?</translation>
 <translation id="7976214039405368314">Хэт олон хүсэлт</translation>
 <translation id="7977538094055660992">Гаралтын төхөөрөмж</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -2565,7 +2563,6 @@
 <translation id="9155211586651734179">Аудионы нэмэлт хэрэгслийг залгасан</translation>
 <translation id="9157595877708044936">Тохиргоог хийж байна ...</translation>
 <translation id="9158625974267017556">C6 (Дугтуй)</translation>
-<translation id="9164029392738894042">Нарийвчлалын шалгалт</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">Танд хадгалсан төлбөрийн хэрэгсэл байгаа эсэхийг шалгахыг сайтуудад зөвшөөрөх</translation>
 <translation id="9169664750068251925">Энэ сайт дээр үргэлж хориглох</translation>

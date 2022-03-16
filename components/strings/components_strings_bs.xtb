@@ -115,7 +115,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1301324364792935241">Provjerite postavke sigurnosnog DNS-a</translation>
 <translation id="1307966114820526988">Zastarjele funkcije</translation>
 <translation id="1308113895091915999">Dostupna je ponuda</translation>
-<translation id="1312803275555673949">Koji dokazi idu tome u prilog?</translation>
 <translation id="1314311879718644478">Pogledajte sadržaj proširene realnosti</translation>
 <translation id="1314509827145471431">Povezivanje desne strane</translation>
 <translation id="1318023360584041678">Sačuvano je u grupu kartica</translation>
@@ -740,7 +739,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="324180406144491771">Linkovi hosta "<ph name="HOST_NAME" />" su blokirani</translation>
 <translation id="3249845759089040423">Cool</translation>
 <translation id="3252266817569339921">Francuska</translation>
-<translation id="3257954757204451555">Ko stoji iza ovih informacija?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da brzo kreirate novi događaj u Google Kalendaru</translation>
 <translation id="3261488570342242926">Saznajte više o virtuelnim karticama</translation>
 <translation id="3264837738038045344">Dugme za upravljanje postavkama Chromea, pritisnite Enter da posjetite postavke Chromea</translation>
@@ -1128,6 +1126,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4414515549596849729">kolačići i podaci web lokacije</translation>
 <translation id="4415426530740016218">Adresa preuzimanja</translation>
 <translation id="4424024547088906515">Ovaj server nije uspio dokazati da predstavlja domenu <ph name="DOMAIN" />. Chrome ne smatra njenu potvrdu sigurnosti pouzdanom. Uzrok tome može biti pogrešna konfiguracija ili napadač koji je prekinuo vašu vezu.</translation>
+<translation id="4428065317363009941">Personalizacija oglasa</translation>
 <translation id="443121186588148776">Serijski priključak</translation>
 <translation id="4432688616882109544">Host računar <ph name="HOST_NAME" /> nije prihvatio vašu potvrdu za prijavu, ili potvrda nije poslana.</translation>
 <translation id="4432792777822557199">Stranice na <ph name="SOURCE_LANGUAGE" /> jeziku će se od sada prevoditi na <ph name="TARGET_LANGUAGE" /> jezik</translation>
@@ -1260,7 +1259,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4838327282952368871">Sanjivo</translation>
 <translation id="4840250757394056958">Pregledajte historiju Chromea</translation>
 <translation id="484462545196658690">Automatski</translation>
-<translation id="4849865131988503897">Provjera tačnosti</translation>
 <translation id="4850886885716139402">Prikaz</translation>
 <translation id="485316830061041779">Njemačka</translation>
 <translation id="4853901935952445031">Ova web lokacija neće moći koristiti U2F API nakon februara 2022. Ako ste vlasnik ove web lokacije, trebate umjesto toga koristiti Web Authentication API.</translation>
@@ -1447,6 +1445,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5398772614898833570">Oglasi su blokirani</translation>
 <translation id="5400836586163650660">Siva</translation>
 <translation id="540969355065856584">Ovaj server nije uspio dokazati da je <ph name="DOMAIN" />; njegova potvrda sigurnosti trenutno nije važeća. Uzrok tome može biti pogrešna konfiguracija ili napadač koji je prekinuo vašu vezu.</translation>
+<translation id="5412236728747081950">Ova web lokacija prikuplja vaša interesovanja iz Chromea da vam prikazuje relevantnije oglase</translation>
 <translation id="541416427766103491">Slagač 4</translation>
 <translation id="5421136146218899937">Obriši podatke pregledanja…</translation>
 <translation id="5426179911063097041">Web lokacija <ph name="SITE" /> vam želi slati obavještenja</translation>
@@ -1963,7 +1962,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> se ne pridržava sigurnosnih standarda.</translation>
 <translation id="7210993021468939304">Aktivnost Linuxa se nalazi u spremniku i moguće je instalirati i pokrenuti Linux aplikacije unutar spremnika</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /> o ovom problemu.</translation>
-<translation id="7215025035562547931">Odvojite malo vremena razmotrite tačnost</translation>
 <translation id="7217745192097460130">Koristiti Touch ID da potvrdite i završite kupovinu?</translation>
 <translation id="7219179957768738017">Veza koristi <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Obrada</translation>
@@ -2093,8 +2091,9 @@ Dodatni detalji:
 <translation id="7569952961197462199">Želite li s Chromea ukloniti kreditnu karticu?</translation>
 <translation id="7569983096843329377">Crna</translation>
 <translation id="7575207903026901870">Dugme za uklanjanje prijedloga. Pritisnite Enter da uklonite ovaj prijedlog</translation>
+<translation id="7577900504646297215">Upravljajte interesovanjima</translation>
 <translation id="7578104083680115302">Plaćajte brzo na web lokacijama i aplikacijama sa svih uređaja pomoću kartica koje sačuvate na Googleu.</translation>
-<translation id="7579442726219254162">Nepoznata varijable <ph name="VARIABLE" /> u upravljanoj konfiguraciji za <ph name="APPLICATION_ID" />.</translation>
+<translation id="7579442726219254162">Nepoznata varijabla "<ph name="VARIABLE" />" u upravljanoj konfiguraciji za "<ph name="APPLICATION_ID" />".</translation>
 <translation id="7581199239021537589">Pomak slike Y sa strane 2</translation>
 <translation id="7582602800368606489">Brzo kreirajte novi događaj u Google kalendaru</translation>
 <translation id="7591288787774558753">Dijeliti povjerljiv sadržaj?</translation>
@@ -2214,7 +2213,6 @@ Dodatni detalji:
 <translation id="7966803981046576691">Vrsta računa za posao</translation>
 <translation id="79682505114836835">Vrijednost "<ph name="VALUE" />" je nevažeći kôd heksadecimalne boje.</translation>
 <translation id="7968982339740310781">Prikaži detalje</translation>
-<translation id="7970392640816874403">Šta kažu drugi izvori?</translation>
 <translation id="7976214039405368314">Previše zahtjeva</translation>
 <translation id="7977538094055660992">Izlazni uređaj</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -2565,7 +2563,6 @@ Dodatni detalji:
 <translation id="9155211586651734179">Povezane periferne zvučne uređaje</translation>
 <translation id="9157595877708044936">Postavljanje...</translation>
 <translation id="9158625974267017556">C6 (koverta)</translation>
-<translation id="9164029392738894042">Provjera tačnosti</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">Dozvoli web lokacijama da provjere imate li sačuvane načine plaćanja</translation>
 <translation id="9169664750068251925">Uvijek blokiraj na ovoj web lokaciji</translation>

@@ -30,7 +30,6 @@
 <translation id="114825011539563458">Los controles de seguridad y privacidad más importantes en un solo lugar</translation>
 <translation id="1149401351239820326">Mes de vencimiento</translation>
 <translation id="1154704303112745282">Página no disponible sin conexión: <ph name="VIOLATED_URL" /></translation>
-<translation id="1166688006062225587">Lista de cuentas que puedes seleccionar.</translation>
 <translation id="1171770572613082465">Presiona el botón "Populares" para ver los sitios web más conocidos</translation>
 <translation id="1173894706177603556">Cambiar nombre</translation>
 <translation id="1177863135347784049">Personalizado</translation>
@@ -571,6 +570,7 @@ Para buscar una palabra, mantenla presionada. Si quieres definir mejor la búsqu
 <translation id="4415276339145661267">Administrar tu Cuenta de Google</translation>
 <translation id="4425140285732600465">Sigues el precio. Recibe alertas si baja el precio en algún sitio.</translation>
 <translation id="442518031075347249">Ya no podrás usar tu tarjeta virtual con Google Pay. <ph name="BEGIN_LINK1" />Obtén más información sobre las tarjetas virtuales<ph name="END_LINK1" /></translation>
+<translation id="4428065317363009941">Personalización de anuncios</translation>
 <translation id="4450672886426705087">Resultado de la búsqueda de Google.</translation>
 <translation id="4452411734226507615">Cierra la pestaña <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Se agregó a favoritos en <ph name="FOLDER_NAME" /></translation>
@@ -897,7 +897,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="6277522088822131679">Se produjo un error al imprimir la página. Vuelve a intentarlo.</translation>
 <translation id="6277722725779679269">No se pudo actualizar la función Seguir precio</translation>
 <translation id="6278428485366576908">Tema</translation>
-<translation id="6293443105724342169">La lista de cuentas que puedes seleccionar está abierta a media altura.</translation>
 <translation id="6294610283659775533">Puedes enviar pestañas entre dispositivos en los que se haya accedido a la misma Cuenta de Google.</translation>
 <translation id="6297765934698848803">La organización que administra tu dispositivo desactivó la cámara.</translation>
 <translation id="6301525844455696527">Ponte al día con tus lecturas</translation>
@@ -1307,7 +1306,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="8461694314515752532">Encriptar los datos sincronizados con tu propia frase de contraseña de sincronización</translation>
 <translation id="8466613982764129868">Comprueba que <ph name="TARGET_DEVICE_NAME" /> tenga conexión a Internet</translation>
 <translation id="8473863474539038330">Direcciones y más</translation>
-<translation id="847656914027543776">La lista de cuentas que puedes seleccionar está cerrada.</translation>
 <translation id="8481921391193215807">Si habilitas esta opción, los sitios podrán utilizar las técnicas de protección de la privacidad que se muestran aquí para ofrecer su contenido y sus servicios. Estas técnicas incluyen alternativas al seguimiento entre sitios. Es posible que se agreguen más pruebas a lo largo del tiempo.
 
 <ph name="BEGIN_LIST_ITEM1" />Los anunciantes y los publicadores pueden usar el FLoC.<ph name="END_LIST_ITEM1" />
@@ -1362,6 +1360,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="8683526617475118045">Beneficios</translation>
 <translation id="869891660844655955">Fecha de vencimiento</translation>
 <translation id="8699120352855309748">No ofrecer la traducción de estos idiomas</translation>
+<translation id="8712637175834984815">Entendido</translation>
 <translation id="8725066075913043281">Intentar nuevamente</translation>
 <translation id="8730621377337864115">Listo</translation>
 <translation id="8746155870861185046">Compartir contenido destacado</translation>
@@ -1434,7 +1433,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="9108312223223904744">Asistencia del teléfono como llave de seguridad</translation>
 <translation id="9108808586816295166">Es posible que el DNS seguro no esté disponible en todo momento</translation>
 <translation id="9133397713400217035">Explorar sin conexión</translation>
-<translation id="9133523398139146080">La lista de cuentas que puedes seleccionar está totalmente abierta.</translation>
 <translation id="9137013805542155359">Mostrar original</translation>
 <translation id="9148126808321036104">Accede nuevamente</translation>
 <translation id="9155898266292537608">También puedes presionar brevemente la palabra para realizar una búsqueda</translation>

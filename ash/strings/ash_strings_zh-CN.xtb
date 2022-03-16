@@ -253,6 +253,7 @@
 <translation id="2595239820337756193">5 公里是多少英里</translation>
 <translation id="2596078834055697711">截取窗口屏幕截图</translation>
 <translation id="2607678425161541573">需要在线登录</translation>
+<translation id="2620436844016719705">系统</translation>
 <translation id="2621713457727696555">受保护</translation>
 <translation id="263399434338050016">“全选”</translation>
 <translation id="2653019840645008922">窗口截取/录制</translation>
@@ -348,6 +349,7 @@
 <translation id="320207200541803018">设置定时器</translation>
 <translation id="3203405173652969239">已启用“开关控制”</translation>
 <translation id="3207953481422525583">用户设置</translation>
+<translation id="3208321278970793882">应用</translation>
 <translation id="3217205077783620295">已开启声音，使用切换开关可将音频静音。</translation>
 <translation id="3226991577105957773">+另外 <ph name="COUNT" /> 条</translation>
 <translation id="3227137524299004712">麦克风</translation>
@@ -1031,6 +1033,7 @@
 <translation id="7513622367902644023">已选择截屏模式</translation>
 <translation id="7513922695575567867">日历，<ph name="DATE" />这周，目前所选日期为 <ph name="SELECTED_DATE" />。</translation>
 <translation id="7514365320538308">下载</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7526573455193969409">网络可能受到了监控</translation>
 <translation id="7536035074519304529">IP 地址：<ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">目前不支持 Linux 应用和无痕式窗口。其他应用会被保存。</translation>
@@ -1098,6 +1101,7 @@
 <translation id="7901405293566323524">手机中心</translation>
 <translation id="7902625623987030061">请轻触指纹传感器</translation>
 <translation id="7904094684485781019">此帐号的管理员已停用多帐号登录。</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7930731167419639574">现在，语音均在本地处理，语音输入内容可离线使用</translation>
 <translation id="7933084174919150729">Google 助理仅适用于主要个人资料。</translation>
 <translation id="79341161159229895">该帐号由 <ph name="FIRST_PARENT_EMAIL" /> 和 <ph name="SECOND_PARENT_EMAIL" /> 管理</translation>

@@ -115,7 +115,6 @@
 <translation id="1301324364792935241">നിങ്ങളുടെ സുരക്ഷിത DNS ക്രമീകരണം പരിശോധിക്കുക</translation>
 <translation id="1307966114820526988">അവസാനിപ്പിച്ച ഫീച്ചറുകൾ</translation>
 <translation id="1308113895091915999">ഓഫർ ലഭ്യമാണ്</translation>
-<translation id="1312803275555673949">ഇതിനെ പിന്തുണയ്ക്കുന്ന തെളിവുകൾ എന്തൊക്കെയാണ്?</translation>
 <translation id="1314311879718644478">അനുബന്ധയാഥാർത്ഥ്യ ഉള്ളടക്കം കാണുക</translation>
 <translation id="1314509827145471431">വലതുവശത്ത് ബൈൻഡ് ചെയ്യുക</translation>
 <translation id="1318023360584041678">ടാബ് ഗ്രൂപ്പിൽ സംരക്ഷിച്ചു</translation>
@@ -738,7 +737,6 @@
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” ലിങ്കുകൾ ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="3249845759089040423">ഗ്രൂവി</translation>
 <translation id="3252266817569339921">ഫ്രഞ്ച്</translation>
-<translation id="3257954757204451555">ആരാണ് ഈ വിവരങ്ങൾ നൽകിയത്?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Calendar-ൽ പുതിയൊരു ഇവന്റ് വേഗത്തിൽ സൃഷ്ടിക്കാൻ Enter അമർത്തുക</translation>
 <translation id="3261488570342242926">വെർച്വൽ കാർഡുകളെക്കുറിച്ച് അറിയുക</translation>
 <translation id="3264837738038045344">Chrome ക്രമീകരണം മാനേജ് ചെയ്യുക ബട്ടൺ, നിങ്ങളുടെ Chrome ക്രമീകരണം സന്ദർശിക്കാൻ Enter അമർത്തുക</translation>
@@ -1124,6 +1122,7 @@
 <translation id="4414515549596849729">കുക്കികളും സൈറ്റ് ഡാറ്റയും</translation>
 <translation id="4415426530740016218">പിക്കപ്പ് വിലാസം</translation>
 <translation id="4424024547088906515">ഈ സെർവറിന് അത് <ph name="DOMAIN" /> ആണെന്ന് തെളിയിക്കാനായില്ല; അതിന്റെ സുരക്ഷാ സർട്ടിഫിക്കറ്റ് Chrome-ന് പരിചയമില്ലാത്തതാണ്. തെറ്റായ കോൺഫിഗറേഷൻ കാരണമോ ഒരു അക്രമണകാരി നിങ്ങളുടെ കണക്ഷനെ തടസ്സപ്പെടുത്തുന്നത് കൊണ്ടോ ആയിരിക്കാം ഇത് സംഭവിച്ചത്.</translation>
+<translation id="4428065317363009941">പരസ്യം വ്യക്തിപരമാക്കൽ</translation>
 <translation id="443121186588148776">സീരിയൽ പോർട്ട്</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" />, നിങ്ങളുടെ ലോഗിൻ സർട്ടിഫിക്കറ്റിന് അംഗീകരിച്ചിട്ടില്ല, അല്ലെങ്കിൽ അങ്ങനെയൊരെണ്ണം നൽകിയിട്ടില്ലായിരിക്കാം.</translation>
 <translation id="4432792777822557199">ഇനിമുതൽ <ph name="SOURCE_LANGUAGE" /> ഭാഷയിലുള്ള പേജുകൾ <ph name="TARGET_LANGUAGE" /> ഭാഷയിലേക്ക് വിവർത്തനം ചെയ്യപ്പെടും</translation>
@@ -1256,7 +1255,6 @@
 <translation id="4838327282952368871">മനോരാജ്യത്തിൽ മുഴുകിയത്</translation>
 <translation id="4840250757394056958">നിങ്ങളുടെ Chrome ചരിത്രം കാണുക</translation>
 <translation id="484462545196658690">സ്വയമേവ</translation>
-<translation id="4849865131988503897">കൃത്യതാ പരിശോധന</translation>
 <translation id="4850886885716139402">കാണുക</translation>
 <translation id="485316830061041779">ജര്‍മ്മന്‍</translation>
 <translation id="4853901935952445031">2022 ഫെബ്രുവരിക്ക് ശേഷം ഈ സൈറ്റിന് U2F API ഉപയോഗിക്കാനാകില്ല. ഈ സൈറ്റ് നിങ്ങളുടേതാണെങ്കിൽ, വെബ് ഓതന്റിക്കേഷൻ API ഉപയോഗിക്കുന്നതിന് നിങ്ങൾ അത് മാറ്റണം.</translation>
@@ -1443,6 +1441,7 @@
 <translation id="5398772614898833570">പരസ്യങ്ങൾ ബ്ലോക്കുചെയ്‌തു</translation>
 <translation id="5400836586163650660">ചാരനിറം</translation>
 <translation id="540969355065856584">ഈ സെർവറിന് അത് <ph name="DOMAIN" /> ആണെന്ന് തെളിയിക്കാനായില്ല; അതിന്റെ സുരക്ഷ സർട്ടിഫിക്കറ്റിന് ഇപ്പോൾ സാധുതയുള്ളതല്ല. തെറ്റായ കോൺഫിഗറേഷൻ കാരണമോ ഒരു ആക്രമണകാരി നിങ്ങളുടെ കണക്ഷനെ തടസ്സപ്പെടുത്തുന്നത് കൊണ്ടോ ആയിരിക്കാം ഇത് സംഭവിച്ചത്.</translation>
+<translation id="5412236728747081950">കൂടുതൽ പ്രസക്തമായ പരസ്യങ്ങൾ കാണിക്കാൻ ഈ സൈറ്റിന് Chrome-ൽ നിന്ന് നിങ്ങളുടെ താൽപ്പര്യങ്ങൾ ലഭിക്കുന്നു</translation>
 <translation id="541416427766103491">സ്റ്റാക്കർ 4</translation>
 <translation id="5421136146218899937">ബ്രൗസിംഗ് ഡാറ്റ മായ്‌ക്കുക...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> നിങ്ങൾക്ക് അറിയിപ്പുകൾ അയയ്‌ക്കാൻ ആഗ്രഹിക്കുന്നു</translation>
@@ -1959,7 +1958,6 @@
 <translation id="7210863904660874423"><ph name="HOST_NAME" />, സുരക്ഷാ മാനദണ്ഡങ്ങൾ പാലിക്കുന്നില്ല.</translation>
 <translation id="7210993021468939304">കണ്ടെയ്‌നറിനുള്ളിലെ Linux ആക്‌റ്റിവിറ്റി, കൂടാതെ കണ്ടെയ്‌നറിനുള്ളിൽ Linux ആപ്പുകൾ ഇൻസ്‌റ്റാൾ ചെയ്യാനും റൺ ചെയ്യാനും കഴിയും</translation>
 <translation id="721197778055552897">ഈ പ്രശ്‌നത്തെക്കുറിച്ച് <ph name="BEGIN_LINK" />കൂടുതൽ‍ മനസിലാക്കുക<ph name="END_LINK" />.</translation>
-<translation id="7215025035562547931">കൃത്യത പരിശോധിക്കാൻ അൽപ്പസമയം ചെലവഴിക്കുക</translation>
 <translation id="7217745192097460130">പരിശോധിച്ചുറപ്പിക്കുന്നതിനും വാങ്ങൽ പൂർത്തിയാക്കുന്നതിനും ടച്ച് ഐഡി ഉപയോഗിക്കണോ?</translation>
 <translation id="7219179957768738017">കണക്ഷന്‍ <ph name="SSL_VERSION" /> ഉപയോഗിക്കുന്നു.</translation>
 <translation id="7220786058474068424">പ്രോസസ്സുചെയ്യുന്നു</translation>
@@ -2087,6 +2085,7 @@
 <translation id="7569952961197462199">Chrome-ൽ നിന്ന് ക്രെഡിറ്റ് കാർഡ് നീക്കംചെയ്യണോ?</translation>
 <translation id="7569983096843329377">കറുപ്പ്</translation>
 <translation id="7575207903026901870">നിർദ്ദേശ ബട്ടൺ നീക്കം ചെയ്യുക, ഈ നിർദ്ദേശം നീക്കം ചെയ്യാൻ എന്റർ അമർത്തുക</translation>
+<translation id="7577900504646297215">താൽപ്പര്യങ്ങൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="7578104083680115302">നിങ്ങൾ Google-ൽ സംരക്ഷിച്ച കാർഡുകൾ ഉപയോഗിച്ച് ഉപകരണങ്ങളിലുടനീളമുള്ള സൈറ്റുകളിലും ആപ്‌സിലും പെട്ടെന്ന് പണമടയ്‌ക്കുക.</translation>
 <translation id="7579442726219254162">"<ph name="APPLICATION_ID" />" എന്നതിന്റെ മാനേജ് ചെയ്‌ത കോൺഫിഗറേഷനിൽ "<ph name="VARIABLE" />" എന്ന അജ്ഞാതമായ വേരിയബിൾ ഉൾപ്പെടുന്നു.</translation>
 <translation id="7581199239021537589">സൈഡ് 2 ചിത്രം Y ഷിഫ്റ്റ്</translation>
@@ -2208,7 +2207,6 @@
 <translation id="7966803981046576691">ജോബ് അക്കൗണ്ട് തരം</translation>
 <translation id="79682505114836835">"<ph name="VALUE" />" എന്ന മൂല്യം അസാധുവായ ഒരു ഹെക്സ് നിറമാണ്.</translation>
 <translation id="7968982339740310781">വിശദാംശങ്ങൾ കാണുക</translation>
-<translation id="7970392640816874403">മറ്റ് ഉറവിടങ്ങൾ എന്താണ് പറയുന്നത്?</translation>
 <translation id="7976214039405368314">നിരവധി അഭ്യർത്ഥനകൾ</translation>
 <translation id="7977538094055660992">ഔട്ട്പുട്ട് ഉപകരണം</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -2559,7 +2557,6 @@
 <translation id="9155211586651734179">അറ്റാച്ച് ചെയ്ത ഓഡിയോ പെരിഫറലുകൾ</translation>
 <translation id="9157595877708044936">സജ്ജീകരിക്കുന്നു...</translation>
 <translation id="9158625974267017556">C6 (എൻവലപ്പ്)</translation>
-<translation id="9164029392738894042">കൃത്യതാ പരിശോധന</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">നിങ്ങൾ പേയ്‌മെന്റ് രീതികൾ സംരക്ഷിച്ചിട്ടുണ്ടോ എന്ന് പരിശോധിക്കാൻ സൈറ്റുകളെ അനുവദിക്കുക</translation>
 <translation id="9169664750068251925">ഈ സൈറ്റിൽ എല്ലായ്‌പ്പോഴും തടയുക</translation>

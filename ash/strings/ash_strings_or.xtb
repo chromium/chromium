@@ -125,6 +125,7 @@
 <translation id="1668469839109562275">ବିଲ୍ଟ-ଇନ VPN</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> ବାକି ଅଛି</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> ସଂଯୁକ୍ତ ହୋଇନାହିଁ।</translation>
+<translation id="1677582821739292812">କୌଣସି ବ୍ୟକ୍ତି ଆପଣଙ୍କ ସ୍କ୍ରିନକୁ ଦେଖୁଛନ୍ତି</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> ଟାଇମର୍ · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 ଠିକଣା: <ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">ଡେସ୍କ: <ph name="DESK_NAME" /></translation>
@@ -257,6 +258,7 @@
 <translation id="2595239820337756193">5K ମାଇଲରେ</translation>
 <translation id="2596078834055697711">ୱିଣ୍ଡୋ ସ୍କ୍ରିନ୍‌ସଟ୍ ନିଅନ୍ତୁ</translation>
 <translation id="2607678425161541573">ଅନଲାଇନ୍ ସାଇନ୍ ଇନ୍ କରିବା ଆବଶ୍ୟକ</translation>
+<translation id="2620436844016719705">ସିଷ୍ଟମ୍‌</translation>
 <translation id="2621713457727696555">ସୁରକ୍ଷିତ</translation>
 <translation id="263399434338050016">"ସମସ୍ତ ଚୟନ କରନ୍ତୁ"</translation>
 <translation id="2653019840645008922">ୱିଣ୍ଡୋ କ୍ୟାପଚର୍</translation>
@@ -352,6 +354,7 @@
 <translation id="320207200541803018">ଟାଇମର୍ ସେଟ୍ କରନ୍ତୁ</translation>
 <translation id="3203405173652969239">'ସ୍ୱିଚ୍ ଆକ୍ସେସ୍' ସୁବିଧା ସକ୍ଷମ କରାଯାଇଛି</translation>
 <translation id="3207953481422525583">ଉପଯୋଗକର୍ତ୍ତା ସେଟିଂସ୍</translation>
+<translation id="3208321278970793882">ଆପ୍</translation>
 <translation id="3217205077783620295">ଭଲ୍ୟୁମ୍ ଚାଲୁ ଅଛି, ଟୋଗଲ୍ କରିବା ଦ୍ୱାରା ଅଡିଓ ମ୍ୟୁଟ୍ ହୋଇଯିବ।</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" />ଟି ଅଧିକ</translation>
 <translation id="3227137524299004712">ମାଇକ୍ରୋଫୋନ୍</translation>
@@ -1034,6 +1037,7 @@
 <translation id="7513622367902644023">ସ୍କ୍ରିନସଟ୍ ମୋଡ୍ ଚୟନ କରାଯାଇଛି</translation>
 <translation id="7513922695575567867">କ୍ୟାଲେଣ୍ଡର, <ph name="DATE" />ର ସପ୍ତାହ, ବର୍ତ୍ତମାନ <ph name="SELECTED_DATE" />କୁ ଚୟନ କରାଯାଇଛି।</translation>
 <translation id="7514365320538308">ଡାଉନ୍‌‌ଲୋଡ୍‌ କରନ୍ତୁ</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7526573455193969409">ନେଟ୍‌ୱର୍କ ଉପରେ ହୁଏତ ନଜର ରଖାଯାଇପାରେ</translation>
 <translation id="7536035074519304529">IP ଠିକଣା: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">ବର୍ତ୍ତମାନ Linux ଆପ ଏବଂ ଇନକଗ୍ନିଟୋ ୱିଣ୍ଡୋଗୁଡ଼ିକ ସମର୍ଥିତ ନୁହେଁ। ଅନ୍ୟ ଆପଗୁଡ଼ିକ ସେଭ ହୋଇଯିବ।</translation>
@@ -1102,6 +1106,7 @@
 <translation id="7901405293566323524">ଫୋନ୍ ହବ୍</translation>
 <translation id="7902625623987030061">ଟିପଚିହ୍ନ ସେନ୍ସରକୁ ଛୁଅଁନ୍ତୁ</translation>
 <translation id="7904094684485781019">ଏହି ଆକାଉଣ୍ଟର ବ୍ୟବସ୍ଥାପକ ଏକାଧିକ ସାଇନ୍‌ ଇନ୍‌ ପାଇଁ ଅନୁମତି ଦେଇନାହାନ୍ତି।</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7930731167419639574">ସ୍ପିଚ୍ ବର୍ତ୍ତମାନ ସ୍ଥାନୀୟ ଭାବେ ପ୍ରକ୍ରିୟାନ୍ୱିତ ହେଉଛି ଏବଂ ଏହାର ଡିକ୍ଟେସନ୍ ଅଫଲାଇନରେ କାମ କରେ</translation>
 <translation id="7933084174919150729">Google Assistant କେବଳ ପ୍ରାଥମିକ ପ୍ରୋଫାଇଲ୍ ପାଇଁ ଉପଲବ୍ଧ ଅଟେ।</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> ଏବଂ <ph name="SECOND_PARENT_EMAIL" /> ଦ୍ୱାରା ଆକାଉଣ୍ଟ ପରିଚାଳିତ ହେଉଛି</translation>

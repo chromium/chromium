@@ -115,7 +115,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1301324364792935241">Ellenőrizze a biztonságos DNS beállításait</translation>
 <translation id="1307966114820526988">Elavult funkciók</translation>
 <translation id="1308113895091915999">Ajánlat áll rendelkezésre</translation>
-<translation id="1312803275555673949">Milyen bizonyíték támasztja alá?</translation>
 <translation id="1314311879718644478">Kiterjesztett valóságot használó tartalmak megtekintése</translation>
 <translation id="1314509827145471431">Kötés a jobb oldalon</translation>
 <translation id="1318023360584041678">Lapcsoportba mentve</translation>
@@ -738,7 +737,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="324180406144491771">A(z) „<ph name="HOST_NAME" />” linkjei le vannak tiltva</translation>
 <translation id="3249845759089040423">Izgalmas</translation>
 <translation id="3252266817569339921">francia</translation>
-<translation id="3257954757204451555">Kitől származik ez az információ?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, tartsa lenyomva a Tab billentyűt, majd nyomja meg az Enter billentyűt új esemény gyors létrehozásához a Google Naptár szolgáltatással</translation>
 <translation id="3261488570342242926">További információ a virtuális kártyákról</translation>
 <translation id="3264837738038045344">A Chrome beállításainak kezelése gomb. Nyomja le az Enter gombot a Chrome beállításainak megnyitásához.</translation>
@@ -1126,6 +1124,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4414515549596849729">cookie-k és webhelyadatok</translation>
 <translation id="4415426530740016218">Átvételi cím</translation>
 <translation id="4424024547088906515">A szerver nem tudta bizonyítani, hogy valóban a(z) <ph name="DOMAIN" /> domainbe tartozik; biztonsági tanúsítványa a Chrome szerint nem megbízható. Ennek oka lehet konfigurációs hiba, vagy hogy egy támadó eltérítette az Ön kapcsolódását.</translation>
+<translation id="4428065317363009941">Hirdetések személyre szabása</translation>
 <translation id="443121186588148776">Soros port</translation>
 <translation id="4432688616882109544">A(z) <ph name="HOST_NAME" /> nem fogadta el az Ön bejelentkezési tanúsítványát, vagy nem talált ilyet.</translation>
 <translation id="4432792777822557199">A(z) <ph name="SOURCE_LANGUAGE" /> nyelvű oldalak mostantól le lesznek fordítva <ph name="TARGET_LANGUAGE" /> nyelvre</translation>
@@ -1258,7 +1257,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4838327282952368871">Álmodozó</translation>
 <translation id="4840250757394056958">Chrome-előzmények megtekintése</translation>
 <translation id="484462545196658690">Automatikus</translation>
-<translation id="4849865131988503897">Pontosság ellenőrzése</translation>
 <translation id="4850886885716139402">Nézet</translation>
 <translation id="485316830061041779">német</translation>
 <translation id="4853901935952445031">Ez a webhely nem tudja majd használni az U2F API-t 2022 áprilisa után. Ha Ön a webhely tulajdonosa, be kell állítania a Web Authentication API használatára.</translation>
@@ -1445,6 +1443,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5398772614898833570">Hirdetések letiltva</translation>
 <translation id="5400836586163650660">Szürke</translation>
 <translation id="540969355065856584">A szerver nem tudta bizonyítani, hogy valóban a(z) <ph name="DOMAIN" /> domainbe tartozik; biztonsági tanúsítványa jelenleg nem érvényes. Ennek oka lehet konfigurációs hiba, vagy hogy egy támadó eltérítette az Ön kapcsolatát.</translation>
+<translation id="5412236728747081950">Ez a webhely lekéri az érdeklődési köreit a Chrome-tól, hogy relevánsabb hirdetéseket jelenítsen meg Önnek</translation>
 <translation id="541416427766103491">4. kötegelő</translation>
 <translation id="5421136146218899937">Böngészési adatok törlése...</translation>
 <translation id="5426179911063097041">A(z) <ph name="SITE" /> értesítéseket szeretne küldeni Önnek</translation>
@@ -1961,7 +1960,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="7210863904660874423">A(z) <ph name="HOST_NAME" /> nem felel meg a biztonsági szabványoknak.</translation>
 <translation id="7210993021468939304">A tárolóban végzett linuxos tevékenység megtekintése, valamint Linux-alkalmazások telepítése és futtatása a tárolóban</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />További információ<ph name="END_LINK" /> erről a hibáról.</translation>
-<translation id="7215025035562547931">Szánjon kis időt az információk helyességének megállapítására</translation>
 <translation id="7217745192097460130">Szeretné Touch ID használatával igazolni és befejezni vásárlását?</translation>
 <translation id="7219179957768738017">A kapcsolat a következőt használja: <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Feldolgozás alatt</translation>
@@ -2091,6 +2089,7 @@ További részletek:
 <translation id="7569952961197462199">Eltávolítja a hitelkártyát a Chrome-ból?</translation>
 <translation id="7569983096843329377">Fekete</translation>
 <translation id="7575207903026901870">Javaslat eltávolítása gomb. Nyomja meg az Entert a javaslat eltávolításához</translation>
+<translation id="7577900504646297215">Érdeklődési körök kezelése</translation>
 <translation id="7578104083680115302">A Google rendszerében mentett kártyákkal gyorsan fizethet webhelyeken és alkalmazásokban bármelyik eszközén.</translation>
 <translation id="7579442726219254162">Ismeretlen változó („<ph name="VARIABLE" />”) található a(z) „<ph name="APPLICATION_ID" />” kezelt konfigurációjában.</translation>
 <translation id="7581199239021537589">2. oldali kép Y-eltolása</translation>
@@ -2212,7 +2211,6 @@ További részletek:
 <translation id="7966803981046576691">Munka fióktípusa</translation>
 <translation id="79682505114836835">A(z) „<ph name="VALUE" />” érvénytelen hexadecimális színkód.</translation>
 <translation id="7968982339740310781">Részletek megjelenítése</translation>
-<translation id="7970392640816874403">Mit mondanak más források?</translation>
 <translation id="7976214039405368314">Túl sok kérelem</translation>
 <translation id="7977538094055660992">Kimeneti eszköz</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -2564,7 +2562,6 @@ További részletek:
 <translation id="9155211586651734179">Csatlakoztatott hangperifériák</translation>
 <translation id="9157595877708044936">Előkészítés...</translation>
 <translation id="9158625974267017556">C6 (boríték)</translation>
-<translation id="9164029392738894042">Pontosság ellenőrzése</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">Engedélyezés a webhelyek számára, hogy ellenőrizzék, van-e elmentett fizetési módja</translation>
 <translation id="9169664750068251925">Mindig tiltsa ezen az oldalon</translation>

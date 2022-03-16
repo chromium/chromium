@@ -31,7 +31,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1150989369772528668">Kalendar</translation>
 <translation id="1153356358378277386">Upareni uređaji</translation>
 <translation id="1165712434476988950">Potrebno je ponovo pokrenuti uređaj kako bi se primijenilo ažuriranje.</translation>
-<translation id="1171742223880403396">Vaš kabel USB-C možda nije ispravno povezan sa zaslonima</translation>
+<translation id="1171742223880403396">USB-C kabl se ne može ispravno povezati s ekranima</translation>
 <translation id="1175572348579024023">Klizanje</translation>
 <translation id="1178581264944972037">Pauziraj</translation>
 <translation id="1181037720776840403">Ukloni</translation>
@@ -125,6 +125,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1668469839109562275">Ugrađeni VPN</translation>
 <translation id="1677472565718498478">Još <ph name="TIME" /></translation>
 <translation id="1677507110654891115">Funkcija <ph name="FEATURE_NAME" /> nije povezana.</translation>
+<translation id="1677582821739292812">Netko gleda vaš zaslon</translation>
 <translation id="1698080062160024910">Tajmer od <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 adresa: <ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">Radna površina: <ph name="DESK_NAME" /></translation>
@@ -257,6 +258,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2595239820337756193">5 km u miljama</translation>
 <translation id="2596078834055697711">Napravite snimak ekrana prozora</translation>
 <translation id="2607678425161541573">Potrebna je online prijava</translation>
+<translation id="2620436844016719705">Sistem</translation>
 <translation id="2621713457727696555">Osigurano</translation>
 <translation id="263399434338050016">"Odaberite sve"</translation>
 <translation id="2653019840645008922">Snimanje prozora</translation>
@@ -352,6 +354,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="320207200541803018">Postavi tajmer</translation>
 <translation id="3203405173652969239">Prekidač za pristup je omogućen</translation>
 <translation id="3207953481422525583">Korisničke postavke</translation>
+<translation id="3208321278970793882">Aplikacija</translation>
 <translation id="3217205077783620295">Zvuk je uključen. Deaktiviranjem će se isključiti zvuk.</translation>
 <translation id="3226991577105957773">i još <ph name="COUNT" /></translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -1035,6 +1038,7 @@ Nova instalacija</translation>
 <translation id="7513622367902644023">Odabran je način rada za snimak ekrana</translation>
 <translation id="7513922695575567867">Kalendar, sedmica <ph name="DATE" />, trenutno je odabran datum <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Preuzmi</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7526573455193969409">Mreža može biti nadzirana</translation>
 <translation id="7536035074519304529">IP adresa: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Linux aplikacije i anonimni prozori trenutno nisu podržani. Druge aplikacije će se sačuvati.</translation>
@@ -1103,6 +1107,7 @@ Nova instalacija</translation>
 <translation id="7901405293566323524">Hub telefona</translation>
 <translation id="7902625623987030061">Dodirnite senzor za otisak prsta</translation>
 <translation id="7904094684485781019">Administrator ovog računa nije dozvolio višestruku prijavu.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7930731167419639574">Govor se sada obrađuje lokalno i Diktiranje radi offline</translation>
 <translation id="7933084174919150729">Google Asistent je dostupan samo za primarni profil.</translation>
 <translation id="79341161159229895">Računom upravlja <ph name="FIRST_PARENT_EMAIL" /> i <ph name="SECOND_PARENT_EMAIL" /></translation>

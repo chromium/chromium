@@ -254,6 +254,7 @@
 <translation id="2595239820337756193">5 กม. เท่ากับกี่ไมล์</translation>
 <translation id="2596078834055697711">ถ่ายภาพหน้าจอของหน้าต่าง</translation>
 <translation id="2607678425161541573">ต้องลงชื่อเข้าใช้ออนไลน์</translation>
+<translation id="2620436844016719705">ระบบ</translation>
 <translation id="2621713457727696555">ปลอดภัย</translation>
 <translation id="263399434338050016">"เลือกทั้งหมด"</translation>
 <translation id="2653019840645008922">การจับภาพหน้าต่าง</translation>
@@ -350,6 +351,7 @@
 <translation id="320207200541803018">ตั้งตัวจับเวลา</translation>
 <translation id="3203405173652969239">เปิดใช้ "การเข้าถึงด้วยสวิตช์" แล้ว</translation>
 <translation id="3207953481422525583">การตั้งค่าของผู้ใช้</translation>
+<translation id="3208321278970793882">แอป</translation>
 <translation id="3217205077783620295">ระดับเสียงเปิดอยู่ สลับเปิด/ปิดเพื่อปิดเสียง</translation>
 <translation id="3226991577105957773">และอีก <ph name="COUNT" /> รายการ</translation>
 <translation id="3227137524299004712">ไมโครโฟน</translation>
@@ -1034,6 +1036,7 @@
 <translation id="7513622367902644023">เลือกโหมดภาพหน้าจอแล้ว</translation>
 <translation id="7513922695575567867">ปฏิทิน, สัปดาห์วันที่ <ph name="DATE" />, เลือกวันที่ <ph name="SELECTED_DATE" /> อยู่</translation>
 <translation id="7514365320538308">ดาวน์โหลด</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7526573455193969409">อาจมีการตรวจสอบเครือข่าย</translation>
 <translation id="7536035074519304529">ที่อยู่ IP: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">ขณะนี้ยังไม่รองรับแอป Linux และหน้าต่างที่ไม่ระบุตัวตน ระบบจะบันทึกแอปอื่นๆ</translation>
@@ -1102,6 +1105,7 @@
 <translation id="7901405293566323524">ฮับโทรศัพท์</translation>
 <translation id="7902625623987030061">แตะเซ็นเซอร์ลายนิ้วมือ</translation>
 <translation id="7904094684485781019">ผู้ดูแลระบบของบัญชีนี้ไม่อนุญาตการลงชื่อเข้าสู่ระบบพร้อมกันหลายบัญชี</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7930731167419639574">คำพูดได้รับการประมวลผลในเครื่องและการพิมพ์ตามคำบอกทำงานแบบออฟไลน์ได้แล้วในขณะนี้</translation>
 <translation id="7933084174919150729">Google Assistant ใช้งานได้กับโปรไฟล์หลักเท่านั้น</translation>
 <translation id="79341161159229895">บัญชีที่จัดการโดย <ph name="FIRST_PARENT_EMAIL" /> และ <ph name="SECOND_PARENT_EMAIL" /></translation>

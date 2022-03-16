@@ -1060,7 +1060,6 @@
 <translation id="2019718679933488176">&amp;नयाँ ट्याबमा अडियो थप्नुहोस्</translation>
 <translation id="2020183425253392403">नेटवर्क ठेगानाका सेटिङहरू देखाउनुहोस्</translation>
 <translation id="2020225359413970060">फाइल स्क्यान गर्नुहोस्</translation>
-<translation id="2022395138980869975">छेउमा खुलेको Google Search पेज टगल गर्नुहोस्</translation>
 <translation id="2023167225947895179">PIN को अनुमान लगाउन सजिलो हुन सक्छ</translation>
 <translation id="202352106777823113">डाउनलोड गर्न अत्यन्त लामो समय लियो र सञ्जालबाट रोकिएको थियो।</translation>
 <translation id="2024195579772565064">सर्च इन्जिन मेटाउनुहोस्</translation>
@@ -1327,6 +1326,7 @@
 <translation id="2278562042389100163">ब्राउजर विन्डो खोल्नुहोस्</translation>
 <translation id="2278668501808246459">कन्टेनर म्यानेजर सुरु गरिँदै छ</translation>
 <translation id="2280486287150724112">दायाँ सीमा</translation>
+<translation id="2281863813036651454">लेफ्ट माउस क्लिक</translation>
 <translation id="2282146716419988068">GPU प्रक्रिया</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{सबै URL नयाँ ट्याब समूहमा खोल्नुहोस्}=1{एउटा URL नयाँ ट्याब समूहमा खोल्नुहोस्}other{सबै ({COUNT}) वटा URL नयाँ ट्याब समूहमा खोल्नुहोस्}}</translation>
 <translation id="2285942871162473373">तपाईंको फिंगरप्रिन्ट पहिचान गर्न सकिएन। फेरि प्रयास गर्नुहोस्।</translation>
@@ -2960,7 +2960,6 @@
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" /> कनेक्सन</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> मार्फत टिपोट लिँदै</translation>
 <translation id="3888586133700543064">यो जानकारीले हामीलाई तपाईंका सहायकसम्बन्धी समस्याहरू अझ राम्ररी बुझ्न मद्दत गर्छ। यो जानकारी ९० दिनसम्म भण्डारण गरिन्छ र अनुमति प्राप्त इन्जिनियरिङ तथा प्रतिक्रिया टोलीका सदस्यले मात्र यो जानकारी हेर्न तथा प्रयोग गर्न पाउँछन्।</translation>
-<translation id="3888900458694486810">छेउमा खुलेको Google Search पेज बन्द गर्नुहोस्</translation>
 <translation id="3890064827463908288">Wi-Fi सिंक प्रयोग गर्न Chrome सिंक अन गर्नुहोस्</translation>
 <translation id="389313931326656921">“अर्को” नामक कार्यका निम्ति स्विच असाइन गर्नुहोस्</translation>
 <translation id="3893295674388762059">डेटा मेटाउन सबै इन्कोग्निटो विन्डो बन्द गर्नुहोस्</translation>
@@ -3273,7 +3272,6 @@
 <translation id="4208390505124702064"><ph name="SITE_NAME" /> मा खोज्नुहोस्</translation>
 <translation id="4209092469652827314">विशाल</translation>
 <translation id="4209251085232852247">निष्क्रिय छ</translation>
-<translation id="4209464433672152343">कागजातहरूलाई छपाइका लागि तयार पार्न तिनलाई <ph name="BEGIN_LINK_HELP" />Google मा पठाइयो<ph name="END_LINK_HELP" />। <ph name="BEGIN_LINK_DASHBOARD" />Google Cloud Print को ड्यासबोर्ड<ph name="END_LINK_DASHBOARD" /> मा आफ्नो प्रिन्टर र प्रिन्टरसम्बन्धी इतिहास हेर्नुहोस् र तिनको व्यवस्थापन गर्नुहोस्।</translation>
 <translation id="4210048056321123003">भर्चुअल मेसिन डाउनलोड गर्दै</translation>
 <translation id="421182450098841253">बुकमार्क पट्टी देखाउनुहोस्</translation>
 <translation id="4211851069413100178">प्रयोग तथा निदानसम्बन्धी डेटा पठाउनुहोस्। निदान, डिभाइस र एपको उपयोगसम्बन्धी डेटा स्वतः Google मा पठाएर आफ्नो Android सम्बन्धी अनुभवलाई सुधार गर्न मद्दत गर्नुहोस्। यसले प्रणाली तथा एपको स्थिरता र थप कुराहरू सुधार गर्न मद्दत गर्ने छ। केही एकीकृत डेटाले Google का एप तथा Android का विकासकर्ता जस्ता साझेदारहरूलाई पनि मद्दत गर्ने छ। मालिकले यो <ph name="BEGIN_LINK1" />सेटिङ<ph name="END_LINK1" /> लागू गर्नुभएको हो। मालिकले यस यन्त्रको निदान तथा प्रयोगसम्बन्धी डेटा Google मा पठाउने विकल्प छनौट गर्न सक्नुहुन्छ। तपाईंको खातामा वेब तथा एपसम्बन्धी अतिरिक्त क्रियाकलापको सेटिङ सक्रिय गरिएको छ भने यो डेटा तपाईंको Google खातामा सुरक्षित गरिन सक्छ। <ph name="BEGIN_LINK2" />थप जान्नुहोस्<ph name="END_LINK2" /></translation>
@@ -5146,6 +5144,7 @@
 <translation id="6129938384427316298">नेटस्केप प्रमाणपत्र टिप्पणी</translation>
 <translation id="6129953537138746214">क्षेत्र</translation>
 <translation id="6130692320435119637">Wi-Fi नेटवर्क थप्नुहोस्</translation>
+<translation id="6130887916931372608">किबोर्ड की</translation>
 <translation id="6136114942382973861">डाउनलोडहरूको पट्टी बन्द गर्नुहोस्</translation>
 <translation id="6136287496450963112">तपाईंको सुरक्षा साँचो PIN प्रयोग गरी सुरक्षित गरिएको छैन। फिंगरप्रिन्ट व्यवस्थापन गर्न सर्वप्रथम PIN बनाउनुहोस्।</translation>
 <translation id="6138680304137685902">SHA-384 सहितको X9.62 ECDSA हस्ताक्षर</translation>
@@ -6170,7 +6169,6 @@
 <translation id="7180611975245234373">ताजा गर्नुहोस्</translation>
 <translation id="7180865173735832675">कस्टमाइज गर्नुहोस्</translation>
 <translation id="7182791023900310535">आफ्नो पासवर्ड खातामा सार्नुहोस्</translation>
-<translation id="7183420126213758623">साइड सर्च टगल गर्नुहोस्। साइड सर्च एक्टिभेट गरिएको छैन।</translation>
 <translation id="7186088072322679094">उपकरणपट्टीमा राख्नुहोस्</translation>
 <translation id="7186303001964993981">यो फोल्डरमा प्रणालीका फाइलहरू भएकाले <ph name="ORIGIN" /> ले यो फोल्डर खोल्न सक्दैन</translation>
 <translation id="7187428571767585875">हटाइनु वा बदल्नु पर्ने रजिस्ट्रीसम्बन्धी प्रविष्टिहरू:</translation>
@@ -6692,7 +6690,6 @@
 <translation id="7701040980221191251">कुनै पनि होइन</translation>
 <translation id="7701869757853594372">प्रयोगकर्ताले सम्हाल्नेहरू</translation>
 <translation id="7702574632857388784">सूचीबाट <ph name="FILE_NAME" /> हटाउनुहोस्</translation>
-<translation id="7702599324215660661">Lock on Leave</translation>
 <translation id="7702907602086592255">डोमेन</translation>
 <translation id="7704305437604973648">कार्य</translation>
 <translation id="7704317875155739195">खोज तथा URL हरू स्वतः पूर्ण गर्नुहोस्</translation>
@@ -6762,6 +6759,7 @@
 <translation id="7768770796815395237">परिवर्तन गर्नुहोस्</translation>
 <translation id="7768784765476638775">सेलेक्ट टु स्पिक</translation>
 <translation id="7770406201819593386">ChromeOS Flex का डाइग्नोस्टिक परीक्षणहरू गर्ने।</translation>
+<translation id="7770450735129978837">राइट माउस क्लिक</translation>
 <translation id="7770612696274572992">अर्को यन्त्रबाट छवि कपी गरियो</translation>
 <translation id="7771452384635174008">सजावट</translation>
 <translation id="7772032839648071052">पासफ्रेज पक्का</translation>
@@ -6798,7 +6796,6 @@
 <translation id="7798844538707273832"><ph name="PERMISSION" /> माथि स्वतः रोक लगाइएको छ</translation>
 <translation id="7799299114731150374">वालपेपर सफलतापूर्वक सेट गरियो</translation>
 <translation id="7799817062559422778">उज्यालो मोड</translation>
-<translation id="7800159967992492578">साइड सर्च टगल गर्नुहोस्। साइड सर्च एक्टिभेट गरिएको छ।</translation>
 <translation id="7800518121066352902">वा&amp;मावर्त घुमाउनुहोस्</translation>
 <translation id="7801679634091975683">तपाईंले यहाँ गर्ने परिवर्तनहरू Lacros Chrome ब्राउजरमा मात्र लागू हुन्छन्। आफ्नो Chrome ब्राउजरको सेटिङ परिवर्तन गर्न Chrome ब्राउजर खोल्नुहोस् र सेटिङमा जानुहोस्।</translation>
 <translation id="780301667611848630">भयो, धन्यवाद</translation>

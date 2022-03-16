@@ -31,6 +31,7 @@
 <translation id="1150989369772528668">تقویم</translation>
 <translation id="1153356358378277386">دستگاه‌های مرتبط‌شده</translation>
 <translation id="1165712434476988950">دستگاه باید برای اعمال به‌روزرسانی بازراه‌اندازی شود.</translation>
+<translation id="1171742223880403396">‏کابل USB-C شما ممکن است نتواند درست به نمایشگرها وصل شود</translation>
 <translation id="1175572348579024023">پیمایش</translation>
 <translation id="1178581264944972037">مکث</translation>
 <translation id="1181037720776840403">حذف</translation>
@@ -256,6 +257,7 @@
 <translation id="2595239820337756193">‏5K in miles (‏۵ کیلومتر به مایل)</translation>
 <translation id="2596078834055697711">گرفتن عکس از پنجره صفحه‌نمایش</translation>
 <translation id="2607678425161541573">ورود به سیستم آنلاین لازم است</translation>
+<translation id="2620436844016719705">سیستم</translation>
 <translation id="2621713457727696555">ایمن شد</translation>
 <translation id="263399434338050016">«انتخاب همه»</translation>
 <translation id="2653019840645008922">ضبط پنجره</translation>
@@ -351,6 +353,7 @@
 <translation id="320207200541803018">تنظیم زمان‌سنج</translation>
 <translation id="3203405173652969239">«دسترسی کلیدی» فعال شده است</translation>
 <translation id="3207953481422525583">«تنظیمات کاربر»</translation>
+<translation id="3208321278970793882">برنامه</translation>
 <translation id="3217205077783620295">دکمه میزان صدا فعال است، با تغییر وضعیت صامت می‌شود.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> مورد دیگر</translation>
 <translation id="3227137524299004712">میکروفن</translation>
@@ -1034,6 +1037,7 @@
 <translation id="7513622367902644023">حالت نماگرفت انتخاب شد</translation>
 <translation id="7513922695575567867">تقویم، هفته <ph name="DATE" />، درحال‌حاضر <ph name="SELECTED_DATE" /> انتخاب شده است.</translation>
 <translation id="7514365320538308">بارگیری</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7526573455193969409">ممکن است شبکه پایش شود</translation>
 <translation id="7536035074519304529">‏نشانی IP: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">‏درحال‌حاضر از برنامه‌های Linux و پنجره‌های «ناشناس» پشتیبانی نمی‌شود. برنامه‌های دیگر ذخیره خواهد شد.</translation>
@@ -1102,6 +1106,7 @@
 <translation id="7901405293566323524">مرکز تلفن</translation>
 <translation id="7902625623987030061">حسگر اثر انگشت را لمس کنید</translation>
 <translation id="7904094684485781019">سرپرست این حساب اجازه ورود چندگانه به سیستم را نمی‌دهد.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7930731167419639574">اکنون گفتار در دستگاه پردازش می‌شود و «تایپ صوتی» به‌صورت آفلاین کار می‌کند</translation>
 <translation id="7933084174919150729">‏«دستیار Google» فقط برای نمایه اصلی دردسترس است.</translation>
 <translation id="79341161159229895">حساب تحت مدیریت <ph name="FIRST_PARENT_EMAIL" /> و <ph name="SECOND_PARENT_EMAIL" /> است</translation>

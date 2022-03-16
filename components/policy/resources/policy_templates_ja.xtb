@@ -187,7 +187,6 @@
 <translation id="1223789468190631420">信頼できる提供元に対してセーフ ブラウジングを有効にする</translation>
 <translation id="123018742985150697">ローカル ユーザーとリモート アクセスホストの所有者の照合を求める</translation>
 <translation id="123081309365616809">デバイスにコンテンツをキャストできるようにする</translation>
-<translation id="1239411164172567974">Direct Sockets API を有効にする。</translation>
 <translation id="1239526922294123540">より限定されたプライベート ネットワークのエンドポイントに対して、ウェブサイトからの安全でない方法でのリクエストを許可するかどうかを制御します。
 
           このポリシーを True に設定した場合、すべてのオリジンに対して <ph name="PRIVATE_NETWORK_ACCESS" /> のチェックは無効になります。この場合、プライベート ネットワーク サーバーへの <ph name="CSRF" /> 攻撃が生じるおそれがあります。
@@ -966,7 +965,6 @@
 <translation id="208623333578980446">電源管理の画面の wake lock を許可する</translation>
 <translation id="2086944573376916479">管理対象アカウントを予備のアカウントのないメイン アカウントのみとする</translation>
 <translation id="2089541797660774692">管理対象ブラウザのクラウド レポートを有効にする</translation>
-<translation id="2090304907729569435">ブラウザのサイドパネルでの <ph name="GOOGLE_SEARCH_PRODUCT_NAME" />結果の表示を無効にする</translation>
 <translation id="2090939118981888335">このポリシーを有効に設定した場合、データ圧縮プロキシが許可されます。このポリシーを無効に設定した場合、プロキシは許可されません。
 
       このポリシーを設定した場合、ユーザーはこの設定を変更できません。未設定の場合、ユーザーはこの機能の使用を選択できます。</translation>
@@ -1012,6 +1010,7 @@
       <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" /> を未設定のままにした場合、検索プロバイダにアイコンは付きません。</translation>
 <translation id="2145735238144543545">必要なクライアント証明書</translation>
 <translation id="2146103669166779785">ブラウザのテーマの生成と適用に使用する 16 進数色コードです。</translation>
+<translation id="2148769554831004951">WebSQL を強制的に有効にする。</translation>
 <translation id="214901426630414675">両面印刷モードを制限</translation>
 <translation id="2149330464730004005">カラー印刷を有効にする</translation>
 <translation id="2149592087996467903">WebRTC に TLS / DTLS の廃止されたバージョンの使用を許可しない</translation>
@@ -1687,7 +1686,6 @@
 
       このポリシーを無効に設定した場合、コンポーネントの更新は無効になります。ただし、一部のコンポーネント（実行可能コードを含まず、ブラウザのセキュリティ上重要なコンポーネント）はこのポリシーの適用外で、これらのコンポーネントの更新は無効にはなりません。
       適用外のコンポーネントの具体的な例としては、証明書失効リストやサブリソース フィルタが挙げられます。</translation>
-<translation id="2939988360019366928">ブラウザのサイドパネルに最新の <ph name="GOOGLE_SEARCH_PRODUCT_NAME" />結果を表示することを許可します。</translation>
 <translation id="2940127076681735544">このポリシーが有効な URL に設定されている場合、<ph name="PRODUCT_NAME" /> はその URL からサイトリストをダウンロードし、<ph name="SITELIST_POLICY_NAME" /> ポリシーで設定されているものとしてルールを適用します。
 
       このポリシーが未設定のままか、無効な URL に設定されている場合、<ph name="PRODUCT_NAME" /> は、このポリシーをブラウザの切り替えを行うルールの参照元として使用しません。
@@ -3396,9 +3394,6 @@
 <translation id="5025239932007658691">このポリシーを有効に設定するか未設定のままにした場合、<ph name="PRODUCT_NAME" /> は正確なタイムスタンプを取得するため、Google サーバーに不定期のクエリを送信します。このポリシーを無効に設定すると、<ph name="PRODUCT_NAME" /> がこれらのクエリを送信するのを停止できます。</translation>
 <translation id="5039110755072335605">CORS 非ワイルドカード リクエスト ヘッダーのサポート</translation>
 <translation id="504116558738617678">デバイスが管理対象外またはユーザーが 1 人のみの場合に限り、ディスクの空き容量不足を通知する</translation>
-<translation id="5049105847726444023">このポリシーを有効に設定するか未設定のままにした場合、ユーザーはツールバーのアイコンを切り替えることでサイドパネルに最新の <ph name="GOOGLE_SEARCH_PRODUCT_NAME" />結果を表示できるようになります。
-
-      このポリシーを無効に設定した場合、サイドパネルに <ph name="GOOGLE_SEARCH_PRODUCT_NAME" />結果を表示するアイコンはツールバーから削除されます。</translation>
 <translation id="5052278640307929670">このポリシーでは、選択したポリシーのソースが異なる場合に、これらのポリシーを同じスコープとレベルで統合できるようにします。
 
       ポリシーがリストにあり、ソース間で矛盾がある場合は次のとおり処理されます。
@@ -4477,6 +4472,7 @@
           このポリシーの値はミリ秒単位とし、アイドル待ちの時間と同じかそれより短い時間を指定できます。
 
           警告メッセージは、アイドル時の操作がログアウトかシャットダウンの場合にのみ表示されます。</translation>
+<translation id="6331172765821724350">Chrome フラグによる WebSQL の無効化を許可する。</translation>
 <translation id="6331943515692769234">従来の User-Agent GREASE アルゴリズムを強制的に使用する。</translation>
 <translation id="6332546092866098577">File System API 経由での読み取りアクセスをブロックするサイトを指定する</translation>
 <translation id="6334330017384340264">このポリシーでは、アプリごとの時間制限を適用しないアプリと URL を指定します。
@@ -5455,9 +5451,6 @@
 <translation id="7459601923199346224">証明書管理のユーザー ポリシーとデバイス ポリシーを管理します。</translation>
 <translation id="7459633275230216698">ファイル選択ダイアログを許可する</translation>
 <translation id="7464991223784276288">一致する URL からの Cookie を現在のセッションに限定する</translation>
-<translation id="7466522266556143347">このポリシーを有効に設定した場合、ユーザーは Direct Sockets API を使用できます（他の必要な条件をすべて満たしている場合）。
-      このポリシーを無効に設定した場合、ユーザーは API にアクセスできません。
-      このポリシーが未設定の場合、デフォルトにより、企業の管理対象ユーザーは使用を許可されず、管理対象外のユーザーは使用を許可されます。</translation>
 <translation id="7468182772656807573">このポリシーの設定により、監視ネットワーク パケットの送信間隔（ミリ秒単位）が決定されます。間隔の範囲は 30 秒～24 時間です。範囲外の値を設定しても、範囲内の値に修正されます。
 
       設定しなかった場合は、デフォルトの 3 分間隔が適用されます。</translation>
@@ -5919,7 +5912,6 @@
 
       このポリシーが未設定の場合、この設定は有効になりますが、ユーザーが変更できます。</translation>
 <translation id="7956210013490975468"><ph name="PRODUCT_OS_NAME" /> のシステム プロキシ サービスを設定します。</translation>
-<translation id="7958340569967087581">ブラウザのサイドパネルでの <ph name="GOOGLE_SEARCH_PRODUCT_NAME" />結果の表示を有効にする</translation>
 <translation id="7958537754689366707">12 時間ごとにパスワードの入力を求める</translation>
 <translation id="7959035883875301444">JavaScript JIT の使用を管理する</translation>
 <translation id="7961779417826583251">リストで指定されたレガシー認証局に対して Certificate Transparency（証明書の透明性）の適用を無効にする</translation>
@@ -6566,7 +6558,6 @@
       このポリシーを無効に設定するか未設定のままにした場合、リモート アクセス ホストは任意のローカル ユーザーと関連付けられます。</translation>
 <translation id="867708016260789630">YouTube の「中」以上の制限付きモードを強制的に適用する</translation>
 <translation id="8677853537025397834">WebHID API を許可するサイトを指定します</translation>
-<translation id="8684781382594546769">Direct Sockets API を無効にする。</translation>
 <translation id="8685024486845674965">パスワードが再使用されたときに、パスワード保護について警告する</translation>
 <translation id="8685680544554917389">このポリシーを True に設定した場合、<ph name="PRODUCT_NAME" /> でメディアの自動再生が可能になります。このポリシーを False に設定した場合、<ph name="PRODUCT_NAME" /> でメディアは自動再生されません。
 
@@ -6640,6 +6631,9 @@
 <translation id="8757552286070680084">Wilco DTC の設定</translation>
 <translation id="8758831693895931466">クラウド管理への登録を必須にする</translation>
 <translation id="8759829385824155666">許可されている Kerberos 暗号化タイプ</translation>
+<translation id="8763716376920670835">WebSQL は、M101 ではデフォルトで有効になっていますが、Chrome フラグで無効にできます。
+          このポリシーを False に設定するか未設定のままにした場合、WebSQL を無効にできます。
+          このポリシーを True に設定した場合、WebSQL を無効にすることはできません。</translation>
 <translation id="8767743923206070405">このポリシーを有効にすると、<ph name="PRODUCT_NAME" /> のツールバーにホームボタンが表示されます。無効にすると、ホームボタンは表示されません。
 
       このポリシーが設定されている場合、ユーザーは <ph name="PRODUCT_NAME" /> でこの設定を変更できません。未設定の場合、ホームボタンを表示するかどうかはユーザーが選択します。</translation>

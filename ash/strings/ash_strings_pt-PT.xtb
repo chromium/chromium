@@ -257,6 +257,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2595239820337756193">5 km em milhas</translation>
 <translation id="2596078834055697711">Criar uma captura de ecrã da janela</translation>
 <translation id="2607678425161541573">É necessário iniciar sessão online</translation>
+<translation id="2620436844016719705">Sistema</translation>
 <translation id="2621713457727696555">Protegida</translation>
 <translation id="263399434338050016">"Selecionar tudo"</translation>
 <translation id="2653019840645008922">Captura da janela</translation>
@@ -352,6 +353,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="320207200541803018">Define um temporizador</translation>
 <translation id="3203405173652969239">Acesso por comutador ativado</translation>
 <translation id="3207953481422525583">Definições do utilizador</translation>
+<translation id="3208321278970793882">App</translation>
 <translation id="3217205077783620295">O volume está ativado, premir o botão irá desativar o áudio.</translation>
 <translation id="3226991577105957773">E mais <ph name="COUNT" /></translation>
 <translation id="3227137524299004712">Microfone</translation>
@@ -1035,6 +1037,7 @@ Nova instalação</translation>
 <translation id="7513622367902644023">Modo de captura de ecrã selecionado</translation>
 <translation id="7513922695575567867">Atualmente, está selecionada a semana de <ph name="DATE" />, <ph name="SELECTED_DATE" />, do calendário.</translation>
 <translation id="7514365320538308">Transferir</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7526573455193969409">A rede pode ser monitorizada</translation>
 <translation id="7536035074519304529">Endereço IP: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">De momento, as apps para Linux e as janelas de navegação anónima não são suportadas. As outras apps serão guardadas.</translation>
@@ -1103,6 +1106,7 @@ Nova instalação</translation>
 <translation id="7901405293566323524">Centro do telemóvel</translation>
 <translation id="7902625623987030061">Toque no sensor de impressões digitais.</translation>
 <translation id="7904094684485781019">O gestor desta conta removeu a permissão de início de sessão integrado.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7930731167419639574">Agora, a voz é processada localmente e o ditado funciona offline.</translation>
 <translation id="7933084174919150729">O Assistente Google está disponível apenas no perfil principal.</translation>
 <translation id="79341161159229895">Conta gerida por <ph name="FIRST_PARENT_EMAIL" /> e <ph name="SECOND_PARENT_EMAIL" />.</translation>

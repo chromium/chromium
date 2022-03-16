@@ -1075,7 +1075,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="2019718679933488176">&amp;Open Audio in New Tab</translation>
 <translation id="2020183425253392403">Show network address settings</translation>
 <translation id="2020225359413970060">Scan file</translation>
-<translation id="2022395138980869975">Toggle side search</translation>
 <translation id="2023167225947895179">PIN may be easy to guess</translation>
 <translation id="202352106777823113">The download was taking too long and was stopped by the network.</translation>
 <translation id="2024195579772565064">Delete search engine</translation>
@@ -2978,7 +2977,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" /> connection</translation>
 <translation id="3888550877729210209">Taking notes with <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">This information helps us better understand your Assistant issue. It's stored for up to 90 days and access is restricted to appropriate engineering and feedback teams.</translation>
-<translation id="3888900458694486810">Close side search</translation>
 <translation id="3890064827463908288">Turn on Chrome Sync to use Wi-Fi Sync</translation>
 <translation id="389313931326656921">Assign switch for 'Next'</translation>
 <translation id="3893295674388762059">To clear data, close all incognito windows</translation>
@@ -3214,6 +3212,10 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4110490973560452005">Download complete: <ph name="FILE_NAME" />. Press Shift+F6 to cycle to the downloads bar area.</translation>
 <translation id="4110686435123617899">Select album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
+<translation id="4114524937989710624">You’re seeing suggested files to help you easily get back to your most recent activity in Google Drive.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        You can manage settings from the card menu or see more options in Customise Chrome.</translation>
 <translation id="4115002065223188701">Network out of range</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="4116704186509653070">Open again</translation>
@@ -3292,7 +3294,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4208390505124702064">Search <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Large</translation>
 <translation id="4209251085232852247">Turned off</translation>
-<translation id="4209464433672152343">Documents are <ph name="BEGIN_LINK_HELP" />sent to Google<ph name="END_LINK_HELP" /> to prepare them for printing. View, edit and manage your printers and printer history on the <ph name="BEGIN_LINK_DASHBOARD" />Google Cloud Print dashboard<ph name="END_LINK_DASHBOARD" />.</translation>
 <translation id="4210048056321123003">Downloading the virtual machine</translation>
 <translation id="421182450098841253">&amp;Show Bookmarks Bar</translation>
 <translation id="4211851069413100178">Send usage and diagnostic data. Help improve your Android experience by automatically sending diagnostic, device and app usage data to Google. This will help system and app stability and other improvements. Some aggregated data will also help Google apps and partners, such as Android developers. This <ph name="BEGIN_LINK1" />setting<ph name="END_LINK1" /> is enforced by the owner. The owner may choose to send diagnostic and usage data for this device to Google. If your additional Web &amp; App Activity setting is turned on, this data may be saved to your Google Account. <ph name="BEGIN_LINK2" />Learn more<ph name="END_LINK2" /></translation>
@@ -3723,6 +3724,10 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4651484272688821107">Could not load online component with demo mode resources.</translation>
 <translation id="4652935475563630866">The change in camera setting requires Parallels Desktop to relaunch. Relaunch Parallels Desktop to proceed.</translation>
 <translation id="4653405415038586100">Error configuring Linux</translation>
+<translation id="465406513924180949">You’re seeing baskets that help you easily get back to items that you left in shopping baskets across the web.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        You can manage settings from the card menu or see more options in Customise Chrome.</translation>
 <translation id="4654236001025007561">Share files with Chromebooks and Android devices around you</translation>
 <translation id="4657914796247705218">TrackPoint speed</translation>
 <translation id="4658285806588491142">Keep your screen private</translation>
@@ -4165,6 +4170,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5121130586824819730">Your hard disk is full.  Please save to another location or make more room on the hard disk.</translation>
 <translation id="5123433949759960244">Basketball</translation>
 <translation id="5125751979347152379">Invalid URL.</translation>
+<translation id="5125967981703109366">About this card</translation>
 <translation id="5126611267288187364">View changes</translation>
 <translation id="5127242257756472928">Not allowed to use info about your screens to open and place windows</translation>
 <translation id="5127620150973591153">Secure connection ID: <ph name="TOKEN" /></translation>
@@ -5151,6 +5157,10 @@ You can assign multiple switches to this action.</translation>
 <translation id="6116921718742659598">Change language and input settings</translation>
 <translation id="6119927814891883061">Name device to <ph name="DEVICE_NAME" /></translation>
 <translation id="6120205520491252677">Pin this page to Start screen...</translation>
+<translation id="6120707837086723438">You’re seeing suggested recipes based on your recent search activity for recipes.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        You can manage settings from the card menu or see more options in Customise Chrome.</translation>
 <translation id="6121773125605585883">View password with username <ph name="USERNAME" /> for <ph name="WEBSITE" /></translation>
 <translation id="6122081475643980456">Your Internet connection is being controlled</translation>
 <translation id="6122093587541546701">Email (optional):</translation>
@@ -6192,7 +6202,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="7180611975245234373">Refresh</translation>
 <translation id="7180865173735832675">Customise</translation>
 <translation id="7182791023900310535">Move your password</translation>
-<translation id="7183420126213758623">Toggle side search. Side search not activated.</translation>
 <translation id="7186088072322679094">Keep in Toolbar</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> can't open this folder because it contains system files</translation>
 <translation id="7187428571767585875">Registry entries to be removed or changed:</translation>
@@ -6714,7 +6723,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="7701040980221191251">None</translation>
 <translation id="7701869757853594372">USER Handles</translation>
 <translation id="7702574632857388784">Remove <ph name="FILE_NAME" /> from list</translation>
-<translation id="7702599324215660661">Lock on leave</translation>
 <translation id="7702907602086592255">Domain</translation>
 <translation id="7704305437604973648">Task</translation>
 <translation id="7704317875155739195">Auto-complete searches and URLs</translation>
@@ -6759,6 +6767,10 @@ You can assign multiple switches to this action.</translation>
 <translation id="7744192722284567281">Found in data breach</translation>
 <translation id="7744649840067671761">Press a new switch or keyboard key to start assignment.
 Press an assigned switch or key to remove assignment.</translation>
+<translation id="7746739418892731373">You’re seeing photo and video highlights from your Google Photos library. You can control what shows up in your highlights at <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" />.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        You can manage settings for this card from the card menu or see more options in Customise Chrome.</translation>
 <translation id="7750228210027921155">Picture-in-picture</translation>
 <translation id="7751260505918304024">Show all</translation>
 <translation id="7753735457098489144">Installation failed due to lack of storage space. To free up space, delete files from device storage.</translation>
@@ -6821,7 +6833,6 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7798844538707273832">Automatically blocked <ph name="PERMISSION" /></translation>
 <translation id="7799299114731150374">Wallpaper set successfully</translation>
 <translation id="7799817062559422778">Light mode</translation>
-<translation id="7800159967992492578">Toggle side search. Side search activated.</translation>
 <translation id="7800518121066352902">Rotate A&amp;nti-clockwise</translation>
 <translation id="7801679634091975683">Changes that you make here apply only to Lacros Chrome Browser. To make changes to your Chrome Browser settings, open Chrome Browser and go to settings.</translation>
 <translation id="780301667611848630">No, thanks</translation>

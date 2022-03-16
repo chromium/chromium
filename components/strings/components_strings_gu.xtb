@@ -115,7 +115,6 @@
 <translation id="1301324364792935241">તમારા સુરક્ષિત DNS સેટિંગ ચેક કરો</translation>
 <translation id="1307966114820526988">નાપસંદ કરેલી સુવિધાઓ</translation>
 <translation id="1308113895091915999">ઑફર ઉપલબ્ધ છે</translation>
-<translation id="1312803275555673949">કયા પુરાવા તેને સપોર્ટ કરે છે?</translation>
 <translation id="1314311879718644478">ઑગ્મેન્ટેડ રિયાલિટી કન્ટેન્ટ જુઓ</translation>
 <translation id="1314509827145471431">જમણી બાજુએ જોડો</translation>
 <translation id="1318023360584041678">ટૅબ ગ્રૂપમાં સાચવ્યું</translation>
@@ -740,7 +739,6 @@
 <translation id="324180406144491771">“<ph name="HOST_NAME" />”ની લિંક બ્લૉક કરેલી છે</translation>
 <translation id="3249845759089040423">ગ્રૂવી</translation>
 <translation id="3252266817569339921">ફ્રેન્ચ</translation>
-<translation id="3257954757204451555">આ માહિતીની પાછળ કોણ છે?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Calendarમાં ઝડપથી કોઈ નવી ઇવેન્ટ બનાવવા માટે, પહેલાં Tab અને પછી Enter કી દબાવો</translation>
 <translation id="3261488570342242926">વર્ચ્યુઅલ કાર્ડ વિશે જાણો</translation>
 <translation id="3264837738038045344">Chrome સેટિંગ મેનેજ કરવા માટેનું બટન, તમારા Chrome સેટિંગની મુલાકાત લેવા માટે Enter કી દબાવો</translation>
@@ -1128,6 +1126,7 @@
 <translation id="4414515549596849729">કુકી અને સાઇટ ડેટા</translation>
 <translation id="4415426530740016218">પિકઅપ માટેનું સરનામું</translation>
 <translation id="4424024547088906515">આ સર્વર સાબિત કરી શક્યું નથી કે તે <ph name="DOMAIN" /> છે; તેનું સુરક્ષા પ્રમાણપત્ર Chrome દ્વારા વિશ્વસનીય નથી. આ કોઈ ખોટી ગોઠવણીને કારણે થયું હશે અથવા કોઈ હુમલાખોર તમારા કનેક્શનને અટકાવી રહ્યો છે.</translation>
+<translation id="4428065317363009941">રુચિ મુજબ જાહેરાત</translation>
 <translation id="443121186588148776">સિરીઅલ પોર્ટ</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> એ તમારું લોગિન પ્રમાણપત્ર સ્વીકાર્યું ન હતું અથવા કદાચ કોઈ એક પ્રદાન કરવામાં આવ્યું નથી.</translation>
 <translation id="4432792777822557199">હવેથી <ph name="SOURCE_LANGUAGE" />માં છે તે પેજનો અનુવાદ <ph name="TARGET_LANGUAGE" />માં થશે</translation>
@@ -1260,7 +1259,6 @@
 <translation id="4838327282952368871">સ્વપ્નશીલ</translation>
 <translation id="4840250757394056958">તમારો Chrome ઇતિહાસ જુઓ</translation>
 <translation id="484462545196658690">ઑટો</translation>
-<translation id="4849865131988503897">સચોટતાની તપાસ</translation>
 <translation id="4850886885716139402">જુઓ</translation>
 <translation id="485316830061041779">જર્મન</translation>
 <translation id="4853901935952445031">આ સાઇટ ફેબ્રુઆરી 2022 પછી U2F APIનો ઉપયોગ કરી શકશે નહીં. જો આ સાઇટની માલિકી તમારી હોય, તો વેબ પ્રમાણીકરણ APIનો ઉપયોગ કરવા માટે તમારે તેને બદલવી જોઈએ.</translation>
@@ -1447,6 +1445,7 @@
 <translation id="5398772614898833570">જાહેરાતો અવરોધિત કરી</translation>
 <translation id="5400836586163650660">ગ્રે</translation>
 <translation id="540969355065856584">આ સર્વર સાબિત કરી શક્યું નથી કે તે <ph name="DOMAIN" /> છે; તેનું સુરક્ષા પ્રમાણપત્ર આ સમયે માન્ય નથી. આ કોઇ ખોટી ગોઠવણીને કારણે થયું હોય અથવા કોઈ હુમલાખોર તમારા કનેક્શનને અટકાવી રહ્યો હોઇ શકે છે.</translation>
+<translation id="5412236728747081950">તમને વધુ સંબંધિત હોય તેવી જાહેરાતો બતાવી શકાય તે માટે આ સાઇટ Chromeમાંથી તમારી રુચિઓ મેળવે છે</translation>
 <translation id="541416427766103491">સ્ટૅકર 4</translation>
 <translation id="5421136146218899937">બ્રાઉઝિંગ ડેટા સાફ કરો...</translation>
 <translation id="5426179911063097041"><ph name="SITE" />તમને નોટિફિકેશનો મોકલવા માગે છે</translation>
@@ -1963,7 +1962,6 @@
 <translation id="7210863904660874423"><ph name="HOST_NAME" />, સુરક્ષા માનકોનું પાલન કરતું નથી.</translation>
 <translation id="7210993021468939304">કન્ટેનરની અંદર જ Linuxની પ્રવૃત્તિ અને કન્ટેનરની અંદર જ Linuxની ઍપ ઇન્સ્ટૉલ કરી શકાશે તેમજ ચલાવી શકાશે</translation>
 <translation id="721197778055552897">આ સમસ્યા વિશે <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" />.</translation>
-<translation id="7215025035562547931">સચોટતાની ખાતરી કરવા માટે સમય ફાળવો</translation>
 <translation id="7217745192097460130">તમારી ખરીદી ચકાસવા અને પૂર્ણ કરવા Touch IDનો ઉપયોગ કરીએ?</translation>
 <translation id="7219179957768738017">કનેક્શન <ph name="SSL_VERSION" /> નો ઉપયોગ કરે છે.</translation>
 <translation id="7220786058474068424">પ્રક્રિયા કરી રહ્યું છે</translation>
@@ -2093,6 +2091,7 @@
 <translation id="7569952961197462199">Chrome માંથી ક્રેડિટ કાર્ડ દૂર કરીએ?</translation>
 <translation id="7569983096843329377">શ્યામ</translation>
 <translation id="7575207903026901870">સૂચન કાઢી નાખો બટન, આ સૂચન કાઢી નાખવા માટે Enter દબાવો</translation>
+<translation id="7577900504646297215">રુચિઓ મેનેજ કરો</translation>
 <translation id="7578104083680115302">તમે Google સાથે સાચવેલાં કાર્ડનો ઉપયોગ કરીને બધા ડિવાઇસમાં સાઇટ અને ઍપ પર ઝડપથી ચુકવણી કરો.</translation>
 <translation id="7581199239021537589">બાજુ 2 છબીને Y અક્ષ પર ખસેડો</translation>
 <translation id="7582602800368606489">Google Calendarમાં ઝડપથી કોઈ નવી ઇવેન્ટ બનાવો</translation>
@@ -2213,7 +2212,6 @@
 <translation id="7966803981046576691">જોબ એકાઉન્ટનો પ્રકાર</translation>
 <translation id="79682505114836835">"<ph name="VALUE" />" મૂલ્ય એ એક અમાન્ય હેક્સ રંગ છે.</translation>
 <translation id="7968982339740310781">વિગતો જુઓ</translation>
-<translation id="7970392640816874403">અન્ય સૉર્સનું શું કહેવું છે?</translation>
 <translation id="7976214039405368314">ઘણી બધી વિનંતીઓ</translation>
 <translation id="7977538094055660992">આઉટપુટ ડિવાઇસ</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -2564,7 +2562,6 @@
 <translation id="9155211586651734179">ઑડિયો પેરિફેરલ જોડેલા છે</translation>
 <translation id="9157595877708044936">સેટિંગ અપ...</translation>
 <translation id="9158625974267017556">C6 (એન્વલપ)</translation>
-<translation id="9164029392738894042">સચોટતાની તપાસ</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">તમારી ચુકવણી પદ્ધતિઓ સાચવવામાં આવી છે કે કેમ તે ચેક કરવાની સાઇટને મંજૂરી આપો</translation>
 <translation id="9169664750068251925">હંમેશા આ સાઇટ પર અવરોધિત કરો</translation>

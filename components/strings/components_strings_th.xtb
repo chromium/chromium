@@ -115,7 +115,6 @@
 <translation id="1301324364792935241">ตรวจสอบการตั้งค่า DNS ที่ปลอดภัย</translation>
 <translation id="1307966114820526988">ฟีเจอร์ที่เลิกใช้งานแล้ว</translation>
 <translation id="1308113895091915999">มีข้อเสนอพิเศษ</translation>
-<translation id="1312803275555673949">ดูหลักฐานสนับสนุน</translation>
 <translation id="1314311879718644478">ดูเนื้อหา Augmented Reality</translation>
 <translation id="1314509827145471431">เย็บเล่มด้านขวา</translation>
 <translation id="1318023360584041678">บันทึกไว้ในกลุ่มแท็บ</translation>
@@ -736,7 +735,6 @@
 <translation id="324180406144491771">ลิงก์ “<ph name="HOST_NAME" />” ถูกบล็อก</translation>
 <translation id="3249845759089040423">ดึงดูด</translation>
 <translation id="3252266817569339921">ฝรั่งเศส</translation>
-<translation id="3257954757204451555">ดูผู้ที่อยู่เบื้องหลังข้อมูลนี้</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อสร้างกิจกรรมใหม่ใน Google ปฏิทินอย่างรวดเร็ว</translation>
 <translation id="3261488570342242926">ดูข้อมูลเกี่ยวกับบัตรเสมือน</translation>
 <translation id="3264837738038045344">ปุ่มจัดการการตั้งค่า Chrome กด Enter เพื่อไปที่การตั้งค่า Chrome</translation>
@@ -1118,6 +1116,7 @@
 <translation id="4414515549596849729">คุกกี้และข้อมูลเว็บไซต์</translation>
 <translation id="4415426530740016218">ที่อยู่ในการรับ</translation>
 <translation id="4424024547088906515">เซิร์ฟเวอร์นี้ไม่สามารถพิสูจน์ได้ว่าเป็น <ph name="DOMAIN" /> เพราะ Chrome ไม่เชื่อถือใบรับรองความปลอดภัย โดยอาจเกิดจากการกำหนดค่าผิดหรือผู้บุกรุกที่ขัดขวางการเชื่อมต่อของคุณ</translation>
+<translation id="4428065317363009941">การปรับโฆษณาตามโปรไฟล์ของผู้ใช้</translation>
 <translation id="443121186588148776">พอร์ตอนุกรม</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> ไม่ยอมรับใบรับรองการเข้าสู่ระบบหรือไม่ได้ให้ใบรับรองไว้</translation>
 <translation id="4432792777822557199">จากนี้ไประบบจะแปลหน้าภาษา<ph name="SOURCE_LANGUAGE" />เป็นภาษา<ph name="TARGET_LANGUAGE" /></translation>
@@ -1250,7 +1249,6 @@
 <translation id="4838327282952368871">ชวนฝัน</translation>
 <translation id="4840250757394056958">ดูประวัติการเข้าชมใน Chrome</translation>
 <translation id="484462545196658690">อัตโนมัติ</translation>
-<translation id="4849865131988503897">การตรวจสอบความแม่นยำ</translation>
 <translation id="4850886885716139402">มุมมอง</translation>
 <translation id="485316830061041779">เยอรมัน</translation>
 <translation id="4853901935952445031">เว็บไซต์นี้จะใช้ U2F API ไม่ได้อีกหลังเดือนกุมภาพันธ์ 2022 หากเป็นเจ้าของเว็บไซต์นี้ คุณควรเปลี่ยนไปใช้ Web Authentication API</translation>
@@ -1437,6 +1435,7 @@
 <translation id="5398772614898833570">บล็อกโฆษณา</translation>
 <translation id="5400836586163650660">สีเทา</translation>
 <translation id="540969355065856584">เซิร์ฟเวอร์นี้ไม่สามารถพิสูจน์ได้ว่าเป็น <ph name="DOMAIN" /> เนื่องจากใบรับรองความปลอดภัยไม่สามารถใช้ได้ในขณะนี้ ซึ่งอาจเป็นเพราะการกำหนดค่าที่ไม่ถูกต้องหรือมีผู้โจมตีที่ขัดขวางการเชื่อมต่อของคุณ</translation>
+<translation id="5412236728747081950">เว็บไซต์นี้รับข้อมูลความสนใจของคุณจาก Chrome เพื่อแสดงโฆษณาที่เกี่ยวข้องมากขึ้น</translation>
 <translation id="541416427766103491">สแต็กเกอร์ 4</translation>
 <translation id="5421136146218899937">ล้างข้อมูลการท่องเว็บ...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> ต้องการส่งการแจ้งเตือนให้คุณ</translation>
@@ -1953,7 +1952,6 @@
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> ไม่เป็นไปตามมาตรฐานความปลอดภัย</translation>
 <translation id="7210993021468939304">กิจกรรม Linux ในคอนเทนเนอร์ และติดตั้งรวมถึงเรียกใช้แอป Linux ในคอนเทนเนอร์ได้</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /> เกี่ยวกับปัญหานี้</translation>
-<translation id="7215025035562547931">ใช้เวลาสักครู่เพื่อพิจารณาความถูกต้อง</translation>
 <translation id="7217745192097460130">ใช้ Touch ID เพื่อยืนยันและทำการซื้อให้เสร็จใช่ไหม</translation>
 <translation id="7219179957768738017">การเชื่อมต่อใช้ <ph name="SSL_VERSION" /></translation>
 <translation id="7220786058474068424">กำลังดำเนินการ</translation>
@@ -2083,6 +2081,7 @@
 <translation id="7569952961197462199">นำบัตรเครดิตออกจาก Chrome ไหม</translation>
 <translation id="7569983096843329377">สีดำ</translation>
 <translation id="7575207903026901870">ปุ่ม "นำคำแนะนำออก" กด Enter เพื่อนำคำแนะนำนี้ออก</translation>
+<translation id="7577900504646297215">จัดการความสนใจ</translation>
 <translation id="7578104083680115302">ชำระเงินบนเว็บไซต์และแอปในอุปกรณ์ต่างๆ ได้อย่างรวดเร็วด้วยบัตรที่คุณได้บันทึกไว้กับ Google</translation>
 <translation id="7581199239021537589">เปลี่ยนตำแหน่งรูปภาพด้าน 2 ตามแกน Y</translation>
 <translation id="7582602800368606489">สร้างกิจกรรมใหม่ใน Google ปฏิทินอย่างรวดเร็ว</translation>
@@ -2203,7 +2202,6 @@
 <translation id="7966803981046576691">ประเภทบัญชีของงาน</translation>
 <translation id="79682505114836835">"<ph name="VALUE" />" ไม่ใช่ค่าสีแบบเลขฐานสิบหกที่ถูกต้อง</translation>
 <translation id="7968982339740310781">ดูรายละเอียด</translation>
-<translation id="7970392640816874403">ดูข้อมูลจากแหล่งที่มาอื่นๆ</translation>
 <translation id="7976214039405368314">มีคำขอมากเกินไป</translation>
 <translation id="7977538094055660992">อุปกรณ์กระดาษออก</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -2555,7 +2553,6 @@
 <translation id="9155211586651734179">อุปกรณ์ต่อพ่วงเสียงที่ต่อเชื่อมไว้</translation>
 <translation id="9157595877708044936">กำลังตั้งค่า...</translation>
 <translation id="9158625974267017556">C6 (ซองจดหมาย)</translation>
-<translation id="9164029392738894042">การตรวจสอบความแม่นยำ</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">อนุญาตให้เว็บไซต์ตรวจสอบว่าคุณได้บันทึกวิธีการชำระเงินไว้ไหม</translation>
 <translation id="9169664750068251925">บล็อกบนไซต์นี้เสมอ</translation>

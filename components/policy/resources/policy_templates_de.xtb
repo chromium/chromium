@@ -191,7 +191,6 @@
 <translation id="1223789468190631420">Safe Browsing-Aktivierungsstatus für vertrauenswürdige Quellen</translation>
 <translation id="123018742985150697">Übereinstimmung von lokalem Nutzer und dem Inhaber des Hosts für den Remote-Zugriff voraussetzen</translation>
 <translation id="123081309365616809">Streamen von Inhalten an das Gerät aktivieren</translation>
-<translation id="1239411164172567974">Direct Sockets API aktivieren.</translation>
 <translation id="1239526922294123540">Diese Richtlinie legt fest, ob Websites unsichere Anfragen an eher private Netzwerk-Endpunkte senden dürfen.
 
           Wenn die Richtlinie auf „true“ gesetzt ist, werden alle <ph name="PRIVATE_NETWORK_ACCESS" />-Prüfungen für alle Ursprünge deaktiviert. Dadurch können Angreifer möglicherweise <ph name="CSRF" />-Angriffe auf Server privater Netzwerke durchführen.
@@ -1001,7 +1000,6 @@ Das Feld „<ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" />“ wurde zuguns
 <translation id="208623333578980446">Bildschirm-Wakelocks für die Energieverwaltung zulassen</translation>
 <translation id="2086944573376916479">Ein verwaltetes Konto muss ein primäres Konto sein und darf nicht mit sekundären Konten verknüpft sein</translation>
 <translation id="2089541797660774692">Cloud-Berichterstellung über verwaltete Browser aktivieren</translation>
-<translation id="2090304907729569435">Anzeige von <ph name="GOOGLE_SEARCH_PRODUCT_NAME" />-Ergebnissen in einer Seitenleiste des Browsers deaktivieren.</translation>
 <translation id="2090939118981888335">Wenn diese Richtlinie aktiviert ist, wird der Proxy zur Datenkomprimierung zugelassen. Ist die Richtlinie deaktiviert, kann der Proxy nicht verwendet werden.
 
       Wenn Sie diese Richtlinie konfigurieren, kann sie von Nutzern nicht geändert werden. Wenn sie nicht konfiguriert ist, können Nutzer entscheiden, ob die Funktion genutzt werden soll.</translation>
@@ -1047,6 +1045,7 @@ Das Feld „<ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" />“ wurde zuguns
       Ist "<ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" />" nicht konfiguriert, wird kein Symbol für den Suchanbieter angezeigt.</translation>
 <translation id="2145735238144543545">Erforderliche Clientzertifikate</translation>
 <translation id="2146103669166779785">Der Hex-Farbcode wird verwendet, um ein Design für den Browser zu erstellen und anzuwenden.</translation>
+<translation id="2148769554831004951">Erzwingen, dass WebSQL aktiviert ist.</translation>
 <translation id="214901426630414675">Duplexdruck einschränken</translation>
 <translation id="2149330464730004005">Farbdruck einschränken</translation>
 <translation id="2149592087996467903">Verhindern, dass WebRTC veraltete Versionen von TLS/DTLS verwendet</translation>
@@ -1759,7 +1758,6 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 
       Wenn sie auf „Deaktiviert“ gesetzt ist, werden die Komponenten nicht aktualisiert. Für einige Komponenten gelten jedoch Ausnahmen: Updates von Komponenten, die keinen ausführbaren Code enthalten und wesentlich für die Sicherheit des Browsers sind, werden nicht deaktiviert.
       Beispiele für solche Komponenten sind Zertifikatssperrlisten und Unterressourcenfilter.</translation>
-<translation id="2939988360019366928">Zulassen, dass die neuesten <ph name="GOOGLE_SEARCH_PRODUCT_NAME" />-Ergebnisse in der Seitenleiste eines Browsers angezeigt werden</translation>
 <translation id="2940127076681735544">Ist für die Richtlinie eine gültige URL angegeben, lädt <ph name="PRODUCT_NAME" /> die Websiteliste von dieser URL herunter und wendet die Regeln so an, als wären sie mit der Richtlinie "<ph name="SITELIST_POLICY_NAME" />" konfiguriert worden.
 
       Wenn die Richtlinie nicht konfiguriert oder keine gültige URL angegeben ist, wird sie von <ph name="PRODUCT_NAME" /> nicht als Regelquelle für den Browserwechsel verwendet.
@@ -3513,9 +3511,6 @@ Wenn diese Richtlinie konfiguriert ist, erlaubt <ph name="PRODUCT_OS_NAME" /> es
       Wird die Richtlinie deaktiviert, sendet <ph name="PRODUCT_NAME" /> solche Abfragen nicht mehr.</translation>
 <translation id="5039110755072335605">Unterstützung für CORS-Anfrageheader ohne Platzhalter</translation>
 <translation id="504116558738617678">Warnungen bei wenig Speicherplatz nur anzeigen, wenn das Gerät nicht verwaltet wird oder es nur einen Nutzer gibt</translation>
-<translation id="5049105847726444023">Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer ihre neuesten Ergebnisse der <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> in einer Seitenleiste anzeigen, indem sie ein Symbol in der Symbolleiste ein- oder ausschalten.
-
-      Ist die Richtlinie deaktiviert, wird das Symbol, das die Seitenleiste mit den <ph name="GOOGLE_SEARCH_PRODUCT_NAME" />-Ergebnissen öffnet, aus der Symbolleiste entfernt.</translation>
 <translation id="5052278640307929670">Wenn die Richtlinie konfiguriert ist, ermöglicht sie das Zusammenführen der ausgewählten Richtlinien, wenn diese aus unterschiedlichen Quellen stammen, mit gleichem Bereich und gleicher Ebene.
 
       Wenn sich eine Richtlinie auf der Liste befindet und dadurch ein Konflikt zwischen Quellen entsteht mit:
@@ -4630,6 +4625,7 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
           Der Wert für die Richtlinie muss in Millisekunden angegeben werden. Werte müssen kleiner oder gleich dem Wert für die Inaktivitätsverzögerung sein.
 
           Die Warnung wird nur eingeblendet, wenn infolge der Inaktivität der Nutzer abgemeldet oder das Gerät heruntergefahren wird.</translation>
+<translation id="6331172765821724350">Deaktivieren von WebSQL per Chrome-Flag zulassen.</translation>
 <translation id="6331943515692769234">Erzwingt die Verwendung der vorherigen Spezifikation des GREASE-Algorithmus für „User-Agent“-Header.</translation>
 <translation id="6332546092866098577">Lesezugriff über die File System API auf diesen Websites blockieren</translation>
 <translation id="6334330017384340264">Mit dieser Richtlinie wird festgelegt, welche Apps und URLs in Bezug auf Nutzungsbeschränkungen auf die Zulassungsliste gesetzt werden sollen.
@@ -5658,9 +5654,6 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
 <translation id="7459601923199346224">Diese Richtlinie steuert Nutzer- und Geräterichtlinien zur Zertifikatverwaltung.</translation>
 <translation id="7459633275230216698">Dialogfelder zur Dateiauswahl zulassen</translation>
 <translation id="7464991223784276288">Cookies von übereinstimmenden URLs auf die aktuelle Sitzung beschränken</translation>
-<translation id="7466522266556143347">Wenn diese Richtlinie aktiviert ist, können Nutzer die Direct Sockets API verwenden (vorausgesetzt, dass alle anderen Bedingungen erfüllt sind).
-      Ist die Richtlinie deaktiviert, können Nutzer nicht auf die API zugreifen.
-      Wenn die Richtlinie nicht konfiguriert ist, gilt die Standardeinstellung: Vom Unternehmen verwaltete Nutzer können die Funktion nicht verwenden, während sie für nicht verwaltete Nutzer zur Verfügung steht.</translation>
 <translation id="7468182772656807573">Die Konfiguration der Richtlinie legt fest, wie oft Kontrollnetzwerkpakete gesendet werden (in Millisekunden). Intervalle reichen von 30 Sekunden bis zu 24 Stunden. Werte außerhalb dieses Bereiches werden automatisch auf den jeweiligen Grenzwert gesetzt.
 
       Wenn die Richtlinie nicht konfiguriert ist, betragen die Intervalle standardmäßig 3 Minuten.</translation>
@@ -6145,7 +6138,6 @@ werden abgelehnt.</translation>
 
       Bleibt diese Richtlinie unkonfiguriert, wird die Einstellung aktiviert, kann jedoch vom Nutzer geändert werden.</translation>
 <translation id="7956210013490975468">Konfiguriert den System-Proxy-Dienst für <ph name="PRODUCT_OS_NAME" />.</translation>
-<translation id="7958340569967087581">Anzeige von <ph name="GOOGLE_SEARCH_PRODUCT_NAME" />-Ergebnissen in einer Seitenleiste des Browsers aktivieren.</translation>
 <translation id="7958537754689366707">Passworteingabe alle zwölf Stunden erforderlich</translation>
 <translation id="7959035883875301444">Verwendung von JavaScript JIT steuern</translation>
 <translation id="7961779417826583251">Erzwingung der Zertifikatstransparenz für eine Liste alter Zertifizierungsstellen deaktivieren</translation>
@@ -6819,7 +6811,6 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
       Ist diese Richtlinie deaktiviert oder nicht konfiguriert, kann der Host für den Remotezugriff mit jedem lokalen Nutzer verknüpft sein.</translation>
 <translation id="867708016260789630">Auf YouTube mindestens den eingeschränkten Modus „Moderat“ erzwingen</translation>
 <translation id="8677853537025397834">WebHID API auf diesen Websites erlauben</translation>
-<translation id="8684781382594546769">Direct Sockets API deaktivieren.</translation>
 <translation id="8685024486845674965">Die Passwortschutzwarnung wird durch die Wiederverwendung eines Passworts ausgelöst</translation>
 <translation id="8685680544554917389">Wenn die Richtlinie auf "True" gesetzt ist, kann <ph name="PRODUCT_NAME" /> Medien automatisch abspielen. Wenn die Richtlinie auf "False" gesetzt ist, kann <ph name="PRODUCT_NAME" /> Medien nicht mehr automatisch abspielen.
 
@@ -6893,6 +6884,9 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
 <translation id="8757552286070680084">Wilco DTC-Konfiguration</translation>
 <translation id="8758831693895931466">Erforderliche Registrierung für Cloud Management aktivieren</translation>
 <translation id="8759829385824155666">Erlaubte Kerberos-Verschlüsselungstypen</translation>
+<translation id="8763716376920670835">WebSQL ist ab M101 standardmäßig aktiviert, kann jedoch per Chrome-Flag deaktiviert werden.
+          Wenn diese Richtlinie auf „false“ gesetzt oder nicht konfiguriert ist, kann WebSQL deaktiviert werden.
+          Ist sie auf „true“ festgelegt, ist es nicht möglich, WebSQL zu deaktivieren.</translation>
 <translation id="8767743923206070405">Wenn die Richtlinie aktiviert ist, wird die Startbildschirmtaste in der Symbolleiste von <ph name="PRODUCT_NAME" /> angezeigt. Ist die Richtlinie deaktiviert, erscheint die Startbildschirmtaste nicht.
 
       Wenn Sie diese Richtlinie konfigurieren, kann sie von Nutzern in <ph name="PRODUCT_NAME" /> nicht geändert werden. Wenn die Richtlinie nicht konfiguriert ist, können Nutzer selbst entscheiden, ob die Startbildschirmtaste angezeigt werden soll.</translation>

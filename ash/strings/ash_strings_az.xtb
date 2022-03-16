@@ -125,8 +125,10 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1668469839109562275">Daxili VPN</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> qaldı</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> qoşulmayıb.</translation>
+<translation id="1677582821739292812">Kimsə ekranınıza baxır</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> taymeri · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 ünvanı: <ph name="ADDRESS" /></translation>
+<translation id="1703117532528082099">Aktiv pəncərə sola əlavə edilib.</translation>
 <translation id="1708345662127501511">Masa: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Şəbəkə Ayarları</translation>
 <translation id="1715293566947629045">Profil deaktiv edilir. Bir neçə dəqiqə gözləyin.</translation>
@@ -257,6 +259,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="2595239820337756193">5000 mil</translation>
 <translation id="2596078834055697711">Pəncərənin skrinşotunu çəkin</translation>
 <translation id="2607678425161541573">Onlayn giriş tələb olunur</translation>
+<translation id="2620436844016719705">Sistem</translation>
 <translation id="2621713457727696555">Güvənli</translation>
 <translation id="263399434338050016">"Hamısını seçin"</translation>
 <translation id="2653019840645008922">Pəncərə çəkimi</translation>
@@ -276,6 +279,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="2727977024730340865">Zəif şarjerə qoşulub. Ola bilər ki, enerji dolmasın.</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Silin"</translation>
+<translation id="2750941250130734256">Aktiv pəncərə çıxarılıb.</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> tərəfindən idarə edilir</translation>
 <translation id="2782591952652094792">Çəkim rejimindən çıxın</translation>
 <translation id="2791421900609674576">Qalan yerdən davam edə bilmək üçün tövsiyələri görəcəksiniz. Tövsiyələri silmək üçün toxunub saxlaya bilərsiniz.</translation>
@@ -352,6 +356,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="320207200541803018">Taymer ayarlayın</translation>
 <translation id="3203405173652969239">Dəyişdirici Girişi aktivdir</translation>
 <translation id="3207953481422525583">İstifadəçi ayarları</translation>
+<translation id="3208321278970793882">Tətbiq</translation>
 <translation id="3217205077783620295">Səs səviyyəsi aktivdir, keçirdikdə audio səssiz ediləcək.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /></translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -788,6 +793,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Aktiv</translation>
 <translation id="5920710855273935292">Mikrofon səssiz edilib.</translation>
+<translation id="5924838240953214369">Çəkim Rejimi, defolt: <ph name="SOURCE" /> <ph name="TYPE" />. Kamera daxiletməsi <ph name="CAMERA_NAME" /> olaraq ayarlanıb, önizləmə aktivdir. Klaviatura naviqasiyası üçün tab düyməsini basın.</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> aktivdir.</translation>
 <translation id="5947494881799873997">Geri dönün</translation>
 <translation id="595202126637698455">Fəaliyyət izləməsi aktiv edildi</translation>
@@ -1035,6 +1041,7 @@ Yeni quraşdırma</translation>
 <translation id="7513622367902644023">Skrinşot rejimi seçilib</translation>
 <translation id="7513922695575567867">Təqvim, <ph name="DATE" /> həftəsi, hazırda <ph name="SELECTED_DATE" /> seçilib.</translation>
 <translation id="7514365320538308">Endirmə</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7526573455193969409">Şəbəkəyə nəzarət edilə bilər</translation>
 <translation id="7536035074519304529">IP ünvanı: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Linux tətbiqləri və Anonim pəncərələr hazırda dəstəklənmir. Digər tətbiqlər yadda saxlanılacaq.</translation>
@@ -1045,6 +1052,7 @@ Yeni quraşdırma</translation>
 <translation id="7564874036684306347">Pəncərənin digər masaüstünə köçürülməsi gözlənilməz nəticələr verə bilər. Növbəti bildirişlər, pəncərə və dialoqlar masaüstülər arasında bölüşdürülə bilər.</translation>
 <translation id="7569509451529460200">Brayl və ChromeVox aktiv edildi</translation>
 <translation id="7569983096843329377">Qara</translation>
+<translation id="7573585051776738856">Aktiv pəncərə sağa əlavə edilib.</translation>
 <translation id="7579778809502851308">Ekran çəkimi</translation>
 <translation id="7590883480672980941">Daxiletmə ayarları</translation>
 <translation id="7593891976182323525">Axtarın və ya Dəyişin</translation>
@@ -1103,6 +1111,7 @@ Yeni quraşdırma</translation>
 <translation id="7901405293566323524">Telefon Habı</translation>
 <translation id="7902625623987030061">Barmaq izi sensoruna toxunun</translation>
 <translation id="7904094684485781019">Administrator bu hesab üçün çoxsaylı girişlərə icazə verməyib.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7930731167419639574">Danışıq indi lokal olaraq emal edilir və oflayn işləyir</translation>
 <translation id="7933084174919150729">Google Assistent yalnız ilkin profildə əlçatandır.</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> və <ph name="SECOND_PARENT_EMAIL" /> tərəfindən idarə edilən hesab</translation>

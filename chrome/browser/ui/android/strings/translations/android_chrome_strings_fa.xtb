@@ -30,7 +30,6 @@
 <translation id="114825011539563458">مهم‌ترین کنترل‌های امنیتی و حریم‌خصوصی در یک‌جا گردآوری شده‌اند</translation>
 <translation id="1149401351239820326">ماه انقضا</translation>
 <translation id="1154704303112745282">صفحه <ph name="VIOLATED_URL" /> به‌صورت آفلاین دردسترس نیست</translation>
-<translation id="1166688006062225587">فهرست حساب‌ها برای انتخاب.</translation>
 <translation id="1171770572613082465">با ضربه زدن روی دکمه «سایت‌های برتر»، وب‌سایت‌های پرطرفدار را ببینید</translation>
 <translation id="1173894706177603556">تغییر نام</translation>
 <translation id="1177863135347784049">سفارشی</translation>
@@ -571,6 +570,7 @@
 <translation id="4415276339145661267">‏مدیریت «حساب Google»</translation>
 <translation id="4425140285732600465">درحال پیگیری قیمت هستید. اگر قیمت در هر سایتی کاهش پیدا کرد، هشدار دریافت می‌کنید.</translation>
 <translation id="442518031075347249">‏دیگر نمی‌توانید از کارت مجازی‌تان در Google Pay استفاده کنید. <ph name="BEGIN_LINK1" />درباره کارت‌های مجازی بیشتر بدانید<ph name="END_LINK1" /></translation>
+<translation id="4428065317363009941">شخصی‌سازی آگهی</translation>
 <translation id="4450672886426705087">‏نتایج جستجو از Google.</translation>
 <translation id="4452411734226507615">بستن برگه <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">در <ph name="FOLDER_NAME" /> نشانک گذاشته شد</translation>
@@ -685,6 +685,7 @@
 <translation id="4988526792673242964">صفحات</translation>
 <translation id="5001388021414335527">این سایت را در اینجا دنبال کنید</translation>
 <translation id="5004416275253351869">‏کنترل‌های فعالیت Google</translation>
+<translation id="5005141133360250920">واکنش حذف شد</translation>
 <translation id="5005498671520578047">کپی گذرواژه</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> می‌خواهد مرتبط شود</translation>
 <translation id="5016205925109358554">Serif</translation>
@@ -740,6 +741,7 @@
 <translation id="5368227114232678694">برای مرور خصوصی در این دستگاه،‌ حالت «ناشناس» را امتحان کنید</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> برگه باز، برای جستجوی برگه ضربه بزنید}one{<ph name="OPEN_TABS_MANY" /> برگه باز، برای جستجوی برگه ضربه بزنید}other{<ph name="OPEN_TABS_MANY" /> برگه باز، برای جستجوی برگه ضربه بزنید}}</translation>
 <translation id="5375577065097716013">‏جستجوی تصویر با «لنز Google» <ph name="BEGIN_NEW" />جدید<ph name="END_NEW" /></translation>
+<translation id="5376898820269806588">واکنش تغییر کرد</translation>
 <translation id="5403644198645076998">فقط بعضی از سایت‌ها مجاز هستند</translation>
 <translation id="5409881200985013443"><ph name="ONE_TIME_CODE" /> در <ph name="CLIENT_NAME" /> ارسال شود؟</translation>
 <translation id="5414836363063783498">در حال تأیید...</translation>
@@ -897,7 +899,6 @@
 <translation id="6277522088822131679">در چاپ صفحه مشکلی پیش آمد. لطفاً دوباره امتحان کنید.</translation>
 <translation id="6277722725779679269">«پیگیری قیمت» به‌روزرسانی نشد</translation>
 <translation id="6278428485366576908">طرح‌زمینه</translation>
-<translation id="6293443105724342169">فهرست حساب‌ها برای انتخاب نیمه‌باز شده است.</translation>
 <translation id="6294610283659775533">‏برگه‌ها را می‌توانید بین دستگاه‌هایی که با یک «حساب Google» به سیستم وارد شدند ارسال کنید.</translation>
 <translation id="6297765934698848803">سازمانی که دستگاهتان را مدیریت می‌کند دوربین را خاموش کرده است.</translation>
 <translation id="6301525844455696527">به فهرست خواندن سر بزنید</translation>
@@ -1073,6 +1074,7 @@
 <translation id="718926126787620637">فهرست پوشه‌های نشانک به‌صورت کامل باز شد</translation>
 <translation id="7191430249889272776">برگه در پس‌زمینه باز شد.</translation>
 <translation id="7196215469483532480">شرح «راهنمای حریم‌خصوصی» به‌صورت کامل باز شده است</translation>
+<translation id="7208109991155904980">واکنش جابه‌جا شد</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{۱ بارگیری در انتظار}one{# بارگیری در انتظار}other{# بارگیری در انتظار}}</translation>
 <translation id="7237045078887540010">‏درصورت استفاده از Chrome، با <ph name="BEGIN_TOS_LINK" />شرایط خدمات Google<ph name="END_TOS_LINK" />، و <ph name="BEGIN_ATOS_LINK" />شرایط خدمات تکمیلی Google Chrome و Chrome OS<ph name="END_ATOS_LINK" /> موافقت می‌کنید. <ph name="BEGIN_PRIVACY_LINK" />خط‌مشی رازداری<ph name="END_PRIVACY_LINK" /> نیز اعمال می‌شود.</translation>
 <translation id="7242755609445462077">برجسته‌سازی سبک‌دار <ph name="CURRENT_DATE" /></translation>
@@ -1307,7 +1309,6 @@
 <translation id="8461694314515752532">رمزگذاری داده‌های همگام‌سازی‌شده با گذرعبارت همگام‌سازی خودتان</translation>
 <translation id="8466613982764129868">مطمئن شوید <ph name="TARGET_DEVICE_NAME" /> به اینترنت متصل باشد</translation>
 <translation id="8473863474539038330">نشانی‌ها و سایر موارد</translation>
-<translation id="847656914027543776">فهرست حساب‌ها بسته شد.</translation>
 <translation id="8481921391193215807">‏وقتی روشن باشد، سایت‌ها می‌توانند برای ارائه محتوا و سرویس‌هایشان از تکنیک‌های حفظ حریم‌خصوصی نشان داده‌شده در اینجا استفاده کنند. این تکنیک‌ها شامل روش‌های جایگزین برای ردیابی بین‌سایتی می‌شود. ممکن است در گذر زمان، دوره‌های آزمایشی بیشتری اضافه شود.
 
 <ph name="BEGIN_LIST_ITEM1" />تبلیغ‌کنندگان و ناشران می‌توانند از FLoC استفاده کنند.<ph name="END_LIST_ITEM1" />
@@ -1362,6 +1363,7 @@
 <translation id="8683526617475118045">مزایایی که دریافت می‌کنید</translation>
 <translation id="869891660844655955">تاریخ انقضا</translation>
 <translation id="8699120352855309748">ترجمه این زبان‌ها پیشنهاد نشود</translation>
+<translation id="8712637175834984815">متوجه شدم</translation>
 <translation id="8725066075913043281">سعی مجدد</translation>
 <translation id="8730621377337864115">تمام</translation>
 <translation id="8746155870861185046">هم‌رسانی مورد برجسته</translation>
@@ -1434,7 +1436,6 @@
 <translation id="9108312223223904744">«تلفن» به‌عنوان «پشتیبان کلید امنیتی»</translation>
 <translation id="9108808586816295166">‏ممکن است DNS ایمن همیشه در دسترس نباشد</translation>
 <translation id="9133397713400217035">کاوش درحالت آفلاین</translation>
-<translation id="9133523398139146080">فهرست حساب‌ها برای انتخاب به‌طور کامل باز شده است.</translation>
 <translation id="9137013805542155359">نمایش مورد اصلی</translation>
 <translation id="9148126808321036104">ورود مجدد به سیستم</translation>
 <translation id="9155898266292537608">می‌توانید با ضربه‌ای سریع روی کلمه نیز جستجو کنید</translation>

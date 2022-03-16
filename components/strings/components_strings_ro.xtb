@@ -115,7 +115,6 @@
 <translation id="1301324364792935241">Verifică setările pentru DNS securizat</translation>
 <translation id="1307966114820526988">Funcții învechite</translation>
 <translation id="1308113895091915999">Ofertă disponibilă</translation>
-<translation id="1312803275555673949">Ce dovezi există?</translation>
 <translation id="1314311879718644478">Vezi conținutul în realitatea augmentată</translation>
 <translation id="1314509827145471431">Legare în dreapta</translation>
 <translation id="1318023360584041678">Salvată în grupul de file</translation>
@@ -740,7 +739,6 @@
 <translation id="324180406144491771">Linkurile <ph name="HOST_NAME" /> sunt blocate</translation>
 <translation id="3249845759089040423">Șic</translation>
 <translation id="3252266817569339921">Franceză</translation>
-<translation id="3257954757204451555">De unde provin aceste informații?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a crea rapid un eveniment în Google Calendar</translation>
 <translation id="3261488570342242926">Află despre cardurile virtuale</translation>
 <translation id="3264837738038045344">Butonul de gestionare a setărilor Chrome, apasă pe Enter pentru a accesa setările Chrome</translation>
@@ -1128,6 +1126,7 @@
 <translation id="4414515549596849729">Cookie-uri și date privind site-urile</translation>
 <translation id="4415426530740016218">Adresă de preluare</translation>
 <translation id="4424024547088906515">Acest server nu a putut dovedi că este <ph name="DOMAIN" />; Chrome nu consideră că certificatul său de securitate este de încredere. Cauza poate fi o configurare greșită sau interceptarea conexiunii de către un atacator.</translation>
+<translation id="4428065317363009941">Personalizarea anunțurilor</translation>
 <translation id="443121186588148776">Port serial</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> nu a acceptat certificatul de conectare sau un astfel de certificat nu a fost oferit.</translation>
 <translation id="4432792777822557199">Paginile în <ph name="SOURCE_LANGUAGE" /> vor fi traduse în <ph name="TARGET_LANGUAGE" /> de acum înainte</translation>
@@ -1260,7 +1259,6 @@
 <translation id="4838327282952368871">Visare</translation>
 <translation id="4840250757394056958">Vezi istoricul Chrome</translation>
 <translation id="484462545196658690">Automat</translation>
-<translation id="4849865131988503897">Verificarea preciziei</translation>
 <translation id="4850886885716139402">Afișează</translation>
 <translation id="485316830061041779">Germană</translation>
 <translation id="4853901935952445031">Site-ul nu va mai putea folosi API-ul U2F începând din februarie 2022. Dacă ești proprietarul acestui site, trebuie să-l modifici astfel încât să folosească API-ul Web Authentication.</translation>
@@ -1447,6 +1445,7 @@
 <translation id="5398772614898833570">Anunțurile au fost blocate</translation>
 <translation id="5400836586163650660">Gri</translation>
 <translation id="540969355065856584">Acest server nu a putut dovedi că este <ph name="DOMAIN" />; momentan, certificatul de securitate nu este valid. Cauza poate fi o configurare greșită sau interceptarea conexiunii de un atacator.</translation>
+<translation id="5412236728747081950">Acest site obține interesele tale din Chrome ca să-ți afișeze anunțuri mai relevante</translation>
 <translation id="541416427766103491">Receptorul de hârtie 4</translation>
 <translation id="5421136146218899937">Șterge datele de navigare...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> dorește să îți trimită notificări</translation>
@@ -1963,7 +1962,6 @@
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> nu respectă standardele de securitate.</translation>
 <translation id="7210993021468939304">activitatea Linux din container și pot să instaleze și să ruleze aplicații Linux în container</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /> despre această problemă.</translation>
-<translation id="7215025035562547931">Evaluează corectitudinea informațiilor</translation>
 <translation id="7217745192097460130">Folosești Touch ID ca să confirmi și finalizezi achiziția?</translation>
 <translation id="7219179957768738017">Conexiunea utilizează <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Se procesează</translation>
@@ -2093,6 +2091,7 @@ Detalii suplimentare:
 <translation id="7569952961197462199">Elimini cardul de credit din Chrome?</translation>
 <translation id="7569983096843329377">Negru</translation>
 <translation id="7575207903026901870">Butonul Elimină sugestia, apasă pe Enter pentru a elimina această sugestie</translation>
+<translation id="7577900504646297215">Gestionează interesele</translation>
 <translation id="7578104083680115302">Plătește rapid pe site-uri și în aplicații pe diferite dispozitive folosind cardurile pe care le-ai salvat pe Google.</translation>
 <translation id="7579442726219254162">Configurația gestionată pentru <ph name="APPLICATION_ID" /> conține o variabilă necunoscută, <ph name="VARIABLE" />.</translation>
 <translation id="7581199239021537589">Deplasarea poziției Y a imaginii de pe fața 2</translation>
@@ -2214,7 +2213,6 @@ Detalii suplimentare:
 <translation id="7966803981046576691">Tipul contului sarcinii</translation>
 <translation id="79682505114836835">Valoarea <ph name="VALUE" /> este o culoare hexazecimală nevalidă.</translation>
 <translation id="7968982339740310781">Afișați detaliile</translation>
-<translation id="7970392640816874403">Ce spun alte surse?</translation>
 <translation id="7976214039405368314">Prea multe solicitări</translation>
 <translation id="7977538094055660992">Dispozitiv de ieșire</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -2566,7 +2564,6 @@ Detalii suplimentare:
 <translation id="9155211586651734179">dispozitivele periferice audio conectate;</translation>
 <translation id="9157595877708044936">Se configurează...</translation>
 <translation id="9158625974267017556">C6 (Plic)</translation>
-<translation id="9164029392738894042">Verificarea preciziei</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">Permite site-urilor să verifice dacă ai salvat metode de plată</translation>
 <translation id="9169664750068251925">Blocați întotdeauna pe acest site</translation>

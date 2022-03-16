@@ -115,7 +115,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1301324364792935241">Preverite nastavitve za varni DNS</translation>
 <translation id="1307966114820526988">Zastarele funkcije</translation>
 <translation id="1308113895091915999">Ponudba je na voljo</translation>
-<translation id="1312803275555673949">Kateri dokazi to potrjujejo?</translation>
 <translation id="1314311879718644478">Ogled vsebine v razširjeno resničnosti</translation>
 <translation id="1314509827145471431">Vezava na desni</translation>
 <translation id="1318023360584041678">Shranjeno v skupini zavihkov</translation>
@@ -740,7 +739,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="324180406144491771">Povezave gostitelja »<ph name="HOST_NAME" />« so blokirane</translation>
 <translation id="3249845759089040423">Razgibano</translation>
 <translation id="3252266817569339921">francoščina</translation>
-<translation id="3257954757204451555">Kdo stoji za temi informacijami?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite hitro ustvariti nov dogodek v Google Koledarju</translation>
 <translation id="3261488570342242926">Preberite več o navideznih karticah</translation>
 <translation id="3264837738038045344">Gumb za upravljanje Chromovih nastavitev, pritisnite Enter, če želite odpreti Chromove nastavitve</translation>
@@ -1128,6 +1126,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4414515549596849729">piškotki in podatki spletnih mest</translation>
 <translation id="4415426530740016218">Naslov za prevzem</translation>
 <translation id="4424024547088906515">Strežniku ni uspelo dokazati, da je <ph name="DOMAIN" />; Chrome ne zaupa njegovemu varnostnemu potrdilu. Razlog za to je lahko napačna konfiguracija ali napadalčevo prestrezanje povezave.</translation>
+<translation id="4428065317363009941">Osebno prilagajanje oglasov</translation>
 <translation id="443121186588148776">Serijska vrata</translation>
 <translation id="4432688616882109544">Spletno mesto <ph name="HOST_NAME" /> ni sprejelo potrdila za prijavo ali pa to ni bilo posredovano.</translation>
 <translation id="4432792777822557199">Strani v jeziku <ph name="SOURCE_LANGUAGE" /> bodo od zdaj naprej prevedene v jezik <ph name="TARGET_LANGUAGE" /></translation>
@@ -1260,7 +1259,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4838327282952368871">Zasanjano</translation>
 <translation id="4840250757394056958">Ogled zgodovine v Chromu</translation>
 <translation id="484462545196658690">Samodejno</translation>
-<translation id="4849865131988503897">Preverjanje natančnosti</translation>
 <translation id="4850886885716139402">Pogled</translation>
 <translation id="485316830061041779">nemščina</translation>
 <translation id="4853901935952445031">To spletno mesto po februarju 2022 ne bo moglo uporabljati API-ja za U2F. Če je spletno mesto vaše, spremenite tako, da bo uporabljalo API za spletno preverjanje pristnosti.</translation>
@@ -1447,6 +1445,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5398772614898833570">Oglasi blokirani</translation>
 <translation id="5400836586163650660">Siva</translation>
 <translation id="540969355065856584">Strežniku ni uspelo dokazati, da je <ph name="DOMAIN" />; njegovo varnostno potrdilo trenutno ni veljavno. Razlog za to je lahko napačna konfiguracija ali napadalčevo prestrezanje povezave.</translation>
+<translation id="5412236728747081950">To spletno mesto pridobi vaša zanimanja iz Chroma, da vam pokaže ustreznejše oglase.</translation>
 <translation id="541416427766103491">Zlagalnik 4</translation>
 <translation id="5421136146218899937">Izbriši podatke brskanja ...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> vam želi pošiljati obvestila</translation>
@@ -1963,7 +1962,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="7210863904660874423">Spletno mesto <ph name="HOST_NAME" /> ne upošteva varnostnih standardov.</translation>
 <translation id="7210993021468939304">Dejavnost Linuxa v vsebniku in omogočeno nameščanje ter izvajanje aplikacij za Linux v vsebniku</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Več o<ph name="END_LINK" /> tej težavi.</translation>
-<translation id="7215025035562547931">Vzemite si trenutek in razmislite, ali so podatki točni</translation>
 <translation id="7217745192097460130">Ali želite za potrditev in dokončanje nakupa uporabiti Touch ID?</translation>
 <translation id="7219179957768738017">Povezava uporablja <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Obdelovanje</translation>
@@ -2093,7 +2091,9 @@ Dodatne podrobnosti:
 <translation id="7569952961197462199">Želite odstraniti kreditno kartico iz Chroma?</translation>
 <translation id="7569983096843329377">Črna</translation>
 <translation id="7575207903026901870">Gumb za odstranitev predloga, pritisnite Enter za odstranitev tega predloga</translation>
+<translation id="7577900504646297215">Upravljanje zanimanj</translation>
 <translation id="7578104083680115302">Hitro plačevanje na spletnih mestih in v aplikacijah v vseh napravah s karticami, ki ste jih shranili v Googlu.</translation>
+<translation id="7579442726219254162">Neznana spremenljivka »<ph name="VARIABLE" />« v upravljani konfiguraciji za »<ph name="APPLICATION_ID" />«.</translation>
 <translation id="7581199239021537589">Pomik slike na 2. strani v Y</translation>
 <translation id="7582602800368606489">Hitro ustvarjanje novega dogodka v Google Koledarju</translation>
 <translation id="7591288787774558753">Želite deliti zaupno vsebino?</translation>
@@ -2213,7 +2213,6 @@ Dodatne podrobnosti:
 <translation id="7966803981046576691">Vrsta računa za opravilo</translation>
 <translation id="79682505114836835">Vrednost »<ph name="VALUE" />« je neveljavna šestnajstiška barva.</translation>
 <translation id="7968982339740310781">Prikaži podrobnosti</translation>
-<translation id="7970392640816874403">Kaj pravijo drugi viri?</translation>
 <translation id="7976214039405368314">Preveč zahtev.</translation>
 <translation id="7977538094055660992">Izhodna naprava</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -2564,7 +2563,6 @@ Dodatne podrobnosti:
 <translation id="9155211586651734179">Priključena zvočna dodatna oprema</translation>
 <translation id="9157595877708044936">Nastavljanje ...</translation>
 <translation id="9158625974267017556">C6 (Envelope)</translation>
-<translation id="9164029392738894042">Preverjanje natančnosti</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">Dovolite spletnim mestom, da preverijo, ali imate shranjena plačilna sredstva</translation>
 <translation id="9169664750068251925">Vedno blokiraj na tem spletnem mestu</translation>

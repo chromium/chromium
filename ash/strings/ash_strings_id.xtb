@@ -257,6 +257,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2595239820337756193">Lima kilometer dalam mil</translation>
 <translation id="2596078834055697711">Mengambil screenshot jendela</translation>
 <translation id="2607678425161541573">Perlu login online</translation>
+<translation id="2620436844016719705">Sistem</translation>
 <translation id="2621713457727696555">Aman</translation>
 <translation id="263399434338050016">"Pilih semua"</translation>
 <translation id="2653019840645008922">Tangkapan jendela</translation>
@@ -352,6 +353,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="320207200541803018">Setel timer</translation>
 <translation id="3203405173652969239">Tombol Akses diaktifkan</translation>
 <translation id="3207953481422525583">Setelan Pengguna</translation>
+<translation id="3208321278970793882">Aplikasi</translation>
 <translation id="3217205077783620295">Volume aktif, mengalihkan tombol akan membisukan audio.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> lagi</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -1035,6 +1037,7 @@ Baru diinstal</translation>
 <translation id="7513622367902644023">Mode screenshot dipilih</translation>
 <translation id="7513922695575567867">Kalender, minggu <ph name="DATE" />, <ph name="SELECTED_DATE" /> saat ini dipilih.</translation>
 <translation id="7514365320538308">Download</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7526573455193969409">Jaringan mungkin dipantau</translation>
 <translation id="7536035074519304529">Alamat IP: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Aplikasi Linux dan jendela Samaran saat ini tidak didukung. Aplikasi lainnya akan disimpan.</translation>
@@ -1103,6 +1106,7 @@ Baru diinstal</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Sentuh sensor sidik jari</translation>
 <translation id="7904094684485781019">Administrator untuk akun ini menonaktifkan fitur masuk banyak akun.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7930731167419639574">Ucapan sekarang diproses secara lokal dan Dikte berfungsi secara offline</translation>
 <translation id="7933084174919150729">Asisten Google hanya tersedia untuk profil utama.</translation>
 <translation id="79341161159229895">Akun dikelola oleh <ph name="FIRST_PARENT_EMAIL" /> dan <ph name="SECOND_PARENT_EMAIL" /></translation>

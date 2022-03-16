@@ -1076,7 +1076,6 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="2019718679933488176">&amp;Opna hljóð í nýjum flipa</translation>
 <translation id="2020183425253392403">Sýna stillingar fyrir vistfang netkerfis</translation>
 <translation id="2020225359413970060">Skanna skrá</translation>
-<translation id="2022395138980869975">Kveikja/slökkva á hliðarleit</translation>
 <translation id="2023167225947895179">Hugsanlega er auðvelt að giska á PIN-númerið</translation>
 <translation id="202352106777823113">Niðurhalið tók of langan tíma og netið stöðvaði það.</translation>
 <translation id="2024195579772565064">Eyða leitarvél</translation>
@@ -2975,7 +2974,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" /> tenging</translation>
 <translation id="3888550877729210209">Glósur með <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">Þessar upplýsingar auðvelda okkur að skilja vandamál þitt með Hjálparann. Upplýsingarnar eru geymdar í allt að 90 daga og aðgangur að þeim er takmarkaður við viðeigandi tölvu- og þjónustuteymi.</translation>
-<translation id="3888900458694486810">Loka hliðarleit</translation>
 <translation id="3890064827463908288">Kveiktu á Chrome samstillingu til að nota Wi-Fi-samstillingu</translation>
 <translation id="389313931326656921">Úthlutaðu rofa fyrir „Áfram“</translation>
 <translation id="3893295674388762059">Lokaðu öllum huliðsgluggum til að hreinsa gögn</translation>
@@ -3289,7 +3287,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4208390505124702064">Leita á <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Stórt</translation>
 <translation id="4209251085232852247">Slökkt</translation>
-<translation id="4209464433672152343">Skjölin eru <ph name="BEGIN_LINK_HELP" />send til Google<ph name="END_LINK_HELP" /> til að búa þau undir prentun. Þú getur skoðað, breytt og stjórnað prenturunum þínum og prentaraferlinum á <ph name="BEGIN_LINK_DASHBOARD" />stjórnborði Google skýjaprentunar<ph name="END_LINK_DASHBOARD" />.</translation>
 <translation id="4210048056321123003">Sækir sýndarvélina</translation>
 <translation id="421182450098841253">&amp;Sýna bókamerkjastiku</translation>
 <translation id="4211851069413100178">Senda notkunar- og greiningargögn. Hjálpaðu okkur að bæta Android fyrir þig með því að senda sjálfkrafa greiningargögn, tækisgögn og upplýsingar um forritanotkun til Google. Þetta mun stuðla að því að bæta stöðugleika kerfa og forrita auk annarra endurbóta. Sum uppsöfnuð gögn munu einnig gagnast forritum og samstarfsaðilum Google, til dæmis þróunaraðilum Android. Eigandi valdi þessa <ph name="BEGIN_LINK1" />stillingu<ph name="END_LINK1" />. Eigandi getur kosið að senda greiningar- og notkunargögn þessa tækis til Google. Ef kveikt er á ítarlegri vef- og forritavirkni geta þessi gögn verið vistuð á Google reikningnum þínum. <ph name="BEGIN_LINK2" />Frekari upplýsingar<ph name="END_LINK2" /></translation>
@@ -6183,7 +6180,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7180611975245234373">Endurnýja</translation>
 <translation id="7180865173735832675">Sérsníða</translation>
 <translation id="7182791023900310535">Færðu aðgangsorðið</translation>
-<translation id="7183420126213758623">Kveikja/slökkva á hliðarleit. Hliðarleit er ekki virk.</translation>
 <translation id="7186088072322679094">Halda á stikunni</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> getur ekki opnað þessa möppu vegna þess að hún inniheldur kerfisskrár</translation>
 <translation id="7187428571767585875">Færslur í stýriskrá sem á að fjarlægja eða breyta:</translation>
@@ -6705,7 +6701,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7701040980221191251">Ekkert</translation>
 <translation id="7701869757853594372">Notendanöfn</translation>
 <translation id="7702574632857388784">Fjarlægja <ph name="FILE_NAME" /> af lista</translation>
-<translation id="7702599324215660661">Læsa við brottför</translation>
 <translation id="7702907602086592255">Lén</translation>
 <translation id="7704305437604973648">Verkefni</translation>
 <translation id="7704317875155739195">Fylla sjálfvirkt út leitir og vefslóðir</translation>
@@ -6811,7 +6806,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7798844538707273832">Lokað var sjálfkrafa á <ph name="PERMISSION" /></translation>
 <translation id="7799299114731150374">Veggfóður er valið</translation>
 <translation id="7799817062559422778">Ljós stilling</translation>
-<translation id="7800159967992492578">Kveikja/slökkva á hliðarleit. Hliðarleit er virk.</translation>
 <translation id="7800518121066352902">Snúa rangsælis</translation>
 <translation id="7801679634091975683">Breytingar sem þú gerir hér eiga eingöngu við um Lacros Chrome vafra. Opnaðu Chrome vafrann og farðu í stillingar til að breyta stillingum Chrome vafrans.</translation>
 <translation id="780301667611848630">Nei, takk</translation>

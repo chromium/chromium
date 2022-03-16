@@ -1060,7 +1060,6 @@
 <translation id="2019718679933488176">&amp;Аудионы жаңа қойындыда ашу</translation>
 <translation id="2020183425253392403">Желі мекенжайы параметрлерін көрсету</translation>
 <translation id="2020225359413970060">Файлды сканерлеу</translation>
-<translation id="2022395138980869975">Бүйірлік іздеу панелін көрсету/жасыру</translation>
 <translation id="2023167225947895179">PIN коды табуға оңай болуы мүмкін</translation>
 <translation id="202352106777823113">Жүктеу тым ұзаққа созылғандықтан, желі оны тоқтатты.</translation>
 <translation id="2024195579772565064">Іздеу жүйесін жою</translation>
@@ -1326,6 +1325,7 @@
 <translation id="2278562042389100163">Браузер терезесін ашу</translation>
 <translation id="2278668501808246459">Контейнер басқарушысы іске қосылуда</translation>
 <translation id="2280486287150724112">Оң жақ шеті</translation>
+<translation id="2281863813036651454">Тінтуірдің сол жақ пернесін түрту</translation>
 <translation id="2282146716419988068">GPU процесі</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{Барлығын &amp;жаңа қойынды тобында ашу}=1{&amp;Жаңа қойынды тобында ашу}other{Барлығын ({COUNT}) &amp;жаңа қойынды тобында ашу}}</translation>
 <translation id="2285942871162473373">Саусақ ізі танылмады. Қайталап көріңіз.</translation>
@@ -2956,7 +2956,6 @@
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" /> байланысы</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> қолданбасымен жазбалар жазу</translation>
 <translation id="3888586133700543064">Бұл ақпарат Assistant ақауын жақсырақ түсінуімізге көмектеседі. Ол 90 күнге дейін сақталады және тиісті инженерлер мен кері байланыс ұжымына ғана қолжетімді болады.</translation>
-<translation id="3888900458694486810">Бүйірлік іздеу панелін жабу</translation>
 <translation id="3890064827463908288">Wi-Fi деректерін синхрондау үшін Chrome Sync функциясын қосыңыз.</translation>
 <translation id="389313931326656921">"Келесі" әрекетіне ауыстырғыш тағайындау</translation>
 <translation id="3893295674388762059">Деректерді тазарту үшін инкогнито терезелерінің барлығын жабыңыз</translation>
@@ -3270,7 +3269,6 @@
 <translation id="4208390505124702064"><ph name="SITE_NAME" /> іздеу</translation>
 <translation id="4209092469652827314">Үлкен</translation>
 <translation id="4209251085232852247">Өшірулі</translation>
-<translation id="4209464433672152343">Басып шығаруға дайындау үшін құжаттар <ph name="BEGIN_LINK_HELP" />Google-ға жіберіледі<ph name="END_LINK_HELP" />. Принтерлер мен принтер тарихын <ph name="BEGIN_LINK_DASHBOARD" />Google Cloud Print бақылау тақтасында<ph name="END_LINK_DASHBOARD" /> көруге, өңдеуге және басқаруға болады.</translation>
 <translation id="4210048056321123003">Виртуалдық құрылғы жүктеп алынуда</translation>
 <translation id="421182450098841253">&amp;Бетбелгілер жолағын көрсету</translation>
 <translation id="4211851069413100178">Пайдаланылуы және диагностикасы туралы деректерді жіберу. Диагностикалық деректерді, сондай-ақ құрылғы мен қолданбаларды пайдалану деректерін Google қызметіне автоматты түрде жіберу арқылы Android жүйесін пайдалану тәжірибесін жақсартуға көмектесіңіз. Олар жүйе мен қолданбаның тұрақты жұмыс істеуіне және басқа да жақсартулар енгізуге көмектеседі. Кейбір жиынтық деректер Google қолданбаларын жетілдіруге және Android әзірлеушілері сияқты серіктестердің жұмысына көмектеседі. Бұл <ph name="BEGIN_LINK1" />параметрді<ph name="END_LINK1" /> иесі орнатқан. Иесі бұл құрылғының диагностикасы және пайдаланылуы туралы деректерді Google қызметіне жіберуге рұқсат бере алады. Егер "Интернет пен қолданбаларды пайдаланудың қосымша тарихы" параметрі қосулы болса, бұл деректер сіздің Google аккаунтыңызға сақталуы мүмкін. <ph name="BEGIN_LINK2" />Толығырақ<ph name="END_LINK2" /></translation>
@@ -5141,6 +5139,7 @@
 <translation id="6129938384427316298">Netscape сертификат пікірі</translation>
 <translation id="6129953537138746214">Бос орын</translation>
 <translation id="6130692320435119637">Wi-Fi желісін қосу</translation>
+<translation id="6130887916931372608">Перне</translation>
 <translation id="6136114942382973861">Жүктеп алынғандар жолағын жабу</translation>
 <translation id="6136287496450963112">Қауіпсіздік кілтіңіз PIN кодымен қорғалмаған. Саусақ іздерін басқару үшін алдымен PIN кодын жасаңыз.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA, SHA-384 алгоритмімен қол қою</translation>
@@ -6163,7 +6162,6 @@
 <translation id="7180611975245234373">Жаңарту</translation>
 <translation id="7180865173735832675">Реттеу</translation>
 <translation id="7182791023900310535">Құпия сөзді көшіру</translation>
-<translation id="7183420126213758623">Бүйірлік іздеу панелін қосу/өшіру. Бүйірлік іздеу іске қосылмады.</translation>
 <translation id="7186088072322679094">Құралдар тақтасында сақтау</translation>
 <translation id="7186303001964993981">Бұл қалтада жүйелік файлдар болғандықтан, <ph name="ORIGIN" /> оны аша алмайды.</translation>
 <translation id="7187428571767585875">Жойылатын немесе өзгертілетін тіркелу жазбалары:</translation>
@@ -6685,7 +6683,6 @@
 <translation id="7701040980221191251">Жоқ</translation>
 <translation id="7701869757853594372">USER өңдегіштері</translation>
 <translation id="7702574632857388784"><ph name="FILE_NAME" /> файлын тізімнен өшіру</translation>
-<translation id="7702599324215660661">Компьютерден алыстағанда құлыптау</translation>
 <translation id="7702907602086592255">Домен</translation>
 <translation id="7704305437604973648">Тапсырма</translation>
 <translation id="7704317875155739195">Іздеулер мен URL мекенжайларын автотолтыру</translation>
@@ -6755,6 +6752,7 @@
 <translation id="7768770796815395237">Өзгерту</translation>
 <translation id="7768784765476638775">Select to Speak</translation>
 <translation id="7770406201819593386">ChromeOS Flex диагностикалық сынақтарын іске қосу.</translation>
+<translation id="7770450735129978837">Тінтуірдің оң жақ пернесін түрту</translation>
 <translation id="7770612696274572992">Сурет басқа құрылғыдан көшірілді</translation>
 <translation id="7771452384635174008">Құрылым</translation>
 <translation id="7772032839648071052">Құпия фразаны растау</translation>
@@ -6791,7 +6789,6 @@
 <translation id="7798844538707273832"><ph name="PERMISSION" /> автоматты түрде бөгелді.</translation>
 <translation id="7799299114731150374">Тұсқағаз орнатылды</translation>
 <translation id="7799817062559422778">Жарық режим</translation>
-<translation id="7800159967992492578">Бүйірлік іздеу панелін қосу/өшіру. Бүйірлік іздеу іске қосылды.</translation>
 <translation id="7800518121066352902">С&amp;ағат тіліне қарсы айналдыру</translation>
 <translation id="7801679634091975683">Осында енгізген өзгерістеріңіз тек Lacros Chrome браузеріне қолданылады. Chrome браузерінің параметрлеріне өзгерістер енгізу үшін Chrome браузерін ашып, параметрлерге өтіңіз.</translation>
 <translation id="780301667611848630">Жоқ, рақмет</translation>

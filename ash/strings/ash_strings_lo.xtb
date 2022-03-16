@@ -258,6 +258,7 @@
 <translation id="2595239820337756193">5 ພັນໄມລ໌</translation>
 <translation id="2596078834055697711">ຖ່າຍພາບໜ້າຈໍ</translation>
 <translation id="2607678425161541573">ຕ້ອງເຂົ້າສູ່ລະບົບອອນລາຍ</translation>
+<translation id="2620436844016719705">ລະ​ບົບ</translation>
 <translation id="2621713457727696555">ຮັກສາຄວາມປອດໄພແລ້ວ</translation>
 <translation id="263399434338050016">"ເລືອກທັງໝົດ"</translation>
 <translation id="2653019840645008922">ຖ່າຍຮູບໜ້າຈໍ</translation>
@@ -354,6 +355,7 @@
 <translation id="320207200541803018">ຕັ້ງຄ່າໂມງນັບຖອຍຫຼັງ</translation>
 <translation id="3203405173652969239">ເປີດການນຳໃຊ້ການເຂົ້າເຖິງດ້ວຍປຸ່ມກົດ</translation>
 <translation id="3207953481422525583">ຕັ້ງຄ່າຜູ້ໃຊ້</translation>
+<translation id="3208321278970793882">ແອັບ</translation>
 <translation id="3217205077783620295">ລະດັບສຽງເປີດຢູ່, ການສະຫຼັບຈະປິດສຽງ.</translation>
 <translation id="3226991577105957773">ອີກ +<ph name="COUNT" /></translation>
 <translation id="3227137524299004712">ໄມໂຄຣໂຟນ</translation>
@@ -1038,6 +1040,7 @@
 <translation id="7513622367902644023">ເລືອກໂໝດຮູບໜ້າຈໍແລ້ວ</translation>
 <translation id="7513922695575567867">ປະຕິທິນ, ອາທິດຂອງ <ph name="DATE" />, ຕອນນີ້ເລືອກ <ph name="SELECTED_DATE" /> ຢູ່.</translation>
 <translation id="7514365320538308">ດາວ​ໂຫລດ</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7526573455193969409">ອາດມີການຕິດຕາມເບິ່ງເຄືອຂ່າຍ</translation>
 <translation id="7536035074519304529">ທີ່ຢູ່ IP: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">ຕອນນີ້ບໍ່ຮອງຮັບແອັບ Linux ແລະ ໜ້າຈໍທີ່ບໍ່ເປີດເຜີຍຕົວຕົນເທື່ອ. ແອັບອື່ນໆຈະຖືກບັນທຶກໄວ້.</translation>
@@ -1107,6 +1110,7 @@
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">ແຕະເຊັນເຊີລາຍນິ້ວມື</translation>
 <translation id="7904094684485781019">ຜູ້ຄວບຄຸມສໍາລັບບັນຊີນີ້​ໄດ້​ຖອນ​ການອະນຸຍາດສຳລັບ​ການລົງຊື່ເຂົ້າໃຊ້ຫຼາຍອັນ.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7930731167419639574">ຕອນນີ້ການເວົ້າຈະຖືກປະມວນຜົນໃນເຄື່ອງ ແລະ ການປ້ອນຂໍ້ມູນດ້ວຍສຽງສາມາດເຮັດວຽກອອບລາຍໄດ້ແລ້ວ</translation>
 <translation id="7933084174919150729">ຜູ້ຊ່ວຍ Google ສາມາດໃຊ້ໄດ້ສຳລັບໂປຣໄຟລ໌ຫຼັກເທົ່ານັ້ນ.</translation>
 <translation id="79341161159229895">ບັນຊີທີ່ຈັດການໂດຍ <ph name="FIRST_PARENT_EMAIL" /> ແລະ <ph name="SECOND_PARENT_EMAIL" /></translation>

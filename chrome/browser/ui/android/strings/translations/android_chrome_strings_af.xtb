@@ -30,7 +30,6 @@
 <translation id="114825011539563458">Die mees belangrike privaatheid- en sekuriteitkontroles op een plek</translation>
 <translation id="1149401351239820326">Vervalmaand</translation>
 <translation id="1154704303112745282">Blad is nie vanlyn beskikbaar nie: <ph name="VIOLATED_URL" /></translation>
-<translation id="1166688006062225587">Lys rekeninge wat gekies kan word.</translation>
 <translation id="1171770572613082465">Sien gewilde webwerwe deur op die "Topwerwe"-knoppie te tik</translation>
 <translation id="1173894706177603556">Hernoem</translation>
 <translation id="1177863135347784049">Gepasmaak</translation>
@@ -571,6 +570,7 @@ Raak en hou enige woord om te soek. Kies meer of minder woorde as jy jou soektog
 <translation id="4415276339145661267">Bestuur jou Google-rekening</translation>
 <translation id="4425140285732600465">Spoor tans prys na. Kry kennisgewings as die prys op enige werf daal.</translation>
 <translation id="442518031075347249">Jy sal nie meer jou virtuele kaart met Google Pay kan gebruik nie <ph name="BEGIN_LINK1" />Kom meer te wete oor virtuele kaarte<ph name="END_LINK1" /></translation>
+<translation id="4428065317363009941">Advertensiepersonalisering</translation>
 <translation id="4450672886426705087">Soekresultate van Google af</translation>
 <translation id="4452411734226507615">Maak <ph name="TAB_TITLE" />-oortjie toe</translation>
 <translation id="4452548195519783679">Geboekmerk in <ph name="FOLDER_NAME" /></translation>
@@ -899,7 +899,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="6277522088822131679">Kon nie die bladsy uitdruk nie. Probeer asseblief weer.</translation>
 <translation id="6277722725779679269">Kon nie prysnasporing opdateer nie</translation>
 <translation id="6278428485366576908">Tema</translation>
-<translation id="6293443105724342169">Lys rekeninge wat gekies kan word, is teen halwe hoogte oopgemaak.</translation>
 <translation id="6294610283659775533">Jy kan oortjies stuur tussen toestelle wat met dieselfde Google-rekening aangemeld is</translation>
 <translation id="6297765934698848803">Die organisasie wat jou toestel bestuur, het jou kamera afgeskakel.</translation>
 <translation id="6301525844455696527">Haal in met jou leeslys</translation>
@@ -1310,7 +1309,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8461694314515752532">Enkripteer gesinkroniseerde data met jou eie sinkroniseringwagfrase</translation>
 <translation id="8466613982764129868">Maak seker dat <ph name="TARGET_DEVICE_NAME" /> aan die internet gekoppel is.</translation>
 <translation id="8473863474539038330">Adresse en meer</translation>
-<translation id="847656914027543776">Lys rekeninge wat gekies kan word, is toegemaak.</translation>
 <translation id="8481921391193215807">Wanneer dit aan is, kan werwe die privaatheidinstandhoudingtegnieke wat hier gewys word, gebruik om hul inhoud en dienste te verskaf. Dit sluit alternatiewe vir kruiswerfnasporing in. Nog proeflopies kan oor tyd bygevoeg word.
 
 <ph name="BEGIN_LIST_ITEM1" />Adverteerders en uitgewers kan FLoC gebruik.<ph name="END_LIST_ITEM1" />
@@ -1365,6 +1363,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8683526617475118045">Wat jy kry</translation>
 <translation id="869891660844655955">Vervaldatum</translation>
 <translation id="8699120352855309748">Moenie aanbied om hierdie tale te vertaal nie</translation>
+<translation id="8712637175834984815">Het dit</translation>
 <translation id="8725066075913043281">Probeer weer</translation>
 <translation id="8730621377337864115">Gedoen</translation>
 <translation id="8746155870861185046">Deel hoogtepunt</translation>
@@ -1437,7 +1436,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="9108312223223904744">Foon as 'n sekuriteitsleutelvervanging</translation>
 <translation id="9108808586816295166">Veilige DNS is dalk nie die hele tyd beskikbaar nie</translation>
 <translation id="9133397713400217035">Verken vanlyn</translation>
-<translation id="9133523398139146080">Lys rekeninge wat gekies kan word, is teen volle hoogte oopgemaak.</translation>
 <translation id="9137013805542155359">Wys oorspronklike</translation>
 <translation id="9148126808321036104">Meld weer aan …</translation>
 <translation id="9155898266292537608">Jy kan ook soek met 'n vinnige tik op 'n woord</translation>

@@ -1076,7 +1076,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="2019718679933488176">&amp;Buksan ang Audio sa Bagong Tab</translation>
 <translation id="2020183425253392403">Ipakita ang mga setting ng address ng network</translation>
 <translation id="2020225359413970060">I-scan ang file</translation>
-<translation id="2022395138980869975">I-toggle ang side search</translation>
 <translation id="2023167225947895179">Maaaring mahulaan agad ang PIN na ito</translation>
 <translation id="202352106777823113">Masyadong matagal ang pag-download at pinahinto ito ng network.</translation>
 <translation id="2024195579772565064">I-delete ang search engine</translation>
@@ -1345,6 +1344,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2278562042389100163">Magbukas ng browser window</translation>
 <translation id="2278668501808246459">Sinisimulan ang manager ng container</translation>
 <translation id="2280486287150724112">Kanang margin</translation>
+<translation id="2281863813036651454">Pag-click sa kaliwang mouse button</translation>
 <translation id="2282146716419988068">Proseso ng GPU</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{Buksan lahat sa &amp;bagong grupo ng tab}=1{Buksan sa &amp;bagong grupo ng tab}one{Buksan lahat ({COUNT}) sa &amp;bagong grupo ng tab}other{Buksan lahat ({COUNT}) sa &amp;bagong grupo ng tab}}</translation>
 <translation id="2285942871162473373">Hindi nakilala ang iyong fingerprint. Subukan ulit.</translation>
@@ -2976,7 +2976,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3888053818972567950">Koneksyon sa <ph name="WEB_DRIVE" /></translation>
 <translation id="3888550877729210209">Nagtatala gamit ang <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">Nakakatulong sa amin ang impormasyong ito na maunawaan nang mas mabuti ang iyong isyu sa Assistant. Sino-store ito nang hanggang 90 araw at paghihigpitan ang access sa mga naaangkop na engineering team at feedback team.</translation>
-<translation id="3888900458694486810">Isara ang side search</translation>
 <translation id="3890064827463908288">I-on ang Chrome Sync para gamitin ang Wi-Fi Sync</translation>
 <translation id="389313931326656921">Magtalaga ng switch para sa “Susunod”</translation>
 <translation id="3893295674388762059">Para i-clear ang data, isara ang lahat ng Incognito window</translation>
@@ -3290,7 +3289,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4208390505124702064">Hanapin sa <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Malaki</translation>
 <translation id="4209251085232852247">Naka-off</translation>
-<translation id="4209464433672152343"><ph name="BEGIN_LINK_HELP" />Ipapadala sa Google<ph name="END_LINK_HELP" /> ang mga dokumento para ihanda ang mga ito sa pag-print. Tingnan, i-edit, at pamahalaan ang iyong mga printer at history ng printer sa <ph name="BEGIN_LINK_DASHBOARD" />dashboard ng Google Cloud Print<ph name="END_LINK_DASHBOARD" />.</translation>
 <translation id="4210048056321123003">Dina-download ang virtual machine</translation>
 <translation id="421182450098841253">&amp;Ipakita ang Bookmarks Bar</translation>
 <translation id="4211851069413100178">Magpadala ng data ng paggamit at diagnostic na data. Tumulong sa pagpapaganda ng iyong karanasan sa Android sa pamamagitan ng awtomatikong pagpapadala ng diagnostic na data, data ng device, at data ng paggamit sa app sa Google. Makakatulong ito sa stability ng system at ng app, at sa iba pang pagpapahusay. Makakatulong din ang ilang pinagsama-samang data sa mga app at partner ng Google, gaya ng mga developer ng Android. Ipinapatupad ng may-ari ang <ph name="BEGIN_LINK1" />setting<ph name="END_LINK1" /> na ito. Maaaring piliin ng may-aring magpadala ng diagnostic na data at data ng paggamit para sa device na ito sa Google. Kung naka-on ang iyong karagdagang setting ng Aktibidad sa Web at App, maaaring ma-save ang data na ito sa Google account mo. <ph name="BEGIN_LINK2" />Matuto Pa<ph name="END_LINK2" /></translation>
@@ -5162,6 +5160,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="6129938384427316298">Komento sa Netscape Certificate</translation>
 <translation id="6129953537138746214">Puwang</translation>
 <translation id="6130692320435119637">Magdagdag ng Wi-Fi</translation>
+<translation id="6130887916931372608">Key ng Keyboard</translation>
 <translation id="6136114942382973861">Isara ang bar ng mga download</translation>
 <translation id="6136287496450963112">Hindi pinoprotektahan ng PIN ang iyong security key. Para pamahalaan ang mga fingerprint, gumawa muna ng PIN.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA Signature na may SHA-384</translation>
@@ -6184,7 +6183,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="7180611975245234373">I-refresh</translation>
 <translation id="7180865173735832675">I-customize</translation>
 <translation id="7182791023900310535">Ilipat ang iyong password</translation>
-<translation id="7183420126213758623">I-toggle ang side search. Hindi na-activate ang side search.</translation>
 <translation id="7186088072322679094">Panatilihin sa Toolbar</translation>
 <translation id="7186303001964993981">Hindi mabuksan ng <ph name="ORIGIN" /> ang folder na ito dahil naglalaman ito ng mga file ng system</translation>
 <translation id="7187428571767585875">Mga aalisin o papalitang entry sa registry:</translation>
@@ -6706,7 +6704,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="7701040980221191251">Wala</translation>
 <translation id="7701869757853594372">Mga USER Handle</translation>
 <translation id="7702574632857388784">Alisin ang <ph name="FILE_NAME" /> sa listahan</translation>
-<translation id="7702599324215660661">Lock on Leave</translation>
 <translation id="7702907602086592255">Domain</translation>
 <translation id="7704305437604973648">Gawain</translation>
 <translation id="7704317875155739195">Awtomatikong kumpletuhin ang mga paghahanap at URL</translation>
@@ -6776,6 +6773,7 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="7768770796815395237">Baguhin</translation>
 <translation id="7768784765476638775">Select to Speak</translation>
 <translation id="7770406201819593386">Magpatakbo ng mga diagnostic test ng ChromeOS Flex.</translation>
+<translation id="7770450735129978837">Pag-click sa kanang mouse button</translation>
 <translation id="7770612696274572992">Nakopya ang larawan mula sa isa pang device</translation>
 <translation id="7771452384635174008">Layout</translation>
 <translation id="7772032839648071052">Kumpirmahin ang passphrase</translation>
@@ -6812,7 +6810,6 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="7798844538707273832">Awtomatikong na-block ang <ph name="PERMISSION" /></translation>
 <translation id="7799299114731150374">Naitakda ang wallpaper</translation>
 <translation id="7799817062559422778">Light mode</translation>
-<translation id="7800159967992492578">I-toggle ang side search. Na-activate ang search.</translation>
 <translation id="7800518121066352902">I-rotate P&amp;akaliwa</translation>
 <translation id="7801679634091975683">Malalapat lang sa Lacros na Chrome Browser ang mga pagbabagong gagawin mo rito. Para gumawa ng mga pagbabago sa mga setting ng iyong Chrome Browser, buksan ang Chrome Browser at pumunta sa mga setting.</translation>
 <translation id="780301667611848630">Hindi salamat</translation>

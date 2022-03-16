@@ -116,7 +116,6 @@
 <translation id="1301324364792935241">‏اپنی محفوظ DNS ترتیبات چیک کریں</translation>
 <translation id="1307966114820526988">فرسودہ خصوصیات</translation>
 <translation id="1308113895091915999">پیشکش دستیاب ہے</translation>
-<translation id="1312803275555673949">کون سا ثبوت اس کو سپورٹ کرتا ہے؟</translation>
 <translation id="1314311879718644478">افزودہ حقیقت کا مواد دیکھیں</translation>
 <translation id="1314509827145471431">دائیں طرف باندھیں</translation>
 <translation id="1318023360584041678">ٹیب گروپ مں محفوظ کردہ</translation>
@@ -742,7 +741,6 @@
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” لنکس مسدود ہیں</translation>
 <translation id="3249845759089040423">دلکش</translation>
 <translation id="3252266817569339921">فرانسيسی</translation>
-<translation id="3257954757204451555">اس معلومات کے پیچھے کون ہے؟</translation>
 <translation id="3259648571731540213">‏<ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />، Google کیلنڈر میں تیزی سے ایک نیا ایونٹ تخلیق کرنے کیلئے Tab، پھر Enter دبائیں</translation>
 <translation id="3261488570342242926">ورچوئل کارڈز کے بارے میں جانیں</translation>
 <translation id="3264837738038045344">‏Chrome کی ترتیبات کے بٹن کا نظم کریں، اپنے Chrome کی ترتیبات ملاحظہ کرنے کے لیے اینٹر دبائیں</translation>
@@ -1130,6 +1128,7 @@
 <translation id="4414515549596849729">کوکیز اور سائٹ کا ڈیٹا</translation>
 <translation id="4415426530740016218">پک اپ کا پتہ</translation>
 <translation id="4424024547088906515">‏یہ سرور یہ بات ثابت نہیں کر سکا کہ یہ <ph name="DOMAIN" /> ہے؛ اس کے سیکیورٹی سرٹیفکیٹ پر Chrome کو بھروسہ نہیں ہے۔ یہ غلط کنفیگرییشن یا آپ کے کنکشن کو قطع کرنے والے کسی حملہ آور کی وجہ سے ہو سکتا ہے۔</translation>
+<translation id="4428065317363009941">اشتہارات کو ذاتی نوعیت کا بنانا</translation>
 <translation id="443121186588148776">سیریل پورٹ</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> نے آپ کا لاگ ان سرٹیفکیٹ قبول نہیں کیا یا ممکن ہے کوئی فراہم نہ کیا گیا ہو۔</translation>
 <translation id="4432792777822557199">آئندہ سے <ph name="SOURCE_LANGUAGE" /> کے صفحات کا <ph name="TARGET_LANGUAGE" /> میں ترجمہ کیا جائے گا</translation>
@@ -1262,7 +1261,6 @@
 <translation id="4838327282952368871">خیالی</translation>
 <translation id="4840250757394056958">‏اپنے Chrome کی سرگزشت دیکھیں</translation>
 <translation id="484462545196658690">خودکار</translation>
-<translation id="4849865131988503897">درستگی چیک کریں</translation>
 <translation id="4850886885716139402">دیکھیں</translation>
 <translation id="485316830061041779">جرمن</translation>
 <translation id="4853901935952445031">‏یہ سائٹ فروری 2022 کے بعد U2F API استعمال نہیں کر سکے گی۔ اگر آپ اس سائٹ کے مالک ہیں تو آپ کو ویب تصدیق کا API استعمال کرنے کیلئے اسے تبدیل کرنا چاہیے۔</translation>
@@ -1449,6 +1447,7 @@
 <translation id="5398772614898833570">اشتہارات مسدود ہیں</translation>
 <translation id="5400836586163650660">خاکستری</translation>
 <translation id="540969355065856584">یہ سرور یہ ثابت نہیں کر سکا کہ یہ <ph name="DOMAIN" /> ہے؛ اس کا سیکیورٹی سرٹیفکیٹ اس وقت درست نہیں ہے۔ یہ غلط کنفیگریشن یا آپ کے کنکشن میں مانع بن رہے کسی حملہ آور کی وجہ سے ہو سکتا ہے۔</translation>
+<translation id="5412236728747081950">‏یہ سائٹ آپ کو مزید متعلقہ اشتہارات دکھانے کے لیے Chrome سے آپ کی دلچسپیاں موصول کرتی ہے</translation>
 <translation id="541416427766103491">اسٹیکر 4</translation>
 <translation id="5421136146218899937">براؤزنگ ڈیٹا صاف کریں…</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> آپ کو اطلاعات بھیجنا چاہتی ہے</translation>
@@ -1966,7 +1965,6 @@
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> سیکیورٹی کے معیارات کی پابندی نہیں کرتا ہے۔</translation>
 <translation id="7210993021468939304">‏کنٹینر کے اندر Linux کی سرگرمی اور کنٹینر کے اندر Linux ایپ کو انسٹال کرکے چلا سکتا ہے</translation>
 <translation id="721197778055552897">اس مسئلہ کے بارے میں <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" />۔</translation>
-<translation id="7215025035562547931">درستگی پر غور کرنے کیلئے تھوڑا سا وقت نکالیں</translation>
 <translation id="7217745192097460130">‏اپنی خریداری کی توثیق اور اسے مکمل کرنے کے لئے Touch ID کا استعمال کریں؟</translation>
 <translation id="7219179957768738017">کنکشن <ph name="SSL_VERSION" /> کا استعمال کرتا ہے۔</translation>
 <translation id="7220786058474068424">کارروائی ہورہی ہے</translation>
@@ -2096,6 +2094,7 @@
 <translation id="7569952961197462199">‏Chrome سے کریڈٹ کارڈ ہٹائیں؟</translation>
 <translation id="7569983096843329377">سیاہ</translation>
 <translation id="7575207903026901870">‏تجویز کا بٹن ہٹائیں، اس تجویز کو ہٹانے کے لیے Enter دبائیں</translation>
+<translation id="7577900504646297215">دلچسپیوں کا نظم کریں</translation>
 <translation id="7578104083680115302">‏Google کے ساتھ اپنے محفوظ کردہ کارڈز کا استعمال کر کے سبھی آلات پر موجود سائٹس اور ایپس پر جلدی سے ادائیگی کریں۔</translation>
 <translation id="7581199239021537589">‏سائیڈ 2 تصویر Y شفٹ</translation>
 <translation id="7582602800368606489">‏Google کیلنڈر میں تیزی سے ایک نیا ایونٹ تخلیق کریں</translation>
@@ -2216,7 +2215,6 @@
 <translation id="7966803981046576691">جاب اکاؤنٹ کی قسم</translation>
 <translation id="79682505114836835">قدر "<ph name="VALUE" />" ایک غلط ہیکس رنگ ہے۔</translation>
 <translation id="7968982339740310781">تفصیلات دیکھیں</translation>
-<translation id="7970392640816874403">دوسرے ذرائع کیا کہتے ہیں؟</translation>
 <translation id="7976214039405368314">بہت زیادہ درخواستیں</translation>
 <translation id="7977538094055660992">آؤٹ پٹ آلہ</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -2568,7 +2566,6 @@
 <translation id="9155211586651734179">آڈیو پیریفیرلز منسلک ہیں</translation>
 <translation id="9157595877708044936">تشکیل دیا جا رہا ہے…</translation>
 <translation id="9158625974267017556">C6 ‎(Envelope‎)‎</translation>
-<translation id="9164029392738894042">درستگی چیک کریں</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">سائٹس کو یہ چیک کرنے کی اجازت دیں کہ آیا آپ نے ادائیگی کے طریقوں کو محفوظ کیا ہے</translation>
 <translation id="9169664750068251925">اس سائٹ پر ہمیشہ مسدود کر دیں</translation>

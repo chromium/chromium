@@ -30,7 +30,6 @@
 <translation id="114825011539563458">Τα σημαντικότερα στοιχεία ελέγχου για το απόρρητο και την ασφάλεια σε μία τοποθεσία</translation>
 <translation id="1149401351239820326">Μήνας λήξης</translation>
 <translation id="1154704303112745282">Η σελίδα δεν είναι διαθέσιμη εκτός σύνδεσης: <ph name="VIOLATED_URL" /></translation>
-<translation id="1166688006062225587">Λίστα λογαριασμών για επιλογή.</translation>
 <translation id="1171770572613082465">Δείτε δημοφιλείς ιστοτόπους πατώντας το κουμπί "Κορυφαίοι ιστότοποι"</translation>
 <translation id="1173894706177603556">Μετονομασία</translation>
 <translation id="1177863135347784049">Προσαρμοσμένη</translation>
@@ -571,6 +570,7 @@
 <translation id="4415276339145661267">Διαχείριση Λογαριασμού Google</translation>
 <translation id="4425140285732600465">Παρακολούθηση τιμής. Λάβετε ειδοποιήσεις σε περίπτωση πτώσης τιμής σε οποιονδήποτε ιστότοπο.</translation>
 <translation id="442518031075347249">Δεν θα μπορείτε πλέον να χρησιμοποιήσετε την εικονική σας κάρτα με το Google Pay. <ph name="BEGIN_LINK1" />Μάθετε περισσότερα σχετικά με τις εικονικές κάρτες<ph name="END_LINK1" /></translation>
+<translation id="4428065317363009941">Εξατομίκευση διαφημίσεων</translation>
 <translation id="4450672886426705087">Αποτελέσματα αναζήτησης από την Google.</translation>
 <translation id="4452411734226507615">Κλείσιμο καρτέλας <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Ο σελιδοδείκτης είναι στο "<ph name="FOLDER_NAME" />"</translation>
@@ -685,6 +685,7 @@
 <translation id="4988526792673242964">Σελίδες</translation>
 <translation id="5001388021414335527">Ακολουθήστε αυτόν τον ιστότοπο εδώ</translation>
 <translation id="5004416275253351869">Στοιχεία ελέγχου δραστηριότητας Google</translation>
+<translation id="5005141133360250920">Η αντίδραση διαγράφηκε</translation>
 <translation id="5005498671520578047">Αντιγραφή κωδικού πρόσβασης</translation>
 <translation id="5011311129201317034">Ο ιστότοπος <ph name="SITE" /> επιθυμεί σύνδεση</translation>
 <translation id="5016205925109358554">Serif</translation>
@@ -740,6 +741,7 @@
 <translation id="5368227114232678694">Για ιδιωτική περιήγηση σε αυτήν τη συσκευή, δοκιμάστε την Ανώνυμη περιήγηση.</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> ανοιχτή καρτέλα, πατήστε για εναλλαγή καρτελών}other{<ph name="OPEN_TABS_MANY" /> ανοιχτές καρτέλες, πατήστε για εναλλαγή καρτελών}}</translation>
 <translation id="5375577065097716013">Αναζήτ. εικόνας με Google Lens <ph name="BEGIN_NEW" />Νέο<ph name="END_NEW" /></translation>
+<translation id="5376898820269806588">Η αντίδραση άλλαξε</translation>
 <translation id="5403644198645076998">Να επιτρέπονται μόνο συγκεκριμένοι ιστότοποι</translation>
 <translation id="5409881200985013443">Υποβολή <ph name="ONE_TIME_CODE" /> σε <ph name="CLIENT_NAME" />;</translation>
 <translation id="5414836363063783498">Γίνεται επαλήθευση…</translation>
@@ -897,7 +899,6 @@
 <translation id="6277522088822131679">Παρουσιάστηκε ένα πρόβλημα κατά την εκτύπωση της σελίδας. Δοκιμάστε ξανά.</translation>
 <translation id="6277722725779679269">Δεν ήταν δυνατή η ενημέρωση της Παρακολούθησης τιμής</translation>
 <translation id="6278428485366576908">Θέμα</translation>
-<translation id="6293443105724342169">Λίστα λογαριασμών για επιλογή ανοιγμένη σε μισό ύψος.</translation>
 <translation id="6294610283659775533">Μπορείτε να στέλνετε καρτέλες μεταξύ συσκευών οι οποίες έχουν συνδεθεί με τον ίδιο Λογαριασμό Google.</translation>
 <translation id="6297765934698848803">Ο οργανισμός που διαχειρίζεται τη συσκευή σας απενεργοποίησε την κάμερά σας.</translation>
 <translation id="6301525844455696527">Μη αναγνωσμένο περιεχόμενο στη λίστα ανάγνωσης</translation>
@@ -1073,6 +1074,7 @@
 <translation id="718926126787620637">Η λίστα φακέλων σελιδοδεικτών άνοιξε σε πλήρες ύψος</translation>
 <translation id="7191430249889272776">Η καρτέλα άνοιξε στο παρασκήνιο.</translation>
 <translation id="7196215469483532480">Η επεξήγηση Οδηγού απορρήτου άνοιξε σε πλήρες ύψος.</translation>
+<translation id="7208109991155904980">Η αντίδραση μεταφέρθηκε</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 λήψη σε εκκρεμότητα}other{# λήψεις σε εκκρεμότητα}}</translation>
 <translation id="7237045078887540010">Χρησιμοποιώντας το Chrome, συμφωνείτε με τους <ph name="BEGIN_TOS_LINK" />Όρους Παροχής Υπηρεσιών της Google<ph name="END_TOS_LINK" /> και τους<ph name="BEGIN_ATOS_LINK" />Πρόσθετους Όρους Παροχής Υπηρεσιών του Google Chrome και του Chrome OS<ph name="END_ATOS_LINK" />. Επίσης, ισχύει η <ph name="BEGIN_PRIVACY_LINK" />Πολιτική απορρήτου<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="7242755609445462077">Στιλιζαρισμένη επισήμανση <ph name="CURRENT_DATE" /></translation>
@@ -1307,7 +1309,6 @@
 <translation id="8461694314515752532">Κρυπτογράφηση συγχρονισμένων δεδομένων με τη δική σας φράση πρόσβασης συγχρονισμού</translation>
 <translation id="8466613982764129868">Βεβαιωθείτε ότι η συσκευή <ph name="TARGET_DEVICE_NAME" /> είναι συνδεδεμένη στο διαδίκτυο.</translation>
 <translation id="8473863474539038330">Διευθύνσεις και άλλα</translation>
-<translation id="847656914027543776">Η λίστα λογαριασμών για επιλογή είναι κλειστή.</translation>
 <translation id="8481921391193215807">Όταν είναι ενεργοποιημένο, οι ιστότοποι μπορούν να χρησιμοποιούν τις τεχνικές διατήρησης απορρήτου που εμφανίζονται εδώ για την παροχή του περιεχομένου και των υπηρεσιών τους. Σε αυτές περιλαμβάνονται εναλλακτικές λύσεις για την παρακολούθηση μεταξύ ιστοτόπων. Περισσότερες δοκιμές ενδέχεται να προστεθούν με την πάροδο του χρόνου.
 
 <ph name="BEGIN_LIST_ITEM1" />Οι διαφημιζόμενοι και οι εκδότες μπορούν να χρησιμοποιήσουν την τεχνολογία FLoC.<ph name="END_LIST_ITEM1" />
@@ -1362,6 +1363,7 @@
 <translation id="8683526617475118045">Οφέλη</translation>
 <translation id="869891660844655955">Ημερομηνία λήξης</translation>
 <translation id="8699120352855309748">Να μην παρέχεται δυνατότητα μετάφρασης αυτών των γλωσσών</translation>
+<translation id="8712637175834984815">Κατάλαβα!</translation>
 <translation id="8725066075913043281">Προσπαθήστε ξανά</translation>
 <translation id="8730621377337864115">Ολοκληρώθηκε</translation>
 <translation id="8746155870861185046">Κοινοποίηση επισήμανσης</translation>
@@ -1434,7 +1436,6 @@
 <translation id="9108312223223904744">Υποστήριξη χρήσης τηλεφώνου ως κλειδιού ασφαλείας</translation>
 <translation id="9108808586816295166">Το ασφαλές DNS μπορεί να μην είναι διαθέσιμο πάντα.</translation>
 <translation id="9133397713400217035">Εξερεύνηση εκτός σύνδεσης</translation>
-<translation id="9133523398139146080">Λίστα λογαριασμών για επιλογή ανοιγμένη σε πλήρες ύψος.</translation>
 <translation id="9137013805542155359">Εμφάνιση πρωτοτύπου</translation>
 <translation id="9148126808321036104">Συνδεθείτε ξανά</translation>
 <translation id="9155898266292537608">Επίσης, μπορείτε να κάνετε αναζήτηση με ένα γρήγορο πάτημα σε μια λέξη</translation>

@@ -30,7 +30,6 @@
 <translation id="114825011539563458">Գաղտնիության և անվտանգության ամենակարևոր կառավարման տարրերը՝ մեկ էջում</translation>
 <translation id="1149401351239820326">Ժամկետի սպառման ամիսը</translation>
 <translation id="1154704303112745282">Էջն անցանց ռեժիմում հասանելի չէ՝ <ph name="VIOLATED_URL" /></translation>
-<translation id="1166688006062225587">Հասանելի հաշիվների ցանկ։</translation>
 <translation id="1171770572613082465">Սեղմեք «Կայքերի ընտրանի» կոճակը և դիտեք թոփ կայքերը</translation>
 <translation id="1173894706177603556">Վերանվանել</translation>
 <translation id="1177863135347784049">Անհատականացված</translation>
@@ -571,6 +570,7 @@
 <translation id="4415276339145661267">Կառավարել Google հաշիվը</translation>
 <translation id="4425140285732600465">Դուք հետևում եք այս ապրանքի գնին։ Երբ որևէ կայքում այն իջնի, դուք կստանաք ծանուցում։</translation>
 <translation id="442518031075347249">Դուք այլևս չեք կարողանա օգտագործել ձեր վիրտուալ քարտը՝ Google Pay-ի միջոցով վճարումներ կատարելու համար։ <ph name="BEGIN_LINK1" />Իմանալ ավելին վիրտուալ քարտերի մասին<ph name="END_LINK1" /></translation>
+<translation id="4428065317363009941">Գովազդի անհատականացում</translation>
 <translation id="4450672886426705087">Որոնման արդյունքներ Google-ից։</translation>
 <translation id="4452411734226507615">Փակել <ph name="TAB_TITLE" /> ներդիրը</translation>
 <translation id="4452548195519783679">Էջանիշը պահվել է <ph name="FOLDER_NAME" />-ում</translation>
@@ -685,6 +685,7 @@
 <translation id="4988526792673242964">Էջեր</translation>
 <translation id="5001388021414335527">Հետևեք այս կայքին այստեղ</translation>
 <translation id="5004416275253351869">Google-ում գործողությունների հետագծում</translation>
+<translation id="5005141133360250920">Արձագանքը ջնջվել է</translation>
 <translation id="5005498671520578047">Պատճենել գաղտնաբառը</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> կայքն ուզում է միանալ</translation>
 <translation id="5016205925109358554">Serif</translation>
@@ -740,6 +741,7 @@
 <translation id="5368227114232678694">Օգտագործեք ինկոգնիտո ռեժիմը, որպեսզի ձեր այցելությունների պատմությունը չպահվի</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> բացված ներդիր: Հպեք՝ ներդիրների միջև անցնելու համար։}one{<ph name="OPEN_TABS_MANY" /> բացված ներդիր։ հպեք՝ ներդիրների միջև անցնելու համար։}other{<ph name="OPEN_TABS_MANY" /> բացված ներդիրներ։ հպեք՝ ներդիրների միջև անցնելու համար։}}</translation>
 <translation id="5375577065097716013">Որոնել Google Տեսապակու միջոցով <ph name="BEGIN_NEW" />Նոր<ph name="END_NEW" /></translation>
+<translation id="5376898820269806588">Արձագանքը փոփոխվել է</translation>
 <translation id="5403644198645076998">Թույլատրել միայն որոշ կայքեր</translation>
 <translation id="5409881200985013443">Ուղարկե՞լ <ph name="ONE_TIME_CODE" /> կոդը <ph name="CLIENT_NAME" />-ին</translation>
 <translation id="5414836363063783498">Ստուգում…</translation>
@@ -897,7 +899,6 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="6277522088822131679">Այս էջը տպելիս խնդիր առաջացավ: Նորից փորձեք:</translation>
 <translation id="6277722725779679269">Չհաջողվեց թարմացնել գների հետագծումը</translation>
 <translation id="6278428485366576908">Թեմա</translation>
-<translation id="6293443105724342169">Հասանելի հաշիվների ցանկը բացված է կիսով չափ։</translation>
 <translation id="6294610283659775533">Դուք կարող եք ուղարկել ներդիրները մի սարքից մյուսը, եթե դրանցում մտել եք հաշիվ միևնույն Google հաշվով</translation>
 <translation id="6297765934698848803">Ձեր սարքը կառավարող կազմակերպությունն անջատել է տեսախցիկը։</translation>
 <translation id="6301525844455696527">Մի՛ մոռացեք ձեր ընթերցանության ցանկի մասին</translation>
@@ -1073,6 +1074,7 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="718926126787620637">Էջանիշներով պանակների ցանկը բացված է ամբողջությամբ</translation>
 <translation id="7191430249889272776">Հետնաշերտում ներդիր է բացված:</translation>
 <translation id="7196215469483532480">Տվյալների պաշտպանության ուղեցույցի մասին տեղեկությունները բացված են ամբողջությամբ</translation>
+<translation id="7208109991155904980">Արձագանքը տեղափոխվել է</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Կնեռբեռնվի 1 ֆայլ}one{Կներբեռնվի # ֆայլ}other{Կներբեռնվի # ֆայլ}}</translation>
 <translation id="7237045078887540010">Օգտվելով Chrome-ից՝ դուք ընդունում եք <ph name="BEGIN_TOS_LINK" />Google-ի օգտագործման պայմանները<ph name="END_TOS_LINK" /> և <ph name="BEGIN_ATOS_LINK" />Google Chrome-ի և Chrome OS-ի օգտագործման լրացուցիչ պայմանները<ph name="END_ATOS_LINK" />։ Կիրառվում է նաև <ph name="BEGIN_PRIVACY_LINK" />Գաղտնիության քաղաքականությունը<ph name="END_PRIVACY_LINK" />։</translation>
 <translation id="7242755609445462077">Ոճավորված բովանդակություն՝ <ph name="CURRENT_DATE" /></translation>
@@ -1307,7 +1309,6 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="8461694314515752532">Գաղտնագրել համաժամացված տվյալները սեփական համաժամացման անցաբառով</translation>
 <translation id="8466613982764129868">Համոզվեք, որ <ph name="TARGET_DEVICE_NAME" /> սարքը միացված է ինտերնետին</translation>
 <translation id="8473863474539038330">Հասցեներ և այլ տեղեկություններ</translation>
-<translation id="847656914027543776">Հասանելի հաշիվների ցանկը փակված է։</translation>
 <translation id="8481921391193215807">Երբ այս գործառույթը միացված է, կայքերը կարող են օգտագործել գաղտնիությունն ապահովող նշված տեխնոլոգիաները, այդ թվում՝ գործողությունների միջկայքային հետագծման այլընտրանքները, իրենց բովանդակությունն ու ծառայությունները առաջարկելու համար։ Դրանք ներառում են գործողությունների միջկայքային հետագծումը։ Ժամանակի ընթացքում կավելացվեն այլ փորձնական գործառույթներ։
 
 <ph name="BEGIN_LIST_ITEM1" />Գովազդատուներն ու հրատարակիչները կարող են օգտագործել FLoC տեխնոլոգիան։<ph name="END_LIST_ITEM1" />
@@ -1362,6 +1363,7 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="8683526617475118045">Գործառույթի առավելությունները</translation>
 <translation id="869891660844655955">Սպառման ժամկետ</translation>
 <translation id="8699120352855309748">Չառաջարկել թարգմանել այս լեզուները</translation>
+<translation id="8712637175834984815">Պատրաստ է</translation>
 <translation id="8725066075913043281">Փորձել կրկին</translation>
 <translation id="8730621377337864115">Պատրաստ է</translation>
 <translation id="8746155870861185046">Կիսվել ընդգծված տեքստով</translation>
@@ -1434,7 +1436,6 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="9108312223223904744">Հեռախոսի օգտագործում որպես անվտանգության բանալի</translation>
 <translation id="9108808586816295166">Ապահով DNS-ը կարող է ամբողջ ընթացքում հասանելի չլինել</translation>
 <translation id="9133397713400217035">Դիտել անցանց ռեժիմում</translation>
-<translation id="9133523398139146080">Հասանելի հաշիվների ցանկը բացված է ամբողջությամբ։</translation>
 <translation id="9137013805542155359">Ցույց տալ բնօրինակը</translation>
 <translation id="9148126808321036104">Նորից մուտք գործել</translation>
 <translation id="9155898266292537608">Կարող եք նաև որոնել՝ սեղմելով բառի վրա</translation>

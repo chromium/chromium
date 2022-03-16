@@ -1074,7 +1074,6 @@
 <translation id="2019718679933488176">नवीन टॅबमध्ये ऑडिओ &amp;उघडा</translation>
 <translation id="2020183425253392403">नेटवर्क पत्ता सेटिंग्ज दर्शवा</translation>
 <translation id="2020225359413970060">फाइल स्कॅन करा</translation>
-<translation id="2022395138980869975">बाजूला असलेला शोध टॉगल करा</translation>
 <translation id="2023167225947895179">पिनचा अंदाज घेणे सोपे असू शकते</translation>
 <translation id="202352106777823113">डाउनलोडला खूप वेळ लागत होता आणि नेटवर्कद्वारे थांबविले.</translation>
 <translation id="2024195579772565064">शोध इंजीन हटवा</translation>
@@ -2977,7 +2976,6 @@
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" /> कनेक्शन</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> सोबत टिपा घेणे</translation>
 <translation id="3888586133700543064">Assistant शी संबंधित तुमच्या समस्या आणखी चांगल्या प्रकारे समजून घेण्यात ही माहिती आम्हाला मदत करते. ती ९० दिवसांपर्यंत स्टोअर केली जाते आणि तिचा अ‍ॅक्सेस योग्य इंजिनीयरिंग आणि फीडबॅक टीमपुरता मर्यादित असतो.</translation>
-<translation id="3888900458694486810">बाजूला असलेला शोध बंद करा</translation>
 <translation id="3890064827463908288">वाय-फाय सिंक वापरणासाठी Chrome सिंक सुरू करा</translation>
 <translation id="389313931326656921">“पुढील” साठी स्विच असाइन करा</translation>
 <translation id="3893295674388762059">डेटा साफ करण्यासाठी, सर्व गुप्त विंडो बंद करा</translation>
@@ -3289,7 +3287,6 @@
 <translation id="4208390505124702064"><ph name="SITE_NAME" /> शोधा</translation>
 <translation id="4209092469652827314">मोठा</translation>
 <translation id="4209251085232852247">बंद केले</translation>
-<translation id="4209464433672152343">दस्तऐवज प्रिंट करण्यासाठी <ph name="BEGIN_LINK_HELP" />Google कडे पाठवले<ph name="END_LINK_HELP" /> आहेत. <ph name="BEGIN_LINK_DASHBOARD" />Google क्लाउड प्रिंट डॅशबोर्ड<ph name="END_LINK_DASHBOARD" /> वर तुमचे प्रिंटर आणि प्रिंटर इतिहास पहा, संपादित करा आणि व्यवस्थापित करा.</translation>
 <translation id="4210048056321123003">व्हर्च्युअल मशीन डाउनलोड होत आहे</translation>
 <translation id="421182450098841253">बुकमार्क बार &amp;दर्शवा</translation>
 <translation id="4211851069413100178">वापर आणि निदान डेटा पाठवा. Google ला आपोआप निदान आणि डिव्हाइस आणि अ‍ॅप वापर डेटा पाठवून तुमचा Android अनुभव सुधारण्यात मदत करा. हे सिस्ट्म आणि अ‍ॅप स्थिरता आणि इतर सुधारणा करण्यात मदत करेल. काही एकत्रित डेटा Google अ‍ॅप्स आणि Android डेव्हलपर सारख्या भागीदारांनादेखील मदत करेल. या <ph name="BEGIN_LINK1" />सेटिंगची<ph name="END_LINK1" /> मालकाद्वारे अंमलबजावणी केली जाते. मालक या डिव्हाइससाठी निदान आणि वापर डेटा Google ला पाठवणे निवडू शकतो. तुमची अतिरिक्त वेब आणि अ‍ॅप अ‍ॅक्टिव्हिटी सेटिंग सुरू केलेली असल्यास, हा डेटा तुमच्या Google खाते वर सेव्ह केला जाऊ शकतो. <ph name="BEGIN_LINK2" />अधिक जाणून घ्या<ph name="END_LINK2" /></translation>
@@ -6190,7 +6187,6 @@
 <translation id="7180611975245234373">रिफ्रेश करा</translation>
 <translation id="7180865173735832675">कस्टमाइझ करा</translation>
 <translation id="7182791023900310535">तुमचा पासवर्ड हलवा</translation>
-<translation id="7183420126213758623">बाजूला असलेला शोध टॉगल करा. बाजूला असलेला शोध अ‍ॅक्टिव्हेट केलेला नाही.</translation>
 <translation id="7186088072322679094">टूलबारमध्ये ठेवा</translation>
 <translation id="7186303001964993981">या फोल्डरमध्ये सिस्टम फाइलचा समावेश असल्यामुळे <ph name="ORIGIN" /> हे फोल्डर उघडू शकत नाही</translation>
 <translation id="7187428571767585875">काढून टाकण्‍यासाठी किंवा बदलण्‍यासाठी रजिस्‍ट्री एंट्री:</translation>
@@ -6712,7 +6708,6 @@
 <translation id="7701040980221191251">काहीही नाही</translation>
 <translation id="7701869757853594372">वापरकर्ता हँडल</translation>
 <translation id="7702574632857388784">सूचीमधून <ph name="FILE_NAME" /> काढून टाका</translation>
-<translation id="7702599324215660661">लॉक ऑन लीव्ह</translation>
 <translation id="7702907602086592255">डोमेन</translation>
 <translation id="7704305437604973648">कार्य</translation>
 <translation id="7704317875155739195">ऑटोकंप्लीट शोध आणि URL</translation>
@@ -6817,7 +6812,6 @@
 <translation id="7798844538707273832">आपोआप ब्लॉक केलेली <ph name="PERMISSION" /></translation>
 <translation id="7799299114731150374">वॉलपेपर यशस्वीरीत्‍‍‍‍या सेट केला</translation>
 <translation id="7799817062559422778">प्रकाश मोड</translation>
-<translation id="7800159967992492578">बाजूला असलेला शोध टॉगल करा. बाजूला असलेला शोध अ‍ॅक्टिव्हेट केला.</translation>
 <translation id="7800518121066352902">घड्याळाच्या वि&amp;रुद्ध दिशेने फिरवा</translation>
 <translation id="7801679634091975683">तुम्ही येथे केलेले बदल फक्त Lacros Chrome ब्राउझरवर लागू होतात. तुमच्या Chrome ब्राउझर सेटिंग्जमध्ये बदल करण्यासाठी, Chrome ब्राउझर उघडा आणि सेटिंग्जवर जा.</translation>
 <translation id="780301667611848630">नाही, नको</translation>

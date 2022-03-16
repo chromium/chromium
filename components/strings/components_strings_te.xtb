@@ -115,7 +115,6 @@
 <translation id="1301324364792935241">మీ సెక్యూర్ DNS సెట్టింగ్‌లను తనిఖీ చేయండి</translation>
 <translation id="1307966114820526988">విస్మరించబడిన ఫీచర్‌లు</translation>
 <translation id="1308113895091915999">ఆఫర్ అందుబాటులో ఉంది</translation>
-<translation id="1312803275555673949">సమాచారం సరైనదనడానికి ఆధారాలు ఏంటి?</translation>
 <translation id="1314311879718644478">అగ్‌మెంటెడ్ రియాలిటీ కంటెంట్‌ను చూడండి</translation>
 <translation id="1314509827145471431">కుడివైపున బైండ్</translation>
 <translation id="1318023360584041678">ట్యాబ్ గ్రూప్‌లో సేవ్ చేయబడింది</translation>
@@ -742,7 +741,6 @@
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” లింక్‌లు బ్లాక్ చేయబడ్డాయి</translation>
 <translation id="3249845759089040423">సొగసైనది</translation>
 <translation id="3252266817569339921">ఫ్రెంచ్</translation>
-<translation id="3257954757204451555">ఈ సమాచారాన్ని ఎవరు అందించారు?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Calendarలో త్వరగా కొత్త ఈవెంట్‌ను క్రియేట్ చేయడానికి Tabను నొక్కి, ఆపై Enterను నొక్కండి</translation>
 <translation id="3261488570342242926">వర్చువల్ కార్డ్‌ల గురించి తెలుసుకోండి</translation>
 <translation id="3264837738038045344">'Chrome సెట్టింగ్‌లను మేనేజ్ చేయండి' బటన్, మీ Chrome సెట్టింగ్‌లకు వెళ్లడానికి Enterను నొక్కండి</translation>
@@ -1130,6 +1128,7 @@
 <translation id="4414515549596849729">కుక్కీలు, సైట్ డేటా</translation>
 <translation id="4415426530740016218">పికప్ అడ్రస్‌</translation>
 <translation id="4424024547088906515">ఈ సర్వర్ <ph name="DOMAIN" /> అని నిరూపించుకోలేకపోయింది; దీని భద్రతా ప్రమాణపత్రాన్ని Chrome విశ్వసించలేదు. ఇది తప్పుగా కాన్ఫిగర్ చేయడం వలన లేదా దాడిచేసే వ్యక్తి మీ కనెక్షన్‌కు అంతరాయం కలిగించడం వలన జరిగి ఉండవచ్చు.</translation>
+<translation id="4428065317363009941">యాడ్ వ్యక్తిగతీకరణ</translation>
 <translation id="443121186588148776">శ్రేణీకృత పోర్ట్</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> మీ లాగిన్ ప్రమాణపత్రాన్ని ఆమోదించలేదు లేదా ఏదీ అందించి ఉండకపోవచ్చు.</translation>
 <translation id="4432792777822557199">ఇప్పటి నుండి <ph name="SOURCE_LANGUAGE" />లో ఉన్న పేజీలు <ph name="TARGET_LANGUAGE" />కు అనువదించబడతాయి</translation>
@@ -1262,7 +1261,6 @@
 <translation id="4838327282952368871">స్వప్నం లాంటిది</translation>
 <translation id="4840250757394056958">మీ Chrome హిస్టరీని చూడండి</translation>
 <translation id="484462545196658690">ఆటో</translation>
-<translation id="4849865131988503897">ఖచ్చితత్వ తనిఖీ</translation>
 <translation id="4850886885716139402">వీక్షణ</translation>
 <translation id="485316830061041779">జర్మన్</translation>
 <translation id="4853901935952445031">ఫిబ్రవరి 2022 తర్వాత, ఈ సైట్ U2F APIను ఉపయోగించలేదు. ఈ సైట్ మీది అయితే, వెబ్ ప్రామాణీకరణ APIను ఉపయోగించడానికి మీరు దాని సెట్టింగ్‌ను మార్చాలి.</translation>
@@ -1449,6 +1447,7 @@
 <translation id="5398772614898833570">ప్రకటనలు బ్లాక్ చేయబడ్డాయి</translation>
 <translation id="5400836586163650660">బూడిద రంగు</translation>
 <translation id="540969355065856584">ఈ సర్వర్ <ph name="DOMAIN" /> అని నిరూపించుకోలేకపోయింది; దీని భద్రతా ప్రమాణపత్రం ప్రస్తుతం చెల్లదు. ఇది తప్పుగా కాన్ఫిగర్ చేయడం వలన లేదా దాడి చేసే వ్యక్తి మీ కనెక్షన్‌కు అంతరాయం కలిగించడం వలన జరిగి ఉండవచ్చు.</translation>
+<translation id="5412236728747081950">మీకు మరింత సందర్భోచితమైన యాడ్‌లను చూపడానికి ఈ సైట్ మీ ఆసక్తులను Chrome నుండి పొందుతుంది</translation>
 <translation id="541416427766103491">స్టాకర్ 4</translation>
 <translation id="5421136146218899937">బ్రౌజింగ్ డేటాను క్లియర్ చేయి...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> మీకు నోటిఫికేషన్‌లను పంపాలనుకుంటోంది</translation>
@@ -1965,7 +1964,6 @@
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> భద్రతా ప్రమాణాలకు కట్టుబడి లేదు.</translation>
 <translation id="7210993021468939304">కంటెయినర్ లోపల Linux యాక్టివిటీ, కంటెయినర్ లోపల Linux యాప్‌లను ఇన్‌స్టాల్ చేయవచ్చు</translation>
 <translation id="721197778055552897">ఈ సమస్య గురించి <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి <ph name="END_LINK" />.</translation>
-<translation id="7215025035562547931">ఖచ్చితత్వాన్ని పరిశీలించడానికి కొంత సమయం కేటాయించండి</translation>
 <translation id="7217745192097460130">మీ కొనుగోలును వెరిఫై చేసి, పూర్తి చేయడానికి Touch IDని ఉపయోగించమంటారా?</translation>
 <translation id="7219179957768738017">కనెక్షన్ <ph name="SSL_VERSION" />ని ఉపయోగిస్తుంది.</translation>
 <translation id="7220786058474068424">ప్రాసెస్ చేస్తోంది</translation>
@@ -2095,6 +2093,7 @@
 <translation id="7569952961197462199">Chrome నుండి క్రెడిట్ కార్డ్‌ను తీసివేయాలా?</translation>
 <translation id="7569983096843329377">నలుపు</translation>
 <translation id="7575207903026901870">సూచన బటన్‌ను తీసివేసి, ఈ సూచనను తీసివేయడానికి ఎంటర్ నొక్కండి</translation>
+<translation id="7577900504646297215">ఆసక్తులను మేనేజ్ చేయండి</translation>
 <translation id="7578104083680115302">మీరు Googleతో సేవ్ చేసిన కార్డ్‌లను ఉపయోగించి పరికరాల్లోని సైట్‌లు మరియు అనువర్తనాల్లో శీఘ్రంగా పేమెంట్ చేయండి.</translation>
 <translation id="7579442726219254162">మేనేజ్ చేసిన కాన్ఫిగరేషన్ "<ph name="APPLICATION_ID" />"లో తెలియని వేరియబుల్ "<ph name="VARIABLE" />" ఉంది.</translation>
 <translation id="7581199239021537589">2వ వైపు ప్రింట్‌లో చిత్రాన్ని Y అక్షంలో జరపు</translation>
@@ -2216,7 +2215,6 @@
 <translation id="7966803981046576691">ఉద్యోగ ఖాతా రకం</translation>
 <translation id="79682505114836835">"<ph name="VALUE" />" విలువ అన్నది చెల్లని హెక్స్ రంగు.</translation>
 <translation id="7968982339740310781">వివరాలను చూడండి</translation>
-<translation id="7970392640816874403">ఇతర సోర్స్‌లు ఏమి చెప్తున్నాయి?</translation>
 <translation id="7976214039405368314">చాలా ఎక్కువ రిక్వెస్ట్‌లు</translation>
 <translation id="7977538094055660992">అవుట్‌పుట్ పరికరం</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -2567,7 +2565,6 @@
 <translation id="9155211586651734179">ఆడియో పెరిఫెరల్స్ జోడించబడ్డాయి</translation>
 <translation id="9157595877708044936">అమర్చుతోంది...</translation>
 <translation id="9158625974267017556">C6 (ఎన్వలప్)</translation>
-<translation id="9164029392738894042">ఖచ్చితత్వ తనిఖీ</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">ఏవైనా పేమెంట్ ఆప్షన్‌లను మీరు సేవ్ చేశారో లేదో చెక్ చేసేందుకు వెబ్‌సైట్‌లను అనుమతించండి</translation>
 <translation id="9169664750068251925">ఈ సైట్‌లో ఎప్పుడూ బ్లాక్ చేయి</translation>

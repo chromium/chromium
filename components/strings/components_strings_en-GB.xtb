@@ -115,7 +115,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1301324364792935241">Check your secure DNS settings</translation>
 <translation id="1307966114820526988">Deprecated features</translation>
 <translation id="1308113895091915999">Offer available</translation>
-<translation id="1312803275555673949">What evidence supports it?</translation>
 <translation id="1314311879718644478">View augmented reality content</translation>
 <translation id="1314509827145471431">Bind right</translation>
 <translation id="1318023360584041678">Saved in tab group</translation>
@@ -739,7 +738,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="324180406144491771">'<ph name="HOST_NAME" />' links are blocked</translation>
 <translation id="3249845759089040423">Groovy</translation>
 <translation id="3252266817569339921">French</translation>
-<translation id="3257954757204451555">Who’s behind this information?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to create a new event in Google Calendar quickly</translation>
 <translation id="3261488570342242926">Learn about virtual cards</translation>
 <translation id="3264837738038045344">Manage Chrome settings button. Press Enter to visit your Chrome settings</translation>
@@ -1127,6 +1125,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4414515549596849729">cookies and site data</translation>
 <translation id="4415426530740016218">Pickup Address</translation>
 <translation id="4424024547088906515">This server could not prove that it is <ph name="DOMAIN" />; its security certificate is not trusted by Chrome. This may be caused by a misconfiguration or an attacker intercepting your connection.</translation>
+<translation id="4428065317363009941">Ad personalisation</translation>
 <translation id="443121186588148776">Serial port</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> didn’t accept your login certificate, or one may not have been provided.</translation>
 <translation id="4432792777822557199">Pages in <ph name="SOURCE_LANGUAGE" /> will be translated to <ph name="TARGET_LANGUAGE" /> from now on</translation>
@@ -1259,7 +1258,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4838327282952368871">Dreamy</translation>
 <translation id="4840250757394056958">View your Chrome history</translation>
 <translation id="484462545196658690">Auto</translation>
-<translation id="4849865131988503897">Accuracy Check</translation>
 <translation id="4850886885716139402">View</translation>
 <translation id="485316830061041779">German</translation>
 <translation id="4853901935952445031">This site won't be able to use the U2F API after February 2022. If you own this site, you should change it to use the Web Authentication API.</translation>
@@ -1446,6 +1444,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5398772614898833570">Ads blocked</translation>
 <translation id="5400836586163650660">Grey</translation>
 <translation id="540969355065856584">This server could not prove that it is <ph name="DOMAIN" />; its security certificate is not valid at this time. This may be caused by a misconfiguration or an attacker intercepting your connection.</translation>
+<translation id="5412236728747081950">This site gets your interests from Chrome to show you more relevant ads</translation>
 <translation id="541416427766103491">Stacker 4</translation>
 <translation id="5421136146218899937">Clear browsing data...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> wants to send you notifications</translation>
@@ -1962,7 +1961,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> doesn't adhere to security standards.</translation>
 <translation id="7210993021468939304">Linux activity within the container, and can install and run Linux apps within the container</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /> about this problem.</translation>
-<translation id="7215025035562547931">Take a moment to consider accuracy</translation>
 <translation id="7217745192097460130">Use Touch ID to verify and complete your purchase?</translation>
 <translation id="7219179957768738017">The connection uses <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Processing</translation>
@@ -2092,6 +2090,7 @@ Additional details:
 <translation id="7569952961197462199">Remove credit card from Chrome?</translation>
 <translation id="7569983096843329377">Black</translation>
 <translation id="7575207903026901870">Remove Suggestion button, press Enter to remove this suggestion</translation>
+<translation id="7577900504646297215">Manage interests</translation>
 <translation id="7578104083680115302">Pay quickly on sites and apps across devices using cards that you have saved with Google.</translation>
 <translation id="7579442726219254162">Unknown variable '<ph name="VARIABLE" />' in the managed configuration of '<ph name="APPLICATION_ID" />'.</translation>
 <translation id="7581199239021537589">Side 2 image Y shift</translation>
@@ -2213,7 +2212,6 @@ Additional details:
 <translation id="7966803981046576691">Job account type</translation>
 <translation id="79682505114836835">Value '<ph name="VALUE" />' is an invalid hex colour.</translation>
 <translation id="7968982339740310781">View details</translation>
-<translation id="7970392640816874403">What do other sources say?</translation>
 <translation id="7976214039405368314">Too many requests</translation>
 <translation id="7977538094055660992">Output device</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -2564,7 +2562,6 @@ Additional details:
 <translation id="9155211586651734179">Audio peripherals attached</translation>
 <translation id="9157595877708044936">Setting up...</translation>
 <translation id="9158625974267017556">C6 (Envelope)</translation>
-<translation id="9164029392738894042">Accuracy Check</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">Allow sites to check if you have payment methods saved</translation>
 <translation id="9169664750068251925">Always block on this site</translation>

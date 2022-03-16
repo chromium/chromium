@@ -824,6 +824,7 @@
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> အသံ</translation>
 <translation id="8045462269890919536">ရောမ</translation>
 <translation id="8049184478152619004">ပင်နံပါတ် ပြန်ဖွင့်သည့် ကုဒ် (PUK) ထည့်ပါ</translation>
+<translation id="807187749540895545"><ph name="FILE_NAME" /> ထုတ်ယူနေသည်…</translation>
 <translation id="8079530767338315840">ထပ်ဖွင့်ပါ</translation>
 <translation id="8087576439476816834">ဒေါင်းလုဒ်လုပ်ရန်၊ <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">ကျွန်ုပ်အား မျှဝေထား</translation>
@@ -875,6 +876,7 @@
 <translation id="8484284835977497781">သင်၏ လတ်တလောဓာတ်ပုံများမှ ရွေးပါ။</translation>
 <translation id="8487700953926739672">Offline ရနိုင်</translation>
 <translation id="8492972329130824181">အိမ်ကွန်ရက်ကို မရနိုင်ပါ။ ချိတ်ဆက်ရန် ကွန်ရက်ပြင်ပဒေတာ အသုံးပြုခြင်းကို ဖွင့်ထားရမည်။</translation>
+<translation id="8499098729323186194">ဖိုင် <ph name="NUMBER_OF_ITEMS" /> ခု ထုတ်ယူနေသည်…</translation>
 <translation id="8521441079177373948">ယူကေ</translation>
 <translation id="8525306231823319788">မျက်နှာပြင် အပြည့်</translation>
 <translation id="853494022971700746">ပြင်သစ် (ပြင်သစ်)</translation>

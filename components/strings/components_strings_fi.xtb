@@ -115,7 +115,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1301324364792935241">Tarkista suojatun DNS:n asetukset</translation>
 <translation id="1307966114820526988">Käytöstä poistetut ominaisuudet</translation>
 <translation id="1308113895091915999">Tarjous saatavilla</translation>
-<translation id="1312803275555673949">Mikä todiste tukee sitä?</translation>
 <translation id="1314311879718644478">Katsele lisätyn todellisuuden sisältöä</translation>
 <translation id="1314509827145471431">Oikealla sidottu</translation>
 <translation id="1318023360584041678">Tallennettu välilehtiryhmään</translation>
@@ -741,7 +740,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="324180406144491771"><ph name="HOST_NAME" />‑linkit on estetty</translation>
 <translation id="3249845759089040423">Svengaava</translation>
 <translation id="3252266817569339921">ranska</translation>
-<translation id="3257954757204451555">Kuka on jakanut tämän tiedon?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, luo uusi tapahtuma nopeasti Google Kalenterissa painamalla sarkainta ja sitten Enter</translation>
 <translation id="3261488570342242926">Lue lisää virtuaalikorteista</translation>
 <translation id="3264837738038045344">Muuta Chromen asetuksia ‑painike, avaa Chromen asetukset painamalla Enter</translation>
@@ -1129,6 +1127,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4414515549596849729">evästeet ja sivustodata</translation>
 <translation id="4415426530740016218">Nouto-osoite</translation>
 <translation id="4424024547088906515">Palvelin ei voinut todistaa olevansa <ph name="DOMAIN" />; Chrome ei luota sen suojausvarmenteeseen. Tämä voi johtua määritysvirheestä tai verkkoyhteytesi siepanneesta hyökkääjästä.</translation>
+<translation id="4428065317363009941">Mainosten personointi</translation>
 <translation id="443121186588148776">Sarjaportti</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> ei hyväksynyt kirjautumisvarmennettasi, tai varmennetta ei annettu.</translation>
 <translation id="4432792777822557199">Kielellä <ph name="SOURCE_LANGUAGE" /> kirjoitetut sivut käännetään tästä lähtien kielelle <ph name="TARGET_LANGUAGE" />.</translation>
@@ -1261,7 +1260,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4838327282952368871">Unenomainen</translation>
 <translation id="4840250757394056958">Tarkista Chrome-historiasi</translation>
 <translation id="484462545196658690">Automaattinen</translation>
-<translation id="4849865131988503897">Tarkkuuden tarkistaminen</translation>
 <translation id="4850886885716139402">Näytä</translation>
 <translation id="485316830061041779">saksa</translation>
 <translation id="4853901935952445031">Sivusto ei voi käyttää U2F APIa helmikuun 2022 jälkeen. Jos omistat tämän sivuston, sinun täytyy vaihtaa sen käyttöön Web Authentication API.</translation>
@@ -1448,6 +1446,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5398772614898833570">Mainokset estetty</translation>
 <translation id="5400836586163650660">Harmaa</translation>
 <translation id="540969355065856584">Palvelin ei voinut todistaa olevansa <ph name="DOMAIN" />, sillä sen suojausvarmenne ei tällä hetkellä ole kelvollinen. Tämä voi johtua määritysvirheestä tai verkkoyhteytesi siepanneesta hyökkääjästä.</translation>
+<translation id="5412236728747081950">Tämä sivusto saa kiinnostuksen kohteesi Chromesta, jotta voit nähdä osuvampia mainoksia</translation>
 <translation id="541416427766103491">Pinoaja 4</translation>
 <translation id="5421136146218899937">Poista selaustiedot...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> haluaa lähettää sinulle ilmoituksia</translation>
@@ -1964,7 +1963,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> ei noudata tietoturvastandardeja.</translation>
 <translation id="7210993021468939304">Linux-toiminta säilön sisällä, ja voi asentaa ja suorittaa Linux-sovelluksia säilön sisällä</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Lisätietoja<ph name="END_LINK" /> ongelmasta.</translation>
-<translation id="7215025035562547931">Mieti hetki tietojen täsmällisyyttä</translation>
 <translation id="7217745192097460130">Vahvistetaanko ja viimeistelläänkö ostos Touch ID:llä?</translation>
 <translation id="7219179957768738017">Yhteys käyttää protokollaa <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Käsitellään.</translation>
@@ -2094,7 +2092,9 @@ Lisätietoja:
 <translation id="7569952961197462199">Poistetaanko luottokortti Chromen tiedoista?</translation>
 <translation id="7569983096843329377">Musta</translation>
 <translation id="7575207903026901870">Ehdotuksen poistopainike, poista ehdotus painamalla Enter</translation>
+<translation id="7577900504646297215">Ylläpidä kiinnostuksen kohteita</translation>
 <translation id="7578104083680115302">Voit maksaa sivustoilla ja sovelluksissa nopeasti eri laitteillasi käyttämällä Googleen tallennettuja kortteja.</translation>
+<translation id="7579442726219254162">Tuntematon muuttuja "<ph name="VARIABLE" />" hallinnoidussa määrityksessä: "<ph name="APPLICATION_ID" />".</translation>
 <translation id="7581199239021537589">2. puolen kuvan Y vaihto</translation>
 <translation id="7582602800368606489">Luo uusi tapahtuma nopeasti Google Kalenterissa</translation>
 <translation id="7591288787774558753">Jaetaanko luottamuksellinen sisältö?</translation>
@@ -2214,7 +2214,6 @@ Lisätietoja:
 <translation id="7966803981046576691">Työpaikkatilin tyyppi</translation>
 <translation id="79682505114836835">Arvo "<ph name="VALUE" />" on virheellinen heksadesimaaliväri.</translation>
 <translation id="7968982339740310781">Näytä tiedot</translation>
-<translation id="7970392640816874403">Mitä muissa lähteissä sanotaan?</translation>
 <translation id="7976214039405368314">Liikaa pyyntöjä</translation>
 <translation id="7977538094055660992">Tulostuslaite</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -2566,7 +2565,6 @@ Lisätietoja:
 <translation id="9155211586651734179">Yhdistetyt audiolisälaitteet</translation>
 <translation id="9157595877708044936">Valmistellaan...</translation>
 <translation id="9158625974267017556">C6 (kirjekuori)</translation>
-<translation id="9164029392738894042">Tarkkuuden tarkistaminen</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">Salli sivustojen tarkastaa, oletko tallentanut maksutapoja</translation>
 <translation id="9169664750068251925">Estä aina tämä sivusto</translation>

@@ -257,6 +257,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2595239820337756193">5 km i miles</translation>
 <translation id="2596078834055697711">Ta en skjermdump av vinduet</translation>
 <translation id="2607678425161541573">Nettbasert pålogging kreves</translation>
+<translation id="2620436844016719705">System</translation>
 <translation id="2621713457727696555">Sikret</translation>
 <translation id="263399434338050016">«Merk alt»</translation>
 <translation id="2653019840645008922">Vindusopptak</translation>
@@ -352,6 +353,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="320207200541803018">Start en nedtelling</translation>
 <translation id="3203405173652969239">Brytertilgang er slått på</translation>
 <translation id="3207953481422525583">Brukerinnstillinger</translation>
+<translation id="3208321278970793882">App</translation>
 <translation id="3217205077783620295">Volumet er på. Hvis du slår det av, kuttes lyden.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> til</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -1035,6 +1037,7 @@ Nylig installert</translation>
 <translation id="7513622367902644023">Skjermdumpmodus er valgt</translation>
 <translation id="7513922695575567867">Kalender – uken som inneholder <ph name="DATE" />. For øyeblikket er <ph name="SELECTED_DATE" /> valgt.</translation>
 <translation id="7514365320538308">Last ned</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7526573455193969409">Nettverket kan være overvåket</translation>
 <translation id="7536035074519304529">IP-adresse: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Linux-apper og inkognitovinduer støttes ikke for øyeblikket. Andre apper blir lagret.</translation>
@@ -1103,6 +1106,7 @@ Nylig installert</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Trykk på fingeravtrykkssensoren</translation>
 <translation id="7904094684485781019">Administratoren for denne kontoen har forbudt multipålogging.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7930731167419639574">Tale behandles nå lokalt, og diktering fungerer uten nett</translation>
 <translation id="7933084174919150729">Google-assistenten er bare tilgjengelig for den primære profilen.</translation>
 <translation id="79341161159229895">Kontoen er administrert av <ph name="FIRST_PARENT_EMAIL" /> og <ph name="SECOND_PARENT_EMAIL" /></translation>

@@ -31,6 +31,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1150989369772528668">Kalender</translation>
 <translation id="1153356358378277386">Seotud seadmed</translation>
 <translation id="1165712434476988950">Värskenduse rakendamiseks tuleb seade taaskäivitada.</translation>
+<translation id="1171742223880403396">Teie USB-C-kaabel ei pruugi ekraanidega õigesti ühendust luua</translation>
 <translation id="1175572348579024023">Keri</translation>
 <translation id="1178581264944972037">Peata</translation>
 <translation id="1181037720776840403">Eemalda</translation>
@@ -256,6 +257,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2595239820337756193">5 km miilides</translation>
 <translation id="2596078834055697711">Jäädvustab aknast kuvatõmmise</translation>
 <translation id="2607678425161541573">Veebis sisselogimine on nõutav</translation>
+<translation id="2620436844016719705">Süsteem</translation>
 <translation id="2621713457727696555">Kaitstud</translation>
 <translation id="263399434338050016">„Vali kõik“</translation>
 <translation id="2653019840645008922">Akna jäädvustamine</translation>
@@ -351,6 +353,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="320207200541803018">Määra taimer</translation>
 <translation id="3203405173652969239">Lülitiga juurdepääs on lubatud</translation>
 <translation id="3207953481422525583">Kasutaja seaded</translation>
+<translation id="3208321278970793882">Rakendus</translation>
 <translation id="3217205077783620295">Helitugevus on sees, vahetamisel heli vaigistatakse.</translation>
 <translation id="3226991577105957773">ja veel <ph name="COUNT" /></translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -1035,6 +1038,7 @@ Uus installimine</translation>
 <translation id="7513622367902644023">Valitud on ekraanipildirežiim</translation>
 <translation id="7513922695575567867">Kalender, kuupäeva <ph name="DATE" /> nädal, <ph name="SELECTED_DATE" /> on praegu valitud.</translation>
 <translation id="7514365320538308">Laadi alla</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7526573455193969409">Võrku võidakse jälgida</translation>
 <translation id="7536035074519304529">IP-adress: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Linuxi rakendusi ja inkognito aknaid praegu ei toetata. Muud rakendused salvestatakse.</translation>
@@ -1103,6 +1107,7 @@ Uus installimine</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Puudutage sõrmejäljeandurit</translation>
 <translation id="7904094684485781019">Selle konto administraator on mitmesse kontosse sisselogimise keelanud.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7930731167419639574">Kõnet töödeldakse nüüd kohalikult ja dikteerimine töötab võrguühenduseta</translation>
 <translation id="7933084174919150729">Google'i assistent on saadaval ainult peamisel profiilil.</translation>
 <translation id="79341161159229895">Kontohaldurid: <ph name="FIRST_PARENT_EMAIL" /> ja <ph name="SECOND_PARENT_EMAIL" /></translation>

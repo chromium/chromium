@@ -30,7 +30,6 @@
 <translation id="114825011539563458">Các chế độ kiểm soát quan trọng nhất về quyền riêng tư và tính bảo mật tại cùng một nơi</translation>
 <translation id="1149401351239820326">Tháng hết hạn</translation>
 <translation id="1154704303112745282">Trang không hiển thị khi không có mạng: <ph name="VIOLATED_URL" /></translation>
-<translation id="1166688006062225587">Danh sách tài khoản để chọn.</translation>
 <translation id="1171770572613082465">Xem các trang web phổ biến bằng cách nhấn vào nút "Trang web hàng đầu"</translation>
 <translation id="1173894706177603556">Đổi tên</translation>
 <translation id="1177863135347784049">Tùy chỉnh</translation>
@@ -571,6 +570,7 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="4415276339145661267">Quản lý Tài khoản Google của bạn</translation>
 <translation id="4425140285732600465">Đang theo dõi giá. Nhận thông báo nếu có chương trình giảm giá trên một trang web bất kỳ.</translation>
 <translation id="442518031075347249">Bạn sẽ không thể sử dụng thẻ ảo qua Google Pay được nữa. <ph name="BEGIN_LINK1" />Tìm hiểu thêm về thẻ ảo<ph name="END_LINK1" /></translation>
+<translation id="4428065317363009941">Cá nhân hoá quảng cáo</translation>
 <translation id="4450672886426705087">Kết quả tìm kiếm của Google.</translation>
 <translation id="4452411734226507615">Đóng thẻ <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Đã đánh dấu trang vào <ph name="FOLDER_NAME" /></translation>
@@ -685,6 +685,7 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="4988526792673242964">Trang</translation>
 <translation id="5001388021414335527">Theo dõi trang web này tại đây</translation>
 <translation id="5004416275253351869">Kiểm soát hoạt động trên Google</translation>
+<translation id="5005141133360250920">Đã xoá phản ứng</translation>
 <translation id="5005498671520578047">Sao chép mật khẩu</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> muốn kết nối</translation>
 <translation id="5016205925109358554">Serif</translation>
@@ -740,6 +741,7 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="5368227114232678694">Để duyệt web riêng tư trên thiết bị này, hãy thử chế độ Ẩn danh</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> thẻ đang mở, nhấn để chuyển thẻ}other{<ph name="OPEN_TABS_MANY" /> thẻ đang mở, nhấn để chuyển thẻ}}</translation>
 <translation id="5375577065097716013">Tìm hình ảnh bằng Google Ống kính <ph name="BEGIN_NEW" />Mới<ph name="END_NEW" /></translation>
+<translation id="5376898820269806588">Đã thay đổi phản ứng</translation>
 <translation id="5403644198645076998">Chỉ cho phép một số trang web</translation>
 <translation id="5409881200985013443">Gửi <ph name="ONE_TIME_CODE" /> trên <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Đang xác minh...</translation>
@@ -897,7 +899,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6277522088822131679">Đã xảy ra sự cố khi in trang này. Vui lòng thử lại.</translation>
 <translation id="6277722725779679269">Không thể cập nhật tính năng Theo dõi giá</translation>
 <translation id="6278428485366576908">Chủ đề</translation>
-<translation id="6293443105724342169">Danh sách tài khoản để chọn, đang mở ở nửa dưới màn hình.</translation>
 <translation id="6294610283659775533">Bạn có thể gửi thẻ giữa các thiết bị được đăng nhập bằng cùng một Tài khoản Google</translation>
 <translation id="6297765934698848803">Tổ chức giữ quyền quản lý thiết bị của bạn đã tắt máy ảnh của bạn.</translation>
 <translation id="6301525844455696527">Hãy hoàn thành danh sách đọc của bạn</translation>
@@ -1073,6 +1074,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="718926126787620637">Danh sách thư mục dấu trang đã được mở ở toàn độ cao</translation>
 <translation id="7191430249889272776">Thẻ được mở dưới nền.</translation>
 <translation id="7196215469483532480">Đã mở nội dung giải thích hướng dẫn về quyền riêng tư trên toàn màn hình</translation>
+<translation id="7208109991155904980">Đã di chuyển phản ứng</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 tệp đang chờ tải xuống}other{# tệp đang chờ tải xuống}}</translation>
 <translation id="7237045078887540010">Bằng việc sử dụng Chrome, bạn đồng ý với <ph name="BEGIN_TOS_LINK" />Điều khoản dịch vụ của Google<ph name="END_TOS_LINK" /> cũng như <ph name="BEGIN_ATOS_LINK" />Điều khoản dịch vụ bổ sung của Google Chrome và Chrome OS<ph name="END_ATOS_LINK" />. <ph name="BEGIN_PRIVACY_LINK" />Chính sách quyền riêng tư<ph name="END_PRIVACY_LINK" /> cũng được áp dụng.</translation>
 <translation id="7242755609445462077">Nội dung nổi bật được cách điệu <ph name="CURRENT_DATE" /></translation>
@@ -1307,7 +1309,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8461694314515752532">Mã hóa dữ liệu đã đồng bộ hóa bằng cụm mật khẩu đồng bộ hóa của riêng bạn</translation>
 <translation id="8466613982764129868">Hãy đảm bảo <ph name="TARGET_DEVICE_NAME" /> có kết nối Internet</translation>
 <translation id="8473863474539038330">Địa chỉ và các tùy chọn khác</translation>
-<translation id="847656914027543776">Đã đóng danh sách tài khoản để chọn.</translation>
 <translation id="8481921391193215807">Khi bạn bật Hộp cát về quyền riêng tư, các trang web có thể dùng kỹ thuật bảo vệ quyền riêng tư theo mô tả ở đây để cung cấp nội dung và dịch vụ của mình. Các kỹ thuật này gồm có những biện pháp thay thế cho hoạt động theo dõi trên nhiều trang web. Theo thời gian, chúng tôi có thể bổ sung nhiều chế độ dùng thử khác.
 
 <ph name="BEGIN_LIST_ITEM1" />Các nhà quảng cáo và nhà xuất bản có thể dùng kỹ thuật FLoC.<ph name="END_LIST_ITEM1" />
@@ -1362,6 +1363,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8683526617475118045">Lợi ích dành cho bạn</translation>
 <translation id="869891660844655955">Ngày hết hạn</translation>
 <translation id="8699120352855309748">Không đề xuất dịch những ngôn ngữ này</translation>
+<translation id="8712637175834984815">Bỏ qua</translation>
 <translation id="8725066075913043281">Thử lại</translation>
 <translation id="8730621377337864115">Xong</translation>
 <translation id="8746155870861185046">Chia sẻ nội dung được làm nổi bật</translation>
@@ -1434,7 +1436,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="9108312223223904744">Hỗ trợ dùng điện thoại làm Khóa bảo mật</translation>
 <translation id="9108808586816295166">DNS bảo mật có thể không phải lúc nào cũng hoạt động</translation>
 <translation id="9133397713400217035">Khám phá khi không kết nối Internet</translation>
-<translation id="9133523398139146080">Danh sách tài khoản để chọn, đang mở trên toàn màn hình.</translation>
 <translation id="9137013805542155359">Hiển thị văn bản gốc</translation>
 <translation id="9148126808321036104">Đăng nhập lại</translation>
 <translation id="9155898266292537608">Bạn cũng có thể tìm kiếm bằng cách nhấn nhanh vào một từ</translation>

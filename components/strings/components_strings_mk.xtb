@@ -115,7 +115,6 @@
 <translation id="1301324364792935241">Проверете ги поставките за безбеден DNS</translation>
 <translation id="1307966114820526988">Неподдржани функции</translation>
 <translation id="1308113895091915999">Достапна понуда</translation>
-<translation id="1312803275555673949">Има докази како поддршка на ова?</translation>
 <translation id="1314311879718644478">Прегледајте ги содржините за проширена реалност</translation>
 <translation id="1314509827145471431">Врзување десно</translation>
 <translation id="1318023360584041678">Зачувано во група картички</translation>
@@ -740,7 +739,6 @@
 <translation id="324180406144491771">Линковите до „<ph name="HOST_NAME" />“ се блокирани</translation>
 <translation id="3249845759089040423">Модерен</translation>
 <translation id="3252266817569339921">француски</translation>
-<translation id="3257954757204451555">Кој стои зад информацииве?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете го копчето Tab, а потоа копчето Enter за да набрзина создадете нов настан во „Календар на Google“</translation>
 <translation id="3261488570342242926">Дознајте за виртуелните картички</translation>
 <translation id="3264837738038045344">Управувајте со поставките за Chrome, притиснете Enter за да одите во поставките за Chrome</translation>
@@ -1128,6 +1126,7 @@
 <translation id="4414515549596849729">колачиња и податоци за сајтот</translation>
 <translation id="4415426530740016218">Адреса за подигнување</translation>
 <translation id="4424024547088906515">Серверот не може да докаже дека е <ph name="DOMAIN" />; Chrome не му верува на неговиот безбедносен сертификат. Тоа може да се должи на погрешна конфигурација или на напаѓач што го пресретнува поврзувањето.</translation>
+<translation id="4428065317363009941">Персонализирање на рекламите</translation>
 <translation id="443121186588148776">Сериска порта</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> не го прифати вашиот сертификат за најавување или можеби таков сертификат не е обезбеден.</translation>
 <translation id="4432792777822557199">Отсега-натаму, страниците на <ph name="SOURCE_LANGUAGE" /> ќе се преведуваат на <ph name="TARGET_LANGUAGE" /></translation>
@@ -1260,7 +1259,6 @@
 <translation id="4838327282952368871">Нереален</translation>
 <translation id="4840250757394056958">Прикажи ја историјата на Chrome</translation>
 <translation id="484462545196658690">Автоматски</translation>
-<translation id="4849865131988503897">Проверка на прецизноста</translation>
 <translation id="4850886885716139402">Приказ</translation>
 <translation id="485316830061041779">германски</translation>
 <translation id="4853901935952445031">Сајтов нема да може да користи API за U2F по февруари 2022 година. Ако сајтов е во ваша сопственост, треба да извршите промена за да користи API за проверка на интернет.</translation>
@@ -1447,6 +1445,7 @@
 <translation id="5398772614898833570">Рекламите се блокирани</translation>
 <translation id="5400836586163650660">Сива</translation>
 <translation id="540969355065856584">Серверот не може да докаже дека е <ph name="DOMAIN" />; неговиот безбедносен сертификат не е важечки во моментов. Тоа може да се должи на погрешна конфигурација или на напаѓач што го пресретнува поврзувањето.</translation>
+<translation id="5412236728747081950">Сајтов ги добива вашите интереси од Chrome за да ви прикажува порелевантни реклами</translation>
 <translation id="541416427766103491">Фиока за складирање 4</translation>
 <translation id="5421136146218899937">Исчисти податоци од прелистување…</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> сака да ви испраќа известувања</translation>
@@ -1963,7 +1962,6 @@
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> не се придржува до стандардите за безбедност.</translation>
 <translation id="7210993021468939304">Активноста на Linux во рамките на контејнерот и може да инсталира и извршува апликации на Linux во рамките на контејнерот</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Дознај повеќе<ph name="END_LINK" /> за овој проблем.</translation>
-<translation id="7215025035562547931">Одвојте момент за да размислите околу точноста</translation>
 <translation id="7217745192097460130">Да се користи ID на допир за потврда и завршување на купувањето?</translation>
 <translation id="7219179957768738017">Оваа врска користи <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Се обработува</translation>
@@ -2093,6 +2091,7 @@
 <translation id="7569952961197462199">Отстрани ја кредитната картичка од Chrome?</translation>
 <translation id="7569983096843329377">Црна</translation>
 <translation id="7575207903026901870">Копче за отстранување предлог, притиснете Enter за да го отстраните предлогов</translation>
+<translation id="7577900504646297215">Управувајте со она што ве интересира</translation>
 <translation id="7578104083680115302">Плаќајте брзо на сајтови и апликации од сите уреди со користење на картичките што сте ги зачувале на Google.</translation>
 <translation id="7579442726219254162">Непозната променлива „<ph name="VARIABLE" />“ во управуваната конфигурација на „<ph name="APPLICATION_ID" />“.</translation>
 <translation id="7581199239021537589">Промена на страната 2 на сликата Y</translation>
@@ -2214,7 +2213,6 @@
 <translation id="7966803981046576691">Тип работен налог</translation>
 <translation id="79682505114836835">Вредноста „<ph name="VALUE" />“ е неважечка хексадецимална боја.</translation>
 <translation id="7968982339740310781">Погледнете детали</translation>
-<translation id="7970392640816874403">Што велат другите извори?</translation>
 <translation id="7976214039405368314">Премногу барања</translation>
 <translation id="7977538094055660992">Излезен уред</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -2565,7 +2563,6 @@
 <translation id="9155211586651734179">Поврзани периферни уреди за аудио</translation>
 <translation id="9157595877708044936">Се поставува…</translation>
 <translation id="9158625974267017556">C6 (плик)</translation>
-<translation id="9164029392738894042">Проверка на прецизноста</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">Дозволете сајтовите да проверуваат дали имате зачувани начини на плаќање</translation>
 <translation id="9169664750068251925">Секогаш блокирај на оваа локација</translation>

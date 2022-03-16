@@ -115,7 +115,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1301324364792935241">Kontrollo cilësimet e DNS-së së sigurt</translation>
 <translation id="1307966114820526988">Veçori të vjetruara</translation>
 <translation id="1308113895091915999">Ofertë e disponueshme</translation>
-<translation id="1312803275555673949">Çfarë prove e mbështet?</translation>
 <translation id="1314311879718644478">Shiko përmbajtjen e realitetit të zgjeruar</translation>
 <translation id="1314509827145471431">Lidhje djathtas</translation>
 <translation id="1318023360584041678">Ruajtur në grupin e skedave</translation>
@@ -739,7 +738,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="324180406144491771">Lidhjet e "<ph name="HOST_NAME" />" janë bllokuar</translation>
 <translation id="3249845759089040423">Moderne</translation>
 <translation id="3252266817569339921">Frëngjisht</translation>
-<translation id="3257954757204451555">Kush qëndron pas këtij informacioni?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp Tab pastaj Enter për të krijuar shpejt një ngjarje të re në "Google Calendar"</translation>
 <translation id="3261488570342242926">Mëso rreth kartave virtuale</translation>
 <translation id="3264837738038045344">Butoni "Menaxho cilësimet e Chrome". Shtyp "Enter" për të vizituar cilësimet e Chrome</translation>
@@ -1125,6 +1123,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4414515549596849729">kukit dhe të dhënat e faqes</translation>
 <translation id="4415426530740016218">Adresa e marrjes</translation>
 <translation id="4424024547088906515">Ky server nuk mundi të dëshmonte se ky është <ph name="DOMAIN" />; certifikata e tij e sigurisë nuk është e besueshme nga Chrome. Kjo mund të shkaktohet nga keqkonfigurimi ose ndonjë sulmues që po ndërhyn në lidhjen tënde.</translation>
+<translation id="4428065317363009941">Personalizimi i reklamave</translation>
 <translation id="443121186588148776">Porta seriale</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> nuk e pranoi certifikatën tënde të identifikimit ose ajo mund të mos jetë dhënë.</translation>
 <translation id="4432792777822557199">Faqet në <ph name="SOURCE_LANGUAGE" /> do të përkthehen në <ph name="TARGET_LANGUAGE" /> nga tani e në vazhdim</translation>
@@ -1257,7 +1256,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4838327282952368871">Si në ëndërr</translation>
 <translation id="4840250757394056958">Shiko historikun tënd të Chrome</translation>
 <translation id="484462545196658690">Automatike</translation>
-<translation id="4849865131988503897">Kontrolli i saktësisë</translation>
 <translation id="4850886885716139402">Pamja</translation>
 <translation id="485316830061041779">Gjermanisht</translation>
 <translation id="4853901935952445031">Ky sajt nuk do të mund të përdorë U2F API pas shkurtit 2022. Nëse je zotëruesi i këtij sajti, duhet ta ndryshosh atë për të përdorur Web Authentication API.</translation>
@@ -1444,6 +1442,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5398772614898833570">Reklamat janë të bllokuara</translation>
 <translation id="5400836586163650660">Gri</translation>
 <translation id="540969355065856584">Ky server nuk mund të provojë se është <ph name="DOMAIN" />; certifikata e tij e sigurisë është e pavlefshme në këtë moment. Kjo mund të shkaktohet për shkak të konfigurimit të pasaktë ose në rast të ndërhyrjes së ndonjë sulmuesi në lidhjen tënde.</translation>
+<translation id="5412236728747081950">Ky sajt merr interesat e tua nga Chrome për të të shfaqur reklama më të përshtatshme</translation>
 <translation id="541416427766103491">Stivuesi 4</translation>
 <translation id="5421136146218899937">Pastro të dhënat e shfletimit...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> dëshiron të të dërgojë njoftime</translation>
@@ -1959,7 +1958,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> nuk i respekton standardet e sigurisë.</translation>
 <translation id="7210993021468939304">Aktiviteti i Linux brenda kontejnerit dhe mund të instalojë dhe të ekzekutojë aplikacione të Linux brenda kontejnerit</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /> rreth këtij problemi.</translation>
-<translation id="7215025035562547931">Gjej një moment për të marrë në konsideratë saktësinë</translation>
 <translation id="7217745192097460130">Dëshiron të përdorësh Touch ID për të verifikuar dhe përfunduar blerjen?</translation>
 <translation id="7219179957768738017">Lidhja përdor <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Po përpunohet</translation>
@@ -2089,7 +2087,9 @@ Detaje shtesë:
 <translation id="7569952961197462199">Të hiqet karta e kreditit nga Chrome?</translation>
 <translation id="7569983096843329377">E zezë</translation>
 <translation id="7575207903026901870">Butoni "Hiq sugjerimin", shtyp Enter për ta hequr këtë sugjerim</translation>
+<translation id="7577900504646297215">Menaxho interesat</translation>
 <translation id="7578104083680115302">Paguaj me shpejtësi në sajte dhe aplikacione mes pajisjeve të ndryshme duke përdorur kartat që ke ruajtur me Google.</translation>
+<translation id="7579442726219254162">Ndryshorja e panjohur "<ph name="VARIABLE" />" në konfigurimin e menaxhuar të "<ph name="APPLICATION_ID" />".</translation>
 <translation id="7581199239021537589">Zhvendosja e imazhit në boshtin Y në anën 2</translation>
 <translation id="7582602800368606489">Krijo shpejt një ngjarje të re në Google Calendar</translation>
 <translation id="7591288787774558753">Të ndahet përmbajtja konfidenciale?</translation>
@@ -2209,7 +2209,6 @@ Detaje shtesë:
 <translation id="7966803981046576691">Lloji i llogarisë së punës</translation>
 <translation id="79682505114836835">Vlera "<ph name="VALUE" />" është një ngjyrë hekzadecimale e pavlefshme.</translation>
 <translation id="7968982339740310781">Shiko detajet</translation>
-<translation id="7970392640816874403">Çfarë thonë burimet e tjera?</translation>
 <translation id="7976214039405368314">Ka shumë kërkesa</translation>
 <translation id="7977538094055660992">Pajisja e daljes</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -2560,7 +2559,6 @@ Detaje shtesë:
 <translation id="9155211586651734179">Pajisjet periferike audio të lidhura</translation>
 <translation id="9157595877708044936">Po konfiguron...</translation>
 <translation id="9158625974267017556">C6 (Zarf)</translation>
-<translation id="9164029392738894042">Kontrolli i saktësisë</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">Lejo që sajtet të kontrollojnë nëse ke mënyra të pagesës të ruajtura</translation>
 <translation id="9169664750068251925">Bllokoje gjithmonë në këtë faqe</translation>

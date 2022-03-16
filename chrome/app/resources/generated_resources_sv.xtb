@@ -1075,7 +1075,6 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="2019718679933488176">&amp;Öppna ljud på ny flik</translation>
 <translation id="2020183425253392403">Visa inställningar för nätverksadress</translation>
 <translation id="2020225359413970060">Genomsöka filen</translation>
-<translation id="2022395138980869975">Aktivera och inaktivera sökningen på sidan</translation>
 <translation id="2023167225947895179">Pinkoden kan vara lätt att lista ut</translation>
 <translation id="202352106777823113">Nedladdningen tog för lång tid och avbröts av nätverket.</translation>
 <translation id="2024195579772565064">Ta bort sökmotor</translation>
@@ -2975,7 +2974,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" />-koppling</translation>
 <translation id="3888550877729210209">Anteckna med <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">Med den här informationen blir det lättare för oss att förstå problemet med assistenten. Informationen lagras i upp till 90 dagar och endast behöriga utvecklar- och feedbackteam har åtkomst till den.</translation>
-<translation id="3888900458694486810">Stäng sökningen på sidan</translation>
 <translation id="3890064827463908288">Aktivera Chrome Sync om du vill använda wifi-synkronisering</translation>
 <translation id="389313931326656921">Tilldela brytare för Nästa</translation>
 <translation id="3893295674388762059">Stäng alla inkognitofönster för att rensa data</translation>
@@ -3289,7 +3287,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4208390505124702064">Sök på <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Stor</translation>
 <translation id="4209251085232852247">Inaktiverade</translation>
-<translation id="4209464433672152343">Dokumenten <ph name="BEGIN_LINK_HELP" />skickas till Google<ph name="END_LINK_HELP" /> när de förbereds för utskrift. Visa, redigera och hantera skrivare och skrivarhistorik i <ph name="BEGIN_LINK_DASHBOARD" />Google Cloud Print-översikten<ph name="END_LINK_DASHBOARD" />.</translation>
 <translation id="4210048056321123003">Den virtuella maskinen laddas ned</translation>
 <translation id="421182450098841253">&amp;Visa bokmärkesfältet</translation>
 <translation id="4211851069413100178">Skicka diagnostik- och användningsdata. Hjälp till att göra Android bättre genom att skicka diagnostikdata, enhetsdata och data om appanvändning till Google automatiskt. Denna data används till att förbättra systemets och apparnas stabilitet med mera. Viss samlad data används även till att förbättra appar från Google och partner, till exempel Android-utvecklare. Ägaren har gjort denna <ph name="BEGIN_LINK1" />inställning<ph name="END_LINK1" /> obligatorisk. Ägaren kan ange att diagnostik- och användningsdata om den här enheten ska skickas till Google. Om ytterligare webb- och appaktivitet har aktiverats kan denna data sparas i Google-kontot. <ph name="BEGIN_LINK2" />Läs mer<ph name="END_LINK2" /></translation>
@@ -6183,7 +6180,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="7180611975245234373">Uppdatera</translation>
 <translation id="7180865173735832675">Anpassa</translation>
 <translation id="7182791023900310535">Flytta lösenordet</translation>
-<translation id="7183420126213758623">Aktivera och inaktivera sökningen på sidan. Sökning på sidan har inte aktiverats.</translation>
 <translation id="7186088072322679094">Spara i verktygsfältet</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> kan inte öppna den här mappen eftersom den innehåller systemfiler</translation>
 <translation id="7187428571767585875">Registerposter som tas bort eller ändras:</translation>
@@ -6705,7 +6701,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="7701040980221191251">Inga</translation>
 <translation id="7701869757853594372">USER-handtag</translation>
 <translation id="7702574632857388784">Ta bort <ph name="FILE_NAME" /> från listan</translation>
-<translation id="7702599324215660661">Lås skärmen när du går ifrån den</translation>
 <translation id="7702907602086592255">Domän</translation>
 <translation id="7704305437604973648">Åtgärd</translation>
 <translation id="7704317875155739195">Autoslutför sökningar och webbadresser</translation>
@@ -6811,7 +6806,6 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7798844538707273832"><ph name="PERMISSION" /> blockerades automatiskt</translation>
 <translation id="7799299114731150374">Bakgrunden har angetts</translation>
 <translation id="7799817062559422778">Ljust läge</translation>
-<translation id="7800159967992492578">Aktivera och inaktivera sökningen på sidan. Sökning på sidan har aktiverats.</translation>
 <translation id="7800518121066352902">Rotera m&amp;oturs</translation>
 <translation id="7801679634091975683">Ändringar du gör här gäller endast webbläsaren Lacros Chrome. Om du vill göra ändringar i inställningarna för webbläsaren Chrome öppnar du Chrome och väljer inställningarna.</translation>
 <translation id="780301667611848630">Nej tack</translation>

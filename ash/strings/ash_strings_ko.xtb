@@ -31,6 +31,7 @@
 <translation id="1150989369772528668">캘린더</translation>
 <translation id="1153356358378277386">페어링된 기기</translation>
 <translation id="1165712434476988950">업데이트를 적용하려면 기기를 다시 시작해야 합니다.</translation>
+<translation id="1171742223880403396">사용 중인 USB-C 케이블이 디스플레이에 제대로 연결되지 않을 수 있습니다.</translation>
 <translation id="1175572348579024023">스크롤</translation>
 <translation id="1178581264944972037">일시중지</translation>
 <translation id="1181037720776840403">삭제</translation>
@@ -256,6 +257,7 @@
 <translation id="2595239820337756193">5km를 마일로 변환</translation>
 <translation id="2596078834055697711">창 스크린샷 찍기</translation>
 <translation id="2607678425161541573">온라인 로그인 필요</translation>
+<translation id="2620436844016719705">시스템</translation>
 <translation id="2621713457727696555">보안</translation>
 <translation id="263399434338050016">"모두 선택"</translation>
 <translation id="2653019840645008922">창 캡처</translation>
@@ -351,6 +353,7 @@
 <translation id="320207200541803018">타이머 설정</translation>
 <translation id="3203405173652969239">스위치 제어 사용 중</translation>
 <translation id="3207953481422525583">사용자 설정</translation>
+<translation id="3208321278970793882">앱</translation>
 <translation id="3217205077783620295">볼륨이 켜져 있으며 전환하면 오디오가 꺼집니다.</translation>
 <translation id="3226991577105957773">외 <ph name="COUNT" />개</translation>
 <translation id="3227137524299004712">마이크</translation>
@@ -1034,6 +1037,7 @@
 <translation id="7513622367902644023">스크린샷 모드 선택됨</translation>
 <translation id="7513922695575567867">현재 캘린더에서 <ph name="DATE" />이 속한 주를 표지 중이며 선택된 날짜는 <ph name="SELECTED_DATE" />입니다.</translation>
 <translation id="7514365320538308">다운로드</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7526573455193969409">네트워크가 모니터링될 수 있음</translation>
 <translation id="7536035074519304529">IP 주소: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Linux 앱 및 시크릿 창은 현재 지원되지 않습니다. 다른 앱은 저장됩니다.</translation>
@@ -1102,6 +1106,7 @@
 <translation id="7901405293566323524">휴대전화 허브</translation>
 <translation id="7902625623987030061">지문 센서를 터치하세요.</translation>
 <translation id="7904094684485781019">이 계정의 관리자가 멀티 로그인을 허용하지 않습니다.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7930731167419639574">음성이 이제 로컬에서 처리되고 음성기록이 오프라인에서 작동합니다.</translation>
 <translation id="7933084174919150729">Google 어시스턴트는 기본 프로필에서만 사용할 수 있습니다.</translation>
 <translation id="79341161159229895">계정 관리자: <ph name="FIRST_PARENT_EMAIL" /> 및 <ph name="SECOND_PARENT_EMAIL" /></translation>

@@ -191,7 +191,6 @@
 <translation id="1223789468190631420">Navigation sécurisée activée pour les sources fiables</translation>
 <translation id="123018742985150697">Exiger que le nom de l'utilisateur local corresponde à celui du propriétaire de l'hôte d'accès à distance</translation>
 <translation id="123081309365616809">Activer la diffusion de contenus sur l'appareil</translation>
-<translation id="1239411164172567974">Activez l'API Direct Sockets.</translation>
 <translation id="1239526922294123540">Contrôle si les sites sont autorisés à envoyer des requêtes à des points de terminaison plus privés du réseau de façon non sécurisée.
 
           Lorsque cette règle est définie sur "True", tous les contrôles d'<ph name="PRIVATE_NETWORK_ACCESS" /> sont désactivés pour toutes les origines. Cela peut permettre aux pirates informatiques d'effectuer des attaques <ph name="CSRF" /> sur des serveurs de réseaux privés.
@@ -1020,7 +1019,6 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 <translation id="208623333578980446">Autoriser les wakelocks forçant l'activation de l'écran pour la gestion de l'alimentation</translation>
 <translation id="2086944573376916479">Un compte géré doit être un compte principal sans comptes secondaires</translation>
 <translation id="2089541797660774692">Activer la création de rapports cloud via un navigateur géré</translation>
-<translation id="2090304907729569435">Désactiver l'affichage des résultats de <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> dans le panneau latéral du navigateur.</translation>
 <translation id="2090939118981888335">Si vous activez cette règle, le proxy de compression des données est activé. Si vous la désactivez, le proxy est désactivé.
 
       Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier. Si vous ne la configurez pas, les utilisateurs peuvent choisir d'utiliser ou non la fonctionnalité.</translation>
@@ -1778,7 +1776,6 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 
       Si elle est désactivée, la mise à jour des composants l'est aussi. Toutefois, certains composants échappent à cette règle : les mises à jour des composants sans code exécutable et qui sont essentiels à la sécurité du navigateur ne seront pas désactivées.
       Ces composants peuvent inclure les listes de révocation de certificats et les filtres de sous-ressource.</translation>
-<translation id="2939988360019366928">Autoriser l'affichage des résultats de <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> les plus récents dans le panneau latéral du navigateur</translation>
 <translation id="2940127076681735544">Si cette règle est définie sur une URL valide, <ph name="PRODUCT_NAME" /> télécharge la liste des sites à partir de cette URL, puis applique les instructions comme si elles avaient été configurées avec la règle <ph name="SITELIST_POLICY_NAME" />.
 
       Si cette règle n'est pas configurée ou qu'elle est définie sur une URL non valide, <ph name="PRODUCT_NAME" /> n'utilise pas cette règle comme source d'instructions pour changer de navigateur.
@@ -3527,9 +3524,6 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
       Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> cesse d'envoyer ces requêtes.</translation>
 <translation id="5039110755072335605">Prise en charge des en-têtes de requêtes CORS sans caractères génériques</translation>
 <translation id="504116558738617678">N'afficher des avertissements de type "espace disque insuffisant" que si l'appareil n'est pas géré ou s'il n'a qu'un seul utilisateur</translation>
-<translation id="5049105847726444023">Si cette règle est activée ou n'est pas configurée, les utilisateurs peuvent afficher les résultats de <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> les plus récents dans un panneau latéral à l'aide d'une icône de la barre d'outils.
-
-      Si cette règle est désactivée, cette icône qui permet d'ouvrir le panneau latéral contenant les résultats de <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> n'est pas affichée dans la barre d'outils.</translation>
 <translation id="5052278640307929670">Cette règle permet de fusionner les règles sélectionnées lorsqu'elles proviennent de sources différentes, et si le niveau et les champs d'application sont les mêmes.
 
       Si une règle figure dans la liste et qu'il y a conflit entre deux sources :
@@ -5681,9 +5675,6 @@ Si elle est définie sur "False" ou si elle n'est pas configurée, ces publicit�
 <translation id="7459601923199346224">Configure les règles au niveau de l'utilisateur et de l'appareil dans le cadre de la gestion des certificats.</translation>
 <translation id="7459633275230216698">Autoriser l'affichage de boîtes de dialogue de sélection de fichiers</translation>
 <translation id="7464991223784276288">Limiter les cookies des URL correspondantes à la session en cours</translation>
-<translation id="7466522266556143347">Si vous activez cette règle, les utilisateurs peuvent utiliser l'API Direct Sockets (si toutes les autres conditions requises sont satisfaites).
-      Si vous la désactivez, ils ne pourront pas accéder à cette API.
-      Si vous ne configurez pas cette règle, par défaut l'accès à l'API n'est pas autorisé pour les utilisateurs gérés par une entreprise et est autorisé pour les utilisateurs non gérés.</translation>
 <translation id="7468182772656807573">Permet de spécifier la fréquence d'envoi (en millisecondes) des paquets réseau de contrôle. Cette fréquence peut être comprise entre 30 secondes et 24 heures. Toute valeur en dehors de cette plage sera remplacée par la valeur minimale ou maximale la plus proche autorisée.
 
       Si cette règle n'est pas configurée, la valeur par défaut (trois minutes) est appliquée.</translation>
@@ -6172,7 +6163,6 @@ au maximum si un utilisateur se sert de l'appareil.
 
       Si vous ne configurez pas cette règle, la prédiction réseau est activée, mais les utilisateurs peuvent la modifier.</translation>
 <translation id="7956210013490975468">Configure le service proxy du système pour <ph name="PRODUCT_OS_NAME" />.</translation>
-<translation id="7958340569967087581">Activer l'affichage des résultats de <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> dans le panneau latéral du navigateur.</translation>
 <translation id="7958537754689366707">La saisie du mot de passe est requise toutes les 12 heures</translation>
 <translation id="7959035883875301444">Contrôler l'utilisation du JIT pour JavaScript</translation>
 <translation id="7961779417826583251">Désactiver l'application des règles de transparence des certificats pour une liste d'autorités de certification héritées</translation>
@@ -6833,7 +6823,6 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
       Si la règle est désactivée ou qu'elle n'est pas configurée, l'hôte d'accès à distance peut être associé à n'importe quel utilisateur local.</translation>
 <translation id="867708016260789630">Forcez le mode restreint à être au moins modéré sur YouTube</translation>
 <translation id="8677853537025397834">Autoriser l'API WebHID sur ces sites</translation>
-<translation id="8684781382594546769">Désactivez l'API Direct Sockets.</translation>
 <translation id="8685024486845674965">L'avertissement de protection par mot de passe est déclenché en cas de réutilisation du mot de passe</translation>
 <translation id="8685680544554917389">Si cette règle est définie sur "True", <ph name="PRODUCT_NAME" /> est autorisé à lire automatiquement du contenu multimédia. Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'est pas autorisé à lire automatiquement du contenu multimédia.
 

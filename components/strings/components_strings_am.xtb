@@ -115,7 +115,6 @@
 <translation id="1301324364792935241">ደህንነታቸው የተጠበቁ የዲኤንኤስ ቅንብሮችዎን ይፈትሹ።</translation>
 <translation id="1307966114820526988">የተቋረጡ ባህሪያት</translation>
 <translation id="1308113895091915999">ቅናሽ ይገኛል</translation>
-<translation id="1312803275555673949">ምን ማስረጃ ይደግፈዋል?</translation>
 <translation id="1314311879718644478">የላቀ እውነታ ይዘትን ይመልከቱ</translation>
 <translation id="1314509827145471431">ወደቀኝ እጠፍ</translation>
 <translation id="1318023360584041678">በትር ቡድን ውስጥ ተቀምጧል</translation>
@@ -735,7 +734,6 @@
 <translation id="324180406144491771">የ«<ph name="HOST_NAME" />» አገናኞች ታግደዋል</translation>
 <translation id="3249845759089040423">ቅጥ ያለው</translation>
 <translation id="3252266817569339921">ፈረንሳይኛ</translation>
-<translation id="3257954757204451555">ከዚህ መረጃ በስተጀርባ ያለው ማነው?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ በGoogle ቀን መቁጠሪያ ውስጥ አዲስ ክስተት በፍጥነት ለመፍጠር ትርን ከዚያ አስገባን ይጫኑ</translation>
 <translation id="3261488570342242926">ስለምናባዊ ካርዶች ይወቁ</translation>
 <translation id="3264837738038045344">የChrome ቅንብሮች አዝራርን ያቀናብሩ፣ የChrome ቅንብሮችዎን ለመጎብኘት አስገባን ይጫኑ</translation>
@@ -1120,6 +1118,7 @@
 <translation id="4414515549596849729">ኩኪዎች እና የጣቢያ ውሂብ</translation>
 <translation id="4415426530740016218">የመውሰጃ አድራሻ</translation>
 <translation id="4424024547088906515">ይህ አገልጋይ <ph name="DOMAIN" /> መሆኑን ሊያረጋግጥ አልቻለም፤ የደህንነት እውቅና ማረጋገጫው በChrome የሚታመን አይደለም። ይሄ በተሳሳተ አወቃቀር ወይም አንድ አጥቂ ግንኙነትዎን በመጥለፉ የተከሰተ ሊሆን ይችላል።</translation>
+<translation id="4428065317363009941">ማስታወቂያን ግላዊነት ማላበስ</translation>
 <translation id="443121186588148776">የመለያ ወደብ</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> የመግቢያ እውቅና ማረጋገጫዎን አልተቀበለም፣ ወይም ገና አልተሰጠዎት ይሆናል።</translation>
 <translation id="4432792777822557199">በ<ph name="SOURCE_LANGUAGE" /> ያሉ ገጾች ወደ <ph name="TARGET_LANGUAGE" /> ከአሁን በኋላ ይተረጎማሉ</translation>
@@ -1252,7 +1251,6 @@
 <translation id="4838327282952368871">ህልመኛ</translation>
 <translation id="4840250757394056958">የChrome ታሪክዎን ይመልከቱ</translation>
 <translation id="484462545196658690">ራስ-ሰር</translation>
-<translation id="4849865131988503897">የትክክለኝነት ፍተሻ</translation>
 <translation id="4850886885716139402">አሳይ</translation>
 <translation id="485316830061041779">ጀርመን</translation>
 <translation id="4853901935952445031">ይህ ጣቢያ ከፌብሩዋሪ 2022 በኋላ የU2F ኤፒአዩን መጠቀም አይችልም። የዚህ ጣቢያ ባለቤት ከሆኑ የድር ማረጋገጫ ኤፒአዩን እንዲጠቀም መለወጥ አለብዎት።</translation>
@@ -1439,6 +1437,7 @@
 <translation id="5398772614898833570">ማስታወቂያዎች ታግደዋል</translation>
 <translation id="5400836586163650660">ግራጫ</translation>
 <translation id="540969355065856584">ይህ አገልጋይ <ph name="DOMAIN" /> መሆኑን ሊያረጋግጥ አልቻለም፤ የደህንነት እውቅና ማረጋገጫው በዚህ ጊዜ ላይ የሚሰራ አይደለም። ይሄ በተሳሳተ አወቃቀር ወይም አንድ አጥቂ ግንኙነትዎን በመጥለፉ የተከሰተ ሊሆን ይችላል።</translation>
+<translation id="5412236728747081950">ይህ ጣቢያ ይበልጥ አግባብነት ያላቸውን ማስታወቂያዎች ለእርስዎ ለማሳየት የእርስዎን ዝንባሌዎች ከChrome ያገኛል</translation>
 <translation id="541416427766103491">ቁልል 4</translation>
 <translation id="5421136146218899937">የአሰሳ ውሂብ አጽዳ…</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> ማሳወቂያዎችን ለእርስዎ መላክ ይፈልጋል</translation>
@@ -1955,7 +1954,6 @@
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> የደህንነት መስፈርቶችን አያከብርም።</translation>
 <translation id="7210993021468939304">በመያዣው ውስጥ ያለ የLinux እንቅስቃሴ፣ እና በመያዣው ውስጥ የLinux መተግበሪያዎችን መጫንና ማሄድ ይችላል</translation>
 <translation id="721197778055552897">ስለዚህ ችግር <ph name="BEGIN_LINK" />ተጨማሪ ለመረዳት<ph name="END_LINK" /> ።</translation>
-<translation id="7215025035562547931">ትክክለኛነትን ከግምት ለማስገባት ትንሽ ጊዜ ይውሰዱ</translation>
 <translation id="7217745192097460130">ግዢዎን ለማረጋገጥ እና ለማጠናቀቅ የንክኪ መታወቂያን ይጠቀሙ?</translation>
 <translation id="7219179957768738017">ግንኙነቱ <ph name="SSL_VERSION" />ን ይጠቀማል።</translation>
 <translation id="7220786058474068424">በማስሄድ ላይ</translation>
@@ -2085,7 +2083,9 @@
 <translation id="7569952961197462199">ክሬዲት ካርድ ከChrome ይወገድ?</translation>
 <translation id="7569983096843329377">ጥቁር</translation>
 <translation id="7575207903026901870">የአስተያየት ጥቆማ አስወግድ አዝራር፣ ይህን የአስተያየት ጥቆማ ለማስወገድ አስገባን ይጫኑ</translation>
+<translation id="7577900504646297215">ፍላጎቶችን አቀናብር</translation>
 <translation id="7578104083680115302">Google ላይ ያስቀመጧቸውን ካርዶች በመጠቀም በሁሉም መሣሪያዎች ላይ በጣቢያዎችና መተግበሪያዎች ላይ በፍጥነት ይክፈሉ።</translation>
+<translation id="7579442726219254162">የማይታወቅ ተለዋዋጭ «<ph name="VARIABLE" />» በሚተዳደረው የ«<ph name="APPLICATION_ID" />» ውቅረት ውስጥ።</translation>
 <translation id="7581199239021537589">ጎን 2 ምስል Y ፈረቃ</translation>
 <translation id="7582602800368606489">በGoogle ቀን መቁጠሪያ ውስጥ አዲስ ክስተት በፍጥነት ፍጠር</translation>
 <translation id="7591288787774558753">ሚስጥራዊ ይዘት ይጋራ?</translation>
@@ -2205,7 +2205,6 @@
 <translation id="7966803981046576691">የስራ መለያ አይነት</translation>
 <translation id="79682505114836835">እሴት «<ph name="VALUE" />» ልክ ያልሆነ የአስራስድስትዮሽ ቀለም ነው።</translation>
 <translation id="7968982339740310781">ዝርዝሮችን ይመልከቱ</translation>
-<translation id="7970392640816874403">ሌሎች ምንጮች ምን ይላሉ?</translation>
 <translation id="7976214039405368314">በጣም ብዙ ጥያቄዎች</translation>
 <translation id="7977538094055660992">የውጽዓት መሣሪያ</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -2557,7 +2556,6 @@
 <translation id="9155211586651734179">የድምፅ መሳሪያዎች ተያይዘዋል</translation>
 <translation id="9157595877708044936">በማዋቀር ላይ…</translation>
 <translation id="9158625974267017556">C6 (የደብዳቤ ፖስታ)</translation>
-<translation id="9164029392738894042">የትክክለኝነት ፍተሻ</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">የተቀመጡ የመክፈያ ዘዴዎች ካልዎት ጣቢያዎች እንዲፈትሹ ይፍቀዱ</translation>
 <translation id="9169664750068251925">ሁልጊዜ በዚህ ጣቢያ ላይ አግድ</translation>

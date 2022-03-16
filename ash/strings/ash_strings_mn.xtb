@@ -259,6 +259,7 @@
 <translation id="2595239820337756193">5 км милиэр</translation>
 <translation id="2596078834055697711">Цонхны дэлгэцийн зургийг дарах</translation>
 <translation id="2607678425161541573">Онлайнаар нэвтрэх шаардлагатай</translation>
+<translation id="2620436844016719705">Систем</translation>
 <translation id="2621713457727696555">Хамгаалалттай</translation>
 <translation id="263399434338050016">"Бүгдийг сонгох"</translation>
 <translation id="2653019840645008922">Цонхны зураг авах</translation>
@@ -355,6 +356,7 @@
 <translation id="320207200541803018">Цаг хэмжигч тохируулах</translation>
 <translation id="3203405173652969239">Сэлгүүрийг идэвхжүүлсэн</translation>
 <translation id="3207953481422525583">Хэрэглэгчийн тохиргоо</translation>
+<translation id="3208321278970793882">Апп</translation>
 <translation id="3217205077783620295">Дууг нээсэн, унтраах нь аудионы дууг хаана.</translation>
 <translation id="3226991577105957773">Бусад +<ph name="COUNT" /></translation>
 <translation id="3227137524299004712">Микрофон</translation>
@@ -1040,6 +1042,7 @@
 <translation id="7513622367902644023">Дэлгэцийн агшны горимыг сонгосон</translation>
 <translation id="7513922695575567867">Календарь, <ph name="DATE" />-н долоо хоног, <ph name="SELECTED_DATE" />-г одоогоор сонгосон.</translation>
 <translation id="7514365320538308">Татаж авах</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7526573455193969409">Сүлжээг хянаж байж болзошгүй</translation>
 <translation id="7536035074519304529">IP хаяг: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Linux аппууд болон Нууцлалтай цонхнуудыг одоогоор дэмждэггүй. Бусад аппыг хадгална.</translation>
@@ -1109,6 +1112,7 @@
 <translation id="7901405293566323524">Утасны Hub</translation>
 <translation id="7902625623987030061">Хурууны хээ мэдрэгчид хүрнэ үү</translation>
 <translation id="7904094684485781019">Энэ бүртгэлийн админ нь олон тооны нэвтрэлтийг хэрэгсэхгүй болгосон байна.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7930731167419639574">Яриаг одоо дотоодод боловсруулах бөгөөд Дуу хоолойгоор бичих онцлог офлайнаар ажиллана</translation>
 <translation id="7933084174919150729">Google Туслах зөвхөн үндсэн профайлд боломжтой.</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> болон <ph name="SECOND_PARENT_EMAIL" />-н удирддаг бүртгэл</translation>

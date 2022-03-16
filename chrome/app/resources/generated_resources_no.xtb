@@ -1069,7 +1069,6 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="2019718679933488176">&amp;Åpne lyd i ny fane</translation>
 <translation id="2020183425253392403">Vis innstillingene for nettverksadresse</translation>
 <translation id="2020225359413970060">Gjennomsøk fil</translation>
-<translation id="2022395138980869975">Slå av/på sidesøket</translation>
 <translation id="2023167225947895179">Det kan være lett å gjette seg til PIN-koden</translation>
 <translation id="202352106777823113">Nedlastingen tok for lang tid og ble stoppet av nettverket.</translation>
 <translation id="2024195579772565064">Slett søkemotoren</translation>
@@ -2970,7 +2969,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" />-tilkobling</translation>
 <translation id="3888550877729210209">Tar notater med <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">Denne informasjonen gir oss bedre forståelse av Assistent-problemet. Den lagres i opptil 90 dager, og bare relevante tekniske team og tilbakemeldingsteam får tilgang.</translation>
-<translation id="3888900458694486810">Lukk sidesøket</translation>
 <translation id="3890064827463908288">Slå på Chrome-synkronisering for å bruke Wi-Fi-synkronisering</translation>
 <translation id="389313931326656921">Tilordne bryter for «Neste»</translation>
 <translation id="3893295674388762059">For å slette data, lukk alle inkognitovinduer</translation>
@@ -3282,7 +3280,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4208390505124702064">Søk på <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Stor</translation>
 <translation id="4209251085232852247">Slått av</translation>
-<translation id="4209464433672152343">Dokumenter <ph name="BEGIN_LINK_HELP" />sendes til Google<ph name="END_LINK_HELP" /> for å forberede dem for utskrift. Se, rediger og administrer skriverne dine og skriverloggen i <ph name="BEGIN_LINK_DASHBOARD" />Google Cloud Print-oversikten<ph name="END_LINK_DASHBOARD" />.</translation>
 <translation id="4210048056321123003">Laster ned den virtuelle maskinen</translation>
 <translation id="421182450098841253">&amp;Vis bokmerkerad</translation>
 <translation id="4211851069413100178">Send bruks- og diagnostikkdata. Hjelp til med å gjøre Android-opplevelsen din bedre ved å sende diagnostikk-, enhets- og appbruksdata til Google automatisk. Dette bidrar til å gjøre systemet og appene bedre og mer stabile. Noen aggregerte data hjelper også Google-apper og -partnere, for eksempel Android-utviklere. Denne <ph name="BEGIN_LINK1" />innstillingen<ph name="END_LINK1" /> håndheves av eieren. Eieren kan velge å sende diagnostikk- og bruksdata for denne enheten til Google. Hvis du har slått på innstillingen for annen nett- og appaktivitet, kan disse dataene bli lagret i Google-kontoen din. <ph name="BEGIN_LINK2" />Finn ut mer<ph name="END_LINK2" /></translation>
@@ -6175,7 +6172,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="7180611975245234373">Last inn på nytt</translation>
 <translation id="7180865173735832675">Tilpass</translation>
 <translation id="7182791023900310535">Flytt passordet</translation>
-<translation id="7183420126213758623">Slå av/på sidesøket. Sidesøket er ikke aktivert.</translation>
 <translation id="7186088072322679094">Behold i verktøyraden</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> kan ikke åpne denne mappen, fordi den inneholder systemfiler</translation>
 <translation id="7187428571767585875">Registeroppføringer som skal fjernes eller endres:</translation>
@@ -6697,7 +6693,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="7701040980221191251">Ingen</translation>
 <translation id="7701869757853594372">BRUKEREN håndterer</translation>
 <translation id="7702574632857388784">Fjern <ph name="FILE_NAME" /> fra listen</translation>
-<translation id="7702599324215660661">Lås når enheten forlates</translation>
 <translation id="7702907602086592255">Domene</translation>
 <translation id="7704305437604973648">Oppgave</translation>
 <translation id="7704317875155739195">Autofullfør søk og nettadresser</translation>
@@ -6804,7 +6799,6 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7798844538707273832">Automatisk blokkert <ph name="PERMISSION" /></translation>
 <translation id="7799299114731150374">Bakgrunnen ble angitt</translation>
 <translation id="7799817062559422778">Lys modus</translation>
-<translation id="7800159967992492578">Slå av/på sidesøket. Sidesøket er aktivert.</translation>
 <translation id="7800518121066352902">Rotér m&amp;ot klokken</translation>
 <translation id="7801679634091975683">Endringer du gjør her, gjelder kun i Lacros Chrome-nettleseren. For å gjøre endringer i Chrome-nettleserinnstillingene, åpne Chrome-nettleseren og gå til innstillingene.</translation>
 <translation id="780301667611848630">Nei takk</translation>

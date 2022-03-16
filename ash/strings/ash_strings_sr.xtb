@@ -125,8 +125,10 @@
 <translation id="1668469839109562275">Уграђени VPN</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> је преостало</translation>
 <translation id="1677507110654891115">Функција <ph name="FEATURE_NAME" /> није повезана.</translation>
+<translation id="1677582821739292812">Неко гледа ваш екран</translation>
 <translation id="1698080062160024910">Тајмер за <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 адреса: <ph name="ADDRESS" /></translation>
+<translation id="1703117532528082099">Активни прозор је фиксиран на левој страни.</translation>
 <translation id="1708345662127501511">Радна површина: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Подешавања мреже</translation>
 <translation id="1715293566947629045">Профил се онемогућава. Сачекајте неколико минута.</translation>
@@ -257,6 +259,7 @@
 <translation id="2595239820337756193">5 km у миљама</translation>
 <translation id="2596078834055697711">Направите снимак екрана прозора</translation>
 <translation id="2607678425161541573">Онлајн пријављивање је обавезно</translation>
+<translation id="2620436844016719705">Систем</translation>
 <translation id="2621713457727696555">Заштићено</translation>
 <translation id="263399434338050016">„Изабери све“</translation>
 <translation id="2653019840645008922">Снимање прозора</translation>
@@ -276,6 +279,7 @@
 <translation id="2727977024730340865">Уређај је укључен у пуњач мале снаге. Пуњење батерије можда неће бити поуздано.</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">„Избриши“</translation>
+<translation id="2750941250130734256">Активни прозор је одвојен.</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" />-ом управља <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Изађите из режима снимања</translation>
 <translation id="2791421900609674576">Видећете препоруке да бисте могли да наставите тамо где сте стали.  Можете да додирнете и задржите да бисте уклонили препоруке.</translation>
@@ -352,6 +356,7 @@
 <translation id="320207200541803018">Подеси тајмер</translation>
 <translation id="3203405173652969239">Приступ помоћу прекидача је омогућен</translation>
 <translation id="3207953481422525583">Подешавања корисника</translation>
+<translation id="3208321278970793882">Апликација</translation>
 <translation id="3217205077783620295">Звук је укључен. Можете да га искључите померањем прекидача.</translation>
 <translation id="3226991577105957773">и још <ph name="COUNT" /></translation>
 <translation id="3227137524299004712">Микрофон</translation>
@@ -788,6 +793,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Укључено</translation>
 <translation id="5920710855273935292">Микрофон је искључен.</translation>
+<translation id="5924838240953214369">Режим снимања, подразумевана вредност је <ph name="SOURCE" /> <ph name="TYPE" />. Унос помоћу камере је подешен на <ph name="CAMERA_NAME" />, а преглед је укључен. Притисните Tab за кретање помоћу тастатуре.</translation>
 <translation id="5946788582095584774">Функција <ph name="FEATURE_NAME" /> је укључена.</translation>
 <translation id="5947494881799873997">Врати</translation>
 <translation id="595202126637698455">Праћење учинка је омогућено</translation>
@@ -1035,6 +1041,7 @@
 <translation id="7513622367902644023">Изабран је режим снимка екрана</translation>
 <translation id="7513922695575567867">Календар, седмица када је <ph name="DATE" />, <ph name="SELECTED_DATE" /> је тренутно изабран.</translation>
 <translation id="7514365320538308">Преузми</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7526573455193969409">Мрежа се можда надгледа</translation>
 <translation id="7536035074519304529">IP адреса: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Linux апликације и прозори без архивирања тренутно нису подржани. Друге апликације ће бити сачуване.</translation>
@@ -1045,6 +1052,7 @@
 <translation id="7564874036684306347">Премештање прозора на други рачунар може да доведе до неочекиваног понашања. Накнадна обавештења, прозори и дијалози ће можда бити подељени између рачунара.</translation>
 <translation id="7569509451529460200">Брајева азбука и ChromeVox су омогућени</translation>
 <translation id="7569983096843329377">Црна</translation>
+<translation id="7573585051776738856">Активни прозор је фиксиран на десној страни.</translation>
 <translation id="7579778809502851308">Снимање екрана</translation>
 <translation id="7590883480672980941">Подешавања уноса</translation>
 <translation id="7593891976182323525">Тастер за претрагу или Shift</translation>
@@ -1103,6 +1111,7 @@
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Додирните сензор за отисак прста</translation>
 <translation id="7904094684485781019">Администратор за овај налог је забранио вишеструко пријављивање.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7930731167419639574">Говор се сада локално обрађује и диктирање ради офлајн</translation>
 <translation id="7933084174919150729">Google помоћник је доступан само за примарни профил.</translation>
 <translation id="79341161159229895">Налогом управљају <ph name="FIRST_PARENT_EMAIL" /> и <ph name="SECOND_PARENT_EMAIL" /></translation>

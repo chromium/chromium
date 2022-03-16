@@ -1076,7 +1076,6 @@
 <translation id="2019718679933488176">নতুন ট্যাবে অডিও &amp;খুলুন</translation>
 <translation id="2020183425253392403">নেটওয়ার্ক ঠিকানার সেটিংস দেখান</translation>
 <translation id="2020225359413970060">ফাইল স্ক্যান করুন</translation>
-<translation id="2022395138980869975">সাইড সার্চ টগল করুন</translation>
 <translation id="2023167225947895179">পিন অনুমান করা সহজ হতে পারে</translation>
 <translation id="202352106777823113">ডাউনলোডটি অনেক সময় নিয়েছে এবং নেটওয়ার্ক দিয়ে বন্ধ হয়েছে৷</translation>
 <translation id="2024195579772565064">সার্চ ইঞ্জিন মুছে ফেলুন</translation>
@@ -2975,7 +2974,6 @@
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" /> কানেকশন</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> ব্যবহার করে নোট নেওয়া হচ্ছে</translation>
 <translation id="3888586133700543064">এই তথ্য আপনার Assistant সংক্রান্ত সমস্যা আমাদের আরও ভালভাবে বুঝতে সাহায্য করে। এটি ৯০ দিন পর্যন্ত সেভ করা থাকে এবং অ্যাক্সেস যথাযথ ইঞ্জিনিয়ারিং এবং মতামত টিমের মধ্যে সীমাবদ্ধ থাকে।</translation>
-<translation id="3888900458694486810">সাইড সার্চ বন্ধ করুন</translation>
 <translation id="3890064827463908288">ওয়াই-ফাই সিঙ্ক ব্যবহার করতে Chrome সিঙ্ক চালু করুন</translation>
 <translation id="389313931326656921">“পরবর্তী” বিকল্পের জন্য সুইচ অ্যাসাইন করুন</translation>
 <translation id="3893295674388762059">ডেটা মুছে ফেলতে, সব ছদ্মবেশী উইন্ডো বন্ধ করুন</translation>
@@ -3288,7 +3286,6 @@
 <translation id="4208390505124702064"><ph name="SITE_NAME" /> খুঁজুন:</translation>
 <translation id="4209092469652827314">বৃহত্</translation>
 <translation id="4209251085232852247">বন্ধ করা আছে</translation>
-<translation id="4209464433672152343">প্রিন্টিংয়ের জন্য ডকুমেন্ট তৈরি করতে <ph name="BEGIN_LINK_HELP" />Google-এ পাঠানো হয়েছে<ph name="END_LINK_HELP" />। <ph name="BEGIN_LINK_DASHBOARD" />Google ক্লাউড প্রিন্ট ড্যাশবোর্ড<ph name="END_LINK_DASHBOARD" /> থেকে আপনার প্রিন্টার এবং প্রিন্টারের ইতিহাস দেখুন, এডিট করুন এবং পরিচালনা করুন।</translation>
 <translation id="4210048056321123003">ভার্চুয়াল মেশিন ডাউনলোড করা হচ্ছে</translation>
 <translation id="421182450098841253">ও বুকমার্ক বার দেখান</translation>
 <translation id="4211851069413100178">ব্যবহার এবং ডায়াগনস্টিক ডেটা পাঠান। Google-এ নিজে থেকে ডায়াগনস্টিক, ডিভাইস এবং অ্যাপ ব্যবহারের ডেটা পাঠিয়ে, আপনার Android অভিজ্ঞতাকে উন্নত করতে সাহায্য করুন। এটি সিস্টেম ও অ্যাপের স্থিতিশীলতা এবং অন্যান্য উন্নতিতে সাহায্য করে। ব্যবহারকারীদের কিছু সম্মিলিত ডেটা Google অ্যাপ এবং Android ডেভেলপারদের মতো পার্টনারদের কাজে লাগবে। এই <ph name="BEGIN_LINK1" />সেটিং<ph name="END_LINK1" /> মালিকের নিয়ন্ত্রণে রয়েছে। এই ডিভাইসের জন্য Google-কে ডায়গনস্টিক এবং ব্যবহারের ডেটা পাঠানোর বিষয়টি মালিক বেছে নিতে পারেন। আপনার অতিরিক্ত ওয়েব ও অ্যাপ অ্যাক্টিভিটি সেটিং চালু থাকলে, এই ডেটা আপনার Google অ্যাকাউন্টে সেভ করা হতে পারে। <ph name="BEGIN_LINK2" />আরও জানুন<ph name="END_LINK2" /></translation>
@@ -6183,7 +6180,6 @@
 <translation id="7180611975245234373">রিফ্রেশ করুন</translation>
 <translation id="7180865173735832675">কাস্টমাইজ করুন</translation>
 <translation id="7182791023900310535">পাসওয়ার্ড সরান</translation>
-<translation id="7183420126213758623">সাইড সার্চ টগল করুন। সাইড সার্চ চালু করা হয়নি।</translation>
 <translation id="7186088072322679094">টুলবারের মধ্যে রাখুন</translation>
 <translation id="7186303001964993981">এই ফোল্ডারে সিস্টেম ফাইল আছে তাই <ph name="ORIGIN" /> এই ফোল্ডারটি খুলতে পারছে না</translation>
 <translation id="7187428571767585875">যে রেজিস্ট্রি এন্ট্রি সরিয়ে দেওয়া হবে অথবা পরিবর্তন করা হবে:</translation>
@@ -6705,7 +6701,6 @@
 <translation id="7701040980221191251">কিছু নেই</translation>
 <translation id="7701869757853594372">ব্যবহারকারীর হ্যান্ডলগুলি</translation>
 <translation id="7702574632857388784">তালিকা থেকে <ph name="FILE_NAME" /> সরান</translation>
-<translation id="7702599324215660661">স্ক্রিন বন্ধ করার সময় লক করা</translation>
 <translation id="7702907602086592255">ডোমেন</translation>
 <translation id="7704305437604973648">কার্য</translation>
 <translation id="7704317875155739195">সার্চ এবং ইউআরএলগুলি নিজে থেকে সম্পূর্ণ হতে দিন</translation>
@@ -6810,7 +6805,6 @@
 <translation id="7798844538707273832"><ph name="PERMISSION" /> অটোমেটিক ব্লক করা হয়েছে</translation>
 <translation id="7799299114731150374">ওয়ালপেপার সেট করা হয়েছে</translation>
 <translation id="7799817062559422778">'লাইট মোড'</translation>
-<translation id="7800159967992492578">সাইড সার্চ টগল করুন। সাইড সার্চ চালু করা হয়েছে।</translation>
 <translation id="7800518121066352902">ঘড়ির কাঁটার &amp;বিপরীত দিকে ঘোরান</translation>
 <translation id="7801679634091975683">এখানে করা পরিবর্তন শুধু Lacros Chrome ব্রাউজারে প্রয়োগ করা হবে। Chrome ব্রাউজার সেটিংসে পরিবর্তন করতে, আপনার Chrome ব্রাউজার খুলে সেটিংসে যান।</translation>
 <translation id="780301667611848630">না থাক</translation>

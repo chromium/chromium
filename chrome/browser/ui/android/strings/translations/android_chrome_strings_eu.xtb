@@ -30,7 +30,6 @@
 <translation id="114825011539563458">Berrikusi pribatutasuna eta segurtasuna kontrolatzeko aukera garrantzitsuenak toki bakarrean</translation>
 <translation id="1149401351239820326">Iraungitze-hilabetea</translation>
 <translation id="1154704303112745282">Orria ez dago erabilgarri konexiorik gabe: <ph name="VIOLATED_URL" /></translation>
-<translation id="1166688006062225587">Hauta daitezkeen kontuen zerrenda.</translation>
 <translation id="1171770572613082465">Sakatu "Webgune nagusiak" botoia webgune ezagunak ikusteko</translation>
 <translation id="1173894706177603556">Aldatu izena</translation>
 <translation id="1177863135347784049">Pertsonalizatua</translation>
@@ -571,6 +570,7 @@ Eduki sakatuta bilatu nahi duzun hitza. Bilaketa mugatzeko, hautatu hitz gehiago
 <translation id="4415276339145661267">Kudeatu Google-ko kontua</translation>
 <translation id="4425140285732600465">Prezioaren jarraipena egiten ari zara. Jaso alertak webguneren batean prezioa jaisten bada.</translation>
 <translation id="442518031075347249">Aurrerantzean, ezingo duzu erabili txartel birtuala Google Pay-rekin. <ph name="BEGIN_LINK1" />Lortu txartel birtualei buruzko informazio gehiago<ph name="END_LINK1" /></translation>
+<translation id="4428065317363009941">Iragarkien pertsonalizazioa</translation>
 <translation id="4450672886426705087">Google-ren bilaketa-emaitzak.</translation>
 <translation id="4452411734226507615">Itxi <ph name="TAB_TITLE" /> fitxa</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> karpetan gehitu da laster-marka</translation>
@@ -899,7 +899,6 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="6277522088822131679">Arazo bat izan da orria inprimatzean. Saiatu berriro.</translation>
 <translation id="6277722725779679269">Ezin izan da eguneratu prezioen jarraipena</translation>
 <translation id="6278428485366576908">Gaia</translation>
-<translation id="6293443105724342169">Hauta daitezkeen kontuen zerrenda altuera erdian irekita.</translation>
 <translation id="6294610283659775533">Google-ko kontu berean saioa hasita daukaten gailuen artean fitxak bidal ditzakezu</translation>
 <translation id="6297765934698848803">Gailua kudeatzen duen erakundeak kamera desaktibatu du.</translation>
 <translation id="6301525844455696527">Ekin zain daukazun irakurketa-zerrendari</translation>
@@ -1310,7 +1309,6 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="8461694314515752532">Enkriptatu sinkronizatutako datuak sinkronizazio-pasaesaldiarekin</translation>
 <translation id="8466613982764129868">Ziurtatu <ph name="TARGET_DEVICE_NAME" /> Internetera konektatuta dagoela</translation>
 <translation id="8473863474539038330">Helbideak eta beste</translation>
-<translation id="847656914027543776">Hauta daitezkeen kontuen zerrenda itxita dago.</translation>
 <translation id="8481921391193215807">Aktibatuta dagoenean, hemen agertzen diren pribatutasuna babesteko teknikak erabil ditzakete webguneek haien edukia eta zerbitzuak eskaintzeko. Besteak beste, webguneen arteko jarraipenaren ordezko aukerak hartzen dira barnean. Litekeena da beste probaldi batzuk gehitzea denborak aurrera egin ahala.
 
 <ph name="BEGIN_LIST_ITEM1" />Iragarleek eta argitaratzaileek FLoC teknika erabil dezakete.<ph name="END_LIST_ITEM1" />
@@ -1365,6 +1363,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="8683526617475118045">Zer lortuko duzu?</translation>
 <translation id="869891660844655955">Iraungitze-data</translation>
 <translation id="8699120352855309748">Ez eskaini hizkuntza hauek itzultzea</translation>
+<translation id="8712637175834984815">Ados</translation>
 <translation id="8725066075913043281">Saiatu berriro</translation>
 <translation id="8730621377337864115">Eginda</translation>
 <translation id="8746155870861185046">Partekatu nabarmendutako edukia</translation>
@@ -1437,7 +1436,6 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="9108312223223904744">Telefonoa segurtasun-giltza gisa erabiltzeko aukera</translation>
 <translation id="9108808586816295166">Baliteke DNS segurua beti erabilgarri ez egotea</translation>
 <translation id="9133397713400217035">Arakatu konexiorik gabeko edukia</translation>
-<translation id="9133523398139146080">Hauta daitezkeen kontuen zerrenda altuera osoan irekita.</translation>
 <translation id="9137013805542155359">Ikusi jatorrizkoa</translation>
 <translation id="9148126808321036104">Hasi saioa berriro</translation>
 <translation id="9155898266292537608">Hatzarekin ukitu bizkor bat emanda ere egin ditzakezu bilaketak</translation>

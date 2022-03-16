@@ -1063,7 +1063,6 @@
 <translation id="2019718679933488176">آڈیو کو نئے ٹیب میں &amp;کھولیں</translation>
 <translation id="2020183425253392403">نیٹ ورک پتے کی ترتیبات دکھائیں</translation>
 <translation id="2020225359413970060">فائل اسکین کریں</translation>
-<translation id="2022395138980869975">سائڈ تلاش کو ٹوگل کریں</translation>
 <translation id="2023167225947895179">‏ممکن ہے کہ PIN کا آسان سے اندازہ لگایا جا سکتا ہو</translation>
 <translation id="202352106777823113">ڈاؤن لوڈ میں بہت زیادہ وقت لگنے کی وجہ سے نیٹ ورک نے اسے روک دیا۔</translation>
 <translation id="2024195579772565064">سرچ انجن حذف کریں</translation>
@@ -2960,7 +2959,6 @@
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" /> کنکشن</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> کے ساتھ نوٹس لیے جا رہے ہیں</translation>
 <translation id="3888586133700543064">اس معلومات سے آپ کی اسسٹنٹ سے متعلق مسئلے کو بہتر طریقے سے سمجھنے میں ہمیں مدد ملتی ہے۔ اسے 90 دنوں تک کیلئے اسٹور کیا جاتا ہے اور اس تک رسائی انجینیئرنگ اور تاثرات کی مناسب ٹیموں تک محدود ہوتی ہے۔</translation>
-<translation id="3888900458694486810">سائڈ تلاش بند کریں</translation>
 <translation id="3890064827463908288">‏Wi-Fi سِنک استعمال کرنے کے لئے Chrome Sync کو آن کریں</translation>
 <translation id="389313931326656921">سوئچ کو "اگلے" کیلئے تفویض کریں</translation>
 <translation id="3893295674388762059">ڈیٹا صاف کرنے کے ليے سبھی پوشیدگی ونڈوز بند کریں</translation>
@@ -3274,7 +3272,6 @@
 <translation id="4208390505124702064"><ph name="SITE_NAME" /> میں تلاش کریں</translation>
 <translation id="4209092469652827314">بڑا</translation>
 <translation id="4209251085232852247">آف ہے</translation>
-<translation id="4209464433672152343">‏پرنٹنگ کیلئے دستاویزات تیار کرنے کیلئے وہ <ph name="BEGIN_LINK_HELP" />Google کو بھیجے<ph name="END_LINK_HELP" /> جاتے ہیں۔ <ph name="BEGIN_LINK_DASHBOARD" />Google کلاؤڈ پرنٹ ڈیش بورڈ<ph name="END_LINK_DASHBOARD" /> پر اپنے پرنٹرز اور پرنٹر کی سرگزشت کو دیکھیں، ترمیم کریں اور ان کا نظم کریں۔</translation>
 <translation id="4210048056321123003">ورچوئل مشین ڈاؤن لوڈ ہو رہی ہے</translation>
 <translation id="421182450098841253">بُک مارکس بار &amp;دکھائیں</translation>
 <translation id="4211851069413100178">‏استعمال اور ڈائیگناسٹک کا ڈیٹا بھیجیں۔ Google کو خودکار طور پر ڈائیگناسٹک، آلے اور ایپ کے استعمال کا ڈیٹا بھیج کر اپنا Android تجربہ بہتر بنانے میں مدد کریں۔ اس سے سسٹم اور ایپ کے استحکام اور دیگر بہتریوں میں مدد ملے گی۔ کچھ مجموعی ڈیٹا Google ایپس اور پارٹنرز، جیسے Android ڈیولپرز، کی مدد بھی کرے گا۔ اس <ph name="BEGIN_LINK1" />ترتیب<ph name="END_LINK1" /> کو مالک نافذ کرتا ہے۔ مالک Google کو اس آلہ کیلئے ڈائیگناسٹک اور استعمال کا ڈیٹا بھیجنے کا انتخاب کر سکتا ہے۔ اگر آپ کی ویب اور ایپ کی اضافی سرگرمی کی ترتیب آن ہے تو اس ڈیٹا کو آپ کے Google اکاؤنٹ میں محفوظ کیا جا سکتا ہے۔ <ph name="BEGIN_LINK2" />مزید جانیں<ph name="END_LINK2" /></translation>
@@ -6167,7 +6164,6 @@
 <translation id="7180611975245234373">ریفریش کریں</translation>
 <translation id="7180865173735832675">حسب ضرورت بنائیں</translation>
 <translation id="7182791023900310535">اپنا پاس ورڈ منتقل کریں</translation>
-<translation id="7183420126213758623">سائیڈ تلاش کو ٹوگل کریں۔ سائیڈ تلاش فعال نہیں ہے۔</translation>
 <translation id="7186088072322679094">ٹول بار میں رکھیں</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> اس فولڈر کو نہیں کھول سکتا کیونکہ اس میں سسٹم کی فائلیں ہیں</translation>
 <translation id="7187428571767585875">ہٹائے جانے یا تبدیل کیے جانے والے رجسٹری کے اندراجات:</translation>
@@ -6689,7 +6685,6 @@
 <translation id="7701040980221191251">کوئی نہیں</translation>
 <translation id="7701869757853594372">صارف کے ہینڈلز</translation>
 <translation id="7702574632857388784">فہرست سے <ph name="FILE_NAME" /> ہٹائيں</translation>
-<translation id="7702599324215660661">چھوڑنے پر مقفل کریں</translation>
 <translation id="7702907602086592255">ڈومین</translation>
 <translation id="7704305437604973648">ٹاسک</translation>
 <translation id="7704317875155739195">‏تلاشوں اور URLs کی خودکار تکمیل کریں</translation>
@@ -6795,7 +6790,6 @@
 <translation id="7798844538707273832"><ph name="PERMISSION" /> خود کار طور پر مسدود کر دی گئی</translation>
 <translation id="7799299114731150374">وال پیپر کامیابی سے سیٹ ہو گیا</translation>
 <translation id="7799817062559422778">لائٹ موڈ</translation>
-<translation id="7800159967992492578">سائیڈ تلاش کو ٹوگل کریں۔ سائیڈ تلاش کو فعال کر دیا گیا۔</translation>
 <translation id="7800518121066352902">گ&amp;ھڑی کی مخالف سمت میں گھمائیں</translation>
 <translation id="7801679634091975683">‏آپ یہاں جو تبدیلیاں کرتے ہیں وہ صرف Lacros Chrome براؤزر پر لاگو ہوتی ہیں۔ اپنے Chrome براؤزر کی ترتیبات میں تبدیلیاں کرنے کے لیے، Chrome براؤزر کھولیں اور ترتیبات پر جائیں۔</translation>
 <translation id="780301667611848630">نہیں شکریہ</translation>

@@ -256,6 +256,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2595239820337756193">5 km í mílum</translation>
 <translation id="2596078834055697711">Taka skjámynd af glugga</translation>
 <translation id="2607678425161541573">Innskráningar á netinu er krafist</translation>
+<translation id="2620436844016719705">Kerfi</translation>
 <translation id="2621713457727696555">Læst</translation>
 <translation id="263399434338050016">„Velja allt“</translation>
 <translation id="2653019840645008922">Myndataka glugga</translation>
@@ -351,6 +352,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="320207200541803018">Stilltur teljari</translation>
 <translation id="3203405173652969239">Kveikt á rofaaðgangi</translation>
 <translation id="3207953481422525583">Notandastillingar</translation>
+<translation id="3208321278970793882">Forrit</translation>
 <translation id="3217205077783620295">Kveikt er á hljóði; slökkt verður á því ef hnappurinn er valinn.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> í viðbót</translation>
 <translation id="3227137524299004712">Hljóðnemi</translation>
@@ -1034,6 +1036,7 @@ Ný uppsetning</translation>
 <translation id="7513622367902644023">Skjámyndastilling valin</translation>
 <translation id="7513922695575567867">Dagatal, vikan <ph name="DATE" />, núverandi val er <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Sækja</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7526573455193969409">Hugsanlega er fylgst með netinu</translation>
 <translation id="7536035074519304529">IP-tala: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Linux forrit og huliðsgluggar eru ekki studdir eins og er. Önnur forrit verða vistuð.</translation>
@@ -1102,6 +1105,7 @@ Ný uppsetning</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Snertu fingrafaralesarann</translation>
 <translation id="7904094684485781019">Stjórnandi þessa reiknings hefur gert innskráningu á marga reikninga óvirka.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7930731167419639574">Úrvinnsla á tali fer núna fram í tækinu og raddinnsláttur virkar án nettengingar</translation>
 <translation id="7933084174919150729">Google hjálparinn er aðeins í boði fyrir aðalprófíl.</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> og <ph name="SECOND_PARENT_EMAIL" /> stjórna þessum reikningi</translation>

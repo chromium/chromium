@@ -30,7 +30,6 @@
 <translation id="114825011539563458">गोपनीयता तथा नियन्त्रणसम्बन्धी सबैभन्दा महत्त्वपूर्ण सेटिङ एकै ठाउँमा उपलब्ध छन्</translation>
 <translation id="1149401351239820326">म्याद सकिने महिना</translation>
 <translation id="1154704303112745282">यो पृष्ठ अफलाइन मोडमा उपलब्ध छैन: <ph name="VIOLATED_URL" /></translation>
-<translation id="1166688006062225587">चयन गर्न मिल्ने खाताहरूको सूची।</translation>
 <translation id="1171770572613082465">"शीर्ष साइटहरू" नामक बटनमा ट्याप गरी लोकप्रिय वेबसाइटहरू हेर्नुहोस्</translation>
 <translation id="1173894706177603556">पुन: नामाकरण गर्नुहोस्</translation>
 <translation id="1177863135347784049">अनुकूल</translation>
@@ -571,6 +570,7 @@
 <translation id="4415276339145661267">आफ्नो Google खाताको व्यवस्थापन गर्नुहोस्</translation>
 <translation id="4425140285732600465">यो उत्पादनको मूल्य ट्र्याक गरिँदै छ। कुनै साइटमा मूल्य घटेका खण्डमा अलर्ट प्राप्त गर्नुहोस्।</translation>
 <translation id="442518031075347249">तपाईं अबदेखि Google Pay मा आफ्नो भर्चुअल कार्ड प्रयोग गर्न सक्नु हुने छैन। <ph name="BEGIN_LINK1" />भर्चुअल कार्डका बारेमा थप जान्नुहोस्<ph name="END_LINK1" /></translation>
+<translation id="4428065317363009941">विज्ञापनको पर्सनलाइजेसन</translation>
 <translation id="4450672886426705087">Google मा खोज्दा भेटिएका परिणामहरू।</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> ट्याब बन्द गर्नुहोस्‌</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> मा पुस्तक चिन्ह लगाइयो</translation>
@@ -684,6 +684,7 @@
 <translation id="4988526792673242964">पृष्ठहरू</translation>
 <translation id="5001388021414335527">यहाँ क्लिक गरी यो साइट फलो गर्नुहोस्</translation>
 <translation id="5004416275253351869">Google का क्रियाकलापसम्बन्धी नियन्त्रणहरू</translation>
+<translation id="5005141133360250920">प्रतिक्रिया मेटाइएको छ</translation>
 <translation id="5005498671520578047">पासवर्ड प्रतिलिपि गर्नुहोस्</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> जडान गर्न चाहन्छ</translation>
 <translation id="5016205925109358554">सेरिफ</translation>
@@ -739,6 +740,7 @@
 <translation id="5368227114232678694">तपाईं यो डिभाइसमार्फत गोप्य रूपमा ब्राउज गर्न चाहनुहुन्छ भने इन्कोग्निटो मोड प्रयोग गरी हेर्नुहोस्</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> ट्याब खोल्नुहोस्, एउटा ट्याबबाट अर्को ट्याबमा जान ट्याप गर्नुहोस्}other{<ph name="OPEN_TABS_MANY" /> ट्याबहरू खोल्नुहोस्, एउटा ट्याबबाट अर्को ट्याबमा जान ट्याप गर्नुहोस्}}</translation>
 <translation id="5375577065097716013">Google लेन्समार्फत फोटो खोज्नुहोस् <ph name="BEGIN_NEW" />नयाँ<ph name="END_NEW" /></translation>
+<translation id="5376898820269806588">प्रतिक्रिया परिवर्तन गरिएको छ</translation>
 <translation id="5403644198645076998">निश्चित साइटहरूलाई मात्र अनुमति दिनुहोस्</translation>
 <translation id="5409881200985013443"><ph name="CLIENT_NAME" /> मा <ph name="ONE_TIME_CODE" /> पेस गर्ने हो?</translation>
 <translation id="5414836363063783498">प्रमाणीकरण गर्दै...</translation>
@@ -896,7 +898,6 @@
 <translation id="6277522088822131679">पृष्ठ प्रिन्टिङ गर्नमा एक समस्या थियो। कृपया पुन: प्रयास गर्नुहोस्।</translation>
 <translation id="6277722725779679269">ट्रयाक गरिएको मूल्य बदल्न सकिएन</translation>
 <translation id="6278428485366576908">विषयवस्तु</translation>
-<translation id="6293443105724342169">चयन गर्न मिल्ने खाताहरूको सूची आधा स्क्रिनमा खोलिएको छ।</translation>
 <translation id="6294610283659775533">तपाईं उही Google खातामार्फत साइन इन गरिएका एउटा डिभाइसबाट अर्को डिभाइसमा ट्याबहरू पठाउन सक्नुहुन्छ</translation>
 <translation id="6297765934698848803">तपाईंको डिभाइसको व्यवस्थापन गर्ने सङ्गठनले तपाईंको डिभाइसको क्यामेरा निष्क्रिय पारेको छ।</translation>
 <translation id="6301525844455696527">आफ्नो अध्ययन सूची हेर्न नभुल्नुहोस्</translation>
@@ -1072,6 +1073,7 @@
 <translation id="718926126787620637">पुस्तक चिन्ह लगाइएका फोल्डरहरूको सूची स्क्रिनको पूरा भागमा खोलियो</translation>
 <translation id="7191430249889272776">पृष्ठभूमिमा ट्याब खुला छ।</translation>
 <translation id="7196215469483532480">गोपनीयतासम्बन्धी मार्गदर्शनको वर्णन स्क्रिनको पूरा भाग ओगट्ने गरी खोलिएको छ</translation>
+<translation id="7208109991155904980">प्रतिक्रिया सारिएको छ</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{१ डाउनलोड विचारधीन छ}other{# डाउनलोडहरू विचारधीन छन्}}</translation>
 <translation id="7237045078887540010">तपाईंले Chrome चलाउनुभयो भने तपाईं <ph name="BEGIN_TOS_LINK" />Google का सेवाका सर्त<ph name="END_TOS_LINK" /> र <ph name="BEGIN_ATOS_LINK" />Google Chrome तथा Chrome OS का सेवाका अतिरिक्त सर्तहरू<ph name="END_ATOS_LINK" />मा सहमति जनाउनुहुन्छ भन्ने अर्थ लाग्छ। यसका साथै, <ph name="BEGIN_PRIVACY_LINK" />गोपनीयता नीति<ph name="END_PRIVACY_LINK" /> पनि लागू हुन्छ।</translation>
 <translation id="7242755609445462077">शैलीबद्ध हाइलाइट <ph name="CURRENT_DATE" /></translation>
@@ -1306,7 +1308,6 @@
 <translation id="8461694314515752532">सिंक गरिएको डेटालाई तपाईंको आफ्नै सिंक पासफ्रेजमार्फत इन्क्रिप्ट गर्नुहोस्</translation>
 <translation id="8466613982764129868"><ph name="TARGET_DEVICE_NAME" /> इन्टरनेटमा जोडिएको कुरा सुनिश्चित गर्नुहोस्</translation>
 <translation id="8473863474539038330">ठेगाना र थप कुराहरू</translation>
-<translation id="847656914027543776">चयन गर्न मिल्ने खाताहरूको सूची बन्द गरिएको छ।</translation>
 <translation id="8481921391193215807">तपाईंले यो सुविधा अन गर्नुभयो भने साइटहरूले तिनका सामग्री तथा सेवा प्रदान गर्न गोपनीयता संरक्षण गर्ने यहाँ देखाइएका प्रविधिहरू प्रयोग गर्न सक्छन्। यसअन्तर्गत विभिन्न साइटहरूमा गरिने क्रियाकलाप ट्र्याक गर्ने प्रविधिको सट्टामा प्रयोग गर्न सकिने अन्य प्रविधिहरू पर्छन्। पछि थप ट्रायल सुविधाहरू समावेश गरिन सक्छन्।
 
 <ph name="BEGIN_LIST_ITEM1" />विज्ञापनदाता र प्रकाशकहरू FLoC प्रयोग गर्न सक्छन्।<ph name="END_LIST_ITEM1" />
@@ -1361,6 +1362,7 @@
 <translation id="8683526617475118045">तपाईंले पाउने लाभहरू</translation>
 <translation id="869891660844655955">समाप्ति मिति</translation>
 <translation id="8699120352855309748">यी भाषाहरू अनुवाद गर्ने प्रस्ताव नगरियोस्</translation>
+<translation id="8712637175834984815">भयो</translation>
 <translation id="8725066075913043281">पुन: प्रयास गर्नुहोस्</translation>
 <translation id="8730621377337864115">गरियो</translation>
 <translation id="8746155870861185046">हाइलाइट गरिएको टेक्स्ट सेयर गर्नुहोस्</translation>
@@ -1435,7 +1437,6 @@
 <translation id="9108312223223904744">सुरक्षा साँचोका रूपमा प्रयोग गर्न मिल्ने फोन</translation>
 <translation id="9108808586816295166">सुरक्षित DNS सधैँ उपलब्ध नहुन सक्छ</translation>
 <translation id="9133397713400217035">अफलाइनमा अन्वेषण गर्नुहोस्</translation>
-<translation id="9133523398139146080">चयन गर्न मिल्ने खाताहरूको सूची पूरै स्क्रिनमा खोलिएको छ।</translation>
 <translation id="9137013805542155359">मूल देखाउनुहोस्</translation>
 <translation id="9148126808321036104">पुन: साइन इन गर्नुहोस्</translation>
 <translation id="9155898266292537608">कुनै शब्दमा द्रुत ट्याप गरेर पनि तपाईं खोज्न सक्नुहुन्छ</translation>

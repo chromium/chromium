@@ -115,7 +115,6 @@
 <translation id="1301324364792935241">Ստուգեք ձեր ապահով DNS-ի կարգավորումները</translation>
 <translation id="1307966114820526988">Հնացած գործառույթներ</translation>
 <translation id="1308113895091915999">Առկա առաջարկ</translation>
-<translation id="1312803275555673949">Ինչո՞վ է դա հաստատվում</translation>
 <translation id="1314311879718644478">Դիտել բովանդակությունը լրացված իրականության ռեժիմում</translation>
 <translation id="1314509827145471431">Ամրակար աջ կողմում</translation>
 <translation id="1318023360584041678">Պահվել է ներդիրների խմբում</translation>
@@ -740,7 +739,6 @@
 <translation id="324180406144491771">«<ph name="HOST_NAME" />» հղումներն արգելափակված են</translation>
 <translation id="3249845759089040423">Նորաձև</translation>
 <translation id="3252266817569339921">Ֆրանսիական</translation>
-<translation id="3257954757204451555">Ո՞վ է տրամադրել այս տեղեկությունները</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Google Օրացույցում արագ միջոցառում ստեղծելու համար սեղմեք Tab, ապա՝ Enter։</translation>
 <translation id="3261488570342242926">Իմանալ ավելին վիրտուալ քարտերի մասին</translation>
 <translation id="3264837738038045344">«Կառավարել Chrome-ի կարգավորումները» կոճակ։ Սեղմեք Enter՝ Chrome-ի կարգավորումներ անցնելու համար</translation>
@@ -1128,6 +1126,7 @@
 <translation id="4414515549596849729">քուքիներ և կայքի տվյալներ</translation>
 <translation id="4415426530740016218">Ստացման հասցեն</translation>
 <translation id="4424024547088906515">Այս սերվերը չի կարող ապացուցել, որ <ph name="DOMAIN" /> է: Chrome-ը չի վստահում դրա անվտանգության վկայականին: Պատճառը կարող է լինել սխալ կազմաձևումը կամ կապակցման խափանումը հարձակվողի կողմից:</translation>
+<translation id="4428065317363009941">Գովազդի անհատականացում</translation>
 <translation id="443121186588148776">Սերիական միացք</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> տիրույթը չի ընդունել ձեր մուտքի վկայագիրը, կամ դուք չեք տրամադրել այն:</translation>
 <translation id="4432792777822557199">Այսուհետ <ph name="SOURCE_LANGUAGE" /> էջերը կթարգմանվեն <ph name="TARGET_LANGUAGE" /></translation>
@@ -1260,7 +1259,6 @@
 <translation id="4838327282952368871">Երազային</translation>
 <translation id="4840250757394056958">Դիտել Chrome-ի պատմությունը</translation>
 <translation id="484462545196658690">Ավտոմատ</translation>
-<translation id="4849865131988503897">Ճշգրտության ստուգում</translation>
 <translation id="4850886885716139402">Տեսք</translation>
 <translation id="485316830061041779">Գերմանական</translation>
 <translation id="4853901935952445031">Այս կայքը 2022 թ․ փետրվար ամսից չի աջակցելու U2F API-ը։ Եթե կայքը ձեզ է պատկանում, անցեք Web Authentication API-ին։</translation>
@@ -1448,6 +1446,7 @@
 <translation id="5398772614898833570">Գովազդն արգելափակված է</translation>
 <translation id="5400836586163650660">Մոխրագույն</translation>
 <translation id="540969355065856584">Այս սերվերը չի կարող ապացուցել, որ <ph name="DOMAIN" /> է: Դրա անվտանգության վկայականն այս անգամ վավեր չէ: Պատճառը կարող է լինել սխալ կազմաձևումը կամ կապակցման խափանումը հարձակվողի կողմից:</translation>
+<translation id="5412236728747081950">Այս կայքը Chrome-ից ստանում է ձեզ հետաքրքրող թեմաների մասին տվյալներ՝ ավելի համապատասխան գովազդ ցուցադրելու համար</translation>
 <translation id="541416427766103491">Շեղջիչ 4</translation>
 <translation id="5421136146218899937">Մաքրել դիտարկումների տվյալները…</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> կայքն ուզում է ձեզ ծանուցումներ ուղարկել</translation>
@@ -1964,7 +1963,6 @@
 <translation id="7210863904660874423"><ph name="HOST_NAME" />-ը չի հետևում անվտանգության չափորոշիչներին:</translation>
 <translation id="7210993021468939304">Տեսնում է Լինուքսի գործողությունները կոնտեյներում և կարող է տեղադրել ու գործարկել Լինուքսի հավելվածներ կոնտեյներից</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /> այս խնդրի մասին:</translation>
-<translation id="7215025035562547931">Գնահատեք տվյալների ճշգրտությունը</translation>
 <translation id="7217745192097460130">Հաստատե՞լ և ավարտել ձեր գնումը Touch ID-ի միջոցով</translation>
 <translation id="7219179957768738017">Կապակցումն օգտագործում է <ph name="SSL_VERSION" />:</translation>
 <translation id="7220786058474068424">Մշակվում է</translation>
@@ -2094,7 +2092,9 @@
 <translation id="7569952961197462199">Հեռացնե՞լ վարկային քարտը Chrome-ից:</translation>
 <translation id="7569983096843329377">Սև</translation>
 <translation id="7575207903026901870">Հուշումը հեռացնելու կոճակ։ Սեղմեք Enter՝ հեռացնելու համար։</translation>
+<translation id="7577900504646297215">Կառավարել հետաքրքրությունները</translation>
 <translation id="7578104083680115302">Պահեք քարտերը Google-ում, որպեսզի արագ կատարեք վճարումներ կայքերում և հավելվածներում ձեր բոլոր սարքերով:</translation>
+<translation id="7579442726219254162">Անհայտ փոփոխական («<ph name="VARIABLE" />») «<ph name="APPLICATION_ID" />» կառավարվող կազմաձևում։</translation>
 <translation id="7581199239021537589">Պատկերների տեղաշարժ հակառակ կողմից՝ Y առանցքով</translation>
 <translation id="7582602800368606489">Արագ ստեղծել միջոցառում Google Օրացույցում</translation>
 <translation id="7591288787774558753">Կիսվե՞լ կոնֆիդենցիալ բովանդակությամբ</translation>
@@ -2214,7 +2214,6 @@
 <translation id="7966803981046576691">Առաջադրանքի հաշվի տեսակը</translation>
 <translation id="79682505114836835">«<ph name="VALUE" />» արժեքը անվավեր HEX գույն է։</translation>
 <translation id="7968982339740310781">Դիտել մանրամասները</translation>
-<translation id="7970392640816874403">Ի՞նչ են ասում մյուս աղբյուրները</translation>
 <translation id="7976214039405368314">Չափազանց շատ հարցումներ</translation>
 <translation id="7977538094055660992">Արտածման սարք</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -2565,7 +2564,6 @@
 <translation id="9155211586651734179">Կցված աուդիո սարքերը</translation>
 <translation id="9157595877708044936">Տեղակայում…</translation>
 <translation id="9158625974267017556">C6 (ծրար)</translation>
-<translation id="9164029392738894042">Ճշգրտության ստուգում</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">Թույլ տալ կայքերին ստուգել՝ արդյոք պահված վճարման եղանակներ ունեք</translation>
 <translation id="9169664750068251925">Միշտ արգելափակել այս կայքում</translation>

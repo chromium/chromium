@@ -256,6 +256,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="2595239820337756193">5 tūkst. mylių</translation>
 <translation id="2596078834055697711">Sukurti lango ekrano kopiją</translation>
 <translation id="2607678425161541573">Reikia prisijungti internete</translation>
+<translation id="2620436844016719705">Sistema</translation>
 <translation id="2621713457727696555">Apsaugota</translation>
 <translation id="263399434338050016">„Pasirinkti viską“</translation>
 <translation id="2653019840645008922">Lango užfiksavimas</translation>
@@ -351,6 +352,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="320207200541803018">Nustatyk laikmatį</translation>
 <translation id="3203405173652969239">Prieiga jungikliu įgalinta</translation>
 <translation id="3207953481422525583">Naudotojo nustatymai</translation>
+<translation id="3208321278970793882">Programa</translation>
 <translation id="3217205077783620295">Garsumas įjungtas; perjungiant garsas bus nutildytas.</translation>
 <translation id="3226991577105957773">Dar <ph name="COUNT" /></translation>
 <translation id="3227137524299004712">Mikrofonas</translation>
@@ -1034,6 +1036,7 @@ Naujas įdiegimas</translation>
 <translation id="7513622367902644023">Pasirinktas ekrano kopijos režimas</translation>
 <translation id="7513922695575567867">Kalendorius, <ph name="DATE" /> savaitė, šiuo metu pasirinkta <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Atsisiųsti</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7526573455193969409">Tinklas gali būti stebimas</translation>
 <translation id="7536035074519304529">IP adresas: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">„Linux“ programos ir inkognito langai šiuo metu nepalaikomi. Kitos programos bus išsaugotos.</translation>
@@ -1102,6 +1105,7 @@ Naujas įdiegimas</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Palieskite kontrolinio kodo jutiklį</translation>
 <translation id="7904094684485781019">Šios paskyros administratorius neleidžia naudoti kelių paskyrų.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7930731167419639574">Kalba dabar apdorojama vietoje ir diktavimas veikia neprisijungus</translation>
 <translation id="7933084174919150729">„Google“ padėjėjas pasiekiamas tik pagrindiniame profilyje.</translation>
 <translation id="79341161159229895">Paskyrą tvarko: <ph name="FIRST_PARENT_EMAIL" /> ir <ph name="SECOND_PARENT_EMAIL" /></translation>

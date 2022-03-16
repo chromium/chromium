@@ -1065,7 +1065,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="2019718679933488176">Atvērt audi&amp;o jaunā cilnē</translation>
 <translation id="2020183425253392403">Rādīt tīkla adrešu iestatījumus</translation>
 <translation id="2020225359413970060">Pārbaudīt failu</translation>
-<translation id="2022395138980869975">Pārslēgt sānu meklēšanas joslu</translation>
 <translation id="2023167225947895179">PIN var viegli uzminēt.</translation>
 <translation id="202352106777823113">Lejupielāde tika veikta pārāk ilgi, un to apturēja tīkls.</translation>
 <translation id="2024195579772565064">Dzēst meklētājprogrammu</translation>
@@ -2962,7 +2961,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3888053818972567950">Saistīšana ar <ph name="WEB_DRIVE" /></translation>
 <translation id="3888550877729210209">Piezīmju rakstīšana, izmantojot <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">Šī informācija palīdz mums labāk izprast jūsu problēmu ar Asistentu. Informācija tiek glabāta ne ilgāk par 90 dienām, un piekļuve ir pieejama tikai attiecīgajām inženieru un atsauksmju komandām.</translation>
-<translation id="3888900458694486810">Aizvērt sānu meklēšanas joslu</translation>
 <translation id="3890064827463908288">Lai izmantotu Wi-Fi sinhronizāciju, ieslēdziet Chrome sinhronizāciju</translation>
 <translation id="389313931326656921">Slēdža piešķiršanai darbībai “Nākamais”</translation>
 <translation id="3893295674388762059">Lai notīrītu datus, aizveriet visus inkognito režīma logus</translation>
@@ -3276,7 +3274,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4208390505124702064">Meklēt vietnē <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Liels</translation>
 <translation id="4209251085232852247">Izslēgts</translation>
-<translation id="4209464433672152343">Dokumenti ir <ph name="BEGIN_LINK_HELP" />nosūtīti Google<ph name="END_LINK_HELP" />, lai sagatavotu tos drukāšanai. Skatiet, rediģējiet un pārvaldiet savus printerus un printeru vēsturi <ph name="BEGIN_LINK_DASHBOARD" />Google mākoņdrukas informācijas panelī<ph name="END_LINK_DASHBOARD" />.</translation>
 <translation id="4210048056321123003">Notiek virtuālās mašīnas lejupielāde</translation>
 <translation id="421182450098841253">&amp;Rādīt grāmatzīmju joslu</translation>
 <translation id="4211851069413100178">Lietojuma un diagnostikas datu sūtīšana. Palīdziet uzlabot Android lietošanas pieredzi, automātiski nosūtot diagnostikas, ierīces un lietotņu lietojuma datus uzņēmumam Google. Šī informācija palīdzēs uzlabot sistēmas un lietotņu stabilitāti un daudz ko citu. Noteiktus apkopotus datus izmantos arī Google lietotņu izstrādātāji un partneri, piemēram, Android izstrādātāji. Šo <ph name="BEGIN_LINK1" />iestatījumu<ph name="END_LINK1" /> ir noteicis īpašnieks. Īpašnieks var izvēlēties nosūtīt šīs ierīces diagnostikas un lietojuma datus uz Google serveriem. Ja ir ieslēgts papildu iestatījums “Darbības tīmeklī un lietotnēs”, šie dati var tikt saglabāti jūsu Google kontā. <ph name="BEGIN_LINK2" />Uzzināt vairāk<ph name="END_LINK2" /></translation>
@@ -6169,7 +6166,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="7180611975245234373">Atsvaidzināt</translation>
 <translation id="7180865173735832675">Piemērot</translation>
 <translation id="7182791023900310535">Pārvietot paroli</translation>
-<translation id="7183420126213758623">Pārslēdziet meklēšanas sānu joslu. Meklēšanas sānu josla nav aktivizēta.</translation>
 <translation id="7186088072322679094">Saglabāšana rīkjoslā</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> nevar atvērt šo mapi, jo tajā ir arī sistēmas faili</translation>
 <translation id="7187428571767585875">Noņemamie vai maināmie reģistra ieraksti:</translation>
@@ -6691,7 +6687,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="7701040980221191251">Nav</translation>
 <translation id="7701869757853594372">USER apstrādātāji</translation>
 <translation id="7702574632857388784">Noņemt failu “<ph name="FILE_NAME" />” no saraksta</translation>
-<translation id="7702599324215660661">Izejot bloķēt</translation>
 <translation id="7702907602086592255">Domēns</translation>
 <translation id="7704305437604973648">Uzdevums</translation>
 <translation id="7704317875155739195">Automātiski pabeigt meklēšanas vaicājumus un vietrāžus URL</translation>
@@ -6796,7 +6791,6 @@ Lai noņemtu piešķīrumu, nospiediet piešķirto slēdzi vai taustiņu.</trans
 <translation id="7798844538707273832">Automātiski bloķēta atļauja “<ph name="PERMISSION" />”</translation>
 <translation id="7799299114731150374">Fona tapete sekmīgi iestatīta</translation>
 <translation id="7799817062559422778">Gaišais režīms</translation>
-<translation id="7800159967992492578">Pārslēdziet meklēšanas sānu joslu. Meklēšanas sānu josla ir aktivizēta.</translation>
 <translation id="7800518121066352902">Pagriezt &amp;pretēji pulksteņrādītāju kustības virzienam</translation>
 <translation id="7801679634091975683">Šeit veiktās izmaiņas tiks lietotas tikai Lacros pārlūkā Chrome. Lai veiktu izmaiņas Chrome pārlūka iestatījumos, atveriet pārlūku Chrome un pārejiet uz iestatījumiem.</translation>
 <translation id="780301667611848630">Nē, paldies</translation>

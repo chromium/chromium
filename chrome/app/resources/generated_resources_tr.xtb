@@ -1063,7 +1063,6 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="2019718679933488176">Sesi Yeni Sekmede &amp;Aç</translation>
 <translation id="2020183425253392403">Ağ adresi ayarlarını göster</translation>
 <translation id="2020225359413970060">Dosyayı tara</translation>
-<translation id="2022395138980869975">Yan aramayı aç/kapat</translation>
 <translation id="2023167225947895179">PIN kolayca tahmin edilebilir</translation>
 <translation id="202352106777823113">İndirme çok uzun süreceği için ağ tarafından durduruldu.</translation>
 <translation id="2024195579772565064">Arama motorunu sil</translation>
@@ -2958,7 +2957,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" /> Bağlantısı</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> ile not alınıyor</translation>
 <translation id="3888586133700543064">Bu bilgiler, Asistanınızla ilgili sorunu daha iyi anlamamıza yardımcı olur. Bilgiler 90 güne kadar saklanır ve yalnızca uygun mühendislerle geri bildirim ekipleri erişebilir.</translation>
-<translation id="3888900458694486810">Yan aramayı kapat</translation>
 <translation id="3890064827463908288">Wi-Fi Senkronizasyonu'nu kullanmak için Chrome Senkronizasyonu'nu açın</translation>
 <translation id="389313931326656921">"Sonraki"ye anahtar atayın</translation>
 <translation id="3893295674388762059">Verileri temizlemek için tüm gizli pencereleri kapatın</translation>
@@ -3272,7 +3270,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4208390505124702064">Ara <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Büyük</translation>
 <translation id="4209251085232852247">Kapatıldı</translation>
-<translation id="4209464433672152343">Dokümanlar yazdırılmaya hazırlanmaları için <ph name="BEGIN_LINK_HELP" />Google'a gönderilir<ph name="END_LINK_HELP" />. Yazıcılarınızı ve yazıcı geçmişinizi <ph name="BEGIN_LINK_DASHBOARD" />Google Cloud Print kontrol panelinde<ph name="END_LINK_DASHBOARD" /> görüntüleyebilir, düzenleyebilir ve yönetebilirsiniz.</translation>
 <translation id="4210048056321123003">Sanal makine indiriliyor</translation>
 <translation id="421182450098841253">Yer İşaretleri Ç&amp;ubuğunu Göster</translation>
 <translation id="4211851069413100178">Kullanım ve teşhis verilerini gönder. Teşhis, cihaz ve uygulama kullanımı verilerini otomatik olarak Google'a göndererek Android deneyiminizin iyileştirilmesine yardımcı olun. Bu veriler, sistem ve uygulama kararlılığı ile diğer özellikleri iyileştirmeye yardımcı olur. Bazı birleştirilmiş veriler, Google uygulamalarına ve iş ortaklarına da (ör. Android geliştiricileri) yardımcı olur. Bu <ph name="BEGIN_LINK1" />ayar<ph name="END_LINK1" />, cihazın sahibi tarafından zorunlu kılınmıştır. Cihazın sahibi bu cihazın teşhis ve kullanım verilerini Google'a göndermeyi seçebilir. Ek Web ve Uygulama Etkinliği açıksa bu veriler Google hesabınıza kaydedilebilir. <ph name="BEGIN_LINK2" />Daha Fazla Bilgi<ph name="END_LINK2" /></translation>
@@ -6165,7 +6162,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="7180611975245234373">Yenile</translation>
 <translation id="7180865173735832675">Özelleştir</translation>
 <translation id="7182791023900310535">Şifrenizi taşıyın</translation>
-<translation id="7183420126213758623">Yan aramayı aç/kapat. Yan arama etkinleştirilmedi.</translation>
 <translation id="7186088072322679094">Araç Çubuğunda Tut</translation>
 <translation id="7186303001964993981">Sistem dosyaları içerdiği için <ph name="ORIGIN" /> bu klasörü açamaz</translation>
 <translation id="7187428571767585875">Kaldırılacak veya değiştirilecek kayıt defteri girişleri:</translation>
@@ -6687,7 +6683,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="7701040980221191251">Yok</translation>
 <translation id="7701869757853594372">KULLANICI İşleyicileri</translation>
 <translation id="7702574632857388784"><ph name="FILE_NAME" /> dosyasını listeden kaldır</translation>
-<translation id="7702599324215660661">Ekran başından ayrılınca kilitle</translation>
 <translation id="7702907602086592255">Alan adı</translation>
 <translation id="7704305437604973648">Görev</translation>
 <translation id="7704317875155739195">Aramaları ve URL'leri otomatik tamamla</translation>
@@ -6793,7 +6788,6 @@ Atamayı kaldırmak için atanmış bir anahtara veya tuşa basın.</translation
 <translation id="7798844538707273832"><ph name="PERMISSION" /> izni otomatik olarak engellendi</translation>
 <translation id="7799299114731150374">Duvar kağıdı başarıyla ayarlandı</translation>
 <translation id="7799817062559422778">Açık mod</translation>
-<translation id="7800159967992492578">Yan aramayı aç/kapat. Yan arama etkinleştirildi.</translation>
 <translation id="7800518121066352902">Saat Yönünün &amp;Tersine Döndür</translation>
 <translation id="7801679634091975683">Burada yaptığınız değişiklikler yalnızca Lacros Chrome Tarayıcı'ya uygulanır. Chrome Tarayıcı ayarlarınızda değişiklik yapmak için Chrome Tarayıcı'yı açıp ayarlara gidin.</translation>
 <translation id="780301667611848630">Hayır, teşekkürler</translation>

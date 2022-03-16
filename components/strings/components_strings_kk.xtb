@@ -115,7 +115,6 @@
 <translation id="1301324364792935241">Қауіпсіз DNS параметрлерін тексеріңіз.</translation>
 <translation id="1307966114820526988">Ескі функциялар</translation>
 <translation id="1308113895091915999">Ұсыныс қолжетімді</translation>
-<translation id="1312803275555673949">Оған қандай дәлел бар?</translation>
 <translation id="1314311879718644478">Толықтырылған шындық мазмұнын көру</translation>
 <translation id="1314509827145471431">Оң жақты байлау</translation>
 <translation id="1318023360584041678">Қойынды тобында сақталған</translation>
@@ -739,7 +738,6 @@
 <translation id="324180406144491771">"<ph name="HOST_NAME" />" сілтемелері бөгелген</translation>
 <translation id="3249845759089040423">Заманауи</translation>
 <translation id="3252266817569339921">француз</translation>
-<translation id="3257954757204451555">Бұл ақпараттың артында кім тұр?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Calendar-да жылдам жаңа іс-шара жасау үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
 <translation id="3261488570342242926">Виртуалды карта туралы толығырақ</translation>
 <translation id="3264837738038045344">Chrome параметрлерін басқару түймесі, Chrome параметрлеріне өту үшін Enter пернесін басыңыз.</translation>
@@ -1127,6 +1125,7 @@
 <translation id="4414515549596849729">cookie файлдары және сайт деректері</translation>
 <translation id="4415426530740016218">Алып кету мекенжайы</translation>
 <translation id="4424024547088906515">Бұл сервер өзінің <ph name="DOMAIN" /> екенін дәлелдей алмады; оның қауіпсіздік сертификатына Chrome сенім білдірмеген. Бұған қате конфигурация немесе қаскүнемнің байланысты үзуі себеп болуы мүмкін.</translation>
+<translation id="4428065317363009941">Жарнаманы жекелендіру</translation>
 <translation id="443121186588148776">Сериялық порт</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> кіру сертификатын қабылдамады немесе оны алмады.</translation>
 <translation id="4432792777822557199">Осыдан кейін <ph name="SOURCE_LANGUAGE" /> тіліндегі бет <ph name="TARGET_LANGUAGE" /> тіліне аударылады</translation>
@@ -1259,7 +1258,6 @@
 <translation id="4838327282952368871">Арманшыл</translation>
 <translation id="4840250757394056958">Chrome тарихын көру</translation>
 <translation id="484462545196658690">Авто</translation>
-<translation id="4849865131988503897">Дәлдікті тексеру</translation>
 <translation id="4850886885716139402">Көрініс</translation>
 <translation id="485316830061041779">неміс</translation>
 <translation id="4853901935952445031">2022 жылдың ақпанынан кейін бұл сайтта U2F API қолдауы тоқтатылады. Егер осы сайттың иесі болсаңыз, Web Authentication API-ға көшуіңіз тиіс.</translation>
@@ -1446,6 +1444,7 @@
 <translation id="5398772614898833570">Жарнамалар бөгелді</translation>
 <translation id="5400836586163650660">Сұр</translation>
 <translation id="540969355065856584">Бұл сервер өзінің <ph name="DOMAIN" /> екенін дәлелдей алмады; оның қауіпсіздік сертификаты әзірше жарамайды. Бұл дұрыс конфигурацияланбағаннан немесе зиянды бағдарламаның байланысқа кедергі келтіргенінен болуы мүмкін.</translation>
+<translation id="5412236728747081950">Бұл сайт сәйкес жарнамаларды көрсету үшін қызығушылықтарыңыз туралы ақпаратты Chrome браузерінен алады.</translation>
 <translation id="541416427766103491">4-жинастырушы</translation>
 <translation id="5421136146218899937">Шолу деректерін өшіру…</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> хабарландыру жіберуге рұқсат сұрады</translation>
@@ -1962,7 +1961,6 @@
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> қауіпсіздік стандарттарына сай емес.</translation>
 <translation id="7210993021468939304">Linux-тің контейнердегі әрекетін көреді, сондай-ақ контейнерден Linux қолданбаларын орната және іске қоса алады.</translation>
 <translation id="721197778055552897">Бұл ақау туралы <ph name="BEGIN_LINK" />толығырақ<ph name="END_LINK" />.</translation>
-<translation id="7215025035562547931">Деректердің дұрыстығын тексеріңіз</translation>
 <translation id="7217745192097460130">Сатып алуды растау және процесті аяқтау үшін Touch ID пайдаланылсын ба?</translation>
 <translation id="7219179957768738017">Байланыс <ph name="SSL_VERSION" /> пайдаланады.</translation>
 <translation id="7220786058474068424">Өңделуде</translation>
@@ -2092,7 +2090,9 @@
 <translation id="7569952961197462199">Chrome браузерінен несиелік картаны өшіру қажет пе?</translation>
 <translation id="7569983096843329377">Қара</translation>
 <translation id="7575207903026901870">"Ұсынысты өшіру" түймесі: өшіру үшін Enter пернесін басыңыз.</translation>
+<translation id="7577900504646297215">Қызығушылықтарды басқару</translation>
 <translation id="7578104083680115302">Google арқылы сақтаған карталармен құрылғылар бойынша сайттарда және қолданбаларда жылдам төлеңіз.</translation>
+<translation id="7579442726219254162">Басқарылатын "<ph name="APPLICATION_ID" />" конфигурациясындағы белгісіз "<ph name="VARIABLE" />" айнымалысы.</translation>
 <translation id="7581199239021537589">Кескіннің Y осі бойынша 2-жағында ығысуы</translation>
 <translation id="7582602800368606489">Google Calendar-да жылдам жаңа іс-шара жасау</translation>
 <translation id="7591288787774558753">Құпия мазмұн бөлісілсін бе?</translation>
@@ -2212,7 +2212,6 @@
 <translation id="7966803981046576691">Тапсырмадағы аккаунттың түрі</translation>
 <translation id="79682505114836835">"<ph name="VALUE" />" мәні – жарамсыз он алтылық түс.</translation>
 <translation id="7968982339740310781">Мәліметтерді көру</translation>
-<translation id="7970392640816874403">Басқа дереккөздер не дейді?</translation>
 <translation id="7976214039405368314">Сұраулар саны өте көп.</translation>
 <translation id="7977538094055660992">Шығару құрылғысы</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -2563,7 +2562,6 @@
 <translation id="9155211586651734179">Жалғанған перифериялық аудиоқұрылғылар</translation>
 <translation id="9157595877708044936">Орнатылуда…</translation>
 <translation id="9158625974267017556">C6 (Envelope)</translation>
-<translation id="9164029392738894042">Дәлдікті тексеру</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">Сайттардың сізде сақталған төлеу әдістері бар-жоғын тексеруіне рұқсат ету</translation>
 <translation id="9169664750068251925">Бұл сайтта әрқашан тыйым салу</translation>

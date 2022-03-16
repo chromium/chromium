@@ -115,7 +115,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1301324364792935241">Tjek indstillingerne for din sikre DNS</translation>
 <translation id="1307966114820526988">Udfasede funktioner</translation>
 <translation id="1308113895091915999">Tilgængeligt kampagnetilbud</translation>
-<translation id="1312803275555673949">Hvilke beviser underbygger dette?</translation>
 <translation id="1314311879718644478">Vis indhold med augmented reality</translation>
 <translation id="1314509827145471431">Bind i højre side</translation>
 <translation id="1318023360584041678">Gemt i fanegruppe</translation>
@@ -740,7 +739,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="324180406144491771">"<ph name="HOST_NAME" />"-links er blokeret</translation>
 <translation id="3249845759089040423">Groovy</translation>
 <translation id="3252266817569339921">Fransk</translation>
-<translation id="3257954757204451555">Hvor stammer disse oplysninger fra?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryk på Tab-tasten efterfulgt af Enter for hurtigt at oprette en ny begivenhed i Google Kalender</translation>
 <translation id="3261488570342242926">Få flere oplysninger om virtuelle kort</translation>
 <translation id="3264837738038045344">Knappen Administrer Chrome-indstillinger, tryk på Enter for at gå til dine Chrome-indstillinger</translation>
@@ -1128,6 +1126,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4414515549596849729">cookies og websitedata</translation>
 <translation id="4415426530740016218">Afhentningsadresse</translation>
 <translation id="4424024547088906515">Denne server kunne ikke bevise, at den er <ph name="DOMAIN" />, da Chrome ikke har tillid til sikkerhedscertifikatet. Dette kan skyldes en fejlkonfiguration, eller at en hacker har opfanget din forbindelse.</translation>
+<translation id="4428065317363009941">Annoncetilpasning</translation>
 <translation id="443121186588148776">Serieport</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> accepterede ikke dit logincertifikat, eller der er ikke angivet et.</translation>
 <translation id="4432792777822557199">Sider på <ph name="SOURCE_LANGUAGE" /> oversættes fremover til <ph name="TARGET_LANGUAGE" /></translation>
@@ -1260,7 +1259,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4838327282952368871">Drømmende</translation>
 <translation id="4840250757394056958">Se din Chrome-historik</translation>
 <translation id="484462545196658690">Automatisk</translation>
-<translation id="4849865131988503897">Nøjagtighedstjek</translation>
 <translation id="4850886885716139402">Vis</translation>
 <translation id="485316830061041779">Tysk</translation>
 <translation id="4853901935952445031">Efter februar 2022 kan dette website ikke anvende U2F API. Hvis du ejer websitet, skal du skifte til Web Authentication API.</translation>
@@ -1447,6 +1445,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5398772614898833570">Annoncer er blokeret</translation>
 <translation id="5400836586163650660">Grå</translation>
 <translation id="540969355065856584">Denne server kunne ikke bevise, at den er <ph name="DOMAIN" />, da dens sikkerhedscertifikat ikke er gyldigt i øjeblikket. Dette kan skyldes en fejlkonfiguration, eller at en hacker har opfanget din forbindelse.</translation>
+<translation id="5412236728747081950">Dette website henter dine interesser fra Chrome og bruger dem til at vise dig mere relevante annoncer</translation>
 <translation id="541416427766103491">Stabler 4</translation>
 <translation id="5421136146218899937">Ryd browserdata...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> vil gerne sende notifikationer til dig</translation>
@@ -1963,7 +1962,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> overholder ikke sikkerhedsstandarderne.</translation>
 <translation id="7210993021468939304">Linux-aktivitet i containeren. Kan også installere og køre Linux-apps i containeren.</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /> om dette problem.</translation>
-<translation id="7215025035562547931">Brug et øjeblik på at udøve kildekritik</translation>
 <translation id="7217745192097460130">Vil du bruge Touch ID til at bekræfte og gennemføre dit køb?</translation>
 <translation id="7219179957768738017">Forbindelsen bruger <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Behandler</translation>
@@ -2093,6 +2091,7 @@ Yderligere oplysninger:
 <translation id="7569952961197462199">Vil du fjerne kreditkortet fra Chrome?</translation>
 <translation id="7569983096843329377">Sort</translation>
 <translation id="7575207903026901870">Knappen Fjern forslag. Tryk på Enter for at fjerne dette forslag.</translation>
+<translation id="7577900504646297215">Administrer interesser</translation>
 <translation id="7578104083680115302">Betal hurtigt på websites og i apps på alle enheder ved hjælp af kort, du har gemt med Google.</translation>
 <translation id="7581199239021537589">Billedskift Y på side 2</translation>
 <translation id="7582602800368606489">Opret hurtigt en ny begivenhed i Google Kalender</translation>
@@ -2213,7 +2212,6 @@ Yderligere oplysninger:
 <translation id="7966803981046576691">Jobkontotype</translation>
 <translation id="79682505114836835">Værdien "<ph name="VALUE" />" er en ugyldig hex-farve.</translation>
 <translation id="7968982339740310781">Se info</translation>
-<translation id="7970392640816874403">Hvad siger andre kilder?</translation>
 <translation id="7976214039405368314">For mange anmodninger</translation>
 <translation id="7977538094055660992">Outputenhed</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -2565,7 +2563,6 @@ Yderligere oplysninger:
 <translation id="9155211586651734179">Forbundne eksterne lydenheder</translation>
 <translation id="9157595877708044936">Konfigurerer...</translation>
 <translation id="9158625974267017556">C6 (Envelope)</translation>
-<translation id="9164029392738894042">Nøjagtighedstjek</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">Tillad, at websites kan tjekke, om du har gemte betalingsmetoder</translation>
 <translation id="9169664750068251925">Bloker altid på dette website</translation>

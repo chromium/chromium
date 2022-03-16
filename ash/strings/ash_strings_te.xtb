@@ -127,6 +127,7 @@
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> కనెక్ట్ కాలేదు.</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> టైమర్ · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 అడ్రస్‌: <ph name="ADDRESS" /></translation>
+<translation id="1703117532528082099">ఎడమ వైపున డాక్ చేసి ఉన్న విండోను యాక్టివేట్ చేయండి.</translation>
 <translation id="1708345662127501511">డెస్క్: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">నెట్‌వర్క్ సెట్టింగ్‌లు</translation>
 <translation id="1715293566947629045">ప్రొఫైల్‌ను డిజేబుల్ చేస్తోంది. కొన్ని నిమిషాలు వేచి ఉండండి.</translation>
@@ -257,6 +258,7 @@
 <translation id="2595239820337756193">5 కిలోమీటర్‌లు, మైళ్ళలో</translation>
 <translation id="2596078834055697711">విండో స్క్రీన్‌షాట్ తీయండి</translation>
 <translation id="2607678425161541573">ఆన్‌లైన్ సైన్ ఇన్ అవసరం</translation>
+<translation id="2620436844016719705">సిస్టమ్</translation>
 <translation id="2621713457727696555">సురక్షితమైంది</translation>
 <translation id="263399434338050016">"అన్నింటినీ ఎంచుకోండి"</translation>
 <translation id="2653019840645008922">విండోను క్యాప్చర్ చేయండి</translation>
@@ -276,6 +278,7 @@
 <translation id="2727977024730340865">తక్కువ-పవర్ గల ఛార్జర్‌కు ప్లగిన్ చేయబడింది. బ్యాటరీ ఛార్జింగ్ విశ్వసనీయంగా ఉండకపోవచ్చు.</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"తొలగించండి"</translation>
+<translation id="2750941250130734256">అన్‌డాక్ చేసిన విండోను యాక్టివేట్ చేయండి.</translation>
 <translation id="2778650143428714839"><ph name="MANAGER" />, <ph name="DEVICE_TYPE" />ను మేనేజ్ చేస్తోంది</translation>
 <translation id="2782591952652094792">క్యాప్చర్ మోడ్ నుండి నిష్క్రమించండి</translation>
 <translation id="2791421900609674576">మీకు సిఫార్సులు కనిపిస్తాయి, కాబట్టి మీరు ఆపివేసిన చోటు నుండే కొనసాగించవచ్చు.  మీరు తాకి, నొక్కి ఉంచి, సిఫార్సులను తీసివేయవచ్చు.</translation>
@@ -352,6 +355,7 @@
 <translation id="320207200541803018">టైమర్‌ని సెట్ చేయండి</translation>
 <translation id="3203405173652969239">స్విచ్ యాక్సెస్ ఎనేబుల్ చేయబడింది</translation>
 <translation id="3207953481422525583">యూజర్ సెట్టింగ్‌లు</translation>
+<translation id="3208321278970793882">యాప్</translation>
 <translation id="3217205077783620295">వాల్యూమ్ ఆన్‌లో ఉంది, టోగుల్ చేయడం వలన ఆడియో మ్యూట్ అవుతుంది.</translation>
 <translation id="3226991577105957773">+మరో <ph name="COUNT" /></translation>
 <translation id="3227137524299004712">మైక్రోఫోన్</translation>
@@ -789,6 +793,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">ఆన్ చేయి</translation>
 <translation id="5920710855273935292">మైక్ మ్యూట్ చేయబడింది.</translation>
+<translation id="5924838240953214369">క్యాప్చర్ మోడ్, ఆటోమేటిక్ సెట్టింగ్ <ph name="SOURCE" /> <ph name="TYPE" />. కెమెరా ఇన్‌పుట్ <ph name="CAMERA_NAME" />‌కు సెట్ చేయబడింది, ప్రివ్యూ ఆన్‌లో ఉంది. కీబోర్డ్ నావిగేషన్ కోసం Tabను నొక్కండి.</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> ఆన్‌లో ఉంది.</translation>
 <translation id="5947494881799873997">తిరిగి పూర్వ స్థితికి మార్చు</translation>
 <translation id="595202126637698455">పనితీరుని గుర్తించడం ప్రారంభించబడింది</translation>
@@ -1036,6 +1041,7 @@
 <translation id="7513622367902644023">స్క్రీన్‌షాట్ మోడ్ ఎంచుకోబడింది</translation>
 <translation id="7513922695575567867">క్యాలెండర్, <ph name="DATE" /> వారం, ప్రస్తుతం <ph name="SELECTED_DATE" /> ఎంపిక చేయబడింది.</translation>
 <translation id="7514365320538308">డౌన్‌లోడ్ చేయి</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7526573455193969409">నెట్‌వ‌ర్క్‌పై ప‌ర్య‌వేక్ష‌ణ ఉండ‌వ‌చ్చు</translation>
 <translation id="7536035074519304529">IP అడ్రస్‌: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Linux యాప్‌లు, అజ్ఞాత విండోలు ప్రస్తుత సపోర్ట్ చేయవు. ఇతర యాప్‌లు సేవ్ చేయబడతాయి.</translation>
@@ -1046,6 +1052,7 @@
 <translation id="7564874036684306347">విండోలను మరొక డెస్క్‌టాప్‌కు తరలించడం వలన ఊహించని ప్రవర్తన చోటు చేసుకోవచ్చు. తర్వాత చూపబడే నోటిఫికేషన్‌లు, విండోలు మరియు డైలాగ్‌లు డెస్క్‌టాప్‌ల మధ్య విభజించబడవచ్చు.</translation>
 <translation id="7569509451529460200">బ్రెయిలీ మరియు ChromeVox ప్రారంభించబడ్డాయి</translation>
 <translation id="7569983096843329377">నలుపు</translation>
+<translation id="7573585051776738856">కుడి వైపున డాక్ చేసి ఉన్న విండోను యాక్టివేట్ చేయండి.</translation>
 <translation id="7579778809502851308">స్క్రీన్‌ను క్యాప్చర్ చేయి</translation>
 <translation id="7590883480672980941">ఇన్‌పుట్ సెట్టింగ్‌లు</translation>
 <translation id="7593891976182323525">Search లేదా Shift</translation>
@@ -1104,6 +1111,7 @@
 <translation id="7901405293566323524">ఫోన్ హబ్</translation>
 <translation id="7902625623987030061">వేలిముద్ర సెన్సార్‌ను తాకండి</translation>
 <translation id="7904094684485781019">ఈ ఖాతా నిర్వాహకులు బహుళ సైన్-ఇన్‌కు అనుమతించలేదు.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7930731167419639574">స్పీచ్ ఇప్పుడు పరికరంలోనే ప్రాసెస్ చేయబడింది, డిక్టేషన్ ఆఫ్‌లైన్‌లో పని చేస్తుంది</translation>
 <translation id="7933084174919150729">ప్రాథమిక ప్రొఫైల్‌కు మాత్రమే Google అసిస్టెంట్ అందుబాటులో ఉంటుంది.</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> మరియు <ph name="SECOND_PARENT_EMAIL" /> ద్వారా ఖాతా నిర్వహించబడుతోంది</translation>

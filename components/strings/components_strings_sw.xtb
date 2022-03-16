@@ -115,7 +115,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="1301324364792935241">Angalia mipangilio yako ya DNS Salama</translation>
 <translation id="1307966114820526988">Vipengele Vilivyoacha Kutumiwa</translation>
 <translation id="1308113895091915999">Ofa inapatikana</translation>
-<translation id="1312803275555673949">Je, kuna ithibati gani nyingine?</translation>
 <translation id="1314311879718644478">Angalia maudhui ya uhalisia ulioboreshwa</translation>
 <translation id="1314509827145471431">Unganisha kulia</translation>
 <translation id="1318023360584041678">Imehifadhiwa katika kikundi cha vichupo</translation>
@@ -739,7 +738,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="324180406144491771">Viungo vya “<ph name="HOST_NAME" />” vimezuiwa</translation>
 <translation id="3249845759089040423">Groovy</translation>
 <translation id="3252266817569339921">Kifaransa</translation>
-<translation id="3257954757204451555">Maelezo haya yameandikwa na nani?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, bonyeza 'Tab' kisha 'Enter' ili uweke tukio jipya katika Kalenda ya Google kwa haraka</translation>
 <translation id="3261488570342242926">Pata maelezo kuhusu kadi pepe</translation>
 <translation id="3264837738038045344">Kitufe cha 'Dhibiti mipangilio ya Chrome', bonyeza 'Enter' ili uende kwenye mipangilio yako ya Chrome</translation>
@@ -1127,6 +1125,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="4414515549596849729">data ya tovuti na vidakuzi</translation>
 <translation id="4415426530740016218">Anwani ya Mahali pa Kuchukulia Bidhaa</translation>
 <translation id="4424024547088906515">Seva hii haikuweza kuthibitisha kuwa ni <ph name="DOMAIN" />; cheti chake cha usalama hakiaminiwi na Chrome. Hii inaweza kusababishwa na usanidi usiofaa au mvamizi kuingilia muunganisho wako.</translation>
+<translation id="4428065317363009941">Kuweka mapendeleo ya matangazo</translation>
 <translation id="443121186588148776">Mlango wa nambari ya ufuatiliaji</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> haikukubali cheti chako cha kuingia katika akaunti, au huenda hukutoa cheti.</translation>
 <translation id="4432792777822557199">Kurasa za <ph name="SOURCE_LANGUAGE" /> zitatafsiriwa katika <ph name="TARGET_LANGUAGE" /> kuanzia sasa</translation>
@@ -1259,7 +1258,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="4838327282952368871">Dreamy</translation>
 <translation id="4840250757394056958">Angalia historia yako kwenye Chrome</translation>
 <translation id="484462545196658690">Otomatiki</translation>
-<translation id="4849865131988503897">Ukaguzi wa usahihi</translation>
 <translation id="4850886885716139402">Mwonekano</translation>
 <translation id="485316830061041779">Kijerumani</translation>
 <translation id="4853901935952445031">Tovuti hii haitaweza kutumia U2F API baada ya Februari 2022. Ikiwa unamiliki tovuti hii, unapaswa kuibadilisha itumie Web Authentication API.</translation>
@@ -1446,6 +1444,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="5398772614898833570">Matangazo yamezuiwa</translation>
 <translation id="5400836586163650660">Kijivu</translation>
 <translation id="540969355065856584">Seva hii haikuweza kuthibitisha kuwa ni <ph name="DOMAIN" />; cheti chake cha usalama si sahihi kwa sasa. Hii inaweza kusababishwa na usanidi usiofaa au mvamizi kuingilia muunganisho wako.</translation>
+<translation id="5412236728747081950">Tovuti hii hupata mambo yanayokuvutia kutoka kwenye Chrome ili kukuonyesha matangazo yanayokufaa zaidi</translation>
 <translation id="541416427766103491">Tupio la kutoa la printa la nne</translation>
 <translation id="5421136146218899937">Futa data ya kuvinjari...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> inataka kukutumia arifa</translation>
@@ -1962,7 +1961,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> haizingatii viwango vya usalama.</translation>
 <translation id="7210993021468939304">Shughuli ya Linux ndani ya metadata inaweza kusakinisha na kutekeleza programu za Linux ndani ya metadata</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /> kuhusu tatizo hili.</translation>
-<translation id="7215025035562547931">Fikiria kuhusu usahihi kwa muda kidogo</translation>
 <translation id="7217745192097460130">Ungependa kutumia Touch ID ili uthibitishe na kukamilisha ununuzi wako?</translation>
 <translation id="7219179957768738017">Muunganisho unatumia <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Malipo yanashughulikiwa</translation>
@@ -2090,6 +2088,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="7569952961197462199">Ungependa kuondoa kadi ya malipo kutoka kwenye Chrome?</translation>
 <translation id="7569983096843329377">Nyeusi</translation>
 <translation id="7575207903026901870">Ondoa kitufe cha Mapendekezo, bonyeza Enter ili uondoe pendekezo hili</translation>
+<translation id="7577900504646297215">Dhibiti yanayokuvutia</translation>
 <translation id="7578104083680115302">Lipa haraka kwenye tovuti na programu katika vifaa vyote ukitumia kadi ulizohifadhi kwenye Google.</translation>
 <translation id="7581199239021537589">Ugeuzaji wa upande wa pili wa picha ya Y</translation>
 <translation id="7582602800368606489">Weka tukio jipya katika Kalenda ya Google kwa haraka</translation>
@@ -2210,7 +2209,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="7966803981046576691">Aina ya akaunti ya kazi</translation>
 <translation id="79682505114836835">Thamani ya "<ph name="VALUE" />" ni rangi ya heksadesimali isiyo sahihi.</translation>
 <translation id="7968982339740310781">Ona maelezo</translation>
-<translation id="7970392640816874403">Vyanzo vingine vinasema nini?</translation>
 <translation id="7976214039405368314">Maombi mengi mno</translation>
 <translation id="7977538094055660992">Kifaa cha kutoa maudhui</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -2560,7 +2558,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="9155211586651734179">Vifaa vya sauti vimeambatishwa</translation>
 <translation id="9157595877708044936">Inasanidi...</translation>
 <translation id="9158625974267017556">C6 (Bahasha)</translation>
-<translation id="9164029392738894042">Ukaguzi wa Usahihi</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">Ruhusu tovuti zikague ikiwa umehifadhi njia ya kulipa</translation>
 <translation id="9169664750068251925">Zuia kila wakati kwenye tovuti hii</translation>

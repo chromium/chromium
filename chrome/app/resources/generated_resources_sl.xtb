@@ -1078,7 +1078,6 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="2019718679933488176">&amp;Odpri zvočni posnetek na novem zavihku</translation>
 <translation id="2020183425253392403">Pokaži nastavitve omrežnega naslova</translation>
 <translation id="2020225359413970060">Pregled datoteke</translation>
-<translation id="2022395138980869975">Preklop stranskega iskanja</translation>
 <translation id="2023167225947895179">Kodo PIN je morda preprosto uganiti</translation>
 <translation id="202352106777823113">Prenos je trajal predolgo in ga je ustavilo omrežje.</translation>
 <translation id="2024195579772565064">Izbris iskalnika</translation>
@@ -1347,6 +1346,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2278562042389100163">Odpri okno brskalnika</translation>
 <translation id="2278668501808246459">Zagon upravitelja vsebnikov</translation>
 <translation id="2280486287150724112">Desni rob</translation>
+<translation id="2281863813036651454">Levi klik z miško</translation>
 <translation id="2282146716419988068">Proces GPU</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{Odprite vse v &amp;novi skupini zavihkov}=1{Odprite v &amp;novi skupini zavihkov}one{Odprite vse ({COUNT}) v &amp;novi skupini zavihkov}two{Odprite vse ({COUNT}) v &amp;novi skupini zavihkov}few{Odprite vse ({COUNT}) v &amp;novi skupini zavihkov}other{Odprite vse ({COUNT}) v &amp;novi skupini zavihkov}}</translation>
 <translation id="2285942871162473373">Vašega prstnega odtisa ni bilo mogoče prepoznati. Poskusite znova.</translation>
@@ -2978,7 +2978,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3888053818972567950">Povezava s storitvijo <ph name="WEB_DRIVE" /></translation>
 <translation id="3888550877729210209">Ustvarjanje zapiskov z aplikacijo <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">S temi podatki si pomagamo pri razumevanju vaše težave s Pomočnikom. Shranjeni so do 90 dni in dostop je omogočen samo ustreznim skupinam inženirjev in skupinam za povratne informacije.</translation>
-<translation id="3888900458694486810">Zapiranje stranskega iskanja</translation>
 <translation id="3890064827463908288">Vklopite sinhronizacijo za Chrome, če želite uporabljati sinhronizacijo poverilnic za Wi-Fi</translation>
 <translation id="389313931326656921">Dodelitev stikala za »Naprej«</translation>
 <translation id="3893295674388762059">Če želite izbrisati podatke, zaprite vsa anonimna okna</translation>
@@ -3292,7 +3291,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4208390505124702064">Iskanje po: <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Velika</translation>
 <translation id="4209251085232852247">Izklopljeno</translation>
-<translation id="4209464433672152343">Dokumenti so <ph name="BEGIN_LINK_HELP" />poslani Googlu<ph name="END_LINK_HELP" /> zaradi priprave na tiskanje. Tiskalnike in zgodovino tiskalnikov si lahko ogledate in jo urejate ter upravljate na <ph name="BEGIN_LINK_DASHBOARD" />nadzorni plošči Google Tiskanja v oblaku<ph name="END_LINK_DASHBOARD" />.</translation>
 <translation id="4210048056321123003">Prenos navideznega računalnika</translation>
 <translation id="421182450098841253">&amp;Pokaži vrstico z zaznamki</translation>
 <translation id="4211851069413100178">Pošiljanje podatkov o uporabi in diagnostičnih podatkov. Pomagajte izboljšati izkušnjo z Androidom s samodejnim pošiljanjem diagnostičnih podatkov ter podatkov o uporabi naprave in aplikacij Googlu. Te podatke uporabljamo za izboljšanje stabilnosti sistema in izvajanja aplikacij ter drugega. Nekateri združeni podatki bodo pomagali tudi Googlovim aplikacijam in partnerjem, na primer razvijalcem za Android. To <ph name="BEGIN_LINK1" />nastavitev<ph name="END_LINK1" /> je uveljavil lastnik naprave. Lastnik bo morda izbral, da se za to napravo pošiljajo diagnostični podatki in podatki o uporabi Googlu. Če ste vklopili dodatno beleženje dejavnosti v spletu in aplikacijah, bodo ti podatki morda shranjeni v vašem računu za Google. <ph name="BEGIN_LINK2" />Več o tem<ph name="END_LINK2" /></translation>
@@ -5166,6 +5164,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6129938384427316298">Pripomba o Netscapeovem potrdilu</translation>
 <translation id="6129953537138746214">Presledek</translation>
 <translation id="6130692320435119637">Dodaj Wi-Fi</translation>
+<translation id="6130887916931372608">Tipka tipkovnice</translation>
 <translation id="6136114942382973861">Zapri vrstico za prenose</translation>
 <translation id="6136287496450963112">Vaš varnostni ključ ni zaščiten s kodo PIN. Če želite upravljati prstne odtise, naprej ustvarite kodo PIN.</translation>
 <translation id="6138680304137685902">Podpis X9.62 ECDSA z algoritmom SHA-384</translation>
@@ -6188,7 +6187,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="7180611975245234373">Osveži</translation>
 <translation id="7180865173735832675">Prilagodi</translation>
 <translation id="7182791023900310535">Premakni geslo</translation>
-<translation id="7183420126213758623">Preklop stranskega iskanja. Stransko iskanje ni aktivirano.</translation>
 <translation id="7186088072322679094">Ohrani v orodni vrstici</translation>
 <translation id="7186303001964993981">Spletno mesto <ph name="ORIGIN" /> ne more odpreti te mape, ker so v njej sistemske datoteke.</translation>
 <translation id="7187428571767585875">Vnosi v register, ki bodo odstranjeni ali spremenjeni:</translation>
@@ -6710,7 +6708,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="7701040980221191251">Nič</translation>
 <translation id="7701869757853594372">Kode za dostop USER</translation>
 <translation id="7702574632857388784">Odstrani datoteko <ph name="FILE_NAME" /> s seznama</translation>
-<translation id="7702599324215660661">Zakleni ob izhodu</translation>
 <translation id="7702907602086592255">Domena</translation>
 <translation id="7704305437604973648">Opravilo</translation>
 <translation id="7704317875155739195">Samodejno dokončanje iskanj in URL-jev</translation>
@@ -6780,6 +6777,7 @@ Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</trans
 <translation id="7768770796815395237">Spremeni</translation>
 <translation id="7768784765476638775">Izberite in poslušajte</translation>
 <translation id="7770406201819593386">Izvajanje diagnostičnih preizkusov za ChromeOS Flex.</translation>
+<translation id="7770450735129978837">Desni klik z miško</translation>
 <translation id="7770612696274572992">Slika je kopirana iz druge naprave</translation>
 <translation id="7771452384635174008">Postavitev</translation>
 <translation id="7772032839648071052">Potrdi geslo</translation>
@@ -6816,7 +6814,6 @@ Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</trans
 <translation id="7798844538707273832">Samodejno je blokirano dovoljenje <ph name="PERMISSION" /></translation>
 <translation id="7799299114731150374">Ozadje uspešno nastavljeno</translation>
 <translation id="7799817062559422778">Svetli način</translation>
-<translation id="7800159967992492578">Preklop stranskega iskanja. Stransko iskanje je aktivirano.</translation>
 <translation id="7800518121066352902">Zasukaj v o&amp;bratni smeri urinega kazalca</translation>
 <translation id="7801679634091975683">Spremembe, ki jih naredite tukaj, se uporabljajo samo za brskalnik Chrome Lacros. Če želite spreminjati nastavitve brskalnika Chrome, odprite brskalnik Chrome in nato nastavitve.</translation>
 <translation id="780301667611848630">Ne, hvala</translation>

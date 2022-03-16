@@ -1075,7 +1075,6 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="2019718679933488176">&amp;Mở Âm thanh trong Thẻ Mới</translation>
 <translation id="2020183425253392403">Hiển thị cài đặt địa chỉ mạng</translation>
 <translation id="2020225359413970060">Quét tệp</translation>
-<translation id="2022395138980869975">Bật/tắt bảng tìm kiếm bên</translation>
 <translation id="2023167225947895179">Mã PIN có thể dễ đoán</translation>
 <translation id="202352106777823113">Quá trình tải xuống mất quá nhiều thời gian và đã bị ngừng bởi mạng.</translation>
 <translation id="2024195579772565064">Xoá công cụ tìm kiếm</translation>
@@ -1344,6 +1343,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2278562042389100163">Mở cửa sổ trình duyệt</translation>
 <translation id="2278668501808246459">Đang khởi động dịch vụ quản lý vùng chứa</translation>
 <translation id="2280486287150724112">Lề phải</translation>
+<translation id="2281863813036651454">Nhấn chuột trái</translation>
 <translation id="2282146716419988068">Quá trình GPU</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{Mở tất cả trong &amp;nhóm thẻ mới}=1{Mở trong &amp;nhóm thẻ mới}other{Mở tất cả ({COUNT}) trong &amp;nhóm thẻ mới}}</translation>
 <translation id="2285942871162473373">Không thể nhận dạng vân tay của bạn. Hãy thử lại.</translation>
@@ -2975,7 +2975,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3888053818972567950">Kết nối với <ph name="WEB_DRIVE" /></translation>
 <translation id="3888550877729210209">Ghi chú bằng <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">Thông tin này sẽ giúp chúng tôi hiểu rõ hơn vấn đề liên quan đến Trợ lý của bạn. Chúng tôi lưu trữ thông tin này trong tối đa 90 ngày và chỉ các nhóm liên quan phụ trách kỹ thuật và phản hồi mới được phép truy cập.</translation>
-<translation id="3888900458694486810">Đóng tính bảng tìm kiếm bên</translation>
 <translation id="3890064827463908288">Bật Chrome Sync để dùng tính năng Đồng bộ hóa Wi-Fi</translation>
 <translation id="389313931326656921">Gán công tắc cho thao tác "Tiếp theo"</translation>
 <translation id="3893295674388762059">Để xóa dữ liệu, hãy đóng mọi Cửa sổ ẩn danh</translation>
@@ -3289,7 +3288,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4208390505124702064">Tìm kiếm <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Lớn</translation>
 <translation id="4209251085232852247">Đang tắt</translation>
-<translation id="4209464433672152343">Tài liệu được <ph name="BEGIN_LINK_HELP" />gửi tới Google<ph name="END_LINK_HELP" /> để chuẩn bị in. Xem, chỉnh sửa và quản lý máy in và lịch sử in của bạn trên <ph name="BEGIN_LINK_DASHBOARD" />trang tổng quan của Google Cloud Print<ph name="END_LINK_DASHBOARD" />.</translation>
 <translation id="4210048056321123003">Đang tải máy ảo xuống</translation>
 <translation id="421182450098841253">&amp;Hiển thị thanh dấu trang</translation>
 <translation id="4211851069413100178">Gửi dữ liệu chẩn đoán và dữ liệu về mức sử dụng. Giúp cải thiện trải nghiệm Android của bạn bằng cách tự động gửi dữ liệu chẩn đoán cũng như dữ liệu về mức sử dụng ứng dụng và thiết bị cho Google. Những thông tin này sẽ giúp tăng độ ổn định của hệ thống và ứng dụng cũng như cải thiện các mặt khác. Một số dữ liệu tổng hợp cũng sẽ hữu ích cho các ứng dụng và đối tác của Google, chẳng hạn như những nhà phát triển Android. Mục <ph name="BEGIN_LINK1" />cài đặt<ph name="END_LINK1" /> này do chủ sở hữu thực thi. Chủ sở hữu có thể chọn gửi dữ liệu chẩn đoán và dữ liệu về mức sử dụng của thiết bị này cho Google. Nếu bạn bật mục cài đặt bổ sung Hoạt động trên web và ứng dụng thì dữ liệu này có thể được lưu vào Tài khoản Google của bạn. <ph name="BEGIN_LINK2" />Tìm hiểu thêm<ph name="END_LINK2" /></translation>
@@ -5161,6 +5159,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6129938384427316298">Nhận xét về Chứng chỉ Netscape</translation>
 <translation id="6129953537138746214">Dấu cách</translation>
 <translation id="6130692320435119637">Thêm mạng Wi-Fi</translation>
+<translation id="6130887916931372608">Nút bàn phím</translation>
 <translation id="6136114942382973861">Đóng thanh tệp đã tải xuống</translation>
 <translation id="6136287496450963112">Khóa bảo mật của bạn không được bảo vệ bằng mã PIN. Để quản lý vân tay số, trước tiên, hãy tạo một mã PIN.</translation>
 <translation id="6138680304137685902">Chữ ký X9.62 ECDSA với SHA-384</translation>
@@ -6183,7 +6182,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="7180611975245234373">Làm mới</translation>
 <translation id="7180865173735832675">Tùy chỉnh</translation>
 <translation id="7182791023900310535">Di chuyển mật khẩu của bạn</translation>
-<translation id="7183420126213758623">Bật/tắt bảng tìm kiếm bên. Chưa kích hoạt bảng tìm kiếm bên.</translation>
 <translation id="7186088072322679094">Giữ trong thanh công cụ</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> không thể mở thư mục này vì thư mục này chứa tệp hệ thống</translation>
 <translation id="7187428571767585875">Các mục sổ đăng ký sẽ bị xóa hoặc thay đổi:</translation>
@@ -6705,7 +6703,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="7701040980221191251">Không có</translation>
 <translation id="7701869757853594372">Xử lý NGƯỜI DÙNG</translation>
 <translation id="7702574632857388784">Xóa <ph name="FILE_NAME" /> khỏi danh sách</translation>
-<translation id="7702599324215660661">Khoá khi rời đi</translation>
 <translation id="7702907602086592255">Miền</translation>
 <translation id="7704305437604973648">Tác vụ</translation>
 <translation id="7704317875155739195">Tự động hoàn thành cụm từ tìm kiếm và URL</translation>
@@ -6775,6 +6772,7 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7768770796815395237">Thay đổi</translation>
 <translation id="7768784765476638775">Chọn để nói</translation>
 <translation id="7770406201819593386">Chạy quá trình kiểm tra chẩn đoán ChromeOS Flex.</translation>
+<translation id="7770450735129978837">Nhấn chuột phải</translation>
 <translation id="7770612696274572992">Hình ảnh được sao chép từ thiết bị khác</translation>
 <translation id="7771452384635174008">Bố cục</translation>
 <translation id="7772032839648071052">Xác nhận cụm mật khẩu</translation>
@@ -6811,7 +6809,6 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7798844538707273832">Đã tự động chặn <ph name="PERMISSION" /></translation>
 <translation id="7799299114731150374">Đã đặt hình nền thành công</translation>
 <translation id="7799817062559422778">Chế độ sáng</translation>
-<translation id="7800159967992492578">Bật/tắt bảng tìm kiếm bên. Đã kích hoạt bảng tìm kiếm bên.</translation>
 <translation id="7800518121066352902">Xoay &amp;ngược chiều kim đồng hồ</translation>
 <translation id="7801679634091975683">Các thay đổi bạn thực hiện tại đây chỉ áp dụng cho Trình duyệt Lacros Chrome. Để thực hiện các thay đổi đối với chế độ cài đặt trên Trình duyệt Chrome của bạn, hãy mở Trình duyệt Chrome và chuyển đến phần cài đặt.</translation>
 <translation id="780301667611848630">Không, cảm ơn</translation>

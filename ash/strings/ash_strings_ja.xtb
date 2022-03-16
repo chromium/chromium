@@ -31,6 +31,7 @@
 <translation id="1150989369772528668">カレンダー</translation>
 <translation id="1153356358378277386">ペア設定されたデバイス</translation>
 <translation id="1165712434476988950">アップデートを適用するにはデバイスの再起動が必要です。</translation>
+<translation id="1171742223880403396">USB-C ケーブルがディスプレイに正しく接続されていない可能性があります</translation>
 <translation id="1175572348579024023">スクロール</translation>
 <translation id="1178581264944972037">一時停止</translation>
 <translation id="1181037720776840403">削除</translation>
@@ -126,6 +127,7 @@
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> は接続されていません。</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> タイマー · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 アドレス: <ph name="ADDRESS" /></translation>
+<translation id="1703117532528082099">アクティブなウィンドウを左側に固定しました。</translation>
 <translation id="1708345662127501511">デスク: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">ネットワーク設定</translation>
 <translation id="1715293566947629045">プロファイルを無効にしています。数分お待ちください。</translation>
@@ -256,6 +258,7 @@
 <translation id="2595239820337756193">5 km は何マイル</translation>
 <translation id="2596078834055697711">ウィンドウのスクリーンショットを撮影する</translation>
 <translation id="2607678425161541573">オンライン ログインが必要です</translation>
+<translation id="2620436844016719705">システム</translation>
 <translation id="2621713457727696555">保護あり</translation>
 <translation id="263399434338050016">"すべて選択"</translation>
 <translation id="2653019840645008922">ウィンドウ キャプチャ</translation>
@@ -275,6 +278,7 @@
 <translation id="2727977024730340865">低電力の充電器に接続しています。バッテリーが充電されない可能性があります。</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />、<ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"削除"</translation>
+<translation id="2750941250130734256">アクティブなウィンドウの固定を解除しました。</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> は <ph name="MANAGER" /> によって管理されています</translation>
 <translation id="2782591952652094792">キャプチャ モードを終了</translation>
 <translation id="2791421900609674576">前回中断したところから再開できるように、おすすめが表示されます。おすすめは長押しで削除できます。</translation>
@@ -351,6 +355,7 @@
 <translation id="320207200541803018">タイマーを設定して</translation>
 <translation id="3203405173652969239">スイッチ アクセスが有効になりました</translation>
 <translation id="3207953481422525583">ユーザー設定</translation>
+<translation id="3208321278970793882">アプリ</translation>
 <translation id="3217205077783620295">音量はオンになっています。切り替えると音声がミュートされます。</translation>
 <translation id="3226991577105957773">他 <ph name="COUNT" /> 件</translation>
 <translation id="3227137524299004712">マイク</translation>
@@ -787,6 +792,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" />（<ph name="MAIL" />）</translation>
 <translation id="5916664084637901428">オン</translation>
 <translation id="5920710855273935292">マイクはミュートです。</translation>
+<translation id="5924838240953214369">キャプチャ モードです。デフォルトは <ph name="SOURCE" /> の <ph name="TYPE" /> です。カメラ入力を <ph name="CAMERA_NAME" /> に設定しました。プレビューはオンです。キーボード ナビゲーションを使用するには、タブキーを押してください。</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> はオンになっています。</translation>
 <translation id="5947494881799873997">元に戻す</translation>
 <translation id="595202126637698455">パフォーマンス追跡機能が有効です</translation>
@@ -1035,6 +1041,7 @@
 <translation id="7513622367902644023">スクリーンショット モードを選択しました</translation>
 <translation id="7513922695575567867">カレンダー、<ph name="DATE" /> の週、現在 <ph name="SELECTED_DATE" /> が選択されています。</translation>
 <translation id="7514365320538308">ダウンロード</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7526573455193969409">ネットワークが監視されている可能性があります</translation>
 <translation id="7536035074519304529">IP アドレス: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Linux アプリとシークレット ウィンドウは現在サポートされていません。他のアプリは保存されます。</translation>
@@ -1045,6 +1052,7 @@
 <translation id="7564874036684306347">ウィンドウを別のデスクトップに移動すると、予期しない動作が起こることがあります。以降の通知、ウィンドウ、ダイアログは、複数のデスクトップに分かれて表示される可能性があります。</translation>
 <translation id="7569509451529460200">Braille と ChromeVox が有効になっています</translation>
 <translation id="7569983096843329377">黒</translation>
+<translation id="7573585051776738856">アクティブなウィンドウを右側に固定しました。</translation>
 <translation id="7579778809502851308">スクリーン キャプチャ</translation>
 <translation id="7590883480672980941">入力設定</translation>
 <translation id="7593891976182323525">検索/Shift</translation>
@@ -1103,6 +1111,7 @@
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">指紋認証センサーをタッチ</translation>
 <translation id="7904094684485781019">このアカウントの管理者がマルチログインを許可していません。</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7930731167419639574">音声はローカルで処理されました。オフラインで音声入力を使用できます。</translation>
 <translation id="7933084174919150729">Google アシスタントはメインのプロフィールでのみご利用いただけます。</translation>
 <translation id="79341161159229895">このアカウントは <ph name="FIRST_PARENT_EMAIL" /> と <ph name="SECOND_PARENT_EMAIL" /> により管理されています</translation>

@@ -115,7 +115,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1301324364792935241">Zkontrolujte nastavení zabezpečeného DNS</translation>
 <translation id="1307966114820526988">Funkce, které již nejsou podporovány</translation>
 <translation id="1308113895091915999">Je k dispozici nabídka</translation>
-<translation id="1312803275555673949">Jaké důkazy to dokládají?</translation>
 <translation id="1314311879718644478">Zobrazit obsah rozšířené reality</translation>
 <translation id="1314509827145471431">Vazba vpravo</translation>
 <translation id="1318023360584041678">Uloženo do skupiny karet</translation>
@@ -733,7 +732,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="324180406144491771">Odkazy „<ph name="HOST_NAME" />“ jsou blokovány</translation>
 <translation id="3249845759089040423">Elegantní</translation>
 <translation id="3252266817569339921">francouzština</translation>
-<translation id="3257954757204451555">Kdo za těmito informacemi stojí?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím klávesy Tab a poté Enter rychle vytvoříte novou událost v Kalendáři Google</translation>
 <translation id="3261488570342242926">Informace o virtuálních kartách</translation>
 <translation id="3264837738038045344">Tlačítko správy nastavení Chromu. Stisknutím klávesy Enter přejdete do nastavení Chromu</translation>
@@ -1115,6 +1113,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4414515549596849729">soubory cookie a data webu</translation>
 <translation id="4415426530740016218">Adresa vyzvednutí</translation>
 <translation id="4424024547088906515">Server nedokázal prokázat, že patří doméně <ph name="DOMAIN" />. Chrome jeho bezpečnostnímu certifikátu nedůvěřuje. Může to být způsobeno nesprávnou konfigurací nebo tím, že vaše připojení zachytává útočník.</translation>
+<translation id="4428065317363009941">Personalizace reklam</translation>
 <translation id="443121186588148776">Sériový port</translation>
 <translation id="4432688616882109544">Web <ph name="HOST_NAME" /> nepřijal přihlašovací certifikát, případně žádný certifikát nebyl poskytnut.</translation>
 <translation id="4432792777822557199">Stránky v jazyce <ph name="SOURCE_LANGUAGE" /> od teď budou překládány do jazyka <ph name="TARGET_LANGUAGE" /></translation>
@@ -1247,7 +1246,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4838327282952368871">Zasněné</translation>
 <translation id="4840250757394056958">Zobrazit historii Chromu</translation>
 <translation id="484462545196658690">Automaticky</translation>
-<translation id="4849865131988503897">Kontrola přesnosti</translation>
 <translation id="4850886885716139402">Zobrazit</translation>
 <translation id="485316830061041779">němčina</translation>
 <translation id="4853901935952445031">Po únoru 2022 nebude tento web moci používat rozhraní U2F API. Pokud tento web vlastníte, měli byste provést úpravy, aby používal rozhraní Web Authentication API.</translation>
@@ -1434,6 +1432,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5398772614898833570">Byly zablokovány reklamy</translation>
 <translation id="5400836586163650660">Šedá</translation>
 <translation id="540969355065856584">Server nedokázal prokázat, že patří doméně <ph name="DOMAIN" />. Jeho bezpečnostní certifikát v tuto chvíli není platný. Může to být způsobeno nesprávnou konfigurací nebo tím, že vaše připojení zachytává útočník.</translation>
+<translation id="5412236728747081950">Tento web získává z Chromu vaše zájmy, aby vám mohl zobrazovat relevantnější reklamy</translation>
 <translation id="541416427766103491">Stohovač 4</translation>
 <translation id="5421136146218899937">Vymazat údaje o prohlížení...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> vám chce zasílat oznámení</translation>
@@ -1949,7 +1948,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7210863904660874423">Web <ph name="HOST_NAME" /> nevyhovuje bezpečnostním standardům.</translation>
 <translation id="7210993021468939304">Aktivita systému Linux v rámci kontejneru, může instalovat a spouštět aplikace Linux v kontejneru</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /> o tomto problému.</translation>
-<translation id="7215025035562547931">Zamyslete se nad přesností</translation>
 <translation id="7217745192097460130">Chcete nákup ověřit a dokončit pomocí Touch ID?</translation>
 <translation id="7219179957768738017">Připojení používá protokol <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Zpracovávání</translation>
@@ -2078,6 +2076,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7569952961197462199">Odstranit platební kartu z Chromu?</translation>
 <translation id="7569983096843329377">Černá</translation>
 <translation id="7575207903026901870">Tlačítko Odstranit návrh, stisknutím klávesy Enter tento návrh odstraníte</translation>
+<translation id="7577900504646297215">Spravovat zájmy</translation>
 <translation id="7578104083680115302">Plaťte na webech a v aplikacích v různých zařízeních rychle pomocí karet uložených na Googlu.</translation>
 <translation id="7581199239021537589">Posun obrázku strany 2 na ose Y</translation>
 <translation id="7582602800368606489">Rychle vytvořit novou událost v Kalendáři Google</translation>
@@ -2198,7 +2197,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7966803981046576691">Typ účtu úlohy</translation>
 <translation id="79682505114836835">„<ph name="VALUE" />“ není platná hexadecimální hodnota barvy.</translation>
 <translation id="7968982339740310781">Zobrazit podrobnosti</translation>
-<translation id="7970392640816874403">Co říkají jiné zdroje?</translation>
 <translation id="7976214039405368314">Příliš mnoho požadavků</translation>
 <translation id="7977538094055660992">Výstupní zařízení</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -2550,7 +2548,6 @@ Další podrobnosti:
 <translation id="9155211586651734179">Jsou připojeny zvukové periferie</translation>
 <translation id="9157595877708044936">Nastavování...</translation>
 <translation id="9158625974267017556">C6 (obálka)</translation>
-<translation id="9164029392738894042">Kontrola přesnosti</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">Povolit webům zjišťovat, zda máte uložené platební metody</translation>
 <translation id="9169664750068251925">Blokovat vždy na tomto webu</translation>

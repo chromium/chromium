@@ -259,6 +259,7 @@
 <translation id="2595239820337756193">5 km во милји</translation>
 <translation id="2596078834055697711">Прави слика од екранот</translation>
 <translation id="2607678425161541573">Задолжително е најавување онлајн</translation>
+<translation id="2620436844016719705">Систем</translation>
 <translation id="2621713457727696555">Заштитена</translation>
 <translation id="263399434338050016">„Избери сѐ“</translation>
 <translation id="2653019840645008922">Снимање прозорец</translation>
@@ -355,6 +356,7 @@
 <translation id="320207200541803018">Постави тајмер</translation>
 <translation id="3203405173652969239">„Пристапот со прекинувачи“ е овозможен</translation>
 <translation id="3207953481422525583">Поставки на корисникот</translation>
+<translation id="3208321278970793882">Апликација</translation>
 <translation id="3217205077783620295">Јачината на звук е вклучена. Ако смените, ќе се исклучи звукот на аудиото.</translation>
 <translation id="3226991577105957773">и уште <ph name="COUNT" /></translation>
 <translation id="3227137524299004712">Микрофон</translation>
@@ -1040,6 +1042,7 @@
 <translation id="7513622367902644023">Избран е режимот на слика од екранот</translation>
 <translation id="7513922695575567867">Календар, седмицата што започнува на <ph name="DATE" />, <ph name="SELECTED_DATE" /> е избран моментално.</translation>
 <translation id="7514365320538308">Преземи</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7526573455193969409">Мрежата можеби се следи</translation>
 <translation id="7536035074519304529">IP адреса: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Апликациите на Linux и прозорците „Инкогнито“ не се поддржани моментално. Другите апликации ќе се зачуваат.</translation>
@@ -1109,6 +1112,7 @@
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Допрете го сензорот за отпечатоци</translation>
 <translation id="7904094684485781019">Администраторот за оваа сметка не дозволува повеќекратно пријавување.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7930731167419639574">Говорот сега се обработува локално и „Диктирањето“ функционира офлајн</translation>
 <translation id="7933084174919150729">„Помошникот на Google“ е достапен само за примарниот профил.</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> и <ph name="SECOND_PARENT_EMAIL" /> управуваат со сметката</translation>

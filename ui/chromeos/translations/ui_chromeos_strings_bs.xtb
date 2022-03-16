@@ -825,7 +825,7 @@
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> audio</translation>
 <translation id="8045462269890919536">rumunski</translation>
 <translation id="8049184478152619004">Unesite lični kôd za deblokiranje (PUK)</translation>
-<translation id="807187749540895545">Izdvajanje datoteka <ph name="FILE_NAME" />...</translation>
+<translation id="807187749540895545">Izdvajanje fajla <ph name="FILE_NAME" />...</translation>
 <translation id="8079530767338315840">Ponovi</translation>
 <translation id="8087576439476816834">Preuzimanje, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Dijeljeno sa mnom</translation>
@@ -877,7 +877,7 @@
 <translation id="8484284835977497781">Odaberite iz nedavnih fotografija.</translation>
 <translation id="8487700953926739672">Dostupno van mreže</translation>
 <translation id="8492972329130824181">Kućna mreža nije dostupna. Prijenos roming podataka na mobilnoj mreži mora biti omogućen da se povežete.</translation>
-<translation id="8499098729323186194">Izdvajanje <ph name="NUMBER_OF_ITEMS" /> stavke/stavki...</translation>
+<translation id="8499098729323186194">Izdvajanje stavki (njih <ph name="NUMBER_OF_ITEMS" />)...</translation>
 <translation id="8521441079177373948">Velika Britanija</translation>
 <translation id="8525306231823319788">Cijeli ekran</translation>
 <translation id="853494022971700746">francuski (Francuska)</translation>

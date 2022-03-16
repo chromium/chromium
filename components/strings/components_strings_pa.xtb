@@ -115,7 +115,6 @@
 <translation id="1301324364792935241">ਆਪਣੀਆਂ ਸੁਰੱਖਿਅਤ DNS ਸੈਟਿੰਗਾਂ ਦੀ ਜਾਂਚ ਕਰੋ</translation>
 <translation id="1307966114820526988">ਨਾਪਸੰਦ ਕੀਤੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ</translation>
 <translation id="1308113895091915999">ਪੇਸ਼ਕਸ਼ ਉਪਲਬਧ ਹੈ</translation>
-<translation id="1312803275555673949">ਕਿਹੜਾ ਸਬੂਤ ਇਸ ਦਾ ਸਮਰਥਨ ਕਰਦਾ ਹੈ?</translation>
 <translation id="1314311879718644478">ਆਗਮੈਂਟਿਡ ਰਿਐਲਿਟੀ ਸੰਬੰਧੀ ਸਮੱਗਰੀ ਦੇਖੋ</translation>
 <translation id="1314509827145471431">ਸੱਜੇ ਜਿਲਦਬੰਦ</translation>
 <translation id="1318023360584041678">ਟੈਬ ਗਰੁੱਪ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੀ ਗਈ</translation>
@@ -734,7 +733,6 @@
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” ਲਿੰਕਾਂ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="3249845759089040423">ਗਰੂਵੀ</translation>
 <translation id="3252266817569339921">ਫਰੈਂਚ</translation>
-<translation id="3257954757204451555">ਇਸ ਜਾਣਕਾਰੀ ਪਿੱਛੇ ਕੌਣ ਹੈ?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Calendar ਵਿੱਚ ਤੇਜ਼ੀ ਨਾਲ ਨਵਾਂ ਇਵੈਂਟ ਬਣਾਉਣ ਲਈ Tab ਦਬਾ ਕੇ ਫਿਰ Enter ਦਬਾਓ</translation>
 <translation id="3261488570342242926">ਆਭਾਸੀ ਕਾਰਡ ਬਾਰੇ ਜਾਣੋ</translation>
 <translation id="3264837738038045344">'Chrome ਸੈਟਿੰਗਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ' ਬਟਨ, ਆਪਣੀਆਂ Chrome ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਜਾਣ ਲਈ Enter ਦਬਾਓ</translation>
@@ -1116,6 +1114,7 @@
 <translation id="4414515549596849729">ਕੁਕੀਜ਼ ਅਤੇ ਸਾਈਟ ਡਾਟਾ</translation>
 <translation id="4415426530740016218">ਪਿਕਅੱਪ ਪਤਾ</translation>
 <translation id="4424024547088906515">ਇਹ ਸਰਵਰ ਇਹ ਸਾਬਤ ਨਹੀਂ ਕਰ ਸਕਿਆ ਕਿ ਇਹ <ph name="DOMAIN" /> ਹੈ; ਇਸਦਾ ਸੁਰੱਖਿਆ ਪ੍ਰਮਾਣ-ਪੱਤਰ Chrome ਵੱਲੋਂ ਭਰੋਸੇਯੋਗ ਨਹੀਂ ਹੈ। ਇਹ ਇੱਕ ਗਲਤ ਸੰਰੂਪਣ ਕਾਰਨ ਹੋ ਸਕਦਾ ਹੈ ਜਾਂ ਕੋਈ ਹਮਲਾਵਰ ਤੁਹਾਡੇ ਕਨੈਕਸ਼ਨ ਨੂੰ ਰਾਹ ਵਿੱਚ ਰੋਕ ਰਿਹਾ ਹੈ।</translation>
+<translation id="4428065317363009941">ਵਿਗਿਆਪਨ ਵਿਅਕਤੀਗਤਕਰਨ</translation>
 <translation id="443121186588148776">ਸੀਰੀਅਲ ਪੋਰਟ</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> ਨੇ ਤੁਹਾਡਾ ਲੌਗ-ਇਨ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਸਵੀਕਾਰ ਨਹੀਂ ਕੀਤਾ, ਜਾਂ ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਕੋਈ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਮੁਹੱਈਆ ਨਾ ਕਰਵਾਇਆ ਗਿਆ ਹੋਵੇ।</translation>
 <translation id="4432792777822557199">ਹੁਣ ਤੋਂ <ph name="SOURCE_LANGUAGE" /> ਭਾਸ਼ਾ ਦੇ ਪੰਨੇ <ph name="TARGET_LANGUAGE" /> ਭਾਸ਼ਾ ਵਿੱਚ ਅਨੁਵਾਦ ਕੀਤੇ ਜਾਣਗੇ</translation>
@@ -1248,7 +1247,6 @@
 <translation id="4838327282952368871">ਸੁਪਨਮਈ</translation>
 <translation id="4840250757394056958">ਆਪਣਾ Chrome ਇਤਿਹਾਸ ਦੇਖੋ</translation>
 <translation id="484462545196658690">ਸਵੈ</translation>
-<translation id="4849865131988503897">ਸਟੀਕਤਾ ਦੀ ਜਾਂਚ</translation>
 <translation id="4850886885716139402">ਦੇਖੋ</translation>
 <translation id="485316830061041779">ਜਰਮਨ</translation>
 <translation id="4853901935952445031">ਇਹ ਸਾਈਟ ਫ਼ਰਵਰੀ 2022 ਤੋਂ ਬਾਅਦ U2F API ਨੂੰ ਵਰਤ ਨਹੀਂ ਪਾਏਗੀ। ਜੇ ਤੁਸੀਂ ਇਸ ਸਾਈਟ ਦੇ ਮਾਲਕ ਹੋ, ਤਾਂ ਤੁਹਾਨੂੰ ਇਸ ਨੂੰ ਵੈੱਬ ਪ੍ਰਮਾਣੀਕਰਨ API ਵਰਤਣ ਦੇ ਯੋਗ ਬਣਾਉਣ ਲਈ ਬਦਲਣਾ ਚਾਹੀਦਾ ਹੈ।</translation>
@@ -1435,6 +1433,7 @@
 <translation id="5398772614898833570">ਵਿਗਿਆਪਨ ਬਲੌਕ ਕੀਤੇ ਗਏ</translation>
 <translation id="5400836586163650660">ਸਲੇਟੀ</translation>
 <translation id="540969355065856584">ਇਹ ਸਰਵਰ ਇਹ ਸਾਬਤ ਨਹੀਂ ਕਰ ਸਕਿਆ ਕਿ ਇਹ <ph name="DOMAIN" /> ਹੈ; ਇਸਦਾ ਸੁਰੱਖਿਆ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਇਸ ਸਮੇਂ ਵੈਧ ਨਹੀਂ ਹੈ। ਇਹ ਇੱਕ ਗਲਤ ਸੰਰੂਪਣ ਕਾਰਨ ਹੋ ਸਕਦਾ ਹੈ ਜਾਂ ਕੋਈ ਹਮਲਾਵਰ ਤੁਹਾਡੇ ਕਨੈਕਸ਼ਨ ਨੂੰ ਰਾਹ ਵਿੱਚ ਰੋਕ ਰਿਹਾ ਹੈ।</translation>
+<translation id="5412236728747081950">ਤੁਹਾਨੂੰ ਜ਼ਿਆਦਾ ਢੁਕਵੇਂ ਵਿਗਿਆਪਨ ਦਿਖਾਉਣ ਲਈ, ਇਹ ਸਾਈਟ Chrome ਤੋਂ ਤੁਹਾਡੀਆਂ ਦਿਲਚਸਪੀਆਂ ਬਾਰੇ ਜਾਣਕਾਰੀ ਲੈਂਦੀ ਹੈ</translation>
 <translation id="541416427766103491">ਸਟੈਕਰ 4</translation>
 <translation id="5421136146218899937">ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਹਟਾਓ</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> ਤੁਹਾਨੂੰ ਸੂਚਨਾਵਾਂ ਭੇਜਣਾ ਚਾਹੁੰਦੀ ਹੈ।</translation>
@@ -1950,7 +1949,6 @@
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> ਸੁਰੱਖਿਆ ਪੈਮਾਨਿਆਂ ਦੀ ਪਾਲਣਾ ਨਹੀਂ ਕਰਦਾ ਹੈ।</translation>
 <translation id="7210993021468939304">ਕੰਟੇਨਰ ਵਿੱਚ Linux ਸਰਗਰਮੀ, ਅਤੇ ਕੰਨਟੇਨਰ ਵਿੱਚ Linux ਐਪਾਂ ਨੂੰ ਸਥਾਪਤ ਕੀਤਾ ਅਤੇ ਚਲਾਇਆ ਜਾ ਸਕਦਾ ਹੈ</translation>
 <translation id="721197778055552897">ਇਸ ਸਮੱਸਿਆ ਬਾਰੇ <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" />।</translation>
-<translation id="7215025035562547931">ਕੁਝ ਸਮਾਂ ਬਿਤਾ ਕੇ ਪੰਨੇ ਦੀ ਸਟੀਕਤਾ ਵੱਲ ਧਿਆਨ ਦਿਓ</translation>
 <translation id="7217745192097460130">ਕੀ ਤੁਸੀਂ ਆਪਣੀਆਂ ਖਰੀਦਾਂ ਦੀ ਪੁਸ਼ਟੀ ਕਰਨ ਅਤੇ ਉਹਨਾਂ ਨੂੰ ਪੂਰਾ ਕਰਨ ਲਈ ਸਪਰਸ਼ ਆਈਡੀ ਵਰਤਣਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="7219179957768738017">ਕਨੈਕਸ਼ਨ <ph name="SSL_VERSION" /> ਵਰਤਦਾ ਹੈ।</translation>
 <translation id="7220786058474068424">ਪ੍ਰਕਿਰਿਆ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
@@ -2080,6 +2078,7 @@
 <translation id="7569952961197462199">ਕੀ Chrome ਤੋਂ ਕ੍ਰੈਡਿਟ ਕਾਰਡ ਨੂੰ ਹਟਾਉਣਾ ਹੈ?</translation>
 <translation id="7569983096843329377">ਕਾਲਾ</translation>
 <translation id="7575207903026901870">ਸੁਝਾਅ ਬਟਨ ਹਟਾਓ, ਇਸ ਸੁਝਾਅ ਨੂੰ ਹਟਾਉਣ ਲਈ ਐਂਟਰ ਦਬਾਓ</translation>
+<translation id="7577900504646297215">ਦਿਲਚਸਪੀਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="7578104083680115302">ਤੁਹਾਡੇ ਵੱਲੋਂ Google ਨਾਲ ਰੱਖਿਅਤ ਕੀਤੇ ਗਏ ਕਾਰਡਾਂ ਦੀ ਵਰਤੋਂ ਕਰਦੇ ਹੋਏ ਸਾਈਟਾਂ ਅਤੇ ਐਪਾਂ 'ਤੇ ਵਧੇਰੇ ਤੇਜ਼ ਭੁਗਤਾਨ ਕਰੋ।</translation>
 <translation id="7579442726219254162">"<ph name="APPLICATION_ID" />" ਦੇ ਪ੍ਰਤਿਬੰਧਿਤ ਸੰਰੂਪਣ ਵਿੱਚ ਅਗਿਆਤ ਵੇਰੀਏਬਲ "<ph name="VARIABLE" />".</translation>
 <translation id="7581199239021537589">ਸਾਈਡ 2 ਚਿੱਤਰ Y ਸ਼ਿਫਟ</translation>
@@ -2201,7 +2200,6 @@
 <translation id="7966803981046576691">ਕਾਰਵਾਈ ਖਾਤੇ ਦੀ ਕਿਸਮ</translation>
 <translation id="79682505114836835">ਮੁੱਲ "<ph name="VALUE" />" ਇੱਕ ਅਵੈਧ ਹੈਕਸ ਰੰਗ ਹੈ।</translation>
 <translation id="7968982339740310781">ਵੇਰਵੇ ਦੇਖੋ</translation>
-<translation id="7970392640816874403">ਦੂਜੇ ਸਰੋਤ ਕੀ ਕਹਿੰਦੇ ਹਨ?</translation>
 <translation id="7976214039405368314">ਬਹੁਤ ਸਾਰੀਆਂ ਬੇਨਤੀਆਂ</translation>
 <translation id="7977538094055660992">ਆਊਟਪੁੱਟ ਡੀਵਾਈਸ</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -2552,7 +2550,6 @@
 <translation id="9155211586651734179">ਆਡੀਓ ਪੈਰੀਫੈਰਲ ਨੱਥੀ ਹਨ</translation>
 <translation id="9157595877708044936">ਸੈਟ ਅਪ ਕਰ ਰਿਹਾ ਹੈ...</translation>
 <translation id="9158625974267017556">C6 (ਲਿਫ਼ਾਫ਼ਾ)</translation>
-<translation id="9164029392738894042">ਸਟੀਕਤਾ ਦੀ ਜਾਂਚ</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">ਸਾਈਟਾਂ ਨੂੰ ਇਹ ਜਾਂਚ ਕਰਨ ਦਿਓ ਕਿ ਤੁਸੀਂ ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਰੱਖਿਅਤ ਕੀਤੀਆਂ ਹੋਈਆਂ ਹਨ ਜਾਂ ਨਹੀਂ</translation>
 <translation id="9169664750068251925">ਹਮੇਸ਼ਾਂ ਇਸ ਸਾਈਟ 'ਤੇ ਬਲਾਕ ਕਰੋ</translation>

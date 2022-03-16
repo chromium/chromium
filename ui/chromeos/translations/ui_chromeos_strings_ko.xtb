@@ -825,6 +825,7 @@
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> 오디오</translation>
 <translation id="8045462269890919536">루마니아어</translation>
 <translation id="8049184478152619004">PUK(Personal Unblocking Key) 입력</translation>
+<translation id="807187749540895545"><ph name="FILE_NAME" /> 추출 중…</translation>
 <translation id="8079530767338315840">반복</translation>
 <translation id="8087576439476816834"><ph name="PROFILE_NAME" />, 다운로드</translation>
 <translation id="8106045200081704138">공유 문서함</translation>
@@ -876,6 +877,7 @@
 <translation id="8484284835977497781">최근 사진 중에서 선택하세요.</translation>
 <translation id="8487700953926739672">오프라인으로 사용 가능</translation>
 <translation id="8492972329130824181">홈 네트워크를 사용할 수 없습니다. 연결하려면 모바일 데이터 로밍이 사용 설정되어 있어야 합니다.</translation>
+<translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" />개 항목 추출 중…</translation>
 <translation id="8521441079177373948">영어(영국)</translation>
 <translation id="8525306231823319788">전체화면</translation>
 <translation id="853494022971700746">프랑스어(프랑스)</translation>

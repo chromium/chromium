@@ -30,7 +30,6 @@
 <translation id="114825011539563458">ਸਭ ਤੋਂ ਮਹੱਤਵਪੂਰਨ ਪਰਦੇਦਾਰੀ ਅਤੇ ਸੁਰੱਖਿਆ ਕੰਟਰੋਲ ਇੱਕੋ ਥਾਂ 'ਤੇ</translation>
 <translation id="1149401351239820326">ਮਿਆਦ ਸਮਾਪਤੀ ਦਾ ਮਹੀਨਾ</translation>
 <translation id="1154704303112745282">ਪੰਨਾ ਆਫ਼ਲਾਈਨ ਉਪਲਬਧ ਨਹੀਂ ਹੈ: <ph name="VIOLATED_URL" /></translation>
-<translation id="1166688006062225587">ਚੁਣੇ ਜਾਣ ਵਾਲੇ ਖਾਤਿਆਂ ਦੀ ਸੂਚੀ।</translation>
 <translation id="1171770572613082465">"ਪ੍ਰਮੁੱਖ ਸਾਈਟਾਂ" ਬਟਨ 'ਤੇ ਟੈਪ ਕਰਕੇ ਪ੍ਰਸਿੱਧ ਵੈੱਬਸਾਈਟਾਂ ਦੇਖੋ</translation>
 <translation id="1173894706177603556">ਮੁੜ-ਨਾਮਕਰਨ ਕਰੋ</translation>
 <translation id="1177863135347784049">ਵਿਉਂਂਤੀ</translation>
@@ -571,6 +570,7 @@
 <translation id="4415276339145661267">ਆਪਣੇ Google ਖਾਤੇ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="4425140285732600465">ਕੀਮਤ ਨੂੰ ਟਰੈਕ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ। ਕਿਸੇ ਵੀ ਸਾਈਟ 'ਤੇ ਕੀਮਤਾਂ ਘਟਣ 'ਤੇ ਸੁਚੇਤਨਾਵਾਂ ਪ੍ਰਾਪਤ ਕਰੋ।</translation>
 <translation id="442518031075347249">ਤੁਸੀਂ ਹੁਣ Google Pay ਨਾਲ ਆਪਣੇ ਆਭਾਸੀ ਕਾਰਡ ਦੀ ਵਰਤੋਂ ਨਹੀਂ ਕਰ ਸਕੋਗੇ। <ph name="BEGIN_LINK1" />ਆਭਾਸੀ ਕਾਰਡਾਂ ਬਾਰੇ ਹੋਰ ਜਾਣੋ<ph name="END_LINK1" /></translation>
+<translation id="4428065317363009941">ਵਿਗਿਆਪਨ ਵਿਅਕਤੀਗਤਕਰਨ</translation>
 <translation id="4450672886426705087">Google ਤੋਂ ਖੋਜ ਨਤੀਜੇ</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> ਟੈਬ ਬੰਦ ਕਰੋ</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> ਵਿੱਚ ਬੁੱਕਮਾਰਕ ਕੀਤਾ ਗਿਆ</translation>
@@ -899,7 +899,6 @@
 <translation id="6277522088822131679">ਸਫ਼ਾ ਪ੍ਰਿੰਟ ਕਰਨ ਵਿੱਚ ਇੱਕ ਸਮੱਸਿਆ ਹੋਈ ਸੀ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="6277722725779679269">'ਕੀਮਤ ਨੂੰ ਟਰੈਕ ਕਰੋ' ਅੱਪਡੇਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
 <translation id="6278428485366576908">ਥੀਮ</translation>
-<translation id="6293443105724342169">ਚੁਣੇ ਜਾਣ ਵਾਲੇ ਖਾਤਿਆਂ ਦੀ ਸੂਚੀ ਅੱਧੀ ਉਚਾਈ ਤੱਕ ਖੁੱਲ੍ਹੀ ਹੈ।</translation>
 <translation id="6294610283659775533">ਤੁਸੀਂ ਉਨ੍ਹਾਂ ਡੀਵਾਈਸਾਂ ਵਿਚਾਲੇ ਟੈਬਾਂ ਭੇਜ ਸਕਦੇ ਹੋ ਜੋ ਇੱਕੋ Google ਖਾਤੇ ਨਾਲ ਸਾਈਨ-ਇਨ ਕੀਤੇ ਹੋਏ ਹਨ</translation>
 <translation id="6297765934698848803">ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਵਾਲੀ ਸੰਸਥਾ ਨੇ ਤੁਹਾਡਾ ਕੈਮਰਾ ਬੰਦ ਕਰ ਦਿੱਤਾ ਹੈ।</translation>
 <translation id="6301525844455696527">ਆਪਣੀ ਪੜ੍ਹਨ-ਸੂਚੀ ਦੇਖੋ</translation>
@@ -1310,7 +1309,6 @@
 <translation id="8461694314515752532">ਆਪਣੇ ਖੁਦ ਦੇ ਸਿੰਕ ਪਾਸਫਰੇਜ਼ ਨਾਲ ਸਿੰਕ ਕੀਤੇ ਡਾਟੇ ਨੂੰ ਇਨਕ੍ਰਿਪਟ ਕਰੋ</translation>
 <translation id="8466613982764129868">ਪੱਕਾ ਕਰੋ ਕਿ <ph name="TARGET_DEVICE_NAME" /> ਇੰਟਰਨੈੱਟ ਨਾਲ ਕਨੈਕਟ ਹੋਵੇ</translation>
 <translation id="8473863474539038330">ਪਤੇ ਅਤੇ ਹੋਰ</translation>
-<translation id="847656914027543776">ਚੁਣੇ ਜਾਣ ਵਾਲੇ ਖਾਤਿਆਂ ਦੀ ਸੂਚੀ ਬੰਦ ਹੈ।</translation>
 <translation id="8481921391193215807">ਚਾਲੂ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਆਪਣੀ ਸਮੱਗਰੀ ਅਤੇ ਸੇਵਾਵਾਂ ਮੁਹੱਈਆ ਕਰਵਾਉਣ ਲਈ ਇੱਥੇ ਦਿਖਾਈਆਂ ਗਈਆਂ ਪਰਦੇਦਾਰੀ-ਸੰਭਾਲਣ ਵਾਲੀਆਂ ਤਕਨੀਕਾਂ ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦੀਆਂ ਹਨ। ਇਹਨਾਂ ਵਿੱਚ ਕ੍ਰਾਸ-ਸਾਈਟ ਟਰੈਕਿੰਗ ਦੇ ਵਿਕਲਪ ਸ਼ਾਮਲ ਹਨ। ਸਮੇਂ ਦੇ ਨਾਲ ਹੋਰ ਪਰਖਾਂ ਸ਼ਾਮਲ ਕੀਤੀਆਂ ਜਾ ਸਕਦੀਆਂ ਹਨ।
 
 <ph name="BEGIN_LIST_ITEM1" />ਵਿਗਿਆਪਨਦਾਤੇ ਅਤੇ ਪ੍ਰਕਾਸ਼ਕ FLoC ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦੇ ਹਨ।<ph name="END_LIST_ITEM1" />
@@ -1365,6 +1363,7 @@
 <translation id="8683526617475118045">ਤੁਹਾਨੂੰ ਇਹ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਮਿਲਣਗੀਆਂ</translation>
 <translation id="869891660844655955">ਮਿਆਦ ਪੁੱਗਣ ਦੀ ਤਾਰੀਖ</translation>
 <translation id="8699120352855309748">ਇਹਨਾਂ ਭਾਸ਼ਾਵਾਂ ਦਾ ਅਨੁਵਾਦ ਕਰਨ ਦੀ ਪੇਸ਼ਕਸ਼ ਨਾ ਕਰੋ</translation>
+<translation id="8712637175834984815">ਸਮਝ ਲਿਆ</translation>
 <translation id="8725066075913043281">ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="8730621377337864115">ਹੋ ਗਿਆ</translation>
 <translation id="8746155870861185046">ਉਜਾਗਰ ਕੀਤੇ ਲਿਖਤ ਨੂੰ ਸਾਂਝਾ ਕਰੋ</translation>
@@ -1437,7 +1436,6 @@
 <translation id="9108312223223904744">ਫ਼ੋਨ ਇੱਕ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਸਹਾਇਤਾ ਦੇ ਰੂਪ ਵਿੱਚ</translation>
 <translation id="9108808586816295166">ਸੁਰੱਖਿਅਤ DNS ਸ਼ਾਇਦ ਹਰ ਵੇਲੇ ਉਪਲਬਧ ਨਾ ਹੋਵੇ</translation>
 <translation id="9133397713400217035">ਆਫ਼ਲਾਈਨ ਪੜਚੋਲ ਕਰੋ</translation>
-<translation id="9133523398139146080">ਚੁਣੇ ਜਾਣ ਵਾਲੇ ਖਾਤਿਆਂ ਦੀ ਸੂਚੀ ਪੂਰੀ ਉਚਾਈ ਤੱਕ ਖੁੱਲ੍ਹੀ ਹੈ।</translation>
 <translation id="9137013805542155359">ਅਸਲ ਦਿਖਾਓ</translation>
 <translation id="9148126808321036104">ਦੁਬਾਰਾ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="9155898266292537608">ਤੁਸੀਂ ਕਿਸੇ ਸ਼ਬਦ 'ਤੇ ਤੁਰੰਤ ਟੈਪ ਨਾਲ ਵੀ ਖੋਜ ਕਰ ਸਕਦੇ ਹੋ</translation>

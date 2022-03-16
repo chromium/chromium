@@ -825,6 +825,7 @@
 <translation id="8042602468072383151">Аудиофайл във формат <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">румънски</translation>
 <translation id="8049184478152619004">Въведете PUK кода</translation>
+<translation id="807187749540895545"><ph name="FILE_NAME" /> се извлича...</translation>
 <translation id="8079530767338315840">Повтаряне</translation>
 <translation id="8087576439476816834">Изтегляне на <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Споделени с мен</translation>
@@ -876,6 +877,7 @@
 <translation id="8484284835977497781">Изберете от скорошните си снимки.</translation>
 <translation id="8487700953926739672">Налице офлайн</translation>
 <translation id="8492972329130824181">Няма достъп до домашната мрежа. Роумингът на мобилни данни трябва да е активиран, за да се установи връзка.</translation>
+<translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> елемента се извличат...</translation>
 <translation id="8521441079177373948">Британска клавиатура</translation>
 <translation id="8525306231823319788">На цял екран</translation>
 <translation id="853494022971700746">Френски (Франция)</translation>

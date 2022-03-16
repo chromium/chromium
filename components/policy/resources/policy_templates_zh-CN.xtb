@@ -190,7 +190,6 @@
 <translation id="1223789468190631420">针对可信来源的安全浏览功能启用状态</translation>
 <translation id="123018742985150697">要求本地用户的名称和远程访问主机所有者的名称必须一致</translation>
 <translation id="123081309365616809">允许向设备投射内容</translation>
-<translation id="1239411164172567974">启用 Direct Sockets API。</translation>
 <translation id="1239526922294123540">控制是否允许网站以不安全方式向更专用网络端点发送请求。
 
           如果此政策设为 true，系统会为所有源停用所有<ph name="PRIVATE_NETWORK_ACCESS" />检查机制。这可能会让攻击者有机会对专用网络服务器发起 <ph name="CSRF" /> 攻击。
@@ -984,7 +983,6 @@
 <translation id="208623333578980446">允许使用屏幕唤醒锁定以便进行电源管理</translation>
 <translation id="2086944573376916479">受管理的帐号必须是主帐号，且无任何辅助帐号</translation>
 <translation id="2089541797660774692">为受管理浏览器启用云报告功能</translation>
-<translation id="2090304907729569435">禁止在浏览器侧边栏中显示 <ph name="GOOGLE_SEARCH_PRODUCT_NAME" />结果。</translation>
 <translation id="2090939118981888335">如果此政策已启用，系统会允许使用数据压缩代理。如果此政策已停用，系统将禁止使用该代理。
 
       如果您设置了此政策，用户便无法更改相关设置。如果您未设置此政策，用户可以选择使用该功能。</translation>
@@ -1741,7 +1739,6 @@
 
       如果此政策已停用，则无法更新组件。不过，某些组件不受此政策限制：只要相应组件不含可执行的代码，并且对浏览器的安全性至关重要，系统就不会禁止更新该组件。
       这类组件包括证书吊销列表、子资源过滤器，等等。</translation>
-<translation id="2939988360019366928">允许在浏览器侧边栏中显示最近的 <ph name="GOOGLE_SEARCH_PRODUCT_NAME" />结果</translation>
 <translation id="2940127076681735544">如果此政策设为一个有效网址，<ph name="PRODUCT_NAME" /> 就会从该网址下载网站列表，并参照 <ph name="SITELIST_POLICY_NAME" /> 政策的设定应用相应规则。
 
       如果此政策未设置（或设为一个无效网址），<ph name="PRODUCT_NAME" /> 便不会将它用作浏览器切换规则的来源。
@@ -3486,9 +3483,6 @@
       如果此政策已停用，系统会阻止 <ph name="PRODUCT_NAME" /> 发送此类查询。</translation>
 <translation id="5039110755072335605">对 CORS 非通配符式请求标头的支持情况</translation>
 <translation id="504116558738617678">仅在相应设备不受管理或只有 1 个用户时显示磁盘空间不足警告</translation>
-<translation id="5049105847726444023">如果此政策已启用或未设置，用户便可通过切换工具栏中的图标显示其近期的 <ph name="GOOGLE_SEARCH_PRODUCT_NAME" />结果。
-
-      如果此政策已停用，系统会从工具栏中移除用于打开包含 <ph name="GOOGLE_SEARCH_PRODUCT_NAME" />结果的侧边栏的图标。</translation>
 <translation id="5052278640307929670">通过设置此政策，您可以允许合并来自多个不同来源并具有相同范围及级别的所选政策。
 
       如果某项政策位于列表中，而且来源之间存在冲突，
@@ -5624,9 +5618,6 @@
 <translation id="7459601923199346224">控制证书管理机制的用户和设备政策。</translation>
 <translation id="7459633275230216698">允许显示文件选择对话框</translation>
 <translation id="7464991223784276288">仅在当前会话中使用来自相符网址的 Cookie</translation>
-<translation id="7466522266556143347">如果此政策已启用，当所有其他必要条件都已满足时，用户便可使用 Direct Sockets API。
-      如果此政策已停用，则用户无法访问该 API。
-      如果未设置此政策，默认情况下，受企业管理的用户无法使用 Direct Sockets API，但不受管理的用户可以使用该 API。</translation>
 <translation id="7468182772656807573">通过设置此政策，您可决定监控网络数据包的发送频率（以毫秒为单位）。时间间隔应介于 30 秒到 24 小时之间。任何不在此范围内的值都会被强制改为距其较近的那个限值（上限值或下限值）。
 
       如果此政策未设置，系统会应用默认时间间隔（3 分钟）。</translation>
@@ -6113,7 +6104,6 @@
 
       如果未设置此政策，系统将会启用此政策，但用户可以自行更改。</translation>
 <translation id="7956210013490975468">为 <ph name="PRODUCT_OS_NAME" />配置系统代理服务。</translation>
-<translation id="7958340569967087581">允许在浏览器侧边栏中显示 <ph name="GOOGLE_SEARCH_PRODUCT_NAME" />结果。</translation>
 <translation id="7958537754689366707">必须每 12 小时输入一次密码</translation>
 <translation id="7959035883875301444">控制对 JavaScript JIT 的使用</translation>
 <translation id="7961779417826583251">对于指定的一系列旧版证书授权机构，不强制执行证书透明化要求</translation>
@@ -6763,7 +6753,6 @@
       如果此政策已停用或未设置，远程访问主机便能与任何本地用户关联。</translation>
 <translation id="867708016260789630">强制使用级别至少为“中等”的 YouTube 受限模式</translation>
 <translation id="8677853537025397834">允许在这些网站上使用 WebHID API</translation>
-<translation id="8684781382594546769">停用 Direct Sockets API。</translation>
 <translation id="8685024486845674965">重复使用密码可触发密码保护服务警告功能</translation>
 <translation id="8685680544554917389">如果此政策设为 True，<ph name="PRODUCT_NAME" /> 将会自动播放媒体。如果此政策设为 False，<ph name="PRODUCT_NAME" /> 不会自动播放媒体。
 

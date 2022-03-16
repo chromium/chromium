@@ -115,7 +115,6 @@
 <translation id="1301324364792935241">შეამოწმეთ თქვენი დაცული DNS-ის პარამეტრები</translation>
 <translation id="1307966114820526988">მოძველებული ფუნქციები</translation>
 <translation id="1308113895091915999">ხელმისაწვდომია შემოთავაზება</translation>
-<translation id="1312803275555673949">რა ასაბუთებს?</translation>
 <translation id="1314311879718644478">აუგმენტური რეალობის კონტენტის ნახვა</translation>
 <translation id="1314509827145471431">აკინძვა მარჯვნივ</translation>
 <translation id="1318023360584041678">შენახულია ჩანართების ჯგუფში</translation>
@@ -736,7 +735,6 @@
 <translation id="324180406144491771">„<ph name="HOST_NAME" />“-ის ბმულები დაბლოკილია</translation>
 <translation id="3249845759089040423">სასიამოვნო</translation>
 <translation id="3252266817569339921">ფრანგული</translation>
-<translation id="3257954757204451555">ვის დგას ამ ინფორმაციის უკან?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Calendar-ში ახალი მოვლენის სწრაფად შესაქმნელად დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
 <translation id="3261488570342242926">შეიტყვეთ ვირტუალური ბარათების შესახებ</translation>
 <translation id="3264837738038045344">Chrome-ის პარამეტრების მართვის ღილაკი, Chrome პარამეტრებზე გადასასვლელად დააჭირეთ კლავიშს Enter</translation>
@@ -1119,6 +1117,7 @@
 <translation id="4414515549596849729">ქუქი-ჩანაწერები და საიტების მონაცემები</translation>
 <translation id="4415426530740016218">წაღების მისამართი</translation>
 <translation id="4424024547088906515">ეს სერვერი ვერ ამტკიცებს, რომ ის არის <ph name="DOMAIN" />; მისი უსაფრთხოების სერთიფიკატი არ ენდობა Chrome. ეს შეიძლება იყოს გამოწვეული არასწორი კონფიგურაციით ან თავდამსხმელის მიერ თქვენი კავშირის გადაჭრით.</translation>
+<translation id="4428065317363009941">რეკლამის პერსონალიზება</translation>
 <translation id="443121186588148776">თანმიმდევრული პორტი</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" />-მა არ მიიღო თქვენი სისტემაში შესვლის სერტიფიკატი, ან ის შეიძლებოდა არ ყოფილიყო წარმოდგენილი.</translation>
 <translation id="4432792777822557199"><ph name="SOURCE_LANGUAGE" /> გვერდები ამიერიდან ითარგმნება შემდეგ ენაზე: <ph name="TARGET_LANGUAGE" /></translation>
@@ -1251,7 +1250,6 @@
 <translation id="4838327282952368871">არაამქვეყნიური</translation>
 <translation id="4840250757394056958">თქვენი Chrome-ის ისტორიის ნახვა</translation>
 <translation id="484462545196658690">ავტომატური</translation>
-<translation id="4849865131988503897">სიზუსტის შემოწმება</translation>
 <translation id="4850886885716139402">გადახედვა</translation>
 <translation id="485316830061041779">გერმანული</translation>
 <translation id="4853901935952445031">2022 წლის თებერვლის შემდეგ ეს საიტი ვეღარ გამოიყენებს U2F API-ს. თუ ამ საიტის მფლობელი ხართ, შეიტანეთ ცვლილებები, Web Authentication API რომ გამოიყენოთ.</translation>
@@ -1438,6 +1436,7 @@
 <translation id="5398772614898833570">რეკლამა დაიბლოკა</translation>
 <translation id="5400836586163650660">ნაცრისფერი</translation>
 <translation id="540969355065856584">ეს სერვერი ვერ ამტკიცებს, რომ ის არის <ph name="DOMAIN" />; მისი უსაფრთხოების სერთიფიკატი ამჟამად არასწორია. ეს შეიძლება იყოს გამოწვეული არასწორი კონფიგურაციით ან თავდამსხმელის მიერ თქვენი კავშირის ხელში ჩაგდებით.</translation>
+<translation id="5412236728747081950">ეს საიტი Chrome-იდან იღებს ინფორმაციას თქვენი ინტერესების შესახებ, უფრო შესაფერისი რეკლამა რომ შემოგთავაზოთ</translation>
 <translation id="541416427766103491">სტეკერი 4</translation>
 <translation id="5421136146218899937">დათვალიერების მონაცემების გასუფთავება…</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> ითხოვს თქვენთვის შეტყობინებების გამოგზავნას</translation>
@@ -1954,7 +1953,6 @@
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> არ აკმაყოფილებს უსაფრთხოების სტანდარტებს.</translation>
 <translation id="7210993021468939304">შეუძლია კონტეინერის შიგნით Linux-ის აქტივობის ნახვა და Linux აპების ინსტალაცია/გაშვება</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />გაიგეთ მეტი<ph name="END_LINK" /> ამ პრობლემის შესახებ.</translation>
-<translation id="7215025035562547931">დაფიქრდით სიზუსტეზე</translation>
 <translation id="7217745192097460130">გსურთ, გამოიყენოთ Touch ID შენაძენების დასადასტურებლად და განსახორციელებლად?</translation>
 <translation id="7219179957768738017">კავშირი იყენებს <ph name="SSL_VERSION" />-ს.</translation>
 <translation id="7220786058474068424">მუშავდება</translation>
@@ -2084,6 +2082,7 @@
 <translation id="7569952961197462199">ამოიშალოს საკრედიტო ბარათი Chrome-იდან?</translation>
 <translation id="7569983096843329377">შავი</translation>
 <translation id="7575207903026901870">შემოთავაზების ამოშლის ღილაკი, ამ შემოთავაზების ამოსაშლელად დააჭირეთ კლავიშს „Enter“</translation>
+<translation id="7577900504646297215">ინტერესების მართვა</translation>
 <translation id="7578104083680115302">სწრაფად გადაიხადეთ საიტებსა და აპებში სხვადასხვა მოწყობილობიდან Google-ში შენახული ბარათების მეშვეობით.</translation>
 <translation id="7579442726219254162">„<ph name="APPLICATION_ID" />“-ის მართულ კონფიგურაციაში უცნობი ცვლადია „<ph name="VARIABLE" />“.</translation>
 <translation id="7581199239021537589">მხარე 2 — სურათის წანაცვლება Y ღერძზე</translation>
@@ -2205,7 +2204,6 @@
 <translation id="7966803981046576691">დავალების ანგარიშის ტიპი</translation>
 <translation id="79682505114836835">მნიშვნელობა „<ph name="VALUE" />“ არასწორი თექვსმეტობითი ფერია.</translation>
 <translation id="7968982339740310781">დეტალების დათვალიერება</translation>
-<translation id="7970392640816874403">რას ამბობს სხვა წყაროები?</translation>
 <translation id="7976214039405368314">ზედმეტად ბევრი მოთხოვნაა</translation>
 <translation id="7977538094055660992">გამოტანის მოწყობილობა</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -2556,7 +2554,6 @@
 <translation id="9155211586651734179">მიერთებული პერიფერიული აუდიომოწყობილობები</translation>
 <translation id="9157595877708044936">დაყენება…</translation>
 <translation id="9158625974267017556">C6 (კონვერტი)</translation>
-<translation id="9164029392738894042">სიზუსტის შემოწმება</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">საიტებისთვის შენახული გადახდის მეთოდების ხელმისაწვდომობის შემოწმების დაშვება</translation>
 <translation id="9169664750068251925">ყოველთვის დაიბლოკოს ამ საიტზე</translation>

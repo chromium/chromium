@@ -115,7 +115,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1301324364792935241">Revisa tu configuración de DNS seguro</translation>
 <translation id="1307966114820526988">Funciones obsoletas</translation>
 <translation id="1308113895091915999">Oferta disponible</translation>
-<translation id="1312803275555673949">¿Qué pruebas la respaldan?</translation>
 <translation id="1314311879718644478">Visualizar contenido de realidad aumentada</translation>
 <translation id="1314509827145471431">Encuadernar por la derecha</translation>
 <translation id="1318023360584041678">Guardado en un grupo de pestañas</translation>
@@ -740,7 +739,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="324180406144491771">Los enlaces de <ph name="HOST_NAME" /> se han bloqueado</translation>
 <translation id="3249845759089040423">Estilosa</translation>
 <translation id="3252266817569339921">Francés</translation>
-<translation id="3257954757204451555">¿Quién está detrás de esta información?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y luego Intro para crear un nuevo evento en Google Calendar rápidamente</translation>
 <translation id="3261488570342242926">Información sobre las tarjetas virtuales</translation>
 <translation id="3264837738038045344">Botón Gestionar la configuración de Chrome: pulsa Intro para ir a la configuración de Chrome</translation>
@@ -1128,6 +1126,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4414515549596849729">cookies y datos de sitios</translation>
 <translation id="4415426530740016218">Dirección de recogida</translation>
 <translation id="4424024547088906515">Este servidor no ha podido probar que su dominio es <ph name="DOMAIN" />, Chrome no confía en su certificado de seguridad. Este problema puede deberse a una configuración incorrecta o a que un atacante haya interceptado la conexión.</translation>
+<translation id="4428065317363009941">Personalización de anuncios</translation>
 <translation id="443121186588148776">Puerto serie</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> no ha aceptado el certificado de inicio de sesión o es posible que no se haya proporcionado ninguno.</translation>
 <translation id="4432792777822557199">Las páginas en <ph name="SOURCE_LANGUAGE" /> se traducirán al <ph name="TARGET_LANGUAGE" /> a partir de ahora</translation>
@@ -1260,7 +1259,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4838327282952368871">De ensueño</translation>
 <translation id="4840250757394056958">Ver tu historial de Chrome</translation>
 <translation id="484462545196658690">Automático</translation>
-<translation id="4849865131988503897">Comprobación de la precisión</translation>
 <translation id="4850886885716139402">Ver</translation>
 <translation id="485316830061041779">Alemán</translation>
 <translation id="4853901935952445031">Este sitio no podrá usar la API U2F después de febrero del 2022. Si este sitio es de tu propiedad, debes cambiarlo para que use la API Web Authentication.</translation>
@@ -1447,6 +1445,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5398772614898833570">Anuncios bloqueados</translation>
 <translation id="5400836586163650660">Gris</translation>
 <translation id="540969355065856584">Este servidor no ha podido probar que su dominio es <ph name="DOMAIN" />, ya que su certificado de seguridad no es válido en este momento. Esto puede deberse a una configuración incorrecta o a que un atacante haya interceptado la conexión.</translation>
+<translation id="5412236728747081950">Este sitio consulta tus intereses en Chrome para mostrarte anuncios más relevantes</translation>
 <translation id="541416427766103491">Apilador 4</translation>
 <translation id="5421136146218899937">Borrar datos de navegación...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> quiere enviarte notificaciones</translation>
@@ -1963,7 +1962,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="7210863904660874423">La página <ph name="HOST_NAME" /> no cumple los estándares de seguridad.</translation>
 <translation id="7210993021468939304">Los administradores pueden ver la actividad de Linux en el contenedor, y también pueden instalar y ejecutar aplicaciones de Linux en el contenedor</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /> sobre este problema.</translation>
-<translation id="7215025035562547931">Piensa un momento en la veracidad</translation>
 <translation id="7217745192097460130">¿Usar Touch ID para verificar y completar la compra?</translation>
 <translation id="7219179957768738017">La conexión utiliza <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Procesando pago</translation>
@@ -2093,6 +2091,7 @@ Más información:
 <translation id="7569952961197462199">¿Eliminar tarjeta de crédito de Chrome?</translation>
 <translation id="7569983096843329377">Negro</translation>
 <translation id="7575207903026901870">Botón Eliminar sugerencia, pulsa Intro para eliminar esta sugerencia</translation>
+<translation id="7577900504646297215">Gestionar intereses</translation>
 <translation id="7578104083680115302">Paga rápidamente en aplicaciones y sitios desde tus dispositivos utilizando las tarjetas que has guardado en Google.</translation>
 <translation id="7581199239021537589">Cara 2 del desplazamiento de la imagen en el eje Y</translation>
 <translation id="7582602800368606489">Crea un nuevo evento en Google Calendar rápidamente</translation>
@@ -2213,7 +2212,6 @@ Más información:
 <translation id="7966803981046576691">Tipo de cuenta de tarea</translation>
 <translation id="79682505114836835">El valor "<ph name="VALUE" />" no es un color hexadecimal válido.</translation>
 <translation id="7968982339740310781">Ver detalles</translation>
-<translation id="7970392640816874403">¿Qué dicen otras fuentes?</translation>
 <translation id="7976214039405368314">Demasiadas solicitudes</translation>
 <translation id="7977538094055660992">Dispositivo de salida</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -2564,7 +2562,6 @@ Más información:
 <translation id="9155211586651734179">Periféricos de audio conectados</translation>
 <translation id="9157595877708044936">Configurando...</translation>
 <translation id="9158625974267017556">C6 (sobre)</translation>
-<translation id="9164029392738894042">Comprobación de la precisión</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">Permite a los sitios comprobar si tienes métodos de pago guardados</translation>
 <translation id="9169664750068251925">Bloquear siempre en este sitio</translation>

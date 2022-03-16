@@ -256,6 +256,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2595239820337756193">5 km kaç mildir</translation>
 <translation id="2596078834055697711">Pencerenin ekran görüntüsünü alır</translation>
 <translation id="2607678425161541573">Online oturum açma gerekli</translation>
+<translation id="2620436844016719705">Sistem</translation>
 <translation id="2621713457727696555">Güvenlik sağlandı</translation>
 <translation id="263399434338050016">"Tümünü seç"</translation>
 <translation id="2653019840645008922">Pencere ekran görüntüsü alma</translation>
@@ -351,6 +352,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="320207200541803018">Zamanlayıcı ayarla</translation>
 <translation id="3203405173652969239">Anahtar Erişimi etkinleştirildi</translation>
 <translation id="3207953481422525583">Kullanıcı Ayarları</translation>
+<translation id="3208321278970793882">Uygulama</translation>
 <translation id="3217205077783620295">Ses açık, düğmeye basılırsa ses kapatılacak.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> öğe daha</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -1034,6 +1036,7 @@ Yeni yüklenmiş</translation>
 <translation id="7513622367902644023">Ekran görüntüsü modu seçildi</translation>
 <translation id="7513922695575567867">Takvim, <ph name="DATE" /> haftası, şu anda <ph name="SELECTED_DATE" /> seçili.</translation>
 <translation id="7514365320538308">İndir</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7526573455193969409">Ağ trafiği izleniyor olabilir</translation>
 <translation id="7536035074519304529">IP adresi: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Linux uygulamaları ve gizli pencereler şu anda desteklenmiyor. Diğer uygulamalar kaydedilecek.</translation>
@@ -1102,6 +1105,7 @@ Yeni yüklenmiş</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Parmak izi sensörüne dokunun</translation>
 <translation id="7904094684485781019">Bu hesabın yöneticisi, çoklu oturum açmayı engelledi.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7930731167419639574">Konuşma artık yerel olarak işlenip çevrimdışı olarak çalışacaktır</translation>
 <translation id="7933084174919150729">Google Asistan yalnızca birincil profilde kullanılabilir.</translation>
 <translation id="79341161159229895">Hesap <ph name="FIRST_PARENT_EMAIL" /> ve <ph name="SECOND_PARENT_EMAIL" /> tarafından yönetiliyor</translation>

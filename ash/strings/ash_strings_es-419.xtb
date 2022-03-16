@@ -256,6 +256,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2595239820337756193">5 km en millas</translation>
 <translation id="2596078834055697711">Tomar captura de pantalla de la ventana</translation>
 <translation id="2607678425161541573">Se requiere acceso en línea</translation>
+<translation id="2620436844016719705">Sistema</translation>
 <translation id="2621713457727696555">Segura</translation>
 <translation id="263399434338050016">"Seleccionar todo"</translation>
 <translation id="2653019840645008922">Captura de ventana</translation>
@@ -351,6 +352,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="320207200541803018">Establecer temporizador</translation>
 <translation id="3203405173652969239">Se habilitó Accesibilidad con interruptores</translation>
 <translation id="3207953481422525583">Configuración del usuario</translation>
+<translation id="3208321278970793882">App</translation>
 <translation id="3217205077783620295">El volumen está activado. Si lo desactivas, se silenciará.</translation>
 <translation id="3226991577105957773"><ph name="COUNT" /> más</translation>
 <translation id="3227137524299004712">Micrófono</translation>
@@ -1035,6 +1037,7 @@ Nueva instalación</translation>
 <translation id="7513622367902644023">Se seleccionó el modo de captura de pantalla</translation>
 <translation id="7513922695575567867">Calendario, semana del <ph name="DATE" />, se seleccionó <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Descargar</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7526573455193969409">Es posible que la red esté supervisada</translation>
 <translation id="7536035074519304529">Dirección IP: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Por el momento, las apps de Linux y las ventanas de incógnito no son compatibles. Se guardarán las demás apps.</translation>
@@ -1103,6 +1106,7 @@ Nueva instalación</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Toca el sensor de huellas dactilares</translation>
 <translation id="7904094684485781019">El administrador de esta cuenta inhabilitó el acceso múltiple.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7930731167419639574">Ahora la voz se procesa de manera local y el dictado funciona sin conexión</translation>
 <translation id="7933084174919150729">El Asistente de Google solo está disponible para el perfil principal.</translation>
 <translation id="79341161159229895">Cuenta administrada por <ph name="FIRST_PARENT_EMAIL" /> y <ph name="SECOND_PARENT_EMAIL" /></translation>

@@ -825,6 +825,7 @@
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" />-heli</translation>
 <translation id="8045462269890919536">rumeenia keel</translation>
 <translation id="8049184478152619004">Sisestage personaalne avamisvõti (PUK)</translation>
+<translation id="807187749540895545">Faili <ph name="FILE_NAME" /> ekstraktimine …</translation>
 <translation id="8079530767338315840">Korda</translation>
 <translation id="8087576439476816834">Allalaadimine, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Minuga jagatud</translation>
@@ -876,6 +877,7 @@
 <translation id="8484284835977497781">Valige oma hiljutiste fotode hulgast.</translation>
 <translation id="8487700953926739672">Võrguühenduseta saadaval</translation>
 <translation id="8492972329130824181">Kodune võrk pole saadaval. Ühenduse loomiseks tuleb lubada mobiilse andmeside rändlus.</translation>
+<translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> üksuse ekstraktimine …</translation>
 <translation id="8521441079177373948">Ühendkuningriik</translation>
 <translation id="8525306231823319788">Täisekraan</translation>
 <translation id="853494022971700746">prantsuse (Prantsusmaa)</translation>

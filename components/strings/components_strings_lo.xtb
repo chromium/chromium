@@ -115,7 +115,6 @@
 <translation id="1301324364792935241">ກວດເບິ່ງການຕັ້ງຄ່າ DNS ທີ່ປອດໄພຂອງທ່ານ</translation>
 <translation id="1307966114820526988">ຄຸນສົມບັດທີ່ເຊົາຮອງຮັບແລ້ວ</translation>
 <translation id="1308113895091915999">ມີຂໍ້ສະເໜີ</translation>
-<translation id="1312803275555673949">ມີຫຼັກຖານໃດສະໜັບສະໜຸນມັນ?</translation>
 <translation id="1314311879718644478">ເບິ່ງເນື້ອຫາອາກິວເມັນ ຣີອາລິຕີ</translation>
 <translation id="1314509827145471431">ຫຍິບເຫຼັ້ມເບື້ອງຂວາ</translation>
 <translation id="1318023360584041678">ບັນທຶກໃນກຸ່ມແຖບແລ້ວ</translation>
@@ -740,7 +739,6 @@
 <translation id="324180406144491771">ລິ້ງ “<ph name="HOST_NAME" />” ຖືກບລັອກໄວ້ແລ້ວ</translation>
 <translation id="3249845759089040423">ກຣູຟີ</translation>
 <translation id="3252266817569339921">ພາສາຝຣັ່ງ</translation>
-<translation id="3257954757204451555">ໃຜຢູ່ເບື້ອງຫຼັງຂໍ້ມູນນີ້?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ Tab ຈາກນັ້ນກົດ Enter ເພື່ອສ້າງນັດໝາຍໃໝ່ໃນ Google ປະຕິທິນໄດ້ຢ່າງວ່ອງໄວ</translation>
 <translation id="3261488570342242926">ສຶກສາກ່ຽວກັບບັດສະເໝືອນ</translation>
 <translation id="3264837738038045344">ປຸ່ມຈັດການການຕັ້ງຄ່າ Chrome, ກົດ Enter ເພື່ອເຂົ້າການຕັ້ງຄ່າ Chrome ຂອງທ່ານ</translation>
@@ -1128,6 +1126,7 @@
 <translation id="4414515549596849729">ຄຸກກີ້ ແລະ ຂໍ້ມູນເວັບໄຊ</translation>
 <translation id="4415426530740016218">ທີ່ຢູ່ບ່ອນຮັບເຄື່ອງ</translation>
 <translation id="4424024547088906515">ເຊີບເວີນີ້ບໍ່ສາມາດພິສູດໄດ້ວ່າ ມັນແມ່ນ <ph name="DOMAIN" />; ໃບຢັ້ງຢືນຄວາມປອດໄພຂອງມັນບໍ່ໄດ້ຮັບການເຊື່ອໝັ້ນຈາກ Chrome. ອັນນີ້ອາດຈະເຮັດໃຫ້ເກີດມີການປັບຕັ້ງຄ່າຜິດ ຫຼືຜູ້ໂຈມຕີອາດຈະດັກເອົາການເຊື່ອມຕໍ່ຂອງທ່ານ.</translation>
+<translation id="4428065317363009941">ການປັບແຕ່ງໂຄສະນາເປັນແບບສ່ວນຕົວ</translation>
 <translation id="443121186588148776">ຜອດອະນຸກຳ</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> ບໍ່ຍອມຮັບໃບຮັບຮອງການເຂົ້າສູ່ລະບົບຂອງທ່ານ ຫຼື ຍັງບໍ່ມີການໃຫ້ໃບຮັບຮອງເທື່ອ.</translation>
 <translation id="4432792777822557199">ໜ້າຕ່າງໆຢູ່ໃນ <ph name="SOURCE_LANGUAGE" /> ຈະຖືກແປເປັນ <ph name="TARGET_LANGUAGE" /> ຈາກນີ້ເປັນຕົ້ນໄປ</translation>
@@ -1260,7 +1259,6 @@
 <translation id="4838327282952368871">ຊວນຝັນ</translation>
 <translation id="4840250757394056958">ເບິ່ງປະຫວັດ Chrome ຂອງທ່ານ</translation>
 <translation id="484462545196658690">ອັດຕະໂນມັດ</translation>
-<translation id="4849865131988503897">ກວດສອບຄວາມຖືກຕ້ອງ</translation>
 <translation id="4850886885716139402">ເບິ່ງ</translation>
 <translation id="485316830061041779">ພາສາເຢຍລະມັນ</translation>
 <translation id="4853901935952445031">ເວັບໄຊນີ້ຈະບໍ່ສາມາດໃຊ້ U2F API ໄດ້ຫຼັງຈາກເດືອນກຸມພາ 2022. ຫາກທ່ານເປັນເຈົ້າຂອງເວັບໄຊນີ້, ທ່ານຄວນປ່ຽນມັນເພື່ອໃຊ້ Web Authentication API.</translation>
@@ -1447,6 +1445,7 @@
 <translation id="5398772614898833570">ບລັອກໂຄສະນາໄວ້ແລ້ວ</translation>
 <translation id="5400836586163650660">ສີເທົາ</translation>
 <translation id="540969355065856584">ເຊີບເວີນີ້ບໍ່ສາມາດພິສູດໄດ້ວ່າ ມັນແມ່ນ <ph name="DOMAIN" />; ໃບຢັ້ງຢືນຄວາມປອດໄພຂອງມັນໃຊ້​ບໍ່​ໄດ້​ໃນ​ເວ​ລາ​ນີ້. ອັນນີ້ອາດຈະເຮັດໃຫ້ເກີດມີການປັບຕັ້ງຄ່າຜິດ ຫຼືຜູ້ໂຈມຕີອາດຈະດັກເອົາການເຊື່ອມຕໍ່ຂອງທ່ານ.</translation>
+<translation id="5412236728747081950">ເວັບໄຊນີ້ໄດ້ຮັບຄວາມສົນໃຈຂອງທ່ານຈາກ Chrome ເພື່ອສະແດງໂຄສະນາທີ່ກ່ຽວຂ້ອງຫຼາຍຂຶ້ນໃຫ້ທ່ານເຫັນ</translation>
 <translation id="541416427766103491">ສະແຕັກເກີ້ 4</translation>
 <translation id="5421136146218899937">ລຶບຂໍ້ມູນການທ່ອງເນັດ...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> ຕ້ອງການສົ່ງການແຈ້ງເຕືອນໃຫ້ທ່ານ</translation>
@@ -1963,7 +1962,6 @@
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> ບໍ່ປະຕິບັດຕາມມາດຕະຖານຄວາມປອດໄພ.</translation>
 <translation id="7210993021468939304">ການເຄື່ອນໄຫວ Linux ພາຍໃນກ່ອງບັນຈຸ ແລະ ສາມາດຕິດຕັ້ງ ແລະ ເປີດໃຊ້ແອັບ Linux ພາຍໃນກ່ອງບັນຈຸໄດ້</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />ຮຽນ​ຮູ້​ເພີ່ມ​ເຕີມ<ph name="END_LINK" /> ກ່ຽວ​ກັບ​ບັນ​ຫາ​ນີ້​.</translation>
-<translation id="7215025035562547931">ໃຊ້ເວລາເລັກນ້ອຍເພື່ອພິຈາລະນາຄວາມຖືກຕ້ອງ</translation>
 <translation id="7217745192097460130">ໃຊ້ Touch ID ເພື່ອຢັ້ງຢືນ ແລະ ເຮັດສຳເລັດການຊື້ຂອງທ່ານບໍ?</translation>
 <translation id="7219179957768738017">ການເຊື່ອມຕໍ່ໃຊ້ <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">ກຳລັງດຳເນີນການ</translation>
@@ -2093,6 +2091,7 @@
 <translation id="7569952961197462199">ເອົາ​ບັດ​ເຄ​ຣ​ດິດ​ອອກ​ໄປ​ຈາກ Chrome ບໍ?</translation>
 <translation id="7569983096843329377">ສີ​ດໍາ</translation>
 <translation id="7575207903026901870">ລຶບປຸ່ມການແນະນຳອອກ, ກົດ Enter ເພື່ອລຶບການແນະນຳນີ້ອອກ</translation>
+<translation id="7577900504646297215">ຈັດການຄວາມສົນໃຈ</translation>
 <translation id="7578104083680115302">ຈ່າຍຢ່າງວ່ອງໄວຢູ່ໃນເວັບໄຊ ແລະແອັບຯໃນທຸກອຸປະກອນທີ່ໃຊ້ບັດທີ່ທ່ານບັນທຶກນຳ Google.</translation>
 <translation id="7579442726219254162">ຕົວແປທີ່ບໍ່ຮູ້ຈັກ "<ph name="VARIABLE" />" ໃນການຕັ້ງຄ່າທີ່ມີການຈັດການຂອງ "<ph name="APPLICATION_ID" />".</translation>
 <translation id="7581199239021537589">ປ່ຽນຕຳແໜ່ງຮູບພາບດ້ານ 2 ຕາມແກນ Y</translation>
@@ -2214,7 +2213,6 @@
 <translation id="7966803981046576691">ປະເພດບັນຊີວຽກ</translation>
 <translation id="79682505114836835">ຄ່າ "<ph name="VALUE" />" ເປັນສີ hex ທີ່ບໍ່ຖືກຕ້ອງ.</translation>
 <translation id="7968982339740310781">ເບິ່ງລາຍ​ລະ​ອຽດ​</translation>
-<translation id="7970392640816874403">ແຫຼ່ງຂໍ້ມູນອື່ນລະບຸແນວໃດ?</translation>
 <translation id="7976214039405368314">ມີການຮ້ອງຂໍຫຼາຍເກີນໄປ</translation>
 <translation id="7977538094055660992">ອຸປະກອນເຈ້ຍອອກ</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -2565,7 +2563,6 @@
 <translation id="9155211586651734179">ອຸປະກອນຕໍ່ພ່ວງສຽງທີ່ເຊື່ອມຕໍ່ໄວ້</translation>
 <translation id="9157595877708044936">ກໍາລັງ​ຕັ້ງ...</translation>
 <translation id="9158625974267017556">C6 (ຊອງຈົດໝາຍ)</translation>
-<translation id="9164029392738894042">ກວດສອບຄວາມຖືກຕ້ອງ</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">ອະນຸຍາດໃຫ້ເວັບໄຊກວດເບິ່ງວ່າທ່ານມີວິທີການຈ່າຍເງິນທີ່ບັນທຶກໄວ້ຫຼືບໍ່</translation>
 <translation id="9169664750068251925">ບລັອກເວັບໄຊທ໌ນີ້ຢູ່ສະເໝີ</translation>

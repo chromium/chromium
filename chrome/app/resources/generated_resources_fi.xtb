@@ -1074,7 +1074,6 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="2019718679933488176">Avaa äänitied&amp;osto uudessa välilehdessä</translation>
 <translation id="2020183425253392403">Näytä verkko-osoitteen asetukset</translation>
 <translation id="2020225359413970060">Tarkista tiedosto</translation>
-<translation id="2022395138980869975">Laita reunan hakuikkuna päälle tai pois päältä</translation>
 <translation id="2023167225947895179">PIN-koodi voi olla helppo arvata.</translation>
 <translation id="202352106777823113">Lataus kesti liian kauan, joten verkko pysäytti sen.</translation>
 <translation id="2024195579772565064">Poista hakukone</translation>
@@ -1343,6 +1342,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2278562042389100163">Avaa selainikkuna</translation>
 <translation id="2278668501808246459">Käynnistetään säilönhallintaa</translation>
 <translation id="2280486287150724112">Oikea reuna</translation>
+<translation id="2281863813036651454">Klikkaus hiiren vasemmalla painikkeelle</translation>
 <translation id="2282146716419988068">GPU-prosessi</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{Avaa kaikki &amp;uudella välilehtiryhmällä}=1{Avaa &amp;uudella välilehtiryhmällä}other{Avaa kaikki ({COUNT}) &amp;uudella välilehtiryhmällä}}</translation>
 <translation id="2285942871162473373">Sormenjälkeäsi ei voitu tunnistaa. Yritä uudelleen.</translation>
@@ -2974,7 +2974,6 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="3888053818972567950">Yhteys: <ph name="WEB_DRIVE" /></translation>
 <translation id="3888550877729210209">Muistiinpanojen kirjoittaminen sovelluksella <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">Nämä tiedot auttavat meitä ymmärtämään Assistant-ongelmaasi paremmin. Niitä säilytetään enintään 90 päivää, ja vain asianmukaiset insinööri- ja palautetiimit pääsevät tietoihin.</translation>
-<translation id="3888900458694486810">Sulje reunan hakuikkuna</translation>
 <translation id="3890064827463908288">Laita Chromen synkronointi päälle, jotta voit käyttää Wi-Fin synkronointia</translation>
 <translation id="389313931326656921">Määritä kytkin: Seuraava</translation>
 <translation id="3893295674388762059">Jos haluat poistaa datan, sulje kaikki incognito-ikkunat</translation>
@@ -3285,7 +3284,6 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4208390505124702064">Haku sivustolta <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Suuri</translation>
 <translation id="4209251085232852247">Poistettu käytöstä</translation>
-<translation id="4209464433672152343">Dokumentit <ph name="BEGIN_LINK_HELP" />lähetetään Googlelle<ph name="END_LINK_HELP" /> tulostamisen valmistelua varten. Voit katsella, muokata ja hallinnoida tulostimia ja tulostushistoriaa <ph name="BEGIN_LINK_DASHBOARD" />Google Cloud Printin hallintapaneelissa<ph name="END_LINK_DASHBOARD" />.</translation>
 <translation id="4210048056321123003">Ladataan virtuaalikonetta</translation>
 <translation id="421182450098841253">Näytä kirjanmerkkipalkki</translation>
 <translation id="4211851069413100178">Lähetä käyttö- ja diagnostiikkadataa. Auta parantamaan Android-käyttökokemusta lähettämällä diagnostiikkadataa sekä laitteen ja sovellusten käyttödataa automaattisesti Googlelle. Datan avulla parannetaan esimerkiksi järjestelmän ja sovellusten vakautta. Kootusta datasta on hyötyä myös Googlen sovelluksille ja kumppaneille, kuten Android-kehittäjille. Omistaja on ottanut tämän <ph name="BEGIN_LINK1" />asetuksen<ph name="END_LINK1" /> käyttöön. Omistaja voi lähettää tätä laitetta koskevaa diagnostiikka- ja käyttödataa Googlelle. Jos olet ottanut käyttöön muun verkko- ja sovellustoiminnan asetuksen, tätä dataa voidaan tallentaa Google-tilillesi. <ph name="BEGIN_LINK2" />Lue lisää<ph name="END_LINK2" /></translation>
@@ -5157,6 +5155,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6129938384427316298">Netscape-varmenteen kommentti</translation>
 <translation id="6129953537138746214">Välilyönti</translation>
 <translation id="6130692320435119637">Lisää Wi-Fi-yhteys</translation>
+<translation id="6130887916931372608">Näppäimistön näppäin</translation>
 <translation id="6136114942382973861">Sulje latauspalkki</translation>
 <translation id="6136287496450963112">Suojausavaintasi ei ole suojattu PIN-koodilla. Luo PIN-koodi, jotta voit ylläpitää sormenjälkiä.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA ‑allekirjoitus, jossa on SHA-384</translation>
@@ -6179,7 +6178,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="7180611975245234373">Päivitä</translation>
 <translation id="7180865173735832675">Muokkaa</translation>
 <translation id="7182791023900310535">Siirrä salasana</translation>
-<translation id="7183420126213758623">Laita reunan hakuikkuna päälle tai pois päältä. Reunan hakuikkunaa ei aktivoitu.</translation>
 <translation id="7186088072322679094">Pidä yläpalkissa</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> ei saa avata tätä kansiota, koska se sisältää järjestelmätiedostoja</translation>
 <translation id="7187428571767585875">Poistettavat tai muutettavat rekisteritiedot:</translation>
@@ -6701,7 +6699,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="7701040980221191251">Ei mitään</translation>
 <translation id="7701869757853594372">KÄYTTÄJÄ-tunnukset</translation>
 <translation id="7702574632857388784">Poista <ph name="FILE_NAME" /> luettelosta</translation>
-<translation id="7702599324215660661">Lukitse poistuttaessa</translation>
 <translation id="7702907602086592255">Verkkotunnus</translation>
 <translation id="7704305437604973648">Tehtävä</translation>
 <translation id="7704317875155739195">Täydennä automaattisesti hakuja ja URL-osoitteita</translation>
@@ -6771,6 +6768,7 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="7768770796815395237">Muuta</translation>
 <translation id="7768784765476638775">Teksti puhuttuna</translation>
 <translation id="7770406201819593386">Suorittaa ChromeOS Flexin diagnostiikkatestit.</translation>
+<translation id="7770450735129978837">Klikkaus hiiren oikealla painikkeella</translation>
 <translation id="7770612696274572992">Toiselta laitteelta kopioitu kuva</translation>
 <translation id="7771452384635174008">Ulkoasu</translation>
 <translation id="7772032839648071052">Vahvista tunnuslause</translation>
@@ -6806,7 +6804,6 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="7798844538707273832"><ph name="PERMISSION" /> estetty automaattisesti</translation>
 <translation id="7799299114731150374">Taustakuvan asettaminen onnistui</translation>
 <translation id="7799817062559422778">Vaalea tila</translation>
-<translation id="7800159967992492578">Laita reunan hakuikkuna päälle tai pois päältä. Reunan hakuikkuna aktivoitu.</translation>
 <translation id="7800518121066352902">Käännä &amp;vastapäivään</translation>
 <translation id="7801679634091975683">Tässä tekemäsi muutokset koskevat vain Lacros Chrome ‑selainta. Jos haluat muuttaa Chrome-selaimesi asetuksia, avaa Chrome-selain ja siirry asetuksiin.</translation>
 <translation id="780301667611848630">Ei kiitos</translation>

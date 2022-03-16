@@ -1064,7 +1064,6 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="2019718679933488176">&amp;Deschide conținutul audio într-o filă nouă</translation>
 <translation id="2020183425253392403">Afișează setările adresei de rețea</translation>
 <translation id="2020225359413970060">Scanează fișierul</translation>
-<translation id="2022395138980869975">Activează / dezactivează căutarea laterală</translation>
 <translation id="2023167225947895179">Este posibil ca PIN-ul să fie ușor de ghicit</translation>
 <translation id="202352106777823113">Descărcarea a durat prea mult și a fost oprită de rețea.</translation>
 <translation id="2024195579772565064">Șterge motorul de căutare</translation>
@@ -1265,6 +1264,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2218019600945559112">Mouse și touchpad</translation>
 <translation id="2218320521449013367">A apărut o eroare în timp ce Chrome elimina un software dăunător</translation>
 <translation id="2218515861914035131">Inserează ca text simplu</translation>
+<translation id="2219658597883514593">Repornește tutorialul</translation>
 <translation id="2220409419896228519">Adaugă marcaje la aplicațiile Google preferate</translation>
 <translation id="2220529011494928058">Semnalați o problemă</translation>
 <translation id="2220572644011485463">PIN sau parolă</translation>
@@ -2409,6 +2409,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3378627645871606983">Permisiunile oferite pentru Steam se aplică pentru toate jocurile și aplicațiile Steam.</translation>
 <translation id="337920581046691015"><ph name="PRODUCT_NAME" /> va fi instalat.</translation>
 <translation id="3380365263193509176">Eroare necunoscută</translation>
+<translation id="3380850890226973980">Întreabă data viitoare</translation>
 <translation id="3382073616108123819">Hopa! Sistemul nu a stabilit identificatorii de dispozitiv pentru acest dispozitiv.</translation>
 <translation id="3382200254148930874">Se oprește supravegherea…</translation>
 <translation id="338323348408199233">Blochează traficul fără VPN</translation>
@@ -2962,7 +2963,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3888053818972567950">Conexiune <ph name="WEB_DRIVE" /></translation>
 <translation id="3888550877729210209">Scriere de notițe cu <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">Aceste informații ne ajută să înțelegem mai bine problema cu Asistentul. Informațiile sunt stocate timp de cel mult 90 de zile, iar accesul la ele este restricționat la echipele de ingineri și de feedback adecvate.</translation>
-<translation id="3888900458694486810">Închide căutarea laterală</translation>
 <translation id="3890064827463908288">Activează Sincronizarea Chrome pentru a folosi Sincronizarea Wi-Fi</translation>
 <translation id="389313931326656921">Atribuie un comutator pentru Înainte</translation>
 <translation id="3893295674388762059">Pentru a șterge date, închide toate ferestrele incognito</translation>
@@ -3276,7 +3276,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4208390505124702064">Caută pe <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Mare</translation>
 <translation id="4209251085232852247">Dezactivat</translation>
-<translation id="4209464433672152343">Documentele sunt <ph name="BEGIN_LINK_HELP" />trimise la Google<ph name="END_LINK_HELP" /> pentru a le pregăti de printare. Afișează, modifică și gestionează imprimantele și istoricul de printare din <ph name="BEGIN_LINK_DASHBOARD" />tabloul de bord Google Cloud Print<ph name="END_LINK_DASHBOARD" />.</translation>
 <translation id="4210048056321123003">Se descarcă mașina virtuală</translation>
 <translation id="421182450098841253">&amp;Afișați bara de marcaje</translation>
 <translation id="4211851069413100178">Trimite date de utilizare și diagnosticare. Contribuie la îmbunătățirea experienței Android trimițând automat la Google date privind diagnosticarea și utilizarea dispozitivelor și a aplicațiilor. Aceasta va ajuta la stabilitatea sistemului, a aplicației și altele. Unele date cumulate vor ajuta aplicațiile și partenerii Google, cum ar fi dezvoltatorii Android. Această <ph name="BEGIN_LINK1" />setare<ph name="END_LINK1" /> este impusă de proprietar. Proprietarul poate alege să trimită date de diagnosticare și utilizare a dispozitivului la Google. Dacă setarea Activitatea suplimentară de pe web și din aplicații este activată, aceste date pot fi salvate în Contul tău Google. <ph name="BEGIN_LINK2" />Află mai multe<ph name="END_LINK2" /></translation>
@@ -4209,6 +4208,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="5185500136143151980">Nu există conexiune la internet</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190187232518914472">Retrăiește amintirile preferate. Pentru a adăuga sau a edita albume, accesează <ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>
+<translation id="5190316321948122159">{NUM_APPS,plural, =1{Șterge aplicația acum}few{Șterge aplicațiile acum}other{Șterge aplicațiile acum}}</translation>
 <translation id="5190926251776387065">Activează portul</translation>
 <translation id="5191094172448199359">Codurile PIN introduse nu sunt identice</translation>
 <translation id="5191251636205085390">Află despre și folosește tehnologii noi, destinate să înlocuiască cookie-urile terță parte</translation>
@@ -4381,6 +4381,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="5342091991439452114">Codul PIN trebuie să conțină minimum <ph name="MINIMUM" /> cifre</translation>
 <translation id="5344036115151554031">Se restabilește Linux</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (dreapta)</translation>
+<translation id="534572711507965074">Denumește grupul, alege o culoare și atinge Enter</translation>
 <translation id="5345916423802287046">Pornește aplicația când te conectezi</translation>
 <translation id="5350293332385664455">Dezactivează Asistentul Google</translation>
 <translation id="535123479159372765">Text copiat de pe alt dispozitiv</translation>
@@ -4961,6 +4962,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5946591249682680882">ID raport <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5948536763493709626">Conectează o tastatură ori un mouse sau continuă configurarea pe ecranul tactil. Dacă folosești dispozitive Bluetooth, asigură-te că sunt gata de conectare.</translation>
 <translation id="5949544233750246342">Fișierul nu poate fi analizat</translation>
+<translation id="5950039854561387265">Întreabă data viitoare</translation>
 <translation id="5950819593680344519">Chrome nu a găsit software dăunător pe computer • A verificat ieri</translation>
 <translation id="5951303645598168883"><ph name="ORIGIN" /> solicită permisiunea de a folosi fonturi locale</translation>
 <translation id="5951624318208955736">Monitor</translation>
@@ -5223,6 +5225,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> este offline. Conectează-te la internet și încearcă din nou.</translation>
 <translation id="6220413761270491930">Eroare la încărcarea extensiei</translation>
 <translation id="6223447490656896591">Imagine personalizată:</translation>
+<translation id="62236885217374510">{NUM_APPS,plural, =1{Șterge aplicația acum}few{Șterge aplicațiile acum}other{Șterge aplicațiile acum}}</translation>
 <translation id="6224481128663248237">Formatarea a fost finalizată!</translation>
 <translation id="622537739776246443">Profilul va fi șters</translation>
 <translation id="6225475702458870625">Conexiune de date disponibilă de pe <ph name="PHONE_NAME" /></translation>
@@ -5855,6 +5858,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6846178040388691741">„<ph name="EXTENSION_NAME" />” dorește să imprime <ph name="FILE_NAME" /> la <ph name="PRINTER_NAME" />.</translation>
 <translation id="6847125920277401289">Eliberează spațiu pentru a continua</translation>
 <translation id="6848388270925200958">În acest moment ai câteva carduri care pot fi folosite doar pe acest dispozitiv.</translation>
+<translation id="6848425544473873717">{NUM_APPS,plural, =1{Una dintre aplicații nu mai este acceptată. <ph name="LEARN_MORE" />}few{# dintre aplicații nu mai sunt acceptate. <ph name="LEARN_MORE" />}other{# dintre aplicații nu mai sunt acceptate. <ph name="LEARN_MORE" />}}</translation>
 <translation id="6848716236260083778">Pentru a configura amprenta, solicită-i copilului tău să atingă senzorul de amprentă. Datele privind amprentele copilului sunt stocate în siguranță și nu părăsesc niciodată dispozitivul <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6850286078059909152">Culoarea textului</translation>
 <translation id="6851181413209322061">Trimite date de utilizare și diagnosticare. Momentan, dispozitivul trimite automat date de diagnosticare și de utilizare a dispozitivului și aplicațiilor la Google. Acestea nu vor fi folosite la identificarea copilului și vor ajuta la stabilitatea sistemului, a aplicațiilor și altele. Unele date cumulate vor ajuta aplicațiile și partenerii Google, cum ar fi dezvoltatorii Android. Această setare este impusă de proprietar. Dacă ai activat setarea Activitatea suplimentară de pe web și din aplicații pentru copilul tău, aceste date pot fi salvate în Contul său Google.</translation>
@@ -6170,7 +6174,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="7180611975245234373">Actualizați</translation>
 <translation id="7180865173735832675">Personalizează</translation>
 <translation id="7182791023900310535">Mută parola</translation>
-<translation id="7183420126213758623">Activează / dezactivează căutarea laterală. Căutarea laterală nu este activată.</translation>
 <translation id="7186088072322679094">Păstrează în bara de instrumente</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> nu poate deschide acest dosar, deoarece conține fișiere de sistem</translation>
 <translation id="7187428571767585875">Intrări din registry care trebuie eliminate sau modificate:</translation>
@@ -6692,7 +6695,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="7701040980221191251">Niciuna</translation>
 <translation id="7701869757853594372">Ghidaje UTILIZATOR</translation>
 <translation id="7702574632857388784">Elimină <ph name="FILE_NAME" /> din listă</translation>
-<translation id="7702599324215660661">Blochează la plecare</translation>
 <translation id="7702907602086592255">Domeniu</translation>
 <translation id="7704305437604973648">Activitate</translation>
 <translation id="7704317875155739195">Completează automat căutările și adresele URL</translation>
@@ -6799,7 +6801,6 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7798844538707273832"><ph name="PERMISSION" /> a fost blocată automat</translation>
 <translation id="7799299114731150374">Imaginea de fundal a fost setată</translation>
 <translation id="7799817062559422778">Modul Luminos</translation>
-<translation id="7800159967992492578">Activează / dezactivează căutarea laterală. Căutarea laterală este activată.</translation>
 <translation id="7800518121066352902">Rotiți în sens &amp;invers acelor de ceasornic</translation>
 <translation id="7801679634091975683">Modificările pe care le faci aici se aplică numai în browserul Lacros Chrome. Pentru a face modificări în setările browserului Chrome, deschide browserul Chrome și accesează setările.</translation>
 <translation id="780301667611848630">Nu, mulțumesc</translation>
@@ -7120,6 +7121,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8102139037507939978">Elimină datele cu caracter personal din system_logs.txt.</translation>
 <translation id="8104088837833760645">Descarcă profilul eSIM</translation>
 <translation id="8105368624971345109">Dezactivează</translation>
+<translation id="8105541061909542455">{NUM_APPS,plural, =1{Aplicație neacceptată}few{Aplicații neacceptate}other{Aplicații neacceptate}}</translation>
 <translation id="8107015733319732394">Se instalează Magazinul Google Play pe dispozitivul <ph name="DEVICE_TYPE" />. Ar putea dura câteva minute.</translation>
 <translation id="810728361871746125">Rezoluția afișajului</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{Niciun cookie terță parte}=1{Un cookie terță parte este blocat}few{# cookie-uri terță parte sunt blocate}other{# de cookie-uri terță parte sunt blocate}}</translation>

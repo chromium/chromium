@@ -30,7 +30,6 @@
 <translation id="114825011539563458">Най-важните контроли за поверителност и сигурност на едно място</translation>
 <translation id="1149401351239820326">Месец на валидност</translation>
 <translation id="1154704303112745282">Страницата не е достъпна офлайн: <ph name="VIOLATED_URL" /></translation>
-<translation id="1166688006062225587">Списъкът с профили, които да бъдат избрани.</translation>
 <translation id="1171770572613082465">Вижте популярните уебсайтове, като докоснете бутона „Водещи сайтове“</translation>
 <translation id="1173894706177603556">Преименуване</translation>
 <translation id="1177863135347784049">По избор</translation>
@@ -571,6 +570,7 @@
 <translation id="4415276339145661267">Управление на профила ви в Google</translation>
 <translation id="4425140285732600465">Цената се проследява. Ще получавате сигнали, когато има понижение в който и да е сайт.</translation>
 <translation id="442518031075347249">Вече няма да можете да използвате виртуалната си карта с Google Pay. <ph name="BEGIN_LINK1" />Научете повече за виртуалните карти<ph name="END_LINK1" /></translation>
+<translation id="4428065317363009941">Персонализиране на рекламите</translation>
 <translation id="4450672886426705087">Резултати от търсенето с Google.</translation>
 <translation id="4452411734226507615">Затваряне на раздела „<ph name="TAB_TITLE" />“</translation>
 <translation id="4452548195519783679">Отметката бе запазена в/ъв „<ph name="FOLDER_NAME" />“</translation>
@@ -685,6 +685,7 @@
 <translation id="4988526792673242964">Страници</translation>
 <translation id="5001388021414335527">Следене на този сайт тук</translation>
 <translation id="5004416275253351869">Контроли за активността в Google</translation>
+<translation id="5005141133360250920">Реакцията е изтрита</translation>
 <translation id="5005498671520578047">Копиране на паролата</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> иска да се свърже</translation>
 <translation id="5016205925109358554">Серифен</translation>
@@ -740,6 +741,7 @@
 <translation id="5368227114232678694">За да сърфирате частно на това устройство, изпробвайте режим „инкогнито“</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> отворен раздел. Докоснете за превключване между разделите}other{<ph name="OPEN_TABS_MANY" /> отворени раздела. Докоснете за превключване между тях}}</translation>
 <translation id="5375577065097716013">Търсене на изобр. с Обектив <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
+<translation id="5376898820269806588">Реакцията е променена</translation>
 <translation id="5403644198645076998">Разрешаване само на конкретни сайтове</translation>
 <translation id="5409881200985013443">Да се изпрати ли еднократният код <ph name="ONE_TIME_CODE" /> до <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Потвърждава се…</translation>
@@ -897,7 +899,6 @@
 <translation id="6277522088822131679">При отпечатването на страницата възникна проблем. Моля, опитайте отново.</translation>
 <translation id="6277722725779679269">Проследяваните цени не бяха актуализирани</translation>
 <translation id="6278428485366576908">Тема</translation>
-<translation id="6293443105724342169">Списъкът с профили, които да бъдат избрани, е отворен на половината височина на екрана.</translation>
 <translation id="6294610283659775533">Можете да изпращате раздели до други устройства, на които сте влезли в един и същ профил в Google</translation>
 <translation id="6297765934698848803">Организацията, която управлява устройството ви, е изключила камерата.</translation>
 <translation id="6301525844455696527">Не забравяйте списъка си за четене</translation>
@@ -1073,6 +1074,7 @@
 <translation id="718926126787620637">Списъкът с папките с отметки е отворен на пълната височина</translation>
 <translation id="7191430249889272776">Разделът е отворен на заден план.</translation>
 <translation id="7196215469483532480">Обяснението на ръководството за поверителност е отворено на пълната височина</translation>
+<translation id="7208109991155904980">Реакцията е преместена</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Предстои 1 изтегляне}other{Предстоят # изтегляния}}</translation>
 <translation id="7237045078887540010">С използването на Chrome приемате <ph name="BEGIN_TOS_LINK" />Общите условия на Google<ph name="END_TOS_LINK" /> и <ph name="BEGIN_ATOS_LINK" />Допълнителните общи условия на Chrome и Chrome OS<ph name="END_ATOS_LINK" />. В сила е и <ph name="BEGIN_PRIVACY_LINK" />Декларацията за поверителност<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="7242755609445462077">Стилизирано открояване – <ph name="CURRENT_DATE" /></translation>
@@ -1307,7 +1309,6 @@
 <translation id="8461694314515752532">Шифроване на синхронизираните данни със собствения ви пропуск за синхронизиране</translation>
 <translation id="8466613982764129868">Уверете се, че устройството <ph name="TARGET_DEVICE_NAME" /> е свързано с интернет</translation>
 <translation id="8473863474539038330">Адреси и др.</translation>
-<translation id="847656914027543776">Списъкът с профили, които да бъдат избрани, е затворен.</translation>
 <translation id="8481921391193215807">Когато настройката е включена, сайтовете може да използват описаните тук техники за защита на поверителността, за да предоставят съдържанието и услугите си. Техниките съдържат алтернативи на проследяването в различни сайтове. С течение на времето може да бъдат добавени други експерименти.
 
 <ph name="BEGIN_LIST_ITEM1" />Рекламодателите и издателите могат да използват техниката FLoC.<ph name="END_LIST_ITEM1" />
@@ -1362,6 +1363,7 @@
 <translation id="8683526617475118045">Какво получавате</translation>
 <translation id="869891660844655955">Дата на валидност</translation>
 <translation id="8699120352855309748">Да не се предлага превод от тези езици</translation>
+<translation id="8712637175834984815">Разбрах</translation>
 <translation id="8725066075913043281">Опитайте отново</translation>
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8746155870861185046">Споделяне на открояването</translation>
@@ -1434,7 +1436,6 @@
 <translation id="9108312223223904744">Поддръжка за използване на телефона като ключ за сигурност</translation>
 <translation id="9108808586816295166">Сигурният DNS може да не е налице по всяко време</translation>
 <translation id="9133397713400217035">Разглеждане в офлайн режим</translation>
-<translation id="9133523398139146080">Списъкът с профили, които да бъдат избрани, е отворен на пълната височина на екрана.</translation>
 <translation id="9137013805542155359">Показване на оригинала</translation>
 <translation id="9148126808321036104">Влезте отново</translation>
 <translation id="9155898266292537608">Можете също да извършите търсене с бързо докосване на дума</translation>

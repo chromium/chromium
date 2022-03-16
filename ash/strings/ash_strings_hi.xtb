@@ -259,6 +259,7 @@
 <translation id="2595239820337756193">5 हज़ार कितने मील होता है</translation>
 <translation id="2596078834055697711">विंडो का स्क्रीनशॉट लें</translation>
 <translation id="2607678425161541573">ऑनलाइन साइन इन करना ज़रूरी है</translation>
+<translation id="2620436844016719705">सिस्टम</translation>
 <translation id="2621713457727696555">सुरक्षित</translation>
 <translation id="263399434338050016">"सभी को चुनें"</translation>
 <translation id="2653019840645008922">विंडो कैप्चर</translation>
@@ -355,6 +356,7 @@
 <translation id="320207200541803018">टाइमर सेट करो</translation>
 <translation id="3203405173652969239">ऐक्सेस करने का तरीका बदलने की सुविधा चालू है</translation>
 <translation id="3207953481422525583">उपयोगकर्ता सेटिंग</translation>
+<translation id="3208321278970793882">ऐप्लिकेशन</translation>
 <translation id="3217205077783620295">आवाज़ चालू है, टॉगल करने से ऑडियो बंद हो जाएगा.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> और</translation>
 <translation id="3227137524299004712">माइक्रोफ़ोन</translation>
@@ -1040,6 +1042,7 @@
 <translation id="7513622367902644023">स्क्रीनशॉट मोड चुना गया</translation>
 <translation id="7513922695575567867"><ph name="DATE" /> वाले हफ़्ते के कैलेंडर में, फ़िलहाल<ph name="SELECTED_DATE" /> को चुना गया है.</translation>
 <translation id="7514365320538308">डाउनलोड करें</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7526573455193969409">नेटवर्क की निगरानी की जा सकती है</translation>
 <translation id="7536035074519304529">आईपी पता: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">फ़िलहाल, Linux ऐप्लिकेशन और गुप्त विंडो काम नहीं कर रही हैं. अन्य ऐप्लिकेशन सेव हो जाएंगे.</translation>
@@ -1109,6 +1112,7 @@
 <translation id="7901405293566323524">फ़ोन हब</translation>
 <translation id="7902625623987030061">फ़िंगरप्रिंट सेंसर को छुएं</translation>
 <translation id="7904094684485781019">इस खाते के एडमिन ने एक से ज़्यादा साइन-इन को अस्वीकार कर दिया है.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7930731167419639574">स्पीच को स्थानीय तौर पर प्रोसेस किया जाता है और लिखवाने की सुविधा ऑफ़लाइन काम करती है</translation>
 <translation id="7933084174919150729">Google Assistant सिर्फ़ प्राथमिक प्रोफ़ाइल के लिए उपलब्ध है.</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> और <ph name="SECOND_PARENT_EMAIL" /> खाता संभालते हैं</translation>

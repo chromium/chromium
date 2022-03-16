@@ -31,6 +31,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1150989369772528668">Lịch</translation>
 <translation id="1153356358378277386">Thiết bị đã ghép nối</translation>
 <translation id="1165712434476988950">Bạn cần phải khởi động lại thiết bị để áp dụng bản cập nhật.</translation>
+<translation id="1171742223880403396">Có thể cáp USB-C của bạn chưa kết nối đúng cách với màn hình</translation>
 <translation id="1175572348579024023">Cuộn</translation>
 <translation id="1178581264944972037">Tạm dừng</translation>
 <translation id="1181037720776840403">Xóa</translation>
@@ -256,6 +257,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2595239820337756193">5.000 dặm</translation>
 <translation id="2596078834055697711">Chụp ảnh màn hình cửa sổ</translation>
 <translation id="2607678425161541573">Yêu cầu đăng nhập trực tuyến</translation>
+<translation id="2620436844016719705">Hệ thống</translation>
 <translation id="2621713457727696555">Đã bảo mật</translation>
 <translation id="263399434338050016">"Chọn tất cả"</translation>
 <translation id="2653019840645008922">Chụp/ghi cửa sổ</translation>
@@ -351,6 +353,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="320207200541803018">Hẹn giờ</translation>
 <translation id="3203405173652969239">Đã bật tùy chọn Tiếp cận bằng công tắc</translation>
 <translation id="3207953481422525583">Cài đặt người dùng</translation>
+<translation id="3208321278970793882">Ứng dụng</translation>
 <translation id="3217205077783620295">Âm lượng đang bật. Nếu bạn chuyển đổi, âm thanh sẽ bị tắt.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> mục khác</translation>
 <translation id="3227137524299004712">Micrô</translation>
@@ -1034,6 +1037,7 @@ Mới cài đặt</translation>
 <translation id="7513622367902644023">Đã chọn chế độ chụp ảnh màn hình</translation>
 <translation id="7513922695575567867">Lịch, tuần tính từ ngày <ph name="DATE" />, đang chọn <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Tải xuống</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7526573455193969409">Mạng có thể được giám sát</translation>
 <translation id="7536035074519304529">Địa chỉ IP: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Hiện không hỗ trợ ứng dụng Linux và cửa sổ ẩn danh. Các ứng dụng khác sẽ được lưu.</translation>
@@ -1102,6 +1106,7 @@ Mới cài đặt</translation>
 <translation id="7901405293566323524">Trung tâm điều khiển điện thoại</translation>
 <translation id="7902625623987030061">Chạm vào cảm biến vân tay</translation>
 <translation id="7904094684485781019">Quản trị viên của tài khoản này đã không cho phép đăng nhập nhiều tài khoản.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7930731167419639574">Giọng nói được xử lý cục bộ và tính năng Nhập bằng giọng nói hoạt động ngoại tuyến</translation>
 <translation id="7933084174919150729">Bạn chỉ có thể sử dụng Trợ lý Google cho hồ sơ chính.</translation>
 <translation id="79341161159229895">Tài khoản được quản lý bởi <ph name="FIRST_PARENT_EMAIL" /> và <ph name="SECOND_PARENT_EMAIL" /></translation>

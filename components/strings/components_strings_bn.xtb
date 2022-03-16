@@ -115,7 +115,6 @@
 <translation id="1301324364792935241">আপনার সুরক্ষিত DNS সেটিংস চেক করে দেখুন</translation>
 <translation id="1307966114820526988">শীঘ্রই বন্ধ করা হবে এমন ফিচার</translation>
 <translation id="1308113895091915999">অফার উপলভ্য</translation>
-<translation id="1312803275555673949">কোন প্রমাণ এখানে কাজ করে?</translation>
 <translation id="1314311879718644478">অগমেন্টেড রিয়েলিটি কন্টেন্ট দেখুন</translation>
 <translation id="1314509827145471431">ডানদিকে বাঁধাই করুন</translation>
 <translation id="1318023360584041678">ট্যাব গ্রুপে সেভ করা হয়েছে</translation>
@@ -741,7 +740,6 @@
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” লিঙ্ক ব্লক করা হয়েছে</translation>
 <translation id="3249845759089040423">গ্ৰুভি</translation>
 <translation id="3252266817569339921">ফরাসী</translation>
-<translation id="3257954757204451555">এই তথ্যের পিছনে কে আছে?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, চটপট নতুন Google Calendar তৈরি করতে প্রথমে Tab, তারপরে Enter প্রেস করুন</translation>
 <translation id="3261488570342242926">ভার্চুয়াল কার্ডের বিষয়ে জানুন</translation>
 <translation id="3264837738038045344">Chrome সেটিংস বোতাম ম্যানেজ করুন, আপনার Chrome সেটিংস দেখতে Enter প্রেস করুন</translation>
@@ -1129,6 +1127,7 @@
 <translation id="4414515549596849729">কুকি ও সাইট ডেটা</translation>
 <translation id="4415426530740016218">পিক-আপের ঠিকানা</translation>
 <translation id="4424024547088906515">এই সার্ভার প্রমাণ করতে পারেনি যে এটি <ph name="DOMAIN" />; এর নিরাপত্তা সার্টিফিকেট Chrome এর নিকট বিশ্বাসযোগ্য নয়। কোনো ভুল কনফিগারেশনের কারণে অথবা কোনো আক্রমণকারী আপনার সংযোগ মাঝপথে আটকে দিচ্ছে বলে এমনটা হতে পারে।</translation>
+<translation id="4428065317363009941">পছন্দ অনুযায়ী বিজ্ঞাপন বেছে নেওয়া</translation>
 <translation id="443121186588148776">সিরিয়াল পোর্ট</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> আপনার লগ-ইন সার্টিফিকেটটি স্বীকার করেনি, অথবা কোনো সার্টিফিকেট দেওয়া হয়নি।</translation>
 <translation id="4432792777822557199">এখন থেকে <ph name="SOURCE_LANGUAGE" /> ভাষার পৃষ্ঠাগুলিকে <ph name="TARGET_LANGUAGE" /> ভাষায় অনুবাদ করা হবে</translation>
@@ -1261,7 +1260,6 @@
 <translation id="4838327282952368871">স্বপ্নালু</translation>
 <translation id="4840250757394056958">আপনার Chrome ইতিহাস দেখুন</translation>
 <translation id="484462545196658690">অটো</translation>
-<translation id="4849865131988503897">আরও উন্নত করার জন্য দেওয়া পরামর্শ যাচাই করা</translation>
 <translation id="4850886885716139402">দেখুন</translation>
 <translation id="485316830061041779">জার্মান</translation>
 <translation id="4853901935952445031">২০২২ সালের ফেব্রুয়ারি মাসের পর থেকে, এই সাইট U2F API ব্যবহার করতে পারবে না। আপনি এই সাইটের মালিক হলে, Web Authentication API ব্যবহার করার জন্য আপনাকে এটি পরিবর্তন করতে হবে।</translation>
@@ -1448,6 +1446,7 @@
 <translation id="5398772614898833570">বিজ্ঞাপন ব্লক করা হয়েছে</translation>
 <translation id="5400836586163650660">ধূসর</translation>
 <translation id="540969355065856584">এই সার্ভার প্রমাণ করতে পারেনি যে এটি <ph name="DOMAIN" />; এর নিরাপত্তা সার্টিফিকেট এই সময়ে বৈধ নয়। কোনো ভুল কনফিগারেশনের কারণে অথবা কোনো আক্রমণকারী আপনার সংযোগ মাঝপথে আটকে দিচ্ছে বলে এমনটা হতে পারে।</translation>
+<translation id="5412236728747081950">এই সাইটটি আপনাকে আরও প্রাসঙ্গিক বিজ্ঞাপন দেখানোর জন্য Chrome থেকে আপনার আগ্রহগুলি নেয়।</translation>
 <translation id="541416427766103491">স্ট্যাকার ৪</translation>
 <translation id="5421136146218899937">ব্রাউজিং ডেটা সাফ করুন...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> আপনাকে বিজ্ঞপ্তি পাঠাতে চায়</translation>
@@ -1963,7 +1962,6 @@
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> নিরাপত্তা মান মেনে চলে না।</translation>
 <translation id="7210993021468939304">কন্টেনারের মধ্যে Linux অ্যাক্টিভিটি দেখা যাবে এবং কন্টেনারের মধ্যেই Linux অ্যাপ ইনস্টল করা ও চালানো যাবে</translation>
 <translation id="721197778055552897">এই সমস্যাটি সম্পর্কে <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" />৷</translation>
-<translation id="7215025035562547931">কিছুটা সময় নিন এবং পৃষ্ঠাটি আরও ভাল করে তুলতে সাহায্য করুন</translation>
 <translation id="7217745192097460130">আপনার কেনাকাটা যাচাই ও সম্পূর্ণ করতে টাচ আইডি ব্যবহার করবেন?</translation>
 <translation id="7219179957768738017">এই সংযোগটি <ph name="SSL_VERSION" />টি ব্যবহার করে</translation>
 <translation id="7220786058474068424">প্রক্রিয়ায় রয়েছে</translation>
@@ -2093,6 +2091,7 @@
 <translation id="7569952961197462199">Chrome থেকে ক্রেডিট কার্ড সরাবেন?</translation>
 <translation id="7569983096843329377">কালো</translation>
 <translation id="7575207903026901870">সাজেশন বোতাম সরান, এই সাজেশন সরাতে 'Enter' কী প্রেস করুন</translation>
+<translation id="7577900504646297215">আপনার পছন্দ ম্যানেজ করুন</translation>
 <translation id="7578104083680115302">আপনি Google এর সাথে সংরক্ষণ করেছেন এমন কার্ড ব্যবহার করে ডিভাইস জুড়ে সাইট এবং অ্যাপ্লিকেশানগুলিতে দ্রুত অর্থ পরিশোধ করুন।</translation>
 <translation id="7581199239021537589">সাইড 2 ছবি Y শিফ্ট</translation>
 <translation id="7582602800368606489">Google Calendar-এ চটপট নতুন একটি ইভেন্ট তৈরি করুন</translation>
@@ -2213,7 +2212,6 @@
 <translation id="7966803981046576691">চাকরির অ্যাকাউন্টের ধরন</translation>
 <translation id="79682505114836835"><ph name="VALUE" /> মান ভুল হেক্স কালার কোড।</translation>
 <translation id="7968982339740310781">বিশদ বিবরণ দেখুন</translation>
-<translation id="7970392640816874403">অন্য সোর্সগুলি কি বলছে?</translation>
 <translation id="7976214039405368314">অত্যধিক অনুরোধ</translation>
 <translation id="7977538094055660992">আউটপুট ডিভাইস</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -2564,7 +2562,6 @@
 <translation id="9155211586651734179">অডিও পেরিফেরাল অ্যাটাচ করা হয়েছে</translation>
 <translation id="9157595877708044936">সেট-আপ হচ্ছে...</translation>
 <translation id="9158625974267017556">C6 (Envelope)</translation>
-<translation id="9164029392738894042">আরও উন্নত করার জন্য, দেওয়া পরামর্শ যাচাই করা</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">আপনি কোনও পেমেন্ট পদ্ধতি সেভ করেছেন কিনা তা সাইটগুলিকে যাচাই করতে দিন</translation>
 <translation id="9169664750068251925">এই সাইটে সর্বদা অবরোধ করুন</translation>

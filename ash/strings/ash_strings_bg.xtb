@@ -31,6 +31,7 @@
 <translation id="1150989369772528668">Календар</translation>
 <translation id="1153356358378277386">Сдвоени устройства</translation>
 <translation id="1165712434476988950">Устройството трябва да се рестартира, за да се приложи актуализацията.</translation>
+<translation id="1171742223880403396">USB-C кабелът ви може да не се свързва правилно с дисплеи</translation>
 <translation id="1175572348579024023">Превъртане</translation>
 <translation id="1178581264944972037">Пауза</translation>
 <translation id="1181037720776840403">Премахване</translation>
@@ -256,6 +257,7 @@
 <translation id="2595239820337756193">5 km in miles</translation>
 <translation id="2596078834055697711">Правене на екранна снимка на прозореца</translation>
 <translation id="2607678425161541573">Изисква се онлайн вход</translation>
+<translation id="2620436844016719705">Система</translation>
 <translation id="2621713457727696555">защитена</translation>
 <translation id="263399434338050016">„Select all“</translation>
 <translation id="2653019840645008922">Заснемане на прозореца</translation>
@@ -351,6 +353,7 @@
 <translation id="320207200541803018">Set timer</translation>
 <translation id="3203405173652969239">Функцията „Достъп с превключване“ е активирана</translation>
 <translation id="3207953481422525583">Потребителски настройки</translation>
+<translation id="3208321278970793882">Приложение</translation>
 <translation id="3217205077783620295">Звукът е включен. Превключването ще го спре.</translation>
 <translation id="3226991577105957773">+ още <ph name="COUNT" /></translation>
 <translation id="3227137524299004712">Микрофон</translation>
@@ -1034,6 +1037,7 @@
 <translation id="7513622367902644023">Избран е режимът за екранна снимка</translation>
 <translation id="7513922695575567867">Календар, седмицата на <ph name="DATE" />, понастоящем е избрана датата <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Изтегляне</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7526573455193969409">Мрежата може да е под наблюдение</translation>
 <translation id="7536035074519304529">IP адрес: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Понастоящем не се поддържат приложения за Linux и прозорци в режим „инкогнито“. Другите приложения ще бъдат запазени.</translation>
@@ -1102,6 +1106,7 @@
 <translation id="7901405293566323524">Център за телефоните</translation>
 <translation id="7902625623987030061">Докоснете сензора за отпечатъци</translation>
 <translation id="7904094684485781019">Администраторът на този профил е забранил централизирания вход.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7930731167419639574">Говорът вече се обработва локално, а диктуването работи офлайн</translation>
 <translation id="7933084174919150729">Google Асистент е налице само за основния потребителски профил.</translation>
 <translation id="79341161159229895">Профилът се управлява от <ph name="FIRST_PARENT_EMAIL" /> и <ph name="SECOND_PARENT_EMAIL" /></translation>

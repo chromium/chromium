@@ -908,7 +908,7 @@
 <translation id="1852141627593563189">العثور على البرامج الضارّة</translation>
 <translation id="1852799913675865625">حدث خطأ أثناء محاولة قراءة الملف: <ph name="ERROR_TEXT" />.</translation>
 <translation id="1854049213067042715">يمكنك المتابعة من حيث توقفت، ويمكنك ضبط التطبيقات لاستعادتها دائمًا عند بدء التشغيل أو إيقاف الاستعادة في "الإعدادات".</translation>
-<translation id="1854180393107901205">إيقاف الإرسال</translation>
+<translation id="1854180393107901205">إيقاف البث</translation>
 <translation id="1855079636134697549">تم تشغيل الكاميرا.</translation>
 <translation id="1856715684130786728">إضافة موقع...</translation>
 <translation id="1858585891038687145">الوثوق بهذه الشهادة لتحديد هوية مصممي البرامج</translation>
@@ -1065,7 +1065,6 @@
 <translation id="2019718679933488176">&amp;فتح ملف الصوت في علامة تبويب جديدة</translation>
 <translation id="2020183425253392403">عرض إعدادات عنوان الشبكة</translation>
 <translation id="2020225359413970060">فحص الملف</translation>
-<translation id="2022395138980869975">إخفاء/عرض نافذة البحث الجانبية</translation>
 <translation id="2023167225947895179">قد يكون رقم التعريف الشخصي سهل التخمين</translation>
 <translation id="202352106777823113">استغرق التنزيل وقتًا طويلاً للغاية وتم إيقافه بواسطة الشبكة.</translation>
 <translation id="2024195579772565064">حذف محرك البحث</translation>
@@ -2967,7 +2966,6 @@
 <translation id="3888053818972567950">الربط بخدمة <ph name="WEB_DRIVE" /></translation>
 <translation id="3888550877729210209">تسجيل الملاحظات من خلال <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">‏تساعدنا هذه المعلومات في فهم مشكلتك على "مساعد Google" بشكل أفضل. ويتم تخزين هذه المعلومات لمدة تصل إلى 90 يومًا ويقتصر الوصول إليها على الفِرق المختصّة في الهندسة والتعامل مع ملاحظات المستخدمين.</translation>
-<translation id="3888900458694486810">إغلاق نافذة البحث الجانبية</translation>
 <translation id="3890064827463908288">‏تفعيل ميزة "مزامنة Chrome" لاستخدام "مزامنة الواي فاي"</translation>
 <translation id="389313931326656921">تخصيص مفتاح تحكّم للإجراء "التالي"</translation>
 <translation id="3893295674388762059">لمحو البيانات، عليك إغلاق جميع نوافذ التصفُّح المتخفي.</translation>
@@ -3278,7 +3276,6 @@
 <translation id="4208390505124702064">بحث في <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">كبير</translation>
 <translation id="4209251085232852247">تم إيقاف الجهاز</translation>
-<translation id="4209464433672152343">‏تم <ph name="BEGIN_LINK_HELP" />إرسال المستندات إلى Google<ph name="END_LINK_HELP" /> لإعدادها للطباعة. يمكنك عرض الطابعات وسجلّ الطابعة وتعديلهما وإدارتهما في <ph name="BEGIN_LINK_DASHBOARD" />لوحة تحكُّم الطباعة السحابية من Google<ph name="END_LINK_DASHBOARD" />.</translation>
 <translation id="4210048056321123003">جارٍ تنزيل الآلة الافتراضية</translation>
 <translation id="421182450098841253">&amp;عرض شريط الإشارات</translation>
 <translation id="4211851069413100178">‏يمكنك إرسال بيانات الاستخدام والتشخيص. يمكنك المساعدة في تحسين تجربة نظام التشغيل Android من خلال إرسال بيانات استخدام التطبيق والجهاز والتشخيص تلقائيًا إلى Google. سيساعد ذلك في استقرار عمل النظام والتطبيقات، بالإضافة إلى التحسينات الأخرى. كما ستساعد بعض البيانات المجمّعة تطبيقات Google وشركائها، مثل مطوّري برامج نظام التشغيل Android. ويفرض المالك هذا <ph name="BEGIN_LINK1" />الإعداد<ph name="END_LINK1" />. قد يختار المالك إرسال بيانات الاستخدام والتشخيص لهذا الجهاز إلى Google. في حال تفعيل إعداد "النشاط الإضافي على الويب وفي التطبيقات"، قد يتم حفظ هذه البيانات في حسابك على Google. <ph name="BEGIN_LINK2" />مزيد من المعلومات<ph name="END_LINK2" /></translation>
@@ -6178,7 +6175,6 @@
 <translation id="7180611975245234373">إعادة التحميل</translation>
 <translation id="7180865173735832675">تخصيص</translation>
 <translation id="7182791023900310535">نقل كلمة المرور الخاصة بك</translation>
-<translation id="7183420126213758623">يمكنك إخفاء أشرطة البحث الجانبية أو عرضها، عندما يكون البحث الجانبي غير مفعَّل.</translation>
 <translation id="7186088072322679094">البقاء مثبتًا في شريط الأدوات</translation>
 <translation id="7186303001964993981">يتعذّر على <ph name="ORIGIN" /> فتح هذا المجلّد لأنّه يحتوي على ملفات النظام.</translation>
 <translation id="7187428571767585875">إدخالات قاعدة بيانات المسجّلين التي ستتم إزالتها أو تغييرها:</translation>
@@ -6700,7 +6696,6 @@
 <translation id="7701040980221191251">لا يوجد</translation>
 <translation id="7701869757853594372">معالجات المستخدم</translation>
 <translation id="7702574632857388784">إزالة الملف <ph name="FILE_NAME" /> من القائمة</translation>
-<translation id="7702599324215660661">Lock on Leave</translation>
 <translation id="7702907602086592255">النطاق</translation>
 <translation id="7704305437604973648">المهمة</translation>
 <translation id="7704317875155739195">‏الإكمال التلقائي لعناوين URL وعمليات البحث</translation>
@@ -6807,7 +6802,6 @@
 <translation id="7798844538707273832">تم حظر إذن <ph name="PERMISSION" /> تلقائيًا.</translation>
 <translation id="7799299114731150374">تم ضبط الخلفية بنجاح</translation>
 <translation id="7799817062559422778">الوضع الفاتح</translation>
-<translation id="7800159967992492578">يمكنك إخفاء أشرطة البحث الجانبية أو عرضها، عندما يكون البحث الجانبي مفعَّلاً.</translation>
 <translation id="7800518121066352902">تدوير ع&amp;كس اتجاه عقارب الساعة</translation>
 <translation id="7801679634091975683">‏لا يتم تطبيق التغييرات التي تجريها هنا إلا على متصفّح Chrome في Lacros. ولإجراء تغييرات على إعدادات متصفّح Chrome، افتح متصفّح Chrome ثم انتقِل إلى الإعدادات.</translation>
 <translation id="780301667611848630">لا، شكرًا</translation>

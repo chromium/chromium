@@ -30,7 +30,6 @@
 <translation id="114825011539563458">Najpomembnejši kontrolniki za zasebnost in varnost na enem mestu</translation>
 <translation id="1149401351239820326">Mesec poteka</translation>
 <translation id="1154704303112745282">Stran ni na voljo brez povezave: <ph name="VIOLATED_URL" /></translation>
-<translation id="1166688006062225587">Seznam računov za izbiro.</translation>
 <translation id="1171770572613082465">Oglejte si priljubljena spletna mesta z dotikom gumba »Najb. prilj.«</translation>
 <translation id="1173894706177603556">Preimenuj</translation>
 <translation id="1177863135347784049">Po meri</translation>
@@ -571,6 +570,7 @@ Dotaknite se poljubne besede in jo pridržite, če želite iskati. Če želite i
 <translation id="4415276339145661267">Upravljanje računa Google</translation>
 <translation id="4425140285732600465">Spremljanje cene. Prejmite opozorila, če se cena zniža na katerem koli spletnem mestu.</translation>
 <translation id="442518031075347249">Navidezne kartice ne bo več mogoče uporabljati v Googlu Pay. <ph name="BEGIN_LINK1" />Preberite več o navideznih karticah<ph name="END_LINK1" /></translation>
+<translation id="4428065317363009941">Osebno prilagajanje oglasov</translation>
 <translation id="4450672886426705087">Rezultati iskanja v Googlu.</translation>
 <translation id="4452411734226507615">Zapiranje zavihka <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Zaznamek ustvarjen v mapi <ph name="FOLDER_NAME" /></translation>
@@ -685,6 +685,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="4988526792673242964">Strani</translation>
 <translation id="5001388021414335527">Spremljajte to spletno mesto tukaj</translation>
 <translation id="5004416275253351869">Googlovi kontrolniki za dejavnost</translation>
+<translation id="5005141133360250920">Odziv je bil izbrisan</translation>
 <translation id="5005498671520578047">Kopiranje gesla</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> se želite povezati</translation>
 <translation id="5016205925109358554">Serif</translation>
@@ -740,6 +741,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="5368227114232678694">Če želite zasebno brskati v tej napravi, preizkusite anonimni način.</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> odprt zavihek, dotaknite se, če želite preklopiti med zavihki}one{<ph name="OPEN_TABS_MANY" /> odprt zavihek, dotaknite se, če želite preklopiti med zavihki}two{<ph name="OPEN_TABS_MANY" /> odprta zavihka, dotaknite se, če želite preklopiti med zavihki}few{<ph name="OPEN_TABS_MANY" /> odprti zavihki, dotaknite se, če želite preklopiti med zavihki}other{<ph name="OPEN_TABS_MANY" /> odprtih zavihkov, dotaknite se, če želite preklopiti med zavihki}}</translation>
 <translation id="5375577065097716013">Išči sliko z Googlom Lens <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
+<translation id="5376898820269806588">Odziv je bil spremenjen</translation>
 <translation id="5403644198645076998">Dovoli samo nekatera spletna mesta</translation>
 <translation id="5409881200985013443">Dovolite, da se <ph name="ONE_TIME_CODE" /> pošlje v napravi <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Preverjanje …</translation>
@@ -897,7 +899,6 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="6277522088822131679">Pri tiskanju strani je prišlo do težave. Poskusite znova.</translation>
 <translation id="6277722725779679269">Spremljanja cene ni bilo mogoče posodobiti.</translation>
 <translation id="6278428485366576908">Tema</translation>
-<translation id="6293443105724342169">Seznam računov za izbiro je odprt pri polovični višini.</translation>
 <translation id="6294610283659775533">Med napravami, v katerih ste prijavljeni z istim računom Google, si lahko pošiljate zavihke.</translation>
 <translation id="6297765934698848803">Organizacija, ki upravlja vašo napravo, je izklopila kamero.</translation>
 <translation id="6301525844455696527">Ne pozabite na svoj bralni seznam</translation>
@@ -1073,6 +1074,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="718926126787620637">Seznam map z zaznamki, odprt pri polni višini.</translation>
 <translation id="7191430249889272776">Zavihek se je odprl v ozadju.</translation>
 <translation id="7196215469483532480">Pojasnilo glede vodnika po zasebnosti se je odprlo pri polni višini</translation>
+<translation id="7208109991155904980">Odziv je bil premaknjen</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 prenos na čakanju}one{# prenos na čakanju}two{# prenosa na čakanju}few{# prenosi na čakanju}other{# prenosov na čakanju}}</translation>
 <translation id="7237045078887540010">Če uporabljate Chrome, se strinjate z <ph name="BEGIN_TOS_LINK" />Googlovimi pogoji storitve<ph name="END_TOS_LINK" /> in <ph name="BEGIN_ATOS_LINK" />dodatnimi pogoji storitve za Google Chrome in Chrome OS<ph name="END_ATOS_LINK" />. Uporablja se tudi <ph name="BEGIN_PRIVACY_LINK" />pravilnik o zasebnosti<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="7242755609445462077">Stilizirana oznaka <ph name="CURRENT_DATE" /></translation>
@@ -1307,7 +1309,6 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="8461694314515752532">Šifriranje sinhroniziranih podatkov z vašim geslom za sinhronizacijo</translation>
 <translation id="8466613982764129868">Naprava <ph name="TARGET_DEVICE_NAME" /> mora biti povezana v internet</translation>
 <translation id="8473863474539038330">Naslovi in drugo</translation>
-<translation id="847656914027543776">Seznam računov za izbiro je zaprt.</translation>
 <translation id="8481921391193215807">Če je funkcija vklopljena, lahko spletna mesta uporabljajo tukaj prikazane tehnike za ohranitev zasebnosti zaradi zagotavljanja svoje vsebine in storitev. Mednje sodijo nadomestne rešitve sledenju na več spletnih mestih. Sčasoma bo morda dodanih več preizkusov.
 
 <ph name="BEGIN_LIST_ITEM1" />Oglaševalci in izdajatelji lahko uporabljajo tehniko FLoC.<ph name="END_LIST_ITEM1" />
@@ -1362,6 +1363,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="8683526617475118045">Kaj ponuja</translation>
 <translation id="869891660844655955">Datum izteka</translation>
 <translation id="8699120352855309748">Ne ponudi prevajanja teh jezikov</translation>
+<translation id="8712637175834984815">Razumem</translation>
 <translation id="8725066075913043281">Poskusite znova</translation>
 <translation id="8730621377337864115">Končano</translation>
 <translation id="8746155870861185046">Deli oznako</translation>
@@ -1434,7 +1436,6 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="9108312223223904744">Podpora za telefon kot varnostni ključ</translation>
 <translation id="9108808586816295166">Varni DNS morda ni na voljo ves čas</translation>
 <translation id="9133397713400217035">Raziščite vsebino brez povezave</translation>
-<translation id="9133523398139146080">Seznam računov za izbiro je odprt pri polni višini.</translation>
 <translation id="9137013805542155359">Pokaži izvirno besedilo</translation>
 <translation id="9148126808321036104">Prijavite se znova</translation>
 <translation id="9155898266292537608">Prav tako lahko iščete, tako da se hitro dotaknete besede</translation>

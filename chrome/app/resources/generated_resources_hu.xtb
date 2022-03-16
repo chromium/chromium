@@ -1074,7 +1074,6 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="2019718679933488176">&amp;Hang megnyitása új lapon</translation>
 <translation id="2020183425253392403">A hálózati cím beállításainak megjelenítése</translation>
 <translation id="2020225359413970060">Fájl vizsgálata</translation>
-<translation id="2022395138980869975">Párhuzamos keresés bekapcsolása</translation>
 <translation id="2023167225947895179">A PIN-kód könnyen kitalálható</translation>
 <translation id="202352106777823113">A letöltés túl sokáig tartott, ezért a hálózat leállította.</translation>
 <translation id="2024195579772565064">Keresőmotor törlése</translation>
@@ -2976,7 +2975,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" />-kapcsolat</translation>
 <translation id="3888550877729210209">Jegyzetek készítése a(z) <ph name="LOCK_SCREEN_APP_NAME" /> alkalmazással</translation>
 <translation id="3888586133700543064">Ezek az információk segítenek nekünk a Segéddel kapcsolatos probléma jobb megértésében. 90 napig tároljuk őket, mely során kizárólag a megfelelő mérnöki és ügyfélszolgálati csapatok férhetnek hozzájuk.</translation>
-<translation id="3888900458694486810">Párhuzamos keresés bezárása</translation>
 <translation id="3890064827463908288">A Wi-Fi-szinkronizálás használatához kapcsolja be a Chrome-szinkronizálás funkciót</translation>
 <translation id="389313931326656921">Kapcsoló hozzárendelése a „Következő” művelethez</translation>
 <translation id="3893295674388762059">Adatok törléséhez zárjon be minden inkognitóablakot</translation>
@@ -3211,6 +3209,10 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4110490973560452005">A letöltés befejeződött: <ph name="FILE_NAME" />. A Shift+F6 billentyűparancs lenyomásával a letöltéssáv területére léphet.</translation>
 <translation id="4110686435123617899">A következő album kiválasztása: <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
+<translation id="4114524937989710624">Itt javasolt fájlokat láthat, amelyek segítségével könnyen folytathatja legutóbbi tevékenységeit a Google Drive-on.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        A beállításokat a kártyamenüben kezelheti, illetve megtekinthet további lehetőségeket A Chrome személyre szabása szakaszban.</translation>
 <translation id="4115002065223188701">A hálózat kívül esik a hatókörön</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="4116704186509653070">Megnyitás újból</translation>
@@ -3289,7 +3291,6 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4208390505124702064">Keresés itt: <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Nagy</translation>
 <translation id="4209251085232852247">Kikapcsolva</translation>
-<translation id="4209464433672152343">A dokumentumok továbbításra kerülnek <ph name="BEGIN_LINK_HELP" />a Google felé<ph name="END_LINK_HELP" /> a nyomtatás előkészítése céljából. Tekintse meg, szerkessze és kezelje nyomtatóit, valamint nyomtatási előzményeit a <ph name="BEGIN_LINK_DASHBOARD" />Google Cloud Print irányítópultjának<ph name="END_LINK_DASHBOARD" /> segítségével.</translation>
 <translation id="4210048056321123003">A virtuális gép letöltése…</translation>
 <translation id="421182450098841253">&amp;Könyvjelzősáv megjelenítése</translation>
 <translation id="4211851069413100178">Használati és diagnosztikai adatok küldése. Segítsen az Android-élmény továbbfejlesztésében azzal, hogy automatikusan diagnosztikai, valamint eszköz- és alkalmazáshasználati adatokat küld a Google-nak. Az adatok a rendszer- és alkalmazásstabilitás javításában, valamint más fejlesztésekben segítenek. Bizonyos összesített adatok a Google-alkalmazásoknak és -partnereknek, például az Android-fejlesztőknek is segítenek. Ezt a <ph name="BEGIN_LINK1" />beállítást<ph name="END_LINK1" /> kötelezővé tette az eszköz tulajdonosa. A tulajdonos dönthet úgy, hogy elküldi az eszközzel kapcsolatos diagnosztikai és használati adatokat a Google-nak. Ha az Internetes és alkalmazástevékenységek beállítás is be van kapcsolva, akkor a rendszer ezeket az adatokat az Ön Google-fiókjába is mentheti. <ph name="BEGIN_LINK2" />További információ.<ph name="END_LINK2" /></translation>
@@ -3720,6 +3721,10 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4651484272688821107">Nem sikerült betölteni az online komponenst a demó mód forrásaival.</translation>
 <translation id="4652935475563630866">A kamerabeállítások módosítása miatt a Parallels Desktop újraindítására van szükség. A folytatáshoz indítsa újra a Parallels Desktopot.</translation>
 <translation id="4653405415038586100">Hiba történt a Linux konfigurálásakor</translation>
+<translation id="465406513924180949">Itt kosarakat láthat, amelyek segítségével könnyen visszatérhet a webes kosaraiban maradt termékekhez.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        A beállításokat a kártyamenüben kezelheti, illetve megtekinthet további lehetőségeket A Chrome személyre szabása szakaszban.</translation>
 <translation id="4654236001025007561">Megoszthat fájlokat az Ön közelében lévő Chromebookokkal és Android-eszközökkel</translation>
 <translation id="4657914796247705218">TrackPoint-sebesség</translation>
 <translation id="4658285806588491142">Képernyő privát jellegének megőrzése</translation>
@@ -4162,6 +4167,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="5121130586824819730">A merevlemez megtelt. Kérjük, mentsen másik helyre, vagy szabadítson fel elegendő helyet a merevlemezen.</translation>
 <translation id="5123433949759960244">Kosárlabda</translation>
 <translation id="5125751979347152379">Érvénytelen URL</translation>
+<translation id="5125967981703109366">Erről a kártyáról</translation>
 <translation id="5126611267288187364">Módosítások megtekintése</translation>
 <translation id="5127242257756472928">Nem használhatja a képernyőkön található információkat ablakok megnyitása és elhelyezése céljából</translation>
 <translation id="5127620150973591153">A biztonságos kapcsolat azonosítója: <ph name="TOKEN" /></translation>
@@ -5150,6 +5156,10 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6116921718742659598">Nyelvi és beviteli beállítások módosítása</translation>
 <translation id="6119927814891883061">Eszköz elnevezése erre: <ph name="DEVICE_NAME" /></translation>
 <translation id="6120205520491252677">Az oldal rögzítése a kezdőképernyőn...</translation>
+<translation id="6120707837086723438">Itt javasolt recepteket láthat legutóbbi receptkeresési tevékenységei alapján.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        A beállításokat a kártyamenüben kezelheti, illetve megtekinthet további lehetőségeket A Chrome személyre szabása szakaszban.</translation>
 <translation id="6121773125605585883">A következő felhasználónévhez és webhelyhez tartozó jelszó megtekintése: <ph name="USERNAME" />, <ph name="WEBSITE" /></translation>
 <translation id="6122081475643980456">Internetkapcsolata felett más vette át az irányítást</translation>
 <translation id="6122093587541546701">E-mail cím (nem kötelező):</translation>
@@ -6191,7 +6201,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7180611975245234373">Frissítés</translation>
 <translation id="7180865173735832675">Testreszabás</translation>
 <translation id="7182791023900310535">Jelszó áthelyezése</translation>
-<translation id="7183420126213758623">A párhuzamos keresés bekapcsolása. A párhuzamos keresés nincs aktiválva.</translation>
 <translation id="7186088072322679094">Gomb megtartása az eszköztáron</translation>
 <translation id="7186303001964993981">A(z) <ph name="ORIGIN" /> nem nyithatja meg ezt a mappát, mert rendszerfájlok találhatók benne.</translation>
 <translation id="7187428571767585875">Eltávolításra vagy módosításra kerülő beállításjegyzékbeli bejegyzések:</translation>
@@ -6713,7 +6722,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7701040980221191251">Nincs</translation>
 <translation id="7701869757853594372">FELHASZNÁLÓI azonosítók</translation>
 <translation id="7702574632857388784">A(z) <ph name="FILE_NAME" /> eltávolítása a listából</translation>
-<translation id="7702599324215660661">Zárolás távozáskor</translation>
 <translation id="7702907602086592255">Domain</translation>
 <translation id="7704305437604973648">Feladat</translation>
 <translation id="7704317875155739195">Keresések és URL-címek automatikus kiegészítése</translation>
@@ -6758,6 +6766,10 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7744192722284567281">Megtalálható adatvédelmi incidensben</translation>
 <translation id="7744649840067671761">A hozzárendelés megkezdéséhez nyomjon meg egy új kapcsolót vagy billentyűt.
 Nyomja meg valamelyik hozzárendelt kapcsolót vagy billentyűt a hozzárendelés megszüntetéséhez.</translation>
+<translation id="7746739418892731373">Itt a Google Fotók-könyvtárából származó kiemelt fotókat és videókat láthatja. A <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> oldalon vezérelheti, hogy mik jelenjenek meg a kiemelések között.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Az erre a kártyára vonatkozó beállításokat a kártyamenüben kezelheti, illetve megtekinthet további lehetőségeket A Chrome személyre szabása szakaszban.</translation>
 <translation id="7750228210027921155">Kép a képben</translation>
 <translation id="7751260505918304024">Összes megjelenítése</translation>
 <translation id="7753735457098489144">A telepítés tárhelyhiány miatt nem sikerült. Tárhely felszabadításához töröljön fájlokat az eszközről.</translation>
@@ -6820,7 +6832,6 @@ Nyomja meg valamelyik hozzárendelt kapcsolót vagy billentyűt a hozzárendelé
 <translation id="7798844538707273832"><ph name="PERMISSION" /> automatikusan letiltva</translation>
 <translation id="7799299114731150374">Sikerült beállítani a háttérképet</translation>
 <translation id="7799817062559422778">Világos mód</translation>
-<translation id="7800159967992492578">A párhuzamos keresés bekapcsolása. A párhuzamos keresés aktiválva van.</translation>
 <translation id="7800518121066352902">Forgatás &amp;balra</translation>
 <translation id="7801679634091975683">Az itt végrehajtott módosítások csak a Lacros Chrome böngészőt érintik. A Chrome böngésző beállításainak módosításához a Chrome böngészőt nyissa meg, majd lépjen a beállításokra.</translation>
 <translation id="780301667611848630">Köszönöm, nem</translation>

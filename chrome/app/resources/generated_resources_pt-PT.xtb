@@ -1063,7 +1063,6 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="2019718679933488176">&amp;Abrir áudio num novo separador</translation>
 <translation id="2020183425253392403">Mostrar definições do endereço de rede</translation>
 <translation id="2020225359413970060">Analisar ficheiro</translation>
-<translation id="2022395138980869975">Ativar/desativar pesquisa lateral</translation>
 <translation id="2023167225947895179">O PIN pode ser fácil de adivinhar</translation>
 <translation id="202352106777823113">A transferência estava a demorar demasiado tempo e foi interrompida pela rede.</translation>
 <translation id="2024195579772565064">Elimine o motor de pesquisa</translation>
@@ -2962,7 +2961,6 @@ Pretende pará-lo?</translation>
 <translation id="3888053818972567950">Ligação ao <ph name="WEB_DRIVE" /></translation>
 <translation id="3888550877729210209">Tirar notas com a aplicação <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">Estas informações ajudam-nos a compreender melhor o seu problema com o Assistente. Ficam armazenadas durante, no máximo, 90 dias e o acesso está restrito às equipas de engenharia e feedback dedicadas.</translation>
-<translation id="3888900458694486810">Fechar pesquisa lateral</translation>
 <translation id="3890064827463908288">Ative a Sincronização do Chrome para utilizar o Sync Wi-Fi</translation>
 <translation id="389313931326656921">Atribua um interruptor para "Seguinte"</translation>
 <translation id="3893295674388762059">Para limpar os dados, feche todas as janelas de navegação anónima</translation>
@@ -3276,7 +3274,6 @@ Pretende pará-lo?</translation>
 <translation id="4208390505124702064">Pesquisar <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Grande</translation>
 <translation id="4209251085232852247">Desativado</translation>
-<translation id="4209464433672152343">Os documentos são <ph name="BEGIN_LINK_HELP" />enviados para a Google<ph name="END_LINK_HELP" /> para preparação para impressão. Veja, edite e faça a gestão das suas impressoras e do histórico de impressoras no <ph name="BEGIN_LINK_DASHBOARD" />painel de controlo do Google Cloud Print<ph name="END_LINK_DASHBOARD" />.</translation>
 <translation id="4210048056321123003">A transferir a máquina virtual…</translation>
 <translation id="421182450098841253">&amp;Mostrar Barra de Marcadores</translation>
 <translation id="4211851069413100178">Envie dados de utilização e diagnóstico. Ajude a melhorar a experiência Android ao enviar automaticamente dados de diagnóstico, de utilização do dispositivo e das aplicações para a Google. Deste modo, ajudará a melhorar a estabilidade das aplicações e do sistema, entre outras melhorias. Alguns dados agregados também ajudarão as aplicações e os parceiros Google, como os programadores Android. Esta <ph name="BEGIN_LINK1" />definição<ph name="END_LINK1" /> é aplicada pelo proprietário. O proprietário pode optar por enviar dados de diagnóstico e de utilização deste dispositivo para a Google. Se a definição Atividade da Web e de apps adicional estiver ativada, estes dados podem ser guardados na sua Conta Google. <ph name="BEGIN_LINK2" />Saiba mais<ph name="END_LINK2" /></translation>
@@ -6171,7 +6168,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7180611975245234373">Atualizar</translation>
 <translation id="7180865173735832675">Personalizar</translation>
 <translation id="7182791023900310535">Mova a sua palavra-passe</translation>
-<translation id="7183420126213758623">Ativar/desativar pesquisa lateral. Pesquisa lateral não ativada.</translation>
 <translation id="7186088072322679094">Manter na Barra de ferramentas</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> não consegue abrir esta pasta porque contém ficheiros de sistema.</translation>
 <translation id="7187428571767585875">Entradas de registo a remover ou a alterar:</translation>
@@ -6693,7 +6689,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7701040980221191251">Nenhuma</translation>
 <translation id="7701869757853594372">Identificadores de UTILIZADOR</translation>
 <translation id="7702574632857388784">Remover <ph name="FILE_NAME" /> da lista</translation>
-<translation id="7702599324215660661">Bloquear ao sair</translation>
 <translation id="7702907602086592255">Domínio</translation>
 <translation id="7704305437604973648">Tarefa</translation>
 <translation id="7704317875155739195">Pesquisas de preenchimento automático e URLs</translation>
@@ -6800,7 +6795,6 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7798844538707273832">Autorização <ph name="PERMISSION" /> bloqueada automaticamente</translation>
 <translation id="7799299114731150374">Imagem de fundo definida com êxito</translation>
 <translation id="7799817062559422778">Modo claro</translation>
-<translation id="7800159967992492578">Ativar/desativar pesquisa lateral. Pesquisa lateral ativada.</translation>
 <translation id="7800518121066352902">Rodar para a &amp;Esquerda</translation>
 <translation id="7801679634091975683">As alterações que efetuar aqui aplicam-se apenas ao navegador Chrome Lacros. Para efetuar alterações às definições do navegador Chrome, abra o navegador Chrome e aceda às definições.</translation>
 <translation id="780301667611848630">Não, obrigado</translation>

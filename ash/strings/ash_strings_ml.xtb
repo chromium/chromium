@@ -125,6 +125,7 @@
 <translation id="1668469839109562275">ബിൽറ്റ് ഇൻ VPN</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> ശേഷിക്കുന്നു</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> കണക്‌റ്റ് ചെയ്‌തിട്ടില്ല.</translation>
+<translation id="1677582821739292812">ആരോ നിങ്ങളുടെ സ്ക്രീനിലേക്ക് നോക്കുന്നു</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> ടൈമർ · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 വിലാസം: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">സജീവ വിൻഡോ ഇടതുവശത്ത് ഡോക്ക് ചെയ്‌തു.</translation>
@@ -258,6 +259,7 @@
 <translation id="2595239820337756193">5K എത്ര മൈലാണ്</translation>
 <translation id="2596078834055697711">വിൻഡോ സ്ക്രീൻഷോട്ട് എടുക്കുക</translation>
 <translation id="2607678425161541573">ഓൺലൈനായി സൈൻ ഇൻ ചെയ്യേണ്ടതുണ്ട്</translation>
+<translation id="2620436844016719705">സിസ്റ്റം</translation>
 <translation id="2621713457727696555">സുരക്ഷിതമാക്കി</translation>
 <translation id="263399434338050016">"എല്ലാം തിരഞ്ഞെടുക്കുക"</translation>
 <translation id="2653019840645008922">വിൻഡോ ക്യാപ്‌ചർ</translation>
@@ -354,6 +356,7 @@
 <translation id="320207200541803018">ടൈമർ സജ്ജീകരിക്കുക</translation>
 <translation id="3203405173652969239">'സ്വിച്ച് ആക്‌സസ്' പ്രവർത്തനക്ഷമമാക്കി</translation>
 <translation id="3207953481422525583">ഉപയോക്തൃ ക്രമീകരണം</translation>
+<translation id="3208321278970793882">ആപ്പ്</translation>
 <translation id="3217205077783620295">വോളിയം ഓണാണ്, മാറ്റുന്നത് ഓഡിയോയെ മ്യൂട്ട് ആക്കും.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> കൂടുതൽ</translation>
 <translation id="3227137524299004712">മൈക്രോഫോൺ</translation>
@@ -1038,6 +1041,7 @@
 <translation id="7513622367902644023">സ്ക്രീൻഷോട്ട് മോഡ് തിരഞ്ഞടുത്തു</translation>
 <translation id="7513922695575567867">കലണ്ടർ, <ph name="DATE" />-ലെ ആഴ്‌ച, നിലവിൽ <ph name="SELECTED_DATE" /> തിരഞ്ഞെടുത്തിരിക്കുന്നു.</translation>
 <translation id="7514365320538308">ഡൗൺലോഡ് ചെയ്യുക</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7526573455193969409">നെറ്റ്‌വർക്ക് നിരീക്ഷിക്കപ്പെടാം</translation>
 <translation id="7536035074519304529">IP വിലാസം: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Linux ആപ്പുകളും അദൃശ്യ വിൻഡോകളും നിലവിൽ പിന്തുണയ്ക്കുന്നില്ല. മറ്റ് ആപ്പുകൾ സംരക്ഷിക്കും.</translation>
@@ -1107,6 +1111,7 @@
 <translation id="7901405293566323524">ഫോൺ ഹബ്</translation>
 <translation id="7902625623987030061">ഫിംഗർപ്രിന്റ് സെൻസർ സ്‌പർശിക്കുക</translation>
 <translation id="7904094684485781019">ഈ അക്കൗണ്ടിന്റെ അഡ്‌മിനിസ്‌ട്രേറ്റർ ഒന്നിലധികം സൈൻ-ഇൻ അനുവദിക്കുന്നില്ല.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7930731167419639574">സംഭാഷണം ഇപ്പോൾ ലോക്കലായി പ്രോസസ് ചെയ്‌ത് കേട്ടെഴുത്ത് ഓഫ്‌ലൈനിൽ പ്രവർത്തിക്കുന്നു</translation>
 <translation id="7933084174919150729">പ്രാഥമിക പ്രൊഫൈലിന് മാത്രമേ Google അസിസ്റ്റന്‍റ് ലഭ്യമാകൂ.</translation>
 <translation id="79341161159229895">അക്കൗണ്ട് മാനേജ് ചെയ്യുന്നത് <ph name="FIRST_PARENT_EMAIL" />, <ph name="SECOND_PARENT_EMAIL" /> എന്നിവരാണ്</translation>

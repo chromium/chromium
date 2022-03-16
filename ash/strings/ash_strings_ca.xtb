@@ -256,6 +256,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2595239820337756193">5 km en milles</translation>
 <translation id="2596078834055697711">Fes una captura de pantalla de la finestra</translation>
 <translation id="2607678425161541573">Cal iniciar la sessió en línia</translation>
+<translation id="2620436844016719705">Sistema</translation>
 <translation id="2621713457727696555">Segura</translation>
 <translation id="263399434338050016">"Selecciona-ho tot"</translation>
 <translation id="2653019840645008922">Captura de la finestra</translation>
@@ -351,6 +352,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="320207200541803018">Inicia el temporitzador</translation>
 <translation id="3203405173652969239">L'accés amb interruptors s'ha activat</translation>
 <translation id="3207953481422525583">Configuració d'usuari</translation>
+<translation id="3208321278970793882">Aplicació</translation>
 <translation id="3217205077783620295">El volum està activat. En commutar-lo, se silenciarà l'àudio.</translation>
 <translation id="3226991577105957773"><ph name="COUNT" /> més</translation>
 <translation id="3227137524299004712">Micròfon</translation>
@@ -1034,6 +1036,7 @@ Instal·lació nova</translation>
 <translation id="7513622367902644023">S'ha seleccionat el mode de captura de pantalla</translation>
 <translation id="7513922695575567867">Calendari, setmana del <ph name="DATE" />, actualment està seleccionat el dia <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Baixa</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7526573455193969409">És possible que la xarxa estigui supervisada</translation>
 <translation id="7536035074519304529">Adreça IP: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Les aplicacions de Linux i les finestres d'incògnit no s'admeten actualment. Les altres aplicacions es desaran.</translation>
@@ -1102,6 +1105,7 @@ Instal·lació nova</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Toca el sensor d'empremtes digitals</translation>
 <translation id="7904094684485781019">L'administrador d'aquest compte no ha permès l'inici de sessió múltiple.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7930731167419639574">La parla ara es processa localment i l'opció de dictat funciona sense connexió.</translation>
 <translation id="7933084174919150729">L'Assistent de Google només està disponible per al perfil principal.</translation>
 <translation id="79341161159229895">Compte gestionat per <ph name="FIRST_PARENT_EMAIL" /> i <ph name="SECOND_PARENT_EMAIL" /></translation>

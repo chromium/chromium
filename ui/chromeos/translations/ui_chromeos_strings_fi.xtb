@@ -825,6 +825,7 @@
 <translation id="8042602468072383151">Äänitiedosto, jonka tyyppi on <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">romania</translation>
 <translation id="8049184478152619004">Lisää PUK-koodi</translation>
+<translation id="807187749540895545">Puretaan <ph name="FILE_NAME" />…</translation>
 <translation id="8079530767338315840">Toista</translation>
 <translation id="8087576439476816834">Lataa, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Jaettu minulle</translation>
@@ -876,6 +877,7 @@
 <translation id="8484284835977497781">Valitse viimeaikaisista kuvistasi.</translation>
 <translation id="8487700953926739672">Käytettävissä offline-tilassa</translation>
 <translation id="8492972329130824181">Kotiverkko ei ole käytettävissä. Yhteyden muodostaminen edellyttää roamingia.</translation>
+<translation id="8499098729323186194">Puretaan <ph name="NUMBER_OF_ITEMS" /> kohdetta…</translation>
 <translation id="8521441079177373948">UK</translation>
 <translation id="8525306231823319788">Koko näyttö</translation>
 <translation id="853494022971700746">ranska (Ranska)</translation>

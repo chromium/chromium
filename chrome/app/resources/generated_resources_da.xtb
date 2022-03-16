@@ -1076,7 +1076,6 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="2019718679933488176">&amp;Åbn lyd på ny fane</translation>
 <translation id="2020183425253392403">Vis indstillinger for netværksadresser</translation>
 <translation id="2020225359413970060">Scan fil</translation>
-<translation id="2022395138980869975">Slå sideløbende søgning til/fra</translation>
 <translation id="2023167225947895179">Pinkoden kan være nem at gætte</translation>
 <translation id="202352106777823113">Overførslen tog for lang tid og blev stoppet af netværket.</translation>
 <translation id="2024195579772565064">Slet søgemaskine</translation>
@@ -2976,7 +2975,6 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" />-forbindelse</translation>
 <translation id="3888550877729210209">Notetagning med <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">Disse oplysninger hjælper os til bedre at forstå dit problem med Assistent. Oplysningerne opbevares i op til 90 dage, og adgangen til oplysningerne er begrænset til de relevante udvikler- og feedbackteams.</translation>
-<translation id="3888900458694486810">Luk sideløbende søgning</translation>
 <translation id="3890064827463908288">Aktivér Chrome-synkronisering for at bruge Wi-Fi-synkronisering</translation>
 <translation id="389313931326656921">Tildel kontakt for handlingen "Næste"</translation>
 <translation id="3893295674388762059">Luk alle inkognitovinduer for at rydde data</translation>
@@ -3290,7 +3288,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4208390505124702064">Søg på <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Stor</translation>
 <translation id="4209251085232852247">Slået fra</translation>
-<translation id="4209464433672152343">Dokumenter <ph name="BEGIN_LINK_HELP" />sendes til Google<ph name="END_LINK_HELP" />, hvor de gøres klar til udskrivning. Du kan se, redigere og administrere dine printere og din printerhistorik via <ph name="BEGIN_LINK_DASHBOARD" />kontrolpanelet for Google Cloudprinter<ph name="END_LINK_DASHBOARD" />.</translation>
 <translation id="4210048056321123003">Downloader den virtuelle maskine</translation>
 <translation id="421182450098841253">&amp;Vis bogmærkelinjen</translation>
 <translation id="4211851069413100178">Send brugs- og diagnosticeringsdata. Hjælp med at forbedre din Android-oplevelse ved automatisk at sende diagnosticerings- og enhedsdata samt data om brug af apps til Google. Dataene bruges til forbedring af bl.a. systemets og appens stabilitet. Visse samlede data hjælper også Google-apps og -partnere, f.eks. Android-udviklere. Denne <ph name="BEGIN_LINK1" />indstilling<ph name="END_LINK1" /> håndhæves af ejeren. Ejeren kan vælge at sende diagnosticerings- og brugsdata for denne enhed til Google. Hvis indstillingen til yderligere web- og appaktivitet er aktiveret, gemmes disse data muligvis på din Google-konto. <ph name="BEGIN_LINK2" />Få flere oplysninger<ph name="END_LINK2" /></translation>
@@ -6184,7 +6181,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="7180611975245234373">Opdater</translation>
 <translation id="7180865173735832675">Tilpas</translation>
 <translation id="7182791023900310535">Flyt din adgangskode</translation>
-<translation id="7183420126213758623">Slå sideløbende søgning til/fra. Sideløbende søgning er ikke aktiveret.</translation>
 <translation id="7186088072322679094">Behold på værktøjslinjen</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> kan ikke åbne denne mappe, da den indeholder systemfiler</translation>
 <translation id="7187428571767585875">Registreringsposter, der skal fjernes eller ændres:</translation>
@@ -6706,7 +6702,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="7701040980221191251">Ingen</translation>
 <translation id="7701869757853594372">BRUGER-håndtag</translation>
 <translation id="7702574632857388784">Fjern <ph name="FILE_NAME" /> fra listen</translation>
-<translation id="7702599324215660661">Lås ved manglende tilstedeværelse</translation>
 <translation id="7702907602086592255">Domæne</translation>
 <translation id="7704305437604973648">Opgave</translation>
 <translation id="7704317875155739195">Autofuldfør søgninger og webadresser</translation>
@@ -6811,7 +6806,6 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7798844538707273832">Blokerede automatisk <ph name="PERMISSION" /></translation>
 <translation id="7799299114731150374">Baggrunden blev indstillet</translation>
 <translation id="7799817062559422778">Lys tilstand</translation>
-<translation id="7800159967992492578">Slå sideløbende søgning til/fra. Sideløbende søgning er aktiveret.</translation>
 <translation id="7800518121066352902">Roter m&amp;od uret</translation>
 <translation id="7801679634091975683">De ændringer, du foretager her, anvendes kun i Lacros Chrome-browseren. Hvis du vil skifte indstillinger for din Chrome-browser, skal du åbne Chrome-browseren og gå til indstillingerne.</translation>
 <translation id="780301667611848630">Nej tak</translation>

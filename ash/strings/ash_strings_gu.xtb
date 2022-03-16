@@ -256,6 +256,7 @@
 <translation id="2595239820337756193">5,000 કિલોમીટર એટલે કેટલા માઇલ?</translation>
 <translation id="2596078834055697711">વિંડો સ્ક્રીનશૉટ લો</translation>
 <translation id="2607678425161541573">ઑનલાઇન સાઇન-ઇન કરવું આવશ્યક છે</translation>
+<translation id="2620436844016719705">સિસ્ટમ</translation>
 <translation id="2621713457727696555">સુરક્ષિત</translation>
 <translation id="263399434338050016">"તમામ પસંદ કરો"</translation>
 <translation id="2653019840645008922">વિન્ડો કૅપ્ચર</translation>
@@ -351,6 +352,7 @@
 <translation id="320207200541803018">ટાઇમર સેટ કરો</translation>
 <translation id="3203405173652969239">સ્વિચ ઍક્સેસ ચાલુ કર્યો</translation>
 <translation id="3207953481422525583">વપરાશકર્તા સેટિંગ</translation>
+<translation id="3208321278970793882">ઍપ</translation>
 <translation id="3217205077783620295">વૉલ્યૂમ ચાલુ છે, ટૉગલ કરવાથી ઑડિયો મ્યૂટ થશે.</translation>
 <translation id="3226991577105957773">+ વધુ <ph name="COUNT" /></translation>
 <translation id="3227137524299004712">માઇક્રોફોન</translation>
@@ -1034,6 +1036,7 @@
 <translation id="7513622367902644023">સ્ક્રીનશૉટ મોડ પસંદ કર્યો</translation>
 <translation id="7513922695575567867">કૅલેન્ડર, <ph name="DATE" />ની તારીખવાળું અઠવાડિયું, હાલમાં <ph name="SELECTED_DATE" /> પસંદ કરેલી છે.</translation>
 <translation id="7514365320538308">ડાઉનલોડ કરો</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7526573455193969409">નેટવર્કને મોનિટર કરવામાં આવી શકે છે</translation>
 <translation id="7536035074519304529">IP સરનામું: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Linux ઍપ અને છૂપી વિન્ડોને હાલમાં સપોર્ટ કરવામાં આવતો નથી. અન્ય ઍપ સાચવવામાં આવશે.</translation>
@@ -1102,6 +1105,7 @@
 <translation id="7901405293566323524">ફોન હબ</translation>
 <translation id="7902625623987030061">ફિંગરપ્રિન્ટ સેન્સરને ટચ કરો</translation>
 <translation id="7904094684485781019">આ એકાઉન્ટ માટે વ્યસ્થાપકે એકથી વધુ સાઇન ઇનને નામંજૂર કર્યું છે.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7930731167419639574">સ્પીચ પર હવે ડિવાઇસમાં જ પ્રક્રિયા કરવામાં આવે છે અને ડિક્ટેશનની સુવિધા ઑફલાઇન કામ કરે છે</translation>
 <translation id="7933084174919150729">Google Assistant માત્ર પ્રાથમિક પ્રોફાઇલ માટે જ ઉપલબ્ધ છે.</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> અને <ph name="SECOND_PARENT_EMAIL" /> દ્વારા મેનેજ કરાતું એકાઉન્ટ</translation>

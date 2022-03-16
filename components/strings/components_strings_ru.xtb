@@ -115,7 +115,6 @@
 <translation id="1301324364792935241">Проверьте настройки безопасного DNS-сервера</translation>
 <translation id="1307966114820526988">Устаревшие функции</translation>
 <translation id="1308113895091915999">Есть предложение</translation>
-<translation id="1312803275555673949">Чем это подтверждается?</translation>
 <translation id="1314311879718644478">Смотрите контент в режиме дополненной реальности.</translation>
 <translation id="1314509827145471431">Скрепление справа</translation>
 <translation id="1318023360584041678">Сохранено в группе вкладок</translation>
@@ -735,7 +734,6 @@
 <translation id="324180406144491771">Ссылки "<ph name="HOST_NAME" />" заблокированы</translation>
 <translation id="3249845759089040423">Яркий</translation>
 <translation id="3252266817569339921">Французский</translation>
-<translation id="3257954757204451555">Кто предоставил эти сведения?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />. Чтобы быстро создать мероприятие в Google Календаре, нажмите Tab, а затем Ввод.</translation>
 <translation id="3261488570342242926">Подробнее…</translation>
 <translation id="3264837738038045344">Кнопка "Открыть настройки Chrome". Нажмите Ввод, чтобы перейти в настройки Chrome.</translation>
@@ -1118,6 +1116,7 @@
 <translation id="4414515549596849729">Файлы cookie и данные сайтов</translation>
 <translation id="4415426530740016218">Адрес получения</translation>
 <translation id="4424024547088906515">Не удалось подтвердить, что это сервер <ph name="DOMAIN" />. Chrome не доверяет его сертификату безопасности. Возможно, сервер настроен неправильно или кто-то пытается перехватить ваши данные.</translation>
+<translation id="4428065317363009941">Персонализация рекламы</translation>
 <translation id="443121186588148776">Последовательный порт</translation>
 <translation id="4432688616882109544">Ваш сертификат отклонен сайтом <ph name="HOST_NAME" /> или не был выдан.</translation>
 <translation id="4432792777822557199">Страницы на этом языке (<ph name="SOURCE_LANGUAGE" />) будут автоматически переводиться на <ph name="TARGET_LANGUAGE" /></translation>
@@ -1250,7 +1249,6 @@
 <translation id="4838327282952368871">Сказочный</translation>
 <translation id="4840250757394056958">Посмотреть историю Chrome</translation>
 <translation id="484462545196658690">Выбрать автоматически</translation>
-<translation id="4849865131988503897">Проверка точности</translation>
 <translation id="4850886885716139402">Посмотреть</translation>
 <translation id="485316830061041779">Немецкий</translation>
 <translation id="4853901935952445031">После февраля 2022 года поддержка U2F API на этом сайте будет прекращена. Если сайт принадлежит вам, перейдите на Web Authentication API.</translation>
@@ -1437,6 +1435,7 @@
 <translation id="5398772614898833570">Реклама заблокирована</translation>
 <translation id="5400836586163650660">Серый</translation>
 <translation id="540969355065856584">Не удалось подтвердить, что это сервер <ph name="DOMAIN" />. Его сертификат безопасности может быть недействителен в настоящее время. Возможно, сервер настроен неправильно или кто-то пытается перехватить ваши данные.</translation>
+<translation id="5412236728747081950">Этот сайт использует информацию из Chrome о ваших интересах, чтобы показывать более подходящие рекламные объявления.</translation>
 <translation id="541416427766103491">Укладчик 4</translation>
 <translation id="5421136146218899937">Очистить историю...</translation>
 <translation id="5426179911063097041">С сайта <ph name="SITE" /> поступил запрос на отправку уведомлений.</translation>
@@ -1953,7 +1952,6 @@
 <translation id="7210863904660874423">Сайт <ph name="HOST_NAME" /> не соответствует стандартам безопасности.</translation>
 <translation id="7210993021468939304">Действия Linux в контейнере (также он может устанавливать и запускать приложения Linux из контейнера).</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Подробнее <ph name="END_LINK" /> об этой неполадке.</translation>
-<translation id="7215025035562547931">Оцените точность сведений</translation>
 <translation id="7217745192097460130">Использовать Touch ID для подтверждения покупки?</translation>
 <translation id="7219179957768738017">В этом подключении используется протокол <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Подождите…</translation>
@@ -2083,6 +2081,7 @@
 <translation id="7569952961197462199">Удалить кредитную карту из Chrome?</translation>
 <translation id="7569983096843329377">Черный</translation>
 <translation id="7575207903026901870">Кнопка удаления подсказки. Нажмите Ввод, чтобы удалить подсказку.</translation>
+<translation id="7577900504646297215">Управление интересами</translation>
 <translation id="7578104083680115302">Быстро оплачивайте покупки на сайтах и в приложениях с помощью карт, сохраненных в Google Pay. Настройка будет действовать на всех ваших устройствах.</translation>
 <translation id="7579442726219254162">Неизвестная переменная "<ph name="VARIABLE" />" в управляемой конфигурации "<ph name="APPLICATION_ID" />".</translation>
 <translation id="7581199239021537589">Смещение изображений на оборотной стороне по оси Y</translation>
@@ -2204,7 +2203,6 @@
 <translation id="7966803981046576691">Тип аккаунта, в котором выполняется задание</translation>
 <translation id="79682505114836835">Недопустимый шестнадцатеричный код цвета (<ph name="VALUE" />).</translation>
 <translation id="7968982339740310781">Просмотреть сведения</translation>
-<translation id="7970392640816874403">Что говорится в других источниках?</translation>
 <translation id="7976214039405368314">слишком много запросов</translation>
 <translation id="7977538094055660992">Устройство вывода</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -2555,7 +2553,6 @@
 <translation id="9155211586651734179">Какие периферийные аудиоустройства подключены.</translation>
 <translation id="9157595877708044936">Настройка...</translation>
 <translation id="9158625974267017556">C6 (конверт)</translation>
-<translation id="9164029392738894042">Проверка точности</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">Разрешить сайтам проверять наличие сохраненных способов оплаты</translation>
 <translation id="9169664750068251925">Всегда блокировать на этом сайте</translation>

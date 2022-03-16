@@ -30,7 +30,6 @@
 <translation id="114825011539563458">Passer en revue les plus importants contrôles de confidentialité et de sécurité, tous regroupés au même endroit</translation>
 <translation id="1149401351239820326">Mois d'expiration</translation>
 <translation id="1154704303112745282">Cette page n'est pas accessible hors ligne : <ph name="VIOLATED_URL" /></translation>
-<translation id="1166688006062225587">Liste des comptes à sélectionner.</translation>
 <translation id="1171770572613082465">Affichez des sites Web populaires en touchant le bouton « Sites populaires »</translation>
 <translation id="1173894706177603556">Renommer</translation>
 <translation id="1177863135347784049">Personnalisé</translation>
@@ -571,6 +570,7 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="4415276339145661267">Gérer votre compte Google</translation>
 <translation id="4425140285732600465">Suivi des prix activé. Obtenez des alertes si le prix est réduit sur un site.</translation>
 <translation id="442518031075347249">Vous ne pourrez plus utiliser votre carte virtuelle avec Google Pay. <ph name="BEGIN_LINK1" />En savoir plus sur les cartes virtuelles<ph name="END_LINK1" /></translation>
+<translation id="4428065317363009941">Personnalisation des annonces</translation>
 <translation id="4450672886426705087">Résultats de la recherche Google.</translation>
 <translation id="4452411734226507615">Fermer l'onglet <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Marqué comme favori dans <ph name="FOLDER_NAME" /></translation>
@@ -897,7 +897,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6277522088822131679">Un problème est survenu lors de l'impression de la page. Veuillez réessayer.</translation>
 <translation id="6277722725779679269">Impossible de mettre à jour le prix suivi</translation>
 <translation id="6278428485366576908">Thème</translation>
-<translation id="6293443105724342169">Liste des comptes à sélectionner ouverte à mi-hauteur.</translation>
 <translation id="6294610283659775533">Vous pouvez envoyer des onglets entre des appareils qui sont connectés au même compte Google</translation>
 <translation id="6297765934698848803">L'organisation qui gère votre appareil a désactivé votre appareil photo.</translation>
 <translation id="6301525844455696527">Lisez des livres de votre liste</translation>
@@ -1307,7 +1306,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8461694314515752532">Chiffrer vos données synchronisées avec votre propre phrase de passe de synchronisation</translation>
 <translation id="8466613982764129868">Assurez-vous que <ph name="TARGET_DEVICE_NAME" /> est connecté à Internet</translation>
 <translation id="8473863474539038330">Adresses et plus</translation>
-<translation id="847656914027543776">Liste des comptes à sélectionner fermée.</translation>
 <translation id="8481921391193215807">Lorsque cette fonctionnalité est activée, les sites peuvent utiliser les techniques de préservation de la confidentialité présentées ici pour fournir leur contenu et leurs services. Celles-ci comprennent des solutions de rechange au suivi intersites. D'autres essais pourront être ajoutés au fil du temps.
 
 <ph name="BEGIN_LIST_ITEM1" />Les annonceurs et les éditeurs peuvent utiliser la technique FLoC.<ph name="END_LIST_ITEM1" />
@@ -1362,6 +1360,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8683526617475118045">Ce que vous obtenez</translation>
 <translation id="869891660844655955">Date d'expiration</translation>
 <translation id="8699120352855309748">Ne pas proposer de traduire ces langues</translation>
+<translation id="8712637175834984815">OK</translation>
 <translation id="8725066075913043281">Réessayer</translation>
 <translation id="8730621377337864115">Terminé</translation>
 <translation id="8746155870861185046">Partager le contenu surligné</translation>
@@ -1434,7 +1433,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="9108312223223904744">Assistance pour l'utilisation du téléphone comme clé de sécurité</translation>
 <translation id="9108808586816295166">Le DNS sécurisé pourrait ne pas être accessible en tout temps</translation>
 <translation id="9133397713400217035">Explorer hors ligne</translation>
-<translation id="9133523398139146080">Liste des comptes à sélectionner ouverte à pleine hauteur.</translation>
 <translation id="9137013805542155359">Afficher l'original</translation>
 <translation id="9148126808321036104">Connectez-vous de nouveau</translation>
 <translation id="9155898266292537608">Vous pouvez également effectuer une recherche d'un simple toucher sur un mot</translation>

@@ -30,7 +30,6 @@
 <translation id="114825011539563458">Najvažnije kontrole privatnosti i sigurnosti na jednom mjestu</translation>
 <translation id="1149401351239820326">Mjesec isteka</translation>
 <translation id="1154704303112745282">Stranica je nedostupna van mreže: <ph name="VIOLATED_URL" /></translation>
-<translation id="1166688006062225587">Lista računa za odabir.</translation>
 <translation id="1171770572613082465">Dodirnite dugme "Popularno" i pristupite popularnim web lokacijama</translation>
 <translation id="1173894706177603556">Promijeni naziv</translation>
 <translation id="1177863135347784049">Prilagođeno</translation>
@@ -571,6 +570,7 @@ Dodirnite i zadržite bilo koju riječ da je pretražite. Za fino podešavanje p
 <translation id="4415276339145661267">Upravljajte Google računom</translation>
 <translation id="4425140285732600465">Praćenje cijene. Primajte obavještenja ako cijena padne na bilo kojoj web lokaciji.</translation>
 <translation id="442518031075347249">Više nećete moći koristiti virtuelnu karticu s Google Payom. <ph name="BEGIN_LINK1" />Saznajte više o virtuelnim karticama<ph name="END_LINK1" /></translation>
+<translation id="4428065317363009941">Personalizacija oglasa</translation>
 <translation id="4450672886426705087">Rezultati pretraživanja s Googlea.</translation>
 <translation id="4452411734226507615">Zatvori karticu <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Označeno u folderu <ph name="FOLDER_NAME" /></translation>
@@ -899,7 +899,6 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="6277522088822131679">Došlo je do problema sa štampanjem stranice. Pokušajte ponovo.</translation>
 <translation id="6277722725779679269">Ažuriranje postavke Prati cijenu nije uspjelo</translation>
 <translation id="6278428485366576908">Tema</translation>
-<translation id="6293443105724342169">Lista računa za odabir je otvorena na pola visine.</translation>
 <translation id="6294610283659775533">Možete slati kartice između uređaja koji su prijavljeni s istim Google računom</translation>
 <translation id="6297765934698848803">Organizacija koja upravlja vašim uređajem je isključila kameru.</translation>
 <translation id="6301525844455696527">Nemojte zaboraviti svoju listu za čitanje</translation>
@@ -1075,7 +1074,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="718926126787620637">Lista foldera s oznakama je otvorena u punoj visini</translation>
 <translation id="7191430249889272776">Kartica je otvorena u pozadini.</translation>
 <translation id="7196215469483532480">Objašnjenje vodiča za privatnost je otvoreno u punoj veličini</translation>
-<translation id="7208109991155904980">Reakcija je premještena</translation>
+<translation id="7208109991155904980">Reakcija je pomjerena</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 preuzimanje na čekanju}one{# preuzimanje na čekanju}few{# preuzimanja na čekanju}other{# preuzimanja na čekanju}}</translation>
 <translation id="7237045078887540010">Korištenjem Chromea pristajete na <ph name="BEGIN_TOS_LINK" />Googleove Uslove korištenja usluge<ph name="END_TOS_LINK" /> i <ph name="BEGIN_ATOS_LINK" />dodatne Uslove korištenja usluge za Google Chrome i Chrome OS<ph name="END_ATOS_LINK" />. Također se primjenjuju <ph name="BEGIN_PRIVACY_LINK" />Pravila privatnosti<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="7242755609445462077">Stilizirani istaknuti tekst <ph name="CURRENT_DATE" /></translation>
@@ -1310,7 +1309,6 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="8461694314515752532">Šifrirajte sinhronizirane podatke svojim pristupnim izrazom</translation>
 <translation id="8466613982764129868">Provjerite je li uređaj <ph name="TARGET_DEVICE_NAME" /> povezan na internet</translation>
 <translation id="8473863474539038330">Adrese i još mnogo toga</translation>
-<translation id="847656914027543776">Lista računa za odabir je zatvorena.</translation>
 <translation id="8481921391193215807">Kada je uključeno, web lokacije mogu koristiti tehnike kojima se štiti privatnost prikazane ovdje u svrhu pružanja sadržaja i usluga. Tehnike uključuju alternative praćenju kretanja između web lokacija. S vremenom se može dodati više probnih perioda.
 
 <ph name="BEGIN_LIST_ITEM1" />Oglašivači i izdavači mogu koristiti FLoC.<ph name="END_LIST_ITEM1" />
@@ -1365,6 +1363,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="8683526617475118045">Šta dobijate</translation>
 <translation id="869891660844655955">Datum isteka</translation>
 <translation id="8699120352855309748">Nemoj nuditi prevođenje ovih jezika</translation>
+<translation id="8712637175834984815">Razumijem</translation>
 <translation id="8725066075913043281">Pokušaj ponovo</translation>
 <translation id="8730621377337864115">Gotovo</translation>
 <translation id="8746155870861185046">Dijeli istaknutu stavku</translation>
@@ -1437,7 +1436,6 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="9108312223223904744">Podrška za telefon kao Sigurnosni ključ</translation>
 <translation id="9108808586816295166">Moguće je da sigurnosni DNS neće uvijek biti dostupan</translation>
 <translation id="9133397713400217035">Istražite van mreže</translation>
-<translation id="9133523398139146080">Lista računa za odabir je otvorena na cijelom ekranu.</translation>
 <translation id="9137013805542155359">Prikaži original</translation>
 <translation id="9148126808321036104">Prijavi se ponovo</translation>
 <translation id="9155898266292537608">Također možete pretraživati brzim dodirom riječi</translation>

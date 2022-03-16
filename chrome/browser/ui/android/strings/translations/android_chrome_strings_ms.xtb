@@ -30,7 +30,6 @@
 <translation id="114825011539563458">Kawalan privasi dan keselamatan yang paling penting di satu tempat</translation>
 <translation id="1149401351239820326">Bulan tamat tempoh</translation>
 <translation id="1154704303112745282">Halaman tidak tersedia di luar talian: <ph name="VIOLATED_URL" /></translation>
-<translation id="1166688006062225587">Senarai akaun untuk dipilih.</translation>
 <translation id="1171770572613082465">Lihat laman web popular dengan mengetik butang "Tapak popular"</translation>
 <translation id="1173894706177603556">Namakan semula</translation>
 <translation id="1177863135347784049">Tersuai</translation>
@@ -571,6 +570,7 @@ Sentuh &amp; tahan mana-mana perkataan untuk mencari. Untuk memperhalus carian a
 <translation id="4415276339145661267">Urus Google Account anda</translation>
 <translation id="4425140285732600465">Menjejaki harga. Dapatkan makluman sekiranya harga jatuh pada mana-mana laman.</translation>
 <translation id="442518031075347249">Anda tidak dapat menggunakan kad maya anda dengan Google Pay lagi. <ph name="BEGIN_LINK1" />Ketahui lebih lanjut tentang kad maya<ph name="END_LINK1" /></translation>
+<translation id="4428065317363009941">Pemperibadian iklan</translation>
 <translation id="4450672886426705087">Hasil carian daripada Google.</translation>
 <translation id="4452411734226507615">Tutup tab <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Ditandai halaman ke <ph name="FOLDER_NAME" /></translation>
@@ -899,7 +899,6 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="6277522088822131679">Terdapat masalah semasa mencetak halaman. Sila cuba sekali lagi.</translation>
 <translation id="6277722725779679269">Tidak dapat mengemas kini Penjejakan harga</translation>
 <translation id="6278428485366576908">Tema</translation>
-<translation id="6293443105724342169">Senarai akaun yang akan dipilih dibuka pada ketinggian separuh.</translation>
 <translation id="6294610283659775533">Anda boleh menghantar tab antara peranti yang dilog masuk dengan Google Account yang sama</translation>
 <translation id="6297765934698848803">Organisasi yang mengurus peranti anda telah mematikan kamera anda.</translation>
 <translation id="6301525844455696527">Ikuti senarai bacaan anda</translation>
@@ -1310,7 +1309,6 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="8461694314515752532">Sulitkan data yang disegerakkan dengan ungkapan laluan penyegerakan anda sendiri</translation>
 <translation id="8466613982764129868">Pastikan <ph name="TARGET_DEVICE_NAME" /> disambungkan ke Internet</translation>
 <translation id="8473863474539038330">Alamat dan pelbagai lagi</translation>
-<translation id="847656914027543776">Senarai akaun yang akan dipilih ditutup.</translation>
 <translation id="8481921391193215807">Apabila dihidupkan, laman boleh menggunakan teknik yang menjaga privasi yang ditunjukkan di sini untuk menyediakan kandungan dan perkhidmatan laman tersebut. Teknik ini termasuklah teknik alternatif bagi penjejakan rentas laman. Lebih banyak percubaan mungkin ditambahkan dari semasa ke semasa.
 
 <ph name="BEGIN_LIST_ITEM1" />Pengiklan dan penerbit boleh menggunakan FLoC.<ph name="END_LIST_ITEM1" />
@@ -1365,6 +1363,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="8683526617475118045">Perkara yang anda dapat</translation>
 <translation id="869891660844655955">Tarikh tamat tempoh</translation>
 <translation id="8699120352855309748">Jangan tawarkan untuk menterjemahkan bahasa ini</translation>
+<translation id="8712637175834984815">Faham</translation>
 <translation id="8725066075913043281">Cuba lagi</translation>
 <translation id="8730621377337864115">Selesai</translation>
 <translation id="8746155870861185046">Kongsi serlahan</translation>
@@ -1439,7 +1438,6 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="9108312223223904744">Telefon sebagai Sokongan Kunci Keselamatan</translation>
 <translation id="9108808586816295166">DNS selamat mungkin tidak tersedia sepanjang masa</translation>
 <translation id="9133397713400217035">Teroka Luar Talian</translation>
-<translation id="9133523398139146080">Senarai akaun yang akan dipilih dibuka pada ketinggian penuh.</translation>
 <translation id="9137013805542155359">Paparkan asal</translation>
 <translation id="9148126808321036104">Log masuk semula</translation>
 <translation id="9155898266292537608">Anda juga boleh mencari dengan mengetik pantas pada perkataan</translation>

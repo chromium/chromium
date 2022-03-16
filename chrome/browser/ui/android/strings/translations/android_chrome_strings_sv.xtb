@@ -30,7 +30,6 @@
 <translation id="114825011539563458">De viktigaste säkerhets- och integritetskontrollerna på ett och samma ställe</translation>
 <translation id="1149401351239820326">Utgångsmånad</translation>
 <translation id="1154704303112745282">Sidan är inte tillgänglig offline: <ph name="VIOLATED_URL" /></translation>
-<translation id="1166688006062225587">Lista med konton att välja bland.</translation>
 <translation id="1171770572613082465">Visa populära webbplatser genom att trycka på Populärt</translation>
 <translation id="1173894706177603556">Ändra namn</translation>
 <translation id="1177863135347784049">Anpassat</translation>
@@ -572,6 +571,7 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="4415276339145661267">Hantera Google-kontot</translation>
 <translation id="4425140285732600465">Bevakar pris. Få aviseringar när priset sjunker på en webbplats.</translation>
 <translation id="442518031075347249">Du kommer inte längre att kunna använda det virtuella kortet med Google Pay. <ph name="BEGIN_LINK1" />Läs mer om virtuella kort<ph name="END_LINK1" /></translation>
+<translation id="4428065317363009941">Personliga annonspreferenser</translation>
 <translation id="4450672886426705087">Sökresultat från Google.</translation>
 <translation id="4452411734226507615">Stäng fliken <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Bokmärkt i <ph name="FOLDER_NAME" /></translation>
@@ -898,7 +898,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6277522088822131679">Det gick inte att skriva ut sidan. Försök igen.</translation>
 <translation id="6277722725779679269">Det gick inte att uppdatera Bevaka pris</translation>
 <translation id="6278428485366576908">Tema</translation>
-<translation id="6293443105724342169">Listan med konton att välja bland har öppnats över halva skärmen.</translation>
 <translation id="6294610283659775533">Du kan skicka flikar mellan enheter som är inloggade på samma Google-konto</translation>
 <translation id="6297765934698848803">Organisationen som hanterar din enhet har inaktiverat kameran.</translation>
 <translation id="6301525844455696527">Läs ikapp i läslistan</translation>
@@ -1308,7 +1307,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="8461694314515752532">Kryptera synkroniserad data med en egen lösenfras för synkronisering</translation>
 <translation id="8466613982764129868">Kontrollera att <ph name="TARGET_DEVICE_NAME" /> är ansluten till internet</translation>
 <translation id="8473863474539038330">Adresser och annat</translation>
-<translation id="847656914027543776">Listan med konton att välja bland har stängts.</translation>
 <translation id="8481921391193215807">När det här alternativet är aktiverat kan webbplatser tillhandahålla sina tjänster med hjälp av de integritetsbevarande metoder som visas här. Det gäller bland annat alternativ till att spåra användaren från webbplats till webbplats. Fler provfunktioner kan läggas till med tiden.
 
 <ph name="BEGIN_LIST_ITEM1" />Annonsörer och utgivare kan använda FLoC.<ph name="END_LIST_ITEM1" />
@@ -1363,6 +1361,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="8683526617475118045">Detta får du</translation>
 <translation id="869891660844655955">Utgångsdatum</translation>
 <translation id="8699120352855309748">Erbjud inte att översätta dessa språk</translation>
+<translation id="8712637175834984815">Uppfattat</translation>
 <translation id="8725066075913043281">Försök igen</translation>
 <translation id="8730621377337864115">Klart</translation>
 <translation id="8746155870861185046">Dela markering</translation>
@@ -1435,7 +1434,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="9108312223223904744">Telefonen som säkerhetsnyckel</translation>
 <translation id="9108808586816295166">Säker DNS kanske inte alltid är tillgänglig</translation>
 <translation id="9133397713400217035">Utforska offline</translation>
-<translation id="9133523398139146080">Listan med konton att välja bland har öppnats över hela skärmen.</translation>
 <translation id="9137013805542155359">Visa original</translation>
 <translation id="9148126808321036104">Logga in igen</translation>
 <translation id="9155898266292537608">Du kan även söka med ett snabbt tryck eller ett ord</translation>

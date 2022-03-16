@@ -1065,7 +1065,6 @@ Na aplikace a obsah v jiných zařízeních tato akce nemá vliv.</translation
 <translation id="2019718679933488176">&amp;Otevřít zvuk v nové kartě</translation>
 <translation id="2020183425253392403">Zobrazit nastavení síťové adresy</translation>
 <translation id="2020225359413970060">Zkontrolovat soubor</translation>
-<translation id="2022395138980869975">Přepnout postranní vyhledávání</translation>
 <translation id="2023167225947895179">PIN může být snadné uhodnout.</translation>
 <translation id="202352106777823113">Stahování trvalo příliš dlouho a bylo sítí zastaveno.</translation>
 <translation id="2024195579772565064">Smazání vyhledávače</translation>
@@ -2961,7 +2960,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3888053818972567950">Propojení se službou <ph name="WEB_DRIVE" /></translation>
 <translation id="3888550877729210209">Pořizování poznámek pomocí aplikace <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">Tyto informace nám pomohou lépe porozumět problému, který s Asistentem máte. Zůstanou uloženy až 90 dní a budou k nim mít přístup jen příslušné týmy vývojářů a pracovníků, kteří zpracovávají zpětnou vazbu.</translation>
-<translation id="3888900458694486810">Zavřít postranní vyhledávání</translation>
 <translation id="3890064827463908288">Chcete-li použít Synchronizaci Wi-Fi, zapněte Synchronizaci Chromu</translation>
 <translation id="389313931326656921">Přiřazení přepínače pro akci Další</translation>
 <translation id="3893295674388762059">Pokud chcete vymazat data, zavřete všechna anonymní okna</translation>
@@ -3274,7 +3272,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4208390505124702064">Hledat na webu <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Velké</translation>
 <translation id="4209251085232852247">Vypnuto</translation>
-<translation id="4209464433672152343">Dokumenty jsou <ph name="BEGIN_LINK_HELP" />odeslány do Googlu<ph name="END_LINK_HELP" />, kde jsou připraveny k tisku. Tiskárny a historii tiskáren můžete zobrazit, upravit a spravovat na <ph name="BEGIN_LINK_DASHBOARD" />panelu služby Google Cloud Print<ph name="END_LINK_DASHBOARD" />.</translation>
 <translation id="4210048056321123003">Stahování virtuálního počítače</translation>
 <translation id="421182450098841253">&amp;Zobrazit lištu záložek</translation>
 <translation id="4211851069413100178">Odesílat údaje o využití a diagnostice. Pomozte se zlepšením prostředí Android tím, že budete do Googlu automaticky odesílat diagnostická data a údaje o využití zařízení a aplikací. Tyto údaje nám pomohou se zvyšováním stability systému a aplikací a dalšími vylepšeními. Některá souhrnná data budou moci využít také naši partneři, např. vývojáři aplikací pro Android. Toto nastavení je <ph name="BEGIN_LINK1" />vyžadováno<ph name="END_LINK1" /> vlastníkem. Vlastník může zvolit, že se diagnostické údaje a údaje o využití z tohoto zařízení mají odesílat do Googlu. Pokud máte zapnuté dodatečné nastavení Aktivita na webu a v aplikacích, mohou se tato data ukládat do vašeho účtu Google. <ph name="BEGIN_LINK2" />Další informace<ph name="END_LINK2" /></translation>
@@ -6167,7 +6164,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="7180611975245234373">Obnovit</translation>
 <translation id="7180865173735832675">Personalizovat</translation>
 <translation id="7182791023900310535">Přesunout heslo</translation>
-<translation id="7183420126213758623">Přepnout postranní vyhledávání. Postranní vyhledávání není aktivováno.</translation>
 <translation id="7186088072322679094">Ponechat na liště</translation>
 <translation id="7186303001964993981">Web <ph name="ORIGIN" /> tuto složku nemůže otevřít, protože obsahuje systémové soubory</translation>
 <translation id="7187428571767585875">Záznamy v registru, které budou odstraněny nebo změněny:</translation>
@@ -6689,7 +6685,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="7701040980221191251">Žádné</translation>
 <translation id="7701869757853594372">Popisovače – UŽIVATEL</translation>
 <translation id="7702574632857388784">Odstranit ze seznamu soubor <ph name="FILE_NAME" /></translation>
-<translation id="7702599324215660661">Při opuštění zamknout</translation>
 <translation id="7702907602086592255">Doména</translation>
 <translation id="7704305437604973648">Úloha</translation>
 <translation id="7704317875155739195">Automaticky doplňovat vyhledávací dotazy a adresy URL</translation>
@@ -6795,7 +6790,6 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7798844538707273832">Automaticky zablokované oprávnění: <ph name="PERMISSION" /></translation>
 <translation id="7799299114731150374">Tapeta byla úspěšně nastavena</translation>
 <translation id="7799817062559422778">Světlý režim</translation>
-<translation id="7800159967992492578">Přepnout postranní vyhledávání. Postranní vyhledávání je aktivováno.</translation>
 <translation id="7800518121066352902">Otočit &amp;proti směru hodinových ručiček</translation>
 <translation id="7801679634091975683">Zde provedené změny se vztahují pouze na prohlížeč Chrome Lacros. Pokud chcete provést změny nastavení prohlížeče Chrome, otevřete prohlížeč Chrome a přejděte na nastavení.</translation>
 <translation id="780301667611848630">Ne, děkuji</translation>

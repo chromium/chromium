@@ -31,6 +31,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1150989369772528668">Koledar</translation>
 <translation id="1153356358378277386">Seznanjene naprave</translation>
 <translation id="1165712434476988950">Če želite uveljaviti posodobitev, morate znova zagnati napravo.</translation>
+<translation id="1171742223880403396">Kabel USB-C se morda ne utegne ustrezno povezati z zasloni.</translation>
 <translation id="1175572348579024023">Drseče pomikanje</translation>
 <translation id="1178581264944972037">Prekini</translation>
 <translation id="1181037720776840403">Odstrani</translation>
@@ -256,6 +257,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2595239820337756193">5 km v miljah</translation>
 <translation id="2596078834055697711">Ustvarjanje posnetka okna</translation>
 <translation id="2607678425161541573">Obvezna je spletna prijava</translation>
+<translation id="2620436844016719705">Sistem</translation>
 <translation id="2621713457727696555">Varno</translation>
 <translation id="263399434338050016">»Izberi vse«</translation>
 <translation id="2653019840645008922">Zajem okna</translation>
@@ -351,6 +353,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="320207200541803018">Nastavitev merilnika časa</translation>
 <translation id="3203405173652969239">Stikalni dostop je omogočen</translation>
 <translation id="3207953481422525583">Uporabniške nastavitve</translation>
+<translation id="3208321278970793882">Aplikacija</translation>
 <translation id="3217205077783620295">Glasnost je vklopljena: če to preklopite, bo zvok izklopljen.</translation>
 <translation id="3226991577105957773">in še <ph name="COUNT" /></translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -1034,6 +1037,7 @@ Nova namestitev</translation>
 <translation id="7513622367902644023">Izbran je način posnetka zaslona</translation>
 <translation id="7513922695575567867">Koledar, v tednu <ph name="DATE" />, trenutno izbran datum: <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Prenos</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7526573455193969409">Omrežje je morda nadzorovano</translation>
 <translation id="7536035074519304529">Naslov IP: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Aplikacije za Linux in anonimna okna trenutno niso podprta. Druge aplikacije bodo shranjene.</translation>
@@ -1102,6 +1106,7 @@ Nova namestitev</translation>
 <translation id="7901405293566323524">Središče za telefone</translation>
 <translation id="7902625623987030061">Dotaknite se tipala prstnih odtisov.</translation>
 <translation id="7904094684485781019">Skrbnik tega računa je onemogočil prijavo z več računi.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7930731167419639574">Govor se zdaj obdela lokalno in narek deluje brez povezave.</translation>
 <translation id="7933084174919150729">Pomočnik Google je na voljo samo za primarni profil.</translation>
 <translation id="79341161159229895">Račun upravljata <ph name="FIRST_PARENT_EMAIL" /> in <ph name="SECOND_PARENT_EMAIL" /></translation>

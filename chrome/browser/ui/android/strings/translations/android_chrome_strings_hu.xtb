@@ -30,7 +30,6 @@
 <translation id="114825011539563458">A legfontosabb adatvédelmi és biztonsági vezérlők egyetlen helyen</translation>
 <translation id="1149401351239820326">Lejárat hónapja</translation>
 <translation id="1154704303112745282">Az oldal nem áll rendelkezésre offline módban: <ph name="VIOLATED_URL" /></translation>
-<translation id="1166688006062225587">A kiválasztható fiókok listája.</translation>
 <translation id="1171770572613082465">A „Népszerűek” gombra koppintva megtekintheti a népszerű webhelyeket</translation>
 <translation id="1173894706177603556">Átnevezés</translation>
 <translation id="1177863135347784049">Egyéni</translation>
@@ -571,6 +570,7 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="4415276339145661267">Google-fiók kezelése</translation>
 <translation id="4425140285732600465">Ár nyomon követve. Értesítést kaphat, ha valamelyik webhelyen csökken az ár.</translation>
 <translation id="442518031075347249">A továbbiakban nem fogja tudni használni virtuális kártyáját a Google Pay alkalmazással. <ph name="BEGIN_LINK1" />További információ a virtuális kártyákról<ph name="END_LINK1" />.</translation>
+<translation id="4428065317363009941">Hirdetések személyre szabása</translation>
 <translation id="4450672886426705087">Keresési találatok a Google-tól.</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> lap bezárása</translation>
 <translation id="4452548195519783679">Könyvjelzők közé téve itt: <ph name="FOLDER_NAME" /></translation>
@@ -899,7 +899,6 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6277522088822131679">Hiba történt az oldal nyomtatásakor. Próbálja újra.</translation>
 <translation id="6277722725779679269">Nem sikerült frissíteni a nyomon követett árat.</translation>
 <translation id="6278428485366576908">Téma</translation>
-<translation id="6293443105724342169">A kiválasztható fiókok listája félmagasságban megnyitva.</translation>
 <translation id="6294610283659775533">Átküldheti a lapokat ugyanazzal a Google-fiókkal bejelentkezett eszközei között</translation>
 <translation id="6297765934698848803">Az eszközét kezelő szervezet kikapcsolta a kamerát.</translation>
 <translation id="6301525844455696527">Ne feledkezzen meg az olvasási listájáról</translation>
@@ -1310,7 +1309,6 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="8461694314515752532">A szinkronizált adatok titkosítása saját összetett szinkronizálási jelszóval</translation>
 <translation id="8466613982764129868">Győződjön meg arról, hogy a(z) <ph name="TARGET_DEVICE_NAME" /> eszköz csatlakozik az internethez</translation>
 <translation id="8473863474539038330">Címek és egyebek</translation>
-<translation id="847656914027543776">A kiválasztható fiókok listája be van zárva.</translation>
 <translation id="8481921391193215807">Ha engedélyezve van, a webhelyek használhatják az itt bemutatott adatvédelem-biztosítási módszereket a tartalmaiknál és a szolgáltatásaiknál. Itt találhatók alternatívák a webhelyeken átnyúló nyomon követésre is. Később további próbafunkciók is belekerülhetnek.
 
 <ph name="BEGIN_LIST_ITEM1" />A hirdetők és a megjelenítők használhatják a FLoC technológiát.<ph name="END_LIST_ITEM1" />
@@ -1365,6 +1363,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="8683526617475118045">Előnyök</translation>
 <translation id="869891660844655955">Lejárati dátum</translation>
 <translation id="8699120352855309748">Ne ajánlja fel a fordítást ezekről a nyelvekről</translation>
+<translation id="8712637175834984815">Sikerült</translation>
 <translation id="8725066075913043281">Újrapróbálás</translation>
 <translation id="8730621377337864115">Kész</translation>
 <translation id="8746155870861185046">Kiemelés megosztása</translation>
@@ -1439,7 +1438,6 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="9108312223223904744">Telefon a biztonsági hardverkulcs támogatásaként</translation>
 <translation id="9108808586816295166">Előfordulhat, hogy a biztonságos DNS nem mindig áll rendelkezésre</translation>
 <translation id="9133397713400217035">Offline felfedezés</translation>
-<translation id="9133523398139146080">A kiválasztható fiókok listája teljes magasságban megnyitva.</translation>
 <translation id="9137013805542155359">Eredeti megjelenítése</translation>
 <translation id="9148126808321036104">Jelentkezzen be újra</translation>
 <translation id="9155898266292537608">Úgy is végrehajthat keresést, hogy gyorsan rákoppint valamelyik szóra</translation>

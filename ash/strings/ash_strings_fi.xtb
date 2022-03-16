@@ -31,6 +31,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1150989369772528668">Kalenteri</translation>
 <translation id="1153356358378277386">Laiteparit</translation>
 <translation id="1165712434476988950">Laite on käynnistettävä uudelleen, jotta päivitys voidaan ottaa käyttöön.</translation>
+<translation id="1171742223880403396">USB-C-johtosi ei ehkä yhdisty näyttöihin kunnolla</translation>
 <translation id="1175572348579024023">Vieritä</translation>
 <translation id="1178581264944972037">Tauko</translation>
 <translation id="1181037720776840403">Poista</translation>
@@ -255,6 +256,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2595239820337756193">5 km maileina</translation>
 <translation id="2596078834055697711">Ota kuvakaappaus</translation>
 <translation id="2607678425161541573">Edellyttää kirjautumista verkossa</translation>
+<translation id="2620436844016719705">Järjestelmä</translation>
 <translation id="2621713457727696555">Suojattu</translation>
 <translation id="263399434338050016">"Valitse kaikki"</translation>
 <translation id="2653019840645008922">Ikkunan tallennus</translation>
@@ -350,6 +352,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="320207200541803018">Aseta ajastin</translation>
 <translation id="3203405173652969239">Kytkimen käyttö päällä</translation>
 <translation id="3207953481422525583">Käyttäjäasetukset</translation>
+<translation id="3208321278970793882">Sovellus</translation>
 <translation id="3217205077783620295">Äänet ovat päällä. Mykistä ne kytkimellä.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> muuta</translation>
 <translation id="3227137524299004712">Mikrofoni</translation>
@@ -1033,6 +1036,7 @@ Uusi asennus</translation>
 <translation id="7513622367902644023">Kuvakaappaustila valittu</translation>
 <translation id="7513922695575567867">Kalenteri, viikko johon kuuluu <ph name="DATE" />, <ph name="SELECTED_DATE" /> on valittuna.</translation>
 <translation id="7514365320538308">Lataa</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7526573455193969409">Verkkoa saatetaan valvoa</translation>
 <translation id="7536035074519304529">IP-osoite: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Linux-sovelluksia ja incognito-ikkunoita ei tällä hetkellä tueta. Muut sovellukset tallennetaan.</translation>
@@ -1101,6 +1105,7 @@ Uusi asennus</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Kosketa sormenjälkitunnistinta</translation>
 <translation id="7904094684485781019">Tämän tilin järjestelmänvalvoja on estänyt useisiin tileihin kirjautumisen.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7930731167419639574">Puhe käsitellään nyt paikallisesti, ja sanelu toimii ilman verkkoyhteyttä</translation>
 <translation id="7933084174919150729">Google Assistant on käytettävissä vain ensisijaisella profiililla.</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> ja <ph name="SECOND_PARENT_EMAIL" /> hallinnoivat tiliä</translation>

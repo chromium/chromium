@@ -30,7 +30,6 @@
 <translation id="114825011539563458">Najvažnije kontrole privatnosti i bezbednosti na jednom mestu</translation>
 <translation id="1149401351239820326">Mesec isteka</translation>
 <translation id="1154704303112745282">Stranica nije dostupna oflajn: <ph name="VIOLATED_URL" /></translation>
-<translation id="1166688006062225587">Lista naloga za izbor.</translation>
 <translation id="1171770572613082465">Dodirnite dugme „Najpopularniji veb-sajtovi“ i vidite te veb-sajtove</translation>
 <translation id="1173894706177603556">Preimenuj</translation>
 <translation id="1177863135347784049">Prilagođeno</translation>
@@ -571,6 +570,7 @@ Dodirnite i zadržite bilo koju reč za pretragu. Da biste precizirali pretragu,
 <translation id="4415276339145661267">Upravljajte Google nalogom</translation>
 <translation id="4425140285732600465">Cena se prati. Dobijajte obaveštenja kada se cena snizi na bilo kom sajtu.</translation>
 <translation id="442518031075347249">Više nećete moći da koristite virtuelnu karticu uz Google Pay. <ph name="BEGIN_LINK1" />Saznajte više o virtuelnim karticama<ph name="END_LINK1" /></translation>
+<translation id="4428065317363009941">Personalizacija oglasa</translation>
 <translation id="4450672886426705087">Rezultati pretrage sa Google-a.</translation>
 <translation id="4452411734226507615">Zatvori karticu <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Obeleživač je dodat u <ph name="FOLDER_NAME" /></translation>
@@ -899,7 +899,6 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="6277522088822131679">Došlo je do problema pri štampanju stranice. Probajte ponovo.</translation>
 <translation id="6277722725779679269">Ažuriranje praćenja cena nije uspelo</translation>
 <translation id="6278428485366576908">Tema</translation>
-<translation id="6293443105724342169">Lista naloga za izbor je otvorena do polovine ekrana.</translation>
 <translation id="6294610283659775533">Možete da šaljete kartice s jednog uređaja na drugi ako ste na njih prijavljeni pomoću istog Google naloga</translation>
 <translation id="6297765934698848803">Organizacija koja upravlja uređajem vam je isključila kameru.</translation>
 <translation id="6301525844455696527">Čitajte stavke sa liste za čitanje</translation>
@@ -1310,7 +1309,6 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="8461694314515752532">Šifrujte sinhronizovane podatke pomoću sopstvene pristupne fraze za sinhronizaciju</translation>
 <translation id="8466613982764129868">Uverite se da je <ph name="TARGET_DEVICE_NAME" /> povezan na internet</translation>
 <translation id="8473863474539038330">Adrese i drugo</translation>
-<translation id="847656914027543776">Lista naloga za izbor je zatvorena.</translation>
 <translation id="8481921391193215807">Kada je ovo uključeno, sajtovi mogu da koriste tehnike za očuvanje privatnosti koje su prikazane ovde da bi pružali sadržaj i usluge. One obuhvataju alternative za praćenje na više sajtova. Možda će tokom vremena biti dodato još proba.
 
 <ph name="BEGIN_LIST_ITEM1" />Oglašavači i objavljivači mogu da koriste grupisane podatke o kohortama.<ph name="END_LIST_ITEM1" />
@@ -1365,6 +1363,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="8683526617475118045">Šta dobijate</translation>
 <translation id="869891660844655955">Datum isteka</translation>
 <translation id="8699120352855309748">Ne nudi prevod ovih jezika</translation>
+<translation id="8712637175834984815">Važi</translation>
 <translation id="8725066075913043281">Probajte ponovo</translation>
 <translation id="8730621377337864115">Gotovo</translation>
 <translation id="8746155870861185046">Deli isticanje</translation>
@@ -1390,6 +1389,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="8881973373982641723">Briše istoriju, uključujući istoriju u okviru za pretragu.</translation>
 <translation id="889338405075704026">Idite u podešavanja Chrome-a</translation>
 <translation id="8898822736010347272">Šalje Google-u URL-ove nekih stranica koje posećujete, ograničene informacije o sistemu i određeni sadržaj stranica da bi se otkrile nove pretnje i zaštitili svi širom veba.</translation>
+<translation id="8906502871739599113">Reakcija je duplirana</translation>
 <translation id="8909135823018751308">Deli...</translation>
 <translation id="8912362522468806198">Google naloga</translation>
 <translation id="8920114477895755567">Čekaju se detalji roditelja.</translation>
@@ -1409,6 +1409,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="8970887620466824814">Došlo je do greške.</translation>
 <translation id="8972098258593396643">Preuzimate u podrazumevani direktorijum?</translation>
 <translation id="8987641763863173640">Upravljajte podešavanjima pregleda videa</translation>
+<translation id="898854820045159673">Reakcija je dodata</translation>
 <translation id="8993760627012879038">Otvaranje nove kartice u režimu bez arhiviranja</translation>
 <translation id="8996847606757455498">Odaberite drugog dobavljača</translation>
 <translation id="8998729206196772491">Prijavljujete se pomoću naloga kojim upravlja <ph name="MANAGED_DOMAIN" /> i dajete njegovom administratoru kontrolu nad svojim Chrome podacima. Podaci će postati trajno povezani sa tim nalogom. Odjavljivanjem iz Chrome-a ćete izbrisati podatke sa ovog uređaja, ali će oni ostati sačuvani na Google nalogu.</translation>
@@ -1437,13 +1438,13 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="9108312223223904744">Podrška za telefon kao bezbednosni ključ</translation>
 <translation id="9108808586816295166">Bezbedni DNS možda neće uvek biti dostupan</translation>
 <translation id="9133397713400217035">Istražujte oflajn</translation>
-<translation id="9133523398139146080">Lista naloga za izbor je otvorena preko celog ekrana.</translation>
 <translation id="9137013805542155359">Prikaži original</translation>
 <translation id="9148126808321036104">Prijavi me ponovo</translation>
 <translation id="9155898266292537608">Možete i kratko da dodirnete reč da biste je pretražili</translation>
 <translation id="9158770349521403363">Delite samo sadržaj</translation>
 <translation id="916446198114569890">URL-ovi koje posećujete se čuvaju na Google nalogu</translation>
 <translation id="9169507124922466868">Istorija navigacije je poluotvorena</translation>
+<translation id="9187955620966010988">Reakcija je prilagođena</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Provereno pre 1 minut}one{Provereno pre # minut}few{Provereno pre # minuta}other{Provereno pre # minuta}}</translation>
 <translation id="9204836675896933765">Preostala je 1 datoteka</translation>
 <translation id="9205933215779845960">Nismo uspeli da pronađemo tu stranicu. Proverite pravopis ili probajte da pretražite na <ph name="SEARCH_ENGINE" />.</translation>

@@ -30,7 +30,6 @@
 <translation id="114825011539563458">Najważniejsze elementy sterujące prywatnością i zabezpieczeniami dostępne w 1 miejscu</translation>
 <translation id="1149401351239820326">Miesiąc utraty ważności</translation>
 <translation id="1154704303112745282">Strona niedostępna offline: <ph name="VIOLATED_URL" /></translation>
-<translation id="1166688006062225587">Lista kont, które można wybrać.</translation>
 <translation id="1171770572613082465">Zobacz najpopularniejsze strony, klikając przycisk „Popularne”</translation>
 <translation id="1173894706177603556">Zmień nazwę</translation>
 <translation id="1177863135347784049">Niestandardowe</translation>
@@ -571,6 +570,7 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="4415276339145661267">Zarządzaj kontem Google</translation>
 <translation id="4425140285732600465">Monitoruję cenę. Jeśli na którejkolwiek stronie produkt stanieje, otrzymasz alert.</translation>
 <translation id="442518031075347249">Stracisz możliwość korzystania z karty wirtualnej w Google Pay. <ph name="BEGIN_LINK1" />Więcej informacji o kartach wirtualnych<ph name="END_LINK1" /></translation>
+<translation id="4428065317363009941">Personalizacja reklam</translation>
 <translation id="4450672886426705087">Wyniki z wyszukiwarki Google.</translation>
 <translation id="4452411734226507615">Zamknij kartę <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Utworzono zakładkę w folderze <ph name="FOLDER_NAME" /></translation>
@@ -899,7 +899,6 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6277522088822131679">Podczas drukowania strony wystąpił problem. Spróbuj ponownie.</translation>
 <translation id="6277722725779679269">Nie udało się zaktualizować monitorowanej ceny</translation>
 <translation id="6278428485366576908">Motyw</translation>
-<translation id="6293443105724342169">Lista kont, które można wybrać, otwarta na połowę wysokości strony.</translation>
 <translation id="6294610283659775533">Możesz przesyłać karty między urządzeniami zalogowanymi na to samo konto Google</translation>
 <translation id="6297765934698848803">Organizacja, która zarządza Twoim urządzeniem, wyłączyła aparat.</translation>
 <translation id="6301525844455696527">Nadrób zaległości w czytaniu</translation>
@@ -1310,7 +1309,6 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="8461694314515752532">Szyfruj synchronizowane dane własnym hasłem synchronizacji</translation>
 <translation id="8466613982764129868">Sprawdź, czy <ph name="TARGET_DEVICE_NAME" /> ma połączenie z internetem</translation>
 <translation id="8473863474539038330">Adresy i ustawienia</translation>
-<translation id="847656914027543776">Lista kont, które można wybrać, jest zamknięta.</translation>
 <translation id="8481921391193215807">Gdy włączysz tę funkcję, witryny będą mogły dostarczać swoje treści i usługi, używając wymienionych tu technik chroniących prywatność. Obejmują one rozwiązania alternatywne dla śledzenia w witrynach. Z czasem może pojawić się więcej wersji próbnych.
 
 <ph name="BEGIN_LIST_ITEM1" />Reklamodawcy i wydawcy mogą korzystać ze sfederowanego uczenia się kohort (FLoC).<ph name="END_LIST_ITEM1" />
@@ -1365,6 +1363,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="8683526617475118045">Co zyskujesz</translation>
 <translation id="869891660844655955">Data wygaśnięcia</translation>
 <translation id="8699120352855309748">Nie proponuj tłumaczenia tych języków</translation>
+<translation id="8712637175834984815">Rozumiem</translation>
 <translation id="8725066075913043281">Spróbuj ponownie</translation>
 <translation id="8730621377337864115">Gotowe</translation>
 <translation id="8746155870861185046">Udostępnij zaznaczenie</translation>
@@ -1439,7 +1438,6 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="9108312223223904744">Telefon jako klucz bezpieczeństwa</translation>
 <translation id="9108808586816295166">Bezpieczny DNS może nie być dostępny przez cały czas</translation>
 <translation id="9133397713400217035">Przeglądaj offline</translation>
-<translation id="9133523398139146080">Lista kont, które można wybrać, otwarta na całą wysokość strony.</translation>
 <translation id="9137013805542155359">Pokaż tekst oryginalny</translation>
 <translation id="9148126808321036104">Zaloguj się ponownie</translation>
 <translation id="9155898266292537608">Możesz też wyszukiwać szybkim kliknięciem słowa</translation>

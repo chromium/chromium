@@ -258,6 +258,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="2595239820337756193">5 km v míľach</translation>
 <translation id="2596078834055697711">Vytvorenie snímky obrazovky okna</translation>
 <translation id="2607678425161541573">Vyžaduje sa prihlásenie online</translation>
+<translation id="2620436844016719705">Systém</translation>
 <translation id="2621713457727696555">Zabezpečená</translation>
 <translation id="263399434338050016">Vybrať všetko</translation>
 <translation id="2653019840645008922">Snímanie okna</translation>
@@ -354,6 +355,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="320207200541803018">Nastaviť časovač</translation>
 <translation id="3203405173652969239">Ovládanie prepínačmi je aktivované</translation>
 <translation id="3207953481422525583">Nastavenia používateľa</translation>
+<translation id="3208321278970793882">Aplikácia</translation>
 <translation id="3217205077783620295">Zvuk je zapnutý. Ak ho chcete vypnúť, prepnite tlačidlo.</translation>
 <translation id="3226991577105957773">a ďalšie (<ph name="COUNT" />)</translation>
 <translation id="3227137524299004712">Mikrofón</translation>
@@ -1038,6 +1040,7 @@ Nová inštalácia</translation>
 <translation id="7513622367902644023">Bol vybraný režim snímky obrazovky</translation>
 <translation id="7513922695575567867">Kalendár, týždeň s dátumom <ph name="DATE" />, momentálne je vybraný dátum <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Stiahnuť</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7526573455193969409">Sieť môže byť sledovaná</translation>
 <translation id="7536035074519304529">Adresa IP: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Aplikácie pre Linux a okná inkognito momentálne nie sú podporované. Ostatné aplikácie budú uložené.</translation>
@@ -1107,6 +1110,7 @@ Nová inštalácia</translation>
 <translation id="7901405293566323524">Telefonické centrum</translation>
 <translation id="7902625623987030061">Dotknite sa senzora odtlačkov prstov</translation>
 <translation id="7904094684485781019">Správca tohto účtu zakázal viacnásobné prihlásenie.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7930731167419639574">Reč sa teraz spracúva miestne a diktovanie funguje offline</translation>
 <translation id="7933084174919150729">Asistent Google je k dispozícii iba pre primárny profil.</translation>
 <translation id="79341161159229895">Správcovia účtu: <ph name="FIRST_PARENT_EMAIL" /> a <ph name="SECOND_PARENT_EMAIL" /></translation>

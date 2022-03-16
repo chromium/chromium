@@ -115,7 +115,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1301324364792935241">Controleer je instellingen voor beveiligde DNS</translation>
 <translation id="1307966114820526988">Verouderde functies</translation>
 <translation id="1308113895091915999">Aanbieding beschikbaar</translation>
-<translation id="1312803275555673949">Door welk bewijs wordt dit bevestigd?</translation>
 <translation id="1314311879718644478">Augmented reality-content bekijken</translation>
 <translation id="1314509827145471431">Rechts inbinden</translation>
 <translation id="1318023360584041678">Opgeslagen in tabbladgroep</translation>
@@ -734,7 +733,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="324180406144491771">Links van <ph name="HOST_NAME" /> zijn geblokkeerd</translation>
 <translation id="3249845759089040423">Groovy</translation>
 <translation id="3252266817569339921">Frans</translation>
-<translation id="3257954757204451555">Van wie heb je deze informatie?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om snel een nieuwe afspraak in Google Agenda te maken</translation>
 <translation id="3261488570342242926">Meer informatie over virtuele kaarten</translation>
 <translation id="3264837738038045344">Knop 'Chrome-instellingen beheren', druk op Enter om naar je Chrome-instellingen te gaan</translation>
@@ -1120,6 +1118,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="4414515549596849729">cookies en sitegegevens</translation>
 <translation id="4415426530740016218">Ophaaladres</translation>
 <translation id="4424024547088906515">De server kan niet bewijzen dat dit <ph name="DOMAIN" /> is. Het beveiligingscertificaat van de server wordt niet vertrouwd door Chrome. Dit kan worden veroorzaakt door een verkeerde configuratie of een aanvaller die je verbinding onderschept.</translation>
+<translation id="4428065317363009941">Advertentiepersonalisatie</translation>
 <translation id="443121186588148776">Seriële poort</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> heeft je inlogcertificaat niet geaccepteerd of er is geen inlogcertificaat geleverd.</translation>
 <translation id="4432792777822557199">Pagina's in het <ph name="SOURCE_LANGUAGE" /> worden vanaf nu vertaald naar het <ph name="TARGET_LANGUAGE" /></translation>
@@ -1252,7 +1251,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="4838327282952368871">Dromerig</translation>
 <translation id="4840250757394056958">Je Chrome-geschiedenis bekijken</translation>
 <translation id="484462545196658690">Auto</translation>
-<translation id="4849865131988503897">Nauwkeurigheidscheck</translation>
 <translation id="4850886885716139402">Weergave</translation>
 <translation id="485316830061041779">Duits</translation>
 <translation id="4853901935952445031">Deze site kan de U2F API na februari 2022 niet meer gebruiken. Als je de eigenaar van deze site bent, moet je de Web Authentication API gebruiken.</translation>
@@ -1439,6 +1437,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="5398772614898833570">Advertenties geblokkeerd</translation>
 <translation id="5400836586163650660">Grijs</translation>
 <translation id="540969355065856584">Deze server kan niet bewijzen dat dit <ph name="DOMAIN" /> is. Het beveiligingscertificaat is momenteel niet geldig. Dit kan worden veroorzaakt door een verkeerde configuratie of een aanvaller die je verbinding onderschept.</translation>
+<translation id="5412236728747081950">Deze site krijgt je interesses van Chrome zodat de site je relevantere advertenties kan laten zien</translation>
 <translation id="541416427766103491">Stapeleenheid 4</translation>
 <translation id="5421136146218899937">Browsegegevens wissen</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> wil meldingen sturen</translation>
@@ -1954,7 +1953,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> voldoet niet aan de beveiligingsnormen.</translation>
 <translation id="7210993021468939304">Linux-activiteit in de container, en kan Linux-apps in de container installeren en uitvoeren</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /> over dit probleem.</translation>
-<translation id="7215025035562547931">Denk eens na over nauwkeurigheid</translation>
 <translation id="7217745192097460130">Touch ID gebruiken om je aankoop te verifiëren en te voltooien?</translation>
 <translation id="7219179957768738017">De verbinding maakt gebruik van <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Verwerken</translation>
@@ -2084,6 +2082,7 @@ Aanvullende informatie:
 <translation id="7569952961197462199">Creditcard verwijderen uit Chrome?</translation>
 <translation id="7569983096843329377">Zwart</translation>
 <translation id="7575207903026901870">Suggestieknop verwijderen, druk op Enter om deze suggestie te verwijderen</translation>
+<translation id="7577900504646297215">Interesses beheren</translation>
 <translation id="7578104083680115302">Betaal op verschillende apparaten snel op sites en in apps met passen die je hebt opgeslagen via Google.</translation>
 <translation id="7579442726219254162">Onbekende variabele <ph name="VARIABLE" /> in de beheerde configuratie van <ph name="APPLICATION_ID" />.</translation>
 <translation id="7581199239021537589">Beeldverschuiving Y van zijde 2</translation>
@@ -2205,7 +2204,6 @@ Aanvullende informatie:
 <translation id="7966803981046576691">Type taakaccount</translation>
 <translation id="79682505114836835">De waarde <ph name="VALUE" /> is een ongeldige hexadecimale kleur.</translation>
 <translation id="7968982339740310781">Details bekijken</translation>
-<translation id="7970392640816874403">Wat zeggen andere bronnen?</translation>
 <translation id="7976214039405368314">Te veel verzoeken</translation>
 <translation id="7977538094055660992">Uitvoerapparaat</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -2556,7 +2554,6 @@ Aanvullende informatie:
 <translation id="9155211586651734179">Aangesloten audiorandapparaten</translation>
 <translation id="9157595877708044936">Bezig met instellen...</translation>
 <translation id="9158625974267017556">C6 (envelop)</translation>
-<translation id="9164029392738894042">Nauwkeurigheidscheck</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">Toestaan dat sites controleren of je betaalmethoden hebt opgeslagen</translation>
 <translation id="9169664750068251925">Altijd blokkeren op deze site</translation>

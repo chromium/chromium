@@ -256,6 +256,7 @@
 <translation id="2595239820337756193">כמה מיילים יש ב-5 קילומטרים</translation>
 <translation id="2596078834055697711">צילום מסך של חלון</translation>
 <translation id="2607678425161541573">נדרשת כניסה אונליין</translation>
+<translation id="2620436844016719705">מערכת</translation>
 <translation id="2621713457727696555">מאובטחת</translation>
 <translation id="263399434338050016">‏"Select all" (בחירה של הכול)</translation>
 <translation id="2653019840645008922">צילום חלון</translation>
@@ -351,6 +352,7 @@
 <translation id="320207200541803018">הגדרת טיימר</translation>
 <translation id="3203405173652969239">'גישה באמצעות מתג' מופעלת</translation>
 <translation id="3207953481422525583">הגדרות משתמש</translation>
+<translation id="3208321278970793882">אפליקציה</translation>
 <translation id="3217205077783620295">לחצן עוצמת הקול מופעל. אם המצב יוחלף, האודיו יושתק.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> נוספות</translation>
 <translation id="3227137524299004712">מיקרופון</translation>
@@ -1034,6 +1036,7 @@
 <translation id="7513622367902644023">נבחר מצב של צילום מסך</translation>
 <translation id="7513922695575567867">יומן, השבוע של <ph name="DATE" />, התאריך שנבחר הוא <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">הורדה</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7526573455193969409">ייתכן שהרשת מנוטרת</translation>
 <translation id="7536035074519304529">‏כתובת IP: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">‏בשלב הזה, אין תמיכה באפליקציות Linux ובחלונות פרטיים. אפליקציות אחרות יישמרו.</translation>
@@ -1104,6 +1107,7 @@
 <translation id="7901405293566323524">מרכז טלפוני</translation>
 <translation id="7902625623987030061">יש לגעת בחיישן טביעות האצבע</translation>
 <translation id="7904094684485781019">מנהל החשבון הזה אסר על כניסה עם מספר חשבונות.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7930731167419639574">העיבוד של דיבור נעשה עכשיו באופן מקומי ותכונת ההכתבה פועלת אופליין.</translation>
 <translation id="7933084174919150729">‏Google Assistant זמינה רק לפרופיל ראשי.</translation>
 <translation id="79341161159229895">החשבון מנוהל על-ידי <ph name="FIRST_PARENT_EMAIL" /> ועל-ידי <ph name="SECOND_PARENT_EMAIL" /></translation>

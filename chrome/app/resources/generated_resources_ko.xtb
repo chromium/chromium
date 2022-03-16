@@ -1075,7 +1075,6 @@
 <translation id="2019718679933488176">새 탭에서 오디오 열기(&amp;O)</translation>
 <translation id="2020183425253392403">네트워크 주소 설정 표시</translation>
 <translation id="2020225359413970060">파일 스캔</translation>
-<translation id="2022395138980869975">사이드 검색 전환</translation>
 <translation id="2023167225947895179">추측하기 쉬운 PIN입니다.</translation>
 <translation id="202352106777823113">다운로드가 너무 오래 걸려 네트워크에서 중단했습니다.</translation>
 <translation id="2024195579772565064">검색엔진 삭제</translation>
@@ -1344,6 +1343,7 @@
 <translation id="2278562042389100163">브라우저 창 열기</translation>
 <translation id="2278668501808246459">컨테이너 관리자 시작 중</translation>
 <translation id="2280486287150724112">오른쪽 여백</translation>
+<translation id="2281863813036651454">마우스 왼쪽 버튼 클릭</translation>
 <translation id="2282146716419988068">GPU 프로세스</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{새 탭 그룹에서 모두 열기(&amp;N)}=1{새 탭 그룹에서 열기(&amp;N)}other{새 탭 그룹에서 {COUNT}개 모두 열기(&amp;N)}}</translation>
 <translation id="2285942871162473373">지문을 인식할 수 없습니다. 다시 시도해 보세요.</translation>
@@ -2975,7 +2975,6 @@
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" /> 연결</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" />(으)로 메모 작성</translation>
 <translation id="3888586133700543064">어시스턴트에서 발생하는 문제를 파악하는 데 도움이 되는 정보입니다. 정보는 최대 90일 동안 저장되며, 관련 엔지니어링팀과 의견팀에서만 액세스할 수 있습니다.</translation>
-<translation id="3888900458694486810">사이드 검색 닫기</translation>
 <translation id="3890064827463908288">Wi-Fi 동기화를 사용하려면 Chrome 동기화 사용 설정</translation>
 <translation id="389313931326656921">'다음'에 스위치 할당</translation>
 <translation id="3893295674388762059">데이터를 삭제하려면 모든 시크릿 창을 닫으세요.</translation>
@@ -3287,7 +3286,6 @@
 <translation id="4208390505124702064"><ph name="SITE_NAME" /> 검색</translation>
 <translation id="4209092469652827314">크게</translation>
 <translation id="4209251085232852247">사용 중지됨</translation>
-<translation id="4209464433672152343">인쇄 준비를 위해 문서를 <ph name="BEGIN_LINK_HELP" />Google에 전송<ph name="END_LINK_HELP" />했습니다. <ph name="BEGIN_LINK_DASHBOARD" />Google 클라우드 프린트 대시보드<ph name="END_LINK_DASHBOARD" />에서 프린터와 프린터 기록을 확인, 수정, 관리할 수 있습니다.</translation>
 <translation id="4210048056321123003">가상 머신 다운로드 중</translation>
 <translation id="421182450098841253">북마크바 표시(&amp;S)</translation>
 <translation id="4211851069413100178">사용 및 진단 데이터를 보냅니다. 진단, 기기, 앱 사용 데이터를 Google에 자동으로 보내 Android 사용 환경 개선에 참여합니다. 이 데이터는 시스템 및 앱 안정성 등을 개선하는 데 활용됩니다. 일부 수집 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움을 줍니다. 이 <ph name="BEGIN_LINK1" />설정<ph name="END_LINK1" />은 소유자가 지정합니다. 소유자가 이 기기의 진단 및 사용 데이터를 Google에 전송할지 선택할 수 있습니다. 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 Google 계정에 저장될 수 있습니다. <ph name="BEGIN_LINK2" />자세히 알아보기<ph name="END_LINK2" /></translation>
@@ -5160,6 +5158,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6129938384427316298">Netscape Certificate Comment</translation>
 <translation id="6129953537138746214">Space</translation>
 <translation id="6130692320435119637">Wi-Fi 추가</translation>
+<translation id="6130887916931372608">키보드 키</translation>
 <translation id="6136114942382973861">다운로드바 닫기</translation>
 <translation id="6136287496450963112">보안 키가 PIN으로 보호되어 있지 않습니다. 지문을 관리하려면 먼저 PIN을 만드세요.</translation>
 <translation id="6138680304137685902">SHA-384를 포함한 X9.62 ECDSA 서명</translation>
@@ -6182,7 +6181,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7180611975245234373">새로고침</translation>
 <translation id="7180865173735832675">맞춤설정</translation>
 <translation id="7182791023900310535">비밀번호 이동</translation>
-<translation id="7183420126213758623">사이드 검색을 전환합니다. 사이드 검색이 활성화되지 않았습니다.</translation>
 <translation id="7186088072322679094">툴바에 보관</translation>
 <translation id="7186303001964993981">이 폴더에는 시스템 파일이 포함되어 있으므로 <ph name="ORIGIN" />에서 열 수 없습니다.</translation>
 <translation id="7187428571767585875">삭제 또는 변경할 레지스트리 항목:</translation>
@@ -6704,7 +6702,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7701040980221191251">없음</translation>
 <translation id="7701869757853594372">사용자 처리</translation>
 <translation id="7702574632857388784">목록에서 <ph name="FILE_NAME" /> 삭제</translation>
-<translation id="7702599324215660661">두고 가면 잠그기</translation>
 <translation id="7702907602086592255">도메인</translation>
 <translation id="7704305437604973648">작업</translation>
 <translation id="7704317875155739195">검색어 및 URL 자동 완성</translation>
@@ -6774,6 +6771,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7768770796815395237">변경</translation>
 <translation id="7768784765476638775">텍스트 읽어주기</translation>
 <translation id="7770406201819593386">ChromeOS Flex 진단 테스트를 실행합니다.</translation>
+<translation id="7770450735129978837">마우스 오른쪽 버튼 클릭</translation>
 <translation id="7770612696274572992">다른 기기에서 이미지가 복사됨</translation>
 <translation id="7771452384635174008">레이아웃</translation>
 <translation id="7772032839648071052">암호 확인</translation>
@@ -6810,7 +6808,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> 권한이 자동으로 차단됨</translation>
 <translation id="7799299114731150374">배경화면 설정이 완료되었습니다.</translation>
 <translation id="7799817062559422778">밝은 모드</translation>
-<translation id="7800159967992492578">사이드 검색을 전환합니다. 사이트 검색이 활성화되었습니다.</translation>
 <translation id="7800518121066352902">반시계 방향으로 회전(&amp;O)</translation>
 <translation id="7801679634091975683">여기에서 변경하는 사항은 Lacros Chrome 브라우저에만 적용됩니다. Chrome 브라우저 설정을 변경하려면 Chrome 브라우저를 열고 설정으로 이동하세요.</translation>
 <translation id="780301667611848630">취소</translation>

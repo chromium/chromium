@@ -31,6 +31,7 @@
 <translation id="1150989369772528668">Օրացույց</translation>
 <translation id="1153356358378277386">Զուգակցված սարքեր</translation>
 <translation id="1165712434476988950">Թարմացումը կիրառելու համար անհրաժեշտ է վերագործարկել սարքը։</translation>
+<translation id="1171742223880403396">Հնարավոր է՝ USB-C մալուխը սխալ է միացված էկրանին</translation>
 <translation id="1175572348579024023">Ոլորել</translation>
 <translation id="1178581264944972037">Դադար</translation>
 <translation id="1181037720776840403">Ջնջել</translation>
@@ -256,6 +257,7 @@
 <translation id="2595239820337756193">5 հազար մղոն</translation>
 <translation id="2596078834055697711">Ստանալ պատուհանի պատկեր</translation>
 <translation id="2607678425161541573">Անհրաժեշտ է առցանց մուտք գործել</translation>
+<translation id="2620436844016719705">Համակարգ</translation>
 <translation id="2621713457727696555">Պաշտպանված է</translation>
 <translation id="263399434338050016">«Select all» (ընտրել բոլորը)</translation>
 <translation id="2653019840645008922">Պատուհանի տեսագրում</translation>
@@ -351,6 +353,7 @@
 <translation id="320207200541803018">Ժամաչափ սահմանիր</translation>
 <translation id="3203405173652969239">Switch Access-ը միացված է</translation>
 <translation id="3207953481422525583">Օգտատիրոջ կարգավորումներ</translation>
+<translation id="3208321278970793882">Հավելված</translation>
 <translation id="3217205077783620295">Ձայնը միացված է։ Անջատելու համար սեղմեք այս կոճակը։</translation>
 <translation id="3226991577105957773">Եվս <ph name="COUNT" /> ծանուցում</translation>
 <translation id="3227137524299004712">Խոսափող</translation>
@@ -1034,6 +1037,7 @@
 <translation id="7513622367902644023">Ընտրված է սքրինշոթի ռեժիմը</translation>
 <translation id="7513922695575567867">Օրացույց, <ph name="DATE" /> ամսաթվի շաբաթը, այժմ ընտրված է՝ <ph name="SELECTED_DATE" />։</translation>
 <translation id="7514365320538308">Ներբեռնել</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7526573455193969409">Ցանցը կարող է վերահսկվել</translation>
 <translation id="7536035074519304529">IP հասցե՝ <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Լինուքսի հավելվածներն ու ինկոգնիտո պատուհանները ներկայումս չեն աջակցվում։ Մյուս հավելվածները կպահվեն։</translation>
@@ -1102,6 +1106,7 @@
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Հպեք մատնահետքի սկաներին</translation>
 <translation id="7904094684485781019">Այս հաշվի ադմինիստրատորը բազմակի մուտք չի թույլատրել:</translation>
+<translation id="7911118814695487383">Լինուքս</translation>
 <translation id="7930731167419639574">Խոսքն այժմ մշակվում է այս սարքում, և թելադրումն աշխատում է առանց ինտերնետի։</translation>
 <translation id="7933084174919150729">Google Օգնականը հասանելի է միայն հիմնական պրոֆիլում։</translation>
 <translation id="79341161159229895">Հաշվի կառավարիչներ՝ <ph name="FIRST_PARENT_EMAIL" /> և <ph name="SECOND_PARENT_EMAIL" /></translation>

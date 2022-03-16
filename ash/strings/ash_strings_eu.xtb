@@ -258,6 +258,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2595239820337756193">Zenbat da 5 km miliatan</translation>
 <translation id="2596078834055697711">Atera leihoaren pantaila-argazkia</translation>
 <translation id="2607678425161541573">Saioa hasi behar da sarean</translation>
+<translation id="2620436844016719705">Sistema</translation>
 <translation id="2621713457727696555">Babestuta</translation>
 <translation id="263399434338050016">"Hautatu guztia"</translation>
 <translation id="2653019840645008922">Kapturatu leihoko edukia</translation>
@@ -353,6 +354,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="320207200541803018">Ezarri tenporizadore bat</translation>
 <translation id="3203405173652969239">Erabilerraztasun-osagarria gaitu da</translation>
 <translation id="3207953481422525583">Erabiltzaile-ezarpenak</translation>
+<translation id="3208321278970793882">Aplikazioa</translation>
 <translation id="3217205077783620295">Bolumena aktibatuta dago. Aldatzen baduzu, audioa isilaraziko da.</translation>
 <translation id="3226991577105957773">eta beste <ph name="COUNT" /></translation>
 <translation id="3227137524299004712">Mikrofonoa</translation>
@@ -1037,6 +1039,7 @@ Berriki instalatu da</translation>
 <translation id="7513622367902644023">Pantaila-argazkiak ateratzeko modua hautatu da</translation>
 <translation id="7513922695575567867">Egutegia, <ph name="DATE" /> egunari dagokion astea, une honetan <ph name="SELECTED_DATE" /> dago hautatuta.</translation>
 <translation id="7514365320538308">Deskargatu</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7526573455193969409">Baliteke sarea gainbegiratuta egotea</translation>
 <translation id="7536035074519304529">IP helbidea: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Une honetan ez dira onartzen Linux-eko aplikazioak eta ezkutuko moduko leihoak. Gainerako aplikazioak gorde egingo dira.</translation>
@@ -1105,6 +1108,7 @@ Berriki instalatu da</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Ukitu hatz-marken sentsorea</translation>
 <translation id="7904094684485781019">Kontu honen administratzaileak saio-hasiera anitzerako baimenak kendu ditu.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7930731167419639574">Hizketa gailuan bertan prozesatzen da orain eta diktaketak konexiorik gabe funtzionatzen du</translation>
 <translation id="7933084174919150729">Profil nagusian soilik erabil daiteke Google-ren Laguntzailea.</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> eta <ph name="SECOND_PARENT_EMAIL" /> kontuen bidez kudeatzen da kontu hau</translation>

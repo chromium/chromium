@@ -825,6 +825,7 @@
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> na audio</translation>
 <translation id="8045462269890919536">Romanian</translation>
 <translation id="8049184478152619004">Ilagay ang Personal Unblocking Key (PUK)</translation>
+<translation id="807187749540895545">Ine-extract ang <ph name="FILE_NAME" />...</translation>
 <translation id="8079530767338315840">Ulitin</translation>
 <translation id="8087576439476816834">I-download, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Ibinahagi sa akin</translation>
@@ -876,6 +877,7 @@
 <translation id="8484284835977497781">Pumili sa iyong mga kamakailang larawan.</translation>
 <translation id="8487700953926739672">Available sa offline</translation>
 <translation id="8492972329130824181">Hindi available ang network sa bahay. Dapat naka-enable ang mobile data roaming para kumonekta.</translation>
+<translation id="8499098729323186194">Ine-extract ang <ph name="NUMBER_OF_ITEMS" /> (na) item...</translation>
 <translation id="8521441079177373948">UK</translation>
 <translation id="8525306231823319788">Buong screen</translation>
 <translation id="853494022971700746">French (France)</translation>

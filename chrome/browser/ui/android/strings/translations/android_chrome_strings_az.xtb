@@ -30,7 +30,6 @@
 <translation id="114825011539563458">Ən vacib məxfilik və təhlükəsizlik nizamlayıcılarını bir yerdə</translation>
 <translation id="1149401351239820326">Bitmə ayı</translation>
 <translation id="1154704303112745282">Səhifə oflayn əlçatan deyil: <ph name="VIOLATED_URL" /></translation>
-<translation id="1166688006062225587">Seçiləcək hesabların siyahısı.</translation>
 <translation id="1171770572613082465">"Popluyar saytlar" seçiminə klikləyin və məşhur saytlara baxın</translation>
 <translation id="1173894706177603556">Adını dəyişin</translation>
 <translation id="1177863135347784049">İxtiyari</translation>
@@ -571,6 +570,7 @@ Axtarmaq üçün istənilən sözə toxunub saxlayın. Axtarışınızı dəqiql
 <translation id="4415276339145661267">Google Hesabını idarə edin</translation>
 <translation id="4425140285732600465">Qiymət izlənilir. Hər hansı bir saytda qiymət enərsə, bildiriş alın</translation>
 <translation id="442518031075347249">Artıq virtual kartınızı Google Pay ilə istifadə edə bilməyəcəksiniz. <ph name="BEGIN_LINK1" />Virtual kartlar haqqında ətraflı məlumat<ph name="END_LINK1" /></translation>
+<translation id="4428065317363009941">Reklam fərdiləşdirməsi</translation>
 <translation id="4450672886426705087">Google'dan nəticələri axtarın.</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> tabını bağlayın</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> qovluğuna əlfəcinləndi</translation>
@@ -897,7 +897,6 @@ Məxfilik Sendboksu sınaqları hələ də aktiv hazırlanma mərhələsindədir
 <translation id="6277522088822131679">Səhifə çap olunarkən problem oldu. Yenidən cəhd edin.</translation>
 <translation id="6277722725779679269">Qiymətin izlənməsini güncəlləmək mümkün olmadı</translation>
 <translation id="6278428485366576908">Tema</translation>
-<translation id="6293443105724342169">Seçiləcək hesabların siyahısı yarı hündürlükdə açılıb.</translation>
 <translation id="6294610283659775533">Eyni Google Hesabı ilə daxil olunan cihazlar arasında tablar göndərə bilərsiniz</translation>
 <translation id="6297765934698848803">Cihazınızı idarə edən təşkilat kameranızı deaktiv edib.</translation>
 <translation id="6301525844455696527">Oxuma siyahınıza çatın</translation>
@@ -1308,7 +1307,6 @@ Məxfilik Sendboksu sınaqları hələ də aktiv hazırlanma mərhələsindədir
 <translation id="8461694314515752532">Sinxronizasiya parolunuz ilə sinxronizasiya edilmiş datanı şifrələyin</translation>
 <translation id="8466613982764129868"><ph name="TARGET_DEVICE_NAME" /> cihazının internetə qoşulduğuna əmin olun</translation>
 <translation id="8473863474539038330">Ünvanlar və s.</translation>
-<translation id="847656914027543776">Seçiləcək hesabların siyahısı bağlanıb.</translation>
 <translation id="8481921391193215807">Aktiv olduqda, saytlar məzmun və xidmətlərini təmin etmək üçün burada göstərilən məxfiliyi qoruma üsullarından istifadə edə bilərlər. Bunlara saytlararası izləmə üçün alternativlər daxildir. Zamanla daha çox sınaq əlavə edilə bilər.
 
 <ph name="BEGIN_LIST_ITEM1" />Reklamçılar və naşirlər FLoC üsulundan istifadə edə bilərlər.<ph name="END_LIST_ITEM1" />
@@ -1363,6 +1361,7 @@ Məxfilik Sendboksu sınaqları hələ də aktiv hazırlanma mərhələsindədir
 <translation id="8683526617475118045">Nə əldə edirsiniz</translation>
 <translation id="869891660844655955">Bitmə tarixi</translation>
 <translation id="8699120352855309748">Bu dillərin tərcümə edilməsini təklif etməyin</translation>
+<translation id="8712637175834984815">Anladım</translation>
 <translation id="8725066075913043281">Yenidən cəhd edin</translation>
 <translation id="8730621377337864115">Tamamdır</translation>
 <translation id="8746155870861185046">Vurğulamanı paylaşın</translation>
@@ -1388,6 +1387,7 @@ Məxfilik Sendboksu sınaqları hələ də aktiv hazırlanma mərhələsindədir
 <translation id="8881973373982641723">Axtarış bölməsindəki daxil olmaqla, tarixçəni silir.</translation>
 <translation id="889338405075704026">Chrome ayarlarına keçin</translation>
 <translation id="8898822736010347272">Yeni təhlükələri aşkarlamaq və vebdə hər kəsi qorumağa yardım etmək üçün daxil olduğunuz bəzi səhifələrin URL'lərini, məhdud sistem məlumatlarını və bəzi səhifə məzmunlarını Google'a göndərin.</translation>
+<translation id="8906502871739599113">Reaksiya təkrarlanıb</translation>
 <translation id="8909135823018751308">Paylaşın...</translation>
 <translation id="8912362522468806198">Google Hesabı</translation>
 <translation id="8920114477895755567">Valideynlərin məlumatları gözlənilir.</translation>
@@ -1407,6 +1407,7 @@ Məxfilik Sendboksu sınaqları hələ də aktiv hazırlanma mərhələsindədir
 <translation id="8970887620466824814">Xəta baş verdi.</translation>
 <translation id="8972098258593396643">Defolt qovluğa endirilsin?</translation>
 <translation id="8987641763863173640">Video Önizləmə Ayarlarını İdarə Edin</translation>
+<translation id="898854820045159673">Reaksiya əlavə edilib</translation>
 <translation id="8993760627012879038">Incognito rejimində yeni panel açın</translation>
 <translation id="8996847606757455498">Başqa provayder seçin</translation>
 <translation id="8998729206196772491"><ph name="MANAGED_DOMAIN" /> tərəfindən idarə olunan hesab ilə daxil olursunuz və onun administratoruna Chrome datanız üzərində nəzarəti verirsiniz. Datanız həmişəlik bu hesab ilə əlaqələndiriləcək. Chrome'dan çıxmaq datanızı bu cihazdan siləcək, lakin data Google Hesabında qalacaq.</translation>
@@ -1435,13 +1436,13 @@ Məxfilik Sendboksu sınaqları hələ də aktiv hazırlanma mərhələsindədir
 <translation id="9108312223223904744">Təhlükəsizlik Açarı Dəstəyi kimi telefon</translation>
 <translation id="9108808586816295166">Təhlükəsiz DNS hər zaman əlçatan olmaya bilər</translation>
 <translation id="9133397713400217035">Oflayn araşdırın</translation>
-<translation id="9133523398139146080">Seçiləcək hesabların siyahısı tam hündürlükdə açılıb.</translation>
 <translation id="9137013805542155359">Originalı göstərin</translation>
 <translation id="9148126808321036104">Yenidən daxil olun</translation>
 <translation id="9155898266292537608">Sözün üzərində klikləməklə axtarış edə bilərsiniz</translation>
 <translation id="9158770349521403363">Yalnız məzmun paylaşın</translation>
 <translation id="916446198114569890">Ziyarət etdiyiniz keçidlər Google hesabınızda saxlanılır</translation>
 <translation id="9169507124922466868">Naviqasiya tarixçəsi yarı açıqdır</translation>
+<translation id="9187955620966010988">Reaksiya tənzimlənib</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 dəqiqə əvvəl yoxlanılıb}other{# dəqiqə əvvəl yoxlanılıb}}</translation>
 <translation id="9204836675896933765">1 fayl qaldı</translation>
 <translation id="9205933215779845960">Həmin səhifəni tapmaq mümkün deyil. Orfoqrafiyanı yoxlayın və ya <ph name="SEARCH_ENGINE" /> sistemində axtarış edin.</translation>

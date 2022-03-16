@@ -30,7 +30,6 @@
 <translation id="114825011539563458">Cele mai importante opțiuni de confidențialitate și de securitate într-un singur loc</translation>
 <translation id="1149401351239820326">Luna expirării</translation>
 <translation id="1154704303112745282">Pagina nu este disponibilă offline: <ph name="VIOLATED_URL" /></translation>
-<translation id="1166688006062225587">Lista conturilor de selectat.</translation>
 <translation id="1171770572613082465">Vezi site-uri populare atingând butonul „Site-uri de top”</translation>
 <translation id="1173894706177603556">Redenumește</translation>
 <translation id="1177863135347784049">Personalizează</translation>
@@ -571,6 +570,7 @@ Atinge lung orice cuvânt pentru a-l căuta. Pentru a rafina căutarea, selectea
 <translation id="4415276339145661267">Gestionează-ți Contul Google</translation>
 <translation id="4425140285732600465">Se urmărește prețul. Primește alerte dacă prețul scade pe orice site.</translation>
 <translation id="442518031075347249">Nu vei mai putea folosi cardul virtual cu Google Pay. <ph name="BEGIN_LINK1" />Află mai multe despre cardurile virtuale<ph name="END_LINK1" /></translation>
+<translation id="4428065317363009941">Personalizarea anunțurilor</translation>
 <translation id="4450672886426705087">Rezultate ale căutării pe Google.</translation>
 <translation id="4452411734226507615">Închide fila <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Marcaj adăugat în <ph name="FOLDER_NAME" /></translation>
@@ -899,7 +899,6 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="6277522088822131679">A apărut o problemă la printarea paginii. Încercați din nou.</translation>
 <translation id="6277722725779679269">Nu s-a putut actualiza Urmărește prețul</translation>
 <translation id="6278428485366576908">Temă</translation>
-<translation id="6293443105724342169">Lista conturilor de selectat deschisă la jumătate din înălțime.</translation>
 <translation id="6294610283659775533">Poți să trimiți file între dispozitivele conectate cu același Cont Google.</translation>
 <translation id="6297765934698848803">Organizația care îți gestionează dispozitivul ți-a dezactivat camera.</translation>
 <translation id="6301525844455696527">Fii la zi cu lista de lectură</translation>
@@ -1310,7 +1309,6 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="8461694314515752532">Criptează datele sincronizate folosind propria expresie de acces pentru sincronizare</translation>
 <translation id="8466613982764129868">Asigură-te că <ph name="TARGET_DEVICE_NAME" /> este conectat la internet</translation>
 <translation id="8473863474539038330">Adrese și altele</translation>
-<translation id="847656914027543776">Lista conturilor de selectat este închisă.</translation>
 <translation id="8481921391193215807">Când opțiunea este activată, site-urile pot folosi tehnicile de păstrare a confidențialității indicate aici pentru a-și pune la dispoziție conținutul și serviciile. Acestea includ alternative la urmărirea pe mai multe site-uri. În timp se pot adăuga mai multe versiuni de încercare.
 
 <ph name="BEGIN_LIST_ITEM1" />Advertiserii și editorii pot folosi tehnologia ÎFG.<ph name="END_LIST_ITEM1" />
@@ -1365,6 +1363,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="8683526617475118045">Beneficii</translation>
 <translation id="869891660844655955">Dată de expirare</translation>
 <translation id="8699120352855309748">Nu oferi traducerea pentru aceste limbi</translation>
+<translation id="8712637175834984815">Am înțeles</translation>
 <translation id="8725066075913043281">Încearcă din nou</translation>
 <translation id="8730621377337864115">Terminat</translation>
 <translation id="8746155870861185046">Distribuie selecția</translation>
@@ -1390,6 +1389,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="8881973373982641723">Șterge istoricul, inclusiv din caseta de căutare.</translation>
 <translation id="889338405075704026">Accesează setările Chrome</translation>
 <translation id="8898822736010347272">Trimite la Google adrese URL ale unor pagini pe care le accesezi, informații despre sistem limitate și o parte din conținutul paginii pentru a identifica amenințările noi și a proteja toți utilizatorii de pe web.</translation>
+<translation id="8906502871739599113">Reacția a fost dublată</translation>
 <translation id="8909135823018751308">Trimite…</translation>
 <translation id="8912362522468806198">Contul Google</translation>
 <translation id="8920114477895755567">Se așteaptă detaliile părinților.</translation>
@@ -1409,6 +1409,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="8970887620466824814">A apărut o eroare.</translation>
 <translation id="8972098258593396643">Descarci în dosarul prestabilit?</translation>
 <translation id="8987641763863173640">Gestionează setările pentru previzualizarea videoclipurilor</translation>
+<translation id="898854820045159673">Reacția a fost adăugată</translation>
 <translation id="8993760627012879038">Deschide o filă nouă în modul incognito</translation>
 <translation id="8996847606757455498">Alege alt furnizor</translation>
 <translation id="8998729206196772491">Te conectezi cu un cont gestionat de <ph name="MANAGED_DOMAIN" /> și acorzi administratorului acestuia controlul asupra datelor Chrome. Datele vor fi asociate definitiv acestui cont. Dacă te deconectezi de la Chrome, datele se vor șterge de pe acest dispozitiv, dar vor rămâne stocate în Contul Google.</translation>
@@ -1437,13 +1438,13 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="9108312223223904744">Compatibilitatea folosirii telefonului ca pe o cheie de securitate</translation>
 <translation id="9108808586816295166">Este posibil să nu fie disponibil oricând un DNS securizat</translation>
 <translation id="9133397713400217035">Explorează offline</translation>
-<translation id="9133523398139146080">Lista conturilor de selectat deschisă la înălțimea completă.</translation>
 <translation id="9137013805542155359">Afișează originalul</translation>
 <translation id="9148126808321036104">Conectează-te din nou</translation>
 <translation id="9155898266292537608">De asemenea, poți căuta atingând scurt un cuvânt</translation>
 <translation id="9158770349521403363">Trimite numai conținutul</translation>
 <translation id="916446198114569890">Adresele URL pe care le accesezi sunt salvate în Contul Google</translation>
 <translation id="9169507124922466868">Istoricul de navigare este pe jumătate deschis</translation>
+<translation id="9187955620966010988">Reacția a fost ajustată</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{A rulat acum un minut}few{A rulat acum # minute}other{A rulat acum # de minute}}</translation>
 <translation id="9204836675896933765">1 fișier rămas</translation>
 <translation id="9205933215779845960">Pagina nu a fost găsită. Verifică ortografierea sau încearcă o căutare pe <ph name="SEARCH_ENGINE" />.</translation>

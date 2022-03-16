@@ -256,6 +256,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2595239820337756193">5 km en millas</translation>
 <translation id="2596078834055697711">Fai unha captura de pantalla da ventá</translation>
 <translation id="2607678425161541573">É necesario iniciar sesión en liña</translation>
+<translation id="2620436844016719705">Sistema</translation>
 <translation id="2621713457727696555">Protexida</translation>
 <translation id="263399434338050016">"Selecciona todo"</translation>
 <translation id="2653019840645008922">Captura de ventá</translation>
@@ -351,6 +352,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="320207200541803018">Define o temporizador</translation>
 <translation id="3203405173652969239">Activouse o Acceso con interruptores</translation>
 <translation id="3207953481422525583">Configuración do usuario</translation>
+<translation id="3208321278970793882">Aplicación</translation>
 <translation id="3217205077783620295">O volume está activado. Utiliza o botón para silencialo.</translation>
 <translation id="3226991577105957773"><ph name="COUNT" /> máis</translation>
 <translation id="3227137524299004712">Micrófono</translation>
@@ -1035,6 +1037,7 @@ Nova instalación</translation>
 <translation id="7513622367902644023">Seleccionouse o modo de captura de pantalla</translation>
 <translation id="7513922695575567867">Calendario, semana do <ph name="DATE" />; nestes momentos está seleccionada a data <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Descargar</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7526573455193969409">É posible que se controle a rede</translation>
 <translation id="7536035074519304529">Enderezo IP: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">As aplicacións de Linux e as ventás do modo de incógnito agora mesmo non son compatibles. Gardaranse outras aplicacións.</translation>
@@ -1103,6 +1106,7 @@ Nova instalación</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Toca o sensor de impresión dixital</translation>
 <translation id="7904094684485781019">O administrador desta conta non permitiu o inicio de sesión múltiple.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7930731167419639574">O que se diga procésase de xeito local e o ditado funciona sen conexión</translation>
 <translation id="7933084174919150729">O Asistente de Google só está dispoñible para o perfil principal.</translation>
 <translation id="79341161159229895">A conta está xestionada por <ph name="FIRST_PARENT_EMAIL" /> e <ph name="SECOND_PARENT_EMAIL" /></translation>

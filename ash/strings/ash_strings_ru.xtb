@@ -258,6 +258,7 @@
 <translation id="2595239820337756193">5 миль в км</translation>
 <translation id="2596078834055697711">Сделать скриншот окна</translation>
 <translation id="2607678425161541573">Войдите в аккаунт в режиме онлайн</translation>
+<translation id="2620436844016719705">Система</translation>
 <translation id="2621713457727696555">Защищена</translation>
 <translation id="263399434338050016">"Выбрать все"</translation>
 <translation id="2653019840645008922">Съемка окна</translation>
@@ -354,6 +355,7 @@
 <translation id="320207200541803018">Установи таймер</translation>
 <translation id="3203405173652969239">Функция Switch Access включена</translation>
 <translation id="3207953481422525583">Пользовательские настройки</translation>
+<translation id="3208321278970793882">Приложение</translation>
 <translation id="3217205077783620295">Звук включен. Нажмите эту кнопку, чтобы отключить его.</translation>
 <translation id="3226991577105957773">Ещё <ph name="COUNT" /></translation>
 <translation id="3227137524299004712">Микрофон</translation>
@@ -1038,6 +1040,7 @@
 <translation id="7513622367902644023">Выбран режим создания скриншота</translation>
 <translation id="7513922695575567867">Календарь, неделя с <ph name="DATE" />, сейчас выбрано <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Скачать</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7526573455193969409">Сеть может отслеживаться</translation>
 <translation id="7536035074519304529">IP-адрес: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Приложения для Linux и окна в режиме инкогнито пока не поддерживаются. Остальные приложения будут сохранены.</translation>
@@ -1107,6 +1110,7 @@
 <translation id="7901405293566323524">Интерфейс Phone Hub</translation>
 <translation id="7902625623987030061">Коснитесь сканера отпечатков.</translation>
 <translation id="7904094684485781019">Администратор этого аккаунта запретил множественный вход</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7930731167419639574">Речь теперь обрабатывается на устройстве. Вы можете пользоваться голосовым вводом офлайн.</translation>
 <translation id="7933084174919150729">Google Ассистент доступен только в основном профиле</translation>
 <translation id="79341161159229895">Администраторы аккаунта: <ph name="FIRST_PARENT_EMAIL" /> и <ph name="SECOND_PARENT_EMAIL" /></translation>

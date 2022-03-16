@@ -1071,7 +1071,6 @@
 <translation id="2019718679933488176">&amp;Отваряне на аудиоклипа в нов раздел</translation>
 <translation id="2020183425253392403">Показване на настройките за мрежовия адрес</translation>
 <translation id="2020225359413970060">Сканиране на файла</translation>
-<translation id="2022395138980869975">Превключване на страничното търсене</translation>
 <translation id="2023167225947895179">Възможно е този ПИН да е лесен за отгатване</translation>
 <translation id="202352106777823113">Изтеглянето отнемаше твърде дълго време и бе спряно от мрежата.</translation>
 <translation id="2024195579772565064">Изтриване на търсещата машина</translation>
@@ -1340,6 +1339,7 @@
 <translation id="2278562042389100163">Отваряне на прозореца на браузъра</translation>
 <translation id="2278668501808246459">Мениджърът на контейнерите се стартира</translation>
 <translation id="2280486287150724112">Дясно поле</translation>
+<translation id="2281863813036651454">Кликване с левия бутон на мишката</translation>
 <translation id="2282146716419988068">Процес на графичния процесор</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{Отваряне на всички в &amp;нова група с раздели}=1{Отваряне в &amp;нова група с раздели}other{Отваряне на всички ({COUNT}) в &amp;нова група с раздели}}</translation>
 <translation id="2285942871162473373">Отпечатъкът ви не бе разпознат. Опитайте отново.</translation>
@@ -2972,7 +2972,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3888053818972567950">Връзка с(ъс) <ph name="WEB_DRIVE" /></translation>
 <translation id="3888550877729210209">Водене на бележки с/ъс <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">Тази информация ни помага да разберем по-добре проблема, който срещате с Асистент. Тя се съхранява до 90 дни и достъпът до нея е ограничен до съответните инженерни екипи и екипи по отзивите.</translation>
-<translation id="3888900458694486810">Затваряне на страничното търсене</translation>
 <translation id="3890064827463908288">Включете синхронизирането в Chrome, за да използвате синхронизирането на Wi-Fi</translation>
 <translation id="389313931326656921">Задаване на превключвател за „Напред“</translation>
 <translation id="3893295674388762059">За да изчистите данните, затворете всички прозорци в режим „инкогнито“</translation>
@@ -3286,7 +3285,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4208390505124702064">Търсене в/ъв <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Голям</translation>
 <translation id="4209251085232852247">Изключено</translation>
-<translation id="4209464433672152343">Документите <ph name="BEGIN_LINK_HELP" />се изпращат до Google<ph name="END_LINK_HELP" /> с цел подготовката им за отпечатване. Преглеждайте, редактирайте и управлявайте принтерите си и историята им от <ph name="BEGIN_LINK_DASHBOARD" />таблото за управление на Google Отпечатване в облак<ph name="END_LINK_DASHBOARD" />.</translation>
 <translation id="4210048056321123003">Виртуалната машина се изтегля</translation>
 <translation id="421182450098841253">&amp;Показване на лентата на отметките</translation>
 <translation id="4211851069413100178">Изпращане на данни за употребата и диагностиката. Помогнете за подобряването на работата си с Android, като автоматично изпращате до Google диагностична информация и данни за употребата на устройството и приложенията. Това ще послужи за подобряване на стабилността на системата и приложенията и др. Някои обобщени данни също така ще подпомогнат приложенията и партньорите на Google, напр. програмистите за Android. Тази <ph name="BEGIN_LINK1" />настройка<ph name="END_LINK1" /> е наложена от собственика. Той може да избере до Google да се изпращат диагностична информация и данни за употребата на това устройство. Ако настройката „Допълнителна активност в мрежата и приложенията“ е включена за вас, тези данни може да се запазват в профила ви в Google. <ph name="BEGIN_LINK2" />Научете повече<ph name="END_LINK2" /></translation>
@@ -5159,6 +5157,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6129938384427316298">Коментар на сертификат на Netscape</translation>
 <translation id="6129953537138746214">Интервал</translation>
 <translation id="6130692320435119637">Добавяне на Wi-Fi</translation>
+<translation id="6130887916931372608">Клавиш от клавиатурата</translation>
 <translation id="6136114942382973861">Затваряне на лентата на изтеглянето</translation>
 <translation id="6136287496450963112">Ключът ви за сигурност не е защитен с ПИН. За да управлявате отпечатъците, първо създайте ПИН.</translation>
 <translation id="6138680304137685902">Подпис по X9.62 ECDSA с SHA-384</translation>
@@ -6181,7 +6180,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7180611975245234373">Опресняване</translation>
 <translation id="7180865173735832675">Персонализиране</translation>
 <translation id="7182791023900310535">Преместване на паролата ви</translation>
-<translation id="7183420126213758623">Превключване на страничното търсене. То не е активирано.</translation>
 <translation id="7186088072322679094">Запазване в лентата с инструменти</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> не може да отваря тази папка, защото тя съдържа системни файлове</translation>
 <translation id="7187428571767585875">Записи в системния регистър, които ще бъдат премахнати или променени:</translation>
@@ -6703,7 +6701,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7701040980221191251">Няма</translation>
 <translation id="7701869757853594372">Манипулатори за потребителски обекти</translation>
 <translation id="7702574632857388784">Премахване на „<ph name="FILE_NAME" />“ от списъка</translation>
-<translation id="7702599324215660661">Lock on Leave</translation>
 <translation id="7702907602086592255">Домейн</translation>
 <translation id="7704305437604973648">Задача</translation>
 <translation id="7704317875155739195">Автоматично довършване на заявки за търсене и URL адреси</translation>
@@ -6773,6 +6770,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7768770796815395237">Промяна</translation>
 <translation id="7768784765476638775">Прочитане на глас</translation>
 <translation id="7770406201819593386">Провеждане на диагностични тестове на ChromeOS Flex.</translation>
+<translation id="7770450735129978837">Кликване с десния бутон на мишката</translation>
 <translation id="7770612696274572992">Изображение, копирано от друго устройство</translation>
 <translation id="7771452384635174008">Ориентация</translation>
 <translation id="7772032839648071052">Потвърдете пропуска</translation>
@@ -6809,7 +6807,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7798844538707273832">„<ph name="PERMISSION" />“ е блокирано автоматично</translation>
 <translation id="7799299114731150374">Тапетът бе зададен успешно</translation>
 <translation id="7799817062559422778">Светъл режим</translation>
-<translation id="7800159967992492578">Превключване на страничното търсене. То е активирано.</translation>
 <translation id="7800518121066352902">Завъртане о&amp;братно на часовниковата стрелка</translation>
 <translation id="7801679634091975683">Промените тук важат само за браузъра Lacros Chrome. За да промените настройките на браузъра Chrome, отворете ги в този браузър.</translation>
 <translation id="780301667611848630">Не, благодаря</translation>

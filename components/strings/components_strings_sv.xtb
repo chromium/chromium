@@ -115,7 +115,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1301324364792935241">Kontrollera inställningarna för den säkra DNS-konfigurationen</translation>
 <translation id="1307966114820526988">Utfasade funktioner</translation>
 <translation id="1308113895091915999">Tillgängligt erbjudande</translation>
-<translation id="1312803275555673949">Vad finns det för belägg för detta?</translation>
 <translation id="1314311879718644478">Visa innehåll med förstärkt verklighet</translation>
 <translation id="1314509827145471431">Bindning till höger</translation>
 <translation id="1318023360584041678">Sparades i en flikgrupp</translation>
@@ -740,7 +739,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="324180406144491771"><ph name="HOST_NAME" />-länkarna har blockerats</translation>
 <translation id="3249845759089040423">Tuff</translation>
 <translation id="3252266817569339921">franska</translation>
-<translation id="3257954757204451555">Vem står bakom informationen?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />: tryck på Tabb och sedan på Retur om du snabbt vill skapa en ny händelse i Google Kalender</translation>
 <translation id="3261488570342242926">Läs mer om virtuella kort</translation>
 <translation id="3264837738038045344">Knappen Hantera inställningar för Chrome: tryck på Retur om du vill öppna Chrome-inställningarna</translation>
@@ -1128,6 +1126,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4414515549596849729">cookies och webbplatsdata</translation>
 <translation id="4415426530740016218">Hämtningsadress</translation>
 <translation id="4424024547088906515">Servern kunde inte bevisa att den är <ph name="DOMAIN" /> eftersom Chrome inte litar på dess säkerhetscertifikat. Detta kan orsakas av en felaktig konfigurering eller att någon spärrar anslutningen.</translation>
+<translation id="4428065317363009941">Personliga annonspreferenser</translation>
 <translation id="443121186588148776">Serieport</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> godkände inte inloggningscertifikatet eller så har inget inloggningscertifikat angetts.</translation>
 <translation id="4432792777822557199">Sidor på <ph name="SOURCE_LANGUAGE" /> översätts till <ph name="TARGET_LANGUAGE" /> från och med nu</translation>
@@ -1260,7 +1259,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4838327282952368871">Drömsk</translation>
 <translation id="4840250757394056958">Visa Chrome-historiken</translation>
 <translation id="484462545196658690">Auto</translation>
-<translation id="4849865131988503897">Precisionskontroll</translation>
 <translation id="4850886885716139402">Visa</translation>
 <translation id="485316830061041779">tyska</translation>
 <translation id="4853901935952445031">Denna webbplats kan inte använda U2F API efter februari 2022. Om det är din webbplats bör du göra om den så att Web Authentication API används.</translation>
@@ -1447,6 +1445,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5398772614898833570">Annonser blockeras</translation>
 <translation id="5400836586163650660">Grå</translation>
 <translation id="540969355065856584">Servern kunde inte bevisa att det är <ph name="DOMAIN" />. Dess säkerhetscertifikat är inte giltigt för närvarande. Detta kan bero på en felaktig konfiguration eller att någon kapat din anslutning.</translation>
+<translation id="5412236728747081950">Den här webbplatsen hämtar dina intressen från Chrome för att visa mer relevanta annonser för dig</translation>
 <translation id="541416427766103491">Utmatningsfack 4</translation>
 <translation id="5421136146218899937">Ta bort webbinformation...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> vill skicka aviseringar</translation>
@@ -1963,7 +1962,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> följer inte säkerhetsstandarderna.</translation>
 <translation id="7210993021468939304">Linux-aktivitet i behållaren och kan installera och köra Linux-appar i behållaren</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /> om problemet.</translation>
-<translation id="7215025035562547931">Fundera över hur tillförlitligt detta är</translation>
 <translation id="7217745192097460130">Vill du verifiera och slutföra köpet med Touch ID?</translation>
 <translation id="7219179957768738017">För anslutningen används <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Bearbetning pågår</translation>
@@ -2093,6 +2091,7 @@ Mer information.
 <translation id="7569952961197462199">Vill du ta bort kreditkortet från Chrome?</translation>
 <translation id="7569983096843329377">Svart</translation>
 <translation id="7575207903026901870">Knappen Ta bort förslag, tryck på retur om du vill ta bort förslaget</translation>
+<translation id="7577900504646297215">Hantera intressen</translation>
 <translation id="7578104083680115302">Betala snabbt på webbplatser och i appar på olika enheter med kort som du har sparat hos Google.</translation>
 <translation id="7581199239021537589">Sida 2 bild Y – byte</translation>
 <translation id="7582602800368606489">Skapa en ny händelse i Google Kalender snabbt</translation>
@@ -2213,7 +2212,6 @@ Mer information.
 <translation id="7966803981046576691">Kontotyp för utskriften</translation>
 <translation id="79682505114836835"><ph name="VALUE" /> är ett ogiltigt hexadecimalt värde för en färg.</translation>
 <translation id="7968982339740310781">Visa information</translation>
-<translation id="7970392640816874403">Vad säger andra källor?</translation>
 <translation id="7976214039405368314">För många begäranden</translation>
 <translation id="7977538094055660992">Utmatningsenhet</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -2565,7 +2563,6 @@ Mer information:
 <translation id="9155211586651734179">Ansluten kringutrustning för ljud</translation>
 <translation id="9157595877708044936">Konfigurerar...</translation>
 <translation id="9158625974267017556">C6 (kuvert)</translation>
-<translation id="9164029392738894042">Precisionskontroll</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">Tillåt att webbplatser kontrollerar om du har sparade betalningsmetoder</translation>
 <translation id="9169664750068251925">Blockera alltid den här webbplatsen</translation>

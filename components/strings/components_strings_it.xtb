@@ -115,7 +115,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1301324364792935241">Controlla le impostazioni del sistema DNS sicuro</translation>
 <translation id="1307966114820526988">Funzionalità obsolete</translation>
 <translation id="1308113895091915999">Offerta disponibile</translation>
-<translation id="1312803275555673949">Quali prove ci sono a supporto?</translation>
 <translation id="1314311879718644478">Visualizza contenuti di realtà aumentata</translation>
 <translation id="1314509827145471431">Rilegatura a destra</translation>
 <translation id="1318023360584041678">Salvato nel gruppo di schede</translation>
@@ -737,7 +736,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="324180406144491771">I link "<ph name="HOST_NAME" />" sono bloccati</translation>
 <translation id="3249845759089040423">Alla moda</translation>
 <translation id="3252266817569339921">Francese</translation>
-<translation id="3257954757204451555">Chi c'è dietro a questa informazione?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab e poi Invio per creare rapidamente un nuovo evento in Google Calendar</translation>
 <translation id="3261488570342242926">Scopri di più sulle carte virtuali</translation>
 <translation id="3264837738038045344">Pulsante Gestisci le impostazioni di Chrome, premi Invio per visitare le tue impostazioni di Chrome</translation>
@@ -1125,6 +1123,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4414515549596849729">cookie e dati dei siti</translation>
 <translation id="4415426530740016218">Indirizzo di ritiro</translation>
 <translation id="4424024547088906515">Questo server non è riuscito a dimostrare che si tratta di <ph name="DOMAIN" />; il relativo certificato di sicurezza non è considerato attendibile da Chrome. Il problema potrebbe essere dovuto a un'errata configurazione o a un malintenzionato che intercetta la connessione.</translation>
+<translation id="4428065317363009941">Personalizzazione degli annunci</translation>
 <translation id="443121186588148776">Porta seriale</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> non ha accettato il certificato di accesso oppure non ne è stato fornito uno.</translation>
 <translation id="4432792777822557199">Le pagine in <ph name="SOURCE_LANGUAGE" /> verranno tradotte in <ph name="TARGET_LANGUAGE" /> d'ora in poi</translation>
@@ -1257,7 +1256,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4838327282952368871">Surreale</translation>
 <translation id="4840250757394056958">Visualizza la tua cronologia di Chrome</translation>
 <translation id="484462545196658690">Automatico</translation>
-<translation id="4849865131988503897">Controllo accuratezza</translation>
 <translation id="4850886885716139402">Visualizza</translation>
 <translation id="485316830061041779">Tedesco</translation>
 <translation id="4853901935952445031">Questo sito non potrà usare l'API U2F dopo febbraio 2022. Se sei proprietario del sito, dovresti cambiarlo per usare l'API Web Authentication.</translation>
@@ -1444,6 +1442,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5398772614898833570">Annunci bloccati</translation>
 <translation id="5400836586163650660">Grigio</translation>
 <translation id="540969355065856584">Questo server non è riuscito a verificare che si tratta di <ph name="DOMAIN" />; il relativo certificato di sicurezza non è considerato valido in questa fase. Il problema potrebbe essere dovuto a un'errata configurazione o a un malintenzionato che ha intercettato la connessione.</translation>
+<translation id="5412236728747081950">Questo sito acquisisce i tuoi interessi da Chrome per mostrarti annunci più pertinenti</translation>
 <translation id="541416427766103491">Fascicolatore 4</translation>
 <translation id="5421136146218899937">Cancella dati di navigazione...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> vuole inviarti notifiche</translation>
@@ -1959,7 +1958,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> non è conforme agli standard di sicurezza.</translation>
 <translation id="7210993021468939304">Attività Linux all'interno del container; possono installare ed eseguire app Linux all'interno del container</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /> su questo problema.</translation>
-<translation id="7215025035562547931">Dedica un istante alla valutazione della precisione</translation>
 <translation id="7217745192097460130">Vuoi usare Touch ID per verificare e completare l'acquisto?</translation>
 <translation id="7219179957768738017">La connessione utilizza <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Elaborazione in corso</translation>
@@ -2089,7 +2087,9 @@ Ulteriori dettagli:
 <translation id="7569952961197462199">Rimuovere la carta di credito da Chrome?</translation>
 <translation id="7569983096843329377">Nero</translation>
 <translation id="7575207903026901870">Rimuovi il pulsante Suggerimento, premi INVIO per rimuovere questo suggerimento</translation>
+<translation id="7577900504646297215">Gestisci interessi</translation>
 <translation id="7578104083680115302">Paga velocemente su siti e app su più dispositivi utilizzando le carte salvate su Google.</translation>
+<translation id="7579442726219254162">Variabile sconosciuta "<ph name="VARIABLE" />" nella configurazione gestita di "<ph name="APPLICATION_ID" />".</translation>
 <translation id="7581199239021537589">Spostamento Y lato 2 immagine</translation>
 <translation id="7582602800368606489">Crea rapidamente un nuovo evento in Google Calendar</translation>
 <translation id="7591288787774558753">Vuoi condividere contenuti riservati?</translation>
@@ -2209,7 +2209,6 @@ Ulteriori dettagli:
 <translation id="7966803981046576691">Tipo di account lavoro</translation>
 <translation id="79682505114836835">Il valore "<ph name="VALUE" />" è un colore esadecimale non valido.</translation>
 <translation id="7968982339740310781">Mostra dettagli</translation>
-<translation id="7970392640816874403">Cosa dicono le altre fonti?</translation>
 <translation id="7976214039405368314">Numero eccessivo di richieste</translation>
 <translation id="7977538094055660992">Dispositivo di uscita</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -2561,7 +2560,6 @@ Ulteriori dettagli:
 <translation id="9155211586651734179">Periferiche audio collegate</translation>
 <translation id="9157595877708044936">Configurazione in corso...</translation>
 <translation id="9158625974267017556">C6 (Envelope)</translation>
-<translation id="9164029392738894042">Controllo accuratezza</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">Consenti ai siti di controllare se hai metodi di pagamento salvati</translation>
 <translation id="9169664750068251925">Blocca sempre su questo sito</translation>

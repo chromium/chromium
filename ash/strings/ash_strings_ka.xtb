@@ -125,6 +125,7 @@
 <translation id="1668469839109562275">ჩაშენებული VPN</translation>
 <translation id="1677472565718498478">დარჩენილია <ph name="TIME" /></translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> არ არის დაკავშირებული.</translation>
+<translation id="1677582821739292812">ვიღაც უყურებს თქვენს ეკრანს</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" />-იანი ტაიმერი · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 მისამართი: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">აქტიური ფანჯარა ჩამაგრებულია მარცხნივ.</translation>
@@ -258,6 +259,7 @@
 <translation id="2595239820337756193">5K მილებში</translation>
 <translation id="2596078834055697711">ფანჯრის ანაბეჭდის გადაღება</translation>
 <translation id="2607678425161541573">საჭიროა სიტემაში ონლაინ შესვლა</translation>
+<translation id="2620436844016719705">სისტემა</translation>
 <translation id="2621713457727696555">დაცული</translation>
 <translation id="263399434338050016">"ყველას არჩევა"</translation>
 <translation id="2653019840645008922">ფანჯრის აღბეჭდვა</translation>
@@ -354,6 +356,7 @@
 <translation id="320207200541803018">ტაიმერის დაყენება</translation>
 <translation id="3203405173652969239">გადამრთველით წვდომა ჩართულია</translation>
 <translation id="3207953481422525583">მომხმარებლის პარამეტრები</translation>
+<translation id="3208321278970793882">აპი</translation>
 <translation id="3217205077783620295">ხმა ჩართულია, გადართვისას აუდიო დადუმდება.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> სხვა</translation>
 <translation id="3227137524299004712">მიკროფონი</translation>
@@ -1038,6 +1041,7 @@
 <translation id="7513622367902644023">არჩეულია ეკრანის ანაბეჭდის რეჟიმი</translation>
 <translation id="7513922695575567867">კალენდარი, <ph name="DATE" />-ის კვირა, ამჟამად არჩეულია <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">ჩამოტვირთვა</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7526573455193969409">ქსელზე შესაძლოა ხორციელდებოდეს მონიტორინგი</translation>
 <translation id="7536035074519304529">IP მისამართი: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Linux აპები და ინკოგნიტო ფანჯრები ამჟამად მხარდაუჭერელია. სხვა აპები შეინახება.</translation>
@@ -1107,6 +1111,7 @@
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">შეეხეთ თითის ანაბეჭდის სენსორს</translation>
 <translation id="7904094684485781019">ამ ანგარიშის ადმინისტრატორმა აკრძალა სისტემაში ერთდროული შესვლა.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7930731167419639574">მეტყველება ახლა მუშავდება ადგილობრივად, კარნახი კი მუშაობს ხაზგარეშე რეჟიმში</translation>
 <translation id="7933084174919150729">Google ასისტენტი ხელმისაწვდომია მხოლოდ ძირითადი პროფილისთვის.</translation>
 <translation id="79341161159229895">ანგარიშს მართავენ <ph name="FIRST_PARENT_EMAIL" /> და <ph name="SECOND_PARENT_EMAIL" /></translation>

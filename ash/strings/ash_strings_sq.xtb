@@ -31,6 +31,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1150989369772528668">Kalendari</translation>
 <translation id="1153356358378277386">Pajisjet e çiftuara</translation>
 <translation id="1165712434476988950">Kërkohet rinisja e pajisjes për të zbatuar përditësimin.</translation>
+<translation id="1171742223880403396">Kablloja jote USB-C mund të mos lidhet siç duhet me ekranet</translation>
 <translation id="1175572348579024023">Lëviz</translation>
 <translation id="1178581264944972037">Pauzë</translation>
 <translation id="1181037720776840403">Hiq</translation>
@@ -256,6 +257,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2595239820337756193">Sa milje janë 5 km</translation>
 <translation id="2596078834055697711">Nxirr një pamje ekrani për dritaren</translation>
 <translation id="2607678425161541573">Kërkohet identifikim në linjë</translation>
+<translation id="2620436844016719705">Sistemi</translation>
 <translation id="2621713457727696555">I siguruar</translation>
 <translation id="263399434338050016">"Zgjidh të gjitha"</translation>
 <translation id="2653019840645008922">Regjistrimi i dritares</translation>
@@ -351,6 +353,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="320207200541803018">Cakto kohëmatësin</translation>
 <translation id="3203405173652969239">"Qasja me çelës" është aktivizuar</translation>
 <translation id="3207953481422525583">Cilësimet e përdoruesit</translation>
+<translation id="3208321278970793882">Aplikacioni</translation>
 <translation id="3217205077783620295">Volumi është aktiv. Ndërrimi do ta heqë audion.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> më shumë</translation>
 <translation id="3227137524299004712">Mikrofoni</translation>
@@ -1034,6 +1037,7 @@ Instalim i ri</translation>
 <translation id="7513622367902644023">U zgjodh modaliteti i pamjes së ekranit</translation>
 <translation id="7513922695575567867">Kalendari, java e datës <ph name="DATE" />, aktualisht është zgjedhur <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Shkarko</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7526573455193969409">Rrjeti mund të jetë i monitoruar</translation>
 <translation id="7536035074519304529">Adresa IP: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Aplikacionet për Linux dhe dritaret "E fshehta" nuk mbështeten aktualisht. Aplikacionet e tjera do të ruhen.</translation>
@@ -1102,6 +1106,7 @@ Instalim i ri</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Prek sensorin e gjurmës së gishtit</translation>
 <translation id="7904094684485781019">Administratori për këtë faqe ka ndaluar identifikimin e shumëfishtë.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7930731167419639574">Ligjërimi përpunohet tani lokalisht dhe "Diktimi" punon jashtë linje</translation>
 <translation id="7933084174919150729">"Asistenti i Google" ofrohet vetëm për profilin kryesor.</translation>
 <translation id="79341161159229895">Llogaria menaxhohet nga <ph name="FIRST_PARENT_EMAIL" /> dhe <ph name="SECOND_PARENT_EMAIL" /></translation>

@@ -115,7 +115,6 @@
 <translation id="1301324364792935241">Праверце налады абароненай DNS</translation>
 <translation id="1307966114820526988">Састарэлыя функцыі</translation>
 <translation id="1308113895091915999">Ёсць прапанова</translation>
-<translation id="1312803275555673949">Што пацвярджае гэту інфармацыю?</translation>
 <translation id="1314311879718644478">Праглядайце змесціва ў рэжыме дапоўненай рэальнасці</translation>
 <translation id="1314509827145471431">Пераплёт справа</translation>
 <translation id="1318023360584041678">Захавана ў групе ўкладак</translation>
@@ -740,7 +739,6 @@
 <translation id="324180406144491771">Спасылкі "<ph name="HOST_NAME" />" заблакіраваны</translation>
 <translation id="3249845759089040423">Стыльны</translation>
 <translation id="3252266817569339921">Французская</translation>
-<translation id="3257954757204451555">Ад каго атрымана гэта інфармацыя?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб хутка стварыць новую падзею ў Google Календары, націсніце Tab, затым Enter</translation>
 <translation id="3261488570342242926">Даведацца больш пра віртуальныя карткі</translation>
 <translation id="3264837738038045344">Кнопка "Кіраваць наладамі Chrome". Каб адкрыць налады Chrome, націсніце Enter</translation>
@@ -1127,6 +1125,7 @@
 <translation id="4414515549596849729">файлы сookie і даныя сайтаў</translation>
 <translation id="4415426530740016218">Адрас атрымання</translation>
 <translation id="4424024547088906515">Серверу не ўдалося даказаць, што гэта <ph name="DOMAIN" />; Chrome не давярае яго сертыфікату бяспекі. Прычынай могуць быць няправільныя налады або зламыснік, які спрабуе перахапіць падключэнне.</translation>
+<translation id="4428065317363009941">Персаналізацыя рэкламы</translation>
 <translation id="443121186588148776">Паслядоўны порт</translation>
 <translation id="4432688616882109544">Хост <ph name="HOST_NAME" /> не прыняў або не атрымаў ваш сертыфікат уваходу.</translation>
 <translation id="4432792777822557199">Цяпер старонкі на мове <ph name="SOURCE_LANGUAGE" /> будуць перакладацца на мову <ph name="TARGET_LANGUAGE" /></translation>
@@ -1259,7 +1258,6 @@
 <translation id="4838327282952368871">Летуценны</translation>
 <translation id="4840250757394056958">Праглядзець гісторыю Chrome</translation>
 <translation id="484462545196658690">Аўтаматычна</translation>
-<translation id="4849865131988503897">Праверка дакладнасці</translation>
 <translation id="4850886885716139402">Праглядзець</translation>
 <translation id="485316830061041779">Нямецкая</translation>
 <translation id="4853901935952445031">З лютага 2022 года гэты сайт не зможа выкарыстоўваць U2F API. Калі вы з'яўляецеся ўладальнікам сайта, вам трэба адаптаваць яго да выкарыстання Web Authentication API.</translation>
@@ -1446,6 +1444,7 @@
 <translation id="5398772614898833570">Рэклама заблакіравана</translation>
 <translation id="5400836586163650660">Шэры</translation>
 <translation id="540969355065856584">Серверу не ўдалося даказаць, што гэта <ph name="DOMAIN" />; сертыфікат бяспекі гэтага сайта не распазнаецца як сапраўдны. Прычынай могуць быць няправільныя налады або зламыснік, які спрабуе перахапіць падключэнне.</translation>
+<translation id="5412236728747081950">Гэты сайт выкарыстоўвае інфармацыю пра вашы дзеянні ў Chrome, каб паказваць вам больш адпаведную вашым інтарэсам рэкламу</translation>
 <translation id="541416427766103491">Укладчык 4</translation>
 <translation id="5421136146218899937">Выдаліць гісторыю праглядаў...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> запытвае дазвол адпраўляць вам апавяшчэнні</translation>
@@ -1962,7 +1961,6 @@
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> не адпавядае стандартам бяспекі.</translation>
 <translation id="7210993021468939304">Дзеянні Linux у кантэйнеры, а таксама ўсталёўка і запуск праграм Linux у кантэйнеры</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /> пра гэту праблему.</translation>
-<translation id="7215025035562547931">Знайдзіце хвілінку, каб упэўніцца ў дакладнасці інфармацыі</translation>
 <translation id="7217745192097460130">Пацвердзіць і завяршыць куплю з дапамогай Touch ID?</translation>
 <translation id="7219179957768738017">На падключэнні выкарыстоўваецца <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Ідзе апрацоўка</translation>
@@ -2093,6 +2091,7 @@
 <translation id="7569952961197462199">Выдаліць крэдытную карту з Chrome?</translation>
 <translation id="7569983096843329377">Чорны</translation>
 <translation id="7575207903026901870">Кнопка "Выдаліць прапанову". Каб выдаліць прапанову, націсніце Enter.</translation>
+<translation id="7577900504646297215">Кіраваць інтарэсамі</translation>
 <translation id="7578104083680115302">Хуткая аплата на сайтах і ў праграмах з розных прылад карткамі, захаванымі ў сэрвісах Google.</translation>
 <translation id="7581199239021537589">Зрух відарыса па восі Y, бок 2</translation>
 <translation id="7582602800368606489">Хутка стварыць новую падзею ў Google Календары</translation>
@@ -2213,7 +2212,6 @@
 <translation id="7966803981046576691">Тып уліковага запісу задання</translation>
 <translation id="79682505114836835">Значэнне <ph name="VALUE" /> не з'яўляецца правільным шаснаццатковым кодам колеру.</translation>
 <translation id="7968982339740310781">Паказаць падрабязныя звесткі</translation>
-<translation id="7970392640816874403">Што паведамляюць іншыя крыніцы?</translation>
 <translation id="7976214039405368314">Занадта шмат запытаў</translation>
 <translation id="7977538094055660992">Прылада вываду</translation>
 <translation id="7977894662897852582">EDP</translation>
@@ -2564,7 +2562,6 @@
 <translation id="9155211586651734179">Якія перыферыйныя прылады падключаны</translation>
 <translation id="9157595877708044936">Ідзе наладжванне...</translation>
 <translation id="9158625974267017556">C6 (канверт)</translation>
-<translation id="9164029392738894042">Праверка дакладнасці</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">Дазволіць сайтам правяраць, ці ёсць у вас захаваныя спосабы аплаты</translation>
 <translation id="9169664750068251925">Заўсёды блакіраваць на гэтым сайце</translation>

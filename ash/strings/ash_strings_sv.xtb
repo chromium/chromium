@@ -256,6 +256,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2595239820337756193">5 km i miles</translation>
 <translation id="2596078834055697711">Ta en skärmbild av fönstret</translation>
 <translation id="2607678425161541573">Onlineinloggning krävs</translation>
+<translation id="2620436844016719705">System</translation>
 <translation id="2621713457727696555">Skyddat</translation>
 <translation id="263399434338050016">”Markera allt”</translation>
 <translation id="2653019840645008922">Skärmbild/skärminspelning av fönster</translation>
@@ -351,6 +352,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="320207200541803018">Ställ in timer</translation>
 <translation id="3203405173652969239">Brytarstyrning har aktiverats</translation>
 <translation id="3207953481422525583">Användarinställningar</translation>
+<translation id="3208321278970793882">App</translation>
 <translation id="3217205077783620295">Ljudet är på. Om du ändrar läge stängs ljudet av.</translation>
 <translation id="3226991577105957773">och <ph name="COUNT" /> till</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -1034,6 +1036,7 @@ Nyligen installerad</translation>
 <translation id="7513622367902644023">Skärmbildsläget har valts</translation>
 <translation id="7513922695575567867">Kalender, veckan med den <ph name="DATE" />, just nu är <ph name="SELECTED_DATE" /> markerat.</translation>
 <translation id="7514365320538308">Ladda ned</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7526573455193969409">Nätverket kan vara övervakat</translation>
 <translation id="7536035074519304529">IP-adress: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Linux-appar och inkognitofönster stöds inte för närvarande. Andra appar sparas.</translation>
@@ -1102,6 +1105,7 @@ Nyligen installerad</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Tryck på fingeravtryckssensorn</translation>
 <translation id="7904094684485781019">Administratören för kontot tillåter inte multiinloggning.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7930731167419639574">Nu bearbetas tal lokalt och diktering kan användas offline.</translation>
 <translation id="7933084174919150729">Endast den primära profilen har tillgång till Google Assistent.</translation>
 <translation id="79341161159229895">Kontot hanteras av <ph name="FIRST_PARENT_EMAIL" /> och <ph name="SECOND_PARENT_EMAIL" /></translation>

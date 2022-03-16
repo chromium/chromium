@@ -190,7 +190,6 @@
 <translation id="1223789468190631420">信任來源的安全瀏覽功能啟用狀態</translation>
 <translation id="123018742985150697">要求比對本機使用者和遠端存取主機擁有者</translation>
 <translation id="123081309365616809">允許將內容投放至裝置</translation>
-<translation id="1239411164172567974">啟用 Direct Sockets API。</translation>
 <translation id="1239526922294123540">控管是否允許網站以不安全的方式，向更私密的網路端點傳送要求。如果將這項政策設為 True，系統會為所有來源停用<ph name="PRIVATE_NETWORK_ACCESS" />檢查。這可能會讓攻擊者有機會對私人網路伺服器執行 <ph name="CSRF" /> 攻擊。
 
           如果不設定這項政策或設為 False，向更私密的網路端點傳送要求的預設行為將取決於使用者對 <ph name="BLOCK_INSECURE_PRIVATE_NETWORK_REQUESTS_FEATURE_NAME" />、<ph name="PRIVATE_NETWORK_ACCESS_SEND_PREFLIGHTS_FEATURE_NAME" /> 和 <ph name="PRIVATE_NETWORK_ACCESS_RESPECT_PREFLIGHT_RESULTS_FEATURE_NAME" /> 功能旗標的個人設定，使用者可以透過實際測試或指令列來進行設定。
@@ -990,7 +989,6 @@
 <translation id="208623333578980446">允許電源管理的螢幕 Wake Lock</translation>
 <translation id="2086944573376916479">受管理帳戶必須是主要帳戶，而且不能有次要帳戶。</translation>
 <translation id="2089541797660774692">啟用受管理瀏覽器的雲端報告功能</translation>
-<translation id="2090304907729569435">停止在瀏覽器側邊面板中顯示 <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> 搜尋結果。</translation>
 <translation id="2090939118981888335">如果將這項政策設為啟用，代表允許使用資料壓縮 Proxy。如果將這項政策設為停用，則代表禁止使用該 Proxy。
 
       如果設定這項政策，使用者將無法變更設定。如果不設定，使用者可選擇使用該功能。</translation>
@@ -1036,6 +1034,7 @@
       如果未設定 <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" /> 政策，搜尋引擎不會有任何圖示。</translation>
 <translation id="2145735238144543545">必須提供用戶端憑證</translation>
 <translation id="2146103669166779785">系統會根據這個十六進位顏色產生主題，並套用至瀏覽器。</translation>
+<translation id="2148769554831004951">強制將 WebSQL 啟用。</translation>
 <translation id="214901426630414675">限制使用雙面列印模式</translation>
 <translation id="2149330464730004005">啟用彩色列印</translation>
 <translation id="2149592087996467903">禁止 WebRTC 使用過時的 TLS/DTLS 版本</translation>
@@ -1747,7 +1746,6 @@
 
       如果將這項政策設為停用，則會禁止更新元件。不過，部分元件不受本政策規範：只要元件更新不含可執行的程式碼，且對瀏覽器安全性至關重要，就不會遭到禁止。
       舉例來說，憑證撤銷清單和子資源篩選器等元件不會受到這項政策影響。</translation>
-<translation id="2939988360019366928">允許瀏覽器側邊面板顯示最新的 <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> 搜尋結果</translation>
 <translation id="2940127076681735544">如果將這項政策設為有效的網址，<ph name="PRODUCT_NAME" /> 會從該網址下載網站清單，然後按照 <ph name="SITELIST_POLICY_NAME" /> 政策中的設定套用規則。
 
       如果未設定 (或設為無效網址)，<ph name="PRODUCT_NAME" /> 不會使用這項政策做為切換瀏覽器的規則來源。
@@ -3486,9 +3484,6 @@
       如果將這項政策設為停用，系統會禁止 <ph name="PRODUCT_NAME" /> 傳送這類查詢。</translation>
 <translation id="5039110755072335605">CORS 非萬用字元要求標頭支援</translation>
 <translation id="504116558738617678">只有在裝置未受管理或只有一位使用者時，才顯示磁碟空間不足的警告</translation>
-<translation id="5049105847726444023">將這項政策設為 Enabled 或不予設定，代表使用者可透過工具列上的切換圖示開啟側邊面板，查看 <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> 搜尋結果。
-
-      將這項政策設為 Disabled 時，則系統會針對顯示 <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> 搜尋結果的側邊面板，將其開啟圖示從工具列移除。</translation>
 <translation id="5052278640307929670">當所選政策的來源不同，但具有相同的範圍和層級時，你可以透過這項政策允許合併。
 
         如果清單中的某項政策發生來源衝突：
@@ -4582,6 +4577,7 @@
           指定政策值時需以毫秒為單位。設定值必須小於或等於閒置延遲時間。
 
           只有當閒置動作設為登出或關機時，系統才會顯示警告訊息。</translation>
+<translation id="6331172765821724350">允許透過 Chrome 旗標將 WebSQL 停用。</translation>
 <translation id="6331943515692769234">強制採用舊版 User-Agent GREASE 演算法。</translation>
 <translation id="6332546092866098577">禁止這些網站透過 File System API 進行讀取</translation>
 <translation id="6334330017384340264">這項政策會指定哪些應用程式和網址應加入個別應用程式使用限制的許可清單。
@@ -5605,9 +5601,6 @@
 <translation id="7459601923199346224">控管憑證管理的使用者和裝置政策。</translation>
 <translation id="7459633275230216698">允許顯示檔案選取對話方塊</translation>
 <translation id="7464991223784276288">將來自相符網址的 Cookie 限制在目前的工作階段中</translation>
-<translation id="7466522266556143347">如果將這項政策設為 Enabled，在滿足所有其他必要條件的情況下，使用者就能使用 Direct Sockets API。
-      如果將這項政策設為 Enabled，代表使用者將無法存取這個 API。
-      如果不設定這項政策，在預設情況下，受企業管理的使用者將無法使用這項功能，其他一般使用者則可使用這項功能。</translation>
 <translation id="7468182772656807573">你可以透過這項政策，決定監控網路封包的傳送頻率 (以毫秒為單位)。間隔範圍須介於 30 秒到 24 小時之間。系統會將超出範圍的值調整到範圍內。
 
       如果未設定，系統會套用 3 分鐘的預設間隔。</translation>
@@ -6086,7 +6079,6 @@
 
       如果不設定這項政策，系統會啟用網路預測功能，但使用者可以自行變更。</translation>
 <translation id="7956210013490975468">設定 <ph name="PRODUCT_OS_NAME" />的系統 Proxy 服務。</translation>
-<translation id="7958340569967087581">允許瀏覽器側邊面板顯示 <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> 搜尋結果。</translation>
 <translation id="7958537754689366707">每 12 小時需輸入密碼</translation>
 <translation id="7959035883875301444">控管 JavaScript JIT 的使用情形</translation>
 <translation id="7961779417826583251">不針對列出的舊版憑證授權單位強制執行憑證透明化政策</translation>
@@ -6736,7 +6728,6 @@
       如果將這項政策設為停用或不設定，遠端存取主機即可與任何本機使用者建立關聯。</translation>
 <translation id="867708016260789630">強制執行中度以上的 YouTube 嚴格篩選模式</translation>
 <translation id="8677853537025397834">允許這些網站上的 WebHID API</translation>
-<translation id="8684781382594546769">停用 Direct Sockets API。</translation>
 <translation id="8685024486845674965">密碼遭到重複使用時，會觸發密碼保護警告</translation>
 <translation id="8685680544554917389">如果將這項政策設為 True，<ph name="PRODUCT_NAME" /> 即可自動播放媒體。如果將這項政策設為 False，<ph name="PRODUCT_NAME" /> 不會自動播放媒體。
 
@@ -6807,6 +6798,9 @@
 <translation id="8757552286070680084">設定 Wilco DTC</translation>
 <translation id="8758831693895931466">啟用雲端管理強制註冊設定</translation>
 <translation id="8759829385824155666">允許的 Kerberos 加密類型</translation>
+<translation id="8763716376920670835">自 M101 起，WebSQL 預設為啟用，但你仍然可以透過 Chrome 旗標將其停用。
+          如果將這項政策設為 False 或未設定，系統就可停用 WebSQL。
+          如果將這項政策設為 True，系統將無法停用 WebSQL。</translation>
 <translation id="8767743923206070405">如果將這項政策設為啟用，<ph name="PRODUCT_NAME" /> 的工具列上會顯示「首頁」按鈕。如果將這項政策設為停用，則不會顯示「首頁」按鈕。
 
       如果設定這項政策，使用者將無法在 <ph name="PRODUCT_NAME" /> 中進行變更。如果未設定，使用者可選擇是否要顯示「首頁」按鈕。</translation>

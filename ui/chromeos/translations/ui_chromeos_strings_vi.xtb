@@ -825,6 +825,7 @@
 <translation id="8042602468072383151">Âm thanh <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">Tiếng Rumani</translation>
 <translation id="8049184478152619004">Nhập khóa mở khóa cá nhân (PUK)</translation>
+<translation id="807187749540895545">Đang trích xuất <ph name="FILE_NAME" />...</translation>
 <translation id="8079530767338315840">Lặp lại</translation>
 <translation id="8087576439476816834">Tải xuống, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Được chia sẻ với tôi</translation>
@@ -876,6 +877,7 @@
 <translation id="8484284835977497781">Chọn trong số các ảnh gần đây của bạn.</translation>
 <translation id="8487700953926739672">Có thể dùng khi không có mạng</translation>
 <translation id="8492972329130824181">Mạng gia đình không hoạt động. Bạn phải bật chế độ chuyển vùng dữ liệu di động để kết nối.</translation>
+<translation id="8499098729323186194">Đang trích xuất <ph name="NUMBER_OF_ITEMS" /> mục...</translation>
 <translation id="8521441079177373948">Vương quốc Anh</translation>
 <translation id="8525306231823319788">Toàn màn hình</translation>
 <translation id="853494022971700746">Tiếng Pháp (Pháp)</translation>

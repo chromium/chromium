@@ -115,7 +115,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1301324364792935241">Revisa la configuració de DNS segur</translation>
 <translation id="1307966114820526988">Funcions obsoletes</translation>
 <translation id="1308113895091915999">Oferta disponible</translation>
-<translation id="1312803275555673949">Quines proves hi ha?</translation>
 <translation id="1314311879718644478">Mostra el contingut de realitat augmentada</translation>
 <translation id="1314509827145471431">Enquadernació a la dreta</translation>
 <translation id="1318023360584041678">S'ha desat al grup de pestanyes</translation>
@@ -736,7 +735,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="324180406144491771">Els enllaços de "<ph name="HOST_NAME" />" estan bloquejats</translation>
 <translation id="3249845759089040423">Atrevida</translation>
 <translation id="3252266817569339921">Francès</translation>
-<translation id="3257954757204451555">Qui hi ha darrere d'aquesta informació?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />: prem Tab i després Retorn per crear un esdeveniment ràpidament a Google Calendar</translation>
 <translation id="3261488570342242926">Informació sobre les targetes virtuals</translation>
 <translation id="3264837738038045344">Botó Gestiona la configuració de Chrome: prem Retorn per veure la configuració de Chrome</translation>
@@ -1119,6 +1117,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4414515549596849729">dades de llocs web i galetes</translation>
 <translation id="4415426530740016218">Adreça de recollida</translation>
 <translation id="4424024547088906515">Aquest servidor no ha pogut comprovar que sigui <ph name="DOMAIN" /> perquè Chrome considera que el seu certificat de seguretat no és de confiança. Això pot ser a causa d'una configuració incorrecta o d'un atacant que intercepta la vostra connexió.</translation>
+<translation id="4428065317363009941">Personalització d'anuncis</translation>
 <translation id="443121186588148776">Port en sèrie</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> no ha acceptat el certificat d'inici de sessió o pot ser que no se n'hagi proporcionat cap.</translation>
 <translation id="4432792777822557199">A partir d'ara, les pàgines en <ph name="SOURCE_LANGUAGE" /> es traduiran a <ph name="TARGET_LANGUAGE" /></translation>
@@ -1251,7 +1250,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4838327282952368871">Somiadora</translation>
 <translation id="4840250757394056958">Mostra l'historial de Chrome</translation>
 <translation id="484462545196658690">Automàtic</translation>
-<translation id="4849865131988503897">Comprovació de la precisió</translation>
 <translation id="4850886885716139402">Mostra</translation>
 <translation id="485316830061041779">Alemany</translation>
 <translation id="4853901935952445031">Aquest lloc web no podrà fer servir l'API U2F a partir del febrer de 2022. Si ets el propietari d'aquest lloc, l'hauries de canviar i fer servir l'API Web Authentication.</translation>
@@ -1438,6 +1436,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5398772614898833570">Anuncis bloquejats</translation>
 <translation id="5400836586163650660">Gris</translation>
 <translation id="540969355065856584">Aquest servidor no ha pogut demostrar que sigui <ph name="DOMAIN" /> perquè el seu certificat de seguretat no és vàlid en aquest moment. Això pot ser a causa d'una configuració incorrecta o d'un atacant que intercepta la connexió.</translation>
+<translation id="5412236728747081950">Aquest lloc web obté els teus interessos de Chrome per mostrar-te anuncis més rellevants</translation>
 <translation id="541416427766103491">Apiladora 4</translation>
 <translation id="5421136146218899937">Esborra dades de navegació...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> et vol enviar notificacions</translation>
@@ -1954,7 +1953,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> no compleix la normativa de seguretat.</translation>
 <translation id="7210993021468939304">L'activitat de Linux al contenidor; i també pot instal·lar-hi i executar-hi aplicacions de Linux</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /> sobre aquest problema.</translation>
-<translation id="7215025035562547931">Dedica un moment a valorar la precisió</translation>
 <translation id="7217745192097460130">Vols fer servir Touch ID per verificar la teva identitat i completar la compra?</translation>
 <translation id="7219179957768738017">La connexió utilitza <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">S'està processant</translation>
@@ -2084,6 +2082,7 @@ Detalls addicionals:
 <translation id="7569952961197462199">Voleu suprimir la targeta de crèdit de Chrome?</translation>
 <translation id="7569983096843329377">Negre</translation>
 <translation id="7575207903026901870">Botó Suprimeix el suggeriment, prem Retorn per suprimir aquest suggeriment</translation>
+<translation id="7577900504646297215">Gestiona els interessos</translation>
 <translation id="7578104083680115302">Agilitzeu els pagaments en llocs i en aplicacions des de qualsevol dispositiu mitjançant les targetes que hàgiu desat a Google.</translation>
 <translation id="7581199239021537589">Desplaçament a l'eix Y del costat 2 de la imatge</translation>
 <translation id="7582602800368606489">Crea un esdeveniment a Google Calendar ràpidament</translation>
@@ -2204,7 +2203,6 @@ Detalls addicionals:
 <translation id="7966803981046576691">Tipus de compte de treball</translation>
 <translation id="79682505114836835">El valor "<ph name="VALUE" />" no és un color hexadecimal vàlid.</translation>
 <translation id="7968982339740310781">Mostra els detalls</translation>
-<translation id="7970392640816874403">Què diuen altres fonts?</translation>
 <translation id="7976214039405368314">Hi ha massa sol·licituds</translation>
 <translation id="7977538094055660992">Dispositiu de sortida</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -2555,7 +2553,6 @@ Detalls addicionals:
 <translation id="9155211586651734179">Els perifèrics d'àudio enllaçats</translation>
 <translation id="9157595877708044936">S'està configurant...</translation>
 <translation id="9158625974267017556">C6 (sobre)</translation>
-<translation id="9164029392738894042">Comprovació de la precisió</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">Permet que els llocs web comprovin si tens formes de pagament desades</translation>
 <translation id="9169664750068251925">Bloqueja sempre en aquest lloc</translation>

@@ -192,7 +192,6 @@
 <translation id="1223789468190631420">Stato attivazione Navigazione sicura per origini attendibili</translation>
 <translation id="123018742985150697">Richiede la corrispondenza tra utente locale e proprietario dell'host di accesso remoto</translation>
 <translation id="123081309365616809">Attiva la trasmissione di contenuti al dispositivo</translation>
-<translation id="1239411164172567974">Abilita l'API Direct Sockets.</translation>
 <translation id="1239526922294123540">Consente di stabilire se i siti web possono o meno effettuare richieste agli endpoint di rete con un livello di protezione più alto in modo non sicuro.
 
           Se questo criterio viene impostato su vero, vengono disattivati tutti i controlli di <ph name="PRIVATE_NETWORK_ACCESS" /> per tutte le origini. Gli utenti malintenzionati potrebbero riuscire a compiere attacchi <ph name="CSRF" /> su server di reti private.
@@ -1014,7 +1013,6 @@ Lasciare il criterio non impostato significa che nessuna estensione è esente da
 <translation id="208623333578980446">Consenti wakelock schermo per la gestione dell'alimentazione</translation>
 <translation id="2086944573376916479">Un account gestito deve essere un account principale e non deve avere account secondari</translation>
 <translation id="2089541797660774692">Attiva reporting su cloud tramite browser gestito</translation>
-<translation id="2090304907729569435">Disattiva la visualizzazione dei risultati di <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> in un riquadro laterale del browser.</translation>
 <translation id="2090939118981888335">Se il criterio viene impostato su Attivato, è consentito il proxy di compressione dei dati. Se viene impostato su Disattivato, il proxy non è consentito.
 
       Se il criterio viene configurato, gli utenti non possono modificarlo. In caso contrario, gli utenti possono scegliere di utilizzare la funzionalità.</translation>
@@ -1778,7 +1776,6 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 
       Se viene impostato su Disattivato, gli aggiornamenti dei componenti vengono disattivati. Tuttavia, alcuni componenti sono esclusi da questo criterio: gli aggiornamenti dei componenti che non contengono codice eseguibile e che sono critici per la sicurezza del browser non verranno disattivati.
       Esempi di tali componenti includono gli elenchi revoche certificati e i filtri di sottorisorse.</translation>
-<translation id="2939988360019366928">Consenti la visualizzazione dei risultati di ricerca di <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> più recenti in un riquadro laterale del browser</translation>
 <translation id="2940127076681735544">Se per il criterio viene impostato un URL valido, <ph name="PRODUCT_NAME" /> scarica l'elenco dei siti da tale URL e applica le regole come se fossero state configurate con il criterio <ph name="SITELIST_POLICY_NAME" />.
 
       Se il criterio non viene impostato (o se viene impostato un URL non valido), <ph name="PRODUCT_NAME" /> non usa il criterio come fonte di regole per il cambio di browser.
@@ -3534,9 +3531,6 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
       Se viene impostato su Disattivato, <ph name="PRODUCT_NAME" /> smette di inviare queste query.</translation>
 <translation id="5039110755072335605">Supporto delle intestazioni delle richieste CORS senza caratteri jolly</translation>
 <translation id="504116558738617678">Mostra gli avvisi relativi allo spazio su disco in esaurimento soltanto se il dispositivo non è gestito o se esiste 1 solo utente</translation>
-<translation id="5049105847726444023">Se il criterio viene impostato su Attivato o se non viene configurato, gli utenti possono spostare i risultati di <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> più recenti in un riquadro laterale attivando un'icona della barra degli strumenti.
-
-      Se il criterio viene impostato su Disattivato, l'icona che apre il riquadro laterale con i risultati di <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> viene rimossa dalla barra degli strumenti.</translation>
 <translation id="5052278640307929670">L'impostazione di questo criterio consente di unire i criteri selezionati quando provengono da origini diverse, con stesso ambito e livello.
 
       Se un criterio è nell'elenco, nel caso ci sia conflitto tra due origini:
@@ -5681,9 +5675,6 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="7459601923199346224">Consente di controllare i criteri relativi agli utenti e ai dispositivi per la gestione dei certificati.</translation>
 <translation id="7459633275230216698">Consenti finestre di dialogo per la selezione di file</translation>
 <translation id="7464991223784276288">Limita i cookie degli URL corrispondenti alla sessione corrente</translation>
-<translation id="7466522266556143347">Se il criterio viene impostato su Attivato, gli utenti possono utilizzare l'API Direct Sockets (purché tutte le altre condizioni necessarie siano soddisfatte).
-      Se il criterio viene impostato su Disattivato, gli utenti non possono accedere all'API.
-      Se il criterio non viene configurato, per impostazione predefinita, la funzionalità non è consentita per gli utenti gestiti a livello aziendale ed è consentita per gli utenti non gestiti.</translation>
 <translation id="7468182772656807573">Questo criterio consente di stabilire la frequenza di invio, in millisecondi, dei pacchetti di rete di monitoraggio. Gli intervalli sono compresi tra 30 secondi e 24 ore. I valori che non rientrano in questo intervallo verranno fatti rientrare nei limiti.
 
       Se il criterio non viene configurato, viene applicato l'intervallo predefinito di 3 minuti.</translation>
@@ -6171,7 +6162,6 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 
       Se la norma non è impostata, sarà attivata ma l'utente potrà modificarla.</translation>
 <translation id="7956210013490975468">Configura il servizio proxy di sistema per <ph name="PRODUCT_OS_NAME" /></translation>
-<translation id="7958340569967087581">Attiva la visualizzazione dei risultati di <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> in un riquadro laterale del browser.</translation>
 <translation id="7958537754689366707">Richiedi inserimento della password ogni dodici ore</translation>
 <translation id="7959035883875301444">Controlla l'utilizzo di JIT di JavaScript</translation>
 <translation id="7961779417826583251">Disattiva l'applicazione di Certificate Transparency per un elenco di autorità di certificazione precedenti</translation>
@@ -6825,7 +6815,6 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
       Se il criterio viene impostato su Disattivato o se non viene configurato, l'host di accesso remoto può essere associato a qualsiasi utente locale.</translation>
 <translation id="867708016260789630">Viene forzato l'uso almeno del livello medio della Modalità con restrizioni di YouTube</translation>
 <translation id="8677853537025397834">Consenti l'API WebHID su questi siti</translation>
-<translation id="8684781382594546769">Disabilita l'API Direct Sockets.</translation>
 <translation id="8685024486845674965">L'avviso di protezione tramite password viene attivato se vengono riutilizzate password</translation>
 <translation id="8685680544554917389">Se il criterio viene configurato su true, <ph name="PRODUCT_NAME" /> può utilizzare la riproduzione automatica per i contenuti multimediali. Se il criterio viene configurato su false, <ph name="PRODUCT_NAME" /> non può più utilizzare la riproduzione automatica per i contenuti multimediali.
 

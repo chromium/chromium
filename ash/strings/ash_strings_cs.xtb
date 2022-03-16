@@ -256,6 +256,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2595239820337756193">5 km v mílích</translation>
 <translation id="2596078834055697711">Pořídit snímek obrazovky okna</translation>
 <translation id="2607678425161541573">Je vyžadováno online přihlášení</translation>
+<translation id="2620436844016719705">Systém</translation>
 <translation id="2621713457727696555">Zabezpečeno</translation>
 <translation id="263399434338050016">„Vybrat vše“</translation>
 <translation id="2653019840645008922">Záznam okna</translation>
@@ -351,6 +352,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="320207200541803018">Nastavit časovač</translation>
 <translation id="3203405173652969239">Je zapnutý přístup pomocí přepínačů</translation>
 <translation id="3207953481422525583">Uživatelská nastavení</translation>
+<translation id="3208321278970793882">Aplikace</translation>
 <translation id="3217205077783620295">Zvuk je zapnutý. Přepnutím ho vypnete.</translation>
 <translation id="3226991577105957773">a ještě <ph name="COUNT" /></translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -1034,6 +1036,7 @@ Nová instalace</translation>
 <translation id="7513622367902644023">Byl vybrán režim snímku obrazovky</translation>
 <translation id="7513922695575567867">Kalendář, týden od <ph name="DATE" />, je vybráno datum <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Stáhnout</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7526573455193969409">Síť může být sledována</translation>
 <translation id="7536035074519304529">IP adresa: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Aplikace pro Linux a anonymní okna v současné době nejsou podporovány. Ostatní aplikace budou uloženy.</translation>
@@ -1102,6 +1105,7 @@ Nová instalace</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Dotkněte se snímače otisků prstů</translation>
 <translation id="7904094684485781019">Správce tohoto účtu zakázal vícenásobné přihlášení.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7930731167419639574">Řeč se teď zpracovává místně a diktování funguje offline.</translation>
 <translation id="7933084174919150729">Asistent Google je k dispozici pouze pro primární profil.</translation>
 <translation id="79341161159229895">Správci účtu: <ph name="FIRST_PARENT_EMAIL" /> a <ph name="SECOND_PARENT_EMAIL" /></translation>

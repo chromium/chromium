@@ -115,7 +115,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1301324364792935241">Kontrollér innstillingene for sikker DNS</translation>
 <translation id="1307966114820526988">Avviklede funksjoner</translation>
 <translation id="1308113895091915999">Et tilbud er tilgjengelig</translation>
-<translation id="1312803275555673949">Hvilke beviser finnes?</translation>
 <translation id="1314311879718644478">Se utvidet virkelighet-innhold</translation>
 <translation id="1314509827145471431">Innbinding høyre</translation>
 <translation id="1318023360584041678">Lagret i fanegruppe</translation>
@@ -740,7 +739,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="324180406144491771">«<ph name="HOST_NAME" />»-linker er blokkert</translation>
 <translation id="3249845759089040423">Groovy</translation>
 <translation id="3252266817569339921">Fransk</translation>
-<translation id="3257954757204451555">Hvem står bak denne informasjonen?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å opprette en ny hendelse i Google Kalender raskt</translation>
 <translation id="3261488570342242926">Finn ut mer om virtuelle kort</translation>
 <translation id="3264837738038045344">Knappen «Administrer Chrome-innstillinger» – trykk på Enter for å åpne Chrome-innstillingene</translation>
@@ -1128,6 +1126,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4414515549596849729">informasjonskapsler og nettstedsdata</translation>
 <translation id="4415426530740016218">Henteadresse</translation>
 <translation id="4424024547088906515">Denne tjeneren kunne ikke bevise at den er <ph name="DOMAIN" />. Sikkerhetssertifikatet til tjeneren er ikke klarert av Chrome. Dette kan være forårsaket av en feilkonfigurering eller en angriper som avskjærer tilkoblingen din.</translation>
+<translation id="4428065317363009941">Personlig tilpasning av annonser</translation>
 <translation id="443121186588148776">Seriell port</translation>
 <translation id="4432688616882109544">Enten godtok ikke <ph name="HOST_NAME" /> påloggingssertifikatet ditt, eller så ble det ikke oppgitt.</translation>
 <translation id="4432792777822557199">Fra nå av oversettes sider på <ph name="SOURCE_LANGUAGE" /> til <ph name="TARGET_LANGUAGE" /></translation>
@@ -1260,7 +1259,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4838327282952368871">Drømmende</translation>
 <translation id="4840250757394056958">Se Chrome-loggen din</translation>
 <translation id="484462545196658690">Auto</translation>
-<translation id="4849865131988503897">Nøyaktighetssjekk</translation>
 <translation id="4850886885716139402">Visning</translation>
 <translation id="485316830061041779">Tysk</translation>
 <translation id="4853901935952445031">Dette nettstedet kan ikke bruke U2F-API-et etter februar 2022. Hvis du eier dette nettstedet, bør du endre det til å bruke Web Authentication-API-et.</translation>
@@ -1447,6 +1445,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5398772614898833570">Annonser er blokkert</translation>
 <translation id="5400836586163650660">Grå</translation>
 <translation id="540969355065856584">Denne tjeneren kunne ikke bevise at den er <ph name="DOMAIN" />. Sikkerhetssertifikatet til tjeneren er ikke gyldig for øyeblikket. Dette kan være forårsaket av en feilkonfigurasjon eller en angriper som lytter på tilkoblingen din.</translation>
+<translation id="5412236728747081950">Dette nettstedet mottar interessene dine fra Chrome for å kunne vise deg mer relevante annonser</translation>
 <translation id="541416427766103491">Hylle 4</translation>
 <translation id="5421136146218899937">Slett nettleserdata</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> vil sende deg varsler</translation>
@@ -1963,7 +1962,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> retter seg ikke etter sikkerhetsstandardene.</translation>
 <translation id="7210993021468939304">Linux-aktivitet i beholderen, og kan installere og kjøre Linux-apper i beholderen</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Mer informasjon<ph name="END_LINK" /> om dette problemet.</translation>
-<translation id="7215025035562547931">Bruk et øyeblikk på å vurdere nøyaktighet</translation>
 <translation id="7217745192097460130">Vil du bruke Touch ID for å verifisere og fullføre kjøpet?</translation>
 <translation id="7219179957768738017">Tilkoblingen bruker <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Behandler</translation>
@@ -2092,6 +2090,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7569952961197462199">Vil du fjerne kredittkortet fra Chrome?</translation>
 <translation id="7569983096843329377">Svart</translation>
 <translation id="7575207903026901870">Knapp for å fjerne forslag – trykk på Enter for å fjerne dette forslaget</translation>
+<translation id="7577900504646297215">Administrer interesser</translation>
 <translation id="7578104083680115302">Når du lagrer kort med Google, kan du bruke dem til å betale raskt på nettsteder og i apper – uansett hvilken enhet du bruker.</translation>
 <translation id="7579442726219254162">Ukjent variabel «<ph name="VARIABLE" />» i den administrerte konfigurasjonen for «<ph name="APPLICATION_ID" />».</translation>
 <translation id="7581199239021537589">Y-forskyvning av bilde på side 2</translation>
@@ -2213,7 +2212,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7966803981046576691">Jobbkontotype</translation>
 <translation id="79682505114836835">Verdien «<ph name="VALUE" />» er en ugyldig heksadesimal fargekode.</translation>
 <translation id="7968982339740310781">Se detaljer</translation>
-<translation id="7970392640816874403">Hva sier andre kilder?</translation>
 <translation id="7976214039405368314">For mange forespørsler</translation>
 <translation id="7977538094055660992">Utskriftsenhet</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -2564,7 +2562,6 @@ Mer informasjon:
 <translation id="9155211586651734179">Eksterne lydenheter er tilkoblet</translation>
 <translation id="9157595877708044936">Konfigurerer ...</translation>
 <translation id="9158625974267017556">C6 (konvolutt)</translation>
-<translation id="9164029392738894042">Nøyaktighetssjekk</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">Tillatt nettsteder å sjekke om du har noen lagrede betalingsmåter</translation>
 <translation id="9169664750068251925">Blokkér alltid på dette nettstedet</translation>

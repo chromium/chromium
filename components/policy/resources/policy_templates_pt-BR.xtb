@@ -187,7 +187,6 @@
 <translation id="1223789468190631420">Ativar Navegação segura para fontes confiáveis</translation>
 <translation id="123018742985150697">Exigir correspondência entre o usuário local e o proprietário do host de acesso remoto</translation>
 <translation id="123081309365616809">Ativa transmissão de conteúdo para o dispositivo</translation>
-<translation id="1239411164172567974">Ativar a API Direct Sockets.</translation>
 <translation id="1239526922294123540">Controla se os sites têm permissão para fazer solicitações para endpoints de rede mais particulares de forma não segura.
 
           Quando esta política é definida como verdadeira, todas as verificações de <ph name="PRIVATE_NETWORK_ACCESS" /> são desativadas para todas as origens. Isso pode permitir que invasores realizem ataques <ph name="CSRF" /> a servidores de rede particular.
@@ -1016,7 +1015,6 @@ Web e PWAs. No momento, com suporte apenas no
 <translation id="208623333578980446">Permitir wake locks de tela para gerenciamento de energia</translation>
 <translation id="2086944573376916479">Uma conta gerenciada precisa ser a principal e não pode ter contas secundárias</translation>
 <translation id="2089541797660774692">Ativar os relatórios de nuvem do navegador gerenciado</translation>
-<translation id="2090304907729569435">Desativar a exibição de resultados da <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> em um painel lateral do navegador.</translation>
 <translation id="2090939118981888335">Se a política for definida como "Ativada", o proxy de compressão de dados será permitido. Se a política for definida como "Desativada", o proxy não será permitido.
 
       Se você definir a política, os usuários não poderão mudá-la. Se ela não for definida, os usuários poderão escolher como usar o recurso.</translation>
@@ -1062,6 +1060,7 @@ Web e PWAs. No momento, com suporte apenas no
       Se a <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" /> não for definida, o provedor de pesquisa não terá um ícone.</translation>
 <translation id="2145735238144543545">Certificados do cliente obrigatórios</translation>
 <translation id="2146103669166779785">Cor hexadecimal que será usada para gerar e aplicar um tema ao navegador.</translation>
+<translation id="2148769554831004951">Forçar a ativação do WebSQL.</translation>
 <translation id="214901426630414675">Restringir o modo duplex de impressão</translation>
 <translation id="2149330464730004005">Ativar a impressão colorida</translation>
 <translation id="2149592087996467903">Impedir que WebRTC use versões obsoletas de TLS/DTLS</translation>
@@ -1780,7 +1779,6 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 
       Se a política for desativada, as atualizações dos componentes também serão desativadas. No entanto, alguns componentes estarão isentos desta política: as atualizações de componentes que não contenham código executável e sejam essenciais para a segurança do navegador não serão desativadas.
       Entre os exemplos desses componentes estão as listas de revogação de certificados e os filtros de recursos secundários.</translation>
-<translation id="2939988360019366928">Permitir a exibição dos resultados mais recentes da <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> em um painel lateral do navegador</translation>
 <translation id="2940127076681735544">Se a política for definida como um URL válido, o <ph name="PRODUCT_NAME" /> fará o download da lista de sites desse URL e aplicará as regras como se tivessem sido configuradas com a política <ph name="SITELIST_POLICY_NAME" />.
 
       Se ela não for definida ou for definida como um URL inválido, o <ph name="PRODUCT_NAME" /> não a usará como fonte de regras para uma troca de navegador.
@@ -3543,9 +3541,6 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
       Se ela for definida como "Desativada", o <ph name="PRODUCT_NAME" /> não enviará essas consultas.</translation>
 <translation id="5039110755072335605">Suporte a cabeçalhos de solicitação de CORS sem caractere curinga</translation>
 <translation id="504116558738617678">Mostrar alertas de pouco espaço no disco apenas quando o dispositivo não tiver gerenciamento ou quando houver apenas um usuário</translation>
-<translation id="5049105847726444023">Se a política for definida como "Ativada" ou for deixada sem definição, os usuários poderão ver os resultados mais recentes da <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> em um painel lateral ao ativar um ícone na barra de ferramentas.
-
-      Se a política for definida como "Desativada", o ícone da barra de ferramentas que abre o painel lateral com os resultados da <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> será removido.</translation>
 <translation id="5052278640307929670">Se a política for definida, será possível mesclar as políticas selecionadas quando elas vierem de fontes diferentes com os mesmos escopos e níveis.
 
       Se uma política estiver na lista e houver um conflito entre fontes com:
@@ -4676,6 +4671,7 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
           O valor da política precisa ser especificado em milissegundos. Os valores são ajustados para serem menores ou iguais ao intervalo de inatividade.
 
           A mensagem de aviso só será mostrada se a ação de inatividade for para sair ou encerrar.</translation>
+<translation id="6331172765821724350">Permitir que o WebSQL seja desativado por uma sinalização do Chrome.</translation>
 <translation id="6331943515692769234">Forçar o algoritmo User-Agent GREASE anterior a ser usado.</translation>
 <translation id="6332546092866098577">Bloquear acesso de leitura com a API File System nestes sites</translation>
 <translation id="6334330017384340264">Esta política especifica quais aplicativos e URLs serão permitidos para restrições de uso por app.
@@ -5700,9 +5696,6 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
 <translation id="7459601923199346224">Controla as políticas do usuário e dispositivo para o gerenciamento de certificados.</translation>
 <translation id="7459633275230216698">Permitir caixas de diálogo para seleção de arquivo</translation>
 <translation id="7464991223784276288">Limita cookies de URLs correspondentes à sessão atual</translation>
-<translation id="7466522266556143347">Se a política for definida como "Ativada", os usuários vão poder usar a API Direct Sockets (desde que todas as outras condições obrigatórias sejam atendidas).
-      Se a política for definida como 'Desativada", os usuários não vão poder acessar a API.
-      Se esta política for deixada sem definição, o comportamento padrão será não permitir para usuários gerenciados por empresas e permitir para usuários não gerenciados.</translation>
 <translation id="7468182772656807573">Se a política for definida, a frequência do envio de pacotes de monitoramento de rede será determinada, em milissegundos. Os intervalos variam de 30 segundos a 24 horas. Valores fora desse intervalo serão ajustados dentro dessa faixa.
 
       Se a política não for definida, o intervalo padrão será de 3 minutos.</translation>
@@ -6190,7 +6183,6 @@ Se esta política não for definida, o renderizador padrão será usado para tod
 
 Se a política não for definida, a configuração ficará ativada, mas o usuário poderá alterá-la.</translation>
 <translation id="7956210013490975468">Configura o serviço de proxy do sistema para o <ph name="PRODUCT_OS_NAME" />.</translation>
-<translation id="7958340569967087581">Ativar a exibição de resultados da <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> em um painel lateral do navegador.</translation>
 <translation id="7958537754689366707">A senha precisa ser digitada a cada 12 horas</translation>
 <translation id="7959035883875301444">Controlar o uso do JIT do JavaScript</translation>
 <translation id="7961779417826583251">Desativar a aplicação da Transparência dos certificados para uma lista de Autoridades de certificação de legado</translation>
@@ -6853,7 +6845,6 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
       Se a política for definida como "Desativada" ou deixada sem definição, o host de acesso remoto poderá ser associado com qualquer usuário local.</translation>
 <translation id="867708016260789630">Forçar o Modo restrito do YouTube pelo menos no nível moderado</translation>
 <translation id="8677853537025397834">Autorizar o uso da API WebHID nestes sites</translation>
-<translation id="8684781382594546769">Desativar a API Direct Sockets.</translation>
 <translation id="8685024486845674965">O aviso de proteção de senha é acionado pela reutilização da senha</translation>
 <translation id="8685680544554917389">Se a política for definida como verdadeira, o <ph name="PRODUCT_NAME" /> poderá tocar mídia automaticamente. Se a política for definida como falsa, o <ph name="PRODUCT_NAME" /> será impedido de tocar mídia automaticamente.
 
@@ -6927,6 +6918,9 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 <translation id="8757552286070680084">Configuração do DTC wilco</translation>
 <translation id="8758831693895931466">Permite a inscrição obrigatória no gerenciamento em nuvem</translation>
 <translation id="8759829385824155666">Permitir tipos de criptografia Kerberos</translation>
+<translation id="8763716376920670835">O WebSQL é ativado por padrão desde a versão M101, mas pode ser desativado por uma sinalização do Chrome.
+          Se a política é definida como "false" ou deixada sem definição, o WebSQL pode ser desativado.
+          Se a política é definida como "true", o WebSQL não pode ser desativado.</translation>
 <translation id="8767743923206070405">Se a política for definida como "Ativada", o botão "Início" será exibido na barra de ferramentas do <ph name="PRODUCT_NAME" />. Se a política for definida como "Desativada", o botão "Início" não será exibido.
 
       Se você definir a política, os usuários não poderão mudá-la no <ph name="PRODUCT_NAME" />. Se não defini-la, os usuários poderão decidir se o botão "Início" será exibido.</translation>

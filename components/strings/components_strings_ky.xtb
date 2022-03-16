@@ -115,7 +115,6 @@
 <translation id="1301324364792935241">Коопсуз DNS жөндөөлөрүңүздү текшериңиз</translation>
 <translation id="1307966114820526988">Жоюлган функциялар</translation>
 <translation id="1308113895091915999">Сунуш бар</translation>
-<translation id="1312803275555673949">Кандай далили бар?</translation>
 <translation id="1314311879718644478">Кошумчаланган чындык контентин көрүү</translation>
 <translation id="1314509827145471431">Оң жагын байлоо</translation>
 <translation id="1318023360584041678">Өтмөктөр тобунда сакталды</translation>
@@ -740,7 +739,6 @@
 <translation id="324180406144491771">"<ph name="HOST_NAME" />" шилтемелери бөгөттөлдү</translation>
 <translation id="3249845759089040423">Көркөм</translation>
 <translation id="3252266817569339921">Французча</translation>
-<translation id="3257954757204451555">Бул маалыматты ким берди?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Жылнаамада жаңы иш-чараны тез түзүү Tab, андан кийин Enter баскычын басыңыз</translation>
 <translation id="3261488570342242926">Виртуалдык карталар жөнүндө маалымат алыңыз</translation>
 <translation id="3264837738038045344">"Chrome жөндөөлөрүн башкаруу" баскычы, Chrome жөндөөлөрүнө баш багуу үчүн Enter баскычын басыңыз</translation>
@@ -1127,6 +1125,7 @@
 <translation id="4414515549596849729">cookie файлдары жана сайттын маалыматы</translation>
 <translation id="4415426530740016218">Алып кете турган жердин дарегин тандоо</translation>
 <translation id="4424024547088906515">Бул сервер <ph name="DOMAIN" /> экендигин далилдей алган жок; себеби Chrome анын коопсуздук тастыктамасына ишенбейт. Мындай көйгөй туура эмес конфигурация менен шартталышы мүмкүн же туташууңузга чабуулчу кийлигишип жатат.</translation>
+<translation id="4428065317363009941">Жарнамаларды жекелештирүү</translation>
 <translation id="443121186588148776">Сериялык порт</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> сайты кирүү тастыктамаңызды кабыл алган жок же тастыктама көрсөтүлгөн эмес окшойт.</translation>
 <translation id="4432792777822557199">Мындан кийин <ph name="SOURCE_LANGUAGE" /> тилиндеги барактар <ph name="TARGET_LANGUAGE" /> тилине которулат</translation>
@@ -1259,7 +1258,6 @@
 <translation id="4838327282952368871">Кыялкеч</translation>
 <translation id="4840250757394056958">Chrome'до көрүлгөн вебсайттарды көрүү</translation>
 <translation id="484462545196658690">Авто</translation>
-<translation id="4849865131988503897">Тактыгын текшерүү</translation>
 <translation id="4850886885716139402">Көрүнүш</translation>
 <translation id="485316830061041779">Немисче</translation>
 <translation id="4853901935952445031">2022-жылдын февралынан кийин бул сайт U2F API'ни колдоно албай калат. Эгер бул сайттын ээси болсоңуз, Web Authentication API'ни колдонуу үчүн аны өзгөртүшүңүз керек.</translation>
@@ -1446,6 +1444,7 @@
 <translation id="5398772614898833570">Жарнамалар бөгөттөлдү</translation>
 <translation id="5400836586163650660">Боз</translation>
 <translation id="540969355065856584">Бул сервер <ph name="DOMAIN" /> экендигин далилдей алган жок; азыркы учурда анын коопсуздук тастыктамасы жарактуу эмес. Бул туура эмес конфигурациялоодон болушу мүмкүн же чабуулчу туташууңузга тоскоол болууда.</translation>
+<translation id="5412236728747081950">Бул сайт Сhrome'дон кызыккан нерселериңиз тууралуу маалымат алып, сизге ылайыктуу жарнамаларды көрсөтүп турат</translation>
 <translation id="541416427766103491">4-төшөгүч</translation>
 <translation id="5421136146218899937">Серептөө дайындарын тазалап салуу…</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> сизге билдирмелерди жөнөткөнү жатат</translation>
@@ -1962,7 +1961,6 @@
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> сайты коопсуздук стандарттарына жооп бербейт.</translation>
 <translation id="7210993021468939304">Контейнердеги Linux аракеттери Linux колдонмолорун контейнердин алкагында орнотуп, иштете алышат</translation>
 <translation id="721197778055552897">Бул көйгөй жөнүндө <ph name="BEGIN_LINK" />Көбүрөөк билүү<ph name="END_LINK" />.</translation>
-<translation id="7215025035562547931">Бир аз убакыт бөлүп, маалыматтын так экенин карап көрүңүз</translation>
 <translation id="7217745192097460130">Сатып алуу үчүн Touch ID'ни колдоносузбу?</translation>
 <translation id="7219179957768738017">Туташуу <ph name="SSL_VERSION" /> колдонот.</translation>
 <translation id="7220786058474068424">Иштелүүдө</translation>
@@ -2092,6 +2090,7 @@
 <translation id="7569952961197462199">Насыя картасы Chrome'дон алынып салынсынбы?</translation>
 <translation id="7569983096843329377">Кара</translation>
 <translation id="7575207903026901870">"Сунушту өчүрүү" баскычы. Сунушту өчүрүү үчүн "Enter" баскычын басыңыз</translation>
+<translation id="7577900504646297215">Кызыккан нерселерди башкаруу</translation>
 <translation id="7578104083680115302">Сайттарда жана колдонмолордо сатып алган нерселердин акысын Google'га сакталган карточкаларыңыз аркылуу төлөңүз. Мындай мүмкүнчүлүк бардык түзмөктөрүңүздө иштейт.</translation>
 <translation id="7579442726219254162">Башкарылган "<ph name="APPLICATION_ID" />" конфигурациясындагы белгисиз өзгөрмө маани: "<ph name="VARIABLE" />".</translation>
 <translation id="7581199239021537589">2-тараптын Y сүрөтүн жылдыруу</translation>
@@ -2213,7 +2212,6 @@
 <translation id="7966803981046576691">Тапшырманын түрү</translation>
 <translation id="79682505114836835">"<ph name="VALUE" />" маанисинин он алтылык түсү жараксыз.</translation>
 <translation id="7968982339740310781">Чоо-жайын карап көрүү</translation>
-<translation id="7970392640816874403">Башка булактарда эмне деп айтылган?</translation>
 <translation id="7976214039405368314">Өтүнүчтөр өтө көп жөнөтүлдү</translation>
 <translation id="7977538094055660992">Чыгаруу түзмөгү</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -2564,7 +2562,6 @@
 <translation id="9155211586651734179">Аудио түзмөктүн көмөкчү жабдыктары тиркелди</translation>
 <translation id="9157595877708044936">Орнотууда…</translation>
 <translation id="9158625974267017556">C6 (Конверт)</translation>
-<translation id="9164029392738894042">Тактыгын текшерүү</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">Сайттарга сакталган төлөм ыкмаларыңыз бар экенин текшерүүгө уруксат берүү</translation>
 <translation id="9169664750068251925">Бул сайтта ар дайым бөгөттөлсүн</translation>

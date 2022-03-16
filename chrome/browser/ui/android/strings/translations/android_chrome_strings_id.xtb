@@ -30,7 +30,6 @@
 <translation id="114825011539563458">Kontrol privasi dan keamanan paling penting di satu tempat</translation>
 <translation id="1149401351239820326">Bulan akhir masa berlaku</translation>
 <translation id="1154704303112745282">Halaman tidak tersedia saat offline: <ph name="VIOLATED_URL" /></translation>
-<translation id="1166688006062225587">Daftar akun yang akan dipilih.</translation>
 <translation id="1171770572613082465">Lihat situs populer dengan mengetuk tombol "Situs populer"</translation>
 <translation id="1173894706177603556">Ganti nama</translation>
 <translation id="1177863135347784049">Sesuaikan</translation>
@@ -571,6 +570,7 @@ Sentuh lama kata apa pun untuk menelusurinya. Untuk menyaring penelusuran, pilih
 <translation id="4415276339145661267">Kelola Akun Google Anda</translation>
 <translation id="4425140285732600465">Memantau harga. Dapatkan notifikasi jika ada diskon di situs mana pun.</translation>
 <translation id="442518031075347249">Anda tidak akan dapat menggunakan kartu virtual dengan Google Pay lagi. <ph name="BEGIN_LINK1" />Pelajari kartu virtual lebih lanjut<ph name="END_LINK1" /></translation>
+<translation id="4428065317363009941">Personalisasi iklan</translation>
 <translation id="4450672886426705087">Hasil penelusuran dari Google.</translation>
 <translation id="4452411734226507615">Tutup tab <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Dibookmark ke <ph name="FOLDER_NAME" /></translation>
@@ -899,7 +899,6 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6277522088822131679">Terjadi masalah saat mencetak halaman. Coba lagi.</translation>
 <translation id="6277722725779679269">Tidak dapat memperbarui Pantau harga</translation>
 <translation id="6278428485366576908">Tema</translation>
-<translation id="6293443105724342169">Daftar akun yang akan dipilih terbuka setengah.</translation>
 <translation id="6294610283659775533">Anda dapat mengirim tab antar-perangkat yang login ke Akun Google yang sama</translation>
 <translation id="6297765934698848803">Organisasi yang mengelola perangkat telah menonaktifkan kamera Anda.</translation>
 <translation id="6301525844455696527">Selesaikan daftar bacaan Anda</translation>
@@ -1310,7 +1309,6 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="8461694314515752532">Enkripsikan data yang disinkronkan dengan frasa sandi sinkronisasi Anda sendiri</translation>
 <translation id="8466613982764129868">Pastikan <ph name="TARGET_DEVICE_NAME" /> terhubung ke internet</translation>
 <translation id="8473863474539038330">Alamat dan lain-lain</translation>
-<translation id="847656914027543776">Daftar akun yang akan dipilih ditutup.</translation>
 <translation id="8481921391193215807">Jika aktif, situs dapat menggunakan teknik yang melindungi privasi seperti yang ditunjukkan di sini untuk menyediakan konten dan layanannya. Ini termasuk alternatif untuk pelacakan lintas situs. Uji coba lainnya dapat ditambahkan seiring waktu.
 
 <ph name="BEGIN_LIST_ITEM1" />Pengiklan dan penayang dapat menggunakan FLoC.<ph name="END_LIST_ITEM1" />
@@ -1365,6 +1363,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="8683526617475118045">Yang Anda dapatkan</translation>
 <translation id="869891660844655955">Masa berlaku</translation>
 <translation id="8699120352855309748">Jangan tawarkan penerjemahan bahasa ini</translation>
+<translation id="8712637175834984815">Mengerti</translation>
 <translation id="8725066075913043281">Coba lagi</translation>
 <translation id="8730621377337864115">Selesai</translation>
 <translation id="8746155870861185046">Bagikan sorotan</translation>
@@ -1437,7 +1436,6 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="9108312223223904744">Dukungan Ponsel sebagai Kunci Keamanan</translation>
 <translation id="9108808586816295166">DNS aman mungkin tidak tersedia sepanjang waktu</translation>
 <translation id="9133397713400217035">Jelajahi Offline</translation>
-<translation id="9133523398139146080">Daftar akun yang akan dipilih terbuka sepenuhnya.</translation>
 <translation id="9137013805542155359">Perlihatkan halaman asli</translation>
 <translation id="9148126808321036104">Login sekali lagi</translation>
 <translation id="9155898266292537608">Anda juga dapat menelusuri dengan mengetuk kata secara cepat</translation>

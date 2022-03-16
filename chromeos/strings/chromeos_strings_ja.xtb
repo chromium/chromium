@@ -20,6 +20,7 @@
 <translation id="1181037720776840403">削除</translation>
 <translation id="1195447618553298278">不明なエラーです。</translation>
 <translation id="1196959502276349371">バージョン <ph name="VERSION" /></translation>
+<translation id="1199355487114804640">再生と一時停止</translation>
 <translation id="1201402288615127009">次へ</translation>
 <translation id="1204296502688602597">DNS レイテンシ</translation>
 <translation id="123124571410524056">ポータルの可能性があります</translation>
@@ -43,6 +44,7 @@
 <translation id="1413240736185167732">失敗 - フィルタエラー</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">入力した鍵ペアを使用</translation>
+<translation id="1423591390236870726"><ph name="KEY_NAME" /> キーが押されていません</translation>
 <translation id="1435763214710588005">指定した日に毎月データ使用量が自動的にリセットされます</translation>
 <translation id="1442433966118452622">画像ソース</translation>
 <translation id="1451536289672181509">デバイスの種類はキーボードです。</translation>
@@ -84,6 +86,7 @@
 <translation id="1827738518074806965">アート ギャラリー</translation>
 <translation id="1851218745569890714">ビデオ会議</translation>
 <translation id="1852934301711881861">ChromeOS Flex をインストール</translation>
+<translation id="1856388568474281774">下矢印</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">ハードウェア リビジョン</translation>
 <translation id="1905710495812624430">最大試行回数を超えました。</translation>
@@ -98,6 +101,7 @@
 <translation id="2016697457005847575">トラブルシューティングの手順を試す</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">詳細設定</translation>
+<translation id="2085089206770112532">ディスプレイの明るさを下げる</translation>
 <translation id="2104796393919810494">修復を完了しました</translation>
 <translation id="2105810540595158374">デバイスの種類はゲーム コントローラです。</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />、バージョン <ph name="MILESTONE_VERSION" /></translation>
@@ -116,6 +120,7 @@
 <translation id="222447520299472966">アート ギャラリーのアルバムを少なくとも 1 つ選択してください</translation>
 <translation id="2230005943220647148">摂氏</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2240366984605217732">レイアウトの切り替え</translation>
 <translation id="225692081236532131">起動状態</translation>
 <translation id="2287186687001756809">画像がありません。写真を追加するには、<ph name="LINK" /> にアクセスしてください</translation>
 <translation id="2307344026739914387">現在の鍵ペアを使用</translation>
@@ -207,9 +212,11 @@
 <translation id="357889014807611375">従量制 Wi-Fi</translation>
 <translation id="3583278742022654445">電波が弱い状態です。Wi-Fi　信号の発生元に近づいてみてください。</translation>
 <translation id="3595596368722241419">バッテリー残量: フル</translation>
+<translation id="3600339377155080675">画面のミラーリング</translation>
 <translation id="3603829704940252505">アバター</translation>
 <translation id="360565022852130722">安全性の低いプロトコル WEP 802.1x が Wi-Fi で使用されています</translation>
 <translation id="3606583719724308068">HTTPS ウェブサイトのレイテンシが高くなっています</translation>
+<translation id="3632579075709132555">プライバシー画面の切り替え</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> テスト</translation>
 <translation id="370665806235115550">読み込んでいます...</translation>
 <translation id="3708186454126126312">以前に接続したデバイス</translation>
@@ -263,6 +270,7 @@
 <translation id="4289540628985791613">概要</translation>
 <translation id="4297501883039923494">停止 - 不明なエラー</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> 件の画像</translation>
+<translation id="4333390807948134856"><ph name="KEY_NAME" /> キーを押しました</translation>
 <translation id="4378373042927530923">未実行</translation>
 <translation id="4378551569595875038">接続中...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -278,6 +286,7 @@
 <translation id="4479639480957787382">イーサネット</translation>
 <translation id="4483049906298469269">デフォルト以外のネットワーク ゲートウェイに向けた ping が失敗しました</translation>
 <translation id="4485626319513081846">デバイスを保管または修理して新しい顧客に配布する場合は、このオプションを選択します。</translation>
+<translation id="4503223151711056411">左矢印</translation>
 <translation id="4511264077854731334">ポータル</translation>
 <translation id="4521826082652183069">サブジェクト代替名マッチ</translation>
 <translation id="4536864596629708641">IP 設定</translation>
@@ -289,10 +298,12 @@
 <translation id="4562494484721939086">サービスなし</translation>
 <translation id="458794348635939462">すべてのホストを解決できませんでした</translation>
 <translation id="4593212453765072419">プロキシ認証が必要です</translation>
+<translation id="4609350030397390689">キーボードの明るさを下げる</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />、<ph name="PRINTER_NAME" />、<ph name="CREATION_TIME" />、<ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />。印刷ジョブをキャンセルするには、Enter キーを押します。</translation>
 <translation id="4627645661474370390">リモート ID</translation>
 <translation id="463791356324567266">スキャンをキャンセルしています...</translation>
 <translation id="4646949265910132906">安全な Wi-Fi 接続</translation>
+<translation id="4650608062294027130">右シフト</translation>
 <translation id="4654549501020883054">毎日変更</translation>
 <translation id="4665014895760275686">メーカー</translation>
 <translation id="467510802200863975">パスワードが一致しません</translation>
@@ -391,8 +402,10 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">再スキャン</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5600027863942488546"><ph name="KEY_NAME" /> キーをテストしました</translation>
 <translation id="5620281292257375798">内部専用</translation>
 <translation id="5649768706273821470">聴く</translation>
+<translation id="5655283760733841251">キーボードの明るさを上げる</translation>
 <translation id="5669267381087807207">有効化中</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">ファミリー</translation>
@@ -400,6 +413,7 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> を更新します。</translation>
 <translation id="5760715441271661976">ポータル状態</translation>
+<translation id="576835345334454681">ディスプレイの明るさを上げる</translation>
 <translation id="57838592816432529">ミュート</translation>
 <translation id="5784136236926853061">HTTP レイテンシが高くなっています</translation>
 <translation id="5832805196449965646">ユーザーを追加</translation>
@@ -430,6 +444,7 @@
 <translation id="6104112872696127344">スキャンをキャンセルしました</translation>
 <translation id="6106186594183574873">終了するには、古いパスワードを入力してください</translation>
 <translation id="6108689792487843350">ゲートウェイにアクセスできません</translation>
+<translation id="6113701710518389813">上矢印</translation>
 <translation id="6122191549521593678">オンライン</translation>
 <translation id="6137767437444130246">ユーザー証明書</translation>
 <translation id="6146993107019042706">終了するには、新しいパスワードを入力してください</translation>
@@ -443,6 +458,7 @@
 <translation id="6232017090690406397">バッテリー</translation>
 <translation id="6235460611964961764">データ使用量を手動でリセットする</translation>
 <translation id="6243280677745499710">現在設定されている壁紙</translation>
+<translation id="6275224645089671689">右矢印</translation>
 <translation id="6278428485366576908">テーマ</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> テストがキャンセルされました</translation>
@@ -478,6 +494,7 @@
 <translation id="6620487321149975369">印刷ジョブは、手動で削除するまで履歴に表示されます</translation>
 <translation id="6643016212128521049">削除</translation>
 <translation id="6647510110698214773">暗号化アルゴリズム</translation>
+<translation id="6650062777702288430">かなと英数字の切り替え</translation>
 <translation id="6657585470893396449">パスワード</translation>
 <translation id="6659594942844771486">タブ</translation>
 <translation id="6692996468359469499">選択した項目に関連する情報を取得する</translation>
@@ -690,6 +707,7 @@
 <translation id="9122602430962285795">再接続するには　[設定] に移動します</translation>
 <translation id="9126720536733509015">複数のページを保存して 1 つの PDF にまとめる</translation>
 <translation id="9137526406337347448">Google サービス</translation>
+<translation id="9138630967333032450">左シフト</translation>
 <translation id="9149391708638971077">メモリテストを実行</translation>
 <translation id="9173638680043580060">残り 1 分未満</translation>
 <translation id="917720651393141712">テスト</translation>

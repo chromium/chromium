@@ -115,7 +115,6 @@
 <translation id="1301324364792935241">‏בדיקת הגדרות ה-DNS המאובטח</translation>
 <translation id="1307966114820526988">תכונות שהוצאו משימוש</translation>
 <translation id="1308113895091915999">הצעה זמינה</translation>
-<translation id="1312803275555673949">האם קיימות ראיות תומכות?</translation>
 <translation id="1314311879718644478">הצגת תוכן של מציאות רבודה</translation>
 <translation id="1314509827145471431">כריכה בקצה הימני</translation>
 <translation id="1318023360584041678">הפריט נשמר בקבוצת הכרטיסיות</translation>
@@ -740,7 +739,6 @@
 <translation id="324180406144491771">קישורים של “<ph name="HOST_NAME" />” חסומים</translation>
 <translation id="3249845759089040423">מגניב</translation>
 <translation id="3252266817569339921">צרפתית</translation>
-<translation id="3257954757204451555">מהו מקור המידע הזה?</translation>
 <translation id="3259648571731540213">‏<ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, מקישים על Tab ואז על Enter כדי ליצור במהירות אירוע חדש ביומן Google</translation>
 <translation id="3261488570342242926">מידע על כרטיסים וירטואליים</translation>
 <translation id="3264837738038045344">‏הלחצן לניהול הגדרות Chrome, מקישים על Enter כדי להיכנס להגדרות Chrome</translation>
@@ -1126,6 +1124,7 @@
 <translation id="4414515549596849729">‏נתוני אתר וקובצי cookie</translation>
 <translation id="4415426530740016218">כתובת איסוף</translation>
 <translation id="4424024547088906515">‏השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />. אישור האבטחה שלו לא נחשב כמהימן על ידי Chrome. ייתכן שהסיבה לכך היא תצורה שגויה או תוקף המיירט את החיבור שלך.</translation>
+<translation id="4428065317363009941">התאמה אישית של מודעות</translation>
 <translation id="443121186588148776">יציאה טורית</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> לא אישר את אישור ההתחברות שלך, או שלא סופק אישור התחברות.</translation>
 <translation id="4432792777822557199">דפים ב<ph name="SOURCE_LANGUAGE" /> יתורגמו ל<ph name="TARGET_LANGUAGE" /> מעכשיו והלאה</translation>
@@ -1262,7 +1261,6 @@ Del</translation>
 <translation id="4838327282952368871">חלומי</translation>
 <translation id="4840250757394056958">‏הצגת ההיסטוריה ב-Chrome</translation>
 <translation id="484462545196658690">אוטומטי</translation>
-<translation id="4849865131988503897">בדיקת דיוק</translation>
 <translation id="4850886885716139402">הצגה</translation>
 <translation id="485316830061041779">גרמנית</translation>
 <translation id="4853901935952445031">‏האתר הזה לא יוכל להשתמש ב-U2F API אחרי פברואר 2022. אם האתר בבעלותך, צריך לשנות אותו כך שיוכל להשתמש ב-Web Authentication API.</translation>
@@ -1449,6 +1447,7 @@ Del</translation>
 <translation id="5398772614898833570">מודעות חסומות</translation>
 <translation id="5400836586163650660">אפור</translation>
 <translation id="540969355065856584">שרת זה לא הצליח להוכיח שהוא <ph name="DOMAIN" />; אישור האבטחה שלו אינו תקף כעת. הסיבה לכך עשויה להיות תצורה שגויה או שתוקף מיירט את החיבור שלך.</translation>
+<translation id="5412236728747081950">‏יוצגו לך מודעות רלוונטיות יותר באתר על סמך תחומי העניין שלך מ-Chrome</translation>
 <translation id="541416427766103491">מערים 4</translation>
 <translation id="5421136146218899937">ניקוי נתוני גלישה...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> רוצה לשלוח לך הודעות</translation>
@@ -1966,7 +1965,6 @@ Del</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> לא פועל בהתאם לתקני האבטחה.</translation>
 <translation id="7210993021468939304">‏קיימת פעילות של Linux בתוך המאגר וניתן להתקין ולהפעיל אפליקציות של Linux בתוך המאגר</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /> בנושא זה.</translation>
-<translation id="7215025035562547931">משקיעים כמה דקות ובודקים: האם המידע מדויק?</translation>
 <translation id="7217745192097460130">‏רוצה להשתמש ב-Touch ID כדי לאמת ולהשלים את הרכישה?</translation>
 <translation id="7219179957768738017">החיבור משתמש ב-<ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">המערכת מעבדת את התשלום</translation>
@@ -2096,6 +2094,7 @@ Del</translation>
 <translation id="7569952961197462199">‏האם להסיר את פרטי כרטיס האשראי מ-Chrome?</translation>
 <translation id="7569983096843329377">שחור</translation>
 <translation id="7575207903026901870">‏הלחצן 'הסרת ההצעה', יש ללחוץ על Enter כדי להסיר את ההצעה הזו</translation>
+<translation id="7577900504646297215">ניהול תחומי עניין</translation>
 <translation id="7578104083680115302">‏ניתן לשלם במהירות באתרים ובאפליקציות בכל המכשירים באמצעות כרטיסים ששמרת ב-Google.</translation>
 <translation id="7581199239021537589">‏הזזה של תמונה בצד 2 על ציר Y</translation>
 <translation id="7582602800368606489">‏יצירה מהירה של אירוע חדש ביומן Google</translation>
@@ -2216,7 +2215,6 @@ Del</translation>
 <translation id="7966803981046576691">סוג חשבון של העבודה</translation>
 <translation id="79682505114836835">הערך "<ph name="VALUE" />" הוא צבע הקסדצימלי לא חוקי.</translation>
 <translation id="7968982339740310781">הצגת פרטים</translation>
-<translation id="7970392640816874403">מה אומרים מקורות אחרים?</translation>
 <translation id="7976214039405368314">יותר מדי בקשות</translation>
 <translation id="7977538094055660992">מכשיר פלט</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -2567,7 +2565,6 @@ Del</translation>
 <translation id="9155211586651734179">ציוד האודיו הההיקפי מחובר</translation>
 <translation id="9157595877708044936">ההגדרה מתבצעת...</translation>
 <translation id="9158625974267017556">C6 (Envelope)‎</translation>
-<translation id="9164029392738894042">בדיקת דיוק</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">מתן הרשאה לאתרים לבדוק אם שמרת אמצעי תשלום</translation>
 <translation id="9169664750068251925">אני רוצה לחסום תמיד באתר זה</translation>

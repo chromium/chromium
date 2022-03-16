@@ -191,7 +191,6 @@
 <translation id="1223789468190631420">Inschakelstatus van Safe Browsing voor vertrouwde bronnen</translation>
 <translation id="123018742985150697">Vereisen dat de lokale gebruiker en de eigenaar van de host voor externe toegang overeenkomen</translation>
 <translation id="123081309365616809">Casten van content naar apparaat aanzetten</translation>
-<translation id="1239411164172567974">Direct Sockets API aanzetten.</translation>
 <translation id="1239526922294123540">Hiermee bepaal je of websites op een onbeveiligde manier verzoeken mogen sturen naar netwerkeindpunten die meer privé zijn.
 
           Als je dit beleid instelt op True, worden alle <ph name="PRIVATE_NETWORK_ACCESS" />-checks uitgezet voor alle oorsprongen. Hierdoor kunnen aanvallers <ph name="CSRF" />-aanvallen uitvoeren op privé-netwerkservers.
@@ -987,7 +986,6 @@ Als je het beleid niet instelt, zijn er geen extensies vrijgesteld van de resetp
 <translation id="208623333578980446">Wake locks voor het scherm toestaan voor stroombeheer</translation>
 <translation id="2086944573376916479">Een beheerd account moet een primair account zijn en mag geen secundaire accounts hebben</translation>
 <translation id="2089541797660774692">Cloudrapportage voor beheerde browsers aanzetten</translation>
-<translation id="2090304907729569435">De weergave van de resultaten van <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> in een zijvenster van de browser uitzetten.</translation>
 <translation id="2090939118981888335">Als je dit beleid toepast, wordt de proxy voor gegevenscompressie toegestaan. Als je het beleid niet toepast, wordt de proxy niet toegestaan.
 
       Als je het beleid instelt, kunnen gebruikers het niet aanpassen. Als je het beleid niet instelt, kunnen gebruikers ervoor kiezen de functie te gebruiken.</translation>
@@ -1033,6 +1031,7 @@ Als je het beleid niet instelt, zijn er geen extensies vrijgesteld van de resetp
       Als je <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" /> niet instelt, is er geen icoon voor de zoekprovider.</translation>
 <translation id="2145735238144543545">Vereiste clientcertificaten</translation>
 <translation id="2146103669166779785">Hexadecimale kleur waarmee een thema voor de browser wordt samengesteld en toegepast.</translation>
+<translation id="2148769554831004951">Afdwingen dat WebSQL wordt aangezet.</translation>
 <translation id="214901426630414675">Afdrukken in duplexmodus beperken</translation>
 <translation id="2149330464730004005">Afdrukken in kleur aanzetten</translation>
 <translation id="2149592087996467903">Niet toestaan dat WebRTC verouderde versies van TLS/DTLS gebruikt</translation>
@@ -1743,7 +1742,6 @@ Als je het beleid niet instelt, staat de stroom voor piekuren aanvankelijk uit. 
 
       Als je het beleid niet toepast, staan updates voor componenten uit. Bepaalde componenten zijn wel uitgesloten van dit beleid. Updates voor componenten worden niet uitgezet als deze geen uitvoerbare code bevatten en essentieel zijn voor de beveiliging van de browser.
       Voorbeelden van dergelijke componenten zijn Certificate Revocation Lists en subresource-filters.</translation>
-<translation id="2939988360019366928">Toestaan dat de meest recente resultaten van <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> in een zijvenster van de browser worden getoond</translation>
 <translation id="2940127076681735544">Als je dit beleid instelt op een geldige URL, downloadt <ph name="PRODUCT_NAME" /> de lijst met sites van die URL en worden de regels toegepast alsof ze zijn ingesteld met het <ph name="SITELIST_POLICY_NAME" />-beleid.
 
       Als je dit beleid niet instelt (of instelt op een ongeldige URL), gebruikt <ph name="PRODUCT_NAME" /> dit beleid niet als een bron van regels die overschakeling naar een andere browser regelen.
@@ -3489,9 +3487,6 @@ Als je dit beleid niet toepast of niet instelt, kunnen sites niet tegelijkertijd
       Als je het beleid niet toepast, stopt <ph name="PRODUCT_NAME" /> met het sturen van deze query's.</translation>
 <translation id="5039110755072335605">Ondersteuning voor CORS-verzoekheaders zonder jokertekens</translation>
 <translation id="504116558738617678">Waarschuwingen voor weinig schijfruimte alleen tonen als het apparaat onbeheerd is of er slechts 1 gebruiker is</translation>
-<translation id="5049105847726444023">Als je dit beleid toepast of niet instelt, kunnen gebruikers de meest recente resultaten van <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> in een zijvenster tonen door een icoon in de werkbalk aan/uit te zetten.
-
-      Als je dit beleid niet toepast, wordt het icoon waarmee het zijvenster met resultaten van <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> kan worden geopend, uit de werkbalk verwijderd.</translation>
 <translation id="5052278640307929670">Als je het beleid instelt, kunnen de geselecteerde beleidsregels worden samengevoegd als ze afkomstig zijn van verschillende bronnen en hetzelfde bereik en niveau hebben.
 
       Als een beleid in de lijst staat en er een conflict is tussen bronnen met:
@@ -4600,6 +4595,7 @@ Als je dit beleid instelt, worden afhankelijk van de waarde verschillende van de
           De beleidswaarde moet worden gespecificeerd in milliseconden. De opgegeven waarden moeten kleiner dan of gelijk zijn aan de inactieve vertraging.
 
           Het waarschuwingsbericht wordt alleen getoond als de inactieve actie 'uitloggen' of 'afsluiten' is.</translation>
+<translation id="6331172765821724350">Toestaan dat WebSQL wordt uitgezet door Chrome-flag.</translation>
 <translation id="6331943515692769234">Afdwingen dat het eerdere User-Agent GREASE-algoritme wordt gebruikt.</translation>
 <translation id="6332546092866098577">Leestoegang via de File System API toestaan op deze sites</translation>
 <translation id="6334330017384340264">Dit beleid geeft aan welke apps en URL's worden toegestaan voor gebruiksbeperkingen per app.
@@ -5626,9 +5622,6 @@ Als je dit beleid instelt op False, wordt de functionaliteit uitgezet.</translat
 <translation id="7459601923199346224">Beheert het gebruikers- en apparaatbeleid voor certificaatbeheer.</translation>
 <translation id="7459633275230216698">Dialoogvensters voor bestandsselectie toestaan</translation>
 <translation id="7464991223784276288">Cookies van overeenkomende URL's beperken tot de huidige sessie</translation>
-<translation id="7466522266556143347">Als je dit beleid toepast, kunnen gebruikers de Direct Sockets API gebruiken (mits aan alle andere noodzakelijke voorwaarden wordt voldaan).
-      Als je het beleid niet toepast, hebben gebruikers geen toegang tot de API.
-      Als je dit beleid niet instelt, geldt de standaardwaarde 'niet toegestaan' voor beheerde zakelijke gebruikers en 'toegestaan' voor niet-beheerde gebruikers.</translation>
 <translation id="7468182772656807573">Als je dit beleid instelt, geef je aan hoe vaak (in milliseconden) controlenetwerkpakketten moeten worden gestuurd. De intervallen variëren van 30 seconden tot 24 uur. Waarden buiten dit bereik worden aangepast aan dit bereik.
 
       Als er geen interval is ingesteld, wordt het standaardinterval van 3 minuten toegepast.</translation>
@@ -6113,7 +6106,6 @@ https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.ht
 
       Als dit beleid niet wordt ingesteld, staat deze instelling aan, maar kan de gebruiker deze wijzigen.</translation>
 <translation id="7956210013490975468">Configureert de systeemproxyservice voor <ph name="PRODUCT_OS_NAME" />.</translation>
-<translation id="7958340569967087581">De weergave van de resultaten van <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> in een zijvenster van de browser aanzetten</translation>
 <translation id="7958537754689366707">Het wachtwoord moet elke twaalf uur worden opgegeven</translation>
 <translation id="7959035883875301444">Gebruik van JavaScript JIT beheren</translation>
 <translation id="7961779417826583251">Handhaving van Certificaattransparantie voor een lijst met certificeringsinstanties uitzetten</translation>
@@ -6772,7 +6764,6 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
       Als je het beleid niet toepast of niet instelt, kan de host voor externe toegang aan elke lokale gebruiker worden gekoppeld.</translation>
 <translation id="867708016260789630">Afdwingen dat de beperkte modus van YouTube minimaal is ingesteld op Gematigd</translation>
 <translation id="8677853537025397834">De WebHID API toestaan op deze sites</translation>
-<translation id="8684781382594546769">Direct Sockets API uitzetten.</translation>
 <translation id="8685024486845674965">Waarschuwing voor wachtwoordbeveiliging wordt geactiveerd bij hergebruik van een wachtwoord</translation>
 <translation id="8685680544554917389">Als je het beleid instelt op True, wordt media automatisch afgespeeld door <ph name="PRODUCT_NAME" />. Als je het beleid instelt op False, wordt media niet automatisch afgespeeld door <ph name="PRODUCT_NAME" />.
 
@@ -6846,6 +6837,9 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
 <translation id="8757552286070680084">Wilco DTC-configuratie</translation>
 <translation id="8758831693895931466">Inschrijving voor cloudbeheer verplichten</translation>
 <translation id="8759829385824155666">Toegestane Kerberos-versleutelingstypen</translation>
+<translation id="8763716376920670835">WebSQL staat standaard aan vanaf M101, maar kan worden uitgezet via Chrome-flag.
+          Als dit beleid is ingesteld op False of niet is ingesteld, kan WebSQL worden uitgezet.
+          Als dit beleid is ingesteld op True, kan WebSQL niet worden uitgezet.</translation>
 <translation id="8767743923206070405">Als je het beleid toepast, wordt de Homepage-knop in de werkbalk van <ph name="PRODUCT_NAME" /> getoond. Als je het beleid niet toepast, wordt de Homepage-knop niet getoond.
 
       Als je het beleid instelt, kunnen gebruikers dit niet wijzigen in <ph name="PRODUCT_NAME" />. Als je het beleid niet instelt, kunnen gebruikers bepalen of ze de Homepage-knop wel of niet willen tonen.</translation>

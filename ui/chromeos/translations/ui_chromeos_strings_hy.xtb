@@ -824,6 +824,7 @@
 <translation id="8042602468072383151">Աուդիո ֆայլ (<ph name="AUDIO_TYPE" />)</translation>
 <translation id="8045462269890919536">Ռումինական</translation>
 <translation id="8049184478152619004">Մուտքագրեք անձնական ապակողպման բանալին (PUK)</translation>
+<translation id="807187749540895545">Ֆայլը (<ph name="FILE_NAME" />) արտահանվում է…</translation>
 <translation id="8079530767338315840">Կրկնել</translation>
 <translation id="8087576439476816834">Ներբեռնել, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Ինձ հասանելի</translation>
@@ -875,6 +876,7 @@
 <translation id="8484284835977497781">Ընտրեք ձեր վերջին լուսանկարներից։</translation>
 <translation id="8487700953926739672">Մատչելի է անցանց ռեժիմում</translation>
 <translation id="8492972329130824181">Տնային ցանցը հասանելի չէ։ Կապ ապահովելու համար անհրաժեշտ է միացնել տվյալների ռոումինգը։</translation>
+<translation id="8499098729323186194">Տարրերը (<ph name="NUMBER_OF_ITEMS" />) արտահանվում են…</translation>
 <translation id="8521441079177373948">ՄԹ</translation>
 <translation id="8525306231823319788">Լիաէկրան</translation>
 <translation id="853494022971700746">ֆրանսերեն (Ֆրանսիա)</translation>

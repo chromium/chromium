@@ -31,6 +31,7 @@
 <translation id="1150989369772528668">ပြက္ခဒိန်</translation>
 <translation id="1153356358378277386">တွဲချိတ်ထားသည့် စက်ပစ္စည်းများ</translation>
 <translation id="1165712434476988950">အပ်ဒိတ်ထည့်သွင်းရန် ကိရိယာကို ပြန်စရပါမည်။</translation>
+<translation id="1171742223880403396">သင့် USB-C ကေဘယ်သည် ဖန်သားပြင်များသို့ မှန်ကန်စွာ ချိတ်ဆက်ထားခြင်း မရှိနိုင်ပါ</translation>
 <translation id="1175572348579024023">လှိမ့်ရန်</translation>
 <translation id="1178581264944972037">ဆိုင်းငံ့ထားရန်</translation>
 <translation id="1181037720776840403">ဖယ်ရှားရန်</translation>
@@ -256,6 +257,7 @@
 <translation id="2595239820337756193">၅ ကီလိုမီတာကို မိုင်ပြောင်းပါ</translation>
 <translation id="2596078834055697711">ဝင်းဒိုး မျက်နှာပြင်ပုံ ရိုက်ရန်</translation>
 <translation id="2607678425161541573">အွန်လိုင်း လက်မှတ်ထိုးဝင်ခြင်း လိုအပ်သည်</translation>
+<translation id="2620436844016719705">စနစ်</translation>
 <translation id="2621713457727696555">လုံခြုံပြီ</translation>
 <translation id="263399434338050016">"အားလုံးရွေးရန်"</translation>
 <translation id="2653019840645008922">ဝင်းဒိုး ပုံဖမ်းယူမှု</translation>
@@ -351,6 +353,7 @@
 <translation id="320207200541803018">အချိန်မှတ်ပါ</translation>
 <translation id="3203405173652969239">'ခလုတ်သုံးခြင်း' ဖွင့်ထားသည်</translation>
 <translation id="3207953481422525583">အသုံးပြုသူ ဆက်တင်များ</translation>
+<translation id="3208321278970793882">အက်ပ်</translation>
 <translation id="3217205077783620295">အသံဖွင့်ထားသည်၊ ပိတ်လိုက်ခြင်းဖြင့် အသံကိုတိတ်လိုက်ပါမည်။</translation>
 <translation id="3226991577105957773">+နောက်ထပ် <ph name="COUNT" /> ခု</translation>
 <translation id="3227137524299004712">မိုက်ခရိုဖုန်း</translation>
@@ -1034,6 +1037,7 @@
 <translation id="7513622367902644023">ဖန်သားပြင်ဓာတ်ပုံမုဒ် ရွေးထားသည်</translation>
 <translation id="7513922695575567867">ပြက္ခဒိန်၊ <ph name="DATE" /> အပတ်၊ <ph name="SELECTED_DATE" /> လက်ရှိတွင် ရွေးထားသည်။</translation>
 <translation id="7514365320538308">ဒေါင်းလုဒ်</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7526573455193969409">ကွန်ရက်ကို စောင့်ကြည့်နိုင်ပါသည်</translation>
 <translation id="7536035074519304529">အိုင်ပီလိပ်စာ− <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Linux အက်ပ်နှင့် ‘ရုပ်ဖျက်’ ဝင်ဒိုးများကို လောလောဆယ် ပံ့ပိုးမထားပါ။ အခြားအက်ပ်များကို သိမ်းပါမည်။</translation>
@@ -1102,6 +1106,7 @@
 <translation id="7901405293566323524">ဖုန်းပင်မ</translation>
 <translation id="7902625623987030061">လက်ဗွေအာရုံခံကိရိယာကို ထိပါ</translation>
 <translation id="7904094684485781019">ဤ အကောင့်၏ စီမံခန့်ခွဲသူမှ လက်မှတ်ထိုးဝင်ရာက်မှုများကို ပိတ်ပင်ထားပါသည်။</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7930731167419639574">တိုက်ရိုက်စာတန်းကို ယခု စက်အတွင်းမှာပင် လုပ်ဆောင်နေပြီး နှုတ်တိုက်ချပေးခြင်းကို အော့ဖ်လိုင်းသုံးနိုင်ပါပြီ</translation>
 <translation id="7933084174919150729">Google Assistant သည် ပင်မပရိုဖိုင်အတွက်သာ ရနိုင်ပါသည်။</translation>
 <translation id="79341161159229895">အကောင့်ကို <ph name="FIRST_PARENT_EMAIL" /> နှင့် <ph name="SECOND_PARENT_EMAIL" /> က စီမံပါသည်</translation>

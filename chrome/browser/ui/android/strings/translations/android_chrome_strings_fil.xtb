@@ -30,7 +30,6 @@
 <translation id="114825011539563458">Ang pinakamahahalagang kontrol sa privacy at seguridad sa iisang lugar</translation>
 <translation id="1149401351239820326">Buwan ng pag-expire</translation>
 <translation id="1154704303112745282">Hindi available ang page kapag offline: <ph name="VIOLATED_URL" /></translation>
-<translation id="1166688006062225587">Listahan ng mga account na pipiliin.</translation>
 <translation id="1171770572613082465">Tingnan ang mga sikat na website sa pamamagitan ng pag-tap sa button na "Mga nangungunang site"</translation>
 <translation id="1173894706177603556">Pangalanang muli</translation>
 <translation id="1177863135347784049">Custom</translation>
@@ -571,6 +570,7 @@ Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong p
 <translation id="4415276339145661267">Pamahalaan ang iyong Google Account</translation>
 <translation id="4425140285732600465">Sinusubaybayan ang presyo. Makatanggap ng mga alerto kapag bumaba ang presyo sa alinmang site.</translation>
 <translation id="442518031075347249">Hindi mo na magagamit ang iyong virtual na card sa Google Pay. <ph name="BEGIN_LINK1" />Matuto pa tungkol sa mga virtual na card<ph name="END_LINK1" /></translation>
+<translation id="4428065317363009941">Pag-personalize ng ad</translation>
 <translation id="4450672886426705087">Mga resulta ng paghahanap mula sa Google.</translation>
 <translation id="4452411734226507615">Isara ang tab na <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Na-bookmark sa <ph name="FOLDER_NAME" /></translation>
@@ -685,6 +685,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="4988526792673242964">Mga Page</translation>
 <translation id="5001388021414335527">Subaybayan ang site na ito dito</translation>
 <translation id="5004416275253351869">Mga kontrol ng aktibidad sa Google</translation>
+<translation id="5005141133360250920">Na-delete ang reaksyon</translation>
 <translation id="5005498671520578047">Kopyahin password</translation>
 <translation id="5011311129201317034">Gustong kumonekta ng <ph name="SITE" /></translation>
 <translation id="5016205925109358554">Serif</translation>
@@ -740,6 +741,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5368227114232678694">Para mag-browse nang pribado sa device na ito, subukan ang Incognito</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> nakabukas na tab, i-tap para lumipat ng tab}one{<ph name="OPEN_TABS_MANY" /> nakabukas na tab, i-tap para lumipat ng tab}other{<ph name="OPEN_TABS_MANY" /> na nakabukas na tab, i-tap para lumipat ng tab}}</translation>
 <translation id="5375577065097716013">Hanapin sa Google Lens <ph name="BEGIN_NEW" />Bago<ph name="END_NEW" /></translation>
+<translation id="5376898820269806588">Binago ang reaksyon</translation>
 <translation id="5403644198645076998">Ilang partikular na site lang ang payagan</translation>
 <translation id="5409881200985013443">Isumite ang <ph name="ONE_TIME_CODE" /> sa <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Vine-verify…</translation>
@@ -897,7 +899,6 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6277522088822131679">Nagkaproblema sa pag-print sa pahina. Pakisubukang muli.</translation>
 <translation id="6277722725779679269">Hindi ma-update ang Subaybayan ang presyo</translation>
 <translation id="6278428485366576908">Tema</translation>
-<translation id="6293443105724342169">Binuksan ang listahan ng mga account na pipiliin nang kalahati ang taas.</translation>
 <translation id="6294610283659775533">Puwede kang magpadala ng mga tab sa pagitan ng mga device na naka-sign in gamit ang iisang Google Account</translation>
 <translation id="6297765934698848803">Na-off ang iyong camera ng organisasyong namamahala sa device mo.</translation>
 <translation id="6301525844455696527">Balikan ang iyong listahan ng babasahin</translation>
@@ -1073,6 +1074,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="718926126787620637">Listahan ng mga folder ng bookmark na binuksan nang buo ang taas</translation>
 <translation id="7191430249889272776">Binuksan ang tab sa background.</translation>
 <translation id="7196215469483532480">Nakabukas nang buo ang paliwanag sa gabay sa privacy</translation>
+<translation id="7208109991155904980">Inilipat ang reaksyon</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Nakabinbin ang 1 pag-download}one{Nakabinbin ang # pag-download}other{Nakabinbin ang # na pag-download}}</translation>
 <translation id="7237045078887540010">Sa pamamagitan ng paggamit sa Chrome, sumasang-ayon ka sa <ph name="BEGIN_TOS_LINK" />Mga Tuntunin ng Serbisyo ng Google<ph name="END_TOS_LINK" />, at sa <ph name="BEGIN_ATOS_LINK" />Mga Karagdagang Tuntunin ng Serbisyo ng Google Chrome at Chrome OS<ph name="END_ATOS_LINK" />. Nalalapat din ang <ph name="BEGIN_PRIVACY_LINK" />Patakaran sa Privacy<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="7242755609445462077">May istilong highlight <ph name="CURRENT_DATE" /></translation>
@@ -1307,7 +1309,6 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="8461694314515752532">I-encrypt ang naka-sync na data gamit ang iyong sariling passphrase sa pag-sync</translation>
 <translation id="8466613982764129868">Tiyaking nakakonekta ang <ph name="TARGET_DEVICE_NAME" /> sa internet</translation>
 <translation id="8473863474539038330">Mga address at higit pa</translation>
-<translation id="847656914027543776">Nakasara ang listahan ng mga account na pipiliin.</translation>
 <translation id="8481921391193215807">Kapag naka-on ito, posibleng gamitin ng mga site ang mga technique sa pagpapanatili ng privacy na ipinapakita rito para maibigay ang content at mga serbisyo ng mga ito. Kasama sa mga ito ang mga alternatibo sa cross-site na pagsubaybay. Posibleng magdagdag ng higit pang trial sa paglipas ng panahon.
 
 <ph name="BEGIN_LIST_ITEM1" />Magagamit ng mga advertiser at publisher ang FLoC.<ph name="END_LIST_ITEM1" />
@@ -1362,6 +1363,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="8683526617475118045">Ang makukuha mo</translation>
 <translation id="869891660844655955">Expiration date</translation>
 <translation id="8699120352855309748">Huwag mag-alok na isalin ang mga wikang ito</translation>
+<translation id="8712637175834984815">Nakuha ko</translation>
 <translation id="8725066075913043281">Muling subukan</translation>
 <translation id="8730621377337864115">Tapos na</translation>
 <translation id="8746155870861185046">Ibahagi ang naka-highlight</translation>
@@ -1434,7 +1436,6 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="9108312223223904744">Telepono bilang Security Key Support</translation>
 <translation id="9108808586816295166">Posibleng hindi available sa lahat ng oras ang secure na DNS</translation>
 <translation id="9133397713400217035">I-explore Offline</translation>
-<translation id="9133523398139146080">Binuksan ang listahan ng mga account na pipiliin nang buo ang taas.</translation>
 <translation id="9137013805542155359">Ipakita ang orihinal</translation>
 <translation id="9148126808321036104">Muling mag-sign in</translation>
 <translation id="9155898266292537608">Makakapaghanap ka rin gamit ang mabilisang pag-tap sa isang salita</translation>

@@ -30,7 +30,6 @@
 <translation id="114825011539563458">Najdôležitejšie ovládanie ochrany súkromia a zabezpečenia na jednom mieste</translation>
 <translation id="1149401351239820326">Mesiac vypršania platnosti</translation>
 <translation id="1154704303112745282">Stránka nie je k dispozícii offline: <ph name="VIOLATED_URL" /></translation>
-<translation id="1166688006062225587">Zoznam účtov na výber.</translation>
 <translation id="1171770572613082465">Klepnutím na tlačidlo Hlavné weby zobrazíte obľúbené webové stránky</translation>
 <translation id="1173894706177603556">Premenovať</translation>
 <translation id="1177863135347784049">Vlastné</translation>
@@ -571,6 +570,7 @@ Vyhľadávanie spustíte pridržaním ľubovoľného slova. Spresníte ho výber
 <translation id="4415276339145661267">Spravovať účet Google</translation>
 <translation id="4425140285732600465">Cenu sledujete. Dostávajte upozornenia, keď na ľubovoľnom webe poklesne.</translation>
 <translation id="442518031075347249">Virtuálnu kartu už nebudete môcť používať so službou Google Pay. <ph name="BEGIN_LINK1" />Ďalšie informácie o virtuálnych kartách<ph name="END_LINK1" /></translation>
+<translation id="4428065317363009941">Prispôsobenie reklám</translation>
 <translation id="4450672886426705087">Výsledky vyhľadávania od Googlu.</translation>
 <translation id="4452411734226507615">Zavrieť kartu <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Uložené ako záložka v priečinku <ph name="FOLDER_NAME" /></translation>
@@ -899,7 +899,6 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="6277522088822131679">Pri tlačení stránky sa vyskytol problém. Skúste to znova.</translation>
 <translation id="6277722725779679269">Nepodarilo sa aktualizovať o nastavenie Sledovať cenu</translation>
 <translation id="6278428485366576908">Motív</translation>
-<translation id="6293443105724342169">Zoznam účtov na výber je otvorený na polovičnú výšku.</translation>
 <translation id="6294610283659775533">Môžete odosielať karty medzi zariadeniami, v ktorých sa prihlásite rovnakým účtom Google</translation>
 <translation id="6297765934698848803">Organizácia, ktorá spravuje vaše zariadenie, vypla vašu kameru.</translation>
 <translation id="6301525844455696527">Sledujte svoj čitateľský zoznam</translation>
@@ -1310,7 +1309,6 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="8461694314515752532">Šifrovať synchronizované údaje pomocou vlastnej prístupovej frázy synchronizácie</translation>
 <translation id="8466613982764129868">Skontrolujte, či je zariadenie <ph name="TARGET_DEVICE_NAME" /> pripojené k internetu</translation>
 <translation id="8473863474539038330">Adresy a ďalšie údaje</translation>
-<translation id="847656914027543776">Zoznam účtov na výber je zatvorený.</translation>
 <translation id="8481921391193215807">Keď je táto možnosť zapnutá, weby môžu pomocou uvedených techník na ochranu súkromia poskytovať obsah a služby. Zahrnujú alternatívy sledovania medzi webmi. Postupne môžu byť pridané ďalšie skúšobné funkcie.
 
 <ph name="BEGIN_LIST_ITEM1" />Inzerenti a vlastníci môžu používať technológiu FLoC.<ph name="END_LIST_ITEM1" />
@@ -1365,6 +1363,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="8683526617475118045">Čo získate</translation>
 <translation id="869891660844655955">Koniec platnosti</translation>
 <translation id="8699120352855309748">Neponúkať preklad týchto jazykov</translation>
+<translation id="8712637175834984815">Dobre</translation>
 <translation id="8725066075913043281">Skúsiť znova</translation>
 <translation id="8730621377337864115">Hotovo</translation>
 <translation id="8746155870861185046">Zdieľať zvýraznenie</translation>
@@ -1439,7 +1438,6 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="9108312223223904744">Podpora používania telefónu ako bezpečnostného kľúča</translation>
 <translation id="9108808586816295166">Zabezpečený systém DNS nemusí byť vždy k dispozícii</translation>
 <translation id="9133397713400217035">Preskúmať offline</translation>
-<translation id="9133523398139146080">Zoznam účtov na výber je otvorený na úplnú výšku.</translation>
 <translation id="9137013805542155359">Zobraziť originál</translation>
 <translation id="9148126808321036104">Znova sa prihlásiť</translation>
 <translation id="9155898266292537608">Vyhľadávať môžete aj rýchlym klepnutím na slovo</translation>

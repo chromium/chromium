@@ -115,7 +115,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1301324364792935241">Semak tetapan DNS Selamat anda</translation>
 <translation id="1307966114820526988">Ciri yang Ditamatkan</translation>
 <translation id="1308113895091915999">Tawaran tersedia</translation>
-<translation id="1312803275555673949">Apakah bukti yang menyokongnya?</translation>
 <translation id="1314311879718644478">Lihat kandungan realiti terimbuh</translation>
 <translation id="1314509827145471431">Ikatan kanan</translation>
 <translation id="1318023360584041678">Disimpan dalam kumpulan tab</translation>
@@ -740,7 +739,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="324180406144491771">Pautan “<ph name="HOST_NAME" />” disekat</translation>
 <translation id="3249845759089040423">Groovy</translation>
 <translation id="3252266817569339921">Bahasa Perancis</translation>
-<translation id="3257954757204451555">Siapakah di sebalik maklumat ini?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan kekunci Tab kemudian Enter untuk membuat acara baharu dalam Google Calendar dengan pantas</translation>
 <translation id="3261488570342242926">Ketahui tentang kad maya</translation>
 <translation id="3264837738038045344">Butang urus tetapan Chrome, tekan Enter untuk melawati tetapan Chrome anda</translation>
@@ -1129,6 +1127,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4414515549596849729">kuki dan data laman</translation>
 <translation id="4415426530740016218">Alamat Pengambilan</translation>
 <translation id="4424024547088906515">Pelayan ini tidak dapat membuktikan bahawa domainnya ialah <ph name="DOMAIN" />; sijil keselamatannya tidak dipercayai oleh Chrome. Ini mungkin disebabkan oleh kesilapan konfigurasi atau penyerang memintasi sambungan anda.</translation>
+<translation id="4428065317363009941">Pemperibadian iklan</translation>
 <translation id="443121186588148776">Port siri</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> tidak menerima sijil log masuk anda atau sijil log masuk mungkin tidak diberikan.</translation>
 <translation id="4432792777822557199">Halaman dalam <ph name="SOURCE_LANGUAGE" /> akan diterjemahkan kepada <ph name="TARGET_LANGUAGE" /> bermula dari sekarang</translation>
@@ -1261,7 +1260,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4838327282952368871">Berangan</translation>
 <translation id="4840250757394056958">Lihat sejarah Chrome anda</translation>
 <translation id="484462545196658690">Auto</translation>
-<translation id="4849865131988503897">Semakan ketepatan</translation>
 <translation id="4850886885716139402">Lihat</translation>
 <translation id="485316830061041779">Bahasa Jerman</translation>
 <translation id="4853901935952445031">Laman ini tidak akan dapat menggunakan API U2F selepas bulan Februari 2022. Jika anda pemilik laman ini, anda harus mengubah laman anda untuk menggunakan API Pengesahan Web.</translation>
@@ -1448,6 +1446,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5398772614898833570">Iklan disekat</translation>
 <translation id="5400836586163650660">Kelabu</translation>
 <translation id="540969355065856584">Pelayan ini tidak dapat membuktikan bahawa pelayan adalah <ph name="DOMAIN" />; sijil keselamatan pelayan tidak sah pada masa ini. Ini mungkin disebabkan oleh kesilapan konfigurasi atau penyerang memintas sambungan anda.</translation>
+<translation id="5412236728747081950">Laman ini mendapat minat anda daripada Chrome untuk memaparkan iklan yang lebih berkaitan kepada anda</translation>
 <translation id="541416427766103491">Petak 4</translation>
 <translation id="5421136146218899937">Kosongkan data semakan imbas...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> mahu menghantar pemberitahuan kepada anda</translation>
@@ -1964,7 +1963,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> tidak mematuhi piawaian keselamatan.</translation>
 <translation id="7210993021468939304">Aktiviti Linux dalam bekas dan boleh memasang serta menjalankan apl Linux dalam bekas</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /> mengenai masalah ini.</translation>
-<translation id="7215025035562547931">Luangkan sedikit masa untuk mempertimbangkan ketepatan</translation>
 <translation id="7217745192097460130">Gunakan Touch ID untuk mengesahkan dan melengkapkan pembelian anda?</translation>
 <translation id="7219179957768738017">Sambungan menggunakan <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Memproses</translation>
@@ -2094,6 +2092,7 @@ Butiran tambahan:
 <translation id="7569952961197462199">Alih keluar kad kredit daripada Chrome?</translation>
 <translation id="7569983096843329377">Hitam</translation>
 <translation id="7575207903026901870">Alih keluar butang Cadangan, tekan Enter untuk mengalih keluar cadangan ini</translation>
+<translation id="7577900504646297215">Urus minat</translation>
 <translation id="7578104083680115302">Bayar dengan cepat di tapak dan apl merentas peranti menggunakan kad yang telah disimpan dengan Google.</translation>
 <translation id="7579442726219254162">Pembolehubah "<ph name="VARIABLE" />" tidak diketahui dalam konfigurasi terurus bagi "<ph name="APPLICATION_ID" />".</translation>
 <translation id="7581199239021537589">Anjakan Y sisi 2 imej</translation>
@@ -2215,7 +2214,6 @@ Butiran tambahan:
 <translation id="7966803981046576691">Jenis akaun kerja</translation>
 <translation id="79682505114836835">Nilai "<ph name="VALUE" />" ialah warna perenambelasan yang tidak sah.</translation>
 <translation id="7968982339740310781">Lihat butiran</translation>
-<translation id="7970392640816874403">Apakah yang dikatakan oleh sumber lain?</translation>
 <translation id="7976214039405368314">Terlalu banyak permintaan</translation>
 <translation id="7977538094055660992">Peranti output</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -2567,7 +2565,6 @@ Butiran tambahan:
 <translation id="9155211586651734179">Persisian audio dilampirkan</translation>
 <translation id="9157595877708044936">Menyediakan...</translation>
 <translation id="9158625974267017556">C6 (Sampul Surat)</translation>
-<translation id="9164029392738894042">Semakan Ketepatan</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">Benarkan tapak menyemak sama ada anda mempunyai kaedah pembayaran yang disimpan</translation>
 <translation id="9169664750068251925">Sentiasa sekat di tapak ini</translation>

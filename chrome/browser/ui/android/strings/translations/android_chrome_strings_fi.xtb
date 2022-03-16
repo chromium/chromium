@@ -30,7 +30,6 @@
 <translation id="114825011539563458">Löydät tärkeimmät yksityisyys- ja suojausasetukset yhdestä paikasta</translation>
 <translation id="1149401351239820326">Viimeinen voimassaolokuukausi</translation>
 <translation id="1154704303112745282">Sivu ei saatavilla offline-tilassa: <ph name="VIOLATED_URL" /></translation>
-<translation id="1166688006062225587">Lista valittavissa olevista tileistä</translation>
 <translation id="1171770572613082465">Katso suositut sivustot napauttamalla Suosituimmat sivustot ‑painiketta</translation>
 <translation id="1173894706177603556">Muuta nimeä</translation>
 <translation id="1177863135347784049">Muokattu</translation>
@@ -571,6 +570,7 @@ Hae sanaa koskettamalla sitä pitkään. Jos haluat tarkentaa hakuasi, valitse e
 <translation id="4415276339145661267">Ylläpidä Google-tiliäsi</translation>
 <translation id="4425140285732600465">Hintaa seurataan. Voit saada ilmoituksen, jos hinta laskee jollakin sivustolla.</translation>
 <translation id="442518031075347249">Et voi tämän jälkeen käyttää virtuaalista korttia Google Payssa. <ph name="BEGIN_LINK1" />Lue lisää virtuaalisista korteista<ph name="END_LINK1" /></translation>
+<translation id="4428065317363009941">Mainosten personointi</translation>
 <translation id="4450672886426705087">Googlen hakutulokset.</translation>
 <translation id="4452411734226507615">Sulje välilehti <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Lisätty kirjanmerkiksi kansioon <ph name="FOLDER_NAME" /></translation>
@@ -685,6 +685,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="4988526792673242964">Sivut</translation>
 <translation id="5001388021414335527">Seuraa sivustoa valitsemalla tämä</translation>
 <translation id="5004416275253351869">Google-toimintojen hallinta</translation>
+<translation id="5005141133360250920">Reaktio poistettu</translation>
 <translation id="5005498671520578047">Kopioi salasana</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> haluaa muodostaa yhteyden</translation>
 <translation id="5016205925109358554">Serif</translation>
@@ -740,6 +741,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5368227114232678694">Voit selata yksityisesti tällä laitteella incognito-tilassa</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> avoin välilehti, vaihda välilehteä napauttamalla}other{<ph name="OPEN_TABS_MANY" /> avointa välilehteä, vaihda välilehteä napauttamalla}}</translation>
 <translation id="5375577065097716013">Hae kuvaa Google Lensilla <ph name="BEGIN_NEW" />Uusi<ph name="END_NEW" /></translation>
+<translation id="5376898820269806588">Reaktiota muutettu</translation>
 <translation id="5403644198645076998">Salli vain tietyt sivustot</translation>
 <translation id="5409881200985013443">Lähetetäänkö <ph name="ONE_TIME_CODE" /> (<ph name="CLIENT_NAME" />)?</translation>
 <translation id="5414836363063783498">Vahvistetaan…</translation>
@@ -897,7 +899,6 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="6277522088822131679">Sivua tulostettaessa tapahtui virhe. Yritä uudelleen.</translation>
 <translation id="6277722725779679269">Hinnan seurantaa ei voitu päivittää</translation>
 <translation id="6278428485366576908">Teema</translation>
-<translation id="6293443105724342169">Lista valittavissa olevista tileistä avattuna puolen näytön kokoiseksi</translation>
 <translation id="6294610283659775533">Voit lähettää välilehtiä laitteiden välillä, jos olet kirjautuneena niillä samalle Google-tilille</translation>
 <translation id="6297765934698848803">Laitettasi ylläpitävä organisaatio on poistanut kamerasi käytöstä.</translation>
 <translation id="6301525844455696527">Katso, mitä lukulistaltasi löytyy</translation>
@@ -1073,6 +1074,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="718926126787620637">Kirjanmerkkikansioiden lista avattu koko näytön kokoisena</translation>
 <translation id="7191430249889272776">Välilehti avattiin taustalla.</translation>
 <translation id="7196215469483532480">Yksityisyysoppaan selitys kokonaan avattuna</translation>
+<translation id="7208109991155904980">Reaktio siirretty</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 lataus odottaa}other{# latausta odottaa}}</translation>
 <translation id="7237045078887540010">Käyttämällä Chromea hyväksyt <ph name="BEGIN_TOS_LINK" />Googlen käyttöehdot<ph name="END_TOS_LINK" /> ja <ph name="BEGIN_ATOS_LINK" />Chromen ja Chrome-käyttöjärjestelmän lisäkäyttöehdot<ph name="END_ATOS_LINK" />. Myös <ph name="BEGIN_PRIVACY_LINK" />tietosuojakäytäntöä<ph name="END_PRIVACY_LINK" /> sovelletaan.</translation>
 <translation id="7242755609445462077">Tyylitelty korostus <ph name="CURRENT_DATE" /></translation>
@@ -1307,7 +1309,6 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="8461694314515752532">Salaa synkronoidut tiedot oman synkronoinnin tunnuslauseesi avulla</translation>
 <translation id="8466613982764129868">Varmista, että <ph name="TARGET_DEVICE_NAME" /> on yhteydessä internetiin</translation>
 <translation id="8473863474539038330">Osoitteet ja muita tietoja</translation>
-<translation id="847656914027543776">Lista valittavissa olevista tileistä on suljettu</translation>
 <translation id="8481921391193215807">Kun se on päällä, sivustot voivat käyttää täällä näkyvää yksityisyyttä suojaavaa tekniikkaa sisällön ja palveluiden tarjoamiseen. Saatavilla on esimerkiksi vaihtoehtoja sivustojen väliselle seurannalle. Muita kokeiluja voidaan lisätä ajan myötä.
 
 <ph name="BEGIN_LIST_ITEM1" />Mainostajat ja julkaisijat voivat käyttää FLoC-tekniikkaa.<ph name="END_LIST_ITEM1" />
@@ -1362,6 +1363,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="8683526617475118045">Mitä saat käyttöösi</translation>
 <translation id="869891660844655955">Vanhenemispäivämäärä</translation>
 <translation id="8699120352855309748">Älä ehdota näiden kielten kääntämistä</translation>
+<translation id="8712637175834984815">Ymmärretty</translation>
 <translation id="8725066075913043281">Yritä uudelleen</translation>
 <translation id="8730621377337864115">Valmis</translation>
 <translation id="8746155870861185046">Jaa kohta</translation>
@@ -1434,7 +1436,6 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="9108312223223904744">Ohjeet puhelimen käyttöön suojausavaimena</translation>
 <translation id="9108808586816295166">Suojattu DNS ei välttämättä ole koko ajan käytettävissä</translation>
 <translation id="9133397713400217035">Tutki offline-tilassa</translation>
-<translation id="9133523398139146080">Lista valittavissa olevista tileistä avattuna koko näytön kokoiseksi</translation>
 <translation id="9137013805542155359">Näytä alkuperäinen</translation>
 <translation id="9148126808321036104">Kirjaudu sisään uudelleen</translation>
 <translation id="9155898266292537608">Voit hakea myös napauttamalla sanaa nopeasti.</translation>

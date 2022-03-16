@@ -1063,7 +1063,6 @@
 <translation id="2019718679933488176">เปิดเสี&amp;ยงในแท็บใหม่</translation>
 <translation id="2020183425253392403">แสดงการตั้งค่าที่อยู่เครือข่าย</translation>
 <translation id="2020225359413970060">สแกนไฟล์</translation>
-<translation id="2022395138980869975">เปิด/ปิดการค้นหาในแผงด้านข้าง</translation>
 <translation id="2023167225947895179">PIN อาจคาดเดาได้ง่าย</translation>
 <translation id="202352106777823113">การดาวน์โหลดนี้ใช้เวลานานเกินไปและถูกหยุดลงโดยเครือข่าย</translation>
 <translation id="2024195579772565064">ลบเครื่องมือค้นหา</translation>
@@ -2961,7 +2960,6 @@
 <translation id="3888053818972567950">การเชื่อมต่อ <ph name="WEB_DRIVE" /></translation>
 <translation id="3888550877729210209">จดโน้ตด้วย <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">ข้อมูลนี้ช่วยให้เราเข้าใจปัญหาที่คุณพบเกี่ยวกับ Assistant ได้ดีขึ้น ระบบจะเก็บข้อมูลไว้สูงสุด 90 วันและจำกัดให้เฉพาะทีมวิศวกรและทีมความคิดเห็นที่เกี่ยวข้องเข้าถึงเท่านั้น</translation>
-<translation id="3888900458694486810">ปิดการค้นหาในแผงด้านข้าง</translation>
 <translation id="3890064827463908288">เปิดการซิงค์ของ Chrome เพื่อใช้การซิงค์ Wi-Fi</translation>
 <translation id="389313931326656921">กำหนดสวิตช์ให้กับ "ถัดไป"</translation>
 <translation id="3893295674388762059">หากต้องการล้างข้อมูล ให้ปิดหน้าต่างที่ไม่ระบุตัวตนทั้งหมด</translation>
@@ -3275,7 +3273,6 @@
 <translation id="4208390505124702064">ค้นหา <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">ขนาดใหญ่</translation>
 <translation id="4209251085232852247">ปิดอยู่</translation>
-<translation id="4209464433672152343">เอกสารจะ<ph name="BEGIN_LINK_HELP" />ส่งไปยัง Google<ph name="END_LINK_HELP" /> เพื่อเตรียมพิมพ์ ดู แก้ไข และจัดการเครื่องพิมพ์และประวัติการพิมพ์ได้ใน<ph name="BEGIN_LINK_DASHBOARD" />แดชบอร์ด Google Cloud Print<ph name="END_LINK_DASHBOARD" /></translation>
 <translation id="4210048056321123003">กำลังดาวน์โหลดเครื่องเสมือน</translation>
 <translation id="421182450098841253">&amp;แสดงแถบบุ๊กมาร์ก</translation>
 <translation id="4211851069413100178">ส่งข้อมูลการใช้งานและการวินิจฉัย ช่วยปรับปรุงประสบการณ์การใช้งาน Android ของคุณให้ดีขึ้นด้วยการส่งข้อมูลการวินิจฉัย อุปกรณ์ และการใช้งานแอปไปยัง Google โดยอัตโนมัติ ซึ่งจะช่วยให้แอปและระบบมีความเสถียร พร้อมทั้งปรับปรุงด้านอื่นๆ ข้อมูลที่รวบรวมมาบางส่วนจะมีประโยชน์ต่อแอปและพาร์ทเนอร์ของ Google ด้วย เช่น นักพัฒนาแอป Android เจ้าของเป็นผู้บังคับใช้<ph name="BEGIN_LINK1" />การตั้งค่า<ph name="END_LINK1" />นี้ เจ้าของอาจเลือกที่จะส่งข้อมูลการวินิจฉัยและการใช้งานสำหรับอุปกรณ์นี้ไปยัง Google หากเปิดการตั้งค่ากิจกรรมเพิ่มเติมบนเว็บและแอปไว้ ระบบอาจบันทึกข้อมูลนี้ไว้ในบัญชี Google ของคุณ <ph name="BEGIN_LINK2" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK2" /></translation>
@@ -6173,7 +6170,6 @@
 <translation id="7180611975245234373">รีเฟรช</translation>
 <translation id="7180865173735832675">กำหนดค่า</translation>
 <translation id="7182791023900310535">ย้ายรหัสผ่าน</translation>
-<translation id="7183420126213758623">เปิด/ปิดการค้นหาในแผงด้านข้าง ไม่ได้เปิดใช้งานการค้นหาในแผงด้านข้าง</translation>
 <translation id="7186088072322679094">เก็บในแถบเครื่องมือ</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> เปิดโฟลเดอร์นี้ไม่ได้เนื่องจากมีไฟล์ระบบอยู่</translation>
 <translation id="7187428571767585875">รายการรีจิสทรีที่จะนำออกหรือเปลี่ยนแปลง:</translation>
@@ -6695,7 +6691,6 @@
 <translation id="7701040980221191251">ไม่มี</translation>
 <translation id="7701869757853594372">ผู้ใช้จัดการ</translation>
 <translation id="7702574632857388784">นำ <ph name="FILE_NAME" /> ออกจากรายการ</translation>
-<translation id="7702599324215660661">ล็อกเมื่อไม่อยู่หน้าจอ</translation>
 <translation id="7702907602086592255">โดเมน</translation>
 <translation id="7704305437604973648">งาน</translation>
 <translation id="7704317875155739195">เติมข้อความค้นหาและ URL อัตโนมัติ</translation>
@@ -6801,7 +6796,6 @@
 <translation id="7798844538707273832">บล็อก<ph name="PERMISSION" />โดยอัตโนมัติ</translation>
 <translation id="7799299114731150374">ตั้งค่าวอลเปเปอร์เรียบร้อยแล้ว</translation>
 <translation id="7799817062559422778">โหมดสว่าง</translation>
-<translation id="7800159967992492578">เปิด/ปิดการค้นหาในแผงด้านข้าง เปิดใช้งานการค้นหาในแผงด้านข้างแล้ว</translation>
 <translation id="7800518121066352902">หมุน&amp;ทวนเข็มนาฬิกา</translation>
 <translation id="7801679634091975683">การเปลี่ยนแปลงที่คุณทำที่นี่จะมีผลกับเบราว์เซอร์ Lacros Chrome เท่านั้น หากต้องการเปลี่ยนแปลงการตั้งค่าเบราว์เซอร์ Chrome ให้เปิดเบราว์เซอร์ Chrome แล้วไปที่การตั้งค่า</translation>
 <translation id="780301667611848630">ไม่ ขอบคุณ</translation>

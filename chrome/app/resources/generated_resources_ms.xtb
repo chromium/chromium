@@ -1075,7 +1075,6 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="2019718679933488176">&amp;Buka Audio dalam Tab Baharu</translation>
 <translation id="2020183425253392403">Tunjukkan tetapan alamat rangkaian</translation>
 <translation id="2020225359413970060">Imbas fail</translation>
-<translation id="2022395138980869975">Togol carian sisi</translation>
 <translation id="2023167225947895179">PIN mungkin mudah untuk diteka</translation>
 <translation id="202352106777823113">Muat turun mengambil masa terlalu lama dan telah diberhentikan oleh rangkaian.</translation>
 <translation id="2024195579772565064">Padamkan enjin carian</translation>
@@ -2978,7 +2977,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="3888053818972567950">Sambungan <ph name="WEB_DRIVE" /></translation>
 <translation id="3888550877729210209">Mencatat nota dengan <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">Maklumat ini membantu kami memahami isu Assistant anda dengan lebih baik. Maklumat ini akan disimpan selama maksimum 90 hari dan akses dihadkan kepada pasukan kejuruteraan dan maklum balas yang berkenaan.</translation>
-<translation id="3888900458694486810">Tutup carian sisi</translation>
 <translation id="3890064827463908288">Hidupkan Penyegerakan Chrome untuk menggunakan Penyegerakan Wi-Fi</translation>
 <translation id="389313931326656921">Tetapkan suis untuk “Seterusnya”</translation>
 <translation id="3893295674388762059">Untuk mengosongkan data, tutup semua tetingkap Inkognito</translation>
@@ -3214,6 +3212,10 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4110490973560452005">Muat turun selesai: <ph name="FILE_NAME" />. Tekan Shift+F6 untuk pergi ke kawasan bar muat turun.</translation>
 <translation id="4110686435123617899">Pilih album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (luar talian)</translation>
+<translation id="4114524937989710624">Anda melihat fail yang dicadangkan untuk membantu anda kembali ke aktiviti anda baru-baru ini dalam Google Drive dengan mudah.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Anda boleh mengurus tetapan daripada menu kad atau melihat lebih banyak pilihan dalam Sesuaikan Chrome.</translation>
 <translation id="4115002065223188701">Rangkaian di luar liputan</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="4116704186509653070">Buka sekali lagi</translation>
@@ -3292,7 +3294,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4208390505124702064">Cari <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Besar</translation>
 <translation id="4209251085232852247">Dimatikan</translation>
-<translation id="4209464433672152343">Dokumen <ph name="BEGIN_LINK_HELP" />dihantar kepada Google<ph name="END_LINK_HELP" /> bagi persediaan untuk dicetak. Lihat, edit dan urus pencetak serta sejarah pencetak anda di <ph name="BEGIN_LINK_DASHBOARD" />papan pemuka Cetakan Awan Google<ph name="END_LINK_DASHBOARD" />.</translation>
 <translation id="4210048056321123003">Memuat turun mesin maya</translation>
 <translation id="421182450098841253">&amp;Tunjukkan Bar Penanda Halaman</translation>
 <translation id="4211851069413100178">Hantar data penggunaan dan diagnostik. Bantu kami meningkatkan pengalaman Android anda dengan menghantar data diagnostik dan penggunaan peranti serta apl kepada Google secara automatik. Data ini akan membantu peningkatan kestabilan sistem dan apl serta pelbagai lagi. Sesetengah data agregat juga akan membantu apl dan rakan kongsi Google, seperti pembangun Android. <ph name="BEGIN_LINK1" />Tetapan<ph name="END_LINK1" /> ini dikuatkuasakan oleh pemilik. Pemilik mungkin memilih untuk menghantar data diagnostik dan penggunaan bagi peranti ini kepada Google. Jika tetapan Aktiviti Web &amp; Apl tambahan anda dihidupkan, data ini mungkin disimpan ke akaun Google anda. <ph name="BEGIN_LINK2" />Ketahui Lebih Lanjut<ph name="END_LINK2" /></translation>
@@ -3723,6 +3724,10 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4651484272688821107">Tidak dapat memuatkan komponen dalam talian dengan sumber mod tunjuk cara.</translation>
 <translation id="4652935475563630866">Perubahan dalam tetapan kamera memerlukan Desktop Parallels dilancarkan semula. Lancarkan semula Desktop Parallels untuk meneruskan.</translation>
 <translation id="4653405415038586100">Ralat semasa mengkonfigurasi Linux</translation>
+<translation id="465406513924180949">Anda melihat troli yang membantu anda mendapatkan kembali item yang anda tinggalkan dalam troli beli-belah dengan mudah di seluruh web.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Anda boleh mengurus tetapan daripada menu kad atau melihat lebih banyak pilihan dalam Sesuaikan Chrome.</translation>
 <translation id="4654236001025007561">Kongsikan fail dengan Chromebook dan peranti Android di sekeliling anda</translation>
 <translation id="4657914796247705218">Kelajuan TrackPoint</translation>
 <translation id="4658285806588491142">Pastikan skrin anda tertutup</translation>
@@ -4165,6 +4170,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5121130586824819730">Cakera keras anda telah penuh. Sila simpan ke lokasi lain atau sediakan lagi ruang pada cakera keras.</translation>
 <translation id="5123433949759960244">Bola Keranjang</translation>
 <translation id="5125751979347152379">URL tidak sah.</translation>
+<translation id="5125967981703109366">Perihal kad ini</translation>
 <translation id="5126611267288187364">Lihat perubahan</translation>
 <translation id="5127242257756472928">Tidak dibenarkan untuk menggunakan maklumat tentang skrin anda bagi membuka dan meletakkan tetingkap</translation>
 <translation id="5127620150973591153">ID sambungan selamat: <ph name="TOKEN" /></translation>
@@ -5151,6 +5157,10 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6116921718742659598">Tukar tetapan bahasa dan input</translation>
 <translation id="6119927814891883061">Namakan peranti kepada <ph name="DEVICE_NAME" /></translation>
 <translation id="6120205520491252677">Pin halaman ini pada skrin Mula...</translation>
+<translation id="6120707837086723438">Anda melihat resipi yang dicadangkan berdasarkan aktiviti Carian resipi anda baru-baru ini.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Anda boleh mengurus tetapan daripada menu kad atau melihat lebih banyak pilihan dalam Sesuaikan Chrome.</translation>
 <translation id="6121773125605585883">Lihat kata laluan dengan nama pengguna <ph name="USERNAME" /> untuk <ph name="WEBSITE" /></translation>
 <translation id="6122081475643980456">Sambungan Internet anda sedang dikawal</translation>
 <translation id="6122093587541546701">E-mel (pilihan):</translation>
@@ -6192,7 +6202,6 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="7180611975245234373">Muat semula</translation>
 <translation id="7180865173735832675">Peribadikan</translation>
 <translation id="7182791023900310535">Alihkan kata laluan anda</translation>
-<translation id="7183420126213758623">Togol carian sisi. Carian sisi tidak diaktifkan.</translation>
 <translation id="7186088072322679094">Simpan dalam Bar Alat</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> tidak dapat membuka folder ini kerana folder ini mengandungi fail sistem</translation>
 <translation id="7187428571767585875">Masukan daftaran yang hendak dialih keluar atau diubah:</translation>
@@ -6714,7 +6723,6 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="7701040980221191251">Tiada</translation>
 <translation id="7701869757853594372">Pemegang USER</translation>
 <translation id="7702574632857388784">Alih keluar <ph name="FILE_NAME" /> daripada senarai</translation>
-<translation id="7702599324215660661">Kunci apabila Meninggalkan</translation>
 <translation id="7702907602086592255">Domain</translation>
 <translation id="7704305437604973648">Tugas</translation>
 <translation id="7704317875155739195">Autolengkap carian dan URL</translation>
@@ -6759,6 +6767,10 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="7744192722284567281">Ditemukan dalam pelanggaran data</translation>
 <translation id="7744649840067671761">Tekan suis atau kekunci papan kekunci baharu untuk memulakan penetapan.
 Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</translation>
+<translation id="7746739418892731373">Anda sedang melihat serlahan foto dan video daripada pustaka Google Photos anda. Anda boleh mengawal perkara yang dipaparkan dalam serlahan anda di <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" />.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Anda boleh mengurus tetapan untuk kad ini daripada menu kad atau melihat lebih banyak pilihan dalam Sesuaikan Chrome.</translation>
 <translation id="7750228210027921155">Gambar dalam gambar</translation>
 <translation id="7751260505918304024">Paparkan semua</translation>
 <translation id="7753735457098489144">Pemasangan gagal kerana ruang storan tidak mencukupi. Untuk mengosongkan ruang, padamkan fail daripada storan peranti.</translation>
@@ -6821,7 +6833,6 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="7798844538707273832"><ph name="PERMISSION" /> disekat secara automatik</translation>
 <translation id="7799299114731150374">Kertas dinding berjaya ditetapkan</translation>
 <translation id="7799817062559422778">Mod cerah</translation>
-<translation id="7800159967992492578">Togol carian sisi. Carian sisi diaktifkan.</translation>
 <translation id="7800518121066352902">Putar M&amp;elawan Arah Jam</translation>
 <translation id="7801679634091975683">Perubahan yang anda buat di sini hanya digunakan pada Penyemak Imbas Chrome Lacros. Untuk membuat perubahan pada tetapan Penyemak Imbas Chrome anda, buka Penyemak Imbas Chrome dan pergi ke tetapan.</translation>
 <translation id="780301667611848630">Tidak, terima kasih</translation>

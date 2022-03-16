@@ -1063,7 +1063,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="2019718679933488176">&amp;Apri audio in un'altra scheda</translation>
 <translation id="2020183425253392403">Mostra impostazioni indirizzi di rete</translation>
 <translation id="2020225359413970060">Esegui la scansione del file</translation>
-<translation id="2022395138980869975">Attiva/Disattiva ricerca laterale</translation>
 <translation id="2023167225947895179">Il PIN potrebbe essere facile da scoprire</translation>
 <translation id="202352106777823113">Il download stava richiedendo troppo tempo ed è stato interrotto dalla rete.</translation>
 <translation id="2024195579772565064">Elimina motore di ricerca</translation>
@@ -1329,6 +1328,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2278562042389100163">Apri finestra browser</translation>
 <translation id="2278668501808246459">Avvio del gestore di container</translation>
 <translation id="2280486287150724112">Margine destro</translation>
+<translation id="2281863813036651454">Clic con il tasto sinistro del mouse</translation>
 <translation id="2282146716419988068">Processo GPU</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{Apri tutti in un &amp;nuovo gruppo di schede}=1{Apri in un &amp;nuovo gruppo di schede}other{Apri tutti ({COUNT}) in un &amp;nuovo gruppo di schede}}</translation>
 <translation id="2285942871162473373">Impossibile riconoscere l'impronta. Riprova.</translation>
@@ -2960,7 +2960,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="3888053818972567950">Connessione <ph name="WEB_DRIVE" /></translation>
 <translation id="3888550877729210209">Creazione di appunti con <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">Queste informazioni ci aiutano a capire meglio il problema del tuo assistente. Vengono memorizzate per massimo 90 giorni e l'accesso è limitato ai team di tecnici e responsabili dei feedback competenti.</translation>
-<translation id="3888900458694486810">Chiudi ricerca laterale</translation>
 <translation id="3890064827463908288">Per utilizzare Sync Wi-Fi, attiva Sincronizzazione Chrome</translation>
 <translation id="389313931326656921">Assegna sensore per "Prossimo"</translation>
 <translation id="3893295674388762059">Per cancellare i dati, chiudi tutte le finestre di navigazione in incognito</translation>
@@ -3274,7 +3273,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="4208390505124702064">Cerca su <ph name="SITE_NAME" />:</translation>
 <translation id="4209092469652827314">Grande</translation>
 <translation id="4209251085232852247">Disattivato</translation>
-<translation id="4209464433672152343">I documenti vengono <ph name="BEGIN_LINK_HELP" />inviati a Google<ph name="END_LINK_HELP" /> per essere preparati per la stampa. Visualizza, modifica e gestisci le tue stampanti e la cronologia delle stampanti nella <ph name="BEGIN_LINK_DASHBOARD" />dashboard di Google Cloud Print<ph name="END_LINK_DASHBOARD" />.</translation>
 <translation id="4210048056321123003">Download della macchina virtuale…</translation>
 <translation id="421182450098841253">&amp;Mostra barra dei Preferiti</translation>
 <translation id="4211851069413100178">Invia dati diagnostici e sull'utilizzo. Contribuisci a migliorare la tua esperienza Android tramite l'invio automatico a Google di dati diagnostici e sull'utilizzo delle app e del dispositivo. Tali dati contribuiranno alla stabilità di app e sistema, nonché ad altri miglioramenti. Alcuni dati aggregati saranno utili anche alle app e ai partner di Google, ad esempio agli sviluppatori Android. Questa <ph name="BEGIN_LINK1" />impostazione<ph name="END_LINK1" /> è applicata dal proprietario. Il proprietario potrebbe decidere di inviare a Google dati di diagnostica e utilizzo relativi a questo dispositivo. Se hai attivato l'impostazione Attività web e app aggiuntiva, queste informazioni potrebbero essere salvate nel tuo Account Google. <ph name="BEGIN_LINK2" />Ulteriori informazioni<ph name="END_LINK2" /></translation>
@@ -5145,6 +5143,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6129938384427316298">Commento certificato Netscape</translation>
 <translation id="6129953537138746214">Spazio</translation>
 <translation id="6130692320435119637">Aggiungi Wi-Fi</translation>
+<translation id="6130887916931372608">Tasto della tastiera</translation>
 <translation id="6136114942382973861">Chiudi la barra dei download</translation>
 <translation id="6136287496450963112">Il token di sicurezza non è protetto tramite PIN. Per gestire le impronte, devi prima creare un PIN.</translation>
 <translation id="6138680304137685902">Firma X9.62 ECDSA con SHA-384</translation>
@@ -6167,7 +6166,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="7180611975245234373">Aggiorna</translation>
 <translation id="7180865173735832675">Personalizza</translation>
 <translation id="7182791023900310535">Sposta la password</translation>
-<translation id="7183420126213758623">Attiva/Disattiva ricerca laterale. Ricerca laterale non attivata.</translation>
 <translation id="7186088072322679094">Mantieni in barra degli strumenti</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> non può aprire questa cartella perché contiene file di sistema</translation>
 <translation id="7187428571767585875">Voci del registro da rimuovere o modificare:</translation>
@@ -6689,7 +6687,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="7701040980221191251">Nulla</translation>
 <translation id="7701869757853594372">Handle UTENTE</translation>
 <translation id="7702574632857388784">Rimuovi <ph name="FILE_NAME" /> dall'elenco</translation>
-<translation id="7702599324215660661">Blocca quando ti allontani</translation>
 <translation id="7702907602086592255">Dominio</translation>
 <translation id="7704305437604973648">Attività</translation>
 <translation id="7704317875155739195">Completamento automatico di ricerche e URL</translation>
@@ -6759,6 +6756,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7768770796815395237">Cambia</translation>
 <translation id="7768784765476638775">Seleziona per ascoltare</translation>
 <translation id="7770406201819593386">Esecuzione di test diagnostici di Chrome OS Flex.</translation>
+<translation id="7770450735129978837">Clic con il tasto destro del mouse</translation>
 <translation id="7770612696274572992">Immagine copiata da un altro dispositivo</translation>
 <translation id="7771452384635174008">Layout</translation>
 <translation id="7772032839648071052">Conferma passphrase</translation>
@@ -6795,7 +6793,6 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7798844538707273832">Autorizzazione <ph name="PERMISSION" /> bloccata automaticamente</translation>
 <translation id="7799299114731150374">Sfondo impostato correttamente</translation>
 <translation id="7799817062559422778">Modalità Luce</translation>
-<translation id="7800159967992492578">Attiva/Disattiva ricerca laterale. Ricerca laterale attivata.</translation>
 <translation id="7800518121066352902">Ruota in senso anti&amp;orario</translation>
 <translation id="7801679634091975683">Le modifiche che apporti qui vengono applicate soltanto al browser Lacros. Per apportare modifiche alle impostazioni del browser Chrome, aprilo e vai alle impostazioni.</translation>
 <translation id="780301667611848630">No grazie</translation>

@@ -191,7 +191,6 @@
 <translation id="1223789468190631420">Safe Browsing mengaktifkan status untuk sumber tepercaya</translation>
 <translation id="123018742985150697">Wajibkan kecocokan antara pengguna lokal dan pemilik host akses jarak jauh</translation>
 <translation id="123081309365616809">Mengaktifkan casting konten ke perangkat</translation>
-<translation id="1239411164172567974">Aktifkan Direct Sockets API.</translation>
 <translation id="1239526922294123540">Mengontrol apakah situs diizinkan untuk membuat permintaan ke endpoint jaringan yang lebih pribadi dengan cara yang tidak aman.
 
           Jika kebijakan ini disetel ke benar (true), semua pemeriksaan <ph name="PRIVATE_NETWORK_ACCESS" /> akan dinonaktifkan untuk semua asal. Hal ini memungkinkan penyerang melakukan serangan <ph name="CSRF" /> di server jaringan pribadi.
@@ -1019,7 +1018,6 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 <translation id="208623333578980446">Izinkan penguncian layar saat aktif untuk pengelolaan daya</translation>
 <translation id="2086944573376916479">Akun terkelola harus berupa akun utama dan tidak memiliki akun sekunder</translation>
 <translation id="2089541797660774692">Aktifkan pelaporan cloud browser terkelola</translation>
-<translation id="2090304907729569435">Jangan izinkan hasil penelusuran <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> ditampilkan di panel samping Browser.</translation>
 <translation id="2090939118981888335">Jika kebijakan disetel ke Aktif, proxy kompresi data akan diizinkan. Jika kebijakan disetel ke Nonaktif, proxy tidak akan diizinkan.
 
       Jika kebijakan disetel, pengguna tidak dapat mengubahnya. Jika tidak disetel, pengguna dapat memilih menggunakan fitur tersebut.</translation>
@@ -1065,6 +1063,7 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
       Jika <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" /> tidak disetel, tidak akan ada ikon untuk penyedia penelusuran.</translation>
 <translation id="2145735238144543545">Sertifikat Klien yang diperlukan</translation>
 <translation id="2146103669166779785">Warna hex yang akan digunakan untuk membuat dan menerapkan tema ke browser.</translation>
+<translation id="2148769554831004951">Paksa pengaktifan WebSQL.</translation>
 <translation id="214901426630414675">Batasi mode dupleks pencetakan</translation>
 <translation id="2149330464730004005">Aktifkan pencetakan warna</translation>
 <translation id="2149592087996467903">Cegah WebRTC menggunakan versi TLS/DTLS yang usang</translation>
@@ -1783,7 +1782,6 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 
       Jika disetel ke nonaktif, update komponen akan dinonaktifkan. Namun, beberapa komponen akan dikecualikan dari kebijakan ini: update komponen apa pun yang tidak berisi kode yang dapat dieksekusi dan yang penting bagi keamanan browser, tidak akan dinonaktifkan.
       Contoh komponen tersebut meliputi daftar pencabutan sertifikat dan filter subresource.</translation>
-<translation id="2939988360019366928">Mengizinkan hasil penelusuran <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> terbaru ditampilkan di panel samping Browser</translation>
 <translation id="2940127076681735544">Jika kebijakan disetel ke URL yang valid, <ph name="PRODUCT_NAME" /> akan mendownload daftar situs dari URL tersebut dan menerapkan aturan seolah-olah aturan tersebut disiapkan dengan kebijakan <ph name="SITELIST_POLICY_NAME" />.
 
       Jika kebijakan tidak disetel (atau disetel ke URL yang tidak valid), <ph name="PRODUCT_NAME" /> tidak akan menggunakannya sebagai sumber aturan untuk beralih browser.
@@ -3555,9 +3553,6 @@ Jika kebijakan ini disetel, <ph name="PRODUCT_OS_NAME" /> hanya mengizinkan peng
       Jika kebijakan disetel ke Nonaktif, <ph name="PRODUCT_NAME" /> akan berhenti mengirimkan kueri tersebut.</translation>
 <translation id="5039110755072335605">Dukungan header permintaan non-karakter pengganti CORS</translation>
 <translation id="504116558738617678">Hanya tampilkan peringatan ruang penyimpanan hampir penuh jika perangkat tidak dikelola atau hanya terdapat 1 pengguna</translation>
-<translation id="5049105847726444023">Jika kebijakan disetel ke Aktif atau tidak disetel, pengguna akan dapat menampilkan hasil penelusuran <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> terbaru di panel samping dengan mengalihkan ikon di toolbar.
-
-      Jika kebijakan disetel ke Nonaktif, ikon dari toolbar yang membuka panel samping yang berisi hasil penelusuran <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> akan dihapus.</translation>
 <translation id="5052278640307929670">Jika kebijakan disetel, penggabungan kebijakan yang dipilih akan memungkinkan jika kebijakan tersebut berasal dari sumber yang berbeda, dengan cakupan dan level yang sama.
 
       Jika kebijakan ada dalam daftar dan terdapat konflik antara sumber dengan:
@@ -4697,6 +4692,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
           Nilai kebijakan harus ditentukan dalam milidetik. Nilai dikunci ke kurang dari atau sama dengan penundaan waktu tidak ada aktivitas.
 
           Pesan peringatan hanya ditampilkan jika tindakan tidak ada aktivitas adalah logout atau matikan.</translation>
+<translation id="6331172765821724350">Izinkan WebSQL dinonaktifkan oleh tanda Chrome.</translation>
 <translation id="6331943515692769234">Paksa penggunaan algoritme GREASE Agen Pengguna sebelumnya.</translation>
 <translation id="6332546092866098577">Blokir akses baca melalui File System API di situs ini</translation>
 <translation id="6334330017384340264">Kebijakan ini akan menentukan aplikasi dan URL mana yang harus diizinkan untuk batasan penggunaan per aplikasi.
@@ -5724,9 +5720,6 @@ Jika kebijakan ini tidak disetel atau kosong, pengguna dapat menyetel akun Googl
 <translation id="7459601923199346224">Mengontrol kebijakan pengguna dan perangkat untuk pengelolaan sertifikat.</translation>
 <translation id="7459633275230216698">Izinkan dialog pemilihan file</translation>
 <translation id="7464991223784276288">Membatasi cookie dari URL yang cocok ke sesi saat ini</translation>
-<translation id="7466522266556143347">Jika kebijakan disetel ke Aktif, pengguna akan dapat menggunakan Direct Sockets API (asalkan semua kondisi lain yang diperlukan terpenuhi).
-      Jika kebijakan disetel ke Nonaktif, pengguna tidak dapat mengakses API tersebut.
-      Jika kebijakan ini tidak disetel, secara default pengguna yang dikelola perusahaan tidak akan diizinkan dan pengguna yang tidak dikelola perusahaan akan diizinkan.</translation>
 <translation id="7468182772656807573">Menyetel kebijakan akan menentukan frekuensi pengiriman paket jaringan pemantauan, dalam milidetik. Rentang intervalnya dari 30 detik hingga 24 jam. Nilai di luar rentang ini akan dibulatkan ke rentang ini.
 
       Jika tidak disetel, interval default 3 menit akan berlaku.</translation>
@@ -6213,7 +6206,6 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
 
       Jika tidak ditetapkan, kebijakan ini akan diaktifkan tetapi pengguna dapat mengubahnya.</translation>
 <translation id="7956210013490975468">Mengonfigurasi layanan System-proxy untuk <ph name="PRODUCT_OS_NAME" />.</translation>
-<translation id="7958340569967087581">Izinkan hasil penelusuran <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> ditampilkan di panel samping Browser.</translation>
 <translation id="7958537754689366707">Sandi harus dimasukkan setiap dua belas jam</translation>
 <translation id="7959035883875301444">Mengontrol penggunaan JIT JavaScript</translation>
 <translation id="7961779417826583251">Nonaktifkan penerapan Transparansi Sertifikat untuk daftar Otoritas Sertifikat Lama</translation>
@@ -6873,7 +6865,6 @@ Kebijakan akan dihapus pada M75.</translation>
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, host akses jarak jauh akan dapat dikaitkan dengan pengguna lokal mana pun.</translation>
 <translation id="867708016260789630">Paksa Mode Terbatas YouTube menjadi minimal Menengah</translation>
 <translation id="8677853537025397834">Mengizinkan WebHID API di situs ini</translation>
-<translation id="8684781382594546769">Nonaktifkan Direct Sockets API.</translation>
 <translation id="8685024486845674965">Peringatan perlindungan sandi dipicu oleh penggunaan ulang sandi</translation>
 <translation id="8685680544554917389">Jika kebijakan disetel ke Benar (True), <ph name="PRODUCT_NAME" /> akan dapat memutar otomatis media. Jika kebijakan disetel ke Salah (False), <ph name="PRODUCT_NAME" /> akan berhenti memutar otomatis media.
 
@@ -6947,6 +6938,9 @@ Kebijakan akan dihapus pada M75.</translation>
 <translation id="8757552286070680084">Konfigurasi DTC wilco</translation>
 <translation id="8758831693895931466">Aktifkan pendaftaran pengelolaan cloud wajib</translation>
 <translation id="8759829385824155666">Jenis enkripsi Kerberos yang diizinkan</translation>
+<translation id="8763716376920670835">WebSQL aktif secara default mulai M101, tetapi dapat dinonaktifkan melalui tanda Chrome.
+          Jika kebijakan ini disetel ke salah (false) atau tidak disetel, WebSQL dapat dinonaktifkan.
+          Jika kebijakan ini disetel ke benar (true), WebSQL tidak dapat dinonaktifkan.</translation>
 <translation id="8767743923206070405">Jika kebijakan disetel ke Aktif, tombol Beranda akan ditampilkan di toolbar <ph name="PRODUCT_NAME" />. Jika kebijakan disetel ke Nonaktif, tombol Beranda tidak akan muncul.
 
       Jika Anda menyetel kebijakan, pengguna tidak dapat mengubahnya di <ph name="PRODUCT_NAME" />. Jika tidak disetel, pengguna dapat memilih untuk menampilkan tombol Beranda atau tidak.</translation>

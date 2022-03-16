@@ -1065,7 +1065,6 @@
 <translation id="2019718679933488176">&amp;Բացել ձայնանյութը նոր ներդիրով</translation>
 <translation id="2020183425253392403">Ցուցադրել ցանցային հասցեի կարգավորումները</translation>
 <translation id="2020225359413970060">Սկանավորել ֆայլը</translation>
-<translation id="2022395138980869975">Միացնել/անջատել կողային որոնումը</translation>
 <translation id="2023167225947895179">PIN կոդը հեշտ է կռահել</translation>
 <translation id="202352106777823113">Ներբեռնումը չափից երկար էր տևում, ուստի դադարեցվեց ցանցի կողմից:</translation>
 <translation id="2024195579772565064">Որոնողական համակարգի ջնջում</translation>
@@ -1331,6 +1330,7 @@
 <translation id="2278562042389100163">Բացել դիտարկիչի պատուհանը</translation>
 <translation id="2278668501808246459">Կոնտեյներների կառավարիչը գործարկվում է</translation>
 <translation id="2280486287150724112">Աջ լուսանցք</translation>
+<translation id="2281863813036651454">Մկնիկի ձախ ստեղնի սեղմում</translation>
 <translation id="2282146716419988068">GPU գործընթացը</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{Բացել բոլորը &amp;նոր ներդիրների խմբում}=1{Բացել &amp;նոր ներդիրների խմբում}one{Բացել բոլորը ({COUNT}) &amp;նոր ներդիրների խմբում}other{Բացել բոլորը ({COUNT}) &amp;նոր ներդիրների խմբում}}</translation>
 <translation id="2285942871162473373">Չհաջողվեց ճանաչել ձեր մատնահետքը։ Նորից փորձեք։</translation>
@@ -2961,7 +2961,6 @@
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" />-ի կապակցում</translation>
 <translation id="3888550877729210209">Կատարեք նշումներ <ph name="LOCK_SCREEN_APP_NAME" />-ի միջոցով</translation>
 <translation id="3888586133700543064">Այս տեղեկությունները կօգնեն ավելի լավ հասկանալ ձեր Օգնականի հետ կապված խնդրի էությունը։ Տեղեկությունները պահվում են մինչև 90 օր և հասանելի են միայն ինժեներների և օգնության թիմերին։</translation>
-<translation id="3888900458694486810">Փակել կողային որոնումը</translation>
 <translation id="3890064827463908288">Միացրեք Chrome Sync-ը՝ Wi-Fi համաժամացումն օգտագործելու համար։</translation>
 <translation id="389313931326656921">Նշանակեք փոխանջատիչ «Առաջ» գործողության համար</translation>
 <translation id="3893295674388762059">Տվյալները ջնջելու համար փակեք բոլոր ինկոգնիտո պատուհանները</translation>
@@ -3275,7 +3274,6 @@
 <translation id="4208390505124702064">Որոնել <ph name="SITE_NAME" />-ում</translation>
 <translation id="4209092469652827314">Մեծ</translation>
 <translation id="4209251085232852247">Անջատված է</translation>
-<translation id="4209464433672152343">Փաստաթղթերն <ph name="BEGIN_LINK_HELP" />ուղարկվում են Google-ին<ph name="END_LINK_HELP" />՝ տպմանը նախապատրաստելու համար: Դիտեք, փոփոխեք և կառավարեք ձեր տպիչներն ու դրանց պատմությունը <ph name="BEGIN_LINK_DASHBOARD" />Google Cloud Print-ի կառավարման վահանակում<ph name="END_LINK_DASHBOARD" />:</translation>
 <translation id="4210048056321123003">Վիրտուալ մեքենայի ներբեռնում</translation>
 <translation id="421182450098841253">&amp;Ցուցադրել էջանիշների գոտին</translation>
 <translation id="4211851069413100178">Օգտագործման և դիագնոստիկ տվյալների ուղարկում Օգնեք բարելավել Android-ի աշխատանքը՝ Google-ին ավտոմատ ուղարկելով ախտորոշման, ինչպես նաև սարքի ու հավելվածի օգտագործման տվյալներ: Այս տեղեկությունները կօգնեն բարելավել համակարգի ու հավելվածի աշխատանքի կայունությունը: Հավաքված տեղեկությունների մի մասը օգտակար կլինի մեր գործընկերների, օրինակ, Android ծրագրավորողների համար։ Այս <ph name="BEGIN_LINK1" />կարգավորումը<ph name="END_LINK1" /> պարտադրված է սեփականատիրոջ կողմից: Սեփականատերը կարող է թույլատրել, որ այս սարքի օգտագործման և դիագնոստիկ տվյալներն ուղարկվեն Google-ին: Եթե Վեբ որոնման և հավելվածների պատմությունը միացված է, այս տվյալները կպահվեն ձեր Google հաշվում։ <ph name="BEGIN_LINK2" />Մանրամասն<ph name="END_LINK2" /></translation>
@@ -5149,6 +5147,7 @@
 <translation id="6129938384427316298">Netscape-ի վկայագրի մեկնաբանություն</translation>
 <translation id="6129953537138746214">Բացատ</translation>
 <translation id="6130692320435119637">Ավելացնել Wi-Fi</translation>
+<translation id="6130887916931372608">Ստեղնաշարի ստեղն</translation>
 <translation id="6136114942382973861">Փակել ներբեռնումների գոտին</translation>
 <translation id="6136287496450963112">Անվտանգության բանալին պաշտպանված չէ PIN-ով: Մատնահետքերը կառավարելու համար նախ ստեղծեք PIN կոդ:</translation>
 <translation id="6138680304137685902">X9.62 ECDSA ստորագրություն SHA-384-ով</translation>
@@ -6171,7 +6170,6 @@
 <translation id="7180611975245234373">Թարմացնել</translation>
 <translation id="7180865173735832675">Հարմարեցնել</translation>
 <translation id="7182791023900310535">Գաղտնաբառի տեղափոխում</translation>
-<translation id="7183420126213758623">Ցույց տալ/թաքցնել որոնման կողագոտին։ Որոնման կողագոտին ակտիվացված չէ։</translation>
 <translation id="7186088072322679094">Պահել գործիքագոտիում</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> կայքը չի կարող բացել այս պանակը, քանի որ այն պարունակում է համակարգի ֆայլեր</translation>
 <translation id="7187428571767585875">Գրանցամատյանի գրառումներ, որոնք ենթակա են հեռացման կամ փոփոխման՝</translation>
@@ -6693,7 +6691,6 @@
 <translation id="7701040980221191251">Չկա</translation>
 <translation id="7701869757853594372">USER նկարագրիչներ</translation>
 <translation id="7702574632857388784">Հեռացնել «<ph name="FILE_NAME" />» ֆայլը ցանկից</translation>
-<translation id="7702599324215660661">Կողպում հեռանալիս</translation>
 <translation id="7702907602086592255">Տիրույթ</translation>
 <translation id="7704305437604973648">Խնդիր</translation>
 <translation id="7704317875155739195">Ավտոմատ լրացնել որոնման հարցումները և URL-ները</translation>
@@ -6763,6 +6760,7 @@
 <translation id="7768770796815395237">Փոխել</translation>
 <translation id="7768784765476638775">Ընտրեք և լսեք</translation>
 <translation id="7770406201819593386">Գործարկել ChromeOS Flex-ի դիագնոստիկ թեստեր</translation>
+<translation id="7770450735129978837">Մկնիկի աջ ստեղնի սեղմում</translation>
 <translation id="7770612696274572992">Պատկերը պատճենվեց այլ սարքից</translation>
 <translation id="7771452384635174008">Դասավորություն</translation>
 <translation id="7772032839648071052">Հաստատեք անցաբառը</translation>
@@ -6798,7 +6796,6 @@
 <translation id="7798844538707273832"><ph name="PERMISSION" />՝ ավտոմատ արգելափակվել է</translation>
 <translation id="7799299114731150374">Պաստառը տեղադրվեց</translation>
 <translation id="7799817062559422778">Բաց ռեժիմ</translation>
-<translation id="7800159967992492578">Ցույց տալ/թաքցնել որոնման կողագոտին։ Որոնման կողագոտին ակտիվացված է։</translation>
 <translation id="7800518121066352902">Պտտել &amp;սլաքի հակառակ ուղղությամբ</translation>
 <translation id="7801679634091975683">Այստեղ արված փոփոխությունները կիրառվում են միայն Lacros Chrome դիտարկիչում։ Chrome դիտարկիչի կարգավորումները փոխելու համար բացեք Chrome-ը և անցեք կարգավորումներ։</translation>
 <translation id="780301667611848630">Ոչ</translation>

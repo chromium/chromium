@@ -30,7 +30,6 @@
 <translation id="114825011539563458">Mikilvægustu persónuverndar- og öryggisstýringarnar á einum stað</translation>
 <translation id="1149401351239820326">Fyrningarmánuður</translation>
 <translation id="1154704303112745282">Síða ekki í boði án nettengingar: <ph name="VIOLATED_URL" /></translation>
-<translation id="1166688006062225587">Listi valinna reikninga.</translation>
 <translation id="1171770572613082465">Sjáðu vinsæl vefsvæði með því að ýta á hnappinn „Vinsælast“</translation>
 <translation id="1173894706177603556">Endurnefna</translation>
 <translation id="1177863135347784049">Sérsniðið</translation>
@@ -571,6 +570,7 @@ Haltu fingri á hvaða orði sem er til að leita að því. Veldu fleiri eða f
 <translation id="4415276339145661267">Stjórna Google reikningnum</translation>
 <translation id="4425140285732600465">Vaktar verð. Fáðu tilkynningu ef verðlækkun verður á einhverju vefsvæði.</translation>
 <translation id="442518031075347249">Þú munt ekki lengur geta notað sýndarkortið þitt með Google Pay. <ph name="BEGIN_LINK1" />Nánar um sýndarkort<ph name="END_LINK1" /></translation>
+<translation id="4428065317363009941">Sérsniðnar auglýsingar</translation>
 <translation id="4450672886426705087">Leitarniðurstöður Google.</translation>
 <translation id="4452411734226507615">Loka flipanum <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Bókamerki var búið til í <ph name="FOLDER_NAME" /></translation>
@@ -897,7 +897,6 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="6277522088822131679">Vandamál kom upp við að prenta síðuna. Reyndu aftur.</translation>
 <translation id="6277722725779679269">Ekki tókst að uppfæra „Vakta verð“</translation>
 <translation id="6278428485366576908">Þema</translation>
-<translation id="6293443105724342169">Listi valinna reikninga opnaður á hálfum skjánum.</translation>
 <translation id="6294610283659775533">Þú getur sent flipa á milli tækja sem eru skráð inn á sama Google reikninginn</translation>
 <translation id="6297765934698848803">Fyrirtækið sem hefur umsjón með tækinu þínu hefur slökkt á myndavélinni.</translation>
 <translation id="6301525844455696527">Styttu leslistann</translation>
@@ -1307,7 +1306,6 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="8461694314515752532">Dulkóða samstillt gögn með eigin aðgangsorði samstillingar</translation>
 <translation id="8466613982764129868">Gakktu úr skugga um að <ph name="TARGET_DEVICE_NAME" /> sé tengt við internetið</translation>
 <translation id="8473863474539038330">Heimilisföng og fleira</translation>
-<translation id="847656914027543776">Listi valinna reikninga er lokaður.</translation>
 <translation id="8481921391193215807">Þegar kveikt er á þessu geta vefsvæði notað umrædda persónuverndartækni til að birta efni og veita þjónustu. Þar á meðal er tækni sem kemur í stað rakningar á vefsvæðum. Mögulegt er að fleiri prufueiginleikum verði bætt við reglulega.
 
 <ph name="BEGIN_LIST_ITEM1" />Auglýsendur og útgefendur geta notað FLoC-tæknina.<ph name="END_LIST_ITEM1" />
@@ -1362,6 +1360,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="8683526617475118045">Þetta færðu</translation>
 <translation id="869891660844655955">Lokadagsetning</translation>
 <translation id="8699120352855309748">Ekki bjóða upp á að þýða þessi tungumál</translation>
+<translation id="8712637175834984815">Ég skil</translation>
 <translation id="8725066075913043281">Reyna aftur</translation>
 <translation id="8730621377337864115">Lokið</translation>
 <translation id="8746155870861185046">Deila áherslumerkingu</translation>
@@ -1434,7 +1433,6 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="9108312223223904744">Aðstoð með síma sem öryggislykil</translation>
 <translation id="9108808586816295166">Ekki er víst að hægt sé að nota örugg DNS alltaf</translation>
 <translation id="9133397713400217035">Skoða ónettengt</translation>
-<translation id="9133523398139146080">Listi valinna reikninga opnaður á öllum skjánum.</translation>
 <translation id="9137013805542155359">Sýna frumtexta</translation>
 <translation id="9148126808321036104">Skrá inn aftur</translation>
 <translation id="9155898266292537608">Þú getur einnig leitað með því að ýta á orð</translation>

@@ -191,7 +191,6 @@
 <translation id="1223789468190631420">La Navegación segura habilita el estado para las fuentes de confianza</translation>
 <translation id="123018742985150697">Solicitar correspondencia entre el usuario local y el propietario del host de acceso remoto</translation>
 <translation id="123081309365616809">Permite transmitir contenido al dispositivo</translation>
-<translation id="1239411164172567974">Habilitar la API de Direct Sockets</translation>
 <translation id="1239526922294123540">Controla si los sitios web pueden enviar solicitudes a extremos de red más privados de una forma no segura.
 
           Si estableces esta política como verdadera, se inhabilitarán todas las verificaciones del <ph name="PRIVATE_NETWORK_ACCESS" /> para todos los orígenes. Esto puede permitir que ocurran ataques <ph name="CSRF" /> en servidores de redes privadas.
@@ -1016,7 +1015,6 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 <translation id="208623333578980446">Permite los bloqueos de activación de pantalla para la administración de energía</translation>
 <translation id="2086944573376916479">Una cuenta administrada debe ser una cuenta principal y no puede tener cuentas secundarias asociadas</translation>
 <translation id="2089541797660774692">Habilitar los informes en la nube de navegadores administrados</translation>
-<translation id="2090304907729569435">No permitir que se muestren los resultados de <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> en el panel lateral de un navegador</translation>
 <translation id="2090939118981888335">Si habilitas la política, se activará el proxy de compresión de datos. Si la inhabilitas, se desactivará el proxy.
 
       Si estableces la política, los usuarios no podrán cambiarla. Si no la estableces, los usuarios podrán usar la función.</translation>
@@ -1778,7 +1776,6 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 
       Si la inhabilitas, no se permitirán las actualizaciones. Sin embargo, algunos componentes están exceptuados de esta política: no se inhabilitarán las actualizaciones de componentes que no contengan código ejecutable y que sean fundamentales para la seguridad del navegador.
       Los ejemplos de estos componentes incluyen las listas de revocación de certificados y los filtros de subrecursos.</translation>
-<translation id="2939988360019366928">Permitir que se muestren los resultados más recientes de <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> en el panel lateral de un navegador</translation>
 <translation id="2940127076681735544">Si estableces esta política con una URL válida, <ph name="PRODUCT_NAME" /> descargará la lista de sitios de esa URL y aplicará las reglas como si se hubieran configurado con la política <ph name="SITELIST_POLICY_NAME" />.
 
       Si no la estableces (o determinas una URL no válida), <ph name="PRODUCT_NAME" /> no utilizará la política como fuente de reglas para cambiar de navegador.
@@ -3545,9 +3542,6 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
       Si la inhabilitas, <ph name="PRODUCT_NAME" /> dejará de enviar estas consultas.</translation>
 <translation id="5039110755072335605">Admisión de encabezados de solicitudes sin comodín CORS</translation>
 <translation id="504116558738617678">Solo mostrar advertencias de poco espacio en el disco si el dispositivo no está administrado o si solo hay 1 solo usuario</translation>
-<translation id="5049105847726444023">Si habilitas la política o no la estableces, los usuarios podrán obtener sus resultados más recientes de <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> en un panel lateral que podrán activar o desactivar mediante un ícono de la barra de herramientas.
-
-      Si inhabilitas la política, se quitará el ícono de la barra de herramientas que abre el panel lateral con los resultados de <ph name="GOOGLE_SEARCH_PRODUCT_NAME" />.</translation>
 <translation id="5052278640307929670">Si estableces la política, se podrán combinar las políticas seleccionadas cuando provienen de diferentes fuentes, con los mismos alcances y niveles.
 
       Si la lista incluye una política y hay conflicto entre fuentes con las siguientes características:
@@ -5709,9 +5703,6 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="7459601923199346224">Controla las políticas de dispositivo y usuario para la administración de certificados.</translation>
 <translation id="7459633275230216698">Permite los diálogos de selección de archivos</translation>
 <translation id="7464991223784276288">Restringir las cookies solo para las URL coincidentes en la sesión actual</translation>
-<translation id="7466522266556143347">Si habilitas la política, los usuarios podrán utilizar la API de Direct Sockets (si se cumplen las demás condiciones necesarias).
-      Si inhabilitas la política, los usuarios no podrán acceder a la API.
-      Si no estableces la política, no se permitirá la acción predeterminada para los usuarios administrados por empresas y sí se permitirá para los usuarios no administrados.</translation>
 <translation id="7468182772656807573">Si estableces la política, se determinará la frecuencia con la que se envían paquetes de red de control (expresado en milisegundos). Los intervalos varían de 30 segundos a 24 horas. Los valores fuera de este rango se restringirán conforme a estos valores.
 
       Si no estableces la política, se aplicará el intervalo predeterminado de 3 minutos.</translation>
@@ -6198,7 +6189,6 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 
       Si no se configura esta política, se habilitará, pero el usuario podrá cambiarla.</translation>
 <translation id="7956210013490975468">Configura el servicio de proxy del sistema para <ph name="PRODUCT_OS_NAME" />.</translation>
-<translation id="7958340569967087581">Permitir que se muestren los resultados de <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> en el panel lateral de un navegador</translation>
 <translation id="7958537754689366707">Se requiere el ingreso de la contraseña cada doce horas.</translation>
 <translation id="7959035883875301444">Controlar el uso de JavaScript con JIT</translation>
 <translation id="7961779417826583251">Inhabilitar la aplicación del Certificado de transparencia para una lista de autoridades certificadoras heredadas</translation>
@@ -6880,7 +6870,6 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       Si inhabilitas la política o no la estableces, el host de acceso remoto podrá asociarse a cualquier usuario local.</translation>
 <translation id="867708016260789630">Forzar que el modo restringido de YouTube sea, al menos, moderado</translation>
 <translation id="8677853537025397834">Permitir la API de WebHID en estos sitios</translation>
-<translation id="8684781382594546769">Inhabilitar la API de Direct Sockets</translation>
 <translation id="8685024486845674965">La advertencia de la protección de la contraseña se activa cuando se vuelve a usar la contraseña</translation>
 <translation id="8685680544554917389">Si estableces la política como verdadera, <ph name="PRODUCT_NAME" /> podrá reproducir contenido multimedia de forma automática. Si estableces la política como falsa, <ph name="PRODUCT_NAME" /> dejará de reproducir contenido multimedia de forma automática.
 

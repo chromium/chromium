@@ -1064,7 +1064,6 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="2019718679933488176">&amp;Ouvrir le fichier audio dans un nouvel onglet</translation>
 <translation id="2020183425253392403">Afficher les paramètres d'adresse réseau</translation>
 <translation id="2020225359413970060">Analyser le fichier</translation>
-<translation id="2022395138980869975">Activer/Désactiver le panneau latéral de recherche</translation>
 <translation id="2023167225947895179">Ce code est facile à deviner</translation>
 <translation id="202352106777823113">Le téléchargement a été trop long et a été interrompu par le réseau.</translation>
 <translation id="2024195579772565064">Supprimer le moteur de recherche</translation>
@@ -2961,7 +2960,6 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="3888053818972567950">Connexion <ph name="WEB_DRIVE" /></translation>
 <translation id="3888550877729210209">Prise de notes avec <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">Ces informations nous aident à mieux comprendre le problème que vous rencontrez avec l'Assistant. Elles sont conservées pendant 90 jours au maximum et ne peuvent être consultées que par nos ingénieurs et nos équipes responsables du traitement des commentaires.</translation>
-<translation id="3888900458694486810">Fermer le panneau latéral de recherche</translation>
 <translation id="3890064827463908288">Activer la synchronisation Chrome pour utiliser Sync Wi-Fi</translation>
 <translation id="389313931326656921">Associer un contacteur à "Suivant"</translation>
 <translation id="3893295674388762059">Pour supprimer les données, fermez toutes les fenêtres de navigation privée</translation>
@@ -3275,7 +3273,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4208390505124702064">Rechercher sur <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Grande</translation>
 <translation id="4209251085232852247">Désactivé</translation>
-<translation id="4209464433672152343">Les documents sont <ph name="BEGIN_LINK_HELP" />envoyés à Google<ph name="END_LINK_HELP" /> afin d'être préparés pour l'impression. Consultez, modifiez et gérez vos imprimantes et leur historique dans le <ph name="BEGIN_LINK_DASHBOARD" />tableau de bord de Google Cloud Print<ph name="END_LINK_DASHBOARD" />.</translation>
 <translation id="4210048056321123003">Téléchargement de la machine virtuelle…</translation>
 <translation id="421182450098841253">&amp;Afficher la barre de favoris</translation>
 <translation id="4211851069413100178">Envoyer des données d'utilisation et de diagnostic. Contribuez à l'amélioration de votre expérience sur Android en envoyant automatiquement à Google des données relatives aux diagnostics et à l'utilisation de l'appareil et des applications. Ce processus permettra d'améliorer, entre autres, la stabilité du système et des applications. Certaines données globales seront également utiles aux développeurs des applications Google et à nos partenaires, tels que les développeurs Android. Ce <ph name="BEGIN_LINK1" />paramètre<ph name="END_LINK1" /> est appliqué par le propriétaire. Le propriétaire de cet appareil peut choisir d'envoyer à Google des données de diagnostic et d'utilisation. Si vous activez le paramètre relatif à l'activité supplémentaire sur le Web et les applications, ces données peuvent être enregistrées dans votre compte Google. <ph name="BEGIN_LINK2" />En savoir plus<ph name="END_LINK2" /></translation>
@@ -6169,7 +6166,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7180611975245234373">Actualiser</translation>
 <translation id="7180865173735832675">Personnaliser</translation>
 <translation id="7182791023900310535">Transférer votre mot de passe</translation>
-<translation id="7183420126213758623">Activer/Désactiver le panneau latéral de recherche. Panneau latéral de recherche non activé.</translation>
 <translation id="7186088072322679094">Garder dans la barre d'outils</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> ne peut pas ouvrir ce dossier, car il contient des fichiers système</translation>
 <translation id="7187428571767585875">Entrées de registre à supprimer ou à modifier :</translation>
@@ -6691,7 +6687,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7701040980221191251">Rien</translation>
 <translation id="7701869757853594372">Handles utilisateur</translation>
 <translation id="7702574632857388784">Supprimer <ph name="FILE_NAME" /> de la liste</translation>
-<translation id="7702599324215660661">Verrouiller en cas d'éloignement</translation>
 <translation id="7702907602086592255">Domaine</translation>
 <translation id="7704305437604973648">Tâche</translation>
 <translation id="7704317875155739195">Saisir semi-automatiquement les recherches et les URL</translation>
@@ -6797,7 +6792,6 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7798844538707273832">Autorisation "<ph name="PERMISSION" />" bloquée automatiquement</translation>
 <translation id="7799299114731150374">Le fond d'écran a bien été défini.</translation>
 <translation id="7799817062559422778">Mode clair</translation>
-<translation id="7800159967992492578">Activer/Désactiver le panneau latéral de recherche. Panneau latéral de recherche activé.</translation>
 <translation id="7800518121066352902">Rotation &amp;antihoraire</translation>
 <translation id="7801679634091975683">Les modifications que vous apportez ici ne concernent que le navigateur Chrome Lacros. Pour changer les paramètres du navigateur Chrome, ouvrez Chrome et accédez aux paramètres.</translation>
 <translation id="780301667611848630">Non merci</translation>

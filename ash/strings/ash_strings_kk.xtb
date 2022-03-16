@@ -31,6 +31,7 @@
 <translation id="1150989369772528668">Күнтізбе</translation>
 <translation id="1153356358378277386">Жұпталған құрылғылар</translation>
 <translation id="1165712434476988950">Жаңарту күшіне енуі үшін, құрылғыны қайта іске қосу қажет.</translation>
+<translation id="1171742223880403396">USB-C кабелі дисплейлерге дұрыс жалғанбауы мүмкін.</translation>
 <translation id="1175572348579024023">Айналдыру</translation>
 <translation id="1178581264944972037">Кідірту</translation>
 <translation id="1181037720776840403">Өшіру</translation>
@@ -256,6 +257,7 @@
 <translation id="2595239820337756193">5 км неше мильге тең</translation>
 <translation id="2596078834055697711">Терезенің скриншотын жасау</translation>
 <translation id="2607678425161541573">Онлайн кіру қажет</translation>
+<translation id="2620436844016719705">Жүйе</translation>
 <translation id="2621713457727696555">Қорғалған</translation>
 <translation id="263399434338050016">"Барлығын таңдау"</translation>
 <translation id="2653019840645008922">Терезені түсіру</translation>
@@ -351,6 +353,7 @@
 <translation id="320207200541803018">Таймерді орнату</translation>
 <translation id="3203405173652969239">Switch Access қосылды.</translation>
 <translation id="3207953481422525583">Пайдаланушы параметрлері</translation>
+<translation id="3208321278970793882">Қолданба</translation>
 <translation id="3217205077783620295">Дыбыс деңгейі қосылып тұр. Түймені қайта бассаңыз, дауыс өшеді.</translation>
 <translation id="3226991577105957773">Тағы <ph name="COUNT" /></translation>
 <translation id="3227137524299004712">Микрофон</translation>
@@ -1034,6 +1037,7 @@
 <translation id="7513622367902644023">Скриншот режимі таңдалды.</translation>
 <translation id="7513922695575567867">Күнтізбе, <ph name="DATE" /> аптасы, <ph name="SELECTED_DATE" /> қазір таңдалды.</translation>
 <translation id="7514365320538308">Жүктеу</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7526573455193969409">Желі бақылануы мүмкін</translation>
 <translation id="7536035074519304529">IP мекенжайы: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Linux қолданбалары мен инкогнито терезелеріне қазір қолдау көрсетілмейді. Басқа қолданбалар сақталады.</translation>
@@ -1102,6 +1106,7 @@
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Саусақ ізін оқу сканерін түртіңіз.</translation>
 <translation id="7904094684485781019">Бұл аккаунттың әкімшісі бірнеше рет кіруге рұқсат бермеген.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7930731167419639574">Айтылған сөз енді жергілікті деңгейде өңделеді және Мәтінді дауыспен енгізу функциясы офлайн режимде жұмыс істейді</translation>
 <translation id="7933084174919150729">Google Assistant тек негізгі профиль үшін қолжетімді.</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> және <ph name="SECOND_PARENT_EMAIL" /> басқаратын аккаунт</translation>

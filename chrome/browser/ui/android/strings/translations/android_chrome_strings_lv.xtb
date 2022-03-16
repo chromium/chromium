@@ -30,7 +30,6 @@
 <translation id="114825011539563458">Svarīgākās konfidencialitātes un drošības vadīklas vienuviet</translation>
 <translation id="1149401351239820326">Derīguma termiņa mēnesis</translation>
 <translation id="1154704303112745282">Šī lapa nav pieejama bezsaistē: <ph name="VIOLATED_URL" /></translation>
-<translation id="1166688006062225587">Atlasāmo kontu saraksts.</translation>
 <translation id="1171770572613082465">Lai skatītu populāras tīmekļa vietnes, pieskarieties pogai “Populāras”</translation>
 <translation id="1173894706177603556">Pārdēvēt</translation>
 <translation id="1177863135347784049">Pielāgota</translation>
@@ -571,6 +570,7 @@ Nospiediet un turiet jebkuru vārdu, lai to meklētu. Lai precizētu meklēšanu
 <translation id="4415276339145661267">Google konta pārvaldība</translation>
 <translation id="4425140285732600465">Notiek cenas izsekošana. Saņemiet paziņojumus, ja kādā vietnē tiek konstatēts cenas kritums.</translation>
 <translation id="442518031075347249">Vairs nevarēsiet izmantot virtuālo karti pakalpojumā Google Pay. <ph name="BEGIN_LINK1" />Uzziniet vairāk par virtuālajām kartēm<ph name="END_LINK1" />.</translation>
+<translation id="4428065317363009941">Reklāmu personalizēšana</translation>
 <translation id="4450672886426705087">Google meklēšanas rezultāti.</translation>
 <translation id="4452411734226507615">Aizvērt cilni <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Grāmatzīme saglabāta mapē <ph name="FOLDER_NAME" /></translation>
@@ -897,7 +897,6 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6277522088822131679">Drukājot lapu, radās problēma. Lūdzu, mēģiniet vēlreiz.</translation>
 <translation id="6277722725779679269">Nevarēja atjaunināt cenas izsekošanu.</translation>
 <translation id="6278428485366576908">Motīvs</translation>
-<translation id="6293443105724342169">Atlasāmo kontu saraksts ir atvērts pusekrāna augstumā.</translation>
 <translation id="6294610283659775533">Varat pārsūtīt cilnes starp ierīcēm, kurās esat pierakstījies vienā un tajā pašā Google kontā.</translation>
 <translation id="6297765934698848803">Organizācija, kas pārvalda jūsu ierīci, ir izslēgusi kameru.</translation>
 <translation id="6301525844455696527">Neaizmirstiet ielūkoties savā lasīšanas sarakstā</translation>
@@ -1307,7 +1306,6 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="8461694314515752532">Šifrējiet sinhronizētos datus, izmantojot savu sinhronizācijas ieejas frāzi</translation>
 <translation id="8466613982764129868">Ierīcē <ph name="TARGET_DEVICE_NAME" /> ir jābūt izveidotam interneta savienojumam</translation>
 <translation id="8473863474539038330">Adreses un citus datus</translation>
-<translation id="847656914027543776">Atlasāmo kontu saraksts ir aizvērts.</translation>
 <translation id="8481921391193215807">Ja šeit parādītie konfidencialitātes aizsardzības risinājumi ir ieslēgti, vietnēs tie var tikt izmantoti satura un pakalpojumu nodrošināšanai. Šie risinājumi ietver arī alternatīvas starpvietņu izsekošanai. Laika gaitā var tikt pievienotas vēl citas izmēģinājuma versijas.
 
 <ph name="BEGIN_LIST_ITEM1" />Reklāmdevēji un izdevēji var izmantot tehnoloģiju FPK.<ph name="END_LIST_ITEM1" />
@@ -1362,6 +1360,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="8683526617475118045">Ieguvumi</translation>
 <translation id="869891660844655955">Derīguma termiņš</translation>
 <translation id="8699120352855309748">Nepiedāvāt tulkot no šīm valodām</translation>
+<translation id="8712637175834984815">Sapratu!</translation>
 <translation id="8725066075913043281">Mēģināt vēlreiz</translation>
 <translation id="8730621377337864115">Gatavs</translation>
 <translation id="8746155870861185046">Kopīgot atzīmēto tekstu</translation>
@@ -1434,7 +1433,6 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="9108312223223904744">Atbalsts, kas var palīdzēt izmantot tālruni kā drošības atslēgu</translation>
 <translation id="9108808586816295166">Drošs DNS serveris var nebūt pieejams visu laiku.</translation>
 <translation id="9133397713400217035">Izpētīt bezsaisti</translation>
-<translation id="9133523398139146080">Atlasāmo kontu saraksts ir atvērts pilnā ekrāna augstumā.</translation>
 <translation id="9137013805542155359">Rādīt oriģinālo</translation>
 <translation id="9148126808321036104">Pierakstieties vēlreiz</translation>
 <translation id="9155898266292537608">Varat arī meklēt, ātri pieskaroties vārdam</translation>

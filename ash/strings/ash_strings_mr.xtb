@@ -258,6 +258,7 @@
 <translation id="2595239820337756193">५००० मैल</translation>
 <translation id="2596078834055697711">विंडो स्क्रीनशॉट घ्या</translation>
 <translation id="2607678425161541573">ऑनलाइन साइन इन करणे आवश्यक आहे</translation>
+<translation id="2620436844016719705">सिस्टम</translation>
 <translation id="2621713457727696555">सुरक्षित</translation>
 <translation id="263399434338050016">"सर्व निवडा"</translation>
 <translation id="2653019840645008922">विंडो कॅप्चर</translation>
@@ -354,6 +355,7 @@
 <translation id="320207200541803018">टायमर सेट करा</translation>
 <translation id="3203405173652969239">स्विच अ‍ॅक्सेस सुरू केले</translation>
 <translation id="3207953481422525583">वापरकर्ता सेटिंग्ज</translation>
+<translation id="3208321278970793882">ॲप</translation>
 <translation id="3217205077783620295">व्हॉल्यूम सुरू आहे, टॉगल केल्याने ऑडिओ म्यूट होईल.</translation>
 <translation id="3226991577105957773">आणखी +<ph name="COUNT" /></translation>
 <translation id="3227137524299004712">मायक्रोफोन</translation>
@@ -1038,6 +1040,7 @@
 <translation id="7513622367902644023">स्क्रीनशॉट मोड निवडला आहे</translation>
 <translation id="7513922695575567867">कॅलेंडर, सध्या <ph name="DATE" /> आठवड्यामधील, <ph name="SELECTED_DATE" /> निवडली आहे.</translation>
 <translation id="7514365320538308">डाउनलोड करा</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7526573455193969409">नेटवर्कचे परीक्षण केले जाऊ शकते</translation>
 <translation id="7536035074519304529">IP पत्ता: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Linux अ‍ॅप्स आणि गुप्त विंडोना सध्या सपोर्ट नाही. इतर ॲप्स सेव्ह केली जातील.</translation>
@@ -1107,6 +1110,7 @@
 <translation id="7901405293566323524">फोन हब</translation>
 <translation id="7902625623987030061">फिंगरप्रिंट सेन्सरला स्पर्श करा</translation>
 <translation id="7904094684485781019">या खात्याच्या ॲडमिनिस्ट्रेटरने एकाहून अधिक साइन इन ची परवानगी  रद्द केली आहे.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7930731167419639574">स्पीचवर आता स्थानिक पातळीवर प्रक्रिया केली जाते आणि डिक्टेशन ऑफलाइन काम करते</translation>
 <translation id="7933084174919150729">Google Assistant फक्त प्राथमिक प्रोफाइलवर उपलब्ध आहे.</translation>
 <translation id="79341161159229895">खाते <ph name="FIRST_PARENT_EMAIL" /> आणि <ph name="SECOND_PARENT_EMAIL" /> ने व्‍यवस्‍थापित केले आहे</translation>

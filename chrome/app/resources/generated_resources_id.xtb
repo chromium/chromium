@@ -1075,7 +1075,6 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="2019718679933488176">Buka Audi&amp;o di Tab Baru</translation>
 <translation id="2020183425253392403">Tampilkan setelan alamat jaringan</translation>
 <translation id="2020225359413970060">Pindai file</translation>
-<translation id="2022395138980869975">Tombol kotak penelusuran samping</translation>
 <translation id="2023167225947895179">PIN mungkin mudah ditebak</translation>
 <translation id="202352106777823113">Download terlalu lama, jadi dihentikan oleh jaringan.</translation>
 <translation id="2024195579772565064">Hapus mesin telusur</translation>
@@ -2976,7 +2975,6 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="3888053818972567950">Koneksi <ph name="WEB_DRIVE" /></translation>
 <translation id="3888550877729210209">Mencatat dengan <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">Informasi ini membantu kami lebih memahami masalah Asisten. Informasi tersebut disimpan selama 90 hari dan hanya dapat diakses oleh tim engineer dan masukan yang terkait.</translation>
-<translation id="3888900458694486810">Tutup kotak penelusuran samping</translation>
 <translation id="3890064827463908288">Aktifkan Sinkronisasi Chrome untuk menggunakan Wi-Fi Sync</translation>
 <translation id="389313931326656921">Tetapkan tombol akses untuk “Berikutnya”</translation>
 <translation id="3893295674388762059">Untuk menghapus data, tutup semua jendela Samaran</translation>
@@ -3290,7 +3288,6 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4208390505124702064">Telusuri <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Besar</translation>
 <translation id="4209251085232852247">Dinonaktifkan</translation>
-<translation id="4209464433672152343">Dokumen <ph name="BEGIN_LINK_HELP" />dikirimkan ke Google<ph name="END_LINK_HELP" /> untuk persiapan pencetakan. Lihat, edit, dan kelola printer serta histori printer Anda di <ph name="BEGIN_LINK_DASHBOARD" />dasbor Google Cloud Print<ph name="END_LINK_DASHBOARD" />.</translation>
 <translation id="4210048056321123003">Mendownload mesin virtual</translation>
 <translation id="421182450098841253">&amp;Tampilkan Bilah Bookmark</translation>
 <translation id="4211851069413100178">Kirim data penggunaan dan diagnostik. Bantuan sempurnakan pengalaman Android Anda dengan otomatis mengirim data diagnostik, perangkat, dan penggunaan aplikasi ke Google. Data ini akan membantu sistem dan stabilitas aplikasi serta peningkatan lainnya. Beberapa data gabungan juga akan membantu aplikasi dan partner Google, seperti developer Android. <ph name="BEGIN_LINK1" />Setelan<ph name="END_LINK1" /> ini diterapkan oleh pemilik. Pemilik dapat memilih untuk mengirim data diagnostik dan penggunaan untuk perangkat ini ke Google. Jika setelan Aktivitas Web &amp; Aplikasi tambahan diaktifkan, data ini mungkin akan disimpan ke Akun Google Anda. <ph name="BEGIN_LINK2" />Pelajari Lebih Lanjut<ph name="END_LINK2" /></translation>
@@ -6185,7 +6182,6 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="7180611975245234373">Perbarui</translation>
 <translation id="7180865173735832675">Sesuaikan</translation>
 <translation id="7182791023900310535">Pindahkan sandi Anda</translation>
-<translation id="7183420126213758623">Tombol kotak penelusuran samping. Kotak penelusuran samping tidak diaktifkan.</translation>
 <translation id="7186088072322679094">Tetap sematkan di Bilah Alat</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> tidak dapat membuka folder ini karena berisi file sistem</translation>
 <translation id="7187428571767585875">Entri registry yang akan dihapus atau diubah:</translation>
@@ -6707,7 +6703,6 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="7701040980221191251">Tidak ada</translation>
 <translation id="7701869757853594372">Penangan PENGGUNA</translation>
 <translation id="7702574632857388784">Hapus <ph name="FILE_NAME" /> dari daftar</translation>
-<translation id="7702599324215660661">Kunci saat Pergi</translation>
 <translation id="7702907602086592255">Domain</translation>
 <translation id="7704305437604973648">Tugas</translation>
 <translation id="7704317875155739195">Lengkapi otomatis penelusuran dan URL</translation>
@@ -6814,7 +6809,6 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="7798844538707273832"><ph name="PERMISSION" /> diblokir secara otomatis</translation>
 <translation id="7799299114731150374">Wallpaper berhasil disetel</translation>
 <translation id="7799817062559422778">Mode terang</translation>
-<translation id="7800159967992492578">Tombol kotak penelusuran samping. Kotak penelusuran samping diaktifkan.</translation>
 <translation id="7800518121066352902">Putar &amp;Berlawanan Arah Jarum Jam</translation>
 <translation id="7801679634091975683">Perubahan yang Anda buat di sini hanya akan diterapkan ke Browser Chrome Lacros. Untuk membuat perubahan ke setelan Browser Chrome, buka Browser Chrome lalu buka setelan.</translation>
 <translation id="780301667611848630">Lain kali</translation>

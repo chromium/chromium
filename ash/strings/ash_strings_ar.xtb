@@ -259,6 +259,7 @@
 <translation id="2595239820337756193">5 كيلومتر بالميل</translation>
 <translation id="2596078834055697711">أخذ لقطة شاشة للنافذة</translation>
 <translation id="2607678425161541573">يجب تسجيل الدخول على الإنترنت</translation>
+<translation id="2620436844016719705">النظام</translation>
 <translation id="2621713457727696555">مؤمّنة</translation>
 <translation id="263399434338050016">"اختيار الكل"</translation>
 <translation id="2653019840645008922">لقطة نافذة</translation>
@@ -355,6 +356,7 @@
 <translation id="320207200541803018">ضبط موقِّت</translation>
 <translation id="3203405173652969239">تم تفعيل ميزة "الوصول عبر مفتاح التحويل".</translation>
 <translation id="3207953481422525583">إعدادات المستخدم</translation>
+<translation id="3208321278970793882">التطبيق</translation>
 <translation id="3217205077783620295">تم تفعيل الصوت، وسيؤدي التبديل إلى كتم الصوت</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> والمزيد</translation>
 <translation id="3227137524299004712">الميكروفون</translation>
@@ -1039,6 +1041,7 @@
 <translation id="7513622367902644023">تم اختيار وضع لقطة الشاشة.</translation>
 <translation id="7513922695575567867">التقويم، الأسبوع الذي يبدأ من <ph name="DATE" />، التاريخ المُحدّد حاليًا هو <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">تنزيل</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7526573455193969409">قد تكون الشبكة خاضعة للمراقبة</translation>
 <translation id="7536035074519304529">‏عنوان IP: ‏<ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">‏تطبيقات Linux ونوافذ التصفّح المتخفي غير متوافقة حاليًا، ولكن سيتم حفظ التطبيقات الأخرى.</translation>
@@ -1108,6 +1111,7 @@
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">المس مستشعر بصمات الإصبع.</translation>
 <translation id="7904094684485781019">لقد حظر مشرف هذا الحساب إمكانية الدخول المتعدد.</translation>
+<translation id="7911118814695487383">‏نظام التشغيل Linux</translation>
 <translation id="7930731167419639574">ميزة "التعرّف على الكلام" جاهزة للعمل الآن على جهازك، كما تعمل ميزة "الإملاء" بلا اتصال بالإنترنت.</translation>
 <translation id="7933084174919150729">‏لا يتوفر مساعد Google إلا للملف الشخصي الأساسي.</translation>
 <translation id="79341161159229895">يُدير <ph name="FIRST_PARENT_EMAIL" /> و<ph name="SECOND_PARENT_EMAIL" /> الحساب.</translation>

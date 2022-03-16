@@ -30,7 +30,6 @@
 <translation id="114825011539563458">ایک ہی مقام پر انتہائی اہم رازداری اور سیکیورٹی کنٹرولز</translation>
 <translation id="1149401351239820326">میعاد کے اختتام کا مہینہ</translation>
 <translation id="1154704303112745282">صفحہ آف لائن غیر دستیاب ہے: <ph name="VIOLATED_URL" /></translation>
-<translation id="1166688006062225587">منتخب کیے جانے والے اکاؤنٹس کی فہرست۔</translation>
 <translation id="1171770572613082465">"سر فہرست سائٹس" بٹن پر تھپتھپا کر مقبول ویب سائٹس دیکھیں</translation>
 <translation id="1173894706177603556">نام بدلیں</translation>
 <translation id="1177863135347784049">حسب ضرورت</translation>
@@ -571,6 +570,7 @@
 <translation id="4415276339145661267">‏اپنے Google اکاؤنٹ کا نظم کریں</translation>
 <translation id="4425140285732600465">قیمت ٹریک کی جا رہی ہے۔ کسی بھی سائٹ پر قیمت میں گراوٹ ہونے پر الرٹس حاصل کریں۔</translation>
 <translation id="442518031075347249">‏اب آپ Google Pay کے ساتھ اپنا ورچوئل کارڈ استعمال نہیں کر سکیں گے۔ <ph name="BEGIN_LINK1" />ورچوئل کارڈز کے بارے میں مزید جانیں<ph name="END_LINK1" /></translation>
+<translation id="4428065317363009941">اشتہارات کو ذاتی نوعیت کا بنانا</translation>
 <translation id="4450672886426705087">‏Google سے تلاش کے نتائج۔</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> ٹیب بند کریں</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> میں بُک مارک کردہ</translation>
@@ -897,7 +897,6 @@
 <translation id="6277522088822131679">صفحہ کو پرنٹ کرنے میں ایک مسئلہ تھا۔ براہ کرم دوبارہ کوشش کریں۔</translation>
 <translation id="6277722725779679269">قیمت ٹریک کریں کو اپ ڈیٹ نہیں کیا جا سکا</translation>
 <translation id="6278428485366576908">تھیم</translation>
-<translation id="6293443105724342169">منتخب کیے جانے والے اکاؤنٹس کی فہرست آدھی اونچائی پر کھلی ہوئی ہے۔</translation>
 <translation id="6294610283659775533">‏آپ اسی Google اکاؤنٹ کے ساتھ سائن ان کردہ آلات کے درمیان ٹیبز بھیج سکتے ہیں</translation>
 <translation id="6297765934698848803">آپ کے آلہ کا نظم کرنے والی تنظیم نے آپ کا کیمرا آف کر دیا ہے۔</translation>
 <translation id="6301525844455696527">اپنی پڑھنے کی فہرست دیکھیں</translation>
@@ -1307,7 +1306,6 @@
 <translation id="8461694314515752532">اپنے ذاتی مطابقت پذیر پاس فریز کے ساتھ مطابقت پذیر کردہ ڈیٹا کی مرموزکاری کریں</translation>
 <translation id="8466613982764129868">یہ یقینی بنائیں کہ <ph name="TARGET_DEVICE_NAME" /> انٹرنیٹ سے منسلک ہے</translation>
 <translation id="8473863474539038330">پتے وغیرہ</translation>
-<translation id="847656914027543776">منتخب کیے جانے والے اکاؤنٹس کی فہرست بند ہے۔</translation>
 <translation id="8481921391193215807">‏آن ہونے پر، سائٹس اپنے مواد اور سروسز کو فراہم کرنے کے لیے یہاں دکھائی گئی رازداری کے تحفظ کی تکنیکوں کا استعمال کر سکتی ہیں۔ ان میں کراس سائٹ ٹریکنگ کے متبادلات شامل ہیں۔ آنے والے وقت میں مزید ٹرائلز شامل کئے جا سکتے ہیں۔
 
 <ph name="BEGIN_LIST_ITEM1" />مشتہرین اور ناشرین FLoC کا استعمال کر سکتے ہیں۔<ph name="END_LIST_ITEM1" />
@@ -1362,6 +1360,7 @@
 <translation id="8683526617475118045">آپ کو کیا ملے گا</translation>
 <translation id="869891660844655955">میعاد ختم ہونے کی تاریخ</translation>
 <translation id="8699120352855309748">ان زبانوں کو ترجمہ کرنے کی پیشکش نہ کریں</translation>
+<translation id="8712637175834984815">سمجھ آ گئی</translation>
 <translation id="8725066075913043281">دوبارہ کوشش کریں</translation>
 <translation id="8730621377337864115">ہوگیا</translation>
 <translation id="8746155870861185046">ہائی لائٹ کا اشتراک کریں</translation>
@@ -1434,7 +1433,6 @@
 <translation id="9108312223223904744">سیکیورٹی کلید سپورٹ کے بطور فون</translation>
 <translation id="9108808586816295166">‏ممکن ہے کہ محفوظ DNS ہر وقت دستیاب نہ ہو</translation>
 <translation id="9133397713400217035">آف لائن دریافت کریں</translation>
-<translation id="9133523398139146080">منتخب کیے جانے والے اکاؤنٹس کی فہرست مکمل اونچائی پر کھلی ہوئی ہے۔</translation>
 <translation id="9137013805542155359">اصل دکھائیں</translation>
 <translation id="9148126808321036104">دوبارہ سائن ان کریں</translation>
 <translation id="9155898266292537608">آپ کسی لفظ پر فوری تھپتھپاہٹ سے بھی تلاش کر سکتے ہیں</translation>

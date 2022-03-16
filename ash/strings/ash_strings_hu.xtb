@@ -125,6 +125,7 @@
 <translation id="1668469839109562275">Beépített VPN</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> van hátra</translation>
 <translation id="1677507110654891115">A(z) <ph name="FEATURE_NAME" /> nem csatlakozik.</translation>
+<translation id="1677582821739292812">Valaki az Ön képernyőjét nézi</translation>
 <translation id="1698080062160024910">Időzítő a következő időtartamra: <ph name="TOTAL_TIME" />   <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6-cím: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Az aktív ablak a bal oldalon van dokkolva.</translation>
@@ -258,6 +259,7 @@
 <translation id="2595239820337756193">5000 mérföld</translation>
 <translation id="2596078834055697711">Képernyőkép készítése az ablakról</translation>
 <translation id="2607678425161541573">Online bejelentkezés szükséges</translation>
+<translation id="2620436844016719705">Rendszer</translation>
 <translation id="2621713457727696555">Biztonságos</translation>
 <translation id="263399434338050016">„Select all” (Az összes kijelölése)</translation>
 <translation id="2653019840645008922">Felvétel készítése az ablakról</translation>
@@ -354,6 +356,7 @@
 <translation id="320207200541803018">Időzítő beállítása</translation>
 <translation id="3203405173652969239">Kapcsolóalapú hozzáférés bekapcsolva</translation>
 <translation id="3207953481422525583">Felhasználói beállítások</translation>
+<translation id="3208321278970793882">Alkalmazás</translation>
 <translation id="3217205077783620295">A hang be van kapcsolva, a gombra kattintva elnémítja.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> további</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -1039,6 +1042,7 @@ Frissen telepítve</translation>
 <translation id="7513622367902644023">Képernyőkép mód kiválasztva</translation>
 <translation id="7513922695575567867">Naptár, <ph name="DATE" />-i hét, jelenleg kijelölt dátum: <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Letöltés</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7526573455193969409">Elképzelhető, hogy figyelik a hálózatot</translation>
 <translation id="7536035074519304529">IP-cím: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">A Linux-alkalmazások és az inkognitó ablakok jelenleg nem támogatottak. Az egyéb alkalmazásokat menti a rendszer.</translation>
@@ -1108,6 +1112,7 @@ Frissen telepítve</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Érintse meg az ujjlenyomat-érzékelőt</translation>
 <translation id="7904094684485781019">A fiók rendszergazdája letiltotta a többfiókos bejelentkezést.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7930731167419639574">A beszéd feldolgozása helyben történik, a diktálás pedig offline működik.</translation>
 <translation id="7933084174919150729">A Google Segéd csak az elsődleges profilhoz áll rendelkezésre.</translation>
 <translation id="79341161159229895">A fiókot a(z) <ph name="FIRST_PARENT_EMAIL" /> és a(z) <ph name="SECOND_PARENT_EMAIL" /> kezeli</translation>

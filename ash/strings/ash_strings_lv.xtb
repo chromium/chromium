@@ -256,6 +256,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2595239820337756193">5 kilometri jūdzēs</translation>
 <translation id="2596078834055697711">Uzņemt loga ekrānuzņēmumu</translation>
 <translation id="2607678425161541573">Nepieciešama pierakstīšanās tiešsaistē</translation>
+<translation id="2620436844016719705">Sistēma</translation>
 <translation id="2621713457727696555">Aizsargāts</translation>
 <translation id="263399434338050016">“Select all” (Atlasīt visu)</translation>
 <translation id="2653019840645008922">Loga uzņemšana</translation>
@@ -351,6 +352,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="320207200541803018">Iestatīt taimeri</translation>
 <translation id="3203405173652969239">Iespējota slēdžu piekļuve</translation>
 <translation id="3207953481422525583">Lietotāja iestatījumi</translation>
+<translation id="3208321278970793882">Lietotne</translation>
 <translation id="3217205077783620295">Skaņa ir ieslēgta. Pārslēdzot tiks izslēgta skaņa.</translation>
 <translation id="3226991577105957773">vēl <ph name="COUNT" /></translation>
 <translation id="3227137524299004712">Mikrofons</translation>
@@ -1034,6 +1036,7 @@ Jauna instalācija</translation>
 <translation id="7513622367902644023">Atlasīts ekrānuzņēmuma režīms</translation>
 <translation id="7513922695575567867">Kalendārs, nedēļa, kas sākas datumā <ph name="DATE" />, pašlaik atlasītais datums ir <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Lejupielādēt</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7526573455193969409">Var tikt pārraudzītas tīklā veiktās darbības</translation>
 <translation id="7536035074519304529">IP adrese: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Linux lietotnes un inkognito režīma logi pašlaik netiek atbalstīti. Citas lietotnes tiks saglabātas.</translation>
@@ -1102,6 +1105,7 @@ Jauna instalācija</translation>
 <translation id="7901405293566323524">Tālruņu centrāle</translation>
 <translation id="7902625623987030061">Pieskarieties pirksta nospieduma sensoram</translation>
 <translation id="7904094684485781019">Šī konta administrators nav atļāvis vairākkārtēju pierakstīšanos.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7930731167419639574">Runa tiek apstrādāta lokāli, un diktēšana darbojas bezsaistē.</translation>
 <translation id="7933084174919150729">Google asistents ir pieejams tikai galvenajam profilam.</translation>
 <translation id="79341161159229895">Kontu pārvalda <ph name="FIRST_PARENT_EMAIL" /> un <ph name="SECOND_PARENT_EMAIL" /></translation>

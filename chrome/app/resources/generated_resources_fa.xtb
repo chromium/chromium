@@ -1072,7 +1072,6 @@
 <translation id="2019718679933488176">&amp;باز کردن فایل صوتی در برگهٔ جدید</translation>
 <translation id="2020183425253392403">نمایش تنظیمات نشانی شبکه</translation>
 <translation id="2020225359413970060">اسکن فایل</translation>
-<translation id="2022395138980869975">رفتن به جستجوی جانبی</translation>
 <translation id="2023167225947895179">حدس زدن این پین آسان است</translation>
 <translation id="202352106777823113">بارگیری خیلی طول کشید و توسط شبکه متوقف شد.</translation>
 <translation id="2024195579772565064">حذف موتور جستجو</translation>
@@ -1341,6 +1340,7 @@
 <translation id="2278562042389100163">باز کردن پنجرهٔ مرورگر</translation>
 <translation id="2278668501808246459">راه‌اندازی مدیر محتوی</translation>
 <translation id="2280486287150724112">حاشیه راست</translation>
+<translation id="2281863813036651454">کلیک سمت چپ موشواره</translation>
 <translation id="2282146716419988068">‏پردازش GPU</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{باز کردن همه در &amp;گروه برگه جدید}=1{باز کردن در &amp;گروه برگه جدید}one{باز کردن همه ({COUNT}) در &amp;گروه برگه جدید}other{باز کردن همه ({COUNT}) در &amp;گروه برگه جدید}}</translation>
 <translation id="2285942871162473373">اثر انگشتتان تشخیص داده نشد. دوباره امتحان کنید.</translation>
@@ -2973,7 +2973,6 @@
 <translation id="3888053818972567950">اتصال <ph name="WEB_DRIVE" /></translation>
 <translation id="3888550877729210209">یادداشت‌برداری با <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">این اطلاعات به ما کمک می‌کند مشکل «دستیار» شما را بهتر تشخیص دهیم. این اطلاعات تا ۹۰ روز ذخیره می‌شود و دسترسی به آن به تیم‌های مهندسی و بازخورد مربوطه محدود می‌شود.</translation>
-<translation id="3888900458694486810">بستن جستجوی جانبی</translation>
 <translation id="3890064827463908288">‏روشن کردن «همگام‌سازی Chrome» برای استفاده از «همگام‌سازی Wi-Fi»</translation>
 <translation id="389313931326656921">اختصاص دادن کلید به کنش «بعدی»</translation>
 <translation id="3893295674388762059">برای پاک کردن داده، همه پنجره‌های ناشناس را ببندید</translation>
@@ -3287,7 +3286,6 @@
 <translation id="4208390505124702064">جستجوی <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">بزرگ</translation>
 <translation id="4209251085232852247">خاموش</translation>
-<translation id="4209464433672152343">‏اسناد جهت آماده‌سازی برای چاپ <ph name="BEGIN_LINK_HELP" />به Google ارسال شدند<ph name="END_LINK_HELP" />. در <ph name="BEGIN_LINK_DASHBOARD" />داشبورد Google Cloud Print<ph name="END_LINK_DASHBOARD" /> چاپگر و سابقه چاپ خود را مشاهده، ویرایش و مدیریت کنید.</translation>
 <translation id="4210048056321123003">درحال بارگیری دستگاه مجازی</translation>
 <translation id="421182450098841253">&amp;نمایش نوار نشانک‌ها</translation>
 <translation id="4211851069413100178">‏داده‌های استفاده و عیب‌یابی را ارسال کنید. با ارسال خودکار داده‌های تشخیص عیب و داده‌های استفاده از دستگاه و برنامه به Google، به بهبود تجربه استفاده از Android کمک کنید. این داده‌ها به بهبود پایداری سیستم و برنامه و موارد دیگر کمک خواهد کرد. بعضی داده‌های انبوهشی نیز به برنامه‌ها و شرکای Google (مانند برنامه‌نویس‌های Android) کمک می‌کند. این <ph name="BEGIN_LINK1" />تنظیم<ph name="END_LINK1" /> توسط مالک اعمال می‌شود. ممکن است مالک انتخاب کند داده‌های استفاده و عیب‌یابی این دستگاه به Google ارسال شود. اگر تنظیم «فعالیت وب و برنامه» تکمیلی روشن باشد، ممکن است این داده‌ها در حساب Google شما ذخیره شود. <ph name="BEGIN_LINK2" />بیشتر بدانید<ph name="END_LINK2" /></translation>
@@ -5160,6 +5158,7 @@
 <translation id="6129938384427316298">‏نظر گواهی Netscape</translation>
 <translation id="6129953537138746214">فاصله</translation>
 <translation id="6130692320435119637">‏افزودن Wi-Fi</translation>
+<translation id="6130887916931372608">کلید صفحه‌کلید</translation>
 <translation id="6136114942382973861">بستن نوار بارگیری</translation>
 <translation id="6136287496450963112">کلید امنیتی‌تان پین ندارد و محافظت‌شده نیست. برای مدیریت اثر انگشت، ابتدا پین ایجاد کنید.</translation>
 <translation id="6138680304137685902">‏امضای X9.62 ECDSA با SHA-384</translation>
@@ -6182,7 +6181,6 @@
 <translation id="7180611975245234373">بازخوانی</translation>
 <translation id="7180865173735832675">سفارشی کردن</translation>
 <translation id="7182791023900310535">انتقال گذرواژه</translation>
-<translation id="7183420126213758623">فعال/ غیرفعال کردن جستجوی جانبی. جستجوی جانبی فعال نیست.</translation>
 <translation id="7186088072322679094">نگه داشتن در نوار ابزار</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> نمی‌تواند این پوشه را باز کند زیرا فایل‌های سیستم در آن وجود دارد</translation>
 <translation id="7187428571767585875">ورودی‌های رجیستری برای برداشتن یا تغییر دادن:</translation>
@@ -6704,7 +6702,6 @@
 <translation id="7701040980221191251">هیچ‌کدام</translation>
 <translation id="7701869757853594372">مدیریت کاربر</translation>
 <translation id="7702574632857388784">برداشتن <ph name="FILE_NAME" /> از فهرست</translation>
-<translation id="7702599324215660661">هنگام ترک کردن، قفل شود</translation>
 <translation id="7702907602086592255">دامنه</translation>
 <translation id="7704305437604973648">کار</translation>
 <translation id="7704317875155739195">تکمیل خودکار جستجوها و نشانی‌های وب</translation>
@@ -6774,6 +6771,7 @@
 <translation id="7768770796815395237">تغییر دادن</translation>
 <translation id="7768784765476638775">انتخاب برای شنیدن</translation>
 <translation id="7770406201819593386">‏اجرای آزمایش‌های عیب‌یابی ChromeOS Flex.</translation>
+<translation id="7770450735129978837">کلیک سمت راست موشواره</translation>
 <translation id="7770612696274572992">تصویر از دستگاه دیگری کپی شده است</translation>
 <translation id="7771452384635174008">صفحه آرایی</translation>
 <translation id="7772032839648071052">تأیید گذرعبارت</translation>
@@ -6809,7 +6807,6 @@
 <translation id="7798844538707273832"><ph name="PERMISSION" /> به‌طور خودکار مسدود‌ شده است</translation>
 <translation id="7799299114731150374">کاغذدیواری باموفقیت تنظیم شد</translation>
 <translation id="7799817062559422778">حالت روشن</translation>
-<translation id="7800159967992492578">فعال/ غیرفعال کردن جستجوی جانبی. جستجوی جانبی فعال است.</translation>
 <translation id="7800518121066352902">چرخاندن خلاف جهت ع&amp;قربه‌های ساعت</translation>
 <translation id="7801679634091975683">‏تغییراتی که اینجا ایجاد می‌کنید فقط در «مرورگر Lacros Chrome» اعمال می‌شود. برای ایجاد تغییرات در تنظیمات «مرورگر Chrome»، «مرورگر Chrome» را باز کنید و به تنظیمات بروید.</translation>
 <translation id="780301667611848630">نه متشکرم</translation>

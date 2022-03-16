@@ -30,7 +30,6 @@
 <translation id="114825011539563458">I controlli per la privacy e la sicurezza più importanti in un unico posto</translation>
 <translation id="1149401351239820326">Mese di scadenza</translation>
 <translation id="1154704303112745282">Pagina non disponibile offline: <ph name="VIOLATED_URL" /></translation>
-<translation id="1166688006062225587">Elenco di account da selezionare.</translation>
 <translation id="1171770572613082465">Scopri i siti web più visitati toccando il pulsante "Siti principali"</translation>
 <translation id="1173894706177603556">Rinomina</translation>
 <translation id="1177863135347784049">Personalizzati</translation>
@@ -571,6 +570,7 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="4415276339145661267">Gestisci il tuo Account Google</translation>
 <translation id="4425140285732600465">Monitoraggio del prezzo attivato. Ricevi avvisi se il prezzo cala su qualsiasi sito.</translation>
 <translation id="442518031075347249">Non potrai più utilizzare la tua carta virtuale con Google Pay. <ph name="BEGIN_LINK1" />Scopri di più sulle carte virtuali<ph name="END_LINK1" /></translation>
+<translation id="4428065317363009941">Personalizzazione degli annunci</translation>
 <translation id="4450672886426705087">Risultati di ricerca di Google.</translation>
 <translation id="4452411734226507615">Chiudi la scheda <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Preferito aggiunto in: <ph name="FOLDER_NAME" /></translation>
@@ -685,6 +685,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="4988526792673242964">Pagine</translation>
 <translation id="5001388021414335527">Segui questo sito qui</translation>
 <translation id="5004416275253351869">Gestione attività Google</translation>
+<translation id="5005141133360250920">Reazione eliminata</translation>
 <translation id="5005498671520578047">Copia password</translation>
 <translation id="5011311129201317034">Il sito <ph name="SITE" /> desidera collegarsi</translation>
 <translation id="5016205925109358554">Serif</translation>
@@ -740,6 +741,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5368227114232678694">Per navigare in privato su questo dispositivo, prova la modalità in incognito</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> scheda aperta, tocca per cambiare scheda}other{<ph name="OPEN_TABS_MANY" /> schede aperte, tocca per cambiare scheda}}</translation>
 <translation id="5375577065097716013">Cerca immagine con Lens <ph name="BEGIN_NEW" />Novità<ph name="END_NEW" /></translation>
+<translation id="5376898820269806588">Reazione cambiata</translation>
 <translation id="5403644198645076998">Consenti solo siti specifici</translation>
 <translation id="5409881200985013443">Vuoi inviare <ph name="ONE_TIME_CODE" /> a <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Verifica…</translation>
@@ -897,7 +899,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6277522088822131679">Si è verificato un problema durante la stampa della pagina. Riprova.</translation>
 <translation id="6277722725779679269">Impossibile aggiornare Monitora prezzo</translation>
 <translation id="6278428485366576908">Tema</translation>
-<translation id="6293443105724342169">Elenco di account da selezionare aperto nella parte inferiore dello schermo.</translation>
 <translation id="6294610283659775533">Puoi inviare schede tra dispositivi su cui è stato eseguito l'accesso con lo stesso Account Google</translation>
 <translation id="6297765934698848803">L'organizzazione che gestisce il tuo dispositivo ha disattivato la fotocamera.</translation>
 <translation id="6301525844455696527">Non dimenticarti il tuo elenco di lettura</translation>
@@ -1073,6 +1074,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="718926126787620637">Elenco di cartelle di preferiti aperto a schermo intero</translation>
 <translation id="7191430249889272776">Scheda aperta in background.</translation>
 <translation id="7196215469483532480">Spiegazione della Guida alla privacy aperta a schermo intero</translation>
+<translation id="7208109991155904980">Reazione spostata</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 download in attesa}other{# download in attesa}}</translation>
 <translation id="7237045078887540010">Se utilizzi Chrome, accetti i <ph name="BEGIN_TOS_LINK" />Termini di servizio di Google<ph name="END_TOS_LINK" /> e i <ph name="BEGIN_ATOS_LINK" />Termini di servizio aggiuntivi di Google Chrome e Chrome OS<ph name="END_ATOS_LINK" />. Si applicano anche le <ph name="BEGIN_PRIVACY_LINK" />Norme sulla privacy<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="7242755609445462077">Evidenziazione stilizzata: <ph name="CURRENT_DATE" /></translation>
@@ -1307,7 +1309,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="8461694314515752532">Cripta i dati sincronizzati con la tua passphrase di sincronizzazione</translation>
 <translation id="8466613982764129868">Assicurati che il dispositivo <ph name="TARGET_DEVICE_NAME" /> sia connesso a Internet</translation>
 <translation id="8473863474539038330">Indirizzi e altro</translation>
-<translation id="847656914027543776">Elenco di account da selezionare chiuso.</translation>
 <translation id="8481921391193215807">Se attivi questa funzionalità, i siti potrebbero usare le tecniche che garantiscono la tutela della privacy mostrate qui per fornire i propri contenuti e servizi. Sono incluse alternative al tracciamento tra siti. Nel tempo potrebbero essere aggiunte altre prove.
 
 <ph name="BEGIN_LIST_ITEM1" />Gli inserzionisti e i publisher possono usare la tecnologia FLoC.<ph name="END_LIST_ITEM1" />
@@ -1362,6 +1363,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="8683526617475118045">I tuoi vantaggi</translation>
 <translation id="869891660844655955">Data di scadenza</translation>
 <translation id="8699120352855309748">Non proporre di tradurre queste lingue</translation>
+<translation id="8712637175834984815">Fatto</translation>
 <translation id="8725066075913043281">Riprova</translation>
 <translation id="8730621377337864115">Fine</translation>
 <translation id="8746155870861185046">Condividi evidenziazione</translation>
@@ -1434,7 +1436,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="9108312223223904744">Assistenza relativa a Telefono come token di sicurezza</translation>
 <translation id="9108808586816295166">Il sistema DNS sicuro potrebbe non essere sempre disponibile</translation>
 <translation id="9133397713400217035">Esplora offline</translation>
-<translation id="9133523398139146080">Elenco di account da selezionare aperto a schermo intero.</translation>
 <translation id="9137013805542155359">Mostra originale</translation>
 <translation id="9148126808321036104">Esegui di nuovo l'accesso</translation>
 <translation id="9155898266292537608">Per eseguire una ricerca, basta un rapido tocco su una parola</translation>

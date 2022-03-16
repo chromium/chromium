@@ -31,6 +31,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1150989369772528668">Kalendaryo</translation>
 <translation id="1153356358378277386">Mga nakapares na device</translation>
 <translation id="1165712434476988950">Kailangang mag-restart ng device para mailapat ang update.</translation>
+<translation id="1171742223880403396">Posibleng hindi kumonekta nang maayos sa mga display ang iyong USB-C cable</translation>
 <translation id="1175572348579024023">Mag-scroll</translation>
 <translation id="1178581264944972037">I-pause</translation>
 <translation id="1181037720776840403">Alisin</translation>
@@ -256,6 +257,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2595239820337756193">5K sa milya</translation>
 <translation id="2596078834055697711">Kumuha ng screenshot ng window</translation>
 <translation id="2607678425161541573">Kailangang mag-sign in online</translation>
+<translation id="2620436844016719705">System</translation>
 <translation id="2621713457727696555">Secured</translation>
 <translation id="263399434338050016">"Piliin lahat"</translation>
 <translation id="2653019840645008922">Window capture</translation>
@@ -351,6 +353,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="320207200541803018">Magtakda ng timer</translation>
 <translation id="3203405173652969239">Naka-enable ang Switch Access</translation>
 <translation id="3207953481422525583">Mga Setting ng User</translation>
+<translation id="3208321278970793882">App</translation>
 <translation id="3217205077783620295">Naka-on ang volume, mamu-mute ang audio kapag nag-toggle.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> pa</translation>
 <translation id="3227137524299004712">Mikropono</translation>
@@ -1034,6 +1037,7 @@ Kaka-install lang</translation>
 <translation id="7513622367902644023">Pinili ang screenshot mode</translation>
 <translation id="7513922695575567867">Kalendaryo, linggo ng <ph name="DATE" />, kasalukuyang pinili ang <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">I-download</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7526573455193969409">Maaaring sinusubaybayan ang network</translation>
 <translation id="7536035074519304529">IP address: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Kasalukuyang hindi sinusuportahan ang mga Linux app at Incognito window. Mase-save ang iba pang app.</translation>
@@ -1102,6 +1106,7 @@ Kaka-install lang</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Pindutin ang fingerprint sensor</translation>
 <translation id="7904094684485781019">Hindi pinayagan ng administrator para sa account na ito ang multiple na pag-sign in.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7930731167419639574">Lokal nang ipinoproseso ang speech at gumagana offline ang Dictation.</translation>
 <translation id="7933084174919150729">Available lang ang Google Assistant para sa pangunahing profile.</translation>
 <translation id="79341161159229895">Pinamamahalaan nina <ph name="FIRST_PARENT_EMAIL" /> at <ph name="SECOND_PARENT_EMAIL" /> ang account</translation>

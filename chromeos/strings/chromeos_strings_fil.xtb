@@ -20,6 +20,7 @@
 <translation id="1181037720776840403">Alisin</translation>
 <translation id="1195447618553298278">Hindi kilalang error.</translation>
 <translation id="1196959502276349371">Bersyon <ph name="VERSION" /></translation>
+<translation id="1199355487114804640">I-play/I-pause</translation>
 <translation id="1201402288615127009">Susunod</translation>
 <translation id="1204296502688602597">Latency ng DNS</translation>
 <translation id="123124571410524056">May pinaghihinalaang portal</translation>
@@ -43,6 +44,7 @@
 <translation id="1413240736185167732">Hindi na-print - Hindi gumana ang filter</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">May keypair ako</translation>
+<translation id="1423591390236870726">Hindi napindot ang key na <ph name="KEY_NAME" /></translation>
 <translation id="1435763214710588005">Awtomatikong nire-reset ang paggamit ng data sa piniling araw kada buwan</translation>
 <translation id="1442433966118452622">Source ng larawan</translation>
 <translation id="1451536289672181509">Keyboard ang device.</translation>
@@ -84,6 +86,7 @@
 <translation id="1827738518074806965">Art gallery</translation>
 <translation id="1851218745569890714">Pakikipagkumperensya Gamit ang Video</translation>
 <translation id="1852934301711881861">I-install ang ChromeOS Flex</translation>
+<translation id="1856388568474281774">Pababang arrow</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Rebisyon ng hardware</translation>
 <translation id="1905710495812624430">Nalampasan na ang maximum na pinapahintulutang bilang ng pagsubok</translation>
@@ -98,6 +101,7 @@
 <translation id="2016697457005847575">Subukan ang mga hakbang sa pag-troubleshoot</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Higit pang mga setting</translation>
+<translation id="2085089206770112532">Babaan ang liwanag ng display</translation>
 <translation id="2104796393919810494">Kumpleto na ang pag-repair</translation>
 <translation id="2105810540595158374">Game controller ang device.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, bersyon <ph name="MILESTONE_VERSION" /></translation>
@@ -116,6 +120,7 @@
 <translation id="222447520299472966">Kailangang pumili ng hindi bababa sa isang album sa Art gallery</translation>
 <translation id="2230005943220647148">Celsius</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2240366984605217732">Switch ng layout</translation>
 <translation id="225692081236532131">Status ng pag-activate</translation>
 <translation id="2287186687001756809">Walang available na larawan. Para magdagdag ng mga larawan, pumunta sa <ph name="LINK" /></translation>
 <translation id="2307344026739914387">Gamitin ang kasalukuyang keypair</translation>
@@ -207,9 +212,11 @@
 <translation id="357889014807611375">nakametrong Wi-Fi</translation>
 <translation id="3583278742022654445">Mahina ang signal. Subukang mas lumapit sa source ng signal ng Wi-Fi.</translation>
 <translation id="3595596368722241419">Puno na ang baterya</translation>
+<translation id="3600339377155080675">Mirror ng screen</translation>
 <translation id="3603829704940252505">Avatar</translation>
 <translation id="360565022852130722">Naka-secure ang WiFi network gamit ang mahinang protocol na WEP 802.1x</translation>
 <translation id="3606583719724308068">Mataas ang latency sa mga HTTPS na website</translation>
+<translation id="3632579075709132555">Toggle ng Privacy screen</translation>
 <translation id="3689839747745352263">Pagsusuri sa <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Naglo-load...</translation>
 <translation id="3708186454126126312">Dating nakakonekta</translation>
@@ -263,6 +270,7 @@
 <translation id="4289540628985791613">Pangkalahatang-ideya</translation>
 <translation id="4297501883039923494">Huminto - Hindi kilalang error</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Larawan</translation>
+<translation id="4333390807948134856">Napindot ang key na <ph name="KEY_NAME" /></translation>
 <translation id="4378373042927530923">Hindi Tumakbo</translation>
 <translation id="4378551569595875038">Kumokonekta...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -278,6 +286,7 @@
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Hindi na-ping ang hindi default na network gateway</translation>
 <translation id="4485626319513081846">Piliin ang opsyong ito kung ire-restock o ire-refurbish ang device para sa pamamahagi sa bagong customer.</translation>
+<translation id="4503223151711056411">Kaliwang arrow</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Pagtugma sa alternatibong pangalan ng subject</translation>
 <translation id="4536864596629708641">Configuration ng IP</translation>
@@ -289,10 +298,12 @@
 <translation id="4562494484721939086">Walang serbisyo</translation>
 <translation id="458794348635939462">Hindi nalutas ang lahat ng host</translation>
 <translation id="4593212453765072419">Kinakailangan ang pagpapatunay ng proxy</translation>
+<translation id="4609350030397390689">Babaan ang liwanag ng keyboard</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> sa <ph name="TOTAL_PAGE_NUMBER" />. Pindutin ang enter para kanselahin ang pag-print.</translation>
 <translation id="4627645661474370390">Remote na pagkakakilanlan</translation>
 <translation id="463791356324567266">Kinakansela ang pag-scan...</translation>
 <translation id="4646949265910132906">Secure na Koneksyon sa WiFi</translation>
+<translation id="4650608062294027130">Kanang shift</translation>
 <translation id="4654549501020883054">Baguhin Araw-araw</translation>
 <translation id="4665014895760275686">Manufacturer</translation>
 <translation id="467510802200863975">Hindi nagtutugma ang mga password</translation>
@@ -391,8 +402,10 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Mag-scan ulit</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5600027863942488546">Nasubok ang key na <ph name="KEY_NAME" /></translation>
 <translation id="5620281292257375798">Internal lang</translation>
 <translation id="5649768706273821470">Pakinggan</translation>
+<translation id="5655283760733841251">Taasan ang liwanag ng keyboard</translation>
 <translation id="5669267381087807207">Ina-activate</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Pamilya</translation>
@@ -400,6 +413,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> sa <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">I-update ang <ph name="DEVICE_NAME" /></translation>
 <translation id="5760715441271661976">Status ng Portal</translation>
+<translation id="576835345334454681">Taasan ang liwanag ng display</translation>
 <translation id="57838592816432529">I-mute</translation>
 <translation id="5784136236926853061">Mataas na latency ng HTTP</translation>
 <translation id="5832805196449965646">Magdagdag ng Tao</translation>
@@ -430,6 +444,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="6104112872696127344">Nakansela ang pag-scan</translation>
 <translation id="6106186594183574873">Para tapusin, ilagay ang iyong lumang password</translation>
 <translation id="6108689792487843350">Hindi makakonekta sa gateway</translation>
+<translation id="6113701710518389813">Pataas na arrow</translation>
 <translation id="6122191549521593678">Online</translation>
 <translation id="6137767437444130246">Certificate ng user</translation>
 <translation id="6146993107019042706">Para tapusin, ilagay ang bago mong password</translation>
@@ -443,6 +458,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="6232017090690406397">Baterya</translation>
 <translation id="6235460611964961764">Manual na i-reset ang paggamit ng data</translation>
 <translation id="6243280677745499710">Kasalukuyang nakatakda</translation>
+<translation id="6275224645089671689">Pakanang arrow</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515">Nakansela ang pagsubok na <ph name="TEST_NAME" /></translation>
@@ -478,6 +494,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="6620487321149975369">Lalabas sa history ang mga pag-print maliban na lang kung manual na aalisin ang mga ito</translation>
 <translation id="6643016212128521049">I-clear</translation>
 <translation id="6647510110698214773">Algorithm ng pag-encrypt</translation>
+<translation id="6650062777702288430">Kana/alphanumeric na switch</translation>
 <translation id="6657585470893396449">Password</translation>
 <translation id="6659594942844771486">Tab</translation>
 <translation id="6692996468359469499">Kumuha ng impormasyon kaugnay ng iyong pinili</translation>
@@ -690,6 +707,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="9122602430962285795">Para kumonekta ulit, pumunta sa Mga Setting</translation>
 <translation id="9126720536733509015">Mag-save ng maraming pahina sa iisang PDF</translation>
 <translation id="9137526406337347448">Mga Serbisyo ng Google</translation>
+<translation id="9138630967333032450">Kaliwang shift</translation>
 <translation id="9149391708638971077">Patakbuhin ang pagsusuri sa Memory</translation>
 <translation id="9173638680043580060">Wala nang isang minuto ang natitira</translation>
 <translation id="917720651393141712">Test</translation>

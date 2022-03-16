@@ -115,7 +115,6 @@
 <translation id="1301324364792935241">请检查您的安全 DNS 设置</translation>
 <translation id="1307966114820526988">已被弃用的功能</translation>
 <translation id="1308113895091915999">有优惠可用</translation>
-<translation id="1312803275555673949">有何证据能证明这项信息属实？</translation>
 <translation id="1314311879718644478">查看增强现实内容</translation>
 <translation id="1314509827145471431">装订（右侧）</translation>
 <translation id="1318023360584041678">已保存在标签页组中</translation>
@@ -734,7 +733,6 @@
 <translation id="324180406144491771">“<ph name="HOST_NAME" />”链接已被禁用</translation>
 <translation id="3249845759089040423">时髦</translation>
 <translation id="3252266817569339921">法语</translation>
-<translation id="3257954757204451555">这项信息是谁提供的？</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 Google 日历中快速创建新活动</translation>
 <translation id="3261488570342242926">了解虚拟卡</translation>
 <translation id="3264837738038045344">“管理 Chrome 设置”按钮，按 Enter 键即可访问您的 Chrome 设置</translation>
@@ -1115,6 +1113,7 @@
 <translation id="4414515549596849729">Cookie 和网站数据</translation>
 <translation id="4415426530740016218">取货地址</translation>
 <translation id="4424024547088906515">此服务器无法证明它是<ph name="DOMAIN" />；Chrome不信任其安全证书。出现此问题的原因可能是配置有误或您的连接被拦截了。</translation>
+<translation id="4428065317363009941">广告个性化</translation>
 <translation id="443121186588148776">串行端口</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> 不接受您的登录证书，或者您可能没有提供登录证书。</translation>
 <translation id="4432792777822557199">从现在开始，源语言为<ph name="SOURCE_LANGUAGE" />的网页一律会被翻译成<ph name="TARGET_LANGUAGE" /></translation>
@@ -1247,7 +1246,6 @@
 <translation id="4838327282952368871">梦幻</translation>
 <translation id="4840250757394056958">查看您的 Chrome 历史记录</translation>
 <translation id="484462545196658690">自动</translation>
-<translation id="4849865131988503897">准确度检查</translation>
 <translation id="4850886885716139402">视图</translation>
 <translation id="485316830061041779">德语</translation>
 <translation id="4853901935952445031">2022 年 2 月之后，此网站将无法使用 U2F API。如果您是此网站的所有者，则应将其更改为使用 Web Authentication API。</translation>
@@ -1434,6 +1432,7 @@
 <translation id="5398772614898833570">广告已被拦截</translation>
 <translation id="5400836586163650660">灰色</translation>
 <translation id="540969355065856584">此服务器无法证明它是 <ph name="DOMAIN" />；其安全证书目前无效。出现此问题的原因可能是配置有误或您的连接被拦截了。</translation>
+<translation id="5412236728747081950">此网站会从 Chrome 中了解您的兴趣，从而向您展示与您的需求更相符的广告</translation>
 <translation id="541416427766103491">堆叠出纸器 4</translation>
 <translation id="5421136146218899937">清除浏览数据...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> 想向您发送通知</translation>
@@ -1949,7 +1948,6 @@
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> 不符合相关安全标准。</translation>
 <translation id="7210993021468939304">可查看该容器内的 Linux 活动，并可在该容器内安装和运行 Linux 应用</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />详细了解<ph name="END_LINK" />此问题。</translation>
-<translation id="7215025035562547931">请花点时间思考这项信息的准确性</translation>
 <translation id="7217745192097460130">使用触控 ID 验证并完成您的购买交易？</translation>
 <translation id="7219179957768738017">该连接使用 <ph name="SSL_VERSION" />。</translation>
 <translation id="7220786058474068424">正在处理</translation>
@@ -2079,6 +2077,7 @@
 <translation id="7569952961197462199">从 Chrome 中移除信用卡信息？</translation>
 <translation id="7569983096843329377">黑色</translation>
 <translation id="7575207903026901870">“移除建议”按钮，按 Enter 键即可移除这项建议</translation>
+<translation id="7577900504646297215">管理我的兴趣</translation>
 <translation id="7578104083680115302">通过各种设备在网站和应用中购物时，您都可以使用 Google 为您保存的银行卡信息快速付款。</translation>
 <translation id="7581199239021537589">侧边 2，图片沿 Y 轴位移</translation>
 <translation id="7582602800368606489">在 Google 日历中快速创建新活动</translation>
@@ -2199,7 +2198,6 @@
 <translation id="7966803981046576691">工作帐号类型</translation>
 <translation id="79682505114836835">值“<ph name="VALUE" />”是无效的十六进制颜色。</translation>
 <translation id="7968982339740310781">查看详情</translation>
-<translation id="7970392640816874403">其他来源显示了什么？</translation>
 <translation id="7976214039405368314">请求次数过多</translation>
 <translation id="7977538094055660992">输出设备</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -2551,7 +2549,6 @@
 <translation id="9155211586651734179">已连接音频外围设备</translation>
 <translation id="9157595877708044936">正在设置...</translation>
 <translation id="9158625974267017556">C6 (Envelope)</translation>
-<translation id="9164029392738894042">准确度检查</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">允许网站检查您是否已保存付款方式</translation>
 <translation id="9169664750068251925">在此网站上始终阻止</translation>

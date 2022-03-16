@@ -1063,7 +1063,6 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="2019718679933488176">Ireki &amp;audioa beste fitxa batean</translation>
 <translation id="2020183425253392403">Erakutsi sarearen helbidearen ezarpenak</translation>
 <translation id="2020225359413970060">Aztertu fitxategia</translation>
-<translation id="2022395138980869975">Itxi edo ireki alboko bilaketa</translation>
 <translation id="2023167225947895179">Erraz asma daiteke PIN hau</translation>
 <translation id="202352106777823113">Deskarga gehiegi luzatzen ari zen eta sareak geldiarazi egin du.</translation>
 <translation id="2024195579772565064">Ezabatu bilatzailea</translation>
@@ -2960,7 +2959,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" /> zerbitzurako konexioa</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> aplikazioarekin oharrak idaztea</translation>
 <translation id="3888586133700543064">Laguntzailea zerbitzuarekin duzun arazoa hobeto ulertzeko balio du informazioak. 90 egunez gordeko da, eta ingeniaritza-taldeek nahiz erabiltzaileen iritzien arduradun direnek bakarrik atzitu ahalko dute.</translation>
-<translation id="3888900458694486810">Itxi alboko bilaketa</translation>
 <translation id="3890064827463908288">Aktibatu Chrome-ren Sinkronizazioa Wifi-sinkronizazioa erabiltzeko</translation>
 <translation id="389313931326656921">Esleitu erabilerraztasun-etengailu bat "Hurrengoa" ekintzari</translation>
 <translation id="3893295674388762059">Datuak garbitzeko, itxi ezkutuko moduko leiho guztiak</translation>
@@ -3278,7 +3276,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4208390505124702064">Bilatu <ph name="SITE_NAME" /> webgunean</translation>
 <translation id="4209092469652827314">Handia</translation>
 <translation id="4209251085232852247">Desaktibatuta</translation>
-<translation id="4209464433672152343"><ph name="BEGIN_LINK_HELP" />Google-ri bidaltzen zaizkio<ph name="END_LINK_HELP" /> dokumentuak, inprimatzeko presta ditzan. Inprimagailuak eta inprimagailu-historia ikusi, editatu eta kudeatzeko, joan <ph name="BEGIN_LINK_DASHBOARD" />Google Cloud Print panelera<ph name="END_LINK_DASHBOARD" />.</translation>
 <translation id="4210048056321123003">Makina birtuala deskargatzen</translation>
 <translation id="421182450098841253">&amp;Erakutsi laster-marken barra</translation>
 <translation id="4211851069413100178">Bidali erabilera- eta diagnostiko-datuak. Bidali diagnostikoak eta gailu zein aplikazioen erabilerari buruzko datuak Google-ri automatikoki haurrak darabiltzan Android zerbitzuak hobetzen laguntzeko. Horri esker, sistemaren eta aplikazioen egonkortasuna hobetuko da, besteak beste. Gainera, multzokatutako datu batzuk oso baliagarriak izango dira Google-ren aplikazioak hobetzeko eta bazkideei laguntzeko (adibidez, Android-en garatzaileei). Jabeak konfiguratu du <ph name="BEGIN_LINK1" />ezarpen<ph name="END_LINK1" /> hori. Gailu honen diagnostiko- eta erabilera-datuak Google-ri bidaltzea aukera dezake jabeak. Sareko eta aplikazioetako jarduera gehigarriak ezarpena aktibatuta badago, baliteke datu horiek Google-ko kontuan gordetzea. <ph name="BEGIN_LINK2" />Lortu informazio gehiago<ph name="END_LINK2" /></translation>
@@ -6181,7 +6178,6 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7180611975245234373">Freskatu</translation>
 <translation id="7180865173735832675">Pertsonalizatu</translation>
 <translation id="7182791023900310535">Eraman pasahitza</translation>
-<translation id="7183420126213758623">Itxi edo ireki alboko bilaketa. Ez dago aktibatuta alboko bilaketa.</translation>
 <translation id="7186088072322679094">Mantendu tresna-barran</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> webguneak ezin du ireki karpeta sistemaren fitxategiak dituelako</translation>
 <translation id="7187428571767585875">Erregistroan kendu edo aldatu beharreko sarrerak:</translation>
@@ -6703,7 +6699,6 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7701040980221191251">Bat ere ez</translation>
 <translation id="7701869757853594372">Erabiltzailearen heldulekuak</translation>
 <translation id="7702574632857388784">Kendu <ph name="FILE_NAME" /> zerrendatik</translation>
-<translation id="7702599324215660661">Blokeatu irtetean</translation>
 <translation id="7702907602086592255">Domeinua</translation>
 <translation id="7704305437604973648">Zeregina</translation>
 <translation id="7704317875155739195">Bete automatikoki bilaketak eta URLak</translation>
@@ -6814,7 +6809,6 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
 <translation id="7798844538707273832"><ph name="PERMISSION" /> automatikoki blokeatu da</translation>
 <translation id="7799299114731150374">Ezarri da horma-papera</translation>
 <translation id="7799817062559422778">Modu argia</translation>
-<translation id="7800159967992492578">Itxi edo ireki alboko bilaketa. Aktibatuta dago alboko bilaketa.</translation>
 <translation id="7800518121066352902">Biratu &amp;erlojuaren orratzen aurka</translation>
 <translation id="7801679634091975683">Lacros darabilen Chrome arakatzailean soilik aplikatuko dira hemen egiten dituzun aldaketak. Chrome arakatzailearen ezarpenetan aldaketak egiteko, ireki Chrome arakatzailea eta joan ezarpenetara.</translation>
 <translation id="780301667611848630">Ez, eskerrik asko</translation>

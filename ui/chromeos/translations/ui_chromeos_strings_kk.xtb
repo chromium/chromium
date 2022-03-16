@@ -824,6 +824,7 @@
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> аудиофайлы</translation>
 <translation id="8045462269890919536">румын</translation>
 <translation id="8049184478152619004">Жеке бөгеуден шығару кодын (PUK коды) енгізіңіз</translation>
+<translation id="807187749540895545"><ph name="FILE_NAME" /> алынып жатыр…</translation>
 <translation id="8079530767338315840">Қайталау</translation>
 <translation id="8087576439476816834">Жүктеп алу: <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Маған қолжетімді</translation>
@@ -875,6 +876,7 @@
 <translation id="8484284835977497781">Соңғы фотосуреттеріңізден таңдаңыз.</translation>
 <translation id="8487700953926739672">Желіден тыс істейді</translation>
 <translation id="8492972329130824181">Үй желісі қолжетімді емес. Байланысу үшін мобильдік интернет роумингін қосу қажет.</translation>
+<translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> элемент алынып жатыр…</translation>
 <translation id="8521441079177373948">Ұлыбритания</translation>
 <translation id="8525306231823319788">Толық экран</translation>
 <translation id="853494022971700746">Француз (Франция)</translation>

@@ -30,7 +30,6 @@
 <translation id="114825011539563458">Kõige olulisemad privaatsus- ja turvaseaded ühes kohas</translation>
 <translation id="1149401351239820326">Aegumiskuu</translation>
 <translation id="1154704303112745282">Leht pole võrguühenduseta saadaval: <ph name="VIOLATED_URL" /></translation>
-<translation id="1166688006062225587">Loend valitavatest kontodest.</translation>
 <translation id="1171770572613082465">Vaadake populaarseid veebisaite, puudutades nuppu „Popid saidid”</translation>
 <translation id="1173894706177603556">Muuda nime</translation>
 <translation id="1177863135347784049">Kohandatud</translation>
@@ -571,6 +570,7 @@ Puudutage pikalt mis tahes sõna, et seda otsida. Otsingu täpsustamiseks valige
 <translation id="4415276339145661267">Google'i konto haldamine</translation>
 <translation id="4425140285732600465">Jälgite hinda. Teile saadetakse märguanne, kui hind mõnel saidil langeb.</translation>
 <translation id="442518031075347249">Te ei saa enam Google Payga virtuaalkaarti kasutada. <ph name="BEGIN_LINK1" />Lisateave virtuaalkaartide kohta<ph name="END_LINK1" /></translation>
+<translation id="4428065317363009941">Reklaamide isikupärastamine</translation>
 <translation id="4450672886426705087">Google'i otsingutulemused</translation>
 <translation id="4452411734226507615">Vahelehe <ph name="TAB_TITLE" /> sulgemine</translation>
 <translation id="4452548195519783679">Lisatud järjehoidjana kausta <ph name="FOLDER_NAME" /></translation>
@@ -685,6 +685,7 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="4988526792673242964">Leheküljed</translation>
 <translation id="5001388021414335527">Jälgige seda saiti siin</translation>
 <translation id="5004416275253351869">Google'i kontotegevuste haldus</translation>
+<translation id="5005141133360250920">Reaktsioon kustutati</translation>
 <translation id="5005498671520578047">Parooli kopeerimine</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> soovib ühenduse luua</translation>
 <translation id="5016205925109358554">Serif</translation>
@@ -740,6 +741,7 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="5368227114232678694">Selles seadmes privaatselt sirvimiseks proovige inkognito režiimi</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> avatud vaheleht, puudutage vahelehtede vahetamiseks}other{<ph name="OPEN_TABS_MANY" /> avatud vahelehte, puudutage vahelehtede vahetamiseks}}</translation>
 <translation id="5375577065097716013">Otsi pilti Google Lensiga <ph name="BEGIN_NEW" />Uus<ph name="END_NEW" /></translation>
+<translation id="5376898820269806588">Reaktsiooni muudeti</translation>
 <translation id="5403644198645076998">Luba ainult kindlad saidid</translation>
 <translation id="5409881200985013443">Kas soovite saata koodi <ph name="ONE_TIME_CODE" /> seadmes <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Kinnitamine ...</translation>
@@ -897,7 +899,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6277522088822131679">Lehe printimisel ilmnes probleem. Proovige uuesti.</translation>
 <translation id="6277722725779679269">Funktsiooni Hindade jälgimine ei õnnestunud värskendada</translation>
 <translation id="6278428485366576908">Teema</translation>
-<translation id="6293443105724342169">Loend valitavatest kontodest, mis avatakse poolel kõrgusel.</translation>
 <translation id="6294610283659775533">Saate vahelehti saata seadmete vahel, mis on sisse logitud sama Google'i kontoga</translation>
 <translation id="6297765934698848803">Teie seadet haldav organisatsioon on kaamera välja lülitanud.</translation>
 <translation id="6301525844455696527">Võtke oma lugemisloend käsile</translation>
@@ -1073,6 +1074,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="718926126787620637">Täiskõrgusel avatud järjehoidjakaustade loend</translation>
 <translation id="7191430249889272776">Taustal on avatud vaheleht.</translation>
 <translation id="7196215469483532480">Privaatsusjuhendi selgitus on avatud täiskõrgusel</translation>
+<translation id="7208109991155904980">Reaktsioon teisaldati</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 allalaadimine on ootel}other{# allalaadimist on ootel}}</translation>
 <translation id="7237045078887540010">Chrome'i kasutades nõustute <ph name="BEGIN_TOS_LINK" />Google'i teenusetingimustega<ph name="END_TOS_LINK" /> ning <ph name="BEGIN_ATOS_LINK" />Google Chrome'i ja Chrome OS-i lisateenusetingimustega<ph name="END_ATOS_LINK" />. Kehtivad ka <ph name="BEGIN_PRIVACY_LINK" />privaatsuseeskirjad<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="7242755609445462077">Stiliseeritud esiletõst kuupäevast <ph name="CURRENT_DATE" /></translation>
@@ -1307,7 +1309,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="8461694314515752532">Krüpteeri sünkroonitud andmed sünkroonimisparooliga</translation>
 <translation id="8466613982764129868">Veenduge, et seadmel <ph name="TARGET_DEVICE_NAME" /> oleks internetiühendus</translation>
 <translation id="8473863474539038330">Aadressid ja muu</translation>
-<translation id="847656914027543776">Loend valitavatest kontodest on suletud.</translation>
 <translation id="8481921391193215807">Kui see on sisse lülitatud, võivad saidid oma sisu ja teenuste pakkumiseks kasutada siin kuvatud privaatsust säilitavaid meetodeid. Need hõlmavad saitidevahelise jälgimise alternatiive. Aja jooksul võidakse lisada rohkem prooviversioone.
 
 <ph name="BEGIN_LIST_ITEM1" />Reklaamijad ja väljaandjad saavad kasutada FLoC-tehnoloogiat.<ph name="END_LIST_ITEM1" />
@@ -1362,6 +1363,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="8683526617475118045">Mida see teile annab?</translation>
 <translation id="869891660844655955">Aegumiskuupäev</translation>
 <translation id="8699120352855309748">Ära paku nende keelte tõlkimist</translation>
+<translation id="8712637175834984815">Selge</translation>
 <translation id="8725066075913043281">Proovi uuesti</translation>
 <translation id="8730621377337864115">Valmis</translation>
 <translation id="8746155870861185046">Esiletõstu jagamine</translation>
@@ -1434,7 +1436,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="9108312223223904744">Tugi telefoni kasutamiseks turvavõtmena</translation>
 <translation id="9108808586816295166">Turvaline DNS ei pruugi alati saadaval olla</translation>
 <translation id="9133397713400217035">Uurige võrguühenduseta</translation>
-<translation id="9133523398139146080">Loend valitavatest kontodest, mis avatakse täiskõrgusel.</translation>
 <translation id="9137013805542155359">Kuva originaal</translation>
 <translation id="9148126808321036104">Logige uuesti sisse</translation>
 <translation id="9155898266292537608">Otsimiseks võite ka kiirelt sõna puudutada</translation>

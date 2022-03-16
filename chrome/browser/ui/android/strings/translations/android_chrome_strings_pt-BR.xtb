@@ -30,7 +30,6 @@
 <translation id="114825011539563458">Todos os controles de privacidade e segurança mais importantes em um só lugar</translation>
 <translation id="1149401351239820326">Mês de expiração</translation>
 <translation id="1154704303112745282">Página indisponível off-line: <ph name="VIOLATED_URL" /></translation>
-<translation id="1166688006062225587">Lista de contas a serem selecionadas.</translation>
 <translation id="1171770572613082465">Toque no botão "Sites famosos" para ver os sites muito acessados</translation>
 <translation id="1173894706177603556">Renomear</translation>
 <translation id="1177863135347784049">Personalizado</translation>
@@ -571,6 +570,7 @@ Toque em qualquer palavra e a mantenha pressionada para pesquisar. Para refinar 
 <translation id="4415276339145661267">Gerenciar sua Conta do Google</translation>
 <translation id="4425140285732600465">Monitorando o preço. Receba alertas se houver uma redução no preço em algum site.</translation>
 <translation id="442518031075347249">Não será mais possível usar o cartão virtual com Google Pay. <ph name="BEGIN_LINK1" />Saiba mais sobre os cartões virtuais<ph name="END_LINK1" /></translation>
+<translation id="4428065317363009941">Personalização de anúncios</translation>
 <translation id="4450672886426705087">Resultados da pesquisa do Google.</translation>
 <translation id="4452411734226507615">Fechar guia <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Adicionado como favorito em <ph name="FOLDER_NAME" /></translation>
@@ -900,7 +900,6 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6277522088822131679">Ocorreu um problema ao imprimir a página. Tente novamente.</translation>
 <translation id="6277722725779679269">Não foi possível atualizar o recurso Monitorar preço</translation>
 <translation id="6278428485366576908">Tema</translation>
-<translation id="6293443105724342169">Lista de contas a serem selecionadas aberta na metade da altura.</translation>
 <translation id="6294610283659775533">Você pode compartilhar guias entre dispositivos conectados à mesma Conta do Google</translation>
 <translation id="6297765934698848803">A organização que gerencia seu dispositivo desativou a câmera.</translation>
 <translation id="6301525844455696527">Veja sua lista de leitura</translation>
@@ -1311,7 +1310,6 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="8461694314515752532">Criptografar dados sincronizados com sua própria senha longa de sincronização</translation>
 <translation id="8466613982764129868">Verifique se o <ph name="TARGET_DEVICE_NAME" /> está conectado à Internet</translation>
 <translation id="8473863474539038330">Endereços e mais</translation>
-<translation id="847656914027543776">A lista de contas a serem selecionadas está fechada.</translation>
 <translation id="8481921391193215807">Quando esse recurso estiver ativado, os sites poderão usar as técnicas de preservação de privacidade mostradas aqui para exibir conteúdo e serviços. Isso inclui alternativas ao rastreamento entre sites. Ao longo do tempo, é possível que outros testes sejam adicionados.
 
 <ph name="BEGIN_LIST_ITEM1" />Anunciantes e editores podem usar o FLoC.<ph name="END_LIST_ITEM1" />
@@ -1366,6 +1364,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="8683526617475118045">Quais são as vantagens</translation>
 <translation id="869891660844655955">Validade</translation>
 <translation id="8699120352855309748">Não oferecer a opção de traduzir estes idiomas</translation>
+<translation id="8712637175834984815">Entendi</translation>
 <translation id="8725066075913043281">Tentar novamente</translation>
 <translation id="8730621377337864115">Concluído</translation>
 <translation id="8746155870861185046">Compartilhar texto em destaque</translation>
@@ -1391,6 +1390,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="8881973373982641723">Limpa o histórico, inclusive da caixa de pesquisa.</translation>
 <translation id="889338405075704026">Acesse as configurações do Chrome</translation>
 <translation id="8898822736010347272">Envia ao Google URLs de algumas páginas que você visita, informações do sistema limitadas e parte do conteúdo das páginas para ajudar a descobrir novas ameaças e proteger todos os usuários na Web.</translation>
+<translation id="8906502871739599113">Reação duplicada</translation>
 <translation id="8909135823018751308">Compartilhar...</translation>
 <translation id="8912362522468806198">Conta do Google</translation>
 <translation id="8920114477895755567">Aguardando detalhes dos pais.</translation>
@@ -1410,6 +1410,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="8970887620466824814">Algo deu errado.</translation>
 <translation id="8972098258593396643">Fazer o download para a pasta padrão?</translation>
 <translation id="8987641763863173640">Gerenciar configurações de prévia de vídeos</translation>
+<translation id="898854820045159673">Reação adicionada</translation>
 <translation id="8993760627012879038">Abrir uma nova guia no modo de navegação anônima</translation>
 <translation id="8996847606757455498">Escolha outro provedor</translation>
 <translation id="8998729206196772491">Você está fazendo login com uma conta gerenciada por <ph name="MANAGED_DOMAIN" /> e dando ao administrador dela o controle sobre seus dados do Chrome, os quais ficarão permanentemente vinculados a essa conta. Se você sair do Chrome, seus dados serão excluídos desse dispositivo, mas permanecerão armazenados na sua Conta do Google.</translation>
@@ -1438,13 +1439,13 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="9108312223223904744">Smartphone como um suporte de chave de segurança</translation>
 <translation id="9108808586816295166">DNS seguro pode não estar disponível o tempo todo</translation>
 <translation id="9133397713400217035">Navegar off-line</translation>
-<translation id="9133523398139146080">Lista de contas a serem selecionadas aberta no tamanho máximo.</translation>
 <translation id="9137013805542155359">Mostrar original</translation>
 <translation id="9148126808321036104">Faça login novamente</translation>
 <translation id="9155898266292537608">Você também pode pesquisar com um toque rápido em uma palavra</translation>
 <translation id="9158770349521403363">Compartilhar apenas o conteúdo</translation>
 <translation id="916446198114569890">Os URLs que você acessa ficam armazenados na sua Conta do Google</translation>
 <translation id="9169507124922466868">Histórico de navegação parcialmente aberto</translation>
+<translation id="9187955620966010988">Reação ajustada</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Verificado 1 minuto atrás}one{Verificado # minuto atrás}other{Verificado # minutos atrás}}</translation>
 <translation id="9204836675896933765">1 arquivo restante</translation>
 <translation id="9205933215779845960">Não foi possível encontrar a página. Verifique se há erros de ortografia ou faça uma pesquisa no <ph name="SEARCH_ENGINE" />.</translation>

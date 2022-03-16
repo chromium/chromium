@@ -1073,7 +1073,6 @@
 <translation id="2019718679933488176">অডিঅ’ নতুন টেবত খোলক</translation>
 <translation id="2020183425253392403">নেটৱর্ক ঠিকনাৰ ছেটিংসমূহ দেখুৱাওক</translation>
 <translation id="2020225359413970060">ফাইল স্কেন কৰক</translation>
-<translation id="2022395138980869975">ছাইড ছাৰ্চ ট’গল কৰক</translation>
 <translation id="2023167225947895179">পিনটো অনুমান কৰাত সহজ হ'ব পাৰে</translation>
 <translation id="202352106777823113">ডাউনল’ডৰ বাবে অতি বেছি সময় লাগিছে আৰু নেটৱর্ক সম্পর্কীয় সমস্যাৰ বাবে ই বাধাপ্ৰাপ্ত হৈছে।</translation>
 <translation id="2024195579772565064">সন্ধানৰ ইঞ্জিন মচক</translation>
@@ -2975,7 +2974,6 @@
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" /> সংযোগ</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" />ৰ জৰিয়তে টোকা লৈ থকা হৈছে</translation>
 <translation id="3888586133700543064">এই তথ্যখিনিয়ে আমাক আপোনাৰ Assistantৰ সমস্যা ভালকৈ বুজি পোৱাত সহায় কৰে। ইয়াক ৯০ দিন পৰ্যন্ত ষ্ট’ৰ কৰি ৰখা হয় আৰু ইয়াৰ এক্সেছ সঠিক অভিযান্ত্রিক আৰু মতামতৰ সৈতে জড়িত দলতে সীমিত।</translation>
-<translation id="3888900458694486810">ছাইড ছাৰ্চ বন্ধ কৰক</translation>
 <translation id="3890064827463908288">ৱাই-ফাই ছিংক ব্যৱহাৰ কৰিবলৈ Chrome ছিংক অন কৰক</translation>
 <translation id="389313931326656921">"পৰৱৰ্তী"ৰ বাবে ছুইচ আবণ্টন কৰক</translation>
 <translation id="3893295674388762059">ডেটা মচিবলৈ আটাইবোৰ ইনক’গনিট’ ৱিণ্ড’ বন্ধ কৰক</translation>
@@ -3288,7 +3286,6 @@
 <translation id="4208390505124702064"><ph name="SITE_NAME" /> সন্ধান কৰক</translation>
 <translation id="4209092469652827314">ডাঙৰ</translation>
 <translation id="4209251085232852247">অফ কৰা হ’ল</translation>
-<translation id="4209464433672152343">নথিসমূহ প্ৰিণ্ট কৰিবলৈ সাজু কৰাবলৈ <ph name="BEGIN_LINK_HELP" />Googleলৈ পঠিওৱা হৈছে<ph name="END_LINK_HELP" />। আপোনাৰ প্ৰিণ্টাৰ আৰু প্ৰিণ্টাৰৰ ইতিহাস <ph name="BEGIN_LINK_DASHBOARD" />Google Cloud Print ডেশ্বব’ৰ্ড<ph name="END_LINK_DASHBOARD" />ত চাওক, সম্পাদনা তথা পৰিচালনা কৰক।</translation>
 <translation id="4210048056321123003">ভাৰ্ছুৱেল মেচিনটো ডাউনল’ড কৰি থকা হৈছে</translation>
 <translation id="421182450098841253">&amp;বুকমার্ক বাৰ দেখুৱাওক</translation>
 <translation id="4211851069413100178">ব্যৱহাৰ আৰু ডায়গন’ষ্টিক কৰা ডেটা পঠিয়াওক। Googleলৈ স্বয়ংক্ৰিয়ভাৱে ডায়গন’ষ্টিকৰ লগতে ডিভাইচ আৰু এপ্ ব্যৱহাৰৰ ডেটা পঠিয়াই আপোনাৰ Androidৰ অভিজ্ঞতা উন্নত কৰক। এই কার্যটোৱে ছিষ্টেম আৰু এপৰ স্থিৰতা আৰু অন্য উন্নয়নত সহায় কৰিব। কিছুমান ডেটাৰ সমষ্টিয়ে লগতে Google এপ্ আৰু অংশীদাৰ, যেনে Androidৰ বিকাশকর্তাকো সহায় কৰিব। এই <ph name="BEGIN_LINK1" />ছেটিংটো<ph name="END_LINK1" /> গৰাকীয়ে বলপূৰ্বকভাৱে বলৱৎ কৰিছে। গৰাকীজনে Googleলৈ ডাইগন‘ষ্টিক আৰু ব্যৱহাৰৰ ডেটা পঠিয়াবলৈ সিন্ধান্ত ল’ব পাৰে। যদি আপোনাৰ অতিৰিক্ত ৱেব আৰু এপ্‌ কাৰ্যকলাপ ছেটিংটো সক্ষম কৰা থাকে, তেন্তে এই ডেটা আপোনাৰ Google একাউণ্টত ছেভ কৰা হ’ব পাৰে। <ph name="BEGIN_LINK2" />অধিক জানক<ph name="END_LINK2" /></translation>
@@ -6188,7 +6185,6 @@
 <translation id="7180611975245234373">ৰিফ্ৰেশ্ব কৰক</translation>
 <translation id="7180865173735832675">কাষ্ট’মাইজ কৰক</translation>
 <translation id="7182791023900310535">আপোনাৰ পাছৱৰ্ডটো স্থানান্তৰ কৰক</translation>
-<translation id="7183420126213758623">ছাইড ছাৰ্চ ট’গল কৰক। ছাইড ছাৰ্চ সক্ৰিয় কৰা হোৱা নাই।</translation>
 <translation id="7186088072322679094">টুলবাৰত ৰাখক</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" />এ এই ফ’ল্ডাৰটো খুলিব নোৱাৰে কাৰণ ইয়াত ছিষ্টেমৰ ফাইল আছে</translation>
 <translation id="7187428571767585875">আঁতৰাব বা সলাবলগীয়া পঞ্জীয়নকৰণৰ অন্তৰ্ভুক্তিসমূহ:</translation>
@@ -6710,7 +6706,6 @@
 <translation id="7701040980221191251">নাই</translation>
 <translation id="7701869757853594372">ব্যৱহাৰকাৰীৰ হেণ্ডেল</translation>
 <translation id="7702574632857388784">সূচীৰ পৰা <ph name="FILE_NAME" /> আঁতৰাওক</translation>
-<translation id="7702599324215660661">এৰি যোৱা অৱস্থাত লক কৰা</translation>
 <translation id="7702907602086592255">ড’মেইন</translation>
 <translation id="7704305437604973648">কাৰ্য</translation>
 <translation id="7704317875155739195">স্বয়ংক্রিয়ভাৱে সম্পূৰ্ণ হোৱা সন্ধান আৰু URL</translation>
@@ -6817,7 +6812,6 @@
 <translation id="7798844538707273832"><ph name="PERMISSION" /> স্বয়ংক্ৰিয়ভাৱে অৱৰোধ কৰা হৈছে</translation>
 <translation id="7799299114731150374">ৱালপেপাৰ সফলতাৰে ছেট কৰা হ’ল</translation>
 <translation id="7799817062559422778">উজ্জ্বল ম’ড</translation>
-<translation id="7800159967992492578">ছাইড ছাৰ্চ ট’গল কৰক। ছাইড ছাৰ্চ সক্ৰিয় কৰা হৈছে।</translation>
 <translation id="7800518121066352902">ঘড়ীৰ কাঁটাৰ বি&amp;পৰীত দিশত ঘূৰাওক</translation>
 <translation id="7801679634091975683">আপুনি ইয়াত কৰা সালসলনিসমূহ কেৱল Lacros Chrome ব্ৰাউজাৰত প্ৰযোজ্য হয়। আপোনাৰ Chrome ব্ৰাউজাৰৰ ছেটিঙত সালসলনিসমূহ কৰিবলৈ, Chrome ব্ৰাউজাৰ খোলক আৰু ছেটিঙলৈ যাওক।</translation>
 <translation id="780301667611848630">নালাগে, ধন্যবাদ</translation>

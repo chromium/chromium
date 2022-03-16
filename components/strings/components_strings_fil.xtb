@@ -115,7 +115,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1301324364792935241">Suriin ang iyong mga setting ng Secure na DNS</translation>
 <translation id="1307966114820526988">Mga Hindi na Ginagamit na Feature</translation>
 <translation id="1308113895091915999">Available ang alok</translation>
-<translation id="1312803275555673949">Anong ebidensya ang sumusuporta rito?</translation>
 <translation id="1314311879718644478">Tingnan ang augmented reality na content</translation>
 <translation id="1314509827145471431">Bind right</translation>
 <translation id="1318023360584041678">Na-save sa grupo ng tab</translation>
@@ -740,7 +739,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="324180406144491771">Naka-block ang mga link na “<ph name="HOST_NAME" />”</translation>
 <translation id="3249845759089040423">Groovy</translation>
 <translation id="3252266817569339921">Pranses</translation>
-<translation id="3257954757204451555">Sino ang nasa likod ng impormasyong ito?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Tab at pagkatapos ay ang Enter para gumawa ng bagong event sa Google Calendar nang mabilis</translation>
 <translation id="3261488570342242926">Matuto pa tungkol sa mga virtual card</translation>
 <translation id="3264837738038045344">Button na Pamahalaan ang mga setting ng Chrome, pindutin ang Enter para bisitahin ang iyong mga setting ng Chrome</translation>
@@ -1128,6 +1126,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4414515549596849729">cookies at data ng site</translation>
 <translation id="4415426530740016218">Address sa Pag-pick up</translation>
 <translation id="4424024547088906515">Hindi mapatunayan ng server na ito na ito ay <ph name="DOMAIN" />; hindi pinagkakatiwalaan ng Chrome ang certificate ng seguridad nito. Maaaring dulot ito ng maling configuration o isang umaatake na hinahadlangan ang iyong koneksyon.</translation>
+<translation id="4428065317363009941">Pag-personalize ng ad</translation>
 <translation id="443121186588148776">Serial port</translation>
 <translation id="4432688616882109544">Hindi tinanggap ng <ph name="HOST_NAME" /> ang iyong certificate sa pag-log in o maaaring walang ibinigay.</translation>
 <translation id="4432792777822557199">Simula ngayon ay isasalin na sa <ph name="TARGET_LANGUAGE" /> ang mga page na nasa <ph name="SOURCE_LANGUAGE" /></translation>
@@ -1260,7 +1259,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4838327282952368871">Dreamy</translation>
 <translation id="4840250757394056958">Tingnan ang iyong history sa Chrome</translation>
 <translation id="484462545196658690">Auto</translation>
-<translation id="4849865131988503897">Pagsusuri sa katumpakan</translation>
 <translation id="4850886885716139402">View</translation>
 <translation id="485316830061041779">German</translation>
 <translation id="4853901935952445031">Hindi na magagamit ng site na ito ang U2F API pagkalipas ng Pebrero 2022. Kung pagmamay-ari mo ang site na ito, dapat mong gawin itong gumagamit ng Web Authentication API.</translation>
@@ -1447,6 +1445,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5398772614898833570">Na-block ang mga ad</translation>
 <translation id="5400836586163650660">Grey</translation>
 <translation id="540969355065856584">Hindi mapatunayan ng server na ito ay ang <ph name="DOMAIN" />; walang bisa ang certificate sa seguridad nito sa pagkakataong ito. Maaaring dahil ito sa isang maling pag-configure o may isang attacker na humahadlang sa iyong koneksyon.</translation>
+<translation id="5412236728747081950">Kinukuha ng site na ito ang iyong mga interes mula sa Chrome para makapagpakita sa iyo ng higit pang nauugnay na ad</translation>
 <translation id="541416427766103491">Stacker 4</translation>
 <translation id="5421136146218899937">I-clear ang data sa pag-browse...</translation>
 <translation id="5426179911063097041">Gusto ng <ph name="SITE" /> na padalhan ka ng mga notification</translation>
@@ -1963,7 +1962,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="7210863904660874423">Hindi sumusunod ang <ph name="HOST_NAME" /> sa mga pamantayan sa seguridad.</translation>
 <translation id="7210993021468939304">Aktibidad ng Linux sa container, at puwedeng mag-install at magpatakbo ng mga Linux app sa container</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Dagdagan ang nalalaman<ph name="END_LINK" /> tungkol sa problemang ito.</translation>
-<translation id="7215025035562547931">Maglaan ng ilang sandali para pag-isipan ang katumpakan</translation>
 <translation id="7217745192097460130">Gumamit ng Touch ID para i-verify at kumpletuhin ang iyong pagbili?</translation>
 <translation id="7219179957768738017">Gumagamit ng <ph name="SSL_VERSION" /> ang koneksyon.</translation>
 <translation id="7220786058474068424">Pinoproseso</translation>
@@ -2093,7 +2091,9 @@ Mga karagdagang detalye:
 <translation id="7569952961197462199">Alisin ang credit card sa Chrome?</translation>
 <translation id="7569983096843329377">Itim</translation>
 <translation id="7575207903026901870">Button na Alisin ang Suhestyon, pindutin ang Enter para alisin ang suhestyong ito</translation>
+<translation id="7577900504646297215">Pamahalaan ang mga interes</translation>
 <translation id="7578104083680115302">Magbayad nang mabilis sa mga site at app sa iba't ibang device gamit ang mga card na na-save mo sa Google.</translation>
+<translation id="7579442726219254162">Hindi alam na variable na "<ph name="VARIABLE" />" sa pinamamahalaang configuration ng "<ph name="APPLICATION_ID" />".</translation>
 <translation id="7581199239021537589">Pag-shift ng side 2 larawan Y</translation>
 <translation id="7582602800368606489">Gumawa ng bagong event sa Google Calendar nang mabilis</translation>
 <translation id="7591288787774558753">Magbahagi ng kumpidensyal na content?</translation>
@@ -2213,7 +2213,6 @@ Mga karagdagang detalye:
 <translation id="7966803981046576691">Uri ng account ng trabaho</translation>
 <translation id="79682505114836835">Invalid na hex color ang value na "<ph name="VALUE" />."</translation>
 <translation id="7968982339740310781">Tingnan ang mga detalye</translation>
-<translation id="7970392640816874403">Ano ang sinasabi ng iba pang source?</translation>
 <translation id="7976214039405368314">Masyadong maraming kahilingan</translation>
 <translation id="7977538094055660992">Output device</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -2564,7 +2563,6 @@ Mga karagdagang detalye:
 <translation id="9155211586651734179">Naka-attach ang mga peripheral ng audio</translation>
 <translation id="9157595877708044936">Nagse-set up...</translation>
 <translation id="9158625974267017556">C6 (Envelope)</translation>
-<translation id="9164029392738894042">Pagsusuri sa Katumpakan</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">Payagan ang mga site na tingnan kung may mga naka-save kang paraan ng pagbabayad</translation>
 <translation id="9169664750068251925">Palaging i-block sa site na ito</translation>

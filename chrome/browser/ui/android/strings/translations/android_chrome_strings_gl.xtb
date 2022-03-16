@@ -30,7 +30,6 @@
 <translation id="114825011539563458">Os controis de privacidade e seguranza máis importantes, nun único lugar</translation>
 <translation id="1149401351239820326">Mes de caducidade</translation>
 <translation id="1154704303112745282">Páxina non dispoñible sen conexión: <ph name="VIOLATED_URL" /></translation>
-<translation id="1166688006062225587">Lista de contas seleccionables.</translation>
 <translation id="1171770572613082465">Para descubrir sitios web populares, toca o botón Populares</translation>
 <translation id="1173894706177603556">Cambiar o nome</translation>
 <translation id="1177863135347784049">Personalizada</translation>
@@ -571,6 +570,7 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="4415276339145661267">Xestionar a túa Conta de Google</translation>
 <translation id="4425140285732600465">Estase facendo un seguimento do prezo. Recibe alertas se baixa o prezo en calquera sitio.</translation>
 <translation id="442518031075347249">Deixarás de poder utilizar a tarxeta virtual con Google Pay. <ph name="BEGIN_LINK1" />Máis información sobre as tarxetas virtuais<ph name="END_LINK1" /></translation>
+<translation id="4428065317363009941">Personalización de anuncios</translation>
 <translation id="4450672886426705087">Resultados da busca de Google.</translation>
 <translation id="4452411734226507615">Pecha a pestana <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Marcador engadido a <ph name="FOLDER_NAME" /></translation>
@@ -897,7 +897,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6277522088822131679">Produciuse un problema ao imprimir a páxina. Téntao de novo.</translation>
 <translation id="6277722725779679269">Non se puido actualizar Facer seguimento do prezo</translation>
 <translation id="6278428485366576908">Tema</translation>
-<translation id="6293443105724342169">Lista de contas seleccionables aberta a media altura.</translation>
 <translation id="6294610283659775533">Podes enviar pestanas entre dispositivos nos que teñas a sesión iniciada coa mesma Conta de Google</translation>
 <translation id="6297765934698848803">A organización que xestiona o teu dispositivo desactivou a cámara.</translation>
 <translation id="6301525844455696527">Ponte ao día coa túa lista de lectura</translation>
@@ -1307,7 +1306,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="8461694314515752532">Encriptar os datos sincronizados coa túa propia frase de acceso de sincronización</translation>
 <translation id="8466613982764129868">Asegúrate de que o dispositivo <ph name="TARGET_DEVICE_NAME" /> estea conectado a Internet</translation>
 <translation id="8473863474539038330">Enderezos e moito máis</translation>
-<translation id="847656914027543776">Lista de contas seleccionables pechada.</translation>
 <translation id="8481921391193215807">Ao activar esta opción, os sitios poden usar as seguintes técnicas, que permiten protexer a privacidade e constitúen alternativas ao seguimento en múltiples sitios, para ofrecer contido e servizos. É posible que se engadan máis probas no futuro.
 
 <ph name="BEGIN_LIST_ITEM1" />Os anunciantes e os editores poden usar a técnica Federated Learning of Cohorts (FLoC).<ph name="END_LIST_ITEM1" />
@@ -1362,6 +1360,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="8683526617475118045">Que consegues?</translation>
 <translation id="869891660844655955">Data de vencemento</translation>
 <translation id="8699120352855309748">Non ofrecer a opción de traducir texto escrito nestes idiomas</translation>
+<translation id="8712637175834984815">De acordo</translation>
 <translation id="8725066075913043281">Tentar de novo</translation>
 <translation id="8730621377337864115">Feito</translation>
 <translation id="8746155870861185046">Compartir texto destacado</translation>
@@ -1434,7 +1433,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="9108312223223904744">Asistencia relativa ao uso do teléfono como chave de seguranza</translation>
 <translation id="9108808586816295166">O DNS seguro pode non estar dispoñible continuamente</translation>
 <translation id="9133397713400217035">Explorar sen conexión</translation>
-<translation id="9133523398139146080">Lista de contas seleccionables aberta a altura completa.</translation>
 <translation id="9137013805542155359">Mostrar orixinal</translation>
 <translation id="9148126808321036104">Iniciar sesión de novo</translation>
 <translation id="9155898266292537608">Tamén podes realizar buscas con só tocar rapidamente unha palabra</translation>

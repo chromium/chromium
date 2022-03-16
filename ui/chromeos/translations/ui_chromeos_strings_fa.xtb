@@ -825,6 +825,7 @@
 <translation id="8042602468072383151">فایل صوتی <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">رومانیایی</translation>
 <translation id="8049184478152619004">‏«کلید لغو انسداد شخصی» (PUK) را وارد کنید</translation>
+<translation id="807187749540895545">درحال استخراج <ph name="FILE_NAME" />…</translation>
 <translation id="8079530767338315840">تکرار</translation>
 <translation id="8087576439476816834">بارگیری، <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">اشتراک‌گذاری شده با من</translation>
@@ -876,6 +877,7 @@
 <translation id="8484284835977497781">از عکس‌های اخیرتان انتخاب کنید.</translation>
 <translation id="8487700953926739672">امکان دسترسی به صورت آفلاین</translation>
 <translation id="8492972329130824181">شبکه خانه دردسترس نیست. برای اتصال، رومینگ داده تلفن همراه باید فعال باشد.</translation>
+<translation id="8499098729323186194">درحال استخراج <ph name="NUMBER_OF_ITEMS" /> مورد…</translation>
 <translation id="8521441079177373948">بریتانیایی</translation>
 <translation id="8525306231823319788">تمام صفحه</translation>
 <translation id="853494022971700746">فرانسوی (فرانسه)</translation>

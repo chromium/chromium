@@ -30,7 +30,6 @@
 <translation id="114825011539563458">プライバシーとセキュリティに関する最も重要な設定を 1 か所で確認</translation>
 <translation id="1149401351239820326">有効期限（月）</translation>
 <translation id="1154704303112745282">オフラインで使用できないページ: <ph name="VIOLATED_URL" /></translation>
-<translation id="1166688006062225587">選択するアカウントのリストです。</translation>
 <translation id="1171770572613082465">人気のウェブサイトを表示するには、[上位のサイト] ボタンをタップします</translation>
 <translation id="1173894706177603556">名前を変更</translation>
 <translation id="1177863135347784049">カスタム</translation>
@@ -571,6 +570,7 @@
 <translation id="4415276339145661267">Google アカウントの管理</translation>
 <translation id="4425140285732600465">価格をトラッキングします。値下げしたサイトがある場合に通知します。</translation>
 <translation id="442518031075347249">Google Pay で仮想カードを使用できなくなります。<ph name="BEGIN_LINK1" />仮想カードの詳細<ph name="END_LINK1" /></translation>
+<translation id="4428065317363009941">広告のカスタマイズ</translation>
 <translation id="4450672886426705087">Google 検索結果。</translation>
 <translation id="4452411734226507615">「<ph name="TAB_TITLE" />」タブを閉じます</translation>
 <translation id="4452548195519783679">「<ph name="FOLDER_NAME" />」にブックマークしました</translation>
@@ -685,6 +685,7 @@
 <translation id="4988526792673242964">ページ</translation>
 <translation id="5001388021414335527">このサイトをフォローするにはこちら</translation>
 <translation id="5004416275253351869">Google アクティビティ管理</translation>
+<translation id="5005141133360250920">リアクションを削除しました</translation>
 <translation id="5005498671520578047">パスワードのコピー</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> が接続を要求しています</translation>
 <translation id="5016205925109358554">Serif</translation>
@@ -740,6 +741,7 @@
 <translation id="5368227114232678694">このデバイスで記録を残さずに閲覧するには、シークレット モードを使用してください</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> 個のタブが開いています。タブを切り替えるにはタップします}other{<ph name="OPEN_TABS_MANY" /> 個のタブが開いています。タブを切り替えるにはタップします}}</translation>
 <translation id="5375577065097716013">Google レンズで画像を検索 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
+<translation id="5376898820269806588">リアクションを変更しました</translation>
 <translation id="5403644198645076998">特定のサイトのみを許可</translation>
 <translation id="5409881200985013443"><ph name="CLIENT_NAME" /> に <ph name="ONE_TIME_CODE" /> を送信しますか？</translation>
 <translation id="5414836363063783498">確認しています…</translation>
@@ -897,7 +899,6 @@
 <translation id="6277522088822131679">ページの印刷中に問題が発生しました。もう一度お試しください。</translation>
 <translation id="6277722725779679269">価格のトラッキングを更新できませんでした</translation>
 <translation id="6278428485366576908">テーマ</translation>
-<translation id="6293443105724342169">選択するアカウントのリストが画面の下半分に表示されています。</translation>
 <translation id="6294610283659775533">同じ Google アカウントでログインしているデバイス間でタブを送信できます</translation>
 <translation id="6297765934698848803">デバイスの管理者がカメラをオフにしています。</translation>
 <translation id="6301525844455696527">リーディング リストをチェックしよう</translation>
@@ -1073,6 +1074,7 @@
 <translation id="718926126787620637">ブックマーク フォルダのリストが画面全体に表示されています</translation>
 <translation id="7191430249889272776">バックグラウンドでタブを開きました。</translation>
 <translation id="7196215469483532480">プライバシー ガイドの説明が画面全体に表示されています</translation>
+<translation id="7208109991155904980">リアクションを移動しました</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 件のダウンロードが保留中です}other{# 件のダウンロードが保留中です}}</translation>
 <translation id="7237045078887540010">Chrome を使用すると、<ph name="BEGIN_TOS_LINK" />Google 利用規約<ph name="END_TOS_LINK" />と <ph name="BEGIN_ATOS_LINK" />Google Chrome および Chrome OS 追加利用規約<ph name="END_ATOS_LINK" />に同意したことになります。また、<ph name="BEGIN_PRIVACY_LINK" />プライバシー ポリシー<ph name="END_PRIVACY_LINK" />も適用されます。</translation>
 <translation id="7242755609445462077">スタイルを設定した選択箇所（<ph name="CURRENT_DATE" />）</translation>
@@ -1307,7 +1309,6 @@
 <translation id="8461694314515752532">同期データを同期パスフレーズで暗号化する</translation>
 <translation id="8466613982764129868"><ph name="TARGET_DEVICE_NAME" /> がインターネットに接続していることを確認してください</translation>
 <translation id="8473863474539038330">住所やその他の情報</translation>
-<translation id="847656914027543776">選択するアカウントのリストが閉じられています。</translation>
 <translation id="8481921391193215807">オンにすると、サイトでコンテンツやサービスを提供する際に、ここで示されているプライバシー保護技術が使用される場合があります。これには、クロスサイト トラッキングの代わりとなる技術も含まれます。今後、試用版の技術がさらに追加される可能性があります。
 
 <ph name="BEGIN_LIST_ITEM1" />広告主やパブリッシャーは FLoC を使用できます。<ph name="END_LIST_ITEM1" />
@@ -1362,6 +1363,7 @@
 <translation id="8683526617475118045">メリット</translation>
 <translation id="869891660844655955">有効期限</translation>
 <translation id="8699120352855309748">これらの言語を翻訳するか尋ねない</translation>
+<translation id="8712637175834984815">閉じる</translation>
 <translation id="8725066075913043281">やり直し</translation>
 <translation id="8730621377337864115">完了</translation>
 <translation id="8746155870861185046">選択箇所を共有</translation>
@@ -1387,6 +1389,7 @@
 <translation id="8881973373982641723">検索ボックスなどの履歴を削除します。</translation>
 <translation id="889338405075704026">Chrome 設定に移動</translation>
 <translation id="8898822736010347272">新たな脅威の発見と、すべてのウェブユーザーの保護に役立てるため、アクセスした一部のページの URL、限定的なシステム情報、一部のページ コンテンツを Google に送信します。</translation>
+<translation id="8906502871739599113">リアクションを複製しました</translation>
 <translation id="8909135823018751308">共有...</translation>
 <translation id="8912362522468806198">Google アカウントを使用</translation>
 <translation id="8920114477895755567">保護者の情報を待っています。</translation>
@@ -1406,6 +1409,7 @@
 <translation id="8970887620466824814">エラーが発生しました。</translation>
 <translation id="8972098258593396643">デフォルトのフォルダにダウンロードしますか？</translation>
 <translation id="8987641763863173640">動画プレビューの設定を管理します</translation>
+<translation id="898854820045159673">リアクションを追加しました</translation>
 <translation id="8993760627012879038">新しいタブをシークレット モードで開く</translation>
 <translation id="8996847606757455498">別のプロバイダを選択</translation>
 <translation id="8998729206196772491"><ph name="MANAGED_DOMAIN" /> で管理されているアカウントでログインして、Chrome データの管理を管理者に委ねようとしています。この操作を行うと、データはこのアカウントに恒久的に関連付けられます。Chrome からログアウトすると、データはこのデバイスから削除されますが、Google アカウントには残ります。</translation>
@@ -1434,13 +1438,13 @@
 <translation id="9108312223223904744">スマートフォンをセキュリティ キーのサポートとして使用する</translation>
 <translation id="9108808586816295166">セキュア DNS は使用できない場合があります</translation>
 <translation id="9133397713400217035">オフライン コンテンツ</translation>
-<translation id="9133523398139146080">選択するアカウントのリストが画面全体に表示されています。</translation>
 <translation id="9137013805542155359">原文のページを表示</translation>
 <translation id="9148126808321036104">もう一度ログインする</translation>
 <translation id="9155898266292537608">単語をタップするだけでも検索できます</translation>
 <translation id="9158770349521403363">コンテンツのみ共有</translation>
 <translation id="916446198114569890">アクセスした URL は Google アカウントに保存されます</translation>
 <translation id="9169507124922466868">ナビゲーション履歴が半分開いています</translation>
+<translation id="9187955620966010988">リアクションを調整しました</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{前回の確認: 1 分前}other{前回の確認: # 分前}}</translation>
 <translation id="9204836675896933765">残り 1 ファイル</translation>
 <translation id="9205933215779845960">該当のページは見つかりません。つづりを確認するか、<ph name="SEARCH_ENGINE" /> で検索してみてください。</translation>

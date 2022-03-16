@@ -1063,7 +1063,6 @@
 <translation id="2019718679933488176">&amp;Obre l'àudio en una pestanya nova</translation>
 <translation id="2020183425253392403">Mostra la configuració de l'adreça de xarxa</translation>
 <translation id="2020225359413970060">Analitza el fitxer</translation>
-<translation id="2022395138980869975">Commuta la cerca lateral</translation>
 <translation id="2023167225947895179">El PIN sembla fàcil d'endevinar</translation>
 <translation id="202352106777823113">La baixada trigava massa i la xarxa l'ha aturat.</translation>
 <translation id="2024195579772565064">Suprimeix el motor de cerca</translation>
@@ -2960,7 +2959,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3888053818972567950">Connexió a <ph name="WEB_DRIVE" /></translation>
 <translation id="3888550877729210209">Escriu notes amb <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">Aquesta informació ens ajuda a entendre millor el problema que tens amb l'Assistent. S'emmagatzema durant 90 dies com a màxim i només hi poden accedir els equips corresponents d'enginyeria i suggeriments.</translation>
-<translation id="3888900458694486810">Tanca la cerca lateral</translation>
 <translation id="3890064827463908288">Activa l'opció Sincronització de Chrome per utilitzar la funció Sincronització Wi‑Fi</translation>
 <translation id="389313931326656921">Assigna l'interruptor a Següent</translation>
 <translation id="3893295674388762059">Per suprimir les dades, tanca totes les finestres d'incògnit</translation>
@@ -3273,7 +3271,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4208390505124702064">Cerca a <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Gran</translation>
 <translation id="4209251085232852247">S'ha desactivat</translation>
-<translation id="4209464433672152343">Els documents <ph name="BEGIN_LINK_HELP" />s'envien a Google<ph name="END_LINK_HELP" />, que els prepara per imprimir-los. Consulta, edita i gestiona les teves impressores i l'historial d'impressió al <ph name="BEGIN_LINK_DASHBOARD" />tauler de Google Cloud Print<ph name="END_LINK_DASHBOARD" />.</translation>
 <translation id="4210048056321123003">S'està baixant la màquina virtual</translation>
 <translation id="421182450098841253">&amp;Mostra la Barra d'adreces d'interès</translation>
 <translation id="4211851069413100178">Envia dades d'ús i de diagnòstic. Ajuda a millorar la teva experiència a Android enviant automàticament a Google dades de diagnòstic, del dispositiu i d'ús d'aplicacions. Aquestes dades ajudaran a millorar l'estabilitat del sistema i de les aplicacions, entre altres característiques. Una part de les dades agregades també serà útil per a les aplicacions i per als partners de Google, com ara els desenvolupadors d'Android. El propietari ha aplicat aquesta <ph name="BEGIN_LINK1" />opció de configuració<ph name="END_LINK1" />. És possible que el propietari decideixi enviar a Google dades de diagnòstic i d'ús sobre aquest dispositiu. Si tens activada l'opció Activitat al web i en aplicacions addicional, és possible que aquestes dades es desin al teu Compte de Google. <ph name="BEGIN_LINK2" />Més informació<ph name="END_LINK2" /></translation>
@@ -6168,7 +6165,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7180611975245234373">Actualitza</translation>
 <translation id="7180865173735832675">Personalitza</translation>
 <translation id="7182791023900310535">Mou la contrasenya</translation>
-<translation id="7183420126213758623">Commuta la cerca lateral. La cerca lateral no està activada.</translation>
 <translation id="7186088072322679094">Conserva a la barra d'eines</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> no pot obrir aquesta carpeta perquè conté fitxers del sistema</translation>
 <translation id="7187428571767585875">Entrades del registre que se suprimiran o canviaran:</translation>
@@ -6690,7 +6686,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7701040980221191251">Cap</translation>
 <translation id="7701869757853594372">Controls d'USUARI</translation>
 <translation id="7702574632857388784">Suprimeix <ph name="FILE_NAME" /> de la llista</translation>
-<translation id="7702599324215660661">Bloqueja en sortir</translation>
 <translation id="7702907602086592255">Domini</translation>
 <translation id="7704305437604973648">Tasca</translation>
 <translation id="7704317875155739195">Completa automàticament les cerques i els URL</translation>
@@ -6796,7 +6791,6 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7798844538707273832">S'ha bloquejat automàticament <ph name="PERMISSION" /></translation>
 <translation id="7799299114731150374">El fons de pantalla s'ha establert correctament</translation>
 <translation id="7799817062559422778">Mode clar</translation>
-<translation id="7800159967992492578">Commuta la cerca lateral. La cerca lateral està activada.</translation>
 <translation id="7800518121066352902">Gira en el sentit con&amp;trari a les agulles del rellotge</translation>
 <translation id="7801679634091975683">Els canvis que facis aquí només s'apliquen al navegador Chrome de Lacros. Per fer canvis a la configuració del navegador Chrome, obre'l i ves a la configuració.</translation>
 <translation id="780301667611848630">No, gràcies</translation>

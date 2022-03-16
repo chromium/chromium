@@ -30,7 +30,6 @@
 <translation id="114825011539563458">De vigtigste privatlivs- og sikkerhedsindstillinger samlet på ét sted</translation>
 <translation id="1149401351239820326">Udløbsmåned</translation>
 <translation id="1154704303112745282">Siden er ikke tilgængelig offline: <ph name="VIOLATED_URL" /></translation>
-<translation id="1166688006062225587">Listen over konti, der skal vælges.</translation>
 <translation id="1171770572613082465">Se populære websites ved at trykke på knappen "Topwebsites"</translation>
 <translation id="1173894706177603556">Omdøb</translation>
 <translation id="1177863135347784049">Tilpasset</translation>
@@ -571,6 +570,7 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="4415276339145661267">Administrer din Google-konto</translation>
 <translation id="4425140285732600465">Der holdes øje med prisen. Få besked, hvis prisen falder på et website.</translation>
 <translation id="442518031075347249">Du vil ikke længere kunne bruge dit virtuelle kort med Google Pay. <ph name="BEGIN_LINK1" />Få flere oplysninger om virtuelle kort<ph name="END_LINK1" /></translation>
+<translation id="4428065317363009941">Annoncetilpasning</translation>
 <translation id="4450672886426705087">Søgeresultater fra Google.</translation>
 <translation id="4452411734226507615">Luk fanen <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Bogmærket er gemt i <ph name="FOLDER_NAME" /></translation>
@@ -897,7 +897,6 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6277522088822131679">Der opstod et problem med udskrivning af siden. Prøv igen.</translation>
 <translation id="6277722725779679269">Overvåg pris kunne ikke opdateres</translation>
 <translation id="6278428485366576908">Tema</translation>
-<translation id="6293443105724342169">Listen over konti, der skal åbnes, er åbnet i halv højde.</translation>
 <translation id="6294610283659775533">Du kan sende faner mellem enheder, hvor du er logget ind på den samme Google-konto</translation>
 <translation id="6297765934698848803">Den organisation, der administrerer din enhed, har deaktiveret dit kamera.</translation>
 <translation id="6301525844455696527">Hold styr på din læseliste</translation>
@@ -1307,7 +1306,6 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="8461694314515752532">Kryptér synkroniserede data med din egen adgangssætning til synkronisering</translation>
 <translation id="8466613982764129868">Sørg for, at <ph name="TARGET_DEVICE_NAME" /> har forbindelse til internettet</translation>
 <translation id="8473863474539038330">Adresser m.m.</translation>
-<translation id="847656914027543776">Listen over konti, der skal vælges, er lukket.</translation>
 <translation id="8481921391193215807">Når Privacy Sandbox er aktiveret, kan websites levere deres indhold og tjenester via den teknologi til beskyttelse af personlige oplysninger, som vises her. Denne teknologi omfatter alternative metoder til sporing på tværs af forskellige websites. Der kan blive tilføjet flere prøveperioder over tid.
 
 <ph name="BEGIN_LIST_ITEM1" />Annoncører og udgivere kan bruge FLoC.<ph name="END_LIST_ITEM1" />
@@ -1362,6 +1360,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="8683526617475118045">Det får du</translation>
 <translation id="869891660844655955">Udløbsdato</translation>
 <translation id="8699120352855309748">Tilbyd ikke at oversætte disse sprog</translation>
+<translation id="8712637175834984815">Forstået</translation>
 <translation id="8725066075913043281">Forsøg igen</translation>
 <translation id="8730621377337864115">Udfør</translation>
 <translation id="8746155870861185046">Del fremhævet</translation>
@@ -1434,7 +1433,6 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="9108312223223904744">Understøttelse af telefonen som en sikkerhedsnøgle</translation>
 <translation id="9108808586816295166">Sikre DNS-servere er muligvis ikke altid tilgængelige</translation>
 <translation id="9133397713400217035">Udforsk offline</translation>
-<translation id="9133523398139146080">Listen over konti, der skal vælges, er åbnet i fuld højde.</translation>
 <translation id="9137013805542155359">Vis oprindelig</translation>
 <translation id="9148126808321036104">Log ind igen</translation>
 <translation id="9155898266292537608">Du kan også søge med et hurtigt tryk på et ord</translation>

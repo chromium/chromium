@@ -256,6 +256,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2595239820337756193">5 kilometer i miles</translation>
 <translation id="2596078834055697711">Tag screenshot af vinduet</translation>
 <translation id="2607678425161541573">Onlinelogin er påkrævet</translation>
+<translation id="2620436844016719705">System</translation>
 <translation id="2621713457727696555">Beskyttet</translation>
 <translation id="263399434338050016">"Vælg alle"</translation>
 <translation id="2653019840645008922">Tag et screenshot af et vindue</translation>
@@ -351,6 +352,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="320207200541803018">Indstil timer</translation>
 <translation id="3203405173652969239">Kontaktadgang blev aktiveret</translation>
 <translation id="3207953481422525583">Brugerindstillinger</translation>
+<translation id="3208321278970793882">App</translation>
 <translation id="3217205077783620295">Lydstyrken er slået til. Tryk på knappen for at sætte på lydløs.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> andre</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -1034,6 +1036,7 @@ Installeret for nylig</translation>
 <translation id="7513622367902644023">Screenshottilstand er valgt</translation>
 <translation id="7513922695575567867">Kalender for ugen med <ph name="DATE" /> – <ph name="SELECTED_DATE" /> er valgt.</translation>
 <translation id="7514365320538308">Download</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7526573455193969409">Netværket kan være overvåget</translation>
 <translation id="7536035074519304529">IP-adresse: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Linux-apps og inkognitovinduer understøttes ikke i øjeblikket. Andre apps gemmes.</translation>
@@ -1102,6 +1105,7 @@ Installeret for nylig</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Sæt finger på fingeraftrykslæser</translation>
 <translation id="7904094684485781019">Administratoren for denne konto tillader ikke samlet login fra flere konti.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7930731167419639574">Tale behandles nu lokalt, og diktering kan bruges offline</translation>
 <translation id="7933084174919150729">Google Assistent kan kun bruges via den primære profil.</translation>
 <translation id="79341161159229895">Kontoen administreres af <ph name="FIRST_PARENT_EMAIL" /> og <ph name="SECOND_PARENT_EMAIL" /></translation>

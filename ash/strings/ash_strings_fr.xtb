@@ -256,6 +256,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2595239820337756193">5 km en miles</translation>
 <translation id="2596078834055697711">Faire une capture de la fenêtre</translation>
 <translation id="2607678425161541573">Connexion en ligne requise</translation>
+<translation id="2620436844016719705">Système</translation>
 <translation id="2621713457727696555">Sécurisé</translation>
 <translation id="263399434338050016">"Tout sélectionner"</translation>
 <translation id="2653019840645008922">Capture de fenêtre</translation>
@@ -351,6 +352,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="320207200541803018">Régler le minuteur</translation>
 <translation id="3203405173652969239">Switch Access activé</translation>
 <translation id="3207953481422525583">Paramètres utilisateur</translation>
+<translation id="3208321278970793882">Application</translation>
 <translation id="3217205077783620295">Le son est activé et peut être coupé lorsque vous cliquez sur le bouton de volume.</translation>
 <translation id="3226991577105957773">+ <ph name="COUNT" /> autres</translation>
 <translation id="3227137524299004712">Micro</translation>
@@ -1034,6 +1036,7 @@ Nouvelle installation</translation>
 <translation id="7513622367902644023">Mode de capture d'écran sélectionné</translation>
 <translation id="7513922695575567867">Agenda, semaine du <ph name="DATE" />, le <ph name="SELECTED_DATE" /> est actuellement sélectionné.</translation>
 <translation id="7514365320538308">Télécharger</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7526573455193969409">Il est possible que le réseau soit surveillé</translation>
 <translation id="7536035074519304529">Adresse IP : <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Les applis Linux et les fenêtres de navigation privée ne sont pas prises en charge pour le moment. Les autres applis seront enregistrées.</translation>
@@ -1102,6 +1105,7 @@ Nouvelle installation</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Appuyez sur le lecteur d'empreinte</translation>
 <translation id="7904094684485781019">L'administrateur de ce compte a désactivé la connexion multicompte.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7930731167419639574">Les paroles sont maintenant traitées localement et la dictée fonctionne hors connexion.</translation>
 <translation id="7933084174919150729">L'Assistant Google n'est disponible que pour le profil principal.</translation>
 <translation id="79341161159229895">Compte géré par <ph name="FIRST_PARENT_EMAIL" /> et <ph name="SECOND_PARENT_EMAIL" /></translation>

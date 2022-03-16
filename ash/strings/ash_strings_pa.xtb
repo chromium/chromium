@@ -257,6 +257,7 @@
 <translation id="2595239820337756193">ਮੀਲ ਵਿੱਚ 5K</translation>
 <translation id="2596078834055697711">ਵਿੰਡੋ ਦਾ ਸਕ੍ਰੀਨਸ਼ਾਟ ਲਓ</translation>
 <translation id="2607678425161541573">ਆਨਲਾਈਨ ਸਾਈਨ-ਇਨ ਕਰਨਾ ਲੋੜੀਂਦਾ ਹੈ</translation>
+<translation id="2620436844016719705">ਸਿਸਟਮ</translation>
 <translation id="2621713457727696555">ਸੁਰੱਖਿਅਤ</translation>
 <translation id="263399434338050016">"ਸਭ ਚੁਣੋ"</translation>
 <translation id="2653019840645008922">ਵਿੰਡੋ ਕੈਪਚਰ</translation>
@@ -352,6 +353,7 @@
 <translation id="320207200541803018">ਟਾਈਮਰ ਸੈੱਟ ਕਰੋ</translation>
 <translation id="3203405173652969239">ਸਵਿੱਚ ਪਹੁੰਚ ਚਾਲੂ ਹੈ</translation>
 <translation id="3207953481422525583">ਵਰਤੋਂਕਾਰ ਸੈਟਿੰਗਾਂ</translation>
+<translation id="3208321278970793882">ਐਪ</translation>
 <translation id="3217205077783620295">ਅਵਾਜ਼ ਚਾਲੂ ਹੈ, ਟੌਗਲ ਕਰਨ 'ਤੇ ਆਡੀਓ ਮਿਊਟ ਹੋ ਜਾਵੇਗਾ।</translation>
 <translation id="3226991577105957773">ਅਤੇ <ph name="COUNT" /> ਹੋਰ</translation>
 <translation id="3227137524299004712">ਮਾਈਕ੍ਰੋਫੋਨ</translation>
@@ -1036,6 +1038,7 @@
 <translation id="7513622367902644023">ਸਕ੍ਰੀਨਸ਼ਾਟ ਮੋਡ ਨੂੰ ਚੁਣਿਆ ਗਿਆ</translation>
 <translation id="7513922695575567867"><ph name="DATE" /> ਵਾਲੇ ਹਫ਼ਤੇ ਦੇ ਕੈਲੰਡਰ ਵਿੱਚ ਫ਼ਿਲਹਾਲ <ph name="SELECTED_DATE" /> ਨੂੰ ਚੁਣਿਆ ਗਿਆ ਹੈ।</translation>
 <translation id="7514365320538308">ਡਾਊਨਲੋਡ ਕਰੋ</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7526573455193969409">ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਨੈੱਟਵਰਕ ਦੀ ਨਿਗਰਾਨੀ ਹੋ ਰਹੀ ਹੋਵੇ</translation>
 <translation id="7536035074519304529">IP ਪਤਾ: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Linux ਐਪਾਂ ਅਤੇ ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋਆਂ ਫ਼ਿਲਹਾਲ ਸਮਰਥਿਤ ਨਹੀਂ ਹਨ। ਹੋਰ ਐਪਾਂ ਨੂੰ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
@@ -1104,6 +1107,7 @@
 <translation id="7901405293566323524">ਫ਼ੋਨ ਹੱਬ</translation>
 <translation id="7902625623987030061">ਫਿੰਗਰਪ੍ਰਿੰਟ ਸੈਂਸਰ ਨੂੰ ਸਪਰਸ਼ ਕਰੋ</translation>
 <translation id="7904094684485781019">ਇਸ ਖਾਤੇ ਦੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਬਹੁ-ਗਿਣਤੀ ਸਾਈਨ-ਇਨ ਨੂੰ ਇਜਾਜ਼ਤ ਨਹੀਂ ਦਿੱਤੀ ਹੈ।</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7930731167419639574">ਬੋਲੀ 'ਤੇ ਹੁਣ ਸਥਾਨਕ ਤੌਰ 'ਤੇ ਪ੍ਰਕਿਰਿਆ ਕੀਤੀ ਜਾਂਦੀ ਹੈ ਅਤੇ ਡਿਕਟੇਸ਼ਨ ਆਫ਼ਲਾਈਨ ਕੰਮ ਕਰਦੀ ਹੈ</translation>
 <translation id="7933084174919150729">Google Assistant ਸਿਰਫ਼ ਪ੍ਰਾਇਮਰੀ ਪ੍ਰੋਫਾਈਲ ਲਈ ਹੀ ਉਪਲਬਧ ਹੈ।</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> ਅਤੇ <ph name="SECOND_PARENT_EMAIL" /> ਵੱਲੋਂ ਖਾਤੇ ਦਾ ਪ੍ਰਬੰਧਨ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>

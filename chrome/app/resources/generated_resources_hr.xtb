@@ -1065,7 +1065,6 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="2019718679933488176">&amp;Otvori zvučni zapis na novoj kartici</translation>
 <translation id="2020183425253392403">Prikaži postavke mrežne adrese</translation>
 <translation id="2020225359413970060">Skeniraj datoteku</translation>
-<translation id="2022395138980869975">Prebacite bočno pretraživanje</translation>
 <translation id="2023167225947895179">PIN se može lako pogoditi</translation>
 <translation id="202352106777823113">Preuzimanje je trajalo predugo pa ga je mreža zaustavila.</translation>
 <translation id="2024195579772565064">Brisanje tražilice</translation>
@@ -2964,7 +2963,6 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="3888053818972567950">Veza <ph name="WEB_DRIVE" /></translation>
 <translation id="3888550877729210209">Izrada bilježaka pomoću aplikacije <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">Ti nam podaci pomažu da bolje shvatimo vašu poteškoću s Asistentom. Pohranjuju se do 90 dana i pristup je ograničen na odgovarajuće timove za inženjerstvo i povratne informacije.</translation>
-<translation id="3888900458694486810">Zatvorite bočno pretraživanje</translation>
 <translation id="3890064827463908288">Uključite Chrome sinkronizaciju kako biste upotrebljavali Wi-Fi sinkronizaciju</translation>
 <translation id="389313931326656921">Dodjela prekidača za radnju Sljedeće</translation>
 <translation id="3893295674388762059">Da biste izbrisali podatke, zatvorite sve anonimne prozore</translation>
@@ -3200,6 +3198,10 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="4110490973560452005">Preuzimanje je dovršeno: <ph name="FILE_NAME" />. Pritisnite Shift + F6 da biste došli do područja trake preuzimanja.</translation>
 <translation id="4110686435123617899">Odaberite album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (izvan mreže)</translation>
+<translation id="4114524937989710624">Prikazuju vam se predložene datoteke da biste se lakše vratili na svoju posljednju aktivnost na Google disku.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Postavkama možete upravljati putem izbornika kartice ili možete vidjeti više opcija u odjeljku Prilagodba Chromea.</translation>
 <translation id="4115002065223188701">Mreža je izvan dometa</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="4116704186509653070">Ponovo otvori</translation>
@@ -3278,7 +3280,6 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="4208390505124702064">Pretraži <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Velik</translation>
 <translation id="4209251085232852247">Isključeno</translation>
-<translation id="4209464433672152343">Dokumenti se <ph name="BEGIN_LINK_HELP" />šalju Googleu<ph name="END_LINK_HELP" /> radi pripreme za ispis. Pisače i povijest pisača možete pregledavati, uređivati i upravljati njima na <ph name="BEGIN_LINK_DASHBOARD" />nadzornoj ploči Google Cloud Printa<ph name="END_LINK_DASHBOARD" />.</translation>
 <translation id="4210048056321123003">Preuzimanje virtualnog računala</translation>
 <translation id="421182450098841253">&amp;Prikaz trake oznake</translation>
 <translation id="4211851069413100178">Slanje podataka o upotrebi i dijagnostici. Pomognite poboljšati Android automatskim slanjem dijagnostičkih podataka te podataka o upotrebi uređaja i aplikacija Googleu. Ti podaci pomoći će poboljšati stabilnost sustava, aplikacija i drugo. Neki skupni podaci pomoći će i Googleovim aplikacijama i partnerima, na primjer razvojnim programerima za Android. Ovu <ph name="BEGIN_LINK1" />postavku<ph name="END_LINK1" /> zadao je vlasnik. Vlasnik može Googleu slati dijagnostiku i podatke o upotrebi za ovaj uređaj. Ako je uključena dodatna postavka Aktivnost na webu i u aplikacijama, ti se podaci mogu spremati na vaš Google račun. <ph name="BEGIN_LINK2" />Saznajte više<ph name="END_LINK2" /></translation>
@@ -3708,6 +3709,10 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="4651484272688821107">Nije uspjelo učitavanje online komponente s resursima demo načina.</translation>
 <translation id="4652935475563630866">Za promjenu postavke fotoaparata potrebno je ponovno pokrenuti Parallels Desktop. Ponovo pokrenite Parallels Desktop da biste nastavili.</translation>
 <translation id="4653405415038586100">Pogreška prilikom konfiguriranja Linuxa</translation>
+<translation id="465406513924180949">Prikazuju vam se košarice pomoću kojih se možete lako vratiti na artikle koje ste ostavili u košaricama na webu.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Postavkama možete upravljati putem izbornika kartice ili možete vidjeti više opcija u odjeljku Prilagodba Chromea.</translation>
 <translation id="4654236001025007561">Dijelite datoteke s Chromebookovima i Android uređajima u blizini</translation>
 <translation id="4657914796247705218">Brzina TrackPointa</translation>
 <translation id="4658285806588491142">Zaštita privatnosti zaslona</translation>
@@ -4150,6 +4155,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="5121130586824819730">Vaš je tvrdi disk pun. Spremite na neku drugu lokaciju ili oslobodite prostor na tvrdom disku.</translation>
 <translation id="5123433949759960244">Košarka</translation>
 <translation id="5125751979347152379">Nevažeći URL.</translation>
+<translation id="5125967981703109366">O ovoj kartici</translation>
 <translation id="5126611267288187364">Prikaz izmjena</translation>
 <translation id="5127242257756472928">Nije dopušteno upotrebljavati podatke o zaslonima za otvaranje i postavljanje prozora</translation>
 <translation id="5127620150973591153">ID sigurne veze: <ph name="TOKEN" /></translation>
@@ -5133,6 +5139,10 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6116921718742659598">Promijenite postavke jezika i unosa</translation>
 <translation id="6119927814891883061">Imenujte uređaj <ph name="DEVICE_NAME" /></translation>
 <translation id="6120205520491252677">Prikvači ovu stranicu na zaslon Start...</translation>
+<translation id="6120707837086723438">Prikazuju vam se predloženi recepti na temelju vaše nedavne aktivnosti pretraživanja u vezi s receptima.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Postavkama možete upravljati putem izbornika kartice ili možete vidjeti više opcija u odjeljku Prilagodba Chromea.</translation>
 <translation id="6121773125605585883">Pregledajte zaporku uz korisničko ime <ph name="USERNAME" /> za <ph name="WEBSITE" /></translation>
 <translation id="6122081475643980456">Internetskom vezom upravlja proširenje</translation>
 <translation id="6122093587541546701">E-adresa (nije obavezno):</translation>
@@ -6172,7 +6182,6 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="7180611975245234373">Osvježi</translation>
 <translation id="7180865173735832675">Prilagodi</translation>
 <translation id="7182791023900310535">Premjestite zaporku</translation>
-<translation id="7183420126213758623">Prebacite bočno pretraživanje. Bočno pretraživanje nije aktivirano.</translation>
 <translation id="7186088072322679094">Zadrži na alatnoj traci</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> ne može otvoriti ovu mapu jer sadrži datoteke sustava</translation>
 <translation id="7187428571767585875">Unosi registra koje treba ukloniti ili promijeniti:</translation>
@@ -6694,7 +6703,6 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="7701040980221191251">Nema ih</translation>
 <translation id="7701869757853594372">Rukuje KORISNIK</translation>
 <translation id="7702574632857388784">Ukloni <ph name="FILE_NAME" /> s popisa</translation>
-<translation id="7702599324215660661">Zaključavanje prilikom odlaska</translation>
 <translation id="7702907602086592255">Domena</translation>
 <translation id="7704305437604973648">Zadatak</translation>
 <translation id="7704317875155739195">Samodovršavanje pretraživanja i URL-ova</translation>
@@ -6739,6 +6747,10 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="7744192722284567281">Pronađeno u povredi podataka</translation>
 <translation id="7744649840067671761">Pritisnite novi prekidač ili tipku na tipkovnici da biste pokrenuli dodjelu.
 Pritisnite dodijeljeni prekidač ili tipku da biste uklonili dodjelu.</translation>
+<translation id="7746739418892731373">Prikazuju vam se istaknute fotografije i videozapisi iz vaše zbirke s Google fotografija. Na stranici <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> možete upravljati time što će se prikazivati u vašim isticanjima.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Postavkama za tu karticu možete upravljati putem izbornika kartice ili možete vidjeti više opcija u odjeljku Prilagodba Chromea.</translation>
 <translation id="7750228210027921155">Slika u slici</translation>
 <translation id="7751260505918304024">Prikaži sve</translation>
 <translation id="7753735457098489144">Instaliranje nije uspjelo jer nema dovoljno prostora za pohranu. Da biste oslobodili prostor, izbrišite datoteke iz pohrane uređaja.</translation>
@@ -6801,7 +6813,6 @@ Pritisnite dodijeljeni prekidač ili tipku da biste uklonili dodjelu.</translati
 <translation id="7798844538707273832">Automatski je blokirano dopuštenje <ph name="PERMISSION" /></translation>
 <translation id="7799299114731150374">Pozadina je uspješno postavljena</translation>
 <translation id="7799817062559422778">Svijetli način</translation>
-<translation id="7800159967992492578">Prebacite bočno pretraživanje. Bočno pretraživanje je aktivirano.</translation>
 <translation id="7800518121066352902">Zakreni u smjeru suprotnom od &amp;kretanja kazaljke na satu</translation>
 <translation id="7801679634091975683">Promjene koje unesete ovdje primjenjuju se samo na preglednik Chrome Lacros. Da biste promijenili postavke preglednika Chrome, otvorite preglednik Chrome, a zatim postavke.</translation>
 <translation id="780301667611848630">Ne, hvala</translation>

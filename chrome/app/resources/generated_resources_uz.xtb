@@ -1062,7 +1062,6 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="2019718679933488176">Audio yozuvni yangi varaqda ochish</translation>
 <translation id="2020183425253392403">Tarmoq manzili sozlamalari ko‘rsatilsin</translation>
 <translation id="2020225359413970060">Faylni skanerlash</translation>
-<translation id="2022395138980869975">Yondagi qidiruv tugmasi</translation>
 <translation id="2023167225947895179">PIN kodni osongina topish mumkin</translation>
 <translation id="202352106777823113">Yuklab olish to‘xtatildi, chunki tarmoqdan kutish vaqti cho‘zilib ketdi.</translation>
 <translation id="2024195579772565064">Qidiruv tizimini oʻchirish</translation>
@@ -2965,7 +2964,6 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" /> ombori</translation>
 <translation id="3888550877729210209">Qaydlar <ph name="LOCK_SCREEN_APP_NAME" /> dasturida yoziladi</translation>
 <translation id="3888586133700543064">Bu axborot Assistent muammosini yaxshiroq tushunishga yordam beradi. Axborot 90 kungacha saqlanadi va faqatgina muayyan jamoa yoki muhandislar tomonidan ishlatiladi.</translation>
-<translation id="3888900458694486810">Yondagi qidiruvni yopish</translation>
 <translation id="3890064827463908288">Wi-Fi Sync ishlatish uchun Chrome Sync funksiyasini yoqing</translation>
 <translation id="389313931326656921">“Keyingi” uchun kalitni tayinlash</translation>
 <translation id="3893295674388762059">Maʼlumotlarni tozalash uchun barcha Inkognito oynalarni yoping</translation>
@@ -3279,7 +3277,6 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4208390505124702064"><ph name="SITE_NAME" /> saytidan qidirish</translation>
 <translation id="4209092469652827314">Katta</translation>
 <translation id="4209251085232852247">Yoqilmagan</translation>
-<translation id="4209464433672152343">Hujjatlar chop etilishi uchun <ph name="BEGIN_LINK_HELP" />Google serverlariga yuborildi<ph name="END_LINK_HELP" />. Printerlaringiz va printer tarixini <ph name="BEGIN_LINK_DASHBOARD" />Google Virtual printer shaxsiy kabineti<ph name="END_LINK_DASHBOARD" /> orqali ko‘rish, tahrirlash va boshqarish mumkin.</translation>
 <translation id="4210048056321123003">Virtual mashina yuklab olinmoqda</translation>
 <translation id="421182450098841253">&amp;Xatcho‘plar panelini ko‘rsatish</translation>
 <translation id="4211851069413100178">Foydalanish va diagnostika axborotini yuborish. Diagnostika hamda qurilma va ilovadan foydalanish statistikasini Google kompaniyasiga avtomatik yuborish orqali Androidni yaxshilashga yordam bering. Ular tizim va ilovalar barqarorligi kabilarni yaxshilash uchun ishlatiladi. Ayrim toʻplangan maʼlumotlar Android dasturchilar kabi hamkorlarimizga ham oʻz ilovalari va mahsulotlarini yanada yaxshilashga yordam beradi. Bu <ph name="BEGIN_LINK1" />parametr<ph name="END_LINK1" /> qurilma egasi tomonidan oʻrnatilgan. Qurilma egasi undagi foydalanish haqidagi va diagnostika axborotini Google serverlariga avtomatik yuborilishini tayinlashi mumkin. Agar Kengaytirilgan veb-qidiruv va ilovalar tarixi yoqilgan boʻlsa, bu maʼlumotlar Google hisobingizda saqlanadi. <ph name="BEGIN_LINK2" />Batafsil<ph name="END_LINK2" /></translation>
@@ -6180,7 +6177,6 @@ maqsadlarida foydalanishi mumkin. Bu ruxsatni myaccount.google.com/activitycontr
 <translation id="7180611975245234373">Yangilash</translation>
 <translation id="7180865173735832675">Sozlash</translation>
 <translation id="7182791023900310535">Parolni boshqa hisobga olish</translation>
-<translation id="7183420126213758623">Yondagi qidiruv tugmasi. Yondagi qidiruv faollashtirilmagan.</translation>
 <translation id="7186088072322679094">Asboblar panelida saqlash</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> bu jilddagi fayllarni ocha olmaydi, chunki unda tizim fayllari mavjud.</translation>
 <translation id="7187428571767585875">O‘chiriladigan yoki o‘zgartiriladigan jurnal qaydlari:</translation>
@@ -6702,7 +6698,6 @@ maqsadlarida foydalanishi mumkin. Bu ruxsatni myaccount.google.com/activitycontr
 <translation id="7701040980221191251">Hech qanday</translation>
 <translation id="7701869757853594372">USER deskriptorlari</translation>
 <translation id="7702574632857388784"><ph name="FILE_NAME" /> faylini roʻyxatdan olib tashlash</translation>
-<translation id="7702599324215660661">Atrofda boʻlmaganingizda qulflansin</translation>
 <translation id="7702907602086592255">Domen</translation>
 <translation id="7704305437604973648">Vazifa</translation>
 <translation id="7704317875155739195">Qidiruv va URL manzillarning avtomatik kiritilishi</translation>
@@ -6808,7 +6803,6 @@ Tayinlovni bekor qilish uchun belgilangan kalit yoki tugmani bosing.</translatio
 <translation id="7798844538707273832"><ph name="PERMISSION" /> ruxsati avtomatik bloklandi.</translation>
 <translation id="7799299114731150374">Fon rasmi o‘rnatildi</translation>
 <translation id="7799817062559422778">Kunduzgi rejim</translation>
-<translation id="7800159967992492578">Yondagi qidiruv tugmasi. Yondagi qidiruv faollashtirilgan.</translation>
 <translation id="7800518121066352902">Soat miliga teskari yo‘nalishda burish</translation>
 <translation id="7801679634091975683">Siz kiritgan oʻzgarishlar faqat Lacros Chrome brauzeriga tatbiq etiladi. Chrome brauzeri sozlamalariga oʻzgartirish kiritish uchun uning sozlamalarini oching</translation>
 <translation id="780301667611848630">Kerak emas</translation>

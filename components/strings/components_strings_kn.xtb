@@ -115,7 +115,6 @@
 <translation id="1301324364792935241">ನಿಮ್ಮ ಸುರಕ್ಷಿತ DNS ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="1307966114820526988">ತೆಗೆದುಹಾಕಲಾದ ವೈಶಿಷ್ಟ್ಯಗಳು</translation>
 <translation id="1308113895091915999">ಕೊಡುಗೆಯು ಲಭ್ಯವಿದೆ</translation>
-<translation id="1312803275555673949">ಇದನ್ನು ಯಾವ ಪುರಾವೆ ಬೆಂಬಲಿಸುತ್ತದೆ?</translation>
 <translation id="1314311879718644478">ಆಗ್‌ಮೆಂಟೆಡ್ ರಿಯಾಲಿಟಿ ವಿಷಯವನ್ನು ವೀಕ್ಷಿಸಿ</translation>
 <translation id="1314509827145471431">ಬಲಗಡೆ ಬೈಂಡ್ ಮಾಡಿ</translation>
 <translation id="1318023360584041678">ಟ್ಯಾಬ್ ಗ್ರೂಪ್‌ನಲ್ಲಿ ಉಳಿಸಲಾಗಿದೆ</translation>
@@ -736,7 +735,6 @@
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” ಲಿಂಕ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="3249845759089040423">ಗ್ರೂವಿ</translation>
 <translation id="3252266817569339921">ಫ್ರೆಂಚ್</translation>
-<translation id="3257954757204451555">ಈ ಮಾಹಿತಿಯ ಹಿಂದೆ ಯಾರಿದ್ದಾರೆ?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Calendar ನಲ್ಲಿ ಹೊಸ ಈವೆಂಟ್ ಅನ್ನು ತ್ವರಿತವಾಗಿ ರಚಿಸಲು Tab ಒತ್ತಿ, ನಂತರ Enter ಒತ್ತಿ</translation>
 <translation id="3261488570342242926">ವರ್ಚುವಲ್ ಕಾರ್ಡ್‌ಗಳ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="3264837738038045344">Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳ ಬಟನ್ ಅನ್ನು ನಿರ್ವಹಿಸಿ, ನಿಮ್ಮ Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಭೇಟಿ ನೀಡಲು Enter ಒತ್ತಿ</translation>
@@ -1118,6 +1116,7 @@
 <translation id="4414515549596849729">ಕುಕೀಗಳು ಮತ್ತು ಸೈಟ್ ಡೇಟಾ</translation>
 <translation id="4415426530740016218">ಪಿಕಪ್ ವಿಳಾಸ</translation>
 <translation id="4424024547088906515">ಈ ಸರ್ವರ್ <ph name="DOMAIN" /> ಆಗಿದೆ ಎಂಬುದನ್ನು ಸಾಬೀತುಪಡಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ; ಅದರ ಸುರಕ್ಷತಾ ಪ್ರಮಾಣಪತ್ರವು Chrome ಪಾಲಿಗೆ ವಿಶ್ವಾಸಾರ್ಹವಾಗಿಲ್ಲ. ಇದು ತಪ್ಪು ಕಾನ್ಫಿಗರೇಶನ್‌ನಿಂದ ಅಥವಾ ಆಕ್ರಮಣಕಾರರು ನಿಮ್ಮ ಸಂಪರ್ಕದಲ್ಲಿ ಒಳನುಸುಳಿರುವುದರಿಂದ ಆಗಿರಬಹುದು.</translation>
+<translation id="4428065317363009941">ಜಾಹೀರಾತು ವೈಯಕ್ತೀಕರಣ</translation>
 <translation id="443121186588148776">ಸೀರಿಯಲ್ ಪೋರ್ಟ್</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> ನಿಮ್ಮ ಲಾಗಿನ್ ಪ್ರಮಾಣಪತ್ರವನ್ನು ಸ್ವೀಕರಿಸಲಿಲ್ಲ ಅಥವಾ ಅದನ್ನು ಒದಗಿಸದೆ ಇರಬಹುದು.</translation>
 <translation id="4432792777822557199">ಈಗಿನಿಂದಲೇ <ph name="SOURCE_LANGUAGE" /> ನಲ್ಲಿನ ಪುಟಗಳನ್ನು <ph name="TARGET_LANGUAGE" /> ಗೆ ಅನುವಾದ ಮಾಡಲಾಗುತ್ತದೆ</translation>
@@ -1250,7 +1249,6 @@
 <translation id="4838327282952368871">ಕನಸು</translation>
 <translation id="4840250757394056958">ನಿಮ್ಮ Chrome ಇತಿಹಾಸವನ್ನು ವೀಕ್ಷಿಸಿ</translation>
 <translation id="484462545196658690">ಆಟೋ</translation>
-<translation id="4849865131988503897">ನಿಖರತೆಯ ಪರಿಶೀಲನೆ</translation>
 <translation id="4850886885716139402">ವೀಕ್ಷಣೆ</translation>
 <translation id="485316830061041779">ಜರ್ಮನ್</translation>
 <translation id="4853901935952445031">ಫೆಬ್ರವರಿ 2022 ರ ನಂತರ ಈ ಸೈಟ್‌ಗೆ U2F API ಅನ್ನು ಬಳಸಲು ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ. ನೀವು ಈ ಸೈಟ್ ಅನ್ನು ಹೊಂದಿದ್ದರೆ, Web Authentication API ಅನ್ನು ಬಳಸಲು ನೀವು ಅದನ್ನು ಬದಲಾಯಿಸಬೇಕು.</translation>
@@ -1437,6 +1435,7 @@
 <translation id="5398772614898833570">ಜಾಹೀರಾತುಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="5400836586163650660">ಬೂದು</translation>
 <translation id="540969355065856584">ಈ ಸರ್ವರ್ <ph name="DOMAIN" /> ಆಗಿದೆ ಎಂಬುದನ್ನು ಸಾಬೀತುಪಡಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ; ಈ ಸಮಯದಲ್ಲಿ ಅದರ ಸುರಕ್ಷತಾ ಪ್ರಮಾಣಪತ್ರವು ಮಾನ್ಯವಾಗಿಲ್ಲ. ಇದು ತಪ್ಪು ಕಾನ್ಫಿಗರೇಶನ್‌ನಿಂದ ಅಥವಾ ಆಕ್ರಮಣಕಾರರು ನಿಮ್ಮ ಸಂಪರ್ಕದಲ್ಲಿ ಒಳನುಸುಳಿರುವುದರಿಂದ ಆಗಿರಬಹುದು.</translation>
+<translation id="5412236728747081950">ನಿಮಗೆ ಹೆಚ್ಚು ಸಂಬಂಧಿತ ಜಾಹೀರಾತುಗಳನ್ನು ತೋರಿಸಲು, ಈ ಸೈಟ್ ನಿಮ್ಮ ಆಸಕ್ತಿಗಳ ಕುರಿತ ಮಾಹಿತಿಯನ್ನು Chrome ನಿಂದ ಪಡೆಯುತ್ತದೆ</translation>
 <translation id="541416427766103491">ಸ್ಟ್ಯಾಕರ್ 4</translation>
 <translation id="5421136146218899937">ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ತೆರವುಗೊಳಿಸಿ...</translation>
 <translation id="5426179911063097041">ನಿಮಗೆ ಅಧಿಸೂಚನೆಗಳನ್ನು ಕಳುಹಿಸಲು <ph name="SITE" /> ಬಯಸುತ್ತದೆ</translation>
@@ -1952,7 +1951,6 @@
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> ಭದ್ರತೆ ಮಾನದಂಡಗಳನ್ನು ಅನುಸರಿಸುತ್ತಿಲ್ಲ.</translation>
 <translation id="7210993021468939304">ಕಂಟೇನರ್‌ನಲ್ಲಿ Linux ಚಟುವಟಿಕೆ ಮತ್ತು ಕಂಟೇನರ್‌ನಲ್ಲಿ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಬಹುದಾದ ಮತ್ತು ರನ್ ಮಾಡಬಹುದಾದ Linux ಆ್ಯಪ್‌ಗಳು</translation>
 <translation id="721197778055552897">ಈ ತೊಂದರೆಯ ಬಗ್ಗೆ <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" />.</translation>
-<translation id="7215025035562547931">ನಿಖರತೆಯನ್ನು ಪರಿಗಣಿಸಲು ಸ್ವಲ್ಪ ಸಮಯ ತೆಗೆದುಕೊಳ್ಳಿ</translation>
 <translation id="7217745192097460130">ನಿಮ್ಮ ಖರೀದಿಯನ್ನು ದೃಢೀಕರಿಸಲು ಮತ್ತು ಪೂರ್ಣಗೊಳಿಸಲು ಟಚ್ ID ಬಳಸಿ?</translation>
 <translation id="7219179957768738017">ಸಂಪರ್ಕವು <ph name="SSL_VERSION" /> ಅನ್ನು ಬಳಸುತ್ತದೆ.</translation>
 <translation id="7220786058474068424">ಪ್ರಕ್ರಿಯೆಗೊಳಿಸಲಾಗುತ್ತಿದೆ</translation>
@@ -2081,7 +2079,9 @@
 <translation id="7569952961197462199">Chrome ನಿಂದ ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್ ತೆಗೆದುಹಾಕುವುದೇ?</translation>
 <translation id="7569983096843329377">ಕಪ್ಪು</translation>
 <translation id="7575207903026901870">ಸಲಹೆ ಬಟನ್ ಅನ್ನು ತೆಗೆದುಹಾಕಿ, ಸಲಹೆಯನ್ನು ತೆಗೆದುಹಾಕಲು Enter ಅನ್ನು ಒತ್ತಿರಿ</translation>
+<translation id="7577900504646297215">ಆಸಕ್ತಿಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="7578104083680115302">Google ನೊಂದಿಗೆ ನೀವು ಉಳಿಸಲಾದ ಕಾರ್ಡ್‌ಗಳನ್ನು ಬಳಸಿಕೊಂಡು ಸಾಧನಗಳಾದ್ಯಂತ ಸೈಟ್‌ಗಳು ಮತ್ತು ಅಪ್ಲಿಕೇಶನ್‌ಗಳಲ್ಲಿ ತ್ವರಿತವಾಗಿ ಪಾವತಿಸಿ.</translation>
+<translation id="7579442726219254162">"<ph name="APPLICATION_ID" />" ನ ನಿರ್ವಹಿಸಲಾದ ಕಾನ್ಫಿಗರೇಶನ್‌ನಲ್ಲಿನ ತಿಳಿಯದ ವೇರಿಯೇಬಲ್ "<ph name="VARIABLE" />".</translation>
 <translation id="7581199239021537589">ಅಂಚು 2 ಚಿತ್ರ Y ಶಿಫ್ಟ್</translation>
 <translation id="7582602800368606489">Google Calendar ನಲ್ಲಿ ಹೊಸ ಈವೆಂಟ್ ಅನ್ನು ತ್ವರಿತವಾಗಿ ರಚಿಸಿ</translation>
 <translation id="7591288787774558753">ಗೌಪ್ಯ ವಿಷಯವನ್ನು ಹಂಚಿಕೊಳ್ಳಬೇಕೇ?</translation>
@@ -2201,7 +2201,6 @@
 <translation id="7966803981046576691">ಕೆಲಸದ ಖಾತೆ ಪ್ರಕಾರ</translation>
 <translation id="79682505114836835">"<ph name="VALUE" />" ಮೌಲ್ಯವು ಅಮಾನ್ಯವಾದ ಹೆಕ್ಸ್ ಬಣ್ಣವಾಗಿದೆ.</translation>
 <translation id="7968982339740310781">ವಿವರಗಳನ್ನು ವೀಕ್ಷಿಸಿ</translation>
-<translation id="7970392640816874403">ಇತರ ಮಾಹಿತಿಮೂಲಗಳು ಏನು ಹೇಳುತ್ತವೆ?</translation>
 <translation id="7976214039405368314">ಅತೀ ಹೆಚ್ಚು ವಿನಂತಿಗಳು</translation>
 <translation id="7977538094055660992">ಔಟ್‌ಪುಟ್ ಸಾಧನ</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -2553,7 +2552,6 @@
 <translation id="9155211586651734179">ಆಡಿಯೊ ಬಾಹ್ಯೋಪಕರಣಗಳನ್ನು ಲಗತ್ತಿಸಲಾಗಿದೆ</translation>
 <translation id="9157595877708044936">ಹೊಂದಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="9158625974267017556">C6 (Envelope)</translation>
-<translation id="9164029392738894042">ನಿಖರತೆಯ ಪರಿಶೀಲನೆ</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">ನೀವು ಪಾವತಿ ವಿಧಾನಗಳನ್ನು ಉಳಿಸಿದಲ್ಲಿ ಪರಿಶೀಲಿಸಲು ಸೈಟ್‌ಗಳನ್ನು ಅನುಮತಿಸಿ</translation>
 <translation id="9169664750068251925">ಈ ಸೈಟ್ ಅನ್ನು ಯಾವಾಗಲೂ ನಿರ್ಬಂಧಿಸು</translation>

@@ -824,6 +824,7 @@
 <translation id="8042602468072383151">សំឡេង <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">ភាសារូម៉ានី</translation>
 <translation id="8049184478152619004">បញ្ចូលកូដឈប់​ទប់ស្កាត់ផ្ទាល់ខ្លួន (PUK)</translation>
+<translation id="807187749540895545">កំពុងស្រង់ <ph name="FILE_NAME" />...</translation>
 <translation id="8079530767338315840">ចាក់ឡើងវិញ</translation>
 <translation id="8087576439476816834">ទាញយក, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">បានចែករំលែកជាមួយខ្ញុំ</translation>
@@ -875,6 +876,7 @@
 <translation id="8484284835977497781">ជ្រើសរើសពី​រូបថតថ្មីៗ​របស់អ្នក។</translation>
 <translation id="8487700953926739672">មាននៅក្រៅបណ្តាញ</translation>
 <translation id="8492972329130824181">មិនអាចប្រើបណ្ដាញ​​នៅផ្ទះបានទេ។ ត្រូវតែបើកការ​រ៉ូមីង​ទិន្នន័យទូរសព្ទចល័ត ដើម្បីភ្ជាប់។</translation>
+<translation id="8499098729323186194">កំពុងស្រង់ធាតុ <ph name="NUMBER_OF_ITEMS" />...</translation>
 <translation id="8521441079177373948">ភាសាអង់គ្លេស</translation>
 <translation id="8525306231823319788">ពេញអេក្រង់</translation>
 <translation id="853494022971700746">ភាសា​បារាំង (បារាំង)</translation>

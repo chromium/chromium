@@ -31,6 +31,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1150989369772528668">Calendario</translation>
 <translation id="1153356358378277386">Dispositivi accoppiati</translation>
 <translation id="1165712434476988950">È necessario riavviare il dispositivo per applicare l'aggiornamento.</translation>
+<translation id="1171742223880403396">Il cavo USB-C potrebbe non collegarsi correttamente ai display</translation>
 <translation id="1175572348579024023">Scorri</translation>
 <translation id="1178581264944972037">Pausa</translation>
 <translation id="1181037720776840403">Rimuovi</translation>
@@ -253,6 +254,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2595239820337756193">5 km in miglia</translation>
 <translation id="2596078834055697711">Consente di acquisire uno screenshot della finestra</translation>
 <translation id="2607678425161541573">Accesso online richiesto</translation>
+<translation id="2620436844016719705">Sistema</translation>
 <translation id="2621713457727696555">Protetta</translation>
 <translation id="263399434338050016">"Seleziona tutto"</translation>
 <translation id="2653019840645008922">Acquisizione finestra</translation>
@@ -348,6 +350,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="320207200541803018">Imposta il timer</translation>
 <translation id="3203405173652969239">Funzionalità Switch Access attiva</translation>
 <translation id="3207953481422525583">Impostazioni utente</translation>
+<translation id="3208321278970793882">App</translation>
 <translation id="3217205077783620295">Il volume è attivo. Selezionalo per disattivarlo.</translation>
 <translation id="3226991577105957773">+ altre <ph name="COUNT" /></translation>
 <translation id="3227137524299004712">Microfono</translation>
@@ -1032,6 +1035,7 @@ Nuova installazione</translation>
 <translation id="7513622367902644023">Modalità screenshot selezionata</translation>
 <translation id="7513922695575567867">Calendario, settimana del <ph name="DATE" />, è attualmente selezionata la data <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Scarica</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7526573455193969409">La rete potrebbe essere monitorata</translation>
 <translation id="7536035074519304529">Indirizzo IP: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Al momento le app Linux e le finestre di navigazione in incognito non sono supportate. Le altre app verranno salvate.</translation>
@@ -1099,6 +1103,7 @@ Nuova installazione</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Tocca il sensore di impronte digitali</translation>
 <translation id="7904094684485781019">L'amministratore di questo account ha bloccato l'accesso simultaneo.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7930731167419639574">Ciò che dici ora viene elaborato localmente e la dettatura funziona offline.</translation>
 <translation id="7933084174919150729">L'Assistente Google è disponibile solo per il profilo principale.</translation>
 <translation id="79341161159229895">Account gestito da <ph name="FIRST_PARENT_EMAIL" /> e <ph name="SECOND_PARENT_EMAIL" /></translation>

@@ -1060,7 +1060,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="2019718679933488176">Abrir audi&amp;o en una nueva pestaña</translation>
 <translation id="2020183425253392403">Mostrar la configuración de direcciones de red</translation>
 <translation id="2020225359413970060">Analizar archivo</translation>
-<translation id="2022395138980869975">Activar o desactivar la búsqueda lateral</translation>
 <translation id="2023167225947895179">Es posible que el PIN sea fácil de adivinar</translation>
 <translation id="202352106777823113">La descarga estaba tardando demasiado y fue detenida por la red.</translation>
 <translation id="2024195579772565064">Borrar el motor de búsqueda</translation>
@@ -2957,7 +2956,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3888053818972567950">Conexión con <ph name="WEB_DRIVE" /></translation>
 <translation id="3888550877729210209">Tomar notas con <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">Esta información nos permite entender mejor tu problema con Asistente. Estos datos se almacenan por 90 días. El acceso a esta información está restringido a los equipos de ingeniería y comentarios correspondientes.</translation>
-<translation id="3888900458694486810">Cerrar la búsqueda lateral</translation>
 <translation id="3890064827463908288">Activa la Sincronización de Chrome para usar la Sincronización Wi-Fi</translation>
 <translation id="389313931326656921">Asignar interruptor a "Siguiente"</translation>
 <translation id="3893295674388762059">Para borrar los datos, cierra todas las ventanas de incógnito</translation>
@@ -3271,7 +3269,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4208390505124702064">Buscar <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Grande</translation>
 <translation id="4209251085232852247">Desactivados</translation>
-<translation id="4209464433672152343">Los documentos <ph name="BEGIN_LINK_HELP" />se envían a Google<ph name="END_LINK_HELP" /> a fin de prepararlos para su impresión. Visualiza, edita y administra las impresoras y tu historial de impresión en el <ph name="BEGIN_LINK_DASHBOARD" />panel de Google Cloud Print<ph name="END_LINK_DASHBOARD" />.</translation>
 <translation id="4210048056321123003">Se está descargando la máquina virtual</translation>
 <translation id="421182450098841253">Mo&amp;strar la barra de favoritos</translation>
 <translation id="4211851069413100178">Envía datos de uso y diagnóstico. Para ayudar a mejorar tu experiencia de Android, envía a Google datos de diagnóstico y uso de dispositivos y apps de forma automática. Esta información ayudará a lograr la estabilidad de las apps y el sistema, entre otras mejoras. Algunos datos agregados también ayudarán a las apps y los socios de Google, como los desarrolladores de Android. El propietario controla esta <ph name="BEGIN_LINK1" />configuración<ph name="END_LINK1" />. Es posible que el propietario decida enviar a Google datos de uso y diagnóstico de este dispositivo. Si habilitaste la "Actividad de web y de aplicaciones adicional", es posible que se almacenen estos datos en tu Cuenta de Google. <ph name="BEGIN_LINK2" />Más información<ph name="END_LINK2" /></translation>
@@ -6164,7 +6161,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="7180611975245234373">Actualizar</translation>
 <translation id="7180865173735832675">Personalizar</translation>
 <translation id="7182791023900310535">Mover tu contraseña</translation>
-<translation id="7183420126213758623">Activa o desactiva la búsqueda lateral. La búsqueda lateral no está activada.</translation>
 <translation id="7186088072322679094">Mantener en la barra de herramientas</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> no puede abrir esta carpeta porque contiene archivos del sistema.</translation>
 <translation id="7187428571767585875">Entradas de registro que se quitarán o cambiarán:</translation>
@@ -6686,7 +6682,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="7701040980221191251">Ninguna</translation>
 <translation id="7701869757853594372">A cargo del USUARIO</translation>
 <translation id="7702574632857388784">Quitar <ph name="FILE_NAME" /> de la lista</translation>
-<translation id="7702599324215660661">Bloquear cuando estés ausente</translation>
 <translation id="7702907602086592255">Dominio</translation>
 <translation id="7704305437604973648">Tarea</translation>
 <translation id="7704317875155739195">Autocompletar búsquedas y URL</translation>
@@ -6792,7 +6787,6 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7798844538707273832">Se bloqueó automáticamente <ph name="PERMISSION" /></translation>
 <translation id="7799299114731150374">Se estableció el fondo de pantalla correctamente</translation>
 <translation id="7799817062559422778">Modo claro</translation>
-<translation id="7800159967992492578">Activa o desactiva la búsqueda lateral. La búsqueda lateral está activada.</translation>
 <translation id="7800518121066352902">Girar &amp;a la izquierda</translation>
 <translation id="7801679634091975683">Los cambios que realices aquí solo se aplicarán en el navegador Chrome Lacros. Para realizar cambios en la configuración de tu navegador Chrome, abre el navegador Chrome y ve a la configuración.</translation>
 <translation id="780301667611848630">No, gracias</translation>

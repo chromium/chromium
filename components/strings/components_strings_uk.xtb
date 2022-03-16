@@ -115,7 +115,6 @@
 <translation id="1301324364792935241">Перевірте налаштування безпеки DNS</translation>
 <translation id="1307966114820526988">Функції не підтримуються</translation>
 <translation id="1308113895091915999">Доступна пропозиція</translation>
-<translation id="1312803275555673949">Які є докази?</translation>
 <translation id="1314311879718644478">Перегляньте контент у режимі доповненої реальності</translation>
 <translation id="1314509827145471431">Зшити праворуч</translation>
 <translation id="1318023360584041678">Збережено в групі вкладок</translation>
@@ -740,7 +739,6 @@
 <translation id="324180406144491771">Посилання <ph name="HOST_NAME" /> заблоковано</translation>
 <translation id="3249845759089040423">Чудовий</translation>
 <translation id="3252266817569339921">Французька</translation>
-<translation id="3257954757204451555">Звідки надійшла ця інформація?</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб швидко створити нову подію в Google Календарі</translation>
 <translation id="3261488570342242926">Докладніше про віртуальні картки</translation>
 <translation id="3264837738038045344">Кнопка "Керувати налаштуваннями Chrome"; натисніть Enter, щоб перейти в налаштування Chrome</translation>
@@ -1128,6 +1126,7 @@
 <translation id="4414515549596849729">файли cookie та дані із сайтів</translation>
 <translation id="4415426530740016218">Адреса отримання</translation>
 <translation id="4424024547088906515">Цей сервер не зміг довести, що він – домен <ph name="DOMAIN" />. Chrome не вважає його сертифікат безпеки надійним. Імовірні причини: неправильна конфігурація або хтось намагається перехопити ваше з’єднання.</translation>
+<translation id="4428065317363009941">Персоналізація реклами</translation>
 <translation id="443121186588148776">Послідовний порт</translation>
 <translation id="4432688616882109544">Хост <ph name="HOST_NAME" /> не прийняв ваш сертифікат входу або ви не надали цей сертифікат.</translation>
 <translation id="4432792777822557199">Надалі сторінки цією мовою (<ph name="SOURCE_LANGUAGE" />) перекладатимуться такою мовою: <ph name="TARGET_LANGUAGE" /></translation>
@@ -1260,7 +1259,6 @@
 <translation id="4838327282952368871">Мрійливий</translation>
 <translation id="4840250757394056958">Переглянути історію Chrome</translation>
 <translation id="484462545196658690">Автоматично</translation>
-<translation id="4849865131988503897">Перевірка точності</translation>
 <translation id="4850886885716139402">Перегляд</translation>
 <translation id="485316830061041779">Німецька</translation>
 <translation id="4853901935952445031">Після лютого 2022 року цей сайт більше не підтримуватиме U2F API. Якщо сайт належить вам, перейдіть на Web Authentication API.</translation>
@@ -1447,6 +1445,7 @@
 <translation id="5398772614898833570">Оголошення заблоковано</translation>
 <translation id="5400836586163650660">Сірий</translation>
 <translation id="540969355065856584">Серверу не вдалося підтвердити, що це <ph name="DOMAIN" />. Його сертифікат безпеки зараз недійсний. Можливі причини: неправильна конфігурація або хтось перехопив ваше з’єднання.</translation>
+<translation id="5412236728747081950">Цей сайт використовує дані про ваші інтереси з Chrome, щоб показувати вам доречнішу рекламу</translation>
 <translation id="541416427766103491">Накопичувач 4</translation>
 <translation id="5421136146218899937">Очистити історію…</translation>
 <translation id="5426179911063097041">Сайт <ph name="SITE" /> хоче надсилати вам сповіщення</translation>
@@ -1963,7 +1962,6 @@
 <translation id="7210863904660874423">Хост <ph name="HOST_NAME" /> не відповідає стандартам безпеки.</translation>
 <translation id="7210993021468939304">Активність Linux у межах контейнера. Може встановлювати та запускати додатки Linux у межах контейнера</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /> про цю проблему.</translation>
-<translation id="7215025035562547931">Оцінюйте наведену тут інформацію критично</translation>
 <translation id="7217745192097460130">Підтвердити й завершити покупку за допомогою Touch ID?</translation>
 <translation id="7219179957768738017">З'єднання використовує версію <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Обробка</translation>
@@ -2093,6 +2091,7 @@
 <translation id="7569952961197462199">Видалити дані кредитної картки з Chrome?</translation>
 <translation id="7569983096843329377">Чорний</translation>
 <translation id="7575207903026901870">Кнопка видалення підказки: натисніть Enter, щоб видалити цю підказку</translation>
+<translation id="7577900504646297215">Керувати інтересами</translation>
 <translation id="7578104083680115302">Зберігайте картки в Google, щоб швидко платити на сайтах і в додатках на всіх своїх пристроях.</translation>
 <translation id="7581199239021537589">Вертикальний зсув сторони 2 зображення</translation>
 <translation id="7582602800368606489">Швидко створюйте нові події в Google Календарі</translation>
@@ -2213,7 +2212,6 @@
 <translation id="7966803981046576691">Тип робочого облікового запису</translation>
 <translation id="79682505114836835">Значення "<ph name="VALUE" />" – недійсний колір у форматі hex.</translation>
 <translation id="7968982339740310781">Переглянути деталі</translation>
-<translation id="7970392640816874403">Яку інформацію подають інші джерела?</translation>
 <translation id="7976214039405368314">Забагато запитів</translation>
 <translation id="7977538094055660992">Пристрій виведення</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -2565,7 +2563,6 @@
 <translation id="9155211586651734179">Підключено периферійні аудіопристрої</translation>
 <translation id="9157595877708044936">Налаштування...</translation>
 <translation id="9158625974267017556">C6 (конверт)</translation>
-<translation id="9164029392738894042">Перевірка точності</translation>
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9168814207360376865">Дозволити сайтам перевіряти, чи у вас є збережені способи оплати</translation>
 <translation id="9169664750068251925">Завжди блокувати на цьому сайті</translation>

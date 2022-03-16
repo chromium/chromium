@@ -30,7 +30,6 @@
 <translation id="114825011539563458">Kontrollet më të rëndësishme të privatësisë dhe sigurisë në një vend</translation>
 <translation id="1149401351239820326">Muaji i skadimit</translation>
 <translation id="1154704303112745282">Faqja nuk ofrohet jashtë linje: <ph name="VIOLATED_URL" /></translation>
-<translation id="1166688006062225587">Lista e llogarive që do të zgjidhen.</translation>
 <translation id="1171770572613082465">Shiko sajte uebi të mirënjohura duke trokitur te butoni "Sajtet kryesore"</translation>
 <translation id="1173894706177603556">Riemërto</translation>
 <translation id="1177863135347784049">E personalizuar</translation>
@@ -571,6 +570,7 @@ Prek dhe mbaj shtypur një fjalë për ta kërkuar. Për të përsosur kërkimin
 <translation id="4415276339145661267">Menaxho "Llogarinë tënde të Google"</translation>
 <translation id="4425140285732600465">Çmimi po monitorohet. Merr sinjalizime nëse ulet çmimi në ndonjë sajt.</translation>
 <translation id="442518031075347249">Nuk do të mund ta përdorësh më kartën virtuale me Google Pay. <ph name="BEGIN_LINK1" />Mëso më shumë rreth kartave virtuale<ph name="END_LINK1" /></translation>
+<translation id="4428065317363009941">Personalizimi i reklamave</translation>
 <translation id="4450672886426705087">Rezultatet e kërkimit nga Google.</translation>
 <translation id="4452411734226507615">Mbyll skedën <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Faqeshënuesi u shtua te <ph name="FOLDER_NAME" /></translation>
@@ -685,6 +685,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="4988526792673242964">Faqet</translation>
 <translation id="5001388021414335527">Ndiqe këtë sajt këtu</translation>
 <translation id="5004416275253351869">Kontrollet e aktivitetit të Google</translation>
+<translation id="5005141133360250920">Reagimi u fshi</translation>
 <translation id="5005498671520578047">Kopjo fjalëkalimin</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> dëshiron që të lidhet</translation>
 <translation id="5016205925109358554">Serif</translation>
@@ -740,6 +741,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5368227114232678694">Provo modalitetin "E fshehtë" për të shfletuar në mënyrë private në këtë pajisje</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> skedë e hapur, trokit për të ndërruar skedat}other{<ph name="OPEN_TABS_MANY" /> skeda të hapura, trokit për të ndërruar skedat}}</translation>
 <translation id="5375577065097716013">Kërko imazh me "Lenten e Google" <ph name="BEGIN_NEW" />E re<ph name="END_NEW" /></translation>
+<translation id="5376898820269806588">Reagimi u ndryshua</translation>
 <translation id="5403644198645076998">Lejo vetëm sajte të caktuara</translation>
 <translation id="5409881200985013443">Të dërgohet <ph name="ONE_TIME_CODE" /> te <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Po verifikon…</translation>
@@ -897,7 +899,6 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="6277522088822131679">Pati një problem me printimin e faqes. Provo përsëri.</translation>
 <translation id="6277722725779679269">Veçoria "Monitoro çmimin" nuk mund të përditësohej</translation>
 <translation id="6278428485366576908">Tema</translation>
-<translation id="6293443105724342169">Lista e llogarive që do të zgjidhen, e hapur në gjysmën e lartësisë.</translation>
 <translation id="6294610283659775533">Mund të dërgosh skeda ndërmjet pajisjeve që janë të identifikuara me të njëjtën "Llogari të Google"</translation>
 <translation id="6297765934698848803">Organizata që menaxhon pajisjen tënde ka çaktivizuar kamerën tënde.</translation>
 <translation id="6301525844455696527">Mos e harro listën tënde të leximit</translation>
@@ -1073,6 +1074,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="718926126787620637">Lista e dosjeve të faqeshënuesve e hapur në lartësi të plotë</translation>
 <translation id="7191430249889272776">Skeda u hap në sfond.</translation>
 <translation id="7196215469483532480">Shpjegimi i udhëzuesit të privatësisë u hap në lartësi të plotë</translation>
+<translation id="7208109991155904980">Reagimi u zhvendos</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 shkarkim në pritje}other{# shkarkime në pritje}}</translation>
 <translation id="7237045078887540010">Duke përdorur Chrome, ti pranon <ph name="BEGIN_TOS_LINK" />Kushtet e shërbimit të Google<ph name="END_TOS_LINK" /> dhe <ph name="BEGIN_ATOS_LINK" />Kushtet shtesë të shërbimit të Google Chrome dhe të Chrome OS<ph name="END_ATOS_LINK" />. Zbatohet gjithashtu <ph name="BEGIN_PRIVACY_LINK" />Politika e privatësisë<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="7242755609445462077">Theksimi i stilizuar (<ph name="CURRENT_DATE" />)</translation>
@@ -1307,7 +1309,6 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="8461694314515752532">Enkripto të dhënat e sinkronizuara me frazën tënde të kalimit për sinkronizimin</translation>
 <translation id="8466613982764129868">Sigurohu që <ph name="TARGET_DEVICE_NAME" /> të jetë lidhur me internetin</translation>
 <translation id="8473863474539038330">Adresat dhe të tjera</translation>
-<translation id="847656914027543776">Lista e llogarive që do të zgjidhen është mbyllur.</translation>
 <translation id="8481921391193215807">Kur janë aktive, sajtet mund të përdorin teknikat e ruajtjes së privatësisë që shfaqen këtu për të ofruar përmbajtjen dhe shërbimet e tyre. Këto përfshijnë alternativa për gjurmimin ndërmjet sajteve. Mund të shtohen prova të tjera me kalimin e kohës.
 
 <ph name="BEGIN_LIST_ITEM1" />Reklamuesit dhe botuesit mund të përdorin teknikën FLoC.<ph name="END_LIST_ITEM1" />
@@ -1362,6 +1363,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="8683526617475118045">Çfarë përfiton</translation>
 <translation id="869891660844655955">Data e skadimit</translation>
 <translation id="8699120352855309748">Mos ofro t'i përkthesh këto gjuhë</translation>
+<translation id="8712637175834984815">E kuptova</translation>
 <translation id="8725066075913043281">Provo sërish</translation>
 <translation id="8730621377337864115">U krye</translation>
 <translation id="8746155870861185046">Shpërndaj theksimin</translation>
@@ -1434,7 +1436,6 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="9108312223223904744">Telefoni si mbështetje çelësi sigurie</translation>
 <translation id="9108808586816295166">DNS-ja e sigurt mund të mos jetë e disponueshme në çdo kohë</translation>
 <translation id="9133397713400217035">Eksploro jashtë linje</translation>
-<translation id="9133523398139146080">Lista e llogarive që do të zgjidhen, e hapur në lartësi të plotë.</translation>
 <translation id="9137013805542155359">Shfaq origjinalin</translation>
 <translation id="9148126808321036104">Identifikohu sërish</translation>
 <translation id="9155898266292537608">Mund të kërkosh po ashtu me një trokitje të shpejtë te një fjalë</translation>

@@ -1061,7 +1061,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="2019718679933488176">&amp;Otwórz dźwięk w nowej karcie</translation>
 <translation id="2020183425253392403">Pokaż ustawienia adresu sieciowego</translation>
 <translation id="2020225359413970060">Skanuj plik</translation>
-<translation id="2022395138980869975">Przełącz wyszukiwanie na boku</translation>
 <translation id="2023167225947895179">Ten kod PIN może być łatwy do odgadnięcia</translation>
 <translation id="202352106777823113">Pobieranie trwało zbyt długo i zostało przerwane przez sieć.</translation>
 <translation id="2024195579772565064">Usuń wyszukiwarkę</translation>
@@ -2960,7 +2959,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3888053818972567950">Połączenie z usługą <ph name="WEB_DRIVE" /></translation>
 <translation id="3888550877729210209">Robienie notatek w aplikacji <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">Te informacje pomogą nam lepiej zrozumieć Twój problem z Asystentem. Są one przechowywane przez 90 dni, a dostęp do nich mają wyłącznie członkowie odpowiednich zespołów technicznych i pracownicy zajmujący się opiniami użytkowników.</translation>
-<translation id="3888900458694486810">Zamknij wyszukiwanie na boku</translation>
 <translation id="3890064827463908288">Aby korzystać z synchronizacji Wi-Fi, włącz Synchronizację Chrome</translation>
 <translation id="389313931326656921">Przypisywanie przełącznika do czynności „Dalej”</translation>
 <translation id="3893295674388762059">Aby wyczyścić dane, zamknij wszystkie okna incognito</translation>
@@ -3274,7 +3272,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4208390505124702064">Szukaj na stronie <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Duży</translation>
 <translation id="4209251085232852247">Wyłączony</translation>
-<translation id="4209464433672152343">Dokumenty są <ph name="BEGIN_LINK_HELP" />wysyłane na serwery Google<ph name="END_LINK_HELP" />, gdzie zostaną przygotowane do druku. <ph name="BEGIN_LINK_DASHBOARD" />W panelu Google Cloud Print<ph name="END_LINK_DASHBOARD" /> możesz zarządzać danymi o swoich drukarkach i historią drukowania, możesz też wyświetlać i edytować te informacje.</translation>
 <translation id="4210048056321123003">Pobieram maszynę wirtualną</translation>
 <translation id="421182450098841253">&amp;Pokaż pasek zakładek</translation>
 <translation id="4211851069413100178">Wysyłaj dane diagnostyczne oraz informacje o użytkowaniu. Pomóż ulepszyć działanie Androida, wysyłając automatycznie do Google dane diagnostyczne oraz informacje o używaniu urządzenia i aplikacji. Dzięki temu będziemy mogli poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. To <ph name="BEGIN_LINK1" />ustawienie<ph name="END_LINK1" /> jest wymuszone przez właściciela. Właściciel może ustawić wysyłanie do Google danych diagnostycznych i informacji o używaniu tego urządzenia. Jeśli włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być zapisywane na Twoim koncie Google. <ph name="BEGIN_LINK2" />Więcej informacji<ph name="END_LINK2" /></translation>
@@ -6161,7 +6158,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="7180611975245234373">Odśwież</translation>
 <translation id="7180865173735832675">Dostosuj</translation>
 <translation id="7182791023900310535">Przenieś hasło</translation>
-<translation id="7183420126213758623">Przełącz wyszukiwanie na boku. Wyszukiwanie na boku nie jest włączone.</translation>
 <translation id="7186088072322679094">Zachowaj na pasku narzędzi</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> nie może otwierać tego folderu, bo zawiera on pliki systemowe</translation>
 <translation id="7187428571767585875">Wpisy w rejestrze, które zostaną usunięte lub zmienione:</translation>
@@ -6683,7 +6679,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="7701040980221191251">Brak</translation>
 <translation id="7701869757853594372">Uchwyty USER</translation>
 <translation id="7702574632857388784">Usuń plik <ph name="FILE_NAME" /> z listy</translation>
-<translation id="7702599324215660661">Zablokuj, kiedy odchodzę od urządzenia</translation>
 <translation id="7702907602086592255">Domena</translation>
 <translation id="7704305437604973648">Zadanie</translation>
 <translation id="7704317875155739195">Autouzupełniaj wyszukiwania i adresy URL</translation>
@@ -6790,7 +6785,6 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7798844538707273832">Automatycznie zablokowano uprawnienie: <ph name="PERMISSION" /></translation>
 <translation id="7799299114731150374">Tapeta została ustawiona</translation>
 <translation id="7799817062559422778">Tryb jasny</translation>
-<translation id="7800159967992492578">Przełącz wyszukiwanie na boku. Wyszukiwanie na boku jest włączone.</translation>
 <translation id="7800518121066352902">&amp;Obróć w lewo</translation>
 <translation id="7801679634091975683">Wprowadzone tu zmiany są stosowane tylko do przeglądarki Chrome w wersji Lacros. Aby zmienić ustawienia przeglądarki Chrome, otwórz ją i przejdź do ustawień.</translation>
 <translation id="780301667611848630">Nie, dziękuję</translation>

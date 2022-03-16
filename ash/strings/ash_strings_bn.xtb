@@ -256,6 +256,7 @@
 <translation id="2595239820337756193">মাইলের হিসেবে ৫ হাজার</translation>
 <translation id="2596078834055697711">উইন্ডো স্ক্রিনশট নিন</translation>
 <translation id="2607678425161541573">অনলাইন সাইন-ইন প্রয়োজন</translation>
+<translation id="2620436844016719705">সিস্টেম</translation>
 <translation id="2621713457727696555">সুরক্ষিত</translation>
 <translation id="263399434338050016">"সবকটি বেছে নিন"</translation>
 <translation id="2653019840645008922">উইন্ডো ক্যাপচার</translation>
@@ -351,6 +352,7 @@
 <translation id="320207200541803018">টাইমার সেট করুন</translation>
 <translation id="3203405173652969239">'অ্যাক্সেস পাল্টান' ফিচারটি চালু করা হয়েছে</translation>
 <translation id="3207953481422525583">ব্যবহারকারী সংক্রান্ত সেটিংস</translation>
+<translation id="3208321278970793882">অ্যাপ</translation>
 <translation id="3217205077783620295">ভলিউম চালু আছে, টগল করলে অডিও মিউট হয়ে যাবে।</translation>
 <translation id="3226991577105957773">+ আরও <ph name="COUNT" />টি</translation>
 <translation id="3227137524299004712">মাইক্রোফোন</translation>
@@ -1034,6 +1036,7 @@
 <translation id="7513622367902644023">স্ক্রিনশট মোড বেছে নেওয়া হয়েছে</translation>
 <translation id="7513922695575567867">ক্যালেন্ডার, <ph name="DATE" /> তারিখের সপ্তাহ, <ph name="SELECTED_DATE" /> তারিখ বর্তমানে বেছে নেওয়া হয়েছে।</translation>
 <translation id="7514365320538308">ডাউনলোড করুন</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7526573455193969409">নেটওয়ার্কের উপরে নজর রাখা হতে পারে</translation>
 <translation id="7536035074519304529">আইপি অ্যাড্রেস: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">বর্তমানে Linux অ্যাপ ও ছদ্মবেশী উইন্ডো ব্যবহারের সুবিধা নেই। অন্যান্য অ্যাপ সেভ করা হবে।</translation>
@@ -1102,6 +1105,7 @@
 <translation id="7901405293566323524">ফোন হাব</translation>
 <translation id="7902625623987030061">আঙুলের ছাপের সেন্সর টাচ করুন</translation>
 <translation id="7904094684485781019">এই অ্যাকাউন্টের অ্যাডমিনিস্ট্রেটর একাধিক সাইন-ইন অননুমোদিত করেছেন৷</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7930731167419639574">স্পিচ এখন স্থানীয়ভাবে প্রসেস করা হয় এবং ডিকটেশন অফলাইনে কাজ করে</translation>
 <translation id="7933084174919150729">Google অ্যাসিস্ট্যান্ট শুধুমাত্র প্রাথমিক প্রোফাইলেই ব্যবহার করা যায়।</translation>
 <translation id="79341161159229895">অ্যাকাউন্টটি <ph name="FIRST_PARENT_EMAIL" /> এবং <ph name="SECOND_PARENT_EMAIL" /> ম্যানেজ করছেন</translation>
