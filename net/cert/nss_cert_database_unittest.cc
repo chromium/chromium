@@ -543,12 +543,20 @@ TEST_F(CertDatabaseNSSTest, ImportServerCert) {
   // All the certs in the imported list should now be found in the NSS DB.
   ScopedCERTCertificateList cert_list = ListCerts();
   ASSERT_EQ(3U, cert_list.size());
-  CERTCertificate* found_server_cert = cert_list[1].get();
-  CERTCertificate* found_intermediate_cert = cert_list[2].get();
-  CERTCertificate* found_root_cert = cert_list[0].get();
-  EXPECT_EQ("127.0.0.1", GetSubjectCN(found_server_cert));
-  EXPECT_EQ("Test Intermediate CA", GetSubjectCN(found_intermediate_cert));
-  EXPECT_EQ("Test Root CA", GetSubjectCN(found_root_cert));
+  CERTCertificate* found_server_cert = nullptr;
+  CERTCertificate* found_intermediate_cert = nullptr;
+  CERTCertificate* found_root_cert = nullptr;
+  for (const auto& cert : cert_list) {
+    if (GetSubjectCN(cert.get()) == "127.0.0.1")
+      found_server_cert = cert.get();
+    else if (GetSubjectCN(cert.get()) == "Test Intermediate CA")
+      found_intermediate_cert = cert.get();
+    else if (GetSubjectCN(cert.get()) == "Test Root CA")
+      found_root_cert = cert.get();
+  }
+  ASSERT_TRUE(found_server_cert);
+  ASSERT_TRUE(found_intermediate_cert);
+  ASSERT_TRUE(found_root_cert);
 
   EXPECT_EQ(NSSCertDatabase::TRUST_DEFAULT,
             cert_db_->GetCertTrust(found_server_cert, SERVER_CERT));

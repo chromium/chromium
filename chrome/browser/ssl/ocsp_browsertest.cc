@@ -27,6 +27,7 @@
 #include "net/cert/ev_root_ca_metadata.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/test_data_directory.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/ssl_config.mojom.h"
 #include "third_party/blink/public/common/features.h"
@@ -34,14 +35,6 @@
 namespace AuthState = ssl_test_util::AuthState;
 
 namespace {
-
-// SHA256 hash of the testserver root_ca_cert DER.
-// openssl x509 -in root_ca_cert.pem -outform der | \
-//   openssl dgst -sha256 -binary | xxd -i
-static const net::SHA256HashValue kTestRootCertHash = {
-    {0xb2, 0xab, 0xa3, 0xa5, 0xd4, 0x11, 0x56, 0xcb, 0xb9, 0x23, 0x35,
-     0x07, 0x6d, 0x0b, 0x51, 0xbe, 0xd3, 0xee, 0x2e, 0xab, 0xe7, 0xab,
-     0x6b, 0xad, 0xcc, 0x2a, 0xfa, 0x35, 0xfb, 0x8e, 0x31, 0x5e}};
 
 // The test EV policy OID used for generated certs.
 static const char kOCSPTestCertPolicy[] = "1.3.6.1.4.1.11129.2.4.1";
@@ -84,8 +77,12 @@ class OCSPBrowserTest : public PlatformBrowserTest,
     // TODO(https://crbug.com/1085233): when the CertVerifierService is moved
     // out of process, the ScopedTestEVPolicy needs to be instantiated in
     // that process.
+    scoped_refptr<net::X509Certificate> root_cert = net::ImportCertFromFile(
+        net::GetTestCertsDirectory(), "root_ca_cert.pem");
+    ASSERT_TRUE(root_cert);
     ev_test_policy_ = std::make_unique<net::ScopedTestEVPolicy>(
-        net::EVRootCAMetadata::GetInstance(), kTestRootCertHash,
+        net::EVRootCAMetadata::GetInstance(),
+        net::X509Certificate::CalculateFingerprint256(root_cert->cert_buffer()),
         kOCSPTestCertPolicy);
   }
 
