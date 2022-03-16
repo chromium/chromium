@@ -5,9 +5,12 @@
 #ifndef CONTENT_BROWSER_SPECULATION_RULES_PREFETCH_PREFETCH_SERVICE_H_
 #define CONTENT_BROWSER_SPECULATION_RULES_PREFETCH_PREFETCH_SERVICE_H_
 
-#include <memory>
+#include <map>
 
+#include "base/memory/weak_ptr.h"
+#include "content/browser/speculation_rules/prefetch/prefetch_container.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/global_routing_id.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -26,7 +29,11 @@ class CONTENT_EXPORT PrefetchService {
   PrefetchService(const PrefetchService&) = delete;
   const PrefetchService& operator=(const PrefetchService&) = delete;
 
-  void PrefetchUrl(const GURL& url);
+  void PrefetchUrl(base::WeakPtr<PrefetchContainer> prefetch_container);
+
+ private:
+  std::map<PrefetchContainer::Key, base::WeakPtr<PrefetchContainer>>
+      all_prefetches_;
 };
 
 }  // namespace content

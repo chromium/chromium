@@ -4,7 +4,10 @@
 
 #include "content/browser/speculation_rules/prefetch/prefetch_service.h"
 
+#include <utility>
+
 #include "base/feature_list.h"
+#include "base/memory/weak_ptr.h"
 #include "content/browser/speculation_rules/prefetch/prefetch_features.h"
 #include "url/gurl.h"
 
@@ -22,8 +25,16 @@ PrefetchService::PrefetchService() = default;
 
 PrefetchService::~PrefetchService() = default;
 
-void PrefetchService::PrefetchUrl(const GURL& url) {
-  // TODO(https://crbug.com/1299059): Prefetch submitted URLs.
+void PrefetchService::PrefetchUrl(
+    base::WeakPtr<PrefetchContainer> prefetch_container) {
+  DCHECK(prefetch_container);
+  auto prefetch_container_key = prefetch_container->GetPrefetchContainerKey();
+
+  DCHECK(all_prefetches_.find(prefetch_container_key) == all_prefetches_.end());
+  all_prefetches_[prefetch_container_key] = prefetch_container;
+
+  // TODO(https://crbug.com/1299059): Start eligibility check for
+  // |prefetch_container|.
 }
 
 }  // namespace content
