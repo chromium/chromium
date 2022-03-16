@@ -14,6 +14,7 @@
 #include "chromeos/network/managed_network_configuration_handler.h"
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_profile_handler.h"
+#include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/policy_util.h"
 
 namespace chromeos {
@@ -34,6 +35,8 @@ constexpr net::BackoffEntry::Policy kRetryBackoffPolicy = {
 
 // Timeout waiting for EUICC to become available in Hermes.
 constexpr base::TimeDelta kEuiccWaitTime = base::Minutes(3);
+// Timeout waiting for cellular device to become available.
+constexpr base::TimeDelta kCellularDeviceWaitTime = base::Seconds(30);
 
 }  // namespace
 
@@ -49,22 +52,27 @@ CellularPolicyHandler::InstallPolicyESimRequest::~InstallPolicyESimRequest() =
 
 CellularPolicyHandler::CellularPolicyHandler() = default;
 
-CellularPolicyHandler::~CellularPolicyHandler() = default;
+CellularPolicyHandler::~CellularPolicyHandler() {
+  OnShuttingDown();
+}
 
 void CellularPolicyHandler::Init(
     CellularESimProfileHandler* cellular_esim_profile_handler,
     CellularESimInstaller* cellular_esim_installer,
     NetworkProfileHandler* network_profile_handler,
+    NetworkStateHandler* network_state_handler,
     ManagedNetworkConfigurationHandler* managed_network_configuration_handler) {
   cellular_esim_profile_handler_ = cellular_esim_profile_handler;
   cellular_esim_installer_ = cellular_esim_installer;
   network_profile_handler_ = network_profile_handler;
+  network_state_handler_ = network_state_handler;
   managed_network_configuration_handler_ =
       managed_network_configuration_handler;
 
   hermes_observation_.Observe(HermesManagerClient::Get());
   cellular_esim_profile_handler_observation_.Observe(
       cellular_esim_profile_handler);
+  network_state_handler_->AddObserver(this, FROM_HERE);
 }
 
 void CellularPolicyHandler::InstallESim(const std::string& smdp_address,
@@ -79,6 +87,20 @@ void CellularPolicyHandler::OnAvailableEuiccListChanged() {
 
 void CellularPolicyHandler::OnESimProfileListUpdated() {
   ResumeInstallIfNeeded();
+}
+
+void CellularPolicyHandler::DeviceListChanged() {
+  ResumeInstallIfNeeded();
+}
+
+void CellularPolicyHandler::OnShuttingDown() {
+  if (!network_state_handler_) {
+    return;
+  }
+  if (network_state_handler_->HasObserver(this)) {
+    network_state_handler_->RemoveObserver(this, FROM_HERE);
+  }
+  network_state_handler_ = nullptr;
 }
 
 void CellularPolicyHandler::ResumeInstallIfNeeded() {
@@ -110,13 +132,29 @@ void CellularPolicyHandler::ProcessRequests() {
 void CellularPolicyHandler::AttemptInstallESim() {
   DCHECK(is_installing_);
 
+  const DeviceState* cellular_device =
+      network_state_handler_->GetDeviceStateByType(
+          NetworkTypePattern::Cellular());
+  if (!cellular_device) {
+    // Cellular device may not be ready. Wait for DeviceListChanged notification
+    // before continuing with installation.
+    NET_LOG(EVENT) << "Cellular device is not available when attempting to "
+                   << "install eSIM profile for SMDP address: "
+                   << GetCurrentSmdpAddress()
+                   << ". Waiting for device list change.";
+    wait_timer_.Start(FROM_HERE, kCellularDeviceWaitTime,
+                      base::BindOnce(&CellularPolicyHandler::OnWaitTimeout,
+                                     weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+
   absl::optional<dbus::ObjectPath> euicc_path = GetCurrentEuiccPath();
   if (!euicc_path) {
     // Hermes may not be ready and available euicc list is empty. Wait for
     // AvailableEuiccListChanged notification to continue with installation.
     NET_LOG(EVENT) << "No EUICC found when attempting to install eSIM profile "
-                      "for SMDP address: "
-                   << GetCurrentSmdpAddress() << ". Waiting for EUICC.";
+                   << "for SMDP address: " << GetCurrentSmdpAddress()
+                   << ". Waiting for EUICC.";
     wait_timer_.Start(FROM_HERE, kEuiccWaitTime,
                       base::BindOnce(&CellularPolicyHandler::OnWaitTimeout,
                                      weak_ptr_factory_.GetWeakPtr()));
