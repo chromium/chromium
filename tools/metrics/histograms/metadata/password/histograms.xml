@@ -2886,7 +2886,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.{Store}{Metric2}.{PasswordType}{CustomPassphraseStatus}"
-    units="units" expires_after="2022-04-24">
+    units="units" expires_after="2022-10-24">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <owner>mamir@chromium.org</owner>
