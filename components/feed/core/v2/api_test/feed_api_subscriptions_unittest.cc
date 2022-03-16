@@ -1209,14 +1209,14 @@ TEST_F(FeedApiSubscriptionsTest, FetchRecommendedWebFeedsAbortOnClearAll) {
   EXPECT_FALSE(callback.RunAndGetResult().success);
 }
 
-TEST_F(FeedApiSubscriptionsTest, FetchSubscribedWebFeedsAbortOnClearAll) {
-  // Test task ordering: ClearAllTask, FetchSubscribedWebFeedsTask.
+TEST_F(FeedApiSubscriptionsTest, FetchSubscribedWebFeedsRetryOnClearAll) {
+  // Test task ordering: ClearAllTask, FetchSubscribedWebFeedsTask, then retry.
   stream_->OnCacheDataCleared();
   CallbackReceiver<WebFeedSubscriptions::RefreshResult> callback;
   network_.InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
   subscriptions().RefreshSubscriptions(callback.Bind());
 
-  EXPECT_FALSE(callback.RunAndGetResult().success);
+  EXPECT_TRUE(callback.RunAndGetResult().success);
 }
 
 TEST_F(FeedApiSubscriptionsTest, FieldTrialRegistered_OneFollow) {

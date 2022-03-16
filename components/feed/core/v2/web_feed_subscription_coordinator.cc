@@ -771,18 +771,25 @@ void WebFeedSubscriptionCoordinator::FetchSubscribedWebFeedsStart() {
 
 void WebFeedSubscriptionCoordinator::FetchSubscribedWebFeedsComplete(
     FetchSubscribedWebFeedsTask::Result result) {
+  if (result.status ==
+      WebFeedRefreshStatus::kAbortFetchWebFeedPendingClearAll) {
+    // Retry the task if it was cancelled by a ClearAll, and don't call the
+    // callbacks.
+    fetching_subscribed_web_feeds_ = false;
+    FetchSubscribedWebFeedsStart();
+    return;
+  }
+
   feed_stream_->GetMetricsReporter().RefreshSubscribedWebFeedsAttempted(
       fetching_subscribed_web_feeds_because_stale_, result.status,
       result.subscribed_web_feeds.size());
 
-  if (result.status !=
-      WebFeedRefreshStatus::kAbortFetchWebFeedPendingClearAll) {
-    DCHECK(model_);
-    fetching_subscribed_web_feeds_because_stale_ = false;
-    fetching_subscribed_web_feeds_ = false;
-    if (result.status == WebFeedRefreshStatus::kSuccess)
-      model_->UpdateSubscribedFeeds(std::move(result.subscribed_web_feeds));
-  }
+  DCHECK(model_);
+  fetching_subscribed_web_feeds_because_stale_ = false;
+  fetching_subscribed_web_feeds_ = false;
+
+  if (result.status == WebFeedRefreshStatus::kSuccess)
+    model_->UpdateSubscribedFeeds(std::move(result.subscribed_web_feeds));
 
   SubscriptionsChanged();
 
