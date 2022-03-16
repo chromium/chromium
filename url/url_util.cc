@@ -438,6 +438,13 @@ bool DoReplaceComponents(const char* spec,
     // ref).
     Replacements<CHAR> replacements_no_scheme = replacements;
     replacements_no_scheme.SetScheme(NULL, Component());
+    // If the input URL has potentially dangling markup, set the flag on the
+    // output too. Note that in some cases the replacement gets rid of the
+    // potentially dangling markup, but this ok since the check will fail
+    // closed.
+    if (parsed.potentially_dangling_markup) {
+      out_parsed->potentially_dangling_markup = true;
+    }
     return DoReplaceComponents(recanonicalized.data(), recanonicalized.length(),
                                recanonicalized_parsed, replacements_no_scheme,
                                charset_converter, output, out_parsed);
