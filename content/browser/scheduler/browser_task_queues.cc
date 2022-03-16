@@ -118,6 +118,12 @@ const char* GetDefaultQueueName(BrowserThread::ID thread_id) {
   return "";
 }
 
+// When GivePreconnectTasksHighestPriority is enabled, the browser will give the
+// dedicated preconnect task queue highest priority rather than its default high
+// priority.
+const base::Feature kGivePreconnectTasksHighestPriority{
+    "GivePreconnectTasksHighestPriority", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace
 
 BrowserTaskQueues::Handle::~Handle() = default;
@@ -236,8 +242,12 @@ void BrowserTaskQueues::PostFeatureListInitializationSetup() {
   // queue too. NOTE: This queue will not be used if the
   // |kTreatPreconnectAsDefault| feature is enabled (see
   // browser_task_executor.cc).
+  QueuePriority preconnect_queue_priority =
+      (base::FeatureList::IsEnabled(kGivePreconnectTasksHighestPriority))
+          ? QueuePriority::kHighestPriority
+          : QueuePriority::kHighPriority;
   GetBrowserTaskQueue(QueueType::kPreconnection)
-      ->SetQueuePriority(QueuePriority::kHighPriority);
+      ->SetQueuePriority(preconnect_queue_priority);
 }
 
 void BrowserTaskQueues::EnableAllQueues() {
