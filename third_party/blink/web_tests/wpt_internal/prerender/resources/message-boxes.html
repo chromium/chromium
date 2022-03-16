@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="utils.js"></script>
+<script src="/speculation-rules/prerender/resources/utils.js"></script>
 <script>
 function runAlertTest() {
   window.alert('Hello! Preprendering!');
@@ -21,6 +21,8 @@ function runPromptTest() {
 
 const params = new URLSearchParams(location.search);
 
+const uid = params.get('uid');
+
 // The main test page (restriction-message-boxes.html) loads the
 // initiator page, then the initiator page will prerender itself with the
 // `prerendering` parameter.
@@ -28,14 +30,15 @@ const isPrerendering = params.has('prerendering');
 
 if (isPrerendering) {
   // Test web APIs on the pages.
-  const bc = new BroadcastChannel('prerender-channel');
+  const bc = new PrerenderChannel('prerender-channel', uid);
   assert_true(document.prerendering);
   if (params.has('alert')) {
     bc.postMessage(runAlertTest());
-  } else if (params.has('confirm'))
+  } else if (params.has('confirm')) {
     bc.postMessage(runConfirmTest());
-  else if (params.has('prompt'))
+  } else if (params.has('prompt')) {
     bc.postMessage(runPromptTest());
+  }
   bc.close();
   window.close();
 } else {

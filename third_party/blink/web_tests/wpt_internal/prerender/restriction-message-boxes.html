@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="resources/utils.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/speculation-rules/prerender/resources/utils.js"></script>
 <meta name="timeout" content="long">
 <body>
 <script>
 function runTest(test_file, expectation, description) {
   promise_test(async t => {
-    const bc = new BroadcastChannel('prerender-channel');
+    const uid = token();
+    const bc = new PrerenderChannel('prerender-channel', uid);
     t.add_cleanup(_ => bc.close());
 
     const gotMessage = new Promise(resolve => {
@@ -19,7 +21,7 @@ function runTest(test_file, expectation, description) {
     });
 
     // Open a new window to test the message box.
-    window.open(test_file, '_blank', 'noopener');
+    window.open(`${test_file}&uid=${uid}`, '_blank', 'noopener');
 
     // Wait for the message from the prerendering page.
     assert_equals(await gotMessage, expectation);
