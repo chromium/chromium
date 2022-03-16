@@ -4148,8 +4148,7 @@ EVENT_TYPE(WEBSOCKET_CLOSE_TIMEOUT)
 // }
 EVENT_TYPE(WEBSOCKET_INVALID_FRAME)
 
-// Temporarily added to investigate for https://crbug.com/1289379.
-// Logged at TransportSecurityState::ShouldUpgradeToSSL.
+// This event is logged at TransportSecurityState::ShouldUpgradeToSSL.
 // The following parameters are attached:
 //   {
 //     "host": <host name>
