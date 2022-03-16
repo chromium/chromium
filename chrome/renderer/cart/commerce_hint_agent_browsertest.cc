@@ -593,7 +593,13 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, NonSignInUser) {
 }
 
 // TODO(crbug/1258803): Skip work on non-eligible profiles.
-IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, MultipleProfiles) {
+// Flaky on Linux Asan and Mac: https://crbug.com/1306908.
+#if (BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)) || BUILDFLAG(IS_MAC)
+#define MAYBE_MultipleProfiles DISABLED_MultipleProfiles
+#else
+#define MAYBE_MultipleProfiles MultipleProfiles
+#endif
+IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, MAYBE_MultipleProfiles) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
