@@ -28,7 +28,6 @@ namespace android {
 namespace {
 
 base::AtExitManager* g_at_exit_manager = nullptr;
-const char* g_library_version_number = "";
 LibraryLoadedHook* g_registration_callback = nullptr;
 NativeInitializationHook* g_native_initialization_hook = nullptr;
 NonMainDexJniRegistrationHook* g_jni_registration_hook = nullptr;
@@ -107,10 +106,6 @@ void LibraryLoaderExitHook() {
     delete g_at_exit_manager;
     g_at_exit_manager = nullptr;
   }
-}
-
-void SetVersionNumber(const char* version_number) {
-  g_library_version_number = strdup(version_number);
 }
 
 void InitAtExitManager() {
