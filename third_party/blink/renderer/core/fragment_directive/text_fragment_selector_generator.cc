@@ -488,7 +488,7 @@ void TextFragmentSelectorGenerator::ExtendRangeSelector() {
     if (range_end_iterator_)
       range_end_iterator_->AdvanceNextWord();
 
-    num_context_words_++;
+    num_range_words_++;
   }
 
   String start =
@@ -531,7 +531,7 @@ void TextFragmentSelectorGenerator::ExtendContext() {
   DCHECK(selector_);
 
   // Give up if context is already too long.
-  if (num_context_words_ == kMaxContextWords) {
+  if (num_context_words_ >= kMaxContextWords) {
     state_ = kFailure;
     error_ = LinkGenerationError::kContextLimitReached;
     return;

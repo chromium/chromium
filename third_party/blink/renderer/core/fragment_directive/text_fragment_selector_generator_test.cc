@@ -1376,6 +1376,35 @@ TEST_F(TextFragmentSelectorGeneratorTest, Nbsp_before_prefix) {
                  "first%20paragraph%20line.-,second,-paragraph%20line.");
 }
 
+// Checks that after adding max number of range words it will correctly add
+// context.
+TEST_F(TextFragmentSelectorGeneratorTest, ContextAfterMaxRange) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+  <p>Eletelephony</p>
+  <p id = 'p1'>There was an elephant who tried to use a_telephant</p>
+  <p id = 'p2'>I mean an elephone who tried to use a_telephone</p>
+  <p>There was an elephant who tried to use a_telephant</p>
+  <p>I mean an elephone who tried to use a_telephone</p>
+  )HTML");
+
+  Node* p1 = GetDocument().getElementById("p1");
+  Node* p2 = GetDocument().getElementById("p2");
+  const auto& start = Position(p1->firstChild(), 0);
+  const auto& end = Position(p2->firstChild(), 47);
+  ASSERT_EQ(
+      "There was an elephant who tried to use a_telephant\n\nI mean an "
+      "elephone who tried to use a_telephone",
+      PlainText(EphemeralRange(start, end)));
+
+  VerifySelector(start, end,
+                 "Eletelephony-,There%20was%20an%20elephant%20who%20tried%20to%"
+                 "20use%20a_telephant,I%20mean%20an%20elephone%20who%20tried%"
+                 "20to%20use%20a_telephone,-There%20was%20an");
+}
+
 // Check the case when available prefix is the text content of the previous
 // block.
 TEST_F(TextFragmentSelectorGeneratorTest, GetPreviousTextEndPosition_PrevNode) {
