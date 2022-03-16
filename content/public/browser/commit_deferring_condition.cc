@@ -4,7 +4,7 @@
 
 #include "content/public/browser/commit_deferring_condition.h"
 
-#include "content/browser/renderer_host/navigation_request.h"
+#include "content/public/browser/navigation_handle.h"
 
 namespace content {
 
