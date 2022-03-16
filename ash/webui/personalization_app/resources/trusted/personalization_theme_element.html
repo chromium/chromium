@@ -38,6 +38,10 @@
   cr-button:hover .text {
     color: var(--cros-text-color-secondary);
   }
+  cr-button[disabled] iron-icon,
+  cr-button[disabled] .text {
+    opacity: var(--cros-disabled-opacity);
+  }
   iron-icon {
     --iron-icon-height: 20px;
     --iron-icon-width: 20px;
@@ -65,7 +69,7 @@
       <iron-icon icon="personalization:dark" aria-hidden="true"></iron-icon>
       <div class="text">$i18n{darkColorMode}</div>
     </cr-button>
-    <cr-button id="autoMode" aria-pressed$="[[getAutoAriaPressed_()]]">
+    <cr-button disabled id="autoMode" aria-pressed$="[[getAutoAriaPressed_()]]">
       <iron-icon icon="personalization:auto" aria-hidden="true"></iron-icon>
       <div class="text">$i18n{autoColorMode}</div>
     </cr-button>
