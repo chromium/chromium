@@ -10,7 +10,7 @@ body {
 }
 
 body {
-    background-color: var(--cros-bg-color-elevation-1);
+    background-color: var(--cros-bg-color);
 }
 
 body.fullscreen-preview {
