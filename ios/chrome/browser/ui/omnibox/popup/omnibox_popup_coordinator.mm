@@ -27,6 +27,7 @@
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "ui/base/device_form_factor.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -88,9 +89,12 @@
     self.model = [[PopupModel alloc] initWithMatches:@[]
                                              headers:@[]
                                             delegate:self.mediator];
+    BOOL popupShouldSelfSize =
+        (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET);
     self.mediator.model = self.model;
-    self.popupViewController =
-        [OmniboxPopupViewProvider makeViewControllerWithModel:self.model];
+    self.popupViewController = [OmniboxPopupViewProvider
+        makeViewControllerWithModel:self.model
+                popupShouldSelfSize:popupShouldSelfSize];
     [self.browser->GetCommandDispatcher()
         startDispatchingToTarget:self.model
                      forProtocol:@protocol(OmniboxSuggestionCommands)];

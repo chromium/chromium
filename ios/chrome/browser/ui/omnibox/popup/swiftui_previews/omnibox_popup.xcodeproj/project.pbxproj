@@ -16,7 +16,9 @@
 		59C4A9C227BFF04F0080C045 /* popup_match.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59C4A9BD27BFF04F0080C045 /* popup_match.swift */; };
 		59C4A9C327BFF04F0080C045 /* popup_model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59C4A9BE27BFF04F0080C045 /* popup_model.swift */; };
 		8701451C27D24A8800C2D66F /* pressed_preference_key_button_style.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8701451B27D24A8800C2D66F /* pressed_preference_key_button_style.swift */; };
+		8749952427E22B8B005EF2ED /* self_sizing_list.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8749952327E22B8B005EF2ED /* self_sizing_list.swift */; };
 		876011EB27D287A6004EB60B /* popup_match_trailing_button.swift in Sources */ = {isa = PBXBuildFile; fileRef = 876011EA27D287A6004EB60B /* popup_match_trailing_button.swift */; };
+		8781A7EC27DFF6950054D0B9 /* popup_empty_space_view.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8781A7EB27DFF6950054D0B9 /* popup_empty_space_view.swift */; };
 		879F655B27CD142E005B650F /* ios_chrome_common_ui_colors_swift.h in Headers */ = {isa = PBXBuildFile; fileRef = 879F655A27CD142E005B650F /* ios_chrome_common_ui_colors_swift.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		879F655E27CD142E005B650F /* ios_chrome_common_ui_colors_swift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 879F655827CD142E005B650F /* ios_chrome_common_ui_colors_swift.framework */; };
 		879F655F27CD142E005B650F /* ios_chrome_common_ui_colors_swift.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 879F655827CD142E005B650F /* ios_chrome_common_ui_colors_swift.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -96,8 +98,10 @@
 		59C4A9BD27BFF04F0080C045 /* popup_match.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = popup_match.swift; path = ../../shared/popup_match.swift; sourceTree = "<group>"; };
 		59C4A9BE27BFF04F0080C045 /* popup_model.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = popup_model.swift; path = ../../shared/popup_model.swift; sourceTree = "<group>"; };
 		8701451B27D24A8800C2D66F /* pressed_preference_key_button_style.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = pressed_preference_key_button_style.swift; path = ../../shared/pressed_preference_key_button_style.swift; sourceTree = "<group>"; };
-		876011EA27D287A6004EB60B /* popup_match_trailing_button.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = popup_match_trailing_button.swift; path = ../../shared/popup_match_trailing_button.swift; sourceTree = "<group>"; };
+		8749952327E22B8B005EF2ED /* self_sizing_list.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = self_sizing_list.swift; path = ../../shared/self_sizing_list.swift; sourceTree = "<group>"; };
 		876011E927D26E28004EB60B /* omnibox_suggestion_commands.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = omnibox_suggestion_commands.h; path = ../../../../commands/omnibox_suggestion_commands.h; sourceTree = "<group>"; };
+		876011EA27D287A6004EB60B /* popup_match_trailing_button.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = popup_match_trailing_button.swift; path = ../../shared/popup_match_trailing_button.swift; sourceTree = "<group>"; };
+		8781A7EB27DFF6950054D0B9 /* popup_empty_space_view.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = popup_empty_space_view.swift; path = ../../shared/popup_empty_space_view.swift; sourceTree = "<group>"; };
 		879F655827CD142E005B650F /* ios_chrome_common_ui_colors_swift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ios_chrome_common_ui_colors_swift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		879F655A27CD142E005B650F /* ios_chrome_common_ui_colors_swift.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ios_chrome_common_ui_colors_swift.h; sourceTree = "<group>"; };
 		879F656627CD14E5005B650F /* Color+Chrome.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Color+Chrome.swift"; path = "../../../../../../common/ui/colors/Color+Chrome.swift"; sourceTree = "<group>"; };
@@ -165,6 +169,7 @@
 				593C4C1227C5638000FBE617 /* omnibox_icon.h */,
 				93BCA07027D2D4C300CE8602 /* fake_omnibox_icon.swift */,
 				59C4A9BA27BFF04F0080C045 /* omnibox_pedal.swift */,
+				8781A7EB27DFF6950054D0B9 /* popup_empty_space_view.swift */,
 				9329C14427D2662F0032C244 /* popup_image.swift */,
 				9329C3D427D2BE500032C244 /* popup_match_image_view.swift */,
 				59C4A9BB27BFF04F0080C045 /* popup_match_row_view.swift */,
@@ -174,6 +179,7 @@
 				59C4A9BE27BFF04F0080C045 /* popup_model.swift */,
 				59C4A9BC27BFF04F0080C045 /* popup_view.swift */,
 				8701451B27D24A8800C2D66F /* pressed_preference_key_button_style.swift */,
+				8749952327E22B8B005EF2ED /* self_sizing_list.swift */,
 				879F659A27CD299E005B650F /* README.md */,
 			);
 			name = shared;
@@ -425,12 +431,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				876011EB27D287A6004EB60B /* popup_match_trailing_button.swift in Sources */,
+				8749952427E22B8B005EF2ED /* self_sizing_list.swift in Sources */,
 				593C4C1327C5639000FBE617 /* autocomplete_result_consumer.h in Sources */,
 				593C4C1427C5639000FBE617 /* autocomplete_suggestion.h in Sources */,
 				593C4C1527C5639000FBE617 /* omnibox_icon.h in Sources */,
 				93B3BBBA27B1C3900034ADF1 /* view_controller.swift in Sources */,
 				93BCA07127D2D4C300CE8602 /* fake_omnibox_icon.swift in Sources */,
 				59C4A9C227BFF04F0080C045 /* popup_match.swift in Sources */,
+				8781A7EC27DFF6950054D0B9 /* popup_empty_space_view.swift in Sources */,
 				9329C16027D26FE30032C244 /* crurl.swift in Sources */,
 				59C4A9C127BFF04F0080C045 /* popup_view.swift in Sources */,
 				93B3BBC827B1C8460034ADF1 /* popup_coordinator.swift in Sources */,

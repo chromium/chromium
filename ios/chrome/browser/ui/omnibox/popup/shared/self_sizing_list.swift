@@ -1,0 +1,68 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import SwiftUI
+
+/// A preference key which is meant to compute the greatest `maxY` value of multiple elements.
+struct MaxYPreferenceKey: PreferenceKey {
+  static var defaultValue: CGFloat? = nil
+  static func reduce(value: inout CGFloat?, nextValue: () -> CGFloat?) {
+    if let nextValue = nextValue() {
+      if let currentValue = value {
+        value = max(currentValue, nextValue)
+      } else {
+        value = nextValue
+      }
+    }
+  }
+}
+
+/// View which acts like a `List` but which also clips whatever empty space
+/// is available below the actual content to replace it with an arbitrary view.
+struct SelfSizingList<Content: View, EmptySpace: View>: View {
+  let bottomMargin: CGFloat
+  var content: () -> Content
+  var emptySpace: () -> EmptySpace
+
+  init(
+    bottomMargin: CGFloat = 0,
+    @ViewBuilder content: @escaping () -> Content,
+    @ViewBuilder emptySpace: @escaping () -> EmptySpace
+  ) {
+    self.bottomMargin = bottomMargin
+    self.content = content
+    self.emptySpace = emptySpace
+  }
+
+  @State private var contentHeightEstimate: CGFloat? = nil
+
+  var body: some View {
+    GeometryReader { geometry in
+      let availableHeight = geometry.size.height
+
+      VStack(spacing: 0) {
+        VStack(spacing: 0) {
+          List {
+            content()
+              .anchorPreference(key: MaxYPreferenceKey.self, value: .bounds) { geometry[$0].maxY }
+          }
+          .onPreferenceChange(MaxYPreferenceKey.self) { newMaxY in
+            let newContentHeightEstimate = newMaxY.map {
+              min($0 + bottomMargin, geometry.size.height)
+            }
+            if self.contentHeightEstimate != newContentHeightEstimate {
+              self.contentHeightEstimate = newContentHeightEstimate
+            }
+          }
+          .frame(height: availableHeight, alignment: .top)
+        }
+        .frame(height: self.contentHeightEstimate, alignment: .top)
+        .clipped()
+
+        // Empty space view to identify and explicitly ignore during hit testing.
+        emptySpace()
+      }
+    }
+  }
+}

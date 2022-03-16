@@ -10,6 +10,7 @@ swift_source_set("popup_swift") {
     "omnibox_popup_view_provider.swift",
     "shared/fake_omnibox_icon.swift",
     "shared/omnibox_pedal.swift",
+    "shared/popup_empty_space_view.swift",
     "shared/popup_image.swift",
     "shared/popup_match.swift",
     "shared/popup_match_image_view.swift",
@@ -19,6 +20,7 @@ swift_source_set("popup_swift") {
     "shared/popup_model.swift",
     "shared/popup_view.swift",
     "shared/pressed_preference_key_button_style.swift",
+    "shared/self_sizing_list.swift",
   ]
 
   deps = [
@@ -37,6 +39,8 @@ swift_source_set("popup_swift") {
 
 source_set("popup") {
   sources = [
+    "omnibox_popup_container_view.h",
+    "omnibox_popup_container_view.mm",
     "omnibox_popup_coordinator.h",
     "omnibox_popup_coordinator.mm",
     "omnibox_popup_mediator.h",

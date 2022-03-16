@@ -7,60 +7,92 @@ import SwiftUI
 struct PopupView: View {
   enum Dimensions {
     static let matchListRowInsets = EdgeInsets(.zero)
+    static let selfSizingListBottomMargin: CGFloat = 40
   }
 
   @ObservedObject var model: PopupModel
-  var body: some View {
-    VStack {
-      List {
-        ForEach(Array(zip(model.sections.indices, model.sections)), id: \.0) {
-          sectionIndex, section in
+  private let shouldSelfSize: Bool
+  private let appearanceContainerType: UIAppearanceContainer.Type?
 
-          let sectionContents =
-            ForEach(Array(zip(section.matches.indices, section.matches)), id: \.0) {
-              matchIndex, match in
-              PopupMatchRowView(
-                match: match,
-                isHighlighted: IndexPath(row: matchIndex, section: sectionIndex)
-                  == self.model.highlightedMatchIndexPath,
+  init(
+    model: PopupModel, shouldSelfSize: Bool = false,
+    appearanceContainerType: UIAppearanceContainer.Type? = nil
+  ) {
+    self.model = model
+    self.shouldSelfSize = shouldSelfSize
+    self.appearanceContainerType = appearanceContainerType
+  }
 
-                selectionHandler: {
-                  model.delegate?.autocompleteResultConsumer(
-                    model, didSelectRow: UInt(matchIndex), inSection: UInt(sectionIndex))
-                },
-                trailingButtonHandler: {
-                  model.delegate?.autocompleteResultConsumer(
-                    model, didTapTrailingButtonForRow: UInt(matchIndex),
-                    inSection: UInt(sectionIndex))
-                }
+  var content: some View {
+    ForEach(Array(zip(model.sections.indices, model.sections)), id: \.0) {
+      sectionIndex, section in
 
-              )
-              .deleteDisabled(!match.supportsDeletion)
-              .listRowInsets(Dimensions.matchListRowInsets)
-            }
-            .onDelete { indexSet in
-              for matchIndex in indexSet {
-                model.delegate?.autocompleteResultConsumer(
-                  model, didSelectRowForDeletion: UInt(matchIndex), inSection: UInt(sectionIndex))
-              }
-            }
+      let sectionContents =
+        ForEach(Array(zip(section.matches.indices, section.matches)), id: \.0) {
+          matchIndex, match in
+          PopupMatchRowView(
+            match: match,
+            isHighlighted: IndexPath(row: matchIndex, section: sectionIndex)
+              == self.model.highlightedMatchIndexPath,
 
-          // Split the suggestions into sections, but only add a header text if the header isn't empty
-          if !section.header.isEmpty {
-            Section(header: Text(section.header)) {
-              sectionContents
+            selectionHandler: {
+              model.delegate?.autocompleteResultConsumer(
+                model, didSelectRow: UInt(matchIndex), inSection: UInt(sectionIndex))
+            },
+            trailingButtonHandler: {
+              model.delegate?.autocompleteResultConsumer(
+                model, didTapTrailingButtonForRow: UInt(matchIndex),
+                inSection: UInt(sectionIndex))
             }
-          } else {
-            Section {
-              sectionContents
-            }
+          )
+          .deleteDisabled(!match.supportsDeletion)
+          .listRowInsets(Dimensions.matchListRowInsets)
+        }
+        .onDelete { indexSet in
+          for matchIndex in indexSet {
+            model.delegate?.autocompleteResultConsumer(
+              model, didSelectRowForDeletion: UInt(matchIndex), inSection: UInt(sectionIndex))
           }
+        }
 
+      // Split the suggestions into sections, but only add a header text if the header isn't empty
+      if !section.header.isEmpty {
+        Section(header: Text(section.header)) {
+          sectionContents
+        }
+      } else {
+        Section {
+          sectionContents
         }
       }
     }
   }
 
+  var body: some View {
+    if shouldSelfSize {
+      SelfSizingList(bottomMargin: Dimensions.selfSizingListBottomMargin) {
+        content
+      } emptySpace: {
+        PopupEmptySpaceView()
+      }
+      .onAppear(perform: onAppear)
+    } else {
+      List {
+        content
+      }
+      .onAppear(perform: onAppear)
+    }
+  }
+
+  func onAppear() {
+    if let appearanceContainerType = self.appearanceContainerType {
+      let listAppearance = UITableView.appearance(whenContainedInInstancesOf: [
+        appearanceContainerType
+      ])
+
+      listAppearance.bounces = false
+    }
+  }
 }
 
 struct PopupView_Previews: PreviewProvider {
