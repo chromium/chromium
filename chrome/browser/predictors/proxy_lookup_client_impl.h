@@ -49,6 +49,7 @@ class ProxyLookupClientImpl : public network::mojom::ProxyLookupClient {
       const absl::optional<net::ProxyInfo>& proxy_info) override;
 
  private:
+  base::TimeTicks proxy_lookup_start_time_;
   mojo::Receiver<network::mojom::ProxyLookupClient> receiver_{this};
   ProxyLookupCallback callback_;
 };

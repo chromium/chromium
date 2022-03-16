@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/metrics/histogram_macros.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/proxy_resolution/proxy_info.h"
@@ -22,6 +23,7 @@ ProxyLookupClientImpl::ProxyLookupClientImpl(
     network::mojom::NetworkContext* network_context)
     : callback_(std::move(callback)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  proxy_lookup_start_time_ = base::TimeTicks::Now();
   network_context->LookUpProxyForURL(
       url, network_isolation_key,
       receiver_.BindNewPipeAndPassRemote(content::GetUIThreadTaskRunner(
@@ -36,6 +38,8 @@ ProxyLookupClientImpl::~ProxyLookupClientImpl() = default;
 void ProxyLookupClientImpl::OnProxyLookupComplete(
     int32_t net_error,
     const absl::optional<net::ProxyInfo>& proxy_info) {
+  UMA_HISTOGRAM_TIMES("Navigation.Preconnect.ProxyLookupLatency",
+                      base::TimeTicks::Now() - proxy_lookup_start_time_);
   bool success = proxy_info.has_value() && !proxy_info->is_direct();
   std::move(callback_).Run(success);
 }

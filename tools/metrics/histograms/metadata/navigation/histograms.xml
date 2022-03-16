@@ -960,6 +960,33 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
   </summary>
 </histogram>
 
+<histogram name="Navigation.Preconnect.ProxyLookupLatency" units="ms"
+    expires_after="2022-09-08">
+  <owner>alexilin@chromium.org</owner>
+  <owner>lizeb@chromium.org</owner>
+  <owner>pasko@chromium.org</owner>
+  <summary>
+    Measures the duration from initiation to completion for a proxy lookup
+    performed as part of navigation preconnect. Recorded for each proxy lookup.
+    Note: Does not capture any delay spent queuing *before* initiating the proxy
+    lookup (e.g., due to a max # of preconnects being in flight).
+  </summary>
+</histogram>
+
+<histogram name="Navigation.Preconnect.ResolveHostLatency" units="ms"
+    expires_after="2022-09-08">
+  <owner>alexilin@chromium.org</owner>
+  <owner>lizeb@chromium.org</owner>
+  <owner>pasko@chromium.org</owner>
+  <summary>
+    Measures the duration from initiation to completion for a host resolution
+    performed as part of navigation preconnect. Recorded for each host
+    resolution. Note: Does not capture any delay spent queuing *before*
+    initiating the host resolution (e.g., due to a max # of preconnects being in
+    flight).
+  </summary>
+</histogram>
+
 <histogram name="Navigation.Prerender.ActivationCommitDeferTime" units="ms"
     expires_after="2022-09-11">
   <owner>sreejakshetty@chromium.org</owner>

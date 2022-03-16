@@ -54,6 +54,7 @@ class ResolveHostClientImpl : public network::ResolveHostClientBase {
   void OnConnectionError();
 
  private:
+  base::TimeTicks resolve_host_start_time_;
   mojo::Receiver<network::mojom::ResolveHostClient> receiver_{this};
   ResolveHostCallback callback_;
 };
