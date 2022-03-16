@@ -3294,7 +3294,8 @@ class BlockableWaylandToplevelWindow : public WaylandToplevelWindow {
 // This mimics the behavior of a modal dialog that comes up as a result of
 // the first touch down/up action, and blocks the original flow, before it gets
 // handled completely.
-TEST_P(WaylandWindowTest, BlockingTouchDownUp_NoCrash) {
+// The test is flaky. https://crbug.com/1305272.
+TEST_P(WaylandWindowTest, DISABLED_BlockingTouchDownUp_NoCrash) {
   window_.reset();
 
   MockPlatformWindowDelegate delegate;
