@@ -7,6 +7,7 @@
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "chrome/browser/ash/login/chrome_restart_request.h"
+#include "chrome/browser/ash/system/device_disabling_manager.h"
 #include "chrome/browser/ui/webui/chromeos/diagnostics_dialog.h"
 
 namespace ash {
@@ -26,6 +27,11 @@ void ChromeShimlessRmaDelegate::ExitRmaThenRestartChrome() {
 }
 
 void ChromeShimlessRmaDelegate::ShowDiagnosticsDialog() {
+  // Don't launch Diagnostics if device is disabled.
+  if (system::DeviceDisablingManager::IsDeviceDisabledDuringNormalOperation()) {
+    return;
+  }
+
   chromeos::DiagnosticsDialog::ShowDialog();
 }
 
