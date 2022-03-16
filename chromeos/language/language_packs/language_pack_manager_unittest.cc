@@ -313,13 +313,7 @@ TEST_F(LanguagePackManagerTest, RemoveObserverTest) {
 // Check that all supported locales are available.
 TEST_F(LanguagePackManagerTest, CheckAllLocalesAvailable) {
   // Handwriting Recognition.
-  const std::vector<std::string> handwriting(
-      {"am", "ar", "be", "bg", "bn", "ca", "cs", "da", "de", "el", "es",
-       "et", "fa", "fi", "fr", "ga", "gu", "hi", "hr", "hu", "hy", "id",
-       "is", "it", "iw", "ja", "ka", "kk", "km", "kn", "ko", "lo", "lt",
-       "lv", "ml", "mn", "mr", "ms", "mt", "my", "ne", "nl", "no", "or",
-       "pa", "pl", "pt", "ro", "ru", "si", "sk", "sl", "sr", "sv", "ta",
-       "te", "th", "ti", "tl", "tr", "uk", "ur", "vi", "zh"});
+  const std::vector<std::string> handwriting({"es", "ja"});
   for (const auto& locale : handwriting) {
     EXPECT_TRUE(manager_->IsPackAvailable(kHandwritingFeatureId, locale));
   }
@@ -327,7 +321,7 @@ TEST_F(LanguagePackManagerTest, CheckAllLocalesAvailable) {
 
 TEST_F(LanguagePackManagerTest, IsPackAvailableFalseTest) {
   // Correct ID, wrong language.
-  bool available = manager_->IsPackAvailable(kHandwritingFeatureId, "xx");
+  bool available = manager_->IsPackAvailable(kHandwritingFeatureId, "fr");
   EXPECT_FALSE(available);
 
   // ID doesn't exists.
