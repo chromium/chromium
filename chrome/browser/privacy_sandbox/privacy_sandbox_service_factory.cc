@@ -49,7 +49,9 @@ KeyedService* PrivacySandboxServiceFactory::BuildServiceInstanceFor(
       SyncServiceFactory::GetForProfile(profile),
       IdentityManagerFactory::GetForProfile(profile),
       profile->GetDefaultStoragePartition()->GetInterestGroupManager(),
-      profile_metrics::GetBrowserProfileType(profile));
+      profile_metrics::GetBrowserProfileType(profile),
+      (!profile->IsGuestSession() || profile->IsOffTheRecord()) ? profile->GetBrowsingDataRemover()
+                                                                : nullptr);
 }
 
 content::BrowserContext* PrivacySandboxServiceFactory::GetBrowserContextToUse(

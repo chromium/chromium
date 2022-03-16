@@ -33,6 +33,7 @@
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/test_sync_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/interest_group_manager.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
@@ -664,7 +665,7 @@ class PrivacySandboxServiceTest : public testing::Test {
         privacy_sandbox_settings(), cookie_settings(), profile()->GetPrefs(),
         policy_service(), sync_service(),
         identity_test_env()->identity_manager(), test_interest_group_manager(),
-        GetProfileType());
+        GetProfileType(), browsing_data_remover());
   }
 
   virtual void InitializeBeforeStart() {
@@ -706,6 +707,9 @@ class PrivacySandboxServiceTest : public testing::Test {
   }
   TestInterestGroupManager* test_interest_group_manager() {
     return &test_interest_group_manager_;
+  }
+  content::BrowsingDataRemover* browsing_data_remover() {
+    return profile()->GetBrowsingDataRemover();
   }
   privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate*
   mock_delegate() {
@@ -1400,6 +1404,22 @@ TEST_F(PrivacySandboxServiceTest, BlockAllCookiesNoDialog) {
   cookie_settings()->SetDefaultCookieSetting(CONTENT_SETTING_ALLOW);
   EXPECT_EQ(PrivacySandboxService::DialogType::kNone,
             privacy_sandbox_service()->GetRequiredDialogType());
+}
+
+TEST_F(PrivacySandboxServiceTest, FledgeBlockDeletesData) {
+  // Allowing FLEDGE joining should not start a removal task.
+  privacy_sandbox_service()->SetFledgeJoiningAllowed("example.com", true);
+  EXPECT_EQ(0xffffffffffffffffull,  // -1, indicates no last removal task.
+            browsing_data_remover()->GetLastUsedRemovalMaskForTesting());
+
+  // When FLEDGE joining is blocked, a removal task should be started.
+  privacy_sandbox_service()->SetFledgeJoiningAllowed("example.com", false);
+  EXPECT_EQ(content::BrowsingDataRemover::DATA_TYPE_INTEREST_GROUPS,
+            browsing_data_remover()->GetLastUsedRemovalMaskForTesting());
+  EXPECT_EQ(base::Time::Min(),
+            browsing_data_remover()->GetLastUsedBeginTimeForTesting());
+  EXPECT_EQ(content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
+            browsing_data_remover()->GetLastUsedOriginTypeMaskForTesting());
 }
 
 class PrivacySandboxRestrictedTest : public PrivacySandboxServiceTest {

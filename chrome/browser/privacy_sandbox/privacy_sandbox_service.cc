@@ -25,6 +25,8 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
+#include "content/public/browser/browsing_data_filter_builder.h"
+#include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/interest_group_manager.h"
 #include "content/public/common/content_features.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -121,7 +123,8 @@ PrivacySandboxService::PrivacySandboxService(
     syncer::SyncService* sync_service,
     signin::IdentityManager* identity_manager,
     content::InterestGroupManager* interest_group_manager,
-    profile_metrics::BrowserProfileType profile_type)
+    profile_metrics::BrowserProfileType profile_type,
+    content::BrowsingDataRemover* browsing_data_remover)
     : privacy_sandbox_settings_(privacy_sandbox_settings),
       cookie_settings_(cookie_settings),
       pref_service_(pref_service),
@@ -129,7 +132,8 @@ PrivacySandboxService::PrivacySandboxService(
       sync_service_(sync_service),
       identity_manager_(identity_manager),
       interest_group_manager_(interest_group_manager),
-      profile_type_(profile_type) {
+      profile_type_(profile_type),
+      browsing_data_remover_(browsing_data_remover) {
   DCHECK(privacy_sandbox_settings_);
   DCHECK(pref_service_);
   DCHECK(cookie_settings_);
@@ -416,6 +420,18 @@ void PrivacySandboxService::SetFledgeJoiningAllowed(
     bool allowed) const {
   privacy_sandbox_settings_->SetFledgeJoiningAllowed(top_frame_etld_plus1,
                                                      allowed);
+
+  if (!allowed && browsing_data_remover_) {
+    std::unique_ptr<content::BrowsingDataFilterBuilder> filter =
+        content::BrowsingDataFilterBuilder::Create(
+            content::BrowsingDataFilterBuilder::Mode::kDelete);
+    filter->AddRegisterableDomain(top_frame_etld_plus1);
+    browsing_data_remover_->RemoveWithFilter(
+        base::Time::Min(), base::Time::Max(),
+        content::BrowsingDataRemover::DATA_TYPE_INTEREST_GROUPS,
+        content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
+        std::move(filter));
+  }
 }
 
 void PrivacySandboxService::Shutdown() {
