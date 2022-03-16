@@ -10,6 +10,12 @@ FakeFuseBoxReverseClient::FakeFuseBoxReverseClient() = default;
 
 FakeFuseBoxReverseClient::~FakeFuseBoxReverseClient() = default;
 
+void FakeFuseBoxReverseClient::AttachStorage(const std::string& name,
+                                             StorageResult callback) {}
+
+void FakeFuseBoxReverseClient::DetachStorage(const std::string& name,
+                                             StorageResult callback) {}
+
 void FakeFuseBoxReverseClient::ReplyToReadDir(
     uint64_t handle,
     int32_t error_code,

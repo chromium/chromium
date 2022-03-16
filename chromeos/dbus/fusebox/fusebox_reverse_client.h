@@ -5,6 +5,9 @@
 #ifndef CHROMEOS_DBUS_FUSEBOX_FUSEBOX_REVERSE_CLIENT_H_
 #define CHROMEOS_DBUS_FUSEBOX_FUSEBOX_REVERSE_CLIENT_H_
 
+#include <string>
+
+#include "base/callback.h"
 #include "base/component_export.h"
 #include "chromeos/dbus/fusebox/fusebox.pb.h"
 
@@ -33,6 +36,17 @@ class COMPONENT_EXPORT(FUSEBOX_REVERSE_CLIENT) FuseBoxReverseClient {
 
   // Returns the global instance which may be null if not initialized.
   static FuseBoxReverseClient* Get();
+
+  // Storage result: |error| is a POSIX errno value.
+  using StorageResult = base::OnceCallback<void(int error)>;
+
+  // Attach fusebox storage.
+  virtual void AttachStorage(const std::string& name,
+                             StorageResult callback) = 0;
+
+  // Detach fusebox storage.
+  virtual void DetachStorage(const std::string& name,
+                             StorageResult callback) = 0;
 
   // Sends a DirEntryListProto to fusebox.
   virtual void ReplyToReadDir(uint64_t handle,

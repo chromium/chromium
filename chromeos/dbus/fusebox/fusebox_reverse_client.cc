@@ -4,6 +4,13 @@
 
 #include "chromeos/dbus/fusebox/fusebox_reverse_client.h"
 
+#include <errno.h>
+
+#include "base/check.h"
+#include "base/logging.h"
+#include "base/memory/weak_ptr.h"
+#include "base/posix/safe_strerror.h"
+#include "base/strings/string_util.h"
 #include "chromeos/dbus/fusebox/fake_fusebox_reverse_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -27,20 +34,93 @@ class FuseBoxReverseClientImpl : public FuseBoxReverseClient {
 
   void Init(dbus::Bus* bus);
 
+  void AttachStorage(const std::string& name, StorageResult callback) override;
+
+  void DetachStorage(const std::string& name, StorageResult callback) override;
+
   void ReplyToReadDir(uint64_t handle,
                       int32_t error_code,
                       fusebox::DirEntryListProto dir_entry_list_proto,
                       bool has_more) override;
 
  private:
+  // Calls fusebox storage |service| method with |name|.
+  void StorageRequest(const char* service,
+                      const std::string& name,
+                      StorageResult callback);
+
+  // Handles fusebox storage |service| method response.
+  void StorageResponse(const char* service,
+                       const std::string& name,
+                       StorageResult callback,
+                       dbus::Response* response);
+
+  // Returns base::WeakPtr{this}.
+  base::WeakPtr<FuseBoxReverseClientImpl> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
   // D-BUS org.chromium.FuseBoxReverseClient proxy.
   dbus::ObjectProxy* proxy_ = nullptr;
+
+  // base::WeakPtr{this} factory.
+  base::WeakPtrFactory<FuseBoxReverseClientImpl> weak_ptr_factory_{this};
 };
 
 void FuseBoxReverseClientImpl::Init(dbus::Bus* bus) {
-  proxy_ = bus->GetObjectProxy(
-      fusebox::kFuseBoxReverseServiceName,
-      dbus::ObjectPath(fusebox::kFuseBoxReverseServicePath));
+  const auto path = dbus::ObjectPath(fusebox::kFuseBoxReverseServicePath);
+  proxy_ = bus->GetObjectProxy(fusebox::kFuseBoxReverseServiceName, path);
+  DCHECK(proxy_);
+}
+
+void FuseBoxReverseClientImpl::AttachStorage(const std::string& name,
+                                             StorageResult callback) {
+  if (!g_instance || !proxy_) {
+    std::move(callback).Run(ENODEV);
+    return;
+  }
+
+  StorageRequest(fusebox::kAttachStorageMethod, name, std::move(callback));
+}
+
+void FuseBoxReverseClientImpl::DetachStorage(const std::string& name,
+                                             StorageResult callback) {
+  if (!g_instance || !proxy_) {
+    std::move(callback).Run(ENODEV);
+    return;
+  }
+
+  StorageRequest(fusebox::kDetachStorageMethod, name, std::move(callback));
+}
+
+void FuseBoxReverseClientImpl::StorageRequest(const char* service,
+                                              const std::string& name,
+                                              StorageResult callback) {
+  dbus::MethodCall method(fusebox::kFuseBoxReverseServiceInterface, service);
+
+  dbus::MessageWriter writer(&method);
+  writer.AppendString(name);
+
+  auto storage_response =
+      base::BindOnce(&FuseBoxReverseClientImpl::StorageResponse, GetWeakPtr(),
+                     service, name, std::move(callback));
+
+  proxy_->CallMethod(&method, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                     std::move(storage_response));
+}
+
+void FuseBoxReverseClientImpl::StorageResponse(const char* service,
+                                               const std::string& name,
+                                               StorageResult callback,
+                                               dbus::Response* response) {
+  int error = ETIMEDOUT;
+  dbus::MessageReader reader(response);
+  if (response && !reader.PopInt32(&error))
+    error = EINVAL;
+
+  LOG_IF(ERROR, error) << base::JoinString(
+      {service, name, base::safe_strerror(error)}, " ");
+  std::move(callback).Run(error);
 }
 
 void FuseBoxReverseClientImpl::ReplyToReadDir(

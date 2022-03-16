@@ -18,6 +18,10 @@ class FakeFuseBoxReverseClient : public FuseBoxReverseClient {
 
   ~FakeFuseBoxReverseClient() override;
 
+  void AttachStorage(const std::string& name, StorageResult callback) override;
+
+  void DetachStorage(const std::string& name, StorageResult callback) override;
+
   void ReplyToReadDir(uint64_t handle,
                       int32_t error_code,
                       fusebox::DirEntryListProto dir_entry_list_proto,
