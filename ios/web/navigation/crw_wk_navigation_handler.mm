@@ -1767,10 +1767,6 @@ const web::CertVerificationErrorsCacheType::size_type kMaxCertErrorsCount = 100;
     if (itemURL != failingURL)
       item->SetVirtualURL(failingURL);
 
-    // Saves original context before, as the original context can be deleted
-    // before the callback is called.
-    __block std::unique_ptr<web::NavigationContextImpl> originalContext =
-        [self.navigationStates removeNavigation:navigation];
     web::GetWebClient()->PrepareErrorPage(
         self.webStateImpl, failingURL, contextError,
         navigationContext->IsPost(),
@@ -1781,9 +1777,22 @@ const web::CertVerificationErrorsCacheType::size_type kMaxCertErrorsCount = 100;
             NSURLRequest* URL = [NSURLRequest
                 requestWithURL:[NSURL URLWithString:failingURLString]];
             if (@available(iOS 15, *)) {
+              NSBundle* bundleForHTMLFile = [NSBundle bundleForClass:CRWWKNavigationHandler.class];
+              NSString* path = [bundleForHTMLFile pathForResource:@"error_page_reloaded"
+                                                              ofType:@"html"];
+              // Script which reloads the error page if the error page is being
+              // served from the browser cache.
+              NSString* reloadPageHTMLTemplate =
+                  [NSString stringWithContentsOfFile:path
+                                            encoding:NSUTF8StringEncoding
+                                               error:nil];
+              NSString* injectedHTML =
+                  [errorHTML stringByAppendingString:reloadPageHTMLTemplate];
               WKNavigation* errorNavigation =
                   [webView loadSimulatedRequest:URL
-                             responseHTMLString:errorHTML];
+                             responseHTMLString:injectedHTML];
+              std::unique_ptr<web::NavigationContextImpl> originalContext =
+                  [self.navigationStates removeNavigation:navigation];
               originalContext->SetLoadingErrorPage(true);
               [self.navigationStates setContext:std::move(originalContext)
                                   forNavigation:errorNavigation];
