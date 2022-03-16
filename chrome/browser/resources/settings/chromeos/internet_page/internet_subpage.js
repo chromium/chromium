@@ -36,7 +36,7 @@ import {DeepLinkingBehavior} from '../deep_linking_behavior.js';
 import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from '../metrics_recorder.m.js';
 import {routes} from '../os_route.m.js';
 import {RouteObserverBehavior} from '../route_observer_behavior.js';
-import {RouteOriginBehavior, RouteOriginBehaviorImpl} from '../route_origin_behavior.m.js';
+import {RouteOriginBehavior, RouteOriginBehaviorImpl} from '../route_origin_behavior.js';
 
 import {InternetPageBrowserProxy, InternetPageBrowserProxyImpl} from './internet_page_browser_proxy.js';
 

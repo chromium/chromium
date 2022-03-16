@@ -260,7 +260,7 @@ preprocess_if_expr("preprocess_v3") {
     "chromeos/deep_linking_behavior.js",
     "chromeos/metrics_recorder.m.js",
     "chromeos/os_settings_routes.m.js",
-    "chromeos/route_origin_behavior.m.js",
+    "chromeos/route_origin_behavior.js",
     "chromeos/search_handler.js",
     "chromeos/os_route.m.js",
     "chromeos/os_page_visibility.js",
@@ -758,7 +758,6 @@ js_library("route_observer_behavior") {
 }
 
 js_library("route_origin_behavior") {
-  sources = [ "route_origin_behavior.m.js" ]
   deps = [
     ":os_route",
     "//ui/webui/resources/js:cr.m",

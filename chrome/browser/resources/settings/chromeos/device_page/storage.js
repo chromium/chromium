@@ -20,7 +20,7 @@ import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer
 import {Route, Router} from '../../router.js';
 import {routes} from '../os_route.m.js';
 import {RouteObserverBehavior} from '../route_observer_behavior.js';
-import {RouteOriginBehavior, RouteOriginBehaviorImpl} from '../route_origin_behavior.m.js';
+import {RouteOriginBehavior, RouteOriginBehaviorImpl} from '../route_origin_behavior.js';
 
 import {BatteryStatus, DevicePageBrowserProxy, DevicePageBrowserProxyImpl, ExternalStorage, getDisplayApi, IdleBehavior, LidClosedBehavior, NoteAppInfo, NoteAppLockScreenSupport, PowerManagementSettings, PowerSource, StorageSpaceState} from './device_page_browser_proxy.js';
 

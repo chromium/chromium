@@ -14,7 +14,7 @@ import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.mi
 
 import {Route, Router} from '../../router.js';
 import {routes} from '../os_route.m.js';
-import {RouteOriginBehavior} from '../route_origin_behavior.m.js';
+import {RouteOriginBehavior} from '../route_origin_behavior.js';
 
 import {MultiDeviceFeature} from './multidevice_constants.js';
 import {MultiDeviceFeatureBehavior} from './multidevice_feature_behavior.js';

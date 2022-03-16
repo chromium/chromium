@@ -22,7 +22,7 @@ import {loadTimeData} from '../../i18n_setup.js';
 import {Router} from '../../router.js';
 import {routes} from '../os_route.m.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
-import {RouteOriginBehavior, RouteOriginBehaviorInterface} from '../route_origin_behavior.m.js';
+import {RouteOriginBehavior, RouteOriginBehaviorInterface} from '../route_origin_behavior.js';
 
 const mojom = chromeos.bluetoothConfig.mojom;
 
