@@ -190,7 +190,7 @@ for all tasks to run.
 int g_condition = false;
 
 base::RunLoop run_loop;
-base::PostTask(FROM_HERE, {}, base::BindOnce(
+base::ThreadPool::PostTask(FROM_HERE, {}, base::BindOnce(
     [] (base::OnceClosure closure) {
         g_condition = true;
         std::move(quit_closure).Run();
