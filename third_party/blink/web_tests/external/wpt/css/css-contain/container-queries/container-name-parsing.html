@@ -18,6 +18,7 @@ test_valid_value('container-name', 'none');
 test_valid_value('container-name', 'foo');
 test_valid_value('container-name', 'BAR');
 test_valid_value('container-name', 'foo bar');
+test_valid_value('container-name', 'foo foo');
 
 test_invalid_value('container-name', 'none none');
 test_invalid_value('container-name', 'foo, bar');
