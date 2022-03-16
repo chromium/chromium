@@ -19,6 +19,7 @@ import org.chromium.ui.text.SpanApplier;
  */
 public class AdMeasurementFragment extends PreferenceFragmentCompat {
     public static final String AD_MEASUREMENT_DESCRIPTION = "ad_measurement_description";
+    private Runnable mOpenHistoryRunnable;
 
     /**
      * Initializes all the objects related to the preferences page.
@@ -35,7 +36,14 @@ public class AdMeasurementFragment extends PreferenceFragmentCompat {
                         new NoUnderlineClickableSpan(getContext(), this::showHistory))));
     }
 
+    /**
+     * Set the a helper to open history from settings.
+     */
+    public void setSetHistoryHelper(Runnable openHistoryRunnable) {
+        mOpenHistoryRunnable = openHistoryRunnable;
+    }
+
     private void showHistory(View view) {
-        // TODO(crbug.com/1286276): Show history page
+        mOpenHistoryRunnable.run();
     }
 }

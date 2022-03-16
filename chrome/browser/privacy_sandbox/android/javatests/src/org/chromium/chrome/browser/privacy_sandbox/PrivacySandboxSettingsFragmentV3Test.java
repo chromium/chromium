@@ -174,6 +174,28 @@ public final class PrivacySandboxSettingsFragmentV3Test {
 
     @Test
     @SmallTest
+    @Feature({"RenderTest"})
+    public void testRenderAdMeasurementView() throws IOException {
+        openPrivacySandboxSettings();
+        onView(withText(R.string.privacy_sandbox_ad_measurement_title)).perform(click());
+        onView(withText(containsString("Ad measurement allows sites")))
+                .check(matches(isDisplayed()));
+        mRenderTestRule.render(getRootView(R.string.privacy_sandbox_ad_measurement_title),
+                "privacy_sandbox_ad_measurement_view");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    public void testRenderSpamFraudView() throws IOException {
+        openPrivacySandboxSettings();
+        onView(withText(R.string.privacy_sandbox_spam_fraud_title)).perform(click());
+        mRenderTestRule.render(getRootView(R.string.privacy_sandbox_spam_fraud_description),
+                "privacy_sandbox_spam_fraud_view");
+    }
+
+    @Test
+    @SmallTest
     public void testMainSettingsView() throws IOException {
         openPrivacySandboxSettings();
         assertTrue(PrivacySandboxBridge.isPrivacySandboxEnabled());

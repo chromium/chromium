@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.settings;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -31,11 +32,13 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ApplicationLifetime;
 import org.chromium.chrome.browser.BackPressHelper;
 import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.accessibility.settings.ChromeAccessibilitySettingsDelegate;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragmentBasic;
 import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
+import org.chromium.chrome.browser.history.HistoryActivity;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsSettings;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
@@ -46,6 +49,7 @@ import org.chromium.chrome.browser.password_check.PasswordCheckFragmentView;
 import org.chromium.chrome.browser.password_entry_edit.CredentialEditUiFactory;
 import org.chromium.chrome.browser.password_entry_edit.CredentialEntryFragmentViewBase;
 import org.chromium.chrome.browser.privacy.settings.PrivacySettings;
+import org.chromium.chrome.browser.privacy_sandbox.AdMeasurementFragment;
 import org.chromium.chrome.browser.privacy_sandbox.AdPersonalizationFragment;
 import org.chromium.chrome.browser.privacy_sandbox.AdPersonalizationRemovedFragment;
 import org.chromium.chrome.browser.privacy_sandbox.FlocSettingsFragment;
@@ -398,6 +402,19 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             ((PrivacySandboxSettingsFragment) fragment)
                     .setCustomTabIntentHelper(
                             LaunchIntentDispatcher::createCustomTabActivityIntent);
+        }
+        if (fragment instanceof AdMeasurementFragment) {
+            // Unlike HistoryManagerUtils, which opens History in a tab on Tablets, this always
+            // opens history in a new activity on top of the SettingsActivity.
+            Runnable openHistoryRunnable = () -> {
+                // TODO(crbug.com/1286276): Opening History overrides the last active tab. Fix it.
+                Activity activity = fragment.getActivity();
+                Intent intent = new Intent();
+                intent.setClass(activity, HistoryActivity.class);
+                intent.putExtra(IntentHandler.EXTRA_INCOGNITO_MODE, false);
+                activity.startActivity(intent);
+            };
+            ((AdMeasurementFragment) fragment).setSetHistoryHelper(openHistoryRunnable);
         }
         if (fragment instanceof FlocSettingsFragment) {
             ((FlocSettingsFragment) fragment)

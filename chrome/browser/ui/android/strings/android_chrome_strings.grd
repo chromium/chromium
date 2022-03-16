@@ -910,7 +910,7 @@ Privacy Sandbox trials are still in active development and are available in sele
       <message name="IDS_PRIVACY_SANDBOX_AD_MEASUREMENT_DESCRIPTION" desc="A description of the Ad measurement API. * “Ad measurement” is the name of an API in this context. We don’t use “API” with the user, but they need to know that there is something called “A measurement” and what it does. * “sites you visit”: call the API to get information. The actor is the site, not Chrome. * “restricts cross-site tracking”: Today, with 3rd-party cookies, ad measurement technologies can inadvertently (and intentionally) share considerable information from one site to another). This feature restricts that sharing in order to improve the user’s privacy. * “your browsing history”: points to chrome://history/ * “You can control…”: The user can “control” this data by clearing their browser data at chrome://history/">
         Ad measurement allows sites you visit to request information from Chrome that helps the site measure the performance of their ads. Ad measurement restricts cross-site tracking by transferring as little information as possible between sites.
 
-You can control measurement information associated with you by accessing <ph name="BEGIN_LINK">&lt;link&gt;</ph>your browsing history.<ph name="END_LINK">&lt;/link&gt;</ph>
+You can control measurement information associated with you by accessing <ph name="BEGIN_LINK">&lt;link&gt;</ph>your browsing history<ph name="END_LINK">&lt;/link&gt;</ph>.
       </message>
       <message name="IDS_PRIVACY_SANDBOX_AD_MEASUREMENT_SUMMARY" desc="The description of card 2 of 3 * The description of a Privacy Sandbox API used by advertisers to measure the effectiveness of ads.">
         Advertisers can understand how ads perform
