@@ -140,6 +140,9 @@ class CastAudioOutputDevice::Internal
       return;
     }
     output_connection_->StartPlayingFrom(0);
+    if (!paused_) {
+      output_connection_->SetPlaybackRate(1.0f);
+    }
   }
 
   void OnNextBuffer(int64_t media_timestamp_microseconds,
