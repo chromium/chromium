@@ -471,7 +471,7 @@ const base::Feature kEcheSWADebugMode{"EcheSWADebugMode",
 
 // Enables the Eche SWA to run in the background.
 const base::Feature kEcheSWAInBackground{"EcheSWAInBackground",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
+                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables background blur for the app list, shelf, unified system tray,
 // autoclick menu, etc. Also enables the AppsGridView mask layer, slower devices
