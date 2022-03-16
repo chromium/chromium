@@ -168,11 +168,11 @@ void LaunchTerminal(Profile* profile,
   LaunchTerminalWithUrl(profile, display_id, url);
 }
 
-void LaunchTerminalForSSH(Profile* profile, int64_t display_id) {
+void LaunchTerminalHome(Profile* profile, int64_t display_id) {
   LaunchTerminalWithUrl(
       profile, display_id,
       GURL(base::StrCat(
-          {chrome::kChromeUIUntrustedTerminalURL, "html/terminal_ssh.html"})));
+          {chrome::kChromeUIUntrustedTerminalURL, "html/terminal_home.html"})));
 }
 
 void LaunchTerminalWithUrl(Profile* profile,
@@ -424,6 +424,7 @@ void AddTerminalMenuShortcuts(
   gfx::ImageSkia terminal_ssh_icon = icon(kTerminalSshIcon);
   gfx::ImageSkia crostini_mascot_icon = icon(kCrostiniMascotIcon);
   if (base::FeatureList::IsEnabled(chromeos::features::kTerminalSSH)) {
+    // TODO(b/223076712): List all SSH connections.
     apps::AddSeparator(ui::DOUBLE_SEPARATOR, &menu_items);
     apps::AddShortcutCommandItem(
         next_command_id++, ShortcutIdForSSH(),
@@ -475,7 +476,11 @@ bool ExecuteTerminalMenuShortcutCommand(Profile* profile,
   }
   const std::string* shortcut_value = shortcut->FindStringKey(kShortcutKey);
   if (shortcut_value && *shortcut_value == kShortcutValueSSH) {
-    LaunchTerminalForSSH(profile, display_id);
+    // TODO(b/223076712): Handle all SSH connections.
+    LaunchTerminalWithUrl(
+        profile, display_id,
+        GURL(base::StrCat({chrome::kChromeUIUntrustedTerminalURL,
+                           "html/terminal_ssh.html"})));
     return true;
   }
 

@@ -84,6 +84,7 @@
 // Terminal system app commands
 #define IDC_TERMINAL_LINUX   34070
 #define IDC_TERMINAL_SSH     34071
+#define IDC_TERMINAL_HOME    34072
 
 // Move window to other user commands
 #define IDC_VISIT_DESKTOP_OF_LRU_USER_2 34080

@@ -8,12 +8,14 @@
 
 #include "ash/public/cpp/app_menu_constants.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/crostini/crostini_terminal.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -31,6 +33,8 @@ void TerminalSystemAppMenuModel::Build() {
     return ui::ImageModel::FromVectorIcon(icon, ui::kColorMenuIcon,
                                           ash::kAppContextMenuIconSize);
   };
+  AddItemWithStringIdAndIcon(IDC_TERMINAL_HOME, IDS_ACCNAME_HOME,
+                             icon(kNavigateHomeIcon));
   AddItemWithStringIdAndIcon(IDC_TERMINAL_LINUX, IDS_APP_TERMINAL_LINUX,
                              icon(kCrostiniMascotIcon));
   AddItemWithStringIdAndIcon(IDC_TERMINAL_SSH, IDS_APP_TERMINAL_SSH,
@@ -46,14 +50,21 @@ bool TerminalSystemAppMenuModel::IsCommandIdEnabled(int command_id) const {
 
 void TerminalSystemAppMenuModel::ExecuteCommand(int command_id,
                                                 int event_flags) {
-  if (command_id == IDC_TERMINAL_LINUX) {
+  if (command_id == IDC_TERMINAL_HOME) {
+    chrome::AddTabAt(browser(),
+                     GURL(base::StrCat({chrome::kChromeUIUntrustedTerminalURL,
+                                        "html/terminal_home.html"})),
+                     /*index=*/-1,
+                     /*foreground=*/true);
+  } else if (command_id == IDC_TERMINAL_LINUX) {
     chrome::AddTabAt(browser(),
                      crostini::GenerateTerminalURL(browser()->profile()),
                      /*index=*/-1,
                      /*foreground=*/true);
   } else if (command_id == IDC_TERMINAL_SSH) {
     chrome::AddTabAt(browser(),
-                     GURL("chrome-untrusted://terminal/html/terminal_ssh.html"),
+                     GURL(base::StrCat({chrome::kChromeUIUntrustedTerminalURL,
+                                        "html/terminal_ssh.html"})),
                      /*index=*/-1,
                      /*foreground=*/true);
   } else if (command_id == IDC_OPTIONS) {
