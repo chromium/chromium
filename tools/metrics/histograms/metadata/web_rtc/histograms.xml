@@ -1259,6 +1259,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="WebRTC.MediaStreamDevices.HasPanTiltZoomCamera"
     enum="BooleanAvailable" expires_after="2022-04-24">
+  <obsolete>
+    Removed 03/2022.
+  </obsolete>
   <owner>reillyg@chromium.org</owner>
   <owner>device-dev@chromium.org</owner>
   <summary>

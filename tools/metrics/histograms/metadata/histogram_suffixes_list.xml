@@ -7416,6 +7416,7 @@ chromium-metrics-reviews@google.com.
 <histogram_suffixes name="PermissionTypes" separator=".">
   <suffix name="AR" label="AR permission actions"/>
   <suffix name="AudioCapture" label="Microphone permission actions"/>
+  <suffix name="CameraPanTiltZoom" label="Camera movements permission actions"/>
   <suffix name="ClipboardReadWrite" label="Clipboard permission actions"/>
   <suffix name="DisplayCapture" label="Display capture permission actions"/>
   <suffix name="Geolocation" label="Geolocation permission actions"/>

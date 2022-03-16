@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_result.h"
@@ -117,8 +116,6 @@ void MediaStreamDevicesController::RequestPermissions(
     bool has_pan_tilt_zoom_camera = controller->HasAvailableDevices(
         ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
         request.requested_video_device_id);
-    base::UmaHistogramBoolean("WebRTC.MediaStreamDevices.HasPanTiltZoomCamera",
-                              has_pan_tilt_zoom_camera);
 
     // Request CAMERA_PAN_TILT_ZOOM only if the website requested the
     // pan-tilt-zoom permission and there are suitable PTZ capable devices
