@@ -318,8 +318,6 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
 
     std::vector<aura::Window*> unsupported_apps;
     std::unique_ptr<app_restore::RestoreData> data;
-    // TODO(crbug.com/1268741): maybe replace the couner and callback below with
-    // a BarrierCallback.
     uint32_t pending_request_count = 0;
     GetDeskTemplateCallback callback;
   };
