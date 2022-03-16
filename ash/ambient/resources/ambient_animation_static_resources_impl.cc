@@ -24,7 +24,9 @@ const AnimationThemeToResourceIdMap& GetAnimationThemeToLottieResourceIdMap() {
   static const AnimationThemeToResourceIdMap* m =
       new AnimationThemeToResourceIdMap(
           {{AmbientAnimationTheme::kFeelTheBreeze,
-            IDR_ASH_AMBIENT_LOTTIE_LOTTIE_FEEL_THE_BREEZE_ANIMATION_JSON}});
+            IDR_ASH_AMBIENT_LOTTIE_LOTTIE_FEEL_THE_BREEZE_ANIMATION_JSON},
+           {AmbientAnimationTheme::kFloatOnBy,
+            IDR_ASH_AMBIENT_LOTTIE_LOTTIE_FLOAT_ON_BY_ANIMATION_JSON}});
   return *m;
 }
 
@@ -52,6 +54,31 @@ AssetIdToResourceIdMap GetAssetIdToResourceIdMapForTheme(
               // End Assets
           }
           // End Theme: Feel the Breeze
+      },
+      {
+          // Theme: Float on By
+          AmbientAnimationTheme::kFloatOnBy,
+          {
+              // Assets
+              {ambient::resources::kShadowA1AssetId,
+               IDR_ASH_AMBIENT_LOTTIE_LOTTIE_FLOAT_ON_BY_SHADOW_A_1_PNG},
+              {ambient::resources::kShadowB1AssetId,
+               IDR_ASH_AMBIENT_LOTTIE_LOTTIE_FLOAT_ON_BY_SHADOW_B_1_PNG},
+              {ambient::resources::kShadowC1AssetId,
+               IDR_ASH_AMBIENT_LOTTIE_LOTTIE_FLOAT_ON_BY_SHADOW_C_1_PNG},
+              {ambient::resources::kShadowD1AssetId,
+               IDR_ASH_AMBIENT_LOTTIE_LOTTIE_FLOAT_ON_BY_SHADOW_D_1_PNG},
+              {ambient::resources::kShadowE1AssetId,
+               IDR_ASH_AMBIENT_LOTTIE_LOTTIE_FLOAT_ON_BY_SHADOW_E_1_PNG},
+              {ambient::resources::kShadowF1AssetId,
+               IDR_ASH_AMBIENT_LOTTIE_LOTTIE_FLOAT_ON_BY_SHADOW_F_1_PNG},
+              {ambient::resources::kShadowG1AssetId,
+               IDR_ASH_AMBIENT_LOTTIE_LOTTIE_FLOAT_ON_BY_SHADOW_G_1_PNG},
+              {ambient::resources::kShadowH1AssetId,
+               IDR_ASH_AMBIENT_LOTTIE_LOTTIE_FLOAT_ON_BY_SHADOW_H_1_PNG},
+              // End Assets
+          }
+          // End Theme: Float on By
       }
       // End Themes
   };

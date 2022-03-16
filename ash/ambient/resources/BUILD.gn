@@ -23,6 +23,15 @@ generate_grd("build_lottie_grd") {
     "lottie/feel_the_breeze/frame_image_1.png",
     "lottie/feel_the_breeze/frame_image_2.png",
     "lottie/feel_the_breeze/tree_shadow.png",
+    "lottie/float_on_by/animation.json",
+    "lottie/float_on_by/shadow_a_1.png",
+    "lottie/float_on_by/shadow_b_1.png",
+    "lottie/float_on_by/shadow_c_1.png",
+    "lottie/float_on_by/shadow_d_1.png",
+    "lottie/float_on_by/shadow_e_1.png",
+    "lottie/float_on_by/shadow_f_1.png",
+    "lottie/float_on_by/shadow_g_1.png",
+    "lottie/float_on_by/shadow_h_1.png",
   ]
   input_files_base_dir = rebase_path(".", "//")
 }
