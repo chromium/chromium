@@ -2205,29 +2205,27 @@ void NGLineBreaker::HandleFloat(const NGInlineItem& item,
     return;
   }
 
-  NGPositionedFloat positioned_float =
+  item_result->positioned_float =
       PositionFloat(&unpositioned_float, exclusion_space_);
 
   if (constraint_space_.HasBlockFragmentation()) {
-    if (positioned_float.need_break_before) {
+    if (item_result->positioned_float->need_break_before) {
       // We broke before the float, and there's no fragment. Create a break
       // token and propagate it all the way to the block container layout
       // algorithm. The float will start in the next fragmentainer.
       auto* break_before = NGBlockBreakToken::CreateBreakBefore(
           unpositioned_float.node, /* is_forced_break */ false);
-      RemoveLastItem(line_info);
       PropagateBreakToken(break_before);
       return;
     }
     // If we broke inside the float, we also need to propagate a break token to
     // the block container. Layout of the float will resume in the next
     // fragmentainer.
-    if (const NGBreakToken* token =
-            positioned_float.layout_result->PhysicalFragment().BreakToken())
+    const NGPhysicalFragment& fragment =
+        item_result->positioned_float->layout_result->PhysicalFragment();
+    if (const NGBreakToken* token = fragment.BreakToken())
       PropagateBreakToken(To<NGBlockBreakToken>(token));
   }
-
-  item_result->positioned_float = positioned_float;
 
   NGLayoutOpportunity opportunity = exclusion_space_->FindLayoutOpportunity(
       {constraint_space_.BfcOffset().line_offset, bfc_block_offset},

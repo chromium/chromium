@@ -336,14 +336,11 @@ void NGInlineLayoutAlgorithm::CreateLine(
       has_out_of_flow_positioned_items = true;
     } else if (item.Type() == NGInlineItem::kFloating) {
       if (item_result.positioned_float) {
-        if (item_result.positioned_float->layout_result) {
+        if (!item_result.positioned_float->need_break_before) {
+          DCHECK(item_result.positioned_float->layout_result);
           line_box->AddChild(item_result.positioned_float->layout_result,
                              item_result.positioned_float->bfc_offset,
                              item.BidiLevel());
-        } else {
-          // If we didn't produce a result, it means that we decided to push the
-          // float to the next fragmentainer.
-          DCHECK(ConstraintSpace().HasBlockFragmentation());
         }
       } else {
         line_box->AddChild(item.GetLayoutObject(), item.BidiLevel());
@@ -1427,7 +1424,6 @@ unsigned NGInlineLayoutAlgorithm::PositionLeadingFloats(
         auto* break_before = NGBlockBreakToken::CreateBreakBefore(
             float_node, /* is_forced_break */ false);
         context_->PropagateBreakToken(break_before);
-        positioned_float.layout_result = nullptr;
       } else if (const NGBreakToken* token =
                      positioned_float.layout_result->PhysicalFragment()
                          .BreakToken()) {
