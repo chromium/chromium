@@ -9,6 +9,8 @@
 const char kNetInfoProxySettings[] = "proxySettings";
 const char kNetInfoBadProxies[] = "badProxies";
 const char kNetInfoHostResolver[] = "hostResolverInfo";
+const char kNetInfoDohProvidersDisabledDueToFeature[] =
+    "dohProvidersDisabledDueToFeature";
 const char kNetInfoSocketPool[] = "socketPoolInfo";
 const char kNetInfoQuic[] = "quicInfo";
 const char kNetInfoSpdySessions[] = "spdySessionInfo";

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -28,6 +29,7 @@
 #include "net/dns/host_cache.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/public/dns_query_type.h"
+#include "net/dns/public/doh_provider_entry.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_network_session.h"
@@ -384,6 +386,17 @@ NET_EXPORT base::Value GetNetInfo(URLRequestContext* context) {
       dict.SetKey("cache", std::move(cache_info_dict));
       net_info_dict.SetKey(kNetInfoHostResolver, std::move(dict));
     }
+
+    // Construct a list containing the names of the disabled DoH providers.
+    base::Value disabled_doh_providers_list(base::Value::Type::LIST);
+    for (const DohProviderEntry* provider : DohProviderEntry::GetList()) {
+      if (!base::FeatureList::IsEnabled(provider->feature)) {
+        disabled_doh_providers_list.Append(
+            NetLogStringValue(provider->provider));
+      }
+    }
+    net_info_dict.SetKey(kNetInfoDohProvidersDisabledDueToFeature,
+                         std::move(disabled_doh_providers_list));
   }
 
   HttpNetworkSession* http_network_session =

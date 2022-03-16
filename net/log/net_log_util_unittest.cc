@@ -7,13 +7,19 @@
 #include <set>
 #include <vector>
 
+#include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/metrics/field_trial.h"
+#include "base/ranges/algorithm.h"
+#include "base/strings/string_piece.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "net/base/net_errors.h"
+#include "net/base/net_info_source_list.h"
 #include "net/base/test_completion_callback.h"
+#include "net/dns/public/doh_provider_entry.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_transaction.h"
 #include "net/log/net_log_source.h"
@@ -84,6 +90,43 @@ TEST(NetLogUtil, GetNetInfoIncludesFieldTrials) {
   EXPECT_EQ(1u, trial_list.size());
   EXPECT_TRUE(trial_list[0].is_string());
   EXPECT_EQ("NewFieldTrial:Active", trial_list[0].GetString());
+}
+
+// Demonstrate that disabling a provider causes it to be added to the list of
+// disabled DoH providers.
+//
+// TODO(https://crbug.com/1306495) Stop using the real DoH provider list.
+TEST(NetLogUtil, GetNetInfoIncludesDisabledDohProviders) {
+  constexpr base::StringPiece kArbitraryProvider = "Google";
+  base::test::TaskEnvironment task_environment;
+
+  for (bool provider_enabled : {false, true}) {
+    // Get the DoH provider entry.
+    auto provider_list = net::DohProviderEntry::GetList();
+    auto provider_it = base::ranges::find(provider_list, kArbitraryProvider,
+                                          &net::DohProviderEntry::provider);
+    CHECK(provider_it != provider_list.end());
+    const DohProviderEntry& provider_entry = **provider_it;
+
+    // Enable or disable the provider's feature according to `provider_enabled`.
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatureState(provider_entry.feature,
+                                             provider_enabled);
+    EXPECT_EQ(provider_enabled,
+              base::FeatureList::IsEnabled(provider_entry.feature));
+
+    // Verify that the provider is present in the list of disabled providers iff
+    // we disabled it.
+    TestURLRequestContext context;
+    base::Value net_info(GetNetInfo(&context));
+    ASSERT_TRUE(net_info.is_dict());
+    const base::Value::List* disabled_doh_providers_list =
+        net_info.GetDict().FindList(kNetInfoDohProvidersDisabledDueToFeature);
+    CHECK(disabled_doh_providers_list);
+    EXPECT_EQ(!provider_enabled,
+              base::Contains(*disabled_doh_providers_list,
+                             base::Value(kArbitraryProvider)));
+  }
 }
 
 // Make sure CreateNetLogEntriesForActiveObjects works for requests from a
