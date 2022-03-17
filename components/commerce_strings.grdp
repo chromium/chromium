@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <!-- Desktop only -->
+  <if expr="not is_android and not is_ios">
+    <message name="IDS_DISCOUNT_CONTEXTUAL_CONSENT_TITLE" desc="The title shown on the consent bubble for getting discount.">
+      Get discount on <ph name="MERCHANT_NAME">$1</ph> and more
+    </message>
+    <message name="IDS_DISCOUNT_CONTEXTUAL_CONSENT_CONTENT" desc="Text shown on the consent bubble asking if users would like to give their consent to the feature.">
+      Let Google use your carts to find personalized discounts when available
+    </message>
+    <message name="IDS_DISCOUNT_CONTEXTUAL_CONSENT_NO_THANKS" desc="Text shown on the reject button of the consent bubble. By clicking this button, users has chosen not to accept the consent.">
+      No thanks
+    </message>
+    <message name="IDS_DISCOUNT_CONTEXTUAL_CONSENT_GET_DISCOUNTS" desc="Text shown on the accept button of the consent bubble. By clicking this button, users has chosen to accept the consent.">
+      Get discounts
+    </message>
+    <message name="IDS_DISCOUNT_CONTEXTUAL_CONSENT_ACCEPTED_CONFIRMATION_TITLE" desc="The title shown on the consent confirmation bubble after the user has accepted the consent.">
+      Google will find discounts for you
+    </message>
+    <message name="IDS_DISCOUNT_CONTEXTUAL_CONSENT_ACCEPTED_CONFIRMATION_CONTENT" desc="The text shown on the consent confirmation bubble telling user where to look for discounts.">
+      When Google finds available discounts, they will show during checkout
+    </message>
+    <message name="IDS_DISCOUNT_CONTEXTUAL_CONSENT_ACCEPTED_CONFIRMATION_DONE" desc="The text shown on the consent confirmation bubble bubble. User can click this button to close the bubble.">
+      Done
+    </message>
+  </if>
+</grit-part>

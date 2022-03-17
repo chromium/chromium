@@ -287,6 +287,7 @@
       <part file="bookmark_component_strings.grdp" />
       <part file="blocked_content_strings.grdp" />
       <part file="browsing_data_strings.grdp" />
+      <part file="commerce_strings.grdp" />
       <part file="live_caption_strings.grdp" />
       <part file="components_settings_strings.grdp" />
       <part file="content_creation_strings.grdp" />

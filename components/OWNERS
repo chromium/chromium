@@ -14,6 +14,7 @@ per-file autofill_payments_strings.grdp=file://components/autofill/core/browser/
 per-file autofill_strings.grdp=file://components/autofill/OWNERS
 per-file bookmark_bar_strings.grdp=file://components/bookmarks/OWNERS
 per-file browsing_data_strings.grdp=file://components/browsing_data/OWNERS
+per-file commerce_strings.grdp=file://components/commerce_strings_grdp/OWNERS
 per-file content_creation_strings.grdp=file://components/content_creation/OWNERS
 per-file crash_strings.grdp=file://components/crash/OWNERS
 per-file dom_distiller_strings.grdp=file://components/dom_distiller/OWNERS
