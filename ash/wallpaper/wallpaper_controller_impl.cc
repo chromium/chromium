@@ -52,6 +52,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/metrics_hashes.h"
@@ -66,6 +67,7 @@
 #include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
+#include "components/account_id/account_id.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -140,6 +142,12 @@ base::FilePath& GlobalChromeOSCustomWallpapersDir() {
   return *dir_chrome_os_custom_wallpapers;
 }
 
+base::FilePath& GlobalChromeOSGooglePhotosWallpapersDir() {
+  static base::NoDestructor<base::FilePath>
+      dir_chrome_os_google_photos_wallpapers;
+  return *dir_chrome_os_google_photos_wallpapers;
+}
+
 void SetGlobalUserDataDir(const base::FilePath& path) {
   base::FilePath& global_path = GlobalUserDataDir();
   global_path = path;
@@ -147,6 +155,11 @@ void SetGlobalUserDataDir(const base::FilePath& path) {
 
 void SetGlobalChromeOSWallpapersDir(const base::FilePath& path) {
   base::FilePath& global_path = GlobalChromeOSWallpapersDir();
+  global_path = path;
+}
+
+void SetGlobalChromeOSGooglePhotosWallpapersDir(const base::FilePath& path) {
+  base::FilePath& global_path = GlobalChromeOSGooglePhotosWallpapersDir();
   global_path = path;
 }
 
@@ -486,6 +499,13 @@ void SaveOnlineWallpaper(const std::string& url,
       kSmallWallpaperMaxHeight);
 }
 
+// Creates the google_photos directory in the local file system for caching
+// Google Photos wallpapers if it does not already exist.
+void EnsureGooglePhotosDirectoryExists() {
+  base::DirectoryExists(GlobalChromeOSGooglePhotosWallpapersDir()) ||
+      base::CreateDirectory(GlobalChromeOSGooglePhotosWallpapersDir());
+}
+
 // Implementation of |WallpaperControllerImpl::GetOfflineWallpaper|.
 std::vector<std::string> GetOfflineWallpaperListImpl() {
   DCHECK(!GlobalChromeOSWallpapersDir().empty());
@@ -540,6 +560,7 @@ void PopulateOnlineWallpaperInfo(WallpaperInfo* info,
       WallpaperControllerImpl::kNewWallpaperVariantListNodeName);
 
   info->collection_id = collection_id ? *collection_id : std::string();
+
   if (asset_id_str) {
     uint64_t asset_id;
     if (base::StringToUint64(*asset_id_str, &asset_id))
@@ -671,6 +692,10 @@ void RemoveWallpaperInfo(const AccountId& account_id,
     return;
   DictionaryPrefUpdate prefs_wallpapers_info_update(pref_service, pref_name);
   prefs_wallpapers_info_update->RemoveKey(account_id.GetUserEmail());
+}
+
+void DeleteGooglePhotosCache() {
+  base::DeletePathRecursively(GlobalChromeOSGooglePhotosWallpapersDir());
 }
 
 }  // namespace
@@ -1088,6 +1113,8 @@ void WallpaperControllerImpl::Init(
     const base::FilePath& device_policy_wallpaper_path) {
   SetGlobalUserDataDir(user_data_path);
   SetGlobalChromeOSWallpapersDir(chromeos_wallpapers_path);
+  SetGlobalChromeOSGooglePhotosWallpapersDir(
+      chromeos_wallpapers_path.Append("google_photos/"));
   SetGlobalChromeOSCustomWallpapersDir(chromeos_custom_wallpapers_path);
   SetDevicePolicyWallpaperPath(device_policy_wallpaper_path);
 }
@@ -2160,29 +2187,67 @@ void WallpaperControllerImpl::OnGooglePhotosPhotoFetched(
     // The photo doesn't exist, or has been deleted. If this photo is the
     // current wallpaper, we need to reset to the default.
     if (current_wallpaper_->wallpaper_info().location == params.id) {
-      // TODO(angusmclean): Remove cached version once caching is implemented.
+      sequenced_task_runner_->PostTask(
+          FROM_HERE, base::BindOnce(&DeleteGooglePhotosCache));
       SetDefaultWallpaperImpl(params.account_id, /*show_wallpaper=*/true);
     }
     std::move(callback).Run(false);
     return;
   }
-  // We need to add a string to the URL to make sure we get back the correct
-  // resolution image, within reason and maintaining aspect ratio. See:
-  // https://developers.google.com/photos/library/guides/access-media-items
-  GURL url(base::StringPrintf("%s=w%d-h%d", photo->url.spec().c_str(),
-                              kLargeWallpaperMaxWidth,
-                              kLargeWallpaperMaxHeight));
 
-  // TODO(angusmclean): Check the cache for the image. Download if not.
-  ImageDownloader::DownloadCallback download_callback = base::BindOnce(
-      &WallpaperControllerImpl::OnGooglePhotosWallpaperDownloaded,
-      set_wallpaper_weak_factory_.GetWeakPtr(), std::move(params),
-      std::move(callback));
-  // TODO(angusmclean): Use a real traffic annotation below.
-  ImageDownloader::Get()->Download(url, NO_TRAFFIC_ANNOTATION_YET,
-                                   /*additional_headers=*/{},
-                                   /*credentials_account_id=*/params.account_id,
-                                   std::move(download_callback));
+  auto cached_path =
+      GlobalChromeOSGooglePhotosWallpapersDir().Append(params.id);
+  sequenced_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&base::PathExists, cached_path),
+      base::BindOnce(
+          &WallpaperControllerImpl::GetGooglePhotosWallpaperFromCacheOrDownload,
+          set_wallpaper_weak_factory_.GetWeakPtr(), std::move(params),
+          std::move(photo), std::move(callback), cached_path));
+}
+
+void WallpaperControllerImpl::GetGooglePhotosWallpaperFromCacheOrDownload(
+    const GooglePhotosWallpaperParams& params,
+    ash::personalization_app::mojom::GooglePhotosPhotoPtr photo,
+    SetWallpaperCallback callback,
+    const base::FilePath& cached_path,
+    bool cached_path_exists) {
+  if (cached_path_exists) {
+    ReadAndDecodeWallpaper(
+        base::BindOnce(&WallpaperControllerImpl::OnGooglePhotosWallpaperDecoded,
+                       set_wallpaper_weak_factory_.GetWeakPtr(),
+                       std::move(params), cached_path, std::move(callback)),
+        cached_path);
+  } else {
+    // We need to add a string to the URL to make sure we get back the correct
+    // resolution image, within reason and maintaining aspect ratio. See:
+    // https://developers.google.com/photos/library/guides/access-media-items
+    GURL url(base::StringPrintf("%s=w%d-h%d", photo->url.spec().c_str(),
+                                kLargeWallpaperMaxWidth,
+                                kLargeWallpaperMaxHeight));
+
+    // TODO(angusmclean): Use a real traffic annotation below.
+    ImageDownloader::DownloadCallback download_callback = base::BindOnce(
+        &WallpaperControllerImpl::OnGooglePhotosWallpaperDownloaded,
+        set_wallpaper_weak_factory_.GetWeakPtr(), params, std::move(callback));
+    ImageDownloader::Get()->Download(url, NO_TRAFFIC_ANNOTATION_YET, {},
+                                     params.account_id,
+                                     std::move(download_callback));
+  }
+}
+
+void WallpaperControllerImpl::OnGooglePhotosWallpaperDecoded(
+    const GooglePhotosWallpaperParams& params,
+    const base::FilePath& path,
+    SetWallpaperCallback callback,
+    const gfx::ImageSkia& image) {
+  if (image.isNull()) {
+    std::move(callback).Run(false);
+    return;
+  }
+  std::move(callback).Run(true);
+  WallpaperInfo info(params);
+  ShowWallpaperImage(image, info, /*preview_mode=*/false,
+                     /*always_on_top=*/false);
 }
 
 void WallpaperControllerImpl::OnGooglePhotosWallpaperDownloaded(
@@ -2206,9 +2271,38 @@ void WallpaperControllerImpl::OnGooglePhotosWallpaperDownloaded(
                   "except in tests.";
   }
 
-  // TODO(angusmclean): Save the image to a cache.
+  sequenced_task_runner_->PostTaskAndReply(
+      FROM_HERE, base::BindOnce(&DeleteGooglePhotosCache),
+      base::BindOnce(
+          &WallpaperControllerImpl::CacheAndShowGooglePhotosWallpaper,
+          set_wallpaper_weak_factory_.GetWeakPtr(), std::move(params), image,
+          wallpaper_info));
+}
+
+void WallpaperControllerImpl::CacheAndShowGooglePhotosWallpaper(
+    const GooglePhotosWallpaperParams& params,
+    const gfx::ImageSkia& image,
+    const WallpaperInfo& wallpaper_info) {
+  auto path = GlobalChromeOSGooglePhotosWallpapersDir().Append(params.id);
+  gfx::ImageSkia thread_safe_image(image);
+  thread_safe_image.MakeThreadSafe();
+  sequenced_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&EnsureGooglePhotosDirectoryExists)
+          .Then(base::BindOnce(&ResizeAndSaveWallpaper, thread_safe_image, path,
+                               params.layout, thread_safe_image.width(),
+                               thread_safe_image.height()))
+          .Then(base::BindOnce([](bool success) {
+            if (!success) {
+              DCHECK(success);
+              LOG(ERROR) << "Failed to save Google Photos wallpaper cache.";
+              return;
+            }
+          })));
+
   if (IsActiveUser(params.account_id)) {
-    ShowWallpaperImage(image, wallpaper_info, /*preview_mode=*/false,
+    ShowWallpaperImage(image, wallpaper_info,
+                       /*preview_mode=*/false,
                        /*always_on_top=*/false);
   }
 }
@@ -2216,10 +2310,9 @@ void WallpaperControllerImpl::OnGooglePhotosWallpaperDownloaded(
 void WallpaperControllerImpl::SetWallpaperFromInfo(const AccountId& account_id,
                                                    const WallpaperInfo& info,
                                                    bool show_wallpaper) {
-  // TODO(angusmclean): Handle Google Photos wallpapers here as well, once
-  // caching is implemented.
   if (info.type != WallpaperType::kOnline &&
       info.type != WallpaperType::kDaily &&
+      info.type != WallpaperType::kGooglePhotos &&
       info.type != WallpaperType::kDefault) {
     // This method is meant to be used for `WallpaperType::kOnline` and
     // `WallpaperType::kDefault` types. In unexpected cases, revert to default
@@ -2257,6 +2350,14 @@ void WallpaperControllerImpl::SetWallpaperFromInfo(const AccountId& account_id,
                        weak_factory_.GetWeakPtr(), account_id, wallpaper_path,
                        info, show_wallpaper),
         wallpaper_path);
+  } else if (info.type == WallpaperType::kGooglePhotos) {
+    auto path = GlobalChromeOSGooglePhotosWallpapersDir().Append(info.location);
+    ReadAndDecodeWallpaper(
+        base::BindOnce(&WallpaperControllerImpl::OnWallpaperDecoded,
+                       set_wallpaper_weak_factory_.GetWeakPtr(), account_id,
+                       path, info, show_wallpaper),
+        path);
+    return;
   } else {
     // Default wallpapers are migrated from M21 user profiles. A code
     // refactor overlooked that case and caused these wallpapers not being

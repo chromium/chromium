@@ -477,6 +477,18 @@ class ASH_EXPORT WallpaperControllerImpl
       SetWallpaperCallback callback,
       ash::personalization_app::mojom::GooglePhotosPhotoPtr photo);
 
+  void GetGooglePhotosWallpaperFromCacheOrDownload(
+      const GooglePhotosWallpaperParams& params,
+      ash::personalization_app::mojom::GooglePhotosPhotoPtr photo,
+      SetWallpaperCallback callback,
+      const base::FilePath& cached_path,
+      bool cached_path_exists);
+
+  void OnGooglePhotosWallpaperDecoded(const GooglePhotosWallpaperParams& params,
+                                      const base::FilePath& path,
+                                      SetWallpaperCallback callback,
+                                      const gfx::ImageSkia& image);
+
   // Used as the callback of downloading wallpapers of type
   // `WallpaperType::kGooglePhotos`. Shows the wallpaper immediately if
   // `params.account_id` is the active user.
@@ -484,6 +496,11 @@ class ASH_EXPORT WallpaperControllerImpl
       const GooglePhotosWallpaperParams& params,
       SetWallpaperCallback callback,
       const gfx::ImageSkia& image);
+
+  void CacheAndShowGooglePhotosWallpaper(
+      const GooglePhotosWallpaperParams& params,
+      const gfx::ImageSkia& image,
+      const WallpaperInfo& wallpaper_info);
 
   // Implementation of |SetOnlineWallpaper|. Shows the wallpaper on screen if
   // |show_wallpaper| is true.

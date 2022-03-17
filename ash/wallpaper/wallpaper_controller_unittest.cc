@@ -4244,6 +4244,7 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest, SetGooglePhotosWallpaper) {
   controller_->SetGooglePhotosWallpaper(params,
                                         google_photos_future.GetCallback());
   EXPECT_EQ(feature_enabled, google_photos_future.Get());
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(feature_enabled,
             controller_->GetWallpaperType() == WallpaperType::kGooglePhotos);
 
