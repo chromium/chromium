@@ -99,6 +99,15 @@ chrome.terminalPrivate.openWindow = function(data) {};
 chrome.terminalPrivate.openOptionsPage = function(callback) {};
 
 /**
+ * Open the System Settings at the specified subpage.
+ * @param {string} subpage Name of subpage to open.  Currently only 'crostini'
+ *     supported.
+ * @param {function(): void} callback Callback that will be called when
+ *     complete.
+ */
+chrome.terminalPrivate.openSettingsSubpage = function(subpage, callback) {};
+
+/**
  * Returns an object containing info about ChromeOS settings that affect the
  * Terminal, e.g. which feature flags are enabled.
  * @param {function({
@@ -108,7 +117,7 @@ chrome.terminalPrivate.openOptionsPage = function(callback) {};
 chrome.terminalPrivate.getOSInfo = function(callback) {};
 
 /**
- * Returns specified pref values.
+ * Returns specified pref values, ignoring any not in allowlist.
  * @param {!Array<string>} paths Paths of prefs to fetch.
  * @param {function(Object): void} callback Callback that will be called with
  *     prefs.
@@ -116,7 +125,7 @@ chrome.terminalPrivate.getOSInfo = function(callback) {};
 chrome.terminalPrivate.getPrefs = function(paths, callback) {};
 
 /**
- * Sets specified prefs.
+ * Sets specified prefs, ignoring any not in allowlist.
  * @param {Object} prefs Prefs to update keyed by paths.
  * @param {function(): void} callback Callback that will be called when
  *     complete.

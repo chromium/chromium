@@ -37,8 +37,11 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/api/terminal_private.h"
 #include "chromeos/process_proxy/process_proxy_registry.h"
@@ -250,6 +253,8 @@ TerminalPrivateAPI::TerminalPrivateAPI(content::BrowserContext* context)
           extensions::events::TERMINAL_PRIVATE_ON_A11Y_STATUS_CHANGED,
           terminal_private::OnA11yStatusChanged::kEventName));
   pref_change_registrar_->Add(crostini::prefs::kCrostiniContainers,
+                              base::BindRepeating(&PrefChanged, profile));
+  pref_change_registrar_->Add(crostini::prefs::kCrostiniEnabled,
                               base::BindRepeating(&PrefChanged, profile));
 }
 
@@ -692,6 +697,18 @@ TerminalPrivateOpenOptionsPageFunction::Run() {
   return RespondNow(NoArguments());
 }
 
+TerminalPrivateOpenSettingsSubpageFunction::
+    ~TerminalPrivateOpenSettingsSubpageFunction() = default;
+
+ExtensionFunction::ResponseAction
+TerminalPrivateOpenSettingsSubpageFunction::Run() {
+  // Ignore params->subpage for now, and always open crostini.
+  chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+      ProfileManager::GetActiveUserProfile(),
+      chromeos::settings::mojom::kCrostiniSectionPath);
+  return RespondNow(NoArguments());
+}
+
 TerminalPrivateGetOSInfoFunction::~TerminalPrivateGetOSInfoFunction() = default;
 
 ExtensionFunction::ResponseAction TerminalPrivateGetOSInfoFunction::Run() {
@@ -717,6 +734,7 @@ ExtensionFunction::ResponseAction TerminalPrivateGetPrefsFunction::Run() {
   static const base::NoDestructor<std::vector<std::string>> kAllowList{{
       ash::prefs::kAccessibilitySpokenFeedbackEnabled,
       crostini::prefs::kCrostiniContainers,
+      crostini::prefs::kCrostiniEnabled,
       crostini::prefs::kCrostiniTerminalSettings,
   }};
 

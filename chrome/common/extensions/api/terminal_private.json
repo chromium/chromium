@@ -209,6 +209,23 @@
         }
       },
       {
+        "name": "openSettingsSubpage",
+        "type": "function",
+        "description": "Open the System Settings at the specified subpage.",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "subpage",
+            "description": "Name of subpage to open.  Currently only 'crostini' supported."
+          }
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "Callback that will be called when complete.",
+          "parameters": []
+        }
+      },
+      {
         "name": "getOSInfo",
         "type": "function",
         "description": "Returns an object containing info about ChromeOS settings that affect the Terminal, e.g. which feature flags are enabled.",
