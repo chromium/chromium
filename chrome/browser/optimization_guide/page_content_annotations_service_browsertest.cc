@@ -215,8 +215,14 @@ class PageContentAnnotationsServicePageTopicsBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(crbug.com/1307251): Failing on Win 7.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_E2EWithGoldenTestData DISABLED_E2EWithGoldenTestData
+#else
+#define MAYBE_E2EWithGoldenTestData E2EWithGoldenTestData
+#endif
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServicePageTopicsBrowserTest,
-                       E2EWithGoldenTestData) {
+                       MAYBE_E2EWithGoldenTestData) {
   PageContentAnnotationsService* service =
       PageContentAnnotationsServiceFactory::GetForProfile(browser()->profile());
   ASSERT_TRUE(service);
