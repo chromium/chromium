@@ -71,6 +71,8 @@
 -EncryptionMigrationTest.*
 -EnrollmentLocalPolicyServerBase.*
 -EnrollmentRecoveryTest.*
+-EnrollmentScreenChromadMigrationTest.*
+-EnrollmentScreenHandsOffTest.*
 -EnrollmentScreenTest.*
 -EnterpriseEnrollmentTest.*
 -EnterpriseEnrollmentTestBase.*
@@ -166,7 +168,9 @@
 -WebviewLoginTest.*
 -WebviewProxyAuthLoginTest.*
 -WelcomeScreenBrowserTest.*
+-WelcomeScreenChromadMigrationBrowserTest.*
 -WelcomeScreenChromeVoxHintTest.*
+-WelcomeScreenHandsOffBrowserTest.*
 -WelcomeScreenInternationalChromeVoxHintTest.*
 -WelcomeScreenSystemDevModeBrowserTest.*
 -WelcomeScreenTimezone.*
@@ -182,6 +186,7 @@
 -WizardControllerKioskFlowTest.*
 -WizardControllerOnboardingResumeTest.*
 -WizardControllerOobeConfigurationTest.*
+-WizardControllerOobeSwitchTest.*
 -WizardControllerOobeResumeTest.*
 -WizardControllerProxyAuthOnSigninTest.*
 -WizardControllerRollbackFlowTest.*

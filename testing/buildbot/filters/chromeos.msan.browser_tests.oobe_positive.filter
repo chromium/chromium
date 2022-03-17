@@ -71,6 +71,8 @@ EnableDebuggingTestBase.*
 EncryptionMigrationTest.*
 EnrollmentLocalPolicyServerBase.*
 EnrollmentRecoveryTest.*
+EnrollmentScreenChromadMigrationTest.*
+EnrollmentScreenHandsOffTest.*
 EnrollmentScreenTest.*
 EnterpriseEnrollmentTest.*
 EnterpriseEnrollmentTestBase.*
@@ -166,7 +168,9 @@ WebviewDeviceOwnedLoginTest.*
 WebviewLoginTest.*
 WebviewProxyAuthLoginTest.*
 WelcomeScreenBrowserTest.*
+WelcomeScreenChromadMigrationBrowserTest.*
 WelcomeScreenChromeVoxHintTest.*
+WelcomeScreenHandsOffBrowserTest.*
 WelcomeScreenInternationalChromeVoxHintTest.*
 WelcomeScreenSystemDevModeBrowserTest.*
 WelcomeScreenTimezone.*
@@ -183,6 +187,7 @@ WizardControllerKioskFlowTest.*
 WizardControllerOnboardingResumeTest.*
 WizardControllerOobeConfigurationTest.*
 WizardControllerOobeResumeTest.*
+WizardControllerOobeSwitchTest.*
 WizardControllerProxyAuthOnSigninTest.*
 WizardControllerRollbackFlowTest.*
 WizardControllerScreenPriorityOOBETest.*
