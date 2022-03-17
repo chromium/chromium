@@ -902,9 +902,18 @@ void CartService::OnAddCart(const std::string& domain,
   if (cart_url) {
     proto.set_merchant_cart_url(cart_url->spec());
   } else {
-    std::string* fallback_url = domain_cart_url_mapping_->FindStringKey(domain);
-    if (fallback_url) {
-      proto.set_merchant_cart_url(*fallback_url);
+    absl::optional<std::string> fallback_url_from_component =
+        commerce_heuristics::CommerceHeuristicsData::GetInstance()
+            .GetMerchantCartURL(domain);
+    std::string* fallback_url_from_resource =
+        domain_cart_url_mapping_->FindStringKey(domain);
+    if (fallback_url_from_component.has_value()) {
+      proto.set_merchant_cart_url(*fallback_url_from_component);
+    } else if (fallback_url_from_resource) {
+      proto.set_merchant_cart_url(*fallback_url_from_resource);
+      // TODO(crbug.com/1300332): Add UMA here to track when component failed to
+      // feed heuristics. It's going to be a enum of {from component, from
+      // resource, missing}.
     }
   }
 

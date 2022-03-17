@@ -11,7 +11,8 @@ namespace {
 const char kHintHeuristicsJSONData[] = R"###(
       {
           "foo.com": {
-              "merchant_name": "Foo"
+              "merchant_name": "Foo",
+              "cart_url": "foo.com/cart"
           },
           "bar.com": {
               "merchant_name": "Bar"
@@ -53,6 +54,8 @@ TEST_F(CommerceHeuristicsDataTest, TestPopulateHintHeuristics_Success) {
   ASSERT_TRUE(hint_heuristics->contains("baz.com"));
   ASSERT_EQ(*hint_heuristics->FindDict("foo.com")->FindString("merchant_name"),
             "Foo");
+  ASSERT_EQ(*hint_heuristics->FindDict("foo.com")->FindString("cart_url"),
+            "foo.com/cart");
   ASSERT_EQ(*hint_heuristics->FindDict("bar.com")->FindString("merchant_name"),
             "Bar");
   auto* global_heuristics = GetGlobalHeuristics();
@@ -91,6 +94,16 @@ TEST_F(CommerceHeuristicsDataTest, TestGetMerchantName) {
   ASSERT_EQ(*data.GetMerchantName("bar.com"), "Bar");
   ASSERT_FALSE(data.GetMerchantName("baz.com").has_value());
   ASSERT_FALSE(data.GetMerchantName("xyz.com").has_value());
+}
+
+TEST_F(CommerceHeuristicsDataTest, TestGetMerchantCartURL) {
+  auto& data = commerce_heuristics::CommerceHeuristicsData::GetInstance();
+
+  ASSERT_TRUE(data.PopulateDataFromComponent(
+      kHintHeuristicsJSONData, kGlobalHeuristicsJSONData, "", ""));
+
+  ASSERT_EQ(*data.GetMerchantCartURL("foo.com"), "foo.com/cart");
+  ASSERT_FALSE(data.GetMerchantCartURL("baz.com").has_value());
 }
 
 TEST_F(CommerceHeuristicsDataTest, TestGetProductSkipPattern) {

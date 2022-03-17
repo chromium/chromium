@@ -28,6 +28,9 @@ class CommerceHeuristicsData {
   // Try to get merchant name for `domain`.
   absl::optional<std::string> GetMerchantName(const std::string& domain);
 
+  // Try to get merchant cart URL for `domain`.
+  absl::optional<std::string> GetMerchantCartURL(const std::string& domain);
+
   // Try to get the product skip pattern.
   const re2::RE2* GetProductSkipPattern();
 

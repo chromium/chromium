@@ -12,6 +12,7 @@ namespace commerce_heuristics {
 namespace {
 // CommerceHintHeuristics types.
 constexpr char kMerchantNameType[] = "merchant_name";
+constexpr char kMerchantCartURLType[] = "cart_url";
 
 // CommerceGlobalHeuristics types.
 constexpr char kSkipProductPatternType[] = "sensitive_product_regex";
@@ -50,6 +51,11 @@ bool CommerceHeuristicsData::PopulateDataFromComponent(
 absl::optional<std::string> CommerceHeuristicsData::GetMerchantName(
     const std::string& domain) {
   return GetCommerceHintHeuristics(kMerchantNameType, domain);
+}
+
+absl::optional<std::string> CommerceHeuristicsData::GetMerchantCartURL(
+    const std::string& domain) {
+  return GetCommerceHintHeuristics(kMerchantCartURLType, domain);
 }
 
 const re2::RE2* CommerceHeuristicsData::GetProductSkipPattern() {

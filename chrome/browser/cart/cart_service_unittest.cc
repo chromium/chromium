@@ -93,7 +93,8 @@ const char kProductURL[] = "https://www.product.com";
 const char kCommerceHintHeuristicsJSONData[] = R"###(
       {
           "foo.com": {
-              "merchant_name": "Foo"
+              "merchant_name": "Foo",
+              "cart_url": "https://foo.com/cart"
           },
           "bar.com": {
               "merchant_name": "Bar"
@@ -990,7 +991,7 @@ TEST_F(CartServiceTest, TestLookupCartInfo_FromComponent) {
   CartDB* cart_db_ = service_->GetDB();
   base::RunLoop run_loop;
   cart_db::ChromeCartContentProto merchant_proto =
-      BuildProto(kMockMerchantA, kMockMerchantURLA);
+      BuildProto(kMockMerchantA, "https://foo.com/cart");
   service_->AddCart(kMockMerchantA, absl::nullopt, merchant_proto);
   task_environment_.RunUntilIdle();
 
