@@ -981,14 +981,8 @@ CanvasResourceProvider::CreateSharedImageProvider(
 
   // If we cannot use overlay, we have to remove the scanout flag and the
   // concurrent read write flag.
-  bool disable_image_scanout = !is_gpu_memory_buffer_image_allowed;
-#if !BUILDFLAG(IS_MAC)
-  // This check is inappropriate on macOS.
-  // https://crbug.com/1305679
-  disable_image_scanout |=
-      is_accelerated && !capabilities.texture_storage_image;
-#endif
-  if (disable_image_scanout) {
+  if (!is_gpu_memory_buffer_image_allowed ||
+      (is_accelerated && !capabilities.texture_storage_image)) {
     shared_image_usage_flags &= ~gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
     shared_image_usage_flags &= ~gpu::SHARED_IMAGE_USAGE_SCANOUT;
   }

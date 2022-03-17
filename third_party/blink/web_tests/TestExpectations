@@ -2602,10 +2602,6 @@ crbug.com/1227485 accessibility/spelling-markers.html [ Failure ]
 crbug.com/1229463 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-largedraws.html [ Crash ]
 crbug.com/1229486 virtual/oopr-canvas2d/fast/canvas/canvas-incremental-repaint.html [ Failure ]
 
-# Bugs caused by enabling overlay support on OOPR-Canvas on macOS
-crbug.com/1305679 [ Mac ] virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-2d-gradients-in-worker.html [ Failure ]
-crbug.com/1305679 [ Mac ] virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-paths-in-worker.html [ Failure ]
-
 # Temporarily disabled after chromium change
 crbug.com/492511 [ Mac ] virtual/text-antialias/atsui-negative-spacing-features.html [ Failure ]
 crbug.com/492511 [ Mac ] virtual/text-antialias/international/arabic-justify.html [ Failure ]
