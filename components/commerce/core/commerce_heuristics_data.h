@@ -42,6 +42,19 @@ class CommerceHeuristicsData {
   // for coupon discount.
   const re2::RE2* GetCouponDiscountPartnerMerchantPattern();
 
+  // Try to get the pattern regex to decide if a URL is cart page URL.
+  const re2::RE2* GetCartPageURLPattern();
+
+  // Try to get the pattern regex to decide if a URL is checkout page URL.
+  const re2::RE2* GetCheckoutPageURLPattern();
+
+  // Try to get the pattern regex to decide if a button is a purchase button.
+  const re2::RE2* GetPurchaseButtonTextPattern();
+
+  // Try to get the pattern regex to decide if a request is a add-to-cart
+  // request.
+  const re2::RE2* GetAddToCartRequestPattern();
+
  private:
   friend class CommerceHeuristicsDataTest;
 
@@ -59,6 +72,10 @@ class CommerceHeuristicsData {
   std::unique_ptr<re2::RE2> product_skip_pattern_;
   std::unique_ptr<re2::RE2> rule_discount_partner_merchant_pattern_;
   std::unique_ptr<re2::RE2> coupon_discount_partner_merchant_pattern_;
+  std::unique_ptr<re2::RE2> cart_url_pattern_;
+  std::unique_ptr<re2::RE2> checkout_url_pattern_;
+  std::unique_ptr<re2::RE2> purchase_button_pattern_;
+  std::unique_ptr<re2::RE2> add_to_cart_request_pattern_;
 };
 
 }  // namespace commerce_heuristics

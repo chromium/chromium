@@ -776,16 +776,47 @@ std::map<std::string, std::string> kNotSkipAddToCartRequests = {
 
 using cart::CommerceHintAgent;
 
-TEST(CommerceHintAgentTest, IsAddToCart) {
+class CommerceHintAgentUnitTest : public testing::Test {
+ public:
+  void TearDown() override {
+    // Clear out heuristics data that is set up during testing.
+    commerce_heuristics::CommerceHeuristicsData::GetInstance()
+        .PopulateDataFromComponent(
+            /*hint_json_data=*/"{}", /*global_json_data=*/"{}",
+            /*product_id_json_data=*/"{}", /*cart_extraction_script=*/"");
+  }
+};
+
+TEST_F(CommerceHintAgentUnitTest, IsAddToCart) {
+  // Heuristics from feature param default value.
   for (auto* str : kAddToCart) {
     EXPECT_TRUE(CommerceHintAgent::IsAddToCart(str)) << str;
   }
   for (auto* str : kNotAddToCart) {
     EXPECT_FALSE(CommerceHintAgent::IsAddToCart(str)) << str;
   }
+
+  // Heuristics from component.
+  const std::string& component_pattern = R"###(
+      {
+        "add_to_cart_request_regex": "bar"
+      }
+  )###";
+  EXPECT_TRUE(commerce_heuristics::CommerceHeuristicsData::GetInstance()
+                  .PopulateDataFromComponent("{}", component_pattern, "", ""));
+  EXPECT_TRUE(CommerceHintAgent::IsAddToCart("request_bar"));
+  for (auto* str : kAddToCart) {
+    EXPECT_FALSE(CommerceHintAgent::IsAddToCart(str)) << str;
+  }
+
+  // Feature param has a higher priority.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      ntp_features::kNtpChromeCartModule, {{"add-to-cart-pattern", "foo"}});
+  EXPECT_FALSE(CommerceHintAgent::IsAddToCart("request_bar"));
 }
 
-TEST(CommerceHintAgentTest, IsAddToCart_SkipLengthLimit) {
+TEST_F(CommerceHintAgentUnitTest, IsAddToCart_SkipLengthLimit) {
   std::string str = "a";
   for (int i = 0; i < 12; ++i) {
     str += str;
@@ -798,25 +829,60 @@ TEST(CommerceHintAgentTest, IsAddToCart_SkipLengthLimit) {
   EXPECT_TRUE(CommerceHintAgent::IsAddToCart(str, true));
 }
 
-TEST(CommerceHintAgentTest, IsVisitCart) {
+TEST_F(CommerceHintAgentUnitTest, IsVisitCart) {
+  // Heuristics from feature param default value.
   for (auto* str : kVisitCart) {
     EXPECT_TRUE(CommerceHintAgent::IsVisitCart(GURL(str))) << str;
   }
   for (auto* str : kNotVisitCart) {
     EXPECT_FALSE(CommerceHintAgent::IsVisitCart(GURL(str))) << str;
   }
+
+  // Heuristics from component.
+  const std::string& component_pattern = R"###(
+      {
+        "cart_page_url_regex": "bar"
+      }
+  )###";
+  EXPECT_TRUE(commerce_heuristics::CommerceHeuristicsData::GetInstance()
+                  .PopulateDataFromComponent("{}", component_pattern, "", ""));
+  EXPECT_TRUE(CommerceHintAgent::IsVisitCart(GURL("https://wwww.bar.com")));
+
+  // Feature param has a higher priority.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      ntp_features::kNtpChromeCartModule, {{"cart-pattern", "foo"}});
+  EXPECT_FALSE(CommerceHintAgent::IsVisitCart(GURL("https://wwww.bar.com")));
 }
 
-TEST(CommerceHintAgentTest, IsVisitCheckout) {
+TEST_F(CommerceHintAgentUnitTest, IsVisitCheckout) {
+  // Heuristics from feature param default value.
   for (auto* str : kVisitCheckout) {
     EXPECT_TRUE(CommerceHintAgent::IsVisitCheckout(GURL(str))) << str;
   }
   for (auto* str : kNotVisitCheckout) {
     EXPECT_FALSE(CommerceHintAgent::IsVisitCheckout(GURL(str))) << str;
   }
+
+  // Heuristics from component.
+  const std::string& component_pattern = R"###(
+      {
+        "checkout_page_url_regex": "bar"
+      }
+  )###";
+  EXPECT_TRUE(commerce_heuristics::CommerceHeuristicsData::GetInstance()
+                  .PopulateDataFromComponent("{}", component_pattern, "", ""));
+  EXPECT_TRUE(CommerceHintAgent::IsVisitCheckout(GURL("https://wwww.bar.com")));
+
+  // Feature param has a higher priority.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      ntp_features::kNtpChromeCartModule, {{"checkout-pattern", "foo"}});
+  EXPECT_FALSE(
+      CommerceHintAgent::IsVisitCheckout(GURL("https://wwww.bar.com")));
 }
 
-TEST(CommerceHintAgentTest, IsPurchaseByURL) {
+TEST_F(CommerceHintAgentUnitTest, IsPurchaseByURL) {
   for (auto* str : kPurchaseURL) {
     EXPECT_TRUE(CommerceHintAgent::IsPurchase(GURL(str))) << str;
   }
@@ -825,16 +891,36 @@ TEST(CommerceHintAgentTest, IsPurchaseByURL) {
   }
 }
 
-TEST(CommerceHintAgentTest, IsPurchaseByForm) {
+TEST_F(CommerceHintAgentUnitTest, IsPurchaseByForm) {
+  // Heuristics from feature param default value.
   for (auto* str : kPurchaseText) {
     EXPECT_TRUE(CommerceHintAgent::IsPurchase(GURL(), str)) << str;
   }
   for (auto* str : kNotPurchaseText) {
     EXPECT_FALSE(CommerceHintAgent::IsPurchase(GURL(), str)) << str;
   }
+
+  // Heuristics from component.
+  const std::string& component_pattern = R"###(
+      {
+        "purchase_button_text_regex": "bar"
+      }
+  )###";
+  EXPECT_TRUE(commerce_heuristics::CommerceHeuristicsData::GetInstance()
+                  .PopulateDataFromComponent("{}", component_pattern, "", ""));
+  EXPECT_TRUE(CommerceHintAgent::IsPurchase(GURL(), "bar"));
+  for (auto* str : kPurchaseText) {
+    EXPECT_FALSE(CommerceHintAgent::IsPurchase(GURL(), str)) << str;
+  }
+
+  // Feature param has a higher priority.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      ntp_features::kNtpChromeCartModule, {{"purchase-button-pattern", "foo"}});
+  EXPECT_FALSE(CommerceHintAgent::IsPurchase(GURL(), "bar"));
 }
 
-TEST(CommerceHintAgentTest, ShouldSkipFromFeatureParam) {
+TEST_F(CommerceHintAgentUnitTest, ShouldSkipFromFeatureParam) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       ntp_features::kNtpChromeCartModule, kSkipParams);
@@ -847,7 +933,7 @@ TEST(CommerceHintAgentTest, ShouldSkipFromFeatureParam) {
   }
 }
 
-TEST(CommerceHintAgentTest, ShouldSkipFromComponent) {
+TEST_F(CommerceHintAgentUnitTest, ShouldSkipFromComponent) {
   EXPECT_TRUE(
       commerce_heuristics::CommerceHeuristicsData::GetInstance()
           .PopulateDataFromComponent("{}", kGlobalHeuristicsJSONData, "", ""));
@@ -860,7 +946,7 @@ TEST(CommerceHintAgentTest, ShouldSkipFromComponent) {
   }
 }
 
-TEST(CommerceHintAgentTest, ShouldSkip_Priority) {
+TEST_F(CommerceHintAgentUnitTest, ShouldSkip_Priority) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       ntp_features::kNtpChromeCartModule, kSkipParams);
@@ -882,7 +968,7 @@ TEST(CommerceHintAgentTest, ShouldSkip_Priority) {
   }
 }
 
-TEST(CommerceHintAgentTest, ShouldSkipAddToCartFromResource) {
+TEST_F(CommerceHintAgentUnitTest, ShouldSkipAddToCartFromResource) {
   for (auto const& entry : kSkipAddToCartRequests) {
     EXPECT_TRUE(CommerceHintAgent::ShouldSkipAddToCartRequest(
         GURL(entry.first), GURL(entry.second)));
@@ -986,7 +1072,7 @@ float BenchmarkShouldSkipAddToCart(const GURL& url) {
 #define MAYBE_RegexBenchmark RegexBenchmark
 #endif
 
-TEST(CommerceHintAgentTest, MAYBE_RegexBenchmark) {
+TEST_F(CommerceHintAgentUnitTest, MAYBE_RegexBenchmark) {
   std::string str = "abcdefghijklmnop";
   const GURL basic_url = GURL("http://example.com/");
   // Compile regex before benchmark loop.

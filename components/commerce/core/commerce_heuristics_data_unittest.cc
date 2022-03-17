@@ -24,7 +24,11 @@ const char kGlobalHeuristicsJSONData[] = R"###(
       {
         "sensitive_product_regex": "\\b\\B",
         "rule_discount_partner_merchant_regex": "foo",
-        "coupon_discount_partner_merchant_regex": "bar"
+        "coupon_discount_partner_merchant_regex": "bar",
+        "cart_page_url_regex": "cart",
+        "checkout_page_url_regex": "checkout",
+        "purchase_button_text_regex": "purchase",
+        "add_to_cart_request_regex": "add_to_cart"
       }
   )###";
 }  // namespace
@@ -61,7 +65,7 @@ TEST_F(CommerceHeuristicsDataTest, TestPopulateHintHeuristics_Success) {
   ASSERT_EQ(*hint_heuristics->FindDict("bar.com")->FindString("merchant_name"),
             "Bar");
   auto* global_heuristics = GetGlobalHeuristics();
-  ASSERT_EQ(global_heuristics->size(), 3u);
+  ASSERT_EQ(global_heuristics->size(), 7u);
   ASSERT_TRUE(global_heuristics->contains("sensitive_product_regex"));
   ASSERT_EQ(*global_heuristics->FindString("sensitive_product_regex"),
             "\\b\\B");
@@ -75,6 +79,17 @@ TEST_F(CommerceHeuristicsDataTest, TestPopulateHintHeuristics_Success) {
   ASSERT_EQ(
       *global_heuristics->FindString("coupon_discount_partner_merchant_regex"),
       "bar");
+  ASSERT_TRUE(global_heuristics->contains("cart_page_url_regex"));
+  ASSERT_EQ(*global_heuristics->FindString("cart_page_url_regex"), "cart");
+  ASSERT_TRUE(global_heuristics->contains("checkout_page_url_regex"));
+  ASSERT_EQ(*global_heuristics->FindString("checkout_page_url_regex"),
+            "checkout");
+  ASSERT_TRUE(global_heuristics->contains("purchase_button_text_regex"));
+  ASSERT_EQ(*global_heuristics->FindString("purchase_button_text_regex"),
+            "purchase");
+  ASSERT_TRUE(global_heuristics->contains("add_to_cart_request_regex"));
+  ASSERT_EQ(*global_heuristics->FindString("add_to_cart_request_regex"),
+            "add_to_cart");
 }
 
 TEST_F(CommerceHeuristicsDataTest, TestPopulateHeuristics_Failure) {
@@ -144,5 +159,41 @@ TEST_F(CommerceHeuristicsDataTest,
       kHintHeuristicsJSONData, kGlobalHeuristicsJSONData, "", ""));
 
   ASSERT_EQ(data.GetCouponDiscountPartnerMerchantPattern()->pattern(), "bar");
+}
+
+TEST_F(CommerceHeuristicsDataTest, TestGetCartPageURLPattern) {
+  auto& data = commerce_heuristics::CommerceHeuristicsData::GetInstance();
+
+  ASSERT_TRUE(data.PopulateDataFromComponent(
+      kHintHeuristicsJSONData, kGlobalHeuristicsJSONData, "", ""));
+
+  ASSERT_EQ(data.GetCartPageURLPattern()->pattern(), "cart");
+}
+
+TEST_F(CommerceHeuristicsDataTest, TestGetCheckoutPageURLPattern) {
+  auto& data = commerce_heuristics::CommerceHeuristicsData::GetInstance();
+
+  ASSERT_TRUE(data.PopulateDataFromComponent(
+      kHintHeuristicsJSONData, kGlobalHeuristicsJSONData, "", ""));
+
+  ASSERT_EQ(data.GetCheckoutPageURLPattern()->pattern(), "checkout");
+}
+
+TEST_F(CommerceHeuristicsDataTest, TestGetPurchaseButtonTextPattern) {
+  auto& data = commerce_heuristics::CommerceHeuristicsData::GetInstance();
+
+  ASSERT_TRUE(data.PopulateDataFromComponent(
+      kHintHeuristicsJSONData, kGlobalHeuristicsJSONData, "", ""));
+
+  ASSERT_EQ(data.GetPurchaseButtonTextPattern()->pattern(), "purchase");
+}
+
+TEST_F(CommerceHeuristicsDataTest, TestGetAddToCartRequestPattern) {
+  auto& data = commerce_heuristics::CommerceHeuristicsData::GetInstance();
+
+  ASSERT_TRUE(data.PopulateDataFromComponent(
+      kHintHeuristicsJSONData, kGlobalHeuristicsJSONData, "", ""));
+
+  ASSERT_EQ(data.GetAddToCartRequestPattern()->pattern(), "add_to_cart");
 }
 }  // namespace commerce_heuristics
