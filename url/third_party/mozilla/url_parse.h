@@ -5,6 +5,8 @@
 #ifndef URL_THIRD_PARTY_MOZILLA_URL_PARSE_H_
 #define URL_THIRD_PARTY_MOZILLA_URL_PARSE_H_
 
+#include <iosfwd>
+
 #include "base/component_export.h"
 
 namespace url {
@@ -46,6 +48,10 @@ struct Component {
   int begin;  // Byte offset in the string of this component.
   int len;    // Will be -1 if the component is unspecified.
 };
+
+// Permit printing Components by CHECK macros.
+COMPONENT_EXPORT(URL)
+std::ostream& operator<<(std::ostream& os, const Component& component);
 
 // Helper that returns a component created with the given begin and ending
 // points. The ending point is non-inclusive.

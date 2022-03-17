@@ -21,14 +21,6 @@
 #include "url/gurl.h"
 #include "url/third_party/mozilla/url_parse.h"
 
-namespace url {
-
-std::ostream& operator<<(std::ostream& os, const Component& part) {
-  return os << "(begin=" << part.begin << ", len=" << part.len << ")";
-}
-
-}  // namespace url
-
 struct SegmentCase {
   const std::string input;
   const std::string result;
