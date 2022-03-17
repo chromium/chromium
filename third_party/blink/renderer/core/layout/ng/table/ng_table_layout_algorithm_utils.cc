@@ -171,37 +171,6 @@ NGTableTypes::Row ComputeMinimumRowBlockSize(
       row.Style().GetWritingDirection();
   const bool has_collapsed_borders = table_borders.IsCollapsed();
 
-  auto CreateCellConstraintSpace = [&column_locations, &table_writing_direction,
-                                    &is_table_block_size_specified,
-                                    &has_collapsed_borders,
-                                    &cell_percentage_inline_size](
-                                       const NGBlockNode& cell,
-                                       wtf_size_t start_column_index,
-                                       const NGBoxStrut& cell_borders) {
-    const wtf_size_t start_column = start_column_index;
-    DCHECK_LT(start_column, column_locations.size());
-    const wtf_size_t end_column =
-        std::min(start_column + cell.TableCellColspan() - 1,
-                 column_locations.size() - 1);
-    const LayoutUnit cell_inline_size = column_locations[end_column].offset +
-                                        column_locations[end_column].size -
-                                        column_locations[start_column].offset;
-
-    // Typically we want these values to match the "layout" pass as close as
-    // possible. The one exception is "is_hidden_for_paint". This is set to
-    // true if a cell should be hidden within a collapsed column. If this is
-    // the case, the size is almost certainly different causing a second layout.
-    return NGTableAlgorithmUtils::CreateTableCellConstraintSpaceBuilder(
-               table_writing_direction, cell, cell_borders,
-               {cell_inline_size, kIndefiniteSize}, cell_percentage_inline_size,
-               /* alignment_baseline */ absl::nullopt, start_column,
-               /* is_initial_block_size_indefinite */ true,
-               is_table_block_size_specified,
-               /* is_hidden_for_paint */ false, has_collapsed_borders,
-               NGCacheSlot::kMeasure)
-        .ToConstraintSpace();
-  };
-
   // TODO(layout-ng) Scrollbars should be frozen when computing row sizes.
   // This cannot be done today, because fragments with frozen scrollbars
   // will be cached. Needs to be fixed in NG framework.
@@ -221,9 +190,20 @@ NGTableTypes::Row ComputeMinimumRowBlockSize(
     const NGBoxStrut cell_borders = table_borders.CellBorder(
         cell, row_index, colspan_cell_tabulator->CurrentColumn(), section_index,
         table_writing_direction);
-    const NGConstraintSpace cell_constraint_space = CreateCellConstraintSpace(
-        cell, colspan_cell_tabulator->CurrentColumn(), cell_borders);
-    const NGLayoutResult* layout_result = cell.Layout(cell_constraint_space);
+
+    // We want these values to match the "layout" pass as close as possible.
+    const auto cell_space =
+        NGTableAlgorithmUtils::CreateTableCellConstraintSpaceBuilder(
+            table_writing_direction, cell, cell_borders, column_locations,
+            /* cell_block_size */ kIndefiniteSize, cell_percentage_inline_size,
+            /* alignment_baseline */ absl::nullopt,
+            colspan_cell_tabulator->CurrentColumn(),
+            /* is_initial_block_size_indefinite */ true,
+            is_table_block_size_specified, has_collapsed_borders,
+            NGCacheSlot::kMeasure)
+            .ToConstraintSpace();
+    const NGLayoutResult* layout_result = cell.Layout(cell_space);
+
     const NGBoxFragment fragment(
         table_writing_direction,
         To<NGPhysicalBoxFragment>(layout_result->PhysicalFragment()));
@@ -255,8 +235,7 @@ NGTableTypes::Row ComputeMinimumRowBlockSize(
       cell_css_percent = cell_specified_block_length.Percent();
     } else if (cell_specified_block_length.IsFixed()) {
       // NOTE: Ignore min/max-height for determining the |cell_css_block_size|.
-      NGBoxStrut cell_padding =
-          ComputePadding(cell_constraint_space, cell_style);
+      NGBoxStrut cell_padding = ComputePadding(cell_space, cell_style);
       NGBoxStrut border_padding = cell_borders + cell_padding;
       // https://quirks.spec.whatwg.org/#the-table-cell-height-box-sizing-quirk
       if (cell.GetDocument().InQuirksMode() ||
@@ -455,17 +434,32 @@ NGTableAlgorithmUtils::CreateTableCellConstraintSpaceBuilder(
     const WritingDirectionMode table_writing_direction,
     const NGBlockNode cell,
     const NGBoxStrut& cell_borders,
-    LogicalSize cell_size,
+    const Vector<NGTableColumnLocation>& column_locations,
+    LayoutUnit cell_block_size,
     LayoutUnit percentage_inline_size,
     absl::optional<LayoutUnit> alignment_baseline,
-    wtf_size_t column_index,
+    wtf_size_t start_column,
     bool is_initial_block_size_indefinite,
     bool is_table_block_size_specified,
-    bool is_hidden_for_paint,
     bool has_collapsed_borders,
     NGCacheSlot cache_slot) {
   const auto& cell_style = cell.Style();
   const auto table_writing_mode = table_writing_direction.GetWritingMode();
+  const wtf_size_t end_column = std::min(
+      start_column + cell.TableCellColspan() - 1, column_locations.size() - 1);
+  const LayoutUnit cell_inline_size = column_locations[end_column].offset +
+                                      column_locations[end_column].size -
+                                      column_locations[start_column].offset;
+
+  // A table-cell is hidden if all the columns it spans are collapsed.
+  const bool is_hidden_for_paint = [&]() -> bool {
+    for (wtf_size_t column = start_column; column <= end_column; ++column) {
+      if (!column_locations[column].is_collapsed)
+        return false;
+    }
+    return true;
+  }();
+
   NGConstraintSpaceBuilder builder(table_writing_mode,
                                    cell_style.GetWritingDirection(),
                                    /* is_new_fc */ true);
@@ -478,21 +472,20 @@ NGTableAlgorithmUtils::CreateTableCellConstraintSpaceBuilder(
                                                : icb_size.width);
   }
 
-  builder.SetAvailableSize(cell_size);
+  builder.SetAvailableSize({cell_inline_size, cell_block_size});
   builder.SetIsFixedInlineSize(true);
-  if (cell_size.block_size != kIndefiniteSize)
+  if (cell_block_size != kIndefiniteSize)
     builder.SetIsFixedBlockSize(true);
   builder.SetIsInitialBlockSizeIndefinite(is_initial_block_size_indefinite);
 
-  // Standard:
-  // https://www.w3.org/TR/css-tables-3/#computing-the-table-height "the
-  // computed height (if definite, percentages being considered 0px)"
+  // https://www.w3.org/TR/css-tables-3/#computing-the-table-height
+  // "the computed height (if definite, percentages being considered 0px)"
   builder.SetPercentageResolutionSize(
       {percentage_inline_size, kIndefiniteSize});
 
   builder.SetTableCellBorders(cell_borders);
   builder.SetTableCellAlignmentBaseline(alignment_baseline);
-  builder.SetTableCellColumnIndex(column_index);
+  builder.SetTableCellColumnIndex(start_column);
   builder.SetIsRestrictedBlockSizeTableCell(
       is_table_block_size_specified || cell_style.LogicalHeight().IsFixed());
   builder.SetIsTableCellHiddenForPaint(is_hidden_for_paint);

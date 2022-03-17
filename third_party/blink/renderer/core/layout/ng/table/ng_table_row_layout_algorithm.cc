@@ -29,40 +29,7 @@ const NGLayoutResult* NGTableRowLayoutAlgorithm::Layout() {
                                        absl::optional<LayoutUnit> row_baseline,
                                        LayoutUnit* cell_inline_offset = nullptr,
                                        bool use_block_fragmentation = false) {
-    const wtf_size_t start_column = table_data.cells[cell_index].start_column;
-    const wtf_size_t end_column =
-        std::min(start_column + cell.TableCellColspan() - 1,
-                 table_data.column_locations.size() - 1);
-
-    // When columns spanned by the cell are collapsed, the cell geometry is
-    // defined by:
-    // - The start edge of the first non-collapsed column.
-    // - The end edge of the last non-collapsed column.
-    // - If all columns are collapsed, the |cell_inline_size| is defined by the
-    //   edges of the last column. Picking last column is arbitrary, any
-    //   spanned column would work, as all spanned columns define the same
-    //   geometry: same location, zero width.
-    wtf_size_t cell_location_start_column = start_column;
-    while (
-        table_data.column_locations[cell_location_start_column].is_collapsed &&
-        cell_location_start_column < end_column)
-      cell_location_start_column++;
-    wtf_size_t cell_location_end_column = end_column;
-    while (table_data.column_locations[cell_location_end_column].is_collapsed &&
-           cell_location_end_column > cell_location_start_column)
-      cell_location_end_column--;
-
-    if (cell_inline_offset) {
-      *cell_inline_offset =
-          table_data.column_locations[cell_location_start_column].offset;
-    }
-
-    const NGTableConstraintSpaceData::Cell& cell_data =
-        table_data.cells[cell_index];
-    const LayoutUnit cell_inline_size =
-        table_data.column_locations[cell_location_end_column].offset +
-        table_data.column_locations[cell_location_end_column].size -
-        table_data.column_locations[cell_location_start_column].offset;
+    const auto& cell_data = table_data.cells[cell_index];
     const LayoutUnit cell_block_size =
         cell_data.rowspan_block_size != kIndefiniteSize
             ? cell_data.rowspan_block_size
@@ -74,17 +41,17 @@ const NGLayoutResult* NGTableRowLayoutAlgorithm::Layout() {
         cell_data.is_constrained ||
         (cell_data.has_grown && table_data.is_table_block_size_specified);
 
-    const bool is_hidden_for_paint =
-        table_data.column_locations[cell_location_start_column].is_collapsed &&
-        cell_location_start_column == cell_location_end_column;
+    const wtf_size_t start_column = cell_data.start_column;
+    if (cell_inline_offset)
+      *cell_inline_offset = table_data.column_locations[start_column].offset;
 
     NGConstraintSpaceBuilder builder =
         NGTableAlgorithmUtils::CreateTableCellConstraintSpaceBuilder(
             table_data.table_writing_direction, cell, cell_data.borders,
-            {cell_inline_size, cell_block_size},
+            table_data.column_locations, cell_block_size,
             container_builder_.InlineSize(), row_baseline, start_column,
             !is_initial_block_size_definite,
-            table_data.is_table_block_size_specified, is_hidden_for_paint,
+            table_data.is_table_block_size_specified,
             table_data.has_collapsed_borders, NGCacheSlot::kLayout);
 
     if (use_block_fragmentation) {

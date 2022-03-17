@@ -16,7 +16,6 @@ class NGBoxFragment;
 class NGConstraintSpaceBuilder;
 class NGTableBorders;
 enum class NGCacheSlot;
-struct LogicalSize;
 
 // Table size distribution algorithms.
 class NGTableAlgorithmUtils {
@@ -38,13 +37,13 @@ class NGTableAlgorithmUtils {
       const WritingDirectionMode table_writing_direction,
       const NGBlockNode cell,
       const NGBoxStrut& cell_borders,
-      LogicalSize cell_size,
+      const Vector<NGTableColumnLocation>& column_locations,
+      LayoutUnit cell_block_size,
       LayoutUnit percentage_inline_size,
       absl::optional<LayoutUnit> alignment_baseline,
-      wtf_size_t column_index,
+      wtf_size_t start_column,
       bool is_initial_block_size_indefinite,
       bool is_restricted_block_size_table,
-      bool is_hidden_for_paint,
       bool has_collapsed_borders,
       NGCacheSlot);
 

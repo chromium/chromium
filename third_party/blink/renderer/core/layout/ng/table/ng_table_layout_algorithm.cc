@@ -240,27 +240,33 @@ void ComputeLocationsFromColumns(
   column_locations->resize(column_constraints.data.size());
   if (column_locations->IsEmpty())
     return;
+  bool is_first_non_collpased_column = true;
   LayoutUnit column_offset = inline_border_spacing;
   for (wtf_size_t i = 0; i < column_constraints.data.size(); ++i) {
     auto& column_location = (*column_locations)[i];
     auto& column_constraint = column_constraints.data[i];
-    *has_collapsed_columns =
-        *has_collapsed_columns || column_constraint.is_collapsed;
-    column_location.offset = column_offset;
+    *has_collapsed_columns |= column_constraint.is_collapsed;
     if (column_constraints.data[i].is_mergeable &&
         (column_sizes[i] == kIndefiniteSize ||
          column_sizes[i] == LayoutUnit())) {
       // Empty mergeable columns are treated as collapsed.
+      column_location.offset = column_offset;
       column_location.size = LayoutUnit();
       column_location.is_collapsed = true;
     } else if (shrink_collapsed && column_constraint.is_collapsed) {
-      column_location.is_collapsed = true;
+      column_location.offset = column_offset;
       column_location.size = LayoutUnit();
+      column_location.is_collapsed = true;
     } else {
-      column_location.is_collapsed = false;
+      if (is_first_non_collpased_column)
+        is_first_non_collpased_column = false;
+      else
+        column_offset += inline_border_spacing;
+      column_location.offset = column_offset;
       column_location.size =
           column_sizes[i] != kIndefiniteSize ? column_sizes[i] : LayoutUnit();
-      column_offset += column_location.size + inline_border_spacing;
+      column_location.is_collapsed = false;
+      column_offset += column_location.size;
     }
   }
 }
