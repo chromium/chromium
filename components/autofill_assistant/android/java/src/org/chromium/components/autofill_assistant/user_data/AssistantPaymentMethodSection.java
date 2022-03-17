@@ -126,11 +126,6 @@ public class AssistantPaymentMethodSection
     }
 
     @Override
-    protected boolean canEditOption(PaymentInstrumentModel model) {
-        return model.canEdit();
-    }
-
-    @Override
     protected @DrawableRes int getEditButtonDrawable(PaymentInstrumentModel model) {
         return R.drawable.ic_edit_24dp;
     }

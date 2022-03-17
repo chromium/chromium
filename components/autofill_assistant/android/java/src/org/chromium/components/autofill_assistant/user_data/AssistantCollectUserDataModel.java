@@ -56,6 +56,11 @@ public class AssistantCollectUserDataModel extends PropertyModel {
         public boolean isComplete() {
             return mOption.isComplete();
         }
+
+        @Override
+        public boolean canEdit() {
+            return mOption.getInfoPopup() != null;
+        }
     }
 
     public static final WritableObjectPropertyKey<AssistantCollectUserDataDelegate> DELEGATE =

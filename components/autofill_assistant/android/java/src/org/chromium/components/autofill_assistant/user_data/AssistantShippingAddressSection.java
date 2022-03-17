@@ -87,11 +87,6 @@ public class AssistantShippingAddressSection extends AssistantCollectUserDataSec
     }
 
     @Override
-    protected boolean canEditOption(AddressModel model) {
-        return model.canEdit();
-    }
-
-    @Override
     protected @DrawableRes int getEditButtonDrawable(AddressModel model) {
         return R.drawable.ic_edit_24dp;
     }

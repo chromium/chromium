@@ -83,11 +83,6 @@ public class AssistantPhoneNumberSection extends AssistantCollectUserDataSection
     }
 
     @Override
-    protected boolean canEditOption(ContactModel model) {
-        return model.canEdit();
-    }
-
-    @Override
     protected @DrawableRes int getEditButtonDrawable(ContactModel model) {
         return R.drawable.ic_edit_24dp;
     }

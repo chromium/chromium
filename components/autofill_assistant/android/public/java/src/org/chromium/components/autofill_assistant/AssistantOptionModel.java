@@ -33,6 +33,8 @@ public abstract class AssistantOptionModel<T> {
         return mErrors.isEmpty();
     }
 
+    public abstract boolean canEdit();
+
     /** Model wrapper for an {@link AssistantAutofillProfile}. */
     public static class ContactModel extends AssistantOptionModel<AssistantAutofillProfile> {
         private final boolean mCanEdit;
@@ -48,6 +50,7 @@ public abstract class AssistantOptionModel<T> {
             mCanEdit = true;
         }
 
+        @Override
         public boolean canEdit() {
             return mCanEdit;
         }
@@ -83,6 +86,7 @@ public abstract class AssistantOptionModel<T> {
             return mSummaryDescription;
         }
 
+        @Override
         public boolean canEdit() {
             return mEditToken == null || mEditToken.length > 0;
         }
@@ -109,6 +113,7 @@ public abstract class AssistantOptionModel<T> {
             this(paymentInstrument, /* errors= */ Collections.emptyList(), /* editToken= */ null);
         }
 
+        @Override
         public boolean canEdit() {
             return mEditToken == null || mEditToken.length > 0;
         }

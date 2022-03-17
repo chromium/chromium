@@ -60,11 +60,6 @@ public class AssistantLoginSection extends AssistantCollectUserDataSection<Login
     }
 
     @Override
-    protected boolean canEditOption(LoginChoiceModel model) {
-        return model.mOption.getInfoPopup() != null;
-    }
-
-    @Override
     protected @DrawableRes int getEditButtonDrawable(LoginChoiceModel model) {
         return R.drawable.btn_info;
     }

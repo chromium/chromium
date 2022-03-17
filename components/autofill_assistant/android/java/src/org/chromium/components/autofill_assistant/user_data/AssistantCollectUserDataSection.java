@@ -300,7 +300,7 @@ public abstract class AssistantCollectUserDataSection<T extends AssistantOptionM
      */
     private void addItem(Item item) {
         mItems.add(item);
-        boolean canEditOption = canEditOption(item.mOption);
+        boolean canEditOption = item.mOption.canEdit();
         @DrawableRes
         int editButtonDrawable = R.drawable.ic_edit_24dp;
         String editButtonContentDescription = "";
@@ -308,7 +308,7 @@ public abstract class AssistantCollectUserDataSection<T extends AssistantOptionM
             editButtonDrawable = getEditButtonDrawable(item.mOption);
             editButtonContentDescription = getEditButtonContentDescription(item.mOption);
         }
-        mItemsView.addItem(item.mFullView, /*hasEditButton=*/canEditOption,
+        mItemsView.addItem(item.mFullView, /* hasEditButton= */ canEditOption,
                 selected
                 -> {
                     if (mIgnoreItemSelectedNotifications || !selected) {
@@ -351,9 +351,6 @@ public abstract class AssistantCollectUserDataSection<T extends AssistantOptionM
 
     /** Asks the subclass to update the contents of the summary view. */
     protected abstract void updateSummaryView(View summaryView, T option);
-
-    /** Asks the subclass whether {@code option} should be editable or not. */
-    protected abstract boolean canEditOption(T option);
 
     /** Asks the subclass which drawable to use for {@code option}. */
     protected abstract @DrawableRes int getEditButtonDrawable(T option);
