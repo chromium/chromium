@@ -281,6 +281,9 @@ void CrOSComponentInstaller::Load(const std::string& name,
 }
 
 bool CrOSComponentInstaller::Unload(const std::string& name) {
+  DispatchFailedLoads(std::move(load_cache_[name].callbacks));
+  load_cache_.erase(name);
+
   const ComponentConfig* config = FindConfig(name);
   if (!config) {
     // Component |name| does not exist.
@@ -306,6 +309,8 @@ void CrOSComponentInstaller::RegisterCompatiblePath(
 }
 
 void CrOSComponentInstaller::UnregisterCompatiblePath(const std::string& name) {
+  DispatchFailedLoads(std::move(load_cache_[name].callbacks));
+  load_cache_.erase(name);
   compatible_components_.erase(name);
 }
 
@@ -318,6 +323,13 @@ base::FilePath CrOSComponentInstaller::GetCompatiblePath(
 void CrOSComponentInstaller::EmitInstalledSignal(const std::string& component) {
   if (delegate_)
     delegate_->EmitInstalledSignal(component);
+}
+
+CrOSComponentInstaller::LoadInfo::LoadInfo() = default;
+CrOSComponentInstaller::LoadInfo::~LoadInfo() = default;
+std::map<std::string, CrOSComponentInstaller::LoadInfo>&
+CrOSComponentInstaller::GetLoadCacheForTesting() {
+  return load_cache_;
 }
 
 bool CrOSComponentInstaller::IsRegisteredMayBlock(const std::string& name) {
@@ -420,6 +432,23 @@ void CrOSComponentInstaller::FinishInstall(const std::string& name,
 
 void CrOSComponentInstaller::LoadInternal(const std::string& name,
                                           LoadCallback load_callback) {
+  // Use the cached value if it exists.
+  auto it = load_cache_.find(name);
+  if (it != load_cache_.end()) {
+    // If the request is ongoing, queue up a callback.
+    if (!it->second.success.has_value()) {
+      it->second.callbacks.push_back(std::move(load_callback));
+      return;
+    }
+    // Otherwise immediately dispatch.
+    DispatchLoadCallback(std::move(load_callback), it->second.path,
+                         it->second.success.value());
+    return;
+  }
+
+  // Update the cache to indicate the request is being queued.
+  load_cache_[name].success = absl::nullopt;
+
   const base::FilePath path = GetCompatiblePath(name);
   DCHECK(!path.empty());
   chromeos::DBusThreadManager::Get()
@@ -438,16 +467,25 @@ void CrOSComponentInstaller::FinishLoad(LoadCallback load_callback,
   // Report component image mount time.
   UMA_HISTOGRAM_LONG_TIMES("ComponentUpdater.ChromeOS.MountTime",
                            base::TimeTicks::Now() - start_time);
-  if (!result.has_value()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(load_callback),
-                       ReportError(Error::MOUNT_FAILURE), base::FilePath()));
-  } else {
-    metadata_table_->AddComponentForCurrentUser(name);
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(load_callback),
-                                  ReportError(Error::NONE), result.value()));
+
+  bool success = result.has_value();
+  base::FilePath path;
+  if (success)
+    path = result.value();
+
+  DispatchLoadCallback(std::move(load_callback), path, success);
+
+  // Update the cache.
+  auto it = load_cache_.find(name);
+  if (it != load_cache_.end()) {
+    it->second.success = success;
+    it->second.path = path;
+
+    // Dispatch queued up callbacks.
+    for (LoadCallback& queued_callback : it->second.callbacks) {
+      DispatchLoadCallback(std::move(queued_callback), path, success);
+    }
+    it->second.callbacks.clear();
   }
 }
 
@@ -461,6 +499,23 @@ void CrOSComponentInstaller::RegisterN(
 
 bool CrOSComponentInstaller::IsCompatible(const std::string& name) const {
   return compatible_components_.count(name) > 0;
+}
+
+void CrOSComponentInstaller::DispatchLoadCallback(LoadCallback callback,
+                                                  base::FilePath path,
+                                                  bool success) {
+  Error error = success ? Error::NONE : Error::MOUNT_FAILURE;
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), ReportError(error), std::move(path)));
+}
+
+void CrOSComponentInstaller::DispatchFailedLoads(
+    std::vector<LoadCallback> callbacks) {
+  for (LoadCallback& callback : callbacks) {
+    DispatchLoadCallback(std::move(callback), base::FilePath(),
+                         /*success=*/false);
+  }
 }
 
 }  // namespace component_updater

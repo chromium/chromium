@@ -157,6 +157,28 @@ class CrOSComponentInstaller : public CrOSComponentManager {
   // Broadcasts a D-Bus signal for a successful component installation.
   void EmitInstalledSignal(const std::string& component);
 
+  // The load cache contains three pieces of information:
+  //   (1) For a given component, whether the load request was successful, a
+  //   failure, or in-progress.
+  //   (2) If the load request was successful, the file path to the loaded
+  //   image.
+  //   (3) If the load request is in progress, the callbacks to invoke after the
+  //   load request finishes.
+  struct LoadInfo {
+    LoadInfo();
+    ~LoadInfo();
+    // If null, then the request is pending.
+    absl::optional<bool> success;
+    // Only populated on success.
+    base::FilePath path;
+    // Only populated if request is pending. Includes all subsequent callbacks
+    // after the first.
+    std::vector<LoadCallback> callbacks;
+  };
+
+  // Test-only method for introspection.
+  std::map<std::string, LoadInfo>& GetLoadCacheForTesting();
+
  protected:
   ~CrOSComponentInstaller() override;
 
@@ -211,6 +233,13 @@ class CrOSComponentInstaller : public CrOSComponentManager {
   // |name|.
   bool IsCompatible(const std::string& name) const;
 
+  // Posts a task with the response information for |callback|.
+  void DispatchLoadCallback(LoadCallback callback,
+                            base::FilePath path,
+                            bool success);
+  // Repeatedly calls DispatchLoadCallback with failure parameters.
+  void DispatchFailedLoads(std::vector<LoadCallback> callbacks);
+
   // Maps from a compatible component name to its installed path.
   base::flat_map<std::string, base::FilePath> compatible_components_;
 
@@ -219,6 +248,10 @@ class CrOSComponentInstaller : public CrOSComponentManager {
 
   // Table storing metadata (installs, usage, etc.).
   std::unique_ptr<MetadataTable> metadata_table_;
+
+  // The load cache stores ongoing load requests, as well as the finished
+  // results.
+  std::map<std::string, LoadInfo> load_cache_;
 
   ComponentUpdateService* const component_updater_;
 };
