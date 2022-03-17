@@ -56,6 +56,7 @@
     <dimen name="omnibox_carousel_icon_rounding_radius">4dp</dimen>
     <dimen name="omnibox_pedal_suggestion_pedal_height">48dp</dimen>
     <dimen name="omnibox_pedal_suggestion_icon_size">18dp</dimen>
+    <dimen name="omnibox_pedal_suggestion_text_vertical_padding">6dp</dimen>
 
     <dimen name="omnibox_suggestion_36dp_icon_size">36dp</dimen>
     <dimen name="omnibox_suggestion_24dp_icon_size">24dp</dimen>

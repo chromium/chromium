@@ -110,6 +110,7 @@
         <attr name="primaryTextAppearance" format="reference"/>
         <attr name="endIconWidth" format="reference|dimension"/>
         <attr name="endIconHeight" format="reference|dimension"/>
+        <attr name="multiLineVerticalPadding" format="reference|dimension"/>
         <attr name="secondaryTextAppearance" format="reference"/>
         <attr name="rippleColor"/>
         <attr name="verticalInset"/>

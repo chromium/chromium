@@ -39,6 +39,8 @@
     <style name="OmniboxPedalChip" parent="SuggestionChip">
         <item name="iconWidth">@dimen/omnibox_pedal_suggestion_icon_size</item>
         <item name="iconHeight">@dimen/omnibox_pedal_suggestion_icon_size</item>
+        <item name="allowMultipleLines">true</item>
+        <item name="multiLineVerticalPadding">@dimen/omnibox_pedal_suggestion_text_vertical_padding</item>
         <item name="textAlignStart">true</item>
     </style>
 
