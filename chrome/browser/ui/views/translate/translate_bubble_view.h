@@ -57,7 +57,7 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
     CHANGE_SOURCE_LANGUAGE
   };
 
-  // Element IDs for ui::ElementTracker
+  // Element IDs for ui::ElementTracker.
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kIdentifier);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSourceLanguageTab);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTargetLanguageTab);
@@ -236,11 +236,11 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
   // Creates a close button.
   std::unique_ptr<views::Button> CreateCloseButton();
 
-  // Get the current always translate checkbox
+  // Get the current always translate checkbox.
   views::Checkbox* GetAlwaysTranslateCheckbox();
 
   // Sets the window title. The window title still needs to be set, even when it
-  // is not shown, for accessiblity purposes.
+  // is not shown, for accessibility purposes.
   void SetWindowTitle(TranslateBubbleModel::ViewState view_state);
 
   // Updates the view state. Whenever the view state is updated, the title needs
