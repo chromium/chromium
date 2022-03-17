@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
+#include "base/numerics/checked_math.h"
 #include "base/trace_event/trace_event.h"
 #include "mojo/core/configuration.h"
 #include "mojo/core/core.h"
@@ -530,8 +531,10 @@ void DataPipeProducerDispatcher::UpdateSignalsStateNoLock() {
         TRACE_EVENT0("ipc",
                      "DataPipeProducerDispatcher received DATA_WAS_READ");
 
-        if (static_cast<size_t>(available_capacity_) + m->num_bytes >
-            options_.capacity_num_bytes) {
+        uint32_t new_available_capacity;
+        if (!base::CheckAdd(available_capacity_, m->num_bytes)
+                 .AssignIfValid(&new_available_capacity) ||
+            new_available_capacity > options_.capacity_num_bytes) {
           DLOG(ERROR) << "Consumer claims to have read too many bytes.";
           break;
         }
@@ -541,7 +544,7 @@ void DataPipeProducerDispatcher::UpdateSignalsStateNoLock() {
                  << " bytes were read. [control_port=" << control_port_.name()
                  << "]";
 
-        available_capacity_ += m->num_bytes;
+        available_capacity_ = new_available_capacity;
       }
     } while (message_event);
   }
