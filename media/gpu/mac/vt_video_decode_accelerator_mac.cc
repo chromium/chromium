@@ -953,6 +953,7 @@ void VTVideoDecodeAccelerator::DecodeTaskH264(
   // record parameter sets for VideoToolbox initialization.
   size_t data_size = 0;
   std::vector<H264NALU> nalus;
+  size_t first_slice_index = 0;
   h264_parser_.SetStream(buffer->data(), buffer->data_size());
   H264NALU nalu;
   while (true) {
@@ -1016,11 +1017,6 @@ void VTVideoDecodeAccelerator::DecodeTaskH264(
           return;
         }
         seen_pps_[pps_id].assign(nalu.data, nalu.data + nalu.size);
-        // Pass PPS as data to the platform decoder, it helps in cases
-        // when there are more than one PPS, Video Toolbox is smart enough
-        // to find and recognize them there.
-        nalus.push_back(nalu);
-        data_size += kNALUHeaderLength + nalu.size;
         break;
       }
 
@@ -1105,8 +1101,12 @@ void VTVideoDecodeAccelerator::DecodeTaskH264(
           frame->has_mmco5 = h264_poc_.IsPendingMMCO5();
           frame->pic_order_cnt = *pic_order_cnt;
           frame->reorder_window = ComputeH264ReorderWindow(sps);
+
+          first_slice_index = nalus.size();
         }
-        [[fallthrough]];
+        nalus.push_back(nalu);
+        data_size += kNALUHeaderLength + nalu.size;
+        break;
 
       default:
         nalus.push_back(nalu);
@@ -1140,27 +1140,53 @@ void VTVideoDecodeAccelerator::DecodeTaskH264(
     return;
   }
 
-  // Apply any configuration change, but only at an IDR. If there is no IDR, we
-  // just hope for the best from the decoder.
-  if (frame->is_idr &&
-      (configured_sps_ != active_sps_ || configured_spsext_ != active_spsext_ ||
-       configured_pps_ != active_pps_)) {
-    if (active_sps_.empty()) {
-      WriteToMediaLog(MediaLogMessageLevel::kERROR,
-                      "Invalid configuration (no SPS)");
-      NotifyError(INVALID_ARGUMENT, SFT_INVALID_STREAM);
-      return;
-    }
-    if (active_pps_.empty()) {
-      WriteToMediaLog(MediaLogMessageLevel::kERROR,
-                      "Invalid configuration (no PPS)");
-      NotifyError(INVALID_ARGUMENT, SFT_INVALID_STREAM);
-      return;
-    }
+  // If the configuration has changed, and we're at an IDR, reconfigure the
+  // decoding session. Otherwise insert the parameter sets and hope for the
+  // best.
+  if (configured_sps_ != active_sps_ || configured_spsext_ != active_spsext_ ||
+      configured_pps_ != active_pps_) {
+    if (frame->is_idr) {
+      if (active_sps_.empty()) {
+        WriteToMediaLog(MediaLogMessageLevel::kERROR,
+                        "Invalid configuration (no SPS)");
+        NotifyError(INVALID_ARGUMENT, SFT_INVALID_STREAM);
+        return;
+      }
+      if (active_pps_.empty()) {
+        WriteToMediaLog(MediaLogMessageLevel::kERROR,
+                        "Invalid configuration (no PPS)");
+        NotifyError(INVALID_ARGUMENT, SFT_INVALID_STREAM);
+        return;
+      }
 
-    // ConfigureDecoder() calls NotifyError() on failure.
-    if (!ConfigureDecoder())
-      return;
+      // ConfigureDecoder() calls NotifyError() on failure.
+      if (!ConfigureDecoder())
+        return;
+    } else {
+      // Only |data| and |size| are read later, other fields are left empty.
+      media::H264NALU sps_nalu;
+      sps_nalu.data = active_sps_.data();
+      sps_nalu.size = active_sps_.size();
+      nalus.insert(nalus.begin() + first_slice_index, sps_nalu);
+      data_size += kNALUHeaderLength + sps_nalu.size;
+      first_slice_index += 1;
+
+      if (active_spsext_.size()) {
+        media::H264NALU spsext_nalu;
+        spsext_nalu.data = active_spsext_.data();
+        spsext_nalu.size = active_spsext_.size();
+        nalus.insert(nalus.begin() + first_slice_index, spsext_nalu);
+        data_size += kNALUHeaderLength + spsext_nalu.size;
+        first_slice_index += 1;
+      }
+
+      media::H264NALU pps_nalu;
+      pps_nalu.data = active_pps_.data();
+      pps_nalu.size = active_pps_.size();
+      nalus.insert(nalus.begin() + first_slice_index, pps_nalu);
+      data_size += kNALUHeaderLength + pps_nalu.size;
+      first_slice_index += 1;
+    }
   }
 
   // If the session is not configured by this point, fail.
