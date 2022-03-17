@@ -13,7 +13,10 @@
     }
 
     function getCookie() {
-      return document.cookie;
+      if (document.cookie)
+        return document.cookie;
+
+      return '';
     }
   </script>
   <body>Test for setting and getting cookies.</body>
