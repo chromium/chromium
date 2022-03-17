@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/files/file.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
@@ -24,6 +25,7 @@
 #include "content/public/browser/first_party_sets_handler.h"
 #include "content/public/common/content_features.h"
 #include "net/cookies/cookie_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using component_updater::ComponentUpdateService;
 
@@ -51,8 +53,11 @@ base::File OpenFile(const base::FilePath& pb_path) {
   return base::File(pb_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
 }
 
-base::FilePath& GetConfigPathInstance() {
-  static base::NoDestructor<base::FilePath> instance;
+absl::optional<base::FilePath>& GetConfigPathInstance() {
+  // Contains nullopt until registration is complete. Afterward, contains the
+  // FilePath for the component file, or an empty FilePath if no component was
+  // installed at startup.
+  static base::NoDestructor<absl::optional<base::FilePath>> instance;
   return *instance;
 }
 
@@ -74,8 +79,15 @@ void SetFirstPartySetsConfig(SetsReadyOnceCallback on_sets_ready) {
     return;
   }
 
-  const base::FilePath instance_path = GetConfigPathInstance();
-  if (instance_path.empty()) {
+  const absl::optional<base::FilePath>& instance_path = GetConfigPathInstance();
+  if (!instance_path.has_value()) {
+    // Registration not is complete yet. The policy's `on_sets_ready_` callback
+    // will still be invoked once registration is done, so we don't bother to
+    // save or invoke `on_sets_ready`.
+    return;
+  }
+
+  if (instance_path->empty()) {
     // Registration is complete, but no component version exists on disk.
     std::move(on_sets_ready).Run(base::File());
     return;
@@ -85,7 +97,7 @@ void SetFirstPartySetsConfig(SetsReadyOnceCallback on_sets_ready) {
   // network navigations at startup.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), GetTaskPriority()},
-      base::BindOnce(&OpenFile, instance_path), std::move(on_sets_ready));
+      base::BindOnce(&OpenFile, *instance_path), std::move(on_sets_ready));
 }
 
 std::string BoolToString(bool b) {
@@ -103,6 +115,8 @@ void FirstPartySetsComponentInstallerPolicy::ReconfigureAfterNetworkRestart(
 }
 
 void FirstPartySetsComponentInstallerPolicy::OnRegistrationComplete() {
+  if (!GetConfigPathInstance().has_value())
+    GetConfigPathInstance() = base::FilePath();
   SetFirstPartySetsConfig(std::move(on_sets_ready_));
 }
 
@@ -149,7 +163,7 @@ void FirstPartySetsComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
     base::Value manifest) {
-  if (install_dir.empty() || !GetConfigPathInstance().empty())
+  if (install_dir.empty() || GetConfigPathInstance().has_value())
     return;
 
   VLOG(1) << "First-Party Sets Component ready, version " << version.GetString()
@@ -202,7 +216,7 @@ FirstPartySetsComponentInstallerPolicy::GetInstallerAttributes() const {
 
 // static
 void FirstPartySetsComponentInstallerPolicy::ResetForTesting() {
-  GetConfigPathInstance().clear();
+  GetConfigPathInstance().reset();
 }
 
 void RegisterFirstPartySetsComponent(ComponentUpdateService* cus) {

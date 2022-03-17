@@ -292,6 +292,60 @@ TEST_F(FirstPartySetsComponentInstallerFeatureEnabledTest,
   }
 }
 
+TEST_F(FirstPartySetsComponentInstallerFeatureEnabledTest,
+       ReconfigureNetworkBeforeComponentReady) {
+  SEQUENCE_CHECKER(sequence_checker);
+  const std::string expectation = "some first party sets";
+
+  base::RunLoop run_loop;
+  FirstPartySetsComponentInstallerPolicy policy(
+      base::BindLambdaForTesting([&](base::File file) {
+        DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
+        EXPECT_TRUE(file.IsValid());
+        EXPECT_EQ(ReadToString(std::move(file)), expectation);
+        run_loop.Quit();
+      }));
+
+  ASSERT_TRUE(
+      base::WriteFile(FirstPartySetsComponentInstallerPolicy::GetInstalledPath(
+                          component_install_dir_.GetPath()),
+                      expectation));
+
+  policy.ReconfigureAfterNetworkRestart(
+      base::BindLambdaForTesting([](base::File file) {
+        // Should not be called.
+        EXPECT_TRUE(false);
+      }));
+
+  policy.ComponentReady(base::Version(), component_install_dir_.GetPath(),
+                        base::Value(base::Value::Type::DICTIONARY));
+
+  run_loop.Run();
+}
+
+TEST_F(FirstPartySetsComponentInstallerFeatureEnabledTest,
+       ReconfigureNetworkBeforeRegistrationComplete) {
+  SEQUENCE_CHECKER(sequence_checker);
+
+  base::RunLoop run_loop;
+  FirstPartySetsComponentInstallerPolicy policy(
+      base::BindLambdaForTesting([&](base::File file) {
+        DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
+        EXPECT_FALSE(file.IsValid());
+        run_loop.Quit();
+      }));
+
+  policy.ReconfigureAfterNetworkRestart(
+      base::BindLambdaForTesting([](base::File file) {
+        // Should not be called.
+        EXPECT_TRUE(false);
+      }));
+
+  policy.OnRegistrationComplete();
+
+  run_loop.Run();
+}
+
 // Test ReconfigureAfterNetworkRestart calls the callback with the correct
 // version, i.e. the first installed component, even if there are newer versions
 // installed after browser startup.
