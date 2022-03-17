@@ -290,8 +290,7 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
     ClearIOSSnapshots(CreatePendingTaskCompletionClosure());
   }
 
-  constexpr base::TaskTraits task_traits = {
-      web::WebThread::IO, base::TaskShutdownBehavior::BLOCK_SHUTDOWN};
+  auto io_thread_task_runner = web::GetIOThreadTaskRunner({});
 
   if (IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::REMOVE_COOKIES)) {
     if (!browser_state_->IsOffTheRecord()) {
@@ -301,8 +300,8 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
     }
     net::CookieDeletionInfo::TimeRange deletion_time_range =
         net::CookieDeletionInfo::TimeRange(delete_begin, delete_end);
-    base::PostTask(
-        FROM_HERE, task_traits,
+    io_thread_task_runner->PostTask(
+        FROM_HERE,
         base::BindOnce(
             &ClearCookies, context_getter_, deletion_time_range,
             base::BindOnce(base::IgnoreResult(&base::TaskRunner::PostTask),
@@ -350,8 +349,8 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
     IOSChromeIOThread* ios_chrome_io_thread =
         GetApplicationContext()->GetIOSChromeIOThread();
     if (ios_chrome_io_thread) {
-      base::PostTaskAndReply(
-          FROM_HERE, task_traits,
+      io_thread_task_runner->PostTaskAndReply(
+          FROM_HERE,
           base::BindOnce(&IOSChromeIOThread::ClearHostCache,
                          base::Unretained(ios_chrome_io_thread)),
           CreatePendingTaskCompletionClosure());
@@ -465,9 +464,8 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
 
   if (IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::REMOVE_CACHE)) {
     base::RecordAction(base::UserMetricsAction("ClearBrowsingData_Cache"));
-    ClearHttpCache(context_getter_,
-                   base::CreateSingleThreadTaskRunner(task_traits),
-                   delete_begin, delete_end,
+    ClearHttpCache(context_getter_, io_thread_task_runner, delete_begin,
+                   delete_end,
                    base::BindOnce(&NetCompletionCallbackAdapter,
                                   CreatePendingTaskCompletionClosure()));
   }
