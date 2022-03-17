@@ -161,6 +161,9 @@ int UninstallImpl(UpdaterScope scope, bool uninstall_all) {
       uninstall_list->Rollback();
       return kErrorFailedToDeleteRegistryKeys;
     }
+
+    // TODO(crbug.com/1307528) : Windows Uninstall discrepancies need fixing.
+    DeleteGoogleUpdateEntries(scope, key);
   }
 
   DeleteComInterfaces(key, uninstall_all);
@@ -170,8 +173,6 @@ int UninstallImpl(UpdaterScope scope, bool uninstall_all) {
 
   if (scope == UpdaterScope::kUser)
     UnregisterUserRunAtStartup(GetTaskNamePrefix(scope));
-
-  DeleteGoogleUpdateEntries(scope, key);
 
   return RunUninstallScript(scope, uninstall_all);
 }
