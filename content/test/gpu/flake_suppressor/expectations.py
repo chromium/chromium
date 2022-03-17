@@ -448,7 +448,7 @@ def GetExpectationFilesFromOrigin():
     files.append(line.split()[-1])
 
   origin_file_contents = {}
-  for f in files:
+  for f in (f for f in files if f.endswith('.txt')):
     origin_filepath = posixpath.join(origin_dir, f)
     origin_filepath_url = posixpath.join(GITILES_URL,
                                          origin_filepath) + TEXT_FORMAT_ARG
@@ -467,7 +467,8 @@ def GetExpectationFilesFromLocalCheckout():
     that are available from the local checkout.
   """
   local_file_contents = {}
-  for f in os.listdir(ABSOLUTE_EXPECTATION_FILE_DIRECTORY):
+  for f in (f for f in os.listdir(ABSOLUTE_EXPECTATION_FILE_DIRECTORY)
+            if f.endswith('.txt')):
     with open(os.path.join(ABSOLUTE_EXPECTATION_FILE_DIRECTORY, f)) as infile:
       local_file_contents[f] = infile.read()
   return local_file_contents
