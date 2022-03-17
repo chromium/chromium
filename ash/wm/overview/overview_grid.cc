@@ -2418,6 +2418,7 @@ void OverviewGrid::OnDesksTemplatesGridFadedOut() {
   desks_bar_view_->UpdateButtonsForDesksTemplatesGrid();
   desks_bar_view_->OnDesksTemplatesGridHidden();
   UpdateSaveDeskAsTemplateButton();
+  UpdateNoWindowsWidget(/*no_items=*/empty());
 }
 
 void OverviewGrid::OnSaveDeskAsTemplateButtonFadedOut() {

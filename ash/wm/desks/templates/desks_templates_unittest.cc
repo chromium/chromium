@@ -472,6 +472,38 @@ TEST_F(DesksTemplatesTest, NoWindowsLabelOnTemplateGridShow) {
   EXPECT_FALSE(grid_list[1]->no_windows_widget());
 }
 
+// Tests that the no windows widget is shown when the last desk template is
+// deleted, forcing it out of desk template grid and return to overview mode
+// onto a desk grid with no windows
+TEST_F(DesksTemplatesTest, NoWindowsLabelOnReturnToEmptyOverviewDesk) {
+  UpdateDisplay("800x600,800x600");
+  // Create a test window.
+  auto test_window = CreateAppWindow();
+
+  // Open overview and save a template.
+  OpenOverviewAndSaveTemplate(Shell::Get()->GetPrimaryRootWindow());
+  std::vector<DeskTemplate*> entries = GetAllEntries();
+  ASSERT_EQ(1ul, desk_model()->GetEntryCount());
+
+  // Close the window and enter overview mode. The no windows widget should be
+  // shown.
+  test_window.reset();
+  ToggleOverview();
+  WaitForDesksTemplatesUI();
+  EXPECT_TRUE(GetOverviewGridList()[0]->no_windows_widget());
+
+  // Open the desk templates grid. The no windows widget should now be hidden.
+  ShowDesksTemplatesGrids();
+  EXPECT_FALSE(GetOverviewGridList()[0]->no_windows_widget());
+
+  // Delete the one and only template, which should hide the templates grid but
+  // remain in overview. Check that the no windows widget is now back.
+  OpenOverviewAndShowTemplatesGrid();
+  DeleteTemplate(entries[0]->uuid(), /*expected_current_item_count=*/1);
+  ASSERT_TRUE(InOverviewSession());
+  EXPECT_TRUE(GetOverviewGridList()[0]->no_windows_widget());
+}
+
 // Tests that the "App does not support split-screen" label is hidden when the
 // desk templates grid is shown.
 TEST_F(DesksTemplatesTest, NoAppSplitScreenLabelOnTemplateGridShow) {
