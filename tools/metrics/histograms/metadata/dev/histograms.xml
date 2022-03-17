@@ -370,6 +370,14 @@ chromium-metrics-reviews@google.com.
   <summary>Specified DevTools sidebar pane was shown.</summary>
 </histogram>
 
+<histogram name="DevTools.StyleTextCopied" enum="DevToolsStyleTextCopied"
+    expires_after="2022-12-01">
+  <owner>changhaohan@chromium.org</owner>
+  <owner>mathias@chromium.org</owner>
+  <owner>yangguo@chromium.org</owner>
+  <summary>Recorded when certain style text is copied in DevTools.</summary>
+</histogram>
+
 <histogram name="DevTools.SyncSetting" enum="DevToolsSyncSetting"
     expires_after="2022-12-01">
   <owner>bmeurer@chromium.org</owner>
