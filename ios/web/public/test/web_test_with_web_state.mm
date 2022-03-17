@@ -74,48 +74,8 @@ void WebTestWithWebState::AddPendingItem(const GURL& url,
 }
 
 bool WebTestWithWebState::LoadHtmlWithoutSubresources(const std::string& html) {
-  NSString* block_all = @"[{"
-                         "  \"trigger\": {"
-                         "    \"url-filter\": \".*\""
-                         "  },"
-                         "  \"action\": {"
-                         "    \"type\": \"block\""
-                         "  }"
-                         "}]";
-  __block WKContentRuleList* content_rule_list = nil;
-  __block NSError* error = nil;
-  __block BOOL rule_compilation_completed = NO;
-  [WKContentRuleListStore.defaultStore
-      compileContentRuleListForIdentifier:@"block_everything"
-                   encodedContentRuleList:block_all
-                        completionHandler:^(WKContentRuleList* rule_list,
-                                            NSError* err) {
-                          error = err;
-                          content_rule_list = rule_list;
-                          rule_compilation_completed = YES;
-                        }];
-
-  bool success = WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool {
-    return rule_compilation_completed;
-  });
-  if (!success) {
-    DLOG(WARNING) << "ContentRuleList compilation timed out.";
-    return false;
-  }
-  if (error) {
-    DLOG(WARNING) << "ContentRuleList compilation failed with error: "
-                  << base::SysNSStringToUTF8(error.description);
-    return false;
-  }
-  DCHECK(content_rule_list);
-  WKWebViewConfigurationProvider& configuration_provider =
-      WKWebViewConfigurationProvider::FromBrowserState(GetBrowserState());
-  WKWebViewConfiguration* configuration =
-      configuration_provider.GetWebViewConfiguration();
-  [configuration.userContentController addContentRuleList:content_rule_list];
-  bool result = LoadHtml(html);
-  [configuration.userContentController removeContentRuleList:content_rule_list];
-  return result;
+  return web::test::LoadHtmlWithoutSubresources(base::SysUTF8ToNSString(html),
+                                                web_state());
 }
 
 void WebTestWithWebState::LoadHtml(NSString* html, const GURL& url) {

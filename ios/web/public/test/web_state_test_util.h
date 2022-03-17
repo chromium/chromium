@@ -25,6 +25,10 @@ void LoadHtml(NSString* html, const GURL& url, web::WebState* web_state);
 // Loads the specified HTML content into the WebState, using test url name.
 void LoadHtml(NSString* html, web::WebState* web_state);
 
+// Loads the specified HTML content with URL into the WebState. None of the
+// subresources will be fetched.
+bool LoadHtmlWithoutSubresources(NSString* html, web::WebState* web_state);
+
 }  // namespace test
 }  // namespace web
 

@@ -12,6 +12,7 @@
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/web_state/ui/crw_web_controller.h"
+#import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
 #import "ios/web/web_state/web_state_impl.h"
 #include "url/gurl.h"
 
@@ -98,6 +99,53 @@ void LoadHtml(NSString* html, const GURL& url, web::WebState* web_state) {
 void LoadHtml(NSString* html, web::WebState* web_state) {
   GURL url("https://chromium.test/");
   LoadHtml(html, url, web_state);
+}
+
+bool LoadHtmlWithoutSubresources(NSString* html, web::WebState* web_state) {
+  NSString* block_all = @"[{"
+                         "  \"trigger\": {"
+                         "    \"url-filter\": \".*\""
+                         "  },"
+                         "  \"action\": {"
+                         "    \"type\": \"block\""
+                         "  }"
+                         "}]";
+  __block WKContentRuleList* content_rule_list = nil;
+  __block NSError* error = nil;
+  __block BOOL rule_compilation_completed = NO;
+  [WKContentRuleListStore.defaultStore
+      compileContentRuleListForIdentifier:@"block_everything"
+                   encodedContentRuleList:block_all
+                        completionHandler:^(WKContentRuleList* rule_list,
+                                            NSError* err) {
+                          error = err;
+                          content_rule_list = rule_list;
+                          rule_compilation_completed = YES;
+                        }];
+
+  bool success = WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForActionTimeout, ^bool {
+        return rule_compilation_completed;
+      });
+  if (!success) {
+    DLOG(WARNING) << "ContentRuleList compilation timed out.";
+    return false;
+  }
+  if (error) {
+    DLOG(WARNING) << "ContentRuleList compilation failed with error: "
+                  << base::SysNSStringToUTF8(error.description);
+    return false;
+  }
+  DCHECK(content_rule_list);
+  web::WKWebViewConfigurationProvider& configuration_provider =
+      web::WKWebViewConfigurationProvider::FromBrowserState(
+          web_state->GetBrowserState());
+  WKWebViewConfiguration* configuration =
+      configuration_provider.GetWebViewConfiguration();
+  [configuration.userContentController addContentRuleList:content_rule_list];
+  web::test::LoadHtml(html, web_state);
+  [configuration.userContentController removeContentRuleList:content_rule_list];
+  return true;
 }
 
 }  // namespace test
