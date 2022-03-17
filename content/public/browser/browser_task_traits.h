@@ -69,8 +69,6 @@ enum class BrowserTaskType {
 // in the order they were posted, regardless of the TaskRunners they were
 // posted via.
 //
-// See //base/task/post_task.h for more detailed documentation.
-//
 // Posting to a BrowserThread must only be done after it was initialized (ref.
 // BrowserMainLoop::CreateThreads() phase).
 class CONTENT_EXPORT BrowserTaskTraitsExtension {
