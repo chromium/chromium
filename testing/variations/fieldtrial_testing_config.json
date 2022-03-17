@@ -6754,7 +6754,6 @@
     "TailoredSecurityIntegration": [
         {
             "platforms": [
-                "android",
                 "chromeos",
                 "chromeos_lacros",
                 "linux",
@@ -6764,6 +6763,21 @@
             "experiments": [
                 {
                     "name": "TailoredSecurityIntegration",
+                    "enable_features": [
+                        "TailoredSecurityIntegration"
+                    ]
+                }
+            ]
+        }
+    ],
+    "TailoredSecurityIntegrationAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20220302",
                     "enable_features": [
                         "TailoredSecurityIntegration"
                     ]
