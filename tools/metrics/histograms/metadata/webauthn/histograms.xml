@@ -22,6 +22,15 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="WebAuthentication.BLEUserEvents"
+    enum="WebAuthenticationBLEUserEvents" expires_after="2022-12-31">
+  <owner>agl@chromium.org</owner>
+  <owner>martinkr@google.com</owner>
+  <summary>
+    Records user-visible BLE events that occur during a WebAuthn flow.
+  </summary>
+</histogram>
+
 <histogram name="WebAuthentication.CableV1DiscoveryEvent"
     enum="WebAuthenticationCableV1DiscoveryEvent" expires_after="2022-07-03">
   <owner>agl@chromium.org</owner>

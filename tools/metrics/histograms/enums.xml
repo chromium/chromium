@@ -94468,6 +94468,15 @@ others/histograms.xml -->
   <int value="4" label="Abandoned"/>
 </enum>
 
+<enum name="WebAuthenticationBLEUserEvents">
+  <int value="0" label="BLE was already powered on"/>
+  <int value="1"
+      label="BLE needs to be powered on so the user was asked to approve"/>
+  <int value="2"
+      label="BLE needs to be powered on, and that can only be done externally"/>
+  <int value="3" label="BLE needed to be powered on, and was powered on"/>
+</enum>
+
 <enum name="WebAuthenticationCableV1DiscoveryEvent">
   <int value="0" label="Discovery started"/>
   <int value="1" label="Adapter found"/>

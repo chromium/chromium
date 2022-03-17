@@ -10,7 +10,7 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -26,6 +26,17 @@
 #include "ui/gfx/text_elider.h"
 
 namespace {
+
+// BleEvent enumerates user-visible BLE events.
+enum class BleEvent {
+  kAlreadyPowered = 0,    // BLE was already powered.
+  kNeedsPowerAuto = 1,    // BLE was not powered and so we asked the user.
+  kNeedsPowerManual = 2,  // BLE was not powered and so we asked the user, but
+                          // they have to do it manually.
+  kNewlyPowered = 3,      // BLE wasn't powered, but the user turned it on.
+
+  kMaxValue = kNewlyPowered,
+};
 
 constexpr int GetMessageIdForTransportDescription(
     AuthenticatorTransport transport) {
@@ -249,7 +260,10 @@ void AuthenticatorRequestDialogModel::
          current_step() == Step::kAndroidAccessory ||
          current_step() == Step::kOffTheRecordInterstitial ||
          current_step() == Step::kNotStarted);
+
   if (ble_adapter_is_powered()) {
+    base::UmaHistogramEnumeration("WebAuthentication.BLEUserEvents",
+                                  BleEvent::kAlreadyPowered);
     SetCurrentStep(step);
     return;
   }
@@ -257,15 +271,25 @@ void AuthenticatorRequestDialogModel::
   after_ble_adapter_powered_ =
       base::BindOnce(&AuthenticatorRequestDialogModel::SetCurrentStep,
                      weak_factory_.GetWeakPtr(), step);
-  SetCurrentStep(transport_availability()->can_power_on_ble_adapter
-                     ? Step::kBlePowerOnAutomatic
-                     : Step::kBlePowerOnManual);
+
+  BleEvent event;
+  if (transport_availability()->can_power_on_ble_adapter) {
+    event = BleEvent::kNeedsPowerAuto;
+    SetCurrentStep(Step::kBlePowerOnAutomatic);
+  } else {
+    event = BleEvent::kNeedsPowerManual;
+    SetCurrentStep(Step::kBlePowerOnManual);
+  }
+
+  base::UmaHistogramEnumeration("WebAuthentication.BLEUserEvents", event);
 }
 
 void AuthenticatorRequestDialogModel::ContinueWithFlowAfterBleAdapterPowered() {
   DCHECK(current_step() == Step::kBlePowerOnManual ||
          current_step() == Step::kBlePowerOnAutomatic);
   DCHECK(ble_adapter_is_powered());
+  base::UmaHistogramEnumeration("WebAuthentication.BLEUserEvents",
+                                BleEvent::kNewlyPowered);
 
   std::move(after_ble_adapter_powered_).Run();
 }
@@ -814,12 +838,21 @@ void AuthenticatorRequestDialogModel::ContactPhoneAfterOffTheRecordInterstitial(
     after_ble_adapter_powered_ = base::BindOnce(
         &AuthenticatorRequestDialogModel::ContactPhoneAfterBleIsPowered,
         weak_factory_.GetWeakPtr(), std::move(name));
-    SetCurrentStep(transport_availability()->can_power_on_ble_adapter
-                       ? Step::kBlePowerOnAutomatic
-                       : Step::kBlePowerOnManual);
+
+    BleEvent event;
+    if (transport_availability()->can_power_on_ble_adapter) {
+      event = BleEvent::kNeedsPowerAuto;
+      SetCurrentStep(Step::kBlePowerOnAutomatic);
+    } else {
+      event = BleEvent::kNeedsPowerManual;
+      SetCurrentStep(Step::kBlePowerOnManual);
+    }
+    base::UmaHistogramEnumeration("WebAuthentication.BLEUserEvents", event);
     return;
   }
 
+  base::UmaHistogramEnumeration("WebAuthentication.BLEUserEvents",
+                                BleEvent::kAlreadyPowered);
   ContactPhoneAfterBleIsPowered(std::move(name));
 }
 
