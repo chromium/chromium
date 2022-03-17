@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/testapi/oobe_test_api_handler.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/logging.h"
@@ -45,9 +46,11 @@ void OobeTestAPIHandler::Initialize() {}
 
 void OobeTestAPIHandler::GetAdditionalParameters(base::DictionaryValue* dict) {
   login::NetworkStateHelper helper_;
-  dict->SetBoolKey("testapi_shouldSkipNetworkFirstShow",
-                   features::IsOobeNetworkScreenSkipEnabled() &&
-                       helper_.IsConnectedToEthernet());
+  dict->SetBoolKey(
+      "testapi_shouldSkipNetworkFirstShow",
+      features::IsOobeNetworkScreenSkipEnabled() &&
+          !ash::switches::IsOOBENetworkScreenSkippingDisabledForTesting() &&
+          helper_.IsConnectedToEthernet());
   dict->SetBoolKey(
       "testapi_shouldSkipEula",
       policy::EnrollmentRequisitionManager::IsRemoraRequisition() ||

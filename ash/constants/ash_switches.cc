@@ -362,6 +362,10 @@ const char kDisableMachineCertRequest[] = "disable-machine-cert-request";
 const char kDisableOOBEChromeVoxHintTimerForTesting[] =
     "disable-oobe-chromevox-hint-timer-for-testing";
 
+// Disables network screen skip check which is based on ethernet connection.
+const char kDisableOOBENetworkScreenSkippingForTesting[] =
+    "disable-oobe-network-screen-skipping-for-testing";
+
 // Disables per-user timezone.
 const char kDisablePerUserTimezone[] = "disable-per-user-timezone";
 
@@ -935,6 +939,11 @@ bool IsAueReachedForUpdateRequiredForTest() {
 bool IsOOBEChromeVoxHintTimerDisabledForTesting() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       kDisableOOBEChromeVoxHintTimerForTesting);
+}
+
+bool IsOOBENetworkScreenSkippingDisabledForTesting() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kDisableOOBENetworkScreenSkippingForTesting);
 }
 
 bool IsOOBEChromeVoxHintEnabledForDevMode() {

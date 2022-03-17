@@ -106,6 +106,10 @@ void OobeBaseTest::SetUpCommandLine(base::CommandLine* command_line) {
       switches::kDisableOOBEChromeVoxHintTimerForTesting);
   if (!needs_background_networking_)
     command_line->AppendSwitch(::switches::kDisableBackgroundNetworking);
+  if (!needs_network_screen_skip_check_) {
+    command_line->AppendSwitch(
+        switches::kDisableOOBENetworkScreenSkippingForTesting);
+  }
   command_line->AppendSwitchASCII(switches::kLoginProfile, "user");
 
   MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);

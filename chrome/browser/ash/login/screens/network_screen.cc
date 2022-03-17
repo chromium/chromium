@@ -248,8 +248,10 @@ void NetworkScreen::OnContinueButtonClicked() {
 }
 
 bool NetworkScreen::UpdateStatusIfConnectedToEthernet() {
-  if (!features::IsOobeNetworkScreenSkipEnabled())
+  if (!features::IsOobeNetworkScreenSkipEnabled() ||
+      switches::IsOOBENetworkScreenSkippingDisabledForTesting()) {
     return false;
+  }
 
   if (!first_ethernet_connection_)
     return false;

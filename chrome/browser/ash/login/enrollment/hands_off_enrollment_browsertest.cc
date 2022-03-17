@@ -48,6 +48,8 @@ class HandsOffEnrollmentTest : public MixinBasedInProcessBrowserTest {
     command_line->AppendSwitchASCII(
         switches::kEnterpriseEnableZeroTouchEnrollment, "hands-off");
     command_line->AppendSwitch(switches::kLoginManager);
+    command_line->AppendSwitch(
+        switches::kDisableOOBENetworkScreenSkippingForTesting);
   }
 
   void SetUpOnMainThread() override {
