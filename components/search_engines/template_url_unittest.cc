@@ -14,6 +14,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/google/core/common/google_util.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -604,6 +605,7 @@ TEST_F(TemplateURLTest, ReplaceSearchTermsMultipleEncodings) {
 
 // Tests replacing assisted query stats (AQS) in various scenarios.
 TEST_F(TemplateURLTest, ReplaceAssistedQueryStats) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({omnibox::kReportAssistedQueryStats}, {});
 
@@ -650,16 +652,22 @@ TEST_F(TemplateURLTest, ReplaceAssistedQueryStats) {
     ASSERT_TRUE(result.is_valid());
     EXPECT_EQ(test_data[i].expected_result, result.spec());
   }
+  // Expect correct histograms to have been logged.
+  histogram_tester.ExpectTotalCount("Omnibox.AssistedQueryStats.Length", 2);
+  histogram_tester.ExpectBucketCount("Omnibox.AssistedQueryStats.Length", 12,
+                                     2);
 }
 
 // Tests replacing searchbox stats (gs_lcrp) in various scenarios.
 TEST_F(TemplateURLTest, ReplaceSearchboxStats) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({omnibox::kReportSearchboxStats}, {});
 
   metrics::ChromeSearchboxStats empty_searchbox_stats;
   metrics::ChromeSearchboxStats non_empty_searchbox_stats;
   non_empty_searchbox_stats.set_client_name("chrome");
+  non_empty_searchbox_stats.set_zero_prefix_enabled(true);
 
   struct TestData {
     const std::u16string search_term;
@@ -679,7 +687,7 @@ TEST_F(TemplateURLTest, ReplaceSearchboxStats) {
       // HTTPS and non-empty gs_lcrp: replace gs_lcrp.
       {u"foo", non_empty_searchbox_stats, "https://foo/",
        "{google:baseURL}?q={searchTerms}&{google:searchboxStats}",
-       "https://foo/?q=foo&gs_lcrp=EgZjaHJvbWU=&"},
+       "https://foo/?q=foo&gs_lcrp=EgZjaHJvbWWwAgE=&"},
       // HTTPS and non-empty gs_lcrp but no google:searchboxStats: no gs_lcrp.
       {u"foo", non_empty_searchbox_stats, "https://foo/",
        "{google:baseURL}?q={searchTerms}", "https://foo/?q=foo"},
@@ -694,7 +702,7 @@ TEST_F(TemplateURLTest, ReplaceSearchboxStats) {
       // gs_lcrp.
       {u"foo", non_empty_searchbox_stats, "https://foo/",
        "https://foo/?{searchTerms}&{google:searchboxStats}",
-       "https://foo/?foo&gs_lcrp=EgZjaHJvbWU=&"},
+       "https://foo/?foo&gs_lcrp=EgZjaHJvbWWwAgE=&"},
       // Non-Google search provider, HTTPS and non-empty gs_lcrp but no
       // google:searchboxStats: no gs_lcrp.
       {u"foo", non_empty_searchbox_stats, "https://foo/",
@@ -715,16 +723,21 @@ TEST_F(TemplateURLTest, ReplaceSearchboxStats) {
     ASSERT_TRUE(result.is_valid());
     EXPECT_EQ(entry.expected_result, result.spec());
   }
+  // Expect correct histograms to have been logged.
+  histogram_tester.ExpectTotalCount("Omnibox.SearchboxStats.Length", 2);
+  histogram_tester.ExpectBucketCount("Omnibox.SearchboxStats.Length", 16, 2);
 }
 
 // Tests replacing searchbox stats (gs_lcrp) and assisted query stats (AQS).
 TEST_F(TemplateURLTest, ReplaceSearchboxStatsAndAssistedQueryStats) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {omnibox::kReportSearchboxStats, omnibox::kReportAssistedQueryStats}, {});
 
   metrics::ChromeSearchboxStats non_empty_searchbox_stats;
   non_empty_searchbox_stats.set_client_name("chrome");
+  non_empty_searchbox_stats.set_zero_prefix_enabled(true);
 
   struct TestData {
     const std::u16string search_term;
@@ -738,13 +751,13 @@ TEST_F(TemplateURLTest, ReplaceSearchboxStatsAndAssistedQueryStats) {
       {u"foo", "chrome.0.0l6", non_empty_searchbox_stats, "https://foo/",
        "{google:baseURL}?q={searchTerms}&{google:searchboxStats}{google:"
        "assistedQueryStats}",
-       "https://foo/?q=foo&gs_lcrp=EgZjaHJvbWU=&aqs=chrome.0.0l6&"},
+       "https://foo/?q=foo&gs_lcrp=EgZjaHJvbWWwAgE=&aqs=chrome.0.0l6&"},
       // Non-Google search provider, HTTPS and non-empty gs_lcrp and AQS:
       // replace both.
       {u"foo", "chrome.0.0l6", non_empty_searchbox_stats, "https://foo/",
        "https://foo/"
        "?{searchTerms}&{google:searchboxStats}{google:assistedQueryStats}",
-       "https://foo/?foo&gs_lcrp=EgZjaHJvbWU=&aqs=chrome.0.0l6&"},
+       "https://foo/?foo&gs_lcrp=EgZjaHJvbWWwAgE=&aqs=chrome.0.0l6&"},
   };
   TemplateURLData data;
   data.input_encodings.push_back("UTF-8");
@@ -762,6 +775,12 @@ TEST_F(TemplateURLTest, ReplaceSearchboxStatsAndAssistedQueryStats) {
     ASSERT_TRUE(result.is_valid());
     EXPECT_EQ(entry.expected_result, result.spec());
   }
+  // Expect correct histograms to have been logged.
+  histogram_tester.ExpectTotalCount("Omnibox.AssistedQueryStats.Length", 2);
+  histogram_tester.ExpectBucketCount("Omnibox.AssistedQueryStats.Length", 12,
+                                     2);
+  histogram_tester.ExpectTotalCount("Omnibox.SearchboxStats.Length", 2);
+  histogram_tester.ExpectBucketCount("Omnibox.SearchboxStats.Length", 16, 2);
 }
 
 // Tests replacing cursor position.

@@ -61,6 +61,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Omnibox.AssistedQueryStats.Length" units="chars"
+    expires_after="2022-08-14">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    Records the length of the aqs= param in the Search Result Page request URLs.
+    Recorded every time a Search Result Page URL is generated in the
+    omnibox/realbox. This happens either when the user selects a suggestion in
+    order to load Search Result Page or when a proactive request is made to
+    prefetch the Search Result Page.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.BitmapFetchLatency" units="ms"
     expires_after="2022-09-11">
 <!-- Name completed by histogram_suffixes name="Omnibox.BitmapFetchLatencyCacheSplit" -->
@@ -689,6 +702,19 @@ chromium-metrics-reviews@google.com.
     This histogram records the number of searches done from omnibox using
     default search engine on desktop and android devices, sliced based on being
     in regular mode or private modes.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.SearchboxStats.Length" units="chars"
+    expires_after="2022-08-14">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    Records the length of the gs_lcrp= param in the Search Result Page request
+    URLs. Recorded every time a Search Result Page URL is generated in the
+    omnibox/realbox. This happens either when the user selects a suggestion in
+    order to load Search Result Page or when a proactive request is made to
+    prefetch the Search Result Page.
   </summary>
 </histogram>
 
