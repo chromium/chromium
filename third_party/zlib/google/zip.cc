@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
+#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
@@ -179,6 +180,9 @@ bool Unzip(const base::FilePath& src_file,
                 << base::File::ErrorToString(file.error_details());
     return false;
   }
+
+  DLOG_IF(WARNING, !base::IsDirectoryEmpty(dest_dir))
+      << "ZIP extraction directory is not empty: " << dest_dir;
 
   return Unzip(file.GetPlatformFile(),
                base::BindRepeating(&CreateFilePathWriterDelegate, dest_dir),

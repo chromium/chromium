@@ -517,7 +517,7 @@ TEST_F(ZipTest, UnzipRepeatedDirName) {
 }
 
 TEST_F(ZipTest, UnzipRepeatedFileName) {
-  EXPECT_TRUE(zip::Unzip(
+  EXPECT_FALSE(zip::Unzip(
       GetDataDirectory().AppendASCII("Repeated File Name.zip"), test_dir_));
 
   EXPECT_THAT(
@@ -527,7 +527,7 @@ TEST_F(ZipTest, UnzipRepeatedFileName) {
   std::string contents;
   EXPECT_TRUE(
       base::ReadFileToString(test_dir_.AppendASCII("repeated"), &contents));
-  EXPECT_EQ("Second file", contents);
+  EXPECT_EQ("First file", contents);
 }
 
 TEST_F(ZipTest, UnzipCannotCreateEmptyDir) {
@@ -602,22 +602,25 @@ TEST_F(ZipTest, UnzipWindowsSpecialNames) {
 }
 
 TEST_F(ZipTest, UnzipDifferentCases) {
-  EXPECT_TRUE(zip::Unzip(GetDataDirectory().AppendASCII(
-                             "Repeated File Name With Different Cases.zip"),
-                         test_dir_));
-
 #if defined(OS_WIN) || defined(OS_MAC)
-  // There is only one file, with the name of the first file but the contents of
-  // the last file.
+  // Only the first file (with mixed case) is extracted.
+  EXPECT_FALSE(zip::Unzip(GetDataDirectory().AppendASCII(
+                              "Repeated File Name With Different Cases.zip"),
+                          test_dir_));
+
   EXPECT_THAT(
       GetRelativePaths(test_dir_, base::FileEnumerator::FileType::FILES),
       UnorderedElementsAre("Case"));
 
   std::string contents;
   EXPECT_TRUE(base::ReadFileToString(test_dir_.AppendASCII("Case"), &contents));
-  EXPECT_EQ("Upper case 3", contents);
+  EXPECT_EQ("Mixed case 111", contents);
 #else
-  // All the files are correctly extracted.
+  // All the files are extracted.
+  EXPECT_TRUE(zip::Unzip(GetDataDirectory().AppendASCII(
+                             "Repeated File Name With Different Cases.zip"),
+                         test_dir_));
+
   EXPECT_THAT(
       GetRelativePaths(test_dir_, base::FileEnumerator::FileType::FILES),
       UnorderedElementsAre("Case", "case", "CASE"));

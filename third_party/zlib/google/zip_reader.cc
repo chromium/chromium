@@ -550,8 +550,8 @@ bool FilePathWriterDelegate::PrepareOutput() {
     return false;
   }
 
-  owned_file_.Initialize(output_file_path_, base::File::FLAG_CREATE_ALWAYS |
-                                                base::File::FLAG_WRITE);
+  owned_file_.Initialize(output_file_path_,
+                         base::File::FLAG_CREATE | base::File::FLAG_WRITE);
   PLOG_IF(ERROR, !owned_file_.IsValid())
       << "Cannot create file " << Redact(output_file_path_) << ": "
       << base::File::ErrorToString(owned_file_.error_details());

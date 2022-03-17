@@ -326,7 +326,8 @@ class FileWriterDelegate : public WriterDelegate {
   int64_t file_length_ = 0;
 };
 
-// A writer delegate that writes a file at a given path.
+// A writer delegate that creates and writes a file at a given path. This does
+// not overwrite any existing file.
 class FilePathWriterDelegate : public FileWriterDelegate {
  public:
   explicit FilePathWriterDelegate(base::FilePath output_file_path);
@@ -336,10 +337,12 @@ class FilePathWriterDelegate : public FileWriterDelegate {
 
   ~FilePathWriterDelegate() override;
 
-  // Creates the output file and any necessary intermediate directories.
+  // Creates the output file and any necessary intermediate directories. Does
+  // not overwrite any existing file, and returns false if the output file
+  // cannot be created because another file conflicts with it.
   bool PrepareOutput() override;
 
-  // Deletes the file.
+  // Deletes the output file.
   void OnError() override;
 
  private:
