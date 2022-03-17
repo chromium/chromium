@@ -71,12 +71,15 @@ void LogOpenInDownloadResult(const OpenInDownloadResult result) {
   UMA_HISTOGRAM_ENUMERATION("IOS.OpenIn.DownloadResult", result);
 }
 
-// Returns true if the file located at |url| is file.
+// Returns true if the file located at |url| can be previewed.
 bool HasValidFileAtUrl(NSURL* url) {
   if (!url)
     return false;
 
-  NSString* extension = [[url path] pathExtension];
+  if (![[NSFileManager defaultManager] isReadableFileAtPath:url.path])
+    return false;
+
+  NSString* extension = [url.path pathExtension];
   if ([extension isEqualToString:@"pdf"]) {
     base::ScopedCFTypeRef<CGPDFDocumentRef> document(
         CGPDFDocumentCreateWithURL((__bridge CFURLRef)url));
