@@ -47,6 +47,7 @@ class BrowserContext;
 
 namespace file_manager {
 
+class FuseBoxMounter;
 class SnapshotManager;
 class VolumeManagerObserver;
 
@@ -503,6 +504,7 @@ class VolumeManager : public KeyedService,
       file_system_provider_service_;  // Not owned by this class.
   GetMtpStorageInfoCallback get_mtp_storage_info_callback_;
   std::map<std::string, std::unique_ptr<Volume>> mounted_volumes_;
+  std::unique_ptr<FuseBoxMounter> fusebox_mounter_;
   std::unique_ptr<SnapshotManager> snapshot_manager_;
   std::unique_ptr<DocumentsProviderRootManager>
       documents_provider_root_manager_;

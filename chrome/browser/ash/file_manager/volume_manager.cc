@@ -37,6 +37,7 @@
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
+#include "chrome/browser/ash/file_manager/fusebox_mounter.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/snapshot_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
@@ -518,6 +519,7 @@ VolumeManager::VolumeManager(
       disk_mount_manager_(disk_mount_manager),
       file_system_provider_service_(file_system_provider_service),
       get_mtp_storage_info_callback_(get_mtp_storage_info_callback),
+      fusebox_mounter_(FuseBoxMounter::Create()),
       snapshot_manager_(new SnapshotManager(profile_)),
       documents_provider_root_manager_(
           std::make_unique<DocumentsProviderRootManager>(
@@ -540,6 +542,9 @@ void VolumeManager::Initialize() {
   if (!ash::ProfileHelper::IsRegularProfile(profile_)) {
     return;
   }
+
+  if (fusebox_mounter_.get())
+    fusebox_mounter_->Mount(disk_mount_manager_);
 
   const base::FilePath localVolume =
       file_manager::util::GetMyFilesFolderForProfile(profile_);
@@ -649,6 +654,9 @@ void VolumeManager::Shutdown() {
     if (session_manager)
       session_manager->RemoveObserver(this);
   }
+
+  if (fusebox_mounter_.get())
+    fusebox_mounter_->Unmount(disk_mount_manager_);
 }
 
 void VolumeManager::AddObserver(VolumeManagerObserver* observer) {
@@ -940,6 +948,7 @@ void VolumeManager::OnMountEvent(
     chromeos::MountError error_code,
     const ash::disks::DiskMountManager::MountPointInfo& mount_info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
   // Network storage is responsible for doing its own mounting.
   if (mount_info.mount_type == chromeos::MOUNT_TYPE_NETWORK_STORAGE)
     return;
@@ -1289,6 +1298,7 @@ void VolumeManager::DoAttachMtpStorage(
                      base::Unretained(MTPDeviceMapService::GetInstance()),
                      info.location(), fsid, read_only));
 
+  // TODO(1289493): mount a fusebox here instead.
   std::unique_ptr<Volume> volume = Volume::CreateForMTP(path, label, read_only);
   DoMountEvent(chromeos::MOUNT_ERROR_NONE, std::move(volume));
 }
