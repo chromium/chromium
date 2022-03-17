@@ -63,7 +63,7 @@ class DevToolsTagTest : public InProcessBrowserTest {
 
 // Tests that opening a DevToolsWindow will result in tagging its main
 // WebContents and that tag will be recorded by the TagsManager.
-IN_PROC_BROWSER_TEST_F(DevToolsTagTest, TagsManagerRecordsATag) {
+IN_PROC_BROWSER_TEST_F(DevToolsTagTest, DISABLED_TagsManagerRecordsATag) {
   // Browser tests start with a single tab.
   EXPECT_EQ(1U, tags_manager()->tracked_tags().size());
 
