@@ -29,19 +29,6 @@
 namespace ui {
 
 // static
-scoped_refptr<InProcessContextProvider> InProcessContextProvider::Create(
-    const gpu::ContextCreationAttribs& attribs,
-    gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
-    gpu::ImageFactory* image_factory,
-    gpu::SurfaceHandle window,
-    const std::string& debug_name,
-    bool support_locking) {
-  return new InProcessContextProvider(attribs, gpu_memory_buffer_manager,
-                                      image_factory, window, debug_name,
-                                      support_locking);
-}
-
-// static
 scoped_refptr<InProcessContextProvider>
 InProcessContextProvider::CreateOffscreen(
     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
@@ -62,23 +49,18 @@ InProcessContextProvider::CreateOffscreen(
   attribs.enable_gles2_interface = !is_worker;
   attribs.enable_oop_rasterization = is_worker;
   return new InProcessContextProvider(attribs, gpu_memory_buffer_manager,
-                                      image_factory, gpu::kNullSurfaceHandle,
-                                      "Offscreen", is_worker);
+                                      image_factory, is_worker);
 }
 
 InProcessContextProvider::InProcessContextProvider(
     const gpu::ContextCreationAttribs& attribs,
     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
     gpu::ImageFactory* image_factory,
-    gpu::SurfaceHandle window,
-    const std::string& debug_name,
     bool support_locking)
     : support_locking_(support_locking),
       attribs_(attribs),
       gpu_memory_buffer_manager_(gpu_memory_buffer_manager),
-      image_factory_(image_factory),
-      window_(window),
-      debug_name_(debug_name) {
+      image_factory_(image_factory) {
   DCHECK(main_thread_checker_.CalledOnValidThread());
   context_thread_checker_.DetachFromThread();
 }
@@ -107,7 +89,6 @@ gpu::ContextResult InProcessContextProvider::BindToCurrentThread() {
   auto* holder = viz::TestGpuServiceHolder::GetInstance();
 
   if (attribs_.enable_oop_rasterization) {
-    DCHECK_EQ(window_, gpu::kNullSurfaceHandle);
     DCHECK(!attribs_.enable_gles2_interface);
     DCHECK(!attribs_.enable_grcontext);
 
@@ -124,7 +105,7 @@ gpu::ContextResult InProcessContextProvider::BindToCurrentThread() {
     bind_result_ = gles2_context_->Initialize(
         viz::TestGpuServiceHolder::GetInstance()->task_executor(),
         /*surface=*/nullptr,
-        /*is_offscreen=*/window_ == gpu::kNullSurfaceHandle, window_, attribs_,
+        /*is_offscreen=*/true, gpu::kNullSurfaceHandle, attribs_,
         gpu::SharedMemoryLimits(), gpu_memory_buffer_manager_, image_factory_,
         /*gpu_task_scheduler=*/nullptr,
         /*display_controller_on_gpu=*/nullptr,

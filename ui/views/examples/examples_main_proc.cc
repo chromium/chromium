@@ -123,7 +123,6 @@ ExamplesExitCode ExamplesMainProc(bool under_test) {
   // The ContextFactory must exist before any Compositors are created.
   auto context_factories =
       std::make_unique<ui::TestContextFactories>(under_test);
-  context_factories->SetUseTestSurface(false);
 
   base::i18n::InitializeICU();
 
