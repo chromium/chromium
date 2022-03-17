@@ -51,6 +51,14 @@ PlatformManagementService::PlatformManagementService()
 
 PlatformManagementService::~PlatformManagementService() = default;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void PlatformManagementService::AddChromeOsStatusProvider(
+    std::unique_ptr<ManagementStatusProvider> provider) {
+  AddManagementStatusProvider(std::move(provider));
+  has_cros_status_provider_ = true;
+}
+#endif
+
 void PlatformManagementService::RefreshCache(CacheRefreshCallback callback) {
   if (!base::FeatureList::IsEnabled(features::kEnableCachedManagementStatus))
     return;

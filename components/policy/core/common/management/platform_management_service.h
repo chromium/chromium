@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/no_destructor.h"
+#include "build/chromeos_buildflags.h"
 
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/policy_export.h"
@@ -21,6 +22,12 @@ class POLICY_EXPORT PlatformManagementService : public ManagementService {
  public:
   // Returns the singleton instance of PlatformManagementService.
   static PlatformManagementService* GetInstance();
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void AddChromeOsStatusProvider(
+      std::unique_ptr<ManagementStatusProvider> provider);
+  bool has_cros_status_provider() const { return has_cros_status_provider_; }
+#endif
 
   void RefreshCache(CacheRefreshCallback callback) override;
 
@@ -42,6 +49,10 @@ class POLICY_EXPORT PlatformManagementService : public ManagementService {
 
   PlatformManagementService();
   ~PlatformManagementService() override;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  bool has_cros_status_provider_;
+#endif
 };
 
 }  // namespace policy

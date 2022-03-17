@@ -107,16 +107,17 @@ void ManagementService::RefreshCache(CacheRefreshCallback callback) {
   ManagementAuthorityTrustworthiness previous =
       GetManagementAuthorityTrustworthiness();
   for (const auto& provider : management_status_providers_) {
-    if (provider->RequiresCache())
+    if (provider->RequiresCache()) {
       provider->UpdateCache(provider->FetchAuthority());
+    }
 
-  ManagementAuthorityTrustworthiness next =
-      GetManagementAuthorityTrustworthiness();
-  base::UmaHistogramBoolean(
-      "Enterprise.ManagementAuthorityTrustworthiness.Cache.ValueChange",
-      previous != next);
-  if (callback)
-    std::move(callback).Run(previous, next);
+    ManagementAuthorityTrustworthiness next =
+        GetManagementAuthorityTrustworthiness();
+    base::UmaHistogramBoolean(
+        "Enterprise.ManagementAuthorityTrustworthiness.Cache.ValueChange",
+        previous != next);
+    if (callback)
+      std::move(callback).Run(previous, next);
   }
 }
 
@@ -188,6 +189,12 @@ void ManagementService::SetManagementStatusProvider(
     std::vector<std::unique_ptr<ManagementStatusProvider>> providers) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   management_status_providers_ = std::move(providers);
+}
+
+void ManagementService::AddManagementStatusProvider(
+    std::unique_ptr<ManagementStatusProvider> provider) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  management_status_providers_.push_back(std::move(provider));
 }
 
 }  // namespace policy

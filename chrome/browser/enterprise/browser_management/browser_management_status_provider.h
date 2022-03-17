@@ -58,6 +58,7 @@ class ProfileCloudManagementStatusProvider final
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+// This is both a device and browser management status provider for ChromeOS.
 class DeviceManagementStatusProvider final
     : public policy::ManagementStatusProvider {
  public:

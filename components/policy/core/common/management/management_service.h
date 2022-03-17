@@ -131,6 +131,10 @@ class POLICY_EXPORT ManagementService {
   // Sets the management status providers to be used by the service.
   void SetManagementStatusProvider(
       std::vector<std::unique_ptr<ManagementStatusProvider>> providers);
+
+  void AddManagementStatusProvider(
+      std::unique_ptr<ManagementStatusProvider> provider);
+
   const std::vector<std::unique_ptr<ManagementStatusProvider>>&
   management_status_providers() {
     return management_status_providers_;
