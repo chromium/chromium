@@ -432,4 +432,33 @@ class UserAgentResponseProvider : public web::DataResponseProvider {
   [ChromeEarlGrey waitForWebStateContainingText:kDesktopSiteLabel];
 }
 
+// Tests that navigating back to a page after changing default mode doesn't
+// change the page mode.
+- (void)testGoBackInDifferentDefaultMode {
+  GREYAssertTrue([ChromeEarlGrey isMobileModeByDefault],
+                 @"The default mode should be mobile.");
+
+  std::unique_ptr<web::DataResponseProvider> provider(
+      new UserAgentResponseProvider());
+  web::test::SetUpHttpServer(std::move(provider));
+
+  [ChromeEarlGrey loadURL:web::test::HttpServer::MakeUrl("http://1.com")];
+  // Verify initial reception of the mobile site.
+  [ChromeEarlGrey waitForWebStateContainingText:kMobileSiteLabel];
+
+  [self selectDefaultMode:@"Desktop"];
+
+  GREYAssertFalse([ChromeEarlGrey isMobileModeByDefault],
+                  @"The default mode should be desktop.");
+
+  // Move to another page, loaded in desktop mode.
+  [ChromeEarlGrey loadURL:web::test::HttpServer::MakeUrl("http://2.com")];
+  [ChromeEarlGrey waitForWebStateContainingText:kDesktopSiteLabel];
+
+  // Go back to the Mobile page.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::BackButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForWebStateContainingText:kMobileSiteLabel];
+}
+
 @end
