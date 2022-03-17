@@ -33,6 +33,9 @@ public class NotificationPermissionController implements UnownedUserData {
     /** Field trial param controlling rationale behavior. */
     public static final String FIELD_TRIAL_ALWAYS_SHOW_RATIONALE_BEFORE_REQUESTING_PERMISSION =
             "always_show_rationale_before_requesting_permission";
+    /** Field trial param controlling number of days between permission requests. */
+    public static final String FIELD_TRIAL_PERMISSION_REQUEST_INTERVAL_DAYS =
+            "permission_request_interval_days";
 
     /** Refers to what type of permission UI should be shown. */
     @IntDef({PermissionRequestMode.DO_NOT_REQUEST, PermissionRequestMode.REQUEST_ANDROID_PERMISSION,
@@ -60,8 +63,6 @@ public class NotificationPermissionController implements UnownedUserData {
          */
         void showRationaleUi(Callback<Boolean> callback);
     }
-
-    private static final long PERMISSION_REQUEST_RETRIGGER_INTERVAL = TimeUnit.DAYS.toMillis(7);
 
     private static final UnownedUserDataKey<NotificationPermissionController> KEY =
             new UnownedUserDataKey<>(NotificationPermissionController.class);
@@ -248,7 +249,19 @@ public class NotificationPermissionController implements UnownedUserData {
         if (lastRequestTimestamp == 0) return false;
 
         long elapsedTime = System.currentTimeMillis() - lastRequestTimestamp;
-        return elapsedTime > PERMISSION_REQUEST_RETRIGGER_INTERVAL;
+        return elapsedTime > getPermissionRequestRetriggerIntervalMs();
+    }
+
+    /**
+     * Gets the amount of time to wait between permission requests in milliseconds.
+     */
+    private static long getPermissionRequestRetriggerIntervalMs() {
+        // Get number of days from param, or use 7 days as default.
+        int retriggerIntervalDays = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                ChromeFeatureList.NOTIFICATION_PERMISSION_VARIANT,
+                FIELD_TRIAL_PERMISSION_REQUEST_INTERVAL_DAYS, /* defaultValue = */ 7);
+
+        return TimeUnit.DAYS.toMillis(retriggerIntervalDays);
     }
 
     private static boolean shouldAlwaysShowRationaleFirst() {

@@ -711,4 +711,49 @@ public class NotificationPermissionControllerTest {
                     /* expectedTimes= */ 1);
         });
     }
+
+    @Test
+    public void testNotificationPrompt_usesWaitIntervalFromFieldTrialParams() {
+        ShadowBuildInfo.setIsAtLeastT(true);
+        mActivityScenarios.getScenario().onActivity(activity -> {
+            TestRationaleDelegate rationaleDelegate = new TestRationaleDelegate();
+            NotificationPermissionController notificationPermissionController =
+                    createNotificationPermissionController(rationaleDelegate, activity);
+
+            // Set field trial params to wait 14 days.
+            FeatureList.TestValues testValues = new FeatureList.TestValues();
+            testValues.addFieldTrialParamOverride(ChromeFeatureList.NOTIFICATION_PERMISSION_VARIANT,
+                    NotificationPermissionController.FIELD_TRIAL_PERMISSION_REQUEST_INTERVAL_DAYS,
+                    "14");
+            FeatureList.setTestValues(testValues);
+
+            // Show and reject OS prompt for the first time.
+            setShouldShowRequestPermissionRationale(activity, false);
+            notificationPermissionController.requestPermissionIfNeeded();
+            setShouldShowRequestPermissionRationale(activity, true);
+            long requestTimestampAfterFirstStartup =
+                    PermissionPrefs.getAndroidNotificationPermissionRequestTimestamp();
+
+            // Wait 10 days, nothing should happen yet.
+            ShadowSystemClock.advanceBy(Duration.ofDays(10));
+            notificationPermissionController.requestPermissionIfNeeded();
+
+            long requestTimestampAfterSecondStartup =
+                    PermissionPrefs.getAndroidNotificationPermissionRequestTimestamp();
+            int rationaleCallCountAfterSecondStartup = rationaleDelegate.getCallCount();
+
+            // Wait 5 more days, now we should show the rationale.
+            ShadowSystemClock.advanceBy(Duration.ofDays(5));
+            rationaleDelegate.setDialogAction(DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
+            notificationPermissionController.requestPermissionIfNeeded();
+            int rationaleCallCountAfterThirdStartup = rationaleDelegate.getCallCount();
+
+            // The second call to requestPermissionIfNeeded shouldn't show a rationale or OS prompt.
+            assertEquals(requestTimestampAfterFirstStartup, requestTimestampAfterSecondStartup);
+            assertEquals(0, rationaleCallCountAfterSecondStartup);
+
+            // The third call should have shown the rationale.
+            assertEquals(1, rationaleCallCountAfterThirdStartup);
+        });
+    }
 }
