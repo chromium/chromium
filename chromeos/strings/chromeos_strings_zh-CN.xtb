@@ -20,6 +20,7 @@
 <translation id="1181037720776840403">移除</translation>
 <translation id="1195447618553298278">未知错误。</translation>
 <translation id="1196959502276349371"><ph name="VERSION" /> 版</translation>
+<translation id="1199355487114804640">播放/暂停</translation>
 <translation id="1201402288615127009">下一步</translation>
 <translation id="1204296502688602597">DNS 延迟时间</translation>
 <translation id="123124571410524056">疑似存在门户</translation>
@@ -43,6 +44,7 @@
 <translation id="1413240736185167732">失败 - 过滤器出问题了</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">我有一个密钥对</translation>
+<translation id="1423591390236870726">未按下<ph name="KEY_NAME" />键</translation>
 <translation id="1435763214710588005">在每月的指定日期自动重置流量使用情况</translation>
 <translation id="1442433966118452622">图片来源</translation>
 <translation id="1451536289672181509">设备类型是键盘。</translation>
@@ -84,6 +86,7 @@
 <translation id="1827738518074806965">画廊</translation>
 <translation id="1851218745569890714">视频会议</translation>
 <translation id="1852934301711881861">安装 ChromeOS Flex</translation>
+<translation id="1856388568474281774">向下</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">硬件版本</translation>
 <translation id="1905710495812624430">已超过允许的尝试次数上限。</translation>
@@ -98,6 +101,7 @@
 <translation id="2016697457005847575">尝试问题排查步骤</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">更多设置</translation>
+<translation id="2085089206770112532">调低显示屏亮度</translation>
 <translation id="2104796393919810494">已修复完毕</translation>
 <translation id="2105810540595158374">设备类型是游戏控制器。</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />，版本 <ph name="MILESTONE_VERSION" /></translation>
@@ -116,6 +120,7 @@
 <translation id="222447520299472966">您需要选择至少 1 个画廊影集</translation>
 <translation id="2230005943220647148">摄氏度</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2240366984605217732">布局切换</translation>
 <translation id="225692081236532131">激活状态</translation>
 <translation id="2287186687001756809">没有可显示的图片。若要添加照片，请前往 <ph name="LINK" /></translation>
 <translation id="2307344026739914387">使用当前密钥对</translation>
@@ -207,9 +212,11 @@
 <translation id="357889014807611375">按流量计费的 Wi-Fi</translation>
 <translation id="3583278742022654445">信号强度较弱。请尝试移到离 Wi-Fi 信号源更近的地方。</translation>
 <translation id="3595596368722241419">电池已充满</translation>
+<translation id="3600339377155080675">屏幕镜像</translation>
 <translation id="3603829704940252505">头像</translation>
 <translation id="360565022852130722">Wi-Fi 网络采用了防护能力较弱的 WEP 802.1x 协议</translation>
 <translation id="3606583719724308068">HTTPS 网站的延迟时间较长</translation>
+<translation id="3632579075709132555">隐私保护屏幕开关</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" />测试</translation>
 <translation id="370665806235115550">正在加载...</translation>
 <translation id="3708186454126126312">曾经连接过</translation>
@@ -263,6 +270,7 @@
 <translation id="4289540628985791613">概述</translation>
 <translation id="4297501883039923494">已停止 - 未知错误</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> 张图片</translation>
+<translation id="4333390807948134856">已按下<ph name="KEY_NAME" />键</translation>
 <translation id="4378373042927530923">未运行</translation>
 <translation id="4378551569595875038">正在连接…</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -278,6 +286,7 @@
 <translation id="4479639480957787382">以太网</translation>
 <translation id="4483049906298469269">未能对非默认网关执行 ping 操作</translation>
 <translation id="4485626319513081846">若要将设备重新上架或翻新后发放给新客户，请选择此选项。</translation>
+<translation id="4503223151711056411">向左</translation>
 <translation id="4511264077854731334">门户网站</translation>
 <translation id="4521826082652183069">主题备用名称匹配</translation>
 <translation id="4536864596629708641">IP 配置</translation>
@@ -289,10 +298,12 @@
 <translation id="4562494484721939086">无服务</translation>
 <translation id="458794348635939462">未能解析所有主机</translation>
 <translation id="4593212453765072419">需要验证代理身份</translation>
+<translation id="4609350030397390689">调低键盘亮度</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />，<ph name="PRINTER_NAME" />，<ph name="CREATION_TIME" />，已打印 <ph name="PRINTED_PAGE_NUMBER" /> 页，共 <ph name="TOTAL_PAGE_NUMBER" /> 页。按 Enter 键即可取消这项打印任务。</translation>
 <translation id="4627645661474370390">远程身份</translation>
 <translation id="463791356324567266">正在取消扫描…</translation>
 <translation id="4646949265910132906">安全的 Wi-Fi 连接</translation>
+<translation id="4650608062294027130">右 Shift</translation>
 <translation id="4654549501020883054">每日更换一次</translation>
 <translation id="4665014895760275686">制造商</translation>
 <translation id="467510802200863975">输入的两个密码不相同</translation>
@@ -391,8 +402,10 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">重新扫描</translation>
 <translation id="5583640892426849032">退格</translation>
+<translation id="5600027863942488546">已测试<ph name="KEY_NAME" />键</translation>
 <translation id="5620281292257375798">仅供内部使用</translation>
 <translation id="5649768706273821470">收听</translation>
+<translation id="5655283760733841251">调高键盘亮度</translation>
 <translation id="5669267381087807207">正在激活</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">家用</translation>
@@ -400,6 +413,7 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> / <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">更新“<ph name="DEVICE_NAME" />”</translation>
 <translation id="5760715441271661976">门户状态</translation>
+<translation id="576835345334454681">调高显示屏亮度</translation>
 <translation id="57838592816432529">静音</translation>
 <translation id="5784136236926853061">HTTP 延迟时间较长</translation>
 <translation id="5832805196449965646">添加用户</translation>
@@ -430,6 +444,7 @@
 <translation id="6104112872696127344">已取消扫描</translation>
 <translation id="6106186594183574873">要完成更改，请输入您的旧密码</translation>
 <translation id="6108689792487843350">无法连接至网关</translation>
+<translation id="6113701710518389813">向上</translation>
 <translation id="6122191549521593678">在线</translation>
 <translation id="6137767437444130246">用户证书</translation>
 <translation id="6146993107019042706">要完成更改，请输入您的新密码</translation>
@@ -443,6 +458,7 @@
 <translation id="6232017090690406397">电池</translation>
 <translation id="6235460611964961764">手动重置流量使用情况</translation>
 <translation id="6243280677745499710">当前设置的壁纸</translation>
+<translation id="6275224645089671689">向右</translation>
 <translation id="6278428485366576908">主题背景</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />测试已被取消</translation>
@@ -478,6 +494,7 @@
 <translation id="6620487321149975369">打印任务如未被手动移除，将会显示在历史记录中，</translation>
 <translation id="6643016212128521049">清除</translation>
 <translation id="6647510110698214773">加密算法</translation>
+<translation id="6650062777702288430">假名/字母数字切换</translation>
 <translation id="6657585470893396449">密码</translation>
 <translation id="6659594942844771486">Tab 键</translation>
 <translation id="6692996468359469499">获取与您的所选项相关的信息</translation>
@@ -690,6 +707,7 @@
 <translation id="9122602430962285795">若要重新连接，请转到“设置”</translation>
 <translation id="9126720536733509015">将多个页面扫描成 1 个 PDF 文件</translation>
 <translation id="9137526406337347448">Google 服务</translation>
+<translation id="9138630967333032450">左 Shift</translation>
 <translation id="9149391708638971077">运行内存测试</translation>
 <translation id="9173638680043580060">还剩不到 1 分钟</translation>
 <translation id="917720651393141712">测试</translation>

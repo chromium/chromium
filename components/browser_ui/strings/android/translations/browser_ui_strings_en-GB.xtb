@@ -77,6 +77,7 @@
 <translation id="2687403674020088961">Block all cookies (not recommended)</translation>
 <translation id="2704606927547763573">Copied</translation>
 <translation id="2717722538473713889">Email addresses</translation>
+<translation id="2750481671343847896">Sites can show sign-in prompts from identity services.</translation>
 <translation id="2785051990912111074">This choice will clear cookies for <ph name="WEBSITE" /></translation>
 <translation id="2822354292072154809">Are you sure that you want to reset all site permissions for <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Site</translation>
@@ -112,6 +113,7 @@
 <translation id="3763247130972274048">Double-tap video left or right to skip 10s</translation>
 <translation id="3797520601150691162">Don’t apply Dark theme for a specific site</translation>
 <translation id="381841723434055211">Phone numbers</translation>
+<translation id="3826050100957962900">Third-party sign-in</translation>
 <translation id="3835233591525155343">Your device use</translation>
 <translation id="385051799172605136">Back</translation>
 <translation id="3859306556332390985">Seek forward</translation>
@@ -235,6 +237,7 @@
 <translation id="6643016212128521049">Clear</translation>
 <translation id="6689172468748959065">Profile photos</translation>
 <translation id="6697925417670533197">Active downloads</translation>
+<translation id="6722828510648505498">Block sign-in prompts from identity services.</translation>
 <translation id="6746124502594467657">Move down</translation>
 <translation id="6749077623962119521">Reset permissions?</translation>
 <translation id="6766622839693428701">Swipe down to close.</translation>

@@ -1331,6 +1331,7 @@
 <translation id="2278562042389100163">Адкрыць акно браўзера</translation>
 <translation id="2278668501808246459">Запускаецца менеджар кантэйнераў</translation>
 <translation id="2280486287150724112">Правае поле</translation>
+<translation id="2281863813036651454">Націсканне левай клавішай мышы</translation>
 <translation id="2282146716419988068">Працэс GPU</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{Адкрыць усе ў новай групе ўкладак}=1{Адкрыць у новай групе ўкладак}one{Адкрыць усе ({COUNT}) у новай групе ўкладак}few{Адкрыць усе ({COUNT}) у новай групе ўкладак}many{Адкрыць усе ({COUNT}) у новай групе ўкладак}other{Адкрыць усе ({COUNT}) у новай групе ўкладак}}</translation>
 <translation id="2285942871162473373">Не ўдалося распазнаць адбітак пальца. Паўтарыце спробу.</translation>
@@ -5144,6 +5145,7 @@
 <translation id="6129938384427316298">Netscape Certificate Comment</translation>
 <translation id="6129953537138746214">Прабел</translation>
 <translation id="6130692320435119637">Дадаць сетку Wi-Fi</translation>
+<translation id="6130887916931372608">Клавіша клавіятуры</translation>
 <translation id="6136114942382973861">Закрыць панэль спамповак</translation>
 <translation id="6136287496450963112">Ключ бяспекі не абаронены PIN-кодам. Каб кіраваць адбіткамі пальцаў, спачатку стварыце PIN-код.</translation>
 <translation id="6138680304137685902">Подпіс X9.62 ECDSA з SHA-384</translation>
@@ -6756,6 +6758,7 @@
 <translation id="7768770796815395237">Змяніць</translation>
 <translation id="7768784765476638775">Чытаць уголас</translation>
 <translation id="7770406201819593386">Запуск дыягнастычных праверак Chrome OS Flex.</translation>
+<translation id="7770450735129978837">Націсканне правай клавішай мышы</translation>
 <translation id="7770612696274572992">Відарыс скапіраваны з іншай прылады</translation>
 <translation id="7771452384635174008">Раскладка</translation>
 <translation id="7772032839648071052">Пацвердзіце фразу-пароль</translation>

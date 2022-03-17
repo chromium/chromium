@@ -20,6 +20,7 @@
 <translation id="1181037720776840403">Ta bort</translation>
 <translation id="1195447618553298278">Okänt fel.</translation>
 <translation id="1196959502276349371">Version <ph name="VERSION" /></translation>
+<translation id="1199355487114804640">Uppspelnings-/paustangenten</translation>
 <translation id="1201402288615127009">Nästa</translation>
 <translation id="1204296502688602597">DNS-latens</translation>
 <translation id="123124571410524056">Misstänkt portal</translation>
@@ -43,6 +44,7 @@
 <translation id="1413240736185167732">Misslyckades – filterfel</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Jag har ett nyckelpar</translation>
+<translation id="1423591390236870726"><ph name="KEY_NAME" /> har inte tryckts ned</translation>
 <translation id="1435763214710588005">Dataanvändningen återställs automatiskt den angivna dagen i månaden</translation>
 <translation id="1442433966118452622">Bildkälla</translation>
 <translation id="1451536289672181509">Enheten är ett tangentbord.</translation>
@@ -84,6 +86,7 @@
 <translation id="1827738518074806965">Konstgalleri</translation>
 <translation id="1851218745569890714">Videokonferenser</translation>
 <translation id="1852934301711881861">Installera ChromeOS Flex</translation>
+<translation id="1856388568474281774">Nedåtpiltangenten</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Revision av maskinvara</translation>
 <translation id="1905710495812624430">Du har försökt för många gånger.</translation>
@@ -98,6 +101,7 @@
 <translation id="2016697457005847575">Testa felsökningsstegen</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Fler inställningar</translation>
+<translation id="2085089206770112532">Tangenten som minskar skärmens ljusstyrka</translation>
 <translation id="2104796393919810494">Reparationen är klar</translation>
 <translation id="2105810540595158374">Enheten är en spelkontroll.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, version <ph name="MILESTONE_VERSION" /></translation>
@@ -116,6 +120,7 @@
 <translation id="222447520299472966">Minst ett album i konstgalleriet måste vara markerat</translation>
 <translation id="2230005943220647148">Celsius</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2240366984605217732">Tangenten som byter tangentbordslayout</translation>
 <translation id="225692081236532131">Aktiveringsstatus</translation>
 <translation id="2287186687001756809">Det finns inga bilder. Du kan lägga till foton via <ph name="LINK" /></translation>
 <translation id="2307344026739914387">Använd nuvarande nyckelpar</translation>
@@ -207,9 +212,11 @@
 <translation id="357889014807611375">wifi med datapriser</translation>
 <translation id="3583278742022654445">Svag signalstyrka. Testa att gå närmare källan till wifi-signalen.</translation>
 <translation id="3595596368722241419">Batteriet är fulladdat</translation>
+<translation id="3600339377155080675">Tangenten för att spegla skärmen</translation>
 <translation id="3603829704940252505">Avatar</translation>
 <translation id="360565022852130722">wifi-nätverket använder det svaga säkerhetsprotokollet WEP 802.1x</translation>
 <translation id="3606583719724308068">Hög fördröjning till HTTPS-webbplatser</translation>
+<translation id="3632579075709132555">Tangenten som aktiverar och inaktiverar sekretesskärmen</translation>
 <translation id="3689839747745352263">Test – <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Läser in...</translation>
 <translation id="3708186454126126312">Tidigare anslutna enheter</translation>
@@ -263,6 +270,7 @@
 <translation id="4289540628985791613">Översikt</translation>
 <translation id="4297501883039923494">Har stoppats – okänt fel</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> bilder</translation>
+<translation id="4333390807948134856"><ph name="KEY_NAME" /> har tryckts ned</translation>
 <translation id="4378373042927530923">Har inte körts</translation>
 <translation id="4378551569595875038">Ansluter ...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -278,6 +286,7 @@
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Det gick inte att pinga gateway för nätverket som inte är standard</translation>
 <translation id="4485626319513081846">Välj det här alternativet om enheten ska åter till lagret eller restaureras så att den kan skickas till en ny kund senare.</translation>
+<translation id="4503223151711056411">Vänsterpiltangenten</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Matchning av ämnets andra namn</translation>
 <translation id="4536864596629708641">IP-konfiguration</translation>
@@ -289,10 +298,12 @@
 <translation id="4562494484721939086">Ingen täckning</translation>
 <translation id="458794348635939462">DNS-matchningen av alla värdar misslyckades</translation>
 <translation id="4593212453765072419">Proxyautentisering krävs</translation>
+<translation id="4609350030397390689">Tangenten som minskar ljusstyrkan på tangentbordet</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> av <ph name="TOTAL_PAGE_NUMBER" />. Tryck på retur för att avbryta utskriftsjobbet.</translation>
 <translation id="4627645661474370390">Fjärridentitet</translation>
 <translation id="463791356324567266">Skanningen avbryts …</translation>
 <translation id="4646949265910132906">Säker wifi-anslutning</translation>
+<translation id="4650608062294027130">Höger skifttangent</translation>
 <translation id="4654549501020883054">Ändra dagligen</translation>
 <translation id="4665014895760275686">Tillverkare</translation>
 <translation id="467510802200863975">Lösenorden matchar inte</translation>
@@ -391,8 +402,10 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Sök igen</translation>
 <translation id="5583640892426849032">Backsteg</translation>
+<translation id="5600027863942488546"><ph name="KEY_NAME" /> har testats</translation>
 <translation id="5620281292257375798">Endast internt</translation>
 <translation id="5649768706273821470">Lyssna</translation>
+<translation id="5655283760733841251">Tangenten som ökar ljusstyrkan på tangentbordet</translation>
 <translation id="5669267381087807207">Aktiverar</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Familj</translation>
@@ -400,6 +413,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> av <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Uppdatera <ph name="DEVICE_NAME" /></translation>
 <translation id="5760715441271661976">Portalläge</translation>
+<translation id="576835345334454681">Tangenten som ökar skärmens ljusstyrka</translation>
 <translation id="57838592816432529">Stäng av ljudet</translation>
 <translation id="5784136236926853061">Hög HTTP-latens</translation>
 <translation id="5832805196449965646">Lägg till person</translation>
@@ -430,6 +444,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="6104112872696127344">Skanningen har avbrutits</translation>
 <translation id="6106186594183574873">Slutför genom att ange det gamla lösenordet</translation>
 <translation id="6108689792487843350">Gateway kan inte nås</translation>
+<translation id="6113701710518389813">Uppåtpiltangenten</translation>
 <translation id="6122191549521593678">Online</translation>
 <translation id="6137767437444130246">Användarcertifikat</translation>
 <translation id="6146993107019042706">Slutför genom att ange det nya lösenordet</translation>
@@ -443,6 +458,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="6232017090690406397">Batteri</translation>
 <translation id="6235460611964961764">Återställ dataanvändningen manuellt</translation>
 <translation id="6243280677745499710">Nuvarande</translation>
+<translation id="6275224645089671689">Högerpiltangenten</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />-testet har avbrutits</translation>
@@ -478,6 +494,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="6620487321149975369">Utskriftsjobb visas i historiken såvida de inte tas bort manuellt</translation>
 <translation id="6643016212128521049">Rensa</translation>
 <translation id="6647510110698214773">Krypteringsalgoritm</translation>
+<translation id="6650062777702288430">Tangenten som byter mellan kana/alfanumeriska tecken</translation>
 <translation id="6657585470893396449">Lösenord</translation>
 <translation id="6659594942844771486">Flik</translation>
 <translation id="6692996468359469499">Få information utifrån det du markerar</translation>
@@ -690,6 +707,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="9122602430962285795">Öppna inställningarna för att återansluta</translation>
 <translation id="9126720536733509015">Spara flera sidor till en PDF</translation>
 <translation id="9137526406337347448">Google Services</translation>
+<translation id="9138630967333032450">Vänster skifttangent</translation>
 <translation id="9149391708638971077">Kör minnestest</translation>
 <translation id="9173638680043580060">Mindre än en minut kvar</translation>
 <translation id="917720651393141712">Testa</translation>

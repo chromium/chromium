@@ -1384,6 +1384,7 @@ You can manage this account’s settings by installing the Family Link app on yo
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2307630946657910723">Search part of the page with <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2309620859903500144">This site has been blocked from accessing your motion or light sensors.</translation>
+<translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">Page URL</translation>
 <translation id="2314165183524574721">Current visibility setting is hidden</translation>
 <translation id="2314774579020744484">Language used when translating pages</translation>
@@ -1978,6 +1979,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="288734198558082692"><ph name="DEVICE" /> and <ph name="NUMBER_OF_DEVICES" /> others</translation>
 <translation id="2889064240420137087">Open link with...</translation>
 <translation id="2891922230654533301">Use your device to sign in to <ph name="APP_NAME" />?</translation>
+<translation id="2893013536106749396">Pick cards that keep you updated on things that matter to you</translation>
 <translation id="2893168226686371498">Default browser</translation>
 <translation id="2893180576842394309">Google may use your history to personalise Search and other Google services</translation>
 <translation id="2894757982205307093">New tab in group</translation>
@@ -2091,6 +2093,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3003623123441819449">CSS Cache</translation>
 <translation id="3003828226041301643">Can't join the device to the domain. Check your account to make sure that you have privileges to add devices.</translation>
 <translation id="3003967365858406397">Your <ph name="PHONE_NAME" /> will create a private Wi-Fi connection.</translation>
+<translation id="3005574332301273731">Don't show</translation>
 <translation id="3006881078666935414">No usage data</translation>
 <translation id="3007771295016901659">Duplicate tab</translation>
 <translation id="3008232374986381779">Run Linux tools, editors and IDEs on your <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
@@ -4311,6 +4314,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5265797726250773323">Error while installing</translation>
 <translation id="5266113311903163739">Certification Authority Import Error</translation>
 <translation id="526622169288322445">More actions for <ph name="ADDRESS_SUMMARY" /></translation>
+<translation id="5268373933383932086">Your page, your way</translation>
 <translation id="5269977353971873915">Print Failed</translation>
 <translation id="5273806377963980154">Edit site URL</translation>
 <translation id="5275352920323889391">Dog</translation>
@@ -5123,6 +5127,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6080689532560039067">Check your system time</translation>
 <translation id="6082877069782862752">Key mapping</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – Part of unnamed group</translation>
+<translation id="6085457109149794212">See all card options in Customise Chrome</translation>
 <translation id="6085886413119427067">Determines how to connect to websites over a secure connection</translation>
 <translation id="6086004606538989567">The account that you verified is not authorised to access this device.</translation>
 <translation id="6086846494333236931">Installed by your administrator</translation>
@@ -5577,6 +5582,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6537880577641744343">Commander</translation>
 <translation id="6538098297809675636">Error detecting code</translation>
 <translation id="653920215766444089">Searching for pointing device</translation>
+<translation id="653983593749614101">Resuming…</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Note:<ph name="END_BOLD" /> Only enable if you know what you are doing or if you have been asked to do so, as collection of data may reduce performance.</translation>
 <translation id="6540672086173674880">Google may use your browsing history to personalise Search and other Google services. You can change this at any time at myaccount.google.com/activitycontrols/search</translation>
 <translation id="6541638731489116978">This site has been blocked from accessing your motion sensors.</translation>

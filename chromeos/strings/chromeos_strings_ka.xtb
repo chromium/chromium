@@ -52,6 +52,7 @@
 <translation id="1468664791493211953">შემოთავაზებები</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> მართავს ამ მოწყობილობას და შეუძლია თქვენი აქტივობის მონიტორინგი.</translation>
 <translation id="1478594628797167447">სკანერი</translation>
+<translation id="1486019694341708158">ჩართეთ გადამრთველი, ეკრანმზოგის ვარიანტები რომ აირჩიოთ</translation>
 <translation id="1491076385728777984">მიმდინარეობს ჩაშენებული პროგრამული უზრუნველყოფის განახლება <ph name="DEVICE_NAME" />-ზე</translation>
 <translation id="1499900233129743732">ამ მომხმარებელს მართავს <ph name="MANAGER" />, რომელსაც შეუძლია პარამეტრების დისტანციურად მართვა და მომხმარებლის აქტივობის მონიტორინგი.</translation>
 <translation id="150962533380566081">PUK კოდი არასწორია.</translation>
@@ -106,6 +107,7 @@
 <translation id="2105810540595158374">მოწყობილობა არის სათამაშო კონტროლერი.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, ვერსია <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">ხელმისაწვდომია <ph name="TOTAL_MEMORY" /> გბაიტიდან <ph name="AVAILABLE_MEMORY" /> გბაიტი</translation>
+<translation id="2138109643290557664">ლივლივი</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> ფოტო</translation>
 <translation id="2157959690810728433">რიგშია</translation>
@@ -268,6 +270,7 @@
 <translation id="4271957103967917607">სრულ ეკრანზე ნახვა</translation>
 <translation id="4275799948641988986">შეკეთების შემდეგ ვინ გამოიყენებს მოწყობილობას?</translation>
 <translation id="4289540628985791613">მიმოხილვა</translation>
+<translation id="4289849978083912975">სლაიდშოუ</translation>
 <translation id="4297501883039923494">გაჩერდა — უცნობი შეცდომა</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> სურათი</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> კლავიში დაჭერილია</translation>
@@ -539,10 +542,12 @@
 <translation id="7175037578838465313">„<ph name="NAME" />“-ის კონფიგურაცია</translation>
 <translation id="7177485034254901881">ეს <ph name="DEVICE_TYPE" /> იმართება <ph name="MANAGER" />-ის მიერ. ადმინისტრატორებს შეუძლიათ ამ მოწყობილობის დისტანციურად კონფიგურაცია.</translation>
 <translation id="7180611975245234373">განახლება</translation>
+<translation id="7191009787982536050">ეკრანმზოგის ანიმაცია</translation>
 <translation id="7212734716605298123">გარე მოწყობილობებში ჩაშენებული პროგრამული უზრუნველყოფის განახლებები</translation>
 <translation id="7216409898977639127">ფიჭური ქსელის პროვაიდერი</translation>
 <translation id="7271040990581020067">სკანერი ამჟამად გამოიყენება. ცადეთ მოგვიანებით.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7281657306185710294">ბრიზი</translation>
 <translation id="7287310195820267359">ფონების კოლექციები</translation>
 <translation id="7297226631177386107">ქსელის დაცვიდან HTTPS ვებსაიტებთან დაკავშირება ვერ ხერხდება</translation>
 <translation id="7302860742311162920">ICCID</translation>

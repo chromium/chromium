@@ -1369,6 +1369,7 @@
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2307630946657910723">გვერდის ნაწილში ძიება <ph name="VISUAL_SEARCH_PROVIDER" />-ით</translation>
 <translation id="2309620859903500144">ამ საიტს აეკრძალა მოძრაობისა თუ განათების სენსორებზე წვდომა.</translation>
+<translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">გვერდის URL</translation>
 <translation id="2314165183524574721">ხილვადობის პარამეტრად ამჟამად მითითებულია დამალული</translation>
 <translation id="2314774579020744484">გვერდების თარგმნისას გამოყენებული ენა</translation>
@@ -1963,6 +1964,7 @@
 <translation id="288734198558082692"><ph name="DEVICE" /> და <ph name="NUMBER_OF_DEVICES" /> სხვა</translation>
 <translation id="2889064240420137087">ბმულის გახსნა…</translation>
 <translation id="2891922230654533301">გსურთ, გამოიყენოთ თქვენი მოწყობილობა <ph name="APP_NAME" />-ში შესასვლელად?</translation>
+<translation id="2893013536106749396">აირჩიეთ ბარათები, რომლებიც თქვენთვის მნიშვნელოვან უახლეს ინფორმაციას მოგაწვდით</translation>
 <translation id="2893168226686371498">ნაგულისხმევი ბრაუზერი</translation>
 <translation id="2893180576842394309">Google-მა შეიძლება გამოიყენოს თქვენი ისტორია Search-ისა და Google-ის სხვა სერვისების თქვენზე მოსარგებად</translation>
 <translation id="2894757982205307093">ახალი ჩანართი ჯგუფში</translation>
@@ -2076,6 +2078,7 @@
 <translation id="3003623123441819449">CSS კეში</translation>
 <translation id="3003828226041301643">მოწყობილობის გაწევრიანება დომენში ვერ მოხერხდა. შეამოწმეთ, აქვს თუ არა თქვენს ანგარიშს მოწყობილობების დამატების უფლება.</translation>
 <translation id="3003967365858406397">თქვენი <ph name="PHONE_NAME" /> კერძო Wi-Fi კავშირს შექმნის.</translation>
+<translation id="3005574332301273731">არ გამოჩნდეს</translation>
 <translation id="3006881078666935414">გამოყენების შესახებ მონაცემები არ არის</translation>
 <translation id="3007771295016901659">ჩანართის დუბლიკატის შექმნა</translation>
 <translation id="3008232374986381779">თქვენს <ph name="DEVICE_TYPE" />-ზე Linux-ის ხელსაწყოების, რედაქტორებისა და IDE-ების გაშვება. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
@@ -4295,6 +4298,7 @@
 <translation id="5265797726250773323">შეცდომა ინსტალაციისას</translation>
 <translation id="5266113311903163739">სერთიფიკატის ავტორიზაციის იმპორტის შეეცდომა</translation>
 <translation id="526622169288322445">სხვა ქმედებები „<ph name="ADDRESS_SUMMARY" />“-სთვის</translation>
+<translation id="5268373933383932086">თქვენი გვერდი, თქვენი წესები</translation>
 <translation id="5269977353971873915">ბეჭვდის შეცდომა</translation>
 <translation id="5273806377963980154">საიტის URL-ის რედაქტირება</translation>
 <translation id="5275352920323889391">ძაღლი</translation>
@@ -5107,6 +5111,7 @@
 <translation id="6080689532560039067">შეამოწმეთ სისტემის დრო</translation>
 <translation id="6082877069782862752">კლავიშების ასახვა</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> — უსახელო ჯგუფის ნაწილი</translation>
+<translation id="6085457109149794212">გაეცანით ბარათებთან დაკავშირებულ ყველა ვარიანტს „Chrome-ის მორგების“ სექციიდან</translation>
 <translation id="6085886413119427067">განსაზღვრავს დაცული კავშირით ვებსაიტებთან დაკავშირების ხერხს</translation>
 <translation id="6086004606538989567">ანგარიშს, რომელიც დაადასტურეთ, არ აქვს ამ მოწყობილობაზე წვდომის უფლება.</translation>
 <translation id="6086846494333236931">დაინსტალირებულია თქვენი ადმინისტრატორის მიერ</translation>
@@ -5561,6 +5566,7 @@
 <translation id="6537880577641744343">Commander</translation>
 <translation id="6538098297809675636">კოდის ამოცნობა ვერ მოხერხდა</translation>
 <translation id="653920215766444089">მიმდინარეობს მიმთითებელი მოწყობილობის ძიება</translation>
+<translation id="653983593749614101">მიმდინარეობს განახლება...</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />შენიშვნა:<ph name="END_BOLD" /> ჩართეთ მხოლოდ იმ შემთხვევაში, თუ ზუსტად იცით, რას აკეთებთ, ან თუ სისტემამ მოითხოვა ეს მოქმედება, რადგან მონაცემების შეგროვებამ შეიძლება შეამციროს ეფექტურობა.</translation>
 <translation id="6540672086173674880">თქვენი დათვალიერების ისტორიის მეშვეობით Google შეძლებს Search-ისა და Google-ის სხვა სერვისების თქვენზე მორგებას. აღნიშნულის ნებისმიერ დროს შეცვლა შეგიძლიათ მისამართზე myaccount.google.com/activitycontrols/search</translation>
 <translation id="6541638731489116978">ამ საიტს აეკრძალა მოძრაობის სენსორებზე წვდომა.</translation>

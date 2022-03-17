@@ -825,6 +825,7 @@
 <translation id="8042602468072383151">Àudio <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">Romanès</translation>
 <translation id="8049184478152619004">Introdueix la clau de desbloqueig personal (PUK)</translation>
+<translation id="807187749540895545">S'està extraient <ph name="FILE_NAME" />...</translation>
 <translation id="8079530767338315840">Repeteix</translation>
 <translation id="8087576439476816834">Baixa, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Compartit amb mi</translation>
@@ -876,6 +877,7 @@
 <translation id="8484284835977497781">Tria de les teves fotos recents.</translation>
 <translation id="8487700953926739672">Disponible sense connexió</translation>
 <translation id="8492972329130824181">La xarxa domèstica no està disponible. La itinerància de dades mòbils ha d'estar activada per poder connectar-t'hi.</translation>
+<translation id="8499098729323186194">S'estan extraient <ph name="NUMBER_OF_ITEMS" /> elements...</translation>
 <translation id="8521441079177373948">Regne Unit</translation>
 <translation id="8525306231823319788">Pantalla completa</translation>
 <translation id="853494022971700746">Francès (França)</translation>

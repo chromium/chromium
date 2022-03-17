@@ -825,6 +825,7 @@
 <translation id="8042602468072383151">เสียง <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">โรมาเนีย</translation>
 <translation id="8049184478152619004">ป้อนคีย์การเลิกบล็อกส่วนตัว (PUK)</translation>
+<translation id="807187749540895545">กำลังแตกข้อมูลของ <ph name="FILE_NAME" />...</translation>
 <translation id="8079530767338315840">เล่นซ้ำ</translation>
 <translation id="8087576439476816834">ดาวน์โหลด <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">ที่แชร์กับฉัน</translation>
@@ -876,6 +877,7 @@
 <translation id="8484284835977497781">เลือกจากรูปภาพล่าสุด</translation>
 <translation id="8487700953926739672">ใช้งานแบบออฟไลน์ได้</translation>
 <translation id="8492972329130824181">เครือข่ายในบ้านไม่พร้อมใช้งาน ต้องเปิดใช้การโรมมิ่งอินเทอร์เน็ตมือถือเพื่อเชื่อมต่อ</translation>
+<translation id="8499098729323186194">กำลังแตกข้อมูล <ph name="NUMBER_OF_ITEMS" /> รายการ...</translation>
 <translation id="8521441079177373948">สหราชอาณาจักร</translation>
 <translation id="8525306231823319788">เต็มหน้าจอ</translation>
 <translation id="853494022971700746">ฝรั่งเศส (ฝรั่งเศส)</translation>

@@ -2084,6 +2084,7 @@ Détails supplémentaires :
 <translation id="7575207903026901870">Bouton Supprimer la suggestion, appuyez sur Entrée pour supprimer cette suggestion</translation>
 <translation id="7577900504646297215">Gérer les centres d'intérêt</translation>
 <translation id="7578104083680115302">Payez rapidement sur les sites et les applications, sur tous les appareils, à l'aide des cartes que vous avez enregistrées avec Google.</translation>
+<translation id="7579442726219254162">Variable inconnue « <ph name="VARIABLE" /> » dans la configuration gérée de « <ph name="APPLICATION_ID" /> ».</translation>
 <translation id="7581199239021537589">Décalage Y de l'image côté 2</translation>
 <translation id="7582602800368606489">Créer rapidement un événement dans Google Agenda</translation>
 <translation id="7591288787774558753">Partager le contenu confidentiel?</translation>

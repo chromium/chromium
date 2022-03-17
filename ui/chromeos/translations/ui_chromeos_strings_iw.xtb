@@ -826,6 +826,7 @@
 <translation id="8042602468072383151">קובץ אודיו בפורמט <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">רומנית</translation>
 <translation id="8049184478152619004">‏יש להזין מפתח אישי לביטול חסימה (PUK)</translation>
+<translation id="807187749540895545">מתבצע חילוץ של הקובץ <ph name="FILE_NAME" />…</translation>
 <translation id="8079530767338315840">חזרה</translation>
 <translation id="8087576439476816834">הורדה, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">בשיתוף איתי</translation>
@@ -877,6 +878,7 @@
 <translation id="8484284835977497781">אפשר לבחור פריטים מתוך התמונות האחרונות.</translation>
 <translation id="8487700953926739672">זמין אופליין</translation>
 <translation id="8492972329130824181">הרשת הביתית אינה זמינה. יש להפעיל נדידה בחבילת גלישה כדי להתחבר.</translation>
+<translation id="8499098729323186194">מתבצע חילוץ של <ph name="NUMBER_OF_ITEMS" /> פריטים…</translation>
 <translation id="8521441079177373948">בריטניה</translation>
 <translation id="8525306231823319788">מסך מלא</translation>
 <translation id="853494022971700746">צרפתית (צרפת)</translation>

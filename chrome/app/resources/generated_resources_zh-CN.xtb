@@ -1321,6 +1321,7 @@
 <translation id="2278562042389100163">打开浏览器窗口</translation>
 <translation id="2278668501808246459">正在启动容器管理器</translation>
 <translation id="2280486287150724112">右侧页边距</translation>
+<translation id="2281863813036651454">用鼠标左键点击</translation>
 <translation id="2282146716419988068">GPU 进程</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{在新标签页组中打开全部网址(&amp;N)}=1{在新标签页组中打开 1 个网址(&amp;N)}other{在新标签页组中打开全部（{COUNT} 个）网址(&amp;N)}}</translation>
 <translation id="2285942871162473373">无法识别您的指纹。请重试。</translation>
@@ -3184,6 +3185,10 @@
 <translation id="4110490973560452005">下载完成：<ph name="FILE_NAME" />。按 Shift+F6 可切换到下载内容栏区域。</translation>
 <translation id="4110686435123617899">选择影集“<ph name="TITLE" />”，<ph name="DESC" /></translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" />（离线）</translation>
+<translation id="4114524937989710624">系统会显示推荐的文件，方便您回到最近在 Google 云端硬盘中进行的活动。
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        您可以从卡片菜单中管理设置，或者在“自定义 Chrome”中查看更多选项。</translation>
 <translation id="4115002065223188701">检测不到网络</translation>
 <translation id="4115378294792113321">洋红色</translation>
 <translation id="4116704186509653070">重新打开</translation>
@@ -3689,6 +3694,10 @@
 <translation id="4651484272688821107">无法加载包含演示模式资源的在线组件。</translation>
 <translation id="4652935475563630866">重新启动 Parallels Desktop 后，对摄像头设置做出的更改才能生效。请重新启动 Parallels Desktop 以继续。</translation>
 <translation id="4653405415038586100">配置 Linux 时出错</translation>
+<translation id="465406513924180949">系统会显示购物车，方便您回来购买网购时留在购物车中的商品。
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        您可以从卡片菜单中管理设置，或者在“自定义 Chrome”中查看更多选项。</translation>
 <translation id="4654236001025007561">与附近的 Chromebook 和 Android 设备分享文件</translation>
 <translation id="4657914796247705218">TrackPoint 速度</translation>
 <translation id="4658285806588491142">保护您的屏幕隐私</translation>
@@ -4131,6 +4140,7 @@
 <translation id="5121130586824819730">您的硬盘已满。请保存到其他位置或在硬盘上腾出更多空间。</translation>
 <translation id="5123433949759960244">篮球</translation>
 <translation id="5125751979347152379">网址无效。</translation>
+<translation id="5125967981703109366">关于此卡片</translation>
 <translation id="5126611267288187364">查看更改</translation>
 <translation id="5127242257756472928">无法使用您的屏幕的相关信息打开并放置窗口</translation>
 <translation id="5127620150973591153">安全配对号码：<ph name="TOKEN" /></translation>
@@ -5114,6 +5124,10 @@
 <translation id="6116921718742659598">更改语言和输入设置</translation>
 <translation id="6119927814891883061">将设备命名为“<ph name="DEVICE_NAME" />”</translation>
 <translation id="6120205520491252677">将此网页固定到“开始”屏幕...</translation>
+<translation id="6120707837086723438">系统会根据您近期的食谱搜索活动显示推荐的食谱。
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        您可以从卡片菜单中管理设置，或者在“自定义 Chrome”中查看更多选项。</translation>
 <translation id="6121773125605585883">查看用户名“<ph name="USERNAME" />”在 <ph name="WEBSITE" /> 上的密码</translation>
 <translation id="6122081475643980456">您的互联网连接受到控制</translation>
 <translation id="6122093587541546701">电子邮件（可选）：</translation>
@@ -5130,6 +5144,7 @@
 <translation id="6129938384427316298">Netscape 证书评论</translation>
 <translation id="6129953537138746214">空格</translation>
 <translation id="6130692320435119637">添加 Wi-Fi</translation>
+<translation id="6130887916931372608">键盘按键</translation>
 <translation id="6136114942382973861">关闭下载内容栏</translation>
 <translation id="6136287496450963112">您尚未设置 PIN 码来保护您的安全密钥。若要管理指纹，请先创建一个 PIN 码。</translation>
 <translation id="6138680304137685902">采用 SHA-384 算法的 X9.62 ECDSA 签名</translation>
@@ -6717,6 +6732,10 @@
 <translation id="7744192722284567281">遭遇了数据泄露</translation>
 <translation id="7744649840067671761">按新的开关键或键盘按键即可开始分配。
 按已分配的开关键或键盘按键即可撤消分配。</translation>
+<translation id="7746739418892731373">系统会显示 Google 相册媒体库中的照片和视频集锦。您可以前往 <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> 控制集锦中显示的内容。
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        您可以从卡片菜单中管理此卡片的设置，或者在“自定义 Chrome”中查看更多选项。</translation>
 <translation id="7750228210027921155">画中画</translation>
 <translation id="7751260505918304024">全部显示</translation>
 <translation id="7753735457098489144">存储空间不足，安装失败。如需释放空间，请从设备存储空间中删除文件。</translation>
@@ -6742,6 +6761,7 @@
 <translation id="7768770796815395237">更改</translation>
 <translation id="7768784765476638775">随选朗读</translation>
 <translation id="7770406201819593386">运行 ChromeOS Flex 诊断测试。</translation>
+<translation id="7770450735129978837">用鼠标右键点击</translation>
 <translation id="7770612696274572992">从其他设备复制的图片</translation>
 <translation id="7771452384635174008">布局</translation>
 <translation id="7772032839648071052">确认密码</translation>

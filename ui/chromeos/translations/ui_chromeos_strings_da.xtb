@@ -825,6 +825,7 @@
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" />-lyd</translation>
 <translation id="8045462269890919536">Rumænsk</translation>
 <translation id="8049184478152619004">Angiv PUK-kode</translation>
+<translation id="807187749540895545">Udtrækker <ph name="FILE_NAME" />…</translation>
 <translation id="8079530767338315840">Gentag</translation>
 <translation id="8087576439476816834">Download, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Delt med mig</translation>
@@ -876,6 +877,7 @@
 <translation id="8484284835977497781">Vælg blandt dine seneste billeder.</translation>
 <translation id="8487700953926739672">Tilgængelig offline</translation>
 <translation id="8492972329130824181">Hjemmenetværket er ikke tilgængeligt. Dataroaming med mobildata skal være aktiveret, før du kan oprette forbindelse.</translation>
+<translation id="8499098729323186194">Udtrækker <ph name="NUMBER_OF_ITEMS" /> elementer…</translation>
 <translation id="8521441079177373948">Britisk</translation>
 <translation id="8525306231823319788">Fuld skærm</translation>
 <translation id="853494022971700746">Fransk (Frankrig)</translation>

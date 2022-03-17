@@ -825,6 +825,7 @@
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> garso įrašas</translation>
 <translation id="8045462269890919536">Rumunų</translation>
 <translation id="8049184478152619004">Įveskite asmeninį blokavimo panaikinimo raktą (PUK)</translation>
+<translation id="807187749540895545">Išarchyvuojamas failas „<ph name="FILE_NAME" />“...</translation>
 <translation id="8079530767338315840">Kartoti</translation>
 <translation id="8087576439476816834">Atsisiųsti „<ph name="PROFILE_NAME" />“</translation>
 <translation id="8106045200081704138">Bendrinama su manimi</translation>
@@ -876,6 +877,7 @@
 <translation id="8484284835977497781">Pasirinkite iš naujausių nuotraukų.</translation>
 <translation id="8487700953926739672">Pasiekiama neprisijungus</translation>
 <translation id="8492972329130824181">Namų tinklas nepasiekiamas. Norint prisijungti turi būti įgalintas tarptinklinis duomenų ryšys mobiliesiems.</translation>
+<translation id="8499098729323186194">Išarchyvuojami elementai (iš viso: <ph name="NUMBER_OF_ITEMS" />)...</translation>
 <translation id="8521441079177373948">JK</translation>
 <translation id="8525306231823319788">Viso ekrano režimas</translation>
 <translation id="853494022971700746">Prancūzų k. (Prancūzija)</translation>

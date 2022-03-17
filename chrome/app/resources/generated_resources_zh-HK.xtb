@@ -3212,6 +3212,10 @@
 <translation id="4110490973560452005">下載完成 ：<ph name="FILE_NAME" />。按住 Shift+F6 鍵即可切換至下載內容列的位置。</translation>
 <translation id="4110686435123617899">揀相簿 <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (離線)</translation>
+<translation id="4114524937989710624">畫面會顯示建議的檔案，以便您繼續執行最近在「Google 雲端硬碟」中的活動。
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        您可透過資訊卡選單管理設定，或前往「自訂 Chrome」查看更多選項。</translation>
 <translation id="4115002065223188701">網絡超出範圍</translation>
 <translation id="4115378294792113321">洋紅色</translation>
 <translation id="4116704186509653070">重新開啟</translation>
@@ -3720,6 +3724,10 @@
 <translation id="4651484272688821107">無法使用示範模式的資源載入網上組件。</translation>
 <translation id="4652935475563630866">Parallels Desktop 需要重新啟動，相機設定的變更才會生效。重新啟動 Parallels Desktop 即可繼續。</translation>
 <translation id="4653405415038586100">設定 Linux 時發生錯誤</translation>
+<translation id="465406513924180949">畫面會顯示購物車，以便您在網絡上輕鬆查看購物車中的商品。
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        您可透過資訊卡選單管理設定，或前往「自訂 Chrome」查看更多選項。</translation>
 <translation id="4654236001025007561">與附近的 Chromebook 和 Android 裝置分享檔案</translation>
 <translation id="4657914796247705218">TrackPoint 速度</translation>
 <translation id="4658285806588491142">避免螢幕內容外洩</translation>
@@ -4162,6 +4170,7 @@
 <translation id="5121130586824819730">您的硬碟已滿。請儲存至其他位置或在硬碟上騰出更多空間。</translation>
 <translation id="5123433949759960244">籃球</translation>
 <translation id="5125751979347152379">網址無效。</translation>
+<translation id="5125967981703109366">關於此資訊卡</translation>
 <translation id="5126611267288187364">查看變更</translation>
 <translation id="5127242257756472928">不允許使用螢幕中的資料開啟及放置視窗</translation>
 <translation id="5127620150973591153">安全連線 ID：<ph name="TOKEN" /></translation>
@@ -4396,7 +4405,7 @@
 <translation id="5342091991439452114">PIN 必須至少有 <ph name="MINIMUM" /> 位數字</translation>
 <translation id="5344036115151554031">正在還原 Linux</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (右邊)</translation>
-<translation id="534572711507965074">為群組命名、選擇顏色，然後輕觸「Enter 鍵」</translation>
+<translation id="534572711507965074">為群組命名、選取顏色，並輕按 Enter</translation>
 <translation id="5345916423802287046">當您登入時啟動應用程式</translation>
 <translation id="5350293332385664455">關閉「Google 助理」</translation>
 <translation id="535123479159372765">從其他裝置複製的文字</translation>
@@ -5148,6 +5157,11 @@
 <translation id="6116921718742659598">變更語言和輸入設定</translation>
 <translation id="6119927814891883061">將裝置個名改做 <ph name="DEVICE_NAME" /></translation>
 <translation id="6120205520491252677">將這個網頁固定到 [開始] 螢幕…</translation>
+<translation id="6120707837086723438">系統會根據您最近搜尋的食譜，為您顯示建議的食譜。
+        
+<ph name="BREAK" />
+        <ph name="BREAK" />
+        您可透過資訊卡選單管理設定，或前往「自訂 Chrome」查看更多選項。</translation>
 <translation id="6121773125605585883">睇下使用者名稱「<ph name="USERNAME" />」喺 <ph name="WEBSITE" /> 嘅密碼</translation>
 <translation id="6122081475643980456">您的互聯網連線目前受到控制</translation>
 <translation id="6122093587541546701">電郵 (選擇性)：</translation>
@@ -5873,7 +5887,7 @@
 <translation id="6846178040388691741">「<ph name="EXTENSION_NAME" />」要求使用 <ph name="PRINTER_NAME" /> 列印 <ph name="FILE_NAME" />。</translation>
 <translation id="6847125920277401289">騰出空間才能繼續</translation>
 <translation id="6848388270925200958">目前您有部分付款卡只可在此裝置上使用</translation>
-<translation id="6848425544473873717">{NUM_APPS,plural, =1{系統已不再支援你其中 1 個應用程式。<ph name="LEARN_MORE" />}other{系統已不再支援你其中 # 個應用程式。<ph name="LEARN_MORE" />}}</translation>
+<translation id="6848425544473873717">{NUM_APPS,plural, =1{系統已不再支援您的 1 個應用程式。<ph name="LEARN_MORE" />}other{系統已不再支援您的 # 個應用程式。<ph name="LEARN_MORE" />}}</translation>
 <translation id="6848716236260083778">如要設定指紋，請讓子女輕觸指紋感應器。系統會妥善地將您子女的指紋資料儲存在此 <ph name="DEVICE_TYPE" /> 上，絕不會外洩。</translation>
 <translation id="6850286078059909152">文字顏色</translation>
 <translation id="6851181413209322061">傳送使用情況和診斷資料。此裝置目前會自動將診斷、裝置及應用程式的使用情況資料傳送至 Google。這些資料不會用來識別您子女的身分，而是用於改善系統和應用程式穩定性以及其他效能。部分彙整資料也會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。擁有者可強制執行此設定。如果您為子女開啟其他「網絡及應用程式活動記錄」設定，此資料可能會儲存在他們的 Google 帳戶中。</translation>
@@ -6754,6 +6768,10 @@
 <translation id="7744192722284567281">發生資料外洩事件</translation>
 <translation id="7744649840067671761">按下新的按鈕裝置或鍵盤按鍵，即可開始指派。
 按下已指派的按鈕裝置或按鍵，則可移除指派設定。</translation>
+<translation id="7746739418892731373">系統正在顯示來自「Google 相片庫」中的精選相片和影片。您可在 <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> 控制系統在精選內容中顯示的項目。
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        您可透過資訊卡選單管理此資訊卡的設定，或前往「自訂 Chrome」查看更多選項。</translation>
 <translation id="7750228210027921155">畫中畫</translation>
 <translation id="7751260505918304024">全部顯示</translation>
 <translation id="7753735457098489144">儲存空間不足，因此無法完成安裝。如要釋出空間，請刪除裝置儲存空間內的檔案。</translation>

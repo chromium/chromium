@@ -1346,6 +1346,7 @@
 <translation id="2278562042389100163">Відкрити вікно переглядача</translation>
 <translation id="2278668501808246459">Запуск менеджера контейнера</translation>
 <translation id="2280486287150724112">Праве поле</translation>
+<translation id="2281863813036651454">Клік лівою кнопкою миші</translation>
 <translation id="2282146716419988068">Процес GPU</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{Відкрити всі в &amp;новій групі вкладок}=1{Відкрити в &amp;новій групі вкладок}one{Відкрити всі ({COUNT}) у &amp;новій групі вкладок}few{Відкрити всі ({COUNT}) у &amp;новій групі вкладок}many{Відкрити всі ({COUNT}) у &amp;новій групі вкладок}other{Відкрити всі ({COUNT}) у &amp;новій групі вкладок}}</translation>
 <translation id="2285942871162473373">Не вдалося розпізнати відбиток пальця. Повторіть спробу.</translation>
@@ -5161,6 +5162,7 @@
 <translation id="6129938384427316298">Коментар сертифіката Netscape</translation>
 <translation id="6129953537138746214">Пробіл</translation>
 <translation id="6130692320435119637">Додати мережу Wi-Fi</translation>
+<translation id="6130887916931372608">Клавіша клавіатури</translation>
 <translation id="6136114942382973861">Закрити панель завантажень</translation>
 <translation id="6136287496450963112">Ваш ключ безпеки не захищено PIN-кодом. Щоб керувати відбитками пальців, спершу створіть новий PIN-код.</translation>
 <translation id="6138680304137685902">Алгоритм ECDSA X9.62 з підписом SHA-384</translation>
@@ -6773,6 +6775,7 @@
 <translation id="7768770796815395237">Змінити</translation>
 <translation id="7768784765476638775">Читання з екрана</translation>
 <translation id="7770406201819593386">Виконувати діагностичні перевірки ОС Chrome Flex.</translation>
+<translation id="7770450735129978837">Клік правою кнопкою миші</translation>
 <translation id="7770612696274572992">Зображення скопійовано з іншого пристрою</translation>
 <translation id="7771452384635174008">Орієнтація</translation>
 <translation id="7772032839648071052">Підтвердити парольну фразу</translation>

@@ -825,6 +825,7 @@
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" />-ljud</translation>
 <translation id="8045462269890919536">rumänska</translation>
 <translation id="8049184478152619004">Ange PUK-kod (Personal Unblocking Key)</translation>
+<translation id="807187749540895545"><ph name="FILE_NAME" /> extraheras …</translation>
 <translation id="8079530767338315840">Upprepa</translation>
 <translation id="8087576439476816834">Ladda ned, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Delade med mig</translation>
@@ -876,6 +877,7 @@
 <translation id="8484284835977497781">Välj bland dina senaste foton.</translation>
 <translation id="8487700953926739672">Tillgänglig offline</translation>
 <translation id="8492972329130824181">Hemnätverket är inte tillgängligt. Dataroaming med mobildata måste aktiveras för anslutningen.</translation>
+<translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> objekt extraheras …</translation>
 <translation id="8521441079177373948">Storbritannien</translation>
 <translation id="8525306231823319788">Helskärm</translation>
 <translation id="853494022971700746">franska (Frankrike)</translation>

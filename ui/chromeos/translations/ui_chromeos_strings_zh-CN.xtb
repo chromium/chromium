@@ -820,6 +820,7 @@
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> 音频</translation>
 <translation id="8045462269890919536">罗马尼亚语</translation>
 <translation id="8049184478152619004">输入个人解锁密钥 (PUK)</translation>
+<translation id="807187749540895545">正在提取 <ph name="FILE_NAME" />…</translation>
 <translation id="8079530767338315840">重复播放</translation>
 <translation id="8087576439476816834">下载，<ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">与我共享</translation>
@@ -871,6 +872,7 @@
 <translation id="8484284835977497781">从您的近期照片中选择。</translation>
 <translation id="8487700953926739672">可离线使用</translation>
 <translation id="8492972329130824181">无法使用家庭网络。必须启用移动数据漫游才能联网。</translation>
+<translation id="8499098729323186194">正在提取 <ph name="NUMBER_OF_ITEMS" /> 个项目…</translation>
 <translation id="8521441079177373948">英国英语</translation>
 <translation id="8525306231823319788">全屏</translation>
 <translation id="853494022971700746">法语（法国）</translation>

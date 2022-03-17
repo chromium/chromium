@@ -20,6 +20,7 @@
 <translation id="1181037720776840403">ہٹائیں</translation>
 <translation id="1195447618553298278">نامعلوم خرابی۔</translation>
 <translation id="1196959502276349371">ورژن <ph name="VERSION" /></translation>
+<translation id="1199355487114804640">چلائیں/روکیں</translation>
 <translation id="1201402288615127009">اگلا</translation>
 <translation id="1204296502688602597">‏DNS تاخیر</translation>
 <translation id="123124571410524056">پورٹل مشکوک ہے</translation>
@@ -43,6 +44,7 @@
 <translation id="1413240736185167732">ناکام ہو گیا - فلٹر ناکام ہو گیا</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">میرے پاس کلیدوں کا ایک جوڑا ہے</translation>
+<translation id="1423591390236870726"><ph name="KEY_NAME" /> کلید نہیں دبائی گئی</translation>
 <translation id="1435763214710588005">ہر ماہ منتخب کردہ دن پر ڈیٹا کے استعمال کو خودکار طور پر ری سیٹ کرتا ہے</translation>
 <translation id="1442433966118452622">تصویر کا ماخذ</translation>
 <translation id="1451536289672181509">آلہ ایک کی بورڈ ہے۔</translation>
@@ -84,6 +86,7 @@
 <translation id="1827738518074806965">آرٹ گیلری</translation>
 <translation id="1851218745569890714">ویڈیو کانفرنسنگ</translation>
 <translation id="1852934301711881861">‏ChromeOS Flex انسٹال کریں</translation>
+<translation id="1856388568474281774">نیچے تیر کا نشان</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">ہارڈ ویئر سے متعلق نظر ثانی</translation>
 <translation id="1905710495812624430">زیادہ سے زیادہ مجاز کوششوں سے تجاوز کرگیا۔</translation>
@@ -98,6 +101,7 @@
 <translation id="2016697457005847575">ٹربل شوٹنگ اقدامات کو آزمائیں</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">مزید ترتیبات</translation>
+<translation id="2085089206770112532">ڈسپلے کی چمک کم کرنے کی کلید</translation>
 <translation id="2104796393919810494">مرمت کی کارروائی مکمل ہو گئی</translation>
 <translation id="2105810540595158374">آلہ ایک گیم کنٹرولر ہے۔</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />، ورژن <ph name="MILESTONE_VERSION" /></translation>
@@ -116,6 +120,7 @@
 <translation id="222447520299472966">کم از کم ایک آرٹ گیلری البم کو منتخب کرنے کی ضرورت ہے</translation>
 <translation id="2230005943220647148">سیلسیئس</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2240366984605217732">لے آؤٹ کو سوئچ کرنے کی کلید</translation>
 <translation id="225692081236532131">فعالیت کی صورتحال</translation>
 <translation id="2287186687001756809">کوئی تصویر دستیاب نہیں ہے۔ تصاویر شامل کرنے کے لیے، <ph name="LINK" /> پر جائیں</translation>
 <translation id="2307344026739914387">موجودہ کلیدوں کا جوڑا استعمال کریں</translation>
@@ -207,9 +212,11 @@
 <translation id="357889014807611375">‏میٹرڈ Wi-Fi</translation>
 <translation id="3583278742022654445">‏کمزور سگنل کی مضبوطی۔ Wi-Fi سگنل ماخذ کے قریب منتقل کرنے کی کوشش کریں۔</translation>
 <translation id="3595596368722241419">بیٹری پوری چارج ہے</translation>
+<translation id="3600339377155080675">اسکرین مرر</translation>
 <translation id="3603829704940252505">اوتار</translation>
 <translation id="360565022852130722">‏WiFi نیٹ ورک کمزور پروٹوکول WEP 802.1x کے ساتھ محفوظ ہے</translation>
 <translation id="3606583719724308068">‏HTTPS ویب سائٹس پر زیادہ تاخیر</translation>
+<translation id="3632579075709132555">رازداری کی اسکرین کو ٹوگل کرنے کی کلید</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> ٹیسٹ</translation>
 <translation id="370665806235115550">لوڈ ہو رہے ہیں…</translation>
 <translation id="3708186454126126312">پہلے سے منسلک کردہ</translation>
@@ -263,6 +270,7 @@
 <translation id="4289540628985791613">عمومی جائزہ</translation>
 <translation id="4297501883039923494">رک گیا - نامعلوم خرابی</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> تصاویر</translation>
+<translation id="4333390807948134856"><ph name="KEY_NAME" /> کلید دبائی گئی</translation>
 <translation id="4378373042927530923">نہیں چلا</translation>
 <translation id="4378551569595875038">منسلک ہو رہا ہے…</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -278,6 +286,7 @@
 <translation id="4479639480957787382">ایتھرنیٹ</translation>
 <translation id="4483049906298469269">غیر ڈیفالٹ نیٹ ورک گیٹ وے کو پنگ کرنے میں ناکام</translation>
 <translation id="4485626319513081846">اگر آلے کو نئے کسٹمر کو بھیجنے کے لیے دوبارہ اسٹاک کیا جا رہا ہے یا اس کے لیے استعمال کیا جا رہا ہے تو اس اختیار کو منتخب کریں۔</translation>
+<translation id="4503223151711056411">بائیں تیر کا نشان</translation>
 <translation id="4511264077854731334">پورٹل</translation>
 <translation id="4521826082652183069">موضوع کا متبادل نام مماثل کریں</translation>
 <translation id="4536864596629708641">‏IP کنفیگریشن</translation>
@@ -289,10 +298,12 @@
 <translation id="4562494484721939086">کوئی سروس نہیں</translation>
 <translation id="458794348635939462">تمام میزبانوں کو حل کرنے میں ناکام</translation>
 <translation id="4593212453765072419">پراکسی کی تصدیق درکار ہے</translation>
+<translation id="4609350030397390689">کی بورڈ کی چمک کم کرنے کی کلید</translation>
 <translation id="4627232916386272576">‏<ph name="DOCUMENT_TITLE" />، <ph name="PRINTER_NAME" />، <ph name="CREATION_TIME" />، <ph name="TOTAL_PAGE_NUMBER" /> میں سے <ph name="PRINTED_PAGE_NUMBER" />۔ براہ کرم پرنٹ جاب منسوخ کرنے کے لیے enter دبائیں۔</translation>
 <translation id="4627645661474370390">ریموٹ شناخت</translation>
 <translation id="463791356324567266">اسکین کا عمل منسوخ کیا جا رہا ہے...</translation>
 <translation id="4646949265910132906">‏WiFi کنکشن محفوظ کریں</translation>
+<translation id="4650608062294027130">دائیں شفٹ</translation>
 <translation id="4654549501020883054">روزانہ تبدیل کریں</translation>
 <translation id="4665014895760275686">مینوفیکچرر</translation>
 <translation id="467510802200863975">پاس ورڈز مماثل نہیں ہیں</translation>
@@ -390,8 +401,10 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">دوبارہ اسکین کریں</translation>
 <translation id="5583640892426849032">بیک اسپیس</translation>
+<translation id="5600027863942488546"><ph name="KEY_NAME" /> کلید ٹیسٹ کی گئی</translation>
 <translation id="5620281292257375798">صرف داخلی</translation>
 <translation id="5649768706273821470">سنیں</translation>
+<translation id="5655283760733841251">کی بورڈ کی چمک بڑھانے کی کلید</translation>
 <translation id="5669267381087807207">فعال ہو رہا ہے</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">فیملی</translation>
@@ -399,6 +412,7 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> از <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> اپ ڈیٹ کریں</translation>
 <translation id="5760715441271661976">پورٹل صورت حال</translation>
+<translation id="576835345334454681">ڈسپلے کی چمک بڑھانے کی کلید</translation>
 <translation id="57838592816432529">آواز بند کریں</translation>
 <translation id="5784136236926853061">‏زیادہ HTTPS تاخیر</translation>
 <translation id="5832805196449965646">شخص کو شامل کریں</translation>
@@ -429,6 +443,7 @@
 <translation id="6104112872696127344">اسکین کا عمل منسوخ کر دیا گیا</translation>
 <translation id="6106186594183574873">مکمل کرنے کے لئے اپنا پرانا پاس ورڈ درج کریں</translation>
 <translation id="6108689792487843350">گیٹ وے ناقابل رسائی ہے</translation>
+<translation id="6113701710518389813">اوپر تیر کا نشان</translation>
 <translation id="6122191549521593678">آن لائن</translation>
 <translation id="6137767437444130246">صارف کا سرٹیفیکیٹ</translation>
 <translation id="6146993107019042706">مکمل کرنے کے لئے اپنا نیا پاس ورڈ درج کریں</translation>
@@ -442,6 +457,7 @@
 <translation id="6232017090690406397">بیٹری</translation>
 <translation id="6235460611964961764">ڈیٹا کے استعمال کو دستی طور پر ری سیٹ کریں</translation>
 <translation id="6243280677745499710">فی الحال سیٹ ہے</translation>
+<translation id="6275224645089671689">دائیں تیر کا نشان</translation>
 <translation id="6278428485366576908">تھیم</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> ٹیسٹ منسوخ کر دیا گیا ہے</translation>
@@ -477,6 +493,7 @@
 <translation id="6620487321149975369">پرنٹ جابز سرگزشت میں ظاہر ہوں گی جب تک کہ انہیں دستی طور پر ہٹا نہیں دیا جاتا</translation>
 <translation id="6643016212128521049">صاف کریں</translation>
 <translation id="6647510110698214773">مرموز کاری الگورتھم</translation>
+<translation id="6650062777702288430">کانا/الفانیومیرک کو سوئچ کرنے کی کلید</translation>
 <translation id="6657585470893396449">پاس ورڈ</translation>
 <translation id="6659594942844771486">ٹیب</translation>
 <translation id="6692996468359469499">اپنے انتخاب سے متعلق معلومات حاصل کریں</translation>
@@ -689,6 +706,7 @@
 <translation id="9122602430962285795">دوبارہ منسلک ہونے کیلئے، ترتیبات پر جائیں</translation>
 <translation id="9126720536733509015">‏متعدد صفحات کو ایک PDF میں محفوظ کریں</translation>
 <translation id="9137526406337347448">‏Google سروسز</translation>
+<translation id="9138630967333032450">بائیں شفٹ</translation>
 <translation id="9149391708638971077">میموری ٹیسٹ چلائیں</translation>
 <translation id="9173638680043580060">ایک منٹ سے کم باقی ہے</translation>
 <translation id="917720651393141712">ٹیسٹ</translation>

@@ -20,6 +20,7 @@
 <translation id="1181037720776840403">Видалити</translation>
 <translation id="1195447618553298278">Невідома помилка.</translation>
 <translation id="1196959502276349371">Версія <ph name="VERSION" /></translation>
+<translation id="1199355487114804640">Відтворити/призупинити</translation>
 <translation id="1201402288615127009">Далі</translation>
 <translation id="1204296502688602597">Затримка DNS</translation>
 <translation id="123124571410524056">Можливо, виявлено портал</translation>
@@ -43,6 +44,7 @@
 <translation id="1413240736185167732">Не надруковано – помилка фільтра</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">У мене є пара ключів</translation>
+<translation id="1423591390236870726">Клавішу "<ph name="KEY_NAME" />" не натиснено</translation>
 <translation id="1435763214710588005">Щомісяця дані про використання трафіку скидатимуться у вибраний день</translation>
 <translation id="1442433966118452622">Джерело зображення</translation>
 <translation id="1451536289672181509">Це клавіатура.</translation>
@@ -84,6 +86,7 @@
 <translation id="1827738518074806965">Мистецька галерея</translation>
 <translation id="1851218745569890714">Відеоконференції</translation>
 <translation id="1852934301711881861">Установити ОС Chrome Flex</translation>
+<translation id="1856388568474281774">Стрілка вниз</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Апаратне забезпечення</translation>
 <translation id="1905710495812624430">Перевищено максимальну кількість дозволених спроб.</translation>
@@ -98,6 +101,7 @@
 <translation id="2016697457005847575">Виконайте дії для вирішення проблеми</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Більше налаштувань</translation>
+<translation id="2085089206770112532">Зменшити яскравість екрана</translation>
 <translation id="2104796393919810494">Ремонт завершено</translation>
 <translation id="2105810540595158374">Це ігровий контролер.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, версія <ph name="MILESTONE_VERSION" /></translation>
@@ -116,6 +120,7 @@
 <translation id="222447520299472966">Потрібно вибрати принаймні один альбом із мистецької галереї</translation>
 <translation id="2230005943220647148">Градуси Цельсія</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2240366984605217732">Перемикач розкладки клавіатури</translation>
 <translation id="225692081236532131">Статус активації</translation>
 <translation id="2287186687001756809">Немає зображень. Щоб додати фото, перейдіть на сторінку <ph name="LINK" /></translation>
 <translation id="2307344026739914387">Використовувати поточну пару ключів</translation>
@@ -207,9 +212,11 @@
 <translation id="357889014807611375">Wi-Fi із тарифікацією трафіку</translation>
 <translation id="3583278742022654445">Низький рівень сигналу. Підійдіть ближче до джерела сигналу Wi-Fi.</translation>
 <translation id="3595596368722241419">Акумулятор заряджено</translation>
+<translation id="3600339377155080675">Дзеркалювання екрана</translation>
 <translation id="3603829704940252505">Аватар</translation>
 <translation id="360565022852130722">Мережа Wi-Fi захищена ненадійним протоколом WEP 802.1x</translation>
 <translation id="3606583719724308068">Велика затримка для веб-сайтів HTTPS</translation>
+<translation id="3632579075709132555">Перемикач Екрана конфіденційності</translation>
 <translation id="3689839747745352263">Перевірка "<ph name="TEST_NAME" />"</translation>
 <translation id="370665806235115550">Завантаження...</translation>
 <translation id="3708186454126126312">Підключені раніше</translation>
@@ -263,6 +270,7 @@
 <translation id="4289540628985791613">Огляд</translation>
 <translation id="4297501883039923494">Зупинено – невідома помилка</translation>
 <translation id="4300073214558989">Зображень: <ph name="IMAGE_COUNT" /></translation>
+<translation id="4333390807948134856">Клавішу "<ph name="KEY_NAME" />" натиснено</translation>
 <translation id="4378373042927530923">Не виконано</translation>
 <translation id="4378551569595875038">Підключення…</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -278,6 +286,7 @@
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Не вдалося надіслати запит ping шлюзу мережі не за умовчанням</translation>
 <translation id="4485626319513081846">Виберіть цей варіант, якщо пристрій знову в наявності або відремонтований для надання новому клієнту.</translation>
+<translation id="4503223151711056411">Стрілка вліво</translation>
 <translation id="4511264077854731334">Портал</translation>
 <translation id="4521826082652183069">Збіг з альтернативною назвою суб’єкта</translation>
 <translation id="4536864596629708641">Конфігурація IP-адрес</translation>
@@ -289,10 +298,12 @@
 <translation id="4562494484721939086">Не працює</translation>
 <translation id="458794348635939462">Не вдалося розпізнати всі хости</translation>
 <translation id="4593212453765072419">Потрібна автентифікація проксі-сервера</translation>
+<translation id="4609350030397390689">Зменшити яскравість клавіатури</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> з <ph name="TOTAL_PAGE_NUMBER" />. Натисніть Enter, щоб скасувати завдання друку.</translation>
 <translation id="4627645661474370390">Віддалений ідентифікатор</translation>
 <translation id="463791356324567266">Сканування скасовується…</translation>
 <translation id="4646949265910132906">Надійне з'єднання Wi-Fi</translation>
+<translation id="4650608062294027130">Права клавіша Shift</translation>
 <translation id="4654549501020883054">Змінювати щодня</translation>
 <translation id="4665014895760275686">Виробник</translation>
 <translation id="467510802200863975">Паролі не збігаються</translation>
@@ -391,8 +402,10 @@
 <translation id="5578477003638479617">Технологія UMTS</translation>
 <translation id="5578519639599103840">Сканувати ще раз</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5600027863942488546">Клавішу "<ph name="KEY_NAME" />" перевірено</translation>
 <translation id="5620281292257375798">Лише для внутрішнього використання</translation>
 <translation id="5649768706273821470">Слухати</translation>
+<translation id="5655283760733841251">Збільшити яскравість клавіатури</translation>
 <translation id="5669267381087807207">Активація</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Сім’я</translation>
@@ -400,6 +413,7 @@
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> з <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Оновити пристрій: <ph name="DEVICE_NAME" /></translation>
 <translation id="5760715441271661976">Стан порталу</translation>
+<translation id="576835345334454681">Збільшити яскравість екрана</translation>
 <translation id="57838592816432529">Вимкнути звук</translation>
 <translation id="5784136236926853061">Велика затримка HTTP</translation>
 <translation id="5832805196449965646">Додати користувача</translation>
@@ -430,6 +444,7 @@
 <translation id="6104112872696127344">Сканування скасовано</translation>
 <translation id="6106186594183574873">Щоб завершити, введіть старий пароль</translation>
 <translation id="6108689792487843350">шлюз недоступний</translation>
+<translation id="6113701710518389813">Стрілка вгору</translation>
 <translation id="6122191549521593678">Онлайн</translation>
 <translation id="6137767437444130246">Сертифікат користувача</translation>
 <translation id="6146993107019042706">Щоб завершити, введіть новий пароль</translation>
@@ -443,6 +458,7 @@
 <translation id="6232017090690406397">Акумулятор</translation>
 <translation id="6235460611964961764">Вручну скидати дані про використання трафіку</translation>
 <translation id="6243280677745499710">Налаштовано зараз</translation>
+<translation id="6275224645089671689">Стрілка вправо</translation>
 <translation id="6278428485366576908">Тема</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6302401976930124515">Тест "<ph name="TEST_NAME" />" скасовано</translation>
@@ -478,6 +494,7 @@
 <translation id="6620487321149975369">Завдання друку відображатимуться в історії, доки ви не вилучите їх вручну</translation>
 <translation id="6643016212128521049">Очистити</translation>
 <translation id="6647510110698214773">Алгоритм шифрування</translation>
+<translation id="6650062777702288430">Перемикач між розкладками кана й буквено-цифровою</translation>
 <translation id="6657585470893396449">Пароль</translation>
 <translation id="6659594942844771486">Вкладка</translation>
 <translation id="6692996468359469499">Отримати інформацію, пов'язану з виділеним текстом</translation>
@@ -690,6 +707,7 @@
 <translation id="9122602430962285795">Щоб знову підключитися, перейдіть у налаштування</translation>
 <translation id="9126720536733509015">Зберігати кілька сторінок в один файл PDF</translation>
 <translation id="9137526406337347448">Служби Google</translation>
+<translation id="9138630967333032450">Ліва клавіша Shift</translation>
 <translation id="9149391708638971077">Виконати перевірку пам'яті</translation>
 <translation id="9173638680043580060">Залишилося менше хвилини</translation>
 <translation id="917720651393141712">Перевірити</translation>

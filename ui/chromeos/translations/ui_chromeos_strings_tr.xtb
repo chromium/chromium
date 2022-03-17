@@ -825,6 +825,7 @@
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> ses</translation>
 <translation id="8045462269890919536">Rumence</translation>
 <translation id="8049184478152619004">Kişisel Engelleme Kaldırma Anahtarını (PUK) girin</translation>
+<translation id="807187749540895545"><ph name="FILE_NAME" /> çıkarılıyor...</translation>
 <translation id="8079530767338315840">Tekrarla</translation>
 <translation id="8087576439476816834">İndir, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Benimle paylaşılanlar</translation>
@@ -876,6 +877,7 @@
 <translation id="8484284835977497781">Son fotoğraflarınızdan seçin.</translation>
 <translation id="8487700953926739672">Çevrimdışı kullanılabilir</translation>
 <translation id="8492972329130824181">Ev ağı kullanılamıyor. Bağlanmak için mobil veri dolaşımı etkinleştirilmelidir.</translation>
+<translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> öğe çıkarılıyor...</translation>
 <translation id="8521441079177373948">İngiltere</translation>
 <translation id="8525306231823319788">Tam ekran</translation>
 <translation id="853494022971700746">Fransızca (Fransa)</translation>

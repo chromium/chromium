@@ -3199,6 +3199,10 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4110490973560452005">Dokončilo sa sťahovanie súboru: <ph name="FILE_NAME" />. Stláčaním klávesov Shift+F6 prejdite do oblasti panela so stiahnutými súbormi.</translation>
 <translation id="4110686435123617899">Vyberte album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
+<translation id="4114524937989710624">Zobrazujú sa navrhované súbory, ktoré vám pomôžu ľahko sa vrátiť k poslednej nedávnej aktivite na Disku Google.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Môžete spravovať nastavenia v ponuke karty alebo si zobraziť ďalšie možnosti v sekcii Pripôsobenie Chromu.</translation>
 <translation id="4115002065223188701">Sieť je mimo dosahu</translation>
 <translation id="4115378294792113321">Purpurová</translation>
 <translation id="4116704186509653070">Znova otvoriť</translation>
@@ -3706,6 +3710,10 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4651484272688821107">Nepodarilo sa načítať komponent so zdrojmi režimu ukážky.</translation>
 <translation id="4652935475563630866">Zmena nastavenia kamery vyžaduje opätovné spustenie aplikácie Parallels Desktop. Pokračujte opätovným spustením aplikácie Parallels Desktop.</translation>
 <translation id="4653405415038586100">Chyba pri konfigurovaní systému Linux</translation>
+<translation id="465406513924180949">Zobrazujú sa karty, ktoré vám pomôžu ľahko sa vrátiť k položkám, ktoré ste zanechali v nákupných košíkoch na internete.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Môžete spravovať nastavenia v ponuke karty alebo si zobraziť ďalšie možnosti v sekcii Pripôsobenie Chromu.</translation>
 <translation id="4654236001025007561">Zdieľajte súbory s Chromebookmi a zariadeniami s Androidom okolo vás</translation>
 <translation id="4657914796247705218">Rýchlosť TrackPointu</translation>
 <translation id="4658285806588491142">Uchovajte si obsah obrazovky v súkromí</translation>
@@ -4148,6 +4156,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="5121130586824819730">Pevný disk je plný. Uložte inde alebo uvoľnite viac miesta na pevnom disku. </translation>
 <translation id="5123433949759960244">Basketbal</translation>
 <translation id="5125751979347152379">Neplatná webová adresa.</translation>
+<translation id="5125967981703109366">Táto karta</translation>
 <translation id="5126611267288187364">Zobraziť zmeny</translation>
 <translation id="5127242257756472928">Weby, ktoré nemajú povolené otvárať a umiestňovať okná pomocou informácií o vašich obrazovkách</translation>
 <translation id="5127620150973591153">Bezpečný spojovací kód: <ph name="TOKEN" /></translation>
@@ -5134,6 +5143,10 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6116921718742659598">Zmeniť nastavenia jazyka a vstupu</translation>
 <translation id="6119927814891883061">Pomenovať zariadenie <ph name="DEVICE_NAME" /></translation>
 <translation id="6120205520491252677">Pripnúť túto stránku na Úvodnú obrazovku...</translation>
+<translation id="6120707837086723438">Zobrazujú sa navrhované recepty na základe vašej nedávnej aktivity vyhľadávania receptov.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Môžete spravovať nastavenia v ponuke karty alebo si zobraziť ďalšie možnosti v sekcii Pripôsobenie Chromu.</translation>
 <translation id="6121773125605585883">Zobraziť heslo s používateľským menom <ph name="USERNAME" /> pre web <ph name="WEBSITE" /></translation>
 <translation id="6122081475643980456">Vaše internetové pripojenie je ovládané</translation>
 <translation id="6122093587541546701">E-mail (nepovinné):</translation>
@@ -6740,6 +6753,10 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="7744192722284567281">Nájdené v rámci porušenia ochrany údajov</translation>
 <translation id="7744649840067671761">Spustite úlohu stlačením nového prepínača alebo klávesa.
 Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation>
+<translation id="7746739418892731373">Zobrazujú sa výbery fotiek a videí z vašej knižnice Fotiek Google. Na <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> môžete ovládať, čo sa má vo výberoch zobrazovať.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Môžete spravovať nastavenia tejto karty v jej ponuke alebo si zobraziť ďalšie možnosti v sekcii Pripôsobenie Chromu.</translation>
 <translation id="7750228210027921155">Obraz v obraze</translation>
 <translation id="7751260505918304024">Zobraziť všetky</translation>
 <translation id="7753735457098489144">Nepodarilo sa nainštalovať pre nedostatok priestoru. Uvoľníte ho odstránením súborov z úložiska zariadenia.</translation>

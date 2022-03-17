@@ -3194,6 +3194,10 @@
 <translation id="4110490973560452005">下載完成：<ph name="FILE_NAME" />。按下 Shift+F6 即可回到下載內容列區域。</translation>
 <translation id="4110686435123617899">選取相簿「<ph name="TITLE" />，<ph name="DESC" />」</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (離線)</translation>
+<translation id="4114524937989710624">畫面上會顯示建議的檔案，方便你繼續執行最近在 Google 雲端硬碟中的活動。
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        你可以透過資訊卡選單管理設定，或前往「自訂 Chrome」查看更多選項。</translation>
 <translation id="4115002065223188701">偵測不到網路</translation>
 <translation id="4115378294792113321">洋紅色</translation>
 <translation id="4116704186509653070">重新開啟</translation>
@@ -3701,6 +3705,10 @@
 <translation id="4651484272688821107">無法使用示範模式的資源載入線上元件。</translation>
 <translation id="4652935475563630866">必須重新啟動 Parallels Desktop，攝影機設定的變更才會生效。請重新啟動 Parallels Desktop 以繼續操作。</translation>
 <translation id="4653405415038586100">設定 Linux 時發生錯誤</translation>
+<translation id="465406513924180949">畫面上會顯示購物車，方便你在網路上輕鬆查看購物車中的商品。
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        你可以透過資訊卡選單管理設定，或前往「自訂 Chrome」查看更多選項。</translation>
 <translation id="4654236001025007561">將檔案分享給附近的 Chromebook 和 Android 裝置</translation>
 <translation id="4657914796247705218">TrackPoint 速度</translation>
 <translation id="4658285806588491142">避免螢幕內容外洩</translation>
@@ -4143,6 +4151,7 @@
 <translation id="5121130586824819730">你的硬碟已滿。請選擇其他儲存位置，或清出足夠的硬碟空間。</translation>
 <translation id="5123433949759960244">籃球</translation>
 <translation id="5125751979347152379">網址無效。</translation>
+<translation id="5125967981703109366">關於這張資訊卡</translation>
 <translation id="5126611267288187364">查看變更</translation>
 <translation id="5127242257756472928">不允許使用畫面中的資訊開啟及放置視窗</translation>
 <translation id="5127620150973591153">安全連線 ID：<ph name="TOKEN" /></translation>
@@ -5129,6 +5138,10 @@
 <translation id="6116921718742659598">變更語言和輸入設定</translation>
 <translation id="6119927814891883061">將裝置命名為「<ph name="DEVICE_NAME" />」</translation>
 <translation id="6120205520491252677">將這個網頁固定到開始畫面...</translation>
+<translation id="6120707837086723438">系統會根據你最近搜尋的食譜，向你顯示推薦食譜。
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        你可以透過資訊卡選單管理設定，或前往「自訂 Chrome」查看更多選項。</translation>
 <translation id="6121773125605585883">檢視使用者名稱「<ph name="USERNAME" />」在「<ph name="WEBSITE" />」的密碼</translation>
 <translation id="6122081475643980456">你的網際網路連線目前受到控制</translation>
 <translation id="6122093587541546701">電子郵件地址 (選填)：</translation>
@@ -6734,6 +6747,10 @@
 <translation id="7744192722284567281">發生資料侵害事件</translation>
 <translation id="7744649840067671761">按下新的外接切換裝置或鍵盤按鍵即可開始指派。
 按下已指派的外接切換裝置或按鍵，則可移除指派設定。</translation>
+<translation id="7746739418892731373">系統會顯示 Google 相簿相片庫中的精選相片和影片。如要控管精選內容中顯示的項目，請前往 <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" />。
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        你可以透過資訊卡選單管理這張資訊卡的設定，或前往「自訂 Chrome」查看更多選項。</translation>
 <translation id="7750228210027921155">子母畫面</translation>
 <translation id="7751260505918304024">全部顯示</translation>
 <translation id="7753735457098489144">儲存空間不足，無法安裝。如要釋出空間，請刪除裝置儲存空間中的檔案。</translation>

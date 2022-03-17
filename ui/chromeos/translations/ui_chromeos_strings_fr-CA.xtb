@@ -826,6 +826,7 @@
 <translation id="8042602468072383151">Audio <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">Roumain</translation>
 <translation id="8049184478152619004">Entrer la clé personnelle de déblocage</translation>
+<translation id="807187749540895545">Extraction de <ph name="FILE_NAME" /> en cours…</translation>
 <translation id="8079530767338315840">Répéter</translation>
 <translation id="8087576439476816834">Téléchargement : <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Partagés avec moi</translation>
@@ -877,6 +878,7 @@
 <translation id="8484284835977497781">Choisissez parmi vos photos récentes.</translation>
 <translation id="8487700953926739672">Offert en ligne</translation>
 <translation id="8492972329130824181">Le réseau domestique n'est pas accessible. L'itinérance sur réseau cellulaire doit être activée pour établir la connexion.</translation>
+<translation id="8499098729323186194">Extraction de <ph name="NUMBER_OF_ITEMS" /> éléments en cours…</translation>
 <translation id="8521441079177373948">R.-U.</translation>
 <translation id="8525306231823319788">Plein écran</translation>
 <translation id="853494022971700746">Français (France)</translation>

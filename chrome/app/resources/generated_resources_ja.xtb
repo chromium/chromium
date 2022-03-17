@@ -1499,7 +1499,7 @@
 <translation id="2443487764245141020">サイトで識別子を使用したデバイスの認識も必要となる場合があります</translation>
 <translation id="244475495405467108">左側のタブを閉じる</translation>
 <translation id="2445081178310039857">拡張機能のルート ディレクトリを指定してください。</translation>
-<translation id="2445484935443597917">新しいプロフィールを作成</translation>
+<translation id="2445484935443597917">新しいプロファイルを作成</translation>
 <translation id="244641233057214044">検索に関連</translation>
 <translation id="2448312741937722512">種類</translation>
 <translation id="2448810255793562605">スイッチ アクセスの自動スキャン</translation>
@@ -3189,6 +3189,10 @@
 <translation id="4110490973560452005">ダウンロードが完了しました（<ph name="FILE_NAME" />）。ダウンロード バーの領域に切り替えるには Shift+F6 キーを押してください。</translation>
 <translation id="4110686435123617899">アルバム「<ph name="TITLE" />」の <ph name="DESC" />を選択</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" />（オフライン）</translation>
+<translation id="4114524937989710624">Google ドライブで最近使用したファイルに簡単にアクセスできるよう、ファイルの候補が表示されています。
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        カードメニューから設定を管理することや、[Chrome をカスタマイズ] でその他のオプションを見ることができます。</translation>
 <translation id="4115002065223188701">ネットワークが圏外です</translation>
 <translation id="4115378294792113321">マゼンタ</translation>
 <translation id="4116704186509653070">もう一度開く</translation>
@@ -3694,6 +3698,10 @@
 <translation id="4651484272688821107">デモモード リソースでオンライン コンポーネントを読み込めませんでした。</translation>
 <translation id="4652935475563630866">カメラの設定を変更するには、Parallels Desktop を再起動する必要があります。続行するには、Parallels Desktop を再起動してください。</translation>
 <translation id="4653405415038586100">Linux の設定中にエラーが発生しました</translation>
+<translation id="465406513924180949">ウェブ上でショッピング カートに入れた商品に簡単にアクセスできるよう、カートが表示されています。
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        カードメニューから設定を管理することや、[Chrome をカスタマイズ] でその他のオプションを見ることができます。</translation>
 <translation id="4654236001025007561">近くの Chromebook や Android デバイスとファイルを共有できます</translation>
 <translation id="4657914796247705218">トラック ポイントの速度</translation>
 <translation id="4658285806588491142">画面を非公開のままにする</translation>
@@ -4136,6 +4144,7 @@
 <translation id="5121130586824819730">ハード ディスクがいっぱいです。別の場所に保存するか、ハード ディスクの空き容量を増やしてください。</translation>
 <translation id="5123433949759960244">バスケットボール</translation>
 <translation id="5125751979347152379">URL が無効です。</translation>
+<translation id="5125967981703109366">このカードについて</translation>
 <translation id="5126611267288187364">変更の表示</translation>
 <translation id="5127242257756472928">画面に関する情報を基にウィンドウを開いて配置することを許可しない</translation>
 <translation id="5127620150973591153">安全な接続 ID: <ph name="TOKEN" /></translation>
@@ -5117,6 +5126,10 @@
 <translation id="6116921718742659598">言語と入力の設定を変更</translation>
 <translation id="6119927814891883061">デバイス名を <ph name="DEVICE_NAME" /> に指定します</translation>
 <translation id="6120205520491252677">このページを起動画面に固定...</translation>
+<translation id="6120707837086723438">最近検索したレシピの候補が表示されています。
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        カードメニューから設定を管理することや、[Chrome をカスタマイズ] でその他のオプションを見ることができます。</translation>
 <translation id="6121773125605585883"><ph name="WEBSITE" /> のユーザー名 <ph name="USERNAME" /> のパスワードを表示します</translation>
 <translation id="6122081475643980456">インターネット接続が制限されています</translation>
 <translation id="6122093587541546701">メール（省略可）:</translation>
@@ -6403,7 +6416,7 @@
 <translation id="7439519621174723623">続行するにはデバイス名を追加してください</translation>
 <translation id="7441736921018636843">この設定を変更するには、<ph name="BEGIN_LINK" />同期をリセット<ph name="END_LINK" />して同期パスフレーズを削除します</translation>
 <translation id="7441830548568730290">他のユーザー</translation>
-<translation id="744341768939279100">新しいプロフィールを作成</translation>
+<translation id="744341768939279100">新しいプロファイルを作成</translation>
 <translation id="744366959743242014">データを読み込んでいます。これには数秒かかる場合があります。</translation>
 <translation id="7443806024147773267">Google アカウントにログインすれば、いつでもパスワードにアクセスできます。</translation>
 <translation id="7444970023873202833">Google フォトで思い出の写真に簡単アクセス</translation>
@@ -6720,6 +6733,10 @@
 <translation id="7744047395460924128">印刷履歴の表示</translation>
 <translation id="7744192722284567281">データ侵害で漏洩</translation>
 <translation id="7744649840067671761">新しいスイッチかキーボードのキーを押すと割り当てを開始できます。割り当て済みのスイッチかキーを押すと割り当てが解除されます。</translation>
+<translation id="7746739418892731373">Google フォト ライブラリの写真と動画のハイライトが表示されています。ハイライトに何を表示するかは、<ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> で管理できます。
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        カードメニューからこのカードの設定を管理することや、[Chrome をカスタマイズ] でその他のオプションを見ることができます。</translation>
 <translation id="7750228210027921155">ピクチャー イン ピクチャー</translation>
 <translation id="7751260505918304024">すべて表示</translation>
 <translation id="7753735457098489144">ストレージの空き容量が不足しているため、インストールできませんでした。空き容量を確保するために、デバイスのストレージからファイルを削除してください。</translation>
