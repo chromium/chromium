@@ -34,7 +34,9 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/pointer/touch_ui_controller.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/image/canvas_image_source.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
@@ -53,20 +55,6 @@ namespace {
 
 constexpr int kDefaultTouchableIconSize = 24;
 
-// Below are hardcoded color constants for the side panel. This is a UX decision
-// to ensure that the colors align with the tier 2 Google SRP which only
-// supports light mode. These are not intended to change to match the light/dark
-// system setting or custom theme colors.
-
-// White background to match the Google SRP.
-constexpr SkColor kHeaderBackgroundColor = SK_ColorWHITE;
-
-// Default light mode icon color for controls.
-constexpr SkColor kIconColor = gfx::kGoogleGrey700;
-
-// Default light mode separator color.
-constexpr SkColor kSeparatorColor = gfx::kGoogleGrey300;
-
 // Base header button class. Responds appropriately to touch ui changes.
 class HeaderButton : public views::ImageButton {
  public:
@@ -83,6 +71,13 @@ class HeaderButton : public views::ImageButton {
   }
   ~HeaderButton() override = default;
 
+  // views::ImageButton:
+  void OnThemeChanged() override {
+    ImageButton::OnThemeChanged();
+    views::InkDrop::Get(this)->SetBaseColor(
+        GetColorProvider()->GetColor(ui::kColorIcon));
+  }
+
   void UpdateIcon() {
     const int icon_size =
         ui::TouchUiController::Get()->touch_ui()
@@ -90,7 +85,11 @@ class HeaderButton : public views::ImageButton {
             : ChromeLayoutProvider::Get()->GetDistanceMetric(
                   ChromeDistanceMetric::
                       DISTANCE_SIDE_PANEL_HEADER_VECTOR_ICON_SIZE);
-    views::SetImageFromVectorIconWithColor(this, icon_, icon_size, kIconColor);
+    SetImageModel(Button::STATE_NORMAL, ui::ImageModel::FromVectorIcon(
+                                            icon_, ui::kColorIcon, icon_size));
+    SetImageModel(Button::STATE_DISABLED,
+                  ui::ImageModel::FromVectorIcon(icon_, ui::kColorIconDisabled,
+                                                 icon_size));
   }
 
  private:
@@ -211,7 +210,8 @@ class HeaderView : public views::View {
         views::kFlexBehaviorKey,
         views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
                                  views::MaximumFlexSizeRule::kPreferred));
-    SetBackground(views::CreateSolidBackground(kHeaderBackgroundColor));
+    SetBackground(
+        views::CreateThemedSolidBackground(this, ui::kColorDialogBackground));
     UpdateSpacing();
   }
   ~HeaderView() override = default;
@@ -246,12 +246,6 @@ class HeaderView : public views::View {
 BEGIN_METADATA(HeaderView, views::View)
 END_METADATA
 
-std::unique_ptr<views::Separator> CreateSeparator() {
-  auto separator = std::make_unique<views::Separator>();
-  separator->SetColor(kSeparatorColor);
-  return separator;
-}
-
 views::WebView* ConfigureSidePanel(views::View* side_panel,
                                    Profile* profile,
                                    Browser* browser,
@@ -261,7 +255,7 @@ views::WebView* ConfigureSidePanel(views::View* side_panel,
   container->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
   container->AddChildView(
       std::make_unique<HeaderView>(std::move(callback), browser));
-  container->AddChildView(CreateSeparator());
+  container->AddChildView(std::make_unique<views::Separator>());
 
   // The WebView will fill the remaining space after the header view has been
   // laid out.
