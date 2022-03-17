@@ -280,11 +280,13 @@ crbug.com/1086687 [ chromeos chromeos-board-kevin ] Pixel_PrecisionRoundedCorner
 
 # Flaky hang.
 crbug.com/1218288 [ fuchsia-board-astro ] Pixel_PrecisionRoundedCorner [ Failure ]
-crbug.com/1218288 [ fuchsia-board-sherlock ] Pixel_PrecisionRoundedCorner [ Failure ]
 crbug.com/1136875 [ fuchsia-board-qemu-x64 ] Pixel_PrecisionRoundedCorner [ RetryOnFailure ]
 
 # Still fails on Nexus 5 after all other Pixel_CanvasLowLatency* pass.
 crbug.com/1097752 [ android android-nexus-5 ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Failure ]
+
+# Fails on Fuchsia emulators
+crbug.com/1302427 [ fuchsia-board-qemu-x64 ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Failure ]
 
 # Produces blank images on gpu-fyi-try-chromeos-kevin, gpu-fyi-try-chromeos-amd64-generic.
 crbug.com/1086690 [ chromeos ] Pixel_WebGLSadCanvas [ Failure ]
@@ -320,15 +322,6 @@ crbug.com/1297636 [ mac ] Pixel_WebGPUImportUnaccelerated2DCanvas [ Failure ]
 # These two tests causes a crash on Swarming. Skipping so that we have a signal for other tests.
 crbug.com/1268144 [ fuchsia fuchsia-board-sherlock skia-renderer-vulkan ] Pixel_BackgroundImage [ Skip ]
 crbug.com/1268144 [ fuchsia fuchsia-board-sherlock skia-renderer-vulkan ] Pixel_SolidColorBackground [ Skip ]
-
-crbug.com/1261867 [ fuchsia fuchsia-board-astro skia-renderer-vulkan ] Pixel_WebGLGreenTriangle_AA_NoAlpha [ Failure ]
-crbug.com/1261867 [ fuchsia fuchsia-board-sherlock skia-renderer-vulkan ] Pixel_WebGLGreenTriangle_AA_NoAlpha [ Failure ]
-crbug.com/1261867 [ fuchsia fuchsia-board-astro skia-renderer-vulkan ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Failure ]
-crbug.com/1261867 [ fuchsia fuchsia-board-sherlock skia-renderer-vulkan ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Failure ]
-crbug.com/1261867 [ fuchsia fuchsia-board-astro skia-renderer-vulkan ] Pixel_WebGL2_ClearBufferfv_Result_Displayed [ Failure ]
-crbug.com/1261867 [ fuchsia fuchsia-board-sherlock skia-renderer-vulkan ] Pixel_WebGL2_ClearBufferfv_Result_Displayed [ Failure ]
-crbug.com/1261867 [ fuchsia fuchsia-board-astro skia-renderer-vulkan ] Pixel_WebGLGreenTriangle_NoAA_NoAlpha [ Failure ]
-crbug.com/1261867 [ fuchsia fuchsia-board-sherlock skia-renderer-vulkan ] Pixel_WebGLGreenTriangle_NoAA_NoAlpha [ Failure ]
 
 # Failures in fuchsia-chrome browser
 crbug.com/1295076 [ fuchsia fuchsia-chrome ] Pixel_CanvasDisplaySRGBAccelerated2D [ Failure ]
