@@ -76,6 +76,15 @@ bool FakeFastPairRepository::DeleteAssociatedDevice(
 }
 
 // Unimplemented.
+void FakeFastPairRepository::CheckOptInStatus(
+    CheckOptInStatusCallback callback) {}
+
+// Unimplemented.
+void FakeFastPairRepository::UpdateOptInStatus(
+    nearby::fastpair::OptInStatus opt_in_status,
+    UpdateOptInStatusCallback callback) {}
+
+// Unimplemented.
 void FakeFastPairRepository::FetchDeviceImages(scoped_refptr<Device> device) {
   return;
 }

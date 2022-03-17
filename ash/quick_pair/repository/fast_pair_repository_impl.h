@@ -68,6 +68,9 @@ class FastPairRepositoryImpl : public FastPairRepository {
   bool EvictDeviceImages(const device::BluetoothDevice* device) override;
   absl::optional<chromeos::bluetooth_config::DeviceImageInfo>
   GetImagesForDevice(const std::string& device_id) override;
+  void CheckOptInStatus(CheckOptInStatusCallback callback) override;
+  void UpdateOptInStatus(nearby::fastpair::OptInStatus opt_in_status,
+                         UpdateOptInStatusCallback callback) override;
 
  private:
   void CheckAccountKeysImpl(const AccountKeyFilter& account_key_filter,
@@ -92,15 +95,20 @@ class FastPairRepositoryImpl : public FastPairRepository {
                                 const std::vector<uint8_t> account_key,
                                 DeviceMetadata* device_metadata,
                                 bool has_retryable_error);
-  void AddToFootprints(const std::string& hex_model_id,
-                       const std::string& mac_address,
-                       const std::vector<uint8_t>& account_key,
-                       DeviceMetadata* metadata,
-                       bool has_retryable_error);
-  void OnAddToFootprintsComplete(const std::string& mac_address,
-                                 const std::vector<uint8_t>& account_key,
-                                 bool success);
-  // Fethces the |device_metadata| images to the DeviceImageStore for
+  void AddDeviceToFootprints(const std::string& hex_model_id,
+                             const std::string& mac_address,
+                             const std::vector<uint8_t>& account_key,
+                             DeviceMetadata* metadata,
+                             bool has_retryable_error);
+  void OnAddDeviceToFootprintsComplete(const std::string& mac_address,
+                                       const std::vector<uint8_t>& account_key,
+                                       bool success);
+  void OnCheckOptInStatus(
+      CheckOptInStatusCallback callback,
+      absl::optional<nearby::fastpair::UserReadDevicesResponse> user_devices);
+  void OnUpdateOptInStatusComplete(UpdateOptInStatusCallback callback,
+                                   bool success);
+  // Fetches the |device_metadata| images to the DeviceImageStore for
   // |hex_model_id|.
   void CompleteFetchDeviceImages(const std::string& hex_model_id,
                                  DeviceMetadata* device_metadata,

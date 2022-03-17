@@ -17,6 +17,9 @@ nearby::fastpair::FastPairInfo BuildFastPairInfo(
     const std::vector<uint8_t>& account_key,
     DeviceMetadata* metadata);
 
+nearby::fastpair::FastPairInfo BuildFastPairInfoForOptIn(
+    nearby::fastpair::OptInStatus opt_in_status);
+
 }  // namespace quick_pair
 }  // namespace ash
 

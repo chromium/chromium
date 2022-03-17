@@ -23,6 +23,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/mock_callback.h"
 #include "components/prefs/testing_pref_service.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
@@ -231,7 +232,7 @@ TEST_F(FastPairRepositoryImplTest, CheckAccountKeys_Match) {
   DeviceMetadata metadata(device, gfx::Image());
 
   // FakeFootprintsFetcher APIs are actually synchronous.
-  footprints_fetcher_->AddUserDevice(
+  footprints_fetcher_->AddUserFastPairInfo(
       BuildFastPairInfo(kValidModelId, kAccountKey1, &metadata),
       base::DoNothing());
 
@@ -344,6 +345,77 @@ TEST_F(FastPairRepositoryImplTest, EvictDeviceImages) {
 
   device_id_map_->RefreshCacheForTest();
   ASSERT_FALSE(device_id_map_->GetModelIdForDeviceId(kTestDeviceId));
+}
+
+TEST_F(FastPairRepositoryImplTest, UpdateOptInStatus_OptedIn) {
+  base::MockCallback<base::OnceCallback<void(bool)>> callback1;
+  EXPECT_CALL(callback1, Run(true)).Times(1);
+  fast_pair_repository_->UpdateOptInStatus(
+      nearby::fastpair::OptInStatus::STATUS_OPTED_IN, callback1.Get());
+  base::RunLoop().RunUntilIdle();
+
+  base::MockCallback<base::OnceCallback<void(nearby::fastpair::OptInStatus)>>
+      callback2;
+  EXPECT_CALL(callback2,
+              Run(testing::Eq(nearby::fastpair::OptInStatus::STATUS_OPTED_IN)))
+      .Times(1);
+  fast_pair_repository_->CheckOptInStatus(callback2.Get());
+}
+
+TEST_F(FastPairRepositoryImplTest, UpdateOptInStatus_OptedOut) {
+  base::MockCallback<base::OnceCallback<void(bool)>> callback1;
+  EXPECT_CALL(callback1, Run(true)).Times(1);
+  fast_pair_repository_->UpdateOptInStatus(
+      nearby::fastpair::OptInStatus::STATUS_OPTED_OUT, callback1.Get());
+  base::RunLoop().RunUntilIdle();
+
+  base::MockCallback<base::OnceCallback<void(nearby::fastpair::OptInStatus)>>
+      callback2;
+  EXPECT_CALL(callback2,
+              Run(testing::Eq(nearby::fastpair::OptInStatus::STATUS_OPTED_OUT)))
+      .Times(1);
+  fast_pair_repository_->CheckOptInStatus(callback2.Get());
+}
+
+TEST_F(FastPairRepositoryImplTest, UpdateOptInStatus_StatusUnknown) {
+  base::MockCallback<base::OnceCallback<void(bool)>> callback1;
+  EXPECT_CALL(callback1, Run(true)).Times(1);
+  fast_pair_repository_->UpdateOptInStatus(
+      nearby::fastpair::OptInStatus::STATUS_UNKNOWN, callback1.Get());
+  base::RunLoop().RunUntilIdle();
+
+  base::MockCallback<base::OnceCallback<void(nearby::fastpair::OptInStatus)>>
+      callback2;
+  EXPECT_CALL(callback2,
+              Run(testing::Eq(nearby::fastpair::OptInStatus::STATUS_UNKNOWN)))
+      .Times(1);
+  fast_pair_repository_->CheckOptInStatus(callback2.Get());
+}
+
+TEST_F(FastPairRepositoryImplTest, UpdateOptInStatus_NoFootprintsResponse) {
+  footprints_fetcher_->SetGetUserDevicesResponse(absl::nullopt);
+  base::MockCallback<base::OnceCallback<void(nearby::fastpair::OptInStatus)>>
+      callback;
+  EXPECT_CALL(callback,
+              Run(testing::Eq(nearby::fastpair::OptInStatus::STATUS_UNKNOWN)))
+      .Times(1);
+  fast_pair_repository_->CheckOptInStatus(callback.Get());
+}
+
+TEST_F(FastPairRepositoryImplTest, UpdateOptInStatus_OptedInUpdateFailed) {
+  footprints_fetcher_->SetAddUserFastPairInfoResult(/*add_user_result=*/false);
+  base::MockCallback<base::OnceCallback<void(bool)>> callback1;
+  EXPECT_CALL(callback1, Run(false)).Times(1);
+  fast_pair_repository_->UpdateOptInStatus(
+      nearby::fastpair::OptInStatus::STATUS_OPTED_IN, callback1.Get());
+  base::RunLoop().RunUntilIdle();
+
+  base::MockCallback<base::OnceCallback<void(nearby::fastpair::OptInStatus)>>
+      callback2;
+  EXPECT_CALL(callback2,
+              Run(testing::Eq(nearby::fastpair::OptInStatus::STATUS_UNKNOWN)))
+      .Times(1);
+  fast_pair_repository_->CheckOptInStatus(callback2.Get());
 }
 
 }  // namespace quick_pair

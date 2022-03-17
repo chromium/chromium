@@ -33,6 +33,9 @@ using CheckAccountKeysCallback =
     base::OnceCallback<void(absl::optional<PairingMetadata>)>;
 using DeviceMetadataCallback = base::OnceCallback<void(DeviceMetadata*, bool)>;
 using ValidModelIdCallback = base::OnceCallback<void(bool)>;
+using CheckOptInStatusCallback =
+    base::OnceCallback<void(nearby::fastpair::OptInStatus)>;
+using UpdateOptInStatusCallback = base::OnceCallback<void(bool)>;
 
 // The entry point for the Repository component in the Quick Pair system,
 // responsible for connecting to back-end services.
@@ -79,6 +82,19 @@ class FastPairRepository {
   // Returns device images belonging to |device_id|, if found.
   virtual absl::optional<chromeos::bluetooth_config::DeviceImageInfo>
   GetImagesForDevice(const std::string& device_id) = 0;
+
+  // Fetches the opt in status from Footprints to determine the status for
+  // saving a user's devices to their account, which is synced all across a
+  // user's devices.
+  virtual void CheckOptInStatus(CheckOptInStatusCallback callback) = 0;
+
+  // Updates the opt in status for saving a user's devices to their account,
+  // synced across all of a user's devices, based on |opt_in_status|.
+  // If |opt_in_status| reflects the user being opted out, then all devices
+  // saved to their account are removed. The success or failure of updating
+  // the opt in status is reflected in running |callback|.
+  virtual void UpdateOptInStatus(nearby::fastpair::OptInStatus opt_in_status,
+                                 UpdateOptInStatusCallback callback) = 0;
 
  protected:
   static void SetInstance(FastPairRepository* instance);

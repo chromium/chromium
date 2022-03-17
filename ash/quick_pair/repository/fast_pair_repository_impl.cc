@@ -204,12 +204,12 @@ void FastPairRepositoryImpl::AssociateAccountKey(
   DCHECK(device->classic_address());
   GetDeviceMetadata(
       device->metadata_id,
-      base::BindOnce(&FastPairRepositoryImpl::AddToFootprints,
+      base::BindOnce(&FastPairRepositoryImpl::AddDeviceToFootprints,
                      weak_ptr_factory_.GetWeakPtr(), device->metadata_id,
                      device->classic_address().value(), account_key));
 }
 
-void FastPairRepositoryImpl::AddToFootprints(
+void FastPairRepositoryImpl::AddDeviceToFootprints(
     const std::string& hex_model_id,
     const std::string& mac_address,
     const std::vector<uint8_t>& account_key,
@@ -220,13 +220,13 @@ void FastPairRepositoryImpl::AddToFootprints(
     return;
   }
 
-  footprints_fetcher_->AddUserDevice(
+  footprints_fetcher_->AddUserFastPairInfo(
       BuildFastPairInfo(hex_model_id, account_key, metadata),
-      base::BindOnce(&FastPairRepositoryImpl::OnAddToFootprintsComplete,
+      base::BindOnce(&FastPairRepositoryImpl::OnAddDeviceToFootprintsComplete,
                      weak_ptr_factory_.GetWeakPtr(), mac_address, account_key));
 }
 
-void FastPairRepositoryImpl::OnAddToFootprintsComplete(
+void FastPairRepositoryImpl::OnAddDeviceToFootprintsComplete(
     const std::string& mac_address,
     const std::vector<uint8_t>& account_key,
     bool success) {
@@ -236,6 +236,51 @@ void FastPairRepositoryImpl::OnAddToFootprintsComplete(
   }
 
   saved_device_registry_->SaveAccountKey(mac_address, account_key);
+}
+
+void FastPairRepositoryImpl::CheckOptInStatus(
+    CheckOptInStatusCallback callback) {
+  footprints_fetcher_->GetUserDevices(
+      base::BindOnce(&FastPairRepositoryImpl::OnCheckOptInStatus,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void FastPairRepositoryImpl::OnCheckOptInStatus(
+    CheckOptInStatusCallback callback,
+    absl::optional<nearby::fastpair::UserReadDevicesResponse> user_devices) {
+  QP_LOG(INFO) << __func__;
+  if (!user_devices) {
+    QP_LOG(WARNING)
+        << __func__
+        << ": Missing UserReadDevicesResponse from call to Footprints";
+    std::move(callback).Run(nearby::fastpair::OptInStatus::STATUS_UNKNOWN);
+    return;
+  }
+
+  for (const auto& info : user_devices->fast_pair_info()) {
+    if (info.has_opt_in_status()) {
+      std::move(callback).Run(info.opt_in_status());
+      return;
+    }
+  }
+
+  std::move(callback).Run(nearby::fastpair::OptInStatus::STATUS_UNKNOWN);
+}
+
+void FastPairRepositoryImpl::UpdateOptInStatus(
+    nearby::fastpair::OptInStatus opt_in_status,
+    UpdateOptInStatusCallback callback) {
+  footprints_fetcher_->AddUserFastPairInfo(
+      BuildFastPairInfoForOptIn(opt_in_status),
+      base::BindOnce(&FastPairRepositoryImpl::OnUpdateOptInStatusComplete,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void FastPairRepositoryImpl::OnUpdateOptInStatusComplete(
+    UpdateOptInStatusCallback callback,
+    bool success) {
+  QP_LOG(INFO) << __func__ << ": success=" << success;
+  std::move(callback).Run(success);
 }
 
 bool FastPairRepositoryImpl::DeleteAssociatedDevice(

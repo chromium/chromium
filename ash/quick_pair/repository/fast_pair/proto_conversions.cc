@@ -97,5 +97,12 @@ nearby::fastpair::FastPairInfo BuildFastPairInfo(
   return proto;
 }
 
+nearby::fastpair::FastPairInfo BuildFastPairInfoForOptIn(
+    nearby::fastpair::OptInStatus opt_in_status) {
+  nearby::fastpair::FastPairInfo proto;
+  proto.set_opt_in_status(opt_in_status);
+  return proto;
+}
+
 }  // namespace quick_pair
 }  // namespace ash

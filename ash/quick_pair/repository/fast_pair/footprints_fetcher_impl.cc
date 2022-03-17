@@ -128,8 +128,9 @@ void FootprintsFetcherImpl::OnGetComplete(
   std::move(callback).Run(devices);
 }
 
-void FootprintsFetcherImpl::AddUserDevice(nearby::fastpair::FastPairInfo info,
-                                          AddDeviceCallback callback) {
+void FootprintsFetcherImpl::AddUserFastPairInfo(
+    nearby::fastpair::FastPairInfo info,
+    AddDeviceCallback callback) {
   auto http_fetcher = CreateHttpFetcher();
   auto* raw_http_fetcher = http_fetcher.get();
   raw_http_fetcher->ExecutePostRequest(

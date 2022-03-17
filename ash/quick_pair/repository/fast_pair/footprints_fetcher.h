@@ -34,8 +34,8 @@ class FootprintsFetcher {
   virtual ~FootprintsFetcher() = default;
 
   virtual void GetUserDevices(UserReadDevicesCallback callback) = 0;
-  virtual void AddUserDevice(nearby::fastpair::FastPairInfo info,
-                             AddDeviceCallback callback) = 0;
+  virtual void AddUserFastPairInfo(nearby::fastpair::FastPairInfo info,
+                                   AddDeviceCallback callback) = 0;
   virtual void DeleteUserDevice(const std::string& hex_account_key,
                                 DeleteDeviceCallback callback) = 0;
 };

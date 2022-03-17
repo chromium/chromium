@@ -27,8 +27,8 @@ class FootprintsFetcherImpl : public FootprintsFetcher {
   ~FootprintsFetcherImpl() override;
 
   void GetUserDevices(UserReadDevicesCallback callback) override;
-  void AddUserDevice(nearby::fastpair::FastPairInfo info,
-                     AddDeviceCallback callback) override;
+  void AddUserFastPairInfo(nearby::fastpair::FastPairInfo info,
+                           AddDeviceCallback callback) override;
   void DeleteUserDevice(const std::string& hex_account_key,
                         DeleteDeviceCallback callback) override;
 

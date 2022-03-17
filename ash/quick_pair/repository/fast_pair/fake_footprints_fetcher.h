@@ -23,14 +23,22 @@ class FakeFootprintsFetcher : public FootprintsFetcher {
 
   // FootprintsFetcher::
   void GetUserDevices(UserReadDevicesCallback callback) override;
-  void AddUserDevice(nearby::fastpair::FastPairInfo info,
-                     AddDeviceCallback callback) override;
+  void AddUserFastPairInfo(nearby::fastpair::FastPairInfo info,
+                           AddDeviceCallback callback) override;
   void DeleteUserDevice(const std::string& hex_account_key,
                         DeleteDeviceCallback callback) override;
 
   bool ContainsKey(const std::vector<uint8_t>& account_key);
 
+  void SetGetUserDevicesResponse(
+      absl::optional<nearby::fastpair::UserReadDevicesResponse> response);
+
+  void SetAddUserFastPairInfoResult(bool add_user_result);
+
  private:
+  bool add_user_result_ = true;
+  absl::optional<nearby::fastpair::UserReadDevicesResponse> response_;
+  nearby::fastpair::FastPairInfo opt_in_status_info_;
   base::flat_map<std::string, nearby::fastpair::FastPairInfo>
       account_key_to_info_map_;
 };

@@ -16,18 +16,47 @@ FakeFootprintsFetcher::FakeFootprintsFetcher() = default;
 FakeFootprintsFetcher::~FakeFootprintsFetcher() = default;
 
 void FakeFootprintsFetcher::GetUserDevices(UserReadDevicesCallback callback) {
+  if (response_.has_value()) {
+    std::move(callback).Run(std::move(response_));
+    return;
+  }
+
   nearby::fastpair::UserReadDevicesResponse response;
   for (const auto& entry : account_key_to_info_map_) {
     *response.add_fast_pair_info() = entry.second;
   }
+
+  if (add_user_result_)
+    *response.add_fast_pair_info() = opt_in_status_info_;
   std::move(callback).Run(std::move(response));
 }
 
-void FakeFootprintsFetcher::AddUserDevice(nearby::fastpair::FastPairInfo info,
-                                          AddDeviceCallback callback) {
+void FakeFootprintsFetcher::SetGetUserDevicesResponse(
+    absl::optional<nearby::fastpair::UserReadDevicesResponse> response) {
+  response_ = response;
+}
+
+void FakeFootprintsFetcher::SetAddUserFastPairInfoResult(bool add_user_result) {
+  add_user_result_ = add_user_result;
+}
+
+void FakeFootprintsFetcher::AddUserFastPairInfo(
+    nearby::fastpair::FastPairInfo info,
+    AddDeviceCallback callback) {
+  if (info.has_opt_in_status() && add_user_result_) {
+    opt_in_status_info_ = info;
+    std::move(callback).Run(add_user_result_);
+    return;
+  }
+
+  if (info.has_opt_in_status() && !add_user_result_) {
+    std::move(callback).Run(add_user_result_);
+    return;
+  }
+
   account_key_to_info_map_[base::HexEncode(
       base::as_bytes(base::make_span(info.device().account_key())))] = info;
-  std::move(callback).Run(true);
+  std::move(callback).Run(add_user_result_);
 }
 
 void FakeFootprintsFetcher::DeleteUserDevice(const std::string& hex_account_key,
