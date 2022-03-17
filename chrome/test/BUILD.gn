@@ -6576,6 +6576,7 @@ test("unit_tests") {
       "//chrome/browser/web_applications:web_applications_test_support",
       "//chrome/browser/web_applications:web_applications_test_support_minimal",
       "//components/chrome_cleaner/test:test_name_helper",
+      "//components/commerce/core:commerce_heuristics_data",
       "//components/enterprise",
       "//components/enterprise:test_support",
       "//components/feature_engagement/test:test_support",

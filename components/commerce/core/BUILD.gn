@@ -60,4 +60,15 @@ if (!is_android) {
 
     deps = [ "//base" ]
   }
+
+  source_set("commerce_heuristics_data_unittests") {
+    testonly = true
+    sources = [ "commerce_heuristics_data_unittest.cc" ]
+    deps = [
+      ":commerce_heuristics_data",
+      "//base",
+      "//base/test:test_support",
+      "//testing/gtest",
+    ]
+  }
 }

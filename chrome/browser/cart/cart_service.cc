@@ -23,6 +23,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/commerce_heuristics_data.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -885,9 +886,18 @@ void CartService::OnAddCart(const std::string& domain,
   }
   // Restore module visibility anytime a cart-related action happens.
   RestoreHidden();
-  std::string* merchant_name = domain_name_mapping_->FindStringKey(domain);
-  if (merchant_name) {
-    proto.set_merchant(*merchant_name);
+  absl::optional<std::string> merchant_name_from_component =
+      commerce_heuristics::CommerceHeuristicsData::GetInstance()
+          .GetMerchantName(domain);
+  std::string* merchant_name_from_resource =
+      domain_name_mapping_->FindStringKey(domain);
+  if (merchant_name_from_component.has_value()) {
+    proto.set_merchant(*merchant_name_from_component);
+  } else if (merchant_name_from_resource) {
+    proto.set_merchant(*merchant_name_from_resource);
+    // TODO(crbug.com/1300332): Add UMA here to track when component failed to
+    // feed heuristics. It's going to be a enum of {from component, from
+    // resource, missing}.
   }
   if (cart_url) {
     proto.set_merchant_cart_url(cart_url->spec());

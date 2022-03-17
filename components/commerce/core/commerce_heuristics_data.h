@@ -6,6 +6,7 @@
 #define COMPONENTS_COMMERCE_CORE_COMMERCE_HEURISTICS_DATA_H_
 
 #include <string>
+#include "base/values.h"
 
 namespace commerce_heuristics {
 
@@ -23,6 +24,17 @@ class CommerceHeuristicsData {
                                  const std::string& global_json_data,
                                  const std::string& product_id_json_data,
                                  const std::string& cart_extraction_script);
+  // Try to get merchant name for `domain`.
+  absl::optional<std::string> GetMerchantName(const std::string& domain);
+
+ private:
+  friend class CommerceHeuristicsDataTest;
+
+  absl::optional<std::string> GetCommerceHintHeuristics(
+      const std::string& type,
+      const std::string& domain);
+
+  base::Value::Dict hint_heuristics_;
 };
 
 }  // namespace commerce_heuristics
