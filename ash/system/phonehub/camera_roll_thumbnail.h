@@ -38,9 +38,6 @@ class ASH_EXPORT CameraRollThumbnail : public views::MenuButton {
  private:
   FRIEND_TEST_ALL_PREFIXES(CameraRollViewTest, ImageThumbnail);
   FRIEND_TEST_ALL_PREFIXES(CameraRollViewTest, VideoThumbnail);
-  FRIEND_TEST_ALL_PREFIXES(CameraRollThumbnailTest, ImageThumbnail);
-  FRIEND_TEST_ALL_PREFIXES(CameraRollThumbnailTest, VideoThumbnail);
-  FRIEND_TEST_ALL_PREFIXES(CameraRollThumbnailTest, PressButtonAndMenuItem);
 
   void ButtonPressed();
   ui::SimpleMenuModel* GetMenuModel();
