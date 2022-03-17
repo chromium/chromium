@@ -298,15 +298,16 @@ class PartitionAllocTest : public testing::TestWithParam<bool> {
     allocator.root()->UncapEmptySlotSpanMemoryForTesting();
     aligned_allocator.root()->UncapEmptySlotSpanMemoryForTesting();
 
-    if (!GetParam())
+    if (GetParam())
       allocator.root()->SwitchToDenserBucketDistribution();
     else
       allocator.root()->ResetBucketDistributionForTesting();
   }
 
   size_t SizeToIndex(size_t size) {
+    const bool with_denser_bucket_distribution = GetParam();
     return PartitionRoot<base::internal::ThreadSafe>::SizeToBucketIndex(
-        size, GetParam());
+        size, with_denser_bucket_distribution);
   }
 
   void TearDown() override {
@@ -1272,27 +1273,36 @@ TEST_P(PartitionAllocTest, IsValidPtrDelta) {
   }
 }
 
-// TODO(crbug.com/1217582): Disabled since the `real_size` is never set or set incorrectly.
-TEST_P(PartitionAllocTest, DISABLED_GetSlotStartMultiplePages) {
-  // Find the smallest bucket with multiple PartitionPages.
-  size_t real_size;
-  bool init_real_size = false;
-  for (PartitionBucket<ThreadSafe>& bucket : allocator.root()->buckets) {
+TEST_P(PartitionAllocTest, GetSlotStartMultiplePages) {
+  auto* root = allocator.root();
+  // Find the smallest bucket with multiple PartitionPages. When searching for
+  // a bucket here, we need to check two conditions:
+  // (1) The bucket is used in our current bucket distribution.
+  // (2) The bucket is large enough that our requested size (see below) will be
+  // non-zero.
+  size_t real_size = 0;
+  for (const auto& bucket : root->buckets) {
+    if ((root->buckets + SizeToIndex(bucket.slot_size))->slot_size !=
+        bucket.slot_size)
+      continue;
+    if (bucket.slot_size <= kExtraAllocSize)
+      continue;
     if (bucket.num_system_pages_per_slot_span >
         NumSystemPagesPerPartitionPage()) {
       real_size = bucket.slot_size;
-      init_real_size = true;
       break;
     }
   }
-  ASSERT_TRUE(init_real_size);
+
+  // Make sure that we've managed to find an appropriate bucket.
+  ASSERT_GT(real_size, 0u);
 
   const size_t requested_size = real_size - kExtraAllocSize;
   // Double check we don't end up with 0 or negative size.
   EXPECT_GT(requested_size, 0u);
   EXPECT_LE(requested_size, real_size);
-  PartitionBucket<ThreadSafe>* bucket =
-      allocator.root()->buckets + SizeToIndex(real_size);
+  const auto* bucket = allocator.root()->buckets + SizeToIndex(real_size);
+  EXPECT_EQ(bucket->slot_size, real_size);
   // Make sure the test is testing multiple partition pages case.
   EXPECT_GT(bucket->num_system_pages_per_slot_span,
             PartitionPageSize() / SystemPageSize());

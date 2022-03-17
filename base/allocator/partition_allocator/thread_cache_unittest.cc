@@ -111,7 +111,7 @@ class PartitionAllocThreadCacheTest : public ::testing::TestWithParam<bool> {
 
  protected:
   void SetUp() override {
-    if (!GetParam())
+    if (GetParam())
       root_->SwitchToDenserBucketDistribution();
     else
       root_->ResetBucketDistributionForTesting();
@@ -157,9 +157,12 @@ class PartitionAllocThreadCacheTest : public ::testing::TestWithParam<bool> {
     return tc_bucket->slot_size;
   }
 
+  static size_t SizeToIndex(size_t size) {
+    return PartitionRoot<ThreadSafe>::SizeToBucketIndex(size, GetParam());
+  }
+
   size_t FillThreadCacheAndReturnIndex(size_t size, size_t count = 1) {
-    uint16_t bucket_index =
-        PartitionRoot<ThreadSafe>::SizeToBucketIndex(size, GetParam());
+    uint16_t bucket_index = SizeToIndex(size);
     std::vector<void*> allocated_data;
 
     for (size_t i = 0; i < count; ++i) {
@@ -203,8 +206,7 @@ TEST_P(PartitionAllocThreadCacheTest, Simple) {
   void* ptr = root_->Alloc(kSmallSize, "");
   ASSERT_TRUE(ptr);
 
-  uint16_t index =
-      PartitionRoot<ThreadSafe>::SizeToBucketIndex(kSmallSize, GetParam());
+  uint16_t index = SizeToIndex(kSmallSize);
   EXPECT_EQ(kFillCountForSmallBucket - 1,
             tcache->bucket_count_for_testing(index));
 
@@ -232,8 +234,7 @@ TEST_P(PartitionAllocThreadCacheTest, InexactSizeMatch) {
   auto* tcache = root_->thread_cache_for_testing();
   EXPECT_TRUE(tcache);
 
-  uint16_t index =
-      PartitionRoot<ThreadSafe>::SizeToBucketIndex(kSmallSize, GetParam());
+  uint16_t index = SizeToIndex(kSmallSize);
   EXPECT_EQ(kFillCountForSmallBucket - 1,
             tcache->bucket_count_for_testing(index));
 
@@ -703,6 +704,7 @@ TEST_P(PartitionAllocThreadCacheTest, MAYBE_DynamicCountPerBucket) {
   auto* tcache = root_->thread_cache_for_testing();
   size_t bucket_index =
       FillThreadCacheAndReturnIndex(kMediumSize, kDefaultCountForMediumBucket);
+
   EXPECT_EQ(kDefaultCountForMediumBucket, tcache->buckets_[bucket_index].count);
 
   ThreadCacheRegistry::Instance().SetThreadCacheMultiplier(
@@ -932,8 +934,7 @@ TEST_P(PartitionAllocThreadCacheTest, MAYBE_Bookkeeping) {
 
   void* ptr = root_->Alloc(kMediumSize, "");
 
-  auto* medium_bucket =
-      &root_->buckets[root_->SizeToBucketIndex(kMediumSize, GetParam())];
+  auto* medium_bucket = root_->buckets + SizeToIndex(kMediumSize);
   size_t medium_alloc_size = medium_bucket->slot_size;
   expected_allocated_size += medium_alloc_size;
   expected_committed_size +=
@@ -984,8 +985,7 @@ TEST_P(PartitionAllocThreadCacheTest, TryPurgeMultipleCorrupted) {
 
   void* ptr = root_->Alloc(kMediumSize, "");
 
-  auto* medium_bucket =
-      &root_->buckets[root_->SizeToBucketIndex(kMediumSize, GetParam())];
+  auto* medium_bucket = root_->buckets + SizeToIndex(kMediumSize);
 
   auto* curr = medium_bucket->active_slot_spans_head->get_freelist_head();
   curr = curr->GetNextForThreadCache<true>(kMediumSize);
