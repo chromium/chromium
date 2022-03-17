@@ -24,8 +24,6 @@ are enabled.
         dataFormatPreference: ['luminance-alpha'],
       };
 
-      setup({single_test: true});
-
       function disableCameraAccess() {
         const indexToRemove = immersiveArSessionInit.requiredFeatures.indexOf("camera-access");
         if(indexToRemove != -1) {

@@ -14,8 +14,6 @@ Tests that AR camera access returns non-empty GLTexture.
     <!-- Required features must be set after importing webxr_boilerplate.js to avoid overwrite -->
     <script>var immersiveArSessionInit = { requiredFeatures: ['camera-access'] };</script>
     <script>
-      setup({single_test: true});
-
       // How many frames with viewer poses some tests will wait for until trying to
       // exercise the API and run the test case:
       const MIN_NUM_FRAMES_WITH_POSES = 10;
