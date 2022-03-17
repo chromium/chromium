@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>CSS Document Transitions Test: page-transition-tag with valid values</title>
+<link rel="author" title="Vladimir Levin" href="mailto:vmpstr@chromium.org">
+<link rel="help" href="https://drafts.csswg.org/css-contain/#page-transition-tag">
+<meta name="assert" content="page-transition-tag supports custom tags">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/parsing-testcommon.js"></script>
+</head>
+<body>
+<script>
+test_valid_value("page-transition-tag", "none");
+test_valid_value("page-transition-tag", "foo");
+test_valid_value("page-transition-tag", "bar");
+test_valid_value("page-transition-tag", "baz");
+</script>
+</body>
+</html>

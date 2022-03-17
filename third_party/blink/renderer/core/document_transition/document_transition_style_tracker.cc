@@ -673,6 +673,12 @@ bool DocumentTransitionStyleTracker::IsSharedElement(Element* element) const {
   return false;
 }
 
+// static
+bool DocumentTransitionStyleTracker::IsReservedTransitionTag(
+    const StringView& value) {
+  return value == RootTag();
+}
+
 void DocumentTransitionStyleTracker::InvalidateStyle() {
   ua_style_sheet_.reset();
   document_->GetStyleEngine().InvalidateUADocumentTransitionStyle();

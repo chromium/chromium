@@ -3424,6 +3424,18 @@
       computable: false,
     },
     {
+      name: "page-transition-tag",
+      field_group: "*",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      converter: "ConvertPageTransitionTag",
+      type_name: "AtomicString",
+      default_value: "AtomicString()",
+      field_template: "external",
+      keywords: ["none"],
+      typedom_types: ["Keyword"],
+      runtime_flag: "DocumentTransition",
+    },
+    {
       name: "paint-order",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       inherited: true,

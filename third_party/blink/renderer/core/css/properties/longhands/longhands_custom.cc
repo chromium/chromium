@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/zoom_adjusted_pixel_value.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
+#include "third_party/blink/renderer/core/document_transition/document_transition_style_tracker.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/counter_node.h"
@@ -5457,6 +5458,28 @@ const CSSValue* Page::CSSValueFromComputedStyleInternal(
   if (style.Page().IsNull())
     return CSSIdentifierValue::Create(CSSValueID::kAuto);
   return MakeGarbageCollected<CSSCustomIdentValue>(style.Page());
+}
+
+const CSSValue* PageTransitionTag::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  if (range.Peek().Id() == CSSValueID::kNone)
+    return css_parsing_utils::ConsumeIdent(range);
+  if (DocumentTransitionStyleTracker::IsReservedTransitionTag(
+          range.Peek().Value())) {
+    return nullptr;
+  }
+  return css_parsing_utils::ConsumeCustomIdent(range, context);
+}
+
+const CSSValue* PageTransitionTag::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  if (style.PageTransitionTag().IsNull())
+    return CSSIdentifierValue::Create(CSSValueID::kNone);
+  return MakeGarbageCollected<CSSCustomIdentValue>(style.PageTransitionTag());
 }
 
 const CSSValue* PaintOrder::ParseSingleValue(

@@ -299,6 +299,9 @@ class StyleBuilderConverter {
 
   static void CountSystemColorComputeToSelfUsage(
       const StyleResolverState& state);
+
+  static AtomicString ConvertPageTransitionTag(StyleResolverState&,
+                                               const CSSValue&);
 };
 
 template <typename T>

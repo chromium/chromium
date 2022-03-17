@@ -113,6 +113,8 @@ class DocumentTransitionStyleTracker
     return std::move(capture_resource_ids_);
   }
 
+  static bool IsReservedTransitionTag(const StringView& value);
+
  private:
   class ImageWrapperPseudoElement;
 
