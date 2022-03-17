@@ -173,6 +173,16 @@
   E_CPONLY(kColorPipWindowHangUpButtonForeground) \
   E_CPONLY(kColorPipWindowSkipAdButtonBackground) \
   E_CPONLY(kColorPipWindowSkipAdButtonBorder) \
+  /* PWA colors. */ \
+  E_CPONLY(kColorPwaBackground) \
+  E_CPONLY(kColorPwaMenuButtonIcon) \
+  E_CPONLY(kColorPwaSecurityChipForeground) \
+  E_CPONLY(kColorPwaSecurityChipForegroundDangerous) \
+  E_CPONLY(kColorPwaSecurityChipForegroundPolicyCert) \
+  E_CPONLY(kColorPwaSecurityChipForegroundSecure) \
+  E_CPONLY(kColorPwaTheme) \
+  E_CPONLY(kColorPwaToolbarBackground) \
+  E_CPONLY(kColorPwaToolbarForeground) \
   /* QR code colors. */ \
   E_CPONLY(kColorQrCodeBackground) \
   E_CPONLY(kColorQrCodeBorder) \

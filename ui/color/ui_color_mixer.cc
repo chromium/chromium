@@ -135,13 +135,6 @@ void AddUiColorMixer(ColorProvider* provider,
       SetAlpha(GetColorWithMaxContrast(kColorOverlayScrollbarFillHoveredLight),
                gfx::kGoogleGreyAlpha500);
   mixer[kColorProgressBar] = {kColorAccent};
-  mixer[kColorPwaSecurityChipForeground] = {kColorSecondaryForeground};
-  mixer[kColorPwaSecurityChipForegroundDangerous] = {kColorAlertHighSeverity};
-  mixer[kColorPwaSecurityChipForegroundPolicyCert] = {kColorDisabledForeground};
-  mixer[kColorPwaSecurityChipForegroundSecure] = {
-      kColorPwaSecurityChipForeground};
-  mixer[kColorPwaToolbarBackground] = {kColorEndpointBackground};
-  mixer[kColorPwaToolbarForeground] = {kColorEndpointForeground};
   mixer[kColorSeparator] = {kColorMidground};
   mixer[kColorShadowBase] = {dark_mode ? SK_ColorBLACK : gfx::kGoogleGrey800};
   mixer[kColorShadowValueAmbientShadowElevationThree] =

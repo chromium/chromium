@@ -5149,6 +5149,7 @@ static_library("ui") {
       "//extensions/components/native_app_window",
       "//extensions/strings",
       "//ui/base/cursor",
+      "//ui/color:color",
     ]
     allow_circular_includes_from += [
       "//chrome/browser/apps/platform_apps",

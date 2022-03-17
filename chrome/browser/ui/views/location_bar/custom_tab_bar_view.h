@@ -92,9 +92,6 @@ class CustomTabBarView : public views::AccessiblePaneView,
   bool IsShowingOriginForTesting() const;
 
  private:
-  // Calculate the view's frame color from the current theme provider.
-  SkColor GetDefaultFrameColor() const;
-
   // Takes the web contents for the custom tab bar back to the app scope.
   void GoBackToApp();
 
@@ -115,9 +112,6 @@ class CustomTabBarView : public views::AccessiblePaneView,
   web_app::AppBrowserController* app_controller() const {
     return browser_->app_controller();
   }
-
-  // Convenience method to return the theme color from |app_controller_|.
-  absl::optional<SkColor> GetThemeColor() const;
 
   // Populates child elements with page details from the current WebContents.
   void UpdateContents();

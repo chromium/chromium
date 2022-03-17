@@ -13,10 +13,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/themes/browser_theme_pack.h"
+#include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window_state.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
@@ -38,6 +40,9 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/models/image_model.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_recipe.h"
+#include "ui/color/color_transform.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/color_palette.h"
@@ -51,6 +56,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/apps/icon_standardizer.h"
+#include "chromeos/ui/base/chromeos_ui_constants.h"
 #endif
 
 namespace {
@@ -389,7 +395,43 @@ bool AppBrowserController::ShouldUseCustomFrame() const {
 
 void AppBrowserController::AddColorMixers(
     ui::ColorProvider* provider,
-    const ui::ColorProviderManager::Key& key) const {}
+    const ui::ColorProviderManager::Key& key) const {
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  // This color is the same as the default active frame color.
+  const absl::optional<SkColor> theme_color = GetThemeColor();
+  ui::ColorTransform default_background =
+      key.color_mode == ui::ColorProviderManager::ColorMode::kLight
+          ? ui::ColorTransform(ui::kColorFrameActiveUnthemed)
+          : ui::HSLShift(ui::kColorFrameActiveUnthemed,
+                         ThemeProperties::GetDefaultTint(
+                             ThemeProperties::TINT_FRAME, true));
+#endif
+  ui::ColorMixer& mixer = provider->AddMixer();
+  absl::optional<SkColor> bg_color = GetBackgroundColor();
+  // TODO(kylixrd): The definition of kColorPwaBackground isn't fully fleshed
+  // out yet. Whether or not the PWA background color is set is used in many
+  // locations to derive other colors. Those specific locations would need to be
+  // addressed in their own context.
+  if (bg_color)
+    mixer[kColorPwaBackground] = {bg_color.value()};
+  mixer[kColorPwaMenuButtonIcon] = {kColorToolbarButtonIcon};
+  mixer[kColorPwaSecurityChipForeground] = {ui::kColorSecondaryForeground};
+  mixer[kColorPwaSecurityChipForegroundDangerous] = {
+      ui::kColorAlertHighSeverity};
+  mixer[kColorPwaSecurityChipForegroundPolicyCert] = {
+      ui::kColorDisabledForeground};
+  mixer[kColorPwaSecurityChipForegroundSecure] = {
+      kColorPwaSecurityChipForeground};
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Ash system frames differ from ChromeOS browser frames.
+  mixer[kColorPwaTheme] = {chromeos::kDefaultFrameColor};
+#else
+  mixer[kColorPwaTheme] = theme_color ? ui::ColorTransform(theme_color.value())
+                                      : default_background;
+#endif
+  mixer[kColorPwaToolbarBackground] = {ui::kColorEndpointBackground};
+  mixer[kColorPwaToolbarForeground] = {ui::kColorEndpointForeground};
+}
 
 void AppBrowserController::OnReceivedInitialURL() {
   UpdateCustomTabBarVisibility(/*animate=*/false);

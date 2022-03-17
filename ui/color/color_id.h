@@ -116,12 +116,6 @@
   E_CPONLY(kColorOverlayScrollbarStrokeHoveredDark) \
   E_CPONLY(kColorOverlayScrollbarStrokeHoveredLight) \
   E_CPONLY(kColorProgressBar) \
-  E_CPONLY(kColorPwaSecurityChipForeground) \
-  E_CPONLY(kColorPwaSecurityChipForegroundDangerous) \
-  E_CPONLY(kColorPwaSecurityChipForegroundPolicyCert) \
-  E_CPONLY(kColorPwaSecurityChipForegroundSecure) \
-  E_CPONLY(kColorPwaToolbarBackground) \
-  E_CPONLY(kColorPwaToolbarForeground) \
   E_CPONLY(kColorSeparator) \
   E_CPONLY(kColorShadowBase) \
   E_CPONLY(kColorShadowValueAmbientShadowElevationSixteen) \
