@@ -8,6 +8,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/simple_test_clock.h"
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/https_only_mode_navigation_throttle.h"
@@ -819,6 +820,96 @@ IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest, CloseInterstitialTab) {
   histograms()->ExpectBucketCount(
       "interstitial.https_first_mode.decision",
       security_interstitials::MetricsHelper::Decision::DONT_PROCEED, 1);
+}
+
+// Tests that if a user allowlists a host and then does not visit it again for
+// seven days (the expiration period), then the interstitial will be shown again
+// the next time they visit the host.
+IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest, AllowlistEntryExpires) {
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
+  content::SSLHostStateDelegate* state = profile->GetSSLHostStateDelegate();
+
+  // Set a testing clock on the StatefulSSLHostStateDelegate, keeping a pointer
+  // to the clock object around so the test can manipulate time. `chrome_state`
+  // takes ownership of `clock`.
+  auto clock = std::make_unique<base::SimpleTestClock>();
+  auto* clock_ptr = clock.get();
+  StatefulSSLHostStateDelegate* chrome_state =
+      static_cast<StatefulSSLHostStateDelegate*>(state);
+  chrome_state->SetClockForTesting(std::move(clock));
+
+  // Start the clock at standard system time.
+  clock_ptr->SetNow(base::Time::NowFromSystemTime());
+
+  // Visit a host that doesn't support HTTPS for the first time, and click
+  // through the HTTPS-First Mode interstitial to allowlist the host.
+  GURL http_url = http_server()->GetURL("bad-https.test", "/simple.html");
+  EXPECT_FALSE(content::NavigateToURL(contents, http_url));
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+      contents));
+  ProceedThroughInterstitial(contents);
+  EXPECT_EQ(http_url, contents->GetLastCommittedURL());
+  EXPECT_TRUE(state->IsHttpAllowedForHost(http_url.host(), contents));
+
+  // Simulate the clock advancing by eight days, which is past the expiration
+  // point.
+  clock_ptr->Advance(base::Days(8));
+
+  // The host should no longer be allowlisted, and the interstitial should
+  // trigger again.
+  EXPECT_FALSE(state->IsHttpAllowedForHost(http_url.host(), contents));
+  EXPECT_FALSE(content::NavigateToURL(contents, http_url));
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+      contents));
+}
+
+// Tests that re-visiting an allowlisted host bumps the expiration time to a new
+// seven days in the future from now.
+IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest, RevisitingBumpsExpiration) {
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
+  content::SSLHostStateDelegate* state = profile->GetSSLHostStateDelegate();
+
+  // Set a testing clock on the StatefulSSLHostStateDelegate, keeping a pointer
+  // to the clock object around so the test can manipulate time. `chrome_state`
+  // takes ownership of `clock`.
+  auto clock = std::make_unique<base::SimpleTestClock>();
+  auto* clock_ptr = clock.get();
+  StatefulSSLHostStateDelegate* chrome_state =
+      static_cast<StatefulSSLHostStateDelegate*>(state);
+  chrome_state->SetClockForTesting(std::move(clock));
+
+  // Start the clock at standard system time.
+  clock_ptr->SetNow(base::Time::NowFromSystemTime());
+
+  // Visit a host that doesn't support HTTPS for the first time, and click
+  // through the HTTPS-First Mode interstitial to allowlist the host.
+  GURL http_url = http_server()->GetURL("bad-https.test", "/simple.html");
+  EXPECT_FALSE(content::NavigateToURL(contents, http_url));
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+      contents));
+  ProceedThroughInterstitial(contents);
+  EXPECT_EQ(http_url, contents->GetLastCommittedURL());
+  EXPECT_TRUE(state->IsHttpAllowedForHost(http_url.host(), contents));
+
+  // Simulate the clock advancing by five days.
+  clock_ptr->Advance(base::Days(5));
+
+  // Navigate to the host again; this will reset the allowlist expiration to
+  // now + 7 days.
+  EXPECT_TRUE(content::NavigateToURL(contents, http_url));
+
+  // Simulate the clock advancing another five days. This will be _after_ the
+  // initial expiration date of the allowlist entry, but _before_ the bumped
+  // expiration date from the second navigation.
+  clock_ptr->Advance(base::Days(5));
+  EXPECT_TRUE(content::NavigateToURL(contents, http_url));
+  EXPECT_FALSE(
+      chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+          contents));
 }
 
 // A simple test fixture that ensures the kHttpsOnlyMode feature is enabled and
