@@ -7,8 +7,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <limits>
 #include <ostream>
 #include <string>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -19,6 +21,7 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/abseil_string_number_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -28,6 +31,7 @@
 #include "content/browser/aggregation_service/aggregation_service_features.h"
 #include "content/browser/aggregation_service/public_key.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/hpke.h"
 #include "third_party/distributed_point_functions/code/dpf/distributed_point_function.h"
@@ -151,15 +155,22 @@ ConstructUnencryptedExperimentalPoplarPayloads(
 }
 
 // TODO(crbug.com/1298196): Replace with `base::WriteBigEndian()` when available
-std::vector<uint8_t> EncodeBucketForPayload(absl::uint128 bucket) {
-  std::vector<uint8_t> byte_string(sizeof(absl::uint128) / sizeof(uint8_t));
+template <typename T>
+std::vector<uint8_t> EncodeIntegerForPayload(T integer) {
+  static_assert(sizeof(T) <= sizeof(absl::uint128),
+                "sizeof(T) <= sizeof(absl::uint128)");
+  static_assert(!std::numeric_limits<T>::is_signed,
+                "!std::numeric_limits<T>::is_signed");
+  static_assert(std::is_integral_v<T> || std::is_same_v<T, absl::uint128>,
+                "std::is_integral_v<T> || std::is_same_v<T, absl::uint128>");
+  std::vector<uint8_t> byte_string(sizeof(T));
 
   // Construct the vector in reverse to ensure network byte (big-endian) order.
   for (auto it = byte_string.rbegin(); it != byte_string.rend(); ++it) {
-    *it = static_cast<uint8_t>(bucket & 0xFF);
-    bucket >>= 8;
+    *it = static_cast<uint8_t>(integer & 0xFF);
+    integer >>= 8;
   }
-  DCHECK_EQ(bucket, 0);
+  DCHECK_EQ(integer, 0u);
   return byte_string;
 }
 
@@ -176,8 +187,10 @@ std::vector<std::vector<uint8_t>> ConstructUnencryptedTeeBasedPayload(
   for (AggregationServicePayloadContents::HistogramContribution contribution :
        payload_contents.contributions) {
     cbor::Value::MapValue data_map;
-    data_map.emplace("bucket", EncodeBucketForPayload(contribution.bucket));
-    data_map.emplace("value", contribution.value);
+    data_map.emplace(
+        "bucket", EncodeIntegerForPayload<absl::uint128>(contribution.bucket));
+    data_map.emplace("value",
+                     EncodeIntegerForPayload<uint32_t>(contribution.value));
     data.push_back(cbor::Value(std::move(data_map)));
   }
   value.emplace("data", std::move(data));

@@ -167,9 +167,17 @@ void VerifyReport(
                                    &bucket);
           EXPECT_EQ(bucket, expected_payload_contents.contributions[i].bucket);
 
-          ASSERT_TRUE(CborMapContainsKeyAndType(data_map, "value",
-                                                cbor::Value::Type::UNSIGNED));
-          EXPECT_EQ(data_map.at(cbor::Value("value")).GetInteger(),
+          ASSERT_TRUE(CborMapContainsKeyAndType(
+              data_map, "value", cbor::Value::Type::BYTE_STRING));
+          const cbor::Value::BinaryValue& value_byte_string =
+              data_map.at(cbor::Value("value")).GetBytestring();
+          EXPECT_EQ(value_byte_string.size(), 4u);  // 4 bytes = 32 bits
+
+          // TODO(crbug.com/1298196): Replace with `base::ReadBigEndian()` when
+          // available.
+          uint32_t value;
+          base::HexStringToUInt(base::HexEncode(value_byte_string), &value);
+          EXPECT_EQ(static_cast<int64_t>(value),
                     expected_payload_contents.contributions[i].value);
         }
 

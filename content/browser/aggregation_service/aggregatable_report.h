@@ -132,8 +132,8 @@ class CONTENT_EXPORT AggregatableReport {
     // {
     //   "operation": "<chosen operation as string>",
     //   "data": [{
-    //     "bucket": <128-bit integer encoded as a big-endian bytestring>,
-    //     "value": <integer>,
+    //     "bucket": <a 16-byte (i.e. 128-bit) big-endian bytestring>,
+    //     "value": <a 4-byte (i.e. 32-bit) big-endian bytestring>
     //   }, ...],
     // }
     // Note that the "data" array may contain multiple contributions.
