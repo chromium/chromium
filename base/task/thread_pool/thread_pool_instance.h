@@ -213,7 +213,7 @@ class BASE_EXPORT ThreadPoolInstance {
   // post_task.h API. In particular, refrain from doing
   //   if (!ThreadPoolInstance::Get()) {
   //     ThreadPoolInstance::Set(...);
-  //     base::PostTask(...);
+  //     base::ThreadPool::PostTask(...);
   //   }
   // instead make sure to SetInstance() early in one determinstic place in the
   // process' initialization phase.
