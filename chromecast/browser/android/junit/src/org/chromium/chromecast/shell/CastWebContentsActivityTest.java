@@ -344,38 +344,35 @@ public class CastWebContentsActivityTest {
     }
 
     @Test
-    public void testDoesNotCloseAppWhenUserLeave() {
+    public void testDoesNotCloseAppWhenActivityStops() {
         mShadowActivityManager.setLockTaskModeState(ActivityManager.LOCK_TASK_MODE_NONE);
         mActivityLifecycle.create().start().resume();
         verifyBroadcastedIntent(
                 filterFor(CastWebContentsIntentUtils.ACTION_ACTIVITY_STOPPED), () -> {
-                    mActivity.onUserLeaveHint();
+                    mActivityLifecycle.pause().stop();
                     assertFalse(mShadowActivity.isFinishing());
-                    mActivityLifecycle.pause().stop().destroy();
                 }, false);
     }
 
     @Test
-    public void testClosesWhenUserLeaveInLockTaskMode() {
+    public void testClosesWhenActivityStopsInLockTaskMode() {
         mShadowActivityManager.setLockTaskModeState(ActivityManager.LOCK_TASK_MODE_LOCKED);
         mActivityLifecycle.create().start().resume();
         verifyBroadcastedIntent(
                 filterFor(CastWebContentsIntentUtils.ACTION_ACTIVITY_STOPPED), () -> {
-                    mActivity.onUserLeaveHint();
+                    mActivityLifecycle.pause().stop();
                     assertTrue(mShadowActivity.isFinishing());
-                    mActivityLifecycle.pause().stop().destroy();
                 }, true);
     }
 
     @Test
-    public void testClosesWhenUserLeaveInLockTaskModePinned() {
+    public void testClosesWhenActivityStopsInLockTaskModePinned() {
         mShadowActivityManager.setLockTaskModeState(ActivityManager.LOCK_TASK_MODE_PINNED);
         mActivityLifecycle.create().start().resume();
         verifyBroadcastedIntent(
                 filterFor(CastWebContentsIntentUtils.ACTION_ACTIVITY_STOPPED), () -> {
-                    mActivity.onUserLeaveHint();
+                    mActivityLifecycle.pause().stop();
                     assertTrue(mShadowActivity.isFinishing());
-                    mActivityLifecycle.pause().stop().destroy();
                 }, true);
     }
 
