@@ -45,16 +45,19 @@ class MEDIA_EXPORT MediaFoundationRenderer
   // Reported to UMA. Do not change existing values.
   enum class ErrorReason {
     kUnknown = 0,
-    kCdmProxyReceivedInInvalidState,
-    kFailedToSetSourceOnMediaEngine,
-    kFailedToSetCurrentTime,
-    kFailedToPlay,
-    kOnPlaybackError,
-    kOnDCompSurfaceReceivedError,
-    kOnDCompSurfaceHandleSetError,
-    kOnConnectionError,
+    kCdmProxyReceivedInInvalidState = 1,
+    kFailedToSetSourceOnMediaEngine = 2,
+    kFailedToSetCurrentTime = 3,
+    kFailedToPlay = 4,
+    kOnPlaybackError = 5,
+    kOnDCompSurfaceReceivedError [[deprecated]] = 6,
+    kOnDCompSurfaceHandleSetError = 7,
+    kOnConnectionError = 8,
+    kFailedToSetDCompMode = 9,
+    kFailedToGetDCompSurface = 10,
+    kFailedToDuplicateHandle = 11,
     // Add new values here and update `kMaxValue`. Never reuse existing values.
-    kMaxValue = kOnConnectionError,
+    kMaxValue = kFailedToDuplicateHandle,
   };
 
   // Report `reason` to UMA.
@@ -157,6 +160,7 @@ class MEDIA_EXPORT MediaFoundationRenderer
   Microsoft::WRL::ComPtr<MediaEngineNotifyImpl> mf_media_engine_notify_;
   Microsoft::WRL::ComPtr<MediaEngineExtension> mf_media_engine_extension_;
   Microsoft::WRL::ComPtr<MediaFoundationSourceWrapper> mf_source_;
+
   // This enables MFMediaEngine to use hardware acceleration for video decoding
   // and video processing.
   Microsoft::WRL::ComPtr<IMFDXGIDeviceManager> dxgi_device_manager_;

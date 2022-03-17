@@ -59881,12 +59881,15 @@ Called by update_use_counter_css.py.-->
   <int value="0" label="Unknown"/>
   <int value="1" label="CdmProxyReceivedInInvalidState"/>
   <int value="2" label="FailedToSetSourceOnMediaEngine"/>
-  <int value="3" label="kFailedToSetCurrentTime"/>
-  <int value="4" label="kFailedToPlay"/>
-  <int value="5" label="kOnPlaybackError"/>
-  <int value="6" label="kOnDCompSurfaceReceivedError"/>
-  <int value="7" label="kOnDCompSurfaceHandleSetError"/>
-  <int value="8" label="kOnConnectionError"/>
+  <int value="3" label="SetCurrentTimeError"/>
+  <int value="4" label="FailedToPlay"/>
+  <int value="5" label="OnPlaybackError"/>
+  <int value="6" label="OnDCompSurfaceReceivedError (deprecated)"/>
+  <int value="7" label="OnDCompSurfaceHandleSetError"/>
+  <int value="8" label="OnConnectionError"/>
+  <int value="9" label="FailedToSetDCompMode"/>
+  <int value="10" label="FailedToGetDCompSurface"/>
+  <int value="11" label="FailedToDuplicateHandle"/>
 </enum>
 
 <enum name="MediaGalleriesUsageType">

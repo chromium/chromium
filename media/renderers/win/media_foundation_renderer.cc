@@ -81,11 +81,19 @@ const std::string GetErrorReasonString(
     STRINGIFY(kFailedToSetCurrentTime);
     STRINGIFY(kFailedToPlay);
     STRINGIFY(kOnPlaybackError);
-    STRINGIFY(kOnDCompSurfaceReceivedError);
     STRINGIFY(kOnDCompSurfaceHandleSetError);
     STRINGIFY(kOnConnectionError);
+    STRINGIFY(kFailedToSetDCompMode);
+    STRINGIFY(kFailedToGetDCompSurface);
+    STRINGIFY(kFailedToDuplicateHandle);
   }
 #undef STRINGIFY
+}
+
+// INVALID_HANDLE_VALUE is the official invalid handle value. Historically, 0 is
+// not used as a handle value too.
+bool IsInvalidHandle(const HANDLE& handle) {
+  return handle == INVALID_HANDLE_VALUE || handle == nullptr;
 }
 
 }  // namespace
@@ -518,18 +526,20 @@ void MediaFoundationRenderer::GetDCompSurface(GetDCompSurfaceCB callback) {
 
   HRESULT hr = SetDCompModeInternal();
   if (FAILED(hr)) {
-    std::string error = "Failed to set DComp mode: " + PrintHr(hr);
-    DLOG(ERROR) << error;
-    std::move(callback).Run(base::win::ScopedHandle(), error);
+    OnError(PIPELINE_ERROR_COULD_NOT_RENDER, ErrorReason::kFailedToSetDCompMode,
+            hr);
+    std::move(callback).Run(base::win::ScopedHandle(), PrintHr(hr));
     return;
   }
 
   HANDLE surface_handle = INVALID_HANDLE_VALUE;
   hr = GetDCompSurfaceInternal(&surface_handle);
-  if (FAILED(hr)) {
-    std::string error = "Failed to get DComp surface: " + PrintHr(hr);
-    DLOG(ERROR) << error;
-    std::move(callback).Run(base::win::ScopedHandle(), error);
+  // The handle could still be invalid after a non failure (e.g. S_FALSE) is
+  // returned. See https://crbug.com/1307065.
+  if (FAILED(hr) || IsInvalidHandle(surface_handle)) {
+    OnError(PIPELINE_ERROR_COULD_NOT_RENDER,
+            ErrorReason::kFailedToGetDCompSurface, hr);
+    std::move(callback).Run(base::win::ScopedHandle(), PrintHr(hr));
     return;
   }
 
@@ -540,11 +550,11 @@ void MediaFoundationRenderer::GetDCompSurface(GetDCompSurfaceCB callback) {
   const BOOL result = ::DuplicateHandle(
       process, surface_handle, process, &duplicated_handle,
       GENERIC_READ | GENERIC_EXECUTE, false, DUPLICATE_CLOSE_SOURCE);
-  if (!result) {
-    std::string error =
-        "Duplicate surface_handle failed: " + PrintHr(::GetLastError());
-    DLOG(ERROR) << error;
-    std::move(callback).Run(base::win::ScopedHandle(), error);
+  if (!result || IsInvalidHandle(surface_handle)) {
+    hr = ::GetLastError();
+    OnError(PIPELINE_ERROR_COULD_NOT_RENDER,
+            ErrorReason::kFailedToDuplicateHandle, hr);
+    std::move(callback).Run(base::win::ScopedHandle(), PrintHr(hr));
     return;
   }
 
@@ -733,9 +743,6 @@ void MediaFoundationRenderer::OnPlaybackError(PipelineStatus status,
 
   base::UmaHistogramSparse("Media.MediaFoundationRenderer.PlaybackError", hr);
 
-  if (status == PIPELINE_ERROR_HARDWARE_CONTEXT_RESET && cdm_proxy_)
-    cdm_proxy_->OnHardwareContextReset();
-
   StopSendingStatistics();
   OnError(status, ErrorReason::kOnPlaybackError, hr);
 }
@@ -869,10 +876,22 @@ void MediaFoundationRenderer::OnError(PipelineStatus status,
   const std::string error =
       "MediaFoundationRenderer error: " + GetErrorReasonString(reason) +
       (hresult.has_value() ? (" (" + PrintHr(hresult.value()) + ")") : "");
+
   DLOG(ERROR) << error;
   MEDIA_LOG(ERROR, media_log_) << error;
   ReportErrorReason(reason);
-  renderer_client_->OnError(status);
+
+  // HRESULT 0x8004CD12 is DRM_E_TEE_INVALID_HWDRM_STATE, which can happen
+  // during OS sleep/resume, or moving video to different graphics adapters.
+  // This is not an error, so special case it here.
+  PipelineStatus status_to_report = status;
+  if (hresult.has_value() && hresult == static_cast<HRESULT>(0x8004CD12)) {
+    status_to_report = PIPELINE_ERROR_HARDWARE_CONTEXT_RESET;
+    if (cdm_proxy_)
+      cdm_proxy_->OnHardwareContextReset();
+  }
+
+  renderer_client_->OnError(status_to_report);
 }
 
 void MediaFoundationRenderer::RequestNextFrameBetweenTimestamps(

@@ -453,10 +453,8 @@ void MediaFoundationRendererClient::InitializeDCOMPRenderingIfNeeded() {
   // Set DirectComposition mode and get DirectComposition surface from
   // MediaFoundationRenderer.
   renderer_extension_->GetDCOMPSurface(
-      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-          base::BindOnce(&MediaFoundationRendererClient::OnDCOMPSurfaceReceived,
-                         weak_factory_.GetWeakPtr()),
-          absl::nullopt, "disconnection error"));
+      base::BindOnce(&MediaFoundationRendererClient::OnDCOMPSurfaceReceived,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void MediaFoundationRendererClient::OnDCOMPSurfaceReceived(
@@ -466,11 +464,9 @@ void MediaFoundationRendererClient::OnDCOMPSurfaceReceived(
   DCHECK(has_video_);
   DCHECK(media_task_runner_->BelongsToCurrentThread());
 
+  // The error should've already been handled in MediaFoundationRenderer.
   if (!token) {
-    MEDIA_LOG(ERROR, media_log_) << "GetDCOMPSurface failed: " + error;
-    MediaFoundationRenderer::ReportErrorReason(
-        MediaFoundationRenderer::ErrorReason::kOnDCompSurfaceReceivedError);
-    OnError(PIPELINE_ERROR_COULD_NOT_RENDER);
+    DLOG(ERROR) << "GetDCOMPSurface failed: " + error;
     return;
   }
 
