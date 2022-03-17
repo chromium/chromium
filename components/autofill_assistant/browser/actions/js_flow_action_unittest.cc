@@ -254,5 +254,24 @@ TEST_F(JsFlowActionTest, AllowsFlowsReturningStatusWithoutResult) {
   EXPECT_FALSE(processed_action_capture.js_flow_result().has_result_json());
 }
 
+TEST_F(JsFlowActionTest, RemovesOriginalProtoFromTheProcessedAction) {
+  auto mock_js_flow_executor = std::make_unique<MockJsFlowExecutor>();
+
+  EXPECT_CALL(*mock_js_flow_executor, Start)
+      .WillOnce(RunOnceCallback<1>(ClientStatus(ACTION_APPLIED),
+                                   /* return_value = */ nullptr));
+
+  ProcessedActionProto processed_action_capture;
+  EXPECT_CALL(callback_, Run)
+      .WillOnce(SaveArgPointee<0>(&processed_action_capture));
+  proto_.set_js_flow(
+      "console.log('Large blob that should not be sent back to the backend');");
+  CreateAction(std::move(mock_js_flow_executor))
+      ->ProcessAction(callback_.Get());
+
+  EXPECT_THAT(processed_action_capture.status(), Eq(ACTION_APPLIED));
+  EXPECT_FALSE(processed_action_capture.action().js_flow().has_js_flow());
+}
+
 }  // namespace
 }  // namespace autofill_assistant

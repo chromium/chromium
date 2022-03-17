@@ -111,6 +111,10 @@ void JsFlowAction::OnFlowFinished(ProcessActionCallback callback,
     }
   }
 
+  // Since JS flows have the potential to be quite big, we remove them from the
+  // action response. The backend has access to the full script anyway.
+  processed_action_proto_->mutable_action()->mutable_js_flow()->clear_js_flow();
+
   std::move(callback).Run(std::move(processed_action_proto_));
 }
 
