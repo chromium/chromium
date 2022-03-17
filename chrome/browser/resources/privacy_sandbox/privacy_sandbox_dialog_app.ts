@@ -55,12 +55,12 @@ export class PrivacySandboxDialogAppElement extends
   override connectedCallback() {
     super.connectedCallback();
 
-    afterNextRender(this, () => {
+    afterNextRender(this, async () => {
       const proxy = PrivacySandboxDialogBrowserProxy.getInstance();
       // Prefer using |document.body.offsetHeight| instead of
       // |document.body.scrollHeight| as it returns the correct height of the
       // page even when the page zoom in Chrome is different than 100%.
-      proxy.resizeDialog(document.body.offsetHeight);
+      await proxy.resizeDialog(document.body.offsetHeight);
 
       // After the content was rendered at size it requires, toggle a class
       // to fit the content into dialog bounds.
@@ -72,6 +72,8 @@ export class PrivacySandboxDialogAppElement extends
         this.didStartWithScrollbar_ =
             this.$.contentArea.offsetHeight < this.$.contentArea.scrollHeight;
         this.canScrollClass_ = this.didStartWithScrollbar_ ? 'can-scroll' : '';
+
+        proxy.showDialog();
       });
     });
   }

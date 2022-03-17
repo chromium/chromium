@@ -14,6 +14,7 @@ class PrivacySandboxDialogHandler : public content::WebUIMessageHandler {
  public:
   PrivacySandboxDialogHandler(base::OnceClosure close_callback,
                               base::OnceCallback<void(int)> resize_callback,
+                              base::OnceClosure show_dialog_callback,
                               base::OnceClosure open_settings_callback,
                               PrivacySandboxService::DialogType dialog_type);
   ~PrivacySandboxDialogHandler() override;
@@ -28,6 +29,8 @@ class PrivacySandboxDialogHandler : public content::WebUIMessageHandler {
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxConsentDialogHandlerTest,
                            HandleResizeDialog);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxConsentDialogHandlerTest,
+                           HandleShowDialog);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxConsentDialogHandlerTest,
                            HandleClickLearnMore);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxConsentDialogHandlerTest,
                            HandleConsentAccepted);
@@ -36,17 +39,21 @@ class PrivacySandboxDialogHandler : public content::WebUIMessageHandler {
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxNoticeDialogHandlerTest,
                            HandleResizeDialog);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxNoticeDialogHandlerTest,
+                           HandleShowDialog);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxNoticeDialogHandlerTest,
                            HandleOpenSettings);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxNoticeDialogHandlerTest,
                            HandleNoticeAcknowledge);
 
   void HandleDialogActionOccurred(const base::Value::List& args);
   void HandleResizeDialog(const base::Value::List& args);
+  void HandleShowDialog(const base::Value::List& args);
   void NotifyServiceAboutDialogAction(
       PrivacySandboxService::DialogAction action);
 
   base::OnceClosure close_callback_;
   base::OnceCallback<void(int)> resize_callback_;
+  base::OnceClosure show_dialog_callback_;
   base::OnceClosure open_settings_callback_;
   PrivacySandboxService::DialogType dialog_type_;
 

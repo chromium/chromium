@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
+// clang-format on
+
 // All actions related to showing & interacting with the privacy sandbox
 // dialog. Includes actions which do not impact consent / notice state.
 // Must be kept in sync with the enum of the same name in
@@ -26,7 +30,11 @@ export class PrivacySandboxDialogBrowserProxy {
   }
 
   resizeDialog(height: number) {
-    chrome.send('resizeDialog', [height]);
+    return sendWithPromise('resizeDialog', height);
+  }
+
+  showDialog() {
+    chrome.send('showDialog');
   }
 
   static getInstance(): PrivacySandboxDialogBrowserProxy {

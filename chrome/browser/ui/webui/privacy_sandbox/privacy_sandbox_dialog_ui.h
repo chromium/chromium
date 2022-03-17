@@ -19,6 +19,7 @@ class PrivacySandboxDialogUI : public content::WebUIController {
   void Initialize(Profile* profile,
                   base::OnceClosure close_callback,
                   base::OnceCallback<void(int)> resize_callback,
+                  base::OnceClosure show_dialog_callback,
                   base::OnceClosure open_settings_callback,
                   PrivacySandboxService::DialogType dialog_type);
 

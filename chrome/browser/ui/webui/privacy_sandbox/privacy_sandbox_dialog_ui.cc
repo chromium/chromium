@@ -85,6 +85,7 @@ void PrivacySandboxDialogUI::Initialize(
     Profile* profile,
     base::OnceClosure close_callback,
     base::OnceCallback<void(int)> resize_callback,
+    base::OnceClosure show_dialog_callback,
     base::OnceClosure open_settings_callback,
     PrivacySandboxService::DialogType dialog_type) {
   std::unique_ptr<base::DictionaryValue> update =
@@ -96,7 +97,8 @@ void PrivacySandboxDialogUI::Initialize(
 
   auto handler = std::make_unique<PrivacySandboxDialogHandler>(
       std::move(close_callback), std::move(resize_callback),
-      std::move(open_settings_callback), dialog_type);
+      std::move(show_dialog_callback), std::move(open_settings_callback),
+      dialog_type);
   web_ui()->AddMessageHandler(std::move(handler));
 }
 

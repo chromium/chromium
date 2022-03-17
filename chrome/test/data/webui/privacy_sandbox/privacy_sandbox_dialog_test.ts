@@ -15,7 +15,7 @@ import {isChildVisible} from 'chrome://webui-test/test_util.js';
 class TestPrivacySandboxDialogBrowserProxy extends TestBrowserProxy implements
     PrivacySandboxDialogBrowserProxy {
   constructor() {
-    super(['dialogActionOccurred', 'resizeDialog']);
+    super(['dialogActionOccurred', 'resizeDialog', 'showDialog']);
   }
 
   dialogActionOccurred() {
@@ -24,6 +24,11 @@ class TestPrivacySandboxDialogBrowserProxy extends TestBrowserProxy implements
 
   resizeDialog() {
     this.methodCalled('resizeDialog', arguments);
+    return Promise.resolve();
+  }
+
+  showDialog() {
+    this.methodCalled('showDialog');
   }
 }
 
@@ -52,6 +57,7 @@ suite('PrivacySandboxDialogConsent', function() {
     document.body.appendChild(page);
 
     await browserProxy.whenCalled('resizeDialog');
+    await browserProxy.whenCalled('showDialog');
   });
 
   test('dialogStructure', function() {
@@ -143,6 +149,7 @@ suite('PrivacySandboxDialogNotice', function() {
     document.body.appendChild(page);
 
     await browserProxy.whenCalled('resizeDialog');
+    await browserProxy.whenCalled('showDialog');
   });
 
   test('dialogStructure', function() {

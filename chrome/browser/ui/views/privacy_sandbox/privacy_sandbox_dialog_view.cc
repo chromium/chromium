@@ -110,6 +110,8 @@ PrivacySandboxDialogView::PrivacySandboxDialogView(
       base::BindOnce(&PrivacySandboxDialogView::Close, base::Unretained(this)),
       base::BindOnce(&PrivacySandboxDialogView::ResizeNativeView,
                      base::Unretained(this)),
+      base::BindOnce(&PrivacySandboxDialogView::ShowNativeView,
+                     base::Unretained(this)),
       base::BindOnce(
           &PrivacySandboxDialogView::OpenPrivacySandboxAdPersonalization,
           base::Unretained(this)),
@@ -130,6 +132,9 @@ void PrivacySandboxDialogView::ResizeNativeView(int height) {
   web_view_->SetPreferredSize(gfx::Size(web_view_->GetPreferredSize().width(),
                                         std::min(height, max_height)));
   GetWidget()->SetSize(GetWidget()->non_client_view()->GetPreferredSize());
+}
+
+void PrivacySandboxDialogView::ShowNativeView() {
   GetWidget()->Show();
 
   DCHECK(!dialog_created_time_.is_null());
