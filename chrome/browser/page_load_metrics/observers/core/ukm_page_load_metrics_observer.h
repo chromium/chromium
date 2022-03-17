@@ -146,6 +146,7 @@ class UkmPageLoadMetricsObserver
 
   void RecordInputTimingMetrics();
   void RecordSmoothnessMetrics();
+  void RecordResponsivenessMetrics();
 
   void RecordMobileFriendlinessMetrics();
   void RecordPageLoadTimestampMetrics(ukm::builders::PageLoad& builder);

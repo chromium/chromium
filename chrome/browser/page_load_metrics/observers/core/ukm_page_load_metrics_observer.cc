@@ -324,6 +324,7 @@ UkmPageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
     RecordTimingMetrics(timing);
   ReportLayoutStability();
   RecordSmoothnessMetrics();
+  RecordResponsivenessMetrics();
   // Assume that page ends on this method, as the app could be evicted right
   // after.
   RecordPageEndMetrics(&timing, current_time,
@@ -414,6 +415,7 @@ void UkmPageLoadMetricsObserver::OnComplete(
     RecordTimingMetrics(timing);
   ReportLayoutStability();
   RecordSmoothnessMetrics();
+  RecordResponsivenessMetrics();
   RecordPageEndMetrics(&timing, current_time,
                        /* app_entered_background */ false);
   RecordMobileFriendlinessMetrics();
@@ -676,61 +678,6 @@ void UkmPageLoadMetricsObserver::RecordTimingMetrics(
         longest_input_timestamp.InMilliseconds());
   }
 
-  const page_load_metrics::NormalizedResponsivenessMetrics&
-      normalized_responsiveness_metrics =
-          GetDelegate().GetNormalizedResponsivenessMetrics();
-  auto& max_event_durations =
-      normalized_responsiveness_metrics.normalized_max_event_durations;
-  auto& total_event_durations =
-      normalized_responsiveness_metrics.normalized_total_event_durations;
-  if (normalized_responsiveness_metrics.num_user_interactions) {
-    builder.SetInteractiveTiming_WorstUserInteractionLatency_MaxEventDuration(
-        max_event_durations.worst_latency.InMilliseconds());
-    builder.SetInteractiveTiming_WorstUserInteractionLatency_TotalEventDuration(
-        total_event_durations.worst_latency.InMilliseconds());
-    builder
-        .SetInteractiveTiming_WorstUserInteractionLatencyOverBudget_MaxEventDuration(
-            max_event_durations.worst_latency_over_budget.InMilliseconds());
-    builder
-        .SetInteractiveTiming_WorstUserInteractionLatencyOverBudget_TotalEventDuration(
-            total_event_durations.worst_latency_over_budget.InMilliseconds());
-    builder
-        .SetInteractiveTiming_SumOfUserInteractionLatencyOverBudget_MaxEventDuration(
-            max_event_durations.sum_of_latency_over_budget.InMilliseconds());
-    builder
-        .SetInteractiveTiming_SumOfUserInteractionLatencyOverBudget_TotalEventDuration(
-            total_event_durations.sum_of_latency_over_budget.InMilliseconds());
-    builder
-        .SetInteractiveTiming_AverageUserInteractionLatencyOverBudget_MaxEventDuration(
-            max_event_durations.sum_of_latency_over_budget.InMilliseconds() /
-            normalized_responsiveness_metrics.num_user_interactions);
-    builder
-        .SetInteractiveTiming_AverageUserInteractionLatencyOverBudget_TotalEventDuration(
-            total_event_durations.sum_of_latency_over_budget.InMilliseconds() /
-            normalized_responsiveness_metrics.num_user_interactions);
-    builder
-        .SetInteractiveTiming_SlowUserInteractionLatencyOverBudget_HighPercentile_MaxEventDuration(
-            max_event_durations.high_percentile_latency_over_budget
-                .InMilliseconds());
-    builder
-        .SetInteractiveTiming_SlowUserInteractionLatencyOverBudget_HighPercentile_TotalEventDuration(
-            total_event_durations.high_percentile_latency_over_budget
-                .InMilliseconds());
-    builder
-        .SetInteractiveTiming_SlowUserInteractionLatencyOverBudget_HighPercentile2_MaxEventDuration(
-            page_load_metrics::ResponsivenessMetricsNormalization::
-                ApproximateHighPercentile(
-                    normalized_responsiveness_metrics.num_user_interactions,
-                    max_event_durations.worst_ten_latencies_over_budget)
-                    .InMilliseconds());
-    builder
-        .SetInteractiveTiming_SlowUserInteractionLatencyOverBudget_HighPercentile2_TotalEventDuration(
-            page_load_metrics::ResponsivenessMetricsNormalization::
-                ApproximateHighPercentile(
-                    normalized_responsiveness_metrics.num_user_interactions,
-                    total_event_durations.worst_ten_latencies_over_budget)
-                    .InMilliseconds());
-  }
   if (timing.interactive_timing->first_scroll_delay &&
       WasStartedInForegroundOptionalEventInForeground(
           timing.interactive_timing->first_scroll_timestamp, GetDelegate())) {
@@ -1318,6 +1265,76 @@ UkmPageLoadMetricsObserver::GetThirdPartyCookieBlockingEnabled() const {
 
   return !cookie_settings->IsThirdPartyAccessAllowed(GetDelegate().GetUrl(),
                                                      nullptr /* source */);
+}
+
+void UkmPageLoadMetricsObserver::RecordResponsivenessMetrics() {
+  ukm::builders::PageLoad builder(GetDelegate().GetPageUkmSourceId());
+  const page_load_metrics::NormalizedResponsivenessMetrics&
+      normalized_responsiveness_metrics =
+          GetDelegate().GetNormalizedResponsivenessMetrics();
+  auto& max_event_durations =
+      normalized_responsiveness_metrics.normalized_max_event_durations;
+  auto& total_event_durations =
+      normalized_responsiveness_metrics.normalized_total_event_durations;
+  if (normalized_responsiveness_metrics.num_user_interactions) {
+    builder.SetInteractiveTiming_WorstUserInteractionLatency_MaxEventDuration(
+        max_event_durations.worst_latency.InMilliseconds());
+    builder.SetInteractiveTiming_WorstUserInteractionLatency_TotalEventDuration(
+        total_event_durations.worst_latency.InMilliseconds());
+    builder
+        .SetInteractiveTiming_WorstUserInteractionLatencyOverBudget_MaxEventDuration(
+            max_event_durations.worst_latency_over_budget.InMilliseconds());
+    builder
+        .SetInteractiveTiming_WorstUserInteractionLatencyOverBudget_TotalEventDuration(
+            total_event_durations.worst_latency_over_budget.InMilliseconds());
+    builder
+        .SetInteractiveTiming_SumOfUserInteractionLatencyOverBudget_MaxEventDuration(
+            max_event_durations.sum_of_latency_over_budget.InMilliseconds());
+    builder
+        .SetInteractiveTiming_SumOfUserInteractionLatencyOverBudget_TotalEventDuration(
+            total_event_durations.sum_of_latency_over_budget.InMilliseconds());
+    builder
+        .SetInteractiveTiming_AverageUserInteractionLatencyOverBudget_MaxEventDuration(
+            max_event_durations.sum_of_latency_over_budget.InMilliseconds() /
+            normalized_responsiveness_metrics.num_user_interactions);
+    builder
+        .SetInteractiveTiming_AverageUserInteractionLatencyOverBudget_TotalEventDuration(
+            total_event_durations.sum_of_latency_over_budget.InMilliseconds() /
+            normalized_responsiveness_metrics.num_user_interactions);
+    builder
+        .SetInteractiveTiming_SlowUserInteractionLatencyOverBudget_HighPercentile_MaxEventDuration(
+            max_event_durations.high_percentile_latency_over_budget
+                .InMilliseconds());
+    builder
+        .SetInteractiveTiming_SlowUserInteractionLatencyOverBudget_HighPercentile_TotalEventDuration(
+            total_event_durations.high_percentile_latency_over_budget
+                .InMilliseconds());
+    builder
+        .SetInteractiveTiming_SlowUserInteractionLatencyOverBudget_HighPercentile2_MaxEventDuration(
+            page_load_metrics::ResponsivenessMetricsNormalization::
+                ApproximateHighPercentile(
+                    normalized_responsiveness_metrics.num_user_interactions,
+                    max_event_durations.worst_ten_latencies_over_budget)
+                    .InMilliseconds());
+    builder
+        .SetInteractiveTiming_SlowUserInteractionLatencyOverBudget_HighPercentile2_TotalEventDuration(
+            page_load_metrics::ResponsivenessMetricsNormalization::
+                ApproximateHighPercentile(
+                    normalized_responsiveness_metrics.num_user_interactions,
+                    total_event_durations.worst_ten_latencies_over_budget)
+                    .InMilliseconds());
+    builder
+        .SetInteractiveTiming_UserInteractionLatency_HighPercentile2_MaxEventDuration(
+            page_load_metrics::ResponsivenessMetricsNormalization::
+                ApproximateHighPercentile(
+                    normalized_responsiveness_metrics.num_user_interactions,
+                    max_event_durations.worst_ten_latencies)
+                    .InMilliseconds());
+    builder.SetInteractiveTiming_NumInteractions(
+        ukm::GetExponentialBucketMinForCounts1000(
+            normalized_responsiveness_metrics.num_user_interactions));
+  }
+  builder.Record(ukm::UkmRecorder::Get());
 }
 
 void UkmPageLoadMetricsObserver::OnTimingUpdate(

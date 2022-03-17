@@ -402,6 +402,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PageLoad.Clients.AMP.InteractiveTiming.NumInteractions.SubFrame"
+    units="Count" expires_after="2022-05-01">
+  <owner>sullivan@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    The number of interactions of a page load, in AMP subframe. Definition of an
+    interaction:
+    https://web.dev/better-responsiveness-metric/#group-events-into-interactions
+  </summary>
+</histogram>
+
+<histogram
     name="PageLoad.Clients.AMP.InteractiveTiming.{NormalizedResponsivenessMetric}.{UserInteractionLatency}.SubFrame{FullNavigation}"
     units="ms" expires_after="2022-05-01">
   <owner>hbsong@chromium.org</owner>
@@ -425,6 +437,7 @@ chromium-metrics-reviews@google.com.
     <variant name="SlowUserInteractionLatencyOverBudget.HighPercentile"/>
     <variant name="SlowUserInteractionLatencyOverBudget.HighPercentile2"/>
     <variant name="SumOfUserInteractionLatencyOverBudget"/>
+    <variant name="UserInteractionLatency.HighPercentile2"/>
     <variant name="WorstUserInteractionLatency"/>
     <variant name="WorstUserInteractionLatencyOverBudget"/>
   </token>
@@ -1755,6 +1768,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PageLoad.InteractiveTiming.NumInteractions{Bfcache}"
+    units="Count" expires_after="2022-05-01">
+  <owner>sullivan@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    The number of user interactions in a page load. Definition of interaction:
+    https://web.dev/better-responsiveness-metric/#group-events-into-interactions
+  </summary>
+  <token key="Bfcache">
+    <variant name=""/>
+    <variant name=".AfterBackForwardCacheRestore"/>
+  </token>
+</histogram>
+
 <histogram name="PageLoad.InteractiveTiming.ProcessingTime" units="ms"
     expires_after="2022-11-01">
   <owner>hbsong@chromium.org</owner>
@@ -1804,6 +1831,7 @@ chromium-metrics-reviews@google.com.
     <variant name="SlowUserInteractionLatencyOverBudget.HighPercentile"/>
     <variant name="SlowUserInteractionLatencyOverBudget.HighPercentile2"/>
     <variant name="SumOfUserInteractionLatencyOverBudget"/>
+    <variant name="UserInteractionLatency.HighPercentile2"/>
     <variant name="WorstUserInteractionLatency"/>
     <variant name="WorstUserInteractionLatencyOverBudget"/>
   </token>

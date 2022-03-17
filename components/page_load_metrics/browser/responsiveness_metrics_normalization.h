@@ -35,6 +35,13 @@ struct NormalizedInteractionLatencies {
   std::priority_queue<base::TimeDelta,
                       std::vector<base::TimeDelta>,
                       std::greater<>>
+      worst_ten_latencies;
+
+  // A min priority queue. The top is the smallest base::TimeDelta in the queue.
+  // We use the worst 10 latencies over budget to approximate a high percentile.
+  std::priority_queue<base::TimeDelta,
+                      std::vector<base::TimeDelta>,
+                      std::greater<>>
       worst_ten_latencies_over_budget;
 };
 
@@ -81,7 +88,7 @@ class ResponsivenessMetricsNormalization {
       uint64_t num_interactions,
       std::priority_queue<base::TimeDelta,
                           std::vector<base::TimeDelta>,
-                          std::greater<>> worst_ten_latencies_over_budget);
+                          std::greater<>> worst_ten_latencies);
 
  private:
   void NormalizeUserInteractionLatencies(

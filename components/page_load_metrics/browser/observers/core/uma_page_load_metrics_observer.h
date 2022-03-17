@@ -16,6 +16,7 @@ namespace internal {
 // specified by the ".Background" suffix. For these events, we put them into the
 // background histogram if the web contents was ever in the background from
 // navigation start to the event in question.
+extern const char kHistogramNumInteractions[];
 extern const char
     kHistogramAverageUserInteractionLatencyOverBudgetMaxEventDuration[];
 extern const char
@@ -24,6 +25,8 @@ extern const char
 extern const char
     kHistogramSlowUserInteractionLatencyOverBudgetHighPercentile2MaxEventDuration
         [];
+extern const char
+    kHistogramUserInteractionLatencyHighPercentile2MaxEventDuration[];
 extern const char
     kHistogramSumOfUserInteractionLatencyOverBudgetMaxEventDuration[];
 extern const char kHistogramWorstUserInteractionLatencyMaxEventDuration[];

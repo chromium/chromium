@@ -585,6 +585,9 @@ TEST_F(AMPPageLoadMetricsObserverTest,
           "SubFrame.InteractiveTiming.SlowUserInteractionLatencyOverBudget."
           "HighPercentile.TotalEventduration",
           55),
+      std::make_pair("SubFrame.InteractiveTiming.UserInteractionLatency."
+                     "HighPercentile2.MaxEventDuration",
+                     150),
       std::make_pair(
           "SubFrame.InteractiveTiming.SlowUserInteractionLatencyOverBudget."
           "HighPercentile2.MaxEventduration",
@@ -601,7 +604,7 @@ TEST_F(AMPPageLoadMetricsObserverTest,
           "SubFrame.InteractiveTiming.WorstUserInteractionLatencyOverBudget."
           "TotalEventduration",
           55),
-  };
+      std::make_pair("SubFrame.InteractiveTiming.NumInteractions", 3)};
 
   for (auto& metric : ukm_list) {
     tester()->test_ukm_recorder().ExpectEntryMetric(entry.get(), metric.first,
@@ -619,6 +622,8 @@ TEST_F(AMPPageLoadMetricsObserverTest,
       "PageLoad.Clients.AMP.InteractiveTiming."
       "SlowUserInteractionLatencyOverBudget.HighPercentile2.MaxEventDuration."
       "Subframe",
+      "PageLoad.Clients.AMP.InteractiveTiming."
+      "UserInteractionLatency.HighPercentile2.MaxEventDuration.Subframe",
       "PageLoad.Clients.AMP.InteractiveTiming."
       "WorstUserInteractionLatencyOverBudget.MaxEventDuration.Subframe",
       "PageLoad.Clients.AMP.InteractiveTiming.WorstUserInteractionLatency."
@@ -726,6 +731,9 @@ TEST_F(AMPPageLoadMetricsObserverTest,
           "SubFrame.InteractiveTiming.SlowUserInteractionLatencyOverBudget."
           "HighPercentile.TotalEventduration",
           55),
+      std::make_pair("SubFrame.InteractiveTiming.UserInteractionLatency."
+                     "HighPercentile2.MaxEventDuration",
+                     150),
       std::make_pair(
           "SubFrame.InteractiveTiming.SlowUserInteractionLatencyOverBudget."
           "HighPercentile2.MaxEventduration",
@@ -761,6 +769,9 @@ TEST_F(AMPPageLoadMetricsObserverTest,
       "Subframe.FullNavigation",
       "PageLoad.Clients.AMP.InteractiveTiming."
       "SlowUserInteractionLatencyOverBudget.HighPercentile2.MaxEventDuration."
+      "Subframe.FullNavigation",
+      "PageLoad.Clients.AMP.InteractiveTiming."
+      "UserInteractionLatency.HighPercentile2.MaxEventDuration."
       "Subframe.FullNavigation",
       "PageLoad.Clients.AMP.InteractiveTiming."
       "WorstUserInteractionLatencyOverBudget.MaxEventDuration.Subframe."

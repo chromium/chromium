@@ -1234,13 +1234,18 @@ TEST_F(UmaPageLoadMetricsObserverTest, NormalizedResponsivenessMetrics) {
       std::make_pair(
           internal::
               kHistogramSlowUserInteractionLatencyOverBudgetHighPercentile2TotalEventDuration,
-          50)};
+          50),
+      std::make_pair(
+          internal::
+              kHistogramUserInteractionLatencyHighPercentile2MaxEventDuration,
+          146),
+      std::make_pair(internal::kHistogramNumInteractions, 3)};
 
   for (auto& metric : uma_list) {
     EXPECT_THAT(
         tester()->histogram_tester().GetAllSamples(metric.first.c_str()),
-        // metric.second is the minimum value of the bucket, not the actual
-        // value.
+        // metric.second is the minimum value of the bucket, not the
+        // actual value.
         testing::ElementsAre(base::Bucket(metric.second, 1)));
   }
 }

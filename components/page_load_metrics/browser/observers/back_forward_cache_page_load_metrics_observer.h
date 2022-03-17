@@ -18,6 +18,7 @@ namespace internal {
 extern const char
     kAverageUserInteractionLatencyOverBudget_MaxEventDuration_AfterBackForwardCacheRestore
         [];
+extern const char kNumInteractions_AfterBackForwardCacheRestore[];
 extern const char
     kSlowUserInteractionLatencyOverBudgetHighPercentile_MaxEventDuration_AfterBackForwardCacheRestore
         [];
@@ -26,6 +27,9 @@ extern const char
         [];
 extern const char
     kSumOfUserInteractionLatencyOverBudget_MaxEventDuration_AfterBackForwardCacheRestore
+        [];
+extern const char
+    kUserInteractionLatencyHighPercentile2_MaxEventDuration_AfterBackForwardCacheRestore
         [];
 extern const char
     kWorstUserInteractionLatency_MaxEventDuration_AfterBackForwardCacheRestore

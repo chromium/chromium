@@ -53,6 +53,8 @@ const char kHistogramAMPSubframeLayoutInstabilityShiftScore[] =
 const char kHistogramAMPSubframeLayoutInstabilityShiftScoreFullNavigation[] =
     "LayoutInstability.CumulativeShiftScore.Subframe.FullNavigation";
 
+const char kHistogramAMPSubframeNumInteractions[] =
+    "InteractiveTiming.NumInteractions.Subframe";
 const char
     kHistogramAMPSubframeAverageUserInteractionLatencyOverBudgetMaxEventDuration
         [] = "InteractiveTiming.AverageUserInteractionLatencyOverBudget."
@@ -65,6 +67,10 @@ const char
     kHistogramAMPSubframeSlowUserInteractionLatencyOverBudgetHighPercentile2MaxEventDuration
         [] = "InteractiveTiming.SlowUserInteractionLatencyOverBudget."
              "HighPercentile2.MaxEventDuration.Subframe";
+const char
+    kHistogramAMPSubframeUserInteractionHighPercentile2MaxEventDuration[] =
+        "InteractiveTiming.UserInteractionLatency."
+        "HighPercentile2.MaxEventDuration.Subframe";
 const char
     kHistogramAMPSubframeSumOfUserInteractionLatencyOverBudgetMaxEventDuration
         [] = "InteractiveTiming.SumOfUserInteractionLatencyOverBudget."
@@ -632,7 +638,12 @@ void AMPPageLoadMetricsObserver::RecordNormalizedResponsivenessMetrics(
   base::TimeDelta high_percentile2_max_event_duration = page_load_metrics::
       ResponsivenessMetricsNormalization::ApproximateHighPercentile(
           normalized_responsiveness_metrics.num_user_interactions,
-          max_event_durations.worst_ten_latencies_over_budget);
+          max_event_durations.worst_ten_latencies);
+  base::TimeDelta high_percentile2_max_event_duration_over_budget =
+      page_load_metrics::ResponsivenessMetricsNormalization::
+          ApproximateHighPercentile(
+              normalized_responsiveness_metrics.num_user_interactions,
+              max_event_durations.worst_ten_latencies_over_budget);
   base::TimeDelta high_percentile2_total_event_duration = page_load_metrics::
       ResponsivenessMetricsNormalization::ApproximateHighPercentile(
           normalized_responsiveness_metrics.num_user_interactions,
@@ -667,11 +678,17 @@ void AMPPageLoadMetricsObserver::RecordNormalizedResponsivenessMetrics(
           total_event_durations.high_percentile_latency_over_budget
               .InMilliseconds());
   builder
-      .SetSubFrame_InteractiveTiming_SlowUserInteractionLatencyOverBudget_HighPercentile2_MaxEventduration(
+      .SetSubFrame_InteractiveTiming_UserInteractionLatency_HighPercentile2_MaxEventDuration(
           high_percentile2_max_event_duration.InMilliseconds());
+  builder
+      .SetSubFrame_InteractiveTiming_SlowUserInteractionLatencyOverBudget_HighPercentile2_MaxEventduration(
+          high_percentile2_max_event_duration_over_budget.InMilliseconds());
   builder
       .SetSubFrame_InteractiveTiming_SlowUserInteractionLatencyOverBudget_HighPercentile2_TotalEventduration(
           high_percentile2_total_event_duration.InMilliseconds());
+  builder.SetSubFrame_InteractiveTiming_NumInteractions(
+      ukm::GetExponentialBucketMinForCounts1000(
+          normalized_responsiveness_metrics.num_user_interactions));
 
   base::UmaHistogramCustomTimes(
       std::string(kHistogramPrefix)
@@ -734,9 +751,16 @@ void AMPPageLoadMetricsObserver::RecordNormalizedResponsivenessMetrics(
   base::UmaHistogramCustomTimes(
       std::string(kHistogramPrefix)
           .append(
-              kHistogramAMPSubframeSlowUserInteractionLatencyOverBudgetHighPercentile2MaxEventDuration)
+              kHistogramAMPSubframeUserInteractionHighPercentile2MaxEventDuration)
           .append(histogram_suffix),
       high_percentile2_max_event_duration, base::Milliseconds(1),
+      base::Seconds(60), 50);
+  base::UmaHistogramCustomTimes(
+      std::string(kHistogramPrefix)
+          .append(
+              kHistogramAMPSubframeSlowUserInteractionLatencyOverBudgetHighPercentile2MaxEventDuration)
+          .append(histogram_suffix),
+      high_percentile2_max_event_duration_over_budget, base::Milliseconds(1),
       base::Seconds(60), 50);
   base::UmaHistogramCustomTimes(
       std::string(kHistogramPrefix)
@@ -745,6 +769,10 @@ void AMPPageLoadMetricsObserver::RecordNormalizedResponsivenessMetrics(
           .append(histogram_suffix),
       high_percentile2_total_event_duration, base::Milliseconds(1),
       base::Seconds(60), 50);
+  base::UmaHistogramCounts1000(
+      std::string(kHistogramPrefix)
+          .append(kHistogramAMPSubframeNumInteractions),
+      normalized_responsiveness_metrics.num_user_interactions);
 }
 
 void AMPPageLoadMetricsObserver::RecordMobileFriendliness(

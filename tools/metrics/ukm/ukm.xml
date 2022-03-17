@@ -528,6 +528,13 @@ be describing additional metrics about the same event.
       https://goo.gl/tr1oTZ for a detailed explanation. In milliseconds.
     </summary>
   </metric>
+  <metric name="SubFrame.InteractiveTiming.NumInteractions">
+    <summary>
+      The number of distinct user interactions in an AMP subframe. See
+      definition of user interaction:
+      https://web.dev/better-responsiveness-metric/#group-events-into-interactions
+    </summary>
+  </metric>
   <metric
       name="SubFrame.InteractiveTiming.SlowUserInteractionLatencyOverBudget.HighPercentile.MaxEventduration">
     <summary>
@@ -592,6 +599,14 @@ be describing additional metrics about the same event.
       deduct a budget from the original value. If the latency value is below the
       budget, it will be treated as 0 ms. Each type of interaction has its own
       budget.
+    </summary>
+  </metric>
+  <metric
+      name="SubFrame.InteractiveTiming.UserInteractionLatency.HighPercentile2.MaxEventDuration">
+    <summary>
+      An approximation of a high percentile of user interaction latency of an
+      AMP subframe, in ms. For this metric, we measure the latency of user
+      interactions by Responsiveness.UserInteraction.MaxEventDuration.
     </summary>
   </metric>
   <metric
@@ -8650,6 +8665,13 @@ be describing additional metrics about the same event.
       from the back-forward cache.
     </summary>
   </metric>
+  <metric name="NumInteractionsAfterBackForwardCacheRestore">
+    <summary>
+      The number of distinct user interactions on a page after it is restored
+      from the back-forward cache. See definition of user interaction:
+      https://web.dev/better-responsiveness-metric/#group-events-into-interactions
+    </summary>
+  </metric>
   <metric name="PageEndReasonAfterBackForwardCacheRestore">
     <summary>
       The reason (as a |page_load_metrics::PageEndReason|) why the user
@@ -8751,6 +8773,15 @@ be describing additional metrics about the same event.
       This is clamped to hours for values greater than 3 hours, to minutes for
       values greater than 3 minutes, to seconds for values greater than 5
       seconds.
+    </summary>
+  </metric>
+  <metric
+      name="UserInteractionLatencyAfterBackForwardCacheRestore.HighPercentile2.MaxEventDuration">
+    <summary>
+      An approximation of a high percentile of user interaction latency of a
+      page after it is restored from the back-forward cache, in ms. For this
+      metric, we measure the latency of user interactions by
+      Responsiveness.UserInteraction.MaxEventDuration.
     </summary>
   </metric>
   <metric
@@ -13084,6 +13115,13 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="InteractiveTiming.NumInteractions">
+    <summary>
+      The number of distinct user interactions. See definition of user
+      interaction:
+      https://web.dev/better-responsiveness-metric/#group-events-into-interactions
+    </summary>
+  </metric>
   <metric
       name="InteractiveTiming.SlowUserInteractionLatencyOverBudget.HighPercentile.MaxEventDuration">
     <summary>
@@ -13202,6 +13240,14 @@ be describing additional metrics about the same event.
       Responsiveness.UserInteraction.TotalEventDuration and we deduct a budget
       from the original value. If the latency value is below the budget, it will
       be treated as 0 ms. Each type of interaction has its own budget.
+    </summary>
+  </metric>
+  <metric
+      name="InteractiveTiming.UserInteractionLatency.HighPercentile2.MaxEventDuration">
+    <summary>
+      An approximation of a high percentile of user interaction latency of a
+      page load, in ms. For this metric, we measure the latency of user
+      interactions by Responsiveness.UserInteraction.MaxEventDuration.
     </summary>
   </metric>
   <metric name="InteractiveTiming.WorstUserInteractionLatency.MaxEventDuration">

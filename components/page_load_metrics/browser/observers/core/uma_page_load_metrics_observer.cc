@@ -150,6 +150,11 @@ const char kHistogramLargestContentfulPaintCrossSiteSubFrame[] =
     "PageLoad.PaintTiming.NavigationToLargestContentfulPaint2."
     "CrossSiteSubFrame";
 
+const char kHistogramNumInteractions[] =
+    "PageLoad.InteractiveTiming.NumInteractions";
+const char kHistogramUserInteractionLatencyHighPercentile2MaxEventDuration[] =
+    "PageLoad.InteractiveTiming.UserInteractionLatency.HighPercentile2."
+    "MaxEventDuration";
 const char kHistogramAverageUserInteractionLatencyOverBudgetMaxEventDuration[] =
     "PageLoad.InteractiveTiming.AverageUserInteractionLatencyOverBudget."
     "MaxEventDuration";
@@ -1178,6 +1183,16 @@ void UmaPageLoadMetricsObserver::RecordNormalizedResponsivenessMetrics() {
               normalized_responsiveness_metrics.num_user_interactions,
               total_event_durations.worst_ten_latencies_over_budget),
       base::Milliseconds(1), base::Seconds(60), 50);
+  UmaHistogramCustomTimes(
+      internal::kHistogramUserInteractionLatencyHighPercentile2MaxEventDuration,
+      page_load_metrics::ResponsivenessMetricsNormalization::
+          ApproximateHighPercentile(
+              normalized_responsiveness_metrics.num_user_interactions,
+              max_event_durations.worst_ten_latencies),
+      base::Milliseconds(1), base::Seconds(60), 50);
+  base::UmaHistogramCounts1000(
+      internal::kHistogramNumInteractions,
+      normalized_responsiveness_metrics.num_user_interactions);
 }
 
 void UmaPageLoadMetricsObserver::RecordForegroundDurationHistograms(

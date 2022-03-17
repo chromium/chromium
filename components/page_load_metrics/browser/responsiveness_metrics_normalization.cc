@@ -46,17 +46,16 @@ base::TimeDelta ResponsivenessMetricsNormalization::ApproximateHighPercentile(
     uint64_t num_interactions,
     std::priority_queue<base::TimeDelta,
                         std::vector<base::TimeDelta>,
-                        std::greater<>> worst_ten_latencies_over_budget) {
+                        std::greater<>> worst_ten_latencies) {
   DCHECK(num_interactions);
-  int index = std::max(
-      0,
-      static_cast<int>(worst_ten_latencies_over_budget.size()) - 1 -
-          static_cast<int>(num_interactions / kHighPercentileUpdateFrequency));
+  int index = std::max(0, static_cast<int>(worst_ten_latencies.size()) - 1 -
+                              static_cast<int>(num_interactions /
+                                               kHighPercentileUpdateFrequency));
   for (; index > 0; index--) {
-    worst_ten_latencies_over_budget.pop();
+    worst_ten_latencies.pop();
   }
 
-  return worst_ten_latencies_over_budget.top();
+  return worst_ten_latencies.top();
 }
 
 void ResponsivenessMetricsNormalization::AddNewUserInteractionLatencies(
@@ -103,6 +102,11 @@ void ResponsivenessMetricsNormalization::NormalizeUserInteractionLatencies(
                  latency_over_budget);
     normalized_event_durations.sum_of_latency_over_budget +=
         latency_over_budget;
+    normalized_event_durations.worst_ten_latencies.push(
+        user_interaction->interaction_latency);
+    if (normalized_event_durations.worst_ten_latencies.size() == 11) {
+      normalized_event_durations.worst_ten_latencies.pop();
+    }
     normalized_event_durations.worst_ten_latencies_over_budget.push(
         latency_over_budget);
     if (normalized_event_durations.worst_ten_latencies_over_budget.size() ==
