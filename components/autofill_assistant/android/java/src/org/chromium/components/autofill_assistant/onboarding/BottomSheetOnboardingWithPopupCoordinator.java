@@ -98,6 +98,8 @@ public class BottomSheetOnboardingWithPopupCoordinator extends BottomSheetOnboar
             bottomSheetYesButton.setText(mContext.getApplicationContext().getString(
                     R.string.autofill_assistant_split_onboarding_show_dialog));
         }
+        bottomSheetYesButton.setContentDescription(bottomSheetYesButton.getText());
+
         ButtonCompat bottomSheetNoButton = mView.findViewById(R.id.button_init_not_ok);
         if (mStringMap.containsKey(SPLIT_ONBOARDING_CLOSE_BOTTOMSHEET_KEY)) {
             bottomSheetNoButton.setText(mStringMap.get(SPLIT_ONBOARDING_CLOSE_BOTTOMSHEET_KEY));
@@ -105,6 +107,8 @@ public class BottomSheetOnboardingWithPopupCoordinator extends BottomSheetOnboar
             bottomSheetNoButton.setText(mContext.getApplicationContext().getString(
                     R.string.autofill_assistant_split_onboarding_close_bottomsheet));
         }
+        bottomSheetNoButton.setContentDescription(bottomSheetNoButton.getText());
+
         TextView titleView = mView.findViewById(R.id.onboarding_try_assistant);
         if (mStringMap.containsKey(SPLIT_ONBOARDING_TITLE_KEY)) {
             titleView.setText(mStringMap.get(SPLIT_ONBOARDING_TITLE_KEY));

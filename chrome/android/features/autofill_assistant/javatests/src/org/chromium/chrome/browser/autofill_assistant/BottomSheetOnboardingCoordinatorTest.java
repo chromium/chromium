@@ -456,6 +456,10 @@ public class BottomSheetOnboardingCoordinatorTest {
         onView(withId(R.id.button_init_ok)).check(matches(withText(expectedOpenDialogText)));
         onView(withId(R.id.button_init_not_ok))
                 .check(matches(withText(expectedCloseBottomsheetText)));
+        onView(withId(R.id.button_init_ok))
+                .check(matches(withContentDescription(expectedOpenDialogText)));
+        onView(withId(R.id.button_init_not_ok))
+                .check(matches(withContentDescription(expectedCloseBottomsheetText)));
 
         onView(withText(expectedOpenDialogText)).perform(click());
         waitUntilViewMatchesCondition(withId(R.id.google_terms_message), isDisplayed());
@@ -515,6 +519,12 @@ public class BottomSheetOnboardingCoordinatorTest {
         onView(withId(R.id.button_init_not_ok))
                 .check(matches(
                         withText(R.string.autofill_assistant_split_onboarding_close_bottomsheet)));
+        onView(withId(R.id.button_init_ok))
+                .check(matches(withContentDescription(
+                        R.string.autofill_assistant_split_onboarding_show_dialog)));
+        onView(withId(R.id.button_init_not_ok))
+                .check(matches(withContentDescription(
+                        R.string.autofill_assistant_split_onboarding_close_bottomsheet)));
 
         onView(withText(R.string.autofill_assistant_split_onboarding_show_dialog)).perform(click());
         waitUntilViewMatchesCondition(withId(R.id.google_terms_message), isDisplayed());
@@ -582,6 +592,10 @@ public class BottomSheetOnboardingCoordinatorTest {
         onView(withId(R.id.button_init_ok)).check(matches(withText(expectedOpenDialogText)));
         onView(withId(R.id.button_init_not_ok))
                 .check(matches(withText(expectedCloseBottomsheetText)));
+        onView(withId(R.id.button_init_ok))
+                .check(matches(withContentDescription(expectedOpenDialogText)));
+        onView(withId(R.id.button_init_not_ok))
+                .check(matches(withContentDescription(expectedCloseBottomsheetText)));
 
         onView(withText(expectedOpenDialogText)).perform(click());
         waitUntilViewMatchesCondition(withId(R.id.google_terms_message), isDisplayed());
@@ -645,6 +659,12 @@ public class BottomSheetOnboardingCoordinatorTest {
         onView(withId(R.id.button_init_not_ok))
                 .check(matches(
                         withText(R.string.autofill_assistant_split_onboarding_close_bottomsheet)));
+        onView(withId(R.id.button_init_ok))
+                .check(matches(withContentDescription(
+                        R.string.autofill_assistant_split_onboarding_show_dialog)));
+        onView(withId(R.id.button_init_not_ok))
+                .check(matches(withContentDescription(
+                        R.string.autofill_assistant_split_onboarding_close_bottomsheet)));
 
         onView(withText(R.string.autofill_assistant_split_onboarding_show_dialog)).perform(click());
         waitUntilViewMatchesCondition(withId(R.id.google_terms_message), isDisplayed());
