@@ -25,8 +25,8 @@ DeskTemplate::~DeskTemplate() = default;
 
 // static
 bool DeskTemplate::IsAppTypeSupported(aura::Window* window) {
-  // For now we'll crostini and lacros windows in desk template. We'll also
-  // ignore ARC apps unless the flag is turned on.
+  // For now we'll ignore crostini and lacros windows in desk template. We'll
+  // also ignore ARC apps unless the flag is turned on.
   const AppType app_type =
       static_cast<AppType>(window->GetProperty(aura::client::kAppType));
   switch (app_type) {
