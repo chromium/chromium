@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <string>
+#include "build/chromeos_buildflags.h"
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -2121,8 +2122,15 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
 }
 
 // Test that rAF events are measured as part of the cpu metrics.
+// TODO(crbug.com/1305274): Flaky on multiple platforms.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+#define MAYBE_TwoRAFFramesTriggerCpuUpdates \
+  DISABLED_TwoRAFFramesTriggerCpuUpdates
+#else
+#define MAYBE_TwoRAFFramesTriggerCpuUpdates TwoRAFFramesTriggerCpuUpdates
+#endif
 IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
-                       TwoRAFFramesTriggerCpuUpdates) {
+                       MAYBE_TwoRAFFramesTriggerCpuUpdates) {
   base::HistogramTester histogram_tester;
   auto waiter = CreatePageLoadMetricsTestWaiter();
 
