@@ -10,6 +10,7 @@
 #include "base/profiler/stack_copier_suspend.h"
 #include "base/profiler/stack_sampler_impl.h"
 #include "base/profiler/suspendable_thread_delegate_mac.h"
+#include "base/profiler/unwinder.h"
 
 namespace base {
 

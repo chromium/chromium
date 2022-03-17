@@ -60,7 +60,7 @@ struct InputStack {
 class NativeUnwinderAppleTest : public testing::Test {
  protected:
   NativeUnwinderAppleTest() {
-    if (__builtin_available(macOS 10.14, iOS 12, *)) {
+    if (__builtin_available(iOS 12, *)) {
       unwinder_ = std::make_unique<NativeUnwinderApple>();
 
       auto test_module =
@@ -76,13 +76,6 @@ class NativeUnwinderAppleTest : public testing::Test {
 
       unwinder_->Initialize(&module_cache_);
     }
-  }
-  void SetUp() override {
-#if BUILDFLAG(IS_MAC)
-    if (base::mac::IsAtMostOS10_13()) {
-      GTEST_SKIP() << "NativeUnwinderApple requires macOS 10.14+";
-    }
-#endif
   }
 
   ModuleCache* module_cache() { return &module_cache_; }

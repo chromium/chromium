@@ -15,8 +15,7 @@
 namespace base {
 
 // Native unwinder implementation for iOS, ARM64 and X86_64, and macOS 10.14+.
-class BASE_EXPORT API_AVAILABLE(ios(12), macosx(10.14)) NativeUnwinderApple
-    : public Unwinder {
+class BASE_EXPORT API_AVAILABLE(ios(12)) NativeUnwinderApple : public Unwinder {
  public:
   NativeUnwinderApple();
 

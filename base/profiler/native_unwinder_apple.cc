@@ -13,6 +13,25 @@
 #include "base/profiler/native_unwinder.h"
 #include "build/build_config.h"
 
+namespace {
+
+// Given a frame pointer, returns the frame pointer of the calling stack
+// frame and places the return address of the calling stack frame into
+// `return_address`. Shim around `pthread_stack_frame_decode_np` where
+// available since it handles pointer authentication on supported platforms.
+// NB: The caller *must* ensure that there are 2+ uintptr_t's worth of memory at
+// `frame_pointer`.
+uintptr_t DecodeFrame(uintptr_t frame_pointer, uintptr_t* return_address) {
+  if (__builtin_available(macOS 10.14, iOS 12, *))
+    return pthread_stack_frame_decode_np(frame_pointer, return_address);
+  const uintptr_t* fp = reinterpret_cast<uintptr_t*>(frame_pointer);
+  uintptr_t next_frame = *fp;
+  *return_address = *(fp + 1);
+  return next_frame;
+}
+
+}  // namespace
+
 namespace base {
 
 NativeUnwinderApple::NativeUnwinderApple() = default;
@@ -57,7 +76,7 @@ UnwindResult NativeUnwinderApple::TryUnwind(RegisterContext* thread_context,
     }
     uintptr_t retaddr;
     uintptr_t frame = next_frame;
-    next_frame = pthread_stack_frame_decode_np(frame, &retaddr);
+    next_frame = DecodeFrame(frame, &retaddr);
     frame_lower_bound = frame + 1;
     // If `next_frame` is 0, we've hit the root and `retaddr` isn't useful.
     // Bail without recording the frame.
@@ -82,11 +101,8 @@ UnwindResult NativeUnwinderApple::TryUnwind(RegisterContext* thread_context,
   return UnwindResult::kCompleted;
 }
 
-// Mac version is defined in NativeUnwinderMac
-#if BUILDFLAG(IS_IOS)
 std::unique_ptr<Unwinder> CreateNativeUnwinder(ModuleCache* module_cache) {
   return std::make_unique<NativeUnwinderApple>();
 }
-#endif
 
 }  // namespace base

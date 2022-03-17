@@ -1276,8 +1276,6 @@ mixed_component("base") {
       "profiler/module_cache_mac.cc",
       "profiler/native_unwinder_apple.cc",
       "profiler/native_unwinder_apple.h",
-      "profiler/native_unwinder_mac.cc",
-      "profiler/native_unwinder_mac.h",
       "profiler/stack_sampler_mac.cc",
       "profiler/suspendable_thread_delegate_mac.cc",
       "profiler/suspendable_thread_delegate_mac.h",
