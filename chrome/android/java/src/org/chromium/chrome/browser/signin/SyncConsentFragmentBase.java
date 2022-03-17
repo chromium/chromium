@@ -79,6 +79,10 @@ public abstract class SyncConsentFragmentBase
     private static final String SETTINGS_LINK_CLOSE = "</LINK1>";
 
     private static final String ARGUMENT_ACCOUNT_NAME = "SyncConsentFragmentBase.AccountName";
+
+    // This bundle argument is optional; it is set only if the child status cannot be reliably
+    // inferred by looking at the last used regular profile, because child sign auto sign in may
+    // not have completed.
     private static final String ARGUMENT_CHILD_ACCOUNT_STATUS =
             "SyncConsentFragmentBase.ChildAccountStatus";
     private static final String ARGUMENT_SIGNIN_FLOW_TYPE =
@@ -131,6 +135,10 @@ public abstract class SyncConsentFragmentBase
     /**
      * Creates an argument bundle for the default {@link SyncConsentFragment} flow with
      * {@link ChildAccountStatus}.
+     *
+     * This version of the method should be used where we cannot guarantee that child auto-signin
+     * has completed and therefore the child status is explicitly provided.
+     *
      * @param accessPoint The access point for starting sign-in flow.
      * @param accountName The account to preselect.
      * @param isChild Whether the selected account is a child one.
@@ -198,8 +206,16 @@ public abstract class SyncConsentFragmentBase
         Bundle arguments = getArguments();
         mSigninAccessPoint = arguments.getInt(ARGUMENT_ACCESS_POINT, SigninAccessPoint.MAX);
         assert mSigninAccessPoint != SigninAccessPoint.MAX : "Cannot find SigninAccessPoint!";
+
+        // TODO(crbug.com/1306971): remove usage of Profile.isChild() and the need for a bundle
+        // argument in the FRE, but moving to a new API for determining device supervision status.
         mSelectedAccountName = arguments.getString(ARGUMENT_ACCOUNT_NAME, null);
-        mIsChild = arguments.getBoolean(ARGUMENT_CHILD_ACCOUNT_STATUS, false);
+        if (arguments.containsKey(ARGUMENT_CHILD_ACCOUNT_STATUS)) {
+            mIsChild = arguments.getBoolean(ARGUMENT_CHILD_ACCOUNT_STATUS);
+        } else {
+            mIsChild = Profile.getLastUsedRegularProfile().isChild();
+        }
+
         @SigninFlowType
         int signinFlowType = arguments.getInt(ARGUMENT_SIGNIN_FLOW_TYPE, SigninFlowType.DEFAULT);
 

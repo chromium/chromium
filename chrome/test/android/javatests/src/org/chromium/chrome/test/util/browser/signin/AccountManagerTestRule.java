@@ -217,15 +217,14 @@ public class AccountManagerTestRule implements TestRule {
     }
 
     /**
-     * Adds and signs in a child account with the default name and enables sync.
+     * Adds a child account, and waits for auto-signin to complete.
      *
      * This method invokes native code. It shouldn't be called in a Robolectric test.
      *
      * @param syncService SyncService object to set up sync, if null, sync won't
      *         start.
      */
-    public CoreAccountInfo addChildTestAccountThenSigninAndEnableSync(
-            @Nullable SyncService syncService) {
+    public CoreAccountInfo addChildTestAccountThenWaitForSignin() {
         assert !mIsSignedIn : "An account is already signed in!";
         CoreAccountInfo coreAccountInfo =
                 addAccountAndWaitForSeeding(generateChildEmail(TEST_ACCOUNT_EMAIL));
@@ -239,6 +238,20 @@ public class AccountManagerTestRule implements TestRule {
                     is(coreAccountInfo));
         });
         mIsSignedIn = true;
+
+        return coreAccountInfo;
+    }
+
+    /**
+     * Adds a child account, waits for auto-signin to complete, and enables sync.
+     *
+     * This method invokes native code. It shouldn't be called in a Robolectric test.
+     *
+     * @param syncService SyncService object to set up sync, if null, sync won't
+     *         start.
+     */
+    public CoreAccountInfo addChildTestAccountThenEnableSync(@Nullable SyncService syncService) {
+        CoreAccountInfo coreAccountInfo = addChildTestAccountThenWaitForSignin();
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS)) {
             // The auto sign-in should leave the user in signed-in, non-syncing state - check this
@@ -275,7 +288,7 @@ public class AccountManagerTestRule implements TestRule {
      */
     public CoreAccountInfo addTestAccountThenSigninAndEnableSync(
             @Nullable SyncService syncService, boolean isChild) {
-        return isChild ? addChildTestAccountThenSigninAndEnableSync(syncService)
+        return isChild ? addChildTestAccountThenEnableSync(syncService)
                        : addTestAccountThenSigninAndEnableSync(syncService);
     }
 
