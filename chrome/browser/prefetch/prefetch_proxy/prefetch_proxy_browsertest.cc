@@ -2827,11 +2827,6 @@ IN_PROC_BROWSER_TEST_F(
                /*expect_successful_tls_probe=*/false,
                /*expected_status=*/1,
                /*expect_probe=*/true);
-
-  histogram_tester().ExpectTotalCount(
-      "PrefetchProxy.CanaryChecker.FinalState.DNS", 1);
-  histogram_tester().ExpectTotalCount(
-      "PrefetchProxy.CanaryChecker.FinalState.TLS", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(
