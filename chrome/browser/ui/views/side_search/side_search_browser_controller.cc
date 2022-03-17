@@ -430,6 +430,12 @@ void SideSearchBrowserController::UpdateSidePanel() {
   const bool will_show_side_panel =
       can_show_side_panel_for_page && GetSidePanelToggledOpen();
 
+  if (base::FeatureList::IsEnabled(features::kSideSearchDSESupport) &&
+      will_show_side_panel) {
+    browser_view_->CloseOpenRightAlignedSidePanel(/*exclude_lens=*/false,
+                                                  /*exclude_side_search=*/true);
+  }
+
   // The side panel contents will be created if it does not already exist.
   web_view_->SetWebContents(will_show_side_panel
                                 ? tab_contents_helper->GetSidePanelContents()

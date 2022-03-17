@@ -193,8 +193,8 @@ class BrowserView : public BrowserWindow,
 
   SidePanel* lens_side_panel() { return lens_side_panel_; }
 
-  SidePanel* left_aligned_side_panel_for_testing() {
-    return left_aligned_side_panel_;
+  SidePanel* side_search_side_panel_for_testing() {
+    return side_search_side_panel_;
   }
 
   SidePanelCoordinator* side_panel_coordinator() {
@@ -721,6 +721,11 @@ class BrowserView : public BrowserWindow,
     return accessibility_focus_highlight_.get();
   }
 
+  // Closes an open right aligned side panel, returns true if there is an open
+  // side panel being closed.
+  bool CloseOpenRightAlignedSidePanel(bool exclude_lens = false,
+                                      bool exclude_side_search = false);
+
 #if BUILDFLAG(ENABLE_SIDE_SEARCH)
   bool IsSideSearchPanelVisible() const override;
   void MaybeRestoreSideSearchStatePerWindow(
@@ -983,8 +988,8 @@ class BrowserView : public BrowserWindow,
   raw_ptr<SidePanel> right_aligned_side_panel_ = nullptr;
   raw_ptr<views::View> right_aligned_side_panel_separator_ = nullptr;
 
-  // The side panel aligned to the left side of the browser window.
-  raw_ptr<SidePanel> left_aligned_side_panel_ = nullptr;
+  // The side search side panel.
+  raw_ptr<SidePanel> side_search_side_panel_ = nullptr;
   raw_ptr<views::View> left_aligned_side_panel_separator_ = nullptr;
 
   // The Lens side panel.

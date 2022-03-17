@@ -58,7 +58,7 @@ class BrowserViewLayout : public views::LayoutManager {
                     views::View* toolbar,
                     InfoBarContainerView* infobar_container,
                     views::View* contents_container,
-                    views::View* left_aligned_side_panel,
+                    views::View* side_search_side_panel,
                     views::View* left_aligned_side_panel_separator,
                     views::View* right_aligned_side_panel,
                     views::View* right_aligned_side_panel_separator,
@@ -173,7 +173,7 @@ class BrowserViewLayout : public views::LayoutManager {
   const raw_ptr<views::View> toolbar_;
   const raw_ptr<InfoBarContainerView> infobar_container_;
   const raw_ptr<views::View> contents_container_;
-  const raw_ptr<views::View> left_aligned_side_panel_;
+  const raw_ptr<views::View> side_search_side_panel_;
   const raw_ptr<views::View> left_aligned_side_panel_separator_;
   const raw_ptr<views::View> right_aligned_side_panel_;
   const raw_ptr<views::View> right_aligned_side_panel_separator_;

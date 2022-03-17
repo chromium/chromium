@@ -202,7 +202,7 @@ class SideSearchBrowserControllerTest
   }
 
   SidePanel* GetSidePanelFor(Browser* browser) {
-    return BrowserViewFor(browser)->left_aligned_side_panel_for_testing();
+    return BrowserViewFor(browser)->side_search_side_panel_for_testing();
   }
 
   content::WebContents* GetSidePanelContentsFor(Browser* browser, int index) {
