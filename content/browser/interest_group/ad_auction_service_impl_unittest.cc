@@ -61,6 +61,7 @@ constexpr char kInterestGroupName[] = "interest-group-name";
 constexpr char kOriginStringA[] = "https://a.test";
 constexpr char kOriginStringB[] = "https://b.test";
 constexpr char kOriginStringC[] = "https://c.test";
+constexpr char kOriginStringNoUpdate[] = "https://no.update.test";
 constexpr char kBiddingUrlPath[] = "/interest_group/bidding_logic.js";
 constexpr char kNewBiddingUrlPath[] = "/interest_group/new_bidding_logic.js";
 constexpr char kDecisionUrlPath[] = "/interest_group/decision_logic.js";
@@ -94,9 +95,15 @@ class AllowInterestGroupContentBrowserClient : public TestContentBrowserClient {
                                  InterestGroupApiOperation operation,
                                  const url::Origin& top_frame_origin,
                                  const url::Origin& api_origin) override {
+    // No updating allowed on no.update.test.
+    if (operation == ContentBrowserClient::InterestGroupApiOperation::kUpdate &&
+        api_origin.host() == "no.update.test") {
+      return false;
+    }
+
     // Can join A interest groups on A top frames, B interest groups on B top
-    // frames, C interest groups on C top frames, and C interest groups on A top
-    // frames.
+    // frames, C interest groups on C top frames, C interest groups on A top
+    // frames, and no.update.test interest groups on no.update.test top frames.
     return (top_frame_origin.host() == "a.test" &&
             api_origin.host() == "a.test") ||
            (top_frame_origin.host() == "b.test" &&
@@ -104,7 +111,9 @@ class AllowInterestGroupContentBrowserClient : public TestContentBrowserClient {
            (top_frame_origin.host() == "c.test" &&
             api_origin.host() == "c.test") ||
            (top_frame_origin.host() == "a.test" &&
-            api_origin.host() == "c.test");
+            api_origin.host() == "c.test") ||
+           (top_frame_origin.host() == "no.update.test" &&
+            api_origin.host() == "no.update.test");
   }
 };
 
@@ -201,14 +210,22 @@ class NetworkResponder {
   // TODO(crbug.com/1298593): Replace this with FailUpdateRequestWithError().
   void FailNextUpdateRequestWithError(net::Error error) {
     base::AutoLock auto_lock(lock_);
-    next_error_ = error;
+    update_next_error_ = error;
   }
 
   // Like FailNextUpdateRequestWithError(), but for a specific path.
   void FailUpdateRequestWithError(const std::string& path, net::Error error) {
     base::AutoLock auto_lock(lock_);
-    error_ = error;
-    error_path_ = path;
+    update_error_ = error;
+    update_error_path_ = path;
+  }
+
+  // Like FailUpdateRequestWithError(), but doesn't alter the update count or
+  // expect transient NIKs.
+  void FailRequestWithError(const std::string& path, net::Error error) {
+    base::AutoLock auto_lock(lock_);
+    non_update_error_ = error;
+    non_update_error_path_ = path;
   }
 
   // Returns the number of updates that occurred -- does not include other
@@ -234,6 +251,15 @@ class NetworkResponder {
  private:
   bool RequestHandler(URLLoaderInterceptor::RequestParams* params) {
     base::AutoLock auto_lock(lock_);
+    // Check if this is a non-update error.
+    if (params->url_request.url.path() == non_update_error_path_) {
+      CHECK(non_update_error_ != net::OK);
+      params->client->OnComplete(
+          network::URLLoaderCompletionStatus(non_update_error_));
+      return true;
+    }
+
+    // Not a non-update error, check if this is a script request.
     const auto script_it = script_map_.find(params->url_request.url.path());
     if (script_it != script_map_.end()) {
       URLLoaderInterceptor::WriteResponse(
@@ -241,7 +267,8 @@ class NetworkResponder {
       return true;
     }
 
-    // Not a script request, check if it's a reporting request.
+    // Not a non-update error or script request, check if it's a reporting
+    // request.
     const auto report_it = report_map_.find(params->url_request.url.path());
     if (report_it != report_map_.end()) {
       report_count_++;
@@ -257,9 +284,10 @@ class NetworkResponder {
       return true;
     }
 
-    // Not a script request or report request, so consider this an update
-    // request.
+    // Not a non-update error, script request, or report request, so consider
+    // this an update request.
     update_count_++;
+    EXPECT_TRUE(params->url_request.trusted_params);
     EXPECT_TRUE(params->url_request.trusted_params->isolation_info
                     .network_isolation_key()
                     .IsTransient());
@@ -279,17 +307,17 @@ class NetworkResponder {
       return true;
     }
 
-    if (params->url_request.url.path() == error_path_) {
-      CHECK(error_ != net::OK);
-      params->client->OnComplete(network::URLLoaderCompletionStatus(error_));
-      next_error_ = net::OK;
+    if (params->url_request.url.path() == update_error_path_) {
+      CHECK(update_error_ != net::OK);
+      params->client->OnComplete(
+          network::URLLoaderCompletionStatus(update_error_));
       return true;
     }
 
-    if (next_error_ != net::OK) {
+    if (update_next_error_ != net::OK) {
       params->client->OnComplete(
-          network::URLLoaderCompletionStatus(next_error_));
-      next_error_ = net::OK;
+          network::URLLoaderCompletionStatus(update_next_error_));
+      update_next_error_ = net::OK;
       return true;
     }
 
@@ -341,16 +369,28 @@ class NetworkResponder {
   mojo::Remote<network::mojom::URLLoaderClient> stored_url_loader_client_
       GUARDED_BY(lock_);
 
-  // Fail the next request with `next_error_` if `next_error_` is not net::OK.
-  net::Error next_error_ GUARDED_BY(lock_) = net::OK;
+  // For updates, fail the next request with `update_next_error_` if
+  // `update_next_error_` is not net::OK.
+  net::Error update_next_error_ GUARDED_BY(lock_) = net::OK;
 
-  // The error to return if `error_path_` matches the path of the current
-  // request.
-  net::Error error_ GUARDED_BY(lock_) = net::OK;
+  // For updates, the error to return if `update_error_path_` matches the path
+  // of the current request.
+  net::Error update_error_ GUARDED_BY(lock_) = net::OK;
 
-  // If the current request's path matches `error_path_`, fail the request with
-  // `error_`.
-  std::string error_path_ GUARDED_BY(lock_);
+  // For updates, if the current request's path matches `update_error_path_`,
+  // fail the request with `update_error_`.
+  std::string update_error_path_ GUARDED_BY(lock_);
+
+  // The non-update variant doesn't alter the update attempt counter or check
+  // for transient NIKs.
+
+  // For non-updates, the error to return if `update_error_path_` matches the
+  // path of the current request.
+  net::Error non_update_error_ GUARDED_BY(lock_) = net::OK;
+
+  // For non-updates, if the current request's path matches
+  // `update_error_path_`, fail the request with `update_error_`.
+  std::string non_update_error_path_ GUARDED_BY(lock_);
 
   size_t update_count_ GUARDED_BY(lock_) = 0;
 
@@ -597,6 +637,8 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
   const url::Origin kOriginB = url::Origin::Create(kUrlB);
   const GURL kUrlC = GURL(kOriginStringC);
   const url::Origin kOriginC = url::Origin::Create(kUrlC);
+  const GURL kUrlNoUpdate = GURL(kOriginStringNoUpdate);
+  const url::Origin kOriginNoUpdate = url::Origin::Create(kUrlNoUpdate);
   const GURL kBiddingLogicUrlA = kUrlA.Resolve(kBiddingUrlPath);
   const GURL kNewBiddingLogicUrlA = kUrlA.Resolve(kNewBiddingUrlPath);
   const GURL kTrustedBiddingSignalsUrlA =
@@ -607,6 +649,7 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
   const GURL kUpdateUrlA4 = kUrlA.Resolve(kDailyUpdateUrlPath4);
   const GURL kUpdateUrlB = kUrlB.Resolve(kDailyUpdateUrlPathB);
   const GURL kUpdateUrlC = kUrlC.Resolve(kDailyUpdateUrlPathC);
+  const GURL kUpdateUrlNoUpdate = kUrlNoUpdate.Resolve(kDailyUpdateUrlPath);
 
   base::test::ScopedFeatureList feature_list_;
 
@@ -908,13 +951,10 @@ TEST_F(AdAuctionServiceImplTest, UpdatePartialPerformsMerge) {
 
 // The update shouldn't change the expiration time of the interest group.
 TEST_F(AdAuctionServiceImplTest, UpdateDoesntChangeExpiration) {
-  network_responder_->RegisterUpdateResponse(
-      kDailyUpdateUrlPath, base::StringPrintf(R"({
-"ads": [{"renderUrl": "%s/new_ad_render_url",
-         "metadata": {"new_a": "b"}
+  network_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath, R"({
+"ads": [{"renderUrl": "https://example.com/new_render"
         }]
-})",
-                                              kOriginStringA));
+})");
 
   blink::InterestGroup interest_group = CreateInterestGroup();
   interest_group.update_url = kUpdateUrlA;
@@ -925,7 +965,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateDoesntChangeExpiration) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+      /*metadata=*/absl::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -949,8 +989,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateDoesntChangeExpiration) {
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
   EXPECT_EQ(group.ads.value()[0].render_url.spec(),
-            base::StringPrintf("%s/new_ad_render_url", kOriginStringA));
-  EXPECT_EQ(group.ads.value()[0].metadata, "{\"new_a\":\"b\"}");
+            "https://example.com/new_render");
 }
 
 // Only set the ads field -- the other fields shouldn't be changed.
@@ -960,8 +999,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateSucceedsIfOptionalNameOwnerMatch) {
       base::StringPrintf(R"({
 "name": "%s",
 "owner": "%s",
-"ads": [{"renderUrl": "%s/new_ad_render_url",
-         "metadata": {"new_a": "b"}
+"ads": [{"renderUrl": "%s/new_ad_render_url"
         }]
 })",
                          kInterestGroupName, kOriginStringA, kOriginStringA));
@@ -975,7 +1013,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateSucceedsIfOptionalNameOwnerMatch) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+      /*metadata=*/absl::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -1007,21 +1045,17 @@ TEST_F(AdAuctionServiceImplTest, UpdateSucceedsIfOptionalNameOwnerMatch) {
   ASSERT_EQ(group.ads->size(), 1u);
   EXPECT_EQ(group.ads.value()[0].render_url.spec(),
             base::StringPrintf("%s/new_ad_render_url", kOriginStringA));
-  EXPECT_EQ(group.ads.value()[0].metadata, "{\"new_a\":\"b\"}");
 }
 
 // Try to set the name -- for security, name and owner shouldn't be
 // allowed to change. If they don't match the interest group (update URLs are
 // registered per interest group), fail the update and don't update anything.
 TEST_F(AdAuctionServiceImplTest, NoUpdateIfOptionalNameDoesntMatch) {
-  network_responder_->RegisterUpdateResponse(
-      kDailyUpdateUrlPath, base::StringPrintf(R"({
+  network_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath, R"({
 "name": "boats",
-"ads": [{"renderUrl": "%s/new_ad_render_url",
-         "metadata":{"new_a": "b"}
+"ads": [{"renderUrl": "https://example.com/new_render"
         }]
-})",
-                                              kOriginStringA));
+})");
 
   blink::InterestGroup interest_group = CreateInterestGroup();
   interest_group.update_url = kUpdateUrlA;
@@ -1032,7 +1066,7 @@ TEST_F(AdAuctionServiceImplTest, NoUpdateIfOptionalNameDoesntMatch) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+      /*metadata=*/absl::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -1049,8 +1083,6 @@ TEST_F(AdAuctionServiceImplTest, NoUpdateIfOptionalNameDoesntMatch) {
   ASSERT_EQ(group.ads->size(), 1u);
   EXPECT_EQ(group.ads.value()[0].render_url.spec(),
             "https://example.com/render");
-  EXPECT_EQ(group.ads.value()[0].metadata,
-            "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
 }
 
 // Try to set the owner -- for security, name and owner shouldn't be
@@ -1060,8 +1092,7 @@ TEST_F(AdAuctionServiceImplTest, NoUpdateIfOptionalOwnerDoesntMatch) {
   network_responder_->RegisterUpdateResponse(
       kDailyUpdateUrlPath, base::StringPrintf(R"({
 "owner": "%s",
-"ads": [{"renderUrl": "%s/new_ad_render_url",
-         "metadata": {"new_a": "b"}
+"ads": [{"renderUrl": "%s/new_ad_render_url"
         }]
 })",
                                               kOriginStringB, kOriginStringA));
@@ -1075,7 +1106,7 @@ TEST_F(AdAuctionServiceImplTest, NoUpdateIfOptionalOwnerDoesntMatch) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+      /*metadata=*/absl::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -1092,8 +1123,6 @@ TEST_F(AdAuctionServiceImplTest, NoUpdateIfOptionalOwnerDoesntMatch) {
   ASSERT_EQ(group.ads->size(), 1u);
   EXPECT_EQ(group.ads.value()[0].render_url.spec(),
             "https://example.com/render");
-  EXPECT_EQ(group.ads.value()[0].metadata,
-            "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
 }
 
 // Join 2 interest groups, each with the same owner, but with different update
@@ -1105,20 +1134,12 @@ TEST_F(AdAuctionServiceImplTest, UpdateMultipleInterestGroups) {
       "/interest_group/daily_update_partial1.json";
   constexpr char kDailyUpdateUrlPath2[] =
       "/interest_group/daily_update_partial2.json";
-  network_responder_->RegisterUpdateResponse(
-      kDailyUpdateUrlPath1, base::StringPrintf(R"({
-"ads": [{"renderUrl": "%s/new_ad_render_url1",
-         "metadata": {"new_a": "b1"}
-        }]
-})",
-                                               kOriginStringA));
-  network_responder_->RegisterUpdateResponse(
-      kDailyUpdateUrlPath2, base::StringPrintf(R"({
-"ads": [{"renderUrl": "%s/new_ad_render_url2",
-         "metadata": {"new_a": "b2"}
-        }]
-})",
-                                               kOriginStringA));
+  network_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath1, R"({
+"ads": [{"renderUrl": "https://example.com/new_render1"}]
+})");
+  network_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath2, R"({
+"ads": [{"renderUrl": "https://example.com/new_render2"}]
+})");
 
   blink::InterestGroup interest_group = CreateInterestGroup();
   interest_group.name = kGroupName1;
@@ -1130,7 +1151,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateMultipleInterestGroups) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+      /*metadata=*/absl::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kGroupName1));
@@ -1146,7 +1167,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateMultipleInterestGroups) {
   interest_group_2.ads.emplace();
   ad = blink::InterestGroup::Ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+      /*metadata=*/absl::nullopt);
   interest_group_2.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_2);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kGroupName2));
@@ -1170,15 +1191,13 @@ TEST_F(AdAuctionServiceImplTest, UpdateMultipleInterestGroups) {
   ASSERT_TRUE(first_group.ads.has_value());
   ASSERT_EQ(first_group.ads->size(), 1u);
   EXPECT_EQ(first_group.ads.value()[0].render_url.spec(),
-            base::StringPrintf("%s/new_ad_render_url1", kOriginStringA));
-  EXPECT_EQ(first_group.ads.value()[0].metadata, "{\"new_a\":\"b1\"}");
+            "https://example.com/new_render1");
 
   EXPECT_EQ(second_group.name, kGroupName2);
   ASSERT_TRUE(second_group.ads.has_value());
   ASSERT_EQ(second_group.ads->size(), 1u);
   EXPECT_EQ(second_group.ads.value()[0].render_url.spec(),
-            base::StringPrintf("%s/new_ad_render_url2", kOriginStringA));
-  EXPECT_EQ(second_group.ads.value()[0].metadata, "{\"new_a\":\"b2\"}");
+            "https://example.com/new_render2");
 }
 
 // Join 2 interest groups, each with a different owner. When updating interest
@@ -1187,13 +1206,10 @@ TEST_F(AdAuctionServiceImplTest, UpdateMultipleInterestGroups) {
 TEST_F(AdAuctionServiceImplTest, UpdateOnlyOwnOrigin) {
   // Both interest groups can share the same update logic and path (they just
   // use different origins).
-  network_responder_->RegisterUpdateResponse(
-      kDailyUpdateUrlPath, base::StringPrintf(R"({
-"ads": [{"renderUrl": "%s/new_ad_render_url",
-         "metadata": {"new_a": "b"}
+  network_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath, R"({
+"ads": [{"renderUrl": "https://example.com/new_render"
         }]
-})",
-                                              kOriginStringA));
+})");
 
   blink::InterestGroup interest_group = CreateInterestGroup();
   interest_group.update_url = kUpdateUrlA;
@@ -1204,7 +1220,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateOnlyOwnOrigin) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+      /*metadata=*/absl::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -1222,7 +1238,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateOnlyOwnOrigin) {
   interest_group_b.ads.emplace();
   ad = blink::InterestGroup::Ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+      /*metadata=*/absl::nullopt);
   interest_group_b.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_b);
   EXPECT_EQ(1, GetJoinCount(kOriginB, kInterestGroupName));
@@ -1240,8 +1256,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateOnlyOwnOrigin) {
   ASSERT_TRUE(origin_b_group.ads.has_value());
   ASSERT_EQ(origin_b_group.ads->size(), 1u);
   EXPECT_EQ(origin_b_group.ads.value()[0].render_url.spec(),
-            base::StringPrintf("%s/new_ad_render_url", kOriginStringA));
-  EXPECT_EQ(origin_b_group.ads.value()[0].metadata, "{\"new_a\":\"b\"}");
+            "https://example.com/new_render");
 
   // ...but the `kOriginA` interest group shouldn't change.
   std::vector<StorageInterestGroup> origin_a_groups =
@@ -1252,21 +1267,16 @@ TEST_F(AdAuctionServiceImplTest, UpdateOnlyOwnOrigin) {
   ASSERT_EQ(origin_a_group.ads->size(), 1u);
   EXPECT_EQ(origin_a_group.ads.value()[0].render_url.spec(),
             "https://example.com/render");
-  EXPECT_EQ(origin_a_group.ads.value()[0].metadata,
-            "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
 }
 
 // Test updating an interest group with a cross-site owner.
 TEST_F(AdAuctionServiceImplTest, UpdateFromCrossSiteIFrame) {
   // All interest groups can share the same update logic and path (they just
   // use different origins).
-  network_responder_->RegisterUpdateResponse(
-      kDailyUpdateUrlPath, base::StringPrintf(R"({
-"ads": [{"renderUrl": "%s/new_ad_render_url",
-         "metadata": {"new_a": "b"}
+  network_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath, R"({
+"ads": [{"renderUrl": "https://example.com/new_render"
         }]
-})",
-                                              kOriginStringA));
+})");
 
   blink::InterestGroup interest_group = CreateInterestGroup();
   interest_group.update_url = kUpdateUrlA;
@@ -1277,7 +1287,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateFromCrossSiteIFrame) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+      /*metadata=*/absl::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -1295,7 +1305,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateFromCrossSiteIFrame) {
   interest_group_b.ads.emplace();
   ad = blink::InterestGroup::Ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+      /*metadata=*/absl::nullopt);
   interest_group_b.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_b);
   EXPECT_EQ(1, GetJoinCount(kOriginB, kInterestGroupName));
@@ -1313,7 +1323,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateFromCrossSiteIFrame) {
   interest_group_c.ads.emplace();
   ad = blink::InterestGroup::Ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+      /*metadata=*/absl::nullopt);
   interest_group_c.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_c);
   EXPECT_EQ(1, GetJoinCount(kOriginC, kInterestGroupName));
@@ -1342,8 +1352,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateFromCrossSiteIFrame) {
   ASSERT_TRUE(origin_c_group.ads.has_value());
   ASSERT_EQ(origin_c_group.ads->size(), 1u);
   EXPECT_EQ(origin_c_group.ads.value()[0].render_url.spec(),
-            base::StringPrintf("%s/new_ad_render_url", kOriginStringA));
-  EXPECT_EQ(origin_c_group.ads.value()[0].metadata, "{\"new_a\":\"b\"}");
+            "https://example.com/new_render");
 
   // ...but the `kOriginA` interest group shouldn't change.
   std::vector<StorageInterestGroup> origin_a_groups =
@@ -1354,8 +1363,6 @@ TEST_F(AdAuctionServiceImplTest, UpdateFromCrossSiteIFrame) {
   ASSERT_EQ(origin_a_group.ads->size(), 1u);
   EXPECT_EQ(origin_a_group.ads.value()[0].render_url.spec(),
             "https://example.com/render");
-  EXPECT_EQ(origin_a_group.ads.value()[0].metadata,
-            "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
 
   // Now try on disallowed subframe from originB.
   subframe =
@@ -1375,8 +1382,6 @@ TEST_F(AdAuctionServiceImplTest, UpdateFromCrossSiteIFrame) {
   ASSERT_EQ(origin_b_group.ads->size(), 1u);
   EXPECT_EQ(origin_b_group.ads.value()[0].render_url.spec(),
             "https://example.com/render");
-  EXPECT_EQ(origin_b_group.ads.value()[0].metadata,
-            "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
 }
 
 // The `ads` field is valid, but the ad `renderUrl` field is an invalid
@@ -1435,7 +1440,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateInvalidJSONIgnored) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+      /*metadata=*/absl::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -1452,8 +1457,6 @@ TEST_F(AdAuctionServiceImplTest, UpdateInvalidJSONIgnored) {
   ASSERT_EQ(group.ads->size(), 1u);
   EXPECT_EQ(group.ads.value()[0].render_url.spec(),
             "https://example.com/render");
-  EXPECT_EQ(group.ads.value()[0].metadata,
-            "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
 }
 
 // UpdateJSONParserCrash fails on Android because Android doesn't use a separate
@@ -1465,13 +1468,10 @@ TEST_F(AdAuctionServiceImplTest, UpdateInvalidJSONIgnored) {
 // The server response is valid, but we simulate the JSON parser (which may
 // run in a separate process) crashing, so the update doesn't happen.
 TEST_F(AdAuctionServiceImplTest, UpdateJSONParserCrash) {
-  network_responder_->RegisterUpdateResponse(
-      kDailyUpdateUrlPath, base::StringPrintf(R"({
-"ads": [{"renderUrl": "%s/new_ad_render_url",
-         "metadata": {"new_a": "b"}
+  network_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath, R"({
+"ads": [{"renderUrl": "https://example.com/new_render"
         }]
-})",
-                                              kOriginStringA));
+})");
 
   blink::InterestGroup interest_group = CreateInterestGroup();
   // Set a long expiration delta so that we can advance to the next rate limit
@@ -1485,7 +1485,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateJSONParserCrash) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+      /*metadata=*/absl::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -1507,8 +1507,6 @@ TEST_F(AdAuctionServiceImplTest, UpdateJSONParserCrash) {
   ASSERT_EQ(group.ads->size(), 1u);
   EXPECT_EQ(group.ads.value()[0].render_url.spec(),
             "https://example.com/render");
-  EXPECT_EQ(group.ads.value()[0].metadata,
-            "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
 
   // Try another IG update, this time with no crash. It should succceed.
   // (We need to advance time since this next attempt is rate-limited).
@@ -1526,11 +1524,46 @@ TEST_F(AdAuctionServiceImplTest, UpdateJSONParserCrash) {
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
   EXPECT_EQ(group.ads.value()[0].render_url.spec(),
-            base::StringPrintf("%s/new_ad_render_url", kOriginStringA));
-  EXPECT_EQ(group.ads.value()[0].metadata, "{\"new_a\":\"b\"}");
+            "https://example.com/new_render");
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+// Trigger an update, but block it via ContentBrowserClient policy.
+// The update shouldn't happen.
+TEST_F(AdAuctionServiceImplTest, UpdateBlockedByContentBrowserClient) {
+  NavigateAndCommit(kUrlNoUpdate);
+  network_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath, R"({
+"ads": [{"renderUrl": "https://example.com/new_render"
+        }]
+})");
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.owner = kOriginNoUpdate;
+  interest_group.update_url = kUpdateUrlNoUpdate;
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginNoUpdate, kInterestGroupName));
+
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  std::vector<StorageInterestGroup> groups =
+      GetInterestGroupsForOwner(kOriginNoUpdate);
+  ASSERT_EQ(groups.size(), 1u);
+  const auto& group = groups[0].interest_group;
+  ASSERT_TRUE(group.ads.has_value());
+  ASSERT_EQ(group.ads->size(), 1u);
+  EXPECT_EQ(group.ads.value()[0].render_url.spec(),
+            "https://example.com/render");
+
+  // There shouldn't have even been an attempt to update.
+  EXPECT_EQ(network_responder_->UpdateCount(), 0u);
+}
 
 // The network request fails (not implemented), so the update is cancelled.
 TEST_F(AdAuctionServiceImplTest, UpdateNetworkFailure) {
@@ -1543,7 +1576,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateNetworkFailure) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+      /*metadata=*/absl::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -1560,8 +1593,6 @@ TEST_F(AdAuctionServiceImplTest, UpdateNetworkFailure) {
   ASSERT_EQ(group.ads->size(), 1u);
   EXPECT_EQ(group.ads.value()[0].render_url.spec(),
             "https://example.com/render");
-  EXPECT_EQ(group.ads.value()[0].metadata,
-            "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
 }
 
 // The network request for updating interest groups times out, so the update
@@ -1577,7 +1608,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateTimeout) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+      /*metadata=*/absl::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -1595,8 +1626,6 @@ TEST_F(AdAuctionServiceImplTest, UpdateTimeout) {
   ASSERT_EQ(group.ads->size(), 1u);
   EXPECT_EQ(group.ads.value()[0].render_url.spec(),
             "https://example.com/render");
-  EXPECT_EQ(group.ads.value()[0].metadata,
-            "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
 }
 
 // Start an update, and delay the server response so that the interest group
@@ -1605,11 +1634,9 @@ TEST_F(AdAuctionServiceImplTest, UpdateTimeout) {
 // disk in an expired state, and not appear in queries.
 TEST_F(AdAuctionServiceImplTest,
        UpdateDuringInterestGroupExpirationNoDbMaintenence) {
-  const std::string kServerResponse = base::StringPrintf(R"({
-"ads": [{"renderUrl": "%s/new_ad_render_url",
-         "metadata": {"new_a": "b"}}]
-})",
-                                                         kOriginStringA);
+  constexpr char kServerResponse[] = R"({
+"ads": [{"renderUrl": "https://example.com/new_render"}]
+})";
   network_responder_->RegisterDeferredUpdateResponse(kDailyUpdateUrlPath);
 
   // Make the interest group expire before the DB maintenance task should be
@@ -1629,7 +1656,7 @@ TEST_F(AdAuctionServiceImplTest,
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+      /*metadata=*/absl::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -1684,11 +1711,9 @@ TEST_F(AdAuctionServiceImplTest,
 // the database.
 TEST_F(AdAuctionServiceImplTest,
        UpdateDuringInterestGroupExpirationWithDbMaintenence) {
-  const std::string kServerResponse = base::StringPrintf(R"({
-"ads": [{"renderUrl": "%s/new_ad_render_url",
-         "metadata": {"new_a": "b"}}]
-})",
-                                                         kOriginStringA);
+  constexpr char kServerResponse[] = R"({
+"ads": [{"renderUrl": "https://example.com/new_render"}]
+})";
   network_responder_->RegisterDeferredUpdateResponse(kDailyUpdateUrlPath);
 
   // Make the interest group expire just before the DB maintenance task should
@@ -1710,7 +1735,7 @@ TEST_F(AdAuctionServiceImplTest,
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+      /*metadata=*/absl::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -1760,13 +1785,7 @@ TEST_F(AdAuctionServiceImplTest,
 // Start an update, and delay the server response so that the test ends before
 // the interest group finishes updating. Nothing should crash.
 TEST_F(AdAuctionServiceImplTest, UpdateNeverFinishesBeforeDestruction) {
-  // It doesn't really matter what we "respond", since we'll never actually send
-  // this.
-  const std::string kServerResponse = base::StringPrintf(R"({
-"ads": [{"renderUrl": "%s/new_ad_render_url",
-         "metadata": {"new_a": "b"}}]
-})",
-                                                         kOriginStringA);
+  // We never respond to this request.
   network_responder_->RegisterDeferredUpdateResponse(kDailyUpdateUrlPath);
 
   blink::InterestGroup interest_group = CreateInterestGroup();
@@ -1779,7 +1798,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateNeverFinishesBeforeDestruction) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+      /*metadata=*/absl::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -1798,8 +1817,6 @@ TEST_F(AdAuctionServiceImplTest, UpdateNeverFinishesBeforeDestruction) {
   ASSERT_EQ(a_group.ads->size(), 1u);
   EXPECT_EQ(a_group.ads.value()[0].render_url.spec(),
             "https://example.com/render");
-  EXPECT_EQ(a_group.ads.value()[0].metadata,
-            "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
 
   // The test ends while the update is in progress. Nothing should crash as we
   // run destructors.
@@ -1808,13 +1825,10 @@ TEST_F(AdAuctionServiceImplTest, UpdateNeverFinishesBeforeDestruction) {
 // The update doesn't happen because the update URL isn't specified at
 // Join() time.
 TEST_F(AdAuctionServiceImplTest, DoesntChangeGroupsWithNoUpdateUrl) {
-  network_responder_->RegisterUpdateResponse(
-      kDailyUpdateUrlPath, base::StringPrintf(R"({
-"ads": [{"renderUrl": "%s/new_ad_render_url",
-         "metadata": {"new_a": "b"}
+  network_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath, R"({
+"ads": [{"renderUrl": "https://example.com/new_render"
         }]
-})",
-                                              kOriginStringA));
+})");
 
   blink::InterestGroup interest_group = CreateInterestGroup();
   interest_group.bidding_url = kBiddingLogicUrlA;
@@ -1824,7 +1838,7 @@ TEST_F(AdAuctionServiceImplTest, DoesntChangeGroupsWithNoUpdateUrl) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+      /*metadata=*/absl::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -1841,20 +1855,15 @@ TEST_F(AdAuctionServiceImplTest, DoesntChangeGroupsWithNoUpdateUrl) {
   ASSERT_EQ(group.ads->size(), 1u);
   EXPECT_EQ(group.ads.value()[0].render_url.spec(),
             "https://example.com/render");
-  EXPECT_EQ(group.ads.value()[0].metadata,
-            "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
 }
 
 // Register a bid and a win, then perform a successful update. The bid and win
 // stats shouldn't change.
 TEST_F(AdAuctionServiceImplTest, UpdateDoesntChangeBrowserSignals) {
-  network_responder_->RegisterUpdateResponse(
-      kDailyUpdateUrlPath, base::StringPrintf(R"({
-"ads": [{"renderUrl": "%s/new_ad_render_url",
-         "metadata": {"new_a": "b"}
+  network_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath, R"({
+"ads": [{"renderUrl": "https://example.com/new_render"
         }]
-})",
-                                              kOriginStringA));
+})");
 
   blink::InterestGroup interest_group = CreateInterestGroup();
   interest_group.update_url = kUpdateUrlA;
@@ -1865,7 +1874,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateDoesntChangeBrowserSignals) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+      /*metadata=*/absl::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -1901,8 +1910,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateDoesntChangeBrowserSignals) {
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
   EXPECT_EQ(group.ads.value()[0].render_url.spec(),
-            base::StringPrintf("%s/new_ad_render_url", kOriginStringA));
-  EXPECT_EQ(group.ads.value()[0].metadata, "{\"new_a\":\"b\"}");
+            "https://example.com/new_render");
 }
 
 // Join an interest group.
@@ -1912,13 +1920,10 @@ TEST_F(AdAuctionServiceImplTest, UpdateDoesntChangeBrowserSignals) {
 // Advance to just before time limit drops, update does nothing (rate limited).
 // Advance after time limit. Update should work.
 TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterSuccessfulUpdate) {
-  network_responder_->RegisterUpdateResponse(
-      kDailyUpdateUrlPath, base::StringPrintf(R"({
-"ads": [{"renderUrl": "%s/new_ad_render_url",
-         "metadata": {"new_a": "b"}
+  network_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath, R"({
+"ads": [{"renderUrl": "https://example.com/new_render"
         }]
-})",
-                                              kOriginStringA));
+})");
 
   blink::InterestGroup interest_group = CreateInterestGroup();
   // Set a long expiration delta so that we can advance to the next rate limit
@@ -1928,7 +1933,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterSuccessfulUpdate) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+      /*metadata=*/absl::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -1944,17 +1949,13 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterSuccessfulUpdate) {
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
   EXPECT_EQ(group.ads.value()[0].render_url.spec(),
-            base::StringPrintf("%s/new_ad_render_url", kOriginStringA));
-  EXPECT_EQ(group.ads.value()[0].metadata, "{\"new_a\":\"b\"}");
+            "https://example.com/new_render");
 
   // Change the update response and try updating again.
-  network_responder_->RegisterUpdateResponse(
-      kDailyUpdateUrlPath, base::StringPrintf(R"({
-"ads": [{"renderUrl": "%s/newer_ad_render_url",
-         "metadata": {"newer_a": "b"}
+  network_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath, R"({
+"ads": [{"renderUrl": "https://example.com/new_render"
         }]
-})",
-                                              kOriginStringA));
+})");
   UpdateInterestGroupNoFlush();
   task_environment()->RunUntilIdle();
 
@@ -1966,8 +1967,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterSuccessfulUpdate) {
   ASSERT_TRUE(group2.ads.has_value());
   ASSERT_EQ(group2.ads->size(), 1u);
   EXPECT_EQ(group2.ads.value()[0].render_url.spec(),
-            base::StringPrintf("%s/new_ad_render_url", kOriginStringA));
-  EXPECT_EQ(group2.ads.value()[0].metadata, "{\"new_a\":\"b\"}");
+            "https://example.com/new_render");
 
   // Advance time to just before end of rate limit period. Update should still
   // do nothing due to rate limiting.
@@ -1985,8 +1985,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterSuccessfulUpdate) {
   ASSERT_TRUE(group3.ads.has_value());
   ASSERT_EQ(group3.ads->size(), 1u);
   EXPECT_EQ(group3.ads.value()[0].render_url.spec(),
-            base::StringPrintf("%s/new_ad_render_url", kOriginStringA));
-  EXPECT_EQ(group3.ads.value()[0].metadata, "{\"new_a\":\"b\"}");
+            "https://example.com/new_render");
 
   // Advance time to just after end of rate limit period. Update should now
   // succeed.
@@ -2003,8 +2002,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterSuccessfulUpdate) {
   ASSERT_TRUE(group4.ads.has_value());
   ASSERT_EQ(group4.ads->size(), 1u);
   EXPECT_EQ(group4.ads.value()[0].render_url.spec(),
-            base::StringPrintf("%s/newer_ad_render_url", kOriginStringA));
-  EXPECT_EQ(group4.ads.value()[0].metadata, "{\"newer_a\":\"b\"}");
+            "https://example.com/new_render");
 }
 
 // Join an interest group.
@@ -2027,7 +2025,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterBadUpdateResponse) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+      /*metadata=*/absl::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -2044,17 +2042,12 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterBadUpdateResponse) {
   ASSERT_EQ(group.ads->size(), 1u);
   EXPECT_EQ(group.ads.value()[0].render_url.spec(),
             "https://example.com/render");
-  EXPECT_EQ(group.ads.value()[0].metadata,
-            "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
 
   // Change the update response and try updating again.
-  network_responder_->RegisterUpdateResponse(
-      kDailyUpdateUrlPath, base::StringPrintf(R"({
-"ads": [{"renderUrl": "%s/new_ad_render_url",
-         "metadata": {"new_a": "b"}
+  network_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath, R"({
+"ads": [{"renderUrl": "https://example.com/new_render"
         }]
-})",
-                                              kOriginStringA));
+})");
   UpdateInterestGroupNoFlush();
   task_environment()->RunUntilIdle();
 
@@ -2067,8 +2060,6 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterBadUpdateResponse) {
   ASSERT_EQ(group2.ads->size(), 1u);
   EXPECT_EQ(group.ads.value()[0].render_url.spec(),
             "https://example.com/render");
-  EXPECT_EQ(group.ads.value()[0].metadata,
-            "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
 
   // Advance time to just before end of rate limit period. Update should still
   // do nothing due to rate limiting. Invalid responses use the longer
@@ -2088,8 +2079,6 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterBadUpdateResponse) {
   ASSERT_EQ(group3.ads->size(), 1u);
   EXPECT_EQ(group.ads.value()[0].render_url.spec(),
             "https://example.com/render");
-  EXPECT_EQ(group.ads.value()[0].metadata,
-            "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
 
   // Advance time to just after end of rate limit period. Update should now
   // succeed.
@@ -2106,8 +2095,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterBadUpdateResponse) {
   ASSERT_TRUE(group4.ads.has_value());
   ASSERT_EQ(group4.ads->size(), 1u);
   EXPECT_EQ(group4.ads.value()[0].render_url.spec(),
-            base::StringPrintf("%s/new_ad_render_url", kOriginStringA));
-  EXPECT_EQ(group4.ads.value()[0].metadata, "{\"new_a\":\"b\"}");
+            "https://example.com/new_render");
 }
 
 // Join an interest group.
@@ -2128,7 +2116,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterFailedUpdate) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+      /*metadata=*/absl::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -2145,17 +2133,12 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterFailedUpdate) {
   ASSERT_EQ(group.ads->size(), 1u);
   EXPECT_EQ(group.ads.value()[0].render_url.spec(),
             "https://example.com/render");
-  EXPECT_EQ(group.ads.value()[0].metadata,
-            "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
 
   // Change the update response and try updating again.
-  network_responder_->RegisterUpdateResponse(
-      kDailyUpdateUrlPath, base::StringPrintf(R"({
-"ads": [{"renderUrl": "%s/new_ad_render_url",
-         "metadata": {"new_a": "b"}
+  network_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath, R"({
+"ads": [{"renderUrl": "https://example.com/new_render"
         }]
-})",
-                                              kOriginStringA));
+})");
   UpdateInterestGroupNoFlush();
   task_environment()->RunUntilIdle();
 
@@ -2168,8 +2151,6 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterFailedUpdate) {
   ASSERT_EQ(group2.ads->size(), 1u);
   EXPECT_EQ(group.ads.value()[0].render_url.spec(),
             "https://example.com/render");
-  EXPECT_EQ(group.ads.value()[0].metadata,
-            "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
 
   // Advance time to just before end of rate limit period. Update should still
   // do nothing due to rate limiting.
@@ -2188,8 +2169,6 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterFailedUpdate) {
   ASSERT_EQ(group3.ads->size(), 1u);
   EXPECT_EQ(group.ads.value()[0].render_url.spec(),
             "https://example.com/render");
-  EXPECT_EQ(group.ads.value()[0].metadata,
-            "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
 
   // Advance time to just after end of rate limit period. Update should now
   // succeed.
@@ -2206,8 +2185,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterFailedUpdate) {
   ASSERT_TRUE(group4.ads.has_value());
   ASSERT_EQ(group4.ads->size(), 1u);
   EXPECT_EQ(group4.ads.value()[0].render_url.spec(),
-            base::StringPrintf("%s/new_ad_render_url", kOriginStringA));
-  EXPECT_EQ(group4.ads.value()[0].metadata, "{\"new_a\":\"b\"}");
+            "https://example.com/new_render");
 }
 
 // net::ERR_INTERNET_DISCONNECTED skips rate limiting, unlike other errors.
@@ -2229,7 +2207,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateNotRateLimitedIfDisconnected) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+      /*metadata=*/absl::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -2246,17 +2224,12 @@ TEST_F(AdAuctionServiceImplTest, UpdateNotRateLimitedIfDisconnected) {
   ASSERT_EQ(group.ads->size(), 1u);
   EXPECT_EQ(group.ads.value()[0].render_url.spec(),
             "https://example.com/render");
-  EXPECT_EQ(group.ads.value()[0].metadata,
-            "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
 
   // Change the update response and try updating again.
-  network_responder_->RegisterUpdateResponse(
-      kDailyUpdateUrlPath, base::StringPrintf(R"({
-"ads": [{"renderUrl": "%s/new_ad_render_url",
-         "metadata": {"new_a": "b"}
+  network_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath, R"({
+"ads": [{"renderUrl": "https://example.com/new_render"
         }]
-})",
-                                              kOriginStringA));
+})");
   UpdateInterestGroupNoFlush();
   task_environment()->RunUntilIdle();
 
@@ -2268,8 +2241,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateNotRateLimitedIfDisconnected) {
   ASSERT_TRUE(group2.ads.has_value());
   ASSERT_EQ(group2.ads->size(), 1u);
   EXPECT_EQ(group2.ads.value()[0].render_url.spec(),
-            base::StringPrintf("%s/new_ad_render_url", kOriginStringA));
-  EXPECT_EQ(group2.ads.value()[0].metadata, "{\"new_a\":\"b\"}");
+            "https://example.com/new_render");
 }
 
 // Nothing crashes if we have a disconnect and a successful update in-flight at
@@ -2290,11 +2262,9 @@ TEST_F(AdAuctionServiceImplTest, UpdateNotRateLimitedIfDisconnected) {
 // rate limiting.
 TEST_F(AdAuctionServiceImplTest, DisconnectedAndSuccessInFlightTogether) {
   // Create 2 interest groups belonging to the same owner.
-  const std::string kServerResponse1 = base::StringPrintf(R"({
-"ads": [{"renderUrl": "%s/new_ad_render_url",
-         "metadata": {"new_a": "b"}}]
-})",
-                                                          kOriginStringA);
+  const std::string kServerResponse1 = R"({
+"ads": [{"renderUrl": "https://example.com/new_render"}]
+})";
   network_responder_->RegisterDeferredUpdateResponse(kDailyUpdateUrlPath);
 
   blink::InterestGroup interest_group_1 = CreateInterestGroup();
@@ -2303,7 +2273,7 @@ TEST_F(AdAuctionServiceImplTest, DisconnectedAndSuccessInFlightTogether) {
   interest_group_1.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+      /*metadata=*/absl::nullopt);
   interest_group_1.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_1);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -2319,7 +2289,7 @@ TEST_F(AdAuctionServiceImplTest, DisconnectedAndSuccessInFlightTogether) {
   interest_group_2.ads.emplace();
   ad = blink::InterestGroup::Ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+      /*metadata=*/absl::nullopt);
   interest_group_2.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_2);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName2));
@@ -2347,15 +2317,11 @@ TEST_F(AdAuctionServiceImplTest, DisconnectedAndSuccessInFlightTogether) {
   ASSERT_EQ(group_2.ads->size(), 1u);
   EXPECT_EQ(group_2.ads.value()[0].render_url.spec(),
             "https://example.com/render");
-  EXPECT_EQ(group_2.ads.value()[0].metadata,
-            "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
 
   // Now, try to update both interest groups. Both should now succeed.
-  const std::string kServerResponse2 = base::StringPrintf(R"({
-"ads": [{"renderUrl": "%s/new_ad_render_url2",
-         "metadata": {"new_a": "b2"}}]
-})",
-                                                          kOriginStringA);
+  const std::string kServerResponse2 = R"({
+"ads": [{"renderUrl": "https://example.com/new_render2"}]
+})";
   network_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath,
                                              kServerResponse1);
   network_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath2,
@@ -2377,25 +2343,20 @@ TEST_F(AdAuctionServiceImplTest, DisconnectedAndSuccessInFlightTogether) {
   ASSERT_TRUE(group_1.ads.has_value());
   ASSERT_EQ(group_1.ads->size(), 1u);
   EXPECT_EQ(group_1.ads.value()[0].render_url.spec(),
-            base::StringPrintf("%s/new_ad_render_url", kOriginStringA));
-  EXPECT_EQ(group_1.ads.value()[0].metadata, "{\"new_a\":\"b\"}");
+            "https://example.com/new_render");
 
   ASSERT_TRUE(group_2.ads.has_value());
   ASSERT_EQ(group_2.ads->size(), 1u);
   EXPECT_EQ(group_2.ads.value()[0].render_url.spec(),
-            base::StringPrintf("%s/new_ad_render_url2", kOriginStringA));
-  EXPECT_EQ(group_2.ads.value()[0].metadata, "{\"new_a\":\"b2\"}");
+            "https://example.com/new_render2");
 }
 
 // Fire off many updates rapidly in a loop. Only one update should happen.
 TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedTightLoop) {
-  network_responder_->RegisterUpdateResponse(
-      kDailyUpdateUrlPath, base::StringPrintf(R"({
-"ads": [{"renderUrl": "%s/new_ad_render_url",
-         "metadata": {"new_a": "b"}
+  network_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath, R"({
+"ads": [{"renderUrl": "https://example.com/new_render"
         }]
-})",
-                                              kOriginStringA));
+})");
 
   blink::InterestGroup interest_group = CreateInterestGroup();
   // Set a long expiration delta so that we can advance to the next rate limit
@@ -2405,7 +2366,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedTightLoop) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+      /*metadata=*/absl::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -2427,8 +2388,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedTightLoop) {
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
   EXPECT_EQ(group.ads.value()[0].render_url.spec(),
-            base::StringPrintf("%s/new_ad_render_url", kOriginStringA));
-  EXPECT_EQ(group.ads.value()[0].metadata, "{\"new_a\":\"b\"}");
+            "https://example.com/new_render");
 }
 
 // Test that creates 3 interest groups for different origins, then runs update
@@ -2439,27 +2399,19 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedTightLoop) {
 TEST_F(AdAuctionServiceImplTest, OnlyOneOriginUpdatesAtATime) {
   // kOriginA's update will be deferred, whereas kOriginB's and kOriginC's
   // updates will be allowed to proceed immediately.
-  const std::string kServerResponseA = base::StringPrintf(R"({
-"ads": [{"renderUrl": "%s/new_ad_render_url",
-         "metadata": {"new_a": "b"}}]
-})",
-                                                          kOriginStringA);
+  constexpr char kServerResponseA[] = R"({
+"ads": [{"renderUrl": "https://example.com/new_render"}]
+})";
   network_responder_->RegisterDeferredUpdateResponse(kDailyUpdateUrlPath);
 
-  network_responder_->RegisterUpdateResponse(
-      kDailyUpdateUrlPathB, base::StringPrintf(R"({
-"ads": [{"renderUrl": "%s/new_ad_render_url",
-         "metadata": {"new_a": "b"}
+  network_responder_->RegisterUpdateResponse(kDailyUpdateUrlPathB, R"({
+"ads": [{"renderUrl": "https://example.com/new_render"
         }]
-})",
-                                               kOriginStringB));
-  network_responder_->RegisterUpdateResponse(
-      kDailyUpdateUrlPathC, base::StringPrintf(R"({
-"ads": [{"renderUrl": "%s/new_ad_render_url",
-         "metadata": {"new_a": "b"}
+})");
+  network_responder_->RegisterUpdateResponse(kDailyUpdateUrlPathC, R"({
+"ads": [{"renderUrl": "https://example.com/new_render"
         }]
-})",
-                                               kOriginStringC));
+})");
 
   // Create interest group for kOriginA.
   blink::InterestGroup interest_group = CreateInterestGroup();
@@ -2470,7 +2422,7 @@ TEST_F(AdAuctionServiceImplTest, OnlyOneOriginUpdatesAtATime) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+      /*metadata=*/absl::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -2486,7 +2438,7 @@ TEST_F(AdAuctionServiceImplTest, OnlyOneOriginUpdatesAtATime) {
   interest_group.ads.emplace();
   ad = blink::InterestGroup::Ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+      /*metadata=*/absl::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginB, kInterestGroupName));
@@ -2502,7 +2454,7 @@ TEST_F(AdAuctionServiceImplTest, OnlyOneOriginUpdatesAtATime) {
   interest_group.ads.emplace();
   ad = blink::InterestGroup::Ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+      /*metadata=*/absl::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginC, kInterestGroupName));
@@ -2522,8 +2474,6 @@ TEST_F(AdAuctionServiceImplTest, OnlyOneOriginUpdatesAtATime) {
   ASSERT_EQ(a_group.ads->size(), 1u);
   EXPECT_EQ(a_group.ads.value()[0].render_url.spec(),
             "https://example.com/render");
-  EXPECT_EQ(a_group.ads.value()[0].metadata,
-            "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
 
   // Now, try to update kOriginB's interest groups. The update shouldn't happen
   // yet, because we're still updating kOriginA's interest groups.
@@ -2538,8 +2488,6 @@ TEST_F(AdAuctionServiceImplTest, OnlyOneOriginUpdatesAtATime) {
   ASSERT_EQ(b_group.ads->size(), 1u);
   EXPECT_EQ(b_group.ads.value()[0].render_url.spec(),
             "https://example.com/render");
-  EXPECT_EQ(b_group.ads.value()[0].metadata,
-            "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
 
   // Now, try to update kOriginC's interest groups. The update shouldn't happen
   // yet, because we're still updating kOriginA's interest groups.
@@ -2554,8 +2502,6 @@ TEST_F(AdAuctionServiceImplTest, OnlyOneOriginUpdatesAtATime) {
   ASSERT_EQ(c_group.ads->size(), 1u);
   EXPECT_EQ(c_group.ads.value()[0].render_url.spec(),
             "https://example.com/render");
-  EXPECT_EQ(c_group.ads.value()[0].metadata,
-            "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
 
   // Only one network request should have been made (for the kOriginA update).
   EXPECT_EQ(network_responder_->UpdateCount(), 1u);
@@ -2575,8 +2521,7 @@ TEST_F(AdAuctionServiceImplTest, OnlyOneOriginUpdatesAtATime) {
   ASSERT_TRUE(a_group.ads.has_value());
   ASSERT_EQ(a_group.ads->size(), 1u);
   EXPECT_EQ(a_group.ads.value()[0].render_url.spec(),
-            base::StringPrintf("%s/new_ad_render_url", kOriginStringA));
-  EXPECT_EQ(a_group.ads.value()[0].metadata, "{\"new_a\":\"b\"}");
+            "https://example.com/new_render");
 
   // kOriginB's groups have updated.
   b_groups = GetInterestGroupsForOwner(kOriginB);
@@ -2585,8 +2530,7 @@ TEST_F(AdAuctionServiceImplTest, OnlyOneOriginUpdatesAtATime) {
   ASSERT_TRUE(b_group.ads.has_value());
   ASSERT_EQ(b_group.ads->size(), 1u);
   EXPECT_EQ(b_group.ads.value()[0].render_url.spec(),
-            base::StringPrintf("%s/new_ad_render_url", kOriginStringB));
-  EXPECT_EQ(b_group.ads.value()[0].metadata, "{\"new_a\":\"b\"}");
+            "https://example.com/new_render");
 
   // kOriginC's groups have updated.
   b_groups = GetInterestGroupsForOwner(kOriginC);
@@ -2595,8 +2539,7 @@ TEST_F(AdAuctionServiceImplTest, OnlyOneOriginUpdatesAtATime) {
   ASSERT_TRUE(b_group.ads.has_value());
   ASSERT_EQ(b_group.ads->size(), 1u);
   EXPECT_EQ(b_group.ads.value()[0].render_url.spec(),
-            base::StringPrintf("%s/new_ad_render_url", kOriginStringC));
-  EXPECT_EQ(b_group.ads.value()[0].metadata, "{\"new_a\":\"b\"}");
+            "https://example.com/new_render");
 }
 
 // Set the maximum number of parallel updates to 2. Create three interest
@@ -2606,13 +2549,10 @@ TEST_F(AdAuctionServiceImplTest, OnlyOneOriginUpdatesAtATime) {
 TEST_F(AdAuctionServiceImplTest, UpdatesInBatches) {
   manager_->set_max_parallel_updates_for_testing(2);
 
-  network_responder_->RegisterUpdateResponse(
-      kDailyUpdateUrlPath, base::StringPrintf(R"({
-"ads": [{"renderUrl": "%s/new_ad_render_url",
-         "metadata": {"new_a": "b"}
+  network_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath, R"({
+"ads": [{"renderUrl": "https://example.com/new_render"
         }]
-})",
-                                              kOriginStringA));
+})");
 
   // Create 3 interest groups for kOriginA.
   blink::InterestGroup interest_group = CreateInterestGroup();
@@ -2621,7 +2561,7 @@ TEST_F(AdAuctionServiceImplTest, UpdatesInBatches) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+      /*metadata=*/absl::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -2634,7 +2574,7 @@ TEST_F(AdAuctionServiceImplTest, UpdatesInBatches) {
   interest_group.ads.emplace();
   ad = blink::InterestGroup::Ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+      /*metadata=*/absl::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName2));
@@ -2647,7 +2587,7 @@ TEST_F(AdAuctionServiceImplTest, UpdatesInBatches) {
   interest_group.ads.emplace();
   ad = blink::InterestGroup::Ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+      /*metadata=*/absl::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName3));
@@ -2671,8 +2611,7 @@ TEST_F(AdAuctionServiceImplTest, UpdatesInBatches) {
     ASSERT_TRUE(group.ads.has_value());
     ASSERT_EQ(group.ads->size(), 1u);
     EXPECT_EQ(group.ads.value()[0].render_url.spec(),
-              base::StringPrintf("%s/new_ad_render_url", kOriginStringA));
-    EXPECT_EQ(group.ads.value()[0].metadata, "{\"new_a\":\"b\"}");
+              "https://example.com/new_render");
   }
 }
 
@@ -2685,13 +2624,10 @@ TEST_F(AdAuctionServiceImplTest, UpdatesInBatches) {
 TEST_F(AdAuctionServiceImplTest, UpdatesInBatchesWithFailuresAndTimeouts) {
   manager_->set_max_parallel_updates_for_testing(2);
 
-  network_responder_->RegisterUpdateResponse(
-      kDailyUpdateUrlPath, base::StringPrintf(R"({
-"ads": [{"renderUrl": "%s/new_ad_render_url",
-         "metadata": {"new_a": "b"}
+  network_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath, R"({
+"ads": [{"renderUrl": "https://example.com/new_render"
         }]
-})",
-                                              kOriginStringA));
+})");
   network_responder_->FailUpdateRequestWithError(kDailyUpdateUrlPath2,
                                                  net::ERR_CONNECTION_RESET);
   // We never respond to this -- just let it timeout.
@@ -2705,7 +2641,7 @@ TEST_F(AdAuctionServiceImplTest, UpdatesInBatchesWithFailuresAndTimeouts) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+      /*metadata=*/absl::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -2718,7 +2654,7 @@ TEST_F(AdAuctionServiceImplTest, UpdatesInBatchesWithFailuresAndTimeouts) {
   interest_group.ads.emplace();
   ad = blink::InterestGroup::Ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+      /*metadata=*/absl::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName2));
@@ -2731,7 +2667,7 @@ TEST_F(AdAuctionServiceImplTest, UpdatesInBatchesWithFailuresAndTimeouts) {
   interest_group.ads.emplace();
   ad = blink::InterestGroup::Ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+      /*metadata=*/absl::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName3));
@@ -2768,13 +2704,10 @@ TEST_F(AdAuctionServiceImplTest, UpdatesInBatchesWithFailuresAndTimeouts) {
 
     if (group.update_url == kUpdateUrlA) {
       EXPECT_EQ(group.ads.value()[0].render_url.spec(),
-                base::StringPrintf("%s/new_ad_render_url", kOriginStringA));
-      EXPECT_EQ(group.ads.value()[0].metadata, "{\"new_a\":\"b\"}");
+                "https://example.com/new_render");
     } else {
       EXPECT_EQ(group.ads.value()[0].render_url.spec(),
                 "https://example.com/render");
-      EXPECT_EQ(group.ads.value()[0].metadata,
-                "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
     }
   }
 }
@@ -2802,20 +2735,15 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdates) {
 
   // kOriginA's update will be deferred, whereas kOriginB's
   // update will be allowed to proceed immediately.
-  const std::string kServerResponseA = base::StringPrintf(R"({
-"ads": [{"renderUrl": "%s/new_ad_render_url",
-         "metadata": {"new_a": "b"}}]
-})",
-                                                          kOriginStringA);
+  constexpr char kServerResponseA[] = R"({
+"ads": [{"renderUrl": "https://example.com/new_render"}]
+})";
   network_responder_->RegisterDeferredUpdateResponse(kDailyUpdateUrlPath);
 
-  network_responder_->RegisterUpdateResponse(
-      kDailyUpdateUrlPathB, base::StringPrintf(R"({
-"ads": [{"renderUrl": "%s/new_ad_render_url",
-         "metadata": {"new_a": "b"}
+  network_responder_->RegisterUpdateResponse(kDailyUpdateUrlPathB, R"({
+"ads": [{"renderUrl": "https://example.com/new_render"
         }]
-})",
-                                               kOriginStringB));
+})");
 
   // Create interest group for kOriginA.
   blink::InterestGroup interest_group = CreateInterestGroup();
@@ -2826,7 +2754,7 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdates) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+      /*metadata=*/absl::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -2842,7 +2770,7 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdates) {
   interest_group.ads.emplace();
   ad = blink::InterestGroup::Ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+      /*metadata=*/absl::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginB, kInterestGroupName));
@@ -2862,8 +2790,6 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdates) {
   ASSERT_EQ(a_group.ads->size(), 1u);
   EXPECT_EQ(a_group.ads.value()[0].render_url.spec(),
             "https://example.com/render");
-  EXPECT_EQ(a_group.ads.value()[0].metadata,
-            "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
 
   // Now, try to update kOriginB's interest groups. The update shouldn't happen
   // yet, because we're still updating kOriginA's interest groups.
@@ -2878,8 +2804,6 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdates) {
   ASSERT_EQ(b_group.ads->size(), 1u);
   EXPECT_EQ(b_group.ads.value()[0].render_url.spec(),
             "https://example.com/render");
-  EXPECT_EQ(b_group.ads.value()[0].metadata,
-            "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
 
   // Only one network request should have been made (for the kOriginA update).
   EXPECT_EQ(network_responder_->UpdateCount(), 1u);
@@ -2905,8 +2829,7 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdates) {
   ASSERT_TRUE(a_group.ads.has_value());
   ASSERT_EQ(a_group.ads->size(), 1u);
   EXPECT_EQ(a_group.ads.value()[0].render_url.spec(),
-            base::StringPrintf("%s/new_ad_render_url", kOriginStringA));
-  EXPECT_EQ(a_group.ads.value()[0].metadata, "{\"new_a\":\"b\"}");
+            "https://example.com/new_render");
 
   // But kOriginB's groups have not updated, because they got cancelled.
   b_groups = GetInterestGroupsForOwner(kOriginB);
@@ -2916,17 +2839,12 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdates) {
   ASSERT_EQ(b_group.ads->size(), 1u);
   EXPECT_EQ(b_group.ads.value()[0].render_url.spec(),
             "https://example.com/render");
-  EXPECT_EQ(b_group.ads.value()[0].metadata,
-            "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
 
   // Now, try updating kOriginB. The update should complete successfully.
-  network_responder_->RegisterUpdateResponse(
-      kDailyUpdateUrlPathB, base::StringPrintf(R"({
-"ads": [{"renderUrl": "%s/newer_ad_render_url",
-         "metadata": {"newer_a": "b"}
+  network_responder_->RegisterUpdateResponse(kDailyUpdateUrlPathB, R"({
+"ads": [{"renderUrl": "https://example.com/newer_render"
         }]
-})",
-                                               kOriginStringB));
+})");
 
   NavigateAndCommit(kUrlB);
   UpdateInterestGroupNoFlush();
@@ -2939,8 +2857,7 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdates) {
   ASSERT_TRUE(b_group.ads.has_value());
   ASSERT_EQ(b_group.ads->size(), 1u);
   EXPECT_EQ(b_group.ads.value()[0].render_url.spec(),
-            base::StringPrintf("%s/newer_ad_render_url", kOriginStringB));
-  EXPECT_EQ(b_group.ads.value()[0].metadata, "{\"newer_a\":\"b\"}");
+            "https://example.com/newer_render");
 }
 
 // Like CancelsLongstandingUpdates, but after the cancellation, tries to update
@@ -2962,20 +2879,15 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdates2) {
 
   // kOriginA's update will be deferred, whereas kOriginB's
   // update will be allowed to proceed immediately.
-  const std::string kServerResponseA = base::StringPrintf(R"({
-"ads": [{"renderUrl": "%s/new_ad_render_url",
-         "metadata": {"new_a": "b"}}]
-})",
-                                                          kOriginStringA);
+  constexpr char kServerResponseA[] = R"({
+"ads": [{"renderUrl": "https://example.com/new_render"}]
+})";
   network_responder_->RegisterDeferredUpdateResponse(kDailyUpdateUrlPath);
 
-  network_responder_->RegisterUpdateResponse(
-      kDailyUpdateUrlPathB, base::StringPrintf(R"({
-"ads": [{"renderUrl": "%s/new_ad_render_url",
-         "metadata": {"new_a": "b"}
+  network_responder_->RegisterUpdateResponse(kDailyUpdateUrlPathB, R"({
+"ads": [{"renderUrl": "https://example.com/new_render"
         }]
-})",
-                                               kOriginStringB));
+})");
 
   // Create interest group for kOriginA.
   blink::InterestGroup interest_group = CreateInterestGroup();
@@ -2986,7 +2898,7 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdates2) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+      /*metadata=*/absl::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -3002,7 +2914,7 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdates2) {
   interest_group.ads.emplace();
   ad = blink::InterestGroup::Ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+      /*metadata=*/absl::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginB, kInterestGroupName));
@@ -3022,8 +2934,6 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdates2) {
   ASSERT_EQ(a_group.ads->size(), 1u);
   EXPECT_EQ(a_group.ads.value()[0].render_url.spec(),
             "https://example.com/render");
-  EXPECT_EQ(a_group.ads.value()[0].metadata,
-            "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
 
   // Now, try to update kOriginB's interest groups. The update shouldn't happen
   // yet, because we're still updating kOriginA's interest groups.
@@ -3038,8 +2948,6 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdates2) {
   ASSERT_EQ(b_group.ads->size(), 1u);
   EXPECT_EQ(b_group.ads.value()[0].render_url.spec(),
             "https://example.com/render");
-  EXPECT_EQ(b_group.ads.value()[0].metadata,
-            "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
 
   // Only one network request should have been made (for the kOriginA update).
   EXPECT_EQ(network_responder_->UpdateCount(), 1u);
@@ -3065,8 +2973,7 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdates2) {
   ASSERT_TRUE(a_group.ads.has_value());
   ASSERT_EQ(a_group.ads->size(), 1u);
   EXPECT_EQ(a_group.ads.value()[0].render_url.spec(),
-            base::StringPrintf("%s/new_ad_render_url", kOriginStringA));
-  EXPECT_EQ(a_group.ads.value()[0].metadata, "{\"new_a\":\"b\"}");
+            "https://example.com/new_render");
 
   // But kOriginB's groups have not updated, because they got cancelled.
   b_groups = GetInterestGroupsForOwner(kOriginB);
@@ -3076,8 +2983,6 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdates2) {
   ASSERT_EQ(b_group.ads->size(), 1u);
   EXPECT_EQ(b_group.ads.value()[0].render_url.spec(),
             "https://example.com/render");
-  EXPECT_EQ(b_group.ads.value()[0].metadata,
-            "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
 
   // Now, try updating a new origin, kOriginC. The update should complete
   // successfully.
@@ -3091,19 +2996,16 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdates2) {
   interest_group.ads.emplace();
   ad = blink::InterestGroup::Ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+      /*metadata=*/absl::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   ASSERT_TRUE(interest_group.IsValid());
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginC, kInterestGroupName));
 
-  network_responder_->RegisterUpdateResponse(
-      kDailyUpdateUrlPathC, base::StringPrintf(R"({
-"ads": [{"renderUrl": "%s/newer_ad_render_url",
-         "metadata": {"newer_a": "b"}
+  network_responder_->RegisterUpdateResponse(kDailyUpdateUrlPathC, R"({
+"ads": [{"renderUrl": "https://example.com/newer_render"
         }]
-})",
-                                               kOriginStringC));
+})");
   UpdateInterestGroupNoFlush();
   task_environment()->RunUntilIdle();
 
@@ -3114,8 +3016,7 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdates2) {
   ASSERT_TRUE(c_group.ads.has_value());
   ASSERT_EQ(c_group.ads->size(), 1u);
   EXPECT_EQ(c_group.ads.value()[0].render_url.spec(),
-            base::StringPrintf("%s/newer_ad_render_url", kOriginStringC));
-  EXPECT_EQ(c_group.ads.value()[0].metadata, "{\"newer_a\":\"b\"}");
+            "https://example.com/newer_render");
 
   // But kOriginB's groups have not updated.
   b_groups = GetInterestGroupsForOwner(kOriginB);
@@ -3125,8 +3026,6 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdates2) {
   ASSERT_EQ(b_group.ads->size(), 1u);
   EXPECT_EQ(b_group.ads.value()[0].render_url.spec(),
             "https://example.com/render");
-  EXPECT_EQ(b_group.ads.value()[0].metadata,
-            "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
 }
 
 // After a round of updates completes, the round cancellation timer should reset
@@ -3141,20 +3040,14 @@ TEST_F(AdAuctionServiceImplTest, UpdateCancellationTimerClearedOnCompletion) {
   constexpr base::TimeDelta kMaxUpdateRoundDuration = base::Seconds(5);
   manager_->set_max_update_round_duration_for_testing(kMaxUpdateRoundDuration);
 
-  network_responder_->RegisterUpdateResponse(
-      kDailyUpdateUrlPath, base::StringPrintf(R"({
-"ads": [{"renderUrl": "%s/new_ad_render_url",
-         "metadata": {"new_a": "b"}
+  network_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath, R"({
+"ads": [{"renderUrl": "https://example.com/new_render"
         }]
-})",
-                                              kOriginStringA));
-  network_responder_->RegisterUpdateResponse(
-      kDailyUpdateUrlPathB, base::StringPrintf(R"({
-"ads": [{"renderUrl": "%s/new_ad_render_url",
-         "metadata": {"new_a": "b"}
+})");
+  network_responder_->RegisterUpdateResponse(kDailyUpdateUrlPathB, R"({
+"ads": [{"renderUrl": "https://example.com/new_render"
         }]
-})",
-                                               kOriginStringB));
+})");
 
   // Create interest group for kOriginA.
   blink::InterestGroup interest_group = CreateInterestGroup();
@@ -3165,7 +3058,8 @@ TEST_F(AdAuctionServiceImplTest, UpdateCancellationTimerClearedOnCompletion) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+      // TODO: update
+      /*metadata=*/absl::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -3181,7 +3075,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateCancellationTimerClearedOnCompletion) {
   interest_group.ads.emplace();
   ad = blink::InterestGroup::Ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+      /*metadata=*/absl::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginB, kInterestGroupName));
@@ -3201,8 +3095,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateCancellationTimerClearedOnCompletion) {
   ASSERT_TRUE(a_group.ads.has_value());
   ASSERT_EQ(a_group.ads->size(), 1u);
   EXPECT_EQ(a_group.ads.value()[0].render_url.spec(),
-            base::StringPrintf("%s/new_ad_render_url", kOriginStringA));
-  EXPECT_EQ(a_group.ads.value()[0].metadata, "{\"new_a\":\"b\"}");
+            "https://example.com/new_render");
 
   // Only one network request should have been made (for the kOriginA update).
   EXPECT_EQ(network_responder_->UpdateCount(), 1u);
@@ -3223,8 +3116,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateCancellationTimerClearedOnCompletion) {
   ASSERT_TRUE(b_group.ads.has_value());
   ASSERT_EQ(b_group.ads->size(), 1u);
   EXPECT_EQ(b_group.ads.value()[0].render_url.spec(),
-            base::StringPrintf("%s/new_ad_render_url", kOriginStringB));
-  EXPECT_EQ(b_group.ads.value()[0].metadata, "{\"new_a\":\"b\"}");
+            "https://example.com/new_render");
 
   // Two network requests should have been made (for the kOriginA and kOriginB
   // updates).
@@ -3439,15 +3331,15 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdatesComplex) {
 TEST_F(AdAuctionServiceImplTest, RunAdAuction) {
   constexpr char kBiddingScript[] = R"(
 function generateBid(
-  interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
-  browserSignals) {
+    interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+    browserSignals) {
   return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
 }
 )";
 
   constexpr char kDecisionScript[] = R"(
 function scoreAd(
-  adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
+    adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
   return bid;
 }
 )";
@@ -3479,15 +3371,601 @@ function scoreAd(
             GURL("https://example.com/render"));
 }
 
+// Runs an auction, and expects that the interest group that participated in
+// the auction gets updated after the auction completes.
+//
+// Create an interest group. Run an auction with that interest group.
+//
+// The interest group should be updated after the auction completes.
+TEST_F(AdAuctionServiceImplTest, UpdatesInterestGroupsAfterSuccessfulAuction) {
+  constexpr char kBiddingScript[] = R"(
+function generateBid(
+    interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+    browserSignals) {
+  return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
+}
+)";
+
+  constexpr char kDecisionScript[] = R"(
+function scoreAd(
+    adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
+  return bid;
+}
+)";
+
+  network_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath, R"({
+"ads": [{"renderUrl": "https://example.com/new_render"
+        }]
+})");
+
+  network_responder_->RegisterScriptResponse(kBiddingUrlPath, kBiddingScript);
+  network_responder_->RegisterScriptResponse(kDecisionUrlPath, kDecisionScript);
+
+  blink::InterestGroup interest_group_a = CreateInterestGroup();
+  interest_group_a.update_url = kUpdateUrlA;
+  interest_group_a.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
+  interest_group_a.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group_a.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group_a);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  auto auction_config = blink::mojom::AuctionAdConfig::New();
+  auction_config->seller = kOriginA;
+  auction_config->decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
+  auction_config->auction_ad_config_non_shared_params =
+      blink::mojom::AuctionAdConfigNonSharedParams::New();
+  auction_config->auction_ad_config_non_shared_params->interest_group_buyers = {
+      kOriginA};
+  absl::optional<GURL> auction_result =
+      RunAdAuctionAndFlush(std::move(auction_config));
+  ASSERT_NE(auction_result, absl::nullopt);
+  EXPECT_EQ(ConvertFencedFrameURNToURL(*auction_result),
+            GURL("https://example.com/render"));
+
+  // Now that the auction has completed, check that the interest group updated.
+  task_environment()->RunUntilIdle();
+
+  auto a_groups = GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(a_groups.size(), 1u);
+  auto a_group = a_groups[0].interest_group;
+  ASSERT_TRUE(a_group.ads.has_value());
+  ASSERT_EQ(a_group.ads->size(), 1u);
+  EXPECT_EQ(a_group.ads.value()[0].render_url.spec(),
+            "https://example.com/new_render");
+}
+
+// Like UpdatesInterestGroupsAfterSuccessfulAuction, but the auction fails
+// because the scoring script always returns 0. The interest group should still
+// update.
+TEST_F(AdAuctionServiceImplTest, UpdatesInterestGroupsAfterFailedAuction) {
+  constexpr char kBiddingScript[] = R"(
+function generateBid(
+    interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+    browserSignals) {
+  return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
+}
+)";
+
+  constexpr char kDecisionScript[] = R"(
+function scoreAd(
+    adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
+  return 0;
+}
+)";
+
+  network_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath, R"({
+"ads": [{"renderUrl": "https://example.com/new_render"
+        }]
+})");
+
+  network_responder_->RegisterScriptResponse(kBiddingUrlPath, kBiddingScript);
+  network_responder_->RegisterScriptResponse(kDecisionUrlPath, kDecisionScript);
+
+  blink::InterestGroup interest_group_a = CreateInterestGroup();
+  interest_group_a.update_url = kUpdateUrlA;
+  interest_group_a.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
+  interest_group_a.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group_a.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group_a);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  auto auction_config = blink::mojom::AuctionAdConfig::New();
+  auction_config->seller = kOriginA;
+  auction_config->decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
+  auction_config->auction_ad_config_non_shared_params =
+      blink::mojom::AuctionAdConfigNonSharedParams::New();
+  auction_config->auction_ad_config_non_shared_params->interest_group_buyers = {
+      kOriginA};
+  absl::optional<GURL> auction_result =
+      RunAdAuctionAndFlush(std::move(auction_config));
+  EXPECT_EQ(auction_result, absl::nullopt);
+
+  // Now that the auction has completed, check that the interest group updated.
+  task_environment()->RunUntilIdle();
+
+  auto a_groups = GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(a_groups.size(), 1u);
+  auto a_group = a_groups[0].interest_group;
+  ASSERT_TRUE(a_group.ads.has_value());
+  ASSERT_EQ(a_group.ads->size(), 1u);
+  EXPECT_EQ(a_group.ads.value()[0].render_url.spec(),
+            "https://example.com/new_render");
+}
+
+// Like UpdatesInterestGroupsAfterFailedAuction, but the auction fails because
+// the decision script can't be loaded. The interest group still updates.
+TEST_F(AdAuctionServiceImplTest,
+       UpdatesInterestGroupsAfterFailedAuctionMissingScript) {
+  constexpr char kMissingScriptPath[] = "/script-not-found.js";
+  constexpr char kBiddingScript[] = R"(
+function generateBid(
+    interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+    browserSignals) {
+  return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
+}
+)";
+
+  network_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath, R"({
+"ads": [{"renderUrl": "https://example.com/new_render"
+        }]
+})");
+
+  network_responder_->RegisterScriptResponse(kBiddingUrlPath, kBiddingScript);
+  network_responder_->FailRequestWithError(kMissingScriptPath,
+                                           net::ERR_FILE_NOT_FOUND);
+
+  blink::InterestGroup interest_group_a = CreateInterestGroup();
+  interest_group_a.update_url = kUpdateUrlA;
+  interest_group_a.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
+  interest_group_a.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group_a.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group_a);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  auto auction_config = blink::mojom::AuctionAdConfig::New();
+  auction_config->seller = kOriginA;
+  auction_config->decision_logic_url = kUrlA.Resolve(kMissingScriptPath);
+  auction_config->auction_ad_config_non_shared_params =
+      blink::mojom::AuctionAdConfigNonSharedParams::New();
+  auction_config->auction_ad_config_non_shared_params->interest_group_buyers = {
+      kOriginA};
+  absl::optional<GURL> auction_result =
+      RunAdAuctionAndFlush(std::move(auction_config));
+  EXPECT_EQ(auction_result, absl::nullopt);
+
+  // Now that the auction has completed, check that the interest group updated.
+  task_environment()->RunUntilIdle();
+
+  auto a_groups = GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(a_groups.size(), 1u);
+  auto a_group = a_groups[0].interest_group;
+  ASSERT_TRUE(a_group.ads.has_value());
+  ASSERT_EQ(a_group.ads->size(), 1u);
+  EXPECT_EQ(a_group.ads.value()[0].render_url.spec(),
+            "https://example.com/new_render");
+}
+
+// Trigger a post auction update, but block it via ContentBrowserClient policy.
+// The update shouldn't happen.
+TEST_F(AdAuctionServiceImplTest,
+       UpdatesInterestGroupsAfterAuctionBlockedByContentBrowserClient) {
+  NavigateAndCommit(kUrlNoUpdate);
+  constexpr char kBiddingScript[] = R"(
+function generateBid(
+    interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+    browserSignals) {
+  return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
+}
+)";
+
+  constexpr char kDecisionScript[] = R"(
+function scoreAd(
+    adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
+  return bid;
+}
+)";
+
+  network_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath, R"({
+"ads": [{"renderUrl": "https://example.com/new_render"
+        }]
+})");
+
+  network_responder_->RegisterScriptResponse(kBiddingUrlPath, kBiddingScript);
+  network_responder_->RegisterScriptResponse(kDecisionUrlPath, kDecisionScript);
+
+  blink::InterestGroup interest_group_no_update = CreateInterestGroup();
+  interest_group_no_update.owner = kOriginNoUpdate;
+  interest_group_no_update.update_url = kUpdateUrlNoUpdate;
+  interest_group_no_update.bidding_url = kUrlNoUpdate.Resolve(kBiddingUrlPath);
+  interest_group_no_update.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group_no_update.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group_no_update);
+  EXPECT_EQ(1, GetJoinCount(kOriginNoUpdate, kInterestGroupName));
+
+  auto auction_config = blink::mojom::AuctionAdConfig::New();
+  auction_config->seller = kOriginNoUpdate;
+  auction_config->decision_logic_url = kUrlNoUpdate.Resolve(kDecisionUrlPath);
+  auction_config->auction_ad_config_non_shared_params =
+      blink::mojom::AuctionAdConfigNonSharedParams::New();
+  auction_config->auction_ad_config_non_shared_params->interest_group_buyers = {
+      kOriginNoUpdate};
+  absl::optional<GURL> auction_result =
+      RunAdAuctionAndFlush(std::move(auction_config));
+  ASSERT_NE(auction_result, absl::nullopt);
+  EXPECT_EQ(ConvertFencedFrameURNToURL(*auction_result),
+            GURL("https://example.com/render"));
+
+  // Now that the auction has completed, check that the interest group didn't
+  // update.
+  task_environment()->RunUntilIdle();
+
+  auto no_update_groups = GetInterestGroupsForOwner(kOriginNoUpdate);
+  ASSERT_EQ(no_update_groups.size(), 1u);
+  auto no_update_group = no_update_groups[0].interest_group;
+  ASSERT_TRUE(no_update_group.ads.has_value());
+  ASSERT_EQ(no_update_group.ads->size(), 1u);
+  EXPECT_EQ(no_update_group.ads.value()[0].render_url.spec(),
+            "https://example.com/render");
+
+  // There shouldn't have even been an attempt to update.
+  EXPECT_EQ(network_responder_->UpdateCount(), 0u);
+}
+
+// Like UpdatesInterestGroupsAfterAuction, but with a component auction.
+//
+// Create 2 interest groups, each in different origins, A and C (we can't use B
+// because AllowInterestGroupContentBrowserClient doesn't allow B interest
+// groups to participate in A auctions). Run a component
+// auction where A is a buyer on the top-level auction, and C is a buyer in the
+// component auction. Force the inner auction to win by making it bid higher.
+//
+// Both interest groups should be updated after the auction completes.
+TEST_F(AdAuctionServiceImplTest,
+       UpdatesInterestGroupsAfterComponentAuctionInnerWins) {
+  constexpr char kBiddingScript1[] = R"(
+function generateBid(
+    interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+    browserSignals) {
+  return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render1',
+          'allowComponentAuction': true};
+}
+)";
+  constexpr char kBiddingScript2[] = R"(
+function generateBid(
+    interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+    browserSignals) {
+  return {'ad': 'example', 'bid': 2, 'render': 'https://example.com/render2',
+          'allowComponentAuction': true};
+}
+)";
+
+  constexpr char kDecisionScript[] = R"(
+function scoreAd(
+    adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
+  return {desirability: bid, allowComponentAuction: true};
+}
+)";
+
+  network_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath, R"({
+"ads": [{"renderUrl": "https://example.com/new_render"
+        }]
+})");
+
+  network_responder_->RegisterUpdateResponse(kDailyUpdateUrlPathC, R"({
+"ads": [{"renderUrl": "https://example.com/new_render"
+        }]
+})");
+
+  network_responder_->RegisterScriptResponse(kBiddingUrlPath, kBiddingScript1);
+  network_responder_->RegisterScriptResponse(kNewBiddingUrlPath,
+                                             kBiddingScript2);
+  network_responder_->RegisterScriptResponse(kDecisionUrlPath, kDecisionScript);
+
+  blink::InterestGroup interest_group_a = CreateInterestGroup();
+  interest_group_a.update_url = kUpdateUrlA;
+  interest_group_a.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
+  interest_group_a.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render1"),
+      /*metadata=*/absl::nullopt);
+  interest_group_a.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group_a);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  NavigateAndCommit(kUrlC);
+  blink::InterestGroup interest_group_b = CreateInterestGroup();
+  interest_group_b.owner = kOriginC;
+  interest_group_b.update_url = kUpdateUrlC;
+  interest_group_b.bidding_url = kUrlC.Resolve(kNewBiddingUrlPath);
+  interest_group_b.ads.emplace();
+  ad = blink::InterestGroup::Ad(
+      /*render_url=*/GURL("https://example.com/render2"),
+      /*metadata=*/absl::nullopt);
+  interest_group_b.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group_b);
+  EXPECT_EQ(1, GetJoinCount(kOriginC, kInterestGroupName));
+
+  NavigateAndCommit(kUrlA);
+  auto auction_config = blink::mojom::AuctionAdConfig::New();
+  auction_config->seller = kOriginA;
+  auction_config->decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
+  auction_config->auction_ad_config_non_shared_params =
+      blink::mojom::AuctionAdConfigNonSharedParams::New();
+  auction_config->auction_ad_config_non_shared_params->interest_group_buyers = {
+      kOriginA};
+  auto component_auction = blink::mojom::AuctionAdConfig::New();
+  component_auction->seller = kOriginA;
+  component_auction->decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
+  component_auction->auction_ad_config_non_shared_params =
+      blink::mojom::AuctionAdConfigNonSharedParams::New();
+  component_auction->auction_ad_config_non_shared_params
+      ->interest_group_buyers = {kOriginC};
+  auction_config->component_auctions.emplace_back(std::move(component_auction));
+  absl::optional<GURL> auction_result =
+      RunAdAuctionAndFlush(std::move(auction_config));
+  ASSERT_NE(auction_result, absl::nullopt);
+  EXPECT_EQ(ConvertFencedFrameURNToURL(*auction_result),
+            GURL("https://example.com/render2"));
+
+  // Now that the auction has completed, check that the interest groups updated.
+  task_environment()->RunUntilIdle();
+
+  auto a_groups = GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(a_groups.size(), 1u);
+  auto a_group = a_groups[0].interest_group;
+  ASSERT_TRUE(a_group.ads.has_value());
+  ASSERT_EQ(a_group.ads->size(), 1u);
+  EXPECT_EQ(a_group.ads.value()[0].render_url.spec(),
+            "https://example.com/new_render");
+
+  auto c_groups = GetInterestGroupsForOwner(kOriginC);
+  ASSERT_EQ(c_groups.size(), 1u);
+  auto c_group = c_groups[0].interest_group;
+  ASSERT_TRUE(c_group.ads.has_value());
+  ASSERT_EQ(c_group.ads->size(), 1u);
+  EXPECT_EQ(c_group.ads.value()[0].render_url.spec(),
+            "https://example.com/new_render");
+}
+
+// Like UpdatesInterestGroupsAfterComponentAuctionInnerWins, but the outer
+// auction wins.
+TEST_F(AdAuctionServiceImplTest,
+       UpdatesInterestGroupsAfterComponentAuctionOuterWins) {
+  constexpr char kBiddingScript1[] = R"(
+function generateBid(
+    interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+    browserSignals) {
+  return {'ad': 'example', 'bid': 2, 'render': 'https://example.com/render1',
+          'allowComponentAuction': true};
+}
+)";
+  constexpr char kBiddingScript2[] = R"(
+function generateBid(
+    interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+    browserSignals) {
+  return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render2',
+          'allowComponentAuction': true};
+}
+)";
+
+  constexpr char kDecisionScript[] = R"(
+function scoreAd(
+    adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
+  return {desirability: bid, allowComponentAuction: true};
+}
+)";
+
+  network_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath, R"({
+"ads": [{"renderUrl": "https://example.com/new_render"
+        }]
+})");
+
+  network_responder_->RegisterUpdateResponse(kDailyUpdateUrlPathC, R"({
+"ads": [{"renderUrl": "https://example.com/new_render"
+        }]
+})");
+
+  network_responder_->RegisterScriptResponse(kBiddingUrlPath, kBiddingScript1);
+  network_responder_->RegisterScriptResponse(kNewBiddingUrlPath,
+                                             kBiddingScript2);
+  network_responder_->RegisterScriptResponse(kDecisionUrlPath, kDecisionScript);
+
+  blink::InterestGroup interest_group_a = CreateInterestGroup();
+  interest_group_a.update_url = kUpdateUrlA;
+  interest_group_a.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
+  interest_group_a.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render1"),
+      /*metadata=*/absl::nullopt);
+  interest_group_a.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group_a);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  NavigateAndCommit(kUrlC);
+  blink::InterestGroup interest_group_b = CreateInterestGroup();
+  interest_group_b.owner = kOriginC;
+  interest_group_b.update_url = kUpdateUrlC;
+  interest_group_b.bidding_url = kUrlC.Resolve(kNewBiddingUrlPath);
+  interest_group_b.ads.emplace();
+  ad = blink::InterestGroup::Ad(
+      /*render_url=*/GURL("https://example.com/render2"),
+      /*metadata=*/absl::nullopt);
+  interest_group_b.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group_b);
+  EXPECT_EQ(1, GetJoinCount(kOriginC, kInterestGroupName));
+
+  NavigateAndCommit(kUrlA);
+  auto auction_config = blink::mojom::AuctionAdConfig::New();
+  auction_config->seller = kOriginA;
+  auction_config->decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
+  auction_config->auction_ad_config_non_shared_params =
+      blink::mojom::AuctionAdConfigNonSharedParams::New();
+  auction_config->auction_ad_config_non_shared_params->interest_group_buyers = {
+      kOriginA};
+  auto component_auction = blink::mojom::AuctionAdConfig::New();
+  component_auction->seller = kOriginA;
+  component_auction->decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
+  component_auction->auction_ad_config_non_shared_params =
+      blink::mojom::AuctionAdConfigNonSharedParams::New();
+  component_auction->auction_ad_config_non_shared_params
+      ->interest_group_buyers = {kOriginC};
+  auction_config->component_auctions.emplace_back(std::move(component_auction));
+  absl::optional<GURL> auction_result =
+      RunAdAuctionAndFlush(std::move(auction_config));
+  ASSERT_NE(auction_result, absl::nullopt);
+  EXPECT_EQ(ConvertFencedFrameURNToURL(*auction_result),
+            GURL("https://example.com/render1"));
+
+  // Now that the auction has completed, check that the interest groups updated.
+  task_environment()->RunUntilIdle();
+
+  auto a_groups = GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(a_groups.size(), 1u);
+  auto a_group = a_groups[0].interest_group;
+  ASSERT_TRUE(a_group.ads.has_value());
+  ASSERT_EQ(a_group.ads->size(), 1u);
+  EXPECT_EQ(a_group.ads.value()[0].render_url.spec(),
+            "https://example.com/new_render");
+
+  auto c_groups = GetInterestGroupsForOwner(kOriginC);
+  ASSERT_EQ(c_groups.size(), 1u);
+  auto c_group = c_groups[0].interest_group;
+  ASSERT_TRUE(c_group.ads.has_value());
+  ASSERT_EQ(c_group.ads->size(), 1u);
+  EXPECT_EQ(c_group.ads.value()[0].render_url.spec(),
+            "https://example.com/new_render");
+}
+
+// Like UpdatesInterestGroupsAfterComponentAuctionInnerWins, but there's no
+// winner, since the decision script scores every bid as 0.
+//
+// All participating interest groups should still update.
+TEST_F(AdAuctionServiceImplTest,
+       UpdatesInterestGroupsAfterComponentAuctionNoWinner) {
+  constexpr char kBiddingScript1[] = R"(
+function generateBid(
+    interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+    browserSignals) {
+  return {'ad': 'example', 'bid': 2, 'render': 'https://example.com/render1',
+          'allowComponentAuction': true};
+}
+)";
+  constexpr char kBiddingScript2[] = R"(
+function generateBid(
+    interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+    browserSignals) {
+  return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render2',
+          'allowComponentAuction': true};
+}
+)";
+
+  constexpr char kDecisionScript[] = R"(
+function scoreAd(
+    adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
+  return {desirability: 0, allowComponentAuction: true};
+}
+)";
+
+  network_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath, R"({
+"ads": [{"renderUrl": "https://example.com/new_render"
+        }]
+})");
+
+  network_responder_->RegisterUpdateResponse(kDailyUpdateUrlPathC, R"({
+"ads": [{"renderUrl": "https://example.com/new_render"
+        }]
+})");
+
+  network_responder_->RegisterScriptResponse(kBiddingUrlPath, kBiddingScript1);
+  network_responder_->RegisterScriptResponse(kNewBiddingUrlPath,
+                                             kBiddingScript2);
+  network_responder_->RegisterScriptResponse(kDecisionUrlPath, kDecisionScript);
+
+  blink::InterestGroup interest_group_a = CreateInterestGroup();
+  interest_group_a.update_url = kUpdateUrlA;
+  interest_group_a.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
+  interest_group_a.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render1"),
+      /*metadata=*/absl::nullopt);
+  interest_group_a.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group_a);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  NavigateAndCommit(kUrlC);
+  blink::InterestGroup interest_group_b = CreateInterestGroup();
+  interest_group_b.owner = kOriginC;
+  interest_group_b.update_url = kUpdateUrlC;
+  interest_group_b.bidding_url = kUrlC.Resolve(kNewBiddingUrlPath);
+  interest_group_b.ads.emplace();
+  ad = blink::InterestGroup::Ad(
+      /*render_url=*/GURL("https://example.com/render2"),
+      /*metadata=*/absl::nullopt);
+  interest_group_b.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group_b);
+  EXPECT_EQ(1, GetJoinCount(kOriginC, kInterestGroupName));
+
+  NavigateAndCommit(kUrlA);
+  auto auction_config = blink::mojom::AuctionAdConfig::New();
+  auction_config->seller = kOriginA;
+  auction_config->decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
+  auction_config->auction_ad_config_non_shared_params =
+      blink::mojom::AuctionAdConfigNonSharedParams::New();
+  auction_config->auction_ad_config_non_shared_params->interest_group_buyers = {
+      kOriginA};
+  auto component_auction = blink::mojom::AuctionAdConfig::New();
+  component_auction->seller = kOriginA;
+  component_auction->decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
+  component_auction->auction_ad_config_non_shared_params =
+      blink::mojom::AuctionAdConfigNonSharedParams::New();
+  component_auction->auction_ad_config_non_shared_params
+      ->interest_group_buyers = {kOriginC};
+  auction_config->component_auctions.emplace_back(std::move(component_auction));
+  absl::optional<GURL> auction_result =
+      RunAdAuctionAndFlush(std::move(auction_config));
+  EXPECT_EQ(auction_result, absl::nullopt);
+
+  // Now that the auction has completed, check that the interest groups updated.
+  task_environment()->RunUntilIdle();
+
+  auto a_groups = GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(a_groups.size(), 1u);
+  auto a_group = a_groups[0].interest_group;
+  ASSERT_TRUE(a_group.ads.has_value());
+  ASSERT_EQ(a_group.ads->size(), 1u);
+  EXPECT_EQ(a_group.ads.value()[0].render_url.spec(),
+            "https://example.com/new_render");
+
+  auto c_groups = GetInterestGroupsForOwner(kOriginC);
+  ASSERT_EQ(c_groups.size(), 1u);
+  auto c_group = c_groups[0].interest_group;
+  ASSERT_TRUE(c_group.ads.has_value());
+  ASSERT_EQ(c_group.ads->size(), 1u);
+  EXPECT_EQ(c_group.ads.value()[0].render_url.spec(),
+            "https://example.com/new_render");
+}
+
 TEST_F(AdAuctionServiceImplTest, FetchReport) {
   const std::string kBiddingScript = base::StringPrintf(R"(
 function generateBid(
-  interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
-  browserSignals) {
+    interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+    browserSignals) {
   return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
 }
 function reportWin(
-  auctionSignals, perBuyerSignals, sellerSignals, browserSignals) {
+    auctionSignals, perBuyerSignals, sellerSignals, browserSignals) {
   sendReportTo('%s/report_bidder');
 }
   )",
@@ -3496,7 +3974,7 @@ function reportWin(
   const std::string kDecisionScript =
       base::StringPrintf(R"(
 function scoreAd(
-  adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
+    adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
   return bid;
 }
 function reportResult(auctionConfig, browserSignals) {
@@ -3557,8 +4035,8 @@ TEST_F(AdAuctionServiceImplTest,
 
   constexpr char kBiddingScript[] = R"(
 function generateBid(
-  interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
-  browserSignals) {
+    interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+    browserSignals) {
   return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
 }
 function reportWin() {}
@@ -3566,7 +4044,7 @@ function reportWin() {}
 
   constexpr char kDecisionScript[] = R"(
 function scoreAd(
-  adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
+    adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
   return bid;
 }
 function reportResult() {}
@@ -3574,7 +4052,7 @@ function reportResult() {}
 
   constexpr char kDecisionScriptFailAll[] = R"(
 function scoreAd(
-  adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
+    adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
   return 0;
 }
 function reportResult() {}
@@ -3725,8 +4203,8 @@ TEST_F(AdAuctionServiceImplTest,
 
   constexpr char kBiddingScript[] = R"(
 function generateBid(
-  interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
-  browserSignals) {
+    interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+    browserSignals) {
   return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
 }
 function reportWin() {}
@@ -3734,7 +4212,7 @@ function reportWin() {}
 
   constexpr char kDecisionScript[] = R"(
 function scoreAd(
-  adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
+    adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
   return bid;
 }
 function reportResult() {}
@@ -3742,7 +4220,7 @@ function reportResult() {}
 
   constexpr char kDecisionScriptFailAll[] = R"(
 function scoreAd(
-  adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
+    adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
   return 0;
 }
 function reportResult() {}
@@ -3891,8 +4369,8 @@ TEST_F(AdAuctionServiceImplTest, NoInterestLimitByDefault) {
 
   constexpr char kBiddingScript[] = R"(
 function generateBid(
-  interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
-  browserSignals) {
+    interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+    browserSignals) {
   return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
 }
 function reportWin() {}
@@ -3900,7 +4378,7 @@ function reportWin() {}
 
   constexpr char kDecisionScript[] = R"(
 function scoreAd(
-  adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
+    adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
   return bid;
 }
 function reportResult() {}
@@ -3908,7 +4386,7 @@ function reportResult() {}
 
   constexpr char kDecisionScriptFailAll[] = R"(
 function scoreAd(
-  adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
+    adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
   return 0;
 }
 function reportResult() {}
@@ -4006,8 +4484,8 @@ TEST_F(AdAuctionServiceImplNumAuctionLimitTest,
 
   constexpr char kBiddingScript[] = R"(
 function generateBid(
-  interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
-  browserSignals) {
+    interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+    browserSignals) {
   return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
 }
 function reportWin() {}
@@ -4015,7 +4493,7 @@ function reportWin() {}
 
   constexpr char kDecisionScript[] = R"(
 function scoreAd(
-  adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
+    adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
   return bid;
 }
 function reportResult() {}
@@ -4023,7 +4501,7 @@ function reportResult() {}
 
   constexpr char kDecisionScriptFailAll[] = R"(
 function scoreAd(
-  adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
+    adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
   return 0;
 }
 function reportResult() {}
@@ -4143,8 +4621,8 @@ TEST_F(AdAuctionServiceImplNumAuctionLimitTest,
 
   constexpr char kBiddingScript[] = R"(
 function generateBid(
-  interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
-  browserSignals) {
+    interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+    browserSignals) {
   return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
 }
 function reportWin() {}
@@ -4152,7 +4630,7 @@ function reportWin() {}
 
   constexpr char kDecisionScript[] = R"(
 function scoreAd(
-  adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
+    adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
   return bid;
 }
 function reportResult() {}

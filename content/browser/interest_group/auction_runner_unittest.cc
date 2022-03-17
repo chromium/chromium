@@ -1250,7 +1250,8 @@ class AuctionRunnerTest : public testing::Test,
     auction_run_loop_ = std::make_unique<base::RunLoop>();
     auction_runner_ = AuctionRunner::CreateAndStart(
         auction_worklet_manager_.get(), interest_group_manager_.get(),
-        std::move(auction_config), IsInterestGroupApiAllowedCallback(),
+        std::move(auction_config), /*client_security_state=*/nullptr,
+        IsInterestGroupApiAllowedCallback(),
         base::BindOnce(&AuctionRunnerTest::OnAuctionComplete,
                        base::Unretained(this)));
   }
@@ -1504,6 +1505,13 @@ class AuctionRunnerTest : public testing::Test,
     if (interest_group_api_operation ==
         ContentBrowserClient::InterestGroupApiOperation::kSell) {
       return disallowed_sellers_.find(origin) == disallowed_sellers_.end();
+    }
+    if (interest_group_api_operation ==
+        ContentBrowserClient::InterestGroupApiOperation::kUpdate) {
+      // Force the auction runner to not issue post-auction interest group
+      // updates in this test environment; these are tested in other test
+      // environments.
+      return false;
     }
     DCHECK_EQ(ContentBrowserClient::InterestGroupApiOperation::kBuy,
               interest_group_api_operation);

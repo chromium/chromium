@@ -8,8 +8,10 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/span.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/rand_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
@@ -198,6 +200,16 @@ void InterestGroupUpdateManager::UpdateInterestGroupsOfOwner(
     network::mojom::ClientSecurityStatePtr client_security_state) {
   owners_to_update_.Enqueue(owner, std::move(client_security_state));
   MaybeContinueUpdatingCurrentOwner();
+}
+
+void InterestGroupUpdateManager::UpdateInterestGroupsOfOwners(
+    base::span<url::Origin> owners,
+    network::mojom::ClientSecurityStatePtr client_security_state) {
+  // Shuffle the list of interest group owners for fairness.
+  base::RandomShuffle(owners.begin(), owners.end());
+  for (const url::Origin& owner : owners) {
+    UpdateInterestGroupsOfOwner(owner, client_security_state.Clone());
+  }
 }
 
 void InterestGroupUpdateManager::set_max_update_round_duration_for_testing(

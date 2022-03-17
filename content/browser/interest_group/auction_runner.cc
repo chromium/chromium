@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/callback_forward.h"
+#include "base/containers/cxx20_erase_vector.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
@@ -29,12 +30,14 @@
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
 #include "net/base/escape.h"
+#include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -415,6 +418,17 @@ std::vector<std::string> AuctionRunner::Auction::TakeErrors() {
   return std::move(errors_);
 }
 
+void AuctionRunner::Auction::TakePostAuctionUpdateOwners(
+    std::vector<url::Origin>& owners) {
+  for (const url::Origin& owner : post_auction_update_owners_) {
+    owners.emplace_back(std::move(owner));
+  }
+
+  for (auto& component_auction : component_auctions_) {
+    component_auction->TakePostAuctionUpdateOwners(owners);
+  }
+}
+
 AuctionRunner::ScoredBid* AuctionRunner::Auction::top_bid() {
   DCHECK(all_bids_scored_);
   DCHECK(top_bid_);
@@ -435,6 +449,8 @@ void AuctionRunner::Auction::OnInterestGroupRead(
       bid_states_.emplace_back(BidState());
       bid_states_.back().bidder = std::move(*bidder);
     }
+    post_auction_update_owners_.push_back(
+        interest_groups[0].interest_group.owner);
     ++num_owners_with_interest_groups_;
   }
   OnOneLoadCompleted();
@@ -1156,12 +1172,14 @@ std::unique_ptr<AuctionRunner> AuctionRunner::CreateAndStart(
     AuctionWorkletManager* auction_worklet_manager,
     InterestGroupManagerImpl* interest_group_manager,
     blink::mojom::AuctionAdConfigPtr auction_config,
+    network::mojom::ClientSecurityStatePtr client_security_state,
     IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback,
     RunAuctionCallback callback) {
-  std::unique_ptr<AuctionRunner> instance(
-      new AuctionRunner(auction_worklet_manager, interest_group_manager,
-                        std::move(auction_config), std::move(callback)));
-  instance->StartAuction(is_interest_group_api_allowed_callback);
+  std::unique_ptr<AuctionRunner> instance(new AuctionRunner(
+      auction_worklet_manager, interest_group_manager,
+      std::move(auction_config), std::move(client_security_state),
+      std::move(is_interest_group_api_allowed_callback), std::move(callback)));
+  instance->StartAuction();
   return instance;
 }
 
@@ -1178,6 +1196,8 @@ void AuctionRunner::FailAuction() {
   // Shouldn't have any win report URLs if nothing won the auction.
   DCHECK(debug_win_report_urls.empty());
 
+  UpdateInterestGroupsPostAuction();
+
   std::move(callback_).Run(
       this, /*render_url=*/absl::nullopt,
       /*winning_group_key=*/absl::nullopt,
@@ -1186,11 +1206,17 @@ void AuctionRunner::FailAuction() {
       std::move(debug_win_report_urls), auction_.TakeErrors());
 }
 
-AuctionRunner::AuctionRunner(AuctionWorkletManager* auction_worklet_manager,
-                             InterestGroupManagerImpl* interest_group_manager,
-                             blink::mojom::AuctionAdConfigPtr auction_config,
-                             RunAuctionCallback callback)
+AuctionRunner::AuctionRunner(
+    AuctionWorkletManager* auction_worklet_manager,
+    InterestGroupManagerImpl* interest_group_manager,
+    blink::mojom::AuctionAdConfigPtr auction_config,
+    network::mojom::ClientSecurityStatePtr client_security_state,
+    IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback,
+    RunAuctionCallback callback)
     : interest_group_manager_(interest_group_manager),
+      client_security_state_(std::move(client_security_state)),
+      is_interest_group_api_allowed_callback_(
+          is_interest_group_api_allowed_callback),
       owned_auction_config_(std::move(auction_config)),
       callback_(std::move(callback)),
       auction_(owned_auction_config_.get(),
@@ -1269,10 +1295,9 @@ std::unique_ptr<AuctionRunner::Bid> AuctionRunner::Auction::TryToCreateBid(
       bidding_signals_data_version, matching_ad, &bid_state, this);
 }
 
-void AuctionRunner::StartAuction(
-    IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback) {
+void AuctionRunner::StartAuction() {
   auction_.StartLoadInterestGroupsPhase(
-      is_interest_group_api_allowed_callback,
+      is_interest_group_api_allowed_callback_,
       base::BindOnce(&AuctionRunner::OnLoadInterestGroupsComplete,
                      base::Unretained(this)));
 }
@@ -1338,11 +1363,33 @@ void AuctionRunner::OnReportingPhaseComplete(bool success) {
   const blink::InterestGroup& winning_group =
       *auction_.top_bid()->bid->interest_group;
   InterestGroupKey winning_group_key({winning_group.owner, winning_group.name});
+
+  UpdateInterestGroupsPostAuction();
+
   std::move(callback_).Run(
       this, std::move(winning_group_key), auction_.top_bid()->bid->render_url,
       auction_.top_bid()->bid->ad_components, auction_.TakeReportUrls(),
       std::move(debug_loss_report_urls), std::move(debug_win_report_urls),
       auction_.TakeErrors());
+}
+
+void AuctionRunner::UpdateInterestGroupsPostAuction() {
+  std::vector<url::Origin> update_owners;
+  auction_.TakePostAuctionUpdateOwners(update_owners);
+
+  // De-duplicate.
+  std::sort(update_owners.begin(), update_owners.end());
+  update_owners.erase(std::unique(update_owners.begin(), update_owners.end()),
+                      update_owners.end());
+
+  // Filter owners not allowed to update.
+  base::EraseIf(update_owners, [this](const url::Origin& owner) {
+    return !is_interest_group_api_allowed_callback_.Run(
+        ContentBrowserClient::InterestGroupApiOperation::kUpdate, owner);
+  });
+
+  interest_group_manager_->UpdateInterestGroupsOfOwners(
+      update_owners, client_security_state_.Clone());
 }
 
 }  // namespace content

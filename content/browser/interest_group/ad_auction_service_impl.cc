@@ -270,7 +270,7 @@ void AdAuctionServiceImpl::UpdateAdInterestGroups() {
     return;
   }
   GetInterestGroupManager().UpdateInterestGroupsOfOwner(
-      origin(), GetFrame()->BuildClientSecurityState());
+      origin(), GetClientSecurityState());
 }
 
 void AdAuctionServiceImpl::RunAdAuction(blink::mojom::AuctionAdConfigPtr config,
@@ -296,6 +296,7 @@ void AdAuctionServiceImpl::RunAdAuction(blink::mojom::AuctionAdConfigPtr config,
 
   std::unique_ptr<AuctionRunner> auction = AuctionRunner::CreateAndStart(
       &auction_worklet_manager_, &GetInterestGroupManager(), std::move(config),
+      GetClientSecurityState(),
       base::BindRepeating(&AdAuctionServiceImpl::IsInterestGroupAPIAllowed,
                           base::Unretained(this)),
       base::BindOnce(&AdAuctionServiceImpl::OnAuctionComplete,
@@ -483,16 +484,15 @@ void AdAuctionServiceImpl::OnAuctionComplete(
 
   network::mojom::URLLoaderFactory* factory = GetTrustedURLLoaderFactory();
   for (const GURL& report_url : report_urls) {
-    FetchReport(factory, report_url, origin(),
-                GetFrame()->BuildClientSecurityState());
+    FetchReport(factory, report_url, origin(), GetClientSecurityState());
   }
   for (const auto& debug_loss_report_url : debug_loss_report_urls) {
     FetchReport(factory, debug_loss_report_url, origin(),
-                GetFrame()->BuildClientSecurityState());
+                GetClientSecurityState());
   }
   for (const auto& debug_win_report_url : debug_win_report_urls) {
     FetchReport(factory, debug_win_report_url, origin(),
-                GetFrame()->BuildClientSecurityState());
+                GetClientSecurityState());
   }
 }
 

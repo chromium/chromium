@@ -13,6 +13,7 @@
 #include "base/callback_forward.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -57,6 +58,14 @@ class CONTENT_EXPORT InterestGroupUpdateManager {
   // load or validate are skipped, but other updates will proceed.
   void UpdateInterestGroupsOfOwner(
       const url::Origin& owner,
+      network::mojom::ClientSecurityStatePtr client_security_state);
+
+  // Like UpdateInterestGroupsOfOwner(), but handles multiple interest group
+  // owners.
+  //
+  // The list is shuffled in-place to ensure fairness.
+  void UpdateInterestGroupsOfOwners(
+      base::span<url::Origin> owners,
       network::mojom::ClientSecurityStatePtr client_security_state);
 
   // For testing *only*; changes the maximum amount of time that the update
