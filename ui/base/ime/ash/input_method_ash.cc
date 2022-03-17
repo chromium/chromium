@@ -485,6 +485,14 @@ bool InputMethodAsh::SetSelectionRange(uint32_t start, uint32_t end) {
 void InputMethodAsh::ConfirmCompositionText(bool reset_engine,
                                             bool keep_selection) {
   TextInputClient* client = GetTextInputClient();
+  // TODO(b/223075193): Quick fix for the case where we have a pending commit.
+  // Without this, then we would lose the pending commit after confirming the
+  // composition text.
+  // Fix this properly by getting rid of the pending mechanism completely.
+  if (pending_commit_ && !pending_composition_range_ && !pending_composition_) {
+    // Only a pending commit, so confirming the composition is a no-op.
+    return;
+  }
   if (client && client->HasCompositionText()) {
     const uint32_t characters_committed =
         client->ConfirmCompositionText(keep_selection);
