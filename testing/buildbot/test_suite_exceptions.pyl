@@ -631,6 +631,8 @@
       },
       # crbug.com/1300822
       'Mac10.12 Tests': {
+         # crbug.com/1307029
+        'experiment_percentage': 100,
         'swarming': {
           'shards': 20,
         },
