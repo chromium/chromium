@@ -10,6 +10,7 @@ import static org.chromium.components.autofill_assistant.user_data.AssistantColl
 
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -62,6 +63,7 @@ public class AutofillAssistantCollectUserDataTestHelper {
         final AssistantChoiceList mShippingAddressList;
         final AssistantChoiceList mLoginList;
         final List<View> mDividers;
+        final RelativeLayout mDataOriginNotice;
 
         ViewHolder(AssistantCollectUserDataCoordinator coordinator) {
             mAccordion = coordinator.getView().findViewWithTag(
@@ -80,6 +82,8 @@ public class AutofillAssistantCollectUserDataTestHelper {
                     AssistantTagsForTesting.COLLECT_USER_DATA_RADIO_TERMS_SECTION_TAG);
             mInfoSection = coordinator.getView().findViewWithTag(
                     AssistantTagsForTesting.COLLECT_USER_DATA_INFO_SECTION_TAG);
+            mDataOriginNotice = coordinator.getView().findViewWithTag(
+                    AssistantTagsForTesting.COLLECT_USER_DATA_DATA_ORIGIN_NOTICE_TAG);
             mDividers = findViewsWithTag(coordinator.getView(), DIVIDER_TAG);
             mContactList = (AssistantChoiceList) (findViewsWithTag(
                     mContactSection, COLLECT_USER_DATA_CHOICE_LIST)

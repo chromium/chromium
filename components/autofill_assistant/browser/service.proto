@@ -2564,6 +2564,11 @@ message PaymentInstrumentProto {
   reserved 1;
 }
 
+message DataOriginNoticeProto {
+  // Text of the link to the dialog.
+  optional string link_text = 1;
+}
+
 // Asks to provide the data used by UseAddressAction and
 // UseCreditCardAction.
 // Next: 40
@@ -2630,6 +2635,8 @@ message CollectUserDataProto {
   optional string credit_card_expired_text = 23;
   // The login details that should be gathered.
   optional LoginDetailsProto login_details = 16;
+  // If set, shows the data origin section to the user.
+  optional DataOriginNoticeProto data_origin_notice = 39;
   // An optional list of additional sections, which is above all other sections.
   repeated UserFormSectionProto additional_prepended_sections = 18;
   // An optional list of additional sections, which is below all other sections.

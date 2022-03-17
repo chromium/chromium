@@ -865,6 +865,28 @@ public class AutofillAssistantCollectUserDataUiTest {
 
     @Test
     @MediumTest
+    public void testDataOriginNotice() throws Exception {
+        AssistantCollectUserDataModel model = createCollectUserDataModel();
+        AssistantCollectUserDataCoordinator coordinator = createCollectUserDataCoordinator(model);
+        AutofillAssistantCollectUserDataTestHelper
+                .ViewHolder viewHolder = TestThreadUtils.runOnUiThreadBlocking(
+                () -> new AutofillAssistantCollectUserDataTestHelper.ViewHolder(coordinator));
+
+        TextView dataOriginLinkText =
+                viewHolder.mDataOriginNotice.findViewById(R.id.link_to_data_origin_dialog);
+
+        // Setting a text from "backend".
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            model.set(AssistantCollectUserDataModel.DATA_ORIGIN_LINK_TEXT, "About this data");
+            model.set(AssistantCollectUserDataModel.VISIBLE, true);
+        });
+
+        onView(is(dataOriginLinkText))
+                .check(matches(allOf(withText("About this data"), isDisplayed())));
+    }
+
+    @Test
+    @MediumTest
     public void testAdditionalStaticSections() throws Exception {
         AssistantCollectUserDataModel model = createCollectUserDataModel();
         AssistantCollectUserDataCoordinator coordinator = createCollectUserDataCoordinator(model);

@@ -1145,6 +1145,14 @@ bool CollectUserDataAction::CreateOptionsFromProto() {
   collect_user_data_options_->default_email =
       delegate_->GetEmailAddressForAccessTokenAccount();
 
+  if (collect_user_data.has_data_origin_notice()) {
+    const auto& notice = collect_user_data.data_origin_notice();
+    if (notice.link_text().empty()) {
+      return false;
+    }
+    collect_user_data_options_->data_origin_notice = notice;
+  }
+
   return true;
 }
 

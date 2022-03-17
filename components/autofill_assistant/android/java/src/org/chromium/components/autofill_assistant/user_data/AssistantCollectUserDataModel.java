@@ -196,6 +196,9 @@ public class AssistantCollectUserDataModel extends PropertyModel {
     public static final WritableObjectPropertyKey<byte[]> INITIALIZE_ADDRESS_COLLECTION_PARAMS =
             new WritableObjectPropertyKey<>();
 
+    public static final WritableObjectPropertyKey<String> DATA_ORIGIN_LINK_TEXT =
+            new WritableObjectPropertyKey<>();
+
     public AssistantCollectUserDataModel() {
         super(DELEGATE, WEB_CONTENTS, VISIBLE, SELECTED_SHIPPING_ADDRESS,
                 SELECTED_PAYMENT_INSTRUMENT, SELECTED_CONTACT_DETAILS, SELECTED_PHONE_NUMBER,
@@ -211,7 +214,8 @@ public class AssistantCollectUserDataModel extends PropertyModel {
                 GENERIC_USER_INTERFACE_PREPENDED, GENERIC_USER_INTERFACE_APPENDED,
                 CONTACT_SUMMARY_DESCRIPTION_OPTIONS, CONTACT_FULL_DESCRIPTION_OPTIONS,
                 SHOULD_STORE_USER_DATA_CHANGES, USE_GMS_CORE_EDIT_DIALOGS, ACCOUNT_EMAIL,
-                ADD_PAYMENT_INSTRUMENT_ACTION_TOKEN, INITIALIZE_ADDRESS_COLLECTION_PARAMS);
+                ADD_PAYMENT_INSTRUMENT_ACTION_TOKEN, INITIALIZE_ADDRESS_COLLECTION_PARAMS,
+                DATA_ORIGIN_LINK_TEXT);
 
         /*
          * Set initial state for basic type properties (others are implicitly null).
@@ -236,6 +240,7 @@ public class AssistantCollectUserDataModel extends PropertyModel {
         set(AVAILABLE_BILLING_ADDRESSES, Collections.emptyList());
         set(INFO_SECTION_TEXT, "");
         set(ACCOUNT_EMAIL, "");
+        set(DATA_ORIGIN_LINK_TEXT, "");
     }
 
     @CalledByNative
@@ -376,6 +381,11 @@ public class AssistantCollectUserDataModel extends PropertyModel {
     @CalledByNative
     private void setSelectedLoginChoice(@Nullable AssistantLoginChoice loginChoice) {
         set(SELECTED_LOGIN, loginChoice == null ? null : new LoginChoiceModel(loginChoice));
+    }
+
+    @CalledByNative
+    private void setDataOriginLinkText(String text) {
+        set(DATA_ORIGIN_LINK_TEXT, text);
     }
 
     /** Creates an empty list of login options. */

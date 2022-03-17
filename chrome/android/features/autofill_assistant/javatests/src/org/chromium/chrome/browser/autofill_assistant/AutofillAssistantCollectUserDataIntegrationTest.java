@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.autofill_assistant;
-
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.pressImeActionButton;
@@ -73,6 +72,7 @@ import org.chromium.chrome.browser.autofill_assistant.proto.CollectUserDataProto
 import org.chromium.chrome.browser.autofill_assistant.proto.CollectUserDataProto.TermsAndConditionsState;
 import org.chromium.chrome.browser.autofill_assistant.proto.CollectUserDataResultProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ContactDetailsProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.DataOriginNoticeProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.DropdownSelectStrategy;
 import org.chromium.chrome.browser.autofill_assistant.proto.ElementAreaProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ElementAreaProto.Rectangle;
@@ -1333,5 +1333,39 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
         onView(withContentDescription("Continue")).perform(click());
         waitUntilViewMatchesCondition(withText("Prompt"), isCompletelyDisplayed());
         assertThat(getElementValue(getWebContents(), "profile_name"), is("John Doe"));
+    }
+
+    /**
+     * Data origin notice should be shown with the corresponding text.
+     */
+    @Test
+    @MediumTest
+    public void testDataOriginNotice() throws Exception {
+        ArrayList<ActionProto> list = new ArrayList<>();
+        list.add(
+                ActionProto.newBuilder()
+                        .setCollectUserData(
+                                CollectUserDataProto.newBuilder()
+                                        .setRequestTermsAndConditions(false)
+                                        .setDataOriginNotice(
+                                                DataOriginNoticeProto.newBuilder().setLinkText(
+                                                        "About this data"))
+                                        .setContactDetails(ContactDetailsProto.newBuilder()
+                                                                   .setContactDetailsName("contact")
+                                                                   .setRequestPayerName(true)
+                                                                   .setRequestPayerEmail(true)))
+                        .build());
+        AutofillAssistantTestScript script = new AutofillAssistantTestScript(
+                SupportedScriptProto.newBuilder()
+                        .setPath("form_target_website.html")
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
+                        .build(),
+                list);
+
+        AutofillAssistantTestService testService =
+                new AutofillAssistantTestService(Collections.singletonList(script));
+        startAutofillAssistant(mTestRule.getActivity(), testService);
+
+        waitUntilViewMatchesCondition(withText("About this data"), isDisplayed());
     }
 }

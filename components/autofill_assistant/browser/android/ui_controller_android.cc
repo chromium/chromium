@@ -1289,6 +1289,12 @@ void UiControllerAndroid::OnCollectUserDataOptionsChanged(
       env, jmodel,
       base::android::ToJavaArrayOfStrings(
           env, collect_user_data_options->supported_basic_card_networks));
+  if (collect_user_data_options->data_origin_notice) {
+    Java_AssistantCollectUserDataModel_setDataOriginLinkText(
+        env, jmodel,
+        ConvertUTF8ToJavaString(
+            env, collect_user_data_options->data_origin_notice->link_text()));
+  }
   if (collect_user_data_options->request_login_choice) {
     auto jlist = CreateJavaLoginChoiceList(
         env, collect_user_data_options->login_choices,

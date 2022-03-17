@@ -350,6 +350,7 @@ struct CollectUserDataOptions {
   absl::optional<GenericUserInterfaceProto> generic_user_interface_prepended;
   absl::optional<GenericUserInterfaceProto> generic_user_interface_appended;
   absl::optional<std::string> additional_model_identifier_to_check;
+  absl::optional<DataOriginNoticeProto> data_origin_notice;
 
   base::OnceCallback<void(UserData*, const UserModel*)> confirm_callback;
   base::OnceCallback<void(int, UserData*, const UserModel*)>

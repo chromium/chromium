@@ -99,6 +99,9 @@ public class AssistantCollectUserDataCoordinator {
                 new AssistantTermsSection(mActivity, paymentRequestExpanderAccordion,
                         /* showAsSingleCheckbox= */ true);
 
+        AssistantDataOriginNotice dataOriginNotice =
+                new AssistantDataOriginNotice(mActivity, paymentRequestExpanderAccordion);
+
         paymentRequestExpanderAccordion.setTag(
                 AssistantTagsForTesting.COLLECT_USER_DATA_ACCORDION_TAG);
         loginSection.getView().setTag(AssistantTagsForTesting.COLLECT_USER_DATA_LOGIN_SECTION_TAG);
@@ -115,15 +118,17 @@ public class AssistantCollectUserDataCoordinator {
         termsAsCheckboxSection.getView().setTag(
                 AssistantTagsForTesting.COLLECT_USER_DATA_CHECKBOX_TERMS_SECTION_TAG);
         infoSection.getView().setTag(AssistantTagsForTesting.COLLECT_USER_DATA_INFO_SECTION_TAG);
+        dataOriginNotice.getView().setTag(
+                AssistantTagsForTesting.COLLECT_USER_DATA_DATA_ORIGIN_NOTICE_TAG);
 
         // Bind view and mediator through the model.
         mViewHolder = new AssistantCollectUserDataBinder.ViewHolder(mPaymentRequestUI,
                 paymentRequestExpanderAccordion, sectionToSectionPadding, loginSection,
                 contactDetailsSection, phoneNumberSection, paymentMethodSection,
                 shippingAddressSection, termsSection, termsAsCheckboxSection, infoSection,
-                prependedSections, appendedSections, genericUserInterfaceContainerPrepended,
-                genericUserInterfaceContainerAppended, DIVIDER_TAG, mActivity, editorFactory,
-                windowAndroid);
+                prependedSections, appendedSections, dataOriginNotice,
+                genericUserInterfaceContainerPrepended, genericUserInterfaceContainerAppended,
+                DIVIDER_TAG, mActivity, editorFactory, windowAndroid);
         AssistantCollectUserDataBinder binder = new AssistantCollectUserDataBinder();
         PropertyModelChangeProcessor.create(model, mViewHolder, binder);
 

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2022 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="30dp"
+    android:layout_centerVertical="true">
+        <TextView
+            android:id="@+id/link_to_data_origin_dialog"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:drawablePadding="12dp"
+            android:includeFontPadding="false"
+            android:gravity="center_vertical"
+            app:drawableEndCompat="@drawable/ic_baseline_help_24dp"
+            />
+        <!-- Line before start of text. -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="40dp"
+            android:layout_toStartOf="@id/link_to_data_origin_dialog"
+            android:background="@color/baseline_neutral_50"
+            />
+        <!-- Line after end of text. -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="40dp"
+            android:layout_toEndOf="@id/link_to_data_origin_dialog"
+            android:background="@color/baseline_neutral_50"
+            />
+</RelativeLayout>

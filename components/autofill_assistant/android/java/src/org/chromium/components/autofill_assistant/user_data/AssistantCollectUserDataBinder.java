@@ -53,6 +53,7 @@ class AssistantCollectUserDataBinder
         private final AssistantInfoSection mInfoSection;
         private final AssistantAdditionalSectionContainer mPrependedSections;
         private final AssistantAdditionalSectionContainer mAppendedSections;
+        private final AssistantDataOriginNotice mDataOriginNotice;
         private final ViewGroup mGenericUserInterfaceContainerPrepended;
         private final ViewGroup mGenericUserInterfaceContainerAppended;
         private final Object mDividerTag;
@@ -70,6 +71,7 @@ class AssistantCollectUserDataBinder
                 AssistantInfoSection infoSection,
                 AssistantAdditionalSectionContainer prependedSections,
                 AssistantAdditionalSectionContainer appendedSections,
+                AssistantDataOriginNotice dataOriginNotice,
                 ViewGroup genericUserInterfaceContainerPrepended,
                 ViewGroup genericUserInterfaceContainerAppended, Object dividerTag,
                 Activity activity, AssistantEditorFactory editorFactory,
@@ -89,6 +91,7 @@ class AssistantCollectUserDataBinder
             mAppendedSections = appendedSections;
             mGenericUserInterfaceContainerPrepended = genericUserInterfaceContainerPrepended;
             mGenericUserInterfaceContainerAppended = genericUserInterfaceContainerAppended;
+            mDataOriginNotice = dataOriginNotice;
             mDividerTag = dividerTag;
             mActivity = activity;
             mEditorFactory = editorFactory;
@@ -317,6 +320,10 @@ class AssistantCollectUserDataBinder
         } else if (propertyKey == AssistantCollectUserDataModel.CONTACT_FULL_DESCRIPTION_OPTIONS) {
             view.mContactDetailsSection.setContactFullOptions(
                     model.get(AssistantCollectUserDataModel.CONTACT_FULL_DESCRIPTION_OPTIONS));
+            return true;
+        } else if (propertyKey == AssistantCollectUserDataModel.DATA_ORIGIN_LINK_TEXT) {
+            view.mDataOriginNotice.setDataOriginLinkText(
+                    model.get(AssistantCollectUserDataModel.DATA_ORIGIN_LINK_TEXT));
             return true;
         }
 
