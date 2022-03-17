@@ -2,14 +2,13 @@
 <script src="/common/get-host-info.sub.js"></script>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/speculation-rules/prerender/resources/utils.js"></script>
 <script src="unload-utils.js"></script>
-<script src="utils.js"></script>
 <body>
 <script type="module">
 const params = new URLSearchParams(location.search);
 const state = params.get('state') || 'start';
-
-const bc = openChannel();
+const uid = params.get('uid');
 
 // Test steps:
 //   1. `start` page starts prerendering `prerendering` page.
@@ -21,37 +20,34 @@ const bc = openChannel();
 //   6. `pagehide`, `visibilitychange`, and `unload` events are handled in
 //      `same-origin-frame` for the resumed navigation.
 //   7. `cross-origin-frame` is loaded, then `prerendering` quits the test.
-bc.postMessage('load ' + state);
+sendChannelMessage('load ' + state, uid);
 if (state === 'start') {
-  const url = createTestUrl('prerendering');
+  const url = createTestUrl('prerendering', uid);
   startPrerendering(url);
 
   // Wait for a message from 'same-origin-frame' that is sent after triggering
   // cross-origin navigation.
-  await waitChannelMessage('request activation');
+  await waitChannelMessage('request activation', uid);
 
   // Activate the 'prerendering' page.
   document.location = url;
 } else if (state === 'prerendering') {
-  const frame = addFrame(createTestUrl('same-origin-frame'));
-
-  // Complete the test when the `cross-origin-frame` is loaded.
-  const message = await waitWindowMessage();
-  bc.postMessage(message);
-  bc.postMessage('Done');
+  const frame = addFrame(createTestUrl('same-origin-frame', uid));
 } else if (state === 'same-origin-frame') {
-  addEventListeners('same-origin-frame');
+  const eventPromise = addEventListeners(state, uid);
 
   // Run a cross-origin navigation.
-  document.location = createCrossOriginTestUrl('cross-origin-frame');
+  document.location = createCrossOriginTestUrl('cross-origin-frame', uid);
 
   // Ask the 'start' page to activate the prerendering page.
-  bc.postMessage('request activation');
+  sendChannelMessage('request activation', uid);
+
+  // Wait for events fired during activation (e.g., unload).
+  await eventPromise;
 } else if (state === 'cross-origin-frame') {
-  // Let the 'prerendering' page know this frame is loaded.
-  window.parent.postMessage('load ' + state, '*');
+  // Complete the test when the `cross-origin-frame` is loaded.
+  window.close();
 }
 
-bc.close();
 </script>
 </body>
