@@ -56,6 +56,13 @@ class AshWebViewImpl : public ash::AshWebView,
   bool TakeFocus(content::WebContents* web_contents, bool reverse) override;
   void NavigationStateChanged(content::WebContents* web_contents,
                               content::InvalidateTypes changed_flags) override;
+  void RequestMediaAccessPermission(
+      content::WebContents* web_contents,
+      const content::MediaStreamRequest& request,
+      content::MediaResponseCallback callback) override;
+  bool CheckMediaAccessPermission(content::RenderFrameHost* render_frame_host,
+                                  const GURL& security_origin,
+                                  blink::mojom::MediaStreamType type) override;
 
   // content::WebContentsObserver:
   void DidStopLoading() override;

@@ -267,7 +267,9 @@ void EcheTray::InitBubble() {
   header_view->SetPaintToLayer();
   header_view->layer()->SetFillsBoundsOpaquely(false);
 
-  auto web_view = AshWebViewFactory::Get()->Create(AshWebView::InitParams());
+  AshWebView::InitParams params;
+  params.can_record_media = true;
+  auto web_view = AshWebViewFactory::Get()->Create(params);
   web_view->SetPreferredSize(GetSizeForEche());
   if (!url_.is_empty())
     web_view->Navigate(url_);
