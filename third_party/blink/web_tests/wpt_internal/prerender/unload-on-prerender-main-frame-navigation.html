@@ -13,17 +13,13 @@ This file cannot be upstreamed to WPT until:
   (https://crbug.com/1222551)
 -->
 <title>unload event handlers</title>
-<meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/common/utils.js"></script>
-<script src="/speculation-rules/prerender/resources/utils.js"></script>
 <script src="resources/unload-utils.js"></script>
 <script>
   promise_test(async t => {
-    const uid = token();
-    const gotMessages = waitChannelMessage('load another-page', uid);
-    const url = `resources/unload-on-prerender-main-frame-navigation.html?uid=${uid}`;
+    const gotMessages = waitChannelMessage('Done');
+    const url = 'resources/unload-on-prerender-main-frame-navigation.html';
     window.open(url, '_blank', 'noopener');
     const result = await gotMessages;
 
@@ -41,6 +37,7 @@ This file cannot be upstreamed to WPT until:
       { message: 'visibilitychange main-frame' },
       { message: 'unload main-frame' },
       { message: 'load another-page' },
+      { message: 'Done' },
     ];
     let offset = 0;
     assert_less_than_equal(result.length, expected.length);
