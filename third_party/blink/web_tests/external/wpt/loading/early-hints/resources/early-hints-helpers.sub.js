@@ -49,11 +49,12 @@ function getPreloadsFromSearchParams() {
  *
  * @param {string} url
  */
- async function fetchScript(url) {
-    return new Promise((resolve) => {
+async function fetchScript(url) {
+    return new Promise((resolve, reject) => {
         const el = document.createElement("script");
         el.src = url;
         el.onload = resolve;
+        el.onerror = _ => reject(new Error("Failed to fetch script"));
         document.body.appendChild(el);
     });
 }
@@ -66,6 +67,9 @@ function getPreloadsFromSearchParams() {
  */
 function isPreloadedByEarlyHints(url) {
     const entries = performance.getEntriesByName(url);
+    if (entries.length === 0) {
+        return false;
+    }
     assert_equals(entries.length, 1);
     return entries[0].initiatorType === "early-hints";
 }
@@ -86,4 +90,29 @@ function testReferrerPolicy(referrer_policy) {
     const path = "resources/referrer-policy-test-loader.h2.py?" + params.toString();
     const url = new URL(path, window.location);
     window.location.replace(url);
+}
+
+/**
+ * Navigate to the content security policy basic test. The test page sends an
+ * Early Hints response with a cross origin resource preload. CSP headers are
+ * configured based on the given policies. A policy should be one of the
+ * followings:
+ *   "absent" - Do not send Content-Security-Policy header
+ *   "allowed" - Set Content-Security-Policy to allow the cross origin preload
+ *   "disallowed" - Set Content-Security-Policy to disallow the cross origin  preload
+ *
+ * @param {string} early_hints_policy - The policy for the Early Hints response
+ * @param {string} final_policy - The policy for the final response
+ */
+function navigateToContentSecurityPolicyBasicTest(
+    early_hints_policy, final_policy) {
+    const params = new URLSearchParams();
+    params.set("resource-origin", CROSS_ORIGIN);
+    params.set("resource-url",
+        CROSS_ORIGIN_RESOURCES_URL + "/empty.js?" + token());
+    params.set("early-hints-policy", early_hints_policy);
+    params.set("final-policy", final_policy);
+
+    const url = "resources/csp-basic-loader.h2.py?" + params.toString();
+    window.location.replace(new URL(url, window.location));
 }
