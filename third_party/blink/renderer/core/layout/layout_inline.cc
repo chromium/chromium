@@ -1285,8 +1285,18 @@ bool LayoutInline::HitTestCulledInline(HitTestResult& result,
     DCHECK(IsDescendantOf(parent_cursor->GetLayoutBlockFlow()));
     NGInlineCursor cursor(*parent_cursor);
     cursor.MoveToIncludingCulledInline(*this);
-    for (; cursor; cursor.MoveToNextForSameLayoutObject())
+    for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
+      // Block-in-inline is inline in the box tree, and may appear as a child of
+      // a culled inline, but it should be painted and hit-tested as block
+      // painting-order-wise. Don't include it as part of the culled inline
+      // region. https://www.w3.org/TR/CSS22/zindex.html#painting-order
+      if (const NGPhysicalBoxFragment* fragment =
+              cursor.Current().BoxFragment()) {
+        if (UNLIKELY(fragment->IsOpaque()))
+          continue;
+      }
       yield(cursor.Current().RectInContainerFragment());
+    }
   } else {
     DCHECK(!IsInLayoutNGInlineFormattingContext());
     CollectCulledLineBoxRects(yield);
