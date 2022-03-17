@@ -47,3 +47,9 @@ test("cast_cast_core_unittests") {
     "//mojo/core/test:run_all_unittests",
   ]
 }
+
+group("cast_core_integration_test") {
+  testonly = true
+  data = [ "//chromecast/cast_core/test/" ]
+  data_deps = [ "//tools/perf/chrome_telemetry_build:telemetry_chrome_test" ]
+}
