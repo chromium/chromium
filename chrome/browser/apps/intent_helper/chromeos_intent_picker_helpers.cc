@@ -9,20 +9,19 @@
 
 #include "base/bind.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_auto_display_service.h"
+#include "chrome/browser/apps/intent_helper/intent_picker_features.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_internal.h"
 #include "chrome/browser/apps/intent_helper/metrics/intent_handling_metrics.h"
 #include "chrome/browser/apps/intent_helper/supported_links_infobar_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
-#include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/intent_constants.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/browser/navigation_handle.h"
@@ -51,7 +50,7 @@ bool ShouldAutoDisplayUi(
   const GURL& url = navigation_handle->GetURL();
 
   // Disable Auto-display when the Intent Chip is enabled.
-  if (base::FeatureList::IsEnabled(features::kLinkCapturingUiUpdate))
+  if (features::LinkCapturingUiUpdateEnabled())
     return false;
 
   if (apps_for_picker.empty())
@@ -218,7 +217,7 @@ void LaunchAppFromIntentPickerChromeOs(content::WebContents* web_contents,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // TODO(crbug.com/1293173): Lacros support for the infobar UI.
-    if (base::FeatureList::IsEnabled(features::kLinkCapturingUiUpdate)) {
+    if (features::LinkCapturingInfoBarEnabled()) {
       SupportedLinksInfoBarDelegate::MaybeShowSupportedLinksInfoBar(
           web_contents, launch_name);
     }

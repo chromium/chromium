@@ -19,6 +19,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/apps/intent_helper/intent_picker_features.h"
 #include "chrome/browser/command_updater.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
@@ -507,8 +508,9 @@ void ToolbarView::ShowIntentPickerBubble(
   views::Button* highlighted_button = nullptr;
   if (bubble_type == IntentPickerBubbleView::BubbleType::kClickToCall) {
     highlighted_button =
+
         GetPageActionIconView(PageActionIconType::kClickToCall);
-  } else if (base::FeatureList::IsEnabled(features::kLinkCapturingUiUpdate)) {
+  } else if (apps::features::LinkCapturingUiUpdateEnabled()) {
     highlighted_button = GetIntentChipButton();
   } else {
     highlighted_button =

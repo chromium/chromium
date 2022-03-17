@@ -3769,6 +3769,11 @@
     "expiry_milestone": 95
   },
   {
+    "name": "intent-chip-skips-intent-picker",
+    "owners": ["tsergeant", "chromeos-apps-foundation-team@google.com"],
+    "expiry_milestone": 105
+  },
+  {
     "name": "interest-feed-notice-card-auto-dismiss",
     "owners": [ "//chrome/android/feed/OWNERS", "feed@chromium.org", "edchin@chromium.org" ],
     "expiry_milestone": 95
@@ -3987,6 +3992,11 @@
     "name": "lightweight-reactions-android",
     "owners": [ "gujen", "sophey" ],
     "expiry_milestone": 104
+  },
+  {
+    "name": "link-capturing-infobar",
+    "owners": ["tsergeant", "chromeos-apps-foundation-team@google.com"],
+    "expiry_milestone": 105
   },
   {
     "name": "link-capturing-ui-update",

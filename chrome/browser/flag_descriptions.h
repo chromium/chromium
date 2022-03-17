@@ -3226,6 +3226,12 @@ extern const char kVaapiAV1DecoderDescription[];
 extern const char kEnableTtsLacrosSupportName[];
 extern const char kEnableTtsLacrosSupportDescription[];
 
+extern const char kIntentChipSkipsPickerName[];
+extern const char kIntentChipSkipsPickerDescription[];
+
+extern const char kLinkCapturingInfoBarName[];
+extern const char kLinkCapturingInfoBarDescription[];
+
 extern const char kLinkCapturingUiUpdateName[];
 extern const char kLinkCapturingUiUpdateDescription[];
 

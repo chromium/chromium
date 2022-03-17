@@ -4,6 +4,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/apps/intent_helper/intent_picker_features.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -13,7 +14,6 @@
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
-#include "chrome/common/chrome_features.h"
 #include "content/public/test/browser_test.h"
 #include "ui/events/event_utils.h"
 #include "ui/views/test/button_test_api.h"
@@ -28,7 +28,10 @@ class IntentChipButtonBrowserTest
     : public web_app::WebAppNavigationBrowserTest {
  public:
   IntentChipButtonBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kLinkCapturingUiUpdate);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{apps::features::kLinkCapturingUiUpdate,
+                              apps::features::kIntentChipSkipsPicker},
+        /*disabled_features=*/{});
   }
 
   void OpenNewTab(const GURL& url) {

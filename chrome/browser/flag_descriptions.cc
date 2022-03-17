@@ -5602,6 +5602,20 @@ const char kEnableTtsLacrosSupportName[] = "Enable tts lacros support";
 const char kEnableTtsLacrosSupportDescription[] =
     "Enable or disable lacros support for text to speech.";
 
+const char kIntentChipSkipsPickerName[] =
+    "Link capturing intent chip skips the intent picker bubble";
+const char kIntentChipSkipsPickerDescription[] =
+    "When enabled, clicking the intent chip in the Omnibox will skip the "
+    "intent picker bubble and launch directly into the app. If multiple apps "
+    "are installed for a URL, the intent picker will still be shown for "
+    "disambigation.";
+
+const char kLinkCapturingInfoBarName[] = "Enable link capturing info bar";
+const char kLinkCapturingInfoBarDescription[] =
+    "Enables an info bar which appears when launching a web app through the "
+    "Omnibox intent chip, prompting to update the link capturing setting for "
+    "that app.";
+
 const char kLinkCapturingUiUpdateName[] = "Enable updated link capturing UI";
 const char kLinkCapturingUiUpdateDescription[] =
     "Enables updated UI for link capturing flows from the browser to apps, "

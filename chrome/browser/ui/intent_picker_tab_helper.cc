@@ -12,6 +12,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_auto_display_service.h"
+#include "chrome/browser/apps/intent_helper/intent_picker_features.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -91,7 +92,7 @@ void IntentPickerTabHelper::SetShouldShowIcon(
 
   tab_helper->should_show_icon_ = should_show_icon;
 
-  if (base::FeatureList::IsEnabled(features::kLinkCapturingUiUpdate)) {
+  if (apps::features::LinkCapturingUiUpdateEnabled()) {
     tab_helper->UpdateCollapsedState();
   }
 

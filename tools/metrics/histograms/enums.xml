@@ -52880,6 +52880,7 @@ from previous Chrome versions.
   <int value="-1294050129" label="ContentFullscreen:disabled"/>
   <int value="-1293987566" label="OmniboxZeroSuggestionsOnNTPRealbox:disabled"/>
   <int value="-1293566107" label="DocumentTransition:disabled"/>
+  <int value="-1292766410" label="IntentChipSkipsPicker:disabled"/>
   <int value="-1292615467"
       label="OmniboxSuggestionTransparencyOptions:disabled"/>
   <int value="-1291963295" label="ComputePressure:disabled"/>
@@ -54193,6 +54194,7 @@ from previous Chrome versions.
       label="OmniboxUIExperimentHideSteadyStateUrlPathQueryAndRefOnInteraction:enabled"/>
   <int value="-389283574" label="IPH_PasswordsAccountStorage:disabled"/>
   <int value="-387606010" label="ArcBootCompletedBroadcast:enabled"/>
+  <int value="-387217874" label="LinkCapturingInfoBar:enabled"/>
   <int value="-385461103" label="XsurfaceMetricsReporting:enabled"/>
   <int value="-385337473" label="enable-fast-unload"/>
   <int value="-384589459" label="disable-supervised-user-safesites"/>
@@ -56030,6 +56032,7 @@ from previous Chrome versions.
   <int value="884106779" label="supervised-user-safesites"/>
   <int value="884892326" label="CSSCascadeLayers:enabled"/>
   <int value="885186849" label="finch-seed-expiration-age"/>
+  <int value="885943836" label="IntentChipSkipsPicker:enabled"/>
   <int value="885971656" label="EnablePlayStoreAppSearch:enabled"/>
   <int value="886907524" label="autoplay-policy"/>
   <int value="886990840" label="ImeMojoDecoder:enabled"/>
@@ -57205,6 +57208,7 @@ from previous Chrome versions.
   <int value="1711037950"
       label="AutofillVisualImprovementsForSuggestionUi:disabled"/>
   <int value="1711286384" label="ContextMenuCopyImage:disabled"/>
+  <int value="1711998812" label="LinkCapturingInfoBar:disabled"/>
   <int value="1712622545" label="Memories:disabled"/>
   <int value="1712697097" label="QuickAnswersV2:disabled"/>
   <int value="1712880335" label="FiltersInRecents:enabled"/>

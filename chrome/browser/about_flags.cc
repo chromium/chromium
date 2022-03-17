@@ -210,6 +210,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/apps/intent_helper/intent_picker_features.h"
 #include "chromeos/constants/chromeos_features.h"
 #endif
 
@@ -8200,7 +8201,7 @@ const FeatureEntry kFeatureEntries[] = {
 #if BUILDFLAG(IS_CHROMEOS)
     {"link-capturing-ui-update", flag_descriptions::kLinkCapturingUiUpdateName,
      flag_descriptions::kLinkCapturingUiUpdateDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kLinkCapturingUiUpdate)},
+     FEATURE_VALUE_TYPE(apps::features::kLinkCapturingUiUpdate)},
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -8406,6 +8407,17 @@ const FeatureEntry kFeatureEntries[] = {
     {"omit-cors-client-cert", flag_descriptions::kOmitCorsClientCertName,
      flag_descriptions::kOmitCorsClientCertDescription, kOsAll,
      FEATURE_VALUE_TYPE(network::features::kOmitCorsClientCert)},
+
+#if BUILDFLAG(IS_CHROMEOS)
+    {"link-capturing-infobar", flag_descriptions::kLinkCapturingInfoBarName,
+     flag_descriptions::kLinkCapturingInfoBarDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(apps::features::kLinkCapturingInfoBar)},
+
+    {"intent-chip-skips-intent-picker",
+     flag_descriptions::kIntentChipSkipsPickerName,
+     flag_descriptions::kIntentChipSkipsPickerDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(apps::features::kIntentChipSkipsPicker)},
+#endif
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
