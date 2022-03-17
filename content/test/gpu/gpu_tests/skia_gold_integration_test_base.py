@@ -127,6 +127,7 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
   def TearDownProcess(cls):
     super(SkiaGoldIntegrationTestBase, cls).TearDownProcess()
     shutil.rmtree(cls._skia_gold_temp_dir)
+    cls._skia_gold_session_manager = None
 
   @classmethod
   def AddCommandlineArgs(cls, parser):
