@@ -413,9 +413,11 @@ public class NotificationUmaTracker {
      * @param grantResults List of grant results.
      */
     public void onNotificationPermissionRequestResult(String[] permissions, int[] grantResults) {
-        assert permissions.length == 1;
-        assert grantResults.length == 1;
-        assert permissions[0].equals(PermissionConstants.NOTIFICATION_PERMISSION);
+        if (permissions.length != 1 || grantResults.length != 1
+                || !permissions[0].equals(PermissionConstants.NOTIFICATION_PERMISSION)) {
+            assert false;
+            return;
+        }
 
         boolean isPermissionGranted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
 
