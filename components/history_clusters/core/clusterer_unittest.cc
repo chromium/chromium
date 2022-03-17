@@ -230,27 +230,34 @@ TEST_F(ClustererTest, SplitClusterOnSearchVisit) {
   cluster_visit4.search_terms = u"whatever";
   visits.push_back(cluster_visit4);
 
-  // Visit5 was referred by visit 4, is a search visit, and has the same search
-  // terms as visit 4.
+  // Visit5 was referred by visit 4.
   history::AnnotatedVisit visit5 =
-      testing::CreateDefaultAnnotatedVisit(5, GURL("https://search.com/"));
+      testing::CreateDefaultAnnotatedVisit(5, GURL("https://resultlink.com/"));
   visit5.referring_visit_of_redirect_chain_start = 4;
   visit5.visit_row.visit_time =
-      base::Time::Now() + base::Hours(2) + base::Minutes(2);
-  history::ClusterVisit cluster_visit5 = testing::CreateClusterVisit(visit5);
-  cluster_visit5.search_terms = u"whatever";
-  visits.push_back(cluster_visit5);
+      base::Time::Now() + base::Hours(2) + base::Minutes(1);
+  visits.push_back(testing::CreateClusterVisit(visit5));
 
-  // Visit6 was referred by visit 5, is a search visit but has different search
-  // terms as visit 5.
+  // Visit6 is a search visit (back-forward) and has the same search terms as
+  // visit 4.
   history::AnnotatedVisit visit6 =
       testing::CreateDefaultAnnotatedVisit(6, GURL("https://search.com/"));
-  visit6.referring_visit_of_redirect_chain_start = 5;
   visit6.visit_row.visit_time =
-      base::Time::Now() + base::Hours(2) + base::Minutes(3);
+      base::Time::Now() + base::Hours(2) + base::Minutes(2);
   history::ClusterVisit cluster_visit6 = testing::CreateClusterVisit(visit6);
-  cluster_visit6.search_terms = u"different";
+  cluster_visit6.search_terms = u"whatever";
   visits.push_back(cluster_visit6);
+
+  // Visit7 was referred by visit 6, is a search visit but has different search
+  // terms as visit 6.
+  history::AnnotatedVisit visit7 =
+      testing::CreateDefaultAnnotatedVisit(7, GURL("https://search.com/"));
+  visit7.referring_visit_of_redirect_chain_start = 6;
+  visit7.visit_row.visit_time =
+      base::Time::Now() + base::Hours(2) + base::Minutes(3);
+  history::ClusterVisit cluster_visit7 = testing::CreateClusterVisit(visit7);
+  cluster_visit7.search_terms = u"different";
+  visits.push_back(cluster_visit7);
 
   std::vector<history::Cluster> result_clusters =
       CreateInitialClustersFromVisits(visits);
@@ -262,9 +269,10 @@ TEST_F(ClustererTest, SplitClusterOnSearchVisit) {
           ElementsAre(testing::VisitResult(3, 1.0)),
           ElementsAre(testing::VisitResult(4, 1.0, /*duplicate_visits=*/{},
                                            u"whatever"),
-                      testing::VisitResult(5, 1.0, /*duplicate_visits=*/{},
+                      testing::VisitResult(5, 1.0),
+                      testing::VisitResult(6, 1.0, /*duplicate_visits=*/{},
                                            u"whatever")),
-          ElementsAre(testing::VisitResult(6, 1.0, /*duplicate_visits=*/{},
+          ElementsAre(testing::VisitResult(7, 1.0, /*duplicate_visits=*/{},
                                            u"different"))));
 }
 
