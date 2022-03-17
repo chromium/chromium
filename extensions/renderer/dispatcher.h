@@ -284,6 +284,8 @@ class Dispatcher : public content::RenderThreadObserver,
   void OnDispatchOnDisconnect(int worker_thread_id,
                               const PortId& port_id,
                               const std::string& error_message);
+
+  // mojom::EventDispatcher implementation.
   void DispatchEvent(mojom::DispatchEventParamsPtr params,
                      base::Value event_args) override;
 
@@ -381,8 +383,9 @@ class Dispatcher : public content::RenderThreadObserver,
   // it is dependent on other messages sent on other associated channels.
   mojo::AssociatedReceiver<mojom::Renderer> receiver_;
 
-  // Extensions Dipsatch receiver. This is an associated receiver because
-  // it is dependent on other messages sent on other associated channels.
+  // Extensions mojom::EventDispatcher receiver. This is an associated receiver
+  // because it is dependent on other messages sent on other associated
+  // channels.
   mojo::AssociatedReceiver<mojom::EventDispatcher> dispatcher_;
 
   // Used to hold a service worker information which is ready to execute but the

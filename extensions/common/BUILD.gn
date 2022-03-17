@@ -173,18 +173,6 @@ mojom("mojom") {
       traits_sources =
           [ "//extensions/common/mojom/activation_sequence_mojom_traits.cc" ]
     },
-    {
-      types = [
-        {
-          mojom = "extensions.mojom.EventFilteringInfo"
-          cpp = "::extensions::EventFilteringInfo"
-        },
-      ]
-      traits_headers =
-          [ "//extensions/common/mojom/event_dispatcher_mojom_traits.h" ]
-      traits_sources =
-          [ "//extensions/common/mojom/event_dispatcher_mojom_traits.cc" ]
-    },
   ]
   overridden_deps = [ "//content/public/common:interfaces" ]
 
@@ -251,10 +239,6 @@ static_library("common") {
     "error_utils.h",
     "event_filter.cc",
     "event_filter.h",
-    "event_filtering_info.cc",
-    "event_filtering_info.h",
-    "event_filtering_info_type_converters.cc",
-    "event_filtering_info_type_converters.h",
     "event_matcher.cc",
     "event_matcher.h",
     "extension.cc",

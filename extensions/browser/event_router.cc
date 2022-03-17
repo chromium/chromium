@@ -34,7 +34,6 @@
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/common/constants.h"
-#include "extensions/common/event_filtering_info_type_converters.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_api.h"
 #include "extensions/common/extension_messages.h"
@@ -163,26 +162,22 @@ void EventRouter::DispatchExtensionMessage(
     UserGestureState user_gesture,
     mojom::EventFilteringInfoPtr info) {
   NotifyEventDispatched(browser_context, extension_id, event_name, *event_args);
-  mojom::DispatchEventParams params;
-  params.worker_thread_id = worker_thread_id;
-  params.extension_id = extension_id;
-  params.event_name = event_name;
-  params.event_id = event_id;
-  params.is_user_gesture = user_gesture == USER_GESTURE_ENABLED;
-  params.filtering_info = info->To<EventFilteringInfo>();
+  auto params = mojom::DispatchEventParams::New();
+  params->worker_thread_id = worker_thread_id;
+  params->extension_id = extension_id;
+  params->event_name = event_name;
+  params->event_id = event_id;
+  params->is_user_gesture = user_gesture == USER_GESTURE_ENABLED;
+  params->filtering_info = std::move(info);
 
-  // TODO(crbug/1222550): Remove IPC->Send call after worker_thread_dispatcher
-  // is also mojofied.
-  if (worker_thread_id == kMainThreadId) {
-    Get(browser_context)->RouteDispatchEvent(rph, params.Clone(), *event_args);
-  } else {
-    rph->Send(new ExtensionMsg_DispatchEvent(params, *event_args));
-  }
+  Get(browser_context)->RouteDispatchEvent(rph, std::move(params), *event_args);
 }
 
 void EventRouter::RouteDispatchEvent(content::RenderProcessHost* rph,
-                                     const mojom::DispatchEventParamsPtr params,
-                                     const ListValue& event_args) {
+                                     mojom::DispatchEventParamsPtr params,
+                                     ListValue& event_args) {
+  // TODO(crbug.com/1302000) Add bindings for worker threads to be directly
+  // channel-associated.
   mojo::AssociatedRemote<mojom::EventDispatcher>& dispatcher =
       rph_dispatcher_map_[rph];
   if (!dispatcher.is_bound()) {
@@ -193,7 +188,7 @@ void EventRouter::RouteDispatchEvent(content::RenderProcessHost* rph,
     channel->GetRemoteAssociatedInterface(
         dispatcher.BindNewEndpointAndPassReceiver());
   }
-  dispatcher->DispatchEvent(params.Clone(), event_args.Clone());
+  dispatcher->DispatchEvent(std::move(params), event_args.Clone());
 }
 
 // static

@@ -32,7 +32,6 @@
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/cors_util.h"
-#include "extensions/common/event_filtering_info_type_converters.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_api.h"
 #include "extensions/common/extension_features.h"
@@ -1302,6 +1301,11 @@ void Dispatcher::OnDispatchOnDisconnect(int worker_thread_id,
 
 void Dispatcher::DispatchEvent(mojom::DispatchEventParamsPtr params,
                                base::Value event_args) {
+  if (params->worker_thread_id != kMainThreadId) {
+    WorkerThreadDispatcher::Get()->DispatchEvent(std::move(params),
+                                                 std::move(event_args));
+    return;
+  }
   content::RenderFrame* background_frame =
       ExtensionFrameHelper::GetBackgroundPageFrame(params->extension_id);
 
@@ -1326,7 +1330,7 @@ void Dispatcher::DispatchEvent(mojom::DispatchEventParamsPtr params,
 
   DispatchEventHelper(params->extension_id, params->event_name,
                       base::Value::AsListValue(event_args),
-                      mojom::EventFilteringInfo::From(params->filtering_info));
+                      std::move(params->filtering_info));
 
   if (background_frame) {
     // Tell the browser process when an event has been dispatched with a lazy
