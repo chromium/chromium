@@ -310,8 +310,6 @@ void AppListClientImpl::GetSearchResultContextMenuModel(
 
 void AppListClientImpl::ViewClosing() {
   display_id_ = display::kInvalidDisplayId;
-  if (search_controller_)
-    search_controller_->ViewClosing();
 }
 
 void AppListClientImpl::ViewShown(int64_t display_id) {
@@ -396,6 +394,8 @@ void AppListClientImpl::OnAppListVisibilityWillChange(bool visible) {
       !ash::features::IsProductivityLauncherEnabled()) {
     search_controller_->StartSearch(std::u16string());
   }
+  if (!visible && search_controller_)
+    search_controller_->ViewClosing();
 }
 
 void AppListClientImpl::OnAppListVisibilityChanged(bool visible) {
