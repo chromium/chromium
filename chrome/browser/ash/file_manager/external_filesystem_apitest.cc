@@ -815,7 +815,7 @@ IN_PROC_BROWSER_TEST_F(DriveFileSystemExtensionApiTest,
       FLAGS_NONE)) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(DriveFileSystemExtensionApiTest, FileWatch) {
+IN_PROC_BROWSER_TEST_F(DriveFileSystemExtensionApiTest, DISABLED_FileWatch) {
   EXPECT_TRUE(RunFileSystemExtensionApiTest(
       "file_browser/file_watcher_test",
       FILE_PATH_LITERAL("manifest.json"),
