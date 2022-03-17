@@ -13,7 +13,7 @@ import android.os.RemoteException;
 
 import org.chromium.android_webview.js.common.IJsSandboxContext;
 import org.chromium.android_webview.js.common.IJsSandboxService;
-import org.chromium.android_webview.js.renderer.JsSandboxService;
+import org.chromium.android_webview.js.renderer.JsSandboxService0;
 import org.chromium.base.ContextUtils;
 
 /**
@@ -65,7 +65,7 @@ public class AwJsSandbox implements AutoCloseable {
      * @param callback used to pass a callback function on creation of object.
      */
     public static void newConnectedInstance(ReadyCallback callback) {
-        Intent intent = new Intent(ContextUtils.getApplicationContext(), JsSandboxService.class);
+        Intent intent = new Intent(ContextUtils.getApplicationContext(), JsSandboxService0.class);
         ConnectionSetup connectionSetup = new ConnectionSetup(callback);
         boolean isBinding = ContextUtils.getApplicationContext().bindService(
                 intent, connectionSetup, Context.BIND_AUTO_CREATE);
