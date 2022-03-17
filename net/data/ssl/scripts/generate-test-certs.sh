@@ -18,6 +18,10 @@ set -e -x
 #   iOS 13/macOS 10.15 - https://support.apple.com/en-us/HT210176
 # 730 is used here as just a short-hand for 2 years
 CERT_LIFETIME=730
+# Some tests mock a test cert as being a public cert, so use the max public
+# cert lifetime for those certs. The current limit is 398 days for certs issued
+# after 2020-09-01.
+PUBLIC_CERT_LIFETIME=397
 
 rm -rf out
 mkdir out
@@ -272,7 +276,7 @@ SUBJECT_NAME="req_punycode_dn" \
 
 ## Reject intranet hostnames in "publicly" trusted certs
 SUBJECT_NAME="req_intranet_dn" \
-  openssl req -x509 -days ${CERT_LIFETIME} -extensions req_intranet_san \
+  openssl req -x509 -days ${PUBLIC_CERT_LIFETIME} -extensions req_intranet_san \
     -config ../scripts/ee.cnf -newkey rsa:2048 -text \
     -out ../certificates/reject_intranet_hosts.pem
 
