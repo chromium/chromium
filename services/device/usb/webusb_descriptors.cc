@@ -206,7 +206,7 @@ bool WebUsbPlatformCapabilityDescriptor::ParseFromBosDescriptor(
 }
 
 // Parses a WebUSB URL Descriptor:
-// http://wicg.github.io/webusb/#dfn-url-descriptor
+// https://wicg.github.io/webusb/#url-descriptor
 //
 //  0                   1                   2                   3
 //  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
@@ -238,6 +238,8 @@ bool ParseWebUsbUrlDescriptor(base::span<const uint8_t> bytes, GURL* output) {
       break;
     case 1:
       url.append("https://");
+      break;
+    case 255:  // 255 indicates that the entire URL is encoded in the URL field.
       break;
     default:
       return false;

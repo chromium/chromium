@@ -45,6 +45,12 @@ const uint8_t kExampleUrlDescriptor1[] = {
     0x19, 0x03, 0x01, 'e', 'x', 'a', 'm', 'p', 'l', 'e', '.', 'c', 'o',
     'm',  '/',  'i',  'n', 'd', 'e', 'x', '.', 'h', 't', 'm', 'l'};
 
+const uint8_t kExampleUrlDescriptor255[] = {
+    0x2E, 0x03, 0xFF, 'c', 'h', 'r', 'o', 'm', 'e', '-', 'e', 'x',
+    't',  'e',  'n',  's', 'i', 'o', 'n', ':', '/', '/', 'e', 'x',
+    't',  'e',  'n',  's', 'i', 'o', 'n', 'i', 'd', '/', 'e', 'x',
+    'a',  'm',  'p',  'l', 'e', '.', 'h', 't', 'm', 'l'};
+
 ACTION_P2(InvokeCallback, data, length) {
   size_t transferred_length = std::min(length, arg6->size());
   memcpy(arg6->front(), data, transferred_length);
@@ -190,6 +196,16 @@ TEST_F(WebUsbDescriptorsTest, UrlDescriptor) {
   GURL url;
   ASSERT_TRUE(ParseWebUsbUrlDescriptor(kExampleUrlDescriptor1, &url));
   EXPECT_EQ(GURL("https://example.com/index.html"), url);
+}
+
+TEST_F(WebUsbDescriptorsTest, EntireUrlDescriptor) {
+  GURL url;
+  ASSERT_TRUE(ParseWebUsbUrlDescriptor(
+      std::vector<uint8_t>(
+          kExampleUrlDescriptor255,
+          kExampleUrlDescriptor255 + sizeof(kExampleUrlDescriptor255)),
+      &url));
+  EXPECT_EQ(GURL("chrome-extension://extensionid/example.html"), url);
 }
 
 TEST_F(WebUsbDescriptorsTest, ShortUrlDescriptorHeader) {
