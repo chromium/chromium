@@ -435,9 +435,6 @@ def main():
       'lld': [
       ],
   }
-  if sys.platform.startswith('linux'):
-    reclient_inputs['clang'].append('lib/libstdc++.so.6')
-    reclient_inputs['lld'].append('lib/libstdc++.so.6')
 
   # Check that all non-glob wanted files exist on disk.
   want = [w.replace('$V', RELEASE_VERSION) for w in want]
