@@ -263,13 +263,13 @@ class AlternatingCriticalCHRequestHandler {
     status_code_ = status_code;
   }
 
-  static constexpr char kCriticaCH[] = "/critical-ch";
+  static constexpr char kCriticalCH[] = "/critical-ch";
 
  private:
   // A response that flips between two critical-ch headers
   std::unique_ptr<net::test_server::HttpResponse> DifferentCriticalCH(
       const net::test_server::HttpRequest& request) {
-    if (!base::StartsWith(request.relative_url, kCriticaCH))
+    if (!base::StartsWith(request.relative_url, kCriticalCH))
       return nullptr;
 
     request_count_++;
@@ -3216,7 +3216,7 @@ IN_PROC_BROWSER_TEST_F(CriticalClientHintsBrowserTest, OneRestartSingleOrigin) {
   base::HistogramTester histogram;
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      https_server.GetURL(AlternatingCriticalCHRequestHandler::kCriticaCH)));
+      https_server.GetURL(AlternatingCriticalCHRequestHandler::kCriticalCH)));
   histogram.ExpectBucketCount("ClientHints.CriticalCHRestart",
                               2 /*=kNavigationRestarted*/, 1);
   EXPECT_EQ(2, handler.request_count());
@@ -3237,10 +3237,10 @@ IN_PROC_BROWSER_TEST_F(CriticalClientHintsBrowserTest,
   base::HistogramTester histogram;
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      https_server.GetURL(AlternatingCriticalCHRequestHandler::kCriticaCH)));
+      https_server.GetURL(AlternatingCriticalCHRequestHandler::kCriticalCH)));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      https_server.GetURL(AlternatingCriticalCHRequestHandler::kCriticaCH)));
+      https_server.GetURL(AlternatingCriticalCHRequestHandler::kCriticalCH)));
   histogram.ExpectBucketCount("ClientHints.CriticalCHRestart",
                               2 /*=kNavigationRestarted*/, 2);
   EXPECT_EQ(4, handler.request_count());
@@ -3382,7 +3382,7 @@ IN_PROC_BROWSER_TEST_P(CriticalClientHintsRedirectBrowserTest,
   base::HistogramTester histogram;
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      https_server.GetURL(AlternatingCriticalCHRequestHandler::kCriticaCH)));
+      https_server.GetURL(AlternatingCriticalCHRequestHandler::kCriticalCH)));
   histogram.ExpectBucketCount("ClientHints.CriticalCHRestart",
                               2 /*=kNavigationRestarted*/, 1);
   EXPECT_EQ(2, handler.request_count());
@@ -3415,9 +3415,9 @@ IN_PROC_BROWSER_TEST_P(CriticalClientHintsRedirectBrowserTest,
   // This will send the two servers redirecting to each other in a loop until
   // the navigation redirect break is tripped.
   handler_1.SetRedirectLocation(
-      https_server_2.GetURL(AlternatingCriticalCHRequestHandler::kCriticaCH));
+      https_server_2.GetURL(AlternatingCriticalCHRequestHandler::kCriticalCH));
   handler_2.SetRedirectLocation(
-      https_server_1.GetURL(AlternatingCriticalCHRequestHandler::kCriticaCH));
+      https_server_1.GetURL(AlternatingCriticalCHRequestHandler::kCriticalCH));
 
   handler_1.SetStatusCode(GetParam());
   handler_2.SetStatusCode(GetParam());
@@ -3425,7 +3425,7 @@ IN_PROC_BROWSER_TEST_P(CriticalClientHintsRedirectBrowserTest,
   base::HistogramTester histogram;
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      https_server_1.GetURL(AlternatingCriticalCHRequestHandler::kCriticaCH)));
+      https_server_1.GetURL(AlternatingCriticalCHRequestHandler::kCriticalCH)));
   histogram.ExpectBucketCount("ClientHints.CriticalCHRestart",
                               2 /*=kNavigationRestarted*/, 2);
   EXPECT_EQ(net::URLRequest::kMaxRedirects,
