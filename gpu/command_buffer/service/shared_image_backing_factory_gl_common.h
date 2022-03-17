@@ -77,6 +77,7 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryGLCommon
   bool texture_usage_angle_ = false;
   SharedImageBackingGLCommon::UnpackStateAttribs attribs_;
   GpuDriverBugWorkarounds workarounds_;
+  WebGPUAdapterName use_webgpu_adapter_ = WebGPUAdapterName::kDefault;
 
   // Used to notify the watchdog before a buffer allocation in case it takes
   // long.

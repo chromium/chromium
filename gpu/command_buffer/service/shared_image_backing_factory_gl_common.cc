@@ -29,6 +29,7 @@ SharedImageBackingFactoryGLCommon::SharedImageBackingFactoryGLCommon(
     : use_passthrough_(gpu_preferences.use_passthrough_cmd_decoder &&
                        gles2::PassthroughCommandDecoderSupported()),
       workarounds_(workarounds),
+      use_webgpu_adapter_(gpu_preferences.use_webgpu_adapter),
       progress_reporter_(progress_reporter) {
   gl::GLApi* api = gl::g_current_gl_context;
   api->glGetIntegervFn(GL_MAX_TEXTURE_SIZE, &max_texture_size_);

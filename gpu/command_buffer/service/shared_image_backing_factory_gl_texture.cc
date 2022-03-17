@@ -142,7 +142,8 @@ bool SharedImageBackingFactoryGLTexture::IsSupported(
     return false;
   }
   // Needs interop factory
-  if ((usage & SHARED_IMAGE_USAGE_WEBGPU) ||
+  if (((usage & SHARED_IMAGE_USAGE_WEBGPU) &&
+       use_webgpu_adapter_ != WebGPUAdapterName::kCompat) ||
       (usage & SHARED_IMAGE_USAGE_VIDEO_DECODE) ||
       (usage & SHARED_IMAGE_USAGE_SCANOUT)) {
     return false;

@@ -5,6 +5,7 @@
 #include "gpu/command_buffer/service/shared_image_representation_dawn_egl_image.h"
 
 #include "build/build_config.h"
+#include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 
 #include <dawn/native/OpenGLBackend.h>
@@ -23,17 +24,14 @@ GLenum ToSharedImageAccessGLMode(WGPUTextureUsage usage) {
 namespace gpu {
 
 SharedImageRepresentationDawnEGLImage::SharedImageRepresentationDawnEGLImage(
-    std::unique_ptr<SharedImageRepresentationGLTexturePassthrough>
-        gl_representation,
+    std::unique_ptr<SharedImageRepresentationGLTextureBase> gl_representation,
     SharedImageManager* manager,
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker,
-    WGPUDevice device,
-    const WGPUTextureDescriptor& texture_descriptor)
+    WGPUDevice device)
     : SharedImageRepresentationDawn(manager, backing, tracker),
       gl_representation_(std::move(gl_representation)),
       device_(device),
-      texture_descriptor_(texture_descriptor),
       dawn_procs_(dawn::native::GetProcs()) {
   DCHECK(device_);
 
@@ -51,11 +49,29 @@ SharedImageRepresentationDawnEGLImage::
 WGPUTexture SharedImageRepresentationDawnEGLImage::BeginAccess(
     WGPUTextureUsage usage) {
   gl_representation_->BeginAccess(ToSharedImageAccessGLMode(usage));
+  WGPUTextureDescriptor texture_descriptor = {};
+  texture_descriptor.nextInChain = nullptr;
+  texture_descriptor.format = viz::ToWGPUFormat(format());
+  texture_descriptor.usage = WGPUTextureUsage_CopySrc |
+                             WGPUTextureUsage_CopyDst |
+                             WGPUTextureUsage_RenderAttachment;
+  texture_descriptor.dimension = WGPUTextureDimension_2D;
+  texture_descriptor.size = {static_cast<uint32_t>(size().width()),
+                             static_cast<uint32_t>(size().height()), 1};
+  texture_descriptor.mipLevelCount = 1;
+  texture_descriptor.sampleCount = 1;
   dawn::native::opengl::ExternalImageDescriptorEGLImage externalImageDesc;
-  externalImageDesc.cTextureDescriptor = &texture_descriptor_;
-  const auto& texture = gl_representation_->GetTexturePassthrough();
-  externalImageDesc.image =
-      texture->GetLevelImage(texture->target(), 0u)->GetEGLImage();
+  externalImageDesc.cTextureDescriptor = &texture_descriptor;
+  const gl::GLImage* image;
+  gpu::TextureBase* texture = gl_representation_->GetTextureBase();
+  if (texture->GetType() == gpu::TextureBase::Type::kPassthrough) {
+    image = static_cast<gles2::TexturePassthrough*>(texture)->GetLevelImage(
+        texture->target(), 0u);
+  } else {
+    image = static_cast<gles2::Texture*>(texture)->GetLevelImage(
+        texture->target(), 0u);
+  }
+  externalImageDesc.image = image->GetEGLImage();
   DCHECK(externalImageDesc.image);
   externalImageDesc.isInitialized = true;
   texture_ =

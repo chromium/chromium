@@ -594,6 +594,13 @@ SharedImageBackingD3D::ProduceDawn(SharedImageManager* manager,
                                    WGPUDevice device,
                                    WGPUBackendType backend_type) {
 #if BUILDFLAG(USE_DAWN)
+#if BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
+  if (backend_type == WGPUBackendType_OpenGLES) {
+    return std::make_unique<SharedImageRepresentationDawnEGLImage>(
+        ProduceGLTexturePassthrough(manager, tracker), manager, this, tracker,
+        device);
+  }
+#endif
   const viz::ResourceFormat viz_resource_format = format();
   const WGPUTextureFormat wgpu_format = viz::ToWGPUFormat(viz_resource_format);
   if (wgpu_format == WGPUTextureFormat_Undefined) {
@@ -609,16 +616,6 @@ SharedImageBackingD3D::ProduceDawn(SharedImageManager* manager,
                              static_cast<uint32_t>(size().height()), 1};
   texture_descriptor.mipLevelCount = 1;
   texture_descriptor.sampleCount = 1;
-
-#if BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
-  if (backend_type == WGPUBackendType_OpenGLES) {
-    // EGLImage textures do not support sampling, at the moment.
-    texture_descriptor.usage &= ~WGPUTextureUsage_TextureBinding;
-    return std::make_unique<SharedImageRepresentationDawnEGLImage>(
-        ProduceGLTexturePassthrough(manager, tracker), manager, this, tracker,
-        device, texture_descriptor);
-  }
-#endif
 
   // We need to have internal usages of CopySrc for copies and
   // RenderAttachment for clears.

@@ -201,6 +201,7 @@ class GPU_GLES2_EXPORT SharedImageRepresentationGLTextureBase
 
  protected:
   friend class SharedImageRepresentationSkiaGL;
+  friend class SharedImageRepresentationDawnEGLImage;
   friend class SharedImageRepresentationGLTextureImpl;
 
   // Can be overridden to handle clear state tracking when GL access begins or
@@ -247,9 +248,6 @@ class GPU_GLES2_EXPORT SharedImageRepresentationGLTexturePassthrough
   GetTexturePassthrough() = 0;
 
   gpu::TextureBase* GetTextureBase() override;
-
- protected:
-  friend class SharedImageRepresentationDawnEGLImage;
 };
 
 class GPU_GLES2_EXPORT SharedImageRepresentationSkia

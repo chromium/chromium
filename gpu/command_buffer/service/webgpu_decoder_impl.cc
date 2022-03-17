@@ -1504,7 +1504,8 @@ error::Error WebGPUDecoderImpl::HandleRequestAdapter(
     force_fallback_adapter = true;
   }
 
-  if (gr_context_type_ != GrContextType::kVulkan) {
+  if (gr_context_type_ != GrContextType::kVulkan &&
+      use_webgpu_adapter_ != WebGPUAdapterName::kCompat) {
 #if BUILDFLAG(IS_LINUX)
     SendAdapterProperties(request_adapter_serial, -1, nullptr,
                           "WebGPU on Linux requires command-line flag "

@@ -13,7 +13,6 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/resource_sizes.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
@@ -46,6 +45,7 @@
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/scoped_binders.h"
+#include "ui/gl/scoped_make_current.h"
 #include "ui/gl/shared_gl_fence_egl.h"
 #include "ui/gl/trace_util.h"
 
@@ -56,6 +56,10 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "gpu/command_buffer/service/shared_image_backing_factory_iosurface.h"
+#endif
+
+#if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
+#include "gpu/command_buffer/service/shared_image_representation_dawn_egl_image.h"
 #endif
 
 namespace gpu {
@@ -186,6 +190,22 @@ SharedImageBackingGLTexture::ProduceDawn(SharedImageManager* manager,
                                          MemoryTypeTracker* tracker,
                                          WGPUDevice device,
                                          WGPUBackendType backend_type) {
+#if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
+  if (backend_type == WGPUBackendType_OpenGLES) {
+    if (!image_egl_) {
+      CreateEGLImage();
+    }
+    std::unique_ptr<SharedImageRepresentationGLTextureBase> texture;
+    if (IsPassthrough()) {
+      texture = ProduceGLTexturePassthrough(manager, tracker);
+    } else {
+      texture = ProduceGLTexture(manager, tracker);
+    }
+    return std::make_unique<SharedImageRepresentationDawnEGLImage>(
+        std::move(texture), manager, this, tracker, device);
+  }
+#endif
+
   if (!factory()) {
     DLOG(ERROR) << "No SharedImageFactory to create a dawn representation.";
     return nullptr;
@@ -234,6 +254,25 @@ void SharedImageBackingGLTexture::InitializeGLTexture(
                            params.is_cleared ? gfx::Rect(size()) : gfx::Rect());
     texture_->SetImmutable(true, params.has_immutable_storage);
   }
+}
+
+void SharedImageBackingGLTexture::CreateEGLImage() {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || defined(USE_OZONE)
+  SharedContextState* shared_context_state = factory()->GetSharedContextState();
+  ui::ScopedMakeCurrent smc(shared_context_state->context(),
+                            shared_context_state->surface());
+  auto image_np = base::MakeRefCounted<gl::GLImageNativePixmap>(
+      size(), viz::BufferFormat(format()));
+  image_np->InitializeFromTexture(GetGLServiceId());
+  image_egl_ = image_np;
+  if (passthrough_texture_) {
+    passthrough_texture_->SetLevelImage(passthrough_texture_->target(), 0,
+                                        image_egl_.get());
+  } else if (texture_) {
+    texture_->SetLevelImage(texture_->target(), 0, image_egl_.get(),
+                            gles2::Texture::ImageState::BOUND);
+  }
+#endif
 }
 
 void SharedImageBackingGLTexture::SetCompatibilitySwizzle(
