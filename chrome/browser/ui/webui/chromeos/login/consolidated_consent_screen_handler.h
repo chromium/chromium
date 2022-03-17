@@ -63,6 +63,9 @@ class ConsolidatedConsentScreenView {
   virtual void SetBackupMode(bool enabled, bool managed) = 0;
   virtual void SetLocationMode(bool enabled, bool managed) = 0;
   virtual void SetIsDeviceOwner(bool is_owner) = 0;
+
+  // Hide the entire section that allows user to opt-in/opt-out from metrics.
+  virtual void HideUsageOptin() = 0;
 };
 
 class ConsolidatedConsentScreenHandler : public ConsolidatedConsentScreenView,
@@ -89,6 +92,7 @@ class ConsolidatedConsentScreenHandler : public ConsolidatedConsentScreenView,
   void SetBackupMode(bool enabled, bool managed) override;
   void SetLocationMode(bool enabled, bool managed) override;
   void SetIsDeviceOwner(bool is_owner) override;
+  void HideUsageOptin() override;
 
   // content::WebUIMessageHandler:
   void RegisterMessages() override;

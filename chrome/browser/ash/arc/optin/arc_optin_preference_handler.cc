@@ -27,12 +27,17 @@ bool ShouldUpdateUserConsent() {
 
   // Metrics mode should be propagated to owner if current user is not the owner
   // OR ownership has not been taken.
-  const bool should_use_owner =
+  const bool is_owner =
       user_manager::UserManager::Get()->IsCurrentUserOwner() ||
       ash::DeviceSettingsService::Get()->GetOwnershipStatus() ==
           ash::DeviceSettingsService::OWNERSHIP_NONE;
 
-  return !should_use_owner;
+  if (is_owner)
+    return false;
+
+  // Per user metrics should be disabled if the device metrics was disabled by
+  // the owner.
+  return ash::StatsReportingController::Get()->IsEnabled();
 }
 
 }  // namespace

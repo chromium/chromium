@@ -240,6 +240,8 @@ class ChromeUserManagerImpl
       const AccountId& account_id,
       const policy::DeviceLocalAccount::Type type) const;
 
+  void UpdateOwnerId();
+
   // Interface to the signed settings store.
   CrosSettings* cros_settings_;
 
@@ -272,6 +274,7 @@ class ChromeUserManagerImpl
   base::CallbackListSubscription allow_guest_subscription_;
   base::CallbackListSubscription users_subscription_;
   base::CallbackListSubscription family_link_accounts_subscription_;
+  base::CallbackListSubscription owner_subscription_;
 
   base::CallbackListSubscription local_accounts_subscription_;
 
