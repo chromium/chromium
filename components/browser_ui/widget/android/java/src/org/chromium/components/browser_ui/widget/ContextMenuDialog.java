@@ -24,6 +24,7 @@ import android.view.animation.ScaleAnimation;
 import android.widget.FrameLayout;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
@@ -215,7 +216,11 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
             mOnDragListener = new OnDragListener() {
                 @Override
                 public boolean onDrag(View view, DragEvent dragEvent) {
-                    return mTouchEventDelegateView.dispatchDragEvent(dragEvent);
+                    if (mTouchEventDelegateView != null
+                            && mTouchEventDelegateView.isAttachedToWindow()) {
+                        return mTouchEventDelegateView.dispatchDragEvent(dragEvent);
+                    }
+                    return false;
                 }
             };
             mLayout.setOnDragListener(mOnDragListener);
@@ -303,7 +308,7 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
             dismiss();
             return true;
         }
-        if (isDialogNonModal()) {
+        if (isDialogNonModal() && mTouchEventDelegateView.isAttachedToWindow()) {
             return mTouchEventDelegateView.dispatchTouchEvent(event);
         }
         return false;
@@ -339,5 +344,10 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
 
     private boolean isDialogNonModal() {
         return mIsPopup && mShouldRemoveScrim && mTouchEventDelegateView != null;
+    }
+
+    @VisibleForTesting
+    OnDragListener getOnDragListenerForTesting() {
+        return mOnDragListener;
     }
 }
