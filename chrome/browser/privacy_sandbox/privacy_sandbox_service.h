@@ -194,8 +194,12 @@ class PrivacySandboxService : public KeyedService,
   // Privacy Sandbox related UI is updated appropriately.
   bool IsPrivacySandboxRestricted();
 
-  // Called when a preference relevant to the the Privacy Sandbox is changed.
-  void OnPrivacySandboxPrefChanged();
+  // Called when a preference relevant to the the V1 Privacy Sandbox page is
+  // changed.
+  void OnPrivacySandboxV1PrefChanged();
+
+  // Called when the V2 Privacy Sandbox preference is changed.
+  void OnPrivacySandboxV2PrefChanged();
 
   // Returns the set of eTLD + 1's on which the user was joined to a FLEDGE
   // interest group. Consults with the InterestGroupManager associated with

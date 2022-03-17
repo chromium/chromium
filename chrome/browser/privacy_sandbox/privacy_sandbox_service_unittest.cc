@@ -1422,6 +1422,32 @@ TEST_F(PrivacySandboxServiceTest, FledgeBlockDeletesData) {
             browsing_data_remover()->GetLastUsedOriginTypeMaskForTesting());
 }
 
+TEST_F(PrivacySandboxServiceTest, DisablingV2SandboxClearsData) {
+  // Confirm that when the V2 sandbox preference is disabled, a browsing data
+  // remover task is started. V1 should remain unaffected.
+  prefs()->SetBoolean(prefs::kPrivacySandboxApisEnabled, false);
+  constexpr uint64_t kNoRemovalTask = -1ull;
+  EXPECT_EQ(kNoRemovalTask,
+            browsing_data_remover()->GetLastUsedRemovalMaskForTesting());
+
+  // Enabling should not cause a removal task.
+  prefs()->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, true);
+  EXPECT_EQ(kNoRemovalTask,
+            browsing_data_remover()->GetLastUsedRemovalMaskForTesting());
+
+  // Disabling should start a task clearing all kAPI information.
+  prefs()->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, false);
+  EXPECT_EQ(content::BrowsingDataRemover::DATA_TYPE_INTEREST_GROUPS |
+                content::BrowsingDataRemover::DATA_TYPE_AGGREGATION_SERVICE |
+                content::BrowsingDataRemover::DATA_TYPE_CONVERSIONS |
+                content::BrowsingDataRemover::DATA_TYPE_TRUST_TOKENS,
+            browsing_data_remover()->GetLastUsedRemovalMaskForTesting());
+  EXPECT_EQ(base::Time::Min(),
+            browsing_data_remover()->GetLastUsedBeginTimeForTesting());
+  EXPECT_EQ(content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
+            browsing_data_remover()->GetLastUsedOriginTypeMaskForTesting());
+}
+
 class PrivacySandboxRestrictedTest : public PrivacySandboxServiceTest {
   void InitializeBeforeStart() override {
     prefs()->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, true);

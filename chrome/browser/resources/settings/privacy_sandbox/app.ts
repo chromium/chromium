@@ -178,6 +178,13 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
         privacySandboxApisEnabled ? 'Settings.PrivacySandbox.ApisEnabled' :
                                     'Settings.PrivacySandbox.ApisDisabled');
     this.setPrefValue('privacy_sandbox.manually_controlled', true);
+
+    // As the backend will have cleared any data when the API is disabled, clear
+    // the associated model entries.
+    if (!privacySandboxApisEnabled) {
+      this.topTopics_ = [];
+      this.joiningSites_ = [];
+    }
   }
 
   private onFlocToggleButtonChange_(event: Event) {

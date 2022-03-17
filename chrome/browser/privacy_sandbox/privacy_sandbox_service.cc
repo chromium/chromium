@@ -143,15 +143,15 @@ PrivacySandboxService::PrivacySandboxService(
   user_prefs_registrar_.Init(pref_service_);
   user_prefs_registrar_.Add(
       prefs::kPrivacySandboxApisEnabled,
-      base::BindRepeating(&PrivacySandboxService::OnPrivacySandboxPrefChanged,
+      base::BindRepeating(&PrivacySandboxService::OnPrivacySandboxV1PrefChanged,
                           base::Unretained(this)));
   user_prefs_registrar_.Add(
       prefs::kPrivacySandboxApisEnabledV2,
-      base::BindRepeating(&PrivacySandboxService::OnPrivacySandboxPrefChanged,
+      base::BindRepeating(&PrivacySandboxService::OnPrivacySandboxV2PrefChanged,
                           base::Unretained(this)));
   user_prefs_registrar_.Add(
       prefs::kPrivacySandboxFlocEnabled,
-      base::BindRepeating(&PrivacySandboxService::OnPrivacySandboxPrefChanged,
+      base::BindRepeating(&PrivacySandboxService::OnPrivacySandboxV1PrefChanged,
                           base::Unretained(this)));
 
   // On first entering the privacy sandbox experiment, users may have the
@@ -377,13 +377,31 @@ void PrivacySandboxService::SetPrivacySandboxEnabled(bool enabled) {
   privacy_sandbox_settings_->SetPrivacySandboxEnabled(enabled);
 }
 
-void PrivacySandboxService::OnPrivacySandboxPrefChanged() {
+void PrivacySandboxService::OnPrivacySandboxV1PrefChanged() {
   // Any change of the two observed prefs should be accompanied by a
   // reset of the FLoC cohort. Technically this only needs to occur on the
   // transition from FLoC being effectively disabled to effectively enabled,
   // but performing it on every pref change achieves the same user visible
   // behavior, and is much simpler.
   ResetFlocId(/*user_initiated=*/false);
+}
+
+void PrivacySandboxService::OnPrivacySandboxV2PrefChanged() {
+  // If the user has disabled the Privacy Sanbdbox, any data stored should be
+  // cleared.
+  if (!browsing_data_remover_)
+    return;
+
+  if (pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabledV2))
+    return;
+
+  browsing_data_remover_->Remove(
+      base::Time::Min(), base::Time::Max(),
+      content::BrowsingDataRemover::DATA_TYPE_INTEREST_GROUPS |
+          content::BrowsingDataRemover::DATA_TYPE_AGGREGATION_SERVICE |
+          content::BrowsingDataRemover::DATA_TYPE_CONVERSIONS |
+          content::BrowsingDataRemover::DATA_TYPE_TRUST_TOKENS,
+      content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB);
 }
 
 void PrivacySandboxService::GetFledgeJoiningEtldPlusOneForDisplay(

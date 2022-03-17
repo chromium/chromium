@@ -384,6 +384,31 @@ suite('PrivacySandboxSettings3', function() {
           apisEnabledPrior ? 'Settings.PrivacySandbox.ApisDisabled' :
                              'Settings.PrivacySandbox.ApisEnabled',
           await metricsBrowserProxy.whenCalled('recordAction'));
+
+      if (apisEnabledPrior) {
+        // Check that top topics & joining sites have been cleared.
+        assertMainViewVisible();
+        page.shadowRoot!.querySelector<HTMLElement>(
+                            '#adPersonalizationRow')!.click();
+        await flushTasks();
+        assertAdPersonalizationDialogVisible();
+
+        const topTopicsSection =
+            page.shadowRoot!.querySelector<HTMLElement>('#topTopicsSection')!;
+        const topTopics = topTopicsSection.querySelector('dom-repeat');
+        assertTrue(!!topTopics);
+        assertEquals(0, topTopics.items!.length);
+        assertTrue(
+            isVisible(topTopicsSection.querySelector('#topTopicsEmpty')));
+
+        const joiningSitesSection = page.shadowRoot!.querySelector<HTMLElement>(
+            '#joiningSitesSection')!;
+        const joiningSites = joiningSitesSection.querySelector('dom-repeat');
+        assertTrue(!!joiningSites);
+        assertEquals(0, joiningSites.items!.length);
+        assertTrue(
+            isVisible(joiningSitesSection.querySelector('#joiningSitesEmpty')));
+      }
     });
   });
 
