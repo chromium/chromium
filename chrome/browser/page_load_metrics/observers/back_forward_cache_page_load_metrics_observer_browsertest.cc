@@ -728,30 +728,14 @@ IN_PROC_BROWSER_TEST_F(
   std::vector<std::string> ukm_list = {
       "WorstUserInteractionLatencyAfterBackForwardCacheRestore."
       "MaxEventduration",
-      "WorstUserInteractionLatencyAfterBackForwardCacheRestore."
-      "TotalEventduration",
-      "WorstUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore."
-      "MaxEventduration",
-      "WorstUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore."
-      "TotalEventduration",
-      "SumOfUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore."
-      "TotalEventduration",
       "SumOfUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore."
       "MaxEventduration",
-      "SlowUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore."
-      "HighPercentile2.TotalEventduration",
       "SlowUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore."
       "HighPercentile2.MaxEventduration",
+      "AverageUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore."
+      "MaxEventduration",
       "UserInteractionLatencyAfterBackForwardCacheRestore."
       "HighPercentile2.MaxEventduration",
-      "SlowUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore."
-      "HighPercentile.TotalEventduration",
-      "SlowUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore."
-      "HighPercentile.MaxEventduration",
-      "AverageUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore."
-      "MaxEventduration",
-      "AverageUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore."
-      "TotalEventduration",
       "NumInteractionsAfterBackForwardCacheRestore"};
 
   for (auto& ukm : ukm_list) {
@@ -763,30 +747,13 @@ IN_PROC_BROWSER_TEST_F(
       internal::
           kAverageUserInteractionLatencyOverBudget_MaxEventDuration_AfterBackForwardCacheRestore,
       internal::
-          kSlowUserInteractionLatencyOverBudgetHighPercentile_MaxEventDuration_AfterBackForwardCacheRestore,
-      internal::
           kSlowUserInteractionLatencyOverBudgetHighPercentile2_MaxEventDuration_AfterBackForwardCacheRestore,
       internal::
           kUserInteractionLatencyHighPercentile2_MaxEventDuration_AfterBackForwardCacheRestore,
       internal::
           kSumOfUserInteractionLatencyOverBudget_MaxEventDuration_AfterBackForwardCacheRestore,
       internal::
-          kWorstUserInteractionLatency_MaxEventDuration_AfterBackForwardCacheRestore,
-      internal::
-          kWorstUserInteractionLatencyOverBudget_MaxEventDuration_AfterBackForwardCacheRestore,
-      internal::
-          kAverageUserInteractionLatencyOverBudget_TotalEventDuration_AfterBackForwardCacheRestore,
-      internal::
-          kSlowUserInteractionLatencyOverBudgetHighPercentile_TotalEventDuration_AfterBackForwardCacheRestore,
-      internal::
-          kSlowUserInteractionLatencyOverBudgetHighPercentile2_TotalEventDuration_AfterBackForwardCacheRestore,
-      internal::
-          kSumOfUserInteractionLatencyOverBudget_TotalEventDuration_AfterBackForwardCacheRestore,
-      internal::
-          kWorstUserInteractionLatency_TotalEventDuration_AfterBackForwardCacheRestore,
-      internal::
-          kWorstUserInteractionLatencyOverBudget_TotalEventDuration_AfterBackForwardCacheRestore,
-      internal::kNumInteractions_AfterBackForwardCacheRestore};
+          kWorstUserInteractionLatency_MaxEventDuration_AfterBackForwardCacheRestore};
 
   for (auto& uma : uma_list) {
     histogram_tester().ExpectTotalCount(uma, 1);

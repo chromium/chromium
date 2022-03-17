@@ -188,7 +188,6 @@ class CONTENT_EXPORT RenderFrameObserver : public IPC::Listener,
   // Notifications When a user interaction latency data becomes available.
   virtual void DidObserveUserInteraction(
       base::TimeDelta max_event_duration,
-      base::TimeDelta total_event_duration,
       blink::UserInteractionType interaction_type) {}
 
   // Notification When the First Scroll Delay becomes available.

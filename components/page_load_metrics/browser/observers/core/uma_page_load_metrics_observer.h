@@ -20,9 +20,6 @@ extern const char kHistogramNumInteractions[];
 extern const char
     kHistogramAverageUserInteractionLatencyOverBudgetMaxEventDuration[];
 extern const char
-    kHistogramSlowUserInteractionLatencyOverBudgetHighPercentileMaxEventDuration
-        [];
-extern const char
     kHistogramSlowUserInteractionLatencyOverBudgetHighPercentile2MaxEventDuration
         [];
 extern const char
@@ -30,21 +27,6 @@ extern const char
 extern const char
     kHistogramSumOfUserInteractionLatencyOverBudgetMaxEventDuration[];
 extern const char kHistogramWorstUserInteractionLatencyMaxEventDuration[];
-extern const char
-    kHistogramWorstUserInteractionLatencyOverBudgetMaxEventDuration[];
-extern const char
-    kHistogramAverageUserInteractionLatencyOverBudgetTotalEventDuration[];
-extern const char
-    kHistogramSlowUserInteractionLatencyOverBudgetHighPercentileTotalEventDuration
-        [];
-extern const char
-    kHistogramSlowUserInteractionLatencyOverBudgetHighPercentile2TotalEventDuration
-        [];
-extern const char
-    kHistogramSumOfUserInteractionLatencyOverBudgetTotalEventDuration[];
-extern const char kHistogramWorstUserInteractionLatencyTotalEventDuration[];
-extern const char
-    kHistogramWorstUserInteractionLatencyOverBudgetTotalEventDuration[];
 extern const char kHistogramFirstInputDelay[];
 extern const char kHistogramFirstInputTimestamp[];
 extern const char kHistogramFirstInputDelay4[];

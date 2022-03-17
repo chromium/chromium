@@ -582,7 +582,6 @@ class CONTENT_EXPORT RenderFrameImpl
   void DidObserveInputDelay(base::TimeDelta input_delay) override;
   void DidObserveUserInteraction(
       base::TimeDelta max_event_duration,
-      base::TimeDelta total_event_durtaion,
       blink::UserInteractionType interaction_type) override;
   void DidChangeCpuTiming(base::TimeDelta time) override;
   void DidObserveLoadingBehavior(blink::LoadingBehaviorFlag behavior) override;

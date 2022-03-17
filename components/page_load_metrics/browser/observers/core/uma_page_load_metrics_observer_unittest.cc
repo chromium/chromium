@@ -1173,17 +1173,6 @@ TEST_F(UmaPageLoadMetricsObserverTest, NormalizedResponsivenessMetrics) {
       base::Milliseconds(100), UserInteractionType::kTapOrClick));
   max_event_durations.emplace_back(UserInteractionLatency::New(
       base::Milliseconds(150), UserInteractionType::kDrag));
-  input_timing.total_event_durations =
-      UserInteractionLatencies::NewUserInteractionLatencies({});
-
-  auto& total_event_durations =
-      input_timing.total_event_durations->get_user_interaction_latencies();
-  total_event_durations.emplace_back(UserInteractionLatency::New(
-      base::Milliseconds(55), UserInteractionType::kKeyboard));
-  total_event_durations.emplace_back(UserInteractionLatency::New(
-      base::Milliseconds(105), UserInteractionType::kTapOrClick));
-  total_event_durations.emplace_back(UserInteractionLatency::New(
-      base::Milliseconds(155), UserInteractionType::kDrag));
   NavigateAndCommit(GURL(kDefaultTestUrl));
   tester()->SimulateInputTimingUpdate(input_timing);
   // Navigate again to force histogram recording.
@@ -1193,47 +1182,16 @@ TEST_F(UmaPageLoadMetricsObserverTest, NormalizedResponsivenessMetrics) {
       std::make_pair(
           internal::kHistogramWorstUserInteractionLatencyMaxEventDuration, 146),
       std::make_pair(
-          internal::kHistogramWorstUserInteractionLatencyTotalEventDuration,
-          146),
-      std::make_pair(
-          internal::
-              kHistogramWorstUserInteractionLatencyOverBudgetMaxEventDuration,
-          50),
-      std::make_pair(
-          internal::
-              kHistogramWorstUserInteractionLatencyOverBudgetTotalEventDuration,
-          50),
-      std::make_pair(
           internal::
               kHistogramSumOfUserInteractionLatencyOverBudgetMaxEventDuration,
           50),
-      std::make_pair(
-          internal::
-              kHistogramSumOfUserInteractionLatencyOverBudgetTotalEventDuration,
-          62),
       std::make_pair(
           internal::
               kHistogramAverageUserInteractionLatencyOverBudgetMaxEventDuration,
           14),
       std::make_pair(
           internal::
-              kHistogramAverageUserInteractionLatencyOverBudgetTotalEventDuration,
-          21),
-      std::make_pair(
-          internal::
-              kHistogramSlowUserInteractionLatencyOverBudgetHighPercentileMaxEventDuration,
-          50),
-      std::make_pair(
-          internal::
-              kHistogramSlowUserInteractionLatencyOverBudgetHighPercentileTotalEventDuration,
-          50),
-      std::make_pair(
-          internal::
               kHistogramSlowUserInteractionLatencyOverBudgetHighPercentile2MaxEventDuration,
-          50),
-      std::make_pair(
-          internal::
-              kHistogramSlowUserInteractionLatencyOverBudgetHighPercentile2TotalEventDuration,
           50),
       std::make_pair(
           internal::

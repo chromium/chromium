@@ -534,17 +534,6 @@ TEST_F(AMPPageLoadMetricsObserverTest,
   max_event_durations.emplace_back(UserInteractionLatency::New(
       base::Milliseconds(150), UserInteractionType::kDrag));
 
-  input_timing.total_event_durations =
-      UserInteractionLatencies::NewUserInteractionLatencies({});
-  auto& total_event_durations =
-      input_timing.total_event_durations->get_user_interaction_latencies();
-  total_event_durations.emplace_back(UserInteractionLatency::New(
-      base::Milliseconds(55), UserInteractionType::kKeyboard));
-  total_event_durations.emplace_back(UserInteractionLatency::New(
-      base::Milliseconds(105), UserInteractionType::kTapOrClick));
-  total_event_durations.emplace_back(UserInteractionLatency::New(
-      base::Milliseconds(155), UserInteractionType::kDrag));
-
   tester()->SimulateInputTimingUpdate(input_timing, subframe);
 
   // Navigate the main frame to trigger metrics recording.
@@ -558,52 +547,21 @@ TEST_F(AMPPageLoadMetricsObserverTest,
       std::make_pair("SubFrame.InteractiveTiming.WorstUserInteractionLatency."
                      "MaxEventduration",
                      150),
-      std::make_pair("SubFrame.InteractiveTiming.WorstUserInteractionLatency."
-                     "TotalEventduration",
-                     155),
       std::make_pair(
           "SubFrame.InteractiveTiming.AverageUserInteractionLatencyOverBudget."
           "MaxEventduration",
           16),
       std::make_pair(
-          "SubFrame.InteractiveTiming.AverageUserInteractionLatencyOverBudget."
-          "TotalEventduration",
-          21),
-      std::make_pair(
           "SubFrame.InteractiveTiming.SumOfUserInteractionLatencyOverBudget."
           "MaxEventduration",
           50),
-      std::make_pair(
-          "SubFrame.InteractiveTiming.SumOfUserInteractionLatencyOverBudget."
-          "TotalEventduration",
-          65),
-      std::make_pair(
-          "SubFrame.InteractiveTiming.SlowUserInteractionLatencyOverBudget."
-          "HighPercentile.MaxEventduration",
-          50),
-      std::make_pair(
-          "SubFrame.InteractiveTiming.SlowUserInteractionLatencyOverBudget."
-          "HighPercentile.TotalEventduration",
-          55),
-      std::make_pair("SubFrame.InteractiveTiming.UserInteractionLatency."
-                     "HighPercentile2.MaxEventDuration",
-                     150),
       std::make_pair(
           "SubFrame.InteractiveTiming.SlowUserInteractionLatencyOverBudget."
           "HighPercentile2.MaxEventduration",
           50),
-      std::make_pair(
-          "SubFrame.InteractiveTiming.SlowUserInteractionLatencyOverBudget."
-          "HighPercentile2.TotalEventduration",
-          55),
-      std::make_pair(
-          "SubFrame.InteractiveTiming.WorstUserInteractionLatencyOverBudget."
-          "MaxEventduration",
-          50),
-      std::make_pair(
-          "SubFrame.InteractiveTiming.WorstUserInteractionLatencyOverBudget."
-          "TotalEventduration",
-          55),
+      std::make_pair("SubFrame.InteractiveTiming.UserInteractionLatency."
+                     "HighPercentile2.MaxEventDuration",
+                     150),
       std::make_pair("SubFrame.InteractiveTiming.NumInteractions", 3)};
 
   for (auto& metric : ukm_list) {
@@ -617,31 +575,12 @@ TEST_F(AMPPageLoadMetricsObserverTest,
       "PageLoad.Clients.AMP.InteractiveTiming."
       "SumOfUserInteractionLatencyOverBudget.MaxEventDuration.Subframe",
       "PageLoad.Clients.AMP.InteractiveTiming."
-      "SlowUserInteractionLatencyOverBudget.HighPercentile.MaxEventDuration."
-      "Subframe",
-      "PageLoad.Clients.AMP.InteractiveTiming."
       "SlowUserInteractionLatencyOverBudget.HighPercentile2.MaxEventDuration."
       "Subframe",
       "PageLoad.Clients.AMP.InteractiveTiming."
       "UserInteractionLatency.HighPercentile2.MaxEventDuration.Subframe",
-      "PageLoad.Clients.AMP.InteractiveTiming."
-      "WorstUserInteractionLatencyOverBudget.MaxEventDuration.Subframe",
       "PageLoad.Clients.AMP.InteractiveTiming.WorstUserInteractionLatency."
       "MaxEventDuration.Subframe",
-      "PageLoad.Clients.AMP.InteractiveTiming."
-      "AverageUserInteractionLatencyOverBudget.TotalEventDuration.Subframe",
-      "PageLoad.Clients.AMP.InteractiveTiming."
-      "SumOfUserInteractionLatencyOverBudget.TotalEventDuration.Subframe",
-      "PageLoad.Clients.AMP.InteractiveTiming."
-      "SlowUserInteractionLatencyOverBudget.HighPercentile.TotalEventDuration."
-      "Subframe",
-      "PageLoad.Clients.AMP.InteractiveTiming."
-      "SlowUserInteractionLatencyOverBudget.HighPercentile2.TotalEventDuration."
-      "Subframe",
-      "PageLoad.Clients.AMP.InteractiveTiming."
-      "WorstUserInteractionLatencyOverBudget.TotalEventDuration.Subframe",
-      "PageLoad.Clients.AMP.InteractiveTiming.WorstUserInteractionLatency."
-      "TotalEventDuration.Subframe",
   };
 
   for (auto& metric : uma_list) {
@@ -680,17 +619,6 @@ TEST_F(AMPPageLoadMetricsObserverTest,
   max_event_durations.emplace_back(UserInteractionLatency::New(
       base::Milliseconds(150), UserInteractionType::kDrag));
 
-  input_timing.total_event_durations =
-      UserInteractionLatencies::NewUserInteractionLatencies({});
-  auto& total_event_durations =
-      input_timing.total_event_durations->get_user_interaction_latencies();
-  total_event_durations.emplace_back(UserInteractionLatency::New(
-      base::Milliseconds(55), UserInteractionType::kKeyboard));
-  total_event_durations.emplace_back(UserInteractionLatency::New(
-      base::Milliseconds(105), UserInteractionType::kTapOrClick));
-  total_event_durations.emplace_back(UserInteractionLatency::New(
-      base::Milliseconds(155), UserInteractionType::kDrag));
-
   tester()->SimulateInputTimingUpdate(input_timing, subframe);
 
   // Navigate the main frame to trigger metrics recording.
@@ -704,33 +632,14 @@ TEST_F(AMPPageLoadMetricsObserverTest,
       std::make_pair("SubFrame.InteractiveTiming.WorstUserInteractionLatency."
                      "MaxEventduration",
                      150),
-      std::make_pair("SubFrame.InteractiveTiming.WorstUserInteractionLatency."
-                     "TotalEventduration",
-                     155),
       std::make_pair(
           "SubFrame.InteractiveTiming.AverageUserInteractionLatencyOverBudget."
           "MaxEventduration",
           16),
       std::make_pair(
-          "SubFrame.InteractiveTiming.AverageUserInteractionLatencyOverBudget."
-          "TotalEventduration",
-          21),
-      std::make_pair(
           "SubFrame.InteractiveTiming.SumOfUserInteractionLatencyOverBudget."
           "MaxEventduration",
           50),
-      std::make_pair(
-          "SubFrame.InteractiveTiming.SumOfUserInteractionLatencyOverBudget."
-          "TotalEventduration",
-          65),
-      std::make_pair(
-          "SubFrame.InteractiveTiming.SlowUserInteractionLatencyOverBudget."
-          "HighPercentile.MaxEventduration",
-          50),
-      std::make_pair(
-          "SubFrame.InteractiveTiming.SlowUserInteractionLatencyOverBudget."
-          "HighPercentile.TotalEventduration",
-          55),
       std::make_pair("SubFrame.InteractiveTiming.UserInteractionLatency."
                      "HighPercentile2.MaxEventDuration",
                      150),
@@ -738,18 +647,6 @@ TEST_F(AMPPageLoadMetricsObserverTest,
           "SubFrame.InteractiveTiming.SlowUserInteractionLatencyOverBudget."
           "HighPercentile2.MaxEventduration",
           50),
-      std::make_pair(
-          "SubFrame.InteractiveTiming.SlowUserInteractionLatencyOverBudget."
-          "HighPercentile2.TotalEventduration",
-          55),
-      std::make_pair(
-          "SubFrame.InteractiveTiming.WorstUserInteractionLatencyOverBudget."
-          "MaxEventduration",
-          50),
-      std::make_pair(
-          "SubFrame.InteractiveTiming.WorstUserInteractionLatencyOverBudget."
-          "TotalEventduration",
-          55),
   };
 
   for (auto& metric : ukm_list) {
@@ -765,36 +662,13 @@ TEST_F(AMPPageLoadMetricsObserverTest,
       "SumOfUserInteractionLatencyOverBudget.MaxEventDuration.Subframe."
       "FullNavigation",
       "PageLoad.Clients.AMP.InteractiveTiming."
-      "SlowUserInteractionLatencyOverBudget.HighPercentile.MaxEventDuration."
-      "Subframe.FullNavigation",
-      "PageLoad.Clients.AMP.InteractiveTiming."
       "SlowUserInteractionLatencyOverBudget.HighPercentile2.MaxEventDuration."
       "Subframe.FullNavigation",
       "PageLoad.Clients.AMP.InteractiveTiming."
       "UserInteractionLatency.HighPercentile2.MaxEventDuration."
       "Subframe.FullNavigation",
-      "PageLoad.Clients.AMP.InteractiveTiming."
-      "WorstUserInteractionLatencyOverBudget.MaxEventDuration.Subframe."
-      "FullNavigation",
       "PageLoad.Clients.AMP.InteractiveTiming.WorstUserInteractionLatency."
       "MaxEventDuration.Subframe.FullNavigation",
-      "PageLoad.Clients.AMP.InteractiveTiming."
-      "AverageUserInteractionLatencyOverBudget.TotalEventDuration.Subframe."
-      "FullNavigation",
-      "PageLoad.Clients.AMP.InteractiveTiming."
-      "SumOfUserInteractionLatencyOverBudget.TotalEventDuration.Subframe."
-      "FullNavigation",
-      "PageLoad.Clients.AMP.InteractiveTiming."
-      "SlowUserInteractionLatencyOverBudget.HighPercentile.TotalEventDuration."
-      "Subframe.FullNavigation",
-      "PageLoad.Clients.AMP.InteractiveTiming."
-      "SlowUserInteractionLatencyOverBudget.HighPercentile2.TotalEventDuration."
-      "Subframe.FullNavigation",
-      "PageLoad.Clients.AMP.InteractiveTiming."
-      "WorstUserInteractionLatencyOverBudget.TotalEventDuration.Subframe."
-      "FullNavigation",
-      "PageLoad.Clients.AMP.InteractiveTiming.WorstUserInteractionLatency."
-      "TotalEventDuration.Subframe.FullNavigation",
   };
 
   for (auto& metric : uma_list) {

@@ -19,10 +19,9 @@ class ResponsivenessMetricsNormalizationTest : public testing::Test {
   ResponsivenessMetricsNormalizationTest() = default;
 
   void AddNewUserInteractions(uint64_t num_new_interactions,
-                              UserInteractionLatencies& max_event_durations,
-                              UserInteractionLatencies& total_event_durations) {
+                              UserInteractionLatencies& max_event_durations) {
     responsiveness_metrics_normalization_.AddNewUserInteractionLatencies(
-        num_new_interactions, max_event_durations, total_event_durations);
+        num_new_interactions, max_event_durations);
   }
 
   const page_load_metrics::NormalizedResponsivenessMetrics&
@@ -48,18 +47,7 @@ TEST_F(ResponsivenessMetricsNormalizationTest, SendAllInteractions) {
   user_interaction_latencies1.emplace_back(UserInteractionLatency::New(
       base::Milliseconds(150), UserInteractionType::kDrag));
 
-  UserInteractionLatenciesPtr total_event_durations =
-      UserInteractionLatencies::NewUserInteractionLatencies({});
-  auto& user_interaction_latencies2 =
-      total_event_durations->get_user_interaction_latencies();
-  user_interaction_latencies2.emplace_back(UserInteractionLatency::New(
-      base::Milliseconds(55), UserInteractionType::kKeyboard));
-  user_interaction_latencies2.emplace_back(UserInteractionLatency::New(
-      base::Milliseconds(105), UserInteractionType::kTapOrClick));
-  user_interaction_latencies2.emplace_back(UserInteractionLatency::New(
-      base::Milliseconds(155), UserInteractionType::kDrag));
-
-  AddNewUserInteractions(3, *max_event_durations, *total_event_durations);
+  AddNewUserInteractions(3, *max_event_durations);
   auto worst_ten_max_event_durations =
       normalized_responsiveness_metrics()
           .normalized_max_event_durations.worst_ten_latencies_over_budget;
@@ -70,17 +58,6 @@ TEST_F(ResponsivenessMetricsNormalizationTest, SendAllInteractions) {
   worst_ten_max_event_durations.pop();
   EXPECT_EQ(worst_ten_max_event_durations.top(), base::Milliseconds(50));
 
-  auto worst_ten_total_event_durations =
-      normalized_responsiveness_metrics()
-          .normalized_total_event_durations.worst_ten_latencies_over_budget;
-  EXPECT_EQ(worst_ten_total_event_durations.size(), 3u);
-  EXPECT_EQ(worst_ten_total_event_durations.top(), base::Milliseconds(5));
-  worst_ten_total_event_durations.pop();
-  EXPECT_EQ(worst_ten_total_event_durations.top(), base::Milliseconds(5));
-  worst_ten_total_event_durations.pop();
-  EXPECT_EQ(worst_ten_total_event_durations.top(), base::Milliseconds(55));
-  EXPECT_EQ(normalized_responsiveness_metrics().num_user_interactions, 3u);
-
   auto& normalized_max_event_durations =
       normalized_responsiveness_metrics().normalized_max_event_durations;
   EXPECT_EQ(normalized_max_event_durations.worst_latency,
@@ -89,19 +66,4 @@ TEST_F(ResponsivenessMetricsNormalizationTest, SendAllInteractions) {
             base::Milliseconds(50));
   EXPECT_EQ(normalized_max_event_durations.sum_of_latency_over_budget,
             base::Milliseconds(50));
-  EXPECT_EQ(
-      normalized_max_event_durations.pseudo_second_worst_latency_over_budget,
-      base::Milliseconds(0));
-
-  auto& normalized_total_event_durations =
-      normalized_responsiveness_metrics().normalized_total_event_durations;
-  EXPECT_EQ(normalized_total_event_durations.worst_latency,
-            base::Milliseconds(155));
-  EXPECT_EQ(normalized_total_event_durations.worst_latency_over_budget,
-            base::Milliseconds(55));
-  EXPECT_EQ(normalized_total_event_durations.sum_of_latency_over_budget,
-            base::Milliseconds(65));
-  EXPECT_EQ(
-      normalized_total_event_durations.pseudo_second_worst_latency_over_budget,
-      base::Milliseconds(5));
 }

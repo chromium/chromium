@@ -23,11 +23,9 @@ struct NormalizedInteractionLatencies {
   base::TimeDelta worst_latency;
   // For metrics below, we reduce a fixed budget from every user interaction
   // latency and we call it latency over budget. Then we calculaute the
-  // worst(maximum), the sum, the second worst and an approximation of high
-  // quantile.
+  // worst(maximum), the sum, and an approximation of high quantile.
   base::TimeDelta worst_latency_over_budget;
   base::TimeDelta sum_of_latency_over_budget;
-  base::TimeDelta pseudo_second_worst_latency_over_budget;
   base::TimeDelta high_percentile_latency_over_budget;
 
   // A min priority queue. The top is the smallest base::TimeDelta in the queue.
@@ -72,8 +70,7 @@ class ResponsivenessMetricsNormalization {
 
   void AddNewUserInteractionLatencies(
       uint64_t num_new_interactions,
-      const mojom::UserInteractionLatencies& max_event_durations,
-      const mojom::UserInteractionLatencies& total_event_durations);
+      const mojom::UserInteractionLatencies& max_event_durations);
 
   const NormalizedResponsivenessMetrics& GetNormalizedResponsivenessMetrics()
       const {

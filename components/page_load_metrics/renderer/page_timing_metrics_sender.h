@@ -74,7 +74,6 @@ class PageTimingMetricsSender {
 
   void DidObserveInputDelay(base::TimeDelta input_delay);
   void DidObserveUserInteraction(base::TimeDelta max_event_duration,
-                                 base::TimeDelta total_event_duration,
                                  blink::UserInteractionType interaction_type);
   // Updates the timing information. Buffers |timing| to be sent over mojo
   // sometime 'soon'.

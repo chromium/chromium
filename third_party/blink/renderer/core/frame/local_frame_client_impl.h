@@ -139,7 +139,6 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
   void DidChangePerformanceTiming() override;
   void DidObserveInputDelay(base::TimeDelta) override;
   void DidObserveUserInteraction(base::TimeDelta max_event_duration,
-                                 base::TimeDelta total_event_duration,
                                  UserInteractionType interaction_type) override;
   void DidChangeCpuTiming(base::TimeDelta) override;
   void DidObserveLoadingBehavior(LoadingBehaviorFlag) override;

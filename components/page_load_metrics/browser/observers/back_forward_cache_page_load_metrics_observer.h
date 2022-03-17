@@ -20,9 +20,6 @@ extern const char
         [];
 extern const char kNumInteractions_AfterBackForwardCacheRestore[];
 extern const char
-    kSlowUserInteractionLatencyOverBudgetHighPercentile_MaxEventDuration_AfterBackForwardCacheRestore
-        [];
-extern const char
     kSlowUserInteractionLatencyOverBudgetHighPercentile2_MaxEventDuration_AfterBackForwardCacheRestore
         [];
 extern const char
@@ -33,27 +30,6 @@ extern const char
         [];
 extern const char
     kWorstUserInteractionLatency_MaxEventDuration_AfterBackForwardCacheRestore
-        [];
-extern const char
-    kWorstUserInteractionLatencyOverBudget_MaxEventDuration_AfterBackForwardCacheRestore
-        [];
-extern const char
-    kAverageUserInteractionLatencyOverBudget_TotalEventDuration_AfterBackForwardCacheRestore
-        [];
-extern const char
-    kSlowUserInteractionLatencyOverBudgetHighPercentile_TotalEventDuration_AfterBackForwardCacheRestore
-        [];
-extern const char
-    kSlowUserInteractionLatencyOverBudgetHighPercentile2_TotalEventDuration_AfterBackForwardCacheRestore
-        [];
-extern const char
-    kSumOfUserInteractionLatencyOverBudget_TotalEventDuration_AfterBackForwardCacheRestore
-        [];
-extern const char
-    kWorstUserInteractionLatency_TotalEventDuration_AfterBackForwardCacheRestore
-        [];
-extern const char
-    kWorstUserInteractionLatencyOverBudget_TotalEventDuration_AfterBackForwardCacheRestore
         [];
 
 extern const char kHistogramFirstPaintAfterBackForwardCacheRestore[];

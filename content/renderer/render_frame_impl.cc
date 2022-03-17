@@ -4386,11 +4386,9 @@ void RenderFrameImpl::DidObserveInputDelay(base::TimeDelta input_delay) {
 
 void RenderFrameImpl::DidObserveUserInteraction(
     base::TimeDelta max_event_duration,
-    base::TimeDelta total_event_duration,
     blink::UserInteractionType interaction_type) {
   for (auto& observer : observers_)
-    observer.DidObserveUserInteraction(max_event_duration, total_event_duration,
-                                       interaction_type);
+    observer.DidObserveUserInteraction(max_event_duration, interaction_type);
 }
 
 void RenderFrameImpl::DidChangeCpuTiming(base::TimeDelta time) {

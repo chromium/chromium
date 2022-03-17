@@ -1058,17 +1058,6 @@ TEST_F(UkmPageLoadMetricsObserverTest, NormalizedUserInteractionLatencies) {
       base::Milliseconds(100), UserInteractionType::kTapOrClick));
   max_event_durations.emplace_back(UserInteractionLatency::New(
       base::Milliseconds(150), UserInteractionType::kDrag));
-  input_timing.total_event_durations =
-      UserInteractionLatencies::NewUserInteractionLatencies({});
-  auto& total_event_durations =
-      input_timing.total_event_durations->get_user_interaction_latencies();
-
-  total_event_durations.emplace_back(UserInteractionLatency::New(
-      base::Milliseconds(55), UserInteractionType::kKeyboard));
-  total_event_durations.emplace_back(UserInteractionLatency::New(
-      base::Milliseconds(105), UserInteractionType::kTapOrClick));
-  total_event_durations.emplace_back(UserInteractionLatency::New(
-      base::Milliseconds(155), UserInteractionType::kDrag));
 
   tester()->SimulateInputTimingUpdate(input_timing);
 
@@ -1091,11 +1080,6 @@ TEST_F(UkmPageLoadMetricsObserverTest, NormalizedUserInteractionLatencies) {
     tester()->test_ukm_recorder().ExpectEntryMetric(
         kv.second.get(),
         PageLoad::
-            kInteractiveTiming_WorstUserInteractionLatencyOverBudget_MaxEventDurationName,
-        50);
-    tester()->test_ukm_recorder().ExpectEntryMetric(
-        kv.second.get(),
-        PageLoad::
             kInteractiveTiming_SumOfUserInteractionLatencyOverBudget_MaxEventDurationName,
         50);
     tester()->test_ukm_recorder().ExpectEntryMetric(
@@ -1103,11 +1087,6 @@ TEST_F(UkmPageLoadMetricsObserverTest, NormalizedUserInteractionLatencies) {
         PageLoad::
             kInteractiveTiming_AverageUserInteractionLatencyOverBudget_MaxEventDurationName,
         16);
-    tester()->test_ukm_recorder().ExpectEntryMetric(
-        kv.second.get(),
-        PageLoad::
-            kInteractiveTiming_SlowUserInteractionLatencyOverBudget_HighPercentile_MaxEventDurationName,
-        50);
     tester()->test_ukm_recorder().ExpectEntryMetric(
         kv.second.get(),
         PageLoad::
@@ -1120,37 +1099,6 @@ TEST_F(UkmPageLoadMetricsObserverTest, NormalizedUserInteractionLatencies) {
         150);
     tester()->test_ukm_recorder().ExpectEntryMetric(
         kv.second.get(), PageLoad::kInteractiveTiming_NumInteractionsName, 3);
-
-    tester()->test_ukm_recorder().ExpectEntryMetric(
-        kv.second.get(),
-        PageLoad::
-            kInteractiveTiming_WorstUserInteractionLatency_TotalEventDurationName,
-        155);
-    tester()->test_ukm_recorder().ExpectEntryMetric(
-        kv.second.get(),
-        PageLoad::
-            kInteractiveTiming_WorstUserInteractionLatencyOverBudget_TotalEventDurationName,
-        55);
-    tester()->test_ukm_recorder().ExpectEntryMetric(
-        kv.second.get(),
-        PageLoad::
-            kInteractiveTiming_SumOfUserInteractionLatencyOverBudget_TotalEventDurationName,
-        65);
-    tester()->test_ukm_recorder().ExpectEntryMetric(
-        kv.second.get(),
-        PageLoad::
-            kInteractiveTiming_AverageUserInteractionLatencyOverBudget_TotalEventDurationName,
-        21);
-    tester()->test_ukm_recorder().ExpectEntryMetric(
-        kv.second.get(),
-        PageLoad::
-            kInteractiveTiming_SlowUserInteractionLatencyOverBudget_HighPercentile_TotalEventDurationName,
-        55);
-    tester()->test_ukm_recorder().ExpectEntryMetric(
-        kv.second.get(),
-        PageLoad::
-            kInteractiveTiming_SlowUserInteractionLatencyOverBudget_HighPercentile2_TotalEventDurationName,
-        55);
   }
 }
 

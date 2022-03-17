@@ -333,12 +333,6 @@ struct InputTiming {
   // TODO(crbug.com/1252179): Once the experiment is done, we could simplify
   // this part.
   UserInteractionLatencies max_event_durations;
-
-  // Includes an array of total_event_duration which is the sum of input event
-  // durations within a user interaction without double counting the overlap.
-  // The unit of duration is ms. Currently, we send this array to the browser
-  // process behind a Finch flag.
-  UserInteractionLatencies total_event_durations;
 };
 
 // Data for user interaction latencies which can be meausred in different ways.

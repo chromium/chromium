@@ -434,8 +434,6 @@ PageLoadMetricsUpdateDispatcher::PageLoadMetricsUpdateDispatcher(
       is_prerendered_page_load_(navigation_handle->IsInPrerenderedMainFrame()) {
   page_input_timing_->max_event_durations =
       mojom::UserInteractionLatencies::New();
-  page_input_timing_->total_event_durations =
-      mojom::UserInteractionLatencies::New();
 }
 
 PageLoadMetricsUpdateDispatcher::~PageLoadMetricsUpdateDispatcher() {
@@ -745,8 +743,7 @@ void PageLoadMetricsUpdateDispatcher::UpdatePageInputTiming(
   if (input_timing_delta.num_interactions) {
     responsiveness_metrics_normalization_.AddNewUserInteractionLatencies(
         input_timing_delta.num_interactions,
-        *(input_timing_delta.max_event_durations),
-        *(input_timing_delta.total_event_durations));
+        *(input_timing_delta.max_event_durations));
   }
 }
 

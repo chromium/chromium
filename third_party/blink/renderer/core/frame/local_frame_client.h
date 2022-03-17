@@ -192,7 +192,6 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
 
   // Will be called when a user interaction is observed.
   virtual void DidObserveUserInteraction(base::TimeDelta max_event_duration,
-                                         base::TimeDelta total_event_duration,
                                          UserInteractionType interaction_type) {
   }
 
