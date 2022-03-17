@@ -1038,11 +1038,6 @@
     "args": ["--js-flags=--experimental-async-stack-tagging-api"]
   },
   {
-    "prefix": "change-service-worker-priority-when-client-foreground-state-change",
-    "bases": ["external/wpt/service-workers"],
-    "args": ["--enable-features=ChangeServiceWorkerPriorityForClientForegroundStateChange"]
-  },
-  {
     "prefix": "system-color-picker-appearance",
     "bases": ["fast/forms/color-scheme/color/color-picker-appearance.html"],
     "args": ["--enable-features=SystemColorChooser"]

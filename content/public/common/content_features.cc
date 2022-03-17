@@ -1159,7 +1159,7 @@ const base::Feature kWebXrArModule{"WebXRARModule",
 // process fore/background state change.
 const base::Feature kChangeServiceWorkerPriorityForClientForegroundStateChange{
     "ChangeServiceWorkerPriorityForClientForegroundStateChange",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 #if BUILDFLAG(IS_ANDROID)
 // Allows the use of page zoom in place of accessibility text autosizing, and
