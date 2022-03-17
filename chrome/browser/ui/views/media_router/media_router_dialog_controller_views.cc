@@ -165,7 +165,26 @@ void MediaRouterDialogControllerViews::ShowGlobalMeidaControlsDialog(
   service->OnStartPresentationContextCreated(std::move(context));
 
   MediaToolbarButtonView* const media_button = GetMediaButton();
-  if (!media_button) {
+  // If there exists a media button, anchor the dialog to this media button.
+  if (media_button) {
+    scoped_widget_observations_.AddObservation(MediaDialogView::ShowDialog(
+        media_button, views::BubbleBorder::TOP_RIGHT, service, profile,
+        initiator(),
+        global_media_controls::GlobalMediaControlsEntryPoint::kPresentation));
+    return;
+  }
+  Browser* const browser = chrome::FindBrowserWithWebContents(initiator());
+  BrowserView* const browser_view =
+      browser ? BrowserView::GetBrowserViewForBrowser(browser) : nullptr;
+  // If there exists a browser_view, anchor the dialog to the top center of the
+  // browser_view. This is necessary only for Mac, but works for other
+  // platforms.
+  if (browser_view) {
+    scoped_widget_observations_.AddObservation(MediaDialogView::ShowDialog(
+        browser_view->top_container(), views::BubbleBorder::TOP_CENTER, service,
+        profile, initiator(),
+        global_media_controls::GlobalMediaControlsEntryPoint::kPresentation));
+  } else {
     // Show the GMC dialog anchored to the top of the web contents.
     gfx::Rect anchor_bounds = initiator()->GetContainerBounds();
     anchor_bounds.set_height(0);
@@ -174,13 +193,7 @@ void MediaRouterDialogControllerViews::ShowGlobalMeidaControlsDialog(
             anchor_bounds, service, profile, initiator(),
             global_media_controls::GlobalMediaControlsEntryPoint::
                 kPresentation));
-    return;
   }
-
-  scoped_widget_observations_.AddObservation(MediaDialogView::ShowDialog(
-      media_button, views::BubbleBorder::TOP_RIGHT, service, profile,
-      initiator(),
-      global_media_controls::GlobalMediaControlsEntryPoint::kPresentation));
 }
 
 MediaToolbarButtonView* MediaRouterDialogControllerViews::GetMediaButton() {

@@ -8,6 +8,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_view.h"
 #include "chrome/browser/ui/views/media_router/media_router_dialog_controller_views.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -135,10 +137,9 @@ IN_PROC_BROWSER_TEST_F(GlobalMediaControlsDialogTest, OpenGMCDialogInWebApp) {
   auto* view = MediaDialogView::GetDialogViewForTesting();
   // If there does not exist a media button, the dialog should not have an
   // anchor view.
-  EXPECT_FALSE(view->GetAnchorView());
-  gfx::Rect anchor_bounds = initiator_->GetContainerBounds();
-  anchor_bounds.set_height(0);
-  EXPECT_EQ(anchor_bounds, view->GetAnchorRect());
+  views::View* anchor_view =
+      BrowserView::GetBrowserViewForBrowser(browser())->top_container();
+  EXPECT_EQ(anchor_view, view->GetAnchorView());
 }
 
 IN_PROC_BROWSER_TEST_F(GlobalMediaControlsDialogTest,
