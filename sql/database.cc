@@ -1188,6 +1188,7 @@ bool Database::AttachDatabase(const base::FilePath& other_db_path,
                               InternalApiToken) {
   TRACE_EVENT0("sql", "Database::AttachDatabase");
 
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(ValidAttachmentPoint(attachment_point));
 
   Statement statement(GetUniqueStatement("ATTACH ? AS ?"));
@@ -1204,6 +1205,7 @@ bool Database::DetachDatabase(base::StringPiece attachment_point,
                               InternalApiToken) {
   TRACE_EVENT0("sql", "Database::DetachDatabase");
 
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(ValidAttachmentPoint(attachment_point));
 
   Statement statement(GetUniqueStatement("DETACH ?"));
@@ -1488,6 +1490,8 @@ std::string Database::GetSchema() {
 }
 
 bool Database::IsSQLValid(const char* sql) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   absl::optional<base::ScopedBlockingCall> scoped_blocking_call;
   InitScopedBlockingCall(FROM_HERE, &scoped_blocking_call);
   if (!db_) {
@@ -1521,19 +1525,24 @@ bool Database::IsSQLValid(const char* sql) {
 }
 
 bool Database::DoesIndexExist(base::StringPiece index_name) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return DoesSchemaItemExist(index_name, "index");
 }
 
 bool Database::DoesTableExist(base::StringPiece table_name) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return DoesSchemaItemExist(table_name, "table");
 }
 
 bool Database::DoesViewExist(base::StringPiece view_name) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return DoesSchemaItemExist(view_name, "view");
 }
 
 bool Database::DoesSchemaItemExist(base::StringPiece name,
                                    base::StringPiece type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   static const char kSql[] =
       "SELECT 1 FROM sqlite_schema WHERE type=? AND name=?";
   Statement statement(GetUniqueStatement(kSql));
@@ -1551,6 +1560,8 @@ bool Database::DoesSchemaItemExist(base::StringPiece name,
 
 bool Database::DoesColumnExist(const char* table_name,
                                const char* column_name) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // sqlite3_table_column_metadata uses out-params to return column definition
   // details, such as the column type and whether it allows NULL values. These
   // aren't needed to compute the current method's result, so we pass in nullptr
