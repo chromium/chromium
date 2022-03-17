@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_HANDLERS_LACROS_AVAILABILITY_POLICY_HANDLER_H_
 #define CHROME_BROWSER_ASH_POLICY_HANDLERS_LACROS_AVAILABILITY_POLICY_HANDLER_H_
 
-#include <string>
-
-#include "base/containers/flat_map.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -41,10 +38,6 @@ class LacrosAvailabilityPolicyHandler : public TypeCheckingPolicyHandler {
   absl::optional<crosapi::browser_util::LacrosAvailability> GetValue(
       const PolicyMap& policies,
       PolicyErrorMap* errors);
-  // TODO(crbug.com/1293250): Remove this map by merging into
-  // kLacrosAvailabilityMap in browser_util.cc
-  const base::flat_map<std::string, crosapi::browser_util::LacrosAvailability>
-      policy_value_to_enum_;
 };
 
 }  // namespace policy

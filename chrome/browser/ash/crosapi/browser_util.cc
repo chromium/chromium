@@ -131,20 +131,17 @@ LacrosAvailability DetermineLacrosAvailabilityFromPolicyValue(
     return LacrosAvailability::kUserChoice;
   }
 
-  auto* map_entry = kLacrosAvailabilityMap.find(policy_value);
-  if (map_entry == kLacrosAvailabilityMap.end()) {
-    LOG(ERROR) << "Invalid LacrosAvailability policy value: " << policy_value;
+  auto result = ParseLacrosAvailability(policy_value);
+  if (!result.has_value())
     return LacrosAvailability::kUserChoice;
-  }
 
-  auto result = map_entry->second;
   if (IsGoogleInternal() &&
       !base::FeatureList::IsEnabled(kLacrosGooglePolicyRollout) &&
       result != LacrosAvailability::kLacrosDisallowed) {
     return LacrosAvailability::kUserChoice;
   }
 
-  return result;
+  return result.value();
 }
 
 // Gets called from IsLacrosAllowedToBeEnabled with primary user or from
@@ -798,6 +795,16 @@ LacrosLaunchSwitchSource GetLacrosLaunchSwitchSource() {
   return GetCachedLacrosAvailability() == LacrosAvailability::kUserChoice
              ? LacrosLaunchSwitchSource::kPossiblySetByUser
              : LacrosLaunchSwitchSource::kForcedByPolicy;
+}
+
+absl::optional<LacrosAvailability> ParseLacrosAvailability(
+    base::StringPiece value) {
+  auto* it = kLacrosAvailabilityMap.find(value);
+  if (it != kLacrosAvailabilityMap.end())
+    return it->second;
+
+  LOG(ERROR) << "Unknown LacrosAvailability policy value is passed: " << value;
+  return absl::nullopt;
 }
 
 base::StringPiece GetLacrosAvailabilityPolicyName(LacrosAvailability value) {

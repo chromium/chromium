@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/feature_list.h"
+#include "base/strings/string_piece.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AccountId;
@@ -303,6 +304,11 @@ bool IsAshBrowserSyncEnabled();
 // Returns who decided how Lacros should be used - or not: The User, the policy
 // or another edge case.
 LacrosLaunchSwitchSource GetLacrosLaunchSwitchSource();
+
+// Parses the string representation of LacrosAvailability policy value into
+// the enum value. Returns nullopt on unknown value.
+absl::optional<LacrosAvailability> ParseLacrosAvailability(
+    base::StringPiece value);
 
 // Returns the policy value name from the given value.
 base::StringPiece GetLacrosAvailabilityPolicyName(LacrosAvailability value);

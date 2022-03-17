@@ -18,19 +18,7 @@ namespace policy {
 
 LacrosAvailabilityPolicyHandler::LacrosAvailabilityPolicyHandler()
     : TypeCheckingPolicyHandler(key::kLacrosAvailability,
-                                base::Value::Type::STRING),
-      policy_value_to_enum_{
-          {"user_choice",
-           crosapi::browser_util::LacrosAvailability::kUserChoice},
-          {"lacros_disallowed",
-           crosapi::browser_util::LacrosAvailability::kLacrosDisallowed},
-          {"side_by_side",
-           crosapi::browser_util::LacrosAvailability::kSideBySide},
-          {"lacros_primary",
-           crosapi::browser_util::LacrosAvailability::kLacrosPrimary},
-          {"lacros_only",
-           crosapi::browser_util::LacrosAvailability::kLacrosOnly},
-      } {}
+                                base::Value::Type::STRING) {}
 
 LacrosAvailabilityPolicyHandler::~LacrosAvailabilityPolicyHandler() = default;
 
@@ -55,18 +43,14 @@ LacrosAvailabilityPolicyHandler::GetValue(const PolicyMap& policies,
                                           PolicyErrorMap* errors) {
   const base::Value* value;
   const bool value_found = CheckAndGetValue(policies, errors, &value) && value;
-  if (!value_found) {
+  if (!value_found)
     return absl::nullopt;
-  }
 
-  const auto value_it = policy_value_to_enum_.find(value->GetString());
-  if (value_it == policy_value_to_enum_.end()) {
-    if (errors)
-      errors->AddError(policy_name(), IDS_POLICY_VALUE_FORMAT_ERROR);
-    return absl::nullopt;
-  }
-
-  return value_it->second;
+  auto parsed =
+      crosapi::browser_util::ParseLacrosAvailability(value->GetString());
+  if (!parsed.has_value() && errors)
+    errors->AddError(policy_name(), IDS_POLICY_VALUE_FORMAT_ERROR);
+  return parsed;
 }
 
 }  // namespace policy

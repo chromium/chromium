@@ -33,17 +33,6 @@ using version_info::Channel;
 
 namespace crosapi {
 
-// TODO(crbug.com/1293250): Get rid of this map by merging into
-// kLacrosAvailabilityMap in browser_util.cc
-const auto policy_enum_to_value =
-    base::MakeFixedFlatMap<LacrosAvailability, std::string>({
-        {LacrosAvailability::kUserChoice, "user_choice"},
-        {LacrosAvailability::kLacrosDisallowed, "lacros_disallowed"},
-        {LacrosAvailability::kSideBySide, "side_by_side"},
-        {LacrosAvailability::kLacrosPrimary, "lacros_primary"},
-        {LacrosAvailability::kLacrosOnly, "lacros_only"},
-    });
-
 // This implementation of RAII for LacrosAvailability is to make it easy reset
 // the state between runs.
 class ScopedLacrosAvailabilityCache {
@@ -62,11 +51,11 @@ class ScopedLacrosAvailabilityCache {
  private:
   void SetLacrosAvailability(LacrosAvailability lacros_availability) {
     policy::PolicyMap policy;
-    base::Value in_value(
-        policy_enum_to_value.find(lacros_availability)->second);
-    policy.Set(policy::key::kLacrosAvailability, policy::POLICY_LEVEL_MANDATORY,
-               policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
-               in_value.Clone(), nullptr);
+    policy.Set(
+        policy::key::kLacrosAvailability, policy::POLICY_LEVEL_MANDATORY,
+        policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+        base::Value(GetLacrosAvailabilityPolicyName(lacros_availability)),
+        /*external_data_fetcher=*/nullptr);
     browser_util::CacheLacrosAvailability(policy);
   }
 };
