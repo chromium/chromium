@@ -9475,6 +9475,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Privacy.DIPS.TimeFromInteractionToStorage" units="ms"
+    expires_after="2022-07-01">
+  <owner>bcl@chromium.org</owner>
+  <owner>jdh@chromium.org</owner>
+  <owner>rtarpine@chromium.org</owner>
+  <summary>
+    The amount of time after a user interacts with a site until the site
+    persists state (e.g. cookies) (where site = eTLD+1). Not recorded if state
+    is written before interaction takes place (see analogous histogram below).
+  </summary>
+</histogram>
+
+<histogram name="Privacy.DIPS.TimeFromStorageToInteraction" units="ms"
+    expires_after="2022-07-01">
+  <owner>bcl@chromium.org</owner>
+  <owner>jdh@chromium.org</owner>
+  <owner>rtarpine@chromium.org</owner>
+  <summary>
+    The amount of time after a site persists state (e.g. cookies) until the user
+    interacts with the site (where site = eTLD+1). Not recorded if interaction
+    takes place before state is written (see analogous histogram above).
+  </summary>
+</histogram>
+
 <histogram name="Privacy.DoNotTrackSetting" enum="BooleanEnabled"
     expires_after="never">
 <!-- expires-never: tracked as an important privacy metric. -->

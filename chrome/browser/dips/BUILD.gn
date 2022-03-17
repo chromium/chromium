@@ -1,0 +1,61 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("dips") {
+  sources = [
+    "dips_helper.cc",
+    "dips_helper.h",
+    "dips_service.cc",
+    "dips_service.h",
+    "dips_service_factory.cc",
+    "dips_service_factory.h",
+    "dips_state.cc",
+    "dips_state.h",
+    "dips_storage.cc",
+    "dips_storage.h",
+  ]
+  deps = [
+    "//base",
+    "//components/keyed_service/content",
+    "//components/keyed_service/core",
+    "//content/public/browser",
+    "//net/base/registry_controlled_domains",
+    "//third_party/abseil-cpp:absl",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "dips_storage_unittest.cc" ]
+
+  deps = [
+    ":dips",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+    "//url",
+  ]
+}
+
+# //chrome/test:test_support_ui doesn't support is_android
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    sources = [ "dips_helper_browsertest.cc" ]
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    deps = [
+      ":dips",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser/ui",
+      "//chrome/test:test_support_ui",
+      "//content/test:test_support",
+      "//net:test_support",
+      "//testing/gtest",
+    ]
+  }
+}
