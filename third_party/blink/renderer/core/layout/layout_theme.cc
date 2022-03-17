@@ -624,7 +624,7 @@ Color LayoutTheme::DefaultSystemColor(
     case CSSValueID::kButtonshadow:
       return 0xFF888888;
     case CSSValueID::kButtontext:
-      return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFFAAAAAA
+      return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFFFFFFFF
                                                               : 0xFF000000;
     case CSSValueID::kCaptiontext:
       return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFFFFFFFF

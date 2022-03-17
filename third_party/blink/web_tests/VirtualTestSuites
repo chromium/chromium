@@ -557,7 +557,8 @@
   },
   {
     "prefix": "dark-color-scheme",
-    "bases": ["external/wpt/css/css-color-adjust/rendering/dark-color-scheme",
+    "bases": ["external/wpt/css/css-color/system-color-consistency.html",
+              "external/wpt/css/css-color-adjust/rendering/dark-color-scheme",
               "fast/forms/color-scheme",
               "fast/forms/validation-bubble-appearance-edge.html",
               "fast/forms/validation-bubble-appearance-wrap.html",

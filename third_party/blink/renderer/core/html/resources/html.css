@@ -664,7 +664,7 @@ button {
     border: 2px outset ButtonBorder;
     box-sizing: border-box;
     background-color: -internal-light-dark(#efefef, #3B3B3B);
-    color: -internal-light-dark(black, white);
+    color: ButtonText;
 }
 
 input[type="checkbox" i]:disabled,
