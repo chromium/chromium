@@ -13,9 +13,6 @@ ci.defaults.set(
     bucket = "ci",
     build_numbers = True,
     cpu = cpu.X86_64,
-    project_trigger_overrides = branches.value({
-        branches.NOT_MAIN: {"chromium": settings.project},
-    }),
     triggered_by = ["chromium-gitiles-trigger"],
 )
 
