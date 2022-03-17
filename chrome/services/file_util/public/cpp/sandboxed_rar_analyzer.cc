@@ -104,9 +104,11 @@ void SandboxedRarAnalyzer::PrepareFileToAnalyze() {
 }
 
 void SandboxedRarAnalyzer::ReportFileFailure() {
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback_),
-                                safe_browsing::ArchiveAnalyzerResults()));
+  if (callback_) {
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback_),
+                                  safe_browsing::ArchiveAnalyzerResults()));
+  }
 }
 
 std::string SandboxedRarAnalyzer::DebugString() const {

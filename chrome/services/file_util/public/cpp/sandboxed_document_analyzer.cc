@@ -87,14 +87,16 @@ void SandboxedDocumentAnalyzer::AnalyzeDocumentDone(
 }
 
 void SandboxedDocumentAnalyzer::ReportFileFailure(const std::string msg) {
-  struct safe_browsing::DocumentAnalyzerResults failure_results =
-      safe_browsing::DocumentAnalyzerResults();
-  failure_results.success = false;
-  failure_results.has_macros = false;
-  failure_results.error_message = msg;
-  failure_results.error_code =
-      safe_browsing::ClientDownloadRequest::DocumentProcessingInfo::INTERNAL;
+  if (callback_) {
+    struct safe_browsing::DocumentAnalyzerResults failure_results =
+        safe_browsing::DocumentAnalyzerResults();
+    failure_results.success = false;
+    failure_results.has_macros = false;
+    failure_results.error_message = msg;
+    failure_results.error_code =
+        safe_browsing::ClientDownloadRequest::DocumentProcessingInfo::INTERNAL;
 
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback_), failure_results));
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback_), failure_results));
+  }
 }

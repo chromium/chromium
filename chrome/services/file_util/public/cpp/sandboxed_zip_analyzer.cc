@@ -73,9 +73,11 @@ void SandboxedZipAnalyzer::PrepareFileToAnalyze() {
 }
 
 void SandboxedZipAnalyzer::ReportFileFailure() {
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback_),
-                                safe_browsing::ArchiveAnalyzerResults()));
+  if (callback_) {
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback_),
+                                  safe_browsing::ArchiveAnalyzerResults()));
+  }
 }
 
 void SandboxedZipAnalyzer::AnalyzeFile(base::File file, base::File temp_file) {
