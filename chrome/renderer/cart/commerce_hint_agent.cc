@@ -17,6 +17,7 @@
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/grit/renderer_resources.h"
 #include "chrome/renderer/cart/commerce_renderer_feature_list.h"
+#include "components/commerce/core/commerce_heuristics_data.h"
 #include "components/search/ntp_features.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
@@ -372,6 +373,14 @@ const re2::RE2& GetVisitCheckoutPattern() {
 }
 
 const re2::RE2& GetSkipPattern() {
+  auto* pattern_from_component =
+      commerce_heuristics::CommerceHeuristicsData::GetInstance()
+          .GetProductSkipPattern();
+  if (pattern_from_component &&
+      kSkipPattern.Get() == kSkipPattern.default_value) {
+    DVLOG(1) << "SkipPattern = " << pattern_from_component->pattern();
+    return *pattern_from_component;
+  }
   static base::NoDestructor<re2::RE2> instance([] {
     const std::string& pattern = kSkipPattern.Get();
     DVLOG(1) << "SkipPattern = " << pattern;

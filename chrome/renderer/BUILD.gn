@@ -384,6 +384,7 @@ static_library("renderer") {
 
     deps += [
       "//chrome/common/cart:mojo_bindings",
+      "//components/commerce/core:commerce_heuristics_data",
       "//components/crx_file",
       "//components/search:search",
     ]

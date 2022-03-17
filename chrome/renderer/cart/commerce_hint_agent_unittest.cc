@@ -7,6 +7,7 @@
 #include "base/cfi_buildflags.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "components/commerce/core/commerce_heuristics_data.h"
 #include "components/search/ntp_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -750,6 +751,12 @@ const char kSkipPattern[] = "(^|\\W)(?i)(skipped|萬國碼)(\\W|$)";
 std::map<std::string, std::string> kSkipParams = {
     {"product-skip-pattern", kSkipPattern}};
 
+const char kGlobalHeuristicsJSONData[] = R"###(
+      {
+        "sensitive_product_regex": "(^|\\W)(?i)(skipped|萬國碼)(\\W|$)"
+      }
+  )###";
+
 std::map<std::string, std::string> kSkipAddToCartRequests = {
     {"https://www.electronicexpress.com", "https://www.electronicexpress.com"},
     {"https://www.electronicexpress.com", "https://www.google.com"},
@@ -827,11 +834,46 @@ TEST(CommerceHintAgentTest, IsPurchaseByForm) {
   }
 }
 
-TEST(CommerceHintAgentTest, ShouldSkip) {
+TEST(CommerceHintAgentTest, ShouldSkipFromFeatureParam) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       ntp_features::kNtpChromeCartModule, kSkipParams);
 
+  for (auto* str : kSkipText) {
+    EXPECT_TRUE(CommerceHintAgent::ShouldSkip(str)) << str;
+  }
+  for (auto* str : kNotSkipText) {
+    EXPECT_FALSE(CommerceHintAgent::ShouldSkip(str)) << str;
+  }
+}
+
+TEST(CommerceHintAgentTest, ShouldSkipFromComponent) {
+  EXPECT_TRUE(
+      commerce_heuristics::CommerceHeuristicsData::GetInstance()
+          .PopulateDataFromComponent("{}", kGlobalHeuristicsJSONData, "", ""));
+
+  for (auto* str : kSkipText) {
+    EXPECT_TRUE(CommerceHintAgent::ShouldSkip(str)) << str;
+  }
+  for (auto* str : kNotSkipText) {
+    EXPECT_FALSE(CommerceHintAgent::ShouldSkip(str)) << str;
+  }
+}
+
+TEST(CommerceHintAgentTest, ShouldSkip_Priority) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      ntp_features::kNtpChromeCartModule, kSkipParams);
+  // Initiate component skip pattern so that nothing is skipped.
+  const std::string& empty_pattern = R"###(
+      {
+        "sensitive_product_regex": "\\b\\B"
+      }
+  )###";
+  EXPECT_TRUE(commerce_heuristics::CommerceHeuristicsData::GetInstance()
+                  .PopulateDataFromComponent("{}", empty_pattern, "", ""));
+
+  // Honor the skip pattern from feature parameter as it has higher priority.
   for (auto* str : kSkipText) {
     EXPECT_TRUE(CommerceHintAgent::ShouldSkip(str)) << str;
   }

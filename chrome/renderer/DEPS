@@ -50,6 +50,7 @@ include_rules = [
   "+components/printing/common",
   "+components/printing/renderer",
   "+components/search/ntp_features.h",
+  "+components/commerce/core/commerce_heuristics_data.h",
   "+components/safe_browsing/buildflags.h",
   "+components/safe_browsing/content/renderer",
   "+components/safe_browsing/content/common",

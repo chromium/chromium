@@ -10,7 +10,11 @@
 namespace commerce_heuristics {
 
 namespace {
+// CommerceHintHeuristics types.
 constexpr char kMerchantNameType[] = "merchant_name";
+
+// CommerceGlobalHeuristics types.
+constexpr char kSkipProductPatternType[] = "sensitive_product_regex";
 }  // namespace
 
 // static
@@ -28,17 +32,28 @@ bool CommerceHeuristicsData::PopulateDataFromComponent(
     const std::string& product_id_json_data,
     const std::string& cart_extraction_script) {
   auto hint_json_value = base::JSONReader::Read(hint_json_data);
+  auto global_json_value = base::JSONReader::Read(global_json_data);
   if (!hint_json_value || !hint_json_value.has_value() ||
       !hint_json_value->is_dict()) {
     return false;
   }
+  if (!global_json_value || !global_json_value.has_value() ||
+      !global_json_value->is_dict()) {
+    return false;
+  }
   hint_heuristics_ = std::move(*hint_json_value->GetIfDict());
+  global_heuristics_ = std::move(*global_json_value->GetIfDict());
+  product_skip_pattern_ = ConstructGlobalRegex(kSkipProductPatternType);
   return true;
 }
 
 absl::optional<std::string> CommerceHeuristicsData::GetMerchantName(
     const std::string& domain) {
   return GetCommerceHintHeuristics(kMerchantNameType, domain);
+}
+
+const re2::RE2* CommerceHeuristicsData::GetProductSkipPattern() {
+  return product_skip_pattern_.get();
 }
 
 absl::optional<std::string> CommerceHeuristicsData::GetCommerceHintHeuristics(
@@ -54,6 +69,25 @@ absl::optional<std::string> CommerceHeuristicsData::GetCommerceHintHeuristics(
     return absl::nullopt;
   }
   return absl::optional<std::string>(*domain_heuristics->FindString(type));
+}
+
+absl::optional<std::string> CommerceHeuristicsData::GetCommerceGlobalHeuristics(
+    const std::string& type) {
+  if (!global_heuristics_.contains(type)) {
+    return absl::nullopt;
+  }
+  return absl::optional<std::string>(*global_heuristics_.FindString(type));
+}
+
+std::unique_ptr<re2::RE2> CommerceHeuristicsData::ConstructGlobalRegex(
+    const std::string& type) {
+  if (!GetCommerceGlobalHeuristics(type).has_value()) {
+    return nullptr;
+  }
+  std::string pattern = *GetCommerceGlobalHeuristics(type);
+  re2::RE2::Options options;
+  options.set_case_sensitive(false);
+  return std::make_unique<re2::RE2>(std::move(pattern), options);
 }
 
 }  // namespace commerce_heuristics

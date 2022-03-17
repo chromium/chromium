@@ -7,6 +7,7 @@
 
 #include <string>
 #include "base/values.h"
+#include "third_party/re2/src/re2/re2.h"
 
 namespace commerce_heuristics {
 
@@ -27,6 +28,9 @@ class CommerceHeuristicsData {
   // Try to get merchant name for `domain`.
   absl::optional<std::string> GetMerchantName(const std::string& domain);
 
+  // Try to get the product skip pattern.
+  const re2::RE2* GetProductSkipPattern();
+
  private:
   friend class CommerceHeuristicsDataTest;
 
@@ -34,7 +38,14 @@ class CommerceHeuristicsData {
       const std::string& type,
       const std::string& domain);
 
+  absl::optional<std::string> GetCommerceGlobalHeuristics(
+      const std::string& type);
+
+  std::unique_ptr<re2::RE2> ConstructGlobalRegex(const std::string& type);
+
   base::Value::Dict hint_heuristics_;
+  base::Value::Dict global_heuristics_;
+  std::unique_ptr<re2::RE2> product_skip_pattern_;
 };
 
 }  // namespace commerce_heuristics

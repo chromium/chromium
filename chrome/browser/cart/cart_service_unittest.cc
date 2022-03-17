@@ -986,7 +986,7 @@ TEST_F(CartServiceTest, TestLookupCartInfo_FromResource) {
 TEST_F(CartServiceTest, TestLookupCartInfo_FromComponent) {
   ASSERT_TRUE(commerce_heuristics::CommerceHeuristicsData::GetInstance()
                   .PopulateDataFromComponent(kCommerceHintHeuristicsJSONData,
-                                             "", "", ""));
+                                             "{}", "", ""));
   CartDB* cart_db_ = service_->GetDB();
   base::RunLoop run_loop;
   cart_db::ChromeCartContentProto merchant_proto =

@@ -58,7 +58,10 @@ if (!is_android) {
       "commerce_heuristics_data.h",
     ]
 
-    deps = [ "//base" ]
+    deps = [
+      "//base",
+      "//third_party/re2:re2",
+    ]
   }
 
   source_set("commerce_heuristics_data_unittests") {
@@ -69,6 +72,7 @@ if (!is_android) {
       "//base",
       "//base/test:test_support",
       "//testing/gtest",
+      "//third_party/re2:re2",
     ]
   }
 }
