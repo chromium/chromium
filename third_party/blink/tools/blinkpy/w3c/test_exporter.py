@@ -59,7 +59,7 @@ class TestExporter(object):
                        '#GitHub-credentials for instructions on how to set '
                        'your credentials up.')
             return False
-        _log.info("###%s###" % credentials['GH_TOKEN'][0:16])
+
         self.wpt_github = self.wpt_github or WPTGitHub(
             self.host, credentials['GH_USER'], credentials['GH_TOKEN'])
         self.gerrit = self.gerrit or GerritAPI(
