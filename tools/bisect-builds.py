@@ -1116,6 +1116,10 @@ def GetRevision(revision_text):
     revision_details = json.loads(response.read())
     revision_text = revision_details['chromium_base_position']
 
+    if not revision_text:
+        raise Exception(
+            "No 'chromium_base_position' matching %s found." % chromium_base_position)
+
   # Translate from text commit position to integer commit position.
   return int(revision_text)
 
