@@ -48,7 +48,6 @@ _CONFIG = [
             'base::AutoReset',
             'base::Contains',
             'base::CpuReductionExperimentFilter',
-            'base::CreateSequencedTaskRunner',
             'base::ValuesEquivalent',
             'base::Days',
             'base::DefaultTickClock',
