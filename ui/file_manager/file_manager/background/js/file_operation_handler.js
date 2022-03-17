@@ -447,6 +447,8 @@ function getMessageFromProgressEvent_(event) {
     switch (event.type) {
       case chrome.fileManagerPrivate.IOTaskType.COPY:
         return strf('COPY_FILESYSTEM_ERROR', detail);
+      case chrome.fileManagerPrivate.IOTaskType.EXTRACT:
+        return strf('EXTRACT_FILESYSTEM_ERROR', detail);
       case chrome.fileManagerPrivate.IOTaskType.MOVE:
         return strf('MOVE_FILESYSTEM_ERROR', detail);
       case chrome.fileManagerPrivate.IOTaskType.ZIP:

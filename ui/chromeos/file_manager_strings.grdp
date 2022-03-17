@@ -641,6 +641,9 @@
   <message name="IDS_FILE_BROWSER_COPY_ITEMS_REMAINING_LONG" desc="File Manager status message including destination folder when copying multiple files or folders. 'Item' is used here as a generic term for file or directory.">
     Copying <ph name="NUMBER_OF_ITEMS">$1<ex>3</ex></ph> items to <ph name="FOLDER_NAME">$2<ex>images</ex></ph>
   </message>
+  <message name="IDS_FILE_BROWSER_EXTRACT_FILESYSTEM_ERROR" desc="File Manager error message.">
+    Extract operation failed. <ph name="ERROR_MESSAGE">$1<ex>An error occurred (code: ABORT)</ex></ph>
+  </message>
   <message name="IDS_FILE_BROWSER_EXTRACT_FILE_NAME" desc="File Manager status message.">
     Extracting <ph name="FILE_NAME">$1<ex>movie.avi</ex></ph>...
   </message>
