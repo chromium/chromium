@@ -67,7 +67,7 @@ bool ProjectorSystemWebAppDelegate::ShouldCaptureNavigations() const {
 gfx::Size ProjectorSystemWebAppDelegate::GetMinimumWindowSize() const {
   // The minimum width matches the minimum width of the Projector viewer left
   // panel defined in the web component.
-  return {492, 550};
+  return {222, 550};
 }
 
 bool ProjectorSystemWebAppDelegate::IsAppEnabled() const {
