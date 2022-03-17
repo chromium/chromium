@@ -260,6 +260,9 @@ class TestMediaClient : public MediaClient {
   GetAudioRendererAlgorithmParameters(AudioParameters audio_parameters) final;
 
  private:
+  KeySystemPropertiesVector GetSupportedKeySystemsInternal();
+
+  GetSupportedKeySystemsCB get_supported_key_systems_cb_;
   bool supports_external_key_system_ = true;
 };
 
@@ -267,14 +270,11 @@ TestMediaClient::TestMediaClient() = default;
 TestMediaClient::~TestMediaClient() = default;
 
 void TestMediaClient::GetSupportedKeySystems(GetSupportedKeySystemsCB cb) {
-  KeySystemPropertiesVector key_systems;
+  // Save the callback for future updates.
+  DCHECK(!get_supported_key_systems_cb_);
+  get_supported_key_systems_cb_ = cb;
 
-  key_systems.emplace_back(new AesKeySystemProperties(kUsesAes));
-
-  if (supports_external_key_system_)
-    key_systems.emplace_back(new ExternalKeySystemProperties());
-
-  std::move(cb).Run(std::move(key_systems));
+  get_supported_key_systems_cb_.Run(GetSupportedKeySystemsInternal());
 }
 
 bool TestMediaClient::IsSupportedAudioType(const media::AudioType& type) {
@@ -291,12 +291,24 @@ bool TestMediaClient::IsSupportedBitstreamAudioCodec(AudioCodec codec) {
 
 void TestMediaClient::DisableExternalKeySystemSupport() {
   supports_external_key_system_ = false;
+  get_supported_key_systems_cb_.Run(GetSupportedKeySystemsInternal());
 }
 
 absl::optional<::media::AudioRendererAlgorithmParameters>
 TestMediaClient::GetAudioRendererAlgorithmParameters(
     AudioParameters audio_parameters) {
   return absl::nullopt;
+}
+
+KeySystemPropertiesVector TestMediaClient::GetSupportedKeySystemsInternal() {
+  KeySystemPropertiesVector key_systems;
+
+  key_systems.emplace_back(new AesKeySystemProperties(kUsesAes));
+
+  if (supports_external_key_system_)
+    key_systems.emplace_back(new ExternalKeySystemProperties());
+
+  return key_systems;
 }
 
 }  // namespace
@@ -358,7 +370,6 @@ class KeySystemsTest : public testing::Test {
     SetMediaClient(nullptr);
   }
 
-  // FIXME: Should just call the callback to update key systems.
   void UpdateClientKeySystems() {
     test_media_client_.DisableExternalKeySystemSupport();
 
@@ -759,8 +770,7 @@ TEST_F(KeySystemsTest, KeySystemNameForUMA) {
   EXPECT_EQ("Unknown", GetKeySystemNameForUMA(kExternalClearKey, true));
 }
 
-// TODO(xhwang): Reenable when we switch to push model.
-TEST_F(KeySystemsTest, DISABLED_KeySystemsUpdate) {
+TEST_F(KeySystemsTest, KeySystemsUpdate) {
   EXPECT_TRUE(IsSupportedKeySystem(kUsesAes));
   EXPECT_TRUE(
       IsSupportedKeySystemWithMediaMimeType(kVideoWebM, no_codecs(), kUsesAes));

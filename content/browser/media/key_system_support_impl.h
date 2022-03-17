@@ -17,9 +17,15 @@
 #include "media/mojo/mojom/key_system_support.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
+
+// TODO(xhwang): Use StructTraits to convert to KeySystemCapabilities to avoid
+// this type.
+using KeySystemCapabilityPtrMap =
+    base::flat_map<std::string, media::mojom::KeySystemCapabilityPtr>;
 
 // A singleton class living in the browser process handling all KeySystemSupport
 // requests.
@@ -34,42 +40,42 @@ class CONTENT_EXPORT KeySystemSupportImpl final
   KeySystemSupportImpl(const KeySystemSupportImpl&) = delete;
   KeySystemSupportImpl& operator=(const KeySystemSupportImpl&) = delete;
 
+  // `get_support_cb_for_testing` is used to get support update for testing.
+  // If null, we'll use `CdmRegistryImpl` to get the update.
+  using GetKeySystemCapabilitiesUpdateCB =
+      base::RepeatingCallback<void(KeySystemCapabilitiesUpdateCB)>;
+  void SetGetKeySystemCapabilitiesUpdateCbForTesting(
+      GetKeySystemCapabilitiesUpdateCB get_support_cb_for_testing);
+
   // Binds the `receiver` to `this`.
   void Bind(mojo::PendingReceiver<media::mojom::KeySystemSupport> receiver);
 
   // media::mojom::KeySystemSupport implementation.
-  void IsKeySystemSupported(const std::string& key_system,
-                            IsKeySystemSupportedCallback callback) final;
+  void AddObserver(mojo::PendingRemote<media::mojom::KeySystemSupportObserver>
+                       observer) final;
 
  private:
   friend class base::NoDestructor<KeySystemSupportImpl>;
   friend class KeySystemSupportImplTest;
 
-  using GetKeySystemCapabilitiesUpdateCB =
-      base::RepeatingCallback<void(KeySystemCapabilitiesUpdateCB)>;
-
-  // `get_support_cb_for_testing` is used to get support update for testing.
-  // If null, we'll use `CdmRegistryImpl` to get the update.
-  explicit KeySystemSupportImpl(
-      GetKeySystemCapabilitiesUpdateCB get_support_cb_for_testing =
-          base::NullCallback());
+  KeySystemSupportImpl();
   ~KeySystemSupportImpl() final;
+
+  void ObserveKeySystemCapabilities();
 
   void OnKeySystemCapabilitiesUpdated(
       KeySystemCapabilities key_system_capabilities);
-  void NotifyIsKeySystemSupportedCallback(
-      const std::string& key_system,
-      IsKeySystemSupportedCallback callback);
 
+  // `KeySystemSupport` uses `media::mojom::KeySystemCapability` while the mojom
+  // interface uses `media::mojom::KeySystemCapabilityPtr`. This function does
+  // the conversion.
+  KeySystemCapabilityPtrMap CloneKeySystemCapabilities();
+
+  GetKeySystemCapabilitiesUpdateCB get_support_cb_for_testing_;
+  bool is_observing_ = false;
+  mojo::ReceiverSet<KeySystemSupport> key_system_support_receivers_;
+  mojo::RemoteSet<media::mojom::KeySystemSupportObserver> observer_remotes_;
   absl::optional<KeySystemCapabilities> key_system_capabilities_;
-
-  mojo::ReceiverSet<media::mojom::KeySystemSupport>
-      key_system_support_receivers_;
-
-  // Key system to IsKeySystemSupportedCallback map.
-  using PendingCallbacks =
-      std::vector<std::pair<std::string, IsKeySystemSupportedCallback>>;
-  PendingCallbacks pending_callbacks_;
 
   base::WeakPtrFactory<KeySystemSupportImpl> weak_ptr_factory_{this};
 };

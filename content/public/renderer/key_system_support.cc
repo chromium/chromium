@@ -6,36 +6,50 @@
 
 #include "base/logging.h"
 #include "content/public/renderer/render_thread.h"
-#include "media/mojo/mojom/key_system_support.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace content {
 
 namespace {
 
-// Helper function to help hold the `key_system_support` remote.
-void OnIsKeySystemSupportedResult(
-    mojo::Remote<media::mojom::KeySystemSupport> key_system_support,
-    IsKeySystemSupportedCB cb,
-    bool is_supported,
-    media::mojom::KeySystemCapabilityPtr capability) {
-  std::move(cb).Run(is_supported, std::move(capability));
-}
+class KeySystemSupportObserverImpl
+    : public media::mojom::KeySystemSupportObserver {
+ public:
+  explicit KeySystemSupportObserverImpl(KeySystemSupportCB cb)
+      : key_system_support_cb_(std::move(cb)) {}
+  KeySystemSupportObserverImpl(const KeySystemSupportObserverImpl&) = delete;
+  KeySystemSupportObserverImpl& operator=(const KeySystemSupportObserverImpl&) =
+      delete;
+  ~KeySystemSupportObserverImpl() override = default;
+
+  // media::mojom::KeySystemSupportObserver
+  void OnKeySystemSupportUpdated(
+      KeySystemCapabilityPtrMap key_system_capabilities) final {
+    key_system_support_cb_.Run(std::move(key_system_capabilities));
+  }
+
+ private:
+  KeySystemSupportCB key_system_support_cb_;
+};
 
 }  // namespace
 
-void IsKeySystemSupported(const std::string& key_system,
-                          IsKeySystemSupportedCB cb) {
-  DVLOG(3) << __func__ << ": key_system=" << key_system;
+void ObserveKeySystemSupportUpdate(KeySystemSupportCB cb) {
+  DVLOG(1) << __func__;
 
+  // `key_system_support` will be destructed after this function returns. This
+  // is fine since the observer will stay registered in KeySystemSupportImpl,
+  // which is a singleton in the browser process.
   mojo::Remote<media::mojom::KeySystemSupport> key_system_support;
   content::RenderThread::Get()->BindHostReceiver(
       key_system_support.BindNewPipeAndPassReceiver());
 
-  auto* key_system_support_raw = key_system_support.get();
-  key_system_support_raw->IsKeySystemSupported(
-      key_system, base::BindOnce(&OnIsKeySystemSupportedResult,
-                                 std::move(key_system_support), std::move(cb)));
+  mojo::PendingRemote<media::mojom::KeySystemSupportObserver> observer_remote;
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<KeySystemSupportObserverImpl>(std::move(cb)),
+      observer_remote.InitWithNewPipeAndPassReceiver());
+  key_system_support->AddObserver(std::move(observer_remote));
 }
 
 }  // namespace content

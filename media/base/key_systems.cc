@@ -395,8 +395,8 @@ void KeySystemsImpl::UpdateSupportedKeySystems() {
   }
 
   GetMediaClient()->GetSupportedKeySystems(
-      base::BindOnce(&KeySystemsImpl::OnSupportedKeySystemsUpdated,
-                     weak_factory_.GetWeakPtr()));
+      base::BindRepeating(&KeySystemsImpl::OnSupportedKeySystemsUpdated,
+                          weak_factory_.GetWeakPtr()));
 }
 
 void KeySystemsImpl::UpdateIfNeeded(base::OnceClosure done_cb) {
@@ -467,7 +467,6 @@ void KeySystemsImpl::OnSupportedKeySystemsUpdated(
     KeySystemPropertiesVector key_systems) {
   DVLOG(1) << __func__;
 
-  DCHECK(is_updating_);
   is_updating_ = false;
 
   // Clear Key is always supported.

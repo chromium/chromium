@@ -9,6 +9,24 @@
 
 namespace content {
 
+namespace {
+
+// All key systems must have either software or hardware secure capability
+// supported.
+bool IsValidKeySystemCapabilities(KeySystemCapabilities capabilities) {
+  for (const auto& entry : capabilities) {
+    auto& capability = entry.second;
+    if (!capability.sw_secure_capability.has_value() &&
+        !capability.hw_secure_capability.has_value()) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+}  // namespace
+
 // static
 KeySystemSupportImpl* KeySystemSupportImpl::GetInstance() {
   static base::NoDestructor<KeySystemSupportImpl> impl;
@@ -21,14 +39,49 @@ void KeySystemSupportImpl::BindReceiver(
   KeySystemSupportImpl::GetInstance()->Bind(std::move(receiver));
 }
 
-KeySystemSupportImpl::KeySystemSupportImpl(
+KeySystemSupportImpl::KeySystemSupportImpl() = default;
+KeySystemSupportImpl::~KeySystemSupportImpl() = default;
+
+void KeySystemSupportImpl::SetGetKeySystemCapabilitiesUpdateCbForTesting(
     GetKeySystemCapabilitiesUpdateCB get_support_cb_for_testing) {
+  get_support_cb_for_testing_ = std::move(get_support_cb_for_testing);
+}
+
+void KeySystemSupportImpl::Bind(
+    mojo::PendingReceiver<media::mojom::KeySystemSupport> receiver) {
+  key_system_support_receivers_.Add(this, std::move(receiver));
+}
+
+void KeySystemSupportImpl::AddObserver(
+    mojo::PendingRemote<media::mojom::KeySystemSupportObserver> observer) {
+  DVLOG(3) << __func__;
+
+  auto id = observer_remotes_.Add(std::move(observer));
+
+  // If `key_system_support_` is already available, notify the new observer
+  // immediately. All observers will be notified if there are updates later.
+  if (key_system_capabilities_.has_value()) {
+    auto* observer = observer_remotes_.Get(id);
+    observer->OnKeySystemSupportUpdated(CloneKeySystemCapabilities());
+    return;
+  }
+
+  // Observe key system capabilities if not have done so.
+  if (!is_observing_)
+    ObserveKeySystemCapabilities();
+}
+
+void KeySystemSupportImpl::ObserveKeySystemCapabilities() {
+  DCHECK(!is_observing_);
+
+  is_observing_ = true;
+
   auto result_cb =
       base::BindRepeating(&KeySystemSupportImpl::OnKeySystemCapabilitiesUpdated,
                           weak_ptr_factory_.GetWeakPtr());
 
-  if (get_support_cb_for_testing) {
-    get_support_cb_for_testing.Run(std::move(result_cb));
+  if (get_support_cb_for_testing_) {
+    get_support_cb_for_testing_.Run(std::move(result_cb));
     return;
   }
 
@@ -36,65 +89,29 @@ KeySystemSupportImpl::KeySystemSupportImpl(
       std::move(result_cb));
 }
 
-KeySystemSupportImpl::~KeySystemSupportImpl() = default;
-
-void KeySystemSupportImpl::Bind(
-    mojo::PendingReceiver<media::mojom::KeySystemSupport> receiver) {
-  key_system_support_receivers_.Add(this, std::move(receiver));
-}
-
-void KeySystemSupportImpl::IsKeySystemSupported(
-    const std::string& key_system,
-    IsKeySystemSupportedCallback callback) {
-  DVLOG(3) << __func__ << ": key_system=" << key_system;
-
-  if (!key_system_capabilities_.has_value()) {
-    pending_callbacks_.emplace_back(key_system, std::move(callback));
-    return;
-  }
-
-  DCHECK(pending_callbacks_.empty());
-
-  NotifyIsKeySystemSupportedCallback(key_system, std::move(callback));
-}
-
 void KeySystemSupportImpl::OnKeySystemCapabilitiesUpdated(
     KeySystemCapabilities key_system_capabilities) {
   DVLOG(3) << __func__;
+  DCHECK(IsValidKeySystemCapabilities(key_system_capabilities));
+  DCHECK(!key_system_capabilities_.has_value() ||
+         key_system_capabilities_.value() != key_system_capabilities)
+      << "Should not be updated with the same key system capabilities";
+
   key_system_capabilities_ = std::move(key_system_capabilities);
 
-  PendingCallbacks callbacks;
-  pending_callbacks_.swap(callbacks);
-
-  for (auto& entry : callbacks) {
-    auto& key_system = entry.first;
-    auto& callback = entry.second;
-    NotifyIsKeySystemSupportedCallback(key_system, std::move(callback));
-  }
+  for (auto& observer : observer_remotes_)
+    observer->OnKeySystemSupportUpdated(CloneKeySystemCapabilities());
 }
 
-void KeySystemSupportImpl::NotifyIsKeySystemSupportedCallback(
-    const std::string& key_system,
-    IsKeySystemSupportedCallback callback) {
-  DVLOG(3) << __func__ << ": key_system=" << key_system;
+KeySystemCapabilityPtrMap KeySystemSupportImpl::CloneKeySystemCapabilities() {
   DCHECK(key_system_capabilities_.has_value());
 
-  if (!key_system_capabilities_->count(key_system)) {
-    std::move(callback).Run(false, nullptr);
-    return;
+  base::flat_map<std::string, media::mojom::KeySystemCapabilityPtr> result;
+  for (const auto& [key_system, capability] :
+       key_system_capabilities_.value()) {
+    result[key_system] = capability.Clone();
   }
-
-  auto key_system_capabilities =
-      key_system_capabilities_.value()[key_system].Clone();
-  DCHECK(key_system_capabilities);
-
-  if (!key_system_capabilities->sw_secure_capability.has_value() &&
-      !key_system_capabilities->hw_secure_capability.has_value()) {
-    std::move(callback).Run(false, nullptr);
-    return;
-  }
-
-  std::move(callback).Run(true, std::move(key_system_capabilities));
+  return result;
 }
 
 }  // namespace content

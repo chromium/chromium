@@ -32,10 +32,14 @@
 #include "base/no_destructor.h"
 #include "components/cdm/common/cdm_manifest.h"
 #include "media/cdm/supported_audio_codecs.h"
-// TODO(crbug.com/663554): Needed for WIDEVINE_CDM_VERSION_STRING. Support
-// component updated CDM on all desktop platforms and remove this.
-// This file is In SHARED_INTERMEDIATE_DIR.
+// Needed for WIDEVINE_CDM_MIN_GLIBC_VERSION. This file is in
+// SHARED_INTERMEDIATE_DIR.
 #include "widevine_cdm_version.h"  // nogncheck
+// The following must be after widevine_cdm_version.h.
+#if defined(WIDEVINE_CDM_MIN_GLIBC_VERSION)
+#include <gnu/libc-version.h>
+#include "base/version.h"
+#endif  // defined(WIDEVINE_CDM_MIN_GLIBC_VERSION)
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/common/media/component_widevine_cdm_hint_file_linux.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -138,6 +142,15 @@ content::CdmInfo* GetComponentUpdatedWidevine() {
 
 void AddSoftwareSecureWidevine(std::vector<content::CdmInfo>* cdms) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if defined(WIDEVINE_CDM_MIN_GLIBC_VERSION)
+  base::Version glibc_version(gnu_get_libc_version());
+  DCHECK(glibc_version.IsValid());
+  if (glibc_version < base::Version(WIDEVINE_CDM_MIN_GLIBC_VERSION)) {
+    LOG(WARNING) << "Widevine not registered because glibc version is too low";
+    return;
+  }
+#endif  // defined(WIDEVINE_CDM_MIN_GLIBC_VERSION)
+
   // The Widevine CDM on Linux needs to be registered (and loaded) before the
   // zygote is locked down. The CDM can be found from the version bundled with
   // Chrome (if BUNDLE_WIDEVINE_CDM = true) and/or the version downloaded by

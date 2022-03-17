@@ -14,7 +14,7 @@ struct CdmCapability {
   // codec profiles separately. The list of supported codecs should be unique.
   array<AudioCodec> audio_codecs;
 
-  // Map of video codecs and associated profiles supported by the CDM
+  // Map from video codecs to associated profiles supported by the CDM
   // (e.g. vp8). If no profiles for a particular codec are specified, then
   // it is assumed that all profiles are supported by the CDM. The list of
   // profiles for each codec should be unique.
@@ -29,14 +29,21 @@ struct KeySystemCapability {
   CdmCapability? hw_secure_capability;
 };
 
-// Used to query the browser to see if a specific key system is supported.
+// Process-wide observer used by the renderer to observe key system support
+// changes. `key_systems` is a map from the key system string to the
+// KeySystemCapability for that key system.
+interface KeySystemSupportObserver {
+  // Called when there's a key system support update.
+  OnKeySystemSupportUpdated(map<string, KeySystemCapability> key_systems);
+};
+
+// Browser process singleton that a renderer process can use to subscribe to
+// key system updates.
 interface KeySystemSupport {
-  // Query to determine if the browser supports the |key_system|. If supported,
-  // |key_system_capability| is non-null indicating supported capability.
-  // KeySystemSupport implementation is in the browser process, as it maintains
-  // the list of registered CDMs, and hardware secure support check also needs
-  // to run in the browser process because the render process is sandboxed.
-  // KeySystemSupport clients run in the renderer process.
-  IsKeySystemSupported(string key_system)
-    => (bool is_supported, KeySystemCapability? key_system_capability);
+  // Adds an observer to observe key system support updates. KeySystemSupport
+  // implementation is in the browser process, as it maintains the list of
+  // registered CDMs, and hardware secure support check also needs to run in the
+  // browser process because the render process is sandboxed. KeySystemSupport
+  // clients run in the renderer process.
+  AddObserver(pending_remote<KeySystemSupportObserver> observer);
 };

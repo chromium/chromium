@@ -82,7 +82,7 @@ using KeySystemPropertiesVector =
     std::vector<std::unique_ptr<KeySystemProperties>>;
 
 using GetSupportedKeySystemsCB =
-    base::OnceCallback<void(KeySystemPropertiesVector)>;
+    base::RepeatingCallback<void(KeySystemPropertiesVector)>;
 
 }  // namespace media
 
