@@ -54874,6 +54874,7 @@ from previous Chrome versions.
   <int value="92327255" label="DisplayMoveWindowAccels:disabled"/>
   <int value="93832899" label="NtpCustomizationMenuV2:enabled"/>
   <int value="97091906" label="AutofillSaveCardShowNoThanks:enabled"/>
+  <int value="97976428" label="CastUseBlocklistForRemotingQuery:enabled"/>
   <int value="98029688" label="MediaAppDisplayExif:disabled"/>
   <int value="98134240" label="material-design-ink-drop-animation-speed"/>
   <int value="98218116" label="ContextualSearchLongpressResolve:disabled"/>
@@ -56409,6 +56410,7 @@ from previous Chrome versions.
   <int value="1162622865" label="EarlyCodeCache:disabled"/>
   <int value="1162693272" label="MacCoreLocationImplementation:disabled"/>
   <int value="1163255347" label="ash-enable-touch-view-touch-feedback"/>
+  <int value="1163588337" label="CastForceEnableRemotingQuery:enabled"/>
   <int value="1164377197" label="SwipingFromLeftEdgeToGoBack:enabled"/>
   <int value="1164460660" label="AutofillEnableVirtualCard:enabled"/>
   <int value="1165682330" label="AutofillSaveAndFillVPA:disabled"/>
@@ -56951,6 +56953,7 @@ from previous Chrome versions.
   <int value="1540487070" label="ContextualSearchDebug:enabled"/>
   <int value="1541723759" label="ServiceWorkerNavigationPreload:disabled"/>
   <int value="1543027970" label="EnableDisplayZoomSetting:disabled"/>
+  <int value="1543349770" label="CastUseBlocklistForRemotingQuery:disabled"/>
   <int value="1546652609" label="SharingHubDesktopOmnibox:disabled"/>
   <int value="1548776701" label="AllBookmarks:disabled"/>
   <int value="1548942246" label="PassiveDocumentEventListeners:disabled"/>
@@ -57190,6 +57193,7 @@ from previous Chrome versions.
       label="AutofillUseUnassociatedListedElements:enabled"/>
   <int value="1710630380"
       label="AutofillEnableSupportForMoreStructureInNames:enabled"/>
+  <int value="1710663404" label="CastForceEnableRemotingQuery:disabled"/>
   <int value="1711037950"
       label="AutofillVisualImprovementsForSuggestionUi:disabled"/>
   <int value="1711286384" label="ContextMenuCopyImage:disabled"/>

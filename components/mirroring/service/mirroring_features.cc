@@ -25,6 +25,18 @@ const base::Feature kCastStreamingAv1{"CastStreamingAv1",
 const base::Feature kCastStreamingVp9{"CastStreamingVp9",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether the allow list (legacy behavior) or blocklist is used to
+// determine whether remoting capabilities should be queried for as part of
+// configuring a mirroring session.
+const base::Feature kCastUseBlocklistForRemotingQuery{
+    "CastUseBlocklistForRemotingQuery", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables querying for remoting capabilities against ALL devices, as opposed to
+// just those controlled by the allow or blocklist. When set, this flag takes
+// precedence over the above flag.
+const base::Feature kCastForceEnableRemotingQuery{
+    "CastForceEnableRemotingQuery", base::FEATURE_DISABLED_BY_DEFAULT};
+
 bool IsCastStreamingAV1Enabled() {
 #if BUILDFLAG(ENABLE_LIBAOM)
   return base::FeatureList::IsEnabled(features::kCastStreamingAv1);
