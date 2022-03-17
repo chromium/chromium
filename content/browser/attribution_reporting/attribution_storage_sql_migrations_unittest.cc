@@ -130,8 +130,8 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateEmptyToCurrent) {
               VersionFromDatabase(&db));
 
     // Check that expected tables are present.
-    EXPECT_TRUE(db.DoesTableExist("conversions"));
-    EXPECT_TRUE(db.DoesTableExist("impressions"));
+    EXPECT_TRUE(db.DoesTableExist("event_level_reports"));
+    EXPECT_TRUE(db.DoesTableExist("sources"));
     EXPECT_TRUE(db.DoesTableExist("meta"));
 
     EXPECT_EQ(GetCurrentSchema(), db.GetSchema());
@@ -175,7 +175,8 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateLatestDeprecatedToCurrent) {
     EXPECT_EQ(RemoveQuotes(GetCurrentSchema()), RemoveQuotes(db.GetSchema()));
 
     // Verify that data is not preserved across the migration.
-    sql::Statement s(db.GetUniqueStatement("SELECT COUNT(*) FROM conversions"));
+    sql::Statement s(
+        db.GetUniqueStatement("SELECT COUNT(*) FROM event_level_reports"));
 
     ASSERT_TRUE(s.Step());
     ASSERT_EQ(0, s.ColumnInt(0));

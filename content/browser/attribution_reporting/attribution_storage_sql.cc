@@ -56,18 +56,18 @@
 namespace content {
 
 // Version number of the database.
-const int AttributionStorageSql::kCurrentVersionNumber = 32;
+const int AttributionStorageSql::kCurrentVersionNumber = 33;
 
 // Earliest version which can use a |kCurrentVersionNumber| database
 // without failing.
-const int AttributionStorageSql::kCompatibleVersionNumber = 32;
+const int AttributionStorageSql::kCompatibleVersionNumber = 33;
 
 // Latest version of the database that cannot be upgraded to
 // |kCurrentVersionNumber| without razing the database.
 //
 // Note that all versions >=15 were introduced during the transitional state of
 // the Attribution Reporting API and can be removed when done.
-const int AttributionStorageSql::kDeprecatedVersionNumber = 31;
+const int AttributionStorageSql::kDeprecatedVersionNumber = 32;
 
 namespace {
 
@@ -79,7 +79,7 @@ const base::FilePath::CharType kInMemoryPath[] = FILE_PATH_LITERAL(":memory");
 const base::FilePath::CharType kDatabasePath[] =
     FILE_PATH_LITERAL("Conversions");
 
-#define ATTRIBUTION_CONVERSIONS_TABLE "conversions"
+#define ATTRIBUTION_CONVERSIONS_TABLE "event_level_reports"
 
 #define ATTRIBUTION_AGGREGATABLE_REPORT_METADATA_TABLE \
   "aggregatable_report_metadata"
@@ -109,18 +109,18 @@ const base::FilePath::CharType kDatabasePath[] =
 // clang-format off
 
 #define ATTRIBUTION_SOURCE_COLUMNS_SQL(prefix) \
-  prefix "impression_id," \
-  prefix "impression_data," \
-  prefix "impression_origin," \
-  prefix "conversion_origin," \
+  prefix "source_id," \
+  prefix "source_event_id," \
+  prefix "source_origin," \
+  prefix "destination_origin," \
   prefix "reporting_origin," \
-  prefix "impression_time," \
+  prefix "source_time," \
   prefix "expiry_time," \
   prefix "source_type," \
-  prefix "attributed_truthfully," \
+  prefix "attribution_logic," \
   prefix "priority," \
   prefix "debug_key," \
-  prefix "num_conversions," \
+  prefix "num_attributions," \
   prefix "aggregatable_budget_consumed," \
   prefix "aggregatable_source," \
   prefix "filter_data," \
@@ -130,10 +130,10 @@ const base::FilePath::CharType kDatabasePath[] =
 #define ATTRIBUTION_SELECT_EVENT_LEVEL_REPORT_AND_SOURCE_COLUMNS_SQL \
   "SELECT "                                                                  \
   ATTRIBUTION_SOURCE_COLUMNS_SQL("I.") \
-  ",C.conversion_data,C.conversion_time,C.report_time,C.conversion_id,"       \
+  ",C.trigger_data,C.trigger_time,C.report_time,C.report_id,"       \
   "C.priority,C.failed_send_attempts,C.external_report_id,C.debug_key "      \
-  "FROM conversions C "                                                      \
-  "JOIN impressions I ON C.impression_id = I.impression_id "
+  "FROM event_level_reports C "                                                      \
+  "JOIN sources I ON C.source_id = I.source_id "
 
 #define ATTRIBUTION_SELECT_AGGREGATABLE_REPORT_AND_SOURCE_COLUMNS_SQL \
   "SELECT "                                                           \
@@ -142,7 +142,7 @@ const base::FilePath::CharType kDatabasePath[] =
   "A.external_report_id,A.failed_send_attempts "                      \
   "FROM aggregatable_report_metadata A "                              \
   DCHECK_SQL_INDEXED_BY("aggregate_report_time_idx")                  \
-  "JOIN impressions I ON A.source_id = I.impression_id "
+  "JOIN sources I ON A.source_id = I.source_id "
 
 // clang-format on
 
@@ -312,8 +312,8 @@ absl::optional<StoredSourceData> ReadSourceToAttribute(
   static constexpr char kReadSourceToAttributeSql[] =
       // clang-format off
       "SELECT " ATTRIBUTION_SOURCE_COLUMNS_SQL("")
-      " FROM impressions "
-      "WHERE impression_id = ?";  // clang-format on
+      " FROM sources "
+      "WHERE source_id = ?";  // clang-format on
   sql::Statement statement(
       db->GetCachedStatement(SQL_FROM_HERE, kReadSourceToAttributeSql));
   statement.BindInt64(0, *source_id);
@@ -376,10 +376,10 @@ AttributionStorageSql::DeactivateSources(
     static constexpr char kGetSourcesToReturnSql[] =
         // clang-format off
         "SELECT " ATTRIBUTION_SOURCE_COLUMNS_SQL("")
-        " FROM impressions "
-        DCHECK_SQL_INDEXED_BY("conversion_destination_idx")
-        "WHERE conversion_destination = ? AND reporting_origin = ? AND "
-        "((event_level_active = 1 AND num_conversions > 0) OR "
+        " FROM sources "
+        DCHECK_SQL_INDEXED_BY("sources_by_active_destination_site_reporting_origin")
+        "WHERE destination_site = ? AND reporting_origin = ? AND "
+        "((event_level_active = 1 AND num_attributions > 0) OR "
         "(aggregatable_active = 1 AND aggregatable_budget_consumed > 0)) "
         "LIMIT ?"; // clang-format on
     sql::Statement get_statement(
@@ -408,11 +408,11 @@ AttributionStorageSql::DeactivateSources(
   }
 
   static constexpr char kDeactivateSourcesSql[] =
-      "UPDATE impressions "
-      DCHECK_SQL_INDEXED_BY("conversion_destination_idx")
+      "UPDATE sources "
+      DCHECK_SQL_INDEXED_BY("sources_by_active_destination_site_reporting_origin")
       "SET event_level_active = 0,aggregatable_active = 0 "
-      "WHERE conversion_destination = ? AND reporting_origin = ? AND "
-      "((event_level_active = 1 AND num_conversions > 0) OR "
+      "WHERE destination_site = ? AND reporting_origin = ? AND "
+      "((event_level_active = 1 AND num_attributions > 0) OR "
       "(aggregatable_active = 1 AND aggregatable_budget_consumed > 0))";
   sql::Statement deactivate_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kDeactivateSourcesSql));
@@ -520,12 +520,12 @@ AttributionStorage::StoreSourceResult AttributionStorageSql::StoreSource(
   const bool aggregatable_active = true;
 
   static constexpr char kInsertImpressionSql[] =
-      "INSERT INTO impressions"
-      "(impression_data,impression_origin,conversion_origin,"
-      "conversion_destination,"
-      "reporting_origin,impression_time,expiry_time,source_type,"
-      "attributed_truthfully,priority,impression_site,"
-      "num_conversions,event_level_active,aggregatable_active,debug_key,"
+      "INSERT INTO sources"
+      "(source_event_id,source_origin,destination_origin,"
+      "destination_site,"
+      "reporting_origin,source_time,expiry_time,source_type,"
+      "attribution_logic,priority,source_site,"
+      "num_attributions,event_level_active,aggregatable_active,debug_key,"
       "aggregatable_budget_consumed,aggregatable_source,filter_data)"
       "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,0,?,?)";
   sql::Statement statement(
@@ -624,14 +624,14 @@ AttributionStorageSql::MaybeReplaceLowerPriorityEventLevelReport(
 
   // Prioritization is scoped within report windows.
   // This is reasonably optimized as is because we only store a ~small number
-  // of reports per impression_id. Selects the report with lowest priority,
-  // and uses the greatest conversion_time to break ties. This favors sending
+  // of reports per source_id. Selects the report with lowest priority,
+  // and uses the greatest trigger_time to break ties. This favors sending
   // reports for report closer to the source time.
   static constexpr char kMinPrioritySql[] =
-      "SELECT priority,conversion_id "
-      "FROM conversions "
-      "WHERE impression_id = ? AND report_time = ? "
-      "ORDER BY priority ASC, conversion_time DESC "
+      "SELECT priority,report_id "
+      "FROM event_level_reports "
+      "WHERE source_id = ? AND report_time = ? "
+      "ORDER BY priority ASC, trigger_time DESC "
       "LIMIT 1";
   sql::Statement min_priority_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kMinPrioritySql));
@@ -646,7 +646,7 @@ AttributionStorageSql::MaybeReplaceLowerPriorityEventLevelReport(
   // generated in the future.
   if (!has_matching_report) {
     static constexpr char kDeactivateSql[] =
-        "UPDATE impressions SET event_level_active = 0 WHERE impression_id = ?";
+        "UPDATE sources SET event_level_active = 0 WHERE source_id = ?";
     sql::Statement deactivate_statement(
         db_->GetCachedStatement(SQL_FROM_HERE, kDeactivateSql));
     deactivate_statement.BindInt64(0, *source.source_id());
@@ -943,12 +943,12 @@ bool AttributionStorageSql::FindMatchingSourceForTrigger(
   // past their expiry time. The sources are fetched in order so that the
   // first one is the one that will be attributed; the others will be deleted.
   static constexpr char kGetMatchingSourcesSql[] =
-      "SELECT impression_id FROM impressions "
-      DCHECK_SQL_INDEXED_BY("conversion_destination_idx")
-      "WHERE conversion_destination = ? AND reporting_origin = ? "
+      "SELECT source_id FROM sources "
+      DCHECK_SQL_INDEXED_BY("sources_by_active_destination_site_reporting_origin")
+      "WHERE destination_site = ? AND reporting_origin = ? "
       "AND (event_level_active = 1 OR aggregatable_active = 1) "
       "AND expiry_time > ? "
-      "ORDER BY priority DESC,impression_time DESC";
+      "ORDER BY priority DESC,source_time DESC";
 
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kGetMatchingSourcesSql));
@@ -1018,7 +1018,7 @@ EventLevelResult AttributionStorageSql::MaybeCreateEventLevelReport(
   // stored source and report with the current configuration. One way to do that
   // is to permanently store the configuration history in the binary with each
   // version having a unique ID, and storing that ID in a new column in the
-  // impressions and conversions DB tables. This code would then look up the
+  // sources and event_level_reports DB tables. This code would then look up the
   // values for the particular IDs. Because such an approach would entail
   // complicating the DB schema, we hardcode the values for now and will wait
   // for the first time the values are changed before complicating the codebase.
@@ -1103,7 +1103,7 @@ EventLevelResult AttributionStorageSql::MaybeStoreEventLevelReport(
   // stored.
   if (dedup_key.has_value()) {
     static constexpr char kInsertDedupKeySql[] =
-        "INSERT INTO dedup_keys(impression_id,dedup_key)VALUES(?,?)";
+        "INSERT INTO dedup_keys(source_id,dedup_key)VALUES(?,?)";
     sql::Statement insert_dedup_key_statement(
         db_->GetCachedStatement(SQL_FROM_HERE, kInsertDedupKeySql));
     insert_dedup_key_statement.BindInt64(0,
@@ -1118,8 +1118,8 @@ EventLevelResult AttributionStorageSql::MaybeStoreEventLevelReport(
   if (maybe_replace_lower_priority_report_result ==
       MaybeReplaceLowerPriorityEventLevelReportResult::kAddNewReport) {
     static constexpr char kUpdateImpressionForConversionSql[] =
-        "UPDATE impressions SET num_conversions = num_conversions + 1 "
-        "WHERE impression_id = ?";
+        "UPDATE sources SET num_attributions = num_attributions + 1 "
+        "WHERE source_id = ?";
     sql::Statement impression_update_statement(db_->GetCachedStatement(
         SQL_FROM_HERE, kUpdateImpressionForConversionSql));
 
@@ -1154,8 +1154,8 @@ bool AttributionStorageSql::StoreEventLevelReport(
   DCHECK(external_report_id.is_valid());
 
   static constexpr char kStoreReportSql[] =
-      "INSERT INTO conversions"
-      "(impression_id,conversion_data,conversion_time,report_time,"
+      "INSERT INTO event_level_reports"
+      "(source_id,trigger_data,trigger_time,report_time,"
       "priority,failed_send_attempts,external_report_id,debug_key)"
       "VALUES(?,?,?,?,?,0,?,?)";
   sql::Statement store_report_statement(
@@ -1254,9 +1254,9 @@ std::vector<AttributionReport> AttributionStorageSql::GetAttributionReports(
 std::vector<AttributionReport>
 AttributionStorageSql::GetEventLevelReportsInternal(base::Time max_report_time,
                                                     int limit) {
-  // Get at most |limit| entries in the conversions table with a |report_time|
-  // no greater than |max_report_time| and their matching information from the
-  // impression table. Negatives are treated as no limit
+  // Get at most |limit| entries in the event_level_reports table with a
+  // |report_time| no greater than |max_report_time| and their matching
+  // information from the impression table. Negatives are treated as no limit
   // (https://sqlite.org/lang_select.html#limitoffset).
   static constexpr char kGetReportsSql[] =
       ATTRIBUTION_SELECT_EVENT_LEVEL_REPORT_AND_SOURCE_COLUMNS_SQL
@@ -1336,7 +1336,7 @@ absl::optional<AttributionReport> AttributionStorageSql::GetReport(
     AttributionReport::EventLevelData::Id conversion_id) {
   static constexpr char kGetReportSql[] =
       ATTRIBUTION_SELECT_EVENT_LEVEL_REPORT_AND_SOURCE_COLUMNS_SQL
-      "WHERE C.conversion_id = ?";
+      "WHERE C.report_id = ?";
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kGetReportSql));
   statement.BindInt64(0, *conversion_id);
@@ -1376,13 +1376,13 @@ bool AttributionStorageSql::DeleteExpiredSources() {
   // Delete all sources that have no associated reports and are past
   // their expiry time. Optimized by |kImpressionExpiryIndexSql|.
   static constexpr char kSelectExpiredSourcesSql[] =
-      "SELECT impression_id FROM impressions "
-      DCHECK_SQL_INDEXED_BY("impression_expiry_idx")
+      "SELECT source_id FROM sources "
+      DCHECK_SQL_INDEXED_BY("sources_by_expiry_time")
       "WHERE expiry_time <= ? AND "
-      "impression_id NOT IN("
-      "SELECT impression_id FROM conversions"
-      DCHECK_SQL_INDEXED_BY("conversion_impression_id_idx")
-      ")AND impression_id NOT IN("
+      "source_id NOT IN("
+      "SELECT source_id FROM event_level_reports"
+      DCHECK_SQL_INDEXED_BY("event_level_reports_by_source_id")
+      ")AND source_id NOT IN("
       "SELECT source_id FROM aggregatable_report_metadata"
       DCHECK_SQL_INDEXED_BY("aggregate_source_id_idx")
       ")LIMIT ?";
@@ -1398,13 +1398,13 @@ bool AttributionStorageSql::DeleteExpiredSources() {
   // |kSelectExpiredSourcesSql| so that each query is optimized by an index.
   // Optimized by |kConversionDestinationIndexSql|.
   static constexpr char kSelectInactiveSourcesSql[] =
-      "SELECT impression_id FROM impressions "
-      DCHECK_SQL_INDEXED_BY("conversion_destination_idx")
+      "SELECT source_id FROM sources "
+      DCHECK_SQL_INDEXED_BY("sources_by_active_destination_site_reporting_origin")
       "WHERE event_level_active = 0 AND aggregatable_active = 0 AND "
-      "impression_id NOT IN("
-      "SELECT impression_id FROM conversions"
-      DCHECK_SQL_INDEXED_BY("conversion_impression_id_idx")
-      ")AND impression_id NOT IN("
+      "source_id NOT IN("
+      "SELECT source_id FROM event_level_reports"
+      DCHECK_SQL_INDEXED_BY("event_level_reports_by_source_id")
+      ")AND source_id NOT IN("
       "SELECT source_id FROM aggregatable_report_metadata"
       DCHECK_SQL_INDEXED_BY("aggregate_source_id_idx")
       ")LIMIT ?";
@@ -1439,7 +1439,7 @@ bool AttributionStorageSql::DeleteReport(AttributionReport::Id report_id) {
 bool AttributionStorageSql::DeleteEventLevelReport(
     AttributionReport::EventLevelData::Id report_id) {
   static constexpr char kDeleteReportSql[] =
-      "DELETE FROM conversions WHERE conversion_id = ?";
+      "DELETE FROM event_level_reports WHERE report_id = ?";
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kDeleteReportSql));
   statement.BindInt64(0, *report_id);
@@ -1461,7 +1461,7 @@ bool AttributionStorageSql::UpdateReportForSendFailure(
       DCHECK_CALLED_ON_VALID_SEQUENCE(storage->sequence_checker_);
       static constexpr char kUpdateFailedReportSql[] =
           ATTRIBUTION_UPDATE_FAILED_REPORT_SQL(ATTRIBUTION_CONVERSIONS_TABLE,
-                                               "conversion_id");
+                                               "report_id");
       return storage->UpdateReportForSendFailure(
           SQL_FROM_HERE, kUpdateFailedReportSql, *id, new_report_time);
     }
@@ -1563,18 +1563,18 @@ void AttributionStorageSql::ClearData(
   SCOPED_UMA_HISTOGRAM_TIMER("Conversions.Storage.ClearDataWithFilterDuration");
 
   // TODO(csharrison, johnidel): This query can be split up and optimized by
-  // adding indexes on the impression_time and conversion_time columns.
+  // adding indexes on the time and trigger_time columns.
   // See this comment for more information:
   // crrev.com/c/2150071/4/content/browser/conversions/conversion_storage_sql.cc#342
   //
   // TODO(crbug.com/1290377): Look into optimizing origin filter callback.
   static constexpr char kScanCandidateData[] =
-      "SELECT I.impression_origin,I.conversion_origin,I.reporting_origin,"
-      "I.impression_id,C.conversion_id "
-      "FROM impressions I LEFT JOIN conversions C ON "
-      "C.impression_id = I.impression_id WHERE"
-      "(I.impression_time BETWEEN ?1 AND ?2)OR"
-      "(C.conversion_time BETWEEN ?1 AND ?2)";
+      "SELECT I.source_origin,I.destination_origin,I.reporting_origin,"
+      "I.source_id,C.report_id "
+      "FROM sources I LEFT JOIN event_level_reports C ON "
+      "C.source_id = I.source_id WHERE"
+      "(I.source_time BETWEEN ?1 AND ?2)OR"
+      "(C.trigger_time BETWEEN ?1 AND ?2)";
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kScanCandidateData));
   statement.BindTime(0, delete_begin);
@@ -1633,7 +1633,7 @@ void AttributionStorageSql::ClearData(
   // Delete all unattributed reports here to ensure everything is cleaned
   // up.
   static constexpr char kDeleteVestigialConversionSql[] =
-      "DELETE FROM conversions WHERE impression_id = ?";
+      "DELETE FROM event_level_reports WHERE source_id = ?";
   sql::Statement delete_vestigial_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kDeleteVestigialConversionSql));
   for (StoredSource::Id source_id : source_ids_to_delete) {
@@ -1672,14 +1672,15 @@ void AttributionStorageSql::ClearAllDataAllTime() {
   if (!transaction.Begin())
     return;
 
-  static constexpr char kDeleteAllReportsSql[] = "DELETE FROM conversions";
+  static constexpr char kDeleteAllReportsSql[] =
+      "DELETE FROM event_level_reports";
   sql::Statement delete_all_reports_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kDeleteAllReportsSql));
   if (!delete_all_reports_statement.Run())
     return;
   int num_reports_deleted = db_->GetLastChangeCount();
 
-  static constexpr char kDeleteAllSourcesSql[] = "DELETE FROM impressions";
+  static constexpr char kDeleteAllSourcesSql[] = "DELETE FROM sources";
   sql::Statement delete_all_sources_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kDeleteAllSourcesSql));
   if (!delete_all_sources_statement.Run())
@@ -1720,9 +1721,9 @@ bool AttributionStorageSql::HasCapacityForStoringSource(
     const std::string& serialized_origin) {
   static constexpr char kCountSourcesSql[] =
       // clang-format off
-      "SELECT COUNT(impression_origin)FROM impressions "
-      DCHECK_SQL_INDEXED_BY("impression_origin_idx")
-      "WHERE impression_origin = ?";  // clang-format on
+      "SELECT COUNT(source_origin)FROM sources "
+      DCHECK_SQL_INDEXED_BY("sources_by_origin")
+      "WHERE source_origin = ?";  // clang-format on
 
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kCountSourcesSql));
@@ -1741,7 +1742,7 @@ AttributionStorageSql::ReportAlreadyStored(StoredSource::Id source_id,
 
   static constexpr char kCountReportsSql[] =
       "SELECT COUNT(*)FROM dedup_keys "
-      "WHERE impression_id = ? AND dedup_key = ?";
+      "WHERE source_id = ? AND dedup_key = ?";
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kCountReportsSql));
   statement.BindInt64(0, *source_id);
@@ -1769,11 +1770,11 @@ AttributionStorageSql::CapacityForStoringReport(
   // |event_level_active| and |aggregatable_active| are booleans, so include
   // them in the conditional.
   static constexpr char kCountReportsSql[] =
-      "SELECT COUNT(conversion_id)FROM conversions C "
-      "JOIN impressions I "
-      DCHECK_SQL_INDEXED_BY("conversion_destination_idx")
-      "ON I.impression_id = C.impression_id "
-      "WHERE I.conversion_destination = ? AND "
+      "SELECT COUNT(*)FROM event_level_reports C "
+      "JOIN sources I "
+      DCHECK_SQL_INDEXED_BY("sources_by_active_destination_site_reporting_origin")
+      "ON I.source_id = C.source_id "
+      "WHERE I.destination_site = ? AND "
       "(event_level_active BETWEEN 0 AND 1) AND "
       "(aggregatable_active BETWEEN 0 AND 1)";
   sql::Statement statement(
@@ -1798,7 +1799,7 @@ std::vector<StoredSource> AttributionStorageSql::GetActiveSources(int limit) {
   static constexpr char kGetActiveSourcesSql[] =
       // clang-format off
       "SELECT " ATTRIBUTION_SOURCE_COLUMNS_SQL("")
-      " FROM impressions "
+      " FROM sources "
       "WHERE (event_level_active = 1 OR aggregatable_active = 1) AND "
       "expiry_time > ? LIMIT ?";  // clang-format on
 
@@ -1831,7 +1832,7 @@ std::vector<StoredSource> AttributionStorageSql::GetActiveSources(int limit) {
 absl::optional<std::vector<uint64_t>> AttributionStorageSql::ReadDedupKeys(
     StoredSource::Id source_id) {
   static constexpr char kDedupKeySql[] =
-      "SELECT dedup_key FROM dedup_keys WHERE impression_id = ?";
+      "SELECT dedup_key FROM dedup_keys WHERE source_id = ?";
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kDedupKeySql));
   statement.BindInt64(0, *source_id);
@@ -1964,9 +1965,9 @@ bool AttributionStorageSql::CreateSchema() {
   // Origins usually aren't _that_ big compared to a 64 bit integer(8 bytes).
   //
   // All of the columns in this table are designed to be "const" except for
-  // |num_conversions|, |aggregatable_budget_consumed|, |event_level_active|
+  // |num_attributions|, |aggregatable_budget_consumed|, |event_level_active|
   // and |aggregatable_active| which are updated when a new trigger is
-  // received. |num_conversions| is the number of times an event-level report
+  // received. |num_attributions| is the number of times an event-level report
   // has been created for a given source. |aggregatable_budget_consumed| is the
   // aggregatable budget that has been consumed for a given source. |delegate_|
   // can choose to enforce a maximum limit on them. |event_level_active| and
@@ -1978,35 +1979,35 @@ bool AttributionStorageSql::CreateSchema() {
   //     ineligible for new sources due to the attribution model documented
   //     in `StoreSource()`.
   //   - A source has expired but still has unsent reports in the
-  //     conversions table meaning it cannot be deleted yet.
+  //     event_level_reports table meaning it cannot be deleted yet.
   // |source_type| is the type of the source of the source, currently always
   // |kNavigation|.
-  // |attributed_truthfully| corresponds to the
+  // |attribution_logic| corresponds to the
   // |StoredSource::AttributionLogic| enum.
-  // |impression_site| is used to optimize the lookup of sources;
+  // |source_site| is used to optimize the lookup of sources;
   // |CommonSourceInfo::ImpressionSite| is always derived from the origin.
   // |filter_data| is a serialized `AttributionFilterData` used for source
   // matching.
   //
-  // |impression_id| uses AUTOINCREMENT to ensure that IDs aren't reused over
+  // |source_id| uses AUTOINCREMENT to ensure that IDs aren't reused over
   // the lifetime of the DB.
   static constexpr char kImpressionTableSql[] =
-      "CREATE TABLE IF NOT EXISTS impressions"
-      "(impression_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
-      "impression_data INTEGER NOT NULL,"
-      "impression_origin TEXT NOT NULL,"
-      "conversion_origin TEXT NOT NULL,"
+      "CREATE TABLE IF NOT EXISTS sources"
+      "(source_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+      "source_event_id INTEGER NOT NULL,"
+      "source_origin TEXT NOT NULL,"
+      "destination_origin TEXT NOT NULL,"
       "reporting_origin TEXT NOT NULL,"
-      "impression_time INTEGER NOT NULL,"
+      "source_time INTEGER NOT NULL,"
       "expiry_time INTEGER NOT NULL,"
-      "num_conversions INTEGER NOT NULL,"
+      "num_attributions INTEGER NOT NULL,"
       "event_level_active INTEGER NOT NULL,"
       "aggregatable_active INTEGER NOT NULL,"
-      "conversion_destination TEXT NOT NULL,"
+      "destination_site TEXT NOT NULL,"
       "source_type INTEGER NOT NULL,"
-      "attributed_truthfully INTEGER NOT NULL,"
+      "attribution_logic INTEGER NOT NULL,"
       "priority INTEGER NOT NULL,"
-      "impression_site TEXT NOT NULL,"
+      "source_site TEXT NOT NULL,"
       "debug_key INTEGER,"
       "aggregatable_budget_consumed INTEGER NOT NULL,"
       "aggregatable_source BLOB NOT NULL,"
@@ -2021,9 +2022,10 @@ bool AttributionStorageSql::CreateSchema() {
   // need to distinguish between active and inactive reports, so include
   // |event_level_active| and |aggregatable_active| in the index.
   static constexpr char kConversionDestinationIndexSql[] =
-      "CREATE INDEX IF NOT EXISTS conversion_destination_idx "
-      "ON impressions(event_level_active,aggregatable_active,"
-      "conversion_destination,reporting_origin)";
+      "CREATE INDEX IF NOT EXISTS "
+      "sources_by_active_destination_site_reporting_origin "
+      "ON sources(event_level_active,aggregatable_active,"
+      "destination_site,reporting_origin)";
   if (!db_->Execute(kConversionDestinationIndexSql))
     return false;
 
@@ -2032,24 +2034,25 @@ bool AttributionStorageSql::CreateSchema() {
   // time. Both calls require only returning sources that expire after a
   // given time.
   static constexpr char kImpressionExpiryIndexSql[] =
-      "CREATE INDEX IF NOT EXISTS impression_expiry_idx "
-      "ON impressions(expiry_time)";
+      "CREATE INDEX IF NOT EXISTS sources_by_expiry_time "
+      "ON sources(expiry_time)";
   if (!db_->Execute(kImpressionExpiryIndexSql))
     return false;
 
   // Optimizes counting sources by source origin.
   static constexpr char kImpressionOriginIndexSql[] =
-      "CREATE INDEX IF NOT EXISTS impression_origin_idx "
-      "ON impressions(impression_origin)";
+      "CREATE INDEX IF NOT EXISTS sources_by_origin "
+      "ON sources(source_origin)";
   if (!db_->Execute(kImpressionOriginIndexSql))
     return false;
 
   // Optimizes `HasCapacityForUniqueDestinationLimitForPendingSource()`, which
   // only needs to examine active, unconverted sources.
   static constexpr char kImpressionSiteReportingOriginIndexSql[] =
-      "CREATE INDEX IF NOT EXISTS impression_site_reporting_origin_idx "
-      "ON impressions(impression_site,reporting_origin)"
-      "WHERE event_level_active=1 AND num_conversions=0 AND "
+      "CREATE INDEX IF NOT EXISTS "
+      "active_unattributed_sources_by_site_reporting_origin "
+      "ON sources(source_site,reporting_origin)"
+      "WHERE event_level_active=1 AND num_attributions=0 AND "
       "aggregatable_active=1 AND aggregatable_budget_consumed=0";
   if (!db_->Execute(kImpressionSiteReportingOriginIndexSql))
     return false;
@@ -2057,20 +2060,20 @@ bool AttributionStorageSql::CreateSchema() {
   // All columns in this table are const except |report_time| and
   // |failed_send_attempts|,
   // which are updated when a report fails to send, as part of retries.
-  // |impression_id| is the primary key of a row in the [impressions] table,
-  // [impressions.impression_id]. |conversion_time| is the time at which the
+  // |source_id| is the primary key of a row in the [sources] table,
+  // [sources.source_id]. |trigger_time| is the time at which the
   // trigger was registered, and should be used for clearing site data.
   // |report_time| is the time a <report, source> pair should be
   // reported, and is specified by |delegate_|.
   //
-  // |conversion_id| uses AUTOINCREMENT to ensure that IDs aren't reused over
+  // |id| uses AUTOINCREMENT to ensure that IDs aren't reused over
   // the lifetime of the DB.
   static constexpr char kConversionTableSql[] =
-      "CREATE TABLE IF NOT EXISTS conversions"
-      "(conversion_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
-      "impression_id INTEGER NOT NULL,"
-      "conversion_data INTEGER NOT NULL,"
-      "conversion_time INTEGER NOT NULL,"
+      "CREATE TABLE IF NOT EXISTS event_level_reports"
+      "(report_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+      "source_id INTEGER NOT NULL,"
+      "trigger_data INTEGER NOT NULL,"
+      "trigger_time INTEGER NOT NULL,"
       "report_time INTEGER NOT NULL,"
       "priority INTEGER NOT NULL,"
       "failed_send_attempts INTEGER NOT NULL,"
@@ -2083,8 +2086,8 @@ bool AttributionStorageSql::CreateSchema() {
   // `GetAttributionReports()`. The reports with the earliest report times are
   // periodically fetched from storage to be sent.
   static constexpr char kConversionReportTimeIndexSql[] =
-      "CREATE INDEX IF NOT EXISTS conversion_report_idx "
-      "ON conversions(report_time)";
+      "CREATE INDEX IF NOT EXISTS event_level_reports_by_report_time "
+      "ON event_level_reports(report_time)";
   if (!db_->Execute(kConversionReportTimeIndexSql))
     return false;
 
@@ -2093,8 +2096,8 @@ bool AttributionStorageSql::CreateSchema() {
   // corresponding pending reports during calls to
   // `DeleteExpiredSources()`.
   static constexpr char kConversionImpressionIdIndexSql[] =
-      "CREATE INDEX IF NOT EXISTS conversion_impression_id_idx "
-      "ON conversions(impression_id)";
+      "CREATE INDEX IF NOT EXISTS event_level_reports_by_source_id "
+      "ON event_level_reports(source_id)";
   if (!db_->Execute(kConversionImpressionIdIndexSql))
     return false;
 
@@ -2103,9 +2106,9 @@ bool AttributionStorageSql::CreateSchema() {
 
   static constexpr char kDedupKeyTableSql[] =
       "CREATE TABLE IF NOT EXISTS dedup_keys"
-      "(impression_id INTEGER NOT NULL,"
+      "(source_id INTEGER NOT NULL,"
       "dedup_key INTEGER NOT NULL,"
-      "PRIMARY KEY(impression_id,dedup_key))WITHOUT ROWID";
+      "PRIMARY KEY(source_id,dedup_key))WITHOUT ROWID";
   if (!db_->Execute(kDedupKeyTableSql))
     return false;
 
@@ -2120,8 +2123,8 @@ bool AttributionStorageSql::CreateSchema() {
   // All columns in this table are const except `report_time` and
   // `failed_send_attempts`, which are updated when a report fails to send, as
   // part of retries.
-  // `source_id` is the primary key of a row in the [impressions] table,
-  // [impressions.impression_id].
+  // `source_id` is the primary key of a row in the [sources] table,
+  // [sources.source_id].
   // `trigger_time` is the time at which the trigger was registered, and
   // should be used for clearing site data.
   // `external_report_id` is used for deduplicating reports received by the
@@ -2249,10 +2252,10 @@ bool AttributionStorageSql::
 
   // Optimized by `kImpressionSiteReportingOriginIndexSql`.
   static constexpr char kSelectSourcesSql[] =
-      "SELECT conversion_destination FROM impressions "
-      DCHECK_SQL_INDEXED_BY("impression_site_reporting_origin_idx")
-      "WHERE impression_site=? AND reporting_origin=? "
-      "AND event_level_active=1 AND num_conversions=0 AND "
+      "SELECT destination_site FROM sources "
+      DCHECK_SQL_INDEXED_BY("active_unattributed_sources_by_site_reporting_origin")
+      "WHERE source_site=? AND reporting_origin=? "
+      "AND event_level_active=1 AND num_attributions=0 AND "
       "aggregatable_active=1 AND aggregatable_budget_consumed=0";
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kSelectSourcesSql));
@@ -2284,7 +2287,7 @@ bool AttributionStorageSql::DeleteSources(
     return false;
 
   static constexpr char kDeleteSourcesSql[] =
-      "DELETE FROM impressions WHERE impression_id = ?";
+      "DELETE FROM sources WHERE source_id = ?";
   sql::Statement delete_impression_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kDeleteSourcesSql));
 
@@ -2296,7 +2299,7 @@ bool AttributionStorageSql::DeleteSources(
   }
 
   static constexpr char kDeleteDedupKeySql[] =
-      "DELETE FROM dedup_keys WHERE impression_id = ?";
+      "DELETE FROM dedup_keys WHERE source_id = ?";
   sql::Statement delete_dedup_key_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kDeleteDedupKeySql));
 
@@ -2349,12 +2352,12 @@ bool AttributionStorageSql::ClearAggregatableAttributionsForOriginsInRange(
   // TODO(linnan): Considering optimizing SQL query by moving some logic to C++.
   // See the comment in crrev.com/c/3379484 for more information.
   static constexpr char kScanCandidateData[] =
-      "SELECT I.impression_origin,I.conversion_origin,I.reporting_origin,"
-      "I.impression_id,A.aggregation_id "
-      "FROM impressions I LEFT JOIN aggregatable_report_metadata A "
+      "SELECT I.source_origin,I.destination_origin,I.reporting_origin,"
+      "I.source_id,A.aggregation_id "
+      "FROM sources I LEFT JOIN aggregatable_report_metadata A "
       DCHECK_SQL_INDEXED_BY("aggregate_trigger_time_idx")
-      "ON A.source_id=I.impression_id WHERE"
-      "(I.impression_time BETWEEN ?1 AND ?2)OR"
+      "ON A.source_id=I.source_id WHERE"
+      "(I.source_time BETWEEN ?1 AND ?2)OR"
       "(A.trigger_time BETWEEN ?1 AND ?2)";
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kScanCandidateData));
@@ -2559,9 +2562,9 @@ bool AttributionStorageSql::AdjustBudgetConsumedForSource(
   DCHECK_GE(additional_budget_consumed, 0);
 
   static constexpr char kAdjustBudgetConsumedForSourceSql[] =
-      "UPDATE impressions "
+      "UPDATE sources "
       "SET aggregatable_budget_consumed=aggregatable_budget_consumed+? "
-      "WHERE impression_id=?";
+      "WHERE source_id=?";
   sql::Statement statement(db_->GetCachedStatement(
       SQL_FROM_HERE, kAdjustBudgetConsumedForSourceSql));
   statement.BindInt64(0, additional_budget_consumed);

@@ -60,8 +60,8 @@ class AttributionStorageSqlTest : public testing::Test {
     EXPECT_TRUE(raw_db.Open(db_path()));
 
     static constexpr const char* kTables[] = {
-        "conversions",
-        "impressions",
+        "event_level_reports",
+        "sources",
         "rate_limits",
         "dedup_keys",
         "aggregatable_report_metadata",
@@ -87,7 +87,7 @@ class AttributionStorageSqlTest : public testing::Test {
     sql::Database raw_db;
     EXPECT_TRUE(raw_db.Open(db_path()));
     size_t rows;
-    sql::test::CountTableRows(&raw_db, "impressions", &rows);
+    sql::test::CountTableRows(&raw_db, "sources", &rows);
     EXPECT_EQ(expected, rows);
   }
 
@@ -151,7 +151,7 @@ TEST_F(AttributionStorageSqlTest,
     sql::Database raw_db;
     EXPECT_TRUE(raw_db.Open(db_path()));
 
-    // [impressions], [conversions], [meta], [rate_limits], [dedup_keys],
+    // [sources], [event_level_reports], [meta], [rate_limits], [dedup_keys],
     // [aggregatable_report_metadata], [aggregatable_contributions],
     // [sqlite_sequence] (for AUTOINCREMENT support).
     EXPECT_EQ(8u, sql::test::CountSQLTables(&raw_db));
@@ -550,7 +550,7 @@ TEST_F(AttributionStorageSqlTest, MaxSourcesPerOrigin) {
   sql::Database raw_db;
   EXPECT_TRUE(raw_db.Open(db_path()));
   size_t impression_rows;
-  sql::test::CountTableRows(&raw_db, "impressions", &impression_rows);
+  sql::test::CountTableRows(&raw_db, "sources", &impression_rows);
   EXPECT_EQ(1u, impression_rows);
   size_t rate_limit_rows;
   sql::test::CountTableRows(&raw_db, "rate_limits", &rate_limit_rows);
@@ -573,7 +573,7 @@ TEST_F(AttributionStorageSqlTest, MaxAttributionsPerOrigin) {
   sql::Database raw_db;
   EXPECT_TRUE(raw_db.Open(db_path()));
   size_t conversion_rows;
-  sql::test::CountTableRows(&raw_db, "conversions", &conversion_rows);
+  sql::test::CountTableRows(&raw_db, "event_level_reports", &conversion_rows);
   EXPECT_EQ(2u, conversion_rows);
   size_t rate_limit_rows;
   sql::test::CountTableRows(&raw_db, "rate_limits", &rate_limit_rows);
@@ -618,7 +618,7 @@ TEST_F(AttributionStorageSqlTest,
   sql::Database raw_db;
   EXPECT_TRUE(raw_db.Open(db_path()));
   size_t conversion_rows;
-  sql::test::CountTableRows(&raw_db, "conversions", &conversion_rows);
+  sql::test::CountTableRows(&raw_db, "event_level_reports", &conversion_rows);
   EXPECT_EQ(0u, conversion_rows);
   size_t rate_limit_rows;
   sql::test::CountTableRows(&raw_db, "rate_limits", &rate_limit_rows);
@@ -663,7 +663,7 @@ TEST_F(AttributionStorageSqlTest,
   sql::Database raw_db;
   EXPECT_TRUE(raw_db.Open(db_path()));
   size_t conversion_rows;
-  sql::test::CountTableRows(&raw_db, "conversions", &conversion_rows);
+  sql::test::CountTableRows(&raw_db, "event_level_reports", &conversion_rows);
   EXPECT_EQ(0u, conversion_rows);
   size_t rate_limit_rows;
   sql::test::CountTableRows(&raw_db, "rate_limits", &rate_limit_rows);

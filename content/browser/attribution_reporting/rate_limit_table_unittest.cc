@@ -130,7 +130,7 @@ class RateLimitTableTest : public testing::Test {
     std::vector<std::pair<int64_t, RateLimitRow>> rows;
 
     static constexpr char kSelectSql[] =
-        "SELECT rate_limit_id,scope,impression_origin,conversion_origin,"
+        "SELECT id,scope,source_origin,destination_origin,"
         "reporting_origin,time FROM rate_limits";
     sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kSelectSql));
 
