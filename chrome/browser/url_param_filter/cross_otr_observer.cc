@@ -15,8 +15,10 @@
 
 namespace url_param_filter {
 
-const char kCrossOtrResponseCodeMetricName[] =
+constexpr char kCrossOtrResponseCodeMetricName[] =
     "Navigation.CrossOtr.ContextMenu.ResponseCodeExperimental";
+constexpr char kCrossOtrRefreshCountMetricName[] =
+    "Navigation.CrossOtr.ContextMenu.RefreshCountExperimental";
 
 void CrossOtrObserver::MaybeCreateForWebContents(
     content::WebContents* web_contents,
@@ -38,15 +40,26 @@ CrossOtrObserver::CrossOtrObserver(content::WebContents* web_contents)
 void CrossOtrObserver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const net::HttpResponseHeaders* headers =
-      navigation_handle->GetResponseHeaders();
-  if (headers) {
-    base::UmaHistogramSparse(
-        kCrossOtrResponseCodeMetricName,
-        net::HttpUtil::MapStatusCodeForHistogram(headers->response_code()));
+  // We only want the first navigation to be counted; after that point, no
+  // response codes should be tracked. The observer is left in place to track
+  // refreshes on the first page.
+  if (!wrote_response_metric_) {
+    wrote_response_metric_ = true;
+    const net::HttpResponseHeaders* headers =
+        navigation_handle->GetResponseHeaders();
+    if (headers) {
+      base::UmaHistogramSparse(
+          kCrossOtrResponseCodeMetricName,
+          net::HttpUtil::MapStatusCodeForHistogram(headers->response_code()));
+    }
+  } else if (navigation_handle->GetReloadType() != content::ReloadType::NONE) {
+    refresh_count_++;
+  } else if (navigation_handle->IsInPrimaryMainFrame() &&
+             !navigation_handle->IsSameDocument() &&
+             navigation_handle->HasCommitted()) {
+    Detach();
+    // DO NOT add code past this point. `this` is destroyed.
   }
-  web_contents()->RemoveUserData(CrossOtrObserver::kUserDataKey);
-  // DO NOT add code past this point. `this` is destroyed.
 }
 
 void CrossOtrObserver::DidRedirectNavigation(
@@ -54,11 +67,26 @@ void CrossOtrObserver::DidRedirectNavigation(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   const net::HttpResponseHeaders* headers =
       navigation_handle->GetResponseHeaders();
-  if (headers) {
+  // After the first navigation has committed, we no longer want to track
+  // redirects.
+  if (!wrote_response_metric_ && headers) {
     base::UmaHistogramSparse(
         kCrossOtrResponseCodeMetricName,
         net::HttpUtil::MapStatusCodeForHistogram(headers->response_code()));
   }
+}
+void CrossOtrObserver::WebContentsDestroyed() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  // The user has closed the tab or otherwise destroyed the web contents. Flush
+  // metrics and cease observation.
+  Detach();
+  // DO NOT add code past this point. `this` is destroyed.
+}
+
+void CrossOtrObserver::Detach() {
+  base::UmaHistogramCounts100(kCrossOtrRefreshCountMetricName, refresh_count_);
+  web_contents()->RemoveUserData(CrossOtrObserver::kUserDataKey);
+  // DO NOT add code past this point. `this` is destroyed.
 }
 
 }  // namespace url_param_filter

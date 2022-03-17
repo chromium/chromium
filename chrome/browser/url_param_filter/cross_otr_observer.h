@@ -28,6 +28,17 @@ class CrossOtrObserver : public content::WebContentsObserver,
       content::NavigationHandle* navigation_handle) override;
   void DidRedirectNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void WebContentsDestroyed() override;
+
+ private:
+  void Detach();
+  // Drives state machine logic; we write the cross-OTR response code metric
+  // only for the first navigation, which is that which would have parameters
+  // filtered.
+  bool wrote_response_metric_ = false;
+  // Tracks refreshes observed, which could point to an issue with param
+  // filtering causing unexpected behavior for the user.
+  int refresh_count_ = 0;
 };
 
 }  // namespace url_param_filter
