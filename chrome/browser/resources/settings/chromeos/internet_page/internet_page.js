@@ -370,6 +370,8 @@ Polymer({
       const type = queryParams.get('type');
       if (type) {
         this.knownNetworksType_ = OncMojo.getNetworkTypeFromString(type);
+      } else {
+        this.knownNetworksType_ = mojom.NetworkType.kWiFi;
       }
     } else if (route === routes.INTERNET) {
       // Show deep links for the internet page.
