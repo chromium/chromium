@@ -4195,7 +4195,7 @@ void NavigationRequest::OnFailureChecksComplete(
     return;
 
   // The OnRequestFailedInternal() did not commit the error page as it
-  // defered to WillFailRequest(), which has called through to here, and
+  // deferred to WillFailRequest(), which has called through to here, and
   // now we are finally ready to commit the error page. This will be committed
   // to the RenderFrameHost previously chosen in OnRequestFailedInternal().
   CommitErrorPage(result.error_page_content());
