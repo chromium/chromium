@@ -24,16 +24,14 @@ class FakeSafeBrowsingUrlCheckerImpl
  public:
   explicit FakeSafeBrowsingUrlCheckerImpl(
       network::mojom::RequestDestination request_destination)
-      : SafeBrowsingUrlCheckerImpl(
-            request_destination,
-            base::MakeRefCounted<UrlCheckerDelegateImpl>(
-                /*database_manager=*/nullptr),
-            base::BindRepeating(
-                []() { return static_cast<web::WebState*>(nullptr); }),
-            /*real_time_lookup_enabled=*/false,
-            /*can_rt_check_subresource_url=*/false,
-            web::GetUIThreadTaskRunner({}),
-            /*url_lookup_service_on_ui=*/nullptr) {}
+      : SafeBrowsingUrlCheckerImpl(request_destination,
+                                   base::MakeRefCounted<UrlCheckerDelegateImpl>(
+                                       /*database_manager=*/nullptr),
+                                   base::WeakPtr<web::WebState>(),
+                                   /*real_time_lookup_enabled=*/false,
+                                   /*can_rt_check_subresource_url=*/false,
+                                   web::GetUIThreadTaskRunner({}),
+                                   /*url_lookup_service_on_ui=*/nullptr) {}
   ~FakeSafeBrowsingUrlCheckerImpl() override = default;
 
   // SafeBrowsingUrlCheckerImpl:

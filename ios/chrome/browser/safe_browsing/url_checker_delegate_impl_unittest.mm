@@ -82,7 +82,7 @@ class UrlCheckerDelegateImplTest : public PlatformTest {
     resource.callback_sequence = task_environment_.GetMainThreadTaskRunner();
     resource.callback =
         base::BindRepeating(&PopulateCallbackState, callback_state);
-    resource.web_state_getter = web_state_->CreateDefaultGetter();
+    resource.weak_web_state = web_state_->GetWeakPtr();
     return resource;
   }
 

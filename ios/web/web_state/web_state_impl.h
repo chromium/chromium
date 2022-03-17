@@ -252,8 +252,6 @@ class WebStateImpl final : public WebState {
   void RemoveAllWebFrames();
 
   // WebState:
-  Getter CreateDefaultGetter() final;
-  OnceGetter CreateDefaultOnceGetter() final;
   WebStateDelegate* GetDelegate() final;
   void SetDelegate(WebStateDelegate* delegate) final;
   bool IsRealized() const final;
@@ -268,6 +266,7 @@ class WebStateImpl final : public WebState {
   void WasHidden() final;
   void SetKeepRenderProcessAlive(bool keep_alive) final;
   BrowserState* GetBrowserState() const final;
+  base::WeakPtr<WebState> GetWeakPtr() final;
   void OpenURL(const WebState::OpenURLParams& params) final;
   void Stop() final;
   const NavigationManager* GetNavigationManager() const final;

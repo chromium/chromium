@@ -24,7 +24,7 @@ class PendingUnsafeResourceStorageTest : public PlatformTest {
     UnsafeResource resource;
     resource.url = url_;
     resource.navigation_url = url_;
-    resource.web_state_getter = web_state_.CreateDefaultGetter();
+    resource.weak_web_state = web_state_.GetWeakPtr();
     resource.threat_type = threat_type_;
     resource.callback =
         base::BindRepeating(&PendingUnsafeResourceStorageTest::ResourceCallback,

@@ -121,7 +121,7 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
   SafeBrowsingUrlCheckerImpl(
       network::mojom::RequestDestination request_destination,
       scoped_refptr<UrlCheckerDelegate> url_checker_delegate,
-      const base::RepeatingCallback<web::WebState*()>& web_state_getter,
+      base::WeakPtr<web::WebState> weak_web_state,
       bool real_time_lookup_enabled,
       bool can_rt_check_subresource_url,
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
@@ -296,7 +296,7 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
   const int load_flags_;
   const network::mojom::RequestDestination request_destination_;
   const bool has_user_gesture_;
-  // TODO(crbug.com/1069047): |web_state_getter| is only used on iOS, and
+  // TODO(crbug.com/1069047): |weak_web_state_| is only used on iOS, and
   // |web_contents_getter_|, |render_process_id_|, |render_frame_id_|, and
   // |frame_tree_node_id_| are used on all other platforms.  This class should
   // be refactored to use only the common functionality can be shared across
@@ -310,7 +310,7 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
   const security_interstitials::UnsafeResource::FrameTreeNodeId
       frame_tree_node_id_ =
           security_interstitials::UnsafeResource::kNoFrameTreeNodeId;
-  base::RepeatingCallback<web::WebState*()> web_state_getter_;
+  base::WeakPtr<web::WebState> weak_web_state_;
   scoped_refptr<UrlCheckerDelegate> url_checker_delegate_;
   scoped_refptr<SafeBrowsingDatabaseManager> database_manager_;
 

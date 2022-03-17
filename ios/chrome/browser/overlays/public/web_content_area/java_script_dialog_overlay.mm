@@ -85,7 +85,7 @@ JavaScriptDialogRequest::JavaScriptDialogRequest(
     NSString* message,
     NSString* default_text_field_value)
     : type_(type),
-      web_state_getter_(web_state->CreateDefaultGetter()),
+      weak_web_state_(web_state->GetWeakPtr()),
       url_(url),
       is_main_frame_(is_main_frame),
       message_(message),

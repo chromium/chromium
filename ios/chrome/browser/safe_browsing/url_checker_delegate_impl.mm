@@ -32,7 +32,7 @@ void HandleBlockingPageRequestOnUIThread(
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
 
   // Send do-not-proceed signal if the WebState has been destroyed.
-  web::WebState* web_state = resource.web_state_getter.Run();
+  web::WebState* web_state = resource.weak_web_state.get();
   if (!web_state) {
     RunUnsafeResourceCallback(resource, /*proceed=*/false,
                               /*showed_interstitial=*/false);

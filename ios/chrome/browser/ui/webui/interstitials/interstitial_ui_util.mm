@@ -189,7 +189,7 @@ CreateSafeBrowsingBlockingPage(web::WebState* web_state, const GURL& url) {
   resource.is_subresource = request_url != main_frame_url;
   resource.is_subframe = false;
   resource.threat_type = threat_type;
-  resource.web_state_getter = web_state->CreateDefaultGetter();
+  resource.weak_web_state = web_state->GetWeakPtr();
 
   return SafeBrowsingBlockingPage::Create(resource);
 }

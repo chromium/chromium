@@ -26,10 +26,6 @@
 
 namespace web {
 namespace {
-// Function used to implement the default WebState getters.
-WebState* ReturnWeakReference(base::WeakPtr<WebStateImpl> weak_web_state) {
-  return weak_web_state.get();
-}
 
 // With |kEnableUnrealizedWebStates|, detect inefficient usage of WebState
 // realization. Various bugs have triggered the realization of the entire
@@ -319,14 +315,6 @@ void WebStateImpl::RemoveAllWebFrames() {
 
 #pragma mark - WebState implementation
 
-WebState::Getter WebStateImpl::CreateDefaultGetter() {
-  return base::BindRepeating(&ReturnWeakReference, weak_factory_.GetWeakPtr());
-}
-
-WebState::OnceGetter WebStateImpl::CreateDefaultOnceGetter() {
-  return base::BindOnce(&ReturnWeakReference, weak_factory_.GetWeakPtr());
-}
-
 WebStateDelegate* WebStateImpl::GetDelegate() {
   return LIKELY(pimpl_) ? pimpl_->GetDelegate() : nullptr;
 }
@@ -417,6 +405,10 @@ void WebStateImpl::SetKeepRenderProcessAlive(bool keep_alive) {
 
 BrowserState* WebStateImpl::GetBrowserState() const {
   return LIKELY(pimpl_) ? pimpl_->GetBrowserState() : saved_->GetBrowserState();
+}
+
+base::WeakPtr<WebState> WebStateImpl::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 void WebStateImpl::OpenURL(const WebState::OpenURLParams& params) {

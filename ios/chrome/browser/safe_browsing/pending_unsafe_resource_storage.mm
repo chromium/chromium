@@ -79,14 +79,14 @@ PendingUnsafeResourceStorage::ResourcePolicyObserver::ResourcePolicyObserver(
     PendingUnsafeResourceStorage* storage)
     : storage_(storage) {
   scoped_observation_.Observe(SafeBrowsingUrlAllowList::FromWebState(
-      storage_->resource()->web_state_getter.Run()));
+      storage_->resource()->weak_web_state.get()));
 }
 
 PendingUnsafeResourceStorage::ResourcePolicyObserver::ResourcePolicyObserver(
     const ResourcePolicyObserver& other)
     : storage_(other.storage_) {
   scoped_observation_.Observe(SafeBrowsingUrlAllowList::FromWebState(
-      storage_->resource()->web_state_getter.Run()));
+      storage_->resource()->weak_web_state.get()));
 }
 
 PendingUnsafeResourceStorage::ResourcePolicyObserver&

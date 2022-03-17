@@ -89,8 +89,7 @@ SafeBrowsingUnsafeResourceContainer::~SafeBrowsingUnsafeResourceContainer() =
 
 void SafeBrowsingUnsafeResourceContainer::StoreMainFrameUnsafeResource(
     const security_interstitials::UnsafeResource& resource) {
-  DCHECK(!resource.web_state_getter.is_null() &&
-         resource.web_state_getter.Run() == web_state_);
+  DCHECK_EQ(resource.weak_web_state.get(), web_state_);
   DCHECK_EQ(network::mojom::RequestDestination::kDocument,
             resource.request_destination);
 
@@ -104,8 +103,7 @@ void SafeBrowsingUnsafeResourceContainer::StoreMainFrameUnsafeResource(
 void SafeBrowsingUnsafeResourceContainer::StoreSubFrameUnsafeResource(
     const security_interstitials::UnsafeResource& resource,
     web::NavigationItem* main_frame_item) {
-  DCHECK(!resource.web_state_getter.is_null() &&
-         resource.web_state_getter.Run() == web_state_);
+  DCHECK_EQ(resource.weak_web_state.get(), web_state_);
   DCHECK_EQ(network::mojom::RequestDestination::kIframe,
             resource.request_destination);
   DCHECK(main_frame_item);

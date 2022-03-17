@@ -181,25 +181,23 @@ const CGFloat kResizeFactor = 4;
   [card setBottomToolbarImage:bottomToolbarSnapshot];
 
   __weak CardSideSwipeView* weakSelf = self;
-  web::WebState::Getter webStateGetter = webState->CreateDefaultGetter();
-  SnapshotTabHelper::FromWebState(webState)->RetrieveColorSnapshot(
-      ^(UIImage* image) {
-        [weakSelf colorSnapshotRetrieved:image
-                                    card:card
-                          webStateGetter:webStateGetter];
-      });
+  base::WeakPtr<web::WebState> weakWebState = webState->GetWeakPtr();
+  SnapshotTabHelper::FromWebState(webState)->RetrieveColorSnapshot(^(
+      UIImage* image) {
+    [weakSelf colorSnapshotRetrieved:image card:card weakWebState:weakWebState];
+  });
 }
 
 // Helper method that is invoked once the color snapshot has been fetched
-// for the WebState returned by |webStateGetter|. As the fetching is done
+// for the WebState returned by |weakWebState|. As the fetching is done
 // asynchronously, it is possible for the WebState to have been destroyed
 // and thus for |webStateGetter| to return nullptr.
 - (void)colorSnapshotRetrieved:(UIImage*)image
                           card:(SwipeView*)card
-                webStateGetter:(web::WebState::Getter)webStateGetter {
+                  weakWebState:(base::WeakPtr<web::WebState>)weakWebState {
   // If the WebState has been destroyed, the card will be dropped, so
   // the image can be dropped.
-  web::WebState* webState = webStateGetter.Run();
+  web::WebState* webState = weakWebState.get();
   if (!webState) {
     return;
   }

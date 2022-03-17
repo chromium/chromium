@@ -156,7 +156,7 @@ class SafeBrowsingTabHelperTest
     resource.request_destination =
         is_main_frame ? network::mojom::RequestDestination::kDocument
                       : network::mojom::RequestDestination::kIframe;
-    resource.web_state_getter = web_state_.CreateDefaultGetter();
+    resource.weak_web_state = web_state_.GetWeakPtr();
     SafeBrowsingQueryManager::FromWebState(&web_state_)
         ->StoreUnsafeResource(resource);
   }

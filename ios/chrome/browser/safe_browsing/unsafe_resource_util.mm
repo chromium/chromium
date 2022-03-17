@@ -78,9 +78,7 @@ std::string GetUnsafeResourceMetricPrefix(
 
 SafeBrowsingUrlAllowList* GetAllowListForResource(
     const security_interstitials::UnsafeResource& resource) {
-  if (resource.web_state_getter.is_null())
-    return nullptr;
-  web::WebState* web_state = resource.web_state_getter.Run();
+  web::WebState* web_state = resource.weak_web_state.get();
   if (!web_state)
     return nullptr;
   return SafeBrowsingUrlAllowList::FromWebState(web_state);

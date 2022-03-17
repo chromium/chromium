@@ -42,7 +42,7 @@ const GURL GetMainFrameUrl(const UnsafeResource& resource) {
   if (resource.request_destination ==
       network::mojom::RequestDestination::kDocument)
     return resource.url;
-  return resource.web_state_getter.Run()->GetLastCommittedURL();
+  return resource.weak_web_state.get()->GetLastCommittedURL();
 }
 // Creates a metrics helper for |resource|.
 std::unique_ptr<IOSBlockingPageMetricsHelper> CreateMetricsHelper(
@@ -50,12 +50,12 @@ std::unique_ptr<IOSBlockingPageMetricsHelper> CreateMetricsHelper(
   security_interstitials::MetricsHelper::ReportDetails reporting_info;
   reporting_info.metric_prefix = GetUnsafeResourceMetricPrefix(resource);
   return std::make_unique<IOSBlockingPageMetricsHelper>(
-      resource.web_state_getter.Run(), resource.url, reporting_info);
+      resource.weak_web_state.get(), resource.url, reporting_info);
 }
 // Returns the default safe browsing error display options.
 BaseSafeBrowsingErrorUI::SBErrorDisplayOptions GetDefaultDisplayOptions(
     const UnsafeResource& resource) {
-  web::WebState* web_state = resource.web_state_getter.Run();
+  web::WebState* web_state = resource.weak_web_state.get();
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(web_state->GetBrowserState());
   PrefService* prefs = browser_state->GetPrefs();
@@ -97,7 +97,7 @@ std::unique_ptr<SafeBrowsingBlockingPage> SafeBrowsingBlockingPage::Create(
 SafeBrowsingBlockingPage::SafeBrowsingBlockingPage(
     const security_interstitials::UnsafeResource& resource,
     SafeBrowsingControllerClient* client)
-    : IOSSecurityInterstitialPage(resource.web_state_getter.Run(),
+    : IOSSecurityInterstitialPage(resource.weak_web_state.get(),
                                   GetMainFrameUrl(resource),
                                   client),
       is_main_page_load_blocked_(resource.IsMainPageLoadBlocked()),
@@ -158,7 +158,7 @@ void SafeBrowsingBlockingPage::PopulateInterstitialStrings(
 SafeBrowsingBlockingPage::SafeBrowsingControllerClient::
     SafeBrowsingControllerClient(const UnsafeResource& resource)
     : IOSBlockingPageControllerClient(
-          resource.web_state_getter.Run(),
+          resource.weak_web_state.get(),
           CreateMetricsHelper(resource),
           GetApplicationContext()->GetApplicationLocale()),
       url_(SafeBrowsingUrlAllowList::GetDecisionUrl(resource)),

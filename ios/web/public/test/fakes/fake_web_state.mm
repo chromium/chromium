@@ -27,12 +27,6 @@
 #endif
 
 namespace web {
-namespace {
-// Function used to implement the default WebState getters.
-web::WebState* ReturnWeakReference(base::WeakPtr<FakeWebState> weak_web_state) {
-  return weak_web_state.get();
-}
-}  // namespace
 
 void FakeWebState::AddObserver(WebStateObserver* observer) {
   observers_.AddObserver(observer);
@@ -59,14 +53,6 @@ FakeWebState::~FakeWebState() {
     observer.ResetWebState();
 }
 
-WebState::Getter FakeWebState::CreateDefaultGetter() {
-  return base::BindRepeating(&ReturnWeakReference, weak_factory_.GetWeakPtr());
-}
-
-WebState::OnceGetter FakeWebState::CreateDefaultOnceGetter() {
-  return base::BindOnce(&ReturnWeakReference, weak_factory_.GetWeakPtr());
-}
-
 WebStateDelegate* FakeWebState::GetDelegate() {
   return nil;
 }
@@ -88,6 +74,10 @@ WebState* FakeWebState::ForceRealized() {
 
 BrowserState* FakeWebState::GetBrowserState() const {
   return browser_state_;
+}
+
+base::WeakPtr<WebState> FakeWebState::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 bool FakeWebState::IsWebUsageEnabled() const {
