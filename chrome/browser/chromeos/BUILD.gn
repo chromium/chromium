@@ -1524,6 +1524,8 @@ source_set("chromeos") {
     "../ash/file_manager/fileapi_util.h",
     "../ash/file_manager/filesystem_api_util.cc",
     "../ash/file_manager/filesystem_api_util.h",
+    "../ash/file_manager/fusebox_mounter.cc",
+    "../ash/file_manager/fusebox_mounter.h",
     "../ash/file_manager/guest_os_file_tasks.cc",
     "../ash/file_manager/guest_os_file_tasks.h",
     "../ash/file_manager/io_task.cc",
