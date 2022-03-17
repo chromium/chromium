@@ -279,6 +279,7 @@
       [view removeFromSuperview];
     }
     [self.mostVisitedViews removeAllObjects];
+    [self.mostVisitedTapRecognizers removeAllObjects];
   }
   NSInteger index = 0;
   for (ContentSuggestionsMostVisitedItem* item in configs) {
@@ -288,6 +289,12 @@
     view.menuProvider = self.menuProvider;
     [self.mostVisitedViews addObject:view];
     if (refreshingTiles) {
+      UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc]
+          initWithTarget:self
+                  action:@selector(contentSuggestionsElementTapped:)];
+      [view addGestureRecognizer:tapRecognizer];
+      tapRecognizer.enabled = YES;
+      [self.mostVisitedTapRecognizers addObject:tapRecognizer];
       view.accessibilityIdentifier = [NSString
           stringWithFormat:
               @"%@%li",
