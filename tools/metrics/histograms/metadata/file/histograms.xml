@@ -550,6 +550,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="FileBrowser.OfficeFiles.FileHandler.{RootType}.{ConnectionStatus}"
+    enum="OfficeFileHandler" expires_after="M110">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: Counts the number of times each file handler is used
+    to open MS Office files from Files app.
+  </summary>
+  <token key="RootType">
+    <variant name="Drive" summary="The file is located on Drive"/>
+    <variant name="NotDrive" summary="The file is not located on Drive"/>
+  </token>
+  <token key="ConnectionStatus">
+    <variant name="Offline" summary="The user is offline"/>
+    <variant name="Online" summary="The user is online"/>
+  </token>
+</histogram>
+
 <histogram name="FileBrowser.OfficeFiles.WebDriveOffice"
     enum="WebDriveOfficeTaskResult" expires_after="M110">
   <owner>simmonsjosh@google.com</owner>
