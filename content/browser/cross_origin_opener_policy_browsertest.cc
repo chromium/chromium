@@ -134,6 +134,16 @@ class CrossOriginOpenerPolicyBrowserTest
     }
   }
 
+  // Provides meaningful param names instead of /0, /1, ...
+  static std::string DescribeParams(
+      const testing::TestParamInfo<ParamType>& info) {
+    auto [render_document_level, enable_back_forward_cache] = info.param;
+    return base::StringPrintf(
+        "%s_%s",
+        GetRenderDocumentLevelNameForTestParams(render_document_level).c_str(),
+        enable_back_forward_cache ? "BFCacheEnabled" : "BFCacheDisabled");
+  }
+
   bool IsBackForwardCacheEnabled() { return std::get<1>(GetParam()); }
 
   net::EmbeddedTestServer* https_server() { return &https_server_; }
@@ -3394,18 +3404,30 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
 static auto kTestParams =
     testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
                      testing::Bool());
-INSTANTIATE_TEST_SUITE_P(All, CrossOriginOpenerPolicyBrowserTest, kTestParams);
-INSTANTIATE_TEST_SUITE_P(All, VirtualBrowsingContextGroupTest, kTestParams);
-INSTANTIATE_TEST_SUITE_P(All, NoSharedArrayBufferByDefault, kTestParams);
+INSTANTIATE_TEST_SUITE_P(All,
+                         CrossOriginOpenerPolicyBrowserTest,
+                         kTestParams,
+                         CrossOriginOpenerPolicyBrowserTest::DescribeParams);
+INSTANTIATE_TEST_SUITE_P(All,
+                         VirtualBrowsingContextGroupTest,
+                         kTestParams,
+                         CrossOriginOpenerPolicyBrowserTest::DescribeParams);
+INSTANTIATE_TEST_SUITE_P(All,
+                         NoSharedArrayBufferByDefault,
+                         kTestParams,
+                         CrossOriginOpenerPolicyBrowserTest::DescribeParams);
 INSTANTIATE_TEST_SUITE_P(All,
                          SoapByDefaultVirtualBrowsingContextGroupTest,
-                         kTestParams);
+                         kTestParams,
+                         CrossOriginOpenerPolicyBrowserTest::DescribeParams);
 INSTANTIATE_TEST_SUITE_P(All,
                          SameOriginAllowPopupsPlusCoepBrowserTest,
-                         kTestParams);
+                         kTestParams,
+                         CrossOriginOpenerPolicyBrowserTest::DescribeParams);
 INSTANTIATE_TEST_SUITE_P(All,
                          NoSiteIsolationCrossOriginIsolationBrowserTest,
-                         kTestParams);
+                         kTestParams,
+                         CrossOriginOpenerPolicyBrowserTest::DescribeParams);
 
 IN_PROC_BROWSER_TEST_P(NoSharedArrayBufferByDefault, BaseCase) {
   GURL url = https_server()->GetURL("a.test", "/empty.html");
@@ -3866,7 +3888,8 @@ class SharedArrayBufferOnDesktopBrowserTest
 
 INSTANTIATE_TEST_SUITE_P(All,
                          SharedArrayBufferOnDesktopBrowserTest,
-                         kTestParams);
+                         kTestParams,
+                         CrossOriginOpenerPolicyBrowserTest::DescribeParams);
 
 IN_PROC_BROWSER_TEST_P(SharedArrayBufferOnDesktopBrowserTest,
                        DesktopHasSharedArrayBuffer) {
