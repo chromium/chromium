@@ -52,7 +52,8 @@ try:
   import psutil
   from selenium import webdriver
 except ImportError:
-  print('Error importing required modules. Run with vpython3 instead of python.')
+  print('Error importing required modules. Run with vpython3 instead of '
+        'python.')
   sys.exit(1)
 
 DEFAULT_INTERVAL = 1
@@ -74,8 +75,8 @@ def ParsePositionalArgs(positional_args):
 # line.
 def ParseArgs():
   # Customize usage and help to include options to be passed to chrome.exe.
-  usage_text = '''%(prog)s [-h] [--interval INTERVAL] [--wait]
-                   [--idlewakeups_dir IDLEWAKEUPS_DIR]
+  usage_text = '''%(prog)s [-h] [--interval INTERVAL] [--start_prompt]
+                   [--exit_prompt] [--idlewakeups_dir IDLEWAKEUPS_DIR]
                    chrome_dir num_navigations url [url ...]
                    [-- --chrome_option ...]'''
   additional_help_text = '''optional arguments to chrome.exe, example:
