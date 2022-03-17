@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/segmentation_platform/internal/execution/segmentation_model_handler.h"
+#include "components/segmentation_platform/internal/execution/optimization_guide/optimization_guide_segmentation_model_handler.h"
 
 #include <memory>
 #include <vector>
@@ -10,18 +10,19 @@
 #include "components/optimization_guide/core/model_executor.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
-#include "components/segmentation_platform/internal/execution/segmentation_model_executor.h"
+#include "components/segmentation_platform/internal/execution/optimization_guide/segmentation_model_executor.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/internal/stats.h"
 
 namespace segmentation_platform {
 
-SegmentationModelHandler::SegmentationModelHandler(
-    optimization_guide::OptimizationGuideModelProvider* model_provider,
-    scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-    optimization_guide::proto::OptimizationTarget optimization_target,
-    const ModelUpdatedCallback& model_updated_callback,
-    absl::optional<optimization_guide::proto::Any>&& model_metadata)
+OptimizationGuideSegmentationModelHandler::
+    OptimizationGuideSegmentationModelHandler(
+        optimization_guide::OptimizationGuideModelProvider* model_provider,
+        scoped_refptr<base::SequencedTaskRunner> background_task_runner,
+        optimization_guide::proto::OptimizationTarget optimization_target,
+        const ModelUpdatedCallback& model_updated_callback,
+        absl::optional<optimization_guide::proto::Any>&& model_metadata)
     : optimization_guide::ModelHandler<float, const std::vector<float>&>(
           model_provider,
           background_task_runner,
@@ -34,9 +35,10 @@ SegmentationModelHandler::SegmentationModelHandler(
       stats::SegmentationModelAvailability::kModelHandlerCreated);
 }
 
-SegmentationModelHandler::~SegmentationModelHandler() = default;
+OptimizationGuideSegmentationModelHandler::
+    ~OptimizationGuideSegmentationModelHandler() = default;
 
-void SegmentationModelHandler::OnModelUpdated(
+void OptimizationGuideSegmentationModelHandler::OnModelUpdated(
     optimization_guide::proto::OptimizationTarget optimization_target,
     const optimization_guide::ModelInfo& model_info) {
   // First invoke parent to update internal status.

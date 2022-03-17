@@ -17,12 +17,9 @@ namespace base {
 class Clock;
 }  // namespace base
 
-namespace optimization_guide {
-class OptimizationGuideModelProvider;
-}  // namespace optimization_guide
-
 namespace segmentation_platform {
 class FeatureListQueryProcessor;
+class ModelProviderFactory;
 class SegmentInfoDatabase;
 class SignalDatabase;
 
@@ -31,9 +28,10 @@ class SignalDatabase;
 // BUILDFLAG(BUILD_WITH_TFLITE_LIB) is not set, in case of the full
 // implementation provided by ModelExecutionManagerImpl.
 std::unique_ptr<ModelExecutionManager> CreateModelExecutionManager(
-    optimization_guide::OptimizationGuideModelProvider* model_provider,
+    std::unique_ptr<ModelProviderFactory> model_provider_factory,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-    base::flat_set<optimization_guide::proto::OptimizationTarget> segment_ids,
+    const base::flat_set<optimization_guide::proto::OptimizationTarget>&
+        segment_ids,
     base::Clock* clock,
     SegmentInfoDatabase* segment_database,
     SignalDatabase* signal_database,

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/segmentation_platform/internal/execution/segmentation_model_executor.h"
+#include "components/segmentation_platform/internal/execution/optimization_guide/segmentation_model_executor.h"
 
 #include <memory>
 
@@ -20,9 +20,11 @@
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
-#include "components/segmentation_platform/internal/execution/segmentation_model_handler.h"
+#include "components/segmentation_platform/internal/execution/optimization_guide/optimization_guide_segmentation_model_handler.h"
+#include "components/segmentation_platform/internal/execution/optimization_guide/optimization_guide_segmentation_model_provider.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
+#include "components/segmentation_platform/public/model_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -60,26 +62,26 @@ class SegmentationModelExecutorTest : public testing::Test {
                            .AppendASCII("segmentation_platform")
                            .AppendASCII("adder.tflite");
 
-    optimization_guide_model_provider_ = std::make_unique<
+    optimization_guide_segmentation_model_provider_ = std::make_unique<
         optimization_guide::TestOptimizationGuideModelProvider>();
   }
 
   void TearDown() override { ResetModelExecutor(); }
 
-  void CreateModelExecutor(
-      SegmentationModelHandler::ModelUpdatedCallback callback) {
-    if (model_executor_handle_)
-      model_executor_handle_.reset();
+  void CreateModelExecutor(ModelProvider::ModelUpdatedCallback callback) {
+    if (opt_guide_model_provider_)
+      opt_guide_model_provider_.reset();
 
-    model_executor_handle_ = std::make_unique<SegmentationModelHandler>(
-        optimization_guide_model_provider_.get(),
-        task_environment_.GetMainThreadTaskRunner(), kOptimizationTarget,
-        callback, absl::nullopt);
+    opt_guide_model_provider_ =
+        std::make_unique<OptimizationGuideSegmentationModelProvider>(
+            optimization_guide_segmentation_model_provider_.get(),
+            task_environment_.GetMainThreadTaskRunner(), kOptimizationTarget);
+    opt_guide_model_provider_->InitAndFetchModel(callback);
   }
 
   void ResetModelExecutor() {
-    model_executor_handle_.reset();
-    // Allow for the SegmentationModelExecutor owned by SegmentationModelHandler
+    opt_guide_model_provider_.reset();
+    // Allow for the SegmentationModelExecutor owned by ModelProvider
     // to be destroyed.
     RunUntilIdle();
   }
@@ -101,32 +103,33 @@ class SegmentationModelExecutorTest : public testing::Test {
           "type.googleapis.com/"
           "segmentation_platform.proto.SegmentationModelMetadata");
     }
-    DCHECK(model_executor_handle_);
+    DCHECK(opt_guide_model_provider_);
 
     auto model_metadata = optimization_guide::TestModelInfoBuilder()
                               .SetModelMetadata(any)
                               .SetModelFilePath(model_file_path_)
                               .SetVersion(kModelVersion)
                               .Build();
-    model_executor_handle_->OnModelUpdated(kOptimizationTarget,
-                                           *model_metadata);
+    opt_guide_model_handler().OnModelUpdated(kOptimizationTarget,
+                                             *model_metadata);
     RunUntilIdle();
   }
 
-  SegmentationModelHandler* model_executor_handle() {
-    return model_executor_handle_.get();
+  OptimizationGuideSegmentationModelHandler& opt_guide_model_handler() {
+    return opt_guide_model_provider_->model_handler_for_testing();
   }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
- private:
+ protected:
   base::test::TaskEnvironment task_environment_;
 
   base::FilePath model_file_path_;
   std::unique_ptr<optimization_guide::TestOptimizationGuideModelProvider>
-      optimization_guide_model_provider_;
+      optimization_guide_segmentation_model_provider_;
 
-  std::unique_ptr<SegmentationModelHandler> model_executor_handle_;
+  std::unique_ptr<OptimizationGuideSegmentationModelProvider>
+      opt_guide_model_provider_;
 };
 
 TEST_F(SegmentationModelExecutorTest, ExecuteWithLoadedModel) {
@@ -154,12 +157,13 @@ TEST_F(SegmentationModelExecutorTest, ExecuteWithLoadedModel) {
   PushModelFileToModelExecutor(metadata);
   model_update_runloop->Run();
 
-  EXPECT_TRUE(model_executor_handle()->ModelAvailable());
+  EXPECT_TRUE(opt_guide_model_handler().ModelAvailable());
 
   std::vector<float> input = {4, 5};
 
   std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
-  model_executor_handle()->ExecuteModelWithInput(
+  opt_guide_model_provider_->ExecuteModelWithInput(
+      input,
       base::BindOnce(
           [](base::RunLoop* run_loop, const absl::optional<float>& output) {
             EXPECT_TRUE(output.has_value());
@@ -168,8 +172,7 @@ TEST_F(SegmentationModelExecutorTest, ExecuteWithLoadedModel) {
 
             run_loop->Quit();
           },
-          run_loop.get()),
-      input);
+          run_loop.get()));
   run_loop->Run();
 
   ResetModelExecutor();
@@ -178,7 +181,7 @@ TEST_F(SegmentationModelExecutorTest, ExecuteWithLoadedModel) {
 TEST_F(SegmentationModelExecutorTest, FailToProvideMetadata) {
   std::unique_ptr<base::RunLoop> model_update_runloop =
       std::make_unique<base::RunLoop>();
-  base::MockCallback<SegmentationModelHandler::ModelUpdatedCallback> callback;
+  base::MockCallback<ModelProvider::ModelUpdatedCallback> callback;
   CreateModelExecutor(callback.Get());
   EXPECT_CALL(callback, Run(_, _, _)).Times(0);
 
@@ -187,7 +190,7 @@ TEST_F(SegmentationModelExecutorTest, FailToProvideMetadata) {
   PushModelFileToModelExecutor(absl::nullopt);
   model_update_runloop->RunUntilIdle();
 
-  EXPECT_TRUE(model_executor_handle()->ModelAvailable());
+  EXPECT_TRUE(opt_guide_model_handler().ModelAvailable());
 }
 
 }  // namespace segmentation_platform

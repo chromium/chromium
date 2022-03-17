@@ -13,6 +13,8 @@ source_set("public") {
     "config.h",
     "features.cc",
     "features.h",
+    "model_provider.cc",
+    "model_provider.h",
     "segment_selection_result.cc",
     "segment_selection_result.h",
     "segmentation_platform_service.cc",

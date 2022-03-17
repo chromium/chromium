@@ -4,6 +4,7 @@
 
 #include "components/segmentation_platform/internal/execution/feature_processor_state.h"
 
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 
 namespace segmentation_platform {

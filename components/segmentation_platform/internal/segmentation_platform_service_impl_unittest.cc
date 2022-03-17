@@ -20,7 +20,6 @@
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/leveldb_proto/public/shared_proto_database_client_list.h"
 #include "components/leveldb_proto/testing/fake_db.h"
-#include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -31,8 +30,7 @@
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
 #include "components/segmentation_platform/internal/dummy_ukm_data_manager.h"
 #include "components/segmentation_platform/internal/execution/feature_aggregator_impl.h"
-#include "components/segmentation_platform/internal/execution/model_execution_manager.h"
-#include "components/segmentation_platform/internal/execution/model_execution_manager_factory.h"
+#include "components/segmentation_platform/internal/execution/mock_model_provider.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/internal/proto/signal.pb.h"
@@ -48,11 +46,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-#include "components/segmentation_platform/internal/execution/model_execution_manager_impl.h"
-#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB
-
 using ::testing::_;
+using ::testing::Invoke;
 
 namespace segmentation_platform {
 namespace {
@@ -103,8 +98,6 @@ std::vector<std::unique_ptr<Config>> CreateTestConfigs() {
   return configs;
 }
 
-}  // namespace
-
 // A mock of the ServiceProxy::Observer.
 class MockServiceProxyObserver : public ServiceProxy::Observer {
  public:
@@ -117,6 +110,8 @@ class MockServiceProxyObserver : public ServiceProxy::Observer {
               (const std::vector<ServiceProxy::ClientInfo>& client_info),
               (override));
 };
+
+}  // namespace
 
 class SegmentationPlatformServiceImplTest : public testing::Test {
  public:
@@ -158,8 +153,9 @@ class SegmentationPlatformServiceImplTest : public testing::Test {
         std::make_unique<SegmentationPlatformServiceImpl>(
             std::move(segment_db), std::move(signal_db),
             std::move(segment_storage_config_db), ukm_data_manager_.get(),
-            &model_provider_, &pref_service_, /*history_service=*/nullptr,
-            task_runner_, &test_clock_, std::move(configs));
+            std::make_unique<TestModelProviderFactory>(&model_provider_data_),
+            &pref_service_, /*history_service=*/nullptr, task_runner_,
+            &test_clock_, std::move(configs));
     segmentation_platform_service_impl_->GetServiceProxy()->AddObserver(
         &observer_);
   }
@@ -243,11 +239,6 @@ class SegmentationPlatformServiceImplTest : public testing::Test {
     // ModelExecutionManagerImpl is publishing the correct data and whether that
     // leads to the SegmentationPlatformServiceImpl doing the right thing.
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-    ModelExecutionManagerImpl* mem_impl =
-        static_cast<ModelExecutionManagerImpl*>(
-            segmentation_platform_service_impl_->model_execution_manager_
-                .get());
-
     base::HistogramTester histogram_tester;
     proto::SegmentationModelMetadata metadata;
     metadata.set_time_unit(proto::TimeUnit::DAY);
@@ -266,9 +257,13 @@ class SegmentationPlatformServiceImplTest : public testing::Test {
     // been updated and every time at startup. This will first read the old info
     // from the database, and then write the merged result of the old and new to
     // the database.
-    mem_impl->OnSegmentationModelUpdated(
-        OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE, metadata,
-        kModelVersion);
+    ASSERT_TRUE(model_provider_data_.model_providers_callbacks.count(
+        OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE));
+    model_provider_data_
+        .model_providers_callbacks
+            [OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE]
+        .Run(OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE,
+             metadata, kModelVersion);
     segment_db_->GetCallback(true);
     segment_db_->UpdateCallback(true);
 
@@ -301,9 +296,13 @@ class SegmentationPlatformServiceImplTest : public testing::Test {
     task_environment_.RunUntilIdle();
     segment_db_->LoadCallback(true);
 
-    mem_impl->OnSegmentationModelUpdated(
-        OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_VOICE, metadata,
-        kModelVersion);
+    ASSERT_TRUE(model_provider_data_.model_providers_callbacks.count(
+        OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_VOICE));
+    model_provider_data_
+        .model_providers_callbacks
+            [OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_VOICE]
+        .Run(OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_VOICE,
+             metadata, kModelVersion);
     segment_db_->GetCallback(true);
     segment_db_->UpdateCallback(true);
 
@@ -351,7 +350,7 @@ class SegmentationPlatformServiceImplTest : public testing::Test {
   raw_ptr<leveldb_proto::test::FakeDB<proto::SignalData>> signal_db_;
   raw_ptr<leveldb_proto::test::FakeDB<proto::SignalStorageConfigs>>
       segment_storage_config_db_;
-  optimization_guide::TestOptimizationGuideModelProvider model_provider_;
+  TestModelProviderFactory::Data model_provider_data_;
   TestingPrefServiceSimple pref_service_;
   base::SimpleTestClock test_clock_;
   std::unique_ptr<UkmDataManager> ukm_data_manager_;

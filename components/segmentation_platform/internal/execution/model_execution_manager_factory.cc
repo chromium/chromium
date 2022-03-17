@@ -11,74 +11,34 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/optimization_guide/proto/models.pb.h"
-#include "components/segmentation_platform/internal/execution/feature_list_query_processor.h"
 #include "components/segmentation_platform/internal/execution/model_execution_manager.h"
+#include "components/segmentation_platform/public/model_provider.h"
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 #include "components/segmentation_platform/internal/execution/model_execution_manager_impl.h"
-#include "components/segmentation_platform/internal/execution/segmentation_model_handler.h"
 #else
 #include "components/segmentation_platform/internal/execution/dummy_model_execution_manager.h"
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
-namespace base {
-class Clock;
-}  // namespace base
-
-namespace optimization_guide {
-class OptimizationGuideModelProvider;
-}  // namespace optimization_guide
-
 namespace segmentation_platform {
-class SegmentInfoDatabase;
-class SignalDatabase;
-
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-
-const char kSegmentationModelMetadataTypeUrl[] =
-    "type.googleapis.com/"
-    "google.internal.chrome.optimizationguide.v1.SegmentationModelMetadata";
-
-// CreateModelHandler makes it possible to pass in any creator of the
-// SegmentationModelHandler, which makes it possible to create mock versions.
-std::unique_ptr<SegmentationModelHandler> CreateModelHandler(
-    optimization_guide::OptimizationGuideModelProvider* model_provider,
-    scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-    optimization_guide::proto::OptimizationTarget optimization_target,
-    const SegmentationModelHandler::ModelUpdatedCallback&
-        model_updated_callback) {
-  // Preparing the version data to be sent to server along with the request to
-  // download the model.
-  optimization_guide::proto::Any any_metadata;
-  any_metadata.set_type_url(kSegmentationModelMetadataTypeUrl);
-  proto::SegmentationModelMetadata model_metadata;
-  proto::VersionInfo* version_info = model_metadata.mutable_version_info();
-  version_info->set_metadata_cur_version(
-      proto::CurrentVersion::METADATA_VERSION);
-  model_metadata.SerializeToString(any_metadata.mutable_value());
-  return std::make_unique<SegmentationModelHandler>(
-      model_provider, background_task_runner, optimization_target,
-      model_updated_callback, std::move(any_metadata));
-}
-#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
 std::unique_ptr<ModelExecutionManager> CreateModelExecutionManager(
-    optimization_guide::OptimizationGuideModelProvider* model_provider,
+    std::unique_ptr<ModelProviderFactory> model_provider_factory,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-    base::flat_set<optimization_guide::proto::OptimizationTarget> segment_ids,
+    const base::flat_set<optimization_guide::proto::OptimizationTarget>&
+        segment_ids,
     base::Clock* clock,
     SegmentInfoDatabase* segment_database,
     SignalDatabase* signal_database,
     FeatureListQueryProcessor* feature_list_query_processor,
     const ModelExecutionManager::SegmentationModelUpdatedCallback&
         model_updated_callback) {
+  // TODO(ssid): The execution manager should always be created, since it can
+  // run default models.
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   return std::make_unique<ModelExecutionManagerImpl>(
-      segment_ids,
-      base::BindRepeating(&CreateModelHandler, model_provider,
-                          background_task_runner),
-      clock, segment_database, signal_database, feature_list_query_processor,
-      model_updated_callback);
+      segment_ids, std::move(model_provider_factory), clock, segment_database,
+      signal_database, feature_list_query_processor, model_updated_callback);
 #else
   return std::make_unique<DummyModelExecutionManager>();
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)

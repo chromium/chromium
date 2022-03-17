@@ -117,6 +117,7 @@ static_library("internal") {
     "//components/history/core/browser:browser",
     "//components/keyed_service/core",
     "//components/leveldb_proto",
+    "//components/optimization_guide:machine_learning_tflite_buildflags",
     "//components/prefs",
     "//components/segmentation_platform/internal/proto",
     "//components/segmentation_platform/public",
@@ -127,25 +128,15 @@ static_library("internal") {
     "//url:url",
   ]
 
-  public_deps = [
-    "//components/optimization_guide/core",
-    "//components/optimization_guide/proto:optimization_guide_proto",
-  ]
+  public_deps =
+      [ "//components/optimization_guide/proto:optimization_guide_proto" ]
 
   if (build_with_tflite_lib) {
     sources += [
       "execution/model_execution_manager_impl.cc",
       "execution/model_execution_manager_impl.h",
-      "execution/segmentation_model_executor.cc",
-      "execution/segmentation_model_executor.h",
-      "execution/segmentation_model_handler.cc",
-      "execution/segmentation_model_handler.h",
     ]
-
-    deps += [
-      "//third_party/tflite:tflite_public_headers",
-      "//third_party/tflite_support",
-    ]
+    deps += [ "//third_party/tflite:tflite_public_headers" ]
   }
 
   if (is_android) {
@@ -155,6 +146,26 @@ static_library("internal") {
     ]
 
     deps += [ ":jni_headers" ]
+  }
+}
+
+if (build_with_tflite_lib) {
+  static_library("optimization_guide_segmentation_handler") {
+    sources = [
+      "execution/optimization_guide/optimization_guide_segmentation_model_handler.cc",
+      "execution/optimization_guide/optimization_guide_segmentation_model_handler.h",
+      "execution/optimization_guide/optimization_guide_segmentation_model_provider.cc",
+      "execution/optimization_guide/optimization_guide_segmentation_model_provider.h",
+      "execution/optimization_guide/segmentation_model_executor.cc",
+      "execution/optimization_guide/segmentation_model_executor.h",
+    ]
+    deps = [
+      ":internal",
+      "//base",
+      "//components/optimization_guide/core",
+      "//components/segmentation_platform/internal/proto",
+      "//components/segmentation_platform/public",
+    ]
   }
 }
 
@@ -195,7 +206,10 @@ source_set("unit_tests") {
     "execution/mock_feature_aggregator.h",
     "execution/mock_feature_list_query_processor.cc",
     "execution/mock_feature_list_query_processor.h",
+    "execution/mock_model_provider.cc",
+    "execution/mock_model_provider.h",
     "execution/model_execution_manager_factory_unittest.cc",
+    "execution/query_processor.h",
     "mock_ukm_data_manager.cc",
     "mock_ukm_data_manager.h",
     "scheduler/model_execution_scheduler_unittest.cc",
@@ -223,6 +237,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/history/core/browser:browser",
     "//components/leveldb_proto:test_support",
+    "//components/optimization_guide/core",
     "//components/optimization_guide/core:test_support",
     "//components/prefs",
     "//components/prefs:test_support",
@@ -243,9 +258,13 @@ source_set("unit_tests") {
     # tests in //components/segmentation_platform/components_unittests.filter
     sources += [
       "execution/model_execution_manager_impl_unittest.cc",
-      "execution/segmentation_model_executor_unittest.cc",
+      "execution/optimization_guide/optimization_guide_segmentation_model_provider_unittest.cc",
+      "execution/optimization_guide/segmentation_model_executor_unittest.cc",
     ]
-    deps += [ ":unit_tests_bundle_data" ]
+    deps += [
+      ":optimization_guide_segmentation_handler",
+      ":unit_tests_bundle_data",
+    ]
   }
 }
 

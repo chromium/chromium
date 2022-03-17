@@ -14,6 +14,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/segmentation_platform/model_provider_factory_impl.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_config.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_profile_observer.h"
 #include "chrome/browser/segmentation_platform/ukm_database_client.h"
@@ -23,6 +24,7 @@
 #include "components/segmentation_platform/internal/segmentation_platform_service_impl.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/features.h"
+#include "components/segmentation_platform/public/model_provider.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 
@@ -81,8 +83,11 @@ KeyedService* SegmentationPlatformServiceFactory::BuildServiceInstanceFor(
       profile->GetDefaultStoragePartition()->GetProtoDatabaseProvider();
   base::DefaultClock* clock = base::DefaultClock::GetInstance();
 
+  auto model_provider_factory = std::make_unique<ModelProviderFactoryImpl>(
+      optimization_guide, task_runner);
+
   auto* service = new SegmentationPlatformServiceImpl(
-      optimization_guide, db_provider, storage_dir,
+      std::move(model_provider_factory), db_provider, storage_dir,
       UkmDatabaseClient::GetInstance().GetUkmDataManager(), profile->GetPrefs(),
       history_service, task_runner, clock, GetSegmentationPlatformConfig());
 

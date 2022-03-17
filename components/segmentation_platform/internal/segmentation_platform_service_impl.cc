@@ -43,6 +43,7 @@
 #include "components/segmentation_platform/internal/stats.h"
 #include "components/segmentation_platform/internal/ukm_data_manager.h"
 #include "components/segmentation_platform/public/config.h"
+#include "components/segmentation_platform/public/model_provider.h"
 
 using optimization_guide::proto::OptimizationTarget;
 
@@ -57,7 +58,7 @@ const base::TimeDelta kDatabaseMaintenanceDelay = base::Seconds(30);
 }  // namespace
 
 SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
-    optimization_guide::OptimizationGuideModelProvider* model_provider,
+    std::unique_ptr<ModelProviderFactory> model_provider,
     leveldb_proto::ProtoDatabaseProvider* db_provider,
     const base::FilePath& storage_dir,
     UkmDataManager* ukm_data_manager,
@@ -80,7 +81,7 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
               storage_dir.Append(kSignalStorageConfigDBName),
               task_runner),
           ukm_data_manager,
-          model_provider,
+          std::move(model_provider),
           pref_service,
           history_service,
           task_runner,
@@ -94,13 +95,13 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
     std::unique_ptr<leveldb_proto::ProtoDatabase<proto::SignalStorageConfigs>>
         signal_storage_config_db,
     UkmDataManager* ukm_data_manager,
-    optimization_guide::OptimizationGuideModelProvider* model_provider,
+    std::unique_ptr<ModelProviderFactory> model_provider,
     PrefService* pref_service,
     history::HistoryService* history_service,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     base::Clock* clock,
     std::vector<std::unique_ptr<Config>> configs)
-    : model_provider_(model_provider),
+    : model_provider_factory_(std::move(model_provider)),
       task_runner_(task_runner),
       clock_(clock),
       platform_options_(PlatformOptions::CreateDefault()),
@@ -250,8 +251,8 @@ void SegmentationPlatformServiceImpl::MaybeRunPostInitializationRoutines() {
   training_data_collector_->OnServiceInitialized();
 
   model_execution_manager_ = CreateModelExecutionManager(
-      model_provider_, task_runner_, all_segment_ids_, clock_,
-      segment_info_database_.get(), signal_database_.get(),
+      std::move(model_provider_factory_), task_runner_, all_segment_ids_,
+      clock_, segment_info_database_.get(), signal_database_.get(),
       feature_list_query_processor_.get(),
       base::BindRepeating(
           &SegmentationPlatformServiceImpl::OnSegmentationModelUpdated,

@@ -35,10 +35,6 @@ namespace leveldb_proto {
 class ProtoDatabaseProvider;
 }  // namespace leveldb_proto
 
-namespace optimization_guide {
-class OptimizationGuideModelProvider;
-}  // namespace optimization_guide
-
 class PrefService;
 
 namespace segmentation_platform {
@@ -56,6 +52,7 @@ class HistogramSignalHandler;
 class HistoryServiceObserver;
 class ModelExecutionManager;
 class ModelExecutionSchedulerImpl;
+class ModelProviderFactory;
 class SegmentationResultPrefs;
 class SegmentInfoDatabase;
 class SegmentSelectorImpl;
@@ -87,7 +84,7 @@ enum class ServiceStatus {
 class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
  public:
   SegmentationPlatformServiceImpl(
-      optimization_guide::OptimizationGuideModelProvider* model_provider,
+      std::unique_ptr<ModelProviderFactory> model_provider,
       leveldb_proto::ProtoDatabaseProvider* db_provider,
       const base::FilePath& storage_dir,
       UkmDataManager* ukm_data_manager,
@@ -106,7 +103,7 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
       std::unique_ptr<leveldb_proto::ProtoDatabase<proto::SignalStorageConfigs>>
           signal_storage_config_db,
       UkmDataManager* ukm_data_manager,
-      optimization_guide::OptimizationGuideModelProvider* model_provider,
+      std::unique_ptr<ModelProviderFactory> model_provider,
       PrefService* pref_service,
       history::HistoryService* history_service,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
@@ -147,7 +144,9 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
   // Called when service status changes.
   void OnServiceStatusChanged();
 
-  raw_ptr<optimization_guide::OptimizationGuideModelProvider> model_provider_;
+  // Moved to ModelExecutionManagerImpl on initialization of service.
+  std::unique_ptr<ModelProviderFactory> model_provider_factory_;
+
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   raw_ptr<base::Clock> clock_;
   const PlatformOptions platform_options_;

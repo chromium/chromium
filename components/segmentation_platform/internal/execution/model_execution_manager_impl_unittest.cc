@@ -18,24 +18,25 @@
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/database/metadata_utils.h"
 #include "components/segmentation_platform/internal/database/mock_signal_database.h"
 #include "components/segmentation_platform/internal/database/signal_database.h"
 #include "components/segmentation_platform/internal/database/test_segment_info_database.h"
 #include "components/segmentation_platform/internal/execution/feature_list_query_processor.h"
+#include "components/segmentation_platform/internal/execution/mock_model_provider.h"
 #include "components/segmentation_platform/internal/execution/model_execution_manager.h"
 #include "components/segmentation_platform/internal/execution/model_execution_status.h"
-#include "components/segmentation_platform/internal/execution/segmentation_model_handler.h"
 #include "components/segmentation_platform/internal/proto/aggregation.pb.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/internal/proto/types.pb.h"
+#include "components/segmentation_platform/public/model_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::base::test::RunOnceCallback;
 using testing::_;
+using testing::Invoke;
 using testing::Return;
 using testing::SaveArg;
 using testing::SetArgReferee;
@@ -77,29 +78,6 @@ class MockSegmentInfoDatabase : public test::TestSegmentInfoDatabase {
               (override));
 };
 
-class MockSegmentationModelHandler : public SegmentationModelHandler {
- public:
-  MockSegmentationModelHandler(
-      optimization_guide::OptimizationGuideModelProvider* model_provider,
-      scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-      optimization_guide::proto::OptimizationTarget optimization_target,
-      const SegmentationModelHandler::ModelUpdatedCallback&
-          model_updated_callback)
-      : SegmentationModelHandler(model_provider,
-                                 background_task_runner,
-                                 optimization_target,
-                                 model_updated_callback,
-                                 absl::nullopt) {}
-
-  MOCK_METHOD(void,
-              ExecuteModelWithInput,
-              (base::OnceCallback<void(const absl::optional<float>&)> callback,
-               const std::vector<float>& input),
-              (override));
-
-  MOCK_METHOD(bool, ModelAvailable, (), (const override));
-};
-
 // TODO(ssid): Use mock_feature_list_query_processor.h.
 class MockFeatureListQueryProcessor : public FeatureListQueryProcessor {
  public:
@@ -123,8 +101,6 @@ class ModelExecutionManagerTest : public testing::Test {
   ~ModelExecutionManagerTest() override = default;
 
   void SetUp() override {
-    optimization_guide_model_provider_ = std::make_unique<
-        optimization_guide::TestOptimizationGuideModelProvider>();
     segment_database_ = std::make_unique<test::TestSegmentInfoDatabase>();
     signal_database_ = std::make_unique<MockSignalDatabase>();
     clock_.SetNow(base::Time::Now());
@@ -132,7 +108,7 @@ class ModelExecutionManagerTest : public testing::Test {
 
   void TearDown() override {
     model_execution_manager_.reset();
-    // Allow for the SegmentationModelExecutor owned by SegmentationModelHandler
+    // Allow for the SegmentationModelExecutor owned by ModelProvider
     // to be destroyed.
     RunUntilIdle();
   }
@@ -140,28 +116,14 @@ class ModelExecutionManagerTest : public testing::Test {
   void CreateModelExecutionManager(
       std::vector<OptimizationTarget> segment_ids,
       const ModelExecutionManager::SegmentationModelUpdatedCallback& callback) {
+    auto model_provider_factory =
+        std::make_unique<TestModelProviderFactory>(&model_provider_data_);
     feature_list_query_processor_ =
         std::make_unique<MockFeatureListQueryProcessor>();
     model_execution_manager_ = std::make_unique<ModelExecutionManagerImpl>(
-        segment_ids,
-        base::BindRepeating(&ModelExecutionManagerTest::CreateModelHandler,
-                            base::Unretained(this)),
-        &clock_, segment_database_.get(), signal_database_.get(),
+        segment_ids, std::move(model_provider_factory), &clock_,
+        segment_database_.get(), signal_database_.get(),
         feature_list_query_processor_.get(), callback);
-  }
-
-  std::unique_ptr<SegmentationModelHandler> CreateModelHandler(
-      optimization_guide::proto::OptimizationTarget segment_id,
-      const SegmentationModelHandler::ModelUpdatedCallback&
-          model_updated_callback) {
-    auto handler = std::make_unique<MockSegmentationModelHandler>(
-        optimization_guide_model_provider_.get(),
-        task_environment_.GetMainThreadTaskRunner(), segment_id,
-        model_updated_callback);
-    model_handlers_.emplace(std::make_pair(segment_id, handler.get()));
-    model_handlers_callbacks_.emplace(
-        std::make_pair(segment_id, model_updated_callback));
-    return handler;
   }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
@@ -186,22 +148,20 @@ class ModelExecutionManagerTest : public testing::Test {
     std::move(closure).Run();
   }
 
-  MockSegmentationModelHandler& FindHandler(
+  MockModelProvider& FindHandler(
       optimization_guide::proto::OptimizationTarget segment_id) {
-    return *(*model_handlers_.find(segment_id)).second;
+    return *(*model_provider_data_.model_providers.find(segment_id)).second;
   }
 
   base::Time StartTime(base::TimeDelta bucket_duration, int64_t bucket_count) {
     return clock_.Now() - bucket_duration * bucket_count;
   }
 
+ protected:
   base::test::TaskEnvironment task_environment_;
 
-  std::unique_ptr<optimization_guide::TestOptimizationGuideModelProvider>
-      optimization_guide_model_provider_;
-  std::map<OptimizationTarget, MockSegmentationModelHandler*> model_handlers_;
-  std::map<OptimizationTarget, SegmentationModelHandler::ModelUpdatedCallback>
-      model_handlers_callbacks_;
+  TestModelProviderFactory::Data model_provider_data_;
+
   base::SimpleTestClock clock_;
   std::unique_ptr<test::TestSegmentInfoDatabase> segment_database_;
   std::unique_ptr<MockSignalDatabase> signal_database_;
@@ -268,8 +228,8 @@ TEST_F(ModelExecutionManagerTest, OnSegmentationModelUpdatedInvalidMetadata) {
   // SegmentInfoDatabase, nor invokes the callback.
   EXPECT_CALL(*mock_segment_database_ptr, GetSegmentInfo(_, _)).Times(0);
   EXPECT_CALL(callback, Run(_)).Times(0);
-  model_handlers_callbacks_[segment_id].Run(segment_id, metadata,
-                                            kModelVersion);
+  model_provider_data_.model_providers_callbacks[segment_id].Run(
+      segment_id, metadata, kModelVersion);
 }
 
 TEST_F(ModelExecutionManagerTest, OnSegmentationModelUpdatedNoOldMetadata) {
@@ -284,8 +244,8 @@ TEST_F(ModelExecutionManagerTest, OnSegmentationModelUpdatedNoOldMetadata) {
   metadata.set_bucket_duration(42u);
   metadata.set_time_unit(proto::TimeUnit::DAY);
   EXPECT_CALL(callback, Run(_)).WillOnce(SaveArg<0>(&segment_info));
-  model_handlers_callbacks_[segment_id].Run(segment_id, metadata,
-                                            kModelVersion);
+  model_provider_data_.model_providers_callbacks[segment_id].Run(
+      segment_id, metadata, kModelVersion);
 
   // Verify that the resulting callback was invoked correctly.
   EXPECT_EQ(segment_id, segment_info.segment_id());
@@ -367,8 +327,8 @@ TEST_F(ModelExecutionManagerTest,
   // Invoke the callback and store the resulting invocation of the outer
   // callback for verification.
   EXPECT_CALL(callback, Run(_)).WillOnce(SaveArg<0>(&segment_info));
-  model_handlers_callbacks_[segment_id].Run(segment_id, metadata,
-                                            kModelVersion);
+  model_provider_data_.model_providers_callbacks[segment_id].Run(
+      segment_id, metadata, kModelVersion);
 
   // Should now have the metadata from the new proto.
   EXPECT_EQ(segment_id, segment_info.segment_id());
@@ -462,8 +422,8 @@ TEST_F(ModelExecutionManagerTest, ExecuteModelWithMultipleFeatures) {
   EXPECT_CALL(FindHandler(segment_id), ModelAvailable())
       .WillRepeatedly(Return(true));
   EXPECT_CALL(FindHandler(segment_id),
-              ExecuteModelWithInput(_, std::vector<float>{1, 2, 3, 4, 5, 6, 7}))
-      .WillOnce(RunOnceCallback<0>(absl::make_optional(0.8)));
+              ExecuteModelWithInput(std::vector<float>{1, 2, 3, 4, 5, 6, 7}, _))
+      .WillOnce(RunOnceCallback<1>(absl::make_optional(0.8)));
 
   ExecuteModel(std::make_pair(0.8, ModelExecutionStatus::kSuccess));
 }

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_SEGMENTATION_MODEL_HANDLER_H_
-#define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_SEGMENTATION_MODEL_HANDLER_H_
+#ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_OPTIMIZATION_GUIDE_OPTIMIZATION_GUIDE_SEGMENTATION_MODEL_HANDLER_H_
+#define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_OPTIMIZATION_GUIDE_OPTIMIZATION_GUIDE_SEGMENTATION_MODEL_HANDLER_H_
 
 #include <memory>
 #include <vector>
@@ -25,7 +25,7 @@ class SegmentationModelMetadata;
 // its parent class.
 // See documentation for SegmentationModelExecutor for details on the
 // requirements for the ML model and the inputs to execution.
-class SegmentationModelHandler
+class OptimizationGuideSegmentationModelHandler
     : public optimization_guide::ModelHandler<float,
                                               const std::vector<float>&> {
  public:
@@ -34,18 +34,20 @@ class SegmentationModelHandler
       proto::SegmentationModelMetadata,
       int64_t)>;
 
-  explicit SegmentationModelHandler(
+  explicit OptimizationGuideSegmentationModelHandler(
       optimization_guide::OptimizationGuideModelProvider* model_provider,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
       optimization_guide::proto::OptimizationTarget optimization_target,
       const ModelUpdatedCallback& model_updated_callback,
       absl::optional<optimization_guide::proto::Any>&& model_metadata);
 
-  ~SegmentationModelHandler() override;
+  ~OptimizationGuideSegmentationModelHandler() override;
 
   // Disallow copy/assign.
-  SegmentationModelHandler(const SegmentationModelHandler&) = delete;
-  SegmentationModelHandler& operator=(const SegmentationModelHandler&) = delete;
+  OptimizationGuideSegmentationModelHandler(
+      const OptimizationGuideSegmentationModelHandler&) = delete;
+  OptimizationGuideSegmentationModelHandler& operator=(
+      const OptimizationGuideSegmentationModelHandler&) = delete;
 
   // optimization_guide::ModelHandler overrides.
   void OnModelUpdated(
@@ -60,4 +62,4 @@ class SegmentationModelHandler
 
 }  // namespace segmentation_platform
 
-#endif  // COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_SEGMENTATION_MODEL_HANDLER_H_
+#endif  // COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_OPTIMIZATION_GUIDE_OPTIMIZATION_GUIDE_SEGMENTATION_MODEL_HANDLER_H_
