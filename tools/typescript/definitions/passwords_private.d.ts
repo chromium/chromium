@@ -54,6 +54,7 @@ declare global {
         id: number;
         frontendId: number;
         fromAccountStore: boolean;
+        passwordNote: string;
       }
 
       export interface ExceptionEntry {
@@ -101,9 +102,15 @@ declare global {
         useAccountStore: boolean;
       }
 
+      export interface ChangeSavedPasswordParams {
+        username: string;
+        password: string;
+        note?: string;
+      }
+
       export function recordPasswordsPageAccessInSettings(): void;
       export function changeSavedPassword(
-          ids: Array<number>, newUsername: string, newPassword: string,
+          ids: Array<number>, params: ChangeSavedPasswordParams,
           callback?: () => void): void;
       export function removeSavedPassword(id: number): void;
       export function removeSavedPasswords(ids: Array<number>): void;

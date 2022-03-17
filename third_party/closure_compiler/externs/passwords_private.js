@@ -73,7 +73,8 @@ chrome.passwordsPrivate.UrlCollection;
  *   federationText: (string|undefined),
  *   id: number,
  *   frontendId: number,
- *   fromAccountStore: boolean
+ *   fromAccountStore: boolean,
+ *   passwordNote: string
  * }}
  */
 chrome.passwordsPrivate.PasswordUiEntry;
@@ -142,6 +143,15 @@ chrome.passwordsPrivate.PasswordCheckStatus;
 chrome.passwordsPrivate.AddPasswordOptions;
 
 /**
+ * @typedef {{
+ *   username: string,
+ *   password: string,
+ *   note: (string|undefined)
+ * }}
+ */
+chrome.passwordsPrivate.ChangeSavedPasswordParams;
+
+/**
  * Function that logs that the Passwords page was accessed from the Chrome
  * Settings WebUI.
  */
@@ -153,12 +163,12 @@ chrome.passwordsPrivate.recordPasswordsPageAccessInSettings = function() {};
  * password for accountId and deviceId. Invokes |callback| or raises an error
  * depending on whether the operation succeeded.
  * @param {!Array<number>} ids The ids for the password entry being updated.
- * @param {string} new_username The new username.
- * @param {string} new_password The new password.
+ * @param {!chrome.passwordsPrivate.ChangeSavedPasswordParams} params The
+ *     dictionary which holds the changed parameters.
  * @param {function(): void=} callback The callback that gets invoked in the
  *     end.
  */
-chrome.passwordsPrivate.changeSavedPassword = function(ids, new_username, new_password, callback) {};
+chrome.passwordsPrivate.changeSavedPassword = function(ids, params, callback) {};
 
 /**
  * Removes the saved password corresponding to |id|. If no saved password for
@@ -327,17 +337,15 @@ chrome.passwordsPrivate.removeInsecureCredential = function(credential, callback
  * @param {!chrome.passwordsPrivate.InsecureCredential} credential
  * @param {function(): void=} callback
  */
-chrome.passwordsPrivate.muteInsecureCredential = function(
-    credential, callback) {};
+chrome.passwordsPrivate.muteInsecureCredential = function(credential, callback) {};
 
 /**
- * Requests to unmute |credential| from the password store. Invokes |callback| on
- * completion.
+ * Requests to unmute |credential| from the password store. Invokes |callback|
+ * on completion.
  * @param {!chrome.passwordsPrivate.InsecureCredential} credential
  * @param {function(): void=} callback
  */
- chrome.passwordsPrivate.unmuteInsecureCredential = function(
-  credential, callback) {};
+chrome.passwordsPrivate.unmuteInsecureCredential = function(credential, callback) {};
 
 /**
  * Starts a check for insecure passwords. Invokes |callback| on completion.

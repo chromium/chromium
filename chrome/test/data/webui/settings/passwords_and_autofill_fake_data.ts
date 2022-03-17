@@ -50,6 +50,7 @@ export function createPasswordEntry(params?: PasswordEntryParams):
     id: id,
     frontendId: frontendId,
     fromAccountStore: fromAccountStore,
+    passwordNote: ''
   };
 }
 

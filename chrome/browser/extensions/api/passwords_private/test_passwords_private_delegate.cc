@@ -88,14 +88,13 @@ bool TestPasswordsPrivateDelegate::AddPassword(
 
 bool TestPasswordsPrivateDelegate::ChangeSavedPassword(
     const std::vector<int>& ids,
-    const std::u16string& new_username,
-    const std::u16string& new_password) {
+    const api::passwords_private::ChangeSavedPasswordParams& params) {
   for (int id : ids) {
     if (static_cast<size_t>(id) >= current_entries_.size()) {
       return false;
     }
   }
-  return !new_password.empty() && !ids.empty();
+  return !params.password.empty() && !ids.empty();
 }
 
 void TestPasswordsPrivateDelegate::RemoveSavedPasswords(

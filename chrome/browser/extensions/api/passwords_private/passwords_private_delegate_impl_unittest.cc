@@ -443,8 +443,10 @@ TEST_F(PasswordsPrivateDelegateImplTest, ChangeSavedPassword) {
   int sample_form_id = delegate.GetPasswordIdGeneratorForTesting().GenerateId(
       password_manager::CreateSortKey(sample_form));
 
-  EXPECT_TRUE(
-      delegate.ChangeSavedPassword({sample_form_id}, u"new_user", u"new_pass"));
+  api::passwords_private::ChangeSavedPasswordParams params;
+  params.password = "new_pass";
+  params.username = "new_user";
+  EXPECT_TRUE(delegate.ChangeSavedPassword({sample_form_id}, params));
 
   // Spin the loop to allow PasswordStore tasks posted when changing the
   // password to be completed.
@@ -454,6 +456,51 @@ TEST_F(PasswordsPrivateDelegateImplTest, ChangeSavedPassword) {
   EXPECT_CALL(callback, Run(SizeIs(1)))
       .WillOnce([](const PasswordsPrivateDelegate::UiEntries& passwords) {
         EXPECT_EQ("new_user", passwords[0].username);
+        EXPECT_EQ("", passwords[0].password_note);
+      });
+  delegate.GetSavedPasswordsList(callback.Get());
+}
+
+TEST_F(PasswordsPrivateDelegateImplTest, ChangeSavedPasswordWithNote) {
+  password_manager::PasswordForm sample_form = CreateSampleForm();
+  password_manager::PasswordNote note(u"example note", base::Time::Now());
+  sample_form.note = note;
+  SetUpPasswordStore({sample_form});
+
+  PasswordsPrivateDelegateImpl delegate(&profile_);
+  // Spin the loop to allow PasswordStore tasks posted on the creation of
+  // |delegate| to be completed.
+  base::RunLoop().RunUntilIdle();
+
+  // Double check that the contents of the passwords list matches our
+  // expectation.
+  base::MockCallback<PasswordsPrivateDelegate::UiEntriesCallback> callback;
+  EXPECT_CALL(callback, Run(SizeIs(1)))
+      .WillOnce([&](const PasswordsPrivateDelegate::UiEntries& passwords) {
+        EXPECT_EQ(sample_form.username_value,
+                  base::UTF8ToUTF16(passwords[0].username));
+        EXPECT_EQ(sample_form.note.value,
+                  base::UTF8ToUTF16(passwords[0].password_note));
+      });
+  delegate.GetSavedPasswordsList(callback.Get());
+  int sample_form_id = delegate.GetPasswordIdGeneratorForTesting().GenerateId(
+      password_manager::CreateSortKey(sample_form));
+
+  api::passwords_private::ChangeSavedPasswordParams params;
+  params.password = "new_pass";
+  params.username = "new_user";
+  params.note = std::make_unique<std::string>("new note");
+  EXPECT_TRUE(delegate.ChangeSavedPassword({sample_form_id}, params));
+
+  // Spin the loop to allow PasswordStore tasks posted when changing the
+  // password to be completed.
+  base::RunLoop().RunUntilIdle();
+
+  // Check that the changing the password got reflected in the passwords
+  EXPECT_CALL(callback, Run(SizeIs(1)))
+      .WillOnce([](const PasswordsPrivateDelegate::UiEntries& passwords) {
+        EXPECT_EQ("new_user", passwords[0].username);
+        EXPECT_EQ("new note", passwords[0].password_note);
       });
   delegate.GetSavedPasswordsList(callback.Get());
 }

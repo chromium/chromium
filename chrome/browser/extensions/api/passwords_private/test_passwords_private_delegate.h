@@ -40,9 +40,9 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   // Fake implementation of ChangeSavedPassword. This succeeds if the current
   // list of entries has each of the ids, vector of ids isn't empty and if the
   // new password isn't empty.
-  bool ChangeSavedPassword(const std::vector<int>& ids,
-                           const std::u16string& new_username,
-                           const std::u16string& new_password) override;
+  bool ChangeSavedPassword(
+      const std::vector<int>& ids,
+      const api::passwords_private::ChangeSavedPasswordParams& params) override;
   void RemoveSavedPasswords(const std::vector<int>& id) override;
   void RemovePasswordExceptions(const std::vector<int>& ids) override;
   // Simplified version of undo logic, only use for testing.

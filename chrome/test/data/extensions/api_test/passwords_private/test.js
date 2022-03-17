@@ -84,7 +84,7 @@ var availableTests = [
 
   function changeSavedPasswordSucceeds() {
     chrome.passwordsPrivate.changeSavedPassword(
-        [0], 'new_user', 'new_pass', () => {
+        [0], {username: 'new_user', password: 'new_pass'}, () => {
           chrome.test.assertNoLastError();
           chrome.test.succeed();
         });
@@ -92,7 +92,7 @@ var availableTests = [
 
   function changeSavedPasswordWithIncorrectIdFails() {
     chrome.passwordsPrivate.changeSavedPassword(
-        [-1], 'new_user', 'new_pass', () => {
+        [-1], {username: 'new_user', password: 'new_pass'}, () => {
           chrome.test.assertLastError(ERROR_MESSAGE_FOR_CHANGE_PASSWORD);
           chrome.test.succeed();
         });
@@ -100,24 +100,35 @@ var availableTests = [
 
   function changeSavedPasswordWithOneIncorrectIdFromArrayFails() {
     chrome.passwordsPrivate.changeSavedPassword(
-        [0, -1], 'new_user', 'new_pass', () => {
+        [0, -1], {username: 'new_user', password: 'new_pass'}, () => {
           chrome.test.assertLastError(ERROR_MESSAGE_FOR_CHANGE_PASSWORD);
           chrome.test.succeed();
         });
   },
 
   function changeSavedPasswordWithEmptyPasswordFails() {
-    chrome.passwordsPrivate.changeSavedPassword([0], 'new_user', '', () => {
-      chrome.test.assertLastError(ERROR_MESSAGE_FOR_CHANGE_PASSWORD);
-      chrome.test.succeed();
-    });
+    chrome.passwordsPrivate.changeSavedPassword(
+        [0], {username: 'new_user', password: ''}, () => {
+          chrome.test.assertLastError(ERROR_MESSAGE_FOR_CHANGE_PASSWORD);
+          chrome.test.succeed();
+        });
   },
 
   function changeSavedPasswordWithEmptyArrayIdFails() {
-    chrome.passwordsPrivate.changeSavedPassword([], 'new_user', '', () => {
-      chrome.test.assertLastError(ERROR_MESSAGE_FOR_CHANGE_PASSWORD);
-      chrome.test.succeed();
-    });
+    chrome.passwordsPrivate.changeSavedPassword(
+        [], {username: 'new_user', password: ''}, () => {
+          chrome.test.assertLastError(ERROR_MESSAGE_FOR_CHANGE_PASSWORD);
+          chrome.test.succeed();
+        });
+  },
+
+  function changeSavedPasswordWithNoteSucceeds() {
+    chrome.passwordsPrivate.changeSavedPassword(
+        [0], {username: 'new_user', password: 'new_pass', note: 'some note'},
+        () => {
+          chrome.test.assertNoLastError();
+          chrome.test.succeed();
+        });
   },
 
   function removeAndUndoRemoveSavedPassword() {

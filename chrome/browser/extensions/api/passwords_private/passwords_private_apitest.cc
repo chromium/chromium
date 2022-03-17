@@ -183,6 +183,12 @@ IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest,
+                       ChangeSavedPasswordWithNoteSucceeds) {
+  EXPECT_TRUE(RunPasswordsSubtest("ChangeSavedPasswordWithNoteSucceeds"))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest,
                        RemoveAndUndoRemoveSavedPassword) {
   EXPECT_TRUE(RunPasswordsSubtest("removeAndUndoRemoveSavedPassword"))
       << message_;

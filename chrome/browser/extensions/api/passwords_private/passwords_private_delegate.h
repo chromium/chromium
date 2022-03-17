@@ -84,11 +84,10 @@ class PasswordsPrivateDelegate : public KeyedService {
 
   // Changes the username and password corresponding to |ids|.
   // |ids|: The ids for the password entries being updated.
-  // |new_username|: The new username.
-  // |new_password|: The new password.
-  virtual bool ChangeSavedPassword(const std::vector<int>& ids,
-                                   const std::u16string& new_username,
-                                   const std::u16string& new_password) = 0;
+  // |params|: The struct which holds the new username, password and note.
+  virtual bool ChangeSavedPassword(
+      const std::vector<int>& ids,
+      const api::passwords_private::ChangeSavedPasswordParams& params) = 0;
 
   // Removes the saved password entries corresponding to the |ids| generated for
   // each entry of the password list. Any invalid id will be ignored.
