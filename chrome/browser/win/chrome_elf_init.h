@@ -6,14 +6,14 @@
 #define CHROME_BROWSER_WIN_CHROME_ELF_INIT_H_
 
 // Field trial name and full name for the blacklist disabled group.
-extern const char kBrowserBlacklistTrialName[];
-extern const char kBrowserBlacklistTrialDisabledGroupName[];
+extern const char kBrowserBlocklistTrialName[];
+extern const char kBrowserBlocklistTrialDisabledGroupName[];
 
 // Prepare any initialization code for Chrome Elf's setup (This will generally
 // only affect future runs since Chrome Elf is already setup by this point).
 void InitializeChromeElf();
 
 // Set the required state for an enabled browser blacklist.
-void BrowserBlacklistBeaconSetup();
+void BrowserBlocklistBeaconSetup();
 
 #endif  // CHROME_BROWSER_WIN_CHROME_ELF_INIT_H_

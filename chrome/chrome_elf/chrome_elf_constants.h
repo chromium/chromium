@@ -9,34 +9,34 @@
 
 #include <windows.h>
 
-namespace blacklist {
+namespace blocklist {
 
-// The name of the blacklist beacon registry key.
+// The name of the blocklist beacon registry key.
 extern const wchar_t kRegistryBeaconKeyName[];
 
-// The properties for the blacklist beacon.
+// The properties for the blocklist beacon.
 extern const wchar_t kBeaconVersion[];
 extern const wchar_t kBeaconState[];
 extern const wchar_t kBeaconAttemptCount[];
 
 // The number of failures that can occur on startup with the beacon enabled
-// before we give up and turn off the blacklist.
+// before we give up and turn off the blocklist.
 extern const DWORD kBeaconMaxAttempts;
 
-// The states for the blacklist setup code.
-enum BlacklistState {
-  BLACKLIST_DISABLED = 0,
-  BLACKLIST_ENABLED,
-  // The blacklist setup code is running. If this is the state at startup, it
+// The states for the blocklist setup code.
+enum BlocklistState {
+  BLOCKLIST_DISABLED = 0,
+  BLOCKLIST_ENABLED,
+  // The blocklist setup code is running. If this is the state at startup, it
   // means the last setup crashed.
-  BLACKLIST_SETUP_RUNNING,
+  BLOCKLIST_SETUP_RUNNING,
   // If the last setup crashed, we reassign the state to failed.
-  BLACKLIST_SETUP_FAILED,
+  BLOCKLIST_SETUP_FAILED,
   // Always keep this at the end.
-  BLACKLIST_STATE_MAX,
+  BLOCKLIST_STATE_MAX,
 };
 
-}  // namespace blacklist
+}  // namespace blocklist
 
 namespace elf_sec {
 

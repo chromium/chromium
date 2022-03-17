@@ -37,7 +37,7 @@ class BeaconTest : public testing::Test {
     beacon_registry_key_ = std::make_unique<base::win::RegKey>(
         HKEY_CURRENT_USER,
         install_static::GetRegistryPath()
-            .append(blacklist::kRegistryBeaconKeyName)
+            .append(blocklist::kRegistryBeaconKeyName)
             .c_str(),
         KEY_QUERY_VALUE | KEY_SET_VALUE);
   }
@@ -56,10 +56,10 @@ class BeaconTest : public testing::Test {
 // Ensure that the beacon state starts off 'running' if a version is specified.
 TEST_F(BeaconTest, Beacon) {
   LONG result = beacon_registry_key_->WriteValue(
-      blacklist::kBeaconState, blacklist::BLACKLIST_SETUP_RUNNING);
+      blocklist::kBeaconState, blocklist::BLOCKLIST_SETUP_RUNNING);
   EXPECT_EQ(ERROR_SUCCESS, result);
 
-  result = beacon_registry_key_->WriteValue(blacklist::kBeaconVersion,
+  result = beacon_registry_key_->WriteValue(blocklist::kBeaconVersion,
                                             L"beacon_version");
   EXPECT_EQ(ERROR_SUCCESS, result);
 
@@ -73,76 +73,76 @@ TEST_F(BeaconTest, Beacon) {
 void TestResetBeacon(std::unique_ptr<base::win::RegKey>& key,
                      DWORD input_state,
                      DWORD expected_output_state) {
-  LONG result = key->WriteValue(blacklist::kBeaconState, input_state);
+  LONG result = key->WriteValue(blocklist::kBeaconState, input_state);
   EXPECT_EQ(ERROR_SUCCESS, result);
 
   EXPECT_TRUE(ResetBeacon());
-  DWORD blacklist_state = blacklist::BLACKLIST_STATE_MAX;
-  result = key->ReadValueDW(blacklist::kBeaconState, &blacklist_state);
+  DWORD blocklist_state = blocklist::BLOCKLIST_STATE_MAX;
+  result = key->ReadValueDW(blocklist::kBeaconState, &blocklist_state);
   EXPECT_EQ(ERROR_SUCCESS, result);
-  EXPECT_EQ(expected_output_state, blacklist_state);
+  EXPECT_EQ(expected_output_state, blocklist_state);
 }
 
 TEST_F(BeaconTest, ResetBeacon) {
   // Ensure that ResetBeacon resets properly on successful runs and not on
   // failed or disabled runs.
-  TestResetBeacon(beacon_registry_key_, blacklist::BLACKLIST_SETUP_RUNNING,
-                  blacklist::BLACKLIST_ENABLED);
+  TestResetBeacon(beacon_registry_key_, blocklist::BLOCKLIST_SETUP_RUNNING,
+                  blocklist::BLOCKLIST_ENABLED);
 
-  TestResetBeacon(beacon_registry_key_, blacklist::BLACKLIST_SETUP_FAILED,
-                  blacklist::BLACKLIST_SETUP_FAILED);
+  TestResetBeacon(beacon_registry_key_, blocklist::BLOCKLIST_SETUP_FAILED,
+                  blocklist::BLOCKLIST_SETUP_FAILED);
 
-  TestResetBeacon(beacon_registry_key_, blacklist::BLACKLIST_DISABLED,
-                  blacklist::BLACKLIST_DISABLED);
+  TestResetBeacon(beacon_registry_key_, blocklist::BLOCKLIST_DISABLED,
+                  blocklist::BLOCKLIST_DISABLED);
 }
 
 TEST_F(BeaconTest, SetupFailed) {
   // Ensure that when the number of failed tries reaches the maximum allowed,
-  // the blacklist state is set to failed.
+  // the blocklist state is set to failed.
   LONG result = beacon_registry_key_->WriteValue(
-      blacklist::kBeaconState, blacklist::BLACKLIST_SETUP_RUNNING);
+      blocklist::kBeaconState, blocklist::BLOCKLIST_SETUP_RUNNING);
   EXPECT_EQ(ERROR_SUCCESS, result);
 
-  // Set the attempt count so that on the next failure the blacklist is
+  // Set the attempt count so that on the next failure the blocklist is
   // disabled.
-  result = beacon_registry_key_->WriteValue(blacklist::kBeaconAttemptCount,
-                                            blacklist::kBeaconMaxAttempts - 1);
+  result = beacon_registry_key_->WriteValue(blocklist::kBeaconAttemptCount,
+                                            blocklist::kBeaconMaxAttempts - 1);
   EXPECT_EQ(ERROR_SUCCESS, result);
 
   EXPECT_FALSE(LeaveSetupBeacon());
 
   DWORD attempt_count = 0;
-  beacon_registry_key_->ReadValueDW(blacklist::kBeaconAttemptCount,
+  beacon_registry_key_->ReadValueDW(blocklist::kBeaconAttemptCount,
                                     &attempt_count);
-  EXPECT_EQ(attempt_count, blacklist::kBeaconMaxAttempts);
+  EXPECT_EQ(attempt_count, blocklist::kBeaconMaxAttempts);
 
-  DWORD blacklist_state = blacklist::BLACKLIST_STATE_MAX;
-  result = beacon_registry_key_->ReadValueDW(blacklist::kBeaconState,
-                                             &blacklist_state);
+  DWORD blocklist_state = blocklist::BLOCKLIST_STATE_MAX;
+  result = beacon_registry_key_->ReadValueDW(blocklist::kBeaconState,
+                                             &blocklist_state);
   EXPECT_EQ(ERROR_SUCCESS, result);
-  EXPECT_EQ(blacklist_state,
-            static_cast<DWORD>(blacklist::BLACKLIST_SETUP_FAILED));
+  EXPECT_EQ(blocklist_state,
+            static_cast<DWORD>(blocklist::BLOCKLIST_SETUP_FAILED));
 }
 
 TEST_F(BeaconTest, SetupSucceeded) {
   // Starting with the enabled beacon should result in the setup running state
   // and the attempt counter reset to zero.
-  LONG result = beacon_registry_key_->WriteValue(blacklist::kBeaconState,
-                                                 blacklist::BLACKLIST_ENABLED);
+  LONG result = beacon_registry_key_->WriteValue(blocklist::kBeaconState,
+                                                 blocklist::BLOCKLIST_ENABLED);
   EXPECT_EQ(ERROR_SUCCESS, result);
-  result = beacon_registry_key_->WriteValue(blacklist::kBeaconAttemptCount,
-                                            blacklist::kBeaconMaxAttempts);
+  result = beacon_registry_key_->WriteValue(blocklist::kBeaconAttemptCount,
+                                            blocklist::kBeaconMaxAttempts);
   EXPECT_EQ(ERROR_SUCCESS, result);
 
   EXPECT_TRUE(LeaveSetupBeacon());
 
-  DWORD blacklist_state = blacklist::BLACKLIST_STATE_MAX;
-  beacon_registry_key_->ReadValueDW(blacklist::kBeaconState, &blacklist_state);
-  EXPECT_EQ(blacklist_state,
-            static_cast<DWORD>(blacklist::BLACKLIST_SETUP_RUNNING));
+  DWORD blocklist_state = blocklist::BLOCKLIST_STATE_MAX;
+  beacon_registry_key_->ReadValueDW(blocklist::kBeaconState, &blocklist_state);
+  EXPECT_EQ(blocklist_state,
+            static_cast<DWORD>(blocklist::BLOCKLIST_SETUP_RUNNING));
 
-  DWORD attempt_count = blacklist::kBeaconMaxAttempts;
-  beacon_registry_key_->ReadValueDW(blacklist::kBeaconAttemptCount,
+  DWORD attempt_count = blocklist::kBeaconMaxAttempts;
+  beacon_registry_key_->ReadValueDW(blocklist::kBeaconAttemptCount,
                                     &attempt_count);
   EXPECT_EQ(static_cast<DWORD>(0), attempt_count);
 }

@@ -26,8 +26,8 @@
 #include "content/public/common/content_features.h"
 #include "sandbox/policy/features.h"
 
-const char kBrowserBlacklistTrialName[] = "BrowserBlacklist";
-const char kBrowserBlacklistTrialDisabledGroupName[] = "NoBlacklist";
+const char kBrowserBlocklistTrialName[] = "BrowserBlocklist";
+const char kBrowserBlocklistTrialDisabledGroupName[] = "NoBlocklist";
 
 namespace {
 
@@ -35,40 +35,40 @@ namespace {
 // Hence,
 //   (a) existing enumerated constants should never be deleted or reordered, and
 //   (b) new constants should only be appended in front of
-//       BLACKLIST_SETUP_EVENT_MAX.
-enum BlacklistSetupEventType {
-  // The blacklist beacon has placed to enable the browser blacklisting.
-  BLACKLIST_SETUP_ENABLED = 0,
+//       BLOCKLIST_SETUP_EVENT_MAX.
+enum BlocklistSetupEventType {
+  // The blocklist beacon has placed to enable the browser blocklisting.
+  BLOCKLIST_SETUP_ENABLED = 0,
 
-  // The blacklist was successfully enabled.
-  BLACKLIST_SETUP_RAN_SUCCESSFULLY,
+  // The blocklist was successfully enabled.
+  BLOCKLIST_SETUP_RAN_SUCCESSFULLY,
 
-  // The blacklist setup code failed to execute.
-  BLACKLIST_SETUP_FAILED,
+  // The blocklist setup code failed to execute.
+  BLOCKLIST_SETUP_FAILED,
 
-  // The blacklist thunk setup code failed. This is probably an indication
+  // The blocklist thunk setup code failed. This is probably an indication
   // that something else patched that code first.
-  BLACKLIST_THUNK_SETUP_FAILED,
+  BLOCKLIST_THUNK_SETUP_FAILED,
 
-  // Deprecated. The blacklist interception code failed to execute.
-  BLACKLIST_INTERCEPTION_FAILED,
+  // Deprecated. The blocklist interception code failed to execute.
+  BLOCKLIST_INTERCEPTION_FAILED,
 
-  // The blacklist was disabled for this run (after it failed too many times).
-  BLACKLIST_SETUP_DISABLED,
+  // The blocklist was disabled for this run (after it failed too many times).
+  BLOCKLIST_SETUP_DISABLED,
 
   // Always keep this at the end.
-  BLACKLIST_SETUP_EVENT_MAX,
+  BLOCKLIST_SETUP_EVENT_MAX,
 };
 
-void RecordBlacklistSetupEvent(BlacklistSetupEventType blacklist_setup_event) {
+void RecordBlocklistSetupEvent(BlocklistSetupEventType blocklist_setup_event) {
   base::UmaHistogramEnumeration("ChromeElf.Beacon.SetupStatus",
-                                blacklist_setup_event,
-                                BLACKLIST_SETUP_EVENT_MAX);
+                                blocklist_setup_event,
+                                BLOCKLIST_SETUP_EVENT_MAX);
 }
 
 std::wstring GetBeaconRegistryPath() {
   return install_static::GetRegistryPath().append(
-      blacklist::kRegistryBeaconKeyName);
+      blocklist::kRegistryBeaconKeyName);
 }
 
 // This enum is used to define the buckets for an enumerated UMA histogram.
@@ -119,13 +119,13 @@ bool IsBrowserLegacyExtensionPointsBlocked() {
 }  // namespace
 
 void InitializeChromeElf() {
-  if (base::FieldTrialList::FindFullName(kBrowserBlacklistTrialName) ==
-      kBrowserBlacklistTrialDisabledGroupName) {
-    // Disable the blacklist for all future runs by removing the beacon.
-    base::win::RegKey blacklist_registry_key(HKEY_CURRENT_USER);
-    blacklist_registry_key.DeleteKey(GetBeaconRegistryPath().c_str());
+  if (base::FieldTrialList::FindFullName(kBrowserBlocklistTrialName) ==
+      kBrowserBlocklistTrialDisabledGroupName) {
+    // Disable the blocklist for all future runs by removing the beacon.
+    base::win::RegKey blocklist_registry_key(HKEY_CURRENT_USER);
+    blocklist_registry_key.DeleteKey(GetBeaconRegistryPath().c_str());
   } else {
-    BrowserBlacklistBeaconSetup();
+    BrowserBlocklistBeaconSetup();
   }
 
   // Make sure the registry key we read earlier in startup
@@ -157,69 +157,69 @@ void InitializeChromeElf() {
   }
 }
 
-void BrowserBlacklistBeaconSetup() {
-  base::win::RegKey blacklist_registry_key(HKEY_CURRENT_USER,
+void BrowserBlocklistBeaconSetup() {
+  base::win::RegKey blocklist_registry_key(HKEY_CURRENT_USER,
                                            GetBeaconRegistryPath().c_str(),
                                            KEY_QUERY_VALUE | KEY_SET_VALUE);
 
   // No point in trying to continue if the registry key isn't valid.
-  if (!blacklist_registry_key.Valid())
+  if (!blocklist_registry_key.Valid())
     return;
 
-  // Record the results of the last blacklist setup.
-  DWORD blacklist_state = blacklist::BLACKLIST_STATE_MAX;
-  blacklist_registry_key.ReadValueDW(blacklist::kBeaconState, &blacklist_state);
+  // Record the results of the last blocklist setup.
+  DWORD blocklist_state = blocklist::BLOCKLIST_STATE_MAX;
+  blocklist_registry_key.ReadValueDW(blocklist::kBeaconState, &blocklist_state);
 
-  if (blacklist_state == blacklist::BLACKLIST_ENABLED) {
-    // The blacklist setup didn't crash, so we report if it was enabled or not.
+  if (blocklist_state == blocklist::BLOCKLIST_ENABLED) {
+    // The blocklist setup didn't crash, so we report if it was enabled or not.
     if (IsThirdPartyInitialized()) {
-      RecordBlacklistSetupEvent(BLACKLIST_SETUP_RAN_SUCCESSFULLY);
+      RecordBlocklistSetupEvent(BLOCKLIST_SETUP_RAN_SUCCESSFULLY);
     } else {
-      // The only way for the blacklist to be enabled, but not fully
-      // initialized is if the thunk setup failed. See blacklist.cc
+      // The only way for the blocklist to be enabled, but not fully
+      // initialized is if the thunk setup failed. See blocklist.cc
       // for more details.
-      RecordBlacklistSetupEvent(BLACKLIST_THUNK_SETUP_FAILED);
+      RecordBlocklistSetupEvent(BLOCKLIST_THUNK_SETUP_FAILED);
     }
 
-    // Regardless of if the blacklist was fully enabled or not, report how many
+    // Regardless of if the blocklist was fully enabled or not, report how many
     // times we had to try to set it up.
     DWORD attempt_count = 0;
-    blacklist_registry_key.ReadValueDW(blacklist::kBeaconAttemptCount,
+    blocklist_registry_key.ReadValueDW(blocklist::kBeaconAttemptCount,
                                        &attempt_count);
     base::UmaHistogramCounts100("ChromeElf.Beacon.RetryAttemptsBeforeSuccess",
                                 attempt_count);
-  } else if (blacklist_state == blacklist::BLACKLIST_SETUP_FAILED) {
+  } else if (blocklist_state == blocklist::BLOCKLIST_SETUP_FAILED) {
     // We can set the state to disabled without checking that the maximum number
-    // of attempts was exceeded because blacklist.cc has already done this.
-    RecordBlacklistSetupEvent(BLACKLIST_SETUP_FAILED);
-    blacklist_registry_key.WriteValue(blacklist::kBeaconState,
-                                      blacklist::BLACKLIST_DISABLED);
-  } else if (blacklist_state == blacklist::BLACKLIST_DISABLED) {
-    RecordBlacklistSetupEvent(BLACKLIST_SETUP_DISABLED);
+    // of attempts was exceeded because blocklist.cc has already done this.
+    RecordBlocklistSetupEvent(BLOCKLIST_SETUP_FAILED);
+    blocklist_registry_key.WriteValue(blocklist::kBeaconState,
+                                      blocklist::BLOCKLIST_DISABLED);
+  } else if (blocklist_state == blocklist::BLOCKLIST_DISABLED) {
+    RecordBlocklistSetupEvent(BLOCKLIST_SETUP_DISABLED);
   }
 
-  // Find the last recorded blacklist version.
-  std::wstring blacklist_version;
-  blacklist_registry_key.ReadValue(blacklist::kBeaconVersion,
-                                   &blacklist_version);
+  // Find the last recorded blocklist version.
+  std::wstring blocklist_version;
+  blocklist_registry_key.ReadValue(blocklist::kBeaconVersion,
+                                   &blocklist_version);
 
-  if (blacklist_version != TEXT(CHROME_VERSION_STRING)) {
-    // The blacklist hasn't been enabled for this version yet, so enable it
+  if (blocklist_version != TEXT(CHROME_VERSION_STRING)) {
+    // The blocklist hasn't been enabled for this version yet, so enable it
     // and reset the failure count to zero.
-    LONG set_version = blacklist_registry_key.WriteValue(
-        blacklist::kBeaconVersion,
+    LONG set_version = blocklist_registry_key.WriteValue(
+        blocklist::kBeaconVersion,
         TEXT(CHROME_VERSION_STRING));
 
-    LONG set_state = blacklist_registry_key.WriteValue(
-        blacklist::kBeaconState,
-        blacklist::BLACKLIST_ENABLED);
+    LONG set_state = blocklist_registry_key.WriteValue(
+        blocklist::kBeaconState,
+        blocklist::BLOCKLIST_ENABLED);
 
-    blacklist_registry_key.WriteValue(blacklist::kBeaconAttemptCount,
+    blocklist_registry_key.WriteValue(blocklist::kBeaconAttemptCount,
                                       static_cast<DWORD>(0));
 
-    // Only report the blacklist as getting setup when both registry writes
-    // succeed, since otherwise the blacklist wasn't properly setup.
+    // Only report the blocklist as getting setup when both registry writes
+    // succeed, since otherwise the blocklist wasn't properly setup.
     if (set_version == ERROR_SUCCESS && set_state == ERROR_SUCCESS)
-      RecordBlacklistSetupEvent(BLACKLIST_SETUP_ENABLED);
+      RecordBlocklistSetupEvent(BLOCKLIST_SETUP_ENABLED);
   }
 }

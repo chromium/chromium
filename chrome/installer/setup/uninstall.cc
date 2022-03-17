@@ -523,21 +523,21 @@ void UninstallActiveSetupEntries(const InstallerState& installer_state) {
       base::BindRepeating(&DeleteUserRegistryKeys, base::Unretained(&paths)));
 }
 
-// Removes the persistent blacklist state for the current user.  Note: this will
+// Removes the persistent blocklist state for the current user.  Note: this will
 // not remove the state for users other than the one uninstalling Chrome on a
 // system-level install (http://crbug.com/388725). Doing so would require
 // extracting the per-user registry hive iteration from
 // UninstallActiveSetupEntries so that it could service multiple tasks.
-void RemoveBlacklistState() {
+void RemoveBlocklistState() {
   DeleteRegistryKey(HKEY_CURRENT_USER,
                     install_static::GetRegistryPath().append(
-                        blacklist::kRegistryBeaconKeyName),
+                        blocklist::kRegistryBeaconKeyName),
                     0);  // wow64_access
 }
 
 // Removes the browser's persistent state in the Windows registry for the
 // current user. Note: this will not remove the state for users other than the
-// one uninstalling Chrome on a system-level install; see RemoveBlacklistState
+// one uninstalling Chrome on a system-level install; see RemoveBlocklistState
 // for details.
 void RemoveDistributionRegistryState() {
   // Delete the contents of the distribution key except for those parts used by
@@ -951,7 +951,7 @@ InstallStatus UninstallProduct(const ModifyParams& modify_params,
 
   UninstallFirewallRules(chrome_exe);
 
-  RemoveBlacklistState();
+  RemoveBlocklistState();
 
   // Notify the shell that associations have changed since Chrome was likely
   // unregistered.

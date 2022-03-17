@@ -4,7 +4,7 @@
 
 #include "chrome/chrome_elf/chrome_elf_constants.h"
 
-namespace blacklist {
+namespace blocklist {
 
 const wchar_t kRegistryBeaconKeyName[] = L"\\BLBeacon";
 const wchar_t kBeaconVersion[] = L"version";
@@ -13,7 +13,7 @@ const wchar_t kBeaconAttemptCount[] = L"failed_count";
 
 const DWORD kBeaconMaxAttempts = 2;
 
-}  // namespace blacklist
+}  // namespace blocklist
 
 namespace elf_sec {
 
