@@ -484,7 +484,7 @@ bool ServiceImageTransferCacheEntry::Deserialize(
   PaintOpReader reader(data.data(), data.size(), options);
 
   // Parameters common to RGBA and YUVA images.
-  uint32_t needs_mips;
+  uint32_t needs_mips = 0;
   reader.Read(&needs_mips);
   has_mips_ = needs_mips;
   absl::optional<TargetColorParams> target_color_params;
