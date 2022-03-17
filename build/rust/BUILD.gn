@@ -22,10 +22,13 @@ static_library("cxx_cppdeps") {
     "//third_party/rust/cxx/v1/crate/src/cxx.cc",
   ]
 
-  defines = [
-    "RUST_CXX_NO_EXCEPTIONS",
-    "CXX_RS_EXPORT=__attribute__((visibility(\"default\")))",
-  ]
+  defines = [ "RUST_CXX_NO_EXCEPTIONS" ]
+
+  if (is_win) {
+    defines += [ "CXX_RS_EXPORT=__declspec(dllexport)" ]
+  } else {
+    defines += [ "CXX_RS_EXPORT=__attribute__((visibility(\"default\")))" ]
+  }
 
   # Depending on the C++ bindings side of cxx then requires also depending
   # on the Rust bindings, since one calls the other. And the Rust bindings
