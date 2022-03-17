@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/component_export.h"
+#include "base/time/time.h"
 #include "chromeos/system/statistics_provider.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -32,11 +33,15 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityController {
   // Registers local state preferences.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
+  // Determines the total start up delay before starting device activity
+  // reporting.
+  static base::TimeDelta DetermineStartUpDelay(base::Time chrome_first_run_ts);
+
   DeviceActivityController(
       version_info::Channel chromeos_channel,
       PrefService* local_state,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      base::TimeDelta start_delay);
+      base::TimeDelta start_up_delay);
   DeviceActivityController(const DeviceActivityController&) = delete;
   DeviceActivityController& operator=(const DeviceActivityController&) = delete;
   ~DeviceActivityController();

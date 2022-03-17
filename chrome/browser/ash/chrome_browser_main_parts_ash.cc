@@ -45,7 +45,6 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
-#include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/system/sys_info.h"
@@ -169,6 +168,7 @@
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
+#include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/metrics/chrome_feature_list_creator.h"
 #include "chrome/browser/metrics/structured/chrome_structured_metrics_recorder.h"
@@ -1233,7 +1233,8 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
             chrome::GetChannel(), g_browser_process->local_state(),
             g_browser_process->system_network_context_manager()
                 ->GetSharedURLLoaderFactory(),
-            base::Minutes(base::RandInt(0, 29)));
+            DeviceActivityController::DetermineStartUpDelay(
+                first_run::GetFirstRunSentinelCreationTime()));
   }
 #endif
 

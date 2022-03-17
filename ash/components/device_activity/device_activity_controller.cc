@@ -11,6 +11,7 @@
 #include "ash/components/device_activity/monthly_use_case_impl.h"
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/rand_util.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
@@ -76,11 +77,37 @@ void DeviceActivityController::RegisterPrefs(PrefRegistrySimple* registry) {
                              unix_epoch);
 }
 
+// static
+base::TimeDelta DeviceActivityController::DetermineStartUpDelay(
+    base::Time chrome_first_run_ts) {
+  // |random_delay| picks a random minute between [0, 29] inclusive (30 buckets)
+  // to delay start. This will distribute the high qps during certain times,
+  // across 30 equally probable buckets.
+  base::TimeDelta random_delay = base::Minutes(base::RandInt(0, 29));
+
+  // Wait at least 10 minutes from the first chrome run sentinel file creation
+  // time. This creation time is used as an indicator of when the device last
+  // reset (powerwashed/recovery/RMA). PSM servers take 10 minutes from CheckIn
+  // to return the correct response for CheckMembership requests, since the PSM
+  // servers need to update their cache.
+  //
+  // This delay avoids the scenario where a device checks in, powerwashes, and
+  // on device start up, gets the wrong check membership response.
+  base::TimeDelta delay_on_first_chrome_run;
+  base::Time current_ts = base::Time::Now();
+  if (current_ts < (chrome_first_run_ts + base::Minutes(10))) {
+    delay_on_first_chrome_run =
+        chrome_first_run_ts + base::Minutes(10) - current_ts;
+  }
+
+  return delay_on_first_chrome_run + random_delay;
+}
+
 DeviceActivityController::DeviceActivityController(
     version_info::Channel chromeos_channel,
     PrefService* local_state,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    base::TimeDelta start_delay)
+    base::TimeDelta start_up_delay)
     : statistics_provider_(
           chromeos::system::StatisticsProvider::GetInstance()) {
   DeviceActivityClient::RecordDeviceActivityMethodCalled(
@@ -90,15 +117,12 @@ DeviceActivityController::DeviceActivityController(
   DCHECK(!g_ash_device_activity_controller);
   g_ash_device_activity_controller = this;
 
-  // Uses a random minute between [0, 29] inclusive (30 buckets) to delay start.
-  // This will distribute the high qps during certain times, across 30 equally
-  // probable buckets.
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&device_activity::DeviceActivityController::Start,
                      weak_factory_.GetWeakPtr(), chromeos_channel, local_state,
                      url_loader_factory),
-      start_delay);
+      start_up_delay);
 }
 
 DeviceActivityController::~DeviceActivityController() {
