@@ -92,6 +92,7 @@ class GL_EXPORT GLSurfaceEGL : public GLSurface {
 
   GLSurfaceEGL(const GLSurfaceEGL&) = delete;
   GLSurfaceEGL& operator=(const GLSurfaceEGL&) = delete;
+  virtual EGLint GetNativeVisualID() const;
 
   // Implement GLSurface.
   EGLDisplay GetDisplay() override;

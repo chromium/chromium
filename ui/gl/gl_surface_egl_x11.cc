@@ -66,6 +66,13 @@ gfx::SwapResult NativeViewGLSurfaceEGLX11::SwapBuffers(
   return result;
 }
 
+EGLint NativeViewGLSurfaceEGLX11::GetNativeVisualID() const {
+  x11::VisualId visual_id;
+  ui::XVisualManager::GetInstance()->ChooseVisualForWindow(
+      true, &visual_id, nullptr, nullptr, nullptr);
+  return static_cast<EGLint>(visual_id);
+}
+
 NativeViewGLSurfaceEGLX11::~NativeViewGLSurfaceEGLX11() {
   Destroy();
 }

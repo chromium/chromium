@@ -27,6 +27,7 @@ class GL_EXPORT NativeViewGLSurfaceEGLX11 : public NativeViewGLSurfaceEGL,
   bool Initialize(GLSurfaceFormat format) override;
   void Destroy() override;
   gfx::SwapResult SwapBuffers(PresentationCallback callback) override;
+  EGLint GetNativeVisualID() const override;
 
  protected:
   ~NativeViewGLSurfaceEGLX11() override;

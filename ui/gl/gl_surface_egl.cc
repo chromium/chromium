@@ -635,7 +635,8 @@ bool ValidateEglConfig(EGLDisplay display,
 
 EGLConfig ChooseConfig(GLSurfaceFormat format,
                        bool surfaceless,
-                       bool offscreen) {
+                       bool offscreen,
+                       EGLint visual_id) {
   // Choose an EGL configuration.
   // On X this is only used for PBuffer surfaces.
 
@@ -722,7 +723,7 @@ EGLConfig ChooseConfig(GLSurfaceFormat format,
     }
 
     std::unique_ptr<EGLConfig[]> matching_configs(new EGLConfig[num_configs]);
-    if (want_rgb565) {
+    if (want_rgb565 || visual_id >= 0) {
       config_size = num_configs;
       config_data = matching_configs.get();
     }
@@ -769,6 +770,16 @@ EGLConfig ChooseConfig(GLSurfaceFormat format,
           LOG(ERROR) << "eglChooseConfig failed with error "
                      << GetLastEGLErrorString();
           return config;
+        }
+      }
+    } else if (visual_id >= 0) {
+      for (int i = 0; i < num_configs; i++) {
+        EGLint id;
+        if (eglGetConfigAttrib(g_egl_display, matching_configs[i],
+                               EGL_NATIVE_VISUAL_ID, &id) &&
+            id == visual_id) {
+          config = matching_configs[i];
+          break;
         }
       }
     }
@@ -990,9 +1001,14 @@ EGLDisplay GLSurfaceEGL::GetDisplay() {
 
 EGLConfig GLSurfaceEGL::GetConfig() {
   if (!config_) {
-    config_ = ChooseConfig(format_, IsSurfaceless(), IsOffscreen());
+    config_ = ChooseConfig(format_, IsSurfaceless(), IsOffscreen(),
+                           GetNativeVisualID());
   }
   return config_;
+}
+
+EGLint GLSurfaceEGL::GetNativeVisualID() const {
+  return -1;
 }
 
 // static
