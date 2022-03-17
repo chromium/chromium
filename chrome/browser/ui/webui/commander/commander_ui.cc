@@ -13,6 +13,7 @@
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/commander_resources.h"
 #include "chrome/grit/commander_resources_map.h"
+#include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_ui_data_source.h"
 
 CommanderUI::CommanderUI(content::WebUI* web_ui)
@@ -23,10 +24,13 @@ CommanderUI::CommanderUI(content::WebUI* web_ui)
 
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUICommanderHost);
-  // TODO(lgrey): Localize when these are no longer temp.
-  source->AddString("placeholder", "Type to search Chrome Commands…");
-  source->AddString("noResults", "No Chrome Commands found.");
-  source->AddString("pageTitle", "Commander");
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"placeholder", IDS_QUICK_COMMANDS_PLACEHOLDER},
+      {"noResults", IDS_QUICK_COMMANDS_NO_RESULTS},
+      {"pageTitle", IDS_QUICK_COMMANDS_LABEL},
+  };
+  for (const auto& str : kLocalizedStrings)
+    webui::AddLocalizedString(source, str.name, str.id);
   webui::SetupWebUIDataSource(
       source, base::make_span(kCommanderResources, kCommanderResourcesSize),
       IDR_COMMANDER_COMMANDER_HTML);

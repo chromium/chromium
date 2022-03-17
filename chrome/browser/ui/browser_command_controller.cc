@@ -811,7 +811,7 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_SHOW_BETA_FORUM:
       ShowBetaForum(browser_);
       break;
-    case IDC_TOGGLE_COMMANDER:
+    case IDC_TOGGLE_QUICK_COMMANDS:
       ToggleCommander(browser_);
       break;
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -1119,7 +1119,7 @@ void BrowserCommandController::InitCommandState() {
       IDC_SHOW_SAVE_LOCAL_CARD_SIGN_IN_PROMO_IF_APPLICABLE, true);
   command_updater_.UpdateCommandEnabled(IDC_CLOSE_SIGN_IN_PROMO, true);
   command_updater_.UpdateCommandEnabled(IDC_CARET_BROWSING_TOGGLE, true);
-  command_updater_.UpdateCommandEnabled(IDC_TOGGLE_COMMANDER,
+  command_updater_.UpdateCommandEnabled(IDC_TOGGLE_QUICK_COMMANDS,
                                         commander::IsEnabled());
   UpdateShowSyncState(true);
 

@@ -286,8 +286,8 @@ base::scoped_nsobject<NSMenuItem> BuildViewMenu(
                 Item(IDS_DISTILL_PAGE)
                     .command_id(IDC_DISTILL_PAGE)
                     .remove_if(!dom_distiller::IsDomDistillerEnabled()),
-                Item(IDS_TOGGLE_COMMANDER)
-                    .command_id(IDC_TOGGLE_COMMANDER)
+                Item(IDS_TOGGLE_QUICK_COMMANDS)
+                    .command_id(IDC_TOGGLE_QUICK_COMMANDS)
                     .remove_if(!commander::IsEnabled()),
 
                 Item().is_separator(),

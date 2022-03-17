@@ -1177,8 +1177,8 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_MOVE_TAB_TO_NEW_WINDOW" desc="The text label of the Move Tab to Window menu item.">
             Move tab to new window
           </message>
-          <message name="IDS_TOGGLE_COMMANDER" desc="The text label of the Toggle Quick Commands menu item">
-          Toggle Quick Commands
+          <message name="IDS_TOGGLE_QUICK_COMMANDS" desc="The text label of the Toggle Quick Commands menu item">
+          Quick commands
           </message>
         </if>
         <if expr="use_titlecase">
@@ -1260,8 +1260,8 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_MOVE_TAB_TO_NEW_WINDOW" desc="In Title Case: The text label of the Move Tab to New Window menu item.">
             Move Tab to New Window
           </message>
-          <message name="IDS_TOGGLE_COMMANDER" desc="In Title Case:The text label of the Toggle Quick Commands menu item">
-          Toggle Quick Commands
+          <message name="IDS_TOGGLE_QUICK_COMMANDS" desc="In Title Case:The text label of the Toggle Quick Commands menu item">
+          Quick Commands
           </message>
         </if>
       </if>
@@ -12454,9 +12454,17 @@ Please help our engineers fix this problem. Tell us what happened right before y
              desc="Title of the prompt to choose a new name for a window.">
       Name this window
     </message>
-    <message name="IDS_COMMANDER_LABEL"
-             desc="Label to identify the Commander feature in Task Manager">
-      Commander
+    <message name="IDS_QUICK_COMMANDS_LABEL"
+             desc="Label to identify the Quick Commands feature in Task Manager">
+      Quick Commands
+    </message>
+    <message name="IDS_QUICK_COMMANDS_PLACEHOLDER"
+             desc="Placeholder text for the Quick Commands text input">
+      Enter a keyword like "tabs" or "windows" to find an action
+    </message>
+    <message name="IDS_QUICK_COMMANDS_NO_RESULTS"
+             desc="Shown when there are no results in Quick Commands">
+      No commands found
     </message>
 
     <!-- ChromeLabs bubble -->

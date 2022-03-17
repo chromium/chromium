@@ -138,7 +138,7 @@ AcceleratorsCocoa::AcceleratorsCocoa() {
 
   if (commander::IsEnabled()) {
     result = accelerators_.insert(
-        std::make_pair(IDC_TOGGLE_COMMANDER,
+        std::make_pair(IDC_TOGGLE_QUICK_COMMANDS,
                        ui::Accelerator(ui::VKEY_SPACE, ui::EF_CONTROL_DOWN)));
     DCHECK(result.second);
   }

@@ -105,7 +105,7 @@ class CommanderFrontendViewsTest : public InProcessBrowserTest {
   }
 
   void OnWidgetShown(views::Widget* widget) {
-    if (widget->GetName() == "Commander") {
+    if (widget->GetName() == "Quick Commands") {
       active_widget_ = widget;
       if (IsWidgetAttachedToBrowser(expected_browser_)) {
         expected_browser_ = nullptr;

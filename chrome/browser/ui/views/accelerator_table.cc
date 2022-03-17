@@ -226,7 +226,7 @@ const AcceleratorMapping kAcceleratorMap[] = {
     // TODO(https://crbug.com/1016439): This is a temporary hotkey. Chrome OS
     // uses this for switching IMEs, but since this feature is only exposed via
     // command line flag at the moment, we'll exclude them entirely for now.
-    {ui::VKEY_SPACE, ui::EF_CONTROL_DOWN, IDC_TOGGLE_COMMANDER},
+    {ui::VKEY_SPACE, ui::EF_CONTROL_DOWN, IDC_TOGGLE_QUICK_COMMANDS},
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // !BUILDFLAG(IS_MAC)
 #if BUILDFLAG(IS_LINUX)
