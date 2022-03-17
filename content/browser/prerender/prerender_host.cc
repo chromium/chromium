@@ -5,6 +5,7 @@
 #include "content/browser/prerender/prerender_host.h"
 
 #include "base/feature_list.h"
+#include "base/observer_list.h"
 #include "base/run_loop.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_conversion_helper.h"

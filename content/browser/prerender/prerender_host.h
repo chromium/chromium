@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/types/pass_key.h"
 #include "content/browser/prerender/prerender_attributes.h"

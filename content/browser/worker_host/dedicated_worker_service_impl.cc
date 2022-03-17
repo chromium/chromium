@@ -4,6 +4,7 @@
 
 #include "content/browser/worker_host/dedicated_worker_service_impl.h"
 
+#include "base/observer_list.h"
 #include "content/browser/worker_host/dedicated_worker_host.h"
 #include "content/public/browser/browser_thread.h"
 

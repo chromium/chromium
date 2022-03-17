@@ -5,6 +5,7 @@
 #include "device/bluetooth/dbus/fake_bluetooth_agent_manager_client.h"
 
 #include "base/logging.h"
+#include "base/observer_list.h"
 #include "device/bluetooth/dbus/fake_bluetooth_agent_service_provider.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 

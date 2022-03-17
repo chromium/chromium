@@ -4,6 +4,7 @@
 
 #include "content/browser/site_instance_group.h"
 
+#include "base/observer_list.h"
 #include "content/public/browser/render_process_host.h"
 
 namespace content {

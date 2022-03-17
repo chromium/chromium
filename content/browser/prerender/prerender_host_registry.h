@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/types/pass_key.h"
 #include "content/browser/prerender/prerender_attributes.h"

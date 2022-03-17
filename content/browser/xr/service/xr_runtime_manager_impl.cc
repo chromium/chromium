@@ -13,6 +13,7 @@
 #include "base/feature_list.h"
 #include "base/lazy_instance.h"
 #include "base/memory/singleton.h"
+#include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"

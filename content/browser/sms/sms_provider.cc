@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/observer_list.h"
 #include "build/build_config.h"
 #include "content/browser/sms/sms_provider.h"
 #include "content/public/common/content_switches.h"

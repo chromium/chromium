@@ -13,6 +13,7 @@
 #include "base/callback_forward.h"
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/observer_list.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "content/browser/interest_group/auction_process_manager.h"

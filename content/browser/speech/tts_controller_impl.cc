@@ -15,6 +15,7 @@
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/observer_list.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "build/build_config.h"

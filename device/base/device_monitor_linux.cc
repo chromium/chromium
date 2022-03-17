@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/observer_list.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "device/udev_linux/udev.h"
 

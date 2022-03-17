@@ -6,6 +6,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
+#include "base/observer_list.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"

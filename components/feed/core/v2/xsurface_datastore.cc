@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 #include "components/feed/core/v2/xsurface_datastore.h"
-#include "base/logging.h"
 
 #include <iterator>
+
+#include "base/logging.h"
+#include "base/observer_list.h"
 
 namespace feed {
 

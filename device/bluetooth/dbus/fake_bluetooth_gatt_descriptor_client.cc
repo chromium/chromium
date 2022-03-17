@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"
+#include "base/observer_list.h"
 #include "dbus/bus.h"
 #include "dbus/property.h"
 #include "device/bluetooth/dbus/bluetooth_gatt_characteristic_client.h"

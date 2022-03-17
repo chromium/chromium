@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/observer_list.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_xr_runtime.h"
 #include "device/vr/public/mojom/vr_service.mojom-shared.h"

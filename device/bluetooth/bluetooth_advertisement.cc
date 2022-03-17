@@ -4,6 +4,8 @@
 
 #include "device/bluetooth/bluetooth_advertisement.h"
 
+#include "base/observer_list.h"
+
 namespace device {
 
 BluetoothAdvertisement::Data::Data(AdvertisementType type)

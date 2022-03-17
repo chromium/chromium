@@ -11,6 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/guid.h"
 #include "base/logging.h"
+#include "base/observer_list.h"
 #include "base/strings/string_util.h"
 #include "dbus/bus.h"
 #include "device/bluetooth/bluez/bluetooth_adapter_bluez.h"

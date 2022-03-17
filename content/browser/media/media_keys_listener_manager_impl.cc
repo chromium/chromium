@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/observer_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/system_media_controls/system_media_controls.h"

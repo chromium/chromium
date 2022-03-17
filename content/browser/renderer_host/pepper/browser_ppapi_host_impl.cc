@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/pepper/browser_ppapi_host_impl.h"
 
+#include "base/observer_list.h"
 #include "content/common/pepper_renderer_instance_data.h"
 #include "content/public/common/process_type.h"
 #include "ipc/ipc_message_macros.h"

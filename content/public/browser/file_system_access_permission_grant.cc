@@ -4,6 +4,8 @@
 
 #include "content/public/browser/file_system_access_permission_grant.h"
 
+#include "base/observer_list.h"
+
 namespace content {
 
 void FileSystemAccessPermissionGrant::AddObserver(Observer* observer) {

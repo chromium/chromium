@@ -22,6 +22,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
+#include "base/observer_list.h"
 #include "base/rand_util.h"
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
