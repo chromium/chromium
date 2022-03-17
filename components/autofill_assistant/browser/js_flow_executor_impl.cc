@@ -53,9 +53,9 @@ absl::optional<std::string> ConvertActionToBytes(const base::Value* action,
     std::string bytes;
     // A base64-encoded string containing a serialized proto.
     if (base::Base64Decode(action->GetString(), &bytes)) {
-      *error_message = "Invalid Base64-encoded string";
       return bytes;
     }
+    *error_message = "Invalid Base64-encoded string";
     return absl::nullopt;
   }
   if (action->is_list()) {
@@ -65,6 +65,7 @@ absl::optional<std::string> ConvertActionToBytes(const base::Value* action,
   *error_message = "Unexpected value type";
   return absl::nullopt;
 }
+
 }  // namespace
 
 JsFlowExecutorImpl::JsFlowExecutorImpl(content::WebContents* web_contents,
@@ -348,8 +349,8 @@ void JsFlowExecutorImpl::RunCallback(
     const ClientStatus& status,
     std::unique_ptr<base::Value> result_value) {
   if (!status.ok() && result_value) {
-    DVLOG(1) << "Flow failed with " << status
-             << " and result: " << *result_value;
+    VLOG(1) << "Flow failed with " << status
+            << " and result: " << *result_value;
   }
   std::move(callback_).Run(status, std::move(result_value));
 }

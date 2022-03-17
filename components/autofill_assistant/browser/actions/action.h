@@ -56,7 +56,7 @@ class Action {
   const ActionProto& proto() const { return proto_; }
 
   // Returns the current action's ActionData.
-  ActionData& GetActionData();
+  virtual ActionData& GetActionData();
 
  protected:
   // |delegate| must remain valid for the lifetime of this instance.

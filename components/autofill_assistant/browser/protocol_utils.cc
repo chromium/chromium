@@ -24,6 +24,7 @@
 #include "components/autofill_assistant/browser/actions/expect_navigation_action.h"
 #include "components/autofill_assistant/browser/actions/generate_password_for_form_field_action.h"
 #include "components/autofill_assistant/browser/actions/get_element_status_action.h"
+#include "components/autofill_assistant/browser/actions/js_flow_action.h"
 #include "components/autofill_assistant/browser/actions/navigate_action.h"
 #include "components/autofill_assistant/browser/actions/perform_on_single_element_action.h"
 #include "components/autofill_assistant/browser/actions/popup_message_action.h"
@@ -448,6 +449,8 @@ std::unique_ptr<Action> ProtocolUtils::CreateAction(ActionDelegate* delegate,
       return std::make_unique<SaveSubmittedPasswordAction>(delegate, action);
     case ActionProto::ActionInfoCase::kExecuteJs:
       return std::make_unique<ExecuteJsAction>(delegate, action);
+    case ActionProto::ActionInfoCase::kJsFlow:
+      return std::make_unique<JsFlowAction>(delegate, action);
     case ActionProto::ActionInfoCase::ACTION_INFO_NOT_SET: {
       VLOG(1) << "Encountered action with ACTION_INFO_NOT_SET";
       return std::make_unique<UnsupportedAction>(delegate, action);
@@ -708,6 +711,10 @@ absl::optional<ActionProto> ProtocolUtils::ParseFromString(
       success = ParseActionFromString(action_id, bytes, error_message,
                                       proto.mutable_execute_js());
       break;
+    case ActionProto::ActionInfoCase::kJsFlow:
+      success = ParseActionFromString(action_id, bytes, error_message,
+                                      proto.mutable_js_flow());
+      break;
     case ActionProto::ActionInfoCase::ACTION_INFO_NOT_SET:
       // This is an "unknown action", handled as such in CreateAction.
       return proto;
@@ -769,6 +776,17 @@ bool ProtocolUtils::ParseActions(ActionDelegate* delegate,
   }
 
   return true;
+}
+
+// static
+std::unique_ptr<Action> ProtocolUtils::ParseAction(
+    ActionDelegate* delegate,
+    const std::string& serialized_action) {
+  ActionProto proto;
+  if (!proto.ParseFromString(serialized_action)) {
+    return nullptr;
+  }
+  return CreateAction(delegate, proto);
 }
 
 // static

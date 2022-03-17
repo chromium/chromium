@@ -39,6 +39,27 @@ ClientStatus ExtractFlowReturnValue(
     runtime::EvaluateResult* devtools_result,
     std::unique_ptr<base::Value>& out_flow_result);
 
+// Extracts client status and optionally return value from |value|. Expects
+// status and result to be in specific fields (see .cc) Other fields are
+// ignored.
+//
+// This returns one the following statuses. In case of error, a source line
+// number is provided in the status details to allow disambiguating.
+//
+// <value.status>, [out_result_value]:
+//   - value is a dictionary, value.status exists, is an int and a valid
+//     ProcessedActionStatusProto enum. It need not be ACTION_APPLIED.
+//     If value.result exists, it will be assigned to |out_result_value|.
+// INVALID_ACTION:
+//   - |value| is not a dictionary and not NONE
+//   - |value| does not contain a "status" integer field containing a valid
+//     ProcessedActionStatusProto.
+// ACTION_APPLIED:
+//   - [value] is NONE
+ClientStatus ExtractJsFlowActionReturnValue(
+    const base::Value& value,
+    std::unique_ptr<base::Value>& out_result_value);
+
 }  // namespace js_flow_util
 }  // namespace autofill_assistant
 

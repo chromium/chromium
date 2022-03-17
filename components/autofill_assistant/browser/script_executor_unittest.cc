@@ -744,6 +744,29 @@ TEST_F(ScriptExecutorTest, StopAfterEnd) {
   executor_->Run(&user_data_, executor_callback_.Get());
 }
 
+TEST_F(ScriptExecutorTest, StopClearsUnexecutedActions) {
+  ActionsResponseProto actions_response;
+  actions_response.add_actions()->mutable_stop();
+  actions_response.add_actions()->mutable_tell()->set_message("should not run");
+
+  EXPECT_CALL(mock_service_, OnGetActions(_, _, _, _, _, _))
+      .WillOnce(RunOnceCallback<5>(net::HTTP_OK, Serialize(actions_response)));
+
+  std::vector<ProcessedActionProto> processed_actions_capture;
+  EXPECT_CALL(mock_service_, OnGetNextActions(_, _, _, _, _, _))
+      .WillOnce(DoAll(SaveArg<3>(&processed_actions_capture),
+                      RunOnceCallback<5>(net::HTTP_OK, "")));
+  EXPECT_CALL(executor_callback_,
+              Run(AllOf(Field(&ScriptExecutor::Result::success, true),
+                        Field(&ScriptExecutor::Result::at_end,
+                              ScriptExecutor::SHUTDOWN))));
+  executor_->Run(&user_data_, executor_callback_.Get());
+
+  EXPECT_NE(ui_delegate_.GetStatusMessage(), "should not run");
+  ASSERT_EQ(processed_actions_capture.size(), 1u);
+  EXPECT_EQ(processed_actions_capture[0].action(), actions_response.actions(0));
+}
+
 TEST_F(ScriptExecutorTest, InterruptActionListOnError) {
   ActionsResponseProto initial_actions_response;
   initial_actions_response.add_actions()->mutable_tell()->set_message(

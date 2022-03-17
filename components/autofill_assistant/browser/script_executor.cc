@@ -595,6 +595,11 @@ void ScriptExecutor::Shutdown(bool show_feedback_chip) {
   } else {
     at_end_ = SHUTDOWN;
   }
+
+  // Clear remaining actions, if any. If there is a current action, it is
+  // allowed to finish and add its status to |processed_actions_|.
+  actions_.resize(processed_actions_.size() +
+                  (current_action_ != nullptr ? 1 : 0));
 }
 
 void ScriptExecutor::Close() {

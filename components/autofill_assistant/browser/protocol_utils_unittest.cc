@@ -238,6 +238,10 @@ TEST_F(ProtocolUtilsTest, ParseActionsParseError) {
       /* should_update_scripts= */ &unused));
 }
 
+TEST_F(ProtocolUtilsTest, ParseActionParseError) {
+  EXPECT_EQ(ProtocolUtils::ParseAction(nullptr, "invalid"), nullptr);
+}
+
 TEST_F(ProtocolUtilsTest, ParseActionsValid) {
   ActionsResponseProto proto;
   proto.set_run_id(1);
@@ -265,6 +269,14 @@ TEST_F(ProtocolUtilsTest, ParseActionsValid) {
   EXPECT_THAT(actions, SizeIs(2));
   EXPECT_FALSE(should_update_scripts);
   EXPECT_TRUE(scripts.empty());
+}
+
+TEST_F(ProtocolUtilsTest, ParseActionValid) {
+  ActionProto action_proto;
+  action_proto.mutable_tell()->set_message("Hello world!");
+  std::string proto_str;
+  action_proto.SerializeToString(&proto_str);
+  EXPECT_NE(ProtocolUtils::ParseAction(nullptr, proto_str), nullptr);
 }
 
 TEST_F(ProtocolUtilsTest, ParseActionsEmptyUpdateScriptList) {

@@ -114,6 +114,12 @@ class ProtocolUtils {
                            std::vector<std::unique_ptr<Script>>* scripts,
                            bool* should_update_scripts);
 
+  // Parses a single serialized ActionProto. Returns nullptr in the case of
+  // parsing errors.
+  static std::unique_ptr<Action> ParseAction(
+      ActionDelegate* delegate,
+      const std::string& serialized_action);
+
   // Parse trigger scripts from the given |response| and insert them into
   // |trigger_scripts|. Returns false if parsing failed or the proto contained
   // invalid values.

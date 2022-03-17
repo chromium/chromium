@@ -144,6 +144,89 @@ TEST(JsFlowUtilTest, ExtractFlowReturnValue) {
   EXPECT_EQ(*out_flow_value, base::Value(12345));
 }
 
+TEST(JsFlowUtilTest, ExtractJsFlowActionReturnValueAllowsNullValue) {
+  std::unique_ptr<base::Value> out_result_value;
+  EXPECT_EQ(ExtractJsFlowActionReturnValue(base::Value(), out_result_value)
+                .proto_status(),
+            ACTION_APPLIED);
+  EXPECT_EQ(out_result_value, nullptr);
+}
+
+TEST(JsFlowUtilTest, ExtractJsFlowActionReturnValueDisallowsNonDictValues) {
+  std::unique_ptr<base::Value> out_result_value;
+  EXPECT_EQ(ExtractJsFlowActionReturnValue(base::Value(1), out_result_value)
+                .proto_status(),
+            INVALID_ACTION);
+  EXPECT_EQ(out_result_value, nullptr);
+}
+
+TEST(JsFlowUtilTest, ExtractJsFlowActionReturnValueDisallowsInvalidDict) {
+  std::unique_ptr<base::Value> out_result_value;
+
+  // Empty dict.
+  EXPECT_EQ(ExtractJsFlowActionReturnValue(base::Value(base::Value::Dict()),
+                                           out_result_value)
+                .proto_status(),
+            INVALID_ACTION);
+  EXPECT_EQ(out_result_value, nullptr);
+
+  // Invalid dict (does not contain 'status' field).
+  base::Value::Dict dict;
+  dict.Set("foo", 12345);
+  EXPECT_EQ(ExtractJsFlowActionReturnValue(base::Value(std::move(dict)),
+                                           out_result_value)
+                .proto_status(),
+            INVALID_ACTION);
+  EXPECT_EQ(out_result_value, nullptr);
+}
+
+TEST(JsFlowUtilTest,
+     ExtractJsFlowActionReturnValueDisallowsResultWithoutStatus) {
+  std::unique_ptr<base::Value> out_result_value;
+  base::Value::Dict dict;
+  dict.Set("result", 12345);
+  EXPECT_EQ(ExtractJsFlowActionReturnValue(base::Value(std::move(dict)),
+                                           out_result_value)
+                .proto_status(),
+            INVALID_ACTION);
+  EXPECT_EQ(out_result_value, nullptr);
+}
+
+TEST(JsFlowUtilTest, ExtractJsFlowActionReturnValueDisallowsInvalidStatus) {
+  std::unique_ptr<base::Value> out_result_value;
+  base::Value::Dict dict;
+  dict.Set("status", -1);
+  EXPECT_EQ(ExtractJsFlowActionReturnValue(base::Value(std::move(dict)),
+                                           out_result_value)
+                .proto_status(),
+            INVALID_ACTION);
+  EXPECT_EQ(out_result_value, nullptr);
+}
+
+TEST(JsFlowUtilTest, ExtractJsFlowActionReturnValueAllowsStatusWithoutResult) {
+  std::unique_ptr<base::Value> out_result_value;
+  base::Value::Dict dict;
+  dict.Set("status", 3);
+  EXPECT_EQ(ExtractJsFlowActionReturnValue(base::Value(std::move(dict)),
+                                           out_result_value)
+                .proto_status(),
+            OTHER_ACTION_STATUS);
+  EXPECT_EQ(out_result_value, nullptr);
+}
+
+TEST(JsFlowUtilTest, ExtractJsFlowActionReturnValueAllowsStatusWithResult) {
+  std::unique_ptr<base::Value> out_result_value;
+  base::Value::Dict dict;
+  dict.Set("status", 3);
+  dict.Set("result", *base::JSONReader::Read(R"([[1, 2], null, {"enum": 5}])"));
+  EXPECT_EQ(ExtractJsFlowActionReturnValue(base::Value(std::move(dict)),
+                                           out_result_value)
+                .proto_status(),
+            OTHER_ACTION_STATUS);
+  EXPECT_EQ(*out_result_value,
+            *base::JSONReader::Read(R"([[1, 2], null, {"enum": 5}])"));
+}
+
 }  // namespace
 }  // namespace js_flow_util
 }  // namespace autofill_assistant

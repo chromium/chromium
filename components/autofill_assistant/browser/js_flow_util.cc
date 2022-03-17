@@ -4,11 +4,19 @@
 
 #include "components/autofill_assistant/browser/js_flow_util.h"
 #include "base/strings/strcat.h"
+#include "components/autofill_assistant/browser/model.pb.h"
 #include "components/autofill_assistant/browser/web/web_controller_util.h"
 
 namespace autofill_assistant {
 
 namespace {
+
+// The field names of the object that a JS flow action expects flows to return.
+// DO NOT CHANGE THIS without changing the backend at the same time.
+// This belongs to |js_flow_action| - it has been moved here to make testing
+// more convenient.
+const char kStatusKey[] = "status";
+const char kResultKey[] = "result";
 
 // Returns true for remote object types that flows are allowed to return. This
 // is mostly used to filter types like FUNCTION which would otherwise slip
@@ -22,6 +30,17 @@ bool IsAllowedRemoteType(runtime::RemoteObjectType type) {
     default:
       return false;
   }
+}
+
+ClientStatus ClientStatusWithSourceLocation(
+    ProcessedActionStatusProto proto_status,
+    const std::string& file,
+    int line) {
+  ClientStatus status(proto_status);
+  auto* error_info = status.mutable_details()->mutable_unexpected_error_info();
+  error_info->set_source_file(file);
+  error_info->set_source_line_number(line);
+  return status;
 }
 
 }  // namespace
@@ -103,6 +122,31 @@ ClientStatus ExtractFlowReturnValue(
   out_flow_result =
       base::Value::ToUniquePtrValue(remote_object->GetValue()->Clone());
   return OkClientStatus();
+}
+
+ClientStatus ExtractJsFlowActionReturnValue(
+    const base::Value& value,
+    std::unique_ptr<base::Value>& out_result_value) {
+  if (value.is_none()) {
+    return ClientStatus(ACTION_APPLIED);
+  }
+
+  if (!value.is_dict()) {
+    return ClientStatusWithSourceLocation(INVALID_ACTION, __FILE__, __LINE__);
+  }
+
+  const base::Value::Dict* dict = value.GetIfDict();
+  absl::optional<int> flow_status = dict->FindInt(kStatusKey);
+  const base::Value* flow_return_value = dict->Find(kResultKey);
+  if (!flow_status || !ProcessedActionStatusProto_IsValid(*flow_status)) {
+    return ClientStatusWithSourceLocation(INVALID_ACTION, __FILE__, __LINE__);
+  }
+
+  if (flow_return_value) {
+    out_result_value =
+        std::make_unique<base::Value>(flow_return_value->Clone());
+  }
+  return ClientStatus(static_cast<ProcessedActionStatusProto>(*flow_status));
 }
 
 }  // namespace js_flow_util

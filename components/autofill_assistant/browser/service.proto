@@ -995,6 +995,7 @@ message ActionProto {
     ResetPendingCredentialsProto reset_pending_credentials = 86;
     SaveSubmittedPasswordProto save_submitted_password = 87;
     UpdateClientSettingsProto update_client_settings = 89;
+    JsFlowProto js_flow = 92;
     ExecuteJsProto execute_js = 93;
   }
 
@@ -1004,7 +1005,7 @@ message ActionProto {
   optional bool clean_contextual_ui = 33;
 
   reserved 5, 6, 8, 13 to 17, 20 to 23, 25 to 27, 30, 31, 34, 38, 46 to 48, 50,
-      51, 71, 88, 90 to 92;
+      51, 71, 88, 90, 91;
 }
 
 // Result of |CollectUserDataProto| to be sent to the server.
@@ -1093,6 +1094,8 @@ message ProcessedActionProto {
     CheckOptionElementProto.Result check_option_element_result = 35;
     // Should be set as a result of SendKeystrokeEventsProto.
     SendKeystrokeEventsProto.Result send_key_stroke_events_result = 36;
+    // Should be set as a result of JsFlowProto.
+    JsFlowProto.Result js_flow_result = 37;
   }
 
   // Reports information about navigation that happened while
@@ -3296,3 +3299,18 @@ message ReleaseElementsProto {
 
 // Action to unconditionally dispatch a custom JS event 'duplexweb' on document.
 message DispatchJsEventProto {}
+
+// Executes a javascript flow in an isolated environment. Additional actions may
+// be requested directly from the flow. See
+// components/autofill_assistant/browser/js_flow_executor_impl.h for details.
+message JsFlowProto {
+  message Result {
+    // A serialized JSON object containing the overall result value of the flow.
+    // This will never contain string values, for reasons of privacy and
+    // security. If the script attempts to return string values anyway, this
+    // field will be empty and the action will return INVALID_ACTION.
+    optional string result_json = 1;
+  }
+  // The JS flow to execute in a sandbox.
+  optional string js_flow = 1;
+}
