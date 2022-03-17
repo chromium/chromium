@@ -138,9 +138,6 @@ class DesksTemplatesClient : public ash::SessionObserver {
   friend class DesksTemplatesClientTest;
   friend class ScopedDesksTemplatesAppLaunchHandlerSetter;
 
-  // Attempts to create `app_launch_handler_` if it doesn't already exist.
-  void MaybeCreateAppLaunchHandler();
-
   void RecordWindowAndTabCountHistogram(ash::DeskTemplate* desk_template);
   void RecordLaunchFromTemplateHistogram();
   void RecordTemplateCountHistogram();
@@ -204,6 +201,9 @@ class DesksTemplatesClient : public ash::SessionObserver {
                          desks_storage::DeskModel::GetTemplateJsonStatus status,
                          const std::string& json_representation);
 
+  // Callback function that clears the data associated with a specific launch.
+  void OnLaunchComplete(int32_t launch_id);
+
   // Called by a launch performance tracker when it has completed monitoring the
   // launch of a template.
   void RemoveLaunchPerformanceTracker(base::GUID tracker_uuid);
@@ -214,8 +214,9 @@ class DesksTemplatesClient : public ash::SessionObserver {
 
   Profile* active_profile_ = nullptr;
 
-  // The object that handles launching apps.
-  std::unique_ptr<DesksTemplatesAppLaunchHandler> app_launch_handler_;
+  // Maps launch id to a launch handler.
+  std::map<int32_t, std::unique_ptr<DesksTemplatesAppLaunchHandler>>
+      app_launch_handlers_;
 
   // A test only template for testing `LaunchDeskTemplate`.
   std::unique_ptr<ash::DeskTemplate> launch_template_for_test_;

@@ -172,6 +172,10 @@ class COMPONENT_EXPORT(APP_RESTORE) RestoreData {
   // Sets `desk_index` as the desk to launch on for all windows.
   void SetDeskIndex(int desk_index);
 
+  // Make all contained window IDs globally unique for a desk template
+  // launch. This must be done before launching.
+  void MakeWindowIdsUniqueForDeskTemplate();
+
   std::string ToString() const;
 
   const AppIdToLaunchList& app_id_to_launch_list() const {

@@ -65,6 +65,11 @@ COMPONENT_EXPORT(APP_RESTORE) int32_t CreateArcSessionId();
 COMPONENT_EXPORT(APP_RESTORE)
 void SetArcSessionIdForWindowId(int32_t arc_session_id, int32_t window_id);
 
+// Associates `desk_template_launch_id` with `arc_session_id`.
+COMPONENT_EXPORT(APP_RESTORE)
+void SetDeskTemplateLaunchIdForArcSessionId(int32_t arc_session_id,
+                                            int32_t desk_template_launch_id);
+
 // Returns the restore window id for the ARC app's `task_id`.
 COMPONENT_EXPORT(APP_RESTORE)
 int32_t GetArcRestoreWindowIdForTaskId(int32_t task_id);

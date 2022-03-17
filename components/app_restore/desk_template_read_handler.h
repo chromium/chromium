@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/containers/flat_map.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "components/app_restore/app_restore_arc_info.h"
@@ -40,17 +41,25 @@ class COMPONENT_EXPORT(APP_RESTORE) DeskTemplateReadHandler
 
   static DeskTemplateReadHandler* Get();
 
-  RestoreData* restore_data() { return restore_data_.get(); }
-  ArcReadHandler* arc_read_handler() { return arc_read_handler_.get(); }
+  // Returns the ARC read handler for the launch associated to the window
+  // `restore_window_id`. Returns nullptr if the launch is unknown.
+  ArcReadHandler* GetArcReadHandlerForWindow(int32_t restore_window_id);
 
-  // Sets the `restore_data` for a launch session. `restore_data` can be
-  // nullptr, which signifies that a launch session is over. Creates
+  // Sets the `restore_data` for the launch identified by `launch_id`. Creates
   // `arc_read_handler_` if necessary, which is a helper class for dealing with
   // ARC apps.
-  void SetRestoreData(std::unique_ptr<RestoreData> restore_data);
+  void SetRestoreData(int32_t launch_id,
+                      std::unique_ptr<RestoreData> restore_data);
+
+  // Returns restore data for the launch associated to the window
+  // `restore_window_id`. Returns nullptr if the launch is unknown.
+  RestoreData* GetRestoreDataForWindow(int32_t restore_window_id);
+
+  // Clears restore data for the launch identified by `launch_id`.
+  void ClearRestoreData(int32_t launch_id);
 
   // Gets the window information for `restore_window_id`.
-  std::unique_ptr<WindowInfo> GetWindowInfo(int restore_window_id);
+  std::unique_ptr<WindowInfo> GetWindowInfo(int32_t restore_window_id);
 
   // Fetches the restore id for the window from RestoreData for the given
   // `app_id`. `app_id` should be a Chrome app id.
@@ -60,9 +69,11 @@ class COMPONENT_EXPORT(APP_RESTORE) DeskTemplateReadHandler
   // chrome app with `app_id`.
   void SetNextRestoreWindowIdForChromeApp(const std::string& app_id);
 
-  // Sets `arc_session_id` for `window_id`. `arc session id` is assigned when
+  // Sets `arc_session_id` for `window_id`. `arc_session_id` is assigned when
   // ARC apps are restored.
   void SetArcSessionIdForWindowId(int32_t arc_session_id, int32_t window_id);
+  // Same as above, but for `launch_id`.
+  void SetLaunchIdForArcSessionId(int32_t arc_session_id, int32_t launch_id);
 
   // Returns the restore window id for the ARC app's `task_id`.
   int32_t GetArcRestoreWindowIdForTaskId(int32_t task_id);
@@ -95,12 +106,31 @@ class COMPONENT_EXPORT(APP_RESTORE) DeskTemplateReadHandler
   void OnTaskDestroyed(int32_t task_id) override;
 
  private:
-  // The restore data read from desk storage. Empty when no launch is underway.
-  std::unique_ptr<RestoreData> restore_data_;
+  // Returns the launch id that `arc_session_id` is associated with, or 0.
+  int32_t GetLaunchIdForArcSessionId(int32_t arc_session_id);
 
-  // Helper that is created if an ARC app is launched. This class contains some
-  // ARC specific logic needed to launch ARC apps.
-  std::unique_ptr<ArcReadHandler> arc_read_handler_;
+  // Returns the launch id that `restore_window_id` is associated with, or 0.
+  int32_t GetLaunchIdForRestoreWindowId(int32_t restore_window_id);
+
+  // Returns the arc read handler associated with `launch_id`, or nullptr.
+  ArcReadHandler* GetArcReadHandlerForLaunch(int32_t launch_id);
+
+  // Returns the most recent launch that has `app_id`.
+  RestoreData* GetMostRecentRestoreDataForApp(const std::string& app_id);
+
+  // Maps launch id to restore data.
+  base::flat_map<int32_t, std::unique_ptr<RestoreData>> restore_data_;
+
+  // Maps launch id to helpers with logic specific to launching ARC apps.
+  base::flat_map<int32_t, std::unique_ptr<ArcReadHandler>> arc_read_handler_;
+
+  // Mapping ARC session id to launch id.
+  base::flat_map<int32_t, int32_t> session_id_to_launch_id_;
+  // Mapping ARC task id to launch id.
+  base::flat_map<int32_t, int32_t> task_id_to_launch_id_;
+
+  // Maps restore window id to launch id.
+  base::flat_map<int32_t, int32_t> restore_window_id_to_launch_id_;
 
   base::ScopedObservation<aura::Env, aura::EnvObserver> env_observer_{this};
 

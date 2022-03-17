@@ -96,7 +96,8 @@ void ModifyWidgetParams(int32_t restore_window_id,
     ArcReadHandler* arc_read_handler =
         ShouldUseFullRestoreArcData()
             ? full_restore_read_handler->arc_read_handler()
-            : DeskTemplateReadHandler::Get()->arc_read_handler();
+            : DeskTemplateReadHandler::Get()->GetArcReadHandlerForWindow(
+                  restore_window_id);
     window_info = arc_read_handler
                       ? arc_read_handler->GetWindowInfo(restore_window_id)
                       : nullptr;
@@ -177,6 +178,12 @@ void SetArcSessionIdForWindowId(int32_t arc_session_id, int32_t window_id) {
   }
   return DeskTemplateReadHandler::Get()->SetArcSessionIdForWindowId(
       arc_session_id, window_id);
+}
+
+void SetDeskTemplateLaunchIdForArcSessionId(int32_t arc_session_id,
+                                            int32_t desk_template_launch_id) {
+  DeskTemplateReadHandler::Get()->SetLaunchIdForArcSessionId(
+      arc_session_id, desk_template_launch_id);
 }
 
 int32_t GetArcRestoreWindowIdForTaskId(int32_t task_id) {

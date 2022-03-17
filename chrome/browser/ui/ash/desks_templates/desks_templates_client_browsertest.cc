@@ -90,10 +90,13 @@ namespace {
 
 constexpr int32_t kSettingsWindowId = 100;
 constexpr int32_t kHelpWindowId = 200;
+constexpr int32_t kLaunchedWindowIdBase = 1000000000;
 
 constexpr char kExampleUrl1[] = "https://examples1.com";
 constexpr char kExampleUrl2[] = "https://examples2.com";
 constexpr char kExampleUrl3[] = "https://examples3.com";
+constexpr char kAboutBlankUrl[] = "about:blank";
+constexpr char kNewTabPageUrl[] = "chrome://newtab/";
 constexpr char kYoutubeUrl[] = "https://www.youtube.com/";
 constexpr char kTestAdminTemplateUuid[] =
     "1f4ec992-0fa9-415d-a136-4b7c292c39dc";
@@ -122,6 +125,19 @@ std::vector<GURL> GetURLsForBrowserWindow(Browser* browser) {
   for (int i = 0; i < tab_strip_model->count(); ++i)
     urls.push_back(tab_strip_model->GetWebContentsAt(i)->GetVisibleURL());
   return urls;
+}
+
+// Locate a browser launched from a template whose URLs match `urls`.
+Browser* FindLaunchedBrowserByURLs(const std::vector<GURL>& urls) {
+  for (auto* browser : *BrowserList::GetInstance()) {
+    aura::Window* window = browser->window()->GetNativeWindow();
+    if (window->GetProperty(app_restore::kRestoreWindowIdKey) >=
+            kLaunchedWindowIdBase &&
+        GetURLsForBrowserWindow(browser) == urls) {
+      return browser;
+    }
+  }
+  return nullptr;
 }
 
 // TODO(crbug.com/1286515): Remove this. Tests should navigate to overview and
@@ -314,39 +330,37 @@ class MockDesksTemplatesAppLaunchHandler
 // purposes.
 class ScopedDesksTemplatesAppLaunchHandlerSetter {
  public:
-  explicit ScopedDesksTemplatesAppLaunchHandlerSetter(
-      std::unique_ptr<DesksTemplatesAppLaunchHandler> launch_handler) {
-    DCHECK_EQ(0, instance_count_);
-    ++instance_count_;
+  ScopedDesksTemplatesAppLaunchHandlerSetter(
+      std::unique_ptr<DesksTemplatesAppLaunchHandler> launch_handler,
+      int launch_id)
+      : launch_id_(launch_id) {
+    DCHECK(!instance_active_);
+    instance_active_ = true;
 
     DesksTemplatesClient* desks_client = DesksTemplatesClient::Get();
     DCHECK(desks_client);
-    old_app_launch_handler_ = std::move(desks_client->app_launch_handler_);
-    desks_client->app_launch_handler_ = std::move(launch_handler);
+    desks_client->app_launch_handlers_[launch_id_] = std::move(launch_handler);
   }
   ScopedDesksTemplatesAppLaunchHandlerSetter(
       const ScopedDesksTemplatesAppLaunchHandlerSetter&) = delete;
   ScopedDesksTemplatesAppLaunchHandlerSetter& operator=(
       const ScopedDesksTemplatesAppLaunchHandlerSetter&) = delete;
   ~ScopedDesksTemplatesAppLaunchHandlerSetter() {
-    DCHECK_EQ(1, instance_count_);
-    --instance_count_;
+    DCHECK(instance_active_);
+    instance_active_ = false;
 
     DesksTemplatesClient* desks_client = DesksTemplatesClient::Get();
     DCHECK(desks_client);
-    desks_client->app_launch_handler_ = std::move(old_app_launch_handler_);
+    desks_client->app_launch_handlers_[launch_id_] = nullptr;
   }
 
  private:
   // Variable to ensure we never have more than one instance of this object.
-  static int instance_count_;
+  inline static bool instance_active_ = false;
 
-  // The old app launch handler prior to the object being created. May be
-  // nullptr.
-  std::unique_ptr<DesksTemplatesAppLaunchHandler> old_app_launch_handler_;
+  // The id of the launch used for testing.
+  int launch_id_;
 };
-
-int ScopedDesksTemplatesAppLaunchHandlerSetter::instance_count_ = 0;
 
 class DesksTemplatesClientTest : public extensions::PlatformAppBrowserTest {
  public:
@@ -363,6 +377,8 @@ class DesksTemplatesClientTest : public extensions::PlatformAppBrowserTest {
   // extension. Avoid further uses of this method and create or launch templates
   // by mocking clicks on the system UI.
   void SetTemplate(std::unique_ptr<ash::DeskTemplate> launch_template) {
+    if (launch_template->launch_id() == 0)
+      launch_template->set_launch_id(1);
     DesksTemplatesClient::Get()->launch_template_for_test_ =
         std::move(launch_template);
   }
@@ -738,6 +754,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, LaunchTemplateWithChromeApp) {
   std::unique_ptr<ash::DeskTemplate> desk_template =
       CaptureActiveDeskAndSaveTemplate();
   ASSERT_TRUE(desk_template);
+  desk_template->set_launch_id(1);
 
   // Close the chrome app window. We'll need to verify if it reopens later.
   views::Widget* app_widget =
@@ -757,7 +774,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, LaunchTemplateWithChromeApp) {
   MockDesksTemplatesAppLaunchHandler* mock_app_launch_handler_ptr =
       mock_app_launch_handler.get();
   ScopedDesksTemplatesAppLaunchHandlerSetter scoped_launch_handler(
-      std::move(mock_app_launch_handler));
+      std::move(mock_app_launch_handler), desk_template->launch_id());
 
   EXPECT_CALL(*mock_app_launch_handler_ptr,
               LaunchSystemWebAppOrChromeApp(_, extension_id, _));
@@ -783,9 +800,6 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
   EXPECT_EQ(static_cast<int>(browser_active_index),
             browser->tab_strip_model()->active_index());
 
-  aura::Window* window = browser->window()->GetNativeWindow();
-  const int32_t browser_window_id =
-      window->GetProperty(app_restore::kWindowIdKey);
   // Get current tabs from browser.
   const std::vector<GURL> urls = GetURLsForBrowserWindow(browser);
 
@@ -803,9 +817,8 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
   content::RunAllTasksUntilIdle();
 
   // Verify that the browser was launched with the correct urls and active tab.
-  Browser* new_browser = FindBrowser(browser_window_id);
+  Browser* new_browser = FindLaunchedBrowserByURLs(urls);
   ASSERT_TRUE(new_browser);
-  EXPECT_EQ(urls, GetURLsForBrowserWindow(new_browser));
   EXPECT_EQ(static_cast<int>(browser_active_index),
             new_browser->tab_strip_model()->active_index());
 
@@ -839,9 +852,6 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
   chrome::AddTabAt(browser(), GURL(kExampleUrl2), /*index=*/-1,
                    /*foreground=*/true);
   EXPECT_EQ(expected_tab_count, browser()->tab_strip_model()->count());
-  const int32_t browser_window_id =
-      browser()->window()->GetNativeWindow()->GetProperty(
-          app_restore::kWindowIdKey);
 
   std::unique_ptr<ash::DeskTemplate> desk_template =
       CaptureActiveDeskAndSaveTemplate();
@@ -856,10 +866,9 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
 
   // Verify that the browser was launched with the correct number of tabs, and
   // that browser session restore did not restore any windows/tabs.
-  Browser* new_browser = FindBrowser(browser_window_id);
+  Browser* new_browser =
+      FindLaunchedBrowserByURLs({GURL(kAboutBlankUrl), GURL(kNewTabPageUrl)});
   ASSERT_TRUE(new_browser);
-  EXPECT_EQ(1u * expected_tab_count,
-            GetURLsForBrowserWindow(new_browser).size());
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
 }
 
@@ -912,13 +921,12 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
       CaptureActiveDeskAndSaveTemplate();
   ASSERT_TRUE(desk_template);
 
-  // Set the template we created as the template we want to launch.
-  ash::DeskTemplate* desk_template_ptr = desk_template.get();
-  SetTemplate(std::move(desk_template));
-
-  int launches = 5;
-  for (int i = 0; i < launches; i++)
-    LaunchTemplate(desk_template_ptr->uuid());
+  const int launches = 5;
+  for (int i = 0; i < launches; i++) {
+    auto launch_template = desk_template->Clone();
+    launch_template->set_launch_id(i + 1);
+    SetAndLaunchTemplate(std::move(launch_template));
+  }
 
   constexpr char kLaunchFromTemplateHistogramName[] =
       "Ash.DeskTemplate.LaunchFromTemplate";
@@ -953,13 +961,15 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, BrowserWindowRestorationTest) {
   ASSERT_TRUE(DesksTemplatesClient::Get());
 
   // Create a new browser and set its bounds.
-  Browser* browser_1 = CreateBrowser({GURL(kExampleUrl1), GURL(kExampleUrl2)});
+  std::vector<GURL> browser_urls_1 = {GURL(kExampleUrl1), GURL(kExampleUrl2)};
+  Browser* browser_1 = CreateBrowser(browser_urls_1);
   const gfx::Rect browser_bounds_1 = gfx::Rect(100, 100, 600, 200);
   aura::Window* window_1 = browser_1->window()->GetNativeWindow();
   window_1->SetBounds(browser_bounds_1);
 
   // Create a new minimized browser.
-  Browser* browser_2 = CreateBrowser({GURL(kExampleUrl1)});
+  std::vector<GURL> browser_urls_2 = {GURL(kExampleUrl1)};
+  Browser* browser_2 = CreateBrowser(browser_urls_2);
   const gfx::Rect browser_bounds_2 = gfx::Rect(150, 150, 500, 300);
   aura::Window* window_2 = browser_2->window()->GetNativeWindow();
   window_2->SetBounds(browser_bounds_2);
@@ -967,21 +977,14 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, BrowserWindowRestorationTest) {
   browser_2->window()->Minimize();
 
   // Create a new maximized browser.
-  Browser* browser_3 = CreateBrowser({GURL(kExampleUrl1)});
+  std::vector<GURL> browser_urls_3 = {GURL(kExampleUrl2)};
+  Browser* browser_3 = CreateBrowser(browser_urls_3);
   browser_3->window()->Maximize();
 
   EXPECT_EQ(browser_bounds_1, window_1->bounds());
   EXPECT_EQ(browser_bounds_2, window_2->bounds());
   ASSERT_TRUE(browser_2->window()->IsMinimized());
   ASSERT_TRUE(browser_3->window()->IsMaximized());
-
-  const int32_t browser_window_id_1 =
-      window_1->GetProperty(app_restore::kWindowIdKey);
-  const int32_t browser_window_id_2 =
-      window_2->GetProperty(app_restore::kWindowIdKey);
-  const int32_t browser_window_id_3 =
-      browser_3->window()->GetNativeWindow()->GetProperty(
-          app_restore::kWindowIdKey);
 
   // Capture the active desk, which contains the two browser windows.
   std::unique_ptr<ash::DeskTemplate> desk_template =
@@ -991,20 +994,20 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, BrowserWindowRestorationTest) {
   SetAndLaunchTemplate(std::move(desk_template));
 
   // Verify that the browser was launched with the correct bounds.
-  Browser* new_browser_1 = FindBrowser(browser_window_id_1);
+  Browser* new_browser_1 = FindLaunchedBrowserByURLs(browser_urls_1);
   ASSERT_TRUE(new_browser_1);
   EXPECT_EQ(browser_bounds_1,
             new_browser_1->window()->GetNativeWindow()->bounds());
 
   // Verify that the browser was launched and minimized.
-  Browser* new_browser_2 = FindBrowser(browser_window_id_2);
+  Browser* new_browser_2 = FindLaunchedBrowserByURLs(browser_urls_2);
   ASSERT_TRUE(new_browser_2);
   ASSERT_TRUE(new_browser_2->window()->IsMinimized());
   EXPECT_EQ(browser_bounds_2,
             new_browser_2->window()->GetNativeWindow()->bounds());
 
   // Verify that the browser was launched and maximized.
-  Browser* new_browser_3 = FindBrowser(browser_window_id_3);
+  Browser* new_browser_3 = FindLaunchedBrowserByURLs(browser_urls_3);
   ASSERT_TRUE(new_browser_3);
   ASSERT_TRUE(new_browser_3->window()->IsMaximized());
 }
@@ -1051,7 +1054,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, LaunchTemplateWithPWA) {
   SetAndLaunchTemplate(std::move(desk_template));
 
   // Verify that the PWA was launched correctly.
-  Browser* new_pwa_browser = FindBrowser(pwa_window_id);
+  Browser* new_pwa_browser = FindLaunchedBrowserByURLs({GURL(kExampleUrl1)});
   ASSERT_TRUE(new_pwa_browser);
   ASSERT_TRUE(new_pwa_browser->is_type_app());
   aura::Window* new_browser_window =
@@ -1186,9 +1189,6 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, SystemUILaunchBrowser) {
   EXPECT_EQ(static_cast<int>(browser_active_index),
             browser->tab_strip_model()->active_index());
 
-  aura::Window* window = browser->window()->GetNativeWindow();
-  const int32_t browser_window_id =
-      window->GetProperty(app_restore::kWindowIdKey);
   // Get current tabs from browser.
   const std::vector<GURL> urls = GetURLsForBrowserWindow(browser);
 
@@ -1212,9 +1212,8 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, SystemUILaunchBrowser) {
   EXPECT_EQ(4u, BrowserList::GetInstance()->size());
 
   // Test that the created browser has the same tabs and the same active tab.
-  Browser* new_browser = FindBrowser(browser_window_id);
+  Browser* new_browser = FindLaunchedBrowserByURLs(urls);
   ASSERT_TRUE(new_browser);
-  EXPECT_EQ(urls, GetURLsForBrowserWindow(new_browser));
   EXPECT_EQ(static_cast<int>(browser_active_index),
             new_browser->tab_strip_model()->active_index());
 
@@ -1454,13 +1453,15 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
 IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
                        SystemUIBrowserWindowRestorationTest) {
   // Create a new browser and set its bounds.
-  Browser* browser_1 = CreateBrowser({GURL(kExampleUrl1), GURL(kExampleUrl2)});
+  std::vector<GURL> browser_urls_1 = {GURL(kExampleUrl1), GURL(kExampleUrl2)};
+  Browser* browser_1 = CreateBrowser(browser_urls_1);
   const gfx::Rect browser_bounds_1 = gfx::Rect(100, 100, 600, 200);
   aura::Window* window_1 = browser_1->window()->GetNativeWindow();
   window_1->SetBounds(browser_bounds_1);
 
   // Create a new minimized browser.
-  Browser* browser_2 = CreateBrowser({GURL(kExampleUrl1)});
+  std::vector<GURL> browser_urls_2 = {GURL(kExampleUrl1)};
+  Browser* browser_2 = CreateBrowser(browser_urls_2);
   const gfx::Rect browser_bounds_2 = gfx::Rect(150, 150, 500, 300);
   aura::Window* window_2 = browser_2->window()->GetNativeWindow();
   window_2->SetBounds(browser_bounds_2);
@@ -1468,21 +1469,14 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
   browser_2->window()->Minimize();
 
   // Create a new maximized browser.
-  Browser* browser_3 = CreateBrowser({GURL(kExampleUrl1)});
+  std::vector<GURL> browser_urls_3 = {GURL(kExampleUrl2)};
+  Browser* browser_3 = CreateBrowser(browser_urls_3);
   browser_3->window()->Maximize();
 
   EXPECT_EQ(browser_bounds_1, window_1->bounds());
   EXPECT_EQ(browser_bounds_2, window_2->bounds());
   ASSERT_TRUE(browser_2->window()->IsMinimized());
   ASSERT_TRUE(browser_3->window()->IsMaximized());
-
-  const int32_t browser_window_id_1 =
-      window_1->GetProperty(app_restore::kWindowIdKey);
-  const int32_t browser_window_id_2 =
-      window_2->GetProperty(app_restore::kWindowIdKey);
-  const int32_t browser_window_id_3 =
-      browser_3->window()->GetNativeWindow()->GetProperty(
-          app_restore::kWindowIdKey);
 
   // Capture the active desk, which contains the three browser windows.
   ash::ToggleOverview();
@@ -1495,20 +1489,20 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
   content::RunAllTasksUntilIdle();
 
   // Verify that the browser was launched with the correct bounds.
-  Browser* new_browser_1 = FindBrowser(browser_window_id_1);
+  Browser* new_browser_1 = FindLaunchedBrowserByURLs(browser_urls_1);
   ASSERT_TRUE(new_browser_1);
   EXPECT_EQ(browser_bounds_1,
             new_browser_1->window()->GetNativeWindow()->bounds());
 
   // Verify that the browser was launched and minimized.
-  Browser* new_browser_2 = FindBrowser(browser_window_id_2);
+  Browser* new_browser_2 = FindLaunchedBrowserByURLs(browser_urls_2);
   ASSERT_TRUE(new_browser_2);
   ASSERT_TRUE(new_browser_2->window()->IsMinimized());
   EXPECT_EQ(browser_bounds_2,
             new_browser_2->window()->GetNativeWindow()->bounds());
 
   // Verify that the browser was launched and maximized.
-  Browser* new_browser_3 = FindBrowser(browser_window_id_3);
+  Browser* new_browser_3 = FindLaunchedBrowserByURLs(browser_urls_3);
   ASSERT_TRUE(new_browser_3);
   ASSERT_TRUE(new_browser_3->window()->IsMaximized());
 }
@@ -1559,7 +1553,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
   ClickFirstTemplateItem();
 
   // Verify that the PWA was launched correctly.
-  Browser* new_pwa_browser = FindBrowser(pwa_window_id);
+  Browser* new_pwa_browser = FindLaunchedBrowserByURLs({GURL(kExampleUrl1)});
   ASSERT_TRUE(new_pwa_browser);
   ASSERT_TRUE(new_pwa_browser->is_type_app());
   aura::Window* new_browser_window =
@@ -1743,7 +1737,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
   MockDesksTemplatesAppLaunchHandler* mock_app_launch_handler_ptr =
       mock_app_launch_handler.get();
   ScopedDesksTemplatesAppLaunchHandlerSetter scoped_launch_handler(
-      std::move(mock_app_launch_handler));
+      std::move(mock_app_launch_handler), /*launch_id=*/1);
 
   EXPECT_CALL(*mock_app_launch_handler_ptr,
               LaunchSystemWebAppOrChromeApp(_, extension_id, _));
@@ -1861,9 +1855,6 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
   chrome::AddTabAt(browser(), GURL(kExampleUrl2), /*index=*/-1,
                    /*foreground=*/true);
   EXPECT_EQ(expected_tab_count, browser()->tab_strip_model()->count());
-  const int32_t browser_window_id =
-      browser()->window()->GetNativeWindow()->GetProperty(
-          app_restore::kWindowIdKey);
 
   // Enter overview and save the current desk as a template.
   ash::ToggleOverview();
@@ -1887,9 +1878,9 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
 
   // Verify that the browser was launched with the correct number of tabs, and
   // that browser session restore did not restore any windows/tabs.
-  Browser* new_browser = FindBrowser(browser_window_id);
+  Browser* new_browser =
+      FindLaunchedBrowserByURLs({GURL(kAboutBlankUrl), GURL(kExampleUrl2)});
   ASSERT_TRUE(new_browser);
-  EXPECT_EQ(expected_tab_count, GetURLsForBrowserWindow(new_browser).size());
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
 }
 

@@ -18,12 +18,15 @@ enum class AppTypeName;
 
 namespace app_restore {
 class DeskTemplateReadHandler;
-class RestoreData;
 }  // namespace app_restore
 
-// The DesksTemplatesAppLaunchHandler class is passed in the desk template
-// restore data and profile, and will launch apps and web pages based on the
-// template.
+namespace ash {
+class DeskTemplate;
+}  // namespace ash
+
+// The DesksTemplatesAppLaunchHandler class is passed a profile, and will launch
+// apps and web pages based on the template. Note that a new handler should be
+// created for each template launch.
 class DesksTemplatesAppLaunchHandler : public ash::AppLaunchHandler {
  public:
   explicit DesksTemplatesAppLaunchHandler(Profile* profile);
@@ -33,8 +36,8 @@ class DesksTemplatesAppLaunchHandler : public ash::AppLaunchHandler {
       const DesksTemplatesAppLaunchHandler&) = delete;
   ~DesksTemplatesAppLaunchHandler() override;
 
-  void SetRestoreDataAndLaunch(
-      std::unique_ptr<app_restore::RestoreData> restore_data);
+  // Launch the given template.
+  void LaunchTemplate(const ash::DeskTemplate& desk_template);
 
  protected:
   // chromeos::AppLaunchHandler:
@@ -64,6 +67,9 @@ class DesksTemplatesAppLaunchHandler : public ash::AppLaunchHandler {
 
   // Cached convenience pointer to the desk template read handler.
   app_restore::DeskTemplateReadHandler* const read_handler_;
+
+  // The ID of the specific launch this handler deals with.
+  int32_t launch_id_ = 0;
 
   base::WeakPtrFactory<DesksTemplatesAppLaunchHandler> weak_ptr_factory_{this};
 };

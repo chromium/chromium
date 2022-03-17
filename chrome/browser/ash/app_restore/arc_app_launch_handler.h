@@ -154,6 +154,10 @@ class ArcAppLaunchHandler
   // chromeos::SchedulerConfigurationManagerBase::Observer:
   void OnConfigurationSet(bool success, size_t num_cores_disabled) override;
 
+  void set_desk_template_launch_id(int32_t desk_template_launch_id) {
+    desk_template_launch_id_ = desk_template_launch_id;
+  }
+
  private:
   friend class full_restore::ArcAppLaunchHandlerArcAppBrowserTest;
   friend class full_restore::FullRestoreAppLaunchHandlerArcAppBrowserTest;
@@ -267,6 +271,10 @@ class ArcAppLaunchHandler
   bool is_shelf_ready_ = false;
 
   bool is_app_connection_ready_ = false;
+
+  // If nonzero, identifies the desk template launch that this handler is used
+  // for.
+  int32_t desk_template_launch_id_ = 0;
 
   // A repeating timer to check whether we can restore the ARC apps.
   std::unique_ptr<base::RepeatingTimer> app_launch_timer_;

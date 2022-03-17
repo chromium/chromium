@@ -68,6 +68,9 @@ class ASH_PUBLIC_EXPORT DeskTemplate {
   const ::app_restore::RestoreData* desk_restore_data() const {
     return desk_restore_data_.get();
   }
+  ::app_restore::RestoreData* mutable_desk_restore_data() {
+    return desk_restore_data_.get();
+  }
 
   void set_desk_restore_data(
       std::unique_ptr<::app_restore::RestoreData> restore_data) {

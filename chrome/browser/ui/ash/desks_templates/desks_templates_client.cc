@@ -63,6 +63,9 @@ constexpr char kNoSavedTemplatesError[] = "You can create up to 6 templates.";
 // Timeout time used in LaunchPerformanceTracker
 constexpr base::TimeDelta kLaunchPerformanceTimeout = base::Minutes(3);
 
+// Launch data is cleared after this time.
+constexpr base::TimeDelta kClearLaunchDataDuration = base::Seconds(20);
+
 // Returns true if `profile` is a supported profile in desk template feature.
 bool IsSupportedProfile(Profile* profile) {
   // Public users & guest users are not supported.
@@ -289,9 +292,6 @@ void DesksTemplatesClient::LaunchDeskTemplate(
     return;
   }
 
-  MaybeCreateAppLaunchHandler();
-  DCHECK(app_launch_handler_);
-
   if (launch_template_for_test_) {
     OnGetTemplateForDeskLaunch(
         std::move(callback), base::Time(),
@@ -312,21 +312,44 @@ void DesksTemplatesClient::LaunchAppsFromTemplate(
     base::Time time_launch_started,
     base::TimeDelta delay) {
   DCHECK(desk_template);
-  const app_restore::RestoreData* restore_data =
-      desk_template->desk_restore_data();
+  DCHECK_GT(desk_template->launch_id(), 0);
+
+  app_restore::RestoreData* restore_data =
+      desk_template->mutable_desk_restore_data();
   if (!restore_data)
     return;
+  if (restore_data->app_id_to_launch_list().empty())
+    return;
 
-  MaybeCreateAppLaunchHandler();
-  DCHECK(app_launch_handler_);
+  // Make window IDs of the template unique. This is a requirement for launching
+  // templates concurrently since the contained window IDs are used as lookup
+  // keys in many places. We must also do this *before* creating the performance
+  // tracker below.
+  restore_data->MakeWindowIdsUniqueForDeskTemplate();
 
   template_ids_to_launch_performance_trackers_[desk_template->uuid()] =
       std::make_unique<LaunchPerformanceTracker>(
           time_launch_started, GetWindowIDSetFromTemplate(desk_template.get()),
           desk_template->uuid(), this);
 
-  app_launch_handler_->set_delay(delay);
-  app_launch_handler_->SetRestoreDataAndLaunch(restore_data->Clone());
+  DCHECK(active_profile_);
+  const int32_t launch_id = desk_template->launch_id();
+
+  auto& handler = app_launch_handlers_[launch_id];
+  // Some tests reach into this class and install a handler ahead of time. In
+  // all other cases, we create a handler for the launch here.
+  if (!handler)
+    handler = std::make_unique<DesksTemplatesAppLaunchHandler>(active_profile_);
+
+  handler->set_delay(delay);
+  handler->LaunchTemplate(*desk_template);
+
+  // Install a timer that will clear the launch handler after a given duration.
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&DesksTemplatesClient::OnLaunchComplete,
+                     weak_ptr_factory_.GetWeakPtr(), launch_id),
+      kClearLaunchDataDuration);
 }
 
 desks_storage::DeskModel* DesksTemplatesClient::GetDeskModel() {
@@ -377,17 +400,6 @@ void DesksTemplatesClient::RemovePolicyPreconfiguredTemplate(
 void DesksTemplatesClient::NotifyMovedSingleInstanceApp(int32_t window_id) {
   for (auto& id_to_tracker : template_ids_to_launch_performance_trackers_)
     id_to_tracker.second->OnMovedSingleInstanceApp(window_id);
-}
-
-void DesksTemplatesClient::MaybeCreateAppLaunchHandler() {
-  if (app_launch_handler_ &&
-      app_launch_handler_->profile() == active_profile_) {
-    return;
-  }
-
-  DCHECK(active_profile_);
-  app_launch_handler_ =
-      std::make_unique<DesksTemplatesAppLaunchHandler>(active_profile_);
 }
 
 void DesksTemplatesClient::RecordWindowAndTabCountHistogram(
@@ -564,6 +576,10 @@ void DesksTemplatesClient::OnGetTemplateJson(
       std::string(status != desks_storage::DeskModel::GetTemplateJsonStatus::kOk
                       ? kStorageError
                       : ""));
+}
+
+void DesksTemplatesClient::OnLaunchComplete(int32_t launch_id) {
+  app_launch_handlers_.erase(launch_id);
 }
 
 void DesksTemplatesClient::RemoveLaunchPerformanceTracker(

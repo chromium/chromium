@@ -420,8 +420,13 @@ void ArcAppLaunchHandler::PrepareAppLaunching(const std::string& app_id) {
     DCHECK(data_it.second->event_flag.has_value());
 
     // Set an ARC session id to find the restore window id based on the newly
-    // created ARC task id.
+    // created ARC task id. Note that the desk template launch ID must be set
+    // first, if available.
     const int32_t arc_session_id = ::app_restore::CreateArcSessionId();
+    if (desk_template_launch_id_ != 0) {
+      ::app_restore::SetDeskTemplateLaunchIdForArcSessionId(
+          arc_session_id, desk_template_launch_id_);
+    }
     ::app_restore::SetArcSessionIdForWindowId(arc_session_id, data_it.first);
     window_id_to_session_id_[data_it.first] = arc_session_id;
     session_id_to_window_id_[arc_session_id] = data_it.first;

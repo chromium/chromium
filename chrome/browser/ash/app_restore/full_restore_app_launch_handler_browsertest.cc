@@ -1118,18 +1118,15 @@ class FullRestoreAppLaunchHandlerArcAppBrowserTest
   void Restore() {
     test_full_restore_info_observer_.Reset();
 
-    auto* arc_task_hanlder =
+    auto* arc_task_handler =
         app_restore::AppRestoreArcTaskHandler::GetForProfile(profile());
-    if (!arc_task_hanlder->full_restore_arc_app_launch_handler_observer_) {
-      arc_task_hanlder->full_restore_arc_app_launch_handler_observer_ =
-          arc_task_hanlder->arc_app_launcher_handers_
-              .emplace_back(
-                  std::make_unique<ash::app_restore::ArcAppLaunchHandler>())
-              .get();
-    }
+    ASSERT_TRUE(arc_task_handler);
+
+    arc_task_handler->CreateFullRestoreHandlerForTest();
 
     arc_app_launch_handler_ =
-        arc_task_hanlder->full_restore_arc_app_launch_handler();
+        arc_task_handler->full_restore_arc_app_launch_handler();
+    DCHECK(arc_app_launch_handler_);
     arc_app_launch_handler_->is_app_connection_ready_ = false;
 
     app_launch_handler_ =

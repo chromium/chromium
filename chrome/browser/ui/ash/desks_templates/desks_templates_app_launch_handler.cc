@@ -7,6 +7,7 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/desk_template.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -33,48 +34,39 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "extensions/common/extension.h"
 
-namespace {
-
-// The restore data owned by this class will clear after being set. This is a
-// temporary estimate of how long it takes to launch apps.
-constexpr base::TimeDelta kClearRestoreDataDuration = base::Seconds(5);
-
-}  // namespace
-
 DesksTemplatesAppLaunchHandler::DesksTemplatesAppLaunchHandler(Profile* profile)
     : ash::AppLaunchHandler(profile),
       read_handler_(app_restore::DeskTemplateReadHandler::Get()) {}
 
-DesksTemplatesAppLaunchHandler::~DesksTemplatesAppLaunchHandler() = default;
+DesksTemplatesAppLaunchHandler::~DesksTemplatesAppLaunchHandler() {
+  if (launch_id_) {
+    read_handler_->ClearRestoreData(launch_id_);
 
-void DesksTemplatesAppLaunchHandler::SetRestoreDataAndLaunch(
-    std::unique_ptr<app_restore::RestoreData> new_restore_data) {
-  // Another desk template is underway.
-  // TODO(sammiequon): Checking the read handler for restore data is temporary.
-  // We will want to use a better check of whether a desk template is underway.
-  // Perhaps removing entries from read handler's restore data of launched apps
-  // and/or using individual shorter timeouts.
-  if (read_handler_->restore_data())
-    return;
+    if (auto* arc_task_handler =
+            ash::app_restore::AppRestoreArcTaskHandler::GetForProfile(
+                profile())) {
+      arc_task_handler->ClearDeskTemplateArcAppLaunchHandler(launch_id_);
+    }
+  }
+}
 
-  set_restore_data(std::move(new_restore_data));
+void DesksTemplatesAppLaunchHandler::LaunchTemplate(
+    const ash::DeskTemplate& desk_template) {
+  // Ensure that the handler isn't re-used.
+  DCHECK_EQ(launch_id_, 0);
+  launch_id_ = desk_template.launch_id();
 
-  if (!HasRestoreData())
-    return;
+  DCHECK(desk_template.desk_restore_data());
+  auto restore_data = desk_template.desk_restore_data()->Clone();
+  DCHECK(!restore_data->app_id_to_launch_list().empty());
 
-  read_handler_->SetRestoreData(restore_data()->Clone());
+  read_handler_->SetRestoreData(launch_id_, restore_data->Clone());
+  set_restore_data(std::move(restore_data));
 
   // Launch the different types of apps. They can be done in any order.
   MaybeLaunchArcApps();
   LaunchApps();
   LaunchBrowsers();
-
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&DesksTemplatesAppLaunchHandler::
-                         ClearDeskTemplateReadHandlerRestoreData,
-                     weak_ptr_factory_.GetWeakPtr()),
-      kClearRestoreDataDuration);
 }
 
 bool DesksTemplatesAppLaunchHandler::ShouldLaunchSystemWebAppOrChromeApp(
@@ -266,13 +258,10 @@ void DesksTemplatesAppLaunchHandler::MaybeLaunchArcApps() {
     return;
 
   if (auto* launch_handler =
-          arc_task_handler->desks_templates_arc_app_launch_handler()) {
+          arc_task_handler->GetDeskTemplateArcAppLaunchHandler(launch_id_)) {
+    launch_handler->set_desk_template_launch_id(launch_id_);
     launch_handler->RestoreArcApps(this);
   }
-}
-
-void DesksTemplatesAppLaunchHandler::ClearDeskTemplateReadHandlerRestoreData() {
-  read_handler_->SetRestoreData(nullptr);
 }
 
 void DesksTemplatesAppLaunchHandler::RecordRestoredAppLaunch(
