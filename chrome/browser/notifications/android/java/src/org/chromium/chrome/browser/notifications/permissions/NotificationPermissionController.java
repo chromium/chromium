@@ -126,13 +126,13 @@ public class NotificationPermissionController implements UnownedUserData {
      *        using notifications, false for invoking on startup.
      */
     public void requestPermissionIfNeeded(boolean contextual) {
-        // Notifications only require permission starting at Android T.
-        if (!BuildInfo.isAtLeastT()) {
+        if (!BuildInfo.isAtLeastT() || !BuildInfo.targetsAtLeastT()) {
             return;
         }
 
-        // Record the state of the notification permission before trying to ask.
-        recordNotificationPermissionState();
+        // Record the state of the notification permission before trying to ask but after verifying
+        // we are running on Android T.
+        recordCurrentNotificationPermissionStatus();
 
         @PermissionRequestMode
         int requestMode = shouldRequestPermission();
@@ -156,7 +156,12 @@ public class NotificationPermissionController implements UnownedUserData {
 
     @PermissionRequestMode
     int shouldRequestPermission() {
-        if (!BuildInfo.isAtLeastT()) return PermissionRequestMode.DO_NOT_REQUEST;
+        // Notifications only require permission starting at Android T. And apps targeting < T can't
+        // request permission as the OS prompts the user automatically.
+        if (!BuildInfo.isAtLeastT() || !BuildInfo.targetsAtLeastT()) {
+            return PermissionRequestMode.DO_NOT_REQUEST;
+        }
+
         if (mAndroidPermissionDelegate.hasPermission(PermissionConstants.NOTIFICATION_PERMISSION)) {
             return PermissionRequestMode.DO_NOT_REQUEST;
         }
@@ -188,7 +193,11 @@ public class NotificationPermissionController implements UnownedUserData {
                                    : PermissionRequestMode.REQUEST_ANDROID_PERMISSION;
     }
 
-    private void recordNotificationPermissionState() {
+    /**
+     * Records the current status of the notification permission (Allowed/Denied) and if denied we
+     * include how many times we've asked or if the permission is denied by policy.
+     */
+    private void recordCurrentNotificationPermissionStatus() {
         if (mAndroidPermissionDelegate.hasPermission(PermissionConstants.NOTIFICATION_PERMISSION)) {
             NotificationUmaTracker.getInstance().recordNotificationPermissionState(
                     NotificationPermissionState.ALLOWED);
