@@ -809,6 +809,14 @@ bool AwContentBrowserClient::
       features::kWebViewSynthesizePageLoadOnlyOnInitialMainDocumentAccess);
 }
 
+bool AwContentBrowserClient::SupportsAvoidUnnecessaryBeforeUnloadCheckSync() {
+  // WebView allows the embedder to override navigation in such a way that
+  // might trigger reentrancy if this returned true. See comments in
+  // ContentBrowserClient::SupportsAvoidUnnecessaryBeforeUnloadCheckSync() for
+  // more details.
+  return false;
+}
+
 bool AwContentBrowserClient::CreateThreadPool(base::StringPiece name) {
   if (g_should_create_thread_pool) {
     base::ThreadPoolInstance::Create(name);

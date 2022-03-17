@@ -1029,17 +1029,24 @@ GURL GetLastDocumentURL(
   return params.url;
 }
 
-bool IsAvoidUnnecessaryBeforeUnloadCheckPostTaskEnabled() {
-  return base::FeatureList::IsEnabled(
-      features::kAvoidUnnecessaryBeforeUnloadCheckPostTask);
+bool IsAvoidUnnecessaryBeforeUnloadCheckSyncEnabled() {
+  const bool is_feature_enabled = base::FeatureList::IsEnabled(
+      features::kAvoidUnnecessaryBeforeUnloadCheckSync);
+#if BUILDFLAG(IS_ANDROID)
+  return is_feature_enabled &&
+         GetContentClient()
+             ->browser()
+             ->SupportsAvoidUnnecessaryBeforeUnloadCheckSync();
+#else
+  return is_feature_enabled;
+#endif
 }
 
-bool IsAvoidUnnecessaryBeforeUnloadCheckSyncEnabled() {
-  // Only one of sync or posttask should be used. If both are set, use posttask
-  // as the sync variant is not safe for android webview.
+bool IsAvoidUnnecessaryBeforeUnloadCheckPostTaskEnabled() {
+  // Only one of sync or posttask should be used. If both are set, use sync.
   return base::FeatureList::IsEnabled(
-             features::kAvoidUnnecessaryBeforeUnloadCheckSync) &&
-         !IsAvoidUnnecessaryBeforeUnloadCheckPostTaskEnabled();
+             features::kAvoidUnnecessaryBeforeUnloadCheckPostTask) &&
+         !IsAvoidUnnecessaryBeforeUnloadCheckSyncEnabled();
 }
 
 }  // namespace

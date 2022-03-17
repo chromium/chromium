@@ -169,6 +169,7 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
   bool
   ShouldIgnoreInitialNavigationEntryNavigationStateChangedForLegacySupport()
       override;
+  bool SupportsAvoidUnnecessaryBeforeUnloadCheckSync() override;
   bool CreateThreadPool(base::StringPiece name) override;
   std::unique_ptr<content::LoginDelegate> CreateLoginDelegate(
       const net::AuthChallengeInfo& auth_info,

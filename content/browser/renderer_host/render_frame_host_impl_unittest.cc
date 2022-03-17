@@ -703,6 +703,49 @@ TEST_F(RenderFrameHostImplTest, NoBeforeUnloadCheckForBrowserInitiated) {
       contents()->GetMainFrame()->is_waiting_for_beforeunload_completion());
 }
 
+TEST_F(RenderFrameHostImplTest,
+       NoBeforeUnloadCheckForBrowserInitiatedSyncTakesPrecedence) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {features::kAvoidUnnecessaryBeforeUnloadCheckSync,
+       features::kAvoidUnnecessaryBeforeUnloadCheckPostTask},
+      {});
+  contents()->GetController().LoadURLWithParams(
+      NavigationController::LoadURLParams(
+          GURL("https://example.com/navigation.html")));
+  EXPECT_FALSE(
+      contents()->GetMainFrame()->is_waiting_for_beforeunload_completion());
+}
+
+// ContentBrowserClient::SupportsAvoidUnnecessaryBeforeUnloadCheckSync() is
+// android specific.
+#if BUILDFLAG(IS_ANDROID)
+class TestContentBrowserClientImpl : public ContentBrowserClient {
+  bool SupportsAvoidUnnecessaryBeforeUnloadCheckSync() override {
+    return false;
+  }
+};
+
+TEST_F(RenderFrameHostImplTest,
+       SupportsAvoidUnnecessaryBeforeUnloadCheckSyncReturnsFalse) {
+  TestContentBrowserClientImpl browser_client;
+  ContentBrowserClient* old_browser_client =
+      SetBrowserClientForTesting(&browser_client);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAvoidUnnecessaryBeforeUnloadCheckSync);
+  contents()->GetController().LoadURLWithParams(
+      NavigationController::LoadURLParams(
+          GURL("https://example.com/navigation.html")));
+  // Should be waiting on beforeunload as
+  // SupportsAvoidUnnecessaryBeforeUnloadCheckSync() takes
+  // precedence.
+  EXPECT_TRUE(
+      contents()->GetMainFrame()->is_waiting_for_beforeunload_completion());
+  SetBrowserClientForTesting(old_browser_client);
+}
+#endif
+
 TEST_F(RenderFrameHostImplTest, BeforeUnloadCheckForBrowserInitiated) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(

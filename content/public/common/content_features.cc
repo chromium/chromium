@@ -74,9 +74,10 @@ const base::Feature kAudioServiceSandbox {
 //   report a beforeunload handler is present. A ramification of this is
 //   navigations that would normally check beforeunload handlers before
 //   continuing will not, and navigation will synchronously continue.
-// Only one should be used (if both are set, the first takes precedence). The
-// second is unsafe for Android webview, as the embedder may trigger
-// reentrancy which can not be changed.
+// Only one should be used (if both are set, the second takes precedence). The
+// second is unsafe for Android WebView (and thus entirely disabled via
+// ContentBrowserClient::SupportsAvoidUnnecessaryBeforeUnloadCheckSync()),
+// because the embedder may trigger reentrancy, which cannot be avoided.
 const base::Feature kAvoidUnnecessaryBeforeUnloadCheckPostTask{
     "AvoidUnnecessaryBeforeUnloadCheck", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kAvoidUnnecessaryBeforeUnloadCheckSync{
