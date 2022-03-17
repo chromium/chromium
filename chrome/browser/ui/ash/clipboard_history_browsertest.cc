@@ -20,11 +20,9 @@
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/repeating_test_future.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
-#include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/ui/user_adding_screen.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -34,7 +32,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
@@ -205,6 +202,36 @@ std::unique_ptr<views::Widget> CreateTestWidget() {
   return widget;
 }
 
+void FlushMessageLoop() {
+  base::RunLoop run_loop;
+  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                   run_loop.QuitClosure());
+  run_loop.Run();
+}
+
+void SetClipboardText(const std::string& text) {
+  ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste)
+      .WriteText(base::UTF8ToUTF16(text));
+
+  // ClipboardHistory will post a task to process clipboard data in order to
+  // debounce multiple clipboard writes occurring in sequence. Here we give
+  // ClipboardHistory the chance to run its posted tasks before proceeding.
+  FlushMessageLoop();
+}
+
+void SetClipboardTextAndHtml(const std::string& text, const std::string& html) {
+  {
+    ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
+    scw.WriteText(base::UTF8ToUTF16(text));
+    scw.WriteHTML(base::UTF8ToUTF16(html), /*source_url=*/"");
+  }
+
+  // ClipboardHistory will post a task to process clipboard data in order to
+  // debounce multiple clipboard writes occurring in sequence. Here we give
+  // ClipboardHistory the chance to run its posted tasks before proceeding.
+  FlushMessageLoop();
+}
+
 ash::ClipboardHistoryControllerImpl* GetClipboardHistoryController() {
   return ash::Shell::Get()->clipboard_history_controller();
 }
@@ -238,6 +265,13 @@ bool VerifyClipboardTextData(const std::initializer_list<std::string>& texts) {
   return true;
 }
 
+void WaitForOperationConfirmed() {
+  base::RunLoop run_loop;
+  GetClipboardHistoryController()->set_confirmed_operation_callback_for_test(
+      run_loop.QuitClosure());
+  run_loop.Run();
+}
+
 }  // namespace
 
 class ClipboardHistoryBrowserTest : public ash::LoginManagerTest {
@@ -256,16 +290,6 @@ class ClipboardHistoryBrowserTest : public ash::LoginManagerTest {
   }
 
  protected:
-  // ash::LoginManagerTest:
-  void SetUpOnMainThread() override {
-    ash::LoginManagerTest::SetUpOnMainThread();
-    event_generator_ = std::make_unique<ui::test::EventGenerator>(
-        ash::Shell::GetPrimaryRootWindow());
-    LoginUser(account_id1_);
-    GetClipboardHistoryController()->set_confirmed_operation_callback_for_test(
-        operation_confirmed_future_.GetCallback());
-  }
-
   // Click at the delete button of the menu entry specified by `index`.
   void ClickAtDeleteButton(int index) {
     auto* item_view = GetContextMenu()->GetMenuItemViewAtForTest(index);
@@ -366,38 +390,18 @@ class ClipboardHistoryBrowserTest : public ash::LoginManagerTest {
     EXPECT_TRUE(item_view->IsSelected());
   }
 
-  void WaitForOperationConfirmed(bool success_expected) {
-    EXPECT_EQ(operation_confirmed_future_.Take(), success_expected);
-  }
-
-  void SetClipboardText(const std::string& text) {
-    ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste)
-        .WriteText(base::UTF8ToUTF16(text));
-
-    // ClipboardHistory will post a task to process clipboard data in order to
-    // debounce multiple clipboard writes occurring in sequence. Here we give
-    // ClipboardHistory the chance to run its posted tasks before proceeding.
-    WaitForOperationConfirmed(/*success_expected=*/true);
-  }
-
-  void SetClipboardTextAndHtml(const std::string& text,
-                               const std::string& html) {
-    {
-      ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
-      scw.WriteText(base::UTF8ToUTF16(text));
-      scw.WriteHTML(base::UTF8ToUTF16(html), /*source_url=*/"");
-    }
-
-    // ClipboardHistory will post a task to process clipboard data in order to
-    // debounce multiple clipboard writes occurring in sequence. Here we give
-    // ClipboardHistory the chance to run its posted tasks before proceeding.
-    WaitForOperationConfirmed(/*success_expected=*/true);
+  // ash::LoginManagerTest:
+  void SetUpOnMainThread() override {
+    ash::LoginManagerTest::SetUpOnMainThread();
+    event_generator_ = std::make_unique<ui::test::EventGenerator>(
+        ash::Shell::GetPrimaryRootWindow());
+    LoginUser(account_id1_);
   }
 
   AccountId account_id1_;
   ash::LoginManagerMixin login_mixin_{&mixin_host_};
+
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
-  base::test::RepeatingTestFuture<bool> operation_confirmed_future_;
 
   base::test::ScopedFeatureList feature_list_;
 };
@@ -1040,7 +1044,7 @@ class ClipboardHistoryTextfieldBrowserTest
     ASSERT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
     ShowContextMenuViaAccelerator(/*wait_for_selection=*/true);
     PressAndRelease(ui::VKEY_RETURN);
-    WaitForOperationConfirmed(/*success_expected=*/true);
+    WaitForOperationConfirmed();
   }
 
   std::unique_ptr<views::Widget> widget_;
@@ -1062,7 +1066,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
   GetEventGenerator()->GestureTapAt(
       second_menu_item_view->GetBoundsInScreen().CenterPoint());
   EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
-  WaitForOperationConfirmed(/*success_expected=*/true);
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ("A", base::UTF16ToUTF8(textfield_->GetText()));
 }
 
@@ -1073,9 +1077,13 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
   base::HistogramTester histogram_tester;
 
   SetClipboardText("A");
+  WaitForOperationConfirmed();
+
   PasteFromClipboardHistoryMenuAndWait();
   PasteFromClipboardHistoryMenuAndWait();
+
   SetClipboardText("B");
+  WaitForOperationConfirmed();
 
   histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.ConsecutivePastes",
                                     /*count=*/1);
@@ -1113,7 +1121,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
   PressAndRelease(ui::KeyboardCode::VKEY_UP, ui::EF_NONE);
   PressAndRelease(ui::VKEY_RETURN);
   EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
-  WaitForOperationConfirmed(/*success_expected=*/true);
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ("B", base::UTF16ToUTF8(textfield_->GetText()));
 }
 
@@ -1133,7 +1141,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
   PressAndRelease(ui::KeyboardCode::VKEY_RETURN);
 
   EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
-  WaitForOperationConfirmed(/*success_expected=*/true);
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ("C", base::UTF16ToUTF8(textfield_->GetText()));
   histogram_tester.ExpectTotalCount(
       "Ash.ClipboardHistory.ContextMenu.DisplayFormatPasted", 1);
@@ -1148,7 +1156,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
   PressAndRelease(ui::KeyboardCode::VKEY_V, ui::EF_COMMAND_DOWN);
 
   EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
-  WaitForOperationConfirmed(/*success_expected=*/true);
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ("C", base::UTF16ToUTF8(textfield_->GetText()));
 
   textfield_->SetText(std::u16string());
@@ -1162,7 +1170,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
   PressAndRelease(ui::KeyboardCode::VKEY_RETURN);
 
   EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
-  WaitForOperationConfirmed(/*success_expected=*/true);
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ("A", base::UTF16ToUTF8(textfield_->GetText()));
 
   textfield_->SetText(std::u16string());
@@ -1177,7 +1185,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
   PressAndRelease(ui::KeyboardCode::VKEY_V, ui::EF_COMMAND_DOWN);
 
   EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
-  WaitForOperationConfirmed(/*success_expected=*/true);
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ("A", base::UTF16ToUTF8(textfield_->GetText()));
 }
 
@@ -1194,7 +1202,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
   EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
   PressAndRelease(ui::KeyboardCode::VKEY_V, ui::EF_COMMAND_DOWN);
   EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
-  WaitForOperationConfirmed(/*success_expected=*/true);
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ("C", base::UTF16ToUTF8(textfield_->GetText()));
   Release(ui::KeyboardCode::VKEY_COMMAND);
 
@@ -1209,39 +1217,9 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
   PressAndRelease(ui::KeyboardCode::VKEY_DOWN, ui::EF_COMMAND_DOWN);
   PressAndRelease(ui::KeyboardCode::VKEY_V, ui::EF_COMMAND_DOWN);
   EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
-  WaitForOperationConfirmed(/*success_expected=*/true);
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ("A", base::UTF16ToUTF8(textfield_->GetText()));
   Release(ui::KeyboardCode::VKEY_COMMAND);
-}
-
-IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
-                       PasteWithLockedScreen) {
-  // Write an item to the clipboard.
-  SetClipboardText("A");
-
-  // Verify that the item can be pasted successfully.
-  ShowContextMenuViaAccelerator(/*wait_for_selection=*/true);
-  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
-  PressAndRelease(ui::KeyboardCode::VKEY_RETURN);
-  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
-  WaitForOperationConfirmed(/*success_expected=*/true);
-  EXPECT_EQ("A", base::UTF16ToUTF8(textfield_->GetText()));
-
-  // Start a new paste.
-  textfield_->SetText(std::u16string());
-  EXPECT_TRUE(textfield_->GetText().empty());
-  ShowContextMenuViaAccelerator(/*wait_for_selection=*/true);
-  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
-  PressAndRelease(ui::KeyboardCode::VKEY_RETURN);
-  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
-
-  // Lock the screen.
-  chromeos::SessionManagerClient::Get()->RequestLockScreen();
-  ash::SessionStateWaiter(session_manager::SessionState::LOCKED).Wait();
-
-  // Verify that the item was not pasted.
-  WaitForOperationConfirmed(/*success_expected=*/false);
-  EXPECT_TRUE(textfield_->GetText().empty());
 }
 
 class FakeDataTransferPolicyController
@@ -1305,7 +1283,7 @@ class ClipboardHistoryWithMockDLPBrowserTest
     // ClipboardHistory will post a task to process clipboard data in order to
     // debounce multiple clipboard writes occurring in sequence. Here we give
     // ClipboardHistory the chance to run its posted tasks before proceeding.
-    WaitForOperationConfirmed(/*success_expected=*/true);
+    FlushMessageLoop();
   }
 
  private:
@@ -1331,7 +1309,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWithMockDLPBrowserTest, Basics) {
       accessible_menu_item_view->GetBoundsInScreen().CenterPoint());
   ASSERT_TRUE(accessible_menu_item_view->IsSelected());
   GetEventGenerator()->ClickLeftButton();
-  WaitForOperationConfirmed(/*success_expected=*/true);
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ("A", base::UTF16ToUTF8(textfield_->GetText()));
 
   // Clear `textfield_`'s contents.

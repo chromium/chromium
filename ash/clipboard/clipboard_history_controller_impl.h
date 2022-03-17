@@ -109,7 +109,7 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   }
 
   void set_confirmed_operation_callback_for_test(
-      base::RepeatingCallback<void(bool)> new_callback) {
+      base::RepeatingClosure new_callback) {
     confirmed_operation_callback_for_test_ = new_callback;
   }
 
@@ -144,12 +144,11 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   void OnCachedImageModelUpdated(
       const std::vector<base::UnguessableToken>& menu_item_ids) override;
 
-  // Invoked by `GetHistoryValues()` once all clipboard instances with images
-  // have been encoded into PNGs. Calls `callback` with the clipboard history
-  // list, which tracks what has been copied to the clipboard. Only the items
-  // listed in `item_id_filter` are returned. If `item_id_filter` is empty, then
-  // all items in the history are returned. If clipboard history is disabled in
-  // the current mode, `callback` will be called with an empty history list.
+  // Invoked by GetHistoryValues once all clipboard instances with images have
+  // been encoded into PNGs. Returns the history which tracks what is being
+  // copied to the clipboard. Only the items listed in `item_id_filter` are
+  // returned. If `item_id_filter` is empty, then all items in the history are
+  // returned.
   void GetHistoryValuesWithEncodedPNGs(
       const std::set<std::string>& item_id_filter,
       GetHistoryValuesCallback callback,
@@ -228,9 +227,9 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   // menu opens.
   base::RepeatingClosure initial_item_selected_callback_for_test_;
 
-  // Called when a copy or paste finishes. Accepts the operation's success as an
-  // argument.
-  base::RepeatingCallback<void(bool)> confirmed_operation_callback_for_test_;
+  // Called when the controller is notified of the confirmed clipboard data
+  // operation.
+  base::RepeatingClosure confirmed_operation_callback_for_test_;
 
   // A new bitmap to be written to the clipboard while existing images are being
   // encoded during `GetHistoryValues()`, which will force `GetHistoryValues()`
