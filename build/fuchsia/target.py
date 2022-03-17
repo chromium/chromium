@@ -73,8 +73,6 @@ class Target(object):
     self._log_listener_proc = None
     self._dry_run = False
     self._started = False
-    self._ffx_path = os.path.join(common.SDK_ROOT, 'tools',
-                                  common.GetHostArchFromPlatform(), 'ffx')
     self._log_manager = LogManager(logs_dir)
     self._ffx_runner = ffx_session.FfxRunner(self._log_manager)
 
@@ -375,13 +373,14 @@ class Target(object):
           raise Exception('Hash mismatch for %s after resolve (%s vs %s).' %
                           (package_name, pkgctl_out, meta_far_merkel))
 
-  def RunFFXCommand(self, ffx_args, **kwargs):
+  def RunFFXCommand(self, ffx_args):
     """Automatically gets the FFX path and runs FFX based on the
-    arguments provided. Extra args can be added to be used with Popen.
+    arguments provided.
 
-    ffx_args: The arguments for a ffx command.
-    kwargs: A dictionary of parameters to be passed to subprocess.Popen().
+    Args:
+      ffx_args: The arguments for a ffx command.
 
-    Returns a Popen object for the command."""
-    command = [self._ffx_path] + ffx_args
-    return subprocess.Popen(command, **kwargs)
+    Returns:
+      A Popen object for the command.
+    """
+    return self._ffx_runner.open_ffx(ffx_args)

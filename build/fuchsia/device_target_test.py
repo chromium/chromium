@@ -8,6 +8,7 @@ import unittest
 import unittest.mock as mock
 from argparse import Namespace
 from device_target import DeviceTarget
+from ffx_session import FfxRunner, FfxTarget
 from target import Target, FuchsiaTargetException
 
 
@@ -26,40 +27,62 @@ class TestDiscoverDeviceTarget(unittest.TestCase):
 
   def testNoNodeNameOneDeviceReturnNoneCheckNameAndAddress(self):
     with DeviceTarget.CreateFromArgs(self.args) as device_target_instance, \
-         mock.patch.object(DeviceTarget, 'RunFFXCommand') as mock_ffx, \
+         mock.patch.object(FfxRunner, 'list_targets') as mock_list_targets, \
+         mock.patch.object(
+             FfxTarget, 'get_ssh_address') as mock_get_ssh_address, \
          mock.patch.object(
              DeviceTarget, '_ConnectToTarget') as mock_connecttotarget:
-      mock_spec_popen = mock.create_autospec(subprocess.Popen, instance=True)
-      mock_spec_popen.communicate.return_value = ('address device_name', '')
-      mock_spec_popen.returncode = 0
-      mock_ffx.return_value = mock_spec_popen
+      mock_list_targets.return_value = [{
+          "nodename": "device_name",
+          "rcs_state": "Y",
+          "serial": "<unknown>",
+          "target_type": "terminal.qemu-x64",
+          "target_state": "Product",
+          "addresses": ["address"]
+      }]
+      mock_get_ssh_address.return_value = ('address', 12345)
       mock_connecttotarget.return_value = True
       self.assertIsNone(device_target_instance.Start())
       self.assertEqual(device_target_instance._node_name, 'device_name')
       self.assertEqual(device_target_instance._host, 'address')
+      self.assertEqual(device_target_instance._port, 12345)
 
   def testNoNodeNameTwoDevicesRaiseExceptionAmbiguousTarget(self):
     with DeviceTarget.CreateFromArgs(self.args) as device_target_instance, \
-         mock.patch.object(DeviceTarget, 'RunFFXCommand') as mock_ffx, \
+         mock.patch.object(FfxRunner, 'list_targets') as mock_list_targets, \
          self.assertRaisesRegex(Exception, \
                                 'More than one device was discovered'):
-      mock_spec_popen = mock.create_autospec(subprocess.Popen, instance=True)
-      mock_spec_popen.communicate.return_value = ('address1 device_name1\n'
-                                                  'address2 device_name2', '')
-      mock_spec_popen.returncode = 0
-      mock_ffx.return_value = mock_spec_popen
+      mock_list_targets.return_value = [{
+          "nodename": "device_name1",
+          "rcs_state": "Y",
+          "serial": "<unknown>",
+          "target_type": "terminal.qemu-x64",
+          "target_state": "Product",
+          "addresses": ["address1"]
+      }, {
+          "nodename": "device_name2",
+          "rcs_state": "Y",
+          "serial": "<unknown>",
+          "target_type": "terminal.qemu-x64",
+          "target_state": "Product",
+          "addresses": ["address2"]
+      }]
       device_target_instance.Start()
       self.assertIsNone(device_target_instance._node_name)
       self.assertIsNone(device_target_instance._host)
 
   def testNoNodeNameDeviceDoesntHaveNameRaiseExceptionCouldNotFind(self):
     with DeviceTarget.CreateFromArgs(self.args) as device_target_instance, \
-         mock.patch.object(DeviceTarget, 'RunFFXCommand') as mock_ffx, \
+         mock.patch.object(FfxRunner, 'list_targets') as mock_list_targets, \
          self.assertRaisesRegex(Exception, 'Could not find device.'):
-      mock_spec_popen = mock.create_autospec(subprocess.Popen, instance=True)
-      mock_spec_popen.communicate.return_value = ('address', '')
-      mock_spec_popen.returncode = 0
-      mock_ffx.return_value = mock_spec_popen
+      mock_list_targets.return_value = [{
+          "nodename": "<unknown>",
+          "rcs_state": "Y",
+          "serial": "<unknown>",
+          "target_type": "terminal.qemu-x64",
+          "target_state": "Product",
+          "addresses": ["address"]
+      }]
       device_target_instance.Start()
       self.assertIsNone(device_target_instance._node_name)
       self.assertIsNone(device_target_instance._host)
@@ -67,35 +90,34 @@ class TestDiscoverDeviceTarget(unittest.TestCase):
   def testNodeNameDefinedDeviceFoundReturnNoneCheckNameAndHost(self):
     self.args.node_name = 'device_name'
     with DeviceTarget.CreateFromArgs(self.args) as device_target_instance, \
-         mock.patch('subprocess.Popen') as mock_popen, \
+         mock.patch.object(
+             FfxTarget, 'get_ssh_address') as mock_get_ssh_address, \
          mock.patch.object(
              DeviceTarget, '_ConnectToTarget') as mock_connecttotarget:
-      mock_popen.return_value.communicate.return_value = ('address',
-                                                          'device_name')
-      mock_popen.return_value.returncode = 0
+      mock_get_ssh_address.return_value = ('address', 12345)
       mock_connecttotarget.return_value = True
       self.assertIsNone(device_target_instance.Start())
       self.assertEqual(device_target_instance._node_name, 'device_name')
       self.assertEqual(device_target_instance._host, 'address')
+      self.assertEqual(device_target_instance._port, 12345)
 
   def testNodeNameDefinedDeviceNotFoundRaiseExceptionCouldNotFind(self):
     self.args.node_name = 'wrong_device_name'
     with DeviceTarget.CreateFromArgs(self.args) as device_target_instance, \
-         mock.patch('subprocess.Popen') as mock_popen, \
+         mock.patch.object(
+             FfxTarget, 'get_ssh_address') as mock_get_ssh_address, \
          self.assertRaisesRegex(Exception, 'Could not find device.'):
-      mock_popen.returncode = ('', '')
+      mock_get_ssh_address.side_effect = subprocess.CalledProcessError(
+          1, 'ffx', 'Timeout attempting to reach target "wrong_device_name"')
       device_target_instance.Start()
       self.assertIsNone(device_target_instance._node_name)
       self.assertIsNone(device_target_instance._host)
 
   def testNoDevicesFoundRaiseExceptionCouldNotFind(self):
     with DeviceTarget.CreateFromArgs(self.args) as device_target_instance, \
-         mock.patch.object(DeviceTarget, 'RunFFXCommand') as mock_ffx, \
+         mock.patch.object(FfxRunner, 'list_targets') as mock_list_targets, \
          self.assertRaisesRegex(Exception, 'Could not find device.'):
-      mock_spec_popen = mock.create_autospec(subprocess.Popen, instance=True)
-      mock_spec_popen.communicate.return_value = ('', '')
-      mock_spec_popen.returncode = 0
-      mock_ffx.return_value = mock_spec_popen
+      mock_list_targets.return_value = []
       device_target_instance.Start()
       self.assertIsNone(device_target_instance._node_name)
       self.assertIsNone(device_target_instance._host)
@@ -138,9 +160,11 @@ class TestDiscoverDeviceTarget(unittest.TestCase):
     self.args.node_name = 'mocknode'
     self.args.system_image_dir = 'mockdir'
     with DeviceTarget.CreateFromArgs(self.args) as device_target_instance, \
-         mock.patch('subprocess.Popen') as mock_popen, \
+         mock.patch.object(
+             FfxTarget, 'get_ssh_address') as mock_get_ssh_address, \
          mock.patch.object(DeviceTarget, '_ProvisionDevice') as mock_provision:
-      mock_popen.returncode = ('', '')
+      mock_get_ssh_address.side_effect = subprocess.CalledProcessError(
+          1, 'ffx', 'Timeout attempting to reach target "mocknode"')
       device_target_instance.Start()
       self.assertEqual(mock_provision.call_count, 1)
 

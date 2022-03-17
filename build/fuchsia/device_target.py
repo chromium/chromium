@@ -93,6 +93,7 @@ class DeviceTarget(target.Target):
     self._system_image_dir = system_image_dir
     self._os_check = os_check
     self._pkg_repo = None
+    self._target_context = None
     self._ffx_target = None
     if not self._system_image_dir and self._os_check != 'ignore':
       raise Exception("Image directory must be provided if a repave is needed.")
@@ -165,96 +166,91 @@ class DeviceTarget(target.Target):
 
   def _Discover(self):
     """Queries mDNS for the IP address of a booted Fuchsia instance whose name
-    matches |_node_name| on the local area network. If |_node_name| isn't
-    specified, and there is only one device on the network, then returns the
-    IP address of that advice.
+    matches |_node_name| on the local area network. If |_node_name| is not
+    specified and there is only one device on the network, |_node_name| is set
+    to that device's name.
 
-    Sets |_host_name| and returns True if the device was found,
-    or waits up to |timeout| seconds and returns False if the device couldn't
-    be found."""
+    Returns:
+      True if exactly one device is found, after setting |_host| and |_port| to
+      its SSH address. False if no devices are found.
 
-    dev_finder_path = GetHostToolPathFromPlatform('device-finder')
+    Raises:
+      Exception: If more than one device is found.
+    """
 
-    with open(os.devnull, 'w') as devnull:
-      if self._node_name:
-        command = [
-            dev_finder_path,
-            'resolve',
-            '-device-limit',
-            '1',  # Exit early as soon as a host is found.
-            self._node_name
-        ]
-        proc = subprocess.Popen(command,
-                                stdout=subprocess.PIPE,
-                                stderr=devnull,
-                                text=True)
-      else:
-        proc = self.RunFFXCommand(['target', 'list', '-f', 'simple'],
-                                  stdout=subprocess.PIPE,
-                                  stderr=devnull,
-                                  text=True)
+    if not self._node_name:
+      # Get the node name of a single attached target.
+      targets = None
+      try:
+        targets = self._ffx_runner.list_targets()
+      except subprocess.CalledProcessError:
+        # A failure to list targets could mean that the device is in zedboot.
+        # Return false in this case so that Start() will attempt to provision.
+        return False
+      if not targets:
+        return False
 
-    output = set(proc.communicate()[0].strip().split('\n'))
-    if proc.returncode != 0:
-      return False
-
-    if self._node_name:
-      # Handle the result of "device-finder resolve".
-      self._host = output.pop().strip()
-    else:
-      name_host_pairs = [x.strip().split(' ') for x in output]
-
-      if len(name_host_pairs) > 1:
+      if len(targets) > 1:
         raise Exception('More than one device was discovered on the network. '
                         'Use --node-name <name> to specify the device to use.'
-                        'List of devices: {}'.format(output))
-      assert len(name_host_pairs) == 1
-      # Check if device has both address and name.
-      if len(name_host_pairs[0]) < 2:
-        return False
-      self._host, self._node_name = name_host_pairs[0]
+                        'List of devices: {}'.format(targets))
+      assert len(targets) == 1
 
-    logging.info('Found device "%s" at address %s.' % (self._node_name,
-                                                       self._host))
+      node_name = targets[0].get('nodename')
+      if not node_name or node_name == '<unknown>':
+        return False
+      self._node_name = node_name
+
+    # Get the ssh address of the target.
+    ffx_target = ffx_session.FfxTarget(self._ffx_runner, self._node_name)
+    try:
+      self._host, self._port = ffx_target.get_ssh_address()
+    except subprocess.CalledProcessError:
+      return False
+
+    logging.info('Found device "%s" at %s:%d.' %
+                 (self._node_name, self._host, self._port))
+
+    # TODO(crbug.com/1307220): Remove this once the telemetry scripts can handle
+    # specifying the port for a device that is not listening on localhost.
+    if self._port == 22:
+      self._port = None
 
     return True
 
   def Start(self):
     if self._host:
       self._ConnectToTarget()
-    else:
-      device_found = self._Discover()
+    elif self._Discover():
+      self._ConnectToTarget()
+      if self._os_check == 'ignore':
+        return
 
-      if device_found:
-        self._ConnectToTarget()
-        if self._os_check == 'ignore':
-          return
-
-        # If accessible, check version.
-        new_version = self._GetSdkHash()
-        installed_version = self._GetInstalledSdkVersion()
-        if new_version == installed_version:
-          logging.info('Fuchsia version installed on device matches Chromium '
-                       'SDK version. Skipping pave.')
-        else:
-          if self._os_check == 'check':
-            raise Exception('Image and Fuchsia version installed on device '
-                            'does not match. Abort.')
-          logging.info('Putting device in recovery mode')
-          self.RunCommandPiped(['dm', 'reboot-recovery'],
-                               stdout=subprocess.PIPE,
-                               stderr=subprocess.STDOUT)
-          self._ProvisionDevice()
+      # If accessible, check version.
+      new_version = self._GetSdkHash()
+      installed_version = self._GetInstalledSdkVersion()
+      if new_version == installed_version:
+        logging.info('Fuchsia version installed on device matches Chromium '
+                     'SDK version. Skipping pave.')
       else:
-        if self._node_name:
-          logging.info('Could not detect device %s.' % self._node_name)
-          if self._os_check == 'update':
-            logging.info('Assuming it is in zedboot. Continuing with paving...')
-            self._ProvisionDevice()
-            return
-        raise Exception('Could not find device. If the device is connected '
-                        'to the host remotely, make sure that --host flag '
-                        'is set and that remote serving is set up.')
+        if self._os_check == 'check':
+          raise Exception('Image and Fuchsia version installed on device '
+                          'does not match. Abort.')
+        logging.info('Putting device in recovery mode')
+        self.RunCommandPiped(['dm', 'reboot-recovery'],
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.STDOUT)
+        self._ProvisionDevice()
+    else:
+      if self._node_name:
+        logging.info('Could not detect device %s.' % self._node_name)
+        if self._os_check == 'update':
+          logging.info('Assuming it is in zedboot. Continuing with paving...')
+          self._ProvisionDevice()
+          return
+      raise Exception('Could not find device. If the device is connected '
+                      'to the host remotely, make sure that --host flag '
+                      'is set and that remote serving is set up.')
 
   def GetFfxTarget(self):
     assert self._ffx_target
@@ -342,18 +338,26 @@ class DeviceTarget(target.Target):
 
   def _ConnectToTarget(self):
     logging.info('Connecting to Fuchsia using ffx.')
-    # Prefer connecting via node name over address:port. Assume that ffx already
-    # knows about the target, so there's no need to add/remove it.
-    self._ffx_target = ffx_session.FfxTarget(
-        self._ffx_runner, self._node_name) if self._node_name else \
-        ffx_session.FfxTarget(self._ffx_runner,
-                              '%s:%s' % (self._host, self._port))
-    self._ffx_target.wait(ATTACH_RETRY_SECONDS)
+    # Prefer connecting via node name over address:port.
+    if self._node_name:
+      # Assume that ffx already knows about the target, so there's no need to
+      # add/remove it.
+      self._ffx_target = ffx_session.FfxTarget(self._ffx_runner,
+                                               self._node_name)
+    else:
+      # The target may not be known by ffx, so tell it how to find it.
+      self._target_context = self._ffx_runner.scoped_target_context(
+          self._host, self._port)
+      self._ffx_target = self._target_context.__enter__()
+      self._ffx_target.wait(ATTACH_RETRY_SECONDS)
     return super(DeviceTarget, self)._ConnectToTarget()
 
   def _DisconnectFromTarget(self):
-    super(DeviceTarget, self)._DisconnectFromTarget()
     self._ffx_target = None
+    if self._target_context:
+      self._target_context.__exit__(None, None, None)
+      self._target_context = None
+    super(DeviceTarget, self)._DisconnectFromTarget()
 
   def _GetSshConfigPath(self):
     return self._ssh_config_path
