@@ -311,22 +311,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     }
 
     @Override
-    protected String getContentPublisher() {
-        Tab tab = getToolbarDataProvider().getTab();
-        if (tab == null) return null;
-
-        String publisherUrl = TrustedCdn.getPublisherUrl(tab);
-        if (publisherUrl != null) {
-            return UrlUtilities.extractPublisherFromPublisherUrl(publisherUrl);
-        }
-
-        // TODO(bauerb): Remove this once trusted CDN publisher URLs have rolled out completely.
-        if (mLocationBar.isShowingTitleOnly()) return parsePublisherNameFromUrl(tab.getUrl());
-
-        return null;
-    }
-
-    @Override
     protected void onNavigatedToDifferentPage() {
         super.onNavigatedToDifferentPage();
         mLocationBarModel.notifyTitleChanged();
@@ -779,7 +763,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 if (activity == null) return;
                 if (mCurrentlyShowingBranding) return;
                 // For now we don't show "store info" row for custom tab.
-                new ChromePageInfo(mModalDialogManagerSupplier, getContentPublisher(),
+                new ChromePageInfo(mModalDialogManagerSupplier,
+                        TrustedCdn.getContentPublisher(getToolbarDataProvider().getTab()),
                         OpenedFromSource.TOOLBAR, /*storeInfoActionHandlerSupplier=*/null)
                         .show(currentTab, ChromePageInfoHighlight.noHighlight());
             });

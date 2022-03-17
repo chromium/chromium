@@ -1740,13 +1740,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     }
 
     /**
-     * @see TopToolbarCoordinator#getContentPublisher()
-     */
-    public String getContentPublisher() {
-        return mToolbar.getContentPublisher();
-    }
-
-    /**
      * Focuses or unfocuses the URL bar.
      *
      * If you request focus and the UrlBar was already focused, this will select all of the text.

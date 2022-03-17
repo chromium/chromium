@@ -474,15 +474,6 @@ public abstract class ToolbarLayout
     protected void setUrlBarHidden(boolean hide) {}
 
     /**
-     * @return The name of the publisher of the content if it can be reliably extracted, or null
-     *         otherwise.
-     */
-    @Nullable
-    protected String getContentPublisher() {
-        return null;
-    }
-
-    /**
      * Tells the Toolbar to update what buttons it is currently displaying.
      */
     void updateButtonVisibility() {}

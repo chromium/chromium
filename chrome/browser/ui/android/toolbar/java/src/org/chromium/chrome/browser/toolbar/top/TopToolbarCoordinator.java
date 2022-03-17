@@ -376,14 +376,6 @@ public class TopToolbarCoordinator implements Toolbar {
     }
 
     /**
-     * @return The name of the publisher of the content if it can be reliably extracted, or null
-     *         otherwise.
-     */
-    public String getContentPublisher() {
-        return mToolbarLayout.getContentPublisher();
-    }
-
-    /**
      * Tells the Toolbar to update what buttons it is currently displaying.
      */
     public void updateButtonVisibility() {

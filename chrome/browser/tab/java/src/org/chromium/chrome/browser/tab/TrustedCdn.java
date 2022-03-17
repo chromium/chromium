@@ -12,6 +12,7 @@ import org.chromium.base.UnownedUserData;
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.content_public.browser.WebContents;
@@ -82,6 +83,22 @@ public class TrustedCdn extends TabWebContentsUserData {
     public static String getPublisherUrl(@Nullable Tab tab) {
         TrustedCdn cdn = get(tab);
         return cdn != null ? cdn.getPublisherUrl() : null;
+    }
+
+    /**
+     * @param tab Tab object currently being shown.
+     * @return The name of the publisher of the content if it can be reliably extracted, or null
+     *         otherwise.
+     */
+    public static String getContentPublisher(Tab tab) {
+        if (tab == null) return null;
+
+        String publisherUrl = TrustedCdn.getPublisherUrl(tab);
+        if (publisherUrl != null) {
+            return UrlUtilities.extractPublisherFromPublisherUrl(publisherUrl);
+        }
+
+        return null;
     }
 
     static TrustedCdn from(@NonNull Tab tab) {
