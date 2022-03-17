@@ -12,6 +12,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build.VERSION_CODES;
 import android.os.SystemClock;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Pair;
 import android.view.DragEvent;
@@ -162,7 +163,8 @@ class DragAndDropDelegateImpl implements ViewAndroidDelegate.DragAndDropDelegate
                 return ClipData.newUri(
                         ContextUtils.getApplicationContext().getContentResolver(), null, uri);
             case DragTargetType.LINK:
-                // TODO(https://crbug.com/1289393): Handle link dragging.
+                // TODO(https://crbug.com/1298308): Handle image link dragging.
+                return ClipData.newPlainText(null, getTextForLinkData(dropData));
             case DragTargetType.INVALID:
                 return null;
             case DragTargetType.NUM_ENTRIES:
@@ -178,6 +180,8 @@ class DragAndDropDelegateImpl implements ViewAndroidDelegate.DragAndDropDelegate
             return View.DRAG_FLAG_GLOBAL;
         } else if (dropData.hasImage()) {
             return View.DRAG_FLAG_GLOBAL | View.DRAG_FLAG_GLOBAL_URI_READ;
+        } else if (dropData.hasLink()) {
+            return View.DRAG_FLAG_GLOBAL;
         } else {
             return 0;
         }
@@ -300,14 +304,24 @@ class DragAndDropDelegateImpl implements ViewAndroidDelegate.DragAndDropDelegate
             return DragTargetType.TEXT;
         } else if (dropDataAndroid.hasImage()) {
             return DragTargetType.IMAGE;
+        } else if (dropDataAndroid.hasLink()) {
+            return DragTargetType.LINK;
         } else {
-            // TODO(https://crbug.com/1289393): Handle link dragging.
             return DragTargetType.INVALID;
         }
     }
 
     private static int getDragShadowMinWidth(Resources resources) {
         return resources.getDimensionPixelSize(R.dimen.drag_shadow_min_width);
+    }
+
+    /**
+     * Return the text to be dropped when {@link DropDataAndroid} contains a link.
+     */
+    static String getTextForLinkData(DropDataAndroid dropData) {
+        assert dropData.hasLink();
+        if (TextUtils.isEmpty(dropData.text)) return dropData.gurl.getSpec();
+        return dropData.text + "\n" + dropData.gurl.getSpec();
     }
 
     private void reset() {

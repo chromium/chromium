@@ -37,6 +37,7 @@ ScopedJavaLocalRef<jobject> ToJavaDropData(const DropData& drop_data) {
   ScopedJavaLocalRef<jobject> jgurl;
   if (!drop_data.url.is_empty()) {
     jgurl = url::GURLAndroid::FromNativeGURL(env, drop_data.url);
+    jtext = ConvertUTF16ToJavaString(env, drop_data.url_title);
   }
 
   // If file_contents is not empty, user is trying to drag image out of the
