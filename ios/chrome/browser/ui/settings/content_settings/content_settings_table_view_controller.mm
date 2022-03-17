@@ -15,6 +15,8 @@
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
+#import "ios/chrome/browser/mailto_handler/mailto_handler_service.h"
+#import "ios/chrome/browser/mailto_handler/mailto_handler_service_factory.h"
 #import "ios/chrome/browser/main/browser.h"
 #include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
@@ -31,8 +33,6 @@
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/grit/ios_strings.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#include "ios/public/provider/chrome/browser/mailto/mailto_handler_provider.h"
 #include "ios/web/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
@@ -166,9 +166,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [model addSectionWithIdentifier:SectionIdentifierSettings];
   [model addItem:[self blockPopupsItem]
       toSectionWithIdentifier:SectionIdentifierSettings];
-  MailtoHandlerProvider* provider =
-      ios::GetChromeBrowserProvider().GetMailtoHandlerProvider();
-  NSString* settingsTitle = provider->MailtoHandlerSettingsTitle();
+  NSString* settingsTitle = MailtoHandlerServiceFactory::GetForBrowserState(
+                                _browser->GetBrowserState())
+                                ->SettingsTitle();
   // Display email settings only on one window at a time, by checking
   // if this is the current owner.
   _openedInAnotherWindowItem = nil;
@@ -239,12 +239,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
   _composeEmailDetailItem = [[TableViewDetailIconItem alloc]
       initWithType:ItemTypeSettingsComposeEmail];
   // Use the handler's preferred title string for the compose email item.
-  MailtoHandlerProvider* provider =
-      ios::GetChromeBrowserProvider().GetMailtoHandlerProvider();
-  NSString* settingsTitle = provider->MailtoHandlerSettingsTitle();
+  NSString* settingsTitle = MailtoHandlerServiceFactory::GetForBrowserState(
+                                _browser->GetBrowserState())
+                                ->SettingsTitle();
   DCHECK([settingsTitle length]);
   // .detailText can display the selected mailto handling app, but the current
-  // MailtoHandlerProvider does not expose this through its API.
+  // MailtoHandlerService does not expose this through its API.
   _composeEmailDetailItem.text = settingsTitle;
   _composeEmailDetailItem.accessoryType =
       UITableViewCellAccessoryDisclosureIndicator;
@@ -257,12 +257,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
   _openedInAnotherWindowItem = [[TableViewMultiDetailTextItem alloc]
       initWithType:ItemTypeSettingsComposeEmail];
   // Use the handler's preferred title string for the compose email item.
-  MailtoHandlerProvider* provider =
-      ios::GetChromeBrowserProvider().GetMailtoHandlerProvider();
-  NSString* settingsTitle = provider->MailtoHandlerSettingsTitle();
+  NSString* settingsTitle = MailtoHandlerServiceFactory::GetForBrowserState(
+                                _browser->GetBrowserState())
+                                ->SettingsTitle();
   DCHECK([settingsTitle length]);
   // .detailText can display the selected mailto handling app, but the current
-  // MailtoHandlerProvider does not expose this through its API.
+  // MailtoHandlerService does not expose this through its API.
   _openedInAnotherWindowItem.text = settingsTitle;
 
   _openedInAnotherWindowItem.trailingDetailText =
@@ -324,10 +324,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
       if (openedMailTo)
         break;
 
-      MailtoHandlerProvider* provider =
-          ios::GetChromeBrowserProvider().GetMailtoHandlerProvider();
       UIViewController* controller =
-          provider->MailtoHandlerSettingsController();
+          MailtoHandlerServiceFactory::GetForBrowserState(
+              _browser->GetBrowserState())
+              ->CreateSettingsController();
       if (controller) {
         [self.navigationController pushViewController:controller animated:YES];
         openedMailTo = YES;
@@ -393,9 +393,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // it detects if the flow is coming back from it, based on the navigation
   // bar stack items.
   NSString* top = self.navigationController.navigationBar.topItem.title;
-  MailtoHandlerProvider* provider =
-      ios::GetChromeBrowserProvider().GetMailtoHandlerProvider();
-  NSString* mailToTitle = provider->MailtoHandlerSettingsTitle();
+  NSString* mailToTitle = MailtoHandlerServiceFactory::GetForBrowserState(
+                              _browser->GetBrowserState())
+                              ->SettingsTitle();
   if ([top isEqualToString:mailToTitle]) {
     openedMailTo = NO;
     [[NSNotificationCenter defaultCenter]

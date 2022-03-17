@@ -73,6 +73,8 @@
 #import "ios/chrome/browser/external_files/external_file_remover_impl.h"
 #include "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/first_run/first_run.h"
+#import "ios/chrome/browser/mailto_handler/mailto_handler_service.h"
+#import "ios/chrome/browser/mailto_handler/mailto_handler_service_factory.h"
 #include "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_list.h"
 #import "ios/chrome/browser/main/browser_list_factory.h"
@@ -116,7 +118,6 @@
 #import "ios/net/empty_nsurlcache.h"
 #include "ios/public/provider/chrome/browser/app_distribution/app_distribution_api.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#include "ios/public/provider/chrome/browser/mailto/mailto_handler_provider.h"
 #import "ios/public/provider/chrome/browser/overrides/overrides_api.h"
 #import "ios/public/provider/chrome/browser/ui_utils/ui_utils_api.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_provider.h"
@@ -297,10 +298,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
   // Handler for the startup tasks, deferred or not.
   StartupTasks* _startupTasks;
-
-  // List of closure to run as part of shutdown. The closure will be called
-  // in reverse order of registration.
-  std::vector<base::OnceClosure> _cleanupClosures;
 }
 
 // Handles collecting metrics on user triggered screenshots
@@ -362,8 +359,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 // Initializes the browser objects for the browser UI (e.g., the browser
 // state).
 - (void)startUpBrowserForegroundInitialization;
-// Register a closure to be called as part of app cleanup.
-- (void)registerCleanupClosure:(base::OnceClosure)closure;
 @end
 
 @implementation MainController
@@ -598,10 +593,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
                 self.appState.postCrashLaunch];
 }
 
-- (void)registerCleanupClosure:(base::OnceClosure)closure {
-  _cleanupClosures.push_back(std::move(closure));
-}
-
 - (void)initializeBrowserState:(ChromeBrowserState*)browserState {
   DCHECK(!browserState->IsOffTheRecord());
   search_engines::UpdateSearchEnginesIfNeeded(
@@ -758,20 +749,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   }
 
   _extensionSearchEngineDataUpdater = nullptr;
-
-  if (!_cleanupClosures.empty()) {
-    std::vector<base::OnceClosure> cleanupClosures;
-    cleanupClosures.swap(_cleanupClosures);
-
-    while (!cleanupClosures.empty()) {
-      base::OnceClosure closure = std::move(cleanupClosures.back());
-      cleanupClosures.pop_back();
-      std::move(closure).Run();
-    }
-
-    DCHECK(_cleanupClosures.empty())
-        << "-registerCleanupClosure must not be called during shutdown";
-  }
 
   // _localStatePrefChangeRegistrar is observing the PrefService, which is owned
   // indirectly by _chromeMain (through the ChromeBrowserState).
@@ -962,16 +939,9 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
                     if (!strongSelf || !strongSelf.appState.mainBrowserState) {
                       return;
                     }
-                    ios::GetChromeBrowserProvider()
-                        .GetMailtoHandlerProvider()
-                        ->PrepareMailtoHandling(
-                            strongSelf.appState.mainBrowserState);
-
-                    [strongSelf registerCleanupClosure:base::BindOnce([] {
-                                  ios::GetChromeBrowserProvider()
-                                      .GetMailtoHandlerProvider()
-                                      ->RemoveMailtoHandling();
-                                })];
+                    // Force the creation of the MailtoHandlerService.
+                    MailtoHandlerServiceFactory::GetForBrowserState(
+                        strongSelf.appState.mainBrowserState);
                   }];
 }
 

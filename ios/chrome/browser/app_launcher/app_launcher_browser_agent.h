@@ -26,7 +26,7 @@ class AppLauncherBrowserAgent
   // Helper object that handles delegated AppLauncherTabHelper functionality.
   class TabHelperDelegate : public AppLauncherTabHelperDelegate {
    public:
-    explicit TabHelperDelegate(WebStateList* web_state_list);
+    explicit TabHelperDelegate(Browser* browser);
     ~TabHelperDelegate() override;
 
    private:
@@ -43,9 +43,9 @@ class AppLauncherBrowserAgent
     // is expected to be closed before the app launcher dialog can be shown.
     OverlayRequestQueue* GetQueueForAppLaunchDialog(web::WebState* web_state);
 
-    // The Browser's WebStateList.  Used to fetch the appropriate request queue
-    // for app launcher dialogs.
-    WebStateList* web_state_list_ = nullptr;
+    // The Browser.  Used to fetch the appropriate request queue for app
+    // launcher dialogs.
+    Browser* browser_ = nullptr;
   };
 
   // Handler for app launches in the Browser.

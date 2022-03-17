@@ -9,6 +9,8 @@
 #include "base/metrics/histogram_macros.h"
 #import "ios/chrome/browser/app_launcher/app_launcher_tab_helper.h"
 #import "ios/chrome/browser/app_launcher/app_launcher_util.h"
+#import "ios/chrome/browser/mailto_handler/mailto_handler_service.h"
+#import "ios/chrome/browser/mailto_handler/mailto_handler_service_factory.h"
 #import "ios/chrome/browser/main/browser.h"
 #include "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
 #import "ios/chrome/browser/overlays/public/overlay_request.h"
@@ -17,8 +19,6 @@
 #import "ios/chrome/browser/overlays/public/web_content_area/app_launcher_overlay.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#include "ios/public/provider/chrome/browser/mailto/mailto_handler_provider.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 #import "net/base/mac/url_conversions.h"
@@ -71,17 +71,17 @@ void LaunchExternalApp(const GURL url, bool user_accepted = true) {
 #pragma mark - AppLauncherBrowserAgent
 
 AppLauncherBrowserAgent::AppLauncherBrowserAgent(Browser* browser)
-    : tab_helper_delegate_(browser->GetWebStateList()),
+    : tab_helper_delegate_(browser),
       tab_helper_delegate_installer_(&tab_helper_delegate_, browser) {}
 
 AppLauncherBrowserAgent::~AppLauncherBrowserAgent() = default;
 
 #pragma mark - AppLauncherBrowserAgent::TabHelperDelegate
 
-AppLauncherBrowserAgent::TabHelperDelegate::TabHelperDelegate(
-    WebStateList* web_state_list)
-    : web_state_list_(web_state_list) {
-  DCHECK(web_state_list_);
+AppLauncherBrowserAgent::TabHelperDelegate::TabHelperDelegate(Browser* browser)
+    : browser_(browser) {
+  DCHECK(browser_);
+  DCHECK(browser_->GetWebStateList());
 }
 
 AppLauncherBrowserAgent::TabHelperDelegate::~TabHelperDelegate() = default;
@@ -100,9 +100,8 @@ void AppLauncherBrowserAgent::TabHelperDelegate::LaunchAppForTabHelper(
 
   // Uses a Mailto Handler to open the appropriate app.
   if (url.SchemeIs(url::kMailToScheme)) {
-    MailtoHandlerProvider* provider =
-        ios::GetChromeBrowserProvider().GetMailtoHandlerProvider();
-    provider->HandleMailtoURL(net::NSURLWithGURL(url));
+    MailtoHandlerServiceFactory::GetForBrowserState(browser_->GetBrowserState())
+        ->HandleMailtoURL(net::NSURLWithGURL(url));
     return;
   }
 
@@ -147,9 +146,10 @@ AppLauncherBrowserAgent::TabHelperDelegate::GetQueueForAppLaunchDialog(
   // dialog before it gets a chance to be shown.  When this occurs, use the
   // OverlayRequestQueue for the tab's opener instead.
   if (!web_state->GetNavigationItemCount() && web_state->HasOpener()) {
-    int index = web_state_list_->GetIndexOfWebState(web_state);
+    WebStateList* web_state_list = browser_->GetWebStateList();
+    const int index = web_state_list->GetIndexOfWebState(web_state);
     queue_web_state =
-        web_state_list_->GetOpenerOfWebStateAt(index).opener ?: queue_web_state;
+        web_state_list->GetOpenerOfWebStateAt(index).opener ?: queue_web_state;
   }
   return OverlayRequestQueue::FromWebState(queue_web_state,
                                            OverlayModality::kWebContentArea);

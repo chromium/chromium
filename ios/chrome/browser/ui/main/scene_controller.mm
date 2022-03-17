@@ -53,6 +53,8 @@
 #import "ios/chrome/browser/first_run/first_run.h"
 #import "ios/chrome/browser/geolocation/geolocation_logger.h"
 #include "ios/chrome/browser/infobars/infobar_manager_impl.h"
+#import "ios/chrome/browser/mailto_handler/mailto_handler_service.h"
+#import "ios/chrome/browser/mailto_handler/mailto_handler_service_factory.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_list.h"
 #import "ios/chrome/browser/main/browser_list_factory.h"
@@ -120,7 +122,6 @@
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#include "ios/public/provider/chrome/browser/mailto/mailto_handler_provider.h"
 #include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 #import "ios/public/provider/chrome/browser/ui_utils/ui_utils_api.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_provider.h"
@@ -2311,10 +2312,10 @@ bool IsSigninForcedByPolicy() {
   // services it wraps.
   ios::GetChromeBrowserProvider().GetChromeIdentityService()->DismissDialogs();
 
-  // MailtoHandlerProvider is responsible for the dialogs displayed by the
+  // MailtoHandlerService is responsible for the dialogs displayed by the
   // services it wraps.
-  ios::GetChromeBrowserProvider()
-      .GetMailtoHandlerProvider()
+  MailtoHandlerServiceFactory::GetForBrowserState(
+      self.currentInterface.browserState)
       ->DismissAllMailtoHandlerInterfaces();
 
   // Then, depending on what the SSO view controller is presented on, dismiss
@@ -2902,7 +2903,7 @@ bool IsSigninForcedByPolicy() {
   // until the callback is received.
   BrowsingDataRemover* browsingDataRemover =
       BrowsingDataRemoverFactory::GetForBrowserStateIfExists(
-          self.currentInterface.browser->GetBrowserState());
+          self.currentInterface.browserState);
   if (browsingDataRemover && browsingDataRemover->IsRemoving())
     return;
 

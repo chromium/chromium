@@ -331,6 +331,8 @@ source_set("app_internal") {
     "//ios/chrome/browser/first_run",
     "//ios/chrome/browser/geolocation",
     "//ios/chrome/browser/history",
+    "//ios/chrome/browser/mailto_handler",
+    "//ios/chrome/browser/mailto_handler:mailto_handler_factory",
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/memory",
     "//ios/chrome/browser/metrics",

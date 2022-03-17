@@ -7,7 +7,6 @@
 #import <UIKit/UIKit.h>
 #include <map>
 
-#include "base/test/task_environment.h"
 #import "ios/chrome/browser/app_launcher/app_launcher_tab_helper.h"
 #import "ios/chrome/browser/app_launcher/fake_app_launcher_abuse_detector.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
@@ -21,6 +20,7 @@
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#include "ios/web/public/test/web_task_environment.h"
 #import "net/base/mac/url_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -98,7 +98,7 @@ class AppLauncherBrowserAgentTest : public PlatformTest {
     return config && config->is_repeated_request() == is_repeated_request;
   }
 
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;
   std::map<web::WebState*, FakeAppLauncherAbuseDetector*> abuse_detectors_;

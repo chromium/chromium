@@ -25,6 +25,8 @@ source_set("content_settings") {
     "//ios/chrome/browser:pref_names",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/content_settings",
+    "//ios/chrome/browser/mailto_handler",
+    "//ios/chrome/browser/mailto_handler:mailto_handler_factory",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/ui:feature_flags",
@@ -37,8 +39,6 @@ source_set("content_settings") {
     "//ios/chrome/browser/ui/settings/utils",
     "//ios/chrome/browser/ui/table_view:utils",
     "//ios/chrome/browser/ui/table_view/cells",
-    "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser/mailto",
     "//ios/web/common:features",
     "//ui/base",
   ]

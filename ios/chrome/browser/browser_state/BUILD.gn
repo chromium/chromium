@@ -112,6 +112,7 @@ source_set("browser_state_impl") {
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/invalidation",
     "//ios/chrome/browser/language",
+    "//ios/chrome/browser/mailto_handler:mailto_handler_factory",
     "//ios/chrome/browser/metrics",
     "//ios/chrome/browser/net",
     "//ios/chrome/browser/ntp_snippets",
