@@ -170,8 +170,6 @@ class StartupBrowserCreator {
       const base::CommandLine& command_line);
 
  private:
-  friend class CloudPrintProxyPolicyTest;
-  friend class CloudPrintProxyPolicyStartupTest;
   friend class StartupBrowserCreatorImpl;
   friend class StartupBrowserCreatorInfobarsTest;
   friend class StartupBrowserCreatorInfobarsWithoutStartupWindowTest;

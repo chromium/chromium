@@ -11,8 +11,4 @@ namespace switches {
 // enabled. Used for testing.
 const char kCloudPrintURL[] = "cloud-print-url";
 
-// The XMPP endpoint the cloud print service will use. Only used if the cloud
-// print service has been enabled. Used for testing.
-const char kCloudPrintXmppEndpoint[] = "cloud-print-xmpp-endpoint";
-
 }  // namespace switches

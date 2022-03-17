@@ -102,7 +102,6 @@ constexpr auto kBrowserSettingsMap =
         {ChromePage::APPEARANCE, chrome::kAppearanceSubPage},
         {ChromePage::AUTOFILL, chrome::kAutofillSubPage},
         {ChromePage::CLEARBROWSERDATA, chrome::kClearBrowserDataSubPage},
-        {ChromePage::CLOUDPRINTERS, chrome::kCloudPrintersSubPage},
         {ChromePage::DOWNLOADS, chrome::kDownloadsSubPage},
         {ChromePage::LANGUAGES, chrome::kLanguagesSubPage},
         {ChromePage::ONSTARTUP, chrome::kOnStartupSubPage},

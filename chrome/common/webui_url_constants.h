@@ -464,7 +464,6 @@ extern const char kAddressesSubPage[];
 extern const char kAppearanceSubPage[];
 extern const char kAutofillSubPage[];
 extern const char kClearBrowserDataSubPage[];
-extern const char kCloudPrintersSubPage[];
 extern const char kContentSettingsSubPage[];
 extern const char kCookieSettingsSubPage[];
 extern const char kCreateProfileSubPage[];

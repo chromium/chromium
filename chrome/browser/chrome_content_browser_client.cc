@@ -2413,7 +2413,6 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
       switches::kAllowInsecureLocalhost,
       switches::kAppsGalleryURL,
       switches::kCloudPrintURL,
-      switches::kCloudPrintXmppEndpoint,
       switches::kDisableJavaScriptHarmonyShipping,
       variations::switches::kEnableBenchmarking,
       switches::kEnableDistillabilityService,

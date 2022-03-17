@@ -352,8 +352,6 @@ void TestAllBrowserSettingPages(const GURL& base_url) {
                      base_url.Resolve(chrome::kAutofillSubPage));
   TestOpenChromePage(ChromePage::CLEARBROWSERDATA,
                      base_url.Resolve(chrome::kClearBrowserDataSubPage));
-  TestOpenChromePage(ChromePage::CLOUDPRINTERS,
-                     base_url.Resolve(chrome::kCloudPrintersSubPage));
   TestOpenChromePage(ChromePage::DOWNLOADS,
                      base_url.Resolve(chrome::kDownloadsSubPage));
   TestOpenChromePage(ChromePage::ONSTARTUP,

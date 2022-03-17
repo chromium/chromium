@@ -525,7 +525,6 @@ const char kAddressesSubPage[] = "addresses";
 const char kAppearanceSubPage[] = "appearance";
 const char kAutofillSubPage[] = "autofill";
 const char kClearBrowserDataSubPage[] = "clearBrowserData";
-const char kCloudPrintersSubPage[] = "cloudPrinters";
 const char kContentSettingsSubPage[] = "content";
 const char kCookieSettingsSubPage[] = "cookies";
 const char kDownloadsSubPage[] = "downloads";
