@@ -185,8 +185,13 @@ void FastPairGattServiceClientImpl::ClearCurrentState() {
 void FastPairGattServiceClientImpl::NotifyInitializedError(
     PairFailure failure) {
   ClearCurrentState();
-  DCHECK(on_initialized_callback_);
-  std::move(on_initialized_callback_).Run(failure);
+
+  // This function is invoked in several flows and it is possible for it to run
+  // twice. In that case, we are ok with the first instance being the one that
+  // reports the failure. An example is if we timeout waiting for all notify
+  // sessions to start.
+  if (on_initialized_callback_)
+    std::move(on_initialized_callback_).Run(failure);
 }
 
 void FastPairGattServiceClientImpl::NotifyWriteRequestError(

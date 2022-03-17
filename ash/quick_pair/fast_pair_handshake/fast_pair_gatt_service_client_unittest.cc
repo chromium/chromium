@@ -695,6 +695,18 @@ TEST_F(FastPairGattServiceClientTest, KeyBasedStartNotifyTimeout) {
   histogram_tester().ExpectTotalCount(kNotifyKeyBasedCharacteristicTime, 0);
 }
 
+TEST_F(FastPairGattServiceClientTest, MultipleNotifyTimeout) {
+  histogram_tester().ExpectTotalCount(kNotifyKeyBasedCharacteristicTime, 0);
+  SetKeybasedNotifySessionTimeout(true);
+  SetPasskeyNotifySessionTimeout(true);
+  SuccessfulGattConnectionSetUp();
+  NotifyGattDiscoveryCompleteForService();
+  EXPECT_EQ(GetInitializedCallbackResult(),
+            PairFailure::kKeyBasedPairingCharacteristicNotifySessionTimeout);
+  EXPECT_FALSE(ServiceIsSet());
+  histogram_tester().ExpectTotalCount(kNotifyKeyBasedCharacteristicTime, 0);
+}
+
 TEST_F(FastPairGattServiceClientTest, WriteKeyBasedRequest) {
   histogram_tester().ExpectTotalCount(kWriteKeyBasedCharacteristicGattError, 0);
   histogram_tester().ExpectTotalCount(kNotifyKeyBasedCharacteristicTime, 0);
