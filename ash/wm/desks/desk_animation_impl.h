@@ -9,6 +9,7 @@
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/wm/desks/desk_animation_base.h"
 #include "ash/wm/desks/desks_histogram_enums.h"
+#include "base/memory/weak_ptr.h"
 
 namespace ash {
 
@@ -60,6 +61,8 @@ class ASH_EXPORT DeskActivationAnimation : public DeskAnimationBase {
 
   // Used to measure the presentation time of a continuous gesture swipe.
   std::unique_ptr<PresentationTimeRecorder> presentation_time_recorder_;
+
+  base::WeakPtrFactory<DeskActivationAnimation> weak_ptr_factory_{this};
 };
 
 class DeskRemovalAnimation : public DeskAnimationBase {

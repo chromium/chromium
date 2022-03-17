@@ -213,9 +213,20 @@ bool DeskActivationAnimation::EndSwipeAnimation() {
       base::TimeTicks::Now() - last_start_or_replace_time_ <
       kFastSwipeThresholdDuration;
   did_continuous_gesture_end_fast_ = is_fast_swipe;
-  for (const auto& animator : desk_switch_animators_)
-    ending_desk_index_ = animator->EndSwipeAnimation(is_fast_swipe);
 
+  // Ending the swipe animation on the animators may delete `this`. Use a local
+  // variable and weak pointer to validate and prevent use after free.
+  int ending_desk_index;
+  base::WeakPtr<DeskActivationAnimation> weak_ptr =
+      weak_ptr_factory_.GetWeakPtr();
+
+  for (const auto& animator : desk_switch_animators_) {
+    ending_desk_index = animator->EndSwipeAnimation(is_fast_swipe);
+    if (!weak_ptr)
+      return true;
+  }
+
+  ending_desk_index_ = ending_desk_index;
   return true;
 }
 
