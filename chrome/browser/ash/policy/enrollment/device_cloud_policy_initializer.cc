@@ -74,6 +74,7 @@ void DeviceCloudPolicyInitializer::Init() {
   state_keys_update_subscription_ = state_keys_broker_->RegisterUpdateCallback(
       base::BindRepeating(&DeviceCloudPolicyInitializer::TryToStartConnection,
                           base::Unretained(this)));
+  policy_manager_observer_.Observe(policy_manager_);
 
   TryToStartConnection();
 }
@@ -83,6 +84,7 @@ void DeviceCloudPolicyInitializer::Shutdown() {
 
   policy_store_->RemoveObserver(this);
   state_keys_update_subscription_ = {};
+  policy_manager_observer_.Reset();
   is_initialized_ = false;
 }
 
@@ -241,6 +243,20 @@ void DeviceCloudPolicyInitializer::OnStoreError(CloudPolicyStore* store) {
   // Do nothing.
 }
 
+void DeviceCloudPolicyInitializer::OnDeviceCloudPolicyManagerConnected() {
+  // Do nothing.
+}
+void DeviceCloudPolicyInitializer::OnDeviceCloudPolicyManagerDisconnected() {
+  // Do nothing.
+}
+void DeviceCloudPolicyInitializer::OnDeviceCloudPolicyManagerGotRegistry() {
+  // `policy_manager_->HasSchemaRegistry()` is one of requirements for
+  // StartConnection. Make another attempt when `policy_manager_` gets its
+  // registry.
+  policy_manager_observer_.Reset();
+  TryToStartConnection();
+}
+
 std::unique_ptr<CloudPolicyClient> DeviceCloudPolicyInitializer::CreateClient(
     DeviceManagementService* device_management_service) {
   // DeviceDMToken callback is empty here because for device policies this
@@ -259,6 +275,17 @@ void DeviceCloudPolicyInitializer::TryToStartConnection() {
     return;
   }
 
+  // TODO(crbug.com/1304636): Move this and all other checks from here to a
+  // separate method.
+  if (!policy_manager_->HasSchemaRegistry()) {
+    // crbug.com/1295871: `policy_manager_` might not have schema registry on
+    // start connection attempt. This may happen on chrome restart when
+    // `chrome::kInitialProfile` is created after login profile: policy will be
+    // loaded but `BuildSchemaRegistryServiceForProfile` will not be called for
+    // non-initial / non-sign-in profile.
+    return;
+  }
+
   // Currently reven devices don't support sever-backed state keys, but they
   // also don't support FRE/AutoRE so don't block initialization of device
   // policy on state keys being available on reven.
@@ -274,6 +301,11 @@ void DeviceCloudPolicyInitializer::TryToStartConnection() {
 
 void DeviceCloudPolicyInitializer::StartConnection(
     std::unique_ptr<CloudPolicyClient> client) {
+  // This initializer will be deleted once `policy_manager_` is connected.
+  // Stop observing the manager as there's nothing interesting it can say
+  // anymore.
+  policy_manager_observer_.Reset();
+
   if (!policy_manager_->IsConnected()) {
     policy_manager_->StartConnection(std::move(client), install_attributes_);
   }

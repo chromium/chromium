@@ -181,6 +181,7 @@ class DeviceCloudPolicyManagerAshTest
 
     RegisterLocalState(local_state_.registry());
     manager_->Init(&schema_registry_);
+    manager_->SetSigninProfileSchemaRegistry(&schema_registry_);
 
     // SharedURLLoaderFactory and LocalState singletons have to be set since
     // they are accessed by EnrollmentHandler and StartupUtils.
@@ -440,6 +441,7 @@ class DeviceCloudPolicyManagerAshObserverTest
   // DeviceCloudPolicyManagerAsh::Observer:
   MOCK_METHOD0(OnDeviceCloudPolicyManagerConnected, void());
   MOCK_METHOD0(OnDeviceCloudPolicyManagerDisconnected, void());
+  MOCK_METHOD0(OnDeviceCloudPolicyManagerGotRegistry, void());
 };
 
 TEST_F(DeviceCloudPolicyManagerAshObserverTest, ConnectAndDisconnect) {
@@ -462,6 +464,19 @@ TEST_F(DeviceCloudPolicyManagerAshObserverTest, ConnectAndDisconnect) {
   EXPECT_CALL(*this, OnDeviceCloudPolicyManagerDisconnected());
   manager_->Disconnect();
   EXPECT_FALSE(manager_->IsConnected());
+}
+
+TEST_F(DeviceCloudPolicyManagerAshObserverTest, GetSchemaRegistry) {
+  EXPECT_CALL(*this, OnDeviceCloudPolicyManagerGotRegistry()).Times(1);
+
+  manager_->Shutdown();
+  manager_->Init(&schema_registry_);
+
+  EXPECT_FALSE(manager_->HasSchemaRegistry());
+
+  manager_->SetSigninProfileSchemaRegistry(&schema_registry_);
+
+  EXPECT_TRUE(manager_->HasSchemaRegistry());
 }
 
 class DeviceCloudPolicyManagerAshEnrollmentTest

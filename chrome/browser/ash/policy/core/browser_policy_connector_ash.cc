@@ -541,6 +541,10 @@ void BrowserPolicyConnectorAsh::OnDeviceCloudPolicyManagerDisconnected() {
   RestartDeviceCloudPolicyInitializer();
 }
 
+void BrowserPolicyConnectorAsh::OnDeviceCloudPolicyManagerGotRegistry() {
+  // Do nothing.
+}
+
 bool BrowserPolicyConnectorAsh::IsCommandLineSwitchSupported() const {
   return true;
 }

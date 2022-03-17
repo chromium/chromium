@@ -10,6 +10,8 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -29,7 +31,6 @@ class StatisticsProvider;
 }  // namespace chromeos
 
 namespace policy {
-class DeviceCloudPolicyManagerAsh;
 class DeviceCloudPolicyStoreAsh;
 class DeviceManagementService;
 struct EnrollmentConfig;
@@ -44,7 +45,9 @@ struct EnrollmentConfig;
 // It is expected that the |DeviceCloudPolicyInitializer| will be
 // destroyed soon after it called |StartConnection|, but see
 // crbug.com/705758 for complications.
-class DeviceCloudPolicyInitializer : public CloudPolicyStore::Observer {
+class DeviceCloudPolicyInitializer
+    : public CloudPolicyStore::Observer,
+      public DeviceCloudPolicyManagerAsh::Observer {
  public:
   DeviceCloudPolicyInitializer(
       PrefService* local_state,
@@ -80,6 +83,11 @@ class DeviceCloudPolicyInitializer : public CloudPolicyStore::Observer {
   void OnStoreLoaded(CloudPolicyStore* store) override;
   void OnStoreError(CloudPolicyStore* store) override;
 
+  // DeviceCloudPolicyManagerAsh::Observer
+  void OnDeviceCloudPolicyManagerConnected() override;
+  void OnDeviceCloudPolicyManagerDisconnected() override;
+  void OnDeviceCloudPolicyManagerGotRegistry() override;
+
   void SetSystemURLLoaderFactoryForTesting(
       scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory);
 
@@ -105,6 +113,12 @@ class DeviceCloudPolicyInitializer : public CloudPolicyStore::Observer {
   bool is_initialized_ = false;
 
   base::CallbackListSubscription state_keys_update_subscription_;
+  base::ScopedObservation<
+      DeviceCloudPolicyManagerAsh,
+      DeviceCloudPolicyManagerAsh::Observer,
+      &DeviceCloudPolicyManagerAsh::AddDeviceCloudPolicyManagerObserver,
+      &DeviceCloudPolicyManagerAsh::RemoveDeviceCloudPolicyManagerObserver>
+      policy_manager_observer_{this};
 
   // The URLLoaderFactory set in tests.
   scoped_refptr<network::SharedURLLoaderFactory>

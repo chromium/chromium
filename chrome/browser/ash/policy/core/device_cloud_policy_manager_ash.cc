@@ -289,6 +289,7 @@ void DeviceCloudPolicyManagerAsh::SetSigninProfileSchemaRegistry(
   DCHECK(!signin_profile_forwarding_schema_registry_);
   signin_profile_forwarding_schema_registry_ =
       std::make_unique<ForwardingSchemaRegistry>(schema_registry);
+  NotifyGotRegistry();
 }
 
 void DeviceCloudPolicyManagerAsh::OnStateKeysUpdated() {
@@ -306,6 +307,11 @@ void DeviceCloudPolicyManagerAsh::NotifyConnected() {
 void DeviceCloudPolicyManagerAsh::NotifyDisconnected() {
   for (auto& observer : observers_)
     observer.OnDeviceCloudPolicyManagerDisconnected();
+}
+
+void DeviceCloudPolicyManagerAsh::NotifyGotRegistry() {
+  for (auto& observer : observers_)
+    observer.OnDeviceCloudPolicyManagerGotRegistry();
 }
 
 void DeviceCloudPolicyManagerAsh::CreateStatusUploader(
