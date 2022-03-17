@@ -1058,15 +1058,9 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, LazyLoadedIframeFetched) {
   EXPECT_NE(old_height, new_height);
 }
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_LazyLoadedIframeFetchedCrossOrigin \
-  DISABLED_LazyLoadedIframeFetchedCrossOrigin
-#else
-#define MAYBE_LazyLoadedIframeFetchedCrossOrigin \
-  LazyLoadedIframeFetchedCrossOrigin
-#endif
+// TODO(crbug.com/1305193)  Reenable after flakes have been resolved.
 IN_PROC_BROWSER_TEST_F(PrintBrowserTest,
-                       MAYBE_LazyLoadedIframeFetchedCrossOrigin) {
+                       DISABLED_LazyLoadedIframeFetchedCrossOrigin) {
   ASSERT_TRUE(embedded_test_server()->Started());
   GURL url(embedded_test_server()->GetURL(
       "/printing/lazy-loaded-iframe-offscreen-cross-origin.html"));
