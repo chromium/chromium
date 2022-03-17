@@ -2284,8 +2284,10 @@ void WallpaperControllerImpl::CacheAndShowGooglePhotosWallpaper(
     const gfx::ImageSkia& image,
     const WallpaperInfo& wallpaper_info) {
   auto path = GlobalChromeOSGooglePhotosWallpapersDir().Append(params.id);
+
   gfx::ImageSkia thread_safe_image(image);
   thread_safe_image.MakeThreadSafe();
+
   sequenced_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&EnsureGooglePhotosDirectoryExists)
@@ -2294,11 +2296,13 @@ void WallpaperControllerImpl::CacheAndShowGooglePhotosWallpaper(
                                thread_safe_image.height()))
           .Then(base::BindOnce([](bool success) {
             if (!success) {
-              DCHECK(success);
+              NOTREACHED();
               LOG(ERROR) << "Failed to save Google Photos wallpaper cache.";
               return;
             }
           })));
+
+  wallpaper_cache_map_[params.account_id] = CustomWallpaperElement(path, image);
 
   if (IsActiveUser(params.account_id)) {
     ShowWallpaperImage(image, wallpaper_info,
