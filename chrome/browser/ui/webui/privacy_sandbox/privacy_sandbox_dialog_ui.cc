@@ -29,6 +29,7 @@ PrivacySandboxDialogUI::PrivacySandboxDialogUI(content::WebUI* web_ui)
       IDR_PRIVACY_SANDBOX_PRIVACY_SANDBOX_DIALOG_HTML);
 
   static constexpr webui::LocalizedString kStrings[] = {
+      {"privacySandboxTitle", IDS_SETTINGS_PRIVACY_SANDBOX_TITLE},
       {"consentTitle", IDS_PRIVACY_SANDBOX_DIALOG_CONSENT_TITLE},
       {"consentSubtitle", IDS_PRIVACY_SANDBOX_DIALOG_CONSENT_SUBTITLE},
       {"consentBodyHeader1", IDS_PRIVACY_SANDBOX_DIALOG_CONSENT_BODY_HEADER_1},
