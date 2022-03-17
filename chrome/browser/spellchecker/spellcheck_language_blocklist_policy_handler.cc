@@ -59,13 +59,14 @@ void SpellcheckLanguageBlocklistPolicyHandler::ApplyPolicySettings(
     const policy::PolicyMap& policies,
     PrefValueMap* prefs) {
   // Ignore this policy if the SpellcheckEnabled policy disables spellcheck.
-  const base::Value* spellcheck_enabled_value =
-      policies.GetValue(policy::key::kSpellcheckEnabled);
-  if (spellcheck_enabled_value && spellcheck_enabled_value->GetBool() == false)
+  const base::Value* spellcheck_enabled_value = policies.GetValue(
+      policy::key::kSpellcheckEnabled, base::Value::Type::BOOLEAN);
+  if (spellcheck_enabled_value && !spellcheck_enabled_value->GetBool())
     return;
 
   // If this policy isn't set, don't modify spellcheck languages.
-  const base::Value* value = policies.GetValue(policy_name());
+  const base::Value* value =
+      policies.GetValue(policy_name(), base::Value::Type::LIST);
   if (!value)
     return;
 
@@ -98,13 +99,14 @@ void SpellcheckLanguageBlocklistPolicyHandler::SortBlocklistedLanguages(
     std::vector<base::Value>* const blocklisted,
     std::vector<std::string>* const unknown,
     std::vector<std::string>* const duplicates) {
-  const base::Value* value = policies.GetValue(policy_name());
+  const base::Value* value =
+      policies.GetValue(policy_name(), base::Value::Type::LIST);
   if (!value)
     return;
 
   // Build a lookup of force-enabled spellcheck languages to find duplicates.
-  const base::Value* forced_enabled_value =
-      policies.GetValue(policy::key::kSpellcheckLanguage);
+  const base::Value* forced_enabled_value = policies.GetValue(
+      policy::key::kSpellcheckLanguage, base::Value::Type::LIST);
   std::unordered_set<std::string> forced_languages_lookup;
   if (forced_enabled_value) {
     for (const auto& forced_language :

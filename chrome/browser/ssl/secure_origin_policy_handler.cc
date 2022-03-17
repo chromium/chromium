@@ -28,7 +28,8 @@ SecureOriginPolicyHandler::~SecureOriginPolicyHandler() = default;
 
 void SecureOriginPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
                                                     PrefValueMap* prefs) {
-  const base::Value* value = policies.GetValue(policy_name());
+  const base::Value* value =
+      policies.GetValue(policy_name(), base::Value::Type::LIST);
   if (!value)
     return;
 

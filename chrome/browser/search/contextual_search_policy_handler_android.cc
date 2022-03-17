@@ -22,13 +22,14 @@ ContextualSearchPolicyHandlerAndroid::~ContextualSearchPolicyHandlerAndroid() {
 void ContextualSearchPolicyHandlerAndroid::ApplyPolicySettings(
     const PolicyMap& policies,
     PrefValueMap* prefs) {
-  const base::Value* value = policies.GetValue(policy_name());
+  const base::Value* value =
+      policies.GetValue(policy_name(), base::Value::Type::BOOLEAN);
   // From a Contextual Search preference point of view, "false" means the
   // feature is turned off completely. "" means the feature is uninitialized and
   // an opt-in screen is presented to the user, after which the preference is
   // either "true" or "false", depending on their choice. Here a false policy
   // explicitly disables Contextual Search.
-  if (value && value->is_bool() && !value->GetBool()) {
+  if (value && !value->GetBool()) {
     prefs->SetString(prefs::kContextualSearchEnabled,
                      prefs::kContextualSearchDisabledValue);
   }

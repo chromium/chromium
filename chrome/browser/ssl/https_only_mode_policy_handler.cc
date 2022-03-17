@@ -19,7 +19,8 @@ HttpsOnlyModePolicyHandler::~HttpsOnlyModePolicyHandler() = default;
 
 void HttpsOnlyModePolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
                                                      PrefValueMap* prefs) {
-  const base::Value* value = policies.GetValue(key::kHttpsOnlyMode);
+  const base::Value* value =
+      policies.GetValue(key::kHttpsOnlyMode, base::Value::Type::STRING);
   if (value && value->GetString() == "disallowed") {
     // Only apply the policy to the pref if it is set to "disallowed".
     prefs->SetBoolean(prefs::kHttpsOnlyModeEnabled, false);
