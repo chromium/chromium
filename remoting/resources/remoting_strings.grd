@@ -33,10 +33,16 @@
     </if>
     <output filename="remoting/resources/es.pak" lang="es" type="data_package"/>
     <output filename="remoting/resources/et.pak" lang="et" type="data_package"/>
+    <if expr="chromeos_ash or chromeos_lacros">
+      <output filename="remoting/resources/eu.pak" lang="eu" type="data_package"/>
+    </if>
     <output filename="remoting/resources/fa.pak" lang="fa" type="data_package"/>
     <output filename="remoting/resources/fi.pak" lang="fi" type="data_package"/>
     <output filename="remoting/resources/fil.pak" lang="fil" type="data_package"/>
     <output filename="remoting/resources/fr.pak" lang="fr" type="data_package"/>
+    <if expr="chromeos_ash or chromeos_lacros">
+      <output filename="remoting/resources/gl.pak" lang="gl" type="data_package"/>
+    </if>
     <output filename="remoting/resources/gu.pak" lang="gu" type="data_package"/>
     <output filename="remoting/resources/he.pak" lang="he" type="data_package"/>
     <output filename="remoting/resources/hi.pak" lang="hi" type="data_package"/>
@@ -118,9 +124,15 @@
       <output filename="remoting/resources/_locales/es_419/messages.json" lang="es-419" type="chrome_messages_json"/>
     </if>
     <output filename="remoting/resources/_locales/et/messages.json" lang="et" type="chrome_messages_json"/>
+    <if expr="chromeos_ash or chromeos_lacros">
+      <output filename="remoting/resources/_locales/eu/messages.json" lang="eu" type="chrome_messages_json"/>
+    </if>
     <output filename="remoting/resources/_locales/fi/messages.json" lang="fi" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/fil/messages.json" lang="fil" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/fr/messages.json" lang="fr" type="chrome_messages_json"/>
+    <if expr="chromeos_ash or chromeos_lacros">
+      <output filename="remoting/resources/_locales/gl/messages.json" lang="gl" type="chrome_messages_json"/>
+    </if>
     <output filename="remoting/resources/_locales/gu/messages.json" lang="gu" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/he/messages.json" lang="he" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/hi/messages.json" lang="hi" type="chrome_messages_json"/>

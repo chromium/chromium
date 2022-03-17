@@ -18,10 +18,12 @@
     <output filename="_locales/es/messages.json.gz" type="chrome_messages_json_gzip" lang="es"/>
     <output filename="_locales/es_419/messages.json.gz" type="chrome_messages_json_gzip" lang="es-419"/>
     <output filename="_locales/et/messages.json.gz" type="chrome_messages_json_gzip" lang="et"/>
+    <output filename="_locales/eu/messages.json.gz" type="chrome_messages_json_gzip" lang="eu"/>
     <output filename="_locales/fa/messages.json.gz" type="chrome_messages_json_gzip" lang="fa"/>
     <output filename="_locales/fi/messages.json.gz" type="chrome_messages_json_gzip" lang="fi"/>
     <output filename="_locales/fil/messages.json.gz" type="chrome_messages_json_gzip" lang="fil"/>
     <output filename="_locales/fr/messages.json.gz" type="chrome_messages_json_gzip" lang="fr"/>
+    <output filename="_locales/gl/messages.json.gz" type="chrome_messages_json_gzip" lang="gl"/>
     <output filename="_locales/gu/messages.json.gz" type="chrome_messages_json_gzip" lang="gu"/>
     <output filename="_locales/he/messages.json.gz" type="chrome_messages_json_gzip" lang="he"/>
     <output filename="_locales/hi/messages.json.gz" type="chrome_messages_json_gzip" lang="hi"/>

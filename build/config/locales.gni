@@ -160,6 +160,8 @@ if (!is_android) {
 # Add or subtract platform specific locales below.
 if (is_chromeos_ash || is_chromeos_lacros) {
   platform_pak_locales += [
+    "eu",
+    "gl",
     "is",
     "zu",
   ]

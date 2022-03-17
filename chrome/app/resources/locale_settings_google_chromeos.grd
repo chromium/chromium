@@ -19,10 +19,12 @@
     <output filename="platform_locale_settings_es.pak" type="data_package" lang="es" />
     <output filename="platform_locale_settings_es-419.pak" type="data_package" lang="es-419" />
     <output filename="platform_locale_settings_et.pak" type="data_package" lang="et" />
+    <output filename="platform_locale_settings_eu.pak" type="data_package" lang="eu" />
     <output filename="platform_locale_settings_fa.pak" type="data_package" lang="fa" />
     <output filename="platform_locale_settings_fi.pak" type="data_package" lang="fi" />
     <output filename="platform_locale_settings_fil.pak" type="data_package" lang="fil" />
     <output filename="platform_locale_settings_fr.pak" type="data_package" lang="fr" />
+    <output filename="platform_locale_settings_gl.pak" type="data_package" lang="gl" />
     <output filename="platform_locale_settings_gu.pak" type="data_package" lang="gu" />
     <output filename="platform_locale_settings_he.pak" type="data_package" lang="he" />
     <output filename="platform_locale_settings_hi.pak" type="data_package" lang="hi" />

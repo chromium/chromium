@@ -77,6 +77,8 @@ if (is_chromeos_ash || is_chromeos_lacros) {
   remoting_locales_without_pseudolocales += [
     "af",
     "en-US",
+    "eu",
+    "gl",
     "is",
     "zu",
   ]
