@@ -634,8 +634,8 @@ void NewTabPageUI::BindInterface(
 
 void NewTabPageUI::BindInterface(
     mojo::PendingReceiver<photos::mojom::PhotosHandler> pending_receiver) {
-  photos_handler_ =
-      std::make_unique<PhotosHandler>(std::move(pending_receiver), profile_);
+  photos_handler_ = std::make_unique<PhotosHandler>(std::move(pending_receiver),
+                                                    profile_, web_contents_);
 }
 
 #if !defined(OFFICIAL_BUILD)

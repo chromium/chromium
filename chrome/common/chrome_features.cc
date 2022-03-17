@@ -534,6 +534,10 @@ const base::Feature kHappinessTrackingSurveysForDesktopNtpModules{
     "HappinessTrackingSurveysForDesktopNtpModules",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kHappinessTrackingSurveysForNtpPhotosOptOut{
+    "HappinessTrackingSurveysForrNtpPhotosOptOut",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables the Happiness Tracking System for Chrome What's New.
 const base::Feature kHappinessTrackingSurveysForDesktopWhatsNew{
     "HappinessTrackingSurveysForDesktopWhatsNew",

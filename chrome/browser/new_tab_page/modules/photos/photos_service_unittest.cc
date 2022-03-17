@@ -527,12 +527,12 @@ TEST_F(PhotosServiceTest, OptInShown) {
   EXPECT_TRUE(service_->ShouldShowOptInScreen());
 
   // If user does not accept opt-in, we should keep showing screen.
-  service_->OnUserOptIn(false);
+  service_->OnUserOptIn(false, NULL, NULL);
   EXPECT_TRUE(service_->ShouldShowOptInScreen());
   EXPECT_FALSE(prefs_.GetBoolean(PhotosService::kOptInAcknowledgedPrefName));
 
   // If user accept opt-in, we should stop showing screen.
-  service_->OnUserOptIn(true);
+  service_->OnUserOptIn(true, NULL, NULL);
   EXPECT_FALSE(service_->ShouldShowOptInScreen());
   EXPECT_TRUE(prefs_.GetBoolean(PhotosService::kOptInAcknowledgedPrefName));
 }
@@ -564,7 +564,7 @@ TEST_F(PhotosServiceTest, ClearOnPrimaryAccountChange) {
   EXPECT_FALSE(prefs_.GetBoolean(PhotosService::kOptInAcknowledgedPrefName));
 
   // Opt-in current account
-  service_->OnUserOptIn(true);
+  service_->OnUserOptIn(true, NULL, NULL);
   EXPECT_TRUE(prefs_.GetBoolean(PhotosService::kOptInAcknowledgedPrefName));
 
   // Clear primary account which should trigger clearing the pref.

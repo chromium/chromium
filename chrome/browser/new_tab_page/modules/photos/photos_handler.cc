@@ -6,11 +6,15 @@
 
 #include "chrome/browser/new_tab_page/modules/photos/photos_service.h"
 #include "chrome/browser/new_tab_page/modules/photos/photos_service_factory.h"
+#include "content/public/browser/web_contents.h"
 
 PhotosHandler::PhotosHandler(
     mojo::PendingReceiver<photos::mojom::PhotosHandler> handler,
-    Profile* profile)
-    : handler_(this, std::move(handler)), profile_(profile) {}
+    Profile* profile,
+    content::WebContents* web_contents)
+    : handler_(this, std::move(handler)),
+      profile_(profile),
+      web_contents_(web_contents) {}
 
 PhotosHandler::~PhotosHandler() = default;
 
@@ -34,7 +38,8 @@ void PhotosHandler::ShouldShowOptInScreen(
 }
 
 void PhotosHandler::OnUserOptIn(bool accept) {
-  PhotosServiceFactory::GetForProfile(profile_)->OnUserOptIn(accept);
+  PhotosServiceFactory::GetForProfile(profile_)->OnUserOptIn(
+      accept, web_contents_, profile_);
 }
 
 void PhotosHandler::OnMemoryOpen() {

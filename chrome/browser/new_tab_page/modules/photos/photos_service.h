@@ -11,9 +11,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/new_tab_page/modules/photos/photos.mojom.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "content/public/browser/web_contents.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -80,7 +82,9 @@ class PhotosService : public KeyedService,
   // Returns whether to show opt-in surface in the module.
   bool ShouldShowOptInScreen();
   // Stores whether the user has opt-in to see the module content.
-  void OnUserOptIn(bool accept);
+  void OnUserOptIn(bool accept,
+                   content::WebContents* web_contents,
+                   Profile* profile);
   // Stores the last time the user opened a memory.
   void OnMemoryOpen();
   // Returns whether to show the soft opt out button.

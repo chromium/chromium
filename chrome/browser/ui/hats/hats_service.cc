@@ -38,6 +38,8 @@ constexpr char kHatsSurveyTriggerAutofillAddress[] = "autofill-address";
 constexpr char kHatsSurveyTriggerAutofillCard[] = "autofill-card";
 constexpr char kHatsSurveyTriggerAutofillPassword[] = "autofill-password";
 constexpr char kHatsSurveyTriggerNtpModules[] = "ntp-modules";
+constexpr char kHatsSurveyTriggerNtpPhotosModuleOptOut[] =
+    "ntp-photos-module-opt-out";
 constexpr char kHatsSurveyTriggerPrivacyGuide[] = "privacy-guide";
 constexpr char kHatsSurveyTriggerPrivacySandbox[] = "privacy-sandbox";
 constexpr char kHatsSurveyTriggerSettings[] = "settings";
@@ -157,6 +159,10 @@ std::vector<HatsService::SurveyConfig> GetSurveyConfigs() {
   survey_configs.emplace_back(
       &features::kHappinessTrackingSurveysForDesktopNtpModules,
       kHatsSurveyTriggerNtpModules);
+  // NTP Photos module opt-out survey.
+  survey_configs.emplace_back(
+      &features::kHappinessTrackingSurveysForNtpPhotosOptOut,
+      kHatsSurveyTriggerNtpPhotosModuleOptOut);
 
   // Trust & Safety Sentiment surveys.
   survey_configs.emplace_back(

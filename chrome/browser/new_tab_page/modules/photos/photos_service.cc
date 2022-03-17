@@ -15,6 +15,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/hats/hats_service.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -23,6 +25,7 @@
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/signin/public/identity_manager/scope_set.h"
 #include "components/variations/net/variations_http_headers.h"
+#include "content/public/browser/web_contents.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "net/base/load_flags.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -228,8 +231,19 @@ void PhotosService::SoftOptOut() {
       pref_service_->GetInteger(kSoftOptOutCountPrefName) + 1);
 }
 
-void PhotosService::OnUserOptIn(bool accept) {
+void PhotosService::OnUserOptIn(bool accept,
+                                content::WebContents* web_contents,
+                                Profile* profile) {
   pref_service_->SetBoolean(kOptInAcknowledgedPrefName, accept);
+
+  // Trigger a HaTS survey when user opts-out.
+  if (!accept && web_contents && profile) {
+    HatsService* hats_service = HatsServiceFactory::GetForProfile(
+        profile, /*create_if_necessary=*/true);
+    CHECK(hats_service);
+    hats_service->LaunchDelayedSurveyForWebContents(
+        kHatsSurveyTriggerNtpPhotosModuleOptOut, web_contents, 0);
+  }
 }
 
 void PhotosService::OnMemoryOpen() {
