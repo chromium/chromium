@@ -76,7 +76,7 @@ group("deps") {
         "test_rust_exe",
         "test_rust_multiple_dep_versions_exe",
         "test_simple_rust_exe",
-        "//third_party/rust/autocxx_gen/v0_16:autocxx_gen",
+        "//third_party/rust/autocxx_gen/v0_17:autocxx_gen",
         "//third_party/rust/bindgen/v0_59:bindgen",
       ]
     }

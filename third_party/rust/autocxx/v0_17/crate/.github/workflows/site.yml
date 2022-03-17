@@ -1,0 +1,43 @@
+name: github pages
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build preprocessor
+        run: cargo build
+        working-directory: tools/mdbook-preprocessor
+
+      - name: Setup mdBook
+        uses: peaceiris/actions-mdbook@v1
+        with:
+          mdbook-version: 'latest'
+
+      - name: Install mdbook-linkcheck
+        run: cargo install mdbook-linkcheck
+    
+      - name: Install mdbook-mermaid
+        run: |
+          curl -LSfs https://japaric.github.io/trust/install.sh | \
+            sh -s -- --git badboy/mdbook-mermaid
+    
+      - run: mdbook build
+        working-directory: book
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        if: ${{ github.ref == 'refs/heads/main' }}
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./book/build/html
+          #cname: autocxx.rs

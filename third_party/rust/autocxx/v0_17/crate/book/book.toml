@@ -1,0 +1,25 @@
+[book]
+title = "Rust ♡ Existing C++"
+authors = ["Adrian Taylor"]
+description = "autocxx — safe interop between Rust and existing C++"
+
+[rust]
+edition = "2018"
+
+[build]
+build-dir = "build"
+create-missing = false
+
+[preprocessor.autocxx]
+command = "../target/debug/autocxx-mdbook-preprocessor"
+
+[preprocessor.mermaid]
+command = "mdbook-mermaid"
+
+[output.html]
+cname = "google.github.io/autocxx"
+git-repository-url = "https://github.com/google/autocxx"
+additional-js = ["mermaid.min.js", "mermaid-init.js"]
+
+[output.linkcheck]
+warning-policy = "error"

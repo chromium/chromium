@@ -37,8 +37,11 @@
 cxxbridge-cmd = "1"
 cxx = "1"
 serde = "1"
-autocxx = "0.16"
-autocxx-gen = "0.16"
+autocxx = "0.17"
+
+[dependencies.autocxx-gen]
+version = "0.17"
+features = [ "static" ]
 
 [dependencies.serde_json_lenient]
 version = "0.1"

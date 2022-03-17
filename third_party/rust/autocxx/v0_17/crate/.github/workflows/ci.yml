@@ -1,0 +1,215 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule: [cron: "40 1 * * *"]
+  workflow_dispatch:
+
+env:
+  RUST_BACKTRACE: short
+  # CI builds don't benefit very much from this and it has bugs
+  CARGO_INCREMENTAL: 0
+  # We can't use a debugger in CI, and this makes builds faster and the cache
+  # smaller. (TODO: use -Cdebuginfo=0 if it doesn't make backtraces useless)
+  RUSTFLAGS: -Cdebuginfo=1
+  CARGO_TERM_COLOR: always
+
+jobs:
+  test:
+    name: Test ${{matrix.name || format('Rust {0}', matrix.rust)}}
+    runs-on: ${{matrix.os || 'ubuntu'}}-latest
+
+    strategy:
+      fail-fast: false
+
+      matrix:
+        include:
+          - rust: nightly
+          - rust: beta
+          - rust: stable
+          - name: macOS
+            rust: nightly
+            os: macos
+          - name: Windows (gnu)
+            rust: nightly-x86_64-pc-windows-gnu
+            os: windows
+          - name: Windows (msvc)
+            rust: nightly-x86_64-pc-windows-msvc
+            os: windows
+            flags: /EHsc
+    env:
+      CXXFLAGS: ${{matrix.flags}}
+      RUSTFLAGS: --cfg deny_warnings -Dwarnings
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{matrix.rust}}
+          components: rustfmt
+      # The `{ sharedKey: ... }` allows different actions to share the cache.
+      - uses: Swatinem/rust-cache@v1
+        with: { sharedKey: fullBuild }
+      # For operating systems that have it packaged, install creduce
+      - name: Install creduce (Linux)
+        if: matrix.os == ''
+        run: sudo apt-get install creduce
+      - name: Install creduce (MacOS)
+        if: matrix.os == 'macOS'
+        run: brew install creduce
+      - name: Set LIBCLANG_PATH (Windows)
+        # Windows github action doesn't set the path for clang, so set it
+        # See https://github.com/rust-lang/rust-bindgen/issues/1797
+        if: matrix.os == 'windows'
+        run: echo "LIBCLANG_PATH=$((gcm clang).source -replace "clang.exe")" >> $env:GITHUB_ENV
+      - name: Exclude failing targets and tests
+        # no creduce on Windows, so exclude tests needing creduce there
+        run: |
+          echo RUSTFLAGS=$RUSTFLAGS >> $GITHUB_ENV
+          echo ::set-output name=exclude::${{runner.os == 'Windows' && '--exclude autocxx-reduce --exclude autocxx-gen' || ''}}
+        env:
+          # non-linux failures https://github.com/google/autocxx/issues/819
+          # beta failing tests https://github.com/google/autocxx/issues/818
+          RUSTFLAGS: ${{matrix.name == 'Windows (msvc)' && '--cfg skip_windows_msvc_failing_tests' || ''}} ${{matrix.name == 'Windows (gnu)' && '--cfg skip_windows_gnu_failing_tests' || ''}}
+        id: testsuite
+        shell: bash
+      - run: cargo test --workspace ${{steps.testsuite.outputs.exclude}}
+
+  examples:
+    name: Examples ${{matrix.name || format('Rust {0}', matrix.rust)}}
+    runs-on: ${{matrix.os || 'ubuntu'}}-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - rust: nightly
+          - rust: beta
+          - rust: stable
+          - name: macOS
+            rust: nightly
+            os: macos
+          - name: Windows (gnu)
+            rust: nightly-x86_64-pc-windows-gnu
+            os: windows
+          - name: Windows (msvc)
+            rust: nightly-x86_64-pc-windows-msvc
+            os: windows
+            flags: /EHsc
+    env:
+      CXXFLAGS: ${{matrix.flags}}
+      RUSTFLAGS: --cfg deny_warnings -Dwarnings
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{matrix.rust}}
+          components: rustfmt
+      - uses: Swatinem/rust-cache@v1
+        with: { sharedKey: fullBuild }
+      - name: Set LIBCLANG_PATH (Windows)
+        # Windows github action doesn't set the path for clang, so set it
+        # See https://github.com/rust-lang/rust-bindgen/issues/1797
+        if: matrix.os == 'windows'
+        run: echo "LIBCLANG_PATH=$((gcm clang).source -replace "clang.exe")" >> $env:GITHUB_ENV
+      - name: Build s2 example
+        working-directory: ./examples/s2
+        # s2 doesn't link on Windows
+        if: matrix.os != 'windows'
+        run: cargo build
+      - name: Build steam example
+        working-directory: ./examples/steam-mini
+        run: cargo build
+      - name: Build subclass example
+        working-directory: ./examples/subclass
+        run: cargo build
+      - name: Build pod example
+        working-directory: ./examples/pod
+        run: cargo build
+      - name: Build chromium render-frame-host example
+        working-directory: ./examples/chromium-fake-render-frame-host
+        # chromium-fake-render-frame-host doesn't link on Windows
+        if: matrix.os != 'windows'
+        run: cargo build
+      - name: Build non-trivial-type-on-stack example
+        working-directory: ./examples/non-trivial-type-on-stack
+        run: cargo build
+
+  sanitizer:
+    name: Address Sanitizer
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      # Need nightly rust.
+      - uses: hecrj/setup-rust-action@v1
+        with:
+          rust-version: nightly
+          components: rust-src
+      - uses: Swatinem/rust-cache@v1
+      - name: Tests with asan
+        env:
+          RUSTFLAGS: -Zsanitizer=address -Cdebuginfo=0
+          RUSTDOCFLAGS: -Zsanitizer=address
+          ASAN_OPTIONS: "detect_stack_use_after_return=1:detect_leaks=0"
+          # Work around https://github.com/rust-lang/rust/issues/59125 by
+          # disabling backtraces. In an ideal world we'd probably suppress the
+          # leak sanitization, but we don't care about backtraces here, so long
+          # as the other tests have them.
+          RUST_BACKTRACE: "0"
+        run: cargo -Z build-std test --workspace --target x86_64-unknown-linux-gnu
+
+  # Clippy check
+  clippy:
+    name: Clippy
+    runs-on: ubuntu-latest
+    env:
+      CARGO_TERM_COLOR: always
+    steps:
+      - uses: actions/checkout@v2
+      - uses: hecrj/setup-rust-action@v1
+        with:
+          components: clippy
+      - uses: Swatinem/rust-cache@v1
+      - run: cargo clippy --workspace --tests -- -Dclippy::all
+
+  # Mention outdated dependencies
+  outdated:
+    name: Outdated
+    runs-on: ubuntu-latest
+    env:
+      CARGO_TERM_COLOR: always
+    steps:
+      - uses: actions/checkout@v2
+      - uses: dtolnay/install@cargo-outdated
+      - run: cargo outdated -R -w
+
+  # Check rustfmt is good
+  fmt:
+    name: Format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: hecrj/setup-rust-action@v1
+        with:
+          components: rustfmt
+      - run: cargo fmt --all -- --check
+
+  # Detect cases where documentation links don't resolve and such.
+  doc:
+    name: Docs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: hecrj/setup-rust-action@v1
+      - uses: Swatinem/rust-cache@v1
+        with: { sharedKey: fullBuild }
+      - run: |
+          for package in $(cargo metadata --no-deps --format-version=1 | jq -r '.packages[] | .name'); do
+            cargo rustdoc --color always -p "$package" -- -D warnings
+          done
+        env: { RUSTDOCFLAGS: -Dwarnings }
