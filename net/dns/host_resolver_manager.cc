@@ -673,7 +673,6 @@ class HostResolverManager::RequestImpl
         host_resolver_flags_(
             HostResolver::ParametersToHostResolverFlags(parameters_)),
         priority_(parameters_.initial_priority),
-        job_(nullptr),
         resolver_(std::move(resolver)),
         tick_clock_(tick_clock) {}
 
@@ -686,7 +685,7 @@ class HostResolverManager::RequestImpl
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(callback);
     // Start() may only be called once per request.
-    DCHECK(!job_);
+    CHECK(!job_.has_value());
     DCHECK(!complete_);
     DCHECK(!callback_);
     // Parent HostResolver must still be alive to call Start().
@@ -694,7 +693,7 @@ class HostResolverManager::RequestImpl
 
     if (!resolve_context_) {
       complete_ = true;
-      resolver_ = nullptr;
+      resolver_.reset();
       set_error_info(ERR_CONTEXT_SHUT_DOWN, false);
       return ERR_NAME_NOT_RESOLVED;
     }
@@ -703,14 +702,14 @@ class HostResolverManager::RequestImpl
     int rv = resolver_->Resolve(this);
     DCHECK(!complete_);
     if (rv == ERR_IO_PENDING) {
-      DCHECK(job_);
+      CHECK(job_.has_value());
       callback_ = std::move(callback);
     } else {
-      DCHECK(!job_);
+      CHECK(!job_.has_value());
       complete_ = true;
       LogFinishRequest(rv, false /* async_completion */);
     }
-    resolver_ = nullptr;
+    resolver_.reset();
 
     return rv;
   }
@@ -805,46 +804,25 @@ class HostResolverManager::RequestImpl
     stale_info_ = std::move(stale_info);
   }
 
-  void AssignJob(Job* job) {
-    DCHECK(job);
-    DCHECK(!job_);
-
-    job_ = job;
+  void AssignJob(base::SafeRef<Job> job) {
+    CHECK(!job_.has_value());
+    job_ = std::move(job);
   }
+
+  bool HasJob() const { return job_.has_value(); }
+
+  // Gets the Job's key. Crashes if no Job has been assigned.
+  const JobKey& GetJobKey() const;
 
   // Unassigns the Job without calling completion callback.
-  void OnJobCancelled(Job* job) {
-    DCHECK_EQ(job_, job);
-    job_ = nullptr;
-    DCHECK(!complete_);
-    DCHECK(callback_);
-    callback_.Reset();
-
-    // No results should be set.
-    DCHECK(!results_);
-
-    LogCancelRequest();
-  }
+  void OnJobCancelled(const JobKey& key);
 
   // Cleans up Job assignment, marks request completed, and calls the completion
   // callback. |is_secure_network_error| indicates whether |error| came from a
   // secure DNS lookup.
-  void OnJobCompleted(Job* job, int error, bool is_secure_network_error) {
-    set_error_info(error, is_secure_network_error);
-
-    DCHECK_EQ(job_, job);
-    job_ = nullptr;
-
-    DCHECK(!complete_);
-    complete_ = true;
-
-    LogFinishRequest(error, true /* async_completion */);
-
-    DCHECK(callback_);
-    std::move(callback_).Run(HostResolver::SquashErrorCode(error));
-  }
-
-  Job* job() const { return job_; }
+  void OnJobCompleted(const JobKey& job_key,
+                      int error,
+                      bool is_secure_network_error);
 
   // NetLog for the source, passed in HostResolver::Resolve.
   const NetLogWithSource& source_net_log() { return source_net_log_; }
@@ -969,8 +947,8 @@ class HostResolverManager::RequestImpl
   RequestPriority priority_;
 
   // The resolve job that this request is dependent on.
-  raw_ptr<Job> job_;
-  base::WeakPtr<HostResolverManager> resolver_;
+  absl::optional<base::SafeRef<Job>> job_;
+  base::WeakPtr<HostResolverManager> resolver_ = nullptr;
 
   // The user's callback to invoke when the request completes.
   CompletionOnceCallback callback_;
@@ -2023,6 +2001,10 @@ struct HostResolverManager::JobKey {
                                  other.network_isolation_key);
   }
 
+  bool operator==(const JobKey& other) const {
+    return !(*this < other || other < *this);
+  }
+
   absl::variant<url::SchemeHostPort, std::string> host;
   NetworkIsolationKey network_isolation_key;
   DnsQueryTypeSet query_types;
@@ -2112,8 +2094,8 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
       // Log any remaining Requests as cancelled.
       RequestImpl* req = requests_.head()->value();
       req->RemoveFromList();
-      DCHECK_EQ(this, req->job());
-      req->OnJobCancelled(this);
+      CHECK(key_ == req->GetJobKey());
+      req->OnJobCancelled(key_);
     }
   }
 
@@ -2146,7 +2128,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
     // separated by scheme/port.
     DCHECK_EQ(GetHostname(key_.host), GetHostname(request->request_host()));
 
-    request->AssignJob(this);
+    request->AssignJob(weak_ptr_factory_.GetSafeRef());
 
     priority_tracker_.Add(request->priority());
 
@@ -2375,6 +2357,8 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
         break;
     }
   }
+
+  const JobKey& key() const { return key_; }
 
   bool is_queued() const { return !handle_.is_null(); }
 
@@ -2853,14 +2837,14 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
     while (!requests_.empty()) {
       RequestImpl* req = requests_.head()->value();
       req->RemoveFromList();
-      DCHECK_EQ(this, req->job());
+      CHECK(key_ == req->GetJobKey());
 
       if (results.error() == OK && !req->parameters().is_speculative) {
         req->set_results(
             results.CopyWithDefaultPort(GetPort(req->request_host())));
       }
       req->OnJobCompleted(
-          this, results.error(),
+          key_, results.error(),
           secure && results.error() != OK /* is_secure_network_error */);
 
       // Check if the resolver was destroyed as a result of running the
@@ -3272,7 +3256,7 @@ bool HostResolverManager::IsLocalTask(TaskType task) {
 int HostResolverManager::Resolve(RequestImpl* request) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // Request should not yet have a scheduled Job.
-  DCHECK(!request->job());
+  DCHECK(!request->HasJob());
   // Request may only be resolved once.
   DCHECK(!request->complete());
   // MDNS requests do not support skipping cache or stale lookups.
@@ -4244,18 +4228,57 @@ std::unique_ptr<DnsProbeRunner> HostResolverManager::CreateDohProbeRunner(
 
 HostResolverManager::RequestImpl::~RequestImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!job_)
+  if (!job_.has_value())
     return;
 
-  job_->CancelRequest(this);
+  job_.value()->CancelRequest(this);
   LogCancelRequest();
 }
 
 void HostResolverManager::RequestImpl::ChangeRequestPriority(
     RequestPriority priority) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(job_);
-  job_->ChangeRequestPriority(this, priority);
+  CHECK(job_.has_value());
+  job_.value()->ChangeRequestPriority(this, priority);
+}
+
+const HostResolverManager::JobKey& HostResolverManager::RequestImpl::GetJobKey()
+    const {
+  CHECK(job_.has_value());
+  return job_.value()->key();
+}
+
+void HostResolverManager::RequestImpl::OnJobCancelled(const JobKey& job_key) {
+  CHECK(job_.has_value());
+  CHECK(job_key == job_.value()->key());
+  job_.reset();
+  DCHECK(!complete_);
+  DCHECK(callback_);
+  callback_.Reset();
+
+  // No results should be set.
+  DCHECK(!results_);
+
+  LogCancelRequest();
+}
+
+void HostResolverManager::RequestImpl::OnJobCompleted(
+    const JobKey& job_key,
+    int error,
+    bool is_secure_network_error) {
+  set_error_info(error, is_secure_network_error);
+
+  CHECK(job_.has_value());
+  CHECK(job_key == job_.value()->key());
+  job_.reset();
+
+  DCHECK(!complete_);
+  complete_ = true;
+
+  LogFinishRequest(error, true /* async_completion */);
+
+  DCHECK(callback_);
+  std::move(callback_).Run(HostResolver::SquashErrorCode(error));
 }
 
 }  // namespace net
