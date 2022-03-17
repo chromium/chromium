@@ -585,7 +585,7 @@ class WebContents : public PageNavigator,
 
   // Returns whether a navigation is currently in progress that should show
   // loading UI if such UI exists (progress bar, loading spinner, stop button,
-  // etc.) True for different-document navigations and appHistory's
+  // etc.) True for different-document navigations and the navigation API's
   // transitionWhile(). This being true implies that IsLoading() is also true.
   virtual bool ShouldShowLoadingUI() = 0;
 

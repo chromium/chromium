@@ -470,7 +470,7 @@ NavigationResult* NavigationApi::navigate(ScriptState* script_state,
     if (options->hasState()) {
       ExceptionState exception_state(
           script_state->GetIsolate(),
-          ExceptionContext::Context::kOperationInvoke, "AppHistory",
+          ExceptionContext::Context::kOperationInvoke, "Navigation",
           "navigate");
       serialized_state = SerializeState(options->state(), exception_state);
       if (exception_state.HadException()) {
@@ -501,7 +501,7 @@ NavigationResult* NavigationApi::reload(ScriptState* script_state,
     if (options->hasState()) {
       ExceptionState exception_state(
           script_state->GetIsolate(),
-          ExceptionContext::Context::kOperationInvoke, "AppHistory", "reload");
+          ExceptionContext::Context::kOperationInvoke, "Navigation", "reload");
       serialized_state = SerializeState(options->state(), exception_state);
       if (exception_state.HadException()) {
         NavigationResult* result =
@@ -559,7 +559,7 @@ NavigationResult* NavigationApi::traverseTo(ScriptState* script_state,
                                             const String& key,
                                             NavigationOptions* options) {
   if (DOMException* maybe_ex =
-          PerformSharedNavigationChecks("goTo()/back()/forward()")) {
+          PerformSharedNavigationChecks("traverseTo()/back()/forward()")) {
     return EarlyErrorResult(script_state, maybe_ex);
   }
 
@@ -778,7 +778,7 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
     // steps. Instead it does stuff like the loading spinner and use counters.
     GetSupplementable()->document()->Loader()->RunURLAndHistoryUpdateSteps(
         url, destination_item,
-        mojom::blink::SameDocumentNavigationType::kAppHistoryTransitionWhile,
+        mojom::blink::SameDocumentNavigationType::kNavigationApiTransitionWhile,
         state_object, type, is_browser_initiated, is_synchronously_committed);
   }
 

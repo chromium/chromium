@@ -166,9 +166,9 @@ class CONTENT_EXPORT WebContentsDelegate {
   // in UI elements. It is generally true for different-document navigations and
   // false for most same-document navigations (because same-documents are
   // typically instantaneous so there's no point in flickering the UI). The
-  // exception is appHistory's transitionWhile, which is the sole type of
-  // same-document navigation that is asynchronous, and therefore a UI change is
-  // sensible.
+  // exception is the navigation API's transitionWhile(), which is the sole type
+  // of same-document navigation that is asynchronous, and therefore a UI change
+  // is sensible.
   virtual void LoadingStateChanged(WebContents* source,
                                    bool should_show_loading_ui) {}
 

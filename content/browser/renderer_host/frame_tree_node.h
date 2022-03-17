@@ -332,7 +332,7 @@ class CONTENT_EXPORT FrameTreeNode {
   // A RenderFrameHost in this node started loading.
   // |should_show_loading_ui| indicates whether this navigation should be
   // visible in the UI. True for cross-document navigations and navigations
-  // intercepted by appHistory's transitionWhile().
+  // intercepted by the navigation API's transitionWhile().
   // |was_previously_loading| is false if the FrameTree was not loading before.
   // The caller is required to provide this boolean as the delegate should only
   // be notified if the FrameTree went from non-loading to loading state.

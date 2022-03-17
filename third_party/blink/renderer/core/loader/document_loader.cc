@@ -700,8 +700,9 @@ static SinglePageAppNavigationType CategorizeSinglePageAppNavigation(
       // WebFrameLoadType::kBackForward.
       DCHECK(frame_load_type != WebFrameLoadType::kBackForward);
       return kSPANavTypeHistoryPushStateOrReplaceState;
-    case mojom::blink::SameDocumentNavigationType::kAppHistoryTransitionWhile:
-      return kSPANavTypeAppHistoryTransitionWhile;
+    case mojom::blink::SameDocumentNavigationType::
+        kNavigationApiTransitionWhile:
+      return kSPANavTypeNavigationApiTransitionWhile;
   }
   NOTREACHED();
   return kSPANavTypeSameDocumentBackwardOrForward;
@@ -818,9 +819,9 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
   // NavigateEvent, the navigation will finish asynchronously, so
   // don't immediately call DidStopLoading() in that case.
   bool should_send_stop_notification =
-      !was_loading &&
-      same_document_navigation_type !=
-          mojom::blink::SameDocumentNavigationType::kAppHistoryTransitionWhile;
+      !was_loading && same_document_navigation_type !=
+                          mojom::blink::SameDocumentNavigationType::
+                              kNavigationApiTransitionWhile;
   if (should_send_stop_notification)
     GetFrameLoader().Progress().ProgressCompleted();
 
