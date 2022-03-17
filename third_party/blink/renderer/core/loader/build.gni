@@ -138,6 +138,8 @@ blink_core_sources_loader = [
   "web_associated_url_loader_impl.h",
   "web_bundle/script_web_bundle.cc",
   "web_bundle/script_web_bundle.h",
+  "web_bundle/script_web_bundle_error.cc",
+  "web_bundle/script_web_bundle_error.h",
   "web_bundle/script_web_bundle_rule.cc",
   "web_bundle/script_web_bundle_rule.h",
   "web_bundle/web_bundle_loader.cc",

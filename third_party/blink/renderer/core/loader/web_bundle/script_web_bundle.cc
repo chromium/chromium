@@ -40,34 +40,34 @@ class ScriptWebBundle::ReleaseResourceTask {
   Persistent<ScriptWebBundle> script_web_bundle_;
 };
 
-ScriptWebBundle* ScriptWebBundle::CreateOrReuseInline(
-    ScriptElementBase& element,
-    const String& source_text) {
+absl::variant<ScriptWebBundle*, ScriptWebBundleError>
+ScriptWebBundle::CreateOrReuseInline(ScriptElementBase& element,
+                                     const String& source_text) {
   Document& document = element.GetDocument();
   auto rule = ScriptWebBundleRule::ParseJson(source_text, document.BaseURL());
   if (!rule) {
-    return nullptr;
+    return ScriptWebBundleError(ScriptWebBundleError::Type::kParseError,
+                                "Failed to parse web bundle: invalid JSON");
   }
 
   ResourceFetcher* resource_fetcher = document.Fetcher();
   if (!resource_fetcher) {
-    return nullptr;
+    return ScriptWebBundleError(ScriptWebBundleError::Type::kSystemError,
+                                "Missing resource fetcher.");
   }
   SubresourceWebBundleList* active_bundles =
       resource_fetcher->GetOrCreateSubresourceWebBundleList();
   if (active_bundles->GetMatchingBundle(rule->source_url())) {
     ExecutionContext* context = document.GetExecutionContext();
-    if (!context)
-      return nullptr;
-    context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kOther,
-        mojom::blink::ConsoleMessageLevel::kWarning,
-        "A nested bundle is not supported: " +
-            rule->source_url().ElidedString()));
-    document.GetTaskRunner(TaskType::kDOMManipulation)
-        ->PostTask(FROM_HERE, WTF::Bind(&ScriptElementBase::DispatchErrorEvent,
-                                        WrapPersistent(&element)));
-    return nullptr;
+    if (context) {
+      context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+          mojom::blink::ConsoleMessageSource::kOther,
+          mojom::blink::ConsoleMessageLevel::kWarning,
+          "A nested bundle is not supported: " +
+              rule->source_url().ElidedString()));
+    }
+    return ScriptWebBundleError(ScriptWebBundleError::Type::kSystemError,
+                                "A nested bundle is not supported.");
   }
 
   if (SubresourceWebBundle* found =
