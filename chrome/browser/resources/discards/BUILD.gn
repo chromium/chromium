@@ -34,6 +34,7 @@ foreach(f, html_files) {
 
 ts_files = [
              "discards.ts",
+             "graph_doc.ts",
              "sorted_table_mixin.ts",
            ] + web_component_files
 
@@ -47,15 +48,9 @@ preprocess_if_expr("preprocess") {
   out_folder = "$target_gen_dir/$preprocess_folder"
 }
 
-# Intentionally excluding graph_tab_template.html.ts since it will be placed in
-# the folder by generate_graph_tab.
 preprocess_if_expr("preprocess_gen") {
   in_folder = target_gen_dir
-  in_files = [
-    "discards_main.html.ts",
-    "discards_tab.html.ts",
-    "database_tab.html.ts",
-  ]
+  in_files = html_wrapper_files
   out_folder = "$target_gen_dir/$preprocess_folder"
   deps = [ ":html_wrapper_files" ]
 }
@@ -66,21 +61,20 @@ preprocess_if_expr("preprocess_gen") {
 action("generate_graph_tab") {
   script = "generate_graph_tab.py"
   sources = [
-    "graph_doc.js",
+    "graph_doc.ts",
     "graph_doc_template.html",
     "graph_tab_template.html",
   ]
-  outputs = [ "$target_gen_dir/$preprocess_folder/graph_tab_template.html.ts" ]
+  outputs = [ "$target_gen_dir/graph_tab/graph_tab_template.html.js" ]
 
   args = rebase_path(outputs, root_build_dir) +
+         rebase_path([ "graph_doc_template.html" ], root_build_dir) +
          rebase_path([
-                       "graph_doc_template.html",
-                       "graph_doc.js",
+                       "$target_gen_dir/tsc/graph_doc.js",
+                       "$target_gen_dir/tsc/graph_tab_template.html.js",
                      ],
-                     root_build_dir) +
-         rebase_path([ "$target_gen_dir/graph_tab_template.html.ts" ],
                      root_build_dir)
-  deps = [ ":html_wrapper_files" ]
+  deps = [ ":build_ts" ]
 }
 
 # Action with a transparent name.
@@ -108,6 +102,10 @@ ts_library("build_ts") {
   root_dir = "$target_gen_dir/$preprocess_folder"
   out_dir = "$target_gen_dir/$tsc_folder"
   tsconfig_base = "tsconfig_base.json"
+  manifest_excludes = [
+    "graph_doc.ts",
+    "graph_tab_template.html.ts",
+  ]
   in_files = ts_files + html_wrapper_files + [
                "discards.mojom-webui.js",
                "site_data.mojom-webui.js",
@@ -121,17 +119,29 @@ ts_library("build_ts") {
 
   extra_deps = [
     ":copy_mojo",
-    ":generate_graph_tab",
     ":preprocess",
     ":preprocess_gen",
   ]
 }
 
+generate_grd("build_graph_tab_grdp") {
+  input_files = [ "graph_tab_template.html.js" ]
+  input_files_base_dir =
+      rebase_path("$target_gen_dir/graph_tab", root_build_dir)
+  deps = [ ":generate_graph_tab" ]
+  grd_prefix = "discards"
+  out_grd = "$target_gen_dir/discards_graph_tab.grdp"
+}
+
 generate_grd("build_grd") {
   input_files = [ "discards.html" ]
   input_files_base_dir = rebase_path(".", "//")
-  deps = [ ":build_ts" ]
+  deps = [
+    ":build_graph_tab_grdp",
+    ":build_ts",
+  ]
   manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+  grdp_files = [ "$target_gen_dir/discards_graph_tab.grdp" ]
   grd_prefix = "discards"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
 }

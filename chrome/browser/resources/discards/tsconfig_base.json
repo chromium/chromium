@@ -2,8 +2,11 @@
   "extends": "../../../../tools/typescript/tsconfig_base.json",
   "compilerOptions": {
     "allowJs": true,
+    "allowUmdGlobalAccess": true,
     "noUncheckedIndexedAccess": false,
     "noUnusedLocals": false,
-    "strictPropertyInitialization": false
+    "strictPropertyInitialization": false,
+    "typeRoots": [ "../../../../third_party/node/node_modules/@types" ],
+    "types": [ "d3" ]
   }
 }

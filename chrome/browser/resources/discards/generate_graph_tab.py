@@ -12,13 +12,17 @@ import string
 import sys
 
 
-def strip_js_imports(js_contents):
-  """The input JS may use imports for Closure compilation. These must be
-  stripped from the output since the resulting data: URL cannot use imports
-  within its webview."""
-  def not_an_import(line):
-    return not line.startswith('import ')
-  return '\n'.join(filter(not_an_import, js_contents.splitlines()))
+def strip_js_exports(js_contents):
+  """The input JS may use imports for TS compilation, but these should be used
+  for types only and therefore should be stripped by TS compiler.
+  TS compiler also generates an "export" statement - remove this. """
+  lines = js_contents.splitlines();
+  for line in lines:
+    assert not line.startswith('import ')
+
+  def not_an_export(line):
+    return not line.startswith('export ');
+  return '\n'.join(filter(not_an_export, lines))
 
 
 def main():
@@ -33,18 +37,24 @@ def main():
   # Slurp the input files.
   js_file_contents = open(args.javascript_file, 'r').read();
   html_template = string.Template(open(args.html_template, 'r').read());
-  output_template = string.Template(open(args.output_template, 'r').read());
+
+  # Note: Don't turn this into a template. It is a .html.js file output from the
+  # TS compiler. TS compiler complains about not finding values if it sees
+  # "${foo}" template syntax, so the input html file needs to use a different
+  # pattern (see DATA_URL_PLACEHOLDER below).
+  output_template = open(args.output_template, 'r').read();
 
   # Stamp the javacript contents into the HTML template.
   html_doc = html_template.substitute(
-      {'javascript_file': strip_js_imports(js_file_contents)})
+      {'javascript_file': strip_js_exports(js_file_contents)})
 
   # Construct the data: URL that contains the combined doc.
   data_url = "data:text/html;base64,%s" % base64.b64encode(
       html_doc.encode()).decode()
 
   # And finally stamp the the data URL into the output template.
-  output = output_template.safe_substitute({'data_url': data_url})
+  DATA_URL_PLACEHOLDER = '{__data_url__}';
+  output = output_template.replace(DATA_URL_PLACEHOLDER, data_url);
 
   current_contents = ''
   if os.path.isfile(args.output_file):
