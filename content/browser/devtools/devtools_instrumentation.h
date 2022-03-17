@@ -294,7 +294,8 @@ void OnServiceWorkerMainScriptFetchingFailed(
     const std::string& error);
 void OnServiceWorkerMainScriptRequestWillBeSent(
     const GlobalRenderFrameHostId& requesting_frame_id,
-    const base::UnguessableToken& token,
+    const ServiceWorkerContextWrapper* context_wrapper,
+    int64_t version_id,
     const network::ResourceRequest& request);
 
 // Fires `Network.onLoadingFailed` event for a dedicated worker main script.

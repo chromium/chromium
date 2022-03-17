@@ -1339,7 +1339,8 @@ void OnServiceWorkerMainScriptFetchingFailed(
 
 void OnServiceWorkerMainScriptRequestWillBeSent(
     const GlobalRenderFrameHostId& requesting_frame_id,
-    const base::UnguessableToken& token,
+    const ServiceWorkerContextWrapper* context_wrapper,
+    int64_t version_id,
     const network::ResourceRequest& request) {
   // Currently, `requesting_frame_id` is invalid when payment apps and
   // extensions register a service worker. See the callers of
@@ -1352,17 +1353,25 @@ void OnServiceWorkerMainScriptRequestWillBeSent(
   if (!requesting_frame)
     return;
 
-  FrameTreeNode* ftn = requesting_frame->frame_tree_node();
-  DCHECK(ftn);
-
   auto timestamp = base::TimeTicks::Now();
   network::mojom::URLRequestDevToolsInfoPtr request_info =
       network::ExtractDevToolsInfo(request);
-  DispatchToAgents(
-      ftn, &protocol::NetworkHandler::RequestSent, token.ToString(),
-      /*loader_id=*/"", request.headers, *request_info,
-      protocol::Network::Initiator::TypeEnum::Other, ftn->current_url(),
-      /*initiator_devtools_request_id=*/"", timestamp);
+
+  ServiceWorkerDevToolsAgentHost* agent_host =
+      ServiceWorkerDevToolsManager::GetInstance()
+          ->GetDevToolsAgentHostForNewInstallingWorker(context_wrapper,
+                                                       version_id);
+  DCHECK(agent_host);
+  DCHECK(request.devtools_request_id.has_value());
+  for (auto* network_handler :
+       protocol::NetworkHandler::ForAgentHost(agent_host)) {
+    network_handler->RequestSent(
+        request.devtools_request_id.value(),
+        /*loader_id=*/"", request.headers, *request_info,
+        protocol::Network::Initiator::TypeEnum::Other,
+        requesting_frame->GetLastCommittedURL(),
+        /*initiator_devtools_request_id=*/"", timestamp);
+  }
 }
 
 void OnWorkerMainScriptLoadingFailed(

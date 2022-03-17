@@ -10,7 +10,7 @@
       return;
     }
 
-    testRunner.faiil(`FAIL: ${
+    testRunner.fail(`FAIL: ${
         description}: networkId !== requestId or one or more ids are missing (${
         networkId} vs. ${requestId})`);
   };
@@ -43,15 +43,27 @@
     });
   });
 
-  const [initScriptWillBeSentEvent, [ initScriptPausedEvent, subFetchWillBeSentEvent, subFetchPausedEvent ]] =
+  const [[
+    initScriptWillBeSentEvent, initScriptPausedEvent, subFetchWillBeSentEvent,
+    subFetchPausedEvent
+  ]] =
       await Promise.all([
-        dp.Network.onceRequestWillBeSent(e => e.params.request.url.endsWith('/service-worker-with-fetch.js')),
         workerProtocol.then(wdp => Promise.all([
-            wdp.Fetch.onceRequestPaused(e => e.params.request.url.endsWith('/service-worker-with-fetch.js')),
-            wdp.Network.onceRequestWillBeSent(e => e.params.request.url.endsWith('/request-within-service-worker')),
-            wdp.Fetch.onceRequestPaused(e => e.params.request.url.endsWith('/request-within-service-worker')),
+          wdp.Network.onceRequestWillBeSent(
+              e => e.params.request.url.endsWith(
+                  '/service-worker-with-fetch.js')),
+          wdp.Fetch.onceRequestPaused(
+              e => e.params.request.url.endsWith(
+                  '/service-worker-with-fetch.js')),
+          wdp.Network.onceRequestWillBeSent(
+              e => e.params.request.url.endsWith(
+                  '/request-within-service-worker')),
+          wdp.Fetch.onceRequestPaused(
+              e => e.params.request.url.endsWith(
+                  '/request-within-service-worker')),
         ])),
-        page.navigate(testRunner.url('./resources/service-worker-with-fetch.html')),
+        page.navigate(
+            testRunner.url('./resources/service-worker-with-fetch.html')),
       ]);
 
   assertNetworkIdAlignment(
