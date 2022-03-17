@@ -336,7 +336,21 @@ class TCPSocketTest : public testing::Test {
       mojo::ScopedDataPipeProducerHandle* send_pipe_handle_out,
       mojom::TCPConnectedSocketOptionsPtr tcp_connected_socket_options =
           nullptr) {
-    net::AddressList remote_addr_list(remote_addr);
+    return CreateTCPConnectedSocketSync(
+        std::move(receiver), std::move(observer), local_addr,
+        net::AddressList(remote_addr), receive_pipe_handle_out,
+        send_pipe_handle_out, std::move(tcp_connected_socket_options));
+  }
+
+  int CreateTCPConnectedSocketSync(
+      mojo::PendingReceiver<mojom::TCPConnectedSocket> receiver,
+      mojo::PendingRemote<mojom::SocketObserver> observer,
+      const absl::optional<net::IPEndPoint>& local_addr,
+      const net::AddressList& remote_addr_list,
+      mojo::ScopedDataPipeConsumerHandle* receive_pipe_handle_out,
+      mojo::ScopedDataPipeProducerHandle* send_pipe_handle_out,
+      mojom::TCPConnectedSocketOptionsPtr tcp_connected_socket_options =
+          nullptr) {
     base::RunLoop run_loop;
     int net_error = net::ERR_FAILED;
     factory_->CreateTCPConnectedSocket(
@@ -351,7 +365,9 @@ class TCPSocketTest : public testing::Test {
               net_error = result;
               if (result == net::OK) {
                 EXPECT_NE(0, actual_local_addr.value().port());
-                EXPECT_EQ(remote_addr, peer_addr.value());
+                if (remote_addr_list.size() == 1) {
+                  EXPECT_EQ(remote_addr_list.front(), peer_addr.value());
+                }
               }
               *receive_pipe_handle_out = std::move(receive_pipe_handle);
               *send_pipe_handle_out = std::move(send_pipe_handle);
@@ -1187,6 +1203,38 @@ TEST_P(TCPSocketWithMockSocketTest, InitialTCPConnectedSocketOptionsFails) {
                   &client_socket_send_handle,
                   std::move(tcp_connected_socket_options)));
   }
+}
+
+// Simulates the initial connection attempt failing, followed by another
+// attempt. Used to simulate cases where the BeforeConnectionCallback is
+// invoked multiple times.
+TEST_P(TCPSocketWithMockSocketTest,
+       InitialTCPConnectedSocketSucceedsOnSecondAttempt) {
+  net::IPEndPoint server_addr_a(net::IPAddress::IPv4Localhost(), 1234);
+  net::IPEndPoint server_addr_b(net::IPAddress::IPv4Localhost(), 1235);
+
+  mojo::ScopedDataPipeConsumerHandle client_socket_receive_handle;
+  mojo::ScopedDataPipeProducerHandle client_socket_send_handle;
+
+  mojo::Remote<mojom::TCPConnectedSocket> client_socket;
+  net::StaticSocketDataProvider data_provider;
+  data_provider.set_connect_data(net::MockConnect(
+      GetParam(), net::OK, server_addr_b, /*first_attempt_fails=*/true));
+
+  mock_client_socket_factory_.AddSocketDataProvider(&data_provider);
+
+  mojom::TCPConnectedSocketOptionsPtr tcp_connected_socket_options =
+      mojom::TCPConnectedSocketOptions::New();
+  tcp_connected_socket_options->receive_buffer_size = 1;
+  tcp_connected_socket_options->send_buffer_size = 2;
+
+  EXPECT_EQ(net::OK,
+            CreateTCPConnectedSocketSync(
+                client_socket.BindNewPipeAndPassReceiver(),
+                mojo::NullRemote() /*observer*/, absl::nullopt /*local_addr*/,
+                net::AddressList({server_addr_a, server_addr_b}),
+                &client_socket_receive_handle, &client_socket_send_handle,
+                std::move(tcp_connected_socket_options)));
 }
 
 TEST_P(TCPSocketWithMockSocketTest, SetBufferSizes) {

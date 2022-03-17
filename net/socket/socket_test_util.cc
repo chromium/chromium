@@ -85,47 +85,32 @@ void DumpData(const char* data, int data_len) {
   } else {
     int i;
     for (i = 0; i <= (data_len - 4); i += 4) {
-      DVLOG(1) << pfx
-               << AsciifyHigh(data[i + 0]) << AsciifyLow(data[i + 0])
+      DVLOG(1) << pfx << AsciifyHigh(data[i + 0]) << AsciifyLow(data[i + 0])
                << AsciifyHigh(data[i + 1]) << AsciifyLow(data[i + 1])
                << AsciifyHigh(data[i + 2]) << AsciifyLow(data[i + 2])
-               << AsciifyHigh(data[i + 3]) << AsciifyLow(data[i + 3])
-               << "  '"
-               << Asciify(data[i + 0])
-               << Asciify(data[i + 1])
-               << Asciify(data[i + 2])
-               << Asciify(data[i + 3])
-               << "'";
+               << AsciifyHigh(data[i + 3]) << AsciifyLow(data[i + 3]) << "  '"
+               << Asciify(data[i + 0]) << Asciify(data[i + 1])
+               << Asciify(data[i + 2]) << Asciify(data[i + 3]) << "'";
       pfx = "         ";
     }
     // Take care of any 'trailing' bytes, if data_len was not a multiple of 4.
     switch (data_len - i) {
       case 3:
-        DVLOG(1) << pfx
-                 << AsciifyHigh(data[i + 0]) << AsciifyLow(data[i + 0])
+        DVLOG(1) << pfx << AsciifyHigh(data[i + 0]) << AsciifyLow(data[i + 0])
                  << AsciifyHigh(data[i + 1]) << AsciifyLow(data[i + 1])
                  << AsciifyHigh(data[i + 2]) << AsciifyLow(data[i + 2])
-                 << "    '"
-                 << Asciify(data[i + 0])
-                 << Asciify(data[i + 1])
-                 << Asciify(data[i + 2])
-                 << " '";
+                 << "    '" << Asciify(data[i + 0]) << Asciify(data[i + 1])
+                 << Asciify(data[i + 2]) << " '";
         break;
       case 2:
-        DVLOG(1) << pfx
-                 << AsciifyHigh(data[i + 0]) << AsciifyLow(data[i + 0])
+        DVLOG(1) << pfx << AsciifyHigh(data[i + 0]) << AsciifyLow(data[i + 0])
                  << AsciifyHigh(data[i + 1]) << AsciifyLow(data[i + 1])
-                 << "      '"
-                 << Asciify(data[i + 0])
-                 << Asciify(data[i + 1])
+                 << "      '" << Asciify(data[i + 0]) << Asciify(data[i + 1])
                  << "  '";
         break;
       case 1:
-        DVLOG(1) << pfx
-                 << AsciifyHigh(data[i + 0]) << AsciifyLow(data[i + 0])
-                 << "        '"
-                 << Asciify(data[i + 0])
-                 << "   '";
+        DVLOG(1) << pfx << AsciifyHigh(data[i + 0]) << AsciifyLow(data[i + 0])
+                 << "        '" << Asciify(data[i + 0]) << "   '";
         break;
     }
   }
@@ -135,8 +120,7 @@ template <MockReadWriteType type>
 void DumpMockReadWrite(const MockReadWrite<type>& r) {
   if (logging::LOG_INFO < logging::GetMinLogLevel())
     return;
-  DVLOG(1) << "Async:   " << (r.mode == ASYNC)
-           << "\nResult:  " << r.result;
+  DVLOG(1) << "Async:   " << (r.mode == ASYNC) << "\nResult:  " << r.result;
   DumpData(r.data, r.data_len);
   const char* stop = (r.sequence_number & MockRead::STOPLOOP) ? " (STOP)" : "";
   DVLOG(1) << "Stage:   " << (r.sequence_number & ~MockRead::STOPLOOP) << stop;
@@ -158,11 +142,17 @@ MockConnect::MockConnect(IoMode io_mode, int r) : mode(io_mode), result(r) {
   peer_addr = IPEndPoint(IPAddress(192, 0, 2, 33), 0);
 }
 
-MockConnect::MockConnect(IoMode io_mode, int r, IPEndPoint addr) :
-    mode(io_mode),
-    result(r),
-    peer_addr(addr) {
-}
+MockConnect::MockConnect(IoMode io_mode, int r, IPEndPoint addr)
+    : mode(io_mode), result(r), peer_addr(addr) {}
+
+MockConnect::MockConnect(IoMode io_mode,
+                         int r,
+                         IPEndPoint addr,
+                         bool first_attempt_fails)
+    : mode(io_mode),
+      result(r),
+      peer_addr(addr),
+      first_attempt_fails(first_attempt_fails) {}
 
 MockConnect::~MockConnect() = default;
 
@@ -378,8 +368,8 @@ SequencedSocketData::SequencedSocketData(base::span<const MockRead> reads,
         next_read->sequence_number == next_sequence_number) {
       // Check if this is a pause.
       if (next_read->mode == ASYNC && next_read->result == ERR_IO_PENDING) {
-        CHECK(!last_event_was_pause) << "Two pauses in a row are not allowed: "
-                                     << next_sequence_number;
+        CHECK(!last_event_was_pause)
+            << "Two pauses in a row are not allowed: " << next_sequence_number;
         last_event_was_pause = true;
       } else if (last_event_was_pause) {
         CHECK_EQ(ASYNC, next_read->mode)
@@ -399,8 +389,8 @@ SequencedSocketData::SequencedSocketData(base::span<const MockRead> reads,
         next_write->sequence_number == next_sequence_number) {
       // Check if this is a pause.
       if (next_write->mode == ASYNC && next_write->result == ERR_IO_PENDING) {
-        CHECK(!last_event_was_pause) << "Two pauses in a row are not allowed: "
-                                     << next_sequence_number;
+        CHECK(!last_event_was_pause)
+            << "Two pauses in a row are not allowed: " << next_sequence_number;
         last_event_was_pause = true;
       } else if (last_event_was_pause) {
         CHECK_EQ(ASYNC, next_write->mode)
@@ -1095,11 +1085,17 @@ int MockTCPClientSocket::Connect(CompletionOnceCallback callback) {
   connected_ = true;
 
   if (before_connect_callback_) {
-    int result = before_connect_callback_.Run();
-    DCHECK_NE(result, ERR_IO_PENDING);
-    if (result != net::OK) {
-      connected_ = false;
-      return result;
+    for (size_t index = 0; index < addresses_.size(); index++) {
+      int result = before_connect_callback_.Run();
+      if (data_->connect_data().first_attempt_fails && index == 0) {
+        continue;
+      }
+      DCHECK_NE(result, ERR_IO_PENDING);
+      if (result != net::OK) {
+        connected_ = false;
+        return result;
+      }
+      break;
     }
   }
 
@@ -1148,7 +1144,12 @@ int MockTCPClientSocket::GetPeerAddress(IPEndPoint* address) const {
   if (addresses_.empty())
     return MockClientSocket::GetPeerAddress(address);
 
-  *address = addresses_[0];
+  if (data_->connect_data().first_attempt_fails) {
+    DCHECK_GE(addresses_.size(), 2U);
+    *address = addresses_[1];
+  } else {
+    *address = addresses_[0];
+  }
   return OK;
 }
 
@@ -1469,8 +1470,7 @@ void MockSSLClientSocket::GetSSLCertRequestInfo(
     SSLCertRequestInfo* cert_request_info) const {
   DCHECK(cert_request_info);
   if (data_->cert_request_info) {
-    cert_request_info->host_and_port =
-        data_->cert_request_info->host_and_port;
+    cert_request_info->host_and_port = data_->cert_request_info->host_and_port;
     cert_request_info->is_proxy = data_->cert_request_info->is_proxy;
     cert_request_info->cert_authorities =
         data_->cert_request_info->cert_authorities;
@@ -2212,19 +2212,19 @@ const int kSOCKS4OkReplyLength = base::size(kSOCKS4OkReply);
 const char kSOCKS5TestHost[] = "host";
 const int kSOCKS5TestPort = 80;
 
-const char kSOCKS5GreetRequest[] = { 0x05, 0x01, 0x00 };
-const int kSOCKS5GreetRequestLength = base::size(kSOCKS5GreetRequest);
+const char kSOCKS5GreetRequest[] = {0x05, 0x01, 0x00};
+const int kSOCKS5GreetRequestLength = std::size(kSOCKS5GreetRequest);
 
-const char kSOCKS5GreetResponse[] = { 0x05, 0x00 };
-const int kSOCKS5GreetResponseLength = base::size(kSOCKS5GreetResponse);
+const char kSOCKS5GreetResponse[] = {0x05, 0x00};
+const int kSOCKS5GreetResponseLength = std::size(kSOCKS5GreetResponse);
 
-const char kSOCKS5OkRequest[] =
-    { 0x05, 0x01, 0x00, 0x03, 0x04, 'h', 'o', 's', 't', 0x00, 0x50 };
-const int kSOCKS5OkRequestLength = base::size(kSOCKS5OkRequest);
+const char kSOCKS5OkRequest[] = {0x05, 0x01, 0x00, 0x03, 0x04, 'h',
+                                 'o',  's',  't',  0x00, 0x50};
+const int kSOCKS5OkRequestLength = std::size(kSOCKS5OkRequest);
 
-const char kSOCKS5OkResponse[] =
-    { 0x05, 0x00, 0x00, 0x01, 127, 0, 0, 1, 0x00, 0x50 };
-const int kSOCKS5OkResponseLength = base::size(kSOCKS5OkResponse);
+const char kSOCKS5OkResponse[] = {0x05, 0x00, 0x00, 0x01, 127,
+                                  0,    0,    1,    0x00, 0x50};
+const int kSOCKS5OkResponseLength = std::size(kSOCKS5OkResponse);
 
 int64_t CountReadBytes(base::span<const MockRead> reads) {
   int64_t total = 0;

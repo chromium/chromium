@@ -116,6 +116,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TCPConnectedSocket
 
   mojom::NetworkContext::CreateTCPConnectedSocketCallback connect_callback_;
 
+  mojom::TCPConnectedSocketOptionsPtr socket_options_;
+
   base::OnceClosure pending_upgrade_to_tls_callback_;
 
   std::unique_ptr<SocketDataPump> socket_data_pump_;
