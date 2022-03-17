@@ -117,7 +117,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AccountManager.NumAccounts" units="count"
-    expires_after="2022-04-10">
+    expires_after="2023-04-10">
   <owner>sinhak@chromium.org</owner>
   <owner>anastasiian@chromium.org</owner>
   <summary>
