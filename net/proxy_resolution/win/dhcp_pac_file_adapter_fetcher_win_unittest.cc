@@ -24,6 +24,8 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/gtest_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -151,7 +153,7 @@ class MockDhcpPacFileAdapterFetcher : public DhcpPacFileAdapterFetcher {
 class FetcherClient {
  public:
   FetcherClient()
-      : url_request_context_(new TestURLRequestContext()),
+      : url_request_context_(CreateTestURLRequestContextBuilder()->Build()),
         fetcher_(new MockDhcpPacFileAdapterFetcher(
             url_request_context_.get(),
             base::ThreadPool::CreateSequencedTaskRunner(
@@ -312,9 +314,9 @@ TEST(DhcpPacFileAdapterFetcher, MockDhcpRealFetch) {
   GURL configured_url = test_server.GetURL("/downloadable.pac");
 
   FetcherClient client;
-  TestURLRequestContext url_request_context;
+  auto url_request_context = CreateTestURLRequestContextBuilder()->Build();
   client.fetcher_ = std::make_unique<MockDhcpRealFetchPacFileAdapterFetcher>(
-      &url_request_context,
+      url_request_context.get(),
       base::ThreadPool::CreateTaskRunner(
           {base::MayBlock(),
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}));
