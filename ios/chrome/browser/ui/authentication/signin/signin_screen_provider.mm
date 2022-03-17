@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/authentication/signin/signin_screen_provider.h"
 
+#import "ios/chrome/browser/ui/first_run/fre_field_trial.h"
 #import "ios/chrome/browser/ui/screen/screen_provider+protected.h"
 #import "ios/chrome/browser/ui/screen/screen_type.h"
 
@@ -14,7 +15,19 @@
 @implementation SigninScreenProvider
 
 - (instancetype)init {
-  return [super initWithScreens:@[ @(kSignIn), @(kStepsCompleted) ]];
+  NSMutableArray* screens = [NSMutableArray array];
+  switch (fre_field_trial::GetNewMobileIdentityConsistencyFRE()) {
+    case NewMobileIdentityConsistencyFRE::kTwoSteps:
+    case NewMobileIdentityConsistencyFRE::kThreeSteps:
+      [screens addObject:@(kSignIn)];
+      break;
+    case NewMobileIdentityConsistencyFRE::kUMADialog:
+    case NewMobileIdentityConsistencyFRE::kOld:
+      [screens addObject:@(kLegacySignIn)];
+      break;
+  }
+  [screens addObject:@(kStepsCompleted)];
+  return [super initWithScreens:screens];
 }
 
 @end

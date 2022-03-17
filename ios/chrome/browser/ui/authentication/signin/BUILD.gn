@@ -153,6 +153,7 @@ source_set("signin_screen_provider") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/browser/ui/first_run:field_trial",
     "//ios/chrome/browser/ui/screen:screen_provider",
     "//ios/chrome/browser/ui/screen:screen_provider_protected",
     "//ios/chrome/browser/ui/screen:screen_type",

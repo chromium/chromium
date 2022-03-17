@@ -19,6 +19,7 @@ source_set("forced_signin") {
     "//ios/chrome/browser/ui/first_run:screen_delegate",
     "//ios/chrome/browser/ui/first_run:utils",
     "//ios/chrome/browser/ui/first_run/legacy_signin",
+    "//ios/chrome/browser/ui/first_run/signin",
     "//ios/chrome/browser/ui/screen:screen_provider",
     "//ios/chrome/browser/ui/screen:screen_type",
   ]

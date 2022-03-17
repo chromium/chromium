@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/ui/first_run/first_run_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_provider.h"
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
+#import "ios/chrome/browser/ui/first_run/fre_field_trial.h"
 #import "ios/chrome/browser/ui/first_run/orientation_limiting_navigation_controller.h"
 #import "ios/chrome/browser/ui/first_run/welcome_to_chrome_view_controller.h"
 #import "ios/chrome/browser/ui/main/browser_interface_provider.h"
@@ -210,7 +211,9 @@
 
   [self setUpPolicyWatcher];
 
-  if (base::FeatureList::IsEnabled(kEnableFREUIModuleIOS)) {
+  if (base::FeatureList::IsEnabled(kEnableFREUIModuleIOS) ||
+      fre_field_trial::GetNewMobileIdentityConsistencyFRE() !=
+          NewMobileIdentityConsistencyFRE::kOld) {
     [self showNewFirstRunUI];
   } else {
     [self showLegacyFirstRunUI];
