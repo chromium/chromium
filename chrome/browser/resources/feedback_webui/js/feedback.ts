@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 import {$} from 'chrome://resources/js/util.m.js';
 
 import {FEEDBACK_LANDING_PAGE, FEEDBACK_LANDING_PAGE_TECHSTOP, FEEDBACK_LEGAL_HELP_URL, FEEDBACK_PRIVACY_POLICY_URL, FEEDBACK_TERM_OF_SERVICE_URL, openUrlInAppWindow} from './feedback_util.js';
@@ -12,18 +11,14 @@ import {questionnaireBegin} from './questionnaire.js';
 import {questionnaireNotification} from './questionnaire.js';
 import {takeScreenshot} from './take_screenshot.js';
 
-/** @type {!number} */
-const formOpenTime = new Date().getTime();
+const formOpenTime: number = new Date().getTime();
 
-/** @type {string} */
-const dialogArgs = chrome.getVariableValue('dialogArguments');
+const dialogArgs: string = chrome.getVariableValue('dialogArguments');
 
 /**
  * The object will be manipulated by feedbackHelper
- *
- * @type {chrome.feedbackPrivate.FeedbackInfo}
  */
-let feedbackInfo = {
+let feedbackInfo: chrome.feedbackPrivate.FeedbackInfo = {
   assistantDebugInfoAllowed: false,
   attachedFile: undefined,
   attachedFileBlobUuid: undefined,
@@ -42,20 +37,16 @@ let feedbackInfo = {
 
 
 class FeedbackHelper {
-
-  getSystemInformation() {
+  getSystemInformation(): Promise<chrome.feedbackPrivate.SystemInformation[]> {
     return new Promise(
         resolve => chrome.feedbackPrivate.getSystemInformation(resolve));
   }
 
-  getUserEmail() {
+  getUserEmail(): Promise<string> {
     return new Promise(resolve => chrome.feedbackPrivate.getUserEmail(resolve));
   }
 
-  /**
-   * @param {boolean} useSystemInfo
-   */
-  sendFeedbackReport(useSystemInfo) {
+  sendFeedbackReport(useSystemInfo: boolean) {
     const ID = Math.round(Date.now() / 1000);
     const FLOW = feedbackInfo.flow;
 
@@ -116,56 +107,18 @@ class FeedbackHelper {
   }
 }
 
-/**
- * @type {FeedbackHelper}
- * @const
- */
-const feedbackHelper = new FeedbackHelper();
+const feedbackHelper: FeedbackHelper = new FeedbackHelper();
 
-/** @type {number}
- * @const
- */
-const MAX_ATTACH_FILE_SIZE = 3 * 1024 * 1024;
+const MAX_ATTACH_FILE_SIZE: number = 3 * 1024 * 1024;
 
-/**
- * @type {number}
- * @const
- */
-const FEEDBACK_MIN_WIDTH = 500;
+const MAX_SCREENSHOT_WIDTH: number = 100;
 
-/**
- * @type {number}
- * @const
- */
-const FEEDBACK_MIN_HEIGHT = 610;
-
-/**
- * @type {number}
- * @const
- */
-const FEEDBACK_MIN_HEIGHT_LOGIN = 482;
-
-/** @type {number}
- * @const
- */
-const MAX_SCREENSHOT_WIDTH = 100;
-
-/** @type {string}
- * @const
- */
-const SYSINFO_WINDOW_ID = 'sysinfo_window';
-
-/**
- * @type {Blob}
- */
-let attachedFileBlob = null;
-const lastReader = null;
+let attachedFileBlob: Blob|null = null;
 
 /**
  * Which questions have been appended to the issue description text area.
- * @type {!Object<string, boolean>}
  */
-const appendedQuestions = {};
+const appendedQuestions: {[key: string]: boolean} = {};
 
 /**
  * Builds a RegExp that matches one of the given words. Each word has to match
@@ -173,9 +126,9 @@ const appendedQuestions = {};
  * the word "SIM" would match the string "I have a sim card issue" but not
  * "I have a simple issue" nor "I have a sim" (because the user might not have
  * finished typing yet).
- * @param {Array<string>} words The words to match.
+ * @param words The words to match.
  */
-function buildWordMatcher(words) {
+function buildWordMatcher(words: string[]): RegExp {
   return new RegExp(
       words.map((word) => '\\b' + word + '\\b[^$]').join('|'), 'i');
 }
@@ -185,22 +138,20 @@ function buildWordMatcher(words) {
  * space between the words; for BT when used as an individual word, or as two
  * individual characters, and for BLE when used as an individual word. Case
  * insensitive matching.
- * @type {RegExp}
  */
-const btRegEx = new RegExp('blu[e]?[ ]?toot[h]?|\\bb[ ]?t\\b|\\bble\\b', 'i');
+const btRegEx: RegExp =
+    new RegExp('blu[e]?[ ]?toot[h]?|\\bb[ ]?t\\b|\\bble\\b', 'i');
 
 /**
  * Regular expression to check for wifi-related keywords.
- * @type {RegExp}
  */
-const wifiRegEx =
+const wifiRegEx: RegExp =
     buildWordMatcher(['wifi', 'wi-fi', 'internet', 'network', 'hotspot']);
 
 /**
  * Regular expression to check for cellular-related keywords.
- * @type {RegExp}
  */
-const cellularRegEx = buildWordMatcher([
+const cellularRegEx: RegExp = buildWordMatcher([
   '2G',     '3G',      '4G',  '5G',   'LTE',  'UMTS',     'SIM',     'eSIM',
   'mmWave', 'mobile',  'APN', 'IMEI', 'IMSI', 'eUICC',    'carrier', 'T.Mobile',
   'TMO',    'Verizon', 'VZW', 'AT&T', 'MVNO', 'pin.lock', 'cellular'
@@ -213,9 +164,8 @@ const cellularRegEx = buildWordMatcher([
  * Sample strings this will match:
  * "I can't connect the speaker!",
  * "The keyboard has connection problem."
- * @type {RegExp}
  */
-const cantConnectRegEx = new RegExp(
+const cantConnectRegEx: RegExp = new RegExp(
     '((headphone|keyboard|mouse|speaker)((?!(connect|pair)).*)(connect|pair))' +
         '|((connect|pair).*(headphone|keyboard|mouse|speaker))',
     'i');
@@ -223,37 +173,34 @@ const cantConnectRegEx = new RegExp(
 /**
  * Regular expression to check for "tether" or "tethering". Case insensitive
  * matching.
- * @type {RegExp}
  */
-const tetherRegEx = new RegExp('tether(ing)?', 'i');
+const tetherRegEx: RegExp = new RegExp('tether(ing)?', 'i');
 
 /**
  * Regular expression to check for "Smart (Un)lock" or "Easy (Un)lock" with or
  * without space between the words. Case insensitive matching.
- * @type {RegExp}
  */
-const smartLockRegEx = new RegExp('(smart|easy)[ ]?(un)?lock', 'i');
+const smartLockRegEx: RegExp = new RegExp('(smart|easy)[ ]?(un)?lock', 'i');
 
 /**
  * Regular expression to check for keywords related to Nearby Share like
  * "nearby (share)" or "phone (hub)".
  * Case insensitive matching.
- * @type {RegExp}
  */
-const nearbyShareRegEx = new RegExp('nearby|phone', 'i');
+const nearbyShareRegEx: RegExp = new RegExp('nearby|phone', 'i');
 
 /**
  * Reads the selected file when the user selects a file.
- * @param {Event} fileSelectedEvent The onChanged event for the file input box.
+ * @param fileSelectedEvent The onChanged event for the file input box.
  */
-function onFileSelected(fileSelectedEvent) {
+function onFileSelected(fileSelectedEvent: Event) {
   // <if expr="chromeos">
   // This is needed on CrOS. Otherwise, the feedback window will stay behind
   // the Chrome window.
   feedbackHelper.showDialog();
   // </if>
 
-  const file = fileSelectedEvent.target.files[0];
+  const file = (fileSelectedEvent.target as HTMLInputElement).files![0];
   if (!file) {
     // User canceled file selection.
     attachedFileBlob = null;
@@ -264,7 +211,7 @@ function onFileSelected(fileSelectedEvent) {
     $('attach-error').hidden = false;
 
     // Clear our selected file.
-    $('attach-file').value = '';
+    ($('attach-file') as HTMLInputElement).value = '';
     attachedFileBlob = null;
     return;
   }
@@ -294,12 +241,13 @@ function clearAttachedFile() {
 
 /**
  * Sets up the event handlers for the given |anchorElement|.
- * @param {HTMLElement} anchorElement The <a> html element.
- * @param {string} url The destination URL for the link.
- * @param {boolean} useAppWindow true if the URL should be opened inside a new
- *                  App Window, false if it should be opened in a new tab.
+ * @param anchorElement The <a> html element.
+ * @param url The destination URL for the link.
+ * @param useAppWindow true if the URL should be opened inside a new App Window,
+ *     false if it should be opened in a new tab.
  */
-function setupLinkHandlers(anchorElement, url, useAppWindow) {
+function setupLinkHandlers(
+    anchorElement: HTMLElement, url: string, useAppWindow: boolean) {
   anchorElement.onclick = function(e) {
     e.preventDefault();
     if (useAppWindow) {
@@ -314,42 +262,43 @@ function setupLinkHandlers(anchorElement, url, useAppWindow) {
   };
 }
 
+// <if expr="chromeos">
 /**
  * Opens a new window with chrome://slow_trace, downloading performance data.
  */
 function openSlowTraceWindow() {
   window.open('chrome://slow_trace/tracing.zip#' + feedbackInfo.traceId);
 }
+// </if>
 
 /**
  * Checks if any keywords related to bluetooth have been typed. If they are,
  * we show the bluetooth logs option, otherwise hide it.
- * @param {Event} inputEvent The input event for the description textarea.
+ * @param inputEvent The input event for the description textarea.
  */
-function checkForSendBluetoothLogs(inputEvent) {
-  const isRelatedToBluetooth = btRegEx.test(inputEvent.target.value) ||
-      cantConnectRegEx.test(inputEvent.target.value) ||
-      tetherRegEx.test(inputEvent.target.value) ||
-      smartLockRegEx.test(inputEvent.target.value) ||
-      nearbyShareRegEx.test(inputEvent.target.value);
+function checkForSendBluetoothLogs(inputEvent: Event) {
+  const value = (inputEvent.target as HTMLInputElement).value;
+  const isRelatedToBluetooth = btRegEx.test(value) ||
+      cantConnectRegEx.test(value) || tetherRegEx.test(value) ||
+      smartLockRegEx.test(value) || nearbyShareRegEx.test(value);
   $('bluetooth-checkbox-container').hidden = !isRelatedToBluetooth;
 }
 
 /**
  * Checks if any keywords have associated questionnaire in a domain. If so,
  * we append the questionnaire in $('description-text').
- * @param {Event} inputEvent The input event for the description textarea.
+ * @param inputEvent The input event for the description textarea.
  */
-function checkForShowQuestionnaire(inputEvent) {
+function checkForShowQuestionnaire(inputEvent: Event) {
   const toAppend = [];
 
   // Match user-entered description before the questionnaire to reduce false
   // positives due to matching the questionnaire questions and answers.
-  const questionnaireBeginPos =
-      inputEvent.target.value.indexOf(questionnaireBegin);
+  const value = (inputEvent.target as HTMLInputElement).value;
+  const questionnaireBeginPos = value.indexOf(questionnaireBegin);
   const matchedText = questionnaireBeginPos >= 0 ?
-      inputEvent.target.value.substring(0, questionnaireBeginPos) :
-      inputEvent.target.value;
+      value.substring(0, questionnaireBeginPos) :
+      value;
 
   if (btRegEx.test(matchedText)) {
     toAppend.push(...domainQuestions['bluetooth']);
@@ -367,9 +316,10 @@ function checkForShowQuestionnaire(inputEvent) {
     return;
   }
 
-  const savedCursor = $('description-text').selectionStart;
+  const textarea = $('description-text') as HTMLTextAreaElement;
+  const savedCursor = textarea.selectionStart;
   if (Object.keys(appendedQuestions).length === 0) {
-    $('description-text').value += '\n\n' + questionnaireBegin + '\n';
+    textarea.value += '\n\n' + questionnaireBegin + '\n';
     $('questionnaire-notification').textContent = questionnaireNotification;
   }
 
@@ -378,14 +328,14 @@ function checkForShowQuestionnaire(inputEvent) {
       continue;
     }
 
-    $('description-text').value += '* ' + question + ' \n';
+    textarea.value += '* ' + question + ' \n';
     appendedQuestions[question] = true;
   }
 
   // After appending text, the web engine automatically moves the cursor to the
   // end of the appended text, so we need to move the cursor back to where the
   // user was typing before.
-  $('description-text').selectionEnd = savedCursor;
+  textarea.selectionEnd = savedCursor;
 }
 
 /**
@@ -393,7 +343,7 @@ function checkForShowQuestionnaire(inputEvent) {
  * If invalid, indicate an error to the user. If valid, remove indication of the
  * error.
  */
-function updateDescription(wasValid) {
+function updateDescription(wasValid: boolean) {
   // Set visibility of the alert text for users who don't use a screen
   // reader.
   $('description-empty-error').hidden = wasValid;
@@ -407,7 +357,7 @@ function updateDescription(wasValid) {
       'aria-labelledby',
       (wasValid ? '' : 'description-empty-error ') + 'free-form-text');
   // Indicate whether input is valid.
-  description.setAttribute('aria-invalid', !wasValid);
+  description.setAttribute('aria-invalid', String(!wasValid));
   if (!wasValid) {
     // Return focus to field so user can correct error.
     description.focus();
@@ -422,10 +372,11 @@ function updateDescription(wasValid) {
  * Sends the report; after the report is sent, we need to be redirected to
  * the landing page, but we shouldn't be able to navigate back, hence
  * we open the landing page in a new tab and sendReport closes this tab.
- * @return {boolean} True if the report was sent.
+ * @return Whether the report was sent.
  */
-function sendReport() {
-  if ($('description-text').value.length === 0) {
+function sendReport(): boolean {
+  const textarea = $('description-text') as HTMLTextAreaElement;
+  if (textarea.value.length === 0) {
     updateDescription(false);
     return false;
   }
@@ -435,58 +386,62 @@ function sendReport() {
   updateDescription(true);
 
   // Prevent double clicking from sending additional reports.
-  $('send-report-button').disabled = true;
+  ($('send-report-button') as HTMLButtonElement).disabled = true;
   if (!feedbackInfo.attachedFile && attachedFileBlob) {
     feedbackInfo.attachedFile = {
-      name: $('attach-file').value,
+      name: ($('attach-file') as HTMLInputElement).value,
       data: attachedFileBlob,
     };
   }
 
-  feedbackInfo.description = $('description-text').value;
-  feedbackInfo.pageUrl = $('page-url-text').value;
-  feedbackInfo.email = $('user-email-drop-down').value;
+  feedbackInfo.description = textarea.value;
+  feedbackInfo.pageUrl = ($('page-url-text') as HTMLInputElement).value;
+  feedbackInfo.email = ($('user-email-drop-down') as HTMLSelectElement).value;
 
   let useSystemInfo = false;
   let useHistograms = false;
-  if ($('sys-info-checkbox') != null && $('sys-info-checkbox').checked) {
+  const checkbox = $('sys-info-checkbox') as HTMLInputElement | null;
+  if (checkbox != null && checkbox.checked) {
     // Send histograms along with system info.
-    useSystemInfo = useHistograms = true;
+    useHistograms = true;
+    useSystemInfo = true;
   }
 
   // <if expr="chromeos">
-  if ($('assistant-info-checkbox') != null &&
-      $('assistant-info-checkbox').checked &&
+  const assistantCheckbox =
+      $('assistant-info-checkbox') as HTMLInputElement | null;
+  if (assistantCheckbox != null && assistantCheckbox.checked &&
       !$('assistant-checkbox-container').hidden) {
     // User consent to link Assistant debug info on Assistant server.
     feedbackInfo.assistantDebugInfoAllowed = true;
   }
-  // </if>
 
-  // <if expr="chromeos">
-  if ($('bluetooth-logs-checkbox') != null &&
-      $('bluetooth-logs-checkbox').checked &&
+  const bluetoothCheckbox =
+      $('bluetooth-logs-checkbox') as HTMLInputElement | null;
+  if (bluetoothCheckbox != null && bluetoothCheckbox.checked &&
       !$('bluetooth-checkbox-container').hidden) {
     feedbackInfo.sendBluetoothLogs = true;
     feedbackInfo.categoryTag = 'BluetoothReportWithLogs';
   }
-  if ($('performance-info-checkbox') == null ||
-      !($('performance-info-checkbox').checked)) {
+
+  const performanceCheckbox =
+      $('performance-info-checkbox') as HTMLInputElement | null;
+  if (performanceCheckbox == null || !performanceCheckbox.checked) {
     feedbackInfo.traceId = undefined;
   }
   // </if>
 
   feedbackInfo.sendHistograms = useHistograms;
 
-  if ($('screenshot-checkbox').checked) {
+  if (($('screenshot-checkbox') as HTMLInputElement).checked) {
     // The user is okay with sending the screenshot and tab titles.
     feedbackInfo.sendTabTitles = true;
   } else {
     // The user doesn't want to send the screenshot, so clear it.
-    feedbackInfo.screenshot = null;
+    feedbackInfo.screenshot = undefined;
   }
 
-  let productId = parseInt('' + feedbackInfo.productId, 10);
+  let productId: number|undefined = parseInt('' + feedbackInfo.productId, 10);
   if (isNaN(productId)) {
     // For apps that still use a string value as the |productId|, we must clear
     // that value since the API uses an integer value, and a conflict in data
@@ -503,9 +458,8 @@ function sendReport() {
 
 /**
  * Click listener for the cancel button.
- * @param {Event} e The click event being handled.
  */
-function cancel(e) {
+function cancel(e: Event) {
   e.preventDefault();
   scheduleWindowClose();
   if (feedbackInfo.flow === chrome.feedbackPrivate.FeedbackFlow.LOGIN) {
@@ -518,15 +472,18 @@ function cancel(e) {
  * Update the page when performance feedback state is changed.
  */
 function performanceFeedbackChanged() {
-  if ($('performance-info-checkbox').checked) {
-    $('attach-file').disabled = true;
-    $('attach-file').checked = false;
+  const screenshotCheckbox = $('screenshot-checkbox') as HTMLInputElement;
+  const fileInput = $('attach-file') as HTMLInputElement;
 
-    $('screenshot-checkbox').disabled = true;
-    $('screenshot-checkbox').checked = false;
+  if (($('performance-info-checkbox') as HTMLInputElement).checked) {
+    fileInput.disabled = true;
+    fileInput.checked = false;
+
+    screenshotCheckbox.disabled = true;
+    screenshotCheckbox.checked = false;
   } else {
-    $('attach-file').disabled = false;
-    $('screenshot-checkbox').disabled = false;
+    fileInput.disabled = false;
+    screenshotCheckbox.disabled = false;
   }
 }
 // </if>
@@ -559,7 +516,7 @@ function scheduleWindowClose() {
  */
 function initialize() {
   // apply received feedback info object.
-  const applyData = function(feedbackInfo) {
+  function applyData(feedbackInfo: chrome.feedbackPrivate.FeedbackInfo) {
     if (feedbackInfo.includeBluetoothLogs) {
       assert(
           feedbackInfo.flow ===
@@ -585,10 +542,11 @@ function initialize() {
 
     $('description-text').textContent = feedbackInfo.description;
     if (feedbackInfo.descriptionPlaceholder) {
-      $('description-text').placeholder = feedbackInfo.descriptionPlaceholder;
+      ($('description-text') as HTMLTextAreaElement).placeholder =
+          feedbackInfo.descriptionPlaceholder;
     }
     if (feedbackInfo.pageUrl) {
-      $('page-url-text').value = feedbackInfo.pageUrl;
+      ($('page-url-text') as HTMLInputElement).value = feedbackInfo.pageUrl;
     }
 
     takeScreenshot(function(screenshotCanvas) {
@@ -602,21 +560,21 @@ function initialize() {
 
       // Allow feedback to be sent even if the screenshot failed.
       if (!screenshotCanvas) {
-        $('screenshot-checkbox').disabled = true;
-        $('screenshot-checkbox').checked = false;
+        const checkbox = $('screenshot-checkbox') as HTMLInputElement;
+        checkbox.disabled = true;
+        checkbox.checked = false;
         return;
       }
 
       screenshotCanvas.toBlob(function(blob) {
-        $('screenshot-image').src = URL.createObjectURL(blob);
+        const image = $('screenshot-image') as HTMLImageElement;
+        image.src = URL.createObjectURL(blob!);
         // Only set the alt text when the src url is available, otherwise we'd
         // get a broken image picture instead. crbug.com/773985.
-        $('screenshot-image').alt = 'screenshot';
-        $('screenshot-image')
-            .classList.toggle(
-                'wide-screen',
-                $('screenshot-image').width > MAX_SCREENSHOT_WIDTH);
-        feedbackInfo.screenshot = blob;
+        image.alt = 'screenshot';
+        image.classList.toggle(
+            'wide-screen', image.width > MAX_SCREENSHOT_WIDTH);
+        feedbackInfo.screenshot = blob!;
       });
     });
 
@@ -640,7 +598,7 @@ function initialize() {
     // An extension called us with an attached file.
     if (feedbackInfo.attachedFile) {
       $('attached-filename-text').textContent = feedbackInfo.attachedFile.name;
-      attachedFileBlob = feedbackInfo.attachedFile.data;
+      attachedFileBlob = feedbackInfo.attachedFile.data!;
       $('custom-file-container').hidden = false;
       $('attach-file').hidden = true;
     }
@@ -655,7 +613,7 @@ function initialize() {
     // <if expr="chromeos">
     if (feedbackInfo.traceId && ($('performance-info-area'))) {
       $('performance-info-area').hidden = false;
-      $('performance-info-checkbox').checked = true;
+      ($('performance-info-checkbox') as HTMLInputElement).checked = true;
       performanceFeedbackChanged();
       $('performance-info-link').onclick = openSlowTraceWindow;
     }
@@ -746,17 +704,15 @@ function initialize() {
 
     // Make sure our focus starts on the description field.
     $('description-text').focus();
-  };
+  }
 
   window.addEventListener('DOMContentLoaded', function() {
     if (dialogArgs) {
-      feedbackInfo = /** @type {chrome.feedbackPrivate.FeedbackInfo} */ (
-          JSON.parse(dialogArgs));
+      feedbackInfo = JSON.parse(dialogArgs);
     }
     applyData(feedbackInfo);
 
-    window.feedbackInfo = feedbackInfo;
-    window.feedbackHelper = feedbackHelper;
+    Object.assign(window, {feedbackInfo, feedbackHelper});
 
     // Setup our event handlers.
     $('attach-file').addEventListener('change', onFileSelected);

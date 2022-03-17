@@ -11,73 +11,76 @@ import {$} from 'chrome://resources/js/util.m.js';
  * A queue of a sequence of closures that will incrementally build the sys info
  * html table.
  */
-const tableCreationClosuresQueue = [];
+const tableCreationClosuresQueue: (() => void)[] = [];
 
 /**
  * The time used to post delayed tasks in MS. Currently set to be enough for two
  * frames.
  */
-const STANDARD_DELAY_MS = 32;
+const STANDARD_DELAY_MS: number = 32;
 
-function getValueDivForButton(button) {
+function getValueDivForButton(button: HTMLElement) {
   return $(button.id.substr(0, button.id.length - 4));
 }
 
-function getButtonForValueDiv(valueDiv) {
+function getButtonForValueDiv(valueDiv: HTMLElement) {
   return $(valueDiv.id + '-btn');
 }
 
-function getSystemInformation() {
+function getSystemInformation():
+    Promise<chrome.feedbackPrivate.SystemInformation[]> {
   return new Promise(
       resolve => chrome.feedbackPrivate.getSystemInformation(resolve));
 }
 
 /**
  * Expands the multiline table cell that contains the given valueDiv.
- * @param {HTMLElement} button The expand button.
- * @param {HTMLElement} valueDiv The div that contains the multiline logs.
- * @param {number} delayFactor A value used for increasing the delay after which
- *     the cell will be expanded. Useful for expandAll() since it expands the
- *     multiline cells one after another with each expension done slightly after
- *     the previous one.
+ * @param button The expand button.
+ * @param valueDiv The div that contains the multiline logs.
+ * @param delayFactor A value used for increasing the delay after which the cell
+ *     will be expanded. Useful for expandAll() since it expands the multiline
+ *     cells one after another with each expension done slightly after the
+ *     previous one.
  */
-function expand(button, valueDiv, delayFactor) {
+function expand(
+    button: HTMLElement, valueDiv: HTMLElement, delayFactor: number) {
   button.textContent = loadTimeData.getString('sysinfoPageCollapseBtn');
   // Show the spinner container.
-  const valueCell = valueDiv.parentNode;
+  const valueCell = valueDiv.parentNode as HTMLElement;
   valueCell.removeAttribute('aria-hidden');
-  valueCell.firstChild.hidden = false;
+  (valueCell.firstChild as HTMLElement).hidden = false;
   // Expanding huge logs can take a very long time, so we do it after a delay
   // to have a chance to render the spinner.
   setTimeout(function() {
     valueCell.className = 'number-expanded';
     // Hide the spinner container.
-    valueCell.firstChild.hidden = true;
+    (valueCell.firstChild as HTMLElement).hidden = true;
   }, STANDARD_DELAY_MS * delayFactor);
 }
 
 /**
  * Collapses the multiline table cell that contains the given valueDiv.
- * @param {HTMLElement} button The expand button.
- * @param {HTMLElement} valueDiv The div that contains the multiline logs.
+ * @param button The expand button.
+ * @param valueDiv The div that contains the multiline logs.
  */
-function collapse(button, valueDiv) {
+function collapse(button: HTMLElement, valueDiv: HTMLElement) {
   button.textContent = loadTimeData.getString('sysinfoPageExpandBtn');
-  valueDiv.parentNode.className = 'number-collapsed';
+  (valueDiv.parentNode as HTMLElement).className = 'number-collapsed';
   // Don't have screen readers announce the empty cell.
-  const valueCell = valueDiv.parentNode;
+  const valueCell = valueDiv.parentNode as HTMLElement;
   valueCell.setAttribute('aria-hidden', 'true');
 }
 
 /**
  * Toggles whether an item is collapsed or expanded.
  */
-function changeCollapsedStatus() {
-  const valueDiv = getValueDivForButton(this);
-  if (valueDiv.parentNode.className === 'number-collapsed') {
-    expand(this, valueDiv, 1);
+function changeCollapsedStatus(e: Event) {
+  const button = e.target as HTMLElement;
+  const valueDiv = getValueDivForButton(button);
+  if ((valueDiv.parentNode as HTMLElement).className === 'number-collapsed') {
+    expand(button, valueDiv, 1);
   } else {
-    collapse(this, valueDiv);
+    collapse(button, valueDiv);
   }
 }
 
@@ -85,14 +88,15 @@ function changeCollapsedStatus() {
  * Collapses all log items.
  */
 function collapseAll() {
-  const valueDivs = document.getElementsByClassName('stat-value');
+  const valueDivs = document.body.querySelectorAll<HTMLElement>('.stat-value');
   for (let i = 0; i < valueDivs.length; ++i) {
-    if (valueDivs[i].parentNode.className !== 'number-expanded') {
+    if ((valueDivs[i]!.parentNode as HTMLElement).className !==
+        'number-expanded') {
       continue;
     }
-    const button = getButtonForValueDiv(valueDivs[i]);
+    const button = getButtonForValueDiv(valueDivs[i]!);
     if (button) {
-      collapse(button, /** @type {!HTMLElement} */ (valueDivs[i]));
+      collapse(button, valueDivs[i]!);
     }
   }
 }
@@ -101,19 +105,20 @@ function collapseAll() {
  * Expands all log items.
  */
 function expandAll() {
-  const valueDivs = document.getElementsByClassName('stat-value');
+  const valueDivs = document.body.querySelectorAll<HTMLElement>('.stat-value');
   for (let i = 0; i < valueDivs.length; ++i) {
-    if (valueDivs[i].parentNode.className !== 'number-collapsed') {
+    if ((valueDivs[i]!.parentNode as HTMLElement).className !==
+        'number-collapsed') {
       continue;
     }
-    const button = getButtonForValueDiv(valueDivs[i]);
+    const button = getButtonForValueDiv(valueDivs[i]!);
     if (button) {
-      expand(button, /** @type {!HTMLElement} */ (valueDivs[i]), i + 1);
+      expand(button, valueDivs[i]!, i + 1);
     }
   }
 }
 
-function createNameCell(key) {
+function createNameCell(key: string): HTMLElement {
   const nameCell = document.createElement('td');
   nameCell.setAttribute('class', 'name');
   const nameDiv = document.createElement('div');
@@ -123,7 +128,7 @@ function createNameCell(key) {
   return nameCell;
 }
 
-function createButtonCell(key, isMultiLine) {
+function createButtonCell(key: string, isMultiLine: boolean): HTMLElement {
   const buttonCell = document.createElement('td');
   buttonCell.setAttribute('class', 'button-cell');
 
@@ -142,7 +147,8 @@ function createButtonCell(key, isMultiLine) {
   return buttonCell;
 }
 
-function createValueCell(key, value, isMultiLine) {
+function createValueCell(
+    key: string, value: string, isMultiLine: boolean): HTMLElement {
   const valueCell = document.createElement('td');
   const valueDiv = document.createElement('div');
   valueDiv.setAttribute('class', 'stat-value');
@@ -151,7 +157,8 @@ function createValueCell(key, value, isMultiLine) {
 
   if (isMultiLine) {
     valueCell.className = 'number-collapsed';
-    const loadingContainer = $('spinner-container').cloneNode(true);
+    const loadingContainer =
+        $('spinner-container').cloneNode(true) as HTMLElement;
     loadingContainer.setAttribute('id', '' + key + '-value-loading');
     loadingContainer.hidden = true;
     valueCell.appendChild(loadingContainer);
@@ -165,7 +172,7 @@ function createValueCell(key, value, isMultiLine) {
   return valueCell;
 }
 
-function createTableRow(key, value) {
+function createTableRow(key: string, value: string): HTMLElement {
   const row = document.createElement('tr');
 
   // Avoid using element.scrollHeight as it's very slow. crbug.com/653968.
@@ -205,11 +212,11 @@ function processQueue() {
 
 /**
  * Creates a closure that creates a table row for the given key and value.
- * @param {string} key The name of the log.
- * @param {string} value The contents of the log.
- * @return {function():void} A closure that creates a row for the given log.
+ * @param key The name of the log.
+ * @param value The contents of the log.
+ * @return A closure that creates a row for the given log.
  */
-function createTableRowWrapper(key, value) {
+function createTableRowWrapper(key: string, value: string): () => void {
   return function() {
     $('detailsTable').appendChild(createTableRow(key, value));
   };
@@ -218,12 +225,11 @@ function createTableRowWrapper(key, value) {
 /**
  * Creates closures to build the system information table row by row
  * incrementally.
- * @param {Object} systemInfo The system information that will be used to fill
- * the table.
+ * @param systemInfo The system information that will be used to fill the table.
  */
-function createTable(systemInfo) {
+function createTable(systemInfo: chrome.feedbackPrivate.SystemInformation[]) {
   for (const key in systemInfo) {
-    const item = systemInfo[key];
+    const item = systemInfo[key]!;
     tableCreationClosuresQueue.push(
         createTableRowWrapper(item['key'], item['value']));
   }

@@ -2,58 +2,37 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @type {string}
- */
-export const questionnaireBegin = '(Google Internal) To help us diagnose and ' +
+export const questionnaireBegin: string =
+    '(Google Internal) To help us diagnose and ' +
     'fix the issue, please answer the following questions:';
 
-/**
- * @type {string}
- */
-export const questionnaireNotification = 'Some questions have been added' +
+export const questionnaireNotification: string =
+    'Some questions have been added' +
     ' to the description box, please answer them before submitting.';
 
-/**
- * @type {string}
- */
-const questionGeneralTimestamp =
+const questionGeneralTimestamp: string =
     '[General] When did this happen? Please mention the exact time ' +
     '(for example: 2:45pm). ';
 
-/**
- * @type {string}
- */
-const questionGeneralRegression =
+const questionGeneralRegression: string =
     '[General] Do you know if this issue is a regression? ' +
     'If so, in which Chrome OS version did this issue start appearing? ';
 
-/**
- * @type {string}
- */
-const questionGeneralReproducibility =
+const questionGeneralReproducibility: string =
     '[General] Does this always happen during a particular activity? ' +
     'Does it happen randomly? If so, how often? ' +
     'Please describe the steps to reproduce this problem. ';
 
-/**
- * @type {string}
- */
-const questionBluetoothPeripheral =
+const questionBluetoothPeripheral: string =
     '[Bluetooth] What is the brand and model of your Bluetooth peripheral ' +
     '(such as headset or mouse) you had an issue with? ';
 
-/**
- * @type {string}
- */
-const questionBluetoothOtherDevices = '[Bluetooth] Do other computer devices ' +
+const questionBluetoothOtherDevices: string =
+    '[Bluetooth] Do other computer devices ' +
     '(such as non-Chrome OS devices or other Chromebooks) ' +
     'work well with this Bluetooth peripheral (such as headset or mouse)? ';
 
-/**
- * @type {string}
- */
-const questionWifiTypeOfIssue = '[WiFi] What type of issue is this? ' +
+const questionWifiTypeOfIssue: string = '[WiFi] What type of issue is this? ' +
     'Please select one or more from the below: \n' +
     '   * Failure to connect to Wi-Fi \n' +
     '   * Internet connectivity \n' +
@@ -61,58 +40,38 @@ const questionWifiTypeOfIssue = '[WiFi] What type of issue is this? ' +
     '   * Constantly slow Wi-Fi \n' +
     '   * Intermittently slow Wi-Fi';
 
-/**
- * @type {string}
- */
-const questionWifiConnectedButNotInternet =
+const questionWifiConnectedButNotInternet: string =
     '[WiFi] Does your computer show that Wi-Fi is connected? ' +
     'If so, is your internet still not working? ';
 
-/**
- * @type {string}
- */
-const questionWifiNetworkWorkingBefore =
+const questionWifiNetworkWorkingBefore: string =
     '[WiFi] Has this device been able to connect ' +
     'to this Wi-Fi network before? ';
 
-/**
- * @type {string}
- */
-const questionWifiOtherDevices = '[WiFi] Do other computer devices ' +
+const questionWifiOtherDevices: string = '[WiFi] Do other computer devices ' +
     '(such as non-Chrome OS devices or other Chromebooks) ' +
     'have the same issue using the same Wi-Fi network? ' +
     'If so, please specify the device type. ';
 
-/**
- * @type {string}
- */
-const questionCellularSim = '[Cellular] Who is your SIM card carrier? ' +
+const questionCellularSim: string =
+    '[Cellular] Who is your SIM card carrier? ' +
     'For example: Verizon, T-Mobile, AT&T. ';
 
-/**
- * @type {string}
- */
-const questionCellularLastSuccess =
+const questionCellularLastSuccess: string =
     '[Cellular] Have you been able to use this SIM card previously ' +
     'on this Chrome OS device? ';
 
-/**
- * @type {string}
- */
-const questionCellularRoaming =
+const questionCellularRoaming: string =
     '[Cellular] Are you currently roaming internationally?';
 
-/**
- * @type {string}
- */
-const questionCellularAPN =
+const questionCellularAPN: string =
     '[Cellular] Did you manually configure the Access Point Name (APN)?';
 
-
-/**
- * @type {Object<string, Array<string>>}
- */
-export const domainQuestions = {
+export const domainQuestions: {
+  bluetooth: string[],
+  wifi: string[],
+  cellular: string[],
+} = {
   'bluetooth': [
     questionGeneralTimestamp,
     questionGeneralRegression,

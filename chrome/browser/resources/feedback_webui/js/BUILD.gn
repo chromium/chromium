@@ -12,11 +12,11 @@ assert(!is_android)
 preprocess_folder = "$target_gen_dir/../preprocessed/js"
 
 ts_files = [
-  "feedback.js",
-  "feedback_util.js",
-  "questionnaire.js",
-  "sys_info.js",
-  "take_screenshot.js",
+  "feedback.ts",
+  "feedback_util.ts",
+  "questionnaire.ts",
+  "sys_info.ts",
+  "take_screenshot.ts",
 ]
 
 preprocess_if_expr("preprocess") {
@@ -28,8 +28,12 @@ preprocess_if_expr("preprocess") {
 ts_library("build_ts") {
   root_dir = preprocess_folder
   out_dir = "$target_gen_dir/tsc"
-  tsconfig_base = "tsconfig_base.json"
   in_files = ts_files
+
+  definitions = [
+    "//tools/typescript/definitions/feedback_private.d.ts",
+    "//tools/typescript/definitions/chrome_send.d.ts",
+  ]
 
   deps = [ "//ui/webui/resources:library" ]
   extra_deps = [ ":preprocess" ]
