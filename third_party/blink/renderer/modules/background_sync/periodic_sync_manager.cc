@@ -8,6 +8,8 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_background_sync_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -106,6 +108,17 @@ void PeriodicSyncManager::RegisterCallback(
     ScriptPromiseResolver* resolver,
     mojom::blink::BackgroundSyncError error,
     mojom::blink::SyncRegistrationOptionsPtr options) {
+  DCHECK(resolver);
+
+  ScriptState* const resolver_script_state = resolver->GetScriptState();
+
+  if (!IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
+                                     resolver_script_state)) {
+    return;
+  }
+
+  ScriptState::Scope script_state_scope(resolver_script_state);
+
   switch (error) {
     case mojom::blink::BackgroundSyncError::NONE:
       resolver->Resolve();
@@ -114,21 +127,25 @@ void PeriodicSyncManager::RegisterCallback(
       NOTREACHED();
       break;
     case mojom::blink::BackgroundSyncError::STORAGE:
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kUnknownError, "Unknown error."));
+      resolver->Reject(V8ThrowDOMException::CreateOrDie(
+          resolver_script_state->GetIsolate(), DOMExceptionCode::kUnknownError,
+          "Unknown error."));
       break;
     case mojom::blink::BackgroundSyncError::NOT_ALLOWED:
-      resolver->Reject(MakeGarbageCollected<DOMException>(
+      resolver->Reject(V8ThrowDOMException::CreateOrDie(
+          resolver_script_state->GetIsolate(),
           DOMExceptionCode::kInvalidAccessError,
           "Attempted to register a sync event without a "
           "window or registration tag too long."));
       break;
     case mojom::blink::BackgroundSyncError::PERMISSION_DENIED:
-      resolver->Reject(MakeGarbageCollected<DOMException>(
+      resolver->Reject(V8ThrowDOMException::CreateOrDie(
+          resolver_script_state->GetIsolate(),
           DOMExceptionCode::kNotAllowedError, "Permission denied."));
       break;
     case mojom::blink::BackgroundSyncError::NO_SERVICE_WORKER:
-      resolver->Reject(MakeGarbageCollected<DOMException>(
+      resolver->Reject(V8ThrowDOMException::CreateOrDie(
+          resolver_script_state->GetIsolate(),
           DOMExceptionCode::kInvalidStateError,
           "Registration failed - no active Service Worker"));
       break;
@@ -139,6 +156,17 @@ void PeriodicSyncManager::GetRegistrationsCallback(
     ScriptPromiseResolver* resolver,
     mojom::blink::BackgroundSyncError error,
     WTF::Vector<mojom::blink::SyncRegistrationOptionsPtr> registrations) {
+  DCHECK(resolver);
+
+  ScriptState* const resolver_script_state = resolver->GetScriptState();
+
+  if (!IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
+                                     resolver_script_state)) {
+    return;
+  }
+
+  ScriptState::Scope script_state_scope(resolver_script_state);
+
   switch (error) {
     case mojom::blink::BackgroundSyncError::NONE: {
       Vector<String> tags;
@@ -155,12 +183,14 @@ void PeriodicSyncManager::GetRegistrationsCallback(
       NOTREACHED();
       break;
     case mojom::blink::BackgroundSyncError::STORAGE:
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kUnknownError, "Unknown error."));
+      resolver->Reject(V8ThrowDOMException::CreateOrDie(
+          resolver_script_state->GetIsolate(), DOMExceptionCode::kUnknownError,
+          "Unknown error."));
       break;
     case mojom::blink::BackgroundSyncError::NO_SERVICE_WORKER:
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kUnknownError, "No service worker is active."));
+      resolver->Reject(V8ThrowDOMException::CreateOrDie(
+          resolver_script_state->GetIsolate(), DOMExceptionCode::kUnknownError,
+          "No service worker is active."));
       break;
   }
 }
@@ -168,17 +198,30 @@ void PeriodicSyncManager::GetRegistrationsCallback(
 void PeriodicSyncManager::UnregisterCallback(
     ScriptPromiseResolver* resolver,
     mojom::blink::BackgroundSyncError error) {
+  DCHECK(resolver);
+
+  ScriptState* const resolver_script_state = resolver->GetScriptState();
+
+  if (!IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
+                                     resolver_script_state)) {
+    return;
+  }
+
+  ScriptState::Scope script_state_scope(resolver_script_state);
+
   switch (error) {
     case mojom::blink::BackgroundSyncError::NONE:
       resolver->Resolve();
       break;
     case mojom::blink::BackgroundSyncError::NO_SERVICE_WORKER:
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kUnknownError, "No service worker is active."));
+      resolver->Reject(V8ThrowDOMException::CreateOrDie(
+          resolver_script_state->GetIsolate(), DOMExceptionCode::kUnknownError,
+          "No service worker is active."));
       break;
     case mojom::blink::BackgroundSyncError::STORAGE:
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kUnknownError, "Unknown error."));
+      resolver->Reject(V8ThrowDOMException::CreateOrDie(
+          resolver_script_state->GetIsolate(), DOMExceptionCode::kUnknownError,
+          "Unknown error."));
       break;
     case mojom::blink::BackgroundSyncError::NOT_FOUND:
     case mojom::blink::BackgroundSyncError::NOT_ALLOWED:
