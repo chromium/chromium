@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include "ash/constants/ash_features.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -13,11 +15,21 @@
 namespace app_list {
 
 double Scoring::FinalScore() const {
-  // Don't make any calls for Finch parameters in this method. If needed, put
-  // them in an anonymous namespace above.
   if (filter)
     return -1.0;
   return ftrl_result_score;
+}
+
+double Scoring::BestMatchScore() const {
+  if (filter)
+    return -1.0;
+
+  if (base::GetFieldTrialParamByFeatureAsBool(
+          ash::features::kProductivityLauncher, "best_match_ftrl", true)) {
+    return std::max(ftrl_result_score, normalized_relevance);
+  } else {
+    return normalized_relevance;
+  }
 }
 
 ::std::ostream& operator<<(::std::ostream& os, const Scoring& scoring) {

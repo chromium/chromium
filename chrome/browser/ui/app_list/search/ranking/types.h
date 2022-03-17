@@ -51,7 +51,11 @@ struct Scoring {
   Scoring(const Scoring&) = delete;
   Scoring& operator=(const Scoring&) = delete;
 
+  // Score used for ranking within a non-best match category.
   double FinalScore() const;
+
+  // Score used to determine if a result should be considered a best match.
+  double BestMatchScore() const;
 };
 
 ::std::ostream& operator<<(::std::ostream& os, const Scoring& result);

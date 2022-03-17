@@ -115,7 +115,7 @@ void BestMatchRanker::UpdateResultRanks(ResultsMap& results,
       continue;
     }
     Scoring& scoring = result->scoring();
-    if (scoring.normalized_relevance >= kBestMatchThreshold) {
+    if (scoring.BestMatchScore() >= kBestMatchThreshold) {
       best_matches_.push_back(result->GetWeakPtr());
     }
   }
@@ -130,8 +130,8 @@ void BestMatchRanker::UpdateResultRanks(ResultsMap& results,
     // first time, simply sort by relevance.
     std::sort(best_matches_.begin(), best_matches_.end(),
               [](const auto& a, const auto& b) {
-                return a->scoring().normalized_relevance >
-                       b->scoring().normalized_relevance;
+                return a->scoring().BestMatchScore() >
+                       b->scoring().BestMatchScore();
               });
   } else {
     // Post-burn-in, where best matches exist from previous provider returns,
