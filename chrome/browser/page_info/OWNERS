@@ -1,1 +1,3 @@
 file://chrome/browser/ui/page_info/OWNERS
+
+per-file ...about_this_site*=dullweber@chromium.org
