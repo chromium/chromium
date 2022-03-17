@@ -1992,7 +1992,7 @@ TEST_F(ContinueSectionViewClamshellModeTest, AnimatesOutAfterRemovingResults) {
   EXPECT_FALSE(GetContinueSectionView()->GetVisible());
 }
 
-TEST_F(ContinueSectionViewClamshellModeTest, AnimatesPrivacyNoticeAccept) {
+TEST_P(ContinueSectionViewTest, AnimatesPrivacyNoticeAccept) {
   ResetPrivacyNoticePref();
   InitializeForAnimationTest(/*result_count=*/3);
 

@@ -209,20 +209,12 @@ void ContinueSectionView::OnPrivacyToastAcknowledged() {
     nudge_controller_->SetPrivacyNoticeAcceptedPref(true);
     nudge_controller_->SetPrivacyNoticeShown(false);
   }
-
-  // Keep the privacy notice view for the dismiss animation in clamshell mode.
-  if (tablet_mode_) {
-    RemovePrivacyNotice();
-  } else {
-    AnimateDismissToast(
-        base::BindRepeating(&ContinueSectionView::AnimateShowContinueSection,
-                            weak_ptr_factory_.GetWeakPtr()));
-  }
+  AnimateDismissToast(
+      base::BindRepeating(&ContinueSectionView::AnimateShowContinueSection,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ContinueSectionView::AnimateDismissToast(base::RepeatingClosure callback) {
-  DCHECK(!tablet_mode_);
-
   PrepareForLayerAnimation(privacy_toast_);
 
   views::AnimationBuilder animation_builder;
@@ -253,12 +245,9 @@ void ContinueSectionView::AnimateSlideLauncherContent(int vertical_offset) {
 }
 
 void ContinueSectionView::AnimateShowContinueSection() {
-  DCHECK(!tablet_mode_);
+  int height_difference = privacy_toast_->GetPreferredSize().height() -
+                          suggestions_container_->GetPreferredSize().height();
 
-  const int height_difference =
-      privacy_toast_->GetPreferredSize().height() -
-      (suggestions_container_->GetPreferredSize().height() +
-       continue_label_->GetPreferredSize().height());
   const gfx::Tween::Type animation_tween = gfx::Tween::ACCEL_40_DECEL_100_3;
 
   // The initial position for the launcher continue section should be right
@@ -266,10 +255,13 @@ void ContinueSectionView::AnimateShowContinueSection() {
   gfx::Transform initial_transform;
   initial_transform.Translate(0, -kVerticalPaddingFromParent);
 
-  PrepareForLayerAnimation(continue_label_);
-  continue_label_->SetVisible(true);
-  continue_label_->layer()->SetOpacity(0);
-  continue_label_->layer()->SetTransform(initial_transform);
+  if (continue_label_) {
+    height_difference -= continue_label_->GetPreferredSize().height();
+    PrepareForLayerAnimation(continue_label_);
+    continue_label_->SetVisible(true);
+    continue_label_->layer()->SetOpacity(0);
+    continue_label_->layer()->SetTransform(initial_transform);
+  }
 
   PrepareForLayerAnimation(suggestions_container_);
   suggestions_container_->layer()->SetTransform(initial_transform);
@@ -283,20 +275,29 @@ void ContinueSectionView::AnimateShowContinueSection() {
 
   AnimateSlideLauncherContent(height_difference);
 
-  auto cleanup = base::BindRepeating(&CleanupLayer, continue_label_);
+  auto cleanup = continue_label_
+                     ? base::BindRepeating(&CleanupLayer, continue_label_)
+                     : base::DoNothing();
 
   views::AnimationBuilder animation_builder;
   animation_builder.OnEnded(cleanup);
   animation_builder.OnAborted(cleanup);
+  animation_builder.SetPreemptionStrategy(
+      ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
+  animation_builder.Once();
 
-  animation_builder
-      .SetPreemptionStrategy(
-          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
-      .Once()
-      .SetOpacity(continue_label_, 1.0, animation_tween)
-      .SetTransform(continue_label_, gfx::Transform(), animation_tween)
-      .SetTransform(suggestions_container_, gfx::Transform(), animation_tween)
-      .SetDuration(kShowSuggestionsAnimationDuration);
+  animation_builder.GetCurrentSequence().SetTransform(
+      suggestions_container_, gfx::Transform(), animation_tween);
+
+  if (continue_label_) {
+    animation_builder.GetCurrentSequence().SetOpacity(continue_label_, 1.0,
+                                                      animation_tween);
+    animation_builder.GetCurrentSequence().SetTransform(
+        continue_label_, gfx::Transform(), animation_tween);
+  }
+
+  animation_builder.GetCurrentSequence().SetDuration(
+      kShowSuggestionsAnimationDuration);
 }
 
 void ContinueSectionView::RemovePrivacyNotice() {

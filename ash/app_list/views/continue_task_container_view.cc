@@ -429,20 +429,19 @@ void ContinueTaskContainerView::AnimateSlideInSuggestions(
     int available_space,
     base::TimeDelta duration,
     gfx::Tween::Type tween) {
-  DCHECK(!tablet_mode_);
-  DCHECK(columns_);
-
   SetVisible(true);
 
   const int rows =
-      std::ceil(static_cast<double>(suggestion_tasks_views_.size()) / columns_);
+      columns_ ? std::ceil(static_cast<double>(suggestion_tasks_views_.size()) /
+                           columns_)
+               : 1;
   double space_per_row = static_cast<double>(available_space) / rows;
 
   for (size_t i = 0; i < suggestion_tasks_views_.size(); i++) {
     views::View* view = suggestion_tasks_views_[i];
     gfx::Transform translation;
 
-    int row_number = (i / columns_) + 1;
+    int row_number = columns_ ? ((i / columns_) + 1) : 1;
     // Distribute the space between the elements so that the space between the
     // previous element in the parent view and the first row is the same as the
     // space between rows. The items in the first row will just be translated by
@@ -452,6 +451,7 @@ void ContinueTaskContainerView::AnimateSlideInSuggestions(
     translation.Translate(0, space_per_row * row_number);
 
     view->layer()->SetTransform(translation);
+    view->layer()->SetOpacity(0.0f);
   }
   views::AnimationBuilder animation_builder;
   animation_builder.Once().SetDuration(duration);
