@@ -5454,6 +5454,8 @@ static_library("ui") {
       "side_search/side_search_tab_contents_helper.h",
       "side_search/side_search_utils.cc",
       "side_search/side_search_utils.h",
+      "views/side_search/default_search_icon_source.cc",
+      "views/side_search/default_search_icon_source.h",
       "views/side_search/side_search_browser_controller.cc",
       "views/side_search/side_search_browser_controller.h",
       "views/side_search/side_search_icon_view.cc",
