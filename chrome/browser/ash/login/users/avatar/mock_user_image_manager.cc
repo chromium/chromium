@@ -9,6 +9,6 @@ namespace ash {
 MockUserImageManager::MockUserImageManager(const AccountId& account_id)
     : UserImageManager(account_id) {}
 
-MockUserImageManager::~MockUserImageManager() {}
+MockUserImageManager::~MockUserImageManager() = default;
 
 }  // namespace ash

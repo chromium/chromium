@@ -33,6 +33,7 @@
 #include "components/user_manager/user_names.h"
 #include "components/user_manager/user_type.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
 #include "ui/gfx/image/image_skia.h"
@@ -221,7 +222,8 @@ UserImageManager* FakeChromeUserManager::GetUserImageManager(
   if (user_image_manager_it != user_image_managers_.end())
     return user_image_manager_it->second.get();
   if (mock_user_image_manager_enabled_) {
-    auto mgr = std::make_unique<MockUserImageManager>(account_id);
+    auto mgr =
+        std::make_unique<::testing::NiceMock<MockUserImageManager>>(account_id);
     MockUserImageManager* mgr_raw = mgr.get();
     user_image_managers_[account_id] = std::move(mgr);
     return mgr_raw;
