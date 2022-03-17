@@ -1664,6 +1664,38 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Ash.DeviceActiveClient.{DeviceActivityClientTransitionMethod}Minute"
+    units="minutes" expires_after="2022-11-01">
+  <owner>hirthanan@google.com</owner>
+  <owner>chromeos-data-team@google.com</owner>
+  <summary>
+    Emitted in the minute during the hour that DeviceActivityClient
+    {DeviceActivityClientTransitionMethod} is called. ChromeOS only.
+  </summary>
+  <token key="DeviceActivityClientTransitionMethod">
+    <variant name="TransitionOutOfIdle" summary="transition-out-of-idle"/>
+    <variant name="TransitionToCheckIn" summary="transition-to-check-in"/>
+  </token>
+</histogram>
+
+<histogram name="Ash.DeviceActiveController.PsmDeviceActiveSecretIsSet"
+    enum="BooleanSuccess" expires_after="2022-11-01">
+  <owner>hirthanan@google.com</owner>
+  <owner>chromeos-data-team@google.com</owner>
+  <summary>Whether the PSM derived active secret is set (non empty).</summary>
+</histogram>
+
+<histogram name="Ash.DeviceActivity.MethodCalled" enum="DeviceActivityMethod"
+    expires_after="2023-02-01">
+  <owner>hirthanan@google.com</owner>
+  <owner>chromeos-data-team@google.com</owner>
+  <summary>
+    Record the number of times various methods are called in
+    //ash/components/device_activity/. ChromeOS only.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Display.InternalDisplay.ActiveEffectiveResolution"
     enum="EffectiveResolution" expires_after="2022-04-03">
   <owner>malaykeshav@chromium.org</owner>

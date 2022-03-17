@@ -61,6 +61,14 @@ const char kHistogramResponsePrefix[] = "Ash.DeviceActiveClient.Response";
 const char kDeviceActiveClientQueryMembershipResult[] =
     "Ash.DeviceActiveClient.QueryMembershipResult";
 
+// Record the minute the device activity client transitions out of idle.
+const char kDeviceActiveClientTransitionOutOfIdleMinute[] =
+    "Ash.DeviceActiveClient.TransitionOutOfIdleMinute";
+
+// Record the minute the device activity client transitions to check in.
+const char kDeviceActiveClientTransitionToCheckInMinute[] =
+    "Ash.DeviceActiveClient.TransitionToCheckInMinute";
+
 // Generates the full histogram name for histogram variants based on state.
 std::string HistogramVariantName(const std::string& histogram_prefix,
                                  DeviceActivityClient::State state) {
@@ -88,6 +96,31 @@ void RecordStateCountMetric(DeviceActivityClient::State state) {
 void RecordQueryMembershipResultBoolean(bool is_member) {
   base::UmaHistogramBoolean(kDeviceActiveClientQueryMembershipResult,
                             is_member);
+}
+
+// Return the minute of the current UTC time.
+base::TimeDelta GetCurrentMinute() {
+  base::Time cur_time = base::Time::Now();
+
+  // Extract minute from exploded |cur_time| in UTC.
+  base::Time::Exploded exploded_utc;
+  cur_time.UTCExplode(&exploded_utc);
+
+  return base::Minutes(exploded_utc.minute);
+}
+
+void RecordTransitionOutOfIdleMinute() {
+  base::UmaHistogramCustomTimes(kDeviceActiveClientTransitionOutOfIdleMinute,
+                                GetCurrentMinute(), base::Minutes(0),
+                                base::Minutes(59),
+                                60 /* number of histogram buckets */);
+}
+
+void RecordTransitionToCheckInMinute() {
+  base::UmaHistogramCustomTimes(kDeviceActiveClientTransitionToCheckInMinute,
+                                GetCurrentMinute(), base::Minutes(0),
+                                base::Minutes(59),
+                                60 /* number of histogram buckets */);
 }
 
 // Histogram sliced by duration and state.
@@ -138,6 +171,15 @@ std::unique_ptr<network::ResourceRequest> GenerateResourceRequest(
 
 }  // namespace
 
+// static
+void DeviceActivityClient::RecordDeviceActivityMethodCalled(
+    DeviceActivityMethod method_name) {
+  // Record the device activity method calls.
+  const char kDeviceActivityMethodCalled[] = "Ash.DeviceActivity.MethodCalled";
+
+  base::UmaHistogramEnumeration(kDeviceActivityMethodCalled, method_name);
+}
+
 DeviceActivityClient::DeviceActivityClient(
     NetworkStateHandler* handler,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -153,6 +195,9 @@ DeviceActivityClient::DeviceActivityClient(
       fresnel_base_url_(fresnel_base_url),
       api_key_(api_key),
       use_cases_(std::move(use_cases)) {
+  RecordDeviceActivityMethodCalled(DeviceActivityClient::DeviceActivityMethod::
+                                       kDeviceActivityClientConstructor);
+
   DCHECK(network_state_handler_);
   DCHECK(url_loader_factory_);
   DCHECK(psm_delegate_);
@@ -167,6 +212,9 @@ DeviceActivityClient::DeviceActivityClient(
 }
 
 DeviceActivityClient::~DeviceActivityClient() {
+  RecordDeviceActivityMethodCalled(DeviceActivityClient::DeviceActivityMethod::
+                                       kDeviceActivityClientDestructor);
+
   network_state_handler_->RemoveObserver(this, FROM_HERE);
 }
 
@@ -203,6 +251,9 @@ std::vector<DeviceActiveUseCase*> DeviceActivityClient::GetUseCases() const {
 }
 
 void DeviceActivityClient::OnNetworkOnline() {
+  RecordDeviceActivityMethodCalled(DeviceActivityClient::DeviceActivityMethod::
+                                       kDeviceActivityClientOnNetworkOnline);
+
   ReportUseCases();
 }
 
@@ -240,6 +291,9 @@ GURL DeviceActivityClient::GetFresnelURL() const {
 // TODO(https://crbug.com/1262189): Add callback to report actives only after
 // synchronizing the system clock.
 void DeviceActivityClient::ReportUseCases() {
+  RecordDeviceActivityMethodCalled(DeviceActivityClient::DeviceActivityMethod::
+                                       kDeviceActivityClientReportUseCases);
+
   DCHECK(!use_cases_.empty());
 
   if (!network_connected_ || state_ != State::kIdle) {
@@ -261,6 +315,9 @@ void DeviceActivityClient::ReportUseCases() {
 }
 
 void DeviceActivityClient::CancelUseCases() {
+  RecordDeviceActivityMethodCalled(DeviceActivityClient::DeviceActivityMethod::
+                                       kDeviceActivityClientCancelUseCases);
+
   // Use RAII to reset |url_loader_| after current function scope.
   // Delete |url_loader_| before the callback is invoked cancels the sent out
   // request.
@@ -283,6 +340,11 @@ void DeviceActivityClient::CancelUseCases() {
 
 void DeviceActivityClient::TransitionOutOfIdle(
     DeviceActiveUseCase* current_use_case) {
+  RecordTransitionOutOfIdleMinute();
+  RecordDeviceActivityMethodCalled(
+      DeviceActivityClient::DeviceActivityMethod::
+          kDeviceActivityClientTransitionOutOfIdle);
+
   DCHECK(current_use_case);
 
   // Begin phase one of checking membership if the device has not pinged yet
@@ -355,6 +417,10 @@ void DeviceActivityClient::TransitionOutOfIdle(
 }
 
 void DeviceActivityClient::TransitionToHealthCheck() {
+  RecordDeviceActivityMethodCalled(
+      DeviceActivityClient::DeviceActivityMethod::
+          kDeviceActivityClientTransitionToHealthCheck);
+
   DCHECK_EQ(state_, State::kIdle);
   DCHECK(!url_loader_);
 
@@ -384,6 +450,9 @@ void DeviceActivityClient::TransitionToHealthCheck() {
 
 void DeviceActivityClient::OnHealthCheckDone(
     std::unique_ptr<std::string> response_body) {
+  RecordDeviceActivityMethodCalled(DeviceActivityClient::DeviceActivityMethod::
+                                       kDeviceActivityClientOnHealthCheckDone);
+
   DCHECK_EQ(state_, State::kHealthCheck);
 
   // Use RAII to reset |url_loader_| after current function scope.
@@ -402,6 +471,10 @@ void DeviceActivityClient::OnHealthCheckDone(
 
 void DeviceActivityClient::TransitionToCheckMembershipOprf(
     DeviceActiveUseCase* current_use_case) {
+  RecordDeviceActivityMethodCalled(
+      DeviceActivityClient::DeviceActivityMethod::
+          kDeviceActivityClientTransitionToCheckMembershipOprf);
+
   DCHECK_EQ(state_, State::kIdle);
   DCHECK(!url_loader_);
 
@@ -452,6 +525,10 @@ void DeviceActivityClient::TransitionToCheckMembershipOprf(
 void DeviceActivityClient::OnCheckMembershipOprfDone(
     DeviceActiveUseCase* current_use_case,
     std::unique_ptr<std::string> response_body) {
+  RecordDeviceActivityMethodCalled(
+      DeviceActivityClient::DeviceActivityMethod::
+          kDeviceActivityClientOnCheckMembershipOprfDone);
+
   DCHECK_EQ(state_, State::kCheckingMembershipOprf);
 
   // Use RAII to reset |url_loader_| after current function scope.
@@ -486,6 +563,10 @@ void DeviceActivityClient::OnCheckMembershipOprfDone(
 void DeviceActivityClient::TransitionToCheckMembershipQuery(
     const psm_rlwe::PrivateMembershipRlweOprfResponse& oprf_response,
     DeviceActiveUseCase* current_use_case) {
+  RecordDeviceActivityMethodCalled(
+      DeviceActivityClient::DeviceActivityMethod::
+          kDeviceActivityClientTransitionToCheckMembershipQuery);
+
   DCHECK_EQ(state_, State::kCheckingMembershipOprf);
   DCHECK(!url_loader_);
 
@@ -536,6 +617,10 @@ void DeviceActivityClient::TransitionToCheckMembershipQuery(
 void DeviceActivityClient::OnCheckMembershipQueryDone(
     DeviceActiveUseCase* current_use_case,
     std::unique_ptr<std::string> response_body) {
+  RecordDeviceActivityMethodCalled(
+      DeviceActivityClient::DeviceActivityMethod::
+          kDeviceActivityClientOnCheckMembershipQueryDone);
+
   DCHECK_EQ(state_, State::kCheckingMembershipQuery);
 
   // Use RAII to reset |url_loader_| after current function scope.
@@ -611,6 +696,11 @@ void DeviceActivityClient::OnCheckMembershipQueryDone(
 
 void DeviceActivityClient::TransitionToCheckIn(
     DeviceActiveUseCase* current_use_case) {
+  RecordTransitionToCheckInMinute();
+  RecordDeviceActivityMethodCalled(
+      DeviceActivityClient::DeviceActivityMethod::
+          kDeviceActivityClientTransitionToCheckIn);
+
   DCHECK(!url_loader_);
 
   state_timer_ = base::ElapsedTimer();
@@ -647,6 +737,9 @@ void DeviceActivityClient::TransitionToCheckIn(
 void DeviceActivityClient::OnCheckInDone(
     DeviceActiveUseCase* current_use_case,
     std::unique_ptr<std::string> response_body) {
+  RecordDeviceActivityMethodCalled(DeviceActivityClient::DeviceActivityMethod::
+                                       kDeviceActivityClientOnCheckInDone);
+
   DCHECK_EQ(state_, State::kCheckingIn);
 
   // Use RAII to reset |url_loader_| after current function scope.
@@ -669,6 +762,9 @@ void DeviceActivityClient::OnCheckInDone(
 
 void DeviceActivityClient::TransitionToIdle(
     DeviceActiveUseCase* current_use_case) {
+  RecordDeviceActivityMethodCalled(DeviceActivityClient::DeviceActivityMethod::
+                                       kDeviceActivityClientTransitionToIdle);
+
   DCHECK(!url_loader_);
   state_ = State::kIdle;
 

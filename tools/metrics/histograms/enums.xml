@@ -21808,6 +21808,35 @@ Called by update_debug_scenarios.py.-->
   <int value="5" label="HealthCheck"/>
 </enum>
 
+<enum name="DeviceActivityMethod">
+<!-- This must be kept current with DeviceActivityClient::DeviceActivityMethod
+        located in ash/components/device_activity/device_activity_client.h -->
+
+  <int value="0" label="Unknown"/>
+  <int value="1" label="DeviceActivityControllerConstructor"/>
+  <int value="2" label="DeviceActivityControllerDestructor"/>
+  <int value="3" label="DeviceActivityControllerStart"/>
+  <int value="4"
+      label="DeviceActivityControllerOnPsmDeviceActiveSecretFetched"/>
+  <int value="5" label="DeviceActivityControllerOnMachineStatisticsLoaded"/>
+  <int value="6" label="DeviceActivityClientConstructor"/>
+  <int value="7" label="DeviceActivityClientDestructor"/>
+  <int value="8" label="DeviceActivityClientOnNetworkOnline"/>
+  <int value="9" label="DeviceActivityClientOnNetworkOffline"/>
+  <int value="10" label="DeviceActivityClientReportUseCases"/>
+  <int value="11" label="DeviceActivityClientCancelUseCases"/>
+  <int value="12" label="DeviceActivityClientTransitionOutOfIdle"/>
+  <int value="13" label="DeviceActivityClientTransitionToHealthCheck"/>
+  <int value="14" label="DeviceActivityClientOnHealthCheckDone"/>
+  <int value="15" label="DeviceActivityClientTransitionToCheckMembershipOprf"/>
+  <int value="16" label="DeviceActivityClientOnCheckMembershipOprfDone"/>
+  <int value="17" label="DeviceActivityClientTransitionToCheckMembershipQuery"/>
+  <int value="18" label="DeviceActivityClientOnCheckMembershipQueryDone"/>
+  <int value="19" label="DeviceActivityClientTransitionToCheckIn"/>
+  <int value="20" label="DeviceActivityClientOnCheckInDone"/>
+  <int value="21" label="DeviceActivityClientTransitionToIdle"/>
+</enum>
+
 <enum name="DeviceIdMismatch">
   <int value="0" label="BOTH_NONEMPTY"/>
   <int value="1" label="SYNC_EMPTY"/>

@@ -81,6 +81,44 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityClient
     kMaxValue = kTimeout,
   };
 
+  // Categorize device activity methods which will be used when bucketing UMA
+  // histograms by number of calls to each method.
+  // Enum listed keys map to methods in |DeviceActivityController| and
+  // |DeviceActivityClient|.
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class DeviceActivityMethod {
+    kUnknown = 0,
+    kDeviceActivityControllerConstructor = 1,
+    kDeviceActivityControllerDestructor = 2,
+    kDeviceActivityControllerStart = 3,
+    kDeviceActivityControllerOnPsmDeviceActiveSecretFetched = 4,
+    kDeviceActivityControllerOnMachineStatisticsLoaded = 5,
+    kDeviceActivityClientConstructor = 6,
+    kDeviceActivityClientDestructor = 7,
+    kDeviceActivityClientOnNetworkOnline = 8,
+    kDeviceActivityClientOnNetworkOffline = 9,
+    kDeviceActivityClientReportUseCases = 10,
+    kDeviceActivityClientCancelUseCases = 11,
+    kDeviceActivityClientTransitionOutOfIdle = 12,
+    kDeviceActivityClientTransitionToHealthCheck = 13,
+    kDeviceActivityClientOnHealthCheckDone = 14,
+    kDeviceActivityClientTransitionToCheckMembershipOprf = 15,
+    kDeviceActivityClientOnCheckMembershipOprfDone = 16,
+    kDeviceActivityClientTransitionToCheckMembershipQuery = 17,
+    kDeviceActivityClientOnCheckMembershipQueryDone = 18,
+    kDeviceActivityClientTransitionToCheckIn = 19,
+    kDeviceActivityClientOnCheckInDone = 20,
+    kDeviceActivityClientTransitionToIdle = 21,
+    kMaxValue = kDeviceActivityClientTransitionToIdle,
+  };
+
+  // Records UMA histogram for number of times various methods are called in
+  // device_activity/.
+  static void RecordDeviceActivityMethodCalled(
+      DeviceActivityMethod method_name);
+
   // Fires device active pings while the device network is connected.
   DeviceActivityClient(
       NetworkStateHandler* handler,
