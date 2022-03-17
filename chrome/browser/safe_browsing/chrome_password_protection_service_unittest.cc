@@ -1224,7 +1224,8 @@ TEST_F(ChromePasswordProtectionServiceTest,
                  /*is_warning_showing=*/false);
   service_->MaybeReportPasswordReuseDetected(request_.get(), kUserName,
                                              PasswordType::ENTERPRISE_PASSWORD,
-                                             /*is_phishing_url =*/true);
+                                             /*is_phishing_url =*/true,
+                                             /*warning_shown =*/true);
   base::RunLoop().RunUntilIdle();
 
   ASSERT_EQ(1, test_event_router_->GetEventCount(
@@ -1241,7 +1242,8 @@ TEST_F(ChromePasswordProtectionServiceTest,
   service_->SetIsAccountSignedIn(true);
   service_->MaybeReportPasswordReuseDetected(request_.get(), kUserName,
                                              PasswordType::OTHER_GAIA_PASSWORD,
-                                             /*is_phishing_url =*/true);
+                                             /*is_phishing_url =*/true,
+                                             /*warning_shown =*/true);
   base::RunLoop().RunUntilIdle();
 
   ASSERT_EQ(2, test_event_router_->GetEventCount(
@@ -1250,7 +1252,7 @@ TEST_F(ChromePasswordProtectionServiceTest,
   // If no password is used , no event should be sent.
   service_->MaybeReportPasswordReuseDetected(
       request_.get(), kUserName, PasswordType::PASSWORD_TYPE_UNKNOWN,
-      /*is_phishing_url =*/true);
+      /*is_phishing_url =*/true, /*warning_shown =*/true);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(2, test_event_router_->GetEventCount(
                    OnPolicySpecifiedPasswordReuseDetected::kEventName));
@@ -1259,7 +1261,8 @@ TEST_F(ChromePasswordProtectionServiceTest,
   service_->ConfigService(true /*incognito*/, false /*SBER*/);
   service_->MaybeReportPasswordReuseDetected(request_.get(), kUserName,
                                              PasswordType::ENTERPRISE_PASSWORD,
-                                             /*is_phishing_url =*/true);
+                                             /*is_phishing_url =*/true,
+                                             /*warning_shown =*/true);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(2, test_event_router_->GetEventCount(
                    OnPolicySpecifiedPasswordReuseDetected::kEventName));
@@ -1282,7 +1285,8 @@ TEST_F(ChromePasswordProtectionServiceTest,
                  /*is_warning_showing=*/false);
   service_->MaybeReportPasswordReuseDetected(request_.get(), kUserName,
                                              PasswordType::ENTERPRISE_PASSWORD,
-                                             /*is_phishing_url =*/true);
+                                             /*is_phishing_url =*/true,
+                                             /*warning_shown =*/true);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, test_event_router_->GetEventCount(
                    OnPolicySpecifiedPasswordReuseDetected::kEventName));
@@ -1291,7 +1295,8 @@ TEST_F(ChromePasswordProtectionServiceTest,
   // should be sent.
   service_->MaybeReportPasswordReuseDetected(request_.get(), kUserName,
                                              PasswordType::OTHER_GAIA_PASSWORD,
-                                             /*is_phishing_url =*/true);
+                                             /*is_phishing_url =*/true,
+                                             /*warning_shown =*/true);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, test_event_router_->GetEventCount(
                    OnPolicySpecifiedPasswordReuseDetected::kEventName));
@@ -1299,7 +1304,7 @@ TEST_F(ChromePasswordProtectionServiceTest,
   // If user is a Gmail user and no password is used , no event should be sent.
   service_->MaybeReportPasswordReuseDetected(
       request_.get(), kUserName, PasswordType::PASSWORD_TYPE_UNKNOWN,
-      /*is_phishing_url =*/true);
+      /*is_phishing_url =*/true, /*warning_shown*/ true);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, test_event_router_->GetEventCount(
                    OnPolicySpecifiedPasswordReuseDetected::kEventName));

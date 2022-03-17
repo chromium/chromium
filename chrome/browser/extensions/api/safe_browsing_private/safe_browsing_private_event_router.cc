@@ -277,7 +277,8 @@ SafeBrowsingPrivateEventRouter::~SafeBrowsingPrivateEventRouter() {
 void SafeBrowsingPrivateEventRouter::OnPolicySpecifiedPasswordReuseDetected(
     const GURL& url,
     const std::string& user_name,
-    bool is_phishing_url) {
+    bool is_phishing_url,
+    bool warning_shown) {
   api::safe_browsing_private::PolicySpecifiedPasswordReuse params;
   params.url = url.spec();
   params.user_name = user_name;
@@ -309,6 +310,10 @@ void SafeBrowsingPrivateEventRouter::OnPolicySpecifiedPasswordReuseDetected(
   event.Set(kKeyUserName, params.user_name);
   event.Set(kKeyIsPhishingUrl, params.is_phishing_url);
   event.Set(kKeyProfileUserName, GetProfileUserName());
+  event.Set(kKeyEventResult,
+            safe_browsing::EventResultToString(
+                warning_shown ? safe_browsing::EventResult::WARNED
+                              : safe_browsing::EventResult::ALLOWED));
 
   ReportRealtimeEvent(kKeyPasswordReuseEvent, std::move(settings.value()),
                       std::move(event));

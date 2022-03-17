@@ -166,6 +166,9 @@ void PasswordProtectionServiceBase::RequestFinished(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(request);
 
+#if !BUILDFLAG(IS_ANDROID)
+  bool warning_shown = false;
+#endif
   if (response) {
     ReusedPasswordAccountType password_type =
         GetPasswordProtectionReusedPasswordAccountType(request->password_type(),
@@ -198,6 +201,9 @@ void PasswordProtectionServiceBase::RequestFinished(
       ShowModalWarning(request, response->verdict_type(),
                        response->verdict_token(), password_type);
       request->set_is_modal_warning_showing(true);
+#if !BUILDFLAG(IS_ANDROID)
+      warning_shown = true;
+#endif
     }
   }
 
@@ -217,7 +223,7 @@ void PasswordProtectionServiceBase::RequestFinished(
 #if !BUILDFLAG(IS_ANDROID)
     MaybeReportPasswordReuseDetected(
         request, request->username(), request->password_type(),
-        verdict == LoginReputationClientResponse::PHISHING);
+        verdict == LoginReputationClientResponse::PHISHING, warning_shown);
 #endif
 
     // Persist a bit in CompromisedCredentials table when saved password is

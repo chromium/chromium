@@ -197,7 +197,8 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
   void MaybeReportPasswordReuseDetected(PasswordProtectionRequest* request,
                                         const std::string& username,
                                         PasswordType password_type,
-                                        bool is_phishing_url) override;
+                                        bool is_phishing_url,
+                                        bool warning_shown) override;
 
   // Triggers "safeBrowsingPrivate.OnPolicySpecifiedPasswordChanged" API.
   void ReportPasswordChanged() override;

@@ -236,7 +236,8 @@ void ChromePasswordProtectionService::MaybeReportPasswordReuseDetected(
     safe_browsing::PasswordProtectionRequest* request,
     const std::string& username,
     PasswordType password_type,
-    bool is_phishing_url) {
+    bool is_phishing_url,
+    bool warning_shown) {
   // Enterprise reporting extension not yet supported in iOS.
 }
 

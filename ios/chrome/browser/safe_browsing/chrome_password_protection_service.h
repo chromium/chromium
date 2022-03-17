@@ -100,7 +100,8 @@ class ChromePasswordProtectionService
       safe_browsing::PasswordProtectionRequest* request,
       const std::string& username,
       safe_browsing::PasswordType password_type,
-      bool is_phishing_url) override;
+      bool is_phishing_url,
+      bool warning_shown) override;
 
   void ReportPasswordChanged() override;
 

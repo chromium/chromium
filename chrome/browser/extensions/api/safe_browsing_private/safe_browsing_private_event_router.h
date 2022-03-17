@@ -122,9 +122,14 @@ class SafeBrowsingPrivateEventRouter
   ~SafeBrowsingPrivateEventRouter() override;
 
   // Notifies listeners that the user reused a protected password.
+  // - `url` is the URL where the password was reused
+  // - `user_name` is the user associated with the reused password
+  // - `is_phising_url` is whether the URL is thought to be a phishing one
+  // - `warning_shown` is whether a warning dialog was shown to the user
   void OnPolicySpecifiedPasswordReuseDetected(const GURL& url,
                                               const std::string& user_name,
-                                              bool is_phishing_url);
+                                              bool is_phishing_url,
+                                              bool warning_shown);
 
   // Notifies listeners that the user changed the password associated with
   // |user_name|.
