@@ -765,7 +765,8 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
   // Returns a custom theme object suitable for use in a
   // ColorProviderManager::Key. If this is null, the window has no custom theme.
-  virtual ui::ColorProviderManager::InitializerSupplier* GetCustomTheme() const;
+  virtual ui::ColorProviderManager::ThemeInitializerSupplier* GetCustomTheme()
+      const;
 
   ui::NativeTheme* GetNativeTheme() {
     return const_cast<ui::NativeTheme*>(
@@ -1114,6 +1115,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   void SetWidth(int width);
   void SetHeight(int height);
   void SetVisible(bool visible);
+
+  // ui::ColorProviderSource:
+  ui::ColorProviderManager::Key GetColorProviderKey() const override;
 
  private:
   // Type of ways to ignore activation changes.

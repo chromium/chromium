@@ -26,8 +26,8 @@ class COMPONENT_EXPORT(COLOR) ColorProviderSource {
   ColorProviderSource();
   virtual ~ColorProviderSource();
 
-  // Implementations should return the ColorProviderInstance associated with
-  // this source.
+  // Returns the ColorProvider associated with the Key returned by
+  // GetColorProviderKey();
   virtual const ColorProvider* GetColorProvider() const = 0;
 
   void AddObserver(ColorProviderSourceObserver* observer);
@@ -40,6 +40,11 @@ class COMPONENT_EXPORT(COLOR) ColorProviderSource {
   base::ObserverList<ColorProviderSourceObserver>& observers_for_testing() {
     return observers_;
   }
+
+ protected:
+  // Implementations should return the ColorProviderManager::Key associated with
+  // this source.
+  virtual ColorProviderManager::Key GetColorProviderKey() const = 0;
 
  private:
   base::ObserverList<ColorProviderSourceObserver> observers_;

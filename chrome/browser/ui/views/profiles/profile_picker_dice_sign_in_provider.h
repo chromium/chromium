@@ -68,7 +68,7 @@ class ProfilePickerDiceSignInProvider
   // Navigates back in the sign-in flow if applicable.
   void NavigateBack();
 
-  ui::ColorProviderManager::InitializerSupplier* GetCustomTheme() const;
+  ui::ColorProviderManager::ThemeInitializerSupplier* GetCustomTheme() const;
 
   // Returns nullptr if profile_ has not been created yet.
   Profile* GetInitializedProfile();

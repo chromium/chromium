@@ -16,7 +16,7 @@ const ui::ThemeProvider* ThemeCopyingWidget::GetThemeProvider() const {
                                         : Widget::GetThemeProvider();
 }
 
-ui::ColorProviderManager::InitializerSupplier*
+ui::ColorProviderManager::ThemeInitializerSupplier*
 ThemeCopyingWidget::GetCustomTheme() const {
   return observed_widget_.IsObserving() ? role_model_->GetCustomTheme()
                                         : Widget::GetCustomTheme();

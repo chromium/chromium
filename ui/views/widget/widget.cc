@@ -870,7 +870,8 @@ const ui::ThemeProvider* Widget::GetThemeProvider() const {
                                               : nullptr;
 }
 
-ui::ColorProviderManager::InitializerSupplier* Widget::GetCustomTheme() const {
+ui::ColorProviderManager::ThemeInitializerSupplier* Widget::GetCustomTheme()
+    const {
   return nullptr;
 }
 
@@ -1776,13 +1777,18 @@ void Widget::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
 ////////////////////////////////////////////////////////////////////////////////
 // Widget, ui::ColorProviderSource:
 
-const ui::ColorProvider* Widget::GetColorProvider() const {
+ui::ColorProviderManager::Key Widget::GetColorProviderKey() const {
   ui::ColorProviderManager::Key key =
       GetNativeTheme()->GetColorProviderKey(GetCustomTheme());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   key.elevation_mode = background_elevation_;
 #endif
-  return ui::ColorProviderManager::Get().GetColorProviderFor(key);
+  return key;
+}
+
+const ui::ColorProvider* Widget::GetColorProvider() const {
+  return ui::ColorProviderManager::Get().GetColorProviderFor(
+      GetColorProviderKey());
 }
 
 ////////////////////////////////////////////////////////////////////////////////

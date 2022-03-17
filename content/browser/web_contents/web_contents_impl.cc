@@ -517,13 +517,19 @@ class DefaultColorProviderSource : public ui::ColorProviderSource,
   // ui::ColorProviderSource:
   const ui::ColorProvider* GetColorProvider() const override {
     return ui::ColorProviderManager::Get().GetColorProviderFor(
-        ui::NativeTheme::GetInstanceForWeb()->GetColorProviderKey(nullptr));
+        GetColorProviderKey());
   }
 
   // ui::NativeThemeObserver:
   void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override {
     DCHECK(native_theme_observation_.IsObservingSource(observed_theme));
     NotifyColorProviderChanged();
+  }
+
+ protected:
+  // ui::ColorProviderSource:
+  ui::ColorProviderManager::Key GetColorProviderKey() const override {
+    return ui::NativeTheme::GetInstanceForWeb()->GetColorProviderKey(nullptr);
   }
 
  private:

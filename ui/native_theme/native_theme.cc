@@ -38,7 +38,7 @@ bool NativeTheme::SystemDarkModeSupported() {
 #endif
 
 ColorProviderManager::Key NativeTheme::GetColorProviderKey(
-    scoped_refptr<ColorProviderManager::InitializerSupplier> custom_theme,
+    scoped_refptr<ColorProviderManager::ThemeInitializerSupplier> custom_theme,
     bool use_custom_frame) const {
   return ColorProviderManager::Key(
       (GetDefaultSystemColorScheme() == ColorScheme::kDark)

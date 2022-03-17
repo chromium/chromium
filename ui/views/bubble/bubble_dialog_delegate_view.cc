@@ -89,7 +89,7 @@ class BubbleWidget : public Widget {
     return anchor ? anchor->GetThemeProvider() : Widget::GetThemeProvider();
   }
 
-  ui::ColorProviderManager::InitializerSupplier* GetCustomTheme()
+  ui::ColorProviderManager::ThemeInitializerSupplier* GetCustomTheme()
       const override {
     const Widget* const anchor = GetAnchorWidget();
     return anchor ? anchor->GetCustomTheme() : Widget::GetCustomTheme();

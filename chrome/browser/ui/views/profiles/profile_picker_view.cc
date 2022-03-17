@@ -117,7 +117,7 @@ class ProfilePickerWidget : public views::Widget {
       return &ThemeService::GetThemeProviderForProfile(profile);
     return nullptr;
   }
-  ui::ColorProviderManager::InitializerSupplier* GetCustomTheme()
+  ui::ColorProviderManager::ThemeInitializerSupplier* GetCustomTheme()
       const override {
     return profile_picker_view_->GetCustomThemeForProfileBeingCreated();
   }
@@ -360,7 +360,7 @@ Profile* ProfilePickerView::GetProfileBeingCreated() const {
   return nullptr;
 }
 
-ui::ColorProviderManager::InitializerSupplier*
+ui::ColorProviderManager::ThemeInitializerSupplier*
 ProfilePickerView::GetCustomThemeForProfileBeingCreated() const {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Custom theme is only needed for the dice flow.

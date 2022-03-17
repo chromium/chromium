@@ -21,7 +21,7 @@ class ThemeCopyingWidget : public views::Widget, public views::WidgetObserver {
 
   // views::Widget:
   const ui::ThemeProvider* GetThemeProvider() const override;
-  ui::ColorProviderManager::InitializerSupplier* GetCustomTheme()
+  ui::ColorProviderManager::ThemeInitializerSupplier* GetCustomTheme()
       const override;
   const ui::NativeTheme* GetNativeTheme() const override;
 

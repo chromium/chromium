@@ -387,6 +387,10 @@ bool AppBrowserController::ShouldUseCustomFrame() const {
 #endif
 }
 
+void AppBrowserController::AddColorMixers(
+    ui::ColorProvider* provider,
+    const ui::ColorProviderManager::Key& key) const {}
+
 void AppBrowserController::OnReceivedInitialURL() {
   UpdateCustomTabBarVisibility(/*animate=*/false);
 

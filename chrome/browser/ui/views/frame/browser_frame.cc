@@ -244,8 +244,8 @@ const ui::ThemeProvider* BrowserFrame::GetThemeProvider() const {
   return &ThemeService::GetThemeProviderForProfile(browser->profile());
 }
 
-ui::ColorProviderManager::InitializerSupplier* BrowserFrame::GetCustomTheme()
-    const {
+ui::ColorProviderManager::ThemeInitializerSupplier*
+BrowserFrame::GetCustomTheme() const {
   Browser* browser = browser_view_->browser();
   // If this is an incognito profile, there should never be a custom theme.
   if (browser->profile()->IsIncognitoProfile())
@@ -348,6 +348,14 @@ void BrowserFrame::SetTabDragKind(TabDragKind tab_drag_kind) {
     browser_view_->TabDraggingStatusChanged(is_dragging_any);
 
   tab_drag_kind_ = tab_drag_kind;
+}
+
+ui::ColorProviderManager::Key BrowserFrame::GetColorProviderKey() const {
+  auto key = Widget::GetColorProviderKey();
+  auto* app_controller = browser_view_->browser()->app_controller();
+  key.app_controller =
+      app_controller ? app_controller->get_weak_ref() : nullptr;
+  return key;
 }
 
 void BrowserFrame::OnMenuClosed() {

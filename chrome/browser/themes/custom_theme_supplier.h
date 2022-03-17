@@ -31,7 +31,7 @@ class ColorProvider;
 // public methods. Subclasses are expected to override all methods which should
 // provide non-default values.
 class CustomThemeSupplier
-    : public ui::ColorProviderManager::InitializerSupplier {
+    : public ui::ColorProviderManager::ThemeInitializerSupplier {
  public:
   enum ThemeType {
     EXTENSION,
@@ -86,7 +86,7 @@ class CustomThemeSupplier
   // doesn't supply all the colors it should (http://crbug.com/1045630).
   virtual bool CanUseIncognitoColors() const;
 
-  // ui::ColorProviderManager::InitializerSupplier:
+  // ui::ColorProviderManager::ThemeInitializerSupplier:
   void AddColorMixers(ui::ColorProvider* provider,
                       const ui::ColorProviderManager::Key& key) const override {
     // TODO(pkasting): All classes that override GetColor() should override

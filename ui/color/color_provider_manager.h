@@ -12,6 +12,7 @@
 #include "base/callback_list.h"
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/weak_ptr.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_utils.h"
 
@@ -54,14 +55,30 @@ class COMPONENT_EXPORT(COLOR) ColorProviderManager {
     kNative,
   };
 
-  // Threadsafe not because ColorProviderManager requires it but because a
-  // concrete subclass does.
-  class InitializerSupplier
-      : public base::RefCountedThreadSafe<InitializerSupplier> {
+  class COMPONENT_EXPORT(COLOR) InitializerSupplier {
    public:
+    InitializerSupplier();
     // Adds any mixers necessary to represent this supplier.
     virtual void AddColorMixers(ColorProvider* provider,
                                 const Key& key) const = 0;
+
+    base::WeakPtr<InitializerSupplier> get_weak_ref() {
+      return weak_factory_.GetWeakPtr();
+    }
+
+   protected:
+    virtual ~InitializerSupplier();
+
+   private:
+    base::WeakPtrFactory<InitializerSupplier> weak_factory_{this};
+  };
+
+  // Threadsafe not because ColorProviderManager requires it but because a
+  // concrete subclass does.
+  class COMPONENT_EXPORT(COLOR) ThemeInitializerSupplier
+      : public InitializerSupplier,
+        public base::RefCountedThreadSafe<ThemeInitializerSupplier> {
+   public:
     // The mixers may need access to the raw colors from the theme.
     virtual bool GetColor(int id, SkColor* color) const = 0;
     // The mixers will also need access to the tints provided by the theme.
@@ -71,10 +88,10 @@ class COMPONENT_EXPORT(COLOR) ColorProviderManager {
     virtual bool HasCustomImage(int id) const = 0;
 
    protected:
-    virtual ~InitializerSupplier() = default;
+    ~ThemeInitializerSupplier() override = default;
 
    private:
-    friend class base::RefCountedThreadSafe<InitializerSupplier>;
+    friend class base::RefCountedThreadSafe<ThemeInitializerSupplier>;
   };
 
   struct COMPONENT_EXPORT(COLOR) Key {
@@ -83,7 +100,7 @@ class COMPONENT_EXPORT(COLOR) ColorProviderManager {
         ContrastMode contrast_mode,
         SystemTheme system_theme,
         FrameType frame_type,
-        scoped_refptr<InitializerSupplier> custom_theme);
+        scoped_refptr<ThemeInitializerSupplier> custom_theme);
     Key(const Key&);
     Key& operator=(const Key&);
     ~Key();
@@ -92,14 +109,19 @@ class COMPONENT_EXPORT(COLOR) ColorProviderManager {
     ElevationMode elevation_mode;
     SystemTheme system_theme;
     FrameType frame_type;
-    scoped_refptr<InitializerSupplier> custom_theme;
+    scoped_refptr<ThemeInitializerSupplier> custom_theme;
+    base::WeakPtr<InitializerSupplier> app_controller;
 
     bool operator<(const Key& other) const {
-      return std::make_tuple(color_mode, contrast_mode, elevation_mode,
-                             system_theme, frame_type, custom_theme) <
-             std::make_tuple(other.color_mode, other.contrast_mode,
-                             other.elevation_mode, other.system_theme,
-                             other.frame_type, other.custom_theme);
+      const auto lhs =
+          std::make_tuple(color_mode, contrast_mode, elevation_mode,
+                          system_theme, frame_type, custom_theme);
+      const auto rhs = std::make_tuple(other.color_mode, other.contrast_mode,
+                                       other.elevation_mode, other.system_theme,
+                                       other.frame_type, other.custom_theme);
+      if (lhs == rhs)
+        return app_controller.get() < other.app_controller.get();
+      return lhs < rhs;
     }
   };
 

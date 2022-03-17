@@ -100,6 +100,11 @@ class MockColorProviderSource : public ui::ColorProviderSource {
     color_provider_.SetColorForTesting(id, color);
   }
 
+ protected:
+  ui::ColorProviderManager::Key GetColorProviderKey() const override {
+    return ui::ColorProviderManager::Key();
+  }
+
  private:
   ui::ColorProvider color_provider_;
 };

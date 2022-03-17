@@ -42,6 +42,10 @@ absl::optional<GlobalManager>& GetGlobalManager() {
 
 }  // namespace
 
+ColorProviderManager::InitializerSupplier::InitializerSupplier() = default;
+
+ColorProviderManager::InitializerSupplier::~InitializerSupplier() = default;
+
 ColorProviderManager::Key::Key()
     : Key(ColorMode::kLight,
           ContrastMode::kNormal,
@@ -49,11 +53,12 @@ ColorProviderManager::Key::Key()
           FrameType::kChromium,
           nullptr) {}
 
-ColorProviderManager::Key::Key(ColorMode color_mode,
-                               ContrastMode contrast_mode,
-                               SystemTheme system_theme,
-                               FrameType frame_type,
-                               scoped_refptr<InitializerSupplier> custom_theme)
+ColorProviderManager::Key::Key(
+    ColorMode color_mode,
+    ContrastMode contrast_mode,
+    SystemTheme system_theme,
+    FrameType frame_type,
+    scoped_refptr<ThemeInitializerSupplier> custom_theme)
     : color_mode(color_mode),
       contrast_mode(contrast_mode),
       elevation_mode(ElevationMode::kLow),

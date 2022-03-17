@@ -15,6 +15,10 @@ namespace {
 
 class MockColorProviderSource : public ColorProviderSource {
  public:
+  MOCK_METHOD(ColorProviderManager::Key,
+              GetColorProviderKey,
+              (),
+              (const, override));
   MOCK_METHOD(const ColorProvider*, GetColorProvider, (), (const, override));
 };
 

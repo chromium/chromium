@@ -43,7 +43,8 @@ class PresentationReceiverWindowFrame final : public views::Widget {
 
  private:
   const ui::ThemeProvider* GetThemeProvider() const final;
-  ui::ColorProviderManager::InitializerSupplier* GetCustomTheme() const final;
+  ui::ColorProviderManager::ThemeInitializerSupplier* GetCustomTheme()
+      const final;
 
   // The profile from which we get the theme.
   const raw_ptr<Profile> profile_;
