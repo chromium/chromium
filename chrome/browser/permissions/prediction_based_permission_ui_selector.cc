@@ -242,6 +242,11 @@ void PredictionBasedPermissionUiSelector::LookupResponseReceived(
     bool response_from_cache,
     const absl::optional<permissions::GeneratePredictionsResponse>& response) {
   request_.reset();
+  if (!callback_) {
+    VLOG(1) << "[CPSS] Prediction service response ignored as the request is "
+               "canceled";
+    return;
+  }
   if (!lookup_succesful || !response || response->prediction_size() == 0) {
     VLOG(1) << "[CPSS] Prediction service request failed";
     std::move(callback_).Run(Decision::UseNormalUiAndShowNoWarning());
