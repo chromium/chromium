@@ -1534,6 +1534,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
            .indexPathsForVisibleItems) {
     UICollectionViewCell* cell =
         [self.collectionView cellForItemAtIndexPath:indexPath];
+    if (![cell isKindOfClass:[GridCell class]])
+      continue;
     NSUInteger itemIndex = base::checked_cast<NSUInteger>(indexPath.item);
     cell.accessibilityIdentifier = [NSString
         stringWithFormat:@"%@%ld", kGridCellIdentifierPrefix, itemIndex];
