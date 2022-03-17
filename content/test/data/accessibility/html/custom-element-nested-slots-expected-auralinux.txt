@@ -1,4 +1,3 @@
 [document web] tag:#document
-++[section] tag:body
-++++[paragraph] tag:p
-++++++[static] name='Slot contents'
+++[paragraph] tag:p
+++++[static] name='Slot contents'

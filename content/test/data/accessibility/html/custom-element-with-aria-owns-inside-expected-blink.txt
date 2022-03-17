@@ -1,6 +1,6 @@
 rootWebArea
 ++genericContainer ignored
-++++genericContainer
+++++genericContainer ignored
 ++++++group
 ++++++++docEndnotes
 ++++++++++docEndnote
