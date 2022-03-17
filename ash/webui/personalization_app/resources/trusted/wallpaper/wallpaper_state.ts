@@ -31,7 +31,7 @@ export interface GooglePhotosState {
   albums: GooglePhotosAlbum[]|null|undefined;
   photos: GooglePhotosPhoto[]|null|undefined;
   photosByAlbumId: Record<string, GooglePhotosPhoto[]|null|undefined>;
-  resumeTokens: {albums: string|null, photos: string|null};
+  resumeTokens: {photos: string|null};
 }
 
 /**
@@ -116,7 +116,7 @@ export function emptyState(): WallpaperState {
       albums: undefined,
       photos: undefined,
       photosByAlbumId: {},
-      resumeTokens: {albums: null, photos: null},
+      resumeTokens: {photos: null},
     },
   };
 }

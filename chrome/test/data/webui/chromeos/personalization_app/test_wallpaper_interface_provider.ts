@@ -97,7 +97,6 @@ export class TestWallpaperProvider extends
   private collections_: WallpaperCollection[]|null;
   private images_: WallpaperImage[]|null;
   private googlePhotosAlbums_: GooglePhotosAlbum[]|undefined = [];
-  private googlePhotosAlbumsResumeToken_: string|undefined;
   private googlePhotosCount_: number = 0;
   private googlePhotosEnabled_: GooglePhotosEnablementState =
       GooglePhotosEnablementState.kError;
@@ -142,14 +141,14 @@ export class TestWallpaperProvider extends
     return Promise.resolve({images: this.images_});
   }
 
-  fetchGooglePhotosAlbums(resumeToken: string|null) {
-    this.methodCalled('fetchGooglePhotosAlbums', resumeToken);
+  fetchGooglePhotosAlbums() {
+    this.methodCalled('fetchGooglePhotosAlbums');
     const response = new FetchGooglePhotosAlbumsResponse();
     response.albums =
         loadTimeData.getBoolean('isGooglePhotosIntegrationEnabled') ?
         this.googlePhotosAlbums_ :
         undefined;
-    response.resumeToken = this.googlePhotosAlbumsResumeToken_;
+    response.resumeToken = undefined;
     return Promise.resolve({response});
   }
 
@@ -260,11 +259,6 @@ export class TestWallpaperProvider extends
     this.googlePhotosAlbums_ = googlePhotosAlbums;
   }
 
-  setGooglePhotosAlbumsResumeToken(googlePhotosAlbumsResumeToken: string|
-                                   undefined) {
-    this.googlePhotosAlbumsResumeToken_ = googlePhotosAlbumsResumeToken;
-  }
-
   setGooglePhotosCount(googlePhotosCount: number) {
     this.googlePhotosCount_ = googlePhotosCount;
   }
@@ -277,9 +271,8 @@ export class TestWallpaperProvider extends
     this.googlePhotosPhotos_ = googlePhotosPhotos;
   }
 
-  setGooglePhotosPhotosResumeToken(googlePhotosPhotosResumeToken: string|
-                                   undefined) {
-    this.googlePhotosPhotosResumeToken_ = googlePhotosPhotosResumeToken;
+  setGooglePhotosPhotosResumeToken(resumeToken: string|undefined) {
+    this.googlePhotosPhotosResumeToken_ = resumeToken;
   }
 
   setGooglePhotosPhotosByAlbumId(
