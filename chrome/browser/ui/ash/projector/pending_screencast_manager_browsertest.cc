@@ -93,15 +93,8 @@ class PendingScreencastMangerBrowserTest : public InProcessBrowserTest {
     return integration_service;
   }
 
-  // Create a file for given `file_path`, which is a relative file path of
-  // drivefs. Write `total_bytes` to this file. Create a drivefs syncing event
-  // for this file with `transferred_bytes` transferred and add this event to
-  // `syncing_status`.
-  void CreateFileAndTransferItemEvent(
-      const std::string& file_path,
-      int64_t total_bytes,
-      int64_t transferred_bytes,
-      drivefs::mojom::SyncingStatus& syncing_status) {
+  void CreateFileInDriveFsFolder(const std::string& file_path,
+                                 int64_t total_bytes) {
     base::ScopedAllowBlockingForTesting allow_blocking;
 
     base::FilePath relative_file_path(file_path);
@@ -120,7 +113,18 @@ class PendingScreencastMangerBrowserTest : public InProcessBrowserTest {
               file.Write(/*offset=*/0, buffer.data(), /*size=*/total_bytes));
     EXPECT_TRUE(file.IsValid());
     file.Close();
+  }
 
+  // Create a file for given `file_path`, which is a relative file path of
+  // drivefs. Write `total_bytes` to this file. Create a drivefs syncing event
+  // for this file with `transferred_bytes` transferred and add this event to
+  // `syncing_status`.
+  void CreateFileAndTransferItemEvent(
+      const std::string& file_path,
+      int64_t total_bytes,
+      int64_t transferred_bytes,
+      drivefs::mojom::SyncingStatus& syncing_status) {
+    CreateFileInDriveFsFolder(file_path, total_bytes);
     AddTransferItemEvent(syncing_status, file_path, total_bytes,
                          transferred_bytes);
   }
@@ -485,6 +489,58 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest,
   EXPECT_EQ(set5, set6);
   EXPECT_EQ(2u, set5.size());
   EXPECT_EQ(2u, set7.size());
+}
+
+// Test a screencast failed to upload will remain a "fail to upload" error state
+// until it get successfully uploaded.
+IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest,
+                       DriveOutOfSpaceError) {
+  const std::string media_file_path =
+      base::StrCat({kTestScreencastPath, "/", kTestMediaFile});
+  const std::string metadata_file_path =
+      base::StrCat({kTestScreencastPath, "/", kTestMetadataFile});
+  drivefs::mojom::SyncingStatus syncing_status;
+  // Create a valid pending screencast.
+  CreateFileAndTransferItemEvent(media_file_path,
+                                 /*total_bytes=*/kTestMediaFileBytes,
+                                 /*transferred_bytes=*/0, syncing_status);
+  CreateFileAndTransferItemEvent(metadata_file_path,
+                                 /*total_bytes=*/kTestMetadataFileBytes,
+                                 /*transferred_bytes=*/0, syncing_status);
+  content::RunAllTasksUntilIdle();
+
+  // Mock DriveFs sends an out of space error for media file.
+  drivefs::mojom::DriveError error{
+      drivefs::mojom::DriveError::Type::kCantUploadStorageFull,
+      base::FilePath(media_file_path)};
+  pending_screencast_manager()->OnError(error);
+
+  // Even there's DriveError, DriveFs will keep trying to sync both metadata and
+  // media file.
+  pending_screencast_manager()->OnSyncingStatusUpdate(syncing_status);
+  content::RunAllTasksUntilIdle();
+
+  // Verify we have a fail status screencast.
+  const PendingScreencastSet pending_screencasts =
+      pending_screencast_manager()->GetPendingScreencasts();
+  EXPECT_EQ(1, pending_screencasts.size());
+  ash::PendingScreencast ps = *(pending_screencasts.begin());
+  EXPECT_TRUE(ps.upload_failed);
+
+  // Mock both metadata and media file get uploaded.
+  syncing_status.item_events.clear();
+  // Create completed transferred events for both files.
+  AddTransferItemEvent(syncing_status, media_file_path,
+                       /*total_bytes=*/kTestMediaFileBytes,
+                       /*transferred_bytes=*/kTestMediaFileBytes);
+  AddTransferItemEvent(syncing_status, metadata_file_path,
+                       /*total_bytes=*/kTestMetadataFileBytes,
+                       /*transferred_bytes=*/kTestMetadataFileBytes);
+  pending_screencast_manager()->OnSyncingStatusUpdate(syncing_status);
+  content::RunAllTasksUntilIdle();
+
+  // Expect the screencast get removed from pending screencasts set .
+  EXPECT_TRUE(pending_screencast_manager()->GetPendingScreencasts().empty());
 }
 
 class PendingScreencastMangerMultiProfileTest : public LoginManagerTest {

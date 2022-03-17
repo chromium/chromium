@@ -24,6 +24,10 @@ class DriveError;
 }  // namespace mojom
 }  // namespace drivefs
 
+namespace base {
+class FilePath;
+}
+
 // A callback to notify the change of pending screencasts to
 // ProjectorAppClient::Observer. The argument is the set of pending screencasts
 // owned by PendingSreencastManager.
@@ -66,10 +70,16 @@ class PendingSreencastManager
   void ActiveUserChanged(user_manager::User* active_user) override;
 
   // Maybe reset `drivefs_observation_` and observe the current active profile.
-  void MaybeSwithDriveFsObservation();
+  void MaybeSwitchDriveFsObservation();
+
+  // TODO(b/221902328): Fix the case that user might delete files through file
+  // app.
 
   // A set that caches current pending screencast.
   ash::PendingScreencastSet pending_screencast_cache_;
+
+  // A set of files failed to upload to Drive.
+  std::set<base::FilePath> error_syncing_files_;
 
   // A callback to notify pending screencast status change.
   PendingScreencastChangeCallback pending_screencast_change_callback_;

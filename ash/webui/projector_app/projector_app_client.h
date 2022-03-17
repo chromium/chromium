@@ -29,8 +29,17 @@ namespace ash {
 
 struct NewScreencastPrecondition;
 
-// TODO(b/200179137): Add `failed_to_upload` field to PendingScreencast.
 struct PendingScreencast {
+  PendingScreencast();
+  explicit PendingScreencast(const base::FilePath& container_dir);
+  PendingScreencast(const base::FilePath& container_dir,
+                    const std::string& name,
+                    int64_t total_size_in_bytes,
+                    int64_t bytes_transferred);
+  PendingScreencast(const PendingScreencast&);
+  PendingScreencast& operator=(const PendingScreencast&);
+  ~PendingScreencast();
+
   base::Value ToValue() const;
   bool operator==(const PendingScreencast& rhs) const;
 
@@ -48,6 +57,12 @@ struct PendingScreencast {
 
   // The media file created time.
   base::Time created_time;
+
+  // True after observing drivefs::mojom::DriveError::kCantUploadStorageFull for
+  // the first time. Screencast's status might go through error -> uploading ->
+  // error -> ... -> uploaded, but it will display the error state until
+  // successfully uploaded to avoid over commnucation with user.
+  bool upload_failed = false;
 };
 
 struct PendingScreencastSetComparator {
