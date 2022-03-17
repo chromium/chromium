@@ -927,10 +927,6 @@ void PdfViewPluginBase::RecalculateAreas(double old_zoom,
 
   engine()->PageOffsetUpdated(available_area_.OffsetFromOrigin());
   engine()->PluginSizeUpdated(available_area_.size());
-
-  if (document_size_.IsEmpty())
-    return;
-  paint_manager_.InvalidateRect(gfx::Rect(plugin_rect_.size()));
 }
 
 void PdfViewPluginBase::CalculateBackgroundParts() {
@@ -1088,7 +1084,10 @@ gfx::Vector2d PdfViewPluginBase::plugin_offset_in_frame() const {
 void PdfViewPluginBase::SetZoom(double scale) {
   double old_zoom = zoom_;
   zoom_ = scale;
+
   OnGeometryChanged(old_zoom, device_scale_);
+  if (!document_size_.IsEmpty())
+    paint_manager_.InvalidateRect(gfx::Rect(plugin_rect_.size()));
 }
 
 // static
@@ -1310,7 +1309,10 @@ void PdfViewPluginBase::HandleViewportMessage(const base::Value& message) {
 
     // TODO(crbug.com/1013800): Eliminate need to get document size from here.
     document_size_ = engine()->ApplyDocumentLayout(layout_options);
+
     OnGeometryChanged(zoom_, device_scale_);
+    if (!document_size_.IsEmpty())
+      paint_manager_.InvalidateRect(gfx::Rect(plugin_rect_.size()));
 
     // Send 100% loading progress only after initial layout negotiated.
     if (last_progress_sent_ < 100 &&
@@ -1759,7 +1761,10 @@ void PdfViewPluginBase::OnPrintPreviewLoaded() {
     print_preview_loaded_page_count_ = 1;
     AppendBlankPrintPreviewPages();
   }
+
   OnGeometryChanged(0, 0);
+  if (!document_size_.IsEmpty())
+    paint_manager_.InvalidateRect(gfx::Rect(plugin_rect_.size()));
 }
 
 void PdfViewPluginBase::AppendBlankPrintPreviewPages() {
