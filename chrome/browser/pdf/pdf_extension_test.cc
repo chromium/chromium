@@ -757,7 +757,9 @@ class PDFExtensionLoadTest : public PDFExtensionTest,
   }
 };
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionLoadTest, Load) {
+// PDFExtensionLoadTest.Load is flaky on multiple platforms:
+// https://crbug.com/1307095.
+IN_PROC_BROWSER_TEST_P(PDFExtensionLoadTest, DISABLED_Load) {
   LoadAllPdfsTest("pdf");
 }
 
