@@ -1646,13 +1646,13 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Camera
       </message>
       <message name="IDS_IOS_PERMISSIONS_INFOBAR_BANNER_CAMERA_ACCESSIBLE" desc="Message shown in the infobar when camera access is enabled.">
-        Camera Access allowed
+        Camera Access Allowed
       </message>
       <message name="IDS_IOS_PERMISSIONS_INFOBAR_BANNER_CAMERA_AND_MICROPHONE_ACCESSIBLE" desc="Message shown in the infobar when both camera and microphone access are enabled.">
-        Camera and Microphone Access allowed
+        Camera and Microphone Access Allowed
       </message>
       <message name="IDS_IOS_PERMISSIONS_INFOBAR_BANNER_MICROPHONE_ACCESSIBLE" desc="Message shown in the infobar when microphone access is enabled.">
-        Microphone Access allowed
+        Microphone Access Allowed
       </message>
       <message name="IDS_IOS_PERMISSIONS_MICROPHONE" desc="Usually used to show whether user has enabled a site's permission to use the device microphone.">
         Microphone
