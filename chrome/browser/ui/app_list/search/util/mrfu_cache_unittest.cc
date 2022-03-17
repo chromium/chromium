@@ -103,10 +103,10 @@ TEST_F(MrfuCacheTest, UseAndGetOneItem) {
   Wait();
 
   // Our boost_factor is set to 5, so it should take 5 consecutive uses for "A"
-  // to get to score approximately 2/3.
+  // to get to score approximately 0.8.
   for (int i = 0; i < 5; ++i)
     cache.Use("A");
-  EXPECT_NEAR(cache.Get("A"), 0.6666f, kEps);
+  EXPECT_NEAR(cache.Get("A"), 0.8f, kEps);
 }
 
 TEST_F(MrfuCacheTest, UseAndDecayItem) {
@@ -156,9 +156,9 @@ TEST_F(MrfuCacheTest, GetAll) {
 
   // These are hand-calculated scores.
   EXPECT_THAT(cache.GetAll(),
-              UnorderedElementsAre(Pair("A", FloatNear(0.166f, kEps)),
-                                   Pair("B", FloatNear(0.333f, kEps)),
-                                   Pair("C", FloatNear(0.666f, kEps))));
+              UnorderedElementsAre(Pair("A", FloatNear(0.2f, kEps)),
+                                   Pair("B", FloatNear(0.4f, kEps)),
+                                   Pair("C", FloatNear(0.8f, kEps))));
 }
 
 TEST_F(MrfuCacheTest, GetAllNormalized) {
@@ -184,7 +184,7 @@ TEST_F(MrfuCacheTest, CorrectBoostCoeffApproximation) {
   // This is a hand-optimized solution to the boost coefficient equation
   // accurate to 3 dp. It uses a half-life of 10 (so decay coefficient of about
   // 0.933033) and boost rate of 5.
-  const float kExpected = 0.233f;
+  const float kExpected = 0.333f;
 
   MrfuCache cache(GetProto(), TestingParams());
   EXPECT_NEAR(boost_coeff(cache), kExpected, 0.001f);

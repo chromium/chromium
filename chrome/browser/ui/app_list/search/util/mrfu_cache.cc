@@ -22,8 +22,8 @@ constexpr int kVersion = 2;
 //
 // where k is a boost coefficient. This is hard to reason about, so instead
 // set a 'boost factor', which is the answer to question: "how many consecutive
-// uses should it take for a score to start at 0 and reach 2/3?". We can then
-// define k based on the boost factor. Note 2/3 is chosen arbitrarily, but
+// uses should it take for a score to start at 0 and reach 0.8?". We can then
+// define k based on the boost factor. Note 0.8 is chosen arbitrarily, but
 // it's a reasonably high score.
 //
 // Here's our terminology:
@@ -47,13 +47,13 @@ constexpr int kVersion = 2;
 //
 // Therefore we're looking for the value of k that satisfies
 //
-//   k (1 - D^N (1-k)^N) / (1 + D(k-1)) = 2/3
+//   k (1 - D^N (1-k)^N) / (1 + D(k-1)) = 0.8
 //
 // which isn't easily solvable, so this function approximates it numerically.
 float ApproximateBoostCoefficient(float decay_coefficient, float boost_factor) {
   float D = decay_coefficient;
   float N = boost_factor;
-  float target = 2.0f / 3.0f;
+  float target = 0.8f;
 
   float k_min = 0.0f;
   float k_max = 1.0f;

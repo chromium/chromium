@@ -25,8 +25,8 @@ double Scoring::BestMatchScore() const {
     return -1.0;
 
   if (base::GetFieldTrialParamByFeatureAsBool(
-          ash::features::kProductivityLauncher, "best_match_ftrl", true)) {
-    return std::max(ftrl_result_score, normalized_relevance);
+          ash::features::kProductivityLauncher, "best_match_usage", true)) {
+    return std::max(mrfu_result_score, normalized_relevance);
   } else {
     return normalized_relevance;
   }

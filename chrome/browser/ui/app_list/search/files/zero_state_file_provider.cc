@@ -108,7 +108,7 @@ ZeroStateFileProvider::ZeroStateFileProvider(Profile* profile)
     file_tasks_observer_.Observe(notifier);
 
     MrfuCache::Params params;
-    // 5 consecutive clicks to get a new file to a score of 2/3, and 10 clicks
+    // 5 consecutive clicks to get a new file to a score of 0.8, and 10 clicks
     // on other files to reduce its score by half.
     params.half_life = 10.0f;
     params.boost_factor = 5.0f;

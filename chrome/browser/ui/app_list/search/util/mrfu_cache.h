@@ -34,7 +34,7 @@ namespace app_list {
 //
 //   boost_coeff is complicated to reason about, so instead we define a
 //   boost_factor parameter, which is the number of consecutive uses a new item
-//   needs to get a score of 2/3. boost_coeff is then calculated based on this.
+//   needs to get a score of 0.8. boost_coeff is then calculated based on this.
 //
 // - Each time an item is used, the scores of all items decay. This is done by
 //
@@ -72,7 +72,7 @@ class MrfuCache {
   struct Params {
     // How many uses of other items before a score decays by half.
     float half_life = 10.0f;
-    // How many consecutive uses of an item it takes to reach a score of 2/3.
+    // How many consecutive uses of an item it takes to reach a score of 0.8.
     float boost_factor = 5.0f;
     // A soft limit on the number of items stored.
     size_t max_items = 50;
