@@ -37,13 +37,6 @@ void OpenTabProvider::Start(const AutocompleteInput& input,
   }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  constexpr size_t kMinQueryLength = 2;
-  if (input.text().length() < kMinQueryLength) {
-    // Exit early if the query is too short. This is to mitigate a short query
-    // matching a large volume of results with low confidence.
-    return;
-  }
-
   // TODO(crbug.com/1293702): Open tab search is currently implemented using
   // the history model to score open tabs. This is an interim implementation,
   // which is intended to be replaced with a scoring mechanism using only the
