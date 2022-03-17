@@ -115,22 +115,23 @@ void DriveSearchProvider::SetSearchResults(
   }
 
   SearchProvider::Results results;
-  for (size_t i = 0; i < items.size(); ++i) {
-    const auto& item = items[i];
-    // Results are returned in descending order of modification time. Set the
-    // relevance in (0,1] based on that.
-    double relevance = 1.0 - static_cast<double>(i) / items.size();
+  for (const auto& item : items) {
+    double relevance =
+        FileResult::CalculateRelevance(last_tokenized_query_, item->path);
+
+    std::unique_ptr<FileResult> result;
     if (item->metadata->type ==
         drivefs::mojom::FileMetadata::Type::kDirectory) {
       const auto type = item->metadata->shared
                             ? FileResult::Type::kSharedDirectory
                             : FileResult::Type::kDirectory;
-      results.emplace_back(
-          MakeResult(item->path, relevance, type, GetDriveId(item)));
+      result = MakeResult(item->path, relevance, type, GetDriveId(item));
     } else {
-      results.emplace_back(MakeResult(
-          item->path, relevance, FileResult::Type::kFile, GetDriveId(item)));
+      result = MakeResult(item->path, relevance, FileResult::Type::kFile,
+                          GetDriveId(item));
     }
+    result->PenalizeRelevanceByAccessTime();
+    results.push_back(std::move(result));
   }
 
   SwapResults(&results);

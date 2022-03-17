@@ -15,11 +15,16 @@
 #include "base/bind.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/app_list/search/common/icon_constants.h"
 #include "chrome/browser/ui/app_list/search/files/justifications.h"
@@ -37,6 +42,18 @@ namespace {
 
 using chromeos::string_matching::TokenizedString;
 using chromeos::string_matching::TokenizedStringMatch;
+
+// The maximum penalty applied to a relevance by PenalizeRelevanceByAccessTime,
+// which will multiply the relevance by a number in [`kMaxPenalty`, 1].
+constexpr double kMaxPenalty = 0.6;
+
+// The steepness of the penalty curve of PenalizeRelevanceByAccessTime. Larger
+// values make the penalty increase faster as the last access time of the file
+// increases. A value of 0.0029 results in a penalty multiplier of ~0.63 for a 1
+// month old file.
+constexpr double kPenaltyCoeff = 0.0029;
+
+constexpr int64_t kMillisPerDay = 1000 * 60 * 60 * 24;
 
 std::string StripHostedFileExtensions(const std::string& filename) {
   static const base::NoDestructor<std::vector<std::string>> hosted_extensions(
@@ -78,6 +95,15 @@ void LogRelevance(ChromeSearchResult::ResultType result_type,
     default:
       NOTREACHED();
   }
+}
+
+absl::optional<base::File::Info> GetFileInfo(const base::FilePath& path) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+  base::File::Info info;
+  if (!base::GetFileInfo(path, &info))
+    return absl::nullopt;
+  return info;
 }
 
 }  // namespace
@@ -223,18 +249,6 @@ void FileResult::RequestThumbnail(ash::ThumbnailLoader* thumbnail_loader) {
                                         weak_factory_.GetWeakPtr()));
 }
 
-void FileResult::SetDetailsToJustificationString() {
-  GetJustificationStringAsync(
-      filepath_, base::BindOnce(&FileResult::OnJustificationStringReturned,
-                                weak_factory_.GetWeakPtr()));
-}
-
-void FileResult::OnJustificationStringReturned(
-    absl::optional<std::u16string> justification) {
-  if (justification)
-    SetDetails(justification.value());
-}
-
 void FileResult::OnThumbnailLoaded(const SkBitmap* bitmap,
                                    base::File::Error error) {
   if (!bitmap) {
@@ -252,6 +266,46 @@ void FileResult::OnThumbnailLoaded(const SkBitmap* bitmap,
 
   SetIcon(ChromeSearchResult::IconInfo(image, dimension,
                                        ash::SearchResultIconShape::kCircle));
+}
+
+void FileResult::PenalizeRelevanceByAccessTime() {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
+      base::BindOnce(&GetFileInfo, filepath_),
+      base::BindOnce(&FileResult::OnFileInfoReturned,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void FileResult::OnFileInfoReturned(
+    const absl::optional<base::File::Info>& info) {
+  // Do not penalize relevance if we can't stat the file.
+  if (!info) {
+    return;
+  }
+
+  // Apply a gaussian penalty based on the time delta. `time_delta` is converted
+  // into millisecond fractions of a day for numerical stability.
+  double time_delta =
+      static_cast<double>(
+          (base::Time::Now() - info->last_accessed).InMilliseconds()) /
+      kMillisPerDay;
+  double penalty =
+      kMaxPenalty +
+      (1.0 - kMaxPenalty) * std::exp(-kPenaltyCoeff * time_delta * time_delta);
+  DCHECK((penalty > 0.0) && (penalty <= 1.0));
+  set_relevance(relevance() * penalty);
+}
+
+void FileResult::SetDetailsToJustificationString() {
+  GetJustificationStringAsync(
+      filepath_, base::BindOnce(&FileResult::OnJustificationStringReturned,
+                                weak_factory_.GetWeakPtr()));
+}
+
+void FileResult::OnJustificationStringReturned(
+    absl::optional<std::u16string> justification) {
+  if (justification)
+    SetDetails(justification.value());
 }
 
 ::std::ostream& operator<<(::std::ostream& os, const FileResult& result) {

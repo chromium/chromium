@@ -101,7 +101,7 @@ IN_PROC_BROWSER_TEST_P(AppListDriveSearchBrowserTest, FolderSearch) {
   EXPECT_EQ(base::UTF16ToASCII(results[0]->title()), "my_folder");
 }
 
-// Test that files are ordered based on modification time.
+// Test that files are ordered based on access time.
 IN_PROC_BROWSER_TEST_P(AppListDriveSearchBrowserTest, ResultOrdering) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
@@ -113,7 +113,7 @@ IN_PROC_BROWSER_TEST_P(AppListDriveSearchBrowserTest, ResultOrdering) {
   base::FilePath older = mount_path.Append("ranking_older.gdoc");
   base::FilePath newer = mount_path.Append("ranking_newer.gdoc");
   base::Time now = base::Time::Now();
-  base::Time then = now - base::Seconds(1);
+  base::Time then = now - base::Seconds(10000);
   ASSERT_TRUE(base::WriteFile(older, "content"));
   ASSERT_TRUE(base::WriteFile(newer, "content"));
   ASSERT_TRUE(base::TouchFile(older, then, then));
@@ -121,7 +121,14 @@ IN_PROC_BROWSER_TEST_P(AppListDriveSearchBrowserTest, ResultOrdering) {
 
   SearchAndWaitForProviders("ranking", {ResultType::kDriveSearch});
 
-  const auto results = PublishedResultsForProvider(ResultType::kDriveSearch);
+  auto results = PublishedResultsForProvider(ResultType::kDriveSearch);
+
+  // Sort high-to-low by relevance.
+  std::sort(results.begin(), results.end(),
+            [](const ChromeSearchResult* a, const ChromeSearchResult* b) {
+              return a->relevance() > b->relevance();
+            });
+
   ASSERT_EQ(results.size(), 2u);
   EXPECT_EQ(base::UTF16ToASCII(results[0]->title()), "ranking_newer");
   EXPECT_EQ(base::UTF16ToASCII(results[1]->title()), "ranking_older");

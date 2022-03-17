@@ -61,6 +61,10 @@ class FileResult : public ChromeSearchResult {
   // justification string, eg. "You opened yesterday".
   void SetDetailsToJustificationString();
 
+  // Applies a penalty to this result's relevance score based on its last
+  // accessed time. The resultant score will be in [0, previous relevance].
+  void PenalizeRelevanceByAccessTime();
+
   void set_drive_id(const absl::optional<std::string>& drive_id) {
     drive_id_ = drive_id;
   }
@@ -74,6 +78,9 @@ class FileResult : public ChromeSearchResult {
   // GetJustificationStringAsync.
   void OnJustificationStringReturned(
       absl::optional<std::u16string> justification);
+
+  // Callback for PenalizeRelevanceByAccesstime.
+  void OnFileInfoReturned(const absl::optional<base::File::Info>& info);
 
   const base::FilePath filepath_;
   const Type type_;

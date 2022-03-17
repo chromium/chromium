@@ -129,23 +129,15 @@ void FileSearchProvider::Start(const std::u16string& query) {
 void FileSearchProvider::OnSearchComplete(
     std::vector<FileSearchProvider::PathInfo> paths) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Sort paths by the time of last access.
-  std::sort(paths.begin(), paths.end(),
-            [](const FileSearchProvider::PathInfo& a,
-               const FileSearchProvider::PathInfo& b) {
-              return a.last_accessed < b.last_accessed;
-            });
 
-  constexpr double kScoreEps = 1.0e-5;
   SearchProvider::Results results;
-  for (size_t i = 0; i < paths.size(); ++i) {
+  for (const auto& path : paths) {
     double relevance =
-        FileResult::CalculateRelevance(last_tokenized_query_, paths[i].path);
-    // Slightly penalize scores for less recently accessed files, but don't let
-    // the relevance go below zero.
-    relevance = std::max(0.0, relevance - (paths.size() - i) * kScoreEps);
+        FileResult::CalculateRelevance(last_tokenized_query_, path.path);
     DCHECK((relevance >= 0.0) && (relevance <= 1.0));
-    results.emplace_back(MakeResult(paths[i], relevance));
+    auto result = MakeResult(path, relevance);
+    result->PenalizeRelevanceByAccessTime();
+    results.push_back(std::move(result));
   }
 
   SwapResults(&results);
