@@ -11,16 +11,17 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/common/buffer.h"
 #include "gpu/command_buffer/common/cmd_buffer_common.h"
-#include "gpu/command_buffer/service/async_api_interface.h"
+#include "gpu/command_buffer/common/constants.h"
 #include "gpu/gpu_export.h"
 
 // Forwardly declare a few GL types to avoid including GL header files.
-typedef int GLsizei;
-typedef int GLint;
+using GLsizei = int;
+using GLint = int;
 
 namespace gfx {
 class ColorSpace;
@@ -35,9 +36,9 @@ class DecoderClient;
 // o3d/gl2 command buffer decoder.
 class GPU_EXPORT CommonDecoder {
  public:
-  typedef error::Error Error;
+  using Error = error::Error;
 
-  static const unsigned int kMaxStackDepth = 32;
+  static constexpr unsigned int kMaxStackDepth = 32;
 
   // A bucket is a buffer to help collect memory across a command buffer. When
   // creating a command buffer implementation of an existing API, sometimes that
@@ -220,11 +221,11 @@ class GPU_EXPORT CommonDecoder {
   raw_ptr<DecoderClient> client_;
   size_t max_bucket_size_;
 
-  typedef std::map<uint32_t, std::unique_ptr<Bucket>> BucketMap;
+  using BucketMap = std::map<uint32_t, std::unique_ptr<Bucket>>;
   BucketMap buckets_;
 
-  typedef Error (CommonDecoder::*CmdHandler)(uint32_t immediate_data_size,
-                                             const volatile void* data);
+  using CmdHandler = Error (CommonDecoder::*)(uint32_t immediate_data_size,
+                                              const volatile void* data);
 
   // A struct to hold info about each command.
   struct CommandInfo {
