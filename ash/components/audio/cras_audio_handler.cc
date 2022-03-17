@@ -1099,7 +1099,8 @@ void CrasAudioHandler::InitializeAudioAfterCrasServiceAvailable(
   GetSystemAecGroupId();
   GetSystemNsSupported();
   GetSystemAgcSupported();
-  GetNodes();
+  RequestNoiseCancellationSupported(base::BindOnce(
+      &CrasAudioHandler::GetNodes, weak_ptr_factory_.GetWeakPtr()));
   GetNumberOfOutputStreams();
   GetNumberOfInputStreamsWithPermissionInternal();
   CrasAudioClient::Get()->SetFixA2dpPacketSize(base::FeatureList::IsEnabled(

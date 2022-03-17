@@ -83,9 +83,6 @@ AudioDetailedView::AudioDetailedView(DetailedViewDelegate* delegate)
     : TrayDetailedView(delegate) {
   CreateItems();
 
-  CrasAudioHandler::Get()->RequestNoiseCancellationSupported(
-      base::BindOnce(&AudioDetailedView::Update, base::Unretained(this)));
-
   Shell::Get()->accessibility_controller()->AddObserver(this);
 }
 
