@@ -5579,6 +5579,14 @@ void WebGLRenderingContextBase::TexImageViaGPU(
   bool have_source_canvas_webgl_context = source_canvas_webgl_context;
   DCHECK(have_source_image ^ have_source_canvas_webgl_context);
 
+  if (source_canvas_webgl_context &&
+      source_canvas_webgl_context->isContextLost()) {
+    SynthesizeGLError(GL_INVALID_OPERATION,
+                      GetTexImageFunctionName(function_id),
+                      "Can't upload a texture from a lost WebGL context.");
+    return;
+  }
+
   int width = source_sub_rectangle.width();
   int height = source_sub_rectangle.height();
 
