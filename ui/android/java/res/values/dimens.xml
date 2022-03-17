@@ -32,6 +32,7 @@
     <!-- Button default measures -->
     <dimen name="button_min_width">88dp</dimen>
     <dimen name="button_bg_vertical_inset">4dp</dimen>
+    <dimen name="button_outlined_border_width">1dp</dimen>
 
     <!-- Menu footer chip measures-->
     <!-- ( listPreferredItemHeightSmall(40dp) - text size(12sp) - top and bottom padding(12dp) ) / 2 -->

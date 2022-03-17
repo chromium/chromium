@@ -131,7 +131,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/privacy_sandbox_consent_button_margin_between"
             android:text="@string/privacy_sandbox_dialog_no_button"
-            style="@style/FilledButton.Flat" />
+            style="@style/OutlinedButton" />
 
         <org.chromium.ui.widget.ButtonCompat
             android:id="@+id/yes_button"
@@ -141,7 +141,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/privacy_sandbox_consent_button_margin_between"
             android:text="@string/privacy_sandbox_dialog_yes_button"
-            style="@style/FilledButton.Flat" />
+            style="@style/OutlinedButton" />
     </LinearLayout>
 
 </LinearLayout>

@@ -69,6 +69,10 @@ public class ButtonCompat extends AppCompatButton {
                 a.getResourceId(R.styleable.ButtonCompat_buttonColor, R.color.blue_when_enabled);
         int rippleColorId = a.getResourceId(
                 R.styleable.ButtonCompat_rippleColor, R.color.filled_button_ripple_color);
+        int borderColorId =
+                a.getResourceId(R.styleable.ButtonCompat_borderColor, android.R.color.transparent);
+        int borderWidthId = a.getResourceId(R.styleable.ButtonCompat_borderWidth,
+                R.dimen.default_ripple_background_border_size);
         boolean buttonRaised = a.getBoolean(R.styleable.ButtonCompat_buttonRaised, true);
         int verticalInset = a.getDimensionPixelSize(R.styleable.ButtonCompat_verticalInset,
                 getResources().getDimensionPixelSize(R.dimen.button_bg_vertical_inset));
@@ -105,8 +109,8 @@ public class ButtonCompat extends AppCompatButton {
         }
 
         a.recycle();
-        mRippleBackgroundHelper = new RippleBackgroundHelper(
-                this, buttonColorId, rippleColorId, radii, verticalInset);
+        mRippleBackgroundHelper = new RippleBackgroundHelper(this, buttonColorId, rippleColorId,
+                radii, borderColorId, borderWidthId, verticalInset);
         setRaised(buttonRaised);
     }
 
