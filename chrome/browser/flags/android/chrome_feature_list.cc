@@ -244,6 +244,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kInstantStart,
     &kKitKatSupported,
     &kLensCameraAssistedSearch,
+    &kLocationBarModelOptimizations,
     &kNewWindowAppMenu,
     &kNotificationPermissionVariant,
     &kOfflineIndicatorV2,
@@ -667,6 +668,9 @@ const base::Feature kInstantStart{"InstantStart",
 
 const base::Feature kKitKatSupported{"KitKatSupported",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kLocationBarModelOptimizations{
+    "LocationBarModelOptimizations", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kSearchEnginePromoExistingDevice{
     "SearchEnginePromo.ExistingDevice", base::FEATURE_ENABLED_BY_DEFAULT};

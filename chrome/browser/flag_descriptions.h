@@ -918,6 +918,9 @@ extern const char kLargeFaviconFromGoogleDescription[];
 extern const char kLensCameraAssistedSearchName[];
 extern const char kLensCameraAssistedSearchDescription[];
 
+extern const char kLocationBarModelOptimizationsName[];
+extern const char kLocationBarModelOptimizationsDescription[];
+
 extern const char kLogJsConsoleMessagesName[];
 extern const char kLogJsConsoleMessagesDescription[];
 

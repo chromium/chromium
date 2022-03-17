@@ -357,7 +357,7 @@ public class OmniboxUrlEmphasizer {
     }
 
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         int[] parseForEmphasizeComponents(
                 String text, AutocompleteSchemeClassifier autocompleteSchemeClassifier);
     }

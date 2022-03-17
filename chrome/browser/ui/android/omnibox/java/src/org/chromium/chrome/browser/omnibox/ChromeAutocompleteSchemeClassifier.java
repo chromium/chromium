@@ -31,7 +31,7 @@ public class ChromeAutocompleteSchemeClassifier extends AutocompleteSchemeClassi
     }
 
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         long createAutocompleteClassifier(Profile profile);
         void deleteAutocompleteClassifier(long chromeAutocompleteSchemeClassifier);
     }

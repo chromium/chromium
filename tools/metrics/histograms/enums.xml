@@ -52148,6 +52148,7 @@ from previous Chrome versions.
   <int value="-1779753607" label="VizDisplayCompositor:disabled"/>
   <int value="-1778993296" label="ContextualSearchMlTapSuppression:disabled"/>
   <int value="-1778202807" label="DelayAsyncScriptExecution:enabled"/>
+  <int value="-1777540083" label="LocationBarModelOptimizations:disabled"/>
   <int value="-1776351704" label="DesktopPWAsOmniboxInstall:disabled"/>
   <int value="-1775842908" label="EnableOAuthIpp:disabled"/>
   <int value="-1774818943" label="VrWebInputEditing:enabled"/>
@@ -52893,6 +52894,7 @@ from previous Chrome versions.
   <int value="-1283164264" label="CroshSWA:disabled"/>
   <int value="-1282992935"
       label="AutofillLocalCardMigrationShowFeedback:disabled"/>
+  <int value="-1282488703" label="LocationBarModelOptimizations:enabled"/>
   <int value="-1281465357" label="MacV2GPUSandbox:disabled"/>
   <int value="-1280673966" label="PluginVmFullscreen:disabled"/>
   <int value="-1280274244" label="OmniboxClosePopupWithEscape:disabled"/>

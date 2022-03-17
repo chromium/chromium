@@ -6486,6 +6486,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kLensCameraAssistedSearch,
                                     kLensCameraAssistedSearchVariations,
                                     "LensCameraAssistedSearch")},
+
+    {"location-bar-model-optimizations",
+     flag_descriptions::kLocationBarModelOptimizationsName,
+     flag_descriptions::kLocationBarModelOptimizationsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kLocationBarModelOptimizations)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

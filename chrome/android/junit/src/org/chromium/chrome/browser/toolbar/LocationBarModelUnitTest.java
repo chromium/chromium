@@ -4,41 +4,82 @@
 
 package org.chromium.chrome.browser.toolbar;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.text.SpannableStringBuilder;
+import android.util.LruCache;
 import android.view.ContextThemeWrapper;
 
+import androidx.annotation.Nullable;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.annotation.Config;
+import org.robolectric.annotation.Implementation;
+import org.robolectric.annotation.Implements;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoCctProfileManager;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
+import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
+import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifierJni;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TrustedCdn;
+import org.chromium.chrome.browser.toolbar.LocationBarModelUnitTest.ShadowTrustedCdn;
+import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
+import org.chromium.components.omnibox.OmniboxUrlEmphasizerJni;
+import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.components.url_formatter.UrlFormatterJni;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
+import org.chromium.url.ShadowGURL;
 
 /**
  * Unit tests for the LocationBarModel.
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE, shadows = {ShadowGURL.class, ShadowTrustedCdn.class})
+@DisableFeatures({ChromeFeatureList.LOCATION_BAR_MODEL_OPTIMIZATIONS})
 public class LocationBarModelUnitTest {
+    @Implements(TrustedCdn.class)
+    static class ShadowTrustedCdn {
+        @Implementation
+        public static String getPublisherUrl(@Nullable Tab tab) {
+            return null;
+        }
+    }
+
+    @Rule
+    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule
+    public JniMocker mJniMocker = new JniMocker();
+
     @Mock
     private Tab mIncognitoTabMock;
 
@@ -63,11 +104,27 @@ public class LocationBarModelUnitTest {
     private LocationBarDataProvider.Observer mLocationBarDataObserver;
     @Mock
     private SearchEngineLogoUtils mSearchEngineLogoUtils;
+    @Mock
+    private LocationBarModel.Natives mLocationBarModelJni;
+    @Mock
+    private ChromeAutocompleteSchemeClassifier.Natives mChromeAutocompleteSchemeClassifierJni;
+    @Mock
+    private UrlFormatter.Natives mUrlFormatterJniMock;
+    @Mock
+    private DomDistillerUrlUtilsJni mDomDistillerUrlUtilsJni;
+    @Mock
+    private OmniboxUrlEmphasizerJni mOmniboxUrlEmphasizerJni;
+    @Mock
+    private GURL mMockGurl;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         Profile.setLastUsedProfileForTesting(mRegularProfileMock);
+        mJniMocker.mock(LocationBarModelJni.TEST_HOOKS, mLocationBarModelJni);
+        mJniMocker.mock(UrlFormatterJni.TEST_HOOKS, mUrlFormatterJniMock);
+        mJniMocker.mock(DomDistillerUrlUtilsJni.TEST_HOOKS, mDomDistillerUrlUtilsJni);
+        mJniMocker.mock(OmniboxUrlEmphasizerJni.TEST_HOOKS, mOmniboxUrlEmphasizerJni);
         IncognitoCctProfileManager.setIncognitoCctProfileManagerForTesting(
                 mIncognitoCctProfileManagerMock);
         when(mIncognitoCctProfileManagerMock.getProfile()).thenReturn(mNonPrimaryOTRProfileMock);
@@ -88,12 +145,12 @@ public class LocationBarModelUnitTest {
             new LocationBarModel.OfflineStatus() {
                 @Override
                 public boolean isShowingTrustedOfflinePage(WebContents webContents) {
-                    return true;
+                    return false;
                 }
 
                 @Override
                 public boolean isOfflinePage(Tab tab) {
-                    return true;
+                    return false;
                 }
             };
 
@@ -127,6 +184,7 @@ public class LocationBarModelUnitTest {
         when(mIncognitoCctProfileManagerMock.getProfile()).thenReturn(null);
         LocationBarModel incognitoLocationBarModel =
                 new TestIncognitoLocationBarModel(mIncognitoTabMock, mSearchEngineLogoUtils);
+        incognitoLocationBarModel.initializeWithNative();
         Profile otrProfile = incognitoLocationBarModel.getProfile();
         Assert.assertEquals(mPrimaryOTRProfileMock, otrProfile);
     }
@@ -136,6 +194,7 @@ public class LocationBarModelUnitTest {
     public void getProfile_IncognitoCCT_ReturnsNonPrimaryOTRProfile() {
         LocationBarModel incognitoLocationBarModel =
                 new TestIncognitoLocationBarModel(mIncognitoTabMock, mSearchEngineLogoUtils);
+        incognitoLocationBarModel.initializeWithNative();
         Profile otrProfile = incognitoLocationBarModel.getProfile();
         Assert.assertEquals(mNonPrimaryOTRProfileMock, otrProfile);
     }
@@ -145,6 +204,7 @@ public class LocationBarModelUnitTest {
     public void getProfile_NullTab_ReturnsPrimaryOTRProfile() {
         LocationBarModel incognitoLocationBarModel =
                 new TestIncognitoLocationBarModel(null, mSearchEngineLogoUtils);
+        incognitoLocationBarModel.initializeWithNative();
         Profile otrProfile = incognitoLocationBarModel.getProfile();
         Assert.assertEquals(mPrimaryOTRProfileMock, otrProfile);
     }
@@ -154,6 +214,7 @@ public class LocationBarModelUnitTest {
     public void getProfile_RegularTab_ReturnsRegularProfile() {
         LocationBarModel regularLocationBarModel =
                 new TestRegularLocationBarModel(mRegularTabMock, mSearchEngineLogoUtils);
+        regularLocationBarModel.initializeWithNative();
         Profile profile = regularLocationBarModel.getProfile();
         Assert.assertEquals(mRegularProfileMock, profile);
     }
@@ -163,6 +224,7 @@ public class LocationBarModelUnitTest {
     public void getProfile_NullTab_ReturnsRegularProfile() {
         LocationBarModel regularLocationBarModel =
                 new TestRegularLocationBarModel(null, mSearchEngineLogoUtils);
+        regularLocationBarModel.initializeWithNative();
         Profile profile = regularLocationBarModel.getProfile();
         Assert.assertEquals(mRegularProfileMock, profile);
     }
@@ -234,5 +296,39 @@ public class LocationBarModelUnitTest {
         verify(mLocationBarDataObserver).onUrlChanged();
         verify(mLocationBarDataObserver).onPrimaryColorChanged();
         verify(mLocationBarDataObserver).onSecurityStateChanged();
+    }
+
+    @EnableFeatures({ChromeFeatureList.LOCATION_BAR_MODEL_OPTIMIZATIONS})
+    @Test
+    @MediumTest
+    public void testSpannableCache() {
+        doReturn(123L).when(mLocationBarModelJni).init(Mockito.any());
+        mJniMocker.mock(ChromeAutocompleteSchemeClassifierJni.TEST_HOOKS,
+                mChromeAutocompleteSchemeClassifierJni);
+        LocationBarModel regularLocationBarModel =
+                new TestRegularLocationBarModel(mRegularTabMock, mSearchEngineLogoUtils);
+        doReturn(true).when(mRegularTabMock).isInitialized();
+        regularLocationBarModel.initializeWithNative();
+        LruCache<LocationBarModel.SpannableDisplayTextCacheKey, SpannableStringBuilder> cache =
+                regularLocationBarModel.getCacheForTesting();
+        Assert.assertEquals(cache.size(), 0);
+
+        String url = "http://www.example.com/";
+        doReturn(url).when(mMockGurl).getSpec();
+        doReturn(mMockGurl).when(mRegularTabMock).getUrl();
+        doReturn(url)
+                .when(mLocationBarModelJni)
+                .getFormattedFullURL(Mockito.anyLong(), Mockito.any());
+        doReturn(url).when(mLocationBarModelJni).getURLForDisplay(Mockito.anyLong(), Mockito.any());
+        doReturn(mMockGurl).when(mUrlFormatterJniMock).fixupUrl(url);
+        doReturn(new int[] {0, 7, 7, 15})
+                .when(mOmniboxUrlEmphasizerJni)
+                .parseForEmphasizeComponents(any(), any());
+        regularLocationBarModel.getUrlBarData();
+        Assert.assertEquals(cache.size(), 1);
+        regularLocationBarModel.getUrlBarData();
+        Assert.assertEquals(cache.hitCount(), 1);
+
+        regularLocationBarModel.destroy();
     }
 }

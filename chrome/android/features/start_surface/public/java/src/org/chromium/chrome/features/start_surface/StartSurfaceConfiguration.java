@@ -273,9 +273,23 @@ public class StartSurfaceConfiguration {
      *         created from the new Tab menu or "+" button, and it hasn't navigate to any URL yet.
      */
     public static boolean shouldHandleAsNtp(Tab tab) {
+        // TODO(https://crbug.com/1305397): Rule out a null url here and assert that it's non-null.
         if (tab == null || tab.getUrl() == null) return false;
 
         return tab.getUrl().isEmpty() && StartSurfaceUserData.getCreatedAsNtp(tab);
+    }
+
+    /**
+     * @return Whether the given tab with the given url should be treated as chrome://newTab. This
+     *         function returns true only when {@link OMNIBOX_FOCUSED_ON_NEW_TAB} is enabled, the
+     *         tab is newly created from the new Tab menu or "+" button, and it hasn't navigate to
+     *         any URL yet.
+     */
+    // TODO(https://crbug.com/1305374): migrate to GURL.
+    public static boolean shouldHandleAsNtp(Tab tab, String url) {
+        if (tab == null || url == null) return false;
+
+        return url.isEmpty() && StartSurfaceUserData.getCreatedAsNtp(tab);
     }
 
     /**

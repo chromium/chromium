@@ -381,6 +381,7 @@ public abstract class ChromeFeatureList {
     public static final String KITKAT_SUPPORTED = "KitKatSupported";
     public static final String LEAK_DETECTION_UNAUTHENTICATED = "LeakDetectionUnauthenticated";
     public static final String LIGHTWEIGHT_REACTIONS = "LightweightReactions";
+    public static final String LOCATION_BAR_MODEL_OPTIMIZATIONS = "LocationBarModelOptimizations";
     public static final String LOOKALIKE_NAVIGATION_URL_SUGGESTIONS_UI =
             "LookalikeUrlNavigationSuggestionsUI";
     public static final String MARK_HTTP_AS = "MarkHttpAs";
