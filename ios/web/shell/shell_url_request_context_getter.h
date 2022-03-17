@@ -14,13 +14,11 @@
 #include "net/url_request/url_request_context_getter.h"
 
 namespace net {
-class NetworkDelegate;
 class ProxyConfigService;
 class TransportSecurityPersister;
 class URLRequestContext;
-class URLRequestContextStorage;
 class SystemCookieStore;
-}
+}  // namespace net
 
 namespace web {
 
@@ -49,8 +47,6 @@ class ShellURLRequestContextGetter : public net::URLRequestContextGetter {
   base::FilePath base_path_;
   scoped_refptr<base::SingleThreadTaskRunner> network_task_runner_;
   std::unique_ptr<net::ProxyConfigService> proxy_config_service_;
-  std::unique_ptr<net::NetworkDelegate> network_delegate_;
-  std::unique_ptr<net::URLRequestContextStorage> storage_;
   std::unique_ptr<net::URLRequestContext> url_request_context_;
   std::unique_ptr<net::TransportSecurityPersister>
       transport_security_persister_;
