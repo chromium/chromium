@@ -1233,7 +1233,7 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
             chrome::GetChannel(), g_browser_process->local_state(),
             g_browser_process->system_network_context_manager()
                 ->GetSharedURLLoaderFactory(),
-            DeviceActivityController::DetermineStartUpDelay(
+            device_activity::DeviceActivityController::DetermineStartUpDelay(
                 first_run::GetFirstRunSentinelCreationTime()));
   }
 #endif
