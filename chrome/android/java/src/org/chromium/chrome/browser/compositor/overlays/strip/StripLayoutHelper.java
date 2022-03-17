@@ -103,7 +103,6 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     private static final float TAB_WIDTH_MEDIUM = 156.f;
     private static final float THRESHOLD_MEDIUM = 120.f;
     private static final float THRESHOLD_SMALL = 96.f;
-    private static final float THRESHOLD_LAST_TAB = 72.f;
 
     // External influences
     private final LayoutUpdateHost mUpdateHost;
@@ -459,10 +458,9 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     /**
      * Helper-specific updates. Cascades the values updated by the animations and flings.
      * @param time The current time of the app in ms.
-     * @param dt   The delta time between update frames in ms.
      * @return     Whether or not animations are done.
      */
-    public boolean updateLayout(long time, long dt) {
+    public boolean updateLayout(long time) {
         // 1. Handle any Scroller movements (flings).
         updateScrollOffset(time);
 
@@ -672,7 +670,8 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         boolean isLastTab = index == mStripTabs.length - 1;
         if (LocalizationUtils.isLayoutRtl()) {
             if (isLastTab) {
-                tabStartHidden = tab.getDrawX() + mTabOverlapWidth < THRESHOLD_LAST_TAB;
+                tabStartHidden = tab.getDrawX() + mTabOverlapWidth
+                        < mNewTabButton.getX() + mNewTabButton.getWidth();
             } else {
                 tabStartHidden = tab.getDrawX() + mTabOverlapWidth < THRESHOLD_MEDIUM;
             }
@@ -680,8 +679,8 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         } else {
             tabStartHidden = tab.getDrawX() + tab.getWidth() < THRESHOLD_SMALL;
             if (isLastTab) {
-                tabEndHidden = tab.getDrawX() + tab.getWidth() - mTabOverlapWidth
-                        > mWidth - THRESHOLD_LAST_TAB;
+                tabEndHidden =
+                        tab.getDrawX() + tab.getWidth() - mTabOverlapWidth > mNewTabButton.getX();
             } else {
                 tabEndHidden = tab.getDrawX() + tab.getWidth() - mTabOverlapWidth
                         > mWidth - THRESHOLD_MEDIUM;

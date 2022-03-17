@@ -5,10 +5,13 @@
 #include "chrome/browser/android/compositor/scene_layer/tab_strip_scene_layer.h"
 
 #include "base/android/jni_android.h"
+#include "base/feature_list.h"
+#include "base/logging.h"
 #include "cc/resources/scoped_ui_resource.h"
 #include "chrome/android/chrome_jni_headers/TabStripSceneLayer_jni.h"
 #include "chrome/browser/android/compositor/layer/tab_handle_layer.h"
 #include "chrome/browser/android/compositor/layer_title_cache.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "ui/android/resources/nine_patch_resource.h"
 #include "ui/android/resources/resource_manager_impl.h"
 #include "ui/gfx/geometry/transform.h"
@@ -42,16 +45,23 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
   // while the incognito button and left/ride fade stay fixed. Put the new tab
   // button and tabs in a separate layer placed visually below the others.
   scrollable_strip_layer_->SetIsDrawable(true);
-  scrollable_strip_layer_->AddChild(new_tab_button_);
+  const bool tab_strip_improvements_enabled =
+      base::FeatureList::IsEnabled(chrome::android::kTabStripImprovements);
+  if (!tab_strip_improvements_enabled) {
+    scrollable_strip_layer_->AddChild(new_tab_button_);
+  }
 
   tab_strip_layer_->SetBackgroundColor(SK_ColorBLACK);
   tab_strip_layer_->SetIsDrawable(true);
   tab_strip_layer_->AddChild(scrollable_strip_layer_);
 
-  tab_strip_layer_->AddChild(scrim_layer_);
   tab_strip_layer_->AddChild(left_fade_);
   tab_strip_layer_->AddChild(right_fade_);
   tab_strip_layer_->AddChild(model_selector_button_);
+  if (tab_strip_improvements_enabled) {
+    tab_strip_layer_->AddChild(new_tab_button_);
+  }
+  tab_strip_layer_->AddChild(scrim_layer_);
   layer()->AddChild(tab_strip_layer_);
 }
 

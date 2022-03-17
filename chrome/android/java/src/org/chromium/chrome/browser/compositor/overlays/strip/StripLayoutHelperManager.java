@@ -637,7 +637,7 @@ public class StripLayoutHelperManager implements SceneOverlay {
     @Override
     public boolean updateOverlay(long time, long dt) {
         getInactiveStripLayoutHelper().finishAnimation();
-        return getActiveStripLayoutHelper().updateLayout(time, dt);
+        return getActiveStripLayoutHelper().updateLayout(time);
     }
 
     @Override

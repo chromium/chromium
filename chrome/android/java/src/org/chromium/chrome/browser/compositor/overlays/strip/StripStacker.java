@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import org.chromium.base.MathUtils;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
+import org.chromium.ui.base.LocalizationUtils;
 
 /**
  * An interface that defines how to stack tabs and how they should look visually.  This lets
@@ -76,9 +77,55 @@ public abstract class StripStacker {
      * @param mNewTabButtonWidth The width of the new tab button.
      * @return The x offset for the new tab button.
      */
-    public abstract float computeNewTabButtonOffset(StripLayoutTab[] indexOrderedTabs,
+    public float computeNewTabButtonOffset(StripLayoutTab[] indexOrderedTabs, float tabOverlapWidth,
+            float stripLeftMargin, float stripRightMargin, float stripWidth,
+            float mNewTabButtonWidth) {
+        return LocalizationUtils.isLayoutRtl()
+                ? computeNewTabButtonOffsetRtl(indexOrderedTabs, tabOverlapWidth, stripLeftMargin,
+                        stripRightMargin, stripWidth, mNewTabButtonWidth)
+                : computeNewTabButtonOffsetLtr(indexOrderedTabs, tabOverlapWidth, stripLeftMargin,
+                        stripRightMargin, stripWidth);
+    }
+
+    private float computeNewTabButtonOffsetLtr(StripLayoutTab[] indexOrderedTabs,
+            float tabOverlapWidth, float stripLeftMargin, float stripRightMargin,
+            float stripWidth) {
+        float rightEdge = stripLeftMargin;
+
+        for (StripLayoutTab tab : indexOrderedTabs) {
+            float layoutWidth = (tab.getWidth() - tabOverlapWidth) * tab.getWidthWeight();
+            rightEdge = Math.max(tab.getDrawX() + layoutWidth, rightEdge);
+        }
+
+        rightEdge = Math.min(rightEdge + tabOverlapWidth, stripWidth - stripRightMargin);
+
+        // Adjust the right edge by the tab overlap width so that the new tab button is nestled
+        // closer to the tab.
+        rightEdge -= tabOverlapWidth / 2;
+
+        // The draw X position for the new tab button is the rightEdge of the tab strip.
+        return rightEdge;
+    }
+
+    private float computeNewTabButtonOffsetRtl(StripLayoutTab[] indexOrderedTabs,
             float tabOverlapWidth, float stripLeftMargin, float stripRightMargin, float stripWidth,
-            float mNewTabButtonWidth);
+            float newTabButtonWidth) {
+        float leftEdge = stripWidth - stripRightMargin;
+
+        for (StripLayoutTab tab : indexOrderedTabs) {
+            leftEdge = Math.min(tab.getDrawX(), leftEdge);
+        }
+
+        leftEdge = Math.max(leftEdge, stripLeftMargin);
+
+        // Adjust the left edge by the tab overlap width so that the new tab button is nestled
+        // closer to the tab.
+        leftEdge += tabOverlapWidth / 2;
+
+        // The draw X position for the new tab button is the left edge of the tab strip minus
+        // the new tab button width.
+        return leftEdge - newTabButtonWidth;
+    }
 
     /**
      * Performs an occlusion pass, setting the visibility on tabs. This is relegated to this

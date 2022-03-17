@@ -142,18 +142,27 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
         boolean showRightTabStripFade =
                 !tabStripImprovementsEnabled || !LocalizationUtils.isLayoutRtl();
 
+        int tab_strip_fade_short =
+                CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_STRIP_IMPROVEMENTS)
+                ? R.drawable.tab_strip_fade_short
+                : R.drawable.tab_strip_fade;
+        int tab_strip_fade_long =
+                CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_STRIP_IMPROVEMENTS)
+                ? R.drawable.tab_strip_fade_long
+                : R.drawable.tab_strip_fade_for_model_selector;
+
         if (showLeftTabStripFade) {
             int leftFadeDrawable = modelSelectorButtonVisible && LocalizationUtils.isLayoutRtl()
-                    ? R.drawable.tab_strip_fade_for_model_selector
-                    : R.drawable.tab_strip_fade;
+                    ? tab_strip_fade_long
+                    : tab_strip_fade_short;
             TabStripSceneLayerJni.get().updateTabStripLeftFade(mNativePtr, TabStripSceneLayer.this,
                     leftFadeDrawable, layoutHelper.getLeftFadeOpacity(), resourceManager);
         }
 
         if (showRightTabStripFade) {
             int rightFadeDrawable = modelSelectorButtonVisible && !LocalizationUtils.isLayoutRtl()
-                    ? R.drawable.tab_strip_fade_for_model_selector
-                    : R.drawable.tab_strip_fade;
+                    ? tab_strip_fade_long
+                    : tab_strip_fade_short;
             TabStripSceneLayerJni.get().updateTabStripRightFade(mNativePtr, TabStripSceneLayer.this,
                     rightFadeDrawable, layoutHelper.getRightFadeOpacity(), resourceManager);
         }

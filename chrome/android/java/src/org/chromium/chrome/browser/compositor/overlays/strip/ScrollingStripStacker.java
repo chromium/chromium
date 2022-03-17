@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
+import org.chromium.chrome.browser.flags.CachedFeatureFlags;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.LocalizationUtils;
 
 /**
@@ -29,11 +31,14 @@ public class ScrollingStripStacker extends StripStacker {
     public float computeNewTabButtonOffset(StripLayoutTab[] indexOrderedTabs,
             float tabOverlapWidth, float stripLeftMargin, float stripRightMargin, float stripWidth,
             float newTabButtonWidth) {
+        if (CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_STRIP_IMPROVEMENTS)) {
+            return super.computeNewTabButtonOffset(indexOrderedTabs, tabOverlapWidth,
+                    stripLeftMargin, stripRightMargin, stripWidth, newTabButtonWidth);
+        }
         return LocalizationUtils.isLayoutRtl()
                 ? computeNewTabButtonOffsetRtl(indexOrderedTabs, tabOverlapWidth, stripRightMargin,
                         stripWidth, newTabButtonWidth)
-                                : computeNewTabButtonOffsetLtr(indexOrderedTabs, tabOverlapWidth,
-                                        stripLeftMargin, stripWidth);
+                : computeNewTabButtonOffsetLtr(indexOrderedTabs, tabOverlapWidth, stripLeftMargin);
     }
 
     @Override
@@ -45,8 +50,8 @@ public class ScrollingStripStacker extends StripStacker {
         }
     }
 
-    private float computeNewTabButtonOffsetLtr(StripLayoutTab[] indexOrderedTabs,
-            float tabOverlapWidth, float stripLeftMargin, float stripWidth) {
+    private float computeNewTabButtonOffsetLtr(
+            StripLayoutTab[] indexOrderedTabs, float tabOverlapWidth, float stripLeftMargin) {
         float rightEdge = stripLeftMargin;
 
         int numTabs = indexOrderedTabs.length;

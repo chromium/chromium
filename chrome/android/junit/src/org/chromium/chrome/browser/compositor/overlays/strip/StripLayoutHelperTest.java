@@ -220,6 +220,7 @@ public class StripLayoutHelperTest {
         StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_2);
         // Set mWidth value to 800.f
         mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT);
+        mStripLayoutHelper.getNewTabButton().setX(600.f);
         // The leftmost tab is partially hidden
         when(tabs[0].getDrawX()).thenReturn(-80.f);
         mStripLayoutHelper.setStripLayoutTabsForTest(tabs);
