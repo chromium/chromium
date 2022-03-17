@@ -29,8 +29,17 @@ enum DownloadClient {
   BOUNDARY = 10;
 }
 
+// Custom key value pair provided by the client and will be sent back to client
+// when download is completed.
+// Next tag: 3
+message CustomData {
+  optional string key = 1;
+  optional string value = 2;
+}
+
 // Stores the request params, internal state, metrics and metadata associated
 // with a download request.
+// Next tag: 21
 message Entry {
   // This should stay in sync with the State enum
   // (components/download/internal/background_service/entry.h).
@@ -76,4 +85,5 @@ message Entry {
   optional string response_headers = 17;
   optional bool did_received_response = 18;
   optional bool require_response_headers = 19;
+  repeated CustomData custom_data = 20;
 }

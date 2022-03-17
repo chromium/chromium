@@ -35,6 +35,7 @@ Entry::Entry(const DownloadParams& params)
       create_time(base::Time::Now()),
       scheduling_params(params.scheduling_params),
       request_params(params.request_params),
+      custom_data(params.custom_data),
       bytes_downloaded(0u),
       bytes_uploaded(0u),
       attempt_count(0),
@@ -72,7 +73,8 @@ bool Entry::operator==(const Entry& other) const {
          AreHeadersEqual(response_headers.get(),
                          other.response_headers.get()) &&
          did_received_response == other.did_received_response &&
-         require_response_headers == other.require_response_headers;
+         require_response_headers == other.require_response_headers &&
+         custom_data == other.custom_data;
 }
 
 size_t Entry::EstimateMemoryUsage() const {
@@ -82,7 +84,8 @@ size_t Entry::EstimateMemoryUsage() const {
          base::trace_event::EstimateMemoryUsage(request_params.method) +
          base::trace_event::EstimateMemoryUsage(
              request_params.request_headers.ToString()) +
-         base::trace_event::EstimateMemoryUsage(target_file_path.value());
+         base::trace_event::EstimateMemoryUsage(target_file_path.value()) +
+         base::trace_event::EstimateMemoryUsage(custom_data);
 }
 
 }  // namespace download

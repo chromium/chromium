@@ -73,6 +73,10 @@ struct Entry {
   // The parameters that define the actual download request to make.
   RequestParams request_params;
 
+  // Custom key value pair provided by client and will sent back to client. See
+  // |custom_data| in DownloadParams for more details.
+  DownloadParams::CustomData custom_data;
+
   // The state of the download to help the scheduler and loggers make the right
   // decisions about the download object.
   State state = State::NEW;

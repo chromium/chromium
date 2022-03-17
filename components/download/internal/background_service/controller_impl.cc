@@ -1201,6 +1201,7 @@ void ControllerImpl::HandleCompleteDownload(CompletionType type,
                                    entry->url_chain, entry->response_headers);
     completion_info.blob_handle = driver_entry->blob_handle;
     completion_info.hash256 = driver_entry->hash256;
+    completion_info.custom_data = entry->custom_data;
 
     entry->last_cleanup_check_time = driver_entry->completion_time;
     base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -1213,6 +1214,7 @@ void ControllerImpl::HandleCompleteDownload(CompletionType type,
     CompletionInfo completion_info;
     completion_info.url_chain = entry->url_chain;
     completion_info.response_headers = entry->response_headers;
+    completion_info.custom_data = entry->custom_data;
 
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,

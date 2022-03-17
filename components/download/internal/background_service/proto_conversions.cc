@@ -319,6 +319,10 @@ Entry ProtoConversions::EntryFromProto(const protodb::Entry& proto) {
   entry.did_received_response = proto.did_received_response();
   entry.require_response_headers = proto.require_response_headers();
 
+  for (const auto& kv : proto.custom_data()) {
+    entry.custom_data[kv.key()] = kv.value();
+  }
+
   return entry;
 }
 
@@ -347,6 +351,11 @@ protodb::Entry ProtoConversions::EntryToProto(const Entry& entry) {
     proto.set_response_headers(entry.response_headers->raw_headers());
   proto.set_did_received_response(entry.did_received_response);
   proto.set_require_response_headers(entry.require_response_headers);
+  for (const auto& kv : entry.custom_data) {
+    auto* custom_data_proto = proto.add_custom_data();
+    custom_data_proto->set_key(kv.first);
+    custom_data_proto->set_value(kv.second);
+  }
 
   return proto;
 }

@@ -51,6 +51,8 @@ namespace {
 
 const base::FilePath::CharType kDownloadDirPath[] =
     FILE_PATH_LITERAL("/test/downloads");
+constexpr char kKey[] = "k";
+constexpr char kValue[] = "v";
 
 bool GuidInEntryList(const std::vector<Entry>& entries,
                      const std::string& guid) {
@@ -793,16 +795,18 @@ TEST_F(DownloadServiceControllerImplTest, Cancel) {
 TEST_F(DownloadServiceControllerImplTest, OnDownloadFailed) {
   // Setup download service test data.
   Entry entry = test::BuildBasicEntry(Entry::State::ACTIVE);
+  entry.custom_data = {{kKey, kValue}};
   std::vector<Entry> entries = {entry};
 
   // Setup download driver test data.
   DriverEntry dentry = BuildDriverEntry(entry, DriverEntry::State::IN_PROGRESS);
   driver_->AddTestData(std::vector<DriverEntry>{dentry});
 
+  CompletionInfo completion_info;
   EXPECT_CALL(*client_, OnServiceInitialized(false, _)).Times(1);
   EXPECT_CALL(*client_,
               OnDownloadFailed(entry.guid, _, Client::FailureReason::NETWORK))
-      .Times(1);
+      .WillOnce(SaveArg<1>(&completion_info));
 
   device_status_listener_->SetDeviceStatus(
       DeviceStatus(BatteryStatus::CHARGING, NetworkStatus::UNMETERED));
@@ -815,6 +819,9 @@ TEST_F(DownloadServiceControllerImplTest, OnDownloadFailed) {
   EXPECT_EQ(nullptr, model_->Get(entry.guid));
 
   task_runner_->RunUntilIdle();
+
+  EXPECT_EQ(1u, completion_info.custom_data.size());
+  EXPECT_EQ(kValue, completion_info.custom_data[kKey]);
 }
 
 TEST_F(DownloadServiceControllerImplTest, OnDownloadFailedFromDriverCancel) {
@@ -978,6 +985,7 @@ TEST_F(DownloadServiceControllerImplTest, RetryOnFailure) {
 TEST_F(DownloadServiceControllerImplTest, OnDownloadSucceeded) {
   // Setup download service test data.
   Entry entry = test::BuildBasicEntry(Entry::State::ACTIVE);
+  entry.custom_data[kKey] = kValue;
   std::vector<Entry> entries = {entry};
 
   // Setup download driver test data.
@@ -988,9 +996,9 @@ TEST_F(DownloadServiceControllerImplTest, OnDownloadSucceeded) {
                                  dentry.bytes_downloaded, entry.url_chain,
                                  entry.response_headers);
   completion_info.hash256 = "01234567ABCDEF";
+  completion_info.custom_data[kKey] = kValue;
   EXPECT_CALL(*client_, OnServiceInitialized(false, _)).Times(1);
-  EXPECT_CALL(*client_, OnDownloadSucceeded(entry.guid, completion_info))
-      .Times(1);
+  EXPECT_CALL(*client_, OnDownloadSucceeded(entry.guid, completion_info));
 
   device_status_listener_->SetDeviceStatus(
       DeviceStatus(BatteryStatus::CHARGING, NetworkStatus::UNMETERED));

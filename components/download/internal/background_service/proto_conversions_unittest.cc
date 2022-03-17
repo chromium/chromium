@@ -13,8 +13,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
-std::string TEST_URL = "https://google.com";
-
+constexpr char kTestUrl[] = "https://www.example.com";
+constexpr char kKey[] = "k";
+constexpr char kValue[] = "v";
 }  // namespace
 
 namespace download {
@@ -96,7 +97,7 @@ TEST_F(ProtoConversionsTest, SchedulingParamsConversion) {
 
 TEST_F(ProtoConversionsTest, RequestParamsWithHeadersConversion) {
   RequestParams expected;
-  expected.url = GURL(TEST_URL);
+  expected.url = GURL(kTestUrl);
   expected.method = "GET";
   expected.fetch_error_body = true;
   expected.require_safety_checks = false;
@@ -125,7 +126,7 @@ TEST_F(ProtoConversionsTest, RequestParamsWithHeadersConversion) {
 
 TEST_F(ProtoConversionsTest, RequestParamsWithMissingCredentialsMode) {
   RequestParams expected;
-  expected.url = GURL(TEST_URL);
+  expected.url = GURL(kTestUrl);
   expected.method = "GET";
 
   protodb::RequestParams proto;
@@ -145,9 +146,10 @@ TEST_F(ProtoConversionsTest, EntryConversion) {
       DownloadClient::TEST, base::GenerateGUID(), base::Time::Now(),
       SchedulingParams::NetworkRequirements::OPTIMISTIC,
       SchedulingParams::BatteryRequirements::BATTERY_SENSITIVE,
-      SchedulingParams::Priority::HIGH, GURL(TEST_URL), "GET",
+      SchedulingParams::Priority::HIGH, GURL(kTestUrl), "GET",
       Entry::State::ACTIVE, base::FilePath(FILE_PATH_LITERAL("/test/xyz")),
       base::Time::Now(), base::Time::Now(), base::Time::Now(), 1024u, 3, 8);
+  expected.custom_data = {{kKey, kValue}};
   actual = EntryFromProto(EntryToProto(expected));
   EXPECT_TRUE(test::CompareEntry(&expected, &actual));
 }
@@ -162,7 +164,7 @@ TEST_F(ProtoConversionsTest, EntryVectorConversion) {
       DownloadClient::TEST, base::GenerateGUID(), base::Time::Now(),
       SchedulingParams::NetworkRequirements::OPTIMISTIC,
       SchedulingParams::BatteryRequirements::BATTERY_SENSITIVE,
-      SchedulingParams::Priority::HIGH, GURL(TEST_URL), "GET",
+      SchedulingParams::Priority::HIGH, GURL(kTestUrl), "GET",
       Entry::State::ACTIVE, base::FilePath(FILE_PATH_LITERAL("/test/xyz")),
       base::Time::Now(), base::Time::Now(), base::Time::Now(), 1024u, 2, 8));
 
