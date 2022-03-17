@@ -247,6 +247,9 @@ class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
   }
 
   bool ShouldUndoOverscroll(const TransformNode* node) const;
+  void UpdateFixedNodeTransformAndClip(
+      const TransformNode* node,
+      gfx::Vector2dF& fixed_position_adjustment);
 
   const StickyPositionNodeData* GetStickyPositionData(int node_id) const {
     return const_cast<TransformTree*>(this)->MutableStickyPositionData(node_id);
@@ -330,6 +333,14 @@ class CC_EXPORT ClipTree final : public PropertyTree<ClipNode> {
 
   void SetViewportClip(gfx::RectF viewport_rect);
   gfx::RectF ViewportClip() const;
+
+  void set_overscroll_node_id(int id) { overscroll_node_id_ = id; }
+  int overscroll_node_id() const { return overscroll_node_id_; }
+
+ private:
+  // Used to track the ClipNode that is corresponding to the overscroll
+  // TransformNode.
+  int overscroll_node_id_;
 };
 
 class CC_EXPORT EffectTree final : public PropertyTree<EffectNode> {

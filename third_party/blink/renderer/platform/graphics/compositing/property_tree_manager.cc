@@ -380,8 +380,12 @@ void PropertyTreeManager::SetCurrentEffectRenderSurfaceReason(
   effect->render_surface_reason = reason;
 }
 
-void PropertyTreeManager::SetOverscrollNodeId(const int id) {
+void PropertyTreeManager::SetOverscrollTransformNodeId(const int id) {
   transform_tree_.set_overscroll_node_id(id);
+}
+
+void PropertyTreeManager::SetOverscrollClipNodeId(const int id) {
+  clip_tree_.set_overscroll_node_id(id);
 }
 
 void PropertyTreeManager::SetFixedElementsDontOverscroll(const bool value) {
