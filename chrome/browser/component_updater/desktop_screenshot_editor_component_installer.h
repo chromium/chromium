@@ -1,17 +1,17 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_COMPONENT_UPDATER_DESKTOP_SHARING_HUB_COMPONENT_INSTALLER_H_
-#define CHROME_BROWSER_COMPONENT_UPDATER_DESKTOP_SHARING_HUB_COMPONENT_INSTALLER_H_
+#ifndef CHROME_BROWSER_COMPONENT_UPDATER_DESKTOP_SCREENSHOT_EDITOR_COMPONENT_INSTALLER_H_
+#define CHROME_BROWSER_COMPONENT_UPDATER_DESKTOP_SCREENSHOT_EDITOR_COMPONENT_INSTALLER_H_
 
 #include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "base/files/file_path.h"
 #include "base/values.h"
 #include "components/component_updater/component_installer.h"
 
@@ -23,15 +23,15 @@ namespace component_updater {
 
 class ComponentUpdateService;
 
-class DesktopSharingHubComponentInstallerPolicy
+class DesktopScreenshotEditorComponentInstallerPolicy
     : public ComponentInstallerPolicy {
  public:
-  DesktopSharingHubComponentInstallerPolicy() = default;
-  DesktopSharingHubComponentInstallerPolicy(
-      const DesktopSharingHubComponentInstallerPolicy&) = delete;
-  DesktopSharingHubComponentInstallerPolicy& operator=(
-      const DesktopSharingHubComponentInstallerPolicy&) = delete;
-  ~DesktopSharingHubComponentInstallerPolicy() override = default;
+  DesktopScreenshotEditorComponentInstallerPolicy() = default;
+  DesktopScreenshotEditorComponentInstallerPolicy(
+      const DesktopScreenshotEditorComponentInstallerPolicy&) = delete;
+  DesktopScreenshotEditorComponentInstallerPolicy& operator=(
+      const DesktopScreenshotEditorComponentInstallerPolicy&) = delete;
+  ~DesktopScreenshotEditorComponentInstallerPolicy() override = default;
 
  private:
   // The following methods override ComponentInstallerPolicy.
@@ -55,9 +55,9 @@ class DesktopSharingHubComponentInstallerPolicy
 };
 
 // Call once during startup to make the component update service aware of
-// the Desktop Sharing Hub component.
-void RegisterDesktopSharingHubComponent(ComponentUpdateService* cus);
+// the Desktop Screenshot Editor component.
+void RegisterDesktopScreenshotEditorComponent(ComponentUpdateService* cus);
 
 }  // namespace component_updater
 
-#endif  // CHROME_BROWSER_COMPONENT_UPDATER_DESKTOP_SHARING_HUB_COMPONENT_INSTALLER_H_
+#endif  // CHROME_BROWSER_COMPONENT_UPDATER_DESKTOP_SCREENSHOT_EDITOR_COMPONENT_INSTALLER_H_
