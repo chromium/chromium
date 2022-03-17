@@ -7620,6 +7620,27 @@ TEST_P(LayerTreeHostImplBrowserControlsTest, BrowserControlsAspectRatio) {
   EXPECT_EQ(expected, InnerViewportScrollLayer()->bounds());
 }
 
+TEST_P(LayerTreeHostImplBrowserControlsTest, NoShrinkNotUserScrollable) {
+  SetupBrowserControlsAndScrollLayerWithVirtualViewport(
+      gfx::Size(100, 100), gfx::Size(100, 100), gfx::Size(100, 200));
+
+  GetScrollNode(OuterViewportScrollLayer())->user_scrollable_vertical = false;
+  DrawFrame();
+
+  gfx::Vector2dF delta(0, 15);
+  ui::ScrollInputType type = ui::ScrollInputType::kTouchscreen;
+  auto& handler = GetInputHandler();
+
+  handler.ScrollBegin(BeginState(gfx::Point(), delta, type).get(), type);
+  handler.ScrollUpdate(UpdateState(gfx::Point(), delta, type).get());
+  handler.ScrollEnd();
+
+  // Outer viewport has overflow, but is not user-scrollable. Make sure the
+  // browser controls did not shrink when we tried to scroll.
+  EXPECT_EQ(top_controls_height_,
+            host_impl_->browser_controls_manager()->ContentTopOffset());
+}
+
 // Test that scrolling the outer viewport affects the browser controls.
 TEST_P(LayerTreeHostImplBrowserControlsTest,
        BrowserControlsScrollOuterViewport) {

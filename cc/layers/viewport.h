@@ -118,7 +118,7 @@ class CC_EXPORT Viewport {
   // Sends the delta to the browser controls, returns the amount applied.
   gfx::Vector2dF ScrollBrowserControls(const gfx::Vector2dF& delta);
 
-  gfx::PointF MaxTotalScrollOffset() const;
+  float MaxUserReachableTotalScrollOffsetY() const;
 
   ScrollNode* InnerScrollNode() const;
   ScrollNode* OuterScrollNode() const;

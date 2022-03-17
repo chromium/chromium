@@ -305,7 +305,8 @@ bool Viewport::ShouldBrowserControlsConsumeScroll(
   if (scroll_delta.y() < 0)
     return true;
 
-  if (TotalScrollOffset().y() < MaxTotalScrollOffset().y())
+  const float kEpsilon = 0.1f;
+  if (TotalScrollOffset().y() + kEpsilon < MaxUserReachableTotalScrollOffsetY())
     return true;
 
   return false;
@@ -325,14 +326,17 @@ gfx::Vector2dF Viewport::AdjustOverscroll(const gfx::Vector2dF& delta) const {
   return adjusted;
 }
 
-gfx::PointF Viewport::MaxTotalScrollOffset() const {
-  gfx::Vector2dF offset =
-      scroll_tree().MaxScrollOffset(InnerScrollNode()->id).OffsetFromOrigin();
+float Viewport::MaxUserReachableTotalScrollOffsetY() const {
+  auto& tree = scroll_tree();
+  float y_offset = tree.MaxScrollOffset(InnerScrollNode()->id).y();
 
-  if (auto* outer_node = OuterScrollNode())
-    offset += scroll_tree().MaxScrollOffset(outer_node->id).OffsetFromOrigin();
-
-  return gfx::PointAtOffsetFromOrigin(offset);
+  if (auto* outer_node = OuterScrollNode()) {
+    if (outer_node->user_scrollable_vertical)
+      y_offset += tree.MaxScrollOffset(outer_node->id).y();
+    else
+      y_offset += tree.current_scroll_offset(outer_node->element_id).y();
+  }
+  return y_offset;
 }
 
 gfx::PointF Viewport::TotalScrollOffset() const {
