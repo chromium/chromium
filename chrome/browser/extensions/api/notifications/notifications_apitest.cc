@@ -200,7 +200,14 @@ IN_PROC_BROWSER_TEST_P(NotificationsApiTestWithBackgroundType, TestBasicUsage) {
   ASSERT_TRUE(RunExtensionTest("notifications/api/basic_usage")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(NotificationsApiTestWithBackgroundType, TestEvents) {
+// Flaky on TSan, see crbug.com/1304777.
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_TestEvents DISABLED_TestEvents
+#else
+#define MAYBE_TestEvents TestEvents
+#endif
+IN_PROC_BROWSER_TEST_P(NotificationsApiTestWithBackgroundType,
+                       MAYBE_TestEvents) {
   ASSERT_TRUE(RunExtensionTest("notifications/api/events")) << message_;
 }
 
