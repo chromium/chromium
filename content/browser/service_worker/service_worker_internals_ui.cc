@@ -162,6 +162,22 @@ base::Value::ListStorage GetRegistrationListValue(
   for (const auto& registration : registrations) {
     base::Value registration_info(base::Value::Type::DICTIONARY);
     registration_info.SetStringKey("scope", registration.scope.spec());
+    registration_info.SetBoolKey(
+        "third_party_storage_partitioning_enabled",
+        registration.key.IsThirdPartyStoragePartitioningEnabled());
+    registration_info.SetStringKey(
+        "ancestor_chain_bit", registration.key.ancestor_chain_bit() ==
+                                      blink::mojom::AncestorChainBit::kCrossSite
+                                  ? "CrossSite"
+                                  : "SameSite");
+    registration_info.SetStringKey("nonce",
+                                   registration.key.nonce().has_value()
+                                       ? registration.key.nonce()->ToString()
+                                       : "<null>");
+    registration_info.SetStringKey("origin",
+                                   registration.key.origin().GetDebugString());
+    registration_info.SetStringKey(
+        "top_level_site", registration.key.top_level_site().Serialize());
     registration_info.SetStringKey(
         "registration_id", base::NumberToString(registration.registration_id));
     registration_info.SetBoolKey("navigation_preload_enabled",
