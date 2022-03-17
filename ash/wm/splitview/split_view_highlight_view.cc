@@ -8,9 +8,13 @@
 #include "ash/shell.h"
 #include "ash/style/default_color_constants.h"
 #include "ash/style/default_colors.h"
+#include "ash/style/highlight_border.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "base/i18n/rtl.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_type.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/views/background.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/widget.h"
@@ -20,7 +24,7 @@ namespace ash {
 namespace {
 
 // The amount of round applied to the corners of the highlight views.
-constexpr gfx::RoundedCornersF kHighlightScreenRoundRectRadii(4.f);
+constexpr int kHighlightScreenRoundRectRadius = 4;
 
 // Self deleting animation observer that removes clipping on View's layer and
 // optionally sets bounds after the animation ends.
@@ -56,16 +60,30 @@ class ClippingObserver : public ui::ImplicitAnimationObserver,
 
 SplitViewHighlightView::SplitViewHighlightView(bool is_right_or_bottom)
     : is_right_or_bottom_(is_right_or_bottom) {
-  SetPaintToLayer(ui::LAYER_SOLID_COLOR);
+  SetPaintToLayer(ui::LAYER_TEXTURED);
+  SetBackground(views::CreateRoundedRectBackground(
+      DeprecatedGetBackgroundColor(kSplitviewHighlightViewBackgroundColor),
+      kHighlightScreenRoundRectRadius));
   layer()->SetFillsBoundsOpaquely(false);
-  layer()->SetColor(
-      DeprecatedGetBackgroundColor(kSplitviewHighlightViewBackgroundColor));
-  layer()->SetRoundedCornerRadius(kHighlightScreenRoundRectRadii);
+  layer()->SetRoundedCornerRadius(
+      gfx::RoundedCornersF{kHighlightScreenRoundRectRadius});
   layer()->SetIsFastRoundedCorner(true);
   // TODO(crbug/1249666): Add border highlight that supports dark/light mode.
 }
 
 SplitViewHighlightView::~SplitViewHighlightView() = default;
+
+void SplitViewHighlightView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  background()->SetNativeControlColor(
+      DeprecatedGetBackgroundColor(kSplitviewHighlightViewBackgroundColor));
+  if (chromeos::features::IsDarkLightModeEnabled()) {
+    SetBorder(std::make_unique<HighlightBorder>(
+        kHighlightScreenRoundRectRadius,
+        HighlightBorder::Type::kHighlightBorder1,
+        /*use_light_colors=*/false));
+  }
+}
 
 void SplitViewHighlightView::SetBounds(
     const gfx::Rect& bounds,
@@ -169,10 +187,16 @@ void SplitViewHighlightView::OnWindowDraggingStateChanged(
     return;
   }
 
-  layer()->SetColor(DeprecatedGetBackgroundColor(
+  background()->SetNativeControlColor(DeprecatedGetBackgroundColor(
       can_dragged_window_be_snapped
           ? kSplitviewHighlightViewBackgroundColor
           : kSplitviewHighlightViewBackgroundCannotSnapColor));
+  if (chromeos::features::IsDarkLightModeEnabled()) {
+    SetBorder(std::make_unique<HighlightBorder>(
+        kHighlightScreenRoundRectRadius,
+        HighlightBorder::Type::kHighlightBorder1,
+        /*use_light_colors=*/false));
+  }
 
   if (preview_position != SplitViewController::NONE) {
     DoSplitviewOpacityAnimation(

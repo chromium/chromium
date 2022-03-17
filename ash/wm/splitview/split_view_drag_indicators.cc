@@ -17,6 +17,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/default_color_constants.h"
 #include "ash/style/default_colors.h"
+#include "ash/style/highlight_border.h"
 #include "ash/utility/haptics_util.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_window_drag_controller.h"
@@ -31,6 +32,7 @@
 #include "ui/aura/window_observer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_type.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/display_observer.h"
 #include "ui/events/devices/haptic_touchpad_effects.h"
@@ -137,7 +139,7 @@ class SplitViewDragIndicators::RotatedImageLabelView : public views::View {
     // this extra view so that we can rotate the label, while having a slide
     // animation at times on the whole thing.
     label_parent_ = AddChildView(std::make_unique<views::View>());
-    label_parent_->SetPaintToLayer();
+    label_parent_->SetPaintToLayer(ui::LAYER_TEXTURED);
     label_parent_->layer()->SetFillsBoundsOpaquely(false);
     label_parent_->SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical,
@@ -231,6 +233,13 @@ class SplitViewDragIndicators::RotatedImageLabelView : public views::View {
         AshColorProvider::BaseLayerType::kTransparent80));
     label_->SetFontList(views::Label::GetDefaultFontList().Derive(
         2, gfx::Font::FontStyle::NORMAL, gfx::Font::Weight::NORMAL));
+
+    if (chromeos::features::IsDarkLightModeEnabled()) {
+      label_parent_->SetBorder(std::make_unique<HighlightBorder>(
+          /*corner_radius=*/kSplitviewLabelRoundRectRadiusDp,
+          HighlightBorder::Type::kHighlightBorder1,
+          /*use_light_colors=*/false));
+    }
   }
 
  protected:
