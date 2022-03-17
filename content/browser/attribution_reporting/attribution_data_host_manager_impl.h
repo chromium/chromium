@@ -74,6 +74,14 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
     url::Origin destination;
   };
 
+  struct ReceiverData {
+    url::Origin source_declared_destination_origin;
+    int num_data_registered;
+  };
+
+  static void RecordRegisteredDataPerDataHost(
+      const ReceiverData& receiver_data);
+
   // blink::mojom::AttributionDataHost:
   void SourceDataAvailable(
       blink::mojom::AttributionSourceDataPtr data) override;
@@ -94,7 +102,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
   // `AttributionDataHost`.
   //
   // If the receiver is processing triggers, stores an opaque origin.
-  base::flat_map<mojo::ReceiverId, url::Origin> receiver_data_;
+  base::flat_map<mojo::ReceiverId, ReceiverData> receiver_data_;
 
   // Map which stores pending receivers for data hosts which are going to
   // register sources associated with a navigation. These are not added to

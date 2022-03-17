@@ -13,6 +13,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_source.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
@@ -47,15 +48,18 @@ class AttributionDataHostManagerImplTest : public testing::Test {
  public:
   AttributionDataHostManagerImplTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        data_host_manager_(&mock_manager_) {}
+        data_host_manager_(
+            std::make_unique<AttributionDataHostManagerImpl>(&mock_manager_)) {}
 
  protected:
   BrowserTaskEnvironment task_environment_;
   MockAttributionManager mock_manager_;
-  AttributionDataHostManagerImpl data_host_manager_;
+  std::unique_ptr<AttributionDataHostManagerImpl> data_host_manager_;
 };
 
 TEST_F(AttributionDataHostManagerImplTest, SourceDataHost_SourceRegistered) {
+  base::HistogramTester histograms;
+
   auto page_origin = url::Origin::Create(GURL("https://page.example"));
   auto destination_origin =
       url::Origin::Create(GURL("https://trigger.example"));
@@ -75,7 +79,7 @@ TEST_F(AttributionDataHostManagerImplTest, SourceDataHost_SourceRegistered) {
                           .Build())))));
 
   mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
-  data_host_manager_.RegisterDataHost(
+  data_host_manager_->RegisterDataHost(
       data_host_remote.BindNewPipeAndPassReceiver(), page_origin);
 
   auto source_data = blink::mojom::AttributionSourceData::New();
@@ -93,10 +97,17 @@ TEST_F(AttributionDataHostManagerImplTest, SourceDataHost_SourceRegistered) {
           .Build();
   data_host_remote->SourceDataAvailable(std::move(source_data));
   data_host_remote.FlushForTesting();
+
+  data_host_manager_.reset();
+
+  histograms.ExpectBucketCount("Conversions.RegisteredSourcesPerDataHost", 1,
+                               1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
        SourceDataHost_OriginTrustworthyChecksPerformed) {
+  base::HistogramTester histograms;
+
   const char kLocalHost[] = "http://localhost";
 
   struct {
@@ -135,7 +146,7 @@ TEST_F(AttributionDataHostManagerImplTest,
     EXPECT_CALL(mock_manager_, HandleSource).Times(test_case.source_expected);
 
     mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
-    data_host_manager_.RegisterDataHost(
+    data_host_manager_->RegisterDataHost(
         data_host_remote.BindNewPipeAndPassReceiver(),
         url::Origin::Create(GURL(test_case.source_origin)));
 
@@ -152,6 +163,14 @@ TEST_F(AttributionDataHostManagerImplTest,
 
     Mock::VerifyAndClear(&mock_manager_);
   }
+
+  data_host_manager_.reset();
+
+  histograms.ExpectBucketCount("Conversions.RegisteredSourcesPerDataHost", 1,
+                               3);
+  // Untrustworthy source origin doesn't register data host.
+  histograms.ExpectBucketCount("Conversions.RegisteredSourcesPerDataHost", 0,
+                               2);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
@@ -161,7 +180,7 @@ TEST_F(AttributionDataHostManagerImplTest,
     EXPECT_CALL(mock_manager_, HandleSource).Times(test_case.valid);
 
     mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
-    data_host_manager_.RegisterDataHost(
+    data_host_manager_->RegisterDataHost(
         data_host_remote.BindNewPipeAndPassReceiver(),
         url::Origin::Create(GURL("https://page.example")));
 
@@ -205,7 +224,7 @@ TEST_F(AttributionDataHostManagerImplTest,
     EXPECT_CALL(mock_manager_, HandleSource).Times(test_case.valid);
 
     mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
-    data_host_manager_.RegisterDataHost(
+    data_host_manager_->RegisterDataHost(
         data_host_remote.BindNewPipeAndPassReceiver(),
         url::Origin::Create(GURL("https://page.example")));
 
@@ -227,6 +246,8 @@ TEST_F(AttributionDataHostManagerImplTest,
 
 TEST_F(AttributionDataHostManagerImplTest,
        SourceDataHost_ReceiverDestinationCheckPerformed) {
+  base::HistogramTester histograms;
+
   Checkpoint checkpoint;
   {
     InSequence seq;
@@ -246,7 +267,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   auto reporting_origin = url::Origin::Create(GURL("https://reporter.example"));
 
   mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
-  data_host_manager_.RegisterDataHost(
+  data_host_manager_->RegisterDataHost(
       data_host_remote.BindNewPipeAndPassReceiver(), page_origin);
 
   auto source_data = blink::mojom::AttributionSourceData::New();
@@ -273,6 +294,11 @@ TEST_F(AttributionDataHostManagerImplTest,
   checkpoint.Call(3);
   data_host_remote->SourceDataAvailable(std::move(source_data));
   data_host_remote.FlushForTesting();
+
+  data_host_manager_.reset();
+
+  histograms.ExpectBucketCount("Conversions.RegisteredSourcesPerDataHost", 2,
+                               1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
@@ -314,7 +340,7 @@ TEST_F(AttributionDataHostManagerImplTest,
     EXPECT_CALL(mock_manager_, HandleSource).Times(test_case.valid);
 
     mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
-    data_host_manager_.RegisterDataHost(
+    data_host_manager_->RegisterDataHost(
         data_host_remote.BindNewPipeAndPassReceiver(),
         url::Origin::Create(GURL("https://page.example")));
 
@@ -333,6 +359,8 @@ TEST_F(AttributionDataHostManagerImplTest,
 }
 
 TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
+  base::HistogramTester histograms;
+
   auto destination_origin =
       url::Origin::Create(GURL("https://trigger.example"));
   auto reporting_origin = url::Origin::Create(GURL("https://reporter.example"));
@@ -368,7 +396,7 @@ TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
       })));
 
   mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
-  data_host_manager_.RegisterDataHost(
+  data_host_manager_->RegisterDataHost(
       data_host_remote.BindNewPipeAndPassReceiver(), destination_origin);
 
   auto trigger_data = blink::mojom::AttributionTriggerData::New();
@@ -400,10 +428,17 @@ TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
 
   data_host_remote->TriggerDataAvailable(std::move(trigger_data));
   data_host_remote.FlushForTesting();
+
+  data_host_manager_.reset();
+
+  histograms.ExpectBucketCount("Conversions.RegisteredTriggersPerDataHost", 1,
+                               1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
        TriggerDataHost_OriginTrustworthyChecksPerformed) {
+  base::HistogramTester histograms;
+
   const char kLocalHost[] = "http://localhost";
 
   struct {
@@ -432,7 +467,7 @@ TEST_F(AttributionDataHostManagerImplTest,
     EXPECT_CALL(mock_manager_, HandleTrigger).Times(test_case.trigger_expected);
 
     mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
-    data_host_manager_.RegisterDataHost(
+    data_host_manager_->RegisterDataHost(
         data_host_remote.BindNewPipeAndPassReceiver(),
         url::Origin::Create(GURL(test_case.destination_origin)));
 
@@ -449,6 +484,14 @@ TEST_F(AttributionDataHostManagerImplTest,
 
     Mock::VerifyAndClear(&mock_manager_);
   }
+
+  data_host_manager_.reset();
+
+  histograms.ExpectBucketCount("Conversions.RegisteredTriggersPerDataHost", 1,
+                               3);
+  // Untrustworthy destination origin doesn't register data host.
+  histograms.ExpectBucketCount("Conversions.RegisteredTriggersPerDataHost", 0,
+                               1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
@@ -458,7 +501,7 @@ TEST_F(AttributionDataHostManagerImplTest,
     EXPECT_CALL(mock_manager_, HandleTrigger).Times(test_case.valid);
 
     mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
-    data_host_manager_.RegisterDataHost(
+    data_host_manager_->RegisterDataHost(
         data_host_remote.BindNewPipeAndPassReceiver(),
         url::Origin::Create(GURL("https://trigger.example")));
 
@@ -486,7 +529,7 @@ TEST_F(AttributionDataHostManagerImplTest,
     EXPECT_CALL(mock_manager_, HandleTrigger).Times(test_case.valid);
 
     mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
-    data_host_manager_.RegisterDataHost(
+    data_host_manager_->RegisterDataHost(
         data_host_remote.BindNewPipeAndPassReceiver(),
         url::Origin::Create(GURL("https://trigger.example")));
 
@@ -520,7 +563,7 @@ TEST_F(AttributionDataHostManagerImplTest,
     EXPECT_CALL(mock_manager_, HandleTrigger).Times(test_case.valid);
 
     mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
-    data_host_manager_.RegisterDataHost(
+    data_host_manager_->RegisterDataHost(
         data_host_remote.BindNewPipeAndPassReceiver(),
         url::Origin::Create(GURL("https://trigger.example")));
 
@@ -562,7 +605,7 @@ TEST_F(AttributionDataHostManagerImplTest,
     EXPECT_CALL(mock_manager_, HandleTrigger).Times(test_case.expected);
 
     mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
-    data_host_manager_.RegisterDataHost(
+    data_host_manager_->RegisterDataHost(
         data_host_remote.BindNewPipeAndPassReceiver(),
         url::Origin::Create(GURL("https://trigger.example")));
 
@@ -593,6 +636,8 @@ TEST_F(AttributionDataHostManagerImplTest,
 
 TEST_F(AttributionDataHostManagerImplTest,
        TriggerDataHost_ReceiverModeCheckPerformed) {
+  base::HistogramTester histograms;
+
   Checkpoint checkpoint;
   {
     InSequence seq;
@@ -611,7 +656,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   auto reporting_origin = url::Origin::Create(GURL("https://reporter.example"));
 
   mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
-  data_host_manager_.RegisterDataHost(
+  data_host_manager_->RegisterDataHost(
       data_host_remote.BindNewPipeAndPassReceiver(), destination_origin);
 
   auto trigger_data = blink::mojom::AttributionTriggerData::New();
@@ -644,10 +689,18 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   data_host_remote->TriggerDataAvailable(std::move(trigger_data));
   data_host_remote.FlushForTesting();
+
+  data_host_manager_.reset();
+
+  histograms.ExpectTotalCount("Conversions.RegisteredSourcesPerDataHost", 0);
+  histograms.ExpectBucketCount("Conversions.RegisteredTriggersPerDataHost", 3,
+                               1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
        SourceDataHost_ReceiverModeCheckPerformed) {
+  base::HistogramTester histograms;
+
   Checkpoint checkpoint;
   {
     InSequence seq;
@@ -667,7 +720,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   auto reporting_origin = url::Origin::Create(GURL("https://reporter.example"));
 
   mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
-  data_host_manager_.RegisterDataHost(
+  data_host_manager_->RegisterDataHost(
       data_host_remote.BindNewPipeAndPassReceiver(), page_origin);
 
   auto source_data = blink::mojom::AttributionSourceData::New();
@@ -700,6 +753,12 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   data_host_remote->SourceDataAvailable(std::move(source_data));
   data_host_remote.FlushForTesting();
+
+  data_host_manager_.reset();
+
+  histograms.ExpectBucketCount("Conversions.RegisteredSourcesPerDataHost", 3,
+                               1);
+  histograms.ExpectTotalCount("Conversions.RegisteredTriggersPerDataHost", 0);
 }
 
 }  // namespace content

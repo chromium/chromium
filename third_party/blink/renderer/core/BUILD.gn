@@ -1284,6 +1284,7 @@ source_set("unit_tests") {
     "frame/ad_tracker_test.cc",
     "frame/anchor_element_listener_test.cc",
     "frame/attribution_response_parsing_test.cc",
+    "frame/attribution_src_loader_test.cc",
     "frame/browser_controls_test.cc",
     "frame/child_frame_compositing_helper_test.cc",
     "frame/csp/content_security_policy_test.cc",

@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -46,6 +47,15 @@ namespace blink {
 
 namespace {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class AttributionSrcRequestStatus {
+  kRequested = 0,
+  kReceived = 1,
+  kFailed = 2,
+  kMaxValue = kFailed,
+};
+
 bool ContainsTriggerHeaders(const HTTPHeaderMap& headers) {
   return headers.Contains(
              http_names::kAttributionReportingRegisterEventTrigger) ||
@@ -54,6 +64,11 @@ bool ContainsTriggerHeaders(const HTTPHeaderMap& headers) {
                   kAttributionReportingRegisterAggregatableTriggerData) &&
           headers.Contains(
               http_names::kAttributionReportingRegisterAggregatableValues));
+}
+
+void RecordAttributionSrcRequestStatus(AttributionSrcRequestStatus status) {
+  base::UmaHistogramEnumeration("Conversions.AttributionSrcRequestStatus",
+                                status);
 }
 
 }  // namespace
@@ -243,6 +258,9 @@ AttributionSrcLoader::ResourceClient* AttributionSrcLoader::DoRegistration(
       this, src_type, associated_with_navigation);
   resource_clients_.insert(client);
   RawResource::Fetch(params, local_frame_->DomWindow()->Fetcher(), client);
+
+  RecordAttributionSrcRequestStatus(AttributionSrcRequestStatus::kRequested);
+
   return client;
 }
 
@@ -374,6 +392,12 @@ void AttributionSrcLoader::ResourceClient::NotifyFinished(Resource* resource) {
 
   DCHECK(loader_->resource_clients_.Contains(this));
   loader_->resource_clients_.erase(this);
+
+  if (resource->ErrorOccurred()) {
+    RecordAttributionSrcRequestStatus(AttributionSrcRequestStatus::kFailed);
+  } else {
+    RecordAttributionSrcRequestStatus(AttributionSrcRequestStatus::kReceived);
+  }
 }
 
 void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(

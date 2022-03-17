@@ -3111,6 +3111,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.AttributionSrcRequestStatus"
+    enum="ConversionAttributionSrcRequestStatus" expires_after="2022-09-12">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the status of the attributionsrc requests. Recorded when the request
+    started and finished.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.ClearDataTime" units="ms" expires_after="M105">
   <owner>johnidel@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
@@ -3268,6 +3279,28 @@ chromium-metrics-reviews@google.com.
     Records the number of impressions attempted on a given top level page load.
     Recorded when the page navigates away or is otherwise closed. Only recorded
     for non-off-the-record profiles (OTR profiles have the feature disabled).
+  </summary>
+</histogram>
+
+<histogram name="Conversions.RegisteredSourcesPerDataHost" units="sources"
+    expires_after="2022-09-12">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures the number of sources registered per data host. Recorded when the
+    data host is disconnected or when the data host manager is destroyed.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.RegisteredTriggersPerDataHost" units="triggers"
+    expires_after="2022-09-12">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures the number of triggers registered per data host. Recorded when the
+    data host is disconnected or when the data host manager is destroyed.
   </summary>
 </histogram>
 

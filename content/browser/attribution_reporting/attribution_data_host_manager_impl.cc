@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_source.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_trigger.h"
@@ -46,6 +47,21 @@ proto::AttributionAggregatableSource ConvertToProto(
 
 }  // namespace
 
+// static
+void AttributionDataHostManagerImpl::RecordRegisteredDataPerDataHost(
+    const ReceiverData& receiver_data) {
+  int count = receiver_data.num_data_registered;
+  DCHECK_GE(count, 0);
+
+  if (receiver_data.source_declared_destination_origin.opaque()) {
+    base::UmaHistogramExactLinear("Conversions.RegisteredTriggersPerDataHost",
+                                  count, 101);
+  } else {
+    base::UmaHistogramExactLinear("Conversions.RegisteredSourcesPerDataHost",
+                                  count, 101);
+  }
+}
+
 AttributionDataHostManagerImpl::AttributionDataHostManagerImpl(
     AttributionManager* attribution_manager)
     : attribution_manager_(attribution_manager) {
@@ -58,7 +74,11 @@ AttributionDataHostManagerImpl::AttributionDataHostManagerImpl(
       base::Unretained(this)));
 }
 
-AttributionDataHostManagerImpl::~AttributionDataHostManagerImpl() = default;
+AttributionDataHostManagerImpl::~AttributionDataHostManagerImpl() {
+  for (const auto& [id, data] : receiver_data_) {
+    RecordRegisteredDataPerDataHost(data);
+  }
+}
 
 void AttributionDataHostManagerImpl::RegisterDataHost(
     mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
@@ -109,9 +129,12 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
   if (data->destination.opaque())
     return;
 
-  auto [it, inserted] =
-      receiver_data_.emplace(receivers_.current_receiver(), data->destination);
-  if (!inserted && data->destination != it->second)
+  auto [it, inserted] = receiver_data_.emplace(
+      receivers_.current_receiver(),
+      ReceiverData{.source_declared_destination_origin = data->destination,
+                   .num_data_registered = 0});
+  if (!inserted &&
+      data->destination != it->second.source_declared_destination_origin)
     return;
 
   const FrozenContext& context = receivers_.current_context();
@@ -128,9 +151,13 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
       break;
     case AttributionSourceType::kEvent:
       // For event source verify that all sources are consistent.
-      auto result = receiver_data_.emplace(receivers_.current_receiver(),
-                                           data->destination);
-      if (!result.second && data->destination != result.first->second)
+      auto result = receiver_data_.emplace(
+          receivers_.current_receiver(),
+          ReceiverData{.source_declared_destination_origin = data->destination,
+                       .num_data_registered = 0});
+      if (!result.second &&
+          data->destination !=
+              result.first->second.source_declared_destination_origin)
         return;
       break;
   }
@@ -156,6 +183,8 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
   if (!aggregatable_source.has_value())
     return;
 
+  it->second.num_data_registered++;
+
   StorableSource storable_source(CommonSourceInfo(
       data->source_event_id, context.context_origin, data->destination,
       reporting_origin, source_time,
@@ -173,9 +202,11 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
     blink::mojom::AttributionTriggerDataPtr data) {
   // TODO(linnan): Log metrics for early returns.
 
-  auto [it, inserted] =
-      receiver_data_.emplace(receivers_.current_receiver(), url::Origin());
-  if (!it->second.opaque())
+  auto [it, inserted] = receiver_data_.emplace(
+      receivers_.current_receiver(),
+      ReceiverData{.source_declared_destination_origin = url::Origin(),
+                   .num_data_registered = 0});
+  if (!it->second.source_declared_destination_origin.opaque())
     return;
 
   const FrozenContext& context = receivers_.current_context();
@@ -231,6 +262,8 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
   if (!aggregatable_trigger.has_value())
     return;
 
+  it->second.num_data_registered++;
+
   AttributionTrigger trigger(
       /*destination_origin=*/context.context_origin, reporting_origin,
       std::move(*filters),
@@ -242,7 +275,12 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
 }
 
 void AttributionDataHostManagerImpl::OnDataHostDisconnected() {
-  receiver_data_.erase(receivers_.current_receiver());
+  auto iter = receiver_data_.find(receivers_.current_receiver());
+  DCHECK(iter != receiver_data_.end());
+
+  RecordRegisteredDataPerDataHost(iter->second);
+
+  receiver_data_.erase(iter);
 }
 
 }  // namespace content
