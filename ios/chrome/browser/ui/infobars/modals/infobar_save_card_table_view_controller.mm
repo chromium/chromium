@@ -195,29 +195,23 @@ typedef NS_ENUM(NSInteger, ItemType) {
       self.displayedTargetAccountAvatar != nil;
 
   // Concatenate legal lines and maybe add the extra one.
-  // TODO(crbug.com/1224680): In reality the server sends a single legal line.
-  // The extra text should be added directly to the server string instead of
-  // here (see b/192290070).
-  NSMutableString* joinedMessage = [[NSMutableString alloc] init];
-  BOOL shouldAddSpace = NO;
   for (SaveCardMessageWithLinks* message in self.legalMessages) {
-    if (shouldAddSpace)
-      [joinedMessage appendString:@" "];
-    [joinedMessage appendString:message.messageText];
-    shouldAddSpace = YES;
+    TableViewTextLinkItem* legalMessageItem =
+        [[TableViewTextLinkItem alloc] initWithType:ItemTypeCardLegalMessage];
+    legalMessageItem.text = message.messageText;
+    legalMessageItem.linkURLs = message.linkURLs;
+    legalMessageItem.linkRanges = message.linkRanges;
+    [model addItem:legalMessageItem
+        toSectionWithIdentifier:SectionIdentifierContent];
   }
   if (shouldShowExtraLegalLineAndAccountInfo) {
-    if (shouldAddSpace)
-      [joinedMessage appendString:@" "];
-    [joinedMessage appendString:l10n_util::GetNSString(
-                                    IDS_IOS_CARD_WILL_BE_SAVED_TO_ACCOUNT)];
+    TableViewTextLinkItem* legalMessageItem =
+        [[TableViewTextLinkItem alloc] initWithType:ItemTypeCardLegalMessage];
+    legalMessageItem.text =
+        l10n_util::GetNSString(IDS_IOS_CARD_WILL_BE_SAVED_TO_ACCOUNT);
+    [model addItem:legalMessageItem
+        toSectionWithIdentifier:SectionIdentifierContent];
   }
-
-  TableViewTextLinkItem* legalMessageItem =
-      [[TableViewTextLinkItem alloc] initWithType:ItemTypeCardLegalMessage];
-  legalMessageItem.text = joinedMessage;
-  [model addItem:legalMessageItem
-      toSectionWithIdentifier:SectionIdentifierContent];
 
   if (shouldShowExtraLegalLineAndAccountInfo) {
     TargetAccountItem* targetTargetAccountItem =
@@ -328,13 +322,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
     case ItemTypeCardLegalMessage: {
       TableViewTextLinkCell* linkCell =
           base::mac::ObjCCast<TableViewTextLinkCell>(cell);
-      for (SaveCardMessageWithLinks* message in self.legalMessages) {
-        [message.linkRanges enumerateObjectsUsingBlock:^(
-                                NSValue* rangeValue, NSUInteger i, BOOL* stop) {
-          CrURL* crurl = [[CrURL alloc] initWithGURL:message.linkURLs[i]];
-          [linkCell setLinkURL:crurl forRange:rangeValue.rangeValue];
-        }];
-      }
       linkCell.delegate = self;
       linkCell.separatorInset =
           UIEdgeInsetsMake(0, self.tableView.bounds.size.width, 0, 0);

@@ -7,9 +7,12 @@
 
 #import <UIKit/UIKit.h>
 
+#include <vector>
+
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cell.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_item.h"
 
+class GURL;
 @class CrURL;
 @class TableViewTextLinkCell;
 
@@ -24,8 +27,12 @@
 @interface TableViewTextLinkItem : TableViewItem
 // Text being stored by this item.
 @property(nonatomic, readwrite, strong) NSString* text;
-// URL link being stored by this item. If empty or not valid no URL will be set.
-@property(nonatomic, readwrite, strong) CrURL* linkURL;
+// URL links being stored by this item.
+@property(nonatomic, assign) std::vector<GURL> linkURLs;
+// Character range for the links in |linkURLs|. Order should match order in
+// |linkURLs|.
+@property(nonatomic, strong) NSArray* linkRanges;
+
 @end
 
 // TableViewCell that displays a text label that might contain a link.

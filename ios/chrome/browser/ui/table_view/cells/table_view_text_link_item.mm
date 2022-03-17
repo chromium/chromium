@@ -20,8 +20,6 @@
 #pragma mark - TableViewTextLinkItem
 
 @implementation TableViewTextLinkItem
-@synthesize text = _text;
-@synthesize linkURL = _linkURL;
 
 - (instancetype)initWithType:(NSInteger)type {
   self = [super initWithType:type];
@@ -38,8 +36,14 @@
       base::mac::ObjCCastStrict<TableViewTextLinkCell>(tableCell);
   cell.textView.text = self.text;
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
-  if (self.linkURL && !self.linkURL.gurl.is_empty())
-    [cell setLinkURL:self.linkURL];
+
+  if (self.linkRanges) {
+    [self.linkRanges enumerateObjectsUsingBlock:^(NSValue* rangeValue,
+                                                  NSUInteger i, BOOL* stop) {
+      CrURL* crurl = [[CrURL alloc] initWithGURL:self.linkURLs[i]];
+      [cell setLinkURL:crurl forRange:rangeValue.rangeValue];
+    }];
+  }
 }
 
 @end
