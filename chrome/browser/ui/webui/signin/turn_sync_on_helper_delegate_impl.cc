@@ -179,7 +179,8 @@ void TurnSyncOnHelperDelegateImpl::OnSyncConfirmationUIClosed(
   // Treat closing the ui as an implicit ABORT_SYNC action.
   if (result == LoginUIService::UI_CLOSED)
     result = LoginUIService::ABORT_SYNC;
-  browser_->signin_view_controller()->CloseModalSignin();
+  if (browser_)
+    browser_->signin_view_controller()->CloseModalSignin();
   std::move(sync_confirmation_callback_).Run(result);
 }
 
