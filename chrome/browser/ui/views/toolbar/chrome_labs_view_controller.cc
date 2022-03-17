@@ -48,7 +48,7 @@ enum class ChromeLabsSelectedLab {
   // kTabSearchSelected = 2,
   kTabScrollingSelected = 3,
   kSidePanelSelected = 4,
-  kLensRegionSearchSelected = 5,
+  // kLensRegionSearchSelected = 5,
   kWebUITabStripSelected = 6,
   kTabSearchMediaTabsSelected = 7,
   kMaxValue = kTabSearchMediaTabsSelected,
@@ -77,8 +77,6 @@ void EmitToHistogram(const std::u16string& selected_lab_state,
       return ChromeLabsSelectedLab::kTabScrollingSelected;
     if (internal_name == flag_descriptions::kSidePanelFlagId)
       return ChromeLabsSelectedLab::kSidePanelSelected;
-    if (internal_name == flag_descriptions::kEnableLensRegionSearchFlagId)
-      return ChromeLabsSelectedLab::kLensRegionSearchSelected;
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP) && \
     (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH))
     if (internal_name == flag_descriptions::kWebUITabStripFlagId)

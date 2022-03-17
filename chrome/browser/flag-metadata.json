@@ -2349,7 +2349,7 @@
     "expiry_milestone": 90
   },
   {
-    "name": "enable-lens-region-search",
+    "name": "enable-lens-standalone",
     "owners": [ "stanfield@google.com", "benwgold@google.com", "juanmojica@google.com" ],
     "expiry_milestone": 103
   },

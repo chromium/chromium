@@ -51,14 +51,6 @@ const std::vector<LabInfo>& GetData() {
         "chrome-labs-tab-search-media-tabs", version_info::Channel::BETA,
         tab_search_media_tabs_variation_description));
 
-    // Lens Region Search
-    lab_info.emplace_back(LabInfo(
-        flag_descriptions::kEnableLensRegionSearchFlagId,
-        l10n_util::GetStringUTF16(IDS_LENS_REGION_SEARCH_EXPERIMENT_NAME),
-        l10n_util::GetStringUTF16(
-            IDS_LENS_REGION_SEARCH_EXPERIMENT_DESCRIPTION),
-        "chrome-labs-lens-region-search", version_info::Channel::BETA));
-
     // Side Panel.
     lab_info.emplace_back(LabInfo(
         flag_descriptions::kSidePanelFlagId,

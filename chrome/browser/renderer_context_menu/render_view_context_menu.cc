@@ -3037,7 +3037,7 @@ bool RenderViewContextMenu::IsRegionSearchEnabled() const {
   const bool provider_supports_image_search =
       provider && !provider->image_url().empty() &&
       provider->image_url_ref().IsValid(service->search_terms_data());
-  return base::FeatureList::IsEnabled(lens::features::kLensRegionSearch) &&
+  return base::FeatureList::IsEnabled(lens::features::kLensStandalone) &&
          !IsFrameInPdfViewer(GetRenderFrameHost()) &&
          provider_supports_image_search &&
          !GetDocumentURL(params_).SchemeIs(content::kChromeUIScheme) &&
@@ -3290,7 +3290,7 @@ void RenderViewContextMenu::ExecSearchLensForImage() {
   core_tab_helper->SearchWithLensInNewTab(
       render_frame_host, params().src_url,
       lens::EntryPoint::CHROME_SEARCH_WITH_GOOGLE_LENS_CONTEXT_MENU_ITEM,
-      lens::features::kEnableSidePanelForLensImageSearch.Get());
+      lens::features::IsLensSidePanelEnabled());
 }
 
 void RenderViewContextMenu::ExecRegionSearch(
