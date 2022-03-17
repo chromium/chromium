@@ -1045,6 +1045,7 @@ void PartitionRoot<thread_safe>::PurgeMemory(int flags) {
     // TODO(bikineev): Consider rescheduling the purging after PCScan.
     if (PCScan::IsInProgress())
       return;
+
     if (flags & PurgeFlags::kDecommitEmptySlotSpans)
       DecommitEmptySlotSpans();
     if (flags & PurgeFlags::kDiscardUnusedSystemPages) {
@@ -1056,6 +1057,10 @@ void PartitionRoot<thread_safe>::PurgeMemory(int flags) {
           internal::PartitionPurgeBucket(&bucket);
         else
           bucket.SortSlotSpanFreelists();
+
+        // Do it at the end, as the actions above change the status of slot
+        // spans (e.g. empty -> decommitted).
+        bucket.MaintainActiveList();
       }
     }
   }

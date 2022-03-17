@@ -2956,6 +2956,60 @@ TEST_P(PartitionAllocTest, PurgeDiscardableDoubleTruncateFreeList) {
   allocator.root()->Free(ptr2);
 }
 
+TEST_P(PartitionAllocTest, ActiveListMaintenance) {
+  size_t size = base::SystemPageSize() - kExtraAllocSize;
+  size_t real_size = size + kExtraAllocSize;
+  size_t bucket_index =
+      allocator.root()->SizeToBucketIndex(real_size, GetParam());
+  PartitionRoot<ThreadSafe>::Bucket* bucket =
+      &allocator.root()->buckets[bucket_index];
+  ASSERT_EQ(bucket->slot_size, real_size);
+  size_t slots_per_span = bucket->num_system_pages_per_slot_span;
+
+  // Make 10 full slot spans.
+  constexpr int kSpans = 10;
+  std::vector<std::vector<void*>> allocated_memory_spans(kSpans);
+  for (int span_index = 0; span_index < kSpans; span_index++) {
+    for (size_t i = 0; i < slots_per_span; i++) {
+      allocated_memory_spans[span_index].push_back(
+          allocator.root()->Alloc(size, ""));
+    }
+  }
+
+  // Free one entry in the middle span, creating a partial slot span.
+  constexpr size_t kSpanIndex = 5;
+  allocator.root()->Free(allocated_memory_spans[kSpanIndex].back());
+  allocated_memory_spans[kSpanIndex].pop_back();
+
+  // Empty the last slot span.
+  for (void* ptr : allocated_memory_spans[kSpans - 1])
+    allocator.root()->Free(ptr);
+  allocated_memory_spans.pop_back();
+
+  // The active list now is:
+  // Partial -> Empty -> Full -> Full -> ... -> Full
+  bucket->MaintainActiveList();
+
+  // Only one entry in the active list.
+  ASSERT_NE(bucket->active_slot_spans_head,
+            SlotSpanMetadata<ThreadSafe>::get_sentinel_slot_span());
+  EXPECT_FALSE(bucket->active_slot_spans_head->next_slot_span);
+
+  // The empty list has 1 entry.
+  ASSERT_NE(bucket->empty_slot_spans_head,
+            SlotSpanMetadata<ThreadSafe>::get_sentinel_slot_span());
+  EXPECT_FALSE(bucket->empty_slot_spans_head->next_slot_span);
+
+  // The rest are full slot spans.
+  EXPECT_EQ(8u, bucket->num_full_slot_spans);
+
+  // Free all memory.
+  for (const auto& span : allocated_memory_spans) {
+    for (void* ptr : span)
+      allocator.root()->Free(ptr);
+  }
+}
+
 TEST_P(PartitionAllocTest, ReallocMovesCookie) {
   // Resize so as to be sure to hit a "resize in place" case, and ensure that
   // use of the entire result is compatible with the debug mode's cookie, even

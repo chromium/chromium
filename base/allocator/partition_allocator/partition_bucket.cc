@@ -558,11 +558,6 @@ void PartitionBucket<thread_safe>::Init(uint32_t new_slot_size) {
 }
 
 template <bool thread_safe>
-NOINLINE void PartitionBucket<thread_safe>::OnFull() {
-  OOM_CRASH(0);
-}
-
-template <bool thread_safe>
 ALWAYS_INLINE SlotSpanMetadata<thread_safe>*
 PartitionBucket<thread_safe>::AllocNewSlotSpan(PartitionRoot<thread_safe>* root,
                                                int flags,
@@ -965,10 +960,11 @@ bool PartitionBucket<thread_safe>::SetNewActiveSlotSpan() {
       // list.
       slot_span->marked_full = 1;
       ++num_full_slot_spans;
-      // num_full_slot_spans is a uint16_t for efficient packing so guard
-      // against overflow to be safe.
-      if (UNLIKELY(!num_full_slot_spans))
-        OnFull();
+      // Overflow. Most likely a correctness issue in the code.  It is in theory
+      // possible that the number of full slot spans really reaches (1 << 24),
+      // but this is very unlikely (and not possible with most GigaCage
+      // settings).
+      PA_CHECK(num_full_slot_spans);
       // Not necessary but might help stop accidents.
       slot_span->next_slot_span = nullptr;
     }
@@ -997,6 +993,53 @@ bool PartitionBucket<thread_safe>::SetNewActiveSlotSpan() {
   }
 
   return usable_active_list_head;
+}
+
+template <bool thread_safe>
+void PartitionBucket<thread_safe>::MaintainActiveList() {
+  SlotSpanMetadata<thread_safe>* slot_span = active_slot_spans_head;
+  if (slot_span == SlotSpanMetadata<thread_safe>::get_sentinel_slot_span())
+    return;
+
+  SlotSpanMetadata<thread_safe>* new_active_slot_spans_head = nullptr;
+  SlotSpanMetadata<thread_safe>* new_active_slot_spans_tail = nullptr;
+
+  SlotSpanMetadata<thread_safe>* next_slot_span;
+  for (; slot_span; slot_span = next_slot_span) {
+    next_slot_span = slot_span->next_slot_span;
+
+    if (slot_span->is_active()) {
+      // Ordering in the active slot span list matters, don't reverse it.
+      if (!new_active_slot_spans_head)
+        new_active_slot_spans_head = slot_span;
+      if (new_active_slot_spans_tail)
+        new_active_slot_spans_tail->next_slot_span = slot_span;
+      new_active_slot_spans_tail = slot_span;
+      slot_span->next_slot_span = nullptr;
+    } else if (slot_span->is_empty()) {
+      // For the empty and decommitted lists, LIFO ordering makes sense (since
+      // it would lead to reusing memory which has been touched relatively
+      // recently, which only matters for committed spans though).
+      slot_span->next_slot_span = empty_slot_spans_head;
+      empty_slot_spans_head = slot_span;
+    } else if (slot_span->is_decommitted()) {
+      slot_span->next_slot_span = decommitted_slot_spans_head;
+      decommitted_slot_spans_head = slot_span;
+    } else {
+      // Full slot spans are not tracked, just accounted for.
+      PA_DCHECK(slot_span->is_full());
+      slot_span->marked_full = 1;
+      ++num_full_slot_spans;
+      PA_CHECK(num_full_slot_spans);  // Overflow.
+      slot_span->next_slot_span = nullptr;
+    }
+  }
+
+  if (!new_active_slot_spans_head) {
+    new_active_slot_spans_head =
+        SlotSpanMetadata<thread_safe>::get_sentinel_slot_span();
+  }
+  active_slot_spans_head = new_active_slot_spans_head;
 }
 
 template <bool thread_safe>

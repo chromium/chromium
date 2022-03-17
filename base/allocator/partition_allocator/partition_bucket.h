@@ -128,6 +128,11 @@ struct PartitionBucket {
   // This is where the guts of the bucket maintenance is done!
   bool SetNewActiveSlotSpan();
 
+  // Walks the entire active slot span list, and perform regular maintenance,
+  // where empty, decommitted and full slot spans are moved to their
+  // steady-state place.
+  BASE_EXPORT void MaintainActiveList();
+
   // Returns a slot number starting from the beginning of the slot span.
   ALWAYS_INLINE size_t GetSlotNumber(size_t offset_in_slot_span) const {
     // See the static assertion for `kReciprocalShift` above.
@@ -145,8 +150,6 @@ struct PartitionBucket {
   void SortSlotSpanFreelists();
 
  private:
-  static NOINLINE void OnFull();
-
   // Allocates a new slot span with size |num_partition_pages| from the
   // current extent. Metadata within this slot span will be initialized.
   // Returns nullptr on error.

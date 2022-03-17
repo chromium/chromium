@@ -183,6 +183,7 @@ void SlotSpanMetadata<thread_safe>::FreeSlowPath(size_t number_of_freed) {
     if (LIKELY(bucket->active_slot_spans_head != get_sentinel_slot_span()))
       next_slot_span = bucket->active_slot_spans_head;
     bucket->active_slot_spans_head = this;
+    PA_CHECK(bucket->num_full_slot_spans);  // Underflow.
     --bucket->num_full_slot_spans;
   }
 
