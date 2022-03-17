@@ -104,7 +104,23 @@ void ServiceWorker::postMessage(ScriptState* script_state,
     msg.locked_agent_cluster_id = absl::nullopt;
   }
 
-  host_->PostMessageToServiceWorker(std::move(msg));
+  // Defer postMessage() from a prerendered page until page activation.
+  // https://wicg.github.io/nav-speculation/prerendering.html#patch-service-workers
+  if (GetExecutionContext()->IsWindow()) {
+    Document* document = To<LocalDOMWindow>(GetExecutionContext())->document();
+    if (document->IsPrerendering()) {
+      document->AddPostPrerenderingActivationStep(
+          WTF::Bind(&ServiceWorker::PostMessageInternal,
+                    WrapWeakPersistent(this), std::move(msg)));
+      return;
+    }
+  }
+
+  PostMessageInternal(std::move(msg));
+}
+
+void ServiceWorker::PostMessageInternal(BlinkTransferableMessage message) {
+  host_->PostMessageToServiceWorker(std::move(message));
 }
 
 ScriptPromise ServiceWorker::InternalsTerminate(ScriptState* script_state) {
@@ -186,7 +202,6 @@ void ServiceWorker::ContextDestroyed() {
 ServiceWorker::ServiceWorker(ExecutionContext* execution_context,
                              WebServiceWorkerObjectInfo info)
     : AbstractWorker(execution_context),
-      was_stopped_(false),
       url_(info.url),
       state_(info.state),
       host_(execution_context),

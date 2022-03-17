@@ -30,7 +30,7 @@ promise_test(async t => {
   startPrerendering(PAGE_URL);
 
   const result = await gotMessage;
-  assert_equals(result, 'postmessage to client');
+  assert_equals(result, 'pingpong');
 }, 'New service worker should be registered in a prerendered page');
 
 </script>

@@ -39,11 +39,11 @@ async function startNavigationToCrossOriginUrl() {
       resolve()
       bc.close();
     });
-    navigator.serviceWorker.controller.postMessage({
+    bc.postMessage(JSON.stringify({
       navigationUrl: navigationUrl,
       clientUrl: new URL(IFRAME_URL, window.location).toString(),
       respondTo: 'navigation-channel',
-    });
+    }));
   });
 
   const prerenderEventCollector = new PrerenderEventCollector();
@@ -55,11 +55,13 @@ async function startNavigationToCrossOriginUrl() {
 function startNavigationToSameOriginUrl() {
   assert_equals(new URL(navigationUrl).origin, window.location.origin);
 
-  navigator.serviceWorker.controller.postMessage({
+  const bc = new PrerenderChannel('navigation-channel', uid);
+  bc.postMessage(JSON.stringify({
     navigationUrl: navigationUrl,
     clientUrl: new URL(IFRAME_URL, window.location).toString(),
     respondTo: 'test-channel',
-  });
+  }));
+  bc.close();
 }
 
 if (prerendering) {

@@ -52,11 +52,13 @@ promise_test(async t => {
 
   // Asks the service worker to navigate the prerendered page to `navigationUrl`
   // via `WindowClient.navigate(url)`.
-  registration.active.postMessage({
+  const bc = new PrerenderChannel('navigation-channel', uid);
+  bc.postMessage(JSON.stringify({
     navigationUrl: SAME_ORIGIN_DESTINATION,
     clientUrl: new URL(PAGE_URL, window.location).toString(),
     respondTo: 'test-channel',
-  });
+  }));
+  bc.close();
 
   const navigationResult = await navigationPromise;
   assert_equals(navigationResult, 'navigate() failed with TypeError',
