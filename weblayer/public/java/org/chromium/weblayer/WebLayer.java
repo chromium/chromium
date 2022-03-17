@@ -586,6 +586,9 @@ public class WebLayer {
      */
     public String getXClientDataHeader() {
         ThreadCheck.ensureOnUiThread();
+        if (getSupportedMajorVersionInternal() < 101) {
+            throw new UnsupportedOperationException();
+        }
         try {
             return mImpl.getXClientDataHeader();
         } catch (RemoteException e) {
