@@ -5,7 +5,6 @@
 #include "ash/system/overview/overview_button_tray.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/metrics/user_metrics_recorder.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
@@ -187,7 +186,7 @@ bool OverviewButtonTray::PerformAction(const ui::Event& event) {
     overview_controller->EndOverview(OverviewEndAction::kOverviewButton);
   else
     overview_controller->StartOverview(OverviewStartAction::kOverviewButton);
-  Shell::Get()->metrics()->RecordUserMetricsAction(UMA_TRAY_OVERVIEW);
+  base::RecordAction(base::UserMetricsAction("Tray_Overview"));
 
   // The return value doesn't matter here. OnOverviewModeStarting() and
   // OnOverviewModeEnded() will do the right thing to set the button state.

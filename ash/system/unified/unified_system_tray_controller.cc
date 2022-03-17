@@ -8,8 +8,6 @@
 #include "ash/capture_mode/capture_mode_feature_pod_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/metrics/user_metrics_action.h"
-#include "ash/metrics/user_metrics_recorder.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/pagination/pagination_controller.h"
 #include "ash/public/cpp/system_tray_client.h"
@@ -168,19 +166,19 @@ UnifiedSystemTrayView* UnifiedSystemTrayController::CreateView() {
 }
 
 void UnifiedSystemTrayController::HandleSignOutAction() {
-  Shell::Get()->metrics()->RecordUserMetricsAction(UMA_STATUS_AREA_SIGN_OUT);
+  base::RecordAction(base::UserMetricsAction("StatusArea_SignOut"));
   if (Shell::Get()->session_controller()->IsDemoSession())
     base::RecordAction(base::UserMetricsAction("DemoMode.ExitFromSystemTray"));
   Shell::Get()->session_controller()->RequestSignOut();
 }
 
 void UnifiedSystemTrayController::HandleLockAction() {
-  Shell::Get()->metrics()->RecordUserMetricsAction(UMA_TRAY_LOCK_SCREEN);
+  base::RecordAction(base::UserMetricsAction("Tray_LockScreen"));
   Shell::Get()->session_controller()->LockScreen();
 }
 
 void UnifiedSystemTrayController::HandleSettingsAction() {
-  Shell::Get()->metrics()->RecordUserMetricsAction(UMA_TRAY_SETTINGS);
+  base::RecordAction(base::UserMetricsAction("Tray_Settings"));
   Shell::Get()->system_tray_model()->client()->ShowSettings(
       display::Screen::GetScreen()
           ->GetDisplayNearestView(unified_view_->GetWidget()->GetNativeView())
@@ -188,7 +186,7 @@ void UnifiedSystemTrayController::HandleSettingsAction() {
 }
 
 void UnifiedSystemTrayController::HandlePowerAction() {
-  Shell::Get()->metrics()->RecordUserMetricsAction(UMA_TRAY_SHUT_DOWN);
+  base::RecordAction(base::UserMetricsAction("Tray_ShutDown"));
   Shell::Get()->lock_state_controller()->RequestShutdown(
       ShutdownReason::TRAY_SHUT_DOWN_BUTTON);
   CloseBubble();
@@ -335,8 +333,7 @@ void UnifiedSystemTrayController::ShowNetworkDetailedView(bool force) {
   if (!force && !IsExpanded())
     return;
 
-  Shell::Get()->metrics()->RecordUserMetricsAction(
-      UMA_STATUS_AREA_DETAILED_NETWORK_VIEW);
+  base::RecordAction(base::UserMetricsAction("StatusArea_Network_Detailed"));
   ShowDetailedView(
       std::make_unique<UnifiedNetworkDetailedViewController>(this));
 }
@@ -345,8 +342,7 @@ void UnifiedSystemTrayController::ShowBluetoothDetailedView() {
   if (!IsExpanded())
     return;
 
-  Shell::Get()->metrics()->RecordUserMetricsAction(
-      UMA_STATUS_AREA_DETAILED_BLUETOOTH_VIEW);
+  base::RecordAction(base::UserMetricsAction("StatusArea_Bluetooth_Detailed"));
   if (ash::features::IsBluetoothRevampEnabled()) {
     ShowDetailedView(std::make_unique<BluetoothDetailedViewController>(this));
   } else {
@@ -356,21 +352,19 @@ void UnifiedSystemTrayController::ShowBluetoothDetailedView() {
 }
 
 void UnifiedSystemTrayController::ShowCastDetailedView() {
-  Shell::Get()->metrics()->RecordUserMetricsAction(
-      UMA_STATUS_AREA_DETAILED_CAST_VIEW);
+  base::RecordAction(base::UserMetricsAction("StatusArea_Cast_Detailed"));
   ShowDetailedView(std::make_unique<UnifiedCastDetailedViewController>(this));
 }
 
 void UnifiedSystemTrayController::ShowAccessibilityDetailedView() {
-  Shell::Get()->metrics()->RecordUserMetricsAction(
-      UMA_STATUS_AREA_DETAILED_ACCESSIBILITY);
+  base::RecordAction(
+      base::UserMetricsAction("StatusArea_Accessability_DetailedView"));
   ShowDetailedView(
       std::make_unique<UnifiedAccessibilityDetailedViewController>(this));
 }
 
 void UnifiedSystemTrayController::ShowVPNDetailedView() {
-  Shell::Get()->metrics()->RecordUserMetricsAction(
-      UMA_STATUS_AREA_DETAILED_VPN_VIEW);
+  base::RecordAction(base::UserMetricsAction("StatusArea_VPN_Detailed"));
   ShowDetailedView(std::make_unique<UnifiedVPNDetailedViewController>(this));
 }
 

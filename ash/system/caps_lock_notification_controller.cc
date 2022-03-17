@@ -15,6 +15,7 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_model.h"
+#include "base/metrics/user_metrics.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -114,9 +115,7 @@ void CapsLockNotificationController::OnCapsLockChanged(bool enabled) {
       enabled ? AccessibilityAlert::CAPS_ON : AccessibilityAlert::CAPS_OFF);
 
   if (enabled) {
-    Shell::Get()->metrics()->RecordUserMetricsAction(
-        UMA_STATUS_AREA_CAPS_LOCK_POPUP);
-
+    base::RecordAction(base::UserMetricsAction("StatusArea_CapsLock_Popup"));
     MessageCenter::Get()->AddNotification(CreateNotification());
   } else if (MessageCenter::Get()->FindVisibleNotificationById(
                  kCapsLockNotificationId)) {

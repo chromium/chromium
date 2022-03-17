@@ -11,6 +11,7 @@
 #include "ash/system/brightness_control_delegate.h"
 #include "ash/system/status_area_widget.h"
 #include "base/bind.h"
+#include "base/metrics/user_metrics.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
 
 namespace {
@@ -98,8 +99,7 @@ void UnifiedSystemTrayModel::DBusObserver::HandleInitialBrightness(
 
 void UnifiedSystemTrayModel::DBusObserver::ScreenBrightnessChanged(
     const power_manager::BacklightBrightnessChange& change) {
-  Shell::Get()->metrics()->RecordUserMetricsAction(
-      UMA_STATUS_AREA_BRIGHTNESS_CHANGED);
+  base::RecordAction(base::UserMetricsAction("StatusArea_BrightnessChanged"));
   owner_->DisplayBrightnessChanged(
       change.percent() / 100.,
       change.cause() ==

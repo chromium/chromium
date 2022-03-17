@@ -311,9 +311,13 @@ BluetoothSystem::State TrayBluetoothHelperLegacy::GetBluetoothState() {
 
 void TrayBluetoothHelperLegacy::SetBluetoothEnabled(bool enabled) {
   if (enabled != (GetBluetoothState() == BluetoothSystem::State::kPoweredOn)) {
-    Shell::Get()->metrics()->RecordUserMetricsAction(
-        enabled ? UMA_STATUS_AREA_BLUETOOTH_ENABLED
-                : UMA_STATUS_AREA_BLUETOOTH_DISABLED);
+    if (enabled) {
+      base::RecordAction(
+          base::UserMetricsAction("StatusArea_Bluetooth_Enabled"));
+    } else {
+      base::RecordAction(
+          base::UserMetricsAction("StatusArea_Bluetooth_Disabled"));
+    }
   }
 
   Shell::Get()->bluetooth_power_controller()->SetBluetoothEnabled(enabled);

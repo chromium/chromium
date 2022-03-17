@@ -174,42 +174,6 @@ void UserMetricsRecorder::RecordUserMetricsAction(UserMetricsAction action) {
       RecordAction(UserMetricsAction("Launcher_SwitchTask"));
       task_switch_metrics_recorder_.OnTaskSwitch(TaskSwitchSource::SHELF);
       break;
-    case UMA_STATUS_AREA_AUDIO_CURRENT_INPUT_DEVICE:
-      RecordAction(UserMetricsAction("StatusArea_Audio_CurrentInputDevice"));
-      break;
-    case UMA_STATUS_AREA_AUDIO_CURRENT_OUTPUT_DEVICE:
-      RecordAction(UserMetricsAction("StatusArea_Audio_CurrentOutputDevice"));
-      break;
-    case UMA_STATUS_AREA_AUDIO_SWITCH_INPUT_DEVICE:
-      RecordAction(UserMetricsAction("StatusArea_Audio_SwitchInputDevice"));
-      break;
-    case UMA_STATUS_AREA_AUDIO_SWITCH_OUTPUT_DEVICE:
-      RecordAction(UserMetricsAction("StatusArea_Audio_SwitchOutputDevice"));
-      break;
-    case UMA_STATUS_AREA_BRIGHTNESS_CHANGED:
-      RecordAction(UserMetricsAction("StatusArea_BrightnessChanged"));
-      break;
-    case UMA_STATUS_AREA_BLUETOOTH_DISABLED:
-      RecordAction(UserMetricsAction("StatusArea_Bluetooth_Disabled"));
-      break;
-    case UMA_STATUS_AREA_BLUETOOTH_ENABLED:
-      RecordAction(UserMetricsAction("StatusArea_Bluetooth_Enabled"));
-      break;
-    case UMA_STATUS_AREA_CAPS_LOCK_DETAILED:
-      RecordAction(UserMetricsAction("StatusArea_CapsLock_Detailed"));
-      break;
-    case UMA_STATUS_AREA_CAPS_LOCK_DISABLED_BY_CLICK:
-      RecordAction(UserMetricsAction("StatusArea_CapsLock_DisabledByClick"));
-      break;
-    case UMA_STATUS_AREA_CAPS_LOCK_ENABLED_BY_CLICK:
-      RecordAction(UserMetricsAction("StatusArea_CapsLock_EnabledByClick"));
-      break;
-    case UMA_STATUS_AREA_CAPS_LOCK_POPUP:
-      RecordAction(UserMetricsAction("StatusArea_CapsLock_Popup"));
-      break;
-    case UMA_STATUS_AREA_CAST_STOP_CAST:
-      RecordAction(UserMetricsAction("StatusArea_Cast_StopCast"));
-      break;
     case UMA_STATUS_AREA_CONNECT_TO_CONFIGURED_NETWORK:
       RecordAction(UserMetricsAction("StatusArea_Network_ConnectConfigured"));
       break;
@@ -224,36 +188,6 @@ void UserMetricsRecorder::RecordUserMetricsAction(UserMetricsAction action) {
       break;
     case UMA_STATUS_AREA_CHANGED_VOLUME_POPUP:
       RecordAction(UserMetricsAction("StatusArea_Volume_ChangedPopup"));
-      break;
-    case UMA_STATUS_AREA_DETAILED_ACCESSIBILITY:
-      RecordAction(UserMetricsAction("StatusArea_Accessability_DetailedView"));
-      break;
-    case UMA_STATUS_AREA_DETAILED_AUDIO_VIEW:
-      RecordAction(UserMetricsAction("StatusArea_Audio_Detailed"));
-      break;
-    case UMA_STATUS_AREA_DETAILED_BLUETOOTH_VIEW:
-      RecordAction(UserMetricsAction("StatusArea_Bluetooth_Detailed"));
-      break;
-    case UMA_STATUS_AREA_DETAILED_BRIGHTNESS_VIEW:
-      RecordAction(UserMetricsAction("StatusArea_Brightness_Detailed"));
-      break;
-    case UMA_STATUS_AREA_DETAILED_CAST_VIEW:
-      RecordAction(UserMetricsAction("StatusArea_Cast_Detailed"));
-      break;
-    case UMA_STATUS_AREA_DETAILED_CAST_VIEW_LAUNCH_CAST:
-      RecordAction(UserMetricsAction("StatusArea_Cast_Detailed_Launch_Cast"));
-      break;
-    case UMA_STATUS_AREA_DETAILED_DRIVE_VIEW:
-      RecordAction(UserMetricsAction("StatusArea_Drive_Detailed"));
-      break;
-    case UMA_STATUS_AREA_DETAILED_NETWORK_VIEW:
-      RecordAction(UserMetricsAction("StatusArea_Network_Detailed"));
-      break;
-    case UMA_STATUS_AREA_DETAILED_SMS_VIEW:
-      RecordAction(UserMetricsAction("StatusArea_SMS_Detailed"));
-      break;
-    case UMA_STATUS_AREA_DETAILED_VPN_VIEW:
-      RecordAction(UserMetricsAction("StatusArea_VPN_Detailed"));
       break;
     case UMA_STATUS_AREA_DISPLAY_DEFAULT_SELECTED:
       RecordAction(UserMetricsAction("StatusArea_Display_Default_Selected"));
@@ -314,9 +248,6 @@ void UserMetricsRecorder::RecordUserMetricsAction(UserMetricsAction action) {
     case UMA_STATUS_AREA_SHOW_VPN_CONNECTION_DETAILS:
       RecordAction(UserMetricsAction("StatusArea_VPN_ConnectionDetails"));
       break;
-    case UMA_STATUS_AREA_SIGN_OUT:
-      RecordAction(UserMetricsAction("StatusArea_SignOut"));
-      break;
     case UMA_STATUS_AREA_SMS_DETAILED_DISMISS_MSG:
       RecordAction(UserMetricsAction("StatusArea_SMS_Detailed_DismissMsg"));
       break;
@@ -337,24 +268,6 @@ void UserMetricsRecorder::RecordUserMetricsAction(UserMetricsAction action) {
       break;
     case UMA_STATUS_AREA_VPN_SETTINGS_OPENED:
       RecordAction(UserMetricsAction("StatusArea_VPN_Settings"));
-      break;
-    case UMA_TRAY_HELP:
-      RecordAction(UserMetricsAction("Tray_Help"));
-      break;
-    case UMA_TRAY_LOCK_SCREEN:
-      RecordAction(UserMetricsAction("Tray_LockScreen"));
-      break;
-    case UMA_TRAY_NIGHT_LIGHT:
-      RecordAction(UserMetricsAction("Tray_NightLight"));
-      break;
-    case UMA_TRAY_OVERVIEW:
-      RecordAction(UserMetricsAction("Tray_Overview"));
-      break;
-    case UMA_TRAY_SETTINGS:
-      RecordAction(UserMetricsAction("Tray_Settings"));
-      break;
-    case UMA_TRAY_SHUT_DOWN:
-      RecordAction(UserMetricsAction("Tray_ShutDown"));
       break;
   }
 }

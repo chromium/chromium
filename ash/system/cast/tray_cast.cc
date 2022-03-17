@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/metrics/user_metrics_recorder.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -140,8 +139,8 @@ void CastDetailedView::HandleViewClicked(views::View* view) {
   auto it = view_to_sink_map_.find(view);
   if (it != view_to_sink_map_.end()) {
     CastConfigController::Get()->CastToSink(it->second);
-    Shell::Get()->metrics()->RecordUserMetricsAction(
-        UMA_STATUS_AREA_DETAILED_CAST_VIEW_LAUNCH_CAST);
+    base::RecordAction(
+        base::UserMetricsAction("StatusArea_Cast_Detailed_Launch_Cast"));
   } else if (view == add_access_code_device_) {
     base::RecordAction(base::UserMetricsAction(
         "StatusArea_Cast_Detailed_Launch_AccesCastDialog"));

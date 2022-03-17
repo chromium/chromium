@@ -9,6 +9,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
+#include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
@@ -113,8 +114,7 @@ void CastNotificationController::OnDevicesUpdated(
 
 void CastNotificationController::StopCasting(absl::optional<int> button_index) {
   CastConfigController::Get()->StopCasting(displayed_route_id_);
-  Shell::Get()->metrics()->RecordUserMetricsAction(
-      UMA_STATUS_AREA_CAST_STOP_CAST);
+  base::RecordAction(base::UserMetricsAction("StatusArea_Cast_StopCast"));
 }
 
 }  // namespace ash
