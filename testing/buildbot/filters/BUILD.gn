@@ -347,7 +347,10 @@ source_set("net_unittests_filters") {
 }
 
 source_set("ozone_unittests_filters") {
-  data = [ "//testing/buildbot/filters/chromeos.ozone_unittests.filter" ]
+  data = [
+    "//testing/buildbot/filters/chromeos.ozone_unittests.filter",
+    "//testing/buildbot/filters/lacros-arm.ozone_unittests.filter",
+  ]
 }
 
 source_set("sandbox_linux_unittests_filters") {
@@ -376,6 +379,7 @@ source_set("viz_unittests_filters") {
     "//testing/buildbot/filters/android.emulator_11.viz_unittests.filter",
     "//testing/buildbot/filters/fuchsia.debug.viz_unittests.filter",
     "//testing/buildbot/filters/fuchsia.viz_unittests.filter",
+    "//testing/buildbot/filters/lacros-arm.viz_unittests.filter",
   ]
 }
 

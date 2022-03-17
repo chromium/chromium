@@ -1971,7 +1971,9 @@
         "timeout_sec": 10800
       },
       {
-        "args": [],
+        "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/lacros-arm.ozone_unittests.filter"
+        ],
         "cros_board": "kevin",
         "cros_img": "kevin-release/R101-14583.0.0",
         "name": "ozone_unittests_KEVIN_RELEASE_LKGM",
@@ -1985,7 +1987,9 @@
         "timeout_sec": 3600
       },
       {
-        "args": [],
+        "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/lacros-arm.ozone_unittests.filter"
+        ],
         "cros_board": "hana",
         "cros_img": "hana-release/R101-14583.0.0",
         "name": "ozone_unittests_HANA_RELEASE_LKGM",
@@ -1999,7 +2003,9 @@
         "timeout_sec": 3600
       },
       {
-        "args": [],
+        "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/lacros-arm.viz_unittests.filter"
+        ],
         "cros_board": "kevin",
         "cros_img": "kevin-release/R101-14583.0.0",
         "name": "viz_unittests_KEVIN_RELEASE_LKGM",
@@ -2013,7 +2019,9 @@
         "timeout_sec": 3600
       },
       {
-        "args": [],
+        "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/lacros-arm.viz_unittests.filter"
+        ],
         "cros_board": "hana",
         "cros_img": "hana-release/R101-14583.0.0",
         "name": "viz_unittests_HANA_RELEASE_LKGM",

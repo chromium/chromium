@@ -6648,7 +6648,7 @@
           'lacros_version_metadata',
         ],
         'test_suites': {
-          'skylab_tests': 'lacros_skylab_arm',
+          'skylab_tests': 'lacros_skylab_arm_fyi',
         },
         'swarming': {
           'dimension_sets': [

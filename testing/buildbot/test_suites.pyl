@@ -3950,10 +3950,30 @@
       },
     },
 
+    # TODO(crbug.com/1283076): ozone_unittests and viz_unittests have failures
+    # remove the filter when the tests are shown to be stable in
+    # lacros-arm-generic-chrome-fyi
+    'lacros_skylab_arm_tests': {
+      'lacros_all_tast_tests': {
+        'tast_expr': '("group:mainline" && "dep:lacros" && !informational)',
+        'timeout_sec': 10800,
+      },
+      'ozone_unittests': {
+        'timeout_sec': 3600,
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/lacros-arm.ozone_unittests.filter']
+      },
+      'viz_unittests': {
+        'timeout_sec': 3600,
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/lacros-arm.viz_unittests.filter']
+      },
+    },
+
     # create this temporary lacros arm test suites that runs on skylab
     # TODO(crbug.com/1247425): remove it if it is the same as
     # lacros_skylab_poc
-    'lacros_skylab_arm_tests': {
+    'lacros_skylab_arm_tests_fyi': {
       'lacros_all_tast_tests': {
         'tast_expr': '("group:mainline" && "dep:lacros" && !informational)',
         'timeout_sec': 10800,
@@ -7311,6 +7331,16 @@
     # Check go/lacros-on-skylab for details of Skylab configurations.
     'lacros_skylab_arm': {
       'lacros_skylab_arm_tests': {
+        'variants': [
+          'CROS_KEVIN_RELEASE_LKGM',
+          'CROS_HANA_RELEASE_LKGM',
+        ]
+      },
+    },
+
+    # Check go/lacros-on-skylab for details of Skylab configurations.
+    'lacros_skylab_arm_fyi': {
+      'lacros_skylab_arm_tests_fyi': {
         'variants': [
           'CROS_KEVIN_RELEASE_LKGM',
           'CROS_HANA_RELEASE_LKGM',

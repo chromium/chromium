@@ -1,0 +1,9 @@
+# TODO(https://crbug.com/1305446): re-enable the tests when they are fixed.
+-ExternalStencilPixelTest.RenderSurfacesIgnoreStencil/GL
+-ExternalStencilPixelTest.StencilTestDisabled/GL
+-ExternalStencilPixelTest.StencilTestEnabled/GL
+-RendererPixelTestWithOverdrawFeedback.TranslucentRectangles/GL
+-VideoRendererPixelHiLoTest.ClippedYUVRect/GL_true
+-VideoRendererPixelHiLoTest.ClippedYUVRect/SkiaGL_true
+-VideoRendererPixelHiLoTest.SimpleYUVRect/GL_true
+-VideoRendererPixelHiLoTest.SimpleYUVRect/SkiaGL_true
