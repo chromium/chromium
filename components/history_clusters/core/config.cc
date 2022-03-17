@@ -59,6 +59,11 @@ Config::Config() {
           internal::kJourneys, "JourneysRescoreVisitsWithinClustersForQuery",
           rescore_visits_within_clusters_for_query);
 
+  sort_clusters_within_batch_for_query =
+      base::GetFieldTrialParamByFeatureAsBool(
+          internal::kJourneys, "JourneysSortClustersWithinBatchForQuery",
+          sort_clusters_within_batch_for_query);
+
   alternate_omnibox_action_text = base::GetFieldTrialParamByFeatureAsBool(
       internal::kJourneys, "JourneysAlternateOmniboxActionText",
       alternate_omnibox_action_text);

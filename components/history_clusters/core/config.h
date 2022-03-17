@@ -57,6 +57,11 @@ struct Config {
   // visits within a cluster to account for whether or not that visit matches.
   bool rescore_visits_within_clusters_for_query = true;
 
+  // If enabled, sorts clusters WITHIN a single batch from most search matches
+  // to least search matches. The batches themselves will still be ordered
+  // reverse chronologically, but the clusters within batches will be resorted.
+  bool sort_clusters_within_batch_for_query = false;
+
   // If enabled, changes the History Clusters omnibox action text to be:
   // "Resume your research" instead of "Resume your journey".
   bool alternate_omnibox_action_text = true;

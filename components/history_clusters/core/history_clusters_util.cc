@@ -38,12 +38,13 @@ bool DoesQueryMatchClusterKeywords(
 
 // Flags any elements within `cluster_visits` that match `find_nodes`. The
 // matching is deliberately meant to closely mirror the History implementation.
-// Returns true if any elements match, and returns false if none of them do.
-bool FlagMatchingVisits(const query_parser::QueryNodeVector& find_nodes,
-                        std::vector<history::ClusterVisit>* cluster_visits) {
+// Returns the total score of matching visits, and returns 0 if no visits match.
+float ComputeTotalMatchScore(
+    const query_parser::QueryNodeVector& find_nodes,
+    std::vector<history::ClusterVisit>* cluster_visits) {
   DCHECK(cluster_visits);
 
-  bool any_visits_match = false;
+  float total_matching_visit_score = 0.0;
 
   for (auto& visit : *cluster_visits) {
     query_parser::QueryWordVector find_in_words;
@@ -67,11 +68,12 @@ bool FlagMatchingVisits(const query_parser::QueryNodeVector& find_nodes,
 
     if (query_parser::QueryParser::DoesQueryMatch(find_in_words, find_nodes)) {
       visit.matches_search_query = true;
-      any_visits_match = true;
+      DCHECK_GE(visit.score, 0);
+      total_matching_visit_score += visit.score;
     }
   }
 
-  return any_visits_match;
+  return total_matching_visit_score;
 }
 
 // Re-scores and re-sorts `cluster_visits` so that all visits that match the
@@ -160,18 +162,33 @@ void ApplySearchQuery(const std::string& query,
   std::swap(all_clusters, *clusters);
 
   for (auto& cluster : all_clusters) {
-    bool any_visits_match = FlagMatchingVisits(find_nodes, &cluster.visits);
-    if (any_visits_match &&
+    const float total_matching_visit_score =
+        ComputeTotalMatchScore(find_nodes, &cluster.visits);
+    DCHECK_GE(total_matching_visit_score, 0);
+    if (total_matching_visit_score > 0 &&
         GetConfig().rescore_visits_within_clusters_for_query) {
       PromoteMatchingVisitsAboveNonMatchingVisits(&cluster.visits);
     }
 
-    // If any of the visits match, or if any of the `cluster.keywords` match,
-    // move this cluster into the list of surviving clusters.
-    if (any_visits_match ||
-        DoesQueryMatchClusterKeywords(find_nodes, cluster.keywords)) {
+    cluster.search_match_score = total_matching_visit_score;
+    if (DoesQueryMatchClusterKeywords(find_nodes, cluster.keywords)) {
+      // Arbitrarily chosen that cluster keyword matches are worth three points.
+      // TODO(crbug.com/1307071): Use relevancy score for each cluster keyword
+      // once support for that is added to the backend.
+      cluster.search_match_score += 3.0;
+    }
+
+    if (cluster.search_match_score > 0) {
+      // Move the matching clusters into the final list.
       clusters->push_back(std::move(cluster));
     }
+  }
+
+  if (GetConfig().sort_clusters_within_batch_for_query) {
+    base::ranges::stable_sort(*clusters, [](auto& c1, auto& c2) {
+      // Use c1 > c2 to get higher scored clusters BEFORE lower scored clusters.
+      return c1.search_match_score > c2.search_match_score;
+    });
   }
 }
 

@@ -5,6 +5,7 @@
 #include "components/history_clusters/core/history_clusters_util.h"
 
 #include "base/strings/stringprintf.h"
+#include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/history_clusters_service_test_api.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -144,6 +145,71 @@ TEST(HistoryClustersUtilTest, PromoteMatchingVisitsAboveNonMatchingVisits) {
     EXPECT_FLOAT_EQ(clusters[0].visits[0].score, 0.75);
     EXPECT_EQ(clusters[0].visits[1].annotated_visit.visit_row.visit_id, 1);
     EXPECT_FLOAT_EQ(clusters[0].visits[1].score, 0.25);
+  }
+}
+
+TEST(HistoryClustersUtilTest, SortClustersWithinBatchForQuery) {
+  std::vector<history::Cluster> all_clusters;
+  all_clusters.push_back(
+      history::Cluster(1,
+                       {
+                           GetHardcodedClusterVisit(1),
+                           GetHardcodedClusterVisit(2),
+                       },
+                       {u"apples", u"Red Oranges"},
+                       /*should_show_on_prominent_ui_surfaces=*/false));
+  all_clusters.push_back(
+      history::Cluster(2,
+                       {
+                           GetHardcodedClusterVisit(1),
+                       },
+                       {u"search"},
+                       /*should_show_on_prominent_ui_surfaces=*/false));
+
+  // When the flag is off, leave the initial ordering alone.
+  {
+    Config config;
+    config.sort_clusters_within_batch_for_query = false;
+    SetConfigForTesting(config);
+
+    std::vector clusters = all_clusters;
+    ApplySearchQuery("search", &clusters);
+    ASSERT_EQ(clusters.size(), 2U);
+    EXPECT_EQ(clusters[0].cluster_id, 1);
+    EXPECT_EQ(clusters[1].cluster_id, 2);
+    EXPECT_FLOAT_EQ(clusters[0].search_match_score, 0.5);
+    EXPECT_FLOAT_EQ(clusters[1].search_match_score, 3.5);
+  }
+
+  // When the flag is on, second cluster should be sorted above the first one,
+  // because the second one has a match on both the keyword and visit.
+  {
+    Config config;
+    config.sort_clusters_within_batch_for_query = true;
+    SetConfigForTesting(config);
+
+    std::vector clusters = all_clusters;
+    ApplySearchQuery("search", &clusters);
+    ASSERT_EQ(clusters.size(), 2U);
+    EXPECT_EQ(clusters[0].cluster_id, 2);
+    EXPECT_EQ(clusters[1].cluster_id, 1);
+    EXPECT_FLOAT_EQ(clusters[0].search_match_score, 3.5);
+    EXPECT_FLOAT_EQ(clusters[1].search_match_score, 0.5);
+  }
+
+  // With flag on, if both scores are equal, the ordering should be preserved.
+  {
+    Config config;
+    config.sort_clusters_within_batch_for_query = true;
+    SetConfigForTesting(config);
+
+    std::vector clusters = all_clusters;
+    ApplySearchQuery("google", &clusters);
+    ASSERT_EQ(clusters.size(), 2U);
+    EXPECT_EQ(clusters[0].cluster_id, 1);
+    EXPECT_EQ(clusters[1].cluster_id, 2);
+    EXPECT_FLOAT_EQ(clusters[0].search_match_score, 0.5);
+    EXPECT_FLOAT_EQ(clusters[1].search_match_score, 0.5);
   }
 }
 

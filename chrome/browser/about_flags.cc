@@ -1001,6 +1001,15 @@ const FeatureEntry::FeatureVariation kPageContentAnnotationsVariations[] = {
      std::size(kPageContentAnnotationsTitleParams), nullptr},
 };
 const FeatureEntry::FeatureParam
+    kJourneysSortClustersWithinBatchForQueryParams[] = {
+        {"JourneysSortClustersWithinBatchForQuery", "true"},
+};
+const FeatureEntry::FeatureVariation kJourneysVariations[] = {
+    {"Sort Clusters Within Batch for Query",
+     kJourneysSortClustersWithinBatchForQueryParams,
+     std::size(kJourneysSortClustersWithinBatchForQueryParams), nullptr},
+};
+const FeatureEntry::FeatureParam
     kJourneysOnDeviceClusteringLabelingNoContentClusteringParams[] = {
         {"should_label_clusters", "true"},
         {"content_clustering_enabled", "false"},
@@ -5092,7 +5101,9 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"history-journeys", flag_descriptions::kJourneysName,
      flag_descriptions::kJourneysDescription, kOsDesktop | kOsAndroid,
-     FEATURE_VALUE_TYPE(history_clusters::internal::kJourneys)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(history_clusters::internal::kJourneys,
+                                    kJourneysVariations,
+                                    "HistoryJourneys")},
 
     {"history-journeys-omnibox-action",
      flag_descriptions::kJourneysOmniboxActionName,
