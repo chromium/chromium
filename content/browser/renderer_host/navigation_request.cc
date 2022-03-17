@@ -961,7 +961,9 @@ void RemoveOriginTrialHintsFromAcceptCH(
     PersistAcceptCH(url::Origin::Create(url), delegate, client_hints);
   }
 
-  if (base::FeatureList::IsEnabled(net::features::kPartitionedCookies)) {
+  if (base::FeatureList::IsEnabled(net::features::kPartitionedCookies) &&
+      !base::FeatureList::IsEnabled(
+          net::features::kPartitionedCookiesBypassOriginTrial)) {
     if (auto* cookie_manager = frame_tree_node->current_frame_host()
                                    ->GetStoragePartition()
                                    ->GetCookieManagerForBrowserProcess()) {

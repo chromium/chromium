@@ -21,6 +21,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/features.h"
 #include "net/base/isolation_info.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/cookies/canonical_cookie.h"
@@ -399,6 +400,22 @@ bool RestrictedCookieManager::IsPartitionedCookiesEnabled() const {
   return cookie_partition_key_.has_value();
 }
 
+namespace {
+
+bool PartitionedCookiesAllowed(
+    bool partitioned_cookies_runtime_feature_enabled,
+    const absl::optional<net::CookiePartitionKey>& cookie_partition_key) {
+  if (base::FeatureList::IsEnabled(
+          net::features::kPartitionedCookiesBypassOriginTrial) ||
+      partitioned_cookies_runtime_feature_enabled)
+    return true;
+  // We allow partition keys which have a nonce since the Origin Trial is
+  // only meant to test cookies set with the Partitioned attribute.
+  return cookie_partition_key && cookie_partition_key->nonce();
+}
+
+}  // namespace
+
 void RestrictedCookieManager::GetAllForUrl(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
@@ -424,10 +441,8 @@ void RestrictedCookieManager::GetAllForUrl(
 
   cookie_store_->GetCookieListWithOptionsAsync(
       url, net_options,
-      // We allow partition keys which have a nonce since the Origin Trial is
-      // only meant to test cookies set with the Partitioned attribute.
-      partitioned_cookies_runtime_feature_enabled ||
-              (cookie_partition_key_ && cookie_partition_key_->nonce())
+      PartitionedCookiesAllowed(partitioned_cookies_runtime_feature_enabled,
+                                cookie_partition_key_)
           ? cookie_partition_key_collection_
           : net::CookiePartitionKeyCollection(),
       base::BindOnce(&RestrictedCookieManager::CookieListToGetAllForUrlCallback,
@@ -766,8 +781,8 @@ void RestrictedCookieManager::SetCookieFromString(
   std::unique_ptr<net::CanonicalCookie> parsed_cookie =
       net::CanonicalCookie::Create(
           url, cookie, base::Time::Now(), absl::nullopt /* server_time */,
-          partitioned_cookies_runtime_feature_enabled ||
-                  (cookie_partition_key_ && cookie_partition_key_->nonce())
+          PartitionedCookiesAllowed(partitioned_cookies_runtime_feature_enabled,
+                                    cookie_partition_key_)
               ? cookie_partition_key_
               : absl::nullopt,
           &status);

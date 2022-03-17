@@ -5133,14 +5133,9 @@ class PartitionedCookiesOriginTrialBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
-  virtual std::string BuildOriginTrialHeader() const = 0;
+  virtual std::string BuildOriginTrialHeader() const { return ""; }
 
-  OriginTrialTestOptions test_options_;
-  std::set<GURL> expected_request_urls_;
-  std::unique_ptr<URLLoaderInterceptor> url_loader_interceptor_;
-
- private:
-  std::unique_ptr<base::FeatureList> EnabledFeatures() {
+  virtual std::unique_ptr<base::FeatureList> EnabledFeatures() {
     std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
     feature_list->InitializeFromCommandLine(
         "UserAgentClientHint,CriticalClientHint,AcceptCHFrame,"
@@ -5149,6 +5144,9 @@ class PartitionedCookiesOriginTrialBrowserTest : public InProcessBrowserTest {
     return feature_list;
   }
 
+  OriginTrialTestOptions test_options_;
+  std::set<GURL> expected_request_urls_;
+  std::unique_ptr<URLLoaderInterceptor> url_loader_interceptor_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -5639,6 +5637,82 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyPartitionedCookiesOriginTrialBrowserTest,
   EXPECT_EQ(cookies.size(), 1u);
   EXPECT_EQ(cookies[0].Name(), "__Host-A");
   EXPECT_FALSE(cookies[0].IsPartitioned());
+}
+
+class PartitionedCookiesBypassOriginTrialBrowserTest
+    : public PartitionedCookiesOriginTrialBrowserTest {
+ public:
+  PartitionedCookiesBypassOriginTrialBrowserTest()
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    https_server_.ServeFilesFromSourceDirectory(
+        "chrome/test/data/client_hints");
+    https_server_.RegisterRequestMonitor(base::BindRepeating(
+        &PartitionedCookiesBypassOriginTrialBrowserTest::MonitorResourceRequest,
+        base::Unretained(this)));
+    EXPECT_TRUE(https_server_.Start());
+  }
+
+  // The URL of the site receiving cookies.
+  // Requests to this origin should be handled by the test server.
+  static constexpr char kCookieOriginUrlNoPort[] = "https://127.0.0.1:";
+
+  GURL partitioned_cookies_url() const {
+    return GURL(base::StrCat({kCookieOriginUrlNoPort,
+                              base::NumberToString(https_server_.port()),
+                              "/partitioned_cookies_embeddee.html"}));
+  }
+
+  absl::optional<std::string> last_sec_ch_partitioned_cookies_value() {
+    base::AutoLock lock(last_request_lock_);
+    return last_sec_ch_partitioned_cookies_value_;
+  }
+
+  void MonitorResourceRequest(const net::test_server::HttpRequest& request) {
+    base::AutoLock lock(last_request_lock_);
+    const auto& it = request.headers.find("sec-ch-partitioned-cookies");
+    last_sec_ch_partitioned_cookies_value_ =
+        it != request.headers.end() ? absl::make_optional(it->second)
+                                    : absl::nullopt;
+  }
+
+ protected:
+  std::unique_ptr<base::FeatureList> EnabledFeatures() override {
+    std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
+    feature_list->InitializeFromCommandLine(
+        "UserAgentClientHint,CriticalClientHint,AcceptCHFrame,"
+        "PartitionedCookies,PartitionedCookiesBypassOriginTrial",
+        "");
+    return feature_list;
+  }
+
+  net::EmbeddedTestServer https_server_;
+  absl::optional<std::string> last_sec_ch_partitioned_cookies_value_;
+  base::Lock last_request_lock_;
+};
+
+IN_PROC_BROWSER_TEST_F(PartitionedCookiesBypassOriginTrialBrowserTest,
+                       ShouldAllowCookiesWithoutToken) {
+  SetCookie(
+      "__Host-A", "0", partitioned_cookies_url(),
+      net::CookiePartitionKey::FromURLForTesting(partitioned_cookies_url()));
+
+  auto cookies = GetCookies(partitioned_cookies_url());
+  EXPECT_EQ(cookies.size(), 1u);
+  EXPECT_EQ(cookies[0].Name(), "__Host-A");
+  EXPECT_TRUE(cookies[0].IsPartitioned());
+
+  NavigateTo(partitioned_cookies_url());
+
+  // Check that the partitioned cookie did not get converted to unpartitioned
+  // even though the site never opted into the origin trial.
+  cookies = GetCookies(partitioned_cookies_url());
+  EXPECT_EQ(cookies.size(), 1u);
+  EXPECT_EQ(cookies[0].Name(), "__Host-A");
+  EXPECT_TRUE(cookies[0].IsPartitioned());
+
+  // We will still send the client hint in the false state if there are
+  // partitioned cookies on the machine.
+  EXPECT_EQ(last_sec_ch_partitioned_cookies_value(), "?0");
 }
 
 // CrOS multi-profiles implementation is too different for these tests.

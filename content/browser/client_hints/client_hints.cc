@@ -1063,6 +1063,8 @@ ParseAndPersistAcceptCHForNavigation(
       enabled_hints.GetEnabledHints();
   PersistAcceptCH(origin, delegate, persisted_hints);
   if (base::FeatureList::IsEnabled(net::features::kPartitionedCookies) &&
+      !base::FeatureList::IsEnabled(
+          net::features::kPartitionedCookiesBypassOriginTrial) &&
       std::find(persisted_hints.begin(), persisted_hints.end(),
                 WebClientHintsType::kPartitionedCookies) ==
           persisted_hints.end()) {

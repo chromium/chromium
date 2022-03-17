@@ -560,6 +560,9 @@ _CONFIG = [
             # nested in the blink namespace.
             'internal::.+',
 
+            # TODO(crbug.com/1296161): Remove this when the CHIPS OT ends.
+            "net::features::kPartitionedCookiesBypassOriginTrial",
+
             # HTTP structured headers
             'net::structured_headers::.+',
 
