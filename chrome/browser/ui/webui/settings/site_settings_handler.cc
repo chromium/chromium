@@ -1790,9 +1790,9 @@ void SiteSettingsHandler::RemoveNonTreeModelData(
   }
   remover->RemoveWithFilter(
       base::Time::Min(), base::Time::Max(),
-      content::BrowsingDataRemover::DATA_TYPE_INTEREST_GROUPS &
-          content::BrowsingDataRemover::DATA_TYPE_AGGREGATION_SERVICE &
-          content::BrowsingDataRemover::DATA_TYPE_CONVERSIONS &
+      content::BrowsingDataRemover::DATA_TYPE_INTEREST_GROUPS |
+          content::BrowsingDataRemover::DATA_TYPE_AGGREGATION_SERVICE |
+          content::BrowsingDataRemover::DATA_TYPE_CONVERSIONS |
           content::BrowsingDataRemover::DATA_TYPE_TRUST_TOKENS,
       content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
       std::move(filter));

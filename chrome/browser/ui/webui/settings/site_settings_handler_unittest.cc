@@ -2861,9 +2861,9 @@ TEST_F(SiteSettingsHandlerTest, NonTreeModelDeletion) {
   handler()->HandleClearEtldPlus1DataAndCookies(args.GetList());
 
   auto* browsing_data_remover = profile()->GetBrowsingDataRemover();
-  EXPECT_EQ(content::BrowsingDataRemover::DATA_TYPE_INTEREST_GROUPS &
-                content::BrowsingDataRemover::DATA_TYPE_AGGREGATION_SERVICE &
-                content::BrowsingDataRemover::DATA_TYPE_CONVERSIONS &
+  EXPECT_EQ(content::BrowsingDataRemover::DATA_TYPE_INTEREST_GROUPS |
+                content::BrowsingDataRemover::DATA_TYPE_AGGREGATION_SERVICE |
+                content::BrowsingDataRemover::DATA_TYPE_CONVERSIONS |
                 content::BrowsingDataRemover::DATA_TYPE_TRUST_TOKENS,
             browsing_data_remover->GetLastUsedRemovalMaskForTesting());
   EXPECT_EQ(base::Time::Min(),
