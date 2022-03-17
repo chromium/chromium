@@ -159,6 +159,14 @@ Polymer({
     },
 
     /**
+     * Enables letters to be displayed on the pin keyboard buttons.
+     */
+    enableLetters: {
+      type: Boolean,
+      value: false,
+    },
+
+    /**
      * The aria label to be used for the input element.
      */
     ariaLabel: {
