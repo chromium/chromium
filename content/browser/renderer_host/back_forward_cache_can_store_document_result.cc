@@ -418,10 +418,15 @@ void BackForwardCacheCanStoreDocumentResult::NoDueToFeatures(
 void BackForwardCacheCanStoreDocumentResult::
     NoDueToDisableForRenderFrameHostCalled(
         const std::set<BackForwardCache::DisabledReason>& reasons) {
-  AddNotStoredReason(BackForwardCacheMetrics::NotRestoredReason::
-                         kDisableForRenderFrameHostCalled);
-  for (const BackForwardCache::DisabledReason& reason : reasons)
+  // This should only be called with non-empty reasons.
+  DCHECK(reasons.size());
+  for (const BackForwardCache::DisabledReason& reason : reasons) {
     disabled_reasons_.insert(reason);
+    // This will be a no-op after the first time but it's written like this to
+    // guarantee that we do not set it without a reason.
+    AddNotStoredReason(BackForwardCacheMetrics::NotRestoredReason::
+                           kDisableForRenderFrameHostCalled);
+  }
 }
 
 void BackForwardCacheCanStoreDocumentResult::NoDueToRelatedActiveContents(
