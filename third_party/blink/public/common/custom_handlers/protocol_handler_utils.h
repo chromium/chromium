@@ -7,6 +7,9 @@
 
 #include "base/strings/string_piece_forward.h"
 #include "third_party/blink/public/common/common_export.h"
+#include "third_party/blink/public/common/security/protocol_handler_security_level.h"
+
+class GURL;
 
 namespace blink {
 
@@ -24,8 +27,16 @@ namespace blink {
 // insensitive match to the string "web+" (or alternatively "ext+" if allowed).
 bool BLINK_COMMON_EXPORT
 IsValidCustomHandlerScheme(const base::StringPiece scheme,
-                           bool allow_ext_prefix,
-                           bool& has_custom_scheme_prefix);
+                           ProtocolHandlerSecurityLevel security_level,
+                           bool* has_custom_scheme_prefix = nullptr);
+
+// This function returns whether the specified URL is allowed as a protocol
+// handler parameter, as described in steps 6 and 7 (except same origin) of the
+// HTML specification:
+// https://html.spec.whatwg.org/multipage/system-state.html#normalize-protocol-handler-parameters
+bool BLINK_COMMON_EXPORT
+IsAllowedCustomHandlerURL(const GURL& url,
+                          ProtocolHandlerSecurityLevel security_level);
 
 }  // namespace blink
 

@@ -51,18 +51,16 @@ namespace {
 
 const char kToken[] = "%s";
 
+// Verify custom handler URL security as described in steps 6 and 7
+// https://html.spec.whatwg.org/multipage/system-state.html#normalize-protocol-handler-parameters
 static bool VerifyCustomHandlerURLSecurity(
     const LocalDOMWindow& window,
     const KURL& full_url,
     String& error_message,
     ProtocolHandlerSecurityLevel security_level) {
-  // This matches ProtocolHandler::IsValid().
-  // https://html.spec.whatwg.org/multipage/system-state.html#normalize-protocol-handler-parameters
-  bool has_valid_scheme =
-      full_url.ProtocolIsInHTTPFamily() ||
-      (security_level == ProtocolHandlerSecurityLevel::kExtensionFeatures &&
-       CommonSchemeRegistry::IsExtensionScheme(full_url.Protocol().Ascii()));
-  if (!has_valid_scheme || !network::IsUrlPotentiallyTrustworthy(full_url)) {
+  // The specification says that the API throws SecurityError exception if the
+  // URL's protocol isn't HTTP(S) or is potentially trustworthy.
+  if (!IsAllowedCustomHandlerURL(full_url, security_level)) {
     error_message = "The scheme of the url provided must be HTTP(S).";
     return false;
   }
@@ -115,13 +113,10 @@ bool VerifyCustomHandlerScheme(const String& scheme,
     return false;
   }
 
-  bool allow_ext_plus_prefix =
-      security_level >= ProtocolHandlerSecurityLevel::kExtensionFeatures;
-  bool has_custom_scheme_prefix;
+  bool has_custom_scheme_prefix = false;
   StringUTF8Adaptor scheme_adaptor(scheme);
   if (!IsValidCustomHandlerScheme(scheme_adaptor.AsStringPiece(),
-                                  allow_ext_plus_prefix,
-                                  has_custom_scheme_prefix)) {
+                                  security_level, &has_custom_scheme_prefix)) {
     if (has_custom_scheme_prefix) {
       error_string = "The scheme name '" + scheme +
                      "' is not allowed. Schemes starting with '" + scheme +

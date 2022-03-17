@@ -73,24 +73,11 @@ bool ProtocolHandler::IsValidDict(const base::Value::Dict& value) {
 }
 
 bool ProtocolHandler::IsValid() const {
-  // This matches VerifyCustomHandlerURLSecurity() in blink's
-  // NavigatorContentUtils.
-  // https://html.spec.whatwg.org/multipage/system-state.html#normalize-protocol-handler-parameters
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  bool has_valid_scheme =
-      url_.SchemeIsHTTPOrHTTPS() ||
-      (security_level_ ==
-           blink::ProtocolHandlerSecurityLevel::kExtensionFeatures &&
-       blink::CommonSchemeRegistry::IsExtensionScheme(url_.scheme()));
-  if (!has_valid_scheme || !network::IsUrlPotentiallyTrustworthy(url_))
+  if (!blink::IsAllowedCustomHandlerURL(url_, security_level_))
     return false;
 
-  bool has_custom_scheme_prefix = false;
-  bool allow_ext_plus_prefix =
-      (security_level_ >=
-       blink::ProtocolHandlerSecurityLevel::kExtensionFeatures);
-  return blink::IsValidCustomHandlerScheme(protocol_, allow_ext_plus_prefix,
-                                           has_custom_scheme_prefix);
+  return blink::IsValidCustomHandlerScheme(protocol_, security_level_);
 }
 
 bool ProtocolHandler::IsSameOrigin(const ProtocolHandler& handler) const {

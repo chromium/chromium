@@ -1984,8 +1984,11 @@ void Browser::RegisterProtocolHandler(
   ProtocolHandler handler = ProtocolHandler::CreateProtocolHandler(
       protocol, url, GetProtocolHandlerSecurityLevel(requesting_frame));
 
-  if (!handler.IsValid())
-    return;
+  // The parameters's normalization process defined in the spec has been already
+  // applied in the WebContentImpl class, so at this point it shouldn't be
+  // possible to create an invalid handler.
+  // https://html.spec.whatwg.org/multipage/system-state.html#normalize-protocol-handler-parameters
+  DCHECK(handler.IsValid());
 
   custom_handlers::ProtocolHandlerRegistry* registry =
       ProtocolHandlerRegistryFactory::GetForBrowserContext(context);

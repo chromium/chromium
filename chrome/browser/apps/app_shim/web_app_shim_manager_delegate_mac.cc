@@ -230,10 +230,8 @@ void WebAppShimManagerDelegate::LaunchApp(
 
     // Validate that the scheme is something that could be registered by the PWA
     // via the manifest.
-    bool has_custom_scheme_prefix = false;
-    if (!blink::IsValidCustomHandlerScheme(url.scheme(),
-                                           /* allow_ext_plus_prefix */ false,
-                                           has_custom_scheme_prefix)) {
+    if (!blink::IsValidCustomHandlerScheme(
+            url.scheme(), blink::ProtocolHandlerSecurityLevel::kStrict)) {
       DLOG(ERROR) << "Protocol is not a valid custom handler scheme.";
       continue;
     }

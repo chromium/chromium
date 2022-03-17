@@ -56,6 +56,9 @@ class ProtocolHandler {
   static bool IsValidDict(const base::Value::Dict& value);
 
   // Return true if the protocol handler meets security constraints.
+  // Verify custom handler URLs security and syntax as well as the schemes
+  // safelist as described in steps 1, 2, 6 and 7 (except same origin).
+  // https://html.spec.whatwg.org/multipage/system-state.html#custom-handlers.
   bool IsValid() const;
 
   // Returns true if this handler's url has the same origin as the given one.

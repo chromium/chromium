@@ -40,14 +40,14 @@ class LocalFrame;
 class NavigatorContentUtilsClient;
 enum class ProtocolHandlerSecurityLevel;
 
-// Verify custom handler schemes for errors as described in
+// Verify custom handler schemes for errors as described in steps 1 and 2
 // https://html.spec.whatwg.org/multipage/system-state.html#custom-handlers.
 // Callers should surface an error with |error_message| if it returns false.
 bool VerifyCustomHandlerScheme(const String& scheme,
                                String& error_message,
                                ProtocolHandlerSecurityLevel security_level);
 
-// Verify custom handler URLs for syntax errors as described in
+// Verify custom handler URLs for syntax errors as described in step 3
 // https://html.spec.whatwg.org/multipage/system-state.html#custom-handlers.
 // Callers should surface an error with |error_message| if it returns false.
 // |full_url| is calculated URL that needs to resolve to a valid URL.

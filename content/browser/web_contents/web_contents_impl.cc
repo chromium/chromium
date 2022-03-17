@@ -151,6 +151,7 @@
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/custom_handlers/protocol_handler_utils.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
@@ -310,10 +311,23 @@ bool AreValidRegisterProtocolHandlerArguments(
   if (policy->IsPseudoScheme(protocol))
     return false;
 
+  // Implementation of the protocol handler arguments normalization steps defined
+  // in the spec.
+  // https://html.spec.whatwg.org/multipage/system-state.html#normalize-protocol-handler-parameters
+  //
+  // Verify custom handler schemes for errors as described in steps 1 and 2
+  if (!blink::IsValidCustomHandlerScheme(protocol, security_level))
+    return false;
+
+  // TODO(jfernandez): Should we include syntax checks (step 3) as we do in the
+  // renderer process ?
+
+  // Verify custom handler URL security as described in steps 6 and 7
+  if (!blink::IsAllowedCustomHandlerURL(url, security_level))
+    return false;
   url::Origin url_origin = url::Origin::Create(url);
   if (url_origin.opaque())
     return false;
-
   if (security_level < blink::ProtocolHandlerSecurityLevel::kUntrustedOrigins &&
       !origin.IsSameOriginWith(url))
     return false;
@@ -6180,6 +6194,9 @@ void WebContentsImpl::RegisterProtocolHandler(RenderFrameHostImpl* source,
   blink::ProtocolHandlerSecurityLevel security_level =
       delegate_->GetProtocolHandlerSecurityLevel(source);
 
+  // Run the protocol handler arguments normalization process defined in the
+  // spec.
+  // https://html.spec.whatwg.org/multipage/system-state.html#normalize-protocol-handler-parameters
   if (!AreValidRegisterProtocolHandlerArguments(
           protocol, url, source->GetLastCommittedOrigin(), security_level)) {
     ReceivedBadMessage(source->GetProcess(),

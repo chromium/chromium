@@ -7,13 +7,19 @@
 #include "base/containers/contains.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "third_party/blink/public/common/scheme_registry.h"
+#include "url/gurl.h"
 
 namespace blink {
 
 bool IsValidCustomHandlerScheme(const base::StringPiece scheme,
-                                bool allow_ext_prefix,
-                                bool& has_custom_scheme_prefix) {
-  has_custom_scheme_prefix = false;
+                                ProtocolHandlerSecurityLevel security_level,
+                                bool* has_custom_scheme_prefix) {
+  bool allow_scheme_prefix =
+      (security_level >= ProtocolHandlerSecurityLevel::kExtensionFeatures);
+  if (has_custom_scheme_prefix)
+    *has_custom_scheme_prefix = false;
 
   static constexpr const char kWebPrefix[] = "web+";
   static constexpr const char kExtPrefix[] = "ext+";
@@ -21,10 +27,11 @@ bool IsValidCustomHandlerScheme(const base::StringPiece scheme,
   static constexpr const size_t kPrefixLength = std::size(kWebPrefix) - 1;
   if (base::StartsWith(scheme, kWebPrefix,
                        base::CompareCase::INSENSITIVE_ASCII) ||
-      (allow_ext_prefix &&
+      (allow_scheme_prefix &&
        base::StartsWith(scheme, kExtPrefix,
                         base::CompareCase::INSENSITIVE_ASCII))) {
-    has_custom_scheme_prefix = true;
+    if (has_custom_scheme_prefix)
+      *has_custom_scheme_prefix = true;
     // HTML5 requires that schemes with the |web+| prefix contain one or more
     // ASCII alphas after that prefix.
     auto scheme_name = scheme.substr(kPrefixLength);
@@ -44,6 +51,15 @@ bool IsValidCustomHandlerScheme(const base::StringPiece scheme,
       "sip",     "sms",    "smsto",  "ssb",  "ssh",  "tel",  "urn",
       "webcal",  "wtai",   "xmpp"};
   return base::Contains(kProtocolSafelist, base::ToLowerASCII(scheme));
+}
+
+bool IsAllowedCustomHandlerURL(const GURL& url,
+                               ProtocolHandlerSecurityLevel security_level) {
+  bool has_valid_scheme =
+      url.SchemeIsHTTPOrHTTPS() ||
+      (security_level == ProtocolHandlerSecurityLevel::kExtensionFeatures &&
+       CommonSchemeRegistry::IsExtensionScheme(url.scheme()));
+  return has_valid_scheme && network::IsUrlPotentiallyTrustworthy(url);
 }
 
 }  // namespace blink

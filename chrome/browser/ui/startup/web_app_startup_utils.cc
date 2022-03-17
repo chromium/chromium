@@ -47,6 +47,7 @@
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "third_party/blink/public/common/custom_handlers/protocol_handler_utils.h"
+#include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "url/gurl.h"
 
 namespace web_app {
@@ -172,11 +173,10 @@ class StartupWebAppCreator
       // has a wait for "on_registry_ready()", `potential_protocol` checks for
       // blink::IsValidCustomHandlerScheme() here to avoid loading the
       // WebAppProvider with a false positive.
-      bool unused_has_custom_scheme_prefix = false;
       if (potential_protocol.is_valid() &&
-          blink::IsValidCustomHandlerScheme(potential_protocol.scheme(),
-                                            /*allow_ext_prefix=*/false,
-                                            unused_has_custom_scheme_prefix)) {
+          blink::IsValidCustomHandlerScheme(
+              potential_protocol.scheme(),
+              blink::ProtocolHandlerSecurityLevel::kStrict)) {
         protocol_url = std::move(potential_protocol);
         break;
       }
