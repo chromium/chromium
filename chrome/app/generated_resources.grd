@@ -6543,7 +6543,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Reader Mode
       </message>
 
-      <!--Tooltip strings-->
+      <!--Tooltip strings -->
       <message name="IDS_TOOLTIP_BACK" desc="The tooltip for back button">
         Click to go back, hold to see history
       </message>
@@ -12511,7 +12511,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_SIDE_PANEL_EXPERIMENT_DESCRIPTION" desc="Description for Side Panel experiment">
       Enables a browser-level side panel for a useful and persistent way to access your Reading List and Bookmarks.
     </message>
-    <!-- ChromeLabs Tab Scrolling-->
+    <!-- ChromeLabs Tab Scrolling -->
     <message name="IDS_TAB_SCROLLING_EXPERIMENT_NAME" desc="Name for Tab Scrolling experiment">
       Tab Scrolling
     </message>
@@ -12537,7 +12537,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_TAB_SEARCH_EXPERIMENT_DESCRIPTION" desc="Description for Tab Search experiment">
       Enable a popup bubble in Top Chrome UI to search over currently open tabs.
     </message>
-    <!-- ChromeLabs Lens Region Search-->
+    <!-- ChromeLabs Lens Region Search -->
     <message name="IDS_LENS_REGION_SEARCH_EXPERIMENT_NAME" desc="Name for Lens Region Search experiment">
       Search your screen with Google Lens
     </message>
