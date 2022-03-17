@@ -188,6 +188,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Quota.QuotaDatabaseError" enum="SqliteLoggedResultCode"
+    expires_after="2023-03-14">
+  <owner>ayui@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>Errors reported by SQLite while using the quota database.</summary>
+</histogram>
+
 <histogram name="Quota.QuotaDatabaseReset" enum="QuotaDatabaseResetReason"
     expires_after="2022-08-07">
   <owner>ayui@chromium.org</owner>

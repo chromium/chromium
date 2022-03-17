@@ -11,6 +11,7 @@
 #include <string>
 #include <tuple>
 
+#include "base/big_endian.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/files/file_util.h"
@@ -41,6 +42,37 @@ bool GetPageSize(sql::Database* db, int* page_size) {
   return true;
 }
 
+// Read a database's page size. Returns nullopt in case of error.
+absl::optional<int> ReadPageSize(const base::FilePath& db_path) {
+  // See https://www.sqlite.org/fileformat2.html#page_size
+  constexpr size_t kPageSizeOffset = 16;
+  uint8_t raw_page_size_bytes[2];
+  base::File file(db_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  if (!file.IsValid())
+    return absl::nullopt;
+  if (!file.ReadAndCheck(kPageSizeOffset, raw_page_size_bytes))
+    return absl::nullopt;
+
+  uint16_t raw_page_size;
+  base::ReadBigEndian(raw_page_size_bytes, &raw_page_size);
+  // The SQLite database format initially allocated a 16 bits for storing the
+  // page size. This worked out until SQLite wanted to support 64kb pages,
+  // because 65536 (64kb) doesn't fit in a 16-bit unsigned integer.
+  //
+  // Currently, the page_size field value of 1 is a special case for 64kb pages.
+  // The documentation hints at the path for future expansion -- the page_size
+  // field may become a litte-endian number that indicates the database page
+  // size divided by 256. This happens to work out because the smallest
+  // supported page size is 512.
+  const int page_size = (raw_page_size == 1) ? 65536 : raw_page_size;
+  // Sanity-check that the page size is valid.
+  constexpr uint16_t kMinPageSize = 512;
+  if (page_size < kMinPageSize || (page_size & (page_size - 1)) != 0)
+    return absl::nullopt;
+
+  return page_size;
+}
+
 // Get |name|'s root page number in the database.
 bool GetRootPage(sql::Database* db, const char* name, int* page_number) {
   static const char kPageSql[] =
@@ -51,6 +83,24 @@ bool GetRootPage(sql::Database* db, const char* name, int* page_number) {
     return false;
   *page_number = s.ColumnInt(0);
   return true;
+}
+
+// Read the number of the root page of a B-tree (index/table).
+//
+// Returns a 0-indexed page number, not the raw SQLite page number.
+absl::optional<int> GetRootPage(sql::Database& db,
+                                base::StringPiece tree_name) {
+  sql::Statement select(
+      db.GetUniqueStatement("SELECT rootpage FROM sqlite_schema WHERE name=?"));
+  select.BindString(0, tree_name);
+  if (!select.Step())
+    return absl::nullopt;
+
+  int sqlite_page_number = select.ColumnInt(0);
+  if (!sqlite_page_number)
+    return absl::nullopt;
+
+  return sqlite_page_number - 1;
 }
 
 // Helper for reading a number from the SQLite header.
@@ -245,6 +295,30 @@ bool CorruptTableOrIndex(const base::FilePath& db_path,
   return true;
 }
 
+bool CorruptIndexRootPage(const base::FilePath& db_path,
+                          base::StringPiece index_name) {
+  absl::optional<int> page_size = ReadPageSize(db_path);
+  if (!page_size.has_value())
+    return false;
+
+  sql::Database db;
+  if (!db.Open(db_path))
+    return false;
+
+  absl::optional<int> page_number = GetRootPage(db, index_name);
+  db.Close();
+  if (!page_number.has_value())
+    return false;
+
+  std::vector<uint8_t> page_buffer(page_size.value());
+  const int64_t page_offset = int64_t{page_number.value()} * page_size.value();
+
+  base::File file(db_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                               base::File::FLAG_WRITE);
+  if (!file.IsValid())
+    return false;
+  return file.WriteAndCheck(page_offset, page_buffer);
+}
 size_t CountSQLTables(sql::Database* db) {
   return CountSQLItemsOfType(db, "table");
 }

@@ -210,6 +210,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   bool IsBootstrapped();
   QuotaError SetIsBootstrapped(bool bootstrap_flag);
 
+  // Returns QuotaError::kNone if the database was successfully reopened after
+  // `corrupter` was run, or QuotaError::kDatabaseError otherwise.
+  QuotaError CorruptForTesting(
+      base::OnceCallback<void(const base::FilePath&)> corrupter);
+
   // Manually disable database to test database error scenarios for testing.
   void SetDisabledForTesting(bool disable) { is_disabled_ = disable; }
 

@@ -12,6 +12,8 @@ component("sql") {
     "database_memory_dump_provider.h",
     "error_delegate_util.cc",
     "error_delegate_util.h",
+    "error_metrics.cc",
+    "error_metrics.h",
     "init_status.h",
     "initialization.cc",
     "initialization.h",
@@ -109,6 +111,7 @@ bundle_data("sql_unittests_bundle_data") {
 test("sql_unittests") {
   sources = [
     "database_unittest.cc",
+    "error_metrics_unittest.cc",
     "meta_table_unittest.cc",
     "recover_module/module_unittest.cc",
     "recovery_unittest.cc",
