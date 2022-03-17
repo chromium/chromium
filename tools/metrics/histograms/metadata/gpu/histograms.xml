@@ -1145,8 +1145,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.Output.HDR" enum="Boolean" expires_after="2022-04-24">
+<histogram name="GPU.Output.HDR" enum="Boolean" expires_after="2023-04-24">
   <owner>hubbe@chromium.org</owner>
+  <owner>cassew@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
     Records if any connected monitor is HDR capable. Recorded when the gpu
