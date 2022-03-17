@@ -11,6 +11,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "components/url_formatter/spoof_checks/skeleton_generator.h"
 #include "components/url_formatter/url_formatter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -1332,6 +1333,59 @@ TEST(IDNSpoofCheckerNoFixtureTest, MultipleSkeletons) {
       UnsafeIDNToUnicodeWithDetails(url.host());
   Skeletons skeletons = checker.GetSkeletons(result.result);
   EXPECT_EQ(Skeletons({"apple.corn", "appie.corn"}), skeletons);
+}
+
+TEST(IDNSpoofCheckerNoFixtureTest, AlternativeSkeletons) {
+  struct TestCase {
+    // Skeleton whose alternative skeletons will be generated
+    std::string skeleton;
+    // Maximum number of skeletons to generate.
+    size_t max_skeletons;
+    // Expected skeleton set.
+    Skeletons expected_skeletons;
+  } kTestCases[] = {{"", 0, {}},
+                    {"", 1, {}},
+                    {"", 2, {}},
+                    {"", 100, {}},
+
+                    {"a", 0, {}},
+                    {"a", 1, {"a"}},
+                    {"a", 2, {"a"}},
+                    {"a", 100, {"a"}},
+
+                    {"ab", 0, {}},
+                    {"ab", 1, {"ab"}},
+                    {"ab", 2, {"ab"}},
+                    {"ab", 100, {"ab"}},
+
+                    {"œ", 0, {}},
+                    {"œ", 1, {"œ"}},
+                    {"œ", 2, {"œ", "ce"}},
+                    {"œ", 100, {"œ", "ce", "oe"}},
+
+                    {"œxample", 0, {}},
+                    {"œxample", 1, {"œxample"}},
+                    {"œxample", 2, {"œxample", "cexample"}},
+                    {"œxample", 100, {"œxample", "cexample", "oexample"}},
+
+                    {"œxamþle", 0, {}},
+                    {"œxamþle", 1, {"œxamþle"}},
+                    {"œxamþle", 2, {"œxamþle", "œxamble"}},
+                    {"œxamþle",
+                     100,
+                     {"œxamþle", "œxample", "œxamble", "oexamþle", "oexample",
+                      "oexamble", "cexamþle", "cexample", "cexamble"}}};
+  // IDNSpoofChecker checker;
+  SkeletonMap skeleton_map;
+  skeleton_map[u'œ'] = {"ce", "oe"};
+  skeleton_map[u'þ'] = {"b", "p"};
+
+  for (const TestCase& test_case : kTestCases) {
+    Skeletons skeletons = SkeletonGenerator::GenerateSupplementalSkeletons(
+        test_case.skeleton, test_case.max_skeletons, skeleton_map);
+    EXPECT_LE(skeletons.size(), test_case.max_skeletons);
+    EXPECT_EQ(skeletons, test_case.expected_skeletons);
+  }
 }
 
 TEST(IDNSpoofCheckerNoFixtureTest, MaybeRemoveDiacritics) {

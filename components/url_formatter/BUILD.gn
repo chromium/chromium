@@ -71,6 +71,7 @@ source_set("unit_tests") {
   ]
 
   deps = [
+    ":skeleton_generator",
     ":url_formatter",
     "//base",
     "//base/test:test_support",

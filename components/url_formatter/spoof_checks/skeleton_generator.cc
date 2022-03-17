@@ -6,12 +6,21 @@
 
 #include <ostream>
 
+#include <queue>
 #include "base/i18n/unicodestring.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "third_party/icu/source/i18n/unicode/regex.h"
 #include "third_party/icu/source/i18n/unicode/translit.h"
 #include "third_party/icu/source/i18n/unicode/uspoof.h"
+
+namespace {
+
+using QueueItem = std::vector<std::u16string>;
+
+}
 
 SkeletonGenerator::SkeletonGenerator(const USpoofChecker* checker)
     : checker_(checker) {
@@ -185,4 +194,59 @@ void SkeletonGenerator::AddSkeletonMapping(const icu::UnicodeString& host,
     ustr_skeleton.toUTF8String(skeleton);
     skeletons->insert(skeleton);
   }
+}
+
+// static
+Skeletons SkeletonGenerator::GenerateSupplementalSkeletons(
+    base::StringPiece input,
+    size_t max_alternatives,
+    const SkeletonMap& mapping) {
+  if (!input.size() || max_alternatives == 0) {
+    return Skeletons();
+  }
+  icu::UnicodeString input_unicode = icu::UnicodeString::fromUTF8(input);
+  // Read only buffer, doesn't need to be released.
+  const char16_t* input_buffer = input_unicode.getBuffer();
+
+  Skeletons output;
+  // This queue contains vectors of skeleton strings. For each character in
+  // the input string, its skeleton string will be appended to the queue item.
+  // Thus, the number of skeleton strings in the queue item will always
+  // correspond to the index of the input string processed so far.
+  std::queue<QueueItem> q;
+  q.push(QueueItem());
+
+  while (!q.empty()) {
+    QueueItem current = q.front();
+    q.pop();
+
+    if (current.size() == static_cast<size_t>(input_unicode.length())) {
+      // Reached the end of the original string. We now generated a complete
+      // alternative string. Add the result to output.
+      output.insert(base::UTF16ToUTF8(base::JoinString(current, u"")));
+      if (output.size() == max_alternatives) {
+        break;
+      }
+      continue;
+    }
+
+    // First, add the original character from input.
+    char16_t c = input_buffer[current.size()];
+    QueueItem new_item1 = current;
+    new_item1.push_back(std::u16string(1, c));
+    q.push(new_item1);
+
+    // Then, find all alternative characters for the current input character and
+    // generate new alternative strings by appending each alternative character
+    // to the string generated so far.
+    const auto it = mapping.find(c);
+    if (it != mapping.end()) {
+      for (auto alternative : it->second) {
+        QueueItem new_item2 = current;
+        new_item2.push_back(base::UTF8ToUTF16(alternative));
+        q.push(new_item2);
+      }
+    }
+  }
+  return output;
 }
