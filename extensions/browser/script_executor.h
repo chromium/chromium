@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
+#include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/mojom/code_injection.mojom.h"
 #include "extensions/common/mojom/css_origin.mojom-shared.h"
@@ -77,6 +78,8 @@ class ScriptExecutor {
 
     // The ID of the frame of the injection.
     int frame_id = -1;
+    // The document ID of the frame of the injection.
+    ExtensionApiFrameIdMap::DocumentId document_id;
     // The error associated with the injection, if any. Empty if the injection
     // succeeded.
     std::string error;

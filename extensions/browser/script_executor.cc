@@ -66,22 +66,28 @@ class Handler : public content::WebContentsObserver {
                                                          frame_id);
       if (!frame) {
         AddWillNotInjectResult(
-            frame_id, base::StringPrintf("No frame with ID: %d", frame_id));
+            frame_id, ExtensionApiFrameIdMap::DocumentId(),
+            base::StringPrintf("No frame with ID: %d", frame_id));
         continue;
       }
 
       DCHECK(!base::Contains(pending_render_frames_, frame));
       if (!frame->IsRenderFrameLive()) {
+        ExtensionApiFrameIdMap::DocumentId document_id =
+            ExtensionApiFrameIdMap::GetDocumentId(frame);
         AddWillNotInjectResult(
-            frame_id,
+            frame_id, document_id,
             base::StringPrintf("Frame with ID %d is not ready", frame_id));
         continue;
       }
 
       if (frame->IsErrorDocument()) {
+        ExtensionApiFrameIdMap::DocumentId document_id =
+            ExtensionApiFrameIdMap::GetDocumentId(frame);
         AddWillNotInjectResult(
-            frame_id, base::StringPrintf(
-                          "Frame with ID %d is showing error page", frame_id));
+            frame_id, document_id,
+            base::StringPrintf("Frame with ID %d is showing error page",
+                               frame_id));
         continue;
       }
 
@@ -146,8 +152,10 @@ class Handler : public content::WebContentsObserver {
   void WebContentsDestroyed() override {
     for (content::RenderFrameHost* frame : pending_render_frames_) {
       int frame_id = ExtensionApiFrameIdMap::GetFrameId(frame);
+      ExtensionApiFrameIdMap::DocumentId document_id =
+          ExtensionApiFrameIdMap::GetDocumentId(frame);
       AddWillNotInjectResult(
-          frame_id,
+          frame_id, document_id,
           base::StringPrintf("Tab containing frame with ID %d was removed.",
                              frame_id));
     }
@@ -163,16 +171,22 @@ class Handler : public content::WebContentsObserver {
       return;
 
     int frame_id = ExtensionApiFrameIdMap::GetFrameId(render_frame_host);
+    ExtensionApiFrameIdMap::DocumentId document_id =
+        ExtensionApiFrameIdMap::GetDocumentId(render_frame_host);
     AddWillNotInjectResult(
-        frame_id,
+        frame_id, document_id,
         base::StringPrintf("Frame with ID %d was removed.", frame_id));
     if (pending_render_frames_.empty())
       Finish();
   }
 
-  void AddWillNotInjectResult(int frame_id, std::string error) {
+  void AddWillNotInjectResult(
+      int frame_id,
+      const ExtensionApiFrameIdMap::DocumentId& document_id,
+      std::string error) {
     ScriptExecutor::FrameResult result;
     result.frame_id = frame_id;
+    result.document_id = document_id;
     result.error = std::move(error);
     results_.push_back(std::move(result));
   }
@@ -213,6 +227,8 @@ class Handler : public content::WebContentsObserver {
     frame_result.frame_responded = true;
     frame_result.frame_id =
         ExtensionApiFrameIdMap::GetFrameId(render_frame_host);
+    frame_result.document_id =
+        ExtensionApiFrameIdMap::GetDocumentId(render_frame_host);
     frame_result.error = error;
     // TODO(devlin): Do we need to trust the renderer for the URL here? Is there
     // a risk of the frame having navigated since the injection happened?

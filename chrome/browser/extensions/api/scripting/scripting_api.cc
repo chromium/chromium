@@ -305,6 +305,62 @@ bool HasPermissionToInjectIntoFrame(const PermissionsData& permissions,
   return permissions.CanAccessPage(committed_url, tab_id, error);
 }
 
+// Collects the frames for injection. Method will return false if an error is
+// encountered.
+bool CollectFramesForInjection(const api::scripting::InjectionTarget& target,
+                               content::WebContents* tab,
+                               std::set<int>& frame_ids,
+                               std::set<content::RenderFrameHost*>& frames,
+                               std::string* error_out) {
+  if (target.document_ids) {
+    for (const auto& id : *target.document_ids) {
+      ExtensionApiFrameIdMap::DocumentId document_id =
+          ExtensionApiFrameIdMap::DocumentIdFromString(id);
+
+      if (!document_id) {
+        *error_out = base::StringPrintf("Invalid document id %s", id.c_str());
+        return false;
+      }
+
+      content::RenderFrameHost* frame =
+          ExtensionApiFrameIdMap::Get()->GetRenderFrameHostByDocumentId(
+              document_id);
+
+      // If the frame was not found or it matched another tab reject this
+      // request.
+      if (!frame || content::WebContents::FromRenderFrameHost(frame) != tab) {
+        *error_out =
+            base::StringPrintf("No document with id %s in tab with id %d",
+                               id.c_str(), target.tab_id);
+        return false;
+      }
+
+      // Convert the documentId into a frameId since the content will be
+      // injected synchronously.
+      frame_ids.insert(ExtensionApiFrameIdMap::GetFrameId(frame));
+      frames.insert(frame);
+    }
+  } else {
+    if (target.frame_ids) {
+      frame_ids.insert(target.frame_ids->begin(), target.frame_ids->end());
+    } else {
+      frame_ids.insert(ExtensionApiFrameIdMap::kTopFrameId);
+    }
+
+    for (int frame_id : frame_ids) {
+      content::RenderFrameHost* frame =
+          ExtensionApiFrameIdMap::GetRenderFrameHostById(tab, frame_id);
+      if (!frame) {
+        *error_out = base::StringPrintf("No frame with id %d in tab with id %d",
+                                        frame_id, target.tab_id);
+        return false;
+      }
+      frames.insert(frame);
+    }
+  }
+  return true;
+}
+
 // Returns true if the `target` can be accessed with the given `permissions`.
 // If the target can be accessed, populates `script_executor_out`,
 // `frame_scope_out`, and `frame_ids_out` with the appropriate values;
@@ -327,8 +383,16 @@ bool CanAccessTarget(const PermissionsData& permissions,
     return false;
   }
 
-  if ((target.all_frames && *target.all_frames == true) && target.frame_ids) {
-    *error_out = "Cannot specify both 'allFrames' and 'frameIds'.";
+  if ((target.all_frames && *target.all_frames == true) &&
+      (target.frame_ids || target.document_ids)) {
+    *error_out =
+        "Cannot specify 'allFrames' if either 'frameIds' or 'documentIds' is "
+        "specified.";
+    return false;
+  }
+
+  if (target.frame_ids && target.document_ids) {
+    *error_out = "Cannot specify both 'frameIds' and 'documentIds'.";
     return false;
   }
 
@@ -341,25 +405,15 @@ bool CanAccessTarget(const PermissionsData& permissions,
           : ScriptExecutor::SPECIFIED_FRAMES;
 
   std::set<int> frame_ids;
-  if (target.frame_ids) {
-    frame_ids.insert(target.frame_ids->begin(), target.frame_ids->end());
-  } else {
-    frame_ids.insert(ExtensionApiFrameIdMap::kTopFrameId);
-  }
+  std::set<content::RenderFrameHost*> frames;
+  if (!CollectFramesForInjection(target, tab, frame_ids, frames, error_out))
+    return false;
 
   // TODO(devlin): If `allFrames` is true, we error out if the extension
   // doesn't have access to the top frame (even if it may inject in child
   // frames). This is inconsistent with content scripts (which can execute on
   // child frames), but consistent with the old tabs.executeScript() API.
-  for (int frame_id : frame_ids) {
-    content::RenderFrameHost* frame =
-        ExtensionApiFrameIdMap::GetRenderFrameHostById(tab, frame_id);
-    if (!frame) {
-      *error_out = base::StringPrintf("No frame with id %d in tab with id %d",
-                                      frame_id, target.tab_id);
-      return false;
-    }
-
+  for (content::RenderFrameHost* frame : frames) {
     DCHECK_EQ(content::WebContents::FromRenderFrameHost(frame), tab);
     if (!HasPermissionToInjectIntoFrame(permissions, target.tab_id, frame,
                                         error_out)) {
@@ -627,6 +681,8 @@ void ScriptingExecuteScriptFunction::OnScriptExecuted(
     injection_result.result =
         base::Value::ToUniquePtrValue(std::move(result.value));
     injection_result.frame_id = result.frame_id;
+    if (result.document_id)
+      injection_result.document_id = result.document_id.ToString();
 
     // Put the top frame first; otherwise, any order.
     if (result.frame_id == ExtensionApiFrameIdMap::kTopFrameId) {
