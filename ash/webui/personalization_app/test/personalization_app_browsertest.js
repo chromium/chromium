@@ -167,9 +167,7 @@ TEST_F('WallpaperSubpageBrowserTest', 'HasWallpaperSubpageUrl', () => {
   testDone();
 });
 
-// TODO(crbug.com/1306628): Disable this test while LayoutNGBlockInInline is
-// off. This should be reenabled before the M101 branch point.
-TEST_F('WallpaperSubpageBrowserTest', 'DISABLED_LoadsCollectionsGrid', () => {
+TEST_F('WallpaperSubpageBrowserTest', 'LoadsCollectionsGrid', () => {
   const router = document.querySelector('personalization-router');
   assertTrue(!!router, 'personalization-router should be top level element');
 

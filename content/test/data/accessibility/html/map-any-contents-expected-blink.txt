@@ -1,6 +1,6 @@
 rootWebArea
 ++genericContainer ignored
-++++genericContainer ignored
+++++genericContainer
 ++++++image name='pipe'
 ++++++++heading name='Headings are allowed in a map'
 ++++++++++staticText name='Headings are allowed in a map'

@@ -21,8 +21,9 @@
 ++[panel] name='Group 4'
 ++++[section]
 ++++++[static] name='Before'
-++++[paragraph]
-++++++[static] name='After'
+++++[section]
+++++++[paragraph]
+++++++++[static] name='After'
 ++[panel] name='Group 5'
 ++++[static] name='Italic only '
 ++++[static] name='italic and bold'
