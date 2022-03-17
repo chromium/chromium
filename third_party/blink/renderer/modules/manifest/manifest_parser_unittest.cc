@@ -2493,19 +2493,31 @@ TEST_F(ManifestParserTest, FileHandlerParseRules) {
               "accept": {
                 "text/plain": ".txt"
               }
+            },
+            {
+              "action": "/files4",
+              "accept": {
+                "text/csv": ".csv"
+              },
+              "launch_type": "multiple-client"
             }
           ]
         })");
     EXPECT_FALSE(IsManifestEmpty(manifest));
     EXPECT_FALSE(manifest->file_handlers.IsEmpty());
-    ASSERT_EQ(3U, manifest->file_handlers.size());
+    ASSERT_EQ(4U, manifest->file_handlers.size());
     EXPECT_EQ(mojom::blink::ManifestFileHandler::LaunchType::kMultipleClients,
               manifest->file_handlers[0]->launch_type);
     EXPECT_EQ(mojom::blink::ManifestFileHandler::LaunchType::kSingleClient,
               manifest->file_handlers[1]->launch_type);
     EXPECT_EQ(mojom::blink::ManifestFileHandler::LaunchType::kSingleClient,
               manifest->file_handlers[2]->launch_type);
-    EXPECT_EQ(0u, GetErrorCount());
+    // This one has a typo.
+    EXPECT_EQ(mojom::blink::ManifestFileHandler::LaunchType::kSingleClient,
+              manifest->file_handlers[3]->launch_type);
+    ASSERT_EQ(1u, GetErrorCount());
+    EXPECT_EQ("launch_type value 'multiple-client' ignored, unknown value.",
+              errors()[0]);
   }
 }
 
