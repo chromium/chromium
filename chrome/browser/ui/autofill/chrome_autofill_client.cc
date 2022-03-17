@@ -379,7 +379,7 @@ ChromeAutofillClient::GetVirtualCardEnrollmentManager() {
 }
 
 void ChromeAutofillClient::ShowVirtualCardEnrollDialog(
-    const raw_ptr<VirtualCardEnrollmentFields> virtual_card_enrollment_fields,
+    const VirtualCardEnrollmentFields& virtual_card_enrollment_fields,
     base::OnceClosure accept_virtual_card_callback,
     base::OnceClosure decline_virtual_card_callback) {
   VirtualCardEnrollBubbleControllerImpl::CreateForWebContents(web_contents());

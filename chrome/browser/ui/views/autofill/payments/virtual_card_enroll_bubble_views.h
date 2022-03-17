@@ -30,7 +30,7 @@ class VirtualCardEnrollBubbleViews : public AutofillBubbleBase,
   VirtualCardEnrollBubbleViews(views::View* anchor_view,
                                content::WebContents* web_contents,
                                VirtualCardEnrollBubbleController* controller);
-
+  ~VirtualCardEnrollBubbleViews() override;
   VirtualCardEnrollBubbleViews(const VirtualCardEnrollBubbleViews&) = delete;
   VirtualCardEnrollBubbleViews& operator=(const VirtualCardEnrollBubbleViews&) =
       delete;
@@ -54,8 +54,6 @@ class VirtualCardEnrollBubbleViews : public AutofillBubbleBase,
 
   void OnDialogAccepted();
   void OnDialogDeclined();
-
-  ~VirtualCardEnrollBubbleViews() override;
 
  private:
   std::unique_ptr<views::View> CreateLegalMessageView();

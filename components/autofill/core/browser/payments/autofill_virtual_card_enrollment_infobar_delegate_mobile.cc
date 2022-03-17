@@ -49,14 +49,14 @@ const raw_ptr<gfx::Image>
 AutofillVirtualCardEnrollmentInfoBarDelegateMobile::GetIssuerIcon() const {
   return virtual_card_enroll_bubble_controller_
       ->GetVirtualCardEnrollmentFields()
-      ->card_art_image.get();
+      .card_art_image.get();
 }
 
 std::u16string
 AutofillVirtualCardEnrollmentInfoBarDelegateMobile::GetCardLabel() const {
   return virtual_card_enroll_bubble_controller_
       ->GetVirtualCardEnrollmentFields()
-      ->credit_card.CardIdentifierStringForAutofillDisplay();
+      .credit_card.CardIdentifierStringForAutofillDisplay();
 }
 
 LegalMessageLines
@@ -64,7 +64,7 @@ AutofillVirtualCardEnrollmentInfoBarDelegateMobile::GetGoogleLegalMessage()
     const {
   return virtual_card_enroll_bubble_controller_
       ->GetVirtualCardEnrollmentFields()
-      ->google_legal_message;
+      .google_legal_message;
 }
 
 LegalMessageLines
@@ -72,7 +72,7 @@ AutofillVirtualCardEnrollmentInfoBarDelegateMobile::GetIssuerLegalMessage()
     const {
   return virtual_card_enroll_bubble_controller_
       ->GetVirtualCardEnrollmentFields()
-      ->issuer_legal_message;
+      .issuer_legal_message;
 }
 
 void AutofillVirtualCardEnrollmentInfoBarDelegateMobile::OnInfobarLinkClicked(

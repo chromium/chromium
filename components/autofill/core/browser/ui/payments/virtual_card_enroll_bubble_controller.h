@@ -26,6 +26,12 @@ class VirtualCardEnrollBubbleController {
       const VirtualCardEnrollBubbleController&) = delete;
   virtual ~VirtualCardEnrollBubbleController() = default;
 
+  // Returns a reference to the VirtualCardEnrollBubbleController associated
+  // with the given |web_contents|. If controller does not exist, this will
+  // create the controller from the |web_contents| then return the reference.
+  static VirtualCardEnrollBubbleController* GetOrCreate(
+      content::WebContents* web_contents);
+
   // Returns the title displayed in the bubble.
   virtual std::u16string GetWindowTitle() const = 0;
 
@@ -40,7 +46,7 @@ class VirtualCardEnrollBubbleController {
   virtual std::u16string GetLearnMoreLinkText() const = 0;
 
   // Returns the enrollment fields for the virtual card.
-  virtual const VirtualCardEnrollmentFields* GetVirtualCardEnrollmentFields()
+  virtual const VirtualCardEnrollmentFields GetVirtualCardEnrollmentFields()
       const = 0;
 
   // Returns the currently active virtual card enroll bubble view. Can be

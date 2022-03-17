@@ -119,6 +119,13 @@ chromium-metrics-reviews@google.com.
                saving the actual card to Google Payments"/>
 </variants>
 
+<variants name="Autofill.VirtualCardEnrollmentSource">
+  <variant name="Downstream" summary="credit card unmasking enrollment flow"/>
+  <variant name="SettingsPage" summary="the settings page"/>
+  <variant name="Unknown" summary="unknown source"/>
+  <variant name="Upstream" summary="credit card uploading enrollment flow"/>
+</variants>
+
 <variants name="Autofill.VirtualCardUnmaskFlowType">
   <variant name="Fido" summary="FIDO authentication only"/>
   <variant name="Otp" summary="OTP auth only"/>
@@ -3342,6 +3349,34 @@ chromium-metrics-reviews@google.com.
     page) and logged based on whether the request suceeded.
   </summary>
   <token key="Source" variants="Autofill.VirtualCard.RequestSource"/>
+</histogram>
+
+<histogram
+    name="Autofill.VirtualCardEnrollBubble.Result.{EnrollmentSource}.{ShowType}"
+    enum="AutofillVirtualCardEnrollBubbleResult" expires_after="2023-03-01">
+  <owner>alexandertekle@google.com</owner>
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the reason for closing the virtual card enroll bubble for flows that
+    start from {EnrollmentSource}. Recorded when the bubble is closed.
+  </summary>
+  <token key="EnrollmentSource"
+      variants="Autofill.VirtualCardEnrollmentSource"/>
+  <token key="ShowType" variants="Autofill.PaymentBubble.Show"/>
+</histogram>
+
+<histogram name="Autofill.VirtualCardEnrollBubble.Shown.{EnrollmentSource}"
+    enum="BooleanPreviouslyShown" expires_after="2023-03-01">
+  <owner>alexandertekle@google.com</owner>
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the reason for starting the virtual card enroll bubble for flows
+    that start from {EnrollmentSource}. Recorded when the bubble is shown.
+  </summary>
+  <token key="EnrollmentSource"
+      variants="Autofill.VirtualCardEnrollmentSource"/>
 </histogram>
 
 <histogram name="Autofill.VirtualCardManualFallbackBubble.FieldClicked"

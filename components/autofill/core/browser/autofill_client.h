@@ -422,7 +422,7 @@ class AutofillClient : public RiskDataLoader {
 
   // Shows a dialog for the user to enroll in a virtual card.
   virtual void ShowVirtualCardEnrollDialog(
-      const raw_ptr<VirtualCardEnrollmentFields> virtual_card_enrollment_fields,
+      const VirtualCardEnrollmentFields& virtual_card_enrollment_fields,
       base::OnceClosure accept_virtual_card_callback,
       base::OnceClosure decline_virtual_card_callback);
 

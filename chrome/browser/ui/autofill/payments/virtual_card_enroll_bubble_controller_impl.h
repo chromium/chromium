@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
+#include "components/autofill/core/browser/metrics/payments/virtual_card_enrollment_metrics.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/ui/payments/virtual_card_enroll_bubble_controller.h"
@@ -30,7 +31,7 @@ class VirtualCardEnrollBubbleControllerImpl
   // icon. Sets virtual card enrollment fields as well as the closure for the
   // accept and decline bubble events.
   void ShowBubble(
-      const VirtualCardEnrollmentFields* virtual_card_enrollment_fields,
+      const VirtualCardEnrollmentFields& virtual_card_enrollment_fields,
       base::OnceClosure accept_virtual_card_callback,
       base::OnceClosure decline_virtual_card_callback);
 
@@ -43,7 +44,7 @@ class VirtualCardEnrollBubbleControllerImpl
   std::u16string GetAcceptButtonText() const override;
   std::u16string GetDeclineButtonText() const override;
   std::u16string GetLearnMoreLinkText() const override;
-  const VirtualCardEnrollmentFields* GetVirtualCardEnrollmentFields()
+  const VirtualCardEnrollmentFields GetVirtualCardEnrollmentFields()
       const override;
   AutofillBubbleBase* GetVirtualCardEnrollBubbleView() const override;
 
@@ -52,6 +53,13 @@ class VirtualCardEnrollBubbleControllerImpl
   void OnLinkClicked(const GURL& url) override;
   void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) override;
   bool IsIconVisible() const override;
+
+#if defined(UNIT_TEST)
+  void SetBubbleShownClosureForTesting(
+      base::RepeatingClosure bubble_shown_closure_for_testing) {
+    bubble_shown_closure_for_testing_ = bubble_shown_closure_for_testing;
+  }
+#endif
 
  protected:
   explicit VirtualCardEnrollBubbleControllerImpl(
@@ -63,8 +71,14 @@ class VirtualCardEnrollBubbleControllerImpl
   void DoShowBubble() override;
 
  private:
+  // Gets the correct virtual card enrollment source metric to log.
+  VirtualCardEnrollmentBubbleSource GetVirtualCardEnrollmentBubbleSource();
+
   friend class content::WebContentsUserData<
       VirtualCardEnrollBubbleControllerImpl>;
+
+  // Contains more details regarding the sort of bubble to show the users.
+  VirtualCardEnrollmentFields virtual_card_enrollment_fields_;
 
 #if !BUILDFLAG(IS_ANDROID)
   // Returns whether the web content associated with this controller is active.
@@ -73,9 +87,6 @@ class VirtualCardEnrollBubbleControllerImpl
   // True if the icon should be showing on the webpage
   BubbleState bubble_state_ = BubbleState::kHidden;
 #endif  // !BUILDFLAG(IS_ANDROID)
-
-  // Contains more details regarding the sort of bubble to show the users.
-  raw_ptr<const VirtualCardEnrollmentFields> virtual_card_enrollment_fields_;
 
   // Denotes whether the bubble is shown due to user gesture. If this is true,
   // it means the bubble is a reshown bubble.
@@ -86,6 +97,10 @@ class VirtualCardEnrollBubbleControllerImpl
 
   // Closure invoked when the user rejects enrolling in a virtual card.
   base::OnceClosure decline_virtual_card_callback_;
+
+  // Closure used for testing purposes that notifies that the enrollment bubble
+  // has been shown.
+  base::RepeatingClosure bubble_shown_closure_for_testing_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

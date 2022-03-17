@@ -7543,6 +7543,14 @@ others/histograms.xml -->
   <int value="2" label="IBAN"/>
 </enum>
 
+<enum name="AutofillVirtualCardEnrollBubbleResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="User accepted the bubble"/>
+  <int value="2" label="User closed bubble via corner X or ESC"/>
+  <int value="3" label="User did not interact with the bubble"/>
+  <int value="4" label="Bubble lost focus and was deactivated"/>
+</enum>
+
 <enum name="AutofillVirtualCardManualFallbackBubbleFieldClicked">
   <int value="0" label="Card number"/>
   <int value="1" label="Expiration month"/>

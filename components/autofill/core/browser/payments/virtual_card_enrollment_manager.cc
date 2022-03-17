@@ -207,7 +207,7 @@ void VirtualCardEnrollmentManager::LoadRiskDataAndContinueFlow(
 void VirtualCardEnrollmentManager::ShowVirtualCardEnrollBubble() {
   DCHECK(autofill_client_);
   autofill_client_->ShowVirtualCardEnrollDialog(
-      &(state_.virtual_card_enrollment_fields),
+      state_.virtual_card_enrollment_fields,
       base::BindOnce(&VirtualCardEnrollmentManager::Enroll,
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(
