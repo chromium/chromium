@@ -60,16 +60,17 @@ class ProfilePickerTurnSyncOnDelegate : public TurnSyncOnHelper::Delegate,
   void ShowSyncConfirmationScreen();
 
   // When ShowSync(Disabled)Confirmation() gets called, this must eventually get
-  // called exactly once in all code branches. Handles the callback and reports
-  // the metrics.
+  // called exactly once in all code branches. Handles the callback.
   void FinishSyncConfirmation(
-      LoginUIService::SyncConfirmationUIClosedResult result,
-      absl::optional<ProfileMetrics::ProfileAddSignInFlowOutcome> outcome);
+      LoginUIService::SyncConfirmationUIClosedResult result);
 
   // Shows the enterprise welcome screen.
   void ShowEnterpriseWelcome(EnterpriseProfileWelcomeUI::ScreenType type);
   void OnEnterpriseWelcomeClosed(EnterpriseProfileWelcomeUI::ScreenType type,
                                  bool proceed);
+
+  // Reports metric with the outcome of the turn-sync-on flow.
+  void LogOutcome(ProfileMetrics::ProfileSignedInFlowOutcome outcome);
 
   // Controls the sign-in flow. Is not guaranteed to outlive this object (gets
   // destroyed when the flow window closes).

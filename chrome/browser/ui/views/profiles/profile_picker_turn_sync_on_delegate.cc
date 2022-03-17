@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_turn_sync_on_delegate.h"
 
 #include "base/logging.h"
+#include "build/chromeos_buildflags.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -17,28 +19,28 @@
 
 namespace {
 
-absl::optional<ProfileMetrics::ProfileAddSignInFlowOutcome> GetSyncOutcome(
+absl::optional<ProfileMetrics::ProfileSignedInFlowOutcome> GetSyncOutcome(
     bool enterprise_account,
     bool sync_disabled,
     LoginUIService::SyncConfirmationUIClosedResult result) {
   // The decision of the user is not relevant for the metric.
   if (sync_disabled)
-    return ProfileMetrics::ProfileAddSignInFlowOutcome::kEnterpriseSyncDisabled;
+    return ProfileMetrics::ProfileSignedInFlowOutcome::kEnterpriseSyncDisabled;
 
   switch (result) {
     case LoginUIService::SYNC_WITH_DEFAULT_SETTINGS:
       return enterprise_account
-                 ? ProfileMetrics::ProfileAddSignInFlowOutcome::kEnterpriseSync
-                 : ProfileMetrics::ProfileAddSignInFlowOutcome::kConsumerSync;
+                 ? ProfileMetrics::ProfileSignedInFlowOutcome::kEnterpriseSync
+                 : ProfileMetrics::ProfileSignedInFlowOutcome::kConsumerSync;
     case LoginUIService::CONFIGURE_SYNC_FIRST:
-      return enterprise_account ? ProfileMetrics::ProfileAddSignInFlowOutcome::
+      return enterprise_account ? ProfileMetrics::ProfileSignedInFlowOutcome::
                                       kEnterpriseSyncSettings
-                                : ProfileMetrics::ProfileAddSignInFlowOutcome::
+                                : ProfileMetrics::ProfileSignedInFlowOutcome::
                                       kConsumerSyncSettings;
     case LoginUIService::ABORT_SYNC:
-      return enterprise_account ? ProfileMetrics::ProfileAddSignInFlowOutcome::
+      return enterprise_account ? ProfileMetrics::ProfileSignedInFlowOutcome::
                                       kEnterpriseSigninOnly
-                                : ProfileMetrics::ProfileAddSignInFlowOutcome::
+                                : ProfileMetrics::ProfileSignedInFlowOutcome::
                                       kConsumerSigninOnly;
     case LoginUIService::UI_CLOSED:
       // The metric is recorded elsewhere.
@@ -48,6 +50,17 @@ absl::optional<ProfileMetrics::ProfileAddSignInFlowOutcome> GetSyncOutcome(
 
 void OpenSettingsInBrowser(Browser* browser) {
   chrome::ShowSettingsSubPage(browser, chrome::kSyncSetupSubPage);
+}
+
+bool IsLacrosPrimaryProfileFirstRun(Profile* profile) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  DCHECK(profile);
+  // The primary profile can never get _created_ through profile creation flow
+  // so if it's the primary (main) profile, it must be onboarding.
+  return profile->IsMainProfile();
+#else
+  return false;
+#endif
 }
 
 }  // namespace
@@ -61,8 +74,14 @@ ProfilePickerTurnSyncOnDelegate::~ProfilePickerTurnSyncOnDelegate() = default;
 
 void ProfilePickerTurnSyncOnDelegate::ShowLoginError(
     const SigninUIError& error) {
-  ProfileMetrics::LogProfileAddSignInFlowOutcome(
-      ProfileMetrics::ProfileAddSignInFlowOutcome::kLoginError);
+  LogOutcome(ProfileMetrics::ProfileSignedInFlowOutcome::kLoginError);
+
+  if (IsLacrosPrimaryProfileFirstRun(profile_)) {
+    // The primary profile onboarding is silently skipped if there's any error.
+    if (controller_)
+      controller_->FinishAndOpenBrowser(ProfilePicker::BrowserOpenedCallback());
+    return;
+  }
 
   // Show the profile switch confirmation screen inside of the profile picker if
   // the user cannot sign in because the account already used by another
@@ -109,7 +128,9 @@ void ProfilePickerTurnSyncOnDelegate::ShowSyncConfirmation(
   DCHECK(callback);
   sync_confirmation_callback_ = std::move(callback);
 
-  if (enterprise_account_) {
+  if (enterprise_account_ || IsLacrosPrimaryProfileFirstRun(profile_)) {
+    // TODO(crbug.com/1300109): Add separate screen types for the enterprise and
+    // non-enterprise first run experience and implement those screen types.
     // First show the enterprise welcome screen and only after that (if the user
     // proceeds with the flow) the sync consent.
     ShowEnterpriseWelcome(
@@ -125,6 +146,15 @@ void ProfilePickerTurnSyncOnDelegate::ShowSyncDisabledConfirmation(
     base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
         callback) {
   DCHECK(callback);
+  if (IsLacrosPrimaryProfileFirstRun(profile_)) {
+    // The primary profile first run experience is silently skipped if sync is
+    // disabled (there's no point to promo a feature that cannot get enabled).
+    // TODO (crbug.com/1141341): SYNC_WITH_DEFAULT_SETTINGS encodes to stay
+    // signed-in. Split the enum for sync disabled / rename the entries to
+    // better match the situation.
+    std::move(callback).Run(LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
+    return;
+  }
   sync_confirmation_callback_ = std::move(callback);
   sync_disabled_ = true;
   ShowEnterpriseWelcome(is_managed_account
@@ -154,8 +184,12 @@ void ProfilePickerTurnSyncOnDelegate::OnSyncConfirmationUIClosed(
       LoginUIServiceFactory::GetForProfile(profile_)));
   scoped_login_ui_service_observation_.Reset();
 
-  FinishSyncConfirmation(
-      result, GetSyncOutcome(enterprise_account_, sync_disabled_, result));
+  absl::optional<ProfileMetrics::ProfileSignedInFlowOutcome> outcome =
+      GetSyncOutcome(enterprise_account_, sync_disabled_, result);
+  if (outcome)
+    LogOutcome(*outcome);
+
+  FinishSyncConfirmation(result);
 }
 
 void ProfilePickerTurnSyncOnDelegate::ShowSyncConfirmationScreen() {
@@ -169,11 +203,8 @@ void ProfilePickerTurnSyncOnDelegate::ShowSyncConfirmationScreen() {
 }
 
 void ProfilePickerTurnSyncOnDelegate::FinishSyncConfirmation(
-    LoginUIService::SyncConfirmationUIClosedResult result,
-    absl::optional<ProfileMetrics::ProfileAddSignInFlowOutcome> outcome) {
+    LoginUIService::SyncConfirmationUIClosedResult result) {
   DCHECK(sync_confirmation_callback_);
-  if (outcome)
-    ProfileMetrics::LogProfileAddSignInFlowOutcome(*outcome);
   std::move(sync_confirmation_callback_).Run(result);
 }
 
@@ -194,13 +225,13 @@ void ProfilePickerTurnSyncOnDelegate::OnEnterpriseWelcomeClosed(
     EnterpriseProfileWelcomeUI::ScreenType type,
     bool proceed) {
   if (!proceed) {
+    LogOutcome(ProfileMetrics::ProfileSignedInFlowOutcome::
+                   kAbortedOnEnterpriseWelcome);
     // The callback provided by TurnSyncOnHelper must be called, UI_CLOSED
     // makes sure the final callback does not get called. It does not matter
     // what happens to sync as the signed-in profile creation gets cancelled
     // right after.
-    FinishSyncConfirmation(LoginUIService::UI_CLOSED,
-                           ProfileMetrics::ProfileAddSignInFlowOutcome::
-                               kAbortedOnEnterpriseWelcome);
+    FinishSyncConfirmation(LoginUIService::UI_CLOSED);
     ProfilePicker::CancelSignedInFlow();
     return;
   }
@@ -211,19 +242,28 @@ void ProfilePickerTurnSyncOnDelegate::OnEnterpriseWelcomeClosed(
       return;
     case EnterpriseProfileWelcomeUI::ScreenType::kEntepriseAccountSyncDisabled:
     case EnterpriseProfileWelcomeUI::ScreenType::kConsumerAccountSyncDisabled:
+      // Logging kEnterpriseSyncDisabled for consumer accounts on managed
+      // devices is a pre-existing minor imprecision in reporting of this metric
+      // that's not worth fixing.
+      LogOutcome(
+          ProfileMetrics::ProfileSignedInFlowOutcome::kEnterpriseSyncDisabled);
       // SYNC_WITH_DEFAULT_SETTINGS encodes that the user wants to continue
       // (despite sync being disabled).
       // TODO (crbug.com/1141341): Split the enum for sync disabled / rename the
       // entries to better match the situation.
-      // Logging kEnterpriseSyncDisabled for consumer accounts on managed
-      // devices is a pre-existing minor imprecision in reporting of this metric
-      // that's not worth fixing.
-      FinishSyncConfirmation(
-          LoginUIService::SYNC_WITH_DEFAULT_SETTINGS,
-          ProfileMetrics::ProfileAddSignInFlowOutcome::kEnterpriseSyncDisabled);
+      FinishSyncConfirmation(LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
       break;
     case EnterpriseProfileWelcomeUI::ScreenType::kEnterpriseAccountCreation:
       NOTREACHED() << "The profile picker should not show an enterprise "
                       "welcome that prompts for profile creation";
+  }
+}
+
+void ProfilePickerTurnSyncOnDelegate::LogOutcome(
+    ProfileMetrics::ProfileSignedInFlowOutcome outcome) {
+  if (IsLacrosPrimaryProfileFirstRun(profile_)) {
+    ProfileMetrics::LogLacrosPrimaryProfileFirstRunOutcome(outcome);
+  } else {
+    ProfileMetrics::LogProfileAddSignInFlowOutcome(outcome);
   }
 }

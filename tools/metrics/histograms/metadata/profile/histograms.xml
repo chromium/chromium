@@ -29,7 +29,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.AddSignInFlowOutcome"
-    enum="ProfileAddSignInFlowOutcome" expires_after="2022-08-07">
+    enum="ProfileSignedInFlowOutcome" expires_after="2022-08-07">
   <owner>jkrcal@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>
@@ -295,6 +295,16 @@ chromium-metrics-reviews@google.com.
 
     Only regular Profiles are considered for this metric (no Incognito, Guest,
     or System Profiles).
+  </summary>
+</histogram>
+
+<histogram name="Profile.LacrosPrimaryProfileFirstRunOutcome"
+    enum="ProfileSignedInFlowOutcome" expires_after="2022-09-16">
+  <owner>dgn@chromium.org</owner>
+  <owner>droger@chromium.org</owner>
+  <summary>
+    Records the outcome of the lacros first run for the primary profile (also in
+    the case it gets skipped silently).
   </summary>
 </histogram>
 

@@ -70,7 +70,7 @@ void ContinueSAMLSignin(std::unique_ptr<content::WebContents> saml_wc,
   browser->tab_strip_model()->ReplaceWebContentsAt(0, std::move(saml_wc));
 
   ProfileMetrics::LogProfileAddSignInFlowOutcome(
-      ProfileMetrics::ProfileAddSignInFlowOutcome::kSAML);
+      ProfileMetrics::ProfileSignedInFlowOutcome::kSAML);
 }
 
 }  // namespace
@@ -100,7 +100,7 @@ ProfileCreationSignedInFlowController::
     // TODO(crbug.com/1300109): Consider moving this recording into
     // ProfilePickerTurnSyncOnDelegate and unify this code with Cancel().
     ProfileMetrics::LogProfileAddSignInFlowOutcome(
-        ProfileMetrics::ProfileAddSignInFlowOutcome::kAbortedAfterSignIn);
+        ProfileMetrics::ProfileSignedInFlowOutcome::kAbortedAfterSignIn);
   }
 }
 

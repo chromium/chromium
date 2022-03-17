@@ -72,7 +72,7 @@ ProfilePickerDiceSignInProvider::~ProfilePickerDiceSignInProvider() {
     }
 
     ProfileMetrics::LogProfileAddSignInFlowOutcome(
-        ProfileMetrics::ProfileAddSignInFlowOutcome::kAbortedBeforeSignIn);
+        ProfileMetrics::ProfileSignedInFlowOutcome::kAbortedBeforeSignIn);
   }
 }
 

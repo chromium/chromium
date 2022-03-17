@@ -216,8 +216,15 @@ void ProfileMetrics::LogProfileAddNewUser(ProfileAdd metric) {
 
 // static
 void ProfileMetrics::LogProfileAddSignInFlowOutcome(
-    ProfileAddSignInFlowOutcome outcome) {
+    ProfileSignedInFlowOutcome outcome) {
   base::UmaHistogramEnumeration("Profile.AddSignInFlowOutcome", outcome);
+}
+
+// static
+void ProfileMetrics::LogLacrosPrimaryProfileFirstRunOutcome(
+    ProfileSignedInFlowOutcome outcome) {
+  base::UmaHistogramEnumeration("Profile.LacrosPrimaryProfileFirstRunOutcome",
+                                outcome);
 }
 
 void ProfileMetrics::LogProfileAvatarSelection(size_t icon_index) {

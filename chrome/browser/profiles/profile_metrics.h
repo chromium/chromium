@@ -55,7 +55,7 @@ class ProfileMetrics {
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
-  enum class ProfileAddSignInFlowOutcome {
+  enum class ProfileSignedInFlowOutcome {
     kConsumerSync = 0,
     kConsumerSigninOnly = 1,
     kConsumerSyncSettings = 2,
@@ -176,7 +176,9 @@ class ProfileMetrics {
   static void LogNumberOfProfiles(ProfileAttributesStorage* storage);
   static void LogProfileAddNewUser(ProfileAdd metric);
   static void LogProfileAddSignInFlowOutcome(
-      ProfileAddSignInFlowOutcome outcome);
+      ProfileSignedInFlowOutcome outcome);
+  static void LogLacrosPrimaryProfileFirstRunOutcome(
+      ProfileSignedInFlowOutcome outcome);
   static void LogProfileAvatarSelection(size_t icon_index);
   static void LogProfileDeleteUser(ProfileDelete metric);
   static void LogProfileSwitchGaia(ProfileGaia metric);
