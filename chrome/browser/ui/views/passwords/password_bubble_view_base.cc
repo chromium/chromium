@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 
+#include "base/notreached.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/passwords/manage_passwords_view_utils.h"
@@ -52,6 +53,11 @@ void PasswordBubbleViewBase::ShowBubble(content::WebContents* web_contents,
       CreateBubble(web_contents, anchor_view, reason);
   DCHECK(bubble);
   DCHECK_EQ(bubble, g_manage_passwords_bubble_);
+  // TODO(crbug.com/1305276): In non-DCHECK mode we could fall through here and
+  // hard-crash if we requested a bubble and were in the wrong state. In the
+  // meantime we will abort if we did not create a bubble.
+  if (!g_manage_passwords_bubble_)
+    return;
 
   g_manage_passwords_bubble_->SetHighlightedButton(
       button_provider->GetPageActionIconView(
