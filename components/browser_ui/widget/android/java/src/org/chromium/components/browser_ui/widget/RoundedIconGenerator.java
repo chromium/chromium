@@ -14,6 +14,7 @@ import android.graphics.RectF;
 import android.text.TextPaint;
 import android.text.TextUtils;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -99,7 +100,7 @@ public class RoundedIconGenerator {
     /**
      * Sets the background color to use when generating icons.
      */
-    public void setBackgroundColor(int color) {
+    public void setBackgroundColor(@ColorInt int color) {
         mBackgroundPaint.setColor(color);
     }
 

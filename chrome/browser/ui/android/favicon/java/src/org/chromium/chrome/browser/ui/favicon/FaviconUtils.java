@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 
@@ -80,7 +81,7 @@ public class FaviconUtils {
      * @return A {@link Drawable} to be displayed as the favicon.
      */
     public static Drawable getIconDrawableWithoutFilter(@Nullable Bitmap icon, GURL url,
-            int fallbackColor, RoundedIconGenerator iconGenerator, Resources resources,
+            @ColorInt int fallbackColor, RoundedIconGenerator iconGenerator, Resources resources,
             int iconSize) {
         return getIconDrawableWithoutFilter(
                 icon, url.getSpec(), fallbackColor, iconGenerator, resources, iconSize);
@@ -88,7 +89,7 @@ public class FaviconUtils {
 
     @Deprecated // Use GURL variant instead.
     public static Drawable getIconDrawableWithoutFilter(@Nullable Bitmap icon, String url,
-            int fallbackColor, RoundedIconGenerator iconGenerator, Resources resources,
+            @ColorInt int fallbackColor, RoundedIconGenerator iconGenerator, Resources resources,
             int iconSize) {
         if (icon == null) {
             iconGenerator.setBackgroundColor(fallbackColor);
