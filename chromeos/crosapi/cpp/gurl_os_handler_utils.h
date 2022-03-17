@@ -38,6 +38,10 @@ namespace gurl_os_handler_utils {
 COMPONENT_EXPORT(CROSAPI)
 GURL SanitizeAshURL(const GURL& url, bool include_path = true);
 
+// Get the URL which should be used by Ash from a URL passed in by Lacros.
+COMPONENT_EXPORT(CROSAPI)
+GURL GetTargetURLFromLacrosURL(const GURL& url);
+
 // Determines if a given URL matches any of the given URLs in the list.
 // Note that the provided |url| needs to be sanitized.
 // Note furthermore that the passed |list| is expected to be lower case for

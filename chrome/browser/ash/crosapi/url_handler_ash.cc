@@ -83,21 +83,11 @@ void UrlHandlerAsh::OpenUrl(const GURL& url) {
 }
 
 bool UrlHandlerAsh::OpenUrlInternal(const GURL& url) {
-  GURL target_url = crosapi::gurl_os_handler_utils::SanitizeAshURL(url);
+  GURL target_url =
+      crosapi::gurl_os_handler_utils::GetTargetURLFromLacrosURL(url);
   GURL short_target_url = crosapi::gurl_os_handler_utils::SanitizeAshURL(
-      url, /*include_path=*/false);
-  // Change os://settings/* into chrome://os-settings/* which will be the long
-  // term home for our OS-settings.
-  if (short_target_url == GURL(chrome::kOsUISettingsURL)) {
-    // This converts the os (GURL lib unusable) address into a chrome
-    // (GURL lib usable) address.
-    target_url =
-        crosapi::gurl_os_handler_utils::GetChromeUrlFromSystemUrl(target_url);
-    GURL::Replacements replacements;
-    replacements.SetHostStr(chrome::kChromeUIOSSettingsHost);
-    target_url = target_url.ReplaceComponents(replacements);
-    short_target_url = GURL(chrome::kChromeUIOSSettingsURL);
-  }
+      target_url, /*include_path=*/false);
+
   // Settings will be handled.
   if (short_target_url == GURL(chrome::kChromeUIOSSettingsURL)) {
     chrome::SettingsWindowManager* settings_window_manager =

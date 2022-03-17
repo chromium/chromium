@@ -16,6 +16,8 @@ const char kOsScheme[] = "os";
 const char kOsUrlPrefix[] = "os://";
 const char kChromeUIScheme[] = "chrome";
 const char kChromeUrlPrefix[] = "chrome://";
+const char kOsUISettingsURL[] = "os://settings";
+const char kChromeUIOSSettingsHost[] = "os-settings";
 
 // The start of the host portion of a GURL which starts with the os scheme.
 const size_t kHostStart = sizeof(kOsUrlPrefix) - 1;
@@ -86,6 +88,25 @@ GURL SanitizeAshURL(const GURL& url, bool include_path) {
 
   return GURL(kOsUrlPrefix +
               GetValidHostAndSubhostFromOsUrl(url, include_path));
+}
+
+GURL GetTargetURLFromLacrosURL(const GURL& url) {
+  GURL target_url = crosapi::gurl_os_handler_utils::SanitizeAshURL(url);
+  GURL short_target_url = crosapi::gurl_os_handler_utils::SanitizeAshURL(
+      url, /*include_path=*/false);
+
+  if (short_target_url != GURL(kOsUISettingsURL))
+    return target_url;
+  // Change os://settings/* into chrome://os-settings/* which will be the long
+  // term home for our OS-settings.
+
+  // This converts the os (GURL lib unusable) address into a chrome
+  // (GURL lib usable) address.
+  target_url =
+      crosapi::gurl_os_handler_utils::GetChromeUrlFromSystemUrl(target_url);
+  GURL::Replacements replacements;
+  replacements.SetHostStr(kChromeUIOSSettingsHost);
+  return target_url.ReplaceComponents(replacements);
 }
 
 bool IsUrlInList(const GURL& test_url, std::vector<GURL> list) {
