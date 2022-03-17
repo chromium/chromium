@@ -4810,6 +4810,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "password-notes",
+    "owners": ["mamir", "derinel@google.com"],
+    "expiry_milestone": 105
+  },
+  {
     "name": "password-scripts-fetching",
     "owners": [ "kolos", "selakovic@google.com", "treib", "brunobraga" ],
     "expiry_milestone": 105

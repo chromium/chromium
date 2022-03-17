@@ -148,6 +148,10 @@ const char kMuteCompromisedPasswordsName[] =
 const char kMuteCompromisedPasswordsDescription[] =
     "Enables muting/unmuting compromised passwords in bulk leak check.";
 
+const char kPasswordNotesName[] = "Password notes in settings";
+const char kPasswordNotesDescription[] =
+    "Enables a note section for each password in the settings page.";
+
 const char kEnableBluetoothSerialPortProfileInSerialApiName[] =
     "Enable Bluetooth Serial Port Profile in Serial API";
 const char kEnableBluetoothSerialPortProfileInSerialApiDescription[] =

@@ -54277,6 +54277,7 @@ from previous Chrome versions.
   <int value="-320820051" label="enable-zero-copy"/>
   <int value="-319235277" label="ShareMenu:disabled"/>
   <int value="-319002650" label="ArcUsbStorageUI:enabled"/>
+  <int value="-318198594" label="PasswordNotes:disabled"/>
   <int value="-317758331" label="WebViewThreadSafeMedia:disabled"/>
   <int value="-317195508" label="TabGroupsContinuationAndroid:disabled"/>
   <int value="-315741215"
@@ -55291,6 +55292,7 @@ from previous Chrome versions.
   <int value="392107748" label="PwaUpdateDialogForIcon:disabled"/>
   <int value="392782890" label="SafeBrowsingTelemetryForApkDownloads:enabled"/>
   <int value="393704200" label="account-consistency"/>
+  <int value="397226364" label="PasswordNotes:enabled"/>
   <int value="397275669" label="QuickCommands:disabled"/>
   <int value="398903399" label="GenericSensorExtraClasses:disabled"/>
   <int value="399039205" label="enable-webrtc-hw-vp9-encoding"/>

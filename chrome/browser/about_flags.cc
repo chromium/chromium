@@ -7040,6 +7040,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMuteCompromisedPasswordsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(password_manager::features::kMuteCompromisedPasswords)},
 
+    {"password-notes", flag_descriptions::kPasswordNotesName,
+     flag_descriptions::kPasswordNotesDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(password_manager::features::kPasswordNotes)},
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"frame-throttle-fps", flag_descriptions::kFrameThrottleFpsName,
      flag_descriptions::kFrameThrottleFpsDescription, kOsCrOS,
