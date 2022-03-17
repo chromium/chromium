@@ -293,7 +293,7 @@ MATCHER_P(IsEqualTo,
           value,
           std::string(negation ? "isn't" : "is") + " equal to " +
               ValueToString(*value)) {
-  return value->Equals(&arg);
+  return *value == arg;
 }
 
 MATCHER(IsListEmpty, std::string(negation ? "isn't" : "is") + " empty.") {

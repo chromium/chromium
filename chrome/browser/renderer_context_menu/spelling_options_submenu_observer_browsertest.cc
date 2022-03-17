@@ -75,8 +75,9 @@ class SpellingOptionsSubMenuObserverTest : public InProcessBrowserTest {
     for (const std::string& dict : dictionaries) {
       dictionaries_value.Append(dict);
     }
-    EXPECT_TRUE(dictionaries_value.Equals(menu()->GetPrefs()->GetList(
-        spellcheck::prefs::kSpellCheckDictionaries)));
+    EXPECT_EQ(dictionaries_value,
+              *menu()->GetPrefs()->GetList(
+                  spellcheck::prefs::kSpellCheckDictionaries));
   }
 
   MockRenderViewContextMenu* menu() { return menu_.get(); }

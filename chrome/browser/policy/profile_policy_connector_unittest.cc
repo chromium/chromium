@@ -287,7 +287,7 @@ TEST_F(ProfilePolicyConnectorTest, IsProfilePolicy) {
       connector.policy_service()->GetPolicies(chrome_ns).GetValue(
           key::kAutofillAddressEnabled, base::Value::Type::BOOLEAN);
   ASSERT_TRUE(value);
-  EXPECT_TRUE(base::Value(false).Equals(value));
+  EXPECT_EQ(base::Value(false), *value);
 
   // Now test with a higher-priority provider also setting the policy.
   UpdateChromePolicyToMockProviderAndVerify(&mock_platform_provider, connector);

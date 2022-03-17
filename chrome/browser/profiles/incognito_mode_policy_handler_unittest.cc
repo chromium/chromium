@@ -51,7 +51,7 @@ class IncognitoModePolicyHandlerTest
   void VerifyValues(IncognitoModePrefs::Availability availability) {
     const base::Value* value = NULL;
     EXPECT_TRUE(store_->GetValue(prefs::kIncognitoModeAvailability, &value));
-    EXPECT_TRUE(base::Value(static_cast<int>(availability)).Equals(value));
+    EXPECT_EQ(base::Value(static_cast<int>(availability)), *value);
   }
 };
 

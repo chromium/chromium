@@ -131,7 +131,7 @@ TEST_P(EnterpriseConnectorsPolicyHandlerTest, Test) {
 
   auto* value_set_in_map = policy_map.GetValue(kPolicyName);
   if (value_set_in_map) {
-    ASSERT_TRUE(value_set_in_map->Equals(value_set_in_pref));
+    ASSERT_EQ(*value_set_in_map, *value_set_in_pref);
     if (policy_scope())
       ASSERT_EQ(policy::POLICY_SCOPE_MACHINE, pref_scope);
   } else {

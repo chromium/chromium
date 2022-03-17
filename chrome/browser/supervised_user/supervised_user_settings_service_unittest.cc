@@ -111,9 +111,8 @@ class SupervisedUserSettingsServiceTest : public ::testing::Test {
       EXPECT_TRUE(expected_value);
     }
 
-    std::unique_ptr<base::Value> value =
-        base::JSONReader::ReadDeprecated(supervised_user_setting.value());
-    EXPECT_TRUE(expected_value->Equals(value.get()));
+    EXPECT_EQ(*expected_value,
+              base::JSONReader::Read(supervised_user_setting.value()));
   }
 
   void OnNewSettingsAvailable(const base::DictionaryValue* settings) {
@@ -207,7 +206,7 @@ TEST_F(SupervisedUserSettingsServiceTest, ProcessSplitSetting) {
   ASSERT_TRUE(value);
   const base::DictionaryValue* dict_value = nullptr;
   ASSERT_TRUE(value->GetAsDictionary(&dict_value));
-  EXPECT_TRUE(dict_value->Equals(&dict));
+  EXPECT_EQ(*dict_value, dict);
 }
 
 TEST_F(SupervisedUserSettingsServiceTest, NotifyForWebsiteApprovals) {

@@ -50,7 +50,7 @@ TEST_F(DefaultGeolocationPolicyHandlerTest, BlockGeolocation) {
   UpdateProviderPolicy(policy);
   const base::Value* value = nullptr;
   EXPECT_TRUE(store_->GetValue(arc::prefs::kArcLocationServiceEnabled, &value));
-  EXPECT_TRUE(base::Value(false).Equals(value));
+  EXPECT_EQ(base::Value(false), *value);
 }
 
 TEST_F(DefaultGeolocationPolicyHandlerTest, AskGeolocation) {
