@@ -172,7 +172,7 @@ public class WebApkUmaRecorder {
         // Don't use an enumerated histogram as there are > 30 potential error codes. In practice,
         // a given client will always get the same error code.
         RecordHistogram.recordSparseHistogram(
-                "WebApk.Install.GooglePlayErrorCode", Math.min(errorCode, 1000));
+                "WebApk.Install.GooglePlayErrorCode", Math.min(errorCode, 10000));
     }
 
     /**
