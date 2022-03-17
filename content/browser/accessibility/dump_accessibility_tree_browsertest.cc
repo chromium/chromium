@@ -1865,7 +1865,14 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityFieldset) {
   RunHtmlTest(FILE_PATH_LITERAL("fieldset.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityFigcaption) {
+// TODO(crbug.com/1307316): failing on Linux bots.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_AccessibilityFigcaption DISABLED_AccessibilityFigcaption
+#else
+#define MAYBE_AccessibilityFigcaption AccessibilityFigcaption
+#endif
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       MAYBE_AccessibilityFigcaption) {
   RunHtmlTest(FILE_PATH_LITERAL("figcaption.html"));
 }
 
