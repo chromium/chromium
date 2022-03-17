@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/url_param_filter/cross_otr_observer.h"
+
 #include <memory>
+
 #include "base/metrics/histogram_functions.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
@@ -27,15 +29,16 @@ void CrossOtrObserver::MaybeCreateForWebContents(
           NavigateParams::PrivacySensitivity::CROSS_OTR &&
       params.started_from_context_menu &&
       !ui::PageTransitionCoreTypeIs(params.transition,
-                                    ui::PAGE_TRANSITION_AUTO_BOOKMARK) &&
-      !web_contents->GetUserData(CrossOtrObserver::kUserDataKey)) {
-    web_contents->SetUserData(CrossOtrObserver::kUserDataKey,
-                              std::make_unique<CrossOtrObserver>(web_contents));
+                                    ui::PAGE_TRANSITION_AUTO_BOOKMARK)) {
+    // Inherited from WebContentsUserData and checks for an already-attached
+    // instance internally.
+    CrossOtrObserver::CreateForWebContents(web_contents);
   }
 }
 
 CrossOtrObserver::CrossOtrObserver(content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<CrossOtrObserver>(*web_contents) {}
 
 void CrossOtrObserver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
@@ -85,8 +88,10 @@ void CrossOtrObserver::WebContentsDestroyed() {
 
 void CrossOtrObserver::Detach() {
   base::UmaHistogramCounts100(kCrossOtrRefreshCountMetricName, refresh_count_);
-  web_contents()->RemoveUserData(CrossOtrObserver::kUserDataKey);
+  web_contents()->RemoveUserData(CrossOtrObserver::UserDataKey());
   // DO NOT add code past this point. `this` is destroyed.
 }
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(CrossOtrObserver);
 
 }  // namespace url_param_filter

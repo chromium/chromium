@@ -46,7 +46,7 @@ TEST_F(CrossOtrObserverTest, NotContextMenuInitiated) {
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
   CrossOtrObserver::MaybeCreateForWebContents(web_contents.get(), params);
 
-  ASSERT_EQ(web_contents->GetUserData(CrossOtrObserver::kUserDataKey), nullptr);
+  ASSERT_EQ(CrossOtrObserver::FromWebContents(web_contents.get()), nullptr);
 }
 TEST_F(CrossOtrObserverTest, DefaultSensitivity) {
   NavigateParams params(profile(), GURL("https://www.foo.com"),
@@ -59,7 +59,7 @@ TEST_F(CrossOtrObserverTest, DefaultSensitivity) {
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
   CrossOtrObserver::MaybeCreateForWebContents(web_contents.get(), params);
 
-  ASSERT_EQ(web_contents->GetUserData(CrossOtrObserver::kUserDataKey), nullptr);
+  ASSERT_EQ(CrossOtrObserver::FromWebContents(web_contents.get()), nullptr);
 }
 TEST_F(CrossOtrObserverTest, BookmarkLink) {
   NavigateParams params(profile(), GURL("https://www.foo.com"),
@@ -72,7 +72,7 @@ TEST_F(CrossOtrObserverTest, BookmarkLink) {
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
   CrossOtrObserver::MaybeCreateForWebContents(web_contents.get(), params);
 
-  ASSERT_EQ(web_contents->GetUserData(CrossOtrObserver::kUserDataKey), nullptr);
+  ASSERT_EQ(CrossOtrObserver::FromWebContents(web_contents.get()), nullptr);
 }
 TEST_F(CrossOtrObserverTest, CreateKey) {
   NavigateParams params(profile(), GURL("https://www.foo.com"),
@@ -83,7 +83,7 @@ TEST_F(CrossOtrObserverTest, CreateKey) {
   content::WebContents* contents = web_contents();
   CrossOtrObserver::MaybeCreateForWebContents(contents, params);
 
-  ASSERT_NE(contents->GetUserData(CrossOtrObserver::kUserDataKey), nullptr);
+  ASSERT_NE(CrossOtrObserver::FromWebContents(contents), nullptr);
 }
 TEST_F(CrossOtrObserverTest, DuplicateCreateKey) {
   NavigateParams params(profile(), GURL("https://www.foo.com"),
@@ -95,7 +95,7 @@ TEST_F(CrossOtrObserverTest, DuplicateCreateKey) {
   CrossOtrObserver::MaybeCreateForWebContents(contents, params);
   CrossOtrObserver::MaybeCreateForWebContents(contents, params);
 
-  ASSERT_NE(contents->GetUserData(CrossOtrObserver::kUserDataKey), nullptr);
+  ASSERT_NE(CrossOtrObserver::FromWebContents(contents), nullptr);
 }
 TEST_F(CrossOtrObserverTest, HandleRedirects) {
   base::HistogramTester histogram_tester;
@@ -106,8 +106,7 @@ TEST_F(CrossOtrObserverTest, HandleRedirects) {
   params.privacy_sensitivity = NavigateParams::PrivacySensitivity::CROSS_OTR;
   content::WebContents* contents = web_contents();
   CrossOtrObserver::MaybeCreateForWebContents(contents, params);
-  CrossOtrObserver* observer = static_cast<CrossOtrObserver*>(
-      contents->GetUserData(CrossOtrObserver::kUserDataKey));
+  CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
   ASSERT_NE(observer, nullptr);
   std::unique_ptr<content::MockNavigationHandle> handle =
       std::make_unique<NiceMock<content::MockNavigationHandle>>(contents);
@@ -131,8 +130,7 @@ TEST_F(CrossOtrObserverTest, FinishedNavigation) {
   params.privacy_sensitivity = NavigateParams::PrivacySensitivity::CROSS_OTR;
   content::WebContents* contents = web_contents();
   CrossOtrObserver::MaybeCreateForWebContents(contents, params);
-  CrossOtrObserver* observer = static_cast<CrossOtrObserver*>(
-      contents->GetUserData(CrossOtrObserver::kUserDataKey));
+  CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
   ASSERT_NE(observer, nullptr);
   std::unique_ptr<content::MockNavigationHandle> handle =
       std::make_unique<NiceMock<content::MockNavigationHandle>>(contents);
@@ -155,8 +153,7 @@ TEST_F(CrossOtrObserverTest, BadRedirectResponse) {
   params.privacy_sensitivity = NavigateParams::PrivacySensitivity::CROSS_OTR;
   content::WebContents* contents = web_contents();
   CrossOtrObserver::MaybeCreateForWebContents(contents, params);
-  CrossOtrObserver* observer = static_cast<CrossOtrObserver*>(
-      contents->GetUserData(CrossOtrObserver::kUserDataKey));
+  CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
   ASSERT_NE(observer, nullptr);
   std::unique_ptr<content::MockNavigationHandle> handle =
       std::make_unique<NiceMock<content::MockNavigationHandle>>(contents);
@@ -174,8 +171,7 @@ TEST_F(CrossOtrObserverTest, BadNavigationResponse) {
   params.privacy_sensitivity = NavigateParams::PrivacySensitivity::CROSS_OTR;
   content::WebContents* contents = web_contents();
   CrossOtrObserver::MaybeCreateForWebContents(contents, params);
-  CrossOtrObserver* observer = static_cast<CrossOtrObserver*>(
-      contents->GetUserData(CrossOtrObserver::kUserDataKey));
+  CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
   ASSERT_NE(observer, nullptr);
   std::unique_ptr<content::MockNavigationHandle> handle =
       std::make_unique<NiceMock<content::MockNavigationHandle>>(contents);
@@ -187,7 +183,7 @@ TEST_F(CrossOtrObserverTest, BadNavigationResponse) {
   // The observer should not cease observation after first load, regardless of
   // whether the headers include a response code. We still want to see
   // the refresh count.
-  ASSERT_NE(contents->GetUserData(CrossOtrObserver::kUserDataKey), nullptr);
+  ASSERT_NE(CrossOtrObserver::FromWebContents(contents), nullptr);
 }
 TEST_F(CrossOtrObserverTest, RefreshedAfterNavigation) {
   base::HistogramTester histogram_tester;
@@ -198,8 +194,7 @@ TEST_F(CrossOtrObserverTest, RefreshedAfterNavigation) {
   params.privacy_sensitivity = NavigateParams::PrivacySensitivity::CROSS_OTR;
   content::WebContents* contents = web_contents();
   CrossOtrObserver::MaybeCreateForWebContents(contents, params);
-  CrossOtrObserver* observer = static_cast<CrossOtrObserver*>(
-      contents->GetUserData(CrossOtrObserver::kUserDataKey));
+  CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
   ASSERT_NE(observer, nullptr);
   std::unique_ptr<content::MockNavigationHandle> handle =
       std::make_unique<NiceMock<content::MockNavigationHandle>>(contents);
@@ -229,8 +224,7 @@ TEST_F(CrossOtrObserverTest, UncommittedNavigationWithRefresh) {
   params.privacy_sensitivity = NavigateParams::PrivacySensitivity::CROSS_OTR;
   content::WebContents* contents = web_contents();
   CrossOtrObserver::MaybeCreateForWebContents(contents, params);
-  CrossOtrObserver* observer = static_cast<CrossOtrObserver*>(
-      contents->GetUserData(CrossOtrObserver::kUserDataKey));
+  CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
   ASSERT_NE(observer, nullptr);
   std::unique_ptr<content::MockNavigationHandle> handle =
       std::make_unique<NiceMock<content::MockNavigationHandle>>(contents);
@@ -271,8 +265,7 @@ TEST_F(CrossOtrObserverTest, MultipleRefreshesAfterNavigation) {
   params.privacy_sensitivity = NavigateParams::PrivacySensitivity::CROSS_OTR;
   content::WebContents* contents = web_contents();
   CrossOtrObserver::MaybeCreateForWebContents(contents, params);
-  CrossOtrObserver* observer = static_cast<CrossOtrObserver*>(
-      contents->GetUserData(CrossOtrObserver::kUserDataKey));
+  CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
   ASSERT_NE(observer, nullptr);
   std::unique_ptr<content::MockNavigationHandle> handle =
       std::make_unique<NiceMock<content::MockNavigationHandle>>(contents);
@@ -294,7 +287,7 @@ TEST_F(CrossOtrObserverTest, MultipleRefreshesAfterNavigation) {
   handle->set_has_committed(true);
   observer->DidFinishNavigation(handle.get());
 
-  ASSERT_EQ(contents->GetUserData(CrossOtrObserver::kUserDataKey), nullptr);
+  ASSERT_EQ(CrossOtrObserver::FromWebContents(contents), nullptr);
 
   histogram_tester.ExpectTotalCount(kCrossOtrRefreshCountMetricName, 1);
   ASSERT_EQ(histogram_tester.GetTotalSum(kCrossOtrRefreshCountMetricName), 2);
@@ -312,8 +305,7 @@ TEST_F(CrossOtrObserverTest, RedirectsAfterNavigation) {
   params.privacy_sensitivity = NavigateParams::PrivacySensitivity::CROSS_OTR;
   content::WebContents* contents = web_contents();
   CrossOtrObserver::MaybeCreateForWebContents(contents, params);
-  CrossOtrObserver* observer = static_cast<CrossOtrObserver*>(
-      contents->GetUserData(CrossOtrObserver::kUserDataKey));
+  CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
   ASSERT_NE(observer, nullptr);
   std::unique_ptr<content::MockNavigationHandle> handle =
       std::make_unique<NiceMock<content::MockNavigationHandle>>(contents);
