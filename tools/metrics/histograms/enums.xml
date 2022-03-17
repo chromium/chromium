@@ -54775,7 +54775,6 @@ from previous Chrome versions.
   <int value="31848187" label="ViewsTaskManager:disabled"/>
   <int value="32057053" label="EnterpriseReportingInBrowser:disabled"/>
   <int value="32242305" label="NtpRecipeTasksModule:enabled"/>
-  <int value="32348093" label="DiagnosticsApp:disabled"/>
   <int value="32488630" label="EphemeralTab:enabled"/>
   <int value="32557641" label="HTTPAuthCommittedInterstitials:disabled"/>
   <int value="33588676" label="TranslateAssistContent:enabled"/>
@@ -54853,7 +54852,7 @@ from previous Chrome versions.
   <int value="83422372"
       label="ChromeHomePersonalizedOmniboxSuggestions:enabled"/>
   <int value="84911198" label="ScanCardsInWebPayments:disabled"/>
-  <int value="87886288" label="DiagnosticsApp:enabled"/>
+  <int value="87306743" label="VariationsFakeCrashAfterStartup:disabled"/>
   <int value="88249612" label="CalendarView:enabled"/>
   <int value="88437020" label="FeaturePolicy:enabled"/>
   <int value="89357752" label="PdfXfaSupport:enabled"/>

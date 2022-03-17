@@ -1120,12 +1120,6 @@ const char kDeprecateAltBasedSixPackDescription[] =
     "Show deprecation notifications and disable functionality for Alt based "
     "six pack deprecations. The Search based versions continue to work.";
 
-const char kDiagnosticsAppName[] = "Diagnostics app";
-const char kDiagnosticsAppDescription[] =
-    "Enables the Diagnostics app that allows Chrome OS users to be able to "
-    "view their system telemetric information and run diagnostic tests for "
-    "their device.";
-
 const char kDiagnosticsAppNavigationName[] = "Diagnostics app navigation";
 const char kDiagnosticsAppNavigationDescription[] =
     "Enables the navigation panel in the Diagnostics app.";

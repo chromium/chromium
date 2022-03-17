@@ -406,10 +406,6 @@ const base::Feature kDesksTemplates{"DesksTemplates",
 const base::Feature kDiacriticsOnPhysicalKeyboardLongpress{
     "DiacriticsOnPhysicalKeyboardLongpress", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables or disables the Diagnostics app.
-const base::Feature kDiagnosticsApp{"DiagnosticsApp",
-                                    base::FEATURE_ENABLED_BY_DEFAULT};
-
 // If enabled, the navigation panel will be shown in the diagnostics app.
 const base::Feature kDiagnosticsAppNavigation{"DiagnosticsAppNavigation",
                                               base::FEATURE_ENABLED_BY_DEFAULT};
@@ -1596,10 +1592,6 @@ bool IsDemoModeSWAEnabled() {
 
 bool IsDeskTemplateSyncEnabled() {
   return base::FeatureList::IsEnabled(kDeskTemplateSync);
-}
-
-bool IsDiagnosticsAppEnabled() {
-  return base::FeatureList::IsEnabled(kDiagnosticsApp);
 }
 
 bool IsDisplayAlignmentAssistanceEnabled() {

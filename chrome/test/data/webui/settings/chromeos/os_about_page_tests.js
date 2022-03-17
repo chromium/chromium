@@ -571,7 +571,6 @@ cr.define('settings_about_page', function() {
     test('LaunchDiagnostics', async function() {
       loadTimeData.overrideValues({
         isDeepLinkingEnabled: true,
-        diagnosticsAppEnabled: true,
       });
 
       await initNewPage();
@@ -585,7 +584,6 @@ cr.define('settings_about_page', function() {
     test('Deep link to diagnostics', async () => {
       loadTimeData.overrideValues({
         isDeepLinkingEnabled: true,
-        diagnosticsAppEnabled: true,
       });
 
       await initNewPage();

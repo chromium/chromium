@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
@@ -432,9 +431,7 @@ IN_PROC_BROWSER_TEST_F(UserManagementDisclosureChildTest,
 
 class LoginUIDiagnosticsTest : public LoginUITestBase {
  public:
-  LoginUIDiagnosticsTest() : LoginUITestBase() {
-    scoped_feature_list_.InitWithFeatures({features::kDiagnosticsApp}, {});
-  }
+  LoginUIDiagnosticsTest() = default;
   ~LoginUIDiagnosticsTest() override = default;
 
   static bool IsDiagnosticsDialogVisible() {
@@ -445,9 +442,6 @@ class LoginUIDiagnosticsTest : public LoginUITestBase {
  protected:
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Checks accelerator can launch diagnostics app

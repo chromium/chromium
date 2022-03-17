@@ -6178,10 +6178,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDisplayAlignmentAssistanceDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kDisplayAlignAssist)},
 
-    {"diagnostics-app", flag_descriptions::kDiagnosticsAppName,
-     flag_descriptions::kDiagnosticsAppDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::features::kDiagnosticsApp)},
-
     {"diagnostics-app-navigation",
      flag_descriptions::kDiagnosticsAppNavigationName,
      flag_descriptions::kDiagnosticsAppNavigationDescription, kOsCrOS,

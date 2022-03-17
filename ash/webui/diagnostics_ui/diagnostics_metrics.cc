@@ -19,11 +19,11 @@ DiagnosticsMetrics::DiagnosticsMetrics()
       successful_usage_started_(false) {}
 
 bool DiagnosticsMetrics::IsEligible() const {
-  return features::IsDiagnosticsAppEnabled();
+  return true;
 }
 
 bool DiagnosticsMetrics::IsEnabled() const {
-  return features::IsDiagnosticsAppEnabled();
+  return true;
 }
 
 // Helper function for feature_usage::FeatureUsageMetrics RecordUsage.

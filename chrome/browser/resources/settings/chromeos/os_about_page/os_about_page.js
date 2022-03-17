@@ -171,14 +171,6 @@ Polymer({
           'currentUpdateStatusEvent_, hasCheckedForUpdates_, hasEndOfLife_)',
     },
 
-    /** @private */
-    showDiagnosticsApp_: {
-      type: Boolean,
-      value: function() {
-        return loadTimeData.getBoolean('diagnosticsAppEnabled');
-      }
-    },
-
     /** @protected */
     showFirmwareUpdatesApp_: {
       type: Boolean,
@@ -367,7 +359,6 @@ Polymer({
 
   /** @private */
   onDiagnosticsClick_() {
-    assert(this.showDiagnosticsApp_);
     this.aboutBrowserProxy_.openDiagnostics();
     recordSettingChange(chromeos.settings.mojom.Setting.kDiagnostics);
   },

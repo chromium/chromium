@@ -979,8 +979,7 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<chromeos::settings::OSSettingsUI>;
   if (url.host_piece() == chrome::kChromeUIPowerHost)
     return &NewWebUI<chromeos::PowerUI>;
-  if (base::FeatureList::IsEnabled(chromeos::features::kDiagnosticsApp) &&
-      url.host_piece() == ash::kChromeUIDiagnosticsAppHost) {
+  if (url.host_piece() == ash::kChromeUIDiagnosticsAppHost) {
     return &NewWebUI<ash::DiagnosticsDialogUI>;
   }
   if (url.host_piece() == ash::kChromeUIPrintManagementHost)

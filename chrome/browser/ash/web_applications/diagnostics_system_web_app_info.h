@@ -21,7 +21,6 @@ class DiagnosticsSystemAppDelegate : public web_app::SystemWebAppDelegate {
   std::unique_ptr<WebAppInstallInfo> GetWebAppInfo() const override;
   bool ShouldShowInLauncher() const override;
   gfx::Size GetMinimumWindowSize() const override;
-  bool IsAppEnabled() const override;
 };
 
 // Returns a WebAppInstallInfo used to install the app.

@@ -218,9 +218,7 @@ AboutSection::AboutSection(Profile* profile,
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.AddSearchTags(GetAboutSearchConcepts());
 
-  if (base::FeatureList::IsEnabled(chromeos::features::kDiagnosticsApp)) {
-    updater.AddSearchTags(GetDiagnosticsAppSearchConcepts());
-  }
+  updater.AddSearchTags(GetDiagnosticsAppSearchConcepts());
 
   if (base::FeatureList::IsEnabled(chromeos::features::kFirmwareUpdaterApp)) {
     updater.AddSearchTags(GetFirmwareUpdatesAppSearchConcepts());
@@ -414,10 +412,6 @@ void AboutSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   std::string safetyInfoLink = GetSafetyInfoLink();
   html_source->AddBoolean("shouldShowSafetyInfo", !safetyInfoLink.empty());
-
-  html_source->AddBoolean(
-      "diagnosticsAppEnabled",
-      base::FeatureList::IsEnabled(chromeos::features::kDiagnosticsApp));
 
   html_source->AddBoolean(
       "isFirmwareUpdaterAppEnabled",

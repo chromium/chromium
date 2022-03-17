@@ -494,8 +494,7 @@ void ChromeNewWindowClient::ShowTaskManager() {
 }
 
 void ChromeNewWindowClient::OpenDiagnostics() {
-  if (base::FeatureList::IsEnabled(chromeos::features::kDiagnosticsApp))
-    chrome::ShowDiagnosticsApp(ProfileManager::GetActiveUserProfile());
+  chrome::ShowDiagnosticsApp(ProfileManager::GetActiveUserProfile());
 }
 
 void ChromeNewWindowClient::OpenFeedbackPage(

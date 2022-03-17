@@ -1392,8 +1392,7 @@ TEST_F(NetworkHealthProviderTest, ResetReceiverOnDisconnect) {
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
       std::vector<base::Feature>{features::kDiagnosticsAppNavigation,
-                                 features::kEnableNetworkingInDiagnosticsApp,
-                                 features::kDiagnosticsApp},
+                                 features::kEnableNetworkingInDiagnosticsApp},
       std::vector<base::Feature>{});
   ASSERT_FALSE(network_health_provider_->ReceiverIsBound());
   mojo::Remote<mojom::NetworkHealthProvider> remote;

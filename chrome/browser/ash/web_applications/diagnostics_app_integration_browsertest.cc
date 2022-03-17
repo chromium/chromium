@@ -35,8 +35,7 @@ class DiagnosticsAppIntegrationTest : public SystemWebAppIntegrationTest {
  public:
   DiagnosticsAppIntegrationTest() {
     scoped_feature_list_.InitWithFeatures(
-        {chromeos::features::kDiagnosticsApp,
-         ash::features::kDiagnosticsAppNavigation,
+        {ash::features::kDiagnosticsAppNavigation,
          ash::features::kEnableNetworkingInDiagnosticsApp},
         {});
   }

@@ -485,8 +485,6 @@ void ShowScanningApp(Profile* profile) {
 }
 
 void ShowDiagnosticsApp(Profile* profile) {
-  DCHECK(base::FeatureList::IsEnabled(chromeos::features::kDiagnosticsApp));
-
   LaunchSystemWebAppAsync(profile, web_app::SystemAppType::DIAGNOSTICS);
 }
 

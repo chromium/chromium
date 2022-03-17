@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/webui/diagnostics_ui/url_constants.h"
 #include "ash/webui/grit/ash_diagnostics_app_resources.h"
 #include "base/strings/utf_string_conversions.h"
@@ -56,8 +55,4 @@ bool DiagnosticsSystemAppDelegate::ShouldShowInLauncher() const {
 
 gfx::Size DiagnosticsSystemAppDelegate::GetMinimumWindowSize() const {
   return {600, 390};
-}
-
-bool DiagnosticsSystemAppDelegate::IsAppEnabled() const {
-  return base::FeatureList::IsEnabled(chromeos::features::kDiagnosticsApp);
 }

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/login/ui/login_display_host_common.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/login_accelerators.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -390,8 +389,7 @@ bool LoginDisplayHostCommon::HandleAccelerator(LoginAcceleratorAction action) {
     return true;
   }
 
-  if (action == LoginAcceleratorAction::kLaunchDiagnostics &&
-      base::FeatureList::IsEnabled(features::kDiagnosticsApp)) {
+  if (action == LoginAcceleratorAction::kLaunchDiagnostics) {
     // Don't handle this action if device is disabled.
     if (system::DeviceDisablingManager::
             IsDeviceDisabledDuringNormalOperation()) {

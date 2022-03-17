@@ -1539,6 +1539,13 @@ const std::vector<ash::KeyboardShortcutItem>& GetKeyboardShortcutItemList() {
        {},
        // |accelerator_ids|
        {{ui::VKEY_SPACE, ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN}}},
+
+      {// |categories|
+       {ShortcutCategory::kSystemAndDisplay},
+       IDS_KSV_DESCRIPTION_OPEN_DIAGNOSTICS,
+       {},
+       // |accelerator_ids|
+       {{ui::VKEY_ESCAPE, ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN}}},
   });
 
   static bool is_initialized = false;
@@ -1547,18 +1554,6 @@ const std::vector<ash::KeyboardShortcutItem>& GetKeyboardShortcutItemList() {
   // string.
   if (!is_initialized) {
     is_initialized = true;
-
-    // Include diagnostics shortcuts only when experiment flag is enabled.
-    if (base::FeatureList::IsEnabled(chromeos::features::kDiagnosticsApp)) {
-      const ash::KeyboardShortcutItem diagnostics_shortcut = {
-          // |categories|
-          {ShortcutCategory::kSystemAndDisplay},
-          IDS_KSV_DESCRIPTION_OPEN_DIAGNOSTICS,
-          {},
-          // |accelerator_ids|
-          {{ui::VKEY_ESCAPE, ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN}}};
-      item_list->emplace_back(diagnostics_shortcut);
-    }
 
     // The improved desks keyboard shortcuts should only be enabled if the
     // improved keyboard shortcuts flag is also enabled.

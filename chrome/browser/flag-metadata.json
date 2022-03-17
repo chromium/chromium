@@ -1204,11 +1204,6 @@
     "expiry_milestone": 100
   },
   {
-    "name": "diagnostics-app",
-    "owners": [ "//ash/webui/diagnostics_ui/OWNERS" ],
-    "expiry_milestone": 92
-  },
-  {
     "name": "diagnostics-app-navigation",
     "owners": [ "//ash/webui/diagnostics_ui/OWNERS" ],
     "expiry_milestone": 99

@@ -32,13 +32,7 @@ this.DiagnosticsApp = class extends PolymerTest {
   }
 
   /** @override */
-  get featureList() {
-    return {
-      enabled: [
-        'chromeos::features::kDiagnosticsApp',
-      ],
-    };
-  }
+  get featureList() {}
 };
 
 this.DiagnosticsAppWithNetwork = class extends PolymerTest {
@@ -51,7 +45,6 @@ this.DiagnosticsAppWithNetwork = class extends PolymerTest {
   get featureList() {
     return {
       enabled: [
-        'chromeos::features::kDiagnosticsApp',
         'chromeos::features::kEnableNetworkingInDiagnosticsApp',
         'chromeos::features::kDiagnosticsAppNavigation',
       ],
@@ -69,7 +62,6 @@ this.DiagnosticsAppWithInput = class extends PolymerTest {
   get featureList() {
     return {
       enabled: [
-        'chromeos::features::kDiagnosticsApp',
         'chromeos::features::kEnableInputInDiagnosticsApp',
       ],
     };
