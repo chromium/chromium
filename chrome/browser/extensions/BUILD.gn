@@ -7,7 +7,6 @@ import("//build/config/features.gni")
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 import("//chrome/common/features.gni")
-import("//chromeos/components/chromebox_for_meetings/buildflags/buildflags.gni")
 import("//components/nacl/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
@@ -1150,6 +1149,8 @@ static_library("extensions") {
       "//chromeos/network",
       "//chromeos/process_proxy",
       "//chromeos/services/assistant/public/cpp",
+      "//chromeos/services/chromebox_for_meetings/public/cpp",
+      "//chromeos/services/chromebox_for_meetings/public/mojom",
       "//chromeos/services/machine_learning/public/cpp",
       "//chromeos/services/machine_learning/public/mojom",
       "//chromeos/services/media_perception/public/mojom",
@@ -1173,12 +1174,6 @@ static_library("extensions") {
       "//ui/ozone",
       "//ui/views",
     ]
-    if (is_cfm) {
-      deps += [
-        "//chromeos/services/chromebox_for_meetings/public/cpp",
-        "//chromeos/services/chromebox_for_meetings/public/mojom",
-      ]
-    }
   } else if (is_chromeos_lacros) {
     sources += [
       "api/enterprise_reporting_private/chrome_desktop_report_request_helper.cc",
