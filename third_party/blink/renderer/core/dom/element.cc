@@ -3168,6 +3168,13 @@ scoped_refptr<ComputedStyle> Element::PropagateInheritedProperties() {
   if (!style || style->Animations() || style->Transitions() ||
       style->HasVariableReference() || style->HasVariableDeclaration())
     return nullptr;
+  if (style->InsideLink() != EInsideLink::kNotInsideLink) {
+    // We cannot do the inherited propagation optimization within links,
+    // since -internal-visited-color is handled in CascadeExpansion
+    // (which we do not run in that path), and we also have no tracking
+    // of whether the property was inherited or not.
+    return nullptr;
+  }
   scoped_refptr<ComputedStyle> new_style = ComputedStyle::Clone(*style);
   new_style->PropagateIndependentInheritedProperties(*parent_style);
   INCREMENT_STYLE_STATS_COUNTER(GetDocument().GetStyleEngine(),
