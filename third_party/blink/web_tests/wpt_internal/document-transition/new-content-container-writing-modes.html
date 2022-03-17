@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html class=reftest-wait>
+<title>Shared transitions: container of shared element writing-modes</title>
+<link rel="help" href="https://github.com/WICG/shared-element-transitions">
+<link rel="author" href="mailto:vmpstr@chromium.org">
+<link rel="match" href="new-content-container-writing-modes-ref.html">
+<script src="/common/reftest-wait.js"></script>
+<style>
+#hidden {
+  width: 100px;
+  height: 100px;
+  background: red;
+  position: absolute;
+  top: 0;
+  left: 0;
+  contain: paint;
+}
+.tb { writing-mode: horizontal-tb; }
+.lr { writing-mode: vertical-lr; }
+.rl { writing-mode: vertical-rl; }
+.shared {
+  margin: 2px;
+  width: 100px;
+  height: 50px;
+  background: green;
+  contain: paint;
+  border: 1px solid black;
+}
+#target {
+  background: red;
+  position: absolute;
+  top: 50px;
+  left: 50px;
+  width: 100px;
+  height: 500px;
+  contain: paint;
+}
+
+html::page-transition-container(hidden) { animation-duration: 300s; }
+html::page-transition-image-wrapper(hidden) { animation: unset; opacity: 0; }
+
+html::page-transition-container(s1),
+html::page-transition-container(s2),
+html::page-transition-container(s3) { animation-duration: 0s; }
+
+html::page-transition-incoming-image(s1),
+html::page-transition-incoming-image(s2),
+html::page-transition-incoming-image(s3) { animation: unset; opacity: 1; }
+
+html::page-transition-outgoing-image(s1),
+html::page-transition-outgoing-image(s2),
+html::page-transition-outgoing-image(s3) { animation: unset; opacity: 0; }
+
+/* hide the root so we show transition background to ensure we're in a transition */
+html::page-transition-container(root) { animation: unset; opacity: 0; }
+html::page-transition { background: lightpink; }
+
+</style>
+
+<div id=hidden>Should not be visible</div>
+<div id=target>Should not be visible</div>
+<div class=tb><div id=one class=shared>T</div></div>
+<div class=lr><div id=two class=shared>T</div></div>
+<div class=rl><div id=three class=shared>T</div></div>
+
+<script>
+async function runTest() {
+  let t = document.createDocumentTransition();
+  t.setElement(hidden, "hidden");
+  t.setElement(target, "s1");
+  t.setElement(target, "s2");
+  t.setElement(target, "s3");
+  t.start(() => {
+    target.remove();
+    t.setElement(hidden, "hidden");
+    hidden.style.left = "200px";
+    t.setElement(one, "s1");
+    t.setElement(two, "s2");
+    t.setElement(three, "s3");
+    requestAnimationFrame(() => requestAnimationFrame(takeScreenshot));
+  });
+}
+onload = () => requestAnimationFrame(() => requestAnimationFrame(runTest));
+</script>
+
+
