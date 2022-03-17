@@ -50,7 +50,8 @@ struct PortId;
 // worker thread (this TODO formerly referred to content::ThreadSafeSender
 // which no longer exists).
 class WorkerThreadDispatcher : public content::RenderThreadObserver,
-                               public IPC::Sender {
+                               public IPC::Sender,
+                               public mojom::EventDispatcher {
  public:
   WorkerThreadDispatcher();
 
@@ -154,6 +155,8 @@ class WorkerThreadDispatcher : public content::RenderThreadObserver,
   static bool HandlesMessageOnWorkerThread(const IPC::Message& message);
   static void ForwardIPC(int worker_thread_id, const IPC::Message& message);
   static void UpdateBindingsOnWorkerThread(const ExtensionId& extension_id);
+  static void DispatchEventOnWorkerThread(mojom::DispatchEventParamsPtr params,
+                                          base::Value event_args);
 
   void OnMessageReceivedOnWorkerThread(int worker_thread_id,
                                        const IPC::Message& message);
@@ -166,8 +169,6 @@ class WorkerThreadDispatcher : public content::RenderThreadObserver,
                         bool succeeded,
                         const base::ListValue& response,
                         const std::string& error);
-  void OnDispatchEvent(const mojom::DispatchEventParams& params,
-                       const base::ListValue& event_args);
   void OnValidateMessagePort(int worker_thread_id, const PortId& id);
   void OnDispatchOnConnect(int worker_thread_id,
                            const PortId& target_port_id,
@@ -181,6 +182,9 @@ class WorkerThreadDispatcher : public content::RenderThreadObserver,
                               const PortId& port_id,
                               const std::string& error_message);
 
+  void DispatchEventHelper(mojom::DispatchEventParamsPtr params,
+                           base::Value event_args);
+
   // IPC sender. Belongs to the render thread, but thread safe.
   scoped_refptr<IPC::SyncMessageFilter> message_filter_;
 
@@ -189,6 +193,12 @@ class WorkerThreadDispatcher : public content::RenderThreadObserver,
   base::Lock task_runner_map_lock_;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
   mojo::AssociatedRemote<mojom::EventRouter> event_router_remote_;
+
+  // Mojo interface implementation, called from the main thread.
+  void DispatchEvent(mojom::DispatchEventParamsPtr params,
+                     base::Value event_args) override;
+
+  friend class Dispatcher;
 };
 
 }  // namespace extensions

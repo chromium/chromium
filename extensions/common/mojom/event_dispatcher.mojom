@@ -18,9 +18,6 @@ interface EventDispatcher {
                   mojo_base.mojom.DeprecatedListValue event_args);
 };
 
-// Typemapped to extensions::EventFilteringInfo.
-// TODO(yochio): Convert extensions::EventFilteringInfo usage to
-// extensions::mojom::EventFilteringInfo (https://crbug.com/1222550)
 struct EventFilteringInfo {
   url.mojom.Url? url;
 
