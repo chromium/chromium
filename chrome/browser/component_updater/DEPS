@@ -11,3 +11,9 @@ include_rules = [
   "+third_party/widevine",
   "+third_party/zxcvbn-cpp"
 ]
+specific_include_rules = {
+  # The PKI metadata component installer needs to inspect SCT auditing state.
+  "pki_metadata_component_installer_unittest.cc": [
+    "+services/network/sct_auditing/sct_auditing_cache.h",
+  ],
+}

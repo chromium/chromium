@@ -5567,6 +5567,8 @@ test("unit_tests") {
     "//components/captive_portal/core:buildflags",
     "//components/cast_channel:cast_channel",
     "//components/cast_channel:test_support",
+    "//components/certificate_transparency",
+    "//components/certificate_transparency:proto",
     "//components/commerce/core:feature_list",
     "//components/component_updater:test_support",
     "//components/content_settings/browser",
