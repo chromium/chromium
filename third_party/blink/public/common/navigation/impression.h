@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "url/origin.h"
 
 namespace blink {
@@ -48,6 +49,10 @@ struct BLINK_COMMON_EXPORT Impression {
 
   // Priority for the attribution source. Declared by the impression tag.
   int64_t priority = 0;
+
+  // Indicates the attributionsrc request associated with `this`, if any. If
+  // provided, data parameters should be used from the attributionsrc response.
+  absl::optional<AttributionSrcToken> attribution_src_token;
 };
 
 }  // namespace blink

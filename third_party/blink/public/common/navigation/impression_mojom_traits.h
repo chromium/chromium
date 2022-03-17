@@ -11,6 +11,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/navigation/impression.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/conversions/conversions.mojom.h"
 #include "url/mojom/url_gurl_mojom_traits.h"
 
@@ -38,6 +39,11 @@ struct BLINK_COMMON_EXPORT
   }
 
   static int64_t priority(const blink::Impression& r) { return r.priority; }
+
+  static const absl::optional<blink::AttributionSrcToken>&
+  attribution_src_token(const blink::Impression& r) {
+    return r.attribution_src_token;
+  }
 
   static bool Read(blink::mojom::ImpressionDataView r, blink::Impression* out);
 };

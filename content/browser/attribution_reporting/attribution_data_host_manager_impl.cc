@@ -17,6 +17,7 @@
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/storable_source.h"
+#include "net/base/schemeful_site.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/attribution_reporting/constants.h"
@@ -69,10 +70,41 @@ void AttributionDataHostManagerImpl::RegisterDataHost(
                                .source_type = AttributionSourceType::kEvent});
 }
 
+void AttributionDataHostManagerImpl::RegisterNavigationDataHost(
+    mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
+    const blink::AttributionSrcToken& attribution_src_token) {
+  navigation_data_host_map_.emplace(attribution_src_token,
+                                    std::move(data_host));
+}
+
+void AttributionDataHostManagerImpl::NotifyNavigationForDataHost(
+    const blink::AttributionSrcToken& attribution_src_token,
+    const url::Origin& source_origin,
+    const url::Origin& destination_origin) {
+  auto it = navigation_data_host_map_.find(attribution_src_token);
+
+  // TODO(johnidel): Record metrics for how often this occurs.
+  if (it == navigation_data_host_map_.end())
+    return;
+
+  receivers_.Add(
+      this, std::move(it->second),
+      FrozenContext{.context_origin = source_origin,
+                    .source_type = AttributionSourceType::kNavigation,
+                    .destination = destination_origin});
+
+  navigation_data_host_map_.erase(it);
+}
+
+void AttributionDataHostManagerImpl::NotifyNavigationFailure(
+    const blink::AttributionSrcToken& attribution_src_token) {
+  // TODO(johnidel): Record metrics for how many potential sources are dropped.
+  navigation_data_host_map_.erase(attribution_src_token);
+}
+
 void AttributionDataHostManagerImpl::SourceDataAvailable(
     blink::mojom::AttributionSourceDataPtr data) {
   // TODO(linnan): Log metrics for early returns.
-
   if (data->destination.opaque())
     return;
 
@@ -83,6 +115,24 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
 
   const FrozenContext& context = receivers_.current_context();
   DCHECK(network::IsOriginPotentiallyTrustworthy(context.context_origin));
+
+  switch (context.source_type) {
+    case AttributionSourceType::kNavigation:
+      // For navigation sources verify the destination matches the final
+      // navigation origin.
+      if (net::SchemefulSite(data->destination) !=
+          net::SchemefulSite(context.destination)) {
+        return;
+      }
+      break;
+    case AttributionSourceType::kEvent:
+      // For event source verify that all sources are consistent.
+      auto result = receiver_data_.emplace(receivers_.current_receiver(),
+                                           data->destination);
+      if (!result.second && data->destination != result.first->second)
+        return;
+      break;
+  }
 
   base::Time source_time = base::Time::Now();
   const url::Origin& reporting_origin = data->reporting_origin;
@@ -129,6 +179,11 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
 
   const FrozenContext& context = receivers_.current_context();
   DCHECK(network::IsOriginPotentiallyTrustworthy(context.context_origin));
+
+  // Only possible in the case of a bad renderer, navigation bound data hosts
+  // cannot register triggers.
+  if (context.source_type == AttributionSourceType::kNavigation)
+    return;
 
   const url::Origin& reporting_origin = data->reporting_origin;
 

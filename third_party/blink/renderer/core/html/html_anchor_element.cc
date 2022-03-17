@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/frame/ad_tracker.h"
+#include "third_party/blink/renderer/core/frame/attribution_src_loader.h"
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -501,7 +502,7 @@ void HTMLAnchorElement::HandleClick(Event& event) {
 
   frame->MaybeLogAdClickNavigation();
 
-  if (request.HasUserGesture() && HasImpression()) {
+  if (request.HasUserGesture()) {
     // An impression must be attached prior to the
     // FindOrCreateFrameForNavigation() call, as that call may result in
     // performing a navigation if the call results in creating a new window with
@@ -511,7 +512,20 @@ void HTMLAnchorElement::HandleClick(Event& event) {
     // set `target_frame` to `frame`, but end up targeting a new window.
     // Attach the impression regardless, the embedder will be able to drop
     // impressions for subframe navigations.
-    absl::optional<WebImpression> impression = GetImpressionForAnchor(this);
+    absl::optional<WebImpression> impression;
+
+    // Favor the attributionsrc API over the html attribute data API for
+    // Attribution Reporting.
+    if (FastHasAttribute(html_names::kAttributionsrcAttr)) {
+      const AtomicString& attribution_src_value =
+          FastGetAttribute(html_names::kAttributionsrcAttr);
+      if (!attribution_src_value.IsNull()) {
+        impression = frame->GetAttributionSrcLoader()->RegisterNavigation(
+            GetDocument().CompleteURL(attribution_src_value));
+      }
+    } else if (HasImpression()) {
+      impression = GetImpressionForAnchor(this);
+    }
     if (impression)
       frame_request.SetImpression(*impression);
   }

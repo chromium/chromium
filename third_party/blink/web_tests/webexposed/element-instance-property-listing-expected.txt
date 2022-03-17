@@ -337,6 +337,7 @@ html element a
     property attributionReportTo
     property attributionSourceEventId
     property attributionSourcePriority
+    property attributionSrc
     property charset
     property coords
     property download

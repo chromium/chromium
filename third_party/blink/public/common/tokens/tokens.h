@@ -90,6 +90,13 @@ using WorkletToken = MultiToken<AnimationWorkletToken,
 // their own section, in alphabetical order. If adding a new token here, please
 // keep the following list in alphabetic order.
 
+// Identifies an attributionsrc request made by the Attribution Reporting API.
+using AttributionSrcToken =
+    base::TokenType<class AttributionSrcTokenTypeMarker>;
+
+// Identifies a unique clipboard state.
+using ClipboardSequenceNumberToken = ui::ClipboardSequenceNumberToken;
+
 // Identifies an arbitrary ExecutionContext. Each concrete implementation of an
 // ExecutionContext has a distinct token type that can be represented here.
 using ExecutionContextToken = MultiToken<LocalFrameToken,
@@ -107,9 +114,6 @@ using PortalToken = base::TokenType<class PortalTokenTypeMarker>;
 
 // Identifies a v8::Context / blink::ScriptState.
 using V8ContextToken = base::TokenType<class V8ContextTokenTypeMarker>;
-
-// Identifies a unique clipboard state.
-using ClipboardSequenceNumberToken = ui::ClipboardSequenceNumberToken;
 
 }  // namespace blink
 

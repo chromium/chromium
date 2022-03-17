@@ -72,6 +72,14 @@ mojom_component("tokens") {
         # them to their own section, in alphabetical order. If adding a new
         # token here, please keep the following list in alphabetic order.
         {
+          mojom = "blink.mojom.AttributionSrcToken"
+          cpp = "::blink::AttributionSrcToken"
+        },
+        {
+          mojom = "blink.mojom.ClipboardSequenceNumberToken"
+          cpp = "::blink::ClipboardSequenceNumberToken"
+        },
+        {
           mojom = "blink.mojom.ExecutionContextToken"
           cpp = "::blink::ExecutionContextToken"
         },
@@ -82,10 +90,6 @@ mojom_component("tokens") {
         {
           mojom = "blink.mojom.V8ContextToken"
           cpp = "::blink::V8ContextToken"
-        },
-        {
-          mojom = "blink.mojom.ClipboardSequenceNumberToken"
-          cpp = "::blink::ClipboardSequenceNumberToken"
         },
       ]
       traits_headers = [

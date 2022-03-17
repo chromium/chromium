@@ -14,7 +14,8 @@ bool StructTraits<blink::mojom::ImpressionDataView, blink::Impression>::Read(
     blink::Impression* out) {
   if (!data.ReadConversionDestination(&out->conversion_destination) ||
       !data.ReadReportingOrigin(&out->reporting_origin) ||
-      !data.ReadExpiry(&out->expiry))
+      !data.ReadExpiry(&out->expiry) ||
+      !data.ReadAttributionSrcToken(&out->attribution_src_token))
     return false;
 
   out->impression_data = data.impression_data();

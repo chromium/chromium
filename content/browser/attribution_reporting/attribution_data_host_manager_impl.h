@@ -11,6 +11,7 @@
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
 #include "url/origin.h"
 
@@ -43,6 +44,15 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
   void RegisterDataHost(
       mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
       url::Origin context_origin) override;
+  void RegisterNavigationDataHost(
+      mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
+      const blink::AttributionSrcToken& attribution_src_token) override;
+  void NotifyNavigationForDataHost(
+      const blink::AttributionSrcToken& attribution_src_token,
+      const url::Origin& source_origin,
+      const url::Origin& destination_origin) override;
+  void NotifyNavigationFailure(
+      const blink::AttributionSrcToken& attribution_src_token) override;
 
   // TODO(johnidel): Add support for navigation bound data hosts.
 
@@ -57,6 +67,11 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
     // triggers still have a source type of` kEvent` as they share the same web
     // API surface.
     AttributionSourceType source_type;
+
+    // For receivers with `source_type` `AttributionSourceType::kNavigation`,
+    // the final committed origin of the navigation associated with the data
+    // host. Opaque origin otherwise.
+    url::Origin destination;
   };
 
   // blink::mojom::AttributionDataHost:
@@ -80,6 +95,14 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
   //
   // If the receiver is processing triggers, stores an opaque origin.
   base::flat_map<mojo::ReceiverId, url::Origin> receiver_data_;
+
+  // Map which stores pending receivers for data hosts which are going to
+  // register sources associated with a navigation. These are not added to
+  // `receivers_` until the necessary browser process information is available
+  // to validate the attribution sources which is after the navigation finishes.
+  base::flat_map<blink::AttributionSrcToken,
+                 mojo::PendingReceiver<blink::mojom::AttributionDataHost>>
+      navigation_data_host_map_;
 };
 
 }  // namespace content

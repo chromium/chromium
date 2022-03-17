@@ -9,6 +9,7 @@
 
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_string.h"
 
@@ -37,6 +38,10 @@ struct WebImpression {
   // Priority for the attribution source. Declared by the impression tag.
   // This is 64 bits to allow timestamps to be used as a prioirty.
   int64_t priority;
+
+  // Indicates the attributionsrc request associated with `this`, if any. If
+  // provided, data parameters should be used from the attributionsrc response.
+  absl::optional<AttributionSrcToken> attribution_src_token;
 };
 
 }  // namespace blink

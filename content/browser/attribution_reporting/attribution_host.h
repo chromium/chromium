@@ -80,6 +80,9 @@ class CONTENT_EXPORT AttributionHost
   void RegisterConversion(blink::mojom::ConversionPtr conversion) override;
   void RegisterDataHost(mojo::PendingReceiver<blink::mojom::AttributionDataHost>
                             data_host) override;
+  void RegisterNavigationDataHost(
+      mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
+      const blink::AttributionSrcToken& attribution_src_token) override;
 
   // WebContentsObserver:
   void DidStartNavigation(NavigationHandle* navigation_handle) override;
@@ -88,6 +91,10 @@ class CONTENT_EXPORT AttributionHost
   // Notifies an impression.
   void NotifyImpressionInitiatedByPage(const url::Origin& impression_origin,
                                        const blink::Impression& impression);
+
+  // Notifies the `AttributionDataHostManager` that a navigation with an
+  // associated `AttributionDataHost` failed, if necessary.
+  void MaybeNotifyFailedSourceNavigation(NavigationHandle* navigation_handle);
 
   // Map which stores the top-frame origin an impression occurred on for all
   // navigations with an associated impression, keyed by navigation ID.

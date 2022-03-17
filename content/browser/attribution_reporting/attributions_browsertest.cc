@@ -813,6 +813,50 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
   expected_report.WaitForReport();
 }
 
+IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
+                       AttributionSrcNavigationSourceAndTrigger_ReportSent) {
+  // Expected reports must be registered before the server starts.
+  ExpectedReportWaiter expected_report(
+      GURL("https://a.test/.well-known/attribution-reporting/"
+           "report-event-attribution"),
+      /*attribution_destination=*/"https://d.test",
+      /*source_event_id=*/"5", /*source_type=*/"navigation",
+      /*trigger_data=*/"1", https_server());
+  ASSERT_TRUE(https_server()->Start());
+
+  EXPECT_TRUE(NavigateToURL(
+      web_contents(),
+      https_server()->GetURL(
+          "b.test",
+          "/attribution_reporting/page_with_impression_creator.html")));
+
+  TestNavigationObserver observer(web_contents());
+
+  EXPECT_TRUE(ExecJs(
+      web_contents(),
+
+      JsReplace(R"(createAndClickAttributionSrcAnchor({url: $1,
+                                      attributionsrc: $2});)",
+                https_server()->GetURL(
+                    "d.test",
+                    "/attribution_reporting/page_with_impression_creator.html"),
+                https_server()->GetURL(
+                    "a.test",
+                    "/attribution_reporting/register_source_headers.html"))));
+
+  observer.Wait();
+
+  EXPECT_TRUE(ExecJs(
+      web_contents(),
+      JsReplace(
+          "createAttributionSrcImg($1);",
+          https_server()->GetURL("a.test",
+                                 "/attribution_reporting/"
+                                 "register_trigger_headers_all_params.html"))));
+
+  expected_report.WaitForReport();
+}
+
 IN_PROC_BROWSER_TEST_F(
     AttributionsBrowserTest,
     AttributionSrcSourceAndNonAttributionSrcTrigger_ReportSent) {

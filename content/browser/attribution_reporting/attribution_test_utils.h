@@ -18,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
+#include "base/run_loop.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -41,10 +42,13 @@
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/public/browser/attribution_reporting.h"
+#include "content/public/browser/navigation_handle.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/test/test_content_browser_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/attribution_reporting/constants.h"
+#include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
 #include "url/origin.h"
 
@@ -101,6 +105,13 @@ class MockAttributionHost : public AttributionHost {
       RegisterDataHost,
       (mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host),
       (override));
+
+  MOCK_METHOD(
+      void,
+      RegisterNavigationDataHost,
+      (mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
+       const blink::AttributionSrcToken& attribution_src_token),
+      (override));
 };
 
 class MockDataHost : public blink::mojom::AttributionDataHost {
@@ -150,6 +161,25 @@ class MockDataHostManager : public AttributionDataHostManager {
       (mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
        url::Origin context_origin),
       (override));
+
+  MOCK_METHOD(
+      void,
+      RegisterNavigationDataHost,
+      (mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
+       const blink::AttributionSrcToken& attribution_src_token),
+      (override));
+
+  MOCK_METHOD(void,
+              NotifyNavigationForDataHost,
+              (const blink::AttributionSrcToken& attribution_src_token,
+               const url::Origin& source_origin,
+               const url::Origin& destination_origin),
+              (override));
+
+  MOCK_METHOD(void,
+              NotifyNavigationFailure,
+              (const blink::AttributionSrcToken& attribution_src_token),
+              (override));
 };
 
 base::GUID DefaultExternalReportID();
@@ -324,6 +354,32 @@ class MockAttributionManager : public AttributionManager {
  private:
   std::unique_ptr<AttributionDataHostManager> data_host_manager_;
   base::ObserverList<AttributionObserver, /*check_empty=*/true> observers_;
+};
+
+// WebContentsObserver that waits until a source is available on a
+// navigation handle for a finished navigation.
+class SourceObserver : public TestNavigationObserver {
+ public:
+  explicit SourceObserver(WebContents* contents, size_t num_impressions = 1u);
+  ~SourceObserver() override;
+
+  // WebContentsObserver:
+  void OnDidFinishNavigation(NavigationHandle* navigation_handle) override;
+
+  const blink::Impression& last_impression() const { return *last_impression_; }
+
+  // Waits for |expected_num_impressions_| navigations with impressions, and
+  // returns the last impression.
+  const blink::Impression& Wait();
+
+  bool WaitForNavigationWithNoImpression();
+
+ private:
+  size_t num_impressions_ = 0u;
+  const size_t expected_num_impressions_ = 0u;
+  absl::optional<blink::Impression> last_impression_;
+  bool waiting_for_null_impression_ = false;
+  base::RunLoop impression_loop_;
 };
 
 // Helper class to construct a StorableSource for tests using default data.

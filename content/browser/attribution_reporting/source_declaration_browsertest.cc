@@ -19,7 +19,6 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
-#include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
@@ -40,57 +39,6 @@ using ::testing::IsEmpty;
 using ::testing::Pair;
 using ::testing::Pointee;
 using ::testing::UnorderedElementsAre;
-
-// WebContentsObserver that waits until a source is available on a
-// navigation handle for a finished navigation.
-class SourceObserver : public TestNavigationObserver {
- public:
-  explicit SourceObserver(WebContents* contents, size_t num_impressions = 1u)
-      : TestNavigationObserver(contents),
-        expected_num_impressions_(num_impressions) {}
-
-  // WebContentsObserver
-  void OnDidFinishNavigation(NavigationHandle* navigation_handle) override {
-    if (!navigation_handle->GetImpression()) {
-      if (waiting_for_null_impression_)
-        impression_loop_.Quit();
-      return;
-    }
-
-    last_impression_ = *(navigation_handle->GetImpression());
-    num_impressions_++;
-
-    if (!waiting_for_null_impression_ &&
-        num_impressions_ >= expected_num_impressions_) {
-      impression_loop_.Quit();
-    }
-  }
-
-  const blink::Impression& last_impression() { return *last_impression_; }
-
-  // Waits for |expected_num_impressions_| navigations with impressions, and
-  // returns the last impression.
-  const blink::Impression& Wait() {
-    if (num_impressions_ >= expected_num_impressions_)
-      return *last_impression_;
-    impression_loop_.Run();
-    return last_impression();
-  }
-
-  bool WaitForNavigationWithNoImpression() {
-    waiting_for_null_impression_ = true;
-    impression_loop_.Run();
-    waiting_for_null_impression_ = false;
-    return true;
-  }
-
- private:
-  size_t num_impressions_ = 0u;
-  const size_t expected_num_impressions_ = 0u;
-  absl::optional<blink::Impression> last_impression_;
-  bool waiting_for_null_impression_ = false;
-  base::RunLoop impression_loop_;
-};
 
 class AttributionSourceDisabledBrowserTest : public ContentBrowserTest {
  public:

@@ -27,6 +27,7 @@
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/conversions/conversions.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -405,6 +406,24 @@ TEST_F(AttributionHostTest, ValidImpression_ForwardedToManager) {
   navigation->Commit();
 }
 
+TEST_F(AttributionHostTest, ValidAttributionSrc_ForwardedToManager) {
+  auto impression = CreateValidImpression();
+  impression.attribution_src_token = blink::AttributionSrcToken();
+
+  EXPECT_CALL(*mock_data_host_manager_,
+              NotifyNavigationForDataHost(
+                  *impression.attribution_src_token,
+                  url::Origin::Create(GURL("https://secure_impression.com")),
+                  url::Origin::Create(GURL(kConversionUrl))));
+
+  contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
+  auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(
+      GURL(kConversionUrl), main_rfh());
+  navigation->SetInitiatorFrame(main_rfh());
+  navigation->set_impression(std::move(impression));
+  navigation->Commit();
+}
+
 TEST_F(AttributionHostTest, ImpressionWithNoManagerAvilable_NoCrash) {
   // Replace the AttributionHost on the WebContents with one that is backed by a
   // null AttributionManager.
@@ -470,6 +489,25 @@ TEST_F(AttributionHostTest, ImpressionNavigationCommitsToErrorPage_Ignored) {
   navigation->CommitErrorPage();
 }
 
+TEST_F(AttributionHostTest,
+       AttributionSrcNavigationCommitsToErrorPage_Ignored) {
+  auto impression = CreateValidImpression();
+  impression.attribution_src_token = blink::AttributionSrcToken();
+
+  EXPECT_CALL(
+      *mock_data_host_manager_,
+      NotifyNavigationFailure(impression.attribution_src_token.value()));
+
+  contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
+
+  auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(
+      GURL(kConversionUrl), main_rfh());
+  navigation->SetInitiatorFrame(main_rfh());
+  navigation->set_impression(std::move(impression));
+  navigation->Fail(net::ERR_FAILED);
+  navigation->CommitErrorPage();
+}
+
 TEST_F(AttributionHostTest, ImpressionNavigationAborts_Ignored) {
   EXPECT_CALL(mock_manager_, HandleSource).Times(0);
 
@@ -479,6 +517,23 @@ TEST_F(AttributionHostTest, ImpressionNavigationAborts_Ignored) {
       GURL(kConversionUrl), main_rfh());
   navigation->SetInitiatorFrame(main_rfh());
   navigation->set_impression(CreateValidImpression());
+  navigation->AbortCommit();
+}
+
+TEST_F(AttributionHostTest, AttributionSrcNavigationAborts_Ignored) {
+  auto impression = CreateValidImpression();
+  impression.attribution_src_token = blink::AttributionSrcToken();
+
+  EXPECT_CALL(
+      *mock_data_host_manager_,
+      NotifyNavigationFailure(impression.attribution_src_token.value()));
+
+  contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
+
+  auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(
+      GURL(kConversionUrl), main_rfh());
+  navigation->SetInitiatorFrame(main_rfh());
+  navigation->set_impression(std::move(impression));
   navigation->AbortCommit();
 }
 
@@ -596,6 +651,25 @@ TEST_F(AttributionHostTest, DataHostOnInsecurePage_BadMessage) {
   mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
   conversion_host_mojom()->RegisterDataHost(
       data_host_remote.BindNewPipeAndPassReceiver());
+
+  EXPECT_EQ(
+      "blink.mojom.ConversionHost can only be used with a secure top-level "
+      "frame.",
+      bad_message_observer.WaitForBadMessage());
+}
+
+TEST_F(AttributionHostTest, NavigationDataHostOnInsecurePage_BadMessage) {
+  contents()->NavigateAndCommit(GURL("http://top.example"));
+  SetCurrentTargetFrameForTesting(main_rfh());
+
+  // Create a fake dispatch context to trigger a bad message in.
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  mojo::test::BadMessageObserver bad_message_observer;
+
+  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+  conversion_host_mojom()->RegisterNavigationDataHost(
+      data_host_remote.BindNewPipeAndPassReceiver(),
+      blink::AttributionSrcToken());
 
   EXPECT_EQ(
       "blink.mojom.ConversionHost can only be used with a secure top-level "

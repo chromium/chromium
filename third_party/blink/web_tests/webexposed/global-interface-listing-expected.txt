@@ -2871,6 +2871,7 @@ interface HTMLAnchorElement : HTMLElement
     getter attributionReportTo
     getter attributionSourceEventId
     getter attributionSourcePriority
+    getter attributionSrc
     getter charset
     getter coords
     getter download
@@ -2904,6 +2905,7 @@ interface HTMLAnchorElement : HTMLElement
     setter attributionReportTo
     setter attributionSourceEventId
     setter attributionSourcePriority
+    setter attributionSrc
     setter charset
     setter coords
     setter download

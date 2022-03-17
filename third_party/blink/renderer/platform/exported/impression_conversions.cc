@@ -19,8 +19,10 @@ blink::Impression ConvertWebImpressionToImpression(
   result.impression_data = web_impression.impression_data;
   result.expiry = web_impression.expiry;
   result.reporting_origin = web_impression.reporting_origin;
-  result.conversion_destination = web_impression.conversion_destination;
+  if (!web_impression.conversion_destination.IsNull())
+    result.conversion_destination = web_impression.conversion_destination;
   result.priority = web_impression.priority;
+  result.attribution_src_token = web_impression.attribution_src_token;
 
   return result;
 }

@@ -88,6 +88,14 @@ union WorkletToken {
 // their own section, in alphabetical order. If adding a new token here, please
 // keep the following list in alphabetic order.
 
+struct AttributionSrcToken {
+  mojo_base.mojom.UnguessableToken value;
+};
+
+struct ClipboardSequenceNumberToken {
+  mojo_base.mojom.UnguessableToken value;
+};
+
 union ExecutionContextToken {
   LocalFrameToken local_frame_token;
   DedicatedWorkerToken dedicated_worker_token;
@@ -104,9 +112,5 @@ struct PortalToken {
 };
 
 struct V8ContextToken {
-  mojo_base.mojom.UnguessableToken value;
-};
-
-struct ClipboardSequenceNumberToken {
   mojo_base.mojom.UnguessableToken value;
 };

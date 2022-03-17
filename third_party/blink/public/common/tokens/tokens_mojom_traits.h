@@ -142,6 +142,20 @@ struct BLINK_COMMON_EXPORT
 // keep the following list in alphabetic order.
 
 template <>
+struct StructTraits<blink::mojom::AttributionSrcTokenDataView,
+                    blink::AttributionSrcToken>
+    : public blink::TokenMojomTraitsHelper<
+          blink::mojom::AttributionSrcTokenDataView,
+          blink::AttributionSrcToken> {};
+
+template <>
+struct StructTraits<blink::mojom::ClipboardSequenceNumberTokenDataView,
+                    blink::ClipboardSequenceNumberToken>
+    : public blink::TokenMojomTraitsHelper<
+          blink::mojom::ClipboardSequenceNumberTokenDataView,
+          blink::ClipboardSequenceNumberToken> {};
+
+template <>
 struct BLINK_COMMON_EXPORT
     UnionTraits<blink::mojom::ExecutionContextTokenDataView,
                 blink::ExecutionContextToken> {
@@ -176,13 +190,6 @@ template <>
 struct StructTraits<blink::mojom::V8ContextTokenDataView, blink::V8ContextToken>
     : public blink::TokenMojomTraitsHelper<blink::mojom::V8ContextTokenDataView,
                                            blink::V8ContextToken> {};
-
-template <>
-struct StructTraits<blink::mojom::ClipboardSequenceNumberTokenDataView,
-                    blink::ClipboardSequenceNumberToken>
-    : public blink::TokenMojomTraitsHelper<
-          blink::mojom::ClipboardSequenceNumberTokenDataView,
-          blink::ClipboardSequenceNumberToken> {};
 
 }  // namespace mojo
 
