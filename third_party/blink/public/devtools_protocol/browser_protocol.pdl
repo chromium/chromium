@@ -1542,6 +1542,8 @@ experimental domain CSS
     properties
       # Supports rule text.
       string text
+      # Whether the supports condition is satisfied.
+      boolean active
       # The associated rule header range in the enclosing stylesheet (if
       # available).
       optional SourceRange range

@@ -2009,6 +2009,7 @@ InspectorCSSAgent::BuildSupportsObject(CSSSupportsRule* rule) {
   std::unique_ptr<protocol::CSS::CSSSupports> supports_object =
       protocol::CSS::CSSSupports::create()
           .setText(rule->ConditionTextInternal())
+          .setActive(rule->ConditionIsSupported())
           .build();
 
   auto it =

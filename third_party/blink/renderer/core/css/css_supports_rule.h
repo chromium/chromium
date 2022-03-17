@@ -47,6 +47,10 @@ class CSSSupportsRule final : public CSSConditionRule {
 
   void SetConditionText(const ExecutionContext*, String);
 
+  bool ConditionIsSupported() const {
+    return To<StyleRuleSupports>(group_rule_.Get())->ConditionIsSupported();
+  }
+
  private:
   CSSRule::Type GetType() const override { return kSupportsRule; }
 };
