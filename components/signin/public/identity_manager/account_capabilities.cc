@@ -34,7 +34,8 @@ const std::vector<std::string>&
 AccountCapabilities::GetSupportedAccountCapabilityNames() {
   static base::NoDestructor<std::vector<std::string>> kCapabilityNames{
       {kCanOfferExtendedChromeSyncPromosCapabilityName,
-       kCanRunChromePrivacySandboxTrialsCapabilityName}};
+       kCanRunChromePrivacySandboxTrialsCapabilityName,
+       kIsSubjectToParentalControlsCapabilityName}};
   return *kCapabilityNames;
 }
 
@@ -65,6 +66,10 @@ signin::Tribool AccountCapabilities::can_offer_extended_chrome_sync_promos()
 signin::Tribool AccountCapabilities::can_run_chrome_privacy_sandbox_trials()
     const {
   return GetCapabilityByName(kCanRunChromePrivacySandboxTrialsCapabilityName);
+}
+
+signin::Tribool AccountCapabilities::is_subject_to_parental_controls() const {
+  return GetCapabilityByName(kIsSubjectToParentalControlsCapabilityName);
 }
 
 bool AccountCapabilities::UpdateWith(const AccountCapabilities& other) {
