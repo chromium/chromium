@@ -274,7 +274,6 @@ src/webgpu/shader/execution/expression/call/builtin/float_built_functions.spec.t
 src/webgpu/shader/execution/expression/call/builtin/floor.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/fract.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/insertBits.spec.ts
-src/webgpu/shader/execution/expression/call/builtin/integer_built_in_functions.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/inversesqrt.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/ldexp.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/log.spec.ts
@@ -282,6 +281,7 @@ src/webgpu/shader/execution/expression/call/builtin/log2.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/logical_built_in_functions.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/max.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/min.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/reverseBits.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/select.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/sin.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/value_testing_built_in_functions.spec.ts
