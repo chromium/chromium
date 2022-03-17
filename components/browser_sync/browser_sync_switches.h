@@ -39,7 +39,7 @@ inline constexpr base::FeatureParam<int> kSyncFCMRegistrationTokensListMaxSize{
 // recently (depending on the device's pulse_interval and an additional margin).
 inline constexpr base::Feature kSyncFilterOutInactiveDevicesForSingleClient{
     "SyncFilterOutInactiveDevicesForSingleClient",
-    base::FEATURE_ENABLED_BY_DEFAULT};
+    base::FEATURE_DISABLED_BY_DEFAULT};
 // An additional threshold to consider devices as active. It extends device's
 // pulse interval to mitigate possible latency after DeviceInfo commit.
 inline constexpr base::FeatureParam<base::TimeDelta> kSyncActiveDeviceMargin{
