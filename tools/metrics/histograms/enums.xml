@@ -7621,6 +7621,7 @@ others/histograms.xml -->
   <int value="2" label="User closed bubble via corner X or ESC"/>
   <int value="3" label="User did not interact with the bubble"/>
   <int value="4" label="Bubble lost focus and was deactivated"/>
+  <int value="5" label="User cancelled the bubble"/>
 </enum>
 
 <enum name="AutofillVirtualCardManualFallbackBubbleFieldClicked">

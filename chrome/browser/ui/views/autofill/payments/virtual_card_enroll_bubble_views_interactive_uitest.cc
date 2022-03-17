@@ -156,6 +156,62 @@ class VirtualCardEnrollBubbleViewsInteractiveUiTest
     }
   }
 
+  void TestCloseBubbleForExpectedResultFromSource(
+      VirtualCardEnrollmentBubbleResult expected_result,
+      VirtualCardEnrollmentSource source) {
+    base::HistogramTester histogram_tester;
+    ShowBubbleAndWaitUntilShown(GetFieldsForSource(source), base::DoNothing(),
+                                base::DoNothing());
+
+    ASSERT_TRUE(GetBubbleViews());
+    ASSERT_TRUE(IsIconVisible());
+
+    views::Widget::ClosedReason closed_reason;
+    switch (expected_result) {
+      case VirtualCardEnrollmentBubbleResult::
+          VIRTUAL_CARD_ENROLLMENT_BUBBLE_ACCEPTED:
+        closed_reason = views::Widget::ClosedReason::kAcceptButtonClicked;
+        break;
+      case VirtualCardEnrollmentBubbleResult::
+          VIRTUAL_CARD_ENROLLMENT_BUBBLE_CLOSED:
+        closed_reason = views::Widget::ClosedReason::kCloseButtonClicked;
+        break;
+      case VirtualCardEnrollmentBubbleResult::
+          VIRTUAL_CARD_ENROLLMENT_BUBBLE_LOST_FOCUS:
+        closed_reason = views::Widget::ClosedReason::kLostFocus;
+        break;
+      case VirtualCardEnrollmentBubbleResult::
+          VIRTUAL_CARD_ENROLLMENT_BUBBLE_CANCELLED:
+        closed_reason = views::Widget::ClosedReason::kCancelButtonClicked;
+        break;
+      case VirtualCardEnrollmentBubbleResult::
+          VIRTUAL_CARD_ENROLLMENT_BUBBLE_NOT_INTERACTED:
+        // The VirtualCardEnrollBubble will be closed differently in the not
+        // interacted case, so no need to set |closed_reason| here.
+        break;
+      case VirtualCardEnrollmentBubbleResult::
+          VIRTUAL_CARD_ENROLLMENT_BUBBLE_RESULT_UNKNOWN:
+        NOTREACHED();
+        break;
+    }
+
+    views::test::WidgetDestroyedWaiter destroyed_waiter(
+        GetBubbleViews()->GetWidget());
+
+    if (expected_result != VirtualCardEnrollmentBubbleResult::
+                               VIRTUAL_CARD_ENROLLMENT_BUBBLE_NOT_INTERACTED) {
+      GetBubbleViews()->GetWidget()->CloseWithReason(closed_reason);
+    } else {
+      browser()->tab_strip_model()->CloseAllTabs();
+    }
+
+    destroyed_waiter.Wait();
+    histogram_tester.ExpectBucketCount(
+        "Autofill.VirtualCardEnrollBubble.Result." +
+            VirtualCardEnrollmentSourceToMetricSuffix(source) + ".FirstShow",
+        expected_result, 1);
+  }
+
  private:
   VirtualCardEnrollmentFields downstream_virtual_card_enrollment_fields_;
   VirtualCardEnrollmentFields upstream_virtual_card_enrollment_fields_;
@@ -195,119 +251,69 @@ IN_PROC_BROWSER_TEST_F(VirtualCardEnrollBubbleViewsInteractiveUiTest,
   EXPECT_TRUE(IsIconVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(VirtualCardEnrollBubbleViewsInteractiveUiTest,
-                       Metrics_BubbleLostFocus) {
-  base::HistogramTester histogram_tester;
-  std::string histogram_name;
-
-  for (VirtualCardEnrollmentSource virtual_card_enrollment_source :
-       {VirtualCardEnrollmentSource::kUpstream,
-        VirtualCardEnrollmentSource::kDownstream,
-        VirtualCardEnrollmentSource::kSettingsPage}) {
-    ShowBubbleAndWaitUntilShown(
-        GetFieldsForSource(virtual_card_enrollment_source), base::DoNothing(),
-        base::DoNothing());
-
-    ASSERT_TRUE(GetBubbleViews());
-    ASSERT_TRUE(IsIconVisible());
-
-    // Mock deactivation and lose focus.
-    views::test::WidgetDestroyedWaiter destroyed_waiter(
-        GetBubbleViews()->GetWidget());
-    GetBubbleViews()->GetWidget()->CloseWithReason(
-        views::Widget::ClosedReason::kLostFocus);
-    destroyed_waiter.Wait();
-
-    histogram_tester.ExpectBucketCount(
-        "Autofill.VirtualCardEnrollBubble.Result." +
-            VirtualCardEnrollmentSourceToMetricSuffix(
-                virtual_card_enrollment_source) +
-            ".FirstShow",
-        VirtualCardEnrollmentBubbleResult::
-            VIRTUAL_CARD_ENROLLMENT_BUBBLE_LOST_FOCUS,
-        1);
-  }
-}
-
-IN_PROC_BROWSER_TEST_F(VirtualCardEnrollBubbleViewsInteractiveUiTest,
-                       Metrics_BubbleAccepted) {
-  base::HistogramTester histogram_tester;
-  std::string histogram_name;
-
-  for (VirtualCardEnrollmentSource virtual_card_enrollment_source :
-       {VirtualCardEnrollmentSource::kUpstream,
-        VirtualCardEnrollmentSource::kDownstream,
-        VirtualCardEnrollmentSource::kSettingsPage}) {
-    ShowBubbleAndWaitUntilShown(
-        GetFieldsForSource(virtual_card_enrollment_source), base::DoNothing(),
-        base::DoNothing());
-
-    ASSERT_TRUE(GetBubbleViews());
-    ASSERT_TRUE(IsIconVisible());
-
-    // Mock deactivation and accept.
-    views::test::WidgetDestroyedWaiter destroyed_waiter(
-        GetBubbleViews()->GetWidget());
-    GetBubbleViews()->GetWidget()->CloseWithReason(
-        views::Widget::ClosedReason::kAcceptButtonClicked);
-    destroyed_waiter.Wait();
-
-    histogram_tester.ExpectBucketCount(
-        "Autofill.VirtualCardEnrollBubble.Result." +
-            VirtualCardEnrollmentSourceToMetricSuffix(
-                virtual_card_enrollment_source) +
-            ".FirstShow",
-        VirtualCardEnrollmentBubbleResult::
-            VIRTUAL_CARD_ENROLLMENT_BUBBLE_ACCEPTED,
-        1);
-  }
-}
-
-class NotInteractedAndClosedMetricsTest
+class VirtualCardEnrollBubbleViewsInteractiveUiTestParameterized
     : public VirtualCardEnrollBubbleViewsInteractiveUiTest,
       public testing::WithParamInterface<VirtualCardEnrollmentSource> {
  public:
-  NotInteractedAndClosedMetricsTest() = default;
-  ~NotInteractedAndClosedMetricsTest() override = default;
+  VirtualCardEnrollBubbleViewsInteractiveUiTestParameterized() = default;
+  ~VirtualCardEnrollBubbleViewsInteractiveUiTestParameterized() override =
+      default;
 };
 
 INSTANTIATE_TEST_SUITE_P(
     ,
-    NotInteractedAndClosedMetricsTest,
+    VirtualCardEnrollBubbleViewsInteractiveUiTestParameterized,
     testing::Values(VirtualCardEnrollmentSource::kUpstream,
                     VirtualCardEnrollmentSource::kDownstream,
                     VirtualCardEnrollmentSource::kSettingsPage));
 
-IN_PROC_BROWSER_TEST_P(NotInteractedAndClosedMetricsTest,
-                       NotInteractedTest_AllSources) {
-  VirtualCardEnrollmentSource virtual_card_enrollment_source = GetParam();
-  base::HistogramTester histogram_tester;
-  std::string histogram_name;
-  ShowBubbleAndWaitUntilShown(
-      GetFieldsForSource(virtual_card_enrollment_source), base::DoNothing(),
-      base::DoNothing());
-
-  ASSERT_TRUE(GetBubbleViews());
-  ASSERT_TRUE(IsIconVisible());
-
-  // Mock browser being closed.
-  views::test::WidgetDestroyedWaiter destroyed_waiter(
-      GetBubbleViews()->GetWidget());
-  browser()->tab_strip_model()->CloseAllTabs();
-  destroyed_waiter.Wait();
-
-  histogram_tester.ExpectBucketCount(
-      "Autofill.VirtualCardEnrollBubble.Result." +
-          VirtualCardEnrollmentSourceToMetricSuffix(
-              virtual_card_enrollment_source) +
-          ".FirstShow",
+IN_PROC_BROWSER_TEST_P(
+    VirtualCardEnrollBubbleViewsInteractiveUiTestParameterized,
+    Metrics_BubbleLostFocus) {
+  TestCloseBubbleForExpectedResultFromSource(
       VirtualCardEnrollmentBubbleResult::
-          VIRTUAL_CARD_ENROLLMENT_BUBBLE_NOT_INTERACTED,
-      1);
+          VIRTUAL_CARD_ENROLLMENT_BUBBLE_LOST_FOCUS,
+      GetParam());
 }
 
-IN_PROC_BROWSER_TEST_P(NotInteractedAndClosedMetricsTest,
-                       ShownAndLostFocusTest_AllSources) {
+IN_PROC_BROWSER_TEST_P(
+    VirtualCardEnrollBubbleViewsInteractiveUiTestParameterized,
+    Metrics_BubbleAccepted) {
+  TestCloseBubbleForExpectedResultFromSource(
+      VirtualCardEnrollmentBubbleResult::
+          VIRTUAL_CARD_ENROLLMENT_BUBBLE_ACCEPTED,
+      GetParam());
+}
+
+IN_PROC_BROWSER_TEST_P(
+    VirtualCardEnrollBubbleViewsInteractiveUiTestParameterized,
+    Metrics_BubbleCancelled) {
+  TestCloseBubbleForExpectedResultFromSource(
+      VirtualCardEnrollmentBubbleResult::
+          VIRTUAL_CARD_ENROLLMENT_BUBBLE_CANCELLED,
+      GetParam());
+}
+
+IN_PROC_BROWSER_TEST_P(
+    VirtualCardEnrollBubbleViewsInteractiveUiTestParameterized,
+    Metrics_BubbleClosed) {
+  TestCloseBubbleForExpectedResultFromSource(
+      VirtualCardEnrollmentBubbleResult::VIRTUAL_CARD_ENROLLMENT_BUBBLE_CLOSED,
+      GetParam());
+}
+
+IN_PROC_BROWSER_TEST_P(
+    VirtualCardEnrollBubbleViewsInteractiveUiTestParameterized,
+    Metrics_NotInteracted) {
+  TestCloseBubbleForExpectedResultFromSource(
+      VirtualCardEnrollmentBubbleResult::
+          VIRTUAL_CARD_ENROLLMENT_BUBBLE_NOT_INTERACTED,
+      GetParam());
+}
+
+IN_PROC_BROWSER_TEST_P(
+    VirtualCardEnrollBubbleViewsInteractiveUiTestParameterized,
+    ShownAndLostFocusTest_AllSources) {
   base::HistogramTester histogram_tester;
   VirtualCardEnrollmentSource virtual_card_enrollment_source = GetParam();
   ShowBubbleAndWaitUntilShown(

@@ -31,7 +31,9 @@ enum class VirtualCardEnrollmentBubbleResult {
   VIRTUAL_CARD_ENROLLMENT_BUBBLE_NOT_INTERACTED = 3,
   // The bubble lost focus and was deactivated.
   VIRTUAL_CARD_ENROLLMENT_BUBBLE_LOST_FOCUS = 4,
-  kMaxValue = VIRTUAL_CARD_ENROLLMENT_BUBBLE_LOST_FOCUS,
+  // The user cancelled the bubble.
+  VIRTUAL_CARD_ENROLLMENT_BUBBLE_CANCELLED = 5,
+  kMaxValue = VIRTUAL_CARD_ENROLLMENT_BUBBLE_CANCELLED,
 };
 
 // Metrics to record the source that prompted the virtual card enrollment

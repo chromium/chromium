@@ -156,7 +156,11 @@ void VirtualCardEnrollBubbleControllerImpl::OnBubbleClosed(
       result = VirtualCardEnrollmentBubbleResult::
           VIRTUAL_CARD_ENROLLMENT_BUBBLE_LOST_FOCUS;
       break;
-    default:
+    case PaymentsBubbleClosedReason::kCancelled:
+      result = VirtualCardEnrollmentBubbleResult::
+          VIRTUAL_CARD_ENROLLMENT_BUBBLE_CANCELLED;
+      break;
+    case PaymentsBubbleClosedReason::kUnknown:
       NOTREACHED();
       result = VirtualCardEnrollmentBubbleResult::
           VIRTUAL_CARD_ENROLLMENT_BUBBLE_RESULT_UNKNOWN;
