@@ -24,6 +24,7 @@ namespace {
 constexpr char kActiveTabIndex[] = "active_tab_index";
 constexpr char kAppId[] = "app_id";
 constexpr char kApps[] = "apps";
+constexpr char kAppName[] = "app_name";
 constexpr char kAppType[] = "app_type";
 constexpr char kAppTypeBrowser[] = "BROWSER";
 constexpr char kAppTypeChrome[] = "CHROME_APP";
@@ -35,7 +36,6 @@ constexpr char kName[] = "name";
 constexpr char kPreMinimizedWindowState[] = "pre_minimized_window_state";
 constexpr char kTabs[] = "tabs";
 constexpr char kTabUrl[] = "url";
-constexpr char kTitleFieldName[] = "title";
 constexpr char kUpdatedTime[] = "updated_time_usec";
 constexpr char kUuid[] = "uuid";
 constexpr char kVersion[] = "version";
@@ -138,9 +138,9 @@ std::unique_ptr<app_restore::AppLaunchInfo> ConvertJsonToAppLaunchInfo(
     return nullptr;
   }
 
-  std::string title_string;
-  if (GetString(app, kTitleFieldName, &title_string))
-    app_launch_info->app_name = title_string;
+  std::string app_name;
+  if (GetString(app, kAppName, &app_name))
+    app_launch_info->app_name = app_name;
 
   if (app_type == kAppTypeBrowser) {
     int active_tab_index;
@@ -426,7 +426,7 @@ base::Value ConvertWindowToDeskApp(const std::string& app_id,
   }
 
   if (app->app_name.has_value())
-    app_data.SetKey(kTitleFieldName, base::Value(app->app_name.value()));
+    app_data.SetKey(kAppName, base::Value(app->app_name.value()));
 
   return app_data;
 }

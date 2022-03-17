@@ -62,6 +62,20 @@ message WorkspaceDeskSpecifics {
     // State of a window before it was minimized. Empty/unset for non-minimized
     // windows.
     optional WindowState pre_minimized_window_state = 7;
+
+    // Container this app was launched from.  Empty/unset for Arc apps.
+    optional LaunchContainer container = 8;
+
+    // Window open disposition, defines how a window opens. Empty/unset for Arc
+    // apps.
+    optional WindowOpenDisposition disposition = 9;
+
+    // Name of the app which is used by the browser to determine whether to
+    // launch an app as an app or a tab. Does not contain a human readable name
+    // but contains the app ID and a prefix.
+    //
+    // TODO(crbug/1306604): Deprecate and remove `app_name`.
+    optional string app_name = 10;
   }
 
   message AppOneOf {
@@ -87,6 +101,9 @@ message WorkspaceDeskSpecifics {
 
     // The index of the currently active tab.
     optional int32 active_tab_index = 2;
+
+    // Indicates whether to show as a dedicated app window.
+    optional bool show_as_app = 3;
   }
 
   // A Chrome App window.
@@ -136,6 +153,16 @@ message WorkspaceDeskSpecifics {
     optional int32 height = 4;
   }
 
+  // Enumeration for the container an app was launched from as used by
+  // (components/services/app_services/public/mojom/types.mojom:490).
+  enum LaunchContainer {
+    LAUNCH_CONTAINER_UNSPECIFIED = 0;
+    LAUNCH_CONTAINER_WINDOW = 1;
+    LAUNCH_CONTAINER_PANEL_DEPRECATED = 2;
+    LAUNCH_CONTAINER_TAB = 3;
+    LAUNCH_CONTAINER_NONE = 4;
+  }
+
   // The state of a generic window.
   enum WindowState {
     UNKNOWN_WINDOW_STATE = 0;
@@ -154,5 +181,32 @@ message WorkspaceDeskSpecifics {
     // in landscape screen orientation and bottom in portrait screen
     // orientation.
     SECONDARY_SNAPPED = 6;
+  }
+
+  // Enumeration for how a window opens.  Maps to base::WindowOpenDisposition.
+  // (found in ui/base/window_open_disposition.h:10).  Does not include
+  // MAX_VALUE as MAX_VALUE is equivalent to NEW_PICTURE_IN_PICTURE.  All
+  // comments are copied verbatim from aforementioned header.
+  enum WindowOpenDisposition {
+    UNKNOWN = 0;
+    CURRENT_TAB = 1;
+    // Indicates that only one tab with the URL shoul exist in the same window.
+    SINGLETON_TAB = 2;
+    NEW_FOREGROUND_TAB = 3;
+    NEW_BACKGROUND_TAB = 4;
+    NEW_POPUP = 5;
+    NEW_WINDOW = 6;
+    SAVE_TO_DISK = 7;
+    OFF_THE_RECORD = 8;
+    IGNORE_ACTION = 9;
+    // Activates an existing tab containing the URL, rather than navigating.
+    // This is similar to SINGLETON_TAB, but searches across all windows
+    // from the current profile and anymity (instead of tjust the current one);
+    // closes the current tab on switching if the current ta was the NTP with
+    // no session history; and behaves like CURRENT_TAB instead of
+    // NEW_FOREGROUND_TAB when no existing tab is found.
+    SWITCH_TO_TAB = 10;
+    // creates a new document picture-in-picture window showing a child WebView.
+    NEW_PICTURE_IN_PICTURE = 11;
   }
 }

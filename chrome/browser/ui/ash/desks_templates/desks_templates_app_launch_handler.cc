@@ -167,7 +167,14 @@ void DesksTemplatesAppLaunchHandler::LaunchBrowsers() {
 
       const bool app_type_browser =
           app_restore_data->app_type_browser.value_or(false);
-      const std::string app_name = app_restore_data->app_name.value_or(app_id);
+
+      const absl::optional<std::string> maybe_app_name =
+          app_restore_data->app_name;
+      const std::string app_name =
+          maybe_app_name.has_value() && !maybe_app_name.value().empty()
+              ? maybe_app_name.value()
+              : app_id;
+
       const gfx::Rect current_bounds =
           app_restore_data->current_bounds.value_or(gfx::Rect());
 

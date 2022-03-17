@@ -668,6 +668,44 @@ const char* ProtoEnumToString(
 }
 
 const char* ProtoEnumToString(
+    sync_pb::WorkspaceDeskSpecifics::LaunchContainer container) {
+  ASSERT_ENUM_BOUNDS(sync_pb::WorkspaceDeskSpecifics, LaunchContainer,
+                     LAUNCH_CONTAINER_UNSPECIFIED, LAUNCH_CONTAINER_NONE);
+  switch (container) {
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, LAUNCH_CONTAINER_UNSPECIFIED);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, LAUNCH_CONTAINER_WINDOW);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics,
+              LAUNCH_CONTAINER_PANEL_DEPRECATED);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, LAUNCH_CONTAINER_TAB);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, LAUNCH_CONTAINER_NONE);
+  }
+  NOTREACHED();
+  return "";
+}
+
+const char* ProtoEnumToString(
+    sync_pb::WorkspaceDeskSpecifics::WindowOpenDisposition disposition) {
+  ASSERT_ENUM_BOUNDS(sync_pb::WorkspaceDeskSpecifics, WindowOpenDisposition,
+                     UNKNOWN, NEW_PICTURE_IN_PICTURE);
+  switch (disposition) {
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, UNKNOWN);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, CURRENT_TAB);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, SINGLETON_TAB);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, NEW_FOREGROUND_TAB);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, NEW_BACKGROUND_TAB);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, NEW_POPUP);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, NEW_WINDOW);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, SAVE_TO_DISK);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, OFF_THE_RECORD);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, IGNORE_ACTION);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, SWITCH_TO_TAB);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, NEW_PICTURE_IN_PICTURE);
+  }
+  NOTREACHED();
+  return "";
+}
+
+const char* ProtoEnumToString(
     sync_pb::UserConsentTypes::AssistantActivityControlConsent::SettingType
         setting_type) {
   ASSERT_ENUM_BOUNDS(sync_pb::UserConsentTypes::AssistantActivityControlConsent,

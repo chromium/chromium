@@ -36,6 +36,7 @@
 #include "components/sync/protocol/workspace_desk_specifics.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/base/window_open_disposition.h"
 
 namespace desks_storage {
 
@@ -48,6 +49,11 @@ using ash::DeskTemplate;
 using ash::DeskTemplateSource;
 using WindowState = sync_pb::WorkspaceDeskSpecifics_WindowState;
 using WindowBound = sync_pb::WorkspaceDeskSpecifics_WindowBound;
+using LaunchContainer = sync_pb::WorkspaceDeskSpecifics_LaunchContainer;
+// Use name prefixed with Sync here to avoid name collision with original class
+// which isn't defined in a namespace.
+using SyncWindowOpenDisposition =
+    sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition;
 using ProgressiveWebApp = sync_pb::WorkspaceDeskSpecifics_ProgressiveWebApp;
 using ChromeApp = sync_pb::WorkspaceDeskSpecifics_ChromeApp;
 using WorkspaceDeskSpecifics_App = sync_pb::WorkspaceDeskSpecifics_App;
@@ -67,6 +73,8 @@ constexpr std::size_t kMaxTemplateCount = 6u;
 constexpr std::size_t kMaxTemplateSize = 8192u;
 
 // Allocate a EntityData and copies |specifics| into it.
+//
+// TODO(crbug/1304465): Switch symbol identifiers to new standard.
 std::unique_ptr<syncer::EntityData> CopyToEntityData(
     const sync_pb::WorkspaceDeskSpecifics& specifics) {
   auto entity_data = std::make_unique<syncer::EntityData>();
@@ -137,8 +145,63 @@ std::string GetAppId(const sync_pb::WorkspaceDeskSpecifics_App& app) {
       return app.app().progress_web_app().app_id();
     case sync_pb::WorkspaceDeskSpecifics_AppOneOf::AppCase::kArcApp:
       return app.app().arc_app().app_id();
-      // Leave out the default case to let compiler to ensure we have
-      // exhaustively handled all cases.
+  }
+}
+
+// Convert sync proto WindowOpenDisposition to base's WindowOpenDisposition.
+// This value is cast to int32_t by the caller to be assigned to the
+// `disposition` field in AppRestoreData.
+WindowOpenDisposition ToBaseWindowOpenDisposition(
+    SyncWindowOpenDisposition disposition) {
+  switch (disposition) {
+    case sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_UNKNOWN:
+      return WindowOpenDisposition::UNKNOWN;
+    case sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_CURRENT_TAB:
+      return WindowOpenDisposition::CURRENT_TAB;
+    case sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_SINGLETON_TAB:
+      return WindowOpenDisposition::SINGLETON_TAB;
+    case sync_pb::
+        WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_FOREGROUND_TAB:
+      return WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    case sync_pb::
+        WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_BACKGROUND_TAB:
+      return WindowOpenDisposition::NEW_BACKGROUND_TAB;
+    case sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_POPUP:
+      return WindowOpenDisposition::NEW_POPUP;
+    case sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_WINDOW:
+      return WindowOpenDisposition::NEW_WINDOW;
+    case sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_SAVE_TO_DISK:
+      return WindowOpenDisposition::SAVE_TO_DISK;
+    case sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_OFF_THE_RECORD:
+      return WindowOpenDisposition::OFF_THE_RECORD;
+    case sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_IGNORE_ACTION:
+      return WindowOpenDisposition::IGNORE_ACTION;
+    case sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_SWITCH_TO_TAB:
+      return WindowOpenDisposition::SWITCH_TO_TAB;
+    case sync_pb::
+        WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_PICTURE_IN_PICTURE:
+      return WindowOpenDisposition::NEW_PICTURE_IN_PICTURE;
+  }
+}
+
+// Convert sync proto LaunchContainer to apps::Mojom::LaunchContainer
+// used in the AppRestoreData `container` field.  This value is cast to
+// int32_t by the caller to be assigned to the field in AppRestoreData.
+apps::mojom::LaunchContainer ToMojomLaunchContainer(LaunchContainer container) {
+  switch (container) {
+    case sync_pb::
+        WorkspaceDeskSpecifics_LaunchContainer_LAUNCH_CONTAINER_UNSPECIFIED:
+      return apps::mojom::LaunchContainer::kLaunchContainerWindow;
+    case sync_pb::
+        WorkspaceDeskSpecifics_LaunchContainer_LAUNCH_CONTAINER_WINDOW:
+      return apps::mojom::LaunchContainer::kLaunchContainerWindow;
+    case sync_pb::
+        WorkspaceDeskSpecifics_LaunchContainer_LAUNCH_CONTAINER_PANEL_DEPRECATED:
+      return apps::mojom::LaunchContainer::kLaunchContainerPanelDeprecated;
+    case sync_pb::WorkspaceDeskSpecifics_LaunchContainer_LAUNCH_CONTAINER_TAB:
+      return apps::mojom::LaunchContainer::kLaunchContainerTab;
+    case sync_pb::WorkspaceDeskSpecifics_LaunchContainer_LAUNCH_CONTAINER_NONE:
+      return apps::mojom::LaunchContainer::kLaunchContainerNone;
   }
 }
 
@@ -156,6 +219,19 @@ std::unique_ptr<app_restore::AppLaunchInfo> ConvertToAppLaunchInfo(
 
   if (app.has_display_id())
     app_launch_info->display_id = app.display_id();
+
+  if (app.has_container()) {
+    app_launch_info->container =
+        static_cast<int32_t>(ToMojomLaunchContainer(app.container()));
+  }
+
+  if (app.has_disposition()) {
+    app_launch_info->disposition =
+        static_cast<int32_t>(ToBaseWindowOpenDisposition(app.disposition()));
+  }
+
+  if (app.has_app_name())
+    app_launch_info->app_name = app.app_name();
 
   // This is a short-term fix as |event_flag| is required to launch ArcApp.
   // Currently we don't support persisting user action in template
@@ -180,6 +256,10 @@ std::unique_ptr<app_restore::AppLaunchInfo> ConvertToAppLaunchInfo(
       FillUrlList(&app_launch_info->urls.value(),
                   app.app().browser_app_window());
 
+      if (app.app().browser_app_window().has_show_as_app())
+        app_launch_info->app_type_browser =
+            app.app().browser_app_window().show_as_app();
+
       break;
     case sync_pb::WorkspaceDeskSpecifics_AppOneOf::AppCase::kChromeApp:
       // |app_id| is enough to identify a Chrome app.
@@ -190,8 +270,6 @@ std::unique_ptr<app_restore::AppLaunchInfo> ConvertToAppLaunchInfo(
     case sync_pb::WorkspaceDeskSpecifics_AppOneOf::AppCase::kArcApp:
       // |app_id| is enough to identify an Arc app.
       break;
-      // Leave out the default case to let compiler to ensure we have
-      // exhaustively handled all cases.
   }
 
   return app_launch_info;
@@ -215,8 +293,6 @@ ui::WindowShowState ToUiWindowState(WindowState state) {
       return ui::WindowShowState::SHOW_STATE_NORMAL;
     case WindowState::WorkspaceDeskSpecifics_WindowState_SECONDARY_SNAPPED:
       return ui::WindowShowState::SHOW_STATE_NORMAL;
-      // Leave out the default case to let compiler to ensure we have
-      // exhaustively handled all cases.
   }
 }
 
@@ -238,8 +314,67 @@ chromeos::WindowStateType ToChromeOsWindowState(WindowState state) {
       return chromeos::WindowStateType::kPrimarySnapped;
     case WindowState::WorkspaceDeskSpecifics_WindowState_SECONDARY_SNAPPED:
       return chromeos::WindowStateType::kSecondarySnapped;
-      // Leave out the default case to let compiler to ensure we have
-      // exhaustively handled all cases.
+  }
+}
+
+// Convert from apps::mojom::LaunchContainer to sunc proto LaunchContainer.
+// Assumes caller has cast `container` from int32_t to
+// apps::mojom::LaunchContainer.
+LaunchContainer FromMojomLaunchContainer(
+    apps::mojom::LaunchContainer container) {
+  switch (container) {
+    case apps::mojom::LaunchContainer::kLaunchContainerWindow:
+      return sync_pb::
+          WorkspaceDeskSpecifics_LaunchContainer_LAUNCH_CONTAINER_WINDOW;
+    case apps::mojom::LaunchContainer::kLaunchContainerPanelDeprecated:
+      return sync_pb::
+          WorkspaceDeskSpecifics_LaunchContainer_LAUNCH_CONTAINER_PANEL_DEPRECATED;
+    case apps::mojom::LaunchContainer::kLaunchContainerTab:
+      return sync_pb::
+          WorkspaceDeskSpecifics_LaunchContainer_LAUNCH_CONTAINER_TAB;
+    case apps::mojom::LaunchContainer::kLaunchContainerNone:
+      return sync_pb::
+          WorkspaceDeskSpecifics_LaunchContainer_LAUNCH_CONTAINER_NONE;
+  }
+}
+
+// Convert sync proto WindowOpenDisposition to base's WindowOpenDisposition.
+// This value is cast to int32_t by the caller to be assigned to the
+// `disposition` field in AppRestoreData.
+SyncWindowOpenDisposition FromBaseWindowOpenDisposition(
+    WindowOpenDisposition disposition) {
+  switch (disposition) {
+    case WindowOpenDisposition::UNKNOWN:
+      return sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_UNKNOWN;
+    case WindowOpenDisposition::CURRENT_TAB:
+      return sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_CURRENT_TAB;
+    case WindowOpenDisposition::SINGLETON_TAB:
+      return sync_pb::
+          WorkspaceDeskSpecifics_WindowOpenDisposition_SINGLETON_TAB;
+    case WindowOpenDisposition::NEW_FOREGROUND_TAB:
+      return sync_pb::
+          WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_FOREGROUND_TAB;
+    case WindowOpenDisposition::NEW_BACKGROUND_TAB:
+      return sync_pb::
+          WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_BACKGROUND_TAB;
+    case WindowOpenDisposition::NEW_POPUP:
+      return sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_POPUP;
+    case WindowOpenDisposition::NEW_WINDOW:
+      return sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_WINDOW;
+    case WindowOpenDisposition::SAVE_TO_DISK:
+      return sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_SAVE_TO_DISK;
+    case WindowOpenDisposition::OFF_THE_RECORD:
+      return sync_pb::
+          WorkspaceDeskSpecifics_WindowOpenDisposition_OFF_THE_RECORD;
+    case WindowOpenDisposition::IGNORE_ACTION:
+      return sync_pb::
+          WorkspaceDeskSpecifics_WindowOpenDisposition_IGNORE_ACTION;
+    case WindowOpenDisposition::SWITCH_TO_TAB:
+      return sync_pb::
+          WorkspaceDeskSpecifics_WindowOpenDisposition_SWITCH_TO_TAB;
+    case WindowOpenDisposition::NEW_PICTURE_IN_PICTURE:
+      return sync_pb::
+          WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_PICTURE_IN_PICTURE;
   }
 }
 
@@ -264,8 +399,6 @@ WindowState FromChromeOsWindowState(chromeos::WindowStateType state) {
       return WindowState::WorkspaceDeskSpecifics_WindowState_PRIMARY_SNAPPED;
     case chromeos::WindowStateType::kSecondarySnapped:
       return WindowState::WorkspaceDeskSpecifics_WindowState_SECONDARY_SNAPPED;
-      // Leave out the default case to let compiler to ensure we have
-      // exhaustively handled all cases.
   }
 }
 
@@ -283,8 +416,6 @@ WindowState FromUiWindowState(ui::WindowShowState state) {
       return WindowState::WorkspaceDeskSpecifics_WindowState_MAXIMIZED;
     case ui::WindowShowState::SHOW_STATE_FULLSCREEN:
       return WindowState::WorkspaceDeskSpecifics_WindowState_FULLSCREEN;
-      // Leave out the default case to let compiler to ensure we have
-      // exhaustively handled all cases.
   }
 }
 
@@ -312,6 +443,11 @@ void FillBrowserAppWindow(BrowserAppWindow* out_browser_app_window,
   if (app_restore_data->active_tab_index.has_value()) {
     out_browser_app_window->set_active_tab_index(
         app_restore_data->active_tab_index.value());
+  }
+
+  if (app_restore_data->app_type_browser.has_value()) {
+    out_browser_app_window->set_show_as_app(
+        app_restore_data->app_type_browser.value());
   }
 }
 
@@ -358,6 +494,37 @@ void FillAppWithDisplayId(WorkspaceDeskSpecifics_App* out_app,
     out_app->set_display_id(app_restore_data->display_id.value());
 }
 
+//  Fill `out_app` with `container` from `app_restore_data`.
+void FillAppWithLaunchContainer(
+    const app_restore::AppRestoreData* app_restore_data,
+    WorkspaceDeskSpecifics_App* out_app) {
+  if (app_restore_data->container.has_value()) {
+    out_app->set_container(
+        FromMojomLaunchContainer(static_cast<apps::mojom::LaunchContainer>(
+            app_restore_data->container.value())));
+  }
+}
+
+// Fill `out_app` with `disposition` from `app_restore_data`.
+void FillAppWithWindowOpenDisposition(
+    const app_restore::AppRestoreData* app_restore_data,
+    WorkspaceDeskSpecifics_App* out_app) {
+  if (app_restore_data->disposition.has_value()) {
+    out_app->set_disposition(
+        FromBaseWindowOpenDisposition(static_cast<WindowOpenDisposition>(
+            app_restore_data->disposition.value())));
+  }
+}
+
+// fill `out_app` with `app_name` from `app_restore_data`.
+void FillAppWithAppName(const app_restore::AppRestoreData* app_restore_data,
+                        WorkspaceDeskSpecifics_App* out_app) {
+  if (app_restore_data->app_name.has_value() &&
+      !app_restore_data->app_name.value().empty()) {
+    out_app->set_app_name(app_restore_data->app_name.value());
+  }
+}
+
 void FillArcAppSize(ArcAppWindowSize* out_window_size, const gfx::Size& size) {
   out_window_size->set_width(size.width());
   out_window_size->set_height(size.height());
@@ -388,6 +555,20 @@ void FillArcApp(ArcApp* out_app,
   }
 }
 
+// Fills an app with container and open disposition.  This is only done in the
+// specific cases of Chrome Apps and PWAs.
+void FillAppWithLaunchContianerAndOpenDisposition(
+    const app_restore::AppRestoreData* app_restore_data,
+    WorkspaceDeskSpecifics_App* out_app) {
+  // If present, fills the proto's `container` field with the information stored
+  // in the `app_restore_data`'s `container` field.
+  FillAppWithLaunchContainer(app_restore_data, out_app);
+
+  // If present, fills the proto's `disposition` field with the information
+  // stored in the `app_restore_data`'s `disposition` field.
+  FillAppWithWindowOpenDisposition(app_restore_data, out_app);
+}
+
 // Fill |out_app| with |app_restore_data|.
 void FillApp(WorkspaceDeskSpecifics_App* out_app,
              const std::string& app_id,
@@ -398,6 +579,10 @@ void FillApp(WorkspaceDeskSpecifics_App* out_app,
   // AppRestoreData.GetWindowInfo does not include |display_id| in the returned
   // WindowInfo. We need to fill the |display_id| from AppRestoreData.
   FillAppWithDisplayId(out_app, app_restore_data);
+
+  // If present, fills the proto's `app_name` field with the information stored
+  // in the `app_restore_data`'s `app_name` field.
+  FillAppWithAppName(app_restore_data, out_app);
 
   // See definition components/services/app_service/public/mojom/types.mojom
   switch (app_type) {
@@ -416,6 +601,7 @@ void FillApp(WorkspaceDeskSpecifics_App* out_app,
           pwa_window->set_title(
               base::UTF16ToUTF8(app_restore_data->title.value()));
         }
+        FillAppWithLaunchContianerAndOpenDisposition(app_restore_data, out_app);
       }
       break;
     }
@@ -434,6 +620,7 @@ void FillApp(WorkspaceDeskSpecifics_App* out_app,
         chrome_app_window->set_title(
             base::UTF16ToUTF8(app_restore_data->title.value()));
       }
+      FillAppWithLaunchContianerAndOpenDisposition(app_restore_data, out_app);
       break;
     }
     case apps::mojom::AppType::kArc: {
@@ -817,7 +1004,8 @@ void DeskSyncBridge::AddOrUpdateEntry(std::unique_ptr<DeskTemplate> new_entry,
   change_processor()->Put(uuid.AsLowercaseString(), std::move(entity_data),
                           batch->GetMetadataChangeList());
 
-  entries_[uuid] = std::move(entry);
+  std::unique_ptr<DeskTemplate> persisted_entry = FromSyncProto(sync_proto);
+  entries_[uuid] = std::move(persisted_entry);
   const DeskTemplate* result = GetUserEntryByUUID(uuid);
 
   batch->WriteData(uuid.AsLowercaseString(),

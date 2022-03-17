@@ -150,6 +150,12 @@ const char* ProtoEnumToString(
     sync_pb::WorkspaceDeskSpecifics::WindowState window_state);
 
 const char* ProtoEnumToString(
+    sync_pb::WorkspaceDeskSpecifics::LaunchContainer container);
+
+const char* ProtoEnumToString(
+    sync_pb::WorkspaceDeskSpecifics::WindowOpenDisposition disposition);
+
+const char* ProtoEnumToString(
     sync_pb::UserConsentTypes::AssistantActivityControlConsent::SettingType
         setting_type);
 
