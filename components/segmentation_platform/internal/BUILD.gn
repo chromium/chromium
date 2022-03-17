@@ -79,6 +79,8 @@ static_library("internal") {
     "segmentation_platform_service_impl.h",
     "segmentation_ukm_helper.cc",
     "segmentation_ukm_helper.h",
+    "selection/segment_result_provider.cc",
+    "selection/segment_result_provider.h",
     "selection/segment_score_provider.cc",
     "selection/segment_score_provider.h",
     "selection/segment_selector.h",

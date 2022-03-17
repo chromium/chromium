@@ -28,7 +28,7 @@ class SignalDatabase;
 // BUILDFLAG(BUILD_WITH_TFLITE_LIB) is not set, in case of the full
 // implementation provided by ModelExecutionManagerImpl.
 std::unique_ptr<ModelExecutionManager> CreateModelExecutionManager(
-    std::unique_ptr<ModelProviderFactory> model_provider_factory,
+    ModelProviderFactory* model_provider_factory,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
     const base::flat_set<optimization_guide::proto::OptimizationTarget>&
         segment_ids,

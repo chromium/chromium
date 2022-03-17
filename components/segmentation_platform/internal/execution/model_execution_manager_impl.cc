@@ -99,7 +99,7 @@ ModelExecutionManagerImpl::ModelExecutionTraceEvent::
 
 ModelExecutionManagerImpl::ModelExecutionManagerImpl(
     const base::flat_set<OptimizationTarget>& segment_ids,
-    std::unique_ptr<ModelProviderFactory> model_provider_factory,
+    ModelProviderFactory* model_provider_factory,
     base::Clock* clock,
     SegmentInfoDatabase* segment_database,
     SignalDatabase* signal_database,

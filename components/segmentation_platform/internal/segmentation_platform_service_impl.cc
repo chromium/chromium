@@ -139,7 +139,7 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
         std::make_unique<SegmentSelectorImpl>(
             segment_info_database_.get(), signal_storage_config_.get(),
             segmentation_result_prefs_.get(), config.get(), clock,
-            platform_options_);
+            platform_options_, model_provider_factory_.get());
   }
 
   proxy_ = std::make_unique<ServiceProxyImpl>(segment_info_database_.get(),
@@ -251,8 +251,8 @@ void SegmentationPlatformServiceImpl::MaybeRunPostInitializationRoutines() {
   training_data_collector_->OnServiceInitialized();
 
   model_execution_manager_ = CreateModelExecutionManager(
-      std::move(model_provider_factory_), task_runner_, all_segment_ids_,
-      clock_, segment_info_database_.get(), signal_database_.get(),
+      model_provider_factory_.get(), task_runner_, all_segment_ids_, clock_,
+      segment_info_database_.get(), signal_database_.get(),
       feature_list_query_processor_.get(),
       base::BindRepeating(
           &SegmentationPlatformServiceImpl::OnSegmentationModelUpdated,

@@ -34,6 +34,9 @@ class ModelProviderFactoryImpl : public ModelProviderFactory {
   std::unique_ptr<ModelProvider> CreateProvider(
       optimization_guide::proto::OptimizationTarget optimization_target)
       override;
+  std::unique_ptr<ModelProvider> CreateDefaultProvider(
+      optimization_guide::proto::OptimizationTarget optimization_target)
+      override;
 
  private:
   raw_ptr<optimization_guide::OptimizationGuideModelProvider>

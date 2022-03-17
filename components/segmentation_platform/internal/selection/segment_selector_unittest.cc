@@ -71,7 +71,7 @@ class SegmentSelectorTest : public testing::Test {
     prefs_ = std::make_unique<TestSegmentationResultPrefs>();
     segment_selector_ = std::make_unique<SegmentSelectorImpl>(
         segment_database_.get(), &signal_storage_config_, prefs_.get(),
-        &config_, &clock_, PlatformOptions::CreateDefault());
+        &config_, &clock_, PlatformOptions::CreateDefault(), nullptr);
   }
 
   void GetSelectedSegment(const SegmentSelectionResult& expected) {
@@ -106,6 +106,7 @@ class SegmentSelectorTest : public testing::Test {
   void CompleteModelExecution(OptimizationTarget segment_id, float score) {
     segment_database_->AddPredictionResult(segment_id, score, clock_.Now());
     segment_selector_->OnModelExecutionCompleted(segment_id);
+    task_environment_.RunUntilIdle();
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -137,6 +138,7 @@ TEST_F(SegmentSelectorTest, FindBestSegmentFlowWithTwoSegments) {
 
   clock_.Advance(base::Days(1));
   segment_selector_->OnModelExecutionCompleted(segment_id);
+  task_environment_.RunUntilIdle();
   ASSERT_TRUE(prefs_->selection.has_value());
   ASSERT_EQ(segment_id2, prefs_->selection->segment_id);
 }
@@ -285,7 +287,9 @@ TEST_F(SegmentSelectorTest,
       OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE;
   OptimizationTarget segment_id1 =
       OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
+  float mapping0[][2] = {{1.0, 0}};
   float mapping1[][2] = {{0.2, 1}, {0.5, 3}, {0.7, 4}};
+  InitializeMetadataForSegment(segment_id0, mapping0, 1);
   InitializeMetadataForSegment(segment_id1, mapping1, 3);
 
   // Set up a selected segment in prefs.
@@ -295,7 +299,7 @@ TEST_F(SegmentSelectorTest,
   // Construct a segment selector. It should read result from last session.
   segment_selector_ = std::make_unique<SegmentSelectorImpl>(
       segment_database_.get(), &signal_storage_config_, prefs_.get(), &config_,
-      &clock_, PlatformOptions::CreateDefault());
+      &clock_, PlatformOptions::CreateDefault(), nullptr);
 
   SegmentSelectionResult result;
   result.segment = segment_id0;
@@ -306,8 +310,10 @@ TEST_F(SegmentSelectorTest,
   // Add results for a new segment.
   base::Time result_timestamp = base::Time::Now();
   segment_database_->AddPredictionResult(segment_id1, 0.6, result_timestamp);
+  segment_database_->AddPredictionResult(segment_id0, 0.5, result_timestamp);
 
   segment_selector_->OnModelExecutionCompleted(segment_id1);
+  task_environment_.RunUntilIdle();
   ASSERT_TRUE(prefs_->selection.has_value());
   ASSERT_EQ(segment_id1, prefs_->selection->segment_id);
 
@@ -337,6 +343,7 @@ TEST_F(SegmentSelectorTest, UpdateSelectedSegment) {
 
   clock_.Advance(base::Days(1));
   segment_selector_->OnModelExecutionCompleted(segment_id);
+  task_environment_.RunUntilIdle();
   ASSERT_TRUE(prefs_->selection.has_value());
   ASSERT_EQ(segment_id2, prefs_->selection->segment_id);
 
