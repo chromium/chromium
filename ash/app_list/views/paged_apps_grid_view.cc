@@ -1178,6 +1178,10 @@ void PagedAppsGridView::AnimateCardifiedState() {
     return settings;
   };
 
+  // Apps might be animating due to drag reorder. Cancel any active animations
+  // so that the cardified state animation can be applied.
+  bounds_animator()->Cancel();
+
   gfx::Vector2d translate_offset(
       0, start_position.y() - items_container()->origin().y());
   for (int i = 0; i < view_model()->view_size(); ++i) {
