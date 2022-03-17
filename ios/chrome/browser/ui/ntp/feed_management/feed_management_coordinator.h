@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 
 @protocol FeedManagementNavigationDelegate;
+@class FeedMetricsRecorder;
 
 // The top-level owner of the Feed Management component. It serves to connect
 // the various independent pieces such as the Feed Management UI, the Follow
@@ -17,6 +18,9 @@
 // Delegate for handling web navigation actions.
 @property(nonatomic, weak) id<FeedManagementNavigationDelegate>
     navigationDelegate;
+
+// Feed metrics recorder.
+@property(nonatomic, weak) FeedMetricsRecorder* feedMetricsRecorder;
 
 @end
 

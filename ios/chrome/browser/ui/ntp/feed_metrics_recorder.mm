@@ -112,6 +112,10 @@ const char kDiscoverFeedUserActionManageActivityTapped[] =
     "ContentSuggestions.Feed.HeaderAction.ManageActivity";
 const char kDiscoverFeedUserActionManageInterestsTapped[] =
     "ContentSuggestions.Feed.HeaderAction.ManageInterests";
+const char kDiscoverFeedUserActionManageHiddenTapped[] =
+    "ContentSuggestions.Feed.HeaderAction.ManageHidden";
+const char kDiscoverFeedUserActionManageFollowingTapped[] =
+    "ContentSuggestions.Feed.HeaderAction.ManageFollowing";
 
 // User action name for engaging with feed.
 const char kDiscoverFeedUserActionEngaged[] = "ContentSuggestions.Feed.Engaged";
@@ -261,6 +265,20 @@ const int kMinutesBetweenSessions = 5;
                                                   kTappedManageInterests];
   base::RecordAction(
       base::UserMetricsAction(kDiscoverFeedUserActionManageInterestsTapped));
+}
+
+- (void)recordHeaderMenuManageHiddenTapped {
+  [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
+                                                  kTappedManageHidden];
+  base::RecordAction(
+      base::UserMetricsAction(kDiscoverFeedUserActionManageHiddenTapped));
+}
+
+- (void)recordHeaderMenuManageFollowingTapped {
+  [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
+                                                  kTappedManageFollowing];
+  base::RecordAction(
+      base::UserMetricsAction(kDiscoverFeedUserActionManageFollowingTapped));
 }
 
 - (void)recordDiscoverFeedVisibilityChanged:(BOOL)visible {

@@ -121,8 +121,10 @@ enum class FeedUserActionType {
   kTappedAddToReadingList = 41,
   // User tapped "Manage" icon to open the manage intestitial.
   kTappedManage = 42,
+  // User tapped "Hidden" in the manage intestitial.
+  kTappedManageHidden = 43,
 
-  kMaxValue = kTappedManage,
+  kMaxValue = kTappedManageHidden,
 };
 
 // For testing and debugging only.

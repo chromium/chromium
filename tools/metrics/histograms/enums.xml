@@ -37959,6 +37959,9 @@ Called by update_permissions_policy_enum.py.-->
   <int value="42"
       label="User tapped the Manage icon to visit the feed management
              interstitial."/>
+  <int value="43"
+      label="User tapped &quot;Hidden&quot; in the feed management
+             interstitial."/>
 </enum>
 
 <enum name="FeedUserCommandType">

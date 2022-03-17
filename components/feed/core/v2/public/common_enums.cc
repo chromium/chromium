@@ -96,6 +96,8 @@ std::ostream& operator<<(std::ostream& out, FeedUserActionType value) {
       return out << "kTappedAddToReadingList";
     case FeedUserActionType::kTappedManage:
       return out << "kTappedManage";
+    case FeedUserActionType::kTappedManageHidden:
+      return out << "kTappedManageHidden";
   }
 }
 

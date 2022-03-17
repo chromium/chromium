@@ -52,6 +52,14 @@ enum class BrokenNTPHierarchyRelationship {
 // feed header menu.
 - (void)recordHeaderMenuManageInterestsTapped;
 
+// Record metrics for when the user selects the 'Hidden' item in the feed
+// management UI.
+- (void)recordHeaderMenuManageHiddenTapped;
+
+// Record metrics for when the user selects the 'Following' item in the feed
+// management UI.
+- (void)recordHeaderMenuManageFollowingTapped;
+
 // Record metrics for when the user toggles the feed visibility from the feed
 // header menu.
 - (void)recordDiscoverFeedVisibilityChanged:(BOOL)visible;

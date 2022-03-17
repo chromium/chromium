@@ -552,6 +552,11 @@ void MetricsReporter::OtherUserAction(const StreamType& stream_type,
           base::UserMetricsAction("ContentSuggestions.Feed.CardAction.Manage"));
       RecordInteraction(stream_type);
       break;
+    case FeedUserActionType::kTappedManageHidden:
+      base::RecordAction(base::UserMetricsAction(
+          "ContentSuggestions.Feed.CardAction.ManageHidden"));
+      RecordInteraction(stream_type);
+      break;
     case FeedUserActionType::kEphemeralChange:
     case FeedUserActionType::kEphemeralChangeRejected:
     case FeedUserActionType::kTappedTurnOn:
