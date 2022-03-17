@@ -413,6 +413,16 @@ CronetContext::NetworkTasks::BuildNetworkBoundURLRequestContext(
   net::URLRequestContextBuilder context_builder;
   SetSharedURLRequestContextBuilderConfig(&context_builder);
 
+  // URLRequestContexts that are bound to a network cannot specify a
+  // HostResolver in any way (URLRequestContextBuilder will internally pick
+  // one that support per-network lookups). Hence, if options for this are
+  // specified in Cronet's configuration, they should apply only to the default
+  // context.
+  context_builder.set_host_resolver(nullptr);
+  context_builder.set_host_mapping_rules(std::string());
+  context_builder.set_host_resolver_manager(nullptr);
+  context_builder.set_host_resolver_factory(nullptr);
+
   context_builder.BindToNetwork(network);
   // On Android, Cronet doesn't handle PAC URL processing, instead it defers
   // that to the OS (which sets up a local proxy configured correctly w.r.t.
