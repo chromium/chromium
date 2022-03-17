@@ -8,6 +8,7 @@
     --iron-icon-width: var(--cr-icon-size);
     --iron-icon-fill-color: var(--cros-icon-color-alert);
     display: inline-block;
+    margin-inline-start: 8px;
   }
 
   #errorDiv {
@@ -15,8 +16,10 @@
     color: var(--cros-text-color-alert);
     display: flex;
     flex-direction: row;
-    height: 32px;
-    min-height: 0;
+    /* Same max-width as width of pin input field. */
+    max-width: 200px;
+    /* Enough height for two rows. */
+    min-height: 48px;
   }
 
   /* Hide this using visibility: hidden instead of hidden so that the

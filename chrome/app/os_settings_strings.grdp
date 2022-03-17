@@ -3288,7 +3288,7 @@ Press an assigned switch or key to remove assignment.
     Confirm PIN to turn on automatic unlock
   </message>
   <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_PIN_AUTOSUBMIT_ERROR_PIN_TOO_LONG" desc="Error shown to users when trying to enable PIN auto submit telling them that their PIN is too long for this feature.">
-    PIN must be 12 digits or less
+    PIN must be 12 digits or less to use automatic unlock
   </message>
   <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_PIN_AUTOSUBMIT_ERROR_PIN_INCORRECT" desc="Error shown to users when trying to enable PIN auto submit telling them that their PIN is incorrect.">
     Incorrect PIN

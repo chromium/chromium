@@ -574,7 +574,9 @@ cr.define('settings_people_page_quick_unlock', function() {
         pinKeyboard.value = '1234567890123';  // 13 digits - Not ok
         assertTrue(confirmButton.disabled);
         assertTrue(isVisible(errorDiv));
-        assertEquals(errorMsg.innerText, 'PIN must be 12 digits or less');
+        assertEquals(
+            errorMsg.innerText,
+            'PIN must be 12 digits or less to use automatic unlock');
       });
 
       test('RightPinActivatesAutosubmit', function() {
