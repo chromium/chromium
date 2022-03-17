@@ -56,7 +56,6 @@ class FtrlOptimizer {
   // All user-settable parameters of the FTRL optimizer. The defaults should be
   // customized as-needed.
   struct Params {
-    // TODO(crbug.com/1199206): These need tweaking.
     double alpha = 0.1;
     double gamma = 0.1;
     size_t num_experts = 0;

@@ -23,13 +23,15 @@ using DisplayType = ash::SearchResultDisplayType;
 // SearchController to avoid an include loop.
 
 // All score information for a single result. This is stored with a result, and
-// incrementally updated by rankers as needed. Generally, each ranker should
-// control one score.
+// is used as 'scratch space' for ranking calculations to pass information
+// between rankers. Generally, each member is controlled by one ranker.
 struct Scoring {
   // = Members used to compute the display score of a result ===================
   bool filter = false;
   double normalized_relevance = 0.0;
+  double mrfu_result_score = 0.0;
   double ftrl_result_score = 0.0;
+
   // Used only for results in the Continue section. Continue results are first
   // ordered by |continue_rank|, and then by their display score. -1 indicates
   // this is unset.

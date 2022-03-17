@@ -52,30 +52,26 @@ class FtrlRanker : public Ranker {
   std::vector<std::unique_ptr<Ranker>> rankers_;
 };
 
-// An expert that keeps track of usage of individual results using a
-// most-recently-frequently-used cache of launch history.
-class MrfuResultRanker : public Ranker {
- public:
-  explicit MrfuResultRanker(MrfuCache::Params params, MrfuCache::Proto proto);
+// The following classes are 'experts', ie. sub-rankers to be used within the
+// FtrlRanker.
 
-  ~MrfuResultRanker() override;
+// An expert that exposes a score from each result's scoring struct.
+class ResultScoringShim : public Ranker {
+ public:
+  // Correspond to the members of a search result's `Scoring`.
+  enum class ScoringMember {
+    kNormalizedRelevance,
+    kMrfuResultScore,
+  };
+
+  explicit ResultScoringShim(ScoringMember member);
 
   // Ranker:
   std::vector<double> GetResultRanks(const ResultsMap& results,
                                      ProviderType provider) override;
-  void Train(const LaunchData& launch) override;
 
  private:
-  std::unique_ptr<MrfuCache> mrfu_;
-};
-
-// An expert that exposes the normalized scores from each result's scoring
-// struct, set by the ScoreNormalizingRanker.
-class NormalizedScoreResultRanker : public Ranker {
- public:
-  // Ranker:
-  std::vector<double> GetResultRanks(const ResultsMap& results,
-                                     ProviderType provider) override;
+  ScoringMember member_;
 };
 
 // Ranks a category based on the normalized relevance of its best result.
@@ -94,36 +90,6 @@ class BestResultCategoryRanker : public Ranker {
 
  private:
   base::flat_map<Category, double> current_category_scores_;
-};
-
-// An expert that keeps track of category usage with a
-// most-recently-frequently-used cache of launch history.
-//
-// Can be used to either immutably return category scores with GetCategoryRanks,
-// or modify them with UpdateCategoryRanks.
-class MrfuCategoryRanker : public Ranker {
- public:
-  MrfuCategoryRanker(MrfuCache::Params params,
-                     PersistentProto<MrfuCacheProto> proto);
-  ~MrfuCategoryRanker() override;
-
-  // Ranker:
-  void Start(const std::u16string& query,
-             ResultsMap& results,
-             CategoriesList& categories) override;
-  void UpdateCategoryRanks(const ResultsMap& results,
-                           CategoriesList& categories,
-                           ProviderType provider) override;
-  std::vector<double> GetCategoryRanks(const ResultsMap& results,
-                                       const CategoriesList& categories,
-                                       ProviderType provider) override;
-  void Train(const LaunchData& launch) override;
-
- private:
-  void SetDefaultCategoryScores();
-
-  std::unique_ptr<MrfuCache> mrfu_;
-  std::vector<double> current_category_scores_;
 };
 
 }  // namespace app_list

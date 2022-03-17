@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/app_list/search/ranking/ranker.h"
 #include "chrome/browser/ui/app_list/search/ranking/types.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
+#include "chrome/browser/ui/app_list/search/test/ranking_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -19,23 +20,7 @@ namespace {
 
 using testing::ElementsAre;
 
-class TestResult : public ChromeSearchResult {
- public:
-  explicit TestResult(const std::string& id,
-                      double score,
-                      ResultType result_type = ResultType::kUnknown,
-                      Category category = Category::kUnknown) {
-    set_id(id);
-    SetDisplayScore(score);
-    scoring().normalized_relevance = score;
-    SetResultType(result_type);
-    SetCategory(category);
-  }
-  ~TestResult() override {}
-
-  // ChromeSearchResult overrides:
-  void Open(int event_flags) override {}
-};
+}  // namespace
 
 class TestRanker : public Ranker {
  public:
@@ -60,65 +45,6 @@ class TestRanker : public Ranker {
 
  private:
   std::vector<double> next_scores_;
-};
-
-// A helper function for creating results. For convenience, the provided scores
-// are set as both the display score and normalized relevance.
-Results MakeScoredResults(const std::vector<std::string>& ids,
-                          const std::vector<double> scores,
-                          ResultType result_type = ResultType::kUnknown,
-                          Category category = Category::kUnknown) {
-  Results res;
-  CHECK_EQ(ids.size(), scores.size());
-  for (size_t i = 0; i < ids.size(); ++i) {
-    res.push_back(
-        std::make_unique<TestResult>(ids[i], scores[i], result_type, category));
-  }
-  return res;
-}
-
-// A helper function for creating results, for when results don't need scores.
-Results MakeResults(const std::vector<std::string>& ids,
-                    ResultType result_type = ResultType::kUnknown,
-                    Category category = Category::kUnknown) {
-  return MakeScoredResults(ids, std::vector<double>(ids.size()), result_type,
-                           category);
-}
-
-LaunchData MakeLaunchData(const std::string& id,
-                          ResultType result_type = ResultType::kUnknown) {
-  LaunchData launch;
-  launch.launched_from = ash::AppListLaunchedFrom::kLaunchedFromSearchBox;
-  launch.id = id;
-  launch.result_type = result_type;
-  return launch;
-}
-
-}  // namespace
-
-class RankerTestBase : public testing::Test {
- public:
-  void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
-
-  base::FilePath GetPath() { return temp_dir_.GetPath().Append("proto"); }
-
-  template <typename T>
-  T ReadProtoFromDisk() {
-    std::string proto_str;
-    CHECK(base::ReadFileToString(GetPath(), &proto_str));
-    T proto;
-    CHECK(proto.ParseFromString(proto_str));
-    return proto;
-  }
-
-  void Wait() { task_environment_.RunUntilIdle(); }
-
- protected:
-  base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::MainThreadType::UI,
-      base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED,
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::ScopedTempDir temp_dir_;
 };
 
 // FtrlRankerTest --------------------------------------------------------------
@@ -237,41 +163,13 @@ TEST_F(FtrlRankerTest, TrainAndRankCategories) {
   EXPECT_GE(proto.weights()[1], 0.9);
 }
 
-// MrfuResultRanker ------------------------------------------------------------
+// ResultScoringShim -------------------------------------------------
 
-class MrfuResultRankerTest : public RankerTestBase {};
+class ResultScoringShimTest : public RankerTestBase {};
 
-TEST_F(MrfuResultRankerTest, TrainAndRank) {
-  MrfuResultRanker ranker(MrfuCache::Params(),
-                          MrfuCache::Proto(GetPath(), base::Seconds(0)));
-  Wait();
-
-  // Train on some results.
-  ranker.Train(MakeLaunchData("a"));
-  ranker.Train(MakeLaunchData("b"));
-  ranker.Train(MakeLaunchData("c"));
-  ranker.Train(MakeLaunchData("a"));
-
-  ResultsMap results;
-  results[ResultType::kInstalledApp] = MakeResults({"a", "b"});
-  results[ResultType::kOsSettings] = MakeResults({"c", "d"});
-  CategoriesList categories;
-
-  // Rank them, expecting ordering a > c > b > d.
-  ranker.Start(u"query", results, categories);
-  auto ab_scores = ranker.GetResultRanks(results, ResultType::kInstalledApp);
-  auto cd_scores = ranker.GetResultRanks(results, ResultType::kOsSettings);
-  EXPECT_GT(ab_scores[0], cd_scores[0]);
-  EXPECT_GT(cd_scores[0], ab_scores[1]);
-  EXPECT_GT(ab_scores[1], cd_scores[1]);
-}
-
-// NormalizedScoreResultRanker -------------------------------------------------
-
-class NormalizedScoreResultRankerTest : public RankerTestBase {};
-
-TEST_F(NormalizedScoreResultRankerTest, Rank) {
-  NormalizedScoreResultRanker ranker;
+TEST_F(ResultScoringShimTest, Rank) {
+  ResultScoringShim ranker(
+      ResultScoringShim::ScoringMember::kNormalizedRelevance);
 
   auto results = MakeResults({"a", "b", "c"});
   ASSERT_EQ(results.size(), 3u);
@@ -325,41 +223,6 @@ TEST_F(BestResultCategoryRankerTest, Rank) {
   EXPECT_EQ(scores[0], 0.5);
   EXPECT_EQ(scores[1], 0.3);
   EXPECT_EQ(scores[2], 0.8);
-}
-
-// MrfuCategoryRanker ----------------------------------------------------------
-
-class MrfuCategoryRankerTest : public RankerTestBase {};
-
-TEST_F(MrfuCategoryRankerTest, TrainAndRank) {
-  MrfuCategoryRanker ranker(MrfuCache::Params(),
-                            MrfuCache::Proto(GetPath(), base::Seconds(0)));
-  Wait();
-
-  // Train so that settings should be first, followed by apps.
-  ranker.Train(MakeLaunchData("a", ResultType::kInstalledApp));
-  ranker.Train(MakeLaunchData("c", ResultType::kOsSettings));
-  ranker.Train(MakeLaunchData("d", ResultType::kOsSettings));
-  ranker.Train(MakeLaunchData("b", ResultType::kInstalledApp));
-
-  ResultsMap results;
-  results[ResultType::kInstalledApp] =
-      MakeResults({"a", "b"}, ResultType::kInstalledApp, Category::kApps);
-  results[ResultType::kOsSettings] =
-      MakeResults({"c", "d"}, ResultType::kOsSettings, Category::kSettings);
-  results[ResultType::kFileSearch] =
-      MakeResults({"e", "f"}, ResultType::kFileSearch, Category::kFiles);
-  CategoriesList categories({{.category = Category::kApps},
-                             {.category = Category::kSettings},
-                             {.category = Category::kFiles}});
-
-  // Expect a ranking of kInstalledApp > kOsSettings > kFileSearch.
-  ranker.Start(u"query", results, categories);
-  auto scores =
-      ranker.GetCategoryRanks(results, categories, ResultType::kInstalledApp);
-  ASSERT_EQ(scores.size(), 3u);
-  EXPECT_GT(scores[0], scores[1]);
-  EXPECT_GT(scores[1], scores[2]);
 }
 
 }  // namespace app_list

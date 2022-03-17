@@ -6,69 +6,10 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
+#include "chrome/browser/ui/app_list/search/ranking/util.h"
 #include "chrome/browser/ui/app_list/search/util/ftrl_optimizer.h"
 
 namespace app_list {
-namespace {
-
-std::string CategoryToString(const Category value) {
-  return base::NumberToString(static_cast<int>(value));
-}
-
-Category StringToCategory(const std::string& value) {
-  int number;
-  base::StringToInt(value, &number);
-  return static_cast<Category>(number);
-}
-
-// TODO(crbug.com/1199206): This can be removed once LaunchData contains the
-// result category.
-//
-// This is slightly inconsistent with the true result->category mapping, because
-// Omnibox results can either be in the kWeb or kSearchAndAssistant category.
-Category ResultTypeToCategory(ResultType result_type) {
-  switch (result_type) {
-    case ResultType::kInstalledApp:
-    case ResultType::kInstantApp:
-    case ResultType::kInternalApp:
-    case ResultType::kGames:
-      return Category::kApps;
-    case ResultType::kArcAppShortcut:
-      return Category::kAppShortcuts;
-    case ResultType::kOmnibox:
-    case ResultType::kAnswerCard:
-    case ResultType::kOpenTab:
-      return Category::kWeb;
-    case ResultType::kZeroStateFile:
-    case ResultType::kZeroStateDrive:
-    case ResultType::kFileChip:
-    case ResultType::kDriveChip:
-    case ResultType::kFileSearch:
-    case ResultType::kDriveSearch:
-      return Category::kFiles;
-    case ResultType::kOsSettings:
-      return Category::kSettings;
-    case ResultType::kHelpApp:
-    case ResultType::kKeyboardShortcut:
-      return Category::kHelp;
-    case ResultType::kPlayStoreReinstallApp:
-    case ResultType::kPlayStoreApp:
-      return Category::kPlayStore;
-    case ResultType::kAssistantChip:
-    case ResultType::kAssistantText:
-      return Category::kSearchAndAssistant;
-    // Never used in the search backend.
-    case ResultType::kUnknown:
-    // Suggested content toggle fake result type. Used only in ash, not in the
-    // search backend.
-    case ResultType::kInternalPrivacyInfo:
-    // Deprecated.
-    case ResultType::kLauncher:
-      return Category::kUnknown;
-  }
-}
-
-}  // namespace
 
 // FtrlRanker ------------------------------------------------------------
 
@@ -157,48 +98,30 @@ void FtrlRanker::UpdateCategoryRanks(const ResultsMap& results,
     categories[i].score = category_scores[i];
 }
 
-// MrfuResultRanker -----------------------------------------------------------
+// ResultScoringShim ----------------------------------------------------------
 
-MrfuResultRanker::MrfuResultRanker(MrfuCache::Params params,
-                                   MrfuCache::Proto proto)
-    : mrfu_(std::make_unique<MrfuCache>(std::move(proto), params)) {}
+ResultScoringShim::ResultScoringShim(ResultScoringShim::ScoringMember member)
+    : member_(member) {}
 
-MrfuResultRanker::~MrfuResultRanker() = default;
-
-std::vector<double> MrfuResultRanker::GetResultRanks(const ResultsMap& results,
-                                                     ProviderType provider) {
+std::vector<double> ResultScoringShim::GetResultRanks(const ResultsMap& results,
+                                                      ProviderType provider) {
   const auto it = results.find(provider);
   if (it == results.end())
     return {};
 
   std::vector<double> scores;
-  for (const auto& result : it->second)
-    scores.push_back(mrfu_->Get(result->id()));
-  return scores;
-}
-
-void MrfuResultRanker::Train(const LaunchData& launch) {
-  if (launch.launched_from !=
-      ash::AppListLaunchedFrom::kLaunchedFromSearchBox) {
-    return;
+  for (const auto& result : it->second) {
+    double score;
+    switch (member_) {
+      case ResultScoringShim::ScoringMember::kNormalizedRelevance:
+        score = result->scoring().normalized_relevance;
+        break;
+      case ResultScoringShim::ScoringMember::kMrfuResultScore:
+        score = result->scoring().mrfu_result_score;
+        break;
+    }
+    scores.push_back(score);
   }
-  mrfu_->Use(launch.id);
-}
-
-// NormalizedScoreResultRanker -------------------------------------------------
-
-// Exposes the normalized scores from each result's scoring struct, set by the
-// ScoreNormalizingRanker.
-std::vector<double> NormalizedScoreResultRanker::GetResultRanks(
-    const ResultsMap& results,
-    ProviderType provider) {
-  const auto it = results.find(provider);
-  if (it == results.end())
-    return {};
-
-  std::vector<double> scores;
-  for (const auto& result : it->second)
-    scores.push_back(result->scoring().normalized_relevance);
   return scores;
 }
 
@@ -242,65 +165,6 @@ std::vector<double> BestResultCategoryRanker::GetCategoryRanks(
   for (const auto& category : categories)
     result.push_back(current_category_scores_[category.category]);
   return result;
-}
-
-// MrfuCategoryRanker ----------------------------------------------------------
-
-MrfuCategoryRanker::MrfuCategoryRanker(MrfuCache::Params params,
-                                       PersistentProto<MrfuCacheProto> proto)
-    : mrfu_(std::make_unique<MrfuCache>(std::move(proto), params)) {}
-
-MrfuCategoryRanker::~MrfuCategoryRanker() = default;
-
-void MrfuCategoryRanker::Start(const std::u16string& query,
-                               ResultsMap& results,
-                               CategoriesList& categories) {
-  if (mrfu_->initialized() && mrfu_->empty())
-    SetDefaultCategoryScores();
-}
-
-std::vector<double> MrfuCategoryRanker::GetCategoryRanks(
-    const ResultsMap& results,
-    const CategoriesList& categories,
-    ProviderType provider) {
-  if (!mrfu_->initialized())
-    return std::vector<double>(categories.size(), 0.0);
-
-  // Build a map of the MRFU category scores, with 0.0 for unseen categories.
-  base::flat_map<Category, double> scores_map;
-  for (const auto& id_score : mrfu_->GetAllNormalized())
-    scores_map[StringToCategory(id_score.first)] = id_score.second;
-
-  std::vector<double> scores;
-  for (const auto& category : categories) {
-    const auto it = scores_map.find(category.category);
-    scores.push_back(it != scores_map.end() ? it->second : 0.0);
-  }
-  DCHECK_EQ(scores.size(), categories.size());
-  return scores;
-}
-
-void MrfuCategoryRanker::UpdateCategoryRanks(const ResultsMap& results,
-                                             CategoriesList& categories,
-                                             ProviderType provider) {
-  const auto& scores = GetCategoryRanks(results, categories, provider);
-  DCHECK_EQ(scores.size(), categories.size());
-  if (scores.size() != categories.size())
-    return;
-  for (size_t i = 0; i < categories.size(); ++i)
-    categories[i].score = scores[i];
-}
-
-void MrfuCategoryRanker::Train(const LaunchData& launch) {
-  if (launch.launched_from !=
-      ash::AppListLaunchedFrom::kLaunchedFromSearchBox) {
-    return;
-  }
-  mrfu_->Use(CategoryToString(ResultTypeToCategory(launch.result_type)));
-}
-
-void MrfuCategoryRanker::SetDefaultCategoryScores() {
-  // TODO(crbug.com/1199206): Implement.
 }
 
 }  // namespace app_list
