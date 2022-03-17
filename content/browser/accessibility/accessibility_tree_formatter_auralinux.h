@@ -33,7 +33,10 @@ class CONTENT_EXPORT AccessibilityTreeFormatterAuraLinux
 
   base::Value BuildNode(ui::AXPlatformNodeDelegate* node) const override;
 
-  AtspiAccessible* FindActiveDocument(AtspiAccessible* root) const;
+  std::string EvaluateScript(
+      const AXTreeSelector& selector,
+      const ui::AXInspectScenario& scenario) const override;
+
   void RecursiveBuildTree(AtspiAccessible* node,
                           base::DictionaryValue* dict) const;
   void RecursiveBuildTree(AtkObject*, base::DictionaryValue*) const;

@@ -27,8 +27,11 @@ struct AXNodeComparator {
 
 //
 // NSAccessibility tree indexer.
-using AXTreeIndexerMac =
-    AXTreeIndexer<GetDOMId, NSArray*, AXChildrenOf, AXNodeComparator>;
+using AXTreeIndexerMac = AXTreeIndexer<const gfx::NativeViewAccessible,
+                                       GetDOMId,
+                                       NSArray*,
+                                       AXChildrenOf,
+                                       AXNodeComparator>;
 
 }  // namespace ui
 

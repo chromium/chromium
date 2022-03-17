@@ -201,8 +201,12 @@ source_set("platform") {
         "ax_platform_atk_hyperlink.h",
         "ax_platform_node_auralinux.cc",
         "ax_platform_node_auralinux.h",
+        "inspect/ax_call_statement_invoker_auralinux.cc",
+        "inspect/ax_call_statement_invoker_auralinux.h",
         "inspect/ax_inspect_utils_auralinux.cc",
         "inspect/ax_inspect_utils_auralinux.h",
+        "inspect/ax_tree_indexer.h",
+        "inspect/ax_tree_indexer_auralinux.h",
       ]
 
       configs += [ "//build/config/linux/atspi2" ]

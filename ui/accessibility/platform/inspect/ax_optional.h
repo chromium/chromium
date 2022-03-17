@@ -36,7 +36,19 @@ class AX_EXPORT AXOptional final {
   bool constexpr IsUnsupported() const { return flag_ == kUnsupported; }
   bool constexpr IsNotApplicable() const { return flag_ == kNotApplicable; }
   bool constexpr IsError() const { return flag_ == kError; }
-  bool constexpr IsNotNull() const { return value_ != nullptr; }
+
+  template <typename T = ValueType>
+  bool constexpr IsNotNull(
+      typename std::enable_if<std::is_pointer<T>::value>::type* = 0) const {
+    return value_ != nullptr;
+  }
+
+  template <typename T = ValueType>
+  bool constexpr IsNotNull(
+      typename std::enable_if<!std::is_pointer<T>::value>::type* = 0) const {
+    return true;
+  }
+
   bool constexpr HasValue() { return flag_ == kValue; }
   constexpr const ValueType& operator*() const { return value_; }
 

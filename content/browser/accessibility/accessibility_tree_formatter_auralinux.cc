@@ -17,7 +17,11 @@
 #include "content/browser/accessibility/browser_accessibility_auralinux.h"
 #include "content/public/browser/ax_inspect_factory.h"
 #include "ui/accessibility/platform/ax_platform_node_auralinux.h"
+#include "ui/accessibility/platform/inspect/ax_call_statement_invoker_auralinux.h"
+#include "ui/accessibility/platform/inspect/ax_inspect_scenario.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_utils_auralinux.h"
+#include "ui/accessibility/platform/inspect/ax_property_node.h"
+#include "ui/accessibility/platform/inspect/ax_script_instruction.h"
 
 #define CHECK_ATSPI_ERROR(error)                       \
   if (error) {                                         \
@@ -57,18 +61,52 @@ base::Value AccessibilityTreeFormatterAuraLinux::BuildTreeForSelector(
     return base::Value(base::Value::Type::DICTIONARY);
   }
 
-  // Active tab
-  if (selector.types & AXTreeSelector::ActiveTab) {
-    node = FindActiveDocument(node);
-    if (!node) {
-      LOG(ERROR) << "No active document was found.";
-      return base::Value(base::Value::Type::DICTIONARY);
-    }
-  }
-
   base::DictionaryValue dict;
   RecursiveBuildTree(node, &dict);
   return std::move(dict);
+}
+
+std::string AccessibilityTreeFormatterAuraLinux::EvaluateScript(
+    const AXTreeSelector& selector,
+    const ui::AXInspectScenario& scenario) const {
+  AtspiAccessible* platform_root = FindAccessible(selector);
+  if (!platform_root) {
+    return "error no accessibility tree found";
+  }
+
+  const std::vector<ui::AXScriptInstruction>& instructions =
+      scenario.script_instructions;
+  size_t end_index = instructions.size();
+
+  base::Value scripts(base::Value::Type::LIST);
+  ui::AXTreeIndexerAuraLinux indexer(platform_root);
+  std::map<std::string, ui::Target> storage;
+  ui::AXCallStatementInvokerAuraLinux invoker(&indexer, &storage);
+  for (size_t index = 0; index < end_index; index++) {
+    if (instructions[index].IsComment()) {
+      scripts.Append(instructions[index].AsComment());
+      continue;
+    }
+
+    DCHECK(instructions[index].IsScript());
+    const ui::AXPropertyNode& property_node = instructions[index].AsScript();
+
+    ui::AXOptionalObject value = invoker.Invoke(property_node);
+    if (value.IsUnsupported()) {
+      continue;
+    }
+
+    scripts.Append(property_node.ToString() + "=" +
+                   ui::AXCallStatementInvokerAuraLinux::ToString(value));
+  }
+
+  std::string contents;
+  for (const base::Value& script : scripts.GetList()) {
+    std::string line;
+    WriteAttribute(true, script.GetString(), &line);
+    contents += line + "\n";
+  }
+  return contents;
 }
 
 AtkObject* GetAtkObject(ui::AXPlatformNodeDelegate* node) {
@@ -100,50 +138,6 @@ base::Value AccessibilityTreeFormatterAuraLinux::BuildNode(
   base::DictionaryValue dict;
   AddProperties(GetAtkObject(node), &dict);
   return std::move(dict);
-}
-
-AtspiAccessible* AccessibilityTreeFormatterAuraLinux::FindActiveDocument(
-    AtspiAccessible* node) const {
-  GError* error = nullptr;
-
-  AtspiRole role = atspi_accessible_get_role(node, &error);
-  CHECK_ATSPI_ERROR_NULLPTR(error)
-
-  // Get embeds relation pointing to active web document.
-  if (role == ATSPI_ROLE_FRAME) {
-    g_autoptr(GArray) relations =
-        atspi_accessible_get_relation_set(node, &error);
-    CHECK_ATSPI_ERROR_NULLPTR(error)
-    if (!relations) {
-      return nullptr;
-    }
-
-    for (guint idx = 0; idx < relations->len; idx++) {
-      AtspiRelation* relation = g_array_index(relations, AtspiRelation*, idx);
-      if (atspi_relation_get_relation_type(relation) == ATSPI_RELATION_EMBEDS &&
-          atspi_relation_get_n_targets(relation) > 0) {
-        return atspi_relation_get_target(relation, 0);
-      }
-    }
-    return nullptr;
-  }
-
-  int child_count = atspi_accessible_get_child_count(node, &error);
-  CHECK_ATSPI_ERROR_NULLPTR(error)
-
-  for (int i = 0; i < child_count; i++) {
-    AtspiAccessible* child =
-        atspi_accessible_get_child_at_index(node, i, &error);
-    CHECK_ATSPI_ERROR_NULLPTR(error)
-
-    CHECK(child);
-    AtspiAccessible* found = FindActiveDocument(child);
-    if (found) {
-      return found;
-    }
-  }
-
-  return nullptr;
 }
 
 void AccessibilityTreeFormatterAuraLinux::RecursiveBuildTree(
