@@ -63,6 +63,11 @@
           'quickrun_shards': 6,
         },
       },
+      'android-nougat-x86-rel': {
+        'swarming': {
+          'shards': 2,
+        },
+      },
       'android-pie-arm64-rel': {
         'args': [
           '--gtest_filter=-ImportantSitesUtilBrowserTest.DSENotConsideredImportantInRegularMode', # https://crbug.com/1034001
@@ -1340,6 +1345,11 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_m.content_browsertests.filter',
         ],
+        'swarming': {
+          'shards': 20,
+        },
+      },
+      'android-nougat-x86-rel': {
         'swarming': {
           'shards': 20,
         },
