@@ -29,13 +29,12 @@ test::SingleThreadTaskEnvironment::MainThreadType GetMainThreadType(
     case MessagePumpType::JAVA:
 #elif BUILDFLAG(IS_APPLE)
     case MessagePumpType::NS_RUNLOOP:
-#elif BUILDFLAG(IS_WIN)
-    case MessagePumpType::UI_WITH_WM_QUIT_SUPPORT:
 #endif
       NOTREACHED();
       return test::SingleThreadTaskEnvironment::MainThreadType::DEFAULT;
   }
 }
+
 }  // namespace
 
 TestMessageLoop::TestMessageLoop() = default;

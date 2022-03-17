@@ -28,10 +28,6 @@ EnumTraits<mojo_base::mojom::MessagePumpType, base::MessagePumpType>::ToMojom(
     case base::MessagePumpType::NS_RUNLOOP:
       return mojo_base::mojom::MessagePumpType::kNsRunloop;
 #endif
-#if BUILDFLAG(IS_WIN)
-    case base::MessagePumpType::UI_WITH_WM_QUIT_SUPPORT:
-      return mojo_base::mojom::MessagePumpType::kUiWithWmQuitSupport;
-#endif
   }
   NOTREACHED();
   return mojo_base::mojom::MessagePumpType::kDefault;
@@ -62,11 +58,6 @@ bool EnumTraits<mojo_base::mojom::MessagePumpType, base::MessagePumpType>::
 #if BUILDFLAG(IS_APPLE)
     case mojo_base::mojom::MessagePumpType::kNsRunloop:
       *output = base::MessagePumpType::NS_RUNLOOP;
-      return true;
-#endif
-#if BUILDFLAG(IS_WIN)
-    case mojo_base::mojom::MessagePumpType::kUiWithWmQuitSupport:
-      *output = base::MessagePumpType::UI_WITH_WM_QUIT_SUPPORT;
       return true;
 #endif
   }

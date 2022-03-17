@@ -136,9 +136,6 @@ class BASE_EXPORT MessagePumpForUI : public MessagePumpWin {
   void ScheduleDelayedWork(
       const Delegate::NextWorkInfo& next_work_info) override;
 
-  // Make the MessagePumpForUI respond to WM_QUIT messages.
-  void EnableWmQuit();
-
   // An observer interface to give the scheduler an opportunity to log
   // information about MSGs before and after they are dispatched.
   class BASE_EXPORT Observer {
@@ -167,10 +164,6 @@ class BASE_EXPORT MessagePumpForUI : public MessagePumpWin {
   bool ProcessPumpReplacementMessage();
 
   base::win::MessageWindow message_window_;
-
-  // Whether MessagePumpForUI responds to WM_QUIT messages or not.
-  // TODO(thestig): Remove when the Cloud Print Service goes away.
-  bool enable_wm_quit_ = false;
 
   // Non-nullopt if there's currently a native timer installed. If so, it
   // indicates when the timer is set to fire and can be used to avoid setting

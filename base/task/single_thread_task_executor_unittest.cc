@@ -538,10 +538,6 @@ class SingleThreadTaskExecutorTypedTest
       case MessagePumpType::NS_RUNLOOP:
         break;
 #endif  // BUILDFLAG(IS_APPLE)
-#if BUILDFLAG(IS_WIN)
-      case MessagePumpType::UI_WITH_WM_QUIT_SUPPORT:
-        break;
-#endif  // BUILDFLAG(IS_WIN)
     }
     NOTREACHED();
     return "";

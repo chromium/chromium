@@ -151,11 +151,6 @@ void MessagePumpForUI::ScheduleDelayedWork(
   }
 }
 
-void MessagePumpForUI::EnableWmQuit() {
-  DCHECK_CALLED_ON_VALID_THREAD(bound_thread_);
-  enable_wm_quit_ = true;
-}
-
 void MessagePumpForUI::AddObserver(Observer* observer) {
   DCHECK_CALLED_ON_VALID_THREAD(bound_thread_);
   observers_.AddObserver(observer);
@@ -510,13 +505,8 @@ bool MessagePumpForUI::ProcessMessageHelper(const MSG& msg) {
 
   if (msg.message == WM_QUIT) {
     // WM_QUIT is the standard way to exit a ::GetMessage() loop. Our
-    // MessageLoop has its own quit mechanism, so WM_QUIT should only terminate
-    // it if |enable_wm_quit_| is explicitly set (and is generally unexpected
-    // otherwise).
-    if (enable_wm_quit_) {
-      run_state_->should_quit = true;
-      return false;
-    }
+    // MessageLoop has its own quit mechanism, so WM_QUIT is generally
+    // unexpected.
     UMA_HISTOGRAM_ENUMERATION("Chrome.MessageLoopProblem",
                               RECEIVED_WM_QUIT_ERROR, MESSAGE_LOOP_PROBLEM_MAX);
     return true;

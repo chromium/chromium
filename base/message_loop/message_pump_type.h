@@ -39,12 +39,6 @@ enum class MessagePumpType {
   // OSX and IOS.
   NS_RUNLOOP,
 #endif  // BUILDFLAG(IS_APPLE)
-
-#if BUILDFLAG(IS_WIN)
-  // This type of pump supports WM_QUIT messages in addition to other native
-  // UI events. This is only for use on windows.
-  UI_WITH_WM_QUIT_SUPPORT,
-#endif  // BUILDFLAG(IS_WIN)
 };
 
 }  // namespace base

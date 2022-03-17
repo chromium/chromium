@@ -16,6 +16,4 @@ enum MessagePumpType {
   kNsRunloop,
   [EnableIf=is_ios]
   kNsRunloop,
-  [EnableIf=is_win]
-  kUiWithWmQuitSupport,
 };

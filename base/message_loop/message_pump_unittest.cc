@@ -322,31 +322,4 @@ INSTANTIATE_TEST_SUITE_P(All,
                                            MessagePumpType::UI,
                                            MessagePumpType::IO));
 
-#if BUILDFLAG(IS_WIN)
-
-TEST(MessagePumpTestWin, WmQuitIsNotIgnoredWithEnableWmQuit) {
-  SingleThreadTaskExecutor task_executor(
-      MessagePumpType::UI_WITH_WM_QUIT_SUPPORT);
-
-  // Post a WM_QUIT message to the current thread.
-  ::PostQuitMessage(0);
-
-  // Post a task to the current thread, with a small delay to make it less
-  // likely that we process the posted task before looking for WM_* messages.
-  RunLoop run_loop;
-  task_executor.task_runner()->PostDelayedTask(FROM_HERE,
-                                               BindOnce(
-                                                   [](OnceClosure closure) {
-                                                     ADD_FAILURE();
-                                                     std::move(closure).Run();
-                                                   },
-                                                   run_loop.QuitClosure()),
-                                               TestTimeouts::tiny_timeout());
-
-  // Run the loop. It should not result in ADD_FAILURE() getting called.
-  run_loop.Run();
-}
-
-#endif  // BUILDFLAG(IS_WIN)
-
 }  // namespace base
