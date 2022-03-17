@@ -41,6 +41,7 @@ from blinkpy.web_tests.port.android import (
 
 from devil.android import apk_helper
 from devil.android import device_utils
+from devil.android.device_errors import CommandFailedError
 from devil.android.tools import system_app
 from devil.android.tools import webview_app
 
@@ -86,6 +87,32 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
       return 'wpt_reports_%s_%02d.json' % (self.options.product, shard_index)
     else:
       return 'wpt_reports_%s.json' % self.options.product
+
+  def get_version_provider_package_name(self):
+    """Get the name of a package containing the product's version.
+
+    Some Android products are broken up into multiple packages with decoupled
+    "versionName"s. This method should return None to use wpt's best guess of
+    the product version or a valid package name to override wpt.
+
+    See also:
+      https://github.com/web-platform-tests/wpt/blob/merge_pr_33203/tools/wpt/browser.py#L850-L864
+    """
+    return None
+
+  def get_version(self):
+    """Get the product version, if available."""
+    version_provider = self.get_version_provider_package_name()
+    if self._devices and version_provider:
+      # Assume emulated devices are identically provisioned.
+      device = self._devices[0]
+      try:
+        version = device.GetApplicationVersion(version_provider)
+        logger.info('Version of %s is %s', version_provider, version)
+        return version
+      except CommandFailedError:
+        logger.warning('Failed to retrieve version of %s', version_provider)
+    return None
 
   @property
   def rest_args(self):
@@ -155,6 +182,10 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
                                     self._wpt_report())
       rest_args.extend(['--log-wptreport',
                         self.wptreport])
+
+    version = self.get_version()
+    if version:
+      rest_args.extend(['--browser-version', version])
 
     if self.options.test_filter:
       for pattern in self.options.test_filter.split(':'):
@@ -329,6 +360,11 @@ class WPTWeblayerAdapter(WPTAndroidAdapter):
     parser.add_argument('--webview-provider',
                         help='Webview provider apk to install.')
 
+  def get_version_provider_package_name(self):
+    if self.options.webview_provider:
+      return apk_helper.GetPackageName(self.options.webview_provider)
+    return self.WEBLAYER_SUPPORT_PKG
+
   @property
   def rest_args(self):
     args = super(WPTWeblayerAdapter, self).rest_args
@@ -384,6 +420,11 @@ class WPTWebviewAdapter(WPTAndroidAdapter):
     parser.add_argument('--release-channel',
                         default=None,
                         help='Using WebView from release channel.')
+
+  def get_version_provider_package_name(self):
+    if self.options.webview_provider:
+      return apk_helper.GetPackageName(self.options.webview_provider)
+    return None
 
   @property
   def rest_args(self):
