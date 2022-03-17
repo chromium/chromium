@@ -57,64 +57,6 @@ events::HistogramValue StorageAreaToEventHistogram(
   }
 }
 
-// Settings change Observer which forwards changes on to the extension
-// processes for |context| and its incognito partner if it exists.
-class DefaultObserver : public SettingsObserver {
- public:
-  explicit DefaultObserver(BrowserContext* context)
-      : browser_context_(context) {}
-
-  // SettingsObserver implementation.
-  void OnSettingsChanged(const std::string& extension_id,
-                         StorageAreaNamespace storage_area,
-                         const base::Value& changes) override {
-    TRACE_EVENT1("browser", "SettingsObserver:OnSettingsChanged",
-                 "extension_id", extension_id);
-
-    // Alias extension_id for investigation of shutdown hangs. crbug.com/1154997
-    // Extension IDs are exactly 32 characters in length.
-    constexpr size_t kExtensionsIdLength = 32;
-    char extension_id_str[kExtensionsIdLength + 1];
-    base::strlcpy(extension_id_str, extension_id.c_str(),
-                  std::size(extension_id_str));
-    base::debug::Alias(extension_id_str);
-
-    const std::string namespace_string = StorageAreaToString(storage_area);
-    EventRouter* event_router = EventRouter::Get(browser_context_);
-
-    // We only dispatch the events if there's a valid listener (even though
-    // EventRouter would handle the no-listener case) since copying `changes`
-    // can be expensive.
-    // Event for each storage(sync, local, managed).
-    if (event_router->ExtensionHasEventListener(
-            extension_id, api::storage::OnChanged::kEventName)) {
-      std::vector<base::Value> args;
-      args.push_back(changes.Clone());
-      args.push_back(base::Value(namespace_string));
-      std::unique_ptr<Event> event(
-          new Event(events::STORAGE_ON_CHANGED,
-                    api::storage::OnChanged::kEventName, std::move(args)));
-      event_router->DispatchEventToExtension(extension_id, std::move(event));
-    }
-
-    // Event for StorageArea.
-    auto area_event_name =
-        base::StringPrintf("storage.%s.onChanged", namespace_string.c_str());
-    if (event_router->ExtensionHasEventListener(extension_id,
-                                                area_event_name)) {
-      std::vector<base::Value> args;
-      args.push_back(changes.Clone());
-      auto event =
-          std::make_unique<Event>(StorageAreaToEventHistogram(storage_area),
-                                  area_event_name, std::move(args));
-      event_router->DispatchEventToExtension(extension_id, std::move(event));
-    }
-  }
-
- private:
-  const raw_ptr<BrowserContext> browser_context_;
-};
-
 }  // namespace
 
 // static
@@ -145,25 +87,19 @@ void StorageFrontend::Init(
     scoped_refptr<value_store::ValueStoreFactory> factory) {
   TRACE_EVENT0("browser,startup", "StorageFrontend::Init");
 
-  observers_ = new SettingsObserverList();
-  browser_context_observer_ =
-      std::make_unique<DefaultObserver>(browser_context_);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!browser_context_->IsOffTheRecord());
-
-  observers_->AddObserver(browser_context_observer_.get());
 
   caches_[settings_namespace::LOCAL] = new LocalValueStoreCache(factory);
 
   // Add any additional caches the embedder supports (for example, caches
   // for chrome.storage.managed and chrome.storage.sync).
   ExtensionsAPIClient::Get()->AddAdditionalValueStoreCaches(
-      browser_context_, factory, observers_, &caches_);
+      browser_context_, factory, GetObserver(), &caches_);
 }
 
 StorageFrontend::~StorageFrontend() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  observers_->RemoveObserver(browser_context_observer_.get());
   for (auto it = caches_.begin(); it != caches_.end(); ++it) {
     ValueStoreCache* cache = it->second;
     cache->ShutdownOnUI();
@@ -216,9 +152,10 @@ void StorageFrontend::DeleteStorageSoon(const std::string& extension_id,
   }
 }
 
-scoped_refptr<SettingsObserverList> StorageFrontend::GetObservers() {
+SettingsChangedCallback StorageFrontend::GetObserver() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return observers_;
+  return base::BindRepeating(&StorageFrontend::OnSettingsChanged,
+                             weak_factory_.GetWeakPtr());
 }
 
 void StorageFrontend::DisableStorageForTesting(
@@ -229,6 +166,67 @@ void StorageFrontend::DisableStorageForTesting(
     cache->ShutdownOnUI();
     GetBackendTaskRunner()->DeleteSoon(FROM_HERE, cache);
     caches_.erase(it);
+  }
+}
+
+// Forwards changes on to the extension processes for |browser_context_| and its
+// incognito partner if it exists.
+void StorageFrontend::OnSettingsChanged(const std::string& extension_id,
+                                        StorageAreaNamespace storage_area,
+                                        base::Value changes) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  TRACE_EVENT1("browser", "SettingsObserver:OnSettingsChanged", "extension_id",
+               extension_id);
+
+  // Alias extension_id for investigation of shutdown hangs. crbug.com/1154997
+  // Extension IDs are exactly 32 characters in length.
+  constexpr size_t kExtensionsIdLength = 32;
+  char extension_id_str[kExtensionsIdLength + 1];
+  base::strlcpy(extension_id_str, extension_id.c_str(),
+                std::size(extension_id_str));
+  base::debug::Alias(extension_id_str);
+
+  const std::string namespace_string = StorageAreaToString(storage_area);
+  EventRouter* event_router = EventRouter::Get(browser_context_);
+
+  bool has_event_changed_listener = event_router->ExtensionHasEventListener(
+      extension_id, api::storage::OnChanged::kEventName);
+
+  // Event for StorageArea.
+  auto area_event_name =
+      base::StringPrintf("storage.%s.onChanged", namespace_string.c_str());
+  bool has_area_changed_event_listener =
+      event_router->ExtensionHasEventListener(extension_id, area_event_name);
+
+  auto make_changed_event = [&namespace_string](base::Value changes) {
+    std::vector<base::Value> args;
+    args.emplace_back(std::move(changes));
+    args.emplace_back(base::Value(namespace_string));
+    return std::make_unique<Event>(events::STORAGE_ON_CHANGED,
+                                   api::storage::OnChanged::kEventName,
+                                   std::move(args));
+  };
+  auto make_area_changed_event = [&storage_area,
+                                  &area_event_name](base::Value changes) {
+    std::vector<base::Value> args;
+    args.push_back(std::move(changes));
+    return std::make_unique<Event>(StorageAreaToEventHistogram(storage_area),
+                                   area_event_name, std::move(args));
+  };
+  // We only dispatch the events if there's a valid listener (even though
+  // EventRouter would handle the no-listener case) since copying `changes`
+  // can be expensive.
+  // Event for each storage(sync, local, managed).
+  if (has_event_changed_listener && has_area_changed_event_listener) {
+    event_router->DispatchEventToExtension(
+        extension_id, make_area_changed_event(changes.Clone()));
+  }
+  if (has_event_changed_listener) {
+    event_router->DispatchEventToExtension(
+        extension_id, make_changed_event(std::move(changes)));
+  } else if (has_area_changed_event_listener) {
+    event_router->DispatchEventToExtension(
+        extension_id, make_area_changed_event(std::move(changes)));
   }
 }
 

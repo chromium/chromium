@@ -31,7 +31,7 @@ class SettingsSyncProcessor;
 // Decorates a ValueStore with sync behaviour.
 class SyncableSettingsStorage : public value_store::ValueStore {
  public:
-  SyncableSettingsStorage(scoped_refptr<SettingsObserverList> observers,
+  SyncableSettingsStorage(SequenceBoundSettingsChangedCallback observer,
                           const std::string& extension_id,
                           // Ownership taken.
                           value_store::ValueStore* delegate,
@@ -114,8 +114,8 @@ class SyncableSettingsStorage : public value_store::ValueStore {
                                  std::unique_ptr<base::Value> old_value,
                                  value_store::ValueStoreChangeList* changes);
 
-  // List of observers to settings changes.
-  const scoped_refptr<SettingsObserverList> observers_;
+  // Observer to settings changes.
+  SequenceBoundSettingsChangedCallback observer_;
 
   // Id of the extension these settings are for.
   std::string const extension_id_;

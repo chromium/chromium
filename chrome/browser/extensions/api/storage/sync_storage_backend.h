@@ -39,7 +39,7 @@ class SyncStorageBackend : public syncer::SyncableService {
   SyncStorageBackend(
       scoped_refptr<value_store::ValueStoreFactory> storage_factory,
       const SettingsStorageQuotaEnforcer::Limits& quota,
-      scoped_refptr<SettingsObserverList> observers,
+      SequenceBoundSettingsChangedCallback observer,
       syncer::ModelType sync_type,
       const syncer::SyncableService::StartSyncFlare& flare);
 
@@ -81,8 +81,8 @@ class SyncStorageBackend : public syncer::SyncableService {
   // Quota limits (see SettingsStorageQuotaEnforcer).
   const SettingsStorageQuotaEnforcer::Limits quota_;
 
-  // The list of observers to settings changes.
-  const scoped_refptr<SettingsObserverList> observers_;
+  // Observer to settings changes.
+  SequenceBoundSettingsChangedCallback observer_;
 
   // A cache of ValueStore objects that have already been created.
   // Ensure that there is only ever one created per extension.

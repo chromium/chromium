@@ -22,12 +22,12 @@ using value_store::ValueStore;
 namespace extensions {
 
 SyncableSettingsStorage::SyncableSettingsStorage(
-    scoped_refptr<base::ObserverListThreadSafe<SettingsObserver>> observers,
+    SequenceBoundSettingsChangedCallback observer,
     const std::string& extension_id,
     ValueStore* delegate,
     syncer::ModelType sync_type,
     const syncer::SyncableService::StartSyncFlare& flare)
-    : observers_(std::move(observers)),
+    : observer_(std::move(observer)),
       extension_id_(extension_id),
       delegate_(delegate),
       sync_type_(sync_type),
@@ -332,10 +332,8 @@ absl::optional<syncer::ModelError> SyncableSettingsStorage::ProcessSyncChanges(
 
   sync_processor_->NotifyChanges(changes);
 
-  observers_->Notify(
-      FROM_HERE, &SettingsObserver::OnSettingsChanged, extension_id_,
-      StorageAreaNamespace::kSync,
-      value_store::ValueStoreChange::ToValue(std::move(changes)));
+  observer_->Run(extension_id_, StorageAreaNamespace::kSync,
+                 value_store::ValueStoreChange::ToValue(std::move(changes)));
 
   // TODO(kalman): Something sensible with multiple errors.
   if (errors.empty())

@@ -29,7 +29,7 @@ namespace extensions {
 class PolicyValueStore : public value_store::ValueStore {
  public:
   PolicyValueStore(const std::string& extension_id,
-                   scoped_refptr<SettingsObserverList> observers,
+                   SequenceBoundSettingsChangedCallback observer,
                    std::unique_ptr<value_store::ValueStore> delegate);
 
   PolicyValueStore(const PolicyValueStore&) = delete;
@@ -65,7 +65,7 @@ class PolicyValueStore : public value_store::ValueStore {
 
  private:
   std::string extension_id_;
-  scoped_refptr<SettingsObserverList> observers_;
+  SequenceBoundSettingsChangedCallback observer_;
   std::unique_ptr<value_store::ValueStore> delegate_;
 };
 

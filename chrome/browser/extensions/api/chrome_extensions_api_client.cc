@@ -99,16 +99,15 @@ ChromeExtensionsAPIClient::~ChromeExtensionsAPIClient() {}
 void ChromeExtensionsAPIClient::AddAdditionalValueStoreCaches(
     content::BrowserContext* context,
     const scoped_refptr<value_store::ValueStoreFactory>& factory,
-    const scoped_refptr<base::ObserverListThreadSafe<SettingsObserver>>&
-        observers,
+    SettingsChangedCallback observer,
     std::map<settings_namespace::Namespace, ValueStoreCache*>* caches) {
   // Add support for chrome.storage.sync.
   (*caches)[settings_namespace::SYNC] =
-      new SyncValueStoreCache(factory, observers, context->GetPath());
+      new SyncValueStoreCache(factory, observer, context->GetPath());
 
   // Add support for chrome.storage.managed.
   (*caches)[settings_namespace::MANAGED] =
-      new ManagedValueStoreCache(context, factory, observers);
+      new ManagedValueStoreCache(context, factory, observer);
 }
 
 void ChromeExtensionsAPIClient::AttachWebContentsHelpers(

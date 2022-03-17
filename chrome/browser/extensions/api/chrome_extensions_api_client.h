@@ -29,8 +29,7 @@ class ChromeExtensionsAPIClient : public ExtensionsAPIClient {
   void AddAdditionalValueStoreCaches(
       content::BrowserContext* context,
       const scoped_refptr<value_store::ValueStoreFactory>& factory,
-      const scoped_refptr<base::ObserverListThreadSafe<SettingsObserver>>&
-          observers,
+      SettingsChangedCallback observer,
       std::map<settings_namespace::Namespace, ValueStoreCache*>* caches)
       override;
   void AttachWebContentsHelpers(content::WebContents* web_contents) const

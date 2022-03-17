@@ -231,12 +231,14 @@ void ManagedValueStoreCache::ExtensionTracker::Register(
 ManagedValueStoreCache::ManagedValueStoreCache(
     BrowserContext* context,
     scoped_refptr<value_store::ValueStoreFactory> factory,
-    scoped_refptr<SettingsObserverList> observers)
+    SettingsChangedCallback observer)
     : profile_(Profile::FromBrowserContext(context)),
       policy_domain_(GetPolicyDomain(profile_)),
       policy_service_(profile_->GetProfilePolicyConnector()->policy_service()),
       storage_factory_(std::move(factory)),
-      observers_(std::move(observers)) {
+      observer_(GetSequenceBoundSettingsChangedCallback(
+          base::SequencedTaskRunnerHandle::Get(),
+          std::move(observer))) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   policy_service_->AddObserver(policy_domain_, this);
@@ -363,7 +365,7 @@ PolicyValueStore* ManagedValueStoreCache::GetStoreFor(
   // Create the store now, and serve the cached policy until the PolicyService
   // sends updated values.
   std::unique_ptr<PolicyValueStore> store(new PolicyValueStore(
-      extension_id, observers_,
+      extension_id, observer_,
       value_store_util::CreateSettingsStore(settings_namespace::MANAGED,
                                             kManagedModelType, extension_id,
                                             storage_factory_)));

@@ -16,16 +16,12 @@
 #include "extensions/browser/api/clipboard/clipboard_api.h"
 #include "extensions/browser/api/declarative_content/content_rules_registry.h"
 #include "extensions/browser/api/storage/settings_namespace.h"
+#include "extensions/browser/api/storage/settings_observer.h"
 #include "extensions/common/api/clipboard.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 
 class GURL;
-
-namespace base {
-template <class T>
-class ObserverListThreadSafe;
-}
 
 namespace content {
 class BrowserContext;
@@ -59,7 +55,6 @@ class MimeHandlerViewGuest;
 class MimeHandlerViewGuestDelegate;
 class NonNativeFileSystemDelegate;
 class RulesCacheDelegate;
-class SettingsObserver;
 class SupervisedUserExtensionsDelegate;
 class ValueStoreCache;
 class VirtualKeyboardDelegate;
@@ -90,8 +85,7 @@ class ExtensionsAPIClient {
   virtual void AddAdditionalValueStoreCaches(
       content::BrowserContext* context,
       const scoped_refptr<value_store::ValueStoreFactory>& factory,
-      const scoped_refptr<base::ObserverListThreadSafe<SettingsObserver>>&
-          observers,
+      SettingsChangedCallback observer,
       std::map<settings_namespace::Namespace, ValueStoreCache*>* caches);
 
   // Attaches any extra web contents helpers (like ExtensionWebContentsObserver)

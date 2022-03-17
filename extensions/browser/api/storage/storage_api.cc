@@ -167,7 +167,9 @@ ExtensionFunction::ResponseAction SettingsFunction::Run() {
                            storage_area_string.c_str())));
   }
 
-  observers_ = frontend->GetObservers();
+  observer_ = GetSequenceBoundSettingsChangedCallback(
+      base::SequencedTaskRunnerHandle::Get(), frontend->GetObserver());
+
   frontend->RunWithStorage(
       extension(), settings_namespace_,
       base::BindOnce(&SettingsFunction::AsyncRunWithStorage, this));
@@ -201,9 +203,8 @@ ExtensionFunction::ResponseValue SettingsFunction::UseWriteResult(
     return Error(result.status().message);
 
   if (!result.changes().empty()) {
-    observers_->Notify(
-        FROM_HERE, &SettingsObserver::OnSettingsChanged, extension_id(),
-        storage_area_,
+    observer_->Run(
+        extension_id(), storage_area_,
         value_store::ValueStoreChange::ToValue(result.PassChanges()));
   }
 
@@ -213,11 +214,14 @@ ExtensionFunction::ResponseValue SettingsFunction::UseWriteResult(
 void SettingsFunction::OnSessionSettingsChanged(
     std::vector<SessionStorageManager::ValueChange> changes) {
   if (!changes.empty()) {
-    scoped_refptr<SettingsObserverList> observers =
-        StorageFrontend::Get(browser_context())->GetObservers();
-    observers->Notify(FROM_HERE, &SettingsObserver::OnSettingsChanged,
-                      extension_id(), storage_area_,
-                      ValueChangeToValue(std::move(changes)));
+    SettingsChangedCallback observer =
+        StorageFrontend::Get(browser_context())->GetObserver();
+    // This used to dispatch asynchronously as a result of a
+    // ObserverListThreadSafe. Ideally, we'd just run this synchronously, but it
+    // appears at least some tests rely on the asynchronous behavior.
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(observer, extension_id(), storage_area_,
+                                  ValueChangeToValue(std::move(changes))));
   }
 }
 

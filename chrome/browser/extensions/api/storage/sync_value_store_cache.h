@@ -35,7 +35,7 @@ class SyncStorageBackend;
 class SyncValueStoreCache : public ValueStoreCache {
  public:
   SyncValueStoreCache(scoped_refptr<value_store::ValueStoreFactory> factory,
-                      scoped_refptr<SettingsObserverList> observers,
+                      SettingsChangedCallback observer,
                       const base::FilePath& profile_path);
 
   SyncValueStoreCache(const SyncValueStoreCache&) = delete;
@@ -54,7 +54,7 @@ class SyncValueStoreCache : public ValueStoreCache {
 
  private:
   void InitOnBackend(scoped_refptr<value_store::ValueStoreFactory> factory,
-                     scoped_refptr<SettingsObserverList> observers,
+                     SequenceBoundSettingsChangedCallback observer,
                      const base::FilePath& profile_path);
 
   bool initialized_;

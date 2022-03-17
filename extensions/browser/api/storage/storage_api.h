@@ -67,7 +67,7 @@ class SettingsFunction : public ExtensionFunction {
       settings_namespace::INVALID;
 
   // Observers, cached so that it's only grabbed from the UI thread.
-  scoped_refptr<SettingsObserverList> observers_;
+  SequenceBoundSettingsChangedCallback observer_;
 };
 
 class StorageStorageAreaGetFunction : public SettingsFunction {

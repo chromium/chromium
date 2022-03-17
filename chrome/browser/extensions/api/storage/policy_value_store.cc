@@ -29,10 +29,10 @@ ValueStore::Status ReadOnlyError() {
 
 PolicyValueStore::PolicyValueStore(
     const std::string& extension_id,
-    scoped_refptr<SettingsObserverList> observers,
+    SequenceBoundSettingsChangedCallback observer,
     std::unique_ptr<ValueStore> delegate)
     : extension_id_(extension_id),
-      observers_(std::move(observers)),
+      observer_(std::move(observer)),
       delegate_(std::move(delegate)) {}
 
 PolicyValueStore::~PolicyValueStore() {}
@@ -99,10 +99,8 @@ void PolicyValueStore::SetCurrentPolicy(const policy::PolicyMap& policy) {
   }
 
   if (!changes.empty()) {
-    observers_->Notify(
-        FROM_HERE, &SettingsObserver::OnSettingsChanged, extension_id_,
-        StorageAreaNamespace::kManaged,
-        value_store::ValueStoreChange::ToValue(std::move(changes)));
+    observer_->Run(extension_id_, StorageAreaNamespace::kManaged,
+                   value_store::ValueStoreChange::ToValue(std::move(changes)));
   }
 }
 

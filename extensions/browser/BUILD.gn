@@ -164,6 +164,7 @@ source_set("browser_sources") {
     "api/scripting/scripting_utils.h",
     "api/storage/settings_namespace.cc",
     "api/storage/settings_namespace.h",
+    "api/storage/settings_observer.h",
     "api/system_display/display_info_provider.cc",
     "api/system_display/display_info_provider.h",
     "api/system_display/system_display_api.cc",

@@ -30,8 +30,7 @@ ExtensionsAPIClient* ExtensionsAPIClient::Get() { return g_instance; }
 void ExtensionsAPIClient::AddAdditionalValueStoreCaches(
     content::BrowserContext* context,
     const scoped_refptr<value_store::ValueStoreFactory>& factory,
-    const scoped_refptr<base::ObserverListThreadSafe<SettingsObserver>>&
-        observers,
+    SettingsChangedCallback observer,
     std::map<settings_namespace::Namespace, ValueStoreCache*>* caches) {}
 
 void ExtensionsAPIClient::AttachWebContentsHelpers(

@@ -23,7 +23,6 @@ source_set("api") {
     "storage/local_value_store_cache.h",
     "storage/session_storage_manager.cc",
     "storage/session_storage_manager.h",
-    "storage/settings_observer.h",
     "storage/settings_storage_quota_enforcer.cc",
     "storage/settings_storage_quota_enforcer.h",
     "storage/storage_api.cc",

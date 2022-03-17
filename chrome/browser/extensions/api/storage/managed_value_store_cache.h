@@ -47,7 +47,7 @@ class ManagedValueStoreCache : public ValueStoreCache,
   // changes.
   ManagedValueStoreCache(content::BrowserContext* context,
                          scoped_refptr<value_store::ValueStoreFactory> factory,
-                         scoped_refptr<SettingsObserverList> observers);
+                         SettingsChangedCallback observer);
 
   ManagedValueStoreCache(const ManagedValueStoreCache&) = delete;
   ManagedValueStoreCache& operator=(const ManagedValueStoreCache&) = delete;
@@ -101,7 +101,7 @@ class ManagedValueStoreCache : public ValueStoreCache,
 
   // These live on the FILE thread.
   scoped_refptr<value_store::ValueStoreFactory> storage_factory_;
-  scoped_refptr<SettingsObserverList> observers_;
+  SequenceBoundSettingsChangedCallback observer_;
 
   // All the PolicyValueStores live on the FILE thread, and |store_map_| can be
   // accessed only on the FILE thread as well.
