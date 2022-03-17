@@ -61,6 +61,7 @@ class CC_ANIMATION_EXPORT ScrollOffsetAnimationsImpl
                                       const gfx::Vector2dF& adjustment);
 
   void ScrollAnimationAbort(bool needs_completion);
+  void AnimatingElementRemovedByCommit();
 
   // AnimationDelegate implementation.
   void NotifyAnimationStarted(base::TimeTicks monotonic_time,

@@ -103,16 +103,9 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
   void ClearMutators() override;
   base::TimeDelta MinimumTickInterval() const override;
 
-  // Processes the current |element_to_animations_map_|, registering animations
-  // which can now be animated and unregistering those that can't based on the
-  // elements in the |changed_list|.
-  void UpdateRegisteredElementIds(ElementListType changed_list) override;
   void InitClientAnimationState() override;
 
-  void RegisterElementId(ElementId element_id,
-                         ElementListType list_type) override;
-  void UnregisterElementId(ElementId element_id,
-                           ElementListType list_type) override;
+  void RemoveElementId(ElementId element_id) override;
 
   void SetMutatorHostClient(MutatorHostClient* client) override;
 
@@ -199,6 +192,7 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
   void ScrollAnimationAbort() override;
 
   ElementId ImplOnlyScrollAnimatingElement() const override;
+  void ImplOnlyScrollAnimatingElementRemoved() override;
 
   // This should only be called from the main thread.
   ScrollOffsetAnimations& scroll_offset_animations();

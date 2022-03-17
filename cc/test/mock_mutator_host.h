@@ -19,11 +19,8 @@ class MockMutatorHost : public MutatorHost {
 
   MOCK_CONST_METHOD0(CreateImplInstance, std::unique_ptr<MutatorHost>());
   MOCK_METHOD0(ClearMutators, void());
-  MOCK_METHOD1(UpdateRegisteredElementIds, void(ElementListType changed_list));
   MOCK_METHOD0(InitClientAnimationState, void());
-  MOCK_METHOD2(RegisterElementId, void(ElementId, ElementListType));
-  MOCK_METHOD2(UnregisterElementId,
-               void(ElementId element_id, ElementListType list_type));
+  MOCK_METHOD1(RemoveElementId, void(ElementId element_id));
   MOCK_METHOD1(SetMutatorHostClient, void(MutatorHostClient* client));
   MOCK_METHOD1(SetLayerTreeMutator,
                void(std::unique_ptr<LayerTreeMutator> mutator));
@@ -94,6 +91,7 @@ class MockMutatorHost : public MutatorHost {
                     base::TimeDelta delayed_by));
   MOCK_METHOD0(ScrollAnimationAbort, void());
   MOCK_CONST_METHOD0(ImplOnlyScrollAnimatingElement, ElementId());
+  MOCK_METHOD0(ImplOnlyScrollAnimatingElementRemoved, void());
   MOCK_CONST_METHOD0(MainThreadAnimationsCount, size_t());
   MOCK_CONST_METHOD0(HasInvalidationAnimation, bool());
   MOCK_CONST_METHOD0(HasNativePropertyAnimation, bool());

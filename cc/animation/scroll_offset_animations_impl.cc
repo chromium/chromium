@@ -197,6 +197,11 @@ void ScrollOffsetAnimationsImpl::ScrollAnimationAbort(bool needs_completion) {
                        "needs_completion", needs_completion);
 }
 
+void ScrollOffsetAnimationsImpl::AnimatingElementRemovedByCommit() {
+  scroll_offset_animation_->GetKeyframeModel(TargetProperty::SCROLL_OFFSET)
+      ->set_affects_pending_elements(false);
+}
+
 void ScrollOffsetAnimationsImpl::NotifyAnimationFinished(
     base::TimeTicks monotonic_time,
     int target_property,

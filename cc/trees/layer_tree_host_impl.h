@@ -399,10 +399,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   void SetMayThrottleIfUndrawnFrames(bool may_throttle_if_undrawn_frames);
 
-  // Updates registered ElementIds present in |changed_list|. Call this after
-  // changing the property trees for the |changed_list| trees.
-  void UpdateElements(ElementListType changed_list);
-
   // Analogous to a commit, this function is used to create a sync tree and
   // add impl-side invalidations to it.
   // virtual for testing.

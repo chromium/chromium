@@ -61,11 +61,7 @@ class CC_ANIMATION_EXPORT ElementAnimations
 
   void ClearAffectedElementTypes(const PropertyToElementIdMap& element_id_map);
 
-  // Called when |element_id| is available to animate in |list_type|.
-  void ElementIdRegistered(ElementId element_id, ElementListType list_type);
-
-  // Called when |element_id| is no longer avialable to animate in |list_type|.
-  void ElementIdUnregistered(ElementId element_id, ElementListType list_type);
+  void RemoveKeyframeEffects();
 
   void AddKeyframeEffect(KeyframeEffect* keyframe_effect);
   void RemoveKeyframeEffect(KeyframeEffect* keyframe_effect);
@@ -96,23 +92,6 @@ class CC_ANIMATION_EXPORT ElementAnimations
   // property and that affects the given tree type.
   bool IsCurrentlyAnimatingProperty(TargetProperty::Type target_property,
                                     ElementListType list_type) const;
-
-  bool has_element_in_active_list() const {
-    return has_element_in_active_list_;
-  }
-  bool has_element_in_pending_list() const {
-    return has_element_in_pending_list_;
-  }
-  bool has_element_in_any_list() const {
-    return has_element_in_active_list_ || has_element_in_pending_list_;
-  }
-
-  void set_has_element_in_active_list(bool has_element_in_active_list) {
-    has_element_in_active_list_ = has_element_in_active_list;
-  }
-  void set_has_element_in_pending_list(bool has_element_in_pending_list) {
-    has_element_in_pending_list_ = has_element_in_pending_list;
-  }
 
   bool AnimationsPreserveAxisAlignment() const;
 
@@ -156,7 +135,7 @@ class CC_ANIMATION_EXPORT ElementAnimations
                               int target_property_id,
                               gfx::KeyframeModel* keyframe_model) override;
 
-  gfx::PointF ScrollOffsetForAnimation() const;
+  absl::optional<gfx::PointF> ScrollOffsetForAnimation() const;
 
   // Returns a map of target property to the ElementId for that property, for
   // KeyframeEffects associated with this ElementAnimations.
@@ -219,9 +198,6 @@ class CC_ANIMATION_EXPORT ElementAnimations
   base::ObserverList<KeyframeEffect>::Unchecked keyframe_effects_list_;
   raw_ptr<AnimationHost> animation_host_;
   ElementId element_id_;
-
-  bool has_element_in_active_list_;
-  bool has_element_in_pending_list_;
 
   mutable bool needs_push_properties_;
 
