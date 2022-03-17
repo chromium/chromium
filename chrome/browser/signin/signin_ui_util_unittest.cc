@@ -447,9 +447,10 @@ TEST_F(DiceSigninUiUtilTest, EnableSyncForNewAccountWithOneTab) {
       active_contents->GetVisibleURL());
 }
 
-TEST_F(DiceSigninUiUtilTest, GetAccountsForDicePromos) {
+TEST_F(DiceSigninUiUtilTest, GetOrderedAccountsForDisplay) {
   // Should start off with no accounts.
-  std::vector<AccountInfo> accounts = GetAccountsForDicePromos(profile());
+  std::vector<AccountInfo> accounts = GetOrderedAccountsForDisplay(
+      profile(), /*restrict_to_accounts_eligible_for_sync=*/true);
   EXPECT_TRUE(accounts.empty());
 
   // TODO(tangltom): Flesh out this test.

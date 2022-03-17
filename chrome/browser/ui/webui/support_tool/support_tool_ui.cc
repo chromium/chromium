@@ -9,8 +9,6 @@
 
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/account_consistency_mode_manager.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
@@ -18,7 +16,6 @@
 #include "chrome/grit/support_tool_resources_map.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -94,30 +91,15 @@ base::Value::List SupportToolMessageHandler::GetAccountsList() {
   Profile* profile = Profile::FromWebUI(web_ui());
   base::Value::List account_list;
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  if (AccountConsistencyModeManager::IsDiceEnabledForProfile(profile)) {
-    // If dice is enabled, show all the accounts.
-    for (const auto& account :
-         signin_ui_util::GetAccountsForDicePromos(profile)) {
-      if (!account.IsEmpty())
-        account_list.Append(base::Value(account.email));
-    }
-    return account_list;
-  }
-#endif
-
   // Guest mode does not have a primary account (or an IdentityManager).
   if (profile->IsGuestSession())
     return account_list;
 
-  // If DICE is disabled for this profile or unsupported on this platform (e.g.
-  // Chrome OS), then show only the primary account, whether or not that account
-  // has consented to sync.
-  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
-  AccountInfo primary_account_info = identity_manager->FindExtendedAccountInfo(
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
-  if (!primary_account_info.IsEmpty())
-    account_list.Append(base::Value(primary_account_info.email));
+  for (const auto& account : signin_ui_util::GetOrderedAccountsForDisplay(
+           profile, /*restrict_to_accounts_eligible_for_sync=*/false)) {
+    if (!account.IsEmpty())
+      account_list.Append(base::Value(account.email));
+  }
   return account_list;
 }
 

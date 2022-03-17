@@ -446,8 +446,8 @@ base::Value PeopleHandler::GetStoredAccountsList() {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   if (AccountConsistencyModeManager::IsDiceEnabledForProfile(profile_)) {
     // If dice is enabled, show all the accounts.
-    for (const auto& account :
-         signin_ui_util::GetAccountsForDicePromos(profile_)) {
+    for (const auto& account : signin_ui_util::GetOrderedAccountsForDisplay(
+             profile_, /*restrict_to_accounts_eligible_for_sync=*/true)) {
       accounts.Append(GetAccountValue(account));
     }
     return accounts;

@@ -351,6 +351,37 @@ void EnableSyncFromMultiAccountPromo(Browser* browser,
 #endif
 }
 
+std::vector<AccountInfo> GetOrderedAccountsForDisplay(
+    Profile* profile,
+    bool restrict_to_accounts_eligible_for_sync) {
+  // Fetch account ids for accounts that have a token.
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  std::vector<AccountInfo> accounts_with_tokens =
+      identity_manager->GetExtendedAccountInfoForAccountsWithRefreshToken();
+
+  // Compute the default account.
+  CoreAccountId default_account_id =
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+
+  // Fetch account information for each id and make sure that the first account
+  // in the list matches the unconsented primary account (if available).
+  std::vector<AccountInfo> accounts;
+  for (auto& account_info : accounts_with_tokens) {
+    DCHECK(!account_info.IsEmpty());
+    if (restrict_to_accounts_eligible_for_sync &&
+        !signin::IsUsernameAllowedByPatternFromPrefs(
+            g_browser_process->local_state(), account_info.email)) {
+      continue;
+    }
+    if (account_info.account_id == default_account_id)
+      accounts.insert(accounts.begin(), std::move(account_info));
+    else
+      accounts.push_back(std::move(account_info));
+  }
+  return accounts;
+}
+
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 namespace internal {
 void EnableSyncFromPromo(
@@ -415,36 +446,9 @@ void EnableSyncFromPromo(
 }
 }  // namespace internal
 
-std::vector<AccountInfo> GetAccountsForDicePromos(Profile* profile) {
-  // Fetch account ids for accounts that have a token.
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  std::vector<AccountInfo> accounts_with_tokens =
-      identity_manager->GetExtendedAccountInfoForAccountsWithRefreshToken();
-
-  // Compute the default account.
-  CoreAccountId default_account_id =
-      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
-
-  // Fetch account information for each id and make sure that the first account
-  // in the list matches the unconsented primary account (if available).
-  std::vector<AccountInfo> accounts;
-  for (auto& account_info : accounts_with_tokens) {
-    DCHECK(!account_info.IsEmpty());
-    if (!signin::IsUsernameAllowedByPatternFromPrefs(
-            g_browser_process->local_state(), account_info.email)) {
-      continue;
-    }
-    if (account_info.account_id == default_account_id)
-      accounts.insert(accounts.begin(), std::move(account_info));
-    else
-      accounts.push_back(std::move(account_info));
-  }
-  return accounts;
-}
-
 AccountInfo GetSingleAccountForDicePromos(Profile* profile) {
-  std::vector<AccountInfo> accounts = GetAccountsForDicePromos(profile);
+  std::vector<AccountInfo> accounts = GetOrderedAccountsForDisplay(
+      profile, /*restrict_to_accounts_eligible_for_sync=*/true);
   if (!accounts.empty())
     return accounts[0];
   return AccountInfo();

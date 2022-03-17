@@ -105,11 +105,15 @@ void EnableSyncFromMultiAccountPromo(Browser* browser,
                                      signin_metrics::AccessPoint access_point,
                                      bool is_default_promo_account);
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // Returns the list of all accounts that have a token. The unconsented primary
-// account will be the first account in the list.
-std::vector<AccountInfo> GetAccountsForDicePromos(Profile* profile);
+// account will be the first account in the list. If
+// |restrict_to_accounts_eligible_for_sync| is true, removes the account that
+// are not suitable for sync promos.
+std::vector<AccountInfo> GetOrderedAccountsForDisplay(
+    Profile* profile,
+    bool restrict_to_accounts_eligible_for_sync);
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // Returns single account to use in Dice promos.
 AccountInfo GetSingleAccountForDicePromos(Profile* profile);
 
