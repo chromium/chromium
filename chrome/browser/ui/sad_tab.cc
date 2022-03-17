@@ -31,19 +31,6 @@
 
 namespace {
 
-// These stats should use the same counting approach and bucket size as tab
-// discard events in memory::OomPriorityManager so they can be directly
-// compared.
-
-// This macro uses a static counter to track how many times it's hit in a
-// session. See Tabs.SadTab.CrashCreated in histograms.xml for details.
-#define UMA_SAD_TAB_COUNTER(histogram_name)           \
-  {                                                   \
-    static int count = 0;                             \
-    ++count;                                          \
-    UMA_HISTOGRAM_COUNTS_1000(histogram_name, count); \
-  }
-
 void RecordEvent(bool feedback, ui_metrics::SadTabEvent event) {
   if (feedback) {
     UMA_HISTOGRAM_ENUMERATION(ui_metrics::kSadTabFeedbackHistogramKey, event,
@@ -210,23 +197,6 @@ void SadTab::RecordFirstPaint() {
   DCHECK(!recorded_paint_);
   recorded_paint_ = true;
 
-  switch (kind_) {
-    case SAD_TAB_KIND_CRASHED:
-      UMA_SAD_TAB_COUNTER("Tabs.SadTab.CrashDisplayed");
-      break;
-    case SAD_TAB_KIND_OOM:
-      UMA_SAD_TAB_COUNTER("Tabs.SadTab.OomDisplayed");
-      break;
-#if BUILDFLAG(IS_CHROMEOS)
-    case SAD_TAB_KIND_KILLED_BY_OOM:
-      UMA_SAD_TAB_COUNTER("Tabs.SadTab.KillDisplayed.OOM");
-      [[fallthrough]];
-#endif
-    case SAD_TAB_KIND_KILLED:
-      UMA_SAD_TAB_COUNTER("Tabs.SadTab.KillDisplayed");
-      break;
-  }
-
   RecordEvent(show_feedback_button_, ui_metrics::SadTabEvent::DISPLAYED);
 }
 
@@ -274,24 +244,18 @@ SadTab::SadTab(content::WebContents* web_contents, SadTabKind kind)
 
   switch (kind) {
     case SAD_TAB_KIND_CRASHED:
-      UMA_SAD_TAB_COUNTER("Tabs.SadTab.CrashCreated");
-      break;
     case SAD_TAB_KIND_OOM:
-      UMA_SAD_TAB_COUNTER("Tabs.SadTab.OomCreated");
       break;
 #if BUILDFLAG(IS_CHROMEOS)
-    case SAD_TAB_KIND_KILLED_BY_OOM:
-      UMA_SAD_TAB_COUNTER("Tabs.SadTab.KillCreated.OOM");
-      {
-        const std::string spec =
-            web_contents->GetURL().DeprecatedGetOriginAsURL().spec();
-        memory::OomMemoryDetails::Log("Tab OOM-Killed Memory details: " + spec +
-                                      ", ");
-      }
+    case SAD_TAB_KIND_KILLED_BY_OOM: {
+      const std::string spec =
+          web_contents->GetURL().DeprecatedGetOriginAsURL().spec();
+      memory::OomMemoryDetails::Log("Tab OOM-Killed Memory details: " + spec +
+                                    ", ");
       [[fallthrough]];
+    }
 #endif
     case SAD_TAB_KIND_KILLED:
-      UMA_SAD_TAB_COUNTER("Tabs.SadTab.KillCreated");
       LOG(WARNING) << "Tab Killed: "
                    << web_contents->GetURL().DeprecatedGetOriginAsURL().spec();
       break;

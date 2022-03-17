@@ -199,7 +199,6 @@ IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, MAYBE_CrashRenderers) {
 #elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   VerifyRendererExitCodeIsSignal(histogram_tester, SIGSEGV);
 #endif
-  histogram_tester.ExpectUniqueSample("Tabs.SadTab.CrashCreated", 1, 1);
 }
 
 // Test is disabled on Windows AMR64 because
@@ -225,7 +224,6 @@ IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "CrashExitCodes.Renderer",
       std::abs(static_cast<int32_t>(STATUS_HEAP_CORRUPTION)), 1);
-  histogram_tester.ExpectUniqueSample("Tabs.SadTab.CrashCreated", 1, 1);
   LOG(INFO) << histogram_tester.GetAllHistogramsRecorded();
 }
 #endif  // BUILDFLAG(IS_WIN)
@@ -252,7 +250,6 @@ IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, MAYBE_CheckCrashRenderers) {
 #elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   VerifyRendererExitCodeIsSignal(histogram_tester, SIGTRAP);
 #endif
-  histogram_tester.ExpectUniqueSample("Tabs.SadTab.CrashCreated", 1, 1);
 }
 
 // OOM code only works on Windows.
@@ -294,8 +291,6 @@ IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, OOMRenderers) {
 
   EXPECT_THAT(histogram_tester.GetAllSamples("CrashExitCodes.Renderer"),
               ::testing::IsSubsetOf(expected_possible_exit_codes));
-
-  histogram_tester.ExpectUniqueSample("Tabs.SadTab.OomCreated", 1, 1);
 }
 #endif  // BUILDFLAG(IS_WIN) && !defined(ADDRESS_SANITIZER)
 

@@ -1911,33 +1911,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tabs.SadTab.CrashCreated" units="tabs"
-    expires_after="2022-08-28">
-  <owner>sonnyrao@chromium.org</owner>
-  <owner>jamescook@chromium.org</owner>
-  <summary>
-    Cumulative number of times a tab crashed with &quot;Aw, Snap!&quot;,
-    recorded once per tab crash event. For example, a user who crashed 3 tabs
-    will record a count in the 1 bin, 2 bin, and 3 bin. Thus each bin N is the
-    number of sessions where users experienced N or more crash events. The user
-    may not have actually seen the sad tab page, as it might have been an
-    inactive tab. Compare to Tabs.SadTab.CrashDisplayed.
-  </summary>
-</histogram>
-
-<histogram name="Tabs.SadTab.CrashDisplayed" units="tabs"
-    expires_after="2022-08-28">
-  <owner>sonnyrao@chromium.org</owner>
-  <owner>jamescook@chromium.org</owner>
-  <summary>
-    Cumulative number of times a tab crashed with &quot;Aw, Snap!&quot; and the
-    user saw the page, recorded once per tab crash event. For example, a user
-    who crashed 3 tabs will record a count in the 1 bin, 2 bin, and 3 bin. Thus
-    each bin N is the number of sessions where users experienced N or more crash
-    events. Compare to Tabs.SadTab.CrashCreated.
-  </summary>
-</histogram>
-
 <histogram name="Tabs.SadTab.Feedback.Event" enum="SadTabEvent"
     expires_after="2022-08-28">
   <owner>sonnyrao@chromium.org</owner>
@@ -1946,89 +1919,6 @@ chromium-metrics-reviews@google.com.
     Counts of events from the style of sad tab which has a feedback button as
     its primary action. Currently, events include being displayed (actually
     visible in a window), and the actions a user can take on the page.
-  </summary>
-</histogram>
-
-<histogram name="Tabs.SadTab.KillCreated" units="tabs"
-    expires_after="2021-12-05">
-  <owner>sonnyrao@chromium.org</owner>
-  <owner>jamescook@chromium.org</owner>
-  <summary>
-    Cumulative number of times a tab was killed with a &quot;He's dead,
-    Jim!&quot; page, which is usually due to the renderer being killed, recorded
-    once per tab kill event. For example, a user who loses 3 tabs will record a
-    count in the 1 bin, 2 bin, and 3 bin. Thus each bin N is the number of
-    sessions where users experienced N or more kill events. The user may not
-    have actually seen the sad tab page, as it might have been an inactive tab.
-    Compare to Tabs.SadTab.KillDisplayed. This can happen due to out of memory,
-    malformed IPC messages, or a SIGINT/TERM/KILL signal sent by a user.
-  </summary>
-</histogram>
-
-<histogram name="Tabs.SadTab.KillCreated.OOM" units="tabs"
-    expires_after="2022-04-24">
-  <owner>sonnyrao@chromium.org</owner>
-  <owner>jamescook@chromium.org</owner>
-  <summary>
-    Cumulative number of times a tab was killed with a &quot;He's dead,
-    Jim!&quot; page due to the kernel out-of-memory killer, recorded once per
-    tab kill event. For example, a user who loses 3 tabs will record a count in
-    the 1 bin, 2 bin, and 3 bin. Thus each bin N is the number of sessions where
-    users experienced N or more kill events. The user may not have actually seen
-    the sad tab page, as it might have been an inactive tab. Compare to
-    Tabs.SadTab.KillDisplayed.
-  </summary>
-</histogram>
-
-<histogram name="Tabs.SadTab.KillDisplayed" units="tabs"
-    expires_after="2022-08-28">
-  <owner>sonnyrao@chromium.org</owner>
-  <owner>jamescook@chromium.org</owner>
-  <summary>
-    Cumulative number of times a tab was killed with a &quot;He's dead,
-    Jim!&quot; page and the user saw the page, recorded once per tab kill event.
-    For example, a user who loses 3 tabs will record a count in the 1 bin, 2
-    bin, and 3 bin. Thus each bin N is the number of sessions where users
-    experienced N or more kill events. Compare to Tabs.SadTab.CrashCreated.
-  </summary>
-</histogram>
-
-<histogram name="Tabs.SadTab.KillDisplayed.OOM" units="tabs"
-    expires_after="2021-06-01">
-  <owner>sonnyrao@chromium.org</owner>
-  <owner>jamescook@chromium.org</owner>
-  <summary>
-    Cumulative number of times a tab was killed with a &quot;He's dead,
-    Jim!&quot; page due to the kernel out-of-memory killer and the user saw the
-    page, recorded once per tab kill event. For example, a user who loses 3 tabs
-    will record a count in the 1 bin, 2 bin, and 3 bin. Thus each bin N is the
-    number of sessions where users experienced N or more kill events. Compare to
-    Tabs.SadTab.CrashCreated.
-  </summary>
-</histogram>
-
-<histogram name="Tabs.SadTab.OomCreated" units="tabs"
-    expires_after="2020-06-01">
-  <owner>wfh@chromium.org</owner>
-  <summary>
-    Cumulative number of times a tab crashed with &quot;Aw, Snap!&quot;,
-    recorded once per tab oom event. For example, a user who ran out of memory
-    in 3 tabs will record a count in the 1 bin, 2 bin, and 3 bin. Thus each bin
-    N is the number of sessions where users experienced N or more oom events.
-    The user may not have actually seen the sad tab page, as it might have been
-    an inactive tab. Compare to Tabs.SadTab.OomDisplayed.
-  </summary>
-</histogram>
-
-<histogram name="Tabs.SadTab.OomDisplayed" units="tabs"
-    expires_after="2020-06-01">
-  <owner>wfh@chromium.org</owner>
-  <summary>
-    Cumulative number of times a tab ran out of memory with &quot;Aw,
-    Snap!&quot; and the user saw the page, recorded once per tab oom event. For
-    example, a user who ran out of memory in 3 tabs will record a count in the 1
-    bin, 2 bin, and 3 bin. Thus each bin N is the number of sessions where users
-    experienced N or more oom events. Compare to Tabs.SadTab.OomCreated.
   </summary>
 </histogram>
 
