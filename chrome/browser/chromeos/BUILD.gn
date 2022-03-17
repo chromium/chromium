@@ -3284,6 +3284,8 @@ source_set("chromeos") {
     "../ash/wallpaper/wallpaper_enumerator.h",
     "../ash/wallpaper_handlers/wallpaper_handlers.cc",
     "../ash/wallpaper_handlers/wallpaper_handlers.h",
+    "../ash/wallpaper_handlers/wallpaper_handlers_metric_utils.cc",
+    "../ash/wallpaper_handlers/wallpaper_handlers_metric_utils.h",
     "../ash/web_applications/calculator_app/calculator_app_utils.cc",
     "../ash/web_applications/calculator_app/calculator_app_utils.h",
     "../ash/web_applications/camera_app/camera_app_untrusted_ui_config.cc",

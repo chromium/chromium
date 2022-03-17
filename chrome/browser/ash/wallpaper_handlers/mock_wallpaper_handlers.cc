@@ -39,6 +39,11 @@ MockGooglePhotosAlbumsFetcher::MockGooglePhotosAlbumsFetcher(Profile* profile)
 
 MockGooglePhotosAlbumsFetcher::~MockGooglePhotosAlbumsFetcher() = default;
 
+absl::optional<size_t> MockGooglePhotosAlbumsFetcher::GetResultCount(
+    const GooglePhotosAlbumsCbkArgs& result) {
+  return GooglePhotosAlbumsFetcher::GetResultCount(result);
+}
+
 MockGooglePhotosCountFetcher::MockGooglePhotosCountFetcher(Profile* profile)
     : GooglePhotosCountFetcher(profile) {
   ON_CALL(*this, AddRequestAndStartIfNecessary)
@@ -54,6 +59,11 @@ MockGooglePhotosCountFetcher::MockGooglePhotosCountFetcher(Profile* profile)
 }
 
 MockGooglePhotosCountFetcher::~MockGooglePhotosCountFetcher() = default;
+
+absl::optional<size_t> MockGooglePhotosCountFetcher::GetResultCount(
+    const int& result) {
+  return GooglePhotosCountFetcher::GetResultCount(result);
+}
 
 MockGooglePhotosEnabledFetcher::MockGooglePhotosEnabledFetcher(Profile* profile)
     : GooglePhotosEnabledFetcher(profile) {
@@ -73,6 +83,11 @@ MockGooglePhotosEnabledFetcher::MockGooglePhotosEnabledFetcher(Profile* profile)
 }
 
 MockGooglePhotosEnabledFetcher::~MockGooglePhotosEnabledFetcher() = default;
+
+absl::optional<size_t> MockGooglePhotosEnabledFetcher::GetResultCount(
+    const GooglePhotosEnablementState& result) {
+  return GooglePhotosEnabledFetcher::GetResultCount(result);
+}
 
 MockGooglePhotosPhotosFetcher::MockGooglePhotosPhotosFetcher(Profile* profile)
     : GooglePhotosPhotosFetcher(profile) {
@@ -99,5 +114,10 @@ MockGooglePhotosPhotosFetcher::MockGooglePhotosPhotosFetcher(Profile* profile)
 }
 
 MockGooglePhotosPhotosFetcher::~MockGooglePhotosPhotosFetcher() = default;
+
+absl::optional<size_t> MockGooglePhotosPhotosFetcher::GetResultCount(
+    const GooglePhotosPhotosCbkArgs& result) {
+  return GooglePhotosPhotosFetcher::GetResultCount(result);
+}
 
 }  // namespace wallpaper_handlers

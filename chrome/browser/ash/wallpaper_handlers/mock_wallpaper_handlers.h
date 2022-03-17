@@ -35,6 +35,10 @@ class MockGooglePhotosAlbumsFetcher : public GooglePhotosAlbumsFetcher {
               ParseResponse,
               (const base::Value::Dict* response),
               (override));
+
+  // Overridden to increase visibility.
+  absl::optional<size_t> GetResultCount(
+      const GooglePhotosAlbumsCbkArgs& result) override;
 };
 
 // Fetcher that returns a dummy value for the number of photos in a user's
@@ -59,6 +63,9 @@ class MockGooglePhotosCountFetcher : public GooglePhotosCountFetcher {
               ParseResponse,
               (const base::Value::Dict* response),
               (override));
+
+  // Overridden to increase visibility.
+  absl::optional<size_t> GetResultCount(const int& result) override;
 };
 
 // Fetcher that claims the user is allowed to access Google Photos data. Used to
@@ -84,6 +91,10 @@ class MockGooglePhotosEnabledFetcher : public GooglePhotosEnabledFetcher {
               ParseResponse,
               (const base::Value::Dict* response),
               (override));
+
+  // Overridden to increase visibility.
+  absl::optional<size_t> GetResultCount(
+      const GooglePhotosEnablementState& result) override;
 };
 
 // Fetcher that returns an empty photo list and no resume token in response to a
@@ -112,6 +123,10 @@ class MockGooglePhotosPhotosFetcher : public GooglePhotosPhotosFetcher {
               ParseResponse,
               (const base::Value::Dict* response),
               (override));
+
+  // Overridden to increase visibility.
+  absl::optional<size_t> GetResultCount(
+      const GooglePhotosPhotosCbkArgs& result) override;
 };
 
 }  // namespace wallpaper_handlers

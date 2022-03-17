@@ -173,13 +173,19 @@ class GooglePhotosFetcher : public signin::IdentityManager::Observer {
   // structure.
   virtual T ParseResponse(const base::Value::Dict* response) = 0;
 
+  // Returns the count of results contained within the specified `result`.
+  virtual absl::optional<size_t> GetResultCount(const T& result) = 0;
+
  private:
   void OnTokenReceived(const GURL& service_url,
+                       base::TimeTicks start_time,
                        GoogleServiceAuthError error,
                        signin::AccessTokenInfo token_info);
   void OnJsonReceived(const GURL& service_url,
+                      base::TimeTicks start_time,
                       std::unique_ptr<std::string> response_body);
   void OnResponseReady(const GURL& service_url,
+                       base::TimeTicks start_time,
                        absl::optional<base::Value> response);
 
   // Profile associated with the Google Photos account that will be queried.
@@ -233,6 +239,8 @@ class GooglePhotosAlbumsFetcher
   // GooglePhotosFetcher:
   GooglePhotosAlbumsCbkArgs ParseResponse(
       const base::Value::Dict* response) override;
+  absl::optional<size_t> GetResultCount(
+      const GooglePhotosAlbumsCbkArgs& result) override;
 };
 
 // Downloads the number of photos in a user's Google Photos library.
@@ -251,6 +259,7 @@ class GooglePhotosCountFetcher : public GooglePhotosFetcher<int> {
  protected:
   // GooglePhotosFetcher:
   int ParseResponse(const base::Value::Dict* response) override;
+  absl::optional<size_t> GetResultCount(const int& result) override;
 };
 
 using ash::personalization_app::mojom::GooglePhotosEnablementState;
@@ -273,6 +282,8 @@ class GooglePhotosEnabledFetcher
   // GooglePhotosFetcher:
   GooglePhotosEnablementState ParseResponse(
       const base::Value::Dict* response) override;
+  absl::optional<size_t> GetResultCount(
+      const GooglePhotosEnablementState& result) override;
 };
 
 using GooglePhotosPhotosCbkArgs =
@@ -299,6 +310,8 @@ class GooglePhotosPhotosFetcher
   // GooglePhotosFetcher:
   GooglePhotosPhotosCbkArgs ParseResponse(
       const base::Value::Dict* response) override;
+  absl::optional<size_t> GetResultCount(
+      const GooglePhotosPhotosCbkArgs& result) override;
 };
 
 }  // namespace wallpaper_handlers
