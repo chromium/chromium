@@ -8,7 +8,6 @@
 #include <cstddef>
 #include <type_traits>
 
-#include "base/containers/buffer_iterator.h"
 #include "base/containers/span.h"
 #include "base/unguessable_token.h"
 
@@ -151,12 +150,6 @@ class BASE_EXPORT ReadOnlySharedMemoryMapping : public SharedMemoryMapping {
     return span<const T>(static_cast<const T*>(raw_memory_ptr()), count);
   }
 
-  // Returns a BufferIterator of const T.
-  template <typename T>
-  BufferIterator<const T> GetMemoryAsBufferIterator() const {
-    return BufferIterator<const T>(GetMemoryAsSpan<T>());
-  }
-
  private:
   friend class ReadOnlySharedMemoryRegion;
   ReadOnlySharedMemoryMapping(void* address,
@@ -229,12 +222,6 @@ class BASE_EXPORT WritableSharedMemoryMapping : public SharedMemoryMapping {
     if (size() / sizeof(T) < count)
       return span<T>();
     return span<T>(static_cast<T*>(raw_memory_ptr()), count);
-  }
-
-  // Returns a BufferIterator of T.
-  template <typename T>
-  BufferIterator<T> GetMemoryAsBufferIterator() {
-    return BufferIterator<T>(GetMemoryAsSpan<T>());
   }
 
  private:

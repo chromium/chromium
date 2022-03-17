@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/containers/buffer_iterator.h"
 #include "base/logging.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/metrics/histogram.h"
@@ -260,8 +261,8 @@ void NexeLoadManager::NexeDidCrash() {
   base::ReadOnlySharedMemoryMapping shmem_mapping =
       crash_info_shmem_region_.MapAt(0, kNaClCrashInfoShmemSize);
   if (shmem_mapping.IsValid()) {
-    base::BufferIterator<const uint8_t> buffer =
-        shmem_mapping.GetMemoryAsBufferIterator<uint8_t>();
+    auto buffer = base::BufferIterator<const uint8_t>(
+        shmem_mapping.GetMemoryAsSpan<uint8_t>());
     const uint32_t* crash_log_length = buffer.Object<uint32_t>();
     base::span<const uint8_t> data = buffer.Span<uint8_t>(
         std::min<uint32_t>(*crash_log_length, kNaClCrashInfoMaxLogSize));
