@@ -19,12 +19,12 @@
 #include "build/build_config.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_processing.h"
+#include "media/media_buildflags.h"
 #include "media/mojo/mojom/audio_processing.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/audio/buildflags.h"
 #include "services/audio/stream_monitor.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -177,9 +177,6 @@ class InputController final : public StreamMonitor {
   void OnStreamInactive(Snoopable* snoopable) override;
 
  private:
-  // TODO(https://crbug.com/1224845): Remove after the output mixing experiment.
-  class NoopReferenceOutputListener;
-
   // Used to log the result of capture startup.
   // This was previously logged as a boolean with only the no callback and OK
   // options. The enum order is kept to ensure backwards compatibility.
@@ -298,13 +295,7 @@ class InputController final : public StreamMonitor {
   // Handles audio processing effects applied to the microphone capture audio.
   std::unique_ptr<AudioProcessorHandler> audio_processor_handler_;
 
-  // Placeholder for `audio_processor_handler_` when it is not created but
-  // `output_tapper_` still needs a ReferenceOutput::Listener to subscribe.
-  // TODO(https://crbug.com/1224845): Remove after the output mixing experiment.
-  std::unique_ptr<NoopReferenceOutputListener> noop_reference_output_listener_;
-
-  // Manages the `audio_processor_handler_` or
-  // `noop_reference_output_listener_` subscription to output audio.
+  // Manages the |audio_processor_handler_| subscription to output audio.
   std::unique_ptr<OutputTapper> output_tapper_;
 #endif
 

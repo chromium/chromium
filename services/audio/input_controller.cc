@@ -117,28 +117,6 @@ float AveragePower(const media::AudioBus& buffer) {
 
 }  // namespace
 
-#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-// No-op implementation of ReferenceOutput::Listener to allow the
-// InputController to subscribe to playout audio without instantiating a more
-// heavy-duty Listener subclass.
-// TODO(https://crbug.com/1224845): Remove after the output mixing experiment.
-class InputController::NoopReferenceOutputListener
-    : public ReferenceOutput::Listener {
- public:
-  NoopReferenceOutputListener() {}
-
- private:
-  // ReferenceOutput::Listener implementation.
-  void OnPlayoutData(const media::AudioBus& audio_bus,
-                     int sample_rate,
-                     base::TimeDelta delay) final {
-    TRACE_EVENT2("audio", "NoopReferenceOutputListener::OnPlayoutData",
-                 " this ", static_cast<void*>(this), "delay",
-                 delay.InMillisecondsF());
-  }
-};
-#endif  // CHROME_WIDE_ECHO_CANCELLATION
-
 // This class implements the AudioInputCallback interface in place of the
 // InputController (AIC), so that
 // - The AIC itself does not publicly inherit AudioInputCallback.
@@ -238,14 +216,10 @@ void InputController::MaybeSetUpAudioProcessing(
   if (!device_output_listener)
     return;
 
-  // TODO(https://crbug.com/1224845): Clean up this initialization logic once
-  // the output mixing experiment is over.
-  // |processing_config| will not be populated while the mixing experiment is
-  // ongoing, so there is no interference here. The mixing experiment always
-  // gets a NoopReferenceOutputListener.
-  ReferenceOutput::Listener* output_listener = nullptr;
-  if (processing_config &&
-      processing_config->settings.NeedAudioModification()) {
+  if (!(processing_config &&
+        processing_config->settings.NeedAudioModification())) {
+    return;
+  }
     // Unretained() is safe, since |this| and |event_handler_| outlive
     // |audio_processor_handler_|.
     audio_processor_handler_ = std::make_unique<AudioProcessorHandler>(
@@ -255,20 +229,15 @@ void InputController::MaybeSetUpAudioProcessing(
         base::BindRepeating(&InputController::DeliverProcessedAudio,
                             base::Unretained(this)),
         std::move(processing_config->controls_receiver));
-    if (processing_config->settings.NeedPlayoutReference())
-      output_listener = audio_processor_handler_.get();
-  } else {
-    noop_reference_output_listener_ =
-        std::make_unique<NoopReferenceOutputListener>();
-    output_listener = noop_reference_output_listener_.get();
-  }
-  if (output_listener) {
+
+    if (!processing_config->settings.NeedPlayoutReference())
+      return;
+
     // Unretained() is safe, since |event_handler_| outlives |output_tapper_|.
     output_tapper_ = std::make_unique<OutputTapper>(
-        device_output_listener, output_listener,
+        device_output_listener, audio_processor_handler_.get(),
         base::BindRepeating(&EventHandler::OnLog,
                             base::Unretained(event_handler_)));
-  }
 }
 #endif
 

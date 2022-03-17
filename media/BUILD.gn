@@ -21,6 +21,7 @@ buildflag_header("media_buildflags") {
   flags = [
     "ALTERNATE_CDM_STORAGE_ID_KEY=\"$alternate_cdm_storage_id_key\"",
     "CDM_PLATFORM_SPECIFIC_PATH=\"$cdm_platform_specific_path\"",
+    "CHROME_WIDE_ECHO_CANCELLATION=$chrome_wide_echo_cancellation_supported",
     "ENABLE_PLATFORM_AC3_EAC3_AUDIO=$enable_platform_ac3_eac3_audio",
     "ENABLE_CAST_AUDIO_RENDERER=$enable_cast_audio_renderer",
     "ENABLE_CDM_HOST_VERIFICATION=$enable_cdm_host_verification",

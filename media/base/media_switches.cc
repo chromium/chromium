@@ -8,6 +8,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/system_media_controls/linux/buildflags/buildflags.h"
+#include "media/media_buildflags.h"
 
 #if BUILDFLAG(IS_LINUX)
 #include "base/cpu.h"
@@ -347,6 +348,13 @@ const base::Feature kCdmHostVerification{"CdmHostVerification",
 // using the same CDM type would share one CDM process.
 const base::Feature kCdmProcessSiteIsolation{"CdmProcessSiteIsolation",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
+
+// If echo cancellation for a mic signal is requested, mix and cancel all audio
+// playback going to a specific output device in the audio service.
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+const base::Feature kChromeWideEchoCancellation{
+    "ChromeWideEchoCancellation", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
 
 // Make MSE garbage collection algorithm more aggressive when we are under
 // moderate or critical memory pressure. This will relieve memory pressure by
@@ -936,6 +944,14 @@ const base::Feature kBresenhamCadence{"BresenhamCadence",
 // Display the playback speed button on the media controls.
 const base::Feature kPlaybackSpeedButton{"PlaybackSpeedButton",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
+
+bool IsChromeWideEchoCancellationEnabled() {
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+  return base::FeatureList::IsEnabled(kChromeWideEchoCancellation);
+#else
+  return false;
+#endif
+}
 
 bool IsHardwareSecureDecryptionEnabled() {
   return base::FeatureList::IsEnabled(kHardwareSecureDecryption) ||

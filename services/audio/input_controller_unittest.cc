@@ -404,6 +404,7 @@ TEST_F(InputControllerTestWithDeviceListener, RecordBeforeSetOutputForAec) {
       .Times(1);
   EXPECT_CALL(device_output_listener_, StopListening(_)).Times(1);
 
+  SetupProcessingConfig(AudioProcessingType::kWithPlayoutReference);
   CreateAudioController();
 
   ASSERT_TRUE(controller_.get());
@@ -421,6 +422,7 @@ TEST_F(InputControllerTestWithDeviceListener, RecordAfterSetOutputForAec) {
       .Times(1);
   EXPECT_CALL(device_output_listener_, StopListening(_)).Times(1);
 
+  SetupProcessingConfig(AudioProcessingType::kWithPlayoutReference);
   CreateAudioController();
 
   ASSERT_TRUE(controller_.get());
@@ -445,6 +447,7 @@ TEST_F(InputControllerTestWithDeviceListener, ChangeOutputForAec) {
   // StopListening() should be called once, regardless of how many ID changes.
   EXPECT_CALL(device_output_listener_, StopListening(_)).Times(1);
 
+  SetupProcessingConfig(AudioProcessingType::kWithPlayoutReference);
   CreateAudioController();
 
   ASSERT_TRUE(controller_.get());
