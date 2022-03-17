@@ -138,7 +138,7 @@ void ReceiverSetState::FlushForTesting() {
   }
 }
 
-void ReceiverSetState::SetDispatchContext(const void* context,
+void ReceiverSetState::SetDispatchContext(void* context,
                                           ReceiverId receiver_id) {
   current_context_ = context;
   current_receiver_ = receiver_id;

@@ -60,6 +60,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ReceiverSetState {
    public:
     virtual ~ReceiverState() = default;
     virtual const void* GetContext() const = 0;
+    virtual void* GetContext() = 0;
     virtual void InstallDispatchHooks(
         std::unique_ptr<MessageFilter> filter,
         RepeatingConnectionErrorWithReasonCallback disconnect_handler) = 0;
@@ -105,6 +106,11 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ReceiverSetState {
     return current_context_;
   }
 
+  void* current_context() {
+    DCHECK(current_context_);
+    return current_context_;
+  }
+
   ReceiverId current_receiver() const {
     DCHECK(current_context_);
     return current_receiver_;
@@ -121,7 +127,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ReceiverSetState {
                         uint32_t custom_reason_code,
                         const std::string& description);
   void FlushForTesting();
-  void SetDispatchContext(const void* context, ReceiverId receiver_id);
+  void SetDispatchContext(void* context, ReceiverId receiver_id);
   void OnDisconnect(ReceiverId id,
                     uint32_t custom_reason_code,
                     const std::string& description);
@@ -131,7 +137,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ReceiverSetState {
   RepeatingConnectionErrorWithReasonCallback disconnect_with_reason_handler_;
   ReceiverId next_receiver_id_ = 0;
   EntryMap entries_;
-  const void* current_context_ = nullptr;
+  void* current_context_ = nullptr;
   ReceiverId current_receiver_;
   base::WeakPtrFactory<ReceiverSetState> weak_ptr_factory_{this};
 };
@@ -300,6 +306,14 @@ class ReceiverSetBase {
     return *static_cast<const Context*>(state_.current_context());
   }
 
+  // Like `current_context() const`, but returns non-const reference to the
+  // context value.
+  Context& current_context() {
+    static_assert(ContextTraits::SupportsContext(),
+                  "current_context() requires non-void context type.");
+    return *static_cast<Context*>(state_.current_context());
+  }
+
   // Implementations may call this when processing a received method call or
   // disconnection notification. See above note for constraints on usage.
   // This returns the ReceiverId associated with the specific receiver which
@@ -369,6 +383,7 @@ class ReceiverSetBase {
 
     // ReceiverSetState::ReceiverState:
     const void* GetContext() const override { return &context_; }
+    void* GetContext() override { return &context_; }
 
     void InstallDispatchHooks(std::unique_ptr<MessageFilter> filter,
                               RepeatingConnectionErrorWithReasonCallback
@@ -393,7 +408,7 @@ class ReceiverSetBase {
 
    private:
     ReceiverType receiver_;
-    Context const context_;
+    Context context_;
   };
 
   ReceiverId AddImpl(ImplPointerType impl,

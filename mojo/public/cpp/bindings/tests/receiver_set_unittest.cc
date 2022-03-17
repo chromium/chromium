@@ -25,16 +25,38 @@ namespace {
 using ReceiverSetTest = BindingsTestBase;
 
 template <typename ReceiverSetType, typename ContextType>
-void ExpectContextHelper(ReceiverSetType* receiver_set,
+void ExpectContextHelper(const ReceiverSetType* receiver_set,
                          ContextType expected_context) {
   EXPECT_EQ(expected_context, receiver_set->current_context());
 }
 
 template <typename ReceiverSetType, typename ContextType>
-base::RepeatingClosure ExpectContext(ReceiverSetType* receiver_set,
+base::RepeatingClosure ExpectContext(const ReceiverSetType* receiver_set,
                                      ContextType expected_context) {
   return base::BindRepeating(&ExpectContextHelper<ReceiverSetType, ContextType>,
                              receiver_set, expected_context);
+}
+
+template <typename ReceiverSetType, typename ContextType>
+void ExpectMutableContextHelper(ReceiverSetType* receiver_set,
+                                ContextType expected_context,
+                                ContextType new_context) {
+  {
+    ContextType& context = receiver_set->current_context();
+    EXPECT_EQ(context, expected_context);
+    context = new_context;
+  }
+
+  ExpectContextHelper(receiver_set, new_context);
+}
+
+template <typename ReceiverSetType, typename ContextType>
+base::RepeatingClosure ExpectMutableContext(ReceiverSetType* receiver_set,
+                                            ContextType expected_context,
+                                            ContextType new_context) {
+  return base::BindRepeating(
+      &ExpectMutableContextHelper<ReceiverSetType, ContextType>, receiver_set,
+      expected_context, new_context);
 }
 
 template <typename ReceiverSetType>
@@ -146,6 +168,29 @@ TEST_P(ReceiverSetTest, ReceiverSetContext) {
   }
 
   EXPECT_TRUE(receivers.empty());
+}
+
+TEST_P(ReceiverSetTest, ReceiverSetMutableContext) {
+  PingImpl impl;
+
+  ReceiverSet<PingService, int> receivers;
+  Remote<PingService> ping_a, ping_b;
+  receivers.Add(&impl, ping_a.BindNewPipeAndPassReceiver(), 1);
+  receivers.Add(&impl, ping_b.BindNewPipeAndPassReceiver(), 2);
+
+  {
+    impl.set_ping_handler(ExpectMutableContext(&receivers, 1, 3));
+    base::RunLoop loop;
+    ping_a->Ping(loop.QuitClosure());
+    loop.Run();
+  }
+
+  {
+    impl.set_ping_handler(ExpectMutableContext(&receivers, 2, 4));
+    base::RunLoop loop;
+    ping_b->Ping(loop.QuitClosure());
+    loop.Run();
+  }
 }
 
 TEST_P(ReceiverSetTest, ReceiverSetDispatchReceiver) {
