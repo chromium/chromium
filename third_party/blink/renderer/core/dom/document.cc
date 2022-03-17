@@ -3676,8 +3676,7 @@ enum class BeforeUnloadUse {
   kNoDialogMultipleConfirmationForNavigation,
   kShowDialog,
   kNoDialogAutoCancelTrue,
-  kNotSupportedInFencedFrame,
-  kMaxValue = kNotSupportedInFencedFrame,
+  kMaxValue = kNoDialogAutoCancelTrue,
 };
 
 void RecordBeforeUnloadUse(BeforeUnloadUse metric) {
@@ -3698,10 +3697,11 @@ bool Document::DispatchBeforeUnloadEvent(ChromeClient* chrome_client,
   if (ProcessingBeforeUnload())
     return false;
 
-  if (GetFrame()->IsInFencedFrameTree()) {
-    RecordBeforeUnloadUse(BeforeUnloadUse::kNotSupportedInFencedFrame);
-    return true;
-  }
+  // Since we do not allow registering the beforeunload event handlers in
+  // fenced frames, it should not be fired by fencedframes.
+  DCHECK(!GetFrame()->IsInFencedFrameTree() || !GetEventTargetData() ||
+         !GetEventTargetData()->event_listener_map.Contains(
+             event_type_names::kBeforeunload));
 
   PageDismissalScope in_page_dismissal;
   auto& before_unload_event = *MakeGarbageCollected<BeforeUnloadEvent>();
@@ -3793,12 +3793,11 @@ void Document::DispatchUnloadEvents(UnloadEventTimingInfo* unload_timing_info) {
   if (auto* input = DynamicTo<HTMLInputElement>(current_focused_element))
     input->EndEditing();
 
-  // A frame that is a fenced frame or in fenced frame tree does not support the
-  // unload event.
-  if (GetFrame()->IsInFencedFrameTree()) {
-    load_event_progress_ = kUnloadEventHandled;
-    return;
-  }
+  // Since we do not allow registering the unload event handlers in
+  // fenced frames, it should not be fired by fencedframes.
+  DCHECK(!GetFrame()->IsInFencedFrameTree() || !GetEventTargetData() ||
+         !GetEventTargetData()->event_listener_map.Contains(
+             event_type_names::kUnload));
 
   // If we've dispatched the pagehide event with 'persisted' set to true, it
   // means we've dispatched the visibilitychange event before too. Also, we
