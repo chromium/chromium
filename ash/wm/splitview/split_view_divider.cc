@@ -12,6 +12,7 @@
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/highlight_border.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_controller.h"
@@ -21,10 +22,13 @@
 #include "ash/wm/window_util.h"
 #include "base/containers/contains.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/scoped_window_targeter.h"
 #include "ui/aura/window_targeter.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_type.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/views/background.h"
 #include "ui/views/view.h"
 #include "ui/views/view_targeter_delegate.h"
 #include "ui/views/widget/widget.h"
@@ -80,8 +84,11 @@ class DividerView : public views::View, public views::ViewTargeterDelegate {
                        SplitViewDivider* divider)
       : controller_(controller), divider_(divider) {
     divider_view_ = AddChildView(std::make_unique<views::View>());
-    divider_view_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-
+    divider_view_->SetPaintToLayer(ui::LAYER_TEXTURED);
+    divider_view_->layer()->SetFillsBoundsOpaquely(false);
+    divider_view_->SetBackground(
+        views::CreateSolidBackground(AshColorProvider::Get()->GetBaseLayerColor(
+            AshColorProvider::BaseLayerType::kOpaque)));
     divider_handler_view_ =
         AddChildView(std::make_unique<SplitViewDividerHandlerView>());
     SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
@@ -189,8 +196,16 @@ class DividerView : public views::View, public views::ViewTargeterDelegate {
 
   void OnThemeChanged() override {
     views::View::OnThemeChanged();
-    divider_view_->layer()->SetColor(AshColorProvider::Get()->GetBaseLayerColor(
-        AshColorProvider::BaseLayerType::kOpaque));
+
+    divider_view_->background()->SetNativeControlColor(
+        AshColorProvider::Get()->GetBaseLayerColor(
+            AshColorProvider::BaseLayerType::kOpaque));
+
+    if (chromeos::features::IsDarkLightModeEnabled()) {
+      divider_view_->SetBorder(std::make_unique<HighlightBorder>(
+          /*corner_radius=*/0, HighlightBorder::Type::kHighlightBorder1,
+          /*use_light_colors=*/false));
+    }
   }
 
   // views::ViewTargeterDelegate:
