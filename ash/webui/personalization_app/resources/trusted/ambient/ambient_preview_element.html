@@ -2,22 +2,24 @@
   :host([main-page]) #container {
     display: grid;
     grid-template-areas:
-      '. slot           . '
-      '. image          . '
-      '. mainpage-desc  . '
-      '. .              . ';
-    grid-template-columns: 20px minmax(0,1fr) 20px;
-    grid-template-rows: minmax(0, 48px) minmax(158px, 220px) 1fr 20px;
+      '. slot           slot  slot    .'
+      '. image          image image   .'
+      '. .              .     .       .'
+      '. mainpage-desc  .     collage .'
+      '. .              .     .       .';
+    grid-template-columns: 20px minmax(0,1fr) 16px 106px 20px;
+    grid-template-rows: 48px minmax(158px, 220px) 20px 106px 20px;
   }
 
   :host(:not([main-page])) #container {
+    border: none;
     display: grid;
     grid-template-areas:
       '. .              . .'
       '. image          . subpage-desc'
       '. .              . .';
     grid-template-columns: 20px 224px 32px minmax(0,1fr);
-    grid-template-rows: 20px minmax(158px, 220px) 20px;
+    grid-template-rows: 20px 152px 20px;
   }
 
   :host([main-page]) .currently-set-text {
@@ -67,10 +69,53 @@
     grid-area: image;
   }
 
+  :host(:not([main-page])) #collageContainer {
+    display: none;
+  }
+
+  :host([main-page]) #collageContainer {
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 12px;
+    display: grid;
+    gap: 2px;
+    grid-area: collage;
+    overflow: hidden;
+  }
+
+  #collageContainer {
+    grid-template-columns: repeat(2, minmax(0,1fr));
+  }
+
+  #collageContainer.collage-1 .collage-item:first-child,
+  #collageContainer.collage-3 .collage-item:nth-child(3) {
+    grid-column: 1 / 3;
+  }
+
+  .collage-item {
+    height: 100%;
+    object-fit: cover;
+    width: 100%;
+  }
+
+  .collage-item:first-child {
+    border-top-left-radius: 12px;
+  }
+
+  .collage-item:nth-child(2) {
+    border-top-right-radius: 12px;
+  }
+
+  .collage-item:nth-child(3) {
+    border-bottom-left-radius: 12px;
+  }
+
+  .collage-item:nth-child(4) {
+    border-bottom-right-radius: 12px;
+  }
 </style>
 <div class="preview-container" id="container">
   <slot></slot>
-  <template is="dom-if" if="[[!previewAlbum_]]">
+  <template is="dom-if" if="[[!previewAlbums_]]">
     <div id="imagePlaceholder" class="placeholder"></div>
     <div id="textPlaceholder" class="preview-text-placeholder album-info-mainpage album-info-subpage">
       <div class="placeholder currently-set-text"></div>
@@ -78,20 +123,26 @@
       <div class="placeholder"></div>
     </div>
   </template>
-  <template is="dom-if" if="[[previewAlbum_]]">
+  <template is="dom-if" if="[[previewAlbums_]]">
     <div id="imageContainer" class="preview-image-container" aria-hidden="true">
       <img class="preview-image" is="cr-auto-img"
-          auto-src="[[getPreviewImage_(previewAlbum_)]]" with-cookies>
+          auto-src="[[getPreviewImage_(firstPreviewAlbum_)]]" with-cookies>
     </div>
     <h2 id="textContainer" class="preview-text-container album-info-mainpage album-info-subpage">
       <span id="currentlySet" class="currently-set-text" aria-hidden="true">
         $i18n{currentlySet}
       </span>
       <span id="albumTitle" aria-hidden="true">
-        [[getAlbumTitle_(previewAlbum_)]]
+        [[getAlbumTitle_(firstPreviewAlbum_)]]
       </span>
       <span id="albumDescription" aria-hidden="true">
-        [[getAlbumDescription_(topicSource_, previewAlbum_)]]
+        [[getAlbumDescription_(topicSource_, previewAlbums_)]]
       </span>
     </h2>
+    <div id="collageContainer" class$="[[getContainerClass_(previewAlbums_)]]">
+      <template is="dom-repeat" items="[[getCollageItems_(previewAlbums_)]]">
+        <img class="collage-item" is="cr-auto-img"
+            auto-src="[[getPreviewImage_(item)]]" with-cookies>
+      </template>
+    </div>
 </div>

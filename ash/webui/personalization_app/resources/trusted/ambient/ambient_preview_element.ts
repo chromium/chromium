@@ -13,6 +13,7 @@ import '../../common/styles.js';
 
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {isNonEmptyArray} from '../../common/utils.js';
 import {AmbientModeAlbum, TopicSource} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {getPhotoCount, getTopicSourceName} from '../utils.js';
@@ -38,16 +39,21 @@ export class AmbientPreview extends WithPersonalizationStore {
         type: Object,
         value: null,
       },
-      previewAlbum_: {
+      previewAlbums_: {
+        type: Array,
+        computed: 'computePreviewAlbums_(albums_, topicSource_)',
+      },
+      firstPreviewAlbum_: {
         type: AmbientModeAlbum,
-        computed: 'computePreviewAlbum_(albums_, topicSource_)',
-      }
+        computed: 'computeFirstPreviewAlbum_(previewAlbums_)',
+      },
     };
   }
 
   private albums_: AmbientModeAlbum[]|null;
   private topicSource_: TopicSource|null;
-  private previewAlbum_: AmbientModeAlbum|null;
+  private previewAlbums_: AmbientModeAlbum[]|null;
+  private firstPreviewAlbum_: AmbientModeAlbum|null;
 
   override ready() {
     super.ready();
@@ -61,42 +67,71 @@ export class AmbientPreview extends WithPersonalizationStore {
     this.updateFromStore();
   }
 
-  private computePreviewAlbum_(): AmbientModeAlbum|null {
-    // TODO(b/222712399): handle preview collage and text for multiple albums.
-    // Currently, if there are multiple albums selected, return the first
-    // selected album.
-    if (!this.albums_) {
-      return null;
-    }
-    return this.albums_.find(
-               album => album.topicSource === this.topicSource_ &&
-                   album.checked && album.url) ??
-        null;
+  private computePreviewAlbums_(): AmbientModeAlbum[]|null {
+    return (this.albums_ || [])
+        .filter(
+            album => album.topicSource === this.topicSource_ && album.checked &&
+                album.url);
   }
 
-  private getPreviewImage_(): string {
-    return this.previewAlbum_ && this.previewAlbum_.url ?
-        this.previewAlbum_.url.url :
-        '';
+  private computeFirstPreviewAlbum_(): AmbientModeAlbum|null {
+    if (isNonEmptyArray(this.previewAlbums_)) {
+      return this.previewAlbums_[0];
+    }
+    return null;
+  }
+
+  private getContainerClass_(): string {
+    return `collage-${this.getCollageItems_().length}`;
+  }
+
+  private getCollageItems_(): AmbientModeAlbum[] {
+    if (!isNonEmptyArray(this.previewAlbums_)) {
+      return [];
+    }
+    return this.previewAlbums_.length < 5 ? this.previewAlbums_ :
+                                            this.previewAlbums_.slice(0, 4);
+  }
+
+  private getPreviewImage_(album: AmbientModeAlbum|null): string {
+    return album && album.url ? album.url.url : '';
   }
 
   private getAlbumTitle_(): string {
-    return this.previewAlbum_ && this.previewAlbum_.title ?
-        this.previewAlbum_.title :
-        '';
+    return this.firstPreviewAlbum_ ? this.firstPreviewAlbum_.title : '';
   }
 
   private getAlbumDescription_(): string {
-    if (!this.previewAlbum_ || this.topicSource_ === null) {
+    if (!isNonEmptyArray(this.previewAlbums_) || this.topicSource_ === null) {
       return '';
     }
-    const topicSourceDesc = getTopicSourceName(this.topicSource_);
-    // TODO(b/223834394): replace dot separator symbol • with an icon/image.
-    // As we don't know the number of photos in Art Gallery albums,
-    // this info won't be shown in this case.
-    return this.topicSource_ === TopicSource.kArtGallery ?
-        topicSourceDesc :
-        `${topicSourceDesc} • ${getPhotoCount(this.previewAlbum_)}`;
+    switch (this.previewAlbums_.length) {
+      case 1:
+        // For only 1 selected album, album description includes image source
+        // and number of photos in the album (only applicable for Google
+        // Photos).
+        const topicSourceDesc = getTopicSourceName(this.topicSource_);
+        // TODO(b/223834394): replace dot separator symbol • with an icon/image.
+        return this.topicSource_ === TopicSource.kArtGallery ?
+            topicSourceDesc :
+            `${topicSourceDesc} • ${
+                getPhotoCount(this.previewAlbums_[0].numberOfPhotos)}`;
+      case 2:
+      case 3:
+        // For 2-3 selected albums, album description includes the titles of all
+        // selected albums except the first one already shown in album title
+        // text.
+        const albumTitles =
+            this.previewAlbums_.slice(1).map(album => album.title);
+        return albumTitles.join(', ');
+      default:
+        // For more than 3 selected albums, album description includes the title
+        // of the second album and the number of remaining albums.
+        // For example: Sweden 2020, +2 more.
+        return this.i18n(
+            'ambientModeMultipleAlbumsDesc', this.previewAlbums_[1].title,
+            this.previewAlbums_.length - 2);
+    }
   }
 }
 

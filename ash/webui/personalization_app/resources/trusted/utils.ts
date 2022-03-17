@@ -89,15 +89,15 @@ export function isRecentHighlightsAlbum(album: AmbientModeAlbum): boolean {
 }
 
 /**
- * Returns the number of photos description in a given album.
+ * Returns photo count string.
  */
-export function getPhotoCount(album: AmbientModeAlbum): string {
-  if (album.numberOfPhotos <= 1) {
+export function getPhotoCount(photoCount: number): string {
+  if (photoCount <= 1) {
     return loadTimeData.getStringF(
-        'ambientModeAlbumsSubpagePhotosNumSingularDesc', album.numberOfPhotos);
+        'ambientModeAlbumsSubpagePhotosNumSingularDesc', photoCount);
   }
   return loadTimeData.getStringF(
-      'ambientModeAlbumsSubpagePhotosNumPluralDesc', album.numberOfPhotos);
+      'ambientModeAlbumsSubpagePhotosNumPluralDesc', photoCount);
 }
 
 /**

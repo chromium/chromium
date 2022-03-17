@@ -147,6 +147,8 @@ void AddStrings(content::WebUIDataSource* source) {
        IDS_PERSONALIZATION_APP_AMBIENT_MODE_ANIMATION_FLOAT_ON_BY_LABEL},
       {"ambientModeZeroStateMessage",
        IDS_PERSONALIZATION_APP_AMBIENT_MODE_ZERO_STATE_MESSAGE},
+      {"ambientModeMultipleAlbumsDesc",
+       IDS_PERSONALIZATION_APP_AMBIENT_MODE_MULTIPLE_ALBUMS_DESC},
 
       // Google Photos strings
       {"googlePhotosLabel", IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS},
