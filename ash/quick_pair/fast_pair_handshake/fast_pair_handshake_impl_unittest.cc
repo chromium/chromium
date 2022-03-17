@@ -24,6 +24,7 @@
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
+#include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -128,6 +129,12 @@ class FastPairHandshakeImplTest : public testing::Test {
     device_ = base::MakeRefCounted<Device>(kMetadataId, kAddress,
                                            Protocol::kFastPairInitial);
 
+    mock_device_ = std::make_unique<device::MockBluetoothDevice>(
+        adapter_.get(), /*bluetooth_class=*/0, "test_device_name", kAddress,
+        /*paired=*/false, /*connected=*/false);
+    ON_CALL(*(adapter_.get()), GetDevice(kAddress))
+        .WillByDefault(testing::Return(mock_device_.get()));
+
     FastPairGattServiceClientImpl::Factory::SetFactoryForTesting(
         &gatt_service_client_factory_);
 
@@ -155,6 +162,7 @@ class FastPairHandshakeImplTest : public testing::Test {
   }
 
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> adapter_;
+  std::unique_ptr<device::MockBluetoothDevice> mock_device_;
   base::HistogramTester histogram_tester_;
   scoped_refptr<Device> device_;
   FakeFastPairGattServiceClientImplFactory gatt_service_client_factory_;
@@ -282,6 +290,18 @@ TEST_F(FastPairHandshakeImplTest, Success) {
   histogram_tester().ExpectTotalCount(kKeyBasedCharacteristicDecryptResult, 1);
   histogram_tester().ExpectTotalCount(kHandshakeResult, 1);
   histogram_tester().ExpectTotalCount(kHandshakeFailureReason, 0);
+}
+
+TEST_F(FastPairHandshakeImplTest, FailsIfNoDevice) {
+  auto device = base::MakeRefCounted<Device>(kMetadataId, "invalid_address",
+                                             Protocol::kFastPairInitial);
+
+  auto handshake = std::make_unique<FastPairHandshakeImpl>(
+      adapter_, device,
+      base::BindLambdaForTesting([](scoped_refptr<Device> device,
+                                    absl::optional<PairFailure> failure) {
+        EXPECT_EQ(failure, PairFailure::kPairingDeviceLost);
+      }));
 }
 
 }  // namespace quick_pair

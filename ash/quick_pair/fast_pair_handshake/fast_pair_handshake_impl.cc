@@ -31,9 +31,19 @@ FastPairHandshakeImpl::FastPairHandshakeImpl(
                         std::move(on_complete),
                         nullptr,
                         nullptr) {
+  device::BluetoothDevice* bluetooth_device =
+      adapter_->GetDevice(device_->ble_address);
+
+  if (!bluetooth_device) {
+    QP_LOG(INFO) << __func__ << ": Lost device before starting handshake.";
+    std::move(on_complete_callback_)
+        .Run(device_, PairFailure::kPairingDeviceLost);
+    return;
+  }
+
   fast_pair_gatt_service_client_ =
       FastPairGattServiceClientImpl::Factory::Create(
-          adapter_->GetDevice(device_->ble_address), adapter_,
+          bluetooth_device, adapter_,
           base::BindRepeating(
               &FastPairHandshakeImpl::OnGattClientInitializedCallback,
               weak_ptr_factory_.GetWeakPtr()));
