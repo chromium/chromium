@@ -40,7 +40,7 @@ class CORE_EXPORT NGHighlightOverlay {
         : type(type), name(name) {}
 
     String ToString() const;
-    PseudoId PseudoId() const;
+    enum PseudoId PseudoId() const;
     const AtomicString& PseudoArgument() const;
 
     int8_t ComparePaintOrder(const HighlightLayer&,

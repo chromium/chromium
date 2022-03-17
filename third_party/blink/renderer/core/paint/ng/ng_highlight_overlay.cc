@@ -62,7 +62,7 @@ String HighlightLayer::ToString() const {
   return result.ToString();
 }
 
-PseudoId HighlightLayer::PseudoId() const {
+enum PseudoId HighlightLayer::PseudoId() const {
   switch (type) {
     case HighlightLayerType::kOriginating:
       return kPseudoIdNone;
