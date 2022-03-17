@@ -651,8 +651,17 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
   EXPECT_FALSE(expected_report.HasRequest());
 }
 
-IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
-                       EventSourceImpressionWithDebugKeyConversion_ReportSent) {
+// TODO(crbug.com/1307082): Test is flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_EventSourceImpressionWithDebugKeyConversion_ReportSent \
+  DISABLED_EventSourceImpressionWithDebugKeyConversion_ReportSent
+#else
+#define MAYBE_EventSourceImpressionWithDebugKeyConversion_ReportSent \
+  EventSourceImpressionWithDebugKeyConversion_ReportSent
+#endif
+IN_PROC_BROWSER_TEST_F(
+    AttributionsBrowserTest,
+    MAYBE_EventSourceImpressionWithDebugKeyConversion_ReportSent) {
   // Expected reports must be registered before the server starts.
   ExpectedReportWaiter expected_report(
       GURL("https://a.test/.well-known/attribution-reporting/"
