@@ -184,7 +184,8 @@ void OnPathReserved(DownloadItemImplDelegate::DownloadTargetCallback callback,
           : BackgroudTargetDeterminationResultTypes::kSuccess);
   std::move(callback).Run(
       target_path, DownloadItem::TARGET_DISPOSITION_OVERWRITE, danger_type,
-      mixed_content_status, intermediate_path, std::move(download_schedule),
+      mixed_content_status, intermediate_path, base::FilePath(),
+      std::move(download_schedule),
       intermediate_path.empty() ? DOWNLOAD_INTERRUPT_REASON_FILE_FAILED
                                 : DOWNLOAD_INTERRUPT_REASON_NONE);
 }
@@ -404,7 +405,7 @@ void InProgressDownloadManager::DetermineDownloadTarget(
     std::move(callback).Run(
         target_path, DownloadItem::TARGET_DISPOSITION_OVERWRITE,
         download->GetDangerType(), download->GetMixedContentStatus(),
-        target_path, download->GetDownloadSchedule(),
+        target_path, base::FilePath(), download->GetDownloadSchedule(),
         DOWNLOAD_INTERRUPT_REASON_FILE_FAILED);
     RecordBackgroundTargetDeterminationResult(
         BackgroudTargetDeterminationResultTypes::kTargetPathMissing);
@@ -417,7 +418,7 @@ void InProgressDownloadManager::DetermineDownloadTarget(
     std::move(callback).Run(
         target_path, DownloadItem::TARGET_DISPOSITION_OVERWRITE,
         download->GetDangerType(), download->GetMixedContentStatus(),
-        target_path, download->GetDownloadSchedule(),
+        target_path, base::FilePath(), download->GetDownloadSchedule(),
         DOWNLOAD_INTERRUPT_REASON_NONE);
     RecordBackgroundTargetDeterminationResult(
         BackgroudTargetDeterminationResultTypes::kSuccess);
@@ -441,7 +442,7 @@ void InProgressDownloadManager::DetermineDownloadTarget(
   std::move(callback).Run(
       target_path, DownloadItem::TARGET_DISPOSITION_OVERWRITE,
       download->GetDangerType(), download->GetMixedContentStatus(),
-      intermediate_path, download->GetDownloadSchedule(),
+      intermediate_path, base::FilePath(), download->GetDownloadSchedule(),
       DOWNLOAD_INTERRUPT_REASON_NONE);
 #endif  // BUILDFLAG(IS_ANDROID)
 }

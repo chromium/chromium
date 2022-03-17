@@ -337,6 +337,13 @@ bool DownloadFileImpl::CalculateBytesToWrite(SourceStream* source_stream,
 
 void DownloadFileImpl::RenameAndUniquify(const base::FilePath& full_path,
                                          RenameCompletionCallback callback) {
+#if BUILDFLAG(IS_ANDROID)
+  if (full_path.IsContentUri()) {
+    DownloadInterruptReason reason = file_.Rename(full_path);
+    OnRenameComplete(full_path, std::move(callback), reason);
+    return;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
   std::unique_ptr<RenameParameters> parameters(
       new RenameParameters(UNIQUIFY, full_path, std::move(callback)));
   RenameWithRetryInternal(std::move(parameters));
@@ -359,38 +366,9 @@ void DownloadFileImpl::RenameAndAnnotate(
 }
 
 #if BUILDFLAG(IS_ANDROID)
-void DownloadFileImpl::RenameToIntermediateUri(
-    const GURL& original_url,
-    const GURL& referrer_url,
-    const base::FilePath& file_name,
-    const std::string& mime_type,
-    const base::FilePath& current_path,
-    RenameCompletionCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Create new content URI if |current_path| is not content URI
-  // or if it is already deleted.
-  base::FilePath content_path =
-      current_path.IsContentUri() && base::ContentUriExists(current_path)
-          ? current_path
-          : DownloadCollectionBridge::CreateIntermediateUriForPublish(
-                original_url, referrer_url, file_name, mime_type);
-  DownloadInterruptReason reason = DOWNLOAD_INTERRUPT_REASON_FILE_FAILED;
-  if (!content_path.empty()) {
-    reason = file_.Rename(content_path);
-    display_name_ = DownloadCollectionBridge::GetDisplayName(content_path);
-  }
-  if (display_name_.empty())
-    display_name_ = file_name;
-  OnRenameComplete(content_path, std::move(callback), reason);
-}
-
 void DownloadFileImpl::PublishDownload(RenameCompletionCallback callback) {
   DownloadInterruptReason reason = file_.PublishDownload();
   OnRenameComplete(file_.full_path(), std::move(callback), reason);
-}
-
-base::FilePath DownloadFileImpl::GetDisplayName() {
-  return display_name_;
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

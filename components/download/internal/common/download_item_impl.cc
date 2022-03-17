@@ -1758,6 +1758,7 @@ void DownloadItemImpl::OnDownloadTargetDetermined(
     DownloadDangerType danger_type,
     MixedContentStatus mixed_content_status,
     const base::FilePath& intermediate_path,
+    const base::FilePath& display_name,
     absl::optional<DownloadSchedule> download_schedule,
     DownloadInterruptReason interrupt_reason) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -1802,6 +1803,8 @@ void DownloadItemImpl::OnDownloadTargetDetermined(
   destination_info_.target_disposition = disposition;
   SetDangerType(danger_type);
   mixed_content_status_ = mixed_content_status;
+  if (!display_name.empty())
+    SetDisplayName(display_name);
 
   // This was an interrupted download that was looking for a filename. Resolve
   // early without performing the intermediate rename. If there is a
@@ -1836,31 +1839,15 @@ void DownloadItemImpl::OnDownloadTargetDetermined(
   //               filename. Unnecessary renames may cause bugs like
   //               http://crbug.com/74187.
   DCHECK(!IsSavePackageDownload());
-  DownloadFile::RenameCompletionCallback callback =
-      base::BindOnce(&DownloadItemImpl::OnDownloadRenamedToIntermediateName,
-                     weak_ptr_factory_.GetWeakPtr());
-#if BUILDFLAG(IS_ANDROID)
-  if ((download_type_ == TYPE_ACTIVE_DOWNLOAD && !transient_ &&
-       DownloadCollectionBridge::ShouldPublishDownload(GetTargetFilePath())) ||
-      GetTargetFilePath().IsContentUri()) {
-    GetDownloadTaskRunner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&DownloadFile::RenameToIntermediateUri,
-                       // Safe because we control download file lifetime.
-                       base::Unretained(download_file_.get()), GetOriginalUrl(),
-                       GetReferrerUrl(), GetFileNameToReportUser(),
-                       GetMimeType(), GetTargetFilePath(),
-                       std::move(callback)));
-    return;
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
 
   GetDownloadTaskRunner()->PostTask(
       FROM_HERE,
-      base::BindOnce(&DownloadFile::RenameAndUniquify,
-                     // Safe because we control download file lifetime.
-                     base::Unretained(download_file_.get()), intermediate_path,
-                     std::move(callback)));
+      base::BindOnce(
+          &DownloadFile::RenameAndUniquify,
+          // Safe because we control download file lifetime.
+          base::Unretained(download_file_.get()), intermediate_path,
+          base::BindOnce(&DownloadItemImpl::OnDownloadRenamedToIntermediateName,
+                         weak_ptr_factory_.GetWeakPtr())));
 }
 
 void DownloadItemImpl::OnDownloadRenamedToIntermediateName(
@@ -1874,14 +1861,6 @@ void DownloadItemImpl::OnDownloadRenamedToIntermediateName(
 
   if (DOWNLOAD_INTERRUPT_REASON_NONE == reason) {
     SetFullPath(full_path);
-#if BUILDFLAG(IS_ANDROID)
-    // For content URIs, target file path is the same as the current path.
-    if (full_path.IsContentUri()) {
-      destination_info_.target_path = full_path;
-      if (display_name_.empty())
-        SetDisplayName(download_file_->GetDisplayName());
-    }
-#endif  // BUILDFLAG(IS_ANDROID)
   } else {
     // TODO(asanka): Even though the rename failed, it may still be possible to
     // recover the partial state from the 'before' name.

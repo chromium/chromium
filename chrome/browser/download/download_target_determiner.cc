@@ -603,7 +603,8 @@ DownloadTargetDeterminer::Result
 }
 
 void DownloadTargetDeterminer::DetermineLocalPathDone(
-    const base::FilePath& local_path) {
+    const base::FilePath& local_path,
+    const base::FilePath& file_name) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DVLOG(20) << "Local path: " << local_path.AsUTF8Unsafe();
   if (local_path.empty()) {
@@ -619,6 +620,14 @@ void DownloadTargetDeterminer::DetermineLocalPathDone(
   DCHECK_EQ(STATE_DETERMINE_MIME_TYPE, next_state_);
 
   local_path_ = local_path;
+#if BUILDFLAG(IS_ANDROID)
+  // If the |local path_| is a content Uri while the |virtual_path_| is a
+  // canonical path, replace the file name with the new name we got from
+  // the system so safebrowsing can check file extensions properly.
+  if (local_path_.IsContentUri() && !virtual_path_.IsContentUri()) {
+    virtual_path_ = virtual_path_.DirName().Append(file_name);
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
   DoLoop();
 }
 
@@ -905,7 +914,6 @@ DownloadTargetDeterminer::Result
   // If the local path is a content URI, the download should be from resumption
   // and we can just use the current path.
   if (local_path_.IsContentUri()) {
-    DCHECK(is_resumption_);
     intermediate_path_ = local_path_;
     return COMPLETE;
   }
@@ -1004,6 +1012,12 @@ void DownloadTargetDeterminer::ScheduleCallbackAndDeleteSelf(
   target_info->is_filetype_handled_safely = is_filetype_handled_safely_;
   target_info->mixed_content_status = mixed_content_status_;
   target_info->download_schedule = std::move(download_schedule_);
+#if BUILDFLAG(IS_ANDROID)
+  // If |virtual_path_| is content URI, there is no need to prompt the user.
+  if (local_path_.IsContentUri() && !virtual_path_.IsContentUri()) {
+    target_info->display_name = virtual_path_.BaseName();
+  }
+#endif
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,

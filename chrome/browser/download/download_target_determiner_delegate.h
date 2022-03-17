@@ -14,6 +14,7 @@
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_path_reservation_tracker.h"
 #include "components/download/public/common/download_schedule.h"
+#include "components/download/public/common/download_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -54,12 +55,6 @@ class DownloadTargetDeterminerDelegate {
       DownloadConfirmationResult,
       const base::FilePath& virtual_path,
       absl::optional<download::DownloadSchedule> download_schedule)>;
-
-  // Callback to be invoked when DetermineLocalPath() completes. The argument
-  // should be the determined local path. It should be non-empty on success. If
-  // |virtual_path| is already a local path, then |virtual_path| should be
-  // returned as-is.
-  using LocalPathCallback = base::OnceCallback<void(const base::FilePath&)>;
 
   // Callback to be invoked after CheckDownloadUrl() completes. The parameter to
   // the callback should indicate the danger type of the download based on the
@@ -120,7 +115,7 @@ class DownloadTargetDeterminerDelegate {
   // invoked to return the path.
   virtual void DetermineLocalPath(download::DownloadItem* download,
                                   const base::FilePath& virtual_path,
-                                  LocalPathCallback callback) = 0;
+                                  download::LocalPathCallback callback) = 0;
 
   // Check whether the download URL is malicious and invoke |callback| with a
   // suggested danger type for the download.

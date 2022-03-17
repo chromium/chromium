@@ -299,8 +299,8 @@ void OnCheckExistingDownloadPathDone(
   std::move(callback).Run(
       target_info->target_path, target_info->target_disposition,
       target_info->danger_type, target_info->mixed_content_status,
-      target_info->intermediate_path, std::move(target_info->download_schedule),
-      target_info->result);
+      target_info->intermediate_path, target_info->display_name,
+      std::move(target_info->download_schedule), target_info->result);
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -313,13 +313,13 @@ void HandleMixedDownloadInfoBarResult(
     bool should_download) {
   // If the download should be blocked, we can call the callback directly.
   if (!should_download) {
-    std::move(callback).Run(target_info->target_path,
-                            target_info->target_disposition,
-                            download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
-                            DownloadItem::MixedContentStatus::SILENT_BLOCK,
-                            target_info->intermediate_path,
-                            std::move(target_info->download_schedule),
-                            download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED);
+    std::move(callback).Run(
+        target_info->target_path, target_info->target_disposition,
+        download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+        DownloadItem::MixedContentStatus::SILENT_BLOCK,
+        target_info->intermediate_path, target_info->display_name,
+        std::move(target_info->download_schedule),
+        download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED);
     return;
   }
   target_info->mixed_content_status =
@@ -1241,9 +1241,9 @@ bool ChromeDownloadManagerDelegate::ShouldShowDownloadLaterDialog(
 void ChromeDownloadManagerDelegate::DetermineLocalPath(
     DownloadItem* download,
     const base::FilePath& virtual_path,
-    DownloadTargetDeterminerDelegate::LocalPathCallback callback) {
+    download::LocalPathCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  std::move(callback).Run(virtual_path);
+  download::DetermineLocalPath(download, virtual_path, std::move(callback));
 }
 
 void ChromeDownloadManagerDelegate::CheckDownloadUrl(

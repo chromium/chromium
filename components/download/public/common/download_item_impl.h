@@ -596,12 +596,15 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   // be used (see TargetDisposition). |danger_type| is the danger level of
   // |target_path| as determined by the caller. |intermediate_path| is the path
   // to use to store the download until OnDownloadCompleting() is called.
+  // If |display_name| is empty, the download should keep its current display
+  // name. Otherwise, the new display name should be used.
   virtual void OnDownloadTargetDetermined(
       const base::FilePath& target_path,
       TargetDisposition disposition,
       DownloadDangerType danger_type,
       MixedContentStatus mixed_content_status,
       const base::FilePath& intermediate_path,
+      const base::FilePath& display_name,
       absl::optional<DownloadSchedule> download_schedule,
       DownloadInterruptReason interrupt_reason);
 

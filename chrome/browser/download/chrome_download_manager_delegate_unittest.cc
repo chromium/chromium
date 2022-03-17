@@ -112,22 +112,19 @@ ACTION_P3(ScheduleCallback3, result0, result1, result2) {
 
 // Struct for holding the result of calling DetermineDownloadTarget.
 struct DetermineDownloadTargetResult {
-  DetermineDownloadTargetResult();
-
   base::FilePath target_path;
-  download::DownloadItem::TargetDisposition disposition;
-  download::DownloadDangerType danger_type;
-  download::DownloadItem::MixedContentStatus mixed_content_status;
+  download::DownloadItem::TargetDisposition disposition =
+      download::DownloadItem::TARGET_DISPOSITION_OVERWRITE;
+  download::DownloadDangerType danger_type =
+      download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS;
+  download::DownloadItem::MixedContentStatus mixed_content_status =
+      download::DownloadItem::MixedContentStatus::UNKNOWN;
   base::FilePath intermediate_path;
-  download::DownloadInterruptReason interrupt_reason;
+  base::FilePath display_name;
+  download::DownloadInterruptReason interrupt_reason =
+      download::DOWNLOAD_INTERRUPT_REASON_NONE;
   absl::optional<download::DownloadSchedule> download_schedule;
 };
-
-DetermineDownloadTargetResult::DetermineDownloadTargetResult()
-    : disposition(download::DownloadItem::TARGET_DISPOSITION_OVERWRITE),
-      danger_type(download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS),
-      mixed_content_status(download::DownloadItem::MixedContentStatus::UNKNOWN),
-      interrupt_reason(download::DOWNLOAD_INTERRUPT_REASON_NONE) {}
 
 // Subclass of the ChromeDownloadManagerDelegate that replaces a few interaction
 // points for ease of testing.
@@ -407,6 +404,7 @@ void StoreDownloadTargetInfo(
     download::DownloadDangerType danger_type,
     download::DownloadItem::MixedContentStatus mixed_content_status,
     const base::FilePath& intermediate_path,
+    const base::FilePath& display_name,
     absl::optional<download::DownloadSchedule> download_schedule,
     download::DownloadInterruptReason interrupt_reason) {
   result->target_path = target_path;
@@ -414,6 +412,7 @@ void StoreDownloadTargetInfo(
   result->danger_type = danger_type;
   result->mixed_content_status = mixed_content_status;
   result->intermediate_path = intermediate_path;
+  result->display_name = display_name;
   result->interrupt_reason = interrupt_reason;
   result->download_schedule = std::move(download_schedule);
   quit_runloop.Run();

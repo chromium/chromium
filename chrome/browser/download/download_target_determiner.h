@@ -223,8 +223,12 @@ class DownloadTargetDeterminer : public download::DownloadItem::Observer {
   // - STATE_DETERMINE_MIME_TYPE.
   Result DoDetermineLocalPath();
 
-  // Callback invoked when the delegate has determined local path.
-  void DetermineLocalPathDone(const base::FilePath& local_path);
+  // Callback invoked when the delegate has determined local path. |file_name|
+  // is supplied in case it cannot be determined from local_path (e.g. local
+  // path is a content Uri: content://media/12345). |file_name| could be empty
+  // if it is the last component of |local_path|.
+  void DetermineLocalPathDone(const base::FilePath& local_path,
+                              const base::FilePath& file_name);
 
   // Determine the MIME type corresponding to the local file path. This is only
   // done if the local path and the virtual path was the same. I.e. The file is

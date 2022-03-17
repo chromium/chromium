@@ -226,11 +226,13 @@ class MockDownloadTargetDeterminerDelegate
                     ConfirmationCallback&));
   void DetermineLocalPath(DownloadItem* item,
                           const base::FilePath& path,
-                          LocalPathCallback cb) override {
+                          download::LocalPathCallback cb) override {
     DetermineLocalPath_(item, path, cb);
   }
   MOCK_METHOD3(DetermineLocalPath_,
-               void(DownloadItem*, const base::FilePath&, LocalPathCallback&));
+               void(DownloadItem*,
+                    const base::FilePath&,
+                    download::LocalPathCallback&));
   void ReserveVirtualPath(
       DownloadItem* download,
       const base::FilePath& virtual_path,
@@ -287,7 +289,7 @@ class MockDownloadTargetDeterminerDelegate
                              ConfirmationCallback& callback);
   static void NullDetermineLocalPath(DownloadItem* download,
                                      const base::FilePath& virtual_path,
-                                     LocalPathCallback& callback);
+                                     download::LocalPathCallback& callback);
 };
 
 class DownloadTargetDeterminerTest : public ChromeRenderViewHostTestHarness {
@@ -624,8 +626,8 @@ void MockDownloadTargetDeterminerDelegate::NullPromptUser(
 void MockDownloadTargetDeterminerDelegate::NullDetermineLocalPath(
     DownloadItem* download,
     const base::FilePath& virtual_path,
-    LocalPathCallback& callback) {
-  std::move(callback).Run(virtual_path);
+    download::LocalPathCallback& callback) {
+  std::move(callback).Run(virtual_path, virtual_path.BaseName());
 }
 
 // NotifyExtensions implementation that overrides the path so that the target
@@ -926,8 +928,9 @@ TEST_F(DownloadTargetDeterminerTest, LastSavePath) {
                                  _, last_selected_dir.AppendASCII("foo.txt"),
                                  DownloadConfirmationReason::SAVE_AS, _));
     EXPECT_CALL(*delegate(), DetermineLocalPath_(_, virtual_path, _))
-        .WillOnce(WithArg<2>(ScheduleCallback(
-            GetPathInDownloadDir(FILE_PATH_LITERAL("bar.txt")))));
+        .WillOnce(WithArg<2>(ScheduleCallback2(
+            GetPathInDownloadDir(FILE_PATH_LITERAL("bar.txt")),
+            base::FilePath())));
     RunTestCasesWithActiveItem(kLastSavePathTestCasesVirtual,
                                std::size(kLastSavePathTestCasesVirtual));
   }
@@ -954,8 +957,9 @@ TEST_F(DownloadTargetDeterminerTest, DefaultVirtual) {
 
         EXPECT_LOCAL_PATH};
     EXPECT_CALL(*delegate(), DetermineLocalPath_(_, _, _))
-        .WillOnce(WithArg<2>(ScheduleCallback(
-            GetPathInDownloadDir(FILE_PATH_LITERAL("foo-local.txt")))));
+        .WillOnce(WithArg<2>(ScheduleCallback2(
+            GetPathInDownloadDir(FILE_PATH_LITERAL("foo-local.txt")),
+            base::FilePath())));
     RunTestCasesWithActiveItem(&kAutomaticDownloadToVirtualDir, 1);
   }
 
@@ -974,8 +978,9 @@ TEST_F(DownloadTargetDeterminerTest, DefaultVirtual) {
 
         EXPECT_LOCAL_PATH};
     EXPECT_CALL(*delegate(), DetermineLocalPath_(_, _, _))
-        .WillOnce(WithArg<2>(ScheduleCallback(
-            GetPathInDownloadDir(FILE_PATH_LITERAL("foo-local.txt")))));
+        .WillOnce(WithArg<2>(ScheduleCallback2(
+            GetPathInDownloadDir(FILE_PATH_LITERAL("foo-local.txt")),
+            base::FilePath())));
     EXPECT_CALL(*delegate(), RequestConfirmation_(
                                  _, test_virtual_dir().AppendASCII("bar.txt"),
                                  DownloadConfirmationReason::SAVE_AS, _))
@@ -1145,7 +1150,8 @@ TEST_F(DownloadTargetDeterminerTest, LocalPathFailed) {
       *delegate(),
       DetermineLocalPath_(
           _, GetPathInDownloadDir(FILE_PATH_LITERAL("virtual/foo.txt")), _))
-      .WillOnce(WithArg<2>(ScheduleCallback(base::FilePath())));
+      .WillOnce(
+          WithArg<2>(ScheduleCallback2(base::FilePath(), base::FilePath())));
   RunTestCasesWithActiveItem(kLocalPathFailedCases,
                              std::size(kLocalPathFailedCases));
 }
@@ -2679,5 +2685,39 @@ TEST_F(DownloadTargetDeterminerTestWithPlugin,
 }
 
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
+
+#if BUILDFLAG(IS_ANDROID)
+// If a content URI is returned when determining local path, virtual path
+// is updated.
+TEST_F(DownloadTargetDeterminerTest, DetermineLocalPathReturnsContentUri) {
+  const DownloadTestCase kLocalPathContentUriCase = {
+      AUTOMATIC,
+      download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+      DownloadFileType::NOT_DANGEROUS,
+      "http://example.com/foo.txt",
+      "text/plain",
+      FILE_PATH_LITERAL(""),
+      FILE_PATH_LITERAL("content://media/123"),
+      DownloadItem::TARGET_DISPOSITION_OVERWRITE,
+      EXPECT_LOCAL_PATH};
+
+  std::unique_ptr<download::MockDownloadItem> item =
+      CreateActiveDownloadItem(0, kLocalPathContentUriCase);
+  // The default download directory is the virtual path.
+  download_prefs()->SetDownloadPath(test_virtual_dir());
+
+  EXPECT_CALL(
+      *delegate(),
+      DetermineLocalPath_(
+          _, GetPathInDownloadDir(FILE_PATH_LITERAL("virtual/foo.txt")), _))
+      .WillOnce(WithArg<2>(ScheduleCallback2(
+          base::FilePath("content://media/123"), base::FilePath("foor.txt"))));
+  std::unique_ptr<DownloadTargetInfo> target_info =
+      RunDownloadTargetDeterminer(base::FilePath(), item.get());
+
+  EXPECT_EQ(target_info->display_name.value(), "foor.txt");
+  EXPECT_EQ(target_info->target_path.value(), "content://media/123");
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace

@@ -131,6 +131,43 @@ void AppendRangeHeader(net::HttpRequestHeaders* headers,
   headers->SetHeader(net::HttpRequestHeaders::kRange, range_header);
 }
 
+#if BUILDFLAG(IS_ANDROID)
+struct CreateIntermediateUriResult {
+ public:
+  CreateIntermediateUriResult(const base::FilePath& content_uri,
+                              const base::FilePath& file_name)
+      : content_uri(content_uri), file_name(file_name) {}
+
+  base::FilePath content_uri;
+  base::FilePath file_name;
+};
+
+CreateIntermediateUriResult CreateIntermediateUri(
+    const GURL& original_url,
+    const GURL& referrer_url,
+    const base::FilePath& current_path,
+    const base::FilePath& suggested_name,
+    const std::string& mime_type) {
+  base::FilePath content_path =
+      current_path.IsContentUri() && base::ContentUriExists(current_path)
+          ? current_path
+          : DownloadCollectionBridge::CreateIntermediateUriForPublish(
+                original_url, referrer_url, suggested_name, mime_type);
+  base::FilePath file_name;
+  if (!content_path.empty()) {
+    file_name = DownloadCollectionBridge::GetDisplayName(content_path);
+  }
+  if (file_name.empty())
+    file_name = suggested_name;
+  return CreateIntermediateUriResult(content_path, file_name);
+}
+
+void OnInterMediateUriCreated(LocalPathCallback callback,
+                              const CreateIntermediateUriResult& result) {
+  std::move(callback).Run(result.content_uri, result.file_name);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace
 
 const uint32_t DownloadItem::kInvalidId = 0;
@@ -734,6 +771,30 @@ int GetDownloadFileBufferSize() {
   return base::GetFieldTrialParamByFeatureAsInt(
       features::kAllowFileBufferSizeControl, kDownloadFileBufferSizeFinchKey,
       kDefaultDownloadFileBufferSize);
+}
+
+void DetermineLocalPath(DownloadItem* download,
+                        const base::FilePath& virtual_path,
+                        LocalPathCallback callback) {
+#if BUILDFLAG(IS_ANDROID)
+  if ((!download->IsTransient() &&
+       DownloadCollectionBridge::ShouldPublishDownload(virtual_path)) ||
+      virtual_path.IsContentUri()) {
+    GetDownloadTaskRunner()->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(&CreateIntermediateUri,
+                       // Safe because we control download file lifetime.
+                       download->GetOriginalUrl(), download->GetReferrerUrl(),
+                       virtual_path,
+                       virtual_path.IsContentUri()
+                           ? download->GetFileNameToReportUser()
+                           : virtual_path.BaseName(),
+                       download->GetMimeType()),
+        base::BindOnce(&OnInterMediateUriCreated, std::move(callback)));
+    return;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+  std::move(callback).Run(virtual_path, base::FilePath());
 }
 
 }  // namespace download

@@ -85,6 +85,9 @@ struct DownloadTargetInfo {
 
   // Defines when to start the download, used by download later feature.
   absl::optional<download::DownloadSchedule> download_schedule;
+
+  // Display name of the file.
+  base::FilePath display_name;
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_TARGET_INFO_H_

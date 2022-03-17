@@ -215,7 +215,7 @@ class ChromeDownloadManagerDelegate
                            ConfirmationCallback callback) override;
   void DetermineLocalPath(download::DownloadItem* download,
                           const base::FilePath& virtual_path,
-                          LocalPathCallback callback) override;
+                          download::LocalPathCallback callback) override;
   void CheckDownloadUrl(download::DownloadItem* download,
                         const base::FilePath& suggested_virtual_path,
                         CheckDownloadUrlCallback callback) override;

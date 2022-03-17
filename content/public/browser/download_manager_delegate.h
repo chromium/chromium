@@ -56,6 +56,9 @@ using SavePackagePathPickedCallback =
 //     |intermediate_path| could be the same as |target_path|. Both paths must
 //     be in the same directory.
 //
+// |display_name| specifies the suggested file name in case the file name cannot
+//     be determined from target_path. Could be empty.
+//
 // |interrupt_reason| should be set to DOWNLOAD_INTERRUPT_REASON_NONE in
 //     order to proceed with the download. DOWNLOAD_INTERRUPT_REASON_USER_CANCEL
 //     results in the download being marked cancelled. Any other value results
@@ -67,6 +70,7 @@ using DownloadTargetCallback = base::OnceCallback<void(
     download::DownloadDangerType danger_type,
     download::DownloadItem::MixedContentStatus mixed_content_status,
     const base::FilePath& intermediate_path,
+    const base::FilePath& display_name,
     absl::optional<download::DownloadSchedule> download_schedule,
     download::DownloadInterruptReason interrupt_reason)>;
 

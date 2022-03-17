@@ -80,14 +80,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadFileImpl : public DownloadFile {
   void Resume() override;
 
 #if BUILDFLAG(IS_ANDROID)
-  void RenameToIntermediateUri(const GURL& original_url,
-                               const GURL& referrer_url,
-                               const base::FilePath& file_name,
-                               const std::string& mime_type,
-                               const base::FilePath& current_path,
-                               RenameCompletionCallback callback) override;
   void PublishDownload(RenameCompletionCallback callback) override;
-  base::FilePath GetDisplayName() override;
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // Wrapper of a ByteStreamReader or ScopedDataPipeConsumerHandle, and the meta
@@ -386,10 +379,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadFileImpl : public DownloadFile {
 
   // TaskRunner this object lives on after initialization.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
-#if BUILDFLAG(IS_ANDROID)
-  base::FilePath display_name_;
-#endif  // BUILDFLAG(IS_ANDROID)
 
   SEQUENCE_CHECKER(sequence_checker_);
 

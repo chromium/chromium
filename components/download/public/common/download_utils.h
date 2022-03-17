@@ -106,6 +106,26 @@ COMPONENTS_DOWNLOAD_EXPORT DownloadItem::DownloadRenameResult
 RenameDownloadedFile(const base::FilePath& from_path,
                      const base::FilePath& display_name);
 
+// Callback to be invoked when DetermineLocalPath() completes. The argument
+// |file_path| should be the determined local path. It should be non-empty
+// on success.
+// On Android, |file_path| could be a content Uri (e.g. content://media/1234).
+// In such cases, |file_name| is provided for displaying the file to the user
+// (e.g. test.apk). If |file_path| is not a content Uri, file name could
+// be empty and should be ignored.
+using LocalPathCallback =
+    base::OnceCallback<void(const base::FilePath& file_path,
+                            const base::FilePath& file_name)>;
+
+// If |virtual_path| is not a local path, should return a possibly temporary
+// local path to use for storing the downloaded file. If |virtual_path| is
+// already local, then it should return the same path. |callback| should be
+// invoked to return the path.
+COMPONENTS_DOWNLOAD_EXPORT
+void DetermineLocalPath(DownloadItem* download,
+                        const base::FilePath& virtual_path,
+                        LocalPathCallback callback);
+
 // Finch parameter key value for number of bytes used for content validation
 // during resumption.
 constexpr char kDownloadContentValidationLengthFinchKey[] =

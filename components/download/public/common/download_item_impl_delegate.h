@@ -52,6 +52,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImplDelegate {
       DownloadDangerType danger_type,
       DownloadItem::MixedContentStatus mixed_content_status,
       const base::FilePath& intermediate_path,
+      const base::FilePath& display_name,
       absl::optional<DownloadSchedule> download_schedule,
       DownloadInterruptReason interrupt_reason)>;
   // Request determination of the download target from the delegate.
