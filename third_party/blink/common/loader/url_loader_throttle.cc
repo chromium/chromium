@@ -75,6 +75,14 @@ void URLLoaderThrottle::BeforeWillProcessResponse(
     const network::mojom::URLResponseHead& response_head,
     bool* defer) {}
 
+void URLLoaderThrottle::BeforeWillRedirectRequest(
+    net::RedirectInfo* redirect_info,
+    const network::mojom::URLResponseHead& response_head,
+    bool* defer,
+    std::vector<std::string>* to_be_removed_request_headers,
+    net::HttpRequestHeaders* modified_request_headers,
+    net::HttpRequestHeaders* modified_cors_exempt_request_headers) {}
+
 void URLLoaderThrottle::WillOnCompleteWithError(
     const network::URLLoaderCompletionStatus& status,
     bool* defer) {}

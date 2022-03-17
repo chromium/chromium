@@ -720,6 +720,28 @@ void ThrottlingURLLoader::OnReceiveRedirect(
 
   if (!throttles_.empty()) {
     bool deferred = false;
+    has_pending_restart_ = false;
+    for (auto& entry : throttles_) {
+      auto* throttle = entry.throttle.get();
+      bool throttle_deferred = false;
+      auto weak_ptr = weak_factory_.GetWeakPtr();
+      std::vector<std::string> removed_headers;
+      net::HttpRequestHeaders modified_headers;
+      net::HttpRequestHeaders modified_cors_exempt_headers;
+      net::RedirectInfo redirect_info_copy = redirect_info;
+      throttle->BeforeWillRedirectRequest(
+          &redirect_info_copy, *response_head, &throttle_deferred,
+          &removed_headers, &modified_headers, &modified_cors_exempt_headers);
+
+      if (!weak_ptr)
+        return;
+    }
+
+    if (has_pending_restart_) {
+      RestartWithFlagsNow();
+      return;
+    }
+
     for (auto& entry : throttles_) {
       auto* throttle = entry.throttle.get();
       bool throttle_deferred = false;

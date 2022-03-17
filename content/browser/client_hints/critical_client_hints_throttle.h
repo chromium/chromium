@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "net/http/http_request_headers.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 
@@ -37,20 +38,25 @@ class CriticalClientHintsThrottle : public blink::URLLoaderThrottle {
   ~CriticalClientHintsThrottle() override;
 
   // blink::URLLoaderThrottle
+  void WillStartRequest(network::ResourceRequest* request,
+                        bool* defer) override;
   void BeforeWillProcessResponse(
       const GURL& response_url,
       const network::mojom::URLResponseHead& response_head,
       bool* defer) override;
+  void BeforeWillRedirectRequest(
+      net::RedirectInfo* redirect_info,
+      const network::mojom::URLResponseHead& response_head,
+      bool* defer,
+      std::vector<std::string>* to_be_removed_request_headers,
+      net::HttpRequestHeaders* modified_request_headers,
+      net::HttpRequestHeaders* modified_cors_exempt_request_headers) override;
 
  private:
-  // Returns true if the extra `hints` are both not stored in the client hints
-  // preferences and allowed to be sent to the given URL (from the given frame
-  // tree node and so on). If returning true, the new name and values are added
-  // to |modified_headers|.
-  bool ShouldRestartWithHints(
-      const url::Origin& origin,
-      const std::vector<network::mojom::WebClientHintsType>& hints,
-      net::HttpRequestHeaders& modified_headers);
+  // Contains the logic for whether or not the navigation should restart, and
+  // persists the Accept-CH header if there is a restart.
+  void MaybeRestartWithHints(
+      const network::mojom::URLResponseHead& response_head);
 
   raw_ptr<BrowserContext> context_;
   raw_ptr<ClientHintsControllerDelegate> client_hint_delegate_;
@@ -58,6 +64,13 @@ class CriticalClientHintsThrottle : public blink::URLLoaderThrottle {
 
   // Ensure that there's only one restart per origin
   base::flat_set<url::Origin> restarted_origins_;
+
+  // Url of the last request made.
+  GURL response_url_;
+
+  // Headers from the initial request. This should include headers added from an
+  // ACCEPT_CH frame that aren't in storage.
+  net::HttpRequestHeaders initial_request_headers_;
 };
 
 }  // namespace content
