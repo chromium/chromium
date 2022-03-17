@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_metrics_helper.h"
 
 #include "base/bind.h"
+#include "base/cpu_reduction_experiment.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/public/platform/scheduler/web_renderer_process_type.h"
@@ -135,6 +136,13 @@ void MainThreadMetricsHelper::RecordTaskMetrics(
     MainThreadTaskQueue* queue,
     const base::sequence_manager::Task& task,
     const base::sequence_manager::TaskQueue::TaskTiming& task_timing) {
+  // Don't log the metrics to evaluate impact of CPU reduction.
+  // This code is deemed not useful anymore (crbug.com/1181870).
+  // TODO(crbug.com/1295441: Fully remove the code once the experiment is over.
+  if (base::IsRunningCpuReductionExperiment()) {
+    return;
+  }
+
   if (ShouldDiscardTask(task, task_timing))
     return;
 
