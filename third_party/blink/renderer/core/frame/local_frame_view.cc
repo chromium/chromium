@@ -4661,7 +4661,7 @@ bool LocalFrameView::MapToVisualRectInRemoteRootFrame(
     bool apply_overflow_clip) {
   DCHECK(frame_->IsLocalRoot());
   // This is the top-level frame, so no mapping necessary.
-  if (frame_->IsMainFrame())
+  if (frame_->IsOutermostMainFrame())
     return true;
   bool result = rect.InclusiveIntersect(PhysicalRect(
       apply_overflow_clip ? frame_->RemoteViewportIntersection()
@@ -4680,7 +4680,7 @@ void LocalFrameView::MapLocalToRemoteMainFrame(
     TransformState& transform_state) {
   DCHECK(frame_->IsLocalRoot());
   // This is the top-level frame, so no mapping necessary.
-  if (frame_->IsMainFrame())
+  if (frame_->IsOutermostMainFrame())
     return;
   transform_state.ApplyTransform(
       TransformationMatrix(GetFrame().RemoteMainFrameTransform()),

@@ -486,7 +486,8 @@ bool IntersectionGeometry::ClipToRoot(const LayoutObject* root,
   // Map and clip rect into root element coordinates.
   // TODO(szager): the writing mode flipping needs a test.
   const LayoutBox* local_ancestor = nullptr;
-  if (!RootIsImplicit() || root->GetDocument().IsInMainFrame())
+  if (!RootIsImplicit() ||
+      root->GetDocument().GetFrame()->IsOutermostMainFrame())
     local_ancestor = To<LayoutBox>(root);
 
   unsigned flags = kDefaultVisualRectFlags | kEdgeInclusive |

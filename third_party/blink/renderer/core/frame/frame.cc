@@ -194,6 +194,10 @@ bool Frame::IsMainFrame() const {
   return !Tree().Parent();
 }
 
+bool Frame::IsOutermostMainFrame() const {
+  return IsMainFrame() && !IsInFencedFrameTree();
+}
+
 bool Frame::IsCrossOriginToMainFrame() const {
   DCHECK(GetSecurityContext());
   const SecurityOrigin* security_origin =

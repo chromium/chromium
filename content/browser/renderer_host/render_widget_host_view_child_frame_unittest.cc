@@ -24,9 +24,12 @@
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/cross_process_frame_connector.h"
 #include "content/browser/renderer_host/frame_token_message_queue.h"
+#include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/site_instance.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/fake_frame_widget.h"
 #include "content/public/test/mock_render_process_host.h"
@@ -35,6 +38,7 @@
 #include "content/test/mock_widget.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_render_widget_host.h"
+#include "content/test/test_web_contents.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -126,9 +130,13 @@ class RenderWidgetHostViewChildFrameTest : public testing::Test {
     int32_t routing_id = process_host_->GetNextRoutingID();
     sink_ = &process_host_->sink();
 
+    web_contents_ = TestWebContents::Create(
+        browser_context_.get(),
+        SiteInstanceImpl::Create(browser_context_.get()));
+
     widget_host_ = RenderWidgetHostImpl::Create(
-        /*frame_tree=*/nullptr, &delegate_, *agent_scheduling_group_host_,
-        routing_id,
+        /*frame_tree=*/&web_contents_->GetPrimaryFrameTree(), &delegate_,
+        *agent_scheduling_group_host_, routing_id,
         /*hidden=*/false, /*renderer_initiated_creation=*/false,
         std::make_unique<FrameTokenMessageQueue>());
 
@@ -161,6 +169,7 @@ class RenderWidgetHostViewChildFrameTest : public testing::Test {
     if (view_)
       view_->Destroy();
     widget_host_.reset();
+    web_contents_.reset();
     process_host_->Cleanup();
     agent_scheduling_group_host_ = nullptr;
     delete test_frame_connector_;
@@ -191,6 +200,7 @@ class RenderWidgetHostViewChildFrameTest : public testing::Test {
   std::unique_ptr<BrowserContext> browser_context_;
   std::unique_ptr<AgentSchedulingGroupHost> agent_scheduling_group_host_;
   std::unique_ptr<MockRenderProcessHost> process_host_;
+  std::unique_ptr<WebContentsImpl> web_contents_;
   raw_ptr<IPC::TestSink> sink_ = nullptr;
   MockRenderWidgetHostDelegate delegate_;
   MockWidget widget_;

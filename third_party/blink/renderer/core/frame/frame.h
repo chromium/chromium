@@ -138,6 +138,13 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
   // reach out to site-isolation-dev@chromium.org.
   bool IsMainFrame() const;
 
+  // Returns true if this frame is the top-level main frame (associated with
+  // the root Document in a WebContents). See content::Page for detailed
+  // documentation.
+  // This is false for main frames created for fenced-frames.
+  // TODO(khushalsagar) : Should also be the case for portals.
+  bool IsOutermostMainFrame() const;
+
   // Returns true if and only if:
   // - this frame is a subframe
   // - it is cross-origin to the main frame

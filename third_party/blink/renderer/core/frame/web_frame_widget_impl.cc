@@ -1763,7 +1763,7 @@ void WebFrameWidgetImpl::SetViewportIntersection(
     const absl::optional<VisualProperties>& visual_properties) {
   // Remote viewports are only applicable to local frames with remote ancestors.
   // TODO(https://crbug.com/1148960): Should this deal with portals?
-  DCHECK(ForSubframe());
+  DCHECK(ForSubframe() || !LocalRootImpl()->GetFrame()->IsOutermostMainFrame());
 
   if (visual_properties.has_value())
     UpdateVisualProperties(visual_properties.value());
@@ -1777,10 +1777,16 @@ void WebFrameWidgetImpl::ApplyViewportIntersectionForTesting(
 
 void WebFrameWidgetImpl::ApplyViewportIntersection(
     mojom::blink::ViewportIntersectionStatePtr intersection_state) {
-  child_data().compositor_visible_rect =
-      intersection_state->compositor_visible_rect;
-  widget_base_->LayerTreeHost()->SetVisualDeviceViewportIntersectionRect(
-      intersection_state->compositor_visible_rect);
+  if (ForSubframe()) {
+    // This information is propagated to LTH to define the region for filling
+    // the on-screen text content.
+    // TODO(khushalsagar) : This needs to also be done for main frames which are
+    // embedded pages (see Frame::IsOutermostMainFrame()).
+    child_data().compositor_visible_rect =
+        intersection_state->compositor_visible_rect;
+    widget_base_->LayerTreeHost()->SetVisualDeviceViewportIntersectionRect(
+        intersection_state->compositor_visible_rect);
+  }
   LocalRootImpl()->GetFrame()->SetViewportIntersectionFromParent(
       *intersection_state);
 }

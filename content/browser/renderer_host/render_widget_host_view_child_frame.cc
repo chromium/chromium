@@ -497,9 +497,13 @@ void RenderWidgetHostViewChildFrame::UpdateViewportIntersection(
     host()->SetIntersectsViewport(
         !intersection_state.viewport_intersection.IsEmpty());
 
-    // Do not send viewport intersection to main frames.
+    // Do not send |visual_properties| to main frames.
     DCHECK(!visual_properties.has_value() || !host()->owner_delegate());
-    if (!host()->owner_delegate()) {
+
+    // TODO(crbug.com/1148960): Also propagate this for portals.
+    bool is_fenced_frame =
+        host()->frame_tree()->type() == FrameTree::Type::kFencedFrame;
+    if (!host()->owner_delegate() || is_fenced_frame) {
       host()->GetAssociatedFrameWidget()->SetViewportIntersection(
           intersection_state.Clone(), visual_properties);
     }
