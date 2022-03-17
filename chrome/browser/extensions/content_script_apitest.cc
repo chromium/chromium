@@ -1977,9 +1977,17 @@ class ContentScriptApiIdentifiabilityTest : public ContentScriptApiTest {
   IdentifiabilityMetricsTestHelper identifiability_metrics_test_helper_;
 };
 
+// Flaky on Mac: crbug.com/1305273
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_InjectionRecorded DISABLED_InjectionRecorded
+#else
+#define MAYBE_InjectionRecorded InjectionRecorded
+#endif
 // Test that identifiability study of content script injection produces the
 // expected UKM events.
-IN_PROC_BROWSER_TEST_F(ContentScriptApiIdentifiabilityTest, InjectionRecorded) {
+IN_PROC_BROWSER_TEST_F(ContentScriptApiIdentifiabilityTest,
+                       MAYBE_InjectionRecorded) {
   base::RunLoop run_loop;
   identifiability_metrics_test_helper_.PrepareForTest(&run_loop);
 
