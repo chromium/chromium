@@ -1325,7 +1325,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Desks.NumberOfDeskTraversals" units="units"
-    expires_after="2022-04-24">
+    expires_after="2022-10-24">
   <owner>afakhry@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
@@ -2508,7 +2508,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Overview.ArrowKeyPresses" units="units"
-    expires_after="2022-04-08">
+    expires_after="2022-10-08">
   <owner>nupurjain@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
   <summary>
@@ -2528,7 +2528,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.Overview.Items" units="units" expires_after="2022-04-08">
+<histogram name="Ash.Overview.Items" units="units" expires_after="2022-10-08">
   <owner>nupurjain@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
   <summary>
@@ -2538,7 +2538,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Overview.KeyPressesOverItemsRatio" units="%"
-    expires_after="2022-04-08">
+    expires_after="2022-10-08">
   <owner>nupurjain@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
   <summary>
@@ -2549,7 +2549,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Overview.OverviewClosedItems" units="units"
-    expires_after="2022-04-08">
+    expires_after="2022-10-08">
   <owner>nupurjain@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
   <summary>
@@ -2580,7 +2580,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Overview.SelectionDepth" units="items"
-    expires_after="2022-04-08">
+    expires_after="2022-10-08">
   <owner>nupurjain@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
@@ -2602,7 +2602,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Overview.TimeBetweenActiveWindowChanges" units="seconds"
-    expires_after="2022-04-08">
+    expires_after="2022-10-08">
   <owner>nupurjain@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
   <summary>
@@ -2614,7 +2614,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Overview.TimeBetweenUse" units="ms"
-    expires_after="2022-04-08">
+    expires_after="2022-10-08">
   <owner>nupurjain@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
   <summary>
@@ -2625,7 +2625,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Overview.TimeInOverview" units="ms"
-    expires_after="2022-04-08">
+    expires_after="2022-10-08">
   <owner>nupurjain@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
   <summary>
@@ -3635,7 +3635,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.TouchView.LidAngle" units="degrees"
-    expires_after="2022-04-03">
+    expires_after="2022-10-03">
   <owner>oshima@chromium.org</owner>
   <summary>
     Chrome OS only. The computed angle between the lid and the keyboard panel.
@@ -4001,7 +4001,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.WindowCycleController.Items" units="items"
-    expires_after="2022-04-10">
+    expires_after="2022-10-10">
   <owner>sammiequon@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
