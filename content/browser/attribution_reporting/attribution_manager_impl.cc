@@ -16,6 +16,7 @@
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/time/time.h"
@@ -118,6 +119,10 @@ ConversionReportSendOutcome ConvertToConversionReportSendOutcome(
     case SendResult::Status::kFailedToAssemble:
       return ConversionReportSendOutcome::kFailedToAssemble;
   }
+}
+
+AttributionReport::ReportType GetReportType(AttributionReport::Id report_id) {
+  return static_cast<AttributionReport::ReportType>(report_id.index());
 }
 
 void RecordAssembleAggregatableReportStatus(
@@ -503,7 +508,7 @@ void AttributionManagerImpl::OnReportStored(CreateReportResult result) {
     // Sources are changed here because storing a report can cause sources to be
     // deleted or become associated with a dedup key.
     NotifySourcesChanged();
-    NotifyReportsChanged();
+    NotifyReportsChanged(AttributionReport::ReportType::kEventLevel);
   }
 
   for (auto& observer : observers_)
@@ -534,16 +539,17 @@ void AttributionManagerImpl::GetActiveSourcesForWebUI(
 }
 
 void AttributionManagerImpl::GetPendingReportsForInternalUse(
+    AttributionReport::ReportType report_type,
     base::OnceCallback<void(std::vector<AttributionReport>)> callback) {
-  // TODO(crbug.com/1285317): Show aggregatable reports in internal page.
-
-  attribution_storage_.AsyncCall(&AttributionStorage::GetEventLevelReports)
-      .WithArgs(/*max_report_time=*/base::Time::Max(), /*limit=*/1000)
+  attribution_storage_.AsyncCall(&AttributionStorage::GetAttributionReports)
+      .WithArgs(
+          /*max_report_time=*/base::Time::Max(), /*limit=*/1000,
+          AttributionReport::ReportTypes{report_type})
       .Then(std::move(callback));
 }
 
 void AttributionManagerImpl::SendReportsForWebUI(
-    const std::vector<AttributionReport::EventLevelData::Id>& ids,
+    const std::vector<AttributionReport::Id>& ids,
     base::OnceClosure done) {
   attribution_storage_.AsyncCall(&AttributionStorage::GetReports)
       .WithArgs(ids)
@@ -566,7 +572,10 @@ void AttributionManagerImpl::ClearData(
             if (manager) {
               manager->scheduler_.Refresh();
               manager->NotifySourcesChanged();
-              manager->NotifyReportsChanged();
+              manager->NotifyReportsChanged(
+                  AttributionReport::ReportType::kEventLevel);
+              manager->NotifyReportsChanged(
+                  AttributionReport::ReportType::kAggregatableAttribution);
             }
           },
           std::move(done), weak_factory_.GetWeakPtr()));
@@ -582,7 +591,10 @@ void AttributionManagerImpl::GetReportsToSend() {
   // TODO(apaseltiner): Consider limiting the number of reports being sent at
   // once, to avoid pulling an arbitrary number of reports into memory.
   attribution_storage_.AsyncCall(&AttributionStorage::GetAttributionReports)
-      .WithArgs(/*max_report_time=*/base::Time::Now(), /*limit=*/-1)
+      .WithArgs(/*max_report_time=*/base::Time::Now(), /*limit=*/-1,
+                AttributionReport::ReportTypes{
+                    AttributionReport::ReportType::kEventLevel,
+                    AttributionReport::ReportType::kAggregatableAttribution})
       .Then(base::BindOnce(&AttributionManagerImpl::OnGetReportsToSend,
                            weak_factory_.GetWeakPtr()));
 }
@@ -718,7 +730,7 @@ void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
               if (manager && success) {
                 manager->MarkReportCompleted(report_id);
                 manager->scheduler_.ScheduleSend(new_report_time);
-                manager->NotifyReportsChanged();
+                manager->NotifyReportsChanged(GetReportType(report_id));
               }
             },
             std::move(done), weak_factory_.GetWeakPtr(), *report.ReportId(),
@@ -734,7 +746,7 @@ void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
 
               if (manager && success) {
                 manager->MarkReportCompleted(report_id);
-                manager->NotifyReportsChanged();
+                manager->NotifyReportsChanged(GetReportType(report_id));
               }
             },
             std::move(done), weak_factory_.GetWeakPtr(), *report.ReportId()));
@@ -856,9 +868,10 @@ void AttributionManagerImpl::NotifySourcesChanged() {
     observer.OnSourcesChanged();
 }
 
-void AttributionManagerImpl::NotifyReportsChanged() {
+void AttributionManagerImpl::NotifyReportsChanged(
+    AttributionReport::ReportType report_type) {
   for (auto& observer : observers_)
-    observer.OnReportsChanged();
+    observer.OnReportsChanged(report_type);
 }
 
 void AttributionManagerImpl::NotifySourceDeactivated(

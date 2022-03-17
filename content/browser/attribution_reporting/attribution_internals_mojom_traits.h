@@ -45,7 +45,36 @@ class EnumTraits<content::mojom::AttributionSourceType,
 };
 
 template <>
-class StructTraits<content::mojom::AttributionReportIDDataView,
+class EnumTraits<content::mojom::AttributionReportType,
+                 content::AttributionReport::ReportType> {
+ public:
+  static content::mojom::AttributionReportType ToMojom(
+      content::AttributionReport::ReportType input) {
+    switch (input) {
+      case content::AttributionReport::ReportType::kEventLevel:
+        return content::mojom::AttributionReportType::kEventLevel;
+      case content::AttributionReport::ReportType::kAggregatableAttribution:
+        return content::mojom::AttributionReportType::kAggregatableAttribution;
+    }
+  }
+
+  static bool FromMojom(content::mojom::AttributionReportType input,
+                        content::AttributionReport::ReportType* out) {
+    switch (input) {
+      case content::mojom::AttributionReportType::kEventLevel:
+        *out = content::AttributionReport::ReportType::kEventLevel;
+        break;
+      case content::mojom::AttributionReportType::kAggregatableAttribution:
+        *out = content::AttributionReport::ReportType::kAggregatableAttribution;
+        break;
+    }
+
+    return true;
+  }
+};
+
+template <>
+class StructTraits<content::mojom::AttributionReportEventLevelIDDataView,
                    content::AttributionReport::EventLevelData::Id> {
  public:
   static int64_t value(
@@ -53,8 +82,23 @@ class StructTraits<content::mojom::AttributionReportIDDataView,
     return *id;
   }
 
-  static bool Read(content::mojom::AttributionReportIDDataView data,
+  static bool Read(content::mojom::AttributionReportEventLevelIDDataView data,
                    content::AttributionReport::EventLevelData::Id* out);
+};
+
+template <>
+class StructTraits<
+    content::mojom::AttributionReportAggregatableAttributionIDDataView,
+    content::AttributionReport::AggregatableAttributionData::Id> {
+ public:
+  static int64_t value(
+      const content::AttributionReport::AggregatableAttributionData::Id& id) {
+    return *id;
+  }
+
+  static bool Read(
+      content::mojom::AttributionReportAggregatableAttributionIDDataView data,
+      content::AttributionReport::AggregatableAttributionData::Id* out);
 };
 
 }  // namespace mojo

@@ -328,6 +328,7 @@ base::Value RunAttributionSimulation(
 
   base::RunLoop loop;
   manager->GetPendingReportsForInternalUse(
+      AttributionReport::ReportType::kEventLevel,
       base::BindLambdaForTesting([&](std::vector<AttributionReport> reports) {
         if (!reports.empty()) {
           last_report_time = base::ranges::max(reports, /*comp=*/{},

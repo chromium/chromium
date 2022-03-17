@@ -322,12 +322,13 @@ class MockAttributionManager : public AttributionManager {
   MOCK_METHOD(
       void,
       GetPendingReportsForInternalUse,
-      (base::OnceCallback<void(std::vector<AttributionReport>)> callback),
+      (AttributionReport::ReportType report_type,
+       base::OnceCallback<void(std::vector<AttributionReport>)> callback),
       (override));
 
   MOCK_METHOD(void,
               SendReportsForWebUI,
-              (const std::vector<AttributionReport::EventLevelData::Id>& ids,
+              (const std::vector<AttributionReport::Id>& ids,
                base::OnceClosure done),
               (override));
 
@@ -344,7 +345,7 @@ class MockAttributionManager : public AttributionManager {
   AttributionDataHostManager* GetDataHostManager() override;
 
   void NotifySourcesChanged();
-  void NotifyReportsChanged();
+  void NotifyReportsChanged(AttributionReport::ReportType report_type);
   void NotifySourceDeactivated(const DeactivatedSource& source);
   void NotifySourceHandled(const StorableSource& source,
                            StorableSource::Result result);
@@ -708,6 +709,9 @@ std::ostream& operator<<(
     const AttributionReport::AggregatableAttributionData& data);
 
 std::ostream& operator<<(std::ostream& out, const AttributionReport& report);
+
+std::ostream& operator<<(std::ostream& out,
+                         AttributionReport::ReportType report_type);
 
 std::ostream& operator<<(std::ostream& out, SendResult::Status status);
 

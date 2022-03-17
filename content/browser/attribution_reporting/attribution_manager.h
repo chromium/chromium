@@ -55,12 +55,13 @@ class AttributionManager {
   // Get all pending reports that are currently stored in this partition. Used
   // for populating WebUI and simulator.
   virtual void GetPendingReportsForInternalUse(
+      AttributionReport::ReportType report_type,
       base::OnceCallback<void(std::vector<AttributionReport>)> callback) = 0;
 
   // Sends the given reports immediately, and runs |done| once they have all
   // been sent.
   virtual void SendReportsForWebUI(
-      const std::vector<AttributionReport::EventLevelData::Id>& ids,
+      const std::vector<AttributionReport::Id>& ids,
       base::OnceClosure done) = 0;
 
   // Deletes all data in storage for URLs matching |filter|, between

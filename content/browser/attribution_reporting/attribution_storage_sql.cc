@@ -1212,34 +1212,38 @@ AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
   return report;
 }
 
-std::vector<AttributionReport> AttributionStorageSql::GetEventLevelReports(
-    base::Time max_report_time,
-    int limit) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent))
-    return {};
-
-  std::vector<AttributionReport> reports =
-      GetEventLevelReportsInternal(max_report_time, limit);
-  delegate_->ShuffleReports(reports);
-  return reports;
-}
-
 std::vector<AttributionReport> AttributionStorageSql::GetAttributionReports(
     base::Time max_report_time,
-    int limit) {
+    int limit,
+    AttributionReport::ReportTypes report_types) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!report_types.Empty());
+
   if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent))
     return {};
 
-  std::vector<AttributionReport> reports =
-      GetEventLevelReportsInternal(max_report_time, limit);
-  std::vector<AttributionReport> aggregatable_reports =
-      GetAggregatableAttributionReportsInternal(max_report_time, limit);
+  std::vector<AttributionReport> reports;
 
-  reports.insert(reports.end(),
-                 std::make_move_iterator(aggregatable_reports.begin()),
-                 std::make_move_iterator(aggregatable_reports.end()));
+  for (AttributionReport::ReportType report_type : report_types) {
+    switch (report_type) {
+      case AttributionReport::ReportType::kEventLevel: {
+        std::vector<AttributionReport> event_level_reports =
+            GetEventLevelReportsInternal(max_report_time, limit);
+        reports.insert(reports.end(),
+                       std::make_move_iterator(event_level_reports.begin()),
+                       std::make_move_iterator(event_level_reports.end()));
+        break;
+      }
+      case AttributionReport::ReportType::kAggregatableAttribution: {
+        std::vector<AttributionReport> aggregatable_reports =
+            GetAggregatableAttributionReportsInternal(max_report_time, limit);
+        reports.insert(reports.end(),
+                       std::make_move_iterator(aggregatable_reports.begin()),
+                       std::make_move_iterator(aggregatable_reports.end()));
+        break;
+      }
+    }
+  }
 
   if (limit >= 0 && reports.size() > static_cast<size_t>(limit)) {
     base::ranges::partial_sort(reports, reports.begin() + limit, /*comp=*/{},
@@ -1318,14 +1322,31 @@ absl::optional<base::Time> AttributionStorageSql::GetNextEventLevelReportTime(
 }
 
 std::vector<AttributionReport> AttributionStorageSql::GetReports(
-    const std::vector<AttributionReport::EventLevelData::Id>& ids) {
+    const std::vector<AttributionReport::Id>& ids) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent))
     return {};
 
+  struct Visitor {
+    raw_ptr<AttributionStorageSql> storage;
+
+    absl::optional<AttributionReport> operator()(
+        AttributionReport::EventLevelData::Id id) {
+      DCHECK_CALLED_ON_VALID_SEQUENCE(storage->sequence_checker_);
+      return storage->GetReport(id);
+    }
+
+    absl::optional<AttributionReport> operator()(
+        AttributionReport::AggregatableAttributionData::Id id) {
+      DCHECK_CALLED_ON_VALID_SEQUENCE(storage->sequence_checker_);
+      return storage->GetReport(id);
+    }
+  };
+
   std::vector<AttributionReport> reports;
-  for (AttributionReport::EventLevelData::Id id : ids) {
-    absl::optional<AttributionReport> report = GetReport(id);
+  for (AttributionReport::Id id : ids) {
+    absl::optional<AttributionReport> report =
+        absl::visit(Visitor{.storage = this}, id);
     if (report.has_value())
       reports.push_back(std::move(*report));
   }
@@ -2465,40 +2486,10 @@ AttributionStorageSql::GetAggregatableAttributionReportsInternal(
 
   std::vector<AttributionReport> reports;
   while (statement.Step()) {
-    absl::optional<StoredSourceData> source_data =
-        ReadSourceFromStatement(statement);
-
-    int col = kSourceColumnCount;
-    AttributionReport::AggregatableAttributionData::Id report_id(
-        statement.ColumnInt64(col++));
-    base::Time trigger_time = statement.ColumnTime(col++);
-    base::Time report_time = statement.ColumnTime(col++);
-    absl::optional<uint64_t> trigger_debug_key =
-        ColumnUint64OrNull(statement, col++);
-    base::GUID external_report_id =
-        base::GUID::ParseLowercase(statement.ColumnString(col++));
-    int failed_send_attempts = statement.ColumnInt(col++);
-
-    // Ensure data is valid before continuing. This could happen if there is
-    // database corruption.
-    if (!source_data.has_value() || !external_report_id.is_valid() ||
-        failed_send_attempts < 0) {
-      continue;
-    }
-
-    std::vector<AggregatableHistogramContribution> contributions =
-        GetAggregatableContributions(report_id);
-    if (contributions.empty())
-      continue;
-
-    AttributionReport report(AttributionInfo(std::move(source_data->source),
-                                             trigger_time, trigger_debug_key),
-                             report_time, std::move(external_report_id),
-                             AttributionReport::AggregatableAttributionData(
-                                 std::move(contributions), report_id));
-    report.set_failed_send_attempts(failed_send_attempts);
-
-    reports.push_back(std::move(report));
+    absl::optional<AttributionReport> report =
+        ReadAggregatableAttributionReportFromStatement(statement);
+    if (report.has_value())
+      reports.push_back(std::move(*report));
   }
 
   if (!statement.Succeeded())
@@ -2719,6 +2710,64 @@ AttributionStorageSql::MaybeStoreAggregatableAttributionReport(
     return AggregatableResult::kInternalError;
 
   return AggregatableResult::kSuccess;
+}
+
+// Helper to deserialize report rows. See `GetReport()` for the expected
+// ordering of columns used for the input to this function.
+absl::optional<AttributionReport>
+AttributionStorageSql::ReadAggregatableAttributionReportFromStatement(
+    sql::Statement& statement) {
+  DCHECK_EQ(statement.ColumnCount(), kSourceColumnCount + 6);
+
+  absl::optional<StoredSourceData> source_data =
+      ReadSourceFromStatement(statement);
+  if (!source_data.has_value())
+    return absl::nullopt;
+
+  int col = kSourceColumnCount;
+  AttributionReport::AggregatableAttributionData::Id report_id(
+      statement.ColumnInt64(col++));
+  base::Time trigger_time = statement.ColumnTime(col++);
+  base::Time report_time = statement.ColumnTime(col++);
+  absl::optional<uint64_t> trigger_debug_key =
+      ColumnUint64OrNull(statement, col++);
+  base::GUID external_report_id =
+      base::GUID::ParseLowercase(statement.ColumnString(col++));
+  int failed_send_attempts = statement.ColumnInt(col++);
+
+  // Ensure data is valid before continuing. This could happen if there is
+  // database corruption.
+  if (!external_report_id.is_valid() || failed_send_attempts < 0) {
+    return absl::nullopt;
+  }
+
+  std::vector<AggregatableHistogramContribution> contributions =
+      GetAggregatableContributions(report_id);
+  if (contributions.empty())
+    return absl::nullopt;
+
+  AttributionReport report(AttributionInfo(std::move(source_data->source),
+                                           trigger_time, trigger_debug_key),
+                           report_time, std::move(external_report_id),
+                           AttributionReport::AggregatableAttributionData(
+                               std::move(contributions), report_id));
+  report.set_failed_send_attempts(failed_send_attempts);
+  return report;
+}
+
+absl::optional<AttributionReport> AttributionStorageSql::GetReport(
+    AttributionReport::AggregatableAttributionData::Id report_id) {
+  static constexpr char kGetReportSql[] =
+      ATTRIBUTION_SELECT_AGGREGATABLE_REPORT_AND_SOURCE_COLUMNS_SQL
+      "WHERE A.aggregation_id = ?";
+  sql::Statement statement(
+      db_->GetCachedStatement(SQL_FROM_HERE, kGetReportSql));
+  statement.BindInt64(0, *report_id);
+
+  if (!statement.Step())
+    return absl::nullopt;
+
+  return ReadAggregatableAttributionReportFromStatement(statement);
 }
 
 }  // namespace content

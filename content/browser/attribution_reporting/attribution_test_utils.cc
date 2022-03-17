@@ -348,9 +348,10 @@ void MockAttributionManager::NotifySourcesChanged() {
     observer.OnSourcesChanged();
 }
 
-void MockAttributionManager::NotifyReportsChanged() {
+void MockAttributionManager::NotifyReportsChanged(
+    AttributionReport::ReportType report_type) {
   for (auto& observer : observers_)
-    observer.OnReportsChanged();
+    observer.OnReportsChanged(report_type);
 }
 
 void MockAttributionManager::NotifySourceDeactivated(
@@ -1191,6 +1192,19 @@ std::ostream& operator<<(std::ostream& out, const AttributionReport& report) {
   return out;
 }
 
+std::ostream& operator<<(std::ostream& out,
+                         AttributionReport::ReportType report_type) {
+  switch (report_type) {
+    case AttributionReport::ReportType::kEventLevel:
+      out << "kEventLevel";
+      break;
+    case AttributionReport::ReportType::kAggregatableAttribution:
+      out << "kAggregatableAttribution";
+      break;
+  }
+  return out;
+}
+
 std::ostream& operator<<(std::ostream& out, SendResult::Status status) {
   switch (status) {
     case SendResult::Status::kSent:
@@ -1393,7 +1407,10 @@ std::vector<AttributionReport> GetAttributionReportsForTesting(
   std::vector<AttributionReport> attribution_reports;
   manager->attribution_storage_
       .AsyncCall(&AttributionStorage::GetAttributionReports)
-      .WithArgs(max_report_time, /*limit=*/-1)
+      .WithArgs(max_report_time, /*limit=*/-1,
+                AttributionReport::ReportTypes{
+                    AttributionReport::ReportType::kEventLevel,
+                    AttributionReport::ReportType::kAggregatableAttribution})
       .Then(base::BindOnce(base::BindLambdaForTesting(
           [&](std::vector<AttributionReport> reports) {
             attribution_reports = std::move(reports);

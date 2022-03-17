@@ -105,7 +105,10 @@ class MockAttributionObserver : public AttributionObserver {
  public:
   MOCK_METHOD(void, OnSourcesChanged, (), (override));
 
-  MOCK_METHOD(void, OnReportsChanged, (), (override));
+  MOCK_METHOD(void,
+              OnReportsChanged,
+              (AttributionReport::ReportType report_type),
+              (override));
 
   MOCK_METHOD(void,
               OnSourceHandled,
@@ -886,10 +889,8 @@ TEST_F(AttributionManagerImplTest, ConversionsSentFromUI_ReportedImmediately) {
   EXPECT_THAT(reports, SizeIs(1));
   EXPECT_THAT(report_sender_->calls(), IsEmpty());
 
-  attribution_manager_->SendReportsForWebUI(
-      {*(absl::get<AttributionReport::EventLevelData>(reports.front().data())
-             .id)},
-      base::DoNothing());
+  attribution_manager_->SendReportsForWebUI({*reports.front().ReportId()},
+                                            base::DoNothing());
   task_environment_.FastForwardBy(base::TimeDelta());
   EXPECT_THAT(report_sender_->calls(), SizeIs(1));
 }
@@ -907,10 +908,7 @@ TEST_F(AttributionManagerImplTest,
   EXPECT_THAT(report_sender_->calls(), IsEmpty());
 
   attribution_manager_->SendReportsForWebUI(
-      {*(absl::get<AttributionReport::EventLevelData>(reports.front().data())
-             .id),
-       *(absl::get<AttributionReport::EventLevelData>(reports.back().data())
-             .id)},
+      {*reports.front().ReportId(), *reports.back().ReportId()},
       base::BindLambdaForTesting([&]() { callback_calls++; }));
   task_environment_.FastForwardBy(base::TimeDelta());
   EXPECT_THAT(report_sender_->calls(), SizeIs(2));
@@ -1204,7 +1202,7 @@ TEST_F(AttributionManagerImplTest, ClearData_NotifiesObservers) {
   observation.Observe(attribution_manager_.get());
 
   EXPECT_CALL(observer, OnSourcesChanged);
-  EXPECT_CALL(observer, OnReportsChanged);
+  EXPECT_CALL(observer, OnReportsChanged).Times(2);
 
   base::RunLoop run_loop;
   attribution_manager_->ClearData(
@@ -1742,17 +1740,26 @@ TEST_F(AttributionManagerImplTest,
   attribution_manager_->HandleSource(SourceBuilder().Build());
 
   const auto aggregatable_attribution =
-      ReportBuilder(
-          AttributionInfoBuilder(
-              SourceBuilder().SetSourceId(StoredSource::Id(1)).BuildStored())
-              .SetTime(base::Time::Now())
-              .Build())
+      ReportBuilder(AttributionInfoBuilder(SourceBuilder()
+                                               .SetSourceId(StoredSource::Id(1))
+                                               .SetDefaultFilterData()
+                                               .BuildStored())
+                        .SetTime(base::Time::Now())
+                        .Build())
           .SetReportTime(base::Time::Now() + base::Hours(1))
           .SetAggregatableHistogramContributions(
               {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)})
           .BuildAggregatableAttribution();
   attribution_manager_->AddAggregatableAttributionForTesting(
       aggregatable_attribution);
+
+  MockAttributionObserver observer;
+  base::ScopedObservation<AttributionManager, AttributionObserver> observation(
+      &observer);
+  observation.Observe(attribution_manager_.get());
+
+  EXPECT_CALL(observer, OnReportSent(aggregatable_attribution,
+                                     /*is_debug_report=*/false, _));
 
   // Make sure the report is not sent earlier than its report time.
   task_environment_.FastForwardBy(base::Hours(1) - base::Microseconds(1));
@@ -1802,7 +1809,7 @@ TEST_F(AttributionManagerImplTest,
 
   aggregation_service_->RunCallback(
       0, absl::nullopt, AggregationService::AssemblyStatus::kAssemblyFailed);
-  EXPECT_THAT(report_sender_->calls(), SizeIs(0));
+  EXPECT_THAT(report_sender_->calls(), IsEmpty());
 
   // kAssembleReportFailed = 3.
   histograms.ExpectUniqueSample(

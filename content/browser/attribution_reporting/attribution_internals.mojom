@@ -13,23 +13,56 @@ enum AttributionSourceType {
   kEvent,
 };
 
-struct AttributionReportID {
+// Represents `AttributionReport::EventLevelData::Id`.
+// Will be used to issue commands for individual reports.
+struct AttributionReportEventLevelID {
   int64 value;
+};
+
+// Represents `AttributionReport::AggregatableAttributionData::Id`.
+// Will be used to issue commands for individual reports.
+struct AttributionReportAggregatableAttributionID {
+  int64 value;
+};
+
+// Contains event-level data to be displayed.
+struct WebUIAttributionReportEventLevelData {
+  // Allows the WebUI to issue commands for individual reports.
+  // Not intended to be displayed.
+  AttributionReportEventLevelID? id;
+  int64 priority;
+  bool attributed_truthfully;
+};
+
+// Represents `AggregatableHistogramContribution`.
+struct AttributionReportHistogramContribution {
+  uint64 key_high_bits;
+  uint64 key_low_bits;
+  uint32 value;
+};
+
+// Contains aggregatable attribution data to be displayed.
+struct WebUIAttributionReportAggregatableAttributionData {
+  // Allows the WebUI to issue commands for individual reports.
+  // Not intended to be displayed.
+  AttributionReportAggregatableAttributionID? id;
+  array<AttributionReportHistogramContribution> contributions;
+};
+
+union WebUIAttributionReportData {
+  WebUIAttributionReportEventLevelData event_level_data;
+  WebUIAttributionReportAggregatableAttributionData
+      aggregatable_attribution_data;
 };
 
 // Struct containing stored data that will be sent in a future attribution
 // report.
 struct WebUIAttributionReport {
-  // Allows the WebUI to issue commands for individual reports.
-  // Not intended to be displayed.
-  AttributionReportID? id;
   string attribution_destination;
   url.mojom.Url report_url;
   double trigger_time;
   double report_time;
-  int64 priority;
   string report_body;
-  bool attributed_truthfully;
 
   enum Status {
     kPending,
@@ -44,12 +77,16 @@ struct WebUIAttributionReport {
     kSent,
     kNetworkError,
     kNoMatchingSourceFilterData,
+    kFailedToAssemble,
+    kInsufficientAggregatableBudget,
   };
 
   Status status;
 
   // Only valid if `status == kSent`.
   int32 http_response_code;
+
+  WebUIAttributionReportData data;
 };
 
 struct AttributionDebugKey {
@@ -87,6 +124,12 @@ struct WebUIAttributionSource {
   Attributability attributability;
 };
 
+// Represents `AttributionReport::ReportType`.
+enum AttributionReportType {
+  kEventLevel,
+  kAggregatableAttribution,
+};
+
 // Observer for events relevant to the attribution internals WebUI.
 interface AttributionInternalsObserver {
   // Called when the sources in storage changed, indicating that the observer
@@ -95,7 +138,7 @@ interface AttributionInternalsObserver {
 
   // Called when the reports in storage changed, indicating that the observer
   // should call `AttributionInternalsHandler::GetReports()`.
-  OnReportsChanged();
+  OnReportsChanged(AttributionReportType report_type);
 
   // Called when a source-registration attempt fails or a stored source is
   // deactivated.
@@ -121,14 +164,21 @@ interface AttributionInternalsHandler {
   // due to reaching policy limits.
   GetActiveSources() => (array<WebUIAttributionSource> sources);
 
-  // Returns all reports contained in storage, including those that are actively
-  // being sent.
-  GetReports() => (array<WebUIAttributionReport> reports);
+  // Returns all reports of the specified type contained in storage, including
+  // those that are actively being sent.
+  GetReports(AttributionReportType report_type) => (
+      array<WebUIAttributionReport> reports);
 
-  // Sends the given reports, ignoring delay, returning when the
+  // Sends the given event-level reports, ignoring delay, returning when the
   // operation has been completed and the reports have been cleared from
   // storage.
-  SendReports(array<AttributionReportID> ids) => ();
+  SendEventLevelReports(array<AttributionReportEventLevelID> ids) => ();
+
+  // Sends the given aggregate reports, ignoring delay, returning when the
+  // operation has been completed and the reports have been cleared from
+  // storage.
+  SendAggregatableAttributionReports(
+      array<AttributionReportAggregatableAttributionID> ids) => ();
 
   // Deletes all persisted data for the attribution reporting API, returning when the
   // operation has been completed.

@@ -6,11 +6,11 @@
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_OBSERVER_H_
 
 #include "base/observer_list_types.h"
+#include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 
 namespace content {
 
-class AttributionReport;
 class CreateReportResult;
 
 struct DeactivatedSource;
@@ -26,7 +26,7 @@ class AttributionObserver : public base::CheckedObserver {
   virtual void OnSourcesChanged() {}
 
   // Called when reports in storage change.
-  virtual void OnReportsChanged() {}
+  virtual void OnReportsChanged(AttributionReport::ReportType report_type) {}
 
   // Called when a source is registered, regardless of success.
   virtual void OnSourceHandled(const StorableSource& source,

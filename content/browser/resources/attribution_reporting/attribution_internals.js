@@ -7,7 +7,7 @@ import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {$, getRequiredElement} from 'chrome://resources/js/util.m.js';
 import {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 
-import {AttributionInternalsHandler, AttributionInternalsHandlerRemote, AttributionInternalsObserverInterface, AttributionInternalsObserverReceiver, AttributionSourceType, WebUIAttributionReport, WebUIAttributionReport_Status, WebUIAttributionSource, WebUIAttributionSource_Attributability} from './attribution_internals.mojom-webui.js';
+import {AttributionInternalsHandler, AttributionInternalsHandlerRemote, AttributionInternalsObserverInterface, AttributionInternalsObserverReceiver, AttributionReportAggregatableAttributionID, AttributionReportEventLevelID, AttributionReportType, AttributionSourceType, WebUIAttributionReport, WebUIAttributionReport_Status, WebUIAttributionSource, WebUIAttributionSource_Attributability} from './attribution_internals.mojom-webui.js';
 
 /**
  * @template T
@@ -495,21 +495,23 @@ class SourceTableModel extends TableModel {
   }
 }
 
+/**
+ * @template ID
+ */
 class Report extends Selectable {
   /**
    * @param {!WebUIAttributionReport} mojo
+   * @param {ID} id
    */
-  constructor(mojo) {
+  constructor(mojo, id) {
     super();
 
-    this.id = mojo.id;
+    this.id = id;
     this.reportBody = mojo.reportBody;
     this.attributionDestination = mojo.attributionDestination;
     this.reportUrl = mojo.reportUrl.url;
     this.triggerTime = new Date(mojo.triggerTime);
     this.reportTime = new Date(mojo.reportTime);
-    this.reportPriority = mojo.priority;
-    this.attributedTruthfully = mojo.attributedTruthfully;
 
     // Only pending reports are selectable.
     if (this.id === null ||
@@ -555,39 +557,60 @@ class Report extends Selectable {
       case WebUIAttributionReport_Status.kNoMatchingSourceFilterData:
         this.status = 'Dropped due to no matching source filter data';
         break;
+      case WebUIAttributionReport_Status.kFailedToAssemble:
+        this.status = 'Dropped due to assembly failure';
+        break;
+      case WebUIAttributionReport_Status.kInsufficientAggregatableBudget:
+        this.status = 'Dropped due to insufficient aggregatable budget';
+        break;
     }
   }
 }
 
-/** @extends {TableModel<Report>} */
+/** @extends {Report<!AttributionReportEventLevelID>} */
+class EventLevelReport extends Report {
+  /**
+   * @param {!WebUIAttributionReport} mojo
+   */
+  constructor(mojo) {
+    super(mojo, mojo.data.eventLevelData.id);
+
+    this.reportPriority = mojo.data.eventLevelData.priority;
+    this.attributedTruthfully = mojo.data.eventLevelData.attributedTruthfully;
+  }
+}
+
+/** @extends {Report<!AttributionReportAggregatableAttributionID>} */
+class AggregatableAttributionReport extends Report {
+  /**
+   * @param {!WebUIAttributionReport} mojo
+   */
+  constructor(mojo) {
+    super(mojo, mojo.data.aggregatableAttributionData.id);
+
+    this.contributions = JSON.stringify(
+        mojo.data.aggregatableAttributionData.contributions,
+        (key, value) =>
+            typeof value === 'bigint' ? value.toString() : value);
+  }
+}
+
+/**
+ * @template ID
+ * @extends {TableModel<Report<ID>>}
+ */
 class ReportTableModel extends TableModel {
   constructor() {
     super();
 
     this.selectionColumn = new SelectionColumn(this);
 
-    this.cols = [
-      this.selectionColumn,
-      new CodeColumn('Report Body', (e) => e.reportBody),
-      new ValueColumn('Destination', (e) => e.attributionDestination),
-      new ValueColumn('Report URL', (e) => e.reportUrl),
-      new DateColumn('Trigger Time', (e) => e.triggerTime),
-      new DateColumn('Report Time', (e) => e.reportTime),
-      new ValueColumn('Report Priority', (e) => e.reportPriority),
-      new ValueColumn(
-          'Fake Report', (e) => e.attributedTruthfully ? 'no' : 'yes'),
-      new ValueColumn('Status', (e) => e.status),
-    ];
-
     this.emptyRowText = 'No sent or pending reports.';
 
-    // Sort by report time by default.
-    this.sortIdx = 5;
-
-    /** @type {!Array<!Report>} */
+    /** @type {!Array<!Report<ID>>} */
     this.sentOrDroppedReports = [];
 
-    /** @type {!Array<!Report>} */
+    /** @type {!Array<!Report<ID>>} */
     this.storedReports = [];
   }
 
@@ -603,13 +626,13 @@ class ReportTableModel extends TableModel {
     return this.sentOrDroppedReports.concat(this.storedReports);
   }
 
-  /** @param {!Array<!Report>} storedReports */
+  /** @param {!Array<!Report<ID>>} storedReports */
   setStoredReports(storedReports) {
     this.storedReports = storedReports;
     this.notifyRowsChanged();
   }
 
-  /** @param {!Report} report */
+  /** @param {!Report<ID>} report */
   addSentOrDroppedReport(report) {
     // Prevent the page from consuming ever more memory if the user leaves the
     // page open for a long time.
@@ -626,7 +649,65 @@ class ReportTableModel extends TableModel {
     this.sentOrDroppedReports = [];
     this.notifyRowsChanged();
   }
+
+  /**
+   * @return {Array<ID>}
+   */
+  getSelectedIDs() {
+    const ids = [];
+    this.storedReports.forEach((report) => {
+      if (!report.input.disabled && report.input.checked && report.id !== null) {
+        ids.push(report.id);
+      }
+    });
+    return ids;
+  }
 }
+
+/** @extends {ReportTableModel<!AttributionReportEventLevelID>} */
+class EventLevelReportTableModel extends ReportTableModel {
+  constructor() {
+    super();
+
+    this.cols = [
+      this.selectionColumn,
+      new CodeColumn('Report Body', (e) => e.reportBody),
+      new ValueColumn('Destination', (e) => e.attributionDestination),
+      new ValueColumn('Report URL', (e) => e.reportUrl),
+      new DateColumn('Trigger Time', (e) => e.triggerTime),
+      new DateColumn('Report Time', (e) => e.reportTime),
+      new ValueColumn('Report Priority', (e) => e.reportPriority),
+      new ValueColumn(
+          'Fake Report', (e) => e.attributedTruthfully ? 'no' : 'yes'),
+      new ValueColumn('Status', (e) => e.status),
+    ];
+
+    // Sort by report time by default.
+    this.sortIdx = 5;
+  }
+}
+
+/** @extends {ReportTableModel<!AttributionReportAggregatableAttributionID>} */
+class AggregatableAttributionReportTableModel extends ReportTableModel {
+  constructor() {
+    super();
+
+    this.cols = [
+      this.selectionColumn,
+      new CodeColumn('Report Body', (e) => e.reportBody),
+      new ValueColumn('Destination', (e) => e.attributionDestination),
+      new ValueColumn('Report URL', (e) => e.reportUrl),
+      new DateColumn('Trigger Time', (e) => e.triggerTime),
+      new DateColumn('Report Time', (e) => e.reportTime),
+      new CodeColumn('Histograms', (e) => e.contributions),
+      new ValueColumn('Status', (e) => e.status),
+    ];
+
+    // Sort by report time by default.
+    this.sortIdx = 5;
+  }
+}
+
 
 /**
  * Reference to the backend providing all the data.
@@ -638,8 +719,11 @@ let pageHandler = null;
 /** @type {?SourceTableModel} */
 let sourceTableModel = null;
 
-/** @type {?ReportTableModel} */
-let reportTableModel = null;
+/** @type {?EventLevelReportTableModel} */
+let eventLevelReportTableModel = null;
+
+/** @type {?AggregatableAttributionReportTableModel} */
+let aggregatableAttributionReportTableModel = null;
 
 /**
  * Converts a mojo origin into a user-readable string, omitting default ports.
@@ -727,7 +811,8 @@ function updatePageData() {
   });
 
   updateSources();
-  updateReports();
+  updateReports(AttributionReportType.kEventLevel);
+  updateReports(AttributionReportType.kAggregatableAttribution);
 }
 
 function updateSources() {
@@ -737,10 +822,27 @@ function updateSources() {
   });
 }
 
-function updateReports() {
-  pageHandler.getReports().then((response) => {
-    reportTableModel.setStoredReports(
-        response.reports.map((mojo) => new Report(mojo)));
+/**
+ * @param {!AttributionReportType} reportType
+ */
+function updateReports(reportType) {
+  pageHandler.getReports(reportType).then((response) => {
+    switch (reportType) {
+      case AttributionReportType.kEventLevel:
+        eventLevelReportTableModel.setStoredReports(
+            response.reports
+                .filter((mojo) => mojo.data.eventLevelData !== undefined)
+                .map((mojo) => new EventLevelReport(mojo)));
+        break;
+      case AttributionReportType.kAggregatableAttribution:
+        aggregatableAttributionReportTableModel.setStoredReports(
+            response.reports
+                .filter(
+                    (mojo) =>
+                        mojo.data.aggregatableAttributionData !== undefined)
+                .map((mojo) => new AggregatableAttributionReport(mojo)));
+        break;
+    }
   });
 }
 
@@ -752,7 +854,8 @@ function updateReports() {
  */
 function clearStorage() {
   sourceTableModel.clear();
-  reportTableModel.clear();
+  eventLevelReportTableModel.clear();
+  aggregatableAttributionReportTableModel.clear();
   pageHandler.clearStorage();
 }
 
@@ -763,27 +866,53 @@ function clearStorage() {
  * automatically as reports are deleted, so there's no need to manually refresh
  * the data on completion.
  */
-function sendReports() {
-  const ids = [];
-  reportTableModel.storedReports.forEach((report) => {
-    if (!report.input.disabled && report.input.checked && report.id !== null) {
-      ids.push(report.id);
-    }
-  });
+function sendEventLevelReports() {
+  const ids = eventLevelReportTableModel.getSelectedIDs();
 
   if (ids.length === 0) {
     return;
   }
 
   const button = $('send-reports');
-  const previousText = $('send-reports').innerText;
+  const previousText = button.innerText;
 
   button.disabled = true;
   button.innerText = 'Sending...';
 
-  pageHandler.sendReports(ids).then(() => {
+  pageHandler.sendEventLevelReports(ids).then(() => {
     button.innerText = previousText;
   });
+}
+
+function sendAggregatableAttributionReports() {
+  const ids = aggregatableAttributionReportTableModel.getSelectedIDs();
+
+  if (ids.length === 0) {
+    return;
+  }
+
+  const button = $('send-aggregatable-reports');
+  const previousText = $('send-aggregatable-reports').innerText;
+
+  button.disabled = true;
+  button.innerText = 'Sending...';
+
+  pageHandler.sendAggregatableAttributionReports(ids).then(() => {
+    button.innerText = previousText;
+  });
+}
+
+/**
+ * @param {!WebUIAttributionReport} mojo
+ */
+function addSentOrDroppedReport(mojo) {
+  if (mojo.data.eventLevelData !== undefined) {
+    eventLevelReportTableModel.addSentOrDroppedReport(
+        new EventLevelReport(mojo));
+  } else {
+    aggregatableAttributionReportTableModel.addSentOrDroppedReport(
+        new AggregatableAttributionReport(mojo));
+  }
 }
 
 /** @implements {AttributionInternalsObserverInterface} */
@@ -794,8 +923,8 @@ class Observer {
   }
 
   /** @override */
-  onReportsChanged() {
-    updateReports();
+  onReportsChanged(reportType) {
+    updateReports(reportType);
   }
 
   /** @override */
@@ -805,12 +934,12 @@ class Observer {
 
   /** @override */
   onReportSent(mojo) {
-    reportTableModel.addSentOrDroppedReport(new Report(mojo));
+    addSentOrDroppedReport(mojo);
   }
 
   /** @override */
   onReportDropped(mojo) {
-    reportTableModel.addSentOrDroppedReport(new Report(mojo));
+    addSentOrDroppedReport(mojo);
   }
 }
 
@@ -819,20 +948,35 @@ document.addEventListener('DOMContentLoaded', function() {
   pageHandler = AttributionInternalsHandler.getRemote();
 
   sourceTableModel = new SourceTableModel();
-  reportTableModel = new ReportTableModel();
+  eventLevelReportTableModel = new EventLevelReportTableModel();
+  aggregatableAttributionReportTableModel =
+      new AggregatableAttributionReportTableModel();
 
   $('refresh').addEventListener('click', updatePageData);
   $('clear-data').addEventListener('click', clearStorage);
 
-  const sendReportsButton = $('send-reports');
-  sendReportsButton.addEventListener('click', sendReports);
-  reportTableModel.selectionColumn.selectionChangedListeners.add(
+  const sendEventLevelReportsButton = $('send-reports');
+  sendEventLevelReportsButton.addEventListener('click', sendEventLevelReports);
+  eventLevelReportTableModel.selectionColumn.selectionChangedListeners.add(
       (anySelected) => {
-        sendReportsButton.disabled = !anySelected;
+        sendEventLevelReportsButton.disabled = !anySelected;
+      });
+
+  const sendAggregatableAttributionReportsButton =
+      $('send-aggregatable-reports');
+  sendAggregatableAttributionReportsButton.addEventListener(
+      'click', sendAggregatableAttributionReports);
+  aggregatableAttributionReportTableModel.selectionColumn
+      .selectionChangedListeners.add((anySelected) => {
+        sendAggregatableAttributionReportsButton.disabled = !anySelected;
       });
 
   Table.decorate(getRequiredElement('source-table-wrapper'), sourceTableModel);
-  Table.decorate(getRequiredElement('report-table-wrapper'), reportTableModel);
+  Table.decorate(
+      getRequiredElement('report-table-wrapper'), eventLevelReportTableModel);
+  Table.decorate(
+      getRequiredElement('aggregatable-report-table-wrapper'),
+      aggregatableAttributionReportTableModel);
 
   const receiver = new AttributionInternalsObserverReceiver(new Observer());
   pageHandler.addObserver(receiver.$.bindNewPipeAndPassRemote());

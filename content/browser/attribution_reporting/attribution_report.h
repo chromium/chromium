@@ -9,6 +9,7 @@
 
 #include <vector>
 
+#include "base/containers/enum_set.h"
 #include "base/guid.h"
 #include "base/numerics/checked_math.h"
 #include "base/time/time.h"
@@ -32,6 +33,16 @@ namespace content {
 // report. This class can represent multiple different types of reports.
 class CONTENT_EXPORT AttributionReport {
  public:
+  enum class ReportType {
+    kEventLevel = 0,
+    kAggregatableAttribution = 1,
+    kMinValue = kEventLevel,
+    kMaxValue = kAggregatableAttribution,
+  };
+
+  using ReportTypes =
+      base::EnumSet<ReportType, ReportType::kMinValue, ReportType::kMaxValue>;
+
   // Struct that contains the data specific to the event-level report.
   struct CONTENT_EXPORT EventLevelData {
     using Id = base::StrongAlias<EventLevelData, int64_t>;

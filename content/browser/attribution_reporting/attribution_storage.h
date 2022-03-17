@@ -75,23 +75,16 @@ class AttributionStorage {
   virtual CreateReportResult MaybeCreateAndStoreReport(
       const AttributionTrigger& trigger) = 0;
 
-  // Returns all of the event-level reports that should be sent before
-  // |max_report_time|. This call is logically const, and does not modify the
-  // underlying storage. |limit| limits the number of reports to return; use
-  // a negative number for no limit.
-  // TODO(crbug.com/1285317): Consider removing this interface or changing to
-  // for testing.
-  virtual std::vector<AttributionReport> GetEventLevelReports(
-      base::Time max_report_time,
-      int limit = -1) = 0;
-
   // Returns all of the reports that should be sent before
   // |max_report_time|. This call is logically const, and does not modify the
   // underlying storage. |limit| limits the number of reports to return; use
   // a negative number for no limit. Reports are shuffled before being returned.
   virtual std::vector<AttributionReport> GetAttributionReports(
       base::Time max_report_time,
-      int limit = -1) = 0;
+      int limit = -1,
+      AttributionReport::ReportTypes report_types = {
+          AttributionReport::ReportType::kEventLevel,
+          AttributionReport::ReportType::kAggregatableAttribution}) = 0;
 
   // Returns the first report time strictly after `time`.
   virtual absl::optional<base::Time> GetNextReportTime(base::Time time) = 0;
@@ -99,7 +92,7 @@ class AttributionStorage {
   // Returns the reports with the given IDs. This call is logically const, and
   // does not modify the underlying storage.
   virtual std::vector<AttributionReport> GetReports(
-      const std::vector<AttributionReport::EventLevelData::Id>& ids) = 0;
+      const std::vector<AttributionReport::Id>& ids) = 0;
 
   // Returns all active sources in storage. Active sources are all
   // sources that can still convert. Sources that: are past expiry,

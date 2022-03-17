@@ -184,12 +184,21 @@ base::Value AttributionReport::ReportBody() const {
     }
 
     base::Value operator()(const AggregatableAttributionData& data) {
-      DCHECK(data.assembled_report.has_value());
+      base::Value::DictStorage dict;
+
+      if (data.assembled_report.has_value()) {
+        dict = data.assembled_report->GetAsJson();
+      } else {
+        // This generally should only be called when displaying the report for
+        // debugging/internals.
+        dict.emplace("shared_info", "not generated prior to send");
+        dict.emplace("aggregation_service_payloads",
+                     "not generated prior to send");
+      }
 
       const CommonSourceInfo& common_info =
           report->attribution_info().source.common_info();
 
-      base::Value::DictStorage dict = data.assembled_report->GetAsJson();
       dict.emplace("source_site", common_info.ImpressionSite().Serialize());
       dict.emplace("attribution_destination",
                    common_info.ConversionDestination().Serialize());

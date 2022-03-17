@@ -89,11 +89,11 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   void GetActiveSourcesForWebUI(
       base::OnceCallback<void(std::vector<StoredSource>)> callback) override;
   void GetPendingReportsForInternalUse(
+      AttributionReport::ReportType report_type,
       base::OnceCallback<void(std::vector<AttributionReport>)> callback)
       override;
-  void SendReportsForWebUI(
-      const std::vector<AttributionReport::EventLevelData::Id>& ids,
-      base::OnceClosure done) override;
+  void SendReportsForWebUI(const std::vector<AttributionReport::Id>& ids,
+                           base::OnceClosure done) override;
   void ClearData(base::Time delete_begin,
                  base::Time delete_end,
                  base::RepeatingCallback<bool(const url::Origin&)> filter,
@@ -159,7 +159,7 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   void MaybeSendDebugReport(AttributionReport&&);
 
   void NotifySourcesChanged();
-  void NotifyReportsChanged();
+  void NotifyReportsChanged(AttributionReport::ReportType report_type);
   void NotifySourceDeactivated(const DeactivatedSource& source);
   void NotifyReportSent(bool is_debug_report, AttributionReport, SendResult);
 

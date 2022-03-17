@@ -20,6 +20,9 @@
 <div id="info">
   <p>Attribution reporting is currently <span id="feature-status-content"></span> in this browser.
 </div>
+<div>
+  <span id="debug-mode-content"></span>
+</div>
 <hr>
 <div id="page-content">
   <div>
@@ -30,15 +33,19 @@
   <div class="content">
     <div class="table-wrapper" id="source-table-wrapper"></div>
   </div>
-  <h2> Sent and Pending Reports </h2>
+  <h2> Sent and Pending Event-Level Reports </h2>
   <div class="content">
     <div>
-      <button id="send-reports" disabled>Send Selected Pending Reports</button>
-    </div>
-    <div>
-      <span id="debug-mode-content"></span>
+      <button id="send-reports" disabled>Send Selected Pending Event-Level Reports</button>
     </div>
     <div class="table-wrapper" id="report-table-wrapper"></div>
+  </div>
+  <h2> Sent and Pending Aggregatable Reports </h2>
+  <div class="content">
+    <div>
+      <button id="send-aggregatable-reports" disabled>Send Selected Pending Aggregatable Reports</button>
+    </div>
+    <div class="table-wrapper" id="aggregatable-report-table-wrapper"></div>
   </div>
 </div>
 </body>
