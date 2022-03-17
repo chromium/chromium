@@ -139,7 +139,6 @@ class PrefetchProxyCanaryChecker {
   void ProcessFailure(int net_error);
   void ProcessSuccess();
   void RecordResult(bool success);
-  std::string GetCacheKeyForCurrentNetwork() const;
   std::string AppendNameToHistogram(const std::string& histogram) const;
   absl::optional<bool> LookupAndRunChecksIfNeeded();
   // Sends a check now if the checker is currently inactive. If the check is
@@ -150,6 +149,16 @@ class PrefetchProxyCanaryChecker {
   // the check succeeds, fails and there are no more retries, or the delegate
   // stops the probing.
   void OnCheckEnd(bool success);
+
+  // Updates the cache with the given entry and key. The arguments are in an
+  // unusual order to make BindOnce calls easier, as this method is used as a
+  // callback since generating the cache key happens asynchronously.
+  void UpdateCacheEntry(PrefetchProxyCanaryChecker::CacheEntry entry,
+                        std::string key);
+
+  // Simply sets |latest_cache_key_| to |key|. This method is used as a
+  // callback since generating the cache key happens asynchronously.
+  void UpdateCacheKey(std::string key);
 
   // The current profile, not owned.
   Profile* profile_;
@@ -204,6 +213,12 @@ class PrefetchProxyCanaryChecker {
   // Small LRU cache holding the result of canary checks made for different
   // networks. This cache is not persisted across browser restarts.
   base::LRUCache<std::string, PrefetchProxyCanaryChecker::CacheEntry> cache_;
+
+  // Keeps track of that latest key used to cache the canary checks. This key
+  // changes if the user's network changes. Evaluating the cache key requires
+  // an OS lookup which is slow on android, so we store the latest cache key
+  // evaluation (and use this stale cache keys for lookups).
+  std::string latest_cache_key_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -566,14 +566,3 @@ TEST_F(PrefetchProxyCanaryCheckerTest, CacheEntryAge) {
   histogram_tester.ExpectTotalCount(
       "PrefetchProxy.CanaryChecker.CacheEntryAge.DNS", 2);
 }
-
-TEST_F(PrefetchProxyCanaryCheckerTest, GenerateCacheEntryHistogram) {
-  base::HistogramTester histogram_tester;
-  GURL probe_url("https://probe-url.com");
-
-  std::unique_ptr<TestPrefetchProxyCanaryChecker> checker =
-      MakeChecker(probe_url);
-  checker->RunChecksIfNeeded();
-  histogram_tester.ExpectTotalCount(
-      "PrefetchProxy.CanaryChecker.GenerateCacheKey.DNS", 1);
-}

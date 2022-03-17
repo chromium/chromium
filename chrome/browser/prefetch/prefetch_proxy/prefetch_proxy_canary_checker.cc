@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/thread_pool.h"
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
 #include "build/build_config.h"
@@ -52,8 +53,6 @@ const char kAttemptsBeforeSuccessHistogram[] =
 const char kNetErrorHistogram[] = "PrefetchProxy.CanaryChecker.NetError";
 const char kCacheEntryAgeHistogram[] =
     "PrefetchProxy.CanaryChecker.CacheEntryAge";
-const char kGenerateCacheKeyHistogram[] =
-    "PrefetchProxy.CanaryChecker.GenerateCacheKey";
 const char kCacheLookupResult[] =
     "PrefetchProxy.CanaryChecker.CacheLookupResult";
 
@@ -158,7 +157,6 @@ PrefetchProxyCanaryChecker::PrefetchProxyCanaryChecker(
       revalidate_cache_after_(revalidate_cache_after),
       tick_clock_(tick_clock),
       clock_(clock),
-      network_connection_tracker_(nullptr),
       cache_(kMaxCacheSize),
       weak_factory_(this) {
   // The NetworkConnectionTracker can only be used directly on the UI thread.
@@ -176,11 +174,34 @@ PrefetchProxyCanaryChecker::AsWeakPtr() const {
   return weak_factory_.GetWeakPtr();
 }
 
+void PrefetchProxyCanaryChecker::UpdateCacheEntry(
+    PrefetchProxyCanaryChecker::CacheEntry entry,
+    std::string key) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  latest_cache_key_ = key;
+  cache_.Put(key, entry);
+}
+
+void PrefetchProxyCanaryChecker::UpdateCacheKey(std::string key) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  latest_cache_key_ = key;
+}
+
 void PrefetchProxyCanaryChecker::OnCheckEnd(bool success) {
   PrefetchProxyCanaryChecker::CacheEntry entry;
   entry.success = success;
   entry.last_modified = clock_->Now();
-  cache_.Put(GetCacheKeyForCurrentNetwork(), entry);
+
+  // We have the check result and we need to store it in the cache, keyed on
+  // the current network key. Getting the network key on Android can be slow
+  // so we do this asynchronously. Note that this is fundamentally racy: the
+  // network might have changed since we completed the check. Fortunately, the
+  // impact of using the wrong key is limited: we might simply filter probe when
+  // we don't have to or fail to filter probe when we should.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(GenerateNetworkID, network_connection_tracker_),
+      base::BindOnce(&PrefetchProxyCanaryChecker::UpdateCacheEntry,
+                     weak_factory_.GetWeakPtr(), entry));
 
   DCHECK(time_when_set_active_.has_value());
   base::TimeDelta active_time = clock_->Now() - time_when_set_active_.value();
@@ -306,7 +327,16 @@ void PrefetchProxyCanaryChecker::RunChecksIfNeeded() {
 absl::optional<bool> PrefetchProxyCanaryChecker::LookupAndRunChecksIfNeeded() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto it = cache_.Get(GetCacheKeyForCurrentNetwork());
+  // Asynchronously update the network cache key. On Android, getting the
+  // network cache key can be very slow, so we don't want to block the main
+  // thread.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(GenerateNetworkID, network_connection_tracker_),
+      base::BindOnce(&PrefetchProxyCanaryChecker::UpdateCacheKey,
+                     weak_factory_.GetWeakPtr()));
+  // Assume the cache key has not changed since last time we checked it. Note
+  // that if we have never set latest_cache_key_, |it| will be cache_.end().
+  auto it = cache_.Get(latest_cache_key_);
   if (it == cache_.end()) {
     SendNowIfInactive();
     return absl::optional<bool>();
@@ -329,17 +359,6 @@ absl::optional<bool> PrefetchProxyCanaryChecker::LookupAndRunChecksIfNeeded() {
   }
 
   return entry.success;
-}
-
-std::string PrefetchProxyCanaryChecker::GetCacheKeyForCurrentNetwork() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const base::Time start(clock_->Now());
-  const std::string key = base::StringPrintf(
-      "%s;%s:%d", GenerateNetworkID(network_connection_tracker_).c_str(),
-      url_.host().c_str(), url_.EffectiveIntPort());
-  UmaHistogramTimes(AppendNameToHistogram(kGenerateCacheKeyHistogram),
-                    clock_->Now() - start);
-  return key;
 }
 
 std::string PrefetchProxyCanaryChecker::AppendNameToHistogram(
