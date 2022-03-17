@@ -10,8 +10,6 @@
 #include "ash/public/cpp/session/session_controller.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/task/post_task.h"
-#include "base/task/task_traits.h"
 #include "chrome/browser/ash/login/auth/chrome_cryptohome_authenticator.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/saml/password_change_success_notification.h"
@@ -105,8 +103,8 @@ InSessionPasswordChangeManager* g_test_instance = nullptr;
 
 // Traits for running RecheckPasswordExpiryTask.
 // Runs from the UI thread to show notification.
-const base::TaskTraits kRecheckTaskTraits = {
-    content::BrowserThread::UI, base::TaskPriority::BEST_EFFORT,
+const content::BrowserTaskTraits kRecheckUITaskTraits = {
+    base::TaskPriority::BEST_EFFORT,
     base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN};
 
 // A time delta of length one hour.
@@ -145,7 +143,8 @@ void RecheckPasswordExpiryTask::Recheck() {
 
 void RecheckPasswordExpiryTask::RecheckAfter(base::TimeDelta delay) {
   CancelPendingRecheck();
-  base::PostDelayedTask(FROM_HERE, kRecheckTaskTraits,
+  content::GetUIThreadTaskRunner(kRecheckUITaskTraits)
+      ->PostDelayedTask(FROM_HERE,
                         base::BindOnce(&RecheckPasswordExpiryTask::Recheck,
                                        weak_ptr_factory_.GetWeakPtr()),
                         std::max(delay, kOneHour));
