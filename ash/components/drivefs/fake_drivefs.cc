@@ -4,6 +4,7 @@
 
 #include "ash/components/drivefs/fake_drivefs.h"
 
+#include <algorithm>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -528,7 +529,20 @@ void FakeDriveFs::ToggleSyncForPath(
     const base::FilePath& path,
     drivefs::mojom::MirrorPathStatus status,
     drivefs::mojom::DriveFs::ToggleSyncForPathCallback callback) {
+  if (status == drivefs::mojom::MirrorPathStatus::kStart) {
+    syncing_paths_.push_back(path);
+  } else {
+    // status == drivefs::mojom::MirrorPathStatus::kStop.
+    auto element =
+        std::find(syncing_paths_.begin(), syncing_paths_.end(), path);
+    syncing_paths_.erase(element);
+  }
   std::move(callback).Run(drive::FileError::FILE_ERROR_OK);
+}
+
+void FakeDriveFs::GetSyncingPaths(
+    drivefs::mojom::DriveFs::GetSyncingPathsCallback callback) {
+  std::move(callback).Run(drive::FILE_ERROR_OK, syncing_paths_);
 }
 
 }  // namespace drivefs

@@ -115,6 +115,9 @@ interface DriveFs {
   // Toggle syncing for supplied path.
   ToggleSyncForPath(mojo_base.mojom.FilePath path,
                     MirrorPathStatus status) => (FileError error);
+
+  // Retrieves a list of paths being synced.
+  GetSyncingPaths() => (FileError error, array<mojo_base.mojom.FilePath> paths);
 };
 
 // Implemented by Chrome, used from DriveFS.

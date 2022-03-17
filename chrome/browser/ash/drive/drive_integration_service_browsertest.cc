@@ -394,6 +394,21 @@ class DriveIntegrationBrowserTestWithMirrorSyncEnabled
     drive_service->RemoveObserver(observer.get());
   }
 
+  void AddSyncingPath(const base::FilePath& path) {
+    auto* drive_service =
+        DriveIntegrationServiceFactory::FindForProfile(browser()->profile());
+
+    base::RunLoop run_loop;
+    auto quit_closure = run_loop.QuitClosure();
+    drive_service->ToggleSyncForPath(
+        path, drivefs::mojom::MirrorPathStatus::kStart,
+        base::BindLambdaForTesting([quit_closure](FileError status) {
+          EXPECT_EQ(FILE_ERROR_OK, status);
+          quit_closure.Run();
+        }));
+    run_loop.Run();
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -465,6 +480,52 @@ IN_PROC_BROWSER_TEST_F(DriveIntegrationBrowserTestWithMirrorSyncEnabled,
         base::FilePath("/fake/path"), drivefs::mojom::MirrorPathStatus::kStart,
         base::BindLambdaForTesting([quit_closure](FileError status) {
           EXPECT_EQ(FILE_ERROR_OK, status);
+          quit_closure.Run();
+        }));
+    run_loop.Run();
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(DriveIntegrationBrowserTestWithMirrorSyncEnabled,
+                       GetSyncingPaths_MirroringDisabled) {
+  auto* drive_service =
+      DriveIntegrationServiceFactory::FindForProfile(browser()->profile());
+
+  {
+    base::RunLoop run_loop;
+    auto quit_closure = run_loop.QuitClosure();
+    drive_service->GetSyncingPaths(base::BindLambdaForTesting(
+        [quit_closure](drive::FileError status,
+                       const std::vector<base::FilePath>& paths) {
+          EXPECT_EQ(drive::FILE_ERROR_SERVICE_UNAVAILABLE, status);
+          EXPECT_EQ(0, paths.size());
+          quit_closure.Run();
+        }));
+    run_loop.Run();
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(DriveIntegrationBrowserTestWithMirrorSyncEnabled,
+                       GetSyncingPaths_MirroringEnabled) {
+  auto* drive_service =
+      DriveIntegrationServiceFactory::FindForProfile(browser()->profile());
+
+  const base::FilePath sync_path("/fake/path");
+
+  // Enable mirror sync and add |sync_path| that we expect to return from
+  // |GetSyncingPaths|.
+  ToggleMirrorSync(true);
+  AddSyncingPath(sync_path);
+
+  {
+    base::RunLoop run_loop;
+    auto quit_closure = run_loop.QuitClosure();
+    drive_service->GetSyncingPaths(base::BindLambdaForTesting(
+        [quit_closure, sync_path](drive::FileError status,
+                                  const std::vector<base::FilePath>& paths) {
+          EXPECT_EQ(drive::FILE_ERROR_OK, status);
+          EXPECT_EQ(1, paths.size());
+          EXPECT_EQ(sync_path, paths[0]);
           quit_closure.Run();
         }));
     run_loop.Run();

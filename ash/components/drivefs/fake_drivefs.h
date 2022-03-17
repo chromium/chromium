@@ -154,6 +154,9 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
       drivefs::mojom::MirrorPathStatus status,
       drivefs::mojom::DriveFs::ToggleSyncForPathCallback callback) override;
 
+  void GetSyncingPaths(
+      drivefs::mojom::DriveFs::GetSyncingPathsCallback callback) override;
+
   const base::FilePath mount_path_;
   int64_t next_stable_id_ = 1;
 
@@ -164,6 +167,8 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
   mojo::Receiver<drivefs::mojom::DriveFsBootstrap> bootstrap_receiver_{this};
   mojo::PendingReceiver<drivefs::mojom::DriveFsDelegate>
       pending_delegate_receiver_;
+
+  std::vector<base::FilePath> syncing_paths_;
 
   base::WeakPtrFactory<FakeDriveFs> weak_factory_{this};
 };

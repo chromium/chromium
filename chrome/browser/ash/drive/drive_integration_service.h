@@ -250,6 +250,10 @@ class DriveIntegrationService : public KeyedService,
       drivefs::mojom::MirrorPathStatus status,
       drivefs::mojom::DriveFs::ToggleSyncForPathCallback callback);
 
+  // Retrieves a list of paths being synced.
+  void GetSyncingPaths(
+      drivefs::mojom::DriveFs::GetSyncingPathsCallback callback);
+
   // Returns whether mirroring is enabled.
   bool IsMirroringEnabled();
 
