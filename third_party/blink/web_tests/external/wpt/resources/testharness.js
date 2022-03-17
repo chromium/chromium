@@ -648,7 +648,7 @@
     /**
      * Create a promise test.
      *
-     * Promise tests are tests which are represeted by a promise
+     * Promise tests are tests which are represented by a promise
      * object. If the promise is fulfilled the test passes, if it's
      * rejected the test fails, otherwise the test passes.
      *

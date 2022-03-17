@@ -213186,6 +213186,19 @@
        {}
       ]
      ],
+     "visited-inheritance.html": [
+      "1442307a9293ed0b26970dd25e70e8c57fef8ee8",
+      [
+       null,
+       [
+        [
+         "/css/selectors/visited-inheritance-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "xml-class-selector.xml": [
       "5666c0065d6262e0ca3c586d145a67e7f9c2a3cf",
       [
@@ -244575,6 +244588,10 @@
       ],
       "animation-composition-valid.tentative-expected.txt": [
        "0f58883c97448d970d76b822f26f36efe3f14489",
+       []
+      ],
+      "animation-computed-expected.txt": [
+       "7cf62fe5bbfce3752012ad4adfe7773b7ce127ce",
        []
       ],
       "animation-name-invalid-expected.txt": [
@@ -281206,6 +281223,10 @@
       "60549107fbeec9ba2ae7c07bcf3afe5d5bc94b34",
       []
      ],
+     "visited-inheritance-ref.html": [
+      "64300b13f4291f416eac17f70ff62e2febf604fe",
+      []
+     ],
      "xml-class-selector-ref.xml": [
       "6b44280737ab254649036ff50808b764bc87cc67",
       []
@@ -282057,7 +282078,7 @@
       []
      ],
      "testdriver.md": [
-      "dd751c3b7668790054d68cd1858b7ec0e7de89c6",
+      "37ceb1ca4776235d4abaacb97b99f04190e7bcc2",
       []
      ],
      "testharness-api.md": [
@@ -314364,7 +314385,7 @@
      []
     ],
     "testdriver-actions.js": [
-     "ef097961fa7d51ba05bba4c90806b0aceb24bba8",
+     "3e5ba74b4cab356e56c73a4662e8f4b91dddf6de",
      []
     ],
     "testdriver-vendor.js": [
@@ -314384,7 +314405,7 @@
      []
     ],
     "testharness.js": [
-     "fcff33a59406ced4ef0b3a2da1afde19418cf5c2",
+     "a6f48e1f943b9952a8fbe5d882278c2cfb86baba",
      []
     ],
     "testharness.js.headers": [
@@ -361509,7 +361530,7 @@
        ]
       ],
       "animation-computed.html": [
-       "467f4357f102fb75ed8df196d221d83cd2efdabc",
+       "f8d34b889ba19dfc7d9fd4d644da499b979d4166",
        [
         null,
         {}
@@ -381459,7 +381480,7 @@
      ],
      "parsing": {
       "transition-computed.html": [
-       "3f253c3a0d1fbe2193bc101872ad67e4a24835cc",
+       "a82551372f160fa77fdd0dcc7ac7d62d546db20d",
        [
         null,
         {}
@@ -528044,6 +528065,13 @@
      ],
      "script-element-removal.https.tentative.html": [
       "a46ce3bbf85a5e9fcbd64223cffab094a55f3436",
+      [
+       null,
+       {}
+      ]
+     ],
+     "script-invalid-json.https.tentative.html": [
+      "57bd82c39d32a8183895efb16ecb8cc370d4d5eb",
       [
        null,
        {}

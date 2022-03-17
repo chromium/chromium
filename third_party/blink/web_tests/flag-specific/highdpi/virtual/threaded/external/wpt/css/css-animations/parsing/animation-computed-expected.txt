@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+FAIL Default animation value assert_equals: expected "0s ease 0s 1 normal none running none" but got "none 0s ease 0s 1 normal none running"
+PASS Property animation value '1s'
+PASS Property animation value 'cubic-bezier(0, -2, 1, 3)'
+PASS Property animation value '1s -3s'
+PASS Property animation value '4'
+PASS Property animation value 'reverse'
+PASS Property animation value 'both'
+PASS Property animation value 'paused'
+PASS Property animation value 'none'
+PASS Property animation value 'anim'
+PASS Property animation value 'anim paused both reverse 4 1s -3s cubic-bezier(0, -2, 1, 3)'
+PASS Property animation value 'anim paused both reverse, 4 1s -3s cubic-bezier(0, -2, 1, 3)'
+Harness: the test ran to completion.
+
