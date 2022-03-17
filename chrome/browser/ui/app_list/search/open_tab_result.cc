@@ -75,7 +75,9 @@ OpenTabResult::OpenTabResult(Profile* profile,
   SetMetricsType(ash::OPEN_TAB);
   SetCategory(Category::kWeb);
 
-  UpdateRelevance(query);
+  // Derive relevance from omnibox relevance and normalize it to [0, 1].
+  set_relevance(match_.relevance / kMaxOmniboxScore);
+
   UpdateText();
   UpdateIcon();
 }
@@ -93,32 +95,28 @@ absl::optional<std::string> OpenTabResult::DriveId() const {
   return drive_id_;
 }
 
-void OpenTabResult::UpdateRelevance(const TokenizedString& query) {
-  TokenizedString title(match_.contents, TokenizedString::Mode::kCamelCase);
-  TokenizedStringMatch match;
-  if (!match.Calculate(query, title)) {
-    // TODO(crbug.com/1293702): Low-scoring results are filtered out here
-    // because the browser-side provider currently only does very basic
-    // filtering.
-    scoring().filter = true;
-  }
-  set_relevance(match.relevance());
-}
-
 void OpenTabResult::UpdateText() {
   // URL results from the Omnibox have the page title stored in
   // `match.description`.
   SetTitle(match_.description);
 
   std::u16string url = base::UTF8ToUTF16(match_.destination_url.spec());
+  // TODO(crbug.com/1293702): This displays
+  //   Go to tab - [url]
+  // which should be switched to
+  //   [url] - Go to tab
+  // once the SetElidable behavior is implemented in ash. The accessible name
+  // should also be updated accordingly.
   SetDetailsTextVector(
-      {CreateStringTextItem(url).SetTextTags({Tag(Tag::URL, 0, url.length())}),
+      {CreateStringTextItem(IDS_APP_LIST_OPEN_TAB_HINT).SetElidable(false),
        CreateStringTextItem(kUrlDelimiter),
-       CreateStringTextItem(IDS_APP_LIST_OPEN_TAB_HINT).SetElidable(false)});
+       CreateStringTextItem(url).SetTextTags(
+           {Tag(Tag::URL, 0, url.length())})});
 
-  SetAccessibleName(
-      base::StrCat({match_.description, kA11yDelimiter, url, kA11yDelimiter,
-                    l10n_util::GetStringUTF16(IDS_APP_LIST_OPEN_TAB_HINT)}));
+  SetAccessibleName(base::JoinString(
+      {match_.description,
+       l10n_util::GetStringUTF16(IDS_APP_LIST_OPEN_TAB_HINT), url},
+      kA11yDelimiter));
 }
 
 void OpenTabResult::UpdateIcon() {

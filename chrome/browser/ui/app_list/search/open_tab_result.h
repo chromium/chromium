@@ -35,7 +35,6 @@ class OpenTabResult : public ChromeSearchResult {
   absl::optional<std::string> DriveId() const override;
 
  private:
-  void UpdateRelevance(const chromeos::string_matching::TokenizedString& query);
   void UpdateText();
   void UpdateIcon();
   void OnFaviconFetched(const gfx::Image& icon);
