@@ -46,8 +46,6 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/tab_title"
                 android:gravity="center_horizontal"
-                android:adjustViewBounds="true"
-                android:scaleType="fitCenter"
                 android:importantForAccessibility="no"
                 android:src="@color/thumbnail_placeholder_on_primary_bg"
                 style="?attr/tabGridThumbnailStyle"/>

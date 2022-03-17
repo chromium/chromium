@@ -15,6 +15,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -28,6 +29,7 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ButtonCompat;
@@ -138,6 +140,14 @@ class TabGridViewBinder {
             updateThumbnail(view, model);
         } else if (TabProperties.CONTENT_DESCRIPTION_STRING == propertyKey) {
             view.setContentDescription(model.get(TabProperties.CONTENT_DESCRIPTION_STRING));
+        } else if (TabProperties.GRID_CARD_HEIGHT == propertyKey) {
+            view.setMinimumHeight(model.get(TabProperties.GRID_CARD_HEIGHT));
+            view.getLayoutParams().height = model.get(TabProperties.GRID_CARD_HEIGHT);
+            view.setLayoutParams(view.getLayoutParams());
+        } else if (TabProperties.GRID_CARD_WIDTH == propertyKey) {
+            view.setMinimumWidth(model.get(TabProperties.GRID_CARD_WIDTH));
+            view.getLayoutParams().width = model.get(TabProperties.GRID_CARD_WIDTH);
+            view.setLayoutParams(view.getLayoutParams());
         }
     }
 
@@ -326,6 +336,13 @@ class TabGridViewBinder {
         TabGridThumbnailView thumbnail =
                 (TabGridThumbnailView) view.fastFindViewById(R.id.tab_thumbnail);
         thumbnail.maybeAdjustThumbnailHeight();
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(view.getContext())
+            && TabUiFeatureUtilities.isGridTabSwitcherEnabled(view.getContext())) {
+            thumbnail.setScaleType(ScaleType.CENTER_CROP);
+        } else {
+            thumbnail.setScaleType(ScaleType.FIT_CENTER);
+            thumbnail.setAdjustViewBounds(true);
+        }
         if (fetcher == null) {
             thumbnail.setImageDrawable(null);
             return;

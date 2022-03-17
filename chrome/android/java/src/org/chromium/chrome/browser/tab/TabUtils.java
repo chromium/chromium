@@ -36,8 +36,6 @@ import org.chromium.url.GURL;
 public class TabUtils {
     private static final String REQUEST_DESKTOP_SCREEN_WIDTH_PARAM = "screen_width_dp";
     @VisibleForTesting
-    static final float TABLET_LANDSCAPE_TAB_THUMBNAIL_ASPECT_RATIO = 1.33f;
-    @VisibleForTesting
     static final float TAB_THUMBNAIL_ASPECT_RATIO = 0.85f;
     // Do not instantiate this class.
     private TabUtils() {}
@@ -172,7 +170,8 @@ public class TabUtils {
         if (context != null && DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
                 && context.getResources().getConfiguration().orientation
                         == Configuration.ORIENTATION_LANDSCAPE) {
-            return TABLET_LANDSCAPE_TAB_THUMBNAIL_ASPECT_RATIO;
+            return (context.getResources().getConfiguration().screenWidthDp * 1f)
+                    / (context.getResources().getConfiguration().screenHeightDp * 1f);
         }
 
         return TAB_THUMBNAIL_ASPECT_RATIO;
