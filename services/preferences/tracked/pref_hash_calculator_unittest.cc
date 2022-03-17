@@ -87,10 +87,9 @@ TEST(PrefHashCalculatorTest, CatchHashChanges) {
   nested_empty_dict.SetKey("a", base::DictionaryValue());
   nested_empty_dict.SetKey("b", base::ListValue());
   base::ListValue nested_empty_list;
-  nested_empty_list.Append(std::make_unique<base::DictionaryValue>());
-  nested_empty_list.Append(std::make_unique<base::ListValue>());
-  nested_empty_list.Append(
-      std::make_unique<base::Value>(nested_empty_dict.Clone()));
+  nested_empty_list.Append(base::Value(base::Value::Type::DICTIONARY));
+  nested_empty_list.Append(base::Value(base::Value::Type::LIST));
+  nested_empty_list.Append(nested_empty_dict.Clone());
 
   // A dictionary with an empty dictionary, an empty list, and nested empty
   // dictionaries/lists in it.
