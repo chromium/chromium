@@ -340,9 +340,7 @@ class RepeatingCallbackList
   }
 };
 
-// Syntactic sugar to parallel that used for Callbacks.
-// ClosureList explicitly not provided since it is not used, and CallbackList
-// is deprecated. {Once,Repeating}ClosureList should instead be used.
+// Syntactic sugar to parallel that used for {Once,Repeating}Callbacks.
 using OnceClosureList = OnceCallbackList<void()>;
 using RepeatingClosureList = RepeatingCallbackList<void()>;
 
