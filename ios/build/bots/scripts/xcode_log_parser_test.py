@@ -165,12 +165,6 @@ TESTS_REF = """
                             "testStatus": {
                               "_value": "Failure"
                             },
-                            "duration" : {
-                              "_type" : {
-                                 "_name" : "Double"
-                              },
-                              "_value" : "45.258606716156"
-                            },
                             "identifier": {
                               "_value": "PageStateTestCase\/testZeroContentOffsetAfterLoad"
                             },
@@ -513,7 +507,7 @@ class XCode11LogParserTest(test_runner_test.TestCase):
       if test_result.name == 'PageStateTestCase/testZeroContentOffsetAfterLoad':
         seen_failed_test = True
         self.assertEqual(test_result.test_log, expected_failure_log)
-        self.assertEqual(test_result.duration, 45258)
+        self.assertEqual(test_result.duration, None)
         crash_file_name = (
             'attempt_0_PageStateTestCase_testZeroContentOffsetAfterLoad_'
             'Crash_3F0A2B1C-7ADA-436E-A54C-D4C39B8411F8.crash'

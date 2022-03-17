@@ -236,9 +236,11 @@ class Xcode11LogParser(object):
           continue
         for test in test_suite['subtests']['_values']:
           test_name = _sanitize_str(test['identifier']['_value'])
-          # Raw duration is a str in seconds with decimals. Convert to
-          # milliseconds as int as used in |TestResult|.
-          duration = int(float(test['duration']['_value']) * 1000)
+          duration = test.get('duration', {}).get('_value')
+          if duration:
+            # Raw duration is a str in seconds with decimals if it exists.
+            # Convert to milliseconds as int as used in |TestResult|.
+            duration = int(float(duration) * 1000)
           if any(
               test_name.endswith(suffix)
               for suffix in SYSTEM_ERROR_TEST_NAME_SUFFIXES):
