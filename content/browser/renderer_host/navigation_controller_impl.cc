@@ -3188,13 +3188,24 @@ NavigationControllerImpl::DetermineActionForHistoryNavigation(
   if (!new_item)
     return HistoryNavigationAction::kStopLooking;
 
-  // If there is no old FrameNavigationEntry, schedule a different-document
-  // load.
-  //
-  // TODO(creis): Store the last committed FrameNavigationEntry to use here,
-  // rather than assuming the NavigationEntry has up to date info on subframes.
+  // Use the RenderFrameHost's last committed FrameNavigationEntry to identify
+  // which history item it is currently on, since this may be different than the
+  // FrameNavigationEntry for the frame in the last committed NavigationEntry
+  // (e.g., if a history navigation is targeting multiple frames and only some
+  // have committed so far).
   FrameNavigationEntry* old_item =
-      GetLastCommittedEntry()->GetFrameEntry(frame);
+      frame->current_frame_host()->last_committed_frame_entry();
+  if (!old_item) {
+    // In cases where the RenderFrameHost does not have a FrameNavigationEntry,
+    // fall back to the last committed NavigationEntry's record for this frame.
+    // This may happen in cases like the initial state of the RenderFrameHost.
+    // TODO(https://crbug.com/1304466): Ensure the RenderFrameHost always has an
+    // accurate FrameNavigationEntry and eliminate this case.
+    old_item = GetLastCommittedEntry()->GetFrameEntry(frame);
+  }
+  // If neither approach finds a FrameNavigationEntry, schedule a
+  // different-document load.
+  // TODO(https://crbug.com/608402): Remove this case.
   if (!old_item)
     return HistoryNavigationAction::kDifferentDocument;
 

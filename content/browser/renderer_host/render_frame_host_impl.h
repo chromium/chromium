@@ -46,6 +46,7 @@
 #include "content/browser/renderer_host/browsing_context_state.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/renderer_host/cross_origin_opener_policy_access_report_manager.h"
+#include "content/browser/renderer_host/frame_navigation_entry.h"
 #include "content/browser/renderer_host/keep_alive_handle_factory.h"
 #include "content/browser/renderer_host/media/render_frame_audio_input_stream_factory.h"
 #include "content/browser/renderer_host/media/render_frame_audio_output_stream_factory.h"
@@ -819,6 +820,16 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // such as for a new subframe navigation in a different frame.
   int nav_entry_id() const { return nav_entry_id_; }
   void set_nav_entry_id(int nav_entry_id) { nav_entry_id_ = nav_entry_id; }
+
+  // The FrameNavigationEntry for the current document in this RenderFrameHost.
+  // See last_committed_frame_entry_ declaration for more details.
+  FrameNavigationEntry* last_committed_frame_entry() {
+    return last_committed_frame_entry_.get();
+  }
+  void set_last_committed_frame_entry(
+      scoped_refptr<FrameNavigationEntry> frame_entry) {
+    last_committed_frame_entry_ = frame_entry;
+  }
 
   // Return true if this contains at least one NavigationRequest waiting to
   // commit in this RenderFrameHost. This includes both same-document and
@@ -3367,6 +3378,16 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Note that that means this value is scoped to a given FrameTree and the
   // cases when a FrameTree embeds another FrameTree are not reflected here.
   const unsigned int depth_ = 0u;
+
+  // The FrameNavigationEntry for the current document in this RenderFrameHost,
+  // shared with any NavigationEntries that reference it. Updated after every
+  // commit.
+  // For now, there are cases when this can be null (e.g., initial state, or
+  // cases from https://crbug.com/608402 when the FrameNavigationEntry is
+  // missing for a frame).
+  // TODO(https://crbug.com/1304466): Ensure this is always set, and use it to
+  // avoid separately storing the last committed URL and origin here.
+  scoped_refptr<FrameNavigationEntry> last_committed_frame_entry_;
 
   // Tracks this frame's last committed navigation's URL. Note that this will be
   // empty before the first commit in this *RenderFrameHost*, even if the

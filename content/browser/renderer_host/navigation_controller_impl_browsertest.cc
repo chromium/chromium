@@ -6265,6 +6265,139 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ(grandchild_url, root->child_at(0)->child_at(0)->current_url());
 }
 
+// Verify that an iframe is not reloaded after going back same-document to a
+// NavigationEntry before the iframe was created, and then forward again.
+// Prevents regression of https://crbug.com/1301985.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       FrameNavigationEntry_BackForwardAcrossSubframeCreation) {
+  GURL main_url(embedded_test_server()->GetURL(
+      "/navigation_controller/simple_page_1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+
+  // 1. Perform a same-document navigation.
+  {
+    FrameNavigateParamsCapturer capturer(root);
+    std::string script = "history.pushState({}, 'foo', 'foo')";
+    EXPECT_TRUE(ExecJs(root, script));
+    capturer.Wait();
+    EXPECT_EQ(NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY, capturer.navigation_type());
+    EXPECT_TRUE(capturer.is_same_document());
+  }
+
+  // 2. Create an iframe to about:blank and inject content.
+  GURL blank_url(url::kAboutBlankURL);
+  {
+    LoadCommittedCapturer capturer(shell()->web_contents());
+    EXPECT_TRUE(ExecJs(root, JsReplace(kAddFrameWithSrcScript, blank_url)));
+    capturer.Wait();
+    EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
+        capturer.transition_type(), ui::PAGE_TRANSITION_AUTO_SUBFRAME));
+    EXPECT_TRUE(ExecJs(root->child_at(0), "foo=3;"));
+  }
+
+  // 3. Perform a same-document back navigation, to a NavigationEntry before the
+  // iframe existed.
+  {
+    TestNavigationObserver back_load_observer(shell()->web_contents());
+    shell()->web_contents()->GetController().GoBack();
+    back_load_observer.Wait();
+  }
+
+  // 4. Perform a same-document forward navigation. Wait for all navigations to
+  // stop, in case subframes are navigated as well.
+  {
+    TestNavigationObserver forward_load_observer(shell()->web_contents());
+    shell()->web_contents()->GetController().GoForward();
+    forward_load_observer.Wait();
+    EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  }
+
+  // Ensure the injected content is still present in the iframe to verify that
+  // it was not reloaded. See https://crbug.com/1301985.
+  EXPECT_EQ(3, EvalJs(root->child_at(0), "foo"));
+}
+
+// Verify that an iframe ends up at the correct URL if going forward from a
+// NavigationEntry created before it existed to one where its URL must change.
+// See https://crbug.com/1301985 and
+// FrameNavigationEntry_BackForwardAcrossSubframeCreation.
+IN_PROC_BROWSER_TEST_P(
+    NavigationControllerBrowserTest,
+    FrameNavigationEntry_BackForwardAcrossSubframeCreationCrossDocument) {
+  GURL main_url(embedded_test_server()->GetURL(
+      "/navigation_controller/simple_page_1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+
+  // 1. Perform a same-document navigation.
+  {
+    FrameNavigateParamsCapturer capturer(root);
+    std::string script = "history.pushState({}, 'foo', 'foo')";
+    EXPECT_TRUE(ExecJs(root, script));
+    capturer.Wait();
+    EXPECT_EQ(NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY, capturer.navigation_type());
+    EXPECT_TRUE(capturer.is_same_document());
+  }
+
+  // 2. Create an iframe to about:blank and inject content.
+  GURL child_url1(embedded_test_server()->GetURL(
+      "/navigation_controller/simple_page_2.html"));
+  {
+    LoadCommittedCapturer capturer(shell()->web_contents());
+    EXPECT_TRUE(ExecJs(root, JsReplace(kAddFrameWithSrcScript, child_url1)));
+    capturer.Wait();
+    EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
+        capturer.transition_type(), ui::PAGE_TRANSITION_AUTO_SUBFRAME));
+    EXPECT_TRUE(ExecJs(root->child_at(0), "foo=3;"));
+  }
+
+  // 3. Navigate the iframe to another document.
+  GURL child_url2(embedded_test_server()->GetURL(
+      "foo.com", "/navigation_controller/page_with_links.html"));
+  {
+    LoadCommittedCapturer capturer(root->child_at(0));
+    std::string script = JsReplace("frames[0].location = $1;", child_url2);
+    EXPECT_TRUE(ExecJs(root, script));
+    capturer.Wait();
+    EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
+        capturer.transition_type(), ui::PAGE_TRANSITION_MANUAL_SUBFRAME));
+  }
+  EXPECT_EQ(child_url2, root->child_at(0)->current_url());
+
+  // 4. Perform a cross-document back navigation within the iframe.
+  {
+    TestNavigationObserver back_load_observer(shell()->web_contents());
+    shell()->web_contents()->GetController().GoBack();
+    back_load_observer.Wait();
+  }
+  EXPECT_EQ(child_url1, root->child_at(0)->current_url());
+
+  // 5. Perform a same-document back navigation, to a NavigationEntry before the
+  // iframe existed.
+  {
+    TestNavigationObserver back_load_observer(shell()->web_contents());
+    shell()->web_contents()->GetController().GoBack();
+    back_load_observer.Wait();
+  }
+  EXPECT_EQ(child_url1, root->child_at(0)->current_url());
+
+  // 6. Go forward two entries (cross-document in the iframe) and wait for all
+  // navigations to stop. Checking the URL in this case ensures that we do not
+  // incorrectly skip navigating the iframe if it needs to be navigated.
+  {
+    TestNavigationObserver forward_load_observer(shell()->web_contents());
+    shell()->web_contents()->GetController().GoToOffset(2);
+    forward_load_observer.Wait();
+    EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  }
+  EXPECT_EQ(child_url2, root->child_at(0)->current_url());
+}
+
 // Verify that the main frame can navigate a grandchild frame to about:blank,
 // even if GetFrameEntry might not find the corresponding FrameNavigationEntry
 // due to https://crbug.com/608402.  Prevents regression of

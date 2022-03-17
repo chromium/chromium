@@ -30,6 +30,11 @@ class SubresourceWebBundleNavigationInfo;
 // frame.
 //
 // This class is refcounted and can be shared across multiple NavigationEntries.
+// Each RenderFrameHost also keeps a scoped_refptr to its last committed
+// FrameNavigationEntry, to accurately track its current state in cases when the
+// last committed NavigationEntry may not match (e.g., when missing the
+// relevant FrameNavigationEntry or during a history navigation targeting
+// multiple frames while only some have committed.)
 class CONTENT_EXPORT FrameNavigationEntry
     : public base::RefCounted<FrameNavigationEntry> {
  public:
