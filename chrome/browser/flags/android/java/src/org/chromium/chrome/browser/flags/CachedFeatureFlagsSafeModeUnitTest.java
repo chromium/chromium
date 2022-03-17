@@ -312,6 +312,40 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         // TODO(crbug.com/1217708): Assert cached flags values are false/false.
     }
 
+    @Test
+    public void testMultipleStartCheckpoints_normalMode() {
+        startRun();
+        // Crash streak is 0. Do not engage Safe Mode.
+        // There are no safe values.
+        // There are no cached flag values, so the defaults false/false are used.
+        assertEquals(Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
+                CachedFeatureFlags.getSafeModeBehaviorForTesting());
+        assertFalse(CachedFeatureFlags.isEnabled(CRASHY_FEATURE));
+        assertFalse(CachedFeatureFlags.isEnabled(OK_FEATURE));
+        endCleanRun(true, true);
+        // Safe values became false/false.
+        // Cached values became true(flaky)/true.
+
+        startRun();
+        startRun();
+        startRun();
+        startRun();
+        // Crash streak is 0. Do not engage Safe Mode.
+        // Safe values are false/false.
+        // Cached flag values are true(flaky)/true.
+        assertEquals(Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
+                CachedFeatureFlags.getSafeModeBehaviorForTesting());
+        assertTrue(CachedFeatureFlags.isEnabled(CRASHY_FEATURE));
+        assertTrue(CachedFeatureFlags.isEnabled(OK_FEATURE));
+        endCrashyRun();
+        // Cached values remain true(crashy)/true.
+
+        startRun();
+        // Crash streak is 1, despite the multiple startRun() calls above. Do not engage Safe Mode.
+        assertEquals(Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
+                CachedFeatureFlags.getSafeModeBehaviorForTesting());
+    }
+
     private void startRun() {
         CachedFeatureFlags.isEnabled(CRASHY_FEATURE);
         CachedFeatureFlags.onStartOrResumeCheckpoint();

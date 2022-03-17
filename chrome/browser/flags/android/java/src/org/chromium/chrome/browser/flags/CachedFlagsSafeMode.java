@@ -24,6 +24,7 @@ import org.chromium.components.version_info.VersionInfo;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Map.Entry;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -63,6 +64,9 @@ class CachedFlagsSafeMode {
 
     private AtomicInteger mBehavior = new AtomicInteger(Behavior.UNKNOWN);
 
+    private AtomicBoolean mStartCheckpointWritten = new AtomicBoolean(false);
+    private AtomicBoolean mEndCheckpointWritten = new AtomicBoolean(false);
+
     CachedFlagsSafeMode() {}
 
     /**
@@ -98,11 +102,20 @@ class CachedFlagsSafeMode {
     }
 
     /**
-     * Call at an early point in the path that leads to caching flags. If onFinishedCachingFlags()
+     * Call at an early point in the path that leads to caching flags. If onEndCheckpoint()
      * does not get called before the next run, this run will be considered a crash for purposes of
      * counting the crash streak and entering Safe Mode.
      */
     public void onStartOrResumeCheckpoint() {
+        if (mEndCheckpointWritten.get()) {
+            // Do not increment the streak if it was already reset.
+            return;
+        }
+        if (mStartCheckpointWritten.getAndSet(true)) {
+            // Limit to one increment per run.
+            return;
+        }
+
         SharedPreferencesManager.getInstance().incrementInt(
                 ChromePreferenceKeys.FLAGS_CRASH_STREAK_BEFORE_CACHE);
         RecordHistogram.recordEnumeratedHistogram(
@@ -114,6 +127,15 @@ class CachedFlagsSafeMode {
      * incremented in {@link #onStartOrResumeCheckpoint} but does not reset it.
      */
     public void onPauseCheckpoint() {
+        if (mEndCheckpointWritten.get()) {
+            // Do not change the streak if it was already reset.
+            return;
+        }
+        if (!mStartCheckpointWritten.getAndSet(false)) {
+            // Do not change the streak if it hasn't been incremented yet.
+            return;
+        }
+
         int currentStreak = SharedPreferencesManager.getInstance().readInt(
                 ChromePreferenceKeys.FLAGS_CRASH_STREAK_BEFORE_CACHE);
         assert currentStreak >= 0;
@@ -128,6 +150,11 @@ class CachedFlagsSafeMode {
      * be saved to be used in Safe Mode.
      */
     void onEndCheckpoint(ValuesReturned safeValuesReturned) {
+        if (mEndCheckpointWritten.getAndSet(true)) {
+            // Limit to one reset per run.
+            return;
+        }
+
         SharedPreferencesManager.getInstance().writeInt(
                 ChromePreferenceKeys.FLAGS_CRASH_STREAK_BEFORE_CACHE, 0);
 
@@ -218,6 +245,8 @@ class CachedFlagsSafeMode {
 
     void clearMemoryForTesting() {
         mBehavior.set(Behavior.UNKNOWN);
+        mStartCheckpointWritten.set(false);
+        mEndCheckpointWritten.set(false);
     }
 
     @SuppressLint({"ApplySharedPref"})
