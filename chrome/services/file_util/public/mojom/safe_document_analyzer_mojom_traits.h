@@ -5,6 +5,7 @@
 #ifndef CHROME_SERVICES_FILE_UTIL_PUBLIC_MOJOM_SAFE_DOCUMENT_ANALYZER_MOJOM_TRAITS_H_
 #define CHROME_SERVICES_FILE_UTIL_PUBLIC_MOJOM_SAFE_DOCUMENT_ANALYZER_MOJOM_TRAITS_H_
 
+#include "base/notreached.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "chrome/common/safe_browsing/document_analyzer_results.h"

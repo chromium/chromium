@@ -15,6 +15,7 @@
 
 #include "base/component_export.h"
 #include "base/files/file_path.h"
+#include "base/notreached.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"

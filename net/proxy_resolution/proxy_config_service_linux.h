@@ -14,6 +14,7 @@
 #include "base/compiler_specific.h"
 #include "base/environment.h"
 #include "base/memory/ref_counted.h"
+#include "base/notreached.h"
 #include "base/observer_list.h"
 #include "net/base/net_export.h"
 #include "net/base/proxy_server.h"

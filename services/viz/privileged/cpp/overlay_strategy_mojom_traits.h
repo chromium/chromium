@@ -5,6 +5,7 @@
 #ifndef SERVICES_VIZ_PRIVILEGED_CPP_OVERLAY_STRATEGY_MOJOM_TRAITS_H_
 #define SERVICES_VIZ_PRIVILEGED_CPP_OVERLAY_STRATEGY_MOJOM_TRAITS_H_
 
+#include "base/notreached.h"
 #include "components/viz/common/display/overlay_strategy.h"
 #include "services/viz/privileged/mojom/compositing/overlay_strategy.mojom-shared.h"
 

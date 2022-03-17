@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include "base/containers/stack_container.h"
+#include "base/notreached.h"
 #include "cc/cc_export.h"
 #include "cc/tiles/picture_layer_tiling_set.h"
 #include "cc/tiles/prioritized_tile.h"

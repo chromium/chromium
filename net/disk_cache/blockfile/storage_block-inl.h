@@ -12,6 +12,7 @@
 
 #include "base/hash/hash.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 
 namespace disk_cache {
 

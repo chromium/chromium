@@ -35,6 +35,7 @@
 #include <utility>
 
 #include "base/i18n/rtl.h"
+#include "base/notreached.h"
 #include "base/unguessable_token.h"
 #include "media/base/audio_processing.h"
 #include "media/base/speech_recognition_client.h"

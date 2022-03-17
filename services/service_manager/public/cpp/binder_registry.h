@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "services/service_manager/public/cpp/export.h"

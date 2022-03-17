@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_COMMON_PERMISSIONS_POLICY_POLICY_VALUE_MOJOM_TRAITS_H_
 #define THIRD_PARTY_BLINK_COMMON_PERMISSIONS_POLICY_POLICY_VALUE_MOJOM_TRAITS_H_
 
+#include "base/notreached.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/permissions_policy/policy_value.h"
 #include "third_party/blink/public/mojom/permissions_policy/policy_value.mojom-shared.h"

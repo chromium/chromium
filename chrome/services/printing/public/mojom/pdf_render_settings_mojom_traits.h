@@ -5,6 +5,7 @@
 #ifndef CHROME_SERVICES_PRINTING_PUBLIC_MOJOM_PDF_RENDER_SETTINGS_MOJOM_TRAITS_H_
 #define CHROME_SERVICES_PRINTING_PUBLIC_MOJOM_PDF_RENDER_SETTINGS_MOJOM_TRAITS_H_
 
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "chrome/services/printing/public/mojom/pdf_render_settings.mojom-shared.h"
 #include "printing/pdf_render_settings.h"

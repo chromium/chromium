@@ -200,6 +200,7 @@
 
 #include "base/export_template.h"
 #include "base/hash/md5_constexpr.h"
+#include "base/notreached.h"
 #include "base/task/common/task_annotator.h"
 #include "ipc/ipc_message_templates.h"
 #include "ipc/ipc_message_utils.h"

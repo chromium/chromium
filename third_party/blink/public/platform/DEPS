@@ -13,7 +13,6 @@ include_rules = [
     "+base/memory/scoped_refptr.h",
     "+base/memory/weak_ptr.h",
     "+base/metrics",
-    "+base/notreached.h",
     "+base/task/sequenced_task_runner.h",
     "+base/task/single_thread_task_runner.h",
     "+base/strings",

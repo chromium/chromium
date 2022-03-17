@@ -5,6 +5,7 @@
 #ifndef EXTENSIONS_COMMON_MOJOM_CHANNEL_MOJOM_TRAITS_H_
 #define EXTENSIONS_COMMON_MOJOM_CHANNEL_MOJOM_TRAITS_H_
 
+#include "base/notreached.h"
 #include "components/version_info/channel.h"
 #include "extensions/common/mojom/channel.mojom-shared.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"

@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/notreached.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
 #include "components/media_router/common/issue.h"
 #include "components/media_router/common/mojom/media_router.mojom-shared.h"

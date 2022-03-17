@@ -5,6 +5,7 @@
 #ifndef MEDIA_MOJO_MOJOM_VIDEO_ENCODE_ACCELERATOR_MOJOM_TRAITS_H_
 #define MEDIA_MOJO_MOJOM_VIDEO_ENCODE_ACCELERATOR_MOJOM_TRAITS_H_
 
+#include "base/notreached.h"
 #include "media/base/bitrate.h"
 #include "media/base/ipc/media_param_traits.h"
 #include "media/mojo/mojom/media_types.mojom-shared.h"

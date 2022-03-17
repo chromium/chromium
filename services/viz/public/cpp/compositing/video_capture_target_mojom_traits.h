@@ -7,6 +7,7 @@
 
 #include <utility>
 
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "components/viz/common/surfaces/video_capture_target.h"
 #include "mojo/public/cpp/base/token_mojom_traits.h"

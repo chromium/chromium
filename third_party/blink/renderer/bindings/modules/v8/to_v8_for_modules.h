@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_MODULES_V8_TO_V8_FOR_MODULES_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_MODULES_V8_TO_V8_FOR_MODULES_H_
 
+#include "base/notreached.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webdatabase/sqlite/sql_value.h"

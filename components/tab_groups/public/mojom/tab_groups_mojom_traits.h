@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_TAB_GROUPS_PUBLIC_MOJOM_TAB_GROUPS_MOJOM_TRAITS_H_
 #define COMPONENTS_TAB_GROUPS_PUBLIC_MOJOM_TAB_GROUPS_MOJOM_TRAITS_H_
 
+#include "base/notreached.h"
 #include "components/tab_groups/public/mojom/tab_group_types.mojom.h"
 #include "components/tab_groups/tab_group_color.h"
 

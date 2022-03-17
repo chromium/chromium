@@ -5,6 +5,7 @@
 #ifndef DEVICE_BLUETOOTH_PUBLIC_MOJOM_CONNECT_RESULT_TYPE_CONVERTER_H_
 #define DEVICE_BLUETOOTH_PUBLIC_MOJOM_CONNECT_RESULT_TYPE_CONVERTER_H_
 
+#include "base/notreached.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/public/mojom/adapter.mojom.h"
 #include "mojo/public/cpp/bindings/type_converter.h"

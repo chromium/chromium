@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/notreached.h"
 #include "base/values.h"
 #include "mojo/public/cpp/bindings/map_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"

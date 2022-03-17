@@ -7,6 +7,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_CONTEXT_MENUS_CONTEXT_MENUS_API_HELPERS_H_
 #define CHROME_BROWSER_EXTENSIONS_API_CONTEXT_MENUS_CONTEXT_MENUS_API_HELPERS_H_
 
+#include "base/notreached.h"
 #include "chrome/browser/extensions/menu_manager.h"
 #include "chrome/common/extensions/api/context_menus.h"
 #include "content/public/browser/browser_context.h"

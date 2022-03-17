@@ -5,6 +5,7 @@
 #ifndef GPU_IPC_COMMON_GPU_PEAK_MEMORY_MOJOM_TRAITS_H_
 #define GPU_IPC_COMMON_GPU_PEAK_MEMORY_MOJOM_TRAITS_H_
 
+#include "base/notreached.h"
 #include "gpu/gpu_export.h"
 #include "gpu/ipc/common/gpu_peak_memory.h"
 #include "gpu/ipc/common/gpu_peak_memory.mojom-shared.h"

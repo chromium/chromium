@@ -5,6 +5,7 @@
 #ifndef CHROME_SERVICES_PRINTING_PUBLIC_MOJOM_PDF_TO_PWG_RASTER_CONVERTER_MOJOM_TRAITS_H_
 #define CHROME_SERVICES_PRINTING_PUBLIC_MOJOM_PDF_TO_PWG_RASTER_CONVERTER_MOJOM_TRAITS_H_
 
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "chrome/services/printing/public/mojom/pdf_to_pwg_raster_converter.mojom-shared.h"
 #include "printing/mojom/print.mojom.h"

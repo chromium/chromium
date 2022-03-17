@@ -6,6 +6,7 @@
 #define CC_TILES_IMAGE_DECODE_CACHE_H_
 
 #include "base/memory/ref_counted.h"
+#include "base/notreached.h"
 #include "cc/base/devtools_instrumentation.h"
 #include "cc/cc_export.h"
 #include "cc/paint/decoded_draw_image.h"

@@ -5,6 +5,7 @@
 #ifndef SKIA_PUBLIC_MOJOM_SURFACE_ORIGIN_MOJOM_TRAITS_H_
 #define SKIA_PUBLIC_MOJOM_SURFACE_ORIGIN_MOJOM_TRAITS_H_
 
+#include "base/notreached.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "skia/public/mojom/surface_origin.mojom-shared.h"
 #include "third_party/skia/include/gpu/GrTypes.h"

@@ -5,6 +5,7 @@
 #ifndef GPU_IPC_COMMON_GPU_FEATURE_INFO_MOJOM_TRAITS_H_
 #define GPU_IPC_COMMON_GPU_FEATURE_INFO_MOJOM_TRAITS_H_
 
+#include "base/notreached.h"
 #include "gpu/config/gpu_blocklist.h"
 #include "gpu/config/gpu_driver_bug_list.h"
 #include "gpu/config/gpu_feature_info.h"

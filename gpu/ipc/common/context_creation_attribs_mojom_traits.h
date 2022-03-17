@@ -5,6 +5,7 @@
 #ifndef GPU_IPC_COMMON_CONTEXT_CREATION_ATTRIBS_MOJOM_TRAITS_H_
 #define GPU_IPC_COMMON_CONTEXT_CREATION_ATTRIBS_MOJOM_TRAITS_H_
 
+#include "base/notreached.h"
 #include "gpu/command_buffer/common/context_creation_attribs.h"
 #include "gpu/gpu_export.h"
 #include "gpu/ipc/common/gpu_channel.mojom-shared.h"

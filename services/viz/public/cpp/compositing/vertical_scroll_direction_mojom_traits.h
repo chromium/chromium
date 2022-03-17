@@ -5,6 +5,7 @@
 #ifndef SERVICES_VIZ_PUBLIC_CPP_COMPOSITING_VERTICAL_SCROLL_DIRECTION_MOJOM_TRAITS_H_
 #define SERVICES_VIZ_PUBLIC_CPP_COMPOSITING_VERTICAL_SCROLL_DIRECTION_MOJOM_TRAITS_H_
 
+#include "base/notreached.h"
 #include "components/viz/common/vertical_scroll_direction.h"
 #include "services/viz/public/mojom/compositing/vertical_scroll_direction.mojom-shared.h"
 

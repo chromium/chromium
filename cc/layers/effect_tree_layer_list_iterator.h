@@ -6,6 +6,7 @@
 #define CC_LAYERS_EFFECT_TREE_LAYER_LIST_ITERATOR_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "cc/cc_export.h"
 #include "cc/trees/effect_node.h"
 #include "cc/trees/layer_tree_impl.h"

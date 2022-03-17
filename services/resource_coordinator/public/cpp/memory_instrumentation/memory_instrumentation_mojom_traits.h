@@ -6,6 +6,7 @@
 #define SERVICES_RESOURCE_COORDINATOR_PUBLIC_CPP_MEMORY_INSTRUMENTATION_MEMORY_INSTRUMENTATION_MOJOM_TRAITS_H_
 
 #include "base/component_export.h"
+#include "base/notreached.h"
 #include "base/process/process_handle.h"
 #include "base/trace_event/memory_allocator_dump.h"
 #include "base/trace_event/memory_dump_manager.h"
