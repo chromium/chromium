@@ -227,6 +227,14 @@ void CdmRegistryImpl::RegisterCdm(const CdmInfo& info) {
   // some later registered CDMs (component updated) will not be used until
   // browser restart, which is fine in most cases.
   cdms_.push_back(info);
+
+  key_system_capabilities_.reset();
+
+  // If there are `key_system_capabilities_update_callbacks_` registered,
+  // finalize key system capabilities and notify the callbacks. Otherwise  we'll
+  // finalize key system capabilities in `ObserveKeySystemCapabilities()`.
+  if (!key_system_capabilities_update_callbacks_.empty())
+    FinalizeKeySystemCapabilities();
 }
 
 const std::vector<CdmInfo>& CdmRegistryImpl::GetRegisteredCdms() const {
@@ -274,6 +282,11 @@ void CdmRegistryImpl::FinalizeKeySystemCapabilities() {
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!key_system_capabilities_.has_value());
+
+  // Abort existing pending LazyInitializeHardwareSecureCapability() operations
+  // to avoid updating the observer twice.
+  pending_lazy_initialize_key_systems_.clear();
+  weak_ptr_factory_.InvalidateWeakPtrs();
 
   // Get the set of supported key systems in case two CDMs are registered with
   // the same key system and robustness; this also avoids updating `cdms_`
