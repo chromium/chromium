@@ -895,6 +895,7 @@ void BackForwardCacheImpl::PopulateStickyReasonsForDocument(
   }
 
   const bool has_unload_handler = rfh->has_unload_handler();
+  DCHECK(!has_unload_handler || !rfh->IsNestedWithinFencedFrame());
   switch (unload_strategy_) {
     case BackForwardCacheImpl::UnloadSupportStrategy::kAlways:
       break;
