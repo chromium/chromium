@@ -42,53 +42,6 @@ class FocusgroupControllerTest : public PageTestBase {
         event);
   }
 
-  void AssertForwardDoesntMoveFocusWhenOutOfFocusgroup(int key);
-  void AssertForwardDoesntMoveFocusWhenOnFocusgroupRoot(int key);
-  void AssertForwardDoesntMoveWhenOnNonFocusgroupItem(int key);
-  void AssertForwardMovesToNextItem(int key);
-  void AssertForwardDoesntMoveWhenOnlyOneItem(int key);
-  void AssertForwardDoesntMoveWhenOnlyOneItemAndWraps(int key);
-  void AssertForwardSkipsNonFocusableItems(int key);
-  void AssertForwardMovesInExtendingFocusgroup(int key);
-  void AssertForwardExitsExtendingFocusgroup(int key);
-  void AssertForwardMovesToNextElementWithinDescendants(int key);
-  void AssertForwardDoesntMoveFocusWhenAxisNotSupported(int key);
-  void AssertForwardMovesFocusWhenInArrowAxisOnlyFocusgroup(int key);
-  void AssertForwardSkipsExtendingFocusgroup(int key);
-  void AssertForwardDoesntWrapWhenNotSupported(int key);
-  void AssertForwardDoesntWrapEvenWhenOtherAxisSupported(int key);
-  void AssertForwardDoesntWrapInFocusgroupWithoutItems(int key);
-  void AssertForwardWrapsSuccessfully(int key);
-  void AssertForwardWrapsToParentFocusgroup(int key);
-  void AssertForwardWrapsInInnerFocusgroupOnly(int key);
-  void AssertForwardWrapsInExpectedScope(int key);
-  void AssertForwardWrapsAndGoesInInnerFocusgroup(int key);
-  void AssertForwardWrapsAndSkipsOrthogonalInnerFocusgroup(int key);
-
-  void AssertBackwardDoesntMoveFocusWhenOutOfFocusgroup(int key);
-  void AssertBackwardDoesntMoveFocusWhenOnFocusgroupRoot(int key);
-  void AssertBackwardDoesntMoveWhenOnNonFocusgroupItem(int key);
-  void AssertBackwardMovesFocusToPreviousItem(int key);
-  void AssertBackwardSkipsNonFocusableItems(int key);
-  void AssertBackwardDoesntMoveWhenOnlyOneItem(int key);
-  void AssertBackwardDoesntMoveWhenOnlyOneItemAndWraps(int key);
-  void AssertBackwardDoesntMoveFocusAxisNotSupported(int key);
-  void AssertBackwardMovesFocusWhenInArrowAxisOnlyFocusgroup(int key);
-  void AssertBackwardDescendIntoExtendingFocusgroup(int key);
-  void AssertBackwardSkipsNonFocusgroupSubtree(int key);
-  void AssertBackwardSkipsOrthogonalFocusgroup(int key);
-  void AssertBackwardSkipsRootFocusgroup(int key);
-  void AssertBackwardSkipsEmptyWrappingFocusgroup(int key);
-  void AssertBackwardSkipsRootFocusgroupComplexCase(int key);
-  void AssertBackwardSkipsOrthogonalFocusgroupComplexCase(int key);
-  void AssertBackwardAscendsToParentFocusgroup(int key);
-  void AssertBackwardDoesntWrapWhenNotSupported(int key);
-  void AssertBackwardWrapsSuccessfully(int key);
-  void AssertBackwardWrapsSuccessfullyInAxis(int key);
-  void AssertBackwardDoesntWrapInOrthogonalAxis(int key);
-  void AssertBackwardWrapsSuccessfullyInExtendingFocusgroup(int key);
-  void AssertBackwardWrapsSuccessfullyInComplexCase(int key);
-
  private:
   void SetUp() override { PageTestBase::SetUp(gfx::Size()); }
 
@@ -671,11 +624,20 @@ TEST_F(FocusgroupControllerTest, DontMoveFocusWhenItAlreadyMoved) {
 // FORWARD NAVIGATION - DOWN ARROW & RIGHT ARROW
 // *****************************************************************************
 
+class FocusgroupControllerForwardNavigationTest
+    : public FocusgroupControllerTest,
+      public ::testing::WithParamInterface<int> {};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         FocusgroupControllerForwardNavigationTest,
+                         testing::Values(ui::DomKey::ARROW_DOWN,
+                                         ui::DomKey::ARROW_RIGHT));
+
 // When the focus is set on an element outside of the focusgroup, an arrow key
 // press shouldn't move the focus at all.
-void FocusgroupControllerTest::AssertForwardDoesntMoveFocusWhenOutOfFocusgroup(
-    int key) {
-  ASSERT_TRUE(key == ui::DomKey::ARROW_DOWN || key == ui::DomKey::ARROW_RIGHT);
+TEST_P(FocusgroupControllerForwardNavigationTest,
+       DoesntMoveFocusWhenOutOfFocusgroup) {
+  int key = GetParam();
   GetDocument().body()->setInnerHTML(R"HTML(
     <span id=out tabindex=-1></span>
     <div focusgroup>
@@ -695,19 +657,11 @@ void FocusgroupControllerTest::AssertForwardDoesntMoveFocusWhenOutOfFocusgroup(
   ASSERT_EQ(GetDocument().FocusedElement(), out);
 }
 
-TEST_F(FocusgroupControllerTest, ArrowDownDoesntMoveFocusWhenOutOfFocusgroup) {
-  AssertForwardDoesntMoveFocusWhenOutOfFocusgroup(ui::DomKey::ARROW_DOWN);
-}
-
-TEST_F(FocusgroupControllerTest, ArrowRightDoesntMoveFocusWhenOutOfFocusgroup) {
-  AssertForwardDoesntMoveFocusWhenOutOfFocusgroup(ui::DomKey::ARROW_RIGHT);
-}
-
 // When the focus is set on the root of a focusgroup element, an arrow key press
 // shouldn't move the focus at all.
-void FocusgroupControllerTest::AssertForwardDoesntMoveFocusWhenOnFocusgroupRoot(
-    int key) {
-  ASSERT_TRUE(key == ui::DomKey::ARROW_DOWN || key == ui::DomKey::ARROW_RIGHT);
+TEST_P(FocusgroupControllerForwardNavigationTest,
+       DoesntMoveFocusWhenOnFocusgroupRoot) {
+  int key = GetParam();
   GetDocument().body()->setInnerHTML(R"HTML(
     <div id=root tabindex=-1 focusgroup>
       <span id=item1 tabindex=0></span>
@@ -726,20 +680,11 @@ void FocusgroupControllerTest::AssertForwardDoesntMoveFocusWhenOnFocusgroupRoot(
   ASSERT_EQ(GetDocument().FocusedElement(), root);
 }
 
-TEST_F(FocusgroupControllerTest, ArrowDownDoesntMoveFocusWhenOnFocusgroupRoot) {
-  AssertForwardDoesntMoveFocusWhenOnFocusgroupRoot(ui::DomKey::ARROW_DOWN);
-}
-
-TEST_F(FocusgroupControllerTest,
-       ArrowRightDoesntMoveFocusWhenOnFocusgroupRoot) {
-  AssertForwardDoesntMoveFocusWhenOnFocusgroupRoot(ui::DomKey::ARROW_RIGHT);
-}
-
 // When the focus is set on a focusable element that isn't a focusgroup item, an
 // arrow key press shouldn't move the focus at all.
-void FocusgroupControllerTest::AssertForwardDoesntMoveWhenOnNonFocusgroupItem(
-    int key) {
-  ASSERT_TRUE(key == ui::DomKey::ARROW_DOWN || key == ui::DomKey::ARROW_RIGHT);
+TEST_P(FocusgroupControllerForwardNavigationTest,
+       DoesntMoveWhenOnNonFocusgroupItem) {
+  int key = GetParam();
   GetDocument().body()->setInnerHTML(R"HTML(
     <div tabindex=-1 focusgroup>
       <div>
@@ -761,18 +706,10 @@ void FocusgroupControllerTest::AssertForwardDoesntMoveWhenOnNonFocusgroupItem(
   ASSERT_EQ(GetDocument().FocusedElement(), nonitem1);
 }
 
-TEST_F(FocusgroupControllerTest, ArrowDownDoesntMoveWhenOnNonFocusgroupItem) {
-  AssertForwardDoesntMoveWhenOnNonFocusgroupItem(ui::DomKey::ARROW_DOWN);
-}
-
-TEST_F(FocusgroupControllerTest, ArrowRightDoesntMoveWhenOnNonFocusgroupItem) {
-  AssertForwardDoesntMoveWhenOnNonFocusgroupItem(ui::DomKey::ARROW_RIGHT);
-}
-
 // When the focus is set on a focusgroup item, an arrow key press should move
 // the focus to the next item.
-void FocusgroupControllerTest::AssertForwardMovesToNextItem(int key) {
-  ASSERT_TRUE(key == ui::DomKey::ARROW_DOWN || key == ui::DomKey::ARROW_RIGHT);
+TEST_P(FocusgroupControllerForwardNavigationTest, MovesToNextItem) {
+  int key = GetParam();
   GetDocument().body()->setInnerHTML(R"HTML(
     <div id=root focusgroup>
       <span id=item1 tabindex=0></span>
@@ -793,17 +730,10 @@ void FocusgroupControllerTest::AssertForwardMovesToNextItem(int key) {
   ASSERT_EQ(GetDocument().FocusedElement(), item2);
 }
 
-TEST_F(FocusgroupControllerTest, ArrowDownMovesToNextItem) {
-  AssertForwardMovesToNextItem(ui::DomKey::ARROW_DOWN);
-}
-
-TEST_F(FocusgroupControllerTest, ArrowRightMovesToNextItem) {
-  AssertForwardMovesToNextItem(ui::DomKey::ARROW_RIGHT);
-}
-
 // When the focus is set on the only focusgroup item, the focus shouldn't move
 // and we shouldn't get stuck in an infinite loop.
-void FocusgroupControllerTest::AssertForwardDoesntMoveWhenOnlyOneItem(int key) {
+TEST_P(FocusgroupControllerForwardNavigationTest, DoesntMoveWhenOnlyOneItem) {
+  int key = GetParam();
   ASSERT_TRUE(key == ui::DomKey::ARROW_DOWN || key == ui::DomKey::ARROW_RIGHT);
   GetDocument().body()->setInnerHTML(R"HTML(
     <div id=root focusgroup>
@@ -822,20 +752,12 @@ void FocusgroupControllerTest::AssertForwardDoesntMoveWhenOnlyOneItem(int key) {
   ASSERT_EQ(GetDocument().FocusedElement(), item1);
 }
 
-TEST_F(FocusgroupControllerTest, ArrowDownDoesntMoveWhenOnlyOneItem) {
-  AssertForwardDoesntMoveWhenOnlyOneItem(ui::DomKey::ARROW_DOWN);
-}
-
-TEST_F(FocusgroupControllerTest, ArrowRightDoesntMoveWhenOnlyOneItem) {
-  AssertForwardDoesntMoveWhenOnlyOneItem(ui::DomKey::ARROW_RIGHT);
-}
-
 // When the focus is set on the only focusgroup item and the focusgroup wraps in
 // the axis of the arrow key pressed, the focus shouldn't move and we shouldn't
 // get stuck in an infinite loop.
-void FocusgroupControllerTest::AssertForwardDoesntMoveWhenOnlyOneItemAndWraps(
-    int key) {
-  ASSERT_TRUE(key == ui::DomKey::ARROW_DOWN || key == ui::DomKey::ARROW_RIGHT);
+TEST_P(FocusgroupControllerForwardNavigationTest,
+       DoesntMoveWhenOnlyOneItemAndWraps) {
+  int key = GetParam();
   GetDocument().body()->setInnerHTML(R"HTML(
     <div id=root focusgroup=wrap>
       <span id=item1 tabindex=0></span>
@@ -853,18 +775,10 @@ void FocusgroupControllerTest::AssertForwardDoesntMoveWhenOnlyOneItemAndWraps(
   ASSERT_EQ(GetDocument().FocusedElement(), item1);
 }
 
-TEST_F(FocusgroupControllerTest, ArrowDownDoesntMoveWhenOnlyOneItemAndWraps) {
-  AssertForwardDoesntMoveWhenOnlyOneItemAndWraps(ui::DomKey::ARROW_DOWN);
-}
-
-TEST_F(FocusgroupControllerTest, ArrowRightDoesntMoveWhenOnlyOneItemAndWraps) {
-  AssertForwardDoesntMoveWhenOnlyOneItemAndWraps(ui::DomKey::ARROW_RIGHT);
-}
-
 // When the focus is set on a focusgroup item, an arrow key press should move
 // the focus to the next item and skip non-focusable items.
-void FocusgroupControllerTest::AssertForwardSkipsNonFocusableItems(int key) {
-  ASSERT_TRUE(key == ui::DomKey::ARROW_DOWN || key == ui::DomKey::ARROW_RIGHT);
+TEST_P(FocusgroupControllerForwardNavigationTest, SkipsNonFocusableItems) {
+  int key = GetParam();
   GetDocument().body()->setInnerHTML(R"HTML(
     <div id=root focusgroup>
       <span id=item1 tabindex=0></span>
@@ -886,20 +800,11 @@ void FocusgroupControllerTest::AssertForwardSkipsNonFocusableItems(int key) {
   ASSERT_EQ(GetDocument().FocusedElement(), item3);
 }
 
-TEST_F(FocusgroupControllerTest, ArrowDownSkipsNonFocusableItems) {
-  AssertForwardSkipsNonFocusableItems(ui::DomKey::ARROW_DOWN);
-}
-
-TEST_F(FocusgroupControllerTest, ArrowRightSkipsNonFocusableItems) {
-  AssertForwardSkipsNonFocusableItems(ui::DomKey::ARROW_RIGHT);
-}
-
 // When the focus is set on a focusgroup item which happens to also be an
 // extending focusgroup, an arrow key press should move the focus to the next
 // item within the extending focusgroup and skip non-focusable items.
-void FocusgroupControllerTest::AssertForwardMovesInExtendingFocusgroup(
-    int key) {
-  ASSERT_TRUE(key == ui::DomKey::ARROW_DOWN || key == ui::DomKey::ARROW_RIGHT);
+TEST_P(FocusgroupControllerForwardNavigationTest, MovesInExtendingFocusgroup) {
+  int key = GetParam();
   GetDocument().body()->setInnerHTML(R"HTML(
     <div id=root focusgroup>
       <div id=item1 tabindex=0 focusgroup=extend>
@@ -924,22 +829,14 @@ void FocusgroupControllerTest::AssertForwardMovesInExtendingFocusgroup(
   ASSERT_EQ(GetDocument().FocusedElement(), item3);
 }
 
-TEST_F(FocusgroupControllerTest, ArrowDownMovesInExtendingFocusgroup) {
-  AssertForwardMovesInExtendingFocusgroup(ui::DomKey::ARROW_DOWN);
-}
-
-TEST_F(FocusgroupControllerTest, ArrowRightMovesInExtendingFocusgroup) {
-  AssertForwardMovesInExtendingFocusgroup(ui::DomKey::ARROW_RIGHT);
-}
-
 // When the focus is set on a focusgroup item which happens to also be an
 // extending focusgroup, an arrow key press should move the focus to the next
 // item within the extending focusgroup and skip non-focusable items. If no
 // valid candidate is found within that extending focusgroup, the next element
 // (in pre-order traversal) should be considered. In this case, |item4| is the
 // valid next candidate.
-void FocusgroupControllerTest::AssertForwardExitsExtendingFocusgroup(int key) {
-  ASSERT_TRUE(key == ui::DomKey::ARROW_DOWN || key == ui::DomKey::ARROW_RIGHT);
+TEST_P(FocusgroupControllerForwardNavigationTest, ExitsExtendingFocusgroup) {
+  int key = GetParam();
   GetDocument().body()->setInnerHTML(R"HTML(
     <div id=root focusgroup>
       <div id=item1 tabindex=0 focusgroup=extend>
@@ -963,20 +860,12 @@ void FocusgroupControllerTest::AssertForwardExitsExtendingFocusgroup(int key) {
   ASSERT_EQ(GetDocument().FocusedElement(), item4);
 }
 
-TEST_F(FocusgroupControllerTest, ArrowDownExitsExtendingFocusgroup) {
-  AssertForwardExitsExtendingFocusgroup(ui::DomKey::ARROW_DOWN);
-}
-
-TEST_F(FocusgroupControllerTest, ArrowRightExitsExtendingFocusgroup) {
-  AssertForwardExitsExtendingFocusgroup(ui::DomKey::ARROW_RIGHT);
-}
-
 // When the focus is set on a focusgroup item that is an ancestor to an
 // extending focusgroup, the focus should move to the next element inside that
 // extending focusgroup even if it's not a direct child.
-void FocusgroupControllerTest::AssertForwardMovesToNextElementWithinDescendants(
-    int key) {
-  ASSERT_TRUE(key == ui::DomKey::ARROW_DOWN || key == ui::DomKey::ARROW_RIGHT);
+TEST_P(FocusgroupControllerForwardNavigationTest,
+       MovesToNextElementWithinDescendants) {
+  int key = GetParam();
   GetDocument().body()->setInnerHTML(R"HTML(
     <div id=root focusgroup>
       <div id=item1 tabindex=0>
@@ -1002,20 +891,12 @@ void FocusgroupControllerTest::AssertForwardMovesToNextElementWithinDescendants(
   ASSERT_EQ(GetDocument().FocusedElement(), item2);
 }
 
-TEST_F(FocusgroupControllerTest, ArrowDownMovesToNextElementWithinDescendants) {
-  AssertForwardMovesToNextElementWithinDescendants(ui::DomKey::ARROW_DOWN);
-}
-
-TEST_F(FocusgroupControllerTest,
-       ArrowRightMovesToNextElementWithinDescendants) {
-  AssertForwardMovesToNextElementWithinDescendants(ui::DomKey::ARROW_RIGHT);
-}
-
 // When the focus is set on an item of a focusgroup that only supports the
 // orthogonal axis to the arrow key pressed, the arrow pressed shouldn't move
 // the focus.
-void FocusgroupControllerTest::AssertForwardDoesntMoveFocusWhenAxisNotSupported(
-    int key) {
+TEST_P(FocusgroupControllerForwardNavigationTest,
+       DoesntMoveFocusWhenAxisNotSupported) {
+  int key = GetParam();
   ASSERT_TRUE(key == ui::DomKey::ARROW_DOWN || key == ui::DomKey::ARROW_RIGHT);
   if (key == ui::DomKey::ARROW_DOWN) {
     // Arrow in the vertical axis, set the test to support only horizontal.
@@ -1046,20 +927,11 @@ void FocusgroupControllerTest::AssertForwardDoesntMoveFocusWhenAxisNotSupported(
   ASSERT_EQ(GetDocument().FocusedElement(), item1);
 }
 
-TEST_F(FocusgroupControllerTest, ArrowDownDoesntMoveFocusWhenAxisNotSupported) {
-  AssertForwardDoesntMoveFocusWhenAxisNotSupported(ui::DomKey::ARROW_DOWN);
-}
-
-TEST_F(FocusgroupControllerTest,
-       ArrowRightDoesntMoveFocusWhenAxisNotSupported) {
-  AssertForwardDoesntMoveFocusWhenAxisNotSupported(ui::DomKey::ARROW_RIGHT);
-}
-
 // When the focus is set on an item of a focusgroup that only supports the
 // axis of the arrow key pressed the focus should move.
-void FocusgroupControllerTest::
-    AssertForwardMovesFocusWhenInArrowAxisOnlyFocusgroup(int key) {
-  ASSERT_TRUE(key == ui::DomKey::ARROW_DOWN || key == ui::DomKey::ARROW_RIGHT);
+TEST_P(FocusgroupControllerForwardNavigationTest,
+       MovesFocusWhenInArrowAxisOnlyFocusgroup) {
+  int key = GetParam();
   if (key == ui::DomKey::ARROW_DOWN) {
     // The arrow is in the vertical axis, so the focusgroup should support only
     // the vertical axis.
@@ -1093,21 +965,11 @@ void FocusgroupControllerTest::
   ASSERT_EQ(GetDocument().FocusedElement(), item2);
 }
 
-TEST_F(FocusgroupControllerTest,
-       ArrowDownMovesFocusWhenInArrowAxisOnlyFocusgroup) {
-  AssertForwardMovesFocusWhenInArrowAxisOnlyFocusgroup(ui::DomKey::ARROW_DOWN);
-}
-
-TEST_F(FocusgroupControllerTest,
-       ArrowRightMovesFocusWhenInArrowAxisOnlyFocusgroup) {
-  AssertForwardMovesFocusWhenInArrowAxisOnlyFocusgroup(ui::DomKey::ARROW_RIGHT);
-}
-
 // When the focus is set on an extending focusgroup element but that focusgroup
 // doesn't support the axis of the arrow key pressed, skip that subtree
 // altogether.
-void FocusgroupControllerTest::AssertForwardSkipsExtendingFocusgroup(int key) {
-  ASSERT_TRUE(key == ui::DomKey::ARROW_DOWN || key == ui::DomKey::ARROW_RIGHT);
+TEST_P(FocusgroupControllerForwardNavigationTest, SkipsExtendingFocusgroup) {
+  int key = GetParam();
   if (key == ui::DomKey::ARROW_DOWN) {
     // The arrow is in the vertical axis, so the extending focusgroup should
     // support only the horizontal axis.
@@ -1146,19 +1008,10 @@ void FocusgroupControllerTest::AssertForwardSkipsExtendingFocusgroup(int key) {
   ASSERT_EQ(GetDocument().FocusedElement(), item3);
 }
 
-TEST_F(FocusgroupControllerTest, ArrowDownSkipsExtendingFocusgroup) {
-  AssertForwardSkipsExtendingFocusgroup(ui::DomKey::ARROW_DOWN);
-}
-
-TEST_F(FocusgroupControllerTest, ArrowRightSkipsExtendingFocusgroup) {
-  AssertForwardSkipsExtendingFocusgroup(ui::DomKey::ARROW_RIGHT);
-}
-
 // When the focus is set on the last item of a focusgroup that doesn't support
 // wrapping in the axis of the arrow key pressed, the focus shouldn't move.
-void FocusgroupControllerTest::AssertForwardDoesntWrapWhenNotSupported(
-    int key) {
-  ASSERT_TRUE(key == ui::DomKey::ARROW_DOWN || key == ui::DomKey::ARROW_RIGHT);
+TEST_P(FocusgroupControllerForwardNavigationTest, DoesntWrapWhenNotSupported) {
+  int key = GetParam();
   GetDocument().body()->setInnerHTML(R"HTML(
     <div id=root focusgroup>
       <span id=item1 tabindex=0></span>
@@ -1177,20 +1030,12 @@ void FocusgroupControllerTest::AssertForwardDoesntWrapWhenNotSupported(
   ASSERT_EQ(GetDocument().FocusedElement(), item2);
 }
 
-TEST_F(FocusgroupControllerTest, ArrowDownDoesntWrapWhenNotSupported) {
-  AssertForwardDoesntWrapWhenNotSupported(ui::DomKey::ARROW_DOWN);
-}
-
-TEST_F(FocusgroupControllerTest, ArrowRightDoesntWrapWhenNotSupported) {
-  AssertForwardDoesntWrapWhenNotSupported(ui::DomKey::ARROW_RIGHT);
-}
-
 // When the focus is set on the last item of a focusgroup that doesn't support
 // wrapping in the axis of the arrow key pressed but supports wrapping in the
 // orthogonal axis, the focus shouldn't move.
-void FocusgroupControllerTest::
-    AssertForwardDoesntWrapEvenWhenOtherAxisSupported(int key) {
-  ASSERT_TRUE(key == ui::DomKey::ARROW_DOWN || key == ui::DomKey::ARROW_RIGHT);
+TEST_P(FocusgroupControllerForwardNavigationTest,
+       DoesntWrapEvenWhenOtherAxisSupported) {
+  int key = GetParam();
   if (key == ui::DomKey::ARROW_DOWN) {
     // The arrow is in the vertical axis, so the focusgroup that wraps should be
     // in the horizontal axis only.
@@ -1231,23 +1076,13 @@ void FocusgroupControllerTest::
   ASSERT_EQ(GetDocument().FocusedElement(), item4);
 }
 
-TEST_F(FocusgroupControllerTest,
-       ArrowDownDoesntWrapEvenWhenOtherAxisSupported) {
-  AssertForwardDoesntWrapEvenWhenOtherAxisSupported(ui::DomKey::ARROW_DOWN);
-}
-
-TEST_F(FocusgroupControllerTest,
-       ArrowRightDoesntWrapEvenWhenOtherAxisSupported) {
-  AssertForwardDoesntWrapEvenWhenOtherAxisSupported(ui::DomKey::ARROW_RIGHT);
-}
-
 // This test validates that we don't get stuck in an infinite loop searching for
 // a focusable element in the extending focusgroup that wraps that doesn't
 // contain one. Wrapping should only be allowed in the focusgroup that contains
 // the focusable element we started on or in one of its ancestors.
-void FocusgroupControllerTest::AssertForwardDoesntWrapInFocusgroupWithoutItems(
-    int key) {
-  ASSERT_TRUE(key == ui::DomKey::ARROW_DOWN || key == ui::DomKey::ARROW_RIGHT);
+TEST_P(FocusgroupControllerForwardNavigationTest,
+       DoesntWrapInFocusgroupWithoutItems) {
+  int key = GetParam();
   GetDocument().body()->setInnerHTML(R"HTML(
     <div id=root focusgroup>
       <span id=item1 tabindex=0></span>
@@ -1274,19 +1109,11 @@ void FocusgroupControllerTest::AssertForwardDoesntWrapInFocusgroupWithoutItems(
   ASSERT_EQ(GetDocument().FocusedElement(), item4);
 }
 
-TEST_F(FocusgroupControllerTest, ArrowDownDoesntWrapInFocusgroupWithoutItems) {
-  AssertForwardDoesntWrapInFocusgroupWithoutItems(ui::DomKey::ARROW_DOWN);
-}
-
-TEST_F(FocusgroupControllerTest, ArrowRightDoesntWrapInFocusgroupWithoutItems) {
-  AssertForwardDoesntWrapInFocusgroupWithoutItems(ui::DomKey::ARROW_RIGHT);
-}
-
 // When the focus is set on the last item of a focusgroup that supports wrapping
 // in the axis of the arrow key pressed, the focus should move back to the first
 // item.
-void FocusgroupControllerTest::AssertForwardWrapsSuccessfully(int key) {
-  ASSERT_TRUE(key == ui::DomKey::ARROW_DOWN || key == ui::DomKey::ARROW_RIGHT);
+TEST_P(FocusgroupControllerForwardNavigationTest, WrapsSuccessfully) {
+  int key = GetParam();
   GetDocument().body()->setInnerHTML(R"HTML(
     <div id=root focusgroup=wrap>
       <span id=item1 tabindex=0></span>
@@ -1307,19 +1134,11 @@ void FocusgroupControllerTest::AssertForwardWrapsSuccessfully(int key) {
   ASSERT_EQ(GetDocument().FocusedElement(), item1);
 }
 
-TEST_F(FocusgroupControllerTest, ArrowDownWrapsSuccessfully) {
-  AssertForwardWrapsSuccessfully(ui::DomKey::ARROW_DOWN);
-}
-
-TEST_F(FocusgroupControllerTest, ArrowRightWrapsSuccessfully) {
-  AssertForwardWrapsSuccessfully(ui::DomKey::ARROW_RIGHT);
-}
-
 // When the focus is set on the last item of an inner focusgroup that supports
 // wrapping while its parent focusgroup also does, the focus should move to the
 // first item of the parent focusgroup.
-void FocusgroupControllerTest::AssertForwardWrapsToParentFocusgroup(int key) {
-  ASSERT_TRUE(key == ui::DomKey::ARROW_DOWN || key == ui::DomKey::ARROW_RIGHT);
+TEST_P(FocusgroupControllerForwardNavigationTest, WrapsToParentFocusgroup) {
+  int key = GetParam();
   GetDocument().body()->setInnerHTML(R"HTML(
     <div id=root focusgroup=wrap>
       <span id=item1 tabindex=0></span>
@@ -1343,20 +1162,11 @@ void FocusgroupControllerTest::AssertForwardWrapsToParentFocusgroup(int key) {
   ASSERT_EQ(GetDocument().FocusedElement(), item1);
 }
 
-TEST_F(FocusgroupControllerTest, ArrowDownWrapsToParentFocusgroup) {
-  AssertForwardWrapsToParentFocusgroup(ui::DomKey::ARROW_DOWN);
-}
-
-TEST_F(FocusgroupControllerTest, ArrowRightWrapsToParentFocusgroup) {
-  AssertForwardWrapsToParentFocusgroup(ui::DomKey::ARROW_RIGHT);
-}
-
 // When the focus is set on the last item of an inner focusgroup that supports
 // wrapping while its parent focusgroup doesn't (in the axis of the arrow key
 // pressed), the focus should move to the first item of the inner focusgroup.
-void FocusgroupControllerTest::AssertForwardWrapsInInnerFocusgroupOnly(
-    int key) {
-  ASSERT_TRUE(key == ui::DomKey::ARROW_DOWN || key == ui::DomKey::ARROW_RIGHT);
+TEST_P(FocusgroupControllerForwardNavigationTest, WrapsInInnerFocusgroupOnly) {
+  int key = GetParam();
   if (key == ui::DomKey::ARROW_DOWN) {
     // The arrow key is in the vertical axis, so the outer focusgroup should
     // only support the horizontal axis.
@@ -1400,21 +1210,13 @@ void FocusgroupControllerTest::AssertForwardWrapsInInnerFocusgroupOnly(
   ASSERT_EQ(GetDocument().FocusedElement(), item3);
 }
 
-TEST_F(FocusgroupControllerTest, ArrowDownWrapsInInnerFocusgroupOnly) {
-  AssertForwardWrapsInInnerFocusgroupOnly(ui::DomKey::ARROW_DOWN);
-}
-
-TEST_F(FocusgroupControllerTest, ArrowRightWrapsInInnerFocusgroupOnly) {
-  AssertForwardWrapsInInnerFocusgroupOnly(ui::DomKey::ARROW_RIGHT);
-}
-
 // When the focus is set on the last item of an inner focusgroup that supports
 // wrapping while its parent focusgroup doesn't (in the axis of the arrow key
 // pressed), the focus should move to the first item of the inner focusgroup
 // even if there's another focusgroup supporting wrapping in the same axis as
 // the arrow key pressed in the hierarchy.
-void FocusgroupControllerTest::AssertForwardWrapsInExpectedScope(int key) {
-  ASSERT_TRUE(key == ui::DomKey::ARROW_DOWN || key == ui::DomKey::ARROW_RIGHT);
+TEST_P(FocusgroupControllerForwardNavigationTest, WrapsInExpectedScope) {
+  int key = GetParam();
   if (key == ui::DomKey::ARROW_DOWN) {
     // The arrow key supports the vertical axis, so the outer focusgroup should
     // only support horizontal wrapping.
@@ -1462,21 +1264,13 @@ void FocusgroupControllerTest::AssertForwardWrapsInExpectedScope(int key) {
   ASSERT_EQ(GetDocument().FocusedElement(), item3);
 }
 
-TEST_F(FocusgroupControllerTest, ArrowDownWrapsInExpectedScope) {
-  AssertForwardWrapsInExpectedScope(ui::DomKey::ARROW_DOWN);
-}
-
-TEST_F(FocusgroupControllerTest, ArrowRightWrapsInExpectedScope) {
-  AssertForwardWrapsInExpectedScope(ui::DomKey::ARROW_RIGHT);
-}
-
 // When the focus is set on the last item of a focusgroup that supports
 // wrapping in the axis of the arrow key pressed and the first item is in an
 // inner focusgroup that supports it too, the focus moves to that item in the
 // inner focusgroup.
-void FocusgroupControllerTest::AssertForwardWrapsAndGoesInInnerFocusgroup(
-    int key) {
-  ASSERT_TRUE(key == ui::DomKey::ARROW_DOWN || key == ui::DomKey::ARROW_RIGHT);
+TEST_P(FocusgroupControllerForwardNavigationTest,
+       WrapsAndGoesInInnerFocusgroup) {
+  int key = GetParam();
   GetDocument().body()->setInnerHTML(R"HTML(
     <div id=root focusgroup=wrap>
       <div focusgroup=extend>
@@ -1500,21 +1294,13 @@ void FocusgroupControllerTest::AssertForwardWrapsAndGoesInInnerFocusgroup(
   ASSERT_EQ(GetDocument().FocusedElement(), item1);
 }
 
-TEST_F(FocusgroupControllerTest, ArrowDownWrapsAndGoesInInnerFocusgroup) {
-  AssertForwardWrapsAndGoesInInnerFocusgroup(ui::DomKey::ARROW_DOWN);
-}
-
-TEST_F(FocusgroupControllerTest, ArrowRightWrapsAndGoesInInnerFocusgroup) {
-  AssertForwardWrapsAndGoesInInnerFocusgroup(ui::DomKey::ARROW_RIGHT);
-}
-
 // When the focus is set on the last item of a focusgroup that supports
 // wrapping in the axis of the arrow key pressed and the first item is in an
 // inner focusgroup that doesn't support wrapping in the same axis, the focus
 // moves to the next item out of that inner focusgroup.
-void FocusgroupControllerTest::
-    AssertForwardWrapsAndSkipsOrthogonalInnerFocusgroup(int key) {
-  ASSERT_TRUE(key == ui::DomKey::ARROW_DOWN || key == ui::DomKey::ARROW_RIGHT);
+TEST_P(FocusgroupControllerForwardNavigationTest,
+       WrapsAndSkipsOrthogonalInnerFocusgroup) {
+  int key = GetParam();
   if (key == ui::DomKey::ARROW_DOWN) {
     // The arrow key is in the vertical axis, so the inner focusgroup should
     // only support the horizontal one.
@@ -1557,25 +1343,24 @@ void FocusgroupControllerTest::
   ASSERT_EQ(GetDocument().FocusedElement(), item3);
 }
 
-TEST_F(FocusgroupControllerTest,
-       ArrowDownWrapsAndSkipsOrthogonalInnerFocusgroup) {
-  AssertForwardWrapsAndSkipsOrthogonalInnerFocusgroup(ui::DomKey::ARROW_DOWN);
-}
-
-TEST_F(FocusgroupControllerTest,
-       ArrowRightWrapsAndSkipsOrthogonalInnerFocusgroup) {
-  AssertForwardWrapsAndSkipsOrthogonalInnerFocusgroup(ui::DomKey::ARROW_RIGHT);
-}
-
 // *****************************************************************************
-// FORWARD NAVIGATION - UP ARROW & LEFT ARROW
+// BACKWARD NAVIGATION - UP ARROW & LEFT ARROW
 // *****************************************************************************
+
+class FocusgroupControllerBackwardNavigationTest
+    : public FocusgroupControllerTest,
+      public ::testing::WithParamInterface<int> {};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         FocusgroupControllerBackwardNavigationTest,
+                         testing::Values(ui::DomKey::ARROW_UP,
+                                         ui::DomKey::ARROW_LEFT));
 
 // When the focus is set on an element outside of the focusgroup, an arrow key
 // press shouldn't move the focus at all.
-void FocusgroupControllerTest::AssertBackwardDoesntMoveFocusWhenOutOfFocusgroup(
-    int key) {
-  ASSERT_TRUE(key == ui::DomKey::ARROW_UP || key == ui::DomKey::ARROW_LEFT);
+TEST_P(FocusgroupControllerBackwardNavigationTest,
+       DoesntMoveFocusWhenOutOfFocusgroup) {
+  int key = GetParam();
   GetDocument().body()->setInnerHTML(R"HTML(
     <span id=out tabindex=-1></span>
     <div focusgroup>
@@ -1595,19 +1380,11 @@ void FocusgroupControllerTest::AssertBackwardDoesntMoveFocusWhenOutOfFocusgroup(
   ASSERT_EQ(GetDocument().FocusedElement(), out);
 }
 
-TEST_F(FocusgroupControllerTest, ArrowUpDoesntMoveFocusWhenOutOfFocusgroup) {
-  AssertBackwardDoesntMoveFocusWhenOutOfFocusgroup(ui::DomKey::ARROW_UP);
-}
-
-TEST_F(FocusgroupControllerTest, ArrowLeftDoesntMoveFocusWhenOutOfFocusgroup) {
-  AssertBackwardDoesntMoveFocusWhenOutOfFocusgroup(ui::DomKey::ARROW_LEFT);
-}
-
 // When the focus is set on the root of a focusgroup element, an arrow key press
 // shouldn't move the focus at all.
-void FocusgroupControllerTest::
-    AssertBackwardDoesntMoveFocusWhenOnFocusgroupRoot(int key) {
-  ASSERT_TRUE(key == ui::DomKey::ARROW_UP || key == ui::DomKey::ARROW_LEFT);
+TEST_P(FocusgroupControllerBackwardNavigationTest,
+       DoesntMoveFocusWhenOnFocusgroupRoot) {
+  int key = GetParam();
   GetDocument().body()->setInnerHTML(R"HTML(
     <div id=root tabindex=-1 focusgroup>
       <span id=item1 tabindex=0></span>
@@ -1626,19 +1403,11 @@ void FocusgroupControllerTest::
   ASSERT_EQ(GetDocument().FocusedElement(), root);
 }
 
-TEST_F(FocusgroupControllerTest, ArrowUpDoesntMoveFocusWhenOnFocusgroupRoot) {
-  AssertBackwardDoesntMoveFocusWhenOnFocusgroupRoot(ui::DomKey::ARROW_UP);
-}
-
-TEST_F(FocusgroupControllerTest, ArrowLeftDoesntMoveFocusWhenOnFocusgroupRoot) {
-  AssertBackwardDoesntMoveFocusWhenOnFocusgroupRoot(ui::DomKey::ARROW_LEFT);
-}
-
 // When the focus is set on a focusable element that isn't a focusgroup item, an
 // arrow key press shouldn't move the focus at all.
-void FocusgroupControllerTest::AssertBackwardDoesntMoveWhenOnNonFocusgroupItem(
-    int key) {
-  ASSERT_TRUE(key == ui::DomKey::ARROW_UP || key == ui::DomKey::ARROW_LEFT);
+TEST_P(FocusgroupControllerBackwardNavigationTest,
+       DoesntMoveWhenOnNonFocusgroupItem) {
+  int key = GetParam();
   GetDocument().body()->setInnerHTML(R"HTML(
     <div tabindex=-1 focusgroup>
       <div>
@@ -1660,18 +1429,11 @@ void FocusgroupControllerTest::AssertBackwardDoesntMoveWhenOnNonFocusgroupItem(
   ASSERT_EQ(GetDocument().FocusedElement(), nonitem1);
 }
 
-TEST_F(FocusgroupControllerTest, ArrowUpDoesntMoveWhenOnNonFocusgroupItem) {
-  AssertBackwardDoesntMoveWhenOnNonFocusgroupItem(ui::DomKey::ARROW_UP);
-}
-
-TEST_F(FocusgroupControllerTest, ArrowLeftDoesntMoveWhenOnNonFocusgroupItem) {
-  AssertBackwardDoesntMoveWhenOnNonFocusgroupItem(ui::DomKey::ARROW_LEFT);
-}
-
 // When the focus is set on the last element of a focusgroup, a backward key
 // press should move the focus to the previous item.
-void FocusgroupControllerTest::AssertBackwardMovesFocusToPreviousItem(int key) {
-  ASSERT_TRUE(key == ui::DomKey::ARROW_UP || key == ui::DomKey::ARROW_LEFT);
+TEST_P(FocusgroupControllerBackwardNavigationTest,
+       MovesFocusToPreviousItem) {
+  int key = GetParam();
   GetDocument().body()->setInnerHTML(R"HTML(
     <div focusgroup>
       <span id=item1 tabindex=0></span>
@@ -1692,19 +1454,12 @@ void FocusgroupControllerTest::AssertBackwardMovesFocusToPreviousItem(int key) {
   ASSERT_EQ(GetDocument().FocusedElement(), item1);
 }
 
-TEST_F(FocusgroupControllerTest, ArrowUpMovesFocusToPreviousItem) {
-  AssertBackwardMovesFocusToPreviousItem(ui::DomKey::ARROW_UP);
-}
-
-TEST_F(FocusgroupControllerTest, ArrowLeftMovesFocusToPreviousItem) {
-  AssertBackwardMovesFocusToPreviousItem(ui::DomKey::ARROW_LEFT);
-}
-
 // When the focus is set on the last element of a focusgroup, a backward key
 // press should move the focus to the previous item, skipping any non-focusable
 // element.
-void FocusgroupControllerTest::AssertBackwardSkipsNonFocusableItems(int key) {
-  ASSERT_TRUE(key == ui::DomKey::ARROW_UP || key == ui::DomKey::ARROW_LEFT);
+TEST_P(FocusgroupControllerBackwardNavigationTest,
+       SkipsNonFocusableItems) {
+  int key = GetParam();
   GetDocument().body()->setInnerHTML(R"HTML(
     <div focusgroup>
       <span id=item1 tabindex=0></span>
@@ -1727,20 +1482,12 @@ void FocusgroupControllerTest::AssertBackwardSkipsNonFocusableItems(int key) {
   ASSERT_EQ(GetDocument().FocusedElement(), item1);
 }
 
-TEST_F(FocusgroupControllerTest, ArrowUpSkipsNonFocusableItems) {
-  AssertBackwardSkipsNonFocusableItems(ui::DomKey::ARROW_UP);
-}
-
-TEST_F(FocusgroupControllerTest, ArrowLeftSkipsNonFocusableItems) {
-  AssertBackwardSkipsNonFocusableItems(ui::DomKey::ARROW_LEFT);
-}
-
 // When the focus is set on the only element of a focusgroup that doesn't wrap,
 // a backward key press shouldn't move the focus and we shouldn't get stuck in
 // an infinite loop.
-void FocusgroupControllerTest::AssertBackwardDoesntMoveWhenOnlyOneItem(
-    int key) {
-  ASSERT_TRUE(key == ui::DomKey::ARROW_UP || key == ui::DomKey::ARROW_LEFT);
+TEST_P(FocusgroupControllerBackwardNavigationTest,
+       DoesntMoveWhenOnlyOneItem) {
+  int key = GetParam();
   GetDocument().body()->setInnerHTML(R"HTML(
     <div focusgroup>
       <span id=item1 tabindex=0></span>
@@ -1758,20 +1505,12 @@ void FocusgroupControllerTest::AssertBackwardDoesntMoveWhenOnlyOneItem(
   ASSERT_EQ(GetDocument().FocusedElement(), item1);
 }
 
-TEST_F(FocusgroupControllerTest, ArrowUpDoesntMoveWhenOnlyOneItem) {
-  AssertBackwardDoesntMoveWhenOnlyOneItem(ui::DomKey::ARROW_UP);
-}
-
-TEST_F(FocusgroupControllerTest, ArrowLeftDoesntMoveWhenOnlyOneItem) {
-  AssertBackwardDoesntMoveWhenOnlyOneItem(ui::DomKey::ARROW_LEFT);
-}
-
 // When the focus is set on the only element of a focusgroup that wraps, a
 // backward key press shouldn't move the focus and we shouldn't get stuck in an
 // infinite loop.
-void FocusgroupControllerTest::AssertBackwardDoesntMoveWhenOnlyOneItemAndWraps(
-    int key) {
-  ASSERT_TRUE(key == ui::DomKey::ARROW_UP || key == ui::DomKey::ARROW_LEFT);
+TEST_P(FocusgroupControllerBackwardNavigationTest,
+       DoesntMoveWhenOnlyOneItemAndWraps) {
+  int key = GetParam();
   GetDocument().body()->setInnerHTML(R"HTML(
     <div focusgroup=wrap>
       <span id=item1 tabindex=0></span>
@@ -1789,19 +1528,11 @@ void FocusgroupControllerTest::AssertBackwardDoesntMoveWhenOnlyOneItemAndWraps(
   ASSERT_EQ(GetDocument().FocusedElement(), item1);
 }
 
-TEST_F(FocusgroupControllerTest, ArrowUpDoesntMoveWhenOnlyOneItemAndWraps) {
-  AssertBackwardDoesntMoveWhenOnlyOneItemAndWraps(ui::DomKey::ARROW_UP);
-}
-
-TEST_F(FocusgroupControllerTest, ArrowLeftDoesntMoveWhenOnlyOneItemAndWraps) {
-  AssertBackwardDoesntMoveWhenOnlyOneItemAndWraps(ui::DomKey::ARROW_LEFT);
-}
-
 // When the focus is set on the last element of a focusgroup that only supports
 // the orthogonal axis of the arrow key pressed, the focus shouldn't move.
-void FocusgroupControllerTest::AssertBackwardDoesntMoveFocusAxisNotSupported(
-    int key) {
-  ASSERT_TRUE(key == ui::DomKey::ARROW_UP || key == ui::DomKey::ARROW_LEFT);
+TEST_P(FocusgroupControllerBackwardNavigationTest,
+       DoesntMoveFocusAxisNotSupported) {
+  int key = GetParam();
   if (key == ui::DomKey::ARROW_UP) {
     // The arrow is in the vertical axis, so the focusgroup should only
     // support the horizontal axis.
@@ -1833,20 +1564,12 @@ void FocusgroupControllerTest::AssertBackwardDoesntMoveFocusAxisNotSupported(
   ASSERT_EQ(GetDocument().FocusedElement(), item2);
 }
 
-TEST_F(FocusgroupControllerTest, ArrowUpDoesntMoveFocusAxisNotSupported) {
-  AssertBackwardDoesntMoveFocusAxisNotSupported(ui::DomKey::ARROW_UP);
-}
-
-TEST_F(FocusgroupControllerTest, ArrowLeftDoesntMoveFocusAxisNotSupported) {
-  AssertBackwardDoesntMoveFocusAxisNotSupported(ui::DomKey::ARROW_LEFT);
-}
-
 // When the focus is set on the last element of a focusgroup that only supports
 // the axis of the arrow key pressed, the focus should move to the previous
 // item.
-void FocusgroupControllerTest::
-    AssertBackwardMovesFocusWhenInArrowAxisOnlyFocusgroup(int key) {
-  ASSERT_TRUE(key == ui::DomKey::ARROW_UP || key == ui::DomKey::ARROW_LEFT);
+TEST_P(FocusgroupControllerBackwardNavigationTest,
+       MovesFocusWhenInArrowAxisOnlyFocusgroup) {
+  int key = GetParam();
   if (key == ui::DomKey::ARROW_UP) {
     // The arrow is in the vertical axis, so the focusgroup should only
     // support the vertical axis.
@@ -1880,22 +1603,12 @@ void FocusgroupControllerTest::
   ASSERT_EQ(GetDocument().FocusedElement(), item1);
 }
 
-TEST_F(FocusgroupControllerTest,
-       ArrowUpMovesFocusWhenInArrowAxisOnlyFocusgroup) {
-  AssertBackwardMovesFocusWhenInArrowAxisOnlyFocusgroup(ui::DomKey::ARROW_UP);
-}
-
-TEST_F(FocusgroupControllerTest,
-       ArrowLeftMovesFocusWhenInArrowAxisOnlyFocusgroup) {
-  AssertBackwardMovesFocusWhenInArrowAxisOnlyFocusgroup(ui::DomKey::ARROW_LEFT);
-}
-
 // When the focus is set on the last item of a focusgroup and the previous item
 // is a descendant of a subtree, a backward arrow key press should move the
 // focus to that previous item within the subtree.
-void FocusgroupControllerTest::AssertBackwardDescendIntoExtendingFocusgroup(
-    int key) {
-  ASSERT_TRUE(key == ui::DomKey::ARROW_UP || key == ui::DomKey::ARROW_LEFT);
+TEST_P(FocusgroupControllerBackwardNavigationTest,
+       DescendIntoExtendingFocusgroup) {
+  int key = GetParam();
   GetDocument().body()->setInnerHTML(R"HTML(
     <div focusgroup=wrap>
       <span id=item1 tabindex=0></span>
@@ -1923,20 +1636,12 @@ void FocusgroupControllerTest::AssertBackwardDescendIntoExtendingFocusgroup(
   ASSERT_EQ(GetDocument().FocusedElement(), item3);
 }
 
-TEST_F(FocusgroupControllerTest, ArrowUpDescendIntoExtendingFocusgroup) {
-  AssertBackwardDescendIntoExtendingFocusgroup(ui::DomKey::ARROW_UP);
-}
-
-TEST_F(FocusgroupControllerTest, ArrowLeftDescendIntoExtendingFocusgroup) {
-  AssertBackwardDescendIntoExtendingFocusgroup(ui::DomKey::ARROW_LEFT);
-}
-
 // When the focus is set on the last item of a focusgroup and the previous item
 // is located past a non-focusgroup subtree, a backward arrow key press should
 // move the focus to that previous item without getting stuck in the subtree.
-void FocusgroupControllerTest::AssertBackwardSkipsNonFocusgroupSubtree(
-    int key) {
-  ASSERT_TRUE(key == ui::DomKey::ARROW_UP || key == ui::DomKey::ARROW_LEFT);
+TEST_P(FocusgroupControllerBackwardNavigationTest,
+       SkipsNonFocusgroupSubtree) {
+  int key = GetParam();
   GetDocument().body()->setInnerHTML(R"HTML(
     <div focusgroup=wrap>
       <span id=item1 tabindex=0></span>
@@ -1961,22 +1666,14 @@ void FocusgroupControllerTest::AssertBackwardSkipsNonFocusgroupSubtree(
   ASSERT_EQ(GetDocument().FocusedElement(), item1);
 }
 
-TEST_F(FocusgroupControllerTest, ArrowUpSkipsNonFocusgroupSubtree) {
-  AssertBackwardSkipsNonFocusgroupSubtree(ui::DomKey::ARROW_UP);
-}
-
-TEST_F(FocusgroupControllerTest, ArrowLeftSkipsNonFocusgroupSubtree) {
-  AssertBackwardSkipsNonFocusgroupSubtree(ui::DomKey::ARROW_LEFT);
-}
-
 // When the focus is set on the last item of a focusgroup and the previous item
 // is a descendant of a subtree, a backward arrow key press should move the
 // focus to that previous item within the subtree. However, if that subtree is
 // an extending focusgroup that supports only the orthogonal axis, it should be
 // skipped.
-void FocusgroupControllerTest::AssertBackwardSkipsOrthogonalFocusgroup(
-    int key) {
-  ASSERT_TRUE(key == ui::DomKey::ARROW_UP || key == ui::DomKey::ARROW_LEFT);
+TEST_P(FocusgroupControllerBackwardNavigationTest,
+       SkipsOrthogonalFocusgroup) {
+  int key = GetParam();
   if (key == ui::DomKey::ARROW_UP) {
     // The arrow is in the vertical axis, so the inner focusgroup should support
     // only the horizontal axis.
@@ -2023,20 +1720,12 @@ void FocusgroupControllerTest::AssertBackwardSkipsOrthogonalFocusgroup(
   ASSERT_EQ(GetDocument().FocusedElement(), item1);
 }
 
-TEST_F(FocusgroupControllerTest, ArrowUpSkipsOrthogonalFocusgroup) {
-  AssertBackwardSkipsOrthogonalFocusgroup(ui::DomKey::ARROW_UP);
-}
-
-TEST_F(FocusgroupControllerTest, ArrowLeftSkipsOrthogonalFocusgroup) {
-  AssertBackwardSkipsOrthogonalFocusgroup(ui::DomKey::ARROW_LEFT);
-}
-
 // When the focus is set on the last item of a focusgroup and the previous item
 // is located past an other (non-extending) focusgroup subtree, a backward arrow
 // key press should move the focus to that previous item without getting stuck
 // in the other focusgroup.
-void FocusgroupControllerTest::AssertBackwardSkipsRootFocusgroup(int key) {
-  ASSERT_TRUE(key == ui::DomKey::ARROW_UP || key == ui::DomKey::ARROW_LEFT);
+TEST_P(FocusgroupControllerBackwardNavigationTest, SkipsRootFocusgroup) {
+  int key = GetParam();
   GetDocument().body()->setInnerHTML(R"HTML(
     <div focusgroup=wrap>
       <span id=item1 tabindex=0></span>
@@ -2064,21 +1753,13 @@ void FocusgroupControllerTest::AssertBackwardSkipsRootFocusgroup(int key) {
   ASSERT_EQ(GetDocument().FocusedElement(), item1);
 }
 
-TEST_F(FocusgroupControllerTest, ArrowUpSkipsRootFocusgroup) {
-  AssertBackwardSkipsRootFocusgroup(ui::DomKey::ARROW_UP);
-}
-
-TEST_F(FocusgroupControllerTest, ArrowLeftSkipsRootFocusgroup) {
-  AssertBackwardSkipsRootFocusgroup(ui::DomKey::ARROW_LEFT);
-}
-
 // When the focus is set on the last item of a focusgroup and the previous item
 // is located past an extending focusgroup that wraps but has no item in it, a
 // backward arrow key press should move the focus to that previous item without
 // getting stuck in the inner focusgroup.
-void FocusgroupControllerTest::AssertBackwardSkipsEmptyWrappingFocusgroup(
-    int key) {
-  ASSERT_TRUE(key == ui::DomKey::ARROW_UP || key == ui::DomKey::ARROW_LEFT);
+TEST_P(FocusgroupControllerBackwardNavigationTest,
+       SkipsEmptyWrappingFocusgroup) {
+  int key = GetParam();
   GetDocument().body()->setInnerHTML(R"HTML(
     <div focusgroup=wrap>
       <span id=item1 tabindex=0></span>
@@ -2106,22 +1787,14 @@ void FocusgroupControllerTest::AssertBackwardSkipsEmptyWrappingFocusgroup(
   ASSERT_EQ(GetDocument().FocusedElement(), item1);
 }
 
-TEST_F(FocusgroupControllerTest, ArrowUpSkipsEmptyWrappingFocusgroup) {
-  AssertBackwardSkipsEmptyWrappingFocusgroup(ui::DomKey::ARROW_UP);
-}
-
-TEST_F(FocusgroupControllerTest, ArrowLeftSkipsEmptyWrappingFocusgroup) {
-  AssertBackwardSkipsEmptyWrappingFocusgroup(ui::DomKey::ARROW_LEFT);
-}
-
 // When the focus is set on the last item of a focusgroup and the previous item
 // is located past an other (non-extending) focusgroup subtree, a backward arrow
 // key press should move the focus to that previous item without getting stuck
 // in the other focusgroup. The same should still be true when inside a
 // focusgroup that extends a root focusgroup within the original focusgroup.
-void FocusgroupControllerTest::AssertBackwardSkipsRootFocusgroupComplexCase(
-    int key) {
-  ASSERT_TRUE(key == ui::DomKey::ARROW_UP || key == ui::DomKey::ARROW_LEFT);
+TEST_P(FocusgroupControllerBackwardNavigationTest,
+       SkipsRootFocusgroupComplexCase) {
+  int key = GetParam();
   GetDocument().body()->setInnerHTML(R"HTML(
     <div focusgroup=wrap>
       <span id=item1 tabindex=0></span>
@@ -2153,14 +1826,6 @@ void FocusgroupControllerTest::AssertBackwardSkipsRootFocusgroupComplexCase(
   ASSERT_EQ(GetDocument().FocusedElement(), item1);
 }
 
-TEST_F(FocusgroupControllerTest, ArrowUpSkipsRootFocusgroupComplexCase) {
-  AssertBackwardSkipsRootFocusgroupComplexCase(ui::DomKey::ARROW_UP);
-}
-
-TEST_F(FocusgroupControllerTest, ArrowLeftSkipsRootFocusgroupComplexCase) {
-  AssertBackwardSkipsRootFocusgroupComplexCase(ui::DomKey::ARROW_LEFT);
-}
-
 // When the focus is set on the last item of a focusgroup and the previous item
 // is located past an extending focusgroup that only supports the orthogonal
 // axis, a backward arrow key press should move the focus to that previous item
@@ -2168,9 +1833,9 @@ TEST_F(FocusgroupControllerTest, ArrowLeftSkipsRootFocusgroupComplexCase) {
 // The same should still be true when inside a focusgroup that extends another
 // extending focusgroup that supports only the orthogonal axis within the
 // original focusgroup.
-void FocusgroupControllerTest::
-    AssertBackwardSkipsOrthogonalFocusgroupComplexCase(int key) {
-  ASSERT_TRUE(key == ui::DomKey::ARROW_UP || key == ui::DomKey::ARROW_LEFT);
+TEST_P(FocusgroupControllerBackwardNavigationTest,
+       SkipsOrthogonalFocusgroupComplexCase) {
+  int key = GetParam();
   if (key == ui::DomKey::ARROW_UP) {
     // The arrow key is vertical, so the middle focusgroup should only support
     // the horizontal axis.
@@ -2225,22 +1890,13 @@ void FocusgroupControllerTest::
   ASSERT_EQ(GetDocument().FocusedElement(), item1);
 }
 
-TEST_F(FocusgroupControllerTest, ArrowUpSkipsOrthogonalFocusgroupComplexCase) {
-  AssertBackwardSkipsOrthogonalFocusgroupComplexCase(ui::DomKey::ARROW_UP);
-}
-
-TEST_F(FocusgroupControllerTest,
-       ArrowLeftSkipsOrthogonalFocusgroupComplexCase) {
-  AssertBackwardSkipsOrthogonalFocusgroupComplexCase(ui::DomKey::ARROW_LEFT);
-}
-
 // When the focus is set on the first item of an extending focusgroup that
 // doesn't support the axis of the arrow key pressed but the parent focusgroup
 // does, ascend to that focusgroup. This should work whether the extending
 // focusgroup is the child of the other focusgroup or a distant descendant.
-void FocusgroupControllerTest::AssertBackwardAscendsToParentFocusgroup(
-    int key) {
-  ASSERT_TRUE(key == ui::DomKey::ARROW_UP || key == ui::DomKey::ARROW_LEFT);
+TEST_P(FocusgroupControllerBackwardNavigationTest,
+       AscendsToParentFocusgroup) {
+  int key = GetParam();
   if (key == ui::DomKey::ARROW_UP) {
     // The arrow key is vertical, so the inner focusgroup should only support
     // the horizontal axis and the outer one should only support the vertical
@@ -2292,18 +1948,11 @@ void FocusgroupControllerTest::AssertBackwardAscendsToParentFocusgroup(
   ASSERT_EQ(GetDocument().FocusedElement(), item2);
 }
 
-TEST_F(FocusgroupControllerTest, ArrowUpAscendsToParentFocusgroup) {
-  AssertBackwardAscendsToParentFocusgroup(ui::DomKey::ARROW_UP);
-}
-
-TEST_F(FocusgroupControllerTest, ArrowLeftAscendsToParentFocusgroup) {
-  AssertBackwardAscendsToParentFocusgroup(ui::DomKey::ARROW_LEFT);
-}
-
 // When the focus is set on the first item of a focusgroup, a backward arrow key
 // press shouldn't move the focus since there aren't any previous item.
-void FocusgroupControllerTest::AssertBackwardDoesntWrapWhenNotSupported(
-    int key) {
+TEST_P(FocusgroupControllerBackwardNavigationTest,
+       DoesntWrapWhenNotSupported) {
+  int key = GetParam();
   ASSERT_TRUE(key == ui::DomKey::ARROW_UP || key == ui::DomKey::ARROW_LEFT);
   GetDocument().body()->setInnerHTML(R"HTML(
     <div focusgroup>
@@ -2323,19 +1972,11 @@ void FocusgroupControllerTest::AssertBackwardDoesntWrapWhenNotSupported(
   ASSERT_EQ(GetDocument().FocusedElement(), item1);
 }
 
-TEST_F(FocusgroupControllerTest, ArrowUpDoesntWrapWhenNotSupported) {
-  AssertBackwardDoesntWrapWhenNotSupported(ui::DomKey::ARROW_UP);
-}
-
-TEST_F(FocusgroupControllerTest, ArrowLeftDoesntWrapWhenNotSupported) {
-  AssertBackwardDoesntWrapWhenNotSupported(ui::DomKey::ARROW_LEFT);
-}
-
 // When the focus is set on the first item of a focusgroup that wraps, a
 // backward arrow key press should move the focus to the last item within the
 // focusgroup.
-void FocusgroupControllerTest::AssertBackwardWrapsSuccessfully(int key) {
-  ASSERT_TRUE(key == ui::DomKey::ARROW_UP || key == ui::DomKey::ARROW_LEFT);
+TEST_P(FocusgroupControllerBackwardNavigationTest, WrapsSuccessfully) {
+  int key = GetParam();
   GetDocument().body()->setInnerHTML(R"HTML(
     <div focusgroup=wrap>
       <span id=item1 tabindex=0></span>
@@ -2357,19 +1998,12 @@ void FocusgroupControllerTest::AssertBackwardWrapsSuccessfully(int key) {
   ASSERT_EQ(GetDocument().FocusedElement(), item3);
 }
 
-TEST_F(FocusgroupControllerTest, ArrowUpWrapsSuccessfully) {
-  AssertBackwardWrapsSuccessfully(ui::DomKey::ARROW_UP);
-}
-
-TEST_F(FocusgroupControllerTest, ArrowLeftWrapsSuccessfully) {
-  AssertBackwardWrapsSuccessfully(ui::DomKey::ARROW_LEFT);
-}
-
 // When the focus is set on the first item of a focusgroup that wraps and
 // supports only the axis of the pressed arrow key, a backward arrow key press
 // should move the focus to the last item within the focusgroup.
-void FocusgroupControllerTest::AssertBackwardWrapsSuccessfullyInAxis(int key) {
-  ASSERT_TRUE(key == ui::DomKey::ARROW_UP || key == ui::DomKey::ARROW_LEFT);
+TEST_P(FocusgroupControllerBackwardNavigationTest,
+       WrapsSuccessfullyInAxis) {
+  int key = GetParam();
   if (key == ui::DomKey::ARROW_UP) {
     // The arrow key is in the vertical axis, so the focusgroup should only
     // support the vertical axis.
@@ -2405,20 +2039,12 @@ void FocusgroupControllerTest::AssertBackwardWrapsSuccessfullyInAxis(int key) {
   ASSERT_EQ(GetDocument().FocusedElement(), item3);
 }
 
-TEST_F(FocusgroupControllerTest, ArrowUpWrapsSuccessfullyInAxis) {
-  AssertBackwardWrapsSuccessfullyInAxis(ui::DomKey::ARROW_UP);
-}
-
-TEST_F(FocusgroupControllerTest, ArrowLeftWrapsSuccessfullyInAxis) {
-  AssertBackwardWrapsSuccessfullyInAxis(ui::DomKey::ARROW_LEFT);
-}
-
 // When the focus is set on the first item of a focusgroup that wraps and
 // supports only the orthogonal axis of the pressed arrow key, a backward arrow
 // key press shouldn't move the focus.
-void FocusgroupControllerTest::AssertBackwardDoesntWrapInOrthogonalAxis(
-    int key) {
-  ASSERT_TRUE(key == ui::DomKey::ARROW_UP || key == ui::DomKey::ARROW_LEFT);
+TEST_P(FocusgroupControllerBackwardNavigationTest,
+       DoesntWrapInOrthogonalAxis) {
+  int key = GetParam();
   if (key == ui::DomKey::ARROW_UP) {
     // The arrow key is in the vertical axis, so the focusgroup should only
     // support the horizontal axis.
@@ -2452,21 +2078,13 @@ void FocusgroupControllerTest::AssertBackwardDoesntWrapInOrthogonalAxis(
   ASSERT_EQ(GetDocument().FocusedElement(), item1);
 }
 
-TEST_F(FocusgroupControllerTest, ArrowUpDoesntWrapInOrthogonalAxis) {
-  AssertBackwardDoesntWrapInOrthogonalAxis(ui::DomKey::ARROW_UP);
-}
-
-TEST_F(FocusgroupControllerTest, ArrowLeftDoesntWrapInOrthogonalAxis) {
-  AssertBackwardDoesntWrapInOrthogonalAxis(ui::DomKey::ARROW_LEFT);
-}
-
 // When the focus is set on the first item of an extending focusgroup that
 // inherited its wrapping behavior, it should only wrap if the focused item is
 // also the first item of that parent focusgroup. If it is, then it should wrap
 // within the parent focusgroup, not within the extending focusgroup.
-void FocusgroupControllerTest::
-    AssertBackwardWrapsSuccessfullyInExtendingFocusgroup(int key) {
-  ASSERT_TRUE(key == ui::DomKey::ARROW_UP || key == ui::DomKey::ARROW_LEFT);
+TEST_P(FocusgroupControllerBackwardNavigationTest,
+       WrapsSuccessfullyInExtendingFocusgroup) {
+  int key = GetParam();
   GetDocument().body()->setInnerHTML(R"HTML(
     <div focusgroup=wrap>
       <div focusgroup=extend>
@@ -2507,23 +2125,13 @@ void FocusgroupControllerTest::
   ASSERT_EQ(GetDocument().FocusedElement(), item1);
 }
 
-TEST_F(FocusgroupControllerTest,
-       ArrowUpWrapsSuccessfullyInExtendingFocusgroup) {
-  AssertBackwardWrapsSuccessfullyInExtendingFocusgroup(ui::DomKey::ARROW_UP);
-}
-
-TEST_F(FocusgroupControllerTest,
-       ArrowLeftWrapsSuccessfullyInExtendingFocusgroup) {
-  AssertBackwardWrapsSuccessfullyInExtendingFocusgroup(ui::DomKey::ARROW_LEFT);
-}
-
 // When the focus is set on the first item of an extending focusgroup while
 // there are other non-item elements before, we should still be able to wrap to
 // the last item. Also, if the last item has other non-item elements after
 // itself, skipping these non-item elements shouldn't be an issue.
-void FocusgroupControllerTest::AssertBackwardWrapsSuccessfullyInComplexCase(
-    int key) {
-  ASSERT_TRUE(key == ui::DomKey::ARROW_UP || key == ui::DomKey::ARROW_LEFT);
+TEST_P(FocusgroupControllerBackwardNavigationTest,
+       WrapsSuccessfullyInComplexCase) {
+  int key = GetParam();
   GetDocument().body()->setInnerHTML(R"HTML(
     <div focusgroup=wrap>
       <div>
@@ -2553,11 +2161,4 @@ void FocusgroupControllerTest::AssertBackwardWrapsSuccessfullyInComplexCase(
   ASSERT_EQ(GetDocument().FocusedElement(), item3);
 }
 
-TEST_F(FocusgroupControllerTest, ArrowUpWrapsSuccessfullyInComplexCase) {
-  AssertBackwardWrapsSuccessfullyInComplexCase(ui::DomKey::ARROW_UP);
-}
-
-TEST_F(FocusgroupControllerTest, ArrowLeftWrapsSuccessfullyInComplexCase) {
-  AssertBackwardWrapsSuccessfullyInComplexCase(ui::DomKey::ARROW_LEFT);
-}
 }  // namespace blink
