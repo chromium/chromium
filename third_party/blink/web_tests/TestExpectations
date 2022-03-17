@@ -6533,10 +6533,6 @@ crbug.com/1205659 [ Mac ] external/wpt/IndexedDB/key-generators/reading-autoincr
 crbug.com/1205659 [ Mac ] storage/indexeddb/empty-blob-file.html [ Pass Timeout ]
 crbug.com/1205673 [ Linux ] virtual/threaded-prefer-compositing/fast/scroll-snap/snaps-after-wheel-scrolling-single-tick.html [ Failure Pass ]
 
-# Browser Infra 2021-05-04
-# Re-enable once all Linux CI/CQ builders migrated to Bionic
-crbug.com/1200134 [ Linux ] fast/gradients/unprefixed-repeating-gradient-color-hint.html [ Failure Pass ]
-
 # Sheriff 2021-05-05
 crbug.com/1205796 [ Mac10.12 ] external/wpt/html/dom/idlharness.https.html?include=HTML.* [ Failure ]
 crbug.com/1205796 [ Mac10.14 ] external/wpt/html/dom/idlharness.https.html?include=HTML.* [ Failure ]
