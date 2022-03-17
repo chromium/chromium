@@ -59,6 +59,8 @@ std::ostream& operator<<(std::ostream& out,
       return out << "kProfilePickerView";
     case ProfileKeepAliveOrigin::kCommanderFrontend:
       return out << "kCommanderFrontend";
+    case ProfileKeepAliveOrigin::kDiceWebSigninInterceptionBubble:
+      return out << "kDiceWebSigninInterceptionBubble";
   }
   NOTREACHED();
   return out << static_cast<int>(origin);

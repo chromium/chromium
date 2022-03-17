@@ -115,7 +115,10 @@ enum class ProfileKeepAliveOrigin {
   // renders to a WebUI, so we can't just destroy it whenever we want.
   kCommanderFrontend = 26,
 
-  kMaxValue = kCommanderFrontend,
+  // UI bubble that may outlive the Browser, especially on Mac.
+  kDiceWebSigninInterceptionBubble = 27,
+
+  kMaxValue = kDiceWebSigninInterceptionBubble,
 };
 
 std::ostream& operator<<(std::ostream& out,

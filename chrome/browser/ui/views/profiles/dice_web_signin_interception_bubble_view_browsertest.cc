@@ -9,9 +9,11 @@
 #include "base/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/signin/profile_colors_util.h"
@@ -47,6 +49,35 @@ struct TestParam {
   bool use_dark_theme = false;
   SkColor4f intercepted_profile_color = SkColors::kLtGray;
   SkColor4f primary_profile_color = SkColors::kBlue;
+};
+
+class ProfileDestructionWatcher : public ProfileObserver {
+ public:
+  ProfileDestructionWatcher() = default;
+
+  ProfileDestructionWatcher(const ProfileDestructionWatcher&) = delete;
+  ProfileDestructionWatcher& operator=(const ProfileDestructionWatcher&) =
+      delete;
+
+  ~ProfileDestructionWatcher() override = default;
+
+  void Watch(Profile* profile) { observed_profiles_.AddObservation(profile); }
+  void WaitForDestruction() { run_loop_.Run(); }
+  bool destroyed() const { return destroyed_; }
+
+ private:
+  // ProfileObserver:
+  void OnProfileWillBeDestroyed(Profile* profile) override {
+    DCHECK(!destroyed_) << "Double profile destruction";
+    destroyed_ = true;
+    observed_profiles_.RemoveObservation(profile);
+    run_loop_.Quit();
+  }
+
+  bool destroyed_ = false;
+  base::RunLoop run_loop_;
+  base::ScopedMultiSourceObservation<Profile, ProfileObserver>
+      observed_profiles_{this};
 };
 
 // To be passed as 4th argument to `INSTANTIATE_TEST_SUITE_P()`, allows the test
@@ -374,6 +405,70 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
                                       SigninInterceptionResult::kAccepted, 1);
   histogram_tester.ExpectUniqueSample("Signin.InterceptResult.MultiUser.NoSync",
                                       SigninInterceptionResult::kAccepted, 1);
+  histogram_tester.ExpectTotalCount("Signin.InterceptResult.Enterprise", 0);
+  histogram_tester.ExpectTotalCount("Signin.InterceptResult.Switch", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
+                       ProfileKeepAlive) {
+  base::HistogramTester histogram_tester;
+
+  // Create a temporary profile with a new browser.
+  Profile* new_profile = nullptr;
+  base::RunLoop run_loop;
+  ProfileManager::CreateMultiProfileAsync(
+      u"test_profile", /*icon_index=*/0, /*is_hidden=*/false,
+      base::BindLambdaForTesting(
+          [&new_profile, &run_loop](Profile* profile,
+                                    Profile::CreateStatus status) {
+            ASSERT_NE(status, Profile::CREATE_STATUS_LOCAL_FAIL);
+            if (status == Profile::CREATE_STATUS_INITIALIZED) {
+              new_profile = profile;
+              run_loop.Quit();
+            }
+          }));
+  run_loop.Run();
+  Browser::CreateParams browser_params(new_profile, /*user_gesture=*/true);
+  Browser* new_browser = Browser::Create(browser_params);
+  new_browser->window()->Show();
+
+  // Create a bubble using the temporary profile, but not attached to its view
+  // hierarchy. This bubble won't be destroyed when the new browser is closed,
+  // and will outlive it.
+  views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(
+      new DiceWebSigninInterceptionBubbleView(
+          new_profile, GetAvatarButton(), GetTestBubbleParameters(),
+          base::BindOnce(&DiceWebSigninInterceptionBubbleBrowserTest::
+                             OnInterceptionComplete,
+                         base::Unretained(this))));
+  widget->Show();
+  EXPECT_FALSE(callback_result_.has_value());
+
+  // Close the browser without closing the bubble.
+  ProfileDestructionWatcher profile_destruction_watcher;
+  profile_destruction_watcher.Watch(new_profile);
+  new_browser->window()->Close();
+
+  // The profile is not destroyed, because the bubble is retaining it.
+  EXPECT_TRUE(g_browser_process->profile_manager()->HasKeepAliveForTesting(
+      new_profile, ProfileKeepAliveOrigin::kDiceWebSigninInterceptionBubble));
+  EXPECT_FALSE(profile_destruction_watcher.destroyed());
+
+  // Close the bubble.
+  views::test::WidgetDestroyedWaiter widget_destroyed_waiter(widget);
+  widget->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
+  widget_destroyed_waiter.Wait();
+  ASSERT_TRUE(callback_result_.has_value());
+  EXPECT_EQ(callback_result_, SigninInterceptionResult::kIgnored);
+
+  // The keep-alive is released and the profile is destroyed.
+  profile_destruction_watcher.WaitForDestruction();
+
+  // Check that histograms are recorded.
+  histogram_tester.ExpectUniqueSample("Signin.InterceptResult.MultiUser",
+                                      SigninInterceptionResult::kIgnored, 1);
+  histogram_tester.ExpectUniqueSample("Signin.InterceptResult.MultiUser.NoSync",
+                                      SigninInterceptionResult::kIgnored, 1);
   histogram_tester.ExpectTotalCount("Signin.InterceptResult.Enterprise", 0);
   histogram_tester.ExpectTotalCount("Signin.InterceptResult.Switch", 0);
 }

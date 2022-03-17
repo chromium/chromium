@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
@@ -62,6 +63,8 @@ class DiceWebSigninInterceptionBubbleView
                            BubbleAccepted);
   FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptionBubbleBrowserTest,
                            BubbleAcceptedGuestMode);
+  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptionBubbleBrowserTest,
+                           ProfileKeepAlive);
   FRIEND_TEST_ALL_PREFIXES(ProfileBubbleInteractiveUiTest,
                            InterceptionBubbleFocus);
 
@@ -96,6 +99,10 @@ class DiceWebSigninInterceptionBubbleView
   // This bubble has no native buttons. The user accepts or cancels or selects
   // Guest profile through this method, which is called by the inner web UI.
   void OnWebUIUserChoice(SigninInterceptionUserChoice user_choice);
+
+  // This bubble can outlive the Browser, in particular on Mac (see
+  // https://crbug.com/1302729). Retain the profile to prevent use-after-free.
+  ScopedProfileKeepAlive profile_keep_alive_;
 
   raw_ptr<Profile> profile_;
   bool accepted_ = false;

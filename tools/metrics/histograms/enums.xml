@@ -74669,6 +74669,7 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="24" label="kCrxInstaller"/>
   <int value="25" label="kProfilePickerView"/>
   <int value="26" label="kCommanderFrontend"/>
+  <int value="27" label="kDiceWebSigninInterceptionBubble"/>
 </enum>
 
 <enum name="ProfileMenuActionableItem">
