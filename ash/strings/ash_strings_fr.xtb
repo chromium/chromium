@@ -927,7 +927,7 @@ Nouvelle installation</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{1 chiffre manquant}one{# chiffre manquant}other{# chiffres manquants}}</translation>
 <translation id="6867938213751067702">Téléchargement du fichier <ph name="FILENAME" /> suspendu</translation>
 <translation id="6878400149835617132">Raccourci désactivé</translation>
-<translation id="6880133753431418782">Vous avez effectué cette recherche précédemment. Si vous la supprimez de votre historique, la requête sera supprimée de votre compte Google sur tous vos appareils de manière définitive.</translation>
+<translation id="6880133753431418782">Vous avez effectué cette recherche précédemment. Si vous la supprimez de votre historique, la requête sera définitivement supprimée de votre compte Google sur tous vos appareils.</translation>
 <translation id="6884665277231944629">Revenir à aujourd'hui</translation>
 <translation id="6886172995547742638">Cela peut nuire aux performances de votre <ph name="DEVICE_TYPE" />. Utilisez un adaptateur secteur USB-C de <ph name="PREFERRED_MINIMUM_POWER" /> W ou plus.</translation>
 <translation id="688631446150864480">Appuyez sur la flèche vers le bas pour changer de fenêtre</translation>
