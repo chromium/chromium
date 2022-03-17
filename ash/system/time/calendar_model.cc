@@ -151,11 +151,18 @@ class CalendarEventFetch {
 };
 
 // The calendar model itself.
-CalendarModel::CalendarModel(const std::set<base::Time>& base_months) {
-  FetchEvents(base_months);
+CalendarModel::CalendarModel(const std::set<base::Time>& base_months)
+    : session_observer_(this) {}
+
+CalendarModel::~CalendarModel() {}
+
+void CalendarModel::OnSessionStateChanged(session_manager::SessionState state) {
+  ClearAllCachedEvents();
 }
 
-CalendarModel::~CalendarModel() = default;
+void CalendarModel::OnActiveUserSessionChanged(const AccountId& account_id) {
+  ClearAllCachedEvents();
+}
 
 void CalendarModel::AddObserver(Observer* observer) {
   if (observer)
@@ -228,6 +235,17 @@ void CalendarModel::QueuePrunableMonth(base::Time start_of_month) {
 
   // start_of_month is now the most-recently-used.
   prunable_months_mru_.push_front(start_of_month);
+}
+
+void CalendarModel::ClearAllCachedEvents() {
+  // Destroy all outstanding fetch requests.
+  pending_fetches_.clear();
+
+  // Destroy the list used to decide who gets pruned.
+  prunable_months_mru_.clear();
+
+  // Destroy the events themselves.
+  event_months_.clear();
 }
 
 void CalendarModel::FetchEvents(const std::set<base::Time>& months) {
