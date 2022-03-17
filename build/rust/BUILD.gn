@@ -14,12 +14,6 @@ config("edition_2015") {
   rustflags = [ "--edition=2015" ]
 }
 
-# The required config for cxx-generated bindings because Chromium C++ is built
-# with -fno-exceptions.
-config("cxx_cppconfig") {
-  defines = [ "RUST_CXX_NO_EXCEPTIONS" ]
-}
-
 # The required dependencies for cxx-generated bindings, that must be included
 # on the C++ side.
 static_library("cxx_cppdeps") {
@@ -28,7 +22,10 @@ static_library("cxx_cppdeps") {
     "//third_party/rust/cxx/v1/crate/src/cxx.cc",
   ]
 
-  defines = [ "CXX_RS_EXPORT=__attribute__((visibility(\"default\")))" ]
+  defines = [
+    "RUST_CXX_NO_EXCEPTIONS",
+    "CXX_RS_EXPORT=__attribute__((visibility(\"default\")))",
+  ]
 
   # Depending on the C++ bindings side of cxx then requires also depending
   # on the Rust bindings, since one calls the other. And the Rust bindings
@@ -41,7 +38,6 @@ static_library("cxx_cppdeps") {
     ":cxx_rustdeps",
     "//build/rust/std",
   ]
-  public_configs = [ ":cxx_cppconfig" ]
 }
 
 # The required dependencies for cxx-generated bindings, that must be included

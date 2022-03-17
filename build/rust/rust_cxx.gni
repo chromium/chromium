@@ -138,11 +138,6 @@ template("rust_cxx") {
         args += [ "__attribute__((visibility(\"default\")))" ]
       }
     }
-
-    # Anyone building the header files we generate needs to have
-    # RUST_CXX_NO_EXCEPTIONS defined so that they build without exception
-    # support.
-    public_configs = [ "//build/rust:cxx_cppconfig" ]
   }
 
   static_library(target_name) {
