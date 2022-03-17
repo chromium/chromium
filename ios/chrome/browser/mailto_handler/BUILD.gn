@@ -5,12 +5,15 @@
 source_set("mailto_handler") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "mailto_handler_configuration.h",
+    "mailto_handler_configuration.mm",
     "mailto_handler_service.h",
     "mailto_handler_service.mm",
   ]
   deps = [
     "//base",
     "//components/keyed_service/core",
+    "//ios/public/provider/chrome/browser/signin:signin_sso_api",
   ]
   frameworks = [ "UIKit.framework" ]
 }
