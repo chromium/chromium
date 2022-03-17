@@ -70,7 +70,7 @@ namespace content {
 //      std::unique_ptr<ByteStreamReader> reader;
 //      CreateByteStream(
 //          GetIOThreadTaskRunner({}),
-//          base::CreateSequencedTaskRunner({base::MayBlock, ...}),
+//          base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock, ...}),
 //          kStreamBufferSize /* e.g. 10240.  */,
 //          &writer,
 //          &reader);         // Presumed passed to FILE thread for reading.
