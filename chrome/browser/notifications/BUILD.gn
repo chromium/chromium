@@ -175,9 +175,7 @@ if (is_android) {
 
   android_resources("java_resources") {
     sources = [
-      "android/java/res/drawable-ldrtl-night/notification_permission_rationale_dialog_header.xml",
       "android/java/res/drawable-ldrtl/notification_permission_rationale_dialog_header.xml",
-      "android/java/res/drawable-night/notification_permission_rationale_dialog_header.xml",
       "android/java/res/drawable/notification_permission_rationale_dialog_header.xml",
       "android/java/res/layout/notification_permission_rationale_dialog.xml",
       "android/java/res/layout/web_notification.xml",
@@ -185,7 +183,9 @@ if (is_android) {
       "android/java/res/layout/web_notification_button.xml",
       "android/java/res/layout/web_notification_icon_frame.xml",
       "android/java/res/layout/web_notification_small_icon.xml",
+      "android/java/res/values-night/colors.xml",
       "android/java/res/values-v21/styles.xml",
+      "android/java/res/values/colors.xml",
       "android/java/res/values/styles.xml",
     ]
 
