@@ -250,9 +250,11 @@ class DelegatedInkPointRendererGpu<InkTrailDevice,
 
   void SetDelegatedInkTrailStartPoint(
       std::unique_ptr<gfx::DelegatedInkMetadata> metadata) {
-    TRACE_EVENT1("delegated_ink_trails",
-                 "DelegatedInkPointRendererGpu::SetDelegatedInkTrailStartPoint",
-                 "metadata", metadata->ToString());
+    TRACE_EVENT_WITH_FLOW1(
+        "delegated_ink_trails",
+        "DelegatedInkPointRendererGpu::SetDelegatedInkTrailStartPoint",
+        TRACE_ID_GLOBAL(metadata_->trace_id()), TRACE_EVENT_FLAG_FLOW_IN,
+        "metadata", metadata_->ToString());
 
     DCHECK(ink_visual_);
     DCHECK(delegated_ink_trail_);
@@ -340,9 +342,12 @@ class DelegatedInkPointRendererGpu<InkTrailDevice,
   }
 
   void StoreDelegatedInkPoint(const gfx::DelegatedInkPoint& point) override {
-    TRACE_EVENT1("delegated_ink_trails",
-                 "DelegatedInkPointRendererGpu::StoreDelegatedInkPoint",
-                 "delegated ink point", point.ToString());
+    TRACE_EVENT_WITH_FLOW1(
+        "delegated_ink_trails",
+        "DelegatedInkPointRendererGpu::StoreDelegatedInkPoint",
+        TRACE_ID_GLOBAL(point.trace_id()),
+        TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "point",
+        point.ToString());
 
     const int32_t pointer_id = point.pointer_id();
 
@@ -632,10 +637,12 @@ class DelegatedInkPointRendererGpu<InkTrailDevice,
       return false;
     }
 
-    TRACE_EVENT_INSTANT1("delegated_ink_trails",
-                         "DelegatedInkPointRendererGpu::DrawDelegatedInkPoint "
-                         "- Point added to trail",
-                         TRACE_EVENT_SCOPE_THREAD, "point", point.ToString());
+    TRACE_EVENT_WITH_FLOW1(
+        "delegated_ink_trails",
+        "DelegatedInkPointRendererGpu::DrawDelegatedInkPoint "
+        "- Point added to trail",
+        TRACE_ID_GLOBAL(point.trace_id()), TRACE_EVENT_FLAG_FLOW_IN, "point",
+        point.ToString());
     delegated_ink_points_[point.pointer_id()][point] = token;
     return true;
   }
