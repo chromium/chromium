@@ -7,6 +7,7 @@
 
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
 
+@class FeedMetricsRecorder;
 @protocol FollowedWebChannelsDataSource;
 @protocol TableViewFaviconDataSource;
 
@@ -19,6 +20,9 @@
 
 // Source for favicons.
 @property(nonatomic, weak) id<TableViewFaviconDataSource> faviconDataSource;
+
+// Feed metrics recorder.
+@property(nonatomic, weak) FeedMetricsRecorder* feedMetricsRecorder;
 
 @end
 

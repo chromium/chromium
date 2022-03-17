@@ -117,6 +117,16 @@ const char kDiscoverFeedUserActionManageHiddenTapped[] =
 const char kDiscoverFeedUserActionManageFollowingTapped[] =
     "ContentSuggestions.Feed.HeaderAction.ManageFollowing";
 
+// User action names for management surface.
+const char kDiscoverFeedUserActionManagementTappedUnfollow[] =
+    "ContentSuggestions.Feed.Management.TappedUnfollow";
+const char
+    kDiscoverFeedUserActionManagementTappedRefollowAfterUnfollowOnSnackbar[] =
+        "ContentSuggestions.Feed.Management."
+        "TappedRefollowAfterUnfollowOnSnackbar";
+const char kDiscoverFeedUserActionManagementTappedUnfollowTryAgainOnSnackbar[] =
+    "ContentSuggestions.Feed.Management.TappedUnfollowTryAgainOnSnackbar";
+
 // User action name for engaging with feed.
 const char kDiscoverFeedUserActionEngaged[] = "ContentSuggestions.Feed.Engaged";
 
@@ -279,6 +289,27 @@ const int kMinutesBetweenSessions = 5;
                                                   kTappedManageFollowing];
   base::RecordAction(
       base::UserMetricsAction(kDiscoverFeedUserActionManageFollowingTapped));
+}
+
+- (void)recordManagementTappedUnfollow {
+  [self recordDiscoverFeedUserActionHistogram:
+            FeedUserActionType::kTappedUnfollowOnManagementSurface];
+  base::RecordAction(
+      base::UserMetricsAction(kDiscoverFeedUserActionManagementTappedUnfollow));
+}
+
+- (void)recordManagementTappedRefollowAfterUnfollowOnSnackbar {
+  [self recordDiscoverFeedUserActionHistogram:
+            FeedUserActionType::kTappedRefollowAfterUnfollowOnSnackbar];
+  base::RecordAction(base::UserMetricsAction(
+      kDiscoverFeedUserActionManagementTappedRefollowAfterUnfollowOnSnackbar));
+}
+
+- (void)recordManagementTappedUnfollowTryAgainOnSnackbar {
+  [self recordDiscoverFeedUserActionHistogram:
+            FeedUserActionType::kTappedUnfollowTryAgainOnSnackbar];
+  base::RecordAction(base::UserMetricsAction(
+      kDiscoverFeedUserActionManagementTappedUnfollowTryAgainOnSnackbar));
 }
 
 - (void)recordDiscoverFeedVisibilityChanged:(BOOL)visible {

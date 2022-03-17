@@ -75,6 +75,8 @@
   followManagementViewController.followedWebChannelsDataSource = mediator;
   followManagementViewController.faviconDataSource = mediator;
   self.followManagementMediator = mediator;
+  followManagementViewController.feedMetricsRecorder = self.feedMetricsRecorder;
+
   [self.navigationController pushViewController:followManagementViewController
                                        animated:YES];
 }

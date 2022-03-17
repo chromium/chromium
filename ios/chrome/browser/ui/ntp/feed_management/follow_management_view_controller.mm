@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/ui/follow/followed_web_channel.h"
 #import "ios/chrome/browser/ui/ntp/feed_management/followed_web_channel_item.h"
 #import "ios/chrome/browser/ui/ntp/feed_management/followed_web_channels_data_source.h"
+#include "ios/chrome/browser/ui/ntp/feed_metrics_recorder.h"
 #import "ios/chrome/browser/ui/table_view/table_view_favicon_data_source.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
@@ -137,6 +138,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)requestUnfollowWebChannelAtIndexPath:(NSIndexPath*)indexPath {
   // TODO(crbug.com/1296745): Start favicon spinner.
 
+  [self.feedMetricsRecorder recordManagementTappedUnfollow];
   self.indexPathOfLastUnfollowAttempt = indexPath;
 
   FollowedWebChannelItem* followedWebChannelItem =
@@ -160,11 +162,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)retryUnfollow {
+  [self.feedMetricsRecorder recordManagementTappedUnfollowTryAgainOnSnackbar];
   [self
       requestUnfollowWebChannelAtIndexPath:self.indexPathOfLastUnfollowAttempt];
 }
 
 - (void)undoUnfollow {
+  [self.feedMetricsRecorder
+          recordManagementTappedRefollowAfterUnfollowOnSnackbar];
+
   // TODO(crbug.com/1296745): Start spinner over UNDO text in snackbar.
   FollowedWebChannelItem* unfollowedItem = self.lastUnfollowedWebChannelItem;
   unfollowedItem.followedWebChannel.refollowRequestBlock(^(BOOL success) {

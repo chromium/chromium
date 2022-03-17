@@ -60,6 +60,18 @@ enum class BrokenNTPHierarchyRelationship {
 // management UI.
 - (void)recordHeaderMenuManageFollowingTapped;
 
+// Record metrics for when the user swipes or taps to unfollow a web channel in
+// the management UI.
+- (void)recordManagementTappedUnfollow;
+
+// Record metrics for when the user taps "UNDO" on the successful unfollow
+// confirmation snackbar in the management UI.
+- (void)recordManagementTappedRefollowAfterUnfollowOnSnackbar;
+
+// Record metrics for when the user taps "Try Again" on the unfollow error
+// confirmation snackbar in the management UI.
+- (void)recordManagementTappedUnfollowTryAgainOnSnackbar;
+
 // Record metrics for when the user toggles the feed visibility from the feed
 // header menu.
 - (void)recordDiscoverFeedVisibilityChanged:(BOOL)visible;
