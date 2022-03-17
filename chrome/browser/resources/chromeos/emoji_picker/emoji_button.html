@@ -94,7 +94,7 @@
     on-click="onClick"
     on-contextmenu="onContextMenu"
     disabled="[[disabled]]"
-    aria-label="[[_label(emoji, variants)]]">
+    aria-label="[[_label(tooltip, emoji, variants)]]">
   [[emoji]]
 </button>
 <template is="dom-if" if="[[!variant]]">

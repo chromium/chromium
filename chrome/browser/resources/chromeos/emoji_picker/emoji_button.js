@@ -93,8 +93,14 @@ export class EmojiButton extends PolymerElement {
     return variants && variants.length > 0 ? 'has-variants' : '';
   }
 
-  _label(emoji, variants) {
-    return variants && variants.length ? emoji + ' with variants.' : emoji;
+  _label(tooltip, emoji, variants) {
+    // TODO(crbug/1227852): Just use emoji as the tooltip once ChromeVox can
+    // announce them properly.
+    const emojiLabel =
+        navigator.languages.some(lang => lang.startsWith('en')) > 0 ? tooltip :
+                                                                      emoji;
+    return variants && variants.length ? emojiLabel + ' with variants.' :
+                                         emojiLabel;
   }
 }
 
