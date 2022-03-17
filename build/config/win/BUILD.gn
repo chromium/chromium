@@ -314,31 +314,6 @@ config("sdk_link") {
   } else if (current_cpu == "arm64") {
     ldflags = [ "/MACHINE:ARM64" ]
   }
-
-  vcvars_toolchain_data = exec_script("../../toolchain/win/setup_toolchain.py",
-                                      [
-                                        visual_studio_path,
-                                        windows_sdk_path,
-                                        visual_studio_runtime_dirs,
-                                        current_os,
-                                        current_cpu,
-                                        "none",
-                                      ],
-                                      "scope")
-
-  vc_lib_path = vcvars_toolchain_data.vc_lib_path
-  if (defined(vcvars_toolchain_data.vc_lib_atlmfc_path)) {
-    vc_lib_atlmfc_path = vcvars_toolchain_data.vc_lib_atlmfc_path
-  }
-  vc_lib_um_path = vcvars_toolchain_data.vc_lib_um_path
-
-  lib_dirs = [
-    "$vc_lib_um_path",
-    "$vc_lib_path",
-  ]
-  if (defined(vc_lib_atlmfc_path)) {
-    lib_dirs += [ "$vc_lib_atlmfc_path" ]
-  }
 }
 
 # This default linker setup is provided separately from the SDK setup so
