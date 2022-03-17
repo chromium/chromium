@@ -236,6 +236,13 @@ class PLATFORM_EXPORT VideoCaptureImpl
   void SetGpuFactoriesHandleOnIOTaskRunner(
       media::GpuVideoAcceleratorFactories* gpu_factories);
 
+  // Sets fallback mode which will make it always request
+  // premapped frames from the capturer.
+  void RequirePremappedFrames();
+
+  // Generates feedback accounding for premapped frames requirement.
+  media::VideoCaptureFeedback DefaultFeedback();
+
   // |device_id_| and |session_id_| are different concepts, but we reuse the
   // same numerical value, passed on construction.
   const base::UnguessableToken device_id_;
@@ -283,6 +290,8 @@ class PLATFORM_EXPORT VideoCaptureImpl
   // Stores feedback from the clients, received in |ProcessFeedback()|.
   // Only accessed on the IO thread.
   media::VideoCaptureFeedback feedback_;
+
+  bool require_premapped_frames_ = false;
 
   THREAD_CHECKER(io_thread_checker_);
 
