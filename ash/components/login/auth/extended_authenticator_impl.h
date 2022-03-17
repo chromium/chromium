@@ -36,6 +36,9 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) ExtendedAuthenticatorImpl
   void SetConsumer(AuthStatusConsumer* consumer) override;
   void AuthenticateToCheck(const UserContext& context,
                            base::OnceClosure success_callback) override;
+  void AuthenticateToUnlockWebAuthnSecret(
+      const UserContext& context,
+      base::OnceClosure success_callback) override;
   void StartFingerprintAuthSession(
       const AccountId& account_id,
       base::OnceCallback<void(bool)> callback) override;
@@ -56,6 +59,7 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) ExtendedAuthenticatorImpl
 
   // Performs actual operation with fully configured |context|.
   void DoAuthenticateToCheck(base::OnceClosure success_callback,
+                             bool unlock_webauthn_secret,
                              const UserContext& context);
 
   // Inner operation callbacks.

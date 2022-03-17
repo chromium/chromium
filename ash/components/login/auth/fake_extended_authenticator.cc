@@ -24,15 +24,15 @@ void FakeExtendedAuthenticator::SetConsumer(AuthStatusConsumer* consumer) {
 void FakeExtendedAuthenticator::AuthenticateToCheck(
     const UserContext& context,
     base::OnceClosure success_callback) {
-  if (expected_user_context_ == context) {
-    if (success_callback)
-      std::move(success_callback).Run();
-    OnAuthSuccess(context);
-    return;
-  }
+  DoAuthenticateToCheck(context, /*unlock_webauthn_secret=*/false,
+                        std::move(success_callback));
+}
 
-  OnAuthFailure(FAILED_MOUNT,
-                AuthFailure(AuthFailure::UNLOCK_FAILED));
+void FakeExtendedAuthenticator::AuthenticateToUnlockWebAuthnSecret(
+    const UserContext& context,
+    base::OnceClosure success_callback) {
+  DoAuthenticateToCheck(context, /*unlock_webauthn_secret=*/true,
+                        std::move(success_callback));
 }
 
 void FakeExtendedAuthenticator::StartFingerprintAuthSession(
@@ -46,7 +46,7 @@ void FakeExtendedAuthenticator::EndFingerprintAuthSession() {}
 void FakeExtendedAuthenticator::AuthenticateWithFingerprint(
     const UserContext& context,
     base::OnceCallback<void(::user_data_auth::CryptohomeErrorCode)> callback) {
-  if (expected_user_context_ == context) {
+  if (expected_user_context_ != context) {
     std::move(callback).Run(::user_data_auth::CryptohomeErrorCode::
                                 CRYPTOHOME_ERROR_FINGERPRINT_RETRY_REQUIRED);
     return;
@@ -61,6 +61,21 @@ void FakeExtendedAuthenticator::TransformKeyIfNeeded(
     ContextCallback callback) {
   if (callback)
     std::move(callback).Run(user_context);
+}
+
+void FakeExtendedAuthenticator::DoAuthenticateToCheck(
+    const UserContext& context,
+    bool unlock_webauthn_secret,
+    base::OnceClosure success_callback) {
+  last_unlock_webauthn_secret_ = unlock_webauthn_secret;
+  if (expected_user_context_ == context) {
+    if (success_callback)
+      std::move(success_callback).Run();
+    OnAuthSuccess(context);
+    return;
+  }
+
+  OnAuthFailure(FAILED_MOUNT, AuthFailure(AuthFailure::UNLOCK_FAILED));
 }
 
 void FakeExtendedAuthenticator::OnAuthSuccess(const UserContext& context) {

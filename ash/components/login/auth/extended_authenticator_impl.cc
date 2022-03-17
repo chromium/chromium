@@ -48,7 +48,17 @@ void ExtendedAuthenticatorImpl::AuthenticateToCheck(
     base::OnceClosure success_callback) {
   TransformKeyIfNeeded(
       context, base::BindOnce(&ExtendedAuthenticatorImpl::DoAuthenticateToCheck,
-                              this, std::move(success_callback)));
+                              this, std::move(success_callback),
+                              /*unlock_webauthn_secret=*/false));
+}
+
+void ExtendedAuthenticatorImpl::AuthenticateToUnlockWebAuthnSecret(
+    const UserContext& context,
+    base::OnceClosure success_callback) {
+  TransformKeyIfNeeded(
+      context, base::BindOnce(&ExtendedAuthenticatorImpl::DoAuthenticateToCheck,
+                              this, std::move(success_callback),
+                              /*unlock_webauthn_secret=*/true));
 }
 
 void ExtendedAuthenticatorImpl::StartFingerprintAuthSession(
@@ -150,6 +160,7 @@ void ExtendedAuthenticatorImpl::OnSaltObtained(const std::string& system_salt) {
 
 void ExtendedAuthenticatorImpl::DoAuthenticateToCheck(
     base::OnceClosure success_callback,
+    bool unlock_webauthn_secret,
     const UserContext& user_context) {
   chromeos::LoginEventRecorder::Get()->AddLoginTimeMarker(
       "Cryptohome-CheckKeyEx-Start", false);
@@ -160,6 +171,7 @@ void ExtendedAuthenticatorImpl::DoAuthenticateToCheck(
       cryptohome::CreateAuthorizationRequestFromKeyDef(
           cryptohome_parameter_utils::CreateAuthorizationKeyDefFromUserContext(
               user_context));
+  request.set_unlock_webauthn_secret(unlock_webauthn_secret);
   chromeos::UserDataAuthClient::Get()->CheckKey(
       request, base::BindOnce(&ExtendedAuthenticatorImpl::OnOperationComplete<
                                   ::user_data_auth::CheckKeyReply>,

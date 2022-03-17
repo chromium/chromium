@@ -71,9 +71,9 @@ class InSessionAuthDialogClientTest : public testing::Test {
   }
 
   void SetExpectedContext(const UserContext& expected_user_context) {
-    client_->SetExtendedAuthenticator(
-        base::MakeRefCounted<FakeExtendedAuthenticator>(client_.get(),
-                                                        expected_user_context));
+    fake_authenticator_ = base::MakeRefCounted<FakeExtendedAuthenticator>(
+        client_.get(), expected_user_context);
+    client_->SetExtendedAuthenticator(fake_authenticator_);
   }
 
   void AuthenticateUserWithPasswordOrPin(
@@ -82,6 +82,10 @@ class InSessionAuthDialogClientTest : public testing::Test {
       base::OnceCallback<void(bool)> callback) {
     client_->AuthenticateUserWithPasswordOrPin(password, authenticated_by_pin,
                                                std::move(callback));
+  }
+
+  bool GetLastUnlockWebAuthnSecret() const {
+    return fake_authenticator_->last_unlock_webauthn_secret();
   }
 
  private:
@@ -97,6 +101,7 @@ class InSessionAuthDialogClientTest : public testing::Test {
       std::make_unique<FakeInSessionAuthDialogController>()};
   std::unique_ptr<InSessionAuthDialogClient> client_{
       std::make_unique<InSessionAuthDialogClient>()};
+  scoped_refptr<ash::FakeExtendedAuthenticator> fake_authenticator_;
 };
 
 TEST_F(InSessionAuthDialogClientTest, WrongPassword) {
@@ -143,6 +148,7 @@ TEST_F(InSessionAuthDialogClientTest, PasswordAuthSuccess) {
 
   run_loop.RunUntilIdle();
   EXPECT_TRUE(result);
+  EXPECT_TRUE(GetLastUnlockWebAuthnSecret());
 }
 
 }  // namespace

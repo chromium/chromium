@@ -170,7 +170,7 @@ void InSessionAuthDialogClient::AuthenticateWithPassword(
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &ExtendedAuthenticator::AuthenticateToCheck,
+          &ExtendedAuthenticator::AuthenticateToUnlockWebAuthnSecret,
           GetExtendedAuthenticator(), user_context,
           base::BindOnce(&InSessionAuthDialogClient::OnPasswordAuthSuccess,
                          weak_factory_.GetWeakPtr(), user_context)));

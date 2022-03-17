@@ -53,6 +53,13 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) ExtendedAuthenticator
   virtual void AuthenticateToCheck(const UserContext& context,
                                    base::OnceClosure success_callback) = 0;
 
+  // This call will attempt to authenticate the user with the key (and key
+  // label) in |context|, and unlock the WebAuthn secret using key if
+  // authentication succeeds.
+  virtual void AuthenticateToUnlockWebAuthnSecret(
+      const UserContext& context,
+      base::OnceClosure success_callback) = 0;
+
   // Attempts to start fingerprint auth session (prepare biometrics daemon for
   // upcoming fingerprint scan) for the user with |account_id|. |callback| will
   // be invoked with whether the fingerprint auth session is successfully

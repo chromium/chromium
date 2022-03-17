@@ -27,6 +27,9 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) FakeExtendedAuthenticator
   void SetConsumer(AuthStatusConsumer* consumer) override;
   void AuthenticateToCheck(const UserContext& context,
                            base::OnceClosure success_callback) override;
+  void AuthenticateToUnlockWebAuthnSecret(
+      const UserContext& context,
+      base::OnceClosure success_callback) override;
   void StartFingerprintAuthSession(
       const AccountId& account_id,
       base::OnceCallback<void(bool)> callback) override;
@@ -38,15 +41,23 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) FakeExtendedAuthenticator
   void TransformKeyIfNeeded(const UserContext& user_context,
                             ContextCallback callback) override;
 
+  bool last_unlock_webauthn_secret() const {
+    return last_unlock_webauthn_secret_;
+  }
+
  private:
   ~FakeExtendedAuthenticator() override;
 
+  void DoAuthenticateToCheck(const UserContext& context,
+                             bool unlock_webauthn_secret,
+                             base::OnceClosure success_callback);
   void OnAuthSuccess(const UserContext& context);
   void OnAuthFailure(AuthState state, const AuthFailure& error);
 
   AuthStatusConsumer* consumer_;
 
   UserContext expected_user_context_;
+  bool last_unlock_webauthn_secret_ = false;
 };
 
 }  // namespace ash
