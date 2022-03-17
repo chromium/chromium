@@ -191,6 +191,10 @@ BidderWorklet::~BidderWorklet() {
   debug_id_->AbortDebuggerPauses();
 }
 
+bool BidderWorklet::IsValidBid(double bid) {
+  return !std::isnan(bid) && std::isfinite(bid) && bid > 0;
+}
+
 int BidderWorklet::context_group_id_for_testing() const {
   return debug_id_->context_group_id();
 }
@@ -610,7 +614,7 @@ void BidderWorklet::V8State::GenerateBid(
     }
   }
 
-  if (bid <= 0 || std::isnan(bid) || !std::isfinite(bid)) {
+  if (!IsValidBid(bid)) {
     PostErrorBidCallbackToUserThread(std::move(callback),
                                      std::move(errors_out));
     return;

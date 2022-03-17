@@ -17,6 +17,7 @@
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
+#include "content/services/auction_worklet/bidder_worklet.h"
 #include "content/services/auction_worklet/for_debugging_only_bindings.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
@@ -384,6 +385,7 @@ void SellerWorklet::V8State::ScoreAd(
   if (!v8_helper_->AppendJsonValue(context, ad_metadata_json, &args)) {
     PostScoreAdCallbackToUserThread(
         std::move(callback), /*score=*/0,
+        /*component_auction_modified_bid_params=*/nullptr,
         /*scoring_signals_data_version=*/absl::nullopt,
         /*debug_loss_report_url=*/absl::nullopt,
         /*debug_win_report_url=*/absl::nullopt,
@@ -397,6 +399,7 @@ void SellerWorklet::V8State::ScoreAd(
                            *auction_ad_config_non_shared_params, &args)) {
     PostScoreAdCallbackToUserThread(
         std::move(callback), /*score=*/0,
+        /*component_auction_modified_bid_params=*/nullptr,
         /*scoring_signals_data_version=*/absl::nullopt,
         /*debug_loss_report_url=*/absl::nullopt,
         /*debug_win_report_url=*/absl::nullopt,
@@ -434,6 +437,7 @@ void SellerWorklet::V8State::ScoreAd(
                                  scoring_signals_data_version.value()))) {
     PostScoreAdCallbackToUserThread(
         std::move(callback), /*score=*/0,
+        /*component_auction_modified_bid_params=*/nullptr,
         /*scoring_signals_data_version=*/absl::nullopt,
         /*debug_loss_report_url=*/absl::nullopt,
         /*debug_win_report_url=*/absl::nullopt,
@@ -445,6 +449,7 @@ void SellerWorklet::V8State::ScoreAd(
                                   browser_signal_ad_components)) {
       PostScoreAdCallbackToUserThread(
           std::move(callback), /*score=*/0,
+          /*component_auction_modified_bid_params=*/nullptr,
           /*scoring_signals_data_version=*/absl::nullopt,
           /*debug_loss_report_url=*/absl::nullopt,
           /*debug_win_report_url=*/absl::nullopt,
@@ -464,6 +469,7 @@ void SellerWorklet::V8State::ScoreAd(
            .ToLocal(&score_ad_result)) {
     PostScoreAdCallbackToUserThread(
         std::move(callback), /*score=*/0,
+        /*component_auction_modified_bid_params=*/nullptr,
         /*scoring_signals_data_version=*/absl::nullopt,
         /*debug_loss_report_url=*/absl::nullopt,
         /*debug_win_report_url=*/absl::nullopt, std::move(errors_out));
@@ -472,6 +478,8 @@ void SellerWorklet::V8State::ScoreAd(
 
   double score;
   bool allow_component_auction = false;
+  mojom::ComponentAuctionModifiedBidParamsPtr
+      component_auction_modified_bid_params;
   // Try to parse the result as a number. On success, it's the desirability
   // score.
   if (!gin::ConvertFromV8(isolate, score_ad_result, &score)) {
@@ -483,19 +491,22 @@ void SellerWorklet::V8State::ScoreAd(
                         " scoreAd() did not return an object or a number."}));
       PostScoreAdCallbackToUserThread(
           std::move(callback), /*score=*/0,
+          /*component_auction_modified_bid_params=*/nullptr,
           /*scoring_signals_data_version=*/absl::nullopt,
           /*debug_loss_report_url=*/absl::nullopt,
           /*debug_win_report_url=*/absl::nullopt, std::move(errors_out));
       return;
     }
 
-    gin::Dictionary result_dict(isolate, score_ad_result.As<v8::Object>());
+    v8::Local<v8::Object> score_ad_object = score_ad_result.As<v8::Object>();
+    gin::Dictionary result_dict(isolate, score_ad_object);
     if (!result_dict.Get("desirability", &score)) {
       errors_out.push_back(
           base::StrCat({decision_logic_url_.spec(),
                         " scoreAd() return value has incorrect structure."}));
       PostScoreAdCallbackToUserThread(
           std::move(callback), /*score=*/0,
+          /*component_auction_modified_bid_params=*/nullptr,
           /*scoring_signals_data_version=*/absl::nullopt,
           /*debug_loss_report_url=*/absl::nullopt,
           /*debug_win_report_url=*/absl::nullopt, std::move(errors_out));
@@ -504,6 +515,45 @@ void SellerWorklet::V8State::ScoreAd(
 
     if (!result_dict.Get("allowComponentAuction", &allow_component_auction))
       allow_component_auction = false;
+
+    // If this is the seller in a component auction (and thus it was passed a
+    // top-level seller), need to return a
+    // mojom::ComponentAuctionModifiedBidParams.
+    if (allow_component_auction && browser_signals_other_seller &&
+        browser_signals_other_seller->is_top_level_seller()) {
+      component_auction_modified_bid_params =
+          mojom::ComponentAuctionModifiedBidParams::New();
+
+      v8::Local<v8::Value> ad_value;
+      if (!score_ad_object
+               ->Get(context, v8_helper_->CreateStringFromLiteral("ad"))
+               .ToLocal(&ad_value) ||
+          !v8_helper_->ExtractJson(
+              context, ad_value, &component_auction_modified_bid_params->ad)) {
+        component_auction_modified_bid_params->ad = "null";
+      }
+
+      component_auction_modified_bid_params->has_bid =
+          result_dict.Get("bid", &component_auction_modified_bid_params->bid);
+      if (component_auction_modified_bid_params->has_bid) {
+        // Fail if the new bid is not valid.
+        if (!BidderWorklet::IsValidBid(
+                component_auction_modified_bid_params->bid)) {
+          errors_out.push_back(
+              base::StrCat({decision_logic_url_.spec(),
+                            " scoreAd() returned an invalid bid."}));
+          PostScoreAdCallbackToUserThread(
+              std::move(callback), /*score=*/0,
+              /*component_auction_modified_bid_params=*/nullptr,
+              /*scoring_signals_data_version=*/absl::nullopt,
+              /*debug_loss_report_url=*/absl::nullopt,
+              /*debug_win_report_url=*/absl::nullopt, std::move(errors_out));
+          return;
+        }
+      } else {
+        component_auction_modified_bid_params->bid = 0;
+      }
+    }
   }
 
   // Fail if `allow_component_auction` is false and this is a component seller
@@ -516,6 +566,7 @@ void SellerWorklet::V8State::ScoreAd(
          "true. Ad dropped from component auction."}));
     PostScoreAdCallbackToUserThread(
         std::move(callback), /*score=*/0,
+        /*component_auction_modified_bid_params=*/nullptr,
         /*scoring_signals_data_version=*/absl::nullopt,
         /*debug_loss_report_url=*/absl::nullopt,
         /*debug_win_report_url=*/absl::nullopt, std::move(errors_out));
@@ -528,6 +579,7 @@ void SellerWorklet::V8State::ScoreAd(
         {decision_logic_url_.spec(), " scoreAd() returned an invalid score."}));
     PostScoreAdCallbackToUserThread(
         std::move(callback), /*score=*/0,
+        /*component_auction_modified_bid_params=*/nullptr,
         /*scoring_signals_data_version=*/absl::nullopt,
         /*debug_loss_report_url=*/absl::nullopt,
         /*debug_win_report_url=*/absl::nullopt, std::move(errors_out));
@@ -538,14 +590,18 @@ void SellerWorklet::V8State::ScoreAd(
     // Keep debug report URLs because we want to send debug loss reports if
     // seller rejected all bids.
     PostScoreAdCallbackToUserThread(
-        std::move(callback), /*score=*/0, scoring_signals_data_version,
+        std::move(callback), /*score=*/0,
+        /*component_auction_modified_bid_params=*/nullptr,
+        scoring_signals_data_version,
         for_debugging_only_bindings.TakeLossReportUrl(),
         for_debugging_only_bindings.TakeWinReportUrl(), std::move(errors_out));
     return;
   }
 
   PostScoreAdCallbackToUserThread(
-      std::move(callback), score, scoring_signals_data_version,
+      std::move(callback), score,
+      std::move(component_auction_modified_bid_params),
+      scoring_signals_data_version,
       for_debugging_only_bindings.TakeLossReportUrl(),
       for_debugging_only_bindings.TakeWinReportUrl(), std::move(errors_out));
 }
@@ -665,6 +721,8 @@ void SellerWorklet::V8State::PostResumeToUserThread(
 void SellerWorklet::V8State::PostScoreAdCallbackToUserThread(
     ScoreAdCallbackInternal callback,
     double score,
+    mojom::ComponentAuctionModifiedBidParamsPtr
+        component_auction_modified_bid_params,
     absl::optional<uint32_t> scoring_signals_data_version,
     absl::optional<GURL> debug_loss_report_url,
     absl::optional<GURL> debug_win_report_url,
@@ -672,7 +730,9 @@ void SellerWorklet::V8State::PostScoreAdCallbackToUserThread(
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
   user_thread_->PostTask(
       FROM_HERE,
-      base::BindOnce(std::move(callback), score, scoring_signals_data_version,
+      base::BindOnce(std::move(callback), score,
+                     std::move(component_auction_modified_bid_params),
+                     scoring_signals_data_version,
                      std::move(debug_loss_report_url),
                      std::move(debug_win_report_url), std::move(errors)));
 }
@@ -782,6 +842,8 @@ void SellerWorklet::ScoreAdIfReady(ScoreAdTaskList::iterator task) {
 void SellerWorklet::DeliverScoreAdCallbackOnUserThread(
     ScoreAdTaskList::iterator task,
     double score,
+    mojom::ComponentAuctionModifiedBidParamsPtr
+        component_auction_modified_bid_params,
     absl::optional<uint32_t> scoring_signals_data_version,
     absl::optional<GURL> debug_loss_report_url,
     absl::optional<GURL> debug_win_report_url,
@@ -794,7 +856,8 @@ void SellerWorklet::DeliverScoreAdCallbackOnUserThread(
     errors.insert(errors.begin(), *task->trusted_scoring_signals_error_msg);
 
   std::move(task->callback)
-      .Run(score, scoring_signals_data_version.value_or(0),
+      .Run(score, std::move(component_auction_modified_bid_params),
+           scoring_signals_data_version.value_or(0),
            scoring_signals_data_version.has_value(), debug_loss_report_url,
            debug_win_report_url, errors);
   score_ad_tasks_.erase(task);

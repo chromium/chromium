@@ -9,7 +9,8 @@ function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
   validateAuctionConfig(auctionConfig);
   validateTrustedScoringSignals(trustedScoringSignals);
   validateBrowserSignals(browserSignals, /*isScoreAd=*/true);
-  return {desirability: 13, allowComponentAuction: true};
+  return {desirability: 13, allowComponentAuction: true,
+          bid:42, ad:['Replaced metadata']};
 }
 
 function reportResult(auctionConfig, browserSignals) {

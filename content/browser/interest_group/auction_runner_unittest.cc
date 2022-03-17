@@ -303,6 +303,13 @@ std::string MakeDecisionScript(
                         JSON.stringify(adMetadata) + "/" +
                         browserSignals.adComponents);
       }
+      // If this is the top-level auction scoring a bid from a component
+      // auction, the component auction should have added a
+      // "fromComponentAuction" field to `adMetadata`.
+      if ("fromComponentAuction" in adMetadata !=
+          "componentSeller" in browserSignals) {
+        throw new Error("wrong adMetadata.fromComponentAuction");
+      }
       if (auctionConfig.decisionLogicUrl !== decisionLogicUrl)
         throw new Error("wrong decisionLogicUrl in auctionConfig");
       // Check `perBuyerSignals` for the first bidder.
@@ -362,12 +369,15 @@ std::string MakeDecisionScript(
       if (debugWinReportUrl)
         forDebuggingOnly.reportAdAuctionWin(debugWinReportUrl + bid);
 
+      adMetadata.fromComponentAuction = true;
+
       return {desirability: computeScore(bid),
               // Only allow a component auction when the passed in ad is from
               // one.
               allowComponentAuction:
                   browserSignals.topLevelSeller !== undefined ||
-                  browserSignals.componentSeller !== undefined}
+                  browserSignals.componentSeller !== undefined,
+              ad: adMetadata}
     }
 
     function reportResult(auctionConfig, browserSignals) {
@@ -2485,6 +2495,81 @@ TEST_F(AuctionRunnerTest, ComponentAuctionOneComponentTwoBidders) {
                   /*expected_interest_groups=*/2, /*expected_owners=*/2);
 }
 
+TEST_F(AuctionRunnerTest, ComponentAuctionModifiesBid) {
+  // Basic bid script.
+  const char kBidScript[] = R"(
+      function generateBid(interestGroup, auctionSignals, perBuyerSignals,
+                           trustedBiddingSignals, browserSignals) {
+        return {ad: [], bid: 2, render: interestGroup.ads[0].renderUrl,
+                allowComponentAuction: true};
+      }
+
+    function reportWin(auctionSignals, perBuyerSignals, sellerSignals,
+                       browserSignals) {
+      sendReportTo("https://buyer-reporting.example.com/" + browserSignals.bid);
+    }
+  )";
+
+  // Component seller script that modifies the bid to 3.
+  const std::string kComponentSellerScript = R"(
+    function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
+      return {desirability: 10, allowComponentAuction: true, bid: 3};
+    }
+
+    function reportResult(auctionConfig, browserSignals) {
+      sendReportTo(auctionConfig.seller + "/" + browserSignals.bid);
+    }
+  )";
+
+  // Top-level seller script that rejects bids that aren't 3..
+  const std::string kTopLevelSellerScript = R"(
+    function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
+      if (bid != 3)
+        return 0;
+      return {desirability: 10, allowComponentAuction: true};
+    }
+
+    function reportResult(auctionConfig, browserSignals) {
+      sendReportTo(auctionConfig.seller + "/" + browserSignals.bid);
+    }
+  )";
+
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
+                                         kBidScript);
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         kTopLevelSellerScript);
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kComponentSeller1Url, kComponentSellerScript);
+
+  interest_group_buyers_.reset();
+  component_auctions_.emplace_back(
+      CreateAuctionConfig(kComponentSeller1Url, {{kBidder1}}));
+
+  // Basic interest group.
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, kBidder1Name, kBidder1Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com")));
+
+  StartAuction(kSellerUrl, std::move(bidders));
+  auction_run_loop_->Run();
+  EXPECT_EQ(GURL("https://ad1.com"), result_.ad_url);
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+  // The reporting URLs contain the bids - the top-level seller report should
+  // see the modified bid, the other worklets see the original bid.
+  //
+  // TODO(https://crbug.com/1288865): The component seller worklet should also
+  // get the modified bid, in another field.
+  EXPECT_THAT(result_.report_urls,
+              testing::UnorderedElementsAre(
+                  GURL("https://buyer-reporting.example.com/2"),
+                  GURL("https://component.seller1.test/2"),
+                  GURL("https://adstuff.publisher1.com/3")));
+  CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+                  /*expected_interest_groups=*/1, /*expected_owners=*/1);
+}
+
 // An auction in which the seller origin is not allowed to use the interest
 // group API.
 TEST_F(AuctionRunnerTest, DisallowedSeller) {
@@ -4050,7 +4135,10 @@ TEST_F(AuctionRunnerTest, BidderCrashBeforeBidding) {
     EXPECT_EQ(kBidder2, score_ad_params.interest_group_owner);
     EXPECT_EQ(7, score_ad_params.bid);
     std::move(score_ad_params.callback)
-        .Run(/*score=*/11, /*data_version=*/0, /*has_data_version=*/false,
+        .Run(/*score=*/11,
+             auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
+             /*data_version=*/0,
+             /*has_data_version=*/false,
              /*debug_loss_report_url=*/absl::nullopt,
              /*debug_win_report_url=*/absl::nullopt, /*errors=*/{});
 
@@ -4117,7 +4205,9 @@ TEST_F(AuctionRunnerTest, WinningBidderCrashWhileReporting) {
   EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
   EXPECT_EQ(7, score_ad_params.bid);
   std::move(score_ad_params.callback)
-      .Run(/*score=*/11, /*data_version=*/0, /*has_data_version=*/false,
+      .Run(/*score=*/11,
+           auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
+           /*data_version=*/0, /*has_data_version=*/false,
            /*debug_loss_report_url=*/absl::nullopt,
            /*debug_win_report_url=*/absl::nullopt, /*errors=*/{});
 
@@ -4126,7 +4216,9 @@ TEST_F(AuctionRunnerTest, WinningBidderCrashWhileReporting) {
   EXPECT_EQ(kBidder2, score_ad_params.interest_group_owner);
   EXPECT_EQ(5, score_ad_params.bid);
   std::move(score_ad_params.callback)
-      .Run(/*score=*/10, /*data_version=*/0, /*has_data_version=*/false,
+      .Run(/*score=*/10,
+           auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
+           /*data_version=*/0, /*has_data_version=*/false,
            /*debug_loss_report_url=*/absl::nullopt,
            /*debug_win_report_url=*/absl::nullopt, /*errors=*/{});
 
@@ -4240,7 +4332,9 @@ TEST_F(AuctionRunnerTest, SellerCrash) {
       EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
       EXPECT_EQ(5, score_ad_params.bid);
       std::move(score_ad_params.callback)
-          .Run(/*score=*/10, /*data_version=*/0, /*has_data_version=*/false,
+          .Run(/*score=*/10,
+               auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
+               /*data_version=*/0, /*has_data_version=*/false,
                /*debug_loss_report_url=*/absl::nullopt,
                /*debug_win_report_url=*/absl::nullopt, /*errors=*/{});
 
@@ -4248,7 +4342,9 @@ TEST_F(AuctionRunnerTest, SellerCrash) {
       EXPECT_EQ(kBidder2, score_ad_params2.interest_group_owner);
       EXPECT_EQ(7, score_ad_params2.bid);
       std::move(score_ad_params2.callback)
-          .Run(/*score=*/11, /*data_version=*/0, /*has_data_version=*/false,
+          .Run(/*score=*/11,
+               auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
+               /*data_version=*/0, /*has_data_version=*/false,
                /*debug_loss_report_url=*/absl::nullopt,
                /*debug_win_report_url=*/absl::nullopt, /*errors=*/{});
 
@@ -4352,7 +4448,12 @@ TEST_F(AuctionRunnerTest, ComponentAuctionOneBidderCrashesBeforeBidding) {
   EXPECT_EQ(kBidder2, score_ad_params.interest_group_owner);
   EXPECT_EQ(2, score_ad_params.bid);
   std::move(score_ad_params.callback)
-      .Run(/*score=*/3, /*data_version=*/0, /*has_data_version=*/false,
+      .Run(/*score=*/3,
+           auction_worklet::mojom::ComponentAuctionModifiedBidParams::New(
+               /*ad=*/"null",
+               /*bid=*/0,
+               /*has_bid=*/false),
+           /*data_version=*/0, /*has_data_version=*/false,
            /*debug_loss_report_url=*/absl::nullopt,
            /*debug_win_report_url=*/absl::nullopt,
            /*errors=*/{});
@@ -4365,7 +4466,9 @@ TEST_F(AuctionRunnerTest, ComponentAuctionOneBidderCrashesBeforeBidding) {
   EXPECT_EQ(kBidder2, score_ad_params.interest_group_owner);
   EXPECT_EQ(2, score_ad_params.bid);
   std::move(score_ad_params.callback)
-      .Run(/*score=*/4, /*data_version=*/0, /*has_data_version=*/false,
+      .Run(/*score=*/4,
+           auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
+           /*data_version=*/0, /*has_data_version=*/false,
            /*debug_loss_report_url=*/absl::nullopt,
            /*debug_win_report_url=*/absl::nullopt, /*errors=*/{});
 
@@ -4456,7 +4559,12 @@ TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellersReportResultFails) {
     EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
     EXPECT_EQ(2, score_ad_params.bid);
     std::move(score_ad_params.callback)
-        .Run(/*score=*/3, /*data_version=*/0, /*has_data_version=*/false,
+        .Run(/*score=*/3,
+             auction_worklet::mojom::ComponentAuctionModifiedBidParams::New(
+                 /*ad=*/"null",
+                 /*bid=*/0,
+                 /*has_bid=*/false),
+             /*data_version=*/0, /*has_data_version=*/false,
              /*debug_loss_report_url=*/absl::nullopt,
              /*debug_win_report_url=*/absl::nullopt, /*errors=*/{});
 
@@ -4468,7 +4576,9 @@ TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellersReportResultFails) {
     EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
     EXPECT_EQ(2, score_ad_params.bid);
     std::move(score_ad_params.callback)
-        .Run(/*score=*/4, /*data_version=*/0, /*has_data_version=*/false,
+        .Run(/*score=*/4,
+             auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
+             /*data_version=*/0, /*has_data_version=*/false,
              /*debug_loss_report_url=*/absl::nullopt,
              /*debug_win_report_url=*/absl::nullopt, /*errors=*/{});
 
@@ -4595,6 +4705,155 @@ TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellersAllCrash) {
                   /*expected_interest_groups=*/2, /*expected_owners=*/2);
 }
 
+// Test cases where a component seller returns an invalid
+// ComponentAuctionModifiedBidParams.
+TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellerBadBidParams) {
+  const struct {
+    auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr params;
+    const char* expected_error;
+  } kTestCases[] = {
+      // Empty parameters are invalid.
+      {auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
+       "Invalid component_auction_modified_bid_params"},
+
+      // Bad bids.
+      {auction_worklet::mojom::ComponentAuctionModifiedBidParams::New(
+           /*ad=*/"null",
+           /*bid=*/0,
+           /*has_bid=*/true),
+       "Invalid component_auction_modified_bid_params bid"},
+      {auction_worklet::mojom::ComponentAuctionModifiedBidParams::New(
+           /*ad=*/"null",
+           /*bid=*/-1,
+           /*has_bid=*/true),
+       "Invalid component_auction_modified_bid_params bid"},
+      {auction_worklet::mojom::ComponentAuctionModifiedBidParams::New(
+           /*ad=*/"null",
+           /*bid=*/std::numeric_limits<double>::infinity(),
+           /*has_bid=*/true),
+       "Invalid component_auction_modified_bid_params bid"},
+      {auction_worklet::mojom::ComponentAuctionModifiedBidParams::New(
+           /*ad=*/"null",
+           /*bid=*/-std::numeric_limits<double>::infinity(),
+           /*has_bid=*/true),
+       "Invalid component_auction_modified_bid_params bid"},
+      {auction_worklet::mojom::ComponentAuctionModifiedBidParams::New(
+           /*ad=*/"null",
+           /*bid=*/-std::numeric_limits<double>::quiet_NaN(),
+           /*has_bid=*/true),
+       "Invalid component_auction_modified_bid_params bid"},
+  };
+
+  SetUpComponentAuctionAndResponses(/*bidder1_seller=*/kComponentSeller1,
+                                    /*bidder2_seller=*/kComponentSeller1,
+                                    /*bid_from_component_auction_wins=*/true);
+
+  for (const auto& test_case : kTestCases) {
+    StartStandardAuctionWithMockService();
+
+    // First bidder doesn't finish scoring the bid. This should not stall the
+    // auction, since these errors represent security errors from the component
+    // auction's seller worklet.
+    auto bidder1_worklet =
+        mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url);
+    ASSERT_TRUE(bidder1_worklet);
+
+    // The second bidder worklet bids.
+    auto bidder2_worklet =
+        mock_auction_process_manager_->TakeBidderWorklet(kBidder2Url);
+    ASSERT_TRUE(bidder2_worklet);
+    bidder2_worklet->InvokeGenerateBidCallback(2, GURL("https://ad2.com/"));
+
+    // Component seller scores the bid, but returns a bad
+    // ComponentAuctionModifiedBidParams.
+    auto component_seller_worklet =
+        mock_auction_process_manager_->TakeSellerWorklet(kComponentSeller1Url);
+    ASSERT_TRUE(component_seller_worklet);
+    component_seller_worklet->set_expect_send_pending_signals_requests_called(
+        false);
+    auto score_ad_params = component_seller_worklet->WaitForScoreAd();
+    EXPECT_EQ(kBidder2, score_ad_params.interest_group_owner);
+    EXPECT_EQ(2, score_ad_params.bid);
+    std::move(score_ad_params.callback)
+        .Run(/*score=*/3, test_case.params.Clone(),
+             /*data_version=*/0, /*has_data_version=*/false,
+             /*debug_loss_report_url=*/absl::nullopt,
+             /*debug_win_report_url=*/absl::nullopt,
+             /*errors=*/{});
+
+    // The auction fails, because of the bad ComponentAuctionModifiedBidParams.
+    auction_run_loop_->Run();
+    EXPECT_FALSE(result_.ad_url);
+    EXPECT_EQ(5, result_.bidder1_bid_count);
+    EXPECT_EQ(5, result_.bidder2_bid_count);
+
+    // Since these are security errors rather than script errors, they're
+    // reported as bad Mojo messages, instead of in the return error list.
+    EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
+    EXPECT_EQ(test_case.expected_error, TakeBadMessage());
+
+    // The component auction failed with a Mojo error, but the top-level auction
+    // sees that as no bids.
+    CheckHistograms(AuctionRunner::AuctionResult::kNoBids,
+                    /*expected_interest_groups=*/2, /*expected_owners=*/2);
+  }
+}
+
+// Test cases where a top-level seller returns an
+// ComponentAuctionModifiedBidParams, which should result in failing the
+// auction.
+TEST_F(AuctionRunnerTest, TopLevelSellerBadBidParams) {
+  // Run a standard auction, with only a top-level seller.
+  StartStandardAuctionWithMockService();
+
+  // First bidder doesn't finish scoring the bid. This should not stall the
+  // auction, since these errors represent security errors from the component
+  // auction's seller worklet.
+  auto bidder1_worklet =
+      mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url);
+  ASSERT_TRUE(bidder1_worklet);
+
+  // The second bidder worklet bids.
+  auto bidder2_worklet =
+      mock_auction_process_manager_->TakeBidderWorklet(kBidder2Url);
+  ASSERT_TRUE(bidder2_worklet);
+  bidder2_worklet->InvokeGenerateBidCallback(2, GURL("https://ad2.com/"));
+
+  // Seller scores the bid, but returns a ComponentAuctionModifiedBidParams.
+  auto seller_worklet =
+      mock_auction_process_manager_->TakeSellerWorklet(kSellerUrl);
+  ASSERT_TRUE(seller_worklet);
+  seller_worklet->set_expect_send_pending_signals_requests_called(false);
+  auto score_ad_params = seller_worklet->WaitForScoreAd();
+  EXPECT_EQ(kBidder2, score_ad_params.interest_group_owner);
+  EXPECT_EQ(2, score_ad_params.bid);
+  std::move(score_ad_params.callback)
+      .Run(/*score=*/3,
+           auction_worklet::mojom::ComponentAuctionModifiedBidParams::New(
+               /*ad=*/"null",
+               /*bid=*/0,
+               /*has_bid=*/false),
+           /*data_version=*/0, /*has_data_version=*/false,
+           /*debug_loss_report_url=*/absl::nullopt,
+           /*debug_win_report_url=*/absl::nullopt,
+           /*errors=*/{});
+
+  // The auction fails, because of the unexpected
+  // ComponentAuctionModifiedBidParams.
+  auction_run_loop_->Run();
+  EXPECT_FALSE(result_.ad_url);
+  EXPECT_EQ(5, result_.bidder1_bid_count);
+  EXPECT_EQ(5, result_.bidder2_bid_count);
+
+  // Since these are security errors rather than script errors, they're
+  // reported as bad Mojo messages, instead of in the return error list.
+  EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
+  EXPECT_EQ("Invalid component_auction_modified_bid_params", TakeBadMessage());
+
+  CheckHistograms(AuctionRunner::AuctionResult::kBadMojoMessage,
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2);
+}
+
 TEST_F(AuctionRunnerTest, NullAdComponents) {
   const GURL kRenderUrl = GURL("https://ad1.com");
   const struct {
@@ -4634,7 +4893,9 @@ TEST_F(AuctionRunnerTest, NullAdComponents) {
       EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
       EXPECT_EQ(1, score_ad_params.bid);
       std::move(score_ad_params.callback)
-          .Run(/*score=*/11, /*data_version=*/0, /*has_data_version=*/false,
+          .Run(/*score=*/11,
+               auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
+               /*data_version=*/0, /*has_data_version=*/false,
                /*debug_loss_report_url=*/absl::nullopt,
                /*debug_win_report_url=*/absl::nullopt, /*errors=*/{});
 
@@ -4720,7 +4981,9 @@ TEST_F(AuctionRunnerTest, AdComponentsLimit) {
       EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
       EXPECT_EQ(1, score_ad_params.bid);
       std::move(score_ad_params.callback)
-          .Run(/*score=*/11, /*data_version=*/0, /*has_data_version=*/false,
+          .Run(/*score=*/11,
+               auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
+               /*data_version=*/0, /*has_data_version=*/false,
                /*debug_loss_report_url=*/absl::nullopt,
                /*debug_win_report_url=*/absl::nullopt, /*errors=*/{});
 
@@ -4943,7 +5206,9 @@ TEST_F(AuctionRunnerTest, BadSellerReportUrl) {
   EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
   EXPECT_EQ(5, score_ad_params.bid);
   std::move(score_ad_params.callback)
-      .Run(/*score=*/10, /*data_version=*/0, /*has_data_version=*/false,
+      .Run(/*score=*/10,
+           auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
+           /*data_version=*/0, /*has_data_version=*/false,
            /*debug_loss_report_url=*/absl::nullopt,
            /*debug_win_report_url=*/absl::nullopt, /*errors=*/{});
 
@@ -5001,7 +5266,12 @@ TEST_F(AuctionRunnerTest, BadComponentSellerReportUrl) {
   EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
   EXPECT_EQ(5, score_ad_params.bid);
   std::move(score_ad_params.callback)
-      .Run(/*score=*/10, /*data_version=*/0, /*has_data_version=*/false,
+      .Run(/*score=*/10,
+           auction_worklet::mojom::ComponentAuctionModifiedBidParams::New(
+               /*ad=*/"null",
+               /*bid=*/0,
+               /*has_bid=*/false),
+           /*data_version=*/0, /*has_data_version=*/false,
            /*debug_loss_report_url=*/absl::nullopt,
            /*debug_win_report_url=*/absl::nullopt, /*errors=*/{});
 
@@ -5010,7 +5280,9 @@ TEST_F(AuctionRunnerTest, BadComponentSellerReportUrl) {
   EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
   EXPECT_EQ(5, score_ad_params.bid);
   std::move(score_ad_params.callback)
-      .Run(/*score=*/10, /*data_version=*/0, /*has_data_version=*/false,
+      .Run(/*score=*/10,
+           auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
+           /*data_version=*/0, /*has_data_version=*/false,
            /*debug_loss_report_url=*/absl::nullopt,
            /*debug_win_report_url=*/absl::nullopt, /*errors=*/{});
 
@@ -5070,7 +5342,9 @@ TEST_F(AuctionRunnerTest, BadBidderReportUrl) {
   EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
   EXPECT_EQ(5, score_ad_params.bid);
   std::move(score_ad_params.callback)
-      .Run(/*score=*/10, /*data_version=*/0, /*has_data_version=*/false,
+      .Run(/*score=*/10,
+           auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
+           /*data_version=*/0, /*has_data_version=*/false,
            /*debug_loss_report_url=*/absl::nullopt,
            /*debug_win_report_url=*/absl::nullopt, /*errors=*/{});
 
@@ -5127,7 +5401,9 @@ TEST_F(AuctionRunnerTest, DestroyBidderWorkletWithoutBid) {
   EXPECT_EQ(kBidder2, score_ad_params.interest_group_owner);
   EXPECT_EQ(7, score_ad_params.bid);
   std::move(score_ad_params.callback)
-      .Run(/*score=*/11, /*data_version=*/0, /*has_data_version=*/false,
+      .Run(/*score=*/11,
+           auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
+           /*data_version=*/0, /*has_data_version=*/false,
            /*debug_loss_report_url=*/absl::nullopt,
            /*debug_win_report_url=*/absl::nullopt, /*errors=*/{});
 
@@ -5183,7 +5459,9 @@ TEST_F(AuctionRunnerTest, Tie) {
     EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
     EXPECT_EQ(5, score_ad_params.bid);
     std::move(score_ad_params.callback)
-        .Run(/*score=*/10, /*data_version=*/0, /*has_data_version=*/false,
+        .Run(/*score=*/10,
+             auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
+             /*data_version=*/0, /*has_data_version=*/false,
              /*debug_loss_report_url=*/absl::nullopt,
              /*debug_win_report_url=*/absl::nullopt, /*errors=*/{});
 
@@ -5194,7 +5472,9 @@ TEST_F(AuctionRunnerTest, Tie) {
     EXPECT_EQ(kBidder2, score_ad_params.interest_group_owner);
     EXPECT_EQ(5, score_ad_params.bid);
     std::move(score_ad_params.callback)
-        .Run(/*score=*/10, /*data_version=*/0, /*has_data_version=*/false,
+        .Run(/*score=*/10,
+             auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
+             /*data_version=*/0, /*has_data_version=*/false,
              /*debug_loss_report_url=*/absl::nullopt,
              /*debug_win_report_url=*/absl::nullopt, /*errors=*/{});
     // Need to flush the service pipe to make sure the AuctionRunner has
@@ -5319,6 +5599,8 @@ TEST_F(AuctionRunnerTest, WorkletOrder) {
           case Event::kBid1Scored:
             std::move(score_ad_params1.callback)
                 .Run(/*score=*/bidder1_wins ? 11 : 9,
+                     auction_worklet::mojom::
+                         ComponentAuctionModifiedBidParamsPtr(),
                      /*data_version=*/0, /*has_data_version=*/false,
                      /*debug_loss_report_url=*/absl::nullopt,
                      /*debug_win_report_url=*/absl::nullopt, /*errors=*/{});
@@ -5327,7 +5609,10 @@ TEST_F(AuctionRunnerTest, WorkletOrder) {
             break;
           case Event::kBid2Scored:
             std::move(score_ad_params2.callback)
-                .Run(/*score=*/10, /*data_version=*/0,
+                .Run(/*score=*/10,
+                     auction_worklet::mojom::
+                         ComponentAuctionModifiedBidParamsPtr(),
+                     /*data_version=*/0,
                      /*has_data_version=*/false,
                      /*debug_loss_report_url=*/absl::nullopt,
                      /*debug_win_report_url=*/absl::nullopt,
@@ -5831,7 +6116,9 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
     EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
     EXPECT_EQ(5, score_ad_params.bid);
     std::move(score_ad_params.callback)
-        .Run(/*score=*/10, /*data_version=*/0, /*has_data_version=*/false,
+        .Run(/*score=*/10,
+             auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
+             /*data_version=*/0, /*has_data_version=*/false,
              test_case.seller_debug_loss_report_url,
              test_case.seller_debug_win_report_url, /*errors=*/{});
     auction_run_loop_->Run();
@@ -5888,7 +6175,9 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
   EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
   EXPECT_EQ(5, score_ad_params.bid);
   std::move(score_ad_params.callback)
-      .Run(/*score=*/10, /*data_version=*/0, /*has_data_version=*/false,
+      .Run(/*score=*/10,
+           auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
+           /*data_version=*/0, /*has_data_version=*/false,
            GURL("https://seller-debug-loss-reporting.com/1"),
            GURL("https://seller-debug-win-reporting.com/1"), /*errors=*/{});
 

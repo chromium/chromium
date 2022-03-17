@@ -275,13 +275,27 @@ class CONTENT_EXPORT AuctionRunner {
   struct ScoredBid {
     ScoredBid(double score,
               absl::optional<uint32_t> scoring_signals_data_version,
-              std::unique_ptr<Bid> bid);
+              std::unique_ptr<Bid> bid,
+              auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr
+                  component_auction_modified_bid_params);
     ~ScoredBid();
 
+    // The seller's desirability score for the bid.
     const double score;
+
+    // The seller's scoring signals version.
     const absl::optional<uint32_t> scoring_signals_data_version;
 
+    // The bid that came from the bidder or component Auction.
     const std::unique_ptr<Bid> bid;
+
+    // Modifications that should be applied to `bid` before the parent
+    // auction uses it. Only present for bids in component Auctions. When
+    // the top-level auction creates a ScoredBid represending the result from
+    // a component auction, the params have already been applied to the
+    // underlying Bid, so the params are no longer needed.
+    const auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr
+        component_auction_modified_bid_params;
   };
 
   // Handles running an auction rooted at a given AuctionConfig. Separate from
@@ -525,13 +539,16 @@ class CONTENT_EXPORT AuctionRunner {
     void ScoreBidIfReady(std::unique_ptr<Bid> bid);
 
     // Callback from ScoreBid().
-    void OnBidScored(std::unique_ptr<Bid> bid,
-                     double score,
-                     uint32_t scoring_signals_data_version,
-                     bool has_scoring_signals_data_version,
-                     const absl::optional<GURL>& debug_loss_report_url,
-                     const absl::optional<GURL>& debug_win_report_url,
-                     const std::vector<std::string>& errors);
+    void OnBidScored(
+        std::unique_ptr<Bid> bid,
+        double score,
+        auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr
+            component_auction_modified_bid_params,
+        uint32_t scoring_signals_data_version,
+        bool has_scoring_signals_data_version,
+        const absl::optional<GURL>& debug_loss_report_url,
+        const absl::optional<GURL>& debug_win_report_url,
+        const std::vector<std::string>& errors);
 
     absl::optional<std::string> PerBuyerSignals(const BidState* state);
     absl::optional<base::TimeDelta> PerBuyerTimeout(const BidState* state);

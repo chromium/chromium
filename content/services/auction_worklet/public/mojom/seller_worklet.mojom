@@ -20,6 +20,23 @@ union ComponentAuctionOtherSeller {
   url.mojom.Origin component_seller;
 };
 
+// When ScoreAd() is invoked for a component seller worklet, it returns an
+// additional set of parameters that are passed to the top-level seller
+// worklet in place of output from the GenerateBid() call that created the bid.
+struct ComponentAuctionModifiedBidParams {
+  // Ad metadata to send to the top-level seller in place of
+  // BidderWorkletBid::ad.
+  string ad;
+
+  // Bid value to sent to the top-level seller seller in place of
+  // BidderWorkletBid::bid. Only valid if `has_bid` is true.
+  double bid;
+
+  // True to indicate that `bid` has been populated.
+  // TODO(https://crbug.com/657632): Update when optional doubles are supported.
+  bool has_bid;
+};
+
 // Manages the auction workflow for one loaded FLEDGE seller worklet.
 // See https://github.com/WICG/turtledove/blob/main/FLEDGE.md
 //
@@ -75,6 +92,10 @@ interface SellerWorklet {
   //  of 0 indicates either an error running the script, or that the script
   //  indicated the bid should not be used.
   //
+  // `component_auction_modified_bid_params` If this is a component seller
+  //  worklet, contains parameters to pass to the top-level seller worklet
+  //  in place of values from the original bidder worklet's BidderWorkletBid.
+  //
   // `scoring_signals_data_version` The value of the Data-Version header served
   //  with the trusted scoring signals.
   //
@@ -109,6 +130,8 @@ interface SellerWorklet {
           uint32 browser_signal_bidding_duration_msecs,
           mojo_base.mojom.TimeDelta? seller_timeout) =>
               (double score,
+              ComponentAuctionModifiedBidParams?
+                  component_auction_modified_bid_params,
               uint32 scoring_signals_data_version,
               bool has_scoring_signals_data_version,
               url.mojom.Url? debug_loss_report_url,

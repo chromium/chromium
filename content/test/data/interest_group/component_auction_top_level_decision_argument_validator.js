@@ -26,15 +26,13 @@ function reportResult(auctionConfig, browserSignals) {
 
 function validateAdMetadata(adMetadata) {
   const adMetadataJSON = JSON.stringify(adMetadata);
-  if (adMetadataJSON !==
-      '{"renderUrl":"https://example.com/render",' +
-      '"metadata":{"ad":"metadata","here":[1,2,3]}}') {
+  if (adMetadataJSON !== '["Replaced metadata"]') {
     throw 'Wrong adMetadata ' + adMetadataJSON;
   }
 }
 
 function validateBid(bid) {
-  if (bid !== 2)
+  if (bid !== 42)
     throw 'Wrong bid ' + bid;
 }
 

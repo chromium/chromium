@@ -79,6 +79,11 @@ class BidderWorklet : public mojom::BidderWorklet {
   ~BidderWorklet() override;
   BidderWorklet& operator=(const BidderWorklet&) = delete;
 
+  // Returns true if `bid` is a valid bid value. Bids of "0" and other values
+  // that mean no bid was offered are considered invalid, for the purposes of
+  // this method.
+  static bool IsValidBid(double bid);
+
   // Sets the callback to be invoked on errors which require closing the pipe.
   // Callback will also immediately delete `this`. Not an argument to
   // constructor because the Mojo ReceiverId needs to be bound to the callback,

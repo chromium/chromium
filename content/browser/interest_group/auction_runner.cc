@@ -71,6 +71,11 @@ const blink::InterestGroup::Ad* FindMatchingAd(
   return nullptr;
 }
 
+// Checks that `bid` is a valid bid value for an auction.
+bool IsValidBid(double bid) {
+  return !std::isnan(bid) && std::isfinite(bid) && bid > 0;
+}
+
 }  // namespace
 
 AuctionRunner::BidState::BidState() = default;
@@ -96,7 +101,7 @@ AuctionRunner::Bid::Bid(std::string ad_metadata,
       bid_ad(bid_ad),
       bid_state(bid_state),
       auction(auction) {
-  DCHECK_GT(bid, 0);
+  DCHECK(IsValidBid(bid));
 }
 
 AuctionRunner::Bid::Bid(Bid&) = default;
@@ -106,10 +111,14 @@ AuctionRunner::Bid::~Bid() = default;
 AuctionRunner::ScoredBid::ScoredBid(
     double score,
     absl::optional<uint32_t> scoring_signals_data_version,
-    std::unique_ptr<Bid> bid)
+    std::unique_ptr<Bid> bid,
+    auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr
+        component_auction_modified_bid_params)
     : score(score),
       scoring_signals_data_version(scoring_signals_data_version),
-      bid(std::move(bid)) {
+      bid(std::move(bid)),
+      component_auction_modified_bid_params(
+          std::move(component_auction_modified_bid_params)) {
   DCHECK_GT(score, 0);
 }
 
@@ -717,11 +726,18 @@ void AuctionRunner::Auction::OnComponentAuctionComplete(
     return;
   }
 
-  // Clone the bid of the component auction.
-  //
-  // TODO(mmenke): When the component auction can make its own bid, need a way
-  // to track both the original bid price and the modified one.
-  ScoreBidIfReady(std::make_unique<Bid>(*component_auction->top_bid()->bid));
+  // Create a copy of component Auction's bid, replacing values as necessary.
+  const Bid* component_bid = component_auction->top_bid()->bid.get();
+  const auto* modified_bid_params =
+      component_auction->top_bid()->component_auction_modified_bid_params.get();
+  DCHECK(modified_bid_params);
+  ScoreBidIfReady(std::make_unique<Bid>(
+      modified_bid_params->ad,
+      modified_bid_params->has_bid ? modified_bid_params->bid
+                                   : component_bid->bid,
+      component_bid->render_url, component_bid->ad_components,
+      component_bid->bid_duration, component_bid->bidding_signals_data_version,
+      component_bid->bid_ad, component_bid->bid_state, component_bid->auction));
 }
 
 void AuctionRunner::Auction::OnNoBid() {
@@ -771,6 +787,8 @@ void AuctionRunner::Auction::ScoreBidIfReady(std::unique_ptr<Bid> bid) {
 void AuctionRunner::Auction::OnBidScored(
     std::unique_ptr<Bid> bid,
     double score,
+    auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr
+        component_auction_modified_bid_params,
     uint32_t data_version,
     bool has_data_version,
     const absl::optional<GURL>& debug_loss_report_url,
@@ -789,6 +807,21 @@ void AuctionRunner::Auction::OnBidScored(
   if (debug_win_report_url.has_value() &&
       !IsUrlValid(debug_win_report_url.value())) {
     mojo::ReportBadMessage("Invalid seller debugging win report URL");
+    OnBiddingAndScoringComplete(AuctionResult::kBadMojoMessage);
+    return;
+  }
+  // Component Auctions must receive a `component_auction_modified_bid_params`,
+  // and top-level Auctions must not.
+  if (component_auction_modified_bid_params.is_null() != (parent_ == nullptr)) {
+    mojo::ReportBadMessage("Invalid component_auction_modified_bid_params");
+    OnBiddingAndScoringComplete(AuctionResult::kBadMojoMessage);
+    return;
+  }
+  // If a component seller modified, the new bid must also be valid.
+  if (component_auction_modified_bid_params &&
+      component_auction_modified_bid_params->has_bid &&
+      !IsValidBid(component_auction_modified_bid_params->bid)) {
+    mojo::ReportBadMessage("Invalid component_auction_modified_bid_params bid");
     OnBiddingAndScoringComplete(AuctionResult::kBadMojoMessage);
     return;
   }
@@ -830,7 +863,7 @@ void AuctionRunner::Auction::OnBidScored(
   if (is_top_bid) {
     top_bid_ = std::make_unique<ScoredBid>(
         score, has_data_version ? data_version : absl::optional<uint32_t>(),
-        std::move(bid));
+        std::move(bid), std::move(component_auction_modified_bid_params));
   }
 
   MaybeCompleteBiddingAndScoringPhase();
@@ -1231,8 +1264,7 @@ std::unique_ptr<AuctionRunner::Bid> AuctionRunner::Auction::TryToCreateBid(
     const absl::optional<uint32_t>& bidding_signals_data_version,
     const absl::optional<GURL>& debug_loss_report_url,
     const absl::optional<GURL>& debug_win_report_url) {
-  if (mojo_bid->bid <= 0 || std::isnan(mojo_bid->bid) ||
-      !std::isfinite(mojo_bid->bid)) {
+  if (!IsValidBid(mojo_bid->bid)) {
     mojo::ReportBadMessage("Invalid bid value");
     return nullptr;
   }
