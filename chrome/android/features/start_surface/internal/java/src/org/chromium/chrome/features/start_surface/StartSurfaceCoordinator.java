@@ -278,12 +278,12 @@ public class StartSurfaceCoordinator implements StartSurface {
 
         TabSwitcher.Controller controller =
                 mTabSwitcher != null ? mTabSwitcher.getController() : mTasksSurface.getController();
-        mStartSurfaceMediator =
-                new StartSurfaceMediator(controller, mTabModelSelector, mPropertyModel,
-                        mIsStartSurfaceEnabled ? this::initializeSecondaryTasksSurface : null,
-                        mIsStartSurfaceEnabled, mActivity, mBrowserControlsManager,
-                        this::isActivityFinishingOrDestroyed, excludeMVTiles, excludeQueryTiles,
-                        startSurfaceOneshotSupplier, hadWarmStart, jankTracker);
+        mStartSurfaceMediator = new StartSurfaceMediator(controller, containerView,
+                mTabModelSelector, mPropertyModel,
+                mIsStartSurfaceEnabled ? this::initializeSecondaryTasksSurface : null,
+                mIsStartSurfaceEnabled, mActivity, mBrowserControlsManager,
+                this::isActivityFinishingOrDestroyed, excludeMVTiles, excludeQueryTiles,
+                startSurfaceOneshotSupplier, hadWarmStart, jankTracker);
 
         // Show feed loading image.
         if (mStartSurfaceMediator.shouldShowFeedPlaceholder()) {

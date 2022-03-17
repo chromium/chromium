@@ -1282,13 +1282,14 @@ public class StartSurfaceMediatorUnitTest {
 
     private StartSurfaceMediator createStartSurfaceMediatorWithoutInit(
             boolean isStartSurfaceEnabled, boolean excludeMVTiles, boolean hadWarmStart) {
-        StartSurfaceMediator mediator = new StartSurfaceMediator(mMainTabGridController,
-                mTabModelSelector, !isStartSurfaceEnabled ? null : mPropertyModel,
-                isStartSurfaceEnabled ? mSecondaryTasksSurfaceInitializer : null,
-                isStartSurfaceEnabled, ContextUtils.getApplicationContext(),
-                mBrowserControlsStateProvider, mActivityStateChecker, excludeMVTiles,
-                true /* excludeQueryTiles */, mStartSurfaceSupplier, hadWarmStart,
-                new DummyJankTracker());
+        StartSurfaceMediator mediator =
+                new StartSurfaceMediator(mMainTabGridController, null /* tabSwitcherContainer */,
+                        mTabModelSelector, !isStartSurfaceEnabled ? null : mPropertyModel,
+                        isStartSurfaceEnabled ? mSecondaryTasksSurfaceInitializer : null,
+                        isStartSurfaceEnabled, ContextUtils.getApplicationContext(),
+                        mBrowserControlsStateProvider, mActivityStateChecker, excludeMVTiles,
+                        true /* excludeQueryTiles */, mStartSurfaceSupplier, hadWarmStart,
+                        new DummyJankTracker());
         return mediator;
     }
 }

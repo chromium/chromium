@@ -32,6 +32,7 @@ import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.
 import android.content.Context;
 import android.content.res.Resources;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -164,9 +165,10 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.Overv
     private boolean mHideTabCarouselForNewSurface;
     private boolean mHideOverviewOnTabSelecting = true;
     private StartSurface.OnTabSelectingListener mOnTabSelectingListener;
+    private ViewGroup mTabSwitcherContainer;
 
-    StartSurfaceMediator(TabSwitcher.Controller controller, TabModelSelector tabModelSelector,
-            @Nullable PropertyModel propertyModel,
+    StartSurfaceMediator(TabSwitcher.Controller controller, ViewGroup tabSwitcherContainer,
+            TabModelSelector tabModelSelector, @Nullable PropertyModel propertyModel,
             @Nullable SecondaryTasksSurfaceInitializer secondaryTasksSurfaceInitializer,
             boolean isStartSurfaceEnabled, Context context,
             BrowserControlsStateProvider browserControlsStateProvider,
@@ -174,6 +176,7 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.Overv
             boolean excludeQueryTiles, OneshotSupplier<StartSurface> startSurfaceSupplier,
             boolean hadWarmStart, JankTracker jankTracker) {
         mController = controller;
+        mTabSwitcherContainer = tabSwitcherContainer;
         mTabModelSelector = tabModelSelector;
         mPropertyModel = propertyModel;
         mSecondaryTasksSurfaceInitializer = secondaryTasksSurfaceInitializer;
@@ -558,6 +561,11 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.Overv
     @Override
     public int getPreviousStartSurfaceState() {
         return mPreviousStartSurfaceState;
+    }
+
+    @Override
+    public ViewGroup getTabSwitcherContainer() {
+        return mTabSwitcherContainer;
     }
 
     @Override

@@ -137,6 +137,10 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
      * @param inTabSwitcherMode Whether or not tab switcher mode should be shown or hidden.
      */
     void setTabSwitcherMode(boolean inTabSwitcherMode) {
+        // Skip the animations and visibility logic when Tablet GTS polish param is enabled, since
+        // they will instead be handled by the container view.
+        if (isTabletGridTabSwitcherPolishEnabled()) return;
+
         if (mVisiblityAnimator != null) mVisiblityAnimator.cancel();
 
         setVisibility(View.VISIBLE);
