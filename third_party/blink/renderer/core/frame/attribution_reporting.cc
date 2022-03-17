@@ -83,8 +83,8 @@ ScriptPromise AttributionReporting::registerSource(
   Document* document = GetSupplementable()->document();
 
   AttributionSrcLoader::RegisterResult result =
-      frame->GetAttributionSrcLoader()->Register(document->CompleteURL(url),
-                                                 /*element=*/nullptr);
+      frame->GetAttributionSrcLoader()->RegisterSources(
+          document->CompleteURL(url));
 
   return HandleRegisterResult(script_state, exception_state, result);
 }

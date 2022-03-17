@@ -46,9 +46,6 @@ namespace blink {
 
 namespace {
 
-// Represents what events are able to be registered from an attributionsrc.
-enum class AttributionSrcType { kUndetermined, kSource, kTrigger };
-
 bool ContainsTriggerHeaders(const HTTPHeaderMap& headers) {
   return headers.Contains(
              http_names::kAttributionReportingRegisterEventTrigger) ||
@@ -67,8 +64,10 @@ class AttributionSrcLoader::ResourceClient
  public:
   // `associated_with_navigation` indicates whether the attribution data
   // produced by this client will need to be associated with a navigation.
-  ResourceClient(AttributionSrcLoader* loader, bool associated_with_navigation)
-      : loader_(loader) {
+  ResourceClient(AttributionSrcLoader* loader,
+                 SrcType type,
+                 bool associated_with_navigation)
+      : loader_(loader), type_(type) {
     DCHECK(loader_);
     DCHECK(loader_->local_frame_);
     DCHECK(loader_->local_frame_->IsAttached());
@@ -126,7 +125,7 @@ class AttributionSrcLoader::ResourceClient
   // Type of events this request can register. In some cases, this will not be
   // assigned until the first event is received. A single attributionsrc
   // request can only register one type of event across redirects.
-  AttributionSrcType type_ = AttributionSrcType::kUndetermined;
+  SrcType type_;
 
   // Token used to identify an attributionsrc request in the browser process.
   // Only generated for attributionsrc requests that are associated with a
@@ -149,20 +148,27 @@ void AttributionSrcLoader::Trace(Visitor* visitor) const {
   visitor->Trace(resource_clients_);
 }
 
-AttributionSrcLoader::RegisterResult AttributionSrcLoader::Register(
-    const KURL& src_url,
-    HTMLImageElement* element) {
+void AttributionSrcLoader::Register(const KURL& src_url,
+                                    HTMLImageElement* element) {
   RegisterResult result;
-  CreateAndSendRequest(src_url, element, /*associated_with_navigation=*/false,
-                       result);
+  CreateAndSendRequest(src_url, element, SrcType::kUndetermined,
+                       /*associated_with_navigation=*/false, result);
+}
+
+AttributionSrcLoader::RegisterResult AttributionSrcLoader::RegisterSources(
+    const KURL& src_url) {
+  RegisterResult result;
+  CreateAndSendRequest(src_url, /*element=*/nullptr, SrcType::kSource,
+                       /*associated_with_navigation=*/false, result);
   return result;
 }
 
 absl::optional<WebImpression> AttributionSrcLoader::RegisterNavigation(
     const KURL& src_url) {
   RegisterResult result;
-  ResourceClient* client = CreateAndSendRequest(
-      src_url, nullptr, /*associated_with_navigation=*/true, result);
+  ResourceClient* client =
+      CreateAndSendRequest(src_url, nullptr, SrcType::kUndetermined,
+                           /*associated_with_navigation=*/true, result);
   if (!client)
     return absl::nullopt;
 
@@ -176,6 +182,7 @@ AttributionSrcLoader::ResourceClient*
 AttributionSrcLoader::CreateAndSendRequest(
     const KURL& src_url,
     HTMLElement* element,
+    SrcType src_type,
     bool associated_with_navigation,
     RegisterResult& out_register_result) {
   // Detached frames cannot/should not register new attributionsrcs.
@@ -201,19 +208,21 @@ AttributionSrcLoader::CreateAndSendRequest(
   Document* document = window->document();
 
   if (document->IsPrerendering()) {
-    document->AddPostPrerenderingActivationStep(WTF::Bind(
-        &AttributionSrcLoader::DoPrerenderingRegistration,
-        WrapPersistentIfNeeded(this), src_url, associated_with_navigation));
+    document->AddPostPrerenderingActivationStep(
+        WTF::Bind(&AttributionSrcLoader::DoPrerenderingRegistration,
+                  WrapPersistentIfNeeded(this), src_url, src_type,
+                  associated_with_navigation));
     out_register_result = RegisterResult::kSuccess;
     return nullptr;
   }
 
   out_register_result = RegisterResult::kSuccess;
-  return DoRegistration(src_url, associated_with_navigation);
+  return DoRegistration(src_url, src_type, associated_with_navigation);
 }
 
 AttributionSrcLoader::ResourceClient* AttributionSrcLoader::DoRegistration(
     const KURL& src_url,
+    SrcType src_type,
     bool associated_with_navigation) {
   if (!local_frame_->IsAttached())
     return nullptr;
@@ -230,8 +239,8 @@ AttributionSrcLoader::ResourceClient* AttributionSrcLoader::DoRegistration(
   params.MutableOptions().initiator_info.name =
       fetch_initiator_type_names::kAttributionsrc;
 
-  auto* client =
-      MakeGarbageCollected<ResourceClient>(this, associated_with_navigation);
+  auto* client = MakeGarbageCollected<ResourceClient>(
+      this, src_type, associated_with_navigation);
   resource_clients_.insert(client);
   RawResource::Fetch(params, local_frame_->DomWindow()->Fetcher(), client);
   return client;
@@ -239,8 +248,9 @@ AttributionSrcLoader::ResourceClient* AttributionSrcLoader::DoRegistration(
 
 void AttributionSrcLoader::DoPrerenderingRegistration(
     const KURL& src_url,
+    SrcType src_type,
     bool associated_with_navigation) {
-  DoRegistration(src_url, associated_with_navigation);
+  DoRegistration(src_url, src_type, associated_with_navigation);
 }
 
 AttributionSrcLoader::RegisterResult
@@ -370,21 +380,21 @@ void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
     const ResourceResponse& response) {
   const auto& headers = response.HttpHeaderFields();
 
-  bool can_process_source = type_ == AttributionSrcType::kUndetermined ||
-                            type_ == AttributionSrcType::kSource;
+  bool can_process_source =
+      type_ == SrcType::kUndetermined || type_ == SrcType::kSource;
   if (can_process_source &&
       headers.Contains(http_names::kAttributionReportingRegisterSource)) {
-    type_ = AttributionSrcType::kSource;
+    type_ = SrcType::kSource;
     HandleSourceRegistration(response);
     return;
   }
 
   // TODO(johnidel): Consider surfacing an error when source and trigger headers
   // are present together.
-  bool can_process_trigger = type_ == AttributionSrcType::kUndetermined ||
-                             type_ == AttributionSrcType::kTrigger;
+  bool can_process_trigger =
+      type_ == SrcType::kUndetermined || type_ == SrcType::kTrigger;
   if (can_process_trigger && ContainsTriggerHeaders(headers)) {
-    type_ = AttributionSrcType::kTrigger;
+    type_ = SrcType::kTrigger;
     HandleTriggerRegistration(response);
   }
 
@@ -393,7 +403,7 @@ void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
 
 void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
     const ResourceResponse& response) {
-  DCHECK_EQ(type_, AttributionSrcType::kSource);
+  DCHECK_EQ(type_, SrcType::kSource);
 
   mojom::blink::AttributionSourceDataPtr source_data =
       mojom::blink::AttributionSourceData::New();
@@ -428,7 +438,7 @@ void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
 
 void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
     const ResourceResponse& response) {
-  DCHECK_EQ(type_, AttributionSrcType::kTrigger);
+  DCHECK_EQ(type_, SrcType::kTrigger);
 
   mojom::blink::AttributionTriggerDataPtr trigger_data =
       attribution_response_parsing::ParseAttributionTriggerData(response);

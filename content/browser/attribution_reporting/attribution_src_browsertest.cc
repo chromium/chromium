@@ -781,6 +781,43 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   EXPECT_THAT(source_data.back()->aggregatable_source->keys, SizeIs(2));
 }
 
+IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
+                       AttributionSrcRegisterSourceJS_TriggerIgnored) {
+  GURL page_url =
+      https_server()->GetURL("b.test", "/page_with_impression_creator.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
+
+  MockAttributionHost host(web_contents());
+  std::unique_ptr<MockDataHost> data_host;
+  base::RunLoop loop;
+  EXPECT_CALL(host, RegisterDataHost)
+      .WillOnce(
+          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
+            data_host = GetRegisteredDataHost(std::move(host));
+            loop.Quit();
+          });
+
+  GURL register_url =
+      https_server()->GetURL("c.test", "/register_trigger_source_trigger.html");
+
+  EXPECT_TRUE(
+      ExecJs(web_contents(),
+             JsReplace("window.attributionReporting.registerSource($1);",
+                       register_url)));
+  if (!data_host)
+    loop.Run();
+  data_host->WaitForSourceData(/*num_source_data=*/1);
+  const auto& source_data = data_host->source_data();
+
+  EXPECT_EQ(source_data.size(), 1u);
+
+  // Only the source should be processed.
+  EXPECT_EQ(source_data.front()->source_event_id, 5u);
+
+  // The triggers should be ignored.
+  EXPECT_EQ(data_host->trigger_data().size(), 0u);
+}
+
 class AttributionSrcPrerenderBrowserTest : public AttributionSrcBrowserTest {
  public:
   AttributionSrcPrerenderBrowserTest()

@@ -46,8 +46,10 @@ class CORE_EXPORT AttributionSrcLoader
   // Registers an attributionsrc. This method handles fetching the attribution
   // src and notifying the browser process to begin tracking it. It is a no-op
   // if the frame is not attached.
-  RegisterResult Register(const KURL& attribution_src,
-                          HTMLImageElement* element);
+  void Register(const KURL& attribution_src, HTMLImageElement* element);
+
+  // Like `Register()`, but only allows sources to be registered.
+  RegisterResult RegisterSources(const KURL& attribution_src);
 
   void MaybeRegisterTrigger(const ResourceRequest& request,
                             const ResourceResponse& response);
@@ -61,6 +63,9 @@ class CORE_EXPORT AttributionSrcLoader
   void Trace(Visitor* visitor) const;
 
  private:
+  // Represents what events are able to be registered from an attributionsrc.
+  enum class SrcType { kUndetermined, kSource, kTrigger };
+
   class ResourceClient;
 
   enum class RegisterContext {
@@ -69,8 +74,10 @@ class CORE_EXPORT AttributionSrcLoader
   };
 
   ResourceClient* DoRegistration(const KURL& src_url,
+                                 SrcType src_type,
                                  bool associated_with_navigation);
   void DoPrerenderingRegistration(const KURL& src_url,
+                                  SrcType src_type,
                                   bool associated_with_navigation);
 
   // Returns whether the attribution is allowed to be registered. Devtool issue
@@ -86,6 +93,7 @@ class CORE_EXPORT AttributionSrcLoader
 
   ResourceClient* CreateAndSendRequest(const KURL& src_url,
                                        HTMLElement* element,
+                                       SrcType src_type,
                                        bool associated_with_navigation,
                                        RegisterResult& out_register_result);
 
