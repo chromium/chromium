@@ -822,8 +822,17 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
   expected_report.WaitForReport();
 }
 
+// TODO(crbug.com/1307363): Consistently failing on Linux MSAN and Linux
+//                          ChromiumOS MSAN.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_AttributionSrcNavigationSourceAndTrigger_ReportSent \
+  DISABLED_AttributionSrcNavigationSourceAndTrigger_ReportSent
+#else
+#define MAYBE_AttributionSrcNavigationSourceAndTrigger_ReportSent \
+  AttributionSrcNavigationSourceAndTrigger_ReportSent
+#endif
 IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
-                       AttributionSrcNavigationSourceAndTrigger_ReportSent) {
+                       MAYBE_AttributionSrcNavigationSourceAndTrigger_ReportSent) {
   // Expected reports must be registered before the server starts.
   ExpectedReportWaiter expected_report(
       GURL("https://a.test/.well-known/attribution-reporting/"
