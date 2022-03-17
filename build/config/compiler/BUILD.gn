@@ -820,13 +820,15 @@ config("compiler") {
     "-Coverflow-checks=on",
 
     # To make Rust .d files compatible with ninja
-    "-Z",
-    "dep-info-omit-d-target",
+    "-Zdep-info-omit-d-target",
 
     # If a macro panics during compilation, show which macro and where it is
     # defined.
-    "-Z",
-    "macro-backtrace",
+    "-Zmacro-backtrace",
+
+    # For deterministic builds, keep the local machine's current working
+    # directory from appearing in build outputs.
+    "-Zremap-cwd-prefix=.",
   ]
   if (rust_abi_target != "") {
     rustflags += [ "--target=$rust_abi_target" ]
