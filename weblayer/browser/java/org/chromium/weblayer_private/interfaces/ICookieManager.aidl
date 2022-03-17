@@ -13,4 +13,8 @@ interface ICookieManager {
   void getCookie(in String url, in IObjectWrapper callback) = 1;
 
   IObjectWrapper addCookieChangedCallback(in String url, in String name, ICookieChangedCallbackClient callback) = 2;
+
+  // Added in 101.
+  void getResponseCookies(in String url, in IObjectWrapper callback) = 3;
+
 }

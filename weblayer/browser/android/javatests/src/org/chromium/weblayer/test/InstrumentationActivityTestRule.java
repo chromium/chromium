@@ -33,6 +33,8 @@ import org.chromium.weblayer.Tab;
 import org.chromium.weblayer.WebLayer;
 import org.chromium.weblayer.shell.InstrumentationActivity;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -288,5 +290,18 @@ public class InstrumentationActivityTestRule
         });
         callbackHelper.waitForFirst();
         return resultHolder[0];
+    }
+
+    public List<String> getResponseCookies(CookieManager cookieManager, Uri uri) throws Exception {
+        List<String> finalResult = new ArrayList<>();
+        CallbackHelper callbackHelper = new CallbackHelper();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            cookieManager.getResponseCookies(uri, (List<String> result) -> {
+                finalResult.addAll(result);
+                callbackHelper.notifyCalled();
+            });
+        });
+        callbackHelper.waitForFirst();
+        return finalResult;
     }
 }

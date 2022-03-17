@@ -19,6 +19,8 @@ import org.chromium.weblayer_private.interfaces.ObjectWrapper;
 import org.chromium.weblayer_private.interfaces.StrictModeWorkaround;
 
 import java.lang.ref.WeakReference;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Implementation of ICookieManager.
@@ -51,6 +53,16 @@ public final class CookieManagerImpl extends ICookieManager.Stub {
                 (ValueCallback<String>) ObjectWrapper.unwrap(callback, ValueCallback.class);
         Callback<String> baseCallback = (String result) -> valueCallback.onReceiveValue(result);
         CookieManagerImplJni.get().getCookie(mNativeCookieManager, url, baseCallback);
+    }
+
+    @Override
+    public void getResponseCookies(String url, IObjectWrapper callback) {
+        StrictModeWorkaround.apply();
+        ValueCallback<List<String>> valueCallback =
+                (ValueCallback<List<String>>) ObjectWrapper.unwrap(callback, ValueCallback.class);
+        Callback<String[]> baseCallback =
+                (String[] result) -> valueCallback.onReceiveValue(Arrays.asList(result));
+        CookieManagerImplJni.get().getResponseCookies(mNativeCookieManager, url, baseCallback);
     }
 
     @Override
@@ -105,6 +117,8 @@ public final class CookieManagerImpl extends ICookieManager.Stub {
         boolean setCookie(
                 long nativeCookieManagerImpl, String url, String value, Callback<Boolean> callback);
         void getCookie(long nativeCookieManagerImpl, String url, Callback<String> callback);
+        void getResponseCookies(
+                long nativeCookieManagerImpl, String url, Callback<String[]> callback);
         int addCookieChangedCallback(long nativeCookieManagerImpl, String url, String name,
                 ICookieChangedCallbackClient callback);
         void removeCookieChangedCallback(long nativeCookieManagerImpl, int id);

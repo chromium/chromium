@@ -7,10 +7,13 @@
 #include "build/build_config.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
+#include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_util.h"
+#include "net/cookies/parsed_cookie.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/callback_android.h"
+#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "weblayer/browser/java/jni/CookieManagerImpl_jni.h"
@@ -27,6 +30,32 @@ void GetCookieComplete(CookieManager::GetCookieCallback callback,
   std::move(callback).Run(net::CanonicalCookie::BuildCookieLine(cookie_list));
 }
 
+void GetResponseCookiesComplete(
+    CookieManager::GetResponseCookiesCallback callback,
+    const net::CookieAccessResultList& cookies,
+    const net::CookieAccessResultList& excluded_cookies) {
+  net::CookieList cookie_list = net::cookie_util::StripAccessResults(cookies);
+  std::vector<std::string> response_cookies;
+  for (const net::CanonicalCookie& cookie : cookie_list) {
+    net::ParsedCookie parsed("");
+    parsed.SetName(cookie.Name());
+    parsed.SetValue(cookie.Value());
+    parsed.SetPath(cookie.Path());
+    parsed.SetDomain(cookie.Domain());
+    if (!cookie.ExpiryDate().is_null())
+      parsed.SetExpires(base::TimeFormatHTTP(cookie.ExpiryDate()));
+    parsed.SetIsSecure(cookie.IsSecure());
+    parsed.SetIsHttpOnly(cookie.IsHttpOnly());
+    if (cookie.SameSite() != net::CookieSameSite::UNSPECIFIED)
+      parsed.SetSameSite(net::CookieSameSiteToString(cookie.SameSite()));
+    parsed.SetPriority(net::CookiePriorityToString(cookie.Priority()));
+    parsed.SetIsSameParty(cookie.IsSameParty());
+    parsed.SetIsPartitioned(cookie.IsPartitioned());
+    response_cookies.push_back(parsed.ToCookieLine());
+  }
+  std::move(callback).Run(response_cookies);
+}
+
 #if BUILDFLAG(IS_ANDROID)
 void OnCookieChangedAndroid(
     base::android::ScopedJavaGlobalRef<jobject> callback,
@@ -37,6 +66,14 @@ void OnCookieChangedAndroid(
       base::android::ConvertUTF8ToJavaString(
           env, net::CanonicalCookie::BuildCookieLine({change.cookie})),
       static_cast<int>(change.cause));
+}
+
+void RunGetResponseCookiesCallback(
+    const base::android::JavaRef<jobject>& callback,
+    const std::vector<std::string>& cookies) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::RunObjectCallbackAndroid(
+      callback, base::android::ToJavaArrayOfStrings(env, cookies));
 }
 #endif
 
@@ -81,6 +118,17 @@ void CookieManagerImpl::GetCookie(const GURL& url, GetCookieCallback callback) {
                       base::BindOnce(&GetCookieComplete, std::move(callback)));
 }
 
+void CookieManagerImpl::GetResponseCookies(
+    const GURL& url,
+    GetResponseCookiesCallback callback) {
+  browser_context_->GetDefaultStoragePartition()
+      ->GetCookieManagerForBrowserProcess()
+      ->GetCookieList(
+          url, net::CookieOptions::MakeAllInclusive(),
+          net::CookiePartitionKeyCollection::Todo(),
+          base::BindOnce(&GetResponseCookiesComplete, std::move(callback)));
+}
+
 base::CallbackListSubscription CookieManagerImpl::AddCookieChangedCallback(
     const GURL& url,
     const std::string* name,
@@ -116,6 +164,16 @@ void CookieManagerImpl::GetCookie(
   GetCookie(
       GURL(ConvertJavaStringToUTF8(url)),
       base::BindOnce(&base::android::RunStringCallbackAndroid,
+                     base::android::ScopedJavaGlobalRef<jobject>(callback)));
+}
+
+void CookieManagerImpl::GetResponseCookies(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jstring>& url,
+    const base::android::JavaParamRef<jobject>& callback) {
+  GetResponseCookies(
+      GURL(ConvertJavaStringToUTF8(url)),
+      base::BindOnce(&RunGetResponseCookiesCallback,
                      base::android::ScopedJavaGlobalRef<jobject>(callback)));
 }
 

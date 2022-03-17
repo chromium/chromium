@@ -37,6 +37,8 @@ class CookieManagerImpl : public CookieManager {
                  const std::string& value,
                  SetCookieCallback callback) override;
   void GetCookie(const GURL& url, GetCookieCallback callback) override;
+  void GetResponseCookies(const GURL& url,
+                          GetResponseCookiesCallback callback) override;
   base::CallbackListSubscription AddCookieChangedCallback(
       const GURL& url,
       const std::string* name,
@@ -50,6 +52,9 @@ class CookieManagerImpl : public CookieManager {
   void GetCookie(JNIEnv* env,
                  const base::android::JavaParamRef<jstring>& url,
                  const base::android::JavaParamRef<jobject>& callback);
+  void GetResponseCookies(JNIEnv* env,
+                          const base::android::JavaParamRef<jstring>& url,
+                          const base::android::JavaParamRef<jobject>& callback);
   int AddCookieChangedCallback(
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& url,
