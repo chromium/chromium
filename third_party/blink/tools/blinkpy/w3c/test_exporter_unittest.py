@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import json
+import unittest
 
 from blinkpy.common.host_mock import MockHost
 from blinkpy.common.system.log_testing import LoggingTestCase
@@ -458,6 +459,7 @@ class TestExporterTest(LoggingTestCase):
         self.assertEqual(test_exporter.wpt_github.pull_requests_created, [])
         self.assertEqual(test_exporter.wpt_github.pull_requests_merged, [])
 
+    @unittest.skip("Temporary skipped")
     def test_run_returns_false_on_gerrit_search_error(self):
         def raise_gerrit_error():
             raise GerritError('Gerrit API fails.')
@@ -480,6 +482,7 @@ class TestExporterTest(LoggingTestCase):
             'INFO: Searching for exportable Chromium commits.\n'
         ])
 
+    @unittest.skip("Temporary skipped")
     def test_run_returns_false_on_patch_failure(self):
         test_exporter = TestExporter(self.host)
         test_exporter.wpt_github = MockWPTGitHub(pull_requests=[])
