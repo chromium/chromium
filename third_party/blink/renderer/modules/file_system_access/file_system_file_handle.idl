@@ -20,7 +20,7 @@
         Exposed=DedicatedWorker,
         RuntimeEnabled=FileSystemAccessAccessHandle,
         Measure
-    ] Promise<FileSystemSyncAccessHandle> createSyncAccessHandle();
+    ] Promise<FileSystemSyncAccessHandle> createSyncAccessHandle(FileSystemCreateAccessHandleOptions options);
 
     [
         CallWith=ScriptState,

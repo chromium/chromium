@@ -6,12 +6,12 @@ importScripts('resources/sandboxed-fs-test-helpers.js');
 directory_test(async (t, root_dir) =>  {
   const fileHandle = await root_dir.getFileHandle('OPFS.test', {create: true});
 
-  const syncHandle1 = await fileHandle.createSyncAccessHandle();
+  const syncHandle1 = await fileHandle.createSyncAccessHandle({mode: "in-place"});
   await promise_rejects_dom(
-      t, 'InvalidStateError', fileHandle.createSyncAccessHandle());
+      t, 'InvalidStateError', fileHandle.createSyncAccessHandle({mode: "in-place"}));
 
   await syncHandle1.close();
-  const syncHandle2 = await fileHandle.createSyncAccessHandle();
+  const syncHandle2 = await fileHandle.createSyncAccessHandle({mode: "in-place"});
   await syncHandle2.close();
 }, 'There can only be one open access handle at any given time');
 
@@ -19,15 +19,15 @@ directory_test(async (t, root_dir) =>  {
   const fooFileHandle = await root_dir.getFileHandle('foo.test', {create: true});
   const barFileHandle = await root_dir.getFileHandle('bar.test', {create: true});
 
-  const fooSyncHandle = await fooFileHandle.createSyncAccessHandle();
+  const fooSyncHandle = await fooFileHandle.createSyncAccessHandle({mode: "in-place"});
   t.add_cleanup(() => fooSyncHandle.close());
 
-  const barSyncHandle1 = await barFileHandle.createSyncAccessHandle();
+  const barSyncHandle1 = await barFileHandle.createSyncAccessHandle({mode: "in-place"});
   await promise_rejects_dom(
-      t, 'InvalidStateError', barFileHandle.createSyncAccessHandle());
+      t, 'InvalidStateError', barFileHandle.createSyncAccessHandle({mode: "in-place"}));
 
   await barSyncHandle1.close();
-  const barSyncHandle2 = await barFileHandle.createSyncAccessHandle();
+  const barSyncHandle2 = await barFileHandle.createSyncAccessHandle({mode: "in-place"});
   await barSyncHandle2.close();
 }, 'An access handle from one file does not interfere with the creation of an' +
      ' access handle on another file');
@@ -39,7 +39,7 @@ directory_test(async (t, root_dir) =>  {
   const fooWritable = await fooFileHandle.createWritable();
   t.add_cleanup(() => fooWritable.close());
 
-  const barSyncHandle = await barFileHandle.createSyncAccessHandle();
+  const barSyncHandle = await barFileHandle.createSyncAccessHandle({mode: "in-place"});
   t.add_cleanup(() => barSyncHandle.close());
 }, 'A writable stream from one file does not interfere with the creation of an' +
      ' access handle on another file');
@@ -48,7 +48,7 @@ directory_test(async (t, root_dir) =>  {
   const fooFileHandle = await root_dir.getFileHandle('foo.test', {create: true});
   const barFileHandle = await root_dir.getFileHandle('bar.test', {create: true});
 
-  const fooSyncHandle = await fooFileHandle.createSyncAccessHandle();
+  const fooSyncHandle = await fooFileHandle.createSyncAccessHandle({mode: "in-place"});
   t.add_cleanup(() => fooSyncHandle.close());
 
   const barWritable = await barFileHandle.createWritable();
@@ -59,7 +59,7 @@ directory_test(async (t, root_dir) =>  {
 directory_test(async (t, root_dir) =>  {
   const fileHandle = await root_dir.getFileHandle('OPFS.test', {create: true});
 
-  const syncHandle = await fileHandle.createSyncAccessHandle();
+  const syncHandle = await fileHandle.createSyncAccessHandle({mode: "in-place"});
   await promise_rejects_dom(
       t, 'InvalidStateError', fileHandle.createWritable());
 
@@ -74,14 +74,14 @@ directory_test(async (t, root_dir) =>  {
   const writable1 = await fileHandle.createWritable();
   const writable2 = await fileHandle.createWritable();
   await promise_rejects_dom(
-      t, 'InvalidStateError', fileHandle.createSyncAccessHandle());
+      t, 'InvalidStateError', fileHandle.createSyncAccessHandle({mode: "in-place"}));
 
   await writable1.close();
   await promise_rejects_dom(
-      t, 'InvalidStateError', fileHandle.createSyncAccessHandle());
+      t, 'InvalidStateError', fileHandle.createSyncAccessHandle({mode: "in-place"}));
 
   await writable2.close();
-  const syncHandle = await fileHandle.createSyncAccessHandle();
+  const syncHandle = await fileHandle.createSyncAccessHandle({mode: "in-place"});
   await syncHandle.close();
 }, 'Access handles cannot be created if there are open Writable streams');
 
