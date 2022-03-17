@@ -1080,6 +1080,65 @@ void HTMLElement::setContentEditable(const String& enabled,
                                           "'plaintext-only', or 'inherit'.");
 }
 
+V8UnionBooleanOrStringOrUnrestrictedDoubleOrNull* HTMLElement::hidden() const {
+  const AtomicString& attribute = FastGetAttribute(html_names::kHiddenAttr);
+
+  if (!RuntimeEnabledFeatures::BeforeMatchEventEnabled(GetExecutionContext())) {
+    return MakeGarbageCollected<
+        V8UnionBooleanOrStringOrUnrestrictedDoubleOrNull>(attribute !=
+                                                          g_null_atom);
+  }
+
+  if (attribute == g_null_atom) {
+    return MakeGarbageCollected<
+        V8UnionBooleanOrStringOrUnrestrictedDoubleOrNull>(false);
+  }
+  if (attribute == "until-found") {
+    return MakeGarbageCollected<
+        V8UnionBooleanOrStringOrUnrestrictedDoubleOrNull>(
+        String("until-found"));
+  }
+  return MakeGarbageCollected<V8UnionBooleanOrStringOrUnrestrictedDoubleOrNull>(
+      true);
+}
+
+void HTMLElement::setHidden(
+    const V8UnionBooleanOrStringOrUnrestrictedDoubleOrNull* value) {
+  switch (value->GetContentType()) {
+    case V8UnionBooleanOrStringOrUnrestrictedDoubleOrNull::ContentType::
+        kBoolean:
+      if (value->GetAsBoolean()) {
+        setAttribute(html_names::kHiddenAttr, "");
+      } else {
+        removeAttribute(html_names::kHiddenAttr);
+      }
+      break;
+    case V8UnionBooleanOrStringOrUnrestrictedDoubleOrNull::ContentType::kString:
+      if (RuntimeEnabledFeatures::BeforeMatchEventEnabled(
+              GetExecutionContext()) &&
+          EqualIgnoringASCIICase(value->GetAsString(), "until-found")) {
+        setAttribute(html_names::kHiddenAttr, "until-found");
+      } else if (value->GetAsString() == "") {
+        removeAttribute(html_names::kHiddenAttr);
+      } else {
+        setAttribute(html_names::kHiddenAttr, "");
+      }
+      break;
+    case V8UnionBooleanOrStringOrUnrestrictedDoubleOrNull::ContentType::kNull:
+      removeAttribute(html_names::kHiddenAttr);
+      break;
+    case V8UnionBooleanOrStringOrUnrestrictedDoubleOrNull::ContentType::
+        kUnrestrictedDouble:
+      double double_value = value->GetAsUnrestrictedDouble();
+      if (double_value && !std::isnan(double_value)) {
+        setAttribute(html_names::kHiddenAttr, "");
+      } else {
+        removeAttribute(html_names::kHiddenAttr);
+      }
+      break;
+  }
+}
+
 const AtomicString& HTMLElement::autocapitalize() const {
   DEFINE_STATIC_LOCAL(const AtomicString, kOff, ("off"));
   DEFINE_STATIC_LOCAL(const AtomicString, kNone, ("none"));

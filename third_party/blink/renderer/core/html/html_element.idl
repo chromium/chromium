@@ -30,7 +30,8 @@
     [CEReactions] attribute DOMString dir;
 
     // user interaction
-    [CEReactions, Reflect] attribute boolean hidden;
+    [CEReactions] attribute (boolean or unrestricted double or DOMString?) hidden;
+
     [RuntimeCallStatsCounter=HTMLElementClick] void click();
     [CEReactions, RuntimeEnabled=InertAttribute, Reflect] attribute boolean inert;
     [CEReactions, Reflect] attribute DOMString accessKey;
