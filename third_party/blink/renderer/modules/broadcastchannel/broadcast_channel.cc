@@ -102,9 +102,31 @@ void BroadcastChannel::postMessage(const ScriptValue& message,
   if (exception_state.HadException())
     return;
 
+  // Defer postMessage() from a prerendered page until page activation.
+  // https://wicg.github.io/nav-speculation/prerendering.html#patch-broadcast-channel
+  if (execution_context->IsWindow()) {
+    Document* document = To<LocalDOMWindow>(execution_context)->document();
+    if (document->IsPrerendering()) {
+      document->AddPostPrerenderingActivationStep(
+          WTF::Bind(&BroadcastChannel::PostMessageInternal,
+                    WrapWeakPersistent(this), std::move(value),
+                    execution_context->GetSecurityOrigin()->IsolatedCopy()));
+      return;
+    }
+  }
+
+  PostMessageInternal(std::move(value),
+                      execution_context->GetSecurityOrigin()->IsolatedCopy());
+}
+
+void BroadcastChannel::PostMessageInternal(
+    scoped_refptr<SerializedScriptValue> value,
+    scoped_refptr<SecurityOrigin> sender_origin) {
+  if (!receiver_.is_bound())
+    return;
   BlinkCloneableMessage msg;
   msg.message = std::move(value);
-  msg.sender_origin = execution_context->GetSecurityOrigin()->IsolatedCopy();
+  msg.sender_origin = std::move(sender_origin);
   remote_client_->OnMessage(std::move(msg));
 }
 

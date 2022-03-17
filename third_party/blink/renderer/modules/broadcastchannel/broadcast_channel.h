@@ -60,6 +60,9 @@ class BroadcastChannel final : public EventTargetWithInlineData,
   void Trace(Visitor*) const override;
 
  private:
+  void PostMessageInternal(scoped_refptr<SerializedScriptValue> value,
+                           scoped_refptr<SecurityOrigin> sender_origin);
+
   // mojom::blink::BroadcastChannelClient:
   void OnMessage(BlinkCloneableMessage) override;
 
