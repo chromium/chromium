@@ -44,6 +44,10 @@
       .content-footer {
         padding-top: 16px;
       }
+
+      .subtitle-illustration {
+        max-height: 250px;
+      }
     </style>
       <oobe-adaptive-dialog role="dialog"
           aria-label$="[[i18nDynamic(locale,
@@ -53,7 +57,7 @@
           [[i18nDynamic(locale, 'smartPrivacyProtectionScreenTitle')]]
         </h1>
         <img slot="subtitle" src="images/smart_privacy.svg"
-            class="oobe-illustration" aria-hidden="true">
+            class="oobe-illustration subtitle-illustration" aria-hidden="true">
         <div slot="content" class="landscape-header-aligned">
           <div id="quickDimSection" class="overview-list-item layout horizontal"
               hidden="[[!isQuickDimEnabled_]]">

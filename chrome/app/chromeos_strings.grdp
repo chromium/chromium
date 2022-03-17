@@ -4212,7 +4212,7 @@
     Lock-on-leave
   </message>
   <message name="IDS_SMART_PRIVACY_PROTECTION_SCREEN_LOCK_DESCRIPTION" desc="Description of the lock-on-leave feature.">
-    If you move away from your device, your screen will lock automatically. When you're in front of your device, your screen will stay awake.
+    If you move away from your device, your screen will lock automatically. When you're in front of your device, your screen will stay awake longer. If lock screen is disabled, your device will sleep instead of lock.
   </message>
   <message name="IDS_SMART_PRIVACY_PROTECTION_SNOOPING_DETECTION" desc="Title of the viewing protection section.">
     Viewing protection
