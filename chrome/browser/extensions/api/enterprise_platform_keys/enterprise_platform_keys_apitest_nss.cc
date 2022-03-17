@@ -138,8 +138,8 @@ const unsigned char privateKeyPkcs8System[] = {
 
 base::FilePath GetExtensionDirName() {
   return base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
-      .Append(
-          FILE_PATH_LITERAL("extensions/api_test/enterprise_platform_keys/"));
+      .Append(FILE_PATH_LITERAL(
+          "extensions/api_test/enterprise_platform_keys/basic/"));
 }
 
 base::FilePath GetExtensionPemFileName() {
@@ -319,12 +319,11 @@ INSTANTIATE_TEST_SUITE_P(
 // chrome.enterprise.platformKeys namespace.
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest,
                        EnterprisePlatformKeysIsRestrictedToPolicyExtension) {
-  ASSERT_TRUE(RunExtensionTest("enterprise_platform_keys",
-                               {.page_url = "api_not_available.html"},
+  ASSERT_TRUE(RunExtensionTest("enterprise_platform_keys/api_not_available", {},
                                {.ignore_manifest_warnings = true}));
 
   base::FilePath extension_path =
-      test_data_dir_.AppendASCII("enterprise_platform_keys");
+      test_data_dir_.AppendASCII("enterprise_platform_keys/api_not_available");
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
   const Extension* extension =
       GetExtensionByPath(registry->enabled_extensions(), extension_path);
