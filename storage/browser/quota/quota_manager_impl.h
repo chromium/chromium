@@ -355,6 +355,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   void GetDiskAvailability(GetDiskAvailabilityCallback callback) override;
   void GetStatistics(GetStatisticsCallback callback) override;
   void RetrieveBucketsTable(RetrieveBucketsTableCallback callback) override;
+  void GetHostUsageForInternals(
+      const std::string& host,
+      storage::mojom::StorageType storage_type,
+      GetHostUsageForInternalsCallback callback) override;
 
   // Called by UI and internal modules.
   void GetPersistentHostQuota(const std::string& host, QuotaCallback callback);
@@ -544,6 +548,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   void DumpBucketTable(DumpBucketTableCallback callback);
   void DidRetrieveBucketsTable(RetrieveBucketsTableCallback callback,
                                const BucketTableEntries& entries);
+  void OnGetHostUsageForInternals(
+      GetHostUsageForInternalsCallback callback,
+      int64_t usage,
+      blink::mojom::UsageBreakdownPtr usage_breakdown);
 
   // Runs BucketDataDeleter which calls QuotaClients to clear data for the
   // bucket. Once the task is complete, calls the QuotaDatabase to delete the

@@ -117,6 +117,17 @@ std::string StorageTypeEnumToString(StorageType type) {
   }
 }
 
+StorageType GetBlinkStorageType(storage::mojom::StorageType type) {
+  switch (type) {
+    case storage::mojom::StorageType::kTemporary:
+      return StorageType::kTemporary;
+    case storage::mojom::StorageType::kPersistent:
+      return StorageType::kPersistent;
+    case storage::mojom::StorageType::kSyncable:
+      return StorageType::kSyncable;
+  }
+}
+
 QuotaErrorOr<BucketInfo> GetOrCreateBucketOnDBThread(
     const StorageKey& storage_key,
     const std::string& bucket_name,
@@ -1688,6 +1699,22 @@ void QuotaManagerImpl::GetHostUsageWithBreakdown(
   usage_tracker->GetHostUsageWithBreakdown(host, std::move(callback));
 }
 
+void QuotaManagerImpl::GetHostUsageForInternals(
+    const std::string& host,
+    storage::mojom::StorageType storage_type,
+    GetHostUsageForInternalsCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  EnsureDatabaseOpened();
+
+  StorageType type = GetBlinkStorageType(storage_type);
+  UsageTracker* usage_tracker = GetUsageTracker(type);
+  DCHECK(usage_tracker);
+
+  usage_tracker->GetHostUsageWithBreakdown(
+      host, base::BindOnce(&QuotaManagerImpl::OnGetHostUsageForInternals,
+                           weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
 bool QuotaManagerImpl::IsStorageUnlimited(const StorageKey& storage_key,
                                           StorageType type) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1895,6 +1922,16 @@ UsageTracker* QuotaManagerImpl::GetUsageTracker(StorageType type) const {
       NOTREACHED();
   }
   return nullptr;
+}
+
+void QuotaManagerImpl::OnGetHostUsageForInternals(
+    GetHostUsageForInternalsCallback callback,
+    int64_t usage,
+    blink::mojom::UsageBreakdownPtr usage_breakdown) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_GE(usage, -1);
+
+  std::move(callback).Run(usage);
 }
 
 void QuotaManagerImpl::NotifyStorageAccessed(const StorageKey& storage_key,

@@ -19,8 +19,16 @@ struct BucketTableEntry {
     mojo_base.mojom.Time last_modified;
 };
 
+// Represents the Storage Type for a given host.
+// This is a subset of blink::mojom::StorageType.
+enum StorageType {
+  kTemporary = 0,
+  kPersistent = 1,
+  kSyncable = 2,
+};
+
 // Interface for controlling Quota Internals.
-// Hosted on chrome://quota-internals" for WebUI content::QuotaInternalsUI.
+// Hosted on "chrome://quota-internals" for WebUI content::QuotaInternalsUI.
 interface QuotaInternalsHandler {
     // Returns the total and available disk space in bits for a user,
     // which is then converted to bytes and displayed on the Quota Internals UI.
@@ -37,4 +45,8 @@ interface QuotaInternalsHandler {
 
     // Returns an array of Storage Bucket entries stored in the QuotaDatabase.
     RetrieveBucketsTable() => (array<BucketTableEntry> entries);
+
+    // Returns a host's usage for a given storage type.
+    GetHostUsageForInternals(string host, StorageType storage_type) =>
+        (int64 host_usage);
 };
