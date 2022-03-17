@@ -588,6 +588,11 @@ WebBluetoothServiceImpl::~WebBluetoothServiceImpl() {
 #endif
 
   BluetoothAdapterFactoryWrapper::Get().ReleaseAdapter(this);
+
+  // Force destructor of device_scanning_prompt_controller_ happening before
+  // members destruction stage to prevent use-after-free accessing
+  // scanning_clients_.empty().
+  device_scanning_prompt_controller_.reset();
 }
 
 blink::mojom::WebBluetoothResult
