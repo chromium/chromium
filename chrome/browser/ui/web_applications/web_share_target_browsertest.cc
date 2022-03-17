@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -36,6 +35,7 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -164,23 +164,6 @@ class WebShareTargetBrowserTest : public WebAppControllerBrowserTest {
     url_observer.Wait();
     EXPECT_EQ(expected_url, web_contents->GetVisibleURL());
     return web_contents;
-  }
-
-  std::string ExecuteShare(const std::string& script) {
-    const GURL url = embedded_test_server()->GetURL("/webshare/index.html");
-    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-    content::WebContents* const contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
-    return content::EvalJs(contents, script).ExtractString();
-  }
-
-  content::WebContents* ShareToTarget(const std::string& script) {
-    ui_test_utils::AllBrowserTabAddedWaiter waiter;
-    EXPECT_EQ("share succeeded", ExecuteShare(script));
-
-    content::WebContents* contents = waiter.Wait();
-    EXPECT_TRUE(content::WaitForLoadStop(contents));
-    return contents;
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -426,100 +409,5 @@ IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, GetLink) {
   EXPECT_EQ("N/A", ReadTextContent(web_contents, "author"));
   EXPECT_EQ(shared_link, ReadTextContent(web_contents, "link"));
 }
-
-IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, ShareToPosterWebApp) {
-  if (!IsServiceAvailable())
-    return;
-
-  ASSERT_TRUE(embedded_test_server()->Start());
-  const GURL app_url =
-      embedded_test_server()->GetURL("/web_share_target/poster.html");
-  const AppId app_id = web_app::InstallWebAppFromManifest(browser(), app_url);
-  SetSelectedSharesheetApp(app_id);
-
-  // Poster web app does not accept image shares.
-  EXPECT_EQ("share failed: AbortError: Share canceled",
-            ExecuteShare("share_single_file()"));
-
-  content::WebContents* web_contents = ShareToTarget("share_title()");
-  EXPECT_EQ("Subject", ReadTextContent(web_contents, "headline"));
-
-  web_contents = ShareToTarget("share_url()");
-  EXPECT_EQ("https://example.com/", ReadTextContent(web_contents, "link"));
-}
-
-// TODO(crbug.com/1225825): Support file sharing from Lacros.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, ShareToChartsWebApp) {
-  if (!IsServiceAvailable())
-    return;
-
-  ASSERT_TRUE(embedded_test_server()->Start());
-  const GURL app_url =
-      embedded_test_server()->GetURL("/web_share_target/charts.html");
-  const AppId app_id = web_app::InstallWebAppFromManifest(browser(), app_url);
-  SetSelectedSharesheetApp(app_id);
-
-  content::WebContents* web_contents = ShareToTarget("share_single_file()");
-  EXPECT_EQ("************", ReadTextContent(web_contents, "notes"));
-
-  web_contents = ShareToTarget("share_url()");
-  EXPECT_EQ("https://example.com/", ReadTextContent(web_contents, "link"));
-  EXPECT_EQ(NumRecentFiles(web_contents), 0U);
-}
-
-IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, ShareImage) {
-  if (!IsServiceAvailable())
-    return;
-
-  ASSERT_TRUE(embedded_test_server()->Start());
-  const GURL app_url =
-      embedded_test_server()->GetURL("/web_share_target/multimedia.html");
-  const AppId app_id = web_app::InstallWebAppFromManifest(browser(), app_url);
-  SetSelectedSharesheetApp(app_id);
-
-  content::WebContents* web_contents = ShareToTarget("share_single_file()");
-  EXPECT_EQ(std::string(12, '*'), ReadTextContent(web_contents, "image"));
-  EXPECT_EQ("sample.webp", ReadTextContent(web_contents, "image_filename"));
-}
-
-IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, ShareMultimedia) {
-  if (!IsServiceAvailable())
-    return;
-
-  ASSERT_TRUE(embedded_test_server()->Start());
-  const GURL app_url =
-      embedded_test_server()->GetURL("/web_share_target/multimedia.html");
-  const AppId app_id = web_app::InstallWebAppFromManifest(browser(), app_url);
-  SetSelectedSharesheetApp(app_id);
-
-  content::WebContents* web_contents = ShareToTarget("share_multiple_files()");
-  EXPECT_EQ(std::string(345, '*'), ReadTextContent(web_contents, "audio"));
-  EXPECT_EQ(std::string(67890, '*'), ReadTextContent(web_contents, "video"));
-  EXPECT_EQ(std::string(1, '*'), ReadTextContent(web_contents, "image"));
-  EXPECT_EQ("sam.ple.mp3", ReadTextContent(web_contents, "audio_filename"));
-  EXPECT_EQ("sample.mp4", ReadTextContent(web_contents, "video_filename"));
-  EXPECT_EQ("sam_ple.gif", ReadTextContent(web_contents, "image_filename"));
-}
-
-IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, ShareToPartialWild) {
-  if (!IsServiceAvailable())
-    return;
-
-  ASSERT_TRUE(embedded_test_server()->Start());
-  const GURL app_url =
-      embedded_test_server()->GetURL("/web_share_target/partial-wild.html");
-  const AppId app_id = web_app::InstallWebAppFromManifest(browser(), app_url);
-  SetSelectedSharesheetApp(app_id);
-
-  // Partial Wild does not accept text shares.
-  EXPECT_EQ("share failed: AbortError: Share canceled",
-            ExecuteShare("share_title()"));
-
-  content::WebContents* web_contents = ShareToTarget("share_single_file()");
-  EXPECT_EQ("************", ReadTextContent(web_contents, "graphs"));
-  EXPECT_EQ(NumRecentFiles(web_contents), 0U);
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace web_app

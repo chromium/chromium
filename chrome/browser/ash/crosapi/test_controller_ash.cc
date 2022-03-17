@@ -18,6 +18,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/window_util.h"
+#include "chrome/browser/sharesheet/sharesheet_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -411,6 +412,15 @@ void TestControllerAsh::TriggerTabScrubbing(
   // returning |false|, and signal Lacros to do so.
   bool scrubbing = TabScrubberChromeOS::GetInstance()->IsActivationPending();
   std::move(callback).Run(scrubbing);
+}
+
+void TestControllerAsh::SetSelectedSharesheetApp(
+    const std::string& app_id,
+    SetSelectedSharesheetAppCallback callback) {
+  sharesheet::SharesheetService::SetSelectedAppForTesting(
+      base::UTF8ToUTF16(app_id));
+
+  std::move(callback).Run();
 }
 
 // This class waits for overview mode to either enter or exit and fires a

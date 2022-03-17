@@ -3755,6 +3755,7 @@ if (!is_android) {
         "../browser/ui/views/plugin_vm/plugin_vm_installer_view_browsertest.cc",
         "../browser/ui/views/tabs/tab_scrubber_chromeos_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_ash_interactive_ui_test.cc",
+        "../browser/ui/web_applications/share_to_target_browsertest.cc",
         "../browser/ui/web_applications/web_app_guest_session_browsertest_chromeos.cc",
         "../browser/ui/webui/chromeos/add_supervision/add_supervision_metrics_recorder_browsertest.cc",
         "../browser/ui/webui/chromeos/add_supervision/add_supervision_ui_browsertest.cc",
@@ -4428,6 +4429,7 @@ if (is_chromeos_lacros) {
       "../browser/ui/browser_navigator_browsertest_chromeos.cc",
       "../browser/ui/views/location_bar/intent_chip_button_browsertest.cc",
       "../browser/ui/views/profiles/profile_picker_view_browsertest.cc",
+      "../browser/ui/web_applications/share_to_target_browsertest.cc",
       "../browser/web_applications/app_service/lacros_web_apps_controller_lacros_browsertest.cc",
     ]
 
@@ -4453,15 +4455,17 @@ if (is_chromeos_lacros) {
       "//components/metrics/structured",
       "//components/metrics/structured:structured_events",
       "//components/proxy_config:proxy_config",
+      "//components/services/app_service/public/cpp:intents",
       "//ui/platform_window",
     ]
 
     data = [
-      "data/media/",
       "data/extensions/api_test/login_screen_apis/",
       "data/extensions/platform_apps/minimal/",
-
-      "data/extensions/api_test/login_screen_apis/",
+      "data/media/",
+      "data/web_apps/",
+      "data/web_share_target/",
+      "data/webshare/",
     ]
 
     data_deps = [

@@ -72,6 +72,9 @@ class TestControllerAsh : public mojom::TestController,
       mojo::PendingRemote<mojom::StandaloneBrowserTestController>) override;
   void TriggerTabScrubbing(float x_offset,
                            TriggerTabScrubbingCallback callback) override;
+  void SetSelectedSharesheetApp(
+      const std::string& app_id,
+      SetSelectedSharesheetAppCallback callback) override;
 
   mojo::Remote<mojom::StandaloneBrowserTestController>&
   GetStandaloneBrowserTestController() {
