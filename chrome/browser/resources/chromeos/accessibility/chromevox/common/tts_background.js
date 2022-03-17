@@ -5,8 +5,9 @@
 /**
  * @fileoverview Sends Text-To-Speech commands to Chrome's native TTS
  * extension API.
- *
  */
+
+import {ChromeTtsBase} from './tts_base.js';
 
 const Utterance = class {
   /**

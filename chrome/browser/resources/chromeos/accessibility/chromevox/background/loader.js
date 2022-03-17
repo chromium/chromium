@@ -18,7 +18,6 @@ goog.require('BrailleBackground');
 goog.require('BrailleCaptionsBackground');
 goog.require('BrailleCommandData');
 goog.require('BrailleKeyCommand');
-goog.require('ChromeTtsBase');
 goog.require('ChromeVox');
 goog.require('ChromeVoxEditableTextBase');
 goog.require('ChromeVoxKbHandler');
