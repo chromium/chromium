@@ -376,6 +376,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes",
            blink::features::
                kThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes},
+          {"TopicsAPI", blink::features::kBrowsingTopics},
           {"TrustedDOMTypes", features::kTrustedDOMTypes},
           {"UserAgentClientHint", blink::features::kUserAgentClientHint},
           {"ViewportHeightClientHintHeader",

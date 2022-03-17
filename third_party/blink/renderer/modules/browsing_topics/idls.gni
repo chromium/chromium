@@ -1,0 +1,7 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+modules_dictionary_idl_files = [ "browsing_topic.idl" ]
+
+modules_dependency_idl_files = [ "browsing_topics_document_supplement.idl" ]

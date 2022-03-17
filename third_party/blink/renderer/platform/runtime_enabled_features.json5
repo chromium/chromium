@@ -2295,6 +2295,9 @@
       name: "TimeZoneChangeEvent",
       status: "experimental",
     },
+    {
+      name: "TopicsAPI",
+    },
     // This feature allows touch dragging and a context menu to occur
     // simultaneously, with the assumption that the menu is non-modal.  Without
     // this feature, a long-press touch gesture can start either a drag or a

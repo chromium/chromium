@@ -6940,6 +6940,7 @@ domain Page
       ambient-light-sensor
       attribution-reporting
       autoplay
+      browsing-topics
       camera
       ch-dpr
       ch-device-memory
@@ -6980,6 +6981,7 @@ domain Page
       gyroscope
       hid
       idle-detection
+      interest-cohort
       join-ad-interest-group
       keyboard-map
       magnetometer

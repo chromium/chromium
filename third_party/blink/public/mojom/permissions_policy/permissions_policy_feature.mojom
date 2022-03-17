@@ -208,6 +208,14 @@ enum PermissionsPolicyFeature {
   // cookies.
   kClientHintPartitionedCookies = 96,
 
+  // "browsing-topics" permissions policy that controls the use of Topics API.
+  // https://github.com/jkarlin/topics
+  kBrowsingTopics = 97,
+
+  // "interest-cohort" permissions policy that controls the use of Topics API.
+  // https://github.com/jkarlin/topics
+  kBrowsingTopicsBackwardCompatible = 98,
+
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.
   // Also, run update_permissions_policy_enum.py in

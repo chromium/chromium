@@ -37542,6 +37542,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4179" label="V8FunctionPrototypeArguments"/>
   <int value="4180" label="V8FunctionPrototypeCaller"/>
   <int value="4181" label="BluetoothDeviceForget"/>
+  <int value="4182" label="TopicsAPI_BrowsingTopics_Method"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
@@ -37658,6 +37659,8 @@ Called by update_permissions_policy_enum.py.-->
   <int value="94" label="ClientHintUAFull"/>
   <int value="95" label="ClientHintUAWoW64"/>
   <int value="96" label="ClientHintPartitionedCookies"/>
+  <int value="97" label="BrowsingTopics"/>
+  <int value="98" label="BrowsingTopicsBackwardCompatible"/>
 </enum>
 
 <enum name="FeaturePolicyImageCompressionFormat">

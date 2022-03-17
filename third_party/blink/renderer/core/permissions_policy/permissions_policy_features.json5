@@ -67,6 +67,18 @@
       permissions_policy_name: "autoplay",
     },
     {
+      name: "BrowsingTopics",
+      permissions_policy_name: "browsing-topics",
+      feature_default: "EnableForAll",
+      depends_on: ["TopicsAPI"],
+    },
+    {
+      name: "BrowsingTopicsBackwardCompatible",
+      permissions_policy_name: "interest-cohort",
+      feature_default: "EnableForAll",
+      depends_on: ["TopicsAPI"],
+    },
+    {
       name: "Camera",
       permissions_policy_name: "camera",
     },
