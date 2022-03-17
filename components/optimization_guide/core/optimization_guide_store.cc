@@ -949,6 +949,10 @@ void OptimizationGuideStore::OnLoadModelsToBeUpdated(
               "OptimizationGuide.PredictionModelExpired." +
                   GetStringNameForOptimizationTarget(optimization_target),
               true);
+          base::UmaHistogramSparse(
+              "OptimizationGuide.PredictionModelExpiredVersion." +
+                  GetStringNameForOptimizationTarget(optimization_target),
+              entry.second.prediction_model().model_info().version());
         }
       } else {
         // If we were checking expiry and the entry did not have an expiration

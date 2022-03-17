@@ -941,6 +941,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="OptimizationGuide.PredictionModelExpiredVersion.{OptimizationTarget}"
+    units="version number" expires_after="M106">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the version of a prediction model for an OptimizationTarget that
+    expired if it was not updated or used within the configured expiration time,
+    but can change subject to Finch or server configuration. Recorded once per
+    browser startup.
+  </summary>
+  <token key="OptimizationTarget" variants="OptimizationTarget"/>
+</histogram>
+
+<histogram
     name="OptimizationGuide.PredictionModelFetcher.GetModelsResponse.NetErrorCode"
     enum="NetErrorCodes" expires_after="M106">
   <owner>mcrouse@chromium.org</owner>

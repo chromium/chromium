@@ -2401,10 +2401,11 @@ TEST_F(OptimizationGuideStoreTest, PurgeInactiveModels) {
   ASSERT_TRUE(update_data);
   base::FilePath old_file_path = temp_dir().AppendASCII("model_v1.tflite");
   ASSERT_EQ(static_cast<int32_t>(3), base::WriteFile(old_file_path, "boo", 3));
+  proto::ModelInfo model_info;
+  model_info.set_version(123);
   SeedPredictionModelUpdateData(
       update_data.get(), proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-      old_file_path,
-      /*info=*/{},
+      old_file_path, model_info,
       update_time - optimization_guide::features::StoredModelsValidDuration());
   UpdatePredictionModels(std::move(update_data));
 
@@ -2440,8 +2441,13 @@ TEST_F(OptimizationGuideStoreTest, PurgeInactiveModels) {
 
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PredictionModelExpired.PainfulPageLoad", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PredictionModelExpiredVersion.PainfulPageLoad", 123,
+      1);
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PredictionModelExpired.LanguageDetection", 0);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PredictionModelExpiredVersion.LanguageDetection", 0);
 }
 
 struct ValidityTestCase {
@@ -2475,6 +2481,7 @@ TEST_P(OptimizationGuideStoreValidityTest, PurgeInactiveModels) {
       guide_store()->CreateUpdateDataForPredictionModels(update_time);
   ASSERT_TRUE(update_data);
   proto::ModelInfo info;
+  info.set_version(123);
   info.set_keep_beyond_valid_duration(test_case.keep_beyond_valid_duration);
   base::FilePath old_file_path = temp_dir().AppendASCII("model_v1.tflite");
   ASSERT_EQ(static_cast<int32_t>(3), base::WriteFile(old_file_path, "boo", 3));
@@ -2516,15 +2523,22 @@ TEST_P(OptimizationGuideStoreValidityTest, PurgeInactiveModels) {
   if (test_case.expect_kept) {
     histogram_tester.ExpectTotalCount(
         "OptimizationGuide.PredictionModelExpired.PainfulPageLoad", 0);
-  } else {
     histogram_tester.ExpectTotalCount(
-        "OptimizationGuide.PredictionModelExpired.PainfulPageLoad", 1);
+        "OptimizationGuide.PredictionModelExpiredVersion.PainfulPageLoad", 0);
+  } else {
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.PredictionModelExpired.PainfulPageLoad", true, 1);
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.PredictionModelExpiredVersion.PainfulPageLoad", 123,
+        1);
   }
   // Verify that the other model is not deleted.
   EXPECT_TRUE(guide_store()->FindPredictionModelEntryKey(
       proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION, &entry_key));
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PredictionModelExpired.LanguageDetection", 0);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PredictionModelExpiredVersion.LanguageDetection", 0);
 }
 INSTANTIATE_TEST_SUITE_P(
     OptimizationGuideStoreValidityTests,
