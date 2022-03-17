@@ -384,25 +384,17 @@ TEST_F(X509CertificateModelTest, ProcessSubjectPublicKeyInfo) {
 
 TEST_F(X509CertificateModelTest, ProcessRawBitsSignatureWrap) {
   net::ScopedCERTCertificate cert(net::ImportCERTCertificateFromFile(
-      net::GetTestCertsDirectory(), "root_ca_cert.pem"));
+      net::GetTestCertsDirectory(), "google.single.pem"));
   ASSERT_TRUE(cert.get());
 
   EXPECT_EQ(
-      "B1 B1 83 61 AF DB ED 98 CF 3D 43 5F A7 42 B8 6D\n"
-      "94 36 57 BB AB 04 EE DD 3B B7 6D EC 78 7D 46 59\n"
-      "B1 E6 2A C3 AA A5 70 A7 E1 0C FA 65 37 C6 CB 7D\n"
-      "A1 37 35 A1 FF F0 DD CE B6 A4 2C 12 D4 46 A9 9C\n"
-      "A2 91 3A B0 95 55 97 55 E6 0A DA 63 60 24 19 AC\n"
-      "20 C9 B1 94 40 E9 99 B1 F5 C3 ED 61 5D DE 4C E4\n"
-      "EB D9 0E AC 3A 0A FC 44 7D 0F 77 A6 B6 DA 28 D4\n"
-      "ED EA 3A BC 57 23 9C 72 2B 2D B0 5D 11 02 4D C5\n"
-      "BC B0 D6 7E 00 8E F7 E7 F5 19 3A 23 DF 33 02 AA\n"
-      "4B BF 81 F4 5A 99 EE 74 20 F3 77 A1 F0 85 1E A8\n"
-      "D6 CC A4 CB 31 FA 73 24 A2 0E DD 9F 6F 82 38 5F\n"
-      "85 AC 8D 76 BD D8 F2 69 73 E3 46 44 42 E3 5E F3\n"
-      "AA 5E 44 13 51 EA 0B 78 91 77 96 EE 73 FE 2A B5\n"
-      "88 C1 38 8D 8D A8 19 76 94 05 02 CF D4 6F EB E6\n"
-      "07 F5 9D 52 24 B8 50 A3 0E C4 45 A6 09 B4 06 2D\n"
-      "3E 14 A5 3F 1C 1A BC DA B8 40 3E C1 1C F6 3C 05",
+      "9F 43 CF 5B C4 50 29 B1 BF E2 B0 9A FF 6A 21 1D\n"
+      "2D 12 C3 2C 4E 5A F9 12 E2 CE B9 82 52 2D E7 1D\n"
+      "7E 1A 76 96 90 79 D1 24 52 38 79 BB 63 8D 80 97\n"
+      "7C 23 20 0F 91 4D 16 B9 EA EE F4 6D 89 CA C6 BD\n"
+      "CC 24 68 D6 43 5B CE 2A 58 BF 3C 18 E0 E0 3C 62\n"
+      "CF 96 02 2D 28 47 50 34 E1 27 BA CF 99 D1 50 FF\n"
+      "29 25 C0 36 36 15 33 52 70 BE 31 8F 9F E8 7F E7\n"
+      "11 0C 8D BF 84 A0 42 1A 80 89 B0 31 58 41 07 5F",
       x509_certificate_model::ProcessRawBitsSignatureWrap(cert.get()));
 }
