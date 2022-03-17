@@ -107,12 +107,7 @@ class GPU_EXPORT CommonDecoder {
                       std::vector<GLint>* _length);
 
    private:
-    bool OffsetSizeValid(size_t offset, size_t size) const {
-      size_t end = 0;
-      if (!base::CheckAdd<size_t>(offset, size).AssignIfValid(&end))
-        return false;
-      return end <= size_;
-    }
+    bool OffsetSizeValid(size_t offset, size_t size) const;
 
     size_t size_;
     ::std::unique_ptr<int8_t[]> data_;

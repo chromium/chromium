@@ -128,6 +128,13 @@ bool CommonDecoder::Bucket::GetAsStrings(
   return true;
 }
 
+bool CommonDecoder::Bucket::OffsetSizeValid(size_t offset, size_t size) const {
+  size_t end = 0;
+  if (!base::CheckAdd<size_t>(offset, size).AssignIfValid(&end))
+    return false;
+  return end <= size_;
+}
+
 CommonDecoder::CommonDecoder(DecoderClient* client,
                              CommandBufferServiceBase* command_buffer_service)
     : command_buffer_service_(command_buffer_service),
