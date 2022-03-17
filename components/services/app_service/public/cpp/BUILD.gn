@@ -239,6 +239,7 @@ source_set("preferred_apps") {
   ]
 
   deps = [
+    ":app_types",
     ":intents",
     "//base",
     "//components/services/app_service/public/mojom",

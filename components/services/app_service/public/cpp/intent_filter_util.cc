@@ -155,7 +155,7 @@ apps::mojom::IntentFilterPtr CreateIntentFilterForUrlScope(const GURL& url) {
 }
 
 int GetFilterMatchLevel(const apps::mojom::IntentFilterPtr& intent_filter) {
-  int match_level = IntentFilterMatchLevel::kNone;
+  int match_level = static_cast<int>(apps::IntentFilterMatchLevel::kNone);
   for (const auto& condition : intent_filter->conditions) {
     switch (condition->condition_type) {
       case apps::mojom::ConditionType::kAction:
@@ -163,17 +163,18 @@ int GetFilterMatchLevel(const apps::mojom::IntentFilterPtr& intent_filter) {
         // match level.
         break;
       case apps::mojom::ConditionType::kScheme:
-        match_level += IntentFilterMatchLevel::kScheme;
+        match_level += static_cast<int>(apps::IntentFilterMatchLevel::kScheme);
         break;
       case apps::mojom::ConditionType::kHost:
-        match_level += IntentFilterMatchLevel::kHost;
+        match_level += static_cast<int>(apps::IntentFilterMatchLevel::kHost);
         break;
       case apps::mojom::ConditionType::kPattern:
-        match_level += IntentFilterMatchLevel::kPattern;
+        match_level += static_cast<int>(apps::IntentFilterMatchLevel::kPattern);
         break;
       case apps::mojom::ConditionType::kMimeType:
       case apps::mojom::ConditionType::kFile:
-        match_level += IntentFilterMatchLevel::kMimeType;
+        match_level +=
+            static_cast<int>(apps::IntentFilterMatchLevel::kMimeType);
         break;
     }
   }
@@ -217,7 +218,8 @@ void UpgradeFilter(apps::mojom::IntentFilterPtr& filter) {
 }
 
 bool IsBrowserFilter(const apps::mojom::IntentFilterPtr& filter) {
-  if (GetFilterMatchLevel(filter) != IntentFilterMatchLevel::kScheme) {
+  if (GetFilterMatchLevel(filter) !=
+      static_cast<int>(apps::IntentFilterMatchLevel::kScheme)) {
     return false;
   }
   for (const auto& condition : filter->conditions) {

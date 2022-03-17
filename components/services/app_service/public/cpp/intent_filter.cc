@@ -93,6 +93,52 @@ IntentFilterPtr IntentFilter::Clone() const {
   return intent_filter;
 }
 
+int IntentFilter::GetFilterMatchLevel() {
+  int match_level = static_cast<int>(IntentFilterMatchLevel::kNone);
+  for (const auto& condition : conditions) {
+    switch (condition->condition_type) {
+      case ConditionType::kAction:
+        // Action always need to be matched, so there is no need for
+        // match level.
+        break;
+      case ConditionType::kScheme:
+        match_level += static_cast<int>(IntentFilterMatchLevel::kScheme);
+        break;
+      case ConditionType::kHost:
+        match_level += static_cast<int>(IntentFilterMatchLevel::kHost);
+        break;
+      case ConditionType::kPattern:
+        match_level += static_cast<int>(IntentFilterMatchLevel::kPattern);
+        break;
+      case ConditionType::kMimeType:
+      case ConditionType::kFile:
+        match_level += static_cast<int>(IntentFilterMatchLevel::kMimeType);
+        break;
+    }
+  }
+  return match_level;
+}
+
+bool IntentFilter::IsBrowserFilter() {
+  if (GetFilterMatchLevel() !=
+      static_cast<int>(IntentFilterMatchLevel::kScheme)) {
+    return false;
+  }
+  for (const auto& condition : conditions) {
+    if (condition->condition_type != ConditionType::kScheme) {
+      continue;
+    }
+    for (const auto& condition_value : condition->condition_values) {
+      if (condition_value->value == url::kHttpScheme ||
+          condition_value->value == url::kHttpsScheme) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
 IntentFilters CloneIntentFilters(const IntentFilters& intent_filters) {
   IntentFilters ret;
   for (const auto& intent_filter : intent_filters) {

@@ -9,6 +9,7 @@
 #include "base/containers/contains.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
+#include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "url/gurl.h"
@@ -264,7 +265,7 @@ absl::optional<std::string> PreferredAppsList::FindPreferredAppForUrl(
 absl::optional<std::string> PreferredAppsList::FindPreferredAppForIntent(
     const apps::mojom::IntentPtr& intent) const {
   absl::optional<std::string> best_match_app_id = absl::nullopt;
-  int best_match_level = apps_util::IntentFilterMatchLevel::kNone;
+  int best_match_level = static_cast<int>(IntentFilterMatchLevel::kNone);
   for (auto& preferred_app : preferred_apps_) {
     if (apps_util::IntentMatchesFilter(intent, preferred_app->intent_filter)) {
       int match_level =

@@ -15,19 +15,6 @@
 
 namespace apps_util {
 
-// The concept of match level is taken from Android. The values are not
-// necessary the same.
-// See
-// https://developer.android.com/reference/android/content/IntentFilter.html#constants_2
-// for more details.
-enum IntentFilterMatchLevel {
-  kNone = 0,
-  kScheme = 1,
-  kHost = 2,
-  kPattern = 4,
-  kMimeType = 8,
-};
-
 // Creates condition value that makes up App Service intent filter
 // condition. Each condition contains a list of condition values.
 // For pattern type of condition, the value match will be based on the

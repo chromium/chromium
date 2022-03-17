@@ -21,6 +21,7 @@
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "components/services/app_service/app_service_mojom_impl.h"
 #include "components/services/app_service/public/cpp/intent_constants.h"
+#include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/types_util.h"
@@ -707,7 +708,7 @@ apps::mojom::IntentFilterPtr AppServiceProxyBase::FindBestMatchingFilter(
     return best_matching_intent_filter;
   }
 
-  int best_match_level = apps_util::IntentFilterMatchLevel::kNone;
+  int best_match_level = static_cast<int>(IntentFilterMatchLevel::kNone);
   app_registry_cache_.ForEachApp(
       [&intent, &best_match_level,
        &best_matching_intent_filter](const apps::AppUpdate& update) {

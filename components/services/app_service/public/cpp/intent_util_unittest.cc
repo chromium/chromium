@@ -6,6 +6,7 @@
 
 #include "base/values.h"
 #include "components/services/app_service/public/cpp/intent.h"
+#include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -380,7 +381,8 @@ TEST_F(IntentUtilTest, GlobMatchType) {
       apps_util::ConditionValueMatches("/acb", condition_value_escape_star));
 }
 
-TEST_F(IntentUtilTest, FilterMatchLevel) {
+// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
+TEST_F(IntentUtilTest, FilterMatchLevelMojom) {
   auto filter_scheme_only = apps_util::CreateSchemeOnlyFilter("http");
   auto filter_scheme_and_host_only =
       apps_util::CreateSchemeAndHostOnlyFilter("https", "www.abc.com");
@@ -389,16 +391,16 @@ TEST_F(IntentUtilTest, FilterMatchLevel) {
   auto filter_empty = apps::mojom::IntentFilter::New();
 
   EXPECT_EQ(apps_util::GetFilterMatchLevel(filter_url),
-            apps_util::IntentFilterMatchLevel::kScheme +
-                apps_util::IntentFilterMatchLevel::kHost +
-                apps_util::IntentFilterMatchLevel::kPattern);
+            static_cast<int>(apps::IntentFilterMatchLevel::kScheme) +
+                static_cast<int>(apps::IntentFilterMatchLevel::kHost) +
+                static_cast<int>(apps::IntentFilterMatchLevel::kPattern));
   EXPECT_EQ(apps_util::GetFilterMatchLevel(filter_scheme_and_host_only),
-            apps_util::IntentFilterMatchLevel::kScheme +
-                apps_util::IntentFilterMatchLevel::kHost);
+            static_cast<int>(apps::IntentFilterMatchLevel::kScheme) +
+                static_cast<int>(apps::IntentFilterMatchLevel::kHost));
   EXPECT_EQ(apps_util::GetFilterMatchLevel(filter_scheme_only),
-            apps_util::IntentFilterMatchLevel::kScheme);
+            static_cast<int>(apps::IntentFilterMatchLevel::kScheme));
   EXPECT_EQ(apps_util::GetFilterMatchLevel(filter_empty),
-            apps_util::IntentFilterMatchLevel::kNone);
+            static_cast<int>(apps::IntentFilterMatchLevel::kNone));
 
   EXPECT_TRUE(apps_util::GetFilterMatchLevel(filter_url) >
               apps_util::GetFilterMatchLevel(filter_scheme_and_host_only));
@@ -406,6 +408,39 @@ TEST_F(IntentUtilTest, FilterMatchLevel) {
               apps_util::GetFilterMatchLevel(filter_scheme_only));
   EXPECT_TRUE(apps_util::GetFilterMatchLevel(filter_scheme_only) >
               apps_util::GetFilterMatchLevel(filter_empty));
+}
+
+TEST_F(IntentUtilTest, FilterMatchLevel) {
+  auto filter_scheme_only = apps_util::MakeSchemeOnlyFilter("http");
+  auto filter_scheme_and_host_only =
+      apps_util::MakeSchemeAndHostOnlyFilter("https", "www.abc.com");
+  auto filter_url =
+      apps_util::MakeIntentFilterForUrlScope(GURL("https:://www.google.com/"));
+  auto filter_empty = std::make_unique<apps::IntentFilter>();
+
+  EXPECT_TRUE(filter_scheme_only->IsBrowserFilter());
+  EXPECT_FALSE(filter_scheme_and_host_only->IsBrowserFilter());
+  EXPECT_FALSE(filter_url->IsBrowserFilter());
+  EXPECT_FALSE(filter_empty->IsBrowserFilter());
+
+  EXPECT_EQ(filter_url->GetFilterMatchLevel(),
+            static_cast<int>(apps::IntentFilterMatchLevel::kScheme) +
+                static_cast<int>(apps::IntentFilterMatchLevel::kHost) +
+                static_cast<int>(apps::IntentFilterMatchLevel::kPattern));
+  EXPECT_EQ(filter_scheme_and_host_only->GetFilterMatchLevel(),
+            static_cast<int>(apps::IntentFilterMatchLevel::kScheme) +
+                static_cast<int>(apps::IntentFilterMatchLevel::kHost));
+  EXPECT_EQ(filter_scheme_only->GetFilterMatchLevel(),
+            static_cast<int>(apps::IntentFilterMatchLevel::kScheme));
+  EXPECT_EQ(filter_empty->GetFilterMatchLevel(),
+            static_cast<int>(apps::IntentFilterMatchLevel::kNone));
+
+  EXPECT_TRUE(filter_url->GetFilterMatchLevel() >
+              filter_scheme_and_host_only->GetFilterMatchLevel());
+  EXPECT_TRUE(filter_scheme_and_host_only->GetFilterMatchLevel() >
+              filter_scheme_only->GetFilterMatchLevel());
+  EXPECT_TRUE(filter_scheme_only->GetFilterMatchLevel() >
+              filter_empty->GetFilterMatchLevel());
 }
 
 // TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
