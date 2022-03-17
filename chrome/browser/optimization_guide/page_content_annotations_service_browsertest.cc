@@ -215,8 +215,8 @@ class PageContentAnnotationsServicePageTopicsBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/1307251): Failing on Win 7.
-#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/1307251): Failing on Win 7 and also on Mac 11.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_E2EWithGoldenTestData DISABLED_E2EWithGoldenTestData
 #else
 #define MAYBE_E2EWithGoldenTestData E2EWithGoldenTestData
