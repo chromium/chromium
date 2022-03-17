@@ -1508,11 +1508,11 @@ const FeatureEntry::FeatureVariation kNtpChromeCartModuleVariations[] = {
 
 // The following are consent v2 variations in the Chrome Cart module.
 const flags_ui::FeatureEntry::FeatureParam kDiscountConsentNtpStringChange[] = {
-    {ntp_features::kNtpChromeCartModuleDiscountConsentNtpVariationParam, "1"}};
+    {commerce::kNtpChromeCartModuleDiscountConsentNtpVariationParam, "1"}};
 const flags_ui::FeatureEntry::FeatureParam kDiscountConsentNtpInline[] = {
-    {ntp_features::kNtpChromeCartModuleDiscountConsentNtpVariationParam, "2"}};
+    {commerce::kNtpChromeCartModuleDiscountConsentNtpVariationParam, "2"}};
 const flags_ui::FeatureEntry::FeatureParam kDiscountConsentNtpDialog[] = {
-    {ntp_features::kNtpChromeCartModuleDiscountConsentNtpVariationParam, "3"}};
+    {commerce::kNtpChromeCartModuleDiscountConsentNtpVariationParam, "3"}};
 const FeatureEntry::FeatureVariation kDiscountConsentV2Variations[] = {
     {"Changing string", kDiscountConsentNtpStringChange,
      std::size(kDiscountConsentNtpStringChange), nullptr},

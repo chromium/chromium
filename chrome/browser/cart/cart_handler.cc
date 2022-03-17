@@ -7,9 +7,9 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/cart/cart_db_content.pb.h"
-#include "chrome/browser/cart/cart_features.h"
 #include "chrome/browser/cart/cart_service.h"
 #include "chrome/browser/cart/cart_service_factory.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/search/ntp_features.h"
 
 CartHandler::CartHandler(
@@ -71,7 +71,7 @@ void CartHandler::GetCartDataCallback(GetMerchantCartsCallback callback,
     auto cart = chrome_cart::mojom::MerchantCart::New();
     cart->merchant = std::move(proto_pair.second.merchant());
 
-    if (cart_features::IsRuleDiscountPartnerMerchant(
+    if (commerce::IsRuleDiscountPartnerMerchant(
             GURL(proto_pair.second.merchant_cart_url()))) {
       cart->cart_url = CartService::AppendUTM(
           GURL(std::move(proto_pair.second.merchant_cart_url())),

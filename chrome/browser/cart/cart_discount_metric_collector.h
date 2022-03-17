@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_CART_CART_DISCOUNT_METRIC_COLLECTOR_H_
 #define CHROME_BROWSER_CART_CART_DISCOUNT_METRIC_COLLECTOR_H_
 
-#include "components/search/ntp_features.h"
+#include "components/commerce/core/commerce_feature_list.h"
 
 // This is used to collect metric related to the Cart Discount.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -47,23 +47,23 @@ class CartDiscountMetricCollector {
   // The following get called when cart module shows to record histogram for
   // detail discount consent status.
   static void RecordDiscountConsentStatusAcceptedIn(
-      ntp_features::DiscountConsentNtpVariation variation);
+      commerce::DiscountConsentNtpVariation variation);
   static void RecordDiscountConsentStatusRejectedIn(
-      ntp_features::DiscountConsentNtpVariation variation);
+      commerce::DiscountConsentNtpVariation variation);
   static void RecordDiscountConsentStatusNoShowAfterDecidedIn(
-      ntp_features::DiscountConsentNtpVariation variation);
+      commerce::DiscountConsentNtpVariation variation);
   static void RecordDiscountConsentStatusDismissedIn(
-      ntp_features::DiscountConsentNtpVariation variation);
+      commerce::DiscountConsentNtpVariation variation);
   static void RecordDiscountConsentStatusShowInterestIn(
-      ntp_features::DiscountConsentNtpVariation variation);
+      commerce::DiscountConsentNtpVariation variation);
   static void RecordDiscountConsentStatusNeverShowIn(
-      ntp_features::DiscountConsentNtpVariation variation);
+      commerce::DiscountConsentNtpVariation variation);
   static void RecordDiscountConsentStatusNoShowIn(
-      ntp_features::DiscountConsentNtpVariation variation);
+      commerce::DiscountConsentNtpVariation variation);
   static void RecordDiscountConsentStatusIgnoredIn(
-      ntp_features::DiscountConsentNtpVariation variation);
+      commerce::DiscountConsentNtpVariation variation);
   static void RecordDiscountConsentStatusShownIn(
-      ntp_features::DiscountConsentNtpVariation variation);
+      commerce::DiscountConsentNtpVariation variation);
 };
 
 #endif  // CHROME_BROWSER_CART_CART_DISCOUNT_METRIC_COLLECTOR_H_

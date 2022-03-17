@@ -372,8 +372,6 @@ static_library("renderer") {
     sources += [
       "cart/commerce_hint_agent.cc",
       "cart/commerce_hint_agent.h",
-      "cart/commerce_renderer_feature_list.cc",
-      "cart/commerce_renderer_feature_list.h",
       "media/chrome_speech_recognition_client.cc",
       "media/chrome_speech_recognition_client.h",
       "searchbox/searchbox.cc",
@@ -385,6 +383,7 @@ static_library("renderer") {
     deps += [
       "//chrome/common/cart:mojo_bindings",
       "//components/commerce/core:commerce_heuristics_data",
+      "//components/commerce/core:feature_list",
       "//components/crx_file",
       "//components/search:search",
     ]

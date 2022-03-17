@@ -10,12 +10,12 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chrome/browser/cart/cart_db_content.pb.h"
-#include "chrome/browser/cart/cart_features.h"
 #include "chrome/browser/cart/cart_service.h"
 #include "chrome/browser/cart/cart_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/search/ntp_features.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/document_service.h"
@@ -196,7 +196,7 @@ void CommerceHintService::OnAddToCart(const GURL& navigation_url,
   // When rule-based discount is enabled, do not accept cart page URLs from
   // partner merchants as there could be things like discount tokens in them.
   if (service_->IsCartDiscountEnabled() &&
-      cart_features::IsRuleDiscountPartnerMerchant(navigation_url) &&
+      commerce::IsRuleDiscountPartnerMerchant(navigation_url) &&
       product_id.empty()) {
     validated_cart = absl::nullopt;
   }
@@ -225,7 +225,7 @@ void CommerceHintService::OnCartUpdated(
   // When rule-based discount is enabled, do not accept cart page URLs from
   // partner merchants as there could be things like discount tokens in them.
   if (service_->IsCartDiscountEnabled() &&
-      cart_features::IsRuleDiscountPartnerMerchant(cart_url)) {
+      commerce::IsRuleDiscountPartnerMerchant(cart_url)) {
     validated_cart = absl::nullopt;
   }
   cart_db::ChromeCartContentProto proto;

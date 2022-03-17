@@ -16,8 +16,8 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/renderer/cart/commerce_renderer_feature_list.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -698,7 +698,7 @@ class CommerceHintProductInfoTest : public CommerceHintAgentTest {
             )###"},
            // Extend timeout to avoid flakiness.
            {"cart-extraction-timeout", "1m"}}},
-         {commerce_renderer_feature::kRetailCoupons,
+         {commerce::kRetailCoupons,
           {{"coupon-partner-merchant-pattern", "(eee.com)"},
            {"coupon-product-id-pattern-mapping",
             R"###(

@@ -3,4 +3,5 @@ include_rules = [
   "+components/optimization_guide",
   "+components/prefs",
   "+third_party/re2",
+  "+components/search",
 ]

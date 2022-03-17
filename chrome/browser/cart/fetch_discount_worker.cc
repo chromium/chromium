@@ -9,7 +9,6 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/cart/cart_discount_fetcher.h"
-#include "chrome/browser/cart/cart_features.h"
 #include "chrome/browser/commerce/coupons/coupon_db_content.pb.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/search/ntp_features.h"
@@ -149,14 +148,13 @@ void FetchDiscountWorker::ReadyToFetch(
   // post another delayed fetch.
   bool has_partner_merchant = false;
   for (auto pair : proto_pairs) {
-    if (cart_features::IsPartnerMerchant(
-            GURL(pair.second.merchant_cart_url()))) {
+    if (commerce::IsPartnerMerchant(GURL(pair.second.merchant_cart_url()))) {
       has_partner_merchant = true;
       break;
     }
   }
   if (!has_partner_merchant) {
-    Start(cart_features::kDiscountFetchDelayParam.Get());
+    Start(commerce::kDiscountFetchDelayParam.Get());
     return;
   }
   backend_task_runner_->PostTask(
@@ -306,6 +304,6 @@ void FetchDiscountWorker::OnUpdatingDiscounts(
           ntp_features::kNtpChromeCartModuleAbandonedCartDiscountParam,
           false)) {
     // Continue to work.
-    Start(cart_features::kDiscountFetchDelayParam.Get());
+    Start(commerce::kDiscountFetchDelayParam.Get());
   }
 }

@@ -14,7 +14,6 @@ static_library("search") {
 
   deps = [
     "//base",
-    "//components/commerce/core:feature_list",
     "//components/google/core/common",
     "//components/history/core/browser",
     "//components/keyed_service/core",

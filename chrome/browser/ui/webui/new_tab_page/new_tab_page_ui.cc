@@ -99,49 +99,47 @@ void AddRawStringOrDefault(content::WebUIDataSource* source,
 void AddResourcesForCartDiscountConsentV2(content::WebUIDataSource* source) {
   AddRawStringOrDefault(
       source, "modulesCartDiscountConsentContent",
-      ntp_features::kNtpChromeCartModuleDiscountConsentStringChangeContent
-          .Get(),
+      commerce::kNtpChromeCartModuleDiscountConsentStringChangeContent.Get(),
       IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_CONTENT_V2);
 
   source->AddBoolean(
       "modulesCartConsentStepTwoDifferentColor",
-      ntp_features::
-          kNtpChromeCartModuleDiscountConsentInlineStepTwoDifferentColor.Get());
+      commerce::kNtpChromeCartModuleDiscountConsentInlineStepTwoDifferentColor
+          .Get());
 
   AddRawStringOrDefault(
       source, "modulesCartDiscountConentTitle",
-      ntp_features::kNtpChromeCartModuleDiscountConsentNtpDialogContentTitle
-          .Get(),
+      commerce::kNtpChromeCartModuleDiscountConsentNtpDialogContentTitle.Get(),
       IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_TITLE);
 
   source->AddBoolean(
       "modulesCartStepOneUseStaticContent",
-      ntp_features::
-          kNtpChromeCartModuleDiscountConsentNtpStepOneUseStaticContent.Get());
+      commerce::kNtpChromeCartModuleDiscountConsentNtpStepOneUseStaticContent
+          .Get());
   // This does not have a raw string resource.
   source->AddString(
       "modulesCartStepOneStaticContent",
-      ntp_features::kNtpChromeCartModuleDiscountConsentNtpStepOneStaticContent
+      commerce::kNtpChromeCartModuleDiscountConsentNtpStepOneStaticContent
           .Get());
 
   AddRawStringOrDefault(
       source, "modulesCartConsentStepOneOneMerchantContent",
-      ntp_features::kNtpChromeCartModuleDiscountConsentNtpStepOneContentOneCart
+      commerce::kNtpChromeCartModuleDiscountConsentNtpStepOneContentOneCart
           .Get(),
       IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_STEP_1_WITH_MERCHANT_NAME);
   AddRawStringOrDefault(
       source, "modulesCartConsentStepOneTwoMerchantsContent",
-      ntp_features::kNtpChromeCartModuleDiscountConsentNtpStepOneContentTwoCarts
+      commerce::kNtpChromeCartModuleDiscountConsentNtpStepOneContentTwoCarts
           .Get(),
       IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_STEP_1_WITH_TWO_MERCHANT_NAMES);
   AddRawStringOrDefault(
       source, "modulesCartConsentStepOneThreeMerchantsContent",
-      ntp_features::
-          kNtpChromeCartModuleDiscountConsentNtpStepOneContentThreeCarts.Get(),
+      commerce::kNtpChromeCartModuleDiscountConsentNtpStepOneContentThreeCarts
+          .Get(),
       IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_STEP_1_WITH_THREE_MERCHANT_NAMES);
   AddRawStringOrDefault(
       source, "modulesCartConsentStepTwoContent",
-      ntp_features::kNtpChromeCartModuleDiscountConsentNtpStepTwoContent.Get(),
+      commerce::kNtpChromeCartModuleDiscountConsentNtpStepTwoContent.Get(),
       IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_CONTENT_V3);
 
   source->AddLocalizedString(
@@ -150,8 +148,7 @@ void AddResourcesForCartDiscountConsentV2(content::WebUIDataSource* source) {
 
   source->AddBoolean(
       "modulesCartDiscountInlineCardShowCloseButton",
-      ntp_features::kNtpChromeCartModuleDiscountConsentInlineShowCloseButton
-          .Get());
+      commerce::kNtpChromeCartModuleDiscountConsentInlineShowCloseButton.Get());
 }
 
 content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
@@ -396,7 +393,7 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
 
   source->AddInteger(
       "modulesCartDiscountConsentVariation",
-      ntp_features::kNtpChromeCartModuleDiscountConsentNtpVariation.Get());
+      commerce::kNtpChromeCartModuleDiscountConsentNtpVariation.Get());
 
   if (base::FeatureList::IsEnabled(commerce::kDiscountConsentV2)) {
     AddResourcesForCartDiscountConsentV2(source);

@@ -19,6 +19,7 @@ source_set("feature_list") {
   deps = [
     "//base",
     "//components/flags_ui",
+    "//components/search",
     "//third_party/re2:re2",
     "//url:url",
   ]
