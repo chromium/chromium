@@ -9,12 +9,27 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/space_split_string.h"
+#include "third_party/blink/renderer/core/html/html_table_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink::focusgroup {
+
+FocusgroupFlags FindNearestFocusgroupAncestorFlags(const Element* element) {
+  // TODO(bebeaudr): We should be using FlatTreeTraversal here.
+  Element* ancestor = Traversal<Element>::FirstAncestor(*element);
+  while (ancestor) {
+    FocusgroupFlags ancestor_flags = ancestor->GetFocusgroupFlags();
+    // When this is true, we found the focusgroup to extend.
+    if (ancestor_flags != FocusgroupFlags::kNone) {
+      return ancestor_flags;
+    }
+    ancestor = Traversal<Element>::FirstAncestor(*ancestor);
+  }
+  return FocusgroupFlags::kNone;
+}
 
 FocusgroupFlags ParseFocusgroup(const Element* element,
                                 const AtomicString& input) {
@@ -25,8 +40,13 @@ FocusgroupFlags ParseFocusgroup(const Element* element,
   bool has_extend = false;
   bool has_horizontal = false;
   bool has_vertical = false;
-  bool has_wrap = false;
   bool has_grid = false;
+  bool has_wrap = false;
+  bool has_row_wrap = false;
+  bool has_col_wrap = false;
+  bool has_flow = false;
+  bool has_row_flow = false;
+  bool has_col_flow = false;
   StringBuilder invalid_tokens;
 
   SpaceSplitString tokens(input);
@@ -38,10 +58,20 @@ FocusgroupFlags ParseFocusgroup(const Element* element,
       has_horizontal = true;
     } else if (lowercase_token == "vertical") {
       has_vertical = true;
-    } else if (lowercase_token == "wrap") {
-      has_wrap = true;
     } else if (lowercase_token == "grid") {
       has_grid = true;
+    } else if (lowercase_token == "wrap") {
+      has_wrap = true;
+    } else if (lowercase_token == "row-wrap") {
+      has_row_wrap = true;
+    } else if (lowercase_token == "col-wrap") {
+      has_col_wrap = true;
+    } else if (lowercase_token == "flow") {
+      has_flow = true;
+    } else if (lowercase_token == "row-flow") {
+      has_row_flow = true;
+    } else if (lowercase_token == "col-flow") {
+      has_col_flow = true;
     } else {
       if (!invalid_tokens.IsEmpty())
         invalid_tokens.Append(", ");
@@ -63,13 +93,256 @@ FocusgroupFlags ParseFocusgroup(const Element* element,
 
   FocusgroupFlags flags = FocusgroupFlags::kNone;
 
-  // 3. Set the axis supported on that focusgroup.
+  // 2. Apply the extend logic. A focusgroup can extend another one explicitly
+  // when the author specifies "extend" or implicitly when a focusgroup has the
+  // "gridcells" role.
+  FocusgroupFlags ancestor_flags = FocusgroupFlags::kNone;
+  if (has_extend) {
+    // Focusgroups should only be allowed to extend when they have a focusgroup
+    // ancestor and the focusgroup ancestor isn't a grid focusgroup.
+    ancestor_flags = FindNearestFocusgroupAncestorFlags(element);
+    if (ancestor_flags != FocusgroupFlags::kNone) {
+      flags |= FocusgroupFlags::kExtend;
+      if (ancestor_flags & FocusgroupFlags::kGrid) {
+        element->GetDocument().AddConsoleMessage(
+            MakeGarbageCollected<ConsoleMessage>(
+                mojom::blink::ConsoleMessageSource::kOther,
+                mojom::blink::ConsoleMessageLevel::kError,
+                WebString::FromUTF8(
+                    "Focusgroup attribute value 'extend' present, "
+                    "but grid focusgroups cannot be extended. Ignoring "
+                    "focusgroup.")));
+        return FocusgroupFlags::kNone;
+      }
+    } else {
+      element->GetDocument().AddConsoleMessage(
+          MakeGarbageCollected<ConsoleMessage>(
+              mojom::blink::ConsoleMessageSource::kOther,
+              mojom::blink::ConsoleMessageLevel::kError,
+              WebString::FromUTF8(
+                  "Focusgroup attribute value 'extend' present, "
+                  "but no parent focusgroup found. Ignoring 'extend'.")));
+    }
+  }
+
+  // 3. Apply the grid focusgroup logic:
+  //     * 'grid' can only be set on an HTML table element.
+  //     * The grid-related wrap/flown can only be set on a grid focusgroup.
+  if (has_grid) {
+    if (has_extend) {
+      element->GetDocument().AddConsoleMessage(
+          MakeGarbageCollected<ConsoleMessage>(
+              mojom::blink::ConsoleMessageSource::kOther,
+              mojom::blink::ConsoleMessageLevel::kError,
+              WebString::FromUTF8(
+                  "Focusgroup attribute values 'extend' and 'grid' present, "
+                  "but grid focusgroup cannot extend. Ignoring focusgroup.")));
+      return FocusgroupFlags::kNone;
+    }
+
+    auto* html_table_element = DynamicTo<HTMLTableElement>(element);
+    if (!html_table_element) {
+      element->GetDocument().AddConsoleMessage(
+          MakeGarbageCollected<ConsoleMessage>(
+              mojom::blink::ConsoleMessageSource::kOther,
+              mojom::blink::ConsoleMessageLevel::kError,
+              WebString::FromUTF8(
+                  "Focusgroup attribute value 'grid' used on an element other "
+                  "than an HTML table. Ignoring focusgroup.")));
+      return FocusgroupFlags::kNone;
+    }
+
+    flags |= FocusgroupFlags::kGrid;
+
+    // Set the wrap/flow flags, if specified.
+    if (has_wrap) {
+      flags |=
+          FocusgroupFlags::kWrapHorizontally | FocusgroupFlags::kWrapVertically;
+      if (has_row_wrap) {
+        element->GetDocument().AddConsoleMessage(
+            MakeGarbageCollected<ConsoleMessage>(
+                mojom::blink::ConsoleMessageSource::kOther,
+                mojom::blink::ConsoleMessageLevel::kWarning,
+                WebString::FromUTF8(
+                    "Focusgroup attribute value 'row-wrap' present, but can be "
+                    "omitted because focusgroup already wraps in both axes.")));
+      }
+      if (has_col_wrap) {
+        element->GetDocument().AddConsoleMessage(
+            MakeGarbageCollected<ConsoleMessage>(
+                mojom::blink::ConsoleMessageSource::kOther,
+                mojom::blink::ConsoleMessageLevel::kWarning,
+                WebString::FromUTF8(
+                    "Focusgroup attribute value 'col-wrap' present, but can be "
+                    "omitted because focusgroup already wraps in both axes.")));
+      }
+    } else {
+      if (has_row_wrap)
+        flags |= FocusgroupFlags::kWrapHorizontally;
+      if (has_col_wrap)
+        flags |= FocusgroupFlags::kWrapVertically;
+
+      if (has_row_wrap && has_col_wrap) {
+        element->GetDocument().AddConsoleMessage(
+            MakeGarbageCollected<ConsoleMessage>(
+                mojom::blink::ConsoleMessageSource::kOther,
+                mojom::blink::ConsoleMessageLevel::kWarning,
+                WebString::FromUTF8(
+                    "Focusgroup attribute values 'row-wrap col-wrap' should be "
+                    "replaced by 'wrap'.")));
+      }
+    }
+
+    if (has_flow) {
+      if (flags & FocusgroupFlags::kWrapHorizontally ||
+          flags & FocusgroupFlags::kWrapVertically) {
+        element->GetDocument().AddConsoleMessage(MakeGarbageCollected<
+                                                 ConsoleMessage>(
+            mojom::blink::ConsoleMessageSource::kOther,
+            mojom::blink::ConsoleMessageLevel::kError,
+            WebString::FromUTF8(
+                "Focusgroup attribute value 'flow' present, "
+                "but focusgroup already set to wrap in at least one axis.")));
+      } else {
+        flags |= FocusgroupFlags::kRowFlow | FocusgroupFlags::kColFlow;
+        if (has_row_flow) {
+          element->GetDocument().AddConsoleMessage(MakeGarbageCollected<
+                                                   ConsoleMessage>(
+              mojom::blink::ConsoleMessageSource::kOther,
+              mojom::blink::ConsoleMessageLevel::kWarning,
+              WebString::FromUTF8(
+                  "Focusgroup attribute value 'row-flow' present, but can be "
+                  "omitted because focusgroup already flows in both axes.")));
+        }
+        if (has_col_flow) {
+          element->GetDocument().AddConsoleMessage(MakeGarbageCollected<
+                                                   ConsoleMessage>(
+              mojom::blink::ConsoleMessageSource::kOther,
+              mojom::blink::ConsoleMessageLevel::kWarning,
+              WebString::FromUTF8(
+                  "Focusgroup attribute value 'col-flow' present, but can be "
+                  "omitted because focusgroup already flows in both axes.")));
+        }
+      }
+    } else {
+      if (has_row_flow) {
+        if (flags & FocusgroupFlags::kWrapHorizontally) {
+          element->GetDocument().AddConsoleMessage(
+              MakeGarbageCollected<ConsoleMessage>(
+                  mojom::blink::ConsoleMessageSource::kOther,
+                  mojom::blink::ConsoleMessageLevel::kError,
+                  WebString::FromUTF8(
+                      "Focusgroup attribute value 'row-flow' present, "
+                      "but focusgroup already wraps in the row axis.")));
+        } else {
+          flags |= FocusgroupFlags::kRowFlow;
+        }
+      }
+      if (has_col_flow) {
+        if (flags & FocusgroupFlags::kWrapVertically) {
+          element->GetDocument().AddConsoleMessage(
+              MakeGarbageCollected<ConsoleMessage>(
+                  mojom::blink::ConsoleMessageSource::kOther,
+                  mojom::blink::ConsoleMessageLevel::kError,
+                  WebString::FromUTF8(
+                      "Focusgroup attribute value 'col-flow' present, "
+                      "but focusgroup already wraps in the column axis.")));
+        } else {
+          flags |= FocusgroupFlags::kColFlow;
+        }
+      }
+      if (flags & FocusgroupFlags::kRowFlow &&
+          flags & FocusgroupFlags::kColFlow) {
+        element->GetDocument().AddConsoleMessage(
+            MakeGarbageCollected<ConsoleMessage>(
+                mojom::blink::ConsoleMessageSource::kOther,
+                mojom::blink::ConsoleMessageLevel::kWarning,
+                WebString::FromUTF8(
+                    "Focusgroup attribute values 'row-flow col-flow' should be "
+                    "replaced by 'flow'.")));
+      }
+    }
+
+    // These values are reserved for linear focusgroups.
+    if (has_horizontal) {
+      element->GetDocument().AddConsoleMessage(
+          MakeGarbageCollected<ConsoleMessage>(
+              mojom::blink::ConsoleMessageSource::kOther,
+              mojom::blink::ConsoleMessageLevel::kError,
+              WebString::FromUTF8(
+                  "Focusgroup attribute value 'horizontal' present, "
+                  "but no has no effect on grid focusgroups.")));
+    }
+    if (has_vertical) {
+      element->GetDocument().AddConsoleMessage(
+          MakeGarbageCollected<ConsoleMessage>(
+              mojom::blink::ConsoleMessageSource::kOther,
+              mojom::blink::ConsoleMessageLevel::kError,
+              WebString::FromUTF8(
+                  "Focusgroup attribute value 'vertical' present, "
+                  "but no has no effect on grid focusgroups.")));
+    }
+
+    return flags;
+  }
+
+  // At this point, we are necessarily in a linear focusgroup. Any grid
+  // focusgroup should have returned above.
+
+  if (has_row_wrap) {
+    element->GetDocument().AddConsoleMessage(
+        MakeGarbageCollected<ConsoleMessage>(
+            mojom::blink::ConsoleMessageSource::kOther,
+            mojom::blink::ConsoleMessageLevel::kError,
+            WebString::FromUTF8(
+                "Focusgroup attribute value 'row-wrap' present, "
+                "but no has no effect on linear focusgroups.")));
+  }
+  if (has_col_wrap) {
+    element->GetDocument().AddConsoleMessage(
+        MakeGarbageCollected<ConsoleMessage>(
+            mojom::blink::ConsoleMessageSource::kOther,
+            mojom::blink::ConsoleMessageLevel::kError,
+            WebString::FromUTF8(
+                "Focusgroup attribute value 'col-wrap' present, "
+                "but no has no effect on linear focusgroups.")));
+  }
+  if (has_flow) {
+    element->GetDocument().AddConsoleMessage(
+        MakeGarbageCollected<ConsoleMessage>(
+            mojom::blink::ConsoleMessageSource::kOther,
+            mojom::blink::ConsoleMessageLevel::kError,
+            WebString::FromUTF8(
+                "Focusgroup attribute value 'flow' present, "
+                "but no has no effect on linear focusgroups.")));
+  }
+  if (has_row_flow) {
+    element->GetDocument().AddConsoleMessage(
+        MakeGarbageCollected<ConsoleMessage>(
+            mojom::blink::ConsoleMessageSource::kOther,
+            mojom::blink::ConsoleMessageLevel::kError,
+            WebString::FromUTF8(
+                "Focusgroup attribute value 'row-flow' present, "
+                "but no has no effect on linear focusgroups.")));
+  }
+  if (has_col_flow) {
+    element->GetDocument().AddConsoleMessage(
+        MakeGarbageCollected<ConsoleMessage>(
+            mojom::blink::ConsoleMessageSource::kOther,
+            mojom::blink::ConsoleMessageLevel::kError,
+            WebString::FromUTF8(
+                "Focusgroup attribute value 'col-flow' present, "
+                "but no has no effect on linear focusgroups.")));
+  }
+
+  // 4. Set the axis supported on that focusgroup.
   if (has_horizontal)
     flags |= FocusgroupFlags::kHorizontal;
   if (has_vertical)
     flags |= FocusgroupFlags::kVertical;
 
-  // When no axis is specified, it means that the focusgroup should handle both.
+  // When no axis is specified, it means that the focusgroup should handle
+  // both.
   if (!has_horizontal && !has_vertical)
     flags |= FocusgroupFlags::kHorizontal | FocusgroupFlags::kVertical;
 
@@ -82,99 +355,6 @@ FocusgroupFlags ParseFocusgroup(const Element* element,
                 "'horizontal' and 'vertical' focusgroup attribute values used "
                 "together are redundant (this is the default behavior) and can "
                 "be omitted.")));
-  }
-
-  // 4. Apply the extend logic.
-  FocusgroupFlags ancestor_flags = FocusgroupFlags::kNone;
-  if (has_extend) {
-    // Focusgroups should only be allowed to extend when they have a focusgroup
-    // ancestor.
-    Element* ancestor = Traversal<Element>::FirstAncestor(*element);
-    while (ancestor) {
-      ancestor_flags = ancestor->GetFocusgroupFlags();
-      // When this is true, we found the focusgroup to extend.
-      if (ancestor_flags != FocusgroupFlags::kNone) {
-        flags |= FocusgroupFlags::kExtend;
-        break;
-      }
-
-      ancestor = Traversal<Element>::FirstAncestor(*ancestor);
-    }
-
-    if (!(flags & FocusgroupFlags::kExtend)) {
-      element->GetDocument().AddConsoleMessage(
-          MakeGarbageCollected<ConsoleMessage>(
-              mojom::blink::ConsoleMessageSource::kOther,
-              mojom::blink::ConsoleMessageLevel::kWarning,
-              WebString::FromUTF8(
-                  "Focusgroup attribute value 'extend' present, "
-                  "but no parent focusgroup found.")));
-    }
-  }
-
-  // 5. Set the flag for grid if the value was provided.
-  if (has_grid || (flags & FocusgroupFlags::kExtend &&
-                   ancestor_flags & FocusgroupFlags::kGrid)) {
-    flags |= FocusgroupFlags::kGrid;
-
-    if (ancestor_flags & FocusgroupFlags::kExtend) {
-      // We don't support focusgroups that try to extend the grid inner
-      // focusgroup.
-      element->GetDocument().AddConsoleMessage(
-          MakeGarbageCollected<ConsoleMessage>(
-              mojom::blink::ConsoleMessageSource::kOther,
-              mojom::blink::ConsoleMessageLevel::kError,
-              WebString::FromUTF8(
-                  "Focusgroup attribute value 'extend' cannot be "
-                  "used to extend a parent 'grid' focusgroup.")));
-      return FocusgroupFlags::kNone;
-    }
-
-    // When in a grid focusgroup, the outer focusgroup should only support one
-    // axis and its inner focusgroup should support the other one.
-    if (flags & FocusgroupFlags::kExtend) {
-      if (ancestor_flags & FocusgroupFlags::kHorizontal) {
-        if (flags & FocusgroupFlags::kHorizontal) {
-          element->GetDocument().AddConsoleMessage(
-              MakeGarbageCollected<ConsoleMessage>(
-                  mojom::blink::ConsoleMessageSource::kOther,
-                  mojom::blink::ConsoleMessageLevel::kWarning,
-                  WebString::FromUTF8(
-                      "Focusgroup attribute value 'horizontal' ignored; parent "
-                      "'grid' focusgroup already specifies 'horizontal' and "
-                      "'vertical' is assumed.")));
-        }
-        flags &= ~FocusgroupFlags::kHorizontal;
-        flags |= FocusgroupFlags::kVertical;
-      } else {
-        DCHECK(ancestor_flags & FocusgroupFlags::kVertical);
-        if (flags & FocusgroupFlags::kVertical) {
-          element->GetDocument().AddConsoleMessage(
-              MakeGarbageCollected<ConsoleMessage>(
-                  mojom::blink::ConsoleMessageSource::kOther,
-                  mojom::blink::ConsoleMessageLevel::kWarning,
-                  WebString::FromUTF8(
-                      "Focusgroup attribute value 'vertical' ignored; parent "
-                      "'grid' focusgroup already specifies 'vertical' and "
-                      "'horizontal' is assumed.")));
-        }
-        flags |= FocusgroupFlags::kHorizontal;
-        flags &= ~FocusgroupFlags::kVertical;
-      }
-    } else if (flags & FocusgroupFlags::kHorizontal &&
-               flags & FocusgroupFlags::kVertical) {
-      // In theory, the author needs to specify an axis on the outer focusgroup,
-      // but if they don't we'll revert to a default value of "horizontal".
-      flags &= ~FocusgroupFlags::kVertical;
-      element->GetDocument().AddConsoleMessage(
-          MakeGarbageCollected<ConsoleMessage>(
-              mojom::blink::ConsoleMessageSource::kOther,
-              mojom::blink::ConsoleMessageLevel::kWarning,
-              WebString::FromUTF8(
-                  "Focusgroup attribute value 'grid' requires an additional "
-                  "'horizontal' or 'vertical' direction value. Using "
-                  "'horizontal' as a default value.")));
-    }
   }
 
   // 6. Determine in what axis a focusgroup should wrap. This needs to be

@@ -11,26 +11,28 @@ namespace blink {
 
 class Element;
 
-enum FocusgroupFlags : int8_t {
+enum FocusgroupFlags : uint8_t {
   kNone = 0,
   kExtend = 1 << 0,
   kHorizontal = 1 << 1,
   kVertical = 1 << 2,
-  kWrapHorizontally = 1 << 3,
-  kWrapVertically = 1 << 4,
-  kGrid = 1 << 5,
+  kGrid = 1 << 3,
+  kWrapHorizontally = 1 << 4,
+  kWrapVertically = 1 << 5,
+  kRowFlow = 1 << 6,
+  kColFlow = 1 << 7,
 };
 
 inline constexpr FocusgroupFlags operator&(FocusgroupFlags a,
                                            FocusgroupFlags b) {
-  return static_cast<FocusgroupFlags>(static_cast<int8_t>(a) &
-                                      static_cast<int8_t>(b));
+  return static_cast<FocusgroupFlags>(static_cast<uint8_t>(a) &
+                                      static_cast<uint8_t>(b));
 }
 
 inline constexpr FocusgroupFlags operator|(FocusgroupFlags a,
                                            FocusgroupFlags b) {
-  return static_cast<FocusgroupFlags>(static_cast<int8_t>(a) |
-                                      static_cast<int8_t>(b));
+  return static_cast<FocusgroupFlags>(static_cast<uint8_t>(a) |
+                                      static_cast<uint8_t>(b));
 }
 
 inline FocusgroupFlags& operator|=(FocusgroupFlags& a, FocusgroupFlags b) {
@@ -42,10 +44,11 @@ inline FocusgroupFlags& operator&=(FocusgroupFlags& a, FocusgroupFlags b) {
 }
 
 inline constexpr FocusgroupFlags operator~(FocusgroupFlags flags) {
-  return static_cast<FocusgroupFlags>(~static_cast<int8_t>(flags));
+  return static_cast<FocusgroupFlags>(~static_cast<uint8_t>(flags));
 }
 
 namespace focusgroup {
+FocusgroupFlags FindNearestFocusgroupAncestorFlags(const Element* element);
 // Implemented based on this explainer:
 // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/Focusgroup/explainer.md
 FocusgroupFlags ParseFocusgroup(const Element* element,

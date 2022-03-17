@@ -895,113 +895,110 @@ TEST_F(ElementTest, ParseFocusgroupAttrDoesntWrapInExtendingFocusgroupOnly) {
   ASSERT_FALSE(fg12_flags & FocusgroupFlags::kWrapVertically);
 }
 
-TEST_F(ElementTest, ParseFocusgroupAttrGridCorrectly) {
+TEST_F(ElementTest, ParseFocusgroupAttrGrid) {
   Document& document = GetDocument();
   SetBodyContent(R"HTML(
-    <div id=fg1 focusgroup="grid vertical">
-      <div id=fg2 focusgroup=extend></div>
-      <div>
-        <div>
-          <div id=fg3 focusgroup=extend></div>
-        </div>
-      </div>
-    </div>
-    <div id=fg4 focusgroup="grid horizontal">
-      <div id=fg5 focusgroup=extend></div>
-    </div>
-    <div id=fg6 focusgroup=grid>
-      <div id=fg7 focusgroup=extend>
-        <div id=fg8 focusgroup=extend></div>
-      </div>
-    </div>
+    <div id=e1 focusgroup=grid></div> <!-- Error -->
+    <table id=e2 focusgroup=grid></table>
+    <table id=e3 focusgroup="grid wrap"></table>
+    <table id=e4 focusgroup="grid row-wrap"></table>
+    <table id=e5 focusgroup="grid col-wrap"></table>
+    <table id=e6 focusgroup="grid row-wrap col-wrap"></table>
+    <table id=e7 focusgroup="grid flow"></table>
+    <table id=e8 focusgroup="grid row-flow"></table>
+    <table id=e9 focusgroup="grid col-flow"></table>
+    <table id=e10 focusgroup="grid row-flow col-flow"></table>
+    <table id=e11 focusgroup="grid row-wrap row-flow"></table>
+    <table id=e12 focusgroup="grid row-wrap col-flow"></table>
+    <table id=e13 focusgroup="grid col-wrap col-flow"></table>
+    <table id=e14 focusgroup="grid col-wrap row-flow"></table>
+    <table focusgroup=grid>
+      <tbody id=e15 focusgroup=extend></tbody> <!-- Error -->
+    </table>
+    <div id=e16 focusgroup="flow"></div> <!-- Error -->
   )HTML");
 
-  // 1. The outer focusgroup should only support the vertical axis and have the
-  // grid flag.
-  auto* fg1 = document.getElementById("fg1");
-  ASSERT_TRUE(fg1);
+  auto* e1 = document.getElementById("e1");
+  auto* e2 = document.getElementById("e2");
+  auto* e3 = document.getElementById("e3");
+  auto* e4 = document.getElementById("e4");
+  auto* e5 = document.getElementById("e5");
+  auto* e6 = document.getElementById("e6");
+  auto* e7 = document.getElementById("e7");
+  auto* e8 = document.getElementById("e8");
+  auto* e9 = document.getElementById("e9");
+  auto* e10 = document.getElementById("e10");
+  auto* e11 = document.getElementById("e11");
+  auto* e12 = document.getElementById("e12");
+  auto* e13 = document.getElementById("e13");
+  auto* e14 = document.getElementById("e14");
+  auto* e15 = document.getElementById("e15");
+  auto* e16 = document.getElementById("e16");
+  ASSERT_TRUE(e1);
+  ASSERT_TRUE(e2);
+  ASSERT_TRUE(e3);
+  ASSERT_TRUE(e4);
+  ASSERT_TRUE(e5);
+  ASSERT_TRUE(e6);
+  ASSERT_TRUE(e7);
+  ASSERT_TRUE(e8);
+  ASSERT_TRUE(e9);
+  ASSERT_TRUE(e10);
+  ASSERT_TRUE(e11);
+  ASSERT_TRUE(e12);
+  ASSERT_TRUE(e13);
+  ASSERT_TRUE(e14);
+  ASSERT_TRUE(e15);
+  ASSERT_TRUE(e16);
 
-  FocusgroupFlags fg1_flags = fg1->GetFocusgroupFlags();
-  ASSERT_NE(fg1_flags, FocusgroupFlags::kNone);
-  ASSERT_TRUE(fg1_flags & FocusgroupFlags::kGrid);
-  ASSERT_FALSE(fg1_flags & FocusgroupFlags::kHorizontal);
-  ASSERT_TRUE(fg1_flags & FocusgroupFlags::kVertical);
+  FocusgroupFlags e1_flags = e1->GetFocusgroupFlags();
+  FocusgroupFlags e2_flags = e2->GetFocusgroupFlags();
+  FocusgroupFlags e3_flags = e3->GetFocusgroupFlags();
+  FocusgroupFlags e4_flags = e4->GetFocusgroupFlags();
+  FocusgroupFlags e5_flags = e5->GetFocusgroupFlags();
+  FocusgroupFlags e6_flags = e6->GetFocusgroupFlags();
+  FocusgroupFlags e7_flags = e7->GetFocusgroupFlags();
+  FocusgroupFlags e8_flags = e8->GetFocusgroupFlags();
+  FocusgroupFlags e9_flags = e9->GetFocusgroupFlags();
+  FocusgroupFlags e10_flags = e10->GetFocusgroupFlags();
+  FocusgroupFlags e11_flags = e11->GetFocusgroupFlags();
+  FocusgroupFlags e12_flags = e12->GetFocusgroupFlags();
+  FocusgroupFlags e13_flags = e13->GetFocusgroupFlags();
+  FocusgroupFlags e14_flags = e14->GetFocusgroupFlags();
+  FocusgroupFlags e15_flags = e15->GetFocusgroupFlags();
+  FocusgroupFlags e16_flags = e16->GetFocusgroupFlags();
 
-  // 2. The inner focusgroup should only support the axis orthogonal to its
-  // parent and have the grid flag even if not specified (because it extends a
-  // grid focusgroup).
-  auto* fg2 = document.getElementById("fg2");
-  ASSERT_TRUE(fg2);
-
-  FocusgroupFlags fg2_flags = fg2->GetFocusgroupFlags();
-  ASSERT_NE(fg2_flags, FocusgroupFlags::kNone);
-  ASSERT_TRUE(fg2_flags & FocusgroupFlags::kGrid);
-  ASSERT_TRUE(fg2_flags & FocusgroupFlags::kHorizontal);
-  ASSERT_FALSE(fg2_flags & FocusgroupFlags::kVertical);
-
-  // 3. Same as the case above, even with the couple of extra divs there are
-  // between the inner focusgroup and the outer one.
-  auto* fg3 = document.getElementById("fg3");
-  ASSERT_TRUE(fg3);
-
-  FocusgroupFlags fg3_flags = fg3->GetFocusgroupFlags();
-  ASSERT_NE(fg3_flags, FocusgroupFlags::kNone);
-  ASSERT_TRUE(fg3_flags & FocusgroupFlags::kGrid);
-  ASSERT_TRUE(fg3_flags & FocusgroupFlags::kHorizontal);
-  ASSERT_FALSE(fg3_flags & FocusgroupFlags::kVertical);
-
-  // 4. The outer focusgroup should only support the horizontal axis and have
-  // the grid flag.
-  auto* fg4 = document.getElementById("fg4");
-  ASSERT_TRUE(fg4);
-
-  FocusgroupFlags fg4_flags = fg4->GetFocusgroupFlags();
-  ASSERT_NE(fg4_flags, FocusgroupFlags::kNone);
-  ASSERT_TRUE(fg4_flags & FocusgroupFlags::kGrid);
-  ASSERT_TRUE(fg4_flags & FocusgroupFlags::kHorizontal);
-  ASSERT_FALSE(fg4_flags & FocusgroupFlags::kVertical);
-
-  // 5. The inner focusgroup should only support the axis orthogonal to its
-  // parent and have the grid flag even if not specified (because it extends a
-  // grid focusgroup).
-  auto* fg5 = document.getElementById("fg5");
-  ASSERT_TRUE(fg5);
-
-  FocusgroupFlags fg5_flags = fg5->GetFocusgroupFlags();
-  ASSERT_NE(fg5_flags, FocusgroupFlags::kNone);
-  ASSERT_TRUE(fg5_flags & FocusgroupFlags::kGrid);
-  ASSERT_FALSE(fg5_flags & FocusgroupFlags::kHorizontal);
-  ASSERT_TRUE(fg5_flags & FocusgroupFlags::kVertical);
-
-  // 6. The outer focusgroup should only support the horizontal axis even if
-  // it's not specified (default value) and have the grid flag.
-  auto* fg6 = document.getElementById("fg6");
-  ASSERT_TRUE(fg6);
-
-  FocusgroupFlags fg6_flags = fg6->GetFocusgroupFlags();
-  ASSERT_NE(fg6_flags, FocusgroupFlags::kNone);
-  ASSERT_TRUE(fg6_flags & FocusgroupFlags::kGrid);
-  ASSERT_TRUE(fg6_flags & FocusgroupFlags::kHorizontal);
-  ASSERT_FALSE(fg6_flags & FocusgroupFlags::kVertical);
-
-  // 7. The inner focusgroup should only support the axis orthogonal to its
-  // parent (even if not explicit on the parent) and have the grid flag even if
-  // not specified (because it extends a grid focusgroup).
-  auto* fg7 = document.getElementById("fg7");
-  ASSERT_TRUE(fg7);
-
-  FocusgroupFlags fg7_flags = fg7->GetFocusgroupFlags();
-  ASSERT_NE(fg7_flags, FocusgroupFlags::kNone);
-  ASSERT_TRUE(fg7_flags & FocusgroupFlags::kGrid);
-  ASSERT_FALSE(fg7_flags & FocusgroupFlags::kHorizontal);
-  ASSERT_TRUE(fg7_flags & FocusgroupFlags::kVertical);
-
-  // 8. No focusgroup is allowed to extend an inner grid focusgroup.
-  auto* fg8 = document.getElementById("fg8");
-  ASSERT_TRUE(fg8);
-
-  FocusgroupFlags fg8_flags = fg8->GetFocusgroupFlags();
-  ASSERT_EQ(fg8_flags, FocusgroupFlags::kNone);
+  ASSERT_EQ(e1_flags, FocusgroupFlags::kNone);
+  ASSERT_EQ(e2_flags, FocusgroupFlags::kGrid);
+  ASSERT_EQ(e3_flags,
+            (FocusgroupFlags::kGrid | FocusgroupFlags::kWrapHorizontally |
+             FocusgroupFlags::kWrapVertically));
+  ASSERT_EQ(e4_flags,
+            (FocusgroupFlags::kGrid | FocusgroupFlags::kWrapHorizontally));
+  ASSERT_EQ(e5_flags,
+            (FocusgroupFlags::kGrid | FocusgroupFlags::kWrapVertically));
+  ASSERT_EQ(e6_flags,
+            (FocusgroupFlags::kGrid | FocusgroupFlags::kWrapHorizontally |
+             FocusgroupFlags::kWrapVertically));
+  ASSERT_EQ(e7_flags, (FocusgroupFlags::kGrid | FocusgroupFlags::kRowFlow |
+                       FocusgroupFlags::kColFlow));
+  ASSERT_EQ(e8_flags, (FocusgroupFlags::kGrid | FocusgroupFlags::kRowFlow));
+  ASSERT_EQ(e9_flags, (FocusgroupFlags::kGrid | FocusgroupFlags::kColFlow));
+  ASSERT_EQ(e10_flags, (FocusgroupFlags::kGrid | FocusgroupFlags::kRowFlow |
+                        FocusgroupFlags::kColFlow));
+  ASSERT_EQ(e11_flags,
+            (FocusgroupFlags::kGrid | FocusgroupFlags::kWrapHorizontally));
+  ASSERT_EQ(e12_flags,
+            (FocusgroupFlags::kGrid | FocusgroupFlags::kWrapHorizontally |
+             FocusgroupFlags::kColFlow));
+  ASSERT_EQ(e13_flags,
+            (FocusgroupFlags::kGrid | FocusgroupFlags::kWrapVertically));
+  ASSERT_EQ(e14_flags,
+            (FocusgroupFlags::kGrid | FocusgroupFlags::kWrapVertically |
+             FocusgroupFlags::kRowFlow));
+  ASSERT_EQ(e15_flags, FocusgroupFlags::kNone);
+  ASSERT_EQ(e16_flags,
+            (FocusgroupFlags::kHorizontal | FocusgroupFlags::kVertical));
 }
 
 TEST_F(ElementTest, ParseFocusgroupAttrValueRecomputedAfterDOMStructureChange) {

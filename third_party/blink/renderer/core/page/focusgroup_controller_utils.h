@@ -13,7 +13,7 @@ namespace blink {
 class Element;
 class KeyboardEvent;
 
-enum FocusgroupFlags : int8_t;
+enum FocusgroupFlags : uint8_t;
 
 enum class FocusgroupDirection {
   kNone,
