@@ -16,10 +16,10 @@ interface IJsSandboxContext {
      * @param callback used to pass the information back to the embedding app
      * from the sandbox.
      */
-    void evaluateJavascript(in String code, in IJsSandboxContextCallback callback);
+    void evaluateJavascript(String code, in IJsSandboxContextCallback callback) = 0;
 
     /**
      * Stop the execution of the context as soon as possible and destroy it.
      */
-    void close();
+    void close() = 1;
 }

@@ -7,6 +7,7 @@ package org.chromium.android_webview.js.browser;
 import android.os.Build;
 import android.os.RemoteException;
 
+import org.chromium.android_webview.js.common.ExecutionErrorTypes;
 import org.chromium.android_webview.js.common.IJsSandboxContext;
 import org.chromium.android_webview.js.common.IJsSandboxContextCallback;
 import org.chromium.base.Log;
@@ -46,7 +47,8 @@ public class AwJsContext implements AutoCloseable {
             }
 
             @Override
-            public void reportError(String error) {
+            public void reportError(@ExecutionErrorTypes int type, String error) {
+                assert type == IJsSandboxContextCallback.JS_EVALUATION_ERROR;
                 callback.reportError(error);
             }
         };

@@ -754,6 +754,7 @@ android_library("js_sandbox_java") {
   sources = [
     "java/src/org/chromium/android_webview/js/browser/AwJsContext.java",
     "java/src/org/chromium/android_webview/js/browser/AwJsSandbox.java",
+    "java/src/org/chromium/android_webview/js/common/ExecutionErrorTypes.java",
     "java/src/org/chromium/android_webview/js/renderer/JsSandboxContext.java",
     "java/src/org/chromium/android_webview/js/renderer/JsSandboxService.java",
   ]
@@ -765,6 +766,7 @@ android_library("js_sandbox_java") {
     "//base:base_java",
     "//base:jni_java",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }

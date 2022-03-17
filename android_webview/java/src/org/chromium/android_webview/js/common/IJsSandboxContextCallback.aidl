@@ -9,6 +9,11 @@ package org.chromium.android_webview.js.common;
  * sandbox to the embedding app.
  */
 oneway interface IJsSandboxContextCallback {
-    void reportResult(in String result);
-    void reportError(in String error);
+    // An exception was thrown during the JS evaluation.
+    const int JS_EVALUATION_ERROR = 0;
+
+    void reportResult(String result) = 0;
+
+    // errorType is one of the error constants above.
+    void reportError(int errorType, String error) = 1;
 }

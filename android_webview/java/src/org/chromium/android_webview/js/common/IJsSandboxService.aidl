@@ -9,5 +9,5 @@ import org.chromium.android_webview.js.common.IJsSandboxContext;
  * Used by the embedding app to execute JavaScript in a sandboxed environment.
  */
 interface IJsSandboxService {
-    IJsSandboxContext createContext();
+    IJsSandboxContext createContext() = 0;
 }

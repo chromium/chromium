@@ -45,7 +45,10 @@ public class JsSandboxContext extends IJsSandboxContext.Stub {
                     },
                     (error) -> {
                         try {
-                            callback.reportError(error);
+                            // Currently we only support
+                            // IJsSandboxContextCallback.JS_EVALUATION_ERROR
+                            callback.reportError(
+                                    IJsSandboxContextCallback.JS_EVALUATION_ERROR, error);
                         } catch (RemoteException e) {
                             Log.e(TAG, "reporting error failed", e);
                         }
