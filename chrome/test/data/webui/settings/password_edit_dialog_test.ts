@@ -745,6 +745,91 @@ suite('PasswordEditDialog', function() {
     assertFalse(!!addDialog.shadowRoot!.querySelector('#note'));
   });
 
+  test('showNoteWarningInEditModeWhen900Characters', async function() {
+    loadTimeData.overrideValues({enablePasswordNotes: true});
+    const commonEntry = createMultiStorePasswordEntry({
+      url: 'goo.gl',
+      username: 'bart',
+      accountId: 42,
+      note: 'a'.repeat(900),
+    });
+    const passwordDialog = elementFactory.createPasswordEditDialog(
+        commonEntry, [], false, PasswordDialogMode.EDIT);
+
+    assertEditDialogParts(passwordDialog);
+    const noteElement =
+        passwordDialog.shadowRoot!.querySelector<SettingsTextareaElement>(
+            '#note');
+    assertEquals(
+        passwordDialog.i18n('passwordNoteCharacterCountWarning', 1000),
+        noteElement!.$.firstFooter.textContent!.trim());
+    assertEquals(
+        passwordDialog.i18n('passwordNoteCharacterCount', 900, 1000),
+        noteElement!.$.secondFooter.textContent!.trim());
+    assertFalse(noteElement!.invalid);
+  });
+
+  test('doNotShowNoteWarningInViewModeWhen999Characters', async function() {
+    loadTimeData.overrideValues({enablePasswordNotes: true});
+    const commonEntry = createMultiStorePasswordEntry({
+      url: 'goo.gl',
+      username: 'bart',
+      accountId: 42,
+      note: 'a'.repeat(999),
+    });
+    const passwordDialog = elementFactory.createPasswordEditDialog(
+        commonEntry, [], false, PasswordDialogMode.PASSWORD_VIEW);
+
+    const noteElement =
+        passwordDialog.shadowRoot!.querySelector<SettingsTextareaElement>(
+            '#note');
+    assertEquals('', noteElement!.$.firstFooter.textContent!.trim());
+    assertEquals('', noteElement!.$.secondFooter.textContent!.trim());
+  });
+
+  test('disableActionButtonWhenNoteIsLargerThan1000Chars', async function() {
+    loadTimeData.overrideValues({enablePasswordNotes: true});
+    const commonEntry = createMultiStorePasswordEntry({
+      url: 'goo.gl',
+      username: 'bart',
+      accountId: 42,
+      note: 'a'.repeat(1001),
+    });
+    const passwordDialog = elementFactory.createPasswordEditDialog(
+        commonEntry, [], false, PasswordDialogMode.EDIT);
+
+    assertTrue(passwordDialog.$.actionButton.disabled);
+    assertTrue(passwordDialog.shadowRoot!
+                   .querySelector<SettingsTextareaElement>('#note')!.invalid);
+  });
+
+  test('changingTheTextInTextareaChangesActionButtonStatus', async function() {
+    loadTimeData.overrideValues({enablePasswordNotes: true});
+    const commonEntry = createMultiStorePasswordEntry({
+      url: 'goo.gl',
+      username: 'bart',
+      accountId: 42,
+      note: 'a'.repeat(1000),
+    });
+    const passwordDialog = elementFactory.createPasswordEditDialog(
+        commonEntry, [], false, PasswordDialogMode.EDIT);
+    const noteElement =
+        passwordDialog.shadowRoot!.querySelector<SettingsTextareaElement>(
+            '#note');
+
+    assertFalse(passwordDialog.$.actionButton.disabled);
+
+    noteElement!.value += 'a';
+    flush();
+
+    assertTrue(passwordDialog.$.actionButton.disabled);
+
+    noteElement!.value = noteElement!.value.slice(0, -5);
+    flush();
+
+    assertFalse(passwordDialog.$.actionButton.disabled);
+  });
+
   // <if expr="not chromeos_ash and not chromeos_lacros">
   // On ChromeOS/Lacros the behavior is different (on failure we request token
   // and retry).

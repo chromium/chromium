@@ -53,6 +53,18 @@ export interface PasswordEditDialogElement {
 const PasswordEditDialogElementBase = I18nMixin(PolymerElement);
 
 /**
+ * When user enters more than or equal to 900 characters in the note field, a
+ * footer will be displayed below the note to warn the user.
+ */
+const PASSWORD_NOTE_WARNING_CHARACTER_COUNT = 900;
+
+/**
+ * When user enters more than 1000 characters, the note will become invalid and
+ * save button will be disabled.
+ */
+const PASSWORD_NOTE_MAX_CHARACTER_COUNT = 1000;
+
+/**
  * Contains the possible modes for 'password-edit-dialog'.
  * FEDERATED_VIEW: entry is an existing federated credential
  * PASSWORD_VIEW: entry is an existing password and in view mode
@@ -199,6 +211,34 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
       note_: {type: String, value: ''},
 
       /**
+       * Password note can be at most PASSWORD_NOTE_MAX_CHARACTER_COUNT
+       * characters long. Warns users when they start having more than or equal
+       * to PASSWORD_NOTE_WARNING_CHARACTER_COUNT characters.
+       */
+      noteFirstFooter_: {
+        type: String,
+        computed: 'computeNoteFirstFooter_(dialogMode, note_)',
+      },
+
+      /**
+       * Informs the user about the note's character count and the character
+       * limit.
+       */
+      noteSecondFooter_: {
+        type: String,
+        computed: 'computeNoteSecondFooter_(dialogMode, note_)',
+      },
+
+      /**
+       * Whether the note is longer than PASSWORD_NOTE_MAX_CHARACTER_COUNT
+       * characters.
+       */
+      noteInvalid_: {
+        type: Boolean,
+        computed: 'computeNoteInvalid_(dialogMode, note_)',
+      },
+
+      /**
        * Whether the username input is invalid.
        */
       usernameInputInvalid_: {
@@ -220,7 +260,8 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
         type: Boolean,
         computed:
             'computeIsSaveButtonDisabled_(websiteUrls_, websiteInputInvalid_, ' +
-            'usernameInputInvalid_, password_)'
+            'usernameInputInvalid_, password_, noteInvalid_, ' +
+            'isPasswordNotesEnabled_)',
       },
       /**
        * Whether the flag notes feature for passwords is enabled.
@@ -255,6 +296,9 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
   private websiteInputErrorMessage_: string|null;
   private username_: string;
   private note_: string;
+  private noteFirstFooter_: string;
+  private noteSecondFooter_: string;
+  private noteInvalid_: boolean;
   private usernameInputInvalid_: boolean;
   private password_: string;
   private isSaveButtonDisabled_: boolean;
@@ -319,13 +363,42 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
 
   private computeIsSaveButtonDisabled_(): boolean {
     return !this.websiteUrls_ || this.websiteInputInvalid_ ||
-        this.usernameInputInvalid_ || !this.password_.length;
+        this.usernameInputInvalid_ || !this.password_.length ||
+        (this.isPasswordNotesEnabled_ && this.noteInvalid_);
   }
 
   private shouldShowNote_(): boolean {
     return this.isPasswordNotesEnabled_ &&
         (this.dialogMode === PasswordDialogMode.PASSWORD_VIEW ||
          this.dialogMode === PasswordDialogMode.EDIT);
+  }
+
+  private isNoteLongerThanOrEqualTo_(characterCount: number): boolean {
+    return this.dialogMode === PasswordDialogMode.EDIT &&
+        this.note_.length >= characterCount;
+  }
+
+  private computeNoteFirstFooter_(): string {
+    return this.isNoteLongerThanOrEqualTo_(
+               PASSWORD_NOTE_WARNING_CHARACTER_COUNT) ?
+        this.i18n(
+            'passwordNoteCharacterCountWarning',
+            PASSWORD_NOTE_MAX_CHARACTER_COUNT) :
+        '';
+  }
+
+  private computeNoteSecondFooter_(): string {
+    return this.isNoteLongerThanOrEqualTo_(
+               PASSWORD_NOTE_WARNING_CHARACTER_COUNT) ?
+        this.i18n(
+            'passwordNoteCharacterCount', this.note_.length,
+            PASSWORD_NOTE_MAX_CHARACTER_COUNT) :
+        '';
+  }
+
+  private computeNoteInvalid_(): boolean {
+    return this.isNoteLongerThanOrEqualTo_(
+        PASSWORD_NOTE_MAX_CHARACTER_COUNT + 1);
   }
 
   /**
@@ -728,11 +801,6 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
       usernamesByOrigin.get(origin).add(entry.username);
       return usernamesByOrigin;
     }, new Map());
-  }
-
-  private onNoteChanged_(): void {
-    // TODO(crbug.com/1297513): Implement the logic and resize the textfield
-    // with the input.
   }
 }
 
