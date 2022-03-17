@@ -923,7 +923,7 @@ int ChromeBrowserMainParts::ApplyFirstRunPrefs() {
   }
 #if BUILDFLAG(IS_MAC)
   if (!master_prefs_->confirm_to_quit) {
-    local_state->SetBoolean(prefs::kBrowserSuppressDefaultBrowserPrompt,
+    local_state->SetBoolean(prefs::kConfirmToQuitEnabled,
                             master_prefs_->confirm_to_quit);
   }
 #endif  // BUILDFLAG(IS_MAC)
