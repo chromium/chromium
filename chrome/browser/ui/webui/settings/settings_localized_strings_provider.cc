@@ -1540,7 +1540,14 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
       base::FeatureList::IsEnabled(omnibox::kDocumentProvider));
   html_source->AddBoolean(
       "consolidatedSiteStorageControlsEnabled",
-      base::FeatureList::IsEnabled(features::kConsolidatedSiteStorageControls));
+      base::FeatureList::IsEnabled(
+          features::kConsolidatedSiteStorageControls) ||
+          // The third release of Privacy Sandbox settings depends on the
+          // simplified control structure. Ideally simplified controls will
+          // launch to 100% in advance of the Privacy Sandbox, but the Sandbox
+          // cannot launch without this simplification enabled.
+          base::FeatureList::IsEnabled(
+              privacy_sandbox::kPrivacySandboxSettings3));
 
   bool show_secure_dns = IsSecureDnsAvailable();
   bool link_secure_dns = ShouldLinkSecureDnsOsSettings();
