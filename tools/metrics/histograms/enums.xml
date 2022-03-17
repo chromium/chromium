@@ -72496,6 +72496,24 @@ Called by update_net_trust_anchors.py.-->
   <int value="9" label="PREF_READ_ERROR_FILE_NOT_SPECIFIED"/>
 </enum>
 
+<enum name="PreinstalledAppDisabledReason">
+  <int value="0" label="kNotDisabled"/>
+  <int value="1" label="kPreinstalledAppsDisabled"/>
+  <int value="2" label="kUserTypeNotAllowed"/>
+  <int value="3" label="kGatedFeatureNotEnabled"/>
+  <int value="4" label="kGatedFeatureNotEnabledAndAppNotInstalled"/>
+  <int value="5" label="kArcAvailable"/>
+  <int value="6" label="kTabletFormFactor"/>
+  <int value="7" label="kNotNewUserAndNotPreviouslyInstalled"/>
+  <int value="8" label="kNotPreviouslyPreinstalled"/>
+  <int value="9" label="kReplacingAppBlockedByPolicy"/>
+  <int value="10" label="kReplacingAppForceInstalled"/>
+  <int value="11" label="kReplacingAppStillInstalled"/>
+  <int value="12" label="kDefaultAppAndAppsToReplaceUninstalled"/>
+  <int value="13" label="kReplacingAppUninstalledByUser"/>
+  <int value="14" label="kStylusRequired"/>
+</enum>
+
 <enum name="PreloadedListCheckResult">
   <int value="0" label="origin was found and allowed https only"/>
   <int value="1" label="origin was not found"/>
