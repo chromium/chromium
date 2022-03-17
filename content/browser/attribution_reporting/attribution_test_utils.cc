@@ -19,10 +19,12 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/task_runner_util.h"
 #include "base/test/bind.h"
+#include "content/browser/attribution_reporting/attribution_aggregatable_key.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/attribution_reporting/rate_limit_result.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -123,6 +125,12 @@ base::Time ConfigurableStorageDelegate::GetEventLevelReportTime(
     base::Time trigger_time) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return source.impression_time() + report_delay_;
+}
+
+base::Time ConfigurableStorageDelegate::GetAggregatableReportTime(
+    base::Time trigger_time) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return trigger_time + report_delay_;
 }
 
 int ConfigurableStorageDelegate::GetMaxAttributionsPerSource(
@@ -542,6 +550,14 @@ TriggerBuilder::TriggerBuilder()
 
 TriggerBuilder::~TriggerBuilder() = default;
 
+TriggerBuilder::TriggerBuilder(const TriggerBuilder&) = default;
+
+TriggerBuilder::TriggerBuilder(TriggerBuilder&&) = default;
+
+TriggerBuilder& TriggerBuilder::operator=(const TriggerBuilder&) = default;
+
+TriggerBuilder& TriggerBuilder::operator=(TriggerBuilder&&) = default;
+
 TriggerBuilder& TriggerBuilder::SetTriggerData(uint64_t trigger_data) {
   trigger_data_ = trigger_data;
   return *this;
@@ -582,10 +598,17 @@ TriggerBuilder& TriggerBuilder::SetDebugKey(
   return *this;
 }
 
+TriggerBuilder& TriggerBuilder::SetAggregatableTrigger(
+    AttributionAggregatableTrigger aggregatable_trigger) {
+  aggregatable_trigger_ = std::move(aggregatable_trigger);
+  return *this;
+}
+
 AttributionTrigger TriggerBuilder::Build() const {
   return AttributionTrigger(trigger_data_, destination_origin_,
                             reporting_origin_, event_source_trigger_data_,
-                            priority_, dedup_key_, debug_key_);
+                            priority_, dedup_key_, debug_key_,
+                            aggregatable_trigger_);
 }
 
 AttributionInfoBuilder::AttributionInfoBuilder(StoredSource source)
@@ -737,7 +760,8 @@ bool operator==(const AttributionTrigger::EventTriggerData& a,
 bool operator==(const AttributionTrigger& a, const AttributionTrigger& b) {
   const auto tie = [](const AttributionTrigger& t) {
     return std::make_tuple(t.destination_origin(), t.reporting_origin(),
-                           t.debug_key(), t.event_triggers());
+                           t.debug_key(), t.event_triggers(),
+                           t.aggregatable_trigger());
   };
   return tie(a) == tie(b);
 }
@@ -854,6 +878,33 @@ bool operator==(const DeactivatedSource& a, const DeactivatedSource& b) {
   return tie(a) == tie(b);
 }
 
+bool operator==(const AttributionAggregatableKey& a,
+                const AttributionAggregatableKey& b) {
+  const auto tie = [](const AttributionAggregatableKey& key) {
+    return std::make_tuple(key.high_bits, key.low_bits);
+  };
+  return tie(a) == tie(b);
+}
+
+bool operator==(const AttributionAggregatableTriggerData& a,
+                const AttributionAggregatableTriggerData& b) {
+  const auto tie = [](const AttributionAggregatableTriggerData& trigger_data) {
+    return std::make_tuple(trigger_data.key(), trigger_data.source_keys(),
+                           trigger_data.filters(), trigger_data.not_filters());
+  };
+  return tie(a) == tie(b);
+}
+
+bool operator==(const AttributionAggregatableTrigger& a,
+                const AttributionAggregatableTrigger& b) {
+  const auto tie =
+      [](const AttributionAggregatableTrigger& aggregatable_trigger) {
+        return std::make_tuple(aggregatable_trigger.trigger_data(),
+                               aggregatable_trigger.values());
+      };
+  return tie(a) == tie(b);
+}
+
 std::ostream& operator<<(std::ostream& out,
                          AttributionTrigger::EventLevelResult status) {
   switch (status) {
@@ -889,6 +940,41 @@ std::ostream& operator<<(std::ostream& out,
       out << "excessiveReportingOrigins";
       break;
     case AttributionTrigger::EventLevelResult::kNoMatchingSourceFilterData:
+      out << "noMatchingSourceFilterData";
+      break;
+  }
+  return out;
+}
+
+std::ostream& operator<<(std::ostream& out,
+                         AttributionTrigger::AggregatableResult status) {
+  switch (status) {
+    case AttributionTrigger::AggregatableResult::kSuccess:
+      out << "success";
+      break;
+    case AttributionTrigger::AggregatableResult::kInternalError:
+      out << "internalError";
+      break;
+    case AttributionTrigger::AggregatableResult::
+        kNoCapacityForConversionDestination:
+      out << "insufficientDestinationCapacity";
+      break;
+    case AttributionTrigger::AggregatableResult::kNoMatchingImpressions:
+      out << "noMatchingSources";
+      break;
+    case AttributionTrigger::AggregatableResult::kExcessiveAttributions:
+      out << "excessiveAttributions";
+      break;
+    case AttributionTrigger::AggregatableResult::kExcessiveReportingOrigins:
+      out << "excessiveReportingOrigins";
+      break;
+    case AttributionTrigger::AggregatableResult::kNoHistograms:
+      out << "noHistograms";
+      break;
+    case AttributionTrigger::AggregatableResult::kInsufficientBudget:
+      out << "insufficientBudget";
+      break;
+    case AttributionTrigger::AggregatableResult::kNoMatchingSourceFilterData:
       out << "noMatchingSourceFilterData";
       break;
   }
@@ -1152,6 +1238,49 @@ std::ostream& operator<<(std::ostream& out, StorableSource::Result status) {
   }
 }
 
+std::ostream& operator<<(std::ostream& out,
+                         const AttributionAggregatableKey& key) {
+  return out << "{high_bits=" << key.high_bits << ",low_bits=" << key.low_bits
+             << "}";
+}
+
+std::ostream& operator<<(
+    std::ostream& out,
+    const AttributionAggregatableTriggerData& trigger_data) {
+  out << "{key=" << trigger_data.key() << ",source_keys=[";
+
+  const char* separator = "";
+  for (const auto& key : trigger_data.source_keys()) {
+    out << separator << key;
+    separator = ", ";
+  }
+
+  return out << "],filters=" << trigger_data.filters()
+             << ",not_filters=" << trigger_data.not_filters() << "}";
+}
+
+std::ostream& operator<<(
+    std::ostream& out,
+    const AttributionAggregatableTrigger& aggregatable_trigger) {
+  out << "{trigger_data=[";
+
+  const char* separator = "";
+  for (const auto& trigger_data : aggregatable_trigger.trigger_data()) {
+    out << separator << trigger_data;
+    separator = ", ";
+  }
+
+  out << "],values=[";
+
+  separator = "";
+  for (const auto& [key, value] : aggregatable_trigger.values()) {
+    out << separator << key << ":" << value;
+    separator = ", ";
+  }
+
+  return out << "]}";
+}
+
 AttributionFilterSizeTestCase::Map AttributionFilterSizeTestCase::AsMap()
     const {
   Map map;
@@ -1277,6 +1406,59 @@ std::vector<AttributionReport> GetAttributionReportsForTesting(
 std::unique_ptr<MockDataHost> GetRegisteredDataHost(
     mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host) {
   return std::make_unique<MockDataHost>(std::move(data_host));
+}
+
+TestAggregatableSourceProvider::TestAggregatableSourceProvider(size_t size) {
+  AggregatableSourceProtoBuilder source_builder;
+  for (size_t i = 0; i < size; ++i) {
+    source_builder.AddKey(
+        base::NumberToString(i),
+        AggregatableKeyProtoBuilder().SetHighBits(0).SetLowBits(i).Build());
+  }
+
+  auto source = AttributionAggregatableSource::Create(source_builder.Build());
+  DCHECK(source.has_value());
+  source_ = std::move(*source);
+}
+
+TestAggregatableSourceProvider::~TestAggregatableSourceProvider() = default;
+
+SourceBuilder TestAggregatableSourceProvider::GetBuilder(
+    base::Time source_time) const {
+  return SourceBuilder(source_time).SetAggregatableSource(source_);
+}
+
+TriggerBuilder DefaultAggregatableTriggerBuilder(
+    const std::vector<uint32_t>& histogram_values) {
+  auto trigger_mojo = blink::mojom::AttributionAggregatableTrigger::New();
+
+  for (size_t i = 0; i < histogram_values.size(); ++i) {
+    std::string key_id = base::NumberToString(i);
+    trigger_mojo->trigger_data.push_back(
+        blink::mojom::AttributionAggregatableTriggerData::New(
+            blink::mojom::AttributionAggregatableKey::New(/*high_bits=*/i,
+                                                          /*low_bits=*/0),
+            std::vector<std::string>{key_id},
+            blink::mojom::AttributionFilterData::New(),
+            blink::mojom::AttributionFilterData::New()));
+    trigger_mojo->values.emplace(std::move(key_id), histogram_values[i]);
+  }
+
+  auto trigger =
+      AttributionAggregatableTrigger::FromMojo(std::move(trigger_mojo));
+  DCHECK(trigger.has_value());
+
+  return TriggerBuilder().SetAggregatableTrigger(*trigger);
+}
+
+std::vector<AggregatableHistogramContribution>
+DefaultAggregatableHistogramContributions(
+    const std::vector<uint32_t>& histogram_values) {
+  std::vector<AggregatableHistogramContribution> contributions;
+  for (size_t i = 0; i < histogram_values.size(); ++i) {
+    contributions.emplace_back(absl::MakeUint128(i, i), histogram_values[i]);
+  }
+  return contributions;
 }
 
 }  // namespace content

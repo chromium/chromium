@@ -300,57 +300,61 @@ void AttributionInternalsHandlerImpl::OnReportSent(
   }
 }
 
-void AttributionInternalsHandlerImpl::OnTriggerHandled(
-    const CreateReportResult& result) {
-  mojom::WebUIAttributionReport::Status status;
-  switch (result.event_level_status()) {
+namespace {
+
+absl::optional<mojom::WebUIAttributionReport::Status> GetDroppedReportStatus(
+    AttributionTrigger::EventLevelResult status) {
+  switch (status) {
     case AttributionTrigger::EventLevelResult::kSuccessDroppedLowerPriority:
     case AttributionTrigger::EventLevelResult::kPriorityTooLow:
-      status = mojom::WebUIAttributionReport::Status::kDroppedDueToLowPriority;
-      break;
+      return mojom::WebUIAttributionReport::Status::kDroppedDueToLowPriority;
     case AttributionTrigger::EventLevelResult::kDroppedForNoise:
-      status = mojom::WebUIAttributionReport::Status::kDroppedForNoise;
-      break;
+      return mojom::WebUIAttributionReport::Status::kDroppedForNoise;
     case AttributionTrigger::EventLevelResult::kExcessiveAttributions:
-      status = mojom::WebUIAttributionReport::Status::
+      return mojom::WebUIAttributionReport::Status::
           kDroppedDueToExcessiveAttributions;
-      break;
     case AttributionTrigger::EventLevelResult::kExcessiveReportingOrigins:
-      status = mojom::WebUIAttributionReport::Status::
+      return mojom::WebUIAttributionReport::Status::
           kDroppedDueToExcessiveReportingOrigins;
-      break;
     case AttributionTrigger::EventLevelResult::kDeduplicated:
-      status = mojom::WebUIAttributionReport::Status::kDeduplicated;
-      break;
+      return mojom::WebUIAttributionReport::Status::kDeduplicated;
     case AttributionTrigger::EventLevelResult::
         kNoCapacityForConversionDestination:
-      status = mojom::WebUIAttributionReport::Status::
+      return mojom::WebUIAttributionReport::Status::
           kNoReportCapacityForDestinationSite;
-      break;
     case AttributionTrigger::EventLevelResult::kNoMatchingSourceFilterData:
-      status =
-          mojom::WebUIAttributionReport::Status::kNoMatchingSourceFilterData;
-      break;
+      return mojom::WebUIAttributionReport::Status::kNoMatchingSourceFilterData;
     case AttributionTrigger::EventLevelResult::kInternalError:
-      // `kInternalError` doesn't always have a dropped report.
-      if (result.dropped_reports().empty())
-        return;
-
-      status = mojom::WebUIAttributionReport::Status::kInternalError;
-      break;
+      return mojom::WebUIAttributionReport::Status::kInternalError;
     case AttributionTrigger::EventLevelResult::kSuccess:
     case AttributionTrigger::EventLevelResult::kNoMatchingImpressions:
       // TODO(apaseltiner): Surface `kNoMatchingImpressions` in internals UI.
-      return;
+      return absl::nullopt;
   }
+}
 
-  DCHECK_EQ(result.dropped_reports().size(), 1u);
-  auto report = WebUIAttributionReport(result.dropped_reports().front(),
-                                       /*is_debug_report=*/false,
-                                       /*http_response_code=*/0, status);
+}  // namespace
 
-  for (auto& observer : observers_) {
-    observer->OnReportDropped(report.Clone());
+void AttributionInternalsHandlerImpl::OnTriggerHandled(
+    const CreateReportResult& result) {
+  for (const AttributionReport& dropped_report : result.dropped_reports()) {
+    // TODO(crbug.com/1285317): Support aggregatable report in internal UI.
+    if (!absl::holds_alternative<AttributionReport::EventLevelData>(
+            dropped_report.data())) {
+      continue;
+    }
+
+    absl::optional<mojom::WebUIAttributionReport::Status> status =
+        GetDroppedReportStatus(result.event_level_status());
+    DCHECK(status.has_value());
+
+    auto report =
+        WebUIAttributionReport(dropped_report, /*is_debug_report=*/false,
+                               /*http_response_code=*/0, *status);
+
+    for (auto& observer : observers_) {
+      observer->OnReportDropped(report.Clone());
+    }
   }
 }
 

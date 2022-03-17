@@ -224,6 +224,8 @@ class AttributionEventHandler : public AttributionObserver {
     base::Value input_value = std::move(input_values_.front());
     input_values_.pop_front();
 
+    // TODO(linnan): Support aggregatable reports in the simulator.
+
     std::stringstream reason;
     switch (result.event_level_status()) {
       case AttributionTrigger::EventLevelResult::kSuccess:

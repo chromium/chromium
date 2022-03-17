@@ -24,6 +24,10 @@ namespace content {
 
 namespace {
 
+using ::testing::AllOf;
+using ::testing::Ge;
+using ::testing::Lt;
+
 using FakeReport = ::content::AttributionStorageDelegate::FakeReport;
 
 constexpr base::TimeDelta kDefaultExpiry = base::Days(30);
@@ -207,6 +211,13 @@ TEST(AttributionStorageDelegateImplTest,
             AttributionStorageDelegateImpl().GetEventLevelReportTime(
                 report.attribution_info().source.common_info(),
                 report.attribution_info().time));
+}
+
+TEST(AttributionStorageDelegateImplTest, GetAggregatableReportTime) {
+  base::Time trigger_time = base::Time::Now();
+  EXPECT_THAT(
+      AttributionStorageDelegateImpl().GetAggregatableReportTime(trigger_time),
+      AllOf(Ge(trigger_time), Lt(trigger_time + base::Hours(1))));
 }
 
 TEST(AttributionStorageDelegateImplTest, NewReportID_IsValidGUID) {

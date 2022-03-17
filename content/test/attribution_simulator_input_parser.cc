@@ -20,6 +20,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_source.h"
+#include "content/browser/attribution_reporting/attribution_aggregatable_trigger.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
@@ -242,11 +243,14 @@ class AttributionSimulatorInputParser {
     if (has_error_)
       return;
 
+    // TODO(linnan): Support aggregatable reports in the simulator.
+
     events_.emplace_back(
         AttributionTriggerAndTime{
             .trigger = AttributionTrigger(
                 std::move(destination_origin), std::move(reporting_origin),
-                std::move(filters), debug_key, std::move(event_triggers)),
+                std::move(filters), debug_key, std::move(event_triggers),
+                AttributionAggregatableTrigger()),
             .time = trigger_time,
         },
         std::move(trigger));

@@ -36,6 +36,7 @@ namespace content {
 
 class AggregatableHistogramContribution;
 class AttributionStorageDelegate;
+struct AttributionInfo;
 
 enum class RateLimitResult : int;
 
@@ -248,7 +249,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   AttributionTrigger::EventLevelResult MaybeCreateEventLevelReport(
-      StoredSource source,
+      AttributionInfo attribution_info,
       const AttributionTrigger& trigger,
       bool top_level_filters_match,
       absl::optional<AttributionReport>& report,
@@ -342,6 +343,23 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       base::TimeDelta min_delay,
       base::TimeDelta max_delay,
       base::Time now) VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  AttributionTrigger::AggregatableResult
+  MaybeCreateAggregatableAttributionReport(
+      AttributionInfo attribution_info,
+      const AttributionTrigger& trigger,
+      bool top_level_filters_match,
+      absl::optional<AttributionReport>& report)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  AttributionTrigger::AggregatableResult
+  MaybeStoreAggregatableAttributionReport(const AttributionReport& report,
+                                          int64_t aggregatable_budget_consumed)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  [[nodiscard]] bool StoreAggregatableAttributionReport(
+      const AttributionReport& report)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   static bool g_run_in_memory_;
 

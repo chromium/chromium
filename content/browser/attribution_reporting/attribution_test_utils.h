@@ -24,6 +24,7 @@
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_source.h"
+#include "content/browser/attribution_reporting/attribution_aggregatable_trigger.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_host.h"
@@ -64,6 +65,8 @@ namespace content {
 class AttributionManagerImpl;
 class AttributionObserver;
 class AttributionTrigger;
+
+struct AttributionAggregatableKey;
 
 enum class RateLimitResult : int;
 
@@ -194,6 +197,7 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
   // AttributionStorageDelegate
   base::Time GetEventLevelReportTime(const CommonSourceInfo& source,
                                      base::Time trigger_time) const override;
+  base::Time GetAggregatableReportTime(base::Time trigger_time) const override;
   int GetMaxAttributionsPerSource(
       AttributionSourceType source_type) const override;
   int GetMaxSourcesPerOrigin() const override;
@@ -468,6 +472,12 @@ class TriggerBuilder {
   TriggerBuilder();
   ~TriggerBuilder();
 
+  TriggerBuilder(const TriggerBuilder&);
+  TriggerBuilder(TriggerBuilder&&);
+
+  TriggerBuilder& operator=(const TriggerBuilder&);
+  TriggerBuilder& operator=(TriggerBuilder&&);
+
   TriggerBuilder& SetTriggerData(uint64_t trigger_data);
 
   TriggerBuilder& SetEventSourceTriggerData(uint64_t event_source_trigger_data);
@@ -482,6 +492,9 @@ class TriggerBuilder {
 
   TriggerBuilder& SetDebugKey(absl::optional<uint64_t> debug_key);
 
+  TriggerBuilder& SetAggregatableTrigger(
+      AttributionAggregatableTrigger aggregatable_trigger);
+
   AttributionTrigger Build() const;
 
  private:
@@ -492,6 +505,7 @@ class TriggerBuilder {
   int64_t priority_ = 0;
   absl::optional<uint64_t> dedup_key_;
   absl::optional<uint64_t> debug_key_;
+  AttributionAggregatableTrigger aggregatable_trigger_;
 };
 
 // Helper class to construct an `AttributionInfo` for tests using default data.
@@ -640,8 +654,20 @@ bool operator==(const SendResult& a, const SendResult& b);
 
 bool operator==(const DeactivatedSource& a, const DeactivatedSource& b);
 
+bool operator==(const AttributionAggregatableKey& a,
+                const AttributionAggregatableKey& b);
+
+bool operator==(const AttributionAggregatableTriggerData& a,
+                const AttributionAggregatableTriggerData& b);
+
+bool operator==(const AttributionAggregatableTrigger& a,
+                const AttributionAggregatableTrigger& b);
+
 std::ostream& operator<<(std::ostream& out,
                          AttributionTrigger::EventLevelResult status);
+
+std::ostream& operator<<(std::ostream& out,
+                         AttributionTrigger::AggregatableResult status);
 
 std::ostream& operator<<(std::ostream& out, DeactivatedSource::Reason reason);
 
@@ -697,6 +723,17 @@ std::ostream& operator<<(std::ostream& out,
                          const DeactivatedSource& deactivated_source);
 
 std::ostream& operator<<(std::ostream& out, StorableSource::Result status);
+
+std::ostream& operator<<(std::ostream& out,
+                         const AttributionAggregatableKey& key);
+
+std::ostream& operator<<(
+    std::ostream& out,
+    const AttributionAggregatableTriggerData& trigger_data);
+
+std::ostream& operator<<(
+    std::ostream& out,
+    const AttributionAggregatableTrigger& aggregatable_trigger);
 
 bool operator==(const AttributionAggregatableSource& a,
                 const AttributionAggregatableSource& b);
@@ -821,10 +858,26 @@ MATCHER_P(ReportURLIs, matcher, "") {
   return ExplainMatchResult(matcher, arg.ReportURL(), result_listener);
 }
 
+MATCHER_P(AggregatableAttributionDataIs, matcher, "") {
+  return ExplainMatchResult(
+      ::testing::VariantWith<AttributionReport::AggregatableAttributionData>(
+          matcher),
+      arg.data(), result_listener);
+}
+
+MATCHER_P(AggregatableHistogramContributionsAre, matcher, "") {
+  return ExplainMatchResult(matcher, arg.contributions, result_listener);
+}
+
 // `CreateReportResult` matchers
 
 MATCHER_P(CreateReportEventLevelStatusIs, matcher, "") {
   return ExplainMatchResult(matcher, arg.event_level_status(), result_listener);
+}
+
+MATCHER_P(CreateReportAggregatableStatusIs, matcher, "") {
+  return ExplainMatchResult(matcher, arg.aggregatable_status(),
+                            result_listener);
 }
 
 MATCHER_P(DroppedReportsAre, matcher, "") {
@@ -900,6 +953,24 @@ constexpr AttributionFilterSizeTestCase kAttributionFilterSizeTestCases[] = {
     {"excessive_value_size", false, 1, 0, 1,
      blink::kMaxBytesPerAttributionFilterString + 1},
 };
+
+class TestAggregatableSourceProvider {
+ public:
+  explicit TestAggregatableSourceProvider(size_t size = 1);
+  ~TestAggregatableSourceProvider();
+
+  SourceBuilder GetBuilder(base::Time source_time = base::Time::Now()) const;
+
+ private:
+  AttributionAggregatableSource source_;
+};
+
+TriggerBuilder DefaultAggregatableTriggerBuilder(
+    const std::vector<uint32_t>& histogram_values = {1});
+
+std::vector<AggregatableHistogramContribution>
+DefaultAggregatableHistogramContributions(
+    const std::vector<uint32_t>& histogram_values = {1});
 
 }  // namespace content
 

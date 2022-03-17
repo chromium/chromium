@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_source.h"
+#include "content/browser/attribution_reporting/attribution_aggregatable_trigger.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_reporting.pb.h"
@@ -224,12 +225,18 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
         std::move(*filters), std::move(*not_filters));
   }
 
+  absl::optional<AttributionAggregatableTrigger> aggregatable_trigger =
+      AttributionAggregatableTrigger::FromMojo(
+          std::move(data->aggregatable_trigger));
+  if (!aggregatable_trigger.has_value())
+    return;
+
   AttributionTrigger trigger(
       /*destination_origin=*/context.context_origin, reporting_origin,
       std::move(*filters),
       data->debug_key ? absl::make_optional(data->debug_key->value)
                       : absl::nullopt,
-      std::move(event_triggers));
+      std::move(event_triggers), std::move(*aggregatable_trigger));
 
   attribution_manager_->HandleTrigger(std::move(trigger));
 }

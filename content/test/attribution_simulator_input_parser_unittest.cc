@@ -11,6 +11,7 @@
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "content/browser/attribution_reporting/attribution_aggregatable_trigger.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
@@ -280,7 +281,8 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
                               /*dedup_key=*/absl::nullopt,
                               /*filters=*/AttributionFilterData(),
                               /*not_filters=*/AttributionFilterData()),
-                      }),
+                      },
+                      AttributionAggregatableTrigger()),
                   .time = kOffsetTime + base::Seconds(1643235576),
               },
               _),
@@ -293,7 +295,7 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
                       url::Origin::Create(GURL("https://b.r.test")),
                       AttributionFilterData(),
                       /*debug_key=*/absl::nullopt,
-                      /*event_triggers=*/{}),
+                      /*event_triggers=*/{}, AttributionAggregatableTrigger()),
                   .time = kOffsetTime + base::Seconds(1643235575),
               },
               _))));

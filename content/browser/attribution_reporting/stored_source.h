@@ -20,6 +20,7 @@ class CONTENT_EXPORT StoredSource {
  public:
   using Id = base::StrongAlias<StoredSource, int64_t>;
 
+  // Note that aggregatable reports are not subject to the attribution logic.
   enum class AttributionLogic {
     // Never send a report for this source even if it gets attributed.
     kNever = 0,

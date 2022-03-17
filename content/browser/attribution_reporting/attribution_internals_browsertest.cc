@@ -421,64 +421,72 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                .Build()}));
   manager_.NotifyTriggerHandled(CreateReportResult(
       AttributionTrigger::EventLevelResult::kPriorityTooLow,
-      /*dropped_reports=*/{
-          ReportBuilder(
-              AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
-              .SetReportTime(now + base::Hours(1))
-              .SetPriority(11)
-              .Build()}));
+      AttributionTrigger::AggregatableResult::kNoHistograms,
+      /*dropped_reports=*/
+      {ReportBuilder(
+           AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
+           .SetReportTime(now + base::Hours(1))
+           .SetPriority(11)
+           .Build()}));
   manager_.NotifyTriggerHandled(CreateReportResult(
       AttributionTrigger::EventLevelResult::kDroppedForNoise,
-      /*dropped_reports=*/{
-          ReportBuilder(
-              AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
-              .SetReportTime(now + base::Hours(2))
-              .SetPriority(12)
-              .Build()}));
+      AttributionTrigger::AggregatableResult::kNoHistograms,
+      /*dropped_reports=*/
+      {ReportBuilder(
+           AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
+           .SetReportTime(now + base::Hours(2))
+           .SetPriority(12)
+           .Build()}));
   manager_.NotifyTriggerHandled(CreateReportResult(
       AttributionTrigger::EventLevelResult::kExcessiveAttributions,
-      /*dropped_reports=*/{
-          ReportBuilder(
-              AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
-              .SetReportTime(now + base::Hours(6))
-              .SetPriority(-3)
-              .Build()}));
+      AttributionTrigger::AggregatableResult::kNoHistograms,
+      /*dropped_reports=*/
+      {ReportBuilder(
+           AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
+           .SetReportTime(now + base::Hours(6))
+           .SetPriority(-3)
+           .Build()}));
   manager_.NotifyTriggerHandled(CreateReportResult(
       AttributionTrigger::EventLevelResult::kExcessiveReportingOrigins,
-      /*dropped_reports=*/{
-          ReportBuilder(
-              AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
-              .SetReportTime(now + base::Hours(7))
-              .SetPriority(-4)
-              .Build()}));
+      AttributionTrigger::AggregatableResult::kNoHistograms,
+      /*dropped_reports=*/
+      {ReportBuilder(
+           AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
+           .SetReportTime(now + base::Hours(7))
+           .SetPriority(-4)
+           .Build()}));
   manager_.NotifyTriggerHandled(CreateReportResult(
       AttributionTrigger::EventLevelResult::kDeduplicated,
-      /*dropped_reports=*/{
-          ReportBuilder(
-              AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
-              .SetReportTime(now + base::Hours(8))
-              .SetPriority(-5)
-              .Build()}));
+      AttributionTrigger::AggregatableResult::kNoHistograms,
+      /*dropped_reports=*/
+      {ReportBuilder(
+           AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
+           .SetReportTime(now + base::Hours(8))
+           .SetPriority(-5)
+           .Build()}));
   manager_.NotifyTriggerHandled(CreateReportResult(
       AttributionTrigger::EventLevelResult::kNoCapacityForConversionDestination,
-      /*dropped_reports=*/{
-          ReportBuilder(
-              AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
-              .SetReportTime(now + base::Hours(9))
-              .SetPriority(-6)
-              .Build()}));
+      AttributionTrigger::AggregatableResult::kNoHistograms,
+      /*dropped_reports=*/
+      {ReportBuilder(
+           AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
+           .SetReportTime(now + base::Hours(9))
+           .SetPriority(-6)
+           .Build()}));
   manager_.NotifyTriggerHandled(CreateReportResult(
       AttributionTrigger::EventLevelResult::kInternalError,
-      /*dropped_reports=*/{
-          ReportBuilder(
-              AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
-              .SetReportTime(now + base::Hours(10))
-              .SetPriority(-7)
-              .Build()}));
+      AttributionTrigger::AggregatableResult::kNoHistograms,
+      /*dropped_reports=*/
+      {ReportBuilder(
+           AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
+           .SetReportTime(now + base::Hours(10))
+           .SetPriority(-7)
+           .Build()}));
 
   // This shouldn't result in a row, as registration succeeded.
   manager_.NotifyTriggerHandled(CreateReportResult(
       AttributionTrigger::EventLevelResult::kSuccess,
+      AttributionTrigger::AggregatableResult::kNoHistograms,
       /*dropped_reports=*/{},
       /*new_reports=*/
       {ReportBuilder(
@@ -487,10 +495,12 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   // These shouldn't result in a row, as `CreateReportResult::dropped_report()`
   // is null.
-  manager_.NotifyTriggerHandled(
-      CreateReportResult(AttributionTrigger::EventLevelResult::kInternalError));
   manager_.NotifyTriggerHandled(CreateReportResult(
-      AttributionTrigger::EventLevelResult::kNoMatchingImpressions));
+      AttributionTrigger::EventLevelResult::kInternalError,
+      AttributionTrigger::AggregatableResult::kNoHistograms));
+  manager_.NotifyTriggerHandled(CreateReportResult(
+      AttributionTrigger::EventLevelResult::kNoMatchingImpressions,
+      AttributionTrigger::AggregatableResult::kNoHistograms));
 
   {
     static constexpr char wait_script[] = R"(

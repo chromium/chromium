@@ -5,6 +5,7 @@
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 
 #include <cmath>
+#include <functional>
 #include <iterator>
 #include <utility>
 
@@ -482,15 +483,23 @@ void AttributionManagerImpl::ProcessNextEvent(bool is_debug_cookie_set) {
 void AttributionManagerImpl::OnReportStored(CreateReportResult result) {
   RecordCreateReportStatus(result.event_level_status());
 
+  // TODO(crbug.com/1285319): Log metrics for aggregatable reports.
+
   if (std::vector<AttributionReport>& new_reports = result.new_reports();
       !new_reports.empty()) {
-    DCHECK_EQ(new_reports.size(), 1u);
-    scheduler_.ScheduleSend(new_reports.front().report_time());
-    MaybeSendDebugReport(std::move(new_reports.front()));
+    auto min_report = base::ranges::min_element(
+        new_reports, std::less<>(), &AttributionReport::report_time);
+    scheduler_.ScheduleSend(min_report->report_time());
+
+    for (AttributionReport& report : new_reports) {
+      MaybeSendDebugReport(std::move(report));
+    }
   }
 
   if (result.event_level_status() !=
-      AttributionTrigger::EventLevelResult::kInternalError) {
+          AttributionTrigger::EventLevelResult::kInternalError ||
+      result.aggregatable_status() !=
+          AttributionTrigger::AggregatableResult::kInternalError) {
     // Sources are changed here because storing a report can cause sources to be
     // deleted or become associated with a dedup key.
     NotifySourcesChanged();
@@ -508,10 +517,6 @@ void AttributionManagerImpl::MaybeSendDebugReport(AttributionReport&& report) {
       !IsReportAllowed(report)) {
     return;
   }
-
-  // TODO(linnan): Support sending debug aggregatable reports.
-  DCHECK(absl::holds_alternative<AttributionReport::EventLevelData>(
-      report.data()));
 
   // We don't delete from storage for debug reports.
   PrepareToSendReport(std::move(report), /*is_debug_report=*/true,

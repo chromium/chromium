@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "content/browser/attribution_reporting/attribution_aggregatable_trigger.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_host_utils.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
@@ -308,7 +309,7 @@ void AttributionHost::RegisterConversion(
       conversion->dedup_key.is_null()
           ? absl::nullopt
           : absl::make_optional(conversion->dedup_key->value),
-      /*debug_key=*/absl::nullopt);
+      /*debug_key=*/absl::nullopt, AttributionAggregatableTrigger());
 
   if (conversion_page_metrics_)
     conversion_page_metrics_->OnConversion(conversion->reporting_origin);

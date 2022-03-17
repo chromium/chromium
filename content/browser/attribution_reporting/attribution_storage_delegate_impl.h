@@ -48,6 +48,7 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
   // AttributionStorageDelegate:
   base::Time GetEventLevelReportTime(const CommonSourceInfo& source,
                                      base::Time trigger_time) const override;
+  base::Time GetAggregatableReportTime(base::Time trigger_time) const override;
   int GetMaxAttributionsPerSource(
       AttributionSourceType source_type) const override;
   int GetMaxSourcesPerOrigin() const override;

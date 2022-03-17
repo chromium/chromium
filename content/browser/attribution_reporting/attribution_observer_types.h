@@ -36,6 +36,7 @@ class CONTENT_EXPORT CreateReportResult {
  public:
   explicit CreateReportResult(
       AttributionTrigger::EventLevelResult event_level_status,
+      AttributionTrigger::AggregatableResult aggregatable_status,
       std::vector<AttributionReport> dropped_reports = {},
       std::vector<AttributionReport> new_reports = {});
   ~CreateReportResult();
@@ -48,6 +49,10 @@ class CONTENT_EXPORT CreateReportResult {
 
   AttributionTrigger::EventLevelResult event_level_status() const {
     return event_level_status_;
+  }
+
+  AttributionTrigger::AggregatableResult aggregatable_status() const {
+    return aggregatable_status_;
   }
 
   const std::vector<AttributionReport>& dropped_reports() const {
@@ -63,13 +68,17 @@ class CONTENT_EXPORT CreateReportResult {
  private:
   AttributionTrigger::EventLevelResult event_level_status_;
 
-  // `AttributionTrigger::EventLevelResult::kInternalError` is only associated
-  // with a dropped report if the browser succeeded in running the
+  AttributionTrigger::AggregatableResult aggregatable_status_;
+
+  // `AttributionTrigger::EventLevelResult::kInternalError` and
+  // `AttributionTrigger::AggregatableResult::kInternalError` are only
+  // associated with a dropped report if the browser succeeded in running the
   // source-to-attribute logic.
   std::vector<AttributionReport> dropped_reports_;
 
   // Empty unless `event_level_status` is `kSuccess` or
-  // `kSuccessDroppedLowerPriority`.
+  // `kSuccessDroppedLowerPriority` or `aggregatable_status` is
+  // `kSuccess`.
   std::vector<AttributionReport> new_reports_;
 };
 

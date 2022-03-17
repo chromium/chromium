@@ -13,28 +13,20 @@ namespace content {
 
 CreateReportResult::CreateReportResult(
     AttributionTrigger::EventLevelResult event_level_status,
+    AttributionTrigger::AggregatableResult aggregatable_status,
     std::vector<AttributionReport> dropped_reports,
     std::vector<AttributionReport> new_reports)
     : event_level_status_(event_level_status),
+      aggregatable_status_(aggregatable_status),
       dropped_reports_(std::move(dropped_reports)),
       new_reports_(std::move(new_reports)) {
-  DCHECK(
-      (event_level_status_ == AttributionTrigger::EventLevelResult::kSuccess &&
-       dropped_reports_.empty()) ||
-      event_level_status_ ==
-          AttributionTrigger::EventLevelResult::kNoMatchingImpressions ||
-      event_level_status_ ==
-          AttributionTrigger::EventLevelResult::kInternalError ||
-      !dropped_reports_.empty());
-
   DCHECK_EQ(
       event_level_status_ == AttributionTrigger::EventLevelResult::kSuccess ||
           event_level_status_ == AttributionTrigger::EventLevelResult::
-                                     kSuccessDroppedLowerPriority,
+                                     kSuccessDroppedLowerPriority ||
+          aggregatable_status_ ==
+              AttributionTrigger::AggregatableResult::kSuccess,
       !new_reports_.empty());
-
-  DCHECK_LE(dropped_reports_.size(), 1u);
-  DCHECK_LE(new_reports_.size(), 1u);
 }
 
 CreateReportResult::~CreateReportResult() = default;

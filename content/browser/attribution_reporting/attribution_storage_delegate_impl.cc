@@ -141,6 +141,18 @@ base::Time AttributionStorageDelegateImpl::GetEventLevelReportTime(
   }
 }
 
+base::Time AttributionStorageDelegateImpl::GetAggregatableReportTime(
+    base::Time trigger_time) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  switch (delay_mode_) {
+    case AttributionDelayMode::kDefault:
+      return trigger_time + rng_->RandDouble() * base::Hours(1);
+    case AttributionDelayMode::kNone:
+      return trigger_time;
+  }
+}
+
 base::GUID AttributionStorageDelegateImpl::NewReportID() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return base::GUID::GenerateRandomV4();
