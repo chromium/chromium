@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "content/browser/prerender/prerender_host_registry.h"
+#include "content/browser/prerender/prerender_navigation_utils.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -63,12 +64,20 @@ NavigationThrottle::ThrottleCheckResult
 PrerenderSubframeNavigationThrottle::WillProcessResponse() {
   auto* navigation_request = NavigationRequest::From(navigation_handle());
   FrameTreeNode* frame_tree_node = navigation_request->frame_tree_node();
+  absl::optional<PrerenderHost::FinalStatus> cancel_reason;
 
   if (!frame_tree_node->frame_tree()->is_prerendering())
     return NavigationThrottle::PROCEED;
 
   // Disallow downloads during prerendering and cancel the prerender.
   if (navigation_handle()->IsDownload()) {
+    cancel_reason = PrerenderHost::FinalStatus::kDownload;
+  } else if (prerender_navigation_utils::IsDisallowedHttpResponseCode(
+                 navigation_request->commit_params().http_response_code)) {
+    cancel_reason = PrerenderHost::FinalStatus::kNavigationBadHttpStatus;
+  }
+
+  if (cancel_reason.has_value()) {
     PrerenderHostRegistry* prerender_host_registry =
         frame_tree_node->current_frame_host()
             ->delegate()
@@ -76,7 +85,7 @@ PrerenderSubframeNavigationThrottle::WillProcessResponse() {
 
     prerender_host_registry->CancelHost(
         frame_tree_node->frame_tree()->root()->frame_tree_node_id(),
-        PrerenderHost::FinalStatus::kDownload);
+        cancel_reason.value());
     return CANCEL;
   }
 

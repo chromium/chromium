@@ -566,6 +566,83 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderCancelledOn500Page) {
       PrerenderHost::FinalStatus::kNavigationBadHttpStatus);
 }
 
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderCancelledOn204Page) {
+  base::HistogramTester histogram_tester;
+
+  // Navigate to an initial page.
+  const GURL kInitialUrl = GetUrl("/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Start prerendering `kPrerenderingUrl` that returns 204 response code.
+  const GURL kPrerenderingUrl = GetUrl("/echo?status=204");
+  test::PrerenderHostObserver host_observer(*web_contents_impl(),
+                                            kPrerenderingUrl);
+  AddPrerenderAsync(kPrerenderingUrl);
+
+  // The prerender should be destroyed.
+  host_observer.WaitForDestroyed();
+  EXPECT_EQ(GetHostForUrl(kPrerenderingUrl),
+            RenderFrameHost::kNoFrameTreeNodeId);
+
+  // Cancellation must have occurred due to bad http status code.
+  ExpectFinalStatusForSpeculationRule(
+      PrerenderHost::FinalStatus::kNavigationBadHttpStatus);
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderCancelledOn205Page) {
+  base::HistogramTester histogram_tester;
+
+  // Navigate to an initial page.
+  const GURL kInitialUrl = GetUrl("/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Start prerendering `kPrerenderingUrl` that returns 205 response code.
+  const GURL kPrerenderingUrl = GetUrl("/echo?status=205");
+  test::PrerenderHostObserver host_observer(*web_contents_impl(),
+                                            kPrerenderingUrl);
+  AddPrerenderAsync(kPrerenderingUrl);
+
+  // The prerender should be destroyed.
+  host_observer.WaitForDestroyed();
+  EXPECT_EQ(GetHostForUrl(kPrerenderingUrl),
+            RenderFrameHost::kNoFrameTreeNodeId);
+
+  // Cancellation must have occurred due to bad http status code.
+  ExpectFinalStatusForSpeculationRule(
+      PrerenderHost::FinalStatus::kNavigationBadHttpStatus);
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderCancelledOn204Iframe) {
+  base::HistogramTester histogram_tester;
+
+  // Navigate to an initial page.
+  const GURL kInitialUrl = GetUrl("/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Start prerendering `kPrerenderingUrl`.
+  const GURL kPrerenderingUrl = GetUrl("/title1.html");
+  int host_id = AddPrerender(kPrerenderingUrl);
+  test::PrerenderHostObserver host_observer(*web_contents_impl(), host_id);
+  WaitForPrerenderLoadCompletion(kPrerenderingUrl);
+
+  // Fetch a subframe that responses 204 status code.
+  const GURL kIFrameUrl = GetUrl("/echo?status=204");
+  RenderFrameHost* prerender_rfh = GetPrerenderedMainFrameHost(host_id);
+  std::ignore =
+      ExecJs(prerender_rfh,
+             "const i = document.createElement('iframe'); i.src = '" +
+                 kIFrameUrl.spec() + "'; document.body.appendChild(i);");
+
+  // The prerender should be destroyed.
+  host_observer.WaitForDestroyed();
+  EXPECT_EQ(GetHostForUrl(kPrerenderingUrl),
+            RenderFrameHost::kNoFrameTreeNodeId);
+
+  // Cancellation must have occurred due to bad http status code.
+  ExpectFinalStatusForSpeculationRule(
+      PrerenderHost::FinalStatus::kNavigationBadHttpStatus);
+}
+
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CancelOnAuthRequested) {
   base::HistogramTester histogram_tester;
 
@@ -607,7 +684,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CancelOnAuthRequestedSubframe) {
   RenderFrameHost* prerender_rfh = GetPrerenderedMainFrameHost(host_id);
   std::ignore =
       ExecJs(prerender_rfh,
-             "var i = document.createElement('iframe'); i.src = '" +
+             "const i = document.createElement('iframe'); i.src = '" +
                  kAuthIFrameUrl.spec() + "'; document.body.appendChild(i);");
 
   // The prerender should be destroyed.

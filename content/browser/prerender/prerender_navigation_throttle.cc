@@ -7,6 +7,7 @@
 #include "content/browser/prerender/prerender_host.h"
 #include "content/browser/prerender/prerender_host_registry.h"
 #include "content/browser/prerender/prerender_metrics.h"
+#include "content/browser/prerender/prerender_navigation_utils.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -19,19 +20,6 @@
 namespace content {
 
 namespace {
-
-// Returns true if a the response code is disallowed for pre-rendering (e.g 404,
-// etc), and false otherwise.
-// TODO(crbug.com/1299316): Sync with
-// https://github.com/WICG/nav-speculation/issues/138 once it's settled down.
-bool IsDisallowedHttpResponseCode(int response_code) {
-  // Disallow status code 204 and 205 because all error statuses should abandon
-  // prerendering as a default behavior.
-  if (response_code == 204 || response_code == 205) {
-    return true;
-  }
-  return response_code < 100 || response_code > 399;
-}
 
 // For the given two origins, analyze what kind of redirection happened.
 void AnalyzeCrossOriginRedirection(
@@ -229,7 +217,7 @@ PrerenderNavigationThrottle::WillProcessResponse() {
   if (navigation_handle()->IsDownload()) {
     // Disallow downloads during prerendering and cancel the prerender.
     cancel_reason = PrerenderHost::FinalStatus::kDownload;
-  } else if (IsDisallowedHttpResponseCode(
+  } else if (prerender_navigation_utils::IsDisallowedHttpResponseCode(
                  navigation_request->commit_params().http_response_code)) {
     // There's no point in trying to prerender failed navigations.
     cancel_reason = PrerenderHost::FinalStatus::kNavigationBadHttpStatus;
