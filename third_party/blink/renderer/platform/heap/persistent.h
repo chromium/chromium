@@ -49,6 +49,12 @@ using CrossThreadPersistent = cppgc::subtle::CrossThreadPersistent<T>;
 // than the thread that owns the heap of the corresponding object.
 //
 // Caveats:
+// - Does not protect the heap owning an object from termination, as the
+//   reference is weak.
+// - In order to access the underlying object
+//   `CrossThreadWeakPersistent<T>::Lock()` must be used which returns a
+//   `CrossThreadPersistent<T>` which in turn also does not protect the heap
+//   owning the object from terminating (see above).
 // - Reaching transitively through the graph is unsupported as objects may be
 //   moved concurrently on the thread owning the object.
 template <typename T>
