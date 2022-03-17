@@ -54,9 +54,9 @@ char kURL1[] = "http://firstURL";
 char kURL2[] = "http://secondURL";
 char kURL3[] = "http://thirdURL";
 char kURL4[] = "http://fourthURL";
-char kTitle1[] = "Page 1";
-char kTitle2[] = "Page 2";
-char kTitle4[] = "Page 4";
+char kTitle1[] = "Page one";
+char kTitle2[] = "Page two";
+char kTitle4[] = "Page four";
 char kResponse1[] = "Test Page 1 content";
 char kResponse2[] = "Test Page 2 content";
 char kResponse3[] = "Test Page 3 content";
@@ -1574,10 +1574,11 @@ id<GREYMatcher> SearchSuggestedActionsSectionWithHistoryMatchesCount(
 
   // Searching with a query with results should show the suggested actions
   // section.
+  NSString* query = [NSString stringWithFormat:@"%s\n", kTitle2];
   [[EarlGrey selectElementWithMatcher:TabGridSearchBar()]
       performAction:grey_clearText()];
   [[EarlGrey selectElementWithMatcher:TabGridSearchBar()]
-      performAction:grey_typeText(@"page 2\n")];
+      performAction:grey_typeText(query)];
 
   // Check that the header is set correctly.
   [[EarlGrey selectElementWithMatcher:SearchOpenTabsHeaderWithValue(1)]
@@ -1617,8 +1618,9 @@ id<GREYMatcher> SearchSuggestedActionsSectionWithHistoryMatchesCount(
       assertWithMatcher:grey_nil()];
 
   // Searching with a query should not show suggested actions section.
+  NSString* query = [NSString stringWithFormat:@"%s\n", kTitle2];
   [[EarlGrey selectElementWithMatcher:TabGridSearchBar()]
-      performAction:grey_typeText(@"page 2\n")];
+      performAction:grey_typeText(query)];
   [[EarlGrey selectElementWithMatcher:SearchSuggestedActionsSectionHeader()]
       assertWithMatcher:grey_nil()];
   [[self scrollDownViewMatcher:chrome_test_util::IncognitoTabGrid()
@@ -1638,8 +1640,9 @@ id<GREYMatcher> SearchSuggestedActionsSectionWithHistoryMatchesCount(
   // TODO(crbug.com/1306246): Scrolling doesn't work properly in very small
   // devices. Once that is fixed a more broad query can be used for searching
   // (eg. "page").
+  NSString* query = [NSString stringWithFormat:@"%s\n", kTitle2];
   [[EarlGrey selectElementWithMatcher:TabGridSearchBar()]
-      performAction:grey_typeText(@"page 2\n")];
+      performAction:grey_typeText(query)];
 
   // Verify that the suggested actions section exist and has "Search on web",
   // "Search recent tabs", "Search history" rows.
@@ -1682,10 +1685,10 @@ id<GREYMatcher> SearchSuggestedActionsSectionWithHistoryMatchesCount(
                    SearchSuggestedActionsSectionWithHistoryMatchesCount(2)]
       assertWithMatcher:grey_notNil()];
 
-  // Adding to the existing query " 2" will search for "page 2" and should only
-  // match 1 item from the history.
+  // Adding to the existing query " two" will search for "page two" and should
+  // only match 1 item from the history.
   [[EarlGrey selectElementWithMatcher:TabGridSearchBar()]
-      performAction:grey_typeText(@" 2\n")];
+      performAction:grey_typeText(@" two\n")];
   [[self scrollDownViewMatcher:RegularTabGrid()
                toSelectMatcher:
                    SearchSuggestedActionsSectionWithHistoryMatchesCount(1)]
