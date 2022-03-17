@@ -55,6 +55,16 @@ public final class AccountCapabilitiesTest {
         return -1;
     }
 
+    /** Populates all capabilities with the given response value. */
+    public static HashMap<String, Integer> populateCapabilitiesResponse(
+            @AccountManagerDelegate.CapabilityResponse int value) {
+        HashMap<String, Integer> response = new HashMap<>();
+        for (String capabilityName : AccountCapabilities.SUPPORTED_ACCOUNT_CAPABILITY_NAMES) {
+            response.put(capabilityName, value);
+        }
+        return response;
+    }
+
     /**
      * List of parameters to run in capability fetching tests.
      */
@@ -138,44 +148,32 @@ public final class AccountCapabilitiesTest {
     }
 
     @Test
-    public void testParseFromCapabilitiesResponseWithSuccessResponse() {
-        AccountCapabilities capabilities =
-                AccountCapabilities.parseFromCapabilitiesResponse(new HashMap<String, Integer>() {
-                    {
-                        put(AccountCapabilitiesConstants
-                                        .IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME,
-                                AccountManagerDelegate.CapabilityResponse.YES);
-                        put(AccountCapabilitiesConstants
-                                        .CAN_OFFER_EXTENDED_CHROME_SYNC_PROMOS_CAPABILITY_NAME,
-                                AccountManagerDelegate.CapabilityResponse.NO);
-                        put(AccountCapabilitiesConstants
-                                        .CAN_RUN_CHROME_PRIVACY_SANDBOX_TRIALS_CAPABILITY_NAME,
-                                AccountManagerDelegate.CapabilityResponse.NO);
-                    }
-                });
-        Assert.assertEquals(capabilities.canOfferExtendedSyncPromos(), Tribool.FALSE);
-        Assert.assertEquals(capabilities.isSubjectToParentalControls(), Tribool.TRUE);
-        Assert.assertEquals(capabilities.canRunChromePrivacySandboxTrials(), Tribool.FALSE);
+    public void testParseFromCapabilitiesResponseWithResponseYes() {
+        AccountCapabilities capabilities = AccountCapabilities.parseFromCapabilitiesResponse(
+                populateCapabilitiesResponse(AccountManagerDelegate.CapabilityResponse.YES));
+
+        for (String capabilityName : AccountCapabilities.SUPPORTED_ACCOUNT_CAPABILITY_NAMES) {
+            Assert.assertEquals(getCapability(capabilityName, capabilities), Tribool.TRUE);
+        }
+    }
+
+    @Test
+    public void testParseFromCapabilitiesResponseWithResponseNo() {
+        AccountCapabilities capabilities = AccountCapabilities.parseFromCapabilitiesResponse(
+                populateCapabilitiesResponse(AccountManagerDelegate.CapabilityResponse.NO));
+
+        for (String capabilityName : AccountCapabilities.SUPPORTED_ACCOUNT_CAPABILITY_NAMES) {
+            Assert.assertEquals(getCapability(capabilityName, capabilities), Tribool.FALSE);
+        }
     }
 
     @Test
     public void testParseFromCapabilitiesResponseWithExceptionResponse() {
-        AccountCapabilities capabilities =
-                AccountCapabilities.parseFromCapabilitiesResponse(new HashMap<String, Integer>() {
-                    {
-                        put(AccountCapabilitiesConstants
-                                        .IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME,
-                                AccountManagerDelegate.CapabilityResponse.EXCEPTION);
-                        put(AccountCapabilitiesConstants
-                                        .CAN_OFFER_EXTENDED_CHROME_SYNC_PROMOS_CAPABILITY_NAME,
-                                AccountManagerDelegate.CapabilityResponse.EXCEPTION);
-                        put(AccountCapabilitiesConstants
-                                        .CAN_RUN_CHROME_PRIVACY_SANDBOX_TRIALS_CAPABILITY_NAME,
-                                AccountManagerDelegate.CapabilityResponse.EXCEPTION);
-                    }
-                });
-        Assert.assertEquals(capabilities.canOfferExtendedSyncPromos(), Tribool.UNKNOWN);
-        Assert.assertEquals(capabilities.isSubjectToParentalControls(), Tribool.UNKNOWN);
-        Assert.assertEquals(capabilities.canRunChromePrivacySandboxTrials(), Tribool.UNKNOWN);
+        AccountCapabilities capabilities = AccountCapabilities.parseFromCapabilitiesResponse(
+                populateCapabilitiesResponse(AccountManagerDelegate.CapabilityResponse.EXCEPTION));
+
+        for (String capabilityName : AccountCapabilities.SUPPORTED_ACCOUNT_CAPABILITY_NAMES) {
+            Assert.assertEquals(getCapability(capabilityName, capabilities), Tribool.UNKNOWN);
+        }
     }
 }
