@@ -197,22 +197,6 @@ public class ToolbarPhoneTest {
         });
     }
 
-    @Test
-    @MediumTest
-    public void testOnDefaultSearchEngineChangedAfterDestroy() {
-        // The purpose of this test is to confirm there is no NullPointerException of
-        // LocationBarCoordinatorPhone caused by the posted runnable in
-        // #onDefaultSearchEngineChanged after LocationBarPhone is destroyed. See crbug.com/1306554
-        // for more info.
-        TestThreadUtils.runOnUiThreadBlocking(() -> mToolbar.onDefaultSearchEngineChanged());
-
-        mToolbar.mLocationBar.getPhoneCoordinator().destroy();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mToolbar.destroy();
-            mToolbar.onDefaultSearchEngineChanged();
-        });
-    }
-
     private static class TestControlsVisibilityDelegate
             extends BrowserStateBrowserControlsVisibilityDelegate {
         public TestControlsVisibilityDelegate() {

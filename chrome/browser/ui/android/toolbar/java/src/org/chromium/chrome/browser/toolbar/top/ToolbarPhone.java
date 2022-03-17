@@ -45,7 +45,6 @@ import androidx.appcompat.graphics.drawable.DrawableWrapper;
 import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.CallbackController;
 import org.chromium.base.MathUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
@@ -287,8 +286,6 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
      */
     private float mLocBarWidthChangeFraction;
 
-    private CallbackController mCallbackController = new CallbackController();
-
     /**
      * A global layout listener used to capture a new texture when the experimental toolbar button
      * is added or removed.
@@ -390,10 +387,6 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
 
     @Override
     void destroy() {
-        if (mCallbackController != null) {
-            mCallbackController.destroy();
-            mCallbackController = null;
-        }
         cancelAnimations();
         super.destroy();
     }
@@ -2351,12 +2344,12 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         // TODO(tedchoc): Move away from updating based on the search engine change and instead
         //                add the toolbar as a listener to the NewTabPage and udpate only when
         //                it notifies the listeners that it has changed its state.
-        post(() -> {
-            if (mCallbackController == null) return;
-            mCallbackController.makeCancelable(() -> {
+        post(new Runnable() {
+            @Override
+            public void run() {
                 updateVisualsForLocationBarState();
                 updateNtpAnimationState();
-            });
+            }
         });
     }
 
