@@ -237,6 +237,9 @@ bool ShouldExecutePageEntitiesModelOnPageContent(const std::string& locale);
 // model.
 bool ShouldProvideFilterPathForPageEntitiesModel();
 
+// Returns whether the page entities model should be reset on shutdown.
+bool ShouldResetPageEntitiesModelOnShutdown();
+
 // Returns whether the page visibility model should be executed on page content
 // for a user using |locale| as their browser language.
 bool ShouldExecutePageVisibilityModelOnPageContent(const std::string& locale);

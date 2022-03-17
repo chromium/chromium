@@ -120,6 +120,10 @@ const base::Feature kPageVisibilityPageContentAnnotations{
 const base::Feature kPageEntitiesModelBypassFilters{
     "PageEntitiesModelBypassFilters", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// This feature flag enables resetting the entities model on shutdown.
+const base::Feature kPageEntitiesModelResetOnShutdown{
+    "PageEntitiesModelResetOnShutdown", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables push notification of hints.
 const base::Feature kPushNotifications{"OptimizationGuidePushNotifications",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
@@ -471,6 +475,10 @@ bool ShouldExecutePageEntitiesModelOnPageContent(const std::string& locale) {
 
 bool ShouldProvideFilterPathForPageEntitiesModel() {
   return !base::FeatureList::IsEnabled(kPageEntitiesModelBypassFilters);
+}
+
+bool ShouldResetPageEntitiesModelOnShutdown() {
+  return base::FeatureList::IsEnabled(kPageEntitiesModelResetOnShutdown);
 }
 
 bool ShouldExecutePageVisibilityModelOnPageContent(const std::string& locale) {
