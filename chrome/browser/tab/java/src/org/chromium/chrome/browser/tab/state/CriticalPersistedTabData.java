@@ -16,7 +16,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.annotations.DoNotClassMerge;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tab.Tab;
@@ -38,11 +37,7 @@ import java.nio.ByteBuffer;
 
 /**
  * Data which is core to the app and must be retrieved as quickly as possible on startup.
- *
- * This class should not be merged because it is being used as a key in a Map
- * in PersistedTabDataConfiguration.java.
  */
-@DoNotClassMerge
 public class CriticalPersistedTabData extends PersistedTabData {
     private static final String TAG = "CriticalPTD";
     private static final Class<CriticalPersistedTabData> USER_DATA_KEY =
