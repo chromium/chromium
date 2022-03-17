@@ -5,6 +5,7 @@
 #include "third_party/blink/public/platform/web_url_loader_factory.h"
 
 #include "base/check.h"
+#include "base/synchronization/waitable_event.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/public/platform/web_url_loader.h"

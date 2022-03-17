@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/synchronization/waitable_event.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/common/sync_token.h"

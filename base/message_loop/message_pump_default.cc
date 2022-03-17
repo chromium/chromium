@@ -6,6 +6,7 @@
 
 #include "base/auto_reset.h"
 #include "base/logging.h"
+#include "base/synchronization/waitable_event.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_APPLE)

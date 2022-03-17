@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/threading/sequence_local_storage_slot.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/types/pass_key.h"

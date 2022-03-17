@@ -20,6 +20,7 @@
 #include "base/sequence_token.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/condition_variable.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/task/scoped_set_task_priority_for_current_thread.h"
 #include "base/task/task_executor.h"
 #include "base/threading/sequence_local_storage_map.h"

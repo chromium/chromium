@@ -22,6 +22,7 @@
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/template_util.h"
 #include "base/thread_annotations.h"
 #include "base/threading/platform_thread.h"

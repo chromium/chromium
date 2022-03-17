@@ -29,6 +29,7 @@
 namespace base {
 class CommandLine;
 class FilePath;
+class WaitableEvent;
 }
 
 namespace discardable_memory {

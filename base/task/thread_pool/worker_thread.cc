@@ -15,6 +15,7 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/debug/alias.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/task/thread_pool/environment_config.h"
 #include "base/task/thread_pool/task_tracker.h"
 #include "base/task/thread_pool/worker_thread_observer.h"

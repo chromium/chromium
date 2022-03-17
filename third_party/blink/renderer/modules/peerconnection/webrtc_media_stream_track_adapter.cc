@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/peerconnection/webrtc_media_stream_track_adapter.h"
 
 #include "base/strings/stringprintf.h"
+#include "base/synchronization/waitable_event.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/renderer/modules/mediastream/processed_local_audio_source.h"
 #include "third_party/blink/renderer/modules/peerconnection/media_stream_video_webrtc_sink.h"

@@ -32,6 +32,7 @@
 
 namespace base {
 class PowerMonitorSource;
+class WaitableEvent;
 }
 
 namespace gpu {

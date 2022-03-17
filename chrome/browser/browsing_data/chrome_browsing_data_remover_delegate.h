@@ -33,6 +33,10 @@ class Profile;
 class ScopedProfileKeepAlive;
 class WebappRegistry;
 
+namespace base {
+class WaitableEvent;
+}
+
 namespace content {
 class BrowserContext;
 }

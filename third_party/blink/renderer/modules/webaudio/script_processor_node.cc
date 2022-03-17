@@ -27,6 +27,7 @@
 
 #include <memory>
 
+#include "base/synchronization/waitable_event.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"

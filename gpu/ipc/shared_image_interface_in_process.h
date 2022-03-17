@@ -11,6 +11,10 @@
 #include "gpu/command_buffer/common/command_buffer_id.h"
 #include "gpu/ipc/in_process_command_buffer.h"
 
+namespace base {
+class WaitableEvent;
+}
+
 namespace gpu {
 class MailboxManager;
 class SharedContextState;

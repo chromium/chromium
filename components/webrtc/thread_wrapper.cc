@@ -14,6 +14,7 @@
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread_local.h"
 #include "base/threading/thread_task_runner_handle.h"

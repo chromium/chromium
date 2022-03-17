@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/webgl/webgl_webcodecs_video_frame.h"
 
+#include "base/synchronization/waitable_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/wait_and_replace_sync_token_client.h"

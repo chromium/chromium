@@ -10,6 +10,7 @@
 #include <set>
 
 #include "base/files/file.h"
+#include "base/synchronization/waitable_event.h"
 #include "components/services/font/public/mojom/font_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"

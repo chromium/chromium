@@ -7,6 +7,10 @@
 
 #include "ppapi/proxy/proxy_channel.h"
 
+namespace base {
+class WaitableEvent;
+}
+
 namespace content {
 
 class PepperProxyChannelDelegateImpl

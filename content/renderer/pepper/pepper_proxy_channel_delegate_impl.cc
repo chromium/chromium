@@ -4,6 +4,7 @@
 
 #include "content/renderer/pepper/pepper_proxy_channel_delegate_impl.h"
 
+#include "base/synchronization/waitable_event.h"
 #include "build/build_config.h"
 #include "content/child/child_process.h"
 #include "ipc/ipc_platform_file.h"

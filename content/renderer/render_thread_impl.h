@@ -68,6 +68,7 @@ class WebVideoCaptureImplManager;
 namespace base {
 class SingleThreadTaskRunner;
 class Thread;
+class WaitableEvent;
 }
 
 namespace cc {

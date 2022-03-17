@@ -17,6 +17,7 @@
 #include "base/base64.h"
 #include "base/containers/flat_set.h"
 #include "base/strings/string_util.h"
+#include "base/synchronization/waitable_event.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_experiments.h"

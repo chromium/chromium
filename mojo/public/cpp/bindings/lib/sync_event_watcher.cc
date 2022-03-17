@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/containers/stack_container.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/synchronization/waitable_event.h"
 
 namespace mojo {
 
