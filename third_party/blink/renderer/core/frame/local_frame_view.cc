@@ -1912,6 +1912,7 @@ void LocalFrameView::PerformPostLayoutTasks(bool visual_viewport_size_changed) {
   if (deferred_to_be_locked_.size() > 0) {
     DCHECK(RuntimeEnabledFeatures::DeferredShapingEnabled());
     for (auto& element : deferred_to_be_locked_) {
+      DCHECK(element->GetLayoutObject()->IsShapingDeferred());
       auto& context = element->EnsureDisplayLockContext();
       context.SetRequestedState(EContentVisibility::kAuto);
     }

@@ -5048,7 +5048,7 @@ void LayoutObject::MarkSelfPaintingLayerForVisualOverflowRecalc() {
 }
 
 bool LayoutObject::IsShapingDeferred() const {
-  if (const auto* block_flow = DynamicTo<LayoutNGBlockFlow>(this)) {
+  if (const auto* block_flow = DynamicTo<LayoutBlockFlow>(this)) {
     return block_flow->HasNGInlineNodeData() &&
            block_flow->GetNGInlineNodeData()->IsShapingDeferred();
   }

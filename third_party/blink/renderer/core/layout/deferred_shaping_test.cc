@@ -195,4 +195,15 @@ TEST_F(DeferredShapingTest, UpdateTextInDeferred) {
   EXPECT_TRUE(IsLocked("target"));
 }
 
+TEST_F(DeferredShapingTest, NonLayoutNGBlockFlow) {
+  SetBodyInnerHTML(R"HTML(
+<div style="height:1800px"></div>
+<table><caption id="target">IFC</caption></table>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  // LayoutNGTableCaption, which is not a subclass of LayoutNGBlockFlow,
+  // should support IsShapingDeferred().
+  EXPECT_TRUE(IsDefer("target"));
+  EXPECT_TRUE(IsLocked("target"));
+}
+
 }  // namespace blink
