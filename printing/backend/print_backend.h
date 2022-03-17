@@ -20,6 +20,7 @@
 
 namespace base {
 class DictionaryValue;
+class Value;
 }
 
 // This is the interface for platform-specific code for a print backend
@@ -226,7 +227,9 @@ class COMPONENT_EXPORT(PRINT_BACKEND) PrintBackend
 
 #if BUILDFLAG(IS_WIN)
   FRIEND_TEST_ALL_PREFIXES(PrintBackendTest,
-                           MANUAL_GetPrinterCapabilitiesForXpsDriver);
+                           MANUAL_GetXmlPrinterCapabilitiesForXpsDriver);
+  FRIEND_TEST_ALL_PREFIXES(PrintBackendTest,
+                           ParseValueForXpsPrinterCapabilities);
 #endif
 
   PrintBackend();
@@ -241,8 +244,11 @@ class COMPONENT_EXPORT(PRINT_BACKEND) PrintBackend
   // Gets the semantic capabilities and defaults for a specific printer.
   // This method uses the XPS API to get the printer capabilities.
   // TODO(crbug.com/1291257): This method is not fully implemented yet.
-  mojom::ResultCode GetPrinterCapabilitiesForXpsDriver(
+  mojom::ResultCode GetXmlPrinterCapabilitiesForXpsDriver(
       const std::string& printer_name,
+      std::string& capabilities);
+  mojom::ResultCode ParseValueForXpsPrinterCapabilities(
+      const base::Value& value,
       PrinterSemanticCapsAndDefaults* printer_info);
 #endif
 };

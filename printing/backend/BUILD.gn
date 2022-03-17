@@ -65,6 +65,7 @@ component("backend") {
       "win_helper.cc",
       "win_helper.h",
     ]
+    deps += [ "//services/data_decoder/public/cpp:safe_xml_parser" ]
   }
 
   if (use_cups) {
