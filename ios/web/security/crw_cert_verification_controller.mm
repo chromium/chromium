@@ -181,8 +181,8 @@ using web::WebThread;
                          completionHandler:(web::PolicyDecisionHandler)handler {
   DCHECK_CURRENTLY_ON(WebThread::UI);
   DCHECK(handler);
-  TaskTraits traits{WebThread::IO, TaskShutdownBehavior::BLOCK_SHUTDOWN};
-  base::PostTask(FROM_HERE, traits, base::BindOnce(^{
+  web::GetIOThreadTaskRunner({})
+      ->PostTask(FROM_HERE, base::BindOnce(^{
                    // |loadPolicyForRejectedTrustResult:certStatus:serverTrust
                    // :host:| can only be called on IO thread.
                    net::CertStatus certStatus =
