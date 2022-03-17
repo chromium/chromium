@@ -7725,11 +7725,6 @@ crbug.com/1298836 virtual/plz-dedicated-worker/external/wpt/fetch/api/basic/resp
 # Sheriff 2022-03-10
 crbug.com/1304956 storage/indexeddb/dont-wedge.html [ Failure Pass ]
 
-# TODO(https://crbug.com/1305896): Fix these tests. Early Hints preload should
-# not appear in the final response.
-crbug.com/1305896 external/wpt/loading/early-hints/csp-early-hints-disallowed-final-absent.h2.window.html [ Failure ]
-crbug.com/1305896 external/wpt/loading/early-hints/csp-early-hints-disallowed-final-allowed.h2.window.html [ Failure ]
-
 # Sheriff 2022-03-15
 crbug.com/626703 external/wpt/scroll-to-text-fragment/force-load-at-top.html [ Pass Timeout ]
 crbug.com/1269534 fast/spatial-navigation/snav-zero-margin-content.html [ Failure Pass ]

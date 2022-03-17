@@ -140,6 +140,8 @@ class CONTENT_EXPORT NavigationEarlyHintsManager {
   void MaybePreloadHintedResource(
       const network::mojom::LinkHeaderPtr& link,
       const network::ResourceRequest& request_for_navigation,
+      const std::vector<network::mojom::ContentSecurityPolicyPtr>&
+          content_security_policies,
       net::ReferrerPolicy referrer_policy,
       bool enabled_by_origin_trial);
 
