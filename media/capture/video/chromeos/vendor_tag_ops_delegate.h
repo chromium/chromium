@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/synchronization/lock.h"
+#include "base/synchronization/waitable_event.h"
 #include "media/capture/video/chromeos/mojom/camera_common.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
