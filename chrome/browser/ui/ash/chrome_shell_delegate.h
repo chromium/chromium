@@ -32,6 +32,8 @@ class ChromeShellDelegate : public ash::ShellDelegate {
       ash::NearbyShareController* controller) const override;
   std::unique_ptr<ash::DesksTemplatesDelegate> CreateDesksTemplatesDelegate()
       const override;
+  scoped_refptr<network::SharedURLLoaderFactory>
+  GetGeolocationSharedURLLoaderFactory() const override;
   void OpenKeyboardShortcutHelpPage() const override;
   bool CanGoBack(gfx::NativeWindow window) const override;
   void SetTabScrubberChromeOSEnabled(bool enabled) override;

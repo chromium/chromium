@@ -16,6 +16,7 @@
 #include "services/device/public/mojom/bluetooth_system.mojom-forward.h"
 #include "services/device/public/mojom/fingerprint.mojom-forward.h"
 #include "services/media_session/public/cpp/media_session_service.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
 
@@ -64,6 +65,11 @@ class ASH_EXPORT ShellDelegate {
 
   virtual std::unique_ptr<DesksTemplatesDelegate> CreateDesksTemplatesDelegate()
       const = 0;
+
+  // Returns the geolocation loader factory used to initialize geolocation
+  // provider.
+  virtual scoped_refptr<network::SharedURLLoaderFactory>
+  GetGeolocationSharedURLLoaderFactory() const = 0;
 
   // Check whether the current tab of the browser window can go back.
   virtual bool CanGoBack(gfx::NativeWindow window) const = 0;

@@ -10,6 +10,7 @@
 #include "ash/capture_mode/test_capture_mode_delegate.h"
 #include "ash/public/cpp/test/test_desks_templates_delegate.h"
 #include "ash/public/cpp/test/test_nearby_share_delegate.h"
+#include "ash/system/geolocation/test_geolocation_url_loader_factory.h"
 #include "ash/system/tray/system_tray_notifier.h"
 #include "ash/wm/gestures/back_gesture/test_back_gesture_contextual_nudge_delegate.h"
 #include "ui/gfx/image/image.h"
@@ -49,6 +50,12 @@ TestShellDelegate::CreateNearbyShareDelegate(
 std::unique_ptr<DesksTemplatesDelegate>
 TestShellDelegate::CreateDesksTemplatesDelegate() const {
   return std::make_unique<TestDesksTemplatesDelegate>();
+}
+
+scoped_refptr<network::SharedURLLoaderFactory>
+TestShellDelegate::GetGeolocationSharedURLLoaderFactory() const {
+  return static_cast<scoped_refptr<network::SharedURLLoaderFactory>>(
+      base::MakeRefCounted<TestGeolocationUrlLoaderFactory>());
 }
 
 bool TestShellDelegate::CanGoBack(gfx::NativeWindow window) const {

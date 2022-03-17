@@ -3094,6 +3094,8 @@ static_library("test_support") {
     "projector/test/mock_projector_metadata_controller.h",
     "projector/test/mock_projector_ui_controller.cc",
     "projector/test/mock_projector_ui_controller.h",
+    "system/geolocation/test_geolocation_url_loader_factory.cc",
+    "system/geolocation/test_geolocation_url_loader_factory.h",
     "test/layer_animation_stopped_waiter.cc",
     "test/layer_animation_stopped_waiter.h",
 
@@ -3225,6 +3227,7 @@ static_library("test_support") {
     "//ash/components/attestation:test_support",
     "//ash/components/audio",
     "//ash/components/disks:test_support",
+    "//ash/components/geolocation",
     "//ash/constants",
     "//ash/keyboard/ui",
     "//ash/keyboard/ui:test_support",

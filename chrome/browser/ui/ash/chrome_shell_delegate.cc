@@ -110,6 +110,32 @@ ChromeShellDelegate::CreateCaptureModeDelegate() const {
   return std::make_unique<ChromeCaptureModeDelegate>();
 }
 
+ash::AccessibilityDelegate* ChromeShellDelegate::CreateAccessibilityDelegate() {
+  return new ChromeAccessibilityDelegate;
+}
+
+std::unique_ptr<ash::BackGestureContextualNudgeDelegate>
+ChromeShellDelegate::CreateBackGestureContextualNudgeDelegate(
+    ash::BackGestureContextualNudgeController* controller) {
+  return std::make_unique<BackGestureContextualNudgeDelegate>(controller);
+}
+
+std::unique_ptr<ash::NearbyShareDelegate>
+ChromeShellDelegate::CreateNearbyShareDelegate(
+    ash::NearbyShareController* controller) const {
+  return std::make_unique<NearbyShareDelegateImpl>(controller);
+}
+
+std::unique_ptr<ash::DesksTemplatesDelegate>
+ChromeShellDelegate::CreateDesksTemplatesDelegate() const {
+  return std::make_unique<ChromeDesksTemplatesDelegate>();
+}
+
+scoped_refptr<network::SharedURLLoaderFactory>
+ChromeShellDelegate::GetGeolocationSharedURLLoaderFactory() const {
+  return g_browser_process->shared_url_loader_factory();
+}
+
 void ChromeShellDelegate::OpenKeyboardShortcutHelpPage() const {
   ash::NewWindowDelegate::GetPrimary()->OpenUrl(
       GURL(kKeyboardShortcutHelpPageUrl),
@@ -191,27 +217,6 @@ void ChromeShellDelegate::BindMultiDeviceSetup(
 media_session::MediaSessionService*
 ChromeShellDelegate::GetMediaSessionService() {
   return &content::GetMediaSessionService();
-}
-
-ash::AccessibilityDelegate* ChromeShellDelegate::CreateAccessibilityDelegate() {
-  return new ChromeAccessibilityDelegate;
-}
-
-std::unique_ptr<ash::BackGestureContextualNudgeDelegate>
-ChromeShellDelegate::CreateBackGestureContextualNudgeDelegate(
-    ash::BackGestureContextualNudgeController* controller) {
-  return std::make_unique<BackGestureContextualNudgeDelegate>(controller);
-}
-
-std::unique_ptr<ash::NearbyShareDelegate>
-ChromeShellDelegate::CreateNearbyShareDelegate(
-    ash::NearbyShareController* controller) const {
-  return std::make_unique<NearbyShareDelegateImpl>(controller);
-}
-
-std::unique_ptr<ash::DesksTemplatesDelegate>
-ChromeShellDelegate::CreateDesksTemplatesDelegate() const {
-  return std::make_unique<ChromeDesksTemplatesDelegate>();
 }
 
 bool ChromeShellDelegate::IsSessionRestoreInProgress() const {

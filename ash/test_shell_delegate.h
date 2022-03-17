@@ -44,6 +44,8 @@ class TestShellDelegate : public ShellDelegate {
       NearbyShareController* controller) const override;
   std::unique_ptr<DesksTemplatesDelegate> CreateDesksTemplatesDelegate()
       const override;
+  scoped_refptr<network::SharedURLLoaderFactory>
+  GetGeolocationSharedURLLoaderFactory() const override;
   bool CanGoBack(gfx::NativeWindow window) const override;
   void SetTabScrubberChromeOSEnabled(bool enabled) override;
   bool ShouldWaitForTouchPressAck(gfx::NativeWindow window) override;
