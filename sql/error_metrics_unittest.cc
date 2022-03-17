@@ -62,7 +62,15 @@ TEST(ErrorMetricsTest, CreateSqliteLoggedResultCode_SqliteInternalError) {
 #endif
 }
 
-TEST(ErrorMetricsTest, CreateSqliteLoggedResultCode_ChromeBugError) {
+// TODO(crbug.com/1306382): Fails when dcheck_always_on = false.
+#if !DCHECK_IS_ON()
+#define MAYBE_CreateSqliteLoggedResultCode_ChromeBugError \
+  DISABLED_CreateSqliteLoggedResultCode_ChromeBugError
+#else
+#define MAYBE_CreateSqliteLoggedResultCode_ChromeBugError \
+  CreateSqliteLoggedResultCode_ChromeBugError
+#endif  // DCHECK_IS_ON()
+TEST(ErrorMetricsTest, MAYBE_CreateSqliteLoggedResultCode_ChromeBugError) {
 #if DCHECK_IS_ON()
   EXPECT_DCHECK_DEATH_WITH(
       CreateSqliteLoggedResultCode(SQLITE_NOTFOUND),
