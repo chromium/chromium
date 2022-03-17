@@ -58,7 +58,7 @@ class CORE_EXPORT NGTableLayoutAlgorithm
  private:
   void ComputeRows(const LayoutUnit table_grid_inline_size,
                    const NGTableGroupedChildren& grouped_children,
-                   const NGTableTypes::ColumnLocations& column_locations,
+                   const Vector<NGTableColumnLocation>& column_locations,
                    const NGTableBorders& table_borders,
                    const LogicalSize& border_spacing,
                    const NGBoxStrut& table_border_padding,
@@ -71,7 +71,7 @@ class CORE_EXPORT NGTableLayoutAlgorithm
 
   void ComputeTableSpecificFragmentData(
       const NGTableGroupedChildren& grouped_children,
-      const NGTableTypes::ColumnLocations& column_locations,
+      const Vector<NGTableColumnLocation>& column_locations,
       const NGTableTypes::Rows& rows,
       const NGTableBorders& table_borders,
       const PhysicalRect& table_grid_rect,
@@ -82,7 +82,7 @@ class CORE_EXPORT NGTableLayoutAlgorithm
       LayoutUnit table_inline_size,
       LayoutUnit minimal_table_grid_block_size,
       const NGTableGroupedChildren& grouped_children,
-      const NGTableTypes::ColumnLocations& column_locations,
+      const Vector<NGTableColumnLocation>& column_locations,
       const NGTableTypes::Rows& rows,
       const NGTableTypes::CellBlockConstraints& cell_block_constraints,
       const NGTableTypes::Sections& sections,

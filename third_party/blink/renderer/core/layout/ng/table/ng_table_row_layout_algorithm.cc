@@ -61,7 +61,7 @@ const NGLayoutResult* NGTableRowLayoutAlgorithm::Layout() {
         table_data.cells[cell_index];
     const LayoutUnit cell_inline_size =
         table_data.column_locations[cell_location_end_column].offset +
-        table_data.column_locations[cell_location_end_column].inline_size -
+        table_data.column_locations[cell_location_end_column].size -
         table_data.column_locations[cell_location_start_column].offset;
     const LayoutUnit cell_block_size =
         cell_data.rowspan_block_size != kIndefiniteSize

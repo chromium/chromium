@@ -185,12 +185,6 @@ class CORE_EXPORT NGTableTypes {
     bool is_collapsed;
   };
 
-  struct ColumnLocation {
-    LayoutUnit offset;  // inline offset from table edge.
-    LayoutUnit size;
-    bool is_collapsed;
-  };
-
   struct Section {
     wtf_size_t start_row;
     wtf_size_t row_count;
@@ -229,7 +223,6 @@ class CORE_EXPORT NGTableTypes {
   using RowspanCells = Vector<RowspanCell>;
   using Rows = Vector<Row>;
   using Sections = Vector<Section>;
-  using ColumnLocations = Vector<ColumnLocation>;
 };
 
 class NGTableGroupedChildrenIterator;
@@ -307,8 +300,6 @@ WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(
 WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(
     blink::NGTableTypes::RowspanCell)
 WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(blink::NGTableTypes::Row)
-WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(
-    blink::NGTableTypes::ColumnLocation)
 WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(blink::NGTableTypes::Section)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_TABLE_NG_TABLE_LAYOUT_ALGORITHM_TYPES_H_

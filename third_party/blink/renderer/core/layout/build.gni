@@ -598,6 +598,7 @@ blink_core_sources_layout = [
   "ng/table/ng_table_borders.h",
   "ng/table/ng_table_child_iterator.cc",
   "ng/table/ng_table_child_iterator.h",
+  "ng/table/ng_table_column_location.h",
   "ng/table/ng_table_constraint_space_data.h",
   "ng/table/ng_table_fragment_data.h",
   "ng/table/ng_table_layout_algorithm.cc",

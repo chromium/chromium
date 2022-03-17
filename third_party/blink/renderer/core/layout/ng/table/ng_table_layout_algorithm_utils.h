@@ -62,7 +62,7 @@ class NGTableAlgorithmUtils {
       const NGBlockNode& section,
       const LayoutUnit cell_percentage_resolution_inline_size,
       const bool is_table_block_size_specified,
-      const NGTableTypes::ColumnLocations& column_locations,
+      const Vector<NGTableColumnLocation>& column_locations,
       const NGTableBorders& table_borders,
       const LayoutUnit block_border_spacing,
       wtf_size_t section_index,
