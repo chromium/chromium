@@ -293,6 +293,18 @@ const DeprecationInfo GetDeprecationInfo(const WebFeature feature) {
           "'HTMLVideoElement.webkitExitFullscreen()'",
           "'Document.exitFullscreen()'");
 
+    case WebFeature::kPrefixedVideoEnterFullScreen:
+      return DeprecationInfo::WithFeatureAndReplacement(
+          "PrefixedVideoEnterFullScreen", kUnknown,
+          "'HTMLVideoElement.webkitEnterFullScreen()'",
+          "'Element.requestFullscreen()'");
+
+    case WebFeature::kPrefixedVideoExitFullScreen:
+      return DeprecationInfo::WithFeatureAndReplacement(
+          "PrefixedVideoExitFullScreen", kUnknown,
+          "'HTMLVideoElement.webkitExitFullScreen()'",
+          "'Document.exitFullscreen()'");
+
     case WebFeature::kPrefixedRequestAnimationFrame:
       return DeprecationInfo::WithDetails(
           "PrefixedRequestAnimationFrame", kUnknown,
