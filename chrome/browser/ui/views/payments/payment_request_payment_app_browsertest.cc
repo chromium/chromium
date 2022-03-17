@@ -284,7 +284,14 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentAppTest, PayWithAlicePay) {
 }
 
 // Test CanMakePayment and payment request can be fullfiled in incognito mode.
-IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentAppTest, PayWithAlicePayIncognito) {
+// The test is flaky https://crbug.com/1306453.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#define MAYBE_PayWithAlicePayIncognito DISABLED_PayWithAlicePayIncognito
+#else
+#define MAYBE_PayWithAlicePayIncognito PayWithAlicePayIncognito
+#endif
+IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentAppTest,
+                       MAYBE_PayWithAlicePayIncognito) {
   SetIncognito();
   InstallAlicePayForMethod("https://alicepay.com");
 
