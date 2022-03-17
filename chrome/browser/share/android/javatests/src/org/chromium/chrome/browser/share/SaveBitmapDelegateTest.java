@@ -5,11 +5,13 @@
 package org.chromium.chrome.browser.share;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -22,7 +24,8 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.ui.permissions.AndroidPermissionDelegate;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.permissions.PermissionCallback;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
@@ -40,7 +43,7 @@ public class SaveBitmapDelegateTest {
     @Mock
     private Runnable mCloseDialogRunnable;
 
-    private TestAndroidPermissionDelegate mPermissionDelegate;
+    private TestWindowAndroid mPermissionDelegate;
 
     private boolean mBitmapSaved;
 
@@ -50,7 +53,8 @@ public class SaveBitmapDelegateTest {
 
         mActivityTestRule.launchActivity(null);
         Activity activity = mActivityTestRule.getActivity();
-        mPermissionDelegate = new TestAndroidPermissionDelegate();
+        mPermissionDelegate =
+                TestThreadUtils.runOnUiThreadBlocking(() -> new TestWindowAndroid(activity));
         Bitmap bitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ALPHA_8);
         mSaveBitmapDelegate = new SaveBitmapDelegate(activity, bitmap,
                 R.string.screenshot_filename_prefix, mCloseDialogRunnable, mPermissionDelegate) {
@@ -59,6 +63,11 @@ public class SaveBitmapDelegateTest {
                 mBitmapSaved = true;
             }
         };
+    }
+
+    @After
+    public void tearDown() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> mPermissionDelegate.destroy());
     }
 
     @Test
@@ -88,15 +97,19 @@ public class SaveBitmapDelegateTest {
     }
 
     /**
-     * Test implementation of {@link AndroidPermissionDelegate}.
+     * Test implementation of {@link WindowAndroid}.
      */
-    private class TestAndroidPermissionDelegate implements AndroidPermissionDelegate {
+    private class TestWindowAndroid extends WindowAndroid {
         private boolean mHasPermission;
         private boolean mCanRequestPermission;
 
         private boolean mCalledHasPermission;
         private boolean mCalledCanRequestPermission;
         private int mPermissionResult = PackageManager.PERMISSION_GRANTED;
+
+        public TestWindowAndroid(Context context) {
+            super(context);
+        }
 
         public void setPermissionResults(int result) {
             mPermissionResult = result;

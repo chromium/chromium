@@ -439,7 +439,7 @@ public class RootUiCoordinator
     public void onAttachFragment(Fragment fragment) {
         if (fragment instanceof QrCodeDialog) {
             QrCodeDialog qrCodeDialog = (QrCodeDialog) fragment;
-            qrCodeDialog.setAndroidPermissionDelegate(mWindowAndroid);
+            qrCodeDialog.setWindowAndroid(mWindowAndroid);
         }
     }
 

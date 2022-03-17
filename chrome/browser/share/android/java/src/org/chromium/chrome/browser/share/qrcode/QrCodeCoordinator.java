@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.share.qrcode;
 import android.app.Activity;
 import android.app.FragmentManager;
 
-import org.chromium.ui.permissions.AndroidPermissionDelegate;
+import org.chromium.ui.base.WindowAndroid;
 
 /**
  * Creates and represents the QrCode main UI.
@@ -20,10 +20,9 @@ public class QrCodeCoordinator {
      * Constructor.
      * @param activity The android activity.
      * @param url the url to be shared.
-     * @param windowAndroid the AndroidPermissionDelegate to access system permissions.
+     * @param windowAndroid the WindowAndroid to access system permissions.
      */
-    public QrCodeCoordinator(
-            Activity activity, String url, AndroidPermissionDelegate windowAndroid) {
+    public QrCodeCoordinator(Activity activity, String url, WindowAndroid windowAndroid) {
         mDialog = QrCodeDialog.newInstance(url, windowAndroid);
 
         mFragmentManager = activity.getFragmentManager();

@@ -4,21 +4,20 @@
 
 package org.chromium.components.permissions;
 
-import android.app.Activity;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.util.SparseArray;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
-import androidx.annotation.StringRes;
-
+import org.chromium.base.BuildInfo;
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
@@ -151,9 +150,9 @@ public class AndroidPermissionRequester {
                     }
                 }
 
-                Activity activity = windowAndroid.getActivity().get();
+                Context context = windowAndroid.getContext().get();
 
-                if (allRequestable && !deniedContentSettings.isEmpty() && activity != null) {
+                if (allRequestable && !deniedContentSettings.isEmpty() && context != null) {
                     int deniedStringId = -1;
                     if (deniedContentSettings.size() == 2
                             && deniedContentSettings.contains(ContentSettingsType.MEDIASTREAM_MIC)
@@ -179,7 +178,9 @@ public class AndroidPermissionRequester {
                             != -1 : "Invalid combination of missing content settings: "
                                     + deniedContentSettings;
 
-                    showMissingPermissionDialog(activity, deniedStringId,
+                    String appName = BuildInfo.getInstance().hostPackageLabel;
+                    showMissingPermissionDialog(windowAndroid,
+                            context.getString(deniedStringId, appName),
                             ()
                                     -> requestAndroidPermissions(
                                             windowAndroid, contentSettingsTypes, delegate),
@@ -200,18 +201,14 @@ public class AndroidPermissionRequester {
 
     /**
      * Shows a dialog that informs the user about a missing Android permission.
-     * @param activity Current Activity. It should implement {@link ModalDialogManagerHolder}.
+     * @param windowAndroid Current WindowAndroid.
      * @param messageId The message that is shown on the dialog.
      * @param onPositiveButtonClicked Runnable that is executed on positive button click.
      * @param onCancelled Runnable that is executed on cancellation.
      */
-    public static void showMissingPermissionDialog(Activity activity, @StringRes int messageId,
+    public static void showMissingPermissionDialog(WindowAndroid windowAndroid, String message,
             Runnable onPositiveButtonClicked, Runnable onCancelled) {
-        assert activity
-                instanceof ModalDialogManagerHolder
-            : "Activity should implement ModalDialogManagerHolder";
-        final ModalDialogManager modalDialogManager =
-                ((ModalDialogManagerHolder) activity).getModalDialogManager();
+        final ModalDialogManager modalDialogManager = windowAndroid.getModalDialogManager();
         assert modalDialogManager != null : "ModalDialogManager is null";
 
         ModalDialogProperties.Controller controller = new ModalDialogProperties.Controller() {
@@ -231,15 +228,16 @@ public class AndroidPermissionRequester {
                 }
             }
         };
-        View view = activity.getLayoutInflater().inflate(R.layout.update_permissions_dialog, null);
+        Context context = windowAndroid.getContext().get();
+        View view = LayoutInflater.from(context).inflate(R.layout.update_permissions_dialog, null);
         TextView dialogText = view.findViewById(R.id.text);
-        dialogText.setText(messageId);
+        dialogText.setText(message);
         PropertyModel dialogModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CUSTOM_VIEW, view)
                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT,
-                                activity.getString(R.string.infobar_update_permissions_button_text))
+                                context.getString(R.string.infobar_update_permissions_button_text))
                         .with(ModalDialogProperties.CONTROLLER, controller)
                         .build();
         modalDialogManager.showDialog(dialogModel, ModalDialogManager.ModalDialogType.APP);

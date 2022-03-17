@@ -9,9 +9,9 @@ import android.view.View;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.share.qrcode.QrCodeDialogTab;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.permissions.AndroidPermissionDelegate;
 
 /**
  * Creates and represents the QrCode share panel UI.
@@ -20,8 +20,8 @@ public class QrCodeShareCoordinator implements QrCodeDialogTab {
     private final QrCodeShareView mShareView;
     private final QrCodeShareMediator mMediator;
 
-    public QrCodeShareCoordinator(Context context, Runnable closeDialog, String url,
-            AndroidPermissionDelegate windowAndroid) {
+    public QrCodeShareCoordinator(
+            Context context, Runnable closeDialog, String url, WindowAndroid windowAndroid) {
         PropertyModel shareViewModel = new PropertyModel(QrCodeShareViewProperties.ALL_KEYS);
         mMediator =
                 new QrCodeShareMediator(context, shareViewModel, closeDialog, url, windowAndroid);
@@ -51,7 +51,7 @@ public class QrCodeShareCoordinator implements QrCodeDialogTab {
     public void onDestroy() {}
 
     @Override
-    public void updatePermissions(AndroidPermissionDelegate windowAndroid) {
+    public void updatePermissions(WindowAndroid windowAndroid) {
         if (mMediator != null) {
             mMediator.updatePermissions(windowAndroid);
         }

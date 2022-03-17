@@ -19,7 +19,7 @@ import com.google.android.material.tabs.TabLayout;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.share.qrcode.scan_tab.QrCodeScanCoordinator;
 import org.chromium.chrome.browser.share.qrcode.share_tab.QrCodeShareCoordinator;
-import org.chromium.ui.permissions.AndroidPermissionDelegate;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.widget.ChromeImageButton;
 
 import java.util.ArrayList;
@@ -31,7 +31,7 @@ public class QrCodeDialog extends DialogFragment {
     // Used to pass the URL in the bundle.
     public static String URL_KEY = "url_key";
 
-    private AndroidPermissionDelegate mWindowAndroid;
+    private WindowAndroid mWindowAndroid;
     private ArrayList<QrCodeDialogTab> mTabs;
     private TabLayoutPageListener mTabLayoutPageListener;
 
@@ -39,13 +39,13 @@ public class QrCodeDialog extends DialogFragment {
      * Create a new instance of {@link QrCodeDialog} and set the URL.
      * @param windowAndroid The AndroidPermissionDelegate to be query for download permissions.
      */
-    static QrCodeDialog newInstance(String url, AndroidPermissionDelegate windowAndroid) {
+    static QrCodeDialog newInstance(String url, WindowAndroid windowAndroid) {
         assert windowAndroid != null;
         QrCodeDialog qrCodeDialog = new QrCodeDialog();
         Bundle args = new Bundle();
         args.putString(URL_KEY, url);
         qrCodeDialog.setArguments(args);
-        qrCodeDialog.setAndroidPermissionDelegate(windowAndroid);
+        qrCodeDialog.setWindowAndroid(windowAndroid);
         return qrCodeDialog;
     }
 
@@ -94,7 +94,7 @@ public class QrCodeDialog extends DialogFragment {
      * Setter for the current WindowAndroid.
      * @param windowAndroid The windowAndroid to set.
      */
-    public void setAndroidPermissionDelegate(AndroidPermissionDelegate windowAndroid) {
+    public void setWindowAndroid(WindowAndroid windowAndroid) {
         mWindowAndroid = windowAndroid;
         if (mTabLayoutPageListener != null) {
             mTabLayoutPageListener.updatePermissions(mWindowAndroid);

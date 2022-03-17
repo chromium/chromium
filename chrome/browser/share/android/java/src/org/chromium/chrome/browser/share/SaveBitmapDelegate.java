@@ -19,7 +19,7 @@ import androidx.appcompat.app.AlertDialog;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.FileAccessPermissionHelper;
-import org.chromium.ui.permissions.AndroidPermissionDelegate;
+import org.chromium.ui.base.WindowAndroid;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -31,7 +31,7 @@ public class SaveBitmapDelegate {
     private final Context mContext;
     private final Bitmap mBitmap;
     private final int mFileNameResource;
-    private final AndroidPermissionDelegate mPermissionDelegate;
+    private final WindowAndroid mWindowAndroid;
     private final Runnable mCallback;
     private Dialog mDialog;
 
@@ -44,11 +44,11 @@ public class SaveBitmapDelegate {
      * @param permissionDelegate The permission delegate for requesting storage permissions.
      */
     public SaveBitmapDelegate(Context context, Bitmap bitmap, int fileNameResource,
-            Runnable callback, AndroidPermissionDelegate permissionDelegate) {
+            Runnable callback, WindowAndroid windowAndroid) {
         mContext = context;
         mBitmap = bitmap;
         mFileNameResource = fileNameResource;
-        mPermissionDelegate = permissionDelegate;
+        mWindowAndroid = windowAndroid;
         mCallback = callback;
     }
 
@@ -60,8 +60,8 @@ public class SaveBitmapDelegate {
             return;
         }
 
-        if (!mPermissionDelegate.hasPermission(permission.WRITE_EXTERNAL_STORAGE)
-                && !mPermissionDelegate.canRequestPermission(permission.WRITE_EXTERNAL_STORAGE)) {
+        if (!mWindowAndroid.hasPermission(permission.WRITE_EXTERNAL_STORAGE)
+                && !mWindowAndroid.canRequestPermission(permission.WRITE_EXTERNAL_STORAGE)) {
             AlertDialog.Builder builder =
                     new AlertDialog.Builder(mContext, R.style.Theme_Chromium_AlertDialog);
             builder.setMessage(R.string.sharing_hub_storage_disabled_text)
@@ -92,7 +92,7 @@ public class SaveBitmapDelegate {
         }
 
         FileAccessPermissionHelper.requestFileAccessPermission(
-                mPermissionDelegate, this::finishDownloadWithPermission);
+                mWindowAndroid, this::finishDownloadWithPermission);
     }
 
     @VisibleForTesting

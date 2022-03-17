@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.share.qrcode;
 
 import android.view.View;
 
-import org.chromium.ui.permissions.AndroidPermissionDelegate;
+import org.chromium.ui.base.WindowAndroid;
 
 /**
  * Common interface for all the tab components in QrCodeDialog.
@@ -33,5 +33,5 @@ public interface QrCodeDialogTab {
     /**
      * Called when the permissions delegate is reset.
      */
-    public void updatePermissions(AndroidPermissionDelegate windowAndroid);
+    public void updatePermissions(WindowAndroid windowAndroid);
 }
