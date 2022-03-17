@@ -66,7 +66,7 @@ const char* kFinalStatusNames[] = {
     "Prerendering Disabled",
     "Cellular Network",
     "Block Third Party Cookies",
-    "Credential Manager API",
+    "Credential Management API",
     "NoStatePrefetch Finished",
     "Low-End Device",
     "BrowserSwitcher Switch",

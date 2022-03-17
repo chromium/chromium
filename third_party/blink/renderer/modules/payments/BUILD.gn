@@ -61,7 +61,7 @@ blink_modules_sources("payments") {
 
   deps = [
     "//components/payments/mojom:mojom_blink",
-    "//third_party/blink/renderer/modules/credentialmanager",
+    "//third_party/blink/renderer/modules/credentialmanagement",
     "//third_party/blink/renderer/modules/permissions",
   ]
 }

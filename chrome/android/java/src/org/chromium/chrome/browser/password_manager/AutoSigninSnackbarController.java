@@ -24,7 +24,7 @@ import org.chromium.ui.base.WindowAndroid;
 
 /**
  * A controller that triggers an auto sign-in snackbar. Auto sign-in snackbar is
- * triggered on a request credentials call of a Credential Manager API.
+ * triggered on a request credentials call of a Credential Management API.
  */
 public class AutoSigninSnackbarController implements SnackbarManager.SnackbarController {
     private final SnackbarManager mSnackbarManager;

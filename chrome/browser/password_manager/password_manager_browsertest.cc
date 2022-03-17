@@ -373,7 +373,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
                        NoPromptAfterCredentialsAPIPasswordStore) {
   NavigateToFile("/password/password_form.html");
-  // Simulate the Credential Manager API function store() is called and
+  // Simulate the Credential Management API function store() is called and
   // PasswordManager instance is notified about that.
   ChromePasswordManagerClient::FromWebContents(WebContents())
       ->NotifyStorePasswordCalled();

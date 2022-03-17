@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<title>Credential Manager: end-to-end test that registers/gets an assertion for a credential.</title>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script type="module">
+import {TestAuthenticatorManager} from './resources/virtual-navigator-credentials.js';
+import {deepCopy, GET_CREDENTIAL_OPTIONS, MAKE_CREDENTIAL_OPTIONS} from './resources/test-inputs.js';
+
+if (document.location.hostname != "subdomain.example.test") {
+  document.location = "https://subdomain.example.test:8443/credentialmanagement/register-then-sign.html";
+  promise_test(_ => new Promise(_ => {}), "Stall tests on the wrong host.");
+}
+
+const manager = new TestAuthenticatorManager;
+
+promise_test(async _ => {
+  // Expect a clean environment.
+  let authenticators = await manager.authenticators();
+  assert_equals(authenticators.length, 0);
+}, "Set up the testing environment.");
+
+promise_test(async _ => {
+  let testAuthenticator = await manager.createAuthenticator();
+  let credential = await navigator.credentials.create({publicKey: MAKE_CREDENTIAL_OPTIONS});
+  let getCredentialsOptions = deepCopy(GET_CREDENTIAL_OPTIONS);
+  getCredentialsOptions.allowCredentials[0].id = credential.rawId;
+  return navigator.credentials.get({publicKey: getCredentialsOptions});
+});
+
+promise_test(_ => manager.clearAuthenticators(), "Clean up testing environment.");
+
+</script>

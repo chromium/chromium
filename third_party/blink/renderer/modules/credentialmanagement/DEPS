@@ -1,0 +1,10 @@
+include_rules = [
+  "+mojo/public",
+  "+services/metrics/public/cpp/metrics_utils.h",
+  "+services/metrics/public/cpp/ukm_builders.h",
+  "+services/metrics/public/cpp/ukm_source_id.h",
+  "+services/network/public/cpp/is_potentially_trustworthy.h",
+  "-third_party/blink/renderer/modules",
+  "+third_party/blink/renderer/modules/credentialmanagement",
+  "+third_party/blink/renderer/modules/modules_export.h",
+]

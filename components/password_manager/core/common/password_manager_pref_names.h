@@ -14,7 +14,7 @@ namespace prefs {
 // component.
 
 // Boolean controlling whether the password manager allows automatic signing in
-// through Credential Manager API.
+// through Credential Management API.
 extern const char kCredentialsEnableAutosignin[];
 
 // The value of this preference controls whether the Password Manager will save

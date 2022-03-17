@@ -17,7 +17,7 @@ class LogManager;
 
 namespace password_manager {
 
-// A helper for logging Credential Manager API calls to
+// A helper for logging Credential Management API calls to
 // chrome://password-manager-internals.
 class CredentialManagerLogger {
  public:

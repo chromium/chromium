@@ -785,7 +785,7 @@
               "fast/forms/fieldset/overflow-scroll-interaction.html",
               "fast/scroll-behavior/middleclick-autoscroll-nested-elements.html",
               "fast/scroll-behavior/middleclick-autoscroll-use-count.html",
-              "http/tests/credentialmanager/credentialscontainer-create-with-virtual-authenticator.html",
+              "http/tests/credentialmanagement/credentialscontainer-create-with-virtual-authenticator.html",
               "ietestcenter/css3/bordersbackgrounds/background-attachment-local-scrolling.htm"],
     "args": ["--enable-features=ScrollUnification,SharedArrayBuffer",
              "--enable-threaded-compositing"]

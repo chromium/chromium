@@ -903,8 +903,8 @@ crbug.com/591099 media/media-controls-clone.html [ Failure ]
 crbug.com/591099 external/wpt/forced-colors-mode/forced-colors-mode-14.html [ Failure ]
 crbug.com/591099 virtual/forced-high-contrast-colors/external/wpt/forced-colors-mode/forced-colors-mode-14.html [ Failure ]
 
-### http/tests/credentialmanager/
-crbug.com/874695 http/tests/credentialmanager/credentialscontainer-create-with-virtual-authenticator.html [ Failure ]
+### http/tests/credentialmanagement/
+crbug.com/874695 http/tests/credentialmanagement/credentialscontainer-create-with-virtual-authenticator.html [ Failure ]
 
 ### http/tests/csslayout/
 crbug.com/591099 http/tests/csslayout/* [ Skip ]

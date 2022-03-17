@@ -1,0 +1,35 @@
+# Copyright 2016 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/blink/renderer/modules/modules.gni")
+
+blink_modules_sources("credentialmanagement") {
+  sources = [
+    "authenticator_assertion_response.cc",
+    "authenticator_assertion_response.h",
+    "authenticator_attestation_response.cc",
+    "authenticator_attestation_response.h",
+    "authenticator_response.cc",
+    "authenticator_response.h",
+    "credential.cc",
+    "credential.h",
+    "credential_manager_proxy.cc",
+    "credential_manager_proxy.h",
+    "credential_manager_type_converters.cc",
+    "credential_manager_type_converters.h",
+    "credentials_container.cc",
+    "credentials_container.h",
+    "federated_credential.cc",
+    "federated_credential.h",
+    "otp_credential.cc",
+    "otp_credential.h",
+    "password_credential.cc",
+    "password_credential.h",
+    "public_key_credential.cc",
+    "public_key_credential.h",
+    "scoped_promise_resolver.cc",
+    "scoped_promise_resolver.h",
+  ]
+  deps = [ "//services/metrics/public/cpp:ukm_builders" ]
+}

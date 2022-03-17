@@ -25,7 +25,7 @@ class CredentialManagerPasswordFormManagerDelegate {
 };
 
 // A PasswordFormManager built to handle PasswordForm objects synthesized
-// by the Credential Manager API.
+// by the Credential Management API.
 class CredentialManagerPasswordFormManager : public PasswordFormManager {
  public:
   // Given a |client| and an |observed_form|, kick off the process of fetching

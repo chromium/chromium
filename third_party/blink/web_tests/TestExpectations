@@ -5155,7 +5155,7 @@ crbug.com/827209 [ Win ] fast/events/middleClickAutoscroll-latching.html [ Failu
 crbug.com/827209 [ Linux ] fast/events/middleClickAutoscroll-latching.html [ Failure Pass Timeout ]
 
 # Utility for manual testing, not intended to be run as part of layout tests.
-crbug.com/785955 http/tests/credentialmanager/tools/virtual-authenticator-environment-manual.html [ Skip ]
+crbug.com/785955 http/tests/credentialmanagement/tools/virtual-authenticator-environment-manual.html [ Skip ]
 
 # Sheriff 2018-04-11
 crbug.com/831796 fast/events/autoscroll-in-textfield.html [ Failure Pass ]
@@ -5694,7 +5694,7 @@ crbug.com/1041973 external/wpt/html/semantics/forms/constraints/form-validation-
 crbug.com/1041993 http/tests/origin_trials/sample-api-script-added-after-css-declaration.html [ Failure ]
 
 # Sheriff 2020-01-20
-crbug.com/1043357 http/tests/credentialmanager/credentialscontainer-get-with-virtual-authenticator.html [ Failure Pass Timeout ]
+crbug.com/1043357 http/tests/credentialmanagement/credentialscontainer-get-with-virtual-authenticator.html [ Failure Pass Timeout ]
 
 # Ref_Tests which fail when SkiaRenderer is enable, and which cannot be
 # rebaselined. TODO(jonross): triage these into any existing bugs or file more
@@ -6817,10 +6817,10 @@ crbug.com/1218714 [ Win ] virtual/scroll-unification/fast/forms/select-popup/pop
 
 # Green Mac11 Test
 crbug.com/1201406 [ Mac11 ] fast/events/touch/gesture/touch-gesture-scroll-listbox.html [ Failure ]
-crbug.com/1201406 [ Mac11 ] http/tests/credentialmanager/credentialscontainer-create-from-nested-frame.html [ Crash Timeout ]
-crbug.com/1201406 [ Mac11 ] http/tests/credentialmanager/credentialscontainer-create-origins.html [ Crash Timeout ]
-crbug.com/1201406 http/tests/credentialmanager/publickeycredential-same-origin-with-ancestors.html [ Crash Pass Timeout ]
-crbug.com/1201406 [ Mac11 ] http/tests/credentialmanager/register-then-sign.html [ Crash Skip Timeout ]
+crbug.com/1201406 [ Mac11 ] http/tests/credentialmanagement/credentialscontainer-create-from-nested-frame.html [ Crash Timeout ]
+crbug.com/1201406 [ Mac11 ] http/tests/credentialmanagement/credentialscontainer-create-origins.html [ Crash Timeout ]
+crbug.com/1201406 http/tests/credentialmanagement/publickeycredential-same-origin-with-ancestors.html [ Crash Pass Timeout ]
+crbug.com/1201406 [ Mac11 ] http/tests/credentialmanagement/register-then-sign.html [ Crash Skip Timeout ]
 
 # Sheriff 2021-06-14
 crbug.com/1219499 external/wpt/websockets/Create-blocked-port.any.html?wpt_flags=h2 [ Failure Pass Timeout ]
@@ -6918,7 +6918,7 @@ crbug.com/1229212 inspector-protocol/heap-profiler/heap-samples-in-snapshot.js [
 
 # Sheriff 2021-07-15
 crbug.com/1229666 external/wpt/html/semantics/forms/form-submission-0/urlencoded2.window.html [ Pass Timeout ]
-crbug.com/1093027 http/tests/credentialmanager/credentialscontainer-create-with-virtual-authenticator.html [ Crash Failure Pass Skip Timeout ]
+crbug.com/1093027 http/tests/credentialmanagement/credentialscontainer-create-with-virtual-authenticator.html [ Crash Failure Pass Skip Timeout ]
 # The next test was originally skipped on mac for lack of support (crbug.com/613672). It is now skipped everywhere due to flakiness.
 crbug.com/1229708 fast/events/pointerevents/pointer-event-in-slop-region.html [ Skip ]
 crbug.com/1229711 [ Linux ] http/tests/devtools/console-resource-errors.js [ Failure Pass ]
