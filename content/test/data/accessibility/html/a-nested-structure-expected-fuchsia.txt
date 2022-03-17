@@ -1,6 +1,6 @@
 UNKNOWN focusable has_input_focus
 ++UNKNOWN hidden
-++++UNKNOWN
+++++UNKNOWN hidden
 ++++++LINK focusable label='Header 1 List element 1 List element 2 List element 3' actions='{DEFAULT}'
 ++++++++UNKNOWN label='Header 1' actions='{DEFAULT}'
 ++++++++++STATIC_TEXT label='Header 1'
