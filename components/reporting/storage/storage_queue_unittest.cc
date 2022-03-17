@@ -992,16 +992,7 @@ TEST_P(StorageQueueTest, WriteIntoNewStorageQueueAndFlush) {
   storage_queue_->Flush();
 }
 
-// TODO(crbug.com/1302007): This test crashes on iPad device.
-#if BUILDFLAG(IS_IOS)
-#define MAYBE_WriteIntoNewStorageQueueReopenWriteMoreAndFlush \
-  DISABLED_WriteIntoNewStorageQueueReopenWriteMoreAndFlush
-#else
-#define MAYBE_WriteIntoNewStorageQueueReopenWriteMoreAndFlush \
-  WriteIntoNewStorageQueueReopenWriteMoreAndFlush
-#endif
-TEST_P(StorageQueueTest,
-       MAYBE_WriteIntoNewStorageQueueReopenWriteMoreAndFlush) {
+TEST_P(StorageQueueTest, WriteIntoNewStorageQueueReopenWriteMoreAndFlush) {
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsOnlyManual());
   WriteStringOrDie(kData[0]);
   WriteStringOrDie(kData[1]);
