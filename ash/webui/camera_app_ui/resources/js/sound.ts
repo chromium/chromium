@@ -38,7 +38,11 @@ export async function play(el: HTMLAudioElement): Promise<boolean> {
   const events = ['ended', 'pause'];
   function onAudioStopped() {
     elementsStatus.set(el, Status.PAUSED);
-    audioStopped.signal(el.ended);
+
+    // TODO(b/223338160): A temporary workaround to avoid shutter sound being
+    // recorded.
+    const ended = el.ended;
+    setTimeout(() => audioStopped.signal(ended), 200);
     for (const event of events) {
       el.removeEventListener(event, onAudioStopped);
     }
