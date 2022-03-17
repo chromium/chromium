@@ -3591,10 +3591,10 @@ const char kStrictSiteIsolationDescription[] =
     "#site-isolation-trial-opt-out for how to disable site isolation for "
     "testing.";
 
-const char kSyncAndroidPromosRevampName[] =
-    "Enable the revamped sync promos on Android";
-const char kSyncAndroidPromosRevampDescription[] =
-    "Improves the visual design of sync promos.";
+const char kSyncAndroidPromosWithSingleButtonName[] =
+    "Enable the single button sync promos on Android";
+const char kSyncAndroidPromosWithSingleButtonDescription[] =
+    "Hides the \"Choose another account\" button on sync promos.";
 
 const char kTabGroupsForTabletsName[] = "Tab groups on tablets";
 const char kTabGroupsForTabletsDescription[] = "Enable tab groups on tablets.";

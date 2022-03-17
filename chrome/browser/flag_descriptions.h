@@ -2050,8 +2050,8 @@ extern const char kStartSurfaceAndroidDescription[];
 extern const char kStrictSiteIsolationName[];
 extern const char kStrictSiteIsolationDescription[];
 
-extern const char kSyncAndroidPromosRevampName[];
-extern const char kSyncAndroidPromosRevampDescription[];
+extern const char kSyncAndroidPromosWithSingleButtonName[];
+extern const char kSyncAndroidPromosWithSingleButtonDescription[];
 
 extern const char kTabGroupsForTabletsName[];
 extern const char kTabGroupsForTabletsDescription[];

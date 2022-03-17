@@ -46,8 +46,8 @@ inline constexpr base::Feature
         base::FEATURE_DISABLED_BY_DEFAULT};
 
 #if BUILDFLAG(IS_ANDROID)
-inline constexpr base::Feature kSyncAndroidPromosRevamp{
-    "SyncAndroidPromosRevamp", base::FEATURE_DISABLED_BY_DEFAULT};
+inline constexpr base::Feature kSyncAndroidPromosWithSingleButton{
+    "SyncAndroidPromosWithSingleButton", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Causes the sync engine to count a quota for commits of data types that can

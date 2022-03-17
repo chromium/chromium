@@ -304,7 +304,8 @@ public abstract class ChromeFeatureList {
             "ContextualTriggersSelectionMenu";
     public static final String CONTEXTUAL_TRIGGERS_SELECTION_SIZE =
             "ContextualTriggersSelectionSize";
-    public static final String SYNC_ANDROID_PROMOS_REVAMP = "SyncAndroidPromosRevamp";
+    public static final String SYNC_ANDROID_PROMOS_WITH_SINGLE_BUTTON =
+            "SyncAndroidPromosWithSingleButton";
     public static final String CONTINUOUS_SEARCH = "ContinuousSearch";
     public static final String CRITICAL_PERSISTED_TAB_DATA = "CriticalPersistedTabData";
     public static final String DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING =
