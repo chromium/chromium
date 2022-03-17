@@ -40,6 +40,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/escape.h"
@@ -55,6 +56,11 @@
 
 namespace crostini {
 
+const char kShortcutKey[] = "shortcut";
+const char kShortcutValueSSH[] = "ssh";
+const char kShortcutValueTerminal[] = "terminal";
+const char kProfileIdKey[] = "profileId";
+
 namespace {
 constexpr char kSettingPrefix[] = "/hterm/profiles/default/";
 const size_t kSettingPrefixSize = std::size(kSettingPrefix) - 1;
@@ -65,26 +71,6 @@ constexpr char kDefaultBackgroundColor[] = "#202124";
 
 constexpr char kSettingPassCtrlW[] = "/hterm/profiles/default/pass-ctrl-w";
 constexpr bool kDefaultPassCtrlW = false;
-
-constexpr char kShortcutKey[] = "shortcut";
-constexpr char kShortcutValueSSH[] = "ssh";
-constexpr char kShortcutValueTerminal[] = "terminal";
-
-std::string ShortcutIdForSSH() {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey(kShortcutKey, base::Value(kShortcutValueSSH));
-  std::string shortcut_id;
-  base::JSONWriter::Write(dict, &shortcut_id);
-  return shortcut_id;
-}
-
-std::string ShortcutIdFromContainerId(const crostini::ContainerId& id) {
-  base::Value dict = id.ToDictValue();
-  dict.SetKey(kShortcutKey, base::Value(kShortcutValueTerminal));
-  std::string shortcut_id;
-  base::JSONWriter::Write(dict, &shortcut_id);
-  return shortcut_id;
-}
 
 base::flat_map<std::string, std::string> ExtrasFromShortcutId(
     const base::Value& shortcut) {
@@ -397,6 +383,62 @@ bool GetTerminalSettingPassCtrlW(Profile* profile) {
   return value->FindBoolKey(kSettingPassCtrlW).value_or(kDefaultPassCtrlW);
 }
 
+std::string ShortcutIdForSSH(const std::string& profileId) {
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetKey(kShortcutKey, base::Value(kShortcutValueSSH));
+  dict.SetKey(kProfileIdKey, base::Value(profileId));
+  std::string shortcut_id;
+  base::JSONWriter::Write(dict, &shortcut_id);
+  return shortcut_id;
+}
+
+std::string ShortcutIdFromContainerId(const crostini::ContainerId& id) {
+  base::Value dict = id.ToDictValue();
+  dict.SetKey(kShortcutKey, base::Value(kShortcutValueTerminal));
+  std::string shortcut_id;
+  base::JSONWriter::Write(dict, &shortcut_id);
+  return shortcut_id;
+}
+
+std::vector<std::pair<std::string, std::string>> GetSSHConnections(
+    Profile* profile) {
+  std::vector<std::pair<std::string, std::string>> result;
+  const base::Value::Dict& settings =
+      profile->GetPrefs()
+          ->GetDictionary(crostini::prefs::kCrostiniTerminalSettings)
+          ->GetDict();
+  const base::Value::List* ids = settings.FindList("/nassh/profile-ids");
+  if (!ids) {
+    return result;
+  }
+  for (const auto& id : *ids) {
+    if (!id.is_string()) {
+      continue;
+    }
+    const std::string* description = settings.FindString(
+        base::StrCat({"/nassh/profiles/", id.GetString(), "/description"}));
+    if (description) {
+      result.emplace_back(id.GetString(), *description);
+    }
+  }
+  return result;
+}
+
+std::vector<ContainerId> GetLinuxContainers(Profile* profile) {
+  std::vector<ContainerId> result;
+  const base::Value::List& container_list =
+      profile->GetPrefs()
+          ->GetList(crostini::prefs::kCrostiniContainers)
+          ->GetList();
+  for (const auto& container : container_list) {
+    crostini::ContainerId id(container);
+    if (!id.vm_name.empty() && !id.container_name.empty()) {
+      result.push_back(std::move(id));
+    }
+  }
+  return result;
+}
+
 void AddTerminalMenuItems(Profile* profile,
                           apps::mojom::MenuItemsPtr* menu_items) {
   apps::AddCommandItem(ash::SETTINGS, IDS_INTERNAL_APP_SETTINGS, menu_items);
@@ -412,6 +454,11 @@ void AddTerminalMenuShortcuts(
     apps::mojom::MenuItemsPtr menu_items,
     apps::mojom::Publisher::GetMenuModelCallback callback,
     std::vector<gfx::ImageSkia> images) {
+  if (!base::FeatureList::IsEnabled(chromeos::features::kTerminalSSH)) {
+    std::move(callback).Run(std::move(menu_items));
+    return;
+  }
+
   ui::ColorProvider* color_provider =
       ui::ColorProviderManager::Get().GetColorProviderFor(
           ui::NativeTheme::GetInstanceForWeb()->GetColorProviderKey(nullptr));
@@ -423,47 +470,35 @@ void AddTerminalMenuShortcuts(
   };
   gfx::ImageSkia terminal_ssh_icon = icon(kTerminalSshIcon);
   gfx::ImageSkia crostini_mascot_icon = icon(kCrostiniMascotIcon);
-  if (base::FeatureList::IsEnabled(chromeos::features::kTerminalSSH)) {
-    // TODO(b/223076712): List all SSH connections.
+  std::vector<std::pair<std::string, std::string>> connections =
+      GetSSHConnections(profile);
+  std::vector<ContainerId> containers;
+  if (CrostiniFeatures::Get()->IsEnabled(profile)) {
+    containers = GetLinuxContainers(profile);
+  }
+  if (connections.size() > 0 || containers.size() > 0) {
     apps::AddSeparator(ui::DOUBLE_SEPARATOR, &menu_items);
+  }
+
+  for (const auto& connection : connections) {
     apps::AddShortcutCommandItem(
-        next_command_id++, ShortcutIdForSSH(),
-        l10n_util::GetStringUTF8(IDS_CROSTINI_TERMINAL_CONNECT_TO_SSH),
-        terminal_ssh_icon, &menu_items);
+        next_command_id++, ShortcutIdForSSH(connection.first),
+        connection.second, terminal_ssh_icon, &menu_items);
   }
 
-  if (!CrostiniFeatures::Get()->IsEnabled(profile)) {
-    return std::move(callback).Run(std::move(menu_items));
-  }
-
-  if (crostini::CrostiniFeatures::Get()->IsMultiContainerAllowed(profile)) {
-    const base::Value* container_list =
-        profile->GetPrefs()->GetList(crostini::prefs::kCrostiniContainers);
-    if (container_list && container_list->GetListDeprecated().size() > 1) {
-      // Shortcuts for each container.
-      for (const auto& dict : container_list->GetListDeprecated()) {
-        crostini::ContainerId id(dict);
-        if (!id.vm_name.empty() && !id.container_name.empty()) {
-          std::string shortcut_id = ShortcutIdFromContainerId(id);
-          std::string label =
-              base::StrCat({id.vm_name, ":", id.container_name});
-          apps::AddShortcutCommandItem(next_command_id++, shortcut_id, label,
-                                       crostini_mascot_icon, &menu_items);
-        }
-      }
-      return std::move(callback).Run(std::move(menu_items));
+  for (const auto& container : containers) {
+    // Use label 'Linux' if we have only the default container, else use
+    // <vm_name>:<container_name>.
+    std::string label = l10n_util::GetStringUTF8(IDS_APP_TERMINAL_LINUX);
+    if (containers.size() > 1 ||
+        container != crostini::ContainerId::GetDefault()) {
+      label = base::StrCat({container.vm_name, ":", container.container_name});
     }
+    apps::AddShortcutCommandItem(next_command_id++,
+                                 ShortcutIdFromContainerId(container), label,
+                                 crostini_mascot_icon, &menu_items);
   }
 
-  // Single shortcut: 'Connect to Linux'.
-  if (base::FeatureList::IsEnabled(chromeos::features::kTerminalSSH)) {
-    std::string shortcut_id =
-        ShortcutIdFromContainerId(ContainerId::GetDefault());
-    apps::AddShortcutCommandItem(
-        next_command_id++, shortcut_id,
-        l10n_util::GetStringUTF8(IDS_CROSTINI_TERMINAL_CONNECT_TO_LINUX),
-        crostini_mascot_icon, &menu_items);
-  }
   std::move(callback).Run(std::move(menu_items));
 }
 
@@ -476,11 +511,14 @@ bool ExecuteTerminalMenuShortcutCommand(Profile* profile,
   }
   const std::string* shortcut_value = shortcut->FindStringKey(kShortcutKey);
   if (shortcut_value && *shortcut_value == kShortcutValueSSH) {
-    // TODO(b/223076712): Handle all SSH connections.
+    const std::string* profileId = shortcut->FindStringKey(kProfileIdKey);
+    if (!profileId) {
+      return false;
+    }
     LaunchTerminalWithUrl(
         profile, display_id,
         GURL(base::StrCat({chrome::kChromeUIUntrustedTerminalURL,
-                           "html/terminal_ssh.html"})));
+                           "html/terminal_ssh.html#profile-id:", *profileId})));
     return true;
   }
 

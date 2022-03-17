@@ -18,6 +18,11 @@ class Profile;
 
 namespace crostini {
 
+extern const char kShortcutKey[];
+extern const char kShortcutValueSSH[];
+extern const char kShortcutValueTerminal[];
+extern const char kProfileIdKey[];
+
 // Settings items that can be user-modified for terminal.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -137,6 +142,19 @@ std::string GetTerminalSettingBackgroundColor(Profile* profile);
 
 // Returns terminal setting 'pass-ctrl-w'.
 bool GetTerminalSettingPassCtrlW(Profile* profile);
+
+// Menu shortcut ID for SSH with specified nassh profile-id.
+std::string ShortcutIdForSSH(const std::string& profileId);
+
+// Menu shortcut ID for Linux container.
+std::string ShortcutIdFromContainerId(const crostini::ContainerId& id);
+
+// Returns list of SSH connections {<profile-id>, <description>}.
+std::vector<std::pair<std::string, std::string>> GetSSHConnections(
+    Profile* profile);
+
+// Returns list of Linux containers.
+std::vector<ContainerId> GetLinuxContainers(Profile* profile);
 
 // Add terminal menu items (Settings, Shut down Linux).
 void AddTerminalMenuItems(Profile* profile,

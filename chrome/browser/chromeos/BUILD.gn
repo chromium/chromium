@@ -4217,6 +4217,7 @@ source_set("unit_tests") {
     "../ash/crostini/crostini_reporting_util_unittest.cc",
     "../ash/crostini/crostini_shelf_utils_unittest.cc",
     "../ash/crostini/crostini_sshfs_unittest.cc",
+    "../ash/crostini/crostini_terminal_unittest.cc",
     "../ash/crostini/crostini_unsupported_action_notifier_unittest.cc",
     "../ash/crostini/crostini_upgrade_available_notification_unittest.cc",
     "../ash/crostini/crostini_util_unittest.cc",
