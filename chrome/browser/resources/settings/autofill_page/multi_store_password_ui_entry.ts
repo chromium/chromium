@@ -67,6 +67,10 @@ export class MultiStorePasswordUiEntry extends MultiStoreIdHandler {
     return this.contents_.federationText;
   }
 
+  get note(): string {
+    return this.contents_.note;
+  }
+
   /**
    * Extract all the information except for the id and fromPasswordStore.
    */
@@ -75,7 +79,8 @@ export class MultiStorePasswordUiEntry extends MultiStoreIdHandler {
     return {
       urls: entry.urls,
       username: entry.username,
-      federationText: entry.federationText
+      federationText: entry.federationText,
+      note: entry.passwordNote,
     };
   }
 }
@@ -83,5 +88,6 @@ export class MultiStorePasswordUiEntry extends MultiStoreIdHandler {
 type MultiStorePasswordUiEntryContents = {
   urls: chrome.passwordsPrivate.UrlCollection,
   username: string,
+  note: string,
   federationText?: string,
 };

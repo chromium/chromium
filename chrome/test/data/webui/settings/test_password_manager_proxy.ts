@@ -343,8 +343,9 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
   }
 
   changeSavedPassword(
-      ids: Array<number>, newUsername: string, newPassword: string) {
-    this.methodCalled('changeSavedPassword', {ids, newUsername, newPassword});
+      ids: Array<number>,
+      params: chrome.passwordsPrivate.ChangeSavedPasswordParams) {
+    this.methodCalled('changeSavedPassword', {ids, params});
     return Promise.resolve();
   }
 

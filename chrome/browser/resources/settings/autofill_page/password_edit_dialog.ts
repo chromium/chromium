@@ -194,6 +194,11 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
       username_: {type: String, value: ''},
 
       /**
+       * Current value in note field.
+       */
+      note_: {type: String, value: ''},
+
+      /**
        * Whether the username input is invalid.
        */
       usernameInputInvalid_: {
@@ -249,6 +254,7 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
   private websiteInputInvalid_: boolean;
   private websiteInputErrorMessage_: string|null;
   private username_: string;
+  private note_: string;
   private usernameInputInvalid_: boolean;
   private password_: string;
   private isSaveButtonDisabled_: boolean;
@@ -263,6 +269,7 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
     if (this.existingEntry) {
       this.websiteUrls_ = this.existingEntry.urls;
       this.username_ = this.existingEntry.username;
+      this.note_ = this.existingEntry.note;
     }
     this.password_ = this.getPassword_();
     if (!this.isInFederatedViewMode_) {
@@ -474,9 +481,16 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
     if (deviceId !== null) {
       idsToChange.push(deviceId);
     }
+    const params: chrome.passwordsPrivate.ChangeSavedPasswordParams = {
+      username: this.username_,
+      password: this.password_,
+    };
+    if (this.isPasswordNotesEnabled_) {
+      params.note = this.note_;
+    }
 
     PasswordManagerImpl.getInstance()
-        .changeSavedPassword(idsToChange, this.username_, this.password_)
+        .changeSavedPassword(idsToChange, params)
         .finally(() => {
           this.close();
         });
