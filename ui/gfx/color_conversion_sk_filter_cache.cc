@@ -21,7 +21,7 @@ namespace gfx {
 namespace {
 
 const base::Feature kImageToneMapping{"ImageToneMapping",
-                                      base::FEATURE_DISABLED_BY_DEFAULT};
+                                      base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Additional YUV information to skia renderer to draw 9- and 10- bits color.
 struct YUVInput {
@@ -87,7 +87,7 @@ sk_sp<SkColorFilter> ColorConversionSkFilterCache::Get(
 
   if (!effect) {
     gfx::ColorTransform::Options options;
-    options.tone_map_pq_and_hlg_to_sdr = !key.dst.IsHDR();
+    options.tone_map_pq_and_hlg_to_sdr = dst_max_luminance_relative == 1.f;
     options.sdr_max_luminance_nits = key.sdr_max_luminance_nits;
     // TODO(https://crbug.com/1286076): Ensure that, when tone mapping using
     // `dst_max_luminance_relative` is implemented, the gfx::ColorTransform's
@@ -170,9 +170,25 @@ sk_sp<SkImage> ColorConversionSkFilterCache::ConvertImage(
                                     /*sampleCount=*/0, kTopLeft_GrSurfaceOrigin,
                                     /*surfaceProps=*/nullptr,
                                     /*shouldCreateWithMips=*/false);
+    // It is not guaranteed that kRGBA_F16_SkColorType is renderable. If we fail
+    // to create an SkSurface with that color type, fall back to
+    // kN32_SkColorType.
+    if (!surface) {
+      DLOG(ERROR) << "Falling back to tone mapped 8-bit surface.";
+      image_info = image_info.makeColorType(kN32_SkColorType);
+      surface = SkSurface::MakeRenderTarget(
+          context, SkBudgeted::kNo, image_info,
+          /*sampleCount=*/0, kTopLeft_GrSurfaceOrigin,
+          /*surfaceProps=*/nullptr,
+          /*shouldCreateWithMips=*/false);
+    }
   } else {
     surface = SkSurface::MakeRaster(image_info, image_info.minRowBytes(),
                                     /*surfaceProps=*/nullptr);
+  }
+  if (!surface) {
+    DLOG(ERROR) << "Failed to create SkSurface color conversion.";
+    return nullptr;
   }
 
   sk_sp<SkColorFilter> filter =
