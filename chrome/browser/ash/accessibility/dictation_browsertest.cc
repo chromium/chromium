@@ -1360,6 +1360,8 @@ class DictationUITest : public DictationExtensionTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// Consistently failing on Linux ChromiumOS MSan (https://crbug.com/1302688).
+#if BUILDFLAG(IS_CHROMEOS) && !defined(MEMORY_SANITIZER)
 INSTANTIATE_TEST_SUITE_P(
     Network,
     DictationUITest,
@@ -1369,6 +1371,7 @@ INSTANTIATE_TEST_SUITE_P(
     OnDevice,
     DictationUITest,
     ::testing::Values(speech::SpeechRecognitionType::kOnDevice));
+#endif
 
 IN_PROC_BROWSER_TEST_P(DictationUITest, ShownWhenSpeechRecognitionStarts) {
   ToggleDictationWithKeystroke();
