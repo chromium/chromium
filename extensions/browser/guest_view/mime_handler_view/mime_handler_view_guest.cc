@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/check_op.h"
 #include "components/guest_view/common/guest_view_constants.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/navigation_handle.h"
@@ -14,6 +15,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/site_instance.h"
 #include "content/public/common/child_process_host.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/api/extensions_api_client.h"
@@ -188,11 +190,28 @@ void MimeHandlerViewGuest::CreateWebContents(
     return;
   }
 
-  // Use the mime handler extension's SiteInstance to create the guest so it
-  // goes under the same process as the extension.
-  ProcessManager* process_manager = ProcessManager::Get(browser_context());
-  scoped_refptr<content::SiteInstance> guest_site_instance =
-      process_manager->GetSiteInstanceForURL(stream_->handler_url());
+  // Compute the mime handler extension's `SiteInstance`. This must match the
+  // `SiteInstance` for the navigation in `DidAttachToEmbedder()`, otherwise the
+  // wrong `HostZoomMap` will be used, and the `RenderFrameHost` for the guest
+  // `WebContents` will need to be swapped.
+  scoped_refptr<content::SiteInstance> guest_site_instance;
+#if BUILDFLAG(ENABLE_PDF)
+  // TODO(crbug.com/1300730): Using `SiteInstance::CreateForURL()` creates a new
+  // `BrowsingInstance`, which causes problems for features like background
+  // pages. Remove one of these branches either when `ProcessManager` correctly
+  // handles the multiple `StoragePartitionConfig` case, or when no
+  // `MimeHandlerView` extension depends on background pages.
+  if (mime_handler_extension->id() == extension_misc::kPdfExtensionId) {
+    guest_site_instance = content::SiteInstance::CreateForURL(
+        browser_context(), stream_->handler_url());
+  } else {
+#endif  // BUILDFLAG(ENABLE_PDF)
+    ProcessManager* process_manager = ProcessManager::Get(browser_context());
+    guest_site_instance =
+        process_manager->GetSiteInstanceForURL(stream_->handler_url());
+#if BUILDFLAG(ENABLE_PDF)
+  }
+#endif  // BUILDFLAG_ENABLE_PDF)
 
   // Clear the zoom level for the mime handler extension. The extension is
   // responsible for managing its own zoom. This is necessary for OOP PDF, as
@@ -466,6 +485,13 @@ void MimeHandlerViewGuest::DidFinishNavigation(
     const GURL& new_url = navigation_handle->GetURL();
     CHECK(url::IsSameOriginWith(new_url, stream_->handler_url()) ||
           new_url.IsAboutBlank());
+
+#if BUILDFLAG(ENABLE_PDF)
+    if (stream_->extension_id() == extension_misc::kPdfExtensionId) {
+      // Host zoom level should match the override set in `CreateWebContents()`.
+      DCHECK_EQ(0, content::HostZoomMap::GetZoomLevel(web_contents()));
+    }
+#endif  // BUILDFLAG(ENABLE_PDF)
   }
 }
 
