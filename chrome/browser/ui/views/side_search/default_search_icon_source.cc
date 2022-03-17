@@ -55,18 +55,9 @@ void DefaultSearchIconSource::OnTemplateURLServiceShuttingDown() {
 }
 
 ui::ImageModel DefaultSearchIconSource::GetSizedIconImage(int size) const {
-  content::WebContents* active_contents =
-      browser_->tab_strip_model()->GetActiveWebContents();
-  if (!active_contents)
-    return ui::ImageModel();
-
-  // Attempt to synchronously get the current default search engine's favicon.
-  auto* omnibox_view = search::GetOmniboxView(active_contents);
-  DCHECK(omnibox_view);
-  gfx::Image icon =
-      omnibox_view->model()->client()->GetFaviconForDefaultSearchProvider(
-          base::BindRepeating(&DefaultSearchIconSource::OnIconFetched,
-                              weak_ptr_factory_.GetWeakPtr()));
+  // If `icon` is empty we may have missed in the cache. Early return and notify
+  // clients when the icon is ready.
+  gfx::Image icon = GetRawIconImage();
   if (icon.IsEmpty())
     return ui::ImageModel();
 
@@ -83,6 +74,24 @@ ui::ImageModel DefaultSearchIconSource::GetSizedIconImage(int size) const {
              : ui::ImageModel::FromImageSkia(
                    gfx::CanvasImageSource::CreatePadded(*icon.ToImageSkia(),
                                                         padding_border));
+}
+
+ui::ImageModel DefaultSearchIconSource::GetIconImage() const {
+  return ui::ImageModel::FromImage(GetRawIconImage());
+}
+
+gfx::Image DefaultSearchIconSource::GetRawIconImage() const {
+  content::WebContents* active_contents =
+      browser_->tab_strip_model()->GetActiveWebContents();
+  if (!active_contents)
+    return gfx::Image();
+
+  // Attempt to synchronously get the current default search engine's favicon.
+  auto* omnibox_view = search::GetOmniboxView(active_contents);
+  DCHECK(omnibox_view);
+  return omnibox_view->model()->client()->GetFaviconForDefaultSearchProvider(
+      base::BindRepeating(&DefaultSearchIconSource::OnIconFetched,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void DefaultSearchIconSource::OnIconFetched(const gfx::Image& icon) {

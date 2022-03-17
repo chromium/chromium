@@ -36,15 +36,24 @@ class DefaultSearchIconSource : public TemplateURLServiceObserver {
   void OnTemplateURLServiceChanged() override;
   void OnTemplateURLServiceShuttingDown() override;
 
-  // Gets the icon image for the current default search provider. Will return an
-  // empty image model if this misses in the icon cache and will notify the
-  // `icon_changed_subscription_` when the icon is ready.
+  // Gets the icon image for the current default search provider with padding
+  // added to bring the resulting ImageModel up to `size`.
   ui::ImageModel GetSizedIconImage(int size) const;
+
+  // Similar to `GetSizedIconImage()` except this does not add padding.
+  ui::ImageModel GetIconImage() const;
 
  private:
   // Callback used for when `GetSizedIconImage()` does not return the icon image
   // immediately but instead fetches the image asynchronously.
   void OnIconFetched(const gfx::Image& icon);
+
+  // Gets the raw gfx::Image icon from the TemplateURL for the current default
+  // search provider. Will return an empty image if this misses in the icon
+  // cache and instead will notify the `icon_changed_subscription_` when the
+  // icon is ready. FaviconCache guarantees favicons will be of size
+  // gfx::kFaviconSize (16x16)
+  gfx::Image GetRawIconImage() const;
 
   // Used to fetch the ChromeOmniboxClient associated with the browser's active
   // tab.
