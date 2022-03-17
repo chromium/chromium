@@ -22,9 +22,9 @@ update-desktop-database > /dev/null 2>&1 || true
 update_defaults_list() {
   # $1: name of the .desktop file
 
-  local DEFAULTS_FILE="/usr/share/applications/defaults.list"
+  local DEFAULTS_LIST="/usr/share/applications/defaults.list"
 
-  if [ ! -f "${DEFAULTS_FILE}" ]; then
+  if [ ! -f "${DEFAULTS_LIST}" ]; then
     return
   fi
 
@@ -35,17 +35,17 @@ update_defaults_list() {
                 cut -d '=' -f 2- |
                 tr ';' ' ')"
   for mime_type in ${mime_types}; do
-    if egrep -q "^${mime_type}=" "${DEFAULTS_FILE}"; then
-      if ! egrep -q "^${mime_type}=.*${1}" "${DEFAULTS_FILE}"; then
-        default_apps="$(grep ${mime_type}= "${DEFAULTS_FILE}" |
+    if egrep -q "^${mime_type}=" "${DEFAULTS_LIST}"; then
+      if ! egrep -q "^${mime_type}=.*${1}" "${DEFAULTS_LIST}"; then
+        default_apps="$(grep ${mime_type}= "${DEFAULTS_LIST}" |
                         cut -d '=' -f 2-)"
-        egrep -v "^${mime_type}=" "${DEFAULTS_FILE}" > "${DEFAULTS_FILE}.new"
-        echo "${mime_type}=${default_apps};${1}" >> "${DEFAULTS_FILE}.new"
-        mv "${DEFAULTS_FILE}.new" "${DEFAULTS_FILE}"
+        egrep -v "^${mime_type}=" "${DEFAULTS_LIST}" > "${DEFAULTS_LIST}.new"
+        echo "${mime_type}=${default_apps};${1}" >> "${DEFAULTS_LIST}.new"
+        mv "${DEFAULTS_LIST}.new" "${DEFAULTS_LIST}"
       fi
     else
       # If there's no mention of the mime type in the file, add it.
-      echo "${mime_type}=${1};" >> "${DEFAULTS_FILE}"
+      echo "${mime_type}=${1};" >> "${DEFAULTS_LIST}"
     fi
   done
 }
