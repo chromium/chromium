@@ -881,16 +881,22 @@ void MediaFoundationRenderer::OnError(PipelineStatus status,
   MEDIA_LOG(ERROR, media_log_) << error;
   ReportErrorReason(reason);
 
+  if (!hresult.has_value()) {
+    renderer_client_->OnError(status);
+    return;
+  }
+
   // HRESULT 0x8004CD12 is DRM_E_TEE_INVALID_HWDRM_STATE, which can happen
   // during OS sleep/resume, or moving video to different graphics adapters.
   // This is not an error, so special case it here.
   PipelineStatus status_to_report = status;
-  if (hresult.has_value() && hresult == static_cast<HRESULT>(0x8004CD12)) {
+  if (hresult == static_cast<HRESULT>(0x8004CD12)) {
     status_to_report = PIPELINE_ERROR_HARDWARE_CONTEXT_RESET;
     if (cdm_proxy_)
       cdm_proxy_->OnHardwareContextReset();
   }
 
+  status_to_report.WithData("hresult", static_cast<uint32_t>(hresult.value()));
   renderer_client_->OnError(status_to_report);
 }
 
