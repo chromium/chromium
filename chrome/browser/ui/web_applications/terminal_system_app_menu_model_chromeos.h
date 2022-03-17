@@ -29,7 +29,7 @@ class TerminalSystemAppMenuModel : public AppMenuModel {
   void ExecuteCommand(int command_id, int event_flags) override;
   void LogMenuAction(AppMenuAction action_id) override;
 
-  std::vector<std::string> shortcuts_;
+  std::vector<GURL> urls_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEB_APPLICATIONS_TERMINAL_SYSTEM_APP_MENU_MODEL_CHROMEOS_H_

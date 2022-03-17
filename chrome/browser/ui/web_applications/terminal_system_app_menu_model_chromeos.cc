@@ -7,7 +7,6 @@
 #include <string>
 
 #include "ash/public/cpp/app_menu_constants.h"
-#include "base/json/json_reader.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -46,7 +45,9 @@ void TerminalSystemAppMenuModel::Build() {
   std::vector<std::pair<std::string, std::string>> connections =
       crostini::GetSSHConnections(browser()->profile());
   for (const auto& connection : connections) {
-    shortcuts_.push_back(crostini::ShortcutIdForSSH(connection.first));
+    urls_.push_back(GURL(base::StrCat(
+        {chrome::kChromeUIUntrustedTerminalURL,
+         "html/terminal_ssh.html#profile-id:", connection.first})));
     AddItemWithIcon(next_command++, base::UTF8ToUTF16(connection.second),
                     icon(kTerminalSshIcon));
   }
@@ -55,7 +56,8 @@ void TerminalSystemAppMenuModel::Build() {
   std::vector<crostini::ContainerId> containers =
       crostini::GetLinuxContainers(browser()->profile());
   for (const auto& container : containers) {
-    shortcuts_.push_back(crostini::ShortcutIdFromContainerId(container));
+    urls_.push_back(
+        crostini::GenerateTerminalURL(browser()->profile(), container));
     // Use label 'Linux' if we have only the default container, else use
     // <vm_name>:<container_name>.
     std::u16string label = l10n_util::GetStringUTF16(IDS_APP_TERMINAL_LINUX);
@@ -80,34 +82,11 @@ GURL TerminalSystemAppMenuModel::GetURLForCommand(int command_id) const {
   if (command_id == IDC_TERMINAL_HOME) {
     return GURL(base::StrCat(
         {chrome::kChromeUIUntrustedTerminalURL, "html/terminal_home.html"}));
-
   } else if (command_id >= ash::LAUNCH_APP_SHORTCUT_FIRST &&
              command_id <= ash::LAUNCH_APP_SHORTCUT_LAST) {
     int i = command_id - ash::LAUNCH_APP_SHORTCUT_FIRST;
-    std::string shortcut_id;
-    if (i < shortcuts_.size()) {
-      shortcut_id = shortcuts_[i];
-    }
-    auto shortcut = base::JSONReader::Read(shortcut_id);
-    if (!shortcut || !shortcut->is_dict()) {
-      return GURL();
-    }
-    const std::string* shortcut_value =
-        shortcut->FindStringKey(crostini::kShortcutKey);
-    if (shortcut_value && *shortcut_value == crostini::kShortcutValueSSH) {
-      const std::string* profileId =
-          shortcut->FindStringKey(crostini::kProfileIdKey);
-      if (!profileId) {
-        return GURL();
-      }
-      return GURL(
-          base::StrCat({chrome::kChromeUIUntrustedTerminalURL,
-                        "html/terminal_ssh.html#profile-id:", *profileId}));
-    }
-
-    if (shortcut_value && *shortcut_value == crostini::kShortcutValueTerminal) {
-      return crostini::GenerateTerminalURL(
-          browser()->profile(), crostini::ContainerId(std::move(*shortcut)));
+    if (i < urls_.size()) {
+      return urls_[i];
     }
   }
   return GURL();
