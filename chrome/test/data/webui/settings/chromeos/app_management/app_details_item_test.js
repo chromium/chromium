@@ -48,7 +48,8 @@ suite('<app-management-app-details-item>', () => {
     test_util.flushTasks();
 
     expectEquals(
-        appDetailsItem.shadowRoot.querySelector('#type').innerText, 'Web App');
+        appDetailsItem.shadowRoot.querySelector('#type').innerText.trim(),
+        'Web App');
   });
 
   test('Android type', async function() {
@@ -75,7 +76,7 @@ suite('<app-management-app-details-item>', () => {
     test_util.flushTasks();
 
     expectEquals(
-        appDetailsItem.shadowRoot.querySelector('#type').innerText,
+        appDetailsItem.shadowRoot.querySelector('#type').innerText.trim(),
         'Android App');
   });
 
@@ -103,7 +104,7 @@ suite('<app-management-app-details-item>', () => {
     test_util.flushTasks();
 
     expectEquals(
-        appDetailsItem.shadowRoot.querySelector('#type').innerText,
+        appDetailsItem.shadowRoot.querySelector('#type').innerText.trim(),
         'Chrome App');
   });
 
@@ -131,7 +132,7 @@ suite('<app-management-app-details-item>', () => {
     test_util.flushTasks();
 
     expectEquals(
-        appDetailsItem.shadowRoot.querySelector('#type').innerText,
+        appDetailsItem.shadowRoot.querySelector('#type').innerText.trim(),
         'Chrome App installed from Chrome Web Store');
   });
 
@@ -159,7 +160,7 @@ suite('<app-management-app-details-item>', () => {
     test_util.flushTasks();
 
     expectEquals(
-        appDetailsItem.shadowRoot.querySelector('#type').innerText,
+        appDetailsItem.shadowRoot.querySelector('#type').innerText.trim(),
         'Android App installed from Google Play Store');
   });
 
@@ -186,7 +187,7 @@ suite('<app-management-app-details-item>', () => {
     test_util.flushTasks();
 
     expectEquals(
-        appDetailsItem.shadowRoot.querySelector('#type').innerText,
+        appDetailsItem.shadowRoot.querySelector('#type').innerText.trim(),
         'System App');
   });
 
@@ -213,7 +214,7 @@ suite('<app-management-app-details-item>', () => {
     test_util.flushTasks();
 
     expectEquals(
-        appDetailsItem.shadowRoot.querySelector('#type').innerText,
+        appDetailsItem.shadowRoot.querySelector('#type').innerText.trim(),
         'Chrome OS System App');
   });
 });

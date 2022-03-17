@@ -30,7 +30,7 @@ class AppManagementAppDetailsItem extends AppManagementAppDetailsItemBase {
     return {
       app: appManagement.mojom.App,
 
-      hidden_: {
+      hidden: {
         type: Boolean,
         computed: 'isHidden_()',
         reflectToAttribute: true,
