@@ -147,20 +147,27 @@ config("runtime_library") {
   # for catalyst build. This can be removed when a catalyst slice is added
   # to upstream Clang.
   if (target_environment == "catalyst") {
-    assert(1300 <= xcode_version_int && xcode_version_int <= 1321)
+    if (xcode_version_int >= 1300 && xcode_version_int <= 1321) {
+      _xcode_clang_version = "13.0.0"
+    } else if (xcode_version_int == 1330) {
+      _xcode_clang_version = "13.1.6"
+    } else {
+      assert(false)
+    }
     ldflags += [
       "-lSystem",
-      rebase_path("$ios_toolchains_path/usr/lib/clang/13.0.0/" +
-                      "lib/darwin/libclang_rt.osx.a",
+      rebase_path("$ios_toolchains_path/usr/lib/clang/" + _xcode_clang_version +
+                      "/lib/darwin/libclang_rt.osx.a",
                   root_build_dir),
       "-nodefaultlibs",
     ]
 
     # UBSAn runtime library is also required when using libfuzzer.
     if (use_libfuzzer) {
-      ldflags += [ rebase_path("$ios_toolchains_path/usr/lib/clang/13.0.0/" +
-                                   "lib/darwin/libclang_rt.ubsan_osx.a",
-                               root_build_dir) ]
+      ldflags += [ rebase_path(
+              "$ios_toolchains_path/usr/lib/clang/" + _xcode_clang_version +
+                  "/lib/darwin/libclang_rt.ubsan_osx.a",
+              root_build_dir) ]
     }
   }
 }
