@@ -71,11 +71,10 @@ class QuickAnswersViewsTest : public AshTestBase {
       CreateAndShowBasicMenu();
 
     anchor_bounds_ = anchor_bounds;
-    auto* ui_controller =
-        static_cast<QuickAnswersControllerImpl*>(QuickAnswersController::Get())
-            ->quick_answers_ui_controller();
+
+    // TODO(b/222422130): Rewrite QuickAnswersViewsTest to expand coverage.
     quick_answers_view_ = std::make_unique<QuickAnswersView>(
-        anchor_bounds_, title, /*is_internal=*/false, ui_controller);
+        anchor_bounds_, title, /*is_internal=*/false, /*controller=*/nullptr);
   }
 
   void CreateAndShowBasicMenu() {

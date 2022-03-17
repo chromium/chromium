@@ -243,12 +243,13 @@ END_METADATA
 
 // QuickAnswersView -----------------------------------------------------------
 
-QuickAnswersView::QuickAnswersView(const gfx::Rect& anchor_view_bounds,
-                                   const std::string& title,
-                                   bool is_internal,
-                                   QuickAnswersUiController* controller)
+QuickAnswersView::QuickAnswersView(
+    const gfx::Rect& anchor_view_bounds,
+    const std::string& title,
+    bool is_internal,
+    base::WeakPtr<QuickAnswersUiController> controller)
     : anchor_view_bounds_(anchor_view_bounds),
-      controller_(controller),
+      controller_(std::move(controller)),
       title_(title),
       is_internal_(is_internal),
       quick_answers_view_handler_(
@@ -309,7 +310,8 @@ void QuickAnswersView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 }
 
 void QuickAnswersView::SendQuickAnswersQuery() {
-  controller_->OnQuickAnswersViewPressed();
+  if (controller_)
+    controller_->OnQuickAnswersViewPressed();
 }
 
 void QuickAnswersView::UpdateAnchorViewBounds(
@@ -350,7 +352,7 @@ void QuickAnswersView::ShowRetryView() {
   retry_label_ =
       description_container->AddChildView(std::make_unique<views::LabelButton>(
           base::BindRepeating(&QuickAnswersUiController::OnRetryLabelPressed,
-                              base::Unretained(controller_)),
+                              controller_),
           l10n_util::GetStringUTF16(IDS_ASH_QUICK_ANSWERS_VIEW_RETRY)));
   retry_label_->SetEnabledTextColors(gfx::kGoogleBlue600);
   retry_label_->SetRequestFocusOnPress(true);
@@ -439,8 +441,7 @@ void QuickAnswersView::AddSettingsButton() {
       .SetCrossAxisAlignment(views::LayoutAlignment::kEnd);
   settings_button_ = settings_view->AddChildView(
       std::make_unique<views::ImageButton>(base::BindRepeating(
-          &QuickAnswersUiController::OnSettingsButtonPressed,
-          base::Unretained(controller_))));
+          &QuickAnswersUiController::OnSettingsButtonPressed, controller_)));
   settings_button_->SetImage(
       views::Button::ButtonState::STATE_NORMAL,
       gfx::CreateVectorIcon(kUnifiedMenuSettingsIcon, kSettingsButtonSizeDip,
@@ -600,7 +601,7 @@ void QuickAnswersView::UpdateQuickAnswerResult(
     report_query_view_ = base_view_->AddChildView(
         std::make_unique<ReportQueryView>(base::BindRepeating(
             &QuickAnswersUiController::OnReportQueryButtonPressed,
-            base::Unretained(controller_))));
+            controller_)));
   }
 }
 

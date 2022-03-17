@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace ash {
@@ -128,6 +129,8 @@ class ASH_EXPORT QuickAnswersUiController {
   quick_answers::UserNoticeView* user_notice_view_ = nullptr;
   quick_answers::UserConsentView* user_consent_view_ = nullptr;
   std::string query_;
+
+  base::WeakPtrFactory<QuickAnswersUiController> weak_factory_{this};
 };
 
 }  // namespace ash

@@ -61,7 +61,8 @@ void QuickAnswersUiController::CreateQuickAnswersView(const gfx::Rect& bounds,
   DCHECK(!user_notice_view_);
   DCHECK(!user_consent_view_);
   SetActiveQuery(query);
-  quick_answers_view_ = new QuickAnswersView(bounds, title, is_internal, this);
+  quick_answers_view_ = new QuickAnswersView(bounds, title, is_internal,
+                                             weak_factory_.GetWeakPtr());
   quick_answers_view_->GetWidget()->ShowInactive();
 }
 
@@ -150,7 +151,7 @@ void QuickAnswersUiController::CreateUserConsentView(
   DCHECK(!user_notice_view_);
   DCHECK(!user_consent_view_);
   user_consent_view_ = new quick_answers::UserConsentView(
-      anchor_bounds, intent_type, intent_text, this);
+      anchor_bounds, intent_type, intent_text, weak_factory_.GetWeakPtr());
   user_consent_view_->GetWidget()->ShowInactive();
 }
 
