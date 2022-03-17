@@ -20,6 +20,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/mock_web_contents_observer.h"
+#include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_browser_context.h"
@@ -35,6 +36,21 @@
 #include "url/gurl.h"
 
 namespace content {
+
+namespace {
+
+constexpr char kAddIframeScript[] = R"({
+    (()=>{
+        return new Promise((resolve) => {
+          const frame = document.createElement('iframe');
+          frame.addEventListener('load', () => {resolve();});
+          frame.src = $1;
+          document.body.appendChild(frame);
+        });
+    })();
+  })";
+
+}  // namespace
 
 class FencedFrameBrowserTest : public ContentBrowserTest {
  protected:
@@ -357,17 +373,6 @@ IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, CrossOriginMessagePost) {
   RenderFrameHostImplWrapper fenced_frame_rfh(
       fenced_frame_test_helper().CreateFencedFrame(primary_rfh.get(),
                                                    main_url));
-
-  constexpr char kAddIframeScript[] = R"({
-        (()=>{
-            return new Promise((resolve) => {
-              const frame = document.createElement('iframe');
-              frame.addEventListener('load', () => {resolve();});
-              frame.src = $1;
-              document.body.appendChild(frame);
-            });
-        })();
-        })";
   EXPECT_TRUE(ExecJs(fenced_frame_rfh.get(),
                      JsReplace(kAddIframeScript, cross_origin_iframe_url)));
 
@@ -495,6 +500,58 @@ IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, ViewportSettings) {
   EXPECT_EQ(EvalJs(fenced_frame->GetInnerRoot(), "window.visualViewport.scale")
                 .ExtractDouble(),
             1.0);
+}
+
+// Test that fenced frames use the primary main frame's UKM source id during
+// navigation.
+IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, GetPageUkmSourceId) {
+  ASSERT_TRUE(https_server()->Start());
+  const GURL main_url = https_server()->GetURL("c.test", "/title1.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  const GURL fenced_frame_url =
+      https_server()->GetURL("c.test", "/fenced_frames/title1.html");
+  NavigationHandleObserver handle_observer(web_contents(), fenced_frame_url);
+  RenderFrameHostImplWrapper fenced_frame_rfh(
+      fenced_frame_test_helper().CreateFencedFrame(primary_main_frame_host(),
+                                                   fenced_frame_url));
+  ASSERT_TRUE(fenced_frame_rfh);
+
+  ukm::SourceId nav_request_id = handle_observer.next_page_ukm_source_id();
+  // Should have the same page UKM ID in navigation as page post commit, and as
+  // the primary main frame.
+  EXPECT_EQ(primary_main_frame_host()->GetPageUkmSourceId(), nav_request_id);
+  EXPECT_EQ(fenced_frame_rfh->GetPageUkmSourceId(), nav_request_id);
+}
+
+// Test that iframes that nested within fenced frames use the primary main
+// frame's UKM source id during navigation.
+IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, GetPageUkmSourceId_NestedFrame) {
+  ASSERT_TRUE(https_server()->Start());
+  const GURL main_url = https_server()->GetURL("c.test", "/title1.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  const GURL fenced_frame_url =
+      https_server()->GetURL("c.test", "/fenced_frames/title1.html");
+  RenderFrameHostImplWrapper fenced_frame_rfh(
+      fenced_frame_test_helper().CreateFencedFrame(primary_main_frame_host(),
+                                                   fenced_frame_url));
+  ASSERT_TRUE(fenced_frame_rfh);
+
+  const GURL iframe_url =
+      https_server()->GetURL("c.test", "/fenced_frames/title1.html");
+  NavigationHandleObserver handle_observer(web_contents(), iframe_url);
+  EXPECT_TRUE(
+      ExecJs(fenced_frame_rfh.get(), JsReplace(kAddIframeScript, iframe_url)));
+
+  RenderFrameHostImpl* iframe_rfh = static_cast<RenderFrameHostImpl*>(
+      ChildFrameAt(fenced_frame_rfh.get(), 0));
+  ukm::SourceId nav_request_id = handle_observer.next_page_ukm_source_id();
+  // Should have the same page UKM ID in navigation as page post commit, and as
+  // the primary main frame.
+  EXPECT_EQ(primary_main_frame_host()->GetPageUkmSourceId(), nav_request_id);
+  EXPECT_EQ(fenced_frame_rfh->GetPageUkmSourceId(), nav_request_id);
+  EXPECT_EQ(iframe_rfh->GetPageUkmSourceId(), nav_request_id);
 }
 
 // Test that FrameTree::CollectNodesForIsLoading doesn't include inner
@@ -905,16 +962,6 @@ class FencedFrameNestedFrameBrowserTest
       observer.Wait();
       return static_cast<RenderFrameHostImpl*>(ChildFrameAt(parent, 0));
     }
-    constexpr char kAddIframeScript[] = R"({
-        (()=>{
-            return new Promise((resolve) => {
-              const frame = document.createElement('iframe');
-              frame.addEventListener('load', () => {resolve();});
-              frame.src = $1;
-              document.body.appendChild(frame);
-            });
-        })();
-        })";
     EXPECT_TRUE(ExecJs(parent, JsReplace(kAddIframeScript, url)));
 
     return static_cast<RenderFrameHostImpl*>(ChildFrameAt(parent, 0));
@@ -955,16 +1002,6 @@ IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, NavigationHandleFrameType) {
           DCHECK_EQ(navigation_handle->GetNavigatingFrameType(),
                     FrameType::kSubframe);
         }));
-    constexpr char kAddIframeScript[] = R"({
-        (()=>{
-            return new Promise((resolve) => {
-              const frame = document.createElement('iframe');
-              frame.addEventListener('load', () => {resolve();});
-              frame.src = $1;
-              document.body.appendChild(frame);
-            });
-        })();
-        })";
     EXPECT_TRUE(
         ExecJs(primary_main_frame_host(),
                JsReplace(kAddIframeScript,

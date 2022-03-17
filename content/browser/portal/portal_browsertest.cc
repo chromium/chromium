@@ -306,6 +306,26 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, MAYBE_ActivatePortal) {
   VerifyActivationTraceEvents(StopTracing());
 }
 
+// Test that portal uses own UKM source id during navigation.
+IN_PROC_BROWSER_TEST_F(PortalBrowserTest, GetPageUkmSourceId) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
+  WebContentsImpl* web_contents_impl =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  RenderFrameHostImpl* primary_rfh = web_contents_impl->GetMainFrame();
+
+  GURL portal_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  Portal* portal = CreatePortalToUrl(web_contents_impl, portal_url);
+  RenderFrameHostImpl* portal_rfh = portal->GetPortalContents()->GetMainFrame();
+  EXPECT_TRUE(portal_rfh);
+
+  // Ensure that portal uses own UKM source id, not from the primary main frame.
+  // TODO(crbug.com/1254770): Modify this test to check the source UKM ID during
+  // navigation as once portals are migrated to MPArch.
+  EXPECT_NE(primary_rfh->GetPageUkmSourceId(),
+            portal_rfh->GetPageUkmSourceId());
+}
+
 // This fixture enables PortalsDefaultActivation
 class PortalDefaultActivationBrowserTest : public PortalBrowserTest {
  protected:

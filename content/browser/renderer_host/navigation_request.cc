@@ -6440,9 +6440,9 @@ ukm::SourceId NavigationRequest::GetNextPageUkmSourceId() {
   if (rfh_restored_from_back_forward_cache_)
     return rfh_restored_from_back_forward_cache_->GetPageUkmSourceId();
 
-  // If this is the same document or a child frame navigation the UKM id will
-  // not change from it.
-  if (IsSameDocument() || !IsInMainFrame())
+  // If this is the same document or a subframe navigation (i.e. iframe or
+  // fenced frame), the UKM id will not change from it.
+  if (IsSameDocument() || !IsInMainFrame() || IsInFencedFrameTree())
     return previous_page_ukm_source_id_;
 
   return ukm::ConvertToSourceId(navigation_id_,

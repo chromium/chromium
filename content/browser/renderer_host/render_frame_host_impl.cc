@@ -5198,8 +5198,13 @@ void RenderFrameHostImpl::ReportNoBinderForInterface(const std::string& error) {
 }
 
 ukm::SourceId RenderFrameHostImpl::GetPageUkmSourceId() {
+  // This id for all subframes or fenced frames is the same as the id for the
+  // outermost main frame. For portals, this id for frames inside a portal is
+  // the same as the id for the main frame for the portal.
+  RenderFrameHostImpl* main_frame =
+      IsNestedWithinFencedFrame() ? GetOutermostMainFrame() : GetMainFrame();
   int64_t navigation_id =
-      GetMainFrame()->last_committed_cross_document_navigation_id_;
+      main_frame->last_committed_cross_document_navigation_id_;
   if (navigation_id == -1)
     return ukm::kInvalidSourceId;
   return ukm::ConvertToSourceId(navigation_id,
