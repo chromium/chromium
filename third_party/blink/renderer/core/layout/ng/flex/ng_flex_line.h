@@ -43,6 +43,8 @@ struct NGFlexLine {
   LayoutUnit line_cross_size;
   LayoutUnit cross_axis_offset;
   LayoutUnit item_offset_adjustment;
+  // This is only used for columns during fragmentation.
+  LayoutUnit line_intrinsic_block_size = kIndefiniteSize;
   bool has_seen_all_children = false;
   HeapVector<NGFlexItem> line_items;
 };

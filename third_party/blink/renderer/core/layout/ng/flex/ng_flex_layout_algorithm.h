@@ -150,6 +150,9 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
                              LayoutUnit row_block_size,
                              wtf_size_t row_index);
 
+  // Add an early break for the column at the provided |index|.
+  void AddColumnEarlyBreak(NGEarlyBreak* breakpoint, wtf_size_t index);
+
 #if DCHECK_IS_ON()
   void CheckFlexLines(const HeapVector<NGFlexLine>& flex_line_outputs) const;
 #endif
@@ -184,6 +187,11 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
   // fragmenting, |total_intrinsic_block_size| and |intrinsic_block_size_| will
   // be equivalent.
   LayoutUnit total_intrinsic_block_size_;
+
+  // Only one early break is supported per container. However, we may need to
+  // return to an early break within multiple flex columns. This stores the
+  // early breaks per column to be used when aborting layout.
+  HeapVector<Member<NGEarlyBreak>> column_early_breaks_;
 };
 
 }  // namespace blink

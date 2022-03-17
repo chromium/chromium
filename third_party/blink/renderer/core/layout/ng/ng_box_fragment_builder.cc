@@ -85,7 +85,8 @@ void NGBoxFragmentBuilder::AddResult(
     const NGLayoutResult& child_layout_result,
     const LogicalOffset offset,
     absl::optional<LogicalOffset> relative_offset,
-    const NGInlineContainer<LogicalOffset>* inline_container) {
+    const NGInlineContainer<LogicalOffset>* inline_container,
+    EBreakBetween* flex_column_break_after) {
   const auto& fragment = child_layout_result.PhysicalFragment();
 
   // We'll normally propagate info from child_layout_result here, but if that's
@@ -129,7 +130,7 @@ void NGBoxFragmentBuilder::AddResult(
     PropagateBreakInfo(*result_for_propagation, offset);
   if (UNLIKELY(ConstraintSpace() &&
                ConstraintSpace()->ShouldPropagateChildBreakValues()))
-    PropagateChildBreakValues(*result_for_propagation);
+    PropagateChildBreakValues(*result_for_propagation, flex_column_break_after);
 }
 
 void NGBoxFragmentBuilder::AddChild(
@@ -444,7 +445,8 @@ void NGBoxFragmentBuilder::PropagateBreakInfo(
 }
 
 void NGBoxFragmentBuilder::PropagateChildBreakValues(
-    const NGLayoutResult& child_layout_result) {
+    const NGLayoutResult& child_layout_result,
+    EBreakBetween* flex_column_break_after) {
   if (child_layout_result.Status() != NGLayoutResult::kSuccess)
     return;
 
@@ -474,6 +476,8 @@ void NGBoxFragmentBuilder::PropagateChildBreakValues(
   EBreakBetween break_after = JoinFragmentainerBreakValues(
       child_layout_result.FinalBreakAfter(), child_style.BreakAfter());
   SetPreviousBreakAfter(break_after);
+  if (flex_column_break_after)
+    *flex_column_break_after = break_after;
 }
 
 const NGLayoutResult* NGBoxFragmentBuilder::ToBoxFragment(

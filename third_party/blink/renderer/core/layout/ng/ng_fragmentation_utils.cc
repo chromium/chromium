@@ -593,13 +593,15 @@ NGBreakStatus FinishFragmentationForFragmentainer(
   return NGBreakStatus::kContinue;
 }
 
-NGBreakStatus BreakBeforeChildIfNeeded(const NGConstraintSpace& space,
-                                       NGLayoutInputNode child,
-                                       const NGLayoutResult& layout_result,
-                                       LayoutUnit fragmentainer_block_offset,
-                                       bool has_container_separation,
-                                       NGBoxFragmentBuilder* builder,
-                                       bool is_row_item) {
+NGBreakStatus BreakBeforeChildIfNeeded(
+    const NGConstraintSpace& space,
+    NGLayoutInputNode child,
+    const NGLayoutResult& layout_result,
+    LayoutUnit fragmentainer_block_offset,
+    bool has_container_separation,
+    NGBoxFragmentBuilder* builder,
+    bool is_row_item,
+    NGFlexColumnBreakInfo* flex_column_break_info) {
   DCHECK(space.HasBlockFragmentation());
 
   // Break-before and break-after are handled at the row level.
@@ -608,8 +610,11 @@ NGBreakStatus BreakBeforeChildIfNeeded(const NGConstraintSpace& space,
         CalculateBreakBetweenValue(child, layout_result, *builder);
     if (IsForcedBreakValue(space, break_between)) {
       BreakBeforeChild(space, child, &layout_result, fragmentainer_block_offset,
-                       kBreakAppealPerfect, /* is_forced_break */ true,
-                       builder);
+                       kBreakAppealPerfect, /* is_forced_break */ true, builder,
+                       /* block_size_override */ absl::nullopt,
+                       flex_column_break_info
+                           ? &flex_column_break_info->break_after
+                           : nullptr);
       return NGBreakStatus::kBrokeBefore;
     }
   }
@@ -622,14 +627,16 @@ NGBreakStatus BreakBeforeChildIfNeeded(const NGConstraintSpace& space,
   // the appeal of breaking there, even if we didn't.
   if (MovePastBreakpoint(space, child, layout_result,
                          fragmentainer_block_offset, appeal_before, builder,
-                         is_row_item))
+                         is_row_item, flex_column_break_info))
     return NGBreakStatus::kContinue;
 
   // Breaking inside the child isn't appealing, and we're out of space. Figure
   // out where to insert a soft break. It will either be before this child, or
   // before an earlier sibling, if there's a more appealing breakpoint there.
   if (!AttemptSoftBreak(space, child, &layout_result,
-                        fragmentainer_block_offset, appeal_before, builder))
+                        fragmentainer_block_offset, appeal_before, builder,
+                        /* block_size_override */ absl::nullopt,
+                        flex_column_break_info))
     return NGBreakStatus::kNeedsEarlierBreak;
 
   return NGBreakStatus::kBrokeBefore;
@@ -642,7 +649,8 @@ void BreakBeforeChild(const NGConstraintSpace& space,
                       absl::optional<NGBreakAppeal> appeal,
                       bool is_forced_break,
                       NGBoxFragmentBuilder* builder,
-                      absl::optional<LayoutUnit> block_size_override) {
+                      absl::optional<LayoutUnit> block_size_override,
+                      EBreakBetween* flex_column_break_after) {
 #if DCHECK_IS_ON()
   DCHECK(layout_result || block_size_override);
   if (layout_result && layout_result->Status() == NGLayoutResult::kSuccess) {
@@ -668,7 +676,7 @@ void BreakBeforeChild(const NGConstraintSpace& space,
 
   if (layout_result && space.ShouldPropagateChildBreakValues() &&
       !is_forced_break)
-    builder->PropagateChildBreakValues(*layout_result);
+    builder->PropagateChildBreakValues(*layout_result, flex_column_break_after);
 
   // We'll drop the fragment (if any) on the floor and retry at the start of the
   // next fragmentainer.
@@ -723,7 +731,8 @@ bool MovePastBreakpoint(const NGConstraintSpace& space,
                         LayoutUnit fragmentainer_block_offset,
                         NGBreakAppeal appeal_before,
                         NGBoxFragmentBuilder* builder,
-                        bool is_row_item) {
+                        bool is_row_item,
+                        NGFlexColumnBreakInfo* flex_column_break_info) {
   if (layout_result.Status() != NGLayoutResult::kSuccess) {
     // Layout aborted - no fragment was produced. There's nothing to move
     // past. We need to break before.
@@ -819,10 +828,17 @@ bool MovePastBreakpoint(const NGConstraintSpace& space,
     // breaking before is impossible, break inside regardless of appeal.
     if (refuse_break_before)
       return true;
-    if (appeal_inside >= appeal_before &&
-        (!builder || !builder->HasEarlyBreak() ||
-         appeal_inside >= builder->EarlyBreak().BreakAppeal()))
-      return true;
+    if (appeal_inside >= appeal_before) {
+      if (flex_column_break_info &&
+          (!flex_column_break_info->early_break ||
+           appeal_inside >=
+               flex_column_break_info->early_break->BreakAppeal())) {
+        return true;
+      } else if (!builder || !builder->HasEarlyBreak() ||
+                 appeal_inside >= builder->EarlyBreak().BreakAppeal()) {
+        return true;
+      }
+    }
   } else {
     bool move_past = refuse_break_before;
     if (!move_past) {
@@ -849,7 +865,8 @@ bool MovePastBreakpoint(const NGConstraintSpace& space,
         // orphans and widows, if at all possible. We also only do this for
         // non-row items since items in a row will be parallel to one another.)
         UpdateEarlyBreakAtBlockChild(space, To<NGBlockNode>(child),
-                                     layout_result, appeal_before, builder);
+                                     layout_result, appeal_before, builder,
+                                     flex_column_break_info);
       }
       return true;
     }
@@ -859,11 +876,13 @@ bool MovePastBreakpoint(const NGConstraintSpace& space,
   return false;
 }
 
-void UpdateEarlyBreakAtBlockChild(const NGConstraintSpace& space,
-                                  NGBlockNode child,
-                                  const NGLayoutResult& layout_result,
-                                  NGBreakAppeal appeal_before,
-                                  NGBoxFragmentBuilder* builder) {
+void UpdateEarlyBreakAtBlockChild(
+    const NGConstraintSpace& space,
+    NGBlockNode child,
+    const NGLayoutResult& layout_result,
+    NGBreakAppeal appeal_before,
+    NGBoxFragmentBuilder* builder,
+    NGFlexColumnBreakInfo* flex_column_break_info) {
   // If the child already broke, it's a little too late to look for breakpoints.
   DCHECK(!layout_result.PhysicalFragment().BreakToken());
 
@@ -872,8 +891,19 @@ void UpdateEarlyBreakAtBlockChild(const NGConstraintSpace& space,
   if (const NGEarlyBreak* breakpoint = layout_result.GetEarlyBreak()) {
     appeal_inside = CalculateBreakAppealInside(space, layout_result,
                                                breakpoint->BreakAppeal());
-    if (!builder->HasEarlyBreak() ||
-        builder->EarlyBreak().BreakAppeal() <= breakpoint->BreakAppeal()) {
+    if (flex_column_break_info) {
+      if (!flex_column_break_info->early_break ||
+          flex_column_break_info->early_break->BreakAppeal() <=
+              breakpoint->BreakAppeal()) {
+        // Found a good breakpoint inside the child. Add the child to the early
+        // break chain for the current column.
+        auto* parent_break = MakeGarbageCollected<NGEarlyBreak>(
+            child, appeal_inside, breakpoint);
+        flex_column_break_info->early_break = parent_break;
+      }
+    } else if (!builder->HasEarlyBreak() ||
+               builder->EarlyBreak().BreakAppeal() <=
+                   breakpoint->BreakAppeal()) {
       // Found a good breakpoint inside the child. Add the child to the early
       // break container chain, and store it.
       auto* parent_break =
@@ -889,6 +919,15 @@ void UpdateEarlyBreakAtBlockChild(const NGConstraintSpace& space,
   if (appeal_before <= appeal_inside)
     return;
 
+  if (flex_column_break_info) {
+    if (flex_column_break_info->early_break &&
+        flex_column_break_info->early_break->BreakAppeal() > appeal_before)
+      return;
+    flex_column_break_info->early_break =
+        MakeGarbageCollected<NGEarlyBreak>(child, appeal_before);
+    return;
+  }
+
   if (builder->HasEarlyBreak() &&
       builder->EarlyBreak().BreakAppeal() > appeal_before)
     return;
@@ -903,12 +942,21 @@ bool AttemptSoftBreak(const NGConstraintSpace& space,
                       LayoutUnit fragmentainer_block_offset,
                       NGBreakAppeal appeal_before,
                       NGBoxFragmentBuilder* builder,
-                      absl::optional<LayoutUnit> block_size_override) {
+                      absl::optional<LayoutUnit> block_size_override,
+                      NGFlexColumnBreakInfo* flex_column_break_info) {
   DCHECK(layout_result || block_size_override);
   // If there's a breakpoint with higher appeal among earlier siblings, we need
   // to abort and re-layout to that breakpoint.
-  if (builder->HasEarlyBreak() &&
-      builder->EarlyBreak().BreakAppeal() > appeal_before) {
+  bool found_earlier_break = false;
+  if (flex_column_break_info) {
+    found_earlier_break =
+        flex_column_break_info->early_break &&
+        flex_column_break_info->early_break->BreakAppeal() > appeal_before;
+  } else {
+    found_earlier_break = builder->HasEarlyBreak() &&
+                          builder->EarlyBreak().BreakAppeal() > appeal_before;
+  }
+  if (found_earlier_break) {
     // Found a better place to break. Before aborting, calculate and report
     // space shortage from where we'd actually break.
     PropagateSpaceShortage(space, layout_result, fragmentainer_block_offset,
@@ -919,9 +967,10 @@ bool AttemptSoftBreak(const NGConstraintSpace& space,
   // Break before the child. Note that there may be a better break further up
   // with higher appeal (but it's too early to tell), in which case this
   // breakpoint will be replaced.
-  BreakBeforeChild(space, child, layout_result, fragmentainer_block_offset,
-                   appeal_before, /* is_forced_break */ false, builder,
-                   block_size_override);
+  BreakBeforeChild(
+      space, child, layout_result, fragmentainer_block_offset, appeal_before,
+      /* is_forced_break */ false, builder, block_size_override,
+      flex_column_break_info ? &flex_column_break_info->break_after : nullptr);
   return true;
 }
 

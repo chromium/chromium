@@ -28,7 +28,6 @@ struct NGFlexBreakTokenData final : NGBlockBreakTokenData {
   }
 
   HeapVector<NGFlexLine> flex_lines;
-  // |row_break_between| is only used in the case of row flex containers.
   Vector<EBreakBetween> row_break_between;
   LayoutUnit intrinsic_block_size;
   // |broke_before_row| is only used in the case of row flex containers. If this
