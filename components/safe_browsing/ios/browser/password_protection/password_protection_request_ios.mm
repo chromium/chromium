@@ -38,20 +38,19 @@ PasswordProtectionRequestIOS::PasswordProtectionRequestIOS(
     bool password_field_exists,
     PasswordProtectionServiceBase* pps,
     int request_timeout_in_ms)
-    : PasswordProtectionRequest(
-          base::CreateSingleThreadTaskRunner({web::WebThread::UI}),
-          base::CreateSingleThreadTaskRunner({web::WebThread::IO}),
-          main_frame_url,
-          /*password_form_action=*/GURL(),
-          /*password_frame_url=*/GURL(),
-          mime_type,
-          username,
-          password_type,
-          matching_reused_credentials,
-          type,
-          password_field_exists,
-          pps,
-          request_timeout_in_ms),
+    : PasswordProtectionRequest(web::GetUIThreadTaskRunner({}),
+                                web::GetIOThreadTaskRunner({}),
+                                main_frame_url,
+                                /*password_form_action=*/GURL(),
+                                /*password_frame_url=*/GURL(),
+                                mime_type,
+                                username,
+                                password_type,
+                                matching_reused_credentials,
+                                type,
+                                password_field_exists,
+                                pps,
+                                request_timeout_in_ms),
       web_state_(web_state) {
   request_canceler_ =
       RequestCanceler::CreateRequestCanceler(AsWeakPtr(), web_state);
