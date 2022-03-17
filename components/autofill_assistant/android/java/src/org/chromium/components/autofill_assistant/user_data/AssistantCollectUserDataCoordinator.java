@@ -99,8 +99,8 @@ public class AssistantCollectUserDataCoordinator {
                 new AssistantTermsSection(mActivity, paymentRequestExpanderAccordion,
                         /* showAsSingleCheckbox= */ true);
 
-        AssistantDataOriginNotice dataOriginNotice =
-                new AssistantDataOriginNotice(mActivity, paymentRequestExpanderAccordion);
+        AssistantDataOriginNotice dataOriginNotice = new AssistantDataOriginNotice(
+                mActivity, windowAndroid, paymentRequestExpanderAccordion);
 
         paymentRequestExpanderAccordion.setTag(
                 AssistantTagsForTesting.COLLECT_USER_DATA_ACCORDION_TAG);

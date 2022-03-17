@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 package org.chromium.components.autofill_assistant;
-
+import android.content.Context;
 import android.graphics.Typeface;
+import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
 import android.text.style.StyleSpan;
 import android.widget.TextView;
@@ -47,6 +48,21 @@ public class AssistantTextUtils {
      */
     public static void applyVisualAppearanceTags(
             TextView view, String text, @Nullable Callback<Integer> linkCallback) {
+        SpannableString textWithSpans =
+                applyVisualAppearanceTags(text, view.getContext(), linkCallback);
+        view.setText(textWithSpans);
+        if (textWithSpans.getSpans(0, textWithSpans.length(), NoUnderlineClickableSpan.class).length
+                != 0) {
+            view.setMovementMethod(LinkMovementMethod.getInstance());
+        }
+    }
+
+    /**
+     * Returns a {@link SpannableString} version of {@code text}, with the appropriate appearance
+     * tags.
+     */
+    public static SpannableString applyVisualAppearanceTags(
+            String text, Context context, @Nullable Callback<Integer> linkCallback) {
         List<SpanApplier.SpanInfo> spans = new ArrayList<>();
         if (text.contains("<b>")) {
             spans.add(BOLD_SPAN_INFO);
@@ -64,7 +80,7 @@ public class AssistantTextUtils {
 
         for (Integer linkId : linkIds) {
             spans.add(new SpanApplier.SpanInfo("<link" + linkId + ">", "</link" + linkId + ">",
-                    new NoUnderlineClickableSpan(view.getContext(), (unusedView) -> {
+                    new NoUnderlineClickableSpan(context, (unusedView) -> {
                         if (linkCallback != null) {
                             linkCallback.onResult(linkId);
                         }
@@ -82,10 +98,7 @@ public class AssistantTextUtils {
                 Log.d(TAG, "Mismatching span", e);
             }
         }
-        view.setText(SpanApplier.applySpans(
-                text, successfulSpans.toArray(new SpanApplier.SpanInfo[successfulSpans.size()])));
-        if (!linkIds.isEmpty()) {
-            view.setMovementMethod(LinkMovementMethod.getInstance());
-        }
+        return SpanApplier.applySpans(
+                text, successfulSpans.toArray(new SpanApplier.SpanInfo[successfulSpans.size()]));
     }
 }

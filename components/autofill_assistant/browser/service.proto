@@ -2567,6 +2567,11 @@ message PaymentInstrumentProto {
 message DataOriginNoticeProto {
   // Text of the link to the dialog.
   optional string link_text = 1;
+
+  // Content of the dialog
+  optional string dialog_title = 2;
+  optional string dialog_text = 3;
+  optional string dialog_button_text = 4;
 }
 
 // Asks to provide the data used by UseAddressAction and

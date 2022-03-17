@@ -1147,7 +1147,8 @@ bool CollectUserDataAction::CreateOptionsFromProto() {
 
   if (collect_user_data.has_data_origin_notice()) {
     const auto& notice = collect_user_data.data_origin_notice();
-    if (notice.link_text().empty()) {
+    if (notice.link_text().empty() || notice.dialog_title().empty() ||
+        notice.dialog_text().empty() || notice.dialog_button_text().empty()) {
       return false;
     }
     collect_user_data_options_->data_origin_notice = notice;

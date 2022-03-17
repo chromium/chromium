@@ -325,6 +325,22 @@ class AssistantCollectUserDataBinder
             view.mDataOriginNotice.setDataOriginLinkText(
                     model.get(AssistantCollectUserDataModel.DATA_ORIGIN_LINK_TEXT));
             return true;
+        } else if (propertyKey == AssistantCollectUserDataModel.DATA_ORIGIN_DIALOG_TITLE) {
+            view.mDataOriginNotice.setDataOriginDialogTitle(
+                    model.get(AssistantCollectUserDataModel.DATA_ORIGIN_DIALOG_TITLE));
+            return true;
+        } else if (propertyKey == AssistantCollectUserDataModel.DATA_ORIGIN_DIALOG_TEXT) {
+            view.mDataOriginNotice.setDataOriginDialogText(
+                    model.get(AssistantCollectUserDataModel.DATA_ORIGIN_DIALOG_TEXT));
+            return true;
+        } else if (propertyKey == AssistantCollectUserDataModel.DATA_ORIGIN_DIALOG_BUTTON_TEXT) {
+            view.mDataOriginNotice.setDataOriginDialogButtonText(
+                    model.get(AssistantCollectUserDataModel.DATA_ORIGIN_DIALOG_BUTTON_TEXT));
+            return true;
+        } else if (propertyKey == AssistantCollectUserDataModel.ACCOUNT_EMAIL) {
+            view.mDataOriginNotice.setAccountEmail(
+                    model.get(AssistantCollectUserDataModel.ACCOUNT_EMAIL));
+            return true;
         }
 
         return false;

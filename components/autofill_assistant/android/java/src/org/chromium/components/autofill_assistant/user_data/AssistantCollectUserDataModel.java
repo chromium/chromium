@@ -198,6 +198,12 @@ public class AssistantCollectUserDataModel extends PropertyModel {
 
     public static final WritableObjectPropertyKey<String> DATA_ORIGIN_LINK_TEXT =
             new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<String> DATA_ORIGIN_DIALOG_TITLE =
+            new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<String> DATA_ORIGIN_DIALOG_TEXT =
+            new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<String> DATA_ORIGIN_DIALOG_BUTTON_TEXT =
+            new WritableObjectPropertyKey<>();
 
     public AssistantCollectUserDataModel() {
         super(DELEGATE, WEB_CONTENTS, VISIBLE, SELECTED_SHIPPING_ADDRESS,
@@ -215,7 +221,8 @@ public class AssistantCollectUserDataModel extends PropertyModel {
                 CONTACT_SUMMARY_DESCRIPTION_OPTIONS, CONTACT_FULL_DESCRIPTION_OPTIONS,
                 SHOULD_STORE_USER_DATA_CHANGES, USE_GMS_CORE_EDIT_DIALOGS, ACCOUNT_EMAIL,
                 ADD_PAYMENT_INSTRUMENT_ACTION_TOKEN, INITIALIZE_ADDRESS_COLLECTION_PARAMS,
-                DATA_ORIGIN_LINK_TEXT);
+                DATA_ORIGIN_LINK_TEXT, DATA_ORIGIN_DIALOG_TITLE, DATA_ORIGIN_DIALOG_TEXT,
+                DATA_ORIGIN_DIALOG_BUTTON_TEXT);
 
         /*
          * Set initial state for basic type properties (others are implicitly null).
@@ -241,6 +248,9 @@ public class AssistantCollectUserDataModel extends PropertyModel {
         set(INFO_SECTION_TEXT, "");
         set(ACCOUNT_EMAIL, "");
         set(DATA_ORIGIN_LINK_TEXT, "");
+        set(DATA_ORIGIN_DIALOG_TITLE, "");
+        set(DATA_ORIGIN_DIALOG_TEXT, "");
+        set(DATA_ORIGIN_DIALOG_BUTTON_TEXT, "");
     }
 
     @CalledByNative
@@ -386,6 +396,21 @@ public class AssistantCollectUserDataModel extends PropertyModel {
     @CalledByNative
     private void setDataOriginLinkText(String text) {
         set(DATA_ORIGIN_LINK_TEXT, text);
+    }
+
+    @CalledByNative
+    private void setDataOriginDialogTitle(String title) {
+        set(DATA_ORIGIN_DIALOG_TITLE, title);
+    }
+
+    @CalledByNative
+    private void setDataOriginDialogText(String text) {
+        set(DATA_ORIGIN_DIALOG_TEXT, text);
+    }
+
+    @CalledByNative
+    private void setDataOriginDialogButtonText(String text) {
+        set(DATA_ORIGIN_DIALOG_BUTTON_TEXT, text);
     }
 
     /** Creates an empty list of login options. */

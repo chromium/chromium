@@ -1336,7 +1336,7 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
     }
 
     /**
-     * Data origin notice should be shown with the corresponding text.
+     * Data origin notice should be shown and should open the dialog when clicked.
      */
     @Test
     @MediumTest
@@ -1348,13 +1348,21 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
                                 CollectUserDataProto.newBuilder()
                                         .setRequestTermsAndConditions(false)
                                         .setDataOriginNotice(
-                                                DataOriginNoticeProto.newBuilder().setLinkText(
-                                                        "About this data"))
+                                                DataOriginNoticeProto.newBuilder()
+                                                        .setLinkText("About this data")
+                                                        .setDialogTitle(
+                                                                "About your personal information")
+                                                        .setDialogText(
+                                                                "Information on the data.\n\n"
+                                                                + "<link0>Manage your Google"
+                                                                + " account</link0>")
+                                                        .setDialogButtonText("Got it"))
                                         .setContactDetails(ContactDetailsProto.newBuilder()
                                                                    .setContactDetailsName("contact")
                                                                    .setRequestPayerName(true)
                                                                    .setRequestPayerEmail(true)))
                         .build());
+
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath("form_target_website.html")
@@ -1367,5 +1375,10 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
         startAutofillAssistant(mTestRule.getActivity(), testService);
 
         waitUntilViewMatchesCondition(withText("About this data"), isDisplayed());
+        onView(withText("About this data")).perform(click());
+
+        waitUntilViewMatchesCondition(withText("About your personal information"), isDisplayed());
+        onView(withText("Information on the data.\n\nManage your Google account"))
+                .check(matches(isDisplayed()));
     }
 }
