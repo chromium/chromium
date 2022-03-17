@@ -210,7 +210,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crostini.DiskType" enum="CrostiniDiskImageType"
-    expires_after="2022-04-24">
+    expires_after="2023-04-24">
   <owner>clumptini@google.com</owner>
   <owner>davidmunro@google.com</owner>
   <summary>
@@ -355,7 +355,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crostini.SettingsEvent" enum="CrostiniSettingsEvent"
-    expires_after="2022-04-24">
+    expires_after="2023-04-24">
   <owner>clumptini@google.com</owner>
   <owner>laurentt@google.com</owner>
   <owner>victorhsieh@chromium.org</owner>
@@ -551,7 +551,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Crostini.UnsupportedNotification.Reason"
-    enum="CrostiniUnsupportedNotificationReason" expires_after="2022-04-17">
+    enum="CrostiniUnsupportedNotificationReason" expires_after="2023-04-17">
   <owner>clumptini@google.com</owner>
   <owner>laurentt@google.com</owner>
   <summary>
@@ -568,7 +568,7 @@ chromium-metrics-reviews@google.com.
   <owner>laurentt@google.com</owner>
   <summary>
     Recorded each time the user sees the Crostini upgrade Notifiation, recording
-    the action that closded the notification.
+    the action that closed the notification.
   </summary>
 </histogram>
 
