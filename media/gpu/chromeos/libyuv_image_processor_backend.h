@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/chromeos/image_processor_backend.h"
 #include "media/gpu/media_gpu_export.h"
 #include "ui/gfx/geometry/rect.h"
@@ -45,6 +46,8 @@ class MEDIA_GPU_EXPORT LibYUVImageProcessorBackend
                FrameReadyCB cb) override;
 
   bool needs_linear_output_buffers() const override;
+
+  static std::vector<Fourcc> GetSupportedOutputFormats(Fourcc input_format);
 
  private:
   LibYUVImageProcessorBackend(

@@ -100,38 +100,39 @@ enum class Transform {
   kRotation,
 };
 
+static constexpr struct {
+  uint32_t input;
+  uint32_t output;
+  Transform transform;
+  SupportResult support_result;
+} kSupportFormatConversionArray[] = {
+#define CONV(in, out, trans, result) \
+  {Fourcc::in, Fourcc::out, Transform::trans, SupportResult::result}
+    // Conversion.
+    CONV(NV12, NV12, kConversion, Supported),
+    CONV(YM16, NV12, kConversion, Supported),
+    CONV(YM16, YU12, kConversion, Supported),
+    CONV(YU12, NV12, kConversion, Supported),
+    CONV(YU12, YU12, kConversion, Supported),
+    CONV(YUYV, NV12, kConversion, Supported),
+    CONV(YUYV, YU12, kConversion, Supported),
+    CONV(YV12, NV12, kConversion, Supported),
+    CONV(MM21, NV12, kConversion, Supported),
+    // Scaling.
+    CONV(NV12, NV12, kScaling, Supported),
+    CONV(YM16, NV12, kScaling, SupportedWithNV12Pivot),
+    CONV(YM16, YU12, kScaling, SupportedWithI420Pivot),
+    CONV(YU12, YU12, kScaling, Supported),
+    CONV(YUYV, NV12, kScaling, SupportedWithNV12Pivot),
+    CONV(YUYV, YU12, kScaling, SupportedWithI420Pivot),
+    // Rotating.
+    CONV(NV12, NV12, kRotation, SupportedWithI420Pivot),
+#undef CONV
+};
+
 SupportResult IsConversionSupported(Fourcc input_fourcc,
                                     Fourcc output_fourcc,
                                     Transform transform) {
-  static constexpr struct {
-    uint32_t input;
-    uint32_t output;
-    Transform transform;
-    SupportResult support_result;
-  } kSupportFormatConversionArray[] = {
-#define CONV(in, out, trans, result) \
-  {Fourcc::in, Fourcc::out, Transform::trans, SupportResult::result}
-      // Conversion.
-      CONV(NV12, NV12, kConversion, Supported),
-      CONV(YM16, NV12, kConversion, Supported),
-      CONV(YM16, YU12, kConversion, Supported),
-      CONV(YU12, NV12, kConversion, Supported),
-      CONV(YU12, YU12, kConversion, Supported),
-      CONV(YUYV, NV12, kConversion, Supported),
-      CONV(YUYV, YU12, kConversion, Supported),
-      CONV(YV12, NV12, kConversion, Supported),
-      // Scaling.
-      CONV(NV12, NV12, kScaling, Supported),
-      CONV(YM16, NV12, kScaling, SupportedWithNV12Pivot),
-      CONV(YM16, YU12, kScaling, SupportedWithI420Pivot),
-      CONV(YU12, YU12, kScaling, Supported),
-      CONV(YUYV, NV12, kScaling, SupportedWithNV12Pivot),
-      CONV(YUYV, YU12, kScaling, SupportedWithI420Pivot),
-      // Rotating.
-      CONV(NV12, NV12, kRotation, SupportedWithI420Pivot),
-#undef CONV
-  };
-
   const auto single_input_fourcc = input_fourcc.ToSinglePlanar();
   const auto single_output_fourcc = output_fourcc.ToSinglePlanar();
   if (!single_input_fourcc || !single_output_fourcc)
@@ -407,6 +408,10 @@ int LibYUVImageProcessorBackend::DoConversion(const VideoFrame* const input,
         return LIBYUV_FUNC(I420ToNV12, Y_V_U_DATA(input), Y_UV_DATA(output));
 
       case PIXEL_FORMAT_NV12:
+        // MM21 mode.
+        if (input_config_.fourcc == Fourcc(Fourcc::MM21))
+          return LIBYUV_FUNC(MM21ToNV12, Y_UV_DATA(input), Y_UV_DATA(output));
+
         // Rotation mode.
         if (relative_rotation_ != VIDEO_ROTATION_0) {
           // The size of |tmp_buffer| of NV12Rotate() should be
@@ -529,6 +534,18 @@ int LibYUVImageProcessorBackend::DoConversion(const VideoFrame* const input,
 
 bool LibYUVImageProcessorBackend::needs_linear_output_buffers() const {
   return true;
+}
+
+std::vector<Fourcc> LibYUVImageProcessorBackend::GetSupportedOutputFormats(
+    Fourcc input_format) {
+  std::vector<Fourcc> supported_formats;
+  for (const auto& conv : kSupportFormatConversionArray) {
+    if (Fourcc::FromUint32(conv.input) &&
+        *Fourcc::FromUint32(conv.input) == input_format &&
+        Fourcc::FromUint32(conv.output))
+      supported_formats.emplace_back(*Fourcc::FromUint32(conv.output));
+  }
+  return supported_formats;
 }
 
 }  // namespace media
