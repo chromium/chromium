@@ -70,10 +70,6 @@ class CheckForCancelledOrPausedDelegate
     cancelled_or_paused_ = true;
   }
 
-  void RestartWithURLResetAndFlagsNow(int additional_load_flags) override {
-    cancelled_or_paused_ = true;
-  }
-
   bool cancelled_or_paused() const { return cancelled_or_paused_; }
 
  private:

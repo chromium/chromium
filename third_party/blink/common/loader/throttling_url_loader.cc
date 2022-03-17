@@ -208,14 +208,6 @@ class ThrottlingURLLoader::ForwardingThrottleDelegate
     loader_->RestartWithURLResetAndFlags(additional_load_flags);
   }
 
-  void RestartWithURLResetAndFlagsNow(int additional_load_flags) override {
-    if (!loader_)
-      return;
-
-    ScopedDelegateCall scoped_delegate_call(this);
-    loader_->RestartWithURLResetAndFlagsNow(additional_load_flags);
-  }
-
   void Detach() { loader_ = nullptr; }
 
  private:
@@ -642,13 +634,6 @@ void ThrottlingURLLoader::RestartWithURLResetAndFlags(
   pending_restart_flags_ |= additional_load_flags;
   throttle_will_start_original_url_ = true;
   has_pending_restart_ = true;
-}
-
-void ThrottlingURLLoader::RestartWithURLResetAndFlagsNow(
-    int additional_load_flags) {
-  RestartWithURLResetAndFlags(additional_load_flags);
-  if (!did_receive_response_)
-    RestartWithFlagsNow();
 }
 
 void ThrottlingURLLoader::OnReceiveEarlyHints(
