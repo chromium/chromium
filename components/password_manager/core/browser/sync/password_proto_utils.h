@@ -57,6 +57,11 @@ PasswordForm PasswordFromProtoWithLocalData(
 std::vector<PasswordForm> PasswordVectorFromListResult(
     const sync_pb::ListPasswordsResult& list_result);
 
+// Returns a copy of |password_specifics_data| with cleared supported fields
+// that don't need to be preserved in EntityMetadata cache.
+sync_pb::PasswordSpecificsData TrimPasswordSpecificsDataForCaching(
+    const sync_pb::PasswordSpecificsData& password_specifics_data);
+
 }  // namespace password_manager
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_SYNC_PASSWORD_PROTO_UTILS_H_

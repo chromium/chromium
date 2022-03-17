@@ -198,6 +198,17 @@ class ModelTypeSyncBridge {
   // SyncableService by other means.
   virtual size_t EstimateSyncOverheadMemoryUsage() const;
 
+  // Returns a copy of |entity_specifics| where fields that do not need to be
+  // preserved in EntityMetadata cache are cleared. This allows each data type
+  // to specify which fields are supported in the current version. This usually
+  // means all known proto fields (i.e. all except unknown proto fields synced
+  // from more recent versions of the browser) but not always, since there are
+  // cases where a proto field is defined, but its implementation is not
+  // complete yet or exists behind a feature flag.
+  // By default, empty EntitySpecifics is returned.
+  virtual sync_pb::EntitySpecifics TrimRemoteSpecificsForCaching(
+      const sync_pb::EntitySpecifics& entity_specifics);
+
   // Needs to be informed about any model change occurring via Delete() and
   // Put(). The changing metadata should be stored to persistent storage
   // before or atomically with the model changes.

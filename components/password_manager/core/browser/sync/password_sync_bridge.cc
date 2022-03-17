@@ -843,6 +843,17 @@ void PasswordSyncBridge::ApplyStopSyncChanges(
   sync_enabled_or_disabled_cb_.Run();
 }
 
+sync_pb::EntitySpecifics PasswordSyncBridge::TrimRemoteSpecificsForCaching(
+    const sync_pb::EntitySpecifics& entity_specifics) {
+  DCHECK(entity_specifics.has_password());
+  sync_pb::EntitySpecifics trimmed_entity_specifics;
+  *trimmed_entity_specifics.mutable_password()
+       ->mutable_client_only_encrypted_data() =
+      TrimPasswordSpecificsDataForCaching(
+          entity_specifics.password().client_only_encrypted_data());
+  return trimmed_entity_specifics;
+}
+
 std::set<FormPrimaryKey> PasswordSyncBridge::GetUnsyncedPasswordsStorageKeys() {
   std::set<FormPrimaryKey> storage_keys;
   DCHECK(password_store_sync_);

@@ -1466,4 +1466,45 @@ TEST_F(PasswordSyncBridgeTest,
   EXPECT_FALSE(error);
 }
 
+TEST_F(PasswordSyncBridgeTest,
+       TrimRemoteSpecificsForCachingPreservesOnlyUnknownFields) {
+  sync_pb::EntitySpecifics specifics_with_only_unknown_fields;
+  *specifics_with_only_unknown_fields.mutable_password()
+       ->mutable_client_only_encrypted_data()
+       ->mutable_unknown_fields() = "unknown_fields";
+
+  sync_pb::EntitySpecifics specifics;
+  sync_pb::PasswordSpecificsData* password_data =
+      specifics.mutable_password()->mutable_client_only_encrypted_data();
+  password_data->set_scheme(2);
+  password_data->set_signon_realm(kSignonRealm1);
+  password_data->set_origin("http://www.origin.com/");
+  password_data->set_action("action");
+  password_data->set_username_element("username_element");
+  password_data->set_username_value("username_value");
+  password_data->set_password_element("password_element");
+  password_data->set_password_value("password_value");
+  password_data->set_date_created(1000);
+  password_data->set_blacklisted(false);
+  password_data->set_type(0);
+  password_data->set_times_used(1);
+  password_data->set_display_name("display_name");
+  password_data->set_avatar_url("avatar_url");
+  password_data->set_federation_url("federation_url");
+  password_data->set_date_last_used(1000);
+  *password_data->mutable_password_issues() =
+      CreateSpecificsIssues({InsecureType::kLeaked});
+  password_data->set_date_password_modified_windows_epoch_micros(1000);
+
+  *specifics.mutable_password()
+       ->mutable_client_only_encrypted_data()
+       ->mutable_unknown_fields() = "unknown_fields";
+
+  sync_pb::EntitySpecifics trimmed_specifics =
+      bridge()->TrimRemoteSpecificsForCaching(specifics);
+
+  EXPECT_EQ(trimmed_specifics.SerializeAsString(),
+            specifics_with_only_unknown_fields.SerializeAsString());
+}
+
 }  // namespace password_manager

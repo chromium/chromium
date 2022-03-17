@@ -68,6 +68,13 @@ size_t ModelTypeSyncBridge::EstimateSyncOverheadMemoryUsage() const {
   return 0U;
 }
 
+sync_pb::EntitySpecifics ModelTypeSyncBridge::TrimRemoteSpecificsForCaching(
+    const sync_pb::EntitySpecifics& entity_specifics) {
+  // Clears all fields by default to avoid the memory and I/O overhead of an
+  // additional copy of the data.
+  return sync_pb::EntitySpecifics();
+}
+
 ModelTypeChangeProcessor* ModelTypeSyncBridge::change_processor() {
   return change_processor_.get();
 }

@@ -102,12 +102,44 @@ base::flat_map<InsecureType, InsecurityMetadata> PasswordIssuesMapFromProto(
   return form_issues;
 }
 
+sync_pb::PasswordSpecificsData TrimPasswordSpecificsDataForCaching(
+    const sync_pb::PasswordSpecificsData& password_specifics_data) {
+  sync_pb::PasswordSpecificsData trimmed_password_data =
+      sync_pb::PasswordSpecificsData(password_specifics_data);
+  trimmed_password_data.clear_scheme();
+  trimmed_password_data.clear_signon_realm();
+  trimmed_password_data.clear_origin();
+  trimmed_password_data.clear_action();
+  trimmed_password_data.clear_username_element();
+  trimmed_password_data.clear_username_value();
+  trimmed_password_data.clear_password_element();
+  trimmed_password_data.clear_password_value();
+  trimmed_password_data.clear_date_created();
+  trimmed_password_data.clear_blacklisted();
+  trimmed_password_data.clear_type();
+  trimmed_password_data.clear_times_used();
+  trimmed_password_data.clear_display_name();
+  trimmed_password_data.clear_avatar_url();
+  trimmed_password_data.clear_federation_url();
+  trimmed_password_data.clear_date_last_used();
+  trimmed_password_data.clear_password_issues();
+  trimmed_password_data.clear_date_password_modified_windows_epoch_micros();
+  return trimmed_password_data;
+}
+
 sync_pb::PasswordSpecifics SpecificsFromPassword(
     const PasswordForm& password_form) {
   sync_pb::PasswordSpecifics specifics;
   *specifics.mutable_client_only_encrypted_data() =
       SpecificsDataFromPassword(password_form);
 
+  // WARNING: if you are adding support for new `PasswordSpecificsData` fields,
+  // you need to update following functions accordingly:
+  // `TrimPasswordSpecificsDataForCaching`
+  // `TrimRemoteSpecificsForCachingPreservesOnlyUnknownFields`
+  DCHECK_EQ(0u, TrimPasswordSpecificsDataForCaching(
+                    specifics.client_only_encrypted_data())
+                    .ByteSizeLong());
   return specifics;
 }
 
