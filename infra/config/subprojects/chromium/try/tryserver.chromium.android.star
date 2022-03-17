@@ -32,23 +32,8 @@ try_.builder(
     name = "android-10-arm64-rel",
 )
 
-try_.orchestrator_builder(
+try_.builder(
     name = "android-11-x86-rel",
-    compilator = "android-11-x86-rel-compilator",
-    # TODO(crbug.com/1137474): Enable it on branch after running on CQ
-    # branch_selector = branches.STANDARD_MILESTONE,
-    main_list_view = "try",
-    # TODO(crbug.com/1137474): Fully enable once it works fine
-    tryjob = try_.job(
-        experiment_percentage = 10,
-    ),
-)
-
-try_.compilator_builder(
-    name = "android-11-x86-rel-compilator",
-    # TODO(crbug.com/1137474): Enable it on branch after running on CQ
-    # branch_selector = branches.STANDARD_MILESTONE,
-    main_list_view = "try",
 )
 
 try_.builder(
