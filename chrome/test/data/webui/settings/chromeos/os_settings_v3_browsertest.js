@@ -8,15 +8,11 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
 GEN('#include "ash/constants/ash_features.h"');
 GEN('#include "build/branding_buildflags.h"');
-GEN('#include "chrome/browser/ash/crostini/crostini_pref_names.h"');
 GEN('#include "chrome/browser/ash/crostini/fake_crostini_features.h"');
 GEN('#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"');
-GEN('#include "chrome/browser/profiles/profile.h"');
-GEN('#include "chrome/browser/ui/browser.h"');
 GEN('#include "chrome/common/buildflags.h"');
 GEN('#include "chrome/common/chrome_features.h"');
 GEN('#include "components/app_restore/features.h"');
-GEN('#include "components/prefs/pref_service.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
 /* eslint-disable no-var */
@@ -33,7 +29,6 @@ var OSSettingsV3BrowserTest = class extends PolymerTest {
     return {
       enabled: [
         'chromeos::features::kEnableHostnameSetting',
-        'features::kCrostini',
       ],
     };
   }
@@ -305,6 +300,23 @@ TEST_F('OSSettingsAppManagementAppDetailsV3Test', 'AllJsTests', () => {
   mocha.run();
 });
 
+var OSSettingsCrostiniPageV3Test = class extends OSSettingsV3BrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/crostini_page_test.m.js';
+  }
+
+  /** @override */
+  testGenPreamble() {
+    GEN('crostini::FakeCrostiniFeatures fake_crostini_features;');
+    GEN('fake_crostini_features.SetAll(true);');
+  }
+};
+
+TEST_F('OSSettingsCrostiniPageV3Test', 'AllJsTests', () => {
+  mocha.run();
+});
+
 [['AccessibilityPage', 'os_a11y_page_tests.m.js'],
  ['AboutPage', 'os_about_page_tests.m.js'],
  ['AccountsPage', 'add_users_tests.m.js'],
@@ -338,7 +350,6 @@ TEST_F('OSSettingsAppManagementAppDetailsV3Test', 'AllJsTests', () => {
    'DictationChangeLanguageLocaleDialogTest',
    'change_dictation_locale_dialog_test.m.js'
  ],
- ['CrostiniPage', 'crostini_page_test.m.js'],
  ['CupsPrinterEntry', 'cups_printer_entry_tests.m.js'],
  ['CupsPrinterLandingPage', 'cups_printer_landing_page_tests.m.js'],
  // TODO(crbug/1240970): Re-enable once flakiness is fixed.
@@ -483,14 +494,6 @@ function registerTest(testName, module, caseName) {
       mocha.grep('PrivacePageTest_OfficialBuild').run();
     });
     GEN('#endif');
-  } else if (testName === 'CrostiniPage') {
-    TEST_F(className, caseName || 'All', () => {
-      GEN('browser()->profile()->GetPrefs()->SetBoolean(');
-      GEN('    crostini::prefs::kCrostiniEnabled, true);');
-      GEN('crostini::FakeCrostiniFeatures fake_crostini_features;');
-      GEN('fake_crostini_features.SetAll(true);');
-      mocha.run();
-    });
   } else {
     TEST_F(className, caseName || 'All', () => mocha.run());
   }
