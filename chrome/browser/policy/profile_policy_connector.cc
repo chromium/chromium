@@ -230,8 +230,6 @@ void ProfilePolicyConnector::Init(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   migrators.push_back(std::make_unique<LegacyChromePolicyMigrator>(
-      policy::key::kDeviceNativePrinters, policy::key::kDevicePrinters));
-  migrators.push_back(std::make_unique<LegacyChromePolicyMigrator>(
       policy::key::kDeviceUserWhitelist,  // nocheck
       policy::key::kDeviceUserAllowlist));
   migrators.push_back(std::make_unique<LegacyChromePolicyMigrator>(

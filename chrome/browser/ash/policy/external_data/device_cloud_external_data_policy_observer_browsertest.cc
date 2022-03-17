@@ -94,17 +94,15 @@ class DeviceCloudExternalDataPolicyObserverTest
     DevicePolicyCrosBrowserTest::TearDownOnMainThread();
   }
 
-  void SetDeviceNativePrintersExternalData(const std::string& policy) {
-    device_policy()
-        ->payload()
-        .mutable_native_device_printers()
-        ->set_external_policy(policy);
+  void SetDevicePrintersExternalData(const std::string& policy) {
+    device_policy()->payload().mutable_device_printers()->set_external_policy(
+        policy);
     RefreshDevicePolicy();
     WaitUntilPolicyChanged();
   }
 
-  void ClearDeviceNativePrintersExternalData() {
-    device_policy()->payload().clear_native_device_printers();
+  void ClearDevicePrintersExternalData() {
+    device_policy()->payload().clear_device_printers();
     RefreshDevicePolicy();
     WaitUntilPolicyChanged();
   }
@@ -144,10 +142,10 @@ IN_PROC_BROWSER_TEST_F(DeviceCloudExternalDataPolicyObserverTest,
   EXPECT_CALL(mock_delegate_, OnDeviceExternalDataSet(kPolicyName));
   EXPECT_CALL(mock_delegate_, OnDeviceExternalDataCleared(kPolicyName));
 
-  SetDeviceNativePrintersExternalData(test::ConstructExternalDataPolicy(
+  SetDevicePrintersExternalData(test::ConstructExternalDataPolicy(
       *embedded_test_server(), kExternalDataPath));
   content::RunAllTasksUntilIdle();
-  ClearDeviceNativePrintersExternalData();
+  ClearDevicePrintersExternalData();
 }
 
 IN_PROC_BROWSER_TEST_F(DeviceCloudExternalDataPolicyObserverTest, PolicyIsSet) {
@@ -164,7 +162,7 @@ IN_PROC_BROWSER_TEST_F(DeviceCloudExternalDataPolicyObserverTest, PolicyIsSet) {
             run_loop.Quit();
           }));
 
-  SetDeviceNativePrintersExternalData(test::ConstructExternalDataPolicy(
+  SetDevicePrintersExternalData(test::ConstructExternalDataPolicy(
       *embedded_test_server(), kExternalDataPath));
   run_loop.Run();
 }
@@ -184,7 +182,7 @@ IN_PROC_BROWSER_TEST_F(DeviceCloudExternalDataPolicyObserverTest,
             run_loop.Quit();
           }));
 
-  SetDeviceNativePrintersExternalData(test::ConstructExternalDataPolicy(
+  SetDevicePrintersExternalData(test::ConstructExternalDataPolicy(
       *embedded_test_server(), kExternalDataPath));
   run_loop.Run();
 
@@ -203,7 +201,7 @@ IN_PROC_BROWSER_TEST_F(DeviceCloudExternalDataPolicyObserverTest,
             run_loop_updated.Quit();
           }));
 
-  SetDeviceNativePrintersExternalData(test::ConstructExternalDataPolicy(
+  SetDevicePrintersExternalData(test::ConstructExternalDataPolicy(
       *embedded_test_server(), kExternalDataPathUpdated));
   run_loop_updated.Run();
 }

@@ -11704,7 +11704,7 @@
     "reason_for_missing_test": "Maps into CrosSettings"
   },
   "DeviceUserWhitelist": {
-    "reason_for_missing_test": "Maps into CrosSettings"
+    "reason_for_missing_test": "Policy was removed"
   },
   "DeviceUserAllowlist": {
     "reason_for_missing_test": "Maps into CrosSettings"
@@ -12138,7 +12138,7 @@
     "reason_for_missing_test": "Maps into CrosSettings"
   },
   "UsbDetachableWhitelist": {
-    "reason_for_missing_test": "Maps into CrosSettings"
+    "reason_for_missing_test": "Policy was removed"
   },
   "UsbDetachableAllowlist": {
     "reason_for_missing_test": "Maps into CrosSettings"
@@ -12310,16 +12310,16 @@
     "reason_for_missing_test": "Maps into CrosSettings"
   },
   "DeviceNativePrinters": {
-    "reason_for_missing_test": "TODO(crbug.com/1213475) external data policy not supported yet"
+    "reason_for_missing_test": "Policy was removed"
   },
   "DeviceNativePrintersAccessMode": {
-    "reason_for_missing_test": "Maps into CrosSettings"
+    "reason_for_missing_test": "Policy was removed"
   },
   "DeviceNativePrintersBlacklist": {
-    "reason_for_missing_test": "Maps into CrosSettings"
+    "reason_for_missing_test": "Policy was removed"
   },
   "DeviceNativePrintersWhitelist": {
-    "reason_for_missing_test": "Maps into CrosSettings"
+    "reason_for_missing_test": "Policy was removed"
   },
   "DeviceExternalPrintServers": {
     "reason_for_missing_test": "TODO(crbug.com/1213475) external data policy not supported yet"

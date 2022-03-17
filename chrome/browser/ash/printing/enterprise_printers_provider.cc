@@ -190,8 +190,7 @@ class EnterprisePrintersProviderImpl : public EnterprisePrintersProvider,
     device_printers_is_complete_ =
         device_printers_->IsComplete() &&
         (device_printers_->IsDataPolicySet() ||
-         (!PolicyWithDataIsSet(policy::key::kDeviceNativePrinters) &&
-          !PolicyWithDataIsSet(policy::key::kDevicePrinters)));
+         !PolicyWithDataIsSet(policy::key::kDevicePrinters));
   }
 
   void RecalculateCurrentPrintersList() {

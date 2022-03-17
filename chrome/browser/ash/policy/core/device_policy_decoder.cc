@@ -237,18 +237,6 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
                   POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
                   std::move(allowlist), nullptr);
   }
-  if (policy.has_user_whitelist()) {          // nocheck
-    const em::UserWhitelistProto& container(  // nocheck
-        policy.user_whitelist());             // nocheck
-    base::Value list(base::Value::Type::LIST);
-    for (const auto& entry : container.user_whitelist())  // nocheck
-      list.Append(entry);
-    policies->Set(key::kDeviceUserWhitelist, POLICY_LEVEL_MANDATORY,  // nocheck
-                  POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD, std::move(list),
-                  nullptr);
-    AddDeprecationWarning(key::kDeviceUserWhitelist,  // nocheck
-                          key::kDeviceUserAllowlist, policies);
-  }
 
   if (policy.has_family_link_accounts_allowed()) {
     const em::DeviceFamilyLinkAccountsAllowedProto& container(
@@ -1346,17 +1334,8 @@ void DecodeExternalDataPolicies(
     }
   }
 
-  // Use DevicePrinters policy if present, fallback to DeviceNativePrinters.
   if (policy.has_device_printers()) {
     const em::DevicePrintersProto& container(policy.device_printers());
-    if (container.has_external_policy()) {
-      SetExternalDataDevicePolicy(key::kDevicePrinters,
-                                  container.external_policy(),
-                                  external_data_manager, policies);
-    }
-  } else if (policy.has_native_device_printers()) {
-    const em::DeviceNativePrintersProto& container(
-        policy.native_device_printers());
     if (container.has_external_policy()) {
       SetExternalDataDevicePolicy(key::kDevicePrinters,
                                   container.external_policy(),
@@ -1551,26 +1530,6 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
                   POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
                   std::move(allowlist), nullptr);
   }
-  if (policy.has_usb_detachable_whitelist()) {         // nocheck
-    const em::UsbDetachableWhitelistProto& container(  // nocheck
-        policy.usb_detachable_whitelist());            // nocheck
-    base::Value list(base::Value::Type::LIST);
-    for (const auto& entry : container.id()) {
-      base::Value ids(base::Value::Type::DICTIONARY);
-      if (entry.has_vendor_id()) {
-        ids.SetStringKey("vid", base::StringPrintf("%04X", entry.vendor_id()));
-      }
-      if (entry.has_product_id()) {
-        ids.SetStringKey("pid", base::StringPrintf("%04X", entry.product_id()));
-      }
-      list.Append(std::move(ids));
-    }
-    policies->Set(
-        key::kUsbDetachableWhitelist, POLICY_LEVEL_MANDATORY,  // nocheck
-        POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD, std::move(list), nullptr);
-    AddDeprecationWarning(key::kUsbDetachableWhitelist,  // nocheck
-                          key::kUsbDetachableAllowlist, policies);
-  }
 
   if (policy.has_quirks_download_enabled()) {
     const em::DeviceQuirksDownloadEnabledProto& container(
@@ -1610,23 +1569,9 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
                     base::Value(container.name()), nullptr);
   }
 
-  // Use DevicePrintersAccessMode if present, fallback to
-  //  DeviceNativePrintersAccessMode.
   if (policy.has_device_printers_access_mode()) {
     const em::DevicePrintersAccessModeProto& container(
         policy.device_printers_access_mode());
-    if (container.has_access_mode()) {
-      std::unique_ptr<base::Value> value(
-          DecodeIntegerValue(container.access_mode()));
-      if (value) {
-        policies->Set(key::kDevicePrintersAccessMode, POLICY_LEVEL_MANDATORY,
-                      POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
-                      std::move(*value), nullptr);
-      }
-    }
-  } else if (policy.has_native_device_printers_access_mode()) {
-    const em::DeviceNativePrintersAccessModeProto& container(
-        policy.native_device_printers_access_mode());
     if (container.has_access_mode()) {
       std::unique_ptr<base::Value> value(
           DecodeIntegerValue(container.access_mode()));
@@ -1649,19 +1594,6 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
                   POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
                   std::move(blocklist), nullptr);
   }
-  if (policy.has_native_device_printers_blacklist()) {        // nocheck
-    const em::DeviceNativePrintersBlacklistProto& container(  // nocheck
-        policy.native_device_printers_blacklist());           // nocheck
-    base::Value list(base::Value::Type::LIST);
-    for (const auto& entry : container.blacklist())  // nocheck
-      list.Append(entry);
-
-    policies->Set(
-        key::kDeviceNativePrintersBlacklist, POLICY_LEVEL_MANDATORY,  // nocheck
-        POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD, std::move(list), nullptr);
-    AddDeprecationWarning(key::kDeviceNativePrintersBlacklist,  // nocheck
-                          key::kDevicePrintersBlocklist, policies);
-  }
 
   if (policy.has_device_printers_allowlist()) {
     const em::DevicePrintersAllowlistProto& container(
@@ -1673,19 +1605,6 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
     policies->Set(key::kDevicePrintersAllowlist, POLICY_LEVEL_MANDATORY,
                   POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
                   std::move(allowlist), nullptr);
-  }
-  if (policy.has_native_device_printers_whitelist()) {        // nocheck
-    const em::DeviceNativePrintersWhitelistProto& container(  // nocheck
-        policy.native_device_printers_whitelist());           // nocheck
-    base::Value list(base::Value::Type::LIST);
-    for (const auto& entry : container.whitelist())  // nocheck
-      list.Append(entry);
-
-    policies->Set(
-        key::kDeviceNativePrintersWhitelist, POLICY_LEVEL_MANDATORY,  // nocheck
-        POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD, std::move(list), nullptr);
-    AddDeprecationWarning(key::kDeviceNativePrintersWhitelist,  // nocheck
-                          key::kDevicePrintersAllowlist, policies);
   }
 
   if (policy.has_external_print_servers_allowlist()) {

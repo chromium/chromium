@@ -11736,7 +11736,7 @@
         'items': { 'type': 'string' },
         'sensitiveValue': True,
       },
-      'supported_on': ['chrome_os:12-'],
+      'supported_on': ['chrome_os:12-100'],
       'device_only': True,
       'features': {
         'dynamic_refresh': True,
@@ -17106,7 +17106,7 @@
           },
         },
       },
-      'supported_on': ['chrome_os:51-'],
+      'supported_on': ['chrome_os:51-100'],
       'device_only': True,
       'features': {
         'dynamic_refresh': False,
@@ -18327,7 +18327,7 @@
           'hash': { 'type': 'string' }
         },
       },
-      'supported_on': ['chrome_os:73-'],
+      'supported_on': ['chrome_os:73-100'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -18357,7 +18357,7 @@
       'owners': ['srad@google.com', 'pawliczek@chromium.org'],
       'id': 387,
       'device_only': True,
-      'supported_on': ['chrome_os:73-'],
+      'supported_on': ['chrome_os:73-100'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -18403,7 +18403,7 @@
     {
       'name': 'DeviceNativePrintersBlacklist',
       'owners': ['srad@google.com', 'pawliczek@chromium.org'],
-      'supported_on': ['chrome_os:73-'],
+      'supported_on': ['chrome_os:73-100'],
       'device_only': True,
       'id': 388,
       'type': 'list',
@@ -18425,7 +18425,7 @@
     {
       'name': 'DeviceNativePrintersWhitelist',
       'owners': ['srad@google.com', 'pawliczek@chromium.org'],
-      'supported_on': ['chrome_os:73-'],
+      'supported_on': ['chrome_os:73-100'],
       'device_only': True,
       'id': 389,
       'type': 'list',

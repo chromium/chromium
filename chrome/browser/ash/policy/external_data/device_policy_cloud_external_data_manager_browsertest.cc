@@ -117,17 +117,15 @@ class DevicePolicyCloudExternalDataManagerTest
     return base::ComputeDirectorySize(device_policy_external_data_path);
   }
 
-  void SetDeviceNativePrintersExternalData(const std::string& policy) {
-    device_policy()
-        ->payload()
-        .mutable_native_device_printers()
-        ->set_external_policy(policy);
+  void SetDevicePrintersExternalData(const std::string& policy) {
+    device_policy()->payload().mutable_device_printers()->set_external_policy(
+        policy);
     RefreshDevicePolicy();
     WaitUntilPolicyChanged();
   }
 
-  void ClearDeviceNativePrintersExternalData() {
-    device_policy()->payload().clear_native_device_printers();
+  void ClearDevicePrintersExternalData() {
+    device_policy()->payload().clear_device_printers();
     RefreshDevicePolicy();
     WaitUntilPolicyChanged();
   }
@@ -162,7 +160,7 @@ class DevicePolicyCloudExternalDataManagerTest
 
 IN_PROC_BROWSER_TEST_F(DevicePolicyCloudExternalDataManagerTest,
                        FetchExternalData) {
-  SetDeviceNativePrintersExternalData(test::ConstructExternalDataPolicy(
+  SetDevicePrintersExternalData(test::ConstructExternalDataPolicy(
       *embedded_test_server(), kExternalDataPath));
   EXPECT_EQ(ReadExternalDataFile(kExternalDataPath), GetExternalData());
 }
@@ -176,7 +174,7 @@ IN_PROC_BROWSER_TEST_F(DevicePolicyCloudExternalDataManagerTest,
   // Check that file size is greater than cache limit.
   ASSERT_GT(base::checked_cast<int64_t>(external_data.size()),
             kTestCacheMaxSize);
-  SetDeviceNativePrintersExternalData(test::ConstructExternalDataPolicy(
+  SetDevicePrintersExternalData(test::ConstructExternalDataPolicy(
       *embedded_test_server(), kExternalDataPathOverSizeLimit));
   EXPECT_EQ(external_data, GetExternalData());
 
@@ -189,21 +187,21 @@ IN_PROC_BROWSER_TEST_F(DevicePolicyCloudExternalDataManagerTest,
   EXPECT_EQ(0, ComputeExternalDataCacheDirectorySize());
 
   std::string external_data = ReadExternalDataFile(kExternalDataPath);
-  SetDeviceNativePrintersExternalData(test::ConstructExternalDataPolicy(
+  SetDevicePrintersExternalData(test::ConstructExternalDataPolicy(
       *embedded_test_server(), kExternalDataPath));
   EXPECT_EQ(external_data, GetExternalData());
   EXPECT_EQ(base::checked_cast<int64_t>(external_data.size()),
             ComputeExternalDataCacheDirectorySize());
 
   external_data = ReadExternalDataFile(kExternalDataPathUpdated);
-  SetDeviceNativePrintersExternalData(test::ConstructExternalDataPolicy(
+  SetDevicePrintersExternalData(test::ConstructExternalDataPolicy(
       *embedded_test_server(), kExternalDataPathUpdated));
   EXPECT_EQ(external_data, GetExternalData());
   // Check that previous policy data was cleared and replaced by new one.
   EXPECT_EQ(base::checked_cast<int64_t>(external_data.size()),
             ComputeExternalDataCacheDirectorySize());
 
-  ClearDeviceNativePrintersExternalData();
+  ClearDevicePrintersExternalData();
   // We have to wait until
   // CloudExternalDataManagerBase::Backend::OnMetadataUpdated(), which is
   // responsible for removing outdated external policy files, is completed.
