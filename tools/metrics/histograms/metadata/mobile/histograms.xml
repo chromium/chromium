@@ -777,15 +777,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="MobileFre.FromLaunch" units="ms"
+<histogram name="MobileFre.FromLaunch.{Target}" units="ms"
     expires_after="2022-08-21">
   <owner>skym@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
   <summary>
-    Android: This suffixed histogram represents the amount of time from when the
-    FRE intent was initially constructed, until some event in the future occurs.
-    Not applicable for light weight FRE.
+    The amount of time between when the FRE intent was initially constructed and
+    when {Target}. Not emitted for the light-weight FRE. Android chrome only.
   </summary>
+  <token key="Target">
+    <variant name="ActivityInflated"
+        summary="the activity is ready to be drawn, although likely empty"/>
+    <variant name="FirstFragmentInflatedV2"
+        summary="the first fragment is ready to be drawn, the first
+                 meaningful paint. Version V2 fixed an issue that previous
+                 data was not recording the time duration from FRE launched"/>
+    <variant name="FreCompleted" summary="the entire FRE is completed"/>
+    <variant name="TosAccepted" summary="the ToS is accepted"/>
+    <variant name="TriggerLayoutInflation"
+        summary="layout inflation is triggered"/>
+  </token>
 </histogram>
 
 <histogram

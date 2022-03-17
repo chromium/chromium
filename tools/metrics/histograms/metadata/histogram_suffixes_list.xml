@@ -4340,20 +4340,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="MobileFre.FragmentInflationSpeed"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="MobileFreFromLaunchTarget" separator=".">
-  <suffix name="ActivityInflated"
-      label="The activity is ready to be drawn, although likely empty."/>
-  <suffix name="FirstFragmentInflatedV2"
-      label="The first fragment is ready to be drawn, the first meaningful
-             paint. Version V2 fixed an issue that previous data was not
-             recording the time duration from FRE launched."/>
-  <suffix name="FreCompleted" label="Entire FRE is completed."/>
-  <suffix name="TosAccepted" label="ToS is accepted."/>
-  <suffix name="TriggerLayoutInflation"
-      label="Recorded when layout inflation is triggered."/>
-  <affected-histogram name="MobileFre.FromLaunch"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="ModuleIntegrityVerificationType" separator=".">
   <suffix name="WithoutByteSet"
       label="The version of the Module Integrity Verifier that doesn't use a
