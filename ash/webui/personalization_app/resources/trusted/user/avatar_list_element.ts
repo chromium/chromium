@@ -121,12 +121,18 @@ export class AvatarList extends WithPersonalizationStore {
     getUserProvider().selectLastExternalUserImage();
   }
 
-  private openCamera_() {
+  private openCamera_(event: Event) {
+    if (!isSelectionEvent(event)) {
+      return;
+    }
     assert(this.isCameraPresent_, 'Camera needed to record an image');
     this.cameraMode_ = AvatarCameraMode.CAMERA;
   }
 
-  private openVideo_() {
+  private openVideo_(event: Event) {
+    if (!isSelectionEvent(event)) {
+      return;
+    }
     assert(this.isCameraPresent_, 'Camera needed to record a video');
     this.cameraMode_ = AvatarCameraMode.VIDEO;
   }

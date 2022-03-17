@@ -9,6 +9,9 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
+
+import '../cros_button_style.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {assertInstanceof, assertNotReached} from 'chrome://resources/js/assert_ts.js';
@@ -74,7 +77,6 @@ export class AvatarCamera extends WithPersonalizationStore {
        */
       mode: {
         type: String,
-        observer: 'onModeChanged_',
         value: AvatarCameraMode.CAMERA,
       },
 
@@ -98,7 +100,7 @@ export class AvatarCamera extends WithPersonalizationStore {
         type: String,
         computed: 'computePreviewBlobUrl_(pngBinary_)',
         observer: 'onPreviewBlobUrlChanged_',
-      }
+      },
     };
   }
 
@@ -191,10 +193,26 @@ export class AvatarCamera extends WithPersonalizationStore {
     this.pngBinary_ = null;
   }
 
-  private isVideoHidden_(): boolean {
-    return !this.cameraStream_ || !!this.previewBlobUrl_;
+  private showLoading_(): boolean {
+    return !this.cameraStream_ && !this.previewBlobUrl_;
   }
 
+  private showSvgMask_(): boolean {
+    return this.showCameraFeed_() || !!this.previewBlobUrl_;
+  }
+
+  private showCameraFeed_(): boolean {
+    return !!this.cameraStream_ && !this.previewBlobUrl_;
+  }
+
+  private showFooter_(): boolean {
+    return this.showCameraFeed_() || !!this.previewBlobUrl_;
+  }
+
+  private getTakePhotoIcon_(mode: AvatarCameraMode): string {
+    return mode === AvatarCameraMode.VIDEO ? 'personalization:loop' :
+                                             'personalization:camera';
+  }
 
   private getTakePhotoText_(mode: AvatarCameraMode): string {
     return mode === AvatarCameraMode.VIDEO ? this.i18n('takeWebcamVideo') :

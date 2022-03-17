@@ -35,7 +35,7 @@
     right: 0;
     top: 0;
   }
-  .folder-container {
+  .avatar-button-container {
     background-color: var(--cros-highlight-color);
     border-radius: 100%;
     cursor: pointer;
@@ -47,17 +47,17 @@
     vertical-align: middle;
     width: 64px;
   }
-  .folder-container:hover {
+  .avatar-button-container:hover {
     background-color: var(--cros-text-highlight-color);
   }
-  .folder-container:focus-visible {
+  .avatar-button-container:focus-visible {
     outline: 2px solid var(--cros-focus-ring-color);
   }
-  .folder-container paper-ripple {
+  .avatar-button-container paper-ripple {
     color: rgba(var(--cros-ripple-color-prominent-rgb), 1);
     --paper-ripple-opacity: var(--cros-button-primary-ripple-opacity);
   }
-  #folderIcon {
+  .avatar-button-container iron-icon {
     line-height: inherit;
     --iron-icon-height: 20px;
     --iron-icon-width: 20px;
@@ -77,19 +77,21 @@
 </style>
 <div id="container">
   <template is="dom-if" if="[[isCameraPresent_]]">
-    <div id="openCamera" on-click="openCamera_">
-      <!-- TODO(cowmoo) placeholder string -->
-      <p>Open Camera</p>
+    <div id="openCamera" class="avatar-button-container" on-click="openCamera_"
+        on-keypress="openCamera_">
+      <paper-ripple class="circle"></paper-ripple>
+      <iron-icon icon="personalization:camera"></iron-icon>
     </div>
-    <div id="openVideo" on-click="openVideo_">
-      <!-- TODO(cowmoo) placeholder string -->
-      <p>Open Video</p>
+    <div id="openVideo" class="avatar-button-container" on-click="openVideo_"
+        on-keypress="openVideo_">
+      <paper-ripple class="circle"></paper-ripple>
+      <iron-icon icon="personalization:loop"></iron-icon>
     </div>
   </template>
-  <div class="folder-container">
+  <div class="avatar-button-container">
     <paper-ripple class="circle"></paper-ripple>
-    <iron-icon id="folderIcon" icon="personalization:folder"
-        on-click="onSelectImageFromDisk_" on-keypress="onSelectImageFromDisk_">
+    <iron-icon icon="personalization:folder" on-click="onSelectImageFromDisk_"
+        on-keypress="onSelectImageFromDisk_">
     </iron-icon>
   </div>
   <template is="dom-if" if="[[lastExternalUserImageUrl_]]">

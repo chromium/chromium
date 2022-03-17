@@ -1,33 +1,106 @@
-<style>
+<style include="cros-button-style">
+  cr-dialog {
+    --cr-dialog-width: 300px;
+    --cr-dialog-body-padding-horizontal: 24px;
+  }
+
   #webcamVideo {
     /*
      * Mirror the webcam feed because people are used to seeing themselves in a
      * mirror. Still has to be mirrored even in RTL layouts.
      */
     transform: scaleX(-1);
+    width: 100%;
+  }
+
+  iron-icon {
+    --iron-icon-height: 20px;
+    --iron-icon-width: 20px;
+  }
+
+  cr-button {
+    border-radius: 16px;
+    display: flex;
+    gap: 8px;
+    height: 32px;
+    padding: 6px 16px;
+  }
+
+  div[slot='body'] {
+    height: 255px;
+    position: relative;
+  }
+
+  paper-spinner-lite {
+    bottom: 50%;
+    left: 50%;
+    position: absolute;
+    transform: translate(-50%, -50%);
+  }
+
+  svg {
+    bottom: 0;
+    left: 0;
+    padding: inherit;
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 1;
+  }
+
+  #previewImg {
+    width: 100%;
+  }
+
+  div[slot='footer'] {
+    display: flex;
+    flex-flow: row nowrap;
+    gap: 8px;
+    justify-content: center;
   }
 </style>
 <cr-dialog id="dialog" show-close-button show-on-attach>
   <div slot="body">
+    <template is="dom-if" if="[[showLoading_(cameraStream_, previewBlobUrl_)]]">
+      <paper-spinner-lite active></paper-spinner-lite>
+    </template>
+    <template is="dom-if" if="[[showSvgMask_(cameraStream_, previewBlobUrl_)]]">
+      <svg viewbox="0 0 100 100" id="svg" hidden="">
+        <defs>
+          <mask id="mask" x="0" y="0" width="100" height="100">
+            <rect x="0" y="0" width="100" height="100" fill="white"></rect>
+            <circle cx="50" cy="50" r="48" fill="black"></circle>
+          </mask>
+        </defs>
+        <rect x="0" y="0" width="100" height="100" mask="url(#mask)"
+            fill-opacity="0.33"></rect>
+      </svg>
+    </template>
     <video id="webcamVideo" autoplay
-        hidden$="[[isVideoHidden_(cameraStream_, previewBlobUrl_)]]"></video>
+        hidden$="[[!showCameraFeed_(cameraStream_, previewBlobUrl_)]]"></video>
     <template is="dom-if" if="[[previewBlobUrl_]]">
-      <img src$="[[previewBlobUrl_]]">
+      <img id="previewImg" src$="[[previewBlobUrl_]]">
     </template>
   </div>
-  <div slot="footer">
-    <template is="dom-if" if="[[!previewBlobUrl_]]">
-      <cr-button id="takePhoto" on-click="takePhoto_">
-        [[getTakePhotoText_(mode)]]
-      </cr-button>
-    </template>
-    <template is="dom-if" if="[[previewBlobUrl_]]">
-      <cr-button id="confirmPhoto" on-click="confirmPhoto_">
-        [[getConfirmText_(mode)]]
-      </cr-button>
-      <cr-button id="clearPhoto" on-click="clearPhoto_">
-        $i18n{rejectWebcamPhoto}
-      </cr-button>
-    </template>
-  </div>
+  <template is="dom-if" if="[[showFooter_(cameraStream_, previewBlobUrl_)]]">
+    <div slot="footer">
+      <template is="dom-if"
+          if="[[showCameraFeed_(cameraStream_, previewBlobUrl_)]]">
+        <cr-button id="takePhoto" on-click="takePhoto_" class="primary">
+          <iron-icon icon="[[getTakePhotoIcon_(mode)]]"></iron-icon>
+          <span>[[getTakePhotoText_(mode)]]</span>
+        </cr-button>
+      </template>
+      <template is="dom-if" if="[[previewBlobUrl_]]">
+        <cr-button id="confirmPhoto" on-click="confirmPhoto_" class="primary">
+          <iron-icon icon="personalization:circle_checkmark"></iron-icon>
+          <span>[[getConfirmText_(mode)]]</span>
+        </cr-button>
+        <cr-button id="clearPhoto" on-click="clearPhoto_" class="secondary">
+          <iron-icon icon="personalization:refresh"></iron-icon>
+          <span>$i18n{rejectWebcamPhoto}</span>
+        </cr-button>
+      </template>
+    </div>
+  </template>
 </cr-dialog>
