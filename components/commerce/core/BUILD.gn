@@ -23,6 +23,26 @@ source_set("feature_list") {
     "//third_party/re2:re2",
     "//url:url",
   ]
+
+  if (!is_android) {
+    deps += [ ":commerce_heuristics_data" ]
+  }
+}
+
+source_set("feature_list_unittests") {
+  testonly = true
+  sources = [ "commerce_feature_list_unittest.cc" ]
+  deps = [
+    ":feature_list",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+    "//third_party/re2:re2",
+  ]
+
+  if (!is_android) {
+    deps += [ ":commerce_heuristics_data" ]
+  }
 }
 
 static_library("metrics") {

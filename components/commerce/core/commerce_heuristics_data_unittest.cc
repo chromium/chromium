@@ -22,7 +22,9 @@ const char kHintHeuristicsJSONData[] = R"###(
   )###";
 const char kGlobalHeuristicsJSONData[] = R"###(
       {
-        "sensitive_product_regex": "\\b\\B"
+        "sensitive_product_regex": "\\b\\B",
+        "rule_discount_partner_merchant_regex": "foo",
+        "coupon_discount_partner_merchant_regex": "bar"
       }
   )###";
 }  // namespace
@@ -59,10 +61,20 @@ TEST_F(CommerceHeuristicsDataTest, TestPopulateHintHeuristics_Success) {
   ASSERT_EQ(*hint_heuristics->FindDict("bar.com")->FindString("merchant_name"),
             "Bar");
   auto* global_heuristics = GetGlobalHeuristics();
-  ASSERT_EQ(global_heuristics->size(), 1u);
+  ASSERT_EQ(global_heuristics->size(), 3u);
   ASSERT_TRUE(global_heuristics->contains("sensitive_product_regex"));
   ASSERT_EQ(*global_heuristics->FindString("sensitive_product_regex"),
             "\\b\\B");
+  ASSERT_TRUE(
+      global_heuristics->contains("rule_discount_partner_merchant_regex"));
+  ASSERT_EQ(
+      *global_heuristics->FindString("rule_discount_partner_merchant_regex"),
+      "foo");
+  ASSERT_TRUE(
+      global_heuristics->contains("coupon_discount_partner_merchant_regex"));
+  ASSERT_EQ(
+      *global_heuristics->FindString("coupon_discount_partner_merchant_regex"),
+      "bar");
 }
 
 TEST_F(CommerceHeuristicsDataTest, TestPopulateHeuristics_Failure) {
@@ -113,5 +125,24 @@ TEST_F(CommerceHeuristicsDataTest, TestGetProductSkipPattern) {
       kHintHeuristicsJSONData, kGlobalHeuristicsJSONData, "", ""));
 
   ASSERT_EQ(data.GetProductSkipPattern()->pattern(), "\\b\\B");
+}
+
+TEST_F(CommerceHeuristicsDataTest, TestGetRuleDiscountPartnerMerchantPattern) {
+  auto& data = commerce_heuristics::CommerceHeuristicsData::GetInstance();
+
+  ASSERT_TRUE(data.PopulateDataFromComponent(
+      kHintHeuristicsJSONData, kGlobalHeuristicsJSONData, "", ""));
+
+  ASSERT_EQ(data.GetRuleDiscountPartnerMerchantPattern()->pattern(), "foo");
+}
+
+TEST_F(CommerceHeuristicsDataTest,
+       TestGetCouponDiscountPartnerMerchantPattern) {
+  auto& data = commerce_heuristics::CommerceHeuristicsData::GetInstance();
+
+  ASSERT_TRUE(data.PopulateDataFromComponent(
+      kHintHeuristicsJSONData, kGlobalHeuristicsJSONData, "", ""));
+
+  ASSERT_EQ(data.GetCouponDiscountPartnerMerchantPattern()->pattern(), "bar");
 }
 }  // namespace commerce_heuristics

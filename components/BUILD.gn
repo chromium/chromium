@@ -498,7 +498,10 @@ test("components_unittests") {
   }
 
   if (!is_android) {
-    deps += [ "//components/commerce/core:commerce_heuristics_data_unittests" ]
+    deps += [
+      "//components/commerce/core:commerce_heuristics_data_unittests",
+      "//components/commerce/core:feature_list_unittests",
+    ]
   }
 
   if (enable_library_cdms) {

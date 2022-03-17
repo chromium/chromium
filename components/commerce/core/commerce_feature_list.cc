@@ -7,6 +7,10 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
+#include "build/buildflag.h"
+#if !BUILDFLAG(IS_ANDROID)
+#include "components/commerce/core/commerce_heuristics_data.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 #include "third_party/re2/src/re2/re2.h"
 
 namespace commerce {
@@ -24,6 +28,15 @@ constexpr base::FeatureParam<std::string> kCouponPartnerMerchantPattern{
     "\\b\\B"};
 
 const re2::RE2& GetRulePartnerMerchantPattern() {
+#if !BUILDFLAG(IS_ANDROID)
+  auto* pattern_from_component =
+      commerce_heuristics::CommerceHeuristicsData::GetInstance()
+          .GetRuleDiscountPartnerMerchantPattern();
+  if (pattern_from_component && kRulePartnerMerchantPattern.Get() ==
+                                    kRulePartnerMerchantPattern.default_value) {
+    return *pattern_from_component;
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
   re2::RE2::Options options;
   options.set_case_sensitive(false);
   static base::NoDestructor<re2::RE2> instance(
@@ -32,6 +45,16 @@ const re2::RE2& GetRulePartnerMerchantPattern() {
 }
 
 const re2::RE2& GetCouponPartnerMerchantPattern() {
+#if !BUILDFLAG(IS_ANDROID)
+  auto* pattern_from_component =
+      commerce_heuristics::CommerceHeuristicsData::GetInstance()
+          .GetCouponDiscountPartnerMerchantPattern();
+  if (pattern_from_component &&
+      kCouponPartnerMerchantPattern.Get() ==
+          kCouponPartnerMerchantPattern.default_value) {
+    return *pattern_from_component;
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
   re2::RE2::Options options;
   options.set_case_sensitive(false);
   static base::NoDestructor<re2::RE2> instance(

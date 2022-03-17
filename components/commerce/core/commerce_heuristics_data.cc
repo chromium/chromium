@@ -16,6 +16,11 @@ constexpr char kMerchantCartURLType[] = "cart_url";
 
 // CommerceGlobalHeuristics types.
 constexpr char kSkipProductPatternType[] = "sensitive_product_regex";
+constexpr char kRuleDiscountPartnerMerchantPatternType[] =
+    "rule_discount_partner_merchant_regex";
+constexpr char kCouponDiscountPartnerMerchantPatternType[] =
+    "coupon_discount_partner_merchant_regex";
+
 }  // namespace
 
 // static
@@ -45,6 +50,10 @@ bool CommerceHeuristicsData::PopulateDataFromComponent(
   hint_heuristics_ = std::move(*hint_json_value->GetIfDict());
   global_heuristics_ = std::move(*global_json_value->GetIfDict());
   product_skip_pattern_ = ConstructGlobalRegex(kSkipProductPatternType);
+  rule_discount_partner_merchant_pattern_ =
+      ConstructGlobalRegex(kRuleDiscountPartnerMerchantPatternType);
+  coupon_discount_partner_merchant_pattern_ =
+      ConstructGlobalRegex(kCouponDiscountPartnerMerchantPatternType);
   return true;
 }
 
@@ -60,6 +69,16 @@ absl::optional<std::string> CommerceHeuristicsData::GetMerchantCartURL(
 
 const re2::RE2* CommerceHeuristicsData::GetProductSkipPattern() {
   return product_skip_pattern_.get();
+}
+
+const re2::RE2*
+CommerceHeuristicsData::GetRuleDiscountPartnerMerchantPattern() {
+  return rule_discount_partner_merchant_pattern_.get();
+}
+
+const re2::RE2*
+CommerceHeuristicsData::GetCouponDiscountPartnerMerchantPattern() {
+  return coupon_discount_partner_merchant_pattern_.get();
 }
 
 absl::optional<std::string> CommerceHeuristicsData::GetCommerceHintHeuristics(
