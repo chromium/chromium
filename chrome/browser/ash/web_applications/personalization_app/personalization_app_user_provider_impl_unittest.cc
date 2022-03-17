@@ -8,11 +8,14 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
+#include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/span.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/login/users/avatar/fake_user_image_file_selector.h"
 #include "chrome/browser/ash/login/users/avatar/mock_user_image_manager.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager.h"
@@ -32,6 +35,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -62,12 +66,21 @@ void AddAndLoginUser(const AccountId& account_id,
   user_manager->SwitchActiveUser(account_id);
 }
 
-gfx::ImageSkia CreateImage(int width, int height) {
+SkBitmap CreateBitmap(int width, int height) {
   SkBitmap bitmap;
   bitmap.allocN32Pixels(width, height);
   bitmap.eraseColor(SK_ColorGREEN);
-  gfx::ImageSkia image = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
+  return bitmap;
+}
+
+gfx::ImageSkia CreateImage(int width, int height) {
+  gfx::ImageSkia image =
+      gfx::ImageSkia::CreateFrom1xBitmap(CreateBitmap(width, height));
   return image;
+}
+
+mojo_base::BigBuffer FakeEncodedPngBuffer() {
+  return mojo_base::BigBuffer({0, 1});
 }
 
 class TestUserImageObserver
@@ -112,6 +125,18 @@ class TestUserImageObserver
 
 }  // namespace
 
+class TestCameraImageDecoder
+    : public PersonalizationAppUserProviderImpl::CameraImageDecoder {
+ public:
+  TestCameraImageDecoder() = default;
+  ~TestCameraImageDecoder() override = default;
+
+  void DecodeCameraImage(base::span<const uint8_t> encoded_bytes,
+                         data_decoder::DecodeImageCallback callback) override {
+    std::move(callback).Run(CreateBitmap(10, 10));
+  }
+};
+
 class PersonalizationAppUserProviderImplTest : public testing::Test {
  public:
   PersonalizationAppUserProviderImplTest()
@@ -140,6 +165,8 @@ class PersonalizationAppUserProviderImplTest : public testing::Test {
     ash::UserImageManagerImpl::SkipProfileImageDownloadForTesting();
     user_provider_ =
         std::make_unique<PersonalizationAppUserProviderImpl>(&web_ui_);
+    user_provider_->camera_image_decoder_ =
+        std::make_unique<TestCameraImageDecoder>();
 
     user_provider_->BindInterface(
         user_provider_remote_.BindNewPipeAndPassReceiver());
@@ -160,6 +187,10 @@ class PersonalizationAppUserProviderImplTest : public testing::Test {
 
   gfx::ImageSkia user_image() {
     return user_manager::UserManager::Get()->GetActiveUser()->GetImage();
+  }
+
+  int image_index() {
+    return user_manager::UserManager::Get()->GetActiveUser()->image_index();
   }
 
   ash::UserImageManagerImpl* user_image_manager() {
@@ -190,6 +221,8 @@ class PersonalizationAppUserProviderImplTest : public testing::Test {
     return test_user_image_observer_.current_profile_image();
   }
 
+  const base::HistogramTester& histogram_tester() { return histogram_tester_; }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
@@ -202,6 +235,7 @@ class PersonalizationAppUserProviderImplTest : public testing::Test {
   mojo::Remote<ash::personalization_app::mojom::UserProvider>
       user_provider_remote_;
   std::unique_ptr<PersonalizationAppUserProviderImpl> user_provider_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(PersonalizationAppUserProviderImplTest, GetsUserInfo) {
@@ -258,7 +292,7 @@ TEST_F(PersonalizationAppUserProviderImplTest, ObservesUserProfileImage) {
   SetUserImageObserver();
 
   // Select a profile image.
-  const gfx::ImageSkia& profile_image = CreateImage(50, 50);
+  gfx::ImageSkia profile_image = CreateImage(50, 50);
   user_image_manager()->SetDownloadedProfileImageForTesting(profile_image);
   user_image_manager()->SaveUserImageFromProfileImage();
 
@@ -270,7 +304,7 @@ TEST_F(PersonalizationAppUserProviderImplTest, ObservesUserProfileImage) {
 TEST_F(PersonalizationAppUserProviderImplTest, SelectProfileImage) {
   SetUserImageObserver();
 
-  const gfx::ImageSkia& profile_image = CreateImage(50, 50);
+  gfx::ImageSkia profile_image = CreateImage(50, 50);
   user_image_manager()->SetDownloadedProfileImageForTesting(profile_image);
   user_provider_remote()->get()->SelectProfileImage();
   user_provider_remote()->FlushForTesting();
@@ -309,6 +343,121 @@ TEST_F(PersonalizationAppUserProviderImplTest, EncodesUserImageToPngBuffer) {
   }
 }
 
+TEST_F(PersonalizationAppUserProviderImplTest,
+       RecordsDefaultImageChangeHistogram) {
+  int image_index = 55;
+  ASSERT_TRUE(ash::default_user_image::IsInCurrentImageSet(image_index));
+
+  histogram_tester().ExpectBucketCount(
+      ash::UserImageManager::kUserImageChangedHistogramName,
+      ash::UserImageManager::ImageIndexToHistogramIndex(image_index), 0);
+
+  user_provider_remote()->get()->SelectDefaultImage(image_index);
+  user_provider_remote()->FlushForTesting();
+
+  // Bucket count is incremented after selecting this default image.
+  histogram_tester().ExpectBucketCount(
+      ash::UserImageManager::kUserImageChangedHistogramName,
+      ash::UserImageManager::ImageIndexToHistogramIndex(image_index), 1);
+
+  // Select the same image again.
+  user_provider_remote()->get()->SelectDefaultImage(image_index);
+  user_provider_remote()->FlushForTesting();
+
+  // Bucket count is not incremented.
+  histogram_tester().ExpectBucketCount(
+      ash::UserImageManager::kUserImageChangedHistogramName,
+      ash::UserImageManager::ImageIndexToHistogramIndex(image_index), 1);
+}
+
+TEST_F(PersonalizationAppUserProviderImplTest,
+       RecordsCameraImageChangeHistogram) {
+  // No camera images recorded yet.
+  histogram_tester().ExpectBucketCount(
+      ash::UserImageManager::kUserImageChangedHistogramName,
+      ash::default_user_image::kHistogramImageFromCamera, 0);
+
+  user_provider_remote()->get()->SelectCameraImage(FakeEncodedPngBuffer());
+  user_provider_remote()->FlushForTesting();
+
+  histogram_tester().ExpectBucketCount(
+      ash::UserImageManager::kUserImageChangedHistogramName,
+      ash::default_user_image::kHistogramImageFromCamera, 1);
+
+  user_provider_remote()->get()->SelectCameraImage(FakeEncodedPngBuffer());
+  user_provider_remote()->FlushForTesting();
+
+  // Every camera image increments the count.
+  histogram_tester().ExpectBucketCount(
+      ash::UserImageManager::kUserImageChangedHistogramName,
+      ash::default_user_image::kHistogramImageFromCamera, 2);
+}
+
+TEST_F(PersonalizationAppUserProviderImplTest,
+       RecordsProfileImageChangeHistogram) {
+  // Set a fake profile image to skip trying to downloading one.
+  const gfx::ImageSkia& profile_image = CreateImage(50, 50);
+  user_image_manager()->SetDownloadedProfileImageForTesting(profile_image);
+
+  // No profile image recorded yet.
+  histogram_tester().ExpectBucketCount(
+      ash::UserImageManager::kUserImageChangedHistogramName,
+      ash::default_user_image::kHistogramImageFromProfile, 0);
+
+  // Select a default image first to make sure profile is not selected.
+  user_provider_remote()->get()->SelectDefaultImage(
+      ash::default_user_image::GetRandomDefaultImageIndex());
+  // Now select profile.
+  user_provider_remote()->get()->SelectProfileImage();
+  user_provider_remote()->FlushForTesting();
+
+  histogram_tester().ExpectBucketCount(
+      ash::UserImageManager::kUserImageChangedHistogramName,
+      ash::default_user_image::kHistogramImageFromProfile, 1);
+
+  // Selecting profile image again is a no-op.
+  user_provider_remote()->get()->SelectProfileImage();
+  user_provider_remote()->FlushForTesting();
+
+  histogram_tester().ExpectBucketCount(
+      ash::UserImageManager::kUserImageChangedHistogramName,
+      ash::default_user_image::kHistogramImageFromProfile, 1);
+}
+
+TEST_F(PersonalizationAppUserProviderImplTest,
+       RecordsSelectLastExternalUserImageChangeHistogram) {
+  // No external image recorded yet.
+  histogram_tester().ExpectBucketCount(
+      ash::UserImageManager::kUserImageChangedHistogramName,
+      ash::default_user_image::kHistogramImageExternal, 0);
+
+  SetUserImageObserver();
+
+  // Set up a camera image as last external and then select a default.
+  user_provider_remote()->get()->SelectCameraImage(FakeEncodedPngBuffer());
+  user_provider_remote()->FlushForTesting();
+  EXPECT_TRUE(current_user_image()->is_external_image());
+
+  user_provider_remote()->get()->SelectDefaultImage(
+      ash::default_user_image::GetRandomDefaultImageIndex());
+  user_provider_remote()->FlushForTesting();
+
+  histogram_tester().ExpectBucketCount(
+      ash::UserImageManager::kUserImageChangedHistogramName,
+      ash::default_user_image::kHistogramImageExternal, 0);
+
+  // A default user image is selected.
+  ASSERT_TRUE(ash::default_user_image::IsInCurrentImageSet(image_index()));
+
+  user_provider_remote()->get()->SelectLastExternalUserImage();
+  user_provider_remote()->FlushForTesting();
+
+  // Finally records an external image chosen.
+  histogram_tester().ExpectBucketCount(
+      ash::UserImageManager::kUserImageChangedHistogramName,
+      ash::default_user_image::kHistogramImageExternal, 1);
+}
+
 class PersonalizationAppUserProviderImplWithMockTest
     : public PersonalizationAppUserProviderImplTest {
  protected:
@@ -322,13 +471,16 @@ class PersonalizationAppUserProviderImplWithMockTest
         ash::ChromeUserManager::Get()->GetUserImageManager(
             GetAccountId(profile())));
   }
+
+  base::FilePath GetTestFilePath() {
+    const base::FilePath base_file_path("/this/is/a/test/directory/Base Name");
+    const base::FilePath dir_path = base_file_path.AppendASCII("dir1");
+    return dir_path.AppendASCII("file1.jpg");
+  }
 };
 
 TEST_F(PersonalizationAppUserProviderImplWithMockTest, SelectImageFromDisk) {
-  const base::FilePath base_file_path("/this/is/a/test/directory/Base Name");
-  const base::FilePath dir_path = base_file_path.AppendASCII("dir1");
-  const base::FilePath file_path = dir_path.AppendASCII("file1.txt");
-
+  base::FilePath file_path = GetTestFilePath();
   EXPECT_CALL(*mock_user_image_manager(), SaveUserImageFromFile(file_path));
 
   auto fake_file_selector =
@@ -338,4 +490,33 @@ TEST_F(PersonalizationAppUserProviderImplWithMockTest, SelectImageFromDisk) {
       std::move(fake_file_selector));
   user_provider_remote()->get()->SelectImageFromDisk();
   user_provider_remote()->FlushForTesting();
+}
+
+TEST_F(PersonalizationAppUserProviderImplWithMockTest,
+       RecordsSelectImageFromDiskChangeHistogram) {
+  // No external image set yet.
+  histogram_tester().ExpectBucketCount(
+      ash::UserImageManager::kUserImageChangedHistogramName,
+      ash::default_user_image::kHistogramImageExternal, 0);
+
+  base::FilePath file_path = GetTestFilePath();
+  auto fake_file_selector =
+      std::make_unique<ash::FakeUserImageFileSelector>(web_ui());
+  fake_file_selector->SetFilePath(file_path);
+  user_provider()->SetUserImageFileSelectorForTesting(
+      std::move(fake_file_selector));
+  user_provider_remote()->get()->SelectImageFromDisk();
+  user_provider_remote()->FlushForTesting();
+
+  histogram_tester().ExpectBucketCount(
+      ash::UserImageManager::kUserImageChangedHistogramName,
+      ash::default_user_image::kHistogramImageExternal, 1);
+
+  user_provider_remote()->get()->SelectImageFromDisk();
+  user_provider_remote()->FlushForTesting();
+
+  // Incremented every time a file is selected.
+  histogram_tester().ExpectBucketCount(
+      ash::UserImageManager::kUserImageChangedHistogramName,
+      ash::default_user_image::kHistogramImageExternal, 2);
 }

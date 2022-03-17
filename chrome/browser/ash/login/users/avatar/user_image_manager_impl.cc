@@ -128,6 +128,17 @@ int UserImageManager::ImageIndexToHistogramIndex(int image_index) {
 }
 
 // static
+void UserImageManager::RecordUserImageChanged(int histogram_value) {
+  // Although |UserImageManager::kUserImageChangedHistogramName| is an
+  // enumerated histogram, we intentionally use UmaHistogramExactLinear() to
+  // emit the metric rather than UmaHistogramEnumeration(). This is because the
+  // enums.xml values correspond to (a) special constants and (b) indexes of an
+  // array containing resource IDs.
+  base::UmaHistogramExactLinear(kUserImageChangedHistogramName, histogram_value,
+                                default_user_image::kHistogramImagesCount + 1);
+}
+
+// static
 void UserImageManager::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(UserImageManagerImpl::kUserImageProperties);
 }

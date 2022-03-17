@@ -57,21 +57,7 @@ using ::ash::AccessibilityManager;
 using ::ash::PlaySoundOption;
 using ::content::BrowserThread;
 
-void RecordUserImageChanged(int sample) {
-  // Although |ChangePictureHandler::kUserImageChangedHistogramName| is an
-  // enumerated histogram, we intentionally use UmaHistogramExactLinear() to
-  // emit the metric rather than UmaHistogramEnumeration(). This is because the
-  // enums.xml values correspond to (a) special constants and (b) indexes of an
-  // array containing resource IDs.
-  base::UmaHistogramExactLinear(
-      ChangePictureHandler::kUserImageChangedHistogramName, sample,
-      default_user_image::kHistogramImagesCount + 1);
-}
-
 }  // namespace
-
-const char ChangePictureHandler::kUserImageChangedHistogramName[] =
-    "UserImage.Changed2";
 
 ChangePictureHandler::ChangePictureHandler()
     : previous_image_index_(user_manager::User::USER_IMAGE_INVALID) {
@@ -336,8 +322,8 @@ void ChangePictureHandler::HandleSelectImage(const base::Value::List& args) {
   // `previous_image_index` is used instead of `previous_image_index_` as the
   // latter has the same value of `image_index` after new image is selected.
   if (previous_image_index != image_index) {
-    RecordUserImageChanged(
-        user_image_manager->ImageIndexToHistogramIndex(image_index));
+    ash::UserImageManager::RecordUserImageChanged(
+        ash::UserImageManager::ImageIndexToHistogramIndex(image_index));
   }
 
   // Ignore the result of the previous decoding if it's no longer needed.
@@ -355,8 +341,9 @@ void ChangePictureHandler::FileSelected(const base::FilePath& path) {
       ChromeUserManager::Get()->GetUserImageManager(GetUser()->GetAccountId());
 
   // Log an impression if image is selected from a file.
-  RecordUserImageChanged(user_image_manager->ImageIndexToHistogramIndex(
-      user_manager::User::USER_IMAGE_EXTERNAL));
+  ash::UserImageManager::RecordUserImageChanged(
+      default_user_image::kHistogramImageExternal);
+
   user_image_manager->SaveUserImageFromFile(path);
   VLOG(1) << "Selected image from file";
 }
@@ -377,7 +364,8 @@ void ChangePictureHandler::SetImageFromCamera(
       ->SaveUserImage(std::move(user_image));
 
   // Log an impression if image is taken from photo.
-  RecordUserImageChanged(default_user_image::kHistogramImageFromCamera);
+  ash::UserImageManager::RecordUserImageChanged(
+      default_user_image::kHistogramImageFromCamera);
   VLOG(1) << "Selected camera photo";
 }
 

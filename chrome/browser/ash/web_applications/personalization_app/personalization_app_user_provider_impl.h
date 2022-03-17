@@ -20,6 +20,8 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
+#include "services/data_decoder/public/cpp/decode_image.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 class Profile;
@@ -85,6 +87,22 @@ class PersonalizationAppUserProviderImpl
       std::unique_ptr<ash::UserImageFileSelector> file_selector);
 
  private:
+  friend class PersonalizationAppUserProviderImplTest;
+  friend class TestCameraImageDecoder;
+
+  // A class to decode camera images. Mocked out in tests.
+  class CameraImageDecoder {
+   public:
+    CameraImageDecoder();
+    virtual ~CameraImageDecoder();
+
+    virtual void DecodeCameraImage(base::span<const uint8_t> encoded_bytes,
+                                   data_decoder::DecodeImageCallback callback);
+
+   private:
+    data_decoder::DataDecoder data_decoder_;
+  };
+
   void OnCameraImageDecoded(scoped_refptr<base::RefCountedBytes> photo_bytes,
                             const SkBitmap& decoded_bitmap);
 
@@ -97,6 +115,8 @@ class PersonalizationAppUserProviderImpl
   raw_ptr<Profile> profile_ = nullptr;
 
   std::unique_ptr<user_manager::UserImage> last_external_user_image_;
+
+  std::unique_ptr<CameraImageDecoder> camera_image_decoder_;
 
   base::ScopedObservation<user_manager::UserManager,
                           user_manager::UserManager::Observer>

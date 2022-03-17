@@ -35,9 +35,6 @@ class ChangePictureHandler : public ::settings::SettingsPageUIHandler,
 
   ~ChangePictureHandler() override;
 
-  // The name of the histogram that records when a user changes a device image.
-  static const char kUserImageChangedHistogramName[];
-
   // WebUIMessageHandler implementation.
   void RegisterMessages() override;
   void OnJavascriptAllowed() override;

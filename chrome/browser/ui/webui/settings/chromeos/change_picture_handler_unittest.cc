@@ -149,7 +149,7 @@ TEST_F(ChangePictureHandlerTest,
   auto* user_image_manager = GetUserImageManager();
 
   histogram_tester().ExpectBucketCount(
-      ChangePictureHandler::kUserImageChangedHistogramName,
+      ash::UserImageManager::kUserImageChangedHistogramName,
       user_image_manager->ImageIndexToHistogramIndex(default_image_index), 1);
 }
 
@@ -161,13 +161,13 @@ TEST_F(ChangePictureHandlerTest,
 
   SelectNewDefaultImage(default_image_index);
   histogram_tester().ExpectBucketCount(
-      ChangePictureHandler::kUserImageChangedHistogramName,
+      ash::UserImageManager::kUserImageChangedHistogramName,
       user_image_manager->ImageIndexToHistogramIndex(default_image_index), 1);
 
   // Selecting the same default image should not log another impression.
   SelectNewDefaultImage(default_image_index);
   histogram_tester().ExpectBucketCount(
-      ChangePictureHandler::kUserImageChangedHistogramName,
+      ash::UserImageManager::kUserImageChangedHistogramName,
       user_image_manager->ImageIndexToHistogramIndex(default_image_index), 1);
 }
 
@@ -179,13 +179,13 @@ TEST_F(ChangePictureHandlerTest, ShoulSendUmaMetricWhenProfileImageIsSelected) {
   // User selects a new default image.
   SelectNewDefaultImage(default_image_index);
   histogram_tester().ExpectBucketCount(
-      ChangePictureHandler::kUserImageChangedHistogramName,
+      ash::UserImageManager::kUserImageChangedHistogramName,
       user_image_manager->ImageIndexToHistogramIndex(default_image_index), 1);
 
   // User selects the profile image.
   SelectProfileImage();
   histogram_tester().ExpectBucketCount(
-      ChangePictureHandler::kUserImageChangedHistogramName,
+      ash::UserImageManager::kUserImageChangedHistogramName,
       user_image_manager->ImageIndexToHistogramIndex(
           user_manager::User::USER_IMAGE_PROFILE),
       1);
@@ -198,7 +198,7 @@ TEST_F(ChangePictureHandlerTest,
   // impression
   SelectProfileImage();
   histogram_tester().ExpectBucketCount(
-      ChangePictureHandler::kUserImageChangedHistogramName,
+      ash::UserImageManager::kUserImageChangedHistogramName,
       user_image_manager->ImageIndexToHistogramIndex(
           user_manager::User::USER_IMAGE_PROFILE),
       0);
@@ -214,7 +214,7 @@ TEST_F(ChangePictureHandlerTest,
   SelectImageFromFile(file_path);
 
   histogram_tester().ExpectBucketCount(
-      ChangePictureHandler::kUserImageChangedHistogramName,
+      ash::UserImageManager::kUserImageChangedHistogramName,
       user_image_manager->ImageIndexToHistogramIndex(
           user_manager::User::USER_IMAGE_EXTERNAL),
       1);
@@ -224,7 +224,7 @@ TEST_F(ChangePictureHandlerTest, ShouldSendUmaMetricWhenCameraImageIsDecoded) {
   // Camera image is decoded
   OnCameraImageDecoded();
   histogram_tester().ExpectBucketCount(
-      ChangePictureHandler::kUserImageChangedHistogramName,
+      ash::UserImageManager::kUserImageChangedHistogramName,
       default_user_image::kHistogramImageFromCamera, 1);
 }
 

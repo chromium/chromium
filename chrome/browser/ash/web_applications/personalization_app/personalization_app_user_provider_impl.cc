@@ -62,9 +62,27 @@ std::vector<unsigned char> ImageSkiaToPngBytes(const gfx::ImageSkia& image) {
 
 }  // namespace
 
+PersonalizationAppUserProviderImpl::CameraImageDecoder::CameraImageDecoder() =
+    default;
+
+PersonalizationAppUserProviderImpl::CameraImageDecoder::~CameraImageDecoder() =
+    default;
+
+void PersonalizationAppUserProviderImpl::CameraImageDecoder::DecodeCameraImage(
+    base::span<const uint8_t> encoded_bytes,
+    data_decoder::DecodeImageCallback callback) {
+  data_decoder::DecodeImage(
+      &data_decoder_, encoded_bytes, data_decoder::mojom::ImageCodec::kPng,
+      /*shrink_to_fit=*/true, data_decoder::kDefaultMaxSizeInBytes,
+      /*desired_image_frame_size=*/gfx::Size(), std::move(callback));
+}
+
 PersonalizationAppUserProviderImpl::PersonalizationAppUserProviderImpl(
     content::WebUI* web_ui)
     : profile_(Profile::FromWebUI(web_ui)),
+      camera_image_decoder_(
+          std::make_unique<
+              PersonalizationAppUserProviderImpl::CameraImageDecoder>()),
       image_encoding_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})) {
@@ -140,6 +158,11 @@ void PersonalizationAppUserProviderImpl::SelectDefaultImage(int index) {
     return;
   }
 
+  if (GetUser(profile_)->image_index() != index) {
+    ash::UserImageManager::RecordUserImageChanged(
+        ash::UserImageManager::ImageIndexToHistogramIndex(index));
+  }
+
   auto* user_image_manager = ash::ChromeUserManager::Get()->GetUserImageManager(
       GetAccountId(profile_));
 
@@ -147,6 +170,12 @@ void PersonalizationAppUserProviderImpl::SelectDefaultImage(int index) {
 }
 
 void PersonalizationAppUserProviderImpl::SelectProfileImage() {
+  if (GetUser(profile_)->image_index() !=
+      user_manager::User::USER_IMAGE_PROFILE) {
+    ash::UserImageManager::RecordUserImageChanged(
+        ash::default_user_image::kHistogramImageFromProfile);
+  }
+
   ash::UserImageManager* user_image_manager =
       ash::ChromeUserManager::Get()->GetUserImageManager(
           GetAccountId(profile_));
@@ -162,10 +191,8 @@ void PersonalizationAppUserProviderImpl::SelectCameraImage(
   // Get a view of the same data copied above.
   auto as_span = base::make_span(ref_counted->front(), ref_counted->size());
 
-  data_decoder::DecodeImageIsolated(
-      as_span, data_decoder::mojom::ImageCodec::kPng,
-      /*shrink_to_fit=*/true, data_decoder::kDefaultMaxSizeInBytes,
-      /*desired_image_frame_size=*/gfx::Size(),
+  camera_image_decoder_->DecodeCameraImage(
+      as_span,
       base::BindOnce(&PersonalizationAppUserProviderImpl::OnCameraImageDecoded,
                      image_decode_weak_ptr_factory_.GetWeakPtr(),
                      std::move(ref_counted)));
@@ -177,6 +204,12 @@ void PersonalizationAppUserProviderImpl::SelectLastExternalUserImage() {
     return;
   }
 
+  if (GetUser(profile_)->image_index() !=
+      user_manager::User::USER_IMAGE_EXTERNAL) {
+    ash::UserImageManager::RecordUserImageChanged(
+        ash::default_user_image::kHistogramImageExternal);
+  }
+
   ash::UserImageManager* user_image_manager =
       ash::ChromeUserManager::Get()->GetUserImageManager(
           GetAccountId(profile_));
@@ -186,6 +219,11 @@ void PersonalizationAppUserProviderImpl::SelectLastExternalUserImage() {
 
 void PersonalizationAppUserProviderImpl::OnFileSelected(
     const base::FilePath& path) {
+  // No way to tell if this is a different external image than last time, so
+  // always record it.
+  ash::UserImageManager::RecordUserImageChanged(
+      ash::default_user_image::kHistogramImageExternal);
+
   ash::UserImageManager* user_image_manager =
       ash::ChromeUserManager::Get()->GetUserImageManager(
           GetAccountId(profile_));
@@ -285,6 +323,11 @@ void PersonalizationAppUserProviderImpl::OnCameraImageDecoded(
     LOG(WARNING) << "Camera image failed decoding";
     return;
   }
+
+  // Every time we decode a camera image it is new, so always record a metric
+  // here.
+  ash::UserImageManager::RecordUserImageChanged(
+      ash::default_user_image::kHistogramImageFromCamera);
 
   auto user_image = std::make_unique<user_manager::UserImage>(
       gfx::ImageSkia::CreateFrom1xBitmap(decoded_bitmap), std::move(bytes),

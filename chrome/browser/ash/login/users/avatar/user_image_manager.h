@@ -34,8 +34,15 @@ class UserImageSyncObserver;
 // There is an instance of this class for each user in the system.
 class UserImageManager {
  public:
+  // The name of the histogram that records when a user changes a device image.
+  inline static constexpr char kUserImageChangedHistogramName[] =
+      "UserImage.Changed2";
+
   // Converts `image_index` to UMA histogram value.
   static int ImageIndexToHistogramIndex(int image_index);
+
+  // See histogram values in default_user_images.cc
+  static void RecordUserImageChanged(int histogram_value);
 
   // Registers user image manager preferences.
   static void RegisterPrefs(PrefRegistrySimple* registry);
