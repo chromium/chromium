@@ -1037,6 +1037,12 @@ void OverviewSession::ShowDesksTemplatesGrids(bool was_zero_state,
   UpdateNoWindowsWidgetOnEachGrid();
 
   UpdateAccessibilityFocus();
+
+  // TODO(crbug.com/1307467): This doesn't need to be reset if it's an ancestor
+  // of the desks bar view. Also, add testing for this. Note that this isn't
+  // needed when hiding, because we either move the focus to the new desk, or
+  // delete all the grid templates items which would reset their highlights.
+  highlight_controller_->ResetHighlightedView();
 }
 
 void OverviewSession::HideDesksTemplatesGrids() {
