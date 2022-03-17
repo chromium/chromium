@@ -298,5 +298,7 @@ public final class ProductionSupportedFlagList {
                     "Collects metrics on when the User-Agent string is overridden and how"),
             Flag.baseFeature(GpuFeatures.CANVAS_CONTEXT_LOST_IN_BACKGROUND,
                     "Free Canvas2D resources when the webview is in the background."),
+            Flag.baseFeature(VizFeatures.SURFACE_SYNC_THROTTLING,
+                    "Enables throttling of Surface Sync to improve rotations"),
     };
 }
