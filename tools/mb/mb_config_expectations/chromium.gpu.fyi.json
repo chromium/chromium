@@ -225,6 +225,36 @@
       "use_goma": true
     }
   },
+  "GPU FYI Win x64 Builder (dbg) (reclient shadow)": {
+    "gn_args": {
+      "enable_nacl": false,
+      "ffmpeg_branding": "Chrome",
+      "internal_gles2_conform_tests": true,
+      "is_component_build": true,
+      "is_debug": true,
+      "is_gpu_fyi_bot": true,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "use_rbe": true,
+      "use_remoteexec": true
+    }
+  },
+  "GPU FYI Win x64 Builder (reclient shadow)": {
+    "gn_args": {
+      "blink_enable_generated_code_formatting": false,
+      "dcheck_always_on": true,
+      "enable_nacl": false,
+      "ffmpeg_branding": "Chrome",
+      "internal_gles2_conform_tests": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "is_gpu_fyi_bot": true,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "use_rbe": true,
+      "use_remoteexec": true
+    }
+  },
   "GPU FYI Win x64 DX12 Vulkan Builder": {
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
@@ -255,6 +285,38 @@
       "use_goma": true
     }
   },
+  "GPU FYI Win x64 DX12 Vulkan Builder (dbg) (reclient shadow)": {
+    "gn_args": {
+      "enable_nacl": false,
+      "enable_vulkan": true,
+      "ffmpeg_branding": "Chrome",
+      "internal_gles2_conform_tests": true,
+      "is_component_build": true,
+      "is_debug": true,
+      "is_gpu_fyi_bot": true,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "use_rbe": true,
+      "use_remoteexec": true
+    }
+  },
+  "GPU FYI Win x64 DX12 Vulkan Builder (reclient shadow)": {
+    "gn_args": {
+      "blink_enable_generated_code_formatting": false,
+      "dcheck_always_on": true,
+      "enable_nacl": false,
+      "enable_vulkan": true,
+      "ffmpeg_branding": "Chrome",
+      "internal_gles2_conform_tests": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "is_gpu_fyi_bot": true,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "use_rbe": true,
+      "use_remoteexec": true
+    }
+  },
   "GPU FYI XR Win x64 Builder": {
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
@@ -268,6 +330,33 @@
       "proprietary_codecs": true,
       "symbol_level": 1,
       "use_goma": true
+    }
+  },
+  "GPU FYI XR Win x64 Builder (reclient shadow)": {
+    "gn_args": {
+      "blink_enable_generated_code_formatting": false,
+      "dcheck_always_on": true,
+      "enable_nacl": false,
+      "ffmpeg_branding": "Chrome",
+      "internal_gles2_conform_tests": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "is_gpu_fyi_bot": true,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "use_rbe": true,
+      "use_remoteexec": true
+    }
+  },
+  "GPU Win x64 Builder (dbg) (reclient shadow)": {
+    "gn_args": {
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": true,
+      "is_debug": true,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "Linux FYI GPU TSAN Release": {

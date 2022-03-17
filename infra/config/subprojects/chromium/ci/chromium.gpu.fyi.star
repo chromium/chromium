@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 """Definitions of builders in the chromium.gpu.fyi builder group."""
 
+load("//lib/args.star", "args")
+load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "goma", "sheriff_rotations")
 load("//lib/ci.star", "ci", "rbe_instance", "rbe_jobs")
 load("//lib/consoles.star", "consoles")
@@ -54,6 +56,14 @@ consoles.console_view(
 def gpu_fyi_windows_builder(*, name, **kwargs):
     kwargs.setdefault("execution_timeout", ci.DEFAULT_EXECUTION_TIMEOUT)
     return ci.gpu.windows_builder(name = name, **kwargs)
+
+def _gpu_fyi_windows_builder_shadow(*, name, **kwargs):
+    kwargs.setdefault("execution_timeout", 5 * time.hour)
+    kwargs.setdefault("goma_backend", None)
+    kwargs.setdefault("reclient_jobs", rbe_jobs.LOW_JOBS_FOR_CI)
+    kwargs.setdefault("reclient_instance", rbe_instance.DEFAULT)
+    kwargs.setdefault("sheriff_rotations", args.ignore_default(None))
+    return gpu_fyi_windows_builder(name = name, **kwargs)
 
 ci.thin_tester(
     name = "Android FYI Release (NVIDIA Shield TV)",
@@ -623,6 +633,155 @@ gpu_fyi_windows_builder(
     name = "GPU FYI XR Win x64 Builder",
     console_view_entry = consoles.console_view_entry(
         category = "Windows|Builder|XR",
+        short_name = "x64",
+    ),
+)
+
+_gpu_fyi_windows_builder_shadow(
+    name = "GPU FYI Win x64 Builder (reclient shadow)",
+    builder_spec = builder_config.builder_spec(
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "chrome_internal",
+                "no_kaleidoscope",
+                "enable_reclient",
+            ],
+        ),
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "Windows|Builder|reclient|Release",
+        short_name = "x64",
+    ),
+)
+
+_gpu_fyi_windows_builder_shadow(
+    name = "GPU FYI Win x64 Builder (dbg) (reclient shadow)",
+    builder_spec = builder_config.builder_spec(
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 64,
+        ),
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "chrome_internal",
+                "no_kaleidoscope",
+                "enable_reclient",
+            ],
+        ),
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "Windows|Builder|reclient|Debug",
+        short_name = "x64",
+    ),
+)
+
+_gpu_fyi_windows_builder_shadow(
+    name = "GPU FYI XR Win x64 Builder (reclient shadow)",
+    builder_spec = builder_config.builder_spec(
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "chrome_internal",
+                "no_kaleidoscope",
+                "enable_reclient",
+            ],
+        ),
+        # This causes the builder to upload isolates to a location where
+        # Pinpoint can access them in addition to the usual isolate
+        # server. This is necessary because "Win10 FYI x64 Release XR
+        # perf (NVIDIA)", which is a child of this builder, uploads perf
+        # results, and Pinpoint may trigger additional builds on this
+        # builder during a bisect.
+        perf_isolate_upload = True,
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "Windows|Builder|reclient|XR",
+        short_name = "x64",
+    ),
+)
+
+_gpu_fyi_windows_builder_shadow(
+    name = "GPU FYI Win x64 DX12 Vulkan Builder (reclient shadow)",
+    builder_spec = builder_config.builder_spec(
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "chrome_internal",
+                "no_kaleidoscope",
+                "enable_reclient",
+            ],
+        ),
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "Windows|Builder|reclient|dx12vk",
+        short_name = "rel",
+    ),
+)
+
+_gpu_fyi_windows_builder_shadow(
+    name = "GPU FYI Win x64 DX12 Vulkan Builder (dbg) (reclient shadow)",
+    builder_spec = builder_config.builder_spec(
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 64,
+        ),
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "chrome_internal",
+                "no_kaleidoscope",
+                "enable_reclient",
+            ],
+        ),
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "Windows|Builder|reclient|dx12vk",
+        short_name = "dbg",
+    ),
+)
+
+_gpu_fyi_windows_builder_shadow(
+    name = "GPU Win x64 Builder (dbg) (reclient shadow)",
+    builder_spec = builder_config.builder_spec(
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 64,
+        ),
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "enable_reclient",
+            ],
+        ),
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "Windows|Builder|reclient|nonFYI|Debug",
         short_name = "x64",
     ),
 )

@@ -10,7 +10,7 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "builder_group": "chromium.fyi",
+              "builder_group": "chromium.gpu.fyi",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
                 "apply_configs": [
@@ -53,6 +53,7 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.fyi",
+  "builder_group": "chromium.gpu.fyi",
+  "perf_dashboard_machine_group": "ChromiumGPUFYI",
   "recipe": "chromium"
 }
