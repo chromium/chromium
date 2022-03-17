@@ -49,11 +49,6 @@ class BlinkRootsHandler final : public v8::EmbedderRootsHandler {
     return false;
   }
 
-  bool IsRoot(const v8::TracedGlobal<v8::Value>& handle) final {
-    CHECK(false) << "Blink does not use v8::TracedGlobal.";
-    return false;
-  }
-
   // ResetRoot() clears references to V8 wrapper objects in all worlds. It is
   // invoked for references where IsRoot() returned false during young
   // generation garbage collections.
