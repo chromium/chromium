@@ -14,6 +14,7 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/process/process_handle.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_split.h"
@@ -49,8 +50,11 @@
 #include "components/variations/net/variations_http_headers.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/version_info/version_info.h"
+#include "content/public/browser/browser_child_process_observer.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/child_process_data.h"
+#include "content/public/browser/child_process_termination_info.h"
 #include "content/public/browser/first_party_sets_handler.h"
 #include "content/public/browser/network_context_client_base.h"
 #include "content/public/browser/network_service_instance.h"
@@ -67,6 +71,7 @@
 #include "net/third_party/uri_template/uri_template.h"
 #include "sandbox/features.h"
 #include "sandbox/policy/features.h"
+#include "sandbox/policy/sandbox_type.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/network_service.h"
 #include "services/network/public/cpp/cross_thread_pending_shared_url_loader_factory.h"
@@ -101,9 +106,31 @@
 #endif
 
 namespace {
+// Enumeration of possible sandbox states. These values are persisted to logs,
+// so entries should not be renumbered and numeric values should never be
+// reused.
+enum class NetworkSandboxState {
+  // Disabled by platform configuration. Either the platform does not support
+  // it, or the feature is disabled.
+  kDisabledByPlatform = 0,
+  // Enabled by platform configuration. Either the platform has it enabled by
+  // default, or it's enabled by feature.
+  kEnabledByPlatform = 1,
+  // Enabled by policy. Only valid on Windows where the policy is respected.
+  kDisabledByPolicy = 2,
+  // Disabled by policy. Only valid on Windows where the policy is respected.
+  kEnabledByPolicy = 3,
+  // Disabled because of a previous failed launch attempt.
+  kDisabledBecauseOfFailedLaunch = 4,
+  kMaxValue = kDisabledBecauseOfFailedLaunch
+};
 
 // The global instance of the SystemNetworkContextmanager.
 SystemNetworkContextManager* g_system_network_context_manager = nullptr;
+
+// Whether or not any instance of the system network context manager has
+// received a failed launch for a sandboxed network service.
+bool g_previously_failed_to_launch_sandboxed_service = false;
 
 // Constructs HttpAuthStaticParams based on |local_state|.
 network::mojom::HttpAuthStaticParamsPtr CreateHttpAuthStaticParams(
@@ -209,7 +236,68 @@ bool ShouldUseChromeRootStore(PrefService* local_state) {
 }
 #endif
 
+NetworkSandboxState IsNetworkSandboxEnabledInternal() {
+  // If previously an attempt to launch the sandboxed process failed, then
+  // launch unsandboxed.
+  if (g_previously_failed_to_launch_sandboxed_service)
+    return NetworkSandboxState::kDisabledBecauseOfFailedLaunch;
+#if BUILDFLAG(IS_WIN)
+  if (!sandbox::features::IsAppContainerSandboxSupported())
+    return NetworkSandboxState::kDisabledByPlatform;
+  auto* local_state = g_browser_process->local_state();
+  if (local_state &&
+      local_state->HasPrefPath(prefs::kNetworkServiceSandboxEnabled)) {
+    return local_state->GetBoolean(prefs::kNetworkServiceSandboxEnabled)
+               ? NetworkSandboxState::kEnabledByPolicy
+               : NetworkSandboxState::kDisabledByPolicy;
+  }
+#endif  // BUILDFLAG(IS_WIN)
+  // If no policy is specified, then delegate to global sandbox configuration.
+  return sandbox::policy::features::IsNetworkSandboxEnabled()
+             ? NetworkSandboxState::kEnabledByPlatform
+             : NetworkSandboxState::kDisabledByPlatform;
+}
+
 }  // namespace
+
+class SystemNetworkContextManager::NetworkProcessLaunchWatcher
+    : public content::BrowserChildProcessObserver {
+ public:
+  NetworkProcessLaunchWatcher() { BrowserChildProcessObserver::Add(this); }
+
+  NetworkProcessLaunchWatcher(const NetworkProcessLaunchWatcher&) = delete;
+  NetworkProcessLaunchWatcher& operator=(const NetworkProcessLaunchWatcher&) =
+      delete;
+
+  ~NetworkProcessLaunchWatcher() override {
+    BrowserChildProcessObserver::Remove(this);
+  }
+
+ private:
+  void BrowserChildProcessLaunchFailed(
+      const content::ChildProcessData& data,
+      const content::ChildProcessTerminationInfo& info) override {
+    if (data.sandbox_type == sandbox::mojom::Sandbox::kNetwork) {
+      // This histogram duplicates data recorded in
+      // ChildProcess.LaunchFailed.UtilityProcessErrorCode but is specific to
+      // the network service to make analysis easier.
+      base::UmaHistogramSparse(
+          "Chrome.SystemNetworkContextManager.NetworkSandboxLaunchFailed."
+          "ErrorCode",
+          info.exit_code);
+#if BUILDFLAG(IS_WIN)
+      // This histogram duplicates data recorded in
+      // ChildProcess.LaunchFailed.WinLastError but is specific to the network
+      // service to make analysis easier.
+      base::UmaHistogramSparse(
+          "Chrome.SystemNetworkContextManager.NetworkSandboxLaunchFailed."
+          "WinLastError",
+          info.last_error);
+#endif
+      g_previously_failed_to_launch_sandboxed_service = true;
+    }
+  }
+};
 
 // SharedURLLoaderFactory backed by a SystemNetworkContextManager and its
 // network context. Transparently handles crashes.
@@ -412,6 +500,13 @@ SystemNetworkContextManager::SystemNetworkContextManager(
       base::BindRepeating(
           &SystemNetworkContextManager::UpdateExplicitlyAllowedNetworkPorts,
           base::Unretained(this)));
+
+  if (content::IsOutOfProcessNetworkService() &&
+      base::FeatureList::IsEnabled(
+          features::kRestartNetworkServiceUnsandboxedForFailedLaunch)) {
+    network_process_launch_watcher_ =
+        std::make_unique<NetworkProcessLaunchWatcher>();
+  }
 }
 
 SystemNetworkContextManager::~SystemNetworkContextManager() {
@@ -738,17 +833,23 @@ SystemNetworkContextManager::GetNetExportFileWriter() {
 
 // static
 bool SystemNetworkContextManager::IsNetworkSandboxEnabled() {
-#if BUILDFLAG(IS_WIN)
-  if (!sandbox::features::IsAppContainerSandboxSupported())
-    return false;
-  auto* local_state = g_browser_process->local_state();
-  if (local_state &&
-      local_state->HasPrefPath(prefs::kNetworkServiceSandboxEnabled)) {
-    return local_state->GetBoolean(prefs::kNetworkServiceSandboxEnabled);
+  NetworkSandboxState state = IsNetworkSandboxEnabledInternal();
+
+  base::UmaHistogramEnumeration(
+      "Chrome.SystemNetworkContextManager.NetworkSandboxState", state);
+
+  switch (state) {
+    case NetworkSandboxState::kDisabledByPlatform:
+      return false;
+    case NetworkSandboxState::kEnabledByPlatform:
+      return true;
+    case NetworkSandboxState::kDisabledByPolicy:
+      return false;
+    case NetworkSandboxState::kEnabledByPolicy:
+      return true;
+    case NetworkSandboxState::kDisabledBecauseOfFailedLaunch:
+      return false;
   }
-#endif  // BUILDFLAG(IS_WIN)
-  // If no policy is specified, then delegate to global sandbox configuration.
-  return sandbox::policy::features::IsNetworkSandboxEnabled();
 }
 
 void SystemNetworkContextManager::FlushSSLConfigManagerForTesting() {

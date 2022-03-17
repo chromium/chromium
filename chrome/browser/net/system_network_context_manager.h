@@ -141,7 +141,7 @@ class SystemNetworkContextManager {
   // or destroyed, and so that it's destroyed before Mojo is shut down.
   net_log::NetExportFileWriter* GetNetExportFileWriter();
 
-  // Returns whether the network sandbox is enabled. This depends on  policy but
+  // Returns whether the network sandbox is enabled. This depends on policy but
   // also feature status from sandbox. Called before there is an instance of
   // SystemNetworkContextManager.
   static bool IsNetworkSandboxEnabled();
@@ -180,6 +180,7 @@ class SystemNetworkContextManager {
       Test);
 
   class URLLoaderFactoryForSystem;
+  class NetworkProcessLaunchWatcher;
 
   // Constructor. |pref_service| must out live this object.
   explicit SystemNetworkContextManager(PrefService* pref_service);
@@ -226,6 +227,8 @@ class SystemNetworkContextManager {
 
   // Initialized on first access.
   std::unique_ptr<net_log::NetExportFileWriter> net_export_file_writer_;
+
+  std::unique_ptr<NetworkProcessLaunchWatcher> network_process_launch_watcher_;
 
   StubResolverConfigReader stub_resolver_config_reader_;
   static StubResolverConfigReader* stub_resolver_config_reader_for_testing_;

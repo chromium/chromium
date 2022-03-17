@@ -163,4 +163,10 @@ const base::Feature kObserverBasedPostProfileInit{
 const base::Feature kKeyPinningComponentUpdater{
     "KeyPinningComponentUpdater", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// When this feature is enabled, the network service will restart unsandboxed if
+// a previous attempt to launch it sandboxed failed.
+const base::Feature kRestartNetworkServiceUnsandboxedForFailedLaunch{
+    "RestartNetworkServiceUnsandboxedForFailedLaunch",
+    base::FEATURE_ENABLED_BY_DEFAULT};
+
 }  // namespace features

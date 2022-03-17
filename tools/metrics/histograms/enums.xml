@@ -65069,6 +65069,18 @@ Called by update_net_trust_anchors.py.-->
   <int value="1" label="Had network 2-quiet for 2 seconds"/>
 </enum>
 
+<enum name="NetworkSandboxState">
+  <summary>
+    The possible states for the network service sandbox. See
+    chrome/browser/net/system_network_context_manager.cc.
+  </summary>
+  <int value="0" label="kDisabledByPlatform"/>
+  <int value="1" label="kEnabledByPlatform"/>
+  <int value="2" label="kDisabledByPolicy"/>
+  <int value="3" label="kEnabledByPolicy"/>
+  <int value="4" label="kDisabledBecauseOfFailedLaunch"/>
+</enum>
+
 <enum name="NetworkSecurityType">
   <summary>Shill's WiFi security types.</summary>
   <int value="0" label="UNKNOWN"/>

@@ -65,6 +65,8 @@ extern const base::FeatureParam<int> kLargeFaviconFromGoogleSizeInDip;
 
 extern const base::Feature kObserverBasedPostProfileInit;
 
+extern const base::Feature kRestartNetworkServiceUnsandboxedForFailedLaunch;
+
 extern const base::Feature kKeyPinningComponentUpdater;
 
 }  // namespace features

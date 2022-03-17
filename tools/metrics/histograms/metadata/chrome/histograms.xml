@@ -129,6 +129,45 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Chrome.SystemNetworkContextManager.NetworkSandboxLaunchFailed.ErrorCode"
+    enum="LaunchErrorCodes" expires_after="2022-12-31">
+  <owner>wfh@chromium.org</owner>
+  <owner>mmenke@chromium.org</owner>
+  <summary>
+    The platform-specific error code returned from a failed attempt to launch
+    the network service process sandboxed. This is recorded if an attempt is
+    made to launch a sandboxed network service process, and the launch fails.
+    See also ChildProcess.LaunchFailed.UtilityProcessErrorCode.
+  </summary>
+</histogram>
+
+<histogram
+    name="Chrome.SystemNetworkContextManager.NetworkSandboxLaunchFailed.WinLastError"
+    enum="WinGetLastError" expires_after="2022-12-31">
+  <owner>wfh@chromium.org</owner>
+  <owner>mmenke@chromium.org</owner>
+  <summary>
+    The Windows last error obtained from a call to GetLastError after a failed
+    attempt to launch the network service process sandboxed. This is recorded if
+    an attempt is made to launch a sandboxed network service process on Windows,
+    and the launch fails. See also ChildProcess.LaunchFailed.WinLastError.
+  </summary>
+</histogram>
+
+<histogram name="Chrome.SystemNetworkContextManager.NetworkSandboxState"
+    enum="NetworkSandboxState" expires_after="2022-12-31">
+  <owner>wfh@chromium.org</owner>
+  <owner>mmenke@chromium.org</owner>
+  <summary>
+    The operational state of the network sandbox. This is recorded each time the
+    browser attempts to launch the network service process. This might be
+    recorded multiple times from the same client if the network service process
+    crashes or does not launch correctly. This is not recorded if the network
+    service is running in-process.
+  </summary>
+</histogram>
+
 <histogram name="Chrome.Tabs.AnimationSmoothness.HoverCard.FadeIn" units="%"
     expires_after="2022-08-29">
   <owner>yichenz@chromium.org</owner>

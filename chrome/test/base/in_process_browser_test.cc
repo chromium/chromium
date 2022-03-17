@@ -25,6 +25,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/after_startup_task_utils.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
@@ -313,6 +314,11 @@ void InProcessBrowserTest::Initialize() {
   // Preconnecting can cause non-deterministic test behavior especially with
   // various test fixtures that mock servers.
   disabled_features.push_back(features::kPreconnectToSearch);
+
+  // If the network service fails to start sandboxed then this should cause
+  // tests to fail.
+  disabled_features.push_back(
+      features::kRestartNetworkServiceUnsandboxedForFailedLaunch);
 
   // In-product help can conflict with tests' expected window activation and
   // focus. Individual tests can re-enable IPH.
