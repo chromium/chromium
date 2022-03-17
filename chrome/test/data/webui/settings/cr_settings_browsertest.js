@@ -493,9 +493,12 @@ var CrSettingsPrivacyGuidePageTest = class extends CrSettingsBrowserTest {
   }
 };
 
-TEST_F('CrSettingsPrivacyGuidePageTest', 'PrivacyGuidePageTests', function() {
-  runMochaSuite('PrivacyGuidePage');
-});
+// TODO(crbug.com/1307443): disabling due to flakiness on several builders.
+TEST_F(
+    'CrSettingsPrivacyGuidePageTest', 'DISABLED_PrivacyGuidePageTests',
+    function() {
+        runMochaSuite('PrivacyGuidePage');
+    });
 
 TEST_F(
     'CrSettingsPrivacyGuidePageTest', 'PrivacyGuideFragmentMetricsTests',
