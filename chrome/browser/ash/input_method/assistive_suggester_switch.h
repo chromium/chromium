@@ -26,19 +26,19 @@ class AssistiveSuggesterSwitch {
   // Are emoji suggestions allowed to be surfaced to the user?
   //
   // TODO(crbug/1146266): Deprecated, remove this method in favor of
-  //     GetAllowlist.
+  //     GetEnabledSuggestions.
   virtual bool IsEmojiSuggestionAllowed() = 0;
 
   // Are multi word suggestions allowed to be surfaced to the user?
   //
   // TODO(crbug/1146266): Deprecated, remove this method in favor of
-  //     GetAllowlist.
+  //     GetEnabledSuggestions.
   virtual bool IsMultiWordSuggestionAllowed() = 0;
 
   // Are personal info suggestions allowed to be surfaced to the user?
   //
   // TODO(crbug/1146266): Deprecated, remove this method in favor of
-  //     GetAllowlist.
+  //     GetEnabledSuggestions.
   virtual bool IsPersonalInfoSuggestionAllowed() = 0;
 
   using GetEnabledSuggestionsCallback =
