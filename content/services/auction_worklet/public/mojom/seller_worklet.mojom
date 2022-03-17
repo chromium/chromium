@@ -37,6 +37,22 @@ struct ComponentAuctionModifiedBidParams {
   bool has_bid;
 };
 
+// Input parameters specific to a component auction's ReportResult() method.
+struct ComponentAuctionReportResultParams {
+  // Metadata returned by the top-level seller's ReportResult() method, as JSON.
+  string top_level_seller_signals;
+
+  // The bid value returned by the component seller's ScoreAd() method. May
+  // be the same value as the original bid.
+  double modified_bid;
+
+  // True to indicate that `modified_bid` has been populated. False if the
+  // component seller's ScoreAd() method didn't return a bid value (either the
+  // same value of the original bid or a different value).
+  // TODO(https://crbug.com/657632): Update when optional doubles are supported.
+  bool has_modified_bid;
+};
+
 // Manages the auction workflow for one loaded FLEDGE seller worklet.
 // See https://github.com/WICG/turtledove/blob/main/FLEDGE.md
 //
@@ -175,6 +191,10 @@ interface SellerWorklet {
   // `browser_signal_desirability` The score returned by ScoreAd for the
   //  the winning bid.
   //
+  // `browser_signals_component_auction_report_result_params` Extra parameters
+  //  passed to the component auction's ReportResult() method. Should be null
+  //  for top-level sellers.
+  //
   // `scoring_signals_data_version` The value of the Data-Version header served
   //  with the trusted scoring signals.
   //
@@ -201,6 +221,8 @@ interface SellerWorklet {
       url.mojom.Url browser_signal_render_url,
       double browser_signal_bid,
       double browser_signal_desirability,
+      ComponentAuctionReportResultParams?
+          browser_signals_component_auction_report_result_params,
       uint32 scoring_signals_data_version,
       bool has_scoring_signals_data_version) =>
           (string? signals_for_winner,

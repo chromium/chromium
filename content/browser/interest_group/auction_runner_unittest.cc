@@ -211,6 +211,24 @@ std::string MakeBidScript(const url::Origin& seller,
         throw new Error("wrong renderUrl");
       if (sellerSignals.bid !== bid)
         throw new Error("wrong bid");
+      // `sellerSignals` is the `browserSignals` for the seller that's
+      // associated with the bid. If it's the top-level seller, the seller's
+      // `browserSignals` should have no `componentSeller`, since the bid
+      // was made directly to the top-level seller. If it's the component
+      // seller, the seller's `browserSignals` should have a `topLevelSeller`
+      // instead of a `componentSeller`, so `componentSeller` should never
+      // be present in `sellerSignals` here.
+      if ("componentSeller" in sellerSignals)
+        throw new Error("wrong componentSeller in sellerSignals");
+      if (browserSignals.seller === topLevelSeller) {
+        if ("topLevelSeller" in sellerSignals)
+          throw new Error("wrong topLevelSeller in sellerSignals");
+      } else {
+        // If the seller is a component seller, then then the seller's
+        // `browserSignals` should have the top-level seller.
+        if (sellerSignals.topLevelSeller !== topLevelSeller)
+          throw new Error("wrong topLevelSeller in browserSignals");
+      }
 
       if (browserSignals.topWindowHostname !== 'publisher1.com')
         throw new Error("wrong browserSignals.topWindowHostname");
@@ -393,8 +411,8 @@ std::string MakeDecisionScript(
       if (decisionLogicUrl.startsWith(topLevelSeller)) {
         // Top-level sellers should receive component sellers, but only for
         // bids received from component auctions.
-          if ("topLevelSeller" in browserSignals)
-            throw new Error("Expected no topLevelSeller in browserSignals.");
+        if ("topLevelSeller" in browserSignals)
+          throw new Error("Expected no topLevelSeller in browserSignals.");
         if (bidFromComponentAuctionWins) {
           if (!browserSignals.componentSeller.includes("component"))
             throw new Error("Incorrect componentSeller in browserSignals.");
@@ -402,16 +420,30 @@ std::string MakeDecisionScript(
           if ("componentSeller" in browserSignals)
             throw new Error("Expected no componentSeller in browserSignals.");
         }
+
+        if ("topLevelSellerSignals" in browserSignals)
+          throw new Error("Unexpected browserSignals.topLevelSellerSignals");
       } else {
         // Component sellers should receive only the top-level seller.
         if (browserSignals.topLevelSeller !== topLevelSeller)
           throw new Error("Incorrect topLevelSeller in browserSignals.");
         if ("componentSeller" in browserSignals)
           throw new Error("Expected no componentSeller in browserSignals.");
+
+        // Component sellers should get the return value of the top-level
+        // seller's `reportResult()` call, which is, in this case, the
+        // `browserSignals` of the top-level seller.
+        if (browserSignals.topLevelSellerSignals.componentSeller !=
+                auctionConfig.seller) {
+          throw new Error("Unexpected browserSignals.topLevelSellerSignals");
+        }
       }
 
       if (browserSignals.desirability != computeScore(browserSignals.bid))
         throw new Error("wrong bid or desirability in browserSignals");
+      // The default scoreAd() script does not modify bids.
+      if ("modifiedBid" in browserSignals)
+        throw new Error("modifiedBid unexpectedly in browserSignals");
       if (browserSignals.dataVersion !== undefined)
         throw new Error(`wrong dataVersion (${browserSignals.dataVersion})`);
       if (sendReportUrl)
@@ -766,17 +798,20 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
     send_pending_signals_requests_called_ = true;
   }
 
-  void ReportResult(blink::mojom::AuctionAdConfigNonSharedParamsPtr
-                        auction_ad_config_non_shared_params,
-                    auction_worklet::mojom::ComponentAuctionOtherSellerPtr
-                        browser_signals_other_seller,
-                    const url::Origin& browser_signal_interest_group_owner,
-                    const GURL& browser_signal_render_url,
-                    double browser_signal_bid,
-                    double browser_signal_desirability,
-                    uint32_t browser_signal_data_version,
-                    bool browser_signal_has_data_version,
-                    ReportResultCallback report_result_callback) override {
+  void ReportResult(
+      blink::mojom::AuctionAdConfigNonSharedParamsPtr
+          auction_ad_config_non_shared_params,
+      auction_worklet::mojom::ComponentAuctionOtherSellerPtr
+          browser_signals_other_seller,
+      const url::Origin& browser_signal_interest_group_owner,
+      const GURL& browser_signal_render_url,
+      double browser_signal_bid,
+      double browser_signal_desirability,
+      auction_worklet::mojom::ComponentAuctionReportResultParamsPtr
+          browser_signals_component_auction_report_result_params,
+      uint32_t browser_signal_data_version,
+      bool browser_signal_has_data_version,
+      ReportResultCallback report_result_callback) override {
     report_result_callback_ = std::move(report_result_callback);
     if (report_result_run_loop_)
       report_result_run_loop_->Quit();
@@ -2495,6 +2530,80 @@ TEST_F(AuctionRunnerTest, ComponentAuctionOneComponentTwoBidders) {
                   /*expected_interest_groups=*/2, /*expected_owners=*/2);
 }
 
+// Test the case a top-level seller returns no signals in its reportResult
+// method. The default scripts return signals, so only need to individually test
+// the no-value case.
+TEST_F(AuctionRunnerTest, ComponentAuctionNoTopLevelReportResultSignals) {
+  // Basic bid script.
+  const char kBidScript[] = R"(
+      function generateBid(interestGroup, auctionSignals, perBuyerSignals,
+                           trustedBiddingSignals, browserSignals) {
+        return {ad: [], bid: 2, render: interestGroup.ads[0].renderUrl,
+                allowComponentAuction: true};
+      }
+
+    function reportWin(auctionSignals, perBuyerSignals, sellerSignals,
+                       browserSignals) {
+      sendReportTo("https://buyer-reporting.example.com/" + browserSignals.bid);
+    }
+  )";
+
+  // Component seller script that makes a report to a URL based on whether the
+  // top-level seller signals are null.
+  const std::string kComponentSellerScript = R"(
+    function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
+      return {desirability: 10, allowComponentAuction: true};
+    }
+
+    function reportResult(auctionConfig, browserSignals) {
+      sendReportTo(auctionConfig.seller + "/" +
+                   (browserSignals.topLevelSellerSignals === null));
+    }
+  )";
+
+  // Top-level seller script with a reportResult method that has no return
+  // value.
+  const std::string kTopLevelSellerScript = R"(
+    function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
+      return {desirability: 10, allowComponentAuction: true};
+    }
+
+    function reportResult(auctionConfig, browserSignals) {
+      sendReportTo(auctionConfig.seller + "/" + browserSignals.bid);
+      // Note that there's no return value here.
+    }
+  )";
+
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
+                                         kBidScript);
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         kTopLevelSellerScript);
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kComponentSeller1Url, kComponentSellerScript);
+
+  interest_group_buyers_.reset();
+  component_auctions_.emplace_back(
+      CreateAuctionConfig(kComponentSeller1Url, {{kBidder1}}));
+
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, kBidder1Name, kBidder1Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com")));
+
+  StartAuction(kSellerUrl, std::move(bidders));
+  auction_run_loop_->Run();
+  EXPECT_EQ(GURL("https://ad1.com"), result_.ad_url);
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+  EXPECT_THAT(result_.report_urls,
+              testing::UnorderedElementsAre(
+                  GURL("https://buyer-reporting.example.com/2"),
+                  GURL("https://component.seller1.test/true"),
+                  GURL("https://adstuff.publisher1.com/2")));
+  CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+                  /*expected_interest_groups=*/1, /*expected_owners=*/1);
+}
+
 TEST_F(AuctionRunnerTest, ComponentAuctionModifiesBid) {
   // Basic bid script.
   const char kBidScript[] = R"(
@@ -2517,7 +2626,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionModifiesBid) {
     }
 
     function reportResult(auctionConfig, browserSignals) {
-      sendReportTo(auctionConfig.seller + "/" + browserSignals.bid);
+      sendReportTo(auctionConfig.seller + "/" + browserSignals.bid +
+                   "_" + browserSignals.modifiedBid);
     }
   )";
 
@@ -2558,13 +2668,10 @@ TEST_F(AuctionRunnerTest, ComponentAuctionModifiesBid) {
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   // The reporting URLs contain the bids - the top-level seller report should
   // see the modified bid, the other worklets see the original bid.
-  //
-  // TODO(https://crbug.com/1288865): The component seller worklet should also
-  // get the modified bid, in another field.
   EXPECT_THAT(result_.report_urls,
               testing::UnorderedElementsAre(
                   GURL("https://buyer-reporting.example.com/2"),
-                  GURL("https://component.seller1.test/2"),
+                  GURL("https://component.seller1.test/2_3"),
                   GURL("https://adstuff.publisher1.com/3")));
   CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
                   /*expected_interest_groups=*/1, /*expected_owners=*/1);

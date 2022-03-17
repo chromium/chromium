@@ -95,6 +95,8 @@ class SellerWorklet : public mojom::SellerWorklet {
       const GURL& browser_signal_render_url,
       double browser_signal_bid,
       double browser_signal_desirability,
+      auction_worklet::mojom::ComponentAuctionReportResultParamsPtr
+          browser_signals_component_auction_report_result_params,
       uint32_t scoring_signals_data_version,
       bool browser_signal_has_data_version,
       ReportResultCallback callback) override;
@@ -155,6 +157,8 @@ class SellerWorklet : public mojom::SellerWorklet {
     GURL browser_signal_render_url;
     double browser_signal_bid;
     double browser_signal_desirability;
+    auction_worklet::mojom::ComponentAuctionReportResultParamsPtr
+        browser_signals_component_auction_report_result_params;
     absl::optional<uint32_t> scoring_signals_data_version;
 
     ReportResultCallback callback;
@@ -213,6 +217,8 @@ class SellerWorklet : public mojom::SellerWorklet {
         const GURL& browser_signal_render_url,
         double browser_signal_bid,
         double browser_signal_desirability,
+        auction_worklet::mojom::ComponentAuctionReportResultParamsPtr
+            browser_signals_component_auction_report_result_params,
         absl::optional<uint32_t> scoring_signals_data_version,
         ReportResultCallbackInternal callback);
 

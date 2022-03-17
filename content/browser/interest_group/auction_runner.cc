@@ -283,6 +283,7 @@ void AuctionRunner::Auction::StartBiddingAndScoringPhase(
 }
 
 void AuctionRunner::Auction::StartReportingPhase(
+    absl::optional<std::string> top_seller_signals,
     AuctionPhaseCompletionCallback reporting_phase_callback) {
   DCHECK(reporting_phase_callback);
   DCHECK(!load_interest_groups_phase_callback_);
@@ -297,18 +298,21 @@ void AuctionRunner::Auction::StartReportingPhase(
   // reload the seller worklet in the case of a component auction.
   if (!seller_worklet_handle_) {
     DCHECK(parent_);
+    DCHECK(top_seller_signals);
     if (!auction_worklet_manager_->RequestSellerWorklet(
             config_->decision_logic_url, config_->trusted_scoring_signals_url,
-            base::BindOnce(&Auction::ReportSellerResult,
-                           base::Unretained(this)),
+            base::BindOnce(&Auction::ReportSellerResult, base::Unretained(this),
+                           top_seller_signals),
             base::BindOnce(&Auction::OnWinningComponentSellerWorkletFatalError,
                            base::Unretained(this)),
             seller_worklet_handle_)) {
       return;
     }
+  } else {
+    DCHECK(!parent_);
+    DCHECK(!top_seller_signals);
   }
-
-  ReportSellerResult();
+  ReportSellerResult(std::move(top_seller_signals));
 }
 
 void AuctionRunner::Auction::ClosePipes() {
@@ -984,14 +988,30 @@ void AuctionRunner::Auction::OnBiddingAndScoringComplete(
   std::move(bidding_and_scoring_phase_callback_).Run(success);
 }
 
-void AuctionRunner::Auction::ReportSellerResult() {
+void AuctionRunner::Auction::ReportSellerResult(
+    absl::optional<std::string> top_seller_signals) {
   DCHECK(seller_worklet_handle_);
   DCHECK(reporting_phase_callback_);
+
+  auction_worklet::mojom::ComponentAuctionReportResultParamsPtr
+      browser_signals_component_auction_report_result_params;
+  if (parent_) {
+    DCHECK(top_seller_signals);
+    DCHECK(top_bid_->component_auction_modified_bid_params);
+    browser_signals_component_auction_report_result_params =
+        auction_worklet::mojom::ComponentAuctionReportResultParams::New(
+            /*top_level_seller_signals=*/std::move(top_seller_signals).value(),
+            /*modified_bid=*/
+            top_bid_->component_auction_modified_bid_params->bid,
+            /*has_modified_bid=*/
+            top_bid_->component_auction_modified_bid_params->has_bid);
+  }
 
   seller_worklet_handle_->GetSellerWorklet()->ReportResult(
       config_->auction_ad_config_non_shared_params.Clone(),
       GetOtherSellerParam(*top_bid_->bid), top_bid_->bid->interest_group->owner,
       top_bid_->bid->render_url, top_bid_->bid->bid, top_bid_->score,
+      std::move(browser_signals_component_auction_report_result_params),
       top_bid_->scoring_signals_data_version.value_or(0),
       top_bid_->scoring_signals_data_version.has_value(),
       base::BindOnce(&Auction::OnReportSellerResultComplete,
@@ -1023,21 +1043,28 @@ void AuctionRunner::Auction::OnReportSellerResultComplete(
 
   errors_.insert(errors_.end(), errors.begin(), errors.end());
 
+  // Treat a null `signals_for_winner` value as a null JS response.
+  //
+  // TODO(mmenke): Consider making `signals_for_winner` itself non-optional, and
+  // clean this up.
+  std::string fixed_up_signals_for_winner = signals_for_winner.value_or("null");
+
   // If a the winning bid is from a nested component auction, need to call into
   // that Auction's report logic (which will invoke both that seller's
   // ReportResult() method, and the bidder's ReportWin()).
   if (top_bid_->bid->auction != this) {
     top_bid_->bid->auction->StartReportingPhase(
+        std::move(fixed_up_signals_for_winner),
         base::BindOnce(&Auction::OnComponentAuctionReportingPhaseComplete,
                        base::Unretained(this)));
     return;
   }
 
-  LoadBidderWorkletToReportBidWin(signals_for_winner);
+  LoadBidderWorkletToReportBidWin(std::move(fixed_up_signals_for_winner));
 }
 
 void AuctionRunner::Auction::LoadBidderWorkletToReportBidWin(
-    const absl::optional<std::string>& signals_for_winner) {
+    const std::string& signals_for_winner) {
   // Worklet handle should have been destroyed once the bid was generated.
   DCHECK(!top_bid_->bid->bid_state->worklet_handle);
 
@@ -1052,25 +1079,13 @@ void AuctionRunner::Auction::LoadBidderWorkletToReportBidWin(
 }
 
 void AuctionRunner::Auction::ReportBidWin(
-    const absl::optional<std::string>& signals_for_winner) {
+    const std::string& signals_for_winner) {
   DCHECK(top_bid_);
-
-  std::string signals_for_winner_arg;
-  if (signals_for_winner) {
-    signals_for_winner_arg = *signals_for_winner;
-  } else {
-    // `signals_for_winner_arg` is passed as JSON, so need to pass "null" when
-    // it's not provided. Pass in "null" instead of making the API take an
-    // optional to limit the information provided to the untrusted BidderWorklet
-    // process that's not part of the FLEDGE API. Unlikely to matter, but best
-    // to be safe.
-    signals_for_winner_arg = "null";
-  }
 
   top_bid_->bid->bid_state->worklet_handle->GetBidderWorklet()->ReportWin(
       top_bid_->bid->interest_group->name,
       config_->auction_ad_config_non_shared_params->auction_signals,
-      PerBuyerSignals(top_bid_->bid->bid_state), signals_for_winner_arg,
+      PerBuyerSignals(top_bid_->bid->bid_state), signals_for_winner,
       top_bid_->bid->render_url, top_bid_->bid->bid, config_->seller,
       parent_ ? parent_->config_->seller : absl::optional<url::Origin>(),
       top_bid_->bid->bidding_signals_data_version.value_or(0),
@@ -1358,8 +1373,10 @@ void AuctionRunner::OnBidsGeneratedAndScored(bool success) {
     return;
   }
 
-  auction_.StartReportingPhase(base::BindOnce(
-      &AuctionRunner::OnReportingPhaseComplete, base::Unretained(this)));
+  auction_.StartReportingPhase(
+      /*top_seller_signals=*/absl::nullopt,
+      base::BindOnce(&AuctionRunner::OnReportingPhaseComplete,
+                     base::Unretained(this)));
 }
 
 void AuctionRunner::OnReportingPhaseComplete(bool success) {

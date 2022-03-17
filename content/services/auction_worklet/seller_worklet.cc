@@ -287,10 +287,18 @@ void SellerWorklet::ReportResult(
     const GURL& browser_signal_render_url,
     double browser_signal_bid,
     double browser_signal_desirability,
+    auction_worklet::mojom::ComponentAuctionReportResultParamsPtr
+        browser_signals_component_auction_report_result_params,
     uint32_t scoring_signals_data_version,
     bool has_scoring_signals_data_version,
     ReportResultCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
+  // `browser_signals_component_auction_report_result_params` should only be
+  // populated for sellers in component auctions, which are the only case where
+  // `browser_signals_other_seller` is a top-level seller.
+  DCHECK_EQ(browser_signals_other_seller &&
+                browser_signals_other_seller->is_top_level_seller(),
+            !browser_signals_component_auction_report_result_params.is_null());
 
   report_result_tasks_.emplace_front();
 
@@ -305,9 +313,13 @@ void SellerWorklet::ReportResult(
   report_result_task->browser_signal_render_url = browser_signal_render_url;
   report_result_task->browser_signal_bid = browser_signal_bid;
   report_result_task->browser_signal_desirability = browser_signal_desirability;
-  if (has_scoring_signals_data_version)
+  report_result_task->browser_signals_component_auction_report_result_params =
+      std::move(browser_signals_component_auction_report_result_params);
+
+  if (has_scoring_signals_data_version) {
     report_result_task->scoring_signals_data_version =
         scoring_signals_data_version;
+  }
   report_result_task->callback = std::move(callback);
 
   // If not yet ready, need to wait for load to complete.
@@ -614,6 +626,8 @@ void SellerWorklet::V8State::ReportResult(
     const GURL& browser_signal_render_url,
     double browser_signal_bid,
     double browser_signal_desirability,
+    auction_worklet::mojom::ComponentAuctionReportResultParamsPtr
+        browser_signals_component_auction_report_result_params,
     absl::optional<uint32_t> scoring_signals_data_version,
     ReportResultCallbackInternal callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
@@ -660,6 +674,26 @@ void SellerWorklet::V8State::ReportResult(
                                          /*report_url=*/absl::nullopt,
                                          /*errors=*/std::vector<std::string>());
     return;
+  }
+  if (browser_signals_component_auction_report_result_params) {
+    if (!v8_helper_->InsertJsonValue(
+            context, "topLevelSellerSignals",
+            browser_signals_component_auction_report_result_params
+                ->top_level_seller_signals,
+            browser_signals) ||
+        (browser_signals_component_auction_report_result_params
+             ->has_modified_bid &&
+         !browser_signals_dict.Set(
+             "modifiedBid",
+             browser_signals_component_auction_report_result_params
+                 ->modified_bid))) {
+      PostReportResultCallbackToUserThread(
+          std::move(callback),
+          /*signals_for_winner=*/absl::nullopt,
+          /*report_url=*/absl::nullopt,
+          /*errors=*/std::vector<std::string>());
+      return;
+    }
   }
   args.push_back(browser_signals);
 
@@ -875,7 +909,10 @@ void SellerWorklet::RunReportResult(ReportResultTaskList::iterator task) {
           std::move(task->browser_signals_other_seller),
           std::move(task->browser_signal_interest_group_owner),
           std::move(task->browser_signal_render_url), task->browser_signal_bid,
-          task->browser_signal_desirability, task->scoring_signals_data_version,
+          task->browser_signal_desirability,
+          std::move(
+              task->browser_signals_component_auction_report_result_params),
+          task->scoring_signals_data_version,
           base::BindOnce(
               &SellerWorklet::DeliverReportResultCallbackOnUserThread,
               weak_ptr_factory_.GetWeakPtr(), task)));

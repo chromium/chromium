@@ -280,17 +280,20 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
     }
   }
 
-  void ReportResult(blink::mojom::AuctionAdConfigNonSharedParamsPtr
-                        auction_ad_config_non_shared_params,
-                    auction_worklet::mojom::ComponentAuctionOtherSellerPtr
-                        browser_signals_other_seller,
-                    const url::Origin& browser_signal_interest_group_owner,
-                    const GURL& browser_signal_render_url,
-                    double browser_signal_bid,
-                    double browser_signal_desirability,
-                    uint32_t browser_signal_data_version,
-                    bool browser_signal_has_data_version,
-                    ReportResultCallback report_result_callback) override {
+  void ReportResult(
+      blink::mojom::AuctionAdConfigNonSharedParamsPtr
+          auction_ad_config_non_shared_params,
+      auction_worklet::mojom::ComponentAuctionOtherSellerPtr
+          browser_signals_other_seller,
+      const url::Origin& browser_signal_interest_group_owner,
+      const GURL& browser_signal_render_url,
+      double browser_signal_bid,
+      double browser_signal_desirability,
+      auction_worklet::mojom::ComponentAuctionReportResultParamsPtr
+          browser_signals_component_auction_report_result_params,
+      uint32_t browser_signal_data_version,
+      bool browser_signal_has_data_version,
+      ReportResultCallback report_result_callback) override {
     NOTREACHED();
   }
 

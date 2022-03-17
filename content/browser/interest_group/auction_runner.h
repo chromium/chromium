@@ -380,7 +380,11 @@ class CONTENT_EXPORT AuctionRunner {
     // when all reporting URLs (if any) have been retrieved from the applicable
     // worklets. `success` is true if the final status of the auction is
     // `kSuccess`.
+    //
+    // If this is a component auction, `top_seller_signals` must populated and
+    // be the output from the top-level seller's reportResult() method.
     void StartReportingPhase(
+        absl::optional<std::string> top_seller_signals,
         AuctionPhaseCompletionCallback reporting_phase_callback);
 
     // Close all Mojo pipes and release all weak pointers. Called when an
@@ -572,14 +576,13 @@ class CONTENT_EXPORT AuctionRunner {
     // Sequence of asynchronous methods to call into the seller and then bidder
     // worklet to report a a win. Will ultimately invoke
     // `reporting_phase_callback_`, which will delete the auction.
-    void ReportSellerResult();
+    void ReportSellerResult(absl::optional<std::string> top_seller_signals);
     void OnReportSellerResultComplete(
         const absl::optional<std::string>& signals_for_winner,
         const absl::optional<GURL>& seller_report_url,
         const std::vector<std::string>& error_msgs);
-    void LoadBidderWorkletToReportBidWin(
-        const absl::optional<std::string>& signals_for_winner);
-    void ReportBidWin(const absl::optional<std::string>& signals_for_winner);
+    void LoadBidderWorkletToReportBidWin(const std::string& signals_for_winner);
+    void ReportBidWin(const std::string& signals_for_winner);
     void OnReportBidWinComplete(const absl::optional<GURL>& bidder_report_url,
                                 const std::vector<std::string>& error_msgs);
 

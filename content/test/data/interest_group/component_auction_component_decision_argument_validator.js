@@ -108,7 +108,7 @@ function validateBrowserSignals(browserSignals, isScoreAd) {
     if (browserSignals.dataVersion !== 5678)
       throw 'Wrong dataVersion ' + browserSignals.dataVersion;
   } else {
-    if (Object.keys(browserSignals).length !== 7) {
+    if (Object.keys(browserSignals).length !== 9) {
       throw 'Wrong number of browser signals fields ' +
           JSON.stringify(browserSignals);
     }
@@ -117,5 +117,11 @@ function validateBrowserSignals(browserSignals, isScoreAd) {
       throw 'Wrong desireability ' + browserSignals.desirability;
     if (browserSignals.dataVersion !== 5678)
       throw 'Wrong dataVersion ' + browserSignals.dataVersion;
+    if (browserSignals.modifiedBid !== 42)
+      throw 'Wrong modifiedBid ' + browserSignals.modifiedBid;
+    const topLevelSellerSignals =
+        JSON.stringify(browserSignals.topLevelSellerSignals);
+    if (topLevelSellerSignals !== '["top-level seller signals for winner"]')
+      throw 'Wrong topLevelSellerSignals ' + topLevelSellerSignals;
   }
 }

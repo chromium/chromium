@@ -406,7 +406,9 @@ class SellerWorkletTest : public testing::Test {
         auction_ad_config_non_shared_params_.Clone(),
         browser_signals_other_seller_.Clone(),
         browser_signal_interest_group_owner_, browser_signal_render_url_, bid_,
-        browser_signal_desireability_, browser_signal_data_version_.value_or(0),
+        browser_signal_desireability_,
+        browser_signals_component_auction_report_result_params_.Clone(),
+        browser_signal_data_version_.value_or(0),
         browser_signal_data_version_.has_value(),
         base::BindOnce(
             [](const absl::optional<std::string>& expected_signals_for_winner,
@@ -431,7 +433,9 @@ class SellerWorkletTest : public testing::Test {
         auction_ad_config_non_shared_params_.Clone(),
         browser_signals_other_seller_.Clone(),
         browser_signal_interest_group_owner_, browser_signal_render_url_, bid_,
-        browser_signal_desireability_, browser_signal_data_version_.value_or(0),
+        browser_signal_desireability_,
+        browser_signals_component_auction_report_result_params_.Clone(),
+        browser_signal_data_version_.value_or(0),
         browser_signal_data_version_.has_value(),
         base::BindOnce([](const absl::optional<std::string>& signals_for_winner,
                           const absl::optional<GURL>& report_url,
@@ -536,6 +540,8 @@ class SellerWorkletTest : public testing::Test {
   std::vector<GURL> browser_signal_ad_components_;
   uint32_t browser_signal_bidding_duration_msecs_;
   double browser_signal_desireability_;
+  auction_worklet::mojom::ComponentAuctionReportResultParamsPtr
+      browser_signals_component_auction_report_result_params_;
   absl::optional<uint32_t> browser_signal_data_version_;
   absl::optional<base::TimeDelta> seller_timeout_;
 
@@ -1661,10 +1667,16 @@ TEST_F(SellerWorkletTest, ReportResultTopLevelSeller) {
   browser_signals_other_seller_ =
       mojom::ComponentAuctionOtherSeller::NewTopLevelSeller(
           url::Origin::Create(GURL("https://top.seller.test")));
+  browser_signals_component_auction_report_result_params_ =
+      auction_worklet::mojom::ComponentAuctionReportResultParams::New(
+          /*top_level_seller_signals=*/"null",
+          /*modified_bid=*/0,
+          /*has_modified_bid=*/false);
   RunReportResultCreatedScriptExpectingResult(
       R"(browserSignals.topLevelSeller === "https://top.seller.test" ? 2 : 0)",
       /*extra_code=*/std::string(), /*expected_signals_for_winner=*/"2",
       /*expected_report_url=*/absl::nullopt);
+  browser_signals_component_auction_report_result_params_.reset();
 
   browser_signals_other_seller_ =
       mojom::ComponentAuctionOtherSeller::NewComponentSeller(
@@ -1685,16 +1697,105 @@ TEST_F(SellerWorkletTest, ReportResultComponentSeller) {
   browser_signals_other_seller_ =
       mojom::ComponentAuctionOtherSeller::NewTopLevelSeller(
           url::Origin::Create(GURL("https://top.seller.test")));
+  browser_signals_component_auction_report_result_params_ =
+      auction_worklet::mojom::ComponentAuctionReportResultParams::New(
+          /*top_level_seller_signals=*/"null",
+          /*modified_bid=*/0,
+          /*has_modified_bid=*/false);
   RunReportResultCreatedScriptExpectingResult(
       R"("componentSeller" in browserSignals ? 0 : 2)",
       /*extra_code=*/std::string(), /*expected_signals_for_winner=*/"2",
       /*expected_report_url=*/absl::nullopt);
+  browser_signals_component_auction_report_result_params_.reset();
 
   browser_signals_other_seller_ =
       mojom::ComponentAuctionOtherSeller::NewComponentSeller(
           url::Origin::Create(GURL("https://component.test")));
   RunReportResultCreatedScriptExpectingResult(
       R"(browserSignals.componentSeller === "https://component.test" ? 3 : 0)",
+      /*extra_code=*/std::string(), /*expected_signals_for_winner=*/"3",
+      /*expected_report_url=*/absl::nullopt);
+}
+
+TEST_F(SellerWorkletTest, ReportResultTopLevelSellerSignals) {
+  // Top-level auctions should never be passed a `topLevelSellerSignals` field,
+  // whether ReportResult() is invoked with a bid from a component auction or
+  // the top-level auction.
+
+  browser_signals_other_seller_.reset();
+  RunReportResultCreatedScriptExpectingResult(
+      "'topLevelSellerSignals' in browserSignals ? 0 : 1",
+      /*extra_code=*/std::string(), /*expected_signals_for_winner=*/"1",
+      /*expected_report_url=*/absl::nullopt);
+
+  browser_signals_other_seller_ =
+      mojom::ComponentAuctionOtherSeller::NewComponentSeller(
+          url::Origin::Create(GURL("https://component.test")));
+  RunReportResultCreatedScriptExpectingResult(
+      "'topLevelSellerSignals' in browserSignals ? 0 : 2",
+      /*extra_code=*/std::string(), /*expected_signals_for_winner=*/"2",
+      /*expected_report_url=*/absl::nullopt);
+
+  // Component auctions should take `topLevelSellerSignals` from the
+  // ComponentAuctionReportResultParams argument.
+  browser_signals_other_seller_ =
+      mojom::ComponentAuctionOtherSeller::NewTopLevelSeller(
+          url::Origin::Create(GURL("https://top.seller.test")));
+  browser_signals_component_auction_report_result_params_ =
+      auction_worklet::mojom::ComponentAuctionReportResultParams::New(
+          /*top_level_seller_signals=*/"null",
+          /*modified_bid=*/0,
+          /*has_modified_bid=*/false);
+  RunReportResultCreatedScriptExpectingResult(
+      "browserSignals.topLevelSellerSignals === null ? 3 : 0",
+      /*extra_code=*/std::string(), /*expected_signals_for_winner=*/"3",
+      /*expected_report_url=*/absl::nullopt);
+
+  browser_signals_component_auction_report_result_params_
+      ->top_level_seller_signals = "[4]";
+  RunReportResultCreatedScriptExpectingResult(
+      "browserSignals.topLevelSellerSignals[0]",
+      /*extra_code=*/std::string(), /*expected_signals_for_winner=*/"4",
+      /*expected_report_url=*/absl::nullopt);
+}
+
+TEST_F(SellerWorkletTest, ReportResultModifiedBid) {
+  // Top-level auctions should never be passed a `modifiedBid` field, whether
+  // ReportResult() is invoked with a bit from a component auction or the
+  // top-level auction.
+
+  browser_signals_other_seller_.reset();
+  RunReportResultCreatedScriptExpectingResult(
+      "'modifiedBid' in browserSignals ? 0 : 1",
+      /*extra_code=*/std::string(), /*expected_signals_for_winner=*/"1",
+      /*expected_report_url=*/absl::nullopt);
+
+  browser_signals_other_seller_ =
+      mojom::ComponentAuctionOtherSeller::NewComponentSeller(
+          url::Origin::Create(GURL("https://component.test")));
+  RunReportResultCreatedScriptExpectingResult(
+      "'modifiedBid' in browserSignals ? 0 : 2",
+      /*extra_code=*/std::string(), /*expected_signals_for_winner=*/"2",
+      /*expected_report_url=*/absl::nullopt);
+
+  // Component auctions should only receive a `modifiedBid` field when
+  // `has_modified_bid` is true.
+  browser_signals_other_seller_ =
+      mojom::ComponentAuctionOtherSeller::NewTopLevelSeller(
+          url::Origin::Create(GURL("https://top.seller.test")));
+  browser_signals_component_auction_report_result_params_ =
+      auction_worklet::mojom::ComponentAuctionReportResultParams::New(
+          /*top_level_seller_signals=*/"null",
+          /*modified_bid=*/4,
+          /*has_modified_bid=*/true);
+  RunReportResultCreatedScriptExpectingResult(
+      "browserSignals.modifiedBid",
+      /*extra_code=*/std::string(), /*expected_signals_for_winner=*/"4",
+      /*expected_report_url=*/absl::nullopt);
+  browser_signals_component_auction_report_result_params_->has_modified_bid =
+      false;
+  RunReportResultCreatedScriptExpectingResult(
+      "'modifiedBid' in browserSignals ? 0 : 3",
       /*extra_code=*/std::string(), /*expected_signals_for_winner=*/"3",
       /*expected_report_url=*/absl::nullopt);
 }
@@ -1891,6 +1992,7 @@ TEST_F(SellerWorkletTest, ScriptIsolation) {
           browser_signals_other_seller_.Clone(),
           browser_signal_interest_group_owner_, browser_signal_render_url_,
           bid_, browser_signal_desireability_,
+          browser_signals_component_auction_report_result_params_.Clone(),
           browser_signal_data_version_.value_or(0),
           browser_signal_data_version_.has_value(),
           base::BindLambdaForTesting(
@@ -1948,7 +2050,9 @@ TEST_F(SellerWorkletTest, DeleteBeforeReportResultCallback) {
       auction_ad_config_non_shared_params_.Clone(),
       browser_signals_other_seller_.Clone(),
       browser_signal_interest_group_owner_, browser_signal_render_url_, bid_,
-      browser_signal_desireability_, browser_signal_data_version_.value_or(0),
+      browser_signal_desireability_,
+      browser_signals_component_auction_report_result_params_.Clone(),
+      browser_signal_data_version_.value_or(0),
       browser_signal_data_version_.has_value(),
       base::BindOnce([](const absl::optional<std::string>& signals_for_winner,
                         const absl::optional<GURL>& report_url,
