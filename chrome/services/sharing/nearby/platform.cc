@@ -56,6 +56,19 @@ int GetCurrentTid() {
   return 0;
 }
 
+std::string ImplementationPlatform::GetDownloadPath(std::string& parent_folder,
+                                                    std::string& file_name) {
+  // This should return the <download_path>/parent_folder/file_name. For now we
+  // will just return an empty string, since chrome doesn't call this yet.
+  // TODO(b/223710122): Eventually chrome should implement this method.
+  NOTIMPLEMENTED();
+  return std::string("");
+}
+
+OSName ImplementationPlatform::GetCurrentOS() {
+  return OSName::kChromeOS;
+}
+
 std::unique_ptr<SubmittableExecutor>
 ImplementationPlatform::CreateSingleThreadExecutor() {
   return std::make_unique<chrome::SubmittableExecutor>(
@@ -109,6 +122,7 @@ std::unique_ptr<AtomicBoolean> ImplementationPlatform::CreateAtomicBoolean(
   return std::make_unique<chrome::AtomicBoolean>(initial_value);
 }
 
+ABSL_DEPRECATED("This interface will be deleted in the near future.")
 std::unique_ptr<InputFile> ImplementationPlatform::CreateInputFile(
     std::int64_t payload_id,
     std::int64_t total_size) {
@@ -117,11 +131,31 @@ std::unique_ptr<InputFile> ImplementationPlatform::CreateInputFile(
       connections.ExtractInputFile(payload_id));
 }
 
+std::unique_ptr<InputFile> ImplementationPlatform::CreateInputFile(
+    absl::string_view file_path,
+    size_t size) {
+  // This constructor is not called by Chrome. Returning nullptr, just in case.
+  // TODO(b/223710122): Eventually chrome should implement and use this
+  // constructor exclusively.
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
+ABSL_DEPRECATED("This interface will be deleted in the near future.")
 std::unique_ptr<OutputFile> ImplementationPlatform::CreateOutputFile(
     std::int64_t payload_id) {
   auto& connections = connections::NearbyConnections::GetInstance();
   return std::make_unique<chrome::OutputFile>(
       connections.ExtractOutputFile(payload_id));
+}
+
+std::unique_ptr<OutputFile> ImplementationPlatform::CreateOutputFile(
+    absl::string_view file_path) {
+  // This constructor is not called by Chrome. Returning nullptr, just in case.
+  // TODO(b/223710122): Eventually chrome should implement and use this
+  // constructor exclusively.
+  NOTIMPLEMENTED();
+  return nullptr;
 }
 
 std::unique_ptr<LogMessage> ImplementationPlatform::CreateLogMessage(
