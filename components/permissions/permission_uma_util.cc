@@ -218,6 +218,7 @@ void RecordPermissionActionUkm(
     PredictionRequestFeatures::ActionCounts loud_ui_actions_counts,
     PredictionRequestFeatures::ActionCounts actions_counts_for_request_type,
     PredictionRequestFeatures::ActionCounts actions_counts,
+    absl::optional<bool> prediction_decision_held_back,
     absl::optional<ukm::SourceId> source_id) {
   // Only record the permission change if the origin is in the history.
   if (!source_id.has_value())
@@ -301,6 +302,11 @@ void RecordPermissionActionUkm(
   if (predicted_grant_likelihood.has_value()) {
     builder.SetPredictionsApiResponse_GrantLikelihood(
         static_cast<int64_t>(predicted_grant_likelihood.value()));
+  }
+
+  if (prediction_decision_held_back.has_value()) {
+    builder.SetPredictionsApiResponse_Heldback(
+        prediction_decision_held_back.value());
   }
 
   if (has_three_consecutive_denies.has_value()) {
@@ -482,7 +488,8 @@ void PermissionUmaUtil::PermissionRevoked(
                          PermissionPromptDisposition::NOT_APPLICABLE,
                          /*ui_reason=*/absl::nullopt, revoked_origin,
                          /*web_contents=*/nullptr, browser_context,
-                         /*predicted_grant_likelihood=*/absl::nullopt);
+                         /*predicted_grant_likelihood=*/absl::nullopt,
+                         /*prediction_decision_held_back=*/absl::nullopt);
 }
 
 void PermissionUmaUtil::RecordEmbargoPromptSuppression(
@@ -550,6 +557,7 @@ void PermissionUmaUtil::PermissionPromptResolved(
     PermissionPromptDisposition ui_disposition,
     absl::optional<PermissionPromptDispositionReason> ui_reason,
     absl::optional<PredictionGrantLikelihood> predicted_grant_likelihood,
+    absl::optional<bool> prediction_decision_held_back,
     bool did_show_prompt,
     bool did_click_managed,
     bool did_click_learn_more) {
@@ -592,7 +600,7 @@ void PermissionUmaUtil::PermissionPromptResolved(
         permission, permission_action, PermissionSourceUI::PROMPT, gesture_type,
         time_to_decision, ui_disposition, ui_reason, requesting_origin,
         web_contents, web_contents->GetBrowserContext(),
-        predicted_grant_likelihood);
+        predicted_grant_likelihood, prediction_decision_held_back);
 
     std::string priorDismissPrefix =
         "Permissions.Prompt." + action_string + ".PriorDismissCount2.";
@@ -822,7 +830,8 @@ void PermissionUmaUtil::RecordPermissionAction(
     const GURL& requesting_origin,
     const content::WebContents* web_contents,
     content::BrowserContext* browser_context,
-    absl::optional<PredictionGrantLikelihood> predicted_grant_likelihood) {
+    absl::optional<PredictionGrantLikelihood> predicted_grant_likelihood,
+    absl::optional<bool> prediction_decision_held_back) {
   DCHECK(PermissionUtil::IsPermission(permission));
   PermissionDecisionAutoBlocker* autoblocker =
       PermissionsClient::Get()->GetPermissionDecisionAutoBlocker(
@@ -882,7 +891,7 @@ void PermissionUmaUtil::RecordPermissionAction(
               browser_context, requesting_origin, permission),
           predicted_grant_likelihood, loud_ui_actions_counts_per_request_type,
           loud_ui_actions_counts, actions_counts_per_request_type,
-          actions_counts));
+          actions_counts, prediction_decision_held_back));
 
   switch (permission) {
     case ContentSettingsType::GEOLOCATION:

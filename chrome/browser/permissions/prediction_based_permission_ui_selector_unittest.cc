@@ -98,9 +98,10 @@ TEST_F(PredictionBasedPermissionUiSelectorTest,
     const char* command_line_value;
     const Decision expected_decision;
   } const kTests[] = {
-      {"very-unlikely", Decision(PredictionBasedPermissionUiSelector::
-                                     QuietUiReason::kPredictedVeryUnlikelyGrant,
-                                 Decision::ShowNoWarning())},
+      {"very-unlikely",
+       Decision(PredictionBasedPermissionUiSelector::QuietUiReason::
+                    kServicePredictedVeryUnlikelyGrant,
+                Decision::ShowNoWarning())},
       {"unlikely", Decision::UseNormalUiAndShowNoWarning()},
       {"neutral", Decision::UseNormalUiAndShowNoWarning()},
       {"likely", Decision::UseNormalUiAndShowNoWarning()},
@@ -151,7 +152,7 @@ TEST_F(PredictionBasedPermissionUiSelectorTest,
   }
 
   // Since there are 4 previous prompts, the prediction service request will be
-  // made and will return a "kPredictedVeryUnlikelyGrant" quiet reason.
+  // made and will return a "kServicePredictedVeryUnlikelyGrant" quiet reason.
   Decision notification_decision = SelectUiToUseAndGetDecision(
       &prediction_selector, permissions::RequestType::kNotifications);
 
@@ -159,11 +160,11 @@ TEST_F(PredictionBasedPermissionUiSelectorTest,
       &prediction_selector, permissions::RequestType::kGeolocation);
 
   EXPECT_EQ(PredictionBasedPermissionUiSelector::QuietUiReason::
-                kPredictedVeryUnlikelyGrant,
+                kServicePredictedVeryUnlikelyGrant,
             notification_decision.quiet_ui_reason);
 
   EXPECT_EQ(PredictionBasedPermissionUiSelector::QuietUiReason::
-                kPredictedVeryUnlikelyGrant,
+                kServicePredictedVeryUnlikelyGrant,
             geolocation_decision.quiet_ui_reason);
 }
 
@@ -212,7 +213,7 @@ TEST_F(PredictionBasedPermissionUiSelectorTest,
   notification_decision = SelectUiToUseAndGetDecision(
       &prediction_selector, permissions::RequestType::kNotifications);
   EXPECT_EQ(PredictionBasedPermissionUiSelector::QuietUiReason::
-                kPredictedVeryUnlikelyGrant,
+                kServicePredictedVeryUnlikelyGrant,
             notification_decision.quiet_ui_reason);
 
   // Geolocation still has too few actions.
@@ -226,13 +227,13 @@ TEST_F(PredictionBasedPermissionUiSelectorTest,
   notification_decision = SelectUiToUseAndGetDecision(
       &prediction_selector, permissions::RequestType::kNotifications);
   EXPECT_EQ(PredictionBasedPermissionUiSelector::QuietUiReason::
-                kPredictedVeryUnlikelyGrant,
+                kServicePredictedVeryUnlikelyGrant,
             notification_decision.quiet_ui_reason);
 
   geolocation_decision = SelectUiToUseAndGetDecision(
       &prediction_selector, permissions::RequestType::kGeolocation);
   EXPECT_EQ(PredictionBasedPermissionUiSelector::QuietUiReason::
-                kPredictedVeryUnlikelyGrant,
+                kServicePredictedVeryUnlikelyGrant,
             geolocation_decision.quiet_ui_reason);
 }
 
@@ -399,14 +400,14 @@ TEST_F(PredictionBasedPermissionUiSelectorTest, HoldbackHistogramTest) {
   feature_list_->InitWithFeaturesAndParameters(
       {
           {features::kPermissionPredictions,
-           {{features::kPermissionPredictionsHoldbackChance.name, "1.1"}}},
+           {{features::kPermissionPredictionsHoldbackChance.name, "1"}}},
           {features::kPermissionGeolocationPredictions,
            {{features::kPermissionGeolocationPredictionsHoldbackChance.name,
-             "1.1"}}},
+             "1"}}},
           {permissions::features::kPermissionOnDeviceNotificationPredictions,
            {{permissions::feature_params::
                  kPermissionOnDeviceNotificationPredictionsHoldbackChance.name,
-             "1.1"}}},
+             "1"}}},
       },
       {});
 
@@ -475,4 +476,101 @@ TEST_F(PredictionBasedPermissionUiSelectorTest, HoldbackHistogramTest) {
   histogram_tester.ExpectTotalCount(
       "Permissions.PredictionService.Response.Geolocation",
       /*count=*/2);
+}
+
+TEST_F(PredictionBasedPermissionUiSelectorTest, HoldbackDecisionTest) {
+  permissions::GeneratePredictionsResponse mock_response_very_unlikely;
+  auto* very_unlikely_prediction =
+      mock_response_very_unlikely.mutable_prediction()->Add();
+  very_unlikely_prediction->mutable_grant_likelihood()->set_discretized_likelihood(
+      permissions::
+          PermissionPrediction_Likelihood_DiscretizedLikelihood_VERY_UNLIKELY);
+
+  permissions::GeneratePredictionsResponse mock_response_likely;
+  auto* likely_prediction = mock_response_likely.mutable_prediction()->Add();
+  likely_prediction->mutable_grant_likelihood()->set_discretized_likelihood(
+      permissions::
+          PermissionPrediction_Likelihood_DiscretizedLikelihood_LIKELY);
+
+  PredictionBasedPermissionUiSelector prediction_selector(profile());
+  // No holdback.
+  feature_list_->Reset();
+  feature_list_->InitWithFeaturesAndParameters(
+      {
+          {features::kPermissionPredictions,
+           {{features::kPermissionPredictionsHoldbackChance.name, "0"}}},
+          {features::kPermissionGeolocationPredictions,
+           {{features::kPermissionGeolocationPredictionsHoldbackChance.name,
+             "0"}}},
+          {permissions::features::kPermissionOnDeviceNotificationPredictions,
+           {{permissions::feature_params::
+                 kPermissionOnDeviceNotificationPredictionsHoldbackChance.name,
+             "0"}}},
+      },
+      {});
+
+  absl::optional<Decision> actual_decision;
+  prediction_selector.callback_ = base::BindLambdaForTesting(
+      [&](const Decision& decision) { actual_decision = decision; });
+
+  prediction_selector.LookupResponseReceived(
+      false, permissions::RequestType::kNotifications, false, false,
+      absl::nullopt);
+  EXPECT_EQ(actual_decision->decision_held_back, absl::nullopt);
+
+  prediction_selector.callback_ = base::BindLambdaForTesting(
+      [&](const Decision& decision) { actual_decision = decision; });
+
+  prediction_selector.LookupResponseReceived(
+      false, permissions::RequestType::kNotifications, true, false,
+      mock_response_very_unlikely);
+  EXPECT_EQ(actual_decision->decision_held_back, false);
+
+  prediction_selector.callback_ = base::BindLambdaForTesting(
+      [&](const Decision& decision) { actual_decision = decision; });
+
+  prediction_selector.LookupResponseReceived(
+      false, permissions::RequestType::kNotifications, true, false,
+      mock_response_likely);
+  EXPECT_EQ(actual_decision->decision_held_back, false);
+
+  // 100% Holdback chance.
+  feature_list_->Reset();
+  feature_list_->InitWithFeaturesAndParameters(
+      {
+          {features::kPermissionPredictions,
+           {{features::kPermissionPredictionsHoldbackChance.name, "1"}}},
+          {features::kPermissionGeolocationPredictions,
+           {{features::kPermissionGeolocationPredictionsHoldbackChance.name,
+             "1"}}},
+          {permissions::features::kPermissionOnDeviceNotificationPredictions,
+           {{permissions::feature_params::
+                 kPermissionOnDeviceNotificationPredictionsHoldbackChance.name,
+             "1"}}},
+      },
+      {});
+
+  prediction_selector.callback_ = base::BindLambdaForTesting(
+      [&](const Decision& decision) { actual_decision = decision; });
+
+  prediction_selector.LookupResponseReceived(
+      false, permissions::RequestType::kNotifications, false, false,
+      absl::nullopt);
+  EXPECT_EQ(actual_decision->decision_held_back, absl::nullopt);
+
+  prediction_selector.callback_ = base::BindLambdaForTesting(
+      [&](const Decision& decision) { actual_decision = decision; });
+
+  prediction_selector.LookupResponseReceived(
+      false, permissions::RequestType::kNotifications, true, false,
+      mock_response_very_unlikely);
+  EXPECT_EQ(actual_decision->decision_held_back, true);
+
+  prediction_selector.callback_ = base::BindLambdaForTesting(
+      [&](const Decision& decision) { actual_decision = decision; });
+
+  prediction_selector.LookupResponseReceived(
+      false, permissions::RequestType::kNotifications, true, false,
+      mock_response_likely);
+  EXPECT_EQ(actual_decision->decision_held_back, true);
 }

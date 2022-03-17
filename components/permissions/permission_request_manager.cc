@@ -719,7 +719,8 @@ void PermissionRequestManager::ShowBubble() {
       switch (*quiet_ui_reason) {
         case QuietUiReason::kEnabledInPrefs:
         case QuietUiReason::kTriggeredByCrowdDeny:
-        case QuietUiReason::kPredictedVeryUnlikelyGrant:
+        case QuietUiReason::kServicePredictedVeryUnlikelyGrant:
+        case QuietUiReason::kOnDevicePredictedVeryUnlikelyGrant:
           break;
         case QuietUiReason::kTriggeredDueToAbusiveRequests:
           LogWarningToConsole(kAbusiveNotificationRequestsEnforcementMessage);
@@ -791,8 +792,9 @@ void PermissionRequestManager::FinalizeCurrentRequests(
       requests_, web_contents(), permission_action, time_to_decision,
       DetermineCurrentRequestUIDisposition(),
       DetermineCurrentRequestUIDispositionReasonForUMA(),
-      prediction_grant_likelihood_, did_show_bubble_, did_click_manage_,
-      did_click_learn_more_);
+      prediction_grant_likelihood_,
+      current_request_ui_to_use_->decision_held_back, did_show_bubble_,
+      did_click_manage_, did_click_learn_more_);
 
   content::BrowserContext* browser_context =
       web_contents()->GetBrowserContext();
@@ -965,7 +967,8 @@ bool PermissionRequestManager::ShouldDropCurrentRequestIfCannotShowQuietly()
   if (quiet_ui_reason.has_value()) {
     switch (quiet_ui_reason.value()) {
       case QuietUiReason::kEnabledInPrefs:
-      case QuietUiReason::kPredictedVeryUnlikelyGrant:
+      case QuietUiReason::kServicePredictedVeryUnlikelyGrant:
+      case QuietUiReason::kOnDevicePredictedVeryUnlikelyGrant:
       case QuietUiReason::kTriggeredByCrowdDeny:
         return false;
       case QuietUiReason::kTriggeredDueToAbusiveRequests:
@@ -1058,8 +1061,10 @@ PermissionRequestManager::DetermineCurrentRequestUIDispositionReasonForUMA() {
     case QuietUiReason::kTriggeredDueToAbusiveRequests:
     case QuietUiReason::kTriggeredDueToAbusiveContent:
       return PermissionPromptDispositionReason::SAFE_BROWSING_VERDICT;
-    case QuietUiReason::kPredictedVeryUnlikelyGrant:
+    case QuietUiReason::kServicePredictedVeryUnlikelyGrant:
       return PermissionPromptDispositionReason::PREDICTION_SERVICE;
+    case QuietUiReason::kOnDevicePredictedVeryUnlikelyGrant:
+      return PermissionPromptDispositionReason::ON_DEVICE_PREDICTION_MODEL;
   }
 }
 

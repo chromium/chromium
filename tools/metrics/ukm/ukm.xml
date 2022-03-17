@@ -15212,6 +15212,12 @@ be describing additional metrics about the same event.
       service was successfully queried.
     </summary>
   </metric>
+  <metric name="PredictionsApiResponse.Heldback" enum="Boolean">
+    <summary>
+      A boolean that records whether the response by the permissions prediction
+      service was held back.
+    </summary>
+  </metric>
   <metric name="PriorDismissals">
     <summary>
       The number of dismissed prompts for the given (origin, permission) pair,

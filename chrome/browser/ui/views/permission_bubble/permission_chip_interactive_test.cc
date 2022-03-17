@@ -450,8 +450,9 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
                        QuietChipNonAbusiveUmaTest) {
   base::HistogramTester histograms;
 
-  for (QuietUiReason reason : {QuietUiReason::kEnabledInPrefs,
-                               QuietUiReason::kPredictedVeryUnlikelyGrant}) {
+  for (QuietUiReason reason :
+       {QuietUiReason::kEnabledInPrefs,
+        QuietUiReason::kServicePredictedVeryUnlikelyGrant}) {
     SetCannedUiDecision(reason, absl::nullopt);
 
     RequestPermission(permissions::RequestType::kNotifications);
@@ -482,8 +483,9 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
                        QuietChipNonAbusiveClickManageUmaTest) {
   base::HistogramTester histograms;
 
-  for (QuietUiReason reason : {QuietUiReason::kEnabledInPrefs,
-                               QuietUiReason::kPredictedVeryUnlikelyGrant}) {
+  for (QuietUiReason reason :
+       {QuietUiReason::kEnabledInPrefs,
+        QuietUiReason::kServicePredictedVeryUnlikelyGrant}) {
     SetCannedUiDecision(reason, absl::nullopt);
 
     RequestPermission(permissions::RequestType::kNotifications);
@@ -995,8 +997,9 @@ IN_PROC_BROWSER_TEST_F(QuietChipPermissionPromptBubbleViewInteractiveTest,
 
 IN_PROC_BROWSER_TEST_F(QuietChipPermissionPromptBubbleViewInteractiveTest,
                        AnimatedQuietChipIsShownForNonAbusiveRequests) {
-  for (QuietUiReason reason : {QuietUiReason::kEnabledInPrefs,
-                               QuietUiReason::kPredictedVeryUnlikelyGrant}) {
+  for (QuietUiReason reason :
+       {QuietUiReason::kEnabledInPrefs,
+        QuietUiReason::kServicePredictedVeryUnlikelyGrant}) {
     SetCannedUiDecision(reason, absl::nullopt);
 
     ContentSettingImageView& quiet_ui_icon = GetContentSettingImageView(
@@ -1090,7 +1093,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipPermissionPromptBubbleViewInteractiveTest,
 
 IN_PROC_BROWSER_TEST_F(QuietChipPermissionPromptBubbleViewInteractiveTest,
                        DispositionPredictedVeryUnlikelyGrantTest) {
-  SetCannedUiDecision(QuietUiReason::kPredictedVeryUnlikelyGrant,
+  SetCannedUiDecision(QuietUiReason::kServicePredictedVeryUnlikelyGrant,
                       absl::nullopt);
 
   RequestPermission(permissions::RequestType::kGeolocation);

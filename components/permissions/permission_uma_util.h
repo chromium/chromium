@@ -191,6 +191,10 @@ enum class PermissionPromptDispositionReason {
 
   // Disposition was used as a fallback, if no selector made a decision.
   DEFAULT_FALLBACK = 3,
+
+  // Disposition was chosen based on grant likelihood predicted by the On-Device
+  // Permission Prediction Model.
+  ON_DEVICE_PREDICTION_MODEL = 4,
 };
 
 enum class AdaptiveTriggers {
@@ -314,6 +318,7 @@ class PermissionUmaUtil {
       PermissionPromptDisposition ui_disposition,
       absl::optional<PermissionPromptDispositionReason> ui_reason,
       absl::optional<PredictionGrantLikelihood> predicted_grant_likelihood,
+      absl::optional<bool> prediction_decision_held_back,
       bool did_show_prompt,
       bool did_click_manage,
       bool did_click_learn_more);
@@ -419,7 +424,8 @@ class PermissionUmaUtil {
       const GURL& requesting_origin,
       const content::WebContents* web_contents,
       content::BrowserContext* browser_context,
-      absl::optional<PredictionGrantLikelihood> predicted_grant_likelihood);
+      absl::optional<PredictionGrantLikelihood> predicted_grant_likelihood,
+      absl::optional<bool> prediction_decision_held_back);
 
   // Records |count| total prior actions for a prompt of type |permission|
   // for a single origin using |prefix| for the metric.

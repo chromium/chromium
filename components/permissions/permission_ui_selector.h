@@ -25,7 +25,8 @@ class PermissionUiSelector {
     kTriggeredByCrowdDeny,
     kTriggeredDueToAbusiveRequests,
     kTriggeredDueToAbusiveContent,
-    kPredictedVeryUnlikelyGrant,
+    kServicePredictedVeryUnlikelyGrant,
+    kOnDevicePredictedVeryUnlikelyGrant,
   };
 
   enum class WarningReason {
@@ -35,7 +36,8 @@ class PermissionUiSelector {
 
   struct Decision {
     Decision(absl::optional<QuietUiReason> quiet_ui_reason,
-             absl::optional<WarningReason> warning_reason);
+             absl::optional<WarningReason> warning_reason,
+             absl::optional<bool> decision_held_back = absl::nullopt);
     ~Decision();
 
     Decision(const Decision&);
@@ -58,6 +60,9 @@ class PermissionUiSelector {
     // The reason for printing a warning to the console, or `absl::nullopt` if
     // no warning should be printed.
     absl::optional<WarningReason> warning_reason;
+
+    // Whether the decision to show the quiet ui was held back.
+    absl::optional<bool> decision_held_back;
   };
 
   using DecisionMadeCallback = base::OnceCallback<void(const Decision&)>;

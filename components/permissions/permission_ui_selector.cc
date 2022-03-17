@@ -15,7 +15,8 @@ bool PermissionUiSelector::ShouldSuppressAnimation(
 
   switch (*reason) {
     case QuietUiReason::kEnabledInPrefs:
-    case QuietUiReason::kPredictedVeryUnlikelyGrant:
+    case QuietUiReason::kServicePredictedVeryUnlikelyGrant:
+    case QuietUiReason::kOnDevicePredictedVeryUnlikelyGrant:
       return false;
     case QuietUiReason::kTriggeredByCrowdDeny:
     case QuietUiReason::kTriggeredDueToAbusiveRequests:
@@ -26,8 +27,11 @@ bool PermissionUiSelector::ShouldSuppressAnimation(
 
 PermissionUiSelector::Decision::Decision(
     absl::optional<QuietUiReason> quiet_ui_reason,
-    absl::optional<WarningReason> warning_reason)
-    : quiet_ui_reason(quiet_ui_reason), warning_reason(warning_reason) {}
+    absl::optional<WarningReason> warning_reason,
+    absl::optional<bool> decision_held_back)
+    : quiet_ui_reason(quiet_ui_reason),
+      warning_reason(warning_reason),
+      decision_held_back(decision_held_back) {}
 PermissionUiSelector::Decision::~Decision() = default;
 
 PermissionUiSelector::Decision::Decision(const Decision&) = default;

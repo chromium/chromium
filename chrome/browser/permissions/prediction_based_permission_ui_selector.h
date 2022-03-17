@@ -61,6 +61,8 @@ class PredictionBasedPermissionUiSelector
                            GetPredictionTypeToUse);
   FRIEND_TEST_ALL_PREFIXES(PredictionBasedPermissionUiSelectorTest,
                            HoldbackHistogramTest);
+  FRIEND_TEST_ALL_PREFIXES(PredictionBasedPermissionUiSelectorTest,
+                           HoldbackDecisionTest);
   permissions::PredictionRequestFeatures BuildPredictionRequestFeatures(
       permissions::PermissionRequest* request);
   void LookupResponseReceived(

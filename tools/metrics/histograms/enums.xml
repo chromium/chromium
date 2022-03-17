@@ -71468,6 +71468,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="1" label="Safe Browsing verdict"/>
   <int value="2" label="Prediction service"/>
   <int value="3" label="Default fallback"/>
+  <int value="4" label="On-Device prediction model"/>
 </enum>
 
 <enum name="PermissionRequestType">

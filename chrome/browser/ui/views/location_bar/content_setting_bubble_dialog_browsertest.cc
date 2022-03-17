@@ -223,7 +223,7 @@ void ContentSettingBubbleDialogTest::ShowUi(const std::string& name) {
     else if (name == "notifications_quiet_abusive_content")
       reason = QuietUiReason::kTriggeredDueToAbusiveContent;
     else if (name == "notifications_quiet_predicted_very_unlikely")
-      reason = QuietUiReason::kPredictedVeryUnlikelyGrant;
+      reason = QuietUiReason::kServicePredictedVeryUnlikelyGrant;
     TriggerQuietNotificationPermissionRequest(reason);
     ShowDialogBubble(ImageType::NOTIFICATIONS_QUIET_PROMPT);
     return;
