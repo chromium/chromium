@@ -55,11 +55,12 @@ WGPUTexture ExternalVkImageDawnRepresentation::BeginAccess(
   texture_descriptor.mipLevelCount = 1;
   texture_descriptor.sampleCount = 1;
 
-  // We need to have an internal usage of CopySrc in order to use
-  // CopyTextureToTextureInternal.
+  // We need to have internal usages of CopySrc for copies and
+  // RenderAttachment for clears.
   WGPUDawnTextureInternalUsageDescriptor internalDesc = {};
   internalDesc.chain.sType = WGPUSType_DawnTextureInternalUsageDescriptor;
-  internalDesc.internalUsage = WGPUTextureUsage_CopySrc;
+  internalDesc.internalUsage =
+      WGPUTextureUsage_CopySrc | WGPUTextureUsage_RenderAttachment;
   texture_descriptor.nextInChain =
       reinterpret_cast<WGPUChainedStruct*>(&internalDesc);
 

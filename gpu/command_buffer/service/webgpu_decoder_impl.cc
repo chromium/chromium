@@ -1812,8 +1812,15 @@ error::Error WebGPUDecoderImpl::HandleDissociateMailboxForPresent(
     render_pass_descriptor.colorAttachmentCount = 1;
     render_pass_descriptor.colorAttachments = &color_attachment;
 
+    WGPUDawnEncoderInternalUsageDescriptor internal_usage_desc = {
+        .chain = {.sType = WGPUSType_DawnEncoderInternalUsageDescriptor},
+        .useInternalUsages = true,
+    };
+    WGPUCommandEncoderDescriptor command_encoder_desc = {
+        .nextInChain = &internal_usage_desc.chain,
+    };
     WGPUCommandEncoder encoder =
-        procs.deviceCreateCommandEncoder(device, nullptr);
+        procs.deviceCreateCommandEncoder(device, &command_encoder_desc);
     WGPURenderPassEncoder pass =
         procs.commandEncoderBeginRenderPass(encoder, &render_pass_descriptor);
     procs.renderPassEncoderEndPass(pass);

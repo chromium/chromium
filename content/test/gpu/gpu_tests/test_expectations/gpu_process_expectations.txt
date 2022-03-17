@@ -82,6 +82,11 @@ crbug.com/681341 [ mac nvidia ] GpuProcess_mac_webgl_terminated_high_performance
 # Software Compositing is not supported on ChromeOS.
 crbug.com/1084796 [ chromeos ] GpuProcess_readback_webgl_gpu_process [ Skip ]
 
+# WebGPU tests hanging on multiple Mac FYI bots
+crbug.com/1305020 [ mac asan intel-0x3e9b ] GpuProcess_webgpu_iframe_removed [ Skip ]
+crbug.com/1305020 [ mac asan intel-0xd26 ] GpuProcess_webgpu_iframe_removed [ Skip ]
+crbug.com/1305020 [ mac nvidia-0xfe9 ] GpuProcess_webgpu_iframe_removed [ Skip ]
+
 ###############################
 # Temporary Skip Expectations #
 ###############################

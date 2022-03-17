@@ -105,6 +105,12 @@ crbug.com/1154047 [ chromeos ] GpuCrash_InfoForHardwareGpu [ Skip ]
 crbug.com/1154047 [ android ] GpuCrash_InfoForHardwareGpu [ Skip ]
 crbug.com/1154047 [ fuchsia ] GpuCrash_InfoForHardwareGpu [ Skip ]
 
+# WebGPU tests hanging on multiple Mac FYI bots
+crbug.com/1305020 [ mac asan intel-0x3e9b ] ContextLost_WebGPUContextLostFromGPUProcessExit [ Skip ]
+crbug.com/1305020 [ mac asan intel-0xd26 ] ContextLost_WebGPUContextLostFromGPUProcessExit [ Skip ]
+crbug.com/1305020 [ mac nvidia-0xfe9 ] ContextLost_WebGPUContextLostFromGPUProcessExit [ Skip ]
+
+
 ###############################
 # Temporary Skip Expectations #
 ###############################
