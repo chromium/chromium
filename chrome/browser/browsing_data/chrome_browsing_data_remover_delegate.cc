@@ -19,6 +19,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -194,17 +195,11 @@ const base::TimeDelta kSlowTaskTimeout = base::Seconds(180);
 
 // Generic functions but currently only used when ENABLE_NACL.
 #if BUILDFLAG(ENABLE_NACL)
-void UIThreadTrampolineHelper(base::OnceClosure callback) {
-  content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(callback));
-}
-
 // Convenience method to create a callback that can be run on any thread and
 // will post the given |callback| back to the UI thread.
 base::OnceClosure UIThreadTrampoline(base::OnceClosure callback) {
-  // We could directly bind &base::PostTask, but that would require
-  // evaluating FROM_HERE when this method is called, as opposed to when the
-  // task is actually posted.
-  return base::BindOnce(&UIThreadTrampolineHelper, std::move(callback));
+  return base::BindPostTask(content::GetUIThreadTaskRunner({}),
+                            std::move(callback));
 }
 #endif  // BUILDFLAG(ENABLE_NACL)
 
