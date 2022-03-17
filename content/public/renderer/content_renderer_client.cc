@@ -161,10 +161,6 @@ void ContentRendererClient::GetSupportedKeySystems(
   std::move(cb).Run({});
 }
 
-bool ContentRendererClient::IsKeySystemsUpdateNeeded() {
-  return false;
-}
-
 bool ContentRendererClient::IsSupportedAudioType(const media::AudioType& type) {
   // Defer to media's default support.
   return ::media::IsDefaultSupportedAudioType(type);

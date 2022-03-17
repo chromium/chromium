@@ -23,7 +23,6 @@ class RenderMediaClient : public media::MediaClient {
 
   // MediaClient implementation.
   void GetSupportedKeySystems(media::GetSupportedKeySystemsCB cb) final;
-  bool IsKeySystemsUpdateNeeded() final;
   bool IsSupportedAudioType(const media::AudioType& type) final;
   bool IsSupportedVideoType(const media::VideoType& type) final;
   bool IsSupportedBitstreamAudioCodec(media::AudioCodec codec) final;

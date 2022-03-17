@@ -276,7 +276,6 @@ class KeySystemsImpl : public KeySystems {
 
   // Implementation of KeySystems interface.
   void UpdateIfNeeded(base::OnceClosure done_cb) override;
-  bool IsUpToDate() override;
   std::string GetBaseKeySystemName(
       const std::string& key_system) const override;
   bool IsSupportedKeySystem(const std::string& key_system) const override;
@@ -323,7 +322,6 @@ class KeySystemsImpl : public KeySystems {
   KeySystemsImpl();
   ~KeySystemsImpl() override;
 
-  bool IsUpdateNeeded();
   void UpdateSupportedKeySystems();
   void OnSupportedKeySystemsUpdated(KeySystemPropertiesVector key_systems);
   void ProcessSupportedKeySystems(KeySystemPropertiesVector key_systems);
@@ -387,10 +385,6 @@ KeySystemsImpl::~KeySystemsImpl() {
     update_callbacks_.Notify();
 }
 
-bool KeySystemsImpl::IsUpdateNeeded() {
-  return GetMediaClient() && GetMediaClient()->IsKeySystemsUpdateNeeded();
-}
-
 void KeySystemsImpl::UpdateSupportedKeySystems() {
   DCHECK(!is_updating_);
   is_updating_ = true;
@@ -407,22 +401,12 @@ void KeySystemsImpl::UpdateSupportedKeySystems() {
 
 void KeySystemsImpl::UpdateIfNeeded(base::OnceClosure done_cb) {
   if (is_updating_) {
+    // The callback will be resolved in OnSupportedKeySystemsUpdated().
     update_callbacks_.AddUnsafe(std::move(done_cb));
     return;
   }
 
-  DCHECK(update_callbacks_.empty());
-  if (!IsUpdateNeeded()) {
-    std::move(done_cb).Run();
-    return;
-  }
-
-  update_callbacks_.AddUnsafe(std::move(done_cb));
-  UpdateSupportedKeySystems();
-}
-
-bool KeySystemsImpl::IsUpToDate() {
-  return !is_updating_ && !IsUpdateNeeded();
+  std::move(done_cb).Run();
 }
 
 SupportedCodecs KeySystemsImpl::GetCodecMaskForMimeType(
@@ -550,6 +534,7 @@ void KeySystemsImpl::ProcessSupportedKeySystems(
 
 const KeySystemProperties* KeySystemsImpl::GetKeySystemProperties(
     const std::string& key_system) const {
+  DCHECK(!is_updating_);
   for (const auto& entry : key_system_properties_map_) {
     const auto& base_key_system = entry.first;
     const auto* properties = entry.second.get();

@@ -30,10 +30,6 @@ void RenderMediaClient::GetSupportedKeySystems(
   GetContentClient()->renderer()->GetSupportedKeySystems(std::move(cb));
 }
 
-bool RenderMediaClient::IsKeySystemsUpdateNeeded() {
-  return GetContentClient()->renderer()->IsKeySystemsUpdateNeeded();
-}
-
 bool RenderMediaClient::IsSupportedAudioType(const media::AudioType& type) {
   return GetContentClient()->renderer()->IsSupportedAudioType(type);
 }

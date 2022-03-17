@@ -69,8 +69,6 @@ static_library("renderer") {
     "loadtimes_extension_bindings.h",
     "media/chrome_key_systems.cc",
     "media/chrome_key_systems.h",
-    "media/chrome_key_systems_provider.cc",
-    "media/chrome_key_systems_provider.h",
     "media/flash_embed_rewrite.cc",
     "media/flash_embed_rewrite.h",
     "media/media_feeds.cc",

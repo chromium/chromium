@@ -17,7 +17,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "chrome/common/media/webrtc_logging.mojom.h"
-#include "chrome/renderer/media/chrome_key_systems_provider.h"
 #include "components/nacl/common/buildflags.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "content/public/renderer/content_renderer_client.h"
@@ -158,7 +157,6 @@ class ChromeContentRendererClient
       media::SpeechRecognitionClient::OnReadyCallback callback) override;
 #endif
   void GetSupportedKeySystems(media::GetSupportedKeySystemsCB cb) override;
-  bool IsKeySystemsUpdateNeeded() override;
   bool IsPluginAllowedToUseCameraDeviceAPI(const GURL& url) override;
   void RunScriptsAtDocumentStart(content::RenderFrame* render_frame) override;
   void RunScriptsAtDocumentEnd(content::RenderFrame* render_frame) override;
@@ -266,8 +264,6 @@ class ChromeContentRendererClient
   std::unique_ptr<ChromeRenderThreadObserver> chrome_observer_;
   std::unique_ptr<web_cache::WebCacheImpl> web_cache_impl_;
   std::unique_ptr<chrome::WebRtcLoggingAgentImpl> webrtc_logging_agent_impl_;
-
-  ChromeKeySystemsProvider key_systems_provider_;
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)
   std::unique_ptr<SpellCheck> spellcheck_;

@@ -43,11 +43,6 @@ class MEDIA_EXPORT MediaClient {
   // Adds properties for supported key systems.
   virtual void GetSupportedKeySystems(GetSupportedKeySystemsCB cb) = 0;
 
-  // Returns whether client key systems properties should be updated.
-  // TODO(xhwang): Refactor this to a proper change "observer" API that is
-  // less fragile (don't assume GetSupportedKeySystems has just one caller).
-  virtual bool IsKeySystemsUpdateNeeded() = 0;
-
   // Returns true if the given audio config is supported.
   virtual bool IsSupportedAudioType(const AudioType& type) = 0;
 

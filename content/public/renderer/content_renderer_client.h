@@ -254,11 +254,6 @@ class CONTENT_EXPORT ContentRendererClient {
   // Allows embedder to register the key system(s) it supports.
   virtual void GetSupportedKeySystems(media::GetSupportedKeySystemsCB cb);
 
-  // Signal that embedder has changed key systems.
-  // TODO(chcunningham): Refactor this to a proper change "observer" API that is
-  // less fragile (don't assume GetSupportedKeySystems has just one caller).
-  virtual bool IsKeySystemsUpdateNeeded();
-
   // Allows embedder to describe customized audio capabilities.
   virtual bool IsSupportedAudioType(const media::AudioType& type);
 

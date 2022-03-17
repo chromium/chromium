@@ -917,7 +917,6 @@
 -ChromeHintsManagerPushDisabledTest.PushManagerSetOnAndroid
 -ChromeHintsManagerPushEnabledTest.PushManagerSetOnAndroid
 -ChromeInfoMapTest.CheckPermissions
--ChromeKeySystemsProviderTest.IsKeySystemsUpdateNeeded
 -ChromeLocalPresentationManagerFactoryTest.CreateForRegularProfile
 -ChromeLoggingTest.EnvironmentAndFlagLogFileName
 -ChromeLoggingTest.EnvironmentLogFileName

@@ -48,6 +48,7 @@
 #include "chrome/renderer/chrome_render_frame_observer.h"
 #include "chrome/renderer/chrome_render_thread_observer.h"
 #include "chrome/renderer/loadtimes_extension_bindings.h"
+#include "chrome/renderer/media/chrome_key_systems.h"
 #include "chrome/renderer/media/flash_embed_rewrite.h"
 #include "chrome/renderer/media/webrtc_logging_agent_impl.h"
 #include "chrome/renderer/net/net_error_helper.h"
@@ -1471,11 +1472,7 @@ ChromeContentRendererClient::CreateWebSocketHandshakeThrottleProvider() {
 
 void ChromeContentRendererClient::GetSupportedKeySystems(
     media::GetSupportedKeySystemsCB cb) {
-  key_systems_provider_.GetSupportedKeySystems(std::move(cb));
-}
-
-bool ChromeContentRendererClient::IsKeySystemsUpdateNeeded() {
-  return key_systems_provider_.IsKeySystemsUpdateNeeded();
+  GetChromeKeySystems(std::move(cb));
 }
 
 bool ChromeContentRendererClient::ShouldReportDetailedMessageForSource(

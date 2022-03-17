@@ -35,9 +35,6 @@ class MEDIA_EXPORT KeySystems {
   // out of date. Calls the `done_cb` when done.
   virtual void UpdateIfNeeded(base::OnceClosure done_cb) = 0;
 
-  // Whether the list of available key systems is up to date.
-  virtual bool IsUpToDate() = 0;
-
   // Gets the base key system name, e.g. "org.chromium.foo".
   virtual std::string GetBaseKeySystemName(
       const std::string& key_system) const = 0;

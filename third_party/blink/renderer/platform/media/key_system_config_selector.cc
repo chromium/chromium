@@ -992,9 +992,6 @@ void KeySystemConfigSelector::SelectConfig(
     const WebString& key_system,
     const WebVector<WebMediaKeySystemConfiguration>& candidate_configurations,
     SelectConfigCB cb) {
-  DCHECK(key_systems_->IsUpToDate())
-      << "The caller must make sure the Key Systems are up to date";
-
   // Continued from requestMediaKeySystemAccess(), step 6, from
   // https://w3c.github.io/encrypted-media/#requestmediakeysystemaccess
   //

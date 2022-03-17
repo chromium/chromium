@@ -113,15 +113,10 @@ void WebEncryptedMediaClientImpl::RequestMediaKeySystemAccess(
     WebEncryptedMediaRequest request) {
   GetReporter(request.KeySystem())->ReportRequested();
 
-  if (!key_systems_->IsUpToDate()) {
-    pending_requests_.push_back(std::move(request));
-    key_systems_->UpdateIfNeeded(
-        base::BindOnce(&WebEncryptedMediaClientImpl::OnKeySystemsUpdated,
-                       weak_factory_.GetWeakPtr()));
-    return;
-  }
-
-  SelectConfig(request);
+  pending_requests_.push_back(std::move(request));
+  key_systems_->UpdateIfNeeded(
+      base::BindOnce(&WebEncryptedMediaClientImpl::OnKeySystemsUpdated,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void WebEncryptedMediaClientImpl::CreateCdm(
