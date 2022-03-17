@@ -444,8 +444,6 @@ TEST(MimeSnifferTest, OfficeTest) {
                       "http://www.example.com/foo.ppt", "text/plain"));
 }
 
-// TODO(thestig) Add more tests for other AV formats. Add another test case for
-// RAW images.
 TEST(MimeSnifferTest, AudioVideoTest) {
   std::string mime_type;
   const char kOggTestData[] = "OggS\x00";
