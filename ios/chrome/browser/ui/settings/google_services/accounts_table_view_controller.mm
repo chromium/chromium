@@ -408,9 +408,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
-  // If there is an operation in process that does not allow selecting a cell
-  // exit without performing the selection.
-  if (self.uiDisabled) {
+  // If there is an operation in process that does not allow selecting a cell or
+  // if the settings will be dismissed, exit without performing the selection.
+  if (self.uiDisabled || !_browser) {
     return;
   }
 
