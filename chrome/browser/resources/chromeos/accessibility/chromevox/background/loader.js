@@ -35,7 +35,6 @@ goog.require('EventStreamLogger');
 goog.require('ExtensionBridge');
 goog.require('GestureCommandData');
 goog.require('GestureGranularity');
-goog.require('IntentHandler');
 goog.require('JaPhoneticMap');
 goog.require('KeyCode');
 goog.require('LibLouis.FormType');
