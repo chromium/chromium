@@ -8,8 +8,8 @@ import abc
 import argparse
 import collections
 import enum
+import json
 import logging
-import os
 import re
 import struct
 import subprocess
@@ -614,22 +614,21 @@ REFUSE_TO_UNWIND: Tuple[EncodedAddressUnwind, ...] = (EncodedAddressUnwind(
     complete_instruction_sequence=bytes([0b10000000, 0b00000000])), )
 
 
-def EncodeFunctionUnwinds(function_unwinds: Iterable[FunctionUnwind]
+def EncodeFunctionUnwinds(function_unwinds: Iterable[FunctionUnwind],
+                          text_section_start_address: int
                           ) -> Iterable[EncodedFunctionUnwind]:
   """Encodes the unwind state for all functions defined in the binary.
 
   This function
   - sorts the collection of `FunctionUnwind`s by address.
   - fills in gaps between functions with trivial unwind.
-  - fills the space in the space in last page after last function with refuse
+  - fills the space in the last page after last function with refuse to unwind.
+  - fills the space in the first page before the first function with refuse
     to unwind.
-
-  Note:
-    This function assumes that min function start address is the text section
-    start address.
 
   Args:
     function_unwinds: An iterable of function unwind states.
+    text_section_start_address: The address of .text section in ELF file.
 
   Returns:
     The encoded function unwind states with no gaps between functions, ordered
@@ -656,7 +655,11 @@ def EncodeFunctionUnwinds(function_unwinds: Iterable[FunctionUnwind]
   sorted_function_unwinds: List[FunctionUnwind] = sorted(
       function_unwinds, key=lambda function_unwind: function_unwind.address)
 
-  text_section_start_address: int = sorted_function_unwinds[0].address
+  if sorted_function_unwinds[0].address > text_section_start_address:
+    yield EncodedFunctionUnwind(page_number=0,
+                                page_offset=0,
+                                address_unwinds=REFUSE_TO_UNWIND)
+
   prev_func_end_address: int = sorted_function_unwinds[0].address
 
   gaps = 0
@@ -1009,6 +1012,29 @@ def GenerateUnwindTables(
           unwind_instruction_table)
 
 
+def ReadTextSectionStartAddress(readobj_path: str, libchrome_path: str) -> int:
+  """Reads the .text section start address of libchrome ELF.
+
+  Arguments:
+    readobj_path: Path to llvm-obj binary.
+    libchrome_path: Path to libchrome binary.
+
+  Returns:
+    The text section start address as a number.
+  """
+  proc = subprocess.Popen(
+      [readobj_path, '--sections', '--elf-output-style=JSON', libchrome_path],
+      stdout=subprocess.PIPE,
+      encoding='ascii')
+
+  elfs = json.loads(proc.stdout.read())[0]
+  assert len(elfs) == 1
+  sections = list(elfs.values())[0]['Sections']
+
+  return next(s['Section']['Address'] for s in sections
+              if s['Section']['Name']['Value'] == '.text')
+
+
 def main():
   build_utils.InitLogging('CREATE_UNWIND_TABLE_DEBUG')
   parser = argparse.ArgumentParser(description=__doc__)
@@ -1024,6 +1050,10 @@ def main():
                       required=True,
                       help='The path of the dump_syms binary.',
                       metavar='FILE')
+  parser.add_argument('--readobj_path',
+                      required=True,
+                      help='The path of the llvm-readobj binary.',
+                      metavar='FILE')
 
   args = parser.parse_args()
   proc = subprocess.Popen(['./' + args.dump_syms_path, args.input_path, '-v'],
@@ -1032,7 +1062,9 @@ def main():
 
   function_cfis = ReadFunctionCfi(proc.stdout)
   function_unwinds = GenerateUnwinds(function_cfis, parsers=ALL_PARSERS)
-  encoded_function_unwinds = EncodeFunctionUnwinds(function_unwinds)
+  encoded_function_unwinds = EncodeFunctionUnwinds(
+      function_unwinds,
+      ReadTextSectionStartAddress(args.readobj_path, args.input_path))
   (page_table, function_table, function_offset_table,
    unwind_instruction_table) = GenerateUnwindTables(encoded_function_unwinds)
   unwind_info: bytes = EncodeUnwindInfo(page_table, function_table,

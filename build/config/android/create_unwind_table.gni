@@ -30,6 +30,8 @@ template("unwind_table_asset_v2") {
       rebase_path(_asset_path, root_build_dir),
       "--dump_syms_path",
       rebase_path("$root_out_dir/dump_syms", root_build_dir),
+      "--readobj_path",
+      rebase_path("$clang_base_path/bin/llvm-readobj", root_build_dir),
     ]
     deps = invoker.deps
     deps += [ "//third_party/breakpad:dump_syms" ]
