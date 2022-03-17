@@ -2,16 +2,22 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-static_library("installer_policies") {
+group("installer_policies") {
+  public_deps = [
+    ":installer_policies_no_content_deps",
+    ":installer_policies_with_content_deps",
+  ]
+}
+
+# Installer policies that can be used in targets that can't depend on
+# //content/ such as //android_webview:nonembedded.
+# Prefer adding installer policies here.
+static_library("installer_policies_no_content_deps") {
   sources = [
     "autofill_states_component_installer.cc",
     "autofill_states_component_installer.h",
     "client_side_phishing_component_installer_policy.cc",
     "client_side_phishing_component_installer_policy.h",
-    "on_device_head_suggest_component_installer.cc",
-    "on_device_head_suggest_component_installer.h",
-    "optimization_hints_component_installer.cc",
-    "optimization_hints_component_installer.h",
     "origin_trials_component_installer.cc",
     "origin_trials_component_installer.h",
     "safety_tips_component_installer.cc",
@@ -24,12 +30,29 @@ static_library("installer_policies") {
     "//base",
     "//components/autofill/core/browser",
     "//components/component_updater",
-    "//components/omnibox/browser",
-    "//components/omnibox/common",
-    "//components/optimization_guide/core",
     "//components/prefs:prefs",
     "//components/reputation/core",
     "//components/reputation/core:proto",
+  ]
+
+  # Disallow depending on content.
+  assert_no_deps = [ "//content/public" ]
+}
+
+static_library("installer_policies_with_content_deps") {
+  sources = [
+    "on_device_head_suggest_component_installer.cc",
+    "on_device_head_suggest_component_installer.h",
+    "optimization_hints_component_installer.cc",
+    "optimization_hints_component_installer.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/component_updater",
+    "//components/omnibox/browser",
+    "//components/omnibox/common",
+    "//components/optimization_guide/core",
   ]
 }
 

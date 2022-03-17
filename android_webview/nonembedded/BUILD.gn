@@ -50,6 +50,7 @@ android_library("nonembedded_java") {
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
   ]
+
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
@@ -161,7 +162,7 @@ source_set("nonembedded") {
     "//android_webview/common",
     "//base",
     "//components/component_updater",
-    "//components/component_updater/installer_policies",
+    "//components/component_updater/installer_policies:installer_policies_no_content_deps",
     "//components/prefs",
     "//components/update_client",
     "//components/update_client:in_process_patcher",
@@ -174,6 +175,9 @@ source_set("nonembedded") {
     # Called via JNI by LicenseContentProvider in :nonembedded_java.
     "//components/about_ui:about_ui_android",
   ]
+
+  # Disallow depending on content.
+  assert_no_deps = [ "//content/public" ]
 }
 
 # WebView icon used by upstream SystemWebView and Trichrome.
