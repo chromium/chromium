@@ -3444,6 +3444,10 @@ crbug.com/626703 [ Win ] external/wpt/wasm/serialization/arraybuffer/transfer.wi
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 virtual/prerender/wpt_internal/prerender/unload-on-prerender-cross-origin-subframe-navigation.html [ Timeout ]
+crbug.com/626703 virtual/prerender/wpt_internal/prerender/unload-on-prerender-main-frame-navigation.html [ Timeout ]
+crbug.com/626703 virtual/prerender/wpt_internal/prerender/unload-on-prerender-remove-subframe.html [ Timeout ]
+crbug.com/626703 virtual/prerender/wpt_internal/prerender/unload-on-prerender-same-origin-subframe-navigation.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/css/css-backgrounds/background-clip/clip-text-flex.html [ Failure ]
 crbug.com/626703 [ Mac10.12 ] external/wpt/css/css-backgrounds/background-clip/clip-text-flex.html [ Failure ]
 crbug.com/626703 [ Mac10.13 ] external/wpt/css/css-backgrounds/background-clip/clip-text-flex.html [ Failure ]
@@ -7723,5 +7727,5 @@ crbug.com/1277877 virtual/partitioned-cookies-first-party-sets/http/tests/inspec
 crbug.com/1298633 http/tests/inspector-protocol/network/cross-origin-isolation/coep-load-error-reporting-worker.js [ Pass Timeout ]
 
 # Sheriff 2022-03-16
-crbug.com/1306848 http/tests/inspector-protocol/conversion/attribution-invalid-data.js [ Failure Timeout Pass ]
+crbug.com/1306848 http/tests/inspector-protocol/conversion/attribution-invalid-data.js [ Failure Pass Timeout ]
 crbug.com/1306770 http/tests/inspector-protocol/network/interception-download.js [ Failure Pass ]
