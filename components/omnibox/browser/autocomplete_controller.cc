@@ -58,6 +58,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/metrics_proto/chrome_searchbox_stats.pb.h"
 #include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -153,13 +154,15 @@ void AutocompleteController::GetMatchTypeAndExtendSubtypes(
   // This type indicates a native chrome suggestion.
   *type = 69;
 
-  // If provider is TYPE_ZERO_SUGGEST or TYPE_ON_DEVICE_HEAD, set the subtype
-  // accordingly. Type will be set in the switch statement below where we'll
-  // enter one of SEARCH_SUGGEST or NAVSUGGEST.
+  // If provider is TYPE_ZERO_SUGGEST_LOCAL_HISTORY, TYPE_ZERO_SUGGEST, or
+  // TYPE_ON_DEVICE_HEAD, set the subtype accordingly. The type will be set in
+  // the switch statement below for SEARCH_SUGGEST or NAVSUGGEST types.
   if (match.provider) {
     if (match.provider->type() == AutocompleteProvider::TYPE_ZERO_SUGGEST &&
         (match.type == AutocompleteMatchType::SEARCH_SUGGEST ||
          match.type == AutocompleteMatchType::NAVSUGGEST)) {
+      // Make sure changes here are reflected in UpdateAssistedQueryStats()
+      // below in which the zero-prefix suggestions are counted.
       if (match.type == AutocompleteMatchType::NAVSUGGEST) {
         subtypes->emplace(/*SUBTYPE_ZERO_PREFIX_LOCAL_FREQUENT_URLS=*/451);
       }
@@ -172,6 +175,8 @@ void AutocompleteController::GetMatchTypeAndExtendSubtypes(
                AutocompleteProvider::TYPE_ON_DEVICE_HEAD) {
       // This subtype indicates a match from an on-device head provider.
       subtypes->emplace(/*SUBTYPE_SUGGEST_2G_LITE=*/271);
+      // Make sure changes here are reflected in UpdateAssistedQueryStats()
+      // below in which the zero-prefix suggestions are counted.
     } else if (match.provider->type() ==
                AutocompleteProvider::TYPE_ZERO_SUGGEST_LOCAL_HISTORY) {
       subtypes->emplace(/*SUBTYPE_ZERO_PREFIX_LOCAL_HISTORY=*/450);
@@ -641,21 +646,36 @@ void AutocompleteController::
     UpdateMatchDestinationURLWithAdditionalAssistedQueryStats(
         base::TimeDelta query_formulation_time,
         AutocompleteMatch* match) const {
+  // We expect the assisted_query_stats and the searchbox_stats to have been
+  // previously set when this method is called. If that is not the case, this
+  // method is being called by mistake and assisted_query_stats and the
+  // searchbox_stats should not be updated with additional information.
   if (!match->search_terms_args ||
-      match->search_terms_args->assisted_query_stats.empty())
+      match->search_terms_args->assisted_query_stats.empty() ||
+      match->search_terms_args->searchbox_stats.ByteSizeLong() == 0) {
     return;
+  }
 
   // Append the query formulation time (time from when the user first typed a
   // character into the omnibox to when the user selected a query), whether
   // a field trial has triggered, and the current page classification to the AQS
   // parameter.
-  match->search_terms_args->assisted_query_stats += base::StringPrintf(
-      ".%" PRId64 "j%dj%d", query_formulation_time.InMilliseconds(),
+  const std::string experiment_stats = base::StringPrintf(
+      "%" PRId64 "j%dj%d", query_formulation_time.InMilliseconds(),
       (search_provider_ &&
        search_provider_->field_trial_triggered_in_session()) ||
           (zero_suggest_provider_ &&
            zero_suggest_provider_->field_trial_triggered_in_session()),
       input_.current_page_classification());
+  match->search_terms_args->assisted_query_stats += "." + experiment_stats;
+  // TODO(crbug.com/1247846): experiment_stats is a deprecated field. We should
+  // however continue to report it for parity with what gets reported in aqs=,
+  // and for the downstream consumers that expect this field. Once gs_lcrp=
+  // fully replaces aqs=, Chrome should start logging the substitute fields and
+  // the downstream consumers should migrate to using those fields before we
+  // can stop logging this deprecated field.
+  match->search_terms_args->searchbox_stats.set_experiment_stats(
+      experiment_stats);
 
   // Append the ExperimentStatsV2 to the AQS parameter to be logged in
   // searchbox_stats.proto's experiment_stats_v2 field.
@@ -682,6 +702,10 @@ void AutocompleteController::
         // 'i' is used as a delimiter between experiment stat type and value.
         experiment_stats_v2.push_back(base::NumberToString(*type_int) + "i" +
                                       value);
+        auto* experiment_stats_v2_proto =
+            match->search_terms_args->searchbox_stats.add_experiment_stats_v2();
+        experiment_stats_v2_proto->set_type_int(*type_int);
+        experiment_stats_v2_proto->set_string_value(value);
       }
     }
     if (!experiment_stats_v2.empty()) {
@@ -949,15 +973,36 @@ void AutocompleteController::UpdateAssistedQueryStats(
   if (result->empty())
     return;
 
+  metrics::ChromeSearchboxStats searchbox_stats;
+  searchbox_stats.set_client_name("chrome");
+
   // Build the impressions string (the AQS part after ".").
   std::string autocompletions;
   int count = 0;
+  int num_zero_prefix_suggestions_shown = 0;
   size_t last_type = std::u16string::npos;
   base::flat_set<int> last_subtypes = {};
-  for (const auto& match : *result) {
-    auto subtypes = match.subtypes;
+  for (size_t index = 0; index < result->size(); ++index) {
+    AutocompleteMatch* match = result->match_at(index);
+    auto subtypes = match->subtypes;
     size_t type = std::u16string::npos;
-    GetMatchTypeAndExtendSubtypes(match, &type, &subtypes);
+    GetMatchTypeAndExtendSubtypes(*match, &type, &subtypes);
+
+    // Count any suggestions that constitute zero-prefix suggestions.
+    if (subtypes.contains(/*SUBTYPE_ZERO_PREFIX_LOCAL_HISTORY*/ 450) ||
+        subtypes.contains(
+            /*SUBTYPE_ZERO_PREFIX_LOCAL_FREQUENT_URLS*/ 451) ||
+        subtypes.contains(/*SUBTYPE_ZERO_PREFIX*/ 362)) {
+      num_zero_prefix_suggestions_shown++;
+    }
+
+    auto* available_suggestion = searchbox_stats.add_available_suggestions();
+    available_suggestion->set_index(index);
+    available_suggestion->set_type(type);
+    for (const auto subtype : subtypes) {
+      available_suggestion->add_subtypes(subtype);
+    }
+
     if (last_type != std::u16string::npos &&
         (type != last_type || subtypes != last_subtypes)) {
       AppendAvailableAutocompletion(last_type, last_subtypes, count,
@@ -971,6 +1016,15 @@ void AutocompleteController::UpdateAssistedQueryStats(
   }
   AppendAvailableAutocompletion(last_type, last_subtypes, count,
                                 &autocompletions);
+
+  // TODO(crbug.com/1307142): These two fields should take into account all the
+  // zero-prefix suggestions shown during the session and not only the ones
+  // shown at the time of user making a selection.
+  searchbox_stats.set_num_zero_prefix_suggestions_shown(
+      num_zero_prefix_suggestions_shown);
+  searchbox_stats.set_zero_prefix_enabled(num_zero_prefix_suggestions_shown >
+                                          0);
+
   // Go over all matches and set AQS if the match supports it.
   for (size_t index = 0; index < result->size(); ++index) {
     AutocompleteMatch* match = result->match_at(index);
@@ -978,10 +1032,24 @@ void AutocompleteController::UpdateAssistedQueryStats(
         match->GetTemplateURL(template_url_service_, false);
     if (!template_url || !match->search_terms_args)
       continue;
+
+    match->search_terms_args->searchbox_stats = searchbox_stats;
+
     std::string selected_index;
     // Prevent trivial suggestions from getting credit for being selected.
-    if (!match->IsTrivialAutocompletion())
+    if (!match->IsTrivialAutocompletion()) {
+      DCHECK_LT(static_cast<int>(index),
+                match->search_terms_args->searchbox_stats
+                    .available_suggestions_size());
+      const auto& selected_suggestion =
+          match->search_terms_args->searchbox_stats.available_suggestions(
+              index);
+      DCHECK_EQ(static_cast<int>(index), selected_suggestion.index());
+      match->search_terms_args->searchbox_stats.mutable_assisted_query_info()
+          ->MergeFrom(selected_suggestion);
+
       selected_index = base::StringPrintf("%" PRIuS, index);
+    }
     match->search_terms_args->assisted_query_stats =
         base::StringPrintf("chrome.%s.%s",
                            selected_index.c_str(),
