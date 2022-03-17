@@ -28,6 +28,7 @@
           <include name="IDR_PRODUCT_LOGO_256" file="google_chrome/linux/product_logo_256.png" type="BINDATA" />
         </if>
         <include name="IDR_PRODUCT_LOGO_24PX_1X" file="google_chrome/chrome_24px_1x.svg" type="BINDATA" />
+        <include name="IDR_PRODUCT_LOGO_128PX_SVG" file="google_chrome/chrome_128px.svg" type="BINDATA" />
         <if expr="chromeos">
           <include name="IDR_PRODUCT_LOGO_24PX_2X" file="google_chrome/chrome_24px_2x.svg" type="BINDATA" />
           <!-- Used by lacros. -->
