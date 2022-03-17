@@ -11,8 +11,8 @@ import android.view.View;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.UserData;
-import org.chromium.chrome.browser.app.download.DownloadInterstitialCoordinatorFactoryHelper;
 import org.chromium.chrome.browser.download.interstitial.DownloadInterstitialCoordinator;
+import org.chromium.chrome.browser.download.interstitial.DownloadInterstitialCoordinatorFactory;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabViewProvider;
@@ -98,7 +98,8 @@ public class NewDownloadTab extends EmptyTabObserver implements UserData, TabVie
 
     private NewDownloadTab(Tab tab) {
         mTab = tab;
-        mCoordinator = DownloadInterstitialCoordinatorFactoryHelper.create(tab);
+        mCoordinator = DownloadInterstitialCoordinatorFactory.create(
+                tab.getContext(), tab.getWindowAndroid());
     }
 
     private boolean isViewAttached() {
