@@ -39,16 +39,14 @@ static constexpr int kTimeBudgetExceeded = -2;
 // prevent the user from scaling the page as if user-scalable=no was set.
 static constexpr double kMaximumScalePreventsZoomingThreshold = 1.2;
 
-// Finding bad tap targets may takes too time for big page and should abort if
-// it takes more than 5ms.
+// Finding bad tap targets may costs too long time for big page and should abort
+// if it takes more than 5ms.
 static constexpr base::TimeDelta kTimeBudgetForBadTapTarget =
     base::Milliseconds(5);
 // Extracting tap targets phase is the major part of finding bad tap targets.
+// This phase will abort when it consumes more than 4ms.
 static constexpr base::TimeDelta kTimeBudgetForTapTargetExtraction =
     base::Milliseconds(4);
-// Checking clock itself is heavy on excessive call, skip checking by this
-// stride.
-constexpr int kTimeBudgetCheckStride = 32;
 static constexpr base::TimeDelta kEvaluationDelay = base::Milliseconds(3000);
 static constexpr base::TimeDelta kEvaluationInterval = base::Minutes(1);
 
@@ -77,8 +75,8 @@ void MobileFriendlinessChecker::WillBeRemovedFromFrame() {
 
 namespace {
 
-bool IsTimeBudgetExpired(const base::Time& from) {
-  return base::Time::Now() - from > kTimeBudgetForBadTapTarget;
+bool IsTimeBudgetExpired(const base::TimeTicks& from) {
+  return base::TimeTicks::Now() - from > kTimeBudgetForBadTapTarget;
 }
 
 // Fenwick tree is a data structure which can efficiently update elements and
@@ -219,21 +217,18 @@ int ExtractAndCountAllTapTargets(
     const LocalFrameView& frame_view,
     int finger_radius,
     Vector<int>& x_positions,
-    const base::Time& started,
+    const base::TimeTicks& started,
     Vector<std::pair<int, EdgeOrCenter>>& vertices) {
   LayoutObject* const root =
       frame_view.GetFrame().GetDocument()->GetLayoutView();
   WTF::HashSet<Member<const LayoutObject>> tap_targets;
 
-  int object_count = 0;
   // Simultaneously iterate front-to-back and back-to-front to consider
   // both page headers and footers using the same time budget.
   for (const LayoutObject *forward = root, *backward = root;
        forward && backward;) {
-    if ((++object_count % kTimeBudgetCheckStride) == 0 &&
-        base::Time::Now() - started > kTimeBudgetForTapTargetExtraction) {
+    if (base::TimeTicks::Now() - started > kTimeBudgetForTapTargetExtraction)
       return static_cast<int>(tap_targets.size());
-    }
 
     blink::GetRootNodeOptions options;
     if (forward->GetNode() != nullptr &&
@@ -309,7 +304,7 @@ void CompressKeyWithVector(const Vector<int>& positions,
 // Returns kTimeBudgetExceeded if time limit exceeded.
 int CountBadTapTargets(wtf_size_t rightmost_position,
                        const Vector<std::pair<int, EdgeOrCenter>>& vertices,
-                       const base::Time& started) {
+                       const base::TimeTicks& started) {
   FenwickTree tree(rightmost_position);
   int bad_tap_targets = 0;
   for (const auto& it : vertices) {
@@ -348,7 +343,7 @@ int CountBadTapTargets(wtf_size_t rightmost_position,
 // go/bad-tap-target-ukm
 int MobileFriendlinessChecker::ComputeBadTapTargetsRatio() {
   DCHECK(frame_view_->GetFrame().IsLocalRoot());
-  base::Time started = base::Time::Now();
+  base::TimeTicks started = base::TimeTicks::Now();
   constexpr float kOneDipInMm = 0.15875;
   double initial_scale = frame_view_->GetPage()
                              ->GetPageScaleConstraintsSet()
@@ -381,7 +376,7 @@ int MobileFriendlinessChecker::ComputeBadTapTargetsRatio() {
 
     all_tap_targets += got_tap_targets;
 
-    if (base::Time::Now() - started > kTimeBudgetForTapTargetExtraction)
+    if (base::TimeTicks::Now() - started > kTimeBudgetForTapTargetExtraction)
       break;
   }
   if (all_tap_targets == 0)

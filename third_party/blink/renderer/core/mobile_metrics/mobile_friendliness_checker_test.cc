@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/mobile_metrics/mobile_friendliness_checker.h"
 
-#include "base/time/time_override.h"
+#include "base/time/time.h"
 #include "third_party/blink/public/common/mobile_metrics/mobile_friendliness.h"
 #include "third_party/blink/public/mojom/mobile_metrics/mobile_friendliness.mojom-shared.h"
 #include "third_party/blink/public/web/web_settings.h"
@@ -44,11 +44,40 @@ static constexpr char kInlineRedDot[] =
     "png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4/"
     "/8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==";
 
+class ScopedTimeTicksOverride {
+ public:
+  explicit ScopedTimeTicksOverride(bool fixed) {
+    if (fixed) {
+      time_clock_overrides_ =
+          std::make_unique<base::subtle::ScopedTimeClockOverrides>(
+              nullptr, &ScopedTimeTicksOverride::FixedTicks, nullptr);
+    } else {
+      time_clock_overrides_ =
+          std::make_unique<base::subtle::ScopedTimeClockOverrides>(
+              nullptr, &ScopedTimeTicksOverride::BoostedTicks, nullptr);
+    }
+  }
+
+  static base::TimeTicks FixedTicks() {
+    static base::TimeTicks now = base::subtle::TimeTicksNowIgnoringOverride();
+    return now;
+  }
+  static base::TimeTicks BoostedTicks() {
+    static base::TimeTicks now = base::subtle::TimeTicksNowIgnoringOverride();
+    now += base::Microseconds(100);
+    return now;
+  }
+
+ private:
+  std::unique_ptr<base::subtle::ScopedTimeClockOverrides> time_clock_overrides_;
+};
+
 class MobileFriendlinessCheckerTest : public testing::Test {
   static void EvalMobileFriendliness(LocalFrameView* view,
-                                     int scroll_y_offset) {
+                                     int scroll_y_offset,
+                                     bool fixed_clock) {
     DCHECK(view->GetFrame().IsLocalRoot());
-
+    ScopedTimeTicksOverride clock(fixed_clock);
     for (const Frame* frame = &view->GetFrame(); frame;
          frame = frame->Tree().TraverseNext()) {
       if (const auto* local_frame = DynamicTo<LocalFrame>(frame)) {
@@ -98,7 +127,8 @@ class MobileFriendlinessCheckerTest : public testing::Test {
 
   MobileFriendliness CalculateMetricsForHTMLString(const std::string& html,
                                                    float device_scale = 1.0,
-                                                   int scroll_y_offset = 0) {
+                                                   int scroll_y_offset = 0,
+                                                   bool fixed_clock = true) {
     MFTestWebFrameClient web_frame_client;
     {
       std::unique_ptr<frame_test_helpers::WebViewHelper> helper(
@@ -108,14 +138,15 @@ class MobileFriendlinessCheckerTest : public testing::Test {
           url_test_helpers::ToKURL("about:blank"));
       EvalMobileFriendliness(
           helper->GetWebView()->MainFrameImpl()->GetFrameView(),
-          scroll_y_offset);
+          scroll_y_offset, fixed_clock);
     }
     return web_frame_client.GetMobileFriendliness();
   }
 
   MobileFriendliness CalculateMetricsForFile(const std::string& path,
                                              float device_scale = 1.0,
-                                             int scroll_y_offset = 0) {
+                                             int scroll_y_offset = 0,
+                                             bool fixed_clock = true) {
     MFTestWebFrameClient web_frame_client;
     {
       std::unique_ptr<frame_test_helpers::WebViewHelper> helper(
@@ -127,28 +158,10 @@ class MobileFriendlinessCheckerTest : public testing::Test {
                                     kBaseUrl + path);
       EvalMobileFriendliness(
           helper->GetWebView()->MainFrameImpl()->GetFrameView(),
-          scroll_y_offset);
+          scroll_y_offset, fixed_clock);
     }
     return web_frame_client.GetMobileFriendliness();
   }
-};
-
-class ClockFixedMobileFriendlinessCheckerTest
-    : public MobileFriendlinessCheckerTest {
- public:
-  void SetUp() override {
-    clock_override_ = std::make_unique<base::subtle::ScopedTimeClockOverrides>(
-        []() {
-          // Returns fixed mock time to avoid BadTapTargetRatio hits
-          // timeout.
-          static base::Time start = base::subtle::TimeNowIgnoringOverride();
-          return start;
-        },
-        nullptr, nullptr);
-  }
-
- protected:
-  std::unique_ptr<base::subtle::ScopedTimeClockOverrides> clock_override_;
 };
 
 TEST_F(MobileFriendlinessCheckerTest, NoViewportSetting) {
@@ -230,7 +243,7 @@ TEST_F(MobileFriendlinessCheckerTest, UserZoom) {
   EXPECT_EQ(actual_mf.small_text_ratio, 100);
 }
 
-TEST_F(ClockFixedMobileFriendlinessCheckerTest, NoText) {
+TEST_F(MobileFriendlinessCheckerTest, NoText) {
   MobileFriendliness actual_mf =
       CalculateMetricsForHTMLString(R"(<body></body>)");
   EXPECT_EQ(actual_mf.viewport_device_width, false);
@@ -857,7 +870,7 @@ TEST_F(MobileFriendlinessCheckerTest, ScrollerOutsideViewport) {
   EXPECT_EQ(actual_mf.text_content_outside_viewport_percentage, 0.0);
 }
 
-TEST_F(ClockFixedMobileFriendlinessCheckerTest, SingleTapTarget) {
+TEST_F(MobileFriendlinessCheckerTest, SingleTapTarget) {
   MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
 <html>
   <head>
@@ -873,7 +886,7 @@ TEST_F(ClockFixedMobileFriendlinessCheckerTest, SingleTapTarget) {
   EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 0);
 }
 
-TEST_F(ClockFixedMobileFriendlinessCheckerTest, TwoImageTapTargetsClose) {
+TEST_F(MobileFriendlinessCheckerTest, TwoImageTapTargetsClose) {
   MobileFriendliness actual_mf = CalculateMetricsForHTMLString(
       base::StringPrintf(R"(
 <html>
@@ -891,7 +904,7 @@ TEST_F(ClockFixedMobileFriendlinessCheckerTest, TwoImageTapTargetsClose) {
   EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 100);
 }
 
-TEST_F(ClockFixedMobileFriendlinessCheckerTest, TwoImageTapTargetsFar) {
+TEST_F(MobileFriendlinessCheckerTest, TwoImageTapTargetsFar) {
   MobileFriendliness actual_mf = CalculateMetricsForHTMLString(
       base::StringPrintf(R"(
 <html>
@@ -910,7 +923,7 @@ TEST_F(ClockFixedMobileFriendlinessCheckerTest, TwoImageTapTargetsFar) {
   EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 0);
 }
 
-TEST_F(ClockFixedMobileFriendlinessCheckerTest, NoBadTapTarget) {
+TEST_F(MobileFriendlinessCheckerTest, NoBadTapTarget) {
   MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
 <html>
   <head>
@@ -929,8 +942,7 @@ TEST_F(ClockFixedMobileFriendlinessCheckerTest, NoBadTapTarget) {
   EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 0);
 }
 
-TEST_F(ClockFixedMobileFriendlinessCheckerTest,
-       NoBadTapTargetWithDeviceScaleFactor) {
+TEST_F(MobileFriendlinessCheckerTest, NoBadTapTargetWithDeviceScaleFactor) {
   MobileFriendliness actual_mf =
       CalculateMetricsForHTMLString(R"(
 <html>
@@ -951,8 +963,7 @@ TEST_F(ClockFixedMobileFriendlinessCheckerTest,
   EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 0);
 }
 
-TEST_F(ClockFixedMobileFriendlinessCheckerTest,
-       BadTapTargetWithDeviceScaleFactor) {
+TEST_F(MobileFriendlinessCheckerTest, BadTapTargetWithDeviceScaleFactor) {
   MobileFriendliness actual_mf =
       CalculateMetricsForHTMLString(R"(
 <html>
@@ -973,7 +984,7 @@ TEST_F(ClockFixedMobileFriendlinessCheckerTest,
   EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 100);
 }
 
-TEST_F(ClockFixedMobileFriendlinessCheckerTest, BadTapTargetWithAutoZoomOut) {
+TEST_F(MobileFriendlinessCheckerTest, BadTapTargetWithAutoZoomOut) {
   MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
 <html>
   <body style="font-size: 18px">
@@ -990,7 +1001,7 @@ TEST_F(ClockFixedMobileFriendlinessCheckerTest, BadTapTargetWithAutoZoomOut) {
   EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 100);
 }
 
-TEST_F(ClockFixedMobileFriendlinessCheckerTest, TooCloseTapTargetsVertical) {
+TEST_F(MobileFriendlinessCheckerTest, TooCloseTapTargetsVertical) {
   MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
 <html>
   <head>
@@ -1013,8 +1024,7 @@ TEST_F(ClockFixedMobileFriendlinessCheckerTest, TooCloseTapTargetsVertical) {
   EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 50);
 }
 
-TEST_F(ClockFixedMobileFriendlinessCheckerTest,
-       TooCloseTapTargetsVerticalEventListener) {
+TEST_F(MobileFriendlinessCheckerTest, TooCloseTapTargetsVerticalEventListener) {
   MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
 <html>
   <head>
@@ -1034,8 +1044,7 @@ TEST_F(ClockFixedMobileFriendlinessCheckerTest,
   EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 50);
 }
 
-TEST_F(ClockFixedMobileFriendlinessCheckerTest,
-       TooCloseTapTargetsVerticalSamePoint) {
+TEST_F(MobileFriendlinessCheckerTest, TooCloseTapTargetsVerticalSamePoint) {
   MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
 <html>
   <head>
@@ -1063,7 +1072,7 @@ TEST_F(ClockFixedMobileFriendlinessCheckerTest,
   EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 34);
 }
 
-TEST_F(ClockFixedMobileFriendlinessCheckerTest, TooCloseTapTargetsHorizontal) {
+TEST_F(MobileFriendlinessCheckerTest, TooCloseTapTargetsHorizontal) {
   MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
 <html>
   <head>
@@ -1086,8 +1095,7 @@ TEST_F(ClockFixedMobileFriendlinessCheckerTest, TooCloseTapTargetsHorizontal) {
   EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 50);
 }
 
-TEST_F(ClockFixedMobileFriendlinessCheckerTest,
-       TooCloseTapTargetsHorizontalSamePoint) {
+TEST_F(MobileFriendlinessCheckerTest, TooCloseTapTargetsHorizontalSamePoint) {
   MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
 <html>
   <head>
@@ -1115,7 +1123,7 @@ TEST_F(ClockFixedMobileFriendlinessCheckerTest,
   EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 34);
 }
 
-TEST_F(ClockFixedMobileFriendlinessCheckerTest, GridGoodTargets3X3) {
+TEST_F(MobileFriendlinessCheckerTest, GridGoodTargets3X3) {
   MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
 <html>
   <head>
@@ -1179,7 +1187,7 @@ TEST_F(ClockFixedMobileFriendlinessCheckerTest, GridGoodTargets3X3) {
   EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 0);
 }
 
-TEST_F(ClockFixedMobileFriendlinessCheckerTest, GridBadTargets3X3) {
+TEST_F(MobileFriendlinessCheckerTest, GridBadTargets3X3) {
   MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
 <html>
   <head>
@@ -1243,7 +1251,7 @@ TEST_F(ClockFixedMobileFriendlinessCheckerTest, GridBadTargets3X3) {
   EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 100);
 }
 
-TEST_F(ClockFixedMobileFriendlinessCheckerTest, FormTapTargets) {
+TEST_F(MobileFriendlinessCheckerTest, FormTapTargets) {
   MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
 <html>
   <head>
@@ -1260,8 +1268,7 @@ TEST_F(ClockFixedMobileFriendlinessCheckerTest, FormTapTargets) {
   EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 50);
 }
 
-TEST_F(ClockFixedMobileFriendlinessCheckerTest,
-       InvisibleTapTargetWillBeIgnored) {
+TEST_F(MobileFriendlinessCheckerTest, InvisibleTapTargetWillBeIgnored) {
   MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
 <html>
   <head>
@@ -1280,8 +1287,7 @@ TEST_F(ClockFixedMobileFriendlinessCheckerTest,
   EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 0);
 }
 
-TEST_F(ClockFixedMobileFriendlinessCheckerTest,
-       BadTapTargetWithPositionAbsolute) {
+TEST_F(MobileFriendlinessCheckerTest, BadTapTargetWithPositionAbsolute) {
   MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
 <html>
   <head>
@@ -1300,17 +1306,9 @@ TEST_F(ClockFixedMobileFriendlinessCheckerTest,
   EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 100);
 }
 
-TEST_F(ClockFixedMobileFriendlinessCheckerTest, TapTargetTimeout) {
-  clock_override_.reset();
-  clock_override_ = std::make_unique<base::subtle::ScopedTimeClockOverrides>(
-      []() {
-        // Time::Now() progress 1 ms stride for every check to force timeout.
-        static base::Time now = base::subtle::TimeNowIgnoringOverride();
-        now += base::Milliseconds(1);
-        return now;
-      },
-      nullptr, nullptr);
-  MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
+TEST_F(MobileFriendlinessCheckerTest, TapTargetTimeout) {
+  MobileFriendliness actual_mf =
+      CalculateMetricsForHTMLString(R"(
 <html>
   <head>
     <meta name="viewport" content="width=480, initial-scale=1">
@@ -1336,11 +1334,14 @@ TEST_F(ClockFixedMobileFriendlinessCheckerTest, TapTargetTimeout) {
     </button>
   </body>
 </html>
-)");
+)",
+                                    /*device_scale=*/1.0,
+                                    /*scroll_y_offset=*/0,
+                                    /*fixed_clock=*/false);
   EXPECT_EQ(actual_mf.bad_tap_targets_ratio, -2);
 }
 
-TEST_F(ClockFixedMobileFriendlinessCheckerTest, TapTargetPositionFixed) {
+TEST_F(MobileFriendlinessCheckerTest, TapTargetPositionFixed) {
   MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
 <html>
   <head>
@@ -1355,7 +1356,7 @@ TEST_F(ClockFixedMobileFriendlinessCheckerTest, TapTargetPositionFixed) {
   EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 100);
 }
 
-TEST_F(ClockFixedMobileFriendlinessCheckerTest, IFrameTest) {
+TEST_F(MobileFriendlinessCheckerTest, IFrameTest) {
   url_test_helpers::RegisterMockedURLLoadFromBase(
       WebString::FromUTF8(kBaseUrl), blink::test::CoreTestDataPath(),
       WebString::FromUTF8("visible_iframe.html"));
@@ -1366,7 +1367,7 @@ TEST_F(ClockFixedMobileFriendlinessCheckerTest, IFrameTest) {
   EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 0);
 }
 
-TEST_F(ClockFixedMobileFriendlinessCheckerTest, IFrameVieportDeviceWidth) {
+TEST_F(MobileFriendlinessCheckerTest, IFrameVieportDeviceWidth) {
   url_test_helpers::RegisterMockedURLLoadFromBase(
       WebString::FromUTF8(kBaseUrl), blink::test::CoreTestDataPath(),
       WebString::FromUTF8("viewport/viewport-1.html"));
@@ -1378,7 +1379,7 @@ TEST_F(ClockFixedMobileFriendlinessCheckerTest, IFrameVieportDeviceWidth) {
   EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 0);
 }
 
-TEST_F(ClockFixedMobileFriendlinessCheckerTest, IFrameSmallTextRatio) {
+TEST_F(MobileFriendlinessCheckerTest, IFrameSmallTextRatio) {
   url_test_helpers::RegisterMockedURLLoadFromBase(
       WebString::FromUTF8(kBaseUrl), blink::test::CoreTestDataPath(),
       WebString::FromUTF8("small_text_iframe.html"));
@@ -1390,7 +1391,7 @@ TEST_F(ClockFixedMobileFriendlinessCheckerTest, IFrameSmallTextRatio) {
   EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 0);
 }
 
-TEST_F(ClockFixedMobileFriendlinessCheckerTest, IFrameBadTapTargetsRatio) {
+TEST_F(MobileFriendlinessCheckerTest, IFrameBadTapTargetsRatio) {
   url_test_helpers::RegisterMockedURLLoadFromBase(
       WebString::FromUTF8(kBaseUrl), blink::test::CoreTestDataPath(),
       WebString::FromUTF8("bad_tap_targets_iframe.html"));
