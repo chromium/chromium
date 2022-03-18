@@ -25,11 +25,11 @@ const NGLayoutResult* NGTableRowLayoutAlgorithm::Layout() {
   const auto& row = table_data.rows[ConstraintSpace().TableRowIndex()];
 
   auto CreateCellConstraintSpace = [this, &row, &table_data](
-                                       NGBlockNode cell, wtf_size_t cell_index,
+                                       NGBlockNode cell,
+                                       const NGTableConstraintSpaceData::Cell&
+                                           cell_data,
                                        absl::optional<LayoutUnit> row_baseline,
-                                       LayoutUnit* cell_inline_offset = nullptr,
                                        bool use_block_fragmentation = false) {
-    const auto& cell_data = table_data.cells[cell_index];
     const LayoutUnit cell_block_size =
         cell_data.rowspan_block_size != kIndefiniteSize
             ? cell_data.rowspan_block_size
@@ -41,16 +41,12 @@ const NGLayoutResult* NGTableRowLayoutAlgorithm::Layout() {
         cell_data.is_constrained ||
         (cell_data.has_grown && table_data.is_table_block_size_specified);
 
-    const wtf_size_t start_column = cell_data.start_column;
-    if (cell_inline_offset)
-      *cell_inline_offset = table_data.column_locations[start_column].offset;
-
     NGConstraintSpaceBuilder builder =
         NGTableAlgorithmUtils::CreateTableCellConstraintSpaceBuilder(
             table_data.table_writing_direction, cell, cell_data.borders,
             table_data.column_locations, cell_block_size,
-            container_builder_.InlineSize(), row_baseline, start_column,
-            !is_initial_block_size_definite,
+            container_builder_.InlineSize(), row_baseline,
+            cell_data.start_column, !is_initial_block_size_definite,
             table_data.is_table_block_size_specified,
             table_data.has_collapsed_borders, NGCacheSlot::kLayout);
 
@@ -75,8 +71,10 @@ const NGLayoutResult* NGTableRowLayoutAlgorithm::Layout() {
     NGRowBaselineTabulator row_baseline_tabulator;
     for (NGBlockNode cell = To<NGBlockNode>(Node().FirstChild()); cell;
          cell = To<NGBlockNode>(cell.NextSibling()), ++cell_index) {
+      const NGTableConstraintSpaceData::Cell& cell_data =
+          table_data.cells[cell_index];
       NGConstraintSpace cell_constraint_space =
-          CreateCellConstraintSpace(cell, cell_index, absl::nullopt);
+          CreateCellConstraintSpace(cell, cell_data, absl::nullopt);
       const NGLayoutResult* layout_result = cell.Layout(cell_constraint_space);
       NGBoxFragment fragment(
           table_data.table_writing_direction,
@@ -105,16 +103,18 @@ const NGLayoutResult* NGTableRowLayoutAlgorithm::Layout() {
     const auto* cell_break_token = To<NGBlockBreakToken>(entry.token);
     const auto& cell_style = cell.Style();
     wtf_size_t cell_index = row.start_cell_index + *entry.index;
-    LayoutUnit cell_inline_offset;
-    NGConstraintSpace cell_constraint_space = CreateCellConstraintSpace(
-        cell, cell_index, row_baseline, &cell_inline_offset,
-        ConstraintSpace().HasBlockFragmentation());
+    const NGTableConstraintSpaceData::Cell& cell_data =
+        table_data.cells[cell_index];
+    NGConstraintSpace cell_constraint_space =
+        CreateCellConstraintSpace(cell, cell_data, row_baseline,
+                                  ConstraintSpace().HasBlockFragmentation());
     const NGLayoutResult* cell_result =
         cell.Layout(cell_constraint_space, cell_break_token);
-    container_builder_.AddResult(
-        *cell_result,
-        {cell_inline_offset - table_data.table_border_spacing.inline_size,
-         LayoutUnit()});
+
+    const LayoutUnit inline_offset =
+        table_data.column_locations[cell_data.start_column].offset -
+        table_data.table_border_spacing.inline_size;
+    container_builder_.AddResult(*cell_result, {inline_offset, LayoutUnit()});
 
     if (should_propagate_child_break_values) {
       auto cell_break_before = JoinFragmentainerBreakValues(
