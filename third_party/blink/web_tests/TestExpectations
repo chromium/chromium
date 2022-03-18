@@ -3456,8 +3456,9 @@ crbug.com/626703 [ Win ] external/wpt/wasm/serialization/arraybuffer/transfer.wi
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/626703 [ Mac11 ] external/wpt/css/css-animations/parsing/animation-computed.html [ Timeout Failure ]
-crbug.com/626703 [ Mac11 ] virtual/threaded/external/wpt/css/css-animations/parsing/animation-computed.html [ Timeout Failure ]
+crbug.com/626703 external/wpt/css/css-grid/subgrid/subgrid-stretch.html [ Failure ]
+crbug.com/626703 [ Mac11 ] external/wpt/css/css-animations/parsing/animation-computed.html [ Failure Timeout ]
+crbug.com/626703 [ Mac11 ] virtual/threaded/external/wpt/css/css-animations/parsing/animation-computed.html [ Failure Timeout ]
 crbug.com/626703 virtual/prerender/wpt_internal/prerender/unload-on-prerender-cross-origin-subframe-navigation.html [ Timeout ]
 crbug.com/626703 virtual/prerender/wpt_internal/prerender/unload-on-prerender-main-frame-navigation.html [ Timeout ]
 crbug.com/626703 virtual/prerender/wpt_internal/prerender/unload-on-prerender-remove-subframe.html [ Timeout ]
