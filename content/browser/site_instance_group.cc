@@ -35,6 +35,10 @@ SiteInstanceGroupId SiteInstanceGroup::GetId() const {
   return id_;
 }
 
+base::SafeRef<SiteInstanceGroup> SiteInstanceGroup::GetSafeRef() {
+  return weak_ptr_factory_.GetSafeRef();
+}
+
 void SiteInstanceGroup::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }

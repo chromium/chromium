@@ -395,27 +395,29 @@ base::LazyInstance<UnboundWidgetInputHandler>::Leaky g_unbound_input_handler =
 std::unique_ptr<RenderWidgetHostImpl> RenderWidgetHostImpl::Create(
     FrameTree* frame_tree,
     RenderWidgetHostDelegate* delegate,
-    AgentSchedulingGroupHost& agent_scheduling_host,
+    base::SafeRef<SiteInstanceGroup> site_instance_group,
     int32_t routing_id,
     bool hidden,
     bool renderer_initiated_creation,
     std::unique_ptr<FrameTokenMessageQueue> frame_token_message_queue) {
   return base::WrapUnique(new RenderWidgetHostImpl(
       frame_tree,
-      /*self_owned=*/false, delegate, agent_scheduling_host, routing_id, hidden,
-      renderer_initiated_creation, std::move(frame_token_message_queue)));
+      /*self_owned=*/false, delegate, std::move(site_instance_group),
+      routing_id, hidden, renderer_initiated_creation,
+      std::move(frame_token_message_queue)));
 }
 
 // static
 RenderWidgetHostImpl* RenderWidgetHostImpl::CreateSelfOwned(
     FrameTree* frame_tree,
     RenderWidgetHostDelegate* delegate,
-    AgentSchedulingGroupHost& agent_scheduling_host,
+    base::SafeRef<SiteInstanceGroup> site_instance_group,
     int32_t routing_id,
     bool hidden,
     std::unique_ptr<FrameTokenMessageQueue> frame_token_message_queue) {
   return new RenderWidgetHostImpl(frame_tree, /*self_owned=*/true, delegate,
-                                  agent_scheduling_host, routing_id, hidden,
+                                  std::move(site_instance_group), routing_id,
+                                  hidden,
                                   /*renderer_initiated_creation=*/true,
                                   std::move(frame_token_message_queue));
 }
@@ -424,7 +426,7 @@ RenderWidgetHostImpl::RenderWidgetHostImpl(
     FrameTree* frame_tree,
     bool self_owned,
     RenderWidgetHostDelegate* delegate,
-    AgentSchedulingGroupHost& agent_scheduling_group,
+    base::SafeRef<SiteInstanceGroup> site_instance_group,
     int32_t routing_id,
     bool hidden,
     bool renderer_initiated_creation,
@@ -433,7 +435,8 @@ RenderWidgetHostImpl::RenderWidgetHostImpl(
       self_owned_(self_owned),
       waiting_for_init_(renderer_initiated_creation),
       delegate_(delegate),
-      agent_scheduling_group_(agent_scheduling_group),
+      agent_scheduling_group_(site_instance_group->agent_scheduling_group()),
+      site_instance_group_(std::move(site_instance_group)),
       routing_id_(routing_id),
       is_hidden_(hidden),
       last_view_screen_rect_(kInvalidScreenRect),
@@ -450,7 +453,7 @@ RenderWidgetHostImpl::RenderWidgetHostImpl(
 #endif
           frame_token_message_queue_.get()),
       frame_sink_id_(base::checked_cast<uint32_t>(
-                         agent_scheduling_group.GetProcess()->GetID()),
+                         agent_scheduling_group_.GetProcess()->GetID()),
                      base::checked_cast<uint32_t>(routing_id_)),
       power_mode_input_voter_(
           power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
@@ -475,7 +478,7 @@ RenderWidgetHostImpl::RenderWidgetHostImpl(
 
   std::pair<RoutingIDWidgetMap::iterator, bool> result =
       g_routing_id_widget_map.Get().insert(std::make_pair(
-          RenderWidgetHostID(agent_scheduling_group.GetProcess()->GetID(),
+          RenderWidgetHostID(agent_scheduling_group_.GetProcess()->GetID(),
                              routing_id_),
           this));
   CHECK(result.second) << "Inserting a duplicate item!";
@@ -484,14 +487,14 @@ RenderWidgetHostImpl::RenderWidgetHostImpl(
   // To avoid leaking any instance. They self-delete when their renderer process
   // is gone.
   if (self_owned_)
-    agent_scheduling_group.GetProcess()->AddObserver(this);
+    agent_scheduling_group_.GetProcess()->AddObserver(this);
 
   render_process_blocked_state_changed_subscription_ =
-      agent_scheduling_group.GetProcess()->RegisterBlockStateChangedCallback(
+      agent_scheduling_group_.GetProcess()->RegisterBlockStateChangedCallback(
           base::BindRepeating(
               &RenderWidgetHostImpl::RenderProcessBlockedStateChanged,
               base::Unretained(this)));
-  agent_scheduling_group.GetProcess()->AddPriorityClient(this);
+  agent_scheduling_group_.GetProcess()->AddPriorityClient(this);
 
   SetupInputRouter();
 
@@ -2628,6 +2631,10 @@ void RenderWidgetHostImpl::OnLocalSurfaceIdChanged(
         metadata.viewport_size_in_pixels, 1.f / metadata.device_scale_factor);
     delegate_->ResizeDueToAutoResize(this, viewport_size_in_dip);
   }
+}
+
+SiteInstanceGroup* RenderWidgetHostImpl::GetSiteInstanceGroup() {
+  return &*site_instance_group_;
 }
 
 // static

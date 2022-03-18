@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/safe_ref.h"
 #include "base/observer_list.h"
 #include "base/types/id_type.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
@@ -84,6 +85,8 @@ class CONTENT_EXPORT SiteInstanceGroup
 
   SiteInstanceGroupId GetId() const;
 
+  base::SafeRef<SiteInstanceGroup> GetSafeRef();
+
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
@@ -160,6 +163,8 @@ class CONTENT_EXPORT SiteInstanceGroup
   raw_ptr<AgentSchedulingGroupHost> agent_scheduling_group_ = nullptr;
 
   base::ObserverList<Observer, true>::Unchecked observers_;
+
+  base::WeakPtrFactory<SiteInstanceGroup> weak_ptr_factory_{this};
 };
 
 }  // namespace content

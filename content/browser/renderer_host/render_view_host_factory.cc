@@ -42,18 +42,16 @@ RenderViewHost* RenderViewHostFactory::Create(
         std::move(main_browsing_context_state));
   }
 
-  RenderViewHostImpl* view_host =
-      new RenderViewHostImpl(frame_tree, instance,
-                             RenderWidgetHostFactory::Create(
-                                 frame_tree, widget_delegate,
-                                 static_cast<SiteInstanceImpl*>(instance)
-                                     ->group()
-                                     ->agent_scheduling_group(),
-                                 widget_routing_id,
-                                 /*hidden=*/true, renderer_initiated_creation),
-                             delegate, routing_id, main_frame_routing_id,
-                             swapped_out, true /* has_initialized_audio_host */,
-                             std::move(main_browsing_context_state));
+  RenderViewHostImpl* view_host = new RenderViewHostImpl(
+      frame_tree, instance,
+      RenderWidgetHostFactory::Create(
+          frame_tree, widget_delegate,
+          static_cast<SiteInstanceImpl*>(instance)->group()->GetSafeRef(),
+          widget_routing_id,
+          /*hidden=*/true, renderer_initiated_creation),
+      delegate, routing_id, main_frame_routing_id, swapped_out,
+      true /* has_initialized_audio_host */,
+      std::move(main_browsing_context_state));
   return view_host;
 }
 

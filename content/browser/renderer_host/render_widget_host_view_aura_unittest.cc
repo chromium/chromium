@@ -41,7 +41,6 @@
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/compositor/test/test_image_transport_factory.h"
 #include "content/browser/gpu/compositor_util.h"
-#include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/delegated_frame_host.h"
 #include "content/browser/renderer_host/delegated_frame_host_client_aura.h"
 #include "content/browser/renderer_host/frame_token_message_queue.h"
@@ -56,6 +55,7 @@
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_event_handler.h"
 #include "content/browser/renderer_host/text_input_manager.h"
+#include "content/browser/site_instance_group.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_contents/web_contents_view_aura.h"
 #include "content/public/browser/context_menu_params.h"
@@ -375,16 +375,17 @@ class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
     return widget_.ReceivedScreenRects();
   }
 
-  // Instance self-delete when its |agent_scheduling_groups|'s process will
+  // Instance self-delete when its |site_instance_group|'s process will
   // exit.
   static MockRenderWidgetHostImpl* Create(
       FrameTree& frame_tree,
       RenderWidgetHostDelegate* delegate,
-      AgentSchedulingGroupHost& agent_scheduling_group,
+      base::SafeRef<SiteInstanceGroup> site_instance_group,
       int32_t routing_id,
       bool hidden) {
-    return new MockRenderWidgetHostImpl(
-        &frame_tree, delegate, agent_scheduling_group, routing_id, hidden);
+    return new MockRenderWidgetHostImpl(&frame_tree, delegate,
+                                        std::move(site_instance_group),
+                                        routing_id, hidden);
   }
 
   MockWidgetInputHandler* input_handler() { return &input_handler_; }
@@ -414,13 +415,13 @@ class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
  private:
   MockRenderWidgetHostImpl(FrameTree* frame_tree,
                            RenderWidgetHostDelegate* delegate,
-                           AgentSchedulingGroupHost& agent_scheduling_group,
+                           base::SafeRef<SiteInstanceGroup> site_instance_group,
                            int32_t routing_id,
                            bool hidden)
       : RenderWidgetHostImpl(frame_tree,
                              /*self_owned=*/true,
                              delegate,
-                             agent_scheduling_group,
+                             std::move(site_instance_group),
                              routing_id,
                              hidden,
                              /*renderer_initiated_creation=*/false,
@@ -508,8 +509,8 @@ class RenderWidgetHostViewAuraTest : public testing::Test {
     int32_t routing_id = process_host_->GetNextRoutingID();
     delegates_.push_back(std::make_unique<MockRenderWidgetHostDelegate>());
     auto* widget_host = MockRenderWidgetHostImpl::Create(
-        GetFrameTree(), delegates_.back().get(), *agent_scheduling_group_host_,
-        routing_id, hidden);
+        GetFrameTree(), delegates_.back().get(),
+        site_instance_group_->GetSafeRef(), routing_id, hidden);
     delegates_.back()->set_widget_host(widget_host);
 
     return new FakeRenderWidgetHostViewAura(widget_host);
@@ -540,19 +541,20 @@ class RenderWidgetHostViewAuraTest : public testing::Test {
     process_host_ =
         std::make_unique<MockRenderProcessHost>(browser_context_.get());
     process_host_->Init();
-    agent_scheduling_group_host_ =
-        std::make_unique<AgentSchedulingGroupHost>(*process_host_);
+    auto site_instance = SiteInstance::Create(browser_context_.get());
+    site_instance_group_ = base::WrapRefCounted(new SiteInstanceGroup(
+        site_instance->GetBrowsingInstanceId(), process_host_.get()));
 
     sink_ = &process_host_->sink();
 
-    web_contents_ = WebContents::Create(WebContents::CreateParams(
-        browser_context_.get(), SiteInstance::Create(browser_context_.get())));
+    web_contents_ = WebContents::Create(
+        WebContents::CreateParams(browser_context_.get(), site_instance));
 
     int32_t routing_id = process_host_->GetNextRoutingID();
     delegates_.push_back(std::make_unique<MockRenderWidgetHostDelegate>());
     parent_host_ = MockRenderWidgetHostImpl::Create(
-        GetFrameTree(), delegates_.back().get(), *agent_scheduling_group_host_,
-        routing_id, /*hidden = */ false);
+        GetFrameTree(), delegates_.back().get(),
+        site_instance_group_->GetSafeRef(), routing_id, /*hidden = */ false);
     delegates_.back()->set_widget_host(parent_host_);
 
     parent_view_ = new RenderWidgetHostViewAura(parent_host_);
@@ -620,7 +622,7 @@ class RenderWidgetHostViewAuraTest : public testing::Test {
     parent_view_->Destroy();
 
     process_host_->Cleanup();
-    agent_scheduling_group_host_ = nullptr;
+    site_instance_group_.reset();
     web_contents_ = nullptr;
     process_host_ = nullptr;
     browser_context_ = nullptr;
@@ -713,7 +715,7 @@ class RenderWidgetHostViewAuraTest : public testing::Test {
   std::unique_ptr<WebContents> web_contents_;
   std::vector<std::unique_ptr<MockRenderWidgetHostDelegate>> delegates_;
   std::unique_ptr<MockRenderProcessHost> process_host_;
-  std::unique_ptr<AgentSchedulingGroupHost> agent_scheduling_group_host_;
+  scoped_refptr<SiteInstanceGroup> site_instance_group_;
 
   // Tests should set these to nullptr if they've already triggered their
   // destruction.
@@ -3254,8 +3256,8 @@ TEST_F(RenderWidgetHostViewAuraTest, DiscardDelegatedFrames) {
     int32_t routing_id = process_host_->GetNextRoutingID();
     delegates_.push_back(base::WrapUnique(new MockRenderWidgetHostDelegate));
     hosts[i] = MockRenderWidgetHostImpl::Create(
-        GetFrameTree(), delegates_.back().get(), *agent_scheduling_group_host_,
-        routing_id, /*hidden = */ false);
+        GetFrameTree(), delegates_.back().get(),
+        site_instance_group_->GetSafeRef(), routing_id, /*hidden = */ false);
     delegates_.back()->set_widget_host(hosts[i]);
 
     views[i] = new FakeRenderWidgetHostViewAura(hosts[i]);
@@ -3376,8 +3378,8 @@ TEST_F(RenderWidgetHostViewAuraTest, DiscardDelegatedFramesWithMemoryPressure) {
 
     delegates_.push_back(base::WrapUnique(new MockRenderWidgetHostDelegate));
     hosts[i] = MockRenderWidgetHostImpl::Create(
-        GetFrameTree(), delegates_.back().get(), *agent_scheduling_group_host_,
-        routing_id, /*hidden = */ false);
+        GetFrameTree(), delegates_.back().get(),
+        site_instance_group_->GetSafeRef(), routing_id, /*hidden = */ false);
     delegates_.back()->set_widget_host(hosts[i]);
 
     hosts[i]->BindWidgetInterfaces(
@@ -5988,26 +5990,26 @@ class InputMethodAuraTestBase : public RenderWidgetHostViewAuraTest {
     InitializeAura();
 
     widget_host_for_first_process_ =
-        CreateRenderWidgetHostForAgentSchedulingGroup(
-            tab_agent_scheduling_group());
+        CreateRenderWidgetHostForSiteInstanceGroup(tab_site_instance_group());
     view_for_first_process_ =
         CreateViewForProcess(widget_host_for_first_process_);
 
     second_process_host_ = CreateNewProcessHost();
-    second_agent_scheduling_group_host_ =
-        std::make_unique<AgentSchedulingGroupHost>(*second_process_host_);
+    second_site_instance_group_ = base::WrapRefCounted(
+        new SiteInstanceGroup(tab_site_instance_group()->browsing_instance_id(),
+                              second_process_host_.get()));
     widget_host_for_second_process_ =
-        CreateRenderWidgetHostForAgentSchedulingGroup(
-            *second_agent_scheduling_group_host_);
+        CreateRenderWidgetHostForSiteInstanceGroup(
+            second_site_instance_group_.get());
     view_for_second_process_ =
         CreateViewForProcess(widget_host_for_second_process_);
 
     third_process_host_ = CreateNewProcessHost();
-    third_agent_scheduling_group_host_ =
-        std::make_unique<AgentSchedulingGroupHost>(*third_process_host_);
-    widget_host_for_third_process_ =
-        CreateRenderWidgetHostForAgentSchedulingGroup(
-            *third_agent_scheduling_group_host_);
+    third_site_instance_group_ = base::WrapRefCounted(
+        new SiteInstanceGroup(tab_site_instance_group()->browsing_instance_id(),
+                              third_process_host_.get()));
+    widget_host_for_third_process_ = CreateRenderWidgetHostForSiteInstanceGroup(
+        third_site_instance_group_.get());
     view_for_third_process_ =
         CreateViewForProcess(widget_host_for_third_process_);
 
@@ -6027,12 +6029,12 @@ class InputMethodAuraTestBase : public RenderWidgetHostViewAuraTest {
 
     view_for_second_process_->Destroy();
     second_process_host_->Cleanup();
-    second_agent_scheduling_group_host_.reset();
+    second_site_instance_group_.reset();
     second_process_host_.reset();
 
     view_for_third_process_->Destroy();
     third_process_host_->Cleanup();
-    third_agent_scheduling_group_host_.reset();
+    third_site_instance_group_.reset();
     third_process_host_.reset();
 
     RenderWidgetHostViewAuraTest::TearDown();
@@ -6049,12 +6051,12 @@ class InputMethodAuraTestBase : public RenderWidgetHostViewAuraTest {
     return std::make_unique<MockRenderProcessHost>(browser_context());
   }
 
-  MockRenderWidgetHostImpl* CreateRenderWidgetHostForAgentSchedulingGroup(
-      AgentSchedulingGroupHost& agent_scheduling_group_host) {
+  MockRenderWidgetHostImpl* CreateRenderWidgetHostForSiteInstanceGroup(
+      SiteInstanceGroup* site_instance_group) {
     return MockRenderWidgetHostImpl::Create(
         GetFrameTree(), render_widget_host_delegate(),
-        agent_scheduling_group_host,
-        agent_scheduling_group_host.GetProcess()->GetNextRoutingID(),
+        site_instance_group->GetSafeRef(),
+        site_instance_group->process()->GetNextRoutingID(),
         /*hidden = */ false);
   }
 
@@ -6074,8 +6076,8 @@ class InputMethodAuraTestBase : public RenderWidgetHostViewAuraTest {
 
   MockRenderProcessHost* tab_process() const { return process_host_.get(); }
 
-  AgentSchedulingGroupHost& tab_agent_scheduling_group() const {
-    return *agent_scheduling_group_host_;
+  SiteInstanceGroup* tab_site_instance_group() const {
+    return site_instance_group_.get();
   }
 
   RenderWidgetHostViewAura* tab_view() const { return view_; }
@@ -6100,11 +6102,11 @@ class InputMethodAuraTestBase : public RenderWidgetHostViewAuraTest {
   raw_ptr<MockRenderWidgetHostImpl> widget_host_for_first_process_;
   raw_ptr<TestRenderWidgetHostView> view_for_first_process_;
   std::unique_ptr<MockRenderProcessHost> second_process_host_;
-  std::unique_ptr<AgentSchedulingGroupHost> second_agent_scheduling_group_host_;
+  scoped_refptr<SiteInstanceGroup> second_site_instance_group_;
   raw_ptr<MockRenderWidgetHostImpl> widget_host_for_second_process_;
   raw_ptr<TestRenderWidgetHostView> view_for_second_process_;
   std::unique_ptr<MockRenderProcessHost> third_process_host_;
-  std::unique_ptr<AgentSchedulingGroupHost> third_agent_scheduling_group_host_;
+  scoped_refptr<SiteInstanceGroup> third_site_instance_group_;
   raw_ptr<MockRenderWidgetHostImpl> widget_host_for_third_process_;
   raw_ptr<TestRenderWidgetHostView> view_for_third_process_;
 };

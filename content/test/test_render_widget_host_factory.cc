@@ -20,11 +20,11 @@ std::unique_ptr<RenderWidgetHostImpl>
 TestRenderWidgetHostFactory::CreateRenderWidgetHost(
     FrameTree* frame_tree,
     RenderWidgetHostDelegate* delegate,
-    AgentSchedulingGroupHost& agent_scheduling_group,
+    base::SafeRef<SiteInstanceGroup> site_instance_group,
     int32_t routing_id,
     bool hidden) {
   return TestRenderWidgetHost::Create(
-      frame_tree, delegate, agent_scheduling_group, routing_id, hidden);
+      frame_tree, delegate, std::move(site_instance_group), routing_id, hidden);
 }
 
 }  // namespace content

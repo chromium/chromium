@@ -7,9 +7,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/mock_render_widget_host.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
+#include "content/browser/site_instance_group.h"
 #include "content/common/cursors/webcursor.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
@@ -58,8 +58,8 @@ class CursorManagerTest : public testing::Test {
     browser_context_ = std::make_unique<TestBrowserContext>();
     process_host_ =
         std::make_unique<MockRenderProcessHost>(browser_context_.get());
-    agent_scheduling_group_host_ =
-        std::make_unique<AgentSchedulingGroupHost>(*process_host_);
+    site_instance_group_ = base::WrapRefCounted(new SiteInstanceGroup(
+        SiteInstanceImpl::NextBrowsingInstanceId(), process_host_.get()));
     widget_host_ = MakeNewWidgetHost();
     top_view_ =
         new MockRenderWidgetHostViewForCursors(widget_host_.get(), true);
@@ -68,7 +68,7 @@ class CursorManagerTest : public testing::Test {
   std::unique_ptr<RenderWidgetHostImpl> MakeNewWidgetHost() {
     int32_t routing_id = process_host_->GetNextRoutingID();
     return MockRenderWidgetHost::Create(
-        /*frame_tree=*/nullptr, &delegate_, *agent_scheduling_group_host_,
+        /*frame_tree=*/nullptr, &delegate_, site_instance_group_->GetSafeRef(),
         routing_id);
   }
 
@@ -78,7 +78,7 @@ class CursorManagerTest : public testing::Test {
 
     widget_host_ = nullptr;
     process_host_->Cleanup();
-    agent_scheduling_group_host_ = nullptr;
+    site_instance_group_.reset();
     process_host_ = nullptr;
   }
 
@@ -87,7 +87,7 @@ class CursorManagerTest : public testing::Test {
 
   std::unique_ptr<BrowserContext> browser_context_;
   std::unique_ptr<MockRenderProcessHost> process_host_;
-  std::unique_ptr<AgentSchedulingGroupHost> agent_scheduling_group_host_;
+  scoped_refptr<SiteInstanceGroup> site_instance_group_;
   std::unique_ptr<RenderWidgetHostImpl> widget_host_;
 
   // Tests should set this to nullptr if they've already triggered its

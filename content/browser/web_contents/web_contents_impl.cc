@@ -4046,7 +4046,7 @@ FrameTree* WebContentsImpl::CreateNewWindow(
 }
 
 RenderWidgetHostImpl* WebContentsImpl::CreateNewPopupWidget(
-    AgentSchedulingGroupHost& agent_scheduling_group,
+    base::SafeRef<SiteInstanceGroup> site_instance_group,
     int32_t route_id,
     mojo::PendingAssociatedReceiver<blink::mojom::PopupWidgetHost>
         blink_popup_widget_host,
@@ -4054,9 +4054,8 @@ RenderWidgetHostImpl* WebContentsImpl::CreateNewPopupWidget(
     mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::CreateNewPopupWidget",
                         "route_id", route_id);
-  RenderProcessHost* process = agent_scheduling_group.GetProcess();
   RenderWidgetHostImpl* widget_host = RenderWidgetHostImpl::CreateSelfOwned(
-      &primary_frame_tree_, this, agent_scheduling_group, route_id, IsHidden(),
+      &primary_frame_tree_, this, site_instance_group, route_id, IsHidden(),
       std::make_unique<FrameTokenMessageQueue>());
 
   widget_host->BindWidgetInterfaces(std::move(blink_widget_host),
@@ -4070,7 +4069,8 @@ RenderWidgetHostImpl* WebContentsImpl::CreateNewPopupWidget(
   widget_view->SetWidgetType(WidgetType::kPopup);
 
   // Save the created widget associated with the route so we can show it later.
-  pending_widgets_[GlobalRoutingID(process->GetID(), route_id)] = widget_host;
+  pending_widgets_[GlobalRoutingID(site_instance_group->process()->GetID(),
+                                   route_id)] = widget_host;
   AddRenderWidgetHostDestructionObserver(widget_host);
 
   return widget_host;

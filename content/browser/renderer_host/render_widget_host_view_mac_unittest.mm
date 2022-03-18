@@ -25,10 +25,10 @@
 #import "content/app_shim_remote_cocoa/render_widget_host_view_cocoa.h"
 #include "content/browser/compositor/image_transport_factory.h"
 #include "content/browser/gpu/compositor_util.h"
-#include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/frame_token_message_queue.h"
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
 #include "content/browser/renderer_host/text_input_manager.h"
+#include "content/browser/site_instance_group.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_types.h"
@@ -317,15 +317,14 @@ id MockSmartMagnifyEvent() {
 
 class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
  public:
-  MockRenderWidgetHostImpl(
-      RenderWidgetHostDelegate* delegate,
-      AgentSchedulingGroupHost& agent_scheduling_group_host,
-      int32_t routing_id,
-      bool for_frame_widget)
+  MockRenderWidgetHostImpl(RenderWidgetHostDelegate* delegate,
+                           base::SafeRef<SiteInstanceGroup> site_instance_group,
+                           int32_t routing_id,
+                           bool for_frame_widget)
       : RenderWidgetHostImpl(/*frame_tree=*/nullptr,
                              /*self_owned=*/false,
                              delegate,
-                             agent_scheduling_group_host,
+                             std::move(site_instance_group),
                              routing_id,
                              /*hidden=*/false,
                              /*renderer_initiated_creation=*/false,
@@ -490,10 +489,10 @@ class RenderWidgetHostViewMacTest : public RenderViewHostImplTestHarness {
     process_host_ =
         std::make_unique<MockRenderProcessHost>(browser_context_.get());
     process_host_->Init();
-    agent_scheduling_group_host_ =
-        std::make_unique<AgentSchedulingGroupHost>(*process_host_);
+    site_instance_group_ = base::WrapRefCounted(new SiteInstanceGroup(
+        SiteInstanceImpl::NextBrowsingInstanceId(), process_host_.get()));
     host_ = std::make_unique<MockRenderWidgetHostImpl>(
-        &delegate_, *agent_scheduling_group_host_,
+        &delegate_, site_instance_group_->GetSafeRef(),
         process_host_->GetNextRoutingID(),
         /*for_frame_widget=*/true);
     host_->set_owner_delegate(&mock_owner_delegate_);
@@ -517,7 +516,7 @@ class RenderWidgetHostViewMacTest : public RenderViewHostImplTestHarness {
     host_->ShutdownAndDestroyWidget(/*also_delete=*/false);
     host_.reset();
     process_host_->Cleanup();
-    agent_scheduling_group_host_.reset();
+    site_instance_group_.reset();
     process_host_.reset();
     browser_context_.reset();
     RecycleAndWait();
@@ -551,7 +550,7 @@ class RenderWidgetHostViewMacTest : public RenderViewHostImplTestHarness {
 
   std::unique_ptr<TestBrowserContext> browser_context_;
   std::unique_ptr<MockRenderProcessHost> process_host_;
-  std::unique_ptr<AgentSchedulingGroupHost> agent_scheduling_group_host_;
+  scoped_refptr<SiteInstanceGroup> site_instance_group_;
   testing::NiceMock<MockRenderWidgetHostOwnerDelegate> mock_owner_delegate_;
   std::unique_ptr<MockRenderWidgetHostImpl> host_;
   RenderWidgetHostViewMac* rwhv_mac_ = nullptr;
@@ -1241,11 +1240,13 @@ TEST_F(RenderWidgetHostViewMacTest,
   TestBrowserContext browser_context;
   MockRenderProcessHost process_host(&browser_context);
   process_host.Init();
-  AgentSchedulingGroupHost agent_scheduling_group_host(process_host);
+  scoped_refptr<SiteInstanceGroup> site_instance_group =
+      base::WrapRefCounted(new SiteInstanceGroup(
+          SiteInstanceImpl::NextBrowsingInstanceId(), &process_host));
   MockRenderWidgetHostDelegate delegate;
   int32_t routing_id = process_host.GetNextRoutingID();
   auto host = std::make_unique<MockRenderWidgetHostImpl>(
-      &delegate, agent_scheduling_group_host, routing_id,
+      &delegate, site_instance_group->GetSafeRef(), routing_id,
       /*for_frame_widget=*/false);
   RenderWidgetHostViewMac* view = new RenderWidgetHostViewMac(host.get());
   base::RunLoop().RunUntilIdle();
@@ -1304,11 +1305,13 @@ TEST_F(RenderWidgetHostViewMacTest,
   TestBrowserContext browser_context;
   MockRenderProcessHost process_host(&browser_context);
   process_host.Init();
-  AgentSchedulingGroupHost agent_scheduling_group_host(process_host);
+  scoped_refptr<SiteInstanceGroup> site_instance_group =
+      base::WrapRefCounted(new SiteInstanceGroup(
+          SiteInstanceImpl::NextBrowsingInstanceId(), &process_host));
   MockRenderWidgetHostDelegate delegate;
   int32_t routing_id = process_host.GetNextRoutingID();
   auto host = std::make_unique<MockRenderWidgetHostImpl>(
-      &delegate, agent_scheduling_group_host, routing_id,
+      &delegate, site_instance_group->GetSafeRef(), routing_id,
       /*for_frame_widget=*/false);
   RenderWidgetHostViewMac* view = new RenderWidgetHostViewMac(host.get());
   base::RunLoop().RunUntilIdle();
@@ -1364,10 +1367,12 @@ TEST_F(RenderWidgetHostViewMacTest,
   MockRenderProcessHost process_host(&browser_context);
   process_host.Init();
   MockRenderWidgetHostDelegate delegate;
-  AgentSchedulingGroupHost agent_scheduling_group_host(process_host);
+  scoped_refptr<SiteInstanceGroup> site_instance_group =
+      base::WrapRefCounted(new SiteInstanceGroup(
+          SiteInstanceImpl::NextBrowsingInstanceId(), &process_host));
   int32_t routing_id = process_host.GetNextRoutingID();
   auto host = std::make_unique<MockRenderWidgetHostImpl>(
-      &delegate, agent_scheduling_group_host, routing_id,
+      &delegate, site_instance_group->GetSafeRef(), routing_id,
       /*for_frame_widget=*/false);
   RenderWidgetHostViewMac* view = new RenderWidgetHostViewMac(host.get());
   base::RunLoop().RunUntilIdle();
@@ -1681,10 +1686,11 @@ class InputMethodMacTest : public RenderWidgetHostViewMacTest {
     child_process_host_ =
         std::make_unique<MockRenderProcessHost>(child_browser_context_.get());
     child_process_host_->Init();
-    child_agent_scheduling_group_host_ =
-        std::make_unique<AgentSchedulingGroupHost>(*child_process_host_);
+    child_site_instance_group_ = base::WrapRefCounted(
+        new SiteInstanceGroup(site_instance_group_->browsing_instance_id(),
+                              child_process_host_.get()));
     child_widget_ = std::make_unique<MockRenderWidgetHostImpl>(
-        &delegate_, *child_agent_scheduling_group_host_,
+        &delegate_, child_site_instance_group_->GetSafeRef(),
         child_process_host_->GetNextRoutingID(), /*for_frame_widget=*/false);
     child_view_ = new TestRenderWidgetHostView(child_widget_.get());
     base::RunLoop().RunUntilIdle();
@@ -1694,7 +1700,7 @@ class InputMethodMacTest : public RenderWidgetHostViewMacTest {
     child_widget_->ShutdownAndDestroyWidget(false);
     child_widget_.reset();
     child_process_host_->Cleanup();
-    child_agent_scheduling_group_host_.reset();
+    child_site_instance_group_.reset();
     child_process_host_.reset();
     child_browser_context_.reset();
     RenderWidgetHostViewMacTest::TearDown();
@@ -1726,7 +1732,7 @@ class InputMethodMacTest : public RenderWidgetHostViewMacTest {
 
  protected:
   std::unique_ptr<MockRenderProcessHost> child_process_host_;
-  std::unique_ptr<AgentSchedulingGroupHost> child_agent_scheduling_group_host_;
+  scoped_refptr<SiteInstanceGroup> child_site_instance_group_;
   std::unique_ptr<MockRenderWidgetHostImpl> child_widget_;
   TestRenderWidgetHostView* child_view_;
 

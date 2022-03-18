@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
+#include "content/browser/site_instance_group.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
@@ -74,7 +75,7 @@ class FlingSchedulerTest : public testing::Test,
     widget_host_->ShutdownAndDestroyWidget(false);
     widget_host_.reset();
     process_host_->Cleanup();
-    agent_scheduling_group_host_.reset();
+    site_instance_group_.reset();
     process_host_.reset();
     browser_context_.reset();
 
@@ -86,13 +87,13 @@ class FlingSchedulerTest : public testing::Test,
     process_host_ =
         std::make_unique<MockRenderProcessHost>(browser_context_.get());
     process_host_->Init();
-    agent_scheduling_group_host_ =
-        std::make_unique<AgentSchedulingGroupHost>(*process_host_);
+    site_instance_group_ = base::WrapRefCounted(new SiteInstanceGroup(
+        SiteInstanceImpl::NextBrowsingInstanceId(), process_host_.get()));
     int32_t routing_id = process_host_->GetNextRoutingID();
     delegate_ = std::make_unique<MockRenderWidgetHostDelegate>();
     widget_host_ = TestRenderWidgetHost::Create(
         /* frame_tree= */ nullptr, delegate_.get(),
-        *agent_scheduling_group_host_, routing_id, false);
+        site_instance_group_->GetSafeRef(), routing_id, false);
     delegate_->set_widget_host(widget_host_.get());
     return std::make_unique<TestRenderWidgetHostView>(widget_host_.get());
   }
@@ -135,7 +136,7 @@ class FlingSchedulerTest : public testing::Test,
   std::unique_ptr<TestBrowserContext> browser_context_;
   std::unique_ptr<RenderWidgetHostImpl> widget_host_;
   std::unique_ptr<MockRenderProcessHost> process_host_;
-  std::unique_ptr<AgentSchedulingGroupHost> agent_scheduling_group_host_;
+  scoped_refptr<SiteInstanceGroup> site_instance_group_;
   std::unique_ptr<TestRenderWidgetHostView> view_;
   std::unique_ptr<MockRenderWidgetHostDelegate> delegate_;
 #if BUILDFLAG(IS_WIN)

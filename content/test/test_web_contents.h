@@ -164,7 +164,7 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
       bool has_user_gesture,
       SessionStorageNamespace* session_storage_namespace) override;
   RenderWidgetHostImpl* CreateNewPopupWidget(
-      AgentSchedulingGroupHost& agent_scheduling_group,
+      base::SafeRef<SiteInstanceGroup> site_instance_group,
       int32_t route_id,
       mojo::PendingAssociatedReceiver<blink::mojom::PopupWidgetHost>
           blink_popup_widget_host,

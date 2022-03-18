@@ -12,9 +12,9 @@
 #include "cc/layers/layer.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
-#include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/mock_render_widget_host.h"
+#include "content/browser/site_instance_group.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
@@ -119,7 +119,7 @@ class RenderWidgetHostViewAndroidTest : public testing::Test {
   std::unique_ptr<TestWebContents> web_contents_;
   std::unique_ptr<FrameTree> frame_tree_;
   std::unique_ptr<MockRenderProcessHost> process_;
-  std::unique_ptr<AgentSchedulingGroupHost> agent_scheduling_group_;
+  scoped_refptr<SiteInstanceGroup> site_instance_group_;
   std::unique_ptr<MockRenderWidgetHostDelegate> delegate_;
   scoped_refptr<cc::Layer> parent_layer_;
   scoped_refptr<cc::Layer> layer_;
@@ -179,12 +179,12 @@ void RenderWidgetHostViewAndroidTest::SetUp() {
 
   delegate_ = std::make_unique<MockRenderWidgetHostDelegate>();
   process_ = std::make_unique<MockRenderProcessHost>(browser_context_.get());
-  agent_scheduling_group_ =
-      std::make_unique<AgentSchedulingGroupHost>(*process_);
+  site_instance_group_ = base::WrapRefCounted(new SiteInstanceGroup(
+      site_instance_->GetBrowsingInstanceId(), process_.get()));
   // Initialized before ownership is given to `render_view_host_`.
   std::unique_ptr<MockRenderWidgetHost> mock_host =
       MockRenderWidgetHost::Create(frame_tree_.get(), delegate_.get(),
-                                   *agent_scheduling_group_,
+                                   site_instance_group_->GetSafeRef(),
                                    process_->GetNextRoutingID());
   host_ = mock_host.get();
   render_view_host_ = new TestRenderViewHost(
@@ -212,7 +212,7 @@ void RenderWidgetHostViewAndroidTest::TearDown() {
 
   delegate_.reset();
   process_->Cleanup();
-  agent_scheduling_group_ = nullptr;
+  site_instance_group_.reset();
   process_ = nullptr;
   browser_context_.reset();
 }

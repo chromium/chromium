@@ -21,6 +21,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
+#include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/process/kill.h"
@@ -100,7 +101,6 @@ enum class DomCode;
 }
 
 namespace content {
-class AgentSchedulingGroupHost;
 class BrowserAccessibilityManager;
 class FlingSchedulerBase;
 class FrameTree;
@@ -108,6 +108,7 @@ class InputRouter;
 class MockRenderWidgetHost;
 class PeakGpuMemoryTracker;
 class RenderWidgetHostOwnerDelegate;
+class SiteInstanceGroup;
 class SyntheticGestureController;
 class TimeoutMonitor;
 class TouchEmulator;
@@ -158,7 +159,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   static std::unique_ptr<RenderWidgetHostImpl> Create(
       FrameTree* frame_tree,
       RenderWidgetHostDelegate* delegate,
-      AgentSchedulingGroupHost& agent_scheduling_host,
+      base::SafeRef<SiteInstanceGroup> site_instance_group,
       int32_t routing_id,
       bool hidden,
       bool renderer_initiated_creation,
@@ -174,7 +175,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   static RenderWidgetHostImpl* CreateSelfOwned(
       FrameTree* frame_tree,
       RenderWidgetHostDelegate* delegate,
-      AgentSchedulingGroupHost& agent_scheduling_host,
+      base::SafeRef<SiteInstanceGroup> site_instance_group,
       int32_t routing_id,
       bool hidden,
       std::unique_ptr<FrameTokenMessageQueue> frame_token_message_queue);
@@ -877,15 +878,19 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void OnLocalSurfaceIdChanged(
       const cc::RenderFrameMetadata& metadata) override;
 
+  SiteInstanceGroup* GetSiteInstanceGroup();
+
  protected:
   // |routing_id| must not be MSG_ROUTING_NONE.
   // If this object outlives |delegate|, DetachDelegate() must be called when
-  // |delegate| goes away.
+  // |delegate| goes away. |site_instance_group| will outlive this
+  // widget but we store it via a `base::SafeRef` instead of a scoped_refptr to
+  // not create a cycle and keep alive the `SiteInstanceGroup`.
   RenderWidgetHostImpl(
       FrameTree* frame_tree,
       bool self_owned,
       RenderWidgetHostDelegate* delegate,
-      AgentSchedulingGroupHost& agent_scheduling_host,
+      base::SafeRef<SiteInstanceGroup> site_instance_group,
       int32_t routing_id,
       bool hidden,
       bool renderer_initiated_creation,
@@ -1166,8 +1171,14 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 
   // AgentSchedulingGroupHost to be used for IPC with the corresponding
   // (renderer-side) AgentSchedulingGroup. Its channel may be nullptr if the
-  // renderer crashed.
+  // renderer crashed. We store it here as a separate reference instead of
+  // dynamically fetching it from `site_instance_group_` since its
+  // value gets cleared early in `SiteInstanceGroup` via
+  // RenderProcessHostDestroyed before this object is destroyed.
   AgentSchedulingGroupHost& agent_scheduling_group_;
+
+  // The SiteInstanceGroup this RenderWidgetHost belongs to.
+  base::SafeRef<SiteInstanceGroup> site_instance_group_;
 
   // The ID of the corresponding object in the Renderer Instance.
   const int routing_id_;

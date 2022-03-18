@@ -106,7 +106,6 @@ namespace {
 class JavaScriptDialogDismissNotifier;
 }
 enum class PictureInPictureResult;
-class AgentSchedulingGroupHost;
 class BeforeUnloadBlockingDelegate;  // content_browser_test_utils_internal.h
 class BrowserPluginEmbedder;
 class BrowserPluginGuest;
@@ -748,7 +747,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   bool IsTransientAllowFullscreenActive() const override;
   bool IsBackForwardCacheSupported() override;
   RenderWidgetHostImpl* CreateNewPopupWidget(
-      AgentSchedulingGroupHost& agent_scheduling_group,
+      base::SafeRef<SiteInstanceGroup> site_instance_group,
       int32_t route_id,
       mojo::PendingAssociatedReceiver<blink::mojom::PopupWidgetHost>
           blink_popup_widget_host,

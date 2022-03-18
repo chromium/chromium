@@ -29,7 +29,7 @@ class TestRenderWidgetHostFactory : public RenderWidgetHostFactory {
   std::unique_ptr<RenderWidgetHostImpl> CreateRenderWidgetHost(
       FrameTree* frame_tree,
       RenderWidgetHostDelegate* delegate,
-      AgentSchedulingGroupHost& agent_scheduling_group,
+      base::SafeRef<SiteInstanceGroup> site_instance_group,
       int32_t routing_id,
       bool hidden) override;
 };

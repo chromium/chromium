@@ -28,7 +28,6 @@
 #include "components/viz/test/begin_frame_args_test.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/gpu/compositor_util.h"
-#include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/data_transfer_util.h"
 #include "content/browser/renderer_host/display_feature.h"
 #include "content/browser/renderer_host/frame_token_message_queue.h"
@@ -38,6 +37,7 @@
 #include "content/browser/renderer_host/render_view_host_delegate_view.h"
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
+#include "content/browser/site_instance_group.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/common/content_constants_internal.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
@@ -543,8 +543,8 @@ class RenderWidgetHostTest : public testing::Test {
     delegate_ = std::make_unique<MockRenderWidgetHostDelegate>();
     process_ =
         std::make_unique<RenderWidgetHostProcess>(browser_context_.get());
-    agent_scheduling_group_host_ =
-        std::make_unique<AgentSchedulingGroupHost>(*process_);
+    site_instance_group_ = base::WrapRefCounted(new SiteInstanceGroup(
+        SiteInstanceImpl::NextBrowsingInstanceId(), process_.get()));
     sink_ = &process_->sink();
 #if defined(USE_AURA) || BUILDFLAG(IS_MAC)
     ImageTransportFactory::SetFactory(
@@ -560,7 +560,7 @@ class RenderWidgetHostTest : public testing::Test {
 #endif
     host_ = MockRenderWidgetHost::Create(
         /* frame_tree= */ nullptr, delegate_.get(),
-        *agent_scheduling_group_host_, process_->GetNextRoutingID(),
+        site_instance_group_->GetSafeRef(), process_->GetNextRoutingID(),
         widget_.GetNewRemote());
     // Set up the RenderWidgetHost as being for a main frame.
     host_->set_owner_delegate(&mock_owner_delegate_);
@@ -610,7 +610,7 @@ class RenderWidgetHostTest : public testing::Test {
     host_.reset();
     delegate_.reset();
     process_->Cleanup();
-    agent_scheduling_group_host_.reset();
+    site_instance_group_.reset();
     process_.reset();
     browser_context_.reset();
 
@@ -796,7 +796,7 @@ class RenderWidgetHostTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestBrowserContext> browser_context_;
   std::unique_ptr<RenderWidgetHostProcess> process_;
-  std::unique_ptr<AgentSchedulingGroupHost> agent_scheduling_group_host_;
+  scoped_refptr<SiteInstanceGroup> site_instance_group_;
   std::unique_ptr<MockRenderWidgetHostDelegate> delegate_;
   testing::NiceMock<MockRenderWidgetHostOwnerDelegate> mock_owner_delegate_;
   std::unique_ptr<MockRenderWidgetHost> host_;

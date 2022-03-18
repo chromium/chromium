@@ -8,14 +8,15 @@
 #include <stdint.h>
 #include <memory>
 
+#include "base/memory/safe_ref.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace content {
-class AgentSchedulingGroupHost;
 class FrameTree;
 class RenderWidgetHostDelegate;
 class RenderWidgetHostImpl;
+class SiteInstanceGroup;
 
 // A factory for creating RenderWidgetHostImpls. There is a global factory
 // function that can be installed for the purposes of testing to provide a
@@ -31,7 +32,7 @@ class RenderWidgetHostFactory {
   static std::unique_ptr<RenderWidgetHostImpl> Create(
       FrameTree* frame_tree,
       RenderWidgetHostDelegate* delegate,
-      AgentSchedulingGroupHost& agent_scheduling_group,
+      base::SafeRef<SiteInstanceGroup> site_instance_group,
       int32_t routing_id,
       bool hidden,
       bool renderer_initiated_creation);
@@ -48,7 +49,7 @@ class RenderWidgetHostFactory {
   virtual std::unique_ptr<RenderWidgetHostImpl> CreateRenderWidgetHost(
       FrameTree* frame_tree,
       RenderWidgetHostDelegate* delegate,
-      AgentSchedulingGroupHost& agent_scheduling_group,
+      base::SafeRef<SiteInstanceGroup> site_instance_group,
       int32_t routing_id,
       bool hidden) = 0;
 

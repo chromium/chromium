@@ -44,23 +44,23 @@ void MockRenderWidgetHost::SetupForInputRouterTest() {
 std::unique_ptr<MockRenderWidgetHost> MockRenderWidgetHost::Create(
     FrameTree* frame_tree,
     RenderWidgetHostDelegate* delegate,
-    AgentSchedulingGroupHost& agent_scheduling_group,
+    base::SafeRef<SiteInstanceGroup> site_instance_group,
     int32_t routing_id) {
-  return Create(frame_tree, delegate, agent_scheduling_group, routing_id,
-                TestRenderWidgetHost::CreateStubWidgetRemote());
+  return Create(frame_tree, delegate, std::move(site_instance_group),
+                routing_id, TestRenderWidgetHost::CreateStubWidgetRemote());
 }
 
 // static
 std::unique_ptr<MockRenderWidgetHost> MockRenderWidgetHost::Create(
     FrameTree* frame_tree,
     RenderWidgetHostDelegate* delegate,
-    AgentSchedulingGroupHost& agent_scheduling_group,
+    base::SafeRef<SiteInstanceGroup> site_instance_group,
     int32_t routing_id,
     mojo::PendingAssociatedRemote<blink::mojom::Widget> pending_blink_widget) {
   DCHECK(pending_blink_widget);
-  return base::WrapUnique(
-      new MockRenderWidgetHost(frame_tree, delegate, agent_scheduling_group,
-                               routing_id, std::move(pending_blink_widget)));
+  return base::WrapUnique(new MockRenderWidgetHost(
+      frame_tree, delegate, std::move(site_instance_group), routing_id,
+      std::move(pending_blink_widget)));
 }
 
 blink::mojom::WidgetInputHandler*
@@ -75,13 +75,13 @@ void MockRenderWidgetHost::NotifyNewContentRenderingTimeoutForTesting() {
 MockRenderWidgetHost::MockRenderWidgetHost(
     FrameTree* frame_tree,
     RenderWidgetHostDelegate* delegate,
-    AgentSchedulingGroupHost& agent_scheduling_group,
+    base::SafeRef<SiteInstanceGroup> site_instance_group,
     int routing_id,
     mojo::PendingAssociatedRemote<blink::mojom::Widget> pending_blink_widget)
     : RenderWidgetHostImpl(frame_tree,
                            /*self_owned=*/false,
                            delegate,
-                           agent_scheduling_group,
+                           std::move(site_instance_group),
                            routing_id,
                            /*hidden=*/false,
                            /*renderer_initiated_creation=*/false,

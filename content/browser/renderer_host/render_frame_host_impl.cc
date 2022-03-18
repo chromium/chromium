@@ -1495,7 +1495,8 @@ RenderFrameHostImpl::RenderFrameHostImpl(
       DCHECK_EQ(nullptr, GetLocalRenderWidgetHost());
       owned_render_widget_host_ = RenderWidgetHostFactory::Create(
           frame_tree_, frame_tree_->render_widget_delegate(),
-          agent_scheduling_group_, widget_routing_id, /*hidden=*/true,
+          site_instance_->group()->GetSafeRef(), widget_routing_id,
+          /*hidden=*/true,
           /*renderer_initiated_creation=*/false);
     }
 
@@ -2958,7 +2959,7 @@ void RenderFrameHostImpl::RenderProcessExited(
 void RenderFrameHostImpl::RenderProcessGone(
     SiteInstanceGroup* site_instance_group,
     const ChildProcessTerminationInfo& info) {
-  DCHECK_EQ(site_instance_.get()->group(), site_instance_group);
+  DCHECK_EQ(site_instance_->group(), site_instance_group);
 
   if (IsInBackForwardCache()) {
     EvictFromBackForwardCacheWithReason(
@@ -7238,7 +7239,7 @@ void RenderFrameHostImpl::CreateNewPopupWidget(
   // widgets in various global tables.
   int32_t widget_route_id = GetProcess()->GetNextRoutingID();
   RenderWidgetHostImpl* widget = delegate_->CreateNewPopupWidget(
-      agent_scheduling_group_, widget_route_id,
+      site_instance_->group()->GetSafeRef(), widget_route_id,
       std::move(blink_popup_widget_host), std::move(blink_widget_host),
       std::move(blink_widget));
   if (!widget)
