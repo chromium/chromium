@@ -115,7 +115,8 @@ CSSStyleValue* CreateStyleValueWithPropertyInternal(CSSPropertyID property_id,
       return MakeGarbageCollected<CSSUnsupportedStyleValue>(
           CSSPropertyName(property_id), value);
     }
-    case CSSPropertyID::kContain: {
+    case CSSPropertyID::kContain:
+    case CSSPropertyID::kContainerType: {
       if (value.IsIdentifierValue())
         return CreateStyleValue(value);
 
@@ -228,6 +229,9 @@ CSSStyleValue* CreateStyleValueWithPropertyInternal(CSSPropertyID property_id,
 CSSStyleValue* CreateStyleValueWithProperty(CSSPropertyID property_id,
                                             const CSSValue& value) {
   DCHECK_NE(property_id, CSSPropertyID::kInvalid);
+
+  if (UNLIKELY(value.IsPendingSubstitutionValue()))
+    return nullptr;
 
   if (CSSStyleValue* style_value = CreateStyleValueWithoutProperty(value))
     return style_value;

@@ -81,7 +81,8 @@ const CSSValue* StyleValueToCSSValue(
       }
       break;
     }
-    case CSSPropertyID::kContain: {
+    case CSSPropertyID::kContain:
+    case CSSPropertyID::kContainerType: {
       // level 1 only accepts single values, which are stored internally
       // as a single element list.
       const auto* value = style_value.ToCSSValue();
