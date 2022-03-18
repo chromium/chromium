@@ -4370,8 +4370,8 @@
   },
   {
     "name": "omnibox-adaptive-suggestions-count",
-    "owners": [ "ender", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 97
+    "owners": [ "ender", "stkhapugin", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 110
   },
   {
     "name": "omnibox-aggregate-shortcuts",
@@ -4429,8 +4429,8 @@
   },
   {
     "name": "omnibox-dynamic-max-autocomplete",
-    "owners": [ "manukh", "ender", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 100
+    "owners": [ "ender", "stkhapugin", "manukh", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 110
   },
   {
     "name": "omnibox-experimental-keyword-mode",
@@ -4459,8 +4459,8 @@
   },
   {
     "name": "omnibox-most-visited-tiles",
-    "owners": [ "fgorski", "ender", "chrome-omnibox-team@google.com"],
-    "expiry_milestone": 97
+    "owners": [ "fgorski", "ender", "stkhapugin", "chrome-omnibox-team@google.com"],
+    "expiry_milestone": 110
   },
   {
     "name": "omnibox-new-popup-ui",
@@ -4484,13 +4484,13 @@
   },
   {
     "name": "omnibox-on-focus-suggestions-contextual-web",
-    "owners": [ "tommycli", "ender", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 100
+    "owners": [ "ender", "stkhapugin", "tommycli", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 110
   },
   {
     "name": "omnibox-on-focus-suggestions-contextual-web-allow-srp",
-    "owners": [ "ender", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 100
+    "owners": [ "ender", "stkhapugin", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 110
   },
   {
     "name": "omnibox-pedals-android-batch1",
@@ -4574,8 +4574,8 @@
   },
   {
     "name": "omnibox-trending-zero-prefix-suggestions-on-ntp",
-    "owners": [ "mahmadi", "ender", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 104
+    "owners": [ "ender", "stkhapugin", "mahmadi", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 110
   },
   {
     "name": "omnibox-trigger-for-prerender2",
