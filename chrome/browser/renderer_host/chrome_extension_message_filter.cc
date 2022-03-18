@@ -112,6 +112,11 @@ void ChromeExtensionMessageFilter::OnGetExtMessageBundle(
     const std::string& extension_id, IPC::Message* reply_msg) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  // The profile may have been destroyed during the hop from the background
+  // thread to the UI thread.
+  if (!profile_)
+    return;
+
   const extensions::ExtensionSet& extension_set =
       extensions::ExtensionRegistry::Get(profile_)->enabled_extensions();
   const extensions::Extension* extension = extension_set.GetByID(extension_id);
