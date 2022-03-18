@@ -295,6 +295,7 @@ void URLRequestContextBuilder::SetHttpServerProperties(
 void URLRequestContextBuilder::SetCreateHttpTransactionFactoryCallback(
     CreateHttpTransactionFactoryCallback
         create_http_network_transaction_factory) {
+  http_transaction_factory_.reset();
   create_http_network_transaction_factory_ =
       std::move(create_http_network_transaction_factory);
 }
@@ -563,7 +564,9 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
       http_network_session_params_, network_session_context));
 
   std::unique_ptr<HttpTransactionFactory> http_transaction_factory;
-  if (!create_http_network_transaction_factory_.is_null()) {
+  if (http_transaction_factory_) {
+    http_transaction_factory = std::move(http_transaction_factory_);
+  } else if (!create_http_network_transaction_factory_.is_null()) {
     http_transaction_factory =
         std::move(create_http_network_transaction_factory_)
             .Run(storage->http_network_session());

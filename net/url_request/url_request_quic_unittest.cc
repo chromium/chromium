@@ -39,6 +39,8 @@
 #include "net/tools/quic/quic_simple_server.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request.h"
+#include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -120,58 +122,56 @@ class URLRequestQuicTest
     : public TestWithTaskEnvironment,
       public ::testing::WithParamInterface<quic::ParsedQuicVersion> {
  protected:
-  URLRequestQuicTest() : context_(new TestURLRequestContext(true)) {
+  URLRequestQuicTest()
+      : context_builder_(CreateTestURLRequestContextBuilder()) {
     QuicEnableVersion(version());
     StartQuicServer(version());
 
-    auto params = std::make_unique<HttpNetworkSessionParams>();
+    HttpNetworkSessionParams params;
     CertVerifyResult verify_result;
     verify_result.verified_cert = ImportCertFromFile(
         GetTestCertsDirectory(), "quic-chain.pem");
-    cert_verifier_.AddResultForCertAndHost(verify_result.verified_cert.get(),
+    auto cert_verifier = std::make_unique<MockCertVerifier>();
+    cert_verifier->AddResultForCertAndHost(verify_result.verified_cert.get(),
                                            kTestServerHost, verify_result, OK);
     // To simplify the test, and avoid the race with the HTTP request, we force
     // QUIC for these requests.
-    context_->set_quic_context(&quic_context_);
-    quic_context_.params()->supported_versions = {version()};
-    quic_context_.params()->origins_to_force_quic_on.insert(
+    auto quic_context = std::make_unique<QuicContext>();
+    quic_context->params()->supported_versions = {version()};
+    quic_context->params()->origins_to_force_quic_on.insert(
         HostPortPair(kTestServerHost, 443));
-    params->enable_quic = true;
-    params->enable_server_push_cancellation = true;
-    context_->set_host_resolver(host_resolver_.get());
-    context_->set_http_network_session_params(std::move(params));
-    context_->set_cert_verifier(&cert_verifier_);
-    context_->set_net_log(NetLog::Get());
-    transport_security_state_.SetExpectCTReporter(&expect_ct_reporter_);
-    context_->set_transport_security_state(&transport_security_state_);
+    context_builder_->set_quic_context(std::move(quic_context));
+    params.enable_quic = true;
+    params.enable_server_push_cancellation = true;
+    context_builder_->set_host_resolver(std::move(host_resolver_));
+    context_builder_->set_http_network_session_params(params);
+    context_builder_->SetCertVerifier(std::move(cert_verifier));
+    context_builder_->set_net_log(NetLog::Get());
   }
 
   void TearDown() override {
     if (server_) {
       server_->Shutdown();
-      // If possible, deliver the conncetion close packet to the client before
-      // destruct the TestURLRequestContext.
       base::RunLoop().RunUntilIdle();
     }
   }
 
-  // Sets a NetworkDelegate to use for |context_|. Must be done before Init().
-  void SetNetworkDelegate(NetworkDelegate* network_delegate) {
-    context_->set_network_delegate(network_delegate);
+  URLRequestContextBuilder* context_builder() { return context_builder_.get(); }
+
+  std::unique_ptr<URLRequestContext> BuildContext() {
+    auto context = context_builder_->Build();
+
+    context->transport_security_state()->SetExpectCTReporter(
+        &expect_ct_reporter_);
+    return context;
   }
 
-  // Can be used to modify |context_|. Only safe to modify before Init() is
-  // called.
-  TestURLRequestContext* context() { return context_.get(); }
-
-  // Initializes the TestURLRequestContext |context_|.
-  void Init() { context_->Init(); }
-
-  std::unique_ptr<URLRequest> CreateRequest(const GURL& url,
-                                            RequestPriority priority,
-                                            URLRequest::Delegate* delegate) {
-    return context_->CreateRequest(url, priority, delegate,
-                                   TRAFFIC_ANNOTATION_FOR_TESTS);
+  static std::unique_ptr<URLRequest> CreateRequest(
+      URLRequestContext* context,
+      const GURL& url,
+      URLRequest::Delegate* delegate) {
+    return context->CreateRequest(url, DEFAULT_PRIORITY, delegate,
+                                  TRAFFIC_ANNOTATION_FOR_TESTS);
   }
 
   unsigned int GetRstErrorCountReceivedByServer(
@@ -211,10 +211,6 @@ class URLRequestQuicTest
   quic::ParsedQuicVersion version() { return GetParam(); }
 
   MockExpectCTReporter* expect_ct_reporter() { return &expect_ct_reporter_; }
-
-  TransportSecurityState* transport_security_state() {
-    return &transport_security_state_;
-  }
 
  protected:
   // Returns a fully-qualified URL for |path| on the test server.
@@ -279,14 +275,11 @@ class URLRequestQuicTest
   }
 
   MockExpectCTReporter expect_ct_reporter_;
-  TransportSecurityState transport_security_state_;
 
   std::unique_ptr<MappedHostResolver> host_resolver_;
   std::unique_ptr<QuicSimpleServer> server_;
-  std::unique_ptr<TestURLRequestContext> context_;
-  QuicContext quic_context_;
   quic::QuicMemoryCacheBackend memory_cache_backend_;
-  MockCertVerifier cert_verifier_;
+  std::unique_ptr<URLRequestContextBuilder> context_builder_;
   QuicFlagSaver flags_;  // Save/restore all QUIC flag values.
 };
 
@@ -376,10 +369,10 @@ INSTANTIATE_TEST_SUITE_P(Version,
                          ::testing::PrintToStringParamName());
 
 TEST_P(URLRequestQuicTest, TestGetRequest) {
-  Init();
+  auto context = BuildContext();
   CheckLoadTimingDelegate delegate(false);
   std::unique_ptr<URLRequest> request =
-      CreateRequest(GURL(UrlFromPath(kHelloPath)), DEFAULT_PRIORITY, &delegate);
+      CreateRequest(context.get(), GURL(UrlFromPath(kHelloPath)), &delegate);
 
   request->Start();
   ASSERT_TRUE(request->is_pending());
@@ -394,10 +387,10 @@ TEST_P(URLRequestQuicTest, TestGetRequest) {
 // should not have |LoadTimingInfo::connect_timing|.
 TEST_P(URLRequestQuicTest, TestTwoRequests) {
   base::RunLoop run_loop;
-  WaitForCompletionNetworkDelegate network_delegate(
-      run_loop.QuitClosure(), /*num_expected_requests=*/2);
-  SetNetworkDelegate(&network_delegate);
-  Init();
+  context_builder()->set_network_delegate(
+      std::make_unique<WaitForCompletionNetworkDelegate>(
+          run_loop.QuitClosure(), /*num_expected_requests=*/2));
+  auto context = BuildContext();
 
   GURL url = GURL(UrlFromPath(kHelloPath));
   auto isolation_info =
@@ -406,13 +399,13 @@ TEST_P(URLRequestQuicTest, TestTwoRequests) {
   CheckLoadTimingDelegate delegate(false);
   delegate.set_on_complete(base::DoNothing());
   std::unique_ptr<URLRequest> request =
-      CreateRequest(url, DEFAULT_PRIORITY, &delegate);
+      CreateRequest(context.get(), url, &delegate);
   request->set_isolation_info(isolation_info);
 
   CheckLoadTimingDelegate delegate2(true);
   delegate2.set_on_complete(base::DoNothing());
   std::unique_ptr<URLRequest> request2 =
-      CreateRequest(url, DEFAULT_PRIORITY, &delegate2);
+      CreateRequest(context.get(), url, &delegate2);
   request2->set_isolation_info(isolation_info);
 
   request->Start();
@@ -428,15 +421,14 @@ TEST_P(URLRequestQuicTest, TestTwoRequests) {
 }
 
 TEST_P(URLRequestQuicTest, RequestHeadersCallback) {
-  Init();
+  auto context = BuildContext();
   HttpRawRequestHeaders raw_headers;
   TestDelegate delegate;
-  TestURLRequestContext context;
   HttpRequestHeaders extra_headers;
   extra_headers.SetHeader("X-Foo", "bar");
 
   std::unique_ptr<URLRequest> request =
-      CreateRequest(GURL(UrlFromPath(kHelloPath)), DEFAULT_PRIORITY, &delegate);
+      CreateRequest(context.get(), GURL(UrlFromPath(kHelloPath)), &delegate);
 
   request->SetExtraRequestHeaders(extra_headers);
   request->SetRequestHeadersCallback(
@@ -477,20 +469,20 @@ TEST_P(URLRequestQuicTest, ExpectCT) {
       // disabled_features
       {});
 
-  MockCTPolicyEnforcerNonCompliant ct_enforcer;
-  context()->set_ct_policy_enforcer(&ct_enforcer);
-  Init();
+  context_builder()->set_ct_policy_enforcer(
+      std::make_unique<MockCTPolicyEnforcerNonCompliant>());
+  auto context = BuildContext();
 
   GURL report_uri("https://report.test/");
   IsolationInfo isolation_info = IsolationInfo::CreateTransient();
-  transport_security_state()->AddExpectCT(
+  context->transport_security_state()->AddExpectCT(
       kTestServerHost, base::Time::Now() + base::Days(1), true /* enforce */,
       report_uri, isolation_info.network_isolation_key());
 
   base::RunLoop run_loop;
   TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
-      CreateRequest(GURL(UrlFromPath(kHelloPath)), DEFAULT_PRIORITY, &delegate);
+      CreateRequest(context.get(), GURL(UrlFromPath(kHelloPath)), &delegate);
   request->set_isolation_info(isolation_info);
   request->Start();
   delegate.RunUntilComplete();

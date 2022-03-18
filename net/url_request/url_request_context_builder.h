@@ -322,6 +322,13 @@ class NET_EXPORT URLRequestContextBuilder {
       CreateHttpTransactionFactoryCallback
           create_http_network_transaction_factory);
 
+  template <typename T>
+  T* SetHttpTransactionFactoryForTesting(std::unique_ptr<T> factory) {
+    create_http_network_transaction_factory_.Reset();
+    http_transaction_factory_ = std::move(factory);
+    return static_cast<T*>(http_transaction_factory_.get());
+  }
+
   // Sets a ClientSocketFactory so a test can mock out sockets. This must
   // outlive the URLRequestContext that will be built.
   void set_client_socket_factory_for_testing(
@@ -387,6 +394,7 @@ class NET_EXPORT URLRequestContextBuilder {
   HttpCacheParams http_cache_params_;
   HttpNetworkSessionParams http_network_session_params_;
   CreateHttpTransactionFactoryCallback create_http_network_transaction_factory_;
+  std::unique_ptr<HttpTransactionFactory> http_transaction_factory_;
   base::FilePath transport_security_persister_file_path_;
   std::vector<std::string> hsts_policy_bypass_list_;
   raw_ptr<NetLog> net_log_ = nullptr;

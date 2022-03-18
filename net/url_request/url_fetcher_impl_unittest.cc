@@ -48,6 +48,8 @@
 #include "net/test/test_with_task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_fetcher_delegate.h"
+#include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "net/url_request/url_request_test_util.h"
 #include "net/url_request/url_request_throttler_manager.h"
@@ -184,45 +186,13 @@ base::FilePath GetUploadFileTestPath() {
       FILE_PATH_LITERAL("net/data/url_request_unittest/BullRunSpeech.txt"));
 }
 
-// A TestURLRequestContext with a ThrottleManager and a MockHostResolver.
-class FetcherTestURLRequestContext : public TestURLRequestContext {
- public:
-  // All requests for |hanging_domain| will hang on host resolution until the
-  // mock_resolver()->ResolveAllPending() is called.
-  FetcherTestURLRequestContext(
-      const std::string& hanging_domain,
-      std::unique_ptr<ProxyResolutionService> proxy_resolution_service)
-      : TestURLRequestContext(true), mock_resolver_(new MockHostResolver()) {
-    mock_resolver_->set_ondemand_mode(true);
-    mock_resolver_->rules()->AddRule(hanging_domain, "127.0.0.1");
-    // Pass ownership to ContextStorage to ensure correct destruction order.
-    context_storage_.set_host_resolver(
-        std::unique_ptr<HostResolver>(mock_resolver_));
-    context_storage_.set_throttler_manager(
-        std::make_unique<URLRequestThrottlerManager>());
-    context_storage_.set_proxy_resolution_service(
-        std::move(proxy_resolution_service));
-    Init();
-  }
-
-  FetcherTestURLRequestContext(const FetcherTestURLRequestContext&) = delete;
-  FetcherTestURLRequestContext& operator=(const FetcherTestURLRequestContext&) =
-      delete;
-
-  MockHostResolver* mock_resolver() { return mock_resolver_; }
-
- private:
-  raw_ptr<MockHostResolver> mock_resolver_;
-};
-
 class FetcherTestURLRequestContextGetter : public URLRequestContextGetter {
  public:
   FetcherTestURLRequestContextGetter(
       scoped_refptr<base::SingleThreadTaskRunner> network_task_runner,
       const std::string& hanging_domain)
       : network_task_runner_(network_task_runner),
-        hanging_domain_(hanging_domain),
-        shutting_down_(false) {}
+        hanging_domain_(hanging_domain) {}
 
   FetcherTestURLRequestContextGetter(
       const FetcherTestURLRequestContextGetter&) = delete;
@@ -234,8 +204,14 @@ class FetcherTestURLRequestContextGetter : public URLRequestContextGetter {
     on_destruction_callback_ = std::move(on_destruction_callback);
   }
 
+  MockHostResolver* mock_resolver() {
+    DCHECK(context_);
+    // This cast is safe because we set a MockHostResolver in the constructor.
+    return static_cast<MockHostResolver*>(context_->host_resolver());
+  }
+
   // URLRequestContextGetter:
-  FetcherTestURLRequestContext* GetURLRequestContext() override {
+  URLRequestContext* GetURLRequestContext() override {
     // Calling this on the wrong thread may be either a bug in the test or a bug
     // in production code.
     EXPECT_TRUE(network_task_runner_->BelongsToCurrentThread());
@@ -244,8 +220,19 @@ class FetcherTestURLRequestContextGetter : public URLRequestContextGetter {
       return nullptr;
 
     if (!context_) {
-      context_ = std::make_unique<FetcherTestURLRequestContext>(
-          hanging_domain_, std::move(proxy_resolution_service_));
+      auto mock_resolver = std::make_unique<MockHostResolver>();
+      mock_resolver->set_ondemand_mode(true);
+      mock_resolver->rules()->AddRule(hanging_domain_, "127.0.0.1");
+
+      auto builder = CreateTestURLRequestContextBuilder();
+      builder->set_host_resolver(std::move(mock_resolver));
+      builder->set_throttling_enabled(true);
+      if (proxy_resolution_service_) {
+        builder->set_proxy_resolution_service(
+            std::move(proxy_resolution_service_));
+      }
+
+      context_ = builder->Build();
     }
 
     return context_.get();
@@ -310,9 +297,8 @@ class FetcherTestURLRequestContextGetter : public URLRequestContextGetter {
     context_.reset();
   }
 
-  // Convenience method to access the context as a FetcherTestURLRequestContext
-  // without going through GetURLRequestContext.
-  FetcherTestURLRequestContext* context() {
+  // Convenience method to access the context.
+  URLRequestContext* context() {
     DCHECK(network_task_runner_->BelongsToCurrentThread());
     return context_.get();
   }
@@ -339,8 +325,8 @@ class FetcherTestURLRequestContextGetter : public URLRequestContextGetter {
   // May be null.
   std::unique_ptr<ProxyResolutionService> proxy_resolution_service_;
 
-  std::unique_ptr<FetcherTestURLRequestContext> context_;
-  bool shutting_down_;
+  std::unique_ptr<URLRequestContext> context_;
+  bool shutting_down_ = false;
 
   base::OnceClosure on_destruction_callback_;
 };
@@ -630,7 +616,7 @@ TEST_F(URLFetcherTest, CancelAll) {
       CreateSameThreadContextGetter());
   // Force context creation.
   context_getter->GetURLRequestContext();
-  MockHostResolver* mock_resolver = context_getter->context()->mock_resolver();
+  MockHostResolver* mock_resolver = context_getter->mock_resolver();
 
   WaitingURLFetcherDelegate delegate;
   delegate.CreateFetcher(hanging_url(), URLFetcher::GET, context_getter);
@@ -652,7 +638,7 @@ TEST_F(URLFetcherTest, DontRetryOnNetworkChangedByDefault) {
       CreateSameThreadContextGetter());
   // Force context creation.
   context_getter->GetURLRequestContext();
-  MockHostResolver* mock_resolver = context_getter->context()->mock_resolver();
+  MockHostResolver* mock_resolver = context_getter->mock_resolver();
 
   WaitingURLFetcherDelegate delegate;
   delegate.CreateFetcher(hanging_url(), URLFetcher::GET, context_getter);
@@ -684,7 +670,7 @@ TEST_F(URLFetcherTest, RetryOnNetworkChangedAndFail) {
       CreateSameThreadContextGetter());
   // Force context creation.
   context_getter->GetURLRequestContext();
-  MockHostResolver* mock_resolver = context_getter->context()->mock_resolver();
+  MockHostResolver* mock_resolver = context_getter->mock_resolver();
 
   WaitingURLFetcherDelegate delegate;
   delegate.CreateFetcher(hanging_url(), URLFetcher::GET, context_getter);
@@ -730,7 +716,7 @@ TEST_F(URLFetcherTest, RetryOnNetworkChangedAndSucceed) {
       CreateSameThreadContextGetter());
   // Force context creation.
   context_getter->GetURLRequestContext();
-  MockHostResolver* mock_resolver = context_getter->context()->mock_resolver();
+  MockHostResolver* mock_resolver = context_getter->mock_resolver();
 
   WaitingURLFetcherDelegate delegate;
   delegate.CreateFetcher(hanging_url(), URLFetcher::GET, context_getter);

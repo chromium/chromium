@@ -39,6 +39,7 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -80,7 +81,6 @@ class HttpWithDnsOverHttpsTest : public TestWithTaskEnvironment {
  public:
   HttpWithDnsOverHttpsTest()
       : host_resolver_proc_(new TestHostResolverProc()),
-        request_context_(true),
         test_server_(EmbeddedTestServer::Type::TYPE_HTTPS),
         test_https_requests_served_(0) {
     EmbeddedTestServer::ServerCertificateConfig cert_config;
@@ -108,23 +108,22 @@ class HttpWithDnsOverHttpsTest : public TestWithTaskEnvironment {
     manager_options.dns_config_overrides.dns_over_https_config =
         *DnsOverHttpsConfig::FromString(doh_server_.GetPostOnlyTemplate());
     manager_options.dns_config_overrides.use_local_ipv6 = true;
-    resolver_ = HostResolver::CreateStandaloneContextResolver(
+    auto resolver = HostResolver::CreateStandaloneContextResolver(
         /*net_log=*/nullptr, manager_options);
 
     // Configure `resolver_` to use `host_resolver_proc_` to resolve
     // `doh_server_` itself. Additionally, without an explicit HostResolverProc,
     // HostResolverManager::HaveTestProcOverride disables the built-in DNS
     // client.
-    resolver_->SetProcParamsForTesting(
+    resolver->SetProcParamsForTesting(
         ProcTaskParams(host_resolver_proc_.get(), 1));
 
-    resolver_->SetRequestContext(&request_context_);
-    request_context_.set_host_resolver(resolver_.get());
-
-    request_context_.Init();
+    auto context_builder = CreateTestURLRequestContextBuilder();
+    context_builder->set_host_resolver(std::move(resolver));
+    request_context_ = context_builder->Build();
   }
 
-  URLRequestContext* context() { return &request_context_; }
+  URLRequestContext* context() { return request_context_.get(); }
 
   std::unique_ptr<test_server::HttpResponse> HandleDefaultRequest(
       const test_server::HttpRequest& request) {
@@ -137,9 +136,8 @@ class HttpWithDnsOverHttpsTest : public TestWithTaskEnvironment {
   }
 
  protected:
-  std::unique_ptr<ContextHostResolver> resolver_;
   scoped_refptr<net::TestHostResolverProc> host_resolver_proc_;
-  TestURLRequestContext request_context_;
+  std::unique_ptr<URLRequestContext> request_context_;
   TestDohServer doh_server_;
   EmbeddedTestServer test_server_;
   uint32_t test_https_requests_served_;
@@ -202,7 +200,7 @@ TEST_F(HttpWithDnsOverHttpsTest, EndToEnd) {
 
   // Set up an idle socket.
   HttpTransactionFactory* transaction_factory =
-      request_context_.http_transaction_factory();
+      request_context_->http_transaction_factory();
   HttpStreamFactory::JobFactory default_job_factory;
   HttpNetworkSession* network_session = transaction_factory->GetSession();
   base::RunLoop loop;

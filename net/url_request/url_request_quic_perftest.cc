@@ -39,6 +39,8 @@
 #include "net/tools/quic/quic_simple_server.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request.h"
+#include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -105,7 +107,6 @@ class URLRequestQuicPerfTest : public ::testing::Test {
     base::trace_event::InitializeMemoryDumpManagerForInProcessTesting(
         /*is_coordinator_process=*/false);
     memory_dump_manager_->set_dumper_registrations_ignored_for_testing(false);
-    context_ = std::make_unique<TestURLRequestContext>(true);
     memory_dump_manager_->set_dumper_registrations_ignored_for_testing(true);
     StartTcpServer();
     StartQuicServer();
@@ -113,29 +114,31 @@ class URLRequestQuicPerfTest : public ::testing::Test {
     // Host mapping.
     std::unique_ptr<MockHostResolver> resolver(new MockHostResolver());
     resolver->rules()->AddRule(kAltSvcHost, "127.0.0.1");
-    host_resolver_ = std::make_unique<MappedHostResolver>(std::move(resolver));
+    auto host_resolver =
+        std::make_unique<MappedHostResolver>(std::move(resolver));
     std::string map_rule = base::StringPrintf("MAP %s 127.0.0.1:%d",
                                               kOriginHost, tcp_server_->port());
-    EXPECT_TRUE(host_resolver_->AddRuleFromString(map_rule));
+    EXPECT_TRUE(host_resolver->AddRuleFromString(map_rule));
 
     net::HttpNetworkSessionContext network_session_context;
-    network_session_context.cert_verifier = &cert_verifier_;
-    auto params = std::make_unique<HttpNetworkSessionParams>();
-    params->enable_quic = true;
-    params->enable_user_alternate_protocol_ports = true;
-    quic_context_.params()->allow_remote_alt_svc = true;
-    context_->set_host_resolver(host_resolver_.get());
-    context_->set_http_network_session_params(std::move(params));
-    context_->set_cert_verifier(&cert_verifier_);
-    context_->set_quic_context(&quic_context_);
-    context_->Init();
+    HttpNetworkSessionParams params;
+    params.enable_quic = true;
+    params.enable_user_alternate_protocol_ports = true;
+    auto quic_context = std::make_unique<QuicContext>();
+    quic_context->params()->allow_remote_alt_svc = true;
+    auto context_builder = CreateTestURLRequestContextBuilder();
+    context_builder->set_host_resolver(std::move(host_resolver));
+    context_builder->set_http_network_session_params(params);
+    context_builder->SetCertVerifier(std::make_unique<MockCertVerifier>());
+    context_builder->set_quic_context(std::move(quic_context));
+    context_ = context_builder->Build();
   }
 
   void TearDown() override {
     if (quic_server_) {
       quic_server_->Shutdown();
-      // If possible, deliver the conncetion close packet to the client before
-      // destruct the TestURLRequestContext.
+      // If possible, deliver the connection close packet to the client before
+      // destruct the URLRequestContext.
       base::RunLoop().RunUntilIdle();
     }
     // |tcp_server_| shuts down in EmbeddedTestServer destructor.
@@ -169,8 +172,8 @@ class URLRequestQuicPerfTest : public ::testing::Test {
     verify_result.verified_cert = ImportCertFromFile(
         GetTestCertsDirectory(), "quic-chain.pem");
     verify_result.is_issued_by_known_root = true;
-    cert_verifier_.AddResultForCert(verify_result.verified_cert.get(),
-                                    verify_result, OK);
+    cert_verifier().AddResultForCert(verify_result.verified_cert.get(),
+                                     verify_result, OK);
   }
 
   void StartTcpServer() {
@@ -181,19 +184,21 @@ class URLRequestQuicPerfTest : public ::testing::Test {
 
     CertVerifyResult verify_result;
     verify_result.verified_cert = tcp_server_->GetCertificate();
-    cert_verifier_.AddResultForCert(tcp_server_->GetCertificate(),
-                                    verify_result, OK);
+    cert_verifier().AddResultForCert(tcp_server_->GetCertificate(),
+                                     verify_result, OK);
+  }
+
+  MockCertVerifier& cert_verifier() {
+    // This cast is safe because we set a MockCertVerifier in the constructor.
+    return *static_cast<MockCertVerifier*>(context_->cert_verifier());
   }
 
   std::unique_ptr<base::trace_event::MemoryDumpManager> memory_dump_manager_;
-  std::unique_ptr<MappedHostResolver> host_resolver_;
   std::unique_ptr<EmbeddedTestServer> tcp_server_;
   std::unique_ptr<QuicSimpleServer> quic_server_;
   std::unique_ptr<base::test::SingleThreadTaskEnvironment> task_environment_;
-  std::unique_ptr<TestURLRequestContext> context_;
+  std::unique_ptr<URLRequestContext> context_;
   quic::QuicMemoryCacheBackend memory_cache_backend_;
-  MockCertVerifier cert_verifier_;
-  QuicContext quic_context_;
 };
 
 void CheckScalarInDump(const MemoryAllocatorDump* dump,

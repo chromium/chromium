@@ -15,6 +15,8 @@
 #include "net/test/gtest_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request.h"
+#include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_job.h"
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -58,10 +60,10 @@ TEST(URLRequestJobFactoryTest, NoProtocolHandler) {
   base::test::TaskEnvironment task_environment(
       base::test::TaskEnvironment::MainThreadType::IO);
   TestDelegate delegate;
-  TestURLRequestContext request_context;
+  auto request_context = CreateTestURLRequestContextBuilder()->Build();
   std::unique_ptr<URLRequest> request(
-      request_context.CreateRequest(GURL("foo://bar"), DEFAULT_PRIORITY,
-                                    &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+      request_context->CreateRequest(GURL("foo://bar"), DEFAULT_PRIORITY,
+                                     &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
   request->Start();
 
   base::RunLoop().Run();
@@ -72,29 +74,17 @@ TEST(URLRequestJobFactoryTest, BasicProtocolHandler) {
   base::test::TaskEnvironment task_environment(
       base::test::TaskEnvironment::MainThreadType::IO);
   TestDelegate delegate;
-  URLRequestJobFactory job_factory;
-  TestURLRequestContext request_context;
-  request_context.set_job_factory(&job_factory);
-  job_factory.SetProtocolHandler("foo",
-                                 std::make_unique<DummyProtocolHandler>());
+  auto context_builder = CreateTestURLRequestContextBuilder();
+  context_builder->SetProtocolHandler("foo",
+                                      std::make_unique<DummyProtocolHandler>());
+  auto request_context = context_builder->Build();
   std::unique_ptr<URLRequest> request(
-      request_context.CreateRequest(GURL("foo://bar"), DEFAULT_PRIORITY,
-                                    &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+      request_context->CreateRequest(GURL("foo://bar"), DEFAULT_PRIORITY,
+                                     &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
   request->Start();
 
   base::RunLoop().Run();
   EXPECT_EQ(OK, delegate.request_status());
-}
-
-TEST(URLRequestJobFactoryTest, DeleteProtocolHandler) {
-  base::test::TaskEnvironment task_environment(
-      base::test::TaskEnvironment::MainThreadType::IO);
-  URLRequestJobFactory job_factory;
-  TestURLRequestContext request_context;
-  request_context.set_job_factory(&job_factory);
-  job_factory.SetProtocolHandler("foo",
-                                 std::make_unique<DummyProtocolHandler>());
-  job_factory.SetProtocolHandler("foo", nullptr);
 }
 
 }  // namespace

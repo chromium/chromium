@@ -26,6 +26,7 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "net/url_request/url_request_throttler_manager.h"
 #include "net/url_request/url_request_throttler_test_support.h"
@@ -125,10 +126,11 @@ class Server : public DiscreteTimeSimulation::Actor {
         num_current_tick_queries_(0),
         num_overloaded_ticks_(0),
         max_experienced_queries_per_tick_(0),
-        mock_request_(context_.CreateRequest(GURL(),
-                                             DEFAULT_PRIORITY,
-                                             nullptr,
-                                             TRAFFIC_ANNOTATION_FOR_TESTS)) {}
+        context_(CreateTestURLRequestContextBuilder()->Build()),
+        mock_request_(context_->CreateRequest(GURL(),
+                                              DEFAULT_PRIORITY,
+                                              nullptr,
+                                              TRAFFIC_ANNOTATION_FOR_TESTS)) {}
 
   Server(const Server&) = delete;
   Server& operator=(const Server&) = delete;
@@ -283,7 +285,7 @@ class Server : public DiscreteTimeSimulation::Actor {
     return output;
   }
 
-  const URLRequestContext& context() const { return context_; }
+  const URLRequestContext& context() const { return *context_; }
 
  private:
   TimeTicks now_;
@@ -297,7 +299,7 @@ class Server : public DiscreteTimeSimulation::Actor {
   int max_experienced_queries_per_tick_;
   std::vector<int> requests_per_tick_;
 
-  TestURLRequestContext context_;
+  std::unique_ptr<URLRequestContext> context_;
   std::unique_ptr<URLRequest> mock_request_;
 };
 

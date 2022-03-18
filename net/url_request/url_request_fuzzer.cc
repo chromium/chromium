@@ -17,6 +17,7 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "url/gurl.h"
 
@@ -37,17 +38,18 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     return 0;
 
   FuzzedDataProvider data_provider(data, size);
-  net::TestURLRequestContext url_request_context(true);
+  auto context_builder = net::CreateTestURLRequestContextBuilder();
   net::FuzzedSocketFactory fuzzed_socket_factory(&data_provider);
-  url_request_context.set_client_socket_factory(&fuzzed_socket_factory);
-  url_request_context.Init();
+  context_builder->set_client_socket_factory_for_testing(
+      &fuzzed_socket_factory);
+  auto url_request_context = context_builder->Build();
 
   net::TestDelegate delegate;
 
   std::unique_ptr<net::URLRequest> url_request(
-      url_request_context.CreateRequest(GURL("http://foo/"),
-                                        net::DEFAULT_PRIORITY, &delegate,
-                                        TRAFFIC_ANNOTATION_FOR_TESTS));
+      url_request_context->CreateRequest(GURL("http://foo/"),
+                                         net::DEFAULT_PRIORITY, &delegate,
+                                         TRAFFIC_ANNOTATION_FOR_TESTS));
   url_request->Start();
   // TestDelegate quits the message loop on completion.
   base::RunLoop().Run();

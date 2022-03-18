@@ -16,6 +16,7 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "net/url_request/url_request_throttler_manager.h"
 #include "net/url_request/url_request_throttler_test_support.h"
@@ -160,10 +161,11 @@ struct GurlAndString {
 class URLRequestThrottlerEntryTest : public TestWithTaskEnvironment {
  protected:
   URLRequestThrottlerEntryTest()
-      : request_(context_.CreateRequest(GURL(),
-                                        DEFAULT_PRIORITY,
-                                        nullptr,
-                                        TRAFFIC_ANNOTATION_FOR_TESTS)) {}
+      : context_(CreateTestURLRequestContextBuilder()->Build()),
+        request_(context_->CreateRequest(GURL(),
+                                         DEFAULT_PRIORITY,
+                                         nullptr,
+                                         TRAFFIC_ANNOTATION_FOR_TESTS)) {}
 
   void SetUp() override;
 
@@ -171,7 +173,7 @@ class URLRequestThrottlerEntryTest : public TestWithTaskEnvironment {
   MockURLRequestThrottlerManager manager_;  // Dummy object, not used.
   scoped_refptr<MockURLRequestThrottlerEntry> entry_;
 
-  TestURLRequestContext context_;
+  std::unique_ptr<URLRequestContext> context_;
   std::unique_ptr<URLRequest> request_;
 };
 
@@ -312,15 +314,16 @@ TEST_F(URLRequestThrottlerEntryTest, SlidingWindow) {
 class URLRequestThrottlerManagerTest : public TestWithTaskEnvironment {
  protected:
   URLRequestThrottlerManagerTest()
-      : request_(context_.CreateRequest(GURL(),
-                                        DEFAULT_PRIORITY,
-                                        nullptr,
-                                        TRAFFIC_ANNOTATION_FOR_TESTS)) {}
+      : context_(CreateTestURLRequestContextBuilder()->Build()),
+        request_(context_->CreateRequest(GURL(),
+                                         DEFAULT_PRIORITY,
+                                         nullptr,
+                                         TRAFFIC_ANNOTATION_FOR_TESTS)) {}
 
   void SetUp() override { request_->SetLoadFlags(0); }
 
   // context_ must be declared before request_.
-  TestURLRequestContext context_;
+  std::unique_ptr<URLRequestContext> context_;
   std::unique_ptr<URLRequest> request_;
 };
 

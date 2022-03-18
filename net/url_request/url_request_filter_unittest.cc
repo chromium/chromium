@@ -13,6 +13,7 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_interceptor.h"
 #include "net/url_request/url_request_job.h"
 #include "net/url_request/url_request_test_job.h"
@@ -53,15 +54,15 @@ TEST(URLRequestFilter, BasicMatching) {
   base::test::TaskEnvironment task_environment(
       base::test::TaskEnvironment::MainThreadType::IO);
   TestDelegate delegate;
-  TestURLRequestContext request_context;
+  auto context = CreateTestURLRequestContextBuilder()->Build();
   URLRequestFilter* filter = URLRequestFilter::GetInstance();
 
   const GURL kUrl1("http://foo.com/");
-  std::unique_ptr<URLRequest> request1(request_context.CreateRequest(
+  std::unique_ptr<URLRequest> request1(context->CreateRequest(
       kUrl1, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
 
   const GURL kUrl2("http://bar.com/");
-  std::unique_ptr<URLRequest> request2(request_context.CreateRequest(
+  std::unique_ptr<URLRequest> request2(context->CreateRequest(
       kUrl2, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
 
   // Check AddUrlInterceptor checks for invalid URLs.

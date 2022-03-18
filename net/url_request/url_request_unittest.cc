@@ -142,6 +142,7 @@
 #include "net/url_request/referrer_policy.h"
 #include "net/url_request/static_http_user_agent_settings.h"
 #include "net/url_request/url_request.h"
+#include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_filter.h"
 #include "net/url_request/url_request_http_job.h"
@@ -13100,26 +13101,25 @@ class URLRequestMaybeAsyncFirstPartySetsTest
     : public URLRequestTest,
       public testing::WithParamInterface<bool> {
  public:
-  URLRequestMaybeAsyncFirstPartySetsTest()
-      : cookie_monster_(/*store=*/nullptr,
-                        /*net_log=*/nullptr,
-                        /*first_party_sets_enabled=*/true) {
+  URLRequestMaybeAsyncFirstPartySetsTest() { CHECK(test_server_.Start()); }
+
+  std::unique_ptr<CookieStore> CreateCookieStore() {
+    auto cookie_monster =
+        std::make_unique<CookieMonster>(/*store=*/nullptr,
+                                        /*net_log=*/nullptr,
+                                        /*first_party_sets_enabled=*/true);
     auto cookie_access_delegate = std::make_unique<TestCookieAccessDelegate>();
     cookie_access_delegate->set_invoke_callbacks_asynchronously(
         invoke_callbacks_asynchronously());
-    cookie_monster_.SetCookieAccessDelegate(std::move(cookie_access_delegate));
-
-    CHECK(test_server_.Start());
+    cookie_monster->SetCookieAccessDelegate(std::move(cookie_access_delegate));
+    return cookie_monster;
   }
 
   bool invoke_callbacks_asynchronously() { return GetParam(); }
 
-  CookieStore* cookie_store() { return &cookie_monster_; }
-
   HttpTestServer& test_server() { return test_server_; }
 
  private:
-  CookieMonster cookie_monster_;
   HttpTestServer test_server_;
 };
 
@@ -13129,12 +13129,12 @@ TEST_P(URLRequestMaybeAsyncFirstPartySetsTest, SimpleRequest) {
       url::Origin::Create(test_server().GetURL(kHost, "/"));
   const SiteForCookies kSiteForCookies = SiteForCookies::FromOrigin(kOrigin);
 
-  TestURLRequestContext context(/*delay_initialization=*/true);
-  context.set_cookie_store(cookie_store());
-  context.Init();
+  auto context_builder = CreateTestURLRequestContextBuilder();
+  context_builder->SetCookieStore(CreateCookieStore());
+  auto context = context_builder->Build();
 
   TestDelegate d;
-  std::unique_ptr<URLRequest> req(context.CreateRequest(
+  std::unique_ptr<URLRequest> req(context->CreateRequest(
       test_server().GetURL(kHost, "/echo"), DEFAULT_PRIORITY, &d,
       TRAFFIC_ANNOTATION_FOR_TESTS));
   req->set_isolation_info(
@@ -13154,12 +13154,12 @@ TEST_P(URLRequestMaybeAsyncFirstPartySetsTest, SingleRedirect) {
       url::Origin::Create(test_server().GetURL(kHost, "/"));
   const SiteForCookies kSiteForCookies = SiteForCookies::FromOrigin(kOrigin);
 
-  TestURLRequestContext context(/*delay_initialization=*/true);
-  context.set_cookie_store(cookie_store());
-  context.Init();
+  auto context_builder = CreateTestURLRequestContextBuilder();
+  context_builder->SetCookieStore(CreateCookieStore());
+  auto context = context_builder->Build();
 
   TestDelegate d;
-  std::unique_ptr<URLRequest> req(context.CreateRequest(
+  std::unique_ptr<URLRequest> req(context->CreateRequest(
       test_server().GetURL(kHost,
                            base::StrCat({
                                "/server-redirect?",
