@@ -38,6 +38,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantTestService.ScriptsReturnMode;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ChipProto;
@@ -316,6 +317,7 @@ public class JsFlowIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1307549")
     public void stopFlowFromJs() throws Exception {
         ArrayList<ActionProto> nestedActions = new ArrayList<>();
         nestedActions.add(ActionProto.newBuilder()
@@ -349,6 +351,7 @@ public class JsFlowIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1307549")
     public void runInterruptDuringFlow() throws Exception {
         ArrayList<AutofillAssistantTestScript> scripts = new ArrayList<>();
         ArrayList<ActionProto> nestedActions = new ArrayList<>();
