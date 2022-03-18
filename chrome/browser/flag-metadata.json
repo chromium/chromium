@@ -759,12 +759,12 @@
   {
     "name": "chrome-share-long-screenshot",
     "owners": [ "skare", "chrome-sharing-eng@google.com" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 104
   },
   {
     "name": "chrome-sharing-hub-launch-adjacent",
     "owners": [ "skare", "chrome-sharing-eng@google.com" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 104
   },
   {
     "name": "chrome-tips-in-main-menu",
@@ -5378,12 +5378,12 @@
   {
     "name": "sharing-desktop-screenshots",
     "owners": ["skare", "kmilka", "chrome-sharing-eng@google.com" ],
-    "expiry_milestone": 102
+    "expiry_milestone": 104
   },
   {
     "name": "sharing-desktop-screenshots-edit",
     "owners": ["skare", "jeffreycohen", "chrome-sharing-eng@google.com" ],
-    "expiry_milestone": 102
+    "expiry_milestone": 104
   },
   {
     "name": "sharing-hub-desktop-app-menu",
