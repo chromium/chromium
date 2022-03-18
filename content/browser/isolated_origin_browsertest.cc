@@ -117,6 +117,18 @@ class IsolatedOriginTestBase : public ContentBrowserTest {
         .requires_origin_keyed_process();
   }
 
+  OriginAgentClusterIsolationState DetermineOriginAgentClusterIsolation(
+      SiteInstanceImpl* site_instance,
+      const GURL& url) {
+    OriginAgentClusterIsolationState isolation_request =
+        OriginAgentClusterIsolationState::CreateNonIsolated();
+
+    return ChildProcessSecurityPolicyImpl::GetInstance()
+        ->DetermineOriginAgentClusterIsolation(
+            site_instance->GetIsolationContext(), url::Origin::Create(url),
+            isolation_request);
+  }
+
   ProcessLock ProcessLockFromUrl(const std::string& url) {
     BrowserContext* browser_context = web_contents()->GetBrowserContext();
     return ProcessLock::FromSiteInfo(SiteInfo(
@@ -300,6 +312,24 @@ class OriginIsolationOptInHeaderTest : public IsolatedOriginTestBase {
 
   absl::optional<std::string> header_;
   std::queue<std::string> content_;
+};
+
+// A set of tests that enable OriginAgentCluster by default.
+class OriginIsolationDefaultOACTest : public OriginIsolationOptInHeaderTest {
+ public:
+  OriginIsolationDefaultOACTest() {
+    feature_list_.InitAndEnableFeature(
+        blink::features::kOriginAgentClusterDefaultEnabled);
+  }
+
+  ~OriginIsolationDefaultOACTest() override = default;
+
+  OriginIsolationDefaultOACTest(const OriginIsolationDefaultOACTest&) = delete;
+  OriginIsolationDefaultOACTest& operator=(OriginIsolationDefaultOACTest&) =
+      delete;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 class OriginIsolationPrerenderOptInHeaderTest
@@ -563,6 +593,128 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest, Basic) {
           static_cast<int>(NavigationRequest::OriginAgentClusterEndResult::
                                kRequestedAndOriginKeyed),
           1)));
+}
+
+IN_PROC_BROWSER_TEST_F(OriginIsolationDefaultOACTest, Basic) {
+  GURL test_url(https_server()->GetURL("foo.com",
+                                       "/cross_site_iframe_factory.html?"
+                                       "foo.com(foo.com)"));
+  // We must load the origins to be isolated (or not) into a child frame so that
+  // they all stay in the same BrowsingInstance, since the test relies on
+  // knowing isolation history for the OriginAgentClusterEndResult::*But* cases.
+  // In this test, the convention is:
+  //   foo.com is (implicitly) isolated,
+  //   isolated.foo.com is (explicitly) isolated,
+  //   isolated.bar.com is (implicitly) isolated, and
+  //   bar.com is (explicitly) not isolated.
+  EXPECT_TRUE(NavigateToURL(shell(), test_url));
+  EXPECT_EQ(2u, CollectAllRenderFrameHosts(shell()->web_contents()).size());
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+  FrameTreeNode* child_frame_node = root->child_at(0);
+
+  // The first three scenarios should all get the isolation status they request
+  // (the "And" cases).
+  {
+    // Explicitly request OriginAgentCluster via the header.
+    SetHeaderValue("?1");
+    GURL isolated_suborigin_url(
+        https_server()->GetURL("isolated.foo.com", "/isolate_origin"));
+    EXPECT_TRUE(
+        NavigateToURLFromRenderer(child_frame_node, isolated_suborigin_url));
+    auto* site_instance =
+        child_frame_node->current_frame_host()->GetSiteInstance();
+    EXPECT_TRUE(DetermineOriginAgentClusterIsolation(site_instance,
+                                                     isolated_suborigin_url)
+                    .requires_origin_keyed_process());
+  }
+  {
+    // Even though this request has no OriginAgentCluster header, it should get
+    // OAC by default.
+    SetHeaderValue("");
+    GURL default_isolated_url(
+        https_server()->GetURL("isolated.bar.com", "/title1.html"));
+    EXPECT_TRUE(
+        NavigateToURLFromRenderer(child_frame_node, default_isolated_url));
+
+    auto* site_instance =
+        child_frame_node->current_frame_host()->GetSiteInstance();
+    OriginAgentClusterIsolationState isolation_state =
+        DetermineOriginAgentClusterIsolation(site_instance,
+                                             default_isolated_url);
+    // TODO(wjmaclean): If OriginAgentCluster-by-default transitions to using
+    // process-isolation at some future date, the second expectation below will
+    // need to change to EXPECT_TRUE.
+    EXPECT_TRUE(isolation_state.is_origin_agent_cluster());
+    EXPECT_FALSE(isolation_state.requires_origin_keyed_process());
+  }
+  {
+    // The "isolate_origin" path in the url will force the test framework to
+    // include the OriginAgentCluster header. Here we explicitly request not to
+    // have OAC.
+    SetHeaderValue("?0");
+    GURL explicit_non_isolated_url(
+        https_server()->GetURL("bar.com", "/isolate_origin"));
+    EXPECT_TRUE(
+        NavigateToURLFromRenderer(child_frame_node, explicit_non_isolated_url));
+    auto* site_instance =
+        child_frame_node->current_frame_host()->GetSiteInstance();
+
+    EXPECT_FALSE(DetermineOriginAgentClusterIsolation(site_instance,
+                                                      explicit_non_isolated_url)
+                     .is_origin_agent_cluster());
+  }
+
+  // The next three cases should all fail to get the isolation status they
+  // request (the "But" cases). In these cases, URLs from origins we have
+  // already visited in the BrowsingInstance return different OAC header values,
+  // but are forced to stick with their earlier value rather than the newly
+  // requested value.
+  {
+    // Even though the lack of a header would normally lead to default OAC
+    // isolation, the previous explicitly non-isolated visit to this origin
+    // means that this origin will remain not origin keyed.
+    SetHeaderValue("");
+    GURL url(https_server()->GetURL("bar.com", "/title1.html"));
+    EXPECT_TRUE(NavigateToURLFromRenderer(child_frame_node, url));
+    auto* site_instance =
+        child_frame_node->current_frame_host()->GetSiteInstance();
+
+    EXPECT_FALSE(DetermineOriginAgentClusterIsolation(site_instance, url)
+                     .is_origin_agent_cluster());
+  }
+
+  {
+    // An explicit opt-out for isolated.bar.com should not be granted given the
+    // previous default-opt-in above.
+    SetHeaderValue("?0");
+    GURL explicit_non_isolated_url(
+        https_server()->GetURL("isolated.bar.com", "/isolate_origin"));
+    EXPECT_TRUE(
+        NavigateToURLFromRenderer(child_frame_node, explicit_non_isolated_url));
+    auto* site_instance =
+        child_frame_node->current_frame_host()->GetSiteInstance();
+
+    OriginAgentClusterIsolationState isolation_state =
+        DetermineOriginAgentClusterIsolation(site_instance,
+                                             explicit_non_isolated_url);
+    EXPECT_TRUE(isolation_state.is_origin_agent_cluster());
+    EXPECT_FALSE(isolation_state.requires_origin_keyed_process());
+  }
+  {
+    // Verify that we don't explicitly opt-in an origin that was explicitly
+    // opted-out.
+    SetHeaderValue("?1");
+    GURL explicit_isolated_url(
+        https_server()->GetURL("bar.com", "/isolate_origin"));
+    EXPECT_TRUE(
+        NavigateToURLFromRenderer(child_frame_node, explicit_isolated_url));
+    auto* site_instance =
+        child_frame_node->current_frame_host()->GetSiteInstance();
+
+    EXPECT_FALSE(DetermineOriginAgentClusterIsolation(site_instance,
+                                                      explicit_isolated_url)
+                     .is_origin_agent_cluster());
+  }
 }
 
 // These tests ensure that non-HTTPS secure contexts (see
