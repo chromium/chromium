@@ -112,6 +112,19 @@ constexpr int kNotificationBubbleGapHeight = 6;
 // the auto-hidden shelf when the shelf is on the boundary between displays.
 constexpr int kMaxAutoHideShowShelfRegionSize = 10;
 
+// Returns the `aura::client::DragDropClient` for the given `shelf_widget`. Note
+// that this may return `nullptr` if the browser is performing its shutdown
+// sequence.
+aura::client::DragDropClient* GetDragDropClient(ShelfWidget* shelf_widget) {
+  if (shelf_widget) {
+    if (aura::Window* window = shelf_widget->GetNativeWindow()) {
+      if (aura::Window* root_window = window->GetRootWindow())
+        return aura::client::GetDragDropClient(root_window);
+    }
+  }
+  return nullptr;
+}
+
 aura::Window* GetDragHandleNudgeWindow(ShelfWidget* shelf_widget) {
   if (!shelf_widget->GetDragHandle())
     return nullptr;
@@ -1264,12 +1277,15 @@ void ShelfLayoutManager::SetState(ShelfVisibilityState visibility_state) {
   if (visibility_state == SHELF_AUTO_HIDE &&
       state_.visibility_state != SHELF_AUTO_HIDE) {
     DCHECK(!drag_drop_observer_);
-    drag_drop_observer_ = std::make_unique<ScopedDragDropObserver>(
-        /*client=*/aura::client::GetDragDropClient(
-            shelf_->GetWindow()->GetRootWindow()),
-        /*event_callback=*/base::BindRepeating(
-            &ShelfLayoutManager::UpdateAutoHideForDragDrop,
-            base::Unretained(this)));
+    // It's possible that the `drag_drop_client` might be `nullptr` if the
+    // browser is performing its shutdown sequence.
+    if (auto* drag_drop_client = GetDragDropClient(shelf_widget_)) {
+      drag_drop_observer_ = std::make_unique<ScopedDragDropObserver>(
+          drag_drop_client,
+          /*event_callback=*/base::BindRepeating(
+              &ShelfLayoutManager::UpdateAutoHideForDragDrop,
+              base::Unretained(this)));
+    }
   } else if (visibility_state != SHELF_AUTO_HIDE &&
              state_.visibility_state == SHELF_AUTO_HIDE) {
     drag_drop_observer_.reset();
