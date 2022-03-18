@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/containers/cxx20_erase.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/views/style/typography.h"
 
@@ -31,6 +32,11 @@ void SidePanelComboboxModel::AddItem(SidePanelEntry* entry) {
       SidePanelComboboxModel::Item(entry->id(), entry->name(), entry->icon()));
   std::sort(entries_.begin(), entries_.end(),
             [](const auto& a, const auto& b) { return a.id < b.id; });
+}
+
+void SidePanelComboboxModel::RemoveItem(SidePanelEntry::Id entry_id) {
+  base::EraseIf(entries_,
+                [entry_id](Item entry) { return entry.id == entry_id; });
 }
 
 void SidePanelComboboxModel::AddItems(

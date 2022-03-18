@@ -38,6 +38,7 @@ class SidePanelComboboxModel : public ui::ComboboxModel {
   ~SidePanelComboboxModel() override;
 
   void AddItem(SidePanelEntry* entry);
+  void RemoveItem(SidePanelEntry::Id entry_id);
   void AddItems(const std::vector<std::unique_ptr<SidePanelEntry>>& entries);
   void RemoveItems(const std::vector<std::unique_ptr<SidePanelEntry>>& entries);
   SidePanelEntry::Id GetIdAt(int index) const;

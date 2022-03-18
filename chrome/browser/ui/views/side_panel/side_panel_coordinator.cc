@@ -361,6 +361,7 @@ void SidePanelCoordinator::OnEntryRegistered(SidePanelEntry* entry) {
 }
 
 void SidePanelCoordinator::OnEntryWillDeregister(SidePanelEntry* entry) {
+  combobox_model_->RemoveItem(entry->id());
   // Update the current entry to make sure we don't show an entry that is being
   // removed.
   if (GetContentView())
