@@ -7,24 +7,27 @@
 
 #include <cstdint>
 #include <map>
+#include <memory>
+#include <set>
+#include <string>
+#include <vector>
 
-#include "base/callback.h"
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
-#include "base/memory/ref_counted_delete_on_sequence.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
 #include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/api/web_request/web_request_info.h"
-#include "extensions/common/extension_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/auth.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/request_priority.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -34,6 +37,22 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
+#include "url/origin.h"
+
+namespace {
+class BrowserContext;
+}
+
+namespace net {
+class HttpRequestHeaders;
+class HttpResponseHeaders;
+class IPEndPoint;
+struct RedirectInfo;
+}  // namespace net
+
+namespace network {
+struct URLLoaderCompletionStatus;
+}
 
 namespace extensions {
 
