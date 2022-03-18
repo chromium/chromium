@@ -439,39 +439,40 @@ void VideoFrameSubmitter::OnReceivedContextProvider(
     return;
   }
 
-  bool has_good_context = false;
-  while (!has_good_context) {
-    if (!context_provider) {
-      // Delay to retry getting the context_provider.
-      constexpr base::TimeDelta kGetContextProviderRetryTimeout =
-          base::Milliseconds(150);
-
-      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-          FROM_HERE,
-          base::BindOnce(
-              context_provider_callback_, context_provider_,
-              base::BindOnce(&VideoFrameSubmitter::OnReceivedContextProvider,
-                             weak_ptr_factory_.GetWeakPtr())),
-          kGetContextProviderRetryTimeout);
-      return;
-    }
-
-    // Note that |context_provider| is now null after the move, such that if we
-    // end up having !|has_good_context|, we will retry to obtain the
-    // context_provider.
-    context_provider_ = std::move(context_provider);
-    auto result = context_provider_->BindToCurrentThread();
-
-    has_good_context =
-        result == gpu::ContextResult::kSuccess &&
-        context_provider_->ContextGL()->GetGraphicsResetStatusKHR() ==
-            GL_NO_ERROR;
+  if (!MaybeAcceptContextProvider(std::move(context_provider))) {
+    constexpr base::TimeDelta kGetContextProviderRetryTimeout =
+        base::Milliseconds(150);
+    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(
+            context_provider_callback_, context_provider_,
+            base::BindOnce(&VideoFrameSubmitter::OnReceivedContextProvider,
+                           weak_ptr_factory_.GetWeakPtr())),
+        kGetContextProviderRetryTimeout);
+    return;
   }
+
   context_provider_->AddObserver(this);
   resource_provider_->Initialize(context_provider_.get(), nullptr);
 
   if (frame_sink_id_.is_valid())
     StartSubmitting();
+}
+
+bool VideoFrameSubmitter::MaybeAcceptContextProvider(
+    scoped_refptr<viz::RasterContextProvider> context_provider) {
+  if (!context_provider) {
+    return false;
+  }
+
+  context_provider_ = std::move(context_provider);
+  if (context_provider_->BindToCurrentThread() !=
+      gpu::ContextResult::kSuccess) {
+    return false;
+  }
+
+  return context_provider_->ContextGL()->GetGraphicsResetStatusKHR() ==
+         GL_NO_ERROR;
 }
 
 void VideoFrameSubmitter::StartSubmitting() {

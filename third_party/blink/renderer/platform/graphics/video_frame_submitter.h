@@ -96,6 +96,12 @@ class PLATFORM_EXPORT VideoFrameSubmitter
       bool use_gpu_compositing,
       scoped_refptr<viz::RasterContextProvider> context_provider);
 
+  // Adopts `context_provider` if it's non-null and in a usable state. Returns
+  // true on success and false on failure, implying that a new ContextProvider
+  // should be requested.
+  bool MaybeAcceptContextProvider(
+      scoped_refptr<viz::RasterContextProvider> context_provider);
+
   // Starts submission and calls UpdateSubmissionState(); which may submit.
   void StartSubmitting();
 
