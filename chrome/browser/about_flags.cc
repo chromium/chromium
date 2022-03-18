@@ -2670,29 +2670,6 @@ constexpr char kBorealisPermittedInternalName[] = "borealis-enabled";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)
-// The variations of Continuous Search.
-const FeatureEntry::FeatureParam kContinuousSearchAfterSecondSrp[] = {
-    {"trigger_mode", "1"}};
-
-const FeatureEntry::FeatureParam kContinuousSearchOnReverseScroll[] = {
-    {"trigger_mode", "2"}};
-
-const FeatureEntry::FeatureParam kContinuousSearchPermanentDismissal[] = {
-    {"permanent_dismissal_threshold", "3"}};
-
-const FeatureEntry::FeatureParam kContinuousSearchDoubleRowChip[] = {
-    {"show_result_title", "true"}};
-
-const FeatureEntry::FeatureVariation kContinuousSearchFeatureVariations[] = {
-    {"show after second SRP", kContinuousSearchAfterSecondSrp,
-     std::size(kContinuousSearchAfterSecondSrp), nullptr},
-    {"show on reverse scroll", kContinuousSearchOnReverseScroll,
-     std::size(kContinuousSearchOnReverseScroll), nullptr},
-    {"with permanent dismissal", kContinuousSearchPermanentDismissal,
-     std::size(kContinuousSearchPermanentDismissal), nullptr},
-    {"with double-row chips", kContinuousSearchDoubleRowChip,
-     std::size(kContinuousSearchDoubleRowChip), nullptr}};
-
 const FeatureEntry::FeatureParam kReadLaterUseRootBookmarkAsDefault[] = {
     {"use_root_bookmark_as_default", "true"}};
 const FeatureEntry::FeatureParam kReadLaterInAppMenu[] = {
@@ -7369,14 +7346,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSupportSearchSuggestionForPrerender2Description,
      kOsAll,
      FEATURE_VALUE_TYPE(features::kSupportSearchSuggestionForPrerender2)},
-
-#if BUILDFLAG(IS_ANDROID)
-    {"continuous-search", flag_descriptions::kContinuousSearchName,
-     flag_descriptions::kContinuousSearchDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kContinuousSearch,
-                                    kContinuousSearchFeatureVariations,
-                                    "ContinuousSearchNavigation")},
-#endif  // BUILDFLAG(IS_ANDROID)
 
     {"chrome-labs", flag_descriptions::kChromeLabsName,
      flag_descriptions::kChromeLabsDescription, kOsDesktop,

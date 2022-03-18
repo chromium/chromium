@@ -980,11 +980,6 @@
     "expiry_milestone": 104
   },
   {
-    "name": "continuous-search",
-    "owners": [ "//chrome/browser/continuous_search/OWNERS" ],
-    "expiry_milestone": 98
-  },
-  {
     "name": "conversion-measurement-debug-mode",
     "owners": [ "//content/browser/attribution_reporting/OWNERS" ],
     "expiry_milestone": 105
