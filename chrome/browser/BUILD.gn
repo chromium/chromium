@@ -5214,6 +5214,8 @@ static_library("browser") {
       "lacros/lacros_url_handling.h",
       "lacros/launcher_search/search_controller_lacros.cc",
       "lacros/launcher_search/search_controller_lacros.h",
+      "lacros/launcher_search/search_util.cc",
+      "lacros/launcher_search/search_util.h",
       "lacros/metrics_reporting_observer.cc",
       "lacros/metrics_reporting_observer.h",
       "lacros/net/lacros_extension_proxy_tracker.cc",

@@ -8,26 +8,45 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "chromeos/crosapi/mojom/launcher_search.mojom.h"
+#include "components/omnibox/browser/autocomplete_controller.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
 namespace crosapi {
 
 // Implements crosapi interface for launcher search controller.
-class SearchControllerLacros : public mojom::SearchController {
+class SearchControllerLacros : public mojom::SearchController,
+                               public AutocompleteController::Observer,
+                               public ProfileObserver {
  public:
   SearchControllerLacros();
   SearchControllerLacros(const SearchControllerLacros&) = delete;
   SearchControllerLacros& operator=(const SearchControllerLacros&) = delete;
   ~SearchControllerLacros() override;
 
+  // ProfileObserver:
+  void OnProfileWillBeDestroyed(Profile* profile) override;
+
  private:
   // mojom::SearchController:
   void Search(const std::u16string& query, SearchCallback callback) override;
 
+  // AutocompleteController::Observer:
+  void OnResultChanged(AutocompleteController* controller,
+                       bool default_match_changed) override;
+
+  Profile* profile_;
+  std::unique_ptr<AutocompleteController> autocomplete_controller_;
+
   mojo::AssociatedRemote<mojom::SearchResultsPublisher> publisher_;
   mojo::Receiver<mojom::SearchController> receiver_{this};
+
+  // Observes the profile destruction.
+  base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 
   base::WeakPtrFactory<SearchControllerLacros> weak_ptr_factory_{this};
 };

@@ -22,6 +22,8 @@ enum SearchStatus {
   // Search session has been cancelled due to a newer query. No more results
   // will be sent.
   kCancelled = 3,
+  // The AutocompleteController is unavailable. No more results will be sent.
+  [MinVersion=1] kBackendUnavailable = 4,
 };
 
 // Enum represents the result type.
@@ -34,7 +36,7 @@ enum SearchResultType {
 };
 
 // Struct represents search result.
-// Next min ID: 14
+// Next min ID: 15
 [Stable]
 struct SearchResult {
   // Type of the result. Used to distinguish between different types of result.
@@ -94,6 +96,7 @@ struct SearchResult {
     kSearch = 5,
     kHistory = 6,
     kCalculator = 7,
+    [MinVersion=1] kOpenTab = 8,
   };
 
   // Enum representing the Omnibox answer subtype.

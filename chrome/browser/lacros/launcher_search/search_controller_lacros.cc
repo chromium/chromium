@@ -6,11 +6,42 @@
 
 #include <utility>
 
+#include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"
+#include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/lacros/launcher_search/search_util.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "components/omnibox/browser/autocomplete_classifier.h"
 
 namespace crosapi {
+namespace {
 
-SearchControllerLacros::SearchControllerLacros() {
+int ProviderTypes() {
+  // We use all the default providers except for the document provider, which
+  // suggests Drive files on enterprise devices. This is disabled to avoid
+  // duplication with search results from DriveFS.
+  return AutocompleteClassifier::DefaultOmniboxProviders() &
+         ~AutocompleteProvider::TYPE_DOCUMENT;
+}
+
+}  // namespace
+
+SearchControllerLacros::SearchControllerLacros()
+    : profile_(g_browser_process->profile_manager()->GetProfileByPath(
+          ProfileManager::GetPrimaryUserProfilePath())) {
+  if (!profile_) {
+    // TODO(crbug.com/1228587): Log error metrics if the profile is unavailable.
+    return;
+  }
+
+  profile_observation_.Observe(profile_);
+
+  autocomplete_controller_ = std::make_unique<AutocompleteController>(
+      std::make_unique<ChromeAutocompleteProviderClient>(profile_),
+      ProviderTypes());
+  autocomplete_controller_->AddObserver(this);
+
   chromeos::LacrosService* service = chromeos::LacrosService::Get();
   if (!service->IsAvailable<mojom::SearchControllerRegistry>())
     return;
@@ -20,13 +51,71 @@ SearchControllerLacros::SearchControllerLacros() {
 
 SearchControllerLacros::~SearchControllerLacros() = default;
 
+void SearchControllerLacros::OnProfileWillBeDestroyed(Profile* profile) {
+  DCHECK_EQ(profile, profile_);
+  DCHECK(profile_observation_.IsObservingSource(profile_));
+
+  // SearchControllerLacros must shut down before the Profile is destroyed,
+  // otherwise there will be a use-after-free.
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  autocomplete_controller_.reset();
+  profile_observation_.Reset();
+  profile_ = nullptr;
+}
+
 void SearchControllerLacros::Search(const std::u16string& query,
                                     SearchCallback callback) {
+  if (!autocomplete_controller_) {
+    // TODO(crbug.com/1228687): Log error metrics if the autocomplete controller
+    // is unavailable.
+    if (publisher_.is_bound() && publisher_.is_connected()) {
+      publisher_->OnSearchResultsReceived(
+          mojom::SearchStatus::kBackendUnavailable, absl::nullopt);
+    }
+    return;
+  }
+
+  autocomplete_controller_->Stop(false);
+  // If there is an in-flight session, send a cancellation notification.
+  if (publisher_.is_bound() && publisher_.is_connected()) {
+    publisher_->OnSearchResultsReceived(mojom::SearchStatus::kCancelled,
+                                        absl::nullopt);
+  }
+
   // Reset the remote and send a new pending receiver to ash.
   publisher_.reset();
   std::move(callback).Run(publisher_.BindNewEndpointAndPassReceiver());
 
-  // TODO(crbug/1228587): Fill the results here.
+  // Start the search. Results will be returned through the observer interface.
+  AutocompleteInput input =
+      AutocompleteInput(query, metrics::OmniboxEventProto::CHROMEOS_APP_LIST,
+                        ChromeAutocompleteSchemeClassifier(profile_));
+  if (input.text().empty())
+    input.set_focus_type(OmniboxFocusType::ON_FOCUS);
+
+  autocomplete_controller_->Start(input);
+}
+
+void SearchControllerLacros::OnResultChanged(AutocompleteController* controller,
+                                             bool default_match_changed) {
+  DCHECK_EQ(controller, autocomplete_controller_.get());
+
+  std::vector<mojom::SearchResultPtr> results;
+  for (AutocompleteMatch match : autocomplete_controller_->result()) {
+    if (match.search_terms_args) {
+      match.search_terms_args->request_source = TemplateURLRef::CROS_APP_LIST;
+      autocomplete_controller_->SetMatchDestinationURL(&match);
+    }
+
+    auto result = match.answer.has_value() ? CreateAnswerResult(match)
+                                           : CreateResult(match);
+    results.push_back(std::move(result));
+  }
+
+  const auto status = autocomplete_controller_->done()
+                          ? mojom::SearchStatus::kDone
+                          : mojom::SearchStatus::kInProgress;
+  publisher_->OnSearchResultsReceived(status, std::move(results));
 }
 
 }  // namespace crosapi
