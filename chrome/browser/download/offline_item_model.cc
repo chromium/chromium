@@ -31,9 +31,30 @@ DownloadUIModel::DownloadUIModelPtr OfflineItemModel::Wrap(
   return model;
 }
 
+DownloadUIModel::DownloadUIModelPtr OfflineItemModel::Wrap(
+    OfflineItemModelManager* manager,
+    const OfflineItem& offline_item,
+    std::unique_ptr<DownloadUIModel::StatusTextBuilderBase>
+        status_text_builder) {
+  DownloadUIModel::DownloadUIModelPtr model(
+      new OfflineItemModel(manager, offline_item,
+                           std::move(status_text_builder)),
+      base::OnTaskRunnerDeleter(base::ThreadTaskRunnerHandle::Get()));
+  return model;
+}
+
 OfflineItemModel::OfflineItemModel(OfflineItemModelManager* manager,
                                    const OfflineItem& offline_item)
-    : manager_(manager),
+    : OfflineItemModel(manager,
+                       offline_item,
+                       std::make_unique<StatusTextBuilder>()) {}
+
+OfflineItemModel::OfflineItemModel(
+    OfflineItemModelManager* manager,
+    const OfflineItem& offline_item,
+    std::unique_ptr<DownloadUIModel::StatusTextBuilderBase> status_text_builder)
+    : DownloadUIModel(std::move(status_text_builder)),
+      manager_(manager),
       offline_item_(std::make_unique<OfflineItem>(offline_item)) {
   Profile* profile = Profile::FromBrowserContext(manager_->browser_context());
   offline_items_collection::OfflineContentAggregator* aggregator =
@@ -167,6 +188,10 @@ bool OfflineItemModel::TimeRemaining(base::TimeDelta* remaining) const {
     return false;
   *remaining = base::Milliseconds(offline_item_->time_remaining_ms);
   return true;
+}
+
+base::Time OfflineItemModel::GetStartTime() const {
+  return offline_item_->creation_time;
 }
 
 base::Time OfflineItemModel::GetEndTime() const {

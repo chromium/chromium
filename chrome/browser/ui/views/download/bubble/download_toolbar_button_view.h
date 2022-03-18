@@ -8,7 +8,6 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/download/bubble/download_display.h"
 #include "chrome/browser/download/bubble/download_icon_state.h"
-#include "chrome/browser/ui/views/download/bubble/download_bubble_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -16,6 +15,7 @@
 class Browser;
 class BrowserView;
 class DownloadDisplayController;
+class DownloadBubbleUIController;
 
 // Download icon shown in the trusted area of the toolbar. Its lifetime is tied
 // to that of its parent ToolbarView. The icon is made visible when downloads
@@ -56,6 +56,8 @@ class DownloadToolbarButtonView : public ToolbarButton, public DownloadDisplay {
   // Controller for the DownloadBubbleUI, both main view and partial view.
   std::unique_ptr<DownloadBubbleUIController> bubble_controller_;
   raw_ptr<views::BubbleDialogDelegate> bubble_delegate_ = nullptr;
+
+  base::WeakPtrFactory<DownloadToolbarButtonView> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_DOWNLOAD_BUBBLE_DOWNLOAD_TOOLBAR_BUTTON_VIEW_H_

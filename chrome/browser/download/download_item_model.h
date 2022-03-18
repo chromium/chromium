@@ -84,6 +84,7 @@ class DownloadItemModel : public DownloadUIModel,
   bool GetOpenWhenComplete() const override;
   bool IsOpenWhenCompleteByPolicy() const override;
   bool TimeRemaining(base::TimeDelta* remaining) const override;
+  base::Time GetStartTime() const override;
   base::Time GetEndTime() const override;
   bool GetOpened() const override;
   void SetOpened(bool opened) override;

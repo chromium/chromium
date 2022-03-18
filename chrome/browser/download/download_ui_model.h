@@ -208,6 +208,9 @@ class DownloadUIModel {
   // Returns |true| if this download should be displayed in the downloads shelf.
   virtual bool ShouldShowInShelf() const;
 
+  // Returns |true| if this download should be displayed in the download bubble.
+  virtual bool ShouldShowInBubble() const;
+
   // Change whether the download should be displayed on the downloads
   // shelf. Setting this is only effective if the download hasn't already been
   // displayed in the shelf.
@@ -297,6 +300,9 @@ class DownloadUIModel {
   // returns false if we do not have the number of bytes or the download speed,
   // and so can't give an estimate.
   virtual bool TimeRemaining(base::TimeDelta* remaining) const;
+
+  // Returns the creation time for a download.
+  virtual base::Time GetStartTime() const;
 
   // Returns the end/completion time for a completed download. base::Time()
   // if the download has not completed yet.

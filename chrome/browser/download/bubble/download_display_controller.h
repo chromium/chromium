@@ -7,11 +7,18 @@
 
 #include "base/timer/timer.h"
 #include "chrome/browser/download/bubble/download_icon_state.h"
+#include "chrome/browser/download/offline_item_model.h"
 #include "components/download/content/public/all_download_item_notifier.h"
+#include "components/offline_items_collection/core/offline_content_aggregator.h"
+#include "components/offline_items_collection/core/offline_content_provider.h"
 
 namespace content {
 class DownloadManager;
 }  // namespace content
+
+class Profile;
+class DownloadBubbleUIController;
+using DownloadUIModelPtr = ::OfflineItemModel::DownloadUIModelPtr;
 
 namespace base {
 class TimeDelta;
@@ -20,11 +27,16 @@ class OneShotTimer;
 
 class DownloadDisplay;
 
+// Used to control the DownloadToolbar Button, through the DownloadDisplay
+// interface. Supports both regular Download and Offline items. When in the
+// future OfflineItems include regular Download on Desktop platforms,
+// we can remove AllDownloadItemNotifier::Observer.
 class DownloadDisplayController
     : public download::AllDownloadItemNotifier::Observer {
  public:
   DownloadDisplayController(DownloadDisplay* display,
-                            content::DownloadManager* download_manager);
+                            Profile* profile,
+                            DownloadBubbleUIController* bubble_controller);
   DownloadDisplayController(const DownloadDisplayController&) = delete;
   DownloadDisplayController& operator=(const DownloadDisplayController&) =
       delete;
@@ -49,14 +61,31 @@ class DownloadDisplayController
   //
   // This implementation will match the one in download_status_updater.cc
   ProgressInfo GetProgress();
+
   // Returns an IconInfo that contains current state of the icon.
   IconInfo GetIconInfo();
 
   // Notifies the controller that the button is pressed. Called by `display_`.
   void OnButtonPressed();
 
+  // Common methods for new downloads or new offline items.
+  // Called from bubble controller when new item(s) are added, with
+  // |in_progress| as argument for if any was in progress.
+  // These methods are virtual so that they can be overridden for fake
+  // controllers in testing.
+  virtual void OnNewItem(bool in_progress);
+  // Called from bubble controller when an item is updated, with |is_done|
+  // indicating if it was marked done.
+  virtual void OnUpdatedItem(bool is_done);
+  // Called from bubble controller when an item is deleted.
+  virtual void OnRemovedItem();
+
   download::AllDownloadItemNotifier& get_download_notifier_for_testing() {
     return download_notifier_;
+  }
+
+  void set_manager_for_testing(content::DownloadManager* manager) {
+    download_manager_ = manager;
   }
 
  private:
@@ -83,24 +112,31 @@ class DownloadDisplayController
   void UpdateDownloadIconToInactive();
 
   // Decides whether the toolbar button should be shown when it is created.
-  void MaybeShowButtonWhenCreated();
+  virtual void MaybeShowButtonWhenCreated();
   // Whether the last download complete time is less than `interval` ago.
-  bool HasRecentCompleteDownload(base::TimeDelta interval);
+  bool HasRecentCompleteDownload(base::TimeDelta interval,
+                                 base::Time last_complete_time);
 
   // AllDownloadItemNotifier::Observer
-  void OnDownloadCreated(content::DownloadManager* manager,
-                         download::DownloadItem* item) override;
-  void OnDownloadUpdated(content::DownloadManager* manager,
-                         download::DownloadItem* item) override;
   void OnManagerGoingDown(content::DownloadManager* manager) override;
 
+  base::Time GetLastCompleteTime(
+      const offline_items_collection::OfflineContentAggregator::OfflineItemList&
+          offline_items);
+
   // The pointer is created in ToolbarView and owned by ToolbarView.
-  DownloadDisplay* const display_;
-  content::DownloadManager* download_manager_;
+  raw_ptr<DownloadDisplay> const display_;
+  raw_ptr<content::DownloadManager> download_manager_;
   download::AllDownloadItemNotifier download_notifier_;
   base::OneShotTimer icon_disappearance_timer_;
   base::OneShotTimer icon_inactive_timer_;
   IconInfo icon_info_;
+  // DownloadDisplayController and DownloadBubbleUIController have the same
+  // lifetime. Both are owned, constructed together, and destructed together by
+  // DownloadToolbarButtonView. If one is valid, so is the other.
+  raw_ptr<DownloadBubbleUIController> bubble_controller_;
+
+  base::WeakPtrFactory<DownloadDisplayController> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_BUBBLE_DOWNLOAD_DISPLAY_CONTROLLER_H_
