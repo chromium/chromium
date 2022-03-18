@@ -237,6 +237,8 @@ crbug.com/v8/12227 external/wpt/wasm/jsapi/exception/toString.tentative.any.work
 
 # --- Skia roll test suppressions
 
+crbug.com/1307317 virtual/scalefactor200/css3/filters/backdrop-filter-clip-radius-zoom.html [ Failure Pass ]
+
 # --- END Skia roll test suppresions
 
 
