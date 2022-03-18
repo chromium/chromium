@@ -146,7 +146,7 @@ class MESSAGE_CENTER_EXPORT MessageCenter {
 
   // Sets the icon image. Icon appears at the top-left of the notification.
   virtual void SetNotificationIcon(const std::string& notification_id,
-                                   const gfx::Image& image) = 0;
+                                   const ui::ImageModel& image) = 0;
 
   // Sets the large image for the notifications of type == TYPE_IMAGE. Specified
   // image will appear below of the notification.

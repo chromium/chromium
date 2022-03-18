@@ -112,7 +112,7 @@ class MESSAGE_CENTER_EXPORT NotificationList {
 
   // Returns true if the notification exists and was updated.
   bool SetNotificationIcon(const std::string& notification_id,
-                           const gfx::Image& image);
+                           const ui::ImageModel& image);
 
   // Returns true if the notification exists and was updated.
   bool SetNotificationImage(const std::string& notification_id,

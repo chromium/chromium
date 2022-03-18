@@ -141,9 +141,9 @@ class AshMessagePopupCollectionTest : public AshTestBase,
       const std::string& id) {
     return std::make_unique<message_center::Notification>(
         message_center::NOTIFICATION_TYPE_BASE_FORMAT, id, u"test_title",
-        u"test message", gfx::Image(), std::u16string() /* display_source */,
-        GURL(), message_center::NotifierId(),
-        message_center::RichNotificationData(),
+        u"test message", ui::ImageModel(),
+        std::u16string() /* display_source */, GURL(),
+        message_center::NotifierId(), message_center::RichNotificationData(),
         new message_center::NotificationDelegate());
   }
 

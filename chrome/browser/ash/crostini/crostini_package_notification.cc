@@ -72,7 +72,7 @@ CrostiniPackageNotification::CrostiniPackageNotification(
   notification_ = std::make_unique<message_center::Notification>(
       message_center::NOTIFICATION_TYPE_PROGRESS, notification_id,
       std::u16string(), std::u16string(),
-      gfx::Image(),  // icon
+      ui::ImageModel(),  // icon
       notification_settings_.source,
       GURL(),  // origin_url
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,

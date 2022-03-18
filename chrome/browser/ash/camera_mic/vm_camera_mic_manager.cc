@@ -265,7 +265,7 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
         l10n_util::GetStringFUTF16(message_id,
                                    l10n_util::GetStringUTF16(name_id_)),
         /*message=*/std::u16string(),
-        /*icon=*/gfx::Image(),
+        /*icon=*/ui::ImageModel(),
         /*display_source=*/
         l10n_util::GetStringUTF16(IDS_CHROME_OS_NOTIFICATION_SOURCE),
         /*origin_url=*/GURL(),

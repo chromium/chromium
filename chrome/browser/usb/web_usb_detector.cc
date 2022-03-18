@@ -234,8 +234,8 @@ void WebUsbDetector::OnDeviceAdded(
           IDS_WEBUSB_DEVICE_DETECTED_NOTIFICATION,
           url_formatter::FormatUrlForSecurityDisplay(
               landing_page, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC)),
-      gfx::Image(gfx::CreateVectorIcon(vector_icons::kUsbIcon, 64,
-                                       gfx::kChromeIconGrey)),
+      ui::ImageModel::FromVectorIcon(vector_icons::kUsbIcon, ui::kColorIcon,
+                                     64),
       std::u16string(), GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierWebUsb),

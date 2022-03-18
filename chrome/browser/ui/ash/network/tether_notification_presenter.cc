@@ -303,7 +303,7 @@ TetherNotificationPresenter::CreateNotification(
     const message_center::RichNotificationData& rich_notification_data) {
   auto notification = std::make_unique<message_center::Notification>(
       message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE, id, title,
-      message, gfx::Image() /* image */, std::u16string() /* display_source */,
+      message, ui::ImageModel(), std::u16string() /* display_source */,
       GURL() /* origin_url */,
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierTether),

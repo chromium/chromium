@@ -116,8 +116,9 @@ void ArcProvisionNotificationService::ShowNotification() {
       l10n_util::GetStringUTF16(IDS_ARC_MANAGED_PROVISION_NOTIFICATION_TITLE),
       l10n_util::GetStringFUTF16(IDS_ARC_MANAGED_PROVISION_NOTIFICATION_MESSAGE,
                                  ui::GetChromeOSDeviceName()),
-      gfx::Image(ui::ResourceBundle::GetSharedInstance().GetImageNamed(
-          IDR_ARC_PLAY_STORE_OPTIN_IN_PROGRESS_NOTIFICATION)),
+      ui::ImageModel::FromImage(
+          ui::ResourceBundle::GetSharedInstance().GetImageNamed(
+              IDR_ARC_PLAY_STORE_OPTIN_IN_PROGRESS_NOTIFICATION)),
       l10n_util::GetStringUTF16(IDS_ARC_NOTIFICATION_DISPLAY_SOURCE), GURL(),
       notifier_id, optional_fields, new message_center::NotificationDelegate());
 

@@ -647,8 +647,10 @@ void AppTimeController::ShowNotificationForApp(
           chromeos::kNotificationSupervisedUserIcon,
           message_center::SystemNotificationWarningLevel::NORMAL);
 
-  if (icon.has_value())
-    message_center_notification->set_icon(gfx::Image(icon.value()));
+  if (icon.has_value()) {
+    message_center_notification->set_icon(
+        ui::ImageModel::FromImageSkia(icon.value()));
+  }
 
   auto* notification_display_service =
       NotificationDisplayService::GetForProfile(profile_);

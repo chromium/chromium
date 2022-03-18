@@ -89,7 +89,8 @@ void StatusIconMac::DisplayBalloon(
     const std::u16string& title,
     const std::u16string& contents,
     const message_center::NotifierId& notifier_id) {
-  notification_.DisplayBalloon(icon, title, contents, notifier_id);
+  notification_.DisplayBalloon(ui::ImageModel::FromImageSkia(icon), title,
+                               contents, notifier_id);
 }
 
 bool StatusIconMac::HasStatusIconMenu() {

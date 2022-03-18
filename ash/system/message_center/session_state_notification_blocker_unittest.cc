@@ -75,7 +75,7 @@ class SessionStateNotificationBlockerTest
     message_center::Notification notification(
         message_center::NOTIFICATION_TYPE_SIMPLE,
         GetNotificationId(notifier_id), u"chromeos-title", u"chromeos-message",
-        gfx::Image(), u"chromeos-source", GURL(), notifier_id,
+        ui::ImageModel(), u"chromeos-source", GURL(), notifier_id,
         message_center::RichNotificationData(), nullptr);
     if (notifier_id.id == kNotifierSystemPriority)
       notification.set_priority(message_center::SYSTEM_PRIORITY);
@@ -87,7 +87,7 @@ class SessionStateNotificationBlockerTest
     message_center::Notification notification(
         message_center::NOTIFICATION_TYPE_SIMPLE,
         GetNotificationId(notifier_id), u"chromeos-title", u"chromeos-message",
-        gfx::Image(), u"chromeos-source", GURL(), notifier_id,
+        ui::ImageModel(), u"chromeos-source", GURL(), notifier_id,
         message_center::RichNotificationData(), nullptr);
     if (notifier_id.id == kNotifierSystemPriority)
       notification.set_priority(message_center::SYSTEM_PRIORITY);

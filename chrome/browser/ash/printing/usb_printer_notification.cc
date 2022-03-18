@@ -46,7 +46,7 @@ UsbPrinterNotification::UsbPrinterNotification(
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id_,
       std::u16string(),  // title
       std::u16string(),  // body
-      gfx::Image(),      // icon
+      ui::ImageModel(),  // icon
       l10n_util::GetStringUTF16(IDS_PRINT_JOB_NOTIFICATION_DISPLAY_SOURCE),
       GURL(),  // origin_url
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,

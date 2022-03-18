@@ -238,8 +238,8 @@ NotificationGroupingController::CreateCopyForParentNotification(
       message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE,
       parent_notification.id() +
           message_center::kIdSuffixForGroupContainerNotification,
-      parent_notification.title(), parent_notification.message(), gfx::Image(),
-      std::u16string(), parent_notification.origin_url(),
+      parent_notification.title(), parent_notification.message(),
+      ui::ImageModel(), std::u16string(), parent_notification.origin_url(),
       parent_notification.notifier_id(), message_center::RichNotificationData(),
       /*delegate=*/nullptr);
   copy->set_timestamp(parent_notification.timestamp() - base::Milliseconds(1));

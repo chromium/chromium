@@ -315,7 +315,7 @@ void ShowNotificationForDevice(const std::string& guid,
   message_center::Notification notification(
       message_center::NOTIFICATION_TYPE_MULTIPLE, notification_id,
       l10n_util::GetStringUTF16(IDS_CROSUSB_DEVICE_DETECTED_NOTIFICATION_TITLE),
-      message, gfx::Image(), std::u16string(), GURL(),
+      message, ui::ImageModel(), std::u16string(), GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierUsb),
       rich_notification_data,

@@ -141,7 +141,7 @@ class FakeMacNotificationProviderFactory
 message_center::Notification CreateNotification() {
   return message_center::Notification(
       message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId, u"title",
-      u"message", /*icon=*/gfx::Image(),
+      u"message", /*icon=*/ui::ImageModel(),
       /*display_source=*/std::u16string(), /*origin_url=*/GURL(),
       message_center::NotifierId(), message_center::RichNotificationData(),
       base::MakeRefCounted<message_center::NotificationDelegate>());

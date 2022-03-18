@@ -51,7 +51,7 @@ class NotificationBuilder {
                       id,
                       std::u16string(),
                       std::u16string(),
-                      gfx::Image(),
+                      ui::ImageModel(),
                       std::u16string(),
                       GURL(),
                       message_center::NotifierId(GURL()),

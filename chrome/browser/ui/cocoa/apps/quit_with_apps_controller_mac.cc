@@ -71,8 +71,9 @@ QuitWithAppsController::QuitWithAppsController() {
       message_center::NOTIFICATION_TYPE_SIMPLE, kQuitWithAppsNotificationID,
       l10n_util::GetStringUTF16(IDS_QUIT_WITH_APPS_TITLE),
       l10n_util::GetStringUTF16(IDS_QUIT_WITH_APPS_EXPLANATION),
-      ui::ResourceBundle::GetSharedInstance().GetImageNamed(
-          IDR_PRODUCT_LOGO_128),
+      ui::ImageModel::FromImage(
+          ui::ResourceBundle::GetSharedInstance().GetImageNamed(
+              IDR_PRODUCT_LOGO_128)),
       l10n_util::GetStringUTF16(IDS_QUIT_WITH_APPS_NOTIFICATION_DISPLAY_SOURCE),
       GURL(kQuitWithAppsOriginUrl),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,

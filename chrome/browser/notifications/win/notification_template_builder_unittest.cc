@@ -67,7 +67,7 @@ class NotificationTemplateBuilderTest : public ::testing::Test {
     GURL origin_url(kNotificationOrigin);
     message_center::Notification notification(
         message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId,
-        kNotificationTitle, kNotificationMessage, gfx::Image() /* icon */,
+        kNotificationTitle, kNotificationMessage, ui::ImageModel() /* icon */,
         std::u16string() /* display_source */, origin_url,
         NotifierId(origin_url), RichNotificationData(), nullptr /* delegate */);
     // Set a fixed timestamp, to avoid having to test against current timestamp.
@@ -369,7 +369,8 @@ TEST_F(NotificationTemplateBuilderTest, Images) {
   icon.allocN32Pixels(64, 64);
   icon.eraseARGB(255, 100, 150, 200);
 
-  notification.set_icon(gfx::Image::CreateFrom1xBitmap(icon));
+  notification.set_icon(
+      ui::ImageModel::FromImage(gfx::Image::CreateFrom1xBitmap(icon)));
   notification.set_image(gfx::Image::CreateFrom1xBitmap(icon));
 
   std::vector<message_center::ButtonInfo> buttons;

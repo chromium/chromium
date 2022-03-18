@@ -70,7 +70,7 @@ class NotificationGroupingControllerTest : public AshTestBase {
         message_center::NOTIFICATION_TYPE_SIMPLE, id_out,
         u"id" + base::NumberToString16(notifications_counter_),
         u"message" + base::NumberToString16(notifications_counter_),
-        gfx::Image(), u"src", origin_url, notifier_id,
+        ui::ImageModel(), u"src", origin_url, notifier_id,
         message_center::RichNotificationData(), nullptr);
     notifications_counter_++;
     return notification;

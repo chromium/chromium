@@ -68,7 +68,7 @@ void ShowDlpNotification(const std::string& id,
                          const std::u16string& message) {
   message_center::Notification notification(
       message_center::NOTIFICATION_TYPE_SIMPLE, id, title, message,
-      /*icon=*/gfx::Image(), /*display_source=*/std::u16string(),
+      /*icon=*/ui::ImageModel(), /*display_source=*/std::u16string(),
       /*origin_url=*/GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kDlpPolicyNotifierId),

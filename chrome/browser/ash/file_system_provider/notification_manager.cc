@@ -73,7 +73,7 @@ void NotificationManager::Close(bool by_user) {
 
 void NotificationManager::OnAppImageUpdated(const std::string& id,
                                             const gfx::ImageSkia& image) {
-  extension_icon_ = gfx::Image(image);
+  extension_icon_ = ui::ImageModel::FromImageSkia(image);
   ShowNotification();
 }
 

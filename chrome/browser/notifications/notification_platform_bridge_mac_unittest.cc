@@ -99,7 +99,7 @@ class NotificationPlatformBridgeMacTest : public testing::Test {
 
     auto notification = std::make_unique<Notification>(
         message_center::NOTIFICATION_TYPE_SIMPLE, "id1",
-        base::UTF8ToUTF16(title), base::UTF8ToUTF16(subtitle), gfx::Image(),
+        base::UTF8ToUTF16(title), base::UTF8ToUTF16(subtitle), ui::ImageModel(),
         u"Notifier's Name", url, message_center::NotifierId(url),
         optional_fields, new message_center::NotificationDelegate());
     if (require_interaction)

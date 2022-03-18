@@ -134,7 +134,7 @@ class NotificationMenuViewTest : public views::ViewsTestBase {
         message_center::NotifierType::APPLICATION, kTestAppId);
     message_center::Notification notification(
         message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title,
-        message, gfx::Image(), u"www.test.org", GURL(), notifier_id,
+        message, ui::ImageModel(), u"www.test.org", GURL(), notifier_id,
         message_center::RichNotificationData(), nullptr /* delegate */);
     notification_menu_view_->AddNotificationItemView(notification);
     notification_menu_view_->Layout();
@@ -149,7 +149,7 @@ class NotificationMenuViewTest : public views::ViewsTestBase {
         message_center::NotifierType::APPLICATION, kTestAppId);
     message_center::Notification notification(
         message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title,
-        message, gfx::Image(), u"www.test.org", GURL(), notifier_id,
+        message, ui::ImageModel(), u"www.test.org", GURL(), notifier_id,
         message_center::RichNotificationData(), nullptr /* delegate */);
     notification_menu_view_->UpdateNotificationItemView(notification);
     return notification;

@@ -35,7 +35,7 @@ std::unique_ptr<message_center::Notification> CreateSystemNotification(
       break;
   }
   auto notification = std::make_unique<message_center::Notification>(
-      type, id, title, message, gfx::Image(), display_source, origin_url,
+      type, id, title, message, ui::ImageModel(), display_source, origin_url,
       notifier_id, optional_fields, delegate);
   notification->set_accent_color(color);
   notification->set_system_notification_warning_level(warning_level);

@@ -47,10 +47,11 @@ class NotificationPlatformBridgeMacUtilsTest : public testing::Test {
       const absl::optional<std::u16string>& contextMessage) {
     GURL url(origin);
 
-    Notification notification(
-        type, "test_id", title, subtitle, gfx::Image(), u"Notifier's Name", url,
-        message_center::NotifierId(url), message_center::RichNotificationData(),
-        /*delegate=*/nullptr);
+    Notification notification(type, "test_id", title, subtitle,
+                              ui::ImageModel(), u"Notifier's Name", url,
+                              message_center::NotifierId(url),
+                              message_center::RichNotificationData(),
+                              /*delegate=*/nullptr);
 
     if (type == message_center::NOTIFICATION_TYPE_PROGRESS)
       notification.set_progress(progress);

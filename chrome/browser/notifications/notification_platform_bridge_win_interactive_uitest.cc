@@ -535,9 +535,9 @@ IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest,
   // Show a new notification.
   message_center::Notification notification(
       message_center::NOTIFICATION_TYPE_SIMPLE, "notification_id", u"Text1",
-      u"Text2", gfx::Image(), std::u16string(), GURL("https://example.com/"),
-      message_center::NotifierId(), message_center::RichNotificationData(),
-      nullptr);
+      u"Text2", ui::ImageModel(), std::u16string(),
+      GURL("https://example.com/"), message_center::NotifierId(),
+      message_center::RichNotificationData(), nullptr);
   base::RunLoop display_run_loop;
   base::StatisticsRecorder::ScopedHistogramSampleObserver
       display_histogram_observer(
@@ -587,9 +587,9 @@ IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest, DisplayWithFakeAC) {
 
   auto notification = std::make_unique<message_center::Notification>(
       message_center::NOTIFICATION_TYPE_SIMPLE, "notification_id", u"Text1",
-      u"Text2", gfx::Image(), std::u16string(), GURL("https://example.com/"),
-      message_center::NotifierId(), message_center::RichNotificationData(),
-      nullptr);
+      u"Text2", ui::ImageModel(), std::u16string(),
+      GURL("https://example.com/"), message_center::NotifierId(),
+      message_center::RichNotificationData(), nullptr);
 
   std::unique_ptr<NotificationCommon::Metadata> metadata;
   Profile* profile = CreateTestingProfile("P1");

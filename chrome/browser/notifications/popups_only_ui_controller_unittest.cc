@@ -57,8 +57,8 @@ class PopupsOnlyUiControllerTest : public views::test::WidgetTest {
   void AddNotification(const std::string& id) {
     auto notification = std::make_unique<Notification>(
         message_center::NOTIFICATION_TYPE_SIMPLE, id, u"Test Web Notification",
-        u"Notification message body.", gfx::Image(), u"Some Chrome extension",
-        GURL("chrome-extension://abbccedd"),
+        u"Notification message body.", ui::ImageModel(),
+        u"Some Chrome extension", GURL("chrome-extension://abbccedd"),
         NotifierId(message_center::NotifierType::APPLICATION, id),
         message_center::RichNotificationData(), nullptr);
 
@@ -69,7 +69,7 @@ class PopupsOnlyUiControllerTest : public views::test::WidgetTest {
     auto notification = std::make_unique<Notification>(
         message_center::NOTIFICATION_TYPE_SIMPLE, id,
         u"Updated Test Web Notification", u"Notification message body.",
-        gfx::Image(), u"Some Chrome extension",
+        ui::ImageModel(), u"Some Chrome extension",
         GURL("chrome-extension://abbccedd"),
         NotifierId(message_center::NotifierType::APPLICATION, id),
         message_center::RichNotificationData(), nullptr);

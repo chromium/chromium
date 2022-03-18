@@ -65,7 +65,8 @@ void NotificationExample::CreateExampleView(View* container) {
   data.settings_button_handler = message_center::SettingsButtonHandler::INLINE;
   message_center::Notification notification(
       message_center::NOTIFICATION_TYPE_BASE_FORMAT, "id", u"Title", u"Message",
-      CreateTestImage(gfx::Size(80, 80)), std::u16string(), GURL(),
+      ui::ImageModel::FromImage(CreateTestImage(gfx::Size(80, 80))),
+      std::u16string(), GURL(),
       message_center::NotifierId(
           GURL(), l10n_util::GetStringUTF16(IDS_NOTIFICATION_TITLE_LABEL)),
       data, base::MakeRefCounted<message_center::NotificationDelegate>());

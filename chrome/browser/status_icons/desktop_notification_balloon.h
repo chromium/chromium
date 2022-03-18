@@ -8,12 +8,12 @@
 #include <memory>
 #include <string>
 
-namespace gfx {
-class ImageSkia;
-}
-
 namespace message_center {
 struct NotifierId;
+}
+
+namespace ui {
+class ImageModel;
 }
 
 // Provides the notification balloon functionality by using desktop
@@ -28,7 +28,7 @@ class DesktopNotificationBalloon {
 
   virtual ~DesktopNotificationBalloon();
 
-  void DisplayBalloon(const gfx::ImageSkia& icon,
+  void DisplayBalloon(const ui::ImageModel& icon,
                       const std::u16string& title,
                       const std::u16string& contents,
                       const message_center::NotifierId& notifier_id);

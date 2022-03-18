@@ -157,7 +157,7 @@ NotificationList::Notifications NotificationList::GetNotificationsByOriginUrl(
 }
 
 bool NotificationList::SetNotificationIcon(const std::string& notification_id,
-                                           const gfx::Image& image) {
+                                           const ui::ImageModel& image) {
   auto iter = GetNotification(notification_id);
   if (iter == notifications_.end())
     return false;

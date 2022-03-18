@@ -457,7 +457,8 @@ PlatformNotificationServiceImpl::CreateNotificationFromData(
   message_center::Notification notification(
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
       notification_data.title, notification_data.body,
-      gfx::Image::CreateFrom1xBitmap(notification_resources.notification_icon),
+      ui::ImageModel::FromImage(gfx::Image::CreateFrom1xBitmap(
+          notification_resources.notification_icon)),
       base::UTF8ToUTF16(origin.host()), origin, notifier_id, optional_fields,
       nullptr /* delegate */);
 

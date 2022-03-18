@@ -30,7 +30,7 @@ DesktopNotificationBalloon::DesktopNotificationBalloon() {}
 DesktopNotificationBalloon::~DesktopNotificationBalloon() {}
 
 void DesktopNotificationBalloon::DisplayBalloon(
-    const gfx::ImageSkia& icon,
+    const ui::ImageModel& icon,
     const std::u16string& title,
     const std::u16string& contents,
     const message_center::NotifierId& notifier_id) {
@@ -47,7 +47,7 @@ void DesktopNotificationBalloon::DisplayBalloon(
       kDesktopNotificationPrefix + base::NumberToString(id_count_++);
   message_center::Notification notification(
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title,
-      contents, gfx::Image(icon), std::u16string(), GURL(), notifier_id, {},
+      contents, icon, std::u16string(), GURL(), notifier_id, {},
       new message_center::NotificationDelegate());
 
   NotificationDisplayService::GetForProfile(profile)->Display(

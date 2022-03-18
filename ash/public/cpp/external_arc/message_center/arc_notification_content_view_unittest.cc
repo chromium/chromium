@@ -234,7 +234,7 @@ class ArcNotificationContentViewTest : public AshTestBase {
     Notification notification(
         message_center::NOTIFICATION_TYPE_CUSTOM,
         notification_item->GetNotificationId(), u"title", u"message",
-        gfx::Image(), u"arc", GURL(),
+        ui::ImageModel(), u"arc", GURL(),
         message_center::NotifierId(
             message_center::NotifierType::ARC_APPLICATION, "ARC_NOTIFICATION"),
         optional_fields,
@@ -332,7 +332,7 @@ TEST_F(ArcNotificationContentViewTest, CloseButton) {
   auto mc_notification = std::make_unique<Notification>(
       message_center::NOTIFICATION_TYPE_SIMPLE,
       notification_item->GetNotificationId(), u"title", u"message",
-      gfx::Image(), u"arc", GURL(),
+      ui::ImageModel(), u"arc", GURL(),
       message_center::NotifierId(message_center::NotifierType::ARC_APPLICATION,
                                  "ARC_NOTIFICATION"),
       message_center::RichNotificationData(), nullptr);

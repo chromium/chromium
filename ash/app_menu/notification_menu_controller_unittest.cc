@@ -24,8 +24,8 @@ void BuildAndSendNotification(const std::string& app_id,
   std::unique_ptr<message_center::Notification> notification =
       std::make_unique<message_center::Notification>(
           message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
-          u"Test Web Notification", u"Notification message body.", gfx::Image(),
-          u"www.test.org", GURL(), notifier_id,
+          u"Test Web Notification", u"Notification message body.",
+          ui::ImageModel(), u"www.test.org", GURL(), notifier_id,
           message_center::RichNotificationData(), nullptr /* delegate */);
   message_center::MessageCenter::Get()->AddNotification(
       std::move(notification));

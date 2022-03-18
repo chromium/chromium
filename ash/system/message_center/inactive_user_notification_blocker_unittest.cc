@@ -89,7 +89,7 @@ class InactiveUserNotificationBlockerTest
 
     message_center::Notification notification(
         message_center::NOTIFICATION_TYPE_SIMPLE, "popup-id", u"popup-title",
-        u"popup-message", gfx::Image(), u"popup-source", GURL(),
+        u"popup-message", ui::ImageModel(), u"popup-source", GURL(),
         id_with_profile, message_center::RichNotificationData(), nullptr);
 
     if (notifier_id.id == kNotifierSystemPriority)
@@ -105,7 +105,7 @@ class InactiveUserNotificationBlockerTest
 
     message_center::Notification notification(
         message_center::NOTIFICATION_TYPE_SIMPLE, "notification-id",
-        u"notification-title", u"notification-message", gfx::Image(),
+        u"notification-title", u"notification-message", ui::ImageModel(),
         u"notification-source", GURL(), id_with_profile,
         message_center::RichNotificationData(), nullptr);
 

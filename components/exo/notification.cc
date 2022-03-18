@@ -80,7 +80,7 @@ Notification::Notification(
 
   auto notification = std::make_unique<message_center::Notification>(
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
-      base::UTF8ToUTF16(title), base::UTF8ToUTF16(message), gfx::Image(),
+      base::UTF8ToUTF16(title), base::UTF8ToUTF16(message), ui::ImageModel(),
       base::UTF8ToUTF16(display_source), GURL(), notifier, data,
       base::MakeRefCounted<NotificationDelegate>(close_callback,
                                                  click_callback));

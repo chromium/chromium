@@ -147,7 +147,7 @@ TEST_F(DesktopNotificationHandlerTest, DisplayNewEntries) {
   message_center::Notification notification(
       message_center::NOTIFICATION_TYPE_SIMPLE, kDesktopNotificationGuid,
       kDesktopNotificationTitle16, kDesktopNotificationDeviceInfoWithPrefix,
-      gfx::Image(), base::UTF8ToUTF16(url.host()), url,
+      ui::ImageModel(), base::UTF8ToUTF16(url.host()), url,
       message_center::NotifierId(url), optional_fields, /*delegate=*/nullptr);
 
   SendTabToSelfEntry entry(kDesktopNotificationGuid, url,

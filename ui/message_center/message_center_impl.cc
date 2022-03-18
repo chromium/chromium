@@ -388,7 +388,7 @@ void MessageCenterImpl::RemoveAllNotifications(bool by_user, RemoveType type) {
 }
 
 void MessageCenterImpl::SetNotificationIcon(const std::string& notification_id,
-                                            const gfx::Image& image) {
+                                            const ui::ImageModel& image) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (notification_list_->SetNotificationIcon(notification_id, image)) {

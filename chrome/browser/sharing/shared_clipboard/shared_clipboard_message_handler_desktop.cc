@@ -46,7 +46,7 @@ void SharedClipboardMessageHandlerDesktop::ShowNotification(
       notification_title,
       l10n_util::GetStringUTF16(
           IDS_CONTENT_CONTEXT_SHARING_SHARED_CLIPBOARD_NOTIFICATION_DESCRIPTION),
-      /* icon= */ gfx::Image(),
+      /* icon= */ ui::ImageModel(),
       /* display_source= */ std::u16string(),
       /* origin_url= */ GURL(), message_center::NotifierId(),
       message_center::RichNotificationData(),

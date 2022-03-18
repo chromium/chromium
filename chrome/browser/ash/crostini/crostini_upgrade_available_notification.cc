@@ -117,7 +117,7 @@ CrostiniUpgradeAvailableNotification::CrostiniUpgradeAvailableNotification(
           IDS_CROSTINI_UPGRADE_AVAILABLE_NOTIFICATION_TITLE),
       l10n_util::GetStringUTF16(
           IDS_CROSTINI_UPGRADE_AVAILABLE_NOTIFICATION_BODY),
-      gfx::Image(), std::u16string(), GURL(),
+      ui::ImageModel(), std::u16string(), GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierCrostiniUpgradeAvailable),
       rich_notification_data,

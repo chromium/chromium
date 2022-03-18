@@ -124,7 +124,8 @@ class AshNotificationViewTest : public AshTestBase, public views::ViewObserver {
 
     std::unique_ptr<Notification> notification = std::make_unique<Notification>(
         notification_type, base::NumberToString(current_id_++), u"title",
-        message, CreateTestImage(80, 80), u"display source", GURL(),
+        message, ui::ImageModel::FromImage(CreateTestImage(80, 80)),
+        u"display source", GURL(),
         message_center::NotifierId(message_center::NotifierType::APPLICATION,
                                    "extension_id"),
         data, delegate_);
@@ -460,7 +461,8 @@ TEST_F(AshNotificationViewTest, GroupedNotificationExpandState) {
 
 TEST_F(AshNotificationViewTest, GroupedNotificationChildIcon) {
   auto notification = CreateTestNotification();
-  notification->set_icon(CreateTestImage(16, 16, SK_ColorBLUE));
+  notification->set_icon(
+      ui::ImageModel::FromImage(CreateTestImage(16, 16, SK_ColorBLUE)));
   notification->SetGroupChild();
   notification_view()->UpdateWithNotification(*notification.get());
 
@@ -710,7 +712,7 @@ TEST_F(AshNotificationViewTest, ImageExpandCollapseAnimationsRecordSmoothness) {
                           "ScaleAndTranslate.AnimationSmoothness");
 
   // Clear icon so that icon view and image container view use the same image.
-  notification->set_icon(gfx::Image());
+  notification->set_icon(ui::ImageModel());
   message_center::MessageCenter::Get()->UpdateNotification(
       notification->id(), std::move(notification));
 

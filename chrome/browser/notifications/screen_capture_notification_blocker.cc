@@ -195,7 +195,7 @@ void ScreenCaptureNotificationBlocker::DisplayMuteNotification() {
       l10n_util::GetPluralStringFUTF16(IDS_NOTIFICATION_MUTED_TITLE,
                                        total_notification_count),
       l10n_util::GetStringUTF16(IDS_NOTIFICATION_MUTED_MESSAGE),
-      /*icon=*/gfx::Image(),
+      /*icon=*/ui::ImageModel(),
       /*display_source=*/std::u16string(),
       /*origin_url=*/GURL(), message_center::NotifierId(),
       rich_notification_data,

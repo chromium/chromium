@@ -58,9 +58,7 @@ class AppNotificationLauncher : public AppIconLoaderDelegate {
   // AppIconLoaderDelegate overrides:
   void OnAppImageUpdated(const std::string& id,
                          const gfx::ImageSkia& image) override {
-    extension_icon_ = gfx::Image(image);
-
-    pending_notification_->set_icon(extension_icon_);
+    pending_notification_->set_icon(ui::ImageModel::FromImageSkia(image));
     NotificationDisplayService::GetForProfile(profile_)->Display(
         NotificationHandler::Type::TRANSIENT, *pending_notification_,
         /*metadata=*/nullptr);
@@ -72,7 +70,6 @@ class AppNotificationLauncher : public AppIconLoaderDelegate {
 
   Profile* profile_;
   std::unique_ptr<AppIconLoader> icon_loader_;
-  gfx::Image extension_icon_;
   std::unique_ptr<message_center::Notification> pending_notification_;
 };
 
@@ -106,7 +103,7 @@ void ShowNotificationForAutoGrantedRequestFileSystem(
   std::unique_ptr<message_center::Notification> notification(new Notification(
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
       base::UTF8ToUTF16(extension.name()), message,
-      gfx::Image(),      // Updated asynchronously later.
+      ui::ImageModel(),  // Updated asynchronously later.
       std::u16string(),  // display_source
       GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,

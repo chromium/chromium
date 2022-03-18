@@ -149,7 +149,7 @@ class BorealisLifetimeObserver
         l10n_util::GetStringUTF16(IDS_BOREALIS_FEEDBACK_NOTIFICATION_TITLE),
         /*message=*/
         l10n_util::GetStringUTF16(IDS_BOREALIS_FEEDBACK_NOTIFICATION_MESSAGE),
-        /*icon=*/gfx::Image(),
+        /*icon=*/ui::ImageModel(),
         /*display_source=*/
         l10n_util::GetStringUTF16(IDS_BOREALIS_FEEDBACK_NOTIFICATION_SOURCE),
         /*origin_url=*/GURL(),

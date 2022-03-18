@@ -33,8 +33,8 @@ void AnnouncementNotificationDelegate::ShowNotification() {
   message_center::Notification notification(
       message_center::NOTIFICATION_TYPE_SIMPLE, kAnnouncementNotificationId,
       l10n_util::GetStringUTF16(IDS_TOS_NOTIFICATION_TITLE),
-      l10n_util::GetStringUTF16(IDS_TOS_NOTIFICATION_BODY_TEXT), gfx::Image(),
-      std::u16string(), GURL(),
+      l10n_util::GetStringUTF16(IDS_TOS_NOTIFICATION_BODY_TEXT),
+      ui::ImageModel(), std::u16string(), GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kAnnouncementNotificationId),
       rich_notification_data, nullptr /*delegate*/);

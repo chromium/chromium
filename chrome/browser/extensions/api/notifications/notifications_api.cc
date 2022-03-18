@@ -338,7 +338,7 @@ bool NotificationsApiFunction::CreateNotification(
 
   std::string notification_id = CreateScopedIdentifier(extension_->id(), id);
   message_center::Notification notification(
-      type, notification_id, title, message, icon,
+      type, notification_id, title, message, ui::ImageModel::FromImage(icon),
       base::UTF8ToUTF16(extension_->name()), extension_->url(),
       message_center::NotifierId(message_center::NotifierType::APPLICATION,
                                  extension_->id()),
@@ -391,7 +391,7 @@ bool NotificationsApiFunction::UpdateNotification(
       *error = kUnableToDecodeIconError;
       return false;
     }
-    notification->set_icon(icon);
+    notification->set_icon(ui::ImageModel::FromImage(icon));
   }
 
   if (options->app_icon_mask_bitmap.get()) {

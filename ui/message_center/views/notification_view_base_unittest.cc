@@ -218,7 +218,8 @@ NotificationViewBaseTest::CreateSimpleNotificationWithRichData(
     const RichNotificationData& data) const {
   std::unique_ptr<Notification> notification = std::make_unique<Notification>(
       NOTIFICATION_TYPE_BASE_FORMAT, std::string(kDefaultNotificationId),
-      u"title", u"message", CreateTestImage(80, 80), u"display source", GURL(),
+      u"title", u"message", ui::ImageModel::FromImage(CreateTestImage(80, 80)),
+      u"display source", GURL(),
       NotifierId(NotifierType::APPLICATION, "extension_id"), data, delegate_);
   notification->set_small_image(CreateTestImage(16, 16));
   notification->set_image(CreateTestImage(320, 240));
@@ -363,7 +364,7 @@ TEST_F(NotificationViewBaseTest, CreateOrUpdateTest) {
   notification->set_image(gfx::Image());
   notification->set_title(std::u16string());
   notification->set_message(std::u16string());
-  notification->set_icon(gfx::Image());
+  notification->set_icon(ui::ImageModel());
 
   notification_view()->CreateOrUpdateViews(*notification);
 
@@ -825,7 +826,7 @@ TEST_F(NotificationViewBaseTest, SnoozeButton) {
   rich_data.should_show_snooze_button = true;
   std::unique_ptr<Notification> notification = std::make_unique<Notification>(
       message_center::NOTIFICATION_TYPE_CUSTOM, kDefaultNotificationId,
-      u"title", u"message", gfx::Image(), u"display source", GURL(),
+      u"title", u"message", ui::ImageModel(), u"display source", GURL(),
       message_center::NotifierId(message_center::NotifierType::ARC_APPLICATION,
                                  "test_app_id"),
       rich_data, nullptr);
@@ -860,7 +861,8 @@ TEST_F(NotificationViewBaseTest, UseImageAsIcon) {
 
   std::unique_ptr<Notification> notification = CreateSimpleNotification();
   notification->set_type(NotificationType::NOTIFICATION_TYPE_IMAGE);
-  notification->set_icon(CreateTestImage(kIconSize, kIconSize));
+  notification->set_icon(
+      ui::ImageModel::FromImage(CreateTestImage(kIconSize, kIconSize)));
 
   // Test normal notification.
   UpdateNotificationViews(*notification);
@@ -878,7 +880,7 @@ TEST_F(NotificationViewBaseTest, UseImageAsIcon) {
   EXPECT_FALSE(notification_view()->expanded_);
 
   // Test notification with |use_image_for_icon| e.g. screenshot preview.
-  notification->set_icon(gfx::Image());
+  notification->set_icon(ui::ImageModel());
   UpdateNotificationViews(*notification);
   EXPECT_TRUE(notification_view()->icon_view_->GetVisible());
   EXPECT_TRUE(notification_view()->right_content_->GetVisible());
@@ -892,7 +894,7 @@ TEST_F(NotificationViewBaseTest, UseImageAsIcon) {
 
 TEST_F(NotificationViewBaseTest, NotificationWithoutIcon) {
   std::unique_ptr<Notification> notification = CreateSimpleNotification();
-  notification->set_icon(gfx::Image());
+  notification->set_icon(ui::ImageModel());
   notification->set_image(gfx::Image());
   UpdateNotificationViews(*notification);
 
@@ -911,12 +913,13 @@ TEST_F(NotificationViewBaseTest, UpdateAddingIcon) {
 
   // Create a notification without an icon.
   std::unique_ptr<Notification> notification = CreateSimpleNotification();
-  notification->set_icon(gfx::Image());
+  notification->set_icon(ui::ImageModel());
   notification->set_image(gfx::Image());
   UpdateNotificationViews(*notification);
 
   // Update the notification, adding an icon.
-  notification->set_icon(CreateTestImage(kIconSize, kIconSize));
+  notification->set_icon(
+      ui::ImageModel::FromImage(CreateTestImage(kIconSize, kIconSize)));
   UpdateNotificationViews(*notification);
 
   // Notification should now have an icon.
@@ -1090,7 +1093,7 @@ TEST_F(NotificationViewBaseTest, AppNameSystemNotification) {
   data.settings_button_handler = SettingsButtonHandler::INLINE;
   auto notification = std::make_unique<Notification>(
       NOTIFICATION_TYPE_BASE_FORMAT, std::string(kDefaultNotificationId),
-      u"title", u"message", gfx::Image(), std::u16string(), GURL(),
+      u"title", u"message", ui::ImageModel(), std::u16string(), GURL(),
       NotifierId(NotifierType::SYSTEM_COMPONENT, "system"), data, nullptr);
 
   UpdateNotificationViews(*notification);
@@ -1122,8 +1125,8 @@ TEST_F(NotificationViewBaseTest, AppNameWebAppNotification) {
 
   std::unique_ptr<Notification> notification = std::make_unique<Notification>(
       NOTIFICATION_TYPE_BASE_FORMAT, std::string(kDefaultNotificationId),
-      u"title", u"message", CreateTestImage(80, 80), u"display source", GURL(),
-      notifier_id, data, delegate_);
+      u"title", u"message", ui::ImageModel::FromImage(CreateTestImage(80, 80)),
+      u"display source", GURL(), notifier_id, data, delegate_);
   notification->set_small_image(gfx::Image::CreateFrom1xBitmap(small_bitmap));
   notification->set_image(CreateTestImage(320, 240));
 

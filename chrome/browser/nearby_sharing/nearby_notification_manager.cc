@@ -73,7 +73,7 @@ message_center::Notification CreateNearbyNotification(const std::string& id) {
       message_center::NOTIFICATION_TYPE_SIMPLE, id,
       /*title=*/std::u16string(),
       /*message=*/std::u16string(),
-      /*icon=*/gfx::Image(),
+      /*icon=*/ui::ImageModel(),
       l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_SOURCE),
       /*origin_url=*/GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
@@ -284,9 +284,9 @@ std::u16string GetConnectionRequestNotificationMessage(
   return message;
 }
 
-gfx::Image GetImageFromShareTarget(const ShareTarget& share_target) {
+ui::ImageModel GetImageFromShareTarget(const ShareTarget& share_target) {
   // TODO(crbug.com/1102348): Create or get profile picture of |share_target|.
-  return gfx::Image();
+  return ui::ImageModel();
 }
 
 NearbyNotificationManager::ReceivedContentType GetReceivedContentType(

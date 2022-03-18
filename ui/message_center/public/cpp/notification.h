@@ -224,7 +224,7 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
                const std::string& id,
                const std::u16string& title,
                const std::u16string& message,
-               const gfx::Image& icon,
+               const ui::ImageModel& icon,
                const std::u16string& display_source,
                const GURL& origin_url,
                const NotifierId& notifier_id,
@@ -356,9 +356,8 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
   // End unpacked values.
 
   // Images fetched asynchronously.
-  // TODO(pkasting): Convert `icon_` to be a ui::ImageModel.
-  ui::ImageModel icon() const { return ui::ImageModel::FromImage(icon_); }
-  void set_icon(const gfx::Image& icon) { icon_ = icon; }
+  ui::ImageModel icon() const { return icon_; }
+  void set_icon(const ui::ImageModel& icon) { icon_ = icon; }
 
   const gfx::Image& image() const { return optional_fields_.image; }
   void set_image(const gfx::Image& image) { optional_fields_.image = image; }
@@ -520,7 +519,7 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
   std::u16string message_;
 
   // Image data for the associated icon, used by Ash when available.
-  gfx::Image icon_;
+  ui::ImageModel icon_;
 
   // The display string for the source of the notification.  Could be
   // the same as |origin_url_|, or the name of an extension.

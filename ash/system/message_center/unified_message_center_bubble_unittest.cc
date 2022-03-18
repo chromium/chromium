@@ -60,7 +60,7 @@ class UnifiedMessageCenterBubbleTest
     std::string id = base::NumberToString(id_++);
     MessageCenter::Get()->AddNotification(std::make_unique<Notification>(
         message_center::NOTIFICATION_TYPE_SIMPLE, id, u"title", u"message",
-        gfx::Image(), std::u16string(), GURL(),
+        ui::ImageModel(), std::u16string(), GURL(),
         message_center::NotifierId(GURL(u"example.com"), u"webpagetitle"),
         message_center::RichNotificationData(), /*delegate=*/nullptr));
     return id;
@@ -70,7 +70,7 @@ class UnifiedMessageCenterBubbleTest
     std::string id = base::NumberToString(id_++);
     MessageCenter::Get()->AddNotification(std::make_unique<Notification>(
         message_center::NOTIFICATION_TYPE_BASE_FORMAT, id, u"test title",
-        u"test message", gfx::Image(), std::u16string(), GURL(),
+        u"test message", ui::ImageModel(), std::u16string(), GURL(),
         message_center::NotifierId(), message_center::RichNotificationData(),
         new message_center::NotificationDelegate()));
     return id;

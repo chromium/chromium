@@ -271,7 +271,7 @@ DownloadItemNotification::DownloadItemNotification(
       message_center::NOTIFICATION_TYPE_PROGRESS, GetNotificationId(),
       std::u16string(),  // title
       std::u16string(),  // body
-      gfx::Image(),      // icon
+      ui::ImageModel(),  // icon
       l10n_util::GetStringUTF16(
           IDS_DOWNLOAD_NOTIFICATION_DISPLAY_SOURCE),  // display_source
       GURL(kDownloadNotificationOrigin),              // origin_url

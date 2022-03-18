@@ -111,7 +111,7 @@ class ArcNotificationViewTest : public AshTestBase {
   std::unique_ptr<Notification> CreateSimpleNotification() {
     std::unique_ptr<Notification> notification = std::make_unique<Notification>(
         message_center::NOTIFICATION_TYPE_CUSTOM, kDefaultNotificationId,
-        u"title", u"message", gfx::Image(), u"display source", GURL(),
+        u"title", u"message", ui::ImageModel(), u"display source", GURL(),
         message_center::NotifierId(
             message_center::NotifierType::ARC_APPLICATION, "test_app_id"),
         message_center::RichNotificationData(), nullptr);
@@ -305,7 +305,7 @@ TEST_F(ArcNotificationViewTest, SnoozeButton) {
   rich_data.should_show_snooze_button = true;
   std::unique_ptr<Notification> notification = std::make_unique<Notification>(
       message_center::NOTIFICATION_TYPE_CUSTOM, kDefaultNotificationId,
-      u"title", u"message", gfx::Image(), u"display source", GURL(),
+      u"title", u"message", ui::ImageModel(), u"display source", GURL(),
       message_center::NotifierId(message_center::NotifierType::ARC_APPLICATION,
                                  "test_app_id"),
       rich_data, nullptr);

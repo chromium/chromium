@@ -869,7 +869,8 @@ PhoneHubNotificationController::CreateNotification(
   }
 
   return std::make_unique<message_center::Notification>(
-      notification_type, cros_id, title, message, icon, display_source,
+      notification_type, cros_id, title, message,
+      ui::ImageModel::FromImage(icon), display_source,
       /*origin_url=*/GURL(), notifier_id, optional_fields,
       delegate->AsScopedRefPtr());
 }

@@ -191,7 +191,7 @@ class ArcAccessibilityHelperBridgeTest : public ChromeViewsTestBase {
   std::unique_ptr<message_center::Notification> CreateNotification() {
     auto notification = std::make_unique<message_center::Notification>(
         message_center::NOTIFICATION_TYPE_CUSTOM, kNotificationKey, u"title",
-        u"message", gfx::Image(), u"display_source", GURL(),
+        u"message", ui::ImageModel(), u"display_source", GURL(),
         message_center::NotifierId(
             message_center::NotifierType::ARC_APPLICATION, "test_app_id"),
         message_center::RichNotificationData(), nullptr);

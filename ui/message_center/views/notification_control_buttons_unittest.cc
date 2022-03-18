@@ -50,7 +50,7 @@ class NotificationControlButtonsTest : public testing::Test {
   void SetUp() override {
     Test::SetUp();
     Notification notification(
-        NOTIFICATION_TYPE_SIMPLE, "id", u"title", u"id", gfx::Image(),
+        NOTIFICATION_TYPE_SIMPLE, "id", u"title", u"id", ui::ImageModel(),
         std::u16string(), GURL(),
         NotifierId(NotifierType::APPLICATION, "notifier_id"),
         RichNotificationData(), nullptr);

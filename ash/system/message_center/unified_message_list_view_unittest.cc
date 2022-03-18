@@ -87,9 +87,9 @@ class TestUnifiedMessageListView : public UnifiedMessageListView {
       std::string id = base::NumberToString(0);
       auto notification = std::make_unique<Notification>(
           message_center::NOTIFICATION_TYPE_BASE_FORMAT, id, u"test title",
-          u"test message", gfx::Image(), std::u16string() /* display_source */,
-          GURL(), message_center::NotifierId(),
-          message_center::RichNotificationData(),
+          u"test message", ui::ImageModel(),
+          std::u16string() /* display_source */, GURL(),
+          message_center::NotifierId(), message_center::RichNotificationData(),
           new message_center::NotificationDelegate());
 
       stacked_notifications_.push_back(notification.get());
@@ -174,7 +174,7 @@ class UnifiedMessageListViewTest : public AshTestBase,
                      u"knowledge and in "
                      u"our skills. Mission Control will be perfect."
                    : u"Hey Flight Control, who brought donuts?",
-        gfx::Image(), std::u16string() /* display_source */, GURL(),
+        ui::ImageModel(), std::u16string() /* display_source */, GURL(),
         message_center::NotifierId(), message_center::RichNotificationData(),
         new message_center::NotificationDelegate());
     notification->set_pinned(pinned);

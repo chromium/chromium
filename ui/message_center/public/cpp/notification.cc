@@ -61,7 +61,7 @@ Notification::Notification(NotificationType type,
                            const std::string& id,
                            const std::u16string& title,
                            const std::u16string& message,
-                           const gfx::Image& icon,
+                           const ui::ImageModel& icon,
                            const std::u16string& display_source,
                            const GURL& origin_url,
                            const NotifierId& notifier_id,
@@ -105,8 +105,8 @@ std::unique_ptr<Notification> Notification::DeepCopy(
     bool include_icon_images) {
   std::unique_ptr<Notification> notification_copy =
       std::make_unique<Notification>(notification);
-  notification_copy->set_icon(
-      gfx::Image(notification_copy->icon().Rasterize(color_provider)));
+  notification_copy->set_icon(ui::ImageModel::FromImageSkia(
+      notification_copy->icon().Rasterize(color_provider)));
   notification_copy->set_image(include_body_image
                                    ? DuplicateImage(notification_copy->image())
                                    : gfx::Image());

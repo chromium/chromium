@@ -87,8 +87,9 @@ class MessageCenterMetricsUtilsTest : public AshTestBase {
     notifier_id.type = message_center::NotifierType::WEB_PAGE;
     return std::make_unique<Notification>(
         message_center::NOTIFICATION_TYPE_BASE_FORMAT,
-        base::NumberToString(current_id_++), u"title", u"message", gfx::Image(),
-        u"display source", GURL(u"http://test-url.com"), notifier_id, data,
+        base::NumberToString(current_id_++), u"title", u"message",
+        ui::ImageModel(), u"display source", GURL(u"http://test-url.com"),
+        notifier_id, data,
         /*delegate=*/nullptr);
   }
 

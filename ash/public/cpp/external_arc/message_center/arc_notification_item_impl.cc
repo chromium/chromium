@@ -120,7 +120,7 @@ void ArcNotificationItemImpl::OnUpdatedFromAndroid(
   auto notification = std::make_unique<message_center::Notification>(
       message_center::NOTIFICATION_TYPE_CUSTOM, notification_id_,
       base::UTF8ToUTF16(data->title), base::UTF8ToUTF16(data->message),
-      gfx::Image(),
+      ui::ImageModel(),
       u"arc",  // display source
       GURL(),  // empty origin url, for system component
       notifier_id, rich_data,

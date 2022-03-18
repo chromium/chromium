@@ -68,7 +68,7 @@ CrostiniExportImportNotificationController::
   notification_ = std::make_unique<message_center::Notification>(
       message_center::NOTIFICATION_TYPE_PROGRESS, notification_id,
       std::u16string(), std::u16string(),
-      gfx::Image(),  // icon
+      ui::ImageModel(),  // icon
       l10n_util::GetStringUTF16(
           IDS_CROSTINI_EXPORT_IMPORT_NOTIFICATION_DISPLAY_SOURCE),
       GURL(),  // origin_url

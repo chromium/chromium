@@ -35,7 +35,7 @@ std::unique_ptr<message_center::Notification> CreateNotification(
     const std::string& id,
     const std::u16string& title,
     const std::u16string& message,
-    const gfx::Image& icon,
+    const ui::ImageModel& icon,
     const message_center::RichNotificationData& rich_notification_data,
     message_center::NotificationDelegate* delegate) {
   return std::make_unique<message_center::Notification>(
@@ -68,8 +68,9 @@ void EasyUnlockNotificationController::ShowChromebookAddedNotification() {
       l10n_util::GetStringFUTF16(
           IDS_EASY_UNLOCK_CHROMEBOOK_ADDED_NOTIFICATION_MESSAGE,
           ui::GetChromeOSDeviceName()),
-      ui::ResourceBundle::GetSharedInstance().GetImageNamed(
-          IDR_NOTIFICATION_EASYUNLOCK_ENABLED),
+      ui::ImageModel::FromImage(
+          ui::ResourceBundle::GetSharedInstance().GetImageNamed(
+              IDR_NOTIFICATION_EASYUNLOCK_ENABLED)),
       rich_notification_data,
       new NotificationDelegate(kEasyUnlockChromebookAddedNotifierId,
                                weak_ptr_factory_.GetWeakPtr())));
@@ -91,8 +92,9 @@ void EasyUnlockNotificationController::ShowPairingChangeNotification() {
       l10n_util::GetStringFUTF16(
           IDS_EASY_UNLOCK_PAIRING_CHANGED_NOTIFICATION_MESSAGE,
           ui::GetChromeOSDeviceName()),
-      ui::ResourceBundle::GetSharedInstance().GetImageNamed(
-          IDR_NOTIFICATION_EASYUNLOCK_ENABLED),
+      ui::ImageModel::FromImage(
+          ui::ResourceBundle::GetSharedInstance().GetImageNamed(
+              IDR_NOTIFICATION_EASYUNLOCK_ENABLED)),
       rich_notification_data,
       new NotificationDelegate(kEasyUnlockPairingChangeNotifierId,
                                weak_ptr_factory_.GetWeakPtr())));
@@ -116,8 +118,9 @@ void EasyUnlockNotificationController::ShowPairingChangeAppliedNotification(
       l10n_util::GetStringFUTF16(
           IDS_EASY_UNLOCK_PAIRING_CHANGE_APPLIED_NOTIFICATION_MESSAGE,
           base::UTF8ToUTF16(phone_name), ui::GetChromeOSDeviceName()),
-      ui::ResourceBundle::GetSharedInstance().GetImageNamed(
-          IDR_NOTIFICATION_EASYUNLOCK_ENABLED),
+      ui::ImageModel::FromImage(
+          ui::ResourceBundle::GetSharedInstance().GetImageNamed(
+              IDR_NOTIFICATION_EASYUNLOCK_ENABLED)),
       rich_notification_data,
       new NotificationDelegate(kEasyUnlockPairingChangeAppliedNotifierId,
                                weak_ptr_factory_.GetWeakPtr())));

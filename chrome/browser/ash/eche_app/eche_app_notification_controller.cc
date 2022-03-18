@@ -51,7 +51,7 @@ std::unique_ptr<message_center::Notification> CreateNotification(
     const std::string& id,
     const std::u16string& title,
     const std::u16string& message,
-    const gfx::Image& icon,
+    const ui::ImageModel& icon,
     const message_center::RichNotificationData& rich_notification_data,
     message_center::NotificationDelegate* delegate) {
   return std::make_unique<message_center::Notification>(
@@ -111,7 +111,7 @@ void EcheAppNotificationController::ShowNotificationFromWebUI(
           l10n_util::GetStringUTF16(IDS_ECHE_APP_NOTIFICATION_HELP_BUTTON)));
       ShowNotification(CreateNotification(
           kEcheAppRetryConnectionNotifierId, title.value(), message.value(),
-          gfx::Image(), rich_notification_data,
+          ui::ImageModel(), rich_notification_data,
           new NotificationDelegate(kEcheAppRetryConnectionNotifierId,
                                    weak_ptr_factory_.GetWeakPtr())));
     } else if (web_type == mojom::WebNotificationType::DEVICE_IDLE) {
@@ -121,14 +121,15 @@ void EcheAppNotificationController::ShowNotificationFromWebUI(
               IDS_ECHE_APP_NOTIFICATION_OPEN_AGAIN_BUTTON)));
       ShowNotification(CreateNotification(
           kEcheAppInactivityNotifierId, title.value(), message.value(),
-          gfx::Image(), rich_notification_data,
+          ui::ImageModel(), rich_notification_data,
           new NotificationDelegate(kEcheAppInactivityNotifierId,
                                    weak_ptr_factory_.GetWeakPtr())));
     } else {
       // No need to take the action.
       ShowNotification(CreateNotification(
           kEcheAppFromWebWithoudButtonNotifierId, title.value(),
-          message.value(), gfx::Image(), message_center::RichNotificationData(),
+          message.value(), ui::ImageModel(),
+          message_center::RichNotificationData(),
           new NotificationDelegate(kEcheAppFromWebWithoudButtonNotifierId,
                                    weak_ptr_factory_.GetWeakPtr())));
     }
@@ -151,7 +152,7 @@ void EcheAppNotificationController::ShowScreenLockNotification(
       l10n_util::GetStringFUTF16(IDS_ECHE_APP_SCREEN_LOCK_NOTIFICATION_TITLE,
                                  title.value()),
       l10n_util::GetStringUTF16(IDS_ECHE_APP_SCREEN_LOCK_NOTIFICATION_MESSAGE),
-      gfx::Image(), rich_notification_data,
+      ui::ImageModel(), rich_notification_data,
       new NotificationDelegate(kEcheAppScreenLockNotifierId,
                                weak_ptr_factory_.GetWeakPtr())));
 }
@@ -165,7 +166,7 @@ void EcheAppNotificationController::ShowDisabledByPhoneNotification(
           IDS_ECHE_APP_DISABLED_BY_PHONE_NOTIFICATION_TITLE, title.value()),
       l10n_util::GetStringUTF16(
           IDS_ECHE_APP_DISABLED_BY_PHONE_NOTIFICATION_MESSAGE),
-      gfx::Image(), message_center::RichNotificationData(),
+      ui::ImageModel(), message_center::RichNotificationData(),
       new NotificationDelegate(kEcheAppDisabledByPhoneNotifierId,
                                weak_ptr_factory_.GetWeakPtr())));
 }

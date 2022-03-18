@@ -50,7 +50,7 @@ PluginVmUninstallerNotification::PluginVmUninstallerNotification(
           IDS_PLUGIN_VM_REMOVING_NOTIFICATION_IN_PROGRESS_MESSAGE,
           app_name),     // title
       std::u16string(),  // message
-      gfx::Image(),      // icon
+      ui::ImageModel(),  // icon
       app_name,
       GURL(),  // origin_url
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
