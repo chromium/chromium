@@ -5127,10 +5127,11 @@ TEST_F(ProjectorCaptureModeIntegrationTests, RecordingOverlayWidgetTargeting) {
   // Now move the mouse over the projector shelf pod, the overlay should not
   // consume the event, and it should instead go through to that pod.
   auto* root_window = Shell::GetPrimaryRootWindow();
+  auto* status_area_widget =
+      RootWindowController::ForWindow(root_window)->GetStatusAreaWidget();
   ProjectorAnnotationTray* annotations_tray =
-      RootWindowController::ForWindow(root_window)
-          ->GetStatusAreaWidget()
-          ->projector_annotation_tray();
+      status_area_widget->projector_annotation_tray();
+
   EXPECT_TRUE(annotations_tray->visible_preferred());
   event_generator->MoveMouseTo(
       annotations_tray->GetBoundsInScreen().CenterPoint());
@@ -5139,6 +5140,16 @@ TEST_F(ProjectorCaptureModeIntegrationTests, RecordingOverlayWidgetTargeting) {
 
   // The overlay status hasn't changed.
   VerifyOverlayEnabledState(overlay_window, /*overlay_enabled_state=*/true);
+
+  // Now move the mouse and then click on the stop recording button, the overlay
+  // should not consume the event. The video recording should be ended.
+  StopRecordingButtonTray* stop_recording_button =
+      status_area_widget->stop_recording_button_tray();
+  const gfx::Point stop_button_center_point =
+      stop_recording_button->GetBoundsInScreen().CenterPoint();
+  event_generator->MoveMouseTo(stop_button_center_point);
+  event_generator->ClickLeftButton();
+  EXPECT_FALSE(controller->is_recording_in_progress());
 }
 
 // Tests that neither preview notification nor recording in tote is shown if in
