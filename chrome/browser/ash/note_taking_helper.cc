@@ -43,6 +43,7 @@
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
+#include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -140,9 +141,9 @@ std::string GetAppName(Profile* profile, const std::string& app_id) {
   return name;
 }
 
-bool IsNoteTakingIntentFilter(const apps::mojom::IntentFilterPtr& filter) {
+bool IsNoteTakingIntentFilter(const apps::IntentFilterPtr& filter) {
   for (const auto& condition : filter->conditions) {
-    if (condition->condition_type != apps::mojom::ConditionType::kAction)
+    if (condition->condition_type != apps::ConditionType::kAction)
       continue;
 
     for (const auto& condition_value : condition->condition_values) {
@@ -154,8 +155,8 @@ bool IsNoteTakingIntentFilter(const apps::mojom::IntentFilterPtr& filter) {
 }
 
 bool HasNoteTakingIntentFilter(
-    const std::vector<apps::mojom::IntentFilterPtr>& filters) {
-  for (const apps::mojom::IntentFilterPtr& filter : filters) {
+    const std::vector<apps::IntentFilterPtr>& filters) {
+  for (const apps::IntentFilterPtr& filter : filters) {
     if (IsNoteTakingIntentFilter(filter))
       return true;
   }

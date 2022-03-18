@@ -102,7 +102,7 @@ class AppUpdateMojomTest : public testing::Test {
   absl::optional<bool> expect_paused_;
   bool expect_paused_changed_;
 
-  std::vector<apps::mojom::IntentFilterPtr> expect_intent_filters_;
+  std::vector<apps::IntentFilterPtr> expect_intent_filters_;
   bool expect_intent_filters_changed_;
 
   absl::optional<bool> expect_resize_locked_;
@@ -236,7 +236,7 @@ class AppUpdateMojomTest : public testing::Test {
     EXPECT_EQ(expect_paused_, u.Paused());
     EXPECT_EQ(expect_paused_changed_, u.PausedChanged());
 
-    EXPECT_EQ(expect_intent_filters_, u.IntentFilters());
+    EXPECT_TRUE(IsEqual(expect_intent_filters_, u.IntentFilters()));
     EXPECT_EQ(expect_intent_filters_changed_, u.IntentFiltersChanged());
 
     EXPECT_EQ(expect_resize_locked_, u.ResizeLocked());
@@ -881,7 +881,8 @@ class AppUpdateMojomTest : public testing::Test {
       intent_filter->conditions.push_back(std::move(host_condition));
 
       state->intent_filters.push_back(intent_filter.Clone());
-      expect_intent_filters_.push_back(intent_filter.Clone());
+      expect_intent_filters_.push_back(
+          apps::ConvertMojomIntentFilterToIntentFilter(intent_filter));
       expect_intent_filters_changed_ = false;
       CheckExpects(u);
     }
@@ -910,7 +911,8 @@ class AppUpdateMojomTest : public testing::Test {
       intent_filter->conditions.push_back(std::move(host_condition));
 
       delta->intent_filters.push_back(intent_filter.Clone());
-      expect_intent_filters_.push_back(intent_filter.Clone());
+      expect_intent_filters_.push_back(
+          apps::ConvertMojomIntentFilterToIntentFilter(intent_filter));
       expect_intent_filters_changed_ = true;
       CheckExpects(u);
     }

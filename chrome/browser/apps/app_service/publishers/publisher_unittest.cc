@@ -326,7 +326,7 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
     apps::AppServiceProxyFactory::GetForProfile(profile())
         ->AppRegistryCache()
         .ForApp(app_id, [&target](const apps::AppUpdate& update) {
-          target = update.GetIntentFilters();
+          target = update.IntentFilters();
         });
 
     EXPECT_EQ(source.size(), target.size());

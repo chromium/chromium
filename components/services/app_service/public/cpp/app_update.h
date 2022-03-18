@@ -163,8 +163,7 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
   absl::optional<bool> Paused() const;
   bool PausedChanged() const;
 
-  std::vector<apps::mojom::IntentFilterPtr> IntentFilters() const;
-  apps::IntentFilters GetIntentFilters() const;
+  apps::IntentFilters IntentFilters() const;
   bool IntentFiltersChanged() const;
 
   absl::optional<bool> ResizeLocked() const;

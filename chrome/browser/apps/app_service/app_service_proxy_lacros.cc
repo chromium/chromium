@@ -462,12 +462,17 @@ std::vector<std::string> AppServiceProxyLacros::GetAppIdsForUrl(
 }
 
 std::vector<IntentLaunchInfo> AppServiceProxyLacros::GetAppsForIntent(
-    const apps::mojom::IntentPtr& intent,
+    const apps::mojom::IntentPtr& mojom_intent,
     bool exclude_browsers,
     bool exclude_browser_tab_apps) {
   std::vector<IntentLaunchInfo> intent_launch_info;
-  if (apps_util::OnlyShareToDrive(intent) ||
-      !apps_util::IsIntentValid(intent)) {
+  if (apps_util::OnlyShareToDrive(mojom_intent) ||
+      !apps_util::IsIntentValid(mojom_intent)) {
+    return intent_launch_info;
+  }
+
+  auto intent = ConvertMojomIntentToIntent(mojom_intent);
+  if (!intent) {
     return intent_launch_info;
   }
 
@@ -485,10 +490,11 @@ std::vector<IntentLaunchInfo> AppServiceProxyLacros::GetAppsForIntent(
           }
           std::set<std::string> existing_activities;
           for (const auto& filter : update.IntentFilters()) {
-            if (exclude_browsers && apps_util::IsBrowserFilter(filter)) {
+            DCHECK(filter);
+            if (exclude_browsers && filter->IsBrowserFilter()) {
               continue;
             }
-            if (apps_util::IntentMatchesFilter(intent, filter)) {
+            if (intent->MatchFilter(filter)) {
               IntentLaunchInfo entry;
               entry.app_id = update.AppId();
               std::string activity_label;

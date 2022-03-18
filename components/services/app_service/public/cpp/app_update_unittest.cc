@@ -245,7 +245,7 @@ class AppUpdateTest : public testing::Test {
     EXPECT_EQ(expect_paused_, u.Paused());
     EXPECT_EQ(expect_paused_changed_, u.PausedChanged());
 
-    EXPECT_TRUE(IsEqual(expect_intent_filters_, u.GetIntentFilters()));
+    EXPECT_TRUE(IsEqual(expect_intent_filters_, u.IntentFilters()));
     EXPECT_EQ(expect_intent_filters_changed_, u.IntentFiltersChanged());
 
     EXPECT_EQ(expect_resize_locked_, u.ResizeLocked());

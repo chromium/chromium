@@ -39,7 +39,17 @@ void CloneStrings(const std::vector<std::string>& clone_from,
   }
 }
 
-void CloneIntentFilters(
+std::vector<apps::IntentFilterPtr> ConvertMojomIntentFiltersToIntentFilters(
+    const std::vector<apps::mojom::IntentFilterPtr>& mojom_intent_filters) {
+  std::vector<apps::IntentFilterPtr> intent_filters;
+  for (const auto& mojom_intent_filter : mojom_intent_filters) {
+    intent_filters.push_back(
+        apps::ConvertMojomIntentFilterToIntentFilter(mojom_intent_filter));
+  }
+  return intent_filters;
+}
+
+void CloneMojomIntentFilters(
     const std::vector<apps::mojom::IntentFilterPtr>& clone_from,
     std::vector<apps::mojom::IntentFilterPtr>* clone_to) {
   for (const auto& intent_filter : clone_from) {
@@ -156,7 +166,7 @@ void AppUpdate::Merge(apps::mojom::App* state, const apps::mojom::App* delta) {
   }
   if (!delta->intent_filters.empty()) {
     state->intent_filters.clear();
-    ::CloneIntentFilters(delta->intent_filters, &state->intent_filters);
+    ::CloneMojomIntentFilters(delta->intent_filters, &state->intent_filters);
   }
   if (delta->resize_locked != apps::mojom::OptionalBool::kUnknown) {
     state->resize_locked = delta->resize_locked;
@@ -855,28 +865,25 @@ bool AppUpdate::PausedChanged() const {
          (!mojom_state_ || (mojom_delta_->paused != mojom_state_->paused));
 }
 
-std::vector<apps::mojom::IntentFilterPtr> AppUpdate::IntentFilters() const {
-  std::vector<apps::mojom::IntentFilterPtr> intent_filters;
+apps::IntentFilters AppUpdate::IntentFilters() const {
+  if (ShouldUseNonMojom()) {
+    if (delta_ && !delta_->intent_filters.empty()) {
+      return CloneIntentFilters(delta_->intent_filters);
+    }
+    if (state_ && !state_->intent_filters.empty()) {
+      return CloneIntentFilters(state_->intent_filters);
+    }
+    return std::vector<IntentFilterPtr>{};
+  }
 
   if (mojom_delta_ && !mojom_delta_->intent_filters.empty()) {
-    ::CloneIntentFilters(mojom_delta_->intent_filters, &intent_filters);
+    return ::ConvertMojomIntentFiltersToIntentFilters(
+        mojom_delta_->intent_filters);
   } else if (mojom_state_ && !mojom_state_->intent_filters.empty()) {
-    ::CloneIntentFilters(mojom_state_->intent_filters, &intent_filters);
+    return ::ConvertMojomIntentFiltersToIntentFilters(
+        mojom_state_->intent_filters);
   }
-
-  return intent_filters;
-}
-
-apps::IntentFilters AppUpdate::GetIntentFilters() const {
-  apps::IntentFilters intent_filters;
-
-  if (delta_ && !delta_->intent_filters.empty()) {
-    intent_filters = CloneIntentFilters(delta_->intent_filters);
-  } else if (state_ && !state_->intent_filters.empty()) {
-    intent_filters = CloneIntentFilters(state_->intent_filters);
-  }
-
-  return intent_filters;
+  return std::vector<IntentFilterPtr>{};
 }
 
 bool AppUpdate::IntentFiltersChanged() const {

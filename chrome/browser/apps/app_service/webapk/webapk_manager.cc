@@ -24,6 +24,7 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -32,11 +33,10 @@ namespace {
 constexpr char kGeneratedWebApkPackagePrefix[] = "org.chromium.webapk.";
 
 bool HasShareIntentFilter(const apps::AppUpdate& app) {
-  auto intent = apps::mojom::Intent::New();
-  intent->action = apps_util::kIntentActionSend;
+  auto intent = std::make_unique<apps::Intent>(apps_util::kIntentActionSend);
   for (const auto& filter : app.IntentFilters()) {
     for (const auto& condition : filter->conditions) {
-      if (apps_util::IntentMatchesCondition(intent, condition)) {
+      if (intent->MatchCondition(condition)) {
         return true;
       }
     }
