@@ -233,6 +233,12 @@ class TestChromeDownloadManagerDelegate : public ChromeDownloadManagerDelegate {
       const base::FilePath& path,
       DownloadTargetDeterminerDelegate::ConfirmationCallback) override {}
 
+  void DetermineLocalPath(download::DownloadItem* download,
+                          const base::FilePath& virtual_path,
+                          download::LocalPathCallback callback) override {
+    std::move(callback).Run(virtual_path, virtual_path.BaseName());
+  }
+
  private:
   friend class ChromeDownloadManagerDelegateTest;
 };

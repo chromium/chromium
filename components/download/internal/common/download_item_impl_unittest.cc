@@ -40,10 +40,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "components/download/internal/common/android/download_collection_bridge.h"
-#endif  // BUILDFLAG(IS_ANDROID)
-
 using ::testing::_;
 using ::testing::ByMove;
 using ::testing::DoAll;
@@ -385,28 +381,12 @@ class DownloadItemTest : public testing::Test {
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       const base::FilePath& new_file_path,
       DownloadInterruptReason reason) {
-    bool use_download_collection = false;
-#if BUILDFLAG(IS_ANDROID)
-    if (DownloadCollectionBridge::ShouldPublishDownload(new_file_path)) {
-      use_download_collection = true;
-      EXPECT_CALL(*download_file, RenameToIntermediateUri(_, _, _, _, _, _))
-          .WillOnce(WithArg<5>([task_runner, new_file_path, reason](
-                                   DownloadFile::RenameCompletionCallback cb) {
-            task_runner->PostTask(
-                FROM_HERE,
-                base::BindOnce(std::move(cb), reason, new_file_path));
-          }));
-    }
-#endif
-    if (!use_download_collection) {
-      EXPECT_CALL(*download_file, RenameAndUniquify(_, _))
-          .WillOnce(WithArg<1>([task_runner, new_file_path, reason](
-                                   DownloadFile::RenameCompletionCallback cb) {
-            task_runner->PostTask(
-                FROM_HERE,
-                base::BindOnce(std::move(cb), reason, new_file_path));
-          }));
-    }
+    EXPECT_CALL(*download_file, RenameAndUniquify(_, _))
+        .WillOnce(WithArg<1>([task_runner, new_file_path, reason](
+                                 DownloadFile::RenameCompletionCallback cb) {
+          task_runner->PostTask(
+              FROM_HERE, base::BindOnce(std::move(cb), reason, new_file_path));
+        }));
   }
 
   void DoDestinationComplete(DownloadItemImpl* item,
@@ -2431,19 +2411,8 @@ std::vector<EventList> GenerateFailingEventLists() {
 DownloadFile::RenameCompletionCallback GetRenameCompletionCallback(
     MockDownloadFile* download_file) {
   DownloadFile::RenameCompletionCallback intermediate_rename_callback;
-  bool use_download_collection = false;
-#if BUILDFLAG(IS_ANDROID)
-  if (DownloadCollectionBridge::ShouldPublishDownload(
-          base::FilePath(kDummyIntermediatePath))) {
-    use_download_collection = true;
-    EXPECT_CALL(*download_file, RenameToIntermediateUri(_, _, _, _, _, _))
-        .WillOnce(MoveArg<5>(&intermediate_rename_callback));
-  }
-#endif
-  if (!use_download_collection) {
-    EXPECT_CALL(*download_file, RenameAndUniquify(_, _))
-        .WillOnce(MoveArg<1>(&intermediate_rename_callback));
-  }
+  EXPECT_CALL(*download_file, RenameAndUniquify(_, _))
+      .WillOnce(MoveArg<1>(&intermediate_rename_callback));
   return intermediate_rename_callback;
 }
 
