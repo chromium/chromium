@@ -24,7 +24,7 @@ WebSocketFactory::WebSocketFactory(NetworkContext* context)
 WebSocketFactory::~WebSocketFactory() {
   // Subtle: This is important to avoid WebSocketFactory::Remove calls during
   // |connections_| destruction.
-  connections_.clear();
+  WebSocketSet connections = std::move(connections_);
 }
 
 void WebSocketFactory::CreateWebSocket(

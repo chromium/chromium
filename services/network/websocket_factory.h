@@ -77,8 +77,10 @@ class WebSocketFactory final {
   void Remove(WebSocket* impl);
 
  private:
+  using WebSocketSet =
+      std::set<std::unique_ptr<WebSocket>, base::UniquePtrComparator>;
   // The connections held by this factory.
-  std::set<std::unique_ptr<WebSocket>, base::UniquePtrComparator> connections_;
+  WebSocketSet connections_;
 
   WebSocketThrottler throttler_;
 
