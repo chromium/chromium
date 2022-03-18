@@ -520,7 +520,8 @@ TEST(KeyboardCodeConversion, Tables) {
   uint32_t previous = 0;
   for (const auto& it : ui::kDomCodeToKeyboardCodeMap) {
     uint32_t current = static_cast<uint32_t>(it.dom_code);
-    EXPECT_LT(previous, current);
+    EXPECT_LT(previous, current)
+        << "kDomCodeToKeyboardCodeMap is not ordered by DomCode\n";
     previous = current;
   }
 }
