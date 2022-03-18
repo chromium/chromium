@@ -25,7 +25,7 @@ manually dismiss the message through provided APIs if necessary.
 You need to do the following things to enable your message UI, all described in
 detail below.
 
-1. [Declare your message UI](#Declaring-your-message-ui) by adding a Message Identifier.
+1. [Declare your message UI](#Declare-your-message-ui) by adding a Message Identifier.
 2. [Build a message model](#Build-a-message-model).
 3. [Enqueue your message model](#Enqueue-your-message-model).
 
@@ -213,24 +213,3 @@ on timer.
 Records the time interval the message was displayed on the screen before the
 user explicitly dismissed it. The metric is recorded when the user presses the
 primary or secondary button, or dismisses the message with a gesture.
-
-
-## Built-in Finch Parameter to control the duration
-
-Using `autodismiss_duration_ms_{MessageIdentifier}` inside the feature
-`MessagesForAndroidInfrastructure` to configure the duration through finch.
-This method does not require any code changes in clients. E.g.:
-
-
-```
-// update the default timer duration of Sync Error Message to 30000 ms
-Feature MessagesForAndroidInfrastructure {
-    params = {
-        autodismiss_duration_ms_SyncError = 30000
-    }
-}
-```
-
-> **Warning**: MessagesForAndroidInfrastructure is enabled by default.
-> **DO NOT** disable it in any group. Disabling MessagesForAndroidInfrastructure
-> will break other experiments depending on that flag.
