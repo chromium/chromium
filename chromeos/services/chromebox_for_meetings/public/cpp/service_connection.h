@@ -39,4 +39,9 @@ class ServiceConnection {
 }  // namespace cfm
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash::cfm {
+using ::chromeos::cfm::ServiceConnection;
+}
+
 #endif  // CHROMEOS_SERVICES_CHROMEBOX_FOR_MEETINGS_PUBLIC_CPP_SERVICE_CONNECTION_H_

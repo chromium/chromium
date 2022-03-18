@@ -6,7 +6,7 @@ is copied as is from its chromeos version as such the original file should be
 edited before changing this file.
 
 Due to the requirement of chrome dependencies individual service implementation
-lives in `chrome/browser/chromeos/chromebox_for_meetings/`.
+lives in `chrome/browser/ash/chromebox_for_meetings/`.
 
 Hot-tip: Generate  Js w/
 

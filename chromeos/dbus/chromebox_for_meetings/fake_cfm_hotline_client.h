@@ -40,4 +40,9 @@ class COMPONENT_EXPORT(CFM_HOTLINE_CLIENT) FakeCfmHotlineClient
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash {
+using ::chromeos::FakeCfmHotlineClient;
+}
+
 #endif  // CHROMEOS_DBUS_CHROMEBOX_FOR_MEETINGS_FAKE_CFM_HOTLINE_CLIENT_H_

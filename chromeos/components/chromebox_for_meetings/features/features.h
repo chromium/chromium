@@ -30,4 +30,10 @@ extern const base::Feature kMojoServices;
 }  // namespace cfm
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash::cfm::features {
+using ::chromeos::cfm::features::kCloudLogger;
+using ::chromeos::cfm::features::kMojoServices;
+}  // namespace ash::cfm::features
+
 #endif  // CHROMEOS_COMPONENTS_CHROMEBOX_FOR_MEETINGS_FEATURES_FEATURES_H_

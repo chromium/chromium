@@ -3693,26 +3693,26 @@ source_set("chromeos") {
 
   if (is_cfm) {
     sources += [
-      "chromebox_for_meetings/browser/cfm_browser_service.cc",
-      "chromebox_for_meetings/browser/cfm_browser_service.h",
-      "chromebox_for_meetings/browser/cfm_memory_details.cc",
-      "chromebox_for_meetings/browser/cfm_memory_details.h",
-      "chromebox_for_meetings/cfm_chrome_services.cc",
-      "chromebox_for_meetings/cfm_chrome_services.h",
-      "chromebox_for_meetings/device_info/device_info_service.cc",
-      "chromebox_for_meetings/device_info/device_info_service.h",
-      "chromebox_for_meetings/diagnostics/diagnostics_service.cc",
-      "chromebox_for_meetings/diagnostics/diagnostics_service.h",
-      "chromebox_for_meetings/external_display_brightness/external_display_brightness_service.cc",
-      "chromebox_for_meetings/external_display_brightness/external_display_brightness_service.h",
-      "chromebox_for_meetings/logger/cfm_logger_service.cc",
-      "chromebox_for_meetings/logger/cfm_logger_service.h",
-      "chromebox_for_meetings/logger/reporting_pipeline.cc",
-      "chromebox_for_meetings/logger/reporting_pipeline.h",
-      "chromebox_for_meetings/network_settings/network_settings_service.cc",
-      "chromebox_for_meetings/network_settings/network_settings_service.h",
-      "chromebox_for_meetings/service_adaptor.cc",
-      "chromebox_for_meetings/service_adaptor.h",
+      "../ash/chromebox_for_meetings/browser/cfm_browser_service.cc",
+      "../ash/chromebox_for_meetings/browser/cfm_browser_service.h",
+      "../ash/chromebox_for_meetings/browser/cfm_memory_details.cc",
+      "../ash/chromebox_for_meetings/browser/cfm_memory_details.h",
+      "../ash/chromebox_for_meetings/cfm_chrome_services.cc",
+      "../ash/chromebox_for_meetings/cfm_chrome_services.h",
+      "../ash/chromebox_for_meetings/device_info/device_info_service.cc",
+      "../ash/chromebox_for_meetings/device_info/device_info_service.h",
+      "../ash/chromebox_for_meetings/diagnostics/diagnostics_service.cc",
+      "../ash/chromebox_for_meetings/diagnostics/diagnostics_service.h",
+      "../ash/chromebox_for_meetings/external_display_brightness/external_display_brightness_service.cc",
+      "../ash/chromebox_for_meetings/external_display_brightness/external_display_brightness_service.h",
+      "../ash/chromebox_for_meetings/logger/cfm_logger_service.cc",
+      "../ash/chromebox_for_meetings/logger/cfm_logger_service.h",
+      "../ash/chromebox_for_meetings/logger/reporting_pipeline.cc",
+      "../ash/chromebox_for_meetings/logger/reporting_pipeline.h",
+      "../ash/chromebox_for_meetings/network_settings/network_settings_service.cc",
+      "../ash/chromebox_for_meetings/network_settings/network_settings_service.h",
+      "../ash/chromebox_for_meetings/service_adaptor.cc",
+      "../ash/chromebox_for_meetings/service_adaptor.h",
     ]
     deps += [
       "//chromeos/components/chromebox_for_meetings/features",
@@ -5024,11 +5024,11 @@ source_set("unit_tests") {
 
   if (is_cfm) {
     sources += [
-      "chromebox_for_meetings/browser/cfm_browser_service_unittest.cc",
-      "chromebox_for_meetings/device_info/device_info_service_unittest.cc",
-      "chromebox_for_meetings/diagnostics/diagnostics_service_unittest.cc",
-      "chromebox_for_meetings/logger/cfm_logger_service_unittest.cc",
-      "chromebox_for_meetings/service_adaptor_unittest.cc",
+      "../ash/chromebox_for_meetings/browser/cfm_browser_service_unittest.cc",
+      "../ash/chromebox_for_meetings/device_info/device_info_service_unittest.cc",
+      "../ash/chromebox_for_meetings/diagnostics/diagnostics_service_unittest.cc",
+      "../ash/chromebox_for_meetings/logger/cfm_logger_service_unittest.cc",
+      "../ash/chromebox_for_meetings/service_adaptor_unittest.cc",
     ]
     deps +=
         [ "//chromeos/services/chromebox_for_meetings/public/cpp:test_support" ]

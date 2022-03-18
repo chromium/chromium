@@ -257,7 +257,7 @@
 #include "ui/events/event_utils.h"
 
 #if BUILDFLAG(PLATFORM_CFM)
-#include "chrome/browser/chromeos/chromebox_for_meetings/cfm_chrome_services.h"
+#include "chrome/browser/ash/chromebox_for_meetings/cfm_chrome_services.h"
 #endif
 
 #if BUILDFLAG(ENABLE_RLZ)
@@ -763,7 +763,7 @@ int ChromeBrowserMainPartsAsh::PreMainMessageLoopRun() {
   }
 
 #if BUILDFLAG(PLATFORM_CFM)
-  chromeos::cfm::InitializeCfmServices();
+  cfm::InitializeCfmServices();
 #endif  // BUILDFLAG(PLATFORM_CFM)
 
   SystemProxyManager::Initialize(g_browser_process->local_state());
@@ -1512,7 +1512,7 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
 #if BUILDFLAG(PLATFORM_CFM)
   // Cleanly shutdown all Chromebox For Meetings services before DBus and other
   // critical services are destroyed
-  chromeos::cfm::ShutdownCfmServices();
+  cfm::ShutdownCfmServices();
 #endif  // BUILDFLAG(PLATFORM_CFM)
 
   // Cleans up dbus services depending on ash.

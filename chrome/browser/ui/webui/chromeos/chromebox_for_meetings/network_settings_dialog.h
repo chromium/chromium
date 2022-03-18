@@ -46,4 +46,9 @@ class NetworkSettingsDialogUi : public ui::MojoWebDialogUI {
 }  // namespace cfm
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash::cfm {
+using ::chromeos::cfm::NetworkSettingsDialog;
+}
+
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_CHROMEBOX_FOR_MEETINGS_NETWORK_SETTINGS_DIALOG_H_

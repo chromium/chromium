@@ -30,4 +30,9 @@ using CfmObserverList = base::ObserverList<CfmObserver>;
 }  // namespace cfm
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash::cfm {
+using ::chromeos::cfm::CfmObserver;
+}
+
 #endif  // CHROMEOS_DBUS_CHROMEBOX_FOR_MEETINGS_CFM_OBSERVER_H_

@@ -53,4 +53,9 @@ class FakeCfmServiceContext : public mojom::CfmServiceContext {
 }  // namespace cfm
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash::cfm {
+using ::chromeos::cfm::FakeCfmServiceContext;
+}
+
 #endif  // CHROMEOS_SERVICES_CHROMEBOX_FOR_MEETINGS_PUBLIC_CPP_FAKE_SERVICE_CONTEXT_H_
