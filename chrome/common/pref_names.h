@@ -1070,7 +1070,6 @@ extern const char kBlockAutoplayEnabled[];
 extern const char kSandboxExternalProtocolBlocked[];
 
 #if BUILDFLAG(IS_LINUX)
-extern const char kAllowNativeNotifications[];
 extern const char kAllowSystemNotifications[];
 #endif
 

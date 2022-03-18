@@ -61,8 +61,7 @@ bool SystemNotificationsEnabled(Profile* profile) {
   if (profile) {
     // Prefs take precedence over flags.
     PrefService* prefs = profile->GetPrefs();
-    if (!prefs->GetBoolean(prefs::kAllowNativeNotifications) ||
-        !prefs->GetBoolean(prefs::kAllowSystemNotifications)) {
+    if (!prefs->GetBoolean(prefs::kAllowSystemNotifications)) {
       return false;
     }
   }

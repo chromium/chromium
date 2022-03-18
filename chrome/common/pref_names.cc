@@ -3127,10 +3127,6 @@ const char kSandboxExternalProtocolBlocked[] =
     "profile.sandbox_external_protocol_blocked";
 
 #if BUILDFLAG(IS_LINUX)
-// Boolean that indicates if native notifications are allowed to be used in
-// place of Chrome notifications. Will be replaced by kAllowSystemNotifications.
-const char kAllowNativeNotifications[] = "native_notifications.allowed";
-
 // Boolean that indicates if system notifications are allowed to be used in
 // place of Chrome notifications.
 const char kAllowSystemNotifications[] = "system_notifications.allowed";

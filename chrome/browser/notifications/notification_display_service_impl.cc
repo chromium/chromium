@@ -66,7 +66,6 @@ NotificationDisplayServiceImpl* NotificationDisplayServiceImpl::GetForProfile(
 void NotificationDisplayServiceImpl::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
 #if BUILDFLAG(IS_LINUX)
-  registry->RegisterBooleanPref(prefs::kAllowNativeNotifications, true);
   registry->RegisterBooleanPref(prefs::kAllowSystemNotifications, true);
 #endif
 }
