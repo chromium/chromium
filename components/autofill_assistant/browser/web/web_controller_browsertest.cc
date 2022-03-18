@@ -104,6 +104,7 @@ class MockAutofillAssistantAgent : public mojom::AutofillAssistantAgent {
               GetSemanticNodes,
               (int32_t role,
                int32_t objective,
+               bool ignore_objective,
                base::TimeDelta model_timeout,
                base::OnceCallback<void(mojom::NodeDataStatus,
                                        const std::vector<NodeData>&)> callback),
@@ -3396,11 +3397,11 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
   NodeData node_data;
   node_data.backend_node_id = backend_node_id;
   EXPECT_CALL(autofill_assistant_agent_,
-              GetSemanticNodes(1, 2, base::Milliseconds(5000), _))
-      .WillOnce(RunOnceCallback<3>(mojom::NodeDataStatus::kSuccess,
+              GetSemanticNodes(1, 2, false, base::Milliseconds(5000), _))
+      .WillOnce(RunOnceCallback<4>(mojom::NodeDataStatus::kSuccess,
                                    std::vector<NodeData>{node_data}))
       // Capture any other frames.
-      .WillRepeatedly(RunOnceCallback<3>(
+      .WillRepeatedly(RunOnceCallback<4>(
           mojom::NodeDataStatus::kUnexpectedError, std::vector<NodeData>()));
 
   // We pretend that the button is the correct element.
@@ -3422,11 +3423,11 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
   NodeData node_data;
   node_data.backend_node_id = backend_node_id;
   EXPECT_CALL(autofill_assistant_agent_,
-              GetSemanticNodes(1, 2, base::Milliseconds(5000), _))
-      .WillOnce(RunOnceCallback<3>(mojom::NodeDataStatus::kSuccess,
+              GetSemanticNodes(1, 2, false, base::Milliseconds(5000), _))
+      .WillOnce(RunOnceCallback<4>(mojom::NodeDataStatus::kSuccess,
                                    std::vector<NodeData>{node_data}))
       // Capture any other frames.
-      .WillRepeatedly(RunOnceCallback<3>(
+      .WillRepeatedly(RunOnceCallback<4>(
           mojom::NodeDataStatus::kUnexpectedError, std::vector<NodeData>()));
 
   // We pretend that the button is the correct element.
@@ -3442,8 +3443,8 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
 
   // All frames return an empty list as a result.
   EXPECT_CALL(autofill_assistant_agent_,
-              GetSemanticNodes(1, 2, base::Milliseconds(5000), _))
-      .WillRepeatedly(RunOnceCallback<3>(mojom::NodeDataStatus::kSuccess,
+              GetSemanticNodes(1, 2, false, base::Milliseconds(5000), _))
+      .WillRepeatedly(RunOnceCallback<4>(mojom::NodeDataStatus::kSuccess,
                                          std::vector<NodeData>{}));
 
   FindElementExpectEmptyResult(Selector(proto));
@@ -3461,19 +3462,39 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
   NodeData node_data_other;
   node_data_other.backend_node_id = 13;
   EXPECT_CALL(autofill_assistant_agent_,
-              GetSemanticNodes(1, 2, base::Milliseconds(5000), _))
-      .WillOnce(RunOnceCallback<3>(mojom::NodeDataStatus::kSuccess,
+              GetSemanticNodes(1, 2, false, base::Milliseconds(5000), _))
+      .WillOnce(RunOnceCallback<4>(mojom::NodeDataStatus::kSuccess,
                                    std::vector<NodeData>{node_data}))
-      .WillOnce(RunOnceCallback<3>(mojom::NodeDataStatus::kSuccess,
+      .WillOnce(RunOnceCallback<4>(mojom::NodeDataStatus::kSuccess,
                                    std::vector<NodeData>{node_data_other}))
       // Capture any other frames.
-      .WillRepeatedly(RunOnceCallback<3>(
+      .WillRepeatedly(RunOnceCallback<4>(
           mojom::NodeDataStatus::kUnexpectedError, std::vector<NodeData>()));
 
   // Two elements are found in different frames.
   ClientStatus status;
   FindElement(Selector(proto), &status, nullptr);
   EXPECT_EQ(TOO_MANY_ELEMENTS, status.proto_status());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebControllerBrowserTest,
+    ElementExistenceCheckWithSemanticModelUsesIgnoreObjective) {
+  EXPECT_CALL(autofill_assistant_agent_,
+              GetSemanticNodes(1, 2, true, base::Milliseconds(5000), _))
+      .WillRepeatedly(RunOnceCallback<4>(
+          mojom::NodeDataStatus::kUnexpectedError, std::vector<NodeData>()));
+
+  SelectorProto proto;
+  auto* semantic_information = proto.mutable_semantic_information();
+  semantic_information->set_semantic_role(1);
+  semantic_information->set_objective(2);
+  // All we want is this to be propagated to the GetSemanticNodes call as
+  // configured in the previous expectation.
+  semantic_information->set_ignore_objective(true);
+
+  ClientStatus ignore_status;
+  FindElement(Selector(proto), &ignore_status, nullptr);
 }
 
 }  // namespace autofill_assistant

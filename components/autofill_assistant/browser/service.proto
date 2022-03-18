@@ -1662,6 +1662,9 @@ message SelectorProto {
     // Timeout, defaults to 5s.
     // TODO(b/218482826): Consider moving this to settings.
     optional int32 model_timeout_ms = 3 [default = 5000];
+    // If true, ignore the objective and treat it as a wildcard '*' when
+    // matching.
+    optional bool ignore_objective = 4;
   }
   optional SemanticInformation semantic_information = 11;
 

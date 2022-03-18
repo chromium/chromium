@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "components/autofill_assistant/content/common/autofill_assistant_agent.mojom.h"
@@ -24,6 +25,7 @@ namespace {
 
 using ::base::test::RunOnceCallback;
 using ::testing::_;
+using ::testing::SizeIs;
 
 class MockAutofillAssistantDriver : public mojom::AutofillAssistantDriver {
  public:
@@ -95,7 +97,7 @@ TEST_F(AutofillAssistantAgentBrowserTest, GetSemanticNodes) {
   base::MockCallback<base::OnceCallback<void(mojom::NodeDataStatus,
                                              const std::vector<NodeData>&)>>
       callback;
-  EXPECT_CALL(callback, Run(mojom::NodeDataStatus::kSuccess, _));
+  EXPECT_CALL(callback, Run(mojom::NodeDataStatus::kSuccess, SizeIs(1)));
 
   LoadHTML(R"(
     <div>
@@ -106,6 +108,7 @@ TEST_F(AutofillAssistantAgentBrowserTest, GetSemanticNodes) {
   autofill_assistant_agent_->GetSemanticNodes(
       /* role= */ 47 /* ADDRESS_LINE1 */,
       /* objective= */ 7 /* FILL_DELIVERY_ADDRESS */,
+      /* ignore_objective= */ false,
       /* model_timeout= */ base::Milliseconds(1000), callback.Get());
 
   base::RunLoop().RunUntilIdle();
@@ -130,6 +133,7 @@ TEST_F(AutofillAssistantAgentBrowserTest, GetSemanticNodesModelTimeout) {
   autofill_assistant_agent_->GetSemanticNodes(
       /* role= */ 47 /* ADDRESS_LINE1 */,
       /* objective= */ 7 /* FILL_DELIVERY_ADDRESS */,
+      /* ignore_objective= */ false,
       /* model_timeout= */ base::Milliseconds(0), callback.Get());
 
   base::RunLoop().RunUntilIdle();
@@ -155,8 +159,33 @@ TEST_F(AutofillAssistantAgentBrowserTest, GetSemanticNodesModelError) {
   autofill_assistant_agent_->GetSemanticNodes(
       /* role= */ 47 /* ADDRESS_LINE1 */,
       /* objective= */ 7 /* FILL_DELIVERY_ADDRESS */,
+      /* ignore_objective= */ false,
       /* model_timeout= */ base::Milliseconds(1000), callback.Get());
 
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(AutofillAssistantAgentBrowserTest, GetSemanticNodesIgnoreObjective) {
+  EXPECT_CALL(autofill_assistant_driver_, GetAnnotateDomModel)
+      .WillOnce(RunOnceCallback<1>(mojom::ModelStatus::kSuccess,
+                                   model_file_.Duplicate()));
+
+  LoadHTML(R"(
+    <div>
+      <h1>Shipping address</h1>
+      <label for="street">Street Address</label><input id="street">
+    </div>)");
+
+  base::MockCallback<base::OnceCallback<void(mojom::NodeDataStatus,
+                                             const std::vector<NodeData>&)>>
+      callback;
+  EXPECT_CALL(callback, Run(mojom::NodeDataStatus::kSuccess, SizeIs(1)));
+
+  autofill_assistant_agent_->GetSemanticNodes(
+      /* role= */ 47 /* ADDRESS_LINE1 */,
+      /* objective= */ 6 /* FILL_BILLING_ADDRESS */,
+      /* ignore_objective= */ true,
+      /* model_timeout= */ base::Milliseconds(1000), callback.Get());
   base::RunLoop().RunUntilIdle();
 }
 

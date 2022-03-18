@@ -284,6 +284,7 @@ void ElementFinder::RunAnnotateDomModelOnFrame(
   driver->GetAutofillAssistantAgent()->GetSemanticNodes(
       selector_.proto.semantic_information().semantic_role(),
       selector_.proto.semantic_information().objective(),
+      selector_.proto.semantic_information().ignore_objective(),
       base::Milliseconds(
           selector_.proto.semantic_information().model_timeout_ms()),
       base::BindOnce(&ElementFinder::OnRunAnnotateDomModelOnFrame,

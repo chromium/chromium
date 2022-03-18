@@ -44,6 +44,7 @@ class AutofillAssistantAgent : public content::RenderFrameObserver,
   // mojom::AutofillAssistantAgent:
   void GetSemanticNodes(int32_t role,
                         int32_t objective,
+                        bool ignore_objective,
                         base::TimeDelta model_timeout,
                         GetSemanticNodesCallback callback) override;
 
@@ -61,6 +62,7 @@ class AutofillAssistantAgent : public content::RenderFrameObserver,
                       blink::WebLocalFrame* frame,
                       int32_t role,
                       int32_t objective,
+                      bool ignore_objective,
                       GetSemanticNodesCallback callback,
                       mojom::ModelStatus model_status,
                       base::File model);

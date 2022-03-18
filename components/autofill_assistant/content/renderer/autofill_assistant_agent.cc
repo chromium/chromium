@@ -47,6 +47,7 @@ base::WeakPtr<AutofillAssistantAgent> AutofillAssistantAgent::GetWeakPtr() {
 void AutofillAssistantAgent::GetSemanticNodes(
     int32_t role,
     int32_t objective,
+    bool ignore_objective,
     base::TimeDelta model_timeout,
     GetSemanticNodesCallback callback) {
   blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
@@ -60,7 +61,7 @@ void AutofillAssistantAgent::GetSemanticNodes(
       model_timeout,
       base::BindOnce(&AutofillAssistantAgent::OnGetModelFile,
                      weak_ptr_factory_.GetWeakPtr(), base::Time::Now(), frame,
-                     role, objective, std::move(callback)));
+                     role, objective, ignore_objective, std::move(callback)));
 }
 
 void AutofillAssistantAgent::GetAnnotateDomModel(
@@ -80,6 +81,7 @@ void AutofillAssistantAgent::OnGetModelFile(base::Time start_time,
                                             blink::WebLocalFrame* frame,
                                             int32_t role,
                                             int32_t objective,
+                                            bool ignore_objective,
                                             GetSemanticNodesCallback callback,
                                             mojom::ModelStatus model_status,
                                             base::File model) {
@@ -122,10 +124,10 @@ void AutofillAssistantAgent::OnGetModelFile(base::Time start_time,
   for (const auto& node_signal : node_signals) {
     auto result = model_executor.ExecuteModelWithInput(node_signal);
     DVLOG(3) << "Annotated node with result: role: " << result->first
-             << " and objective: " << result->second;
-    // TODO(mcarlen): Use the objective wildcard here to ignore the second part
-    // of the condition.
-    if (result && result->first == role && result->second == objective) {
+             << " and objective: " << result->second
+             << " (or ignore: " << ignore_objective << ")";
+    if (result && result->first == role &&
+        (result->second == objective || ignore_objective)) {
       NodeData node_data;
       node_data.backend_node_id = node_signal.backend_node_id;
       nodes.push_back(node_data);

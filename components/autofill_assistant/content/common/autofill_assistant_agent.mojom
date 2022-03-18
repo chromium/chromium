@@ -12,6 +12,8 @@ import "mojo/public/mojom/base/time.mojom";
 interface AutofillAssistantAgent {
   // Evaluates all input, textarea and select nodes in the frame's document and
   // returns all that match the given semantic role and objective.
-  GetSemanticNodes(int32 role, int32 objective, mojo_base.mojom.TimeDelta timeout)
-      => (NodeDataStatus status, array<autofill_assistant.mojom.NodeData> nodes);
+  GetSemanticNodes(int32 role, int32 objective, bool ignore_objective,
+                   mojo_base.mojom.TimeDelta timeout)
+      => (NodeDataStatus status,
+          array<autofill_assistant.mojom.NodeData> nodes);
 };
