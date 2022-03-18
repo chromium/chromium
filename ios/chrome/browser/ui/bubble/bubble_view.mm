@@ -92,6 +92,150 @@ const CGFloat kSnoozeButtonTitleVerticalMargin = 16.0f;
 const CGFloat kSnoozeButtonMinimumSize = 48.0f;
 const CGFloat kSnoozeButtonFontSize = 15.0f;
 
+// Returns a background view for BubbleView.
+UIView* BubbleBackgroundView() {
+  UIView* background = [[UIView alloc] initWithFrame:CGRectZero];
+  [background setBackgroundColor:BubbleColor()];
+  [background.layer setCornerRadius:kBubbleCornerRadius];
+  [background setTranslatesAutoresizingMaskIntoConstraints:NO];
+  return background;
+}
+
+// Returns an arrow view for BubbleView.
+UIView* BubbleArrowViewWithDirection(BubbleArrowDirection arrowDirection) {
+  CGFloat width = kArrowSize.width;
+  CGFloat height = kArrowSize.height;
+  UIView* arrow =
+      [[UIView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, width, height)];
+  UIBezierPath* path = UIBezierPath.bezierPath;
+  CGFloat xCenter = width / 2;
+  CGFloat controlPointCenter = xCenter * kControlPointCenter;
+  CGFloat controlPointEnd = xCenter * kControlPointEnd;
+  if (arrowDirection == BubbleArrowDirectionUp) {
+    [path moveToPoint:CGPointMake(xCenter, 0)];
+    [path addCurveToPoint:CGPointMake(width, height)
+            controlPoint1:CGPointMake(xCenter + controlPointCenter, 0)
+            controlPoint2:CGPointMake(xCenter + controlPointEnd, height)];
+    [path addLineToPoint:CGPointMake(0, height)];
+    [path addCurveToPoint:CGPointMake(xCenter, 0)
+            controlPoint1:CGPointMake(xCenter - controlPointEnd, height)
+            controlPoint2:CGPointMake(xCenter - controlPointCenter, 0)];
+  } else {
+    [path moveToPoint:CGPointMake(xCenter, height)];
+    [path addCurveToPoint:CGPointMake(width, 0)
+            controlPoint1:CGPointMake(xCenter + controlPointCenter, height)
+            controlPoint2:CGPointMake(xCenter + controlPointEnd, 0)];
+    [path addLineToPoint:CGPointZero];
+    [path addCurveToPoint:CGPointMake(xCenter, height)
+            controlPoint1:CGPointMake(xCenter - controlPointEnd, 0)
+            controlPoint2:CGPointMake(xCenter - controlPointCenter, height)];
+  }
+  [path closePath];
+  CAShapeLayer* layer = [CAShapeLayer layer];
+  [layer setPath:path.CGPath];
+  [layer setFillColor:BubbleColor().CGColor];
+  [arrow.layer addSublayer:layer];
+  [arrow setTranslatesAutoresizingMaskIntoConstraints:NO];
+  return arrow;
+}
+
+// Returns a close button for BubbleView.
+UIButton* BubbleCloseButton() {
+  UIImageSymbolConfiguration* configuration = [UIImageSymbolConfiguration
+      configurationWithScale:UIImageSymbolScaleMedium];
+  UIImage* buttonImage = [UIImage systemImageNamed:@"xmark"
+                                 withConfiguration:configuration];
+  // Computes the paddings to position the button's image. The button is
+  // bigger than the image for accessibility purposes.
+  const CGFloat closeButtonBottomPadding = kCloseButtonSize -
+                                           kCloseButtonTopTrailingPadding -
+                                           buttonImage.size.height;
+  const CGFloat closeButtonLeadingPadding = kCloseButtonSize -
+                                            kCloseButtonTopTrailingPadding -
+                                            buttonImage.size.width;
+  UIButton* button;
+  // setImageEdgeInsets from UIButton is deprecated since iOS 15.0, the new
+  // API uses UIButtonConfiguration to set the image inset.
+  if (@available(iOS 15.0, *)) {
+    UIButtonConfiguration* buttonConfiguration =
+        UIButtonConfiguration.plainButtonConfiguration;
+    [buttonConfiguration setImage:buttonImage];
+    [buttonConfiguration setContentInsets:NSDirectionalEdgeInsetsMake(
+                                              kCloseButtonTopTrailingPadding,
+                                              closeButtonLeadingPadding,
+                                              closeButtonBottomPadding,
+                                              kCloseButtonTopTrailingPadding)];
+    button = [UIButton buttonWithConfiguration:buttonConfiguration
+                                 primaryAction:nil];
+  } else {
+    button = [UIButton buttonWithType:UIButtonTypeSystem];
+    [button setImage:buttonImage forState:UIControlStateNormal];
+    [button.imageView setBounds:CGRectZero];
+    [button.imageView setContentMode:UIViewContentModeScaleAspectFit];
+    [button setImageEdgeInsets:UIEdgeInsetsMakeDirected(
+                                   kCloseButtonTopTrailingPadding,
+                                   closeButtonLeadingPadding,
+                                   closeButtonBottomPadding,
+                                   kCloseButtonTopTrailingPadding)];
+  }
+  [button setTintColor:[UIColor colorNamed:kSolidButtonTextColor]];
+  [button setAccessibilityIdentifier:kBubbleViewCloseButtonIdentifier];
+  [button setTranslatesAutoresizingMaskIntoConstraints:NO];
+  return button;
+}
+
+// Returns a snooze button for BubbleView.
+UIButton* BubbleSnoozeButton() {
+  UIButton* button = [UIButton buttonWithType:UIButtonTypeSystem];
+  [button setTitle:l10n_util::GetNSString(IDS_IOS_IPH_BUBBLE_SNOOZE)
+          forState:UIControlStateNormal];
+  [button setTitleColor:[UIColor colorNamed:kSolidButtonTextColor]
+               forState:UIControlStateNormal];
+  [button.titleLabel
+      setFont:[UIFont boldSystemFontOfSize:kSnoozeButtonFontSize]];
+  [button.titleLabel setNumberOfLines:0];
+  [button.titleLabel setLineBreakMode:NSLineBreakByWordWrapping];
+  [button setAccessibilityIdentifier:kBubbleViewSnoozeButtonIdentifier];
+  [button setTranslatesAutoresizingMaskIntoConstraints:NO];
+  return button;
+}
+
+// Returns a label to be used for a BubbleView that displays white text.
+UILabel* BubbleLabelWithText(NSString* text) {
+  DCHECK(text.length);
+  UILabel* label = [[UILabel alloc] initWithFrame:CGRectZero];
+  [label setText:text];
+  [label setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline]];
+  [label setTextColor:[UIColor colorNamed:kSolidButtonTextColor]];
+  [label setTextAlignment:NSTextAlignmentCenter];
+  [label setNumberOfLines:0];
+  [label setLineBreakMode:NSLineBreakByWordWrapping];
+  [label setTranslatesAutoresizingMaskIntoConstraints:NO];
+  return label;
+}
+
+// Returns a label to be used for the BubbleView's title.
+UILabel* BubbleTitleLabelWithText(NSString* text) {
+  DCHECK(text.length);
+  UILabel* label = BubbleLabelWithText(text);
+  [label setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]];
+  [label setAccessibilityIdentifier:kBubbleViewTitleLabelIdentifier];
+  return label;
+}
+
+// Returns a image view used for the BubbleViews's imageView.
+UIImageView* BubbleImageViewWithImage(UIImage* image) {
+  UIImageView* imageView = [[UIImageView alloc] initWithImage:image];
+  [imageView setBackgroundColor:UIColor.blackColor];
+  [imageView setAlpha:kImageViewAlpha];
+  [imageView.layer setCornerRadius:kImageViewCornerRadius];
+  [imageView.layer setMasksToBounds:YES];
+  [imageView setContentMode:UIViewContentModeCenter];
+  [imageView setAccessibilityIdentifier:kBubbleViewImageViewIdentifier];
+  imageView.translatesAutoresizingMaskIntoConstraints = NO;
+  return imageView;
+}
+
 }  // namespace
 
 @interface BubbleView ()
@@ -113,8 +257,8 @@ const CGFloat kSnoozeButtonFontSize = 15.0f;
 @property(nonatomic, weak) CAShapeLayer* arrowLayer;
 @property(nonatomic, assign, readonly) BubbleArrowDirection direction;
 @property(nonatomic, assign, readonly) BubbleAlignment alignment;
-// Indicate whether view properties need to be added as subviews of the bubble.
-@property(nonatomic, assign) BOOL needsAddSubviews;
+// Indicate whether views' constraints need to be added to the bubble.
+@property(nonatomic, assign) BOOL needsAddConstraints;
 
 // Controls if there is a close button in the view.
 @property(nonatomic, readonly) BOOL showsCloseButton;
@@ -126,15 +270,6 @@ const CGFloat kSnoozeButtonFontSize = 15.0f;
 @end
 
 @implementation BubbleView
-@synthesize label = _label;
-@synthesize titleLabel = _titleLabel;
-@synthesize background = _background;
-@synthesize arrow = _arrow;
-@synthesize direction = _direction;
-@synthesize alignment = _alignment;
-@synthesize needsAddSubviews = _needsAddSubviews;
-@synthesize closeButton = _closeButton;
-@synthesize snoozeButton = _snoozeButton;
 
 - (instancetype)initWithText:(NSString*)text
               arrowDirection:(BubbleArrowDirection)direction
@@ -148,19 +283,49 @@ const CGFloat kSnoozeButtonFontSize = 15.0f;
   if (self) {
     _direction = direction;
     _alignment = alignment;
-    _label = [BubbleView labelWithText:text];
+    // Add background view.
+    _background = BubbleBackgroundView();
+    [self addSubview:_background];
+    // Add label view.
+    _label = BubbleLabelWithText(text);
+    [self setAccessibilityLabel:_label.text];
+    [self addSubview:_label];
+    // Add arrow view.
+    _arrow = BubbleArrowViewWithDirection(direction);
+    _arrowLayer = [_arrow.layer.sublayers lastObject];
+    [self addSubview:_arrow];
+    // Add title label if present.
     if (titleString && titleString.length > 0) {
-      _titleLabel = [BubbleView titleLabelWithText:titleString];
+      _titleLabel = BubbleTitleLabelWithText(titleString);
       [_label
           setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleFootnote]];
+      [self addSubview:_titleLabel];
     }
+    // Add image view if present.
     if (image) {
-      _imageView = [BubbleView imageViewWithImage:image];
+      _imageView = BubbleImageViewWithImage(image);
+      [self addSubview:_imageView];
     }
+    // Add close button if present.
     _showsCloseButton = shouldShowCloseButton;
+    if (_showsCloseButton) {
+      _closeButton = BubbleCloseButton();
+      [_closeButton addTarget:self
+                       action:@selector(closeButtonWasTapped:)
+             forControlEvents:UIControlEventTouchUpInside];
+      [self addSubview:_closeButton];
+    }
+    // Add snooze button if present.
     _showsSnoozeButton = shouldShowSnoozeButton;
+    if (_showsSnoozeButton) {
+      _snoozeButton = BubbleSnoozeButton();
+      [_snoozeButton addTarget:self
+                        action:@selector(snoozeButtonWasTapped:)
+              forControlEvents:UIControlEventTouchUpInside];
+      [self addSubview:_snoozeButton];
+    }
     _delegate = delegate;
-    _needsAddSubviews = YES;
+    _needsAddConstraints = YES;
   }
   return self;
 }
@@ -194,188 +359,6 @@ const CGFloat kSnoozeButtonFontSize = 15.0f;
             : UIControlContentHorizontalAlignmentLeading;
     [self.snoozeButton setContentHorizontalAlignment:buttonAlignment];
   }
-}
-
-#pragma mark - Private property accessors
-
-// Lazily load the background view.
-- (UIView*)background {
-  // If the instance variable for the background has not been set up, load the
-  // background view and set the instance variable equal to the background view.
-  if (!_background) {
-    UIView* background = [[UIView alloc] initWithFrame:CGRectZero];
-    [background setBackgroundColor:BubbleColor()];
-    [background.layer setCornerRadius:kBubbleCornerRadius];
-    [background setTranslatesAutoresizingMaskIntoConstraints:NO];
-    _background = background;
-  }
-  return _background;
-}
-
-// Lazily load the arrow view.
-- (UIView*)arrow {
-  // If the instance variable for the arrow has not been set up, load the arrow
-  // and set the instance variable equal to the arrow.
-  if (!_arrow) {
-    CGFloat width = kArrowSize.width;
-    CGFloat height = kArrowSize.height;
-    UIView* arrow =
-        [[UIView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, width, height)];
-    UIBezierPath* path = UIBezierPath.bezierPath;
-    CGFloat xCenter = width / 2;
-    if (self.direction == BubbleArrowDirectionUp) {
-      [path moveToPoint:CGPointMake(xCenter, 0)];
-      [path addCurveToPoint:CGPointMake(width, height)
-              controlPoint1:CGPointMake(xCenter + xCenter * kControlPointCenter,
-                                        0)
-              controlPoint2:CGPointMake(xCenter + xCenter * kControlPointEnd,
-                                        height)];
-      [path addLineToPoint:CGPointMake(0, height)];
-      [path addCurveToPoint:CGPointMake(xCenter, 0)
-              controlPoint1:CGPointMake(xCenter - xCenter * kControlPointEnd,
-                                        height)
-              controlPoint2:CGPointMake(xCenter - xCenter * kControlPointCenter,
-                                        0)];
-      } else {
-        [path moveToPoint:CGPointMake(xCenter, height)];
-        [path
-            addCurveToPoint:CGPointMake(width, 0)
-              controlPoint1:CGPointMake(xCenter + xCenter * kControlPointCenter,
-                                        height)
-              controlPoint2:CGPointMake(xCenter + xCenter * kControlPointEnd,
-                                        0)];
-        [path addLineToPoint:CGPointZero];
-        [path
-            addCurveToPoint:CGPointMake(xCenter, height)
-              controlPoint1:CGPointMake(xCenter - xCenter * kControlPointEnd, 0)
-              controlPoint2:CGPointMake(xCenter - xCenter * kControlPointCenter,
-                                        height)];
-      }
-    [path closePath];
-    CAShapeLayer* layer = [CAShapeLayer layer];
-    [layer setPath:path.CGPath];
-    [layer setFillColor:BubbleColor().CGColor];
-    [arrow.layer addSublayer:layer];
-    _arrowLayer = layer;
-    [arrow setTranslatesAutoresizingMaskIntoConstraints:NO];
-    _arrow = arrow;
-  }
-  return _arrow;
-}
-
-// Lazy loads the close button.
-- (UIButton*)closeButton {
-  if (!_closeButton) {
-    UIImageSymbolConfiguration* configuration = [UIImageSymbolConfiguration
-        configurationWithScale:UIImageSymbolScaleMedium];
-    UIImage* buttonImage = [UIImage systemImageNamed:@"xmark"
-                                   withConfiguration:configuration];
-    // Computes the paddings to position the button's image. The button is
-    // bigger than the image for accessibility purposes.
-    const CGFloat closeButtonBottomPadding = kCloseButtonSize -
-                                             kCloseButtonTopTrailingPadding -
-                                             buttonImage.size.height;
-    const CGFloat closeButtonLeadingPadding = kCloseButtonSize -
-                                              kCloseButtonTopTrailingPadding -
-                                              buttonImage.size.width;
-    UIButton* button;
-    // setImageEdgeInsets from UIButton is deprecated since iOS 15.0, the new
-    // API uses UIButtonConfiguration to set the image inset.
-    if (@available(iOS 15.0, *)) {
-      UIButtonConfiguration* buttonConfiguration =
-          [UIButtonConfiguration.plainButtonConfiguration copy];
-      [buttonConfiguration setImage:buttonImage];
-      [buttonConfiguration
-          setContentInsets:NSDirectionalEdgeInsetsMake(
-                               kCloseButtonTopTrailingPadding,
-                               closeButtonLeadingPadding,
-                               closeButtonBottomPadding,
-                               kCloseButtonTopTrailingPadding)];
-      button = [UIButton buttonWithConfiguration:buttonConfiguration
-                                   primaryAction:nil];
-    } else {
-      button = [UIButton buttonWithType:UIButtonTypeSystem];
-      [button setImage:buttonImage forState:UIControlStateNormal];
-      [button.imageView setBounds:CGRectZero];
-      [button.imageView setContentMode:UIViewContentModeScaleAspectFit];
-      [button setImageEdgeInsets:UIEdgeInsetsMakeDirected(
-                                     kCloseButtonTopTrailingPadding,
-                                     closeButtonLeadingPadding,
-                                     closeButtonBottomPadding,
-                                     kCloseButtonTopTrailingPadding)];
-    }
-    [button setTintColor:[UIColor colorNamed:kSolidButtonTextColor]];
-    [button addTarget:self
-                  action:@selector(closeButtonWasTapped:)
-        forControlEvents:UIControlEventTouchUpInside];
-    [button setAccessibilityIdentifier:kBubbleViewCloseButtonIdentifier];
-    [button setTranslatesAutoresizingMaskIntoConstraints:NO];
-    _closeButton = button;
-  }
-  return _closeButton;
-}
-
-- (UIButton*)snoozeButton {
-  if (!_snoozeButton) {
-    UIButton* button = [UIButton buttonWithType:UIButtonTypeSystem];
-    [button setTitle:l10n_util::GetNSString(IDS_IOS_IPH_BUBBLE_SNOOZE)
-            forState:UIControlStateNormal];
-    [button setTitleColor:[UIColor colorNamed:kSolidButtonTextColor]
-                 forState:UIControlStateNormal];
-    [button.titleLabel
-        setFont:[UIFont boldSystemFontOfSize:kSnoozeButtonFontSize]];
-    [button.titleLabel setNumberOfLines:0];
-    [button.titleLabel setLineBreakMode:NSLineBreakByWordWrapping];
-    if (self.textAlignment == NSTextAlignmentNatural) {
-      [button setContentHorizontalAlignment:
-                  UIControlContentHorizontalAlignmentLeading];
-    }
-    [button addTarget:self
-                  action:@selector(snoozeButtonWasTapped:)
-        forControlEvents:UIControlEventTouchUpInside];
-    [button setAccessibilityIdentifier:kBubbleViewSnoozeButtonIdentifier];
-    [button setTranslatesAutoresizingMaskIntoConstraints:NO];
-    _snoozeButton = button;
-  }
-  return _snoozeButton;
-}
-
-#pragma mark - Private class methods
-
-// Returns a label to be used for a BubbleView that displays white text.
-+ (UILabel*)labelWithText:(NSString*)text {
-  DCHECK(text.length);
-  UILabel* label = [[UILabel alloc] initWithFrame:CGRectZero];
-  [label setText:text];
-  [label setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline]];
-  [label setTextColor:[UIColor colorNamed:kSolidButtonTextColor]];
-  [label setTextAlignment:NSTextAlignmentCenter];
-  [label setNumberOfLines:0];
-  [label setLineBreakMode:NSLineBreakByWordWrapping];
-  [label setTranslatesAutoresizingMaskIntoConstraints:NO];
-  return label;
-}
-
-// Returns a label to be used for the BubbleView's title.
-+ (UILabel*)titleLabelWithText:(NSString*)text {
-  DCHECK(text.length);
-  UILabel* label = [BubbleView labelWithText:text];
-  [label setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]];
-  [label setAccessibilityIdentifier:kBubbleViewTitleLabelIdentifier];
-  return label;
-}
-
-// Returns a image view used for the BubbleViews's imageView.
-+ (UIImageView*)imageViewWithImage:(UIImage*)image {
-  UIImageView* imageView = [[UIImageView alloc] initWithImage:image];
-  [imageView setBackgroundColor:UIColor.blackColor];
-  [imageView setAlpha:kImageViewAlpha];
-  [imageView.layer setCornerRadius:kImageViewCornerRadius];
-  [imageView.layer setMasksToBounds:YES];
-  [imageView setContentMode:UIViewContentModeCenter];
-  [imageView setAccessibilityIdentifier:kBubbleViewImageViewIdentifier];
-  imageView.translatesAutoresizingMaskIntoConstraints = NO;
-  return imageView;
 }
 
 #pragma mark - Private instance methods
@@ -626,31 +609,14 @@ const CGFloat kSnoozeButtonFontSize = 15.0f;
 
 // Override |willMoveToSuperview| to add view properties to the view hierarchy.
 - (void)willMoveToSuperview:(UIView*)newSuperview {
-  // If subviews have not been added to the view hierarchy, add them.
-  if (self.needsAddSubviews) {
-    [self addSubview:self.arrow];
-    [self addSubview:self.background];
-    [self addSubview:self.label];
-    if (self.showsCloseButton) {
-      [self addSubview:self.closeButton];
-    }
-    if (self.titleLabel) {
-      [self addSubview:self.titleLabel];
-    }
-    if (self.imageView) {
-      [self addSubview:self.imageView];
-    }
-    if (self.showsSnoozeButton) {
-      [self addSubview:self.snoozeButton];
-    }
-    // Set |needsAddSubviews| to NO to ensure that the subviews are only added
-    // to the view hierarchy once.
-    self.needsAddSubviews = NO;
-    // Perform additional setup and layout operations, such as activating
-    // constraints, adding the drop shadow, and setting the accessibility label.
+  // If constraints have not been added to the view, add them.
+  if (self.needsAddConstraints) {
     [self activateConstraints];
+    // Add drop shadow.
     [self addShadow];
-    [self setAccessibilityLabel:self.label.text];
+    // Set |needsAddConstraints| to NO to ensure that the constraints are only
+    // added to the view hierarchy once.
+    self.needsAddConstraints = NO;
   }
   [super willMoveToSuperview:newSuperview];
 }
