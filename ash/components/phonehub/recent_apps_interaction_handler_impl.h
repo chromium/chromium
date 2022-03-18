@@ -56,6 +56,7 @@ class RecentAppsInteractionHandlerImpl
 
   // MultideviceFeatureAccessManager::Observer:
   void OnNotificationAccessChanged() override;
+  void OnAppsAccessChanged() override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(RecentAppsInteractionHandlerTest, RecentAppsUpdated);

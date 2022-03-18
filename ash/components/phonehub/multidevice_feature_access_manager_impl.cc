@@ -8,8 +8,10 @@
 #include "ash/components/phonehub/message_sender.h"
 #include "ash/components/phonehub/pref_names.h"
 #include "ash/components/phonehub/util/histogram_util.h"
+#include "ash/constants/ash_features.h"
 #include "ash/webui/eche_app_ui/pref_names.h"
 #include "chromeos/components/multidevice/logging/logging.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "pref_names.h"
@@ -48,10 +50,18 @@ MultideviceFeatureAccessManagerImpl::MultideviceFeatureAccessManagerImpl(
 
   current_feature_status_ = feature_status_provider_->GetStatus();
   feature_status_provider_->AddObserver(this);
+
+  pref_change_registrar_.Init(pref_service_);
+  pref_change_registrar_.Add(
+      eche_app::prefs::kAppsAccessStatus,
+      base::BindRepeating(
+          &MultideviceFeatureAccessManagerImpl::NotifyAppsAccessChanged,
+          base::Unretained(this)));
 }
 
 MultideviceFeatureAccessManagerImpl::~MultideviceFeatureAccessManagerImpl() {
   feature_status_provider_->RemoveObserver(this);
+  pref_change_registrar_.RemoveAll();
 }
 
 bool MultideviceFeatureAccessManagerImpl::

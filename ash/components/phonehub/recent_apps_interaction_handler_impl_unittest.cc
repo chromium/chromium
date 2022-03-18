@@ -9,8 +9,10 @@
 #include "ash/components/phonehub/fake_multidevice_feature_access_manager.h"
 #include "ash/components/phonehub/notification.h"
 #include "ash/components/phonehub/pref_names.h"
+#include "ash/constants/ash_features.h"
 #include "ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -58,6 +60,9 @@ class RecentAppsInteractionHandlerTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kEchePhoneHubPermissionsOnboarding},
+        /*disabled_features=*/{});
     RecentAppsInteractionHandlerImpl::RegisterPrefs(pref_service_.registry());
     fake_multidevice_setup_client_ =
         std::make_unique<multidevice_setup::FakeMultiDeviceSetupClient>();
@@ -152,6 +157,13 @@ class RecentAppsInteractionHandlerTest : public testing::Test {
             MultideviceFeatureAccessManager::AccessProhibitedReason::kUnknown);
   }
 
+  void SetAppsAccessStatus(bool enabled) {
+    fake_multidevice_feature_access_manager_.SetAppsAccessStatusInternal(
+        enabled ? MultideviceFeatureAccessManager::AccessStatus::kAccessGranted
+                : MultideviceFeatureAccessManager::AccessStatus::
+                      kAvailableButNotGranted);
+  }
+
   std::vector<RecentAppsInteractionHandler::UserState> GetDefaultUserStates() {
     RecentAppsInteractionHandler::UserState user_state1;
     user_state1.user_id = 1;
@@ -226,6 +238,7 @@ class RecentAppsInteractionHandlerTest : public testing::Test {
   std::unique_ptr<RecentAppsInteractionHandlerImpl> interaction_handler_;
   TestingPrefServiceSimple pref_service_;
   FakeMultideviceFeatureAccessManager fake_multidevice_feature_access_manager_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(RecentAppsInteractionHandlerTest, RecentAppsClicked) {
@@ -438,6 +451,7 @@ TEST_F(RecentAppsInteractionHandlerTest,
        OnFeatureStatesChangedToEnabledWithEmptyRecentAppsList) {
   SetEcheFeatureState(FeatureState::kEnabledByUser);
   SetPhoneHubNotificationsFeatureState(FeatureState::kEnabledByUser);
+  SetAppsAccessStatus(true);
   SetNotificationAccess(true);
 
   EXPECT_EQ(RecentAppsInteractionHandler::RecentAppsUiState::PLACEHOLDER_VIEW,
@@ -448,6 +462,7 @@ TEST_F(RecentAppsInteractionHandlerTest,
        DisableNotificationAccessWithEmptyRecentAppsList) {
   SetEcheFeatureState(FeatureState::kEnabledByUser);
   SetPhoneHubNotificationsFeatureState(FeatureState::kEnabledByUser);
+  SetAppsAccessStatus(true);
   SetNotificationAccess(true);
 
   EXPECT_EQ(RecentAppsInteractionHandler::RecentAppsUiState::PLACEHOLDER_VIEW,
@@ -491,7 +506,7 @@ TEST_F(RecentAppsInteractionHandlerTest,
       Notification::AppMetadata(app_visible_name1, package_name1, gfx::Image(),
                                 /*icon_color=*/absl::nullopt,
                                 /*icon_is_monochrome=*/true, expected_user_id1);
-
+  SetAppsAccessStatus(true);
   handler().NotifyRecentAppAddedOrUpdated(app_metadata1, now);
   SetEcheFeatureState(FeatureState::kEnabledByUser);
 
@@ -510,6 +525,7 @@ TEST_F(RecentAppsInteractionHandlerTest,
                                 /*icon_color=*/absl::nullopt,
                                 /*icon_is_monochrome=*/true, expected_user_id1);
 
+  SetAppsAccessStatus(true);
   handler().NotifyRecentAppAddedOrUpdated(app_metadata1, now);
   SetEcheFeatureState(FeatureState::kEnabledByUser);
 
@@ -541,6 +557,7 @@ TEST_F(RecentAppsInteractionHandlerTest,
        UiStateChangedToVisibleWhenRecentAppBeAdded) {
   SetEcheFeatureState(FeatureState::kEnabledByUser);
   SetPhoneHubNotificationsFeatureState(FeatureState::kEnabledByUser);
+  SetAppsAccessStatus(true);
   SetNotificationAccess(true);
 
   EXPECT_EQ(RecentAppsInteractionHandler::RecentAppsUiState::PLACEHOLDER_VIEW,
@@ -557,6 +574,45 @@ TEST_F(RecentAppsInteractionHandlerTest,
   handler().NotifyRecentAppAddedOrUpdated(app_metadata1, now);
 
   EXPECT_EQ(RecentAppsInteractionHandler::RecentAppsUiState::ITEMS_VISIBLE,
+            handler().ui_state());
+}
+
+TEST_F(RecentAppsInteractionHandlerTest, DisableAppsAccess) {
+  GenerateDefaultAppMetadata();
+
+  // The apps access has not been granted yet so the UI state always HIDDEN.
+  SetAppsAccessStatus(true);
+
+  SetPhoneHubNotificationsFeatureState(FeatureState::kEnabledByUser);
+  SetNotificationAccess(true);
+
+  EXPECT_EQ(RecentAppsInteractionHandler::RecentAppsUiState::HIDDEN,
+            handler().ui_state());
+
+  SetNotificationAccess(false);
+
+  EXPECT_EQ(RecentAppsInteractionHandler::RecentAppsUiState::HIDDEN,
+            handler().ui_state());
+
+  // Disable notification access permission on the local device.
+  SetNotificationAccess(true);
+  SetPhoneHubNotificationsFeatureState(FeatureState::kDisabledByUser);
+
+  EXPECT_EQ(RecentAppsInteractionHandler::RecentAppsUiState::HIDDEN,
+            handler().ui_state());
+
+  // Disable notification access permission on both devices.
+  SetNotificationAccess(false);
+  SetPhoneHubNotificationsFeatureState(FeatureState::kDisabledByUser);
+
+  EXPECT_EQ(RecentAppsInteractionHandler::RecentAppsUiState::HIDDEN,
+            handler().ui_state());
+
+  // Enable notification access permission back on both devices.
+  SetNotificationAccess(true);
+  SetPhoneHubNotificationsFeatureState(FeatureState::kEnabledByUser);
+
+  EXPECT_EQ(RecentAppsInteractionHandler::RecentAppsUiState::HIDDEN,
             handler().ui_state());
 }
 

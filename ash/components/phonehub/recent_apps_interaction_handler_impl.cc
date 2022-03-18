@@ -6,6 +6,7 @@
 
 #include "ash/components/phonehub/notification.h"
 #include "ash/components/phonehub/pref_names.h"
+#include "ash/constants/ash_features.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -182,6 +183,10 @@ void RecentAppsInteractionHandlerImpl::OnNotificationAccessChanged() {
   ComputeAndUpdateUiState();
 }
 
+void RecentAppsInteractionHandlerImpl::OnAppsAccessChanged() {
+  ComputeAndUpdateUiState();
+}
+
 void RecentAppsInteractionHandlerImpl::ComputeAndUpdateUiState() {
   ui_state_ = RecentAppsUiState::HIDDEN;
 
@@ -195,7 +200,14 @@ void RecentAppsInteractionHandlerImpl::ComputeAndUpdateUiState() {
   // 3. Otherwise, no recent apps view will be shown.
   bool allow_streaming = multidevice_setup_client_->GetFeatureState(
                              Feature::kEche) == FeatureState::kEnabledByUser;
-  if (!allow_streaming) {
+
+  bool is_apps_access_required =
+      features::IsEchePhoneHubPermissionsOnboarding() &&
+      multidevice_feature_access_manager_->GetAppsAccessStatus() ==
+          phonehub::MultideviceFeatureAccessManager::AccessStatus::
+              kAvailableButNotGranted;
+
+  if (!allow_streaming || is_apps_access_required) {
     NotifyRecentAppsViewUiStateUpdated();
     return;
   }

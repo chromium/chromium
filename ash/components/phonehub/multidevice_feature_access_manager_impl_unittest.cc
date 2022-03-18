@@ -11,6 +11,8 @@
 #include "ash/components/phonehub/fake_message_sender.h"
 #include "ash/components/phonehub/notification_access_setup_operation.h"
 #include "ash/components/phonehub/pref_names.h"
+#include "ash/webui/eche_app_ui/pref_names.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -34,6 +36,9 @@ class FakeObserver : public MultideviceFeatureAccessManager::Observer {
 
   // MultideviceFeatureAccessManager::Observer:
   void OnCameraRollAccessChanged() override { ++num_calls_; }
+
+  // MultideviceFeatureAccessManager::Observer:
+  void OnAppsAccessChanged() override { ++num_calls_; }
 
  private:
   size_t num_calls_ = 0;
@@ -77,6 +82,9 @@ class MultideviceFeatureAccessManagerImplTest : public testing::Test {
         std::make_unique<FakeFeatureStatusProvider>();
     fake_message_sender_ = std::make_unique<FakeMessageSender>();
     fake_connection_scheduler_ = std::make_unique<FakeConnectionScheduler>();
+    pref_service_.registry()->RegisterIntegerPref(
+        eche_app::prefs::kAppsAccessStatus,
+        /*default_value=*/0);
   }
 
   void TearDown() override { manager_->RemoveObserver(&fake_observer_); }
@@ -96,6 +104,12 @@ class MultideviceFeatureAccessManagerImplTest : public testing::Test {
         &pref_service_, fake_feature_status_provider_.get(),
         fake_message_sender_.get(), fake_connection_scheduler_.get());
     manager_->AddObserver(&fake_observer_);
+  }
+
+  void InitializeAppsAccessStatus(MultideviceFeatureAccessManager::AccessStatus
+                                      apps_access_expected_status) {
+    pref_service_.SetInteger(eche_app::prefs::kAppsAccessStatus,
+                             static_cast<int>(apps_access_expected_status));
   }
 
   NotificationAccessSetupOperation::Status
@@ -125,6 +139,13 @@ class MultideviceFeatureAccessManagerImplTest : public testing::Test {
     EXPECT_EQ(static_cast<int>(expected_status),
               pref_service_.GetInteger(prefs::kCameraRollAccessStatus));
     EXPECT_EQ(expected_status, manager_->GetCameraRollAccessStatus());
+  }
+
+  void VerifyAppsAccessGrantedState(
+      MultideviceFeatureAccessManager::AccessStatus expected_status) {
+    EXPECT_EQ(static_cast<int>(expected_status),
+              pref_service_.GetInteger(eche_app::prefs::kAppsAccessStatus));
+    EXPECT_EQ(expected_status, manager_->GetAppsAccessStatus());
   }
 
   bool HasMultideviceFeatureSetupUiBeenDismissed() {
@@ -595,6 +616,29 @@ TEST_F(MultideviceFeatureAccessManagerImplTest,
       AccessStatus::kProhibited,
       AccessProhibitedReason::kDisabledByPhonePolicy);
   EXPECT_EQ(1u, GetNumObserverCalls());
+}
+
+TEST_F(MultideviceFeatureAccessManagerImplTest, AppsAccessChanged) {
+  InitializeAccessStatus(
+      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted,
+      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
+  InitializeAppsAccessStatus(
+      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
+  VerifyAppsAccessGrantedState(
+      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted);
+  EXPECT_EQ(1u, GetNumObserverCalls());
+
+  InitializeAppsAccessStatus(
+      MultideviceFeatureAccessManager::AccessStatus::kAvailableButNotGranted);
+  VerifyAppsAccessGrantedState(
+      MultideviceFeatureAccessManager::AccessStatus::kAvailableButNotGranted);
+  EXPECT_EQ(2u, GetNumObserverCalls());
+
+  InitializeAppsAccessStatus(
+      MultideviceFeatureAccessManager::AccessStatus::kProhibited);
+  VerifyAppsAccessGrantedState(
+      MultideviceFeatureAccessManager::AccessStatus::kProhibited);
+  EXPECT_EQ(3u, GetNumObserverCalls());
 }
 
 }  // namespace phonehub

@@ -55,6 +55,11 @@ void MultideviceFeatureAccessManager::NotifyCameraRollAccessChanged() {
     observer.OnCameraRollAccessChanged();
 }
 
+void MultideviceFeatureAccessManager::NotifyAppsAccessChanged() {
+  for (auto& observer : observer_list_)
+    observer.OnAppsAccessChanged();
+}
+
 void MultideviceFeatureAccessManager::SetNotificationSetupOperationStatus(
     NotificationAccessSetupOperation::Status new_status) {
   DCHECK(IsSetupOperationInProgress());
@@ -89,6 +94,10 @@ void MultideviceFeatureAccessManager::Observer::OnNotificationAccessChanged() {
 }
 
 void MultideviceFeatureAccessManager::Observer::OnCameraRollAccessChanged() {
+  // Optional method, inherit class doesn't have to implement this
+}
+
+void MultideviceFeatureAccessManager::Observer::OnAppsAccessChanged() {
   // Optional method, inherit class doesn't have to implement this
 }
 

@@ -52,6 +52,7 @@ void FakeMultideviceFeatureAccessManager::SetAppsAccessStatusInternal(
     return;
 
   apps_access_status_ = apps_access_status;
+  NotifyAppsAccessChanged();
 }
 
 MultideviceFeatureAccessManager::AccessStatus

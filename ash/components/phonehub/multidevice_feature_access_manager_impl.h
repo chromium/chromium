@@ -9,6 +9,7 @@
 
 #include "ash/components/phonehub/feature_status_provider.h"
 #include "ash/components/phonehub/message_receiver.h"
+#include "components/prefs/pref_change_registrar.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -65,6 +66,9 @@ class MultideviceFeatureAccessManagerImpl
   FeatureStatusProvider* feature_status_provider_;
   MessageSender* message_sender_;
   ConnectionScheduler* connection_scheduler_;
+
+  // Registers preference value change listeners.
+  PrefChangeRegistrar pref_change_registrar_;
 };
 
 }  // namespace phonehub

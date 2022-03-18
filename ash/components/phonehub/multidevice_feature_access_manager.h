@@ -72,6 +72,10 @@ class MultideviceFeatureAccessManager {
     // Called when camera roll access has changed; use
     // GetCameraRollAccessStatus() for the new status.
     virtual void OnCameraRollAccessChanged();
+
+    // Called when apps access has changed; use
+    // GetAppsAccessStatus() for the new status.
+    virtual void OnAppsAccessChanged();
   };
 
   MultideviceFeatureAccessManager(MultideviceFeatureAccessManager&) = delete;
@@ -118,6 +122,7 @@ class MultideviceFeatureAccessManager {
 
   void NotifyNotificationAccessChanged();
   void NotifyCameraRollAccessChanged();
+  void NotifyAppsAccessChanged();
   void SetNotificationSetupOperationStatus(
       NotificationAccessSetupOperation::Status new_status);
 
