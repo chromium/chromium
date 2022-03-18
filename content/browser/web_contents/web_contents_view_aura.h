@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/render_view_host_delegate_view.h"
+#include "content/browser/site_instance_group.h"
 #include "content/browser/web_contents/web_contents_view.h"
 #include "content/common/buildflags.h"
 #include "content/common/content_export.h"
@@ -367,15 +368,15 @@ class CONTENT_EXPORT WebContentsViewAura
   // We also track whether a dragged image is accessible from its frame, so we
   // can disallow tainted-cross-origin same-page drag-drop.
   struct DragStart {
-    DragStart(int process_id,
+    DragStart(SiteInstanceGroupId site_instance_group_id,
               GlobalRoutingID view_id,
               bool image_accessible_from_frame)
-        : process_id(process_id),
+        : site_instance_group_id(site_instance_group_id),
           view_id(view_id),
           image_accessible_from_frame(image_accessible_from_frame) {}
     ~DragStart() = default;
 
-    int process_id;
+    SiteInstanceGroupId site_instance_group_id;
     GlobalRoutingID view_id;
     bool image_accessible_from_frame;
   };

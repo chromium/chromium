@@ -863,43 +863,46 @@ gfx::NativeView WebContentsViewAura::GetRenderWidgetHostViewParent() const {
 
 bool WebContentsViewAura::IsValidDragTarget(
     RenderWidgetHostImpl* target_rwh) const {
-  // This is the browser-side check for https://crbug.com/59081 to prevent
-  // drags between cross-origin frames within the same page.
+  // This is the browser-side check for https://crbug.com/59081 to block
+  // drags between cross-origin frames within the same page. Otherwise, a
+  // malicious attacker could abuse drag interactions to leak information
+  // across origins without explicit user intent.
+  if (!drag_start_)
+    return true;
+
+  // For site isolation, it is desirable to avoid having the renderer
+  // perform the check unless it already has access to the starting
+  // document's origin. If the SiteInstanceGroups match, then the process
+  // allocation policy decided that it is OK for the source and target
+  // frames to live in the same renderer process. Furthermore, it means that
+  // either the source and target frame are part of the same `blink::Page` or
+  // that there is an opener relationship and would cross tab boundaries. Allow
+  // this drag to the renderer. Blink will perform an additional check against
+  // `blink::DragController::drag_initiator_` to decide whether or not to
+  // allow the drag operation. This can be done in the renderer, as the
+  // browser-side checks only have local tree fragment (potentially with
+  // multiple origins) granularity at best, but a drag operation eventually
+  // targets one single frame in that local tree fragment.
+  bool same_site_instance_group = target_rwh->GetSiteInstanceGroup()->GetId() ==
+                                  drag_start_->site_instance_group_id;
+  if (same_site_instance_group)
+    return true;
+
+  // Otherwise, if the SiteInstanceGroups do not match, enforce explicit
+  // user intent by ensuring this drag operation is crossing page boundaries.
+  // `drag_start_->view_id` is set to the main `RenderFrameHost`'s
+  // `RenderViewHost`'s ID when a drag starts, so if the two IDs match here,
+  // the drag is within the same page and disallowed.
   //
-  // First, check if the target widget's render process ID matches the starting
-  // frame's render process ID. If it matches, this is either:
-  //
-  // - a same-process drag between frames in the same page. Since this is a drag
-  //   within the same `blink::Page`, `blink::DragController::drag_initiator_`
-  //   will be non-null (since each `blink::Page` owns `blink::DragController`)
-  //   and the render process will use `drag_initiator_` to perform an origin
-  //   check to decide whether or not to allow the drag. For example, frames
-  //   in the same renderer process may be same-site but cross-origin: in this
-  //   case, the drag should be disallowed.
-  //
-  // - a same-process drag between frames in different pages. Since this is a
-  //   drag between two different `blink::Page`s, the aforementioned
-  //   `blink::DragController::drag_initiator_` for the target
-  //   `blink::Page` will be null. When `drag_initiator_` is unset, Blink always
-  //   allows the drag, but this is OK: cross-origin cross-page drags should be
-  //   allowed.
-  //
-  // Otherwise, if the render process IDs do not match, this is a cross-process
-  // drag—but still possibly within the same page. `drag_start_->view_id` is set
-  // to the main `RenderFrameHost`'s `RenderViewHost`'s ID—so if the two
-  // IDs match here, the drag is within the same page and disallowed. It is
-  // important to block these drags here, as if it were allowed to go to the
-  // render process, `blink::DragController::drag_initiator_` will be null (by
-  // definition, since the target frame is cross-process to the starting frame),
-  // and the drag will be incorrectly allowed.
-  //
-  // TODO(https://crbug.com/1266953): There are some known gaps caused by
-  // comparing `RenderViewHost` IDs, as `RenderViewHost` ID is not really a
-  // strong signal for page identity.
-  return !drag_start_ ||
-         target_rwh->GetProcess()->GetID() == drag_start_->process_id ||
-         GetRenderViewHostID(web_contents_->GetRenderViewHost()) !=
-             drag_start_->view_id;
+  // Drags between an embedder and an inner `WebContents` will disallowed by
+  // the above view ID check because `WebContentsViewAura` is always created
+  // for the outermost view. Inner `WebContents` will have a
+  // `WebContentsViewChildFrame` so when dragging between an inner
+  // `WebContents` and its embedder the view IDs will be the same.
+  bool cross_tab_drag =
+      GetRenderViewHostID(web_contents_->GetRenderViewHost()) !=
+      drag_start_->view_id;
+  return cross_tab_drag;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1147,7 +1150,7 @@ void WebContentsViewAura::StartDragging(
       source_rwh->GetWeakPtr();
 
   drag_start_ =
-      DragStart(source_rwh->GetProcess()->GetID(),
+      DragStart(source_rwh->GetSiteInstanceGroup()->GetId(),
                 GetRenderViewHostID(web_contents_->GetRenderViewHost()),
                 drop_data.file_contents_image_accessible);
 
