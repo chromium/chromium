@@ -57,15 +57,16 @@ message WrappedRecord {
 message EncryptionInfo {
   // Encryption key (optional).
   // Represents the client's X25519 public key used along with the server's
-  // private key (identified by |public_key_id|) for shared secret recreation
-  // by the server to get the symmetric key used for |encrypted_wrapped_record|
-  // encryption.
+  // private key (identified by |public_key_id|) for shared secret recreation by
+  // the server to compose the symmetric key used for |encrypted_wrapped_record|
+  // encryption. Is transmitted in plaintext.
   optional bytes encryption_key = 1;
 
   // Public key id (optional)
-  // Hash of the public key used to do encryption. Used to identity the
-  // private key for decryption. If no key_id is present, it is assumed that
-  // |key| has been transferred in plaintext.
+  // Hash of the public key used to do encryption. Used to identity the server
+  // private key for decryption. If no key_id is present,
+  // |encrypted_wrapped_record| is transmitted in plaintext (which has become a
+  // test-only feature).
   optional int64 public_key_id = 2;
 }
 
@@ -73,15 +74,17 @@ message EncryptionInfo {
 message SequenceInformation {
   // Sequencing ID (monotonic number, required)
   // Tracks records processing progress and is used for confirming that this
-  // and all prior records have been processed. If the same number is
+  // and all prior records have been processed. Always starts from zero, and
+  // increases by one each time in a perfect world. If the same number is
   // encountered more than once, only one instance needs to be processed. If
   // certain number is absent when higher are encountered, it indicates that
-  // some records have been lost and there is a gap in the records stream
-  // (what to do with that is a decision that the caller needs to make).
+  // some records have been lost and there is a gap in the records stream (what
+  // to do with that is a decision that the caller needs to make).
   optional int64 sequencing_id = 1;
 
-  // Generation ID (required). Unique per device and priority. Generated anew
-  // when previous record digest is not found at startup (e.g. after powerwash).
+  // Generation ID (required). Unique per device and priority. Generated
+  // randomly anew when previous record digest is not found at startup (e.g.
+  // after powerwash).
   optional int64 generation_id = 2;
 
   // Priority (required)
@@ -93,10 +96,10 @@ message SequenceInformation {
 // disk and sent to the server.
 message EncryptedRecord {
   // Encrypted Wrapped Record (required)
-  // |WrappedRecord| encrypted with the |encryption_key| in |encryption_info|.
-  // When absent, indicates gap - respective record is irreparably corrupt or
-  // missing from Storage, and server side should log it as such and no longer
-  // expect client to deliver it.
+  // |WrappedRecord| encrypted with the symmetric key. When absent, indicates
+  // gap - respective record is irreparably corrupt or missing from Storage, and
+  // server side should log it as such and no longer expect client to deliver
+  // it. Otherwise, must be present.
   optional bytes encrypted_wrapped_record = 1;
 
   // Must be present to facilitate decryption of encrypted record.

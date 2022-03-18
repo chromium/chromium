@@ -12,15 +12,17 @@
 
 namespace reporting {
 
+// {{{Note}}} ERP Encrypted Record
+//
 // Builds an upload request payload specific for
-// EncryptedReportingJobConfiguration A JSON version of the payload looks like
+// EncryptedReportingJobConfiguration. A JSON version of the payload looks like
 // this:
 // {
 //   "encryptedRecord": [
 //     {
 //       "encryptedWrappedRecord": "EncryptedMessage",
 //       "encryptionInfo" : {
-//         "encryptionKey": "EncryptedMessage",
+//         "encryptionKey": "LocalPublicValue",
 //         "publicKeyId": 1
 //       },
 //       "sequenceInformation": {
@@ -32,7 +34,7 @@ namespace reporting {
 //     {
 //       "encryptedWrappedRecord": "EncryptedMessage",
 //       "encryptionInfo" : {
-//         "encryptionKey": "EncryptedMessage",
+//         "encryptionKey": "LocalPublicValue",
 //         "publicKeyId": 2
 //       },
 //       "sequenceInformation": {
@@ -47,16 +49,21 @@ namespace reporting {
 // TODO(b/159361496): Periodically add memory and disk space usage.
 //
 // This payload is added to the common payload of all reporting jobs, which
-// includes "device" and "browser" sub-fields:
+// includes other sub-fields such as "device" and "browser" (See note "ERP
+// Payload Overview"):
 //
-// EncryptedReportingRequestBuilder builder;
-// builder.AddRecord(record1);
-// builder.AddRecord(record2);
-//  ...
-// builder.AddRecord(recordN);
-// auto payload_result = builder.Build();
-// DCHECK(payload_result.has_value());
-// job_payload_.Merge(payload_result.value());
+//   EncryptedReportingRequestBuilder builder;
+//   builder.AddRecord(record1);
+//   builder.AddRecord(record2);
+//   ...
+//   builder.AddRecord(recordN);
+//   auto payload_result = builder.Build();
+//   DCHECK(payload_result.has_value());
+//   job_payload_.Merge(payload_result.value());
+//
+// The value of an "encryptedRecord" must be a list, in which each element is a
+// dictionary that represents a record. The details of each record is documented
+// in record.proto.
 
 class UploadEncryptedReportingRequestBuilder {
  public:
