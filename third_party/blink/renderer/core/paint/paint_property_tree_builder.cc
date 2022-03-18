@@ -1506,6 +1506,11 @@ void FragmentPaintPropertyTreeBuilder::UpdateFilter() {
 
       UpdateFilterEffect(object_, properties_->Filter(), state.filter);
 
+      // TODO(crbug.com/900241): Remove the setter when we can use
+      // state.direct_compositing_reasons to check for active animations.
+      state.has_active_filter_animation =
+          object_.StyleRef().HasCurrentFilterAnimation();
+
       // The CSS filter spec didn't specify how filters interact with overflow
       // clips. The implementation here mimics the old Blink/WebKit behavior for
       // backward compatibility.
@@ -1524,9 +1529,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateFilter() {
       // On the other hand, "B" should not be clipped because the overflow clip
       // is not in its containing block chain, but as the filter output will be
       // clipped, so a blurred "B" may still be invisible.
-      if (!state.filter.IsEmpty() ||
-          (full_context_.direct_compositing_reasons &
-           CompositingReason::kActiveFilterAnimation))
+      if (!state.filter.IsEmpty() || state.has_active_filter_animation)
         state.output_clip = context_.current.clip;
 
       // TODO(trchen): A filter may contain spatial operations such that an
@@ -1551,11 +1554,6 @@ void FragmentPaintPropertyTreeBuilder::UpdateFilter() {
 
       state.compositor_element_id =
           GetCompositorElementId(CompositorElementIdNamespace::kEffectFilter);
-
-      // TODO(crbug.com/900241): Remove the setter when we can use
-      // state.direct_compositing_reasons to check for active animations.
-      state.has_active_filter_animation =
-          object_.StyleRef().HasCurrentFilterAnimation();
 
       EffectPaintPropertyNode::AnimationState animation_state;
       animation_state.is_running_filter_animation_on_compositor =
