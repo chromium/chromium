@@ -1,0 +1,12 @@
+<html>
+<head></head>
+<script>
+const worker = new Worker('/back_forward_cache/worker_with_importscripts.js');
+window.receivedMessagePromise = new Promise(resolve => {
+  worker.addEventListener('message', (msg) => {
+    resolve(msg.data);
+  });
+});
+
+</script>
+</html>

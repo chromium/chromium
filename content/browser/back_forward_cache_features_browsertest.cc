@@ -159,6 +159,30 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheWithDedicatedWorkerBrowserTest,
   ExpectRestored(FROM_HERE);
 }
 
+// Confirms that an active page using a dedicated worker that calls
+// importScripts won't trigger an eviction IPC, causing the page to reload.
+// Regression test for https://crbug.com/1305041.
+IN_PROC_BROWSER_TEST_P(
+    BackForwardCacheWithDedicatedWorkerBrowserTest,
+    PageWithDedicatedWorkerAndImportScriptsWontTriggerReload) {
+  CreateHttpsServer();
+  ASSERT_TRUE(https_server()->Start());
+
+  EXPECT_TRUE(NavigateToURL(
+      shell(), https_server()->GetURL(
+                   "a.test",
+                   "/back_forward_cache/"
+                   "page_with_dedicated_worker_and_importscripts.html")));
+  // Wait until the importScripts() call finished running.
+  EXPECT_EQ(42, EvalJs(current_frame_host(), "window.receivedMessagePromise"));
+
+  // If the importScripts() call triggered an eviction, a reload will be
+  // triggered due to the "evict after docment is restored" will be hit, as the
+  // page is not in back/forward cache.
+  EXPECT_FALSE(
+      web_contents()->GetPrimaryFrameTree().root()->navigation_request());
+}
+
 // Confirms that a page using a dedicated worker with WebTransport is not
 // cached.
 // TODO(crbug.com/1299018): Flakes on Linux.

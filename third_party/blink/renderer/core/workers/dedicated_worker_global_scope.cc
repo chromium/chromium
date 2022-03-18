@@ -524,6 +524,13 @@ void DedicatedWorkerGlobalScope::EvictFromBackForwardCache(
   if (!back_forward_cache_controller_host_.is_bound()) {
     return;
   }
+  if (!GetExecutionContext()->is_in_back_forward_cache()) {
+    // Don't send an eviction message unless the document associated with this
+    // DedicatedWorker is in back/forward cache.
+    // TODO(crbug.com/1163843): Maybe also check if eviction is already disabled
+    // for the document?
+    return;
+  }
   UMA_HISTOGRAM_ENUMERATION("BackForwardCache.Eviction.Renderer", reason);
   back_forward_cache_controller_host_->EvictFromBackForwardCache(reason);
 }
