@@ -1281,7 +1281,7 @@
     },
     {
       name: "InertAttribute",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "InputMultipleFieldsUI",
