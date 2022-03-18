@@ -191,6 +191,10 @@ void InfobarBadgeTabHelper::InfobarManagerObserver::OnInfoBarReplaced(
   // states.
   if (GetInfobarType(old_infobar) == InfobarType::kInfobarTypePermissions &&
       GetInfobarType(new_infobar) == InfobarType::kInfobarTypePermissions) {
+    infobar_accept_observer_->scoped_observations().RemoveObservation(
+        static_cast<InfoBarIOS*>(old_infobar));
+    infobar_accept_observer_->scoped_observations().AddObservation(
+        static_cast<InfoBarIOS*>(new_infobar));
     return;
   }
   OnInfoBarRemoved(old_infobar, /*animate=*/false);
