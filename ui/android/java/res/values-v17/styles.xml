@@ -57,7 +57,7 @@
     </style>
     <style name="OutlinedButton" parent="TextButton" tools:ignore="UnusedResources">
         <item name="borderWidth">@dimen/button_outlined_border_width</item>
-        <item name="borderColor">?attr/divider_line_bg_color_dynamic</item>
+        <item name="borderColor">?attr/globalOutlinedButtonBorderColor</item>
     </style>
 
     <!-- Used by Chrome and Content -->

@@ -42,6 +42,7 @@
     <attr name="globalFilledButtonBgColor" format="color"/>
     <attr name="globalFilledButtonTextColor" format="reference"/>
     <attr name="globalTextButtonTextColor" format="reference"/>
+    <attr name="globalOutlinedButtonBorderColor" format="color"/>
     <attr name="globalLinkTextColor" format="color"/>
     <attr name="globalClickableSpanColor" format="color"/>
 
