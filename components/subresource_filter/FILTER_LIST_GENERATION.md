@@ -103,3 +103,25 @@ The final filterlist has been generated. If you'd like to convert it to Chromium
 2. out/Release/ruleset_converter --input_format=filter-list --output_format=unindexed-ruleset --input_files=final_list.txt --output_file=final_list_unindexed
 3. out/Release/subresource_indexing_tool final_list_unindexed final_list_indexed
 ```
+
+# Generating and using a mock ruleset for development/testing
+
+It can be useful for development and testing to create a custom ruleset to activate the filter on your testing page:
+
+1. Grab easylist: https://easylist.to/easylist/easylist.txt or create your own, see https://adblockplus.org/filter-cheatsheet for the format. Here's an example `mock_easylist.txt`:
+    ```
+    ||mockad.glitch.me^
+    ```
+    Will filter a subframe coming from `http(s)://mockad.glitch.me`.
+2. Build tools needed to build the ruleset: `autoninja -C out/Release subresource_filter_tools`
+3. Run `./out/Release/ruleset_converter --input_format=filter-list --output_format=unindexed-ruleset --input_files=mock_easylist.txt --output_file=mock_easylist_unindexed`
+4. In `chrome://components` ensure "Subresource Filter Rules" has a non-0 version number or click "Check For Update". This ensures the path used in the following steps is created.
+5. In your Chrome user-data-dir, go to the `Subresource Filter/Unindexed` directory. Duplicate the latest version directory and increment the number: e.g. `cp -R 9.34.0/ 9.34.1/` (note: long-term, Chrome may replace this with a real list again when a new version is found).
+6. Update the `version` property in `manifext.json` to match the incremented version number
+7. Overwrite `Filtering Rules` with the unindexed ruleset generated in step 3: `cp $CHROME_DIR/mock_easylist_indexed ./Filtering\ Rules`
+8. Remove `manifest.fingerprint` and `\_metadata`, leaving just `Filtering Rules`, `LICENSE.txt`, and `manifest.json`: `rm -rf manifest.fingerprint _metadata`
+9. Open Chrome. Confirm you're on the incremented version in chrome://components. A matching version directory should be created in `Subresource Filter/Indexed`, e.g. `Subresource Filter/Indexed Rules/35/9.34.1`
+
+The ruleset is now loaded in Chrome but filtering will only occur on a pages
+that have the ad blocker activated. Activation can be simulated using the "Force ad
+blocking on this site" option in [DevTools Settings](https://www.chromium.org/testing-chrome-ad-filtering/).
