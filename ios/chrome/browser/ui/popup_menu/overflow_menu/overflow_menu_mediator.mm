@@ -964,11 +964,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 // Updates the follow status of the website to |followStatus|, and dismisses the
 // menu.
 - (void)updateFollowStatus:(BOOL)followStatus {
-  if (followStatus) {
-    ios::GetChromeBrowserProvider().GetFollowProvider()->UpdateFollowStatus(
-        self.siteInfo, YES);
-  }
-  // TODO(crbug.com/1264872): add implementation when the followStatus is NO.
+  ios::GetChromeBrowserProvider().GetFollowProvider()->UpdateFollowStatus(
+      self.siteInfo, followStatus);
   [self.dispatcher dismissPopupMenuAnimated:YES];
 }
 
