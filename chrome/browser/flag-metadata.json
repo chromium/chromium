@@ -6001,12 +6001,12 @@
   {
     "name": "use-xps-for-printing",
     "owners": [ "awscreen", "thestig" ],
-    "expiry_milestone": 101
+    "expiry_milestone": 112
   },
   {
     "name": "use-xps-for-printing-from-pdf",
     "owners": [ "awscreen", "thestig" ],
-    "expiry_milestone": 101
+    "expiry_milestone": 112
   },
   {
     "name": "username-first-flow",
