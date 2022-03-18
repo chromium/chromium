@@ -290,9 +290,10 @@ public class UndoTabModelTest {
 
         TabModelSelector selector = orchestrator.getTabModelSelector();
         for (int i = 0; i < selector.getModels().size(); i++) {
-            TabList tabs = selector.getModels().get(i).getComprehensiveModel();
+            TabModel model = selector.getModels().get(i);
+            TabList tabs = model.getComprehensiveModel();
             for (int j = 0; j < tabs.getCount(); j++) {
-                Assert.assertFalse(tabs.isClosurePending(tabs.getTabAt(j).getId()));
+                Assert.assertFalse(model.isClosurePending(tabs.getTabAt(j).getId()));
             }
         }
     }

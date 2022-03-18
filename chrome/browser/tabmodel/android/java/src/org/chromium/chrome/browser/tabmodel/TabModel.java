@@ -106,6 +106,13 @@ public interface TabModel extends TabList {
     public boolean supportsPendingClosures();
 
     /**
+     * @param tabId The id of the {@link Tab} that might have a pending closure.
+     * @return Whether or not the {@link Tab} specified by {@code tabId} has a pending
+     *         closure.
+     */
+    boolean isClosurePending(int tabId);
+
+    /**
      * Commits all pending closures, closing all tabs that had a chance to be undone.
      */
     public void commitAllTabClosures();

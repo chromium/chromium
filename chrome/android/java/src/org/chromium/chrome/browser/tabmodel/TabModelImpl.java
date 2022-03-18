@@ -709,11 +709,6 @@ public class TabModelImpl extends TabModelJniBridge {
             return mRewoundTabs.indexOf(tab);
         }
 
-        @Override
-        public boolean isClosurePending(int tabId) {
-            return TabModelImpl.this.isClosurePending(tabId);
-        }
-
         /**
          * Resets this list to match the original {@link TabModel}.  Note that if the
          * {@link TabModel} doesn't support pending closures this model will be empty.  This should

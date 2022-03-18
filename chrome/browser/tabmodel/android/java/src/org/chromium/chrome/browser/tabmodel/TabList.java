@@ -44,11 +44,4 @@ public interface TabList {
      * @return index of the given tab in the order of the tab stack.
      */
     int indexOf(Tab tab);
-
-    /**
-     * @param tabId The id of the {@link Tab} that might have a pending closure.
-     * @return      Whether or not the {@link Tab} specified by {@code tabId} has a pending
-     *              closure.
-     */
-    boolean isClosurePending(int tabId);
 }

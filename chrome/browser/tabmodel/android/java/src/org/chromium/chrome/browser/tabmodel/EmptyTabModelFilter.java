@@ -59,9 +59,4 @@ public class EmptyTabModelFilter extends TabModelFilter {
     public int indexOf(Tab tab) {
         return getTabModel().indexOf(tab);
     }
-
-    @Override
-    public boolean isClosurePending(int tabId) {
-        return getTabModel().isClosurePending(tabId);
-    }
 }

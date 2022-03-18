@@ -80,7 +80,7 @@ public class AccessibilityTabModelAdapter extends BaseAdapter {
 
                 @Override
                 public boolean hasPendingClosure(int tab) {
-                    return mUndoneTabModel.isClosurePending(tab);
+                    return mActualTabModel.isClosurePending(tab);
                 }
 
                 @Override
