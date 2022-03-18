@@ -748,33 +748,36 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
       auto cache_result =
           map.insert(has_scope_element, false);  // Mark as checked
       if (!cache_result.is_new_entry) {        // Was already marked as checked
-
-        // The SiblingsAffectedByHas flag is set only when an element is a
-        // sibling of the :has() scope element during the subselector matching.
-        // But during the matching, the matching status of some elements are
-        // cached and those element cannot be a sibling of the :has() scope
-        // element in case that the subselector starts with adjacent combinator.
-        // 1. MatchSelector() gives some possibly matched elements, and those
-        //    are cached as matched.
-        // 2. If an element is not matched, then it is cached as not matched.
-        // We need to set missing SiblingAffectedByHas flags for the cached
-        // elements before returning early.
-        switch (leftmost_relation) {
-          case CSSSelector::kRelativeDirectAdjacent:
-            if (Element* next_sibling =
-                    ElementTraversal::NextSibling(*has_scope_element))
-              next_sibling->SetSiblingsAffectedByHas();
-            break;
-          case CSSSelector::kRelativeIndirectAdjacent:
-            for (Element* next_sibling =
-                     ElementTraversal::NextSibling(*has_scope_element);
-                 next_sibling && !next_sibling->SiblingsAffectedByHas();
-                 next_sibling = ElementTraversal::NextSibling(*next_sibling)) {
-              next_sibling->SetSiblingsAffectedByHas();
-            }
-            break;
-          default:
-            break;
+        if (mode_ == kResolvingStyle) {
+          // The SiblingsAffectedByHas flag is set only when an element is a
+          // sibling of the :has() scope element during the subselector
+          // matching. But during the matching, the matching status of some
+          // elements are cached and those element cannot be a sibling of the
+          // :has() scope element in case that the subselector starts with
+          // adjacent combinator.
+          // 1. MatchSelector() gives some possibly matched elements, and those
+          //    are cached as matched.
+          // 2. If an element is not matched, then it is cached as not matched.
+          // We need to set missing SiblingAffectedByHas flags for the cached
+          // elements before returning early.
+          switch (leftmost_relation) {
+            case CSSSelector::kRelativeDirectAdjacent:
+              if (Element* next_sibling =
+                      ElementTraversal::NextSibling(*has_scope_element))
+                next_sibling->SetSiblingsAffectedByHas();
+              break;
+            case CSSSelector::kRelativeIndirectAdjacent:
+              for (Element* next_sibling =
+                       ElementTraversal::NextSibling(*has_scope_element);
+                   next_sibling && !next_sibling->SiblingsAffectedByHas();
+                   next_sibling =
+                       ElementTraversal::NextSibling(*next_sibling)) {
+                next_sibling->SetSiblingsAffectedByHas();
+              }
+              break;
+            default:
+              break;
+          }
         }
 
         if (cache_result.stored_value->value)  // Was already marked as matched
@@ -800,7 +803,7 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
         // flags of the skipped elements will not set.
         // To prevent this, marks the flags of skipped elements if those are
         // under the depth limit.
-        if (iterator.UnderDepthLimit()) {
+        if (mode_ == kResolvingStyle && iterator.UnderDepthLimit()) {
           SetAffectedByHasFlag(iterator.CurrentElement(),
                                iterator.AtSiblingOfHasScope());
         }
@@ -845,36 +848,45 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
       }
 
       if (selector_matched) {
-        // Need to walk up to set 'AncestorsOrAncestorSiblingsAffectedByHas'
-        // or 'SiblingsAffectedByHas' flag so that the StyleEngine can walk up
-        // to find the elements affected by subject or non-subject :has().
-        //
-        // StyleEngine tries to find elements affected by :has() by walking up
-        // siblings or ancestors a mutated element only when an element has the
-        // flags set. If an element doesn't have those flags set, then the
-        // StyleEngine will stop the upward tree walk at the element.
-        //
-        // HasArgumentSubtreeIterator traverses the sub-tree in the reversed
-        // DOM tree walk order for preventing O(n^2) matching problem of
-        // multiple elements affected by :has(). Due to this traversal order,
-        // this early returning can break the upward tree walk.
-        //
-        // To prevent the problem, walks up until reach to the scope element
-        // and marks elements as 'AncestorsOrAncestorSiblingsAffectedByHas' or
-        // 'SiblingsAffectedByHas' before returning.
-        //
-        // Similar to the DynamicRestyleFlags in the ContainerNode, these flags
-        // will never be reset.
-        for (AffectedByHasIterator affected_by_has_iterator(iterator);
-             !affected_by_has_iterator.AtEnd(); ++affected_by_has_iterator) {
-          SetAffectedByHasFlag(affected_by_has_iterator.CurrentElement(),
-                               affected_by_has_iterator.AtSiblingOfHasScope());
+        if (mode_ == kResolvingStyle) {
+          // Need to traverse to ancestors or siblings to set the affected-by-
+          // has flags ('AncestorsOrAncestorSiblingsAffectedByHas' or
+          // 'SiblingsAffectedByHas') so that the StyleEngine can traverse to
+          // ancestors or siblings to find the elements affected by subject or
+          // non-subject :has().
+          //
+          // StyleEngine tries to find elements affected by :has() by traversing
+          // siblings or ancestors of a mutated element only when an element has
+          // the flags set. If an element doesn't have those flags set, then the
+          // StyleEngine will stop the traversal at the element.
+          //
+          // HasArgumentSubtreeIterator traverses the subtree in the reversed
+          // DOM tree walk order to prevent duplicated subtree traversal caused
+          // by the multiple elements affected by :has(). Due to this traversal
+          // order, this early returning can break the traversal to ancestors or
+          // siblings.
+          //
+          // To prevent the problem, traverse to ancestors or siblings until
+          // reach to the scope element and marks elements as
+          // 'AncestorsOrAncestorSiblingsAffectedByHas' or
+          // 'SiblingsAffectedByHas' before returning.
+          //
+          // Similar to the DynamicRestyleFlags in the ContainerNode, these
+          // flags will never be reset.
+          for (AffectedByHasIterator affected_by_has_iterator(iterator);
+               !affected_by_has_iterator.AtEnd(); ++affected_by_has_iterator) {
+            SetAffectedByHasFlag(
+                affected_by_has_iterator.CurrentElement(),
+                affected_by_has_iterator.AtSiblingOfHasScope());
+          }
         }
         return true;
       }
 
-      SetAffectedByHasFlag(iterator.CurrentElement(),
-                           iterator.AtSiblingOfHasScope());
+      if (mode_ == kResolvingStyle) {
+        SetAffectedByHasFlag(iterator.CurrentElement(),
+                             iterator.AtSiblingOfHasScope());
+      }
     }
   }
   return false;
