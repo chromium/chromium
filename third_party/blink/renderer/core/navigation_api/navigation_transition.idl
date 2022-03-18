@@ -1,5 +1,5 @@
 [Exposed=Window,
-  RuntimeEnabled=AppHistory]
+  RuntimeEnabled=NavigationApi]
 interface NavigationTransition {
   readonly attribute NavigationNavigationType navigationType;
   readonly attribute NavigationHistoryEntry from;

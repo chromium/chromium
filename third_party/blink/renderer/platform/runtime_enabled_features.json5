@@ -196,11 +196,6 @@
       status: "experimental",
     },
     {
-      name: "AppHistory",
-      origin_trial_feature_name: "AppHistory",
-      status: "experimental",
-    },
-    {
       name: "AriaTouchPassthrough",
       status: "experimental",
     },
@@ -1577,6 +1572,10 @@
       // Named pages for pagination (the "page" CSS property).
       name: "NamedPages",
       status: "stable",
+    },
+    {
+      name: "NavigationApi",
+      status: "experimental",
     },
     {
       name: "NavigationId",

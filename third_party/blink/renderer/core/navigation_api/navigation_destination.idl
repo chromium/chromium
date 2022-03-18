@@ -5,7 +5,7 @@
 // https://wicg.github.io/navigation-api/
 [
   Exposed=Window,
-  RuntimeEnabled=AppHistory
+  RuntimeEnabled=NavigationApi
 ] interface NavigationDestination {
   readonly attribute DOMString? key;
   readonly attribute DOMString? id;

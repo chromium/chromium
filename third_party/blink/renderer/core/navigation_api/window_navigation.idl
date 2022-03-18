@@ -6,5 +6,5 @@
 [
   ImplementedAs=NavigationApi
 ] partial interface Window {
-  [RuntimeEnabled=AppHistory, Replaceable] readonly attribute Navigation navigation;
+  [RuntimeEnabled=NavigationApi, Replaceable] readonly attribute Navigation navigation;
 };

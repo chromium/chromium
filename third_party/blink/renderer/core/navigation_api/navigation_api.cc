@@ -177,8 +177,8 @@ String DetermineNavigationType(WebFrameLoadType type) {
 const char NavigationApi::kSupplementName[] = "NavigationApi";
 
 NavigationApi* NavigationApi::navigation(LocalDOMWindow& window) {
-  return RuntimeEnabledFeatures::AppHistoryEnabled(&window) ? From(window)
-                                                            : nullptr;
+  return RuntimeEnabledFeatures::NavigationApiEnabled(&window) ? From(window)
+                                                               : nullptr;
 }
 
 NavigationApi* NavigationApi::From(LocalDOMWindow& window) {
