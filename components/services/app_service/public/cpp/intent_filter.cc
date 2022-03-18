@@ -119,6 +119,24 @@ int IntentFilter::GetFilterMatchLevel() {
   return match_level;
 }
 
+void IntentFilter::GetMimeTypesAndExtensions(
+    std::set<std::string>& mime_types,
+    std::set<std::string>& file_extensions) {
+  for (const auto& condition : conditions) {
+    if (condition->condition_type != ConditionType::kFile) {
+      continue;
+    }
+    for (const auto& condition_value : condition->condition_values) {
+      if (condition_value->match_type == PatternMatchType::kFileExtension) {
+        file_extensions.insert(condition_value->value);
+      }
+      if (condition_value->match_type == PatternMatchType::kMimeType) {
+        mime_types.insert(condition_value->value);
+      }
+    }
+  }
+}
+
 bool IntentFilter::IsBrowserFilter() {
   if (GetFilterMatchLevel() !=
       static_cast<int>(IntentFilterMatchLevel::kScheme)) {

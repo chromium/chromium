@@ -158,6 +158,21 @@ apps::IntentFilterPtr MakeSchemeAndHostOnlyFilter(const std::string& scheme,
   return intent_filter;
 }
 
+void AddConditionValue(apps::ConditionType condition_type,
+                       const std::string& value,
+                       apps::PatternMatchType pattern_match_type,
+                       apps::IntentFilterPtr& intent_filter) {
+  for (auto& condition : intent_filter->conditions) {
+    if (condition->condition_type == condition_type) {
+      condition->condition_values.push_back(
+          std::make_unique<apps::ConditionValue>(value, pattern_match_type));
+      return;
+    }
+  }
+  AddSingleValueCondition(condition_type, value, pattern_match_type,
+                          intent_filter);
+}
+
 apps::mojom::IntentFilterPtr CreateSchemeOnlyFilter(const std::string& scheme) {
   std::vector<apps::mojom::ConditionValuePtr> condition_values;
   condition_values.push_back(apps_util::MakeConditionValue(

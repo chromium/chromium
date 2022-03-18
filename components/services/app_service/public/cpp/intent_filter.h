@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_INTENT_FILTER_H_
 #define COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_INTENT_FILTER_H_
 
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -111,6 +112,9 @@ struct COMPONENT_EXPORT(APP_TYPES) IntentFilter {
   // matching level value, and this function will return the sum of the matching
   // level values of all existing condition types.
   int GetFilterMatchLevel();
+
+  void GetMimeTypesAndExtensions(std::set<std::string>& mime_types,
+                                 std::set<std::string>& file_extensions);
 
   // Returns true if the filter is a browser filter, i.e. can handle all https
   // or http scheme.

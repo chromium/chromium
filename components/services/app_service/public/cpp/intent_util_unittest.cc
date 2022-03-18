@@ -1371,7 +1371,8 @@ TEST_F(IntentUtilTest, CalculateCommonMimeType) {
                        {"image/png", "image/jpeg", "text/plain"}));
 }
 
-TEST_F(IntentUtilTest, IsGenericFileHandler) {
+// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
+TEST_F(IntentUtilTest, IsGenericFileHandlerMojom) {
   using apps::mojom::IntentFile;
   using apps::mojom::IntentFilePtr;
   using apps::mojom::IntentFilterPtr;
@@ -1477,6 +1478,104 @@ TEST_F(IntentUtilTest, IsGenericFileHandler) {
   // File is a directory, but filter is inode/directory.
   IntentFilterPtr filter12 =
       apps_util::CreateFileFilterForView("inode/directory", "", kLabel);
+  EXPECT_FALSE(apps_util::IsGenericFileHandler(intent3, filter12));
+}
+
+TEST_F(IntentUtilTest, IsGenericFileHandler) {
+  using apps::Intent;
+  using apps::IntentFile;
+  using apps::IntentFilePtr;
+  using apps::IntentFilterPtr;
+  using apps::IntentPtr;
+
+  std::vector<IntentFilePtr> intent_files;
+  IntentFilePtr foo = std::make_unique<IntentFile>(test_url("foo.jpg"));
+  foo->mime_type = "image/jpeg";
+  foo->is_directory = false;
+  intent_files.push_back(std::move(foo));
+
+  IntentFilePtr bar = std::make_unique<IntentFile>(test_url("bar.txt"));
+  bar->mime_type = "text/plain";
+  bar->is_directory = false;
+  intent_files.push_back(std::move(bar));
+
+  std::vector<IntentFilePtr> intent_files2;
+  IntentFilePtr foo2 = std::make_unique<IntentFile>(test_url("foo.ics"));
+  foo2->mime_type = "text/calendar";
+  foo2->is_directory = false;
+  intent_files2.push_back(std::move(foo2));
+
+  std::vector<IntentFilePtr> intent_files3;
+  IntentFilePtr foo_dir = std::make_unique<IntentFile>(test_url("foo/"));
+  foo_dir->mime_type = "";
+  foo_dir->is_directory = true;
+  intent_files3.push_back(std::move(foo_dir));
+
+  IntentPtr intent = std::make_unique<Intent>(std::move(intent_files));
+  IntentPtr intent2 = std::make_unique<Intent>(std::move(intent_files2));
+  IntentPtr intent3 = std::make_unique<Intent>(std::move(intent_files3));
+
+  const std::string kLabel = "";
+
+  // extensions: ["*"]
+  IntentFilterPtr filter1 = apps_util::MakeFileFilterForView("", "*", kLabel);
+  EXPECT_TRUE(apps_util::IsGenericFileHandler(intent, filter1));
+
+  // extensions: ["*", "jpg"]
+  IntentFilterPtr filter2 = apps_util::MakeFileFilterForView("", "*", kLabel);
+  apps_util::AddConditionValue(apps::ConditionType::kFile, "jpg",
+                               apps::PatternMatchType::kFileExtension, filter2);
+  EXPECT_TRUE(apps_util::IsGenericFileHandler(intent, filter2));
+
+  // extensions: ["jpg"]
+  IntentFilterPtr filter3 = apps_util::MakeFileFilterForView("", "jpg", kLabel);
+  EXPECT_FALSE(apps_util::IsGenericFileHandler(intent, filter3));
+
+  // types: ["*"]
+  IntentFilterPtr filter4 = apps_util::MakeFileFilterForView("*", "", kLabel);
+  EXPECT_TRUE(apps_util::IsGenericFileHandler(intent, filter4));
+
+  // types: ["*/*"]
+  IntentFilterPtr filter5 = apps_util::MakeFileFilterForView("*/*", "", kLabel);
+  EXPECT_TRUE(apps_util::IsGenericFileHandler(intent, filter5));
+
+  // types: ["image/*"]
+  IntentFilterPtr filter6 =
+      apps_util::MakeFileFilterForView("image/*", "", kLabel);
+  // Partial wild card is not generic.
+  EXPECT_FALSE(apps_util::IsGenericFileHandler(intent, filter6));
+
+  // types: ["*", "image/*"]
+  IntentFilterPtr filter7 = apps_util::MakeFileFilterForView("*", "", kLabel);
+  apps_util::AddConditionValue(apps::ConditionType::kFile, "image/*",
+                               apps::PatternMatchType::kMimeType, filter7);
+  EXPECT_TRUE(apps_util::IsGenericFileHandler(intent, filter7));
+
+  // extensions: ["*"], types: ["image/*"]
+  IntentFilterPtr filter8 =
+      apps_util::MakeFileFilterForView("image/*", "*", kLabel);
+  EXPECT_TRUE(apps_util::IsGenericFileHandler(intent, filter8));
+
+  // types: ["text/*"] and target files contain unsupported text mime type, e.g.
+  // text/calendar.
+  IntentFilterPtr filter9 =
+      apps_util::MakeFileFilterForView("text/*", "", kLabel);
+  EXPECT_TRUE(apps_util::IsGenericFileHandler(intent2, filter9));
+
+  // types: ["text/*"] and target files don't contain unsupported text mime
+  // type.
+  IntentFilterPtr filter10 =
+      apps_util::MakeFileFilterForView("text/*", "", kLabel);
+  EXPECT_FALSE(apps_util::IsGenericFileHandler(intent, filter10));
+
+  // File is a directory.
+  IntentFilterPtr filter11 =
+      apps_util::MakeFileFilterForView("text/*", "", kLabel);
+  EXPECT_TRUE(apps_util::IsGenericFileHandler(intent3, filter11));
+
+  // File is a directory, but filter is inode/directory.
+  IntentFilterPtr filter12 =
+      apps_util::MakeFileFilterForView("inode/directory", "", kLabel);
   EXPECT_FALSE(apps_util::IsGenericFileHandler(intent3, filter12));
 }
 

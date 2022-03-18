@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -101,6 +102,11 @@ bool IntentMatchesFilter(const apps::mojom::IntentPtr& intent,
 // Return true if |filter| only contains file extension pattern matches.
 bool FilterIsForFileExtensions(const apps::mojom::IntentFilterPtr& filter);
 
+bool IsGenericFileHandler(const apps::IntentPtr& intent,
+                          const apps::IntentFilterPtr& filter);
+
+// TODO(crbug.com/1253250): Remove this function after migrating to non-mojo
+// AppService.
 bool IsGenericFileHandler(const apps::mojom::IntentPtr& intent,
                           const apps::mojom::IntentFilterPtr& filter);
 

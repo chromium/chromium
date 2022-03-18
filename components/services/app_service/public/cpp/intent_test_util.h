@@ -41,6 +41,14 @@ apps::IntentFilterPtr MakeSchemeOnlyFilter(const std::string& scheme);
 apps::IntentFilterPtr MakeSchemeAndHostOnlyFilter(const std::string& scheme,
                                                   const std::string& host);
 
+// Add a condition value to the |intent_filter|. If the |condition_type|
+// exists, add the condition value to the existing condition, otherwise
+// create new condition.
+void AddConditionValue(apps::ConditionType condition_type,
+                       const std::string& value,
+                       apps::PatternMatchType pattern_match_type,
+                       apps::IntentFilterPtr& intent_filter);
+
 // TODO(crbug.com/1253250): Remove below functions after migrating to non-mojo
 // AppService.
 

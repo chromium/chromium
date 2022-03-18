@@ -366,6 +366,43 @@ void GetMimeTypesAndExtensions(const apps::mojom::IntentFilterPtr& filter,
 
 }  // namespace
 
+bool IsGenericFileHandler(const apps::IntentPtr& intent,
+                          const apps::IntentFilterPtr& filter) {
+  if (!intent || !filter || intent->files.empty()) {
+    return false;
+  }
+
+  std::set<std::string> mime_types;
+  std::set<std::string> file_extensions;
+  filter->GetMimeTypesAndExtensions(mime_types, file_extensions);
+  if (file_extensions.count("*") > 0 || mime_types.count("*") > 0 ||
+      mime_types.count("*/*") > 0) {
+    return true;
+  }
+
+  // If a text/* file handler matches with an unsupported text mime type, we
+  // regard it as a generic match.
+  if (mime_types.count("text/*")) {
+    for (const auto& file : intent->files) {
+      DCHECK(file);
+      if (file->mime_type.has_value() &&
+          blink::IsUnsupportedTextMimeType(file->mime_type.value())) {
+        return true;
+      }
+    }
+  }
+
+  // If directory is selected, it is generic unless mime_types included
+  // 'inode/directory'.
+  for (const auto& file : intent->files) {
+    DCHECK(file);
+    if (file->is_directory.value_or(false)) {
+      return mime_types.count(kMimeTypeInodeDirectory) == 0;
+    }
+  }
+  return false;
+}
+
 bool IsGenericFileHandler(const apps::mojom::IntentPtr& intent,
                           const apps::mojom::IntentFilterPtr& filter) {
   if (!intent->files.has_value())
