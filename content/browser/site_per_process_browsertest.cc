@@ -4842,8 +4842,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ParentDetachRemoteChild) {
       node->parent()
           ->frame_tree_node()
           ->render_manager()
-          ->GetRoutingIdForSiteInstance(
-              node->current_frame_host()->GetSiteInstance());
+          ->GetRoutingIdForSiteInstanceGroup(
+              node->current_frame_host()->GetSiteInstance()->group());
 
   // Have the parent frame remove the child frame from its DOM. This should
   // result in the child RenderFrame being deleted in the remote process.

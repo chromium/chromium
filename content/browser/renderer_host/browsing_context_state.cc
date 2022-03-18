@@ -294,12 +294,12 @@ void BrowsingContextState::RenderProcessGone(
 }
 
 void BrowsingContextState::SendFramePolicyUpdatesToProxies(
-    SiteInstance* parent_site_instance,
+    SiteInstanceGroup* parent_group,
     const blink::FramePolicy& frame_policy) {
   // Notify all of the frame's proxies about updated policies, excluding
   // the parent process since it already knows the latest state.
   for (const auto& pair : proxy_hosts_) {
-    if (pair.second->GetSiteInstance() != parent_site_instance) {
+    if (pair.second->site_instance_group() != parent_group) {
       pair.second->GetAssociatedRemoteFrame()->DidUpdateFramePolicy(
           frame_policy);
     }
@@ -323,9 +323,10 @@ void BrowsingContextState::ResetProxyHosts() {
   proxy_hosts_.clear();
 }
 
-void BrowsingContextState::UpdateOpener(SiteInstance* source_site_instance) {
+void BrowsingContextState::UpdateOpener(
+    SiteInstanceGroup* source_site_instance_group) {
   for (const auto& pair : proxy_hosts_) {
-    if (pair.second->GetSiteInstance() == source_site_instance)
+    if (pair.second->site_instance_group() == source_site_instance_group)
       continue;
     pair.second->UpdateOpener();
   }

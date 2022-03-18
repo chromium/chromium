@@ -714,7 +714,7 @@ void RenderFrameProxyHost::UpdateViewportIntersection(
 void RenderFrameProxyHost::DidChangeOpener(
     const absl::optional<blink::LocalFrameToken>& opener_frame_token) {
   frame_tree_node_->render_manager()->DidChangeOpener(opener_frame_token,
-                                                      GetSiteInstance());
+                                                      site_instance_group());
 }
 
 void RenderFrameProxyHost::AdvanceFocus(

@@ -195,7 +195,7 @@ class CONTENT_EXPORT BrowsingContextState
 
   // Notify all of the proxies about the updated FramePolicy, excluding the
   // parent, as it will already know.
-  void SendFramePolicyUpdatesToProxies(SiteInstance* parent_site_instance,
+  void SendFramePolicyUpdatesToProxies(SiteInstanceGroup* parent_group,
                                        const blink::FramePolicy& frame_policy);
 
   // Create a RenderFrameProxyHost owned by this object. This
@@ -219,7 +219,7 @@ class CONTENT_EXPORT BrowsingContextState
   void OnDidStopLoading();
 
   // Notify proxies that an opener has been updated.
-  void UpdateOpener(SiteInstance* source_site_instance);
+  void UpdateOpener(SiteInstanceGroup* source_site_instance_group);
 
   void OnDidUpdateFrameOwnerProperties(
       const blink::mojom::FrameOwnerProperties& properties);

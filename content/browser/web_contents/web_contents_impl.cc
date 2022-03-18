@@ -2563,7 +2563,8 @@ std::unique_ptr<WebContents> WebContentsImpl::DetachFromOuterWebContents() {
   GetRenderManager()->DeleteOuterDelegateProxy(
       node_.OuterContentsFrameTreeNode()
           ->current_frame_host()
-          ->GetSiteInstance());
+          ->GetSiteInstance()
+          ->group());
   view_.reset(CreateWebContentsView(
       this, GetContentClient()->browser()->GetWebContentsViewDelegate(this),
       &render_view_host_delegate_view_));

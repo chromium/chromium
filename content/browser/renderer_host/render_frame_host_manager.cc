@@ -526,7 +526,8 @@ void RenderFrameHostManager::DidNavigateFrame(
     } else {
       render_frame_host_->browsing_context_state()
           ->SendFramePolicyUpdatesToProxies(
-              frame_tree_node_->parent()->GetSiteInstance(), frame_policy);
+              frame_tree_node_->parent()->GetSiteInstance()->group(),
+              frame_policy);
     }
   }
 }
@@ -586,11 +587,11 @@ void RenderFrameHostManager::CommitPendingIfNecessary(
 
 void RenderFrameHostManager::DidChangeOpener(
     const absl::optional<blink::LocalFrameToken>& opener_frame_token,
-    SiteInstance* source_site_instance) {
+    SiteInstanceGroup* source_site_instance_group) {
   FrameTreeNode* opener = nullptr;
   if (opener_frame_token) {
     RenderFrameHostImpl* opener_rfhi = RenderFrameHostImpl::FromFrameToken(
-        source_site_instance->GetProcess()->GetID(), *opener_frame_token);
+        source_site_instance_group->process()->GetID(), *opener_frame_token);
     // If |opener_rfhi| is null, the opener RFH has already disappeared.  In
     // this case, clear the opener rather than keeping the old opener around.
     if (opener_rfhi)
@@ -603,16 +604,18 @@ void RenderFrameHostManager::DidChangeOpener(
   frame_tree_node_->SetOpener(opener);
 
   render_frame_host_->browsing_context_state()->UpdateOpener(
-      source_site_instance);
+      source_site_instance_group);
 
-  if (render_frame_host_->GetSiteInstance() != source_site_instance)
+  if (render_frame_host_->GetSiteInstance()->group() !=
+      source_site_instance_group) {
     render_frame_host_->UpdateOpener();
+  }
 
   // Notify the speculative RenderFrameHosts as well.  This is necessary in case
   // a process swap has started while the message was in flight.
   if (speculative_render_frame_host_ &&
-      speculative_render_frame_host_->GetSiteInstance() !=
-          source_site_instance) {
+      speculative_render_frame_host_->GetSiteInstance()->group() !=
+          source_site_instance_group) {
     speculative_render_frame_host_->UpdateOpener();
   }
 }
@@ -3008,9 +3011,9 @@ RenderFrameProxyHost* RenderFrameHostManager::CreateOuterDelegateProxy(
 }
 
 void RenderFrameHostManager::DeleteOuterDelegateProxy(
-    SiteInstance* outer_contents_site_instance) {
+    SiteInstanceGroup* outer_contents_site_instance_group) {
   render_frame_host_->browsing_context_state()->DeleteRenderFrameProxyHost(
-      static_cast<SiteInstanceImpl*>(outer_contents_site_instance)->group());
+      outer_contents_site_instance_group);
 }
 
 void RenderFrameHostManager::SwapOuterDelegateFrame(
@@ -3173,20 +3176,20 @@ bool RenderFrameHostManager::InitRenderFrame(
   if (render_frame_host->IsRenderFrameLive())
     return true;
 
-  SiteInstance* site_instance = render_frame_host->GetSiteInstance();
+  SiteInstanceGroup* site_instance_group =
+      render_frame_host->GetSiteInstance()->group();
 
   absl::optional<blink::FrameToken> opener_frame_token;
-  if (frame_tree_node_->opener()) {
-    opener_frame_token = GetOpenerFrameToken(
-        static_cast<SiteInstanceImpl*>(site_instance)->group());
-  }
+  if (frame_tree_node_->opener())
+    opener_frame_token = GetOpenerFrameToken(site_instance_group);
 
   int parent_routing_id = MSG_ROUTING_NONE;
   if (frame_tree_node_->parent()) {
-    parent_routing_id = frame_tree_node_->parent()
-                            ->frame_tree_node()
-                            ->render_manager()
-                            ->GetRoutingIdForSiteInstance(site_instance);
+    parent_routing_id =
+        frame_tree_node_->parent()
+            ->frame_tree_node()
+            ->render_manager()
+            ->GetRoutingIdForSiteInstanceGroup(site_instance_group);
     CHECK_NE(parent_routing_id, MSG_ROUTING_NONE);
   }
 
@@ -3200,14 +3203,14 @@ bool RenderFrameHostManager::InitRenderFrame(
       frame_tree_node_->current_frame_host()->PreviousSibling();
   if (previous_sibling) {
     previous_sibling_routing_id =
-        previous_sibling->render_manager()->GetRoutingIdForSiteInstance(
-            site_instance);
+        previous_sibling->render_manager()->GetRoutingIdForSiteInstanceGroup(
+            site_instance_group);
     CHECK_NE(previous_sibling_routing_id, MSG_ROUTING_NONE);
   }
 
   RenderFrameProxyHost* existing_proxy =
       render_frame_host->browsing_context_state()->GetRenderFrameProxyHost(
-          static_cast<SiteInstanceImpl*>(site_instance)->group());
+          site_instance_group);
   if (existing_proxy && !existing_proxy->is_render_frame_proxy_live())
     existing_proxy->InitRenderFrameProxy();
 
@@ -3300,14 +3303,14 @@ bool RenderFrameHostManager::ReinitializeMainRenderFrame(
   return true;
 }
 
-int RenderFrameHostManager::GetRoutingIdForSiteInstance(
-    SiteInstance* site_instance) {
-  if (render_frame_host_->GetSiteInstance() == site_instance)
+int RenderFrameHostManager::GetRoutingIdForSiteInstanceGroup(
+    SiteInstanceGroup* site_instance_group) {
+  if (render_frame_host_->GetSiteInstance()->group() == site_instance_group)
     return render_frame_host_->GetRoutingID();
 
   RenderFrameProxyHost* proxy =
       render_frame_host_->browsing_context_state()->GetRenderFrameProxyHost(
-          static_cast<SiteInstanceImpl*>(site_instance)->group());
+          site_instance_group);
   if (proxy)
     return proxy->GetRoutingID();
 
