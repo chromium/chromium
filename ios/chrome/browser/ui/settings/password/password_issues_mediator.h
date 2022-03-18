@@ -7,20 +7,25 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/ui/table_view/table_view_favicon_data_source.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 
 namespace password_manager {
 struct PasswordForm;
 }  // namespace password_manager
 
+class FaviconLoader;
 class IOSChromePasswordCheckManager;
 @protocol PasswordIssuesConsumer;
 
 // This mediator fetches and organises the credentials for its consumer.
-@interface PasswordIssuesMediator : NSObject <SuccessfulReauthTimeAccessor>
+@interface PasswordIssuesMediator
+    : NSObject <SuccessfulReauthTimeAccessor, TableViewFaviconDataSource>
 
 - (instancetype)initWithPasswordCheckManager:
-    (IOSChromePasswordCheckManager*)manager NS_DESIGNATED_INITIALIZER;
+                    (IOSChromePasswordCheckManager*)manager
+                               faviconLoader:(FaviconLoader*)faviconLoader
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

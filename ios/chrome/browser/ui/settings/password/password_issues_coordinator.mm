@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/ui/settings/password/password_issues_coordinator.h"
 
 #include "base/mac/foundation_util.h"
+#import "ios/chrome/browser/favicon/favicon_loader.h"
+#include "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
@@ -66,11 +68,20 @@
   // To start, a password check manager should be ready.
   DCHECK(_manager);
 
-  self.viewController = [[PasswordIssuesTableViewController alloc]
-      initWithStyle:ChromeTableViewStyle()];
+  FaviconLoader* faviconLoader =
+      IOSChromeFaviconLoaderFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
 
-  self.mediator =
-      [[PasswordIssuesMediator alloc] initWithPasswordCheckManager:_manager];
+  self.mediator = [[PasswordIssuesMediator alloc]
+      initWithPasswordCheckManager:_manager
+                     faviconLoader:faviconLoader];
+
+  PasswordIssuesTableViewController* passwordIssuesTableViewController =
+      [[PasswordIssuesTableViewController alloc]
+          initWithStyle:ChromeTableViewStyle()];
+  passwordIssuesTableViewController.imageDataSource = self.mediator;
+  self.viewController = passwordIssuesTableViewController;
+
   // If reauthentication module was not provided, coordinator will create its
   // own.
   if (!self.reauthModule) {

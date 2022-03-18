@@ -55,6 +55,8 @@ source_set("password") {
 source_set("password_ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "legacy_password_issue_content_item.h",
+    "legacy_password_issue_content_item.mm",
     "password_exporter.h",
     "password_exporter.mm",
     "password_issue.h",

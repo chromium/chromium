@@ -1018,12 +1018,11 @@ bool IsFaviconEnabled() {
   return passwordItem;
 }
 
-// TODO(crbug.com/1300569): Remove this when kEnableFaviconForPasswords flag is
-// removed.
 - (LegacyPasswordFormContentItem*)
     legacySavedFormItemWithText:(NSString*)text
                   andDetailText:(NSString*)detailText
                         forForm:(const password_manager::PasswordForm&)form {
+  DCHECK(!IsFaviconEnabled());
   LegacyPasswordFormContentItem* passwordItem =
       [[LegacyPasswordFormContentItem alloc]
           initWithType:ItemTypeSavedPassword];
@@ -1043,11 +1042,10 @@ bool IsFaviconEnabled() {
   return passwordItem;
 }
 
-// TODO(crbug.com/1300569): Remove this when kEnableFaviconForPasswords flag is
-// removed.
 - (LegacyPasswordFormContentItem*)
     legacyBlockedFormItemWithText:(NSString*)text
                           forForm:(const password_manager::PasswordForm&)form {
+  DCHECK(!IsFaviconEnabled());
   LegacyPasswordFormContentItem* passwordItem =
       [[LegacyPasswordFormContentItem alloc] initWithType:ItemTypeBlocked];
   passwordItem.text = text;
@@ -1778,8 +1776,6 @@ bool IsFaviconEnabled() {
   std::vector<password_manager::PasswordForm> blockedToDelete;
 
   for (NSIndexPath* indexPath in indexPaths) {
-    // TODO(crbug.com/1300569): Remove this when kEnableFaviconForPasswords flag
-    // is removed.
     password_manager::PasswordForm form =
         IsFaviconEnabled()
             ? base::mac::ObjCCastStrict<PasswordFormContentItem>(
@@ -1862,8 +1858,7 @@ bool IsFaviconEnabled() {
                                   animated:NO];
     self.mostRecentlyUpdatedItem = nil;
   } else if (self.legacyMostRecentlyUpdatedItem) {
-    // TODO(crbug.com/1300569): Remove this when kEnableFaviconForPasswords flag
-    // is removed.
+    DCHECK(!IsFaviconEnabled());
     NSIndexPath* indexPath = [self.tableViewModel
         indexPathForItem:self.legacyMostRecentlyUpdatedItem];
     [self.tableView scrollToRowAtIndexPath:indexPath

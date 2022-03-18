@@ -6,10 +6,14 @@
 
 #import <UIKit/UIKit.h>
 #include "base/mac/foundation_util.h"
+#include "components/password_manager/core/common/password_manager_features.h"
+#import "ios/chrome/browser/ui/settings/password/legacy_password_issue_content_item.h"
 #import "ios/chrome/browser/ui/settings/password/password_issue_content_item.h"
 #import "ios/chrome/browser/ui/settings/password/password_issues_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/password_issues_presenter.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
+#import "ios/chrome/browser/ui/table_view/table_view_favicon_data_source.h"
+#import "ios/chrome/common/ui/favicon/favicon_view.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
@@ -27,6 +31,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeHeader = kItemTypeEnumZero,
   ItemTypePassword,  // This is a repeated item type.
 };
+
+// Return if the feature flag for the favicon is enabled.
+// TODO(crbug.com/1300569): Remove this when kEnableFaviconForPasswords flag is
+// removed.
+bool IsFaviconEnabled() {
+  return base::FeatureList::IsEnabled(
+      password_manager::features::kEnableFaviconForPasswords);
+}
 
 }  // namespace
 
@@ -66,9 +78,16 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [model setHeader:[self compromisedPasswordsDescriptionItem]
       forSectionWithIdentifier:SectionIdentifierContent];
 
-  for (id<PasswordIssue> password in self.passwords) {
-    [model addItem:[self passwordIssueItem:password]
-        toSectionWithIdentifier:SectionIdentifierContent];
+  if (IsFaviconEnabled()) {
+    for (id<PasswordIssue> password in self.passwords) {
+      [model addItem:[self passwordIssueItem:password]
+          toSectionWithIdentifier:SectionIdentifierContent];
+    }
+  } else {
+    for (id<PasswordIssue> password in self.passwords) {
+      [model addItem:[self legacyPasswordIssueItem:password]
+          toSectionWithIdentifier:SectionIdentifierContent];
+    }
   }
 }
 
@@ -90,6 +109,17 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return passwordItem;
 }
 
+- (LegacyPasswordIssueContentItem*)legacyPasswordIssueItem:
+    (id<PasswordIssue>)password {
+  DCHECK(!IsFaviconEnabled());
+  LegacyPasswordIssueContentItem* passwordItem =
+      [[LegacyPasswordIssueContentItem alloc] initWithType:ItemTypePassword];
+  passwordItem.password = password;
+  passwordItem.accessibilityTraits |= UIAccessibilityTraitButton;
+  passwordItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+  return passwordItem;
+}
+
 #pragma mark - UITableViewDelegate
 
 - (void)tableView:(UITableView*)tableView
@@ -103,11 +133,17 @@ typedef NS_ENUM(NSInteger, ItemType) {
     case ItemTypeHeader:
       break;
     case ItemTypePassword: {
-      PasswordIssueContentItem* passwordIssue =
-          base::mac::ObjCCastStrict<PasswordIssueContentItem>(
-              [model itemAtIndexPath:indexPath]);
-
-      [self.presenter presentPasswordIssueDetails:passwordIssue.password];
+      if (IsFaviconEnabled()) {
+        PasswordIssueContentItem* passwordIssue =
+            base::mac::ObjCCastStrict<PasswordIssueContentItem>(
+                [model itemAtIndexPath:indexPath]);
+        [self.presenter presentPasswordIssueDetails:passwordIssue.password];
+      } else {
+        LegacyPasswordIssueContentItem* passwordIssue =
+            base::mac::ObjCCastStrict<LegacyPasswordIssueContentItem>(
+                [model itemAtIndexPath:indexPath]);
+        [self.presenter presentPasswordIssueDetails:passwordIssue.password];
+      }
       break;
     }
   }
@@ -121,13 +157,44 @@ typedef NS_ENUM(NSInteger, ItemType) {
                      cellForRowAtIndexPath:indexPath];
   switch ([self.tableViewModel itemTypeForIndexPath:indexPath]) {
     case ItemTypePassword: {
-      TableViewDetailTextCell* textCell =
-          base::mac::ObjCCastStrict<TableViewDetailTextCell>(cell);
-      textCell.textLabel.lineBreakMode = NSLineBreakByTruncatingHead;
+      if (IsFaviconEnabled()) {
+        TableViewURLCell* urlCell =
+            base::mac::ObjCCastStrict<TableViewURLCell>(cell);
+        urlCell.textLabel.lineBreakMode = NSLineBreakByTruncatingHead;
+        // Load the favicon from cache.
+        [self loadFaviconAtIndexPath:indexPath forCell:cell];
+      } else {
+        TableViewDetailTextCell* textCell =
+            base::mac::ObjCCastStrict<TableViewDetailTextCell>(cell);
+        textCell.textLabel.lineBreakMode = NSLineBreakByTruncatingHead;
+      }
       break;
     }
   }
   return cell;
+}
+
+// Asynchronously loads favicon for given index path. The loads are cancelled
+// upon cell reuse automatically.
+- (void)loadFaviconAtIndexPath:(NSIndexPath*)indexPath
+                       forCell:(UITableViewCell*)cell {
+  TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
+  DCHECK(item);
+  DCHECK(cell);
+
+  TableViewURLItem* URLItem = base::mac::ObjCCastStrict<TableViewURLItem>(item);
+  TableViewURLCell* URLCell = base::mac::ObjCCastStrict<TableViewURLCell>(cell);
+
+  NSString* itemIdentifier = URLItem.uniqueIdentifier;
+  [self.imageDataSource
+      faviconForURL:URLItem.URL
+         completion:^(FaviconAttributes* attributes) {
+           // Only set favicon if the cell hasn't been reused.
+           if ([URLCell.cellUniqueIdentifier isEqualToString:itemIdentifier]) {
+             DCHECK(attributes);
+             [URLCell.faviconView configureWithAttributes:attributes];
+           }
+         }];
 }
 
 #pragma mark - PasswordIssuesConsumer
