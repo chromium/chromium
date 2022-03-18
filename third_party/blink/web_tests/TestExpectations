@@ -7727,6 +7727,10 @@ crbug.com/1299946 [ Mac ] external/wpt/css/css-sizing/min-content-negative-margi
 crbug.com/1299948 [ Mac ] external/wpt/css/css-tables/crashtests/textarea-intrinsic-size-crash.html [ Pass Timeout ]
 crbug.com/1299972 [ Linux ] screen_orientation/screenorientation-unsupported-no-crash.html [ Failure Pass Timeout ]
 
+# Until Plan B is removed on Fuchsia, allow these tests to fail to allow contradictory expectations.
+crbug.com/1302249 [ Fuchsia ] external/wpt/webrtc/RTCPeerConnection-plan-b-is-not-supported.html [ Failure Pass ]
+crbug.com/1302249 [ Fuchsia ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCPeerConnection-plan-b-is-not-supported.html [ Failure Pass ]
+
 # Disable flaky test for further investigation
 crbug.com/1229801 http/tests/devtools/elements/css-rule-hover-highlights-selectors.js [ Failure Pass ]
 

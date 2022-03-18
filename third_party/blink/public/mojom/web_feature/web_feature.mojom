@@ -3116,7 +3116,7 @@ enum WebFeature {
   kCSSAtRuleCounterStyle = 3809,
   kCanvasUseColorSpace = 3810,
   kSelectMenuElement = 3811,
-  kRTCPeerConnectionSdpSemanticsPlanBWithReverseOriginTrial = 3812,
+  kOBSOLETE_RTCPeerConnectionSdpSemanticsPlanBWithReverseOriginTrial = 3812,
   kWebAppManifestCaptureLinks = 3813,
   kSanitizerAPICreated = 3814,
   kSanitizerAPIDefaultConfiguration = 3815,

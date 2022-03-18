@@ -7,6 +7,8 @@
 #include <string>
 
 #include "base/bind.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
@@ -583,7 +585,10 @@ TEST_F(RTCPeerConnectionTest,
   EXPECT_FALSE(pc->GetTrackForTesting(track_component.Get()));
 }
 
-TEST_F(RTCPeerConnectionTest, CheckForComplexSdpWithSdpSemanticsPlanB) {
+#if BUILDFLAG(IS_FUCHSIA)
+
+TEST_F(RTCPeerConnectionTest,
+       CheckForComplexSdpWithSdpSemanticsPlanBOnFuchsia) {
   V8TestingScope scope;
   Persistent<RTCPeerConnection> pc = CreatePC(scope, "plan-b");
   RTCSessionDescriptionInit* sdp = RTCSessionDescriptionInit::Create();
@@ -611,6 +616,8 @@ TEST_F(RTCPeerConnectionTest, CheckForComplexSdpWithSdpSemanticsPlanB) {
   ASSERT_FALSE(
       pc->CheckForComplexSdp(ParsedSessionDescription::Parse(sdp)).has_value());
 }
+
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
 TEST_F(RTCPeerConnectionTest, CheckForComplexSdpWithSdpSemanticsUnifiedPlan) {
   V8TestingScope scope;
@@ -1204,6 +1211,7 @@ TEST_F(RTCPeerConnectionTest, SdpSemanticsUseCounters) {
     EXPECT_TRUE(scope.GetDocument().IsUseCounted(
         WebFeature::kRTCPeerConnectionUsingComplexUnifiedPlan));
   }
+#if BUILDFLAG(IS_FUCHSIA)
   // Constructor with {sdpSemantics:"plan-b"}.
   {
     V8TestingScope scope;
@@ -1232,6 +1240,7 @@ TEST_F(RTCPeerConnectionTest, SdpSemanticsUseCounters) {
     EXPECT_FALSE(scope.GetDocument().IsUseCounted(
         WebFeature::kRTCPeerConnectionUsingComplexUnifiedPlan));
   }
+#endif  // BUILDFLAG(IS_FUCHSIA)
   // Constructor with {sdpSemantics:"unified-plan"}.
   {
     V8TestingScope scope;

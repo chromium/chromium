@@ -39,6 +39,8 @@
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
@@ -294,63 +296,27 @@ webrtc::PeerConnectionInterface::RTCConfiguration ParseConfiguration(
     DCHECK_EQ(configuration->rtcpMuxPolicy(), "require");
   }
 
-  if (configuration->hasSdpSemantics()) {
-    if (configuration->sdpSemantics() == "plan-b") {
-      web_configuration.sdp_semantics = webrtc::SdpSemantics::kPlanB;
-      // Extend the Plan B deprecation deadline if
-      // RTCExtendDeadlineForPlanBRemoval is enabled, i.e. if the page has opted
-      // in to the 'RTCPeerConnection Plan B SDP Semantics' Deprecation Trial or
-      // if --enable-blink-features=RTCExtendDeadlineForPlanBRemoval was used.
-      // Local files also get the extended deadline beecause "file://" URLs
-      // cannot sign up for Origin Trials.
-      if (RuntimeEnabledFeatures::RTCExtendDeadlineForPlanBRemovalEnabled(
-              context) ||
-          context->Url().IsLocalFile()) {
-        // TODO(https://crbug.com/857004): In M97, when the Deprecation Trial
-        // ends, remove this code path in favor of throwing the exception below.
-        Deprecation::CountDeprecation(
-            context,
-            WebFeature::
-                kRTCPeerConnectionSdpSemanticsPlanBWithReverseOriginTrial);
-      } else {
-        // The Deprecation Trial is not active. In this case, throw an exception
-        // if RTCDisallowPlanBOutsideDeprecationTrial is enabled.
-        if (base::FeatureList::IsEnabled(
-                features::kRTCDisallowPlanBOutsideDeprecationTrial)) {
-          // Throw Plan B exception!
-          UseCounter::Count(
-              context, WebFeature::kRTCPeerConnectionPlanBThrewAnException);
-          exception_state->ThrowDOMException(
-              DOMExceptionCode::kNotSupportedError,
-              "Plan B SDP semantics is a legacy version of the Session "
-              "Description Protocol that has severe compatibility issues on "
-              "modern browsers and is no longer supported. See "
-              "https://www.chromestatus.com/feature/5823036655665152 for more "
-              "details, including the possibility of registering for a "
-              "Deprecation Trial in order to extend the Plan B deprecation "
-              "deadline for a limited amount of time.");
-        } else {
-          // Throwing is not enabled, so just show a deprecation warning.
-          Deprecation::CountDeprecation(
-              context, WebFeature::kRTCPeerConnectionSdpSemanticsPlanB);
-        }
-      }
-    } else {
-      DCHECK_EQ(configuration->sdpSemantics(), "unified-plan");
-      web_configuration.sdp_semantics = webrtc::SdpSemantics::kUnifiedPlan;
-    }
-  } else {
-    // RTCUnifiedPlanByDefault decides the SDP semantics unless specified by the
-    // configuration (see above). By default RTCUnifiedPlanByDefault is enabled,
-    // meaning "Unified Plan" is used. For "Plan B"-by-default, pass the flag:
-    // --disable-features=RTCUnifiedPlanByDefault
-    if (!base::FeatureList::IsEnabled(features::kRTCUnifiedPlanByDefault) &&
-        !RuntimeEnabledFeatures::RTCUnifiedPlanByDefaultEnabled()) {
-      web_configuration.sdp_semantics = webrtc::SdpSemantics::kPlanB;
-    } else {
-      web_configuration.sdp_semantics = webrtc::SdpSemantics::kUnifiedPlan;
-    }
+  // Unified Plan is used by default (RTCUnifiedPlanByDefault is
+  // ENABLED_BY_DEFAULT). For testing-only purposes the default can be set to
+  // Plan B instead using --disable-features=RTCUnifiedPlanByDefault.
+  DCHECK_EQ(web_configuration.sdp_semantics,
+            webrtc::SdpSemantics::kUnifiedPlan);
+  if (!base::FeatureList::IsEnabled(features::kRTCUnifiedPlanByDefault) &&
+      !RuntimeEnabledFeatures::RTCUnifiedPlanByDefaultEnabled()) {
+    web_configuration.sdp_semantics = webrtc::SdpSemantics::kPlanB;
+    Deprecation::CountDeprecation(
+        context, WebFeature::kRTCPeerConnectionSdpSemanticsPlanB);
   }
+  // Only on Fuchsia is it still possible to overwrite the default sdpSemantics
+  // value in JavaScript.
+  // TODO(https://crbug.com/1302249): Don't support Plan B on Fuchsia either,
+  // delete Plan B from all of Chromium.
+#if BUILDFLAG(IS_FUCHSIA)
+  if (configuration->hasSdpSemantics() &&
+      configuration->sdpSemantics() == "plan-b") {
+    web_configuration.sdp_semantics = webrtc::SdpSemantics::kPlanB;
+  }
+#endif
 
   if (configuration->hasIceServers()) {
     WebVector<webrtc::PeerConnectionInterface::IceServer> ice_servers;

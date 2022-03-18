@@ -333,11 +333,6 @@ const base::Feature kWindowOpenNewPopupBehavior{
 // The feature is still used by virtual test suites exercising Plan B.
 const base::Feature kRTCUnifiedPlanByDefault{"RTCUnifiedPlanByDefault",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
-// When enabled, throw an exception when an RTCPeerConnection is constructed
-// with {sdpSemantics:"plan-b"} and the Deprecation Trial is not enabled.
-const base::Feature kRTCDisallowPlanBOutsideDeprecationTrial{
-    "RTCDisallowPlanBOutsideDeprecationTrial",
-    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Determines if the SDP attrbute extmap-allow-mixed should be offered by
 // default or not. The default value can be overridden by passing

@@ -37166,7 +37166,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3810" label="CanvasUseColorSpace"/>
   <int value="3811" label="SelectMenuElement"/>
   <int value="3812"
-      label="RTCPeerConnectionSdpSemanticsPlanBWithReverseOriginTrial"/>
+      label="OBSOLETE_RTCPeerConnectionSdpSemanticsPlanBWithReverseOriginTrial"/>
   <int value="3813" label="WebAppManifestCaptureLinks"/>
   <int value="3814" label="SanitizerAPICreated"/>
   <int value="3815" label="SanitizerAPIDefaultConfiguration"/>

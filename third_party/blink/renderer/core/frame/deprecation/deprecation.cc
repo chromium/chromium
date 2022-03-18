@@ -557,26 +557,12 @@ const DeprecationInfo GetDeprecationInfo(const WebFeature feature) {
           "RTCPeerConnectionSdpSemanticsPlanB", kM93,
           "Plan B SDP semantics, which is used when constructing an "
           "RTCPeerConnection with {sdpSemantics:\"plan-b\"}, is a legacy "
-          "version of the Session Description Protocol that has severe "
-          "compatibility issues on modern browsers. The standardized SDP "
-          "format, \"unified-plan\", has been used by default since M72 "
-          "(January, 2019). Dropping support for Plan B is targeted for M93, "
-          "but it's possible to register for a Deprecation Trial in order to "
-          "extend the Plan B deprecation deadline for a limited amount of "
-          "time.",
+          "non-standard version of the Session Description Protocol that has "
+          "been permanently deleted from the Web Platform. It is still "
+          "available when building with IS_FUCHSIA, but we intend to delete it "
+          "as soon as possible. Stop depending on it. See "
+          "https://crbug.com/1302249 for status.",
           "5823036655665152");
-
-    case WebFeature::kRTCPeerConnectionSdpSemanticsPlanBWithReverseOriginTrial:
-      return DeprecationInfo::WithDetails(
-          "RTCPeerConnectionSdpSemanticsPlanBWithReverseOriginTrial", kM96,
-          "Plan B SDP semantics, which is used when constructing an "
-          "RTCPeerConnection with {sdpSemantics:\"plan-b\"}, is a legacy "
-          "version of the Session Description Protocol that has severe "
-          "compatibility issues on modern browsers. The standardized SDP "
-          "format, \"unified-plan\", has been used by default since M72 "
-          "(January, 2019). Dropping support for Plan B is targeted for M93, "
-          "but this page may extend the deadline until the End Date of the "
-          "'RTCPeerConnection Plan B SDP Semantics' deprecation trial.");
 
     case WebFeature::kAddressSpacePublicNonSecureContextEmbeddedPrivate:
     case WebFeature::kAddressSpacePublicNonSecureContextEmbeddedLocal:
