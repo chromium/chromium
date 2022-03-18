@@ -345,12 +345,12 @@ void ProfileNetworkContextService::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kQuicAllowed, true);
   registry->RegisterBooleanPref(prefs::kGloballyScopeHTTPAuthCacheEnabled,
                                 false);
+  registry->RegisterListPref(prefs::kHSTSPolicyBypassList);
 }
 
 // static
 void ProfileNetworkContextService::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
-  registry->RegisterListPref(prefs::kHSTSPolicyBypassList);
   registry->RegisterIntegerPref(
       prefs::kAmbientAuthenticationInPrivateModesEnabled,
       static_cast<int>(net::AmbientAuthAllowedProfileTypes::REGULAR_ONLY));
@@ -794,7 +794,7 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
         base::FilePath(chrome::kSCTAuditingPendingReportsFileName);
   }
   const base::Value* hsts_policy_bypass_list =
-      g_browser_process->local_state()->GetList(prefs::kHSTSPolicyBypassList);
+      profile_->GetPrefs()->GetList(prefs::kHSTSPolicyBypassList);
   for (const auto& value : hsts_policy_bypass_list->GetListDeprecated()) {
     const std::string* string_value = value.GetIfString();
     if (!string_value)

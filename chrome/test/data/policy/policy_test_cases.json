@@ -15391,7 +15391,7 @@
         },
         "prefs": {
           "hsts.policy.upgrade_bypass_list": {
-            "location": "local_state"
+            "location": "user_profile"
           }
         }
       }
