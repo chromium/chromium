@@ -461,6 +461,16 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.Intercept.FRE.Event"
+    enum="SigninInterceptFREDialogEvent" expires_after="2022-06-11">
+  <owner>alexilin@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records various events that occur during the first run experience after the
+    sign-in interception.
+  </summary>
+</histogram>
+
 <histogram name="Signin.Intercept.HeuristicOutcome"
     enum="SigninInterceptHeuristicOutcome" expires_after="2022-08-28">
   <owner>droger@chromium.org</owner>

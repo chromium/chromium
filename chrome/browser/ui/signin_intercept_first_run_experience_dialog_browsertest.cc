@@ -4,7 +4,10 @@
 
 #include "chrome/browser/ui/signin_intercept_first_run_experience_dialog.h"
 
+#include "base/containers/enum_set.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
@@ -34,6 +37,7 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/signin/public/base/account_consistency_method.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/sync/driver/test_sync_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -103,6 +107,10 @@ std::unique_ptr<KeyedService> CreateTestUserPolicySigninService(
 class SigninInterceptFirstRunExperienceDialogBrowserTest
     : public InProcessBrowserTest {
  public:
+  using DialogEvent = SigninInterceptFirstRunExperienceDialog::DialogEvent;
+  using DialogEventSet =
+      base::EnumSet<DialogEvent, DialogEvent::kStart, DialogEvent::kMaxValue>;
+
   SigninInterceptFirstRunExperienceDialogBrowserTest()
       : feature_list_(feature_engagement::kIPHProfileSwitchFeature) {}
   ~SigninInterceptFirstRunExperienceDialogBrowserTest() override = default;
@@ -192,6 +200,26 @@ class SigninInterceptFirstRunExperienceDialogBrowserTest
     dialog()->OnProfileCustomizationDoneButtonClicked();
   }
 
+  void ExpectRecordedEvents(DialogEventSet events) {
+    std::vector<base::Bucket> expected_buckets;
+    for (DialogEvent event : events)
+      expected_buckets.emplace_back(static_cast<int>(event), 1);
+    EXPECT_THAT(histogram_tester_.GetAllSamples("Signin.Intercept.FRE.Event"),
+                ::testing::ContainerEq(expected_buckets));
+  }
+
+  void ExpectSigninHistogramsRecorded() {
+    const auto access_point = signin_metrics::AccessPoint::
+        ACCESS_POINT_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE;
+    histogram_tester_.ExpectUniqueSample("Signin.SigninStartedAccessPoint",
+                                         access_point, 1);
+    histogram_tester_.ExpectUniqueSample("Signin.SigninCompletedAccessPoint",
+                                         access_point, 1);
+    EXPECT_EQ(user_action_tester_.GetActionCount(
+                  "Signin_Signin_FromSigninInterceptFirstRunExperience"),
+              1);
+  }
+
   // `kSignin` consent level means that Sync should be disabled.
   void ExpectPrimaryAccountWithExactConsentLevel(
       signin::ConsentLevel consent_level) {
@@ -242,6 +270,9 @@ class SigninInterceptFirstRunExperienceDialogBrowserTest
       identity_test_env_profile_adaptor_;
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
   base::test::ScopedFeatureList feature_list_;
+
+  base::HistogramTester histogram_tester_;
+  base::UserActionTester user_action_tester_;
 
   CoreAccountId account_id_;
   FeaturePromoControllerCommon::TestLock test_lock_;
@@ -297,6 +328,11 @@ IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
   SimulateProfileCustomizationUIClosing();
   EXPECT_FALSE(controller()->ShowsModalDialog());
   EXPECT_TRUE(ProfileSwitchPromoHasBeenShown());
+  ExpectRecordedEvents({DialogEvent::kStart, DialogEvent::kShowSyncConfirmation,
+                        DialogEvent::kSyncConfirmationClickConfirm,
+                        DialogEvent::kShowProfileCustomization,
+                        DialogEvent::kProfileCustomizationClickDone});
+  ExpectSigninHistogramsRecorded();
 }
 
 // The user enables sync and has a synced extension theme. Tests that the dialog
@@ -378,6 +414,9 @@ IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
   ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSync);
   EXPECT_FALSE(controller()->ShowsModalDialog());
   EXPECT_TRUE(ProfileSwitchPromoHasBeenShown());
+  ExpectRecordedEvents({DialogEvent::kStart, DialogEvent::kShowSyncConfirmation,
+                        DialogEvent::kSyncConfirmationClickConfirm});
+  ExpectSigninHistogramsRecorded();
 }
 
 // Goes through all steps of the fre dialog. The user declines sync.
@@ -410,6 +449,11 @@ IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
   SimulateProfileCustomizationUIClosing();
   EXPECT_FALSE(controller()->ShowsModalDialog());
   EXPECT_TRUE(ProfileSwitchPromoHasBeenShown());
+  ExpectRecordedEvents({DialogEvent::kStart, DialogEvent::kShowSyncConfirmation,
+                        DialogEvent::kSyncConfirmationClickCancel,
+                        DialogEvent::kShowProfileCustomization,
+                        DialogEvent::kProfileCustomizationClickDone});
+  ExpectSigninHistogramsRecorded();
 }
 
 // Tests the case when the account has a profile color policy. Tests that the
@@ -448,6 +492,9 @@ IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
 
   EXPECT_FALSE(controller()->ShowsModalDialog());
   EXPECT_TRUE(ProfileSwitchPromoHasBeenShown());
+  ExpectRecordedEvents({DialogEvent::kStart, DialogEvent::kShowSyncConfirmation,
+                        DialogEvent::kSyncConfirmationClickConfirm});
+  ExpectSigninHistogramsRecorded();
 }
 
 // The user chooses to manage sync settings in the sync confirmation dialog.
@@ -477,6 +524,9 @@ IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
   // Sync settings abort the fre dialog.
   EXPECT_FALSE(controller()->ShowsModalDialog());
   EXPECT_TRUE(ProfileSwitchPromoHasBeenShown());
+  ExpectRecordedEvents({DialogEvent::kStart, DialogEvent::kShowSyncConfirmation,
+                        DialogEvent::kSyncConfirmationClickSettings});
+  ExpectSigninHistogramsRecorded();
 }
 
 // Closes the fre dialog before the sync confirmation is shown. Tests that
@@ -506,6 +556,8 @@ IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
       browser()->profile()));
   // Sync is aborted.
   ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSignin);
+  ExpectRecordedEvents({DialogEvent::kStart});
+  ExpectSigninHistogramsRecorded();
 }
 
 // Tests the case when sync is disabled by policy. The fre dialog starts with
@@ -533,6 +585,10 @@ IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
   SimulateProfileCustomizationUIClosing();
   EXPECT_FALSE(controller()->ShowsModalDialog());
   EXPECT_TRUE(ProfileSwitchPromoHasBeenShown());
+  ExpectRecordedEvents({DialogEvent::kStart,
+                        DialogEvent::kShowProfileCustomization,
+                        DialogEvent::kProfileCustomizationClickDone});
+  ExpectSigninHistogramsRecorded();
 }
 
 // Tests the case when the user went through the forced intercept dialog. The
@@ -556,6 +612,9 @@ IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
   SimulateProfileCustomizationUIClosing();
   EXPECT_FALSE(controller()->ShowsModalDialog());
   EXPECT_TRUE(ProfileSwitchPromoHasBeenShown());
+  ExpectRecordedEvents({DialogEvent::kStart,
+                        DialogEvent::kShowProfileCustomization,
+                        DialogEvent::kProfileCustomizationClickDone});
 }
 
 // Tests the case when the user went through the forced intercept dialog and the
@@ -575,4 +634,5 @@ IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
   EXPECT_FALSE(controller()->ShowsModalDialog());
   ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSignin);
   EXPECT_TRUE(ProfileSwitchPromoHasBeenShown());
+  ExpectRecordedEvents({DialogEvent::kStart});
 }

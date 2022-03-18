@@ -124,6 +124,10 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromEnterpriseSignoutSheet"));
       break;
+    case AccessPoint::ACCESS_POINT_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_Signin_FromSigninInterceptFirstRunExperience"));
+      break;
     case AccessPoint::ACCESS_POINT_KALEIDOSCOPE:
       NOTREACHED() << "Access point " << static_cast<int>(access_point)
                    << " is only used to trigger non-sync sign-in and this"
@@ -134,7 +138,6 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::ACCESS_POINT_FORCED_SIGNIN:
     case AccessPoint::ACCESS_POINT_ACCOUNT_RENAMED:
     case AccessPoint::ACCESS_POINT_WEB_SIGNIN:
-    case AccessPoint::ACCESS_POINT_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE:
       NOTREACHED() << "Access point " << static_cast<int>(access_point)
                    << " is not supposed to log signin user actions.";
       break;

@@ -6062,6 +6062,13 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ContentSuggestions.Feed.CardAction.ManageHidden">
+  <owner>edchin@google.com</owner>
+  <description>
+    TODO(edchin): Please enter the description of the metric.
+  </description>
+</action>
+
 <action name="ContentSuggestions.Feed.CardAction.ManageInterests">
   <owner>harringtond@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
@@ -28079,6 +28086,14 @@ should be able to be added at any place in this file.
   <description>
     Recorded on sign in start from access point
     signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS.
+  </description>
+</action>
+
+<action name="Signin_Signin_FromSigninInterceptFirstRunExperience">
+  <owner>alexilin@chromium.org</owner>
+  <description>
+    Recorded on sign in start from access point
+    signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE.
   </description>
 </action>
 

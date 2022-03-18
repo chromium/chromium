@@ -82949,6 +82949,16 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="10" label="Undo">The sync was aborted with an undo button.</int>
 </enum>
 
+<enum name="SigninInterceptFREDialogEvent">
+  <int value="0" label="FRE started"/>
+  <int value="1" label="Sync confirmation shown"/>
+  <int value="2" label="The user turned sync on"/>
+  <int value="3" label="The user canceled sync"/>
+  <int value="4" label="The user clicked on sync settings"/>
+  <int value="5" label="Profile customization shown"/>
+  <int value="6" label="The user completed profile customization"/>
+</enum>
+
 <enum name="SigninInterceptGuestAvailability">
   <obsolete>
     Removed 2021-05.
