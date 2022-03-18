@@ -208,6 +208,10 @@ aggregate_vector_icons("chrome_vector_icons") {
     sources += [
       "autocorrect_undo.icon",
       "full_restore_notification.icon",
+      "mouse_left_click_edit.icon",
+      "mouse_left_click_view.icon",
+      "mouse_right_click_edit.icon",
+      "mouse_right_click_view.icon",
       "notification_battery.icon",
       "notification_captive_portal.icon",
       "notification_cellular_alert.icon",

@@ -6,7 +6,7 @@
 
 #include <set>
 
-#include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/action_tag.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/gfx/color_palette.h"
@@ -17,8 +17,8 @@ namespace input_overlay {
 namespace {
 // UI specs.
 constexpr int kWidthPadding = 10;
-constexpr gfx::Size kMinimumLabelSize(32, 32);
-constexpr int kCornerRadius = 6;
+constexpr gfx::Size kMinimumViewLabelSize(32, 32);
+constexpr int kCornerRadiusView = 6;
 
 constexpr SkColor kViewModeBgColor = SkColorSetA(SK_ColorGRAY, 0x99);
 constexpr SkColor kEditModeBgColor = SK_ColorWHITE;
@@ -53,39 +53,15 @@ std::string GetDisplayText(const ui::DomCode code) {
 
 ActionLabel::ActionLabel() : views::Label() {}
 ActionLabel::ActionLabel(const std::u16string& text) : views::Label(text) {
-  SetDisplayMode(DisplayMode::kView);
+  SetToViewMode();
 }
 
 ActionLabel::~ActionLabel() = default;
 
-void ActionLabel::SetDisplayMode(DisplayMode mode) {
-  switch (mode) {
-    case DisplayMode::kMenu:
-    case DisplayMode::kView:
-      SetToView();
-      break;
-    case DisplayMode::kEdit:
-      SetToEditDefault();
-      break;
-    default:
-      NOTREACHED();
-      break;
-  }
-}
-
-void ActionLabel::SetPositionFromCenterPosition(gfx::PointF& center_position) {
-  auto size = GetPreferredSize();
-  SetSize(size);
-  int left = std::max(0, (int)(center_position.x() - size.width() / 2));
-  int top = std::max(0, (int)(center_position.y() - size.height() / 2));
-  // SetPosition function needs the top-left position.
-  SetPosition(gfx::Point(left, top));
-}
-
 gfx::Size ActionLabel::CalculatePreferredSize() const {
   auto size = Label::CalculatePreferredSize();
   size.set_width(size.width() + kWidthPadding);
-  size.SetToMax(kMinimumLabelSize);
+  size.SetToMax(kMinimumViewLabelSize);
   return size;
 }
 
@@ -97,34 +73,36 @@ void ActionLabel::OnFocus() {
   SetToEditFocus();
   SelectAll();
   Label::OnFocus();
-  static_cast<ActionView*>(parent())->RemoveEditMenu();
+  static_cast<ActionTag*>(parent())->OnActionLabelFocused();
 }
 
 void ActionLabel::OnBlur() {
-  SetToEditDefault();
+  SetToEditMode();
   ClearSelection();
   Label::OnBlur();
 }
 
-void ActionLabel::SetToView() {
+void ActionLabel::SetToViewMode() {
   SetFontList(gfx::FontList({kFontSytle}, gfx::Font::NORMAL, kViewFontSize,
                             gfx::Font::Weight::BOLD));
   SetFocusBehavior(FocusBehavior::NEVER);
   SetBackground(
-      views::CreateRoundedRectBackground(kViewModeBgColor, kCornerRadius));
+      views::CreateRoundedRectBackground(kViewModeBgColor, kCornerRadiusView));
   SetAutoColorReadabilityEnabled(false);
   SetEnabledColor(kViewTextColor);
+  SetSize(GetPreferredSize());
   SetSelectable(false);
   SetEnabled(false);
 }
 
-void ActionLabel::SetToEditDefault() {
+void ActionLabel::SetToEditMode() {
   SetFontList(gfx::FontList({kFontSytle}, gfx::Font::NORMAL, kUnFocusFontSize,
                             gfx::Font::Weight::BOLD));
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetBackground(
-      views::CreateRoundedRectBackground(kEditModeBgColor, kCornerRadius));
+      views::CreateRoundedRectBackground(kEditModeBgColor, kCornerRadiusView));
   SetEnabledColor(kEditTextColor);
+  SetSize(GetPreferredSize());
   SetSelectable(true);
   SetEnabled(true);
 }

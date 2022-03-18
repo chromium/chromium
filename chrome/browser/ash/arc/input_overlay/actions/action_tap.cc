@@ -5,8 +5,9 @@
 #include "chrome/browser/ash/arc/input_overlay/actions/action_tap.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ash/arc/input_overlay/actions/input_element.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_id_manager.h"
-#include "chrome/browser/ash/arc/input_overlay/ui/action_label.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/action_tag.h"
 #include "ui/aura/window.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -18,8 +19,8 @@ namespace arc {
 namespace input_overlay {
 namespace {
 // UI specs.
-constexpr int kLabelPositionToSide = 36;
-constexpr int kLabelMargin = 2;
+constexpr int kTagPositionToSide = 36;
+constexpr int kTagMargin = 2;
 }  // namespace
 
 class ActionTap::ActionTapView : public ActionView {
@@ -30,39 +31,38 @@ class ActionTap::ActionTapView : public ActionView {
       : ActionView(action, display_overlay_controller) {
     int radius = action->GetUIRadius(content_bounds);
     auto circle = std::make_unique<ActionCircle>(radius);
-    std::string text;
+    std::unique_ptr<ActionTag> tag;
     if (action->IsKeyboardBound()) {
-      text = GetDisplayText(action->current_binding()->keys()[0]);
+      tag = ActionTag::CreateTextActionTag(
+          GetDisplayText(action->current_binding()->keys()[0]));
     } else if (action->IsMouseBound()) {
-      text = action->current_binding()->mouse_action();
+      tag = ActionTag::CreateImageActionTag(
+          action->current_binding()->mouse_action());
     } else {
-      text = "?";
+      tag = ActionTag::CreateTextActionTag("?");
     }
-    auto label = std::make_unique<ActionLabel>(base::UTF8ToUTF16(text));
-    label->set_editable(true);
-    auto label_size = label->GetPreferredSize();
-    label->SetSize(label_size);
-    int width = std::max(
-        radius * 2, radius * 2 - kLabelPositionToSide + label_size.width());
+    auto tag_size = tag->GetPreferredSize();
+    tag->SetSize(tag_size);
+    int width = std::max(radius * 2,
+                         radius * 2 - kTagPositionToSide + tag_size.width());
     SetSize(gfx::Size(width, radius * 2));
     if (action->on_left_or_middle_side()) {
       circle->SetPosition(gfx::Point());
-      label->SetPosition(
-          gfx::Point(label_size.width() > kLabelPositionToSide
-                         ? width - label_size.width()
-                         : width - kLabelPositionToSide,
-                     radius * 2 - label_size.height() - kLabelMargin));
+      tag->SetPosition(gfx::Point(tag_size.width() > kTagPositionToSide
+                                      ? width - tag_size.width()
+                                      : width - kTagPositionToSide,
+                                  radius * 2 - tag_size.height() - kTagMargin));
       center_.set_x(radius);
       center_.set_y(radius);
     } else {
       circle->SetPosition(gfx::Point(width - radius * 2, 0));
-      label->SetPosition(
-          gfx::Point(0, radius * 2 - label_size.height() - kLabelMargin));
+      tag->SetPosition(
+          gfx::Point(0, radius * 2 - tag_size.height() - kTagMargin));
       center_.set_x(width - radius);
       center_.set_y(radius);
     }
     circle_ = AddChildView(std::move(circle));
-    labels_.emplace_back(AddChildView(std::move(label)));
+    tags_.emplace_back(AddChildView(std::move(tag)));
   }
 
   ActionTapView(const ActionTapView&) = delete;

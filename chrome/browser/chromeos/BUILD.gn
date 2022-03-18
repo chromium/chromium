@@ -904,6 +904,8 @@ source_set("chromeos") {
     "../ash/arc/input_overlay/ui/action_edit_menu.h",
     "../ash/arc/input_overlay/ui/action_label.cc",
     "../ash/arc/input_overlay/ui/action_label.h",
+    "../ash/arc/input_overlay/ui/action_tag.cc",
+    "../ash/arc/input_overlay/ui/action_tag.h",
     "../ash/arc/input_overlay/ui/action_view.cc",
     "../ash/arc/input_overlay/ui/action_view.h",
     "../ash/arc/input_overlay/ui/input_mapping_view.cc",

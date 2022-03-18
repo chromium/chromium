@@ -11,7 +11,7 @@
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_circle.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_edit_button.h"
-#include "chrome/browser/ash/arc/input_overlay/ui/action_label.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/action_tag.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/views/view.h"
@@ -56,7 +56,7 @@ class ActionView : public views::View {
   // The circle view shows up for editing the action.
   ActionCircle* circle_ = nullptr;
   // Labels for mapping hints.
-  std::vector<ActionLabel*> labels_;
+  std::vector<ActionTag*> tags_;
   // Current display mode.
   DisplayMode current_display_mode_ = DisplayMode::kNone;
   // Center position of the circle view.

@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
 
 #include "base/bind.h"
-#include "chrome/browser/ash/arc/input_overlay/ui/action_label.h"
 
 namespace arc {
 namespace input_overlay {
@@ -34,8 +33,8 @@ void ActionView::SetDisplayMode(DisplayMode mode) {
     AddEditButton();
     if (circle_)
       circle_->SetDisplayMode(mode);
-    for (auto* label : labels_)
-      label->SetDisplayMode(mode);
+    for (auto* tag : tags_)
+      tag->SetDisplayMode(mode);
   }
 }
 

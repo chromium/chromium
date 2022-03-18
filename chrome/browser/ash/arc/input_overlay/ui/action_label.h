@@ -17,8 +17,7 @@ namespace input_overlay {
 // on different keyboard layout.
 std::string GetDisplayText(const ui::DomCode code);
 
-// ActionLabel is the basic UI label for the action. It can set default view
-// mode and edit mode.
+// ActionLabel shows text mapping hint for each action.
 class ActionLabel : public views::Label {
  public:
   ActionLabel();
@@ -28,11 +27,8 @@ class ActionLabel : public views::Label {
   ActionLabel& operator=(const ActionLabel&) = delete;
   ~ActionLabel() override;
 
-  void set_editable(bool editable) { editable_ = editable; }
-
-  void SetDisplayMode(const DisplayMode mode);
-  // Set position from its center position.
-  void SetPositionFromCenterPosition(gfx::PointF& center_position);
+  void SetToViewMode();
+  void SetToEditMode();
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
@@ -41,12 +37,7 @@ class ActionLabel : public views::Label {
   void OnBlur() override;
 
  private:
-  void SetToView();
-  void SetToEditDefault();
   void SetToEditFocus();
-
- private:
-  bool editable_ = false;
 };
 }  // namespace input_overlay
 }  // namespace arc
