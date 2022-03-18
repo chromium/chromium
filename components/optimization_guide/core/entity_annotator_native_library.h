@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/scoped_native_library.h"
+#include "base/native_library.h"
 #include "components/optimization_guide/core/entity_metadata.h"
 #include "components/optimization_guide/core/model_info.h"
 
@@ -65,7 +65,7 @@ class EntityAnnotatorNativeLibrary {
   EntityMetadata GetEntityMetadataFromOptimizationGuideEntityMetadata(
       const void* og_entity_metadata);
 
-  base::ScopedNativeLibrary native_library_;
+  base::NativeLibrary native_library_;
 
   // Functions exposed by native library.
   using GetMaxSupportedFeatureFlagFunc = int32_t (*)();
