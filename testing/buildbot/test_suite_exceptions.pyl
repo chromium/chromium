@@ -2324,6 +2324,11 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.net_unittests.filter',
         ],
       },
+      'android-cronet-x86-dbg-kitkat-tests': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_k.net_unittests.filter',
+        ],
+      },
       'android-cronet-x86-dbg-lollipop-tests': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_l.net_unittests.filter',
