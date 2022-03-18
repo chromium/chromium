@@ -20,6 +20,7 @@
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "ui/accessibility/platform/ax_fragment_root_delegate_win.h"
+#include "ui/base/win/internal_constants.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -64,7 +65,7 @@ class CONTENT_EXPORT LegacyRenderWidgetHostHWND
                               ATL::CWinTraits<WS_CHILD>>,
       public ui::AXFragmentRootDelegateWin {
  public:
-  DECLARE_WND_CLASS_EX(L"Chrome_RenderWidgetHostHWND", CS_DBLCLKS, 0)
+  DECLARE_WND_CLASS_EX(ui::kLegacyRenderWidgetHostHwnd, CS_DBLCLKS, 0)
 
   typedef ATL::CWindowImpl<LegacyRenderWidgetHostHWND,
                            ATL::CWindow,

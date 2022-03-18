@@ -21,6 +21,7 @@
 #include "ui/accessibility/platform/ax_platform_node_win.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_utils_win.h"
 #include "ui/base/win/atl_module.h"
+#include "ui/base/win/internal_constants.h"
 #include "ui/gfx/win/hwnd_util.h"
 
 namespace ui {
@@ -184,7 +185,7 @@ void AXEventRecorderWin::OnWinEventHook(HWINEVENTHOOK handle,
   }
 
   if (only_web_events_) {
-    if (hwnd_class_name != "Chrome_RenderWidgetHostHWND")
+    if (hwnd_class_name != base::WideToUTF8(ui::kLegacyRenderWidgetHostHwnd))
       return;
 
     Microsoft::WRL::ComPtr<IServiceProvider> service_provider;

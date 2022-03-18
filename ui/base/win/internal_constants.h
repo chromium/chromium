@@ -14,6 +14,10 @@ namespace ui {
 COMPONENT_EXPORT(UI_BASE)
 extern const wchar_t kIgnoreTouchMouseActivateForWindow[];
 
+// This class name is assigned to legacy windows created for screen readers that
+// expect each web content container to be in its own HWNDs.
+COMPONENT_EXPORT(UI_BASE) extern const wchar_t kLegacyRenderWidgetHostHwnd[];
+
 // This property is put on an HWND so the compositor output knows to treat it
 // as transparent and draw to it using WS_EX_LAYERED (if using the software
 // compositor).
