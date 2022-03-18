@@ -685,12 +685,9 @@ Vector<int> GetApmSupportedChannels(
   Vector<int> result;
   // APM always supports mono output;
   result.push_back(1);
-  if (base::FeatureList::IsEnabled(
-          features::kWebRtcEnableCaptureMultiChannelApm)) {
-    const int channels = device_params.channels();
-    if (channels > 1)
-      result.push_back(channels);
-  }
+  const int channels = device_params.channels();
+  if (channels > 1)
+    result.push_back(channels);
   return result;
 }
 

@@ -16,9 +16,6 @@ COMPONENT_EXPORT(MEDIA_WEBRTC)
 extern const base::Feature kWebRtcAllowWgcDesktopCapturer;
 
 COMPONENT_EXPORT(MEDIA_WEBRTC)
-extern const base::Feature kWebRtcEnableCaptureMultiChannelApm;
-
-COMPONENT_EXPORT(MEDIA_WEBRTC)
 extern const base::Feature kWebRtcAllow48kHzProcessingOnArm;
 
 COMPONENT_EXPORT(MEDIA_WEBRTC)

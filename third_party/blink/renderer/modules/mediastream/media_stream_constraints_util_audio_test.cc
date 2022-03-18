@@ -797,9 +797,6 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, Channels) {
 }
 
 TEST_P(MediaStreamConstraintsUtilAudioTest, MultiChannelEchoCancellation) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatureState(::features::kWebRtcEnableCaptureMultiChannelApm,
-                                true);
   if (!IsDeviceCapture())
     return;
 
@@ -851,67 +848,6 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, MultiChannelEchoCancellation) {
   EXPECT_EQ(result.device_id(), "4_channels_device");
   EXPECT_EQ(result.audio_processing_properties().echo_cancellation_type,
             EchoCancellationType::kEchoCancellationAec3);
-  EXPECT_EQ(result.num_channels(), 4);
-}
-
-TEST_P(MediaStreamConstraintsUtilAudioTest,
-       MultiChannelEchoCancellationDisabled) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatureState(::features::kWebRtcEnableCaptureMultiChannelApm,
-                                false);
-  if (!IsDeviceCapture())
-    return;
-
-  AudioCaptureSettings result;
-
-  ResetFactory();
-  result = SelectSettings();
-  EXPECT_TRUE(result.HasValue());
-  EXPECT_EQ(result.device_id(), "default_device");
-  // By default the number of channels must be 1 with echo cancellation enabled.
-  EXPECT_EQ(result.audio_processing_properties().echo_cancellation_type,
-            EchoCancellationType::kEchoCancellationAec3);
-  EXPECT_EQ(result.num_channels(), 1);
-
-  ResetFactory();
-  constraint_factory_.basic().device_id.SetExact("default_device");
-  constraint_factory_.basic().echo_cancellation.SetExact(true);
-  result = SelectSettings();
-  EXPECT_TRUE(result.HasValue());
-  // By default, use 1 channel,
-  EXPECT_EQ(result.device_id(), "default_device");
-  EXPECT_EQ(result.audio_processing_properties().echo_cancellation_type,
-            EchoCancellationType::kEchoCancellationAec3);
-  EXPECT_EQ(result.num_channels(), 1);
-
-  ResetFactory();
-  constraint_factory_.basic().channel_count.SetExact(2);
-  result = SelectSettings();
-  EXPECT_TRUE(result.HasValue());
-  EXPECT_EQ(result.device_id(), "default_device");
-  // Forcing two channels requires APM disabled.
-  EXPECT_EQ(result.audio_processing_properties().echo_cancellation_type,
-            EchoCancellationType::kEchoCancellationDisabled);
-  EXPECT_EQ(result.num_channels(), 2);
-
-  ResetFactory();
-  constraint_factory_.basic().channel_count.SetIdeal(2);
-  result = SelectSettings();
-  EXPECT_TRUE(result.HasValue());
-  EXPECT_EQ(result.device_id(), "default_device");
-  // Satisfying the requested 2 channels requires APM disabled.
-  EXPECT_EQ(result.audio_processing_properties().echo_cancellation_type,
-            EchoCancellationType::kEchoCancellationDisabled);
-  EXPECT_EQ(result.num_channels(), 2);
-
-  ResetFactory();
-  constraint_factory_.basic().channel_count.SetIdeal(4);
-  result = SelectSettings();
-  EXPECT_TRUE(result.HasValue());
-  EXPECT_EQ(result.device_id(), "4_channels_device");
-  // Satisfying the requested 4 channels requires APM disabled.
-  EXPECT_EQ(result.audio_processing_properties().echo_cancellation_type,
-            EchoCancellationType::kEchoCancellationDisabled);
   EXPECT_EQ(result.num_channels(), 4);
 }
 
