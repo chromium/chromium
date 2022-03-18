@@ -146,7 +146,7 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment, public TreeScope {
     return static_cast<SlotAssignmentMode>(slot_assignment_mode_);
   }
   String slotAssignment() const {
-    return IsManualSlotting() ? "manual" : "auto";
+    return IsManualSlotting() ? "manual" : "named";
   }
 
   void SetIsDeclarativeShadowRoot(bool flag) {
