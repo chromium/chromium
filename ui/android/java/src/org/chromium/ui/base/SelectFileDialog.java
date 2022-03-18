@@ -268,15 +268,18 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
         String storagePermission = Manifest.permission.READ_EXTERNAL_STORAGE;
         boolean shouldUsePhotoPicker = shouldUsePhotoPicker();
         if (shouldUsePhotoPicker) {
-            if (!window.hasPermission(storagePermission)) missingPermissions.add(storagePermission);
             if (BuildInfo.targetsAtLeastT()) {
-                if (!window.hasPermission(PermissionConstants.READ_MEDIA_IMAGE)
+                if (!window.hasPermission(PermissionConstants.READ_MEDIA_IMAGES)
                         && shouldShowImageTypes()) {
-                    missingPermissions.add(PermissionConstants.READ_MEDIA_IMAGE);
+                    missingPermissions.add(PermissionConstants.READ_MEDIA_IMAGES);
                 }
                 if (!window.hasPermission(PermissionConstants.READ_MEDIA_VIDEO)
                         && shouldShowVideoTypes()) {
                     missingPermissions.add(PermissionConstants.READ_MEDIA_VIDEO);
+                }
+            } else {
+                if (!window.hasPermission(storagePermission)) {
+                    missingPermissions.add(storagePermission);
                 }
             }
         } else {
@@ -321,7 +324,7 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
 
                         if (shouldUsePhotoPicker) {
                             if (permissions[i].equals(storagePermission)
-                                    || permissions[i].equals(PermissionConstants.READ_MEDIA_IMAGE)
+                                    || permissions[i].equals(PermissionConstants.READ_MEDIA_IMAGES)
                                     || permissions[i].equals(
                                             PermissionConstants.READ_MEDIA_VIDEO)) {
                                 onFileNotSelected();
