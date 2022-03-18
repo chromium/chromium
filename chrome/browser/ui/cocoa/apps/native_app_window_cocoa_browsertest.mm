@@ -407,7 +407,11 @@ IN_PROC_BROWSER_TEST_F(NativeAppWindowCocoaBrowserTest, MinimizeMaximize) {
 }
 
 // Test Maximize, Fullscreen, Restore combinations.
-IN_PROC_BROWSER_TEST_F(NativeAppWindowCocoaBrowserTest, MaximizeFullscreen) {
+// Disabled because ScopedFakeNSWindowFullscreen is incompatible with
+// NSWindowFullscreenNotificationWaiter.
+// https://crbug.com/1307803
+IN_PROC_BROWSER_TEST_F(NativeAppWindowCocoaBrowserTest,
+                       DISABLED_MaximizeFullscreen) {
   ui::test::ScopedFakeNSWindowFullscreen fake_fullscreen;
 
   SetUpAppWithWindows(1);
