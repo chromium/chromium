@@ -36,8 +36,8 @@ class PasswordStoreBackendMigrationDecoratorTest : public testing::Test {
         prefs::kCurrentMigrationVersionToGoogleMobileServices, 0);
 
     feature_list_.InitAndEnableFeatureWithParameters(
-        /*enabled_feature=*/features::kUnifiedPasswordManagerMigration,
-        {{"migration_version", "1"}});
+        /*enabled_feature=*/features::kUnifiedPasswordManagerAndroid,
+        {{"migration_version", "1"}, {"stage", "0"}});
 
     backend_migration_decorator_ =
         std::make_unique<PasswordStoreBackendMigrationDecorator>(
@@ -126,8 +126,9 @@ TEST_F(PasswordStoreBackendMigrationDecoratorTest,
                    prefs::kCurrentMigrationVersionToGoogleMobileServices));
 }
 
+// TODO(crbug.com/1306001): Reenable or clean up for local-only users.
 TEST_F(PasswordStoreBackendMigrationDecoratorTest,
-       LocalAndroidPasswordsClearedWhenSyncEnabled) {
+       DISABLED_LocalAndroidPasswordsClearedWhenSyncEnabled) {
   base::MockCallback<base::OnceCallback<void(bool)>> mock_completion_callback;
   base::RepeatingClosure sync_status_changed_closure;
 

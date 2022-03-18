@@ -193,23 +193,6 @@ const base::Feature kUnifiedCredentialManagerDryRun = {
 const base::Feature kUnifiedPasswordManagerAndroid{
     "UnifiedPasswordManagerAndroid", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables migration of passwords from built in storage to Google Mobile
-// Services.
-const base::Feature kUnifiedPasswordManagerMigration{
-    "UnifiedPasswordManagerMigration", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Sends shadow traffic to Google Mobile Services for password storage. This
-// allows to check stability without switching away from the local storage as
-// source of truth.
-const base::Feature kUnifiedPasswordManagerShadowAndroid{
-    "UnifiedPasswordManagerShadowAndroid", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Similar to kUnifiedPasswordManagerShadowAndroid but send modify operations
-// instead of read operations.Relevant only for non-sync'ing users.
-const base::Feature kUnifiedPasswordManagerShadowWriteOperationsAndroid{
-    "UnifiedPasswordManagerShadowWriteOperationsAndroid",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
 // If enabled, the built-in sync functionality in PasswordSyncBridge becomes
 // unused, meaning that SyncService/SyncEngine will no longer download or
 // upload changes to/from the Sync server. Instead, an external Android-specific
@@ -249,7 +232,7 @@ extern const base::FeatureParam<bool> kPasswordChangeLiveExperimentParam = {
 // Current migration version to Google Mobile Services. If version saved in pref
 // is lower than 'kMigrationVersion' passwords will be re-uploaded.
 extern const base::FeatureParam<int> kMigrationVersion = {
-    &kUnifiedPasswordManagerMigration, "migration_version", 1};
+    &kUnifiedPasswordManagerAndroid, "migration_version", 1};
 #endif
 
 // Field trial identifier for password generation requirements.
@@ -294,9 +277,44 @@ bool IsPasswordScriptsFetchingEnabled() {
 
 #if BUILDFLAG(IS_ANDROID)
 bool UsesUnifiedPasswordManagerUi() {
-  return base::FeatureList::IsEnabled(kUnifiedPasswordManagerAndroid) &&
-         kUpmExperimentVariationParam.Get() !=
-             UpmExperimentVariation::kShadowSyncingUsers;
+  if (!base::FeatureList::IsEnabled(kUnifiedPasswordManagerAndroid))
+    return false;
+  UpmExperimentVariation variation = kUpmExperimentVariationParam.Get();
+  switch (variation) {
+    case UpmExperimentVariation::kEnableForSyncingUsers:
+      return true;
+    case UpmExperimentVariation::kShadowSyncingUsers:
+      return false;
+  }
+  NOTREACHED() << "Define explicitly whether UI is required!";
+  return false;
+}
+
+bool RequiresInitialMigrationForUnifiedPasswordManager() {
+  if (!base::FeatureList::IsEnabled(kUnifiedPasswordManagerAndroid))
+    return false;
+  UpmExperimentVariation variation = kUpmExperimentVariationParam.Get();
+  switch (variation) {
+    case UpmExperimentVariation::kEnableForSyncingUsers:
+      return true;
+    case UpmExperimentVariation::kShadowSyncingUsers:
+      return false;
+  }
+  NOTREACHED() << "Define explicitly whether migration is required!";
+  return false;
+}
+
+bool ManagesLocalPasswordsInUnifiedPasswordManager() {
+  if (!base::FeatureList::IsEnabled(kUnifiedPasswordManagerAndroid))
+    return false;
+  UpmExperimentVariation variation = kUpmExperimentVariationParam.Get();
+  switch (variation) {
+    case UpmExperimentVariation::kEnableForSyncingUsers:
+    case UpmExperimentVariation::kShadowSyncingUsers:
+      return false;
+  }
+  NOTREACHED() << "Define explicitly whether migration is required!";
+  return false;
 }
 #endif  // IS_ANDROID
 

@@ -28,20 +28,8 @@ namespace {
 
 bool ShouldExecuteModifyOperationsOnShadowBackend(PrefService* prefs,
                                                   bool is_syncing) {
-  if (!base::FeatureList::IsEnabled(
-          features::kUnifiedPasswordManagerShadowWriteOperationsAndroid)) {
-    return false;
-  }
-  if (is_syncing)
-    return false;
-  if (features::kMigrationVersion.Get() >
-      prefs->GetInteger(
-          prefs::kCurrentMigrationVersionToGoogleMobileServices)) {
-    // If initial migration isn't completed yet, we shouldn't modify the shadow
-    // backend.
-    return false;
-  }
-  return true;
+  // TODO(crbug.com/1306001): Reenable or clean up for local-only users.
+  return false;
 }
 
 bool ShouldExecuteReadOperationsOnShadowBackend(PrefService* prefs,
@@ -51,8 +39,11 @@ bool ShouldExecuteReadOperationsOnShadowBackend(PrefService* prefs,
     // i.e. necessary migrations have happened and appropriate flags are set.
     return true;
   }
-  return is_syncing && base::FeatureList::IsEnabled(
-                           features::kUnifiedPasswordManagerShadowAndroid);
+  return is_syncing &&
+         base::FeatureList::IsEnabled(
+             features::kUnifiedPasswordManagerAndroid) &&
+         features::kUpmExperimentVariationParam.Get() ==
+             features::UpmExperimentVariation::kShadowSyncingUsers;
 }
 
 using MethodName = base::StrongAlias<struct MethodNameTag, std::string>;

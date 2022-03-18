@@ -93,8 +93,8 @@ class BuiltInBackendToAndroidBackendMigratorTest : public testing::Test {
 TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
        CurrentMigrationVersionIsUpdatedWhenMigrationIsNeeded_SyncOn) {
   feature_list().InitAndEnableFeatureWithParameters(
-      /*enabled_feature=*/features::kUnifiedPasswordManagerMigration,
-      {{"migration_version", "1"}});
+      /*enabled_feature=*/features::kUnifiedPasswordManagerAndroid,
+      {{"migration_version", "1"}, {"stage", "0"}});
   Init();
   EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
       .WillRepeatedly(Return(true));
@@ -112,8 +112,8 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
 TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
        AllPrefsAreUpdatedWhenMigrationIsNeeded_SyncOff) {
   feature_list().InitAndEnableFeatureWithParameters(
-      /*enabled_feature=*/features::kUnifiedPasswordManagerMigration,
-      {{"migration_version", "1"}});
+      /*enabled_feature=*/features::kUnifiedPasswordManagerAndroid,
+      {{"migration_version", "1"}, {"stage", "0"}});
   Init();
 
   EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
@@ -132,7 +132,8 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
 TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
        PrefsUnchangedWhenAttemptedMigrationEarlierToday) {
   feature_list().InitAndEnableFeatureWithParameters(
-      features::kUnifiedPasswordManagerMigration, {{"migration_version", "1"}});
+      features::kUnifiedPasswordManagerAndroid,
+      {{"migration_version", "1"}, {"stage", "0"}});
   Init();
 
   prefs()->SetDouble(password_manager::prefs::kTimeOfLastMigrationAttempt,
@@ -152,9 +153,9 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
        LastAttemptUnchangedWhenRollingMigrationDisabled) {
   // Setup the pref to indicate that the initial migration has happened already.
   feature_list().InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{features::kUnifiedPasswordManagerMigration,
-                             {{"migration_version", "1"}}}},
-      /*disabled_features=*/{features::kUnifiedPasswordManagerAndroid});
+      /*enabled_features=*/{{features::kUnifiedPasswordManagerAndroid,
+                             {{"migration_version", "1"}, {"stage", "1"}}}},
+      /*disabled_features=*/{});
   Init(/*current_migration_version=*/1);
 
   migrator()->StartMigrationIfNecessary();
@@ -166,13 +167,13 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
                    password_manager::prefs::kTimeOfLastMigrationAttempt));
 }
 
+// TODO(crbug.com/1306001): Reenable rolling migration or clean up.
 TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
-       LastAttemptUpdatedInPrefsWhenRollingMigrationEnabled) {
+       DISABLED_LastAttemptUpdatedInPrefsWhenRollingMigrationEnabled) {
   // Setup the pref to indicate that the initial migration has happened already.
   feature_list().InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{features::kUnifiedPasswordManagerMigration,
-                             {{"migration_version", "1"}}},
-                            {features::kUnifiedPasswordManagerAndroid, {{}}}},
+      /*enabled_features=*/{{features::kUnifiedPasswordManagerAndroid,
+                             {{"migration_version", "1"}, {"stage", "0"}}}},
       /*disabled_features=*/{});
   Init(/*current_migration_version=*/1);
 
@@ -193,8 +194,8 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
       "PasswordManager.UnifiedPasswordManager.WasMigrationDone";
 
   feature_list().InitAndEnableFeatureWithParameters(
-      /*enabled_feature=*/features::kUnifiedPasswordManagerMigration,
-      {{"migration_version", "1"}});
+      /*enabled_feature=*/features::kUnifiedPasswordManagerAndroid,
+      {{"migration_version", "1"}, {"stage", "0"}});
   Init();
 
   histogram_tester.ExpectTotalCount(kMigrationFinishedMetric, 1);
@@ -208,8 +209,8 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
       "PasswordManager.UnifiedPasswordManager.WasMigrationDone";
 
   feature_list().InitAndEnableFeatureWithParameters(
-      /*enabled_feature=*/features::kUnifiedPasswordManagerMigration,
-      {{"migration_version", "1"}});
+      /*enabled_feature=*/features::kUnifiedPasswordManagerAndroid,
+      {{"migration_version", "1"}, {"stage", "0"}});
   Init(/*current_migration_version=*/1);
 
   histogram_tester.ExpectTotalCount(kMigrationFinishedMetric, 1);
@@ -223,8 +224,8 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
       "PasswordManager.UnifiedPasswordManager.WasMigrationDone";
 
   feature_list().InitAndEnableFeatureWithParameters(
-      /*enabled_feature=*/features::kUnifiedPasswordManagerMigration,
-      {{"migration_version", "2"}});
+      /*enabled_feature=*/features::kUnifiedPasswordManagerAndroid,
+      {{"migration_version", "2"}, {"stage", "0"}});
 
   Init(/*current_migration_version=*/1);
 
@@ -235,8 +236,8 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
 TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
        InitialMigrationForSyncingUserShouldMoveLocalOnlyDataToAndroidBackend) {
   feature_list().InitAndEnableFeatureWithParameters(
-      /*enabled_feature=*/features::kUnifiedPasswordManagerMigration,
-      {{"migration_version", "1"}});
+      /*enabled_feature=*/features::kUnifiedPasswordManagerAndroid,
+      {{"migration_version", "1"}, {"stage", "0"}});
   EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
       .WillRepeatedly(Return(true));
 
@@ -324,8 +325,8 @@ TEST_P(BuiltInBackendToAndroidBackendMigratorTestWithMigrationParams,
       .WillRepeatedly(Return(false));
 
   feature_list().InitAndEnableFeatureWithParameters(
-      /*enabled_feature=*/features::kUnifiedPasswordManagerMigration,
-      {{"migration_version", "1"}});
+      /*enabled_feature=*/features::kUnifiedPasswordManagerAndroid,
+      {{"migration_version", "1"}, {"stage", "0"}});
 
   const MigrationParam& p = GetParam();
 
@@ -349,14 +350,14 @@ TEST_P(BuiltInBackendToAndroidBackendMigratorTestWithMigrationParams,
   }
 }
 
+// TODO(crbug.com/1306001): Reenable or clean up for local-only users.
 TEST_P(BuiltInBackendToAndroidBackendMigratorTestWithMigrationParams,
-       RollingMigration) {
+       DISABLED_RollingMigration) {
   // Setup the pref to indicate that the initial migration has happened already.
   // This implies that rolling migration will take place!
   feature_list().InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{features::kUnifiedPasswordManagerMigration,
-                             {{"migration_version", "1"}}},
-                            {features::kUnifiedPasswordManagerAndroid, {{}}}},
+      /*enabled_features=*/{{features::kUnifiedPasswordManagerAndroid,
+                             {{"migration_version", "1"}, {"stage", "0"}}}},
       /*disabled_features=*/{});
   BuiltInBackendToAndroidBackendMigratorTest::Init(
       /*current_migration_version=*/1);
@@ -429,18 +430,16 @@ class BuiltInBackendToAndroidBackendMigratorTestMetrics
                                             0.0);
     if (GetParam().is_initial_migration) {
       feature_list().InitAndEnableFeatureWithParameters(
-          /*enabled_feature=*/features::kUnifiedPasswordManagerMigration,
-          {{"migration_version", "1"}});
+          /*enabled_feature=*/features::kUnifiedPasswordManagerAndroid,
+          {{"migration_version", "1"}, {"stage", "0"}});
       latency_metric_ =
           "PasswordManager.UnifiedPasswordManager.InitialMigration.Latency";
       success_metric_ =
           "PasswordManager.UnifiedPasswordManager.InitialMigration.Success";
     } else {
       feature_list().InitWithFeaturesAndParameters(
-          /*enabled_features=*/{{features::kUnifiedPasswordManagerMigration,
-                                 {{"migration_version", "1"}}},
-                                {features::kUnifiedPasswordManagerAndroid,
-                                 {{}}}},
+          /*enabled_features=*/{{features::kUnifiedPasswordManagerAndroid,
+                                 {{"migration_version", "1"}, {"stage", "0"}}}},
           /*disabled_features=*/{});
       // Setup the pref to indicate that the initial migration has happened
       // already.
@@ -508,17 +507,14 @@ TEST_P(BuiltInBackendToAndroidBackendMigratorTestMetrics,
                                      !GetParam().is_successful_migration);
 }
 
+// TODO(crbug.com/1306001): Add test cases rolling migration or clean up.
 INSTANTIATE_TEST_SUITE_P(
     BuiltInBackendToAndroidBackendMigratorTest,
     BuiltInBackendToAndroidBackendMigratorTestMetrics,
     testing::Values(MigrationParamForMetrics{.is_initial_migration = true,
                                              .is_successful_migration = true},
-                    MigrationParamForMetrics{.is_initial_migration = true,
-                                             .is_successful_migration = false},
-                    MigrationParamForMetrics{.is_initial_migration = false,
-                                             .is_successful_migration = true},
                     MigrationParamForMetrics{
-                        .is_initial_migration = false,
+                        .is_initial_migration = true,
                         .is_successful_migration = false}));
 
 class BuiltInBackendToAndroidBackendMigratorWithMockAndroidBackendTest
@@ -530,8 +526,8 @@ class BuiltInBackendToAndroidBackendMigratorWithMockAndroidBackendTest
     prefs()->registry()->RegisterDoublePref(prefs::kTimeOfLastMigrationAttempt,
                                             0.0);
     feature_list().InitAndEnableFeatureWithParameters(
-        /*enabled_feature=*/features::kUnifiedPasswordManagerMigration,
-        {{"migration_version", "1"}});
+        /*enabled_feature=*/features::kUnifiedPasswordManagerAndroid,
+        {{"migration_version", "1"}, {"stage", "0"}});
 
     migrator_ = std::make_unique<BuiltInBackendToAndroidBackendMigrator>(
         &built_in_backend_, &android_backend_, prefs(), &sync_delegate_);
