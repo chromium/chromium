@@ -257,14 +257,9 @@ TEST_F(InSessionPasswordChangeManagerTest, TimePasses_NoUserActionTaken) {
 }
 
 // Timing out on ASan LSan: http://crbug.com/1306035.
-#if defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
-#define MAYBE_TimePasses_NotificationDismissed \
-  DISABLED_TimePasses_NotificationDismissed
-#else
-#define MAYBE_TimePasses_NotificationDismissed TimePasses_NotificationDismissed
-#endif
+// Disabling due to timeout in chromeos-dgb on Linux: http://crbug.com/1307706
 TEST_F(InSessionPasswordChangeManagerTest,
-       MAYBE_TimePasses_NotificationDismissed) {
+       DISABLED_TimePasses_NotificationDismissed) {
   SetExpirationTime(base::Time::Now() + kOneYear + kAdvanceWarningTime / 2);
   manager_->MaybeShowExpiryNotification();
 
