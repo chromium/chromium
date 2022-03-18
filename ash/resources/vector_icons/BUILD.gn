@@ -471,49 +471,6 @@ aggregate_vector_icons("ash_vector_icons") {
       "system_menu_cast_meeting.icon",
     ]
   }
-
-  # Vector icons used for an experimental Switch Access feature.
-  sources += [
-    "switch_access_action_recorder.icon",
-    "switch_access_display_brightness_down.icon",
-    "switch_access_display_brightness_up.icon",
-    "switch_access_display_menu.icon",
-    "switch_access_display_mirror.icon",
-    "switch_access_display_rotate.icon",
-    "switch_access_display_zoom_in.icon",
-    "switch_access_display_zoom_out.icon",
-    "switch_access_execute_macro.icon",
-    "switch_access_leave_group.icon",
-    "switch_access_media_fastforward.icon",
-    "switch_access_media_menu.icon",
-    "switch_access_media_mute.icon",
-    "switch_access_media_play_pause.icon",
-    "switch_access_media_rewind.icon",
-    "switch_access_media_volume_down.icon",
-    "switch_access_media_volume_up.icon",
-    "switch_access_quick_commands.icon",
-    "switch_access_start_recording.icon",
-    "switch_access_stop_recording.icon",
-    "switch_access_system_diagnostics.icon",
-    "switch_access_system_help.icon",
-    "switch_access_system_launcher.icon",
-    "switch_access_system_menu.icon",
-    "switch_access_system_screenshot.icon",
-    "switch_access_system_status_bar.icon",
-    "switch_access_system_task_manager.icon",
-    "switch_access_user_lock.icon",
-    "switch_access_user_menu.icon",
-    "switch_access_user_next_user.icon",
-    "switch_access_user_previous_user.icon",
-    "switch_access_user_sign_out.icon",
-    "switch_access_web_bookmark.icon",
-    "switch_access_web_bottom_of_page.icon",
-    "switch_access_web_clear_history.icon",
-    "switch_access_web_downloads.icon",
-    "switch_access_web_find_in_page.icon",
-    "switch_access_web_menu.icon",
-    "switch_access_web_top_of_page.icon",
-  ]
 }
 
 source_set("vector_icons") {

@@ -14,7 +14,6 @@
 #include "base/containers/flat_map.h"
 #include "base/no_destructor.h"
 #include "ui/accessibility/accessibility_features.h"
-#include "ui/accessibility/accessibility_switches.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/mojom/ax_node_data.mojom-shared.h"
 #include "ui/events/event.h"
@@ -37,7 +36,7 @@ const base::flat_map<std::string, ButtonInfo>& GetMenuButtonDetails() {
       menu_button_details({});
 
   if (menu_button_details->empty()) {
-    base::flat_map<std::string, ButtonInfo> base_menu_button_details(
+    base::flat_map<std::string, ButtonInfo> kBaseMenuButtonDetails(
         {{"copy", {&kSwitchAccessCopyIcon, IDS_ASH_SWITCH_ACCESS_COPY}},
          {"cut", {&kSwitchAccessCutIcon, IDS_ASH_SWITCH_ACCESS_CUT}},
          {"decrement",
@@ -101,129 +100,7 @@ const base::flat_map<std::string, ButtonInfo>& GetMenuButtonDetails() {
          {"rightClick",
           {&kSwitchAccessRightClickIcon, IDS_ASH_SWITCH_ACCESS_RIGHT_CLICK}}});
 
-    if (switches::IsSwitchAccessMultistepAutomationEnabled()) {
-      base_menu_button_details.insert(std::pair<std::string, ButtonInfo>(
-          "shortcuts",
-          {&kSwitchAccessQuickCommandsIcon, IDS_ASH_SWITCH_ACCESS_SHORTCUTS}));
-      base_menu_button_details.insert(std::pair<std::string, ButtonInfo>(
-          "leaveGroup",
-          {&kSwitchAccessLeaveGroupIcon, IDS_ASH_SWITCH_ACCESS_LEAVE_GROUP}));
-      base_menu_button_details.insert(std::pair<std::string, ButtonInfo>(
-          "webMenu",
-          {&kSwitchAccessWebMenuIcon, IDS_ASH_SWITCH_ACCESS_WEB_MENU}));
-      base_menu_button_details.insert(std::pair<std::string, ButtonInfo>(
-          "webBookmark",
-          {&kSwitchAccessWebBookmarkIcon, IDS_ASH_SWITCH_ACCESS_WEB_BOOKMARK}));
-      base_menu_button_details.insert(std::pair<std::string, ButtonInfo>(
-          "webBottomOfPage", {&kSwitchAccessWebBottomOfPageIcon,
-                              IDS_ASH_SWITCH_ACCESS_WEB_BOTTOM_OF_PAGE}));
-      base_menu_button_details.insert(std::pair<std::string, ButtonInfo>(
-          "webTopOfPage", {&kSwitchAccessWebTopOfPageIcon,
-                           IDS_ASH_SWITCH_ACCESS_WEB_TOP_OF_PAGE}));
-      base_menu_button_details.insert(std::pair<std::string, ButtonInfo>(
-          "webFindInPage", {&kSwitchAccessWebFindInPageIcon,
-                            IDS_ASH_SWITCH_ACCESS_WEB_FIND_IN_PAGE}));
-      base_menu_button_details.insert(std::pair<std::string, ButtonInfo>(
-          "webDownloads", {&kSwitchAccessWebDownloadsIcon,
-                           IDS_ASH_SWITCH_ACCESS_WEB_DOWNLOADS}));
-      base_menu_button_details.insert(std::pair<std::string, ButtonInfo>(
-          "webClearHistory", {&kSwitchAccessWebClearHistoryIcon,
-                              IDS_ASH_SWITCH_ACCESS_WEB_CLEAR_HISTORY}));
-      base_menu_button_details.insert(std::pair<std::string, ButtonInfo>(
-          "systemMenu",
-          {&kSwitchAccessSystemMenuIcon, IDS_ASH_SWITCH_ACCESS_SYSTEM_MENU}));
-      base_menu_button_details.insert(std::pair<std::string, ButtonInfo>(
-          "systemStatusBar", {&kSwitchAccessSystemStatusBarIcon,
-                              IDS_ASH_SWITCH_ACCESS_SYSTEM_STATUS_BAR}));
-      base_menu_button_details.insert(std::pair<std::string, ButtonInfo>(
-          "systemLauncher", {&kSwitchAccessSystemLauncherIcon,
-                             IDS_ASH_SWITCH_ACCESS_SYSTEM_LAUNCHER}));
-      base_menu_button_details.insert(std::pair<std::string, ButtonInfo>(
-          "systemTaskManager", {&kSwitchAccessSystemTaskManagerIcon,
-                                IDS_ASH_SWITCH_ACCESS_SYSTEM_TASK_MANAGER}));
-      base_menu_button_details.insert(std::pair<std::string, ButtonInfo>(
-          "systemDiagnostics", {&kSwitchAccessSystemDiagnosticsIcon,
-                                IDS_ASH_SWITCH_ACCESS_SYSTEM_DIAGNOSTICS}));
-      base_menu_button_details.insert(std::pair<std::string, ButtonInfo>(
-          "systemScreenshot", {&kSwitchAccessSystemScreenshotIcon,
-                               IDS_ASH_SWITCH_ACCESS_SYSTEM_SCREENSHOT}));
-      base_menu_button_details.insert(std::pair<std::string, ButtonInfo>(
-          "systemHelp",
-          {&kSwitchAccessSystemHelpIcon, IDS_ASH_SWITCH_ACCESS_SYSTEM_HELP}));
-      base_menu_button_details.insert(std::pair<std::string, ButtonInfo>(
-          "mediaMenu",
-          {&kSwitchAccessMediaMenuIcon, IDS_ASH_SWITCH_ACCESS_MEDIA_MENU}));
-      base_menu_button_details.insert(std::pair<std::string, ButtonInfo>(
-          "mediaMute",
-          {&kSwitchAccessMediaMuteIcon, IDS_ASH_SWITCH_ACCESS_MEDIA_MUTE}));
-      base_menu_button_details.insert(std::pair<std::string, ButtonInfo>(
-          "mediaVolumeDown", {&kSwitchAccessMediaVolumeDownIcon,
-                              IDS_ASH_SWITCH_ACCESS_MEDIA_VOLUME_DOWN}));
-      base_menu_button_details.insert(std::pair<std::string, ButtonInfo>(
-          "mediaVolumeUp", {&kSwitchAccessMediaVolumeUpIcon,
-                            IDS_ASH_SWITCH_ACCESS_MEDIA_VOLUME_UP}));
-      base_menu_button_details.insert(std::pair<std::string, ButtonInfo>(
-          "mediaRewind",
-          {&kSwitchAccessMediaRewindIcon, IDS_ASH_SWITCH_ACCESS_MEDIA_REWIND}));
-      base_menu_button_details.insert(std::pair<std::string, ButtonInfo>(
-          "mediaPlayPause", {&kSwitchAccessMediaPlayPauseIcon,
-                             IDS_ASH_SWITCH_ACCESS_MEDIA_PLAY_PAUSE}));
-      base_menu_button_details.insert(std::pair<std::string, ButtonInfo>(
-          "mediaFastforward", {&kSwitchAccessMediaFastforwardIcon,
-                               IDS_ASH_SWITCH_ACCESS_MEDIA_FASTFORWARD}));
-      base_menu_button_details.insert(std::pair<std::string, ButtonInfo>(
-          "displayMenu",
-          {&kSwitchAccessDisplayMenuIcon, IDS_ASH_SWITCH_ACCESS_DISPLAY_MENU}));
-      base_menu_button_details.insert(std::pair<std::string, ButtonInfo>(
-          "displayMirror", {&kSwitchAccessDisplayMirrorIcon,
-                            IDS_ASH_SWITCH_ACCESS_DISPLAY_MIRROR}));
-      base_menu_button_details.insert(std::pair<std::string, ButtonInfo>(
-          "displayBrightnessDown",
-          {&kSwitchAccessDisplayBrightnessDownIcon,
-           IDS_ASH_SWITCH_ACCESS_DISPLAY_BRIGHTNESS_DOWN}));
-      base_menu_button_details.insert(std::pair<std::string, ButtonInfo>(
-          "displayBrightnessUp",
-          {&kSwitchAccessDisplayBrightnessUpIcon,
-           IDS_ASH_SWITCH_ACCESS_DISPLAY_BRIGHTNESS_UP}));
-      base_menu_button_details.insert(std::pair<std::string, ButtonInfo>(
-          "displayRotate", {&kSwitchAccessDisplayRotateIcon,
-                            IDS_ASH_SWITCH_ACCESS_DISPLAY_ROTATE}));
-      base_menu_button_details.insert(std::pair<std::string, ButtonInfo>(
-          "displayZoomOut", {&kSwitchAccessDisplayZoomOutIcon,
-                             IDS_ASH_SWITCH_ACCESS_DISPLAY_ZOOM_OUT}));
-      base_menu_button_details.insert(std::pair<std::string, ButtonInfo>(
-          "displayZoomIn", {&kSwitchAccessDisplayZoomInIcon,
-                            IDS_ASH_SWITCH_ACCESS_DISPLAY_ZOOM_IN}));
-      base_menu_button_details.insert(std::pair<std::string, ButtonInfo>(
-          "userMenu",
-          {&kSwitchAccessUserMenuIcon, IDS_ASH_SWITCH_ACCESS_USER_MENU}));
-      base_menu_button_details.insert(std::pair<std::string, ButtonInfo>(
-          "userLock",
-          {&kSwitchAccessUserLockIcon, IDS_ASH_SWITCH_ACCESS_USER_LOCK}));
-      base_menu_button_details.insert(std::pair<std::string, ButtonInfo>(
-          "userPreviousUser", {&kSwitchAccessUserPreviousUserIcon,
-                               IDS_ASH_SWITCH_ACCESS_USER_PREVIOUS_USER}));
-      base_menu_button_details.insert(std::pair<std::string, ButtonInfo>(
-          "userNextUser", {&kSwitchAccessUserNextUserIcon,
-                           IDS_ASH_SWITCH_ACCESS_USER_NEXT_USER}));
-      base_menu_button_details.insert(std::pair<std::string, ButtonInfo>(
-          "userSignOut", {&kSwitchAccessUserSignOutIcon,
-                          IDS_ASH_SWITCH_ACCESS_USER_SIGN_OUT}));
-      base_menu_button_details.insert(std::pair<std::string, ButtonInfo>(
-          "actionRecorder", {&kSwitchAccessActionRecorderIcon,
-                             IDS_ASH_SWITCH_ACCESS_ACTION_RECORDER}));
-      base_menu_button_details.insert(std::pair<std::string, ButtonInfo>(
-          "startRecording", {&kSwitchAccessStartRecordingIcon,
-                             IDS_ASH_SWITCH_ACCESS_START_RECORDING}));
-      base_menu_button_details.insert(std::pair<std::string, ButtonInfo>(
-          "stopRecording", {&kSwitchAccessStopRecordingIcon,
-                            IDS_ASH_SWITCH_ACCESS_STOP_RECORDING}));
-      base_menu_button_details.insert(std::pair<std::string, ButtonInfo>(
-          "executeMacro", {&kSwitchAccessExecuteMacroIcon,
-                           IDS_ASH_SWITCH_ACCESS_EXECUTE_MACRO}));
-    }
-
-    menu_button_details->swap(base_menu_button_details);
+    menu_button_details->swap(kBaseMenuButtonDetails);
   }
   return *menu_button_details;
 }

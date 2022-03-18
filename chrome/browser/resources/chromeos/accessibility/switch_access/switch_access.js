@@ -61,18 +61,9 @@ export class SwitchAccess {
      */
     this.enableImprovedTextInput_ = false;
 
-    /** @private {boolean} */
-    this.enableMultistepAutomationFeatures_ = false;
-
     chrome.commandLinePrivate.hasSwitch(
         'enable-experimental-accessibility-switch-access-text', (result) => {
           this.enableImprovedTextInput_ = result;
-        });
-
-    chrome.commandLinePrivate.hasSwitch(
-        'enable-experimental-accessibility-switch-access-multistep-automation',
-        (enabled) => {
-          this.enableMultistepAutomationFeatures_ = enabled;
         });
 
     /* @private {!SAConstants.Mode} */
@@ -86,11 +77,6 @@ export class SwitchAccess {
    */
   improvedTextInputEnabled() {
     return this.enableImprovedTextInput_;
-  }
-
-  /** @return {boolean} */
-  multistepAutomationFeaturesEnabled() {
-    return this.enableMultistepAutomationFeatures_;
   }
 
   /** @return {!SAConstants.Mode} */

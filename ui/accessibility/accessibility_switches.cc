@@ -36,11 +36,6 @@ const char kEnableExperimentalAccessibilitySwitchAccessText[] =
 // zooming in.
 const char kEnableMagnifierDebugDrawRect[] = "enable-magnifier-debug-draw-rect";
 
-// Enables multistep automation for Switch Access, which is a 2021 accessibility
-// sprint project and hasn't launched yet.
-const char kEnableExperimentalAccessibilitySwitchAccessMultistepAutomation[] =
-    "enable-experimental-accessibility-switch-access-multistep-automation";
-
 bool IsExperimentalAccessibilityLanguageDetectionEnabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       ::switches::kEnableExperimentalAccessibilityLanguageDetection);
@@ -59,12 +54,6 @@ bool IsExperimentalAccessibilitySwitchAccessTextEnabled() {
 bool IsMagnifierDebugDrawRectEnabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       ::switches::kEnableMagnifierDebugDrawRect);
-}
-
-bool IsSwitchAccessMultistepAutomationEnabled() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      ::switches::
-          kEnableExperimentalAccessibilitySwitchAccessMultistepAutomation);
 }
 
 #if BUILDFLAG(IS_WIN)

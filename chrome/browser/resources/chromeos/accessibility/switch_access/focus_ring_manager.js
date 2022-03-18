@@ -59,43 +59,6 @@ export class FocusRingManager {
   }
 
   /**
-   * Set state of recording macro and switch colors of the focus rings.
-   * @param {boolean} isRecording
-   */
-  static setIsRecording(isRecording) {
-    // If the feature flag is not enabled, escape.
-    if (!SwitchAccess.instance.multistepAutomationFeaturesEnabled()) {
-      return;
-    }
-
-    const manager = FocusRingManager.instance;
-
-    if (isRecording) {
-      manager.rings_.get(SAConstants.Focus.ID.PRIMARY).color =
-          SAConstants.Focus.PRIMARY_COLOR_RECORDING_MACRO;
-      manager.rings_.get(SAConstants.Focus.ID.PRIMARY).secondaryColor =
-          SAConstants.Focus.OUTER_COLOR_RECORDING_MACRO;
-
-      manager.rings_.get(SAConstants.Focus.ID.PREVIEW).color =
-          SAConstants.Focus.PREVIEW_COLOR_RECORDING_MACRO;
-      manager.rings_.get(SAConstants.Focus.ID.PREVIEW).secondaryColor =
-          SAConstants.Focus.OUTER_COLOR_RECORDING_MACRO;
-    } else {
-      manager.rings_.get(SAConstants.Focus.ID.PRIMARY).color =
-          SAConstants.Focus.PRIMARY_COLOR;
-      manager.rings_.get(SAConstants.Focus.ID.PRIMARY).secondaryColor =
-          SAConstants.Focus.OUTER_COLOR;
-
-      manager.rings_.get(SAConstants.Focus.ID.PREVIEW).color =
-          SAConstants.Focus.PREVIEW_COLOR;
-      manager.rings_.get(SAConstants.Focus.ID.PREVIEW).secondaryColor =
-          SAConstants.Focus.OUTER_COLOR;
-    }
-
-    manager.updateFocusRings_(null, null);
-  }
-
-  /**
    * Sets the primary and preview focus rings based on the current primary and
    *     group nodes used for navigation.
    * @param {!SAChildNode} node

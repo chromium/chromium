@@ -84,18 +84,7 @@ export const SAConstants = {
    * @enum {number}
    * @const
    */
-  MenuType: {
-    MAIN_MENU: 0,
-    TEXT_NAVIGATION: 1,
-    POINT_SCAN_MENU: 2,
-    SHORTCUTS_MENU: 3,
-    ACTION_RECORDER_MENU: 4,
-    WEB_MENU: 5,
-    SYSTEM_MENU: 6,
-    MEDIA_MENU: 7,
-    USER_MENU: 8,
-    DISPLAY_MENU: 9,
-  },
+  MenuType: {MAIN_MENU: 0, TEXT_NAVIGATION: 1, POINT_SCAN_MENU: 2},
 
   /**
    * The modes of interaction the user can select for how to interact with the
@@ -179,26 +168,5 @@ export const SAConstants = {
      * @const
      */
     OUTER_COLOR: '#174EA6',  // Google Blue 900
-
-    /**
-     * The inner color of the primary focus ring when recording marcos.
-     * @type {string}
-     * @const
-     */
-    PRIMARY_COLOR_RECORDING_MACRO: '#E57373',  // Google Red 300
-
-    /**
-     * The inner color of the preview focus ring when recording marcos.
-     * @type {string}
-     * @const
-     */
-    PREVIEW_COLOR_RECORDING_MACRO: '#E5737380',  // Google Red 300, 50% opacity
-
-    /**
-     * The outer color of the focus rings when recording marcos.
-     * @type {string}
-     * @const
-     */
-    OUTER_COLOR_RECORDING_MACRO: '#B71C1C',  // Google Red 900
   },
 };

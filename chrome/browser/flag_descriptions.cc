@@ -4816,13 +4816,6 @@ const char kExperimentalAccessibilitySwitchAccessTextDescription[] =
     "Enable experimental or in-progress Switch Access features for improved "
     "text input";
 
-const char kExperimentalAccessibilitySwitchAccessMultistepAutomationName[] =
-    "Enable multistep automation for Switch Access.";
-const char
-    kExperimentalAccessibilitySwitchAccessMultistepAutomationDescription[] =
-        "Enable multistep automation for Switch Access, which is a project for "
-        "the 2021 accessibility sprint.";
-
 const char kExtendedOpenVpnSettingsName[] = "Enable extended OpenVPN settings";
 const char kExtendedOpenVpnSettingsDescription[] =
     "Enable displaying additional configuration properties of already "

@@ -2764,11 +2764,6 @@ extern const char kExperimentalAccessibilityDictationWithPumpkinDescription[];
 extern const char kExperimentalAccessibilitySwitchAccessTextName[];
 extern const char kExperimentalAccessibilitySwitchAccessTextDescription[];
 
-extern const char
-    kExperimentalAccessibilitySwitchAccessMultistepAutomationName[];
-extern const char
-    kExperimentalAccessibilitySwitchAccessMultistepAutomationDescription[];
-
 extern const char kExtendedOpenVpnSettingsName[];
 extern const char kExtendedOpenVpnSettingsDescription[];
 

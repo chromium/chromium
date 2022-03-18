@@ -4474,15 +4474,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      SINGLE_VALUE_TYPE(
          ::switches::kEnableExperimentalAccessibilitySwitchAccessText)},
-    {"enable-experimental-accessibility-switch-access-multistep-automation",
-     flag_descriptions::
-         kExperimentalAccessibilitySwitchAccessMultistepAutomationName,
-     flag_descriptions::
-         kExperimentalAccessibilitySwitchAccessMultistepAutomationDescription,
-     kOsCrOS,
-     SINGLE_VALUE_TYPE(
-         ::switches::
-             kEnableExperimentalAccessibilitySwitchAccessMultistepAutomation)},
     {"enable-experimental-kernel-vm-support",
      flag_descriptions::kKernelnextVMsName,
      flag_descriptions::kKernelnextVMsDescription, kOsCrOS,
