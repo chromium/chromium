@@ -71,7 +71,8 @@ OSFeedbackUI::OSFeedbackUI(content::WebUI* web_ui)
   webui_allowlist->RegisterAutoGrantedPermission(
       untrusted_origin, ContentSettingsType::JAVASCRIPT);
 
-  helpContentProvider_ = std::make_unique<feedback::HelpContentProvider>();
+  helpContentProvider_ =
+      std::make_unique<feedback::HelpContentProvider>(browser_context);
 }
 
 OSFeedbackUI::~OSFeedbackUI() = default;
