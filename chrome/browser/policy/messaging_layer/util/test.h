@@ -38,6 +38,16 @@ class RequestValidityMatcherInterface {
   virtual std::string Name() const = 0;
 };
 
+// attachEncryptionSettings must be of bool type and true.
+class AttachEncryptionSettingsMatcher : public RequestValidityMatcherInterface {
+ public:
+  bool MatchAndExplain(const base::Value::Dict& arg,
+                       MatchResultListener* listener) const override;
+  void DescribeTo(std::ostream* os) const override;
+  void DescribeNegationTo(std::ostream* os) const override;
+  std::string Name() const override;
+};
+
 // encryptedRecord must be a list. This matcher is recommended to be applies
 // before verifying the details of any record (e.g., via |RecordMatcher|) to
 // generate more readable error messages.
@@ -143,6 +153,16 @@ class RequestValidityMatcherBuilder {
   }
 
   // Creates and returns a |RequestValidityMatcherBuilder| instance that
+  // contains a matcher that is suited for verifying an encryption key-request
+  // upload request.
+  static RequestValidityMatcherBuilder<T> CreateEncryptionKeyRequestUpload() {
+    // A gap upload is a data upload with no encryptedWrappedRecord.
+    return std::move(RequestValidityMatcherBuilder<T>::CreateEmpty()
+                         .AppendMatcher(AttachEncryptionSettingsMatcher())
+                         .AppendMatcher(RequestIdMatcher()));
+  }
+
+  // Creates and returns a |RequestValidityMatcherBuilder| instance that
   // contains a matcher that is suited for verifying a gap upload request.
   static RequestValidityMatcherBuilder<T> CreateGapUpload() {
     // A gap upload is a data upload with no encryptedWrappedRecord.
@@ -232,6 +252,13 @@ class RequestContainingRecordMatcher {
 template <class T = base::Value::Dict>
 Matcher<T> IsDataUploadRequestValid() {
   return RequestValidityMatcherBuilder<T>::CreateDataUpload().Build();
+}
+
+// Match an encryption key-request upload request that is valid.
+template <class T = base::Value::Dict>
+Matcher<T> IsEncryptionKeyRequestUploadRequestValid() {
+  return RequestValidityMatcherBuilder<T>::CreateEncryptionKeyRequestUpload()
+      .Build();
 }
 
 // Match a gap upload request that is valid.

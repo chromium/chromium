@@ -394,7 +394,8 @@ TEST_P(ReportClientTest, EnqueueMessageAndUpload) {
     }
 
     // Uploader is available, let it set the key.
-    EXPECT_CALL(*client_, UploadEncryptedReport(_, _, _))
+    EXPECT_CALL(*client_, UploadEncryptedReport(
+                              IsEncryptionKeyRequestUploadRequestValid(), _, _))
         .WillOnce(WithArgs<0, 2>(Invoke(GetEncryptionKeyInvocation())))
         .RetiresOnSaturation();
   }
@@ -443,7 +444,9 @@ TEST_P(ReportClientTest, SpeculativelyEnqueueMessageAndUpload) {
     // Note: there does not seem to be another way to define the expectations
     // A+B for encrypted case and just B for non-encrypted.
     if (is_encryption_enabled()) {
-      EXPECT_CALL(*client_, UploadEncryptedReport(_, _, _))
+      EXPECT_CALL(*client_,
+                  UploadEncryptedReport(
+                      IsEncryptionKeyRequestUploadRequestValid(), _, _))
           .WillOnce(WithArgs<0, 2>(Invoke(GetEncryptionKeyInvocation())));
       EXPECT_CALL(*client_,
                   UploadEncryptedReport(IsDataUploadRequestValid(), _, _))

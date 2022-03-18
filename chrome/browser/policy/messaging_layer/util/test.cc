@@ -36,6 +36,36 @@ static const base::Value::List* GetRecordList(const base::Value::Dict& arg,
   return record_list;
 }
 
+bool AttachEncryptionSettingsMatcher::MatchAndExplain(
+    const base::Value::Dict& arg,
+    MatchResultListener* listener) const {
+  const auto attach_encryption_settings =
+      arg.FindBool("attachEncryptionSettings");
+  if (!attach_encryption_settings) {
+    *listener << "No key named \"attachEncryptionSettings\" in the argument or "
+                 "the value is not of bool type.";
+    return false;
+  }
+  if (!attach_encryption_settings.value()) {
+    *listener << "The value of \"attachEncryptionSettings\" is false.";
+    return false;
+  }
+  return true;
+}
+
+void AttachEncryptionSettingsMatcher::DescribeTo(std::ostream* os) const {
+  *os << "has a valid attachEncryptionSettings field.";
+}
+
+void AttachEncryptionSettingsMatcher::DescribeNegationTo(
+    std::ostream* os) const {
+  *os << "has an invalid attachEncryptionSettings field.";
+}
+
+std::string AttachEncryptionSettingsMatcher::Name() const {
+  return "attach-encryption-settings-matcher";
+}
+
 bool EncryptedRecordMatcher::MatchAndExplain(
     const base::Value::Dict& arg,
     MatchResultListener* listener) const {
