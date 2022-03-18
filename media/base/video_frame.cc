@@ -1448,9 +1448,6 @@ bool VideoFrame::IsValidConfigInternal(VideoPixelFormat format,
     return false;
   }
 
-  // Make sure new formats are properly accounted for in the method.
-  static_assert(PIXEL_FORMAT_MAX == 33,
-                "Added pixel format, please review AreSizesValid()");
   switch (frame_control_type) {
     case FrameControlType::kNone:
       // Check that software-allocated buffer formats are not empty.
