@@ -95,26 +95,33 @@ struct PopupView: View {
     }
   }
 
-  var body: some View {
+  @ViewBuilder
+  var listView: some View {
     let listModifier = SimultaneousGestureModifier(DragGesture().onChanged { onDrag($0) })
       .concat(ScrollOnChangeModifier(value: $model.sections, action: onNewMatches))
-
+      .concat(BlurredBackground())
     if shouldSelfSize {
       SelfSizingList(
         bottomMargin: Dimensions.selfSizingListBottomMargin,
-        listModifier: listModifier
-      ) {
-        listContent
-      } emptySpace: {
-        PopupEmptySpaceView()
-      }
-      .onAppear(perform: onAppear)
+        listModifier: listModifier,
+        content: {
+          listContent
+        },
+        emptySpace: {
+          PopupEmptySpaceView()
+        }
+      )
     } else {
-      List { listContent }
-        .modifier(listModifier)
-        .onAppear(perform: onAppear)
-        .ignoresSafeArea(.keyboard)
+      List {
+        listContent
+      }
+      .modifier(listModifier)
+      .ignoresSafeArea(.keyboard)
     }
+  }
+
+  var body: some View {
+    listView.onAppear(perform: onAppear)
   }
 
   func onAppear() {
@@ -122,6 +129,7 @@ struct PopupView: View {
       let listAppearance = UITableView.appearance(whenContainedInInstancesOf: [
         appearanceContainerType
       ])
+      listAppearance.backgroundColor = .clear
 
       if shouldSelfSize {
         listAppearance.bounces = false

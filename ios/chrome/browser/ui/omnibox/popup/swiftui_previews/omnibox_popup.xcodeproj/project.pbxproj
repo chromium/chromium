@@ -44,6 +44,7 @@
 		93B3BBC827B1C8460034ADF1 /* popup_coordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B3BBC727B1C8460034ADF1 /* popup_coordinator.swift */; };
 		93B3BBD627B1C8D20034ADF1 /* popup_mediator.m in Sources */ = {isa = PBXBuildFile; fileRef = 93B3BBD527B1C8D20034ADF1 /* popup_mediator.m */; };
 		93BCA07127D2D4C300CE8602 /* fake_omnibox_icon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93BCA07027D2D4C300CE8602 /* fake_omnibox_icon.swift */; };
+		93BCA08727E2A53C00CE8602 /* blurred_background.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93BCA08627E2A53C00CE8602 /* blurred_background.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -131,6 +132,7 @@
 		93B3BBD427B1C8D20034ADF1 /* popup_mediator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = popup_mediator.h; sourceTree = "<group>"; };
 		93B3BBD527B1C8D20034ADF1 /* popup_mediator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = popup_mediator.m; sourceTree = "<group>"; };
 		93BCA07027D2D4C300CE8602 /* fake_omnibox_icon.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = fake_omnibox_icon.swift; path = ../../shared/fake_omnibox_icon.swift; sourceTree = "<group>"; };
+		93BCA08627E2A53C00CE8602 /* blurred_background.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = blurred_background.swift; path = ../../shared/blurred_background.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -167,6 +169,7 @@
 				593C4C1027C5638000FBE617 /* autocomplete_result_consumer.h */,
 				593C4C1127C5638000FBE617 /* autocomplete_suggestion.h */,
 				593C4C1227C5638000FBE617 /* omnibox_icon.h */,
+				93BCA08627E2A53C00CE8602 /* blurred_background.swift */,
 				93BCA07027D2D4C300CE8602 /* fake_omnibox_icon.swift */,
 				59C4A9BA27BFF04F0080C045 /* omnibox_pedal.swift */,
 				8781A7EB27DFF6950054D0B9 /* popup_empty_space_view.swift */,
@@ -431,6 +434,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				876011EB27D287A6004EB60B /* popup_match_trailing_button.swift in Sources */,
+				93BCA08727E2A53C00CE8602 /* blurred_background.swift in Sources */,
 				8749952427E22B8B005EF2ED /* self_sizing_list.swift in Sources */,
 				593C4C1327C5639000FBE617 /* autocomplete_result_consumer.h in Sources */,
 				593C4C1427C5639000FBE617 /* autocomplete_suggestion.h in Sources */,

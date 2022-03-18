@@ -8,6 +8,7 @@ swift_source_set("popup_swift") {
   bridge_header = "popup_swift_bridge.h"
   sources = [
     "omnibox_popup_view_provider.swift",
+    "shared/blurred_background.swift",
     "shared/fake_omnibox_icon.swift",
     "shared/omnibox_pedal.swift",
     "shared/popup_empty_space_view.swift",
