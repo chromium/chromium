@@ -63,7 +63,6 @@ class CORE_EXPORT NGTableLayoutAlgorithm
                    const LogicalSize& border_spacing,
                    const NGBoxStrut& table_border_padding,
                    const LayoutUnit captions_block_size,
-                   bool is_fixed_layout,
                    NGTableTypes::Rows* rows,
                    NGTableTypes::CellBlockConstraints* cell_block_constraints,
                    NGTableTypes::Sections* sections,

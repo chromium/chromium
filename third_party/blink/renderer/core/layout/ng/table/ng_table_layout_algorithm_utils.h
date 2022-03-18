@@ -82,6 +82,19 @@ class NGTableAlgorithmUtils {
       NGTableTypes::Sections* sections,
       NGTableTypes::Rows* rows,
       NGTableTypes::CellBlockConstraints* cell_block_constraints);
+
+  // Recalculates any row baselines if needed. Rows which contain %-block-size
+  // descendants may shift their baseline once we have the final row geometry.
+  static void RecomputeRowBaselines(
+      const NGTableGroupedChildren&,
+      const Vector<NGTableColumnLocation>&,
+      const NGTableTypes::CellBlockConstraints&,
+      const LogicalSize& border_spacing,
+      WritingDirectionMode table_writing_direction,
+      LayoutUnit cell_percentage_inline_size,
+      bool is_table_block_size_specified,
+      bool has_collapsed_borders,
+      NGTableTypes::Rows*);
 };
 
 // NGColspanCellTabulator keeps track of columns occupied by colspanned cells

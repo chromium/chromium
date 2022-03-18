@@ -42,22 +42,17 @@ class NGTableConstraintSpaceData
         LayoutUnit block_size,
         wtf_size_t start_cell_index,
         wtf_size_t cell_count,
-        bool has_baseline_aligned_percentage_block_size_descendants,
         bool is_collapsed)
         : baseline(baseline),
           block_size(block_size),
           start_cell_index(start_cell_index),
           cell_count(cell_count),
-          has_baseline_aligned_percentage_block_size_descendants(
-              has_baseline_aligned_percentage_block_size_descendants),
           is_collapsed(is_collapsed) {}
 
     bool MaySkipLayout(const Row& other) const {
       // We don't compare |start_cell_index| as this is allowed to change.
       return baseline == other.baseline && block_size == other.block_size &&
              cell_count == other.cell_count &&
-             has_baseline_aligned_percentage_block_size_descendants ==
-                 other.has_baseline_aligned_percentage_block_size_descendants &&
              is_collapsed == other.is_collapsed;
     }
 
@@ -65,7 +60,6 @@ class NGTableConstraintSpaceData
     const LayoutUnit block_size;
     const wtf_size_t start_cell_index;
     const wtf_size_t cell_count;
-    const bool has_baseline_aligned_percentage_block_size_descendants;
     const bool is_collapsed;
   };
 

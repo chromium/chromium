@@ -293,10 +293,8 @@ scoped_refptr<const NGTableConstraintSpaceData> CreateConstraintSpaceData(
     data->sections.emplace_back(section.start_row, section.row_count);
   data->rows.ReserveCapacity(rows.size());
   for (const auto& row : rows) {
-    data->rows.emplace_back(
-        row.baseline, row.block_size, row.start_cell_index, row.cell_count,
-        row.has_baseline_aligned_percentage_block_size_descendants,
-        row.is_collapsed);
+    data->rows.emplace_back(row.baseline, row.block_size, row.start_cell_index,
+                            row.cell_count, row.is_collapsed);
   }
   data->cells.ReserveCapacity(cell_block_constraints.size());
   // Traversing from section is necessary to limit cell's rowspan to the
@@ -558,8 +556,8 @@ const NGLayoutResult* NGTableLayoutAlgorithm::Layout() {
   LayoutUnit minimal_table_grid_block_size;
   ComputeRows(table_inline_size_before_collapse - border_padding.InlineSum(),
               grouped_children, column_locations, *table_borders,
-              border_spacing, border_padding, captions_block_size,
-              is_fixed_layout, &rows, &cell_block_constraints, &sections,
+              border_spacing, border_padding, captions_block_size, &rows,
+              &cell_block_constraints, &sections,
               &minimal_table_grid_block_size);
 
   if (has_collapsed_columns) {
@@ -649,7 +647,6 @@ void NGTableLayoutAlgorithm::ComputeRows(
     const LogicalSize& border_spacing,
     const NGBoxStrut& table_border_padding,
     const LayoutUnit captions_block_size,
-    bool is_fixed,
     NGTableTypes::Rows* rows,
     NGTableTypes::CellBlockConstraints* cell_block_constraints,
     NGTableTypes::Sections* sections,
@@ -705,9 +702,12 @@ void NGTableLayoutAlgorithm::ComputeRows(
     }
   }
 
-  // Collapsed rows get 0 block-size, and shrink the minimum table size.
-  for (NGTableTypes::Row& row : *rows) {
+  bool recompute_row_baselines = false;
+  for (auto& row : *rows) {
+    // Collapsed rows get zero block-size, and shrink the minimum table size.
     if (row.is_collapsed) {
+      // TODO(ikilpatrick): As written |minimal_table_grid_block_size| can go
+      // negative. Investigate.
       if (*minimal_table_grid_block_size != LayoutUnit()) {
         *minimal_table_grid_block_size -= row.block_size;
         if (rows->size() > 1)
@@ -715,8 +715,19 @@ void NGTableLayoutAlgorithm::ComputeRows(
       }
       row.block_size = LayoutUnit();
     }
+
+    // Check if we need to perform a final pass.
+    recompute_row_baselines |=
+        row.has_baseline_aligned_percentage_block_size_descendants;
   }
-  minimal_table_grid_block_size->ClampNegativeToZero();
+
+  // There is at least one row which needs its baseline recomputed.
+  if (recompute_row_baselines) {
+    NGTableAlgorithmUtils::RecomputeRowBaselines(
+        grouped_children, column_locations, *cell_block_constraints,
+        border_spacing, Style().GetWritingDirection(), table_grid_inline_size,
+        is_table_block_size_specified, table_borders.IsCollapsed(), rows);
+  }
 }
 
 // Method also sets LogicalWidth/Height on columns.
