@@ -28,3 +28,16 @@ font_access_test(async t => {
   // enough to catch any crash from the query() call in the removed iframe.
   await navigator.fonts.query();
 }, 'Detaching iframe while query() settles.');
+
+font_access_test(async t => {
+  const iframe = document.createElement('iframe');
+  document.body.appendChild(iframe);
+
+  const iframeFonts = await iframe.contentWindow.navigator.fonts.query();
+  assert_greater_than_equal(iframeFonts.length, 1, 'Need a least one font');
+  const iframeFontMetadata = iframeFonts[0];
+  const frameDOMException = iframe.contentWindow.DOMException;
+  iframe.remove();
+
+  iframeFontMetadata.blob();
+}, 'FontMetadata.blob() should not crash when called from a detached iframe.');

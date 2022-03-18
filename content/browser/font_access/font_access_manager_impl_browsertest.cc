@@ -60,7 +60,7 @@ class FontAccessManagerImplBrowserBase : public ContentBrowserTest {
   // Must be called before the StoragePartition's FontAccessManager is accessed.
   //
   // This method replaces the StoragePartition's FontAccessManager. This leads
-  // to confusin if the old FontAccessManager is already in use, either due to
+  // to confusion if the old FontAccessManager is already in use, either due to
   // a font_access_manager() call, or due to JavaScript connecting to the Font
   // Access API.
   void OverrideFontAccessLocale(std::string locale) {
@@ -118,21 +118,37 @@ IN_PROC_BROWSER_TEST_F(FontAccessManagerImplBrowserTest, EnumerationTest) {
   ASSERT_TRUE(NavigateToURL(shell(), GetTestUrl(nullptr, "simple_page.html")));
   font_access_manager()->SkipPrivacyChecksForTesting(true);
 
-  EvalJsResult result =
-      EvalJs(shell(),
-             "(async () => {"
-             "  let count = 0;"
-             "  const fonts = await "
-             "navigator.fonts.query({persistentAccess: true});"
-             "  for (const item of fonts) {"
-             "    count++;"
-             "  }"
-             "  return count;"
-             "})()");
+  EvalJsResult result = EvalJs(shell(),
+                               "(async () => {"
+                               "  const fonts = await navigator.fonts.query();"
+                               "  return fonts.length;"
+                               "})()");
 
   if (FontEnumerationDataSource::IsOsSupportedForTesting()) {
     EXPECT_LT(0, result.ExtractInt())
         << "Enumeration should return at least one font on supported OS.";
+  } else {
+    // TODO(crbug.com/1296792): Figure out Android situation.
+    EXPECT_TRUE(!result.error.empty());
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(FontAccessManagerImplBrowserTest,
+                       EnumerationTestWithInvalidSelect) {
+  ASSERT_TRUE(NavigateToURL(shell(), GetTestUrl(nullptr, "simple_page.html")));
+  font_access_manager()->SkipPrivacyChecksForTesting(true);
+
+  EvalJsResult result =
+      EvalJs(shell(),
+             "(async () => {"
+             "  const fonts ="
+             "      await navigator.fonts.query({select: ['invalid-query']});"
+             "  return fonts.length;"
+             "})()");
+
+  if (FontEnumerationDataSource::IsOsSupportedForTesting()) {
+    EXPECT_EQ(0, result.ExtractInt())
+        << "Enumeration should return no fonts with an invalid select query.";
   } else {
     // TODO(crbug.com/1296792): Figure out Android situation.
     EXPECT_TRUE(!result.error.empty());

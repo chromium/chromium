@@ -182,9 +182,10 @@ void ValidateFontEnumerationBasic(FontEnumerationStatus status,
                                   base::ReadOnlySharedMemoryRegion region) {
   ASSERT_EQ(status, FontEnumerationStatus::kOk) << "enumeration status is kOk";
 
-  blink::FontEnumerationTable table;
   base::ReadOnlySharedMemoryMapping mapping = region.Map();
-  table.ParseFromArray(mapping.memory(), mapping.size());
+  ASSERT_TRUE(mapping.IsValid());
+  blink::FontEnumerationTable table;
+  EXPECT_TRUE(table.ParseFromArray(mapping.memory(), mapping.size()));
 
   blink::FontEnumerationTable_FontMetadata previous_font;
   for (const auto& font : table.fonts()) {
@@ -192,6 +193,7 @@ void ValidateFontEnumerationBasic(FontEnumerationStatus status,
         << "postscript_name size is not zero.";
     EXPECT_GT(font.full_name().size(), 0ULL) << "full_name size is not zero.";
     EXPECT_GT(font.family().size(), 0ULL) << "family size is not zero.";
+    EXPECT_GT(font.style().size(), 0ULL) << "style size is not zero.";
 
     if (previous_font.IsInitialized()) {
       EXPECT_LT(previous_font.postscript_name(), font.postscript_name())
