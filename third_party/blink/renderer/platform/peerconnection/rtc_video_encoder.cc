@@ -1196,9 +1196,9 @@ void RTCVideoEncoder::Impl::EncodeOneFrame() {
 
   // All non-native frames require a copy because we can't tell if non-copy
   // conditions are met.
-  bool requires_copy =
+  bool requires_copy_or_scale =
       buffer->type() != webrtc::VideoFrameBuffer::Type::kNative;
-  if (!requires_copy) {
+  if (!requires_copy_or_scale) {
     const WebRtcVideoFrameAdapter* frame_adapter =
         static_cast<WebRtcVideoFrameAdapter*>(buffer.get());
     frame = frame_adapter->getMediaVideoFrame();
@@ -1206,25 +1206,32 @@ void RTCVideoEncoder::Impl::EncodeOneFrame() {
     const bool is_shmem_frame = storage == media::VideoFrame::STORAGE_SHMEM;
     const bool is_gmb_frame =
         storage == media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER;
-    requires_copy =
+    requires_copy_or_scale =
         RequiresSizeChange(*frame) || !(is_shmem_frame || is_gmb_frame);
   }
 
-  if (requires_copy) {
+  if (requires_copy_or_scale) {
     const base::TimeDelta timestamp =
         frame ? frame->timestamp()
               : base::Milliseconds(next_frame->ntp_time_ms());
-    // TODO(https://crbug.com/1194500): Android (e.g. android-pie-arm64-rel)
-    // and CrOS does not support the optimzed path, perhaps due to not
-    // supporting STORAGE_GPU_MEMORY_BUFFER or NV12? When this is fixed, remove
-    // the special casing on platform and the legacy code path.
-    bool optimized_scaling =
+    // Native buffer scaling is performed by WebRtcVideoFrameAdapter, which may
+    // be more efficient in some cases. E.g. avoiding I420 conversion or scaling
+    // from a middle layer instead of top layer.
+    //
+    // Native buffer scaling is only supported when `input_frame_coded_size_`
+    // and `input_visible_size_` strides match. This ensures the strides of the
+    // frame that we pass to the encoder fits the input requirements.
+    bool native_buffer_scaling =
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-        buffer->type() == webrtc::VideoFrameBuffer::Type::kNative;
+        buffer->type() == webrtc::VideoFrameBuffer::Type::kNative &&
+        input_frame_coded_size_.width() == input_visible_size_.width();
 #else
+        // TODO(https://crbug.com/1194500): Android (e.g. android-pie-arm64-rel)
+        // and CrOS does not support the native buffer scaling path. Investigate
+        // why and find a way to enable it, if possible.
         false;
 #endif
-    if (optimized_scaling) {
+    if (native_buffer_scaling) {
       DCHECK_EQ(buffer->type(), webrtc::VideoFrameBuffer::Type::kNative);
       auto scaled_buffer = buffer->Scale(input_visible_size_.width(),
                                          input_visible_size_.height());
@@ -1250,8 +1257,6 @@ void RTCVideoEncoder::Impl::EncodeOneFrame() {
         return;
       }
     } else {
-      // TODO(https://crbug.com/1194500): Remove this code path in favor of the
-      // above code path. This will allow us to remove |input_buffers_|.
       std::pair<base::UnsafeSharedMemoryRegion,
                 base::WritableSharedMemoryMapping>* input_buffer =
           input_buffers_[index].get();
@@ -1270,7 +1275,6 @@ void RTCVideoEncoder::Impl::EncodeOneFrame() {
 
       // Do a strided copy and scale (if necessary) the input frame to match
       // the input requirements for the encoder.
-      // TODO(sheu): Support zero-copy from WebRTC. http://crbug.com/269312
       // TODO(magjed): Downscale with an image pyramid instead.
       rtc::scoped_refptr<webrtc::I420BufferInterface> i420_buffer =
           next_frame->video_frame_buffer()->ToI420();
