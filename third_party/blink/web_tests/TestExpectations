@@ -7755,3 +7755,6 @@ crbug.com/1298633 http/tests/inspector-protocol/network/cross-origin-isolation/c
 # Sheriff 2022-03-16
 crbug.com/1306848 http/tests/inspector-protocol/conversion/attribution-invalid-data.js [ Failure Pass Timeout ]
 crbug.com/1306770 http/tests/inspector-protocol/network/interception-download.js [ Failure Pass ]
+
+# Sheriff 2022-03-18
+crbug.com/1290040 [ Linux ] external/wpt/service-workers/service-worker/same-site-cookies.https.html [ Skip ]
