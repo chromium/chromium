@@ -93,9 +93,11 @@ class TouchToFillProperties {
                 new PropertyModel.ReadableObjectPropertyKey<>("formatted_url");
         static final PropertyModel.ReadableBooleanPropertyKey ORIGIN_SECURE =
                 new PropertyModel.ReadableBooleanPropertyKey("origin_secure");
+        static final PropertyModel.ReadableIntPropertyKey IMAGE_DRAWABLE_ID =
+                new PropertyModel.ReadableIntPropertyKey("image_drawable_id");
 
-        static final PropertyKey[] ALL_KEYS = {
-                SHOW_SUBMIT_SUBTITLE, SINGLE_CREDENTIAL, FORMATTED_URL, ORIGIN_SECURE};
+        static final PropertyKey[] ALL_KEYS = {SHOW_SUBMIT_SUBTITLE, SINGLE_CREDENTIAL,
+                FORMATTED_URL, ORIGIN_SECURE, IMAGE_DRAWABLE_ID};
 
         private HeaderProperties() {}
     }

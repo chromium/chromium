@@ -18,6 +18,7 @@ import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.Cr
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.ON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.SHOW_SUBMIT_BUTTON;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.FORMATTED_URL;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.ORIGIN_SECURE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.SHOW_SUBMIT_SUBTITLE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.SINGLE_CREDENTIAL;
@@ -89,6 +90,7 @@ public class TouchToFillViewTest {
     private PropertyModel mModel;
     private TouchToFillView mTouchToFillView;
     private BottomSheetController mBottomSheetController;
+    TouchToFillResourceProvider mResourceProvider;
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -100,6 +102,7 @@ public class TouchToFillViewTest {
         mBottomSheetController = mActivityTestRule.getActivity()
                                          .getRootUiCoordinatorForTesting()
                                          .getBottomSheetController();
+        mResourceProvider = new TouchToFillResourceProviderImpl();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mModel = TouchToFillProperties.createDefaultModel(mDismissHandler);
             mTouchToFillView = new TouchToFillView(getActivity(), mBottomSheetController);
@@ -134,6 +137,8 @@ public class TouchToFillViewTest {
                                     .with(SINGLE_CREDENTIAL, true)
                                     .with(FORMATTED_URL, "www.example.org")
                                     .with(ORIGIN_SECURE, true)
+                                    .with(IMAGE_DRAWABLE_ID,
+                                            mResourceProvider.getHeaderImageDrawableId())
                                     .build()));
             mModel.set(VISIBLE, true);
         });
@@ -158,6 +163,8 @@ public class TouchToFillViewTest {
                                     .with(SINGLE_CREDENTIAL, false)
                                     .with(FORMATTED_URL, "www.example.org")
                                     .with(ORIGIN_SECURE, true)
+                                    .with(IMAGE_DRAWABLE_ID,
+                                            mResourceProvider.getHeaderImageDrawableId())
                                     .build()));
             mModel.set(VISIBLE, true);
         });
@@ -180,6 +187,8 @@ public class TouchToFillViewTest {
                                     .with(SINGLE_CREDENTIAL, true)
                                     .with(FORMATTED_URL, "www.example.org")
                                     .with(ORIGIN_SECURE, true)
+                                    .with(IMAGE_DRAWABLE_ID,
+                                            mResourceProvider.getHeaderImageDrawableId())
                                     .build()));
             mModel.set(VISIBLE, true);
         });
@@ -202,6 +211,8 @@ public class TouchToFillViewTest {
                                     .with(SINGLE_CREDENTIAL, false)
                                     .with(FORMATTED_URL, "www.example.org")
                                     .with(ORIGIN_SECURE, true)
+                                    .with(IMAGE_DRAWABLE_ID,
+                                            mResourceProvider.getHeaderImageDrawableId())
                                     .build()));
             mModel.set(VISIBLE, true);
         });
@@ -222,6 +233,8 @@ public class TouchToFillViewTest {
                             new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
                                     .with(FORMATTED_URL, "www.example.org")
                                     .with(ORIGIN_SECURE, true)
+                                    .with(IMAGE_DRAWABLE_ID,
+                                            mResourceProvider.getHeaderImageDrawableId())
                                     .build()));
             mModel.set(VISIBLE, true);
         });
@@ -241,6 +254,8 @@ public class TouchToFillViewTest {
                             new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
                                     .with(FORMATTED_URL, "m.example.org")
                                     .with(ORIGIN_SECURE, false)
+                                    .with(IMAGE_DRAWABLE_ID,
+                                            mResourceProvider.getHeaderImageDrawableId())
                                     .build()));
             mModel.set(VISIBLE, true);
         });
@@ -262,6 +277,8 @@ public class TouchToFillViewTest {
                                     .with(SHOW_SUBMIT_SUBTITLE, true)
                                     .with(FORMATTED_URL, "m.example.org")
                                     .with(ORIGIN_SECURE, true)
+                                    .with(IMAGE_DRAWABLE_ID,
+                                            mResourceProvider.getHeaderImageDrawableId())
                                     .build()));
             mModel.set(VISIBLE, true);
         });
@@ -283,6 +300,8 @@ public class TouchToFillViewTest {
                                     .with(SHOW_SUBMIT_SUBTITLE, true)
                                     .with(FORMATTED_URL, "m.example.org")
                                     .with(ORIGIN_SECURE, false)
+                                    .with(IMAGE_DRAWABLE_ID,
+                                            mResourceProvider.getHeaderImageDrawableId())
                                     .build()));
             mModel.set(VISIBLE, true);
         });

@@ -14,11 +14,11 @@
     android:orientation="vertical">
 
     <ImageView
+        android:id="@+id/touch_to_fill_sheet_header_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:importantForAccessibility="no"
-        app:srcCompat="@drawable/touch_to_fill_header_image" />
+        android:importantForAccessibility="no" />
 
     <org.chromium.ui.widget.TextViewWithLeading
         android:id="@+id/touch_to_fill_sheet_title"

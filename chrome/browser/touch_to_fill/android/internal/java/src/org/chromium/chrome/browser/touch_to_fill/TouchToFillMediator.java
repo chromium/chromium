@@ -10,6 +10,7 @@ import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.Cr
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.ON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.SHOW_SUBMIT_BUTTON;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.FORMATTED_URL;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.ORIGIN_SECURE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.SHOW_SUBMIT_SUBTITLE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.SINGLE_CREDENTIAL;
@@ -69,6 +70,8 @@ class TouchToFillMediator {
         assert credentials != null;
         mModel.set(ON_CLICK_MANAGE, this::onManagePasswordSelected);
 
+        TouchToFillResourceProvider resourceProvider = new TouchToFillResourceProviderImpl();
+
         ListModel<ListItem> sheetItems = mModel.get(SHEET_ITEMS);
         sheetItems.clear();
 
@@ -83,6 +86,7 @@ class TouchToFillMediator {
                                         url, SchemeDisplay.OMIT_HTTP_AND_HTTPS))
                         .with(ORIGIN_SECURE, isOriginSecure)
                         .with(SHOW_SUBMIT_SUBTITLE, show_submit_subtitle)
+                        .with(IMAGE_DRAWABLE_ID, resourceProvider.getHeaderImageDrawableId())
                         .build()));
 
         mCredentials = credentials;
