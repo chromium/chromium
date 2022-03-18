@@ -858,42 +858,6 @@ const FeatureEntry::Choice kForceColorProfileChoices[] = {
      switches::kForceDisplayColorProfile, "hdr10"},
 };
 
-const FeatureEntry::Choice kForceEffectiveConnectionTypeChoices[] = {
-    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
-    {flag_descriptions::kEffectiveConnectionTypeUnknownDescription,
-     network::switches::kForceEffectiveConnectionType,
-     net::kEffectiveConnectionTypeUnknown},
-    {flag_descriptions::kEffectiveConnectionTypeOfflineDescription,
-     network::switches::kForceEffectiveConnectionType,
-     net::kEffectiveConnectionTypeOffline},
-    {flag_descriptions::kEffectiveConnectionTypeSlow2GDescription,
-     network::switches::kForceEffectiveConnectionType,
-     net::kEffectiveConnectionTypeSlow2G},
-    {flag_descriptions::kEffectiveConnectionTypeSlow2GOnCellularDescription,
-     network::switches::kForceEffectiveConnectionType,
-     net::kEffectiveConnectionTypeSlow2GOnCellular},
-    {flag_descriptions::kEffectiveConnectionType2GDescription,
-     network::switches::kForceEffectiveConnectionType,
-     net::kEffectiveConnectionType2G},
-    {flag_descriptions::kEffectiveConnectionType3GDescription,
-     network::switches::kForceEffectiveConnectionType,
-     net::kEffectiveConnectionType3G},
-    {flag_descriptions::kEffectiveConnectionType4GDescription,
-     network::switches::kForceEffectiveConnectionType,
-     net::kEffectiveConnectionType4G},
-};
-
-// Ensure that all effective connection types returned by Network Quality
-// Estimator (NQE) are also exposed via flags.
-static_assert(net::EFFECTIVE_CONNECTION_TYPE_LAST + 2 ==
-                  std::size(kForceEffectiveConnectionTypeChoices),
-              "ECT enum value is not handled.");
-static_assert(net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN == 0,
-              "ECT enum value is not handled.");
-static_assert(net::EFFECTIVE_CONNECTION_TYPE_4G + 1 ==
-                  net::EFFECTIVE_CONNECTION_TYPE_LAST,
-              "ECT enum value is not handled.");
-
 const FeatureEntry::FeatureParam kIsolatedPrerenderPrefetchLimitNone[] = {
     {"max_srp_prefetches", "-1"}};
 const FeatureEntry::FeatureParam kIsolatedPrerenderPrefetchLimitZero[] = {
@@ -2203,28 +2167,6 @@ const FeatureEntry::FeatureVariation kDynamicColorAndroidVariations[] = {
 };
 
 #endif  // BUILDFLAG(IS_ANDROID)
-
-const FeatureEntry::FeatureParam kLazyFrameLoadingAutomatic[] = {
-    {"automatic-lazy-load-frames-enabled", "true"},
-    {"restrict-lazy-load-frames-to-data-saver-only", "false"},
-};
-
-const FeatureEntry::FeatureVariation kLazyFrameLoadingVariations[] = {
-    {"(Automatically lazily load where safe even if not marked "
-     "'loading=lazy')",
-     kLazyFrameLoadingAutomatic, std::size(kLazyFrameLoadingAutomatic),
-     nullptr}};
-
-const FeatureEntry::FeatureParam kLazyImageLoadingAutomatic[] = {
-    {"automatic-lazy-load-images-enabled", "true"},
-    {"restrict-lazy-load-images-to-data-saver-only", "false"},
-};
-
-const FeatureEntry::FeatureVariation kLazyImageLoadingVariations[] = {
-    {"(Automatically lazily load where safe even if not marked "
-     "'loading=lazy')",
-     kLazyImageLoadingAutomatic, std::size(kLazyImageLoadingAutomatic),
-     nullptr}};
 
 const FeatureEntry::Choice kNotificationSchedulerChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
@@ -5012,11 +4954,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kForceColorProfileDescription, kOsAll,
      MULTI_VALUE_TYPE(kForceColorProfileChoices)},
 
-    {"force-effective-connection-type",
-     flag_descriptions::kForceEffectiveConnectionTypeName,
-     flag_descriptions::kForceEffectiveConnectionTypeDescription, kOsAll,
-     MULTI_VALUE_TYPE(kForceEffectiveConnectionTypeChoices)},
-
     {"forced-colors", flag_descriptions::kForcedColorsName,
      flag_descriptions::kForcedColorsDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kForcedColors)},
@@ -5692,20 +5629,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kShoppingListDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(commerce::kShoppingList)},
 #endif  // BUILDFLAG(IS_ANDROID)
-
-    {"enable-lazy-image-loading",
-     flag_descriptions::kEnableLazyImageLoadingName,
-     flag_descriptions::kEnableLazyImageLoadingDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kLazyImageLoading,
-                                    kLazyImageLoadingVariations,
-                                    "LazyLoad")},
-
-    {"enable-lazy-frame-loading",
-     flag_descriptions::kEnableLazyFrameLoadingName,
-     flag_descriptions::kEnableLazyFrameLoadingDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kLazyFrameLoading,
-                                    kLazyFrameLoadingVariations,
-                                    "LazyLoad")},
 
     {"autofill-enable-toolbar-status-chip",
      flag_descriptions::kAutofillEnableToolbarStatusChipName,

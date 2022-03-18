@@ -567,12 +567,6 @@ extern const char kEnableGenericSensorExtraClassesDescription[];
 extern const char kEnableGpuServiceLoggingName[];
 extern const char kEnableGpuServiceLoggingDescription[];
 
-extern const char kEnableLazyFrameLoadingName[];
-extern const char kEnableLazyFrameLoadingDescription[];
-
-extern const char kEnableLazyImageLoadingName[];
-extern const char kEnableLazyImageLoadingDescription[];
-
 extern const char kEnableNetworkLoggingToFileName[];
 extern const char kEnableNetworkLoggingToFileDescription[];
 
@@ -760,16 +754,6 @@ extern const char kFilteringScrollPredictionDescription[];
 
 extern const char kFractionalScrollOffsetsName[];
 extern const char kFractionalScrollOffsetsDescription[];
-
-extern const char kForceEffectiveConnectionTypeName[];
-extern const char kForceEffectiveConnectionTypeDescription[];
-extern const char kEffectiveConnectionTypeUnknownDescription[];
-extern const char kEffectiveConnectionTypeOfflineDescription[];
-extern const char kEffectiveConnectionTypeSlow2GDescription[];
-extern const char kEffectiveConnectionTypeSlow2GOnCellularDescription[];
-extern const char kEffectiveConnectionType2GDescription[];
-extern const char kEffectiveConnectionType3GDescription[];
-extern const char kEffectiveConnectionType4GDescription[];
 
 extern const char kFedCmName[];
 extern const char kFedCmDescription[];

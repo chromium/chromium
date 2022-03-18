@@ -1045,16 +1045,6 @@ const char kDownloadRangeName[] = "Enable download range support";
 const char kDownloadRangeDescription[] =
     "Enables arbitrary download range request support.";
 
-const char kEnableLazyFrameLoadingName[] = "Enable lazy frame loading";
-const char kEnableLazyFrameLoadingDescription[] =
-    "Defers the loading of iframes marked with the attribute 'loading=lazy' "
-    "until the page is scrolled down near them.";
-
-const char kEnableLazyImageLoadingName[] = "Enable lazy image loading";
-const char kEnableLazyImageLoadingDescription[] =
-    "Defers the loading of images marked with the attribute 'loading=lazy' "
-    "until the page is scrolled down near them.";
-
 const char kEnableNetworkLoggingToFileName[] = "Enable network logging to file";
 const char kEnableNetworkLoggingToFileDescription[] =
     "Enables network logging to a file named netlog.json in the user data "
@@ -1350,22 +1340,6 @@ const char kFractionalScrollOffsetsName[] = "Fractional Scroll Offsets";
 const char kFractionalScrollOffsetsDescription[] =
     "Enables fractional scroll offsets inside Blink, exposing non-integer "
     "offsets to web APIs.";
-
-const char kForceEffectiveConnectionTypeName[] =
-    "Override effective connection type";
-const char kForceEffectiveConnectionTypeDescription[] =
-    "Overrides the effective connection type of the current connection "
-    "returned by the network quality estimator. Slow 2G on Cellular returns "
-    "Slow 2G when connected to a cellular network, and the actual estimate "
-    "effective connection type when not on a cellular network.";
-const char kEffectiveConnectionTypeUnknownDescription[] = "Unknown";
-const char kEffectiveConnectionTypeOfflineDescription[] = "Offline";
-const char kEffectiveConnectionTypeSlow2GDescription[] = "Slow 2G";
-const char kEffectiveConnectionTypeSlow2GOnCellularDescription[] =
-    "Slow 2G On Cellular";
-const char kEffectiveConnectionType2GDescription[] = "2G";
-const char kEffectiveConnectionType3GDescription[] = "3G";
-const char kEffectiveConnectionType4GDescription[] = "4G";
 
 const char kFedCmName[] = "FedCM";
 const char kFedCmDescription[] =
