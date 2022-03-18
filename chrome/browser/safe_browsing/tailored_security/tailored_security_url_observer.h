@@ -71,6 +71,9 @@ class TailoredSecurityUrlObserver
   // The most recent URL the WebContents navigated to.
   GURL last_url_;
 
+  // Whether we currently have a query request.
+  bool has_query_request_ = false;
+
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 

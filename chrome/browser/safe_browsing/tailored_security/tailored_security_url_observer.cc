@@ -27,8 +27,30 @@ namespace {
 
 const int kThresholdForInFlowNotificationMinutes = 5;
 
-bool CanQueryTailoredSecurity(GURL url) {
+bool CanQueryTailoredSecurityForUrl(GURL url) {
   return url.DomainIs("google.com") || url.DomainIs("youtube.com");
+}
+
+bool CanQueryTailoredSecurity(Profile* profile) {
+  if (IsEnhancedProtectionEnabled(*profile->GetPrefs()))
+    return false;
+
+  // We should only trigger the unconsented UX if the user is not consented to
+  // sync. Syncing users have different UX, handled by the
+  // `ChromeTailoredSecurityService`.
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  if (!identity_manager ||
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    return false;
+  }
+
+  if (profile->GetPrefs()->GetBoolean(
+          prefs::kAccountTailoredSecurityShownNotification)) {
+    return false;
+  }
+
+  return true;
 }
 
 }  // namespace
@@ -36,8 +58,9 @@ bool CanQueryTailoredSecurity(GURL url) {
 TailoredSecurityUrlObserver::~TailoredSecurityUrlObserver() {
   if (service_) {
     service_->RemoveObserver(this);
-    if (focused_ && CanQueryTailoredSecurity(last_url_)) {
+    if (has_query_request_) {
       service_->RemoveQueryRequest();
+      has_query_request_ = false;
     }
   }
 }
@@ -135,13 +158,24 @@ TailoredSecurityUrlObserver::TailoredSecurityUrlObserver(
 
 void TailoredSecurityUrlObserver::UpdateFocusAndURL(bool focused,
                                                     const GURL& url) {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  if (!CanQueryTailoredSecurity(profile)) {
+    return;
+  }
+
   if (service_) {
-    bool should_query = focused && CanQueryTailoredSecurity(url);
-    bool old_should_query = focused_ && CanQueryTailoredSecurity(last_url_);
-    if (should_query && !old_should_query)
+    bool should_query = focused && CanQueryTailoredSecurityForUrl(url);
+    bool old_should_query =
+        focused_ && CanQueryTailoredSecurityForUrl(last_url_);
+    if (should_query && !old_should_query) {
       service_->AddQueryRequest();
-    if (!should_query && old_should_query)
+      has_query_request_ = true;
+    }
+    if (!should_query && old_should_query) {
       service_->RemoveQueryRequest();
+      has_query_request_ = false;
+    }
   }
 
   focused_ = focused;
