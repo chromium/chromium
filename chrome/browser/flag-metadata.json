@@ -2465,7 +2465,7 @@
   {
     "name": "enable-notifications-revamp",
     "owners": [ "amehfooz", "newcomer" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 106
   },
   {
     "name": "enable-oauth-ipp",
