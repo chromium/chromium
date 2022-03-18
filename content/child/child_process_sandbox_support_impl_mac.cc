@@ -9,11 +9,10 @@
 
 #include "base/bind.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/numerics/safe_conversions.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/strings/sys_string_conversions.h"
 #include "content/common/mac/font_loader.h"
 #include "content/public/child/child_thread.h"
-#include "mojo/public/cpp/system/buffer.h"
 
 namespace content {
 
@@ -36,10 +35,10 @@ bool WebSandboxSupportMac::LoadFont(
   base::ScopedCFTypeRef<CFStringRef> name_ref(CTFontCopyPostScriptName(font));
   std::u16string font_name = SysCFStringRefToUTF16(name_ref);
   float font_point_size = CTFontGetSize(font);
-  mojo::ScopedSharedBufferHandle font_data;
+  base::ReadOnlySharedMemoryRegion font_data;
   bool success = sandbox_support_->LoadFont(font_name, font_point_size,
                                             &font_data, font_id) &&
-                 *font_id > 0 && font_data.is_valid();
+                 *font_id > 0 && font_data.IsValid();
   if (!success) {
     DLOG(ERROR) << "Bad response from LoadFont() for " << font_name;
     out_descriptor->reset();
@@ -47,16 +46,14 @@ bool WebSandboxSupportMac::LoadFont(
     return false;
   }
 
-  uint64_t font_data_size = font_data->GetSize();
+  size_t font_data_size = font_data.GetSize();
   DCHECK_GT(font_data_size, 0U);
-  DCHECK(base::IsValueInRangeForNumericType<uint32_t>(font_data_size));
 
   // TODO(jeremy): Need to call back into the requesting process to make sure
   // that the font isn't already activated, based on the font id.  If it's
   // already activated, don't reactivate it here - https://crbug.com/72727 .
-  return FontLoader::CTFontDescriptorFromBuffer(
-      std::move(font_data), static_cast<uint32_t>(font_data_size),
-      out_descriptor);
+  return FontLoader::CTFontDescriptorFromBuffer(std::move(font_data),
+                                                out_descriptor);
 }
 
 SkColor WebSandboxSupportMac::GetSystemColor(

@@ -13,8 +13,8 @@
 
 #include "base/callback_forward.h"
 #include "base/mac/scoped_cftyperef.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "content/common/content_export.h"
-#include "mojo/public/cpp/system/buffer.h"
 
 namespace content {
 
@@ -30,17 +30,17 @@ class FontLoader {
     ResultInternal();
     ~ResultInternal();
 
-    mojo::ScopedSharedBufferHandle font_data;
+    base::ReadOnlySharedMemoryRegion font_data;
     uint32_t font_id = 0;
   };
 
   // Callback for the reporting result of LoadFont().
-  // - The ScopedSharedBufferHandle points to a shared memory buffer containing
-  //   the raw data for the font file.
+  // - The base::ReadOnlySharedMemoryRegion points to a shared memory region
+  //   containing the raw data for the font file.
   // - The last argument is the font_id: a unique identifier for the on-disk
   //   file we load for the font.
   using LoadedCallback =
-      base::OnceCallback<void(mojo::ScopedSharedBufferHandle, uint32_t)>;
+      base::OnceCallback<void(base::ReadOnlySharedMemoryRegion, uint32_t)>;
 
   // Load a font specified by |font| into a shared memory buffer suitable for
   // sending over IPC. On failure, zeroes and an invalid handle are reported
@@ -50,10 +50,10 @@ class FontLoader {
                        float font_point_size,
                        LoadedCallback callback);
 
-  // Given a shared memory buffer containing the raw data for a font file, load
+  // Given a shared memory region containing the raw data for a font file, load
   // the font and turn them into a CTFontDescriptor.
   //
-  // |data| - A shared memory handle pointing to the raw data from a font file.
+  // |data| - A shared memory region contained the raw data from a font file.
   // |data_size| - Size of |data|.
   //
   // On return:
@@ -62,8 +62,7 @@ class FontLoader {
   //  The caller is responsible for releasing this value via CFRelease().
   CONTENT_EXPORT
   static bool CTFontDescriptorFromBuffer(
-      mojo::ScopedSharedBufferHandle font_data,
-      uint32_t font_data_size,
+      base::ReadOnlySharedMemoryRegion font_data,
       base::ScopedCFTypeRef<CTFontDescriptorRef>* out_descriptor);
 
   CONTENT_EXPORT

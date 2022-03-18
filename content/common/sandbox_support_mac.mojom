@@ -17,5 +17,6 @@ interface SandboxSupportMac {
   // Request the browser to load a font into a shared memory buffer.
   [Sync]
   LoadFont(mojo_base.mojom.String16 font_name, float font_point_size)
-      => (handle<shared_buffer>? font_data, uint32 font_id);
+      => (mojo_base.mojom.ReadOnlySharedMemoryRegion? font_data,
+          uint32 font_id);
 };
