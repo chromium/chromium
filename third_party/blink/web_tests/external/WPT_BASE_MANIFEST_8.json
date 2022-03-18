@@ -274875,6 +274875,10 @@
         "de80b40399280b99029ae20d9f043fed34a1795d",
         []
        ],
+       "container-type-expected.txt": [
+        "244ec2146406ec299ce2b3e17d2e841d672bcaaa",
+        []
+       ],
        "dominant-baseline-expected.txt": [
         "b61e9c7db19b6713b4c00758870af00f8fa615cb",
         []
@@ -360055,8 +360059,8 @@
       {}
      ]
     ],
-    "fedcm-logout.https.html": [
-     "4b38e863bf4ae91f28aa48dc11df6447ae6758ed",
+    "fedcm-logout.sub.https.html": [
+     "7024638a127dcd8e579083813c031e048b0fbeb5",
      [
       null,
       {}
@@ -383188,6 +383192,13 @@
        ],
        "contain.html": [
         "f3f50f8143e398acb03cee4a6a350cd5087b94ce",
+        [
+         null,
+         {}
+        ]
+       ],
+       "container-type.html": [
+        "d52915492390dc0c6300a710f7f77565c7754145",
         [
          null,
          {}
@@ -451317,6 +451328,13 @@
         null,
         {}
        ]
+      ],
+      "hidden-ua-stylesheet.html": [
+       "913ecc037cfcd3ff4d0b1f41f210808f009d9ca4",
+       [
+        null,
+        {}
+       ]
       ]
      }
     },
@@ -458882,9 +458900,13 @@
         ]
        ],
        "selection-not-application.html": [
-        "aa98a030a83b8b9506c8e04dc945e022f11073ee",
+        "7771c3cf312d5514c0bc1d68d34109ac54e87f6d",
         [
          null,
+         {}
+        ],
+        [
+         "html/semantics/forms/textfieldselection/selection-not-application.html?week,month",
          {}
         ]
        ],
