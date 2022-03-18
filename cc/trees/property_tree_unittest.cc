@@ -196,36 +196,52 @@ TEST(PropertyTreeTest, ComputeTransformSiblingSingularAncestor) {
 }
 
 // Tests that the transform for fixed elements is translated based on the
-// overscroll nodes scroll_offset.
+// overscroll nodes scroll_offset and that the clip node has an outset based on
+// the overscroll distance.
 TEST(PropertyTreeTest, FixedElementInverseTranslation) {
   FakeProtectedSequenceSynchronizer synchronizer;
   PropertyTrees property_trees(synchronizer);
-  TransformTree& tree = property_trees.transform_tree_mutable();
+
+  ClipTree& clip_tree = property_trees.clip_tree_mutable();
+  const gfx::RectF clip_rect(0, 0, 100, 100);
+  ClipNode clip_node;
+  clip_node.id = 1;
+  clip_node.parent_id = 0;
+  clip_node.clip = clip_rect;
+  clip_tree.Insert(clip_node, 0);
+  clip_tree.set_overscroll_node_id(clip_node.id);
+
+  TransformTree& transform_tree = property_trees.transform_tree_mutable();
   TransformNode contents_root;
   contents_root.local.Translate(2, 2);
-  contents_root.id = tree.Insert(contents_root, 0);
-  tree.UpdateTransforms(1);
+  contents_root.id = transform_tree.Insert(contents_root, 0);
+  transform_tree.UpdateTransforms(1);
 
   const gfx::PointF overscroll_offset(0, 10);
   TransformNode overscroll_node;
   overscroll_node.scroll_offset = overscroll_offset;
-  overscroll_node.id = tree.Insert(overscroll_node, 1);
+  overscroll_node.id = transform_tree.Insert(overscroll_node, 1);
 
-  tree.set_overscroll_node_id(overscroll_node.id);
-  tree.set_fixed_elements_dont_overscroll(true);
+  transform_tree.set_overscroll_node_id(overscroll_node.id);
+  transform_tree.set_fixed_elements_dont_overscroll(true);
 
   TransformNode fixed_node;
   fixed_node.is_fixed_position = true;
-  fixed_node.id = tree.Insert(fixed_node, 2);
+  fixed_node.id = transform_tree.Insert(fixed_node, 2);
 
-  EXPECT_TRUE(tree.ShouldUndoOverscroll(&fixed_node));
+  EXPECT_TRUE(transform_tree.ShouldUndoOverscroll(&fixed_node));
 
-  tree.UpdateTransforms(2);  // overscroll_node
-  tree.UpdateTransforms(3);  // fixed_node
+  transform_tree.UpdateTransforms(2);  // overscroll_node
+  transform_tree.UpdateTransforms(3);  // fixed_node
 
   gfx::Transform expected;
   expected.Translate(overscroll_offset.OffsetFromOrigin());
-  EXPECT_TRANSFORM_EQ(expected, tree.Node(fixed_node.id)->to_parent);
+  EXPECT_TRANSFORM_EQ(expected, transform_tree.Node(fixed_node.id)->to_parent);
+
+  gfx::RectF expected_clip_rect(clip_rect);
+  expected_clip_rect.set_height(clip_rect.height() + overscroll_offset.y());
+  EXPECT_EQ(clip_tree.Node(clip_tree.overscroll_node_id())->clip,
+            expected_clip_rect);
 }
 
 TEST(PropertyTreeTest, TransformsWithFlattening) {

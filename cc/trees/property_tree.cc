@@ -476,8 +476,8 @@ void TransformTree::UpdateFixedNodeTransformAndClip(
   fixed_position_adjustment +=
       gfx::ScaleVector2d(overscroll_offset, 1.f / page_scale_factor());
 
-  ClipNode* clip_node = property_trees()->clip_tree_mutable().Node(
-      property_trees()->clip_tree_mutable().overscroll_node_id());
+  ClipTree& clip_tree = property_trees()->clip_tree_mutable();
+  ClipNode* clip_node = clip_tree.Node(clip_tree.overscroll_node_id());
 
   if (clip_node) {
     // Inflate the clip rect based on the overscroll direction.
@@ -490,7 +490,7 @@ void TransformTree::UpdateFixedNodeTransformAndClip(
         : outsets.set_bottom(fixed_position_adjustment.y());
 
     clip_node->clip.Outset(outsets);
-    property_trees()->clip_tree_mutable().set_needs_update(true);
+    clip_tree.set_needs_update(true);
   }
 }
 
