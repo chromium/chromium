@@ -128,6 +128,7 @@ export class SettingsTextareaElement extends PolymerElement {
 
   override autofocus: boolean;
   disabled: boolean;
+  readonly: boolean;
   rows: number;
   label: string;
   value: string;
