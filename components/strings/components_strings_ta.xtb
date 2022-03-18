@@ -519,6 +519,7 @@
 <translation id="2523886232349826891">இந்தச் சாதனத்தில் மட்டும் சேமிக்கப்படும்</translation>
 <translation id="2524461107774643265">மேலும் தகவலைச் சேர்க்கவும்</translation>
 <translation id="2529899080962247600">இதில் <ph name="MAX_ITEMS_LIMIT" /> உள்ளீடுகளுக்கு மேல் இருக்கக்கூடாது. அதற்கு மேல் இருப்பவை நிராகரிக்கப்படும்.</translation>
+<translation id="2535585790302968248">தனிப்பட்ட முறையில் உலாவ, புதிய மறைநிலைப் பக்கத்தைத் திறக்கும்</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{மேலும் ஒன்று}other{மேலும் #}}</translation>
 <translation id="2536110899380797252">முகவரியைச் சேர்</translation>
 <translation id="2539524384386349900">கண்டறி</translation>
@@ -585,6 +586,7 @@
 <translation id="2709516037105925701">தானாகநிரப்பு</translation>
 <translation id="2713444072780614174">வெள்ளை</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome அமைப்புகளில் பேமெண்ட்டுகள், கிரெடிட் கார்டு ஆகியவை குறித்த தகவலை நிர்வகிக்க Tab விசையை அழுத்திய பிறகு Enter விசையை அழுத்துங்கள்</translation>
+<translation id="271663710482723385">முழுத்திரையில் இருந்து வெளியேற, |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| பட்டன்களை அழுத்தவும்</translation>
 <translation id="2721148159707890343">கோரிக்கை வெற்றியடைந்தது</translation>
 <translation id="2723669454293168317">Chrome அமைப்புகளில் பாதுகாப்புச் சரிபார்ப்பை இயக்கும்</translation>
 <translation id="2726001110728089263">சைடு டிரே</translation>
@@ -1257,6 +1259,7 @@
 <translation id="4854362297993841467">இந்த டெலிவரி முறை இல்லை. வேறு முறையைப் பயன்படுத்திப் பார்க்கவும்.</translation>
 <translation id="4854853140771946034">Google Keepபில் புதிய குறிப்பை விரைவாக உருவாக்கும்</translation>
 <translation id="485902285759009870">குறியீட்டைச் சரிபார்க்கிறது...</translation>
+<translation id="4866506163384898554">கர்சரைக் காட்ட, |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| பட்டன்களை அழுத்தவும்</translation>
 <translation id="4876188919622883022">எளிதாக்கப்பட்ட காட்சி</translation>
 <translation id="4876305945144899064">பயனர்பெயர் இல்லை</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{எதுவுமில்லை}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
@@ -1480,6 +1483,7 @@
 <translation id="5556459405103347317">மீண்டும் ஏற்று</translation>
 <translation id="5560088892362098740">காலாவதியாகும் தேதி</translation>
 <translation id="55635442646131152">ஆவணத்தின் மேலோட்டம்</translation>
+<translation id="5565613213060953222">மறைநிலைப் பக்கத்தைத் திற</translation>
 <translation id="5565735124758917034">செயலில் உள்ளது</translation>
 <translation id="5570825185877910964">கணக்கைப் பாதுகாத்திடு</translation>
 <translation id="5571083550517324815">இந்த முகவரியிலிருந்து பிக்அப் செய்ய முடியாது. வேறு முகவரியைத் தேர்ந்தெடுக்கவும்.</translation>
@@ -1945,6 +1949,7 @@
 <translation id="7192203810768312527"><ph name="SIZE" /> அளவைக் காலியாக்கும். நீங்கள் அடுத்த முறை பார்வையிடும் போது, சில தளங்கள் மிகவும் மெதுவாக ஏற்றப்படலாம்.</translation>
 <translation id="719464814642662924">Visa</translation>
 <translation id="7201591969684833065">உங்கள் நிர்வாகி இவற்றைப் பார்க்க முடியும்:</translation>
+<translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, தனிப்பட்ட முறையில் உலாவுவதற்குப் புதிய மறைநிலைப் பக்கத்தைத் திறக்க, Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்துங்கள்</translation>
 <translation id="7202346780273620635">Letter-Extra</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> பாதுகாப்புத் தரநிலைகளுக்கு இணங்கவில்லை.</translation>
 <translation id="7210993021468939304">கண்டெய்னருக்குள் நடக்கும் Linux செயல்பாட்டினைப் பார்க்க முடியும், மற்றும் கண்டெய்னருக்குள் Linux ஆப்ஸை நிறுவி இயக்க முடியும்</translation>
@@ -2210,6 +2215,7 @@
 <translation id="799149739215780103">பைண்டு</translation>
 <translation id="7992044431894087211"><ph name="APPLICATION_TITLE" /> உடன் திரையைப் பகிர்வது மீண்டும் தொடங்கப்பட்டது</translation>
 <translation id="7995512525968007366">குறிப்பிடப்படவில்லை</translation>
+<translation id="7998269595945679889">மறைநிலைப் பக்கத்தைத் திறப்பதற்கான பட்டன், தனிப்பட்ட முறையில் உலாவுவதற்குப் புதிய மறைநிலைப் பக்கத்தைத் திறக்க, Enter பட்டனை அழுத்துங்கள்</translation>
 <translation id="800218591365569300">பிற தாவல்கள் அல்லது நிரல்களை மூடி, நினைவகத்தைக் காலியாக்கவும்.</translation>
 <translation id="8004582292198964060">உலாவி</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{இந்தக் கார்டும் அதன் பில்லிங் முகவரியும் சேமிக்கப்படும். <ph name="USER_EMAIL" /> இல் உள்நுழைந்திருக்கும்போது இதைப் பயன்படுத்தலாம்.}other{இந்தக் கார்டுகளும் அவற்றின் பில்லிங் முகவரிகளும் சேமிக்கப்படும். <ph name="USER_EMAIL" /> இல் உள்நுழைந்திருக்கும்போது இவற்றைப் பயன்படுத்தலாம்.}}</translation>

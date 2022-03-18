@@ -30,6 +30,7 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">புதுப்பிப்பிக்கிறது (<ph name="PERCENTAGE_VALUE" />% நிறைவடைந்துள்ளது)</translation>
 <translation id="1310380015393971138"><ph name="NETWORK_NAME" /> நெட்வொர்க் எதுவுமில்லை</translation>
+<translation id="131421566576084655">கடைசியாக டேட்டாவை ரீசெட் செய்த தேதி தெரியவில்லை</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">உள்ளூர் நெட்வொர்க், ரோமிங் இல்லை</translation>
 <translation id="1327977588028644528">கேட்வே</translation>
@@ -42,6 +43,7 @@
 <translation id="1413240736185167732">ஃபில்டர் வேலை செய்யாததால் அச்சிட முடியவில்லை</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">என்னிடம் குறியீட்டு இணை உள்ளது</translation>
+<translation id="1435763214710588005">தேர்ந்தெடுத்த நாளில் ஒவ்வொரு மாதமும் டேட்டா உபயோகத்தைத் தானாக ரீசெட் செய்யும்</translation>
 <translation id="1442433966118452622">பட ஆதாரம்</translation>
 <translation id="1451536289672181509">சாதனம் ஒரு கீபோர்டு.</translation>
 <translation id="1459693405370120464">வானிலை</translation>
@@ -56,6 +58,7 @@
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> ஐப் புதுப்பிக்க முடியவில்லை</translation>
 <translation id="1567064801249837505">ஆல்பங்கள்</translation>
 <translation id="1572585716423026576">வால்பேப்பராக அமை</translation>
+<translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> வரையிலான டேட்டா உபயோகம்</translation>
 <translation id="1621067168122174824">சார்ஜ் சோதனையை இயக்கு</translation>
 <translation id="1639239467298939599">ஏற்றுகிறது</translation>
 <translation id="1641857168437328880">டாக்குமெண்ட் ஃபீடர் (ஒரு பக்கம்)</translation>
@@ -392,6 +395,7 @@
 <translation id="5939518447894949180">மீட்டமை</translation>
 <translation id="594552776027197022">ரேண்டம் குறியீட்டு இணையை உருவாக்கு</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="6034694447310538551">மாதந்தோறும் தானாக ரீசெட் செய்வதை இயக்கு</translation>
 <translation id="6037291330010597344">ஸ்கேனரின் டாக்குமெண்ட் ஃபீடர் காலியாக உள்ளது. ஆவணங்களைச் சேர்த்துவிட்டு மீண்டும் முயலவும்.</translation>
 <translation id="6040143037577758943">மூடு</translation>
 <translation id="6040852767465482106">அநாமதேய அடையாளம்</translation>
@@ -415,6 +419,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">ஸ்கேனர்கள் எதுவுமில்லை</translation>
 <translation id="6232017090690406397">பேட்டரி</translation>
+<translation id="6235460611964961764">டேட்டா உபயோகத்தை நீங்களே ரீசெட் செய்யுங்கள்</translation>
 <translation id="6243280677745499710">தற்போது அமைக்கப்பட்டுள்ளது</translation>
 <translation id="6278428485366576908">தீம்</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -626,6 +631,7 @@
 <translation id="8910721771319628100">இயல்புநிலை நெட்வொர்க்கில் ஏற்படும் தாமதம் வரம்பை மீறி உள்ளது</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> இன் <ph name="DEVICE_TYPE" /></translation>
 <translation id="8919837981463578619">பிரிண்டரில் டிரே இல்லாததால் அச்சிட முடியவில்லை</translation>
+<translation id="8923267550422472772">ரீசெட் செய்ய வேண்டிய நாள்</translation>
 <translation id="8928727111548978589">காகிதம் இல்லாததால் அச்சிட முடியவில்லை</translation>
 <translation id="8930521118335213258">பியர்</translation>
 <translation id="8930622219860340959">கம்பியில்லா</translation>
