@@ -138,6 +138,7 @@ ci.builder(
         category = "emulator|x86|rel",
         short_name = "N",
     ),
+    execution_timeout = 4 * time.hour,
     goma_backend = None,
     reclient_instance = rbe_instance.DEFAULT,
     reclient_jobs = rbe_jobs.DEFAULT,

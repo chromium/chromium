@@ -953,7 +953,7 @@
   'nougat-x86-emulator': {
     '$mixin_append': {
       'args': [
-        '--avd-config=../../tools/android/avd/proto/generic_android25.textpb',
+        '--avd-config=../../tools/android/avd/proto/generic_android24.textpb',
       ],
     },
     'swarming': {
