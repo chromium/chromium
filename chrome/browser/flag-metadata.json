@@ -5052,7 +5052,7 @@
   {
     "name": "quick-settings-network-revamp",
     "owners": [ "chadduffin", "khorimoto", "cros-connectivity@google.com" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 104
   },
   {
     "name": "quick-settings-pwa-notifications",
