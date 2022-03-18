@@ -97,36 +97,33 @@ TEST(JobTest, NoInit) {
   ASSERT_FALSE(job.GetHandle() == INVALID_HANDLE_VALUE);
 }
 
-// Tests the initialization of the job with different security level.
+// Tests the initialization of the job with different security levels.
 TEST(JobTest, SecurityLevel) {
-  Job job1;
+  Job job_lockdown;
   ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            job1.Init(JOB_LOCKDOWN, L"job1", 0, 0));
+            job_lockdown.Init(JOB_LOCKDOWN, L"job_lockdown", 0, 0));
 
-  Job job2;
+  Job job_limited_user;
   ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            job2.Init(JOB_RESTRICTED, L"job2", 0, 0));
+            job_limited_user.Init(JOB_LIMITED_USER, L"job_limited_user", 0, 0));
 
-  Job job3;
+  Job job_interactive;
   ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            job3.Init(JOB_LIMITED_USER, L"job3", 0, 0));
+            job_interactive.Init(JOB_INTERACTIVE, L"job_interactive", 0, 0));
 
-  Job job4;
+  Job job_unprotected;
   ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            job4.Init(JOB_INTERACTIVE, L"job4", 0, 0));
-
-  Job job5;
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            job5.Init(JOB_UNPROTECTED, L"job5", 0, 0));
+            job_unprotected.Init(JOB_UNPROTECTED, L"job_unprotected", 0, 0));
 
   // JOB_NONE means we run without a job object so Init should fail.
-  Job job6;
+  Job job_none;
   ASSERT_EQ(static_cast<DWORD>(ERROR_BAD_ARGUMENTS),
-            job6.Init(JOB_NONE, L"job6", 0, 0));
+            job_none.Init(JOB_NONE, L"job_none", 0, 0));
 
-  Job job7;
+  Job job_bad_args;
   ASSERT_EQ(static_cast<DWORD>(ERROR_BAD_ARGUMENTS),
-            job7.Init(static_cast<JobLevel>(JOB_NONE + 1), L"job7", 0, 0));
+            job_bad_args.Init(static_cast<JobLevel>(JOB_NONE + 1),
+                              L"job_bad_args", 0, 0));
 }
 
 // Tests the method "AssignProcessToJob".

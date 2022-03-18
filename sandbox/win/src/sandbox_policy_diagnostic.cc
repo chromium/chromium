@@ -77,8 +77,6 @@ std::string GetJobLevelInEnglish(JobLevel job) {
   switch (job) {
     case JOB_LOCKDOWN:
       return "Lockdown";
-    case JOB_RESTRICTED:
-      return "Restricted";
     case JOB_LIMITED_USER:
       return "Limited User";
     case JOB_INTERACTIVE:

@@ -39,9 +39,6 @@ DWORD Job::Init(JobLevel security_level,
     case JOB_LOCKDOWN: {
       jeli.BasicLimitInformation.LimitFlags |=
           JOB_OBJECT_LIMIT_DIE_ON_UNHANDLED_EXCEPTION;
-      [[fallthrough]];
-    }
-    case JOB_RESTRICTED: {
       jbur.UIRestrictionsClass |= JOB_OBJECT_UILIMIT_WRITECLIPBOARD;
       jbur.UIRestrictionsClass |= JOB_OBJECT_UILIMIT_READCLIPBOARD;
       jbur.UIRestrictionsClass |= JOB_OBJECT_UILIMIT_HANDLES;

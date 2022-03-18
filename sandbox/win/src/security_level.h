@@ -114,27 +114,21 @@ enum TokenLevel {
 //                  | *Forbid changes to the display    |  limit.            |
 //                  |  settings.                        | *Kill on Job close.|
 // -----------------|---------------------------------- |--------------------|
-// JOB_RESTRICTED   | Same as LIMITED_USER plus:        | *One active process|
+// JOB_LOCKDOWN     | Same as LIMITED_USER plus:        | *One active process|
 //                  | * No read/write to the clipboard. |  limit.            |
 //                  | * No access to User Handles that  | *Kill on Job close.|
-//                  |   belong to other processes.      |                    |
-//                  | * Forbid message broadcasts.      |                    |
+//                  |   belong to other processes.      | *Kill on unhandled |
+//                  | * Forbid message broadcasts.      |  exception.        |
 //                  | * Forbid setting global hooks.    |                    |
 //                  | * No access to the global atoms   |                    |
 //                  |   table.                          |                    |
 // -----------------|-----------------------------------|--------------------|
-// JOB_LOCKDOWN     | Same as RESTRICTED                | *One active process|
-//                  |                                   |  limit.            |
-//                  |                                   | *Kill on Job close.|
-//                  |                                   | *Kill on unhandled |
-//                  |                                   |  exception.        |
-//                  |                                   |                    |
+//
 // In the context of the above table, 'user handles' refers to the handles of
 // windows, bitmaps, menus, etc. Files, treads and registry handles are kernel
 // handles and are not affected by the job level settings.
 enum JobLevel {
   JOB_LOCKDOWN = 0,
-  JOB_RESTRICTED,
   JOB_LIMITED_USER,
   JOB_INTERACTIVE,
   JOB_UNPROTECTED,

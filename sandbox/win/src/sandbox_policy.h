@@ -118,7 +118,7 @@ class TargetPolicy {
   // length in:
   //   http://msdn2.microsoft.com/en-us/library/ms684152.aspx
   //
-  // Note: the recommended level is JOB_RESTRICTED or JOB_LOCKDOWN.
+  // Note: the recommended level is JOB_LOCKDOWN.
   virtual ResultCode SetJobLevel(JobLevel job_level,
                                  uint32_t ui_exceptions) = 0;
 
