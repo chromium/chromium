@@ -1020,8 +1020,10 @@ void PrePaintTreeWalk::WalkChildren(
     // missable child fragments. We may enter fragment traversal mode further
     // down in the subtree, and there may be a node that's a direct child of
     // |object|, fragment-wise, while it's further down in the tree, CSS
-    // box-tree-wise.
-    if (box && box->PhysicalFragmentCount()) {
+    // box-tree-wise. This is only an issue for OOF descendants, though, so only
+    // examine OOF containing blocks.
+    if (box && box->CanContainAbsolutePositionObjects() &&
+        box->PhysicalFragmentCount()) {
       DCHECK_EQ(box->PhysicalFragmentCount(), 1u);
       fragment = box->GetPhysicalFragment(0);
     }
