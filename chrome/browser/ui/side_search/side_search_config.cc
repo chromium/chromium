@@ -111,6 +111,9 @@ SideSearchConfig::SideSearchConfig(Profile* profile) : profile_(profile) {
   if (auto* template_url_service =
           TemplateURLServiceFactory::GetForProfile(profile_)) {
     template_url_service_observation_.Observe(template_url_service);
+
+    // Call this initially in case the default URL has already been set.
+    OnTemplateURLServiceChanged();
   }
   ApplyDSEConfiguration(profile_, *this);
 }
@@ -141,6 +144,7 @@ void SideSearchConfig::OnTemplateURLServiceChanged() {
       default_template_url_id_ != kInvalidTemplateURLID) {
     default_template_url_id_ = kInvalidTemplateURLID;
     ResetStateAndNotifyConfigChanged();
+    return;
   }
 
   // Propagate an update only if the current default search provider has

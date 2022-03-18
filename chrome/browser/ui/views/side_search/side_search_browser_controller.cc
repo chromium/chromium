@@ -112,11 +112,31 @@ class DseImageView : public views::ImageView {
     SetBorder(views::CreateEmptyBorder(
         gfx::Insets(0, views::LayoutProvider::Get()->GetDistanceMetric(
                            views::DISTANCE_RELATED_CONTROL_VERTICAL))));
+    UpdateIconImage();
   }
   ~DseImageView() override = default;
 
   void UpdateIconImage() {
-    SetImage(default_search_icon_source_.GetIconImage());
+    // Attempt to get the default search engine's favicon.
+    auto icon_image = default_search_icon_source_.GetIconImage();
+
+    // Use the DSE's icon image if available.
+    if (!icon_image.IsEmpty()) {
+      SetImage(default_search_icon_source_.GetIconImage());
+      return;
+    }
+
+    // If the icon image is empty use kSearchIcon as a default. It is not
+    // guaranteed that the FaviconService will return a favicon for the search
+    // provider.
+    const int icon_size =
+        ui::TouchUiController::Get()->touch_ui()
+            ? kDefaultTouchableIconSize
+            : ChromeLayoutProvider::Get()->GetDistanceMetric(
+                  ChromeDistanceMetric::
+                      DISTANCE_SIDE_PANEL_HEADER_VECTOR_ICON_SIZE);
+    SetImage(ui::ImageModel::FromVectorIcon(vector_icons::kSearchIcon,
+                                            ui::kColorIcon, icon_size));
   }
 
  private:

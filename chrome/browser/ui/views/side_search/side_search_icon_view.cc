@@ -69,7 +69,8 @@ views::BubbleDialogDelegate* SideSearchIconView::GetBubble() const {
 }
 
 const gfx::VectorIcon& SideSearchIconView::GetVectorIcon() const {
-  return gfx::kNoneIcon;
+  // Default to the kSearchIcon if the DSE icon image is not available.
+  return vector_icons::kSearchIcon;
 }
 
 ui::ImageModel SideSearchIconView::GetSizedIconImage(int size) const {

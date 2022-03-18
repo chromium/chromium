@@ -10,6 +10,7 @@
 #include "base/scoped_observation.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_observer.h"
+#include "url/gurl.h"
 
 class Browser;
 
@@ -67,6 +68,11 @@ class DefaultSearchIconSource : public TemplateURLServiceObserver {
   // The ID of the current default TemplateURL instance. Keep track of this so
   // we update the page action's favicon only when the default instance changes.
   TemplateURLID default_template_url_id_ = kInvalidTemplateURLID;
+
+  // The most recently seen favicon url of the default search provider. We keep
+  // track of this since the favicon url may change even if the default search
+  // provider does not itself change.
+  GURL favicon_url_;
 
   base::ScopedObservation<TemplateURLService, TemplateURLServiceObserver>
       template_url_service_observation_{this};

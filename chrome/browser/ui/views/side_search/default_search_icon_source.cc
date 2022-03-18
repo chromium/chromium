@@ -23,6 +23,9 @@ DefaultSearchIconSource::DefaultSearchIconSource(
   if (auto* template_url_service =
           TemplateURLServiceFactory::GetForProfile(browser->profile())) {
     template_url_service_observation_.Observe(template_url_service);
+
+    // Call this initially in case the default URL has already been set.
+    OnTemplateURLServiceChanged();
   }
 }
 
@@ -38,15 +41,22 @@ void DefaultSearchIconSource::OnTemplateURLServiceChanged() {
   if (!default_template_url &&
       default_template_url_id_ != kInvalidTemplateURLID) {
     default_template_url_id_ = kInvalidTemplateURLID;
+    favicon_url_ = GURL();
     icon_changed_subscription_.Run();
+    return;
   }
 
-  // Update the favicon only if the current default search provider has changed.
+  // Update the favicon only if the current default search provider or the
+  // favicon url has changed. The favicon url may update without the default
+  // search provider changing.
   if (!default_template_url ||
-      default_template_url->id() == default_template_url_id_)
+      (default_template_url->id() == default_template_url_id_ &&
+       default_template_url->favicon_url() == favicon_url_)) {
     return;
+  }
 
   default_template_url_id_ = default_template_url->id();
+  favicon_url_ = default_template_url->favicon_url();
   icon_changed_subscription_.Run();
 }
 
