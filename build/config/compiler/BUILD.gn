@@ -191,12 +191,11 @@ declare_args() {
   # other architectures.
   #
   # lld doesn't have the bug.
-  use_icf =
-      (is_posix || is_fuchsia) && !is_debug && !using_sanitizer &&
-      !use_clang_coverage && current_os != "zos" &&
-      !(is_android && use_order_profiling) &&
-      (use_lld || (use_gold && (is_chromeos_ash || !(current_cpu == "x86" ||
-                                                     current_cpu == "x64"))))
+  use_icf = (is_posix || is_fuchsia) && !is_debug && !using_sanitizer &&
+            !use_clang_coverage && current_os != "zos" &&
+            !(is_android && use_order_profiling) &&
+            (use_lld || (use_gold && (is_chromeos || !(current_cpu == "x86" ||
+                                                       current_cpu == "x64"))))
 }
 
 if (is_android || (is_chromeos_ash && is_chromeos_device)) {
@@ -333,7 +332,7 @@ config("compiler") {
       } else {
         cflags += [ "-fstack-protector" ]
       }
-    } else if ((is_posix && !is_chromeos_ash && !is_nacl) || is_fuchsia) {
+    } else if ((is_posix && !is_chromeos && !is_nacl) || is_fuchsia) {
       # TODO(phajdan.jr): Use -fstack-protector-strong when our gcc supports it.
       # See also https://crbug.com/533294
       if (current_os != "zos") {
@@ -1356,7 +1355,7 @@ config("compiler_arm_thumb") {
 }
 
 config("compiler_arm") {
-  if (current_cpu == "arm" && (is_chromeos_ash || is_chromeos_lacros)) {
+  if (current_cpu == "arm" && is_chromeos) {
     # arm is normally the default mode for clang, but on chromeos a wrapper
     # is used to pass -mthumb, and therefor change the default.
     cflags = [ "-marm" ]
@@ -2226,7 +2225,7 @@ if (is_clang && is_a_target_toolchain) {
   } else if (clang_use_default_sample_profile) {
     assert(build_with_chromium,
            "Our default profiles currently only apply to Chromium")
-    assert(is_android || is_chromeos_lacros || is_chromeos_ash || is_chromecast,
+    assert(is_android || is_chromeos || is_chromecast,
            "The current platform has no default profile")
     if (is_android || is_chromecast) {
       _clang_sample_profile = "//chrome/android/profiles/afdo.prof"
