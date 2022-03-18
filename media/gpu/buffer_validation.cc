@@ -68,7 +68,7 @@ bool VerifyGpuMemoryBufferHandle(
   }
   if (pixel_format != PIXEL_FORMAT_I420 && pixel_format != PIXEL_FORMAT_NV12 &&
       pixel_format != PIXEL_FORMAT_P016LE) {
-    VLOGF(1) << "Unsupported: " << pixel_format;
+    VLOG(1) << "Unsupported: " << pixel_format;
     return false;
   }
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
