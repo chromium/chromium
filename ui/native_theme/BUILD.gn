@@ -22,8 +22,6 @@ component("native_theme") {
     "native_theme_observer.h",
     "native_theme_utils.cc",
     "native_theme_utils.h",
-    "themed_vector_icon.cc",
-    "themed_vector_icon.h",
   ]
 
   if (is_android) {
@@ -126,7 +124,7 @@ source_set("test_support") {
 test("native_theme_unittests") {
   use_xvfb = use_xvfb_in_this_config
 
-  sources = [ "themed_vector_icon_unittest.cc" ]
+  sources = []
 
   if (use_aura) {
     sources += [ "native_theme_aura_unittest.cc" ]

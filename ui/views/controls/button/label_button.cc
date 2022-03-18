@@ -27,7 +27,6 @@
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/label_button_border.h"
-#include "ui/views/image_model_utils.h"
 #include "ui/views/painter.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/view_class_properties.h"
@@ -67,8 +66,7 @@ LabelButton::~LabelButton() {
 
 gfx::ImageSkia LabelButton::GetImage(ButtonState for_state) const {
   for_state = ImageStateForState(for_state);
-  return GetImageSkiaFromImageModel(button_state_image_models_[for_state],
-                                    GetColorProvider());
+  return button_state_image_models_[for_state].Rasterize(GetColorProvider());
 }
 
 void LabelButton::SetImage(ButtonState for_state, const gfx::ImageSkia& image) {

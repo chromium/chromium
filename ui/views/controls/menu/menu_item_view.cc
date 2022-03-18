@@ -49,7 +49,6 @@
 #include "ui/views/controls/menu/new_badge.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/controls/separator.h"
-#include "ui/views/image_model_utils.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view_class_properties.h"
@@ -1142,8 +1141,7 @@ void MenuItemView::PaintMinorIconAndText(gfx::Canvas* canvas, SkColor color) {
   }
 
   if (!minor_icon.IsEmpty()) {
-    const gfx::ImageSkia image =
-        GetImageSkiaFromImageModel(minor_icon, GetColorProvider());
+    const gfx::ImageSkia image = minor_icon.Rasterize(GetColorProvider());
 
     int image_x = GetMirroredRect(minor_text_bounds).right() -
                   render_text->GetContentWidth() -

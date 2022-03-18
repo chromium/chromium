@@ -52,7 +52,6 @@
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/webview/webview.h"
-#include "ui/views/image_model_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
@@ -183,8 +182,7 @@ ui::ImageModel ChromeNativeAppWindowViewsAuraAsh::GetWindowIcon() {
     return ui::ImageModel();
 
   DCHECK(image.IsImage());
-  const gfx::ImageSkia image_skia =
-      views::GetImageSkiaFromImageModel(image, nullptr);
+  const gfx::ImageSkia image_skia = image.Rasterize(nullptr);
   return ui::ImageModel::FromImageSkia(
       apps::CreateStandardIconImage(image_skia));
 }

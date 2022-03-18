@@ -29,12 +29,12 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/themed_vector_icon.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/native_theme/themed_vector_icon.h"
 #include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
@@ -42,7 +42,6 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/focus/focus_manager.h"
-#include "ui/views/image_model_utils.h"
 
 namespace ash {
 
@@ -395,8 +394,7 @@ void SearchResultTileItemView::SetBadgeIcon(const ui::ImageModel& badge_icon,
     return;
   }
 
-  gfx::ImageSkia badge_icon_skia =
-      views::GetImageSkiaFromImageModel(badge_icon, GetColorProvider());
+  gfx::ImageSkia badge_icon_skia = badge_icon.Rasterize(GetColorProvider());
 
   if (use_badge_icon_background) {
     badge_icon_skia =

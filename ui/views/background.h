@@ -11,9 +11,9 @@
 
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/themed_vector_icon.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/color_palette.h"
-#include "ui/native_theme/themed_vector_icon.h"
 #include "ui/views/views_export.h"
 
 namespace gfx {

@@ -10,6 +10,10 @@
 #include "ui/color/color_id.h"
 #include "ui/gfx/vector_icon_utils.h"
 
+#if !BUILDFLAG(IS_IOS)
+#include "ui/base/themed_vector_icon.h"
+#endif
+
 namespace ui {
 
 VectorIconModel::VectorIconModel() = default;
@@ -159,6 +163,24 @@ bool ImageModel::operator==(const ImageModel& other) const {
 bool ImageModel::operator!=(const ImageModel& other) const {
   return !(*this == other);
 }
+
+#if !BUILDFLAG(IS_IOS)
+gfx::ImageSkia ImageModel::Rasterize(
+    const ui::ColorProvider* color_provider) const {
+  if (IsImage())
+    return GetImage().AsImageSkia();
+
+  if (IsVectorIcon()) {
+    DCHECK(color_provider);
+    return ThemedVectorIcon(GetVectorIcon()).GetImageSkia(color_provider);
+  }
+
+  if (IsImageGenerator())
+    return GetImageGenerator().Run(color_provider);
+
+  return gfx::ImageSkia();
+}
+#endif
 
 ImageModel::ImageGeneratorAndSize::ImageGeneratorAndSize(
     ImageGenerator generator,

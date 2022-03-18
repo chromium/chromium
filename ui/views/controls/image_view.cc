@@ -12,11 +12,10 @@
 #include "cc/paint/paint_flags.h"
 #include "skia/ext/image_operations.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/themed_vector_icon.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/native_theme/themed_vector_icon.h"
-#include "ui/views/image_model_utils.h"
 
 namespace views {
 
@@ -51,7 +50,7 @@ void ImageView::SetImage(const ui::ImageModel& image_model) {
 }
 
 gfx::ImageSkia ImageView::GetImage() const {
-  return views::GetImageSkiaFromImageModel(image_model_, GetColorProvider());
+  return image_model_.Rasterize(GetColorProvider());
 }
 
 ui::ImageModel ImageView::GetImageModel() const {
@@ -131,8 +130,7 @@ gfx::ImageSkia ImageView::GetPaintImage(float scale) {
     return gfx::ImageSkia();
 
   if (image_model_.IsImage() || image_model_.IsImageGenerator()) {
-    const gfx::ImageSkia image =
-        views::GetImageSkiaFromImageModel(image_model_, GetColorProvider());
+    const gfx::ImageSkia image = image_model_.Rasterize(GetColorProvider());
     if (image.isNull())
       return image;
 
@@ -154,8 +152,7 @@ gfx::ImageSkia ImageView::GetPaintImage(float scale) {
             scaled_size.width(), scaled_size.height()),
         scale));
   } else if (scaled_image_.isNull()) {
-    scaled_image_ =
-        views::GetImageSkiaFromImageModel(image_model_, GetColorProvider());
+    scaled_image_ = image_model_.Rasterize(GetColorProvider());
   }
   return scaled_image_;
 }

@@ -122,6 +122,11 @@ class COMPONENT_EXPORT(UI_BASE) ImageModel {
   bool operator==(const ImageModel& other) const;
   bool operator!=(const ImageModel& other) const;
 
+#if !BUILDFLAG(IS_IOS)
+  // Rasterizes if necessary.
+  gfx::ImageSkia Rasterize(const ui::ColorProvider* color_provider) const;
+#endif
+
  private:
   struct ImageGeneratorAndSize {
     ImageGeneratorAndSize(ImageGenerator generator, gfx::Size size);

@@ -40,7 +40,6 @@
 #include "ui/gfx/render_text.h"
 #include "ui/resources/grit/ui_resources.h"
 #include "ui/views/drag_utils.h"
-#include "ui/views/image_model_utils.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
@@ -241,7 +240,7 @@ class BookmarkDragHelper : public bookmarks::BaseBookmarkModelObserver {
               (icon.IsEmpty() || (icon.IsImageGenerator() && !color_provider))
                   ? *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
                         IDR_DEFAULT_FAVICON)
-                  : views::GetImageSkiaFromImageModel(icon, color_provider),
+                  : icon.Rasterize(color_provider),
               count_),
           BookmarkDragImageSource::kBookmarkDragImageSize);
 

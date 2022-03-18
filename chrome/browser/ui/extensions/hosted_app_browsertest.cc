@@ -90,7 +90,6 @@
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
-#include "ui/views/image_model_utils.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
@@ -504,8 +503,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppTest, LoadIcon) {
       app_service_test().LoadAppIconBlocking(
           apps::mojom::AppType::kChromeApp, app_id_,
           extension_misc::EXTENSION_ICON_SMALL),
-      views::GetImageSkiaFromImageModel(
-          app_browser_->app_controller()->GetWindowAppIcon(), nullptr)));
+      app_browser_->app_controller()->GetWindowAppIcon().Rasterize(nullptr)));
 }
 #endif
 

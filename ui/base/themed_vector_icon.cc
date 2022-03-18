@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/native_theme/themed_vector_icon.h"
+#include "ui/base/themed_vector_icon.h"
 
 #include "ui/color/color_provider.h"
 #include "ui/gfx/paint_vector_icon.h"

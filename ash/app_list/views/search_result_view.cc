@@ -46,7 +46,6 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/image_model_utils.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/style/typography.h"
@@ -446,8 +445,8 @@ void SearchResultView::UpdateBadgeIcon() {
     return;
   }
 
-  gfx::ImageSkia badge_icon_skia = views::GetImageSkiaFromImageModel(
-      result()->badge_icon(), GetColorProvider());
+  gfx::ImageSkia badge_icon_skia =
+      result()->badge_icon().Rasterize(GetColorProvider());
 
   if (result()->use_badge_icon_background()) {
     badge_icon_skia =

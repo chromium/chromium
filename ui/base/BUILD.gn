@@ -348,6 +348,8 @@ component("base") {
       "pointer/touch_editing_controller.h",
       "text/bytes_formatting.cc",
       "text/bytes_formatting.h",
+      "themed_vector_icon.cc",
+      "themed_vector_icon.h",
       "ui_base_types.cc",
       "ui_base_types.h",
       "user_activity/user_activity_detector.cc",
@@ -458,6 +460,7 @@ component("base") {
     "//ui/base:data_exchange",
     "//ui/base/clipboard:clipboard_types",
     "//ui/base/dragdrop/mojom",
+    "//ui/color",
     "//ui/display",
     "//ui/display/util:gpu_info_util",
     "//ui/events",
@@ -932,7 +935,10 @@ test("ui_base_unittests") {
     ]
   }
   if (!is_ios) {
-    sources += [ "user_activity/user_activity_detector_unittest.cc" ]
+    sources += [
+      "themed_vector_icon_unittest.cc",
+      "user_activity/user_activity_detector_unittest.cc",
+    ]
 
     if (is_mac) {
       sources += [
@@ -950,6 +956,7 @@ test("ui_base_unittests") {
     "//base",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
+    "//components/vector_icons",
     "//mojo/core/embedder",
     "//net",
     "//net:test_support",

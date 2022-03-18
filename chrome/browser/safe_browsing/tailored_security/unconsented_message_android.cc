@@ -28,7 +28,6 @@
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/views/image_model_utils.h"
 
 namespace safe_browsing {
 

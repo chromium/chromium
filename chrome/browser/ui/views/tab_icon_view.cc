@@ -20,7 +20,6 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/paint_throbber.h"
-#include "ui/views/image_model_utils.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -140,8 +139,8 @@ void TabIconView::PaintButtonContents(gfx::Canvas* canvas) {
       return;
     }
 
-    gfx::ImageSkia favicon = views::GetImageSkiaFromImageModel(
-        model_->GetFaviconForTabIconView(), GetColorProvider());
+    gfx::ImageSkia favicon =
+        model_->GetFaviconForTabIconView().Rasterize(GetColorProvider());
     if (!favicon.isNull()) {
       PaintFavicon(canvas, favicon);
       return;

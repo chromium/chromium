@@ -33,7 +33,6 @@
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_util_mac.h"
-#include "ui/views/image_model_utils.h"
 
 namespace {
 
@@ -715,8 +714,8 @@ void TaskManagerMac::WindowWasClosed() {
 
 NSImage* TaskManagerMac::GetImageForRow(int row) {
   const NSSize kImageSize = NSMakeSize(16.0, 16.0);
-  NSImage* image = gfx::NSImageFromImageSkia(
-      views::GetImageSkiaFromImageModel(table_model_.GetIcon(row), nullptr));
+  NSImage* image =
+      gfx::NSImageFromImageSkia(table_model_.GetIcon(row).Rasterize(nullptr));
   if (image)
     image.size = kImageSize;
   else

@@ -6,8 +6,10 @@
 
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/vector_icons/vector_icons.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -213,5 +215,29 @@ TEST(ImageModelTest, CheckEqual) {
   image_model_src = image_model_dest;
   EXPECT_EQ(image_model_src, image_model_dest);
 }
+
+#if !BUILDFLAG(IS_IOS)
+TEST(ImageModelTest, ShouldRasterizeEmptyModel) {
+  gfx::ImageSkia image_skia = ui::ImageModel().Rasterize(nullptr);
+  EXPECT_TRUE(image_skia.isNull());
+}
+
+TEST(ImageModelTest, ShouldRasterizeVectorIcon) {
+  ui::ColorProvider color_provider;
+  color_provider.GenerateColorMap();
+  gfx::ImageSkia image_skia =
+      ui::ImageModel::FromVectorIcon(vector_icons::kSyncIcon)
+          .Rasterize(&color_provider);
+  EXPECT_FALSE(image_skia.isNull());
+}
+
+TEST(ImageModelTest, ShouldRasterizeImage) {
+  gfx::Image image = gfx::test::CreateImage(16, 16);
+  gfx::ImageSkia image_skia =
+      ui::ImageModel::FromImage(image).Rasterize(nullptr);
+  EXPECT_FALSE(image_skia.isNull());
+  EXPECT_TRUE(image_skia.BackedBySameObjectAs(image.AsImageSkia()));
+}
+#endif  // !BUILDFLAG(IS_IOS)
 
 }  // namespace ui

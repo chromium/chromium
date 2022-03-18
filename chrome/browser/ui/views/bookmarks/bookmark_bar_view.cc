@@ -128,7 +128,6 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/drag_utils.h"
-#include "ui/views/image_model_utils.h"
 #include "ui/views/metrics.h"
 #include "ui/views/view_constants.h"
 #include "ui/views/widget/tooltip_manager.h"
@@ -1488,10 +1487,9 @@ void BookmarkBarView::WriteDragDataForView(View* sender,
         chrome::BookmarkFolderIconType::kNormal, ui::kColorMenuIcon);
   }
 
-  button_drag_utils::SetDragImage(
-      node->url(), node->GetTitle(),
-      views::GetImageSkiaFromImageModel(icon, GetColorProvider()), &press_pt,
-      data);
+  button_drag_utils::SetDragImage(node->url(), node->GetTitle(),
+                                  icon.Rasterize(GetColorProvider()), &press_pt,
+                                  data);
   WriteBookmarkDragData(node, data);
 }
 

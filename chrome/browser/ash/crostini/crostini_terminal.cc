@@ -52,7 +52,6 @@
 #include "ui/color/color_provider_manager.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/native_theme/native_theme.h"
-#include "ui/views/image_model_utils.h"
 
 namespace crostini {
 
@@ -463,10 +462,9 @@ void AddTerminalMenuShortcuts(
       ui::ColorProviderManager::Get().GetColorProviderFor(
           ui::NativeTheme::GetInstanceForWeb()->GetColorProviderKey(nullptr));
   auto icon = [color_provider](const gfx::VectorIcon& icon) {
-    return views::GetImageSkiaFromImageModel(
-        ui::ImageModel::FromVectorIcon(icon, ui::kColorMenuIcon,
-                                       apps::kAppShortcutIconSizeDip),
-        color_provider);
+    return ui::ImageModel::FromVectorIcon(icon, ui::kColorMenuIcon,
+                                          apps::kAppShortcutIconSizeDip)
+        .Rasterize(color_provider);
   };
   gfx::ImageSkia terminal_ssh_icon = icon(kTerminalSshIcon);
   gfx::ImageSkia crostini_mascot_icon = icon(kCrostiniMascotIcon);
