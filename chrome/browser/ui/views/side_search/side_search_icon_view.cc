@@ -30,6 +30,7 @@ SideSearchIconView::SideSearchIconView(
           browser,
           base::BindRepeating(&SideSearchIconView::UpdateIconImage,
                               base::Unretained(this))) {
+  image()->SetFlipCanvasOnPaintForRTLUI(false);
   SetProperty(views::kElementIdentifierKey, kSideSearchButtonElementId);
   SetVisible(false);
 }
