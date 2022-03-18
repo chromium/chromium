@@ -263,7 +263,7 @@ class BookmarkBarView : public views::AccessiblePaneView,
                        const ui::Event& event);
   void OnMenuButtonPressed(const bookmarks::BookmarkNode* node,
                            const ui::Event& event);
-  void OnTabGroupButtonPressed(const SavedTabGroup* group,
+  void OnTabGroupButtonPressed(const tab_groups::TabGroupId& group_id,
                                const ui::Event& event);
 
   // NOTE: unless otherwise stated all methods that take an index are in terms
