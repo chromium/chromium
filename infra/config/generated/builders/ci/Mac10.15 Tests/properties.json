@@ -9,6 +9,6 @@
   "builder_group": "chromium.mac",
   "recipe": "chromium",
   "sheriff_rotations": [
-    "chromium"
+    "chrome_browser_release"
   ]
 }

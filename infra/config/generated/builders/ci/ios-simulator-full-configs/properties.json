@@ -14,8 +14,7 @@
   "builder_group": "chromium.mac",
   "recipe": "chromium",
   "sheriff_rotations": [
-    "chromium",
-    "ios"
+    "chrome_browser_release"
   ],
   "xcode_build_version": "13c100"
 }

@@ -16,6 +16,6 @@
   "builder_group": "chromium.memory",
   "recipe": "chromium",
   "sheriff_rotations": [
-    "chromium"
+    "chrome_browser_release"
   ]
 }
