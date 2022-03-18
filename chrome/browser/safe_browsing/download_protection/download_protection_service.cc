@@ -327,9 +327,7 @@ bool DownloadProtectionService::IsSupportedDownload(
 
 void DownloadProtectionService::CheckPPAPIDownloadRequest(
     const GURL& requestor_url,
-    const GURL& initiating_frame_url,
-    const content::GlobalRenderFrameHostId& initiating_outermost_main_frame_id,
-    content::WebContents* web_contents,
+    content::RenderFrameHost* initiating_frame,
     const base::FilePath& default_file_path,
     const std::vector<base::FilePath::StringType>& alternate_extensions,
     Profile* profile,
@@ -337,15 +335,17 @@ void DownloadProtectionService::CheckPPAPIDownloadRequest(
   DVLOG(1) << __func__ << " url:" << requestor_url
            << " default_file_path:" << default_file_path.value();
   if (profile &&
-      MatchesEnterpriseAllowlist(*profile->GetPrefs(),
-                                 {requestor_url, initiating_frame_url})) {
+      MatchesEnterpriseAllowlist(
+          *profile->GetPrefs(),
+          {requestor_url,
+           (initiating_frame ? initiating_frame->GetLastCommittedURL()
+                             : GURL())})) {
     std::move(callback).Run(DownloadCheckResult::ALLOWLISTED_BY_POLICY);
     return;
   }
   std::unique_ptr<PPAPIDownloadRequest> request(new PPAPIDownloadRequest(
-      requestor_url, initiating_frame_url, initiating_outermost_main_frame_id,
-      web_contents, default_file_path, alternate_extensions, profile,
-      std::move(callback), this, database_manager_));
+      requestor_url, initiating_frame, default_file_path, alternate_extensions,
+      profile, std::move(callback), this, database_manager_));
   PPAPIDownloadRequest* request_copy = request.get();
   auto insertion_result = ppapi_download_requests_.insert(
       std::make_pair(request_copy, std::move(request)));

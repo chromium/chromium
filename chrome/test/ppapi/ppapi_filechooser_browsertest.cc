@@ -54,10 +54,7 @@ class FakeDownloadProtectionService : public DownloadProtectionService {
 
   void CheckPPAPIDownloadRequest(
       const GURL& requestor_url,
-      const GURL& initiating_frame_url_unused,
-      const content::GlobalRenderFrameHostId&
-          initiating_outermost_main_frame_id,
-      content::WebContents* web_contents_unused,
+      content::RenderFrameHost* unused_initiating_frame,
       const base::FilePath& default_file_path,
       const std::vector<base::FilePath::StringType>& alternate_extensions,
       Profile* /* profile */,

@@ -13,12 +13,11 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "components/sessions/core/session_id.h"
-#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "url/gurl.h"
 
 namespace content {
-class WebContents;
+class RenderFrameHost;
 }  // namespace content
 
 namespace network {
@@ -64,10 +63,7 @@ class PPAPIDownloadRequest : public content::WebContentsObserver {
 
   PPAPIDownloadRequest(
       const GURL& requestor_url,
-      const GURL& initiating_frame_url,
-      const content::GlobalRenderFrameHostId&
-          initiating_outermost_main_frame_id,
-      content::WebContents* web_contents,
+      content::RenderFrameHost* initiating_frame,
       const base::FilePath& default_file_path,
       const std::vector<base::FilePath::StringType>& alternate_extensions,
       Profile* profile,
@@ -181,8 +177,6 @@ class PPAPIDownloadRequest : public content::WebContentsObserver {
   bool is_enhanced_protection_;
 
   raw_ptr<Profile> profile_;
-
-  raw_ptr<content::WebContents> web_contents_;
 
   base::WeakPtrFactory<PPAPIDownloadRequest> weakptr_factory_{this};
 };

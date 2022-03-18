@@ -116,10 +116,7 @@ class DownloadProtectionService {
 
   virtual void CheckPPAPIDownloadRequest(
       const GURL& requestor_url,
-      const GURL& initiating_frame_url,
-      const content::GlobalRenderFrameHostId&
-          initiating_outermost_main_frame_id,
-      content::WebContents* web_contents,
+      content::RenderFrameHost* initiating_frame,
       const base::FilePath& default_file_path,
       const std::vector<base::FilePath::StringType>& alternate_extensions,
       Profile* profile,
