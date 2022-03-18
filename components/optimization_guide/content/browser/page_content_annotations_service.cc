@@ -239,36 +239,37 @@ void PageContentAnnotationsService::OverridePageContentAnnotatorForTesting(
 }
 
 // static
-std::string PageContentAnnotationsService::StringInputForPageTopicsDomain(
-    const GURL& url) {
-  std::string domain = base::ToLowerASCII(url.host());
+std::string PageContentAnnotationsService::StringInputForPageTopicsHost(
+    const std::string& host) {
+  std::string output = base::ToLowerASCII(host);
 
   // Strip the 'www.' if it exists.
-  if (base::StartsWith(domain, "www.")) {
-    domain = domain.substr(4);
+  if (base::StartsWith(output, "www.")) {
+    output = output.substr(4);
   }
 
-  for (char c : std::vector<char>{'-', '_', '.', '+'}) {
-    std::replace(domain.begin(), domain.end(), c, ' ');
+  const char kCharsToReplaceWithSpace[] = {'-', '_', '.', '+'};
+  for (char c : kCharsToReplaceWithSpace) {
+    std::replace(output.begin(), output.end(), c, ' ');
   }
 
-  return domain;
+  return output;
 }
 
 void PageContentAnnotationsService::BatchAnnotatePageTopics(
     BatchAnnotationCallback callback,
-    const std::vector<GURL>& inputs) {
-  std::vector<std::string> domains;
-  for (const GURL& url : inputs) {
-    domains.emplace_back(StringInputForPageTopicsDomain(url));
+    const std::vector<std::string>& hosts) {
+  std::vector<std::string> tokenized_hosts;
+  for (const std::string& host : hosts) {
+    tokenized_hosts.emplace_back(StringInputForPageTopicsHost(host));
   }
 
   if (!annotator_) {
-    std::move(callback).Run(CreateEmptyBatchAnnotationResults(domains));
+    std::move(callback).Run(CreateEmptyBatchAnnotationResults(tokenized_hosts));
     return;
   }
 
-  annotator_->Annotate(std::move(callback), domains,
+  annotator_->Annotate(std::move(callback), tokenized_hosts,
                        AnnotationType::kPageTopics);
 }
 
@@ -289,8 +290,8 @@ void PageContentAnnotationsService::BatchAnnotate(
 absl::optional<ModelInfo> PageContentAnnotationsService::GetModelInfoForType(
     AnnotationType type) const {
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  DCHECK(model_manager_);
-  return model_manager_->GetModelInfoForType(type);
+  DCHECK(annotator_);
+  return annotator_->GetModelInfoForType(type);
 #else
   return absl::nullopt;
 #endif
@@ -482,11 +483,7 @@ void PageContentAnnotationsService::RunBatchAnnotationValidation() {
     return;
   }
 
-  std::vector<GURL> urls;
-  for (const std::string& domain : dummy_inputs) {
-    urls.emplace_back(GURL("https://" + domain));
-  }
-  BatchAnnotatePageTopics(base::DoNothing(), urls);
+  BatchAnnotatePageTopics(base::DoNothing(), dummy_inputs);
 }
 
 // static

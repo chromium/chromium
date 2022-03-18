@@ -39,7 +39,7 @@ class CONTENT_EXPORT BrowsingTopicsSiteDataManagerImpl
       GetBrowsingTopicsApiUsageCallback callback) override;
 
   void OnBrowsingTopicsApiUsed(
-      const browsing_topics::HashedHost& hashed_top_host,
+      const browsing_topics::HashedHost& hashed_main_frame_host,
       const base::flat_set<browsing_topics::HashedDomain>&
           hashed_context_domains) override;
 

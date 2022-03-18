@@ -53,11 +53,11 @@ void BrowsingTopicsSiteDataManagerImpl::GetBrowsingTopicsApiUsage(
 }
 
 void BrowsingTopicsSiteDataManagerImpl::OnBrowsingTopicsApiUsed(
-    const browsing_topics::HashedHost& hashed_top_host,
+    const browsing_topics::HashedHost& hashed_main_frame_host,
     const base::flat_set<browsing_topics::HashedDomain>&
         hashed_context_domains) {
   storage_.AsyncCall(&BrowsingTopicsSiteDataStorage::OnBrowsingTopicsApiUsed)
-      .WithArgs(hashed_top_host, hashed_context_domains);
+      .WithArgs(hashed_main_frame_host, hashed_context_domains);
 }
 
 }  // namespace content

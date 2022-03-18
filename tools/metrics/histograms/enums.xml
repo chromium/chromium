@@ -11455,6 +11455,15 @@ Called by update_bad_message_reasons.py.-->
   <int value="3" label="Multiple pages, all of which are non-visible"/>
 </enum>
 
+<enum name="BrowsingTopicsCalculatorResultStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failure: permission denied"/>
+  <int value="2" label="Failure: api usage context query error"/>
+  <int value="3" label="Failure: annotation execution error"/>
+  <int value="4"
+      label="Failure: taxonomy version not supported in the Chrome binary"/>
+</enum>
+
 <enum name="BubbleDismissalReason">
   <obsolete>
     Deprecated 12/2020 as it is no longer used for analysis.

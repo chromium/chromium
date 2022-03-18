@@ -57,6 +57,16 @@ class EpochTopics {
   // reset `padded_top_topics_start_index_` to 0.
   void ClearTopics();
 
+  const std::vector<TopicAndDomains>& top_topics_and_observing_domains() const {
+    return top_topics_and_observing_domains_;
+  }
+
+  size_t padded_top_topics_start_index() const {
+    return padded_top_topics_start_index_;
+  }
+
+  size_t taxonomy_size() const { return taxonomy_size_; }
+
   int taxonomy_version() const { return taxonomy_version_; }
 
   int model_version() const { return model_version_; }

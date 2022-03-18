@@ -123,7 +123,7 @@ TEST_F(BrowsingTopicsSiteDataStorageTest,
   // and [sqlite_autoindex_meta_1].
   EXPECT_EQ(3u, sql::test::CountSQLIndices(&db));
 
-  // `hashed_context_domain`, `hashed_top_host`, and `last_usage_time`.
+  // `hashed_context_domain`, `hashed_main_frame_host`, and `last_usage_time`.
   EXPECT_EQ(3u,
             sql::test::CountTableColumns(&db, "browsing_topics_api_usages"));
 
@@ -206,7 +206,7 @@ TEST_F(BrowsingTopicsSiteDataStorageTest, LoadFromFile_VersionTooNew_Failure) {
 TEST_F(BrowsingTopicsSiteDataStorageTest, OnBrowsingTopicsApiUsed_SingleEntry) {
   OpenDatabase();
   topics_storage()->OnBrowsingTopicsApiUsed(
-      /*hashed_top_host=*/browsing_topics::HashedHost(123),
+      /*hashed_main_frame_host=*/browsing_topics::HashedHost(123),
       /*hashed_context_domains=*/{browsing_topics::HashedDomain(456)});
   CloseDatabase();
 
@@ -215,17 +215,18 @@ TEST_F(BrowsingTopicsSiteDataStorageTest, OnBrowsingTopicsApiUsed_SingleEntry) {
   EXPECT_EQ(1u, CountApiUsagesEntries(db));
 
   const char kGetAllEntriesSql[] =
-      "SELECT hashed_context_domain, hashed_top_host, last_usage_time FROM "
+      "SELECT hashed_context_domain, hashed_main_frame_host, last_usage_time "
+      "FROM "
       "browsing_topics_api_usages";
   sql::Statement s(db.GetUniqueStatement(kGetAllEntriesSql));
   EXPECT_TRUE(s.Step());
 
   int64_t hashed_context_domain = s.ColumnInt64(0);
-  int64_t hashed_top_host = s.ColumnInt64(1);
+  int64_t hashed_main_frame_host = s.ColumnInt64(1);
   base::Time time = s.ColumnTime(2);
 
   EXPECT_EQ(hashed_context_domain, 456);
-  EXPECT_EQ(hashed_top_host, 123);
+  EXPECT_EQ(hashed_main_frame_host, 123);
   EXPECT_EQ(time, base::Time::Now());
 
   EXPECT_FALSE(s.Step());
@@ -235,17 +236,17 @@ TEST_F(BrowsingTopicsSiteDataStorageTest,
        OnBrowsingTopicsApiUsed_MultipleEntries) {
   OpenDatabase();
   topics_storage()->OnBrowsingTopicsApiUsed(
-      /*hashed_top_host=*/browsing_topics::HashedHost(123),
+      /*hashed_main_frame_host=*/browsing_topics::HashedHost(123),
       /*hashed_context_domains=*/{browsing_topics::HashedDomain(123)});
 
   task_environment_.FastForwardBy(base::Seconds(1));
 
   topics_storage()->OnBrowsingTopicsApiUsed(
-      /*hashed_top_host=*/browsing_topics::HashedHost(123),
+      /*hashed_main_frame_host=*/browsing_topics::HashedHost(123),
       /*hashed_context_domains=*/{browsing_topics::HashedDomain(456),
                                   browsing_topics::HashedDomain(789)});
   topics_storage()->OnBrowsingTopicsApiUsed(
-      /*hashed_top_host=*/browsing_topics::HashedHost(456),
+      /*hashed_main_frame_host=*/browsing_topics::HashedHost(456),
       /*hashed_context_domains=*/{browsing_topics::HashedDomain(789)});
   CloseDatabase();
 
@@ -254,9 +255,10 @@ TEST_F(BrowsingTopicsSiteDataStorageTest,
   EXPECT_EQ(4u, CountApiUsagesEntries(db));
 
   const char kGetAllEntriesSql[] =
-      "SELECT hashed_context_domain, hashed_top_host, last_usage_time FROM "
+      "SELECT hashed_context_domain, hashed_main_frame_host, last_usage_time "
+      "FROM "
       "browsing_topics_api_usages "
-      "ORDER BY last_usage_time, hashed_top_host, hashed_context_domain";
+      "ORDER BY last_usage_time, hashed_main_frame_host, hashed_context_domain";
 
   sql::Statement s(db.GetUniqueStatement(kGetAllEntriesSql));
 
@@ -264,11 +266,11 @@ TEST_F(BrowsingTopicsSiteDataStorageTest,
     EXPECT_TRUE(s.Step());
 
     int64_t hashed_context_domain = s.ColumnInt64(0);
-    int64_t hashed_top_host = s.ColumnInt64(1);
+    int64_t hashed_main_frame_host = s.ColumnInt64(1);
     base::Time time = s.ColumnTime(2);
 
     EXPECT_EQ(hashed_context_domain, 123);
-    EXPECT_EQ(hashed_top_host, 123);
+    EXPECT_EQ(hashed_main_frame_host, 123);
     EXPECT_EQ(time, base::Time::Now() - base::Seconds(1));
   }
 
@@ -276,11 +278,11 @@ TEST_F(BrowsingTopicsSiteDataStorageTest,
     EXPECT_TRUE(s.Step());
 
     int64_t hashed_context_domain = s.ColumnInt64(0);
-    int64_t hashed_top_host = s.ColumnInt64(1);
+    int64_t hashed_main_frame_host = s.ColumnInt64(1);
     base::Time time = s.ColumnTime(2);
 
     EXPECT_EQ(hashed_context_domain, 456);
-    EXPECT_EQ(hashed_top_host, 123);
+    EXPECT_EQ(hashed_main_frame_host, 123);
     EXPECT_EQ(time, base::Time::Now());
   }
 
@@ -288,11 +290,11 @@ TEST_F(BrowsingTopicsSiteDataStorageTest,
     EXPECT_TRUE(s.Step());
 
     int64_t hashed_context_domain = s.ColumnInt64(0);
-    int64_t hashed_top_host = s.ColumnInt64(1);
+    int64_t hashed_main_frame_host = s.ColumnInt64(1);
     base::Time time = s.ColumnTime(2);
 
     EXPECT_EQ(hashed_context_domain, 789u);
-    EXPECT_EQ(hashed_top_host, 123);
+    EXPECT_EQ(hashed_main_frame_host, 123);
     EXPECT_EQ(time, base::Time::Now());
   }
 
@@ -300,11 +302,11 @@ TEST_F(BrowsingTopicsSiteDataStorageTest,
     EXPECT_TRUE(s.Step());
 
     int64_t hashed_context_domain = s.ColumnInt64(0);
-    int64_t hashed_top_host = s.ColumnInt64(1);
+    int64_t hashed_main_frame_host = s.ColumnInt64(1);
     base::Time time = s.ColumnTime(2);
 
     EXPECT_EQ(hashed_context_domain, 789u);
-    EXPECT_EQ(hashed_top_host, 456);
+    EXPECT_EQ(hashed_main_frame_host, 456);
     EXPECT_EQ(time, base::Time::Now());
   }
 
@@ -315,13 +317,13 @@ TEST_F(BrowsingTopicsSiteDataStorageTest, GetBrowsingTopicsApiUsage) {
   OpenDatabase();
 
   topics_storage()->OnBrowsingTopicsApiUsed(
-      /*hashed_top_host=*/browsing_topics::HashedHost(123),
+      /*hashed_main_frame_host=*/browsing_topics::HashedHost(123),
       /*hashed_context_domains=*/{browsing_topics::HashedDomain(123)});
 
   task_environment_.FastForwardBy(base::Seconds(1));
 
   topics_storage()->OnBrowsingTopicsApiUsed(
-      /*hashed_top_host=*/browsing_topics::HashedHost(123),
+      /*hashed_main_frame_host=*/browsing_topics::HashedHost(123),
       /*hashed_context_domains=*/{browsing_topics::HashedDomain(456)});
 
   task_environment_.FastForwardBy(base::Seconds(1));
@@ -335,14 +337,14 @@ TEST_F(BrowsingTopicsSiteDataStorageTest, GetBrowsingTopicsApiUsage) {
   EXPECT_TRUE(result.success);
   EXPECT_EQ(result.api_usage_contexts.size(), 2u);
 
-  EXPECT_EQ(result.api_usage_contexts[0].hashed_top_host,
+  EXPECT_EQ(result.api_usage_contexts[0].hashed_main_frame_host,
             browsing_topics::HashedHost(123));
   EXPECT_EQ(result.api_usage_contexts[0].hashed_context_domain,
             browsing_topics::HashedDomain(456));
   EXPECT_EQ(result.api_usage_contexts[0].time,
             base::Time::Now() - base::Seconds(1));
 
-  EXPECT_EQ(result.api_usage_contexts[1].hashed_top_host,
+  EXPECT_EQ(result.api_usage_contexts[1].hashed_main_frame_host,
             browsing_topics::HashedHost(123));
   EXPECT_EQ(result.api_usage_contexts[1].hashed_context_domain,
             browsing_topics::HashedDomain(123));
@@ -355,13 +357,13 @@ TEST_F(BrowsingTopicsSiteDataStorageTest,
   OpenDatabase();
 
   topics_storage()->OnBrowsingTopicsApiUsed(
-      /*hashed_top_host=*/browsing_topics::HashedHost(123),
+      /*hashed_main_frame_host=*/browsing_topics::HashedHost(123),
       /*hashed_context_domains=*/{browsing_topics::HashedDomain(123)});
 
   task_environment_.FastForwardBy(base::Seconds(1));
 
   topics_storage()->OnBrowsingTopicsApiUsed(
-      /*hashed_top_host=*/browsing_topics::HashedHost(123),
+      /*hashed_main_frame_host=*/browsing_topics::HashedHost(123),
       /*hashed_context_domains=*/{browsing_topics::HashedDomain(456)});
 
   task_environment_.FastForwardBy(base::Seconds(1));
@@ -374,7 +376,7 @@ TEST_F(BrowsingTopicsSiteDataStorageTest,
 
   EXPECT_TRUE(result.success);
   EXPECT_EQ(result.api_usage_contexts.size(), 1u);
-  EXPECT_EQ(result.api_usage_contexts[0].hashed_top_host,
+  EXPECT_EQ(result.api_usage_contexts[0].hashed_main_frame_host,
             browsing_topics::HashedHost(123));
   EXPECT_EQ(result.api_usage_contexts[0].hashed_context_domain,
             browsing_topics::HashedDomain(456));
@@ -392,13 +394,13 @@ TEST_F(BrowsingTopicsSiteDataStorageTest, ExpireDataBefore) {
   OpenDatabase();
 
   topics_storage()->OnBrowsingTopicsApiUsed(
-      /*hashed_top_host=*/browsing_topics::HashedHost(123),
+      /*hashed_main_frame_host=*/browsing_topics::HashedHost(123),
       /*hashed_context_domains=*/{browsing_topics::HashedDomain(123)});
 
   task_environment_.FastForwardBy(base::Seconds(1));
 
   topics_storage()->OnBrowsingTopicsApiUsed(
-      /*hashed_top_host=*/browsing_topics::HashedHost(123),
+      /*hashed_main_frame_host=*/browsing_topics::HashedHost(123),
       /*hashed_context_domains=*/{browsing_topics::HashedDomain(456)});
 
   task_environment_.FastForwardBy(base::Seconds(1));
@@ -412,17 +414,18 @@ TEST_F(BrowsingTopicsSiteDataStorageTest, ExpireDataBefore) {
 
   // The `ExpireDataBefore()` should have deleted the first inserted entry.
   const char kGetAllEntriesSql[] =
-      "SELECT hashed_context_domain, hashed_top_host, last_usage_time FROM "
+      "SELECT hashed_context_domain, hashed_main_frame_host, last_usage_time "
+      "FROM "
       "browsing_topics_api_usages";
   sql::Statement s(db.GetUniqueStatement(kGetAllEntriesSql));
   EXPECT_TRUE(s.Step());
 
   int64_t hashed_context_domain = s.ColumnInt64(0);
-  int64_t hashed_top_host = s.ColumnInt64(1);
+  int64_t hashed_main_frame_host = s.ColumnInt64(1);
   base::Time time = s.ColumnTime(2);
 
   EXPECT_EQ(hashed_context_domain, 456);
-  EXPECT_EQ(hashed_top_host, 123);
+  EXPECT_EQ(hashed_main_frame_host, 123);
   EXPECT_EQ(time, base::Time::Now() - base::Seconds(1));
 
   EXPECT_FALSE(s.Step());
@@ -445,13 +448,13 @@ TEST_F(BrowsingTopicsSiteDataStorageMaxEntriesToLoadTest, MaxEntriesToLoad) {
   OpenDatabase();
 
   topics_storage()->OnBrowsingTopicsApiUsed(
-      /*hashed_top_host=*/browsing_topics::HashedHost(123),
+      /*hashed_main_frame_host=*/browsing_topics::HashedHost(123),
       /*hashed_context_domains=*/{browsing_topics::HashedDomain(123)});
 
   task_environment_.FastForwardBy(base::Seconds(1));
 
   topics_storage()->OnBrowsingTopicsApiUsed(
-      /*hashed_top_host=*/browsing_topics::HashedHost(123),
+      /*hashed_main_frame_host=*/browsing_topics::HashedHost(123),
       /*hashed_context_domains=*/{browsing_topics::HashedDomain(456)});
 
   task_environment_.FastForwardBy(base::Seconds(1));
@@ -466,7 +469,7 @@ TEST_F(BrowsingTopicsSiteDataStorageMaxEntriesToLoadTest, MaxEntriesToLoad) {
   EXPECT_TRUE(result.success);
   EXPECT_EQ(result.api_usage_contexts.size(), 1u);
 
-  EXPECT_EQ(result.api_usage_contexts[0].hashed_top_host,
+  EXPECT_EQ(result.api_usage_contexts[0].hashed_main_frame_host,
             browsing_topics::HashedHost(123));
   EXPECT_EQ(result.api_usage_contexts[0].hashed_context_domain,
             browsing_topics::HashedDomain(456));

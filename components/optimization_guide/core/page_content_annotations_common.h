@@ -86,12 +86,12 @@ class BatchAnnotationResult {
   BatchAnnotationResult(const BatchAnnotationResult&);
   ~BatchAnnotationResult();
 
-  std::string input() const { return input_; }
+  const std::string& input() const { return input_; }
   AnnotationType type() const { return type_; }
-  absl::optional<std::vector<WeightedIdentifier>> topics() const {
+  const absl::optional<std::vector<WeightedIdentifier>>& topics() const {
     return topics_;
   }
-  absl::optional<std::vector<ScoredEntityMetadata>> entities() const {
+  const absl::optional<std::vector<ScoredEntityMetadata>>& entities() const {
     return entities_;
   }
   absl::optional<double> visibility_score() const { return visibility_score_; }

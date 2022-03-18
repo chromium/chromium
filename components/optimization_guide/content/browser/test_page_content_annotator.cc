@@ -53,20 +53,40 @@ void TestPageContentAnnotator::Annotate(BatchAnnotationCallback callback,
   std::move(callback).Run(results);
 }
 
+absl::optional<ModelInfo> TestPageContentAnnotator::GetModelInfoForType(
+    AnnotationType annotation_type) const {
+  if (annotation_type == AnnotationType::kPageTopics)
+    return topics_model_info_;
+
+  if (annotation_type == AnnotationType::kPageEntities)
+    return entities_model_info_;
+
+  if (annotation_type == AnnotationType::kPageEntities)
+    return visibility_scores_model_info_;
+
+  return absl::nullopt;
+}
+
 void TestPageContentAnnotator::UsePageTopics(
+    const absl::optional<ModelInfo>& model_info,
     const base::flat_map<std::string, std::vector<WeightedIdentifier>>&
         topics_by_input) {
+  topics_model_info_ = model_info;
   topics_by_input_ = topics_by_input;
 }
 
 void TestPageContentAnnotator::UsePageEntities(
+    const absl::optional<ModelInfo>& model_info,
     const base::flat_map<std::string, std::vector<ScoredEntityMetadata>>&
         entities_by_input) {
+  entities_model_info_ = model_info;
   entities_by_input_ = entities_by_input;
 }
 
 void TestPageContentAnnotator::UseVisibilityScores(
+    const absl::optional<ModelInfo>& model_info,
     const base::flat_map<std::string, double>& visibility_scores_for_input) {
+  visibility_scores_model_info_ = model_info;
   visibility_scores_for_input_ = visibility_scores_for_input;
 }
 

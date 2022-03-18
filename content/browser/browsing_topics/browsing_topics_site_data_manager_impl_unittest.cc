@@ -36,7 +36,7 @@ TEST_F(BrowsingTopicsSiteDataManagerImplTest, GetBrowsingTopicsApiUsage) {
   base::Time initial_time = base::Time::Now();
 
   topics_manager_->OnBrowsingTopicsApiUsed(
-      /*hashed_top_host=*/browsing_topics::HashedHost(123),
+      /*hashed_main_frame_host=*/browsing_topics::HashedHost(123),
       /*hashed_context_domains=*/{browsing_topics::HashedDomain(456)});
 
   size_t query_result_count = 0;
@@ -72,7 +72,7 @@ TEST_F(BrowsingTopicsSiteDataManagerImplTest, GetBrowsingTopicsApiUsage) {
             EXPECT_TRUE(result.success);
             EXPECT_EQ(result.api_usage_contexts.size(), 1u);
 
-            EXPECT_EQ(result.api_usage_contexts[0].hashed_top_host,
+            EXPECT_EQ(result.api_usage_contexts[0].hashed_main_frame_host,
                       browsing_topics::HashedHost(123));
             EXPECT_EQ(result.api_usage_contexts[0].hashed_context_domain,
                       browsing_topics::HashedDomain(456));

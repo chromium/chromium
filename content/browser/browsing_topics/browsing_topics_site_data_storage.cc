@@ -68,7 +68,7 @@ BrowsingTopicsSiteDataStorage::GetBrowsingTopicsApiUsage(base::Time begin_time,
 
   static constexpr char kGetApiUsageSql[] =
       // clang-format off
-      "SELECT hashed_context_domain,hashed_top_host,last_usage_time "
+      "SELECT hashed_context_domain,hashed_main_frame_host,last_usage_time "
           "FROM browsing_topics_api_usages "
           "WHERE last_usage_time>=? AND last_usage_time<? "
           "ORDER BY last_usage_time DESC "
@@ -90,7 +90,7 @@ BrowsingTopicsSiteDataStorage::GetBrowsingTopicsApiUsage(base::Time begin_time,
     browsing_topics::ApiUsageContext usage_context;
     usage_context.hashed_context_domain =
         browsing_topics::HashedDomain(statement.ColumnInt64(0));
-    usage_context.hashed_top_host =
+    usage_context.hashed_main_frame_host =
         browsing_topics::HashedHost(statement.ColumnInt64(1));
     usage_context.time = statement.ColumnTime(2);
 
@@ -104,7 +104,7 @@ BrowsingTopicsSiteDataStorage::GetBrowsingTopicsApiUsage(base::Time begin_time,
 }
 
 void BrowsingTopicsSiteDataStorage::OnBrowsingTopicsApiUsed(
-    const browsing_topics::HashedHost& hashed_top_host,
+    const browsing_topics::HashedHost& hashed_main_frame_host,
     const base::flat_set<browsing_topics::HashedDomain>&
         hashed_context_domains) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -123,14 +123,14 @@ void BrowsingTopicsSiteDataStorage::OnBrowsingTopicsApiUsed(
     static constexpr char kInsertApiUsageSql[] =
         // clang-format off
         "INSERT OR REPLACE INTO browsing_topics_api_usages "
-            "(hashed_context_domain,hashed_top_host,last_usage_time) "
+            "(hashed_context_domain,hashed_main_frame_host,last_usage_time) "
             "VALUES (?,?,?)";
     // clang-format on
 
     sql::Statement insert_api_usage_statement(
         db_->GetCachedStatement(SQL_FROM_HERE, kInsertApiUsageSql));
     insert_api_usage_statement.BindInt64(0, hashed_context_domain.value());
-    insert_api_usage_statement.BindInt64(1, hashed_top_host.value());
+    insert_api_usage_statement.BindInt64(1, hashed_main_frame_host.value());
     insert_api_usage_statement.BindTime(2, current_time);
 
     if (!insert_api_usage_statement.Run())
@@ -211,9 +211,9 @@ bool BrowsingTopicsSiteDataStorage::CreateSchema() {
       // clang-format off
       "CREATE TABLE IF NOT EXISTS browsing_topics_api_usages("
           "hashed_context_domain INTEGER NOT NULL,"
-          "hashed_top_host INTEGER NOT NULL,"
+          "hashed_main_frame_host INTEGER NOT NULL,"
           "last_usage_time INTEGER NOT NULL,"
-          "PRIMARY KEY (hashed_context_domain,hashed_top_host))";
+          "PRIMARY KEY (hashed_context_domain,hashed_main_frame_host))";
   // clang-format on
   if (!db_->Execute(kBrowsingTopicsApiUsagesTableSql))
     return false;

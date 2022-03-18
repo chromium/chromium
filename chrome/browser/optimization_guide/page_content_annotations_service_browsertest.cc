@@ -243,10 +243,10 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServicePageTopicsBrowserTest,
             run_loop->Quit();
           },
           &run_loop, &results),
-      std::vector<GURL>{
-          GURL("https://www.youtube.com/"),
-          GURL("https://www.chrome.com/"),
-          GURL("https://music.youtube.com/"),
+      std::vector<std::string>{
+          "youtube.com",
+          "chrome.com",
+          "music.youtube.com",
       });
   run_loop.Run();
 
@@ -497,7 +497,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
             run_loop->Quit();
           },
           &run_loop),
-      std::vector<GURL>{GURL("https://www.chromium.org")});
+      std::vector<std::string>{"www.chromium.org"});
 
   run_loop.Run();
 }

@@ -32,8 +32,60 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="BrowsingTopics.EpochTopicsCalculation.CalculatorResultStatus"
+    enum="BrowsingTopicsCalculatorResultStatus" expires_after="2023-03-14">
+  <owner>yaoxia@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    Records the browsing topics calculation result status (i.e. success, or the
+    failure reason). Recored at the end of each (weekly) topics calculation.
+  </summary>
+</histogram>
+
+<histogram
+    name="BrowsingTopics.EpochTopicsCalculation.EligibleDistinctHistoryHostsCount"
+    units="hosts" expires_after="2023-03-14">
+  <owner>yaoxia@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    Records the count of distinct history hosts that are eligible for topics
+    calculation. Recorded during each (weekly) topics calculation after the
+    observation domains are derived. In case of a calculation failure (e.g.
+    permission denied, etc.), this metric won't be recorded.
+  </summary>
+</histogram>
+
+<histogram
+    name="BrowsingTopics.EpochTopicsCalculation.ObservationContextDomainsCountPerTopTopic"
+    units="context domains" expires_after="2023-03-14">
+  <owner>yaoxia@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    Records the count of context domains for each of the calculated top topics.
+    This won't exceed the cap number
+    `kBrowsingTopicsMaxNumberOfApiUsageContextDomainsToKeepPerTopic`. Recorded
+    once for each calculated top topics, during each (weekly) topics calculation
+    after the observation domains are derived. In case of a calculation failure
+    (e.g. permission denied; candidate topic was blocked; etc.), this metric
+    won't be recorded.
+  </summary>
+</histogram>
+
+<histogram
+    name="BrowsingTopics.EpochTopicsCalculation.TopTopicsCountBeforePadding"
+    units="topics" expires_after="2023-03-14">
+  <owner>yaoxia@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    Records the count of derived top topics before random ones are padded.
+    Recorded during each (weekly) topics calculation after the top topics are
+    derived. In case of a calculation failure (e.g. permission denied, etc.),
+    this metric won't be recorded.
+  </summary>
+</histogram>
+
 <histogram name="BrowsingTopics.SiteDataStorage.InitStatus"
-    enum="BooleanSuccess" expires_after="2023-02-10">
+    enum="BooleanSuccess" expires_after="2023-03-14">
   <owner>yaoxia@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>
