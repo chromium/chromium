@@ -42,9 +42,9 @@ class PrimaryAccountMutatorImpl : public PrimaryAccountMutator {
 
  private:
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  // Returns true if revoking the sync consent should instead clear the primary
-  // account.
-  bool RevokeConsentShouldClearPrimaryAccount() const;
+  // Returns true if transitioning from Sync to Signin consent level is allowed
+  // for this platform / configuration.
+  bool CanTransitionFromSyncToSigninConsentLevel() const;
 #endif
 
   // Pointers to the services used by the PrimaryAccountMutatorImpl. They

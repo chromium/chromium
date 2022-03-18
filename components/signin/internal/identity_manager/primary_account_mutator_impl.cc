@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
@@ -15,6 +16,7 @@
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "google_apis/gaia/core_account_id.h"
 
 namespace signin {
@@ -90,7 +92,8 @@ PrimaryAccountMutatorImpl::SetPrimaryAccount(const CoreAccountId& account_id,
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-bool PrimaryAccountMutatorImpl::RevokeConsentShouldClearPrimaryAccount() const {
+bool PrimaryAccountMutatorImpl::CanTransitionFromSyncToSigninConsentLevel()
+    const {
   switch (account_consistency_) {
     case AccountConsistencyMethod::kDice:
       // If DICE is enabled, then adding and removing accounts is handled from
@@ -106,7 +109,7 @@ bool PrimaryAccountMutatorImpl::RevokeConsentShouldClearPrimaryAccount() const {
       //
       // TODO(msarda): The logic in this function is platform specific and we
       // should consider moving it to |SigninManager|.
-      return token_service_->RefreshTokenHasError(
+      return !token_service_->RefreshTokenHasError(
           primary_account_manager_->GetPrimaryAccountId(ConsentLevel::kSync));
     case AccountConsistencyMethod::kMirror:
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -114,12 +117,30 @@ bool PrimaryAccountMutatorImpl::RevokeConsentShouldClearPrimaryAccount() const {
       // main profile and return true, otherwise. This requires implementing
       // ProfileOAuth2TokenServiceDelegateChromeOS::Revoke* and it's not clear
       // what these functions should do.
-      return false;
-#else
       return true;
+#elif BUILDFLAG(IS_ANDROID)
+      // Android supports users being signed in with sync disabled, with the
+      // exception of child accounts with the kAllowSyncOffForChildAccounts
+      // flag disabled.
+      //
+      // Strictly-speaking we should only look at the value of this flag for
+      // child accounts, however the child account status is not easily
+      // available here and it doesn't matter if we clear the primary account
+      // for non-Child accounts as we don't expose a 'Turn off sync' UI for
+      // them.  As this is a short-lived flag, we leave as-is rather than
+      // plumb through child status here.
+      return base::FeatureList::IsEnabled(
+          switches::kAllowSyncOffForChildAccounts);
+#else
+      // TODO(crbug.com/1165785): once kAllowSyncOffForChildAccounts has been
+      // rolled out and assuming it has not revealed any issues, make the
+      // behaviour consistent across all Mirror platforms, by allowing this
+      // transition on iOS too (i.e. return true with no platform checks for
+      // kMirror).
+      return false;
 #endif
     case AccountConsistencyMethod::kDisabled:
-      return true;
+      return false;
   }
 }
 #endif
@@ -130,7 +151,7 @@ void PrimaryAccountMutatorImpl::RevokeSyncConsent(
   DCHECK(primary_account_manager_->HasPrimaryAccount(ConsentLevel::kSync));
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  if (RevokeConsentShouldClearPrimaryAccount()) {
+  if (!CanTransitionFromSyncToSigninConsentLevel()) {
     ClearPrimaryAccount(source_metric, delete_metric);
     return;
   }

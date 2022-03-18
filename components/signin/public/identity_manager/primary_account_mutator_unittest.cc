@@ -17,6 +17,7 @@
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -465,8 +466,27 @@ TEST_F(PrimaryAccountMutatorTest, RevokeSyncConsent_DisabledConsistency) {
                            RemoveAccountExpectation::kRemoveAll);
 }
 
+#if BUILDFLAG(IS_ANDROID)
+// Test that revoking the sync consent when account consistency is disabled
+// also clears the primary account and removes all accounts, even when sync
+// is allowed to be off.
+TEST_F(PrimaryAccountMutatorTest,
+       RevokeSyncConsent_DisabledConsistency_AllowSyncOff) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      switches::kAllowSyncOffForChildAccounts);
+  RunRevokeSyncConsentTest(signin::AccountConsistencyMethod::kDisabled,
+                           RemoveAccountExpectation::kRemoveAll);
+}
+#endif
+
 // Test that revoking sync consent when Mirror account consistency is enabled
 // clears the primary account (except for lacros).
+//
+// TODO(crbug.com/1306031): once the kAllowSyncOffForChildAccounts flag is
+// cleaned up, we will no longer clear the primary account on Android.  Update
+// this test case and delete RevokeSyncConsent_MirrorConsistency_AllowSyncOff
+// as part of that cleanup.
 TEST_F(PrimaryAccountMutatorTest, RevokeSyncConsent_MirrorConsistency) {
   RunRevokeSyncConsentTest(signin::AccountConsistencyMethod::kMirror,
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -476,6 +496,20 @@ TEST_F(PrimaryAccountMutatorTest, RevokeSyncConsent_MirrorConsistency) {
 #endif
   );
 }
+
+#if BUILDFLAG(IS_ANDROID)
+// Test that revoking sync consent when Mirror account consistency is enabled
+// and Android supervised users are allowed to disable sync, results in the
+// sync consent being revoked for the primary account.
+TEST_F(PrimaryAccountMutatorTest,
+       RevokeSyncConsent_MirrorConsistency_AllowSyncOff) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      switches::kAllowSyncOffForChildAccounts);
+  RunRevokeSyncConsentTest(signin::AccountConsistencyMethod::kMirror,
+                           RemoveAccountExpectation::kKeepAll);
+}
+#endif
 
 // Test that revoking the sync consent when DICE account consistency is
 // enabled does not clear the primary account.
