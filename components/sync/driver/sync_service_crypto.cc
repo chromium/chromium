@@ -368,16 +368,12 @@ bool SyncServiceCrypto::SetDecryptionPassphrase(const std::string& passphrase) {
       state_.passphrase_key_derivation_params, passphrase);
   DCHECK(nigori);
 
-  std::string bootstrap_token = SerializeNigoriAsBootstrapToken(*nigori);
-  if (SetDecryptionKeyWithoutUpdatingBootstrapToken(std::move(nigori))) {
-    // Update the bootstrap token immediately, even if engine has new pending
-    // keys, which aren't decryptable with |nigori|, this is harmless as
-    // bootstrap token is ignored if it doesn't contain the right key.
-    delegate_->SetEncryptionBootstrapToken(bootstrap_token);
-    return true;
-  }
+  // Update the bootstrap token immediately, this is harmless as bootstrap token
+  // is ignored if it doesn't contain the right key.
+  delegate_->SetEncryptionBootstrapToken(
+      SerializeNigoriAsBootstrapToken(*nigori));
 
-  return false;
+  return SetDecryptionKeyWithoutUpdatingBootstrapToken(std::move(nigori));
 }
 
 void SyncServiceCrypto::SetDecryptionNigoriKey(std::unique_ptr<Nigori> nigori) {
@@ -389,13 +385,12 @@ void SyncServiceCrypto::SetDecryptionNigoriKey(std::unique_ptr<Nigori> nigori) {
     return;
   }
 
-  std::string bootstrap_token = SerializeNigoriAsBootstrapToken(*nigori);
-  if (SetDecryptionKeyWithoutUpdatingBootstrapToken(std::move(nigori))) {
-    // Update the bootstrap token immediately, even if engine has new pending
-    // keys, which aren't decryptable with |nigori|, this is harmless as
-    // bootstrap token is ignored if it doesn't contain the right key.
-    delegate_->SetEncryptionBootstrapToken(bootstrap_token);
-  }
+  // Update the bootstrap token immediately, this is harmless as bootstrap token
+  // is ignored if it doesn't contain the right key.
+  delegate_->SetEncryptionBootstrapToken(
+      SerializeNigoriAsBootstrapToken(*nigori));
+
+  SetDecryptionKeyWithoutUpdatingBootstrapToken(std::move(nigori));
 }
 
 std::unique_ptr<Nigori> SyncServiceCrypto::GetDecryptionNigoriKey() const {
