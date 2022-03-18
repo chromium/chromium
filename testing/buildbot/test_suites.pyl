@@ -614,7 +614,7 @@
           'idempotent': False,  # https://crbug.com/923426#c27
           # Tast test doesn't always output. See crbug.com/1306300
           'io_timeout': 3600,
-          'shards': 6,
+          'shards': 7,
         },
         'resultdb': {
           'enable': True,
