@@ -14,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_enumerator.h"
@@ -281,6 +282,16 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler {
         base::BindRepeating(&DriveInternalsWebUIHandler::SetMirroringEnabled,
                             weak_ptr_factory_.GetWeakPtr()));
     web_ui()->RegisterMessageCallback(
+        "addSyncPath",
+        base::BindRepeating(&DriveInternalsWebUIHandler::ToggleSyncPath,
+                            weak_ptr_factory_.GetWeakPtr(),
+                            drivefs::mojom::MirrorPathStatus::kStart));
+    web_ui()->RegisterMessageCallback(
+        "removeSyncPath",
+        base::BindRepeating(&DriveInternalsWebUIHandler::ToggleSyncPath,
+                            weak_ptr_factory_.GetWeakPtr(),
+                            drivefs::mojom::MirrorPathStatus::kStop));
+    web_ui()->RegisterMessageCallback(
         "enableTracing",
         base::BindRepeating(&DriveInternalsWebUIHandler::SetTracingEnabled,
                             weak_ptr_factory_.GetWeakPtr(), true));
@@ -357,6 +368,8 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler {
     UpdateInFlightOperationsSection();
 
     UpdateDriveDebugSection();
+
+    UpdateMirrorSyncSection();
 
     // When the drive-internals page is reloaded by the reload key, the page
     // content is recreated, but this WebUI object is not (instead, OnPageLoaded
@@ -473,10 +486,6 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler {
     MaybeCallJavascript("updateVerboseLogging",
                         base::Value(verbose_logging_enabled));
 
-    bool mirroring_enabled = profile()->GetPrefs()->GetBoolean(
-        drive::prefs::kDriveFsEnableMirrorSync);
-    MaybeCallJavascript("updateMirroring", base::Value(mirroring_enabled));
-
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
         base::BindOnce(GetDeveloperMode),
@@ -494,6 +503,82 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler {
     } else {
       LOG(ERROR) << "Home directory not found";
     }
+  }
+
+  void UpdateMirrorSyncSection() {
+    if (!chromeos::features::IsDriveFsMirroringEnabled()) {
+      SetSectionEnabled("mirror-sync-section", false);
+      return;
+    }
+
+    SetSectionEnabled("mirror-sync-section", true);
+
+    bool mirroring_enabled = profile()->GetPrefs()->GetBoolean(
+        drive::prefs::kDriveFsEnableMirrorSync);
+    MaybeCallJavascript("updateMirroring", base::Value(mirroring_enabled));
+    SetSectionEnabled("mirror-sync-paths", mirroring_enabled);
+    SetSectionEnabled("mirror-path-form", mirroring_enabled);
+    if (!mirroring_enabled) {
+      return;
+    }
+
+    drive::DriveIntegrationService* integration_service =
+        GetIntegrationService();
+    if (!integration_service) {
+      return;
+    }
+
+    integration_service->GetSyncingPaths(
+        base::BindOnce(&DriveInternalsWebUIHandler::OnGetSyncingPaths,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  void OnGetSyncingPaths(drive::FileError status,
+                         const std::vector<base::FilePath>& paths) {
+    if (status != drive::FILE_ERROR_OK) {
+      LOG(ERROR) << "Error retrieving syncing paths: " << status;
+      return;
+    }
+    for (const base::FilePath& sync_path : paths) {
+      MaybeCallJavascript(
+          "onAddSyncPath", base::Value(sync_path.value()),
+          base::Value(drive::FileErrorToString(drive::FILE_ERROR_OK)));
+    }
+  }
+
+  void ToggleSyncPath(drivefs::mojom::MirrorPathStatus status,
+                      const base::Value::List& args) {
+    if (!chromeos::features::IsDriveFsMirroringEnabled()) {
+      return;
+    }
+
+    drive::DriveIntegrationService* integration_service =
+        GetIntegrationService();
+    if (!integration_service) {
+      return;
+    }
+
+    if (args.size() == 1 && args[0].is_string()) {
+      const base::FilePath sync_path(args[0].GetString());
+      auto callback =
+          base::BindOnce((status == drivefs::mojom::MirrorPathStatus::kStart)
+                             ? &DriveInternalsWebUIHandler::OnAddSyncPath
+                             : &DriveInternalsWebUIHandler::OnRemoveSyncPath,
+                         weak_ptr_factory_.GetWeakPtr(), sync_path);
+      integration_service->ToggleSyncForPath(sync_path, status,
+                                             std::move(callback));
+    }
+  }
+
+  void OnAddSyncPath(const base::FilePath& sync_path, drive::FileError status) {
+    MaybeCallJavascript("onAddSyncPath", base::Value(sync_path.value()),
+                        base::Value(drive::FileErrorToString(status)));
+  }
+
+  void OnRemoveSyncPath(const base::FilePath& sync_path,
+                        drive::FileError status) {
+    MaybeCallJavascript("onRemoveSyncPath", base::Value(sync_path.value()),
+                        base::Value(drive::FileErrorToString(status)));
   }
 
   // Called when GetDeveloperMode() is complete.
@@ -682,6 +767,8 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler {
       bool enabled = args[0].GetBool();
       profile()->GetPrefs()->SetBoolean(drive::prefs::kDriveFsEnableMirrorSync,
                                         enabled);
+      SetSectionEnabled("mirror-sync-paths", enabled);
+      SetSectionEnabled("mirror-path-form", enabled);
     }
   }
 

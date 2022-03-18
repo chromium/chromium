@@ -34,12 +34,6 @@
         </label>
       </div>
       <div>
-        <label>
-          Mirroring
-          <input type="checkbox" id="mirroring-toggle">
-        </label>
-      </div>
-      <div>
         Tracing
         <button id="button-enable-tracing">Enable</button>
         <button id="button-disable-tracing">Disable</button>
@@ -95,6 +89,23 @@
         <li>Quota Information: <span id="account-quota-info"></span></li>
         <li>Root Resource Id: <span id="root-resource-id"></span></li>
       </ul>
+    </section>
+
+    <section id="mirror-sync-section" hidden>
+      <h2>MirrorSync</h2>
+      <label>
+        Enable Mirroring
+        <input type="checkbox" id="mirroring-toggle">
+      </label>
+      <form id="mirror-path-form" hidden>
+        <input type="text" id="mirror-path-input">
+        <button type="submit">Add Sync Path</button>
+        <span id="mirroring-path-status"></span>
+      </form>
+      <table>
+        <tbody id="mirror-sync-paths" hidden>
+        </tbody>
+      </table>
     </section>
 
     <section id="delta-update-status-section" hidden>

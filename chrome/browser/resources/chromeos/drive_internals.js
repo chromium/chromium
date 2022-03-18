@@ -217,6 +217,54 @@ function updateOtherServiceLogsUrl(url) {
 }
 
 /**
+ * Adds a new row to the syncing paths table upon successful completion.
+ * @param {string} path The path that was synced.
+ * @param {string} status The drive::FileError as a string.
+ */
+function onAddSyncPath(path, status) {
+  $('mirroring-path-status').textContent = status;
+  if (status !== 'FILE_ERROR_OK') {
+    return;
+  }
+
+  // Avoid adding paths to the table if they already exist.
+  if ($(`mirroring-${path}`)) {
+    return;
+  }
+
+  const newRow = document.createElement('tr');
+  newRow.id = `mirroring-${path}`;
+  const deleteButton = createElementFromText('button', 'Delete');
+  deleteButton.addEventListener('click', function(e) {
+    e.preventDefault();
+    chrome.send('removeSyncPath', [path]);
+  });
+  const deleteCell = document.createElement('td');
+  deleteCell.appendChild(deleteButton);
+  newRow.appendChild(deleteCell);
+  const pathCell = createElementFromText('td', path);
+  newRow.appendChild(pathCell);
+  $('mirror-sync-paths').appendChild(newRow);
+}
+
+/**
+ * Remove a path from the syncing table.
+ * @param {string} path The path that was synced.
+ * @param {string} status The drive::FileError as a string.
+ */
+function onRemoveSyncPath(path, status) {
+  if (status !== 'FILE_ERROR_OK') {
+    return;
+  }
+
+  if (!$(`mirroring-${path}`)) {
+    return;
+  }
+
+  $(`mirroring-${path}`).remove();
+}
+
+/**
  * Creates an element named |elementName| containing the content |text|.
  * @param {string} elementName Name of the new element to be created.
  * @param {string} text Text to be contained in the new element.
@@ -317,6 +365,12 @@ document.addEventListener('DOMContentLoaded', function() {
     e.preventDefault();
     $('arguments-status-text').textContent = 'applying...';
     chrome.send('setStartupArguments', [$('startup-arguments-input').value]);
+  });
+
+  $('mirror-path-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    $('mirroring-path-status').textContent = 'adding...';
+    chrome.send('addSyncPath', [$('mirror-path-input').value]);
   });
 
   $('button-enable-tracing').addEventListener('click', function() {
