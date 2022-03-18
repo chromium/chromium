@@ -100,6 +100,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/hit_test_region_observer.h"
 #include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/policy_container_utils.h"
@@ -3766,6 +3767,98 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   NavigateNamedFrame(shell(), named_frame_url, "foo");
   EXPECT_TRUE(WaitForLoadStop(foo_shell->web_contents()));
   EXPECT_EQ(named_frame_url, foo_root->current_url());
+}
+
+class SitePerProcessFencedFrameTest
+    : public SitePerProcessBrowserTestBase,
+      public testing::WithParamInterface<
+          blink::features::FencedFramesImplementationType> {
+ public:
+  SitePerProcessFencedFrameTest() {
+    if (GetParam() ==
+        blink::features::FencedFramesImplementationType::kMPArch) {
+      fenced_frame_helper_ =
+          std::make_unique<content::test::FencedFrameTestHelper>();
+    } else {
+      feature_list_.InitAndEnableFeatureWithParameters(
+          blink::features::kFencedFrames,
+          {{"implementation_type", "shadow_dom"}});
+    }
+  }
+
+ protected:
+  content::RenderFrameHost* CreateFencedFrame(content::RenderFrameHost* parent,
+                                              const GURL& url) {
+    if (fenced_frame_helper_) {
+      return fenced_frame_helper_->CreateFencedFrame(parent, url);
+    }
+
+    // FencedFrameTestHelper only supports the MPArch version of fenced frames.
+    // So need to maually create a fenced frame for the ShadowDOM version.
+    content::TestNavigationManager navigation(web_contents(), url);
+
+    constexpr char kAddFencedFrameScript[] = R"({
+        const fenced_frame = document.createElement('fencedframe');
+        fenced_frame.src = $1;
+        document.body.appendChild(fenced_frame);
+    })";
+    EXPECT_TRUE(ExecJs(parent, content::JsReplace(kAddFencedFrameScript, url)));
+    navigation.WaitForNavigationFinished();
+
+    return ChildFrameAt(parent, 0);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<content::test::FencedFrameTestHelper> fenced_frame_helper_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    SitePerProcessFencedFrameTest,
+    SitePerProcessFencedFrameTest,
+    testing::Values(blink::features::FencedFramesImplementationType::kShadowDOM,
+                    blink::features::FencedFramesImplementationType::kMPArch));
+
+IN_PROC_BROWSER_TEST_P(SitePerProcessFencedFrameTest,
+                       PopupFromFencedFrameDoesNotCreateProxy) {
+  GURL main_url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // It is safe to obtain the root frame tree node here, as it doesn't change.
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+
+  // Create a fenced frame.
+  GURL fenced_frame_url(
+      embedded_test_server()->GetURL("/fenced_frames/title1.html"));
+  RenderFrameHost* fenced_frame_host =
+      CreateFencedFrame(web_contents()->GetMainFrame(), fenced_frame_url);
+  EXPECT_NE(nullptr, fenced_frame_host);
+
+  // Open a popup named "foo" from the fenced frame.
+  Shell* popup_shell =
+      OpenPopup(fenced_frame_host, GURL(url::kAboutBlankURL), "foo", "", false);
+  EXPECT_TRUE(popup_shell);
+
+  // Check that the popup from the fenced frame didn't create a proxy.
+  // Opening popups from fenced frames forces noopener, which makes named
+  // frames not discoverable.
+  FrameTreeNode* popup_root =
+      static_cast<WebContentsImpl*>(popup_shell->web_contents())
+          ->GetPrimaryFrameTree()
+          .root();
+  EXPECT_EQ(nullptr, popup_root->opener());
+
+  SiteInstanceImpl* site_instance =
+      root->current_frame_host()->GetSiteInstance();
+  EXPECT_FALSE(popup_root->current_frame_host()
+                   ->browsing_context_state()
+                   ->GetRenderFrameProxyHost(site_instance->group()));
+
+  SiteInstanceImpl* embedder_site_instance =
+      static_cast<RenderFrameHostImpl*>(fenced_frame_host)->GetSiteInstance();
+  EXPECT_FALSE(popup_root->current_frame_host()
+                   ->browsing_context_state()
+                   ->GetRenderFrameProxyHost(embedder_site_instance->group()));
 }
 
 // Similar to DiscoverNamedFrameFromAncestorOfOpener, but check that if a
