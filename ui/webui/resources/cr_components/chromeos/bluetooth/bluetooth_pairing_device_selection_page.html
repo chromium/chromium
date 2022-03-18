@@ -1,5 +1,6 @@
 <style include="cr-shared-style">
-  localized-link {
+  localized-link,
+  #learn-more-description {
     color: var(--cros-text-color-secondary);
   }
 
@@ -18,9 +19,16 @@
     show-scan-progress="[[isBluetoothEnabled]]"
     button-bar-state="[[buttonBarState_]]">
   <div slot="page-body" id="pageBody">
-    <localized-link
-        localized-string="[[i18nAdvanced('bluetoothPairingLearnMoreLabel')]]">
-    </localized-link>
+    <template is="dom-if" if="[[!shouldOmitLinks]]" restamp>
+      <localized-link
+          localized-string="[[i18nAdvanced('bluetoothPairingLearnMoreLabel')]]">
+      </localized-link>
+    </template>
+    <template is="dom-if" if="[[shouldOmitLinks]]" restamp>
+      <div id="learn-more-description" aria-live="polite">
+        [[i18n('bluetoothPairingDescription')]]
+      </div>
+    </template>
     <h2 id="deviceListTitle" aria-live="polite">
       [[getDeviceListTitle_(devices.*, isBluetoothEnabled, devicePendingPairing.*)]]
     </h2>

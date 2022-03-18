@@ -14,6 +14,7 @@
 </template>
 <template is="dom-if" if="[[isBluetoothRevampEnabled_]]" restamp>
   <bluetooth-pairing-ui on-finished="closeDialog_"
-      pairing-device-address="[[deviceAddress_]]">
+      pairing-device-address="[[deviceAddress_]]"
+      should-omit-links="[[shouldOmitLinks_]]">
   </bluetooth-pairing-ui>
 </template>

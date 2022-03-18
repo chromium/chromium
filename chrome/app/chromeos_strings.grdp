@@ -846,6 +846,9 @@
   <message name="IDS_BLUETOOTH_PAIRING_LEARN_MORE" desc="Bluetooth pairing dialog: Message informing the user on what actions to take in order to see a device in the list of available devices.">
     Make sure your Bluetooth device is in pairing mode and nearby. Only pair with devices you trust. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
   </message>
+  <message name="IDS_BLUETOOTH_PAIRING_DESCRIPTION" desc="Bluetooth pairing dialog: Message informing the user on what actions to take in order to see a device in the list of available devices.">
+    Make sure your Bluetooth device is in pairing mode and nearby. Only pair with devices you trust.
+  </message>
   <message name="IDS_BLUETOOTH_PAIRING_ENTER_PIN" desc="Bluetooth pairing dialog: Message displayed informing the user to enter a PIN in other to complete device pairing.">
     Enter PIN to pair with <ph name="DEVICE_NAME">$1<ex>Nexus S</ex></ph>
   </message>

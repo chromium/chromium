@@ -73,12 +73,23 @@ suite('CrComponentsBluetoothPairingDeviceSelectionPageTest', function() {
         deviceSelectionPage.shadowRoot.querySelector('bluetooth-base-page');
     assertTrue(getBasePage().showScanProgress);
 
-    const learnMoreLink =
+    const getLearnMoreLink = () =>
         deviceSelectionPage.shadowRoot.querySelector('localized-link');
-    assertTrue(!!learnMoreLink);
+    assertTrue(!!getLearnMoreLink());
     assertEquals(
-        learnMoreLink.localizedString,
+        getLearnMoreLink().localizedString,
         deviceSelectionPage.i18nAdvanced('bluetoothPairingLearnMoreLabel'));
+
+    const getLearnMoreDescription = () =>
+        deviceSelectionPage.shadowRoot.querySelector('#learn-more-description');
+    assertFalse(!!getLearnMoreDescription());
+
+    deviceSelectionPage.shouldOmitLinks = true;
+    await flushAsync();
+
+    assertTrue(!!getLearnMoreDescription);
+    assertFalse(!!getLearnMoreLink());
+
     // No lists should be showing at first.
     assertFalse(!!getDeviceList());
     assertTrue(!!getDeviceListTitle());

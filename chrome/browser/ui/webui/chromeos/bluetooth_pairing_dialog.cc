@@ -19,6 +19,7 @@
 #include "chrome/grit/bluetooth_pairing_dialog_resources.h"
 #include "chrome/grit/bluetooth_pairing_dialog_resources_map.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -97,6 +98,14 @@ BluetoothPairingDialog::BluetoothPairingDialog(
   } else {
     CHECK(ash::features::IsBluetoothRevampEnabled());
   }
+
+  if (!ash::features::IsBluetoothRevampEnabled())
+    return;
+
+  device_data_.SetBoolKey(
+      "shouldOmitLinks",
+      session_manager::SessionManager::Get()->session_state() !=
+          session_manager::SessionState::ACTIVE);
 }
 
 BluetoothPairingDialog::~BluetoothPairingDialog() = default;

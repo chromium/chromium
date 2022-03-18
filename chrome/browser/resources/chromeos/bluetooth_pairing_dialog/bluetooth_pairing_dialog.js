@@ -57,6 +57,18 @@ Polymer({
       type: String,
       value: null,
     },
+
+    /**
+     * Flag indicating whether links should be displayed or not. In some
+     * cases, such as the user being in OOBE or the login screen, links will
+     * not work and should not be displayed.
+     * This is set by the dialog arguments when |isBluetoothRevampEnabled_| is
+     * true.
+     */
+    shouldOmitLinks_: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   /** @override */
@@ -74,6 +86,7 @@ Polymer({
       }
 
       this.deviceAddress_ = parsedDialogArgs.address;
+      this.shouldOmitLinks_ = !!parsedDialogArgs.shouldOmitLinks;
       return;
     }
 

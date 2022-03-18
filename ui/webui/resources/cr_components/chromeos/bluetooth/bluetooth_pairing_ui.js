@@ -104,6 +104,16 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
       },
 
       /**
+       * Flag indicating whether links should be displayed or not. In some
+       * cases, such as the user being in OOBE or the login screen, links will
+       * not work and should not be displayed.
+       */
+      shouldOmitLinks: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
        * Id of the currently selected Bluetooth pairing subpage.
        * @private {!BluetoothPairingSubpageId}
        */

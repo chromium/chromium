@@ -74,6 +74,16 @@ export class SettingsBluetoothPairingDeviceSelectionPageElement extends
         value: false,
       },
 
+      /**
+       * Flag indicating whether links should be displayed or not. In some
+       * cases, such as the user being in OOBE or the login screen, links will
+       * not work and should not be displayed.
+       */
+      shouldOmitLinks: {
+        type: Boolean,
+        value: false,
+      },
+
       /** @private {!ButtonBarState} */
       buttonBarState_: {
         type: Object,
