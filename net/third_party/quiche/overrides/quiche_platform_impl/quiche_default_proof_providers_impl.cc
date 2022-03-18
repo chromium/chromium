@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "net/quic/platform/impl/quic_default_proof_providers_impl.h"
+#include "net/third_party/quiche/overrides/quiche_platform_impl/quiche_default_proof_providers_impl.h"
 
 #include <utility>
 
@@ -40,7 +40,7 @@ DEFINE_QUICHE_COMMAND_LINE_FLAG(std::string,
 using net::CertVerifier;
 using net::ProofVerifierChromium;
 
-namespace quic {
+namespace quiche {
 
 namespace {
 
@@ -74,7 +74,7 @@ class ProofVerifierChromiumWithOwnership : public net::ProofVerifierChromium {
   net::TransportSecurityState transport_security_state_;
 };
 
-std::unique_ptr<ProofVerifier> CreateDefaultProofVerifierImpl(
+std::unique_ptr<quic::ProofVerifier> CreateDefaultProofVerifierImpl(
     const std::string& host) {
   std::unique_ptr<net::CertVerifier> cert_verifier =
       net::CertVerifier::CreateDefault(/*cert_net_fetcher=*/nullptr);
@@ -82,10 +82,10 @@ std::unique_ptr<ProofVerifier> CreateDefaultProofVerifierImpl(
       std::move(cert_verifier), host);
 }
 
-std::unique_ptr<ProofSource> CreateDefaultProofSourceImpl() {
+std::unique_ptr<quic::ProofSource> CreateDefaultProofSourceImpl() {
   auto proof_source = std::make_unique<net::ProofSourceChromium>();
-  proof_source->SetTicketCrypter(
-      std::make_unique<SimpleTicketCrypter>(QuicChromiumClock::GetInstance()));
+  proof_source->SetTicketCrypter(std::make_unique<quic::SimpleTicketCrypter>(
+      quic::QuicChromiumClock::GetInstance()));
   CHECK(proof_source->Initialize(
 #if BUILDFLAG(IS_WIN)
       base::FilePath(base::UTF8ToWide(GetQuicFlag(FLAGS_certificate_file))),
@@ -98,4 +98,4 @@ std::unique_ptr<ProofSource> CreateDefaultProofSourceImpl() {
   return std::move(proof_source);
 }
 
-}  // namespace quic
+}  // namespace quiche

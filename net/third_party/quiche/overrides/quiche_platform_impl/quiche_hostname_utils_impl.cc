@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "net/quic/platform/impl/quic_hostname_utils_impl.h"
+#include "net/third_party/quiche/overrides/quiche_platform_impl/quiche_hostname_utils_impl.h"
 
 #include "base/strings/abseil_string_conversions.h"
 #include "net/base/url_util.h"
@@ -10,10 +10,10 @@
 #include "url/gurl.h"
 #include "url/url_canon.h"
 
-namespace quic {
+namespace quiche {
 
 // static
-bool QuicHostnameUtilsImpl::IsValidSNI(absl::string_view sni) {
+bool QuicheHostnameUtilsImpl::IsValidSNI(absl::string_view sni) {
   // TODO(rtenneti): Support RFC2396 hostname.
   // NOTE: Microsoft does NOT enforce this spec, so if we throw away hostnames
   // based on the above spec, we may be losing some hostnames that windows
@@ -27,7 +27,7 @@ bool QuicHostnameUtilsImpl::IsValidSNI(absl::string_view sni) {
 }
 
 // static
-std::string QuicHostnameUtilsImpl::NormalizeHostname(
+std::string QuicheHostnameUtilsImpl::NormalizeHostname(
     absl::string_view hostname) {
   url::CanonHostInfo host_info;
   std::string host(net::CanonicalizeHost(
@@ -47,4 +47,4 @@ std::string QuicHostnameUtilsImpl::NormalizeHostname(
   return host;
 }
 
-}  // namespace quic
+}  // namespace quiche

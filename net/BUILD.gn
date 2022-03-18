@@ -778,15 +778,6 @@ component("net") {
     "quic/network_connection.h",
     "quic/platform/impl/quic_chromium_clock.cc",
     "quic/platform/impl/quic_chromium_clock.h",
-    "quic/platform/impl/quic_containers_impl.h",
-    "quic/platform/impl/quic_error_code_wrappers_impl.h",
-    "quic/platform/impl/quic_file_utils_impl.h",
-    "quic/platform/impl/quic_hostname_utils_impl.cc",
-    "quic/platform/impl/quic_hostname_utils_impl.h",
-    "quic/platform/impl/quic_prefetch_impl.h",
-    "quic/platform/impl/quic_server_stats_impl.h",
-    "quic/platform/impl/quic_sleep_impl.h",
-    "quic/platform/impl/quic_stack_trace_impl.h",
     "quic/properties_based_quic_server_info.cc",
     "quic/properties_based_quic_server_info.h",
     "quic/quic_address_mismatch.cc",
@@ -2494,8 +2485,6 @@ if (is_linux || is_chromeos) {
     sources = [
       "quic/platform/impl/quic_epoll_clock.cc",
       "quic/platform/impl/quic_epoll_clock.h",
-      "quic/platform/impl/quic_stream_buffer_allocator_impl.h",
-      "quic/platform/impl/quic_udp_socket_platform_impl.h",
     ]
     deps = [
       ":epoll_server",
@@ -2630,12 +2619,6 @@ source_set("quic_test_tools") {
     "quic/mock_encrypter.h",
     "quic/mock_quic_context.cc",
     "quic/mock_quic_context.h",
-    "quic/platform/impl/quic_expect_bug_impl.h",
-    "quic/platform/impl/quic_mock_log_impl.h",
-    "quic/platform/impl/quic_test_loopback_impl.cc",
-    "quic/platform/impl/quic_test_loopback_impl.h",
-    "quic/platform/impl/quic_test_output_impl.cc",
-    "quic/platform/impl/quic_test_output_impl.h",
     "quic/test_task_runner.cc",
     "quic/test_task_runner.h",
     "third_party/quiche/src/quic/test_tools/test_ticket_crypter.cc",
@@ -2663,8 +2646,6 @@ source_set("quic_test_tools") {
 
 source_set("simple_quic_tools") {
   sources = [
-    "quic/platform/impl/quic_default_proof_providers_impl.cc",
-    "quic/platform/impl/quic_default_proof_providers_impl.h",
     "tools/quic/quic_client_message_loop_network_helper.cc",
     "tools/quic/quic_client_message_loop_network_helper.h",
     "tools/quic/quic_http_proxy_backend.cc",

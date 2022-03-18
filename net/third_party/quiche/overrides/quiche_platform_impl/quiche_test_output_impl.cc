@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "net/quic/platform/impl/quic_test_output_impl.h"
+#include "net/third_party/quiche/overrides/quiche_platform_impl/quiche_test_output_impl.h"
 
 #include <stdlib.h>
 #include <time.h>
@@ -16,10 +16,10 @@
 #include "net/third_party/quiche/src/quic/platform/api/quic_logging.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace quic {
+namespace quiche {
 
-void QuicRecordTestOutputToFile(absl::string_view filename,
-                                absl::string_view data) {
+void QuicheRecordTestOutputToFile(absl::string_view filename,
+                                  absl::string_view data) {
   std::string output_dir;
   if (!base::Environment::Create()->GetVar("QUIC_TEST_OUTPUT_DIR",
                                            &output_dir) ||
@@ -39,12 +39,12 @@ void QuicRecordTestOutputToFile(absl::string_view filename,
   QUIC_LOG(INFO) << "Recorded test output into " << path;
 }
 
-void QuicSaveTestOutputImpl(absl::string_view filename,
-                            absl::string_view data) {
-  QuicRecordTestOutputToFile(filename, data);
+void QuicheSaveTestOutputImpl(absl::string_view filename,
+                              absl::string_view data) {
+  QuicheRecordTestOutputToFile(filename, data);
 }
 
-bool QuicLoadTestOutputImpl(absl::string_view filename, std::string* data) {
+bool QuicheLoadTestOutputImpl(absl::string_view filename, std::string* data) {
   std::string output_dir;
   if (!base::Environment::Create()->GetVar("QUIC_TEST_OUTPUT_DIR",
                                            &output_dir) ||
@@ -61,7 +61,8 @@ bool QuicLoadTestOutputImpl(absl::string_view filename, std::string* data) {
   return base::ReadFileToString(path, data);
 }
 
-void QuicRecordTraceImpl(absl::string_view identifier, absl::string_view data) {
+void QuicheRecordTraceImpl(absl::string_view identifier,
+                           absl::string_view data) {
   const testing::TestInfo* test_info =
       testing::UnitTest::GetInstance()->current_test_info();
 
@@ -81,7 +82,7 @@ void QuicRecordTraceImpl(absl::string_view identifier, absl::string_view data) {
       "%s.%s.%s.%s.qtr", test_info->name(), test_info->test_case_name(),
       identifier.data(), timestamp);
 
-  QuicRecordTestOutputToFile(filename, data);
+  QuicheRecordTestOutputToFile(filename, data);
 }
 
-}  // namespace quic
+}  // namespace quiche

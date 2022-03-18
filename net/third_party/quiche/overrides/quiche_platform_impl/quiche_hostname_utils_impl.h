@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NET_QUIC_PLATFORM_IMPL_QUIC_HOSTNAME_UTILS_IMPL_H_
-#define NET_QUIC_PLATFORM_IMPL_QUIC_HOSTNAME_UTILS_IMPL_H_
+#ifndef NET_THIRD_PARTY_QUICHE_OVERRIDES_QUICHE_PLATFORM_IMPL_QUICHE_HOSTNAME_UTILS_IMPL_H_
+#define NET_THIRD_PARTY_QUICHE_OVERRIDES_QUICHE_PLATFORM_IMPL_QUICHE_HOSTNAME_UTILS_IMPL_H_
 
-#include "net/third_party/quiche/src/quic/platform/api/quic_export.h"
+#include "net/third_party/quiche/src/common/platform/api/quiche_export.h"
 #include "third_party/abseil-cpp/absl/strings/string_view.h"
 
-namespace quic {
+namespace quiche {
 
-class QUIC_EXPORT_PRIVATE QuicHostnameUtilsImpl {
+class QUICHE_EXPORT_PRIVATE QuicheHostnameUtilsImpl {
  public:
-  QuicHostnameUtilsImpl(const QuicHostnameUtilsImpl&) = delete;
-  QuicHostnameUtilsImpl& operator=(const QuicHostnameUtilsImpl&) = delete;
+  QuicheHostnameUtilsImpl(const QuicheHostnameUtilsImpl&) = delete;
+  QuicheHostnameUtilsImpl& operator=(const QuicheHostnameUtilsImpl&) = delete;
 
   // Returns true if the sni is valid, false otherwise.
   //  (1) disallow IP addresses;
@@ -22,10 +22,9 @@ class QUIC_EXPORT_PRIVATE QuicHostnameUtilsImpl {
   static bool IsValidSNI(absl::string_view sni);
 
   // Convert hostname to lowercase and remove the trailing '.'.
-  // WARNING: mutates |hostname| in place and returns |hostname|.
   static std::string NormalizeHostname(absl::string_view hostname);
 };
 
-}  // namespace quic
+}  // namespace quiche
 
-#endif  // NET_QUIC_PLATFORM_IMPL_QUIC_HOSTNAME_UTILS_IMPL_H_
+#endif  // NET_THIRD_PARTY_QUICHE_OVERRIDES_QUICHE_PLATFORM_IMPL_QUICHE_HOSTNAME_UTILS_IMPL_H_

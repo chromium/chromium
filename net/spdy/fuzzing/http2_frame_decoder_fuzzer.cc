@@ -15,7 +15,7 @@
 // Entry point for LibFuzzer.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   FuzzedDataProvider fuzzed_data_provider(data, size);
-  http2::Http2FrameDecoder decoder;
+  http2::Http2FrameDecoder decoder(nullptr);
 
   // Store all chunks in a function scope list, as the API requires the caller
   // to make sure the fragment chunks data is accessible during the whole
