@@ -102,6 +102,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
                     const net::SiteForCookies& site_for_cookies,
                     const url::Origin& top_frame_origin,
                     mojom::CookieManagerGetOptionsPtr options,
+                    bool partitioned_cookies_runtime_feature_enabled,
                     GetAllForUrlCallback callback) override;
 
   void SetCanonicalCookie(const net::CanonicalCookie& cookie,
@@ -121,11 +122,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
                            const net::SiteForCookies& site_for_cookies,
                            const url::Origin& top_frame_origin,
                            const std::string& cookie,
+                           bool partitioned_cookies_runtime_feature_enabled,
                            SetCookieFromStringCallback callback) override;
 
   void GetCookiesString(const GURL& url,
                         const net::SiteForCookies& site_for_cookies,
                         const url::Origin& top_frame_origin,
+                        bool partitioned_cookies_runtime_feature_enabled,
                         GetCookiesStringCallback callback) override;
   void CookiesEnabledFor(const GURL& url,
                          const net::SiteForCookies& site_for_cookies,

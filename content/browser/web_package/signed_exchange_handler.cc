@@ -734,6 +734,7 @@ void SignedExchangeHandler::CheckAbsenceOfCookies(base::OnceClosure callback) {
   cookie_manager_->GetAllForUrl(
       envelope_->request_url().url, isolation_info.site_for_cookies(),
       *isolation_info.top_frame_origin(), std::move(match_options),
+      /*partitioned_cookies_runtime_feature_enabled=*/false,
       base::BindOnce(&SignedExchangeHandler::OnGetCookies,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }

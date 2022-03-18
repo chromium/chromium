@@ -556,6 +556,7 @@ class PrefetchedNavigationLoaderInterceptor
         request.url, request.trusted_params->isolation_info.site_for_cookies(),
         *request.trusted_params->isolation_info.top_frame_origin(),
         std::move(match_options),
+        /*partitioned_cookies_runtime_feature_enabled=*/false,
         base::BindOnce(&PrefetchedNavigationLoaderInterceptor::OnGetCookies,
                        weak_factory_.GetWeakPtr(), std::move(callback),
                        std::move(fallback_callback)));
