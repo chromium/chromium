@@ -30,6 +30,7 @@ class VIEWS_EXPORT RadioButton : public Checkbox {
   // Overridden from View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   View* GetSelectedViewForGroup(int group) override;
+  bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
   bool IsGroupFocusTraversable() const override;
   void OnFocus() override;
   void OnThemeChanged() override;
@@ -48,6 +49,8 @@ class VIEWS_EXPORT RadioButton : public Checkbox {
 
  private:
   void GetViewsInGroupFromParent(int group, Views* views);
+
+  bool select_on_focus_ = true;
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, RadioButton, Checkbox)

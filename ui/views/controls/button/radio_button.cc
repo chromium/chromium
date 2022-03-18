@@ -4,7 +4,9 @@
 
 #include "ui/views/controls/button/radio_button.h"
 
+#include "base/auto_reset.h"
 #include "base/check.h"
+#include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -50,6 +52,17 @@ View* RadioButton::GetSelectedViewForGroup(int group) {
   return (i == views.cend()) ? nullptr : *i;
 }
 
+bool RadioButton::HandleAccessibleAction(const ui::AXActionData& action_data) {
+  if (action_data.action == ax::mojom::Action::kFocus) {
+    if (IsAccessibilityFocusable()) {
+      base::AutoReset<bool> reset(&select_on_focus_, false);
+      RequestFocus();
+      return true;
+    }
+  }
+  return Checkbox::HandleAccessibleAction(action_data);
+}
+
 bool RadioButton::IsGroupFocusTraversable() const {
   // When focusing a radio button with tab/shift+tab, only the selected button
   // from the group should be focused.
@@ -58,7 +71,8 @@ bool RadioButton::IsGroupFocusTraversable() const {
 
 void RadioButton::OnFocus() {
   Checkbox::OnFocus();
-  SetChecked(true);
+  if (select_on_focus_)
+    SetChecked(true);
 }
 
 void RadioButton::OnThemeChanged() {
