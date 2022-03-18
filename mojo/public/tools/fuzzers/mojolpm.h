@@ -487,6 +487,225 @@ uint32_t NextId() {
   return GetContext()->NextId<T>();
 }
 
+// Common code shared between most fuzzer testcases.
+//
+// Per-testcase state needed to run the interface being tested. The lifetime of
+// this is scoped to a single testcase, and it is created and destroyed from the
+// fuzzer sequence.
+//
+// This removes the need for a lot of boilerplate code to handle the most basic
+// actions that almost all MojoLPM fuzzers will want to perform. It assumes some
+// common formatting for testcase protobufs, which can be seen in (for example)
+// content/test/fuzzers/code_cache_host_mojolpm_fuzzer.proto:
+//
+// message Action {
+//   oneof action {
+//     ... fuzzer actions here
+//   }
+// }
+//
+// message Sequence {
+//   repeated uint32 action_indexes = 1 [packed = true];
+// }
+//
+// message Testcase {
+//   repeated Action actions = 1;
+//   repeated Sequence sequences = 2;
+//   repeated uint32 sequence_indexes = 3 [packed = true];
+// }
+//
+// In this case, the individual fuzzer testcase type should then inherit from
+//   mojolpm::Testcase<proto::Testcase, proto::Action>
+// and override `SetUp`, `TearDown` and `DoAction` accordingly.
+//
+// See content/test/fuzzer/code_cache_host_mojolpm_fuzzer.cc for an example.
+//
+// The fuzzer main function should then set up the environment and post a call
+// to mojolpm::RunTestcase onto the fuzzer thread.
+template <typename ProtoTestcase,
+          typename ProtoAction,
+          int kMaxActionCount = 128,
+          int kMaxActionSize = 300 * 1024 * 1024>
+class Testcase {
+ protected:
+  explicit Testcase(const ProtoTestcase& proto_testcase);
+
+  // The three functions below need to be implemented for each fuzzer.
+
+  // SetUp will be invoked prior to the first fuzzer actions running; and once
+  // it has completed, all per-testcase fuzzer state should be ready.
+  //
+  // Once setup is complete, `done_closure` should be invoked on the fuzzer
+  // sequence.
+  //
+  // This will be called from the fuzzer sequence.
+  virtual void SetUp(base::OnceClosure done_closure) = 0;
+
+  // TearDown will be invoked after the last fuzzer action has run; and once it
+  // has completed, all per-testcase fuzzer state should have been destroyed
+  // (and the process should be left in a state that would permit a new testcase
+  // to start).
+  //
+  // Once teardown is complete, `done_closure` should be invoked on the fuzzer
+  // sequence.
+  //
+  // This will be called from the fuzzer sequence.
+  virtual void TearDown(base::OnceClosure done_closure) = 0;
+
+  // RunAction will be invoked for each action as described by the protobuf file
+  // for the testcase. This function is responsible for executing the given
+  // action, and then invoking `done_closure`. `done_closure` must be invoked
+  // regardless of any failure/error condition that may occur.
+  //
+  // For the most part this will be a large switch statement that simply hands
+  // actions to the appropriate mojolpm function; but it will also need to
+  // handle the initial interface binding for the interfaces being fuzzed.
+  //
+  // case ProtoAction::kFooRemoteAction:
+  //   mojolpm::HandleRemoteAction(action.foo_remote_action());
+  //   break;
+  //
+  // case ProtoAction::kBarReceiverAction:
+  //   mojolpm::HandleReceiverAction(action.bar_receiver_action());
+  //   break;
+  //
+  // Once the action has been executed, `done_closure` should be invoked on the
+  // fuzzer sequence.
+  //
+  // This will be called from the fuzzer sequence.
+  virtual void RunAction(const ProtoAction& action,
+                         base::OnceClosure done_closure) = 0;
+
+ private:
+  template <typename T>
+  friend void RunTestcase(
+      T* testcase,
+      scoped_refptr<base::SequencedTaskRunner> fuzzer_task_runner,
+      base::OnceClosure done_closure);
+
+  // While there are still actions remaining in the testcase, this will perform
+  // the next action, and then queue itself to run again. When the testcase is
+  // finished, this will invoke `done_closure` on the fuzzer sequence.
+  //
+  // This should only be called from the fuzzer sequence.
+  void Run(scoped_refptr<base::TaskRunner> fuzzer_task_runner,
+           base::OnceClosure done_closure);
+
+  // Returns true once either all of the actions in the testcase have been
+  // performed, or the per-testcase action limit has been exceeded.
+  //
+  // This should only be called from the fuzzer sequence.
+  bool IsFinished();
+
+  // The proto message describing the test actions to perform.
+  const ProtoTestcase& proto_testcase_;
+
+  // Count of total actions performed in this testcase.
+  int action_count_ = 0;
+
+  // The index of the next sequence of actions to execute.
+  int next_sequence_idx_ = 0;
+
+  // The index of the next action to execute.
+  int next_action_idx_ = 0;
+
+ protected:
+  SEQUENCE_CHECKER(sequence_checker_);
+};
+
+template <typename ProtoTestcase,
+          typename ProtoAction,
+          int kMaxActionCount,
+          int kMaxActionSize>
+Testcase<ProtoTestcase, ProtoAction, kMaxActionCount, kMaxActionSize>::Testcase(
+    const ProtoTestcase& proto_testcase)
+    : proto_testcase_(proto_testcase) {
+  // Testcase's are created on the main thread, but the actions that we want to
+  // validate the sequencing of take place on the fuzzer sequence.
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+}
+
+template <typename ProtoTestcase,
+          typename ProtoAction,
+          int kMaxActionCount,
+          int kMaxActionSize>
+bool Testcase<ProtoTestcase, ProtoAction, kMaxActionCount, kMaxActionSize>::
+    IsFinished() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!proto_testcase_.actions_size()) {
+    return true;
+  }
+
+  if (next_sequence_idx_ >= proto_testcase_.sequence_indexes_size()) {
+    return true;
+  }
+
+  if (action_count_ >= kMaxActionCount) {
+    return true;
+  }
+
+  return false;
+}
+
+template <typename ProtoTestcase,
+          typename ProtoAction,
+          int kMaxActionCount,
+          int kMaxActionSize>
+void Testcase<ProtoTestcase, ProtoAction, kMaxActionCount, kMaxActionSize>::Run(
+    scoped_refptr<base::TaskRunner> fuzzer_task_runner,
+    base::OnceClosure done_closure) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (IsFinished()) {
+    std::move(done_closure).Run();
+
+    // Explicit return early here, since `this` will be invalidated as soon as
+    // `done_closure` is invoked.
+    return;
+  } else {
+    // Bind a closure to continue the fuzzing. This must be called in every path
+    // through this block, otherwise fuzzing will hang. Unretained is safe since
+    // `this` will only be destroyed after `done_closure` is called.
+    auto run_closure = base::BindOnce(
+        &Testcase<ProtoTestcase, ProtoAction, kMaxActionCount,
+                  kMaxActionSize>::Run,
+        base::Unretained(this), fuzzer_task_runner, std::move(done_closure));
+
+    auto sequence_idx = proto_testcase_.sequence_indexes(next_sequence_idx_);
+    const auto& sequence = proto_testcase_.sequences(
+        sequence_idx % proto_testcase_.sequences_size());
+    if (next_action_idx_ < sequence.action_indexes_size()) {
+      auto action_idx = sequence.action_indexes(next_action_idx_++);
+      const auto& action =
+          proto_testcase_.actions(action_idx % proto_testcase_.actions_size());
+      if (action.ByteSizeLong() <= kMaxActionSize) {
+        RunAction(action, std::move(run_closure));
+      } else {
+        fuzzer_task_runner->PostTask(FROM_HERE, std::move(run_closure));
+      }
+    } else {
+      next_sequence_idx_++;
+      fuzzer_task_runner->PostTask(FROM_HERE, std::move(run_closure));
+    }
+  }
+}
+
+// Helper function to setup and run the testcase, since we need to do that from
+// the fuzzer sequence rather than the main thread.
+template <typename T>
+void RunTestcase(T* testcase,
+                 scoped_refptr<base::SequencedTaskRunner> fuzzer_task_runner,
+                 base::OnceClosure done_closure) {
+  auto teardown = base::BindOnce(&T::TearDown, base::Unretained(testcase),
+                                 std::move(done_closure));
+
+  auto start_fuzzing = base::BindOnce(&T::Run, base::Unretained(testcase),
+                                      fuzzer_task_runner, std::move(teardown));
+
+  fuzzer_task_runner->PostTask(
+      FROM_HERE, base::BindOnce(&T::SetUp, base::Unretained(testcase),
+                                std::move(start_fuzzing)));
+}
+
 bool FromProto(const bool& input, bool& output);
 bool ToProto(const bool& input, bool& output);
 bool FromProto(const ::google::protobuf::int32& input, int8_t& output);
