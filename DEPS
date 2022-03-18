@@ -105,10 +105,10 @@ vars = {
   # be overridden by gclient variables.
   'checkout_google_benchmark': False,
 
-  # By default, do not checkout JavaScript coverage node modules. These packages
+  # By default, checkout JavaScript coverage node modules. These packages
   # are used to post-process raw v8 coverage reports into IstanbulJS compliant
   # output.
-  'checkout_js_coverage_modules': False,
+  'checkout_js_coverage_modules': True,
 
   # Check out and download nacl by default, unless on an arm mac.
   # This can be disabled e.g. with custom_vars.
