@@ -462,6 +462,9 @@ crbug.com/1259977 [ win nvidia-0x2184 angle-vulkan passthrough ] conformance/gls
 
 crbug.com/1291276 [ win nvidia angle-vulkan passthrough ] conformance/ogles/GL/mod/mod_001_to_008.html [ Failure ]
 
+# Flaky on Win / Passthrough command decoder (both GL and D3D11 backends)
+crbug.com/1307905 [ win passthrough ] conformance/attribs/gl-vertexattribpointer.html [ RetryOnFailure ]
+
 ####################
 # Mac failures     #
 ####################
