@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <vector>
+#include "build/build_config.h"
 
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/clipboard/clipboard_history.h"
@@ -387,7 +388,13 @@ TEST_F(ClipboardHistoryControllerTest, EncodeMultipleImages) {
   }
 }
 
-TEST_F(ClipboardHistoryControllerTest, WriteBitmapWhileEncodingImage) {
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+#define MAYBE_WriteBitmapWhileEncodingImage \
+  DISABLED_WriteBitmapWhileEncodingImage
+#else
+#define MAYBE_WriteBitmapWhileEncodingImage WriteBitmapWhileEncodingImage
+#endif
+TEST_F(ClipboardHistoryControllerTest, MAYBE_WriteBitmapWhileEncodingImage) {
   // Write a bitmap to ClipboardHistory.
   std::vector<const SkBitmap> test_bitmaps;
   test_bitmaps.emplace_back(gfx::test::CreateBitmap(3, 2));
