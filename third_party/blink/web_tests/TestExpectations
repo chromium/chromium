@@ -3563,7 +3563,6 @@ crbug.com/626703 [ Mac11-arm64 ] external/wpt/fetch/private-network-access/xhr.w
 crbug.com/626703 [ Mac10.12 ] external/wpt/scroll-to-text-fragment/scroll-to-text-fragment-security.sub.html [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/plz-dedicated-worker/external/wpt/fetch/private-network-access/worker.https.window.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/webaudio/the-audio-api/the-pannernode-interface/ctor-panner.html [ Crash ]
-crbug.com/626703 [ Mac11-arm64 ] external/wpt/webaudio/the-audio-api/the-mediastreamaudiosourcenode-interface/mediastreamaudiosourcenode-routing.html [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/fetch/data-urls/processing.any.html [ Failure Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/mediacapture-record/MediaRecorder-mimetype.html [ Failure Timeout ]
 crbug.com/626703 [ Mac10.13 ] external/wpt/wasm/jsapi/constructor/instantiate-bad-imports.any.html [ Timeout ]
@@ -4099,8 +4098,6 @@ crbug.com/626703 external/wpt/input-events/input-events-get-target-ranges-backsp
 crbug.com/626703 external/wpt/input-events/input-events-get-target-ranges-forwarddelete.tentative.html [ Failure Skip Timeout ]
 crbug.com/626703 [ Mac ] external/wpt/dom/events/scrolling/scrollend-event-for-user-scroll.html [ Failure Timeout ]
 crbug.com/626703 [ Win ] external/wpt/dom/events/scrolling/scrollend-event-for-user-scroll.html [ Failure Timeout ]
-crbug.com/626703 [ Mac10.15 ] external/wpt/webaudio/the-audio-api/the-mediastreamaudiosourcenode-interface/mediastreamaudiosourcenode-routing.html [ Timeout ]
-crbug.com/626703 [ Mac11 ] external/wpt/webaudio/the-audio-api/the-mediastreamaudiosourcenode-interface/mediastreamaudiosourcenode-routing.html [ Timeout ]
 crbug.com/626703 external/wpt/workers/Worker-replace-self.any.html [ Timeout ]
 crbug.com/626703 external/wpt/cookie-store/cookieStoreManager_getSubscriptions_multiple.tentative.https.any.worker.html [ Timeout ]
 crbug.com/626703 external/wpt/cookie-store/serviceworker_oncookiechange_eventhandler_single_subscription.tentative.https.any.html [ Timeout ]
@@ -4162,8 +4159,6 @@ crbug.com/626703 [ Win7 ] external/wpt/pointerevents/pointerevent_touch-action-i
 crbug.com/626703 [ Win7 ] external/wpt/pointerevents/pointerevent_touch-action-pan-y-css_touch.html [ Skip Timeout ]
 crbug.com/626703 [ Win ] external/wpt/web-animations/timing-model/animation-effects/phases-and-states.html [ Crash ]
 crbug.com/626703 external/wpt/webvtt/rendering/cues-with-video/processing-model/snap-to-line.html [ Failure ]
-crbug.com/626703 [ Mac10.13 ] external/wpt/webaudio/the-audio-api/the-mediastreamaudiosourcenode-interface/mediastreamaudiosourcenode-routing.html [ Timeout ]
-crbug.com/626703 [ Mac10.14 ] external/wpt/webaudio/the-audio-api/the-mediastreamaudiosourcenode-interface/mediastreamaudiosourcenode-routing.html [ Timeout ]
 crbug.com/626703 [ Win7 ] external/wpt/IndexedDB/structured-clone.any.html [ Timeout ]
 crbug.com/626703 [ Win7 ] external/wpt/pointerevents/pointerevent_touch-action-svg-none-test_touch.html [ Skip Timeout ]
 crbug.com/626703 [ Win7 ] external/wpt/pointerevents/extension/pointerevent_touch-action-pan-right-css_touch.html [ Timeout ]
@@ -7766,3 +7761,8 @@ crbug.com/1306770 http/tests/inspector-protocol/network/interception-download.js
 
 # Sheriff 2022-03-18
 crbug.com/1290040 [ Linux ] external/wpt/service-workers/service-worker/same-site-cookies.https.html [ Skip ]
+
+# WebAudio flaky timeout (crbug.com/1307741)
+crbug.com/1307741 [ Mac ] external/wpt/webaudio/the-audio-api/the-mediastreamaudiosourcenode-interface/mediastreamaudiosourcenode-routing.html [ Timeout ]
+crbug.com/1307741 external/wpt/webaudio/the-audio-api/the-pannernode-interface/pannernode-basic.html [ Timeout ]
+crbug.com/1307741 webaudio/AudioParam/audioparam-k-rate.html [ Timeout ]
