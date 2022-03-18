@@ -20,6 +20,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.AwContents;
+import org.chromium.android_webview.AwContentsStatics;
 import org.chromium.android_webview.AwScrollOffsetManager;
 import org.chromium.android_webview.test.AwActivityTestRule.PopupInfo;
 import org.chromium.android_webview.test.util.AwTestTouchUtils;
@@ -218,14 +219,21 @@ public class AndroidScrollIntegrationTest {
                         && scrollYPix == testContainerView.getScrollY());
     }
 
+    private int[] getScrollOnMainSync(final ScrollTestContainerView testContainerView) {
+        final int scroll[] = new int[2];
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
+            scroll[0] = testContainerView.getScrollX();
+            scroll[1] = testContainerView.getScrollY();
+        });
+        return scroll;
+    }
+
     private void assertScrollOnMainSync(final ScrollTestContainerView testContainerView,
             final int scrollXPix, final int scrollYPix) {
-        final AtomicInteger scrolledXPix = new AtomicInteger();
-        final AtomicInteger scrolledYPix = new AtomicInteger();
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
-            scrolledXPix.set(testContainerView.getScrollX());
-            scrolledYPix.set(testContainerView.getScrollY());
-        });
+        int scrolled[] = getScrollOnMainSync(testContainerView);
+        int scrolledXPix = scrolled[0];
+        int scrolledYPix = scrolled[1];
+
         // Actual scrolling is done using this formula:
         // floor (scroll_offset_dip * max_offset) / max_scroll_offset_dip
         // where max_offset is calculated using a ceil operation.
@@ -251,11 +259,11 @@ public class AndroidScrollIntegrationTest {
         //
         // For more information, see crbug.com/537343
         Assert.assertTrue("Actual and expected x-scroll offsets do not match. Expected "
-                        + scrollXPix + ", actual " + scrolledXPix.get(),
-                scrollXPix == scrolledXPix.get() || scrollXPix == scrolledXPix.get() - 1);
+                        + scrollXPix + ", actual " + scrolledXPix,
+                scrollXPix == scrolledXPix || scrollXPix == scrolledXPix - 1);
         Assert.assertTrue("Actual and expected y-scroll offsets do not match. Expected "
-                        + scrollYPix + ", actual " + scrolledYPix.get(),
-                scrollYPix == scrolledYPix.get() || scrollYPix == scrolledYPix.get() - 1);
+                        + scrollYPix + ", actual " + scrolledYPix,
+                scrollYPix == scrolledYPix || scrollYPix == scrolledYPix - 1);
     }
 
     private void assertScrollInJs(final AwContents awContents,
@@ -870,5 +878,44 @@ public class AndroidScrollIntegrationTest {
 
         InstrumentationRegistry.getInstrumentation().runOnMainSync(
                 () -> Assert.assertEquals(testContainerView.getScrollY(), scrolledYPix));
+    }
+
+    // Regression test for crbug.com/1299753.
+    @Test
+    @SmallTest
+    @Feature("AndroidWebView")
+    public void testCanTouchScrollYWithRecordFullDocument() throws Throwable {
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(
+                () -> { AwContentsStatics.setRecordFullDocument(true); });
+
+        final TestAwContentsClient contentsClient = new TestAwContentsClient();
+        final ScrollTestContainerView testContainerView =
+                (ScrollTestContainerView) mActivityTestRule.createAwTestContainerViewOnMainSync(
+                        contentsClient);
+        AwActivityTestRule.enableJavaScriptOnUiThread(testContainerView.getAwContents());
+
+        // Load page.
+        loadTestPageAndWaitForFirstFrame(testContainerView, contentsClient, null, "");
+
+        // Check page loaded at scroll offset 0.
+        {
+            int scroll[] = getScrollOnMainSync(testContainerView);
+            Assert.assertEquals(0, scroll[1]);
+        }
+
+        // Drag scroll.
+        final CallbackHelper onScrollToCallbackHelper =
+                testContainerView.getOnScrollToCallbackHelper();
+        final int scrollToCallCount = onScrollToCallbackHelper.getCallCount();
+        final int dragSteps = 10;
+        final int dragStepSize = 24;
+        final int targetScrollYPix = dragStepSize * dragSteps;
+        AwTestTouchUtils.dragCompleteView(testContainerView, 0, 0, 0, -targetScrollYPix, dragSteps);
+
+        // Poll until scroll on UI is bigger than 0.
+        AwActivityTestRule.pollInstrumentationThread(() -> {
+            int scroll[] = getScrollOnMainSync(testContainerView);
+            return scroll[1] > 0;
+        });
     }
 }
