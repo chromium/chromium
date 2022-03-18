@@ -712,10 +712,6 @@ Resource* PreloadHelper::StartPreload(ResourceType type,
       break;
     case ResourceType::kFont:
       resource = FontResource::Fetch(params, resource_fetcher, nullptr);
-      if (document.GetRenderBlockingResourceManager()) {
-        document.GetRenderBlockingResourceManager()->FontPreloadingStarted(
-            To<FontResource>(resource));
-      }
       break;
     case ResourceType::kAudio:
     case ResourceType::kVideo:

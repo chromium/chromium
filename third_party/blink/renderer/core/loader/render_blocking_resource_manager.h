@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_RENDER_BLOCKING_RESOURCE_MANAGER_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/timer.h"
@@ -13,10 +14,9 @@
 namespace blink {
 
 class Document;
-class FontResource;
 class FontFace;
+class LinkLoaderClient;
 class Node;
-class ResourceFinishObserver;
 class ScriptElementBase;
 
 // https://html.spec.whatwg.org/#render-blocking-mechanism with some extensions.
@@ -32,11 +32,8 @@ class CORE_EXPORT RenderBlockingResourceManager final
 
   bool HasRenderBlockingResources() const {
     return pending_stylesheet_owner_nodes_.size() || pending_scripts_.size() ||
-           font_preload_finish_observers_.size() ||
-           imperative_font_loading_count_;
+           pending_preloads_.size() || imperative_font_loading_count_;
   }
-
-  // TODO(crbug.com/1271296): Use this class to handle render-blocking preloads.
 
   bool HasPendingStylesheets() const {
     return pending_stylesheet_owner_nodes_.size();
@@ -55,8 +52,11 @@ class CORE_EXPORT RenderBlockingResourceManager final
   // Loading API) to block rendering for a short period, so that preloaded fonts
   // have a higher chance to be used by the first paint.
   // Design doc: https://bit.ly/36E8UKB
-  void FontPreloadingStarted(FontResource*);
-  void FontPreloadingFinished(FontResource*, ResourceFinishObserver*);
+  enum class PreloadType { kRegular, kShortBlockingFont };
+  void AddPendingPreload(const LinkLoaderClient& link, PreloadType type);
+  void RemovePendingPreload(const LinkLoaderClient& link);
+
+  // TODO(xiaochengh): Rename these methods to be consistent with the others.
   void FontPreloadingTimerFired(TimerBase*);
   void ImperativeFontLoadingStarted(FontFace*);
   void ImperativeFontLoadingFinished();
@@ -77,14 +77,15 @@ class CORE_EXPORT RenderBlockingResourceManager final
   // directly included in this set. See:
   // https://html.spec.whatwg.org/multipage/links.html#link-type-stylesheet
   // https://html.spec.whatwg.org/multipage/semantics.html#update-a-style-block
-  HeapHashSet<Member<const Node>> pending_stylesheet_owner_nodes_;
+  HeapHashSet<WeakMember<const Node>> pending_stylesheet_owner_nodes_;
 
   // Tracks the currently pending render-blocking script elements.
-  HeapHashSet<Member<const ScriptElementBase>> pending_scripts_;
+  HeapHashSet<WeakMember<const ScriptElementBase>> pending_scripts_;
 
-  // Need to hold strong references here, otherwise they'll be GC-ed immediately
-  // as Resource only holds weak references.
-  HeapHashSet<Member<ResourceFinishObserver>> font_preload_finish_observers_;
+  // Tracks the currently pending render-blocking preload and modulepreload
+  // links, including short-blocking font preloads.
+  HeapHashMap<WeakMember<const LinkLoaderClient>, PreloadType>
+      pending_preloads_;
 
   unsigned imperative_font_loading_count_ = 0;
 

@@ -162,6 +162,18 @@ bool LinkLoader::LoadLink(const LinkLoadParameters& params,
   if (!client_->ShouldLoadLink())
     return false;
 
+  if (RenderBlockingResourceManager* manager =
+          document.GetRenderBlockingResourceManager()) {
+    if (client_->IsRenderBlockingPreload()) {
+      manager->AddPendingPreload(
+          *client_, RenderBlockingResourceManager::PreloadType::kRegular);
+    } else if (client_->IsFontPreload()) {
+      manager->AddPendingPreload(
+          *client_,
+          RenderBlockingResourceManager::PreloadType::kShortBlockingFont);
+    }
+  }
+
   PreloadHelper::DnsPrefetchIfNeeded(params, &document, document.GetFrame(),
                                      PreloadHelper::kLinkCalledFromMarkup);
 
