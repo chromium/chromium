@@ -7,7 +7,7 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {CookiePrimarySetting, PrivacyGuideCompletionFragmentElement, PrivacyGuideHistorySyncFragmentElement, PrivacyGuideStep, PrivacyGuideWelcomeFragmentElement, SafeBrowsingSetting, SettingsPrivacyGuidePageElement, SettingsRadioGroupElement} from 'chrome://settings/lazy_load.js';
-import {MetricsBrowserProxyImpl, PrivacyGuideInteractions, PrivacyGuideSettingsStates, Router, routes, StatusAction, SyncBrowserProxyImpl, SyncPrefs, syncPrefsIndividualDataTypes, SyncStatus} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, MetricsBrowserProxyImpl, PrivacyGuideInteractions, PrivacyGuideSettingsStates, Router, routes, StatusAction, SyncBrowserProxyImpl, SyncPrefs, syncPrefsIndividualDataTypes, SyncStatus} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, flushTasks, isChildVisible} from 'chrome://webui-test/test_util.js';
 import {getSyncAllPrefs} from './sync_test_util.js';
@@ -331,7 +331,10 @@ suite('PrivacyGuidePage', function() {
     assertStepIndicatorModel(activeIndex);
   }
 
-  test('startPrivacyGuide', function() {
+  test('startPrivacyGuide', async function() {
+    await CrSettingsPrefs.initialized;
+    assertFalse(page.getPref('privacy_guide.viewed').value);
+
     // Navigating to the privacy guide without a step parameter navigates to
     // the welcome card.
     Router.getInstance().navigateTo(routes.PRIVACY_GUIDE);

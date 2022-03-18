@@ -32,6 +32,7 @@ import {loadTimeData} from '../../i18n_setup.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyGuideInteractions} from '../../metrics_browser_proxy.js';
 import {SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from '../../people_page/sync_browser_proxy.js';
 import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
+import {CrSettingsPrefs} from '../../prefs/prefs_types.js';
 import {SafeBrowsingSetting} from '../../privacy_page/security_page.js';
 import {routes} from '../../route.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../../router.js';
@@ -165,7 +166,10 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
       return;
     }
     // Set the pref that the user has viewed the Privacy guide.
-    this.setPrefValue('privacy_guide.viewed', true);
+    CrSettingsPrefs.initialized.then(() => {
+      this.setPrefValue('privacy_guide.viewed', true);
+    });
+
     this.updateStateFromQueryParameters_();
   }
 
@@ -447,6 +451,10 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
   }
 
   private shouldShowCookiesCard_(): boolean {
+    if (!this.prefs) {
+      // Prefs are not available yet. Show the card until they become available.
+      return true;
+    }
     const currentCookieSetting =
         this.getPref('generated.cookie_primary_setting').value;
     return currentCookieSetting === CookiePrimarySetting.BLOCK_THIRD_PARTY ||
@@ -455,6 +463,10 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
   }
 
   private shouldShowSafeBrowsingCard_(): boolean {
+    if (!this.prefs) {
+      // Prefs are not available yet. Show the card until they become available.
+      return true;
+    }
     const currentSafeBrowsingSetting =
         this.getPref('generated.safe_browsing').value;
     return currentSafeBrowsingSetting === SafeBrowsingSetting.ENHANCED ||
