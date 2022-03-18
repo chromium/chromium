@@ -95,6 +95,8 @@ ci.builder(
             "tools/android/avd/proto/creation/generic_android19.textpb",
             "tools/android/avd/proto/creation/generic_android22.textpb",
             "tools/android/avd/proto/creation/generic_android23.textpb",
+            "tools/android/avd/proto/creation/generic_android24.textpb",
+            "tools/android/avd/proto/creation/generic_playstore_android24.textpb",
             "tools/android/avd/proto/creation/generic_android25.textpb",
             "tools/android/avd/proto/creation/generic_playstore_android25.textpb",
             "tools/android/avd/proto/creation/generic_android27.textpb",
