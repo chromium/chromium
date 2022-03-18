@@ -322,6 +322,8 @@ SearchResultListView::ScheduleResultAnimations(
 
   SetVisible(true);
   last_container_start_index_ = aggregate_animation_info.total_views;
+  current_animation_info.use_short_animations =
+      aggregate_animation_info.use_short_animations;
 
   auto schedule_animation = [this, &current_animation_info,
                              &aggregate_animation_info](views::View* view) {

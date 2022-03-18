@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "ash/app_list/app_list_model_provider.h"
+#include "ash/app_list/model/search/search_box_model.h"
+#include "ash/app_list/model/search/search_box_model_observer.h"
 #include "ash/app_list/views/search_result_container_view.h"
 #include "ash/ash_export.h"
 #include "base/timer/timer.h"
@@ -28,7 +30,8 @@ class SearchResultPageDialogController;
 class ASH_EXPORT ProductivityLauncherSearchView
     : public views::View,
       public SearchResultContainerView::Delegate,
-      public AppListModelProvider::Observer {
+      public AppListModelProvider::Observer,
+      public SearchBoxModelObserver {
  public:
   METADATA_HEADER(ProductivityLauncherSearchView);
 
@@ -52,6 +55,11 @@ class ASH_EXPORT ProductivityLauncherSearchView
   // AppListModelProvider::Observer:
   void OnActiveAppListModelsChanged(AppListModel* model,
                                     SearchModel* search_model) override;
+
+  // Overridden from SearchBoxModelObserver:
+  void Update() override;
+  void SearchEngineChanged() override;
+  void ShowAssistantChanged() override;
 
   // Returns true if there are search results that can be keyboard selected.
   bool CanSelectSearchResults();
@@ -130,6 +138,9 @@ class ASH_EXPORT ProductivityLauncherSearchView
 
   // The last reported number of search results shown by all containers.
   int last_search_result_count_ = 0;
+
+  base::ScopedObservation<SearchBoxModel, SearchBoxModelObserver>
+      search_box_model_observer_{this};
 };
 
 }  // namespace ash

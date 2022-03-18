@@ -141,7 +141,10 @@ ProductivityLauncherSearchView::ProductivityLauncherSearchView(
 
   scroll_view_->SetContents(std::move(scroll_contents));
 
-  AppListModelProvider::Get()->AddObserver(this);
+  AppListModelProvider* const model_provider = AppListModelProvider::Get();
+  model_provider->AddObserver(this);
+  search_box_model_observer_.Observe(
+      model_provider->search_model()->search_box());
 }
 
 ProductivityLauncherSearchView::~ProductivityLauncherSearchView() {
@@ -185,16 +188,6 @@ void ProductivityLauncherSearchView::OnSearchResultContainerResultsChanged() {
           base::TimeTicks::Now() - search_result_fast_update_time_.value();
       if (time_since_last_update < kForcedFastAnimationInterval) {
         aggregate_animation_info.use_short_animations = true;
-      }
-    }
-    if (!aggregate_animation_info.use_short_animations &&
-        app_list_features::IsDynamicSearchUpdateAnimationEnabled()) {
-      // Scan result_container_views_ to see if there are any in progress
-      // animations that would be preempted.
-      for (SearchResultContainerView* view : result_container_views_) {
-        if (view->HasAnimatingChildView()) {
-          aggregate_animation_info.use_short_animations = true;
-        }
       }
     }
 
@@ -275,7 +268,25 @@ void ProductivityLauncherSearchView::OnActiveAppListModelsChanged(
     SearchModel* search_model) {
   for (auto* container : result_container_views_)
     container->SetResults(search_model->results());
+  search_box_model_observer_.Reset();
+  search_box_model_observer_.Observe(search_model->search_box());
 }
+
+void ProductivityLauncherSearchView::Update() {
+  if (app_list_features::IsDynamicSearchUpdateAnimationEnabled()) {
+    // Scan result_container_views_ to see if there are any in progress
+    // animations when the search model is updated.
+    for (SearchResultContainerView* view : result_container_views_) {
+      if (view->HasAnimatingChildView()) {
+        search_result_fast_update_time_ = base::TimeTicks::Now();
+      }
+    }
+  }
+}
+
+void ProductivityLauncherSearchView::SearchEngineChanged() {}
+
+void ProductivityLauncherSearchView::ShowAssistantChanged() {}
 
 void ProductivityLauncherSearchView::OnSelectedResultChanged() {
   if (!result_selection_controller_->selected_result()) {
