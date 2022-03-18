@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "ash/constants/ash_pref_names.h"
-#include "ash/metrics/user_metrics_recorder.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
@@ -29,6 +28,7 @@
 #include "ash/system/tray/view_click_listener.h"
 #include "ash/system/unified/unified_system_tray_view.h"
 #include "base/bind.h"
+#include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/network/network_connect.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
@@ -186,8 +186,8 @@ class VPNListProviderEntry : public views::View {
     // If the user clicks on a provider entry, request that the "add network"
     // dialog for this provider be shown.
     if (vpn_provider_->type == VpnType::kExtension) {
-      Shell::Get()->metrics()->RecordUserMetricsAction(
-          UMA_STATUS_AREA_VPN_ADD_THIRD_PARTY_CLICKED);
+      base::RecordAction(
+          base::UserMetricsAction("StatusArea_VPN_AddThirdParty"));
       Shell::Get()->system_tray_model()->client()->ShowThirdPartyVpnCreate(
           vpn_provider_->app_id);
     } else if (vpn_provider_->type == VpnType::kArc) {
@@ -195,8 +195,7 @@ class VPNListProviderEntry : public views::View {
       Shell::Get()->system_tray_model()->client()->ShowArcVpnCreate(
           vpn_provider_->app_id);
     } else {
-      Shell::Get()->metrics()->RecordUserMetricsAction(
-          UMA_STATUS_AREA_VPN_ADD_BUILT_IN_CLICKED);
+      base::RecordAction(base::UserMetricsAction("StatusArea_VPN_AddBuiltIn"));
       Shell::Get()->system_tray_model()->client()->ShowNetworkCreate(
           ::onc::network_type::kVPN);
     }

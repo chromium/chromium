@@ -10,6 +10,7 @@
 #include "ash/system/network/network_icon.h"
 #include "ash/system/network/tray_network_state_model.h"
 #include "ash/system/tray/system_tray_notifier.h"
+#include "base/metrics/user_metrics.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
@@ -68,8 +69,9 @@ void WifiToggleNotificationController::RequestToggleWifi() {
   if (!wifi)
     return;
   bool enabled = wifi->device_state == DeviceStateType::kEnabled;
-  Shell::Get()->metrics()->RecordUserMetricsAction(
-      enabled ? UMA_STATUS_AREA_DISABLE_WIFI : UMA_STATUS_AREA_ENABLE_WIFI);
+  base::RecordAction(
+      enabled ? base::UserMetricsAction("StatusArea_Network_WifiDisabled")
+              : base::UserMetricsAction("StatusArea_Network_WifiEnabled"));
   model->SetNetworkTypeEnabledState(NetworkType::kWiFi, !enabled);
 
   // Create a new notification with the new state.

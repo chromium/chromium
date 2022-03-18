@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "ash/metrics/user_metrics_recorder.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -17,6 +16,7 @@
 #include "ash/system/tray/system_menu_button.h"
 #include "ash/system/tray/tri_view.h"
 #include "base/bind.h"
+#include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -33,6 +33,11 @@
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/widget/widget.h"
 
+namespace ash {
+namespace tray {
+namespace {
+
+using base::UserMetricsAction;
 using chromeos::network_config::mojom::ActivationStateType;
 using chromeos::network_config::mojom::ConnectionStateType;
 using chromeos::network_config::mojom::DeviceStateProperties;
@@ -40,10 +45,6 @@ using chromeos::network_config::mojom::DeviceStateType;
 using chromeos::network_config::mojom::NetworkStateProperties;
 using chromeos::network_config::mojom::NetworkStatePropertiesPtr;
 using chromeos::network_config::mojom::NetworkType;
-
-namespace ash {
-namespace tray {
-namespace {
 
 // Delay between scan requests.
 constexpr int kRequestScanDelaySeconds = 10;
@@ -328,10 +329,10 @@ void NetworkStateListDetailedView::HandleViewClickedImpl(
             network->type == NetworkType::kCellular
                 ? network->type_state->get_cellular()->eid
                 : "")) {
-      Shell::Get()->metrics()->RecordUserMetricsAction(
+      base::RecordAction(
           list_type_ == LIST_TYPE_VPN
-              ? UMA_STATUS_AREA_CONNECT_TO_VPN
-              : UMA_STATUS_AREA_CONNECT_TO_CONFIGURED_NETWORK);
+              ? UserMetricsAction("StatusArea_VPN_ConnectToNetwork")
+              : UserMetricsAction("StatusArea_Network_ConnectConfigured"));
       LogUserNetworkEvent(*network.get());
       chromeos::NetworkConnect::Get()->ConnectToNetworkId(network->guid);
       return;
@@ -339,10 +340,10 @@ void NetworkStateListDetailedView::HandleViewClickedImpl(
   }
   // If the network is no longer available or not connectable or configurable,
   // show the Settings UI.
-  Shell::Get()->metrics()->RecordUserMetricsAction(
+  base::RecordAction(
       list_type_ == LIST_TYPE_VPN
-          ? UMA_STATUS_AREA_SHOW_VPN_CONNECTION_DETAILS
-          : UMA_STATUS_AREA_SHOW_NETWORK_CONNECTION_DETAILS);
+          ? UserMetricsAction("StatusArea_VPN_ConnectionDetails")
+          : UserMetricsAction("StatusArea_Network_ConnectionDetails"));
   Shell::Get()->system_tray_model()->client()->ShowNetworkSettings(
       network ? network->guid : std::string());
 }
@@ -369,10 +370,9 @@ void NetworkStateListDetailedView::CreateExtraTitleRowButtons() {
 }
 
 void NetworkStateListDetailedView::ShowSettings() {
-  Shell::Get()->metrics()->RecordUserMetricsAction(
-      list_type_ == LIST_TYPE_VPN ? UMA_STATUS_AREA_VPN_SETTINGS_OPENED
-                                  : UMA_STATUS_AREA_NETWORK_SETTINGS_OPENED);
-
+  base::RecordAction(list_type_ == LIST_TYPE_VPN
+                         ? UserMetricsAction("StatusArea_VPN_Settings")
+                         : UserMetricsAction("StatusArea_Network_Settings"));
   const std::string guid = model_->default_network()
                                ? model_->default_network()->guid
                                : std::string();

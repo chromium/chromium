@@ -10,8 +10,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/display/screen_orientation_controller.h"
-#include "ash/metrics/user_metrics_action.h"
-#include "ash/metrics/user_metrics_recorder.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -22,6 +20,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/metrics/user_metrics.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -74,14 +73,14 @@ std::u16string GetDisplaySize(int64_t display_id) {
 void OnNotificationClicked(absl::optional<int> button_index) {
   DCHECK(!button_index);
 
-  Shell::Get()->metrics()->RecordUserMetricsAction(
-      UMA_STATUS_AREA_DISPLAY_NOTIFICATION_SELECTED);
+  base::RecordAction(
+      base::UserMetricsAction("StatusArea_Display_Notification_Selected"));
   // Settings may be blocked, e.g. at the lock screen.
   if (Shell::Get()->session_controller()->ShouldEnableSettings() &&
       Shell::Get()->system_tray_model()->client()) {
     Shell::Get()->system_tray_model()->client()->ShowDisplaySettings();
-    Shell::Get()->metrics()->RecordUserMetricsAction(
-        UMA_STATUS_AREA_DISPLAY_NOTIFICATION_SHOW_SETTINGS);
+    base::RecordAction(base::UserMetricsAction(
+        "StatusArea_Display_Notification_Show_Settings"));
   }
   message_center::MessageCenter::Get()->RemoveNotification(
       ScreenLayoutObserver::kNotificationId, /*by_user=*/true);
@@ -375,8 +374,8 @@ void ScreenLayoutObserver::CreateOrUpdateNotification(
       message_center::SystemNotificationWarningLevel::NORMAL);
   notification->set_priority(message_center::SYSTEM_PRIORITY);
 
-  Shell::Get()->metrics()->RecordUserMetricsAction(
-      UMA_STATUS_AREA_DISPLAY_NOTIFICATION_CREATED);
+  base::RecordAction(
+      base::UserMetricsAction("StatusArea_Display_Notification_Created"));
   message_center::MessageCenter::Get()->AddNotification(
       std::move(notification));
 }

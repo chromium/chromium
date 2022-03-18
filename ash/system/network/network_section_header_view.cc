@@ -5,7 +5,6 @@
 #include "ash/system/network/network_section_header_view.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/metrics/user_metrics_recorder.h"
 #include "ash/public/cpp/bluetooth_config_service.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -18,6 +17,7 @@
 #include "ash/system/network/tray_network_state_model.h"
 #include "ash/system/tray/tray_toggle_button.h"
 #include "base/bind.h"
+#include "base/metrics/user_metrics.h"
 #include "chromeos/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
@@ -504,8 +504,7 @@ void WifiSectionHeaderView::UpdateJoinButtonVisibility() {
 }
 
 void WifiSectionHeaderView::JoinButtonPressed() {
-  Shell::Get()->metrics()->RecordUserMetricsAction(
-      UMA_STATUS_AREA_NETWORK_JOIN_OTHER_CLICKED);
+  base::RecordAction(base::UserMetricsAction("StatusArea_Network_JoinOther"));
   Shell::Get()->system_tray_model()->client()->ShowNetworkCreate(
       ::onc::network_type::kWiFi);
 }

@@ -4,8 +4,6 @@
 
 #include "ash/system/audio/unified_volume_slider_controller.h"
 
-#include "ash/metrics/user_metrics_action.h"
-#include "ash/metrics/user_metrics_recorder.h"
 #include "ash/shell.h"
 #include "ash/system/audio/unified_volume_view.h"
 #include "ash/system/machine_learning/user_settings_event_logger.h"
@@ -37,8 +35,8 @@ void UnifiedVolumeSliderController::SliderValueChanged(
   const int level = value * 100;
 
   if (level != CrasAudioHandler::Get()->GetOutputVolumePercent()) {
-    Shell::Get()->metrics()->RecordUserMetricsAction(
-        UMA_STATUS_AREA_CHANGED_VOLUME_MENU);
+    base::RecordAction(
+        base::UserMetricsAction("StatusArea_Volume_ChangedMenu"));
   }
 
   CrasAudioHandler::Get()->SetOutputVolumePercent(level);
