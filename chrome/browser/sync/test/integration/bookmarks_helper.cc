@@ -1035,8 +1035,8 @@ void BookmarkModelStatusChangeChecker::PostCheckExitCondition() {
 
   pending_check_exit_condition_ = true;
 
-  // Use base::PostTask() instead of CheckExitCondition() directly to make sure
-  // that the checker doesn't immediately kick in while bookmarks are modified.
+  // PostTask() instead of CheckExitCondition() directly to make sure that the
+  // checker doesn't immediately kick in while bookmarks are modified.
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(&BookmarkModelStatusChangeChecker::CheckExitCondition,
