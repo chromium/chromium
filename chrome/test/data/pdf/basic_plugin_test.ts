@@ -12,8 +12,7 @@ const tests = [
    * Test that the page is sized to the size of the document.
    */
   function testPageSize() {
-    const viewer = /** @type {!PDFViewerElement} */ (
-        document.body.querySelector('#viewer'));
+    const viewer = document.body.querySelector<PDFViewerElement>('#viewer')!;
     // Verify that the initial zoom is less than or equal to 100%.
     chrome.test.assertTrue(viewer.viewport.getZoom() <= 1);
 

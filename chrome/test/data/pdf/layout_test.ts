@@ -7,8 +7,7 @@ import {PDFScriptingAPI, PDFViewerElement} from 'chrome-extension://mhjfbmdgcfjb
 // Tests common to all PDFs.
 const tests = [
   function testLayoutOptions() {
-    const viewer = /** @type {!PDFViewerElement} */ (
-        document.body.querySelector('#viewer'));
+    const viewer = document.body.querySelector<PDFViewerElement>('#viewer')!;
     chrome.test.assertEq(
         {
           direction: 2,
@@ -21,11 +20,10 @@ const tests = [
 ];
 
 // Tests specific to each PDF's layout.
-const perLayoutTests = {
+const perLayoutTests: {[name: string]: Array<() => void>} = {
   'test-layout3.pdf': [
     function testDimensions3() {
-      const viewer = /** @type {!PDFViewerElement} */ (
-          document.body.querySelector('#viewer'));
+      const viewer = document.body.querySelector<PDFViewerElement>('#viewer')!;
       chrome.test.assertEq(
           {
             width: 103,
@@ -38,8 +36,7 @@ const perLayoutTests = {
 
   'test-layout4.pdf': [
     function testDimensions4() {
-      const viewer = /** @type {!PDFViewerElement} */ (
-          document.body.querySelector('#viewer'));
+      const viewer = document.body.querySelector<PDFViewerElement>('#viewer')!;
       chrome.test.assertEq(
           {
             width: 143,
@@ -54,7 +51,7 @@ const perLayoutTests = {
 const scriptingAPI = new PDFScriptingAPI(window, window);
 scriptingAPI.setLoadCompleteCallback((success) => {
   if (success && document.title in perLayoutTests) {
-    chrome.test.runTests(tests.concat(perLayoutTests[document.title]));
+    chrome.test.runTests(tests.concat(perLayoutTests[document.title]!));
   } else {
     chrome.test.fail(document.title);
   }
