@@ -72,17 +72,10 @@ class GuestViewBase::OwnerContentsObserver : public WebContentsObserver {
     Destroy();
   }
 
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override {
+  void PrimaryPageChanged(content::Page& page) override {
     // TODO(1206312, 1205920): It is incorrect to assume that a navigation will
     // destroy the embedder.
     // If the embedder navigates to a different page then destroy the guest.
-    if (!navigation_handle->IsInMainFrame() ||
-        !navigation_handle->HasCommitted() ||
-        navigation_handle->IsSameDocument()) {
-      return;
-    }
-
     Destroy();
   }
 
