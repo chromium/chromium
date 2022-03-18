@@ -1687,7 +1687,6 @@
     "args": [
       "--replace-system-package",
       "org.chromium.webview_shell,apks/SystemWebViewShell.apk",
-      "--use-apk-under-test-flags-file",
     ],
     "label": "//android_webview/tools/system_webview_shell:system_webview_shell_layout_test_apk",
     "type": "console_test_launcher",

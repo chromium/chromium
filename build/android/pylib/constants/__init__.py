@@ -72,10 +72,6 @@ PACKAGE_INFO.update({
     chrome.PackageInfo('com.google.android.webview',
                        'com.android.cts.webkit.WebViewStartupCtsActivity',
                        'webview-command-line', None),
-    'android_system_webview_shell':
-    chrome.PackageInfo('org.chromium.webview_shell',
-                       'org.chromium.webview_shell.WebViewBrowserActivity',
-                       'webview-command-line', None),
     'android_webview_ui_test':
     chrome.PackageInfo('org.chromium.webview_ui_test',
                        'org.chromium.webview_ui_test.WebViewUiTestActivity',
