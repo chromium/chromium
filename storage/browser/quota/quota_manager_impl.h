@@ -667,7 +667,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   // pressure event dispatch if appropriate.
   // TODO(crbug.com/1088004): Implement UsageAndQuotaInfoGatherer::Completed()
   // to use DetermineStoragePressure().
-  // TODO(crbug.com/1102433): Define and explain StoragePressure in the README.
   void DetermineStoragePressure(int64_t free_space, int64_t total_space);
 
   absl::optional<int64_t> GetQuotaOverrideForStorageKey(
