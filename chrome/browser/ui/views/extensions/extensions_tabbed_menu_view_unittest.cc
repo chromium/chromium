@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_unittest.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/url_formatter/url_formatter.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/notification_types.h"
@@ -701,7 +702,7 @@ TEST_F(ExtensionsTabbedMenuViewUnitTest, SiteAccessTab_NoExtensionsHaveAccess) {
 
   auto no_extensions_have_access_text = l10n_util::GetStringFUTF16(
       IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_NO_EXTENSIONS_HAVE_ACCESS_TEXT,
-      base::UTF8ToUTF16(url.host()));
+      url_formatter::IDNToUnicode(url_formatter::StripWWW(url.host())));
 
   // Verify only the correct message is displayed when no extensions have access
   // to the current site.
