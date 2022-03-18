@@ -60,7 +60,7 @@ base::ListValue GetPEMEncodedChainAsList(
   std::vector<std::string> pem_encoded_chain;
   cert_chain->GetPEMEncodedChain(&pem_encoded_chain);
   for (const std::string& cert : pem_encoded_chain)
-    result.Append(std::make_unique<base::Value>(cert));
+    result.Append(cert);
 
   return result;
 }
@@ -82,9 +82,9 @@ std::string SCTOriginToString(
 
 bool AddSCT(const net::SignedCertificateTimestampAndStatus& sct,
             base::ListValue* list) {
-  std::unique_ptr<base::DictionaryValue> list_item(new base::DictionaryValue());
+  base::Value::Dict list_item;
   // Chrome implements RFC6962, not 6962-bis, so the reports contain v1 SCTs.
-  list_item->SetInteger("version", 1);
+  list_item.Set("version", 1);
   std::string status;
   switch (sct.status) {
     case net::ct::SCT_STATUS_LOG_UNKNOWN:
@@ -100,15 +100,15 @@ bool AddSCT(const net::SignedCertificateTimestampAndStatus& sct,
     case net::ct::SCT_STATUS_NONE:
       NOTREACHED();
   }
-  list_item->SetString("status", status);
-  list_item->SetString("source", SCTOriginToString(sct.sct->origin));
+  list_item.Set("status", status);
+  list_item.Set("source", SCTOriginToString(sct.sct->origin));
   std::string serialized_sct;
   if (!net::ct::EncodeSignedCertificateTimestamp(sct.sct, &serialized_sct))
     return false;
   std::string encoded_serialized_sct;
   base::Base64Encode(serialized_sct, &encoded_serialized_sct);
-  list_item->SetString("serialized_sct", encoded_serialized_sct);
-  list->Append(std::move(list_item));
+  list_item.Set("serialized_sct", encoded_serialized_sct);
+  list->Append(base::Value(std::move(list_item)));
   return true;
 }
 
