@@ -84,7 +84,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/window_proxy.h"
 #include "third_party/blink/renderer/core/accessibility/ax_context.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
-#include "third_party/blink/renderer/core/animation/css/css_animation_update_scope.h"
 #include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/animation/pending_animations.h"
@@ -102,6 +101,7 @@
 #include "third_party/blink/renderer/core/css/media_query_matcher.h"
 #include "third_party/blink/renderer/core/css/media_values.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
+#include "third_party/blink/renderer/core/css/post_style_update_scope.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/css/property_registry.h"
 #include "third_party/blink/renderer/core/css/resolver/font_builder.h"
@@ -2032,7 +2032,7 @@ void Document::UpdateStyleAndLayoutTree(LayoutUpgrade& upgrade) {
     owner->GetDocument().UpdateStyleAndLayoutTree(parent_upgrade);
   }
 
-  CSSAnimationUpdateScope animation_update_scope(*this);
+  PostStyleUpdateScope post_style_update_scope(*this);
 
   // This call has to happen even if UpdateStyleAndLayout below will be called.
   // This is because the subsequent call to ShouldUpgrade may depend on the
@@ -2143,21 +2143,6 @@ void Document::UpdateStyleAndLayoutTreeForThisDocument() {
   if (GetStyleResolver().WasViewportResized()) {
     GetStyleResolver().ClearResizedForViewportUnits();
     View()->MarkOrthogonalWritingModeRootsForLayout();
-  }
-
-  // TODO(crbug.com/1298921): If style is layout-dependent, we have to
-  // delay this until after layout.
-  if (focused_element_) {
-    bool focusable = false;
-    if (RuntimeEnabledFeatures::CSSContainerQueriesEnabled() &&
-        GetStyleEngine().StyleMayRequireLayout()) {
-      const ComputedStyle* style = focused_element_->GetComputedStyle();
-      focusable = style && style->IsFocusable();
-    } else {
-      focusable = focused_element_->IsFocusable();
-    }
-    if (!focusable)
-      ClearFocusedElementSoon();
   }
 
   GetLayoutView()->ClearHitTestCache();
@@ -2588,9 +2573,11 @@ void Document::AttachCompositorTimeline(
                                                                  GetFrame());
 }
 
-void Document::ClearFocusedElementSoon() {
-  if (!clear_focused_element_timer_.IsActive())
+void Document::ClearFocusedElementIfNeeded() {
+  if (!clear_focused_element_timer_.IsActive() && focused_element_ &&
+      !focused_element_->IsFocusable()) {
     clear_focused_element_timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
+  }
 }
 
 void Document::ClearFocusedElementTimerFired(TimerBase*) {

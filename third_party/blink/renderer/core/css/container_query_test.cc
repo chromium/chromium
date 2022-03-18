@@ -5,11 +5,11 @@
 #include "third_party/blink/renderer/core/css/container_query.h"
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/renderer/core/animation/css/css_animation_update_scope.h"
 #include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/css/css_container_rule.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
+#include "third_party/blink/renderer/core/css/post_style_update_scope.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -114,12 +114,12 @@ class ContainerQueryTest : public PageTestBase,
   }
 
   size_t GetOldStylesCount(String html) {
-    // Creating a CSSAnimationUpdateScope prevents old styles from being
-    // cleared until this function completes.
-    CSSAnimationUpdateScope animation_update_scope(GetDocument());
+    // Creating a PostStyleUpdateScope prevents old styles from being cleared
+    // until this function completes.
+    PostStyleUpdateScope post_style_update_scope(GetDocument());
     SetBodyInnerHTML(html);
-    DCHECK(CSSAnimationUpdateScope::CurrentData());
-    return CSSAnimationUpdateScope::CurrentData()->old_styles_.size();
+    DCHECK(PostStyleUpdateScope::CurrentAnimationData());
+    return PostStyleUpdateScope::CurrentAnimationData()->old_styles_.size();
   }
 };
 
@@ -575,7 +575,7 @@ TEST_F(ContainerQueryTest, OldStyleForTransitions) {
 
   // Simulate a style and layout pass with multiple rounds of style recalc.
   {
-    CSSAnimationUpdateScope animation_update_scope(GetDocument());
+    PostStyleUpdateScope post_style_update_scope(GetDocument());
 
     // Should transition between [10px, 20px]. (Intermediate round).
     GetDocument().GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
@@ -596,7 +596,7 @@ TEST_F(ContainerQueryTest, OldStyleForTransitions) {
     EXPECT_EQ(0u, GetAnimationsCount(target));
   }
 
-  // CSSAnimationUpdateScope going out of scope applies the update.
+  // PostStyleUpdateScope going out of scope applies the update.
   EXPECT_EQ(1u, GetAnimationsCount(target));
 
   // Verify that the newly-updated Animation produces the correct value.
@@ -648,7 +648,7 @@ TEST_F(ContainerQueryTest, TransitionAppearingInFinalPass) {
 
   // Simulate a style and layout pass with multiple rounds of style recalc.
   {
-    CSSAnimationUpdateScope animation_update_scope(GetDocument());
+    PostStyleUpdateScope post_style_update_scope(GetDocument());
 
     // No transition property present. (Intermediate round).
     GetDocument().GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
@@ -669,7 +669,7 @@ TEST_F(ContainerQueryTest, TransitionAppearingInFinalPass) {
     EXPECT_EQ(0u, GetAnimationsCount(target));
   }
 
-  // CSSAnimationUpdateScope going out of scope applies the update.
+  // PostStyleUpdateScope going out of scope applies the update.
   EXPECT_EQ(1u, GetAnimationsCount(target));
 
   // Verify that the newly-updated Animation produces the correct value.
@@ -721,7 +721,7 @@ TEST_F(ContainerQueryTest, TransitionTemporarilyAppearing) {
 
   // Simulate a style and layout pass with multiple rounds of style recalc.
   {
-    CSSAnimationUpdateScope animation_update_scope(GetDocument());
+    PostStyleUpdateScope post_style_update_scope(GetDocument());
 
     // No transition property present yet. (Intermediate round).
     GetDocument().GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
@@ -742,7 +742,7 @@ TEST_F(ContainerQueryTest, TransitionTemporarilyAppearing) {
     EXPECT_EQ(0u, GetAnimationsCount(target));
   }
 
-  // CSSAnimationUpdateScope going out of scope applies the update.
+  // PostStyleUpdateScope going out of scope applies the update.
   // We ultimately ended up with no transition, hence we should have no
   // Animations on the element.
   EXPECT_EQ(0u, GetAnimationsCount(target));
@@ -794,7 +794,7 @@ TEST_F(ContainerQueryTest, RedefiningAnimations) {
 
   // Simulate a style and layout pass with multiple rounds of style recalc.
   {
-    CSSAnimationUpdateScope animation_update_scope(GetDocument());
+    PostStyleUpdateScope post_style_update_scope(GetDocument());
 
     // Animation at 20%. (Intermediate round).
     GetDocument().GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
@@ -815,7 +815,7 @@ TEST_F(ContainerQueryTest, RedefiningAnimations) {
     EXPECT_EQ(0u, GetAnimationsCount(target));
   }
 
-  // CSSAnimationUpdateScope going out of scope applies the update.
+  // PostStyleUpdateScope going out of scope applies the update.
   EXPECT_EQ(1u, GetAnimationsCount(target));
 
   // Verify that the newly-updated Animation produces the correct value.
@@ -865,7 +865,7 @@ TEST_F(ContainerQueryTest, UnsetAnimation) {
 
   // Simulate a style and layout pass with multiple rounds of style recalc.
   {
-    CSSAnimationUpdateScope animation_update_scope(GetDocument());
+    PostStyleUpdateScope post_style_update_scope(GetDocument());
 
     // Animation should appear to be canceled. (Intermediate round).
     GetDocument().GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
@@ -880,7 +880,7 @@ TEST_F(ContainerQueryTest, UnsetAnimation) {
     EXPECT_EQ(1u, GetAnimationsCount(target));
   }
 
-  // CSSAnimationUpdateScope going out of scope applies the update.
+  // PostStyleUpdateScope going out of scope applies the update.
   // (Although since we didn't cancel, there is nothing to update).
   EXPECT_EQ(1u, GetAnimationsCount(target));
 
@@ -893,7 +893,7 @@ TEST_F(ContainerQueryTest, UnsetAnimation) {
 
   // Change width such that container query matches, and cancel the animation
   // for real this time. Note that since we no longer have a
-  // CSSAnimationUpdateScope above us, the CSSAnimationUpdateScope within
+  // PostStyleUpdateScope above us, the PostStyleUpdateScope within
   // UpdateAllLifecyclePhasesForTest will apply the update.
   container->SetInlineStyleProperty(CSSPropertyID::kWidth, "130px");
   UpdateAllLifecyclePhasesForTest();

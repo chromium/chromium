@@ -949,6 +949,7 @@ class CORE_EXPORT Document : public ContainerNode,
   bool SetFocusedElement(Element*, const FocusParams&);
   void ClearFocusedElement();
   Element* FocusedElement() const { return focused_element_.Get(); }
+  void ClearFocusedElementIfNeeded();
   UserActionElementSet& UserActionElements() { return user_action_elements_; }
   const UserActionElementSet& UserActionElements() const {
     return user_action_elements_;
@@ -1971,7 +1972,6 @@ class CORE_EXPORT Document : public ContainerNode,
 
   void DidAssociateFormControlsTimerFired(TimerBase*);
 
-  void ClearFocusedElementSoon();
   void ClearFocusedElementTimerFired(TimerBase*);
 
   bool HaveScriptBlockingStylesheetsLoaded() const;

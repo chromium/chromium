@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_CSS_CSS_ANIMATION_UPDATE_SCOPE_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_CSS_CSS_ANIMATION_UPDATE_SCOPE_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_POST_STYLE_UPDATE_SCOPE_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_POST_STYLE_UPDATE_SCOPE_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -18,24 +18,25 @@ class Document;
 class ComputedStyle;
 class CSSAnimationUpdate;
 
-// CSSAnimationUpdateScope applies pending animation on destruction, if it
-// is the *current* scope. A CSSAnimationUpdateScope becomes the current
-// scope upon construction if there isn't one already.
-class CORE_EXPORT CSSAnimationUpdateScope {
+// PostStyleUpdateScope applies pending animation, and initiates clearing of the
+// focused element, on destruction, if it is the *current* scope. A
+// PostStyleUpdateScope becomes the current scope upon construction if there
+// isn't one already.
+class CORE_EXPORT PostStyleUpdateScope {
   STACK_ALLOCATED();
 
  public:
-  explicit CSSAnimationUpdateScope(Document&);
-  ~CSSAnimationUpdateScope();
+  explicit PostStyleUpdateScope(Document&);
+  ~PostStyleUpdateScope();
 
-  class Data {
+  class AnimationData {
     STACK_ALLOCATED();
 
    public:
     // Set a pending CSSAnimationUpdate for a given Element.
     //
     // The update will be automatically applied when the owning
-    // CSSAnimationUpdateScope object goes out of scope.
+    // PostStyleUpdateScope object goes out of scope.
     void SetPendingUpdate(Element&, const CSSAnimationUpdate&);
 
     // When calculating transition updates, we need the old style of the element
@@ -49,8 +50,8 @@ class CORE_EXPORT CSSAnimationUpdateScope {
     // it as the old style. If an old style was already stored for this Element,
     // this function does nothing.
     //
-    // The old styles remain until the CSSAnimationUpdateScope/Data object goes
-    // out of scope.
+    // The old styles remain until the PostStyleUpdateScope object goes out of
+    // scope.
     void StoreOldStyleIfNeeded(Element&);
 
     // If an old-style was previously stored using StoreOldStyleIfNeeded,
@@ -59,7 +60,7 @@ class CORE_EXPORT CSSAnimationUpdateScope {
     const ComputedStyle* GetOldStyle(Element&) const;
 
    private:
-    friend class CSSAnimationUpdateScope;
+    friend class PostStyleUpdateScope;
     friend class ContainerQueryTest;
 
     HeapHashSet<Member<Element>> elements_with_pending_updates_;
@@ -67,19 +68,19 @@ class CORE_EXPORT CSSAnimationUpdateScope {
         old_styles_;
   };
 
-  static Data* CurrentData();
+  static AnimationData* CurrentAnimationData();
 
  private:
   Document& document_;
-  // Note that |data_| is only used if the CSSAnimationUpdateScope is the
+  // Note that |animation_data_| is only used if the PostStyleUpdateScope is the
   // current scope. Otherwise it will remain empty.
-  Data data_;
+  AnimationData animation_data_;
 
   void Apply();
 
-  static CSSAnimationUpdateScope* current_;
+  static PostStyleUpdateScope* current_;
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_CSS_CSS_ANIMATION_UPDATE_SCOPE_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_POST_STYLE_UPDATE_SCOPE_H_

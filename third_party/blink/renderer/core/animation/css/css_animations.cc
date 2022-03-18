@@ -40,7 +40,6 @@
 #include "third_party/blink/renderer/core/animation/compositor_animations.h"
 #include "third_party/blink/renderer/core/animation/css/compositor_keyframe_value_factory.h"
 #include "third_party/blink/renderer/core/animation/css/css_animation.h"
-#include "third_party/blink/renderer/core/animation/css/css_animation_update_scope.h"
 #include "third_party/blink/renderer/core/animation/css/css_keyframe_effect_model.h"
 #include "third_party/blink/renderer/core/animation/css/css_scroll_timeline.h"
 #include "third_party/blink/renderer/core/animation/css/css_transition.h"
@@ -62,6 +61,7 @@
 #include "third_party/blink/renderer/core/css/css_property_equality.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
+#include "third_party/blink/renderer/core/css/post_style_update_scope.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
@@ -1495,7 +1495,7 @@ void CSSAnimations::CalculateTransitionUpdate(CSSAnimationUpdate& update,
   const ComputedStyle* old_style = animating_element.GetComputedStyle();
 
   if (RuntimeEnabledFeatures::CSSDelayedAnimationUpdatesEnabled()) {
-    if (auto* data = CSSAnimationUpdateScope::CurrentData())
+    if (auto* data = PostStyleUpdateScope::CurrentAnimationData())
       old_style = data->GetOldStyle(animating_element);
   }
 

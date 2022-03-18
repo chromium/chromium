@@ -32,7 +32,6 @@
 
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/animation/css/compositor_keyframe_value_factory.h"
-#include "third_party/blink/renderer/core/animation/css/css_animation_update_scope.h"
 #include "third_party/blink/renderer/core/animation/css/css_animations.h"
 #include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
@@ -55,6 +54,7 @@
 #include "third_party/blink/renderer/core/css/font_face.h"
 #include "third_party/blink/renderer/core/css/page_rule_collector.h"
 #include "third_party/blink/renderer/core/css/part_names.h"
+#include "third_party/blink/renderer/core/css/post_style_update_scope.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
@@ -148,7 +148,7 @@ void SetAnimationUpdateIfNeeded(const StyleRecalcContext& style_recalc_context,
                                 StyleResolverState& state,
                                 Element& element) {
   if (RuntimeEnabledFeatures::CSSDelayedAnimationUpdatesEnabled()) {
-    if (auto* data = CSSAnimationUpdateScope::CurrentData()) {
+    if (auto* data = PostStyleUpdateScope::CurrentAnimationData()) {
       if (ShouldStoreOldStyle(style_recalc_context, state))
         data->StoreOldStyleIfNeeded(element);
     }
@@ -161,7 +161,7 @@ void SetAnimationUpdateIfNeeded(const StyleRecalcContext& style_recalc_context,
     return;
 
   if (RuntimeEnabledFeatures::CSSDelayedAnimationUpdatesEnabled()) {
-    if (auto* data = CSSAnimationUpdateScope::CurrentData())
+    if (auto* data = PostStyleUpdateScope::CurrentAnimationData())
       data->SetPendingUpdate(element, state.AnimationUpdate());
   } else {
     element.EnsureElementAnimations().CssAnimations().SetPendingUpdate(

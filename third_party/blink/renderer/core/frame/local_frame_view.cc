@@ -51,9 +51,9 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_into_view_options.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
-#include "third_party/blink/renderer/core/animation/css/css_animation_update_scope.h"
 #include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/css/font_face_set_document.h"
+#include "third_party/blink/renderer/core/css/post_style_update_scope.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/document_transition/document_transition_supplement.h"
@@ -3248,7 +3248,7 @@ void LocalFrameView::UpdateStyleAndLayout() {
 }
 
 bool LocalFrameView::UpdateStyleAndLayoutInternal() {
-  CSSAnimationUpdateScope animation_update_scope(*frame_->GetDocument());
+  PostStyleUpdateScope post_style_update_scope(*frame_->GetDocument());
 
   {
     frame_->GetDocument()->UpdateStyleAndLayoutTreeForThisDocument();

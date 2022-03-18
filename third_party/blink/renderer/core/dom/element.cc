@@ -2886,7 +2886,7 @@ scoped_refptr<ComputedStyle> Element::StyleForLayoutObject(
   }
 
   if (ElementAnimations* element_animations = GetElementAnimations()) {
-    // See also CSSAnimationUpdateScope.
+    // See also PostStyleUpdateScope.
     if (!RuntimeEnabledFeatures::CSSDelayedAnimationUpdatesEnabled())
       element_animations->CssAnimations().MaybeApplyPendingUpdate(this);
   }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/animation/css/css_animation_update_scope.h"
+#include "third_party/blink/renderer/core/css/post_style_update_scope.h"
 
 #include "third_party/blink/renderer/core/animation/css/css_animations.h"
 #include "third_party/blink/renderer/core/animation/document_animations.h"
@@ -15,34 +15,36 @@
 
 namespace blink {
 
-CSSAnimationUpdateScope* CSSAnimationUpdateScope::current_ = nullptr;
+PostStyleUpdateScope* PostStyleUpdateScope::current_ = nullptr;
 
-CSSAnimationUpdateScope::Data* CSSAnimationUpdateScope::CurrentData() {
+PostStyleUpdateScope::AnimationData*
+PostStyleUpdateScope::CurrentAnimationData() {
   if (!RuntimeEnabledFeatures::CSSDelayedAnimationUpdatesEnabled())
     return nullptr;
-  return current_ ? &current_->data_ : nullptr;
+  return current_ ? &current_->animation_data_ : nullptr;
 }
 
-CSSAnimationUpdateScope::CSSAnimationUpdateScope(Document& document)
+PostStyleUpdateScope::PostStyleUpdateScope(Document& document)
     : document_(document) {
   if (!current_)
     current_ = this;
 }
 
-CSSAnimationUpdateScope::~CSSAnimationUpdateScope() {
+PostStyleUpdateScope::~PostStyleUpdateScope() {
   if (current_ == this) {
     if (RuntimeEnabledFeatures::CSSDelayedAnimationUpdatesEnabled())
       Apply();
+    document_.ClearFocusedElementIfNeeded();
     current_ = nullptr;
   }
 }
 
-void CSSAnimationUpdateScope::Apply() {
+void PostStyleUpdateScope::Apply() {
   StyleEngine::InApplyAnimationUpdateScope in_apply_animation_update_scope(
       document_.GetStyleEngine());
 
   HeapHashSet<Member<Element>> pending;
-  std::swap(pending, data_.elements_with_pending_updates_);
+  std::swap(pending, animation_data_.elements_with_pending_updates_);
 
   for (auto& element : pending) {
     ElementAnimations* element_animations = element->GetElementAnimations();
@@ -51,23 +53,24 @@ void CSSAnimationUpdateScope::Apply() {
     element_animations->CssAnimations().MaybeApplyPendingUpdate(element.Get());
   }
 
-  DCHECK(data_.elements_with_pending_updates_.IsEmpty())
+  DCHECK(animation_data_.elements_with_pending_updates_.IsEmpty())
       << "MaybeApplyPendingUpdate must not set further pending updates";
 }
 
-void CSSAnimationUpdateScope::Data::SetPendingUpdate(
+void PostStyleUpdateScope::AnimationData::SetPendingUpdate(
     Element& element,
     const CSSAnimationUpdate& update) {
   element.EnsureElementAnimations().CssAnimations().SetPendingUpdate(update);
   elements_with_pending_updates_.insert(&element);
 }
 
-void CSSAnimationUpdateScope::Data::StoreOldStyleIfNeeded(Element& element) {
+void PostStyleUpdateScope::AnimationData::StoreOldStyleIfNeeded(
+    Element& element) {
   old_styles_.insert(
       &element, scoped_refptr<const ComputedStyle>(element.GetComputedStyle()));
 }
 
-const ComputedStyle* CSSAnimationUpdateScope::Data::GetOldStyle(
+const ComputedStyle* PostStyleUpdateScope::AnimationData::GetOldStyle(
     Element& element) const {
   auto iter = old_styles_.find(&element);
   if (iter == old_styles_.end())

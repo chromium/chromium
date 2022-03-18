@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Verify that onblur is called on hidden input assert_unreached: Event listener for 'blur' not called Reached unreachable code
-Harness: the test ran to completion.
-

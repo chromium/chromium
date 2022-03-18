@@ -103,7 +103,7 @@ class CORE_EXPORT DocumentAnimations final
   // ApplyPendingElementUpdates.
   //
   // It's invalid to call this function if there is no current
-  // CSSAnimationUpdateScope.
+  // PostStyleUpdateScope.
   void AddElementWithPendingAnimationUpdate(Element&);
 
   // Apply pending updates for any elements previously added during AddElement-
