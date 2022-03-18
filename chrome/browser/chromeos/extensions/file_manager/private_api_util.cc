@@ -504,6 +504,9 @@ void VolumeToVolumeMetadata(
       volume_metadata->volume_type =
           file_manager_private::VOLUME_TYPE_SYSTEM_INTERNAL;
       break;
+    case VOLUME_TYPE_GUEST_OS:
+      volume_metadata->volume_type = file_manager_private::VOLUME_TYPE_GUEST_OS;
+      break;
     case NUM_VOLUME_TYPE:
       NOTREACHED();
       break;

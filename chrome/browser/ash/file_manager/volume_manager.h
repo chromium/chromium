@@ -67,6 +67,7 @@ enum VolumeType {
   VOLUME_TYPE_SMB,
   VOLUME_TYPE_SYSTEM_INTERNAL,  // Internal volume which is never exposed to
                                 // users.
+  VOLUME_TYPE_GUEST_OS,         // Guest OS volumes (Crostini, Bruschetta, etc)
   // The enum values must be kept in sync with FileManagerVolumeType in
   // tools/metrics/histograms/enums.xml. Since enums for histograms are
   // append-only (for keeping the number consistent across versions), new values
@@ -117,6 +118,10 @@ class Volume : public base::SupportsWeakPtr<Volume> {
       const std::string& root_document_id);
   static std::unique_ptr<Volume> CreateForSshfsCrostini(
       const base::FilePath& crostini_path,
+      const base::FilePath& remote_mount_path);
+  static std::unique_ptr<Volume> CreateForSftpGuestOs(
+      const std::string display_name,
+      const base::FilePath& sftp_mount_path,
       const base::FilePath& remote_mount_path);
   static std::unique_ptr<Volume> CreateForAndroidFiles(
       const base::FilePath& mount_path);
@@ -300,8 +305,11 @@ class VolumeManager : public KeyedService,
       const std::string&,
       device::mojom::MtpManager::GetStorageInfoCallback)>;
 
-  // Callback for |RemoveSshfsCrostiniVolume|.
+  // Callback for `RemoveSshfsCrostiniVolume`.
   using RemoveSshfsCrostiniVolumeCallback = base::OnceCallback<void(bool)>;
+
+  // Callback for `RemoveSftpGuestOsVolume`.
+  using RemoveSftpGuestOsVolumeCallback = base::OnceCallback<void(bool)>;
 
   VolumeManager(
       Profile* profile,
@@ -344,15 +352,28 @@ class VolumeManager : public KeyedService,
   // path, is located. Returns nullptr if no volume is found.
   base::WeakPtr<Volume> FindVolumeFromPath(const base::FilePath& path);
 
-  // Add sshfs crostini volume mounted at specified path.
+  // Add sshfs crostini volume mounted at `sshfs_mount_path` path. Will
+  // automatically remove the volume on container shutdown.
   void AddSshfsCrostiniVolume(const base::FilePath& sshfs_mount_path,
                               const base::FilePath& remote_mount_path);
 
-  // Removes specified sshfs crostini mount. Runs |callback| with true if the
+  // Add sftp Guest OS volume mounted at `sftp_mount_path`. Note: volume must be
+  // removed on unmount (including Guest OS shutdown).
+  void AddSftpGuestOsVolume(const std::string display_name,
+                            const base::FilePath& sftp_mount_path,
+                            const base::FilePath& remote_mount_path);
+
+  // Removes specified sshfs crostini mount. Runs `callback` with true if the
   // mount was removed successfully or wasn't mounted to begin with. Runs
-  // |callback| with false in all other cases.
+  // `callback` with false in all other cases.
   void RemoveSshfsCrostiniVolume(const base::FilePath& sshfs_mount_path,
                                  RemoveSshfsCrostiniVolumeCallback callback);
+
+  // Removes specified sftp Guest OS mount. Runs `callback` with true if the
+  // mount was removed successfully or wasn't mounted to begin with. Runs
+  // `callback` with false in all other cases.
+  void RemoveSftpGuestOsVolume(const base::FilePath& sftp_mount_path,
+                               RemoveSftpGuestOsVolumeCallback callback);
 
   // Removes Downloads volume used for testing.
   void RemoveDownloadsDirectoryForTesting();
@@ -494,6 +515,10 @@ class VolumeManager : public KeyedService,
       const base::FilePath& sshfs_mount_path,
       RemoveSshfsCrostiniVolumeCallback callback,
       chromeos::MountError error_code);
+
+  void OnSftpGuestOsUnmountCallback(const base::FilePath& sftp_mount_path,
+                                    RemoveSftpGuestOsVolumeCallback callback,
+                                    chromeos::MountError error_code);
 
   Profile* profile_;
   drive::DriveIntegrationService* drive_integration_service_;  // Not owned.

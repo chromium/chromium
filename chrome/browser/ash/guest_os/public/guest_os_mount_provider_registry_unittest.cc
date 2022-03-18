@@ -16,6 +16,10 @@ using Id = GuestOsMountProviderRegistry::Id;
 
 class MockProvider : public GuestOsMountProvider {
   std::string DisplayName() override { return "Ptery"; }
+  Profile* profile() override { return nullptr; }
+  crostini::ContainerId ContainerId() override {
+    return crostini::ContainerId::GetDefault();
+  }
 };
 
 class MockObserver : public GuestOsMountProviderRegistry::Observer {

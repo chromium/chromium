@@ -30,6 +30,7 @@
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_mount_provider.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/smb_client/smb_service.h"
 #include "chrome/browser/ash/smb_client/smb_service_factory.h"
@@ -343,8 +344,21 @@ std::string GetCrostiniMountPointName(Profile* profile) {
       "_");
 }
 
+std::string GetGuestOsMountPointName(Profile* profile,
+                                     crostini::ContainerId id) {
+  return base::JoinString(
+      {"guestos", ash::ProfileHelper::GetUserIdHashFromProfile(profile),
+       net::EscapeAllExceptUnreserved(id.vm_name),
+       net::EscapeAllExceptUnreserved(id.container_name)},
+      "+");
+}
+
 base::FilePath GetCrostiniMountDirectory(Profile* profile) {
   return base::FilePath("/media/fuse/" + GetCrostiniMountPointName(profile));
+}
+
+base::FilePath GetGuestOsMountDirectory(std::string mountPointName) {
+  return base::FilePath("/media/fuse/" + mountPointName);
 }
 
 std::vector<std::string> GetCrostiniMountOptions(

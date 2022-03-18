@@ -1664,6 +1664,10 @@ class MockGuestOsMountProvider : public guest_os::GuestOsMountProvider {
   explicit MockGuestOsMountProvider(std::string name) : name_(name) {}
 
   std::string DisplayName() override { return name_; }
+  Profile* profile() override { return nullptr; }
+  crostini::ContainerId ContainerId() override {
+    return crostini::ContainerId::GetDefault();
+  }
 
  private:
   std::string name_;
