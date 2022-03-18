@@ -20,17 +20,25 @@ struct MaxYPreferenceKey: PreferenceKey {
 
 /// View which acts like a `List` but which also clips whatever empty space
 /// is available below the actual content to replace it with an arbitrary view.
-struct SelfSizingList<Content: View, EmptySpace: View>: View {
+struct SelfSizingList<Content: View, EmptySpace: View, ListModifier: ViewModifier>: View {
   let bottomMargin: CGFloat
+  var listModifier: ListModifier
   var content: () -> Content
   var emptySpace: () -> EmptySpace
 
+  /// - Parameters:
+  ///   - bottomMargin: The bottom margin below the end of the list.
+  ///   - listModifier: A `ViewModifier` to apply to the internal list.
+  ///   - content: The content of the list.
+  ///   - emptySpace: The view used to replace the area below the list.
   init(
     bottomMargin: CGFloat = 0,
+    listModifier: ListModifier,
     @ViewBuilder content: @escaping () -> Content,
     @ViewBuilder emptySpace: @escaping () -> EmptySpace
   ) {
     self.bottomMargin = bottomMargin
+    self.listModifier = listModifier
     self.content = content
     self.emptySpace = emptySpace
   }
@@ -47,6 +55,7 @@ struct SelfSizingList<Content: View, EmptySpace: View>: View {
             content()
               .anchorPreference(key: MaxYPreferenceKey.self, value: .bounds) { geometry[$0].maxY }
           }
+          .modifier(listModifier)
           .onPreferenceChange(MaxYPreferenceKey.self) { newMaxY in
             let newContentHeightEstimate = newMaxY.map {
               min($0 + bottomMargin, geometry.size.height)

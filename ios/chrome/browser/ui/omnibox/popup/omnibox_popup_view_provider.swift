@@ -7,12 +7,14 @@ import UIKit
 
 /// A provider to provide the SwiftUI PopupView to Objective-C. This is
 /// necessary because Objective-C can't see SwiftUI types.
-///
-/// - Parameters:
-///   - model: The popup model to be used by the popup view.
-///   - popupShouldSelfSize: Whether the popup should resize itself to fit its content.
-/// - Returns: The hosting controller which embeds the popup view.
 @objcMembers public class OmniboxPopupViewProvider: NSObject {
+
+  /// Returns a hosting controller embedding the popup view using the given model and settings.
+  ///
+  /// - Parameters:
+  ///   - model: The popup model to be used by the popup view.
+  ///   - popupShouldSelfSize: Whether the popup should resize itself to fit its content.
+  /// - Returns: The hosting controller which embeds the popup view.
   public static func makeViewController(withModel model: PopupModel, popupShouldSelfSize: Bool)
     -> UIViewController & ContentProviding
   {

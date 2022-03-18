@@ -120,13 +120,13 @@ struct PopupMatchRowView: View {
     ZStack {
       if self.isPressed || self.isHighlighted { Color.cr_tableRowViewHighlight }
 
-      Button(action: selectionHandler) { Rectangle().fill(.clear).contentShape(Rectangle()) }
+      Button(action: selectionHandler) { Color.clear.contentShape(Rectangle()) }
         .buttonStyle(PressedPreferenceKeyButtonStyle())
         .onPreferenceChange(PressedPreferenceKey.self) { isPressed in
           self.isPressed = isPressed
         }
 
-      /// The content is in front of the button, for proper hit testing.
+      // The content is in front of the button, for proper hit testing.
       HStack(alignment: .center, spacing: 0) {
         HStack(alignment: .center, spacing: 0) {
           Spacer()

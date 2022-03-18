@@ -4,6 +4,34 @@
 
 import SwiftUI
 
+/// Utility which provides a way to treat the `simultaneousGesture` view modifier as a value.
+struct SimultaneousGestureModifier<T: Gesture>: ViewModifier {
+  let gesture: T
+  let mask: GestureMask
+
+  init(_ gesture: T, including mask: GestureMask = .all) {
+    self.gesture = gesture
+    self.mask = mask
+  }
+
+  func body(content: Content) -> some View {
+    content.simultaneousGesture(gesture, including: mask)
+  }
+}
+
+/// A view modifier which embeds the content in a `ScrollViewReader` and calls `action`
+/// when the provided `value` changes. It is similar to the `onChange` view modifier, but provides
+/// a `ScrollViewProxy` object in addition to the new state of `value` when calling `action`.
+struct ScrollOnChangeModifier<V: Equatable>: ViewModifier {
+  @Binding var value: V
+  let action: (V, ScrollViewProxy) -> Void
+  func body(content: Content) -> some View {
+    ScrollViewReader { scrollProxy in
+      content.onChange(of: value) { newState in action(newState, scrollProxy) }
+    }
+  }
+}
+
 struct PopupView: View {
   enum Dimensions {
     static let matchListRowInsets = EdgeInsets(.zero)
@@ -23,7 +51,7 @@ struct PopupView: View {
     self.appearanceContainerType = appearanceContainerType
   }
 
-  var content: some View {
+  var listContent: some View {
     ForEach(Array(zip(model.sections.indices, model.sections)), id: \.0) {
       sectionIndex, section in
 
@@ -34,7 +62,6 @@ struct PopupView: View {
             match: match,
             isHighlighted: IndexPath(row: matchIndex, section: sectionIndex)
               == self.model.highlightedMatchIndexPath,
-
             selectionHandler: {
               model.delegate?.autocompleteResultConsumer(
                 model, didSelectRow: UInt(matchIndex), inSection: UInt(sectionIndex))
@@ -69,18 +96,24 @@ struct PopupView: View {
   }
 
   var body: some View {
+    let listModifier = SimultaneousGestureModifier(DragGesture().onChanged { onDrag($0) })
+      .concat(ScrollOnChangeModifier(value: $model.sections, action: onNewMatches))
+
     if shouldSelfSize {
-      SelfSizingList(bottomMargin: Dimensions.selfSizingListBottomMargin) {
-        content
+      SelfSizingList(
+        bottomMargin: Dimensions.selfSizingListBottomMargin,
+        listModifier: listModifier
+      ) {
+        listContent
       } emptySpace: {
         PopupEmptySpaceView()
       }
       .onAppear(perform: onAppear)
     } else {
-      List {
-        content
-      }
-      .onAppear(perform: onAppear)
+      List { listContent }
+        .modifier(listModifier)
+        .onAppear(perform: onAppear)
+        .ignoresSafeArea(.keyboard)
     }
   }
 
@@ -90,8 +123,20 @@ struct PopupView: View {
         appearanceContainerType
       ])
 
-      listAppearance.bounces = false
+      if shouldSelfSize {
+        listAppearance.bounces = false
+      }
     }
+  }
+
+  func onDrag(_ dragValue: DragGesture.Value) {
+    model.highlightedMatchIndexPath = nil
+    model.delegate?.autocompleteResultConsumerDidScroll(model)
+  }
+
+  func onNewMatches(matches: [PopupMatchSection], scrollProxy: ScrollViewProxy) {
+    // Scroll to the very top of the list.
+    scrollProxy.scrollTo(0, anchor: UnitPoint(x: 0, y: -.infinity))
   }
 }
 
