@@ -500,7 +500,7 @@ void TabLifecycleUnitSource::TabLifecycleUnit::FinishDiscard(
   bool fast_shutdown_success =
       GetRenderProcessHost()->FastShutdownIfPossible(1u, false);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!fast_shutdown_success &&
       discard_reason == LifecycleUnitDiscardReason::URGENT) {
     content::RenderFrameHost* main_frame = old_contents->GetMainFrame();
