@@ -569,7 +569,11 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
         passEncoder.endPass();
         device.queue.submit([commandEncoder.finish()]);
 
-        window.requestAnimationFrame(oneFrame);
+        // TODO(crbug.com/1289482): Workaround for backpressure mechanism
+        // not working properly.
+        device.queue.onSubmittedWorkDone().then(() => {
+          window.requestAnimationFrame(oneFrame);
+        });
       });
   };
 
@@ -634,7 +638,11 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
           functionDuration, 'ms,  longer than 33.3 ms (1sec/30fps)');
     }
 
-    window.requestAnimationFrame(oneFrameWithImportTextureApi);
+    // TODO(crbug.com/1289482): Workaround for backpressure mechanism
+    // not working properly.
+    device.queue.onSubmittedWorkDone().then(() => {
+      window.requestAnimationFrame(oneFrameWithImportTextureApi);
+    });
   };
 
   if (useImportTextureApi) {
