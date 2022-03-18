@@ -28,14 +28,14 @@ class FirstPartySetParser {
   using SingleSet =
       std::pair<net::SchemefulSite, base::flat_set<net::SchemefulSite>>;
 
-  enum ParseError {
+  enum class ParseError {
     kInvalidType,
     kInvalidOrigin,
     kSingletonSet,
     kNonDisjointSets
   };
 
-  enum PolicySetType { kReplacement, kAddition };
+  enum class PolicySetType { kReplacement, kAddition };
 
   struct PolicyParsingError {
     bool operator==(const PolicyParsingError& other) const;
