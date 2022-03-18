@@ -579,8 +579,6 @@ TEST_F(DlpContentManagerAshCheckRestrictionTest, PrintingWarnedProceeded) {
   // The warning should be shown only once.
   EXPECT_CALL(*mock_dlp_warn_notifier, ShowDlpWarningDialog(_, _)).Times(1);
 
-  SetReportQueueForReportingManager();
-  SetupDlpRulesManager();
   EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern(_, _, _))
       .Times(3)
       .WillRepeatedly(::testing::Return(kSrcPattern));
@@ -668,8 +666,6 @@ TEST_F(DlpContentManagerAshCheckRestrictionTest, PrintingWarnedCancelled) {
   // If the user cancels, the warning can be shown again for the same contents.
   EXPECT_CALL(*mock_dlp_warn_notifier, ShowDlpWarningDialog(_, _)).Times(2);
 
-  SetReportQueueForReportingManager();
-  SetupDlpRulesManager();
   EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern(_, _, _))
       .Times(2)
       .WillRepeatedly(::testing::Return(kSrcPattern));
@@ -758,10 +754,10 @@ TEST_F(DlpContentManagerAshCheckRestrictionTest, CaptureModeInitRestricted) {
   GetManager()->CheckCaptureModeInitRestriction(
       base::BindOnce(on_dlp_restriction_checked_callback, &is_action_allowed_));
   VerifyAndResetActionAllowed(true /*expected*/);
-  histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kCaptureModeInitBlockedUMA, true, 0);
-  histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kCaptureModeInitBlockedUMA, false, 1);
+  VerifyHistogramCounts(/*blocked_count=*/0, /*warned_count=*/0,
+                        /*total_count=*/1,
+                        /*blocked_suffix=*/dlp::kCaptureModeInitBlockedUMA,
+                        /*warned_suffix=*/dlp::kCaptureModeInitWarnedUMA);
 
   // Block restriction is enforced for web_contents: block.
   helper_.ChangeConfidentiality(web_contents.get(), kScreenshotRestricted);
@@ -771,11 +767,10 @@ TEST_F(DlpContentManagerAshCheckRestrictionTest, CaptureModeInitRestricted) {
   GetManager()->CheckCaptureModeInitRestriction(
       base::BindOnce(on_dlp_restriction_checked_callback, &is_action_allowed_));
   VerifyAndResetActionAllowed(false /*expected*/);
-  histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kCaptureModeInitBlockedUMA, true, 1);
-  histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kCaptureModeInitBlockedUMA, false, 1);
-
+  VerifyHistogramCounts(/*blocked_count=*/1, /*warned_count=*/0,
+                        /*total_count=*/2,
+                        /*blocked_suffix=*/dlp::kCaptureModeInitBlockedUMA,
+                        /*warned_suffix=*/dlp::kCaptureModeInitWarnedUMA);
   EXPECT_EQ(events_.size(), 1u);
   EXPECT_THAT(events_[0],
               IsDlpPolicyEvent(CreateDlpPolicyEvent(
@@ -789,22 +784,20 @@ TEST_F(DlpContentManagerAshCheckRestrictionTest, CaptureModeInitRestricted) {
   GetManager()->CheckCaptureModeInitRestriction(
       base::BindOnce(on_dlp_restriction_checked_callback, &is_action_allowed_));
   VerifyAndResetActionAllowed(true /*expected*/);
-  histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kCaptureModeInitBlockedUMA, true, 1);
-  histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kCaptureModeInitBlockedUMA, false, 2);
+  VerifyHistogramCounts(/*blocked_count=*/1, /*warned_count=*/0,
+                        /*total_count=*/3,
+                        /*blocked_suffix=*/dlp::kCaptureModeInitBlockedUMA,
+                        /*warned_suffix=*/dlp::kCaptureModeInitWarnedUMA);
 }
 
 TEST_F(DlpContentManagerAshCheckRestrictionTest,
        CaptureModeInitWarnedContinued) {
   // Set the notifier to "Proceed" on the warning.
   MockDlpWarnNotifier* mock_dlp_warn_notifier =
-      CreateAndSetDlpWarnNotifier(true /*should_proceed*/);
+      CreateAndSetDlpWarnNotifier(/*should_proceed=*/true);
   // The warning should be shown only once.
   EXPECT_CALL(*mock_dlp_warn_notifier, ShowDlpWarningDialog(_, _)).Times(1);
 
-  SetReportQueueForReportingManager();
-  SetupDlpRulesManager();
   EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern)
       .Times(1)
       .WillRepeatedly(::testing::Return(kSrcPattern));
@@ -816,7 +809,11 @@ TEST_F(DlpContentManagerAshCheckRestrictionTest,
   EXPECT_FALSE(helper_.HasAnyContentCached());
   GetManager()->CheckCaptureModeInitRestriction(
       base::BindOnce(on_dlp_restriction_checked_callback, &is_action_allowed_));
-  VerifyAndResetActionAllowed(true /*expected*/);
+  VerifyHistogramCounts(/*blocked_count=*/0, /*warned_count=*/0,
+                        /*total_count=*/1,
+                        /*blocked_suffix=*/dlp::kCaptureModeInitBlockedUMA,
+                        /*warned_suffix=*/dlp::kCaptureModeInitWarnedUMA);
+  VerifyAndResetActionAllowed(/*expected=*/true);
   EXPECT_FALSE(helper_.HasAnyContentCached());
   EXPECT_TRUE(events_.empty());
 
@@ -826,7 +823,14 @@ TEST_F(DlpContentManagerAshCheckRestrictionTest,
             kScreenshotWarned);
   GetManager()->CheckCaptureModeInitRestriction(
       base::BindOnce(on_dlp_restriction_checked_callback, &is_action_allowed_));
-  VerifyAndResetActionAllowed(true /*expected*/);
+  VerifyAndResetActionAllowed(/*expected=*/true);
+  VerifyHistogramCounts(/*blocked_count=*/0, /*warned_count=*/1,
+                        /*total_count=*/2,
+                        /*blocked_suffix=*/dlp::kCaptureModeInitBlockedUMA,
+                        /*warned_suffix=*/dlp::kCaptureModeInitWarnedUMA);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenshotWarnProceededUMA, true, 1);
+
   EXPECT_TRUE(helper_.HasContentCachedForRestriction(
       web_contents.get(), DlpRulesManager::Restriction::kScreenshot));
   EXPECT_EQ(events_.size(), 1u);
@@ -838,7 +842,16 @@ TEST_F(DlpContentManagerAshCheckRestrictionTest,
   // Check again: allow based on cached user's response - no dialog is shown.
   GetManager()->CheckCaptureModeInitRestriction(
       base::BindOnce(on_dlp_restriction_checked_callback, &is_action_allowed_));
-  VerifyAndResetActionAllowed(true /*expected*/);
+  VerifyHistogramCounts(/*blocked_count=*/0, /*warned_count=*/2,
+                        /*total_count=*/3,
+                        /*blocked_suffix=*/dlp::kCaptureModeInitBlockedUMA,
+                        /*warned_suffix=*/dlp::kCaptureModeInitWarnedUMA);
+  VerifyAndResetActionAllowed(/*expected=*/true);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenshotWarnProceededUMA, true, 1);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenshotWarnSilentProceededUMA, true,
+      1);
   EXPECT_TRUE(helper_.HasContentCachedForRestriction(
       web_contents.get(), DlpRulesManager::Restriction::kScreenshot));
   EXPECT_EQ(events_.size(), 1u);
@@ -849,7 +862,11 @@ TEST_F(DlpContentManagerAshCheckRestrictionTest,
             kEmptyRestrictionSet);
   GetManager()->CheckCaptureModeInitRestriction(
       base::BindOnce(on_dlp_restriction_checked_callback, &is_action_allowed_));
-  VerifyAndResetActionAllowed(true /*expected*/);
+  VerifyAndResetActionAllowed(/*expected=*/true);
+  VerifyHistogramCounts(/*blocked_count=*/0, /*warned_count=*/2,
+                        /*total_count=*/4,
+                        /*blocked_suffix=*/dlp::kCaptureModeInitBlockedUMA,
+                        /*warned_suffix=*/dlp::kCaptureModeInitWarnedUMA);
   EXPECT_EQ(events_.size(), 1u);
 }
 
@@ -857,12 +874,10 @@ TEST_F(DlpContentManagerAshCheckRestrictionTest,
        CaptureModeInitWarnedCancelled) {
   // Set the notifier to "Proceed" on the warning.
   MockDlpWarnNotifier* mock_dlp_warn_notifier =
-      CreateAndSetDlpWarnNotifier(false /*should_proceed*/);
+      CreateAndSetDlpWarnNotifier(/*should_proceed=*/false);
   // If the user cancels, the warning can be shown again for the same contents.
   EXPECT_CALL(*mock_dlp_warn_notifier, ShowDlpWarningDialog(_, _)).Times(2);
 
-  SetReportQueueForReportingManager();
-  SetupDlpRulesManager();
   EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern)
       .Times(2)
       .WillRepeatedly(::testing::Return(kSrcPattern));
@@ -874,7 +889,11 @@ TEST_F(DlpContentManagerAshCheckRestrictionTest,
   EXPECT_FALSE(helper_.HasAnyContentCached());
   GetManager()->CheckCaptureModeInitRestriction(
       base::BindOnce(on_dlp_restriction_checked_callback, &is_action_allowed_));
-  VerifyAndResetActionAllowed(true /*expected*/);
+  VerifyHistogramCounts(/*blocked_count=*/0, /*warned_count=*/0,
+                        /*total_count=*/1,
+                        /*blocked_suffix=*/dlp::kCaptureModeInitBlockedUMA,
+                        /*warned_suffix=*/dlp::kCaptureModeInitWarnedUMA);
+  VerifyAndResetActionAllowed(/*expected=*/true);
   EXPECT_FALSE(helper_.HasAnyContentCached());
   EXPECT_TRUE(events_.empty());
 
@@ -884,7 +903,13 @@ TEST_F(DlpContentManagerAshCheckRestrictionTest,
             kScreenshotWarned);
   GetManager()->CheckCaptureModeInitRestriction(
       base::BindOnce(on_dlp_restriction_checked_callback, &is_action_allowed_));
-  VerifyAndResetActionAllowed(false /*expected*/);
+  VerifyHistogramCounts(/*blocked_count=*/0, /*warned_count=*/1,
+                        /*total_count=*/2,
+                        /*blocked_suffix=*/dlp::kCaptureModeInitBlockedUMA,
+                        /*warned_suffix=*/dlp::kCaptureModeInitWarnedUMA);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenshotWarnProceededUMA, false, 1);
+  VerifyAndResetActionAllowed(/*expected=*/false);
   EXPECT_FALSE(helper_.HasAnyContentCached());
   EXPECT_EQ(events_.size(), 1u);
   EXPECT_THAT(events_[0],
@@ -895,7 +920,13 @@ TEST_F(DlpContentManagerAshCheckRestrictionTest,
   // Check again: since the user previously cancelled, dialog is shown again.
   GetManager()->CheckCaptureModeInitRestriction(
       base::BindOnce(on_dlp_restriction_checked_callback, &is_action_allowed_));
-  VerifyAndResetActionAllowed(false /*expected*/);
+  VerifyHistogramCounts(/*blocked_count=*/0, /*warned_count=*/2,
+                        /*total_count=*/3,
+                        /*blocked_suffix=*/dlp::kCaptureModeInitBlockedUMA,
+                        /*warned_suffix=*/dlp::kCaptureModeInitWarnedUMA);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenshotWarnProceededUMA, false, 2);
+  VerifyAndResetActionAllowed(/*expected=*/false);
   EXPECT_FALSE(helper_.HasAnyContentCached());
   EXPECT_EQ(events_.size(), 2u);
   EXPECT_THAT(events_[1],
@@ -909,8 +940,11 @@ TEST_F(DlpContentManagerAshCheckRestrictionTest,
             kEmptyRestrictionSet);
   GetManager()->CheckCaptureModeInitRestriction(
       base::BindOnce(on_dlp_restriction_checked_callback, &is_action_allowed_));
-
-  VerifyAndResetActionAllowed(true /*expected*/);
+  VerifyHistogramCounts(/*blocked_count=*/0, /*warned_count=*/2,
+                        /*total_count=*/4,
+                        /*blocked_suffix=*/dlp::kCaptureModeInitBlockedUMA,
+                        /*warned_suffix=*/dlp::kCaptureModeInitWarnedUMA);
+  VerifyAndResetActionAllowed(/*expected=*/true);
   EXPECT_EQ(events_.size(), 2u);
 }
 
@@ -930,11 +964,11 @@ TEST_F(DlpContentManagerAshCheckRestrictionTest, ScreenshotRestricted) {
   GetManager()->CheckScreenshotRestriction(
       area,
       base::BindOnce(on_dlp_restriction_checked_callback, &is_action_allowed_));
-  VerifyAndResetActionAllowed(true /*expected*/);
-  histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, true, 0);
-  histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, false, 1);
+  VerifyAndResetActionAllowed(/*expected=*/true);
+  VerifyHistogramCounts(/*blocked_count=*/0, /*warned_count=*/0,
+                        /*total_count=*/1,
+                        /*blocked_suffix=*/dlp::kScreenshotBlockedUMA,
+                        /*warned_suffix=*/dlp::kScreenshotWarnedUMA);
 
   // Block restriction is enforced for web_contents: block.
   helper_.ChangeConfidentiality(web_contents.get(), kScreenshotRestricted);
@@ -944,11 +978,11 @@ TEST_F(DlpContentManagerAshCheckRestrictionTest, ScreenshotRestricted) {
   GetManager()->CheckScreenshotRestriction(
       area,
       base::BindOnce(on_dlp_restriction_checked_callback, &is_action_allowed_));
-  VerifyAndResetActionAllowed(false /*expected*/);
-  histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, true, 1);
-  histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, false, 1);
+  VerifyAndResetActionAllowed(/*expected=*/false);
+  VerifyHistogramCounts(/*blocked_count=*/1, /*warned_count=*/0,
+                        /*total_count=*/2,
+                        /*blocked_suffix=*/dlp::kScreenshotBlockedUMA,
+                        /*warned_suffix=*/dlp::kScreenshotWarnedUMA);
 
   EXPECT_EQ(events_.size(), 1u);
   EXPECT_THAT(events_[0],
@@ -963,22 +997,20 @@ TEST_F(DlpContentManagerAshCheckRestrictionTest, ScreenshotRestricted) {
   GetManager()->CheckScreenshotRestriction(
       area,
       base::BindOnce(on_dlp_restriction_checked_callback, &is_action_allowed_));
-  VerifyAndResetActionAllowed(true /*expected*/);
-  histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, true, 1);
-  histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, false, 2);
+  VerifyAndResetActionAllowed(/*expected=*/true);
+  VerifyHistogramCounts(/*blocked_count=*/1, /*warned_count=*/0,
+                        /*total_count=*/3,
+                        /*blocked_suffix=*/dlp::kScreenshotBlockedUMA,
+                        /*warned_suffix=*/dlp::kScreenshotWarnedUMA);
 }
 
 TEST_F(DlpContentManagerAshCheckRestrictionTest, ScreenshotWarnedContinued) {
   // Set the notifier to "Proceed" on the warning.
   MockDlpWarnNotifier* mock_dlp_warn_notifier =
-      CreateAndSetDlpWarnNotifier(true /*should_proceed*/);
+      CreateAndSetDlpWarnNotifier(/*should_proceed=*/true);
   // The warning should be shown only once.
   EXPECT_CALL(*mock_dlp_warn_notifier, ShowDlpWarningDialog(_, _)).Times(1);
 
-  SetReportQueueForReportingManager();
-  SetupDlpRulesManager();
   EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern)
       .Times(1)
       .WillRepeatedly(::testing::Return(kSrcPattern));
@@ -993,7 +1025,11 @@ TEST_F(DlpContentManagerAshCheckRestrictionTest, ScreenshotWarnedContinued) {
   GetManager()->CheckScreenshotRestriction(
       area,
       base::BindOnce(on_dlp_restriction_checked_callback, &is_action_allowed_));
-  VerifyAndResetActionAllowed(true /*expected*/);
+  VerifyAndResetActionAllowed(/*expected=*/true);
+  VerifyHistogramCounts(/*blocked_count=*/0, /*warned_count=*/0,
+                        /*total_count=*/1,
+                        /*blocked_suffix=*/dlp::kScreenshotBlockedUMA,
+                        /*warned_suffix=*/dlp::kScreenshotWarnedUMA);
   EXPECT_FALSE(helper_.HasAnyContentCached());
   EXPECT_TRUE(events_.empty());
 
@@ -1004,7 +1040,11 @@ TEST_F(DlpContentManagerAshCheckRestrictionTest, ScreenshotWarnedContinued) {
   GetManager()->CheckScreenshotRestriction(
       area,
       base::BindOnce(on_dlp_restriction_checked_callback, &is_action_allowed_));
-  VerifyAndResetActionAllowed(true /*expected*/);
+  VerifyAndResetActionAllowed(/*expected=*/true);
+  VerifyHistogramCounts(/*blocked_count=*/0, /*warned_count=*/1,
+                        /*total_count=*/2,
+                        /*blocked_suffix=*/dlp::kScreenshotBlockedUMA,
+                        /*warned_suffix=*/dlp::kScreenshotWarnedUMA);
   EXPECT_TRUE(helper_.HasContentCachedForRestriction(
       web_contents.get(), DlpRulesManager::Restriction::kScreenshot));
   EXPECT_EQ(events_.size(), 1u);
@@ -1017,7 +1057,13 @@ TEST_F(DlpContentManagerAshCheckRestrictionTest, ScreenshotWarnedContinued) {
   GetManager()->CheckScreenshotRestriction(
       area,
       base::BindOnce(on_dlp_restriction_checked_callback, &is_action_allowed_));
-  VerifyAndResetActionAllowed(true /*expected*/);
+  VerifyAndResetActionAllowed(/*expected=*/true);
+  VerifyHistogramCounts(/*blocked_count=*/0, /*warned_count=*/2,
+                        /*total_count=*/3,
+                        /*blocked_suffix=*/dlp::kScreenshotBlockedUMA,
+                        /*warned_suffix=*/dlp::kScreenshotWarnedUMA);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenshotWarnProceededUMA, true, 1);
   EXPECT_TRUE(helper_.HasContentCachedForRestriction(
       web_contents.get(), DlpRulesManager::Restriction::kScreenshot));
   EXPECT_EQ(events_.size(), 1u);
@@ -1029,19 +1075,26 @@ TEST_F(DlpContentManagerAshCheckRestrictionTest, ScreenshotWarnedContinued) {
   GetManager()->CheckScreenshotRestriction(
       area,
       base::BindOnce(on_dlp_restriction_checked_callback, &is_action_allowed_));
-  VerifyAndResetActionAllowed(true /*expected*/);
+  VerifyAndResetActionAllowed(/*expected=*/true);
+  VerifyHistogramCounts(/*blocked_count=*/0, /*warned_count=*/2,
+                        /*total_count=*/4,
+                        /*blocked_suffix=*/dlp::kScreenshotBlockedUMA,
+                        /*warned_suffix=*/dlp::kScreenshotWarnedUMA);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenshotWarnProceededUMA, true, 1);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenshotWarnSilentProceededUMA, true,
+      1);
   EXPECT_EQ(events_.size(), 1u);
 }
 
 TEST_F(DlpContentManagerAshCheckRestrictionTest, ScreenshotWarnedCancelled) {
   // Set the notifier to "Proceed" on the warning.
   MockDlpWarnNotifier* mock_dlp_warn_notifier =
-      CreateAndSetDlpWarnNotifier(false /*should_proceed*/);
+      CreateAndSetDlpWarnNotifier(/*should_proceed=*/false);
   // If the user cancels, the warning can be shown again for the same contents.
   EXPECT_CALL(*mock_dlp_warn_notifier, ShowDlpWarningDialog(_, _)).Times(2);
 
-  SetReportQueueForReportingManager();
-  SetupDlpRulesManager();
   EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern)
       .Times(2)
       .WillRepeatedly(::testing::Return(kSrcPattern));
@@ -1056,7 +1109,11 @@ TEST_F(DlpContentManagerAshCheckRestrictionTest, ScreenshotWarnedCancelled) {
   GetManager()->CheckScreenshotRestriction(
       area,
       base::BindOnce(on_dlp_restriction_checked_callback, &is_action_allowed_));
-  VerifyAndResetActionAllowed(true /*expected*/);
+  VerifyAndResetActionAllowed(/*expected=*/true);
+  VerifyHistogramCounts(/*blocked_count=*/0, /*warned_count=*/0,
+                        /*total_count=*/1,
+                        /*blocked_suffix=*/dlp::kScreenshotBlockedUMA,
+                        /*warned_suffix=*/dlp::kScreenshotWarnedUMA);
   EXPECT_FALSE(helper_.HasAnyContentCached());
   EXPECT_TRUE(events_.empty());
 
@@ -1067,7 +1124,13 @@ TEST_F(DlpContentManagerAshCheckRestrictionTest, ScreenshotWarnedCancelled) {
   GetManager()->CheckScreenshotRestriction(
       area,
       base::BindOnce(on_dlp_restriction_checked_callback, &is_action_allowed_));
-  VerifyAndResetActionAllowed(false /*expected*/);
+  VerifyAndResetActionAllowed(/*expected=*/false);
+  VerifyHistogramCounts(/*blocked_count=*/0, /*warned_count=*/1,
+                        /*total_count=*/2,
+                        /*blocked_suffix=*/dlp::kScreenshotBlockedUMA,
+                        /*warned_suffix=*/dlp::kScreenshotWarnedUMA);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenshotWarnProceededUMA, false, 1);
   EXPECT_FALSE(helper_.HasAnyContentCached());
   EXPECT_EQ(events_.size(), 1u);
   EXPECT_THAT(events_[0],
@@ -1079,7 +1142,13 @@ TEST_F(DlpContentManagerAshCheckRestrictionTest, ScreenshotWarnedCancelled) {
   GetManager()->CheckScreenshotRestriction(
       area,
       base::BindOnce(on_dlp_restriction_checked_callback, &is_action_allowed_));
-  VerifyAndResetActionAllowed(false /*expected*/);
+  VerifyAndResetActionAllowed(/*expected=*/false);
+  VerifyHistogramCounts(/*blocked_count=*/0, /*warned_count=*/2,
+                        /*total_count=*/3,
+                        /*blocked_suffix=*/dlp::kScreenshotBlockedUMA,
+                        /*warned_suffix=*/dlp::kScreenshotWarnedUMA);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenshotWarnProceededUMA, false, 2);
   EXPECT_FALSE(helper_.HasAnyContentCached());
   EXPECT_EQ(events_.size(), 2u);
   EXPECT_THAT(events_[1],
@@ -1094,7 +1163,11 @@ TEST_F(DlpContentManagerAshCheckRestrictionTest, ScreenshotWarnedCancelled) {
   GetManager()->CheckScreenshotRestriction(
       area,
       base::BindOnce(on_dlp_restriction_checked_callback, &is_action_allowed_));
-  VerifyAndResetActionAllowed(true /*expected*/);
+  VerifyAndResetActionAllowed(/*expected=*/true);
+  VerifyHistogramCounts(/*blocked_count=*/0, /*warned_count=*/2,
+                        /*total_count=*/4,
+                        /*blocked_suffix=*/dlp::kScreenshotBlockedUMA,
+                        /*warned_suffix=*/dlp::kScreenshotWarnedUMA);
   EXPECT_EQ(events_.size(), 2u);
 }
 

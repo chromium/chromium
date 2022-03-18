@@ -84,8 +84,7 @@ const absl::optional<std::string> RestrictionToWarnProceededUMASuffix(
     case DlpRulesManager::Restriction::kPrinting:
       return absl::make_optional(dlp::kPrintingWarnProceededUMA);
     case DlpRulesManager::Restriction::kScreenshot:
-      // TODO(crbug.com/1304750): Add UMA stats for warning for screenshots.
-      return absl::nullopt;
+      return absl::make_optional(dlp::kScreenshotWarnProceededUMA);
     case DlpRulesManager::Restriction::kUnknownRestriction:
     case DlpRulesManager::Restriction::kClipboard:
     case DlpRulesManager::Restriction::kPrivacyScreen:
@@ -173,6 +172,7 @@ bool DlpContentManager::IsScreenshotApiRestricted(
     ReportWarningEvent(restriction_info.url,
                        DlpRulesManager::Restriction::kScreenshot);
   DlpBooleanHistogram(dlp::kScreenshotBlockedUMA, IsBlocked(restriction_info));
+  DlpBooleanHistogram(dlp::kScreenshotWarnedUMA, IsWarn(restriction_info));
   // TODO(crbug.com/1252736): Properly handle WARN for screenshots API.
   return IsBlocked(restriction_info) || IsWarn(restriction_info);
 }

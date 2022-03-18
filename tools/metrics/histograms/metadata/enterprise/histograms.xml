@@ -772,6 +772,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.Dlp.CaptureModeInitWarned" enum="BooleanWarned"
+    expires_after="2022-12-01">
+  <owner>aidazolic@chromium.org</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Recorded when the user is warned by Data Leak Prevention before capture mode
+    initialization.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.Dlp.ClipboardReadBlocked" enum="BooleanBlocked"
     expires_after="2022-12-01">
   <owner>poromov@chromium.org</owner>
@@ -1009,6 +1019,40 @@ chromium-metrics-reviews@google.com.
   <summary>
     Result of Data Leak Prevention evaluation for taking a screenshot or a video
     capture.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Dlp.ScreenshotWarned" enum="BooleanWarned"
+    expires_after="2022-12-01">
+  <owner>aidazolic@chromium.org</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Recorded when there is a &quot;warn&quot; level Data Leak Prevention
+    evaluation for taking a screenshot or a video capture.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Dlp.ScreenshotWarnProceeded" enum="Boolean"
+    expires_after="2022-12-01">
+  <owner>aidazolic@chromium.org</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Recorded when the user proceeded with (True) or canceled (False) the action
+    after a Data Leak Prevention warning shown at the capture mode
+    initialization or before taking a screenshot or a video capture.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Dlp.ScreenshotWarnSilentProceeded" enum="Boolean"
+    expires_after="2022-12-01">
+  <owner>aidazolic@chromium.org</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Recorded when there is a &quot;warn&quot; level Data Leak Prevention
+    evaluation for initiating capture mode, or taking a screenshot or a video
+    capture, but it is caused by the content that the user was already warned
+    about and decided to proceed, so no new warning is shown and the screen
+    share is silently allowed.
   </summary>
 </histogram>
 

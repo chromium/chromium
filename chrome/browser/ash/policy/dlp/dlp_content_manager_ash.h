@@ -129,6 +129,10 @@ class DlpContentManagerAsh : public DlpContentManager,
     // informs if we already sent a warning proceeded event for the warning
     // mode.
     bool was_reported_warning_proceeded = false;
+    // Flag that indicates that there was some content with warn level
+    // restriction captured. Used to indicate that the warn UMA should be
+    // logged, even if no warning is shown.
+    bool had_warning_restriction = false;
   };
 
   DlpContentManagerAsh();

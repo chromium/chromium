@@ -272,63 +272,63 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest, ScreenshotsRestricted) {
   ScreenshotArea partial_in =
       ScreenshotArea::CreateForPartialWindow(root_window, in_rect);
 
-  CheckScreenshotRestriction(fullscreen, /*expected=*/true);
-  CheckScreenshotRestriction(window, /*expected=*/true);
-  CheckScreenshotRestriction(partial_in, /*expected=*/true);
-  CheckScreenshotRestriction(partial_out, /*expected=*/true);
-  histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, true, 0);
-  histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, false, 4);
+  CheckScreenshotRestriction(fullscreen, /*expected_allowed=*/true);
+  CheckScreenshotRestriction(window, /*expected_allowed=*/true);
+  CheckScreenshotRestriction(partial_in, /*expected_allowed=*/true);
+  CheckScreenshotRestriction(partial_out, /*expected_allowed=*/true);
+  VerifyHistogramCounts(/*blocked_count=*/0, /*warned_count=*/0,
+                        /*total_count=*/4,
+                        /*blocked_suffix=*/dlp::kScreenshotBlockedUMA,
+                        /*warned_suffix=*/dlp::kScreenshotWarnedUMA);
   CheckEvents(DlpRulesManager::Restriction::kScreenshot,
               DlpRulesManager::Level::kBlock, 0u);
 
   helper_->ChangeConfidentiality(web_contents, kScreenshotRestricted);
-  CheckScreenshotRestriction(fullscreen, /*expected=*/false);
-  CheckScreenshotRestriction(window, /*expected=*/false);
-  CheckScreenshotRestriction(partial_in, /*expected=*/false);
-  CheckScreenshotRestriction(partial_out, /*expected=*/true);
-  histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, true, 3);
-  histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, false, 5);
+  CheckScreenshotRestriction(fullscreen, /*expected_allowed=*/false);
+  CheckScreenshotRestriction(window, /*expected_allowed=*/false);
+  CheckScreenshotRestriction(partial_in, /*expected_allowed=*/false);
+  CheckScreenshotRestriction(partial_out, /*expected_allowed=*/true);
+  VerifyHistogramCounts(/*blocked_count=*/3, /*warned_count=*/0,
+                        /*total_count=*/8,
+                        /*blocked_suffix=*/dlp::kScreenshotBlockedUMA,
+                        /*warned_suffix=*/dlp::kScreenshotWarnedUMA);
   CheckEvents(DlpRulesManager::Restriction::kScreenshot,
               DlpRulesManager::Level::kBlock, 3u);
 
   web_contents->WasHidden();
   helper_->ChangeVisibility(web_contents);
-  CheckScreenshotRestriction(fullscreen, /*expected=*/true);
-  CheckScreenshotRestriction(window, /*expected=*/false);
-  CheckScreenshotRestriction(partial_in, /*expected=*/true);
-  CheckScreenshotRestriction(partial_out, /*expected=*/true);
-  histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, true, 4);
-  histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, false, 8);
+  CheckScreenshotRestriction(fullscreen, /*expected_allowed=*/true);
+  CheckScreenshotRestriction(window, /*expected_allowed=*/false);
+  CheckScreenshotRestriction(partial_in, /*expected_allowed=*/true);
+  CheckScreenshotRestriction(partial_out, /*expected_allowed=*/true);
+  VerifyHistogramCounts(/*blocked_count=*/4, /*warned_count=*/0,
+                        /*total_count=*/12,
+                        /*blocked_suffix=*/dlp::kScreenshotBlockedUMA,
+                        /*warned_suffix=*/dlp::kScreenshotWarnedUMA);
   CheckEvents(DlpRulesManager::Restriction::kScreenshot,
               DlpRulesManager::Level::kBlock, 4u);
 
   web_contents->WasShown();
   helper_->ChangeVisibility(web_contents);
-  CheckScreenshotRestriction(fullscreen, /*expected=*/false);
-  CheckScreenshotRestriction(window, /*expected=*/false);
-  CheckScreenshotRestriction(partial_in, /*expected=*/false);
-  CheckScreenshotRestriction(partial_out, /*expected=*/true);
-  histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, true, 7);
-  histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, false, 9);
+  CheckScreenshotRestriction(fullscreen, /*expected_allowed=*/false);
+  CheckScreenshotRestriction(window, /*expected_allowed=*/false);
+  CheckScreenshotRestriction(partial_in, /*expected_allowed=*/false);
+  CheckScreenshotRestriction(partial_out, /*expected_allowed=*/true);
+  VerifyHistogramCounts(/*blocked_count=*/7, /*warned_count=*/0,
+                        /*total_count=*/16,
+                        /*blocked_suffix=*/dlp::kScreenshotBlockedUMA,
+                        /*warned_suffix=*/dlp::kScreenshotWarnedUMA);
   CheckEvents(DlpRulesManager::Restriction::kScreenshot,
               DlpRulesManager::Level::kBlock, 7u);
 
   helper_->DestroyWebContents(web_contents);
-  CheckScreenshotRestriction(fullscreen, /*expected=*/true);
-  CheckScreenshotRestriction(partial_in, /*expected=*/true);
-  CheckScreenshotRestriction(partial_out, /*expected=*/true);
-  histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, true, 7);
-  histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, false, 12);
+  CheckScreenshotRestriction(fullscreen, /*expected_allowed=*/true);
+  CheckScreenshotRestriction(partial_in, /*expected_allowed=*/true);
+  CheckScreenshotRestriction(partial_out, /*expected_allowed=*/true);
+  VerifyHistogramCounts(/*blocked_count=*/7, /*warned_count=*/0,
+                        /*total_count=*/19,
+                        /*blocked_suffix=*/dlp::kScreenshotBlockedUMA,
+                        /*warned_suffix=*/dlp::kScreenshotWarnedUMA);
   CheckEvents(DlpRulesManager::Restriction::kScreenshot,
               DlpRulesManager::Level::kBlock, 7u);
 }
@@ -357,43 +357,63 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest, ScreenshotsWarned) {
   ScreenshotArea partial_in =
       ScreenshotArea::CreateForPartialWindow(root_window, in_rect);
 
-  CheckScreenshotRestriction(fullscreen, /*expected=*/true);
-  CheckScreenshotRestriction(window, /*expected=*/true);
-  CheckScreenshotRestriction(partial_in, /*expected=*/true);
-  CheckScreenshotRestriction(partial_out, /*expected=*/true);
+  CheckScreenshotRestriction(fullscreen, /*expected_allowed=*/true);
+  CheckScreenshotRestriction(window, /*expected_allowed=*/true);
+  CheckScreenshotRestriction(partial_in, /*expected_allowed=*/true);
+  CheckScreenshotRestriction(partial_out, /*expected_allowed=*/true);
+  VerifyHistogramCounts(/*blocked_count=*/0, /*warned_count=*/0,
+                        /*total_count=*/4,
+                        /*blocked_suffix=*/dlp::kScreenshotBlockedUMA,
+                        /*warned_suffix=*/dlp::kScreenshotWarnedUMA);
   CheckEvents(DlpRulesManager::Restriction::kScreenshot,
               DlpRulesManager::Level::kWarn, 0u);
 
   helper_->ChangeConfidentiality(web_contents, kScreenshotWarned);
-  CheckScreenshotRestriction(fullscreen, /*expected=*/false);
-  CheckScreenshotRestriction(window, /*expected=*/false);
-  CheckScreenshotRestriction(partial_in, /*expected=*/false);
-  CheckScreenshotRestriction(partial_out, /*expected=*/true);
+  CheckScreenshotRestriction(fullscreen, /*expected_allowed=*/false);
+  CheckScreenshotRestriction(window, /*expected_allowed=*/false);
+  CheckScreenshotRestriction(partial_in, /*expected_allowed=*/false);
+  CheckScreenshotRestriction(partial_out, /*expected_allowed=*/true);
+  VerifyHistogramCounts(/*blocked_count=*/0, /*warned_count=*/3,
+                        /*total_count=*/8,
+                        /*blocked_suffix=*/dlp::kScreenshotBlockedUMA,
+                        /*warned_suffix=*/dlp::kScreenshotWarnedUMA);
   CheckEvents(DlpRulesManager::Restriction::kScreenshot,
               DlpRulesManager::Level::kWarn, 3u);
 
   web_contents->WasHidden();
   helper_->ChangeVisibility(web_contents);
-  CheckScreenshotRestriction(fullscreen, /*expected=*/true);
-  CheckScreenshotRestriction(window, /*expected=*/false);
-  CheckScreenshotRestriction(partial_in, /*expected=*/true);
-  CheckScreenshotRestriction(partial_out, /*expected=*/true);
+  CheckScreenshotRestriction(fullscreen, /*expected_allowed=*/true);
+  CheckScreenshotRestriction(window, /*expected_allowed=*/false);
+  CheckScreenshotRestriction(partial_in, /*expected_allowed=*/true);
+  CheckScreenshotRestriction(partial_out, /*expected_allowed=*/true);
+  VerifyHistogramCounts(/*blocked_count=*/0, /*warned_count=*/4,
+                        /*total_count=*/12,
+                        /*blocked_suffix=*/dlp::kScreenshotBlockedUMA,
+                        /*warned_suffix=*/dlp::kScreenshotWarnedUMA);
   CheckEvents(DlpRulesManager::Restriction::kScreenshot,
               DlpRulesManager::Level::kWarn, 4u);
 
   web_contents->WasShown();
   helper_->ChangeVisibility(web_contents);
-  CheckScreenshotRestriction(fullscreen, /*expected=*/false);
-  CheckScreenshotRestriction(window, /*expected=*/false);
-  CheckScreenshotRestriction(partial_in, /*expected=*/false);
-  CheckScreenshotRestriction(partial_out, /*expected=*/true);
+  CheckScreenshotRestriction(fullscreen, /*expected_allowed=*/false);
+  CheckScreenshotRestriction(window, /*expected_allowed=*/false);
+  CheckScreenshotRestriction(partial_in, /*expected_allowed=*/false);
+  CheckScreenshotRestriction(partial_out, /*expected_allowed=*/true);
+  VerifyHistogramCounts(/*blocked_count=*/0, /*warned_count=*/7,
+                        /*total_count=*/16,
+                        /*blocked_suffix=*/dlp::kScreenshotBlockedUMA,
+                        /*warned_suffix=*/dlp::kScreenshotWarnedUMA);
   CheckEvents(DlpRulesManager::Restriction::kScreenshot,
               DlpRulesManager::Level::kWarn, 7u);
 
   helper_->DestroyWebContents(web_contents);
-  CheckScreenshotRestriction(fullscreen, /*expected=*/true);
-  CheckScreenshotRestriction(partial_in, /*expected=*/true);
-  CheckScreenshotRestriction(partial_out, /*expected=*/true);
+  CheckScreenshotRestriction(fullscreen, /*expected_allowed=*/true);
+  CheckScreenshotRestriction(partial_in, /*expected_allowed=*/true);
+  CheckScreenshotRestriction(partial_out, /*expected_allowed=*/true);
+  VerifyHistogramCounts(/*blocked_count=*/0, /*warned_count=*/7,
+                        /*total_count=*/19,
+                        /*blocked_suffix=*/dlp::kScreenshotBlockedUMA,
+                        /*warned_suffix=*/dlp::kScreenshotWarnedUMA);
   CheckEvents(DlpRulesManager::Restriction::kScreenshot,
               DlpRulesManager::Level::kWarn, 7u);
 }
@@ -419,47 +439,47 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest, ScreenshotsReported) {
   ScreenshotArea partial_in =
       ScreenshotArea::CreateForPartialWindow(root_window, in_rect);
 
-  CheckScreenshotRestriction(fullscreen, /*expected=*/true);
-  CheckScreenshotRestriction(window, /*expected=*/true);
-  CheckScreenshotRestriction(partial_in, /*expected=*/true);
-  CheckScreenshotRestriction(partial_out, /*expected=*/true);
+  CheckScreenshotRestriction(fullscreen, /*expected_allowed=*/true);
+  CheckScreenshotRestriction(window, /*expected_allowed=*/true);
+  CheckScreenshotRestriction(partial_in, /*expected_allowed=*/true);
+  CheckScreenshotRestriction(partial_out, /*expected_allowed=*/true);
   CheckEvents(DlpRulesManager::Restriction::kScreenshot,
               DlpRulesManager::Level::kReport, 0u);
 
   helper_->ChangeConfidentiality(web_contents, kScreenshotReported);
-  CheckScreenshotRestriction(fullscreen, /*expected=*/true);
-  CheckScreenshotRestriction(window, /*expected=*/true);
-  CheckScreenshotRestriction(partial_in, /*expected=*/true);
-  CheckScreenshotRestriction(partial_out, /*expected=*/true);
+  CheckScreenshotRestriction(fullscreen, /*expected_allowed=*/true);
+  CheckScreenshotRestriction(window, /*expected_allowed=*/true);
+  CheckScreenshotRestriction(partial_in, /*expected_allowed=*/true);
+  CheckScreenshotRestriction(partial_out, /*expected_allowed=*/true);
   CheckEvents(DlpRulesManager::Restriction::kScreenshot,
               DlpRulesManager::Level::kReport, 0u);
 
   web_contents->WasHidden();
   helper_->ChangeVisibility(web_contents);
-  CheckScreenshotRestriction(fullscreen, /*expected=*/true);
-  CheckScreenshotRestriction(window, /*expected=*/true);
-  CheckScreenshotRestriction(partial_in, /*expected=*/true);
-  CheckScreenshotRestriction(partial_out, /*expected=*/true);
+  CheckScreenshotRestriction(fullscreen, /*expected_allowed=*/true);
+  CheckScreenshotRestriction(window, /*expected_allowed=*/true);
+  CheckScreenshotRestriction(partial_in, /*expected_allowed=*/true);
+  CheckScreenshotRestriction(partial_out, /*expected_allowed=*/true);
   CheckEvents(DlpRulesManager::Restriction::kScreenshot,
               DlpRulesManager::Level::kReport, 0u);
 
   web_contents->WasShown();
   helper_->ChangeVisibility(web_contents);
-  CheckScreenshotRestriction(fullscreen, /*expected=*/true);
-  CheckScreenshotRestriction(window, /*expected=*/true);
-  CheckScreenshotRestriction(partial_in, /*expected=*/true);
-  CheckScreenshotRestriction(partial_out, /*expected=*/true);
+  CheckScreenshotRestriction(fullscreen, /*expected_allowed=*/true);
+  CheckScreenshotRestriction(window, /*expected_allowed=*/true);
+  CheckScreenshotRestriction(partial_in, /*expected_allowed=*/true);
+  CheckScreenshotRestriction(partial_out, /*expected_allowed=*/true);
   CheckEvents(DlpRulesManager::Restriction::kScreenshot,
               DlpRulesManager::Level::kReport, 0u);
 
   helper_->DestroyWebContents(web_contents);
-  CheckScreenshotRestriction(fullscreen, /*expected=*/true);
-  CheckScreenshotRestriction(partial_in, /*expected=*/true);
-  CheckScreenshotRestriction(partial_out, /*expected=*/true);
-  histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, true, 0);
-  histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, false, 19);
+  CheckScreenshotRestriction(fullscreen, /*expected_allowed=*/true);
+  CheckScreenshotRestriction(partial_in, /*expected_allowed=*/true);
+  CheckScreenshotRestriction(partial_out, /*expected_allowed=*/true);
+  VerifyHistogramCounts(/*blocked_count=*/0, /*warned_count=*/0,
+                        /*total_count=*/19,
+                        /*blocked_suffix=*/dlp::kScreenshotBlockedUMA,
+                        /*warned_suffix=*/dlp::kScreenshotWarnedUMA);
   CheckEvents(DlpRulesManager::Restriction::kScreenshot,
               DlpRulesManager::Level::kReport, 0u);
 }
@@ -715,12 +735,16 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
   EXPECT_FALSE(helper_->HasAnyContentCached());
   capture_mode_delegate->StopObservingRestrictedContent(
       on_dlp_checked_at_video_end_cb.Get());
+  histogram_tester_.ExpectUniqueSample(
+      GetDlpHistogramPrefix() + dlp::kScreenshotWarnedUMA, true, 1);
   // Check that the warning is now shown.
   EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 1);
   // Hit Enter to "Save anyway".
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
       browser(), ui::VKEY_RETURN, /*control=*/false,
       /*shift=*/false, /*alt=*/false, /*command=*/false));
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenshotWarnProceededUMA, true, 1);
   EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 0);
   EXPECT_TRUE(helper_->HasContentCachedForRestriction(
       web_contents1, DlpRulesManager::Restriction::kScreenshot));
@@ -780,12 +804,16 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
   EXPECT_FALSE(helper_->HasAnyContentCached());
   capture_mode_delegate->StopObservingRestrictedContent(
       on_dlp_checked_at_video_end_cb.Get());
+  histogram_tester_.ExpectUniqueSample(
+      GetDlpHistogramPrefix() + dlp::kScreenshotWarnedUMA, true, 1);
   // Check that the warning is now shown.
   EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 1);
   // Hit Enter to "Cancel".
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
       browser(), ui::VKEY_ESCAPE, /*control=*/false,
       /*shift=*/false, /*alt=*/false, /*command=*/false));
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenshotWarnProceededUMA, false, 1);
   EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 0);
   EXPECT_FALSE(helper_->HasAnyContentCached());
 

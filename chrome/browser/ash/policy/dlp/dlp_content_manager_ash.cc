@@ -104,6 +104,7 @@ void DlpContentManagerAsh::CheckScreenshotRestriction(
   }
   DlpBooleanHistogram(dlp::kScreenshotBlockedUMA,
                       IsBlocked(info.restriction_info));
+  DlpBooleanHistogram(dlp::kScreenshotWarnedUMA, IsWarn(info.restriction_info));
   CheckScreenCaptureRestriction(info, std::move(callback));
 }
 
@@ -144,10 +145,15 @@ void DlpContentManagerAsh::OnVideoCaptureStarted(const ScreenshotArea& area) {
 
 void DlpContentManagerAsh::CheckStoppedVideoCapture(
     ash::OnCaptureModeDlpRestrictionChecked callback) {
+  if (!running_video_capture_info_.has_value()) {
+    std::move(callback).Run(/*proceed=*/true);
+    return;
+  }
   // If some confidential content was shown during the recording, but not
   // before, warn the user before saving the file.
-  if (running_video_capture_info_.has_value() &&
-      !running_video_capture_info_->confidential_contents.IsEmpty()) {
+  DlpBooleanHistogram(dlp::kScreenshotWarnedUMA,
+                      running_video_capture_info_->had_warning_restriction);
+  if (!running_video_capture_info_->confidential_contents.IsEmpty()) {
     const GURL& url =
         running_video_capture_info_->confidential_contents.GetContents()
             .begin()
@@ -170,6 +176,7 @@ void DlpContentManagerAsh::CheckStoppedVideoCapture(
             DlpRulesManager::Restriction::kScreenshot, std::move(callback)),
         running_video_capture_info_->confidential_contents);
   } else {
+    DlpBooleanHistogram(dlp::kScreenshotWarnSilentProceededUMA, true);
     std::move(callback).Run(/*proceed=*/true);
   }
 
@@ -206,6 +213,8 @@ void DlpContentManagerAsh::CheckCaptureModeInitRestriction(
 
   DlpBooleanHistogram(dlp::kCaptureModeInitBlockedUMA,
                       IsBlocked(info.restriction_info));
+  DlpBooleanHistogram(dlp::kCaptureModeInitWarnedUMA,
+                      IsWarn(info.restriction_info));
   CheckScreenCaptureRestriction(info, std::move(callback));
 }
 
@@ -623,6 +632,7 @@ void DlpContentManagerAsh::CheckRunningVideoCapture() {
                           DlpRulesManager::Restriction::kScreenshot);
     running_video_capture_info_->confidential_contents.UnionWith(
         info.confidential_contents);
+    running_video_capture_info_->had_warning_restriction = true;
     return;
   }
 }
@@ -647,6 +657,7 @@ void DlpContentManagerAsh::CheckScreenCaptureRestriction(
                           DlpRulesManager::Restriction::kScreenshot);
     if (info.confidential_contents.IsEmpty()) {
       // The user already allowed all the visible content.
+      DlpBooleanHistogram(dlp::kScreenshotWarnSilentProceededUMA, true);
       std::move(callback).Run(true);
       return;
     }
