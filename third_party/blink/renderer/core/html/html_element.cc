@@ -1080,40 +1080,40 @@ void HTMLElement::setContentEditable(const String& enabled,
                                           "'plaintext-only', or 'inherit'.");
 }
 
-V8UnionBooleanOrStringOrUnrestrictedDoubleOrNull* HTMLElement::hidden() const {
+V8UnionBooleanOrStringOrUnrestrictedDouble* HTMLElement::hidden() const {
   const AtomicString& attribute = FastGetAttribute(html_names::kHiddenAttr);
 
   if (!RuntimeEnabledFeatures::BeforeMatchEventEnabled(GetExecutionContext())) {
-    return MakeGarbageCollected<
-        V8UnionBooleanOrStringOrUnrestrictedDoubleOrNull>(attribute !=
-                                                          g_null_atom);
+    return MakeGarbageCollected<V8UnionBooleanOrStringOrUnrestrictedDouble>(
+        attribute != g_null_atom);
   }
 
   if (attribute == g_null_atom) {
-    return MakeGarbageCollected<
-        V8UnionBooleanOrStringOrUnrestrictedDoubleOrNull>(false);
+    return MakeGarbageCollected<V8UnionBooleanOrStringOrUnrestrictedDouble>(
+        false);
   }
   if (attribute == "until-found") {
-    return MakeGarbageCollected<
-        V8UnionBooleanOrStringOrUnrestrictedDoubleOrNull>(
+    return MakeGarbageCollected<V8UnionBooleanOrStringOrUnrestrictedDouble>(
         String("until-found"));
   }
-  return MakeGarbageCollected<V8UnionBooleanOrStringOrUnrestrictedDoubleOrNull>(
-      true);
+  return MakeGarbageCollected<V8UnionBooleanOrStringOrUnrestrictedDouble>(true);
 }
 
 void HTMLElement::setHidden(
-    const V8UnionBooleanOrStringOrUnrestrictedDoubleOrNull* value) {
+    const V8UnionBooleanOrStringOrUnrestrictedDouble* value) {
+  if (!value) {
+    removeAttribute(html_names::kHiddenAttr);
+    return;
+  }
   switch (value->GetContentType()) {
-    case V8UnionBooleanOrStringOrUnrestrictedDoubleOrNull::ContentType::
-        kBoolean:
+    case V8UnionBooleanOrStringOrUnrestrictedDouble::ContentType::kBoolean:
       if (value->GetAsBoolean()) {
         setAttribute(html_names::kHiddenAttr, "");
       } else {
         removeAttribute(html_names::kHiddenAttr);
       }
       break;
-    case V8UnionBooleanOrStringOrUnrestrictedDoubleOrNull::ContentType::kString:
+    case V8UnionBooleanOrStringOrUnrestrictedDouble::ContentType::kString:
       if (RuntimeEnabledFeatures::BeforeMatchEventEnabled(
               GetExecutionContext()) &&
           EqualIgnoringASCIICase(value->GetAsString(), "until-found")) {
@@ -1124,10 +1124,7 @@ void HTMLElement::setHidden(
         setAttribute(html_names::kHiddenAttr, "");
       }
       break;
-    case V8UnionBooleanOrStringOrUnrestrictedDoubleOrNull::ContentType::kNull:
-      removeAttribute(html_names::kHiddenAttr);
-      break;
-    case V8UnionBooleanOrStringOrUnrestrictedDoubleOrNull::ContentType::
+    case V8UnionBooleanOrStringOrUnrestrictedDouble::ContentType::
         kUnrestrictedDouble:
       double double_value = value->GetAsUnrestrictedDouble();
       if (double_value && !std::isnan(double_value)) {
