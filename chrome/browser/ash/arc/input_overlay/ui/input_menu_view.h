@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UI_INPUT_MENU_VIEW_H_
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UI_INPUT_MENU_VIEW_H_
 
-#include "ui/views/view.h"
-
 #include <memory>
+
+#include "ui/views/view.h"
 
 namespace ash {
 class PillButton;
@@ -40,11 +40,10 @@ class InputMenuView : public views::View {
  public:
   static std::unique_ptr<InputMenuView> BuildMenuView(
       DisplayOverlayController* display_overlay_controller,
-      views::View* anchor_view);
+      views::View* entry_view);
 
-  // TODO(djacobo): Pass a callback to return responses to owner.
   InputMenuView(DisplayOverlayController* display_overlay_controller,
-                views::View* anchor_view);
+                views::View* entry_view);
 
   InputMenuView(const InputMenuView&) = delete;
   InputMenuView& operator=(const InputMenuView&) = delete;

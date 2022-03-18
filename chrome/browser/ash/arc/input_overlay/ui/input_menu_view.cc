@@ -8,8 +8,6 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/pill_button.h"
 #include "base/bind.h"
-// TODO(djacobo): Callbacks seem like an overkill provided how tightly
-// integrated these classes are, but may be worthy to write it that way.
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -58,13 +56,13 @@ constexpr int kBodyFontSize = 13;
 // static
 std::unique_ptr<InputMenuView> InputMenuView::BuildMenuView(
     DisplayOverlayController* display_overlay_controller,
-    views::View* anchor_view) {
+    views::View* entry_view) {
   // Ensure there is only one menu at any time.
   if (display_overlay_controller->HasMenuView())
     display_overlay_controller->RemoveInputMenuView();
 
   auto menu_view_ptr =
-      std::make_unique<InputMenuView>(display_overlay_controller, anchor_view);
+      std::make_unique<InputMenuView>(display_overlay_controller, entry_view);
   menu_view_ptr->Init();
 
   return menu_view_ptr;
@@ -267,10 +265,10 @@ void InputMenuView::OnToggleShowHintPressed() {
 
 void InputMenuView::OnButtonCustomizedPressed() {
   DCHECK(display_overlay_controller_);
-  if (display_overlay_controller_) {
-    display_overlay_controller_->SetDisplayMode(DisplayMode::kEdit);
-  }
-  // TODO(djacobo|cuicuiruan): Show the save/cancel dialog.
+  if (!display_overlay_controller_)
+    return;
+  // Change display mode, load edit UI per action and overall edit buttons.
+  display_overlay_controller_->SetDisplayMode(DisplayMode::kEdit);
 }
 
 }  // namespace input_overlay

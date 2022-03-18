@@ -8,6 +8,7 @@
 
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "base/bind.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/edit_mode_exit_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/input_menu_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/exo/shell_surface_base.h"
@@ -27,6 +28,8 @@ namespace {
 // UI specs.
 constexpr int kMenuEntrySize = 56;
 constexpr int kMenuEntrySideMargin = 24;
+constexpr int kEditModeExitWidth = 140;
+constexpr int kEditModeExitHeight = 184;
 constexpr SkColor kMenuEntryBgColor = SkColorSetA(SK_ColorWHITE, 0x99);
 constexpr int kCornerRadius = 8;
 
@@ -126,6 +129,18 @@ void DisplayOverlayController::AddMenuEntryView(views::Widget* overlay_widget) {
   menu_entry_ = parent_view->AddChildView(std::move(menu_entry));
 }
 
+void DisplayOverlayController::AddEditModeExitView(
+    views::Widget* overlay_widget) {
+  DCHECK(overlay_widget);
+  auto* parent_view = overlay_widget->GetContentsView();
+  DCHECK(parent_view);
+
+  // TODO(djacobo): Undefined vertical position, reusing whatever |entry_menu_|
+  // uses for now.
+  edit_mode_view_ = parent_view->AddChildView(
+      EditModeExitView::BuildView(this, CalculateEditModeExitPosition()));
+}
+
 void DisplayOverlayController::OnMenuEntryPressed() {
   auto* overlay_widget = GetOverlayWidget();
   DCHECK(overlay_widget);
@@ -159,6 +174,13 @@ void DisplayOverlayController::RemoveMenuEntryView() {
   menu_entry_ = nullptr;
 }
 
+void DisplayOverlayController::RemoveEditModeExitView() {
+  if (!edit_mode_view_)
+    return;
+  edit_mode_view_->parent()->RemoveChildViewT(edit_mode_view_);
+  edit_mode_view_ = nullptr;
+}
+
 views::Widget* DisplayOverlayController::GetOverlayWidget() {
   auto* shell_surface_base =
       exo::GetShellSurfaceBaseForWindow(touch_injector_->target_window());
@@ -182,6 +204,19 @@ gfx::Point DisplayOverlayController::CalculateMenuEntryPosition() {
       std::max(0, view->height() / 2 - kMenuEntrySize / 2));
 }
 
+gfx::Point DisplayOverlayController::CalculateEditModeExitPosition() {
+  auto* overlay_widget = GetOverlayWidget();
+  if (!overlay_widget)
+    return gfx::Point();
+  auto* view = overlay_widget->GetContentsView();
+  if (!view || view->bounds().IsEmpty())
+    return gfx::Point();
+
+  return gfx::Point(
+      std::max(0, view->width() - kEditModeExitWidth - kMenuEntrySideMargin),
+      std::max(0, view->height() / 2 - kEditModeExitHeight / 2));
+}
+
 void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
   if (display_mode_ == mode)
     return;
@@ -195,6 +230,7 @@ void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
     case DisplayMode::kNone:
       RemoveMenuEntryView();
       RemoveInputMappingView();
+      RemoveEditModeExitView();
       break;
     case DisplayMode::kEducation:
       // TODO(cuicuiruan): Add educational dialog.
@@ -211,6 +247,7 @@ void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
     case DisplayMode::kEdit:
       RemoveInputMenuView();
       RemoveMenuEntryView();
+      AddEditModeExitView(overlay_widget);
       overlay_widget->GetNativeWindow()->SetEventTargetingPolicy(
           aura::EventTargetingPolicy::kTargetAndDescendants);
       break;

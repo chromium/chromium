@@ -12617,6 +12617,15 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_INPUT_OVERLAY_EDIT_MENU_RESET" desc="Entry point to reset the action binding to original binding.">
         Reset
       </message>
+      <message name="IDS_INPUT_OVERLAY_EDIT_MODE_RESET" desc="Restore key-bindings to a preset status.">
+        Reset to defaults
+      </message>
+      <message name="IDS_INPUT_OVERLAY_EDIT_MODE_SAVE" desc="Apply and store the newly set key-bindings.">
+        Save
+      </message>
+      <message name="IDS_INPUT_OVERLAY_EDIT_MODE_CANCEL" desc="Discard all the newly assigned key-bindings in this session.">
+        Cancel
+      </message>
     </if>
 
     <!-- Privacy Sandbox Dialog strings -->

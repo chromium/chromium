@@ -25,6 +25,7 @@ class TouchInjector;
 class InputMappingView;
 class InputMenuView;
 class ActionEditMenu;
+class EditModeExitView;
 
 // DisplayOverlayController manages the input mapping view, view and edit mode,
 // menu, and educational dialog.
@@ -53,14 +54,17 @@ class DisplayOverlayController {
 
   void AddInputMappingView(views::Widget* overlay_widget);
   void AddMenuEntryView(views::Widget* overlay_widget);
+  void AddEditModeExitView(views::Widget* overlay_widget);
   void OnMenuEntryPressed();
 
   void RemoveInputMenuView();
   void RemoveInputMappingView();
   void RemoveMenuEntryView();
+  void RemoveEditModeExitView();
 
   views::Widget* GetOverlayWidget();
   gfx::Point CalculateMenuEntryPosition();
+  gfx::Point CalculateEditModeExitPosition();
   bool HasMenuView() const;
   void SetInputMappingVisible(bool visible);
   bool GetInputMappingViewVisible() const;
@@ -81,6 +85,7 @@ class DisplayOverlayController {
   InputMenuView* input_menu_view_ = nullptr;
   views::ImageButton* menu_entry_ = nullptr;
   ActionEditMenu* action_edit_menu_ = nullptr;
+  EditModeExitView* edit_mode_view_ = nullptr;
 };
 
 }  // namespace input_overlay
