@@ -33,6 +33,7 @@
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
@@ -2344,6 +2345,13 @@ bool BrowserView::IsDownloadShelfVisible() const {
 }
 
 DownloadShelf* BrowserView::GetDownloadShelf() {
+  // Don't show download shelf if download bubble is enabled, except that the
+  // shelf is already showing (this can happen if prefs were changed at
+  // runtime).
+  if (download::IsDownloadBubbleEnabled(browser_->profile()) &&
+      !download_shelf_) {
+    return nullptr;
+  }
   if (!download_shelf_) {
     if (base::FeatureList::IsEnabled(features::kWebUIDownloadShelf)) {
       download_shelf_ = AddChildView(

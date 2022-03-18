@@ -3699,6 +3699,8 @@ static_library("browser") {
       "diagnostics/recon_diagnostics.h",
       "diagnostics/sqlite_diagnostics.cc",
       "diagnostics/sqlite_diagnostics.h",
+      "download/bubble/download_bubble_prefs.cc",
+      "download/bubble/download_bubble_prefs.h",
       "download/default_download_dir_policy_handler.cc",
       "download/default_download_dir_policy_handler.h",
       "download/download_commands.cc",
