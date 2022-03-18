@@ -204,7 +204,7 @@ FirstPartySetParser::SetsMap FirstPartySetParser::DeserializeFirstPartySets(
   if (!value_deserialized || !value_deserialized->is_dict())
     return {};
 
-  base::flat_map<net::SchemefulSite, net::SchemefulSite> map;
+  std::vector<std::pair<net::SchemefulSite, net::SchemefulSite>> map;
   base::flat_set<net::SchemefulSite> owner_set;
   base::flat_set<net::SchemefulSite> member_set;
   for (const auto item : value_deserialized->DictItems()) {
@@ -223,7 +223,7 @@ FirstPartySetParser::SetsMap FirstPartySetParser::DeserializeFirstPartySets(
       continue;
     }
     if (!owner_set.contains(maybe_owner)) {
-      map.emplace(*maybe_owner, *maybe_owner);
+      map.emplace_back(*maybe_owner, *maybe_owner);
     }
     // Check disjointness. Note that we are relying on the JSON Parser to
     // eliminate the possibility of a site being used as a key more than once,
@@ -234,7 +234,7 @@ FirstPartySetParser::SetsMap FirstPartySetParser::DeserializeFirstPartySets(
     }
     owner_set.insert(*maybe_owner);
     member_set.insert(*maybe_member);
-    map.emplace(std::move(*maybe_member), std::move(*maybe_owner));
+    map.emplace_back(std::move(*maybe_member), std::move(*maybe_owner));
   }
   return map;
 }
@@ -264,7 +264,7 @@ FirstPartySetParser::CanonicalizeRegisteredDomain(
 
 base::flat_map<net::SchemefulSite, net::SchemefulSite>
 FirstPartySetParser::ParseSetsFromStream(std::istream& input) {
-  base::flat_map<net::SchemefulSite, net::SchemefulSite> map;
+  std::vector<std::pair<net::SchemefulSite, net::SchemefulSite>> map;
   base::flat_set<net::SchemefulSite> elements;
   for (std::string line; std::getline(input, line);) {
     base::StringPiece trimmed = base::TrimWhitespaceASCII(line, base::TRIM_ALL);
@@ -278,9 +278,9 @@ FirstPartySetParser::ParseSetsFromStream(std::istream& input) {
     if (ParseSet(*maybe_value, elements, output).has_value())
       return {};
     auto [owner, members] = output;
-    map.emplace(owner, owner);
+    map.emplace_back(owner, owner);
     for (net::SchemefulSite& member : members) {
-      map.emplace(std::move(member), owner);
+      map.emplace_back(std::move(member), owner);
     }
   }
   return map;
