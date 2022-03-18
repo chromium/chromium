@@ -58,9 +58,6 @@ class POLICY_EXPORT PolicyConversionsClient {
   // Set to get all user scope policies.
   // Enabled by default.
   void EnableUserPolicies(bool enabled);
-  // Set to drop the policies of which value is a default one set by the policy
-  // provider. Disabled by default.
-  void SetDropDefaultValues(bool enabled);
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Sets the updater policies.
@@ -170,7 +167,6 @@ class POLICY_EXPORT PolicyConversionsClient {
   bool GetUserPoliciesEnabled() const;
 
  private:
-  friend class PolicyConversionsClientTest;
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   std::unique_ptr<PolicyMap> updater_policies_;
   absl::optional<PolicyConversions::PolicyToSchemaMap> updater_policy_schemas_;
@@ -182,7 +178,6 @@ class POLICY_EXPORT PolicyConversionsClient {
   bool device_info_enabled_ = false;
   bool pretty_print_enabled_ = true;
   bool user_policies_enabled_ = true;
-  bool drop_default_values_enabled_ = false;
 };
 
 }  // namespace policy

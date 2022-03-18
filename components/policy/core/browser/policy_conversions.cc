@@ -85,11 +85,6 @@ PolicyConversions& PolicyConversions::EnableUserPolicies(bool enabled) {
   return *this;
 }
 
-PolicyConversions& PolicyConversions::SetDropDefaultValues(bool enabled) {
-  client_->SetDropDefaultValues(enabled);
-  return *this;
-}
-
 std::string PolicyConversions::ToJSON() {
   return client_->ConvertValueToJSON(ToValue());
 }
