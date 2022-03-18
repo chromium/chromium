@@ -116,8 +116,6 @@ source_set("win") {
     "com_security.cc",
     "com_security.h",
     "core_resource.h",
-    "default_apps_util.cc",
-    "default_apps_util.h",
     "default_audio_device_change_detector.cc",
     "default_audio_device_change_detector.h",
     "etw_trace_consumer.h",

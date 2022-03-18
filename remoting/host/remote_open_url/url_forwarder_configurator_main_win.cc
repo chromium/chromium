@@ -23,6 +23,7 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
+#include "base/win/default_apps_util.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/windows_types.h"
@@ -32,7 +33,6 @@
 #include "remoting/host/remote_open_url/remote_open_url_constants.h"
 #include "remoting/host/user_setting_keys.h"
 #include "remoting/host/win/core_resource.h"
-#include "remoting/host/win/default_apps_util.h"
 #include "remoting/host/win/simple_task_dialog.h"
 
 namespace remoting {
@@ -177,7 +177,8 @@ void SetUpProcess::OnSetUpDialogContinue() {
   SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, nullptr, nullptr);
 
   HOST_LOG << "Launching default apps settings dialog";
-  if (!LaunchDefaultAppsSettingsModernDialog()) {
+  if (!base::win::LaunchDefaultAppsSettingsModernDialog(
+          /*protocol=*/std::wstring())) {
     std::move(done_callback_).Run(false);
     return;
   }

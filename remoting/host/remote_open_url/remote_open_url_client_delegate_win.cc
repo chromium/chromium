@@ -16,12 +16,12 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/current_module.h"
+#include "base/win/default_apps_util.h"
 #include "remoting/base/logging.h"
 #include "remoting/base/user_settings.h"
 #include "remoting/host/remote_open_url/remote_open_url_constants.h"
 #include "remoting/host/user_setting_keys.h"
 #include "remoting/host/win/core_resource.h"
-#include "remoting/host/win/default_apps_util.h"
 #include "remoting/host/win/simple_task_dialog.h"
 
 namespace remoting {
@@ -57,7 +57,7 @@ void ShowIncorrectConfigurationPrompt() {
   task_dialog.set_default_button(IDOK);
   absl::optional<int> result = task_dialog.Show();
   DCHECK_EQ(IDOK, *result);
-  LaunchDefaultAppsSettingsModernDialog();
+  base::win::LaunchDefaultAppsSettingsModernDialog(/*protocol=*/std::wstring());
 }
 
 }  // namespace
