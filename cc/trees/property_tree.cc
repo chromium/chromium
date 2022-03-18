@@ -152,6 +152,10 @@ bool TransformTree::OnTransformAnimated(ElementId element_id,
                                         const gfx::Transform& transform) {
   TransformNode* node = FindNodeFromElementId(element_id);
   DCHECK(node);
+  // TODO(crbug.com/1307498): Remove this when we no longer animate
+  // non-existent nodes.
+  if (!node)
+    return false;
   if (node->local == transform)
     return false;
   node->local = transform;
@@ -887,6 +891,10 @@ void EffectTree::UpdateSurfaceContentsScale(EffectNode* effect_node) {
 bool EffectTree::OnOpacityAnimated(ElementId id, float opacity) {
   EffectNode* node = FindNodeFromElementId(id);
   DCHECK(node);
+  // TODO(crbug.com/1307498): Remove this when we no longer animate
+  // non-existent nodes.
+  if (!node)
+    return false;
   if (node->opacity == opacity)
     return false;
   node->opacity = opacity;
@@ -900,6 +908,10 @@ bool EffectTree::OnFilterAnimated(ElementId id,
                                   const FilterOperations& filters) {
   EffectNode* node = FindNodeFromElementId(id);
   DCHECK(node);
+  // TODO(crbug.com/1307498): Remove this when we no longer animate
+  // non-existent nodes.
+  if (!node)
+    return false;
   if (node->filters == filters)
     return false;
   node->filters = filters;
@@ -914,6 +926,10 @@ bool EffectTree::OnBackdropFilterAnimated(
     const FilterOperations& backdrop_filters) {
   EffectNode* node = FindNodeFromElementId(id);
   DCHECK(node);
+  // TODO(crbug.com/1307498): Remove this when we no longer animate
+  // non-existent nodes.
+  if (!node)
+    return false;
   if (node->backdrop_filters == backdrop_filters)
     return false;
   node->backdrop_filters = backdrop_filters;

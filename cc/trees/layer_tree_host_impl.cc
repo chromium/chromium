@@ -4911,8 +4911,8 @@ void LayerTreeHostImpl::SetTreeLayerScrollOffsetMutated(
                     element_id));
   const ScrollNode* scroll_node =
       property_trees->scroll_tree().FindNodeFromElementId(element_id);
-  // TODO(flackr): We should aim to prevent this condition from happening
-  // and either remove this check or make it fatal.
+  // TODO(crbug.com/1307498): We should aim to prevent this condition from
+  // happening and either remove this check or make it fatal.
   DCHECK(scroll_node);
   if (!scroll_node)
     return;

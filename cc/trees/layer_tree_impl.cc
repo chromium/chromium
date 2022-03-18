@@ -61,17 +61,6 @@
 
 namespace cc {
 namespace {
-
-template <class T>
-bool CheckPropertyNodeExists(const T& property_tree, ElementId element_id) {
-  size_t nodes_with_element_id =
-      property_tree.element_id_to_node_index().count(element_id);
-  DCHECK_EQ(1u, nodes_with_element_id);
-  // TODO(flackr): We should aim to prevent this condition from happening
-  // and either remove this check or make it fatal.
-  return nodes_with_element_id > 0;
-}
-
 // Small helper class that saves the current viewport location as the user sees
 // it and resets to the same location.
 class ViewportAnchor {
@@ -962,9 +951,9 @@ ElementListType LayerTreeImpl::GetElementTypeForAnimation() const {
 
 void LayerTreeImpl::SetTransformMutated(ElementId element_id,
                                         const gfx::Transform& transform) {
-  if (!CheckPropertyNodeExists(property_trees()->transform_tree(), element_id))
-    return;
-
+  DCHECK_EQ(1u,
+            property_trees()->transform_tree().element_id_to_node_index().count(
+                element_id));
   if (IsSyncTree() || IsRecycleTree())
     element_id_to_transform_animations_[element_id] = transform;
   if (property_trees()->transform_tree_mutable().OnTransformAnimated(element_id,
@@ -973,9 +962,9 @@ void LayerTreeImpl::SetTransformMutated(ElementId element_id,
 }
 
 void LayerTreeImpl::SetOpacityMutated(ElementId element_id, float opacity) {
-  if (!CheckPropertyNodeExists(property_trees()->effect_tree(), element_id))
-    return;
-
+  DCHECK_EQ(1u,
+            property_trees()->effect_tree().element_id_to_node_index().count(
+                element_id));
   if (IsSyncTree() || IsRecycleTree())
     element_id_to_opacity_animations_[element_id] = opacity;
   if (property_trees()->effect_tree_mutable().OnOpacityAnimated(element_id,
@@ -985,9 +974,9 @@ void LayerTreeImpl::SetOpacityMutated(ElementId element_id, float opacity) {
 
 void LayerTreeImpl::SetFilterMutated(ElementId element_id,
                                      const FilterOperations& filters) {
-  if (!CheckPropertyNodeExists(property_trees()->effect_tree(), element_id))
-    return;
-
+  DCHECK_EQ(1u,
+            property_trees()->effect_tree().element_id_to_node_index().count(
+                element_id));
   if (IsSyncTree() || IsRecycleTree())
     element_id_to_filter_animations_[element_id] = filters;
   if (property_trees()->effect_tree_mutable().OnFilterAnimated(element_id,
@@ -998,9 +987,9 @@ void LayerTreeImpl::SetFilterMutated(ElementId element_id,
 void LayerTreeImpl::SetBackdropFilterMutated(
     ElementId element_id,
     const FilterOperations& backdrop_filters) {
-  if (!CheckPropertyNodeExists(property_trees()->effect_tree(), element_id))
-    return;
-
+  DCHECK_EQ(1u,
+            property_trees()->effect_tree().element_id_to_node_index().count(
+                element_id));
   if (IsSyncTree() || IsRecycleTree())
     element_id_to_backdrop_filter_animations_[element_id] = backdrop_filters;
   if (property_trees()->effect_tree_mutable().OnBackdropFilterAnimated(
