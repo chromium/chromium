@@ -3723,6 +3723,24 @@
             ]
         }
     ],
+    "IOSDiscoverFeedFastFollows": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "PostM98_Enabled_SRS",
+                    "params": {
+                        "DiscoverFeedSRSReconstructedTemplatesEnabled": "true"
+                    },
+                    "enable_features": [
+                        "IOSDiscoverFeedStaticResourceServing"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSEnableUnrealizedWebStates": [
         {
             "platforms": [
