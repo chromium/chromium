@@ -151,7 +151,7 @@
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_dialog_ui.h"
 #include "chrome/browser/ui/webui/read_later/read_later_ui.h"
 #include "chrome/browser/ui/webui/read_later/side_panel/bookmarks_side_panel_ui.h"
-#include "chrome/browser/ui/webui/read_later/side_panel/reader_mode/reader_mode_side_panel_ui.h"
+#include "chrome/browser/ui/webui/read_later/side_panel/read_anything/read_anything_side_panel_ui.h"
 #include "chrome/browser/ui/webui/settings/settings_ui.h"
 #include "chrome/browser/ui/webui/settings/settings_utils.h"
 #include "chrome/browser/ui/webui/signin/sync_confirmation_ui.h"
@@ -853,9 +853,9 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   }
   if (url.host_piece() == chrome::kChromeUIBookmarksSidePanelHost)
     return &NewWebUI<BookmarksSidePanelUI>;
-  if (features::IsReaderModeSidePanelEnabled()) {
-    if (url.host_piece() == chrome::kChromeUIReaderModeSidePanelHost)
-      return &NewWebUI<ReaderModeSidePanelUI>;
+  if (features::IsReadAnythingEnabled()) {
+    if (url.host_piece() == chrome::kChromeUIReadAnythingSidePanelHost)
+      return &NewWebUI<ReadAnythingSidePanelUI>;
   }
   // Settings are implemented with native UI elements on Android.
   if (url.host_piece() == chrome::kChromeUISettingsHost)

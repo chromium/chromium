@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './reader_mode.mojom-webui.js';
+import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './read_anything.mojom-webui.js';
 
-let instance: ReaderModeApiProxy|null = null;
+let instance: ReadAnythingApiProxy|null = null;
 
-export class ReaderModeApiProxy {
+export class ReadAnythingApiProxy {
   callbackRouter: PageCallbackRouter;
   handler: PageHandlerRemote;
 
@@ -28,10 +28,10 @@ export class ReaderModeApiProxy {
   }
 
   static getInstance() {
-    return instance || (instance = new ReaderModeApiProxy());
+    return instance || (instance = new ReadAnythingApiProxy());
   }
 
-  static setInstance(obj: ReaderModeApiProxy) {
+  static setInstance(obj: ReadAnythingApiProxy) {
     instance = obj;
   }
 }

@@ -7,13 +7,13 @@ import '../../strings.m.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ReaderModeApiProxy} from './reader_mode_api_proxy.js';
+import {ReadAnythingApiProxy} from './read_anything_api_proxy.js';
 
-const ReaderModeElementBase = WebUIListenerMixin(PolymerElement);
+const ReadAnythingElementBase = WebUIListenerMixin(PolymerElement);
 
-export class ReaderModeElement extends ReaderModeElementBase {
+export class ReadAnythingElement extends ReadAnythingElementBase {
   static get is() {
-    return 'reader-mode-app';
+    return 'read-anything-app';
   }
 
   static get template() {
@@ -29,7 +29,7 @@ export class ReaderModeElement extends ReaderModeElementBase {
     };
   }
 
-  private apiProxy_: ReaderModeApiProxy = ReaderModeApiProxy.getInstance();
+  private apiProxy_: ReadAnythingApiProxy = ReadAnythingApiProxy.getInstance();
   private listenerIds_: number[];
   private paragraphs_: string[];
 
@@ -55,4 +55,4 @@ export class ReaderModeElement extends ReaderModeElementBase {
     this.paragraphs_ = essential_content;
   }
 }
-customElements.define(ReaderModeElement.is, ReaderModeElement);
+customElements.define(ReadAnythingElement.is, ReadAnythingElement);

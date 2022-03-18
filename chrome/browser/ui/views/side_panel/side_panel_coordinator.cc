@@ -21,7 +21,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/webui/read_later/side_panel/bookmarks_side_panel_ui.h"
-#include "chrome/browser/ui/webui/read_later/side_panel/reader_mode/reader_mode_side_panel_ui.h"
+#include "chrome/browser/ui/webui/read_later/side_panel/read_anything/read_anything_side_panel_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -107,12 +107,12 @@ SidePanelCoordinator::SidePanelCoordinator(BrowserView* browser_view,
       ui::ImageModel::FromVectorIcon(omnibox::kStarIcon, ui::kColorIcon),
       base::BindRepeating(&SidePanelCoordinator::CreateBookmarksWebView,
                           base::Unretained(this), browser_view->browser())));
-  if (features::IsReaderModeSidePanelEnabled()) {
+  if (features::IsReadAnythingEnabled()) {
     global_registry->Register(std::make_unique<SidePanelEntry>(
-        SidePanelEntry::Id::kReaderMode,
-        l10n_util::GetStringUTF16(IDS_READER_MODE_TITLE),
+        SidePanelEntry::Id::kReadAnything,
+        l10n_util::GetStringUTF16(IDS_READ_ANYTHING_TITLE),
         ui::ImageModel::FromVectorIcon(kReaderModeIcon, ui::kColorIcon),
-        base::BindRepeating(&SidePanelCoordinator::CreateReaderModeWebView,
+        base::BindRepeating(&SidePanelCoordinator::CreateReadAnythingWebView,
                             base::Unretained(this), browser_view->browser())));
   }
 }
@@ -344,14 +344,14 @@ std::unique_ptr<views::View> SidePanelCoordinator::CreateBookmarksWebView(
   return bookmarks_web_view;
 }
 
-std::unique_ptr<views::View> SidePanelCoordinator::CreateReaderModeWebView(
+std::unique_ptr<views::View> SidePanelCoordinator::CreateReadAnythingWebView(
     Browser* browser) {
-  return std::make_unique<SidePanelWebUIViewT<ReaderModeSidePanelUI>>(
+  return std::make_unique<SidePanelWebUIViewT<ReadAnythingSidePanelUI>>(
       browser, base::RepeatingClosure(),
       base::BindRepeating(&SidePanelCoordinator::Close, base::Unretained(this)),
-      std::make_unique<BubbleContentsWrapperT<ReaderModeSidePanelUI>>(
-          GURL(chrome::kChromeUIReaderModeSidePanelURL), browser->profile(),
-          IDS_READER_MODE_TITLE,
+      std::make_unique<BubbleContentsWrapperT<ReadAnythingSidePanelUI>>(
+          GURL(chrome::kChromeUIReadAnythingSidePanelURL), browser->profile(),
+          IDS_READ_ANYTHING_TITLE,
           /*webui_resizes_host=*/false,
           /*esc_closes_ui=*/false));
 }

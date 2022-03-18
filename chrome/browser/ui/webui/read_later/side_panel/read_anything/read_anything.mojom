@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// A module for a prototype of the Reader Mode feature.
-module reader_mode.mojom;
+// A module for a prototype of the Read Anything feature.
+module read_anything.mojom;
 
 // Used by the WebUI page to bootstrap bidirectional communication.
 interface PageHandlerFactory {
@@ -20,7 +20,7 @@ interface PageHandler {
 
 // WebUI-side handler for requests from the browser.
 interface Page {
-  // Trigger the frontend to update the current reader mode display. Essential
+  // Trigger the frontend to update the current read anything display. Essential
   // content is a list of paragraphs from a web page, where each paragraph is
   // considered essential (is part of the main content of the web page).
   OnEssentialContent(array<string> essential_content);

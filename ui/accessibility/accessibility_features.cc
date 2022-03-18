@@ -203,11 +203,11 @@ bool IsComputeAXModeEnabled() {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-const base::Feature kReaderModeSidePanel{"ReaderModeSidePanel",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kReadAnything{"ReadAnything",
+                                  base::FEATURE_DISABLED_BY_DEFAULT};
 
-bool IsReaderModeSidePanelEnabled() {
-  return base::FeatureList::IsEnabled(::features::kReaderModeSidePanel);
+bool IsReadAnythingEnabled() {
+  return base::FeatureList::IsEnabled(::features::kReadAnything);
 }
 
 #if !BUILDFLAG(IS_ANDROID)

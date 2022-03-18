@@ -1,0 +1,46 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_WEBUI_READ_LATER_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_SIDE_PANEL_UI_H_
+#define CHROME_BROWSER_UI_WEBUI_READ_LATER_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_SIDE_PANEL_UI_H_
+
+#include <memory>
+
+#include "chrome/browser/ui/webui/read_later/side_panel/read_anything/read_anything.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "ui/webui/mojo_bubble_web_ui_controller.h"
+
+class ReadAnythingPageHandler;
+
+class ReadAnythingSidePanelUI
+    : public ui::MojoBubbleWebUIController,
+      public read_anything::mojom::PageHandlerFactory {
+ public:
+  explicit ReadAnythingSidePanelUI(content::WebUI* web_ui);
+  ReadAnythingSidePanelUI(const ReadAnythingSidePanelUI&) = delete;
+  ReadAnythingSidePanelUI& operator=(const ReadAnythingSidePanelUI&) = delete;
+  ~ReadAnythingSidePanelUI() override;
+
+  // Instantiates the implementor of the mojom::PageHandlerFactory mojo
+  // interface passing the pending receiver that will be internally bound.
+  void BindInterface(
+      mojo::PendingReceiver<read_anything::mojom::PageHandlerFactory> receiver);
+
+ private:
+  // read_anything::mojom::PageHandlerFactory:
+  void CreatePageHandler(
+      mojo::PendingRemote<read_anything::mojom::Page> page,
+      mojo::PendingReceiver<read_anything::mojom::PageHandler> receiver)
+      override;
+
+  std::unique_ptr<ReadAnythingPageHandler> read_anything_page_handler_;
+  mojo::Receiver<read_anything::mojom::PageHandlerFactory>
+      read_anything_page_factory_receiver_{this};
+
+  WEB_UI_CONTROLLER_TYPE_DECL();
+};
+
+#endif  // CHROME_BROWSER_UI_WEBUI_READ_LATER_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_SIDE_PANEL_UI_H_

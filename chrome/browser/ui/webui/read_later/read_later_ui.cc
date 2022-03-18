@@ -13,7 +13,7 @@
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/read_later/read_later_page_handler.h"
 #include "chrome/browser/ui/webui/read_later/side_panel/bookmarks_page_handler.h"
-#include "chrome/browser/ui/webui/read_later/side_panel/reader_mode/reader_mode_page_handler.h"
+#include "chrome/browser/ui/webui/read_later/side_panel/read_anything/read_anything_page_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -50,7 +50,7 @@ ReadLaterUI::ReadLaterUI(content::WebUI* web_ui)
        IDS_READ_LATER_MENU_EMPTY_STATE_ADD_FROM_DIALOG_SUBHEADER},
       {"emptyStateHeader", IDS_READ_LATER_MENU_EMPTY_STATE_HEADER},
       {"emptyStateSubheader", IDS_READ_LATER_MENU_EMPTY_STATE_SUBHEADER},
-      {"readerModeTabTitle", IDS_READER_MODE_TITLE},
+      {"readAnythingTabTitle", IDS_READ_ANYTHING_TITLE},
       {"readHeader", IDS_READ_LATER_MENU_READ_HEADER},
       {"title", IDS_READ_LATER_TITLE},
       {"sidePanelTitle", IDS_SIDE_PANEL_TITLE},
@@ -86,8 +86,7 @@ ReadLaterUI::ReadLaterUI(content::WebUI* web_ui)
       "hasUnseenReadingListEntries",
       reading_list_model->loaded() ? reading_list_model->unseen_size() : false);
 
-  source->AddBoolean("readerModeSidePanelEnabled",
-                     features::IsReaderModeSidePanelEnabled());
+  source->AddBoolean("readAnythingEnabled", features::IsReadAnythingEnabled());
   source->AddBoolean("unifiedSidePanel",
                      base::FeatureList::IsEnabled(features::kUnifiedSidePanel));
 
@@ -137,16 +136,16 @@ void ReadLaterUI::CreateBookmarksPageHandler(
 }
 
 void ReadLaterUI::BindInterface(
-    mojo::PendingReceiver<reader_mode::mojom::PageHandlerFactory> receiver) {
-  reader_mode_page_factory_receiver_.reset();
-  reader_mode_page_factory_receiver_.Bind(std::move(receiver));
+    mojo::PendingReceiver<read_anything::mojom::PageHandlerFactory> receiver) {
+  read_anything_page_factory_receiver_.reset();
+  read_anything_page_factory_receiver_.Bind(std::move(receiver));
 }
 
 void ReadLaterUI::CreatePageHandler(
-    mojo::PendingRemote<reader_mode::mojom::Page> page,
-    mojo::PendingReceiver<reader_mode::mojom::PageHandler> receiver) {
+    mojo::PendingRemote<read_anything::mojom::Page> page,
+    mojo::PendingReceiver<read_anything::mojom::PageHandler> receiver) {
   DCHECK(page);
-  reader_mode_page_handler_ = std::make_unique<ReaderModePageHandler>(
+  read_anything_page_handler_ = std::make_unique<ReadAnythingPageHandler>(
       std::move(page), std::move(receiver));
 }
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/read_later/side_panel/reader_mode/reader_mode_page_handler.h"
+#include "chrome/browser/ui/webui/read_later/side_panel/read_anything/read_anything_page_handler.h"
 
 #include <algorithm>
 #include <queue>
@@ -77,31 +77,31 @@ void AddTextNodesToVector(const ui::AXNode* node,
 
 }  // namespace
 
-ReaderModePageHandler::ReaderModePageHandler(
-    mojo::PendingRemote<reader_mode::mojom::Page> page,
-    mojo::PendingReceiver<reader_mode::mojom::PageHandler> receiver)
+ReadAnythingPageHandler::ReadAnythingPageHandler(
+    mojo::PendingRemote<read_anything::mojom::Page> page,
+    mojo::PendingReceiver<read_anything::mojom::PageHandler> receiver)
     : receiver_(this, std::move(receiver)), page_(std::move(page)) {}
 
-ReaderModePageHandler::~ReaderModePageHandler() = default;
+ReadAnythingPageHandler::~ReadAnythingPageHandler() = default;
 
-void ReaderModePageHandler::ShowUI() {
+void ReadAnythingPageHandler::ShowUI() {
   Browser* browser = chrome::FindLastActive();
   if (!browser)
     return;
   content::WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
 
-  // Get page contents (via snapshot of a11y tree) for reader generation.
+  // Get page contents (via snapshot of a11y tree) for read anything generation.
   // This will include subframe content for any subframes loaded at this point.
   web_contents->RequestAXTreeSnapshot(
-      base::BindOnce(&ReaderModePageHandler::CombineTextNodesAndMakeCallback,
+      base::BindOnce(&ReadAnythingPageHandler::CombineTextNodesAndMakeCallback,
                      weak_pointer_factory_.GetWeakPtr()),
       ui::AXMode::kWebContents,
       /* exclude_offscreen= */ false, kMaxNodes,
       /* timeout= */ {});
 }
 
-void ReaderModePageHandler::CombineTextNodesAndMakeCallback(
+void ReadAnythingPageHandler::CombineTextNodesAndMakeCallback(
     const ui::AXTreeUpdate& update) {
   ui::AXTree tree;
   bool success = tree.Unserialize(update);
@@ -109,14 +109,14 @@ void ReaderModePageHandler::CombineTextNodesAndMakeCallback(
     return;
 
   // If this page has an article node, only combine text from that node.
-  const ui::AXNode* reader_root = GetArticleNode(tree.root());
-  if (!reader_root) {
-    reader_root = tree.root();
+  const ui::AXNode* read_anything_root = GetArticleNode(tree.root());
+  if (!read_anything_root) {
+    read_anything_root = tree.root();
   }
 
   std::vector<std::string> text_node_contents;
   text_node_contents.reserve(update.nodes.size());
-  AddTextNodesToVector(reader_root, &text_node_contents);
+  AddTextNodesToVector(read_anything_root, &text_node_contents);
 
   page_->OnEssentialContent(std::move(text_node_contents));
 }

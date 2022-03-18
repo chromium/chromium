@@ -34,7 +34,7 @@ generate_grd("build_grd") {
     "images/read_later_empty.svg",
     "read_later.html",
     "side_panel/bookmarks.html",
-    "side_panel/reader_mode/reader_mode.html",
+    "side_panel/read_anything/read_anything.html",
     "side_panel/side_panel.html",
   ]
   input_files_base_dir = rebase_path(".", "//")
@@ -95,9 +95,9 @@ ts_library("build_ts") {
     "side_panel/bookmarks_api_proxy.ts",
     "side_panel/bookmarks_drag_manager.ts",
     "side_panel/bookmarks.mojom-webui.js",
-    "side_panel/reader_mode/app.ts",
-    "side_panel/reader_mode/reader_mode_api_proxy.ts",
-    "side_panel/reader_mode/reader_mode.mojom-webui.js",
+    "side_panel/read_anything/app.ts",
+    "side_panel/read_anything/read_anything_api_proxy.ts",
+    "side_panel/read_anything/read_anything.mojom-webui.js",
   ]
   definitions = [
     "//tools/typescript/definitions/bookmark_manager_private.d.ts",

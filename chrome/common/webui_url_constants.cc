@@ -238,10 +238,10 @@ const char kChromeUIBookmarksSidePanelHost[] =
     "bookmarks-side-panel.top-chrome";
 const char kChromeUIBookmarksSidePanelURL[] =
     "chrome://bookmarks-side-panel.top-chrome/";
-const char kChromeUIReaderModeSidePanelHost[] =
-    "reader-mode-side-panel.top-chrome";
-const char kChromeUIReaderModeSidePanelURL[] =
-    "chrome://reader-mode-side-panel.top-chrome/";
+const char kChromeUIReadAnythingSidePanelHost[] =
+    "read-anything-side-panel.top-chrome";
+const char kChromeUIReadAnythingSidePanelURL[] =
+    "chrome://read-anything-side-panel.top-chrome/";
 const char kChromeUIReadLaterHost[] = "read-later.top-chrome";
 const char kChromeUIReadLaterURL[] = "chrome://read-later.top-chrome/";
 const char kChromeUIWebAppInternalsHost[] = "web-app-internals";
