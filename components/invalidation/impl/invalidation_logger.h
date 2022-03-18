@@ -90,9 +90,7 @@ class InvalidationLogger {
   // The name of all invalidatorHandler registered (note that this is not
   // necessarily the same as the keys of latest_topics_, because they might
   // have not registered any Topic).
-  // TODO(crbug.com/1049591): it should be std::set, once handlers names are
-  // unique.
-  std::multiset<std::string> registered_handlers_;
+  std::set<std::string> registered_handlers_;
 };
 
 }  // namespace invalidation

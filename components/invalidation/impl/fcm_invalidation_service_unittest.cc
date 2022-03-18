@@ -221,7 +221,7 @@ TEST(FCMInvalidationServiceTest, NotifiesAboutInstanceID) {
   ASSERT_TRUE(invalidation_service->GetInvalidatorClientId().empty());
 
   // Register a handler *before* initializing the invalidation service.
-  FakeInvalidationHandler handler;
+  FakeInvalidationHandler handler("owner_1");
   invalidation_service->RegisterInvalidationHandler(&handler);
 
   // Because the invalidation service hasn't been initialized, the client ID is
@@ -252,7 +252,7 @@ TEST(FCMInvalidationServiceTest, NotifiesAboutInstanceID) {
 
   // Another handler that gets registered should immediately be informed of the
   // client ID.
-  FakeInvalidationHandler handler2;
+  FakeInvalidationHandler handler2(/*owner=*/"owner_2");
   invalidation_service->RegisterInvalidationHandler(&handler2);
   EXPECT_EQ(handler2.GetInvalidatorClientId(), "FreshInstanceID");
 

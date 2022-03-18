@@ -6,15 +6,8 @@
 
 namespace invalidation {
 
-FakeInvalidationHandler::FakeInvalidationHandler()
-    : state_(DEFAULT_INVALIDATION_ERROR),
-      invalidation_count_(0),
-      owner_name_("Fake") {}
-
 FakeInvalidationHandler::FakeInvalidationHandler(const std::string& owner_name)
-    : FakeInvalidationHandler() {
-  owner_name_ = owner_name;
-}
+    : owner_name_(owner_name) {}
 
 FakeInvalidationHandler::~FakeInvalidationHandler() = default;
 

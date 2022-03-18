@@ -36,7 +36,7 @@ TEST(InvalidatorRegistrarWithMemoryTest, Basic) {
   auto invalidator = std::make_unique<InvalidatorRegistrarWithMemory>(
       &pref_service, "sender_id", /*migrate_old_prefs=*/false);
 
-  FakeInvalidationHandler handler;
+  FakeInvalidationHandler handler("owner");
   invalidator->RegisterHandler(&handler);
 
   TopicInvalidationMap invalidation_map;
@@ -105,10 +105,10 @@ TEST(InvalidatorRegistrarWithMemoryTest, MultipleHandlers) {
   auto invalidator = std::make_unique<InvalidatorRegistrarWithMemory>(
       &pref_service, "sender_id", /*migrate_old_prefs=*/false);
 
-  FakeInvalidationHandler handler1;
-  FakeInvalidationHandler handler2;
-  FakeInvalidationHandler handler3;
-  FakeInvalidationHandler handler4;
+  FakeInvalidationHandler handler1("owner_1");
+  FakeInvalidationHandler handler2("owner_2");
+  FakeInvalidationHandler handler3("owner_3");
+  FakeInvalidationHandler handler4("owner_4");
 
   invalidator->RegisterHandler(&handler1);
   invalidator->RegisterHandler(&handler2);
@@ -208,10 +208,10 @@ TEST(InvalidatorRegistrarWithMemoryTest, EmptySetUnregisters) {
   auto invalidator = std::make_unique<InvalidatorRegistrarWithMemory>(
       &pref_service, "sender_id", /*migrate_old_prefs=*/false);
 
-  FakeInvalidationHandler handler1;
+  FakeInvalidationHandler handler1("owner_1");
 
   // Control observer.
-  FakeInvalidationHandler handler2;
+  FakeInvalidationHandler handler2("owner_2");
 
   invalidator->RegisterHandler(&handler1);
   invalidator->RegisterHandler(&handler2);

@@ -18,4 +18,4 @@ per-file ntp_tiles_internals_ui.*=file://components/ntp_tiles/OWNERS
 
 per-file signin_internals_ui*=achuith@chromium.org
 
-per-file invalidations_message_handler.*=file://components/invalidation/OWNERS
+per-file invalidations/invalidations_message_handler.*=file://components/invalidation/OWNERS

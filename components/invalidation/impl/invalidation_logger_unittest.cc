@@ -23,11 +23,10 @@ class InvalidationLoggerObserverTest : public InvalidationLoggerObserver {
     invalidation_received = false;
     detailed_status_received = false;
     updated_topics_replicated = std::map<std::string, TopicCountMap>();
-    registered_handlers = std::multiset<std::string>();
+    registered_handlers = std::set<std::string>();
   }
 
-  void OnRegistrationChange(
-      const std::multiset<std::string>& handlers) override {
+  void OnRegistrationChange(const std::set<std::string>& handlers) override {
     registered_handlers = handlers;
     registration_change_received = true;
   }
@@ -62,7 +61,7 @@ class InvalidationLoggerObserverTest : public InvalidationLoggerObserver {
   bool invalidation_received;
   bool detailed_status_received;
   std::map<std::string, TopicCountMap> updated_topics_replicated;
-  std::multiset<std::string> registered_handlers;
+  std::set<std::string> registered_handlers;
 };
 
 // Test that the callbacks are actually being called when observers are
@@ -263,22 +262,22 @@ TEST(InvalidationLoggerTest, TestRegisteredHandlers) {
   log.RegisterObserver(&observer_test);
 
   log.OnRegistration(std::string("FakeHandler1"));
-  std::multiset<std::string> test_multiset;
-  test_multiset.insert("FakeHandler1");
+  std::set<std::string> test_set;
+  test_set.insert("FakeHandler1");
   EXPECT_TRUE(observer_test.registration_change_received);
-  EXPECT_EQ(observer_test.registered_handlers, test_multiset);
+  EXPECT_EQ(observer_test.registered_handlers, test_set);
 
   observer_test.ResetStates();
   log.OnRegistration(std::string("FakeHandler2"));
-  test_multiset.insert("FakeHandler2");
+  test_set.insert("FakeHandler2");
   EXPECT_TRUE(observer_test.registration_change_received);
-  EXPECT_EQ(observer_test.registered_handlers, test_multiset);
+  EXPECT_EQ(observer_test.registered_handlers, test_set);
 
   observer_test.ResetStates();
   log.OnUnregistration(std::string("FakeHandler2"));
-  test_multiset.erase("FakeHandler2");
+  test_set.erase("FakeHandler2");
   EXPECT_TRUE(observer_test.registration_change_received);
-  EXPECT_EQ(observer_test.registered_handlers, test_multiset);
+  EXPECT_EQ(observer_test.registered_handlers, test_set);
 
   log.UnregisterObserver(&observer_test);
 }

@@ -27,7 +27,7 @@ class TopicInvalidationMap;
 class InvalidationLoggerObserver {
  public:
   virtual void OnRegistrationChange(
-      const std::multiset<std::string>& registered_handlers) = 0;
+      const std::set<std::string>& registered_handlers) = 0;
   virtual void OnStateChange(const InvalidatorState& new_state,
                              const base::Time& last_change_timestamp) = 0;
   virtual void OnUpdatedTopics(const std::string& handler_name,

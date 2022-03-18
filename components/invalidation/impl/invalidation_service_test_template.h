@@ -111,7 +111,7 @@ TYPED_TEST_P(InvalidationServiceTest, Basic) {
   InvalidationService* const invalidator =
       this->CreateAndInitializeInvalidationService();
 
-  FakeInvalidationHandler handler;
+  FakeInvalidationHandler handler("owner");
 
   invalidator->RegisterInvalidationHandler(&handler);
 
@@ -175,10 +175,10 @@ TYPED_TEST_P(InvalidationServiceTest, MultipleHandlers) {
   InvalidationService* const invalidator =
       this->CreateAndInitializeInvalidationService();
 
-  FakeInvalidationHandler handler1;
-  FakeInvalidationHandler handler2;
-  FakeInvalidationHandler handler3;
-  FakeInvalidationHandler handler4;
+  FakeInvalidationHandler handler1(/*owner=*/"owner_1");
+  FakeInvalidationHandler handler2(/*owner=*/"owner_2");
+  FakeInvalidationHandler handler3(/*owner=*/"owner_3");
+  FakeInvalidationHandler handler4(/*owner=*/"owner_4");
 
   invalidator->RegisterInvalidationHandler(&handler1);
   invalidator->RegisterInvalidationHandler(&handler2);
@@ -256,8 +256,8 @@ TYPED_TEST_P(InvalidationServiceTest, MultipleRegistrations) {
   InvalidationService* const invalidator =
       this->CreateAndInitializeInvalidationService();
 
-  FakeInvalidationHandler handler1;
-  FakeInvalidationHandler handler2;
+  FakeInvalidationHandler handler1(/*owner=*/"owner_1");
+  FakeInvalidationHandler handler2(/*owner=*/"owner_2");
 
   invalidator->RegisterInvalidationHandler(&handler1);
   invalidator->RegisterInvalidationHandler(&handler2);
@@ -279,10 +279,10 @@ TYPED_TEST_P(InvalidationServiceTest, EmptySetUnregisters) {
   InvalidationService* const invalidator =
       this->CreateAndInitializeInvalidationService();
 
-  FakeInvalidationHandler handler1;
+  FakeInvalidationHandler handler1(/*owner=*/"owner_1");
 
   // Control observer.
-  FakeInvalidationHandler handler2;
+  FakeInvalidationHandler handler2(/*owner=*/"owner_2");
 
   invalidator->RegisterInvalidationHandler(&handler1);
   invalidator->RegisterInvalidationHandler(&handler2);
@@ -331,7 +331,8 @@ TYPED_TEST_P(InvalidationServiceTest, EmptySetUnregisters) {
 // the bound InvalidationService.
 class BoundFakeInvalidationHandler : public FakeInvalidationHandler {
  public:
-  explicit BoundFakeInvalidationHandler(const InvalidationService& invalidator);
+  BoundFakeInvalidationHandler(const InvalidationService& invalidator,
+                               const std::string& owner);
 
   BoundFakeInvalidationHandler(const BoundFakeInvalidationHandler&) = delete;
   BoundFakeInvalidationHandler& operator=(const BoundFakeInvalidationHandler&) =
@@ -356,7 +357,7 @@ TYPED_TEST_P(InvalidationServiceTest, GetInvalidatorStateAlwaysCurrent) {
   InvalidationService* const invalidator =
       this->CreateAndInitializeInvalidationService();
 
-  BoundFakeInvalidationHandler handler(*invalidator);
+  BoundFakeInvalidationHandler handler(*invalidator, "owner");
   invalidator->RegisterInvalidationHandler(&handler);
 
   this->delegate_.TriggerOnInvalidatorStateChange(INVALIDATIONS_ENABLED);

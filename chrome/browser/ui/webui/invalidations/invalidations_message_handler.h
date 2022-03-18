@@ -33,7 +33,7 @@ class InvalidationsMessageHandler
 
   // Implementation of InvalidationLoggerObserver.
   void OnRegistrationChange(
-      const std::multiset<std::string>& registered_handlers) override;
+      const std::set<std::string>& registered_handlers) override;
   void OnStateChange(const invalidation::InvalidatorState& new_state,
                      const base::Time& last_change_timestamp) override;
   void OnUpdatedTopics(

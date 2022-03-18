@@ -7,8 +7,10 @@
 namespace invalidation {
 
 BoundFakeInvalidationHandler::BoundFakeInvalidationHandler(
-    const InvalidationService& invalidator)
-    : invalidator_(invalidator),
+    const InvalidationService& invalidator,
+    const std::string& owner)
+    : FakeInvalidationHandler(owner),
+      invalidator_(invalidator),
       last_retrieved_state_(DEFAULT_INVALIDATION_ERROR) {}
 
 BoundFakeInvalidationHandler::~BoundFakeInvalidationHandler() = default;

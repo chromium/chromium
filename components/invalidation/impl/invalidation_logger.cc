@@ -19,6 +19,8 @@ InvalidationLogger::InvalidationLogger()
 InvalidationLogger::~InvalidationLogger() = default;
 
 void InvalidationLogger::OnRegistration(const std::string& registrar_name) {
+  DCHECK(registered_handlers_.find(registrar_name) ==
+         registered_handlers_.end());
   registered_handlers_.insert(registrar_name);
   EmitRegisteredHandlers();
 }

@@ -14,7 +14,6 @@ namespace invalidation {
 
 class FakeInvalidationHandler : public InvalidationHandler {
  public:
-  FakeInvalidationHandler();
   explicit FakeInvalidationHandler(const std::string& owner);
   FakeInvalidationHandler(const FakeInvalidationHandler& other) = delete;
   FakeInvalidationHandler& operator=(const FakeInvalidationHandler& other) =
@@ -35,9 +34,9 @@ class FakeInvalidationHandler : public InvalidationHandler {
   void OnInvalidatorClientIdChange(const std::string& client_id) override;
 
  private:
-  InvalidatorState state_;
+  InvalidatorState state_ = DEFAULT_INVALIDATION_ERROR;
   TopicInvalidationMap last_invalidation_map_;
-  int invalidation_count_;
+  int invalidation_count_ = 0;
   std::string owner_name_;
   std::string client_id_;
 };
