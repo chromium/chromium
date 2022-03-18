@@ -863,14 +863,12 @@ void FrameTreeNode::SetFencedFrameModeIfNeeded(
 }
 
 bool FrameTreeNode::IsErrorPageIsolationEnabled() const {
-  // Enable error page isolation for fenced frames in both MPArch and ShadowDOM
-  // modes to address the issue with invalid urn:uuid (crbug.com/1264224).
-  //
-  // Note that `IsMainFrame()` only covers MPArch, therefore we add explicit
-  // `IsFencedFrameRoot()` check for ShadowDOM, at least until error page
-  // isolation is supported for subframes in crbug.com/1092524.
-  return SiteIsolationPolicy::IsErrorPageIsolationEnabled(IsMainFrame() ||
-                                                          IsFencedFrameRoot());
+  // Error page isolation is enabled for main frames only (crbug.com/1092524).
+  // Note that this will also enable error page isolation for fenced frames in
+  // MPArch mode, but not ShadowDOM mode.
+  // See the issue in crbug.com/1264224#c7 for why it can't be enabled for
+  // ShadowDOM mode.
+  return SiteIsolationPolicy::IsErrorPageIsolationEnabled(IsMainFrame());
 }
 
 void FrameTreeNode::SetSrcdocValue(const std::string& srcdoc_value) {

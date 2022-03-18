@@ -1192,7 +1192,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
   EXPECT_EQ(urn_uuid, EvalJs(root, navigate_fenced_frame_to_urn_script));
 
   observer2.Wait();
-  EXPECT_EQ(observer2.last_net_error_code(), net::ERR_INVALID_URL);
+  EXPECT_EQ(observer2.last_net_error_code(), net::ERR_ABORTED);
 }
 
 // Tests that if the URN mapping is not finished before the keep-alive timeout,
@@ -1292,7 +1292,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(0u, test_worklet_host_manager().GetKeepAliveWorkletHostsCount());
 
   observer.Wait();
-  EXPECT_EQ(observer.last_net_error_code(), net::ERR_INVALID_URL);
+  EXPECT_EQ(observer.last_net_error_code(), net::ERR_ABORTED);
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
@@ -1349,7 +1349,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
   EXPECT_EQ(urn_uuid, EvalJs(root, navigate_fenced_frame_to_urn_script));
 
   observer.Wait();
-  EXPECT_EQ(observer.last_net_error_code(), net::ERR_INVALID_URL);
+  EXPECT_EQ(observer.last_net_error_code(), net::ERR_ABORTED);
 }
 
 }  // namespace content

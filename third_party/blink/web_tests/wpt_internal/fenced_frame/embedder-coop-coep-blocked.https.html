@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<title>Test COOP/COEP properties set for a Fenced Frame Tree</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="resources/utils.js"></script>
+
+<body>
+<script>
+promise_test(async(t) => {
+  const fencedframe = attachFencedFrameContext();
+  t.step_timeout(() => t.done(), 1000);
+  await fencedframe.execute(() => {});
+  assert_unreached("fenced frame should not be loaded.");
+}, 'Create fencedframe with COOP:same-origin and COEP:require-corp');
+</script>
+</body>
