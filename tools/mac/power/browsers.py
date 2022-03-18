@@ -17,18 +17,17 @@ class BrowserDriver(abc.ABC):
   """Abstract Base Class encapsulating browser setup and tear down.
   """
 
-  def __init__(self,
-               browser_name: str,
-               process_name: str,
-               executable: str = None):
+  def __init__(self, browser_name: str, process_name: str):
     self.name = browser_name
     self.process_name = process_name
     self.browser_process = None
-    self.executable = executable
 
-    executable_path = (self.executable
-                       if self.executable is not None else os.path.join(
-                           "/Applications", f"{self.process_name}.app"))
+    # LaunchServices can get confused when an application is launched from
+    # more than one location and break AppleScript commands. Always launch
+    # browsers from /Applications to avoid such problems.
+    self.executable_path = (os.path.join("/Applications",
+                                         f"{self.process_name}.app"))
+
     if not os.path.exists(executable_path):
       raise ValueError(f"Application doesn't exist for {browser_name}.")
 
@@ -47,14 +46,7 @@ class BrowserDriver(abc.ABC):
 
   def GetApplicationInfo(self) -> typing.Dict:
     """ Returns the Info.plist data in the application folder. """
-    # `executable` may be either a path or an identifier.
-    if self.executable is not None:
-      executable_path = self.executable
-    else:
-      executable_path = os.path.join("/Applications",
-                                     f"{self.process_name}.app")
-
-    plist_path = os.path.join(executable_path, "Contents", "Info.plist")
+    plist_path = os.path.join(self.executable_path, "Contents", "Info.plist")
     with open(plist_path, 'rb') as plist_file:
       return plistlib.load(plist_file)
 
@@ -80,7 +72,7 @@ class BrowserDriver(abc.ABC):
 
 class SafariDriver(BrowserDriver):
   def __init__(self, extra_args=[]):
-    super().__init__("safari", "", "Safari")
+    super().__init__("safari", "Safari")
     self.extra_args = extra_args
 
   def Launch(self):
@@ -102,19 +94,15 @@ class ChromiumDriver(BrowserDriver):
                browser_name: str,
                variation: str,
                process_name: str,
-               executable_path=None,
                extra_args=[]):
     if variation != "":
       browser_name += f"_{variation}"
-    super().__init__(browser_name, process_name, executable_path)
+    super().__init__(browser_name, process_name)
     self.extra_args = extra_args
 
 
   def Launch(self):
-    if self.executable is not None:
-      open_args = [self.executable]
-    else:
-      open_args = ["-a", self.process_name]
+    open_args = ["-a", self.process_name]
     subprocess.call(["open"] + open_args + ["--args"] +
                     ["--enable-benchmarking", "--disable-stack-profiler"] +
                     self.extra_args)
@@ -155,11 +143,10 @@ def Canary(variation, extra_args=[]):
                         extra_args=extra_args)
 
 
-def Chromium(variation, executable_path=None, extra_args=[]):
+def Chromium(variation, extra_args=[]):
   return ChromiumDriver("chromium",
                         variation,
                         "Chromium",
-                        executable_path=executable_path,
                         extra_args=extra_args)
 
 
@@ -176,10 +163,8 @@ PROCESS_NAMES = [
 ]
 
 
-def MakeBrowserDriver(browser_name: str,
-                      variation: str,
-                      chrome_user_dir=None,
-                      chromium_path=None) -> BrowserDriver:
+def MakeBrowserDriver(browser_name: str, variation: str,
+                      chrome_user_dir=None) -> BrowserDriver:
   """Creates browser driver by name.
 
   Args:
@@ -190,7 +175,7 @@ def MakeBrowserDriver(browser_name: str,
 
   if "safari" == browser_name:
     return Safari()
-  if browser_name in ["chrome", "chromium", "canary"]:
+  if browser_name in ["chrome", "chromium", "canary", "edge"]:
     if chrome_user_dir:
       chrome_extra_arg = [f"--user-data-dir={chrome_user_dir}"]
     else:
@@ -202,7 +187,7 @@ def MakeBrowserDriver(browser_name: str,
     if browser_name == "canary":
       return Canary(variation, extra_args=chrome_extra_arg)
     elif browser_name == "chromium":
-      return Chromium(variation,
-                      executable_path=chromium_path,
-                      extra_args=chrome_extra_arg)
+      return Chromium(variation, extra_args=chrome_extra_arg)
+    elif browser_name == "edge":
+      return Edge(variation, extra_args=chrome_extra_arg)
   return None

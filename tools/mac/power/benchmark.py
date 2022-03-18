@@ -67,10 +67,6 @@ def main():
       dest='chrome_user_dir',
       action='store',
       help='The user data dir to pass to Chrome via --user-data-dir')
-  parser.add_argument('--chromium-path',
-                      dest='chromium_path',
-                      action='store',
-                      help='The path to Chromium.app')
 
   parser.add_argument('--verbose',
                       action='store_true',
@@ -102,8 +98,7 @@ def main():
     def BrowserFactory(browser_name, variation):
       return browsers.MakeBrowserDriver(browser_name,
                                         variation,
-                                        chrome_user_dir=args.chrome_user_dir,
-                                        chromium_path=args.chromium_path)
+                                        chrome_user_dir=args.chrome_user_dir)
 
     for scenario in IterScenarios(args.scenarios,
                                   BrowserFactory,
