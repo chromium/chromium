@@ -69,6 +69,10 @@ crbug.com/237245 [ Debug Win7 ] editing/selection/programmatic-selection-on-mac-
 # Most DevTools tests are slow in Debug.
 webkit.org/b/90488 [ Debug ] http/tests/devtools/* [ Slow ]
 webkit.org/b/90488 [ Debug ] inspector-protocol/* [ Slow ]
+webkit.org/b/90488 [ Debug ] http/tests/inspector-protocol/* [ Slow ]
+
+# Conversion tests are slow on Windows
+crbug.com/1306848 [ Win ] http/tests/inspector-protocol/conversion/* [ Slow ]
 
 # DevTools tests cause flakes on slow hardware in Release as well.
 crbug.com/1063051 [ Release ] http/tests/devtools/* [ Slow ]
