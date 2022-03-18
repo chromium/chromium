@@ -364,9 +364,7 @@ CONTENT-VISUAL: css/*
 CONTENT-MANUAL: css/*
 
 ## Support files not in /support/ or similar
-SUPPORT-WRONG-DIR: css/requirements.txt
 SUPPORT-WRONG-DIR: css/README.md
-SUPPORT-WRONG-DIR: css/build-css-testsuites.sh
 SUPPORT-WRONG-DIR: css/*/reftest.list
 SUPPORT-WRONG-DIR: css/*/README
 SUPPORT-WRONG-DIR: css/*/README.md
