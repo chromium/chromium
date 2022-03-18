@@ -1139,7 +1139,7 @@
   {
     "name": "default-wkwebview-context-menu",
     "owners": [ "gambard", "bling-flags@google.com" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 105
   },
   {
     "name": "deferred-font-shaping",
@@ -2143,12 +2143,12 @@
   {
     "name": "enable-fre-default-browser-screen-testing",
     "owners": [ "alionadangla", "gambard" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 105
   },
   {
     "name": "enable-fre-ui-module-ios-with-options",
     "owners": [ "gambard", "veronguyen", "vincb" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 102
   },
   {
     "name": "enable-fullscreen-api",
@@ -3238,7 +3238,7 @@
   {
     "name": "expanded-tab-strip",
     "owners": [ "rkgibson@google.com", "gambard", "bling-flags@google.com" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 105
   },
   {
     "name": "explore-sites",
