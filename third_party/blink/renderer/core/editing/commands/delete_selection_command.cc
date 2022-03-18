@@ -774,12 +774,14 @@ void DeleteSelectionCommand::HandleGeneralDelete(EditingState* editing_state) {
             text_node_to_trim, start_offset,
             downstream_end_.ComputeOffsetInContainerNode() - start_offset);
       } else {
+        RelocatablePosition relocatable_downstream_end(downstream_end_);
         RemoveChildrenInRange(start_node, start_offset,
                               downstream_end_.ComputeEditingOffset(),
                               editing_state);
         if (editing_state->IsAborted())
           return;
         ending_position_ = upstream_start_;
+        downstream_end_ = relocatable_downstream_end.GetPosition();
       }
       // We should update layout to associate |start_node| to layout object.
       GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);

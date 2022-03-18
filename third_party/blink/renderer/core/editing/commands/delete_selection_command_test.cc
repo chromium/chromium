@@ -149,4 +149,19 @@ TEST_F(DeleteSelectionCommandTest, DeleteWithEditabilityChange) {
   EXPECT_EQ("|x", GetSelectionTextFromBody());
 }
 
+// This is a regression test for https://crbug.com/1307391
+TEST_F(DeleteSelectionCommandTest, FloatingInputsWithTrailingSpace) {
+  GetDocument().setDesignMode("on");
+  InsertStyleElement("input { float: left; }");
+  Selection().SetSelection(SetSelectionTextToBody("<input>^<input><input>| "),
+                           SetSelectionOptions());
+
+  DeleteSelectionCommand& command =
+      *MakeGarbageCollected<DeleteSelectionCommand>(
+          GetDocument(), DeleteSelectionOptions::NormalDelete());
+  // Should not crash.
+  EXPECT_TRUE(command.Apply());
+  EXPECT_EQ("<input>| ", GetSelectionTextFromBody());
+}
+
 }  // namespace blink
