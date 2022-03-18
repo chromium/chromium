@@ -29,7 +29,7 @@ const base::Feature kEnableViewPaintOptimization{
 // flakes are mopped up, this feature will be removed.
 // https://crbug.com/1302857
 const base::Feature kFullscreenControllerMac{"FullscreenControllerMac",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
+                                             base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
 }  // namespace features

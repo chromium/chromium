@@ -1645,10 +1645,6 @@ void NativeWidgetNSWindowBridge::NotifyVisibilityChangeDown() {
 }
 
 void NativeWidgetNSWindowBridge::UpdateWindowGeometry() {
-  if (fullscreen_controller_ &&
-      fullscreen_controller_->IsInFullscreenTransition())
-    return;
-
   gfx::Rect window_in_screen = gfx::ScreenRectFromNSRect([window_ frame]);
   gfx::Rect content_in_screen = gfx::ScreenRectFromNSRect(
       [window_ contentRectForFrameRect:[window_ frame]]);
