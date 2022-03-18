@@ -20,7 +20,7 @@ std::unique_ptr<net::ProxyConfigService>
 ProxyServiceFactory::CreateProxyConfigService(PrefProxyConfigTracker* tracker) {
   std::unique_ptr<net::ProxyConfigService> base_service(
       net::ConfiguredProxyResolutionService::CreateSystemProxyConfigService(
-          base::CreateSingleThreadTaskRunner({web::WebThread::IO})));
+          web::GetIOThreadTaskRunner({})));
   return tracker->CreateTrackingProxyConfigService(std::move(base_service));
 }
 
@@ -30,8 +30,7 @@ ProxyServiceFactory::CreatePrefProxyConfigTrackerOfProfile(
     PrefService* browser_state_prefs,
     PrefService* local_state_prefs) {
   return std::make_unique<PrefProxyConfigTrackerImpl>(
-      browser_state_prefs,
-      base::CreateSingleThreadTaskRunner({web::WebThread::IO}));
+      browser_state_prefs, web::GetIOThreadTaskRunner({}));
 }
 
 // static
@@ -39,8 +38,7 @@ std::unique_ptr<PrefProxyConfigTracker>
 ProxyServiceFactory::CreatePrefProxyConfigTrackerOfLocalState(
     PrefService* local_state_prefs) {
   return std::make_unique<PrefProxyConfigTrackerImpl>(
-      local_state_prefs,
-      base::CreateSingleThreadTaskRunner({web::WebThread::IO}));
+      local_state_prefs, web::GetIOThreadTaskRunner({}));
 }
 
 // static
