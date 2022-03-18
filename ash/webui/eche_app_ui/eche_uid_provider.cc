@@ -8,8 +8,8 @@
 #include <openssl/base64.h>
 #include <cstring>
 
+#include "ash/components/multidevice/logging/logging.h"
 #include "base/check.h"
-#include "chromeos/components/multidevice/logging/logging.h"
 #include "components/prefs/pref_service.h"
 #include "crypto/random.h"
 

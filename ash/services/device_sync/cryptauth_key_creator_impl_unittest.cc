@@ -8,6 +8,8 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/multidevice/fake_secure_message_delegate.h"
+#include "ash/components/multidevice/secure_message_delegate_impl.h"
 #include "ash/services/device_sync/cryptauth_enrollment_constants.h"
 #include "ash/services/device_sync/cryptauth_key.h"
 #include "ash/services/device_sync/cryptauth_key_bundle.h"
@@ -15,8 +17,6 @@
 #include "ash/services/device_sync/proto/cryptauth_common.pb.h"
 #include "base/bind.h"
 #include "base/containers/flat_map.h"
-#include "chromeos/components/multidevice/fake_secure_message_delegate.h"
-#include "chromeos/components/multidevice/secure_message_delegate_impl.h"
 #include "crypto/hkdf.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

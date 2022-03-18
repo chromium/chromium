@@ -4,6 +4,7 @@
 
 #include "ash/services/secure_channel/nearby_connection.h"
 
+#include "ash/components/multidevice/logging/logging.h"
 #include "ash/services/secure_channel/file_transfer_update_callback.h"
 #include "ash/services/secure_channel/public/mojom/nearby_connector.mojom.h"
 #include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
@@ -15,7 +16,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
-#include "chromeos/components/multidevice/logging/logging.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 

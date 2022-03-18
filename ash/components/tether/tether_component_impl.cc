@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/components/multidevice/logging/logging.h"
 #include "ash/components/tether/active_host.h"
 #include "ash/components/tether/asynchronous_shutdown_object_container_impl.h"
 #include "ash/components/tether/crash_recovery_manager_impl.h"
@@ -21,7 +22,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
-#include "chromeos/components/multidevice/logging/logging.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 
 namespace ash {

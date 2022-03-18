@@ -6,10 +6,10 @@
 
 #include <memory>
 
+#include "ash/components/multidevice/remote_device_ref.h"
+#include "ash/components/multidevice/remote_device_test_util.h"
 #include "base/base64.h"
 #include "base/bind.h"
-#include "chromeos/components/multidevice/remote_device_ref.h"
-#include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

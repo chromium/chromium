@@ -7,8 +7,8 @@
 
 #include <vector>
 
+#include "ash/components/multidevice/remote_device_ref.h"
 #include "ash/components/tether/tether_host_response_recorder.h"
-#include "chromeos/components/multidevice/remote_device_ref.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace ash {

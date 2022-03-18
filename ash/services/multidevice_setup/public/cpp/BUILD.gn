@@ -15,10 +15,10 @@ source_set("cpp") {
   ]
 
   public_deps = [
+    "//ash/components/multidevice",
+    "//ash/components/multidevice/logging",
     "//ash/services/multidevice_setup/public/mojom",
     "//base",
-    "//chromeos/components/multidevice",
-    "//chromeos/components/multidevice/logging",
     "//mojo/public/cpp/bindings",
   ]
 }
@@ -135,13 +135,13 @@ source_set("unit_tests") {
   deps = [
     ":cpp",
     ":test_support",
+    "//ash/components/multidevice",
+    "//ash/components/multidevice:test_support",
     "//ash/services/multidevice_setup",
     "//ash/services/multidevice_setup:test_support",
     "//ash/services/multidevice_setup/public/mojom",
     "//base",
     "//base/test:test_support",
-    "//chromeos/components/multidevice",
-    "//chromeos/components/multidevice:test_support",
     "//testing/gtest",
   ]
 }

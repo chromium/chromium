@@ -7,6 +7,10 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/multidevice/fake_secure_message_delegate.h"
+#include "ash/components/multidevice/remote_device_ref.h"
+#include "ash/components/multidevice/remote_device_test_util.h"
+#include "ash/components/multidevice/secure_message_delegate_impl.h"
 #include "ash/services/secure_channel/fake_authenticator.h"
 #include "ash/services/secure_channel/fake_connection.h"
 #include "ash/services/secure_channel/fake_secure_context.h"
@@ -17,10 +21,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/bind.h"
-#include "chromeos/components/multidevice/fake_secure_message_delegate.h"
-#include "chromeos/components/multidevice/remote_device_ref.h"
-#include "chromeos/components/multidevice/remote_device_test_util.h"
-#include "chromeos/components/multidevice/secure_message_delegate_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::secure_channel {

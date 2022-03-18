@@ -172,14 +172,14 @@ static_library("secure_channel") {
   ]
 
   deps = [
+    "//ash/components/multidevice",
+    "//ash/components/multidevice/logging",
     "//ash/constants",
     "//ash/services/device_sync/proto",
     "//ash/services/secure_channel/public/cpp/shared",
     "//ash/services/secure_channel/public/mojom",
     "//base",
     "//chromeos",
-    "//chromeos/components/multidevice",
-    "//chromeos/components/multidevice/logging",
     "//crypto",
     "//device/bluetooth",
     "//device/bluetooth/public/cpp",
@@ -275,12 +275,12 @@ static_library("test_support") {
   public_deps = [ ":secure_channel" ]
 
   deps = [
+    "//ash/components/multidevice",
+    "//ash/components/multidevice/logging",
     "//ash/services/secure_channel/public/cpp/shared",
     "//ash/services/secure_channel/public/mojom",
     "//base",
     "//base/test:test_support",
-    "//chromeos/components/multidevice",
-    "//chromeos/components/multidevice/logging",
     "//device/bluetooth",
     "//testing/gmock",
   ]
@@ -339,15 +339,15 @@ source_set("unit_tests") {
 
   deps = [
     ":test_support",
+    "//ash/components/multidevice",
+    "//ash/components/multidevice:test_support",
+    "//ash/components/multidevice/logging",
     "//ash/services/secure_channel/public/cpp/client:test_support",
     "//ash/services/secure_channel/public/cpp/client:unit_tests",
     "//ash/services/secure_channel/public/cpp/shared",
     "//ash/services/secure_channel/public/mojom",
     "//ash/services/secure_channel/public/mojom:unit_tests",
     "//base/test:test_support",
-    "//chromeos/components/multidevice",
-    "//chromeos/components/multidevice:test_support",
-    "//chromeos/components/multidevice/logging",
     "//device/bluetooth:mocks",
     "//testing/gmock",
     "//testing/gtest",

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/components/multidevice/remote_device_test_util.h"
 #include "ash/services/secure_channel/background_eid_generator.h"
 #include "ash/services/secure_channel/fake_background_eid_generator.h"
 #include "ash/services/secure_channel/remote_attribute.h"
@@ -15,7 +16,6 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"

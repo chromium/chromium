@@ -7,9 +7,9 @@
 
 #include <memory>
 
+#include "ash/components/multidevice/remote_device_ref.h"
 #include "base/callback.h"
 #include "base/observer_list.h"
-#include "chromeos/components/multidevice/remote_device_ref.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {

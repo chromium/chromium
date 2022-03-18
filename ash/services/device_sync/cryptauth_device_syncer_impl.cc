@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/components/multidevice/logging/logging.h"
 #include "ash/services/device_sync/async_execution_time_metrics_logger.h"
 #include "ash/services/device_sync/cryptauth_client.h"
 #include "ash/services/device_sync/cryptauth_ecies_encryptor_impl.h"
@@ -23,7 +24,6 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "chromeos/components/multidevice/logging/logging.h"
 
 namespace chromeos {
 

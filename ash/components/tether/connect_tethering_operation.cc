@@ -4,13 +4,13 @@
 
 #include "ash/components/tether/connect_tethering_operation.h"
 
+#include "ash/components/multidevice/logging/logging.h"
 #include "ash/components/tether/message_wrapper.h"
 #include "ash/components/tether/proto/tether.pb.h"
 #include "ash/components/tether/tether_host_response_recorder.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/default_clock.h"
-#include "chromeos/components/multidevice/logging/logging.h"
 
 namespace ash {
 

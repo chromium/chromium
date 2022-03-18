@@ -4,11 +4,11 @@
 
 #include "ash/services/secure_channel/ble_connection_manager.h"
 
+#include "ash/components/multidevice/logging/logging.h"
+#include "ash/components/multidevice/remote_device_ref.h"
 #include "ash/services/secure_channel/authenticated_channel.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
-#include "chromeos/components/multidevice/logging/logging.h"
-#include "chromeos/components/multidevice/remote_device_ref.h"
 
 namespace ash::secure_channel {
 

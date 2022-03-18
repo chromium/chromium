@@ -4,14 +4,14 @@
 
 #include "ash/services/device_sync/software_feature_manager_impl.h"
 
+#include "ash/components/multidevice/remote_device_ref.h"
+#include "ash/components/multidevice/remote_device_test_util.h"
+#include "ash/components/multidevice/software_feature.h"
 #include "ash/services/device_sync/fake_cryptauth_feature_status_setter.h"
 #include "ash/services/device_sync/feature_status_change.h"
 #include "ash/services/device_sync/mock_cryptauth_client.h"
 #include "ash/services/device_sync/proto/enum_util.h"
 #include "base/bind.h"
-#include "chromeos/components/multidevice/remote_device_ref.h"
-#include "chromeos/components/multidevice/remote_device_test_util.h"
-#include "chromeos/components/multidevice/software_feature.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

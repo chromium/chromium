@@ -17,6 +17,7 @@ static_library("multidevice_debug") {
   ]
 
   deps = [
+    "//ash/components/multidevice/logging",
     "//ash/constants",
     "//ash/services/device_sync/proto",
     "//ash/services/device_sync/proto:util",
@@ -27,7 +28,6 @@ static_library("multidevice_debug") {
     "//ash/webui/resources:multidevice_debug_resources",
     "//base",
     "//base:i18n",
-    "//chromeos/components/multidevice/logging",
     "//components/prefs",
     "//components/resources",
     "//content/public/browser",

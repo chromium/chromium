@@ -9,9 +9,9 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/multidevice/remote_device_ref.h"
 #include "ash/components/tether/gms_core_notifications_state_tracker.h"
 #include "ash/components/tether/host_scanner_operation.h"
-#include "chromeos/components/multidevice/remote_device_ref.h"
 
 namespace ash {
 

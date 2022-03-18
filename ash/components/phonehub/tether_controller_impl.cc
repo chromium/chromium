@@ -4,10 +4,10 @@
 
 #include "ash/components/phonehub/tether_controller_impl.h"
 
+#include "ash/components/multidevice/logging/logging.h"
 #include "ash/components/phonehub/phone_status_model.h"
 #include "ash/components/phonehub/user_action_recorder.h"
 #include "ash/components/phonehub/util/histogram_util.h"
-#include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/services/network_config/in_process_instance.h"
 
 namespace ash {

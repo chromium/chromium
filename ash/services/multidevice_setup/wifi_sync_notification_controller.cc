@@ -6,6 +6,10 @@
 
 #include <memory>
 
+#include "ash/components/multidevice/logging/logging.h"
+#include "ash/components/multidevice/remote_device_ref.h"
+#include "ash/components/multidevice/software_feature.h"
+#include "ash/components/multidevice/software_feature_state.h"
 #include "ash/services/device_sync/public/cpp/device_sync_client.h"
 #include "ash/services/multidevice_setup/account_status_change_delegate_notifier.h"
 #include "ash/services/multidevice_setup/global_state_feature_manager.h"
@@ -14,10 +18,6 @@
 #include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "base/memory/ptr_util.h"
 #include "base/power_monitor/power_monitor.h"
-#include "chromeos/components/multidevice/logging/logging.h"
-#include "chromeos/components/multidevice/remote_device_ref.h"
-#include "chromeos/components/multidevice/software_feature.h"
-#include "chromeos/components/multidevice/software_feature_state.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"

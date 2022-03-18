@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/components/multidevice/remote_device_test_util.h"
 #include "ash/components/phonehub/fake_camera_roll_manager.h"
 #include "ash/components/phonehub/fake_multidevice_feature_access_manager.h"
 #include "ash/components/phonehub/multidevice_feature_access_manager.h"
@@ -20,7 +21,6 @@
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"

@@ -11,6 +11,8 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/multidevice/beacon_seed.h"
+#include "ash/components/multidevice/remote_device_test_util.h"
 #include "ash/components/proximity_auth/fake_lock_handler.h"
 #include "ash/components/proximity_auth/screenlock_bridge.h"
 #include "ash/constants/ash_features.h"
@@ -37,8 +39,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/components/multidevice/beacon_seed.h"
-#include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"

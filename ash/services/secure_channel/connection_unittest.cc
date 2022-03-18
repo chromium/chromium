@@ -4,6 +4,8 @@
 
 #include "ash/services/secure_channel/connection.h"
 
+#include "ash/components/multidevice/remote_device_ref.h"
+#include "ash/components/multidevice/remote_device_test_util.h"
 #include "ash/services/secure_channel/connection_observer.h"
 #include "ash/services/secure_channel/file_transfer_update_callback.h"
 #include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
@@ -12,8 +14,6 @@
 #include "base/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/bind.h"
-#include "chromeos/components/multidevice/remote_device_ref.h"
-#include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

@@ -4,10 +4,10 @@
 
 #include "ash/components/phonehub/recent_apps_interaction_handler_impl.h"
 
+#include "ash/components/multidevice/logging/logging.h"
 #include "ash/components/phonehub/notification.h"
 #include "ash/components/phonehub/pref_names.h"
 #include "ash/constants/ash_features.h"
-#include "chromeos/components/multidevice/logging/logging.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 

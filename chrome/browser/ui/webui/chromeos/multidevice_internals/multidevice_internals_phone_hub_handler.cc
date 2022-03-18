@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/chromeos/multidevice_internals/multidevice_internals_phone_hub_handler.h"
 
+#include "ash/components/multidevice/logging/logging.h"
 #include "ash/components/phonehub/camera_roll_item.h"
 #include "ash/components/phonehub/fake_phone_hub_manager.h"
 #include "ash/components/phonehub/notification.h"
@@ -14,7 +15,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/phonehub/phone_hub_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/components/multidevice/logging/logging.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"

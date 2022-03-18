@@ -9,6 +9,11 @@
 #include <memory>
 
 #include "ash/components/login/auth/user_context.h"
+#include "ash/components/multidevice/logging/logging.h"
+#include "ash/components/multidevice/remote_device.h"
+#include "ash/components/multidevice/remote_device_cache.h"
+#include "ash/components/multidevice/remote_device_ref.h"
+#include "ash/components/multidevice/software_feature_state.h"
 #include "ash/components/proximity_auth/proximity_auth_local_state_pref_manager.h"
 #include "ash/components/proximity_auth/smart_lock_metrics_recorder.h"
 #include "ash/constants/ash_features.h"
@@ -31,11 +36,6 @@
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/components/multidevice/logging/logging.h"
-#include "chromeos/components/multidevice/remote_device.h"
-#include "chromeos/components/multidevice/remote_device_cache.h"
-#include "chromeos/components/multidevice/remote_device_ref.h"
-#include "chromeos/components/multidevice/software_feature_state.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/tpm/tpm_token_loader.h"
 

@@ -7,6 +7,7 @@
 #include <ostream>
 #include <sstream>
 
+#include "ash/components/multidevice/logging/logging.h"
 #include "ash/services/secure_channel/active_connection_manager_impl.h"
 #include "ash/services/secure_channel/authenticated_channel.h"
 #include "ash/services/secure_channel/ble_connection_manager_impl.h"
@@ -20,7 +21,6 @@
 #include "ash/services/secure_channel/secure_channel_disconnector_impl.h"
 #include "ash/services/secure_channel/timer_factory_impl.h"
 #include "base/memory/ptr_util.h"
-#include "chromeos/components/multidevice/logging/logging.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
 namespace ash::secure_channel {

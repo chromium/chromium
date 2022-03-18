@@ -5,10 +5,10 @@
 #ifndef ASH_SERVICES_SECURE_CHANNEL_CONNECT_TO_DEVICE_OPERATION_H_
 #define ASH_SERVICES_SECURE_CHANNEL_CONNECT_TO_DEVICE_OPERATION_H_
 
+#include "ash/components/multidevice/logging/logging.h"
 #include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "base/callback.h"
 #include "base/logging.h"
-#include "chromeos/components/multidevice/logging/logging.h"
 
 namespace ash::secure_channel {
 

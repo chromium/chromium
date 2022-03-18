@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/components/multidevice/remote_device_test_util.h"
 #include "ash/components/tether/device_id_tether_network_guid_map.h"
 #include "ash/components/tether/fake_connection_preserver.h"
 #include "ash/components/tether/fake_host_scan_cache.h"
@@ -27,7 +28,6 @@
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "chromeos/network/network_state_test_helper.h"
 #include "components/session_manager/core/session_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"

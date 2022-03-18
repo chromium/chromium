@@ -6,12 +6,12 @@
 
 #include "ash/services/multidevice_setup/multidevice_setup_initializer.h"
 
+#include "ash/components/multidevice/logging/logging.h"
 #include "ash/services/multidevice_setup/multidevice_setup_impl.h"
 #include "ash/services/multidevice_setup/public/cpp/android_sms_app_helper_delegate.h"
 #include "ash/services/multidevice_setup/public/cpp/android_sms_pairing_state_tracker.h"
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
-#include "chromeos/components/multidevice/logging/logging.h"
 
 namespace ash {
 

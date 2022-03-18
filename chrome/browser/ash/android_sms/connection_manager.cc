@@ -6,10 +6,10 @@
 
 #include <utility>
 
+#include "ash/components/multidevice/logging/logging.h"
 #include "chrome/browser/ash/android_sms/android_sms_urls.h"
 #include "chrome/browser/ash/android_sms/connection_establisher.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/components/multidevice/logging/logging.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/service_worker_context.h"

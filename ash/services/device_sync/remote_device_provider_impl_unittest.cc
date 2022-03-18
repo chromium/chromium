@@ -7,6 +7,10 @@
 #include <memory>
 #include <vector>
 
+#include "ash/components/multidevice/beacon_seed.h"
+#include "ash/components/multidevice/fake_secure_message_delegate.h"
+#include "ash/components/multidevice/remote_device.h"
+#include "ash/components/multidevice/secure_message_delegate_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/services/device_sync/cryptauth_device.h"
 #include "ash/services/device_sync/cryptauth_device_manager.h"
@@ -22,10 +26,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/components/multidevice/beacon_seed.h"
-#include "chromeos/components/multidevice/fake_secure_message_delegate.h"
-#include "chromeos/components/multidevice/remote_device.h"
-#include "chromeos/components/multidevice/secure_message_delegate_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {

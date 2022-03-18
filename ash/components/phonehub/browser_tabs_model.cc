@@ -4,7 +4,7 @@
 
 #include "ash/components/phonehub/browser_tabs_model.h"
 
-#include "chromeos/components/multidevice/logging/logging.h"
+#include "ash/components/multidevice/logging/logging.h"
 
 namespace ash {
 namespace phonehub {

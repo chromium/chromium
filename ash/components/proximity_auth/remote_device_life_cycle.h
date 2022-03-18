@@ -7,7 +7,7 @@
 
 #include <ostream>
 
-#include "chromeos/components/multidevice/remote_device_ref.h"
+#include "ash/components/multidevice/remote_device_ref.h"
 
 namespace ash {
 namespace secure_channel {

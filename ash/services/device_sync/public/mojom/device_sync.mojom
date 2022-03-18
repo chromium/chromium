@@ -4,7 +4,7 @@
 
 module chromeos.device_sync.mojom;
 
-import "chromeos/components/multidevice/mojom/multidevice_types.mojom";
+import "ash/components/multidevice/mojom/multidevice_types.mojom";
 import "mojo/public/mojom/base/time.mojom";
 
 // Denotes the outcome of an HTTP request, where results like kBadRequest map

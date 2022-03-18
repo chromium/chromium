@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/multidevice/remote_device_test_util.h"
 #include "ash/components/phonehub/fake_do_not_disturb_controller.h"
 #include "ash/components/phonehub/fake_feature_status_provider.h"
 #include "ash/components/phonehub/fake_find_my_device_controller.h"
@@ -28,7 +29,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image.h"
 

@@ -4,13 +4,13 @@
 
 #include "ash/components/tether/active_host.h"
 
+#include "ash/components/multidevice/logging/logging.h"
+#include "ash/components/multidevice/remote_device_ref.h"
 #include "ash/components/tether/pref_names.h"
 #include "ash/components/tether/tether_host_fetcher.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
-#include "chromeos/components/multidevice/logging/logging.h"
-#include "chromeos/components/multidevice/remote_device_ref.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 

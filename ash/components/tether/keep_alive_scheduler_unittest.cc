@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/components/multidevice/remote_device_test_util.h"
 #include "ash/components/tether/device_id_tether_network_guid_map.h"
 #include "ash/components/tether/fake_active_host.h"
 #include "ash/components/tether/fake_host_scan_cache.h"
@@ -15,7 +16,6 @@
 #include "ash/services/secure_channel/public/cpp/client/fake_secure_channel_client.h"
 #include "base/memory/ptr_util.h"
 #include "base/timer/mock_timer.h"
-#include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {

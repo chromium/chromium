@@ -8,13 +8,13 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/multidevice/remote_device.h"
+#include "ash/components/multidevice/remote_device_cache.h"
+#include "ash/components/multidevice/remote_device_ref.h"
 #include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "base/callback.h"
 #include "base/timer/timer.h"
-#include "chromeos/components/multidevice/remote_device.h"
-#include "chromeos/components/multidevice/remote_device_cache.h"
-#include "chromeos/components/multidevice/remote_device_ref.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"

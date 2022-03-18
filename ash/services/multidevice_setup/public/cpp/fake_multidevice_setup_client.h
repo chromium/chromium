@@ -10,10 +10,10 @@
 #include <string>
 #include <tuple>
 
+#include "ash/components/multidevice/remote_device_ref.h"
 #include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "base/callback.h"
-#include "chromeos/components/multidevice/remote_device_ref.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {

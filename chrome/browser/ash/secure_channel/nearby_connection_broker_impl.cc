@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/components/multidevice/logging/logging.h"
 #include "ash/constants/ash_features.h"
 #include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "base/bind.h"
@@ -23,7 +24,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/secure_channel/nearby_endpoint_finder.h"
 #include "chrome/browser/ash/secure_channel/util/histogram_util.h"
-#include "chromeos/components/multidevice/logging/logging.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash {

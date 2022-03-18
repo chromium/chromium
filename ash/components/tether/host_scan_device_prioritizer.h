@@ -5,7 +5,7 @@
 #ifndef ASH_COMPONENTS_TETHER_HOST_SCAN_DEVICE_PRIORITIZER_H_
 #define ASH_COMPONENTS_TETHER_HOST_SCAN_DEVICE_PRIORITIZER_H_
 
-#include "chromeos/components/multidevice/remote_device_ref.h"
+#include "ash/components/multidevice/remote_device_ref.h"
 
 namespace ash {
 

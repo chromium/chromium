@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ui/webui/chromeos/multidevice_internals/multidevice_internals_logs_handler.h"
 
+#include "ash/components/multidevice/logging/logging.h"
 #include "base/bind.h"
 #include "base/i18n/time_formatting.h"
 #include "base/values.h"
-#include "chromeos/components/multidevice/logging/logging.h"
 
 namespace chromeos {
 

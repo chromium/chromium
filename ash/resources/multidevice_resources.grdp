@@ -2,13 +2,13 @@
 <grit-part>
   <!-- Mojo JS files. -->
   <include name="IDR_MULTIDEVICE_MULTIDEVICE_TYPES_MOJOM_HTML"
-      file="${mojom_root}/chromeos/components/multidevice/mojom/multidevice_types.mojom.html"
-      resource_path="mojo/chromeos/components/multidevice/mojom/multidevice_types.mojom.html"
+      file="${mojom_root}/ash/components/multidevice/mojom/multidevice_types.mojom.html"
+      resource_path="mojo/ash/components/multidevice/mojom/multidevice_types.mojom.html"
       use_base_dir="false"
       type="BINDATA" />
   <include name="IDR_MULTIDEVICE_MULTIDEVICE_TYPES_MOJOM_LITE_JS"
-      file="${mojom_root}/chromeos/components/multidevice/mojom/multidevice_types.mojom-lite.js"
-      resource_path="mojo/chromeos/components/multidevice/mojom/multidevice_types.mojom-lite.js"
+      file="${mojom_root}/ash/components/multidevice/mojom/multidevice_types.mojom-lite.js"
+      resource_path="mojo/ash/components/multidevice/mojom/multidevice_types.mojom-lite.js"
       use_base_dir="false"
       type="BINDATA" />
   <include name="IDR_MULTIDEVICE_DEVICE_SYNC_MOJOM_HTML"

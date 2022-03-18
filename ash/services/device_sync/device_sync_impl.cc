@@ -4,6 +4,8 @@
 
 #include "ash/services/device_sync/device_sync_impl.h"
 
+#include "ash/components/multidevice/logging/logging.h"
+#include "ash/components/multidevice/secure_message_delegate_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/services/device_sync/cryptauth_client_impl.h"
 #include "ash/services/device_sync/cryptauth_device_activity_getter_impl.h"
@@ -37,8 +39,6 @@
 #include "base/time/default_clock.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
-#include "chromeos/components/multidevice/logging/logging.h"
-#include "chromeos/components/multidevice/secure_message_delegate_impl.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"

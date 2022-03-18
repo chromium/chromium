@@ -4,10 +4,10 @@
 
 #include "ash/components/phonehub/cros_state_sender.h"
 
+#include "ash/components/multidevice/logging/logging.h"
 #include "ash/components/phonehub/message_sender.h"
 #include "ash/components/phonehub/phone_model.h"
 #include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
-#include "chromeos/components/multidevice/logging/logging.h"
 
 namespace ash {
 namespace phonehub {

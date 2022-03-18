@@ -9,6 +9,8 @@
 #include <memory>
 #include <string>
 
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "ash/components/multidevice/remote_device_cache.h"
 #include "ash/components/proximity_auth/screenlock_bridge.h"
 // TODO(https://crbug.com/1164001): move to forward declaration
 #include "ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
@@ -17,8 +19,6 @@
 #include "base/values.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_types.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/components/multidevice/remote_device_cache.h"
 
 namespace proximity_auth {
 class ProximityAuthLocalStatePrefManager;

@@ -1,6 +1,0 @@
-include_rules = [
-  "+ash/services/device_sync/proto",
-  "+device/bluetooth/public/cpp",
-  "+mojo/public/cpp",
-  "+third_party/securemessage",
-]

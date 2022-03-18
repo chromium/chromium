@@ -8,6 +8,8 @@
 #include <memory>
 #include <string>
 
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "ash/components/multidevice/software_feature.h"
 #include "ash/services/device_sync/public/cpp/device_sync_client.h"
 #include "ash/services/device_sync/public/mojom/device_sync.mojom.h"
 #include "ash/services/multidevice_setup/global_state_feature_manager.h"
@@ -15,8 +17,6 @@
 #include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/components/multidevice/software_feature.h"
 
 class PrefRegistrySimple;
 class PrefService;

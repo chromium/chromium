@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/components/multidevice/logging/logging.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chromeos/components/multidevice/logging/logging.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 

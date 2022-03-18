@@ -7,11 +7,11 @@
 #include <memory>
 #include <set>
 
+#include "ash/components/multidevice/logging/logging.h"
 #include "ash/components/tether/message_wrapper.h"
 #include "ash/components/tether/timer_factory.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
-#include "chromeos/components/multidevice/logging/logging.h"
 
 namespace ash {
 

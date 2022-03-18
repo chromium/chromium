@@ -7,12 +7,12 @@
 
 #include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client_impl.h"
 
+#include "ash/components/multidevice/logging/logging.h"
 #include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
-#include "chromeos/components/multidevice/logging/logging.h"
 
 namespace {
 

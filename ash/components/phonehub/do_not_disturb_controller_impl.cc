@@ -4,9 +4,9 @@
 
 #include "ash/components/phonehub/do_not_disturb_controller_impl.h"
 
+#include "ash/components/multidevice/logging/logging.h"
 #include "ash/components/phonehub/message_sender.h"
 #include "ash/components/phonehub/user_action_recorder.h"
-#include "chromeos/components/multidevice/logging/logging.h"
 
 namespace ash {
 namespace phonehub {

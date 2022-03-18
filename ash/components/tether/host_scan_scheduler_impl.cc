@@ -6,13 +6,13 @@
 
 #include <memory>
 
+#include "ash/components/multidevice/logging/logging.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_clock.h"
-#include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"

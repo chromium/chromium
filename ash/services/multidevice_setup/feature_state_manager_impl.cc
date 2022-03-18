@@ -6,6 +6,9 @@
 
 #include <array>
 
+#include "ash/components/multidevice/logging/logging.h"
+#include "ash/components/multidevice/remote_device_ref.h"
+#include "ash/components/multidevice/software_feature.h"
 #include "ash/constants/ash_features.h"
 #include "ash/services/multidevice_setup/global_state_feature_manager.h"
 #include "ash/services/multidevice_setup/public/cpp/prefs.h"
@@ -16,9 +19,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
-#include "chromeos/components/multidevice/logging/logging.h"
-#include "chromeos/components/multidevice/remote_device_ref.h"
-#include "chromeos/components/multidevice/software_feature.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

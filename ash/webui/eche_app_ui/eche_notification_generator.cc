@@ -4,8 +4,8 @@
 
 #include "ash/webui/eche_app_ui/eche_notification_generator.h"
 
+#include "ash/components/multidevice/logging/logging.h"
 #include "ash/webui/eche_app_ui/launch_app_helper.h"
-#include "chromeos/components/multidevice/logging/logging.h"
 
 namespace ash {
 namespace eche_app {

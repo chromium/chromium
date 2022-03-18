@@ -6,7 +6,7 @@
 
 #include <sstream>
 
-#include "chromeos/components/multidevice/logging/logging.h"
+#include "ash/components/multidevice/logging/logging.h"
 
 namespace ash {
 

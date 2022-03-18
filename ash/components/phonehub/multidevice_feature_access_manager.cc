@@ -4,9 +4,9 @@
 
 #include "ash/components/phonehub/multidevice_feature_access_manager.h"
 
+#include "ash/components/multidevice/logging/logging.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "chromeos/components/multidevice/logging/logging.h"
 
 namespace ash {
 namespace phonehub {

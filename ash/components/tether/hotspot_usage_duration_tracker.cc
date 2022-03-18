@@ -4,9 +4,9 @@
 
 #include "ash/components/tether/hotspot_usage_duration_tracker.h"
 
+#include "ash/components/multidevice/logging/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/clock.h"
-#include "chromeos/components/multidevice/logging/logging.h"
 
 namespace ash {
 

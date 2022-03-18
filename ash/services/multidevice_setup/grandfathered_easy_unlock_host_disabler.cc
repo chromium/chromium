@@ -4,12 +4,12 @@
 
 #include "ash/services/multidevice_setup/grandfathered_easy_unlock_host_disabler.h"
 
+#include "ash/components/multidevice/logging/logging.h"
 #include "ash/constants/ash_features.h"
 #include "ash/services/device_sync/public/cpp/device_sync_client.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/timer/timer.h"
-#include "chromeos/components/multidevice/logging/logging.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 

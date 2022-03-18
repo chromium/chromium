@@ -8,9 +8,9 @@
 #include <memory>
 #include <string>
 
-#include "ash/services/secure_channel/bluetooth_helper.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/components/multidevice/remote_device_cache.h"
+#include "ash/components/multidevice/remote_device_cache.h"
+#include "ash/services/secure_channel/bluetooth_helper.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::secure_channel {

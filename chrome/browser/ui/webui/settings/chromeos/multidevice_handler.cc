@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/chromeos/multidevice_handler.h"
 
+#include "ash/components/multidevice/logging/logging.h"
 #include "ash/components/phonehub/util/histogram_util.h"
 #include "ash/components/proximity_auth/proximity_auth_pref_names.h"
 #include "ash/constants/ash_features.h"
@@ -23,7 +24,6 @@
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/chromeos/multidevice_setup/multidevice_setup_dialog.h"
-#include "chromeos/components/multidevice/logging/logging.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui.h"

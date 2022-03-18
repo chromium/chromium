@@ -7,11 +7,11 @@
 #include <set>
 #include <utility>
 
+#include "ash/components/multidevice/logging/logging.h"
 #include "ash/services/multidevice_setup/host_device_timestamp_manager.h"
 #include "ash/services/multidevice_setup/host_status_provider_impl.h"
 #include "base/memory/ptr_util.h"
 #include "base/time/clock.h"
-#include "chromeos/components/multidevice/logging/logging.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 

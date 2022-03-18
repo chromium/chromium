@@ -4,6 +4,7 @@
 
 #include "ash/webui/eche_app_ui/system_info_provider.h"
 
+#include "ash/components/multidevice/logging/logging.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
@@ -12,7 +13,6 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/values.h"
-#include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 
 namespace ash {

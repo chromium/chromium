@@ -4,8 +4,8 @@
 
 #include "ash/services/multidevice_setup/host_verifier.h"
 
+#include "ash/components/multidevice/logging/logging.h"
 #include "base/logging.h"
-#include "chromeos/components/multidevice/logging/logging.h"
 
 namespace ash {
 

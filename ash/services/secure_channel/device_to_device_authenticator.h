@@ -7,13 +7,13 @@
 
 #include <memory>
 
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/components/multidevice/secure_message_delegate.h"
 #include "ash/services/secure_channel/authenticator.h"
 #include "ash/services/secure_channel/connection.h"
 #include "ash/services/secure_channel/connection_observer.h"
 #include "ash/services/secure_channel/session_keys.h"
 #include "base/memory/weak_ptr.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/components/multidevice/secure_message_delegate.h"
 
 namespace base {
 class OneShotTimer;

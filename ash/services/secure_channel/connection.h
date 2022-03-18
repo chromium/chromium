@@ -8,11 +8,11 @@
 #include <memory>
 #include <ostream>
 
+#include "ash/components/multidevice/remote_device_ref.h"
 #include "ash/services/secure_channel/file_transfer_update_callback.h"
 #include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom-forward.h"
 #include "base/callback_forward.h"
 #include "base/observer_list.h"
-#include "chromeos/components/multidevice/remote_device_ref.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::secure_channel {

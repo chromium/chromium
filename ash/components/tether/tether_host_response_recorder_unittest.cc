@@ -6,8 +6,8 @@
 
 #include <memory>
 
+#include "ash/components/multidevice/remote_device_test_util.h"
 #include "base/memory/ptr_util.h"
-#include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"

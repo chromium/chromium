@@ -6,12 +6,12 @@
 
 #include <memory>
 
+#include "ash/components/multidevice/logging/logging.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_clock.h"
-#include "chromeos/components/multidevice/logging/logging.h"
 
 namespace ash::secure_channel {
 

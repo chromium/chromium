@@ -9,8 +9,8 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/multidevice/remote_device.h"
 #include "ash/services/device_sync/public/cpp/device_sync_client.h"
-#include "chromeos/components/multidevice/remote_device.h"
 
 namespace ash {
 

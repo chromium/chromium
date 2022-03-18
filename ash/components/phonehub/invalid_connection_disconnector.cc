@@ -4,10 +4,10 @@
 
 #include "ash/components/phonehub/invalid_connection_disconnector.h"
 
+#include "ash/components/multidevice/logging/logging.h"
 #include "ash/components/phonehub/phone_model.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chromeos/components/multidevice/logging/logging.h"
 
 namespace ash {
 namespace phonehub {

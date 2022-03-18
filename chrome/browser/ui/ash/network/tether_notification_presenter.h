@@ -8,10 +8,10 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/multidevice/remote_device_ref.h"
 #include "ash/components/tether/notification_presenter.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/network/network_state.h"
 #include "ui/message_center/public/cpp/notification.h"
 

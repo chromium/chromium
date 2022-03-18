@@ -5,6 +5,7 @@
 #ifndef ASH_SERVICES_SECURE_CHANNEL_SECURE_CHANNEL_H_
 #define ASH_SERVICES_SECURE_CHANNEL_SECURE_CHANNEL_H_
 
+#include "ash/components/multidevice/remote_device_ref.h"
 #include "ash/services/secure_channel/authenticator.h"
 #include "ash/services/secure_channel/connection.h"
 #include "ash/services/secure_channel/connection_observer.h"
@@ -15,7 +16,6 @@
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/components/multidevice/remote_device_ref.h"
 
 namespace ash::secure_channel {
 

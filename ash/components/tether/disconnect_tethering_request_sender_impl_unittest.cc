@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "ash/components/multidevice/remote_device_ref.h"
+#include "ash/components/multidevice/remote_device_test_util.h"
 #include "ash/components/tether/disconnect_tethering_operation.h"
 #include "ash/components/tether/disconnect_tethering_request_sender.h"
 #include "ash/components/tether/fake_tether_host_fetcher.h"
@@ -13,8 +15,6 @@
 #include "ash/services/secure_channel/public/cpp/client/fake_secure_channel_client.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/task_environment.h"
-#include "chromeos/components/multidevice/remote_device_ref.h"
-#include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {

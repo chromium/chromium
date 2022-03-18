@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/components/multidevice/remote_device_test_util.h"
 #include "ash/components/tether/message_wrapper.h"
 #include "ash/components/tether/proto_test_util.h"
 #include "ash/components/tether/test_timer_factory.h"
@@ -15,7 +16,6 @@
 #include "ash/services/secure_channel/public/cpp/client/fake_secure_channel_client.h"
 #include "base/memory/ptr_util.h"
 #include "base/timer/mock_timer.h"
-#include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/components/multidevice/remote_device_test_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/services/device_sync/public/cpp/fake_device_sync_client.h"
 #include "ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
@@ -20,7 +21,6 @@
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
 #include "base/timer/mock_timer.h"
-#include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::secure_channel {

@@ -4,8 +4,8 @@
 
 #include "ash/components/proximity_auth/remote_status_update.h"
 
+#include "ash/components/multidevice/logging/logging.h"
 #include "base/values.h"
-#include "chromeos/components/multidevice/logging/logging.h"
 
 namespace {
 

@@ -4,10 +4,10 @@
 
 #include "ash/services/secure_channel/ble_characteristics_finder.h"
 
+#include "ash/components/multidevice/logging/logging.h"
 #include "ash/services/secure_channel/background_eid_generator.h"
 #include "base/bind.h"
 #include "base/strings/string_util.h"
-#include "chromeos/components/multidevice/logging/logging.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_remote_gatt_characteristic.h"

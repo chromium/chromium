@@ -6,11 +6,11 @@
 
 #include <string>
 
+#include "ash/components/multidevice/remote_device_test_util.h"
 #include "ash/services/multidevice_setup/fake_feature_state_manager.h"
 #include "ash/services/multidevice_setup/fake_host_status_provider.h"
 #include "ash/services/multidevice_setup/public/cpp/fake_android_sms_app_helper_delegate.h"
 #include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
-#include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

@@ -5,8 +5,8 @@
 #ifndef ASH_SERVICES_MULTIDEVICE_SETUP_FAKE_HOST_BACKEND_DELEGATE_H_
 #define ASH_SERVICES_MULTIDEVICE_SETUP_FAKE_HOST_BACKEND_DELEGATE_H_
 
+#include "ash/components/multidevice/remote_device_ref.h"
 #include "ash/services/multidevice_setup/host_backend_delegate.h"
-#include "chromeos/components/multidevice/remote_device_ref.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {

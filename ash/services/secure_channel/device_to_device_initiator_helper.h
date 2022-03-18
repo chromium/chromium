@@ -8,11 +8,11 @@
 #include <memory>
 #include <string>
 
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/components/multidevice/secure_message_delegate.h"
 #include "ash/services/secure_channel/session_keys.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/components/multidevice/secure_message_delegate.h"
 #include "third_party/ukey2/proto/device_to_device_messages.pb.h"
 
 namespace ash::secure_channel {

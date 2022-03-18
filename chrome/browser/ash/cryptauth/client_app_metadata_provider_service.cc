@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/components/multidevice/logging/logging.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/services/device_sync/proto/cryptauth_better_together_feature_metadata.pb.h"
@@ -23,7 +24,6 @@
 #include "chrome/browser/ash/cryptauth/cryptauth_device_id_provider_impl.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_type_pattern.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"

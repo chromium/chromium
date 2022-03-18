@@ -4,10 +4,10 @@
 
 #include "ash/components/tether/active_host_network_state_updater.h"
 
+#include "ash/components/multidevice/logging/logging.h"
+#include "ash/components/multidevice/remote_device_ref.h"
 #include "ash/components/tether/active_host.h"
 #include "base/memory/ptr_util.h"
-#include "chromeos/components/multidevice/logging/logging.h"
-#include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/network/network_state_handler.h"
 
 namespace ash {

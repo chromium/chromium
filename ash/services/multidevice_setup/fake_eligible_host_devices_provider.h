@@ -5,8 +5,8 @@
 #ifndef ASH_SERVICES_MULTIDEVICE_SETUP_FAKE_ELIGIBLE_HOST_DEVICES_PROVIDER_H_
 #define ASH_SERVICES_MULTIDEVICE_SETUP_FAKE_ELIGIBLE_HOST_DEVICES_PROVIDER_H_
 
+#include "ash/components/multidevice/remote_device_ref.h"
 #include "ash/services/multidevice_setup/eligible_host_devices_provider.h"
-#include "chromeos/components/multidevice/remote_device_ref.h"
 
 namespace ash {
 

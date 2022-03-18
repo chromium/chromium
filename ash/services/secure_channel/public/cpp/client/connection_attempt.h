@@ -5,8 +5,8 @@
 #ifndef ASH_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_CLIENT_CONNECTION_ATTEMPT_H_
 #define ASH_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_CLIENT_CONNECTION_ATTEMPT_H_
 
+#include "ash/components/multidevice/logging/logging.h"
 #include "ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
-#include "chromeos/components/multidevice/logging/logging.h"
 
 namespace ash::secure_channel {
 

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/components/multidevice/remote_device_test_util.h"
 #include "ash/components/tether/fake_disconnect_tethering_request_sender.h"
 #include "ash/components/tether/fake_tether_host_fetcher.h"
 #include "ash/components/tether/tether_component_impl.h"
@@ -16,7 +17,6 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/task_environment.h"
-#include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -6,13 +6,13 @@
 
 #include <memory>
 
+#include "ash/components/multidevice/remote_device_ref.h"
+#include "ash/components/multidevice/remote_device_test_util.h"
 #include "ash/components/proximity_auth/messenger_observer.h"
 #include "ash/components/proximity_auth/remote_status_update.h"
 #include "ash/services/secure_channel/public/cpp/client/fake_client_channel.h"
 #include "base/callback.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/components/multidevice/remote_device_ref.h"
-#include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

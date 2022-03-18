@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/components/multidevice/remote_device_test_util.h"
 #include "ash/components/tether/fake_active_host.h"
 #include "ash/components/tether/mock_tether_host_response_recorder.h"
 #include "ash/components/tether/timer_factory.h"
@@ -18,7 +19,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/test/task_environment.h"
 #include "base/timer/mock_timer.h"
-#include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_test_helper.h"

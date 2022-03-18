@@ -5,12 +5,12 @@
 #ifndef ASH_SERVICES_SECURE_CHANNEL_PRESENCE_MONITOR_DELEGATE_H_
 #define ASH_SERVICES_SECURE_CHANNEL_PRESENCE_MONITOR_DELEGATE_H_
 
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/components/multidevice/remote_device_cache.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/components/multidevice/remote_device_ref.h"
 #include "ash/services/secure_channel/ble_scanner.h"
 #include "ash/services/secure_channel/public/cpp/shared/presence_monitor.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/components/multidevice/remote_device_cache.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/components/multidevice/remote_device_ref.h"
 
 namespace device {
 class BluetoothAdapter;

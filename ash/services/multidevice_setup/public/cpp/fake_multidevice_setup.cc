@@ -6,8 +6,8 @@
 
 #include "ash/services/multidevice_setup/public/cpp/fake_multidevice_setup.h"
 
+#include "ash/components/multidevice/remote_device.h"
 #include "base/containers/flat_map.h"
-#include "chromeos/components/multidevice/remote_device.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace ash {

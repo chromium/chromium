@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/components/multidevice/logging/logging.h"
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
@@ -14,7 +15,6 @@
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_key_names.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_tpm_key_manager.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_tpm_key_manager_factory.h"
-#include "chromeos/components/multidevice/logging/logging.h"
 #include "components/account_id/account_id.h"
 
 namespace ash {

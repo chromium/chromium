@@ -6,12 +6,12 @@
 
 #include <memory>
 
+#include "ash/components/multidevice/logging/logging.h"
+#include "ash/components/multidevice/remote_device_ref.h"
 #include "ash/components/tether/host_scan_cache.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/components/multidevice/logging/logging.h"
-#include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 

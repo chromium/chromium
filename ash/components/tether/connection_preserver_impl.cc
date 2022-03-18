@@ -4,11 +4,11 @@
 
 #include "ash/components/tether/connection_preserver_impl.h"
 
+#include "ash/components/multidevice/logging/logging.h"
+#include "ash/components/multidevice/remote_device_ref.h"
 #include "ash/components/tether/tether_host_response_recorder.h"
 #include "base/bind.h"
 #include "base/timer/timer.h"
-#include "chromeos/components/multidevice/logging/logging.h"
-#include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_type_pattern.h"

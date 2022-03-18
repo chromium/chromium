@@ -117,6 +117,7 @@ static_library("tether") {
   ]
 
   deps = [
+    "//ash/components/multidevice/logging",
     "//ash/components/tether/proto",
     "//ash/constants",
     "//ash/services/device_sync/public/cpp",
@@ -125,7 +126,6 @@ static_library("tether") {
     "//ash/services/secure_channel/public/cpp/shared",
     "//ash/services/secure_channel/public/mojom",
     "//base",
-    "//chromeos/components/multidevice/logging",
     "//chromeos/dbus/power",
     "//chromeos/login/login_state",
     "//chromeos/network",
@@ -200,14 +200,14 @@ static_library("test_support") {
   public_deps = [ ":tether" ]
 
   deps = [
+    "//ash/components/multidevice",
+    "//ash/components/multidevice:test_support",
     "//ash/components/tether/proto",
     "//ash/services/device_sync/public/cpp:test_support",
     "//ash/services/secure_channel/public/cpp/client:test_support",
     "//ash/services/secure_channel/public/cpp/shared",
     "//base",
     "//base/test:test_support",
-    "//chromeos/components/multidevice",
-    "//chromeos/components/multidevice:test_support",
     "//chromeos/network:test_support",
     "//device/bluetooth",
     "//testing/gmock",
@@ -262,6 +262,8 @@ source_set("unit_tests") {
   deps = [
     ":test_support",
     ":tether",
+    "//ash/components/multidevice",
+    "//ash/components/multidevice:test_support",
     "//ash/components/tether/proto",
     "//ash/services/device_sync:test_support",
     "//ash/services/device_sync/public/cpp",
@@ -273,8 +275,6 @@ source_set("unit_tests") {
     "//ash/services/secure_channel/public/cpp/client:test_support",
     "//ash/services/secure_channel/public/cpp/shared",
     "//base/test:test_support",
-    "//chromeos/components/multidevice",
-    "//chromeos/components/multidevice:test_support",
     "//chromeos/dbus/power",
     "//chromeos/login/login_state",
     "//chromeos/network:test_support",

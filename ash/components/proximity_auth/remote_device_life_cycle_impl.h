@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "ash/components/multidevice/remote_device_ref.h"
 #include "ash/components/proximity_auth/messenger_observer.h"
 #include "ash/components/proximity_auth/remote_device_life_cycle.h"
 #include "ash/services/secure_channel/public/cpp/client/connection_attempt.h"
@@ -15,7 +16,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
-#include "chromeos/components/multidevice/remote_device_ref.h"
 
 namespace ash {
 namespace secure_channel {

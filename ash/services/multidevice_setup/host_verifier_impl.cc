@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "ash/components/multidevice/logging/logging.h"
+#include "ash/components/multidevice/software_feature.h"
 #include "ash/constants/ash_features.h"
 #include "ash/services/device_sync/proto/cryptauth_common.pb.h"
 #include "base/bind.h"
@@ -13,8 +15,6 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "chromeos/components/multidevice/logging/logging.h"
-#include "chromeos/components/multidevice/software_feature.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 

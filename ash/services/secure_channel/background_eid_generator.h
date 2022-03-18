@@ -10,7 +10,7 @@
 #include <vector>
 
 // TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/components/multidevice/remote_device_ref.h"
+#include "ash/components/multidevice/remote_device_ref.h"
 
 namespace base {
 class Clock;

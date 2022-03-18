@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_MULTIDEVICE_INTERNALS_MULTIDEVICE_INTERNALS_LOGS_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_MULTIDEVICE_INTERNALS_MULTIDEVICE_INTERNALS_LOGS_HANDLER_H_
 
+#include "ash/components/multidevice/logging/log_buffer.h"
+#include "ash/components/multidevice/logging/logging.h"
 #include "base/scoped_observation.h"
-#include "chromeos/components/multidevice/logging/log_buffer.h"
-#include "chromeos/components/multidevice/logging/logging.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 namespace base {

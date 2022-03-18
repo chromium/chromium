@@ -5,10 +5,9 @@
 #ifndef ASH_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_SHARED_PRESENCE_MONITOR_H_
 #define ASH_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_SHARED_PRESENCE_MONITOR_H_
 
-#include "base/callback.h"
-
 // TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/components/multidevice/remote_device.h"
+#include "ash/components/multidevice/remote_device.h"
+#include "base/callback.h"
 
 namespace ash::secure_channel {
 

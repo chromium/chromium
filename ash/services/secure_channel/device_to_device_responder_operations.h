@@ -7,9 +7,9 @@
 
 #include <string>
 
-#include "base/callback_forward.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/components/multidevice/secure_message_delegate.h"
+#include "ash/components/multidevice/secure_message_delegate.h"
+#include "base/callback_forward.h"
 
 namespace ash::secure_channel {
 

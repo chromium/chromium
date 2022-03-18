@@ -6,8 +6,8 @@
 
 #include <memory>
 
+#include "ash/components/multidevice/remote_device.h"
 #include "base/memory/ptr_util.h"
-#include "chromeos/components/multidevice/remote_device.h"
 
 namespace ash {
 
