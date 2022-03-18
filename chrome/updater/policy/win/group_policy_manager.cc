@@ -4,6 +4,7 @@
 
 #include "chrome/updater/policy/win/group_policy_manager.h"
 
+#include <ostream>
 #include <string>
 #include <utility>
 

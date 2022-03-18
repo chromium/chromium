@@ -18,6 +18,7 @@
 #include <paths.h>
 #include <unistd.h>
 
+#include <ostream>
 #include <tuple>
 
 #include "base/check.h"

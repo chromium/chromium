@@ -8,6 +8,8 @@
 #include <stddef.h>
 #include <unistd.h>
 
+#include <ostream>
+
 #include "base/posix/eintr_wrapper.h"
 
 namespace mojo {

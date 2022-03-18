@@ -9,6 +9,7 @@
 #include <wow64apiset.h>
 
 #include <algorithm>
+#include <ostream>
 
 #include "base/check_op.h"
 #include "base/files/file_path.h"

@@ -6,7 +6,6 @@
 #define BASE_SCOPED_GENERIC_H_
 
 #include <stdlib.h>
-#include <ostream>
 
 #include <algorithm>
 #include <utility>
@@ -123,7 +122,7 @@ class ScopedGeneric {
   ScopedGeneric& operator=(const ScopedGeneric&) = delete;
 
   virtual ~ScopedGeneric() {
-    CHECK(!receiving_) << "ScopedGeneric destroyed with active receiver";
+    CHECK(!receiving_);  // ScopedGeneric destroyed with active receiver.
     FreeIfNecessary();
   }
 
@@ -212,23 +211,23 @@ class ScopedGeneric {
   class Receiver {
    public:
     explicit Receiver(ScopedGeneric& parent) : scoped_generic_(&parent) {
-      CHECK(!scoped_generic_->receiving_)
-          << "attempted to construct Receiver for ScopedGeneric with existing "
-             "Receiver";
+      // Check if we attempted to construct a Receiver for ScopedGeneric with an
+      // existing Receiver.
+      CHECK(!scoped_generic_->receiving_);
       scoped_generic_->receiving_ = true;
     }
     Receiver(const Receiver&) = delete;
     Receiver& operator=(const Receiver&) = delete;
     Receiver(Receiver&& move) {
-      CHECK(!used_) << "moving into already-used Receiver";
-      CHECK(!move.used_) << "moving from already-used Receiver";
+      CHECK(!used_);       // Moving into already-used Receiver.
+      CHECK(!move.used_);  // Moving from already-used Receiver.
       scoped_generic_ = move.scoped_generic_;
       move.scoped_generic_ = nullptr;
     }
 
     Receiver& operator=(Receiver&& move) {
-      CHECK(!used_) << "moving into already-used Receiver";
-      CHECK(!move.used_) << "moving from already-used Receiver";
+      CHECK(!used_);       // Moving into already-used Receiver.
+      CHECK(!move.used_);  // Moving from already-used Receiver.
       scoped_generic_ = move.scoped_generic_;
       move.scoped_generic_ = nullptr;
     }

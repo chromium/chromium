@@ -10,6 +10,8 @@
 #include <string.h>
 #include <windows.h>
 
+#include <ostream>
+
 namespace mojo {
 namespace core {
 namespace test {
