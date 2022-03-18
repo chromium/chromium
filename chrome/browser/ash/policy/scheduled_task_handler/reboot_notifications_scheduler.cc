@@ -66,8 +66,7 @@ void RebootNotificationsScheduler::ResetState() {
     notification_timer_.Stop();
   if (dialog_timer_.IsRunning())
     dialog_timer_.Stop();
-  notification_controller_.CloseRebootNotification();
-  notification_controller_.CloseRebootDialog();
+  CloseNotifications();
   reboot_callback_.Reset();
 }
 
@@ -107,6 +106,11 @@ const base::TimeDelta RebootNotificationsScheduler::GetSystemUptime() const {
 base::TimeDelta RebootNotificationsScheduler::GetRebootDelay(
     const base::Time& reboot_time) const {
   return (reboot_time - GetCurrentTime());
+}
+
+void RebootNotificationsScheduler::CloseNotifications() {
+  notification_controller_.CloseRebootNotification();
+  notification_controller_.CloseRebootDialog();
 }
 
 }  // namespace policy

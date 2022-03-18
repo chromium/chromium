@@ -36,6 +36,8 @@ class FakeRebootNotificationsScheduler : public RebootNotificationsScheduler {
 
   const base::TimeDelta GetSystemUptime() const override;
 
+  void CloseNotifications() override;
+
   int show_dialog_calls_ = 0, show_notification_calls_ = 0;
   const base::Clock* clock_;
   // Default uptime for test is 10h.

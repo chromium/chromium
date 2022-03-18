@@ -57,6 +57,9 @@ class RebootNotificationsScheduler {
   // Returns delay from now until |reboot_time|.
   base::TimeDelta GetRebootDelay(const base::Time& reboot_time) const;
 
+  // Closes the reboot notification and the reboot dialog.
+  virtual void CloseNotifications();
+
   // Timers for scheduling notification or dialog displaying.
   base::WallClockTimer notification_timer_, dialog_timer_;
   // Controller responsible for creating notifications and dialog.

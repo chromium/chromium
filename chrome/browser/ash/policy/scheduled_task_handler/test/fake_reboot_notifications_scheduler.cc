@@ -48,4 +48,7 @@ const base::TimeDelta FakeRebootNotificationsScheduler::GetSystemUptime()
     const {
   return uptime_;
 }
+
+void FakeRebootNotificationsScheduler::CloseNotifications() {}
+
 }  // namespace policy

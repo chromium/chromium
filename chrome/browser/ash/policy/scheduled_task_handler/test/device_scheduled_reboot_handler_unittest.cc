@@ -24,7 +24,6 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "services/device/public/cpp/test/test_wake_lock_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -96,7 +95,6 @@ class DeviceScheduledRebootHandlerTest : public testing::Test {
             std::move(notifications_scheduler));
     // Set 0 delay for tests.
     device_scheduled_reboot_handler_->SetRebootDelayForTest(base::TimeDelta());
-    session_manager_.SetSessionState(session_manager::SessionState::ACTIVE);
   }
 
   ~DeviceScheduledRebootHandlerTest() override {
@@ -156,6 +154,18 @@ class DeviceScheduledRebootHandlerTest : public testing::Test {
             task_environment_.GetMockClock()->Now());
   }
 
+  void InitWithFeatureFlag(bool enable_force_scheduled_reboots) {
+    if (enable_force_scheduled_reboots) {
+      scoped_feature_list_.InitWithFeatures(
+          /* enabled_features */ {ash::features::kDeviceForceScheduledReboot},
+          /* disabled_features */ {});
+      return;
+    }
+    scoped_feature_list_.InitWithFeatures(
+        /* enabled_features */ {},
+        /* disabled_features */ {ash::features::kDeviceForceScheduledReboot});
+  }
+
   base::test::TaskEnvironment task_environment_;
   ash::MockUserManager* mock_user_manager_;  // Not owned.
   user_manager::ScopedUserManager user_manager_enabler_;
@@ -166,14 +176,11 @@ class DeviceScheduledRebootHandlerTest : public testing::Test {
   device::TestWakeLockProvider wake_lock_provider_;
   FakeRebootNotificationsScheduler* notifications_scheduler_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  session_manager::SessionManager session_manager_;
 };
 
 TEST_F(DeviceScheduledRebootHandlerTest,
        CheckIfDailyRebootIsScheduledForKiosk) {
-  scoped_feature_list_.InitWithFeatures(
-      /* enabled_features */ {},
-      /* disabled_features */ {ash::features::kDeviceForceScheduledReboot});
+  InitWithFeatureFlag(false /* enable_force_scheduled_reboots */);
   EXPECT_CALL(*mock_user_manager_, IsLoggedInAsKioskApp())
       .WillRepeatedly(testing::Return(true));
 
@@ -212,11 +219,9 @@ TEST_F(DeviceScheduledRebootHandlerTest,
 
 TEST_F(DeviceScheduledRebootHandlerTest,
        CheckIfDailyRebootIsScheduledForNonKiosk) {
-  scoped_feature_list_.InitWithFeatures(
-      /* enabled_features */ {},
-      /* disabled_features */ {ash::features::kDeviceForceScheduledReboot});
-  EXPECT_CALL(*mock_user_manager_, IsLoggedInAsKioskApp())
-      .WillRepeatedly(testing::Return(false));
+  InitWithFeatureFlag(false /* enable_force_scheduled_reboots */);
+  EXPECT_CALL(*mock_user_manager_, IsUserLoggedIn())
+      .WillRepeatedly(testing::Return(true));
 
   // Calculate time from one hour from now and set the reboot policy to
   // happen daily at that time.
@@ -261,11 +266,11 @@ TEST_F(DeviceScheduledRebootHandlerTest,
 
 TEST_F(DeviceScheduledRebootHandlerTest,
        CheckIfWeeklyUpdateCheckIsScheduledForKiosk) {
-  scoped_feature_list_.InitWithFeatures(
-      /* enabled_features */ {},
-      /* disabled_features */ {ash::features::kDeviceForceScheduledReboot});
+  InitWithFeatureFlag(false /* enable_force_scheduled_reboots */);
   EXPECT_CALL(*mock_user_manager_, IsLoggedInAsKioskApp())
-      .WillOnce(testing::Return(false));
+      .WillRepeatedly(testing::Return(false));
+  EXPECT_CALL(*mock_user_manager_, IsUserLoggedIn())
+      .WillRepeatedly(testing::Return(true));
   // Set the first reboot to happen 49 hours from now (i.e. 1 hour from 2
   // days from now) and then weekly after.
   base::TimeDelta delay_from_now = base::Hours(49);
@@ -303,11 +308,12 @@ TEST_F(DeviceScheduledRebootHandlerTest,
 
 TEST_F(DeviceScheduledRebootHandlerTest,
        CheckIfMonthlyRebootIsScheduledForKiosk) {
-  scoped_feature_list_.InitWithFeatures(
-      /* enabled_features */ {},
-      /* disabled_features */ {ash::features::kDeviceForceScheduledReboot});
+  InitWithFeatureFlag(false /* enable_force_scheduled_reboots */);
   EXPECT_CALL(*mock_user_manager_, IsLoggedInAsKioskApp())
-      .WillOnce(testing::Return(false));
+      .WillRepeatedly(testing::Return(false));
+  EXPECT_CALL(*mock_user_manager_, IsUserLoggedIn())
+      .WillRepeatedly(testing::Return(true));
+
   // Set the first reboot to happen 1 hour from now.
   base::TimeDelta delay_from_now = base::Hours(1);
   auto policy_and_next_reboot_time = scheduled_task_test_util::CreatePolicy(
@@ -357,6 +363,11 @@ TEST_F(DeviceScheduledRebootHandlerTest,
 
 TEST_F(DeviceScheduledRebootHandlerTest,
        CheckIfDailyRebootIsScheduledWithExternalDelay) {
+  // Login user and disable kDeviceScheduledReboot flag. The reboot should not
+  // occur.
+  InitWithFeatureFlag(false /* enable_force_scheduled_reboots */);
+  EXPECT_CALL(*mock_user_manager_, IsUserLoggedIn())
+      .WillRepeatedly(testing::Return(true));
   device_scheduled_reboot_handler_->SetRebootDelayForTest(kExternalRebootDelay);
 
   // Calculate time from one hour from now and set the reboot policy to
@@ -396,11 +407,10 @@ TEST_F(DeviceScheduledRebootHandlerTest,
 }
 
 TEST_F(DeviceScheduledRebootHandlerTest,
-       CheckIfDailyRebootIsScheduledForLockScreen) {
-  scoped_feature_list_.InitWithFeatures(
-      /* enabled_features */ {},
-      /* disabled_features */ {ash::features::kDeviceForceScheduledReboot});
-  session_manager_.SetSessionState(session_manager::SessionState::LOCKED);
+       CheckIfDailyRebootIsScheduledForLoginScreen) {
+  InitWithFeatureFlag(false /* enable_force_scheduled_reboots */);
+  EXPECT_CALL(*mock_user_manager_, IsUserLoggedIn())
+      .WillRepeatedly(testing::Return(false));
 
   // Set device uptime to 10 minutes and schedule reboot in 30 minutes. Apply
   // grace time - reboot should not occur.
@@ -443,9 +453,7 @@ TEST_F(DeviceScheduledRebootHandlerTest,
 }
 
 TEST_F(DeviceScheduledRebootHandlerTest, EnableForceRebootFeatureInKiosk) {
-  scoped_feature_list_.InitWithFeatures(
-      /* enabled_features */ {ash::features::kDeviceForceScheduledReboot},
-      /* disabled_features */ {});
+  InitWithFeatureFlag(true /* enable_force_scheduled_reboots */);
 
   // Set device uptime to 10 minutes and enable kiosk mode. We don't apply grace
   // period to kiosks, so reboot should occur.
@@ -482,11 +490,9 @@ TEST_F(DeviceScheduledRebootHandlerTest, EnableForceRebootFeatureInKiosk) {
 
 TEST_F(DeviceScheduledRebootHandlerTest,
        EnableForceRebootFeatureNonKioskSession) {
-  scoped_feature_list_.InitWithFeatures(
-      /* enabled_features */ {ash::features::kDeviceForceScheduledReboot},
-      /* disabled_features */ {});
-  EXPECT_CALL(*mock_user_manager_, IsLoggedInAsKioskApp())
-      .WillRepeatedly(testing::Return(false));
+  InitWithFeatureFlag(true /* enable_force_scheduled_reboots */);
+  EXPECT_CALL(*mock_user_manager_, IsUserLoggedIn())
+      .WillRepeatedly(testing::Return(true));
 
   // Set device uptime to 10 minutes and schedule reboot in 30 minutes. Apply
   // grace time - reboot should not occur.
@@ -532,11 +538,9 @@ TEST_F(DeviceScheduledRebootHandlerTest,
 }
 
 TEST_F(DeviceScheduledRebootHandlerTest, SimulateNotificationButtonClick) {
-  scoped_feature_list_.InitWithFeatures(
-      /* enabled_features */ {ash::features::kDeviceForceScheduledReboot},
-      /* disabled_features */ {});
-  EXPECT_CALL(*mock_user_manager_, IsLoggedInAsKioskApp())
-      .WillRepeatedly(testing::Return(false));
+  InitWithFeatureFlag(true /* enable_force_scheduled_reboots */);
+  EXPECT_CALL(*mock_user_manager_, IsUserLoggedIn())
+      .WillRepeatedly(testing::Return(true));
 
   /// Schedule reboot to happen in 3 hours.
   base::TimeDelta delay_from_now = base::Hours(3);
