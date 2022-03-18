@@ -992,9 +992,10 @@ chromium-metrics-reviews@google.com.
     Share transfer. Emitted when the transfer concludes, successfully or not.
   </summary>
   <token key="Type">
-    <variant name="" summary="text or file"/>
+    <variant name="" summary="text, file, or Wi-Fi credentials"/>
     <variant name=".File" summary="file"/>
     <variant name=".Text" summary="text"/>
+    <variant name=".WiFiCredentials" summary="Wi-Fi credentials"/>
   </token>
 </histogram>
 

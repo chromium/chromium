@@ -95,7 +95,8 @@ enum class AttachmentType {
   kUrl = 7,
   kAddress = 8,
   kPhoneNumber = 9,
-  kMaxValue = kPhoneNumber
+  kWifiCredentials = 10,
+  kMaxValue = kWifiCredentials
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -419,6 +420,13 @@ void RecordNearbySharePayloadTextAttachmentTypeMetric(
       TextMetadataTypeToAttachmentType(type), is_incoming, status);
 }
 
+void RecordNearbySharePayloadWifiCredentialsAttachmentTypeMetric(
+    bool is_incoming,
+    location::nearby::connections::mojom::PayloadStatus status) {
+  RecordNearbySharePayloadAttachmentTypeMetric(AttachmentType::kWifiCredentials,
+                                               is_incoming, status);
+}
+
 void RecordNearbySharePayloadFinalStatusMetric(
     location::nearby::connections::mojom::PayloadStatus status,
     absl::optional<location::nearby::connections::mojom::Medium> medium) {
@@ -448,14 +456,20 @@ void RecordNearbySharePayloadMediumMetric(
   }
 }
 
-void RecordNearbySharePayloadNumAttachmentsMetric(size_t num_text_attachments,
-                                                  size_t num_file_attachments) {
+void RecordNearbySharePayloadNumAttachmentsMetric(
+    size_t num_text_attachments,
+    size_t num_file_attachments,
+    size_t num_wifi_credentials_attachments) {
   base::UmaHistogramCounts100("Nearby.Share.Payload.NumAttachments",
-                              num_text_attachments + num_file_attachments);
+                              num_text_attachments + num_file_attachments +
+                                  num_wifi_credentials_attachments);
   base::UmaHistogramCounts100("Nearby.Share.Payload.NumAttachments.Text",
                               num_text_attachments);
   base::UmaHistogramCounts100("Nearby.Share.Payload.NumAttachments.File",
                               num_file_attachments);
+  base::UmaHistogramCounts100(
+      "Nearby.Share.Payload.NumAttachments.WiFiCredentials",
+      num_wifi_credentials_attachments);
 }
 
 void RecordNearbySharePayloadSizeMetric(

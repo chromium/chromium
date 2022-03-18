@@ -214,8 +214,9 @@ void PayloadTracker::EmitFinalMetrics(
   RecordNearbySharePayloadSizeMetric(share_target_.is_incoming,
                                      share_target_.type, last_upgraded_medium_,
                                      status, total_transfer_size_);
-  RecordNearbySharePayloadNumAttachmentsMetric(num_text_attachments_,
-                                               num_file_attachments_);
+  RecordNearbySharePayloadNumAttachmentsMetric(
+      num_text_attachments_, num_file_attachments_,
+      num_wifi_credentials_attachments_);
 
   // Because we only start tracking after receiving the first status update,
   // subtract off that first transfer size.
@@ -236,5 +237,10 @@ void PayloadTracker::EmitFinalMetrics(
   for (const auto& text_attachment : share_target_.text_attachments) {
     RecordNearbySharePayloadTextAttachmentTypeMetric(
         text_attachment.type(), share_target_.is_incoming, status);
+  }
+
+  for (int i = 0; i < share_target_.wifi_credentials_attachments.size(); ++i) {
+    RecordNearbySharePayloadWifiCredentialsAttachmentTypeMetric(
+        share_target_.is_incoming, status);
   }
 }
