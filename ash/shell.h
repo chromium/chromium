@@ -86,6 +86,7 @@ class AcceleratorControllerImpl;
 class AccessibilityControllerImpl;
 class AccessibilityDelegate;
 class AccessibilityFocusRingControllerImpl;
+class AdaptiveChargingController;
 class AmbientController;
 class AppListControllerImpl;
 class AppListFeatureUsageMetrics;
@@ -742,6 +743,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<AccessibilityDelegate> accessibility_delegate_;
   std::unique_ptr<AccessibilityFocusRingControllerImpl>
       accessibility_focus_ring_controller_;
+  std::unique_ptr<AdaptiveChargingController> adaptive_charging_controller_;
   std::unique_ptr<AmbientController> ambient_controller_;
   std::unique_ptr<AppListControllerImpl> app_list_controller_;
   std::unique_ptr<AppListFeatureUsageMetrics> app_list_feature_usage_metrics_;

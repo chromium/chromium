@@ -1388,6 +1388,8 @@ component("ash") {
     "system/phonehub/tether_connection_pending_view.cc",
     "system/phonehub/tether_connection_pending_view.h",
     "system/phonehub/ui_constants.h",
+    "system/power/adaptive_charging_controller.cc",
+    "system/power/adaptive_charging_controller.h",
     "system/power/backlights_forced_off_setter.cc",
     "system/power/backlights_forced_off_setter.h",
     "system/power/battery_image_source.cc",

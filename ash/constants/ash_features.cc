@@ -24,6 +24,11 @@ const base::Feature kInstantTetheringBackgroundAdvertisementSupport{
 
 }  // namespace
 
+// Enables the UI and logic that minimizes the amount of time the device spends
+// at full battery. This preserves battery lifetime.
+const base::Feature kAdaptiveCharging{"AdaptiveCharging",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Adjusts portrait mode split view to avoid the input field in the bottom
 // window being occluded by the virtual keyboard.
 const base::Feature kAdjustSplitViewForVK{"AdjustSplitViewForVK",
@@ -1476,6 +1481,10 @@ bool AreDesksTrackpadSwipeImprovementsEnabled() {
 
 bool DoWindowsFollowCursor() {
   return base::FeatureList::IsEnabled(kWindowsFollowCursor);
+}
+
+bool IsAdaptiveChargingEnabled() {
+  return base::FeatureList::IsEnabled(kAdaptiveCharging);
 }
 
 bool IsAdjustSplitViewForVKEnabled() {

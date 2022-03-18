@@ -127,6 +127,7 @@
 #include "ash/system/network/sms_observer.h"
 #include "ash/system/night_light/night_light_controller_impl.h"
 #include "ash/system/pcie_peripheral/pcie_peripheral_notification_controller.h"
+#include "ash/system/power/adaptive_charging_controller.h"
 #include "ash/system/power/backlights_forced_off_setter.h"
 #include "ash/system/power/peripheral_battery_notifier.h"
 #include "ash/system/power/power_button_controller.h"
@@ -739,6 +740,8 @@ Shell::~Shell() {
   // Accesses root window containers.
   logout_confirmation_controller_.reset();
 
+  adaptive_charging_controller_.reset();
+
   // Drag-and-drop must be canceled prior to close all windows.
   drag_drop_controller_.reset();
 
@@ -1196,6 +1199,11 @@ void Shell::Init(
   mouse_cursor_filter_ = std::make_unique<MouseCursorEventFilter>();
   AddPreTargetHandler(mouse_cursor_filter_.get(),
                       ui::EventTarget::Priority::kAccessibility);
+
+  if (features::IsAdaptiveChargingEnabled()) {
+    adaptive_charging_controller_ =
+        std::make_unique<AdaptiveChargingController>();
+  }
 
   // Create Controllers that may need root window.
   // TODO(oshima): Move as many controllers before creating
