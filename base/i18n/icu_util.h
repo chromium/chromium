@@ -6,7 +6,6 @@
 #define BASE_I18N_ICU_UTIL_H_
 
 #include <stdint.h>
-#include <string>
 
 #include "base/files/memory_mapped_file.h"
 #include "base/i18n/base_i18n_export.h"
@@ -38,30 +37,14 @@ using IcuDataFile = IcuMergeableDataFile;
 // Outside of Lacros, we simply memory map the ICU data file.
 using IcuDataFile = MemoryMappedFile;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-// Loads ICU's extra data tables from disk for the current process. If used must
-// be called before InitializeICU(). |split_name| is used on Android to find the
-// asset file.
-BASE_I18N_EXPORT bool InitializeExtraICU(const std::string& split_name);
-
-// Returns the PlatformFile and Region that was initialized by InitializeICU()
-// or InitializeExtraICU(). Use with InitializeICUWithFileDescriptor() or
-// InitializeExtraICUWithFileDescriptor().
+// Returns the PlatformFile and Region that was initialized by InitializeICU().
+// Use with InitializeICUWithFileDescriptor().
 BASE_I18N_EXPORT PlatformFile
 GetIcuDataFileHandle(MemoryMappedFile::Region* out_region);
-BASE_I18N_EXPORT PlatformFile
-GetIcuExtraDataFileHandle(MemoryMappedFile::Region* out_region);
 
 // Loads ICU data file from file descriptor passed by browser process to
 // initialize ICU in render processes.
 BASE_I18N_EXPORT bool InitializeICUWithFileDescriptor(
-    PlatformFile data_fd,
-    const MemoryMappedFile::Region& data_region);
-
-// Loads ICU extra data file from file descriptor passed by browser process to
-// initialize ICU in render processes. If used must be called before
-// InitializeICUWithFileDescriptor().
-BASE_I18N_EXPORT bool InitializeExtraICUWithFileDescriptor(
     PlatformFile data_fd,
     const MemoryMappedFile::Region& data_region);
 

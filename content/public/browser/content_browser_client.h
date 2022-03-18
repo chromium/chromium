@@ -2019,11 +2019,6 @@ class CONTENT_EXPORT ContentBrowserClient {
                                       const url::Origin& requesting_origin,
                                       const url::Origin& embedding_origin);
 
-  // Returns true if the extra ICU data file is available and should be used to
-  // initialize ICU. |split_name| can be set on Android to the split where the
-  // asset is located.
-  virtual bool ShouldLoadExtraIcuDataFile(std::string* split_name);
-
   // Returns true if the site is allowed to use persistent media device IDs.
   virtual bool ArePersistentMediaDeviceIDsAllowed(
       content::BrowserContext* browser_context,

@@ -85,12 +85,6 @@ ChildProcessLauncherHelper::GetFilesToMap() {
   base::MemoryMappedFile::Region icu_region;
   int fd = base::i18n::GetIcuDataFileHandle(&icu_region);
   files_to_register->ShareWithRegion(kAndroidICUDataDescriptor, fd, icu_region);
-  base::MemoryMappedFile::Region icu_extra_region;
-  int extra_fd = base::i18n::GetIcuExtraDataFileHandle(&icu_extra_region);
-  if (extra_fd != -1) {
-    files_to_register->ShareWithRegion(kAndroidICUExtraDataDescriptor, extra_fd,
-                                       icu_extra_region);
-  }
 #endif  // ICU_UTIL_DATA_IMPL == ICU_UTIL_DATA_FILE
 
   return files_to_register;

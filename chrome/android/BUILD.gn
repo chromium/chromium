@@ -2635,7 +2635,6 @@ android_library("base_module_java") {
     "//services/shape_detection:shape_detection_java",
 
     # Deps for DFMs.
-    "//chrome/android/modules/extra_icu/provider:java",
     "//chrome/android/modules/stack_unwinder/provider:java",
     "//chrome/browser/test_dummy/internal:base_module_java",
 

@@ -1267,7 +1267,7 @@ deps = {
     Var('chromium_git') + '/chromium/deps/hunspell_dictionaries.git' + '@' + '41cdffd71c9948f63c7ad36e1fb0ff519aa7a37e',
 
   'src/third_party/icu':
-    Var('chromium_git') + '/chromium/deps/icu.git' + '@' + 'ea8c08d8783fceda86c19618694881149e23f305',
+    Var('chromium_git') + '/chromium/deps/icu.git' + '@' + 'a9359a84a3969b3019db7d62899afb19642eefcd',
 
   'src/third_party/icu4j': {
       'packages': [

@@ -381,7 +381,6 @@
 #include "base/android/build_info.h"
 #include "base/feature_list.h"
 #include "chrome/android/features/dev_ui/buildflags.h"
-#include "chrome/android/modules/extra_icu/provider/module_provider.h"
 #include "chrome/browser/android/customtabs/client_data_header_web_contents_observer.h"
 #include "chrome/browser/android/devtools_manager_delegate_android.h"
 #include "chrome/browser/android/ntp/new_tab_page_url_handler.h"
@@ -5989,16 +5988,6 @@ void ChromeContentBrowserClient::BlockBluetoothScanning(
   content_settings->SetContentSettingDefaultScope(
       requesting_origin.GetURL(), embedding_origin.GetURL(),
       ContentSettingsType::BLUETOOTH_SCANNING, CONTENT_SETTING_BLOCK);
-}
-
-bool ChromeContentBrowserClient::ShouldLoadExtraIcuDataFile(
-    std::string* split_name) {
-#if BUILDFLAG(IS_ANDROID)
-  *split_name = "extra_icu";
-  return extra_icu::ModuleProvider::IsModuleInstalled();
-#else
-  return false;
-#endif
 }
 
 bool ChromeContentBrowserClient::ArePersistentMediaDeviceIDsAllowed(

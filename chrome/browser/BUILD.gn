@@ -3328,7 +3328,6 @@ static_library("browser") {
       ":profile_token",
       ":usage_stats_proto",
       "//chrome/android:jni_headers",
-      "//chrome/android/modules/extra_icu/provider:native",
       "//chrome/browser/android/messages:jni_headers",
       "//chrome/browser/android/metrics:jni_headers",
       "//chrome/browser/android/webapk:webapk_features",

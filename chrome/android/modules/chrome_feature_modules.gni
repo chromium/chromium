@@ -10,7 +10,6 @@ import("//chrome/android/features/tab_ui/tab_ui_module.gni")
 import("//chrome/android/modules/buildflags.gni")
 import(
     "//chrome/android/modules/cablev2_authenticator/cablev2_authenticator_module.gni")
-import("//chrome/android/modules/extra_icu/extra_icu_module.gni")
 import("//chrome/android/modules/stack_unwinder/stack_unwinder_module.gni")
 import("//chrome/android/modules/test_dummy/test_dummy_module.gni")
 import("//device/vr/buildflags/buildflags.gni")
@@ -45,7 +44,6 @@ if (enable_arcore) {
 # Modules shipped in Chrome Modern (Android L+).
 chrome_modern_module_descs = [
   test_dummy_module_desc,
-  extra_icu_module_desc,
   stack_unwinder_module_desc,
 ]
 if (enable_vr) {

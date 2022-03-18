@@ -39,7 +39,6 @@ import("//build/timestamp.gni")
 import("//build_overrides/build.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
-import("//third_party/icu/config.gni")
 
 if (is_mac) {
   # Used to generate fuzzer corpus :base_mach_port_rendezvous_convert_corpus.
@@ -3677,15 +3676,6 @@ test("base_unittests") {
       ":base_java_unittest_support",
       "//base/test:test_support_java",
     ]
-  }
-
-  if (icu_use_data_file) {
-    if (is_android) {
-      deps += [ "//third_party/icu:icu_extra_assets" ]
-    } else {
-      deps += [ "//third_party/icu:extra_icudata" ]
-      data += [ "$root_out_dir/icudtl_extra.dat" ]
-    }
   }
 
   if (is_ios) {

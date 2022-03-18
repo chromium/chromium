@@ -372,7 +372,11 @@ chromium-metrics-reviews@google.com.
   <suffix name="chime" label="Chime Notification Module"/>
   <suffix name="chrome" label="Chrome Module"/>
   <suffix name="dev_ui" label="Developer UI Module"/>
-  <suffix name="extra_icu" label="Extra ICU Module"/>
+  <suffix name="extra_icu" label="Extra ICU Module">
+    <obsolete>
+      Deprecated in M98 since we removed the extra_icu module.
+    </obsolete>
+  </suffix>
   <suffix name="feedv2" label="Feed V2 Module"/>
   <suffix name="image_editor" label="Image Editor Module"/>
   <suffix name="stack_unwinder" label="Stack Unwinder Module"/>
