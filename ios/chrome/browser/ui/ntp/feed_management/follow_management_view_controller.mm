@@ -136,19 +136,22 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)requestUnfollowWebChannelAtIndexPath:(NSIndexPath*)indexPath {
-  // TODO(crbug.com/1296745): Start favicon spinner.
-
   [self.feedMetricsRecorder recordManagementTappedUnfollow];
+
   self.indexPathOfLastUnfollowAttempt = indexPath;
 
   FollowedWebChannelItem* followedWebChannelItem =
       base::mac::ObjCCastStrict<FollowedWebChannelItem>(
           [self.tableViewModel itemAtIndexPath:indexPath]);
+  FollowedWebChannelCell* followedWebChannelCell =
+      base::mac::ObjCCastStrict<FollowedWebChannelCell>(
+          [self.tableView cellForRowAtIndexPath:indexPath]);
+  [followedWebChannelCell startAnimatingActivityIndicator];
 
   __weak FollowManagementViewController* weakSelf = self;
   followedWebChannelItem.followedWebChannel.unfollowRequestBlock(
       ^(BOOL success) {
-        // TODO(crbug.com/1296745): Stop favicon spinner.
+        [followedWebChannelCell stopAnimatingActivityIndicator];
         if (success) {
           // TODO(crbug.com/1296745): Show success snackbar
           // with undo button.

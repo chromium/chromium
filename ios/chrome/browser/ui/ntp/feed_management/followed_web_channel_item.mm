@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/ntp/feed_management/followed_web_channel_item.h"
 
+#import <UIKit/UIKit.h>
+
 #include "base/mac/foundation_util.h"
 #import "ios/chrome/browser/ui/follow/followed_web_channel.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -33,12 +35,17 @@
   return _followedWebChannel.channelURL;
 }
 
-- (NSString*)supplementalURLText {
+- (NSString*)thirdRowText {
   if (_followedWebChannel.unavailable) {
     return l10n_util::GetNSString(
         IDS_IOS_FOLLOW_MANAGEMENT_CHANNEL_UNAVAILABLE);
   }
   return nil;
+}
+
+- (UIColor*)thirdRowTextColor {
+  // TODO(crbug.com/1296745): Polish color.
+  return [UIColor redColor];
 }
 
 - (void)configureCell:(TableViewCell*)tableCell
