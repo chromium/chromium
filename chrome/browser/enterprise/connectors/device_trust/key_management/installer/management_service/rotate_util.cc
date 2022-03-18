@@ -43,7 +43,7 @@ absl::optional<std::string> Decode(const std::string& encoded_value) {
 
 bool RotateDeviceTrustKey(
     std::unique_ptr<KeyRotationManager> key_rotation_manager,
-    base::CommandLine* command_line,
+    const base::CommandLine* command_line,
     version_info::Channel channel) {
   auto dm_token =
       Decode(command_line->GetSwitchValueASCII(switches::kRotateDTKey));

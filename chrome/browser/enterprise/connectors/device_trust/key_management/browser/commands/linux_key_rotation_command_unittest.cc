@@ -86,8 +86,9 @@ class LinuxKeyRotationCommandTest : public testing::Test {
 
     base::RunLoop run_loop;
     EXPECT_CALL(mock_launch_callback_, Run(_, _))
-        .WillOnce([&process_name](base::CommandLine& command_line,
-                                  base::LaunchOptions& options) {
+        .WillOnce([&process_name](const base::CommandLine& command_line,
+                                  const base::LaunchOptions& options) {
+          EXPECT_TRUE(options.allow_new_privs);
           return LaunchTestProcess(process_name, command_line, options);
         });
     EXPECT_CALL(mock_trigger_callback_, Run(status))

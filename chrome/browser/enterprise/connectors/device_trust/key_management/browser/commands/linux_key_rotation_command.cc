@@ -34,12 +34,12 @@ namespace enterprise_connectors {
 namespace {
 
 // Builds the command line needed to launch the service. The  `params` specify
-// `the needed KeyRotationCommandParams. pipe_name` is the name of the pipe to
+// the needed KeyRotationCommandParams. 'pipe_name` is the name of the pipe to
 //  connect to.
 base::CommandLine GetCommandLine(const KeyRotationCommand::Params& params,
                                  const std::string& pipe_name) {
   base::FilePath exe_path;
-  auto success = base::PathService::Get(base::DIR_EXE, &exe_path);
+  bool success = base::PathService::Get(base::DIR_EXE, &exe_path);
   DCHECK(success);
   exe_path = exe_path.Append(constants::kBinaryFileName);
 
@@ -58,8 +58,8 @@ base::CommandLine GetCommandLine(const KeyRotationCommand::Params& params,
 
 // `command_line` is the command line we get from the GetCommandLine function,
 // and `options` are the launch options we need to launch the process.
-base::Process Launch(base::CommandLine& command_line,
-                     base::LaunchOptions& options) {
+base::Process Launch(const base::CommandLine& command_line,
+                     const base::LaunchOptions& options) {
   return base::LaunchProcess(command_line, options);
 }
 
@@ -84,8 +84,9 @@ LinuxKeyRotationCommand::~LinuxKeyRotationCommand() = default;
 void LinuxKeyRotationCommand::Trigger(const Params& params, Callback callback) {
   DCHECK(callback);
 
-  auto pipe_name = base::NumberToString(base::RandUint64());
-  auto command_line = GetCommandLine(params, pipe_name);
+  uint64_t pipe_name = base::RandUint64();
+  base::CommandLine command_line =
+      GetCommandLine(params, base::NumberToString(pipe_name));
 
   mojo::OutgoingInvitation invitation;
   mojo::ScopedMessagePipeHandle pipe = invitation.AttachMessagePipe(pipe_name);
@@ -102,6 +103,7 @@ void LinuxKeyRotationCommand::Trigger(const Params& params, Callback callback) {
              mojo::OutgoingInvitation invitation) {
             mojo::PlatformChannel channel;
             base::LaunchOptions options;
+            options.allow_new_privs = true;
             channel.PrepareToPassRemoteEndpoint(&options, &command_line);
 
             base::Process process = launch_callback.Run(command_line, options);

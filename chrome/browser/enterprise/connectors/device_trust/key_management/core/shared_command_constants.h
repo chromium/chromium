@@ -20,6 +20,10 @@ namespace constants {
 // Specifies the filename of the chrome management service executable.
 extern const char kBinaryFileName[];
 
+// Specifies the group name that the chrome-management-service and the
+// signing key file should have.
+extern const char kGroupName[];
+
 // Path to where the signing key is stored.
 extern const char kSigningKeyFilePath[];
 

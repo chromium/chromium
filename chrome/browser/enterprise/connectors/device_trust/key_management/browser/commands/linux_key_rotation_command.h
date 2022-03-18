@@ -34,8 +34,8 @@ class LinuxKeyRotationCommand : public KeyRotationCommand {
 
   // Callback to the Launch Process function.
   using LaunchCallback =
-      base::RepeatingCallback<base::Process(base::CommandLine&,
-                                            base::LaunchOptions&)>;
+      base::RepeatingCallback<base::Process(const base::CommandLine&,
+                                            const base::LaunchOptions&)>;
 
   // Strictly used for testing and allows mocking the launched process.
   // The `launch_callback` is a callback to the

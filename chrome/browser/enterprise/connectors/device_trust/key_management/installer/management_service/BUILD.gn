@@ -3,10 +3,27 @@
 # found in the LICENSE file.
 
 if (is_linux) {
-  source_set("management_service") {
-    public = [ "rotate_util.h" ]
+  executable("chrome_management_service") {
+    sources = [ "chrome_management_service_main.cc" ]
 
-    sources = [ "rotate_util.cc" ]
+    deps = [
+      ":management_service",
+      "//base",
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/core:constants",
+      "//mojo/core/embedder",
+    ]
+  }
+
+  source_set("management_service") {
+    public = [
+      "chrome_management_service.h",
+      "rotate_util.h",
+    ]
+
+    sources = [
+      "chrome_management_service.cc",
+      "rotate_util.cc",
+    ]
 
     public_deps = [
       "//base",
@@ -15,10 +32,11 @@ if (is_linux) {
     ]
 
     deps = [
-      "//build:branding_buildflags",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core:constants",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/network",
       "//chrome/common:channel_info",
+      "//mojo/public/cpp/bindings",
+      "//services/network/public/mojom",
       "//third_party/abseil-cpp:absl",
       "//url",
     ]
@@ -27,7 +45,10 @@ if (is_linux) {
   source_set("unit_tests") {
     testonly = true
 
-    sources = [ "rotate_util_unittest.cc" ]
+    sources = [
+      "chrome_management_service_unittest.cc",
+      "rotate_util_unittest.cc",
+    ]
 
     deps = [
       ":management_service",
@@ -39,6 +60,7 @@ if (is_linux) {
       "//chrome/browser/enterprise/connectors/device_trust/key_management/installer:elevated_rotation",
       "//components/policy/proto",
       "//components/version_info",
+      "//services/network:test_support",
       "//testing/gtest",
     ]
   }

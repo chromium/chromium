@@ -31,13 +31,16 @@ namespace enterprise_connectors {
 
 namespace {
 
-// Mode the signing key file should have.
+// The mode the signing key file should have.
 constexpr int kFileMode = 0664;
 
-// Group name the signing key file should have.
-constexpr char kGroupName[] = "chromemgmt";
+constexpr int kMaxBufferSize = 2048;
+constexpr char kSigningKeyName[] = "signingKey";
+constexpr char kSigningKeyTrustLevel[] = "trustLevel";
 
-// Path to the signing key file differs based on chrome/chromium build.
+// The path to the policy file should be the same as the
+// chrome::DIR_POLICY_FILES. This code runs in the chrome-management-service
+// and thus cannot directly use chrome::DIR_POLICY_FILES
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 base::FilePath::CharType kDirPolicyPath[] =
     FILE_PATH_LITERAL("/etc/opt/chrome/policies");
@@ -55,46 +58,47 @@ base::File OpenSigningKeyFile(uint32_t flags) {
   return base::File(GetSigningKeyFilePath(), flags);
 }
 
+bool LogFailure(const std::string& log_message) {
+  SYSLOG(ERROR) << log_message;
+  return false;
+}
+
 }  // namespace
 
-bool LinuxKeyPersistenceDelegate::CheckRotationPermissions() {
-  auto signing_key_path = GetSigningKeyFilePath();
-  auto file = base::File(signing_key_path,
-                         base::File::FLAG_OPEN | base::File::FLAG_WRITE);
+LinuxKeyPersistenceDelegate::LinuxKeyPersistenceDelegate() = default;
+LinuxKeyPersistenceDelegate::~LinuxKeyPersistenceDelegate() = default;
 
-  if (!file.IsValid() ||
-      (file.Lock(base::File::LockMode::kExclusive) != base::File::FILE_OK)) {
-    SYSLOG(ERROR) << "Device trust key rotation failed. Could not acquire a "
-                     "lock on the signing key storage.";
-    return false;
-  }
+bool LinuxKeyPersistenceDelegate::CheckRotationPermissions() {
+  base::FilePath signing_key_path = GetSigningKeyFilePath();
+  locked_file_ = base::File(signing_key_path, base::File::FLAG_OPEN |
+                                                  base::File::FLAG_READ |
+                                                  base::File::FLAG_WRITE);
+
+  if (locked_file_ && !locked_file_.value().IsValid() &&
+      (locked_file_.value().Lock(base::File::LockMode::kExclusive) !=
+       base::File::FILE_OK))
+    return LogFailure(
+        "Device trust key rotation failed. Could not acquire lock on the "
+        "signing key storage.");
 
   int mode;
-  if (!base::GetPosixFilePermissions(signing_key_path, &mode)) {
-    SYSLOG(ERROR)
-        << "Device trust key rotation failed. Could not get permissions "
-           "for the signing key storage.";
-    return false;
-  }
+  if (!base::GetPosixFilePermissions(signing_key_path, &mode))
+    return LogFailure(
+        "Device trust key rotation failed. Could not get permissions "
+        "for the signing key storage.");
 
   struct stat st;
   stat(signing_key_path.value().c_str(), &st);
   gid_t signing_key_file_gid = st.st_gid;
-  struct group* chrome_mgmt_group = getgrnam(kGroupName);
+  struct group* chrome_mgmt_group = getgrnam(constants::kGroupName);
 
   if (!chrome_mgmt_group || signing_key_file_gid != chrome_mgmt_group->gr_gid ||
-      mode != kFileMode) {
-    SYSLOG(ERROR) << "Device trust key rotation failed. Incorrect permissions "
-                     "for signing key storage.";
-    return false;
-  }
+      mode != kFileMode)
+    return LogFailure(
+        "Device trust key rotation failed. Incorrect permissions "
+        "for the signing key storage.");
   return true;
 }
-
-LinuxKeyPersistenceDelegate::~LinuxKeyPersistenceDelegate() = default;
-const int kMaxBufferSize = 2048;
-const char kSigningKeyName[] = "signingKey";
-const char kSigningKeyTrustLevel[] = "trustLevel";
 
 bool LinuxKeyPersistenceDelegate::StoreKeyPair(
     KeyPersistenceDelegate::KeyTrustLevel trust_level,
@@ -109,7 +113,9 @@ bool LinuxKeyPersistenceDelegate::StoreKeyPair(
   base::File file =
       OpenSigningKeyFile(base::File::FLAG_OPEN | base::File::FLAG_WRITE);
   if (!file.IsValid())
-    return false;
+    return LogFailure(
+        "Device trust key rotation failed. Could not open the signing key file "
+        "for writing.");
 
   // Storing key and trust level information.
   base::Value keyinfo(base::Value::Type::DICTIONARY);
@@ -117,20 +123,34 @@ bool LinuxKeyPersistenceDelegate::StoreKeyPair(
   keyinfo.SetKey(kSigningKeyName, base::Value(encoded_key));
   keyinfo.SetKey(kSigningKeyTrustLevel, base::Value(trust_level));
   std::string keyinfo_str;
-  if (!base::JSONWriter::Write(keyinfo, &keyinfo_str)) {
-    return false;
-  }
-  int bytes_written =
-      file.WriteAtCurrentPos(keyinfo_str.c_str(), keyinfo_str.length());
-  return bytes_written > 0;
+  if (!base::JSONWriter::Write(keyinfo, &keyinfo_str))
+    return LogFailure(
+        "Device trust key rotation failed. Could not format signing key "
+        "information for storage.");
+
+  bool write_result =
+      file.WriteAtCurrentPos(keyinfo_str.c_str(), keyinfo_str.length()) > 0
+          ? true
+          : LogFailure(
+                "Device trust key rotation failed. Could not write to the "
+                "signing key storage.");
+
+  // TODO(b/225163677): File gets unlocked after being written to.
+  if (locked_file_ && !locked_file_.value().IsValid() &&
+      (locked_file_.value().Lock(base::File::LockMode::kExclusive) !=
+       base::File::FILE_OK))
+    return LogFailure(
+        "Device trust key rotation failed. Could not reacquire lock on the "
+        "signing key storage.");
+
+  return write_result;
 }
 
 KeyPersistenceDelegate::KeyInfo LinuxKeyPersistenceDelegate::LoadKeyPair() {
   base::File file =
       OpenSigningKeyFile(base::File::FLAG_OPEN | base::File::FLAG_READ);
-  if (!file.IsValid()) {
+  if (!file.IsValid())
     return invalid_key_info();
-  }
 
   // Read key info.
   char keyinfo_str[kMaxBufferSize];

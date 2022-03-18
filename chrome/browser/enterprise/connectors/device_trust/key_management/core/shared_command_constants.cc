@@ -10,6 +10,8 @@ namespace constants {
 
 const char kBinaryFileName[] = "chrome-management-service";
 
+const char kGroupName[] = "chromemgmt";
+
 const char kSigningKeyFilePath[] = "enrollment/DeviceTrustSigningKey";
 
 }  // namespace constants
