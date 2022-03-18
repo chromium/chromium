@@ -111,6 +111,15 @@ class DesktopNativeWidgetTopLevelHandler : public aura::WindowObserver {
     init_params.type = full_screen ? Widget::InitParams::TYPE_WINDOW
                                    : is_menu ? Widget::InitParams::TYPE_MENU
                                              : Widget::InitParams::TYPE_POPUP;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // Evaluate if the window needs shadow.
+    init_params.shadow_type =
+        (wm::GetShadowElevationConvertDefault(child_window) > 0)
+            ? Widget::InitParams::ShadowType::kDrop
+            : Widget::InitParams::ShadowType::kNone;
+#endif
+
 #if BUILDFLAG(IS_WIN)
     // For menus, on Windows versions that support drop shadow remove
     // the standard frame in order to keep just the shadow.
