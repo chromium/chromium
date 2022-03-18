@@ -309,8 +309,11 @@ bool AddressField::ParseAddress(AutofillScanner* scanner,
   if (street_name_ && house_number_) {
     return false;
   }
-  return ParseAddressFieldSequence(scanner, page_language) ||
-         ParseAddressLines(scanner, page_language);
+  // Do not inline these calls: After passing an address field sequence, there
+  // might be an additional address line 2 to parse afterwards.
+  bool has_field_sequence = ParseAddressFieldSequence(scanner, page_language);
+  bool has_address_lines = ParseAddressLines(scanner, page_language);
+  return has_field_sequence || has_address_lines;
 }
 
 bool AddressField::ParseAddressLines(AutofillScanner* scanner,
@@ -337,7 +340,10 @@ bool AddressField::ParseAddressLines(AutofillScanner* scanner,
   // AutofillParsingPatternProvider. The old code calls ParseFieldSpecifics()
   // for two different patterns, |pattern| and |label_pattern|. The new code
   // handles both patterns at once in the |address_line1_patterns|.
-  if (!ParseFieldSpecifics(scanner, pattern,
+  // Address line 1 is skipped if a |street_name_|, |house_number_| combination
+  // is present.
+  if (!(street_name_ && house_number_) &&
+      !ParseFieldSpecifics(scanner, pattern,
                            kDefaultMatchParamsWith<MatchFieldType::kSearch>,
                            address_line1_patterns, &address1_,
                            {log_manager_, "kAddressLine1Re"}) &&

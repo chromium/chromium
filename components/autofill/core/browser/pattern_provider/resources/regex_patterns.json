@@ -117,7 +117,7 @@
     "en": [
       {
         "pattern_identifier": "en_house_number",
-        "positive_pattern": "(house.?|street.?|^)number",
+        "positive_pattern": "(house.?|street.?|^)(number|no\\.?$)",
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": [0, 1],
@@ -127,7 +127,7 @@
     "de": [
       {
         "pattern_identifier": "de_house_number",
-        "positive_pattern": "(haus|^)(nummer|nr\\.?)",
+        "positive_pattern": "(haus|^)(nummer|nr)",
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": [0, 1],
