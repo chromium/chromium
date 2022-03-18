@@ -571,14 +571,6 @@ class ShellUtil {
       const base::FilePath& chrome_exe,
       const std::wstring& protocol);
 
-  // Launches the Windows 'settings' modern app with the 'default apps' view
-  // focused. If `protocol` is not empty, it also highlights the `protocol` in
-  // the dialog. This method only works for Windows 8 and Windows 10.
-  // Returns true if the default apps dialog was opened, and the `protocol`,
-  // if not empty, was highlighted.
-  static bool LaunchDefaultAppsSettingsModernDialog(
-      const std::wstring& protocol);
-
   // Registers Chrome as a potential default browser and handler for filetypes
   // and protocols.
   // If Chrome is already registered, this method is a no-op.

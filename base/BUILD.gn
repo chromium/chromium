@@ -1096,6 +1096,8 @@ mixed_component("base") {
       "win/core_winrt_util.cc",
       "win/core_winrt_util.h",
       "win/current_module.h",
+      "win/default_apps_util.cc",
+      "win/default_apps_util.h",
       "win/embedded_i18n/language_selector.cc",
       "win/embedded_i18n/language_selector.h",
       "win/enum_variant.cc",

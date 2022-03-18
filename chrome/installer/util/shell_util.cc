@@ -25,14 +25,12 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/hash/md5.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -43,6 +41,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/values.h"
+#include "base/win/default_apps_util.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/shortcut.h"
@@ -707,20 +706,6 @@ bool ElevateAndRegisterChrome(
       return true;
   }
   return false;
-}
-
-// Returns the target used as a activate parameter when opening the settings
-// pointing to the page that is the most relevant to a user trying to change the
-// default handler for |protocol|.
-std::wstring GetTargetForDefaultAppsSettings(const std::wstring& protocol) {
-  static const wchar_t kSystemSettingsDefaultAppsFormat[] =
-      L"SystemSettings_DefaultApps_%ls";
-
-  if (base::EqualsCaseInsensitiveASCII(protocol, L"http"))
-    return base::StringPrintf(kSystemSettingsDefaultAppsFormat, L"Browser");
-  if (base::EqualsCaseInsensitiveASCII(protocol, L"mailto"))
-    return base::StringPrintf(kSystemSettingsDefaultAppsFormat, L"Email");
-  return L"SettingsPageAppsDefaultsProtocolView";
 }
 
 // Launches the Windows 7 and Windows 8 dialog for picking the application to
@@ -2267,7 +2252,7 @@ bool ShellUtil::ShowMakeChromeDefaultSystemUI(
         // dialog box can no longer be used to change the default program used
         // to open a file extension. You can only use SHOpenWithDialog to open
         // a single file."
-        succeeded = LaunchDefaultAppsSettingsModernDialog(L"http");
+        succeeded = base::win::LaunchDefaultAppsSettingsModernDialog(L"http");
         break;
     }
     is_default = (succeeded && GetChromeDefaultState() == IS_DEFAULT);
@@ -2323,46 +2308,6 @@ bool ShellUtil::MakeChromeDefaultProtocolClient(
   return ret;
 }
 
-bool ShellUtil::LaunchDefaultAppsSettingsModernDialog(
-    const std::wstring& protocol) {
-  // The appModelId looks arbitrary but it is the same in Win8 and Win10. There
-  // is no easy way to retrieve the appModelId from the registry.
-  static const wchar_t kControlPanelAppModelId[] =
-      L"windows.immersivecontrolpanel_cw5n1h2txyewy"
-      L"!microsoft.windows.immersivecontrolpanel";
-
-  static constexpr base::Feature kHighlightProtocolInWindowsSettings{
-      "HighlightProtocolInWindowsSettings", base::FEATURE_ENABLED_BY_DEFAULT};
-
-  if (base::win::GetVersion() < base::win::Version::WIN8)
-    return false;
-
-  Microsoft::WRL::ComPtr<IApplicationActivationManager> activator;
-  HRESULT hr = ::CoCreateInstance(CLSID_ApplicationActivationManager, nullptr,
-                                  CLSCTX_ALL, IID_PPV_ARGS(&activator));
-  if (SUCCEEDED(hr)) {
-    DWORD pid = 0;
-    CoAllowSetForegroundWindow(activator.Get(), nullptr);
-    hr = activator->ActivateApplication(kControlPanelAppModelId,
-                                        L"page=SettingsPageAppsDefaults",
-                                        AO_NONE, &pid);
-    if (!protocol.empty() && SUCCEEDED(hr) &&
-        base::FeatureList::IsEnabled(kHighlightProtocolInWindowsSettings)) {
-      hr = activator->ActivateApplication(
-          kControlPanelAppModelId,
-          base::StringPrintf(L"page=SettingsPageAppsDefaults&target=%ls",
-                             GetTargetForDefaultAppsSettings(protocol).c_str())
-              .c_str(),
-          AO_NONE, &pid);
-    }
-    if (SUCCEEDED(hr))
-      return true;
-    base::UmaHistogramSparse("DefaultBrowser.ActivateSettings.ErrorHresult",
-                             hr);
-  }
-  return false;
-}
-
 bool ShellUtil::ShowMakeChromeDefaultProtocolClientSystemUI(
     const base::FilePath& chrome_exe,
     const std::wstring& protocol) {
@@ -2396,7 +2341,8 @@ bool ShellUtil::ShowMakeChromeDefaultProtocolClientSystemUI(
       case SYSTEM_SETTINGS:
         // On Windows 10, you can't even launch the associations dialog.
         // So we launch the settings dialog.
-        succeeded = LaunchDefaultAppsSettingsModernDialog(protocol.c_str());
+        succeeded =
+            base::win::LaunchDefaultAppsSettingsModernDialog(protocol.c_str());
         break;
     }
     is_default = (succeeded &&
