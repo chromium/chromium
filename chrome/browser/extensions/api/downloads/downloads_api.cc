@@ -1140,7 +1140,7 @@ ExtensionFunction::ResponseAction DownloadsSearchFunction::Run() {
         *it, off_record
                  ? profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)
                  : profile->GetOriginalProfile()));
-    json_results->Append(std::move(json_item));
+    json_results->Append(base::Value::FromUniquePtrValue(std::move(json_item)));
   }
   RecordApiFunctions(DOWNLOADS_FUNCTION_SEARCH);
   return RespondNow(
@@ -1928,10 +1928,10 @@ void ExtensionDownloadsEventRouter::DispatchEvent(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!EventRouter::Get(profile_))
     return;
-  std::unique_ptr<base::ListValue> args(new base::ListValue());
-  args->Append(std::move(arg));
+  base::ListValue args;
+  args.Append(base::Value::FromUniquePtrValue(std::move(arg)));
   std::string json_args;
-  base::JSONWriter::Write(*args, &json_args);
+  base::JSONWriter::Write(args, &json_args);
   // The downloads system wants to share on-record events with off-record
   // extension renderers even in incognito_split_mode because that's how
   // chrome://downloads works. The "restrict_to_profile" mechanism does not
@@ -1945,7 +1945,7 @@ void ExtensionDownloadsEventRouter::DispatchEvent(
       (include_incognito && !profile_->IsOffTheRecord()) ? nullptr
                                                          : profile_.get();
   auto event = std::make_unique<Event>(histogram_value, event_name,
-                                       std::move(*args).TakeListDeprecated(),
+                                       std::move(args).TakeListDeprecated(),
                                        restrict_to_browser_context);
   event->will_dispatch_callback = std::move(will_dispatch_callback);
   EventRouter::Get(profile_)->BroadcastEvent(std::move(event));
