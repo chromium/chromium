@@ -306,14 +306,12 @@ scoped_refptr<const NGTableConstraintSpaceData> CreateConstraintSpaceData(
       const auto& row = rows[row_index];
       for (wtf_size_t cell_index = row.start_cell_index;
            cell_index < row.start_cell_index + row.cell_count; ++cell_index) {
-        wtf_size_t max_rowspan =
-            section.start_row + section.row_count - row_index;
-        wtf_size_t rowspan =
-            std::min(cell_block_constraints[cell_index].rowspan, max_rowspan);
+        const wtf_size_t effective_rowspan =
+            cell_block_constraints[cell_index].effective_rowspan;
 
         // Determine the cell's block-size.
         LayoutUnit cell_block_size;
-        for (wtf_size_t i = 0; i < rowspan; ++i) {
+        for (wtf_size_t i = 0; i < effective_rowspan; ++i) {
           if (rows[row_index + i].is_collapsed)
             continue;
           cell_block_size += rows[row_index + i].block_size;
@@ -323,9 +321,9 @@ scoped_refptr<const NGTableConstraintSpaceData> CreateConstraintSpaceData(
 
         // Confusingly a rowspanned cell originating from a collapsed-row will
         // have no block-size.
-        LayoutUnit rowspan_block_size = rowspan > 1 && !row.is_collapsed
-                                            ? cell_block_size
-                                            : kIndefiniteSize;
+        LayoutUnit rowspan_block_size =
+            effective_rowspan > 1 && !row.is_collapsed ? cell_block_size
+                                                       : kIndefiniteSize;
 
         data->cells.emplace_back(
             cell_block_constraints[cell_index].borders, rowspan_block_size,

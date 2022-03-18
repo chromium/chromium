@@ -1005,8 +1005,9 @@ void NGTableAlgorithmHelpers::DistributeRowspanCellToRows(
     const NGTableTypes::RowspanCell& rowspan_cell,
     LayoutUnit border_block_spacing,
     NGTableTypes::Rows* rows) {
-  DCHECK_GE(rowspan_cell.span, 0u);
-  DistributeExcessBlockSizeToRows(rowspan_cell.start_row, rowspan_cell.span,
+  DCHECK_GT(rowspan_cell.effective_rowspan, 1u);
+  DistributeExcessBlockSizeToRows(rowspan_cell.start_row,
+                                  rowspan_cell.effective_rowspan,
                                   rowspan_cell.min_block_size,
                                   /* is_rowspan_distribution */ true,
                                   border_block_spacing, kIndefiniteSize, rows);

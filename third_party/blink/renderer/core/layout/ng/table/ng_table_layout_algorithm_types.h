@@ -120,17 +120,17 @@ class CORE_EXPORT NGTableTypes {
     LayoutUnit min_block_size;
     NGBoxStrut borders;
     wtf_size_t column_index;
-    wtf_size_t rowspan;
+    wtf_size_t effective_rowspan;
     bool is_constrained;  // True if this cell has a specified block-size.
     CellBlockConstraint(LayoutUnit min_block_size,
                         NGBoxStrut borders,
                         wtf_size_t column_index,
-                        wtf_size_t rowspan,
+                        wtf_size_t effective_rowspan,
                         bool is_constrained)
         : min_block_size(min_block_size),
           borders(borders),
           column_index(column_index),
-          rowspan(rowspan),
+          effective_rowspan(effective_rowspan),
           is_constrained(is_constrained) {}
   };
 
@@ -138,12 +138,14 @@ class CORE_EXPORT NGTableTypes {
   struct RowspanCell {
     DISALLOW_NEW();
     wtf_size_t start_row;
-    wtf_size_t span;
+    wtf_size_t effective_rowspan;
     LayoutUnit min_block_size;
     RowspanCell(wtf_size_t start_row,
-                wtf_size_t span,
+                wtf_size_t effective_rowspan,
                 LayoutUnit min_block_size)
-        : start_row(start_row), span(span), min_block_size(min_block_size) {}
+        : start_row(start_row),
+          effective_rowspan(effective_rowspan),
+          min_block_size(min_block_size) {}
 
     // Original Legacy sorting criteria from
     // CompareRowspanCellsInHeightDistributionOrder
@@ -153,12 +155,15 @@ class CORE_EXPORT NGTableTypes {
       auto IsEnclosed = [](const NGTableTypes::RowspanCell& c1,
                            const NGTableTypes::RowspanCell& c2) {
         return (c1.start_row >= c2.start_row) &&
-               (c1.start_row + c1.span) <= (c2.start_row + c2.span);
+               (c1.start_row + c1.effective_rowspan) <=
+                   (c2.start_row + c2.effective_rowspan);
       };
 
       // If cells span the same rows, the bigger cell is distributed first.
-      if (start_row == rhs.start_row && span == rhs.span)
+      if (start_row == rhs.start_row &&
+          effective_rowspan == rhs.effective_rowspan) {
         return min_block_size > rhs.min_block_size;
+      }
 
       // If one cell is fully enclosed by another, the inner cell wins.
       if (IsEnclosed(*this, rhs))
