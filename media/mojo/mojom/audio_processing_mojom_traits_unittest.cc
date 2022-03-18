@@ -5,6 +5,7 @@
 #include "media/mojo/mojom/audio_processing_mojom_traits.h"
 
 #include "media/base/audio_processing.h"
+#include "media/mojo/mojom/audio_processing.mojom.h"
 #include "media/mojo/mojom/traits_test_service.mojom.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"

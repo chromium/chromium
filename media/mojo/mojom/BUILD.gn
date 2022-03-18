@@ -128,6 +128,20 @@ mojom("mojom") {
     {
       types = [
         {
+          mojom = "media.mojom.AudioProcessingSettings"
+          cpp = "::media::AudioProcessingSettings"
+        },
+        {
+          mojom = "media.mojom.AudioProcessingStats"
+          cpp = "::media::AudioProcessingStats"
+        },
+      ]
+      traits_headers = [ "audio_processing_mojom_traits.h" ]
+      traits_public_deps = [ ":shared_mojom_traits" ]
+    },
+    {
+      types = [
+        {
           mojom = "media.mojom.FullscreenVideoStatus"
           cpp = "::blink::WebFullscreenVideoStatus"
         },
@@ -161,21 +175,6 @@ mojom("mojom") {
   ]
 
   cpp_typemaps = [
-    {
-      types = [
-        {
-          mojom = "media.mojom.AudioProcessingSettings"
-          cpp = "::media::AudioProcessingSettings"
-        },
-        {
-          mojom = "media.mojom.AudioProcessingStats"
-          cpp = "::media::AudioProcessingStats"
-        },
-      ]
-      traits_headers = [ "audio_processing_mojom_traits.h" ]
-      traits_sources = [ "audio_processing_mojom_traits.cc" ]
-      traits_public_deps = [ ":shared_mojom_traits" ]
-    },
     {
       types = [
         {
@@ -745,6 +744,8 @@ mojom("mojom") {
 
 source_set("shared_mojom_traits") {
   sources = [
+    "audio_processing_mojom_traits.cc",
+    "audio_processing_mojom_traits.h",
     "video_frame_metadata_mojom_traits.cc",
     "video_frame_metadata_mojom_traits.h",
   ]

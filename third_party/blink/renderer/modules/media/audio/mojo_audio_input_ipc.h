@@ -12,9 +12,9 @@
 #include "base/sequence_checker.h"
 #include "media/audio/audio_input_ipc.h"
 #include "media/audio/audio_source_parameters.h"
+#include "media/base/audio_processor_controls.h"
 #include "media/mojo/mojom/audio_input_stream.mojom-blink.h"
 #include "media/mojo/mojom/audio_processing.mojom-blink.h"
-#include "media/webrtc/audio_processor_controls.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -29,6 +29,7 @@ namespace blink {
 // thread.
 class MODULES_EXPORT MojoAudioInputIPC
     : public media::AudioInputIPC,
+      public media::AudioProcessorControls,
       public mojom::blink::RendererAudioInputStreamFactoryClient,
       public media::mojom::blink::AudioInputStreamClient {
  public:
@@ -67,7 +68,12 @@ class MODULES_EXPORT MojoAudioInputIPC
   void RecordStream() override;
   void SetVolume(double volume) override;
   void SetOutputDeviceForAec(const std::string& output_device_id) override;
+  media::AudioProcessorControls* GetProcessorControls() override;
   void CloseStream() override;
+
+  // AudioProcessorControls implementation
+  void GetStats(GetStatsCB callback) override;
+  void SetPreferredNumCaptureChannels(int32_t num_preferred_channels) override;
 
  private:
   void StreamCreated(

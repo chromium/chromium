@@ -66,6 +66,17 @@ class MockStream : public media::mojom::blink::AudioInputStream {
   MOCK_METHOD1(SetVolume, void(double));
 };
 
+class MockAudioProcessorControls
+    : public media::mojom::blink::AudioProcessorControls {
+ public:
+  void GetStats(GetStatsCallback cb) override {
+    GetStatsCalled();
+    std::move(cb).Run(media::AudioProcessingStats());
+  }
+  MOCK_METHOD0(GetStatsCalled, void());
+  MOCK_METHOD1(SetPreferredNumCaptureChannels, void(int32_t));
+};
+
 class MockDelegate : public media::AudioInputIPCDelegate {
  public:
   MockDelegate() = default;
@@ -86,10 +97,11 @@ class MockDelegate : public media::AudioInputIPCDelegate {
 class FakeStreamCreator {
  public:
   FakeStreamCreator(media::mojom::blink::AudioInputStream* stream,
+                    media::mojom::blink::AudioProcessorControls* controls,
                     bool initially_muted,
                     bool expect_processing_config = false)
-      : stream_(stream),
-        receiver_(stream_),
+      : receiver_(stream),
+        controls_receiver_(controls),
         initially_muted_(initially_muted),
         expect_processing_config_(expect_processing_config) {}
 
@@ -98,12 +110,11 @@ class FakeStreamCreator {
       mojo::PendingRemote<mojom::blink::RendererAudioInputStreamFactoryClient>
           factory_client,
       mojo::PendingReceiver<media::mojom::blink::AudioProcessorControls>
-          controls_receiver,
+          pending_controls_receiver,
       const media::AudioParameters& params,
       bool automatic_gain_control,
       uint32_t total_segments) {
     EXPECT_FALSE(receiver_.is_bound());
-    EXPECT_NE(stream_, nullptr);
     EXPECT_EQ(source_params.session_id, SourceParams().session_id);
     factory_client_.reset();
     factory_client_.Bind(std::move(factory_client));
@@ -111,7 +122,9 @@ class FakeStreamCreator {
     EXPECT_TRUE(
         base::CancelableSyncSocket::CreatePair(&socket_, &foreign_socket));
 
-    EXPECT_EQ(!!controls_receiver, expect_processing_config_);
+    EXPECT_EQ(!!pending_controls_receiver, expect_processing_config_);
+    if (pending_controls_receiver)
+      controls_receiver_.Bind(std::move(pending_controls_receiver));
 
     factory_client_->StreamCreated(
         receiver_.BindNewPipeAndPassRemote(),
@@ -130,6 +143,7 @@ class FakeStreamCreator {
   void Rearm() {
     stream_client_.reset();
     receiver_.reset();
+    controls_receiver_.reset();
     socket_.Close();
   }
 
@@ -139,11 +153,12 @@ class FakeStreamCreator {
   }
 
  private:
-  media::mojom::blink::AudioInputStream* stream_;
   mojo::Remote<media::mojom::blink::AudioInputStreamClient> stream_client_;
   mojo::Remote<mojom::blink::RendererAudioInputStreamFactoryClient>
       factory_client_;
   mojo::Receiver<media::mojom::blink::AudioInputStream> receiver_;
+  mojo::Receiver<media::mojom::blink::AudioProcessorControls>
+      controls_receiver_;
   bool initially_muted_;
   bool expect_processing_config_;
   base::CancelableSyncSocket socket_;
@@ -159,8 +174,9 @@ void AssociateOutputForAec(const base::UnguessableToken& stream_id,
 
 TEST(MojoAudioInputIPC, OnStreamCreated_Propagates) {
   StrictMock<MockStream> stream;
+  StrictMock<MockAudioProcessorControls> controls;
   StrictMock<MockDelegate> delegate;
-  FakeStreamCreator creator(&stream, false);
+  FakeStreamCreator creator(&stream, &controls, false);
 
   const std::unique_ptr<media::AudioInputIPC> ipc =
       std::make_unique<MojoAudioInputIPC>(
@@ -178,8 +194,9 @@ TEST(MojoAudioInputIPC, OnStreamCreated_Propagates) {
 
 TEST(MojoAudioInputIPC, OnStreamCreated_Propagates_WithProcessingConfig) {
   StrictMock<MockStream> stream;
+  StrictMock<MockAudioProcessorControls> controls;
   StrictMock<MockDelegate> delegate;
-  FakeStreamCreator creator(&stream, false,
+  FakeStreamCreator creator(&stream, &controls, false,
                             /*expect_processing_config*/ true);
 
   const std::unique_ptr<media::AudioInputIPC> ipc =
@@ -225,8 +242,9 @@ TEST(MojoAudioInputIPC, FactoryDisconnected_SendsError) {
 
 TEST(MojoAudioInputIPC, OnStreamCreated_PropagatesInitiallyMuted) {
   StrictMock<MockStream> stream;
+  StrictMock<MockAudioProcessorControls> controls;
   StrictMock<MockDelegate> delegate;
-  FakeStreamCreator creator(&stream, true);
+  FakeStreamCreator creator(&stream, &controls, true);
 
   const std::unique_ptr<media::AudioInputIPC> ipc =
       std::make_unique<MojoAudioInputIPC>(
@@ -244,8 +262,9 @@ TEST(MojoAudioInputIPC, OnStreamCreated_PropagatesInitiallyMuted) {
 
 TEST(MojoAudioInputIPC, IsReusable) {
   StrictMock<MockStream> stream;
+  StrictMock<MockAudioProcessorControls> controls;
   StrictMock<MockDelegate> delegate;
-  FakeStreamCreator creator(&stream, false);
+  FakeStreamCreator creator(&stream, &controls, false);
 
   const std::unique_ptr<media::AudioInputIPC> ipc =
       std::make_unique<MojoAudioInputIPC>(
@@ -268,8 +287,9 @@ TEST(MojoAudioInputIPC, IsReusable) {
 
 TEST(MojoAudioInputIPC, IsReusableAfterError) {
   StrictMock<MockStream> stream;
+  StrictMock<MockAudioProcessorControls> controls;
   StrictMock<MockDelegate> delegate;
-  FakeStreamCreator creator(&stream, false);
+  FakeStreamCreator creator(&stream, &controls, false);
 
   const std::unique_ptr<media::AudioInputIPC> ipc =
       std::make_unique<MojoAudioInputIPC>(
@@ -298,8 +318,9 @@ TEST(MojoAudioInputIPC, IsReusableAfterError) {
 
 TEST(MojoAudioInputIPC, Record_Records) {
   StrictMock<MockStream> stream;
+  StrictMock<MockAudioProcessorControls> controls;
   StrictMock<MockDelegate> delegate;
-  FakeStreamCreator creator(&stream, false);
+  FakeStreamCreator creator(&stream, &controls, false);
 
   const std::unique_ptr<media::AudioInputIPC> ipc =
       std::make_unique<MojoAudioInputIPC>(
@@ -320,8 +341,9 @@ TEST(MojoAudioInputIPC, Record_Records) {
 
 TEST(MojoAudioInputIPC, SetVolume_SetsVolume) {
   StrictMock<MockStream> stream;
+  StrictMock<MockAudioProcessorControls> controls;
   StrictMock<MockDelegate> delegate;
-  FakeStreamCreator creator(&stream, false);
+  FakeStreamCreator creator(&stream, &controls, false);
 
   const std::unique_ptr<media::AudioInputIPC> ipc =
       std::make_unique<MojoAudioInputIPC>(
@@ -342,8 +364,9 @@ TEST(MojoAudioInputIPC, SetVolume_SetsVolume) {
 
 TEST(MojoAudioInputIPC, SetOutputDeviceForAec_AssociatesInputAndOutputForAec) {
   StrictMock<MockStream> stream;
+  StrictMock<MockAudioProcessorControls> controls;
   StrictMock<MockDelegate> delegate;
-  FakeStreamCreator creator(&stream, false);
+  FakeStreamCreator creator(&stream, &controls, false);
 
   const std::unique_ptr<media::AudioInputIPC> ipc =
       std::make_unique<MojoAudioInputIPC>(
@@ -358,6 +381,136 @@ TEST(MojoAudioInputIPC, SetOutputDeviceForAec_AssociatesInputAndOutputForAec) {
   base::RunLoop().RunUntilIdle();
 
   ipc->CloseStream();
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST(MojoAudioInputIPC,
+     Controls_NotCalled_BeforeStreamCreated_WithoutProcessing) {
+  StrictMock<MockStream> stream;
+  StrictMock<MockAudioProcessorControls> controls;
+  StrictMock<MockDelegate> delegate;
+  FakeStreamCreator creator(&stream, &controls, false);
+
+  const std::unique_ptr<media::AudioInputIPC> ipc =
+      std::make_unique<MojoAudioInputIPC>(
+          SourceParams(), creator.GetCallback(),
+          base::BindRepeating(&AssociateOutputForAec));
+
+  // StrictMock will verify that no calls are made to |controls|.
+  media::AudioProcessorControls* media_controls = ipc->GetProcessorControls();
+  media_controls->SetPreferredNumCaptureChannels(1);
+  media_controls->GetStats(media::AudioProcessorControls::GetStatsCB());
+  base::RunLoop().RunUntilIdle();
+
+  ipc->CloseStream();
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST(MojoAudioInputIPC,
+     Controls_NotCalled_AfterStreamCreated_WithoutProcessing) {
+  StrictMock<MockStream> stream;
+  StrictMock<MockAudioProcessorControls> controls;
+  StrictMock<MockDelegate> delegate;
+  FakeStreamCreator creator(&stream, &controls, false);
+
+  const std::unique_ptr<media::AudioInputIPC> ipc =
+      std::make_unique<MojoAudioInputIPC>(
+          SourceParams(), creator.GetCallback(),
+          base::BindRepeating(&AssociateOutputForAec));
+
+  media::AudioProcessorControls* media_controls = ipc->GetProcessorControls();
+
+  EXPECT_CALL(delegate, GotOnStreamCreated(_));
+
+  ipc->CreateStream(&delegate, Params(), false, kTotalSegments);
+  base::RunLoop().RunUntilIdle();
+
+  // StrictMock will verify that no calls are made to |controls|.
+  media_controls->SetPreferredNumCaptureChannels(1);
+  media_controls->GetStats(media::AudioProcessorControls::GetStatsCB());
+  base::RunLoop().RunUntilIdle();
+
+  ipc->CloseStream();
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST(MojoAudioInputIPC, Controls_NotCalled_BeforeStreamCreated_WithProcessing) {
+  StrictMock<MockStream> stream;
+  StrictMock<MockAudioProcessorControls> controls;
+  StrictMock<MockDelegate> delegate;
+  FakeStreamCreator creator(&stream, &controls, false,
+                            /*expect_processing_config*/ true);
+
+  const std::unique_ptr<media::AudioInputIPC> ipc =
+      std::make_unique<MojoAudioInputIPC>(
+          SourceParamsWithProcessing(), creator.GetCallback(),
+          base::BindRepeating(&AssociateOutputForAec));
+
+  // StrictMock will verify that no calls are made to |controls|.
+  media::AudioProcessorControls* media_controls = ipc->GetProcessorControls();
+  media_controls->SetPreferredNumCaptureChannels(1);
+  media_controls->GetStats(media::AudioProcessorControls::GetStatsCB());
+  base::RunLoop().RunUntilIdle();
+
+  ipc->CloseStream();
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST(MojoAudioInputIPC, Controls_Called_AfterStreamCreated_WithProcessing) {
+  StrictMock<MockStream> stream;
+  StrictMock<MockAudioProcessorControls> controls;
+  StrictMock<MockDelegate> delegate;
+  FakeStreamCreator creator(&stream, &controls, false,
+                            /*expect_processing_config*/ true);
+
+  const std::unique_ptr<media::AudioInputIPC> ipc =
+      std::make_unique<MojoAudioInputIPC>(
+          SourceParamsWithProcessing(), creator.GetCallback(),
+          base::BindRepeating(&AssociateOutputForAec));
+
+  media::AudioProcessorControls* media_controls = ipc->GetProcessorControls();
+
+  EXPECT_CALL(delegate, GotOnStreamCreated(_));
+  EXPECT_CALL(controls, SetPreferredNumCaptureChannels(1));
+  EXPECT_CALL(controls, GetStatsCalled());
+
+  ipc->CreateStream(&delegate, Params(), false, kTotalSegments);
+  base::RunLoop().RunUntilIdle();
+
+  media_controls->SetPreferredNumCaptureChannels(1);
+  media_controls->GetStats(
+      base::BindOnce([](const media::AudioProcessingStats& stats) {}));
+  base::RunLoop().RunUntilIdle();
+
+  ipc->CloseStream();
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST(MojoAudioInputIPC, Controls_NotCalled_AfterStreamClosed_WithProcessing) {
+  StrictMock<MockStream> stream;
+  StrictMock<MockAudioProcessorControls> controls;
+  StrictMock<MockDelegate> delegate;
+  FakeStreamCreator creator(&stream, &controls, false,
+                            /*expect_processing_config*/ true);
+
+  const std::unique_ptr<media::AudioInputIPC> ipc =
+      std::make_unique<MojoAudioInputIPC>(
+          SourceParamsWithProcessing(), creator.GetCallback(),
+          base::BindRepeating(&AssociateOutputForAec));
+
+  media::AudioProcessorControls* media_controls = ipc->GetProcessorControls();
+
+  EXPECT_CALL(delegate, GotOnStreamCreated(_));
+
+  ipc->CreateStream(&delegate, Params(), false, kTotalSegments);
+  base::RunLoop().RunUntilIdle();
+
+  ipc->CloseStream();
+  base::RunLoop().RunUntilIdle();
+
+  // StrictMock will verify that no calls are made to |controls|.
+  media_controls->SetPreferredNumCaptureChannels(1);
+  media_controls->GetStats(media::AudioProcessorControls::GetStatsCB());
   base::RunLoop().RunUntilIdle();
 }
 

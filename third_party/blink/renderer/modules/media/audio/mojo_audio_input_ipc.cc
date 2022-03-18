@@ -78,6 +78,11 @@ void MojoAudioInputIPC::SetOutputDeviceForAec(
     stream_associator_.Run(*stream_id_, output_device_id);
 }
 
+media::AudioProcessorControls* MojoAudioInputIPC::GetProcessorControls() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return this;
+}
+
 void MojoAudioInputIPC::CloseStream() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   delegate_ = nullptr;
@@ -85,6 +90,19 @@ void MojoAudioInputIPC::CloseStream() {
   stream_client_receiver_.reset();
   stream_.reset();
   processor_controls_.reset();
+}
+
+void MojoAudioInputIPC::GetStats(GetStatsCB callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (processor_controls_)
+    processor_controls_->GetStats(std::move(callback));
+}
+
+void MojoAudioInputIPC::SetPreferredNumCaptureChannels(
+    int32_t num_preferred_channels) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (processor_controls_)
+    processor_controls_->SetPreferredNumCaptureChannels(num_preferred_channels);
 }
 
 void MojoAudioInputIPC::StreamCreated(

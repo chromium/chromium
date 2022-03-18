@@ -5,8 +5,8 @@
 #define MEDIA_MOJO_MOJOM_AUDIO_PROCESSING_MOJOM_TRAITS_H_
 
 #include "media/base/audio_processing.h"
-
-#include "media/mojo/mojom/audio_processing.mojom.h"
+#include "media/base/audio_processor_controls.h"
+#include "media/mojo/mojom/audio_processing.mojom-shared.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 
 namespace mojo {

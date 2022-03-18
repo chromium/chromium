@@ -73,6 +73,7 @@ source_set("base") {
     "audio_power_monitor.h",
     "audio_processing.cc",
     "audio_processing.h",
+    "audio_processor_controls.h",
     "audio_pull_fifo.cc",
     "audio_pull_fifo.h",
     "audio_push_fifo.cc",
