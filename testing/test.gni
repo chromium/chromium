@@ -675,7 +675,7 @@ template("test") {
 
     _generated_script = "$root_build_dir/bin/run_" + invoker.target_name
     if (is_skylab) {
-      generate_skylab_runner_script(_gen_runner_target) {
+      generate_skylab_deps(_gen_runner_target) {
         generated_script = _generated_script
         test_exe = invoker.target_name
       }
