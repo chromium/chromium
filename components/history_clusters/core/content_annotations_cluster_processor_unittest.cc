@@ -5,9 +5,9 @@
 #include "components/history_clusters/core/content_annotations_cluster_processor.h"
 
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/history_clusters/core/clustering_test_utils.h"
+#include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/on_device_clustering_features.h"
 #include "components/search_engines/template_url_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -22,11 +22,10 @@ using ::testing::UnorderedElementsAre;
 class ContentAnnotationsClusterProcessorTest : public ::testing::Test {
  public:
   ContentAnnotationsClusterProcessorTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kOnDeviceClustering,
-        {{"content_clustering_enabled", "true"},
-         {"use_content_clustering_intersection_similarity", "false"},
-         {"content_clustering_similarity_threshold", "0.5"}});
+    config_.content_clustering_enabled = true;
+    config_.content_cluster_on_intersection_similarity = false;
+    config_.content_clustering_similarity_threshold = 0.5;
+    SetConfigForTesting(config_);
   }
 
   void SetUp() override {
@@ -41,7 +40,7 @@ class ContentAnnotationsClusterProcessorTest : public ::testing::Test {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  Config config_;
   std::unique_ptr<ContentAnnotationsClusterProcessor> cluster_processor_;
 };
 
@@ -152,14 +151,13 @@ class ContentAnnotationsIntersectionMetricTest
     : public ContentAnnotationsClusterProcessorTest {
  public:
   ContentAnnotationsIntersectionMetricTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kOnDeviceClustering,
-        {{"content_clustering_enabled", "true"},
-         {"content_clustering_interaction_similarity", "true"}});
+    config_.content_clustering_enabled = true;
+    config_.content_cluster_on_intersection_similarity = true;
+    SetConfigForTesting(config_);
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  Config config_;
 };
 
 TEST_F(ContentAnnotationsIntersectionMetricTest, AboveThreshold) {

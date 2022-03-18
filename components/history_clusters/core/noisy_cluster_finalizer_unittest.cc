@@ -5,9 +5,9 @@
 #include "components/history_clusters/core/noisy_cluster_finalizer.h"
 
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/history_clusters/core/clustering_test_utils.h"
+#include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/on_device_clustering_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,9 +21,9 @@ class NoisyClusterFinalizerTest : public ::testing::Test {
  public:
   void SetUp() override {
     cluster_finalizer_ = std::make_unique<NoisyClusterFinalizer>();
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kOnDeviceClustering,
-        {{"num_interesting_visits_filter_threshold", "2"}});
+
+    config_.number_interesting_visits_filter_threshold = 2;
+    SetConfigForTesting(config_);
   }
 
   void TearDown() override { cluster_finalizer_.reset(); }
@@ -33,7 +33,7 @@ class NoisyClusterFinalizerTest : public ::testing::Test {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  Config config_;
   std::unique_ptr<NoisyClusterFinalizer> cluster_finalizer_;
   base::test::TaskEnvironment task_environment_;
 };

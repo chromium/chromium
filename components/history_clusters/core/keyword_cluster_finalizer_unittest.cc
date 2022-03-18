@@ -7,6 +7,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/history_clusters/core/clustering_test_utils.h"
+#include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/on_device_clustering_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -20,10 +21,10 @@ class KeywordClusterFinalizerTest : public ::testing::Test {
  public:
   void SetUp() override {
     cluster_finalizer_ = std::make_unique<KeywordClusterFinalizer>();
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kOnDeviceClustering,
-        {{"exclude_keywords_from_noisy_visits", "true"},
-         {"include_categories_in_keywords", "false"}});
+
+    config_.should_exclude_keywords_from_noisy_visits = true;
+    config_.should_include_categories_in_keywords = false;
+    SetConfigForTesting(config_);
   }
 
   void TearDown() override { cluster_finalizer_.reset(); }
@@ -33,7 +34,7 @@ class KeywordClusterFinalizerTest : public ::testing::Test {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  Config config_;
   std::unique_ptr<KeywordClusterFinalizer> cluster_finalizer_;
   base::test::TaskEnvironment task_environment_;
 };
@@ -76,10 +77,10 @@ class KeywordClusterFinalizerIncludeAllTest : public ::testing::Test {
  public:
   void SetUp() override {
     cluster_finalizer_ = std::make_unique<KeywordClusterFinalizer>();
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kOnDeviceClustering,
-        {{"exclude_keywords_from_noisy_visits", "false"},
-         {"include_categories_in_keywords", "true"}});
+
+    config_.should_exclude_keywords_from_noisy_visits = false;
+    config_.should_include_categories_in_keywords = true;
+    SetConfigForTesting(config_);
   }
 
   void TearDown() override { cluster_finalizer_.reset(); }
@@ -89,7 +90,7 @@ class KeywordClusterFinalizerIncludeAllTest : public ::testing::Test {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  Config config_;
   std::unique_ptr<KeywordClusterFinalizer> cluster_finalizer_;
   base::test::TaskEnvironment task_environment_;
 };
