@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "ash/capture_mode/capture_mode_bar_view.h"
+#include "ash/capture_mode/capture_mode_button.h"
 #include "ash/capture_mode/capture_mode_camera_controller.h"
+#include "ash/capture_mode/capture_mode_camera_preview_view.h"
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_menu_group.h"
@@ -19,7 +21,10 @@
 #include "ash/constants/ash_features.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/test/ash_test_base.h"
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
@@ -27,7 +32,11 @@
 #include "base/system/system_monitor.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/image/image_unittest_util.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
@@ -117,7 +126,7 @@ class CaptureModeCameraTest : public AshTestBase {
     scoped_feature_list_.InitAndEnableFeature(
         features::kCaptureModeSelfieCamera);
     AshTestBase::SetUp();
-    window_ = CreateTestWindow(gfx::Rect(30, 40, 300, 200));
+    window_ = CreateTestWindow(gfx::Rect(30, 40, 600, 500));
   }
 
   void TearDown() override {
@@ -212,6 +221,12 @@ class CaptureModeCameraTest : public AshTestBase {
     }
   }
 
+  CaptureModeButton* GetPreviewResizeButton() const {
+    return GetCameraController()
+        ->camera_preview_view_for_test()
+        ->resize_button_for_test();
+  }
+
   // Verifies that the camera preview is placed on the correct position based on
   // current preview snap position and the given `confine_bounds_in_screen`.
   void VerifyPreviewAlignment(const gfx::Rect& confine_bounds_in_screen) {
@@ -257,6 +272,29 @@ class CaptureModeCameraTest : public AshTestBase {
         break;
       }
     }
+  }
+
+  // Verifies that the icon image and the tooltip of the resize button gets
+  // updated correctly when pressed.
+  void VerifyResizeButton(bool is_collapsed, CaptureModeButton* resize_button) {
+    SkColor color = AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kIconColorPrimary);
+    const gfx::ImageSkia collapse_icon_image =
+        gfx::CreateVectorIcon(kCaptureModeCameraPreviewCollapseIcon, color);
+    const gfx::ImageSkia expand_icon_image =
+        gfx::CreateVectorIcon(kCaptureModeCameraPreviewExpandIcon, color);
+
+    const SkBitmap* expected_icon = is_collapsed ? expand_icon_image.bitmap()
+                                                 : collapse_icon_image.bitmap();
+    const SkBitmap* actual_icon =
+        resize_button->GetImage(views::ImageButton::ButtonState::STATE_NORMAL)
+            .bitmap();
+    EXPECT_TRUE(gfx::test::AreBitmapsEqual(*actual_icon, *expected_icon));
+
+    const auto expected_tooltip_text = l10n_util::GetStringUTF16(
+        is_collapsed ? IDS_ASH_SCREEN_CAPTURE_TOOLTIP_EXPAND_SELFIE_CAMERA
+                     : IDS_ASH_SCREEN_CAPTURE_TOOLTIP_COLLAPSE_SELFIE_CAMERA);
+    EXPECT_EQ(resize_button->GetTooltipText(), expected_tooltip_text);
   }
 
  private:
@@ -861,9 +899,9 @@ TEST_F(CaptureModeCameraTest, MultiDisplayCameraPreviewWidgetBounds) {
   MoveMouseToAndUpdateCursorDisplay(point_in_second_display, event_generator);
   controller->SetSource(CaptureModeSource::kRegion);
   // The capture region set through `controller` is in root coordinate.
-  const gfx::Rect capture_region(100, 0, 200, 150);
+  const gfx::Rect capture_region(100, 0, 400, 550);
   controller->SetUserCaptureRegion(capture_region, /*by_user=*/true);
-  const gfx::Rect capture_region_in_screen(901, 0, 200, 150);
+  const gfx::Rect capture_region_in_screen(901, 0, 400, 550);
   const gfx::Rect preview_bounds = preview_widget->GetWindowBoundsInScreen();
   EXPECT_TRUE(second_display_bounds.Contains(preview_bounds));
   EXPECT_TRUE(capture_region_in_screen.Contains(preview_bounds));
@@ -872,7 +910,7 @@ TEST_F(CaptureModeCameraTest, MultiDisplayCameraPreviewWidgetBounds) {
   // should be inside the window that is being recorded inside the second
   // display.
   window()->SetBoundsInScreen(
-      gfx::Rect(900, 0, 400, 300),
+      gfx::Rect(900, 0, 600, 500),
       display::Screen::GetScreen()->GetDisplayNearestWindow(
           Shell::GetAllRootWindows()[1]));
   StartRecordingFromSource(CaptureModeSource::kWindow);
@@ -1375,6 +1413,70 @@ TEST_P(CaptureModeCameraPreviewTest, CursorTypeUpdates) {
   DragPreviewToPoint(preview_widget, {camera_preview_origin_point.x() - 20,
                                       camera_preview_origin_point.y() - 20});
   EXPECT_EQ(cursor_manager->GetCursor(), GetCursorTypeOnCaptureSurface());
+}
+
+// Tests the functionality of resize button on changing the size of the camera
+// preview widget, updating the icon image and tooltip text after clicking on
+// it. It also tests the ability to restore to previous resize button settings
+// if any when initiating a new capture mode session.
+TEST_P(CaptureModeCameraPreviewTest, ResizePreviewWidget) {
+  StartCaptureSessionWithParam();
+  auto* controller = CaptureModeController::Get();
+  auto* camera_controller = GetCameraController();
+  AddDefaultCamera();
+  camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
+
+  views::Widget* preview_widget = camera_controller->camera_preview_widget();
+  DCHECK(preview_widget);
+  const auto default_preview_bounds = preview_widget->GetWindowBoundsInScreen();
+  EXPECT_EQ(default_preview_bounds.size(), capture_mode::kCameraPreviewSize);
+
+  auto* resize_button = GetPreviewResizeButton();
+  auto* event_generator = GetEventGenerator();
+
+  // Tests the default settings of the resize button.
+  VerifyResizeButton(camera_controller->is_camera_preview_collapsed(),
+                     resize_button);
+
+  // First time click on resize button will make the preview widget collapse
+  // to half of the default size with tooltip text and resize button icon
+  // changed to expanded related contents accordingly.
+  ClickOnView(resize_button, event_generator);
+  EXPECT_EQ(preview_widget->GetWindowBoundsInScreen().size(),
+            capture_mode::kCollapsedPreviewSize);
+  VerifyResizeButton(camera_controller->is_camera_preview_collapsed(),
+                     resize_button);
+
+  // Second time click on resize button will make the preview widget expand
+  // back to the default size with tooltip text and resize button icon changed
+  // to the collapsed related contents accordingly.
+  ClickOnView(resize_button, event_generator);
+  EXPECT_EQ(preview_widget->GetWindowBoundsInScreen(), default_preview_bounds);
+  VerifyResizeButton(camera_controller->is_camera_preview_collapsed(),
+                     resize_button);
+
+  // Click on the resize button again will collapse the preview widget. Exit the
+  // session and start a new session, the settings for preview widget bounds and
+  // resize button will be restored.
+  ClickOnView(resize_button, event_generator);
+  EXPECT_EQ(preview_widget->GetWindowBoundsInScreen().size(),
+            capture_mode::kCollapsedPreviewSize);
+  VerifyResizeButton(camera_controller->is_camera_preview_collapsed(),
+                     resize_button);
+  const auto collapsed_preview_bounds =
+      preview_widget->GetWindowBoundsInScreen();
+  controller->Stop();
+
+  StartCaptureSessionWithParam();
+  preview_widget = camera_controller->camera_preview_widget();
+  EXPECT_TRUE(preview_widget);
+  EXPECT_EQ(preview_widget->GetWindowBoundsInScreen(),
+            collapsed_preview_bounds);
+
+  resize_button = GetPreviewResizeButton();
+  EXPECT_TRUE(resize_button);
+  VerifyResizeButton(camera_controller->is_camera_preview_collapsed(),
+                     resize_button);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

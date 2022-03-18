@@ -4075,6 +4075,12 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SCREEN_CAPTURE_SHOW_CAMERA_USER_NUDGE" desc="The message shown in a toast widget to nudge the user and alert them to check out the new settings that allow them to show camera during video recording.">
         You can now record yourself and your screen at the same time
       </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_TOOLTIP_COLLAPSE_SELFIE_CAMERA" desc="Tooltip of the collapse resize button for screen capture selfie camera.">
+        Collapse camera
+      </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_TOOLTIP_EXPAND_SELFIE_CAMERA" desc="Tooltip of the expand resize button for screen capture selfie camera.">
+        Expand camera
+      </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_TOOLTIP_FULLSCREEN_SCREENSHOT" desc="Tooltip of the fullscreen toggle button when in image capture mode.">
         Take full screen screenshot
       </message>

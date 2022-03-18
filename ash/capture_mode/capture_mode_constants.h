@@ -35,11 +35,17 @@ constexpr SkColor kRegionBorderColor = SK_ColorWHITE;
 // The space between the `image_toggle_button_` and `video_toggle_button_`.
 constexpr int kSpaceBetweenCaptureModeTypeButtons = 2;
 
-constexpr gfx::Size kCameraPreviewSize{96, 96};
+constexpr gfx::Size kCameraPreviewSize{192, 192};
+
+constexpr gfx::Size kCollapsedPreviewSize{96, 96};
 
 // The space between the camera preview and edges of the bounds that will be
 // recorded.
 constexpr int kSpaceBetweenCameraPreviewAndEdges = 16;
+
+// The space between the bottom of camera preview resize button and the bottom
+// of the camera preview.
+constexpr int kSpaceBetweenResizeButtonAndCameraPreview = 12;
 
 }  // namespace capture_mode
 

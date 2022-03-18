@@ -141,6 +141,9 @@ class ASH_EXPORT CaptureModeCameraController
     return camera_preview_snap_position_;
   }
   bool is_drag_in_progress() const { return is_drag_in_progress_; }
+  bool is_camera_preview_collapsed() const {
+    return is_camera_preview_collapsed_;
+  }
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -175,6 +178,10 @@ class ASH_EXPORT CaptureModeCameraController
   void ContinueDraggingPreview(const gfx::PointF& screen_location);
   void EndDraggingPreview(const gfx::PointF& screen_location, bool is_touch);
 
+  // Updates the bounds of the preview widget and the value of
+  // `is_camera_preview_collapsed_` when the resize button is pressed.
+  void ToggleCameraPreviewSize();
+
   // base::SystemMonitor::DevicesChangedObserver:
   void OnDevicesChanged(base::SystemMonitor::DeviceType device_type) override;
 
@@ -184,6 +191,9 @@ class ASH_EXPORT CaptureModeCameraController
 
   base::OneShotTimer* camera_reconnect_timer_for_test() {
     return &camera_reconnect_timer_;
+  }
+  CameraPreviewView* camera_preview_view_for_test() const {
+    return camera_preview_view_;
   }
 
  private:
@@ -286,6 +296,11 @@ class ASH_EXPORT CaptureModeCameraController
 
   // True when the dragging for `camera_preview_view_` is in progress.
   bool is_drag_in_progress_ = false;
+
+  // True if the camera preview is collapsed. Its value will be updated when
+  // the resize button is clicked. The size of the preview widget and the icon
+  // of the resize button will be updated based on it.
+  bool is_camera_preview_collapsed_ = false;
 
   base::WeakPtrFactory<CaptureModeCameraController> weak_ptr_factory_{this};
 };

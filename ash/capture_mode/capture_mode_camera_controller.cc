@@ -24,6 +24,8 @@
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/widget/widget.h"
@@ -151,6 +153,11 @@ void AdjustBoundsWithinConfinedBounds(const gfx::Rect& confined_bounds,
              offset < 0) {
     preview_bounds.set_y(y + offset);
   }
+}
+
+gfx::Size GetInitialPreviewSize(bool is_camera_preview_collapsed) {
+  return is_camera_preview_collapsed ? capture_mode::kCollapsedPreviewSize
+                                     : capture_mode::kCameraPreviewSize;
 }
 
 }  // namespace
@@ -289,7 +296,11 @@ void CaptureModeCameraController::MaybeUpdatePreviewWidgetBounds() {
     return;
   }
 
-  camera_preview_widget_->SetBounds(GetPreviewWidgetBounds());
+  const gfx::Rect target_bounds = GetPreviewWidgetBounds();
+  camera_preview_widget_->SetBounds(target_bounds);
+  ui::Layer* layer = camera_preview_widget_->GetLayer();
+  layer->SetRoundedCornerRadius(
+      gfx::RoundedCornersF(target_bounds.height() / 2.f));
 }
 
 void CaptureModeCameraController::StartDraggingPreview(
@@ -346,6 +357,21 @@ void CaptureModeCameraController::EndDraggingPreview(
     CaptureModeController::Get()->capture_mode_session()->UpdateCursor(
         gfx::ToRoundedPoint(screen_location), is_touch);
   }
+}
+
+void CaptureModeCameraController::ToggleCameraPreviewSize() {
+  DCHECK(camera_preview_view_);
+  is_camera_preview_collapsed_ = !is_camera_preview_collapsed_;
+  // The order here matters, the preferred size for `camera_preview_view_`
+  // should always be set before  `MaybeUpdatePreviewWidgetBounds`, since
+  // `GetPreviewWidgetBounds` called by `MaybeUpdatePreviewWidgetBounds` has
+  // dependency on the preferred size of the `camera_preview_view_`.
+  auto preferred_size = camera_preview_view_->GetPreferredSize();
+  const float scale_factor = is_camera_preview_collapsed_ ? 0.5f : 2.f;
+  preferred_size = gfx::ScaleToFlooredSize(preferred_size, scale_factor);
+  camera_preview_view_->SetPreferredSize(preferred_size);
+
+  MaybeUpdatePreviewWidgetBounds();
 }
 
 void CaptureModeCameraController::OnDevicesChanged(
@@ -443,10 +469,14 @@ void CaptureModeCameraController::RefreshCameraPreview() {
   }
 
   if (!camera_preview_widget_) {
-    camera_preview_widget_ =
-        CreateCameraPreviewWidget(GetPreviewWidgetBounds());
+    const gfx::Rect preview_bounds = GetPreviewWidgetBounds();
+    camera_preview_widget_ = CreateCameraPreviewWidget(preview_bounds);
     camera_preview_view_ = camera_preview_widget_->SetContentsView(
-        std::make_unique<CameraPreviewView>(this));
+        std::make_unique<CameraPreviewView>(this, preview_bounds.size()));
+    ui::Layer* layer = camera_preview_widget_->GetLayer();
+    layer->SetFillsBoundsOpaquely(false);
+    layer->SetRoundedCornerRadius(
+        gfx::RoundedCornersF(preview_bounds.height() / 2.f));
   }
   camera_preview_widget_->Show();
 }
@@ -464,9 +494,15 @@ gfx::Rect CaptureModeCameraController::GetPreviewWidgetBounds() const {
   auto* controller = CaptureModeController::Get();
   DCHECK(controller->IsActive() || controller->is_recording_in_progress());
   const gfx::Rect confine_bounds = controller->GetCameraPreviewConfineBounds();
-  const gfx::Size preview_size = camera_preview_view_
-                                     ? camera_preview_view_->GetPreferredSize()
-                                     : capture_mode::kCameraPreviewSize;
+
+  // If `camera_preview_view_` is available, the preferred size of the
+  // `camera_preview_view_` should be used otherwise the initial preview size
+  // inferred from the `is_camera_preview_collapsed_` will be used.
+  const gfx::Size preview_size =
+      camera_preview_view_
+          ? camera_preview_view_->GetPreferredSize()
+          : GetInitialPreviewSize(is_camera_preview_collapsed_);
+
   if (confine_bounds.IsEmpty())
     return gfx::Rect(preview_size);
 
