@@ -13,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/types/pass_key.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/browser/media/cdm_file_impl.h"
@@ -110,11 +111,14 @@ void MediaLicenseStorageHost::DidOpenFile(const std::string& file_name,
                              this, binding_context.cdm_type, file_name,
                              cdm_file.InitWithNewEndpointAndPassReceiver()));
 
-  // TODO(crbug.com/1231162): Notify the quota system of a write.
   // We don't actually touch the database here, but notify the quota system
   // anyways since conceptually we're creating an empty file.
-
-  std::move(callback).Run(Status::kSuccess, std::move(cdm_file));
+  manager_->quota_manager_proxy()->NotifyBucketModified(
+      storage::QuotaClientType::kMediaLicense, bucket_locator_.id, /*delta=*/0,
+      /*modification_time=*/base::Time::Now(),
+      base::SequencedTaskRunnerHandle::Get(),
+      base::BindOnce(std::move(callback), Status::kSuccess,
+                     std::move(cdm_file)));
 }
 
 void MediaLicenseStorageHost::ReadFile(const media::CdmType& cdm_type,
@@ -122,7 +126,9 @@ void MediaLicenseStorageHost::ReadFile(const media::CdmType& cdm_type,
                                        ReadFileCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/1231162): Notify the quota system of a read.
+  manager_->quota_manager_proxy()->NotifyBucketAccessed(
+      bucket_locator_.id,
+      /*access_time=*/base::Time::Now());
 
   db_.AsyncCall(&MediaLicenseDatabase::ReadFile)
       .WithArgs(cdm_type, file_name)
@@ -139,7 +145,26 @@ void MediaLicenseStorageHost::WriteFile(const media::CdmType& cdm_type,
 
   db_.AsyncCall(&MediaLicenseDatabase::WriteFile)
       .WithArgs(cdm_type, file_name, data)
-      .Then(std::move(callback));
+      .Then(base::BindOnce(&MediaLicenseStorageHost::DidWriteFile,
+                           weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void MediaLicenseStorageHost::DidWriteFile(WriteFileCallback callback,
+                                           bool success) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!success) {
+    manager_->quota_manager_proxy()->NotifyWriteFailed(storage_key());
+    std::move(callback).Run(false);
+    return;
+  }
+
+  // Pass `delta`=0 since media license data does not count against quota.
+  manager_->quota_manager_proxy()->NotifyBucketModified(
+      storage::QuotaClientType::kMediaLicense, bucket_locator_.id, /*delta=*/0,
+      /*modification_time=*/base::Time::Now(),
+      base::SequencedTaskRunnerHandle::Get(),
+      base::BindOnce(std::move(callback), success));
 }
 
 void MediaLicenseStorageHost::DeleteFile(const media::CdmType& cdm_type,
@@ -152,6 +177,13 @@ void MediaLicenseStorageHost::DeleteFile(const media::CdmType& cdm_type,
   db_.AsyncCall(&MediaLicenseDatabase::DeleteFile)
       .WithArgs(cdm_type, file_name)
       .Then(std::move(callback));
+}
+
+void MediaLicenseStorageHost::DeleteBucketData(
+    base::OnceCallback<void(bool)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  db_.AsyncCall(&MediaLicenseDatabase::ClearDatabase).Then(std::move(callback));
 }
 
 void MediaLicenseStorageHost::OnReceiverDisconnect() {

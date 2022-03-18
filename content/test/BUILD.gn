@@ -2664,6 +2664,7 @@ test("content_unittests") {
     sources += [
       "../browser/media/cdm_storage_impl_unittest.cc",
       "../browser/media/key_system_support_impl_unittest.cc",
+      "../browser/media/media_license_manager_unittest.cc",
     ]
   }
 

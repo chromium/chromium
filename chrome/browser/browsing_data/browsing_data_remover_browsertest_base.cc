@@ -386,7 +386,7 @@ int BrowsingDataRemoverBrowserTestBase::GetCookiesTreeModelCount(
     EXPECT_GE(node->children().size(), 1u);
     count += std::count_if(node->children().cbegin(), node->children().cend(),
                            [](const auto& child) {
-                             // TODO(crbug.com/642955): Include quota nodes.
+                             // TODO(crbug.com/1307796): Include quota nodes.
                              return child->GetDetailedInfo().node_type !=
                                     CookieTreeNode::DetailedInfo::TYPE_QUOTA;
                            });

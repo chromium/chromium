@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_MEDIA_MEDIA_LICENSE_STORAGE_HOST_H_
 #define CONTENT_BROWSER_MEDIA_MEDIA_LICENSE_STORAGE_HOST_H_
 
+#include "base/callback_forward.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/files/file_path.h"
 #include "base/thread_annotations.h"
@@ -57,6 +58,8 @@ class CONTENT_EXPORT MediaLicenseStorageHost : public media::mojom::CdmStorage {
                   const std::string& file_name,
                   DeleteFileCallback callback);
 
+  void DeleteBucketData(base::OnceCallback<void(bool)> callback);
+
   void OnFileReceiverDisconnect(const std::string& name,
                                 const media::CdmType& cdm_type,
                                 base::PassKey<CdmFileImpl> pass_key);
@@ -101,6 +104,7 @@ class CONTENT_EXPORT MediaLicenseStorageHost : public media::mojom::CdmStorage {
                    BindingContext binding_context,
                    OpenCallback callback,
                    bool success);
+  void DidWriteFile(WriteFileCallback callback, bool success);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

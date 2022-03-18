@@ -61,8 +61,8 @@ void SiteDataCountingHelper::CountAndDestroySelfWhenFinished() {
 
   storage::QuotaManager* quota_manager = partition->GetQuotaManager();
   if (quota_manager) {
-    // Count storage keys with filesystem, websql, appcache, indexeddb,
-    // serviceworkers and cachestorage using quota manager.
+    // Count storage keys with filesystem, websql, indexeddb, serviceworkers,
+    // cachestorage, and medialicense using quota manager.
     auto buckets_callback =
         base::BindRepeating(&SiteDataCountingHelper::GetQuotaBucketsCallback,
                             base::Unretained(this));

@@ -47,7 +47,7 @@ absl::optional<std::vector<uint8_t>> MediaLicenseDatabase::ReadFile(
     const std::string& file_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!db_.is_open())
+  if (!OpenDatabase())
     return absl::nullopt;
 
   static constexpr char kSelectSql[] =
@@ -80,7 +80,7 @@ bool MediaLicenseDatabase::WriteFile(const media::CdmType& cdm_type,
                                      const std::vector<uint8_t>& data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!db_.is_open())
+  if (!OpenDatabase())
     return false;
 
   static constexpr char kInsertSql[] =
@@ -106,7 +106,7 @@ bool MediaLicenseDatabase::DeleteFile(const media::CdmType& cdm_type,
                                       const std::string& file_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!db_.is_open())
+  if (!OpenDatabase())
     return false;
 
   static constexpr char kDeleteSql[] =
@@ -124,32 +124,46 @@ bool MediaLicenseDatabase::DeleteFile(const media::CdmType& cdm_type,
   return success;
 }
 
+bool MediaLicenseDatabase::ClearDatabase() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  db_.Close();
+
+  if (path_.empty()) {
+    // Memory associated with an in-memory database will be released when the
+    // database is closed above.
+    return true;
+  }
+
+  return sql::Database::Delete(path_);
+}
+
 // Opens and sets up a database if one is not already set up.
 bool MediaLicenseDatabase::OpenDatabase(bool is_retry) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Open the database if it isn't open already.
-  if (!db_.is_open()) {
-    bool success = false;
-    if (path_.empty()) {
-      success = db_.OpenInMemory();
-    } else {
-      // Ensure `path`'s parent directory exists.
-      base::File::Error error = base::File::Error::FILE_OK;
-      if (!base::CreateDirectoryAndGetError(path_.DirName(), &error)) {
-        DVLOG(1) << "Failed to open CDM database: "
-                 << base::File::ErrorToString(error);
-        return false;
-      }
-      DCHECK_EQ(error, base::File::Error::FILE_OK);
+  if (db_.is_open())
+    return true;
 
-      success = db_.Open(path_);
-    }
-
-    if (!success) {
-      DVLOG(1) << "Failed to open CDM database: " << db_.GetErrorMessage();
+  bool success = false;
+  if (path_.empty()) {
+    success = db_.OpenInMemory();
+  } else {
+    // Ensure `path`'s parent directory exists.
+    base::File::Error error = base::File::Error::FILE_OK;
+    if (!base::CreateDirectoryAndGetError(path_.DirName(), &error)) {
+      DVLOG(1) << "Failed to open CDM database: "
+               << base::File::ErrorToString(error);
       return false;
     }
+    DCHECK_EQ(error, base::File::Error::FILE_OK);
+
+    success = db_.Open(path_);
+  }
+
+  if (!success) {
+    DVLOG(1) << "Failed to open CDM database: " << db_.GetErrorMessage();
+    return false;
   }
 
   sql::MetaTable meta_table;

@@ -86,6 +86,10 @@ class CONTENT_EXPORT MediaLicenseManager {
   void DidGetBucket(const blink::StorageKey& storage_key,
                     storage::QuotaErrorOr<storage::BucketInfo> result);
 
+  void DidDeleteBucketData(
+      storage::mojom::QuotaClient::DeleteBucketDataCallback callback,
+      bool success);
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Task runner which all database operations are routed through.

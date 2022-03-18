@@ -271,6 +271,13 @@ void UsageTracker::AccumulateClientHostUsage(base::OnceClosure barrier_callback,
     case QuotaClientType::kNativeIO:
       info->usage_breakdown->fileSystem += total_usage;
       break;
+    case QuotaClientType::kMediaLicense:
+      // Media license data does not count against quota and should always
+      // report 0 usage.
+      // TODO(crbug.com/1305441): Consider counting media license data against
+      // quota.
+      DCHECK_EQ(total_usage, 0);
+      break;
   }
 
   std::move(barrier_callback).Run();

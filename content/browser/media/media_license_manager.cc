@@ -7,17 +7,21 @@
 #include <memory>
 #include <utility>
 
+#include "base/bind.h"
+#include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/services/storage/public/cpp/buckets/constants.h"
 #include "components/services/storage/public/cpp/constants.h"
 #include "content/browser/media/media_license_storage_host.h"
+#include "sql/database.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
 
 namespace content {
@@ -56,7 +60,13 @@ MediaLicenseManager::MediaLicenseManager(
       // this instance.
       quota_client_(this),
       quota_client_receiver_(&quota_client_) {
-  // TODO(crbug.com/1231162): Register a new backend with the quota client.
+  if (quota_manager_proxy_) {
+    // Quota client assumes all backends have registered.
+    quota_manager_proxy_->RegisterClient(
+        quota_client_receiver_.BindNewPipeAndPassRemote(),
+        storage::QuotaClientType::kMediaLicense,
+        {blink::mojom::StorageType::kTemporary});
+  }
 }
 
 MediaLicenseManager::~MediaLicenseManager() = default;
@@ -122,9 +132,37 @@ void MediaLicenseManager::DeleteBucketData(
     storage::mojom::QuotaClient::DeleteBucketDataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/1231162): Delete all media license data for `bucket`.
+  auto it_hosts = hosts_.find(bucket.storage_key);
+  if (it_hosts != hosts_.end()) {
+    // Let the host gracefully handle data deletion.
+    it_hosts->second->DeleteBucketData(
+        base::BindOnce(&MediaLicenseManager::DidDeleteBucketData,
+                       weak_factory_.GetWeakPtr(), std::move(callback)));
+    return;
+  }
 
-  std::move(callback).Run(blink::mojom::QuotaStatusCode::kOk);
+  // If we have an in-memory profile, any data for the storage key would have
+  // lived in the associated MediaLicenseStorageHost.
+  if (bucket_base_path_.empty()) {
+    std::move(callback).Run(blink::mojom::QuotaStatusCode::kOk);
+    return;
+  }
+
+  // Otherwise delete database file.
+  auto path = GetDatabasePath(bucket);
+  db_runner()->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&sql::Database::Delete, path),
+      base::BindOnce(&MediaLicenseManager::DidDeleteBucketData,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void MediaLicenseManager::DidDeleteBucketData(
+    storage::mojom::QuotaClient::DeleteBucketDataCallback callback,
+    bool success) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  std::move(callback).Run(success ? blink::mojom::QuotaStatusCode::kOk
+                                  : blink::mojom::QuotaStatusCode::kUnknown);
 }
 
 base::FilePath MediaLicenseManager::GetDatabasePath(

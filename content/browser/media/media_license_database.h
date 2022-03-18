@@ -28,6 +28,8 @@ class MediaLicenseDatabase {
                  const std::vector<uint8_t>& data);
   bool DeleteFile(const media::CdmType& cdm_type, const std::string& file_name);
 
+  bool ClearDatabase();
+
  private:
   // Opens and sets up a database if one is not already set up.
   bool OpenDatabase(bool is_retry = false);
