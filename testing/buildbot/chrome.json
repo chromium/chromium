@@ -30,6 +30,7 @@
             }
           ],
           "idempotent": false,
+          "io_timeout": 3600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 6
         },
@@ -93,6 +94,7 @@
             }
           ],
           "idempotent": false,
+          "io_timeout": 3600,
           "named_caches": [
             {
               "name": "cros_vm",
@@ -340,6 +342,7 @@
             }
           ],
           "idempotent": false,
+          "io_timeout": 3600,
           "named_caches": [
             {
               "name": "cros_vm",
@@ -1323,6 +1326,7 @@
             }
           ],
           "idempotent": false,
+          "io_timeout": 3600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 6
         },
@@ -1416,6 +1420,7 @@
             }
           ],
           "idempotent": false,
+          "io_timeout": 3600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 6
         },
@@ -1616,6 +1621,7 @@
             }
           ],
           "idempotent": false,
+          "io_timeout": 3600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 6
         },
