@@ -5,12 +5,14 @@
 #include "sql/error_metrics.h"
 
 #include <ostream>  // Needed to compile NOTREACHED() with operator <<.
+#include <set>
 #include <utility>
 
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_piece.h"
 #include "third_party/sqlite/sqlite3.h"
 
 namespace sql {
@@ -26,6 +28,7 @@ constexpr std::pair<int, SqliteLoggedResultCode> kResultCodeMapping[] = {
     {SQLITE_INTERNAL, SqliteLoggedResultCode::kUnusedSqlite},
     {SQLITE_PERM, SqliteLoggedResultCode::kPermission},
     {SQLITE_ABORT, SqliteLoggedResultCode::kAbort},
+    {SQLITE_BUSY, SqliteLoggedResultCode::kBusy},
 
     // Chrome features shouldn't execute conflicting statements concurrently.
     {SQLITE_LOCKED, SqliteLoggedResultCode::kUnusedChrome},
@@ -122,7 +125,7 @@ constexpr std::pair<int, SqliteLoggedResultCode> kResultCodeMapping[] = {
 #endif
 
     // Chrome does not use blocking Posix advisory file lock requests.
-    {SQLITE_ERROR_SNAPSHOT, SqliteLoggedResultCode::kUnusedChrome},
+    {SQLITE_BUSY_TIMEOUT, SqliteLoggedResultCode::kUnusedChrome},
 #ifdef SQLITE_ENABLE_SETLK_TIMEOUT
 #error "This code assumes that Chrome does not use
 #endif
@@ -254,6 +257,57 @@ void UmaHistogramSqliteResult(const char* histogram_name,
                               int sqlite_result_code) {
   auto logged_code = CreateSqliteLoggedResultCode(sqlite_result_code);
   base::UmaHistogramEnumeration(histogram_name, logged_code);
+}
+
+void CheckSqliteLoggedResultCodeForTesting() {
+  // Ensure that error codes are alphabetical.
+  const auto* unordered_it = base::ranges::adjacent_find(
+      kResultCodeMapping,
+      [](const std::pair<int, SqliteLoggedResultCode>& lhs,
+         const std::pair<int, SqliteLoggedResultCode>& rhs) {
+        return lhs >= rhs;
+      });
+  DCHECK_EQ(unordered_it, base::ranges::end(kResultCodeMapping))
+      << "Mapping ordering broken at {" << unordered_it->first << ", "
+      << static_cast<int>(unordered_it->second) << "}";
+
+  std::set<int> sqlite_result_codes;
+  for (auto& mapping_entry : kResultCodeMapping)
+    sqlite_result_codes.insert(mapping_entry.first);
+
+  // SQLite doesn't have special messages for extended errors.
+  // At the time of this writing, sqlite3_errstr() has a string table for
+  // primary result codes, and uses it for extended error codes as well.
+  //
+  // So, we can only use sqlite3_errstr() to check for holes in the primary
+  // message table.
+  for (int result_code = 0; result_code <= 256; ++result_code) {
+    if (sqlite_result_codes.count(result_code) != 0)
+      continue;
+
+    const char* error_message = sqlite3_errstr(result_code);
+
+    static constexpr base::StringPiece kUnknownErrorMessage("unknown error");
+    DCHECK_EQ(kUnknownErrorMessage.compare(error_message), 0)
+        << "Unmapped SQLite result code: " << result_code
+        << " SQLite message: " << error_message;
+  }
+
+  // Number of #defines in https://www.sqlite.org/c3ref/c_abort.html
+  //
+  // This number is also stated at
+  // https://www.sqlite.org/rescode.html#primary_result_code_list
+  static constexpr int kPrimaryResultCodes = 31;
+
+  // Number of #defines in https://www.sqlite.org/c3ref/c_abort_rollback.html
+  //
+  // This number is also stated at
+  // https://www.sqlite.org/rescode.html#extended_result_code_list
+  static constexpr int kExtendedResultCodes = 74;
+
+  DCHECK_EQ(std::size(kResultCodeMapping),
+            size_t{kPrimaryResultCodes + kExtendedResultCodes})
+      << "Mapping table has incorrect number of entries";
 }
 
 }  // namespace sql

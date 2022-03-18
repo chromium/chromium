@@ -76,7 +76,7 @@ TEST(ErrorMetricsTest, MAYBE_CreateSqliteLoggedResultCode_ChromeBugError) {
       CreateSqliteLoggedResultCode(SQLITE_NOTFOUND),
       "SQLite reported code that should never show up in Chrome: 12");
 #else
-  EXPECT_EQ(SqliteLoggedResultCode::kUnusedSqlite,
+  EXPECT_EQ(SqliteLoggedResultCode::kUnusedChrome,
             CreateSqliteLoggedResultCode(SQLITE_NOTFOUND));
 #endif
 }
@@ -103,6 +103,10 @@ TEST(ErrorMetricsTest, UmaHistogramSqliteResult_ExtendedErrorCode) {
   histogram_tester.ExpectTotalCount("Sql.ResultTest", 1);
   histogram_tester.ExpectBucketCount("Sql.ResultTest",
                                      SqliteLoggedResultCode::kCorruptIndex, 1);
+}
+
+TEST(ErrorMetricsTest, CheckMapping) {
+  CheckSqliteLoggedResultCodeForTesting();
 }
 
 }  // namespace
