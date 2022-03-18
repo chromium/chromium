@@ -174,7 +174,7 @@ class TailoredSecurityService : public KeyedService {
   size_t active_query_request_ = 0;
 
   // Timer to periodically check tailored security bit.
-  base::RepeatingTimer timer_;
+  base::OneShotTimer timer_;
 
   bool is_tailored_security_enabled_ = false;
   base::Time last_updated_;

@@ -280,13 +280,23 @@ void TailoredSecurityService::AddQueryRequest() {
   DCHECK(!is_shut_down_);
   active_query_request_++;
   if (active_query_request_ == 1) {
-    // Query now and register a repeating timer to get the tailored security bit
-    // every `kRepeatingCheckTailoredSecurityBitDelayInMinutes` minutes.
-    QueryTailoredSecurityBit();
-    timer_.Start(
-        FROM_HERE,
-        base::Minutes(kRepeatingCheckTailoredSecurityBitDelayInMinutes), this,
-        &TailoredSecurityService::QueryTailoredSecurityBit);
+    if (base::Time::Now() - last_updated_ <=
+        base::Minutes(kRepeatingCheckTailoredSecurityBitDelayInMinutes)) {
+      // Since we queried recently, start the timer with a shorter delay.
+      base::TimeDelta delay =
+          base::Minutes(kRepeatingCheckTailoredSecurityBitDelayInMinutes) -
+          (base::Time::Now() - last_updated_);
+      timer_.Start(FROM_HERE, delay, this,
+                   &TailoredSecurityService::QueryTailoredSecurityBit);
+    } else {
+      // Query now and register a timer to get the tailored security bit
+      // every `kRepeatingCheckTailoredSecurityBitDelayInMinutes` minutes.
+      QueryTailoredSecurityBit();
+      timer_.Start(
+          FROM_HERE,
+          base::Minutes(kRepeatingCheckTailoredSecurityBitDelayInMinutes), this,
+          &TailoredSecurityService::QueryTailoredSecurityBit);
+    }
   }
 }
 
@@ -362,6 +372,12 @@ void TailoredSecurityService::OnTailoredSecurityBitRetrieved(
   }
   is_tailored_security_enabled_ = is_enabled;
   last_updated_ = base::Time::Now();
+  if (active_query_request_ > 0) {
+    timer_.Start(
+        FROM_HERE,
+        base::Minutes(kRepeatingCheckTailoredSecurityBitDelayInMinutes), this,
+        &TailoredSecurityService::QueryTailoredSecurityBit);
+  }
 }
 
 void TailoredSecurityService::QueryTailoredSecurityBitCompletionCallback(
