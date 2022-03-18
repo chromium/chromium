@@ -75,6 +75,15 @@ export function removeHighResolutionSuffix(url: string): string {
 }
 
 /**
+ * Removes the resolution suffix at the end of an image (from character '=' to
+ * the end) and replace it with a new resolution suffix.
+ */
+export function replaceResolutionSuffix(
+    url: string, resolution: string): string {
+  return url.replace(/=w[\w-]+$/, resolution);
+}
+
+/**
  * Returns whether the given URL starts with http:// or https://.
  */
 export function hasHttpScheme(url: string): boolean {

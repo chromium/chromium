@@ -31,9 +31,12 @@
   }
 
   :host([main-page]) #imageContainer {
+    display: flex;
+    height: 100%;
     justify-self: center;
     max-width: 360px;
     min-width: 252px;
+    width: 100%;
   }
 
   ::slotted(div[id='ambientLabel']) {
@@ -84,6 +87,13 @@
 
   #collageContainer {
     grid-template-columns: repeat(2, minmax(0,1fr));
+    grid-template-rows: repeat(2, minmax(0,1fr));
+  }
+
+  #collageContainer.collage-1 .collage-item:first-child,
+  #collageContainer.collage-2 .collage-item:first-child,
+  #collageContainer.collage-2 .collage-item:nth-child(2) {
+    grid-row: 1 / 3;
   }
 
   #collageContainer.collage-1 .collage-item:first-child,
@@ -95,22 +105,6 @@
     height: 100%;
     object-fit: cover;
     width: 100%;
-  }
-
-  .collage-item:first-child {
-    border-top-left-radius: 12px;
-  }
-
-  .collage-item:nth-child(2) {
-    border-top-right-radius: 12px;
-  }
-
-  .collage-item:nth-child(3) {
-    border-bottom-left-radius: 12px;
-  }
-
-  .collage-item:nth-child(4) {
-    border-bottom-right-radius: 12px;
   }
 </style>
 <div class="preview-container" id="container">
