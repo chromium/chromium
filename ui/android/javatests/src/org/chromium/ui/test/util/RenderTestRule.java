@@ -52,6 +52,9 @@ import java.util.concurrent.Callable;
  *             // Required. If using ANDROID_RENDER_TESTS_PUBLIC, the Builder can be created with
  *             // the shorthand RenderTestRule.Builder.withPublicCorpus().
  *             .setCorpus(RenderTestRule.Corpus.ANDROID_RENDER_TESTS_PUBLIC)
+ *             // Required. If adding a test for the first time for a component, add the string
+ *             // value to the Component @StringDef and @interface.
+ *             .setBugComponent(RenderTestRule.Component.BLINK_FORMS_COLOR)
  *             // Optional, only necessary once a CL lands that should invalidate previous golden
  *             // images, e.g. a UI rework.
  *             .setRevision(2)
@@ -101,6 +104,7 @@ public class RenderTestRule extends TestWatcher {
     private int mSkiaGoldRevision;
     private String mSkiaGoldRevisionDescription;
     private boolean mFailOnUnsupportedConfigs;
+    private String mBugComponent;
 
     @StringDef({Corpus.ANDROID_RENDER_TESTS_PUBLIC, Corpus.ANDROID_RENDER_TESTS_INTERNAL,
             Corpus.ANDROID_VR_RENDER_TESTS})
@@ -114,21 +118,31 @@ public class RenderTestRule extends TestWatcher {
         String ANDROID_VR_RENDER_TESTS = "android-vr-render-tests";
     }
 
+    @StringDef({Component.NONE})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface Component {
+        // Default for now, likely to be removed once all existing uses have a valid component.
+        String NONE = "N/A";
+        String BLINK_FORMS_COLOR = "Blink>Forms>Color";
+    }
+
     // Skia Gold-specific constructor used by the builder.
     // Note that each corpus/description combination results in some additional initialization
     // on the host (~250 ms), so consider whether adding unique descriptions is necessary before
     // adding them to a bunch of test classes.
     protected RenderTestRule(int revision, @Corpus String corpus, String description,
-            boolean failOnUnsupportedConfigs) {
+            boolean failOnUnsupportedConfigs, @Component String component) {
         assert revision >= 0;
         // Don't have a default corpus so that users explicitly specify whether
         // they want their test results to be public or not.
         assert corpus != null;
+        assert component != null;
 
         mSkiaGoldCorpus = corpus;
         mSkiaGoldRevisionDescription = description;
         mSkiaGoldRevision = revision;
         mFailOnUnsupportedConfigs = failOnUnsupportedConfigs;
+        mBugComponent = component;
 
         // The output folder can be overridden with the --render-test-output-dir command.
         mOutputFolder = CommandLine.getInstance().getSwitchValue("render-test-output-dir");
@@ -196,18 +210,25 @@ public class RenderTestRule extends TestWatcher {
 
         saveBitmap(testBitmap, createOutputPath(SKIA_GOLD_FOLDER_RELATIVE, imageName));
         JSONObject goldKeys = new JSONObject();
+        JSONObject optionalKeys = new JSONObject();
         try {
             goldKeys.put("source_type", mSkiaGoldCorpus);
             goldKeys.put("model", Build.MODEL);
             goldKeys.put("sdk_version", String.valueOf(Build.VERSION.SDK_INT));
             if (!TextUtils.isEmpty(mSkiaGoldRevisionDescription)) {
-                goldKeys.put("revision_description", mSkiaGoldRevisionDescription);
+                optionalKeys.put("revision_description", mSkiaGoldRevisionDescription);
             }
-            goldKeys.put("fail_on_unsupported_configs", String.valueOf(mFailOnUnsupportedConfigs));
+            optionalKeys.put(
+                    "fail_on_unsupported_configs", String.valueOf(mFailOnUnsupportedConfigs));
+            optionalKeys.put("bug_component", mBugComponent);
             // This key will be deleted by the test runner before uploading to Gold. It is used to
             // differentiate results from different tests if the test runner has batched multiple
             // tests together in a single run.
             goldKeys.put("full_test_name", mFullTestName);
+            // This key will be deleted by the test runner and its contents passed into Gold as
+            // optional key/value pairs. These are purely informational as opposed to indicating
+            // something that might have an effect on test output such as device model.
+            goldKeys.put("optional_keys", optionalKeys);
         } catch (JSONException e) {
             Assert.fail("Failed to create Skia Gold JSON keys: " + e.toString());
         }
@@ -339,6 +360,7 @@ public class RenderTestRule extends TestWatcher {
         protected @Corpus String mCorpus;
         protected String mDescription;
         protected boolean mFailOnUnsupportedConfigs;
+        protected @Component String mBugComponent = Component.NONE;
 
         /**
          * Sets the revision that will be appended to the test name reported to Gold. This should
@@ -377,6 +399,14 @@ public class RenderTestRule extends TestWatcher {
             return self();
         }
 
+        /**
+         * Sets the bug component that will be shown alongside the image in the Gold web UI.
+         */
+        public B setBugComponent(@Component String component) {
+            mBugComponent = component;
+            return self();
+        }
+
         protected B self() {
             return (B) this;
         }
@@ -390,7 +420,8 @@ public class RenderTestRule extends TestWatcher {
     public static class Builder extends BaseBuilder<Builder> {
         @Override
         public RenderTestRule build() {
-            return new RenderTestRule(mRevision, mCorpus, mDescription, mFailOnUnsupportedConfigs);
+            return new RenderTestRule(
+                    mRevision, mCorpus, mDescription, mFailOnUnsupportedConfigs, mBugComponent);
         }
 
         /**

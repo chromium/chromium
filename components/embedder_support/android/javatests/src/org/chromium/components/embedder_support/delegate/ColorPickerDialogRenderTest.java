@@ -43,7 +43,10 @@ public class ColorPickerDialogRenderTest extends BlankUiTestActivityTestCase {
             new NightModeTestUtils.NightModeParams().getParameters();
 
     @Rule
-    public RenderTestRule mRenderTestRule = RenderTestRule.Builder.withPublicCorpus().build();
+    public RenderTestRule mRenderTestRule =
+            RenderTestRule.Builder.withPublicCorpus()
+                    .setBugComponent(RenderTestRule.Component.BLINK_FORMS_COLOR)
+                    .build();
 
     private View mView;
 

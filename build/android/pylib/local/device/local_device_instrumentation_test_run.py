@@ -1200,8 +1200,12 @@ class LocalDeviceInstrumentationTestRun(
           # All the key/value pairs in the JSON file are strings, so convert
           # to a bool.
           json_dict = json.load(infile)
-          fail_on_unsupported = json_dict.get('fail_on_unsupported_configs',
-                                              'false')
+          optional_dict = json_dict.get('optional_keys', {})
+          if 'optional_keys' in json_dict:
+            should_rewrite = True
+            del json_dict['optional_keys']
+          fail_on_unsupported = optional_dict.get('fail_on_unsupported_configs',
+                                                  'false')
           fail_on_unsupported = fail_on_unsupported.lower() == 'true'
           # Grab the full test name so we can associate the comparison with a
           # particular test, which is necessary if tests are batched together.
@@ -1221,7 +1225,8 @@ class LocalDeviceInstrumentationTestRun(
         # should_ignore_in_gold != should_hide_failure.
         should_hide_failure = running_on_unsupported
         if should_ignore_in_gold:
-          should_rewrite = True
+          # This is put in the regular keys dict instead of the optional one
+          # because ignore rules do not apply to optional keys.
           json_dict['ignore'] = '1'
         if should_rewrite:
           with open(json_path, 'w') as outfile:
@@ -1236,6 +1241,7 @@ class LocalDeviceInstrumentationTestRun(
               png_file=image_path,
               output_manager=self._env.output_manager,
               use_luci=use_luci,
+              optional_keys=optional_dict,
               force_dryrun=self._IsRetryWithoutPatch())
         except Exception as e:  # pylint: disable=broad-except
           _FailTestIfNecessary(results, full_test_name)
