@@ -77,6 +77,7 @@
 <translation id="2687403674020088961">सबै कुकीहरूमाथि रोक लगाउनुहोस् (सिफारिस गरिँदैन)</translation>
 <translation id="2704606927547763573">प्रतिलिपि गरियो</translation>
 <translation id="2717722538473713889">इमेल ठेगानाहरू</translation>
+<translation id="2750481671343847896">साइटहरूले पहिचान सेवा प्रदायकहरूबाट प्राप्त साइन इन गर्ने प्रम्प्टहरू देखाउन सक्छन्।</translation>
 <translation id="2785051990912111074">तपाईंले यो विकल्प रोज्नुभयो भने <ph name="WEBSITE" /> का कुकीहरू मेटाइने छन्</translation>
 <translation id="2822354292072154809">तपाईं साँच्चिकै <ph name="CHOSEN_OBJECT_NAME" /> का साइटसम्बन्धी सम्पूर्ण अनुमतिहरू रिसेट गर्न चाहनुहुन्छ?</translation>
 <translation id="2870560284913253234">साइट</translation>
@@ -112,6 +113,7 @@
 <translation id="3763247130972274048">१० सेकेन्ड छाडेर अगाडि पछाडि जान भिडियोको बायाँ वा दायाँतिर डबल ट्याप गर्नुहोस्</translation>
 <translation id="3797520601150691162">निश्चित साइटमा अँध्यारो थिम लागू नगर्नुहोस्</translation>
 <translation id="381841723434055211">फोन नम्बरहरू</translation>
+<translation id="3826050100957962900">तेस्रो पक्षीय साइन इन</translation>
 <translation id="3835233591525155343">तपाईंको डिभाइसको प्रयोग</translation>
 <translation id="385051799172605136">पछाडि जानुहोस्</translation>
 <translation id="3859306556332390985">अगाडि खोज्नुहोस्</translation>
@@ -235,6 +237,7 @@
 <translation id="6643016212128521049">खालि गर्नुहोस्</translation>
 <translation id="6689172468748959065">प्रोफाइल तस्बिरहरू</translation>
 <translation id="6697925417670533197">जारी डाउनलोडहरू</translation>
+<translation id="6722828510648505498">पहिचान सेवा प्रदायकहरूबाट प्राप्त साइन इन गर्ने प्रम्प्टहरू ब्लक गरियोस्।</translation>
 <translation id="6746124502594467657">तल सार्नुहोस्</translation>
 <translation id="6749077623962119521">अनुमति रिसेट गर्ने हो?</translation>
 <translation id="6766622839693428701">बन्द गर्न तलतिर स्वाइप गर्नुहोस्।</translation>

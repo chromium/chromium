@@ -893,6 +893,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1829129547161959350">Chim cánh cụt</translation>
 <translation id="1829192082282182671">Thu &amp;nhỏ</translation>
 <translation id="1830550083491357902">Chưa đăng nhập</translation>
+<translation id="1832459821645506983">Có, tôi đồng ý</translation>
 <translation id="1832511806131704864">Đã cập nhật thay đổi điện thoại</translation>
 <translation id="1832848789136765277">Hãy xác minh danh tính để đảm bảo bạn luôn có thể truy cập vào dữ liệu đã đồng bộ</translation>
 <translation id="1834503245783133039">Tải xuống không thành công: <ph name="FILE_NAME" /></translation>
@@ -5574,7 +5575,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6535331821390304775">Luôn cho phép <ph name="ORIGIN" /> mở loại đường liên kết này trong ứng dụng liên kết</translation>
 <translation id="653659894138286600">Quét tài liệu và hình ảnh</translation>
 <translation id="6537613839935722475">Tên có thể chứa chữ cái, số và dấu gạch nối (-)</translation>
-<translation id="6537880577641744343">Commander</translation>
 <translation id="6538098297809675636">Lỗi khi phát hiện mã</translation>
 <translation id="653920215766444089">Đang tìm kiếm thiết bị trỏ</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Lưu ý:<ph name="END_BOLD" /> Chỉ bật nếu bạn biết mình đang làm gì hoặc nếu bạn đã được yêu cầu bật vì việc thu thập dữ liệu có thể giảm hiệu suất hoạt động.</translation>
@@ -5808,7 +5808,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6781978626986383437">Đã hủy quá trình sao lưu Linux</translation>
 <translation id="6782067259631821405">Mã PIN không hợp lệ</translation>
 <translation id="6784523122863989144">Hồ sơ không được hỗ trợ</translation>
-<translation id="6785518634832172390">Mã PIN chỉ được dài tối đa 12 chữ số</translation>
 <translation id="6786747875388722282">Tiện ích</translation>
 <translation id="6787097042755590313">Thẻ khác</translation>
 <translation id="6787839852456839824">Phím tắt</translation>
@@ -6714,7 +6713,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="7691077781194517083">Không thể đặt lại khóa bảo mật này. Lỗi <ph name="ERROR_CODE" />.</translation>
 <translation id="7691163173018300413">"Ok Google"</translation>
 <translation id="7691698019618282776">Nâng cấp Crostini</translation>
-<translation id="769375405463525957">Nếu bạn rời khỏi thiết bị, màn hình của bạn sẽ tự động khoá. Khi bạn ở đối diện thiết bị, màn hình sẽ mở khoá trở lại.</translation>
 <translation id="7694246789328885917">Công cụ làm nổi bật</translation>
 <translation id="7696063401938172191">Trên '<ph name="PHONE_NAME" />' của bạn:</translation>
 <translation id="7697166915480294040">Thông tin chi tiết bị ẩn trong khi bạn chia sẻ màn hình</translation>
@@ -7007,7 +7005,6 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7969046989155602842">Phím Command</translation>
 <translation id="7970673414865679092">Thông tin chi tiết về Ethernet</translation>
 <translation id="7970882136539140748">Hệ thống không thể lưu thẻ vào lúc này</translation>
-<translation id="7972354851134703743">Bật/tắt lệnh nhanh</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 Với Mã hóa RSA</translation>
 <translation id="7973776233567882054">Trường hợp nào sau đây mô tả đúng nhất mạng của bạn?</translation>
 <translation id="797394244396603170">Chọn thiết bị mà bạn muốn chia sẻ tệp</translation>

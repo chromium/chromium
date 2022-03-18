@@ -893,6 +893,7 @@
 <translation id="1829129547161959350">펭귄</translation>
 <translation id="1829192082282182671">축소(&amp;O)</translation>
 <translation id="1830550083491357902">로그인하지 않음</translation>
+<translation id="1832459821645506983">예</translation>
 <translation id="1832511806131704864">휴대전화 변경사항이 업데이트됨</translation>
 <translation id="1832848789136765277">동기화 데이터에 항상 액세스하려면 본인 확인 절차를 거치세요.</translation>
 <translation id="1834503245783133039">다운로드 실패: <ph name="FILE_NAME" /></translation>
@@ -5573,7 +5574,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6535331821390304775">항상 <ph name="ORIGIN" />에서 연결된 앱에 있는 이 유형의 링크를 열도록 허용</translation>
 <translation id="653659894138286600">문서 및 이미지 스캔</translation>
 <translation id="6537613839935722475">이름에는 문자, 숫자, 하이픈(-)을 사용할 수 있습니다.</translation>
-<translation id="6537880577641744343">Commander</translation>
 <translation id="6538098297809675636">코드를 감지하는 중 오류 발생</translation>
 <translation id="653920215766444089">포인팅 기기 검색 중</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />참고:<ph name="END_BOLD" /> 데이터 수집으로 인해 성능이 감소할 수 있으므로 확신이 있는 경우 또는 요청을 받은 경우에만 사용하도록 설정합니다.</translation>
@@ -5807,7 +5807,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6781978626986383437">Linux 백업이 취소됨</translation>
 <translation id="6782067259631821405">잘못된 PIN</translation>
 <translation id="6784523122863989144">지원되는 프로필입니다.</translation>
-<translation id="6785518634832172390">PIN은 12자리 이하여야 합니다.</translation>
 <translation id="6786747875388722282">확장 프로그램</translation>
 <translation id="6787097042755590313">다른 탭</translation>
 <translation id="6787839852456839824">단축키</translation>
@@ -6713,7 +6712,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7691077781194517083">보안 키를 재설정할 수 없습니다. <ph name="ERROR_CODE" /> 오류입니다.</translation>
 <translation id="7691163173018300413">'Hey Google'</translation>
 <translation id="7691698019618282776">Crostini 업그레이드</translation>
-<translation id="769375405463525957">기기를 자리에 두고 일어나면 화면이 자동으로 잠깁니다. 기기 앞에 있으면 화면이 켜진 상태를 유지합니다.</translation>
 <translation id="7694246789328885917">강조표시 도구</translation>
 <translation id="7696063401938172191">'<ph name="PHONE_NAME" />'에서 다음과 같이 설정하세요.</translation>
 <translation id="7697166915480294040">화면을 공유하는 동안에는 세부정보가 표시되지 않습니다.</translation>
@@ -7007,7 +7005,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7969046989155602842">Command</translation>
 <translation id="7970673414865679092">이더넷 세부정보</translation>
 <translation id="7970882136539140748">지금은 카드를 저장할 수 없음</translation>
-<translation id="7972354851134703743">빠른 명령어 전환</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384(RSA 암호화 사용)</translation>
 <translation id="7973776233567882054">다음 중 사용 중인 네트워크를 가장 잘 설명하는 항목은 무엇인가요?</translation>
 <translation id="797394244396603170">파일을 공유할 기기를 선택하세요.</translation>

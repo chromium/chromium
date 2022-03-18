@@ -7,22 +7,17 @@
 <translation id="2077832278056815832">Закройте всплывающие подсказки или окна, связанные с другими приложениями, и повторите попытку.</translation>
 <translation id="230115972905494466">Совместимые устройства не найдены.</translation>
 <translation id="2359808026110333948">Продолжить</translation>
-<translation id="2416359993254398973">Для этого сайта Chrome запрашивает разрешение на доступ к камере.</translation>
 <translation id="2987449669841041897">Этот сайт не может запросить разрешение</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Справка<ph name="END_LINK" /></translation>
 <translation id="3773755127849930740">Чтобы разрешить подключение, <ph name="BEGIN_LINK" />включите Bluetooth<ph name="END_LINK" /></translation>
 <translation id="4915549754973153784">Поиск устройств… <ph name="BEGIN_LINK" />Справка<ph name="END_LINK" /></translation>
 <translation id="5230560987958996918">Сайт <ph name="SITE" /> ищет устройства Bluetooth поблизости. Обнаружены следующие устройства:</translation>
 <translation id="5527082711130173040">Чтобы выполнить поиск устройств, браузеру Chrome нужен доступ к геоданным. <ph name="BEGIN_LINK2" />Включите доступ<ph name="END_LINK2" /> и <ph name="BEGIN_LINK1" />обновите разрешения<ph name="END_LINK1" />.</translation>
-<translation id="557283862590186398">Для этого сайта Chrome запрашивает разрешение на доступ к микрофону.</translation>
 <translation id="5817918615728894473">Подключить</translation>
 <translation id="5858741533101922242">Не удалось включить адаптер Bluetooth</translation>
 <translation id="5860491529813859533">Включить</translation>
 <translation id="6092062101542170135">Чтобы продолжить, включите NFC в настройках Android.</translation>
-<translation id="6393863479814692971">Для этого сайта Chrome запрашивает разрешение на доступ к камере и микрофону.</translation>
 <translation id="6656545060687952787">Чтобы выполнить поиск устройств, браузеру Chrome нужен доступ к геоданным. <ph name="BEGIN_LINK" />Обновить разрешения<ph name="END_LINK" /></translation>
-<translation id="6697947395630195233">Для этого сайта Chrome запрашивает доступ к данным о вашем местоположении.</translation>
-<translation id="7134415045456331657">Chrome запрашивает доступ к камере, чтобы создавать 3D-карты места, в котором вы находитесь.</translation>
 <translation id="7624880197989616768"><ph name="BEGIN_LINK1" />Справка<ph name="END_LINK1" /> или <ph name="BEGIN_LINK2" />повторное сканирование<ph name="END_LINK2" /></translation>
 <translation id="7884346424584885269">Браузеру Chrome требуется разрешение на поиск устройств поблизости. <ph name="BEGIN_LINK" />Изменить разрешения<ph name="END_LINK" /></translation>
 <translation id="8368027906805972958">Неизвестное или неподдерживаемое устройство (<ph name="DEVICE_ID" />)</translation>

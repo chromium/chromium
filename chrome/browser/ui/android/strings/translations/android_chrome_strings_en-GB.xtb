@@ -478,7 +478,6 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="363596933471559332">Automatically sign in to websites using stored credentials. When the feature is off, you’ll be asked for verification every time before signing in to a website.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3677911431265050325">Request mobile site</translation>
-<translation id="3678391608108111420">Your browsing history affects the ads that you see and the interests as estimated below. Chrome auto-deletes your interests every few weeks to protect your privacy. Interests refresh unless you remove them.</translation>
 <translation id="3685860403008476208">Anyone using this device can see files that you download in Incognito</translation>
 <translation id="3687645719033307815">You are viewing a preview of this page</translation>
 <translation id="3690369331356918524">Warns you if passwords are exposed in a data breach</translation>
@@ -732,7 +731,6 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5123685120097942451">Incognito tab</translation>
 <translation id="5126510351761255129">Verify your card</translation>
 <translation id="5132942445612118989">Sync your passwords, history and more on all devices</translation>
-<translation id="5136889366284282380">During the experiment, Chrome will estimate topics that you may be interested in, based on your recent browsing history. Then, without learning who you are, some sites that you visit will use this info to show you relevant ads.</translation>
 <translation id="5139940364318403933">Learn how to use Google Drive</translation>
 <translation id="5142281402488957685">For new stories, pull down to refresh</translation>
 <translation id="5152843274749979095">No supported apps installed</translation>
@@ -815,9 +813,6 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5628604359369369630">Unread – available offline</translation>
 <translation id="5639724618331995626">Allow all sites</translation>
 <translation id="5648166631817621825">Last 7 days</translation>
-<translation id="5655245063036102919">Ad measurement allows sites that you visit to request information from Chrome that helps the site measure the performance of their ads. Ad measurement restricts cross-site tracking by transferring as little information as possible between sites.
-
-You can control measurement information associated with you by accessing <ph name="BEGIN_LINK" />your browsing history.<ph name="END_LINK" /></translation>
 <translation id="5655963694829536461">Search your downloads</translation>
 <translation id="5659593005791499971">Email</translation>
 <translation id="5665379678064389456">Create event in <ph name="APP_NAME" /></translation>
@@ -1222,7 +1217,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7805768142964895445">Status</translation>
 <translation id="7808889146555843082">Deleting this password will not delete your account on <ph name="SITE" />. Change your password or delete your account on <ph name="SITE" /> to keep it safe from others.</translation>
 <translation id="7810647596859435254">Open with…</translation>
-<translation id="7814332119093857963"><ph name="BEGIN_BOLD" />How you can manage your data:<ph name="END_BOLD" /> Your interests are deleted and refreshed each week. You can also block an interest at any time.</translation>
 <translation id="7815484226266492798">Long screenshot</translation>
 <translation id="78270725016672455">Your computer wants to register this device for signing in to a site</translation>
 <translation id="7844171778363018843">No data selected to sync</translation>

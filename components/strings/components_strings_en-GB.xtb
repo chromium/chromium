@@ -103,6 +103,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to manage your Chrome settings</translation>
 <translation id="1263231323834454256">Reading list</translation>
 <translation id="1264309058268477500">Alternative</translation>
+<translation id="1264974993859112054">Sports</translation>
 <translation id="1269516672602708785">Create a new site in Google Sites quickly</translation>
 <translation id="1270502636509132238">Pickup Method</translation>
 <translation id="1281476433249504884">Stacker 1</translation>
@@ -174,6 +175,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1453974140256777690">Text that you paste or attach is sent to Google Cloud or third parties for analysis. For example, it might be scanned for sensitive data.</translation>
 <translation id="1455413310270022028">Eraser</translation>
+<translation id="1459693405370120464">Weather</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Use the fonts on your computer so that you can create high-fidelity content</translation>
 <translation id="1463543813647160932">5 x 7</translation>
@@ -573,6 +575,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2666092431469916601">Top</translation>
 <translation id="2666117266261740852">Close other tabs or apps</translation>
 <translation id="2672201172023654893">Your browser is not managed.</translation>
+<translation id="2673968385134502798">Games</translation>
 <translation id="2674170444375937751">Are you sure that you want to delete these pages from your history?</translation>
 <translation id="2674804415323431591">Hide suggestions</translation>
 <translation id="2676271551327853224">Roc-8K</translation>
@@ -606,6 +609,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2775884851269838147">First print page</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">The connection was reset.</translation>
+<translation id="2791176355335562114">Pay faster next time</translation>
 <translation id="2792012897584536778">Administrators of this device have set up security certificates that may allow them to see the content of websites that you visit.</translation>
 <translation id="2799020568854403057">The site ahead contains harmful apps</translation>
 <translation id="2799223571221894425">Relaunch</translation>
@@ -1208,6 +1212,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="468314109939257734">View your virtual card number</translation>
 <translation id="4691835149146451662">Architecture-A (Envelope)</translation>
+<translation id="4692623383562244444">Search engines</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Side</translation>
 <translation id="4702656508969495934">Live Caption visible; use window switcher to focus</translation>
@@ -1354,6 +1359,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5115232566827194440">Restricted managed Guest session override</translation>
 <translation id="5115563688576182185">(64-bit)</translation>
 <translation id="5123063207673082822">Weekend</translation>
+<translation id="5123433949759960244">Basketball</translation>
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">Verify your card</translation>
 <translation id="512670116361803001"><ph name="APP_NAME" /> may not resize well. Use preset window sizes to prevent the app from experiencing issues.</translation>
@@ -1494,6 +1500,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="55635442646131152">Document outline</translation>
 <translation id="5565613213060953222">Open incognito tab</translation>
 <translation id="5565735124758917034">Active</translation>
+<translation id="5565871407246142825">Credit cards</translation>
 <translation id="5570825185877910964">Protect account</translation>
 <translation id="5571083550517324815">Can’t pick up from this address. Select a different address.</translation>
 <translation id="5580958916614886209">Check your expiry month and try again</translation>
@@ -1564,6 +1571,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{This card will be charged when you pay, but its real number won't be shared with this site. For extra security, a temporary CVC will be generated.}other{The card that you select will be charged when you pay, but its real number won't be shared with this site. For extra security, a temporary CVC will be generated.}}</translation>
 <translation id="5826507051599432481">Common Name (CN)</translation>
 <translation id="5830698870816298009">camera use and movement</translation>
+<translation id="583281660410589416">Unknown</translation>
 <translation id="5838278095973806738">You should not enter any sensitive information on this site (for example, passwords or credit cards) because it could be stolen by attackers.</translation>
 <translation id="5851548754964597211">Tab list</translation>
 <translation id="5860033963881614850">Off</translation>
@@ -1819,6 +1827,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6696588630955820014">Share this tab button; press Enter to share this tab by sharing the link, creating a QR code, casting and more</translation>
 <translation id="6698381487523150993">Created:</translation>
 <translation id="6702919718839027939">Present</translation>
+<translation id="6709133671862442373">News</translation>
 <translation id="6710213216561001401">Previous</translation>
 <translation id="6710594484020273272">&lt;Type search term&gt;</translation>
 <translation id="671076103358959139">Enrolment Token:</translation>
@@ -1849,6 +1858,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6825578344716086703">You attempted to reach <ph name="DOMAIN" />, but the server presented a certificate signed using a weak signature algorithm (such as SHA-1). This means that the security credentials that the server presented could have been forged, and the server may not be the server that you expected (you may be communicating with an attacker).</translation>
 <translation id="6826993739343257035">Allow AR?</translation>
 <translation id="6831043979455480757">Translate</translation>
+<translation id="6833752742582340615">Save your card and billing info to your Google Account for secure and faster checkouts</translation>
 <translation id="6839929833149231406">Area</translation>
 <translation id="6846340164947227603">Use a virtual card number…</translation>
 <translation id="6852204201400771460">Reload app?</translation>
@@ -2283,6 +2293,7 @@ Additional details:
 <translation id="8175796834047840627">Chrome is offering to save your cards in your Google Account because you are signed in. You can change this behaviour in settings.</translation>
 <translation id="8176440868214972690">The administrator of this device has sent some info to the following websites, like settings or policies.</translation>
 <translation id="8184538546369750125">Use global default (Allow)</translation>
+<translation id="8186706823560132848">Software</translation>
 <translation id="8190193880870196235">Managed by an extension</translation>
 <translation id="8194797478851900357">&amp;Undo Move</translation>
 <translation id="8201077131113104583">Invalid update URL for extension with ID "<ph name="EXTENSION_ID" />".</translation>
@@ -2411,6 +2422,7 @@ Additional details:
 <translation id="861775596732816396">Size 4</translation>
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">No matching passwords. Show all saved passwords.</translation>
+<translation id="8624354461147303341">Get discounts</translation>
 <translation id="8625384913736129811">Save This Card to This Device</translation>
 <translation id="865032292777205197">motion sensors</translation>
 <translation id="8663226718884576429">Order Summary, <ph name="TOTAL_LABEL" />, More Details</translation>
@@ -2561,6 +2573,7 @@ Additional details:
 <translation id="9128870381267983090">Connect to network</translation>
 <translation id="9131119348384879525">Capture confidential content?</translation>
 <translation id="9137013805542155359">Show original</translation>
+<translation id="9139318394846604261">Shopping</translation>
 <translation id="9141013498910525015">Manage addresses</translation>
 <translation id="9144951720726881238">Expiry date:</translation>
 <translation id="9148088599418889305">Choose delivery method</translation>

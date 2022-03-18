@@ -884,6 +884,7 @@
 <translation id="1829129547161959350">Пингвин</translation>
 <translation id="1829192082282182671">&amp;Уменьшить</translation>
 <translation id="1830550083491357902">Вход не выполнен</translation>
+<translation id="1832459821645506983">ОК</translation>
 <translation id="1832511806131704864">Сведения о телефоне обновлены</translation>
 <translation id="1832848789136765277">Чтобы никогда не терять доступ к синхронизированным данным, подтвердите свою личность.</translation>
 <translation id="1834503245783133039">Не удалось скачать файл <ph name="FILE_NAME" /></translation>
@@ -5546,7 +5547,6 @@
 <translation id="6535331821390304775">Всегда разрешать сайту <ph name="ORIGIN" /> открывать ссылки этого типа в связанном приложении</translation>
 <translation id="653659894138286600">Сканирование документов и изображений</translation>
 <translation id="6537613839935722475">Допускаются буквы, цифры и дефисы.</translation>
-<translation id="6537880577641744343">Commander</translation>
 <translation id="6538098297809675636">При распознавании кода произошла ошибка.</translation>
 <translation id="653920215766444089">Поиск указывающего устройства</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Примечание.<ph name="END_BOLD" /> Данную функцию следует включать только при необходимости, поскольку сбор данных может замедлить работу системы.</translation>
@@ -5780,7 +5780,6 @@
 <translation id="6781978626986383437">Резервное копирование контейнера Linux отменено.</translation>
 <translation id="6782067259631821405">Неверный PIN-код.</translation>
 <translation id="6784523122863989144">Профиль поддерживается.</translation>
-<translation id="6785518634832172390">PIN-код должен быть не длиннее 12 символов.</translation>
 <translation id="6786747875388722282">Расширения</translation>
 <translation id="6787097042755590313">Другая вкладка</translation>
 <translation id="6787839852456839824">Быстрые клавиши</translation>
@@ -6686,7 +6685,6 @@
 <translation id="7691077781194517083">Не удалось сбросить настройки электронного ключа. Код ошибки: <ph name="ERROR_CODE" />.</translation>
 <translation id="7691163173018300413">Окей, Google</translation>
 <translation id="7691698019618282776">Обновить Crostini</translation>
-<translation id="769375405463525957">Когда вы отходите от своего устройства, его экран автоматически блокируется. Если вы перед экраном, он остается включенным.</translation>
 <translation id="7694246789328885917">Инструмент "Маркер"</translation>
 <translation id="7696063401938172191">На устройстве <ph name="PHONE_NAME" />:</translation>
 <translation id="7697166915480294040">Во время демонстрации экрана содержимое уведомлений скрыто.</translation>
@@ -6974,7 +6972,6 @@
 <translation id="7969046989155602842">Command</translation>
 <translation id="7970673414865679092">Сведения о сети Ethernet</translation>
 <translation id="7970882136539140748">Не удалось сохранить карту</translation>
-<translation id="7972354851134703743">Включить быстрые команды</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 с шифрованием RSA</translation>
 <translation id="7973776233567882054">Какой из вариантов наиболее точно описывает вашу сеть?</translation>
 <translation id="797394244396603170">Выберите устройство, с которым хотите обмениваться файлами</translation>

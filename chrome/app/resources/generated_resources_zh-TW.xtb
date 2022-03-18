@@ -881,6 +881,7 @@
 <translation id="1829129547161959350">企鵝</translation>
 <translation id="1829192082282182671">縮小(&amp;O)</translation>
 <translation id="1830550083491357902">未登入</translation>
+<translation id="1832459821645506983">是，我同意</translation>
 <translation id="1832511806131704864">手機變更已更新</translation>
 <translation id="1832848789136765277">為確保你可以隨時存取同步處理的資料，請驗證你的身分</translation>
 <translation id="1834503245783133039">下載失敗：<ph name="FILE_NAME" /></translation>
@@ -5554,7 +5555,6 @@
 <translation id="6535331821390304775">一律允許 <ph name="ORIGIN" /> 使用相關聯的應用程式開啟這類連結</translation>
 <translation id="653659894138286600">掃描文件和圖片</translation>
 <translation id="6537613839935722475">名稱可以包含字母、數字和連字號 (-)</translation>
-<translation id="6537880577641744343">指令工具</translation>
 <translation id="6538098297809675636">偵測代碼時發生錯誤</translation>
 <translation id="653920215766444089">正在搜尋指標裝置</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />注意：<ph name="END_BOLD" />除非你瞭解這項功能的用途或是收到相關指示，否則請不要啟用這項功能，因為收集資料可能會導致系統效能降低。</translation>
@@ -5788,7 +5788,6 @@
 <translation id="6781978626986383437">已取消 Linux 備份作業</translation>
 <translation id="6782067259631821405">PIN 碼無效</translation>
 <translation id="6784523122863989144">支援設定檔</translation>
-<translation id="6785518634832172390">PIN 碼不能超過 12 個數字</translation>
 <translation id="6786747875388722282">擴充功能</translation>
 <translation id="6787097042755590313">其他分頁</translation>
 <translation id="6787839852456839824">鍵盤快速鍵</translation>
@@ -6694,7 +6693,6 @@
 <translation id="7691077781194517083">無法重設這個安全金鑰。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="7691163173018300413">「Ok Google」</translation>
 <translation id="7691698019618282776">Crostini 升級</translation>
-<translation id="769375405463525957">如果你離開裝置，系統會自動鎖定螢幕。當你回到裝置前方時，系統會解除鎖定螢幕。</translation>
 <translation id="7694246789328885917">螢光筆工具</translation>
 <translation id="7696063401938172191">在你的「<ph name="PHONE_NAME" />」上：</translation>
 <translation id="7697166915480294040">分享螢幕畫面時會隱藏詳細資料</translation>
@@ -6987,7 +6985,6 @@
 <translation id="7969046989155602842">Command 鍵</translation>
 <translation id="7970673414865679092">乙太網路詳細資料</translation>
 <translation id="7970882136539140748">目前無法儲存信用卡</translation>
-<translation id="7972354851134703743">切換快速指令</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 (使用 RSA 加密)</translation>
 <translation id="7973776233567882054">下列何者最符合你的網路使用情形？</translation>
 <translation id="797394244396603170">選取你要分享檔案的裝置</translation>

@@ -884,6 +884,7 @@
 <translation id="1829129547161959350">Պինգվին</translation>
 <translation id="1829192082282182671">Փոք&amp;րացնել</translation>
 <translation id="1830550083491357902">Մուտք գործած չէ</translation>
+<translation id="1832459821645506983">Այո, թույլատրել</translation>
 <translation id="1832511806131704864">Հեռախոսի փոփոխությունը կիրառվեց</translation>
 <translation id="1832848789136765277">Հաստատեք ձեր ինքնությունը, որպեսզի համաժամացված տվյալները միշտ հասանելի լինեն ձեզ</translation>
 <translation id="1834503245783133039">Չհաջողվեց ներբեռնել՝ <ph name="FILE_NAME" /></translation>
@@ -5562,7 +5563,6 @@
 <translation id="6535331821390304775">Միշտ թույլատրել <ph name="ORIGIN" /> կայքին բացել նման տեսակի հղումները համապատասխան հավելվածում</translation>
 <translation id="653659894138286600">Սկանավորեք փաստաթղթեր և պատկերներ</translation>
 <translation id="6537613839935722475">Անվանման մեջ կարող են օգտագործվել տառեր, թվեր և գծիկներ (-)</translation>
-<translation id="6537880577641744343">Commander</translation>
 <translation id="6538098297809675636">Կոդը հայտնաբերելիս սխալ առաջացավ</translation>
 <translation id="653920215766444089">Ցուցիչ սարքի որոնում</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Նշում.<ph name="END_BOLD" /> Այս գործառույթը միացնել միայն այն դեպքում, երբ գիտեք թե ինչ եք անում կամ, եթե ձեզ խնդրել են դա անել, քանի որ տվյալների հավաքումը կարող է նվազեցնել կատարողականությունը:</translation>
@@ -5796,7 +5796,6 @@
 <translation id="6781978626986383437">Լինուքսի պահուստավորումը չեղարկվել է</translation>
 <translation id="6782067259631821405">Սխալ PIN</translation>
 <translation id="6784523122863989144">Պրոֆիլն աջակցվում է</translation>
-<translation id="6785518634832172390">PIN կոդը պետք է կազմված լինի առավելագույնը 12 նիշից</translation>
 <translation id="6786747875388722282">Ընդլայնումներ</translation>
 <translation id="6787097042755590313">Այլ ներդիր</translation>
 <translation id="6787839852456839824">Ստեղնային դյուրանցումներ</translation>
@@ -6702,7 +6701,6 @@
 <translation id="7691077781194517083">Չհաջողվեց զրոյացնել անվտանգության բանալու կարգավորումները։ Սխալի կոդը՝ <ph name="ERROR_CODE" />:</translation>
 <translation id="7691163173018300413">«Ok Google»</translation>
 <translation id="7691698019618282776">Crostini-ի նորացում</translation>
-<translation id="769375405463525957">Երբ հեռանաք ձեր սարքից, սարքի էկրանն ավտոմատ կկողպվի։ Երբ էկրանի դիմաց լինեք, այն միացված կմնա։</translation>
 <translation id="7694246789328885917">«Գունանշում» գործիք</translation>
 <translation id="7696063401938172191">Ձեր «<ph name="PHONE_NAME" />» հեռախոսում՝</translation>
 <translation id="7697166915480294040">Էկրանի ցուցադրման ժամանակ ծանուցումների մանրամասները թաքցվում են</translation>
@@ -6993,7 +6991,6 @@
 <translation id="7969046989155602842">Command</translation>
 <translation id="7970673414865679092">Տեղեկություններ Ethernet-ի մասին</translation>
 <translation id="7970882136539140748">Չհաջողվեց պահել քարտը</translation>
-<translation id="7972354851134703743">Միացնել/անջատել արագ հրամանները</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384՝ RSA գաղտնագրումով</translation>
 <translation id="7973776233567882054">Հետևյալ նկարագրություններից ո՞րն է համապատասխանում ձեր ցանցին։</translation>
 <translation id="797394244396603170">Ընտրեք սարքը, որի հետ ուզում եք կիսվել ֆայլերով</translation>
