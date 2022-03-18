@@ -39,6 +39,11 @@ class ExtractIOTask : public IOTask {
 
   void ZipExtractCallback(bool success);
 
+  // Creates a (non-existing) destination name for creating a directory inside
+  // 'parent'.
+  base::FilePath CreateDestinationName(const base::FilePath& parent,
+                                       const base::FilePath& source_file);
+
   // URLs of the files that have archives in them for extraction.
   const std::vector<storage::FileSystemURL> source_urls_;
 
@@ -52,6 +57,9 @@ class ExtractIOTask : public IOTask {
 
   // Counter of the number of archives needing extraction.
   size_t extractCount_;
+
+  // Maximum directory naming retries when trying to extract.
+  const int kMaxRetries = 1000;
 
   base::WeakPtrFactory<ExtractIOTask> weak_ptr_factory_{this};
 };

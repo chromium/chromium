@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/file_manager/extract_io_task.h"
 
+#include "base/files/file_util.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/chromeos/fileapi/file_system_backend.h"
 #include "components/services/unzip/content/unzip_service.h"
 
@@ -43,6 +45,22 @@ void ExtractIOTask::ZipExtractCallback(bool success) {
   }
 }
 
+base::FilePath ExtractIOTask::CreateDestinationName(
+    const base::FilePath& parent,
+    const base::FilePath& source_file) {
+  const base::FilePath target = source_file.BaseName().RemoveExtension();
+  base::FilePath destination_directory = parent.Append(target);
+  if (base::PathExists(destination_directory)) {
+    // Create a unique name for the output directory.
+    for (int i = 1; base::PathExists(destination_directory) && i < kMaxRetries;
+         ++i) {
+      destination_directory = parent.Append(
+          base::StrCat({target.value(), " (", base::NumberToString(i), ")"}));
+    }
+  }
+  return destination_directory;
+}
+
 void ExtractIOTask::Execute(IOTask::ProgressCallback progress_callback,
                             IOTask::CompleteCallback complete_callback) {
   progress_callback_ = std::move(progress_callback);
@@ -55,10 +73,15 @@ void ExtractIOTask::Execute(IOTask::ProgressCallback progress_callback,
     const base::FilePath source_file = source.url.path();
     // TODO(crbug.com/953256) Perform this check only once.
     if (chromeos::FileSystemBackend::CanHandleURL(parent_folder_)) {
-      const base::FilePath destination_directory = parent_folder_.path();
-      unzip::Unzip(unzip::LaunchUnzipper(), source_file, destination_directory,
-                   base::BindOnce(&ExtractIOTask::ZipExtractCallback,
-                                  weak_ptr_factory_.GetWeakPtr()));
+      const base::FilePath destination_directory =
+          CreateDestinationName(parent_folder_.path(), source_file);
+      // Create the directory to extract into.
+      if (base::CreateDirectory(destination_directory)) {
+        unzip::Unzip(unzip::LaunchUnzipper(), source_file,
+                     destination_directory,
+                     base::BindOnce(&ExtractIOTask::ZipExtractCallback,
+                                    weak_ptr_factory_.GetWeakPtr()));
+      }  // TODO(crbug.com/953256) Report directory creation error.
     } else {
       progress_.state = State::kError;
       // We won't get a callback so reduce the count and maybe finalise.
