@@ -176,10 +176,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   // TODO(crbug.com/1296745): Start spinner over UNDO text in snackbar.
   FollowedWebChannelItem* unfollowedItem = self.lastUnfollowedWebChannelItem;
+  __weak FollowManagementViewController* weakSelf = self;
   unfollowedItem.followedWebChannel.refollowRequestBlock(^(BOOL success) {
     // TODO(crbug.com/1296745): Stop spinner over UNDO text in snackbar.
     if (success) {
-      // TODO(crbug.com/1296745): Re-insert row.
+      [weakSelf reinsertLastUnfollowedItem];
     } else {
       // TODO(crbug.com/1296745): Show undo failure snackbar.
     }
@@ -200,6 +201,24 @@ typedef NS_ENUM(NSInteger, ItemType) {
                         atIndex:index];
   [self.tableView deleteRowsAtIndexPaths:@[ indexPath ]
                         withRowAnimation:UITableViewRowAnimationAutomatic];
+}
+
+// Reinserts last unfollowed item into both model and UI.
+- (void)reinsertLastUnfollowedItem {
+  TableViewModel* model = self.tableViewModel;
+  NSIndexPath* indexPath = self.indexPathOfLastUnfollowAttempt;
+
+  NSInteger sectionID =
+      [model sectionIdentifierForSectionIndex:indexPath.section];
+  NSUInteger index = [model indexInItemTypeForIndexPath:indexPath];
+
+  [model insertItem:self.lastUnfollowedWebChannelItem
+      inSectionWithIdentifier:sectionID
+                      atIndex:index];
+  [self.tableView insertRowsAtIndexPaths:@[ indexPath ]
+                        withRowAnimation:UITableViewRowAnimationAutomatic];
+  self.lastUnfollowedWebChannelItem = nil;
+  self.indexPathOfLastUnfollowAttempt = nil;
 }
 
 @end
