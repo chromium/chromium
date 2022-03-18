@@ -191,6 +191,10 @@ try_.builder(
     name = "android-inverse-fieldtrials-pie-x86-fyi-rel",
 )
 
+try_.builder(
+    name = "android-marshmallow-x86-fyi-rel-reviver",
+)
+
 try_.orchestrator_builder(
     name = "android-marshmallow-arm64-rel",
     compilator = "android-marshmallow-arm64-rel-compilator",

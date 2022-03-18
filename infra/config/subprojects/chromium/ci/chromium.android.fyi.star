@@ -117,6 +117,21 @@ ci.builder(
 )
 
 ci.builder(
+    name = "android-marshmallow-x86-fyi-rel-reviver",
+    console_view_entry = consoles.console_view_entry(
+        category = "reviver",
+        short_name = "M",
+    ),
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = rbe_instance.DEFAULT,
+    # Set to an empty list to avoid chromium-gitiles-trigger triggering new
+    # builds. Also we don't set any `schedule` since this builder is for
+    # reference only and should not run any new builds.
+    triggered_by = [],
+)
+
+ci.builder(
     name = "android-nougat-x86-rel",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
