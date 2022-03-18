@@ -50,6 +50,7 @@ StyleElement::StyleElement(Document* document, bool created_by_parser)
     : has_finished_parsing_children_(!created_by_parser),
       loading_(false),
       registered_as_candidate_(false),
+      created_by_parser_(created_by_parser),
       start_position_(TextPosition::BelowRangePosition()),
       pending_sheet_type_(PendingSheetType::kNone) {
   if (created_by_parser && document &&
@@ -169,10 +170,13 @@ StyleElement::ProcessingResult StyleElement::CreateSheet(Element& element,
         media_query_matches = evaluator.Eval(*media_queries);
       }
     }
-    // TODO(crbug.com/1271296): Should be blocking only when created by parser
-    // or has `blocking="render"`.
-    pending_sheet_type_ = media_query_matches ? PendingSheetType::kBlocking
-                                              : PendingSheetType::kNonBlocking;
+    pending_sheet_type_ =
+        media_query_matches &&
+                (created_by_parser_ ||
+                 (RuntimeEnabledFeatures::BlockingAttributeEnabled() &&
+                  blocking() && blocking()->IsRenderBlocking()))
+            ? PendingSheetType::kBlocking
+            : PendingSheetType::kNonBlocking;
     loading_ = true;
     TextPosition start_position =
         start_position_ == TextPosition::BelowRangePosition()
