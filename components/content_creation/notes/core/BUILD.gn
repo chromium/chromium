@@ -57,6 +57,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/content_creation/notes/core/server",
     "//components/content_creation/notes/core/templates",
+    "//components/content_creation/notes/core/templates:template_storage_proto",
     "//components/content_creation/notes/core/templates:types",
     "//components/content_creation/notes/core/test:test_support",
     "//components/prefs:test_support",

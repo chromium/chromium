@@ -11,6 +11,7 @@
 #include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "components/content_creation/notes/core/note_features.h"
 #include "components/content_creation/notes/core/note_prefs.h"
 #include "components/content_creation/notes/core/templates/note_template.h"
@@ -21,6 +22,25 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace content_creation {
+
+namespace {
+
+bool ConvertProtoDateToTime(proto::Date date, base::Time& time_date) {
+  base::Time::Exploded exploded_date = {
+      /*year=*/date.year(),
+      /*month=*/date.month(),
+      /*day_of_week=*/0,
+      /*day_of_month=*/date.day(),
+      /*hour=*/0,
+      /*minute=*/0,
+      /*second=*/0,
+      /*millisecond=*/0,
+  };
+
+  return base::Time::FromLocalExploded(exploded_date, &time_date);
+}
+
+}  // namespace
 
 TemplateStore::TemplateStore(
     PrefService* pref_service,
@@ -67,10 +87,56 @@ std::vector<NoteTemplate> TemplateStore::BuildDefaultTemplates() {
   return templates;
 }
 
+bool TemplateStore::TemplateAvailable(proto::CollectionItem current_template,
+                                      base::Time today) {
+  base::Time activation;
+  base::Time expiration;
+
+  if (current_template.has_activation() &&
+      (!ConvertProtoDateToTime(current_template.activation(), activation) ||
+       today < activation)) {
+    return false;
+  }
+
+  if (current_template.has_expiration() &&
+      (!ConvertProtoDateToTime(current_template.expiration(), expiration) ||
+       today >= expiration)) {
+    return false;
+  }
+
+  return true;
+}
+
 std::vector<NoteTemplate> TemplateStore::ParseTemplatesFromString(
     std::string response_body) {
-  // TODO(graysonlafleur): implement dynamic templates here
-  return BuildDefaultTemplates();
+  std::vector<NoteTemplate> templates = {};
+  proto::Collection collection;
+
+  if (!collection.ParseFromString(response_body)) {
+    return BuildDefaultTemplates();
+  }
+
+  int numTemplates = 0;
+  base::Time today = base::Time::NowFromSystemTime();
+
+  for (int i = 0; i < collection.templates_size() &&
+                  numTemplates < collection.max_template_number();
+       i++) {
+    proto::CollectionItem current_template = collection.templates(i);
+
+    if (!TemplateAvailable(current_template, today)) {
+      continue;
+    }
+
+    templates.push_back(NoteTemplate(current_template.templateid()));
+    numTemplates++;
+  }
+
+  if (templates.size() == 0) {
+    return BuildDefaultTemplates();
+  }
+
+  return templates;
 }
 
 void TemplateStore::OnTemplatesReceived(

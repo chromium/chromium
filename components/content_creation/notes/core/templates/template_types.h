@@ -7,6 +7,8 @@
 #include <string>
 #include <vector>
 
+#include "components/content_creation/notes/core/templates/template_storage.pb.h"
+
 namespace content_creation {
 
 using ARGBColor = uint32_t;
@@ -51,6 +53,10 @@ class Background {
 
   // Creates an image background based on a remotely hosted image's URL.
   explicit Background(const std::string& image_url);
+
+  // Creates a Background from a protobuf Background object while still
+  // ensuring the DChecks().
+  static Background Init(const proto::Background& background);
 
   Background(const Background& other);
 
@@ -107,6 +113,9 @@ class TextStyle {
                      ARGBColor highlight_color,
                      HighlightStyle highlight_style);
 
+  // Creates a TextStyle from a protobuf TextStyle object.
+  explicit TextStyle(const proto::TextStyle& textstyle);
+
   TextStyle(const TextStyle& text_style);
   TextStyle& operator=(const TextStyle& text_style);
 
@@ -136,6 +145,9 @@ class TextStyle {
 class FooterStyle {
  public:
   explicit FooterStyle(ARGBColor text_color, ARGBColor logo_color);
+
+  // Creates a FooterStyle from a protobuf FooterStyle object.
+  explicit FooterStyle(const proto::FooterStyle& footerstyle);
 
   ARGBColor text_color() const { return text_color_; }
   ARGBColor logo_color() const { return logo_color_; }

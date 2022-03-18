@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//third_party/protobuf/proto_library.gni")
+
 static_library("templates") {
   sources = [
     "note_template.cc",
@@ -15,6 +17,7 @@ static_library("templates") {
   ]
 
   deps = [
+    ":template_storage_proto",
     ":types",
     "//base",
     "//components/content_creation/notes/core:features",
@@ -33,5 +36,13 @@ static_library("types") {
     "template_types.h",
   ]
 
-  deps = [ "//base" ]
+  deps = [
+    ":template_storage_proto",
+    "//base",
+  ]
+}
+
+proto_library("template_storage_proto") {
+  sources = [ "template_storage.proto" ]
+  generate_python = false
 }

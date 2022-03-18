@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "components/content_creation/notes/core/templates/template_storage.pb.h"
 #include "components/content_creation/notes/core/templates/template_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -28,6 +29,9 @@ class NoteTemplate {
                         const Background& content_background,
                         const TextStyle& text_style,
                         const FooterStyle& footer_style);
+
+  // Created a NoteTemplate object based on a protobuf NoteTemplate object.
+  explicit NoteTemplate(const proto::NoteTemplate& note_template);
 
   NoteTemplate(const NoteTemplate& other);
 

@@ -30,6 +30,18 @@ NoteTemplate::NoteTemplate(NoteTemplateIds id,
       text_style_(text_style),
       footer_style_(footer_style) {}
 
+NoteTemplate::NoteTemplate(const proto::NoteTemplate& note_template)
+    : id_(static_cast<NoteTemplateIds>(note_template.id())),
+      // TODO(graysonlafleur): remove localized_name UI element.
+      localized_name_(""),
+      main_background_(Background::Init(note_template.mainbackground())),
+      text_style_(note_template.textstyle()),
+      footer_style_(note_template.footerstyle()) {
+  if (note_template.has_contentbackground()) {
+    content_background_ = Background::Init(note_template.contentbackground());
+  }
+}
+
 NoteTemplate::NoteTemplate(const NoteTemplate& other)
     : id_(other.id()),
       localized_name_(other.localized_name()),

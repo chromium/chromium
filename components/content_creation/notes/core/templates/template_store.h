@@ -12,9 +12,14 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/content_creation/notes/core/templates/template_fetcher.h"
+#include "components/content_creation/notes/core/templates/template_storage.pb.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 class PrefService;
+
+namespace base {
+class Time;
+}
 
 namespace content_creation {
 
@@ -35,6 +40,11 @@ class TemplateStore {
   // Not copyable or movable.
   TemplateStore(const TemplateStore&) = delete;
   TemplateStore& operator=(const TemplateStore&) = delete;
+
+  // Checks whether given template should be available based on activation and
+  // expiration dates.
+  bool TemplateAvailable(proto::CollectionItem current_template,
+                         base::Time today);
 
   // Calls Start() in TemplateFetcher to do a GET request and send the
   // data from the URL to OnFetchTemplateComplete.
