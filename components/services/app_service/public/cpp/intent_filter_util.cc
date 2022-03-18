@@ -6,7 +6,6 @@
 
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
-#include "components/services/app_service/public/cpp/intent_constants.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "url/url_constants.h"
@@ -92,17 +91,6 @@ apps::mojom::ConditionPtr MakeCondition(
   return condition;
 }
 
-void AddSingleValueCondition(apps::ConditionType condition_type,
-                             const std::string& value,
-                             apps::PatternMatchType pattern_match_type,
-                             apps::IntentFilterPtr& intent_filter) {
-  apps::ConditionValues condition_values;
-  condition_values.push_back(
-      std::make_unique<apps::ConditionValue>(value, pattern_match_type));
-  intent_filter->conditions.push_back(std::make_unique<apps::Condition>(
-      condition_type, std::move(condition_values)));
-}
-
 void AddSingleValueCondition(apps::mojom::ConditionType condition_type,
                              const std::string& value,
                              apps::mojom::PatternMatchType pattern_match_type,
@@ -118,18 +106,20 @@ void AddSingleValueCondition(apps::mojom::ConditionType condition_type,
 apps::IntentFilterPtr MakeIntentFilterForUrlScope(const GURL& url) {
   auto intent_filter = std::make_unique<apps::IntentFilter>();
 
-  AddSingleValueCondition(apps::ConditionType::kAction,
-                          apps_util::kIntentActionView,
-                          apps::PatternMatchType::kNone, intent_filter);
+  intent_filter->AddSingleValueCondition(apps::ConditionType::kAction,
+                                         apps_util::kIntentActionView,
+                                         apps::PatternMatchType::kNone);
 
-  AddSingleValueCondition(apps::ConditionType::kScheme, url.scheme(),
-                          apps::PatternMatchType::kNone, intent_filter);
+  intent_filter->AddSingleValueCondition(apps::ConditionType::kScheme,
+                                         url.scheme(),
+                                         apps::PatternMatchType::kNone);
 
-  AddSingleValueCondition(apps::ConditionType::kHost, url.host(),
-                          apps::PatternMatchType::kNone, intent_filter);
+  intent_filter->AddSingleValueCondition(apps::ConditionType::kHost, url.host(),
+                                         apps::PatternMatchType::kNone);
 
-  AddSingleValueCondition(apps::ConditionType::kPattern, url.path(),
-                          apps::PatternMatchType::kPrefix, intent_filter);
+  intent_filter->AddSingleValueCondition(apps::ConditionType::kPattern,
+                                         url.path(),
+                                         apps::PatternMatchType::kPrefix);
 
   return intent_filter;
 }
@@ -316,11 +306,61 @@ std::set<std::string> AppManagementGetSupportedLinks(
 }
 
 bool IsSupportedLinkForApp(const std::string& app_id,
+                           const apps::IntentFilterPtr& intent_filter) {
+  // Filters associated with kUseBrowserForLink are a special case. These
+  // filters do not "belong" to the app and should not be treated as supported
+  // links.
+  if (app_id == apps_util::kUseBrowserForLink) {
+    return false;
+  }
+
+  bool action = false;
+  bool scheme = false;
+  bool host = false;
+  bool pattern = false;
+  for (auto& condition : intent_filter->conditions) {
+    switch (condition->condition_type) {
+      case apps::ConditionType::kAction:
+        for (auto& condition_value : condition->condition_values) {
+          if (condition_value->value == apps_util::kIntentActionView) {
+            action = true;
+            break;
+          }
+        }
+        break;
+      case apps::ConditionType::kScheme:
+        for (auto& condition_value : condition->condition_values) {
+          if (condition_value->value == "http" ||
+              condition_value->value == "https") {
+            scheme = true;
+            break;
+          }
+        }
+        break;
+      case apps::ConditionType::kHost:
+        host = true;
+        break;
+      case apps::ConditionType::kPattern:
+        pattern = true;
+        break;
+      default:
+        break;
+    }
+
+    if (action && scheme && host && pattern) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+bool IsSupportedLinkForApp(const std::string& app_id,
                            const apps::mojom::IntentFilterPtr& intent_filter) {
   // Filters associated with kUseBrowserForLink are a special case. These
   // filters do not "belong" to the app and should not be treated as supported
   // links.
-  if (app_id == apps::kUseBrowserForLink) {
+  if (app_id == apps_util::kUseBrowserForLink) {
     return false;
   }
 

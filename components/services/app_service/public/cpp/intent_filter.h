@@ -106,6 +106,12 @@ struct COMPONENT_EXPORT(APP_TYPES) IntentFilter {
 
   std::unique_ptr<IntentFilter> Clone() const;
 
+  // Creates condition that only contain one value and adds the condition to
+  // the intent filter.
+  void AddSingleValueCondition(apps::ConditionType condition_type,
+                               const std::string& value,
+                               apps::PatternMatchType pattern_match_type);
+
   // Gets the intent_filter match level. The higher the return value, the better
   // the match is. For example, a filter with scheme, host and path is better
   // match compare with filter with only scheme. Each condition type has a

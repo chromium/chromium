@@ -22,7 +22,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
-#include "components/services/app_service/public/cpp/intent_constants.h"
+#include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/visibility.h"
@@ -87,7 +87,7 @@ bool ShouldAutoDisplayUi(
   if (proxy) {
     auto preferred_app_id = proxy->PreferredApps().FindPreferredAppForUrl(url);
     if (preferred_app_id.has_value() &&
-        preferred_app_id.value() == apps::kUseBrowserForLink) {
+        preferred_app_id.value() == apps_util::kUseBrowserForLink) {
       return false;
     }
   }

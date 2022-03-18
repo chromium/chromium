@@ -91,6 +91,7 @@ const char kIntentActionView[] = "view";
 const char kIntentActionSend[] = "send";
 const char kIntentActionSendMultiple[] = "send_multiple";
 const char kIntentActionCreateNote[] = "create_note";
+const char kUseBrowserForLink[] = "use_browser";
 
 apps::mojom::IntentPtr CreateIntentFromUrl(const GURL& url) {
   auto intent = apps::mojom::Intent::New();

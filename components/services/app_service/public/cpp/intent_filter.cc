@@ -93,6 +93,17 @@ IntentFilterPtr IntentFilter::Clone() const {
   return intent_filter;
 }
 
+void IntentFilter::AddSingleValueCondition(
+    ConditionType condition_type,
+    const std::string& value,
+    PatternMatchType pattern_match_type) {
+  ConditionValues condition_values;
+  condition_values.push_back(
+      std::make_unique<ConditionValue>(value, pattern_match_type));
+  conditions.push_back(
+      std::make_unique<Condition>(condition_type, std::move(condition_values)));
+}
+
 int IntentFilter::GetFilterMatchLevel() {
   int match_level = static_cast<int>(IntentFilterMatchLevel::kNone);
   for (const auto& condition : conditions) {

@@ -16,7 +16,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
-#include "components/services/app_service/public/cpp/intent_constants.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_test_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
@@ -483,24 +482,24 @@ TEST_F(AppServiceProxyPreferredAppsTest, AddPreferredAppBrowser) {
 
   // Setting "use browser" for a URL currently handled by App 1 should unset
   // both of App 1's links.
-  proxy()->AddPreferredApp(apps::kUseBrowserForLink, kTestUrl1);
+  proxy()->AddPreferredApp(apps_util::kUseBrowserForLink, kTestUrl1);
   proxy()->FlushMojoCallsForTesting();
 
-  ASSERT_EQ(apps::kUseBrowserForLink,
+  ASSERT_EQ(apps_util::kUseBrowserForLink,
             proxy()->PreferredApps().FindPreferredAppForUrl(kTestUrl1));
   ASSERT_EQ(absl::nullopt,
             proxy()->PreferredApps().FindPreferredAppForUrl(kTestUrl2));
 
-  proxy()->AddPreferredApp(apps::kUseBrowserForLink, kTestUrl3);
+  proxy()->AddPreferredApp(apps_util::kUseBrowserForLink, kTestUrl3);
   proxy()->FlushMojoCallsForTesting();
-  ASSERT_EQ(apps::kUseBrowserForLink,
+  ASSERT_EQ(apps_util::kUseBrowserForLink,
             proxy()->PreferredApps().FindPreferredAppForUrl(kTestUrl3));
 
   // Changing the setting back from "use browser" to App 1 should only update
   // that "use-browser" setting, settings for other URLs are unchanged.
   proxy()->AddPreferredApp(kTestAppId1, kTestUrl1);
   proxy()->FlushMojoCallsForTesting();
-  ASSERT_EQ(apps::kUseBrowserForLink,
+  ASSERT_EQ(apps_util::kUseBrowserForLink,
             proxy()->PreferredApps().FindPreferredAppForUrl(kTestUrl3));
 }
 

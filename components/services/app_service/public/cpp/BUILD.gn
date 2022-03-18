@@ -202,8 +202,6 @@ source_set("intents") {
   sources = [
     "intent.cc",
     "intent.h",
-    "intent_constants.cc",
-    "intent_constants.h",
     "intent_filter_util.cc",
     "intent_filter_util.h",
     "intent_util.cc",

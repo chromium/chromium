@@ -33,13 +33,6 @@ apps::mojom::ConditionPtr MakeCondition(
     apps::mojom::ConditionType condition_type,
     std::vector<apps::mojom::ConditionValuePtr> condition_values);
 
-// Creates condition that only contain one value and add the condition to
-// the intent filter.
-void AddSingleValueCondition(apps::ConditionType condition_type,
-                             const std::string& value,
-                             apps::PatternMatchType pattern_match_type,
-                             apps::IntentFilterPtr& intent_filter);
-
 // TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
 void AddSingleValueCondition(apps::mojom::ConditionType condition_type,
                              const std::string& value,
@@ -85,8 +78,14 @@ bool IsBrowserFilter(const apps::mojom::IntentFilterPtr& filter);
 std::set<std::string> AppManagementGetSupportedLinks(
     const apps::mojom::IntentFilterPtr& intent_filter);
 
+// Checks if the `intent_filter` is a supported link for `app_id`, i.e. it has
+// the "view" action, a http or https scheme, and at least one host and pattern.
+bool IsSupportedLinkForApp(const std::string& app_id,
+                           const apps::IntentFilterPtr& intent_filter);
+
 // Check if the |intent_filter| is a supported link for |app_id|, i.e. it has
 // the "view" action, a http or https scheme, and at least one host and pattern.
+// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
 bool IsSupportedLinkForApp(const std::string& app_id,
                            const apps::mojom::IntentFilterPtr& intent_filter);
 

@@ -28,6 +28,10 @@ extern const char kIntentActionSend[];
 extern const char kIntentActionSendMultiple[];
 extern const char kIntentActionCreateNote[];
 
+// App ID value which can be used as a Preferred App to denote that the browser
+// will open the link, and that we should not prompt the user about it.
+extern const char kUseBrowserForLink[];
+
 struct SharedText {
   std::string text;
   GURL url;

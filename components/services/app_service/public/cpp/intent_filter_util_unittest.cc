@@ -27,6 +27,29 @@ const char kAppId[] = "aaa";
 
 class IntentFilterUtilTest : public testing::Test {
  protected:
+  apps::IntentFilterPtr MakeFilter(std::string scheme,
+                                   std::string host,
+                                   std::string path,
+                                   apps::PatternMatchType pattern) {
+    auto intent_filter = std::make_unique<apps::IntentFilter>();
+
+    intent_filter->AddSingleValueCondition(apps::ConditionType::kAction,
+                                           apps_util::kIntentActionView,
+                                           apps::PatternMatchType::kNone);
+
+    intent_filter->AddSingleValueCondition(apps::ConditionType::kScheme, scheme,
+                                           apps::PatternMatchType::kNone);
+
+    intent_filter->AddSingleValueCondition(apps::ConditionType::kHost, host,
+                                           apps::PatternMatchType::kNone);
+
+    intent_filter->AddSingleValueCondition(apps::ConditionType::kPattern, path,
+                                           pattern);
+
+    return intent_filter;
+  }
+
+  // TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
   apps::mojom::IntentFilterPtr MakeFilter(
       std::string scheme,
       std::string host,
@@ -290,7 +313,8 @@ TEST_F(IntentFilterUtilTest, PathsWithNoSlash) {
   EXPECT_EQ(links.count("m.youtube.com/.*/foo"), 1u);
 }
 
-TEST_F(IntentFilterUtilTest, IsSupportedLink) {
+// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
+TEST_F(IntentFilterUtilTest, IsSupportedLinkMojom) {
   auto filter = MakeFilter("https", "www.google.com", "/maps",
                            apps::mojom::PatternMatchType::kLiteral);
   ASSERT_TRUE(apps_util::IsSupportedLinkForApp(kAppId, filter));
@@ -300,7 +324,18 @@ TEST_F(IntentFilterUtilTest, IsSupportedLink) {
   ASSERT_TRUE(apps_util::IsSupportedLinkForApp(kAppId, filter));
 }
 
-TEST_F(IntentFilterUtilTest, NotSupportedLink) {
+TEST_F(IntentFilterUtilTest, IsSupportedLink) {
+  auto filter = MakeFilter("https", "www.google.com", "/maps",
+                           apps::PatternMatchType::kLiteral);
+  ASSERT_TRUE(apps_util::IsSupportedLinkForApp(kAppId, filter));
+
+  filter = MakeFilter("https", "www.google.com", ".*",
+                      apps::PatternMatchType::kGlob);
+  ASSERT_TRUE(apps_util::IsSupportedLinkForApp(kAppId, filter));
+}
+
+// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
+TEST_F(IntentFilterUtilTest, NotSupportedLinkMojom) {
   ASSERT_FALSE(apps_util::IsSupportedLinkForApp(
       kAppId, apps_util::CreateIntentFilterForMimeType("image/png")));
 
@@ -323,6 +358,30 @@ TEST_F(IntentFilterUtilTest, NotSupportedLink) {
   apps_util::AddSingleValueCondition(
       apps::mojom::ConditionType::kHost, "www.example.com",
       apps::mojom::PatternMatchType::kNone, host_filter);
+  ASSERT_FALSE(apps_util::IsSupportedLinkForApp(kAppId, browser_filter));
+}
+
+TEST_F(IntentFilterUtilTest, NotSupportedLink) {
+  ASSERT_FALSE(apps_util::IsSupportedLinkForApp(
+      kAppId, apps_util::MakeIntentFilterForMimeType("image/png")));
+
+  auto browser_filter = std::make_unique<apps::IntentFilter>();
+  browser_filter->AddSingleValueCondition(apps::ConditionType::kAction,
+                                          apps_util::kIntentActionView,
+                                          apps::PatternMatchType::kNone);
+  browser_filter->AddSingleValueCondition(apps::ConditionType::kScheme, "https",
+                                          apps::PatternMatchType::kNone);
+  ASSERT_FALSE(apps_util::IsSupportedLinkForApp(kAppId, browser_filter));
+
+  auto host_filter = std::make_unique<apps::IntentFilter>();
+  host_filter->AddSingleValueCondition(apps::ConditionType::kAction,
+                                       apps_util::kIntentActionView,
+                                       apps::PatternMatchType::kNone);
+  host_filter->AddSingleValueCondition(apps::ConditionType::kScheme, "https",
+                                       apps::PatternMatchType::kNone);
+  host_filter->AddSingleValueCondition(apps::ConditionType::kHost,
+                                       "www.example.com",
+                                       apps::PatternMatchType::kNone);
   ASSERT_FALSE(apps_util::IsSupportedLinkForApp(kAppId, browser_filter));
 }
 
@@ -448,37 +507,30 @@ TEST_F(IntentFilterUtilTest, IntentFiltersConvert) {
   base::flat_map<std::string, std::vector<apps::IntentFilterPtr>> filters;
 
   auto intent_filter1 = std::make_unique<apps::IntentFilter>();
-  apps_util::AddSingleValueCondition(apps::ConditionType::kScheme, "1",
-                                     apps::PatternMatchType::kNone,
-                                     intent_filter1);
+  intent_filter1->AddSingleValueCondition(apps::ConditionType::kScheme, "1",
+                                          apps::PatternMatchType::kNone);
   filters["1"].push_back(std::move(intent_filter1));
 
   auto intent_filter2 = std::make_unique<apps::IntentFilter>();
-  apps_util::AddSingleValueCondition(apps::ConditionType::kHost, "2",
-                                     apps::PatternMatchType::kLiteral,
-                                     intent_filter2);
-  apps_util::AddSingleValueCondition(apps::ConditionType::kPattern, "3",
-                                     apps::PatternMatchType::kPrefix,
-                                     intent_filter2);
+  intent_filter2->AddSingleValueCondition(apps::ConditionType::kHost, "2",
+                                          apps::PatternMatchType::kLiteral);
+  intent_filter2->AddSingleValueCondition(apps::ConditionType::kPattern, "3",
+                                          apps::PatternMatchType::kPrefix);
   filters["1"].push_back(std::move(intent_filter2));
 
   apps::IntentFilters intent_filters2;
   auto intent_filter3 = std::make_unique<apps::IntentFilter>();
-  apps_util::AddSingleValueCondition(apps::ConditionType::kAction, "4",
-                                     apps::PatternMatchType::kGlob,
-                                     intent_filter3);
-  apps_util::AddSingleValueCondition(apps::ConditionType::kMimeType, "5",
-                                     apps::PatternMatchType::kMimeType,
-                                     intent_filter3);
+  intent_filter3->AddSingleValueCondition(apps::ConditionType::kAction, "4",
+                                          apps::PatternMatchType::kGlob);
+  intent_filter3->AddSingleValueCondition(apps::ConditionType::kMimeType, "5",
+                                          apps::PatternMatchType::kMimeType);
   filters["2"].push_back(std::move(intent_filter3));
 
   auto intent_filter4 = std::make_unique<apps::IntentFilter>();
-  apps_util::AddSingleValueCondition(apps::ConditionType::kFile, "6",
-                                     apps::PatternMatchType::kMimeType,
-                                     intent_filter4);
-  apps_util::AddSingleValueCondition(apps::ConditionType::kFile, "7",
-                                     apps::PatternMatchType::kFileExtension,
-                                     intent_filter4);
+  intent_filter4->AddSingleValueCondition(apps::ConditionType::kFile, "6",
+                                          apps::PatternMatchType::kMimeType);
+  intent_filter4->AddSingleValueCondition(
+      apps::ConditionType::kFile, "7", apps::PatternMatchType::kFileExtension);
   filters["2"].push_back(std::move(intent_filter4));
 
   auto output = apps::ConvertMojomIntentFiltersToIntentFilters(

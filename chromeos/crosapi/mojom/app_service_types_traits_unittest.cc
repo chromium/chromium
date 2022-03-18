@@ -44,9 +44,8 @@ TEST(AppServiceTypesTraitsTest, RoundTrip) {
   input->paused = false;
 
   auto intent_filter = std::make_unique<apps::IntentFilter>();
-  apps_util::AddSingleValueCondition(apps::ConditionType::kScheme, "https",
-                                     apps::PatternMatchType::kNone,
-                                     intent_filter);
+  intent_filter->AddSingleValueCondition(apps::ConditionType::kScheme, "https",
+                                         apps::PatternMatchType::kNone);
   intent_filter->activity_name = "activity_name";
   intent_filter->activity_label = "activity_label";
   input->intent_filters.push_back(std::move(intent_filter));
@@ -135,9 +134,8 @@ TEST(AppServiceTypesTraitsTest, RoundTripNoOptional) {
   input->paused = false;
 
   auto intent_filter = std::make_unique<apps::IntentFilter>();
-  apps_util::AddSingleValueCondition(apps::ConditionType::kScheme, "https",
-                                     apps::PatternMatchType::kNone,
-                                     intent_filter);
+  intent_filter->AddSingleValueCondition(apps::ConditionType::kScheme, "https",
+                                         apps::PatternMatchType::kNone);
   input->intent_filters.push_back(std::move(intent_filter));
   input->window_mode = apps::WindowMode::kBrowser;
   input->allow_uninstall = true;
@@ -558,30 +556,22 @@ TEST(AppServiceTypesTraitsTest, RoundTripPaused) {
 TEST(AppServiceTypesTraitsTest, RoundTripIntentFilters) {
   auto input = std::make_unique<apps::App>(apps::AppType::kArc, "abcdefg");
   auto intent_filter = std::make_unique<apps::IntentFilter>();
-  apps_util::AddSingleValueCondition(apps::ConditionType::kScheme, "1",
-                                     apps::PatternMatchType::kNone,
-                                     intent_filter);
-  apps_util::AddSingleValueCondition(apps::ConditionType::kHost, "2",
-                                     apps::PatternMatchType::kLiteral,
-                                     intent_filter);
-  apps_util::AddSingleValueCondition(apps::ConditionType::kPattern, "3",
-                                     apps::PatternMatchType::kPrefix,
-                                     intent_filter);
-  apps_util::AddSingleValueCondition(apps::ConditionType::kAction, "4",
-                                     apps::PatternMatchType::kGlob,
-                                     intent_filter);
-  apps_util::AddSingleValueCondition(apps::ConditionType::kMimeType, "5",
-                                     apps::PatternMatchType::kMimeType,
-                                     intent_filter);
-  apps_util::AddSingleValueCondition(apps::ConditionType::kFile, "6",
-                                     apps::PatternMatchType::kMimeType,
-                                     intent_filter);
-  apps_util::AddSingleValueCondition(apps::ConditionType::kFile, "7",
-                                     apps::PatternMatchType::kFileExtension,
-                                     intent_filter);
-  apps_util::AddSingleValueCondition(apps::ConditionType::kHost, "8",
-                                     apps::PatternMatchType::kSuffix,
-                                     intent_filter);
+  intent_filter->AddSingleValueCondition(apps::ConditionType::kScheme, "1",
+                                         apps::PatternMatchType::kNone);
+  intent_filter->AddSingleValueCondition(apps::ConditionType::kHost, "2",
+                                         apps::PatternMatchType::kLiteral);
+  intent_filter->AddSingleValueCondition(apps::ConditionType::kPattern, "3",
+                                         apps::PatternMatchType::kPrefix);
+  intent_filter->AddSingleValueCondition(apps::ConditionType::kAction, "4",
+                                         apps::PatternMatchType::kGlob);
+  intent_filter->AddSingleValueCondition(apps::ConditionType::kMimeType, "5",
+                                         apps::PatternMatchType::kMimeType);
+  intent_filter->AddSingleValueCondition(apps::ConditionType::kFile, "6",
+                                         apps::PatternMatchType::kMimeType);
+  intent_filter->AddSingleValueCondition(
+      apps::ConditionType::kFile, "7", apps::PatternMatchType::kFileExtension);
+  intent_filter->AddSingleValueCondition(apps::ConditionType::kHost, "8",
+                                         apps::PatternMatchType::kSuffix);
   input->intent_filters.push_back(std::move(intent_filter));
 
   apps::AppPtr output;
