@@ -63,8 +63,8 @@ class NET_EXPORT_PRIVATE PrioritizedTaskRunner
                         base::OnceClosure reply,
                         uint32_t priority);
 
-  // Similar to base::PostTaskAndReplyWithResult, except that the task runs at
-  // |priority|. See PostTaskAndReply for a description of |priority|.
+  // Similar to TaskRunner::PostTaskAndReplyWithResult, except that the task
+  // runs at |priority|. See PostTaskAndReply for a description of |priority|.
   template <typename TaskReturnType, typename ReplyArgType>
   void PostTaskAndReplyWithResult(const base::Location& from_here,
                                   base::OnceCallback<TaskReturnType()> task,
