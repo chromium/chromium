@@ -54,6 +54,8 @@ const int kSearchBarTrailingSpace = 24;
 }
 
 - (void)setPage:(TabGridPage)page {
+  if (_page == page)
+    return;
   _page = page;
   [self setItemsForTraitCollection:self.traitCollection];
 }
@@ -319,7 +321,8 @@ const int kSearchBarTrailingSpace = 24;
 
   [items addObjectsFromArray:@[ _spaceItem, centralItem, _spaceItem ]];
 
-  if (ShowThumbStripInTraitCollection(traitCollection)) {
+  if (ShowThumbStripInTraitCollection(traitCollection) &&
+      _mode == TabGridModeNormal) {
     // The new tab button is only used if the thumb strip is enabled. In other
     // cases, there is a floating new tab button on the bottom.
     [items
