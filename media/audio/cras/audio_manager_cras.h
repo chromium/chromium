@@ -46,6 +46,11 @@ class MEDIA_EXPORT AudioManagerCras : public AudioManagerCrasBase {
   bool IsDefault(const std::string& device_id, bool is_input) override;
   enum CRAS_CLIENT_TYPE GetClientType() override;
 
+  // Produces AudioParameters for the system, including audio processing
+  // capabilities tailored for the system,
+  AudioParameters GetStreamParametersForSystem(
+      int user_buffer_size);
+
  protected:
   AudioParameters GetPreferredOutputStreamParameters(
       const std::string& output_device_id,
