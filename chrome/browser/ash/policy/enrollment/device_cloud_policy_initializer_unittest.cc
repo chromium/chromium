@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/enrollment/device_cloud_policy_initializer.h"
 
+#include "ash/components/tpm/stub_install_attributes.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/test/task_environment.h"
@@ -15,7 +16,6 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "chromeos/system/statistics_provider.h"
-#include "chromeos/tpm/stub_install_attributes.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

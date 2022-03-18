@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/tpm/install_attributes.h"
 #include "base/bind.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/attestation/enrollment_certificate_uploader_impl.h"
@@ -18,7 +19,6 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/dbus/login_manager/policy_descriptor.pb.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
-#include "chromeos/tpm/install_attributes.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/dmserver_job_configurations.h"
 #include "components/prefs/pref_registry_simple.h"

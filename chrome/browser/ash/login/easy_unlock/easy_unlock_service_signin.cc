@@ -16,6 +16,7 @@
 #include "ash/components/multidevice/software_feature_state.h"
 #include "ash/components/proximity_auth/proximity_auth_local_state_pref_manager.h"
 #include "ash/components/proximity_auth/smart_lock_metrics_recorder.h"
+#include "ash/components/tpm/tpm_token_loader.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/smartlock_state.h"
 #include "base/base64url.h"
@@ -37,7 +38,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/login/login_state/login_state.h"
-#include "chromeos/tpm/tpm_token_loader.h"
 
 namespace ash {
 namespace {

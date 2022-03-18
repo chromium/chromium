@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/components/tpm/stub_install_attributes.h"
 #include "ash/constants/ash_features.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -15,7 +16,6 @@
 #include "chromeos/dbus/services/service_provider_test_helper.h"
 #include "chromeos/dbus/system_proxy/system_proxy_client.h"
 #include "chromeos/network/network_handler_test_helper.h"
-#include "chromeos/tpm/stub_install_attributes.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/components/attestation/attestation_flow_utils.h"
+#include "ash/components/tpm/stub_install_attributes.h"
 #include "ash/constants/ash_switches.h"
 #include "base/test/scoped_chromeos_version_info.h"
 #include "build/build_config.h"
@@ -32,7 +33,6 @@
 #include "chromeos/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/test/chromeos_test_utils.h"
-#include "chromeos/tpm/stub_install_attributes.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/notification_registrar.h"

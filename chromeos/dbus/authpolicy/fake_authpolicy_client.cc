@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/components/tpm/install_attributes.h"
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/hash/md5.h"
@@ -18,7 +19,6 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
-#include "chromeos/tpm/install_attributes.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/proto/cloud_policy.pb.h"
 #include "dbus/message.h"

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_controller.h"
 
+#include "ash/components/tpm/install_attributes.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -31,7 +32,6 @@
 #include "chromeos/dbus/system_clock/system_clock_sync_observation.h"
 #include "chromeos/dbus/userdataauth/install_attributes_client.h"
 #include "chromeos/system/statistics_provider.h"
-#include "chromeos/tpm/install_attributes.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"

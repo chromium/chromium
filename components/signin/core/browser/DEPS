@@ -6,11 +6,10 @@ include_rules = [
 
 specific_include_rules = {
   "active_directory_account_reconcilor_delegate.cc": [
-    "+chromeos/tpm/install_attributes.h"
+    "+ash/components/tpm/install_attributes.h"
   ],
   "account_reconcilor_unittest.cc": [
-    "+chromeos/tpm/install_attributes.h",
-    "+chromeos/tpm/stub_install_attributes.h"
+    "+ash/components/tpm/stub_install_attributes.h"
   ],
   # TODO(crbug.com/1198528): remove Lacros deps after the rollout.
   "chrome_connected_header_helper.cc": [

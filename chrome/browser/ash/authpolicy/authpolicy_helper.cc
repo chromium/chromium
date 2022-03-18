@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/authpolicy/authpolicy_helper.h"
 
+#include "ash/components/tpm/install_attributes.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
@@ -15,7 +16,6 @@
 #include "chromeos/dbus/authpolicy/authpolicy_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/upstart/upstart_client.h"
-#include "chromeos/tpm/install_attributes.h"
 #include "components/account_id/account_id.h"
 #include "crypto/encryptor.h"
 #include "crypto/hmac.h"

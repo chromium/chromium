@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/tpm/install_attributes.h"
 #include "base/barrier_closure.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -23,7 +24,6 @@
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_profile_handler.h"
 #include "chromeos/network/network_state_handler.h"
-#include "chromeos/tpm/install_attributes.h"
 #include "components/onc/onc_constants.h"
 #include "dbus/object_path.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

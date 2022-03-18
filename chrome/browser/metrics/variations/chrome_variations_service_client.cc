@@ -20,13 +20,12 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/components/tpm/install_attributes.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #include "base/enterprise_util.h"
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/tpm/install_attributes.h"
 #endif
 
 ChromeVariationsServiceClient::ChromeVariationsServiceClient() = default;

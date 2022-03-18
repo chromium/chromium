@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/crosapi/cert_database_ash.h"
 
+#include "ash/components/tpm/tpm_token_info_getter.h"
 #include "base/bind.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -12,7 +13,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/crosapi/mojom/cert_database.mojom.h"
 #include "chromeos/login/login_state/login_state.h"
-#include "chromeos/tpm/tpm_token_info_getter.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
 #include "content/public/browser/browser_task_traits.h"

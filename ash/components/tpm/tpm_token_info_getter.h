@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_TPM_TPM_TOKEN_INFO_GETTER_H_
-#define CHROMEOS_TPM_TPM_TOKEN_INFO_GETTER_H_
+#ifndef ASH_COMPONENTS_TPM_TPM_TOKEN_INFO_GETTER_H_
+#define ASH_COMPONENTS_TPM_TPM_TOKEN_INFO_GETTER_H_
 
 #include <memory>
 #include <string>
@@ -27,7 +27,7 @@ namespace chromeos {
 
 // Class for getting a user or the system TPM token info from cryptohome during
 // TPM token loading.
-class COMPONENT_EXPORT(CHROMEOS_TPM) TPMTokenInfoGetter {
+class COMPONENT_EXPORT(ASH_COMPONENTS_TPM) TPMTokenInfoGetter {
  public:
   using TpmTokenInfoCallback = base::OnceCallback<void(
       absl::optional<user_data_auth::TpmTokenInfo> token_info)>;
@@ -126,4 +126,4 @@ class COMPONENT_EXPORT(CHROMEOS_TPM) TPMTokenInfoGetter {
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_TPM_TPM_TOKEN_INFO_GETTER_H_
+#endif  // ASH_COMPONENTS_TPM_TPM_TOKEN_INFO_GETTER_H_

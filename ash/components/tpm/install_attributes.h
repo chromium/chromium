@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_TPM_INSTALL_ATTRIBUTES_H_
-#define CHROMEOS_TPM_INSTALL_ATTRIBUTES_H_
+#ifndef ASH_COMPONENTS_TPM_INSTALL_ATTRIBUTES_H_
+#define ASH_COMPONENTS_TPM_INSTALL_ATTRIBUTES_H_
 
 #include <map>
 #include <string>
@@ -24,7 +24,7 @@ namespace chromeos {
 // Brokers access to the installation-time attributes on Chrome OS.  When
 // initialized with kInstallAttributesFileName, the attributes are fully trusted
 // (signature has been verified by lockbox-cache).
-class COMPONENT_EXPORT(CHROMEOS_TPM) InstallAttributes {
+class COMPONENT_EXPORT(ASH_COMPONENTS_TPM) InstallAttributes {
  public:
   // InstallAttributes status codes.  Do not change the numeric ids or the
   // meaning of the existing codes to preserve the interpretability of old
@@ -244,4 +244,4 @@ namespace ash {
 using ::chromeos::InstallAttributes;
 }
 
-#endif  // CHROMEOS_TPM_INSTALL_ATTRIBUTES_H_
+#endif  // ASH_COMPONENTS_TPM_INSTALL_ATTRIBUTES_H_

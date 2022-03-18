@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/components/cryptohome/system_salt_getter.h"
+#include "ash/components/tpm/stub_install_attributes.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
@@ -25,7 +26,6 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/system/fake_statistics_provider.h"
-#include "chromeos/tpm/stub_install_attributes.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

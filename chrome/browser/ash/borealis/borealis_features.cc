@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/borealis/borealis_features.h"
+
 #include <memory>
 #include <string>
 
 #include "ash/components/settings/cros_settings_names.h"
+#include "ash/components/tpm/install_attributes.h"
 #include "ash/constants/ash_features.h"
 #include "base/base64.h"
 #include "base/callback.h"
@@ -30,7 +32,6 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chromeos/system/statistics_provider.h"
-#include "chromeos/tpm/install_attributes.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/channel.h"
 #include "crypto/sha2.h"

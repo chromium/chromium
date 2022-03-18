@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/tpm/tpm_token_info_getter.h"
+#include "ash/components/tpm/tpm_token_info_getter.h"
 
 #include <stdint.h>
 

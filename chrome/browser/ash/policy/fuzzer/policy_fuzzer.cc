@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include "ash/components/tpm/install_attributes.h"
 #include "base/at_exit.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
@@ -24,7 +25,6 @@
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/policy/configuration_policy_handler_list_factory.h"
 #include "chrome/common/chrome_paths.h"
-#include "chromeos/tpm/install_attributes.h"
 #include "components/policy/core/browser/configuration_policy_handler_list.h"
 #include "components/policy/core/browser/policy_conversions_client.h"
 #include "components/policy/core/browser/policy_error_map.h"

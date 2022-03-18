@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/dbus/ash_dbus_helper.h"
 
 #include "ash/components/cryptohome/system_salt_getter.h"
+#include "ash/components/tpm/install_attributes.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_paths.h"
 #include "base/files/file_path.h"
@@ -61,7 +62,6 @@
 #include "chromeos/dbus/userdataauth/cryptohome_pkcs11_client.h"
 #include "chromeos/dbus/userdataauth/install_attributes_client.h"
 #include "chromeos/dbus/userdataauth/userdataauth_client.h"
-#include "chromeos/tpm/install_attributes.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #include "device/bluetooth/floss/floss_dbus_manager.h"
 #include "device/bluetooth/floss/floss_features.h"

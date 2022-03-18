@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "ash/components/settings/timezone_settings.h"
+#include "ash/components/tpm/stub_install_attributes.h"
 #include "base/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
@@ -42,7 +43,6 @@
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_test_helper.h"
-#include "chromeos/tpm/stub_install_attributes.h"
 #include "components/policy/core/common/policy_service.h"
 #include "services/device/public/cpp/test/test_wake_lock_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -7,6 +7,7 @@
 #include "ash/components/attestation/attestation_flow_adaptive.h"
 #include "ash/components/cryptohome/cryptohome_parameters.h"
 #include "ash/components/settings/cros_settings_names.h"
+#include "ash/components/tpm/install_attributes.h"
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/check_op.h"
@@ -31,7 +32,6 @@
 #include "chromeos/dbus/constants/attestation_constants.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
-#include "chromeos/tpm/install_attributes.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 

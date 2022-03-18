@@ -2,21 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/tpm/tpm_token_info_getter.h"
+#include "ash/components/tpm/tpm_token_info_getter.h"
 
 #include <stdint.h>
 
 #include <utility>
 
 #include "ash/components/cryptohome/cryptohome_parameters.h"
+#include "ash/components/tpm/buildflags.h"
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/task/task_runner.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "chromeos/dbus/userdataauth/userdataauth_client.h"
-#include "chromeos/tpm/buildflags.h"
 
 namespace {
 
@@ -53,7 +54,7 @@ std::unique_ptr<TPMTokenInfoGetter> TPMTokenInfoGetter::CreateForUserToken(
     CryptohomePkcs11Client* userdataauth_client,
     const scoped_refptr<base::TaskRunner>& delayed_task_runner) {
   CHECK(account_id.is_valid());
-  return std::unique_ptr<TPMTokenInfoGetter>(new TPMTokenInfoGetter(
+  return base::WrapUnique(new TPMTokenInfoGetter(
       TYPE_USER, account_id, userdataauth_client, delayed_task_runner));
 }
 
@@ -61,7 +62,7 @@ std::unique_ptr<TPMTokenInfoGetter> TPMTokenInfoGetter::CreateForUserToken(
 std::unique_ptr<TPMTokenInfoGetter> TPMTokenInfoGetter::CreateForSystemToken(
     CryptohomePkcs11Client* userdataauth_client,
     const scoped_refptr<base::TaskRunner>& delayed_task_runner) {
-  return std::unique_ptr<TPMTokenInfoGetter>(new TPMTokenInfoGetter(
+  return base::WrapUnique(new TPMTokenInfoGetter(
       TYPE_SYSTEM, EmptyAccountId(), userdataauth_client, delayed_task_runner));
 }
 

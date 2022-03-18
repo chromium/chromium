@@ -2,7 +2,6 @@ include_rules = [
   "+ash/components/peripheral_notification",
   "+components/account_manager_core",
   "+chrome/services/local_search_service",
-  "+chromeos/tpm:tpm",
   "+device/udev_linux/fake_udev_loader.h",      # For keyboard unit test.
 ]
 

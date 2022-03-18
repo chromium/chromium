@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/components/tpm/tpm_token_loader.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -15,7 +16,6 @@
 #include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/network/network_cert_loader.h"
 #include "chromeos/network/system_token_cert_db_storage_test_util.h"
-#include "chromeos/tpm/tpm_token_loader.h"
 #include "content/public/test/browser_task_environment.h"
 #include "crypto/nss_util.h"
 #include "crypto/scoped_test_system_nss_key_slot.h"

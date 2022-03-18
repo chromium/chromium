@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/handlers/device_name_policy_handler_impl.h"
 
+#include "ash/components/tpm/stub_install_attributes.h"
 #include "ash/constants/ash_features.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -11,7 +12,6 @@
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chromeos/network/network_handler_test_helper.h"
 #include "chromeos/system/fake_statistics_provider.h"
-#include "chromeos/tpm/stub_install_attributes.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

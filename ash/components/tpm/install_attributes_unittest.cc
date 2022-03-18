@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/tpm/install_attributes.h"
+#include "ash/components/tpm/install_attributes.h"
 
 #include <memory>
 

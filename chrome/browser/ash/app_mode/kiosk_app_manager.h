@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/tpm/install_attributes.h"
 #include "base/callback_forward.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/chromeos/app_mode/chrome_kiosk_external_loader_broker.h"
 #include "chrome/browser/chromeos/extensions/external_cache.h"
 #include "chrome/browser/chromeos/extensions/external_cache_delegate.h"
-#include "chromeos/tpm/install_attributes.h"
 #include "components/account_id/account_id.h"
 #include "extensions/common/extension_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

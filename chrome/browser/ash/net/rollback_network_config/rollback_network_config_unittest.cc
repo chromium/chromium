@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include "ash/components/tpm/stub_install_attributes.h"
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -25,7 +26,6 @@
 #include "chromeos/network/network_handler_test_helper.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
-#include "chromeos/tpm/stub_install_attributes.h"
 #include "components/onc/onc_constants.h"
 #include "components/onc/onc_pref_names.h"
 #include "components/ownership/mock_owner_key_util.h"

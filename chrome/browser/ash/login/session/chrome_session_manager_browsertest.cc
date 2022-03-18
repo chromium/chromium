@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "ash/components/tpm/stub_install_attributes.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/session/session_controller_impl.h"
@@ -33,7 +34,6 @@
 #include "chromeos/dbus/rmad/rmad_client.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "chromeos/system/statistics_provider.h"
-#include "chromeos/tpm/stub_install_attributes.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/fake_gaia.h"

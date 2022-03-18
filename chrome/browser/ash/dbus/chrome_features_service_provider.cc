@@ -12,6 +12,7 @@
 
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/settings/cros_settings_names.h"
+#include "ash/components/tpm/install_attributes.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/bind.h"
@@ -25,7 +26,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_features.h"
-#include "chromeos/tpm/install_attributes.h"
 #include "components/prefs/pref_service.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"

@@ -204,7 +204,7 @@ bool FakeInstallAttributesClient::LoadInstallAttributes() {
                              &cache_file) &&
       base::PathExists(cache_file);
   DCHECK(file_exists);
-  // Mostly copied from chrome/browser/chromeos/tpm/install_attributes.cc.
+  // Mostly copied from ash/components/tpm/install_attributes.cc.
   std::string file_blob;
   if (!base::ReadFileToStringWithMaxSize(cache_file, &file_blob,
                                          kInstallAttributesFileMaxSize)) {

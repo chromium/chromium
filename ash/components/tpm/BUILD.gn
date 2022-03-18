@@ -2,11 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//ash/components/tpm/buildflags.gni")
 import("//build/buildflag_header.gni")
-import("//chromeos/tpm/buildflags.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//testing/test.gni")
 
-assert(is_chromeos, "Non-Chrome-OS builds must not depend on //chromeos")
+assert(is_chromeos_ash)
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
@@ -14,12 +15,9 @@ buildflag_header("buildflags") {
 }
 
 component("tpm") {
-  defines = [ "IS_CHROMEOS_TPM_IMPL" ]
+  defines = [ "IS_ASH_COMPONENTS_TPM_IMPL" ]
   deps = [
     ":buildflags",
-
-    # TODO(https://crbug.com/1164001): temporary dependency until chromeos/tpm
-    # is moved to ash/.
     "//ash/components/cryptohome",
     "//base",
     "//chromeos/dbus/constants",

@@ -9,9 +9,9 @@
 #include <string>
 
 #include "ash/components/settings/cros_settings_provider.h"
+#include "ash/components/tpm/stub_install_attributes.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
-#include "chromeos/tpm/stub_install_attributes.h"
 
 class Profile;
 

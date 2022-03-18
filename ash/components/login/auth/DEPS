@@ -12,7 +12,6 @@ include_rules = [
   "+chromeos/dbus",
   "+chromeos/metrics",
   "+chromeos/login/login_state",
-  "+chromeos/tpm",
   "+components/account_id",
   "+components/device_event_log",
   "+components/password_manager",

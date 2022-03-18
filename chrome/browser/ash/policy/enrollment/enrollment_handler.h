@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/tpm/install_attributes.h"
 #include "base/callback.h"
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
@@ -18,7 +19,6 @@
 #include "chromeos/dbus/authpolicy/authpolicy_client.h"
 #include "chromeos/dbus/constants/attestation_constants.h"
 #include "chromeos/dbus/userdataauth/userdataauth_client.h"
-#include "chromeos/tpm/install_attributes.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"

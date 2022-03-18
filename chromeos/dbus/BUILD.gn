@@ -122,6 +122,7 @@ source_set("unit_tests") {
   deps = [
     ":dbus",
     ":test_support",
+    "//ash/components/tpm:test_support",
     "//base",
     "//base/test:test_support",
     "//chromeos/dbus/audio",
@@ -156,7 +157,6 @@ source_set("unit_tests") {
     "//chromeos/dbus/userdataauth",
     "//chromeos/dbus/userdataauth:userdataauth_proto",
     "//chromeos/dbus/util:unit_tests",
-    "//chromeos/tpm:test_support",
     "//components/account_id",
     "//dbus",
     "//dbus:test_support",

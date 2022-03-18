@@ -6,12 +6,13 @@
 #define CHROME_BROWSER_POLICY_ENROLLMENT_STATUS_H_
 
 #include "build/chromeos_buildflags.h"
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/tpm/install_attributes.h"
-#endif
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/cloud/cloud_policy_validator.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/components/tpm/install_attributes.h"
+#endif
 
 namespace policy {
 

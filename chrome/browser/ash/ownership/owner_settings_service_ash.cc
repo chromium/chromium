@@ -11,6 +11,8 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/tpm/install_attributes.h"
+#include "ash/components/tpm/tpm_token_loader.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -32,8 +34,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chromeos/tpm/install_attributes.h"
-#include "chromeos/tpm/tpm_token_loader.h"
 #include "components/ownership/owner_key_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
