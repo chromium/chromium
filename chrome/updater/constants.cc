@@ -42,6 +42,7 @@ const char kAppIdSwitch[] = "app-id";
 const char kAppVersionSwitch[] = "app-version";
 const char kWakeSwitch[] = "wake";
 const char kTagSwitch[] = "tag";
+const char kInstallerDataSwitch[] = "installerdata";
 
 const char kServerServiceSwitch[] = "service";
 
@@ -85,6 +86,8 @@ const char kProxyModeSystem[] = "system";
 
 // Specifies that urls that can be cached by proxies are preferred.
 const char kDownloadPreferenceCacheable[] = "cacheable";
+
+const char kUTF8BOM[] = "\xEF\xBB\xBF";
 
 #if BUILDFLAG(IS_MAC)
 // The user defaults suite name.

@@ -15,6 +15,7 @@
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
+#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -301,5 +302,31 @@ std::wstring GetTaskDisplayName(UpdaterScope scope) {
 }
 
 #endif  // BUILDFLAG(IS_WIN)
+
+absl::optional<base::FilePath> WriteInstallerDataToTempFile(
+    const std::string& installer_data) {
+  VLOG(2) << __func__ << ": " << installer_data;
+  if (installer_data.empty())
+    return absl::nullopt;
+
+  base::FilePath module_dir;
+  if (!base::PathService::Get(base::DIR_MODULE, &module_dir))
+    return absl::nullopt;
+
+  base::FilePath path;
+  base::File file = base::CreateAndOpenTemporaryFileInDir(module_dir, &path);
+  if (!file.IsValid())
+    return absl::nullopt;
+
+  const std::string installer_data_utf8_bom =
+      base::StrCat({kUTF8BOM, installer_data});
+  if (file.Write(0, installer_data_utf8_bom.c_str(),
+                 installer_data_utf8_bom.length()) == -1) {
+    VLOG(2) << __func__ << " file.Write failed";
+    return absl::nullopt;
+  }
+
+  return path;
+}
 
 }  // namespace updater

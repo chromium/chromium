@@ -83,6 +83,12 @@ extern const char kInstallSwitch[];
 // currently encoded as a ASCII string.
 extern const char kTagSwitch[];
 
+// The --installerdata=file.dat switch is passed to an installer if an
+// installdataindex is specified in the tag or if installerdata is passed in via
+// --appargs. The corresponding installerdata is written to file.dat with an
+// UTF8 encoding as well as a UTF8 BOM.
+extern const char kInstallerDataSwitch[];
+
 #if BUILDFLAG(IS_WIN)
 // A debug switch to indicate that --install is running from the `out` directory
 // of the build. When this switch is present, the setup picks up the run time
@@ -318,6 +324,10 @@ extern const char kProxyModeFixedServers[];
 extern const char kProxyModeSystem[];
 
 extern const char kDownloadPreferenceCacheable[];
+
+// UTF8 byte order mark (BOM) used to prefix the contents of the installerdata
+// file.
+extern const char kUTF8BOM[];
 
 constexpr int kPolicyNotSet = -1;
 constexpr int kPolicyDisabled = 0;

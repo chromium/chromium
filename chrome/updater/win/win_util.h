@@ -214,11 +214,20 @@ absl::optional<base::FilePath> GetGoogleUpdateExePath(UpdaterScope scope);
 // program state.
 [[nodiscard]] HRESULT DisableCOMExceptionHandling();
 
-// Builds a command line running `MSIExec` on the provided `msi_installer` and
-// `arguments`, with added logging to a log file in the same directory as the
-// MSI installer.
-std::wstring BuildMsiCommandLine(const std::wstring& arguments,
-                                 const base::FilePath& msi_installer);
+// Builds a command line running `MSIExec` on the provided
+// `msi_installer`,`arguments`, and `installer_data_file`, with added logging to
+// a log file in the same directory as the MSI installer.
+std::wstring BuildMsiCommandLine(
+    const std::wstring& arguments,
+    const absl::optional<base::FilePath>& installer_data_file,
+    const base::FilePath& msi_installer);
+
+// Builds a command line running the provided `exe_installer`, `arguments`, and
+// `installer_data_file`.
+std::wstring BuildExeCommandLine(
+    const std::wstring& arguments,
+    const absl::optional<base::FilePath>& installer_data_file,
+    const base::FilePath& exe_installer);
 
 // Returns `true` if the service specified is currently running or starting.
 bool IsServiceRunning(const std::wstring& service_name);

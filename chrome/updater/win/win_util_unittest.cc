@@ -67,14 +67,41 @@ TEST(WinUtil, GetServiceName) {
 }
 
 TEST(WinUtil, BuildMsiCommandLine) {
-  EXPECT_STREQ(L"", BuildMsiCommandLine(std::wstring(L"arg1 arg2 arg3"),
+  EXPECT_STREQ(L"", BuildMsiCommandLine(std::wstring(L"arg1 arg2 arg3"), {},
                                         base::FilePath(L"NotMsi.exe"))
                         .c_str());
   EXPECT_STREQ(
       L"msiexec arg1 arg2 arg3 REBOOT=ReallySuppress /qn /i \"c:\\my "
       L"path\\YesMsi.msi\" /log \"c:\\my path\\YesMsi.msi.log\"",
-      BuildMsiCommandLine(std::wstring(L"arg1 arg2 arg3"),
+      BuildMsiCommandLine(std::wstring(L"arg1 arg2 arg3"), {},
                           base::FilePath(L"c:\\my path\\YesMsi.msi"))
+          .c_str());
+  EXPECT_STREQ(
+      L"msiexec arg1 arg2 arg3 INSTALLERDATA=\"c:\\my path\\installer data "
+      L"file.dat\" REBOOT=ReallySuppress /qn /i \"c:\\my "
+      L"path\\YesMsi.msi\" /log \"c:\\my path\\YesMsi.msi.log\"",
+      BuildMsiCommandLine(
+          std::wstring(L"arg1 arg2 arg3"),
+          base::FilePath(L"c:\\my path\\installer data file.dat"),
+          base::FilePath(L"c:\\my path\\YesMsi.msi"))
+          .c_str());
+}
+
+TEST(WinUtil, BuildExeCommandLine) {
+  EXPECT_STREQ(L"", BuildExeCommandLine(std::wstring(L"arg1 arg2 arg3"), {},
+                                        base::FilePath(L"NotExe.msi"))
+                        .c_str());
+  EXPECT_STREQ(L"\"c:\\my path\\YesExe.exe\" arg1 arg2 arg3",
+               BuildExeCommandLine(std::wstring(L"arg1 arg2 arg3"), {},
+                                   base::FilePath(L"c:\\my path\\YesExe.exe"))
+                   .c_str());
+  EXPECT_STREQ(
+      L"\"c:\\my path\\YesExe.exe\" arg1 arg2 arg3 --installerdata=\"c:\\my "
+      L"path\\installer data file.dat\"",
+      BuildExeCommandLine(
+          std::wstring(L"arg1 arg2 arg3"),
+          base::FilePath(L"c:\\my path\\installer data file.dat"),
+          base::FilePath(L"c:\\my path\\YesExe.exe"))
           .c_str());
 }
 

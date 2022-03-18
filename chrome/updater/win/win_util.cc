@@ -666,15 +666,45 @@ HRESULT DisableCOMExceptionHandling() {
                            COMGLB_EXCEPTION_DONOT_HANDLE);
 }
 
-std::wstring BuildMsiCommandLine(const std::wstring& arguments,
-                                 const base::FilePath& msi_installer) {
+std::wstring BuildMsiCommandLine(
+    const std::wstring& arguments,
+    const absl::optional<base::FilePath>& installer_data_file,
+    const base::FilePath& msi_installer) {
   if (!msi_installer.MatchesExtension(L".msi")) {
     return std::wstring();
   }
 
   return base::StrCat(
-      {L"msiexec ", arguments, L" REBOOT=ReallySuppress /qn /i \"",
-       msi_installer.value(), L"\" /log \"", msi_installer.value(), L".log\""});
+      {L"msiexec ", arguments,
+       installer_data_file
+           ? base::StrCat(
+                 {L" ",
+                  base::UTF8ToWide(base::ToUpperASCII(kInstallerDataSwitch)),
+                  L"=\"", installer_data_file->value(), L"\""})
+           : L"",
+       L" REBOOT=ReallySuppress /qn /i \"", msi_installer.value(),
+       L"\" /log \"", msi_installer.value(), L".log\""});
+}
+
+std::wstring BuildExeCommandLine(
+    const std::wstring& arguments,
+    const absl::optional<base::FilePath>& installer_data_file,
+    const base::FilePath& exe_installer) {
+  if (!exe_installer.MatchesExtension(L".exe")) {
+    return std::wstring();
+  }
+
+  return base::StrCat({base::CommandLine(exe_installer).GetCommandLineString(),
+                       L" ", arguments, [&installer_data_file]() {
+                         if (!installer_data_file)
+                           return std::wstring();
+
+                         base::CommandLine installer_data_args(
+                             base::CommandLine::NO_PROGRAM);
+                         installer_data_args.AppendSwitchPath(
+                             kInstallerDataSwitch, *installer_data_file);
+                         return installer_data_args.GetCommandLineString();
+                       }()});
 }
 
 bool IsServiceRunning(const std::wstring& service_name) {

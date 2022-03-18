@@ -5,6 +5,9 @@
 #include "chrome/updater/util.h"
 
 #include "base/command_line.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/strings/strcat.h"
 #include "base/test/scoped_command_line.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/tag.h"
@@ -36,6 +39,22 @@ TEST(Util, AppArgsAndAP) {
         GetAPFromAppArgs("8a69f345-c564-463c-aff1-a69d9e530f96").c_str(),
         "TestAP");
   }
+}
+
+TEST(Util, WriteInstallerDataToTempFile) {
+  EXPECT_FALSE(WriteInstallerDataToTempFile(""));
+
+  const std::string kInstallerData =
+      R"({"distribution":{"msi":true,"allow_downgrade":false}})";
+  const absl::optional<base::FilePath> installer_data_file =
+      WriteInstallerDataToTempFile(kInstallerData);
+  ASSERT_TRUE(installer_data_file);
+
+  std::string contents;
+  EXPECT_TRUE(base::ReadFileToString(*installer_data_file, &contents));
+  EXPECT_EQ(base::StrCat({kUTF8BOM, kInstallerData}), contents);
+
+  EXPECT_TRUE(base::DeleteFile(*installer_data_file));
 }
 
 }  // namespace updater

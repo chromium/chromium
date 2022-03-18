@@ -325,6 +325,7 @@ Installer::Result MakeInstallerResult(
 Installer::Result Installer::RunApplicationInstaller(
     const base::FilePath& app_installer,
     const std::string& arguments,
+    const absl::optional<base::FilePath>& installer_data_file,
     ProgressCallback progress_callback) {
   if (!app_installer.MatchesExtension(L".exe") &&
       !app_installer.MatchesExtension(L".msi")) {
@@ -337,10 +338,8 @@ Installer::Result Installer::RunApplicationInstaller(
   const std::wstring argsw = base::UTF8ToWide(arguments);
   const std::wstring cmdline =
       app_installer.MatchesExtension(L".msi")
-          ? BuildMsiCommandLine(argsw, app_installer)
-          : base::StrCat(
-                {base::CommandLine(app_installer).GetCommandLineString(), L" ",
-                 argsw});
+          ? BuildMsiCommandLine(argsw, installer_data_file, app_installer)
+          : BuildExeCommandLine(argsw, installer_data_file, app_installer);
   VLOG(1) << "Running application installer: " << cmdline;
 
   base::LaunchOptions options;

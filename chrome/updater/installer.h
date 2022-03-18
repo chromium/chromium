@@ -96,9 +96,11 @@ class Installer final : public update_client::CrxInstaller {
   // creating processes, mounting images, running scripts, and collecting
   // exit codes. The install progress, if it can be collected, is reported by
   // invoking the |progress_callback|.
-  Result RunApplicationInstaller(const base::FilePath& app_installer,
-                                 const std::string& arguments,
-                                 ProgressCallback progress_callback);
+  Result RunApplicationInstaller(
+      const base::FilePath& app_installer,
+      const std::string& arguments,
+      const absl::optional<base::FilePath>& installer_data_file,
+      ProgressCallback progress_callback);
 
   // Deletes recursively the install paths not matching the |pv_| version.
   void DeleteOlderInstallPaths();

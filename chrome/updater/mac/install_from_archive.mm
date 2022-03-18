@@ -26,9 +26,11 @@
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/version.h"
+#include "chrome/updater/constants.h"
 #include "chrome/updater/mac/mac_util.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 namespace {
@@ -121,6 +123,7 @@ bool IsInstallScriptExecutable(const base::FilePath& script_path) {
 int RunExecutable(const base::FilePath& existence_checker_path,
                   const std::string& ap,
                   const std::string& arguments,
+                  const absl::optional<base::FilePath>& installer_data_file,
                   const UpdaterScope& scope,
                   const base::Version& pv,
                   const base::FilePath& unpacked_path) {
@@ -171,6 +174,11 @@ int RunExecutable(const base::FilePath& existence_checker_path,
         {"UPDATE_IS_MACHINE", scope == UpdaterScope::kSystem ? "1" : "0"},
         {"UNPACK_DIR", unpacked_path.value()},
     };
+    if (installer_data_file) {
+      options.environment.emplace(base::ToUpperASCII(kInstallerDataSwitch),
+                                  installer_data_file->value());
+    }
+
     int exit_code = 0;
     VLOG(1) << "Running " << command.GetCommandLineString();
     if (!base::LaunchProcess(command, options).WaitForExit(&exit_code))
@@ -304,12 +312,14 @@ int InstallFromApp(const base::FilePath& app_file_path,
 }
 }  // namespace
 
-int InstallFromArchive(const base::FilePath& file_path,
-                       const base::FilePath& existence_checker_path,
-                       const std::string& ap,
-                       const UpdaterScope& scope,
-                       const base::Version& pv,
-                       const std::string& arguments) {
+int InstallFromArchive(
+    const base::FilePath& file_path,
+    const base::FilePath& existence_checker_path,
+    const std::string& ap,
+    const UpdaterScope& scope,
+    const base::Version& pv,
+    const std::string& arguments,
+    const absl::optional<base::FilePath>& installer_data_file) {
   const std::map<std::string,
                  int (*)(const base::FilePath&,
                          base::OnceCallback<int(const base::FilePath&)>)>
@@ -323,7 +333,7 @@ int InstallFromArchive(const base::FilePath& file_path,
     if (base::PathExists(new_path)) {
       return entry.second(
           new_path, base::BindOnce(&RunExecutable, existence_checker_path, ap,
-                                   arguments, scope, pv));
+                                   arguments, installer_data_file, scope, pv));
     }
   }
 

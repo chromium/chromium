@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/files/file_enumerator.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -163,9 +164,10 @@ Installer::Result Installer::InstallHelper(
   // the prefs are updated asynchronously with the new |pv| and |fingerprint|.
   // The task sequencing guarantees that the prefs will be updated by the
   // time another CrxDataCallback is invoked, which needs updated values.
-  return RunApplicationInstaller(application_installer,
-                                 install_params->arguments,
-                                 std::move(progress_callback));
+  return RunApplicationInstaller(
+      application_installer, install_params->arguments,
+      WriteInstallerDataToTempFile(install_params->server_install_data),
+      std::move(progress_callback));
 }
 
 void Installer::InstallWithSyncPrimitives(
@@ -232,6 +234,7 @@ absl::optional<base::FilePath> Installer::GetCurrentInstallDir() const {
 Installer::Result Installer::RunApplicationInstaller(
     const base::FilePath& /*app_installer*/,
     const std::string& /*arguments*/,
+    const absl::optional<base::FilePath>& /*installer_data_file*/,
     ProgressCallback /*progress_callback*/) {
   NOTIMPLEMENTED();
   return Installer::Result(-1);
