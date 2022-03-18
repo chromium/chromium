@@ -71,6 +71,20 @@ void ValidateDiff(const char* filename) {
   ParseDiffSizeInfoFromFile(filename, &before, &after);
 }
 
+void ShowDisassembly(const char* filename) {
+  caspian::SizeInfo before;
+  caspian::SizeInfo after;
+  ParseDiffSizeInfoFromFile(filename, &before, &after);
+
+  for (const auto& sym : after.raw_symbols) {
+    if (sym.disassembly_ != nullptr) {
+      std::cout << "Symbol Name: " << sym.full_name_ << std::endl;
+      std::cout << "Disassembly:" << std::endl
+                << *sym.disassembly_ << std::endl;
+    }
+  }
+}
+
 void PrintUsageAndExit() {
   std::cerr << "Must have exactly one of:" << std::endl;
   std::cerr << "  validate, diff" << std::endl;
@@ -78,6 +92,7 @@ void PrintUsageAndExit() {
   std::cerr << "  caspian_cli validate <.size file>" << std::endl;
   std::cerr << "  caspian_cli validatediff <.sizediff file>" << std::endl;
   std::cerr << "  caspian_cli diff <before_file> <after_file>" << std::endl;
+  std::cerr << "  caspian_cli showdisassembly <.sizediff file>" << std::endl;
   exit(1);
 }
 
@@ -91,6 +106,8 @@ int main(int argc, char* argv[]) {
     Validate(argv[2]);
   } else if (std::string_view(argv[1]) == "validatediff") {
     ValidateDiff(argv[2]);
+  } else if (std::string_view(argv[1]) == "showdisassembly") {
+    ShowDisassembly(argv[2]);
   } else {
     PrintUsageAndExit();
   }

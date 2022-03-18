@@ -278,6 +278,7 @@ def _SaveSizeInfoToFile(size_info,
   fields = {
       'has_components': True,
       'has_padding': include_padding,
+      'has_disassembly': True
   }
 
   if has_multi_containers:
@@ -371,8 +372,12 @@ def _SaveSizeInfoToFile(size_info,
   w.LogSize('component indices')
 
   prev_aliases = None
+  symbols_with_disassembly = []
+  disassembly_idx = 0
   for group in symbol_group_by_segment:
     for symbol in group:
+      if symbol.disassembly:
+        symbols_with_disassembly.append((disassembly_idx, symbol.disassembly))
       w.WriteString(symbol.full_name)
       if symbol.aliases and symbol.aliases is not prev_aliases:
         w.WriteString('\t0%x' % symbol.num_aliases)
@@ -380,7 +385,14 @@ def _SaveSizeInfoToFile(size_info,
       if symbol.flags:
         w.WriteString('\t%x' % symbol.flags)
       w.WriteBytes(b'\n')
+      disassembly_idx += 1
   w.LogSize('names (final)')  # For libchrome: adds 3.5mb.
+
+  w.WriteNumberList(x[0] for x in symbols_with_disassembly)
+  for _, disassembly in symbols_with_disassembly:
+    disassembly_bytes = disassembly.encode('utf-8')
+    w.WriteBytes(b'%d\n' % len(disassembly_bytes))
+    w.WriteBytes(disassembly_bytes)
 
 
 def _ReadLine(file_iter):
@@ -465,6 +477,7 @@ def _LoadSizeInfoFromFile(file_obj, size_path):
 
   has_components = fields.get('has_components', False)
   has_padding = fields.get('has_padding', False)
+  has_disassembly = fields.get('has_disassembly', False)
 
   # Eat empty line.
   _ReadLine(lines)
@@ -574,6 +587,7 @@ def _LoadSizeInfoFromFile(file_obj, size_path):
       component = components[cur_component_indices[i]] if has_components else ''
       new_sym.component = component
       new_sym.flags = flags
+      new_sym.disassembly = ''
       # Derived.
       if cur_paddings:
         new_sym.padding = cur_paddings[i]
@@ -601,6 +615,15 @@ def _LoadSizeInfoFromFile(file_obj, size_path):
   if not has_padding:
     CalculatePadding(raw_symbols)
 
+  # Get disassmebly if it exists.
+  if has_disassembly:
+    idx_disassembly = _ReadValuesFromLine(lines, split=' ')
+    if len(idx_disassembly) > 0 and idx_disassembly[0] != '':
+      for elem in idx_disassembly:
+        elem = int(elem)
+        diss_len = int(_ReadLine(lines))
+        diss_text = lines.read(diss_len)
+        raw_symbols[elem].disassembly = diss_text
   return models.SizeInfo(build_config,
                          containers,
                          raw_symbols,
@@ -628,20 +651,18 @@ def SaveSizeInfo(size_info,
   if os.environ.get('SUPERSIZE_MEASURE_GZIP') == '1':
     # Doing serialization and Gzip together.
     with _OpenGzipForWrite(path, file_obj=file_obj) as f:
-      _SaveSizeInfoToFile(
-          size_info,
-          f,
-          include_padding=include_padding,
-          sparse_symbols=sparse_symbols)
+      _SaveSizeInfoToFile(size_info,
+                          f,
+                          include_padding=include_padding,
+                          sparse_symbols=sparse_symbols)
   else:
     # Doing serizliation and Gzip separately.
     # This turns out to be faster. On Python 3: 40s -> 14s.
     bytesio = io.BytesIO()
-    _SaveSizeInfoToFile(
-        size_info,
-        bytesio,
-        include_padding=include_padding,
-        sparse_symbols=sparse_symbols)
+    _SaveSizeInfoToFile(size_info,
+                        bytesio,
+                        include_padding=include_padding,
+                        sparse_symbols=sparse_symbols)
 
     logging.debug('Serialization complete. Gzipping...')
     with _OpenGzipForWrite(path, file_obj=file_obj) as f:
@@ -671,13 +692,12 @@ def SaveDeltaSizeInfo(delta_size_info, path, file_obj=None):
   before_size_file = io.BytesIO()
   after_size_file = io.BytesIO()
 
-  after_promise = parallel.CallOnThread(
-      SaveSizeInfo,
-      delta_size_info.after,
-      '',
-      file_obj=after_size_file,
-      include_padding=True,
-      sparse_symbols=after_symbols)
+  after_promise = parallel.CallOnThread(SaveSizeInfo,
+                                        delta_size_info.after,
+                                        '',
+                                        file_obj=after_size_file,
+                                        include_padding=True,
+                                        sparse_symbols=after_symbols)
   SaveSizeInfo(
       delta_size_info.before,
       '',

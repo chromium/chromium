@@ -105,6 +105,7 @@ class BaseSymbol {
   virtual const char* SourcePath() const = 0;
   virtual const char* SectionName() const = 0;
   virtual const char* Component() const = 0;
+  virtual std::string* Disassembly() const = 0;
 
   virtual float Pss() const = 0;
   virtual float PssWithoutPadding() const = 0;
@@ -193,6 +194,7 @@ class Symbol : public BaseSymbol {
   const char* SourcePath() const override;
   const char* SectionName() const override;
   const char* Component() const override;
+  std::string* Disassembly() const override;
 
   float Pss() const override;
 
@@ -216,6 +218,7 @@ class Symbol : public BaseSymbol {
   const char* object_path_ = nullptr;
   const char* source_path_ = nullptr;
   const char* component_ = nullptr;
+  std::string* disassembly_ = nullptr;
 
   std::vector<Symbol*>* aliases_ = nullptr;
   const Container* container_ = nullptr;
@@ -250,6 +253,7 @@ class DeltaSymbol : public BaseSymbol {
   const char* SourcePath() const override;
   const char* SectionName() const override;
   const char* Component() const override;
+  std::string* Disassembly() const override;
 
   float Pss() const override;
   float PssWithoutPadding() const override;

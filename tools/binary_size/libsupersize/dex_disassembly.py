@@ -216,8 +216,8 @@ def _AddUnifiedDiff(top_changed_symbols, before_directory, after_directory):
     else:
       before = None
     logging.debug('Adding disassembly for symbol: %s ', symbol.full_name)
-    symbol.disassembly = _CreateUnifiedDiff(symbol.full_name, before or [],
-                                            after)
+    symbol.after_symbol.disassembly = _CreateUnifiedDiff(
+        symbol.full_name, before or [], after)
     counter -= 1
     if counter == 0:
       break

@@ -244,6 +244,7 @@ void ParseSizeInfo(const char* gzipped, unsigned long len, SizeInfo* info) {
 
   const bool has_components = info->fields["has_components"].asBool();
   const bool has_padding = info->fields["has_padding"].asBool();
+  const bool has_disassembly = info->fields["has_disassembly"].asBool();
 
   // List of paths: (object_path, [source_path]).
   int n_paths = ReadLoneInt(&rest);
@@ -439,6 +440,18 @@ void ParseSizeInfo(const char* gzipped, unsigned long len, SizeInfo* info) {
   info->is_sparse = has_padding;
   if (!has_padding) {
     CalculatePadding(&info->raw_symbols);
+  }
+
+  if (has_disassembly) {
+    std::vector<const char*> disassemby_list = ReadValuesFromLine(&rest, " ");
+    for (const char* disassembly_idx : disassemby_list) {
+      int num_bytes_disassembly = ReadLoneInt(&rest);
+      int index = atoi(disassembly_idx);
+      std::string disassembly(rest, rest + num_bytes_disassembly);
+      info->owned_strings.push_back(disassembly);
+      info->raw_symbols[index].disassembly_ = &(info->owned_strings.back());
+      rest += num_bytes_disassembly;
+    }
   }
 
   // If there are unparsed non-empty lines, something's gone wrong.

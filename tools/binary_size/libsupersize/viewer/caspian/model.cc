@@ -116,6 +116,9 @@ const char* Symbol::SectionName() const {
 const char* Symbol::Component() const {
   return component_;
 }
+std::string* Symbol::Disassembly() const {
+  return disassembly_;
+}
 
 float Symbol::Pss() const {
   return static_cast<float>(Size()) / NumAliases();
@@ -226,6 +229,10 @@ const char* DeltaSymbol::SectionName() const {
 
 const char* DeltaSymbol::Component() const {
   return (after_ ? after_ : before_)->Component();
+}
+
+std::string* DeltaSymbol::Disassembly() const {
+  return (after_ ? after_ : before_)->Disassembly();
 }
 
 float DeltaSymbol::Pss() const {

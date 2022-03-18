@@ -546,21 +546,9 @@ class BaseSymbol:
 class Symbol(BaseSymbol):
   """Represents a single symbol within a binary."""
 
-  __slots__ = (
-      'address',
-      'full_name',
-      'template_name',
-      'name',
-      'flags',
-      'object_path',
-      'aliases',
-      'padding',
-      'container',
-      'section_name',
-      'source_path',
-      'size',
-      'component',
-  )
+  __slots__ = ('address', 'full_name', 'template_name', 'name', 'flags',
+               'object_path', 'aliases', 'padding', 'container', 'section_name',
+               'source_path', 'size', 'component', 'disassembly')
 
   def __init__(self,
                section_name,
@@ -572,7 +560,8 @@ class Symbol(BaseSymbol):
                source_path=None,
                object_path=None,
                flags=0,
-               aliases=None):
+               aliases=None,
+               disassembly=None):
     self.section_name = section_name
     self.address = address or 0
     self.full_name = full_name or ''
@@ -586,6 +575,7 @@ class Symbol(BaseSymbol):
     self.padding = 0
     self.container = None
     self.component = ''
+    self.disassembly = disassembly or ''
 
   def __repr__(self):
     if self.container_name:
@@ -627,7 +617,7 @@ class DeltaSymbol(BaseSymbol):
   to one symbol in the |before|, and then be an alias to another in |after|.
   """
 
-  __slots__ = ('before_symbol', 'after_symbol', 'disassembly')
+  __slots__ = ('before_symbol', 'after_symbol')
 
   def __init__(self, before_symbol, after_symbol):
     self.before_symbol = before_symbol
