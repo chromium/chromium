@@ -6,6 +6,8 @@
 
 set -e
 
+@@include@@../common/variables.include
+
 @@include@@../common/postinst.include
 
 # Add to the alternatives system

@@ -275,6 +275,7 @@ copy("common_packaging_files") {
     "common/postinst.include",
     "common/prerm.include",
     "common/repo.cron",
+    "common/repo_variables.include",
     "common/rpm.include",
     "common/rpmrepo.cron",
     "common/symlinks.include",

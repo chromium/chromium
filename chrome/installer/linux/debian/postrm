@@ -13,6 +13,8 @@ if [ "$action" != "purge" ] ; then
   exit 0
 fi
 
+@@include@@../common/variables.include
+
 @@include@@../common/apt.include
 
 @@include@@../common/symlinks.include

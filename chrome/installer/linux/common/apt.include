@@ -1,4 +1,4 @@
-@@include@@variables.include
+@@include@@repo_variables.include
 
 APT_GET="`command -v apt-get 2> /dev/null`"
 APT_CONFIG="`command -v apt-config 2> /dev/null`"
