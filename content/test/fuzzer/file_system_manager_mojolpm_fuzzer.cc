@@ -24,6 +24,7 @@
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_content_client_initializer.h"
 #include "content/test/fuzzer/file_system_manager_mojolpm_fuzzer.pb.h"
+#include "content/test/fuzzer/mojolpm_fuzzer_support.h"
 #include "mojo/core/embedder/embedder.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/quota/special_storage_policy.h"
@@ -43,52 +44,11 @@ using url::Origin;
 namespace content {
 
 const size_t kNumRenderers = 2;
-const char* cmdline[] = {"file_system_manager_mojolpm_fuzzer", nullptr};
+const char* kCmdline[] = {"file_system_manager_mojolpm_fuzzer", nullptr};
 
-// Global environment needed to run the interface being tested.
-//
-// This will be created once, before fuzzing starts, and will be shared between
-// all testcases. It is created on the main thread.
-//
-// At a minimum, we should always be able to set up the command line, i18n and
-// mojo, and create the thread on which the fuzzer will be run. We want to avoid
-// (as much as is reasonable) any state being preserved between testcases.
-//
-// For FileSystemManager, we can also safely re-use a single
-// BrowserTaskEnvironment and the TestContentClientInitializer between
-// testcases. We try to create an environment that matches the real browser
-// process as much as possible, so we use real platform threads in the task
-// environment.
-class ContentFuzzerEnvironment {
- public:
-  ContentFuzzerEnvironment()
-      : fuzzer_thread_("fuzzer_thread"),
-        task_environment_(
-            (base::CommandLine::Init(1, cmdline),
-             TestTimeouts::Initialize(),
-             base::test::TaskEnvironment::MainThreadType::DEFAULT),
-            base::test::TaskEnvironment::ThreadPoolExecutionMode::ASYNC,
-            base::test::TaskEnvironment::ThreadingMode::MULTIPLE_THREADS,
-            content::BrowserTaskEnvironment::REAL_IO_THREAD) {
-    logging::SetMinLogLevel(logging::LOG_FATAL);
-    mojo::core::Init();
-    base::i18n::InitializeICU();
-    fuzzer_thread_.StartAndWaitForTesting();
-  }
-
-  scoped_refptr<base::SequencedTaskRunner> fuzzer_task_runner() {
-    return fuzzer_thread_.task_runner();
-  }
-
- private:
-  base::AtExitManager at_exit_manager_;
-  base::Thread fuzzer_thread_;
-  content::BrowserTaskEnvironment task_environment_;
-  content::TestContentClientInitializer content_client_initializer_;
-};
-
-ContentFuzzerEnvironment& GetEnvironment() {
-  static base::NoDestructor<ContentFuzzerEnvironment> environment;
+mojolpm::FuzzerEnvironment& GetEnvironment() {
+  static base::NoDestructor<mojolpm::FuzzerEnvironmentWithTaskEnvironment>
+      environment(1, kCmdline);
   return *environment;
 }
 
@@ -314,12 +274,12 @@ void FileSystemManagerTestcase::NextAction() {
           break;
 
         case Action::kFileSystemManagerRemoteAction:
-          mojolpm::HandleRemoteAction(
+          ::mojolpm::HandleRemoteAction(
               action.file_system_manager_remote_action());
           break;
 
         case Action::kFileSystemCancellableOperationRemoteAction:
-          mojolpm::HandleRemoteAction(
+          ::mojolpm::HandleRemoteAction(
               action.file_system_cancellable_operation_remote_action());
           break;
 
@@ -363,7 +323,7 @@ void FileSystemManagerTestcase::AddFileSystemManager(
       run_loop.QuitClosure());
   run_loop.Run();
 
-  mojolpm::GetContext()->AddInstance(id, std::move(remote));
+  ::mojolpm::GetContext()->AddInstance(id, std::move(remote));
 }
 }  // namespace content
 
@@ -391,7 +351,7 @@ void RunTestcase(content::FileSystemManagerTestcase* testcase) {
 
   testcase->SetUp();
 
-  mojolpm::GetContext()->StartTestcase();
+  ::mojolpm::GetContext()->StartTestcase();
 
   base::RunLoop fuzzer_run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   content::GetFuzzerTaskRunner()->PostTask(
@@ -399,7 +359,7 @@ void RunTestcase(content::FileSystemManagerTestcase* testcase) {
                                 fuzzer_run_loop.QuitClosure()));
   fuzzer_run_loop.Run();
 
-  mojolpm::GetContext()->EndTestcase();
+  ::mojolpm::GetContext()->EndTestcase();
 
   testcase->TearDown();
 }

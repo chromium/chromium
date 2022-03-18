@@ -134,6 +134,28 @@ fuzzer_test("merkle_integrity_source_stream_fuzzer") {
   environment_variables = [ "AFL_DRIVER_DONT_DEFER=1" ]
 }
 
+if (enable_mojom_fuzzer) {
+  source_set("mojolpm_fuzzer_support") {
+    testonly = true
+
+    sources = [
+      "mojolpm_fuzzer_support.cc",
+      "mojolpm_fuzzer_support.h",
+    ]
+
+    deps = [ "//mojo/core/embedder:embedder" ]
+
+    public_deps = [
+      "//base/test:test_support",
+      "//content/browser:for_content_tests",
+      "//content/test:test_support",
+      "//services/network:test_support",
+      "//storage/browser:test_support",
+      "//third_party/icu:icudata",
+    ]
+  }
+}
+
 mojolpm_fuzzer_test("code_cache_host_mojolpm_fuzzer") {
   sources = [ "code_cache_host_mojolpm_fuzzer.cc" ]
 
@@ -141,13 +163,9 @@ mojolpm_fuzzer_test("code_cache_host_mojolpm_fuzzer") {
   testcase_proto_kind = "content.fuzzing.code_cache_host.proto.Testcase"
 
   deps = [
-    "//base/test:test_support",
+    ":mojolpm_fuzzer_support",
     "//content/browser:for_content_tests",
     "//content/public/browser:browser_sources",
-    "//content/test:test_support",
-    "//services/network:test_support",
-    "//storage/browser:test_support",
-    "//third_party/icu:icudata",
   ]
 
   proto_deps = [ "//third_party/blink/public/mojom:mojom_platform_mojolpm" ]
@@ -164,15 +182,9 @@ mojolpm_fuzzer_test("file_system_manager_mojolpm_fuzzer") {
   proto_source = "file_system_manager_mojolpm_fuzzer.proto"
 
   deps = [
-    "//base/test:test_support",
-    "//content/browser:for_content_tests",
-    "//content/public/browser:browser_sources",
-    "//content/test:test_support",
-    "//services/network:test_support",
-    "//storage/browser:test_support",
+    ":mojolpm_fuzzer_support",
     "//testing/libfuzzer/proto:url_proto_converter",
     "//third_party/blink/public/common:storage_key_proto_converter",
-    "//third_party/icu:icudata",
   ]
 
   proto_deps = [
@@ -187,11 +199,9 @@ mojolpm_fuzzer_test("audio_context_manager_mojolpm_fuzzer") {
   proto_source = "audio_context_manager_mojolpm_fuzzer.proto"
 
   deps = [
-    "//base/test:test_support",
+    ":mojolpm_fuzzer_support",
     "//content/browser:for_content_tests",
-    "//content/test:test_support",
-    "//services/network:test_support",
-    "//storage/browser:test_support",
+    "//content/public/browser:browser_sources",
   ]
 
   proto_deps = [ "//third_party/blink/public/mojom:mojom_platform_mojolpm" ]
@@ -272,13 +282,10 @@ mojolpm_fuzzer_test("media_stream_dispatcher_host_mojolpm_fuzzer") {
   proto_source = "media_stream_dispatcher_host_mojolpm_fuzzer.proto"
 
   deps = [
-    "//base/test:test_support",
+    ":mojolpm_fuzzer_support",
     "//content/browser:browser",
     "//content/browser:for_content_tests",
     "//content/public/browser:browser_sources",
-    "//content/test:test_support",
-    "//services/network:test_support",
-    "//storage/browser:test_support",
   ]
 
   proto_deps = [ "//third_party/blink/public/mojom:mojom_platform_mojolpm" ]
@@ -293,18 +300,14 @@ if (is_linux || is_chromeos_lacros) {
     proto_source = "video_capture_host_mojolpm_fuzzer.proto"
 
     deps = [
-      "//base/test:test_support",
+      ":mojolpm_fuzzer_support",
       "//content/browser:for_content_tests",
-      "//content/public/browser:browser",
+      "//content/public/browser:browser_sources",
       "//content/test:content_unittests",
-      "//content/test:test_support",
       "//media:test_support",
       "//media/capture:capture_lib",
       "//media/capture:test_support",
-      "//services/network:test_support",
-      "//storage/browser:test_support",
       "//third_party/blink/public/common:common",
-      "//third_party/icu:icudata",
     ]
 
     proto_deps = [ "//media/capture/mojom:video_capture_mojolpm" ]
@@ -318,13 +321,8 @@ mojolpm_fuzzer_test("presentation_service_mojolpm_fuzzer") {
 
   deps = [
     ":controller_presentation_service_delegate_for_fuzzing",
-    "//base/test:test_support",
+    ":mojolpm_fuzzer_support",
     "//content/browser:for_content_tests",
-    "//content/public/browser:browser",
-    "//content/test:content_unittests",
-    "//content/test:test_support",
-    "//services/network:test_support",
-    "//storage/browser:test_support",
     "//ui/events/devices:devices",
   ]
 

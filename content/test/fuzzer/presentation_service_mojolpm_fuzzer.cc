@@ -7,40 +7,28 @@
 #include <string>
 #include <utility>
 
-#include "base/at_exit.h"
-#include "base/base_switches.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/command_line.h"
-#include "base/i18n/icu_util.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
-#include "base/test/test_switches.h"
-#include "base/test/test_timeouts.h"
-#include "base/threading/platform_thread.h"
 #include "base/threading/thread.h"
-#include "content/browser/gpu/gpu_data_manager_impl.h"      // nogncheck
-#include "content/browser/network_service_instance_impl.h"  // nogncheck
+#include "content/browser/gpu/gpu_data_manager_impl.h"  // nogncheck
 #include "content/browser/presentation/presentation_service_impl.h"  // nogncheck
 #include "content/browser/presentation/presentation_test_utils.h"
 #include "content/browser/site_instance_impl.h"  // nogncheck
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/presentation_request.h"
 #include "content/public/browser/presentation_service_delegate.h"
 #include "content/public/browser/site_instance.h"
-#include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/test_browser_context.h"
-#include "content/public/test/test_content_client_initializer.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/test/fuzzer/controller_presentation_service_delegate_for_fuzzing.h"
+#include "content/test/fuzzer/mojolpm_fuzzer_support.h"
 #include "content/test/fuzzer/presentation_service_mojolpm_fuzzer.pb.h"
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_web_contents.h"
-#include "mojo/core/embedder/embedder.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -50,44 +38,11 @@
 #include "third_party/libprotobuf-mutator/src/src/libfuzzer/libfuzzer_macro.h"
 #include "ui/events/devices/device_data_manager.h"
 
-const char* cmdline[] = {"presentation_service_mojolpm_fuzzer", nullptr};
+const char* kCmdline[] = {"presentation_service_mojolpm_fuzzer", nullptr};
 
-// Global environment needed to run the interface being tested.
-//
-// This will be created once, before fuzzing starts, and will be shared between
-// all testcases. It is created on the main thread.
-//
-// At a minimum, we should always be able to set up the command line, i18n and
-// mojo, and create the thread on which the fuzzer will be run. We want to avoid
-// (as much as is reasonable) any state being preserved between testcases.
-//
-// We try to create an environment that matches the real browser process as
-// much as possible, so we use real platform threads in the task environment.
-class ContentFuzzerEnvironment {
- public:
-  ContentFuzzerEnvironment()
-      : fuzzer_thread_((base::CommandLine::Init(1, cmdline), "fuzzer_thread")) {
-    TestTimeouts::Initialize();
-    logging::SetMinLogLevel(logging::LOG_FATAL);
-    mojo::core::Init();
-    base::i18n::InitializeICU();
-    fuzzer_thread_.StartAndWaitForTesting();
-
-    content::ForceCreateNetworkServiceDirectlyForTesting();
-  }
-
-  scoped_refptr<base::SequencedTaskRunner> fuzzer_task_runner() {
-    return fuzzer_thread_.task_runner();
-  }
-
- private:
-  base::AtExitManager at_exit_manager_;
-  base::Thread fuzzer_thread_;
-  content::TestContentClientInitializer content_client_initializer_;
-};
-
-ContentFuzzerEnvironment& GetEnvironment() {
-  static base::NoDestructor<ContentFuzzerEnvironment> environment;
+content::mojolpm::FuzzerEnvironment& GetEnvironment() {
+  static base::NoDestructor<content::mojolpm::FuzzerEnvironment> environment(
+      1, kCmdline);
   return *environment;
 }
 
