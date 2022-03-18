@@ -57,7 +57,7 @@ class ProtobufModelScorer : public Scorer {
     !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
   void ApplyVisualTfLiteModel(
       const SkBitmap& bitmap,
-      base::OnceCallback<void(std::vector<double>)> callback) override;
+      base::OnceCallback<void(std::vector<double>)> callback) const override;
 #endif
 
   int model_version() const override;

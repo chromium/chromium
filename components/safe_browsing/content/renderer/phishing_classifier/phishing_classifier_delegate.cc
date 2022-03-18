@@ -46,8 +46,8 @@ std::set<PhishingClassifierDelegate*>& PhishingClassifierDelegates() {
   return *s;
 }
 
-base::LazyInstance<std::unique_ptr<safe_browsing::Scorer>>::DestructorAtExit
-    g_phishing_scorer = LAZY_INSTANCE_INITIALIZER;
+base::LazyInstance<std::unique_ptr<const safe_browsing::Scorer>>::
+    DestructorAtExit g_phishing_scorer = LAZY_INSTANCE_INITIALIZER;
 
 }  // namespace
 
@@ -121,7 +121,7 @@ PhishingClassifierDelegate* PhishingClassifierDelegate::Create(
 }
 
 void PhishingClassifierDelegate::SetPhishingScorer(
-    safe_browsing::Scorer* scorer) {
+    const safe_browsing::Scorer* scorer) {
   if (is_classifying_) {
     // If there is a classification going on right now it means we're
     // actually replacing an existing scorer with a new model.  In

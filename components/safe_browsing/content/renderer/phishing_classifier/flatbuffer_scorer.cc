@@ -125,8 +125,7 @@ FlatBufferModelScorer* FlatBufferModelScorer::Create(
 
   // Only do this part if the visual model file exists
   if (visual_tflite_model.IsValid()) {
-    scorer->visual_tflite_model_ = std::make_unique<base::MemoryMappedFile>();
-    if (!scorer->visual_tflite_model_->Initialize(
+    if (!scorer->visual_tflite_model_.Initialize(
             std::move(visual_tflite_model))) {
       RecordScorerCreationStatus(SCORER_FAIL_MAP_VISUAL_TFLITE_MODEL);
       return nullptr;
@@ -189,18 +188,23 @@ void FlatBufferModelScorer::GetMatchingVisualTargets(
     !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 void FlatBufferModelScorer::ApplyVisualTfLiteModel(
     const SkBitmap& bitmap,
-    base::OnceCallback<void(std::vector<double>)> callback) {
+    base::OnceCallback<void(std::vector<double>)> callback) const {
   DCHECK(content::RenderThread::IsMainThread());
-  if (visual_tflite_model_ && visual_tflite_model_->IsValid()) {
+  if (visual_tflite_model_.IsValid()) {
+    base::Time start_post_task_time = base::Time::Now();
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE,
         {base::TaskPriority::BEST_EFFORT, base::WithBaseSyncPrimitives()},
         base::BindOnce(&ApplyVisualTfLiteModelHelper, bitmap,
                        flatbuffer_model_->tflite_metadata()->input_width(),
                        flatbuffer_model_->tflite_metadata()->input_height(),
-                       std::move(visual_tflite_model_)),
-        base::BindOnce(&FlatBufferModelScorer::OnVisualTfLiteModelComplete,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                       std::string(reinterpret_cast<const char*>(
+                                       visual_tflite_model_.data()),
+                                   visual_tflite_model_.length())),
+        std::move(callback));
+    base::UmaHistogramTimes(
+        "SBClientPhishing.TfLiteModelLoadTime.FlatbufferScorer",
+        base::Time::Now() - start_post_task_time);
   } else {
     std::move(callback).Run(std::vector<double>());
   }

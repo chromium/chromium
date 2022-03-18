@@ -64,7 +64,7 @@ class PhishingClassifierDelegate : public content::RenderFrameObserver,
 
   // Called by the RenderFrame once there is a phishing scorer available.
   // The scorer is passed on to the classifier.
-  void SetPhishingScorer(safe_browsing::Scorer* scorer);
+  void SetPhishingScorer(const safe_browsing::Scorer* scorer);
 
   // Called by the RenderFrame once a page has finished loading.  Updates the
   // last-loaded URL and page text, then starts classification if all other
