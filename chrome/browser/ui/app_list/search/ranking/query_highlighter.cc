@@ -44,17 +44,16 @@ void QueryHighlighter::UpdateResultRanks(ResultsMap& results,
   DCHECK(it != results.end());
 
   for (const auto& result : it->second) {
-    // Don't perform query highlighting on answer cards.
-    if (result->display_type() == ChromeSearchResult::DisplayType::kAnswerCard)
-      continue;
-
     TextVector title_vector = result->title_text_vector();
     SetMatchTags(last_query_, title_vector);
     result->SetTitleTextVector(title_vector);
 
-    TextVector details_vector = result->details_text_vector();
-    SetMatchTags(last_query_, details_vector);
-    result->SetDetailsTextVector(details_vector);
+    if (result->display_type() !=
+        ChromeSearchResult::DisplayType::kAnswerCard) {
+      TextVector details_vector = result->details_text_vector();
+      SetMatchTags(last_query_, details_vector);
+      result->SetDetailsTextVector(details_vector);
+    }
   }
 }
 

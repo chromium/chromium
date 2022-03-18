@@ -122,20 +122,6 @@ std::vector<TextItem> MatchFieldsToTextVector(
   return {text_item};
 }
 
-std::vector<TextItem> AddBoldTags(std::vector<TextItem> text_vector) {
-  std::vector<TextItem> bolded_vector;
-  for (const auto& old_text : text_vector) {
-    auto new_text = old_text;
-    if (old_text.GetType() == TextType::kString) {
-      auto tags = old_text.GetTextTags();
-      tags.push_back(Tag(Tag::MATCH, 0, old_text.GetText().length()));
-      new_text.SetTextTags(tags);
-    }
-    bolded_vector.push_back(new_text);
-  }
-  return bolded_vector;
-}
-
 std::u16string ComputeAccessibleName(
     const std::vector<std::vector<TextItem>>& text_vectors) {
   std::vector<std::u16string> text;
@@ -217,12 +203,12 @@ void OmniboxAnswerResult::UpdateTitleAndDetails() {
     std::vector<TextItem> contents_vector =
         MatchFieldsToTextVector(match_.contents, match_.contents_class);
     if (match_.description.empty()) {
-      SetTitleTextVector(contents_vector);
-      SetDetailsTextVector({CreateStringTextItem(query_)});
-    } else {
-      SetTitleTextVector(MatchFieldsToTextVector(match_.description,
-                                                 match_.description_class));
+      SetTitleTextVector({CreateStringTextItem(query_)});
       SetDetailsTextVector(contents_vector);
+    } else {
+      SetTitleTextVector(contents_vector);
+      SetDetailsTextVector(MatchFieldsToTextVector(match_.description,
+                                                   match_.description_class));
     }
   } else if (IsWeatherResult()) {
     const auto& second_line = match_.answer->second_line();
@@ -246,17 +232,9 @@ void OmniboxAnswerResult::UpdateTitleAndDetails() {
     auto second_vector = ImageLineToTextVector(second_line);
     AppendAdditionalText(second_line, second_vector);
 
-    if (IsDictionaryResult()) {
-      SetTitleTextVector(first_vector);
-      SetDetailsTextVector(second_vector);
-    } else {
-      SetTitleTextVector(second_vector);
-      SetDetailsTextVector(first_vector);
-    }
+    SetTitleTextVector(first_vector);
+    SetDetailsTextVector(second_vector);
   }
-
-  // Bold the title field.
-  SetTitleTextVector(AddBoldTags(title_text_vector()));
 
   std::u16string accessible_name = ComputeAccessibleName(
       {big_title_text_vector(), title_text_vector(), details_text_vector()});
@@ -313,11 +291,6 @@ void OmniboxAnswerResult::OnFetchComplete(const GURL& url,
 
 bool OmniboxAnswerResult::IsCalculatorResult() const {
   return match_.type == AutocompleteMatchType::CALCULATOR;
-}
-
-bool OmniboxAnswerResult::IsDictionaryResult() const {
-  return match_.answer.has_value() &&
-         match_.answer->type() == SuggestionAnswer::ANSWER_TYPE_DICTIONARY;
 }
 
 bool OmniboxAnswerResult::IsWeatherResult() const {
