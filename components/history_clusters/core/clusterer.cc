@@ -4,6 +4,7 @@
 
 #include "components/history_clusters/core/clusterer.h"
 
+#include "base/containers/adapters.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/on_device_clustering_features.h"
 
@@ -14,18 +15,26 @@ namespace {
 // Returns whether |visit| should be added to |cluster|.
 bool ShouldAddVisitToCluster(const history::ClusterVisit& visit,
                              const history::Cluster& cluster) {
-  auto last_visit = cluster.visits.back();
   if ((visit.annotated_visit.visit_row.visit_time -
-       last_visit.annotated_visit.visit_row.visit_time) >
+       cluster.visits.back().annotated_visit.visit_row.visit_time) >
       features::ClusterNavigationTimeCutoff()) {
     return false;
   }
   if (features::ShouldSplitClustersAtSearchVisits() &&
       !visit.search_terms.empty()) {
     // If we want to split the clusters at search visits and we are at a search
-    // visit, only add the visit to the cluster if the last visit was also a
-    // search visit with the same terms.
-    return visit.search_terms == last_visit.search_terms;
+    // visit, only add the visit to the cluster if the last search visit was
+    // also a search visit with the same terms. Also break the cluster if there
+    // was not already a search visit already.
+    absl::optional<history::ClusterVisit> last_search_visit;
+    for (const auto& existing_visit : base::Reversed(cluster.visits)) {
+      if (!existing_visit.search_terms.empty()) {
+        last_search_visit = existing_visit;
+        break;
+      }
+    }
+    return last_search_visit &&
+           visit.search_terms == last_search_visit->search_terms;
   }
   return true;
 }
