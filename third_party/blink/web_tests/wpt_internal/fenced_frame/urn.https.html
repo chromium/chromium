@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<title>Test Maximum Subframes</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="resources/utils.js"></script>
+<script src="/common/utils.js"></script>
+
+<body>
+<script>
+promise_test(async (t) => {
+  const key = token();
+
+  attachFencedFrame(await generateURN("resources/embeddee.html", [key]));
+  result = await nextValueFromServer(key);
+
+  assert_equals(result, "PASS",
+                "The fenced frame with src=urn:uuid should load");
+}, 'urn:uuid Loading Test');
+
+</script>
+</body>
+</html>

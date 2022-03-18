@@ -14,6 +14,32 @@ function generateURL(href, keylist) {
   return ret_url;
 }
 
+// Similar to generateURL, but creates a urn:uuid that a fenced frame can
+// navigate to. This relies on a mock Shared Storage auction, since it is the
+// simplest WP-exposed way to turn a url into a urn:uuid.
+// Note: this function, unlike generateURL, is asynchronous and needs to be
+// called with an await operator.
+// @param {string} href - The base url of the page being navigated to
+// @param {string list} keylist - The list of key UUIDs to be used. Note that
+//                                order matters when extracting the keys
+async function generateURN(href, keylist) {
+  try {
+    await sharedStorage.worklet.addModule(
+      "/wpt_internal/shared_storage/resources/simple-module.js");
+  } catch (e) {
+    // Shared Storage needs to have a module added before we can operate on it.
+    // It is generated on the fly with this call, and since there's no way to
+    // tell through the API if a module already exists, wrap the addModule call
+    // in a try/catch so that if it runs a second time in a test, it will
+    // gracefully fail rather than bring the whole test down.
+  }
+
+  const full_url = generateURL(href, keylist);
+  return await sharedStorage.runURLSelectionOperation(
+      "test-url-selection-operation", [full_url], {data: {'mockResult': 0}}
+  );
+}
+
 // Extracts a list of UUIDs from the from the current page's URL.
 // @returns {string list} - The list of UUIDs extracted from the page. This can
 //                          be read into multiple variables using the
