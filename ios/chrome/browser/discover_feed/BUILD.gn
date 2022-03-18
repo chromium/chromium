@@ -14,12 +14,15 @@ source_set("discover_feed") {
     "discover_feed_service.mm",
     "discover_feed_view_controller_configuration.h",
     "discover_feed_view_controller_configuration.mm",
+    "feed_model_configuration.h",
+    "feed_model_configuration.mm",
   ]
   deps = [
     "//base",
     "//components/keyed_service/core",
     "//ios/public/provider/chrome/browser/signin:signin_sso_api",
   ]
+  public_deps = [ ":constants" ]
   frameworks = [ "UIKit.framework" ]
 }
 
@@ -45,4 +48,9 @@ source_set("discover_feed_factory") {
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/discover_feed:discover_feed_api",
   ]
+}
+
+source_set("constants") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "feed_constants.h" ]
 }

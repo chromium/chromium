@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
+#import "ios/chrome/browser/discover_feed/feed_constants.h"
 
 @protocol FeedControlDelegate;
 
@@ -22,8 +22,10 @@
 // Delegate for controlling the presented feed.
 @property(nonatomic, weak) id<FeedControlDelegate> feedControlDelegate;
 
-// Initializes the header with the currently selected feed.
+// Initializes the header with the currently selected feed and the Following
+// feed's sort type.
 - (instancetype)initWithSelectedFeed:(FeedType)selectedFeed
+               followingFeedSortType:(FollowingFeedSortType)sortType
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

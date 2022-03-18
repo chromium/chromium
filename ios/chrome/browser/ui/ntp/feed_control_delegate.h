@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_NTP_FEED_CONTROL_DELEGATE_H_
 #define IOS_CHROME_BROWSER_UI_NTP_FEED_CONTROL_DELEGATE_H_
 
-enum class FeedType;
+#import "ios/chrome/browser/discover_feed/feed_constants.h"
 
 // Delegate for controlling the presented feed.
 @protocol FeedControlDelegate
@@ -13,6 +13,9 @@ enum class FeedType;
 // Handles operations after a new feed has been selected. e.g. Displays the
 // feed, updates states, etc.
 - (void)handleFeedSelected:(FeedType)feedType;
+
+// Handles the sorting being selected for the Following feed.
+- (void)handleSortTypeForFollowingFeed:(FollowingFeedSortType)sortType;
 
 @end
 

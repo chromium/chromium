@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/ntp/feed_control_delegate.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -75,14 +76,19 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
 // header when NTP coordinator's restart is improved.
 @property(nonatomic, assign) FeedType selectedFeed;
 
+// The currently selected sorting for the Following feed.
+@property(nonatomic, assign) FollowingFeedSortType followingFeedSortType;
+
 @end
 
 @implementation FeedHeaderViewController
 
-- (instancetype)initWithSelectedFeed:(FeedType)selectedFeed {
+- (instancetype)initWithSelectedFeed:(FeedType)selectedFeed
+               followingFeedSortType:(FollowingFeedSortType)sortType {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _selectedFeed = selectedFeed;
+    _followingFeedSortType = sortType;
 
     // The menu button is created early so that it can be assigned a tap action
     // before the view loads.
@@ -138,25 +144,39 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
 - (UIMenu*)createSortMenu {
   NSMutableArray<UIAction*>* sortActions = [NSMutableArray array];
 
+  // Create menu actions.
   UIAction* sortByPublisherAction = [UIAction
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_FEED_SORT_PUBLISHER)
                 image:nil
            identifier:nil
-              handler:^(UIAction* action){
-                  // TODO(crbug.com/1277974): Handle selected sorting.
+              handler:^(UIAction* action) {
+                [self.feedControlDelegate handleSortTypeForFollowingFeed:
+                                              FollowingFeedSortTypeByPublisher];
+                self.followingFeedSortType = FollowingFeedSortTypeByPublisher;
+                self.sortButton.menu = [self createSortMenu];
               }];
-  // TODO(crbug.com/1277974): Set the active state based on selected sorting.
-  sortByPublisherAction.state = UIMenuElementStateOn;
   [sortActions addObject:sortByPublisherAction];
-
-  UIAction* sortByLatestAction =
-      [UIAction actionWithTitle:l10n_util::GetNSString(IDS_IOS_FEED_SORT_LATEST)
-                          image:nil
-                     identifier:nil
-                        handler:^(UIAction* action){
-                            // TODO(crbug.com/1277974): Handle selected sorting.
-                        }];
+  UIAction* sortByLatestAction = [UIAction
+      actionWithTitle:l10n_util::GetNSString(IDS_IOS_FEED_SORT_LATEST)
+                image:nil
+           identifier:nil
+              handler:^(UIAction* action) {
+                [self.feedControlDelegate handleSortTypeForFollowingFeed:
+                                              FollowingFeedSortTypeByLatest];
+                self.followingFeedSortType = FollowingFeedSortTypeByLatest;
+                self.sortButton.menu = [self createSortMenu];
+              }];
   [sortActions addObject:sortByLatestAction];
+
+  // Set active sorting.
+  switch (self.followingFeedSortType) {
+    case FollowingFeedSortTypeByLatest:
+      sortByLatestAction.state = UIMenuElementStateOn;
+      break;
+    case FollowingFeedSortTypeByPublisher:
+    default:
+      sortByPublisherAction.state = UIMenuElementStateOn;
+  }
 
   return [UIMenu menuWithTitle:@"" children:sortActions];
 }
@@ -202,7 +222,7 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
   // The sort button is only visible if the Following feed is selected.
   // TODO(crbug.com/1277974): Determine if the button should show when the feed
   // is hidden.
-  sortButton.alpha = self.selectedFeed == FeedType::kFollowingFeed ? 1 : 0;
+  sortButton.alpha = self.selectedFeed == FeedTypeFollowing ? 1 : 0;
 
   return sortButton;
 }
@@ -313,16 +333,16 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
 // Handles a new feed being selected from the header.
 - (void)onSegmentSelected:(UISegmentedControl*)segmentedControl {
   switch (segmentedControl.selectedSegmentIndex) {
-    case static_cast<NSInteger>(FeedType::kDiscoverFeed): {
-      [self.feedControlDelegate handleFeedSelected:FeedType::kDiscoverFeed];
+    case static_cast<NSInteger>(FeedTypeDiscover): {
+      [self.feedControlDelegate handleFeedSelected:FeedTypeDiscover];
       [UIView animateWithDuration:kSortButtonAnimationDuration
                        animations:^{
                          self.sortButton.alpha = 0;
                        }];
       break;
     }
-    case static_cast<NSInteger>(FeedType::kFollowingFeed): {
-      [self.feedControlDelegate handleFeedSelected:FeedType::kFollowingFeed];
+    case static_cast<NSInteger>(FeedTypeFollowing): {
+      [self.feedControlDelegate handleFeedSelected:FeedTypeFollowing];
       [UIView animateWithDuration:kSortButtonAnimationDuration
                        animations:^{
                          self.sortButton.alpha = 1;

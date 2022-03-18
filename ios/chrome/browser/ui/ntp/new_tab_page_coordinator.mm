@@ -24,6 +24,7 @@
 #include "ios/chrome/browser/discover_feed/discover_feed_service.h"
 #import "ios/chrome/browser/discover_feed/discover_feed_service_factory.h"
 #include "ios/chrome/browser/discover_feed/discover_feed_service_factory.h"
+#import "ios/chrome/browser/discover_feed/feed_constants.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/pref_names.h"
 #include "ios/chrome/browser/reading_list/reading_list_model_factory.h"
@@ -238,7 +239,7 @@ namespace {
 
     // TODO(crbug.com/1277974): Make sure that we always want the Discover feed
     // as default.
-    _selectedFeed = FeedType::kDiscoverFeed;
+    _selectedFeed = FeedTypeDiscover;
   }
   return self;
 }
@@ -575,8 +576,14 @@ namespace {
 #pragma mark - FeedControlDelegate
 
 - (void)handleFeedSelected:(FeedType)feedType {
+  DCHECK(IsWebChannelsEnabled());
   self.selectedFeed = feedType;
   [self updateNTPForFeed];
+}
+
+- (void)handleSortTypeForFollowingFeed:(FollowingFeedSortType)sortType {
+  DCHECK(IsWebChannelsEnabled());
+  self.discoverFeedService->SetFollowingFeedSortType(sortType);
 }
 
 #pragma mark - FeedMenuCommands
@@ -928,15 +935,16 @@ namespace {
 
   // Requests a Discover feed here if the correct flags and prefs are enabled.
   if ([self shouldFeedBeFetched]) {
+    // TODO(crbug.com/1277974): Create models separately with default sorting.
     self.discoverFeedService->CreateFeedModels();
 
     if (IsWebChannelsEnabled()) {
       // TODO(crbug.com/1277504): Use unique property for Following feed.
       switch (self.selectedFeed) {
-        case FeedType::kDiscoverFeed:
+        case FeedTypeDiscover:
           self.discoverFeedViewController = [self discoverFeed];
           break;
-        case FeedType::kFollowingFeed:
+        case FeedTypeFollowing:
           self.discoverFeedViewController = [self followingFeed];
           break;
       }
@@ -1116,7 +1124,8 @@ namespace {
 - (FeedHeaderViewController*)feedHeaderViewController {
   if (!_feedHeaderViewController) {
     _feedHeaderViewController = [[FeedHeaderViewController alloc]
-        initWithSelectedFeed:self.selectedFeed];
+         initWithSelectedFeed:self.selectedFeed
+        followingFeedSortType:FollowingFeedSortTypeByPublisher];
     _feedHeaderViewController.feedControlDelegate = self;
     [_feedHeaderViewController.menuButton
                addTarget:self
