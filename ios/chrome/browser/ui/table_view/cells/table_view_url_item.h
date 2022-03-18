@@ -25,6 +25,12 @@
 @property(nonatomic, readwrite, copy) NSString* supplementalURLText;
 // Delimiter used to separate the URL hostname and the supplemental text.
 @property(nonatomic, readwrite, copy) NSString* supplementalURLTextDelimiter;
+// Custom third row text. This is not shown if it is empty or if the second row
+// is empty.
+@property(nonatomic, readwrite, copy) NSString* thirdRowText;
+// Third row text color, if it is shown. If nil, ChromeTableViewStyler's
+// |detailTextColor| is used, otherwise a default color is used.
+@property(nonatomic, strong) UIColor* thirdRowTextColor;
 // Detail text to be displayed instead of the URL.
 @property(nonatomic, strong) NSString* detailText;
 // Metadata text displayed at the trailing edge of the cell.
@@ -58,6 +64,10 @@
 
 // Optional metadata that is displayed at the trailing edge of the cell.
 @property(nonatomic, readonly, strong) UILabel* metadataLabel;
+
+// Optional third row label. This is never used in place of the second row of
+// text.
+@property(nonatomic, readonly, strong) UILabel* thirdRowLabel;
 
 // Unique identifier that matches with one URLItem.
 @property(nonatomic, strong) NSString* cellUniqueIdentifier;

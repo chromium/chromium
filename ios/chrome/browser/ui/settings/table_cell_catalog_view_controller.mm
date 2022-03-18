@@ -72,6 +72,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeURLWithTimestamp,
   ItemTypeURLWithSize,
   ItemTypeURLWithSupplementalText,
+  ItemTypeURLWithThirdRowText,
   ItemTypeURLWithBadgeImage,
   ItemTypeTextSettingsDetail,
   ItemTypeLinkFooter,
@@ -611,6 +612,21 @@ typedef NS_ENUM(NSInteger, ItemType) {
       initWithType:ItemTypeURLWithActivityIndicatorStopped];
   item.title = @"Received Response from Server";
   item.URL = [[CrURL alloc] initWithGURL:GURL("https://stopped.spinner.com/")];
+  [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
+
+  item = [[TableViewURLItem alloc] initWithType:ItemTypeURLWithThirdRowText];
+  item.title = @"Web Channel with 3rd Row Text";
+  item.URL =
+      [[CrURL alloc] initWithGURL:GURL("https://blog.google/products/chrome/")];
+  item.thirdRowText = @"Unavailable";
+  [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
+
+  item = [[TableViewURLItem alloc] initWithType:ItemTypeURLWithThirdRowText];
+  item.title = @"Web Channel with 3rd Row Red Text";
+  item.URL =
+      [[CrURL alloc] initWithGURL:GURL("https://blog.google/products/chrome/")];
+  item.thirdRowText = @"Unavailable";
+  item.thirdRowTextColor = UIColor.redColor;
   [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
 }
 

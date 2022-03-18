@@ -56,6 +56,7 @@ const char kDefaultSupplementalURLTextDelimiter[] = "•";
       base::mac::ObjCCastStrict<TableViewURLCell>(tableCell);
   cell.titleLabel.text = [self titleLabelText];
   cell.URLLabel.text = [self URLLabelText];
+  cell.thirdRowLabel.text = self.thirdRowText;
   cell.faviconBadgeView.image = self.badgeImage;
   cell.metadataLabel.text = self.metadata;
   cell.cellUniqueIdentifier = self.uniqueIdentifier;
@@ -65,8 +66,11 @@ const char kDefaultSupplementalURLTextDelimiter[] = "•";
     cell.titleLabel.textColor = styler.cellTitleColor;
   if (styler.cellDetailColor) {
     cell.URLLabel.textColor = styler.cellDetailColor;
+    cell.thirdRowLabel.textColor = styler.cellDetailColor;
     cell.metadataLabel.textColor = styler.cellDetailColor;
   }
+  if (self.thirdRowTextColor)
+    cell.thirdRowLabel.textColor = self.thirdRowTextColor;
 
   [cell configureUILayout];
 }
@@ -149,6 +153,7 @@ const char kDefaultSupplementalURLTextDelimiter[] = "•";
     _faviconBadgeView = [[TableViewURLCellFaviconBadgeView alloc] init];
     _titleLabel = [[UILabel alloc] init];
     _URLLabel = [[UILabel alloc] init];
+    _thirdRowLabel = [[UILabel alloc] init];
     _metadataLabel = [[UILabel alloc] init];
 
     // Set font sizes using dynamic type.
@@ -159,6 +164,11 @@ const char kDefaultSupplementalURLTextDelimiter[] = "•";
     _URLLabel.adjustsFontForContentSizeCategory = YES;
     _URLLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
     _URLLabel.hidden = YES;
+    _thirdRowLabel.font =
+        [UIFont preferredFontForTextStyle:kTableViewSublabelFontStyle];
+    _thirdRowLabel.adjustsFontForContentSizeCategory = YES;
+    _thirdRowLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
+    _thirdRowLabel.hidden = YES;
     _metadataLabel.font =
         [UIFont preferredFontForTextStyle:kTableViewSublabelFontStyle];
     _metadataLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
@@ -167,7 +177,7 @@ const char kDefaultSupplementalURLTextDelimiter[] = "•";
 
     // Use stack views to layout the subviews except for the favicon.
     UIStackView* verticalStack = [[UIStackView alloc]
-        initWithArrangedSubviews:@[ _titleLabel, _URLLabel ]];
+        initWithArrangedSubviews:@[ _titleLabel, _URLLabel, _thirdRowLabel ]];
     verticalStack.axis = UILayoutConstraintAxisVertical;
     [_metadataLabel setContentHuggingPriority:UILayoutPriorityDefaultHigh
                                       forAxis:UILayoutConstraintAxisHorizontal];
@@ -259,6 +269,12 @@ const char kDefaultSupplementalURLTextDelimiter[] = "•";
   } else {
     self.URLLabel.hidden = YES;
   }
+  if ([self.thirdRowLabel.text length] && !self.URLLabel.hidden) {
+    self.thirdRowLabel.hidden = NO;
+  } else {
+    // There shouldn't be a third row if the second row isn't even shown.
+    self.thirdRowLabel.hidden = YES;
+  }
 }
 
 - (void)prepareForReuse {
@@ -268,6 +284,7 @@ const char kDefaultSupplementalURLTextDelimiter[] = "•";
   self.horizontalStack.alignment = UIStackViewAlignmentFill;
   self.metadataLabel.hidden = YES;
   self.URLLabel.hidden = YES;
+  self.thirdRowLabel.hidden = YES;
 }
 
 - (void)setAccessibilityLabel:(NSString*)accessibilityLabel {
@@ -281,6 +298,11 @@ const char kDefaultSupplementalURLTextDelimiter[] = "•";
     if (self.URLLabel.text.length > 0) {
       accessibilityLabel = [NSString
           stringWithFormat:@"%@, %@", accessibilityLabel, self.URLLabel.text];
+    }
+    if (self.thirdRowLabel.text.length > 0) {
+      accessibilityLabel =
+          [NSString stringWithFormat:@"%@, %@", accessibilityLabel,
+                                     self.thirdRowLabel.text];
     }
     if (self.metadataLabel.text.length > 0) {
       accessibilityLabel =
