@@ -2,20 +2,16 @@
 <title>Style element is not script-blocking when media doesn't match</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script>
-const start = performance.now();
-</script>
+<script src="support/utils.js"></script>
 <style media="print">
 @import url('stylesheet.py?delay=1');
 </style>
+<h1>Some text</h1>
 <script>
-// The loading of the imported sheet may start before the <style> element is set
-// up due to preload scanner, so even when it's script-blocking, it may block
-// script for a bit less than 1000ms. So we set an error margin to make the test
-// more robust.
-const epsilon = 50;
 test(() => {
-  const delay = performance.now() - start;
-  assert_less_than(delay, 1000 - epsilon);
+  assert_false(styleExists("h1 { color: purple; }"),
+               'stylesheet should still be pending');
+  const h1 = document.querySelector('h1');
+  assert_equals(getComputedStyle(h1).color, 'rgb(0, 0, 0)');
 });
 </script>
