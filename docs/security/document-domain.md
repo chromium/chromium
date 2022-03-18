@@ -58,6 +58,19 @@ It is also a no-op in other browsers, since they either match Chromium's
 current default or have not implemented the `Origin-Agent-Cluster` header at
 all.
 
+## Where are the deprecation warnings found?
+
+The deprecation warnings are found in the [issues tab](https://developer.chrome.com/docs/devtools/issues/).
+
+## What does the deprecation warning tell me?
+
+There are two deprecation warnings: One for setting the `document.domain`
+accessors, which modifies the security behaviour. And from M101 on,
+a second warning when a cross-domain access is made that is facilitated by
+the modified `document.domain` property. The first warning tells you where
+the setup happens, and the second one tells you where it is being used (and
+thus likely why this is being done in the first place).
+
 ## How Can I Test This?
 
 In the DevTools console, for a page `www.example.test`:
@@ -78,7 +91,7 @@ window.originAgentCluster;  // true, if page is assigned to an origin-keyed
 
 How to enable/disable the deprecation:
 
-### Enable the Warning (Scheduled for M100)
+### Enable the Warning (Before M100)
 
 * Start Chrome with `--enable-features=OriginAgentClusterDefaultWarning`
 
