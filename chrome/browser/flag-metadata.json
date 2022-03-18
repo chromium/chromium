@@ -5335,7 +5335,7 @@
   },
   {
     "name": "send-tab-to-self-v2",
-    "owners": ["kmilka", "chrome-sharing-eng@google.com"],
+    "owners": ["ellyjones", "chrome-sharing-eng@google.com"],
     "expiry_milestone": 100
   },
   {
@@ -5372,12 +5372,12 @@
   },
   {
     "name": "shared-highlighting-v2",
-    "owners": ["kmilka", "cheickcisse@google.com"],
+    "owners": ["jeffreycohen", "kristipark", "cheickcisse@google.com"],
     "expiry_milestone": 99
   },
   {
     "name": "sharing-desktop-screenshots",
-    "owners": ["skare", "kmilka", "chrome-sharing-eng@google.com" ],
+    "owners": ["skare", "jeffreycohen", "chrome-sharing-eng@google.com" ],
     "expiry_milestone": 104
   },
   {
