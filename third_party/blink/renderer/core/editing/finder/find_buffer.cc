@@ -54,17 +54,24 @@ bool ShouldIgnoreContents(const Node& node) {
               DisplayLockActivationReason::kFindInPage));
 }
 
-// Returns the first ancestor that isn't searchable. In other words, either
-// ShouldIgnoreContents() returns true for it or it has a display: none style.
-// Returns nullptr if no such ancestor exists.
-Node* GetNonSearchableAncestor(const Node& node) {
+// Returns the first ancestor element that isn't searchable. In other words,
+// either ShouldIgnoreContents() returns true for it or it has a display: none
+// style.  Returns nullptr if no such ancestor exists.
+Node* GetOutermostNonSearchableAncestor(const Node& node) {
+  Node* display_none = nullptr;
   for (Node& ancestor : FlatTreeTraversal::InclusiveAncestorsOf(node)) {
-    const ComputedStyle* style = ancestor.EnsureComputedStyle();
-    if (ancestor.IsDocumentNode())
-      return nullptr;
-    if ((style && style->Display() == EDisplay::kNone) ||
-        ShouldIgnoreContents(ancestor))
-      return &ancestor;
+    Element* element_ancestor = DynamicTo<Element>(&ancestor);
+    if (!element_ancestor)
+      continue;
+    const ComputedStyle* style = element_ancestor->GetComputedStyle();
+    if (!style || style->IsEnsuredInDisplayNone()) {
+      display_none = element_ancestor;
+      continue;
+    }
+    if (ShouldIgnoreContents(*element_ancestor))
+      return element_ancestor;
+    if (display_none)
+      return display_none;
   }
   return nullptr;
 }
@@ -75,7 +82,7 @@ template <class Direction>
 Node* GetVisibleTextNode(Node& start_node) {
   Node* node = &start_node;
   // Move to outside display none subtree if we're inside one.
-  while (Node* ancestor = GetNonSearchableAncestor(*node)) {
+  while (Node* ancestor = GetOutermostNonSearchableAncestor(*node)) {
     if (!ancestor)
       return nullptr;
     node = Direction::NextSkippingSubtree(*ancestor);
@@ -173,7 +180,7 @@ EphemeralRangeInFlatTree FindBuffer::FindMatchInRange(
       }
     }
 
-    if (GetNonSearchableAncestor(*node)) {
+    if (GetOutermostNonSearchableAncestor(*node)) {
       node = FlatTreeTraversal::NextSkippingChildren(*node);
       continue;
     }
