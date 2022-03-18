@@ -166,7 +166,7 @@ ExtensionFunction::ResponseAction InputImeSetCompositionFunction::Run() {
                               segments, &error)) {
     std::unique_ptr<base::ListValue> results =
         std::make_unique<base::ListValue>();
-    results->Append(std::make_unique<base::Value>(false));
+    results->Append(false);
     return RespondNow(ErrorWithArguments(
         std::move(results), InformativeError(error, static_function_name())));
   }
@@ -187,7 +187,7 @@ ExtensionFunction::ResponseAction InputImeCommitTextFunction::Run() {
                           &error)) {
     std::unique_ptr<base::ListValue> results =
         std::make_unique<base::ListValue>();
-    results->Append(std::make_unique<base::Value>(false));
+    results->Append(false);
     return RespondNow(ErrorWithArguments(
         std::move(results), InformativeError(error, static_function_name())));
   }

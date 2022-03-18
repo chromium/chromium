@@ -982,7 +982,7 @@ ExtensionFunction::ResponseAction InputImeClearCompositionFunction::Run() {
   bool success = engine->ClearComposition(params.context_id, &error);
   std::unique_ptr<base::ListValue> results =
       std::make_unique<base::ListValue>();
-  results->Append(std::make_unique<base::Value>(success));
+  results->Append(success);
   return RespondNow(success
                         ? ArgumentList(std::move(results))
                         : ErrorWithArguments(
@@ -1076,7 +1076,7 @@ InputImeSetCandidateWindowPropertiesFunction::Run() {
       !engine->SetCandidateWindowVisible(*properties.visible, &error)) {
     std::unique_ptr<base::ListValue> results =
         std::make_unique<base::ListValue>();
-    results->Append(std::make_unique<base::Value>(false));
+    results->Append(false);
     return RespondNow(ErrorWithArguments(
         std::move(results), InformativeError(error, static_function_name())));
   }
@@ -1169,7 +1169,7 @@ ExtensionFunction::ResponseAction InputImeSetCandidatesFunction::Run() {
       engine->SetCandidates(params.context_id, candidates_out, &error);
   std::unique_ptr<base::ListValue> results =
       std::make_unique<base::ListValue>();
-  results->Append(std::make_unique<base::Value>(success));
+  results->Append(success);
   return RespondNow(success
                         ? ArgumentList(std::move(results))
                         : ErrorWithArguments(
@@ -1194,7 +1194,7 @@ ExtensionFunction::ResponseAction InputImeSetCursorPositionFunction::Run() {
       engine->SetCursorPosition(params.context_id, params.candidate_id, &error);
   std::unique_ptr<base::ListValue> results =
       std::make_unique<base::ListValue>();
-  results->Append(std::make_unique<base::Value>(success));
+  results->Append(success);
   return RespondNow(success
                         ? ArgumentList(std::move(results))
                         : ErrorWithArguments(
@@ -1324,18 +1324,17 @@ InputMethodPrivateGetCompositionBoundsFunction::Run() {
   if (!engine)
     return RespondNow(Error(InformativeError(error, static_function_name())));
 
-  auto bounds_list = std::make_unique<base::ListValue>();
+  base::Value::List bounds_list;
   for (const auto& bounds : engine->composition_bounds()) {
-    auto bounds_value = std::make_unique<base::DictionaryValue>();
-    bounds_value->SetIntKey("x", bounds.x());
-    bounds_value->SetIntKey("y", bounds.y());
-    bounds_value->SetIntKey("w", bounds.width());
-    bounds_value->SetIntKey("h", bounds.height());
-    bounds_list->Append(std::move(bounds_value));
+    base::Value::Dict bounds_value;
+    bounds_value.Set("x", bounds.x());
+    bounds_value.Set("y", bounds.y());
+    bounds_value.Set("w", bounds.width());
+    bounds_value.Set("h", bounds.height());
+    bounds_list.Append(std::move(bounds_value));
   }
 
-  return RespondNow(
-      OneArgument(base::Value::FromUniquePtrValue(std::move(bounds_list))));
+  return RespondNow(OneArgument(base::Value(std::move(bounds_list))));
 }
 
 void InputImeAPI::OnExtensionLoaded(content::BrowserContext* browser_context,
