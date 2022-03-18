@@ -43,7 +43,6 @@ source_set("v4l2") {
     "v4l2_slice_video_decode_accelerator.h",
     "v4l2_stateful_workaround.cc",
     "v4l2_stateful_workaround.h",
-    "v4l2_status.h",
     "v4l2_utils.cc",
     "v4l2_utils.h",
     "v4l2_vda_helpers.cc",
@@ -94,6 +93,7 @@ source_set("v4l2") {
   public_deps = [ "//ui/gl" ]
 
   deps = [
+    ":v4l2_status",
     "//base",
     "//gpu/ipc/common",
     "//gpu/ipc/service",
@@ -125,6 +125,19 @@ source_set("v4l2") {
       "//media/gpu:video_frame_mapper_common",
     ]
   }
+}
+
+# The v4l2 status functionality is in its own source set so that it can be
+# depended on without pulling the //media/gpu/v4l2:v4l2 target.
+source_set("v4l2_status") {
+  sources = [ "v4l2_status.h" ]
+
+  visibility = [
+    ":v4l2",
+    "//media/mojo/mojom/stable:*",
+  ]
+
+  deps = [ "//media" ]
 }
 
 source_set("unit_test") {

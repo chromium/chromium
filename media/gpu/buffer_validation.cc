@@ -7,11 +7,11 @@
 #include <algorithm>
 #include <cstdint>
 
+#include "base/logging.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "media/base/video_frame.h"
-#include "media/gpu/macros.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
@@ -25,22 +25,22 @@ namespace media {
 bool GetFileSize(const int fd, size_t* size) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   if (fd < 0) {
-    VLOGF(1) << "Invalid file descriptor";
+    VLOG(1) << "Invalid file descriptor";
     return false;
   }
 
   off_t fd_size = lseek(fd, 0, SEEK_END);
   lseek(fd, 0, SEEK_SET);
   if (fd_size < 0u) {
-    VPLOGF(1) << "Fail to find the size of fd";
+    VPLOG(1) << "Fail to find the size of fd";
     return false;
   }
 
   if (!base::IsValueInRangeForNumericType<size_t>(fd_size)) {
-    VLOGF(1) << "fd_size is out of range of size_t"
-             << ", size=" << size
-             << ", size_t max=" << std::numeric_limits<size_t>::max()
-             << ", size_t min=" << std::numeric_limits<size_t>::min();
+    VLOG(1) << "fd_size is out of range of size_t"
+            << ", size=" << size
+            << ", size_t max=" << std::numeric_limits<size_t>::max()
+            << ", size_t min=" << std::numeric_limits<size_t>::min();
     return false;
   }
 
@@ -58,12 +58,12 @@ bool VerifyGpuMemoryBufferHandle(
     const gfx::GpuMemoryBufferHandle& gmb_handle,
     GetFileSizeCBForTesting file_size_cb_for_testing) {
   if (gmb_handle.type != gfx::NATIVE_PIXMAP) {
-    VLOGF(1) << "Unexpected GpuMemoryBufferType: " << gmb_handle.type;
+    VLOG(1) << "Unexpected GpuMemoryBufferType: " << gmb_handle.type;
     return false;
   }
   if (!media::VideoFrame::IsValidCodedSize(coded_size)) {
-    VLOGF(1) << "Coded size is beyond allowed dimensions: "
-             << coded_size.ToString();
+    VLOG(1) << "Coded size is beyond allowed dimensions: "
+            << coded_size.ToString();
     return false;
   }
   if (pixel_format != PIXEL_FORMAT_I420 && pixel_format != PIXEL_FORMAT_NV12 &&
@@ -75,9 +75,9 @@ bool VerifyGpuMemoryBufferHandle(
   const size_t num_planes = media::VideoFrame::NumPlanes(pixel_format);
   if (num_planes != gmb_handle.native_pixmap_handle.planes.size() ||
       num_planes == 0) {
-    VLOGF(1) << "Invalid number of dmabuf planes passed: "
-             << gmb_handle.native_pixmap_handle.planes.size()
-             << ", expected: " << num_planes;
+    VLOG(1) << "Invalid number of dmabuf planes passed: "
+            << gmb_handle.native_pixmap_handle.planes.size()
+            << ", expected: " << num_planes;
     return false;
   }
 
@@ -91,8 +91,8 @@ bool VerifyGpuMemoryBufferHandle(
 
   for (size_t i = 0; i < num_planes; i++) {
     const auto& plane = gmb_handle.native_pixmap_handle.planes[i];
-    DVLOGF(4) << "Plane " << i << ", offset: " << plane.offset
-              << ", stride: " << plane.stride;
+    DVLOG(4) << "Plane " << i << ", offset: " << plane.offset
+             << ", stride: " << plane.stride;
 
     size_t file_size_in_bytes;
     if (file_size_cb_for_testing) {
@@ -110,7 +110,7 @@ bool VerifyGpuMemoryBufferHandle(
     if (!min_plane_size.IsValid<uint64_t>() ||
         min_plane_size.ValueOrDie<uint64_t>() > plane.size ||
         base::strict_cast<size_t>(plane.stride) < plane_pixel_width) {
-      VLOGF(1) << "Invalid strides/sizes";
+      VLOG(1) << "Invalid strides/sizes";
       return false;
     }
 
@@ -122,7 +122,7 @@ bool VerifyGpuMemoryBufferHandle(
     if (!min_buffer_size.IsValid() ||
         min_buffer_size.ValueOrDie() >
             base::strict_cast<uint64_t>(file_size_in_bytes)) {
-      VLOGF(1) << "Invalid strides/offsets";
+      VLOG(1) << "Invalid strides/offsets";
       return false;
     }
   }

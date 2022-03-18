@@ -32,6 +32,7 @@ if (use_v4l2_codec || use_vaapi) {
       "//ash/components/arc/mojom:media",
       "//gpu/ipc/common:common",
       "//media",
+      "//media/gpu:buffer_validation",
       "//media/gpu/chromeos:common",
     ]
   }
@@ -48,6 +49,7 @@ source_set("common") {
 
   deps = [
     "//media",
+    "//media/gpu:buffer_validation",
     "//media/gpu:gpu",
     "//mojo/public/cpp/system:system",
     "//ui/gfx:memory_buffer",

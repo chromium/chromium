@@ -59,7 +59,7 @@ source_set("utils") {
   ]
 
   deps = [
-    "//media/gpu",
+    "//media/gpu:buffer_validation",
     "//mojo/public/cpp/system",
   ]
 }

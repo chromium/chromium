@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//media/gpu/args.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("stable_video_decoder") {
@@ -123,7 +124,15 @@ mojom("stable_video_decoder") {
       ]
       traits_headers = [ "stable_video_decoder_types_mojom_traits.h" ]
       traits_sources = [ "stable_video_decoder_types_mojom_traits.cc" ]
-      traits_public_deps = [ "//media/gpu" ]
+      traits_deps = [ "//media/gpu:buffer_validation" ]
+
+      if (use_vaapi) {
+        traits_deps += [ "//media/gpu/vaapi:vaapi_status" ]
+      }
+
+      if (use_v4l2_codec) {
+        traits_deps += [ "//media/gpu/v4l2:v4l2_status" ]
+      }
     },
   ]
 

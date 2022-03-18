@@ -64,6 +64,8 @@ source_set("common") {
     "libyuv_image_processor_backend.h",
     "mailbox_video_frame_converter.cc",
     "mailbox_video_frame_converter.h",
+    "oop_video_decoder.cc",
+    "oop_video_decoder.h",
     "platform_video_frame_pool.cc",
     "platform_video_frame_pool.h",
     "platform_video_frame_utils.cc",
@@ -78,7 +80,10 @@ source_set("common") {
   ]
 
   # TODO(crbug.com/1012587): Merge :fourcc to :common.
-  public_deps = [ ":fourcc" ]
+  public_deps = [
+    ":fourcc",
+    "//media/mojo/mojom/stable:stable_video_decoder_cpp_sources",
+  ]
 
   deps = [
     ":fourcc",
@@ -87,6 +92,7 @@ source_set("common") {
     "//build/config/linux/libdrm",
     "//gpu/ipc/common:common",
     "//media",
+    "//media/gpu:buffer_validation",
     "//media/gpu:buildflags",
     "//media/gpu:command_buffer_helper",
     "//media/gpu:common",

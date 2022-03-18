@@ -118,6 +118,8 @@ absl::optional<SupportedVideoDecoderConfigs>
 VideoDecoderPipeline::GetSupportedConfigs(
     const gpu::GpuDriverBugWorkarounds& workarounds) {
   absl::optional<SupportedVideoDecoderConfigs> configs =
+  // TODO(b/195769334): figure out the best way to query the supported
+  // configurations when using an out-of-process video decoder.
 #if BUILDFLAG(USE_VAAPI)
       VaapiVideoDecoder::GetSupportedConfigs();
 #elif BUILDFLAG(USE_V4L2_CODEC)

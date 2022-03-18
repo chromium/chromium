@@ -260,8 +260,6 @@ source_set("common") {
   defines = [ "MEDIA_GPU_IMPLEMENTATION" ]
   sources = [
     "accelerated_video_decoder.h",
-    "buffer_validation.cc",
-    "buffer_validation.h",
     "codec_picture.cc",
     "codec_picture.h",
     "gpu_video_decode_accelerator_helpers.cc",
@@ -339,6 +337,21 @@ source_set("common") {
     ]
     public_deps += [ "//third_party/libgav1:libgav1" ]
   }
+}
+
+# The buffer validation functionality is in its own component so that it can be
+# depended on without pulling the entire //media/gpu target.
+component("buffer_validation") {
+  defines = [ "IS_MEDIA_GPU_BUFFER_VALIDATION_IMPL" ]
+  sources = [
+    "buffer_validation.cc",
+    "buffer_validation.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//media",
+  ]
 }
 
 source_set("command_buffer_helper") {
@@ -507,6 +520,8 @@ source_set("unit_tests") {
   }
   if (is_linux || is_chromeos) {
     sources += [ "buffer_validation_unittest.cc" ]
+
+    deps += [ ":buffer_validation" ]
   }
 
   # TODO(b/219079009): consider running these tests without VA-API or V4L2.

@@ -6,8 +6,8 @@
 #define MEDIA_GPU_BUFFER_VALIDATION_H_
 
 #include "base/callback.h"
+#include "base/component_export.h"
 #include "media/base/video_types.h"
-#include "media/gpu/media_gpu_export.h"
 
 namespace gfx {
 class Size;
@@ -19,10 +19,12 @@ namespace media {
 using GetFileSizeCBForTesting = base::RepeatingCallback<size_t()>;
 
 // Gets the file size of |fd| and writes in |size|. Returns false on failure.
-MEDIA_GPU_EXPORT bool GetFileSize(const int fd, size_t* size);
+COMPONENT_EXPORT(MEDIA_GPU_BUFFER_VALIDATION)
+bool GetFileSize(const int fd, size_t* size);
 
 // Verifies if GpuMemoryBufferHandle is valid.
-MEDIA_GPU_EXPORT bool VerifyGpuMemoryBufferHandle(
+COMPONENT_EXPORT(MEDIA_GPU_BUFFER_VALIDATION)
+bool VerifyGpuMemoryBufferHandle(
     media::VideoPixelFormat pixel_format,
     const gfx::Size& coded_size,
     const gfx::GpuMemoryBufferHandle& gmb_handle,
