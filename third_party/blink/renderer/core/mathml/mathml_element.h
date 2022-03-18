@@ -32,6 +32,8 @@ class CORE_EXPORT MathMLElement : public Element {
 
   bool IsMathMLElement() const =
       delete;  // This will catch anyone doing an unnecessary check.
+  bool IsStyledElement() const =
+      delete;  // This will catch anyone doing an unnecessary check.
 
   virtual bool IsGroupingElement() const { return false; }
 

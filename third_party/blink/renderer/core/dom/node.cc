@@ -1696,22 +1696,6 @@ void Node::NotifyPriorityScrollAnchorStatusChanged() {
   }
 }
 
-// StyledElements allow inline style (style="border: 1px"), presentational
-// attributes (ex. color), class names (ex. class="foo bar") and other non-basic
-// styling features. They also control if this element can participate in style
-// sharing.
-//
-// FIXME: The only things that ever go through StyleResolver that aren't
-// StyledElements are PseudoElements and VTTElements. It's possible we can just
-// eliminate all the checks since those elements will never have class names,
-// inline style, or other things that this apparently guards against.
-bool Node::IsStyledElement() const {
-  auto* this_element = DynamicTo<Element>(this);
-  return IsHTMLElement() || IsSVGElement() || IsMathMLElement() ||
-         (!RuntimeEnabledFeatures::MathMLCoreEnabled() && this_element &&
-          this_element->namespaceURI() == mathml_names::kNamespaceURI);
-}
-
 bool Node::IsActiveSlot() const {
   return ToHTMLSlotElementIfSupportsAssignmentOrNull(*this);
 }

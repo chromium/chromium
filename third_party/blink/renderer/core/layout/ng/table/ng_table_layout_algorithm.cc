@@ -1074,7 +1074,7 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
                                    grid_converter.ToPhysical(table_grid_rect),
                                    border_spacing, column_block_size);
 
-  if (Node().GetDOMNode() &&
+  if (RuntimeEnabledFeatures::MathMLCoreEnabled() && Node().GetDOMNode() &&
       Node().GetDOMNode()->HasTagName(mathml_names::kMtableTag))
     table_baseline = MathTableBaseline(Style(), child_block_offset);
   if (table_baseline)
