@@ -6,14 +6,21 @@
 
 #include "base/command_line.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/values_test_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
+#include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
+#include "content/browser/attribution_reporting/storable_source.h"
+#include "content/browser/storage_partition_impl.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/network_service_instance.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -41,6 +48,7 @@ namespace content {
 
 namespace {
 
+using ::testing::_;
 using ::testing::Return;
 
 constexpr char kBaseDataDir[] = "content/test/data/";
@@ -174,6 +182,37 @@ class AttributionsBrowserTest : public ContentBrowserTest {
   WebContents* web_contents() { return shell()->web_contents(); }
 
   net::EmbeddedTestServer* https_server() { return https_server_.get(); }
+
+  AttributionManager* attribution_manager() {
+    return static_cast<StoragePartitionImpl*>(
+               web_contents()
+                   ->GetBrowserContext()
+                   ->GetDefaultStoragePartition())
+        ->GetAttributionManager();
+  }
+
+  void RegisterSourceAndWaitForStorage(const GURL& attribution_src_url,
+                                       bool use_js = false) {
+    MockAttributionObserver observer;
+    base::ScopedObservation<AttributionManager, AttributionObserver>
+        observation(&observer);
+    observation.Observe(attribution_manager());
+
+    base::RunLoop loop;
+    EXPECT_CALL(observer, OnSourceHandled(_, StorableSource::Result::kSuccess))
+        .WillOnce([&]() { loop.Quit(); });
+
+    base::StringPiece register_js_template =
+        use_js ? "window.attributionReporting.registerSource($1);"
+               : "createAttributionSrcImg($1);";
+    EXPECT_TRUE(ExecJs(web_contents(),
+                       JsReplace(register_js_template, attribution_src_url)));
+
+    // Wait until the source has been stored before registering the trigger;
+    // otherwise the trigger could be processed before the source, in which case
+    // there would be no matching source: crbug.com/1307082.
+    loop.Run();
+  }
 
  private:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
@@ -651,17 +690,8 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
   EXPECT_FALSE(expected_report.HasRequest());
 }
 
-// TODO(crbug.com/1307082): Test is flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_EventSourceImpressionWithDebugKeyConversion_ReportSent \
-  DISABLED_EventSourceImpressionWithDebugKeyConversion_ReportSent
-#else
-#define MAYBE_EventSourceImpressionWithDebugKeyConversion_ReportSent \
-  EventSourceImpressionWithDebugKeyConversion_ReportSent
-#endif
-IN_PROC_BROWSER_TEST_F(
-    AttributionsBrowserTest,
-    MAYBE_EventSourceImpressionWithDebugKeyConversion_ReportSent) {
+IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
+                       EventSourceImpressionWithDebugKeyConversion_ReportSent) {
   // Expected reports must be registered before the server starts.
   ExpectedReportWaiter expected_report(
       GURL("https://a.test/.well-known/attribution-reporting/"
@@ -681,12 +711,9 @@ IN_PROC_BROWSER_TEST_F(
       "a.test", "/attribution_reporting/page_with_impression_creator.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), impression_url));
 
-  GURL register_url = https_server()->GetURL(
+  RegisterSourceAndWaitForStorage(https_server()->GetURL(
       "a.test",
-      "/attribution_reporting/register_source_headers_debug_key.html");
-
-  EXPECT_TRUE(ExecJs(web_contents(),
-                     JsReplace("createAttributionSrcImg($1);", register_url)));
+      "/attribution_reporting/register_source_headers_debug_key.html"));
 
   GURL conversion_url = https_server()->GetURL(
       "b.test", "/attribution_reporting/page_with_conversion_redirect.html");
@@ -717,12 +744,10 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
       "a.test", "/attribution_reporting/page_with_impression_creator.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), impression_url));
 
-  GURL register_url = https_server()->GetURL(
-      "a.test",
-      "/attribution_reporting/register_source_headers_debug_key_cookie.html");
-
-  EXPECT_TRUE(ExecJs(web_contents(),
-                     JsReplace("createAttributionSrcImg($1);", register_url)));
+  RegisterSourceAndWaitForStorage(
+      https_server()->GetURL("a.test",
+                             "/attribution_reporting/"
+                             "register_source_headers_debug_key_cookie.html"));
 
   GURL conversion_url = https_server()->GetURL(
       "b.test", "/attribution_reporting/page_with_conversion_redirect.html");
@@ -754,13 +779,10 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
       "a.test", "/attribution_reporting/page_with_impression_creator.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), impression_url));
 
-  GURL register_url = https_server()->GetURL(
-      "a.test", "/attribution_reporting/register_source_headers.html");
-
-  EXPECT_TRUE(
-      ExecJs(web_contents(),
-             JsReplace("window.attributionReporting.registerSource($1);",
-                       register_url)));
+  RegisterSourceAndWaitForStorage(
+      https_server()->GetURL(
+          "a.test", "/attribution_reporting/register_source_headers.html"),
+      /*use_js=*/true);
 
   GURL conversion_url = https_server()->GetURL(
       "d.test", "/attribution_reporting/page_with_conversion_redirect.html");
@@ -798,12 +820,8 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
           "b.test",
           "/attribution_reporting/page_with_impression_creator.html")));
 
-  EXPECT_TRUE(ExecJs(
-      web_contents(),
-      JsReplace("createAttributionSrcImg($1);",
-                https_server()->GetURL(
-                    "a.test",
-                    "/attribution_reporting/register_source_headers.html"))));
+  RegisterSourceAndWaitForStorage(https_server()->GetURL(
+      "a.test", "/attribution_reporting/register_source_headers.html"));
 
   EXPECT_TRUE(NavigateToURL(
       web_contents(),
@@ -899,12 +917,8 @@ IN_PROC_BROWSER_TEST_F(
           "b.test",
           "/attribution_reporting/page_with_impression_creator.html")));
 
-  EXPECT_TRUE(ExecJs(
-      web_contents(),
-      JsReplace("createAttributionSrcImg($1);",
-                https_server()->GetURL(
-                    "a.test",
-                    "/attribution_reporting/register_source_headers.html"))));
+  RegisterSourceAndWaitForStorage(https_server()->GetURL(
+      "a.test", "/attribution_reporting/register_source_headers.html"));
 
   EXPECT_TRUE(NavigateToURL(
       web_contents(),

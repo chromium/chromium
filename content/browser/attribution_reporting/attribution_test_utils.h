@@ -31,6 +31,7 @@
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_manager_provider.h"
+#include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_reporting.pb.h"
@@ -359,6 +360,47 @@ class MockAttributionManager : public AttributionManager {
  private:
   std::unique_ptr<AttributionDataHostManager> data_host_manager_;
   base::ObserverList<AttributionObserver, /*check_empty=*/true> observers_;
+};
+
+class MockAttributionObserver : public AttributionObserver {
+ public:
+  MockAttributionObserver();
+  ~MockAttributionObserver() override;
+
+  MockAttributionObserver(const MockAttributionObserver&) = delete;
+  MockAttributionObserver(MockAttributionObserver&&) = delete;
+
+  MockAttributionObserver& operator=(const MockAttributionObserver&) = delete;
+  MockAttributionObserver& operator=(MockAttributionObserver&&) = delete;
+
+  MOCK_METHOD(void, OnSourcesChanged, (), (override));
+
+  MOCK_METHOD(void,
+              OnReportsChanged,
+              (AttributionReport::ReportType),
+              (override));
+
+  MOCK_METHOD(void,
+              OnSourceHandled,
+              (const StorableSource& source, StorableSource::Result result),
+              (override));
+
+  MOCK_METHOD(void,
+              OnSourceDeactivated,
+              (const DeactivatedSource& source),
+              (override));
+
+  MOCK_METHOD(void,
+              OnReportSent,
+              (const AttributionReport& report,
+               bool is_debug_report,
+               const SendResult& info),
+              (override));
+
+  MOCK_METHOD(void,
+              OnTriggerHandled,
+              (const CreateReportResult& result),
+              (override));
 };
 
 // WebContentsObserver that waits until a source is available on a
