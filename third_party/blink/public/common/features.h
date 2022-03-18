@@ -484,11 +484,6 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kBrowsingTopicsTaxonomyVersion;
 
-// Control switch for minimizing processing in the WebRTC APM when all audio
-// tracks are disabled.
-BLINK_COMMON_EXPORT extern const base::Feature
-    kMinimizeAudioProcessingForUnusedOutput;
-
 // When <dialog>s are closed, this focuses the "previously focused" element
 // which had focus when the <dialog> was first opened.
 // TODO(crbug.com/649162): Remove DialogFocusNewSpecBehavior after

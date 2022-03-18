@@ -75,16 +75,10 @@ class MODULES_EXPORT ProcessedLocalAudioSource final
   absl::optional<blink::AudioProcessingProperties>
   GetAudioProcessingProperties() const final;
 
-  // The following accessors are valid after the source is started (when the
-  // first track is connected).
+  // Valid after the source is started (when the first track is connected). Will
+  // return nullptr if WebRTC stats are no available for the current
+  // configuration.
   scoped_refptr<webrtc::AudioProcessorInterface> GetAudioProcessor() const;
-
-  bool HasWebRtcAudioProcessing() const;
-
-  // Instructs the Audio Processing Module (APM) to reduce its complexity when
-  // |muted| is true. This mode is triggered when all audio tracks are disabled.
-  // The default APM complexity mode is restored when |muted| is set to false.
-  void SetOutputWillBeMuted(bool muted);
 
   const scoped_refptr<blink::MediaStreamAudioLevelCalculator::Level>&
   audio_level() const {

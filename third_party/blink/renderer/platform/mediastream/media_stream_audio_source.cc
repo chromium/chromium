@@ -129,22 +129,6 @@ bool MediaStreamAudioSource::RenderToAssociatedSinkEnabled() const {
   return device().matched_output_device_id.has_value();
 }
 
-bool MediaStreamAudioSource::AllTracksAreDisabled() {
-  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-
-  unsigned int num_disabled_tracks = 0;
-  Vector<MediaStreamAudioTrack*> audio_tracks;
-  deliverer_.GetConsumerList(&audio_tracks);
-  for (MediaStreamAudioTrack* track : audio_tracks) {
-    if (!track->IsEnabled())
-      ++num_disabled_tracks;
-  }
-  LogMessage(base::StringPrintf("%s => (%u of %u tracks are disabled))",
-                                __func__, num_disabled_tracks,
-                                audio_tracks.size()));
-  return (num_disabled_tracks == audio_tracks.size());
-}
-
 void* MediaStreamAudioSource::GetClassIdentifier() const {
   return nullptr;
 }

@@ -380,25 +380,6 @@ void MediaStreamTrack::setEnabled(bool enabled) {
     return;
 
   DidSetMediaStreamTrackEnabled(component_.Get());
-
-  MediaStreamAudioSource* media_stream_audio_source =
-      MediaStreamAudioSource::From(component_->Source());
-  ProcessedLocalAudioSource* processed_local_audio_source =
-      ProcessedLocalAudioSource::From(media_stream_audio_source);
-  if (media_stream_audio_source && processed_local_audio_source) {
-    if (!enabled) {
-      // One track was disabled. Check if all tracks are disabled and inform the
-      // APM about the state. The APM can enter a low-complexity mode if it
-      // knows that all tracks are muted and that saves CPU cycles.
-      const bool all_tracks_disabled =
-          media_stream_audio_source->AllTracksAreDisabled();
-      processed_local_audio_source->SetOutputWillBeMuted(all_tracks_disabled);
-    } else {
-      // At least one track is enabled. Tell the APM to go back to its normal
-      // mode.
-      processed_local_audio_source->SetOutputWillBeMuted(false);
-    }
-  }
 }
 
 bool MediaStreamTrack::muted() const {

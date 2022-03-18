@@ -464,21 +464,10 @@ void ProcessedLocalAudioSource::EnsureSourceIsStopped() {
 scoped_refptr<webrtc::AudioProcessorInterface>
 ProcessedLocalAudioSource::GetAudioProcessor() const {
   DCHECK(media_stream_audio_processor_);
+  if (!media_stream_audio_processor_->has_webrtc_audio_processing())
+    return nullptr;
   return static_cast<scoped_refptr<webrtc::AudioProcessorInterface>>(
       media_stream_audio_processor_);
-}
-
-bool ProcessedLocalAudioSource::HasWebRtcAudioProcessing() const {
-  return media_stream_audio_processor_ &&
-         media_stream_audio_processor_->has_webrtc_audio_processing();
-}
-
-void ProcessedLocalAudioSource::SetOutputWillBeMuted(bool muted) {
-  if (base::FeatureList::IsEnabled(
-          features::kMinimizeAudioProcessingForUnusedOutput) &&
-      HasWebRtcAudioProcessing()) {
-    media_stream_audio_processor_->SetOutputWillBeMuted(muted);
-  }
 }
 
 void ProcessedLocalAudioSource::SetVolume(double volume) {

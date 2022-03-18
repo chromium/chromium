@@ -103,9 +103,6 @@ class PLATFORM_EXPORT MediaStreamAudioSource
   bool disable_local_echo() const { return disable_local_echo_; }
   bool RenderToAssociatedSinkEnabled() const;
 
-  // Checks all tracks acting as consumers and returns true if all are disabled.
-  bool AllTracksAreDisabled();
-
   // Returns a unique class identifier. Some subclasses override and use this
   // method to provide safe down-casting to their type.
   virtual void* GetClassIdentifier() const;
