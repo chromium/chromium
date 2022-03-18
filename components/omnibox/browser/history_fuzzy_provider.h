@@ -26,17 +26,42 @@ namespace fuzzy {
 // of algorithm robustness.
 // If the `replacement` character is 0, it is interpreted as deletion.
 struct Correction {
+  // The kind of change to apply to text. Note, KEEP essentially means
+  // no edit, and will never be applied or kept as part of a correction chain.
+  enum class Kind {
+    KEEP,
+    DELETE,
+    INSERT,
+    REPLACE,
+  };
+  Kind kind;
+
+  // Text index at which to apply correction.
   size_t at;
-  char16_t replacement;
+
+  // Character data; relevant only for REPLACE and INSERT.
+  char16_t new_char;
+
+  // A short chain of additional related corrections to apply with this one.
   std::unique_ptr<Correction> next;
 
-  Correction(Correction&) = delete;
+  Correction(Correction&);
   Correction(Correction&&);
-  Correction(size_t at, char16_t replacement);
+  Correction& operator=(Correction&&) = default;
+  Correction(Kind kind, size_t at, char16_t new_char);
+  Correction(Kind kind,
+             size_t at,
+             char16_t new_char,
+             std::unique_ptr<Correction> next);
   ~Correction();
 
   // Applies this correction to given text, mutating it in place.
   void ApplyTo(std::u16string& text) const;
+
+  // This is a utility method to eliminate the need for allocation of
+  // non-applicable corrections. It returns a copy of this, or `next` if
+  // this `kind` is KEEP.
+  std::unique_ptr<Correction> GetApplicableCorrection();
 };
 
 // Nodes form a trie structure used to find potential input corrections.
@@ -50,7 +75,8 @@ struct Node {
   void Insert(const std::u16string& text, size_t from);
 
   // Produce corrections necessary to get `text` back on trie. Each correction
-  // will be of size `tolerance` or smaller.
+  // will be of size `tolerance` or smaller, and none will have smaller edit
+  // distance than any other (i.e. all corrections are equally optimal).
   // Returns whether input `text` starting at `from` is present in this trie.
   //  - true without corrections -> `text` on trie.
   //  - false without corrections -> cannot complete on trie within `tolerance`.
@@ -59,7 +85,6 @@ struct Node {
   // Note: For efficiency, not all possible corrections are returned; any found
   // valid corrections will preclude further more elaborate subcorrections.
   bool FindCorrections(const std::u16string& text,
-                       size_t from,
                        int tolerance,
                        std::vector<Correction>& corrections) const;
 

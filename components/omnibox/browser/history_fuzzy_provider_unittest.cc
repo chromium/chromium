@@ -11,6 +11,13 @@
 
 namespace {
 
+struct TestCase {
+  int tolerance;
+  std::u16string input;
+  bool expect_found;
+  std::vector<std::u16string> corrected_inputs;
+};
+
 template <typename Container, typename Item>
 void SwapRemoveElement(Container& container, const Item& item) {
   typename Container::iterator it =
@@ -25,6 +32,31 @@ void SwapRemoveElement(Container& container, const Item& item) {
   container.pop_back();
 }
 
+void VerifyCases(fuzzy::Node* node, std::vector<TestCase>& cases) {
+  // Note: Each case is destroyed in place as it is checked.
+  for (TestCase& test_case : cases) {
+    std::vector<fuzzy::Correction> corrections;
+    bool found = node->FindCorrections(test_case.input, test_case.tolerance,
+                                       corrections);
+    for (const fuzzy::Correction& correction : corrections) {
+      std::u16string corrected_input = test_case.input;
+      correction.ApplyTo(corrected_input);
+      DVLOG(1) << "-> " << corrected_input;
+    }
+    CHECK_EQ(found, test_case.expect_found)
+        << " input(" << test_case.tolerance << "): " << test_case.input;
+    CHECK_EQ(test_case.corrected_inputs.size(), corrections.size())
+        << " input(" << test_case.tolerance << "): " << test_case.input;
+    for (const fuzzy::Correction& correction : corrections) {
+      std::u16string corrected_input = test_case.input;
+      correction.ApplyTo(corrected_input);
+      SwapRemoveElement(test_case.corrected_inputs, corrected_input);
+    }
+    CHECK_EQ(test_case.corrected_inputs.size(), size_t{0})
+        << " input(" << test_case.tolerance << "): " << test_case.input;
+  }
+}
+
 }  // namespace
 
 class HistoryFuzzyProviderTest : public testing::Test {
@@ -36,22 +68,64 @@ class HistoryFuzzyProviderTest : public testing::Test {
   void SetUp() override {}
 };
 
-TEST_F(HistoryFuzzyProviderTest, TrieProducesCorrections) {
-  // TODO(orinj): Confirm that changing from memory store to table store
-  //  doesn't break.
+TEST_F(HistoryFuzzyProviderTest, AlgorithmIsNotGreedy) {
   fuzzy::Node node;
+  node.Insert(u"wind", 0);
+  node.Insert(u"wash", 0);
 
+  std::vector<TestCase> cases = {
+      {
+          1,
+          u"wand",
+          false,
+          {
+              u"wind",
+          },
+      },
+      {
+          1,
+          u"wish",
+          false,
+          {
+              u"wash",
+          },
+      },
+      {
+          2,
+          u"xasx",
+          false,
+          {
+              u"wash",
+          },
+      },
+      {
+          3,
+          u"xaxsx",
+          false,
+          {
+              u"wash",
+          },
+      },
+      {
+          2,
+          u"want",
+          false,
+          {
+              u"wind",
+              u"wash",
+          },
+      },
+  };
+
+  VerifyCases(&node, cases);
+}
+
+TEST_F(HistoryFuzzyProviderTest, ReplacementWorksAnywhere) {
+  fuzzy::Node node;
   node.Insert(u"abcdefg", 0);
   node.Insert(u"abcdxyz", 0);
   node.Insert(u"tuvwxyz", 0);
   node.Insert(u"tuvabcd", 0);
-
-  struct Case {
-    int tolerance;
-    std::u16string input;
-    bool expect_found;
-    std::vector<std::u16string> corrected_inputs;
-  };
 
   // A few things to note about these cases:
   // They don't complete to full strings; minimal corrections are supplied.
@@ -60,7 +134,7 @@ TEST_F(HistoryFuzzyProviderTest, TrieProducesCorrections) {
   // incremental tolerance gains as more of the input string is scanned.
   // A stepping tolerance schedule like this would greatly increase efficiency
   // and allow more tolerance for longer strings without risking odd matches.
-  Case cases[] = {
+  std::vector<TestCase> cases = {
       {
           0,
           u"abcdefg",
@@ -121,7 +195,7 @@ TEST_F(HistoryFuzzyProviderTest, TrieProducesCorrections) {
           },
       },
       {
-          10,
+          4,
           u"abc____",
           false,
           {
@@ -131,18 +205,116 @@ TEST_F(HistoryFuzzyProviderTest, TrieProducesCorrections) {
       },
   };
 
-  // Note: Each case is destroyed in place as it is checked.
-  for (Case& test_case : cases) {
-    std::vector<fuzzy::Correction> corrections;
-    bool found = node.FindCorrections(test_case.input, 0, test_case.tolerance,
-                                      corrections);
-    CHECK_EQ(found, test_case.expect_found);
-    CHECK_EQ(test_case.corrected_inputs.size(), corrections.size());
-    for (const fuzzy::Correction& correction : corrections) {
-      std::u16string corrected_input = test_case.input;
-      correction.ApplyTo(corrected_input);
-      SwapRemoveElement(test_case.corrected_inputs, corrected_input);
-    }
-    CHECK_EQ(test_case.corrected_inputs.size(), size_t{0});
-  }
+  VerifyCases(&node, cases);
+}
+
+TEST_F(HistoryFuzzyProviderTest, InsertionWorksAnywhereExceptEnd) {
+  fuzzy::Node node;
+  node.Insert(u"abc", 0);
+
+  std::vector<TestCase> cases = {
+      {
+          1,
+          u"bc",
+          false,
+          {
+              u"abc",
+          },
+      },
+      {
+          1,
+          u"ac",
+          false,
+          {
+              u"abc",
+          },
+      },
+      {
+          1,
+          u"ab",
+          true,
+          {
+              // Note, we are NOT expecting "abc" here because insertion at
+              // end of input is generally predictive, and that is the job
+              // of the whole autocomplete system, not the fuzzy input
+              // correction algorithm, which seeks only to get inputs back
+              // on track for good suggestions.
+          },
+      },
+      {
+          2,
+          u"b",
+          false,
+          {
+              u"ab",
+          },
+      },
+  };
+
+  VerifyCases(&node, cases);
+}
+
+TEST_F(HistoryFuzzyProviderTest, DeletionWorksAnywhere) {
+  fuzzy::Node node;
+  node.Insert(u"abc", 0);
+
+  std::vector<TestCase> cases = {
+      {
+          1,
+          u"xabc",
+          false,
+          {
+              u"abc",
+          },
+      },
+      {
+          1,
+          u"abxc",
+          false,
+          {
+              u"abc",
+          },
+      },
+      {
+          1,
+          u"abcx",
+          false,
+          {
+              u"abc",
+          },
+      },
+      {
+          2,
+          u"axbxc",
+          false,
+          {
+              u"abc",
+          },
+      },
+  };
+
+  VerifyCases(&node, cases);
+}
+
+// This test ensures a preference for longer results when edit distances are
+// equal. This isn't an absolute requirement, and some relevance or probability
+// guidance might be better, but this simple heuristic avoids creating shorter
+// substring corrections, for example both "was" and "wash".
+TEST_F(HistoryFuzzyProviderTest, LongerResultsArePreferred) {
+  fuzzy::Node node;
+  node.Insert(u"ao", 0);
+  node.Insert(u"eeo", 0);
+
+  std::vector<TestCase> cases = {
+      {
+          1,
+          u"eo",
+          false,
+          {
+              u"eeo",
+          },
+      },
+  };
+
+  VerifyCases(&node, cases);
 }

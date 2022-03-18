@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <functional>
 #include <memory>
+#include <ostream>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -22,22 +23,95 @@
 
 namespace fuzzy {
 
+Correction::Correction(Correction& other) {
+  kind = other.kind;
+  at = other.at;
+  new_char = other.new_char;
+  if (other.next) {
+    next = std::make_unique<Correction>(*other.next.get());
+  }
+}
+
 Correction::Correction(Correction&&) = default;
 
-Correction::Correction(size_t at, char16_t replacement)
-    : at(at), replacement(replacement) {}
+Correction::Correction(Kind kind, size_t at, char16_t new_char)
+    : kind(kind), at(at), new_char(new_char) {}
+
+Correction::Correction(Kind kind,
+                       size_t at,
+                       char16_t new_char,
+                       std::unique_ptr<Correction> next)
+    : kind(kind), at(at), new_char(new_char), next(std::move(next)) {}
 
 Correction::~Correction() = default;
 
 void Correction::ApplyTo(std::u16string& text) const {
-  if (replacement == 0) {
-    text.erase(at, 1);
-  } else {
-    text[at] = replacement;
+  switch (kind) {
+    case Kind::DELETE: {
+      text.erase(at, 1);
+      break;
+    }
+    case Kind::INSERT: {
+      text.insert(at, 1, new_char);
+      break;
+    }
+    case Kind::REPLACE: {
+      text[at] = new_char;
+      break;
+    }
+    case Kind::KEEP:
+    default: {
+      NOTREACHED();
+      break;
+    }
   }
   if (next) {
     next->ApplyTo(text);
   }
+}
+
+std::unique_ptr<Correction> Correction::GetApplicableCorrection() {
+  if (kind == Kind::KEEP) {
+    // Because this function eliminates KEEP corrections as the chain is built,
+    // it doesn't need to work recursively; a single elimination is sufficient.
+    DCHECK(!next || next->kind != Kind::KEEP);
+    return next ? std::make_unique<Correction>(*next) : nullptr;
+  } else {
+    // TODO(orinj): Consider a shared ownership model or preallocated pool to
+    //  eliminate lots of copy allocations. For now this is kept simple with
+    //  direct ownership of the full correction chain.
+    return std::make_unique<Correction>(*this);
+  }
+}
+
+// This operator implementation is for debugging.
+std::ostream& operator<<(std::ostream& os, Correction& correction) {
+  os << '{';
+  switch (correction.kind) {
+    case Correction::Kind::KEEP: {
+      os << 'K';
+      break;
+    }
+    case Correction::Kind::DELETE: {
+      os << 'D';
+      break;
+    }
+    case Correction::Kind::INSERT: {
+      os << 'I';
+      break;
+    }
+    case Correction::Kind::REPLACE: {
+      os << 'R';
+      break;
+    }
+    default: {
+      NOTREACHED();
+      break;
+    }
+  }
+  os << "," << correction.at << "," << static_cast<char>(correction.new_char)
+     << "}";
+  return os;
 }
 
 Node::Node() = default;
@@ -58,48 +132,142 @@ void Node::Insert(const std::u16string& text, size_t from) {
 }
 
 bool Node::FindCorrections(const std::u16string& text,
-                           size_t from,
                            int tolerance,
                            std::vector<Correction>& corrections) const {
-  if (from >= text.length()) {
+  DVLOG(1) << "FindCorrections(" << text << ", " << tolerance << ")";
+  DCHECK(corrections.empty());
+
+  // TODO(orinj): Use priority_queue; prioritize minimum distance and use index
+  //  to break ties. Then there's no need to compare with best, as the first
+  //  found solution is best (and fastest in common cases near input on trie).
+  //  Algorithm can then return all equally-best results as soon as distance
+  //  increases beyond that of found results. Length also needs to be
+  //  considered to avoid producing shorter substring texts.
+
+  if (text.length() == 0) {
     return true;
   }
-  char16_t c = text[from];
-  const auto it = next.find(c);
-  if (it == next.end()) {
-    // Not found; abort if tolerance is exhausted, otherwise correct the
-    // mistake and reduce tolerance.
-    if (tolerance <= 0) {
-      return false;
+
+  // A utility class to track search progression.
+  struct Step {
+    // Walks through trie.
+    const Node* node;
+
+    // Edit distance.
+    int distance;
+
+    // Advances through input text. This effectively tells how much of the
+    // input has been consumed so far, regardless of output text length.
+    size_t index;
+
+    // Length of corrected text. This tells how long the output string will
+    // be, regardless of input text length. It is independent of `index`
+    // because corrections are not only 1:1 replacements but may involve
+    // insertions or deletions as well.
+    int length;
+
+    // Backtracking data to enable text correction (from end of string back
+    // to beginning, i.e. correction chains are applied in reverse).
+    // TODO(orinj): This should be optimized in final algorithm; stop copying.
+    Correction correction;
+
+    Step(Step&&) = default;
+    Step& operator=(Step&&) = default;
+  };
+  // TODO(orinj): Don't need to keep full best anymore, only best distance.
+  Step best{
+      nullptr, INT_MAX, SIZE_MAX, INT_MAX, {Correction::Kind::KEEP, 0, '_'}};
+  std::queue<Step> q;
+  q.push({this, 0, 0, 0, {Correction::Kind::KEEP, 0, '_'}});
+  int i = 0;
+  while (!q.empty()) {
+    i++;
+    Step step = std::move(q.front());
+    q.pop();
+    DVLOG(1) << i << "(" << step.distance << "," << step.index << ","
+             << step.length << "," << step.correction << ")";
+    // TODO(orinj): Enforce a tolerance schedule with index versus distance;
+    //  this would allow more errors for longer inputs and prevents searching
+    //  through long corrections near start of input.
+    if (step.distance > best.distance) {
+      // Prune early. This won't be needed once driven by priority_queue.
+      DVLOG(1) << "skipped";
+      continue;
     }
-    for (const auto& entry : next) {
-      // TODO(orinj): Here is the place to search also for deletion and
-      //  insertion, not only replacement. Change `from` parameter and modify
-      //  correction accordingly.
-      std::vector<Correction> subcorrections;
-      bool found = entry.second->FindCorrections(text, from + 1, tolerance - 1,
-                                                 subcorrections);
-      if (found) {
-        // Remaining input without further correction is on trie.
-        corrections.emplace_back(from, entry.first);
-        // Note: We might consider searching further for an optimal relevance
-        // match but in terms of corrections it isn't possible to do any
-        // better than this. Any later corrections will be at least
-        // the size of this one, so return early for efficiency.
-        return false;
+    // Strictly greater should not be possible for this comparison.
+    if (step.index >= text.length()) {
+      if (step.distance == 0) {
+        // Ideal common case, full input on trie with no correction required.
+        // Note, we won't need to clear when search is directed; this is a
+        // temporary hack while the bare queue bumbles around the search space.
+        corrections.clear();
+        return true;
       }
-      // Propagate corrections including current correction first.
-      for (auto& subcorrection : subcorrections) {
-        Correction current = {from, entry.first};
-        current.next = std::make_unique<Correction>(std::move(subcorrection));
-        corrections.push_back(std::move(current));
+      // Check `length` to keep longer results. Without this, we could end up
+      // with shorter substring corrections (e.g. both "was" and "wash").
+      // It may not be necessary to do this if priority_queue keeps results
+      // optimal or returns a first best result immediately.
+      if (step.distance < best.distance || step.length > best.length) {
+        best = std::move(step);
+        DVLOG(1) << "new best";
+        corrections.clear();
+        // Dereference is safe because nonzero distance implies presence of
+        // nontrivial correction.
+        corrections.emplace_back(*best.correction.GetApplicableCorrection());
+      } else {
+        // Equal distance.
+        // Strictly greater should not be possible for this comparison.
+        if (step.length >= best.length) {
+          // Dereference is safe because this is another equally
+          // distant correction, necessarily discovered after the first.
+          corrections.emplace_back(*step.correction.GetApplicableCorrection());
+        }
+#if DCHECK_ALWAYS_ON
+        std::u16string corrected = text;
+        step.correction.GetApplicableCorrection()->ApplyTo(corrected);
+        DCHECK_EQ(corrected.length(), static_cast<size_t>(step.length))
+            << corrected;
+#endif
+      }
+      continue;
+    }
+    if (step.distance < tolerance) {
+      // Delete
+      q.push({step.node,
+              step.distance + 1,
+              step.index + 1,
+              step.length,
+              {Correction::Kind::DELETE, step.index, '_',
+               step.correction.GetApplicableCorrection()}});
+    }
+    for (const auto& entry : step.node->next) {
+      if (entry.first == text[step.index]) {
+        // Keep
+        q.push({entry.second.get(),
+                step.distance,
+                step.index + 1,
+                step.length + 1,
+                {Correction::Kind::KEEP, step.index, '_',
+                 step.correction.GetApplicableCorrection()}});
+      } else if (step.distance < tolerance) {
+        // Insert
+        q.push({entry.second.get(),
+                step.distance + 1,
+                step.index,
+                step.length + 1,
+                {Correction::Kind::INSERT, step.index, entry.first,
+                 step.correction.GetApplicableCorrection()}});
+        // Replace
+        q.push({entry.second.get(),
+                step.distance + 1,
+                step.index + 1,
+                step.length + 1,
+                {Correction::Kind::REPLACE, step.index, entry.first,
+                 step.correction.GetApplicableCorrection()}});
       }
     }
-    return false;
-  } else {
-    // Found; proceed with tolerance.
-    return it->second->FindCorrections(text, from + 1, tolerance, corrections);
   }
+  return false;
 }
 
 void Node::Log(std::u16string built) const {
@@ -157,7 +325,7 @@ void HistoryFuzzyProvider::DoAutocomplete() {
   } else {
     std::vector<fuzzy::Correction> corrections;
     DVLOG(1) << "FindCorrections: <" << text << "> ---> ?{";
-    if (root_.FindCorrections(text, 0, 1, corrections)) {
+    if (root_.FindCorrections(text, 1, corrections)) {
       DVLOG(1) << "Trie contains input; no fuzzy results needed?";
       AddMatchForText(u"INPUT ON TRIE");
     }
