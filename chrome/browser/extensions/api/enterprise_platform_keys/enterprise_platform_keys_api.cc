@@ -245,13 +245,13 @@ void EnterprisePlatformKeysGetCertificatesFunction::OnGetCertificates(
   }
   DCHECK(result->is_certificates());
 
-  auto client_certs = std::make_unique<base::ListValue>();
+  base::Value::List client_certs;
   for (std::vector<uint8_t>& cert : result->get_certificates()) {
-    client_certs->Append(std::make_unique<base::Value>(std::move(cert)));
+    client_certs.Append(base::Value(std::move(cert)));
   }
 
   auto results = std::make_unique<base::ListValue>();
-  results->Append(std::move(client_certs));
+  results->Append(base::Value(std::move(client_certs)));
   Respond(ArgumentList(std::move(results)));
 }
 
