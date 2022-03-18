@@ -1,0 +1,79 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/browser/resources/pdf/pdf.gni")
+import("//pdf/features.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+assert(enable_pdf, "enable_pdf check failed")
+
+generate_grd("build_grdp") {
+  grd_prefix = "pdf"
+  out_grd = "$target_gen_dir/resources.grdp"
+
+  deps = [ ":build_ts" ]
+  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+  resource_path_prefix = "pdf"
+}
+
+ts_library("build_ts") {
+  root_dir = "."
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  path_mappings = [
+    "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/*|" +
+        rebase_path("$root_gen_dir/chrome/browser/resources/pdf/tsc/*",
+                    target_gen_dir),
+    "chrome://webui-test/*|" +
+        rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
+                    target_gen_dir),
+  ]
+  in_files = [
+    "basic_plugin_test.js",
+    "basic_test.js",
+    "beep_test.js",
+    "bookmarks_test.js",
+    "download_controls_test.js",
+    "fullscreen_test.js",
+    "gesture_detector_test.js",
+    "layout_test.js",
+    "material_elements_test.js",
+    "metrics_test.js",
+    "navigator_test.js",
+    "nobeep_test.js",
+    "page_change_test.js",
+    "params_parser_test.js",
+    "post_message_proxy_test.js",
+    "scroll_with_form_field_focused_test.js",
+    "test_util.js",
+    "title_test.js",
+    "touch_handling_test.js",
+    "viewer_password_dialog_test.js",
+    "viewer_pdf_sidenav_test.js",
+    "viewer_properties_dialog_test.js",
+    "viewer_thumbnail_bar_test.js",
+    "viewer_thumbnail_test.js",
+    "viewer_toolbar_test.js",
+    "viewport_scroller_test.js",
+    "viewport_test.js",
+    "whitespace_title_test.js",
+    "zoom_manager_test.js",
+  ]
+
+  if (enable_ink) {
+    in_files += [
+      "annotations_feature_enabled_test.js",
+      "annotations_toolbar_test.js",
+      "viewer_toolbar_dropdown_test.js",
+    ]
+  }
+
+  if (is_chromeos_ash) {
+    in_files += [ "printing_icon_test.js" ]
+  }
+
+  definitions = ts_definitions
+  deps = [ "//chrome/browser/resources/pdf:build_ts" ]
+}

@@ -154,6 +154,27 @@ css_wrapper_files = pdf_css_wrapper_files + shared_css_wrapper_files
 print_preview_only_files =
     print_preview_ts_files + print_preview_html_wrapper_files
 
+ts_definitions = [
+  # Using an absolute path because this variable is also consumed by
+  # chrome/test/data/pdf:build_ts.
+  "//chrome/browser/resources/pdf/source_capabilities.d.ts",
+
+  "//tools/typescript/definitions/chrome_event.d.ts",
+  "//tools/typescript/definitions/content_settings.d.ts",
+  "//tools/typescript/definitions/file_system.d.ts",
+  "//tools/typescript/definitions/metrics_private.d.ts",
+  "//tools/typescript/definitions/mime_handler_private.d.ts",
+  "//tools/typescript/definitions/pending.d.ts",
+  "//tools/typescript/definitions/resources_private.d.ts",
+  "//tools/typescript/definitions/runtime.d.ts",
+  "//tools/typescript/definitions/tabs.d.ts",
+  "//tools/typescript/definitions/windows.d.ts",
+]
+
+if (enable_ink) {
+  ts_definitions += [ "//chrome/browser/resources/pdf/ink/drawing_canvas.d.ts" ]
+}
+
 # Print Preview's .grdp file needs all the shared + Print Preview specific files.
 print_preview_grdp_ts_files =
     shared_ts_files + shared_html_wrapper_files + shared_css_wrapper_files +

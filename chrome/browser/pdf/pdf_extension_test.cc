@@ -62,6 +62,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/base/web_ui_test_data_source.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/download/public/common/download_item.h"
 #include "components/guest_view/browser/guest_view_manager.h"
@@ -1017,6 +1018,21 @@ IN_PROC_BROWSER_TEST_F(PDFPluginDisabledTest,
 
 class PDFExtensionJSTest : public PDFExtensionTest {
  protected:
+  void SetUpOnMainThread() override {
+    PDFExtensionTest::SetUpOnMainThread();
+
+    // Load the pak file holding the resources served from chrome://webui-test.
+    base::FilePath pak_path;
+    ASSERT_TRUE(base::PathService::Get(base::DIR_MODULE, &pak_path));
+    pak_path = pak_path.AppendASCII("browser_tests.pak");
+    ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
+        pak_path, ui::kScaleFactorNone);
+
+    // Register the chrome://webui-test data source.
+    content::WebUIDataSource::Add(browser()->profile(),
+                                  webui::CreateWebUITestDataSource());
+  }
+
   void RunTestsInJsModule(const std::string& filename,
                           const std::string& pdf_filename) {
     RunTestsInJsModuleHelper(filename, pdf_filename, /*new_tab=*/false);
@@ -1050,12 +1066,16 @@ class PDFExtensionJSTest : public PDFExtensionTest {
     constexpr char kModuleLoaderTemplate[] =
         R"(var s = document.createElement('script');
            s.type = 'module';
-           s.src = '_test_resources/pdf/%s';
+           s.src = 'chrome://%s/pdf/%s';
+           s.onerror = function(e) {
+             console.error('Error while loading', e.target.src);
+           };
            document.body.appendChild(s);)";
 
     ASSERT_TRUE(content::ExecuteScript(
         guest_contents,
-        base::StringPrintf(kModuleLoaderTemplate, filename.c_str())));
+        base::StringPrintf(kModuleLoaderTemplate,
+                           chrome::kChromeUIWebUITestHost, filename.c_str())));
 
     if (!catcher.GetNextResult())
       FAIL() << catcher.message();

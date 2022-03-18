@@ -4959,6 +4959,8 @@ void AddChromeSchemeFactories(
     // are allowed to use chrome://resources/ and chrome://theme/ URLs.
     allowed_webui_hosts.emplace_back(content::kChromeUIResourcesHost);
     allowed_webui_hosts.emplace_back(chrome::kChromeUIThemeHost);
+    // For testing purposes chrome://webui-test/ is also allowed.
+    allowed_webui_hosts.emplace_back(chrome::kChromeUIWebUITestHost);
   }
   if (extension->is_extension() || extension->is_legacy_packaged_app() ||
       (extension->is_platform_app() &&

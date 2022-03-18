@@ -245,6 +245,7 @@ const char kChromeUIReaderModeSidePanelURL[] =
 const char kChromeUIReadLaterHost[] = "read-later.top-chrome";
 const char kChromeUIReadLaterURL[] = "chrome://read-later.top-chrome/";
 const char kChromeUIWebAppInternalsHost[] = "web-app-internals";
+const char kChromeUIWebUITestHost[] = "webui-test";
 #endif
 
 #if BUILDFLAG(PLATFORM_CFM)
