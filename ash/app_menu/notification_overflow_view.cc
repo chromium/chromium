@@ -34,9 +34,6 @@ constexpr int kIconLayoutSize = kIconSize + 1;
 // Padding between overflow icons in dips.
 constexpr int kInterIconPadding = 8;
 
-// Color used for |overflow_icon_|.
-constexpr SkColor kOverflowIconColor = SkColorSetRGB(0x5F, 0x63, 0x60);
-
 }  // namespace
 
 namespace ash {
@@ -45,7 +42,7 @@ namespace ash {
 class NotificationOverflowImageView
     : public message_center::ProportionalImageView {
  public:
-  NotificationOverflowImageView(const gfx::ImageSkia& image,
+  NotificationOverflowImageView(const ui::ImageModel& image,
                                 const std::string& notification_id)
       : message_center::ProportionalImageView(gfx::Size(kIconSize, kIconSize)),
         notification_id_(notification_id) {
@@ -88,14 +85,13 @@ void NotificationOverflowView::AddIcon(
 
   if (image_views_.size() > kMaxOverflowIcons) {
     if (!overflow_icon_) {
-      gfx::Image icon = gfx::Image(gfx::CreateVectorIcon(
-          views::kOptionsIcon, kIconSize, kOverflowIconColor));
+      auto icon = ui::ImageModel::FromVectorIcon(views::kOptionsIcon,
+                                                 ui::kColorIcon, kIconSize);
       auto overflow_icon =
           std::make_unique<message_center::ProportionalImageView>(
               gfx::Size(kIconSize, kIconSize));
       overflow_icon->SetID(kOverflowIconId);
-      overflow_icon->SetImage(icon.AsImageSkia(),
-                              gfx::Size(kIconSize, kIconSize));
+      overflow_icon->SetImage(icon, gfx::Size(kIconSize, kIconSize));
       overflow_icon_ = AddChildView(std::move(overflow_icon));
     }
     overflow_icon_->SetVisible(true);

@@ -160,7 +160,8 @@ TEST_F(MessageCenterAshTest, SerializationSimple) {
 
   EXPECT_TRUE(
       AreBitmapsEqual(test_badge, ui_notification->small_image().AsBitmap()));
-  EXPECT_TRUE(AreBitmapsEqual(test_icon, ui_notification->icon().AsBitmap()));
+  EXPECT_TRUE(AreBitmapsEqual(
+      test_icon, *ui_notification->icon().Rasterize(nullptr).bitmap()));
 
   ASSERT_EQ(2u, ui_notification->buttons().size());
   EXPECT_EQ(u"button1", ui_notification->buttons()[0].title);

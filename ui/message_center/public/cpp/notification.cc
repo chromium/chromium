@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "build/chromeos_buildflags.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -98,12 +99,14 @@ Notification::~Notification() = default;
 // static
 std::unique_ptr<Notification> Notification::DeepCopy(
     const Notification& notification,
+    const ui::ColorProvider* color_provider,
     bool include_body_image,
     bool include_small_image,
     bool include_icon_images) {
   std::unique_ptr<Notification> notification_copy =
       std::make_unique<Notification>(notification);
-  notification_copy->set_icon(DuplicateImage(notification_copy->icon()));
+  notification_copy->set_icon(
+      gfx::Image(notification_copy->icon().Rasterize(color_provider)));
   notification_copy->set_image(include_body_image
                                    ? DuplicateImage(notification_copy->image())
                                    : gfx::Image());

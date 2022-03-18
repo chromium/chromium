@@ -356,7 +356,8 @@ TEST_F(PhoneHubNotificationControllerTest, NotificationDataAndImages) {
 
   // Note that there's a slight discrepancy between the PhoneHub and
   // notification image naming.
-  EXPECT_EQ(contact_image, cros_notification->icon());
+  EXPECT_TRUE(contact_image.AsImageSkia().BackedBySameObjectAs(
+      cros_notification->icon().Rasterize(nullptr)));
   EXPECT_EQ(icon, cros_notification->small_image());
   EXPECT_EQ(shared_image, cros_notification->image());
 }

@@ -204,7 +204,8 @@ void WriteImageElement(XmlWriter* xml_writer,
 void WriteIconElement(XmlWriter* xml_writer,
                       NotificationImageRetainer* image_retainer,
                       const message_center::Notification& notification) {
-  WriteImageElement(xml_writer, image_retainer, notification.icon(),
+  WriteImageElement(xml_writer, image_retainer,
+                    gfx::Image(notification.icon().Rasterize(nullptr)),
                     kPlacementAppLogoOverride, kHintCropNone);
 }
 

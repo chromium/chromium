@@ -11,6 +11,8 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "chrome/browser/notifications/notification_platform_bridge_delegate.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
 #include "chromeos/crosapi/mojom/notification.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -49,7 +51,8 @@ crosapi::mojom::FullscreenVisibility ToMojo(
 }
 
 crosapi::mojom::NotificationPtr ToMojo(
-    const message_center::Notification& notification) {
+    const message_center::Notification& notification,
+    const ui::ColorProvider* color_provider) {
   auto mojo_note = crosapi::mojom::Notification::New();
   mojo_note->type = ToMojo(notification.type());
   mojo_note->id = notification.id();
@@ -58,7 +61,7 @@ crosapi::mojom::NotificationPtr ToMojo(
   mojo_note->display_source = notification.display_source();
   mojo_note->origin_url = notification.origin_url();
   if (!notification.icon().IsEmpty())
-    mojo_note->icon = notification.icon().AsImageSkia();
+    mojo_note->icon = notification.icon().Rasterize(color_provider);
   mojo_note->priority = base::clamp(notification.priority(), -2, 2);
   mojo_note->require_interaction = notification.never_timeout();
   mojo_note->timestamp = notification.timestamp();
@@ -181,8 +184,12 @@ void NotificationPlatformBridgeLacros::Display(
   auto pending_notification = std::make_unique<RemoteNotificationDelegate>(
       notification.id(), bridge_delegate_, weak_factory_.GetWeakPtr());
   // Display the notification, or update an existing one with the same ID.
+  // `profile` may be null in tests.
+  const auto* const color_provider =
+      profile ? ThemeServiceFactory::GetForProfile(profile)->GetColorProvider()
+              : nullptr;
   (*message_center_remote_)
-      ->DisplayNotification(ToMojo(notification),
+      ->DisplayNotification(ToMojo(notification, color_provider),
                             pending_notification->BindNotificationDelegate());
   remote_notifications_[notification.id()] = std::move(pending_notification);
 }

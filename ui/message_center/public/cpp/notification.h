@@ -15,6 +15,7 @@
 #include "build/chromeos_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image.h"
@@ -29,6 +30,10 @@
 namespace gfx {
 struct VectorIcon;
 }  // namespace gfx
+
+namespace ui {
+class ColorProvider;
+}
 
 namespace message_center {
 
@@ -249,6 +254,7 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
   // platforms.
   static std::unique_ptr<Notification> DeepCopy(
       const Notification& notification,
+      const ui::ColorProvider* color_provider,
       bool include_body_image,
       bool include_small_image,
       bool include_icon_images);
@@ -350,7 +356,8 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
   // End unpacked values.
 
   // Images fetched asynchronously.
-  const gfx::Image& icon() const { return icon_; }
+  // TODO(pkasting): Convert `icon_` to be a ui::ImageModel.
+  ui::ImageModel icon() const { return ui::ImageModel::FromImage(icon_); }
   void set_icon(const gfx::Image& icon) { icon_ = icon; }
 
   const gfx::Image& image() const { return optional_fields_.image; }

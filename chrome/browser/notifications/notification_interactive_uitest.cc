@@ -553,8 +553,8 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestNotificationValidIcon) {
 
   auto* notification = *notifications.rbegin();
 
-  EXPECT_EQ(100, notification->icon().Width());
-  EXPECT_EQ(100, notification->icon().Height());
+  EXPECT_EQ(100, notification->icon().Size().width());
+  EXPECT_EQ(100, notification->icon().Size().height());
 }
 
 IN_PROC_BROWSER_TEST_F(NotificationsTest, TestNotificationInvalidIcon) {

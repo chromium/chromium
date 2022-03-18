@@ -706,11 +706,12 @@ void NotificationViewBase::CreateOrUpdateIconView(
     const Notification& notification) {
   const bool use_image_for_icon = notification.icon().IsEmpty();
 
-  gfx::ImageSkia icon = use_image_for_icon ? notification.image().AsImageSkia()
-                                           : notification.icon().AsImageSkia();
+  ui::ImageModel icon = use_image_for_icon
+                            ? ui::ImageModel::FromImage(notification.image())
+                            : notification.icon();
 
   if (notification.type() == NOTIFICATION_TYPE_PROGRESS ||
-      notification.type() == NOTIFICATION_TYPE_MULTIPLE || icon.isNull()) {
+      notification.type() == NOTIFICATION_TYPE_MULTIPLE || icon.IsEmpty()) {
     DCHECK(!icon_view_ || right_content_->Contains(icon_view_));
     delete icon_view_;
     icon_view_ = nullptr;
@@ -727,7 +728,7 @@ void NotificationViewBase::CreateOrUpdateIconView(
   apply_rounded_corners =
       ash::features::IsNotificationsRefreshEnabled() && use_image_for_icon;
 #endif  // IS_CHROMEOS_ASH
-  icon_view_->SetImage(icon, icon.size(), apply_rounded_corners);
+  icon_view_->SetImage(icon, icon.Size(), apply_rounded_corners);
 
   // Hide the icon on the right side when the notification is expanded.
   hide_icon_on_expanded_ = use_image_for_icon;

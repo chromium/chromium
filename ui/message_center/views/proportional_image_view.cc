@@ -22,7 +22,7 @@ ProportionalImageView::ProportionalImageView(const gfx::Size& view_size) {
 
 ProportionalImageView::~ProportionalImageView() {}
 
-void ProportionalImageView::SetImage(const gfx::ImageSkia& image,
+void ProportionalImageView::SetImage(const ui::ImageModel& image,
                                      const gfx::Size& max_image_size,
                                      bool apply_rounded_corners) {
   apply_rounded_corners_ = apply_rounded_corners;
@@ -41,11 +41,12 @@ void ProportionalImageView::OnPaint(gfx::Canvas* canvas) {
   gfx::Rect draw_bounds = GetContentsBounds();
   draw_bounds.ClampToCenteredSize(draw_size);
 
+  gfx::ImageSkia rasterized = image_.Rasterize(GetColorProvider());
   gfx::ImageSkia image =
-      (image_.size() == draw_size)
-          ? image_
+      (rasterized.size() == draw_size)
+          ? rasterized
           : gfx::ImageSkiaOperations::CreateResizedImage(
-                image_, skia::ImageOperations::RESIZE_BEST, draw_size);
+                rasterized, skia::ImageOperations::RESIZE_BEST, draw_size);
 
   if (apply_rounded_corners_) {
     SkPath path;
@@ -72,7 +73,7 @@ gfx::Size ProportionalImageView::GetImageDrawingSize() {
 
   gfx::Size max_size = max_image_size_;
   max_size.SetToMin(GetContentsBounds().size());
-  return GetImageSizeForContainerSize(max_size, image_.size());
+  return GetImageSizeForContainerSize(max_size, image_.Size());
 }
 
 BEGIN_METADATA(ProportionalImageView, views::View)

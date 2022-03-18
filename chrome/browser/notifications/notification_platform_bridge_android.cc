@@ -34,9 +34,11 @@
 #include "content/public/common/persistent_notification_status.h"
 #include "third_party/blink/public/common/notifications/platform_notification_data.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/image/image.h"
 #include "ui/message_center/public/cpp/notification.h"
+#include "ui/native_theme/native_theme.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
@@ -287,9 +289,13 @@ void NotificationPlatformBridgeAndroid::Display(
     image = gfx::ConvertToJavaBitmap(image_bitmap);
 
   ScopedJavaLocalRef<jobject> notification_icon;
-  SkBitmap notification_icon_bitmap = notification.icon().AsBitmap();
-  if (!notification_icon_bitmap.drawsNothing())
-    notification_icon = gfx::ConvertToJavaBitmap(notification_icon_bitmap);
+  const auto* const color_provider =
+      ui::ColorProviderManager::Get().GetColorProviderFor(
+          ui::NativeTheme::GetInstanceForWeb()->GetColorProviderKey(nullptr));
+  const SkBitmap* notification_icon_bitmap =
+      notification.icon().Rasterize(color_provider).bitmap();
+  if (!notification_icon_bitmap->drawsNothing())
+    notification_icon = gfx::ConvertToJavaBitmap(*notification_icon_bitmap);
 
   ScopedJavaLocalRef<jobject> badge;
   SkBitmap badge_bitmap = notification.small_image().AsBitmap();

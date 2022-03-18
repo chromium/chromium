@@ -838,7 +838,7 @@ void AshNotificationView::CreateOrUpdateTitleView(
 void AshNotificationView::CreateOrUpdateSmallIconView(
     const message_center::Notification& notification) {
   if (is_grouped_child_view_ && !notification.icon().IsEmpty()) {
-    app_icon_view_->SetImage(notification.icon().AsImageSkia(),
+    app_icon_view_->SetImage(notification.icon().Rasterize(GetColorProvider()),
                              gfx::Size(kAppIconViewSize, kAppIconViewSize));
     return;
   }

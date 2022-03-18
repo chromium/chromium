@@ -36,6 +36,8 @@
 #include "chrome/browser/notifications/win/notification_template_builder.h"
 #include "chrome/browser/notifications/win/notification_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/notifications/notification_image_retainer.h"
@@ -921,7 +923,9 @@ void NotificationPlatformBridgeWin::Display(
   // Make a deep copy of the notification as its resources cannot safely
   // be passed between threads.
   auto notification_copy = message_center::Notification::DeepCopy(
-      notification, /*include_body_image=*/true, /*include_small_image=*/true,
+      notification,
+      ThemeServiceFactory::GetForProfile(profile)->GetColorProvider(),
+      /*include_body_image=*/true, /*include_small_image=*/true,
       /*include_icon_images=*/true);
 
   notification_task_runner_->PostTask(

@@ -24,6 +24,7 @@ component("cpp") {
     "//base",
     "//build:chromeos_buildflags",
     "//skia",
+    "//ui/base",
     "//ui/gfx",
     "//ui/strings",
     "//url",
