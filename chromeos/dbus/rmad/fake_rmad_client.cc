@@ -4,6 +4,7 @@
 
 #include "chromeos/dbus/rmad/fake_rmad_client.h"
 
+#include "base/callback_forward.h"
 #include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
 
@@ -324,9 +325,11 @@ bool FakeRmadClient::WasRmaStateDetected() {
   return NumStates() > 0;
 }
 
-bool FakeRmadClient::WasRmaStateDetectedForSessionManager(
-    base::OnceCallback<void()> session_manager_callback) {
-  return NumStates() > 0;
+void FakeRmadClient::SetRmaRequiredCallbackForSessionManager(
+    base::OnceClosure session_manager_callback) {
+  if (NumStates() > 0) {
+    std::move(session_manager_callback).Run();
+  }
 }
 
 void FakeRmadClient::SetAbortable(bool abortable) {

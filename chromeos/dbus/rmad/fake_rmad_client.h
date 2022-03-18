@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/observer_list.h"
 #include "chromeos/dbus/rmad/rmad.pb.h"
@@ -26,8 +27,8 @@ class COMPONENT_EXPORT(RMAD) FakeRmadClient : public RmadClient {
   static FakeRmadClient* Get();
 
   bool WasRmaStateDetected() override;
-  bool WasRmaStateDetectedForSessionManager(
-      base::OnceCallback<void()> session_manager_callback) override;
+  void SetRmaRequiredCallbackForSessionManager(
+      base::OnceClosure session_manager_callback) override;
   void GetCurrentState(
       DBusMethodCallback<rmad::GetStateReply> callback) override;
   void TransitionNextState(

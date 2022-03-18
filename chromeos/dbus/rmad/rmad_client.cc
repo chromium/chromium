@@ -35,7 +35,7 @@ class RmadClientImpl : public RmadClient {
   void Init(dbus::Bus* bus);
 
   bool WasRmaStateDetected() override;
-  bool WasRmaStateDetectedForSessionManager(
+  void SetRmaRequiredCallbackForSessionManager(
       base::OnceClosure session_manager_callback) override;
   void GetCurrentState(
       DBusMethodCallback<rmad::GetStateReply> callback) override;
@@ -519,13 +519,13 @@ bool RmadClientImpl::WasRmaStateDetected() {
          (is_rma_required_ || rma_state_file_exists_.value_or(false));
 }
 
-bool RmadClientImpl::WasRmaStateDetectedForSessionManager(
+void RmadClientImpl::SetRmaRequiredCallbackForSessionManager(
     base::OnceClosure session_manager_callback) {
-  const bool was_rma_state_detected = WasRmaStateDetected();
-  if (!was_rma_state_detected) {
+  if (WasRmaStateDetected()) {
+    std::move(session_manager_callback).Run();
+  } else {
     session_manager_callback_ = std::move(session_manager_callback);
   }
-  return was_rma_state_detected;
 }
 
 RmadClient::RmadClient() {
