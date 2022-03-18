@@ -64,10 +64,9 @@ HasArgumentMatchContext::HasArgumentMatchContext(const CSSSelector* selector) {
           sibling_combinator_between_child_or_descendant_combinator_ = true;
         }
         contains_child_or_descendant_combinator = true;
-        if (DepthFixed()) {
+        if (DepthFixed())
           depth_limit_++;
-          adjacent_distance_limit_ = 0;
-        }
+        adjacent_distance_limit_ = 0;
         break;
 
       case CSSSelector::kRelativeDirectAdjacent:
@@ -98,6 +97,7 @@ HasArgumentMatchContext::HasArgumentMatchContext(const CSSSelector* selector) {
         return;
     }
   }
+  DCHECK_NE(leftmost_relation_, CSSSelector::kSubSelector);
 }
 
 HasArgumentSubtreeIterator::HasArgumentSubtreeIterator(

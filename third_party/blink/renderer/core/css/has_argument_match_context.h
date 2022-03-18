@@ -10,7 +10,7 @@
 
 namespace blink {
 
-class HasArgumentMatchContext {
+class CORE_EXPORT HasArgumentMatchContext {
   STACK_ALLOCATED();
 
  public:
@@ -49,13 +49,13 @@ class HasArgumentMatchContext {
   // Case 1:  (kDescendant, 0, max)
   //   - Argument selector conditions
   //     - Starts with descendant combinator.
-  //   - E.g. ':has(.a)', ':has(.a)', ':has(.a ~ .b > .c)'
+  //   - E.g. ':has(.a)', ':has(.a ~ .b)', ':has(.a ~ .b > .c)'
   //   - Traverse all descendants of the :has scope element.
   // Case 2:  (kChild, 0, max)
   //   - Argument selector conditions
   //     - Starts with child combinator.
   //     - At least one descendant combinator.
-  //   - E.g. ':has(> .a .b)', ':has(> .a ~ .b .c)'
+  //   - E.g. ':has(> .a .b)', ':has(> .a ~ .b .c)', ':has(> .a + .b .c)'
   //   - Traverse all descendants of the :has scope element.
   // Case 3:  (kChild, 0, n)
   //   - Argument selector conditions
@@ -95,7 +95,7 @@ class HasArgumentMatchContext {
   //     - At least one subsequent-sibling combinator to the left of every
   //       descendant or child combinator.
   //     - At least 1 descendant combinator.
-  //   - E.g. ':has(+ .a ~ .b .c)', ':has(+ .a ~ .b > .c + .e .f)'
+  //   - E.g. ':has(+ .a ~ .b .c)', ':has(+ .a ~ .b > .c + .d .e)'
   //   - Traverse all the subsequent sibling subtrees of the :has scope element.
   //     (all subsequent siblings and it's descendants)
   // Case 8:  (kDirectAdjacent, max, 0)
@@ -114,7 +114,7 @@ class HasArgumentMatchContext {
   //     - No descendant combinator.
   //   - E.g.
   //     - ':has(+ .a ~ .b > .c)'            : (kDirectAdjacent, max, 1)
-  //     - ':has(+ .a ~ .b > .c + .e >.f)'   : (kDirectAdjacent, max, 2)
+  //     - ':has(+ .a ~ .b > .c + .d >.e)'   : (kDirectAdjacent, max, 2)
   //   - Traverse depth n elements of all subsequent sibling subtree of the
   //     :has scope element.
   // Case 10:  (kDirectAdjacent, n, max)
@@ -155,7 +155,7 @@ class HasArgumentMatchContext {
   //   - Traverse the depth m elements of the distance n sibling subtree of
   //     the :has scope element. (elements at depth m of the descendant subtree
   //     of the sibling element at distance n)
-  CSSSelector::RelationType leftmost_relation_;
+  CSSSelector::RelationType leftmost_relation_{CSSSelector::kSubSelector};
   int adjacent_distance_limit_;
   int depth_limit_;
 
