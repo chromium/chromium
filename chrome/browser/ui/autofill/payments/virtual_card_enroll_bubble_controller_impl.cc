@@ -127,7 +127,12 @@ void VirtualCardEnrollBubbleControllerImpl::OnDeclineButton() {
 #endif
 }
 
-void VirtualCardEnrollBubbleControllerImpl::OnLinkClicked(const GURL& url) {
+void VirtualCardEnrollBubbleControllerImpl::OnLinkClicked(
+    VirtualCardEnrollmentLinkType link_type,
+    const GURL& url) {
+  LogVirtualCardEnrollmentLinkClickedMetric(
+      link_type, GetVirtualCardEnrollmentBubbleSource());
+
   web_contents()->OpenURL(content::OpenURLParams(
       url, content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui::PAGE_TRANSITION_LINK, false));

@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/metrics/payments/virtual_card_enrollment_metrics.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
+#include "components/autofill/core/browser/payments/payments_service_url.h"
 #include "components/autofill/core/browser/payments/test_legal_message_line.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "content/public/test/browser_test.h"
@@ -30,7 +31,6 @@ namespace {
 
 constexpr int kCardImageWidthInPx = 32;
 constexpr int kCardImageLengthInPx = 20;
-
 }  // namespace
 
 class VirtualCardEnrollBubbleViewsInteractiveUiTest
@@ -118,6 +118,18 @@ class VirtualCardEnrollBubbleViewsInteractiveUiTest
 
     return static_cast<VirtualCardEnrollBubbleViews*>(
         controller->GetVirtualCardEnrollBubbleView());
+  }
+
+  void ClickLearnMoreLink() { GetBubbleViews()->LearnMoreLinkClicked(); }
+
+  void ClickGoogleLegalMessageLink() {
+    GetBubbleViews()->GoogleLegalMessageClicked(
+        autofill::payments::GetVirtualCardEnrollmentSupportUrl());
+  }
+
+  void ClickIssuerLegalMessageLink() {
+    GetBubbleViews()->IssuerLegalMessageClicked(
+        autofill::payments::GetVirtualCardEnrollmentSupportUrl());
   }
 
   VirtualCardEnrollIconView* GetIconView() {
@@ -224,7 +236,7 @@ class VirtualCardEnrollBubbleViewsInteractiveUiTest
 IN_PROC_BROWSER_TEST_F(VirtualCardEnrollBubbleViewsInteractiveUiTest,
                        ShowBubble) {
   ShowBubbleAndWaitUntilShown(upstream_virtual_card_enrollment_fields(),
-                               base::DoNothing(), base::DoNothing());
+                              base::DoNothing(), base::DoNothing());
   EXPECT_TRUE(GetBubbleViews());
   EXPECT_TRUE(IsIconVisible());
 
@@ -241,12 +253,12 @@ IN_PROC_BROWSER_TEST_F(VirtualCardEnrollBubbleViewsInteractiveUiTest,
   EXPECT_TRUE(IsIconVisible());
 
   ShowBubbleAndWaitUntilShown(downstream_virtual_card_enrollment_fields(),
-                               base::DoNothing(), base::DoNothing());
+                              base::DoNothing(), base::DoNothing());
   EXPECT_TRUE(GetBubbleViews());
   EXPECT_TRUE(IsIconVisible());
 
   ShowBubbleAndWaitUntilShown(settings_page_virtual_card_enrollment_fields(),
-                               base::DoNothing(), base::DoNothing());
+                              base::DoNothing(), base::DoNothing());
   EXPECT_TRUE(GetBubbleViews());
   EXPECT_TRUE(IsIconVisible());
 }
@@ -380,6 +392,74 @@ IN_PROC_BROWSER_TEST_P(
           VirtualCardEnrollmentSourceToMetricSuffix(
               virtual_card_enrollment_source),
       true, 2);
+}
+
+class LinksClickedTest
+    : public VirtualCardEnrollBubbleViewsInteractiveUiTest,
+      public testing::WithParamInterface<VirtualCardEnrollmentSource> {
+ public:
+  LinksClickedTest() = default;
+  ~LinksClickedTest() override = default;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    LinksClickedTest,
+    testing::Values(VirtualCardEnrollmentSource::kUpstream,
+                    VirtualCardEnrollmentSource::kDownstream,
+                    VirtualCardEnrollmentSource::kSettingsPage));
+
+IN_PROC_BROWSER_TEST_P(LinksClickedTest, LearnMoreTest_AllSources) {
+  VirtualCardEnrollmentSource virtual_card_enrollment_source = GetParam();
+  base::HistogramTester histogram_tester;
+  ShowBubbleAndWaitUntilShown(
+      GetFieldsForSource(virtual_card_enrollment_source), base::DoNothing(),
+      base::DoNothing());
+
+  ASSERT_TRUE(GetBubbleViews());
+  ClickLearnMoreLink();
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.VirtualCardEnroll.LinkClicked." +
+          VirtualCardEnrollmentSourceToMetricSuffix(
+              virtual_card_enrollment_source) +
+          ".LearnMoreLink",
+      true, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(LinksClickedTest, GoogleLegalMessageTest_AllSources) {
+  VirtualCardEnrollmentSource virtual_card_enrollment_source = GetParam();
+  base::HistogramTester histogram_tester;
+  ShowBubbleAndWaitUntilShown(
+      GetFieldsForSource(virtual_card_enrollment_source), base::DoNothing(),
+      base::DoNothing());
+
+  ASSERT_TRUE(GetBubbleViews());
+  ClickGoogleLegalMessageLink();
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.VirtualCardEnroll.LinkClicked." +
+          VirtualCardEnrollmentSourceToMetricSuffix(
+              virtual_card_enrollment_source) +
+          ".GoogleLegalMessageLink",
+      true, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(LinksClickedTest, IssuerLegalMessageTest_AllSources) {
+  VirtualCardEnrollmentSource virtual_card_enrollment_source = GetParam();
+  base::HistogramTester histogram_tester;
+  ShowBubbleAndWaitUntilShown(
+      GetFieldsForSource(virtual_card_enrollment_source), base::DoNothing(),
+      base::DoNothing());
+
+  ASSERT_TRUE(GetBubbleViews());
+  ClickIssuerLegalMessageLink();
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.VirtualCardEnroll.LinkClicked." +
+          VirtualCardEnrollmentSourceToMetricSuffix(GetParam()) +
+          ".IssuerLegalMessageLink",
+      true, 1);
 }
 
 }  // namespace autofill

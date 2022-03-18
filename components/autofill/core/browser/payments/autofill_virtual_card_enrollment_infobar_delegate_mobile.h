@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "components/autofill/core/browser/metrics/payments/virtual_card_enrollment_metrics.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/ui/payments/virtual_card_enroll_bubble_controller.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
@@ -57,7 +58,8 @@ class AutofillVirtualCardEnrollmentInfoBarDelegateMobile
   LegalMessageLines GetIssuerLegalMessage() const;
 
   // Called when a link in the legal message text was clicked.
-  virtual void OnInfobarLinkClicked(GURL url);
+  virtual void OnInfobarLinkClicked(GURL url,
+                                    VirtualCardEnrollmentLinkType link_type);
 
   // ConfirmInfoBarDelegate:
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;

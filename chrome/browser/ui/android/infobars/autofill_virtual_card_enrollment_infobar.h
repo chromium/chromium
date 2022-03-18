@@ -29,7 +29,10 @@ class AutofillVirtualCardEnrollmentInfoBar : public infobars::ConfirmInfoBar {
   ~AutofillVirtualCardEnrollmentInfoBar() override;
 
   // Called when a link in the infobar text was clicked.
-  void OnInfobarLinkClicked(JNIEnv* env, jobject obj, jstring url);
+  void OnInfobarLinkClicked(JNIEnv* env,
+                            jobject obj,
+                            jstring url,
+                            jint link_type);
 
  private:
   // ConfirmInfoBar:

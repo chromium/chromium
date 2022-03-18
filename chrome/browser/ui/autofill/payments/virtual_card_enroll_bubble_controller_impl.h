@@ -50,7 +50,8 @@ class VirtualCardEnrollBubbleControllerImpl
 
   void OnAcceptButton() override;
   void OnDeclineButton() override;
-  void OnLinkClicked(const GURL& url) override;
+  void OnLinkClicked(VirtualCardEnrollmentLinkType link_type,
+                     const GURL& url) override;
   void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) override;
   bool IsIconVisible() const override;
 
