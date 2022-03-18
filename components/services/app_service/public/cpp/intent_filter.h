@@ -120,6 +120,9 @@ struct COMPONENT_EXPORT(APP_TYPES) IntentFilter {
   // or http scheme.
   bool IsBrowserFilter();
 
+  // Returns true if the filter only contains file extension pattern matches.
+  bool IsFileExtensionsFilter();
+
   Conditions conditions;
 
   // Activity which registered this filter. We only fill this field for ARC

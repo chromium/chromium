@@ -1520,63 +1520,75 @@ TEST_F(IntentUtilTest, IsGenericFileHandler) {
   // extensions: ["*"]
   IntentFilterPtr filter1 = apps_util::MakeFileFilterForView("", "*", kLabel);
   EXPECT_TRUE(apps_util::IsGenericFileHandler(intent, filter1));
+  EXPECT_TRUE(filter1->IsFileExtensionsFilter());
 
   // extensions: ["*", "jpg"]
   IntentFilterPtr filter2 = apps_util::MakeFileFilterForView("", "*", kLabel);
   apps_util::AddConditionValue(apps::ConditionType::kFile, "jpg",
                                apps::PatternMatchType::kFileExtension, filter2);
   EXPECT_TRUE(apps_util::IsGenericFileHandler(intent, filter2));
+  EXPECT_TRUE(filter2->IsFileExtensionsFilter());
 
   // extensions: ["jpg"]
   IntentFilterPtr filter3 = apps_util::MakeFileFilterForView("", "jpg", kLabel);
   EXPECT_FALSE(apps_util::IsGenericFileHandler(intent, filter3));
+  EXPECT_TRUE(filter3->IsFileExtensionsFilter());
 
   // types: ["*"]
   IntentFilterPtr filter4 = apps_util::MakeFileFilterForView("*", "", kLabel);
   EXPECT_TRUE(apps_util::IsGenericFileHandler(intent, filter4));
+  EXPECT_FALSE(filter4->IsFileExtensionsFilter());
 
   // types: ["*/*"]
   IntentFilterPtr filter5 = apps_util::MakeFileFilterForView("*/*", "", kLabel);
   EXPECT_TRUE(apps_util::IsGenericFileHandler(intent, filter5));
+  EXPECT_FALSE(filter5->IsFileExtensionsFilter());
 
   // types: ["image/*"]
   IntentFilterPtr filter6 =
       apps_util::MakeFileFilterForView("image/*", "", kLabel);
   // Partial wild card is not generic.
   EXPECT_FALSE(apps_util::IsGenericFileHandler(intent, filter6));
+  EXPECT_FALSE(filter6->IsFileExtensionsFilter());
 
   // types: ["*", "image/*"]
   IntentFilterPtr filter7 = apps_util::MakeFileFilterForView("*", "", kLabel);
   apps_util::AddConditionValue(apps::ConditionType::kFile, "image/*",
                                apps::PatternMatchType::kMimeType, filter7);
   EXPECT_TRUE(apps_util::IsGenericFileHandler(intent, filter7));
+  EXPECT_FALSE(filter7->IsFileExtensionsFilter());
 
   // extensions: ["*"], types: ["image/*"]
   IntentFilterPtr filter8 =
       apps_util::MakeFileFilterForView("image/*", "*", kLabel);
   EXPECT_TRUE(apps_util::IsGenericFileHandler(intent, filter8));
+  EXPECT_FALSE(filter8->IsFileExtensionsFilter());
 
   // types: ["text/*"] and target files contain unsupported text mime type, e.g.
   // text/calendar.
   IntentFilterPtr filter9 =
       apps_util::MakeFileFilterForView("text/*", "", kLabel);
   EXPECT_TRUE(apps_util::IsGenericFileHandler(intent2, filter9));
+  EXPECT_FALSE(filter9->IsFileExtensionsFilter());
 
   // types: ["text/*"] and target files don't contain unsupported text mime
   // type.
   IntentFilterPtr filter10 =
       apps_util::MakeFileFilterForView("text/*", "", kLabel);
   EXPECT_FALSE(apps_util::IsGenericFileHandler(intent, filter10));
+  EXPECT_FALSE(filter10->IsFileExtensionsFilter());
 
   // File is a directory.
   IntentFilterPtr filter11 =
       apps_util::MakeFileFilterForView("text/*", "", kLabel);
   EXPECT_TRUE(apps_util::IsGenericFileHandler(intent3, filter11));
+  EXPECT_FALSE(filter11->IsFileExtensionsFilter());
 
   // File is a directory, but filter is inode/directory.
   IntentFilterPtr filter12 =
       apps_util::MakeFileFilterForView("inode/directory", "", kLabel);
   EXPECT_FALSE(apps_util::IsGenericFileHandler(intent3, filter12));
+  EXPECT_FALSE(filter12->IsFileExtensionsFilter());
 }
 
 // TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.

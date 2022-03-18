@@ -157,6 +157,24 @@ bool IntentFilter::IsBrowserFilter() {
   return false;
 }
 
+bool IntentFilter::IsFileExtensionsFilter() {
+  for (const auto& condition : conditions) {
+    // We expect action conditions to be paired with file conditions.
+    if (condition->condition_type == ConditionType::kAction) {
+      continue;
+    }
+    if (condition->condition_type != ConditionType::kFile) {
+      return false;
+    }
+    for (const auto& condition_value : condition->condition_values) {
+      if (condition_value->match_type != PatternMatchType::kFileExtension) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
 IntentFilters CloneIntentFilters(const IntentFilters& intent_filters) {
   IntentFilters ret;
   for (const auto& intent_filter : intent_filters) {
