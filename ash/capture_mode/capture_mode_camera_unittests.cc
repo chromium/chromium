@@ -33,6 +33,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -731,6 +732,75 @@ TEST_F(CaptureModeCameraTest, CameraPreviewWidgetStackingInRegion) {
   // top-most child of it.
   ASSERT_EQ(preview_window->parent(), overlay_container);
   EXPECT_EQ(overlay_container->children().back(), preview_window);
+}
+
+// Tests that camera preview widget is shown, hidden and parented correctly
+// while moving, dragging and updating the user selection region.
+TEST_F(CaptureModeCameraTest, CameraPreviewWhileUpdatingCaptureRegion) {
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kVideo);
+  auto* camera_controller = GetCameraController();
+  auto* capture_session = controller->capture_mode_session();
+  AddDefaultCamera();
+  camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
+  const auto* camera_preview_widget =
+      camera_controller->camera_preview_widget();
+  EXPECT_TRUE(camera_preview_widget);
+  auto* preview_window = camera_preview_widget->GetNativeWindow();
+  const auto* unparented_container =
+      preview_window->GetRootWindow()->GetChildById(
+          kShellWindowId_UnparentedContainer);
+
+  const gfx::Rect capture_region(10, 20, 80, 60);
+  controller->SetUserCaptureRegion(capture_region, /*by_user=*/true);
+
+  // After user capture region is set, parent of the preview should be the
+  // OverlayContainer.
+  const auto* overlay_container = preview_window->GetRootWindow()->GetChildById(
+      kShellWindowId_OverlayContainer);
+  ASSERT_EQ(preview_window->parent(), overlay_container);
+
+  // Press the bottom right of selection region. Verify preview is hidden and
+  // parent of the preview should be UnparentedContainer.
+  auto* event_generator = GetEventGenerator();
+  event_generator->set_current_screen_location(capture_region.bottom_right());
+  event_generator->PressLeftButton();
+  EXPECT_FALSE(camera_preview_widget->IsVisible());
+  EXPECT_EQ(preview_window->parent(), unparented_container);
+
+  // Move mouse to update the selection region. Verify preview is still
+  // hidden.
+  const gfx::Vector2d delta(15, 20);
+  event_generator->MoveMouseTo(capture_region.bottom_right() + delta);
+  EXPECT_TRUE(capture_session->is_drag_in_progress());
+  EXPECT_FALSE(camera_preview_widget->IsVisible());
+  EXPECT_EQ(preview_window->parent(), unparented_container);
+
+  // Now release the drag to end selection region update. Verify preview is
+  // shown and parent of the preview should be OverlayContainer.
+  event_generator->ReleaseLeftButton();
+  EXPECT_FALSE(capture_session->is_drag_in_progress());
+  EXPECT_TRUE(camera_preview_widget->IsVisible());
+  EXPECT_EQ(preview_window->parent(), overlay_container);
+
+  // Press in the selection region to move it around. Since in the
+  // use case, selection region is not updated, preview should not be hidden.
+  const gfx::Point current_position(capture_region.origin() + delta);
+  event_generator->set_current_screen_location(current_position);
+  event_generator->PressLeftButton();
+  EXPECT_TRUE(camera_preview_widget->IsVisible());
+  EXPECT_EQ(preview_window->parent(), overlay_container);
+
+  // Move mouse to move selection region around. Verify preview is shown.
+  event_generator->MoveMouseTo(current_position + delta);
+  EXPECT_TRUE(camera_preview_widget->IsVisible());
+  EXPECT_EQ(preview_window->parent(), overlay_container);
+
+  // Now release the move to end moving selection region. Verify preview is
+  // shown.
+  event_generator->ReleaseLeftButton();
+  EXPECT_TRUE(camera_preview_widget->IsVisible());
+  EXPECT_EQ(preview_window->parent(), overlay_container);
 }
 
 TEST_F(CaptureModeCameraTest, CameraPreviewWidgetStackingInWindow) {

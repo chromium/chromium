@@ -371,6 +371,9 @@ class ASH_EXPORT CaptureModeSession
   // space between the capture bar and the menu.
   bool IsEventInSettingsMenuBounds(const gfx::Point& location_in_screen);
 
+  // Called when the parent container of camera preview may need to be updated.
+  void MaybeReparentCameraPreviewWidget();
+
   CaptureModeController* const controller_;
 
   // The current root window on which the capture session is active, which may

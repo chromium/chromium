@@ -370,7 +370,7 @@ bool IsDragAllowedOnCameraPreview(const gfx::Point& screen_location) {
   auto* camera_controller = controller->camera_controller();
   if (camera_controller && !controller->is_recording_in_progress()) {
     auto* camera_preview_widget = camera_controller->camera_preview_widget();
-    if ((camera_preview_widget &&
+    if ((camera_preview_widget && camera_preview_widget->IsVisible() &&
          camera_preview_widget->GetWindowBoundsInScreen().Contains(
              screen_location)) ||
         camera_controller->is_drag_in_progress()) {
@@ -701,9 +701,7 @@ void CaptureModeSession::OnCaptureSourceChanged(CaptureModeSource new_source) {
   capture_mode_util::TriggerAccessibilityAlert(
       GetMessageIdForCaptureSource(new_source, /*for_toggle_alert=*/true));
 
-  auto* camera_controller = controller_->camera_controller();
-  if (camera_controller && !controller_->is_recording_in_progress())
-    camera_controller->MaybeReparentPreviewWidget();
+  MaybeReparentCameraPreviewWidget();
 }
 
 void CaptureModeSession::OnCaptureTypeChanged(CaptureModeType new_type) {
@@ -880,8 +878,11 @@ aura::Window* CaptureModeSession::GetCameraPreviewParentWindow() const {
     case CaptureModeSource::kFullscreen:
       return overlay_container;
     case CaptureModeSource::kRegion:
-      return controller_->user_capture_region().IsEmpty() ? unparented_container
-                                                          : overlay_container;
+      return controller_->user_capture_region().IsEmpty() ||
+                     (is_drag_in_progress_ &&
+                      fine_tune_position_ != FineTunePosition::kCenter)
+                 ? unparented_container
+                 : overlay_container;
     case CaptureModeSource::kWindow:
       aura::Window* selected_window = GetSelectedWindow();
       return selected_window ? selected_window : unparented_container;
@@ -1728,8 +1729,20 @@ void CaptureModeSession::OnLocatedEventPressed(
   if (user_nudge_controller_)
     user_nudge_controller_->SetVisible(false);
 
-  if (!is_event_on_capture_bar_or_menu)
+  base::ScopedClosureRunner deferred_runner;
+  if (!is_event_on_capture_bar_or_menu) {
     UpdateCaptureBarWidgetOpacity(0.f, /*on_release=*/false);
+    // Run `MaybeReparentCameraPreviewWidget` at the exit of this function's
+    // scope if the user presses anywhere outside of the capture bar or menu,
+    // since the camera preview should be hidden if user is dragging to update
+    // the capture region. The reason we want to run it at the exit of this
+    // function is if `is_selecting_region_` is false, we want
+    // `fine_tune_position_` to be updated first since it can affect whether we
+    // should hide camera preview or not.
+    deferred_runner.ReplaceClosure(
+        base::BindOnce(&CaptureModeSession::MaybeReparentCameraPreviewWidget,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
 
   if (is_selecting_region_)
     return;
@@ -1827,6 +1840,11 @@ void CaptureModeSession::OnLocatedEventReleased(
 
   // Do a repaint to show the affordance circles.
   RepaintRegion();
+
+  // Show the camera which may have been hidden in `OnLocatedEventPressed`
+  // regardless of whether we're selecting a region for the first time, or just
+  // dragging to fine tune it.
+  MaybeReparentCameraPreviewWidget();
 
   if (!is_selecting_region_)
     return;
@@ -2262,9 +2280,7 @@ void CaptureModeSession::MaybeChangeRoot(aura::Window* new_root) {
 
   UpdateRootWindowDimmers();
 
-  auto* camera_controller = controller_->camera_controller();
-  if (camera_controller && !controller_->is_recording_in_progress())
-    camera_controller->MaybeReparentPreviewWidget();
+  MaybeReparentCameraPreviewWidget();
 }
 
 void CaptureModeSession::UpdateRootWindowDimmers() {
@@ -2444,6 +2460,12 @@ bool CaptureModeSession::IsEventInSettingsMenuBounds(
       0, 0, 0, -capture_mode::kSpaceBetweenCaptureBarAndSettingsMenu);
 
   return settings_menu_bounds.Contains(location_in_screen);
+}
+
+void CaptureModeSession::MaybeReparentCameraPreviewWidget() {
+  auto* camera_controller = controller_->camera_controller();
+  if (camera_controller && !controller_->is_recording_in_progress())
+    camera_controller->MaybeReparentPreviewWidget();
 }
 
 }  // namespace ash
