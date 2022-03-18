@@ -133,9 +133,6 @@ class SubresourceFilterBrowserTest : public PlatformBrowserTest {
       "SubresourceFilter.Actions2";
 
   bool AdsBlockedInContentSettings(content::RenderFrameHost* frame_host);
-#if BUILDFLAG(IS_ANDROID)
-  bool PresentingAdsBlockedInfobar(content::WebContents* web_contents);
-#endif
 
  protected:
   // InProcessBrowserTest:

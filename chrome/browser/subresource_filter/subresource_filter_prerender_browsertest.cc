@@ -4,7 +4,6 @@
 
 #include "chrome/browser/subresource_filter/subresource_filter_browser_test_harness.h"
 
-#include "build/build_config.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/subresource_filter/content/browser/ad_tagging_browser_test_utils.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
@@ -29,6 +28,10 @@ using testing::_;
 using testing::Mock;
 
 namespace subresource_filter {
+
+// TODO(bokan): These tests don't run on Android but it'd be good to test there
+// as well as the UI differs. In particular, testing that prerender activation
+// hides infobars.
 
 // Tests -----------------------------------------------------------------------
 
@@ -236,9 +239,6 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
     // still prerendering.
     EXPECT_FALSE(AdsBlockedInContentSettings(web_contents()->GetMainFrame()));
     EXPECT_FALSE(AdsBlockedInContentSettings(prerender_rfh));
-#if BUILDFLAG(IS_ANDROID)
-    EXPECT_FALSE(PresentingAdsBlockedInfobar());
-#endif
   }
 
   // Makes the prerendering page primary (i.e. the user clicked on a link to
@@ -250,9 +250,6 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
 
     EXPECT_TRUE(AdsBlockedInContentSettings(web_contents()->GetMainFrame()));
     EXPECT_TRUE(AdsBlockedInContentSettings(prerender_rfh));
-#if BUILDFLAG(IS_ANDROID)
-    EXPECT_TRUE(PresentingAdsBlockedInfobar());
-#endif
   }
 }
 
@@ -521,7 +518,5 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
               console_observer.GetMessageAt(0u));
   }
 }
-
-// TODO - test that prerender activation hides infobars.
 
 }  // namespace subresource_filter

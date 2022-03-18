@@ -15,7 +15,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
-#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_database_helper.h"
@@ -81,25 +80,6 @@ bool SubresourceFilterBrowserTest::AdsBlockedInContentSettings(
 
   return content_settings->IsContentBlocked(ContentSettingsType::ADS);
 }
-
-#if BUILDFLAG(IS_ANDROID)
-bool SubresourceFilterBrowserTest::PresentingAdsBlockedInfobar(
-    content::WebContents* web_contents) {
-  auto* infobar_manager =
-      infobars::ContentInfoBarManager::FromWebContents(web_contents);
-  if (infobar_manager->infobar_count() == 0)
-    return false;
-
-  // No infobars other than the ads blocked infobar should be displayed in the
-  // context of these tests.
-  EXPECT_EQ(infobar_manager->infobar_count(), 1u);
-  auto* infobar = infobar_manager->infobar_at(0);
-  EXPECT_EQ(infobar->delegate()->GetIdentifier(),
-            infobars::InfoBarDelegate::ADS_BLOCKED_INFOBAR_DELEGATE_ANDROID);
-
-  return true;
-}
-#endif
 
 void SubresourceFilterBrowserTest::SetUp() {
   database_helper_ = CreateTestDatabase();
