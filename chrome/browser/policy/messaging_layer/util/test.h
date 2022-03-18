@@ -80,6 +80,16 @@ class EncryptedWrappedRecordRecordMatcher : public RecordMatcher {
   std::string Name() const override;
 };
 
+// Verify the absence of the encryptedWrappedRecord field of each record.
+class NoEncryptedWrappedRecordRecordMatcher : public RecordMatcher {
+ public:
+  bool MatchAndExplainRecord(const base::Value::Dict& arg,
+                             MatchResultListener* listener) const override;
+  void DescribeTo(std::ostream* os) const override;
+  void DescribeNegationTo(std::ostream* os) const override;
+  std::string Name() const override;
+};
+
 // Verify the sequenceInformation field of each record.
 class SequenceInformationRecordMatcher : public RecordMatcher {
  public:
@@ -130,6 +140,16 @@ class RequestValidityMatcherBuilder {
                          .AppendMatcher(EncryptedRecordMatcher())
                          .AppendMatcher(EncryptedWrappedRecordRecordMatcher())
                          .AppendMatcher(SequenceInformationRecordMatcher()));
+  }
+
+  // Creates and returns a |RequestValidityMatcherBuilder| instance that
+  // contains a matcher that is suited for verifying a gap upload request.
+  static RequestValidityMatcherBuilder<T> CreateGapUpload() {
+    // A gap upload is a data upload with no encryptedWrappedRecord.
+    return std::move(
+        RequestValidityMatcherBuilder<T>::CreateDataUpload()
+            .RemoveMatcher("encrypted-wrapped-record-record-matcher")
+            .AppendMatcher(NoEncryptedWrappedRecordRecordMatcher()));
   }
 
   // Builds and returns the |Matcher<T>| object.
@@ -212,6 +232,12 @@ class RequestContainingRecordMatcher {
 template <class T = base::Value::Dict>
 Matcher<T> IsDataUploadRequestValid() {
   return RequestValidityMatcherBuilder<T>::CreateDataUpload().Build();
+}
+
+// Match a gap upload request that is valid.
+template <class T = base::Value::Dict>
+Matcher<T> IsGapUploadRequestValid() {
+  return RequestValidityMatcherBuilder<T>::CreateGapUpload().Build();
 }
 
 // Match a request that contains the given record |matched_record_json|. The

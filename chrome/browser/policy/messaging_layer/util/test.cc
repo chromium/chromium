@@ -126,11 +126,35 @@ void EncryptedWrappedRecordRecordMatcher::DescribeTo(std::ostream* os) const {
 
 void EncryptedWrappedRecordRecordMatcher::DescribeNegationTo(
     std::ostream* os) const {
-  *os << "has at least one invalid encrypted wrapped records.";
+  *os << "has at least one invalid encrypted wrapped records or has missing "
+         "encrypted wrapped records.";
 }
 
 std::string EncryptedWrappedRecordRecordMatcher::Name() const {
   return "encrypted-wrapped-record-record-matcher";
+}
+
+bool NoEncryptedWrappedRecordRecordMatcher::MatchAndExplainRecord(
+    const base::Value::Dict& record,
+    MatchResultListener* listener) const {
+  if (record.Find("encryptedWrappedRecord") != nullptr) {
+    *listener << "Found \"encryptedWrappedRecord\" in record " << record << '.';
+    return false;
+  }
+  return true;
+}
+
+void NoEncryptedWrappedRecordRecordMatcher::DescribeTo(std::ostream* os) const {
+  *os << "expectedly has no encrypted wrapped record.";
+}
+
+void NoEncryptedWrappedRecordRecordMatcher::DescribeNegationTo(
+    std::ostream* os) const {
+  *os << "has at least one encrypted wrapped record that it should not have.";
+}
+
+std::string NoEncryptedWrappedRecordRecordMatcher::Name() const {
+  return "no-encrypted-wrapped-record-record-matcher";
 }
 
 bool SequenceInformationRecordMatcher::MatchAndExplainRecord(
