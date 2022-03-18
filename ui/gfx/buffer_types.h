@@ -97,6 +97,28 @@ enum class BufferPlane {
   LAST = V
 };
 
+// This enum is used for histogram states and should only have new values added
+// to the end before kMaxValue. tools/metrics/histograms/enums.xml should be
+// updated together.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class OddSize {
+  kEvenWidthAndHeight = 0,
+  kOddWidthOnly = 1,
+  kOddHeightOnly = 2,
+  kOddWidthAndHeight = 3,
+  kMaxValue = kOddWidthAndHeight,
+};
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class OddOffset {
+  kEvenXAndY = 0,
+  kOddXOnly = 1,
+  kOddYOnly = 2,
+  kOddXAndY = 3,
+  kMaxValue = kOddXAndY,
+};
+
 }  // namespace gfx
 
 #endif  // UI_GFX_BUFFER_TYPES_H_

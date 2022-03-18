@@ -23,6 +23,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/sys_byteorder.h"
@@ -39,6 +40,7 @@
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "ui/gfx/buffer_format_util.h"
+#include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gl/trace_util.h"
 
@@ -48,6 +50,68 @@
 #endif
 
 namespace media {
+
+namespace {
+
+const std::string PixelFormatToString(VideoPixelFormat format) {
+  switch (format) {
+    case PIXEL_FORMAT_YV12:
+      return "YV12";
+    case PIXEL_FORMAT_I420:
+      return "I420";
+    case PIXEL_FORMAT_YUV420P10:
+      return "YUV420P10";
+    case PIXEL_FORMAT_I420A:
+      return "I420A";
+    case PIXEL_FORMAT_NV12:
+      return "NV12";
+    default:
+      NOTREACHED();
+      return "UNKNOWN";
+  }
+}
+
+void RecordVideoFrameSizeAndOffsetHistogram(VideoPixelFormat pixel_format,
+                                            gfx::Size coded_size,
+                                            gfx::Rect visible_rect) {
+  bool odd_width = (coded_size.width() % 2) == 1;
+  bool odd_height = (coded_size.height() % 2) == 1;
+  bool odd_x = (visible_rect.x() % 2) == 1;
+  bool odd_y = (visible_rect.y() % 2) == 1;
+
+  gfx::OddSize size_enum;
+  if (odd_width && odd_height)
+    size_enum = gfx::OddSize::kOddWidthAndHeight;
+  else if (odd_width)
+    size_enum = gfx::OddSize::kOddWidthOnly;
+  else if (odd_height)
+    size_enum = gfx::OddSize::kOddHeightOnly;
+  else
+    size_enum = gfx::OddSize::kEvenWidthAndHeight;
+
+  base::UmaHistogramEnumeration("Media.GpuMemoryBufferVideoFramePool.Size",
+                                size_enum);
+  base::UmaHistogramEnumeration("Media.GpuMemoryBufferVideoFramePool.Size." +
+                                    PixelFormatToString(pixel_format),
+                                size_enum);
+
+  gfx::OddOffset offset_enum;
+  if (odd_x && odd_y)
+    offset_enum = gfx::OddOffset::kOddXAndY;
+  else if (odd_x)
+    offset_enum = gfx::OddOffset::kOddXOnly;
+  else if (odd_y)
+    offset_enum = gfx::OddOffset::kOddYOnly;
+  else
+    offset_enum = gfx::OddOffset::kEvenXAndY;
+
+  base::UmaHistogramEnumeration("Media.GpuMemoryBufferVideoFramePool.Offset",
+                                offset_enum);
+  base::UmaHistogramEnumeration("Media.GpuMemoryBufferVideoFramePool.Offset." +
+                                    PixelFormatToString(pixel_format),
+                                offset_enum);
+}
+}  // namespace
 
 const base::Feature kMultiPlaneSoftwareVideoSharedImages {
   "MultiPlaneSoftwareVideoSharedImages",
@@ -749,6 +813,8 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::CreateHardwareFrame(
     case PIXEL_FORMAT_YUV420P10:
     case PIXEL_FORMAT_I420A:
     case PIXEL_FORMAT_NV12:
+      RecordVideoFrameSizeAndOffsetHistogram(
+          pixel_format, video_frame->coded_size(), video_frame->visible_rect());
       break;
     // Unsupported cases.
     case PIXEL_FORMAT_I422:

@@ -66432,6 +66432,20 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="Unknown"/>
 </enum>
 
+<enum name="OddOffset">
+  <int value="0" label="Even offset"/>
+  <int value="1" label="Odd x only"/>
+  <int value="2" label="Odd y only"/>
+  <int value="3" label="Odd x and y"/>
+</enum>
+
+<enum name="OddSize">
+  <int value="0" label="Even size"/>
+  <int value="1" label="Odd width only"/>
+  <int value="2" label="Odd height only"/>
+  <int value="3" label="Odd width and height"/>
+</enum>
+
 <enum name="OfficeFileHandler">
   <int value="0" label="Other"/>
   <int value="1" label="Web Drive Office"/>

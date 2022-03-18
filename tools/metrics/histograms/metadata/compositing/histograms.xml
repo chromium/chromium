@@ -478,6 +478,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Compositing.Renderer.CALayer.OddOffsetVideo" enum="OddOffset"
+    expires_after="2022-09-17">
+  <owner>magchen@chromium.org</owner>
+  <owner>ccameron@chromium.org</owner>
+  <summary>
+    Recorded whether the draw frame contains an odd offset video when processing
+    CALayerOverlay.
+  </summary>
+</histogram>
+
+<histogram name="Compositing.Renderer.CALayer.OddSizedVideo" enum="OddSize"
+    expires_after="2022-09-17">
+  <owner>magchen@chromium.org</owner>
+  <owner>ccameron@chromium.org</owner>
+  <summary>
+    Recorded whether the draw frame contains an odd sized video when processing
+    CALayerOverlay.
+  </summary>
+</histogram>
+
 <histogram name="Compositing.Renderer.CALayerResult" enum="CALayerResult"
     expires_after="2022-09-11">
   <owner>ccameron@chromium.org</owner>
