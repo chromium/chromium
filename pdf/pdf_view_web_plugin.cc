@@ -96,6 +96,8 @@ namespace chrome_pdf {
 
 namespace {
 
+constexpr base::TimeDelta kFindResultCooldown = base::Milliseconds(100);
+
 // Initialization performed per renderer process. Initialization may be
 // triggered from multiple plugin instances, but should only execute once.
 //
@@ -637,17 +639,20 @@ bool PdfViewWebPlugin::StartFind(const blink::WebString& search_text,
                                  bool case_sensitive,
                                  int identifier) {
   find_identifier_ = identifier;
-  return PdfViewPluginBase::StartFind(search_text.Utf8(), case_sensitive);
+  engine()->StartFind(search_text.Utf8(), case_sensitive);
+  return true;
 }
 
 void PdfViewWebPlugin::SelectFindResult(bool forward, int identifier) {
   find_identifier_ = identifier;
-  PdfViewPluginBase::SelectFindResult(forward);
+  engine()->SelectFindResult(forward);
 }
 
 void PdfViewWebPlugin::StopFind() {
   find_identifier_ = -1;
-  PdfViewPluginBase::StopFind();
+  engine()->StopFind();
+  tickmarks_.clear();
+  container_wrapper_->ReportFindInPageTickmarks(tickmarks_);
 }
 
 bool PdfViewWebPlugin::CanRotateView() {
@@ -703,6 +708,47 @@ void PdfViewWebPlugin::ImeFinishComposingTextForPlugin(
 
 void PdfViewWebPlugin::UpdateCursor(ui::mojom::CursorType new_cursor_type) {
   set_cursor_type(new_cursor_type);
+}
+
+void PdfViewWebPlugin::UpdateTickMarks(
+    const std::vector<gfx::Rect>& tickmarks) {
+  float inverse_scale = 1.0f / device_scale();
+  tickmarks_.clear();
+  tickmarks_.reserve(tickmarks.size());
+  std::transform(tickmarks.begin(), tickmarks.end(),
+                 std::back_inserter(tickmarks_),
+                 [inverse_scale](const gfx::Rect& t) -> gfx::Rect {
+                   return gfx::ScaleToEnclosingRect(t, inverse_scale);
+                 });
+}
+
+void PdfViewWebPlugin::NotifyNumberOfFindResultsChanged(int total,
+                                                        bool final_result) {
+  // We don't want to spam the renderer with too many updates to the number of
+  // find results. Don't send an update if we sent one too recently. If it's the
+  // final update, we always send it though.
+  if (recently_sent_find_update_ && !final_result)
+    return;
+
+  // After stopping search and setting `find_identifier_` to -1 there still may
+  // be a NotifyNumberOfFindResultsChanged notification pending from engine.
+  // Just ignore them.
+  if (find_identifier_ != -1) {
+    container_wrapper_->ReportFindInPageMatchCount(find_identifier_, total,
+                                                   final_result);
+  }
+
+  container_wrapper_->ReportFindInPageTickmarks(tickmarks_);
+
+  if (final_result)
+    return;
+
+  recently_sent_find_update_ = true;
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&PdfViewWebPlugin::ResetRecentlySentFindUpdate,
+                     weak_factory_.GetWeakPtr()),
+      kFindResultCooldown);
 }
 
 void PdfViewWebPlugin::NotifySelectedFindResultChanged(int current_find_index) {
@@ -923,22 +969,6 @@ void PdfViewWebPlugin::SetAccessibilityViewportInfo(
                      weak_factory_.GetWeakPtr(), std::move(viewport_info)));
 }
 
-void PdfViewWebPlugin::NotifyFindResultsChanged(int total, bool final_result) {
-  // After stopping search and setting `find_identifier_` to -1 there still may
-  // be a NotifyNumberOfFindResultsChanged notification pending from engine.
-  // Just ignore them.
-  if (find_identifier_ == -1 || !container_wrapper_)
-    return;
-
-  container_wrapper_->ReportFindInPageMatchCount(find_identifier_, total,
-                                                 final_result);
-}
-
-void PdfViewWebPlugin::NotifyFindTickmarks(
-    const std::vector<gfx::Rect>& tickmarks) {
-  container_wrapper_->ReportFindInPageTickmarks(tickmarks);
-}
-
 void PdfViewWebPlugin::SetContentRestrictions(int content_restrictions) {
   auto* service = GetPdfService();
   if (!service)
@@ -1119,6 +1149,10 @@ void PdfViewWebPlugin::OnSetAccessibilityViewportInfo(
 
 pdf::mojom::PdfService* PdfViewWebPlugin::GetPdfService() {
   return pdf_service_remote_.is_bound() ? pdf_service_remote_.get() : nullptr;
+}
+
+void PdfViewWebPlugin::ResetRecentlySentFindUpdate() {
+  recently_sent_find_update_ = false;
 }
 
 }  // namespace chrome_pdf

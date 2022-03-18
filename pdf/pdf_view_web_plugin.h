@@ -234,10 +234,11 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
       int relative_cursor_pos) override;
   void ImeFinishComposingTextForPlugin(bool keep_selection) override;
 
-  // PdfViewPluginBase:
+  // PDFEngine::Client:
   void UpdateCursor(ui::mojom::CursorType new_cursor_type) override;
+  void UpdateTickMarks(const std::vector<gfx::Rect>& tickmarks) override;
+  void NotifyNumberOfFindResultsChanged(int total, bool final_result) override;
   void NotifySelectedFindResultChanged(int current_find_index) override;
-  void CaretChanged(const gfx::Rect& caret_rect) override;
   void Alert(const std::string& message) override;
   bool Confirm(const std::string& message) override;
   std::string Prompt(const std::string& question,
@@ -245,8 +246,11 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   std::vector<SearchStringResult> SearchString(const char16_t* string,
                                                const char16_t* term,
                                                bool case_sensitive) override;
+  void CaretChanged(const gfx::Rect& caret_rect) override;
   void SetSelectedText(const std::string& selected_text) override;
   bool IsValidLink(const std::string& url) override;
+
+  // PdfViewPluginBase:
   std::unique_ptr<Graphics> CreatePaintGraphics(const gfx::Size& size) override;
   bool BindPaintGraphics(Graphics& graphics) override;
 
@@ -303,8 +307,6 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
                                 AccessibilityPageObjects page_objects) override;
   void SetAccessibilityViewportInfo(
       AccessibilityViewportInfo viewport_info) override;
-  void NotifyFindResultsChanged(int total, bool final_result) override;
-  void NotifyFindTickmarks(const std::vector<gfx::Rect>& tickmarks) override;
   void SetContentRestrictions(int content_restrictions) override;
   void SetPluginCanSave(bool can_save) override;
   void PluginDidStartLoading() override;
@@ -375,6 +377,8 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   // May be null in unit tests.
   pdf::mojom::PdfService* GetPdfService();
 
+  void ResetRecentlySentFindUpdate();
+
   blink::WebString selected_text_;
 
   std::unique_ptr<Client> const client_;
@@ -430,6 +434,13 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   // May be null in unit tests.
   std::unique_ptr<PdfAccessibilityDataHandler> const
       pdf_accessibility_data_handler_;
+
+  // Whether an update to the number of find results found was sent less than
+  // `kFindResultCooldown` TimeDelta ago.
+  bool recently_sent_find_update_ = false;
+
+  // Stores the tickmarks to be shown for the current find results.
+  std::vector<gfx::Rect> tickmarks_;
 
   // The metafile in which to save the printed output. Assigned a value only
   // between `PrintBegin()` and `PrintEnd()` calls.

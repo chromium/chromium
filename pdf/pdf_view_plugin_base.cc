@@ -86,8 +86,6 @@ constexpr double kMinZoom = 0.01;
 // responsive.
 constexpr base::TimeDelta kAccessibilityPageDelay = base::Milliseconds(100);
 
-constexpr base::TimeDelta kFindResultCooldown = base::Milliseconds(100);
-
 constexpr char kChromeExtensionHost[] =
     "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/";
 
@@ -295,40 +293,6 @@ void PdfViewPluginBase::NavigateToDestination(int page,
   if (zoom)
     message.SetDoubleKey("zoom", *zoom);
   SendMessage(std::move(message));
-}
-
-void PdfViewPluginBase::UpdateTickMarks(
-    const std::vector<gfx::Rect>& tickmarks) {
-  float inverse_scale = 1.0f / device_scale_;
-  tickmarks_.clear();
-  tickmarks_.reserve(tickmarks.size());
-  std::transform(tickmarks.begin(), tickmarks.end(),
-                 std::back_inserter(tickmarks_),
-                 [inverse_scale](const gfx::Rect& t) -> gfx::Rect {
-                   return gfx::ScaleToEnclosingRect(t, inverse_scale);
-                 });
-}
-
-void PdfViewPluginBase::NotifyNumberOfFindResultsChanged(int total,
-                                                         bool final_result) {
-  // We don't want to spam the renderer with too many updates to the number of
-  // find results. Don't send an update if we sent one too recently. If it's the
-  // final update, we always send it though.
-  if (recently_sent_find_update_ && !final_result)
-    return;
-
-  NotifyFindResultsChanged(total, final_result);
-  NotifyFindTickmarks(tickmarks_);
-
-  if (final_result)
-    return;
-
-  recently_sent_find_update_ = true;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&PdfViewPluginBase::ResetRecentlySentFindUpdate,
-                     GetWeakPtr()),
-      kFindResultCooldown);
 }
 
 void PdfViewPluginBase::NotifyTouchSelectionOccurred() {
@@ -1061,22 +1025,6 @@ void PdfViewPluginBase::PrepareAndSetAccessibilityViewportInfo() {
   SetAccessibilityViewportInfo(std::move(viewport_info));
 }
 
-bool PdfViewPluginBase::StartFind(const std::string& text,
-                                  bool case_sensitive) {
-  engine_->StartFind(text, case_sensitive);
-  return true;
-}
-
-void PdfViewPluginBase::SelectFindResult(bool forward) {
-  engine_->SelectFindResult(forward);
-}
-
-void PdfViewPluginBase::StopFind() {
-  engine_->StopFind();
-  tickmarks_.clear();
-  NotifyFindTickmarks(tickmarks_);
-}
-
 gfx::Vector2d PdfViewPluginBase::plugin_offset_in_frame() const {
   return plugin_rect_.OffsetFromOrigin();
 }
@@ -1656,10 +1604,6 @@ void PdfViewPluginBase::LoadAccessibility() {
       base::BindOnce(&PdfViewPluginBase::PrepareAndSetAccessibilityPageInfo,
                      GetWeakPtr(), /*page_index=*/0),
       kAccessibilityPageDelay);
-}
-
-void PdfViewPluginBase::ResetRecentlySentFindUpdate() {
-  recently_sent_find_update_ = false;
 }
 
 namespace {

@@ -107,8 +107,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
                              const float* x,
                              const float* y,
                              const float* zoom) override;
-  void UpdateTickMarks(const std::vector<gfx::Rect>& tickmarks) override;
-  void NotifyNumberOfFindResultsChanged(int total, bool final_result) override;
   void NotifyTouchSelectionOccurred() override;
   void GetDocumentPassword(
       base::OnceCallback<void(const std::string&)> callback) override;
@@ -320,17 +318,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   virtual void SetAccessibilityViewportInfo(
       AccessibilityViewportInfo viewport_info) = 0;
 
-  // Find handlers.
-  bool StartFind(const std::string& text, bool case_sensitive);
-  void SelectFindResult(bool forward);
-  void StopFind();
-
-  // Notify the plugin container about the total matches for a find request.
-  virtual void NotifyFindResultsChanged(int total, bool final_result) = 0;
-
-  // Notify the frame about the tickmarks for the find request.
-  virtual void NotifyFindTickmarks(const std::vector<gfx::Rect>& tickmarks) = 0;
-
   // Returns the print preset options for the document.
   blink::WebPrintPresetOptions GetPrintPresetOptions();
 
@@ -481,8 +468,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // Starts loading accessibility information.
   void LoadAccessibility();
 
-  void ResetRecentlySentFindUpdate();
-
   // Records metrics about the attachment types.
   void RecordAttachmentTypes();
 
@@ -630,13 +615,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // The next accessibility page index, used to track interprocess calls when
   // reconstructing the tree for new document layouts.
   int32_t next_accessibility_page_index_ = 0;
-
-  // Whether an update to the number of find results found was sent less than
-  // `kFindResultCooldownMs` milliseconds ago.
-  bool recently_sent_find_update_ = false;
-
-  // Stores the tickmarks to be shown for the current find results.
-  std::vector<gfx::Rect> tickmarks_;
 
   // Keeps track of which unsupported features have been reported to avoid
   // spamming the metrics if a feature shows up many times per document.
