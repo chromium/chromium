@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 export class CrSplitterElement extends PolymerElement {
@@ -19,36 +20,23 @@ export class CrSplitterElement extends PolymerElement {
     };
   }
 
-  constructor() {
-    super();
+  private handlers_: Map<string, (e: any) => void>|null = null;
+  private startX_: number = 0;
+  private startWidth_: number = -1;
+  resizeNextElement: boolean = false;
 
-    /** @private {?Map<string, !Function>} */
-    this.handlers_ = null;
-
-    /** @private {number} */
-    this.startX_ = 0;
-
-    /** @private {number} */
-    this.startWidth_ = -1;
-
-    /** @type {boolean} */
-    this.resizeNextElement = false;
-  }
-
-  ready() {
+  override ready() {
     super.ready();
     this.addEventListener('mousedown', e => this.onMouseDown_(e));
     this.addEventListener('touchstart', e => this.onTouchStart_(e));
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.handlers_ = new Map();
   }
 
-  /** @override */
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
     this.removeAllHandlers_();
     this.handlers_ = null;
@@ -57,15 +45,18 @@ export class CrSplitterElement extends PolymerElement {
   /**
    * Starts the dragging of the splitter. Adds listeners for mouse or touch
    * events and calls splitter drag start handler.
-   * @param {number} clientX X position of the mouse or touch event that
-   *                         started the drag.
-   * @param {boolean} isTouchEvent True if the drag started by touch event.
+   * @param clientX X position of the mouse or touch event that started the
+   *     drag.
+   * @param isTouchEvent True if the drag started by touch event.
    */
-  startDrag(clientX, isTouchEvent) {
-    if (this.handlers_) {
+  startDrag(clientX: number, isTouchEvent: boolean) {
+    assert(!!this.handlers_);
+
+    if (this.handlers_.size > 0) {
       // Concurrent drags
       this.endDrag_();
     }
+
     if (isTouchEvent) {
       const endDragBound = this.endDrag_.bind(this);
       this.handlers_.set('touchmove', this.handleTouchMove_.bind(this));
@@ -92,11 +83,10 @@ export class CrSplitterElement extends PolymerElement {
     this.handleSplitterDragStart_();
   }
 
-  /** @private */
-  removeAllHandlers_() {
+  private removeAllHandlers_() {
     const doc = this.ownerDocument;
-    const handlers = /** @type {!Map<string, !Function>} */ (this.handlers_);
-    for (const [eventType, handler] of handlers) {
+    assert(!!this.handlers_);
+    for (const [eventType, handler] of this.handlers_) {
       doc.removeEventListener(
           /** @type {string} */ (eventType),
           /** @type {Function} */ (handler), true);
@@ -107,39 +97,30 @@ export class CrSplitterElement extends PolymerElement {
   /**
    * Ends the dragging of the splitter. Removes listeners set in startDrag
    * and calls splitter drag end handler.
-   * @private
    */
-  endDrag_() {
+  private endDrag_() {
     this.removeAllHandlers_();
     this.handleSplitterDragEnd_();
   }
 
-  /**
-   * @return {Element}
-   * @private
-   */
-  getResizeTarget_() {
-    return this.resizeNextElement ? this.nextElementSibling :
-                                    this.previousElementSibling;
+  private getResizeTarget_(): HTMLElement {
+    const target = this.resizeNextElement ? this.nextElementSibling :
+                                            this.previousElementSibling;
+    return target as HTMLElement;
   }
 
   /**
    * Calculate width to resize target element.
-   * @param {number} deltaX horizontal drag amount
-   * @return {number}
-   * @private
+   * @param deltaX horizontal drag amount
    */
-  calcDeltaX_(deltaX) {
+  private calcDeltaX_(deltaX: number): number {
     return this.resizeNextElement ? -deltaX : deltaX;
   }
 
   /**
    * Handles the mousedown event which starts the dragging of the splitter.
-   * @param {!Event} e The mouse event.
-   * @private
    */
-  onMouseDown_(e) {
-    e = /** @type {!MouseEvent} */ (e);
+  private onMouseDown_(e: MouseEvent) {
     if (e.button) {
       return;
     }
@@ -150,13 +131,10 @@ export class CrSplitterElement extends PolymerElement {
 
   /**
    * Handles the touchstart event which starts the dragging of the splitter.
-   * @param {!Event} e The touch event.
-   * @private
    */
-  onTouchStart_(e) {
-    e = /** @type {!TouchEvent} */ (e);
+  private onTouchStart_(e: TouchEvent) {
     if (e.touches.length === 1) {
-      this.startDrag(e.touches[0].clientX, true);
+      this.startDrag(e.touches[0]!.clientX, true);
       e.preventDefault();
     }
   }
@@ -164,30 +142,26 @@ export class CrSplitterElement extends PolymerElement {
   /**
    * Handles the mousemove event which moves the splitter as the user moves
    * the mouse.
-   * @param {!MouseEvent} e The mouse event.
-   * @private
    */
-  handleMouseMove_(e) {
+  private handleMouseMove_(e: MouseEvent) {
     this.handleMove_(e.clientX);
   }
 
   /**
    * Handles the touch move event.
-   * @param {!TouchEvent} e The touch event.
    */
-  handleTouchMove_(e) {
+  private handleTouchMove_(e: TouchEvent) {
     if (e.touches.length === 1) {
-      this.handleMove_(e.touches[0].clientX);
+      this.handleMove_(e.touches[0]!.clientX);
     }
   }
 
   /**
    * Common part of handling mousemove and touchmove. Calls splitter drag
    * move handler.
-   * @param {number} clientX X position of the mouse or touch event.
-   * @private
+   * @param clientX X position of the mouse or touch event.
    */
-  handleMove_(clientX) {
+  private handleMove_(clientX: number) {
     const deltaX = this.matches(':host-context([dir=rtl]) cr-splitter') ?
         this.startX_ - clientX :
         clientX - this.startX_;
@@ -196,26 +170,23 @@ export class CrSplitterElement extends PolymerElement {
 
   /**
    * Handles the mouse up event which ends the dragging of the splitter.
-   * @param {!MouseEvent} e The mouse event.
-   * @private
    */
-  handleMouseUp_(e) {
+  private handleMouseUp_(_e: MouseEvent) {
     this.endDrag_();
   }
 
   /**
    * Handles start of the splitter dragging. Saves current width of the
    * element being resized.
-   * @private
    */
-  handleSplitterDragStart_() {
+  private handleSplitterDragStart_() {
     // Use the computed width style as the base so that we can ignore what
     // box sizing the element has. Add the difference between offset and
     // client widths to account for any scrollbars.
     const targetElement = this.getResizeTarget_();
     const doc = targetElement.ownerDocument;
     this.startWidth_ =
-        parseFloat(doc.defaultView.getComputedStyle(targetElement).width) +
+        parseFloat(doc.defaultView!.getComputedStyle(targetElement).width) +
         targetElement.offsetWidth - targetElement.clientWidth;
 
     this.classList.add('splitter-active');
@@ -223,10 +194,9 @@ export class CrSplitterElement extends PolymerElement {
 
   /**
    * Handles splitter moves. Updates width of the element being resized.
-   * @param {number} deltaX The change of splitter horizontal position.
-   * @private
+   * @param deltaX The change of splitter horizontal position.
    */
-  handleSplitterDragMove_(deltaX) {
+  private handleSplitterDragMove_(deltaX: number) {
     const targetElement = this.getResizeTarget_();
     const newWidth = this.startWidth_ + this.calcDeltaX_(deltaX);
     targetElement.style.width = newWidth + 'px';
@@ -236,14 +206,13 @@ export class CrSplitterElement extends PolymerElement {
   /**
    * Handles end of the splitter dragging. This fires a 'resize' event if the
    * size changed.
-   * @private
    */
-  handleSplitterDragEnd_() {
+  private handleSplitterDragEnd_() {
     // Check if the size changed.
     const targetElement = this.getResizeTarget_();
     const doc = targetElement.ownerDocument;
     const computedWidth =
-        parseFloat(doc.defaultView.getComputedStyle(targetElement).width);
+        parseFloat(doc.defaultView!.getComputedStyle(targetElement).width);
     if (this.startWidth_ !== computedWidth) {
       this.dispatchEvent(new CustomEvent('resize'));
     }

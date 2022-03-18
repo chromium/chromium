@@ -46,13 +46,12 @@ group("preprocess") {
 }
 
 preprocess_if_expr("preprocess_src") {
-  in_folder = "./"
+  in_folder = "."
   out_folder = "$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_src_manifest"
   in_files = [
     "cr_auto_img/cr_auto_img.js",
     "cr_search_field/cr_search_field_behavior.js",
-    "cr_splitter/cr_splitter.js",
   ]
 
   if (is_chromeos_ash) {
@@ -67,10 +66,11 @@ preprocess_if_expr("preprocess_src") {
 # TS files are passed to a separate target so that they are not listed in the
 # |out_manifest|.
 preprocess_if_expr("preprocess_src_ts") {
-  in_folder = "./"
+  in_folder = "."
   out_folder = preprocess_folder
   in_files = [
     "cr_container_shadow_mixin.ts",
+    "cr_splitter/cr_splitter.ts",
     "find_shortcut_mixin.ts",
     "mouse_hoverable_mixin.ts",
   ]
@@ -244,7 +244,6 @@ group("closure_compile") {
     "cr_menu_selector:closure_compile",
     "cr_radio_button:closure_compile",
     "cr_radio_group:closure_compile",
-    "cr_splitter:closure_compile",
     "cr_toggle:closure_compile",
     "policy:closure_compile",
 
