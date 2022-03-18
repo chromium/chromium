@@ -247958,10 +247958,6 @@
        "ecd72b7516c41c83b6e8d320c9b0b87f9c231781",
        []
       ],
-      "layout-dependent-focus-expected.txt": [
-       "c69221b27d619ce342cc52163d2b42d778d450c2",
-       []
-      ],
       "multicol-container-001-expected.txt": [
        "81e1ba5e89ba840e12b22c5475412827d6db71f5",
        []
@@ -282011,7 +282007,7 @@
    },
    "docs": {
     "Dockerfile": [
-     "e8ae834bd4fcab002b75bdd171e85eb9e81b9cfb",
+     "e6b3df3f62095c91db9c55d9212a900d0c062086",
      []
     ],
     "META.yml": [
@@ -282107,7 +282103,7 @@
      []
     ],
     "frontend.py": [
-     "3f06e3c1430d4e504bd6053f0fdd935d8af6c588",
+     "c8d114b39f6fc2b35d31ee80f82f43e2f9be0b9e",
      []
     ],
     "index.md": [
@@ -324302,10 +324298,6 @@
      "ed647bbe78fed07eb31fb89274edee8be96ae8e8",
      []
     ],
-    "RTCPeerConnection-plan-b-is-not-supported-expected.txt": [
-     "637f3d231b8bb5def498d7953a6ff76ea7f2f13d",
-     []
-    ],
     "RTCPeerConnection-restartIce.https-expected.txt": [
      "7f2351afac9482f1cc4ff6d9da58b2197466b116",
      []
@@ -360348,6 +360340,13 @@
       ],
       "block-in-inline-hittest-001.html": [
        "c51e4c5329a686808009f04d0392f688aacbd236",
+       [
+        null,
+        {}
+       ]
+      ],
+      "block-in-inline-hittest-002.html": [
+       "b01eaa93ff155dce437ebe4c72baf03fb2c99f9e",
        [
         null,
         {}

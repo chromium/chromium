@@ -4310,7 +4310,7 @@ crbug.com/626703 external/wpt/screen-orientation/orientation-reading.html [ Time
 crbug.com/626703 external/wpt/html/browsers/browsing-the-web/unloading-documents/prompt-and-unload-script-closeable.html [ Failure ]
 
 # Tests that rely on a non-exposed test-only API. Tested in virtual/task-tracking
-wpt_internal/task-tracking/* [ Skip Failure ]
+wpt_internal/task-tracking/* [ Failure Skip ]
 virtual/task-tracking/* [ Pass ]
 
 # navigation.sub.html fails or times out when run with run_web_tests.py but passes with run_wpt_tests.py
