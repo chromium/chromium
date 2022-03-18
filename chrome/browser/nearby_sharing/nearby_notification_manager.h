@@ -38,14 +38,16 @@ class NearbyNotificationManager : public TransferUpdateCallback,
     kCopyImage,
     kOpenDownloads,
     kOpenUrl,
+    kOpenWifiNetworksList,
   };
 
   // Type of content we received that determines the actions we provide.
   enum class ReceivedContentType {
-    kFiles,        // One or more generic files
-    kSingleImage,  // One image that will be shown as a preview
-    kSingleUrl,    // One URL that will be opened on click.
-    kText,         // Arbitrary text content
+    kFiles,            // One or more generic files
+    kSingleImage,      // One image that will be shown as a preview
+    kSingleUrl,        // One URL that will be opened on click.
+    kText,             // Arbitrary text content
+    kWifiCredentials,  // Wi-Fi credentials for a network configuration
   };
 
   class SettingsOpener {
@@ -132,6 +134,9 @@ class NearbyNotificationManager : public TransferUpdateCallback,
       const std::string& notification_id);
 
   void OpenURL(GURL url);
+
+  // Opens Wi-Fi Networks subpage in Settings.
+  void OpenWifiNetworksList();
 
   // Cancels the currently in progress transfer.
   void CancelTransfer();
