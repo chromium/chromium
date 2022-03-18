@@ -61,9 +61,6 @@ template("trichrome_library_apk_tmpl") {
 
     alternative_android_sdk_dep = webview_framework_dep
     if (trichrome_synchronized_proguard) {
-      # TODO(crbug.com/956839): Remove this once R8 fixes the class merging
-      # and/or inlining bugs.
-      disable_r8_outlining = true
       if (defined(invoker.webview_target) && defined(invoker.chrome_target)) {
         shared_resources_allowlist_locales = locales
         static_library_dependent_targets = [

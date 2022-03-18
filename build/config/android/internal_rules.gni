@@ -1241,10 +1241,6 @@ if (enable_java_templates) {
     }
     _outputs += [ _mapping_path ]
 
-    if (defined(invoker.disable_r8_outlining) && invoker.disable_r8_outlining) {
-      _args += [ "--disable-outlining" ]
-    }
-
     if (defined(invoker.enable_proguard_checks) &&
         !invoker.enable_proguard_checks) {
       _args += [ "--disable-checks" ]
@@ -1478,7 +1474,6 @@ if (enable_java_templates) {
                                      "data_deps",
                                      "deps",
                                      "desugar_jars_paths",
-                                     "disable_r8_outlining",
                                      "enable_proguard_checks",
                                      "expected_proguard_config",
                                      "expected_proguard_config_base",

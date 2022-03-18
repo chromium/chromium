@@ -22,21 +22,6 @@ from util import diff_utils
 sys.path.insert(1, os.path.dirname(os.path.dirname(__file__)))
 from pylib.dex import dex_parser
 
-_API_LEVEL_VERSION_CODE = [
-    (21, 'L'),
-    (22, 'LollipopMR1'),
-    (23, 'M'),
-    (24, 'N'),
-    (25, 'NMR1'),
-    (26, 'O'),
-    (27, 'OMR1'),
-    (28, 'P'),
-    (29, 'Q'),
-    (30, 'R'),
-    (31, 'S'),
-]
-
-
 def _ParseOptions():
   args = build_utils.ExpandFileArgs(sys.argv[1:])
   parser = argparse.ArgumentParser()
@@ -85,10 +70,6 @@ def _ParseOptions():
       '--verbose', '-v', action='store_true', help='Print all ProGuard output')
   parser.add_argument(
       '--repackage-classes', help='Package all optimized classes are put in.')
-  parser.add_argument(
-      '--disable-outlining',
-      action='store_true',
-      help='Disable the outlining optimization provided by R8.')
   parser.add_argument(
     '--disable-checks',
     action='store_true',
@@ -307,11 +288,8 @@ def _OptimizeWithR8(options,
 
     # R8 OOMs with the default xmx=1G.
     cmd = build_utils.JavaCmd(options.warnings_as_errors, xmx='2G') + [
-        '-Dcom.android.tools.r8.allowTestProguardOptions=1',
         '-Dcom.android.tools.r8.disableHorizontalClassMerging=1',
     ]
-    if options.disable_outlining:
-      cmd += ['-Dcom.android.tools.r8.disableOutlining=1']
     if options.dump_inputs:
       cmd += ['-Dcom.android.tools.r8.dumpinputtofile=r8inputs.zip']
     cmd += [
