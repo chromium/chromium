@@ -138,8 +138,6 @@ class PLATFORM_EXPORT FloatRoundedRect {
   void SetRadii(const Radii& radii) { radii_ = radii; }
 
   void Move(const gfx::Vector2dF& offset) { rect_.Offset(offset); }
-  // TODO(wangxianzhu): Consider merging this into Outset().
-  void InflateWithRadii(int size);
 
   // Inflates/shrinks the rounded rect by the specified amount on each side and
   // corner. Zero widths and heights of radii are kept zero so that sharp

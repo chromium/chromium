@@ -225,21 +225,6 @@ void FloatRoundedRect::OutsetForMarginOrShadow(float size) {
   radii_.OutsetForMarginOrShadow(size);
 }
 
-void FloatRoundedRect::InflateWithRadii(int size) {
-  gfx::RectF old = rect_;
-
-  rect_.Outset(size);
-  // Considering the inflation factor of shorter size to scale the radii seems
-  // appropriate here
-  float factor;
-  if (rect_.width() < rect_.height())
-    factor = old.width() ? (float)rect_.width() / old.width() : int(0);
-  else
-    factor = old.height() ? (float)rect_.height() / old.height() : int(0);
-
-  radii_.Scale(factor);
-}
-
 bool FloatRoundedRect::IntersectsQuad(const gfx::QuadF& quad) const {
   if (!quad.IntersectsRect(rect_))
     return false;

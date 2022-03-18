@@ -140,7 +140,7 @@ void BoxPainterBase::PaintNormalBoxShadow(const PaintInfo& info,
         // introduces subpixel gaps along the corners. Those are avoided by
         // insetting the clipping path by one CSS pixel.
         if (has_opaque_background)
-          rect_to_clip_out.InflateWithRadii(-1);
+          rect_to_clip_out.Inset(1);
 
         if (!rect_to_clip_out.IsEmpty())
           context.ClipOutRoundedRect(rect_to_clip_out);
