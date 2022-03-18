@@ -31,24 +31,24 @@ ts_library("build_ts") {
                     target_gen_dir),
   ]
   in_files = [
-    "basic_plugin_test.ts",
+    "basic_plugin_test.js",
     "basic_test.js",
-    "beep_test.ts",
+    "beep_test.js",
     "bookmarks_test.js",
     "download_controls_test.js",
     "fullscreen_test.js",
     "gesture_detector_test.js",
-    "layout_test.ts",
+    "layout_test.js",
     "material_elements_test.js",
     "metrics_test.js",
     "navigator_test.js",
-    "nobeep_test.ts",
+    "nobeep_test.js",
     "page_change_test.js",
     "params_parser_test.js",
-    "post_message_proxy_test.ts",
+    "post_message_proxy_test.js",
     "scroll_with_form_field_focused_test.js",
     "test_util.js",
-    "title_test.ts",
+    "title_test.js",
     "touch_handling_test.js",
     "viewer_password_dialog_test.js",
     "viewer_pdf_sidenav_test.js",
@@ -58,7 +58,7 @@ ts_library("build_ts") {
     "viewer_toolbar_test.js",
     "viewport_scroller_test.js",
     "viewport_test.js",
-    "whitespace_title_test.ts",
+    "whitespace_title_test.js",
     "zoom_manager_test.js",
   ]
 
@@ -71,10 +71,9 @@ ts_library("build_ts") {
   }
 
   if (is_chromeos_ash) {
-    in_files += [ "printing_icon_test.ts" ]
+    in_files += [ "printing_icon_test.js" ]
   }
 
-  definitions =
-      ts_definitions + [ "//tools/typescript/definitions/chrome_test.d.ts" ]
+  definitions = ts_definitions
   deps = [ "//chrome/browser/resources/pdf:build_ts" ]
 }
