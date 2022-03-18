@@ -49,6 +49,11 @@ struct BLINK_COMMON_EXPORT
     return interest_group.name;
   }
 
+  static double priority(const blink::InterestGroup& interest_group) {
+    DCHECK(interest_group.priority);
+    return interest_group.priority.value_or(0);
+  }
+
   static const absl::optional<GURL>& bidding_url(
       const blink::InterestGroup& interest_group) {
     return interest_group.bidding_url;

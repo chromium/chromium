@@ -4,6 +4,7 @@
 
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 
+#include <cmath>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -63,12 +64,13 @@ bool InterestGroup::Ad::operator==(const Ad& other) const {
   return render_url == other.render_url && metadata == other.metadata;
 }
 
-InterestGroup::InterestGroup() = default;
+InterestGroup::InterestGroup() : priority(0.0) {}
 
 InterestGroup::InterestGroup(
     base::Time expiry,
     url::Origin owner,
     std::string name,
+    double priority,
     absl::optional<GURL> bidding_url,
     absl::optional<GURL> bidding_wasm_helper_url,
     absl::optional<GURL> update_url,
@@ -80,6 +82,7 @@ InterestGroup::InterestGroup(
     : expiry(expiry),
       owner(std::move(owner)),
       name(std::move(name)),
+      priority(priority),
       bidding_url(std::move(bidding_url)),
       bidding_wasm_helper_url(std::move(bidding_wasm_helper_url)),
       update_url(std::move(update_url)),
@@ -96,6 +99,9 @@ InterestGroup::~InterestGroup() = default;
 // there, so they can be compared against each other.
 bool InterestGroup::IsValid() const {
   if (owner.scheme() != url::kHttpsScheme)
+    return false;
+
+  if (!priority || !std::isfinite(*priority))
     return false;
 
   if (bidding_url && !IsUrlAllowed(*bidding_url, *this))
@@ -140,6 +146,10 @@ size_t InterestGroup::EstimateSize() const {
   size_t size = 0u;
   size += owner.Serialize().size();
   size += name.size();
+
+  // priority is not stored as nullable, so only count the value size.
+  size += sizeof(decltype(priority)::value_type);
+
   if (bidding_url)
     size += bidding_url->spec().length();
   if (bidding_wasm_helper_url)
@@ -166,13 +176,13 @@ size_t InterestGroup::EstimateSize() const {
 }
 
 bool InterestGroup::IsEqualForTesting(const InterestGroup& other) const {
-  return std::tie(expiry, owner, name, bidding_url, bidding_wasm_helper_url,
-                  update_url, trusted_bidding_signals_url,
-                  trusted_bidding_signals_keys, user_bidding_signals, ads,
-                  ad_components) ==
-         std::tie(other.expiry, other.owner, other.name, other.bidding_url,
-                  other.bidding_wasm_helper_url, other.update_url,
-                  other.trusted_bidding_signals_url,
+  return std::tie(expiry, owner, name, priority, bidding_url,
+                  bidding_wasm_helper_url, update_url,
+                  trusted_bidding_signals_url, trusted_bidding_signals_keys,
+                  user_bidding_signals, ads, ad_components) ==
+         std::tie(other.expiry, other.owner, other.name, other.priority,
+                  other.bidding_url, other.bidding_wasm_helper_url,
+                  other.update_url, other.trusted_bidding_signals_url,
                   other.trusted_bidding_signals_keys,
                   other.user_bidding_signals, other.ads, other.ad_components);
 }

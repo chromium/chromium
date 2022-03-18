@@ -45,6 +45,7 @@ size_t EstimateBlinkInterestGroupSize(
   size_t size = 0u;
   size += group.owner->ToString().length();
   size += group.name.length();
+  size += sizeof(group.priority);
 
   if (group.bidding_url)
     size += group.bidding_url->GetString().length();
@@ -91,6 +92,13 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
     error_field_name = "owner";
     error_field_value = group.owner->ToString();
     error = "owner origin must be HTTPS.";
+    return false;
+  }
+
+  if (!std::isfinite(group.priority)) {
+    error_field_name = "priority";
+    error_field_value = String::NumberToStringECMAScript(group.priority);
+    error = "priority must be finite.";
     return false;
   }
 

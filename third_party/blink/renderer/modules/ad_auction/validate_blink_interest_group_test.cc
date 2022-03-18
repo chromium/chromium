@@ -486,15 +486,15 @@ TEST_F(ValidateBlinkInterestGroupTest, MalformedUrl) {
 TEST_F(ValidateBlinkInterestGroupTest, TooLarge) {
   mojom::blink::InterestGroupPtr blink_interest_group =
       CreateMinimalInterestGroup();
-  std::string long_string(51200, 'n');
+  std::string long_string(51173, 'n');
   blink_interest_group->name = String(long_string);
   ExpectInterestGroupIsNotValid(
       blink_interest_group, "size" /* expected_error_field_name */,
-      "51219" /* expected_error_field_value */,
+      "51200" /* expected_error_field_value */,
       "interest groups must be less than 51200 bytes" /* expected_error */);
 
   // Almost too big should still work.
-  long_string = std::string(51200 - 20, 'n');
+  long_string = std::string(51200 - 28, 'n');
   blink_interest_group->name = String(long_string);
 
   ExpectInterestGroupIsValid(blink_interest_group);
@@ -503,7 +503,7 @@ TEST_F(ValidateBlinkInterestGroupTest, TooLarge) {
 TEST_F(ValidateBlinkInterestGroupTest, TooLargeAds) {
   mojom::blink::InterestGroupPtr blink_interest_group =
       CreateMinimalInterestGroup();
-  blink_interest_group->name = "padding to 51200...............";
+  blink_interest_group->name = "padding to 51200.......";
   blink_interest_group->ad_components.emplace();
   for (int i = 0; i < 682; ++i) {
     // Each ad component is 75 bytes.
@@ -524,6 +524,27 @@ TEST_F(ValidateBlinkInterestGroupTest, TooLargeAds) {
   blink_interest_group->ad_components->resize(681);
 
   ExpectInterestGroupIsValid(blink_interest_group);
+}
+
+TEST_F(ValidateBlinkInterestGroupTest, InvalidPriority) {
+  struct {
+    double priority;
+    const char* priority_text;
+  } test_cases[] = {
+      {std::numeric_limits<double>::quiet_NaN(), "NaN"},
+      {std::numeric_limits<double>::signaling_NaN(), "NaN"},
+      {std::numeric_limits<double>::infinity(), "Infinity"},
+      {-std::numeric_limits<double>::infinity(), "-Infinity"},
+  };
+  for (const auto& test_case : test_cases) {
+    mojom::blink::InterestGroupPtr blink_interest_group =
+        CreateMinimalInterestGroup();
+    blink_interest_group->priority = test_case.priority;
+    ExpectInterestGroupIsNotValid(
+        blink_interest_group, "priority" /* expected_error_field_name */,
+        test_case.priority_text, /*expected_error_field_value */
+        "priority must be finite." /* expected_error */);
+  }
 }
 
 }  // namespace blink

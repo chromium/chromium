@@ -1415,10 +1415,10 @@ class AuctionRunnerTest : public testing::Test,
 
     StorageInterestGroup storage_group;
     storage_group.interest_group = blink::InterestGroup(
-        base::Time::Max(), std::move(owner), std::move(name),
+        base::Time::Max(), std::move(owner), std::move(name), /*priority=*/0.0,
         std::move(bidding_url),
         /*bidding_wasm_helper_url=*/absl::nullopt,
-        /*update_url=*/GURL(), std::move(trusted_bidding_signals_url),
+        /*update_url=*/absl::nullopt, std::move(trusted_bidding_signals_url),
         std::move(trusted_bidding_signals_keys), absl::nullopt, std::move(ads),
         std::move(ad_components));
     storage_group.bidding_browser_signals =
