@@ -5,11 +5,21 @@
 #include <cstddef>
 #include <cstdint>
 
+#include "base/at_exit.h"
 #include "base/check.h"
+#include "base/i18n/icu_util.h"
 #include "base/strings/string_piece.h"
 #include "media/formats/hls/media_playlist.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
+
+struct IcuEnvironment {
+  IcuEnvironment() { CHECK(base::i18n::InitializeICU()); }
+  // used by ICU integration.
+  base::AtExitManager at_exit_manager;
+};
+
+IcuEnvironment* env = new IcuEnvironment();
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // Create a StringPiece from the given input

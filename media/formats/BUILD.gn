@@ -348,6 +348,7 @@ fuzzer_test("hls_media_playlist_fuzzer") {
   sources = [ "hls/media_playlist_fuzzer.cc" ]
   deps = [
     "//base",
+    "//base:i18n",
     "//media",
   ]
 }
