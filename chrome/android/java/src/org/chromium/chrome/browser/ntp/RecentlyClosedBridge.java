@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -19,6 +20,7 @@ import java.util.List;
 /**
  * This class allows Java code to get and clear the list of recently closed tabs.
  */
+@JNINamespace("recent_tabs")
 public class RecentlyClosedBridge implements RecentlyClosedTabManager {
     private long mNativeBridge;
 
@@ -42,7 +44,7 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
     @Override
     public void destroy() {
         assert mNativeBridge != 0;
-        RecentlyClosedBridgeJni.get().destroy(mNativeBridge, RecentlyClosedBridge.this);
+        RecentlyClosedBridgeJni.get().destroy(mNativeBridge);
         mNativeBridge = 0;
         mTabsUpdatedRunnable = null;
     }
@@ -56,27 +58,25 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
     public List<RecentlyClosedTab> getRecentlyClosedTabs(int maxTabCount) {
         List<RecentlyClosedTab> tabs = new ArrayList<RecentlyClosedTab>();
         boolean received = RecentlyClosedBridgeJni.get().getRecentlyClosedTabs(
-                mNativeBridge, RecentlyClosedBridge.this, tabs, maxTabCount);
+                mNativeBridge, tabs, maxTabCount);
         return received ? tabs : null;
     }
 
     @Override
     public boolean openRecentlyClosedTab(
             TabModel tabModel, RecentlyClosedTab recentTab, int windowOpenDisposition) {
-        return RecentlyClosedBridgeJni.get().openRecentlyClosedTab(mNativeBridge,
-                RecentlyClosedBridge.this, tabModel, recentTab.id, windowOpenDisposition);
+        return RecentlyClosedBridgeJni.get().openRecentlyClosedTab(
+                mNativeBridge, tabModel, recentTab.id, windowOpenDisposition);
     }
 
     @Override
     public void openMostRecentlyClosedTab(TabModel tabModel) {
-        RecentlyClosedBridgeJni.get().openMostRecentlyClosedTab(
-                mNativeBridge, RecentlyClosedBridge.this, tabModel);
+        RecentlyClosedBridgeJni.get().openMostRecentlyClosedTab(mNativeBridge, tabModel);
     }
 
     @Override
     public void clearRecentlyClosedTabs() {
-        RecentlyClosedBridgeJni.get().clearRecentlyClosedTabs(
-                mNativeBridge, RecentlyClosedBridge.this);
+        RecentlyClosedBridgeJni.get().clearRecentlyClosedTabs(mNativeBridge);
     }
 
     /**
@@ -91,15 +91,12 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
         long init(RecentlyClosedBridge caller, Profile profile);
-        void destroy(long nativeRecentlyClosedTabsBridge, RecentlyClosedBridge caller);
-        boolean getRecentlyClosedTabs(long nativeRecentlyClosedTabsBridge,
-                RecentlyClosedBridge caller, List<RecentlyClosedTab> tabs, int maxTabCount);
-        boolean openRecentlyClosedTab(long nativeRecentlyClosedTabsBridge,
-                RecentlyClosedBridge caller, TabModel tabModel, int recentTabId,
-                int windowOpenDisposition);
-        boolean openMostRecentlyClosedTab(long nativeRecentlyClosedTabsBridge,
-                RecentlyClosedBridge caller, TabModel tabModel);
-        void clearRecentlyClosedTabs(
-                long nativeRecentlyClosedTabsBridge, RecentlyClosedBridge caller);
+        void destroy(long nativeRecentlyClosedTabsBridge);
+        boolean getRecentlyClosedTabs(
+                long nativeRecentlyClosedTabsBridge, List<RecentlyClosedTab> tabs, int maxTabCount);
+        boolean openRecentlyClosedTab(long nativeRecentlyClosedTabsBridge, TabModel tabModel,
+                int recentTabId, int windowOpenDisposition);
+        boolean openMostRecentlyClosedTab(long nativeRecentlyClosedTabsBridge, TabModel tabModel);
+        void clearRecentlyClosedTabs(long nativeRecentlyClosedTabsBridge);
     }
 }
