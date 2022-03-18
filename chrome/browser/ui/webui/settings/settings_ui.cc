@@ -314,6 +314,11 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       !chrome::ShouldDisplayManagedUi(profile) &&
           base::FeatureList::IsEnabled(features::kPrivacyGuide));
 
+  html_source->AddBoolean(
+      "privacyGuide2Enabled",
+      !chrome::ShouldDisplayManagedUi(profile) &&
+          base::FeatureList::IsEnabled(features::kPrivacyGuide2));
+
   AddSettingsPageUIHandler(std::make_unique<AboutHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<ResetSettingsHandler>(profile));
 

@@ -2174,6 +2174,11 @@ const char kPrivacyGuideDescription[] =
     "Shows a new subpage in Settings that helps the user to review various "
     "privacy settings.";
 
+const char kPrivacyGuide2Name[] = "Privacy Guide V2";
+const char kPrivacyGuide2Description[] =
+    "Enables UI updates for Privacy Guide. This requires #privacy-guide to "
+    "also be enabled";
+
 const char kPrivacySandboxV3Name[] = "Privacy Sandbox V3";
 const char kPrivacySandboxV3Description[] =
     "Enables an updated Privacy Sandbox UI. Also enables some related "

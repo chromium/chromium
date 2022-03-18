@@ -7765,6 +7765,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPrivacyGuideDescription, kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(features::kPrivacyGuide)},
 
+    {"privacy-guide-2", flag_descriptions::kPrivacyGuide2Name,
+     flag_descriptions::kPrivacyGuide2Description, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kPrivacyGuide2)},
+
 #if BUILDFLAG(IS_ANDROID)
     {"google-mobile-services-passwords",
      flag_descriptions::kUnifiedPasswordManagerAndroidName,

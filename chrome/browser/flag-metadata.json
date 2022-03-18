@@ -4973,6 +4973,14 @@
     "expiry_milestone": 104
   },
   {
+    "name": "privacy-guide-2",
+    "owners": [
+      "rainhard",
+      "msramek",
+      "chrome-friendly-settings@google.com"],
+    "expiry_milestone": 104
+  },
+  {
     "name": "privacy-sandbox-v3-android",
     "owners": [
       "dullweber",

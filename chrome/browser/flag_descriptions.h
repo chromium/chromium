@@ -1225,6 +1225,9 @@ extern const char kPrivacyAdvisorDescription[];
 extern const char kPrivacyGuideName[];
 extern const char kPrivacyGuideDescription[];
 
+extern const char kPrivacyGuide2Name[];
+extern const char kPrivacyGuide2Description[];
+
 extern const char kPrivacySandboxV3Name[];
 extern const char kPrivacySandboxV3Description[];
 
