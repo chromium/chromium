@@ -6,12 +6,9 @@
 #define ASH_SYSTEM_HPS_HPS_CONFIGURATION_H_
 
 #include "ash/ash_export.h"
+#include "base/time/time.h"
 #include "chromeos/dbus/hps/hps_service.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-namespace base {
-class TimeDelta;
-}  // namespace base
 
 namespace ash {
 
@@ -33,6 +30,10 @@ ASH_EXPORT base::TimeDelta GetQuickLockDelay();
 // dim is undimmed within a short period of time.
 // Used to configure power_manager.
 ASH_EXPORT bool GetQuickDimFeedbackEnabled();
+
+// Gets the window following a positive signal in which snooping protection
+// should continue to report snooper presence.
+base::TimeDelta GetSnoopingProtectionPositiveWindow();
 
 }  // namespace ash
 
