@@ -182,6 +182,9 @@ struct UnzipOptions {
 
   // Password to decrypt the encrypted files.
   std::string password;
+
+  // Should ignore errors when extracting files?
+  bool continue_on_error = false;
 };
 
 typedef base::RepeatingCallback<std::unique_ptr<WriterDelegate>(

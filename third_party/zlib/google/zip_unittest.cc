@@ -471,8 +471,9 @@ TEST_F(ZipTest, UnzipEncryptedWithWrongPassword) {
   EXPECT_EQ("This is not encrypted.\n", contents);
 
   // No rubbish file should be left behind.
-  EXPECT_FALSE(
-      base::PathExists(test_dir_.AppendASCII("Encrypted ZipCrypto.txt")));
+  EXPECT_THAT(
+      GetRelativePaths(test_dir_, base::FileEnumerator::FileType::FILES),
+      UnorderedElementsAre("ClearText.txt"));
 }
 
 TEST_F(ZipTest, UnzipEncryptedWithNoPassword) {
@@ -491,8 +492,25 @@ TEST_F(ZipTest, UnzipEncryptedWithNoPassword) {
   EXPECT_EQ("This is not encrypted.\n", contents);
 
   // No rubbish file should be left behind.
-  EXPECT_FALSE(
-      base::PathExists(test_dir_.AppendASCII("Encrypted ZipCrypto.txt")));
+  EXPECT_THAT(
+      GetRelativePaths(test_dir_, base::FileEnumerator::FileType::FILES),
+      UnorderedElementsAre("ClearText.txt"));
+}
+
+TEST_F(ZipTest, UnzipEncryptedContinueOnError) {
+  EXPECT_TRUE(
+      zip::Unzip(GetDataDirectory().AppendASCII("Different Encryptions.zip"),
+                 test_dir_, {.continue_on_error = true}));
+
+  std::string contents;
+  EXPECT_TRUE(base::ReadFileToString(test_dir_.AppendASCII("ClearText.txt"),
+                                     &contents));
+  EXPECT_EQ("This is not encrypted.\n", contents);
+
+  // No rubbish file should be left behind.
+  EXPECT_THAT(
+      GetRelativePaths(test_dir_, base::FileEnumerator::FileType::FILES),
+      UnorderedElementsAre("ClearText.txt"));
 }
 
 TEST_F(ZipTest, UnzipWrongCrc) {
@@ -500,7 +518,9 @@ TEST_F(ZipTest, UnzipWrongCrc) {
       zip::Unzip(GetDataDirectory().AppendASCII("Wrong CRC.zip"), test_dir_));
 
   // No rubbish file should be left behind.
-  EXPECT_FALSE(base::PathExists(test_dir_.AppendASCII("Corrupted.txt")));
+  EXPECT_THAT(
+      GetRelativePaths(test_dir_, base::FileEnumerator::FileType::FILES),
+      UnorderedElementsAre());
 }
 
 TEST_F(ZipTest, UnzipRepeatedDirName) {
@@ -637,6 +657,148 @@ TEST_F(ZipTest, UnzipDifferentCases) {
 #endif
 }
 
+TEST_F(ZipTest, UnzipDifferentCasesContinueOnError) {
+  EXPECT_TRUE(zip::Unzip(GetDataDirectory().AppendASCII(
+                             "Repeated File Name With Different Cases.zip"),
+                         test_dir_, {.continue_on_error = true}));
+
+  std::string contents;
+
+#if defined(OS_WIN) || defined(OS_MAC)
+  // Only the first file (with mixed case) has been extracted.
+  EXPECT_THAT(
+      GetRelativePaths(test_dir_, base::FileEnumerator::FileType::FILES),
+      UnorderedElementsAre("Case"));
+
+  EXPECT_TRUE(base::ReadFileToString(test_dir_.AppendASCII("Case"), &contents));
+  EXPECT_EQ("Mixed case 111", contents);
+#else
+  // All the files have been extracted.
+  EXPECT_THAT(
+      GetRelativePaths(test_dir_, base::FileEnumerator::FileType::FILES),
+      UnorderedElementsAre("Case", "case", "CASE"));
+
+  EXPECT_TRUE(base::ReadFileToString(test_dir_.AppendASCII("Case"), &contents));
+  EXPECT_EQ("Mixed case 111", contents);
+
+  EXPECT_TRUE(base::ReadFileToString(test_dir_.AppendASCII("case"), &contents));
+  EXPECT_EQ("Lower case 22", contents);
+
+  EXPECT_TRUE(base::ReadFileToString(test_dir_.AppendASCII("CASE"), &contents));
+  EXPECT_EQ("Upper case 3", contents);
+#endif
+}
+
+TEST_F(ZipTest, UnzipMixedPaths) {
+  EXPECT_TRUE(zip::Unzip(GetDataDirectory().AppendASCII("Mixed Paths.zip"),
+                         test_dir_, {.continue_on_error = true}));
+
+  std::unordered_set<std::string> want_paths = {
+#ifdef OS_WIN
+      "Dot",               //
+      "Space→",            //
+      "a\\b",              //
+      "u\\v\\w\\x\\y\\z",  //
+      "←Backslash2",       //
+#else
+      " ",                        // Invalid on Windows
+      "Angle <>",                 // Invalid on Windows
+      "Backslash1→\\",            //
+      "Backspace \x08",           // Invalid on Windows
+      "Bell \a",                  // Invalid on Windows
+      "C:",                       // Invalid on Windows
+      "C:\\",                     // Absolute path on Windows
+      "C:\\Temp",                 // Absolute path on Windows
+      "C:\\Temp\\",               // Absolute path on Windows
+      "C:\\Temp\\File",           // Absolute path on Windows
+      "Carriage Return \r",       // Invalid on Windows
+      "Colon :",                  // Invalid on Windows
+      "Dot .",                    // Becomes "Dot" on Windows
+      "Double quote \"",          // Invalid on Windows
+      "Escape \x1B",              // Invalid on Windows
+      "Line Feed \n",             // Invalid on Windows
+      "NUL .txt",                 // Disappears on Windows
+      "NUL",                      // Disappears on Windows
+      "NUL..txt",                 // Disappears on Windows
+      "NUL.tar.gz",               // Disappears on Windows
+      "NUL.txt",                  // Disappears on Windows
+      "Pipe |",                   // Invalid on Windows
+      "Question ?",               // Invalid on Windows
+      "Space→ ",                  // Becomes "Space→" on Windows
+      "Star *",                   // Invalid on Windows
+      "Tab \t",                   // Invalid on Windows
+      "\\\\server\\share\\file",  // Absolute path on Windows
+      "\\←Backslash2",            // Becomes "←Backslash2" on Windows
+      "a/b",                      //
+      "u/v/w/x/y/z",              //
+#ifndef OS_MAC
+      "CASE",                     //
+      "Case",                     //
+#endif
+#endif
+      " NUL.txt",                  //
+      " ←Space",                   //
+      "$HOME",                     //
+      "%TMP",                      //
+      "-",                         //
+      "...Tree",                   //
+      "..Two",                     //
+      ".One",                      //
+      "Ampersand &",               //
+      "At @",                      //
+      "Backslash3→\\←Backslash4",  //
+      "Backtick `",                //
+      "Caret ^",                   //
+      "Comma ,",                   //
+      "Curly {}",                  //
+      "Dash -",                    //
+      "Delete \x7F",               //
+      "Dollar $",                  //
+      "Equal =",                   //
+      "Euro €",                    //
+      "Exclamation !",             //
+      "FileOrDir",                 //
+      "First",                     //
+      "Hash #",                    //
+      "Last",                      //
+      "Percent %",                 //
+      "Plus +",                    //
+      "Quote '",                   //
+      "Round ()",                  //
+      "Semicolon ;",               //
+      "Smile \U0001F642",          //
+      "Square []",                 //
+      "String Terminator \u009C",  //
+      "Tilde ~",                   //
+      "Underscore _",              //
+      "case",                      //
+      "~",                         //
+  };
+
+  const std::vector<std::string> got_paths =
+      GetRelativePaths(test_dir_, base::FileEnumerator::FileType::FILES);
+
+  for (const std::string& path : got_paths) {
+    EXPECT_TRUE(want_paths.erase(path))
+        << "Found unexpected file: " << std::quoted(path);
+  }
+
+  for (const std::string& path : want_paths) {
+    EXPECT_TRUE(false) << "Cannot find expected file: " << std::quoted(path);
+  }
+
+  EXPECT_THAT(
+      GetRelativePaths(test_dir_, base::FileEnumerator::FileType::DIRECTORIES),
+      UnorderedElementsAre(
+#ifdef OS_WIN
+          "Backslash3→", "Empty", "a", "u", "u\\v", "u\\v\\w", "u\\v\\w\\x",
+          "u\\v\\w\\x\\y"
+#else
+          "Empty", "a", "u", "u/v", "u/v/w", "u/v/w/x", "u/v/w/x/y"
+#endif
+          ));
+}
+
 TEST_F(ZipTest, UnzipWithDelegates) {
   auto dir_creator =
       base::BindLambdaForTesting([this](const base::FilePath& entry_path) {
@@ -662,6 +824,34 @@ TEST_F(ZipTest, UnzipWithDelegates) {
   EXPECT_TRUE(base::PathExists(dir_foo_bar.AppendASCII(".hidden")));
   EXPECT_TRUE(base::PathExists(dir_foo_bar.AppendASCII("baz.txt")));
   EXPECT_TRUE(base::PathExists(dir_foo_bar.AppendASCII("quux.txt")));
+}
+
+TEST_F(ZipTest, UnzipOnlyDirectories) {
+  auto dir_creator =
+      base::BindLambdaForTesting([this](const base::FilePath& entry_path) {
+        return base::CreateDirectory(test_dir_.Append(entry_path));
+      });
+
+  // Always return a null WriterDelegate.
+  auto writer =
+      base::BindLambdaForTesting([](const base::FilePath& entry_path) {
+        return std::unique_ptr<zip::WriterDelegate>();
+      });
+
+  base::File file(GetDataDirectory().AppendASCII("test.zip"),
+                  base::File::Flags::FLAG_OPEN | base::File::Flags::FLAG_READ);
+  EXPECT_TRUE(zip::Unzip(file.GetPlatformFile(), writer, dir_creator,
+                         {.continue_on_error = true}));
+  base::FilePath dir = test_dir_;
+  base::FilePath dir_foo = dir.AppendASCII("foo");
+  base::FilePath dir_foo_bar = dir_foo.AppendASCII("bar");
+  EXPECT_FALSE(base::PathExists(dir.AppendASCII("foo.txt")));
+  EXPECT_TRUE(base::DirectoryExists(dir_foo));
+  EXPECT_FALSE(base::PathExists(dir_foo.AppendASCII("bar.txt")));
+  EXPECT_TRUE(base::DirectoryExists(dir_foo_bar));
+  EXPECT_FALSE(base::PathExists(dir_foo_bar.AppendASCII(".hidden")));
+  EXPECT_FALSE(base::PathExists(dir_foo_bar.AppendASCII("baz.txt")));
+  EXPECT_FALSE(base::PathExists(dir_foo_bar.AppendASCII("quux.txt")));
 }
 
 // Tests that a ZIP archive containing SJIS-encoded file names can be correctly
