@@ -30,7 +30,7 @@ TEST(HpsFeatureConfigTest, EmptyParamsValid) {
   EXPECT_EQ(GetEnableHpsSenseConfig()->filter_config_case(),
             hps::FeatureConfig::kConsecutiveResultsFilterConfig);
   EXPECT_EQ(GetEnableHpsNotifyConfig()->filter_config_case(),
-            hps::FeatureConfig::kAverageFilterConfig);
+            hps::FeatureConfig::kConsecutiveResultsFilterConfig);
 }
 
 TEST(HpsFeatureConfigTest, ReturnNullIfTypeIsNotRecognizableHpsSense) {
