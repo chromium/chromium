@@ -504,6 +504,7 @@ Polymer({
     const urlParams = Router.getInstance().getQueryParameters();
     if (urlParams.get('showPhonePermissionSetupDialog') !== null) {
       this.showPhonePermissionSetupDialog_ = true;
+      Router.getInstance().navigateTo(routes.MULTIDEVICE_FEATURES);
     }
   },
 
