@@ -767,9 +767,16 @@ void NearbyNotificationManager::OnTransferUpdate(
         ShowProgress(share_target, transfer_metadata);
       break;
     case TransferMetadata::Status::kAwaitingLocalConfirmation:
-      // Only incoming transfers are handled via notifications.
-      if (share_target.is_incoming)
-        ShowConnectionRequest(share_target, transfer_metadata);
+      if (base::FeatureList::IsEnabled(features::kNearbySharingSelfShare)) {
+        // Only incoming transfers are handled via notifications.
+        // Don't show notification for self shares since we will auto-accept.
+        if (share_target.is_incoming && !share_target.for_self_share)
+          ShowConnectionRequest(share_target, transfer_metadata);
+      } else {
+        // Only incoming transfers are handled via notifications.
+        if (share_target.is_incoming)
+          ShowConnectionRequest(share_target, transfer_metadata);
+      }
       break;
     case TransferMetadata::Status::kComplete:
       ShowSuccess(share_target);

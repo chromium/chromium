@@ -747,7 +747,8 @@ class NearbySharingServiceImplTestBase : public testing::Test {
   }
 
   void ProcessLatestPublicCertificateDecryption(size_t expected_num_calls,
-                                                bool success) {
+                                                bool success,
+                                                bool for_self_share = false) {
     // Ensure that all pending mojo messages are processed and the certificate
     // manager state is as expected up to this point.
     base::RunLoop().RunUntilIdle();
@@ -763,11 +764,13 @@ class NearbySharingServiceImplTestBase : public testing::Test {
               calls.back().encrypted_metadata_key.encrypted_key());
 
     if (success) {
+      nearbyshare::proto::PublicCertificate cert =
+          GetNearbyShareTestPublicCertificate(
+              nearby_share::mojom::Visibility::kAllContacts);
+      cert.set_for_self_share(for_self_share);
       std::move(calls.back().callback)
           .Run(NearbyShareDecryptedPublicCertificate::DecryptPublicCertificate(
-              GetNearbyShareTestPublicCertificate(
-                  nearby_share::mojom::Visibility::kAllContacts),
-              GetNearbyShareTestEncryptedMetadataKey()));
+              cert, GetNearbyShareTestEncryptedMetadataKey()));
     } else {
       std::move(calls.back().callback).Run(absl::nullopt);
     }
@@ -895,7 +898,8 @@ class NearbySharingServiceImplTestBase : public testing::Test {
   }
 
   ShareTarget SetUpIncomingConnection(
-      NiceMock<MockTransferUpdateCallback>& callback) {
+      NiceMock<MockTransferUpdateCallback>& callback,
+      bool for_self_share = false) {
     fake_nearby_connections_manager_->SetRawAuthenticationToken(kEndpointId,
                                                                 kToken);
     SetUpAdvertisementDecoder(kValidV1EndpointInfo,
@@ -923,7 +927,7 @@ class NearbySharingServiceImplTestBase : public testing::Test {
     service_->OnIncomingConnection(kEndpointId, kValidV1EndpointInfo,
                                    &connection_);
     ProcessLatestPublicCertificateDecryption(/*expected_num_calls=*/1,
-                                             /*success=*/true);
+                                             /*success=*/true, for_self_share);
     run_loop.Run();
 
     EXPECT_TRUE(
@@ -1255,50 +1259,44 @@ class NearbySharingServiceImplTestBase : public testing::Test {
     base::FilePath file_path;
     base::RunLoop run_loop_success;
     EXPECT_CALL(callback, OnTransferUpdate(testing::_, testing::_))
-        .WillOnce(testing::Invoke(
-            [&](const ShareTarget& share_target, TransferMetadata metadata) {
-              EXPECT_TRUE(metadata.is_final_status());
-              EXPECT_EQ(TransferMetadata::Status::kComplete, metadata.status());
+        .WillOnce(testing::Invoke([&](const ShareTarget& share_target,
+                                      TransferMetadata metadata) {
+          EXPECT_TRUE(metadata.is_final_status());
+          EXPECT_EQ(TransferMetadata::Status::kComplete, metadata.status());
 
-              ASSERT_TRUE(share_target.has_attachments());
-              EXPECT_EQ(1u, share_target.file_attachments.size());
-              for (const FileAttachment& file : share_target.file_attachments) {
-                EXPECT_TRUE(file.file_path());
-                file_path = *file.file_path();
-              }
+          ASSERT_TRUE(share_target.has_attachments());
+          EXPECT_EQ(1u, share_target.file_attachments.size());
+          for (const FileAttachment& file : share_target.file_attachments) {
+            EXPECT_TRUE(file.file_path());
+            file_path = *file.file_path();
+          }
 
-              EXPECT_EQ(3u, share_target.text_attachments.size());
-              for (const TextAttachment& text : share_target.text_attachments) {
-                EXPECT_EQ(kTextPayload, text.text_body());
-              }
+          EXPECT_EQ(3u, share_target.text_attachments.size());
+          for (const TextAttachment& text : share_target.text_attachments) {
+            EXPECT_EQ(kTextPayload, text.text_body());
+          }
 
-              if (base::FeatureList::IsEnabled(
-                      features::kNearbySharingReceiveWifiCredentials)) {
-                EXPECT_EQ(1u, share_target.wifi_credentials_attachments.size());
-                for (const WifiCredentialsAttachment& wifi_credentials :
-                     share_target.wifi_credentials_attachments) {
-                  EXPECT_EQ(kSsid, wifi_credentials.ssid());
-                  EXPECT_EQ(kWifiPassword, wifi_credentials.wifi_password());
-                  EXPECT_EQ(kWifiSecurityType,
-                            wifi_credentials.security_type());
-                }
-                EXPECT_EQ(1u,
-                          wifi_network_handler_->num_configure_network_calls());
-                EXPECT_EQ(kSsid,
-                          wifi_network_handler_->last_attachment().ssid());
-                EXPECT_EQ(
-                    kWifiPassword,
-                    wifi_network_handler_->last_attachment().wifi_password());
-                EXPECT_EQ(
-                    kWifiSecurityType,
-                    wifi_network_handler_->last_attachment().security_type());
-              } else {
-                EXPECT_EQ(0u, share_target.wifi_credentials_attachments.size());
-                EXPECT_EQ(0u,
-                          wifi_network_handler_->num_configure_network_calls());
-              }
-              run_loop_success.Quit();
-            }));
+          if (base::FeatureList::IsEnabled(
+                  features::kNearbySharingReceiveWifiCredentials)) {
+            EXPECT_EQ(1u, share_target.wifi_credentials_attachments.size());
+            for (const WifiCredentialsAttachment& wifi_credentials :
+                 share_target.wifi_credentials_attachments) {
+              EXPECT_EQ(kSsid, wifi_credentials.ssid());
+              EXPECT_EQ(kWifiPassword, wifi_credentials.wifi_password());
+              EXPECT_EQ(kWifiSecurityType, wifi_credentials.security_type());
+            }
+            EXPECT_EQ(1u, wifi_network_handler_->num_configure_network_calls());
+            EXPECT_EQ(kSsid, wifi_network_handler_->last_attachment().ssid());
+            EXPECT_EQ(kWifiPassword,
+                      wifi_network_handler_->last_attachment().wifi_password());
+            EXPECT_EQ(kWifiSecurityType,
+                      wifi_network_handler_->last_attachment().security_type());
+          } else {
+            EXPECT_EQ(0u, share_target.wifi_credentials_attachments.size());
+            EXPECT_EQ(0u, wifi_network_handler_->num_configure_network_calls());
+          }
+          run_loop_success.Quit();
+        }));
 
     base::WeakPtr<NearbyConnectionsManager::PayloadStatusListener> listener =
         fake_nearby_connections_manager_->GetRegisteredPayloadStatusListener(
@@ -5341,6 +5339,69 @@ TEST_P(NearbySharingServiceImplTest, CreateShareTarget) {
   EXPECT_EQ(kDeviceName, share_target->device_name);
   EXPECT_EQ(kDeviceType, share_target->type);
   EXPECT_FALSE(share_target->for_self_share);
+}
+
+TEST_P(NearbySharingServiceImplTest, SelfShareAutoAccept) {
+  for (int64_t payload_id : kValidIntroductionFramePayloadIds) {
+    fake_nearby_connections_manager_->SetPayloadPathStatus(
+        payload_id, location::nearby::connections::mojom::Status::kSuccess);
+  }
+
+  // We create an incoming connection corresponding to a certificate where the
+  // |for_self_share| field is set to 'true'. This value will be propagated to
+  // the ShareTarget, which will be used as a signal for the service to
+  // automatically accept the transfer when Self Share is enabled. This is
+  // similar to other tests (see "AcceptValidShareTarget") but without the
+  // explicit call to service_->Accept().
+  NiceMock<MockTransferUpdateCallback> callback;
+  ShareTarget share_target =
+      SetUpIncomingConnection(callback, /*for_self_share=*/true);
+
+  // If Self Share is not enabled, we should just time out.
+  if (!base::FeatureList::IsEnabled(features::kNearbySharingSelfShare)) {
+    base::RunLoop run_loop;
+    EXPECT_CALL(callback, OnTransferUpdate(testing::_, testing::_))
+        .WillOnce(testing::Invoke(
+            [&](const ShareTarget& share_target, TransferMetadata metadata) {
+              EXPECT_TRUE(metadata.is_final_status());
+              EXPECT_EQ(TransferMetadata::Status::kTimedOut, metadata.status());
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+    return;
+  }
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(callback, OnTransferUpdate(testing::_, testing::_))
+      .WillOnce(testing::Invoke(
+          [&](const ShareTarget& share_target, TransferMetadata metadata) {
+            EXPECT_FALSE(metadata.is_final_status());
+            EXPECT_EQ(TransferMetadata::Status::kAwaitingRemoteAcceptance,
+                      metadata.status());
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+
+  // Check data written to connection_.
+  ExpectPairedKeyEncryptionFrame();
+  ExpectPairedKeyResultFrame();
+  ExpectConnectionResponseFrame(
+      sharing::nearby::ConnectionResponseFrame::ACCEPT);
+
+  EXPECT_FALSE(connection_.IsClosed());
+
+  // TODO(https://crbug.com/1122552) - Remove cleanups after bugfix
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    absl::optional<base::FilePath> path =
+        fake_nearby_connections_manager_->GetRegisteredPayloadPath(
+            kFilePayloadId);
+    EXPECT_TRUE(path);
+    base::DeleteFile(*path);
+  }
+
+  // To avoid UAF in OnIncomingTransferUpdate().
+  service_->UnregisterReceiveSurface(&callback);
 }
 
 INSTANTIATE_TEST_SUITE_P(NearbySharingServiceImplTest,

@@ -1761,6 +1761,26 @@ TEST_P(NearbyNotificationManagerTest,
   }
 }
 
+TEST_P(NearbyNotificationManagerTest, ConnectionRequest_SelfShare) {
+  ShareTarget share_target;
+  share_target.is_incoming = true;
+  share_target.for_self_share = true;
+  TransferMetadata transfer_metadata =
+      TransferMetadataBuilder()
+          .set_status(TransferMetadata::Status::kAwaitingLocalConfirmation)
+          .build();
+
+  // Simulate incoming connection request waiting for local confirmation.
+  manager()->OnTransferUpdate(share_target, transfer_metadata);
+  std::vector<message_center::Notification> notifications =
+      GetDisplayedNotifications();
+  if (is_self_share_enabled_) {
+    ASSERT_EQ(0u, notifications.size());
+  } else {
+    ASSERT_EQ(1u, notifications.size());
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(NearbyNotificationManagerTest,
                          NearbyNotificationManagerTest,
                          testing::Combine(testing::Bool(), testing::Bool()));

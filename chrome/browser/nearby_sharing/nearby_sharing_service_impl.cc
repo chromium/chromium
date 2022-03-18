@@ -1934,12 +1934,13 @@ void NearbySharingServiceImpl::InvalidateAdvertisingState() {
   }
 
   // Do not advertise on lock screen unless Self Share is enabled.
-  if (is_screen_locked_ &&
-      !base::FeatureList::IsEnabled(features::kNearbySharingSelfShare)) {
-    StopAdvertising();
-    NS_LOG(VERBOSE) << __func__
-                    << ": Stopping advertising because the screen is locked.";
-    return;
+  if (!base::FeatureList::IsEnabled(features::kNearbySharingSelfShare)) {
+    if (is_screen_locked_) {
+      StopAdvertising();
+      NS_LOG(VERBOSE) << __func__
+                      << ": Stopping advertising because the screen is locked.";
+      return;
+    }
   }
 
   if (!HasAvailableConnectionMediums()) {
@@ -3662,6 +3663,14 @@ void NearbySharingServiceImpl::OnStorageCheckCompleted(
                     << ": Stopped reading further frames, due to no connection "
                        "established.";
     return;
+  }
+
+  if (base::FeatureList::IsEnabled(features::kNearbySharingSelfShare)) {
+    // Auto-accept self shares when not in high-visibility mode.
+    if (share_target.for_self_share && !IsInHighVisibility()) {
+      NS_LOG(INFO) << __func__ << ": Auto-accepting self share.";
+      Accept(share_target, base::DoNothing());
+    }
   }
 
   frames_reader->ReadFrame(
