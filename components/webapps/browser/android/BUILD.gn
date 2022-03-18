@@ -128,22 +128,31 @@ source_set("unit_tests") {
     "add_to_homescreen_data_fetcher_unittest.cc",
     "shortcut_info_unittest.cc",
     "webapk/webapk_icon_hasher_unittest.cc",
+    "webapk/webapk_proto_builder_unittest.cc",
     "webapps_utils_unittest.cc",
   ]
   deps = [
     "//base",
     "//components/favicon/content",
     "//components/favicon_base",
+    "//components/webapk:proto",
     "//components/webapps/browser",
     "//components/webapps/common:mojo_bindings",
     "//content/public/browser",
     "//content/test:test_support",
+    "//net:test_support",
     "//services/network:test_support",
     "//testing/gtest",
     "//third_party/blink/public/common:common",
     "//third_party/blink/public/mojom:mojom_platform",
     "//ui/gfx:test_support",
     "//url",
+  ]
+
+  data = [
+    "//components/test/data/webapps/nostore.html",
+    "//components/test/data/webapps/simple.html",
+    "//components/test/data/webapps/title1.html",
   ]
 }
 

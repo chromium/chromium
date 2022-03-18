@@ -141,21 +141,6 @@ class WebApkInstaller {
                         const base::android::JavaParamRef<jobject>& obj,
                         jint status);
 
-  // Asynchronously builds the WebAPK proto on a background thread for an update
-  // or install request. Runs |callback| on the calling thread when complete.
-  static void BuildProto(
-      const webapps::ShortcutInfo& shortcut_info,
-      const std::string& primary_icon_data,
-      bool is_primary_icon_maskable,
-      const std::string& splash_icon_data,
-      const std::string& package_name,
-      const std::string& version,
-      std::map<std::string, webapps::WebApkIconHasher::Icon>
-          icon_url_to_murmur2_hash,
-      bool is_manifest_stale,
-      bool is_app_identity_update_supported,
-      base::OnceCallback<void(std::unique_ptr<std::string>)> callback);
-
   // Builds the WebAPK proto for an update or an install request and stores it
   // to |update_request_path|. Runs |callback| with a boolean indicating
   // whether the proto was successfully written to disk.

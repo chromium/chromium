@@ -14,6 +14,7 @@ include_rules = [
   "+content/public/test",
   "+mojo/public/cpp",
   "+net/http/http_util.h",
+  "+net/test/embedded_test_server/embedded_test_server.h",
   "+services/device/public/mojom",
   "+services/network/public/mojom",
   "+services/network/test",

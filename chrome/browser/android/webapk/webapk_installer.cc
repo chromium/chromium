@@ -26,7 +26,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
-#include "base/task/post_task.h"
 #include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -210,30 +209,6 @@ void WebApkInstaller::OnInstallFinished(
     const base::android::JavaParamRef<jobject>& obj,
     jint result) {
   OnResult(static_cast<WebApkInstallResult>(result));
-}
-
-// static
-void WebApkInstaller::BuildProto(
-    const webapps::ShortcutInfo& shortcut_info,
-    const std::string& primary_icon_data,
-    bool is_primary_icon_maskable,
-    const std::string& splash_icon_data,
-    const std::string& package_name,
-    const std::string& version,
-    std::map<std::string, webapps::WebApkIconHasher::Icon>
-        icon_url_to_murmur2_hash,
-    bool is_manifest_stale,
-    bool is_app_identity_update_supported,
-    base::OnceCallback<void(std::unique_ptr<std::string>)> callback) {
-  base::PostTaskAndReplyWithResult(
-      GetBackgroundTaskRunner().get(), FROM_HERE,
-      base::BindOnce(&webapps::BuildProtoInBackground, shortcut_info,
-                     primary_icon_data, is_primary_icon_maskable,
-                     splash_icon_data, package_name, version,
-                     std::move(icon_url_to_murmur2_hash), is_manifest_stale,
-                     is_app_identity_update_supported,
-                     std::vector<webapps::WebApkUpdateReason>()),
-      std::move(callback));
 }
 
 // static
@@ -664,14 +639,15 @@ void WebApkInstaller::OnGotIconMurmur2Hashes(
 
   // Using empty string for |primary_icon_data| and |splash_icon_data| here
   // because in WebApk installs, we are using the icon data from |hashes|.
-  BuildProto(*install_shortcut_info_, std::string() /* primary_icon_data */,
-             is_primary_icon_maskable_, std::string() /* splash_icon_data */,
-             "" /* package_name */, "" /* version */, std::move(*hashes),
-             false /* is_manifest_stale */,
-             false /* is_app_identity_update_supported */,
-             base::BindOnce(&WebApkInstaller::SendRequest,
-                            weak_ptr_factory_.GetWeakPtr(),
-                            traffic_annotation_install_from_chrome));
+  webapps::BuildProto(
+      *install_shortcut_info_, std::string() /* primary_icon_data */,
+      is_primary_icon_maskable_, std::string() /* splash_icon_data */,
+      "" /* package_name */, "" /* version */, std::move(*hashes),
+      false /* is_manifest_stale */,
+      false /* is_app_identity_update_supported */,
+      base::BindOnce(&WebApkInstaller::SendRequest,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     traffic_annotation_install_from_chrome));
 }
 
 void WebApkInstaller::SendRequest(
