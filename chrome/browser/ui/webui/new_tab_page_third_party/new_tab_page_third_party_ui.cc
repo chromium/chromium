@@ -61,26 +61,39 @@ content::WebUIDataSource* CreateNewTabPageThirdPartyUiHtmlSource(
 
   source->AddLocalizedStrings(kStrings);
 
-  const ui::ThemeProvider& theme_provider =
-      ThemeService::GetThemeProviderForProfile(profile);
-  source->AddString("backgroundPosition",
-                    GetNewTabBackgroundPositionCSS(theme_provider));
-  source->AddString("backgroundTiling",
-                    GetNewTabBackgroundTilingCSS(theme_provider));
-  source->AddString("colorBackground",
-                    color_utils::SkColorToRgbaString(GetThemeColor(
-                        webui::GetNativeTheme(web_contents), theme_provider,
-                        ThemeProperties::COLOR_NTP_BACKGROUND)));
-  source->AddString("themeId",
-                    profile->GetPrefs()->GetString(prefs::kCurrentThemeID));
-  source->AddString("hascustombackground",
-                    theme_provider.HasCustomImage(IDR_THEME_NTP_BACKGROUND)
-                        ? "has-custom-background"
-                        : "");
-  source->AddString("isdark", !color_utils::IsDark(theme_provider.GetColor(
-                                  ThemeProperties::COLOR_NTP_TEXT))
-                                  ? "dark"
-                                  : "");
+  const ui::ThemeProvider* theme_provider =
+      webui::GetThemeProvider(web_contents);
+  // TODO(crbug.com/1299925): Always mock theme provider in tests so that
+  // `theme_provider` is never nullptr.
+  if (theme_provider) {
+    source->AddString("backgroundPosition",
+                      GetNewTabBackgroundPositionCSS(*theme_provider));
+    source->AddString("backgroundTiling",
+                      GetNewTabBackgroundTilingCSS(*theme_provider));
+    source->AddString("colorBackground",
+                      color_utils::SkColorToRgbaString(GetThemeColor(
+                          webui::GetNativeTheme(web_contents), *theme_provider,
+                          ThemeProperties::COLOR_NTP_BACKGROUND)));
+    // TODO(crbug.com/1056758): don't get theme id from profile.
+    source->AddString("themeId",
+                      profile->GetPrefs()->GetString(prefs::kCurrentThemeID));
+    source->AddString("hascustombackground",
+                      theme_provider->HasCustomImage(IDR_THEME_NTP_BACKGROUND)
+                          ? "has-custom-background"
+                          : "");
+    source->AddString("isdark", !color_utils::IsDark(theme_provider->GetColor(
+                                    ThemeProperties::COLOR_NTP_TEXT))
+                                    ? "dark"
+                                    : "");
+  } else {
+    source->AddString("backgroundPosition", "");
+    source->AddString("backgroundTiling", "");
+    source->AddString("colorBackground", "");
+    source->AddString("themeId", "");
+    source->AddString("hascustombackground", "");
+    source->AddString("isdark", "");
+  }
+
   source->AddBoolean(
       "handleMostVisitedNavigationExplicitly",
       base::FeatureList::IsEnabled(

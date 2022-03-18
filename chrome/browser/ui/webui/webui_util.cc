@@ -26,6 +26,7 @@
 #if defined(TOOLKIT_VIEWS)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/widget/widget.h"
@@ -119,7 +120,20 @@ const ui::ThemeProvider* GetThemeProvider(content::WebContents* web_contents) {
 
   auto* browser_window =
       BrowserWindow::FindBrowserWindowWithWebContents(web_contents);
-  return browser_window ? browser_window->GetThemeProvider() : nullptr;
+
+  if (browser_window)
+    return browser_window->GetThemeProvider();
+
+  // Fallback: get the theme provider from the last created browser.
+  // This is used in newly created tabs, e.g. NewTabPageUI. They need access to
+  // the theme browser before the WebContents is attached to a browser window.
+  // TODO(crbug.com/1298767): Remove this fallback by associating the
+  // WebContents during navigation.
+  BrowserList* browser_list = BrowserList::GetInstance();
+  const Browser* browser = browser_list->empty()
+                               ? nullptr
+                               : *std::prev(BrowserList::GetInstance()->end());
+  return browser ? browser->window()->GetThemeProvider() : nullptr;
 }
 
 void SetThemeProviderForTesting(const ui::ThemeProvider* theme_provider) {
