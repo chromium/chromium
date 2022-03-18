@@ -26,7 +26,7 @@
     //   name: "ExampleFeature",
     //   status: {"Android": "stable", "Win": "experimental"},
     // }
-    // "ExampleFeature" will be stable on Android, experimental on ChromeOS
+    // "ExampleFeature" will be stable on Android, experimental on Windows
     // and not enabled on any other platform
     //
     // "stable" features listed here should be rare, as anything which we've
