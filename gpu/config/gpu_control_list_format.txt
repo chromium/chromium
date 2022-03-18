@@ -108,11 +108,10 @@
 // in that case, major is still numerical, but minor is lexical.
 // Only "driver_version" supports "(intel|nvidia)_driver" schema.
 //
-// intel_driver schema versions have two forms: AA.BB.CC.DDDD (legacy) and
-// AA.BB.CCC.DDDD (new). Of these, the last two fields are most relevant, and
-// the first two can be ignored by setting them to 0. The two forms must not be
-// mixed e.g. < 0.0.100.0 does not include legacy driver versions - the correct
-// constraint is <= 0.0.99.9999.
+// intel_driver schema versions have the form like "AA.BB.(CC|CCC).DDDD". The
+// last two fields are most relevant, and the first two will be ignored by
+// setting them to 0. Thus "0.0.(CC|CCC).DDDD" will be used in comparison
+// following the general rule.
 //
 // FLOAT includes "op" "value", and "value2".  "op" can be any of the
 // following values: "=", "<", "<=", ">", ">=", "any", "between".  "value2" is

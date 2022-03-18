@@ -146,21 +146,6 @@ bool GpuControlList::Version::Contains(const std::string& version_string,
       if (op == kBetween)
         ref_version2.erase(ref_version2.begin());
     }
-
-    // No comparison should be run if two being-compared versions do not match
-    // Intel driver version schema.
-    if (Version::Compare({version[0]}, {"100"}, style) >= 0) {
-      if ((Version::Compare({ref_version1[0]}, {"100"}, style) < 0) ||
-          (op == kBetween
-               ? Version::Compare({ref_version2[0]}, {"100"}, style) < 0
-               : false))
-        return false;
-    } else if ((Version::Compare({ref_version1[0]}, {"100"}, style) >= 0) ||
-               (op == kBetween
-                    ? Version::Compare({ref_version2[0]}, {"100"}, style) >= 0
-                    : false)) {
-      return false;
-    }
   } else if (schema == kVersionSchemaNvidiaDriver) {
     // The driver version we get from the os is "XX.XX.XXXA.BBCC", while the
     // workaround is of the form "ABB.CC".  Drop the first two stanzas from the

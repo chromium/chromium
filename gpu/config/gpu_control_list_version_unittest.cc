@@ -194,33 +194,22 @@ TEST_F(VersionTest, LexicalComparison) {
 
 TEST_F(VersionTest, IntelDriverSchema) {
   {
-    // New drivers, AA.BB.CCC.DDDD
     Version info = {kLT, kNumerical, kIntelDriver, "25.20.100.6952", nullptr};
     EXPECT_TRUE(info.Contains("0.0.100.6000"));
     EXPECT_FALSE(info.Contains("0.0.100.7000"));
     EXPECT_FALSE(info.Contains("0.0.200.6000"));
     EXPECT_TRUE(info.Contains("26.20.100.6000"));
     EXPECT_FALSE(info.Contains("24.20.100.7000"));
+    EXPECT_TRUE(info.Contains("23.20.16.5037"));
   }
   {
-    // Old drivers, AA.BB.CC.DDDD
     Version info = {kGT, kNumerical, kIntelDriver, "10.18.15.4256", nullptr};
     EXPECT_TRUE(info.Contains("0.0.15.6000"));
     EXPECT_FALSE(info.Contains("0.0.15.4000"));
     EXPECT_TRUE(info.Contains("10.18.15.4279"));
     EXPECT_FALSE(info.Contains("15.40.15.4058"));
-  }
-  {
-    // Old driver versions cannot be compared against new driver versions.
-    Version info = {kLT, kNumerical, kIntelDriver, "0.0.100.0", nullptr};
-    EXPECT_FALSE(info.Contains("23.20.16.4973"));
-    EXPECT_FALSE(info.Contains("20.19.15.4364"));
-  }
-  {
-    // Old driver versions can only be compared against old driver versions.
-    Version info = {kLE, kNumerical, kIntelDriver, "0.0.99.9999", nullptr};
-    EXPECT_TRUE(info.Contains("23.20.16.4973"));
-    EXPECT_TRUE(info.Contains("20.19.15.4364"));
+    EXPECT_TRUE(info.Contains("26.20.100.6000"));
+    EXPECT_TRUE(info.Contains("26.20.100.4000"));
   }
 }
 
