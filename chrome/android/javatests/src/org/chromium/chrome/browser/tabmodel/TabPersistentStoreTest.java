@@ -493,7 +493,7 @@ public class TabPersistentStoreTest {
                     tabId, isIncognito, (res) -> { callbackHelper.notifyCalled(res); });
         });
         callbackHelper.waitForCallback(chCount);
-        Assert.assertEquals(isNull, callbackHelper.getRes().isEmpty());
+        Assert.assertEquals(isNull, callbackHelper.getRes() == null);
     }
 
     private static class CPTDCallbackHelper extends CallbackHelper {
