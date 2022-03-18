@@ -539,7 +539,8 @@ crbug.com/tint/993 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,ex
 crbug.com/dawn/548 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,rendering,draw:arguments:indirect=true;* [ Failure ]
 
 # Device lost is triggered unexpectedly.
-crbug.com/dawn/1278 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,image_copy,texture_related:format:method="WriteTexture";depthOrArrayLayers=32;dimension="3d";format="r8unorm";mipLevel=2;copyWidthModifier=-1;copyHeightModifier=-1;copyDepthModifier=0;* [ Failure ]
+crbug.com/dawn/1278 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,image_copy,texture_related:format:method="WriteTexture";depthOrArrayLayers=32;dimension="3d";format="r8unorm";mipLevel=2;* [ Failure ]
+crbug.com/dawn/1278 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,image_copy,texture_related:format:method="WriteTexture";depthOrArrayLayers=32;dimension="3d";format="r8snorm";mipLevel=2;* [ Failure ]
 
 # (Intel-only) StoreOpClear handling is overclearing resources that should be preserved
 crbug.com/1237175 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";format="rg32float";uninitializeMethod="StoreOpClear";canaryOnCreation=true;* [ Failure ]
