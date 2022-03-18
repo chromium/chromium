@@ -317,8 +317,16 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerInternalsUIBrowserTest,
   EXPECT_EQ(0, CountRenderProcessHosts());
 }
 
+// TODO(crbug.com/1307548): Flaky on Linux
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_RegisteredSWReflectedOnInternalUI \
+  DISABLED_RegisteredSWReflectedOnInternalUI
+#else
+#define MAYBE_RegisteredSWReflectedOnInternalUI \
+  RegisteredSWReflectedOnInternalUI
+#endif
 IN_PROC_BROWSER_TEST_F(ServiceWorkerInternalsUIBrowserTest,
-                       RegisteredSWReflectedOnInternalUI) {
+                       MAYBE_RegisteredSWReflectedOnInternalUI) {
   Shell* SWInternalUIWindow = CreateNewWindow();
   NavigateToServiceWorkerInternalUI();
   EXPECT_EQ(1, CountRenderProcessHosts());
