@@ -96,9 +96,8 @@ InsecureFormNavigationThrottle::GetThrottleResultForMixedForm(
 
   // Do not set special error page HTML for insecure forms in subframes; those
   // are already hard blocked.
-  if (!handle->IsInMainFrame()) {
+  if (handle->GetParentFrameOrOuterDocument())
     return content::NavigationThrottle::PROCEED;
-  }
 
   url::Origin form_originating_origin =
       handle->GetInitiatorOrigin().value_or(url::Origin());
