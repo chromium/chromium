@@ -1444,7 +1444,7 @@
     },
     {
       name: "MediaCapabilitiesWebRtc",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "MediaCapture",
