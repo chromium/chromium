@@ -30,6 +30,11 @@ VersionHandlerChromeOS::VersionHandlerChromeOS() {}
 
 VersionHandlerChromeOS::~VersionHandlerChromeOS() {}
 
+void VersionHandlerChromeOS::OnJavascriptDisallowed() {
+  VersionHandler::OnJavascriptDisallowed();
+  weak_factory_.InvalidateWeakPtrs();
+}
+
 void VersionHandlerChromeOS::HandleRequestVersionInfo(
     const base::ListValue* args) {
   VersionHandler::HandleRequestVersionInfo(args);

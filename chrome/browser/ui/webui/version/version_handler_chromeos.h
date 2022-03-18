@@ -23,6 +23,7 @@ class VersionHandlerChromeOS : public VersionHandler {
   ~VersionHandlerChromeOS() override;
 
   // VersionHandler overrides:
+  void OnJavascriptDisallowed() override;
   void HandleRequestVersionInfo(const base::ListValue* args) override;
   void RegisterMessages() override;
 
