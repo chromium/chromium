@@ -101,6 +101,10 @@ hidden="true" so that these annotations don't show up in the document.
       <traffic_annotation unique_id="cros_recovery_image_download"/>
       <traffic_annotation unique_id="download_recovery_component"/>
     </sender>
+    <sender name="ChromeOS Printers Manager">
+      <traffic_annotation unique_id="printing_oauth2_metadata_request"/>
+      <traffic_annotation unique_id="printing_oauth2_registration_request"/>
+    </sender>
   </group>
   <group name="Unsorted" hidden="true">
     <!-- Unsorted annotations go here. -->
