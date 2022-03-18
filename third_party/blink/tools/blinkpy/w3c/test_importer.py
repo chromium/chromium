@@ -39,7 +39,7 @@ POLL_DELAY_SECONDS = 2 * 60
 TIMEOUT_SECONDS = 210 * 60
 
 # Sheriff calendar URL, used for getting the ecosystem infra sheriff to cc.
-ROTATIONS_URL = 'https://chrome-ops-rotation-proxy.appspot.com/current/grotation:chrome-ecosystem-infra'
+ROTATIONS_URL = 'https://chrome-ops-rotation-proxy.appspot.com/current/grotation:chromium-wpt-two-way-sync'
 SHERIFF_EMAIL_FALLBACK = 'weizhong@google.com'
 RUBBER_STAMPER_BOT = 'rubber-stamper@appspot.gserviceaccount.com'
 
