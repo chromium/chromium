@@ -2632,7 +2632,7 @@
   {
     "name": "enable-reader-mode",
     "owners": [ "katie", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 104
   },
   {
     "name": "enable-reader-mode-in-cct",
