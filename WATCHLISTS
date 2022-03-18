@@ -1506,6 +1506,9 @@
                   '|OriginTrial'\
                   '|ConditionalFeature',
     },
+    'os_crypt': {
+      'filepath': 'components/os_crypt/',
+    },
     'ozone': {
       'filepath': 'ui/ozone/|'\
         'ui/events/ozone/|'\
@@ -2689,6 +2692,7 @@
     'omnibox': ['jdonnelly+watch@chromium.org'],
     'origin_trials': ['chasej+watch@chromium.org',
                       'iclelland+watch@chromium.org'],
+    'os_crypt': ['wfh+watch@chromium.org'],
     'ozone': ['ozone-reviews@chromium.org'],
     'ozone_fuchsia': ['dworsham@google.com',
                       'emircan@google.com',
