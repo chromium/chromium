@@ -110,7 +110,8 @@ PolicyBase::PolicyBase()
       lockdown_default_dacl_(false),
       add_restricting_random_sid_(false),
       effective_token_(nullptr),
-      allow_no_sandbox_job_(false) {
+      allow_no_sandbox_job_(false),
+      job_() {
   dispatcher_ = std::make_unique<TopLevelDispatcher>(this);
 }
 
@@ -149,6 +150,9 @@ TokenLevel PolicyBase::GetLockdownTokenLevel() const {
 }
 
 ResultCode PolicyBase::SetJobLevel(JobLevel job_level, uint32_t ui_exceptions) {
+  // Cannot set this after the job has been initialized.
+  if (job_.IsValid())
+    return SBOX_ERROR_BAD_PARAMS;
   if (memory_limit_ && job_level == JOB_NONE) {
     return SBOX_ERROR_BAD_PARAMS;
   }
@@ -390,28 +394,37 @@ const base::HandlesToInheritVector& PolicyBase::GetHandlesBeingShared() {
   return handles_to_share_;
 }
 
-ResultCode PolicyBase::MakeJobObject(base::win::ScopedHandle* job) {
-  if (job_level_ == JOB_NONE) {
-    job->Close();
-    return SBOX_ALL_OK;
-  }
+ResultCode PolicyBase::InitJob() {
+  if (job_.IsValid())
+    return SBOX_ERROR_BAD_PARAMS;
 
-  // Create the windows job object.
-  Job job_obj;
-  DWORD result =
-      job_obj.Init(job_level_, nullptr, ui_exceptions_, memory_limit_);
+  if (job_level_ == JOB_NONE)
+    return SBOX_ALL_OK;
+
+  // Create the Windows job object.
+  DWORD result = job_.Init(job_level_, nullptr, ui_exceptions_, memory_limit_);
   if (ERROR_SUCCESS != result)
     return SBOX_ERROR_CANNOT_INIT_JOB;
 
-  *job = job_obj.Take();
   return SBOX_ALL_OK;
 }
 
-ResultCode PolicyBase::DropActiveProcessLimit(base::win::ScopedHandle* job) {
+HANDLE PolicyBase::GetJobHandle() {
+  return job_.GetHandle();
+}
+
+bool PolicyBase::HasJob() {
+  return job_.IsValid();
+}
+
+ResultCode PolicyBase::DropActiveProcessLimit() {
+  if (!job_.IsValid())
+    return SBOX_ERROR_BAD_PARAMS;
+
   if (job_level_ >= JOB_INTERACTIVE)
     return SBOX_ALL_OK;
 
-  if (ERROR_SUCCESS != Job::SetActiveProcessLimit(job, 0))
+  if (ERROR_SUCCESS != job_.SetActiveProcessLimit(0))
     return SBOX_ERROR_CANNOT_UPDATE_JOB_PROCESS_LIMIT;
 
   return SBOX_ALL_OK;
@@ -544,9 +557,9 @@ ResultCode PolicyBase::ApplyToTarget(std::unique_ptr<TargetProcess> target) {
   return SBOX_ALL_OK;
 }
 
-bool PolicyBase::OnJobEmpty(HANDLE job) {
-  if (target_->Job() == job)
-    target_.reset();
+// Can only be called if a job was associated with this policy.
+bool PolicyBase::OnJobEmpty() {
+  target_.reset();
   return true;
 }
 

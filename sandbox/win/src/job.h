@@ -52,13 +52,14 @@ class Job {
   // the error.
   DWORD UserHandleGrantAccess(HANDLE handle);
 
-  // Revokes ownership to the job handle and returns it.
-  // If the object is not yet initialized, it returns an invalid handle.
-  base::win::ScopedHandle Take();
+  // True if the job has been initialized and has a valid handle.
+  bool IsValid();
 
-  // Updates the active process limit for |job_handle|.
-  static DWORD SetActiveProcessLimit(base::win::ScopedHandle* job_handle,
-                                     DWORD processes);
+  // If the object is not yet initialized, returns nullptr.
+  HANDLE GetHandle();
+
+  // Updates the active process limit.
+  DWORD SetActiveProcessLimit(DWORD processes);
 
  private:
   // Handle to the job referenced by the object.

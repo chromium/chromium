@@ -35,41 +35,9 @@ TEST(JobTest, TestCreation) {
   ASSERT_EQ(static_cast<DWORD>(ERROR_FILE_NOT_FOUND), ::GetLastError());
 }
 
-// Tests the method "Take".
-TEST(JobTest, Take) {
-  base::win::ScopedHandle job_handle;
-  // Scope the creation of Job.
-  {
-    // Create the job.
-    Job job;
-    ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-              job.Init(JOB_LOCKDOWN, L"my_test_job_name", 0, 0));
-
-    job_handle = job.Take();
-    ASSERT_TRUE(job_handle.IsValid());
-  }
-
-  // Check to be sure that the job is still alive even after the object is gone
-  // out of scope.
-  HANDLE job_handle_dup =
-      ::OpenJobObjectW(GENERIC_ALL, false, L"my_test_job_name");
-  ASSERT_TRUE(job_handle_dup);
-
-  // Remove all references.
-  if (job_handle_dup)
-    ::CloseHandle(job_handle_dup);
-
-  job_handle.Close();
-
-  // Check if the jbo is really dead.
-  job_handle_dup = ::OpenJobObjectW(GENERIC_ALL, false, L"my_test_job_name");
-  ASSERT_TRUE(!job_handle_dup);
-  ASSERT_EQ(static_cast<DWORD>(ERROR_FILE_NOT_FOUND), ::GetLastError());
-}
-
 // Tests the ui exceptions
 TEST(JobTest, TestExceptions) {
-  base::win::ScopedHandle job_handle;
+  HANDLE job_handle;
   // Scope the creation of Job.
   {
     // Create the job.
@@ -78,16 +46,15 @@ TEST(JobTest, TestExceptions) {
               job.Init(JOB_LOCKDOWN, L"my_test_job_name",
                        JOB_OBJECT_UILIMIT_READCLIPBOARD, 0));
 
-    job_handle = job.Take();
-    ASSERT_TRUE(job_handle.IsValid());
+    job_handle = job.GetHandle();
+    ASSERT_TRUE(job_handle != INVALID_HANDLE_VALUE);
 
     JOBOBJECT_BASIC_UI_RESTRICTIONS jbur = {0};
     DWORD size = sizeof(jbur);
     ASSERT_TRUE(::QueryInformationJobObject(
-        job_handle.Get(), JobObjectBasicUIRestrictions, &jbur, size, &size));
+        job_handle, JobObjectBasicUIRestrictions, &jbur, size, &size));
 
     ASSERT_EQ(0u, jbur.UIRestrictionsClass & JOB_OBJECT_UILIMIT_READCLIPBOARD);
-    job_handle.Close();
   }
 
   // Scope the creation of Job.
@@ -97,13 +64,13 @@ TEST(JobTest, TestExceptions) {
     ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
               job.Init(JOB_LOCKDOWN, L"my_test_job_name", 0, 0));
 
-    job_handle = job.Take();
-    ASSERT_TRUE(job_handle.IsValid());
+    job_handle = job.GetHandle();
+    ASSERT_TRUE(job_handle != INVALID_HANDLE_VALUE);
 
     JOBOBJECT_BASIC_UI_RESTRICTIONS jbur = {0};
     DWORD size = sizeof(jbur);
     ASSERT_TRUE(::QueryInformationJobObject(
-        job_handle.Get(), JobObjectBasicUIRestrictions, &jbur, size, &size));
+        job_handle, JobObjectBasicUIRestrictions, &jbur, size, &size));
 
     ASSERT_EQ(static_cast<DWORD>(JOB_OBJECT_UILIMIT_READCLIPBOARD),
               jbur.UIRestrictionsClass & JOB_OBJECT_UILIMIT_READCLIPBOARD);
@@ -127,7 +94,7 @@ TEST(JobTest, NoInit) {
   ASSERT_EQ(static_cast<DWORD>(ERROR_NO_DATA),
             job.UserHandleGrantAccess(nullptr));
   ASSERT_EQ(static_cast<DWORD>(ERROR_NO_DATA), job.AssignProcessToJob(nullptr));
-  ASSERT_FALSE(job.Take().IsValid());
+  ASSERT_FALSE(job.GetHandle() == INVALID_HANDLE_VALUE);
 }
 
 // Tests the initialization of the job with different security level.
@@ -179,13 +146,13 @@ TEST(JobTest, ProcessInJob) {
             job.AssignProcessToJob(pi.process_handle()));
 
   // Get the job handle.
-  base::win::ScopedHandle job_handle = job.Take();
+  HANDLE job_handle = job.GetHandle();
 
   // Check if the process is in the job.
   JOBOBJECT_BASIC_PROCESS_ID_LIST jbpidl = {0};
   DWORD size = sizeof(jbpidl);
   EXPECT_TRUE(::QueryInformationJobObject(
-      job_handle.Get(), JobObjectBasicProcessIdList, &jbpidl, size, &size));
+      job_handle, JobObjectBasicProcessIdList, &jbpidl, size, &size));
 
   EXPECT_EQ(1u, jbpidl.NumberOfAssignedProcesses);
   EXPECT_EQ(1u, jbpidl.NumberOfProcessIdsInList);

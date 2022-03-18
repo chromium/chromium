@@ -781,15 +781,16 @@ ResultCode LaunchWithoutSandbox(
     if (base::win::GetVersion() >= base::win::Version::WIN8 ||
         (::IsProcessInJob(::GetCurrentProcess(), nullptr, &in_job) &&
          !in_job)) {
-      static HANDLE job_object_handle = nullptr;
-      if (!job_object_handle) {
-        Job job_obj;
-        DWORD result = job_obj.Init(JOB_UNPROTECTED, nullptr, 0, 0);
-        if (result != ERROR_SUCCESS)
+      static Job* job_object = nullptr;
+      if (!job_object) {
+        job_object = new Job;
+        DWORD result = job_object->Init(JOB_UNPROTECTED, nullptr, 0, 0);
+        if (result != ERROR_SUCCESS) {
+          job_object = nullptr;
           return SBOX_ERROR_CANNOT_INIT_JOB;
-        job_object_handle = job_obj.Take().Take();
+        }
       }
-      options.job_handle = job_object_handle;
+      options.job_handle = job_object->GetHandle();
     }
   }
 
