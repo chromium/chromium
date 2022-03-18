@@ -533,8 +533,6 @@ class PrefetchProxyBrowserTest
                            "SpeculationRulesPrefetchProxy");
   }
 
-  void ResetFeatureList() { scoped_feature_list_.Reset(); }
-
   content::WebContents* GetWebContents() const {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
@@ -4313,10 +4311,7 @@ IN_PROC_BROWSER_TEST_F(SpeculationPrefetchProxyTest,
 
 class PrefetchProxyPrerenderBrowserTest : public PrefetchProxyBrowserTest {
  public:
-  PrefetchProxyPrerenderBrowserTest()
-      : prerender_test_helper_(base::BindRepeating(
-            &PrefetchProxyPrerenderBrowserTest::GetWebContents,
-            base::Unretained(this))) {}
+  PrefetchProxyPrerenderBrowserTest() = default;
   ~PrefetchProxyPrerenderBrowserTest() override = default;
   PrefetchProxyPrerenderBrowserTest(const PrefetchProxyPrerenderBrowserTest&) =
       delete;
@@ -4324,21 +4319,27 @@ class PrefetchProxyPrerenderBrowserTest : public PrefetchProxyBrowserTest {
   PrefetchProxyPrerenderBrowserTest& operator=(
       const PrefetchProxyPrerenderBrowserTest&) = delete;
 
-  void TearDown() override { PrefetchProxyBrowserTest::ResetFeatureList(); }
-
-  void SetUp() override {
-    prerender_test_helper_.SetUp(embedded_test_server());
-    PrefetchProxyBrowserTest::SetUp();
-  }
-
   void SetUpOnMainThread() override {
+    prerender_test_helper_->SetUp(embedded_test_server());
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
     PrefetchProxyBrowserTest::SetUpOnMainThread();
   }
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    PrefetchProxyBrowserTest::SetUpCommandLine(command_line);
+    // |prerender_test_helper_| has a ScopedFeatureList so we needed to delay
+    // its creation until now because PrefetchProxyBrowserTest also uses a
+    // ScopedFeatureList and initialization order matters.
+    prerender_test_helper_ =
+        std::make_unique<content::test::PrerenderTestHelper>(
+            base::BindRepeating(
+                &PrefetchProxyPrerenderBrowserTest::GetWebContents,
+                base::Unretained(this)));
+  }
+
   content::test::PrerenderTestHelper& prerender_test_helper() {
-    return prerender_test_helper_;
+    return *prerender_test_helper_;
   }
 
   content::WebContents* GetWebContents() {
@@ -4346,7 +4347,7 @@ class PrefetchProxyPrerenderBrowserTest : public PrefetchProxyBrowserTest {
   }
 
  private:
-  content::test::PrerenderTestHelper prerender_test_helper_;
+  std::unique_ptr<content::test::PrerenderTestHelper> prerender_test_helper_;
 };
 
 IN_PROC_BROWSER_TEST_F(PrefetchProxyPrerenderBrowserTest,
