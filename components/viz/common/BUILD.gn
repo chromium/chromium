@@ -38,6 +38,7 @@ viz_component("resource_format_utils") {
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//cc/base:base",
     "//gpu/vulkan:buildflags",
     "//skia",
