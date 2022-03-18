@@ -26,6 +26,13 @@ if (_tcache_tool_supported) {
       "//base",
     ]
   }
+  executable("pa_dump_heap") {
+    sources = [ "pa_dump_heap.cc" ]
+    deps = [
+      ":pa_tool_utils",
+      "//base",
+    ]
+  }
 }
 
 group("all") {

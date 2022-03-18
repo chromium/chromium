@@ -63,8 +63,8 @@ static_assert(
 // CAUTION! |extent| must point to the extent of the first super page in the
 // range of consecutive super pages.
 template <bool thread_safe>
-ALWAYS_INLINE uintptr_t
-SuperPagesBeginFromExtent(PartitionSuperPageExtentEntry<thread_safe>* extent) {
+ALWAYS_INLINE uintptr_t SuperPagesBeginFromExtent(
+    const PartitionSuperPageExtentEntry<thread_safe>* extent) {
   PA_DCHECK(0 < extent->number_of_consecutive_super_pages);
   uintptr_t extent_as_uintptr = reinterpret_cast<uintptr_t>(extent);
   PA_DCHECK(IsManagedByNormalBuckets(extent_as_uintptr));
@@ -77,8 +77,8 @@ SuperPagesBeginFromExtent(PartitionSuperPageExtentEntry<thread_safe>* extent) {
 // CAUTION! |extent| must point to the extent of the first super page in the
 // range of consecutive super pages.
 template <bool thread_safe>
-ALWAYS_INLINE uintptr_t
-SuperPagesEndFromExtent(PartitionSuperPageExtentEntry<thread_safe>* extent) {
+ALWAYS_INLINE uintptr_t SuperPagesEndFromExtent(
+    const PartitionSuperPageExtentEntry<thread_safe>* extent) {
   return SuperPagesBeginFromExtent(extent) +
          (extent->number_of_consecutive_super_pages * kSuperPageSize);
 }

@@ -26,7 +26,6 @@ bool ReadMemory(int fd, unsigned long address, size_t size, char* buffer) {
       static_cast<ssize_t>(size)) {
     return true;
   }
-
   return false;
 }
 

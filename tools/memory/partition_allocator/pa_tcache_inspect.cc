@@ -50,31 +50,6 @@ uintptr_t FindThreadCacheRegistry(pid_t pid, int mem_fd) {
   return IndexThreadCacheNeedleArray(pid, mem_fd, 1);
 }
 
-// Allows to access an object copied from remote memory "as if" it were
-// local. Of course, dereferencing any pointer from within it will at best
-// fault.
-template <typename T>
-class RawBuffer {
- public:
-  RawBuffer() = default;
-  const T* get() const { return reinterpret_cast<const T*>(buffer_); }
-  char* get_buffer() { return buffer_; }
-
-  static absl::optional<RawBuffer<T>> ReadFromMemFd(int mem_fd,
-                                                    uintptr_t address) {
-    RawBuffer<T> buf;
-    bool ok = ReadMemory(mem_fd, reinterpret_cast<unsigned long>(address),
-                         sizeof(T), buf.get_buffer());
-    if (!ok)
-      return absl::nullopt;
-
-    return {buf};
-  }
-
- private:
-  alignas(T) char buffer_[sizeof(T)];
-};
-
 // List all thread names for a given PID.
 std::map<base::PlatformThreadId, std::string> ThreadNames(pid_t pid) {
   std::map<base::PlatformThreadId, std::string> result;

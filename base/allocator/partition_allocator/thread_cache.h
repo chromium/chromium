@@ -56,6 +56,7 @@ constexpr uintptr_t kNeedle2 = 0x9615ee1c;
 constexpr size_t kThreadCacheNeedleArraySize = 4;
 extern uintptr_t kThreadCacheNeedleArray[kThreadCacheNeedleArraySize];
 
+class HeapDumper;
 class ThreadCacheInspector;
 
 }  // namespace partition_alloc::internal::tools
@@ -148,6 +149,7 @@ class BASE_EXPORT ThreadCacheRegistry {
 
  private:
   friend class partition_alloc::internal::tools::ThreadCacheInspector;
+  friend class partition_alloc::internal::tools::HeapDumper;
   friend class NoDestructor<ThreadCacheRegistry>;
   // Not using base::Lock as the object's constructor must be constexpr.
   PartitionLock lock_;
@@ -319,6 +321,7 @@ class BASE_EXPORT ThreadCache {
       ThreadCacheLimits::kLargeSizeThreshold;
 
  private:
+  friend class partition_alloc::internal::tools::HeapDumper;
   friend class partition_alloc::internal::tools::ThreadCacheInspector;
 
   struct Bucket {
