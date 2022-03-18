@@ -250,25 +250,6 @@ std::vector<std::string> ChromeShelfPrefs::GetAppsPinnedByPolicy(
       continue;
     }
 
-    // Handle Chrome App ids
-    if (crx_file::id_util::IdIsValid(*policy_entry)) {
-      if (*policy_entry == file_manager::kFileManagerAppId &&
-          chromeos::features::IsFileManagerSwaEnabled()) {
-        absl::optional<std::string> files_app_id =
-            web_app::GetAppIdForSystemWebApp(
-                helper->profile(), web_app::SystemAppType::FILE_MANAGER);
-        if (files_app_id) {
-          result.emplace_back(*files_app_id);
-        } else {
-          // Fall-back to the policy_entry if we cannot fetch one for Files app.
-          result.emplace_back(*policy_entry);
-        }
-      } else {
-        result.emplace_back(*policy_entry);
-      }
-      continue;
-    }
-
     // URLs provided through policy might not match exactly (eg. missing
     // trailing slash), so check the normalized version of valid URLs too.
     std::vector<std::string> policy_entries_to_check{*policy_entry};
@@ -281,6 +262,7 @@ std::vector<std::string> ChromeShelfPrefs::GetAppsPinnedByPolicy(
     // Handle App Service policy IDs (currently Web Apps only)
     if (apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
             helper->profile())) {
+      size_t initial_result_size = result.size();
       apps::AppServiceProxyFactory::GetForProfile(helper->profile())
           ->AppRegistryCache()
           .ForEachApp([&result, &policy_entries_to_check](
@@ -290,6 +272,15 @@ std::vector<std::string> ChromeShelfPrefs::GetAppsPinnedByPolicy(
               result.emplace_back(update.AppId());
             }
           });
+      if (result.size() > initial_result_size) {
+        continue;
+      }
+    }
+
+    // Handle Chrome App ids
+    if (crx_file::id_util::IdIsValid(*policy_entry)) {
+      result.emplace_back(*policy_entry);
+      continue;
     }
 
     // Handle Arc++ App ids

@@ -5,22 +5,28 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_APP_SERVICE_WEB_APP_PUBLISHER_HELPER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_APP_SERVICE_WEB_APP_PUBLISHER_HELPER_H_
 
+#include <stdint.h>
 #include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
+#include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/types/id_type.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
-#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/paused_apps.h"
 #include "chrome/browser/web_applications/app_registrar_observer.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -30,9 +36,13 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/permission.h"
+#include "components/services/app_service/public/cpp/run_on_os_login_types.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/services/app_service/public/mojom/types.mojom-forward.h"
+#include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "ui/gfx/native_widget_types.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -44,10 +54,23 @@
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "content/public/browser/media_request_state.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 #include "ui/message_center/public/cpp/notification.h"
 #endif
 
+class ContentSettingsPattern;
+class ContentSettingsTypeSet;
+class GURL;
 class Profile;
+
+namespace apps {
+struct AppLaunchParams;
+}
+
+namespace base {
+class Time;
+}
 
 namespace content {
 class WebContents;
@@ -57,7 +80,6 @@ namespace web_app {
 
 class WebApp;
 class WebAppProvider;
-class WebAppRegistrar;
 class WebAppLaunchManager;
 
 struct ShortcutIdTypeMarker {};
@@ -359,6 +381,10 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
       apps::mojom::LaunchSource launch_source,
       int64_t display_id,
       base::OnceCallback<void(content::WebContents*)> callback);
+
+  // Get the identifier for the app that will be used in policy controls, such
+  // as force-installation and pinning. May be empty.
+  std::string GetPolicyId(const WebApp& web_app);
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Updates app visibility.

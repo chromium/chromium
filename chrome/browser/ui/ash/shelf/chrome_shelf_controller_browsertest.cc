@@ -3120,18 +3120,29 @@ class FilesSystemWebAppPinnedTest : public ShelfPlatformAppBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(FilesSystemWebAppPinnedTest, EnterpriseMigration) {
-  // Setup: the customer pins Files Chrome App (hhaomji... app ID).
+  // Setup: the customer pins Files Chrome App (ID:hhaomji...).
   base::DictionaryValue entry;
   entry.SetKey(ChromeShelfPrefs::kPinnedAppsPrefAppIDKey,
                base::Value(file_manager::kFileManagerAppId));
   base::ListValue policy_value;
   policy_value.Append(std::move(entry));
   profile()->GetPrefs()->Set(prefs::kPolicyPinnedLauncherApps, policy_value);
-  WaitForSystemAppsSynchronized();
 
-  // Expected results: fkiggjm... is pinned.
-  ash::ShelfID shelf_id(file_manager::kFileManagerSwaAppId);
-  EXPECT_TRUE(ChromeShelfController::instance()->IsPinned(shelf_id));
+  // Ensure shelf is updated.
+  WaitForSystemAppsSynchronized();
+  web_app::WebAppProvider::GetForTest(browser()->profile())
+      ->install_manager()
+      .NotifyWebAppInstalledWithOsHooks(file_manager::kFileManagerSwaAppId);
+  apps::AppServiceProxyFactory::GetForProfile(profile())
+      ->FlushMojoCallsForTesting();
+
+  // Expected results: Files SWA App (ID:fkiggjm...) is force-pinned.
+  ash::ShelfID swa_shelf_id(file_manager::kFileManagerSwaAppId);
+  EXPECT_TRUE(ChromeShelfController::instance()->IsPinned(swa_shelf_id));
+  ash::ShelfID extension_shelf_id(file_manager::kFileManagerAppId);
+  EXPECT_FALSE(ChromeShelfController::instance()->IsPinned(extension_shelf_id));
+  EXPECT_EQ(AppListControllerDelegate::PIN_FIXED,
+            GetPinnableForAppID(file_manager::kFileManagerSwaAppId, profile()));
 }
 
 INSTANTIATE_TEST_SUITE_P(All, PerDeskShelfAppBrowserTest, ::testing::Bool());

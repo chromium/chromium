@@ -62,16 +62,18 @@ namespace {
 // Chrome App.
 std::string GetPolicyValueFromAppId(const std::string& app_id,
                                     Profile* profile) {
-  // Handle Web App ids
+  // Handle App Service apps (eg. web apps).
   //
-  // WebAppProvider is absent in some cases e.g. Arc++ Kiosk Mode.
-  if (auto* provider = web_app::WebAppProvider::GetDeprecated(profile)) {
-    std::map<web_app::AppId, GURL> installed_apps =
-        provider->registrar().GetExternallyInstalledApps(
-            web_app::ExternalInstallSource::kExternalPolicy);
-    auto it = installed_apps.find(app_id);
-    if (it != installed_apps.end())
-      return it->second.spec();
+  // App Service is absent in some cases e.g. Arc++ Kiosk Mode.
+  if (apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
+    std::string policy_id;
+    apps::AppServiceProxyFactory::GetForProfile(profile)
+        ->AppRegistryCache()
+        .ForOneApp(app_id, [&policy_id](const apps::AppUpdate& update) {
+          policy_id = update.PolicyId();
+        });
+    if (!policy_id.empty())
+      return policy_id;
   }
 
   // Handle Arc++ ids
