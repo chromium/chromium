@@ -67,6 +67,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeSearchHistorySuggestedItem,
   ItemTypeTextAccessoryNoImage,
   ItemTypeTextEditItem,
+  ItemTypeURLWithActivityIndicator,
+  ItemTypeURLWithActivityIndicatorStopped,
   ItemTypeURLWithTimestamp,
   ItemTypeURLWithSize,
   ItemTypeURLWithSupplementalText,
@@ -598,6 +600,18 @@ typedef NS_ENUM(NSInteger, ItemType) {
   item.URL = [[CrURL alloc] initWithGURL:GURL("https://photos.google.com/")];
   item.badgeImage = [UIImage imageNamed:@"table_view_cell_check_mark"];
   [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
+
+  item =
+      [[TableViewURLItem alloc] initWithType:ItemTypeURLWithActivityIndicator];
+  item.title = @"Sent Request to Server";
+  item.URL = [[CrURL alloc] initWithGURL:GURL("https://started.spinner.com/")];
+  [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
+
+  item = [[TableViewURLItem alloc]
+      initWithType:ItemTypeURLWithActivityIndicatorStopped];
+  item.title = @"Received Response from Server";
+  item.URL = [[CrURL alloc] initWithGURL:GURL("https://stopped.spinner.com/")];
+  [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
 }
 
 #pragma mark - Actions
@@ -667,6 +681,18 @@ typedef NS_ENUM(NSInteger, ItemType) {
         base::mac::ObjCCastStrict<TableViewTabsSearchSuggestedHistoryCell>(
             cell);
     [searchHistoryCell updateHistoryResultsCount:7];
+  } else if (itemType == ItemTypeURLWithActivityIndicator) {
+    TableViewURLCell* URLCell =
+        base::mac::ObjCCastStrict<TableViewURLCell>(cell);
+    [URLCell startAnimatingActivityIndicator];
+  } else if (itemType == ItemTypeURLWithActivityIndicatorStopped) {
+    TableViewURLCell* URLCell =
+        base::mac::ObjCCastStrict<TableViewURLCell>(cell);
+    [URLCell startAnimatingActivityIndicator];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 4 * NSEC_PER_SEC),
+                   dispatch_get_main_queue(), ^{
+                     [URLCell stopAnimatingActivityIndicator];
+                   });
   }
   return cell;
 }

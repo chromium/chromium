@@ -67,6 +67,14 @@
 // that use TableViewURLCell.
 - (void)configureUILayout;
 
+// Starts the animation of the activity indicator replacing the favicon. NO-OP
+// if it is already running.
+- (void)startAnimatingActivityIndicator;
+
+// Stops the animation of the activity indicator and puts favicon back in place.
+// NO-OP if it is already stopped.
+- (void)stopAnimatingActivityIndicator;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TABLE_VIEW_CELLS_TABLE_VIEW_URL_ITEM_H_
