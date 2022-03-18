@@ -21,7 +21,10 @@ AutofillVirtualCardEnrollmentInfoBarDelegateMobile::
           virtual_card_enroll_bubble_controller) {}
 
 AutofillVirtualCardEnrollmentInfoBarDelegateMobile::
-    ~AutofillVirtualCardEnrollmentInfoBarDelegateMobile() = default;
+    ~AutofillVirtualCardEnrollmentInfoBarDelegateMobile() {
+  if (!had_user_interaction_)
+    OnInfobarClosed(PaymentsBubbleClosedReason::kNotInteracted);
+}
 
 // static
 AutofillVirtualCardEnrollmentInfoBarDelegateMobile*
@@ -113,17 +116,28 @@ AutofillVirtualCardEnrollmentInfoBarDelegateMobile::GetButtonLabel(
 }
 
 void AutofillVirtualCardEnrollmentInfoBarDelegateMobile::InfoBarDismissed() {
+  OnInfobarClosed(PaymentsBubbleClosedReason::kClosed);
   virtual_card_enroll_bubble_controller_->OnDeclineButton();
 }
 
 bool AutofillVirtualCardEnrollmentInfoBarDelegateMobile::Cancel() {
+  OnInfobarClosed(PaymentsBubbleClosedReason::kClosed);
   virtual_card_enroll_bubble_controller_->OnDeclineButton();
   return true;
 }
 
 bool AutofillVirtualCardEnrollmentInfoBarDelegateMobile::Accept() {
+  OnInfobarClosed(PaymentsBubbleClosedReason::kAccepted);
   virtual_card_enroll_bubble_controller_->OnAcceptButton();
   return true;
+}
+
+void AutofillVirtualCardEnrollmentInfoBarDelegateMobile::OnInfobarClosed(
+    PaymentsBubbleClosedReason closed_reason) {
+  DCHECK(!had_user_interaction_);
+
+  virtual_card_enroll_bubble_controller_->OnBubbleClosed(closed_reason);
+  had_user_interaction_ = true;
 }
 
 }  // namespace autofill

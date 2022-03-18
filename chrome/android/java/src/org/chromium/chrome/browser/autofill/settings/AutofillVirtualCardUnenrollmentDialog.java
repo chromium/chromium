@@ -7,9 +7,12 @@ package org.chromium.chrome.browser.autofill.settings;
 import android.content.Context;
 
 import org.chromium.base.Callback;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeStringConstants;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
+import org.chromium.chrome.browser.autofill.AutofillUiUtils.VirtualCardDialogLink;
+import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -37,6 +40,9 @@ public class AutofillVirtualCardUnenrollmentDialog {
     public void show() {
         SimpleModalDialogController modalDialogController =
                 new SimpleModalDialogController(mModalDialogManager, result -> {
+                    RecordHistogram.recordBooleanHistogram(
+                            "Autofill.VirtualCard.SettingsPageUnenrollment",
+                            result == DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
                     mResultHandler.onResult(result == DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
                 });
         PropertyModel.Builder builder =
@@ -50,7 +56,14 @@ public class AutofillVirtualCardUnenrollmentDialog {
                                         mContext,
                                         R.string.autofill_credit_card_editor_virtual_card_unenroll_dialog_message,
                                         ChromeStringConstants
-                                                .AUTOFILL_VIRTUAL_CARD_ENROLLMENT_SUPPORT_URL))
+                                                .AUTOFILL_VIRTUAL_CARD_ENROLLMENT_SUPPORT_URL,
+                                        url -> {
+                                            RecordHistogram.recordEnumeratedHistogram(
+                                                    "Autofill.VirtualCard.SettingsPageUnenrollment.LinkClicked",
+                                                    VirtualCardDialogLink.EDUCATION_TEXT,
+                                                    VirtualCardDialogLink.NUM_ENTRIES);
+                                            CustomTabActivity.showInfoPage(mContext, url);
+                                        }))
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT,
                                 mContext.getString(
                                         R.string.autofill_credit_card_editor_virtual_card_unenroll_dialog_positive_button_label))

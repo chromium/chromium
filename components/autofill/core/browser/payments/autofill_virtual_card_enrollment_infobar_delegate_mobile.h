@@ -70,9 +70,15 @@ class AutofillVirtualCardEnrollmentInfoBarDelegateMobile
   bool Accept() override;
 
  private:
+  // Logs metrics via the native controller.
+  void OnInfobarClosed(PaymentsBubbleClosedReason closed_reason);
+
   // Pointer to the native controller.
   raw_ptr<VirtualCardEnrollBubbleController>
       virtual_card_enroll_bubble_controller_;
+
+  // Did the user ever explicitly accept or dismiss this infobar?
+  bool had_user_interaction_ = false;
 };
 
 }  // namespace autofill

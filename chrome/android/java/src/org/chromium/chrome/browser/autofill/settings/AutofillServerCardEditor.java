@@ -16,6 +16,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.annotations.UsedByReflection;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeStringConstants;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
@@ -63,10 +64,14 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
         ((TextView) v.findViewById(R.id.title)).setText(mCard.getObfuscatedNumber());
         ((TextView) v.findViewById(R.id.summary))
                 .setText(mCard.getFormattedExpirationDate(getActivity()));
-        v.findViewById(R.id.edit_server_card)
-                .setOnClickListener(view
-                        -> CustomTabActivity.showInfoPage(getActivity(),
-                                ChromeStringConstants.AUTOFILL_MANAGE_WALLET_CARD_URL));
+        v.findViewById(R.id.edit_server_card).setOnClickListener(view -> {
+            RecordHistogram.recordBooleanHistogram(showVirtualCardEnrollmentButton()
+                            ? "Autofill.SettingsPage.ButtonClicked.VirtualCard.EditCard"
+                            : "Autofill.SettingsPage.ButtonClicked.ServerCard.EditCard",
+                    true);
+            CustomTabActivity.showInfoPage(
+                    getActivity(), ChromeStringConstants.AUTOFILL_MANAGE_WALLET_CARD_URL);
+        });
 
         final LinearLayout virtualCardContainerLayout =
                 (LinearLayout) v.findViewById(R.id.virtual_card_ui);
@@ -81,6 +86,10 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
                     : "mDelegate must be initialized before making (un)enrolment calls.";
                 final ModalDialogManager modalDialogManager = new ModalDialogManager(
                         new AppModalPresenter(getActivity()), ModalDialogType.APP);
+                RecordHistogram.recordBooleanHistogram(mVirtualCardEnrollmentButtonShowsUnenroll
+                                ? "Autofill.SettingsPage.ButtonClicked.VirtualCard.VirtualCardUnenroll"
+                                : "Autofill.SettingsPage.ButtonClicked.VirtualCard.VirtualCardEnroll",
+                        true);
                 if (!mVirtualCardEnrollmentButtonShowsUnenroll) {
                     mDelegate.offerVirtualCardEnrollment(mCard.getInstrumentId(),
                             result -> showVirtualCardEnrollmentDialog(result, modalDialogManager));

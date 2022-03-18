@@ -7543,6 +7543,12 @@ others/histograms.xml -->
   <int value="2" label="IBAN"/>
 </enum>
 
+<enum name="AutofillVirtualCardDialogLinkClicked">
+  <int value="0" label="Education text link"/>
+  <int value="1" label="Google legal message link"/>
+  <int value="2" label="Issuer legal message link"/>
+</enum>
+
 <enum name="AutofillVirtualCardEnrollBubbleResult">
   <int value="0" label="Unknown"/>
   <int value="1" label="User accepted the bubble"/>

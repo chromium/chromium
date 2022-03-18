@@ -23,12 +23,22 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.test.runner.lifecycle.Stage;
+import android.text.Spanned;
+import android.text.style.ClickableSpan;
+import android.view.View;
+import android.widget.TextView;
 
+import androidx.test.espresso.Espresso;
+import androidx.test.espresso.NoMatchingViewException;
+import androidx.test.espresso.UiController;
+import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.matcher.ViewMatchers.Visibility;
 import androidx.test.filters.MediumTest;
 
+import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -41,11 +51,13 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
+import org.chromium.base.test.metrics.HistogramTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
+import org.chromium.chrome.browser.autofill.AutofillUiUtils.VirtualCardDialogLink;
 import org.chromium.chrome.browser.autofill.LegalMessageLine;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -76,6 +88,8 @@ public class AutofillServerCardEditorTest {
     @Rule
     public final SettingsActivityTestRule<AutofillServerCardEditor> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(AutofillServerCardEditor.class);
+    @Rule
+    public HistogramTestRule mHistogramTester = new HistogramTestRule();
 
     private static final long NATIVE_AUTOFILL_PAYMENTS_METHODS_DELEGATE = 100L;
 
@@ -213,6 +227,12 @@ public class AutofillServerCardEditorTest {
         // Press the Add button.
         onView(withId(R.id.virtual_card_enrollment_button)).perform(click());
 
+        // Verify that enrollment button click is recorded.
+        Assert.assertEquals(1,
+                mHistogramTester.getHistogramValueCount(
+                        "Autofill.SettingsPage.ButtonClicked.VirtualCard.VirtualCardEnroll",
+                        /* true */ 1));
+
         // Verify that the Virtual Card enrollment button still shows "Add" and that the button is
         // disabled.
         onView(withId(R.id.virtual_card_enrollment_button))
@@ -243,8 +263,25 @@ public class AutofillServerCardEditorTest {
         // Verify that the dialog was displayed.
         onView(withId(R.id.dialog_title)).check(matches(isDisplayed()));
 
+        // Click on the education link.
+        onView(withId(R.id.virtual_card_education)).perform(clickLink());
+
+        // Verify that education text link click is recorded.
+        Assert.assertEquals(1,
+                mHistogramTester.getHistogramValueCount(
+                        "Autofill.VirtualCard.SettingsPageEnrollment.LinkClicked",
+                        VirtualCardDialogLink.EDUCATION_TEXT));
+
+        // Go back to the settings page.
+        Espresso.pressBack();
+
         // Click positive button on enrollment dialog.
         onView(withId(R.id.positive_button)).perform(click());
+
+        // Verify that enrollment dialog acceptance is recorded.
+        Assert.assertEquals(1,
+                mHistogramTester.getHistogramValueCount(
+                        "Autofill.VirtualCard.SettingsPageEnrollment", /* true */ 1));
 
         // Verify that the Virtual Card enrollment button shows "Remove" and that the button is
         // enabled.
@@ -309,6 +346,11 @@ public class AutofillServerCardEditorTest {
         // Click negative button on enrollment dialog.
         onView(withId(R.id.negative_button)).perform(click());
 
+        // Verify that enrollment dialog rejection is recorded.
+        Assert.assertEquals(1,
+                mHistogramTester.getHistogramValueCount(
+                        "Autofill.VirtualCard.SettingsPageEnrollment", /* false */ 0));
+
         // Verify that the Virtual Card enrollment button still shows "Add" and that the button is
         // now enabled.
         onView(withId(R.id.virtual_card_enrollment_button))
@@ -361,12 +403,25 @@ public class AutofillServerCardEditorTest {
 
         // Press the Remove button.
         onView(withId(R.id.virtual_card_enrollment_button)).perform(click());
+
+        // Verify that unenrollment button click is recorded.
+        Assert.assertEquals(1,
+                mHistogramTester.getHistogramValueCount(
+                        "Autofill.SettingsPage.ButtonClicked.VirtualCard.VirtualCardUnenroll",
+                        /* true */ 1));
+
         // Verify that the unenroll dialog is shown.
         onView(withText(R.string.autofill_credit_card_editor_virtual_card_unenroll_dialog_title))
                 .check(matches(isDisplayed()));
 
         // Click the Cancel button.
         onView(withText(android.R.string.cancel)).perform(click());
+
+        // Verify that unenrollment dialog rejection is recorded.
+        Assert.assertEquals(1,
+                mHistogramTester.getHistogramValueCount(
+                        "Autofill.VirtualCard.SettingsPageUnenrollment", /* false */ 0));
+
         // Verify that the button label has not changed from "Remove".
         onView(withId(R.id.virtual_card_enrollment_button))
                 .check(matches(withText(R.string.remove)));
@@ -401,6 +456,12 @@ public class AutofillServerCardEditorTest {
         onView(withText(
                        R.string.autofill_credit_card_editor_virtual_card_unenroll_dialog_positive_button_label))
                 .perform(click());
+
+        // Verify that unenrollment dialog acceptance is recorded.
+        Assert.assertEquals(1,
+                mHistogramTester.getHistogramValueCount(
+                        "Autofill.VirtualCard.SettingsPageUnenrollment", /* true */ 1));
+
         // Verify that the Virtual Card enrollment button now shows "Add".
         onView(withId(R.id.virtual_card_enrollment_button)).check(matches(withText(R.string.add)));
         // Verify that the native unenroll method was called with the correct parameters.
@@ -437,5 +498,35 @@ public class AutofillServerCardEditorTest {
         Bundle args = new Bundle();
         args.putString(AutofillEditorBase.AUTOFILL_GUID, guid);
         return args;
+    }
+
+    private ViewAction clickLink() {
+        return new ViewAction() {
+            @Override
+            public Matcher<View> getConstraints() {
+                return Matchers.instanceOf(TextView.class);
+            }
+
+            @Override
+            public String getDescription() {
+                return "Clicks on the only link in the view.";
+            }
+
+            @Override
+            public void perform(UiController uiController, View view) {
+                TextView textView = (TextView) view;
+                Spanned spannedString = (Spanned) textView.getText();
+                ClickableSpan[] spans =
+                        spannedString.getSpans(0, spannedString.length(), ClickableSpan.class);
+                if (spans.length == 0) {
+                    throw new NoMatchingViewException.Builder()
+                            .includeViewHierarchy(true)
+                            .withRootView(textView)
+                            .build();
+                }
+                Assert.assertEquals("There should be only one clickable link", 1, spans.length);
+                spans[0].onClick(view);
+            }
+        };
     }
 }

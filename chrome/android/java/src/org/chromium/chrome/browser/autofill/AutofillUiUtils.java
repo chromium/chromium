@@ -32,9 +32,9 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.core.widget.TextViewCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
@@ -75,6 +75,18 @@ public class AutofillUiUtils {
         int CVC_AND_EXPIRATION = 5;
         int NOT_ENOUGH_INFO = 6;
         int NONE = 7;
+    }
+
+    // Constants used to log UMA "enum" histograms about the type of links clicked in mobile virtual
+    // card dialogs. Entries should not be renumbered and numeric values should never be reused.
+    @IntDef({VirtualCardDialogLink.EDUCATION_TEXT, VirtualCardDialogLink.GOOGLE_LEGAL_MESSAGE,
+            VirtualCardDialogLink.ISSUER_LEGAL_MESSAGE, VirtualCardDialogLink.NUM_ENTRIES})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface VirtualCardDialogLink {
+        int EDUCATION_TEXT = 0;
+        int GOOGLE_LEGAL_MESSAGE = 1;
+        int ISSUER_LEGAL_MESSAGE = 2;
+        int NUM_ENTRIES = 3;
     }
 
     /**
@@ -389,16 +401,17 @@ public class AutofillUiUtils {
      *
      * @param context The context used for fetching the required resources.
      * @param legalMessageLines The list of LegalMessageLines to be represented as a string.
+     * @param onClickCallback The callback for the link clicks.
      * @return A {@link SpannableStringBuilder} that can directly be set on a TextView.
      */
-    public static SpannableStringBuilder getSpannableStringForLegalMessageLines(
-            Context context, LinkedList<LegalMessageLine> legalMessageLines) {
+    public static SpannableStringBuilder getSpannableStringForLegalMessageLines(Context context,
+            LinkedList<LegalMessageLine> legalMessageLines, Callback<String> onClickCallback) {
         SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
         for (LegalMessageLine line : legalMessageLines) {
             SpannableString text = new SpannableString(line.text);
             for (final LegalMessageLine.Link link : line.links) {
                 text.setSpan(new NoUnderlineClickableSpan(context.getResources(),
-                                     (view) -> CustomTabActivity.showInfoPage(context, link.url)),
+                                     view -> onClickCallback.onResult(link.url)),
                         link.start, link.end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
             }
             spannableStringBuilder.append(text);
@@ -408,19 +421,19 @@ public class AutofillUiUtils {
 
     /**
      * Returns a {@link SpannableString} containing a {@link NoUnderlineClickableSpan} for the text
-     * contained within the tags <link1></link1> and defaults to opening a the provided url in a
-     * custom tab.
+     * contained within the tags <link1></link1>.
      * @param context The context required to fetch the resources.
      * @param stringResourceId The resource id of the string on which the clickable span should be
      *         applied.
      * @param url The url that should be opened when the clickable span is clicked.
+     * @param onClickCallback The callback for the link clicks.
      * @return {@link SpannableString} that can be directly set on the TextView.
      */
     public static SpannableString getSpannableStringWithClickableSpansToOpenLinksInCustomTabs(
-            Context context, int stringResourceId, String url) {
+            Context context, int stringResourceId, String url, Callback<String> onClickCallback) {
         return SpanApplier.applySpans(context.getString(stringResourceId),
                 new SpanApplier.SpanInfo("<link1>", "</link1>",
-                        new NoUnderlineClickableSpan(context.getResources(),
-                                (view) -> CustomTabActivity.showInfoPage(context, url))));
+                        new NoUnderlineClickableSpan(
+                                context.getResources(), view -> onClickCallback.onResult(url))));
     }
 }

@@ -79,9 +79,9 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="Autofill.PaymentsRpcCardType">
-  <variant name="ServerCard" summary="The card is a server card."/>
-  <variant name="UnknownCard" summary="The card type was unknown."/>
-  <variant name="VirtualCard" summary="The card is a virtual card."/>
+  <variant name="ServerCard" summary="server card"/>
+  <variant name="UnknownCard" summary="unknown card type"/>
+  <variant name="VirtualCard" summary="virtual card"/>
 </variants>
 
 <variants name="Autofill.PaymentsRpcResult">
@@ -99,6 +99,13 @@ chromium-metrics-reviews@google.com.
 <variants name="Autofill.ProgressDialog.FlowType">
   <variant name="CardUnmask"
       summary="Progress dialog for the VCN Card Unmask Flow"/>
+</variants>
+
+<variants name="Autofill.SettingsPage.VirtualCardDialogType">
+  <variant name="SettingsPageEnrollment"
+      summary="the virtual card enrollment dialog"/>
+  <variant name="SettingsPageUnenrollment"
+      summary="the virtual card unenrollment dialog"/>
 </variants>
 
 <variants name="Autofill.Snackbar.Type">
@@ -2707,6 +2714,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.SettingsPage.ButtonClicked.{CardType}.{Button}"
+    enum="BooleanAttempted" expires_after="2023-04-01">
+  <owner>vishwasuppoor@chromium.org</owner>
+  <owner>siashah@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Emits true whenever {Button} is clicked in the mobile {CardType} edit page.
+    Never emits false.
+  </summary>
+  <token key="CardType" variants="Autofill.PaymentsRpcCardType"/>
+  <token key="Button">
+    <variant name="EditCard" summary="the edit button"/>
+    <variant name="Enroll" summary="the enroll button"/>
+    <variant name="Unenroll" summary="the unenroll button"/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.Snackbar.{SnackbarType}.ActionClicked"
     enum="BooleanShown" expires_after="2022-12-01">
   <owner>siashah@chromium.org</owner>
@@ -3351,9 +3375,34 @@ chromium-metrics-reviews@google.com.
   <token key="Source" variants="Autofill.VirtualCard.RequestSource"/>
 </histogram>
 
+<histogram name="Autofill.VirtualCard.{Dialog}" enum="BooleanAccepted"
+    expires_after="2023-04-01">
+  <owner>vishwasuppoor@chromium.org</owner>
+  <owner>siashah@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Emits true when a user accepts {Dialog} in the mobile virtual card edit
+    page. Emits false if the user declines.
+  </summary>
+  <token key="Dialog" variants="Autofill.SettingsPage.VirtualCardDialogType"/>
+</histogram>
+
+<histogram name="Autofill.VirtualCard.{Dialog}.LinkClicked"
+    enum="AutofillVirtualCardDialogLinkClicked" expires_after="2023-04-01">
+  <owner>vishwasuppoor@chromium.org</owner>
+  <owner>siashah@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records which link is clicked whenever a user clicks on links in {Dialog} in
+    the mobile virtual card edit page. The links are the education text link,
+    Google legal message link, and issuer legal message link.
+  </summary>
+  <token key="Dialog" variants="Autofill.SettingsPage.VirtualCardDialogType"/>
+</histogram>
+
 <histogram
     name="Autofill.VirtualCardEnrollBubble.Result.{EnrollmentSource}.{ShowType}"
-    enum="AutofillVirtualCardEnrollBubbleResult" expires_after="2023-03-01">
+    enum="AutofillVirtualCardEnrollBubbleResult" expires_after="2023-04-01">
   <owner>alexandertekle@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
@@ -3367,13 +3416,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.VirtualCardEnrollBubble.Shown.{EnrollmentSource}"
-    enum="BooleanPreviouslyShown" expires_after="2023-03-01">
+    enum="BooleanPreviouslyShown" expires_after="2023-04-01">
   <owner>alexandertekle@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records the reason for starting the virtual card enroll bubble for flows
     that start from {EnrollmentSource}. Recorded when the bubble is shown.
+    Records false the first time the bubble is shown, true for subsequent bubble
+    shows.
   </summary>
   <token key="EnrollmentSource"
       variants="Autofill.VirtualCardEnrollmentSource"/>
