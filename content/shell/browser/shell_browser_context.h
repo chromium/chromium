@@ -24,6 +24,7 @@ class ClientHintsControllerDelegate;
 class DownloadManagerDelegate;
 class PermissionControllerDelegate;
 class ShellDownloadManagerDelegate;
+class ShellFederatedPermissionContext;
 class ZoomLevelDelegate;
 
 class ShellBrowserContext : public BrowserContext {
@@ -62,6 +63,12 @@ class ShellBrowserContext : public BrowserContext {
   BrowsingDataRemoverDelegate* GetBrowsingDataRemoverDelegate() override;
   ContentIndexProvider* GetContentIndexProvider() override;
   ClientHintsControllerDelegate* GetClientHintsControllerDelegate() override;
+  FederatedIdentityRequestPermissionContextDelegate*
+  GetFederatedIdentityRequestPermissionContext() override;
+  FederatedIdentitySharingPermissionContextDelegate*
+  GetFederatedIdentitySharingPermissionContext() override;
+  FederatedIdentityActiveSessionPermissionContextDelegate*
+  GetFederatedIdentityActiveSessionPermissionContext() override;
 
  protected:
   // Contains URLRequestContextGetter required for resource loading.
@@ -82,6 +89,8 @@ class ShellBrowserContext : public BrowserContext {
   std::unique_ptr<PermissionControllerDelegate> permission_manager_;
   std::unique_ptr<BackgroundSyncController> background_sync_controller_;
   std::unique_ptr<ContentIndexProvider> content_index_provider_;
+  std::unique_ptr<ShellFederatedPermissionContext>
+      federated_permission_context_;
 
  private:
   // Performs initialization of the ShellBrowserContext while IO is still

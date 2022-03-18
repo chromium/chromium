@@ -3,22 +3,23 @@
 <link rel="help" href="https://wicg.github.io/FedCM">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script type="module">
-  import {fedcm_test} from './support/fedcm-helper.js';
-
+<body>
+<script>
+  const url_prefix = 'https://{{host}}:{{ports[https][0]}}/credential-management/support/';
   const test_options = {
     federated: {
       providers: [{
-        url: 'https://idp.test',
+        url: url_prefix,
         clientId: '1',
-        hint: 'foo@bar.com',
+        // hint has to match the account id in support/accounts.json
+        hint: '1234',
       }]
     }
   };
   const test_options_no_hint = {
     federated: {
       providers: [{
-        url: 'https://idp.test',
+        url: url_prefix,
         clientId: '1',
       }]
     }
@@ -27,30 +28,36 @@
     nonce: '2',
   };
 
+   async function set_cookie() {
+     // Wait for the identity provider's cookie to be installed.
+     await new Promise(resolve => {
+       const img = document.createElement('img');
+       img.addEventListener('error', resolve);
+       img.src = url_prefix + 'set_cookie';
+       document.body.appendChild(img);
+     });
+   }
 
-  fedcm_test(async (t, mock) => {
-    mock.returnIdToken("a_token");
-    mock.logoutReturn("kSuccess");
+  promise_test(async t => {
+    await set_cookie();
     const cred = await navigator.credentials.get(test_options);
     const token = await cred.login(login_options);
-    assert_equals(token.idToken, "a_token");
+    assert_equals(token.idToken, "token");
 
     await cred.logout();
   }, "logout should not throw an exception.");
 
-  fedcm_test(async (t, mock) => {
-    mock.logoutReturn("kNotLoggedIn");
+  promise_test(async t => {
     const cred = await navigator.credentials.get(test_options);
 
     return promise_rejects_dom(t, "InvalidStateError", cred.logout());
   }, "logout should throw an exception when not logged in.");
 
-  fedcm_test(async (t, mock) => {
-    mock.returnIdToken("a_token");
-    mock.logoutReturn("kSuccess");
+  promise_test(async t => {
+    await set_cookie();
     const cred = await navigator.credentials.get(test_options_no_hint);
     const token = await cred.login(login_options);
-    assert_equals(token.idToken, "a_token");
+    assert_equals(token.idToken, "token");
 
     return promise_rejects_dom(t, "InvalidStateError", cred.logout());
   }, "logout should require a hint.");

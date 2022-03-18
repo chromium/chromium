@@ -26,6 +26,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/shell/browser/shell_content_index_provider.h"
 #include "content/shell/browser/shell_download_manager_delegate.h"
+#include "content/shell/browser/shell_federated_permission_context.h"
 #include "content/shell/browser/shell_paths.h"
 #include "content/shell/browser/shell_permission_manager.h"
 #include "content/shell/common/shell_switches.h"
@@ -189,6 +190,30 @@ ContentIndexProvider* ShellBrowserContext::GetContentIndexProvider() {
   if (!content_index_provider_)
     content_index_provider_ = std::make_unique<ShellContentIndexProvider>();
   return content_index_provider_.get();
+}
+
+FederatedIdentityRequestPermissionContextDelegate*
+ShellBrowserContext::GetFederatedIdentityRequestPermissionContext() {
+  if (!federated_permission_context_)
+    federated_permission_context_ =
+        std::make_unique<ShellFederatedPermissionContext>();
+  return federated_permission_context_.get();
+}
+
+FederatedIdentitySharingPermissionContextDelegate*
+ShellBrowserContext::GetFederatedIdentitySharingPermissionContext() {
+  if (!federated_permission_context_)
+    federated_permission_context_ =
+        std::make_unique<ShellFederatedPermissionContext>();
+  return federated_permission_context_.get();
+}
+
+FederatedIdentityActiveSessionPermissionContextDelegate*
+ShellBrowserContext::GetFederatedIdentityActiveSessionPermissionContext() {
+  if (!federated_permission_context_)
+    federated_permission_context_ =
+        std::make_unique<ShellFederatedPermissionContext>();
+  return federated_permission_context_.get();
 }
 
 }  // namespace content
