@@ -181,11 +181,12 @@ platform.
 * Sanitizer creation: `kSanitizerAPICreated` and
   `kSanitizerAPIDefaultConfiguration` tell us how many Sanitizers are
   created and how many Sanitizers are created without custom configurations.
-* Sanitizing process: `kSanitizerAPIToString` and
-  `kSanitizerAPIToFragment` counts the usage of two methods,
-  `Sanitizer::sanitizeToString` and `Sanitizer::sanitize`.
-* `kSanitizerAPIActionTaken` shows how many times do the
-  actual sanitize action has been performed while calling the Sanitizer APIs.
+* Sanitizer method: `kSanitizerAPIToFragment`, `kSanitizerAPISanitizeFor`,
+  and `kSanitizerAPIElementSetSanitized` measure which API entry point has been
+  called.
+* `kSanitizerAPIActionTaken` shows how many times a sanitize action has been
+  performed while calling the Sanitizer APIs. (That is, on how many sanitizer
+  calls did the sanitizer remove nodes from the input sets.)
 * Input type: `kSanitizerAPIFromString`, `kSanitizerAPIFromDocument` and
   `kSanitizerAPIFromFragment` tell us what kind of input people are using.
 
