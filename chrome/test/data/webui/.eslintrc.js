@@ -6,14 +6,20 @@ module.exports = {
   'env': {'browser': true, 'es6': true},
   'rules': {
     'no-restricted-properties': [
-      'error',
-      {
+      'error', {
         'object': 'MockInteractions',
         'property': 'tap',
         'message': 'Do not use on-tap handlers in prod code, and use the ' +
             'native click() method in tests. See more context at ' +
             'crbug.com/812035.',
       },
+      {
+        'object': 'test',
+        'property': 'only',
+        'message': 'test.only() silently disables other tests in the same ' +
+            'suite(). Did you forget deleting it before uploading? Use ' +
+            'test.skip() instead to explicitly disable certain test() cases.',
+      }
     ],
     'no-var': 'off',
     'prefer-const': 'off',
