@@ -482,4 +482,11 @@ struct CommitNavigationParams {
 
   // When URL is about:srcdoc, this carries the srcdoc attribute's value.
   string srcdoc_value;
+
+  // Whether the navigation should be treated as a "loadDataWithBaseURL"
+  // navigation, where the "document URL" is set to the supplied base URL
+  // instead of the data URL set in CommonNavigationParams' `url`. If this
+  // returns false, the data: URL will still be loaded, but we won't try to use
+  // the supplied base URL and history URL.
+  bool is_load_data_with_base_url = false;
 };

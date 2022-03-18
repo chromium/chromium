@@ -1173,7 +1173,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
           std::vector<GURL>(), absl::nullopt /* ad_auction_components */,
           // This timestamp will be populated when the commit IPC is sent.
           base::TimeTicks() /* commit_sent */, false /* anonymous */,
-          std::string() /* srcdoc_value */);
+          std::string() /* srcdoc_value */, false /* should_load_data_url */);
 
   // CreateRendererInitiated() should only be triggered when the navigation is
   // initiated by a frame in the same process.
@@ -1297,7 +1297,7 @@ NavigationRequest::CreateForSynchronousRendererCommit(
           absl::nullopt /* ad_auction_components */,
           // This timestamp will be populated when the commit IPC is sent.
           base::TimeTicks() /* commit_sent */, false /* anonymous */,
-          std::string() /* srcdoc_value */);
+          std::string() /* srcdoc_value */, false /* should_load_data_url */);
   blink::mojom::BeginNavigationParamsPtr begin_params =
       blink::mojom::BeginNavigationParams::New();
   std::unique_ptr<NavigationRequest> navigation_request(new NavigationRequest(
@@ -5992,6 +5992,8 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
 
   SetExpectedProcess(render_frame_host_->GetProcess());
 
+  commit_params_->is_load_data_with_base_url = IsLoadDataWithBaseURL();
+
   if (!IsSameDocument()) {
 #if DCHECK_IS_ON()
     DCHECK(is_safe_to_delete_);
@@ -6029,11 +6031,9 @@ bool NavigationRequest::IsPdf() {
 }
 
 bool NavigationRequest::IsLoadDataWithBaseURL() const {
-  // A navigation is a loadDataWithBaseURL navigation if it's a successful main
-  // frame navigation, and its base URL is valid. This function should be kept
-  // in sync with the ShouldLoadDataWithBaseURL() function in
-  // render_frame_impl.cc.
-  return IsInMainFrame() && !DidEncounterError() &&
+  // A navigation is a loadDataWithBaseURL navigation if it's a successful
+  // primary main frame navigation to a data: URL, and its base URL is valid.
+  return IsInPrimaryMainFrame() && !DidEncounterError() &&
          common_params_->url.SchemeIs(url::kDataScheme) &&
          common_params_->base_url_for_data_url.is_valid();
 }

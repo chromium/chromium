@@ -852,26 +852,6 @@ mojo::PendingRemote<blink::mojom::BlobURLToken> CloneBlobURLToken(
   return cloned_token;
 }
 
-// Whether the navigation should be treated as a "loadDataWithBaseURL"
-// navigation, where the "document URL" is set to the supplied base URL instead
-// of the data URL set in CommonNavigationParams' `url` and the "unreachable
-// URL" is set to the supplied history URL. If this returns false, the data:
-// URL will still be loaded, but we won't try to use the supplied base URL and
-// history URL.
-// This should be kept in sync with NavigationRequest::IsLoadDataWithBaseURL().
-bool ShouldLoadDataWithBaseURL(
-    bool is_main_frame,
-    const blink::mojom::CommonNavigationParams& common_params,
-    const blink::mojom::CommitNavigationParams& commit_params) {
-  if (!is_main_frame)
-    return false;
-  // If no base URL is supplied, we should treat this as a normal data: URL
-  // navigation.
-  bool should_load_data_url = !common_params.base_url_for_data_url.is_empty();
-  DCHECK(!should_load_data_url || common_params.url.SchemeIs(url::kDataScheme));
-  return should_load_data_url;
-}
-
 // Creates a fully functional DocumentState in the case where we do not have
 // navigation parameters available.
 std::unique_ptr<DocumentState> BuildDocumentState() {
@@ -890,8 +870,7 @@ std::unique_ptr<DocumentState> BuildDocumentStateFromParams(
     mojom::NavigationClient::CommitNavigationCallback commit_callback,
     std::unique_ptr<NavigationClient> navigation_client,
     int request_id,
-    bool was_initiated_in_this_frame,
-    bool is_main_frame) {
+    bool was_initiated_in_this_frame) {
   std::unique_ptr<DocumentState> document_state(new DocumentState());
 
   DCHECK(!common_params.navigation_start.is_null());
@@ -907,10 +886,9 @@ std::unique_ptr<DocumentState> BuildDocumentStateFromParams(
   // If this is a loadDataWithBaseURL request, save the commit URL so that we
   // can send a DidCommit message with the URL that was originally sent by the
   // browser in CommonNavigationParams (See MaybeGetOverriddenURL()).
-  bool load_data =
-      ShouldLoadDataWithBaseURL(is_main_frame, common_params, commit_params);
-  document_state->set_was_load_data_with_base_url_request(load_data);
-  if (load_data)
+  document_state->set_was_load_data_with_base_url_request(
+      commit_params.is_load_data_with_base_url);
+  if (commit_params.is_load_data_with_base_url)
     document_state->set_data_url(common_params.url);
 
   document_state->set_navigation_state(NavigationState::Create(
@@ -2680,7 +2658,7 @@ void RenderFrameImpl::CommitNavigation(
   std::unique_ptr<DocumentState> document_state = BuildDocumentStateFromParams(
       *common_params, *commit_params, std::move(commit_callback),
       std::move(navigation_client_impl_), request_id,
-      was_initiated_in_this_frame, is_main_frame_);
+      was_initiated_in_this_frame);
 
   // Check if the navigation being committed originated as a client redirect.
   bool is_client_redirect =
@@ -2716,8 +2694,7 @@ void RenderFrameImpl::CommitNavigation(
 #endif
 
   if (should_handle_data_url_as_string ||
-      ShouldLoadDataWithBaseURL(is_main_frame_, *common_params,
-                                *commit_params)) {
+      commit_params->is_load_data_with_base_url) {
     std::string mime_type, charset, data;
     // `base_url` will be set to `base_url_for_data_url` from `common_params`,
     // unless it's empty (the `data_url_as_string` handling case), in which
@@ -3059,7 +3036,7 @@ void RenderFrameImpl::CommitFailedNavigation(
       *common_params, *commit_params, std::move(callback),
       std::move(navigation_client_impl_),
       blink::WebResourceRequestSender::MakeRequestID(),
-      false /* was_initiated_in_this_frame */, is_main_frame_);
+      false /* was_initiated_in_this_frame */);
 
   DCHECK(!pending_loader_factories_);
   pending_loader_factories_ = std::move(new_loader_factories);
@@ -5911,7 +5888,7 @@ blink::WebURL RenderFrameImpl::LastCommittedUrlForUKM() {
 // - For loadDataWithBaseURL() navigations, it will return the data: URL
 // used to commit, instead of the "base URL" used as the document URL in the
 // DocumentLoader. See comments in  BuildDocumentStateFromParams() and
-// ShouldLoadDataWithBaseURL() for more details.
+// in navigation_params.mojom's `is_load_data_with_base_url` for more details.
 GURL RenderFrameImpl::GetLoadingUrl() const {
   WebDocumentLoader* document_loader = frame_->GetDocumentLoader();
 
