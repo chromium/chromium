@@ -243,11 +243,17 @@ Frame* FrameTree::FindFrameForNavigationInternal(const AtomicString& name,
   }
 
   if (EqualIgnoringASCIICase(name, "_self") ||
-      EqualIgnoringASCIICase(name, "_current") || name.IsEmpty())
+      EqualIgnoringASCIICase(name, "_current") || name.IsEmpty()) {
     return this_frame_;
+  }
 
   if (EqualIgnoringASCIICase(name, "_top"))
     return &Top(FrameTreeBoundary::kFenced);
+
+  if (EqualIgnoringASCIICase(name, "_unfencedTop") &&
+      this_frame_.Get()->IsInFencedFrameTree()) {
+    return &Top();
+  }
 
   if (EqualIgnoringASCIICase(name, "_parent")) {
     return Parent(FrameTreeBoundary::kFenced)

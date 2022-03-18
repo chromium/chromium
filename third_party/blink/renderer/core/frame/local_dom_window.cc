@@ -2134,6 +2134,15 @@ DOMWindow* LocalDOMWindow::open(v8::Isolate* isolate,
     return result.frame->DomWindow();
   }
 
+  // _unfencedTop (in fenced frames) should not return the window,
+  // because it is outside of the fenced subtree.
+  // Outside of fenced frames, _unfencedTop is not a reserved frame
+  // name/keyword, so we skip this special case.
+  if (EqualIgnoringASCIICase(target, "_unfencedTop") &&
+      GetFrame()->IsInFencedFrameTree()) {
+    return nullptr;
+  }
+
   if (window_features.noopener)
     return nullptr;
   if (!result.new_window)

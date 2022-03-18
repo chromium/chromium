@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<title>Test top-level navigation from fenced frames with _unfencedTop</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="resources/utils.js"></script>
+
+<body>
+<script>
+
+// Creates a new window and validates its opener/referrer, then creates a
+// fenced frame inside of it.
+// Returns the window and the URL of the fenced frame.
+async function createAndValidateWindow() {
+  const new_window = attachWindowContext();
+
+  const fenced_frame_url = await new_window.execute(async (original_referrer) => {
+    assert_equals(document.referrer, original_referrer,
+                  "Initially, the window's referrer is the test file.");
+    assert_not_equals(window.opener, null,
+                      `The window has an opener, because it was created from
+                       outside a fenced frame.`);
+
+    // We have to store the frame under 'window' explicitly, because otherwise
+    // the variable wouldn't persist between script executions.
+    window.fenced_frame = attachFencedFrameContext();
+
+    // Wait for the fenced frame to load.
+    await window.fenced_frame.execute(() => {
+      assert_false(navigator.userActivation.isActive,
+                   "The fenced frame should initially be inactive.");
+    });
+
+    // Send a click to user-activate the fenced frame.
+    // Note: this is tricky because we are in a fenced frame inside an
+    // auxiliary browsing context.
+    // The normal cross-platform test_driver APIs don't seem to work in
+    // auxiliary browsing contexts.
+    // The Blink-internal API `eventSender` works in the top-level frame
+    // of the auxiliary browsing context, but not when called from inside
+    // the fenced frame.
+    assert_not_equals(eventSender, null);
+    var rect = window.fenced_frame.element.getBoundingClientRect();
+    eventSender.mouseMoveTo(rect.x+rect.width/2, rect.y+rect.height/2);
+    eventSender.mouseDown();
+
+    await window.fenced_frame.execute(() => {
+      assert_true(navigator.userActivation.isActive,
+                  "Now the fenced frame should be active.");
+    });
+
+    return window.fenced_frame.src;
+  }, [location.href]);
+
+  return [new_window, fenced_frame_url];
+}
+
+// Test successful navigation out of a fenced frame through _unfencedTop.
+promise_test(async () => {
+    // Create a new window, where we'll navigate the outermost frame.
+    // (We can't do it in this window, or we'd lose the testing harness.)
+    // Create a fenced frame in the window, and return its URL (which will
+    // become the document.referrer of the navigated outermost frame).
+    const [new_window, new_referrer] = await createAndValidateWindow();
+
+    // Navigate the window's top-level frame from inside the fenced frame.
+    // (Navigate to the original URL, i.e. refresh the page, so that we can
+    // still communicate via RemoteContext.)
+    // Suspend the remote executor so that the next command we send will be
+    // handled by the refreshed page, not the moribund old page.
+    await new_window.execute(() => {
+      window.executor.suspend(() => {
+        window.fenced_frame.execute((refresh_url) => {
+          const window_handle = window.open(refresh_url, '_unfencedTop');
+          assert_equals(window_handle, null,
+                        `There should be no window handle returned from
+                         navigations through _unfencedTop.`);
+        }, [location.href]);
+      });
+    });
+
+    message_received = new Promise(resolve => window.onmessage = () => resolve());
+
+    // Check that the navigation happened in the correct frame.
+    await new_window.execute((expected_referrer) => {
+      assert_not_equals(window.opener, null,
+                        `The browsing context has a window.opener, because it
+                         is the top-level frame in the opened window.`);
+      window.opener.postMessage('This should reach the original opener', '*');
+      assert_equals(document.referrer, expected_referrer,
+                    `The new document.referrer should be from the fenced frame
+                     that originated the navigation.`);
+      assert_equals(window.fenced_frame, undefined,
+                    `The browsing context has been refreshed, so old variables
+                     are gone.`);
+    }, [new_referrer]);
+
+    // Await the postMessage from inside the frame to confirm that the opener
+    // is unchanged.
+    await message_received;
+
+}, '_unfencedTop success case');
+
+// Test unsuccessful navigation out of a fenced frame using _unfencedTop and
+// a javascript: URL.
+promise_test(async() => {
+  // Create a new window.
+  const [new_window, _] = await createAndValidateWindow();
+
+  await new_window.execute(async () => {
+
+    // Navigate the fenced frame to a JS URL.
+    await window.fenced_frame.execute(() => {
+      window.open('javascript:window.secret=true', '_self');
+    });
+
+    // In a separate remote script execution (to ensure the navigation has
+    // finished), observe that JS URL navigations work in fenced frames.
+    await window.fenced_frame.execute(() => {
+      assert_equals(window.secret, true,
+                    "The JS URL navigation worked inside the fenced frame.");
+    });
+
+    // Now try to navigate _unfencedTop using a JS URL.
+    await window.fenced_frame.execute(() => {
+      const result = window.open('javascript:window.secret=false', '_unfencedTop');
+      assert_equals(result, null, "_unfencedTop didn't return a window.");
+    });
+  });
+
+  // In a separate remote script execution (to ensure the navigation has
+  // finished), observe that JS URL navigations don't work for _unfencedTop.
+  await new_window.execute(() => {
+    assert_equals(window.secret, undefined,
+                  "The JS URL navigation to _unfencedTop failed");
+  });
+}, '_unfencedTop :javascript URL failure');
+
+// Test successful navigation using _unfencedTop outside of a fenced frame,
+// which behaves like any other target name.
+promise_test(async() => {
+  const openee = window.open('about:blank', '_unfencedTop');
+  assert_not_equals(openee.document, document,
+                    "_unfencedTop outside a fenced frame opens a new document.");
+  assert_not_equals(openee.window, window,
+                    "_unfencedTop outside a fenced frame opens a new window.");
+}, '_unfencedTop outside a fenced frame');
+
+</script>
+</body>

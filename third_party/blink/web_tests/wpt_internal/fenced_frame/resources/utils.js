@@ -62,19 +62,19 @@ function getRemoteOriginURL(url, https=true) {
   return new URL(url.toString().replace(same_origin, cross_origin));
 }
 
-// Attaches a frame that waits for scripts to execute from RemoteContext.
-// Returns a proxy for the frame that first resolves to the frame HTML element,
+// Attaches an object that waits for scripts to execute from RemoteContext.
+// (In practice, this is either a frame or a window.)
+// Returns a proxy for the object that first resolves to the object itself,
 // then resolves to the RemoteContext if the property isn't found.
 // The proxy also has an extra attribute `execute`, which is an alias for the
 // remote context's `execute_script(fn, args=[])`.
-function attachFrameContext(element_name, html, headers, attributes) {
+function attachContext(object_constructor, html, headers) {
 
-  // Create the frame, passing the unique id for the parent/child channel.
-  const frame = document.createElement(element_name);
+  // Generate the unique id for the parent/child channel.
   const uuid = token();
 
   // Use the absolute path of the remote context executor source file, so that
-  // nested frames will work.
+  // nested contexts will work.
   const url = new URL(REMOTE_EXECUTOR_URL, location.origin);
   url.searchParams.append('uuid', uuid);
 
@@ -88,12 +88,7 @@ function attachFrameContext(element_name, html, headers, attributes) {
   });
   url.searchParams.append('pipe', formatted_headers.join("|"));
 
-  attributes.forEach(attribute => {
-    frame.setAttribute(attribute[0], attribute[1]);
-  });
-
-  frame.src = url;
-  document.body.append(frame);
+  const object = object_constructor(url);
 
   // https://github.com/web-platform-tests/wpt/blob/master/common/dispatcher/README.md
   const context = new RemoteContext(uuid);
@@ -113,7 +108,7 @@ function attachFrameContext(element_name, html, headers, attributes) {
         return context.execute_script;
       }
       if (key == "element") {
-        return frame;
+        return object;
       }
       if (key in target) {
         return target[key];
@@ -126,8 +121,22 @@ function attachFrameContext(element_name, html, headers, attributes) {
     }
   };
 
-  const proxy = new Proxy(frame, handler);
+  const proxy = new Proxy(object, handler);
   return proxy;
+}
+
+function attachFrameContext(element_name, html, headers, attributes) {
+  frame_constructor = (url) => {
+    frame = document.createElement(element_name);
+    attributes.forEach(attribute => {
+      frame.setAttribute(attribute[0], attribute[1]);
+    });
+    frame.src = url;
+    document.body.append(frame);
+    return frame;
+  };
+
+  return attachContext(frame_constructor, html, headers);
 }
 
 // Attach a fenced frame that waits for scripts to execute.
@@ -145,6 +154,17 @@ function attachFencedFrameContext({html = "", headers=[], attributes=[]} = {}) {
 // See `attachFencedFrameContext` for more details.
 function attachIFrameContext({html = "", headers=[], attributes=[]} = {}) {
   return attachFrameContext('iframe', html, headers, attributes);
+}
+
+// Open a window that waits for scripts to execute.
+// Returns a proxy that acts like the window object, but with an extra
+// function `execute`. See `attachContext` for more details.
+function attachWindowContext({target="_blank", html = "", headers=[]} = {}) {
+  window_constructor = (url) => {
+    return window.open(url, target);
+  }
+
+  return attachContext(window_constructor, html, headers);
 }
 
 // Converts a key string into a key uuid using a cryptographic hash function.
