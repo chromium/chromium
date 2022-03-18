@@ -60,8 +60,10 @@ struct CORE_EXPORT NGGridLayoutData {
   }
 
   void CopyFrom(const NGGridLayoutData& other) {
-    columns = std::make_unique<NGGridLayoutTrackCollection>(*other.Columns());
-    rows = std::make_unique<NGGridLayoutTrackCollection>(*other.Rows());
+    if (other.columns)
+      columns = std::make_unique<NGGridLayoutTrackCollection>(*other.Columns());
+    if (other.rows)
+      rows = std::make_unique<NGGridLayoutTrackCollection>(*other.Rows());
   }
 
   NGGridLayoutTrackCollection* Columns() const {
