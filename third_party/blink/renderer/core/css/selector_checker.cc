@@ -784,64 +784,13 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
     }
 
     sub_context.selector = selector;
-
-    bool depth_fixed = has_argument_match_context.DepthFixed();
-
-    // To prevent incorrect 'NotChecked' status while matching ':has' pseudo
-    // class, change the argument matching context scope when the ':has'
-    // argument matching traversal cannot be fixed with a certain depth and
-    // adjacent distance.
-    //
-    // For example, When we tries to match '.a:has(.b .c) .d' on below DOM,
-    // <div id=d1 class="a">
-    //  <div id=d2 class="b">
-    //   <div id=d3 class="a">
-    //    <div id=d4 class="c">
-    //      <div id=d5 class="d"></div>
-    //    </div>
-    //   </div>
-    //  </div>
-    // </div>
-    // the ':has(.b .c)' selector will be checked on the #d3 element first
-    // because the selector '.a:has(.b .c) .d' will be matched upward from
-    // the #d5 element.
-    //  1) '.d' will be matched first on #d5
-    //  2) move to the #d3 until the '.a' matched
-    //  3) match the ':has(.b .c)' on the #d3
-    //    3.1) match the argument selector '.b .c' on the descendants of #d3
-    //  4) move to the #d1 until the '.a' matched
-    //  5) match the ':has(.b .c)' on the #d1
-    //    5.1) match the argument selector '.b .c' on the descendants of #d1
-    //
-    // The argument selector '.b .c' will not be matched on the #d4 at this
-    // step if the argument matching scope is limited to #d3. But the '.b .c'
-    // can be matched on the #d4 if the argument matching scope is #d1.
-    // To prevent duplicated argument matching operation, the #d1 should be
-    // marked as 'Matched' at the step 3.
-    //
-    // TODO(blee@igalia.com) Need to clarify the :scope dependency in relative
-    // selector definition.
-    // - spec : https://www.w3.org/TR/selectors-4/#relative
-    // - csswg issue : https://github.com/w3c/csswg-drafts/issues/6399
-    if (!depth_fixed) {
-      sub_context.relative_leftmost_element =
-          &has_scope_element->GetTreeScope().RootNode();
-    } else if (has_argument_match_context.AdjacentDistanceFixed()) {
-      if (ContainerNode* parent_node = has_scope_element->parentNode()) {
-        sub_context.relative_leftmost_element =
-            Traversal<Element>::FirstChild(*parent_node);
-      } else {
-        sub_context.relative_leftmost_element = has_scope_element;
-      }
-    } else {
-      sub_context.relative_leftmost_element = has_scope_element;
-    }
+    sub_context.relative_leftmost_element = has_scope_element;
 
     bool selector_matched = false;
     for (HasArgumentSubtreeIterator iterator(*has_scope_element,
                                              has_argument_match_context);
          !iterator.AtEnd(); ++iterator) {
-      if (depth_fixed && !iterator.AtFixedDepth()) {
+      if (has_argument_match_context.DepthFixed() && !iterator.AtFixedDepth()) {
         // We can skip subselector matching on some elements at a certain depth
         // when the subselector doesn't have descendant combinator. (e.g. For
         // the style rule '.a:has(> .b > .c) {}', we don't need to match the
