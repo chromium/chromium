@@ -61,6 +61,9 @@ class POLICY_EXPORT PolicyConversions {
   // Set to get all user scope policies.
   // Enabled by default.
   PolicyConversions& EnableUserPolicies(bool enabled);
+  // Set to drop the policies of which value is a default one set by the policy
+  // provider. Disabled by default.
+  PolicyConversions& SetDropDefaultValues(bool enabled);
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Sets the updater policies.
