@@ -582,7 +582,7 @@ TEST_F(PinRequestViewTest, VirtualKeyboardHidden) {
 
   ui::GestureEvent event(
       text_field->x(), text_field->y(), 0, base::TimeTicks::Now(),
-      ui::GestureEventDetails(ui::EventType::ET_GESTURE_TAP_DOWN));
+      ui::GestureEventDetails(ui::EventType::ET_GESTURE_TAP));
   text_field->OnGestureEvent(&event);
   base::RunLoop().RunUntilIdle();
 

@@ -177,7 +177,7 @@ views::View* AccessibleInputField::GetSelectedViewForGroup(int group) {
 }
 
 void AccessibleInputField::OnGestureEvent(ui::GestureEvent* event) {
-  if (event->type() == ui::ET_GESTURE_TAP_DOWN) {
+  if (event->type() == ui::ET_GESTURE_TAP) {
     RequestFocusWithPointer(event->details().primary_pointer_type());
     return;
   }
