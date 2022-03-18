@@ -1961,8 +1961,22 @@ bool NGBoxFragmentPainter::NodeAtPoint(const HitTestContext& hit_test,
     return false;
 
   // Now hit test ourselves.
-  if (hit_test_self &&
-      IsVisibleToHitTest(box_fragment_, hit_test.result->GetHitTestRequest())) {
+  if (hit_test_self) {
+    if (UNLIKELY(!IsVisibleToHitTest(fragment,
+                                     hit_test.result->GetHitTestRequest())))
+      return false;
+    if (UNLIKELY(fragment.IsOpaque()))
+      return false;
+  } else if (UNLIKELY(fragment.IsOpaque() &&
+                      hit_test.result->HasListBasedResult() &&
+                      IsVisibleToHitTest(
+                          fragment, hit_test.result->GetHitTestRequest()))) {
+    // Opaque fragments should not hit, but they are still ancestors in the DOM
+    // tree. They should be added to the list-based result as ancestors if
+    // descendants hit.
+    hit_test_self = true;
+  }
+  if (hit_test_self) {
     PhysicalRect bounds_rect(physical_offset, size);
     if (UNLIKELY(
             hit_test.result->GetHitTestRequest().IsHitTestVisualOverflow())) {
@@ -1988,10 +2002,6 @@ bool NGBoxFragmentPainter::NodeAtPoint(const HitTestContext& hit_test,
       // See http://crbug.com/1043471
       DCHECK(!box_item_ || box_item_->BoxFragment() == &fragment);
       if (box_item_ && box_item_->IsInlineBox()) {
-        // Opaque fragments should be included only for list-based hit-testing.
-        if (fragment.IsOpaque() &&
-            !hit_test.result->GetHitTestRequest().ListBased())
-          return false;
         DCHECK(inline_box_cursor_);
         if (hit_test.AddNodeToResultWithContentOffset(
                 fragment.NodeForHitTest(),

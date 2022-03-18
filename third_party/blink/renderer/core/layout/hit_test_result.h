@@ -191,6 +191,10 @@ class CORE_EXPORT HitTestResult {
 
   void Append(const HitTestResult&);
 
+  bool HasListBasedResult() const {
+    return GetHitTestRequest().ListBased() && InnerNode();
+  }
+
   // If m_listBasedTestResult is 0 then set it to a new NodeSet. Return
   // *m_listBasedTestResult. Lazy allocation makes sense because the NodeSet is
   // seldom necessary, and it's somewhat expensive to allocate and initialize.
