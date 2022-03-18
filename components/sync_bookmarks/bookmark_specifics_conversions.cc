@@ -11,6 +11,7 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/guid.h"
 #include "base/hash/sha1.h"
 #include "base/logging.h"
@@ -40,6 +41,11 @@ const int kLegacyCanonicalizedTitleLimitBytes = 255;
 
 // The list of bookmark titles which are reserved for use by the server.
 const char* const kForbiddenTitles[] = {"", ".", ".."};
+
+// Maximum size for the favicon URL. This limit should be very generous in most
+// cases, the notable exception being data: URLs that encode the content of
+// the favicon itself in the URL, and may be arbitrarily large.
+const int kMaxFaviconUrlSize = 4096;
 
 // Used in metrics: "Sync.InvalidBookmarkSpecifics". These values are
 // persisted to logs. Entries should not be renumbered and numeric values
@@ -118,10 +124,10 @@ void SetBookmarkFaviconFromSpecifics(
   LogFaviconContainedInSpecifics(true);
 
   if (icon_url.is_empty()) {
-    // WebUI pages such as "chrome://bookmarks/" are missing a favicon URL but
-    // they have a favicon. In addition, ancient clients (prior to M25) may not
-    // be syncing the favicon URL. If the icon URL is not synced, use the page
-    // URL as a fake icon URL as it is guaranteed to be unique.
+    // See documentation in BookmarkSpecifics to understand the (rare) scenarios
+    // where |icon_url| may be missing despite a favicon image itself (proto
+    // field |favicon|) being set. In this case, use the page URL as a fake icon
+    // URL as it is guaranteed to be unique.
     icon_url = GURL(bookmark_node->url());
   }
 
@@ -313,11 +319,18 @@ sync_pb::EntitySpecifics CreateSpecificsFromBookmarkNode(
 
   if (favicon_bytes.get() && favicon_bytes->size() != 0) {
     bm_specifics->set_favicon(favicon_bytes->front(), favicon_bytes->size());
-    bm_specifics->set_icon_url(node->icon_url() ? node->icon_url()->spec()
-                                                : std::string());
-  } else {
-    bm_specifics->clear_favicon();
-    bm_specifics->clear_icon_url();
+    // Avoid sync-ing favicon URLs that are unreasonably large, as determined by
+    // |kMaxFaviconUrlSize|. Most notably, URLs prefixed with the data: scheme
+    // to embed the content of the image itself in the URL may be arbitrarily
+    // large and run into the server-side enforced limit per sync entity.
+    if (node->icon_url() &&
+        (node->icon_url()->spec().size() <= kMaxFaviconUrlSize ||
+         !base::FeatureList::IsEnabled(
+             switches::kSyncOmitLargeBookmarkFaviconUrl))) {
+      bm_specifics->set_icon_url(node->icon_url()->spec());
+    } else {
+      bm_specifics->set_icon_url(std::string());
+    }
   }
 
   return specifics;

@@ -9,6 +9,9 @@
 
 namespace switches {
 
+inline constexpr base::Feature kSyncOmitLargeBookmarkFaviconUrl{
+    "SyncOmitLargeBookmarkFaviconUrl", base::FEATURE_ENABLED_BY_DEFAULT};
+
 // TODO(crbug.com/1232951): remove the feature toggle once most of bookmarks
 // have been reuploaded.
 inline constexpr base::Feature kSyncReuploadBookmarks{
