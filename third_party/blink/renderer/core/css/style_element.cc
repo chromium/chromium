@@ -47,7 +47,7 @@ static bool IsCSS(const Element& element, const AtomicString& type) {
 }
 
 StyleElement::StyleElement(Document* document, bool created_by_parser)
-    : created_by_parser_(created_by_parser),
+    : has_finished_parsing_children_(!created_by_parser),
       loading_(false),
       registered_as_candidate_(false),
       start_position_(TextPosition::BelowRangePosition()),
@@ -70,7 +70,7 @@ StyleElement::ProcessingResult StyleElement::ProcessStyleSheet(
 
   registered_as_candidate_ = true;
   document.GetStyleEngine().AddStyleSheetCandidateNode(element);
-  if (created_by_parser_)
+  if (!has_finished_parsing_children_)
     return kProcessingSuccessful;
 
   return Process(element);
@@ -93,7 +93,7 @@ void StyleElement::RemovedFrom(Element& element,
 }
 
 StyleElement::ProcessingResult StyleElement::ChildrenChanged(Element& element) {
-  if (created_by_parser_)
+  if (!has_finished_parsing_children_)
     return kProcessingSuccessful;
   probe::WillChangeStyleElement(&element);
   return Process(element);
@@ -102,7 +102,7 @@ StyleElement::ProcessingResult StyleElement::ChildrenChanged(Element& element) {
 StyleElement::ProcessingResult StyleElement::FinishParsingChildren(
     Element& element) {
   ProcessingResult result = Process(element);
-  created_by_parser_ = false;
+  has_finished_parsing_children_ = true;
   return result;
 }
 
@@ -170,8 +170,7 @@ StyleElement::ProcessingResult StyleElement::CreateSheet(Element& element,
       }
     }
     // TODO(crbug.com/1271296): Should be blocking only when created by parser
-    // or has `blocking="render"`, but created_by_parser_ flag is flipped to
-    // false in FinishParsingChildren(), which causes test failures.
+    // or has `blocking="render"`.
     pending_sheet_type_ = media_query_matches ? PendingSheetType::kBlocking
                                               : PendingSheetType::kNonBlocking;
     loading_ = true;

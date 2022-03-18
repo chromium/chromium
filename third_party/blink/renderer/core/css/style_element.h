@@ -70,7 +70,7 @@ class CORE_EXPORT StyleElement : public GarbageCollectedMixin {
   ProcessingResult Process(Element&);
   void ClearSheet(Element& owner_element);
 
-  bool created_by_parser_ : 1;
+  bool has_finished_parsing_children_ : 1;
   bool loading_ : 1;
   bool registered_as_candidate_ : 1;
   TextPosition start_position_;
