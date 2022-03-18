@@ -49,6 +49,224 @@ FirstPartySets::FlattenedSets ParseSetsFromStream(const std::string& sets) {
   return FirstPartySetParser::ParseSetsFromStream(stream);
 }
 
+TEST(FirstPartySets, ComputeSetsDiff_SitesJoined) {
+  FirstPartySets::FlattenedSets old_sets = {
+      {net::SchemefulSite(GURL("https://example.test")),
+       net::SchemefulSite(GURL("https://example.test"))},
+      {net::SchemefulSite(GURL("https://member1.test")),
+       net::SchemefulSite(GURL("https://example.test"))},
+      {net::SchemefulSite(GURL("https://member3.test")),
+       net::SchemefulSite(GURL("https://example.test"))}};
+  // Consistency check the reviewer-friendly format matches the input.
+  ASSERT_THAT(ParseSetsFromStream(
+                  R"({"owner": "https://example.test", "members": )"
+                  R"(["https://member1.test", "https://member3.test"]})"),
+              old_sets);
+
+  FirstPartySets::FlattenedSets current_sets = {
+      {net::SchemefulSite(GURL("https://example.test")),
+       net::SchemefulSite(GURL("https://example.test"))},
+      {net::SchemefulSite(GURL("https://member1.test")),
+       net::SchemefulSite(GURL("https://example.test"))},
+      {net::SchemefulSite(GURL("https://member3.test")),
+       net::SchemefulSite(GURL("https://example.test"))},
+      {net::SchemefulSite(GURL("https://foo.test")),
+       net::SchemefulSite(GURL("https://foo.test"))},
+      {net::SchemefulSite(GURL("https://member2.test")),
+       net::SchemefulSite(GURL("https://foo.test"))},
+  };
+  // Consistency check the reviewer-friendly format matches the input.
+  ASSERT_THAT(
+      ParseSetsFromStream(
+          R"({"owner": "https://example.test", )"
+          R"("members": ["https://member1.test", "https://member3.test"]}
+      {"owner": "https://foo.test", "members": ["https://member2.test"]})"),
+      current_sets);
+
+  // "https://foo.test" and "https://member2.test" joined FPSs. We don't clear
+  // site data upon joining, so the computed diff should be empty set.
+  EXPECT_THAT(FirstPartySets::ComputeSetsDiff(old_sets, current_sets),
+              IsEmpty());
+}
+
+TEST(FirstPartySets, ComputeSetsDiff_SitesLeft) {
+  FirstPartySets::FlattenedSets old_sets = {
+      {net::SchemefulSite(GURL("https://example.test")),
+       net::SchemefulSite(GURL("https://example.test"))},
+      {net::SchemefulSite(GURL("https://member1.test")),
+       net::SchemefulSite(GURL("https://example.test"))},
+      {net::SchemefulSite(GURL("https://member3.test")),
+       net::SchemefulSite(GURL("https://example.test"))},
+      {net::SchemefulSite(GURL("https://foo.test")),
+       net::SchemefulSite(GURL("https://foo.test"))},
+      {net::SchemefulSite(GURL("https://member2.test")),
+       net::SchemefulSite(GURL("https://foo.test"))}};
+  // Consistency check the reviewer-friendly format matches the input.
+  ASSERT_THAT(
+      ParseSetsFromStream(R"({"owner": "https://example.test", "members": )"
+                          R"(["https://member1.test", "https://member3.test"]}
+      { "owner": "https://foo.test", "members": ["https://member2.test"]})"),
+      old_sets);
+
+  FirstPartySets::FlattenedSets current_sets = {
+      {net::SchemefulSite(GURL("https://example.test")),
+       net::SchemefulSite(GURL("https://example.test"))},
+      {net::SchemefulSite(GURL("https://member1.test")),
+       net::SchemefulSite(GURL("https://example.test"))}};
+  // Consistency check the reviewer-friendly format matches the input.
+  ASSERT_THAT(ParseSetsFromStream(R"({"owner": "https://example.test", )"
+                                  R"("members": ["https://member1.test"]})"),
+              current_sets);
+
+  // Expected diff: "https://foo.test", "https://member2.test" and
+  // "https://member3.test" left FPSs.
+  EXPECT_THAT(FirstPartySets::ComputeSetsDiff(old_sets, current_sets),
+              UnorderedElementsAre(SerializesTo("https://foo.test"),
+                                   SerializesTo("https://member2.test"),
+                                   SerializesTo("https://member3.test")));
+}
+
+TEST(FirstPartySets, ComputeSetsDiff_OwnerChanged) {
+  FirstPartySets::FlattenedSets old_sets = {
+      {net::SchemefulSite(GURL("https://example.test")),
+       net::SchemefulSite(GURL("https://example.test"))},
+      {net::SchemefulSite(GURL("https://member1.test")),
+       net::SchemefulSite(GURL("https://example.test"))},
+      {net::SchemefulSite(GURL("https://foo.test")),
+       net::SchemefulSite(GURL("https://foo.test"))},
+      {net::SchemefulSite(GURL("https://member2.test")),
+       net::SchemefulSite(GURL("https://foo.test"))},
+      {net::SchemefulSite(GURL("https://member3.test")),
+       net::SchemefulSite(GURL("https://foo.test"))}};
+  // Consistency check the reviewer-friendly format matches the input.
+  ASSERT_THAT(ParseSetsFromStream(
+                  R"({"owner": "https://example.test", "members": )"
+                  R"(["https://member1.test"]}
+      {"owner": "https://foo.test", "members": )"
+                  R"(["https://member2.test", "https://member3.test"]})"),
+              old_sets);
+
+  FirstPartySets::FlattenedSets current_sets = {
+      {net::SchemefulSite(GURL("https://example.test")),
+       net::SchemefulSite(GURL("https://example.test"))},
+      {net::SchemefulSite(GURL("https://member1.test")),
+       net::SchemefulSite(GURL("https://example.test"))},
+      {net::SchemefulSite(GURL("https://member3.test")),
+       net::SchemefulSite(GURL("https://example.test"))},
+      {net::SchemefulSite(GURL("https://foo.test")),
+       net::SchemefulSite(GURL("https://foo.test"))},
+      {net::SchemefulSite(GURL("https://member2.test")),
+       net::SchemefulSite(GURL("https://foo.test"))}};
+  // Consistency check the reviewer-friendly format matches the input.
+  ASSERT_THAT(
+      ParseSetsFromStream(R"({"owner": "https://example.test", "members": )"
+                          R"(["https://member1.test", "https://member3.test"]}
+      {"owner": "https://foo.test", "members": ["https://member2.test"]})"),
+      current_sets);
+
+  // Expected diff: "https://member3.test" changed owner.
+  EXPECT_THAT(FirstPartySets::ComputeSetsDiff(old_sets, current_sets),
+              UnorderedElementsAre(SerializesTo("https://member3.test")));
+}
+
+TEST(FirstPartySets, ComputeSetsDiff_OwnerLeft) {
+  FirstPartySets::FlattenedSets old_sets = {
+      {net::SchemefulSite(GURL("https://example.test")),
+       net::SchemefulSite(GURL("https://example.test"))},
+      {net::SchemefulSite(GURL("https://foo.test")),
+       net::SchemefulSite(GURL("https://example.test"))},
+      {net::SchemefulSite(GURL("https://bar.test")),
+       net::SchemefulSite(GURL("https://example.test"))}};
+  // Consistency check the reviewer-friendly format matches the input.
+  ASSERT_THAT(
+      ParseSetsFromStream(R"({"owner": "https://example.test", "members": )"
+                          R"(["https://foo.test", "https://bar.test"]})"),
+      old_sets);
+
+  FirstPartySets::FlattenedSets current_sets = {
+      {net::SchemefulSite(GURL("https://foo.test")),
+       net::SchemefulSite(GURL("https://foo.test"))},
+      {net::SchemefulSite(GURL("https://bar.test")),
+       net::SchemefulSite(GURL("https://foo.test"))}};
+  // Consistency check the reviewer-friendly format matches the input.
+  ASSERT_THAT(ParseSetsFromStream(R"(
+      {"owner": "https://foo.test", "members": ["https://bar.test"]})"),
+              current_sets);
+
+  // Expected diff: "https://example.test" left FPSs, "https://foo.test" and
+  // "https://bar.test" changed owner.
+  // It would be valid to only have example.test in the diff, but our logic
+  // isn't sophisticated enough yet to know that foo.test and bar.test don't
+  // need to be included in the result.
+  EXPECT_THAT(FirstPartySets::ComputeSetsDiff(old_sets, current_sets),
+              UnorderedElementsAre(SerializesTo("https://example.test"),
+                                   SerializesTo("https://foo.test"),
+                                   SerializesTo("https://bar.test")));
+}
+
+TEST(FirstPartySets, ComputeSetsDiff_OwnerMemberRotate) {
+  FirstPartySets::FlattenedSets old_sets = {
+      {net::SchemefulSite(GURL("https://example.test")),
+       net::SchemefulSite(GURL("https://example.test"))},
+      {net::SchemefulSite(GURL("https://foo.test")),
+       net::SchemefulSite(GURL("https://example.test"))}};
+  // Consistency check the reviewer-friendly format matches the input.
+  ASSERT_THAT(
+      ParseSetsFromStream(R"({"owner": "https://example.test", "members": )"
+                          R"(["https://foo.test"]})"),
+      old_sets);
+
+  FirstPartySets::FlattenedSets current_sets = {
+      {net::SchemefulSite(GURL("https://example.test")),
+       net::SchemefulSite(GURL("https://foo.test"))},
+      {net::SchemefulSite(GURL("https://foo.test")),
+       net::SchemefulSite(GURL("https://foo.test"))}};
+  // Consistency check the reviewer-friendly format matches the input.
+  ASSERT_THAT(
+      ParseSetsFromStream(
+          R"({"owner": "https://foo.test", "members": ["https://example.test"]})"),
+      current_sets);
+
+  // Expected diff: "https://example.test" and "https://foo.test" changed owner.
+  // It would be valid to not include example.test and foo.test in the result,
+  // but our logic isn't sophisticated enough yet to know that.ß
+  EXPECT_THAT(FirstPartySets::ComputeSetsDiff(old_sets, current_sets),
+              UnorderedElementsAre(SerializesTo("https://example.test"),
+                                   SerializesTo("https://foo.test")));
+}
+
+TEST(FirstPartySets, ComputeSetsDiff_EmptyOldSets) {
+  // Empty old_sets.
+  FirstPartySets::FlattenedSets current_sets = {
+      {net::SchemefulSite(GURL("https://example.test")),
+       net::SchemefulSite(GURL("https://example.test"))},
+      {net::SchemefulSite(GURL("https://member1.test")),
+       net::SchemefulSite(GURL("https://example.test"))}};
+  // Consistency check the reviewer-friendly format matches the input.
+  ASSERT_THAT(ParseSetsFromStream(R"({"owner": "https://example.test", )"
+                                  R"("members": ["https://member1.test"]})"),
+              current_sets);
+
+  EXPECT_THAT(FirstPartySets::ComputeSetsDiff({}, current_sets), IsEmpty());
+}
+
+TEST(FirstPartySets, ComputeSetsDiff_EmptyCurrentSets) {
+  // Empty current sets.
+  FirstPartySets::FlattenedSets old_sets = {
+      {net::SchemefulSite(GURL("https://example.test")),
+       net::SchemefulSite(GURL("https://example.test"))},
+      {net::SchemefulSite(GURL("https://member1.test")),
+       net::SchemefulSite(GURL("https://example.test"))}};
+  // Consistency check the reviewer-friendly format matches the input.
+  ASSERT_THAT(ParseSetsFromStream(R"({"owner": "https://example.test", )"
+                                  R"("members": ["https://member1.test"]})"),
+              old_sets);
+
+  EXPECT_THAT(FirstPartySets::ComputeSetsDiff(old_sets, {}),
+              UnorderedElementsAre(SerializesTo("https://example.test"),
+                                   SerializesTo("https://member1.test")));
+}
+
 class FirstPartySetsTest : public ::testing::Test {
  public:
   explicit FirstPartySetsTest(bool enabled) : sets_(enabled) {}
@@ -195,191 +413,6 @@ TEST_F(FirstPartySetsEnabledTest, Sets_IsEmpty) {
   SetComponentSets("[]");
   sets().SetManuallySpecifiedSet("");
   EXPECT_THAT(SetsAndWait(), IsEmpty());
-}
-
-TEST_F(FirstPartySetsEnabledTest, ComputeSetsDiff_SitesJoined) {
-  auto old_sets = FirstPartySets::FlattenedSets{
-      {net::SchemefulSite(GURL("https://example.test")),
-       net::SchemefulSite(GURL("https://example.test"))},
-      {net::SchemefulSite(GURL("https://member1.test")),
-       net::SchemefulSite(GURL("https://example.test"))},
-      {net::SchemefulSite(GURL("https://member3.test")),
-       net::SchemefulSite(GURL("https://example.test"))}};
-
-  // Consistency check the reviewer-friendly format matches the input.
-  ASSERT_THAT(ParseSetsFromStream(
-                  R"({"owner": "https://example.test", "members": )"
-                  R"(["https://member1.test", "https://member3.test"]})"),
-              old_sets);
-
-  SetComponentSets(
-      R"({"owner": "https://example.test", )"
-      R"("members": ["https://member1.test", "https://member3.test"]}
-      {"owner": "https://foo.test", "members": ["https://member2.test"]})");
-  // Set required input to be able to receive the merged sets from
-  // FirstPartySetsLoader.
-  sets().SetManuallySpecifiedSet("");
-  env().RunUntilIdle();
-
-  // "https://foo.test" and "https://member2.test" joined FPSs. We don't clear
-  // site data upon joining, so the computed diff should be empty set.
-  EXPECT_THAT(sets().ComputeSetsDiff(old_sets), IsEmpty());
-}
-
-TEST_F(FirstPartySetsEnabledTest, ComputeSetsDiff_SitesLeft) {
-  auto old_sets = FirstPartySets::FlattenedSets{
-      {net::SchemefulSite(GURL("https://example.test")),
-       net::SchemefulSite(GURL("https://example.test"))},
-      {net::SchemefulSite(GURL("https://member1.test")),
-       net::SchemefulSite(GURL("https://example.test"))},
-      {net::SchemefulSite(GURL("https://member3.test")),
-       net::SchemefulSite(GURL("https://example.test"))},
-      {net::SchemefulSite(GURL("https://foo.test")),
-       net::SchemefulSite(GURL("https://foo.test"))},
-      {net::SchemefulSite(GURL("https://member2.test")),
-       net::SchemefulSite(GURL("https://foo.test"))}};
-
-  // Consistency check the reviewer-friendly format matches the input.
-  ASSERT_THAT(
-      ParseSetsFromStream(R"({"owner": "https://example.test", "members": )"
-                          R"(["https://member1.test", "https://member3.test"]}
-      { "owner": "https://foo.test", "members": ["https://member2.test"]})"),
-      old_sets);
-
-  SetComponentSets(R"({"owner": "https://example.test", )"
-                   R"("members": ["https://member1.test"]})");
-  // Set required input to be able to receive the merged sets from
-  // FirstPartySetsLoader.
-  sets().SetManuallySpecifiedSet("");
-  env().RunUntilIdle();
-  // Expected diff: "https://foo.test", "https://member2.test" and
-  // "https://member3.test" left FPSs.
-  EXPECT_THAT(sets().ComputeSetsDiff(old_sets),
-              UnorderedElementsAre(SerializesTo("https://foo.test"),
-                                   SerializesTo("https://member2.test"),
-                                   SerializesTo("https://member3.test")));
-}
-
-TEST_F(FirstPartySetsEnabledTest, ComputeSetsDiff_OwnerChanged) {
-  auto old_sets = FirstPartySets::FlattenedSets{
-      {net::SchemefulSite(GURL("https://example.test")),
-       net::SchemefulSite(GURL("https://example.test"))},
-      {net::SchemefulSite(GURL("https://member1.test")),
-       net::SchemefulSite(GURL("https://example.test"))},
-      {net::SchemefulSite(GURL("https://foo.test")),
-       net::SchemefulSite(GURL("https://foo.test"))},
-      {net::SchemefulSite(GURL("https://member2.test")),
-       net::SchemefulSite(GURL("https://foo.test"))},
-      {net::SchemefulSite(GURL("https://member3.test")),
-       net::SchemefulSite(GURL("https://foo.test"))}};
-
-  // Consistency check the reviewer-friendly format matches the input.
-  ASSERT_THAT(ParseSetsFromStream(
-                  R"({"owner": "https://example.test", "members": )"
-                  R"(["https://member1.test"]}
-      {"owner": "https://foo.test", "members": )"
-                  R"(["https://member2.test", "https://member3.test"]})"),
-              old_sets);
-
-  SetComponentSets(R"({"owner": "https://example.test", "members": )"
-                   R"(["https://member1.test", "https://member3.test"]}
-      {"owner": "https://foo.test", "members": ["https://member2.test"]})");
-  // Set required input to be able to receive the merged sets from
-  // FirstPartySetsLoader.
-  sets().SetManuallySpecifiedSet("");
-  env().RunUntilIdle();
-  // Expected diff: "https://member3.test" changed owner.
-  EXPECT_THAT(sets().ComputeSetsDiff(old_sets),
-              UnorderedElementsAre(SerializesTo("https://member3.test")));
-}
-
-TEST_F(FirstPartySetsEnabledTest, ComputeSetsDiff_OwnerLeft) {
-  auto old_sets = FirstPartySets::FlattenedSets{
-      {net::SchemefulSite(GURL("https://example.test")),
-       net::SchemefulSite(GURL("https://example.test"))},
-      {net::SchemefulSite(GURL("https://foo.test")),
-       net::SchemefulSite(GURL("https://example.test"))},
-      {net::SchemefulSite(GURL("https://bar.test")),
-       net::SchemefulSite(GURL("https://example.test"))}};
-
-  // Consistency check the reviewer-friendly format matches the input.
-  ASSERT_THAT(
-      ParseSetsFromStream(R"({"owner": "https://example.test", "members": )"
-                          R"(["https://foo.test", "https://bar.test"]})"),
-      old_sets);
-
-  SetComponentSets(R"(
-      {"owner": "https://foo.test", "members": ["https://bar.test"]}
-  )");
-  // Set required input to be able to receive the merged sets from
-  // FirstPartySetsLoader.
-  sets().SetManuallySpecifiedSet("");
-  env().RunUntilIdle();
-  // Expected diff: "https://example.test" left FPSs, "https://foo.test" and
-  // "https://bar.test" changed owner.
-  // It would be valid to only have example.test in the diff, but our logic
-  // isn't sophisticated enough yet to know that foo.test and bar.test don't
-  // need to be included in the result.
-  EXPECT_THAT(sets().ComputeSetsDiff(old_sets),
-              UnorderedElementsAre(SerializesTo("https://example.test"),
-                                   SerializesTo("https://foo.test"),
-                                   SerializesTo("https://bar.test")));
-}
-
-TEST_F(FirstPartySetsEnabledTest, ComputeSetsDiff_OwnerMemberRotate) {
-  auto old_sets = FirstPartySets::FlattenedSets{
-      {net::SchemefulSite(GURL("https://example.test")),
-       net::SchemefulSite(GURL("https://example.test"))},
-      {net::SchemefulSite(GURL("https://foo.test")),
-       net::SchemefulSite(GURL("https://example.test"))}};
-
-  // Consistency check the reviewer-friendly format matches the input.
-  ASSERT_THAT(
-      ParseSetsFromStream(R"({"owner": "https://example.test", "members": )"
-                          R"(["https://foo.test"]})"),
-      old_sets);
-
-  SetComponentSets(
-      R"({"owner": "https://foo.test", "members": ["https://example.test"]})");
-  // Set required input to be able to receive the merged sets from
-  // FirstPartySetsLoader.
-  sets().SetManuallySpecifiedSet("");
-  env().RunUntilIdle();
-  // Expected diff: "https://example.test" and "https://foo.test" changed owner.
-  // It would be valid to not include example.test and foo.test in the result,
-  // but our logic isn't sophisticated enough yet to know that.ß
-  EXPECT_THAT(sets().ComputeSetsDiff(old_sets),
-              UnorderedElementsAre(SerializesTo("https://example.test"),
-                                   SerializesTo("https://foo.test")));
-}
-
-TEST_F(FirstPartySetsEnabledTest, ComputeSetsDiff_EmptySets) {
-  // Empty old_sets.
-  SetComponentSets(R"({"owner": "https://example.test", )"
-                   R"("members": ["https://member1.test"]})");
-  // Set required input to be able to receive the merged sets from
-  // FirstPartySetsLoader.
-  sets().SetManuallySpecifiedSet("");
-  env().RunUntilIdle();
-  EXPECT_THAT(sets().ComputeSetsDiff({}), IsEmpty());
-
-  // Empty current sets.
-  auto old_sets = FirstPartySets::FlattenedSets{
-      {net::SchemefulSite(GURL("https://example.test")),
-       net::SchemefulSite(GURL("https://example.test"))},
-      {net::SchemefulSite(GURL("https://member1.test")),
-       net::SchemefulSite(GURL("https://example.test"))}};
-  // Consistency check the reviewer-friendly format matches the input.
-  ASSERT_THAT(ParseSetsFromStream(R"({"owner": "https://example.test", )"
-                                  R"("members": ["https://member1.test"]})"),
-              old_sets);
-  FirstPartySets first_party_sets(true);
-  first_party_sets.SetManuallySpecifiedSet("");
-  SetComponentSets(first_party_sets, "[]");
-  env().RunUntilIdle();
-  EXPECT_THAT(first_party_sets.ComputeSetsDiff(old_sets),
-              UnorderedElementsAre(SerializesTo("https://example.test"),
-                                   SerializesTo("https://member1.test")));
 }
 
 TEST_F(FirstPartySetsEnabledTest, ClearSiteDataOnChangedSetsIfReady_NotReady) {

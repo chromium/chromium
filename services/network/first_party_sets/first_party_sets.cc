@@ -400,22 +400,31 @@ void FirstPartySets::SetEnabledForTesting(bool enabled) {
   enabled_ = enabled;
 }
 
+// static
 base::flat_set<net::SchemefulSite> FirstPartySets::ComputeSetsDiff(
-    const FirstPartySets::FlattenedSets& old_sets) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(sets_.has_value());
+    const base::flat_map<net::SchemefulSite, net::SchemefulSite>& old_sets,
+    const base::flat_map<net::SchemefulSite, net::SchemefulSite>&
+        current_sets) {
   if (old_sets.empty())
     return {};
 
-  base::flat_set<net::SchemefulSite> result;
+  std::vector<net::SchemefulSite> result;
+  if (current_sets.empty()) {
+    result.reserve(old_sets.size());
+    for (const auto& pair : old_sets) {
+      result.push_back(pair.first);
+    }
+    return result;
+  }
   for (const auto& old_pair : old_sets) {
     const net::SchemefulSite& old_member = old_pair.first;
     const net::SchemefulSite& old_owner = old_pair.second;
-    const FirstPartySets::OwnerResult current_owner =
-        FindOwnerInternal(old_member, /*infer_singleton_sets=*/false);
+
+    const auto current_pair = current_sets.find(old_member);
     // Look for the removed sites and the ones have owner changed.
-    if (!current_owner || *current_owner != old_owner) {
-      result.emplace(old_member);
+    if (current_pair == current_sets.end() ||
+        current_pair->second != old_owner) {
+      result.push_back(old_member);
     }
   }
   return result;
@@ -430,7 +439,8 @@ void FirstPartySets::ClearSiteDataOnChangedSetsIfReady() {
 
   base::flat_set<net::SchemefulSite> diff =
       ComputeSetsDiff(FirstPartySetParser::DeserializeFirstPartySets(
-          raw_persisted_sets_.value()));
+                          raw_persisted_sets_.value()),
+                      sets_.value());
 
   // TODO(shuuran@chromium.org): Implement site state clearing.
 

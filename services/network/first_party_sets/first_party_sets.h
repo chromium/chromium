@@ -109,6 +109,17 @@ class FirstPartySets {
   // Sets the enabled_ attribute for testing.
   void SetEnabledForTesting(bool enabled);
 
+  // Compares the map `old_sets` to `current_sets` and returns the set of sites
+  // that: 1) were in `old_sets` but are no longer in `current_sets`, i.e. leave
+  // the FPSs; or, 2) mapped to a different owner site.
+  //
+  // This method assumes that the sites were normalized properly when the maps
+  // were created. Made public only for testing,
+  static base::flat_set<net::SchemefulSite> ComputeSetsDiff(
+      const base::flat_map<net::SchemefulSite, net::SchemefulSite>& old_sets,
+      const base::flat_map<net::SchemefulSite, net::SchemefulSite>&
+          current_sets);
+
   // Returns nullopt if First-Party Sets is disabled or if the input is not in
   // a nontrivial set.
   // If FPS is enabled and the input site is in a nontrivial set, then this
@@ -220,12 +231,6 @@ class FirstPartySets {
   // initialized.
   SetsByOwner SetsInternal() const;
 
-  // Compares the map `old_sets` to `sets_` and returns the set of sites that:
-  // 1) were in `old_sets` but are no longer in `sets_`, i.e. leave the FPSs;
-  // or, 2) mapped to a different owner site.
-  base::flat_set<net::SchemefulSite> ComputeSetsDiff(
-      const FlattenedSets& old_sets) const;
-
   // Checks the required inputs have been received, and if so, computes the diff
   // between the `sets_` and the parsed `raw_persisted_sets_`, and clears the
   // site data of the set of sites based on the diff.
@@ -277,18 +282,6 @@ class FirstPartySets {
 
   base::WeakPtrFactory<FirstPartySets> weak_factory_{this};
 
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsEnabledTest,
-                           ComputeSetsDiff_SitesJoined);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsEnabledTest,
-                           ComputeSetsDiff_SitesLeft);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsEnabledTest,
-                           ComputeSetsDiff_OwnerChanged);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsEnabledTest,
-                           ComputeSetsDiff_OwnerLeft);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsEnabledTest,
-                           ComputeSetsDiff_OwnerMemberRotate);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsEnabledTest,
-                           ComputeSetsDiff_EmptySets);
   FRIEND_TEST_ALL_PREFIXES(PopulatedFirstPartySetsTest, ComputeContextType);
 };
 
