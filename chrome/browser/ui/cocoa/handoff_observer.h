@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_COCOA_HANDOFF_ACTIVE_URL_OBSERVER_H_
-#define CHROME_BROWSER_UI_COCOA_HANDOFF_ACTIVE_URL_OBSERVER_H_
+#ifndef CHROME_BROWSER_UI_COCOA_HANDOFF_OBSERVER_H_
+#define CHROME_BROWSER_UI_COCOA_HANDOFF_OBSERVER_H_
+
+#import <Cocoa/Cocoa.h>
 
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -15,24 +17,28 @@ class WebContents;
 }
 
 class Browser;
-class HandoffActiveURLObserverDelegate;
+
+// A protocol that allows ObjC objects to receive delegate callbacks from
+// HandoffObserver.
+@protocol HandoffObserverDelegate
+- (void)handoffContentsChanged:(content::WebContents*)webContents;
+@end
 
 // This class observes changes to the "active URL". This is defined as the
 // visible URL of the WebContents of the selected tab of the most recently
 // focused browser window.
-class HandoffActiveURLObserver : public BrowserListObserver,
-                                 public TabStripModelObserver,
-                                 public content::WebContentsObserver {
+class HandoffObserver : public BrowserListObserver,
+                        public TabStripModelObserver,
+                        public content::WebContentsObserver {
  public:
-  explicit HandoffActiveURLObserver(HandoffActiveURLObserverDelegate* delegate);
+  explicit HandoffObserver(NSObject<HandoffObserverDelegate>* delegate);
 
-  HandoffActiveURLObserver(const HandoffActiveURLObserver&) = delete;
-  HandoffActiveURLObserver& operator=(const HandoffActiveURLObserver&) = delete;
+  HandoffObserver(const HandoffObserver&) = delete;
+  HandoffObserver& operator=(const HandoffObserver&) = delete;
 
-  ~HandoffActiveURLObserver() override;
+  ~HandoffObserver() override;
 
- private:
-  // BrowserListObserver
+ private:  // BrowserListObserver
   void OnBrowserSetLastActive(Browser* browser) override;
   void OnBrowserRemoved(Browser* browser) override;
 
@@ -44,6 +50,7 @@ class HandoffActiveURLObserver : public BrowserListObserver,
 
   // content::WebContentsObserver
   void PrimaryPageChanged(content::Page& page) override;
+  void TitleWasSet(content::NavigationEntry* entry) override;
 
   // Updates the active browser.
   void SetActiveBrowser(Browser* active_browser);
@@ -58,12 +65,12 @@ class HandoffActiveURLObserver : public BrowserListObserver,
   // Returns the active WebContents. May return nullptr.
   content::WebContents* GetActiveWebContents();
 
-  // Instances of this class should be owned by their |delegate_|.
-  HandoffActiveURLObserverDelegate* delegate_;
-
   // This pointer is always up to date, and points to the most recently
   // activated browser, or nullptr if no browsers exist.
-  Browser* active_browser_;
+  Browser* active_browser_ = nullptr;
+
+  // Instances of this class should be owned by their |delegate_|.
+  NSObject<HandoffObserverDelegate>* delegate_;
 };
 
-#endif  // CHROME_BROWSER_UI_COCOA_HANDOFF_ACTIVE_URL_OBSERVER_H_
+#endif  // CHROME_BROWSER_UI_COCOA_HANDOFF_OBSERVER_H_

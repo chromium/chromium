@@ -24,9 +24,9 @@ class AppControllerProfileObserver;
 class BookmarkMenuBridge;
 class CommandUpdater;
 class GURL;
-class HandoffActiveURLObserverBridge;
 @class HandoffManager;
 class HistoryMenuBridge;
+class HandoffObserver;
 class Profile;
 @class ProfileMenuController;
 class QuitWithAppsController;
@@ -107,9 +107,8 @@ class ThemeProvider;
   // Responsible for maintaining all state related to the Handoff feature.
   base::scoped_nsobject<HandoffManager> _handoffManager;
 
-  // Observes changes to the active URL.
-  std::unique_ptr<HandoffActiveURLObserverBridge>
-      _handoff_active_url_observer_bridge;
+  // Observes changes to the active web contents.
+  std::unique_ptr<HandoffObserver> _handoff_observer;
 
   // This will be true after receiving a NSWorkspaceWillPowerOffNotification.
   BOOL _isPoweringOff;

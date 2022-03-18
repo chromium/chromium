@@ -17,9 +17,11 @@
 #include "base/command_line.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_nsobject.h"
+#include "base/mac/scoped_objc_class_swizzler.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -1089,14 +1091,18 @@ IN_PROC_BROWSER_TEST_F(AppControllerIncognitoSwitchTest,
 //--------------------------AppControllerHandoffBrowserTest---------------------
 
 static GURL g_handoff_url;
+static std::u16string g_handoff_title;
 
 @interface AppController (BrowserTest)
-- (void)new_passURLToHandoffManager:(const GURL&)handoffURL;
+- (void)new_updateHandoffManagerWithURL:(const GURL&)handoffURL
+                                  title:(const std::u16string&)handoffTitle;
 @end
 
 @implementation AppController (BrowserTest)
-- (void)new_passURLToHandoffManager:(const GURL&)handoffURL {
+- (void)new_updateHandoffManagerWithURL:(const GURL&)handoffURL
+                                  title:(const std::u16string&)handoffTitle {
   g_handoff_url = handoffURL;
+  g_handoff_title = handoffTitle;
 }
 @end
 
@@ -1104,34 +1110,16 @@ namespace {
 
 class AppControllerHandoffBrowserTest : public InProcessBrowserTest {
  protected:
-  AppControllerHandoffBrowserTest() {}
-
-  // Exchanges the implementations of the two selectors on the class
-  // AppController.
-  void ExchangeSelectors(SEL originalMethod, SEL newMethod) {
-    Class appControllerClass = NSClassFromString(@"AppController");
-
-    ASSERT_TRUE(appControllerClass != nil);
-
-    Method original =
-        class_getInstanceMethod(appControllerClass, originalMethod);
-    Method destination = class_getInstanceMethod(appControllerClass, newMethod);
-
-    ASSERT_TRUE(original != NULL);
-    ASSERT_TRUE(destination != NULL);
-
-    method_exchangeImplementations(original, destination);
-  }
-
   // Swizzle Handoff related implementations.
   void SetUpInProcessBrowserTestFixture() override {
     // This swizzle intercepts the URL that would be sent to the Handoff
     // Manager, and instead puts it into a variable accessible to this test.
-    SEL originalMethod = @selector(passURLToHandoffManager:);
-    SEL newMethod = @selector(new_passURLToHandoffManager:);
-    ExchangeSelectors(originalMethod, newMethod);
+    swizzler_ = std::make_unique<base::mac::ScopedObjCClassSwizzler>(
+        [AppController class], @selector(updateHandoffManagerWithURL:title:),
+        @selector(new_updateHandoffManagerWithURL:title:));
   }
 
+  void TearDownInProcessBrowserTestFixture() override { swizzler_.reset(); }
   // Closes the tab, and waits for the close to finish.
   void CloseTab(Browser* browser, int index) {
     content::WebContentsDestroyedWatcher destroyed_watcher(
@@ -1140,6 +1128,9 @@ class AppControllerHandoffBrowserTest : public InProcessBrowserTest {
         index, TabStripModel::CLOSE_CREATE_HISTORICAL_TAB);
     destroyed_watcher.Wait();
   }
+
+ private:
+  std::unique_ptr<base::mac::ScopedObjCClassSwizzler> swizzler_;
 };
 
 // Tests that as a user switches between tabs, navigates within a tab, and
@@ -1148,11 +1139,13 @@ class AppControllerHandoffBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(AppControllerHandoffBrowserTest, TestHandoffURLs) {
   ASSERT_TRUE(embedded_test_server()->Start());
   EXPECT_EQ(g_handoff_url, GURL(url::kAboutBlankURL));
+  EXPECT_EQ(g_handoff_title, u"about:blank");
 
-  // Test that navigating to a URL updates the handoff URL.
+  // Test that navigating to a URL updates the handoff manager.
   GURL test_url1 = embedded_test_server()->GetURL("/title1.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url1));
   EXPECT_EQ(g_handoff_url, test_url1);
+  EXPECT_TRUE(base::EndsWith(g_handoff_title, u"title1.html"));
 
   // Test that opening a new tab updates the handoff URL.
   GURL test_url2 = embedded_test_server()->GetURL("/title2.html");
@@ -1165,17 +1158,20 @@ IN_PROC_BROWSER_TEST_F(AppControllerHandoffBrowserTest, TestHandoffURLs) {
   browser()->tab_strip_model()->ActivateTabAt(
       0, {TabStripModel::GestureType::kOther});
   EXPECT_EQ(g_handoff_url, test_url1);
+  EXPECT_TRUE(base::EndsWith(g_handoff_title, u"title1.html"));
 
   // Test that closing the current tab updates the handoff URL.
   CloseTab(browser(), 0);
   EXPECT_EQ(g_handoff_url, test_url2);
+  EXPECT_EQ(g_handoff_title, u"Title Of Awesomeness");
 
   // Test that opening a new browser window updates the handoff URL.
   GURL test_url3 = embedded_test_server()->GetURL("/title3.html");
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(test_url3), WindowOpenDisposition::NEW_WINDOW,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   EXPECT_EQ(g_handoff_url, test_url3);
+  EXPECT_EQ(g_handoff_title, u"Title Of More Awesomeness");
 
   // Check that there are exactly 2 browsers.
   BrowserList* active_browser_list = BrowserList::GetInstance();
@@ -1185,6 +1181,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerHandoffBrowserTest, TestHandoffURLs) {
   Browser* browser2 = active_browser_list->get(1);
   CloseBrowserSynchronously(browser2);
   EXPECT_EQ(g_handoff_url, test_url2);
+  EXPECT_EQ(g_handoff_title, u"Title Of Awesomeness");
 
   // The URLs of incognito windows should not be passed to Handoff.
   GURL test_url4 = embedded_test_server()->GetURL("/simple.html");
@@ -1192,6 +1189,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerHandoffBrowserTest, TestHandoffURLs) {
       browser(), GURL(test_url4), WindowOpenDisposition::OFF_THE_RECORD,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
   EXPECT_EQ(g_handoff_url, GURL());
+  EXPECT_EQ(g_handoff_title, u"");
 
   // Open a new tab in the incognito window.
   EXPECT_EQ(2u, active_browser_list->size());
@@ -1200,15 +1198,18 @@ IN_PROC_BROWSER_TEST_F(AppControllerHandoffBrowserTest, TestHandoffURLs) {
       browser3, test_url4, WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
   EXPECT_EQ(g_handoff_url, GURL());
+  EXPECT_EQ(g_handoff_title, u"");
 
   // Navigate the current tab in the incognito window.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser3, test_url1));
   EXPECT_EQ(g_handoff_url, GURL());
+  EXPECT_EQ(g_handoff_title, u"");
 
   // Activate the original browser window.
   Browser* browser1 = active_browser_list->get(0);
   browser1->window()->Show();
   EXPECT_EQ(g_handoff_url, test_url2);
+  EXPECT_EQ(g_handoff_title, u"Title Of Awesomeness");
 }
 
 class AppControllerHandoffPrerenderBrowserTest

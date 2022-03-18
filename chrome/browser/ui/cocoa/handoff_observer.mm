@@ -2,46 +2,42 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/cocoa/handoff_active_url_observer.h"
+#include "chrome/browser/ui/cocoa/handoff_observer.h"
 
 #include "base/check.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/cocoa/handoff_active_url_observer_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "content/public/browser/page.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 
-HandoffActiveURLObserver::HandoffActiveURLObserver(
-    HandoffActiveURLObserverDelegate* delegate)
-    : delegate_(delegate),
-      active_browser_(nullptr) {
+HandoffObserver::HandoffObserver(NSObject<HandoffObserverDelegate>* delegate)
+    : delegate_(delegate) {
   DCHECK(delegate_);
-
   BrowserList::AddObserver(this);
   SetActiveBrowser(chrome::FindLastActive());
 }
 
-HandoffActiveURLObserver::~HandoffActiveURLObserver() {
+HandoffObserver::~HandoffObserver() {
   BrowserList::RemoveObserver(this);
   SetActiveBrowser(nullptr);
 }
 
-void HandoffActiveURLObserver::OnBrowserSetLastActive(Browser* browser) {
+void HandoffObserver::OnBrowserSetLastActive(Browser* browser) {
   SetActiveBrowser(browser);
-  delegate_->HandoffActiveURLChanged(GetActiveWebContents());
+  [delegate_ handoffContentsChanged:GetActiveWebContents()];
 }
 
-void HandoffActiveURLObserver::OnBrowserRemoved(Browser* removed_browser) {
+void HandoffObserver::OnBrowserRemoved(Browser* removed_browser) {
   if (active_browser_ != removed_browser)
     return;
 
   SetActiveBrowser(chrome::FindLastActive());
-  delegate_->HandoffActiveURLChanged(GetActiveWebContents());
+  [delegate_ handoffContentsChanged:GetActiveWebContents()];
 }
 
-void HandoffActiveURLObserver::OnTabStripModelChanged(
+void HandoffObserver::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
@@ -49,14 +45,18 @@ void HandoffActiveURLObserver::OnTabStripModelChanged(
     return;
 
   StartObservingWebContents(selection.new_contents);
-  delegate_->HandoffActiveURLChanged(selection.new_contents);
+  [delegate_ handoffContentsChanged:GetActiveWebContents()];
 }
 
-void HandoffActiveURLObserver::PrimaryPageChanged(content::Page& page) {
-  delegate_->HandoffActiveURLChanged(web_contents());
+void HandoffObserver::PrimaryPageChanged(content::Page& page) {
+  [delegate_ handoffContentsChanged:GetActiveWebContents()];
 }
 
-void HandoffActiveURLObserver::SetActiveBrowser(Browser* active_browser) {
+void HandoffObserver::TitleWasSet(content::NavigationEntry* entry) {
+  [delegate_ handoffContentsChanged:GetActiveWebContents()];
+}
+
+void HandoffObserver::SetActiveBrowser(Browser* active_browser) {
   if (active_browser == active_browser_)
     return;
 
@@ -75,17 +75,17 @@ void HandoffActiveURLObserver::SetActiveBrowser(Browser* active_browser) {
   }
 }
 
-void HandoffActiveURLObserver::StartObservingWebContents(
+void HandoffObserver::StartObservingWebContents(
     content::WebContents* web_contents) {
   DCHECK(web_contents);
   Observe(web_contents);
 }
 
-void HandoffActiveURLObserver::StopObservingWebContents() {
+void HandoffObserver::StopObservingWebContents() {
   Observe(nullptr);
 }
 
-content::WebContents* HandoffActiveURLObserver::GetActiveWebContents() {
+content::WebContents* HandoffObserver::GetActiveWebContents() {
   if (!active_browser_)
     return nullptr;
 
