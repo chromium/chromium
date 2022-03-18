@@ -68,25 +68,27 @@ using autofill::FieldRendererId;
                                   webState:(web::WebState*)webState
                          completionHandler:
                              (SuggestionsAvailableCompletion)completion {
-  base::PostTask(FROM_HERE, {web::WebThread::UI}, base::BindOnce(^{
-                   NSArray<FormSuggestion*>* formSuggestions =
-                       [self suggestionsForFormName:formQuery.formName
-                                    fieldIdentifier:formQuery.fieldIdentifier
-                                            frameID:formQuery.frameID];
-                   completion([formSuggestions count] ? YES : NO);
-                 }));
+  web::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(^{
+        NSArray<FormSuggestion*>* formSuggestions =
+            [self suggestionsForFormName:formQuery.formName
+                         fieldIdentifier:formQuery.fieldIdentifier
+                                 frameID:formQuery.frameID];
+        completion([formSuggestions count] ? YES : NO);
+      }));
 }
 
 - (void)retrieveSuggestionsForForm:(FormSuggestionProviderQuery*)formQuery
                           webState:(web::WebState*)webState
                  completionHandler:(SuggestionsReadyCompletion)completion {
-  base::PostTask(FROM_HERE, {web::WebThread::UI}, base::BindOnce(^{
-                   NSArray<FormSuggestion*>* formSuggestions =
-                       [self suggestionsForFormName:formQuery.formName
-                                    fieldIdentifier:formQuery.fieldIdentifier
-                                            frameID:formQuery.frameID];
-                   completion(formSuggestions, self);
-                 }));
+  web::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(^{
+        NSArray<FormSuggestion*>* formSuggestions =
+            [self suggestionsForFormName:formQuery.formName
+                         fieldIdentifier:formQuery.fieldIdentifier
+                                 frameID:formQuery.frameID];
+        completion(formSuggestions, self);
+      }));
 }
 
 - (void)didSelectSuggestion:(FormSuggestion*)suggestion
@@ -96,13 +98,14 @@ using autofill::FieldRendererId;
               uniqueFieldID:(FieldRendererId)uniqueFieldID
                     frameID:(NSString*)frameID
           completionHandler:(SuggestionHandledCompletion)completion {
-  base::PostTask(FROM_HERE, {web::WebThread::UI}, base::BindOnce(^{
-                   [self selectSuggestion:suggestion
-                              forFormName:formName
-                          fieldIdentifier:fieldIdentifier
-                                  frameID:frameID];
-                   completion();
-                 }));
+  web::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(^{
+        [self selectSuggestion:suggestion
+                   forFormName:formName
+               fieldIdentifier:fieldIdentifier
+                       frameID:frameID];
+        completion();
+      }));
 }
 
 #pragma mark - Private Methods
