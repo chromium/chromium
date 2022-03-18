@@ -14,9 +14,10 @@ import unittest
 from wpt_common import (
     BaseWptScriptAdapter, TESTS_ROOT_DIR, WEB_TESTS_DIR)
 
-from blinkpy.common.host_mock import MockHost
+from blinkpy.common.host_mock import MockHost as BlinkMockHost
 from blinkpy.web_tests.port.factory_mock import MockPortFactory
 from blinkpy.w3c.wpt_manifest import BASE_MANIFEST_NAME
+from typ.fakes.host_fake import FakeHost as TypFakeHost
 
 # The path where the output of a wpt run was written. This is the file that
 # gets processed by BaseWptScriptAdapter.
@@ -27,7 +28,7 @@ class MockResultSink(object):
 
     def __init__(self):
         self.sink_requests = []
-        self.host = MockHost()
+        self.host = TypFakeHost()
 
     def report_individual_test_result(self, test_name, result,
                                       artifacts_sub_dir,
@@ -44,7 +45,7 @@ class MockResultSink(object):
 
 class BaseWptScriptAdapterTest(unittest.TestCase):
     def setUp(self):
-        self.host = MockHost()
+        self.host = BlinkMockHost()
         self.host.port_factory = MockPortFactory(self.host)
         self.port = self.host.port_factory.get()
 
