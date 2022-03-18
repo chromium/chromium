@@ -45,10 +45,11 @@ enum class StatusCode {
   kUnexpectedError
 };
 
-// This type of callback is returned to the caller. When `status` equals
-// StatusCode::kOK the access token or authorization URL is returned in
-// `data`. In other case `data` contains an error message or an empty string.
-using AuthServerSessionCallback =
+// This is the standard callback used in oauth2 namespace. When `status` equals
+// StatusCode::kOK, `data` may contain an access token or authorization URL.
+// When `status` is different than StatusCode::kOK, `data` may contain
+// an additional error message.
+using StatusCallback =
     base::OnceCallback<void(StatusCode status, const std::string& data)>;
 
 }  // namespace oauth2

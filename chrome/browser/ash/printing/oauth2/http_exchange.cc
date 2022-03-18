@@ -29,7 +29,7 @@ namespace {
 std::string ToString(ContentFormat format) {
   switch (format) {
     case ContentFormat::kJson:
-      return "application/json;charset=UTF-8";
+      return "application/json";
     case ContentFormat::kXWwwFormUrlencoded:
       return "application/x-www-form-urlencoded";
     default:
@@ -115,6 +115,7 @@ void HttpExchange::Exchange(
   resource_request->method = http_method;
   resource_request->url = url;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  resource_request->headers.SetHeader("Accept", "application/json");
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::CompleteNetworkTrafficAnnotation("printing_oauth2_http_exchange",
                                             partial_traffic_annotation, R"(
