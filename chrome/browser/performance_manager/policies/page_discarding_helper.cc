@@ -150,6 +150,9 @@ void PageDiscardingHelper::UrgentlyDiscardMultiplePages(
     base::OnceCallback<void(bool)> post_discard_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  LOG(WARNING) << "Urgently discarding multiple pages with target (kb): "
+               << (reclaim_target_kb ? *reclaim_target_kb : 0);
+
   // Ensures running post_discard_cb on early return.
   auto split_callback = base::SplitOnceCallback(std::move(post_discard_cb));
   base::ScopedClosureRunner run_post_discard_cb_on_return(
@@ -253,6 +256,8 @@ void PageDiscardingHelper::UrgentlyDiscardMultiplePages(
 
   // Got to the end successfully, don't call the early return callback.
   run_post_discard_cb_on_return.ReplaceClosure(base::DoNothing());
+
+  LOG(WARNING) << "Discarding " << discard_attempts.size() << " pages";
 
   page_discarder_->DiscardPageNodes(
       discard_attempts,
