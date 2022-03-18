@@ -13,6 +13,7 @@
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_invalidator.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_platform_keys_helpers.h"
@@ -208,6 +209,10 @@ class CertProvisioningSchedulerImpl
   // PlatformKeysServiceObserver
   void OnPlatformKeysServiceShutDown() override;
 
+  // Called by |hold_back_updates_timer_| when the notifications should be sent
+  // again. Notifies observers if there were any events during the hold back
+  // period.
+  void OnHoldBackUpdatesTimerExpired();
   // Notifies each observer from |observers_| that the state has changed.
   void NotifyObserversVisibleStateChanged();
 
@@ -249,6 +254,13 @@ class CertProvisioningSchedulerImpl
   // True when a task for notifying observers about a state change has been
   // scheduled but not executed yet.
   bool notify_observers_pending_ = false;
+  // When this timer is running, notifications should not be sent until it
+  // fires. Used to prevent spamming the observers if many events happen in
+  // rapid succession.
+  base::OneShotTimer hold_back_updates_timer_;
+  // When this is true, an update should be sent to the UI when
+  // |hold_back_updates_timer_| fires.
+  bool update_after_hold_back_ = false;
 
   base::ScopedObservation<platform_keys::PlatformKeysService,
                           platform_keys::PlatformKeysServiceObserver>

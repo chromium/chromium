@@ -84,7 +84,10 @@ class TestCertProvisioningSchedulerObserver
       const TestCertProvisioningSchedulerObserver& other) = delete;
 
   // CertProvisioningSchedulerObserver:
-  void OnVisibleStateChanged() override { run_loop_->Quit(); }
+  void OnVisibleStateChanged() override {
+    ++notifications_received_;
+    run_loop_->Quit();
+  }
 
   // Waits for one call to happen (since construction or since the previous
   // WaitForOneCall has returned).
@@ -95,7 +98,15 @@ class TestCertProvisioningSchedulerObserver
     run_loop_ = std::make_unique<base::RunLoop>();
   }
 
+  // Returns the number of received calls since the last use of this method.
+  size_t ReadAndResetCallCount() {
+    size_t result = notifications_received_;
+    notifications_received_ = 0;
+    return result;
+  }
+
  private:
+  size_t notifications_received_ = 0;
   std::unique_ptr<base::RunLoop> run_loop_ = std::make_unique<base::RunLoop>();
 };
 
@@ -1087,6 +1098,85 @@ TEST_F(CertProvisioningSchedulerTest, StateChangeNotifications) {
       base::Contains(scheduler.GetFailedCertProfileIds(), kCertProfileId1));
 
   scheduler.RemoveObserver(&observer);
+}
+
+TEST_F(CertProvisioningSchedulerTest, HoldBackNotifications) {
+  CertProvisioningSchedulerImpl scheduler(
+      CertScope::kDevice, GetProfile(), &pref_service_, &cloud_policy_client_,
+      &platform_keys_service_,
+      network_state_test_helper_.network_state_handler(),
+      MakeFakeInvalidationFactory());
+
+  TestCertProvisioningSchedulerObserver observer;
+  scheduler.AddObserver(&observer);
+
+  // Ensure initial 0.
+  EXPECT_EQ(0u, observer.ReadAndResetCallCount());
+
+  // A single event produces a single notification.
+  {
+    scheduler.OnVisibleStateChanged();
+    // Here and below this is needed to let an async notification task to be
+    // executed.
+    FastForwardBy(base::Seconds(0));
+    EXPECT_EQ(1u, observer.ReadAndResetCallCount());
+    FastForwardBy(base::Seconds(0));
+    EXPECT_EQ(0u, observer.ReadAndResetCallCount());
+    FastForwardBy(base::Days(1));
+    EXPECT_EQ(0u, observer.ReadAndResetCallCount());
+  }
+
+  // Multiple synchronous events produce a single notification.
+  {
+    scheduler.OnVisibleStateChanged();
+    scheduler.OnVisibleStateChanged();
+    scheduler.OnVisibleStateChanged();
+    // Here and below this is needed to let an async notification task to be
+    // executed.
+    FastForwardBy(base::Seconds(0));
+    EXPECT_EQ(1u, observer.ReadAndResetCallCount());
+    FastForwardBy(base::Seconds(0));
+    EXPECT_EQ(0u, observer.ReadAndResetCallCount());
+    FastForwardBy(base::Days(1));
+    EXPECT_EQ(0u, observer.ReadAndResetCallCount());
+  }
+
+  // Multiple asynchronous events within a short period of time produce a single
+  // notification immediately and one more after the internal timer is released.
+  {
+    scheduler.OnVisibleStateChanged();
+    FastForwardBy(base::Seconds(0));
+    scheduler.OnVisibleStateChanged();
+    FastForwardBy(base::Seconds(0));
+    scheduler.OnVisibleStateChanged();
+    // Here and below this is needed to let an async notification task to be
+    // executed.
+    FastForwardBy(base::Seconds(0));
+    EXPECT_EQ(1u, observer.ReadAndResetCallCount());
+    FastForwardBy(base::Seconds(0));
+    EXPECT_EQ(0u, observer.ReadAndResetCallCount());
+    FastForwardBy(base::Milliseconds(350));
+    EXPECT_EQ(1u, observer.ReadAndResetCallCount());
+    FastForwardBy(base::Days(1));
+    EXPECT_EQ(0u, observer.ReadAndResetCallCount());
+  }
+
+  // N asynchronous events far enough apart produce N notifications.
+  {
+    scheduler.OnVisibleStateChanged();
+    FastForwardBy(base::Milliseconds(350));
+    scheduler.OnVisibleStateChanged();
+    FastForwardBy(base::Milliseconds(350));
+    scheduler.OnVisibleStateChanged();
+    // Here and below this is needed to let an async notification task to be
+    // executed.
+    FastForwardBy(base::Seconds(0));
+    EXPECT_EQ(3u, observer.ReadAndResetCallCount());
+    FastForwardBy(base::Seconds(0));
+    EXPECT_EQ(0u, observer.ReadAndResetCallCount());
+    FastForwardBy(base::Days(1));
+    EXPECT_EQ(0u, observer.ReadAndResetCallCount());
+  }
 }
 
 }  // namespace

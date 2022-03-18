@@ -449,12 +449,7 @@ TEST_F(CertificateProvisioningUiHandlerTest, Updates) {
   content::TestWebUIListenerObserver result_waiter_2(
       &web_ui_, "certificate-provisioning-processes-changed");
   scheduler_observer_for_user_->OnVisibleStateChanged();
-  // Another update does not trigger a UI update for the holdoff time.
-  task_environment_.FastForwardBy(base::Milliseconds(299));
-  EXPECT_EQ(0U, handler_->ReadAndResetUiRefreshCountForTesting());
 
-  // When the holdoff time has elapsed, an UI update is triggered.
-  task_environment_.FastForwardBy(base::Milliseconds(2));
   EXPECT_EQ(1U, handler_->ReadAndResetUiRefreshCountForTesting());
   result_waiter_2.Wait();
 

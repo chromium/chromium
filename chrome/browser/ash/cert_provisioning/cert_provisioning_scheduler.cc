@@ -731,15 +731,41 @@ void CertProvisioningSchedulerImpl::CancelWorkersWithoutPolicy(
 
 void CertProvisioningSchedulerImpl::OnVisibleStateChanged() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (notify_observers_pending_) {
+
+  // |notify_observers_pending_| prevents the scheduler from sending multiple
+  // notifications from a single synchronous code execution sequence. Extra
+  // notifications are discarded.
+  if (observers_.empty() || notify_observers_pending_) {
     return;
   }
+
+  // |hold_back_updates_timer_| prevents the scheduler from sending multiple
+  // notifications within a specified time period from asynchronous tasks. Extra
+  // notifications are combined into one and delayed.
+  if (hold_back_updates_timer_.IsRunning()) {
+    update_after_hold_back_ = true;
+    return;
+  }
+  constexpr base::TimeDelta kTimeToHoldBackUpdates = base::Milliseconds(300);
+  hold_back_updates_timer_.Start(
+      FROM_HERE, kTimeToHoldBackUpdates,
+      base::BindOnce(
+          &CertProvisioningSchedulerImpl::OnHoldBackUpdatesTimerExpired,
+          weak_factory_.GetWeakPtr()));
+
   notify_observers_pending_ = true;
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(
           &CertProvisioningSchedulerImpl::NotifyObserversVisibleStateChanged,
           weak_factory_.GetWeakPtr()));
+}
+
+void CertProvisioningSchedulerImpl::OnHoldBackUpdatesTimerExpired() {
+  if (update_after_hold_back_) {
+    update_after_hold_back_ = false;
+    NotifyObserversVisibleStateChanged();
+  }
 }
 
 void CertProvisioningSchedulerImpl::NotifyObserversVisibleStateChanged() {

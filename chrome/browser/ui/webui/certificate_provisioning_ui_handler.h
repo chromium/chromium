@@ -9,7 +9,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
-#include "base/timer/timer.h"
 #include "base/values.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_scheduler.h"
 #include "content/public/browser/web_ui_message_handler.h"
@@ -95,15 +94,6 @@ class CertificateProvisioningUiHandler
   // Unowned.
   ash::cert_provisioning::CertProvisioningScheduler* const
       scheduler_for_device_;
-
-  // When this timer is running, updates provided by the schedulers should not
-  // be forwarded to the UI until it fires. Used to prevent spamming the UI if
-  // many events come in in rapid succession.
-  base::OneShotTimer hold_back_updates_timer_;
-
-  // When this is true, an update should be sent to the UI when
-  // |hold_back_updates_timer_| fires.
-  bool update_after_hold_back_ = false;
 
   // Keeps track of the count of UI refreshes sent to the WebUI.
   unsigned int ui_refresh_count_for_testing_ = 0;

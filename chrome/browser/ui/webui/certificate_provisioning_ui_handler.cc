@@ -200,21 +200,10 @@ void CertificateProvisioningUiHandler::RegisterMessages() {
 }
 
 void CertificateProvisioningUiHandler::OnVisibleStateChanged() {
-  // If Javascript is not allowed yet, we don't need to cache the update,
-  // because the UI will request a refresh during its first message to the
-  // handler.
+  // If Javascript is not allowed yet, the UI will request a refresh during its
+  // first message to the handler.
   if (!IsJavascriptAllowed())
     return;
-  if (hold_back_updates_timer_.IsRunning()) {
-    update_after_hold_back_ = true;
-    return;
-  }
-  constexpr base::TimeDelta kTimeToHoldBackUpdates = base::Milliseconds(300);
-  hold_back_updates_timer_.Start(
-      FROM_HERE, kTimeToHoldBackUpdates,
-      base::BindOnce(
-          &CertificateProvisioningUiHandler::OnHoldBackUpdatesTimerExpired,
-          weak_ptr_factory_.GetWeakPtr()));
 
   RefreshCertificateProvisioningProcesses();
 }
@@ -273,13 +262,6 @@ void CertificateProvisioningUiHandler::
   ++ui_refresh_count_for_testing_;
   FireWebUIListener("certificate-provisioning-processes-changed",
                     std::move(all_processes));
-}
-
-void CertificateProvisioningUiHandler::OnHoldBackUpdatesTimerExpired() {
-  if (update_after_hold_back_) {
-    update_after_hold_back_ = false;
-    RefreshCertificateProvisioningProcesses();
-  }
 }
 
 // static
