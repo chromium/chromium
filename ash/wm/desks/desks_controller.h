@@ -14,6 +14,7 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/desks/root_window_desk_switch_animator.h"
+#include "ash/wm/desks/templates/restore_data_collector.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/observer_list.h"
@@ -309,19 +310,6 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
   friend class DeskRemovalAnimation;
   friend class DesksTemplatesTest;
 
-  // Keeps the state for the asynchronous call for AppLaunchData to the clients.
-  struct Call {
-    Call();
-    Call(Call&&);
-    Call& operator=(Call&&);
-    ~Call();
-
-    std::vector<aura::Window*> unsupported_apps;
-    std::unique_ptr<app_restore::RestoreData> data;
-    uint32_t pending_request_count = 0;
-    GetDeskTemplateCallback callback;
-  };
-
   void set_disable_app_id_check_for_desk_templates(
       bool disable_app_id_check_for_desk_templates) {
     disable_app_id_check_for_desk_templates_ =
@@ -379,23 +367,6 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
   // |interacted_with_this_week_| field for each inactive desk in |desks_|.
   void RecordAndResetNumberOfWeeklyActiveDesks();
 
-  // Receives the AppLaunchInfo from the single client and puts it into the
-  // RestoreData record where data from all clients is accumulated.  If all data
-  // is collected, invokes SendAppLaunchData().
-  // TODO(crbug.com/1268741): extract this, together with the `calls_` and the
-  // relevant methods, into a separate class.
-  void OnAppLaunchDataReceived(
-      uint32_t serial,
-      const std::string app_id,
-      const int32_t window_id,
-      std::unique_ptr<app_restore::WindowInfo> window_info,
-      std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info) const;
-
-  // Sends the RestoreData to the consumer after all clients deliver their
-  // AppLaunchInfo.
-  void SendRestoreData(uint32_t serial,
-                       aura::Window* root_window_to_show) const;
-
   std::vector<std::unique_ptr<Desk>> desks_;
 
   Desk* active_desk_ = nullptr;
@@ -441,12 +412,8 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
   // Scheduler for reporting the weekly active desks metric.
   base::OneShotTimer weekly_active_desks_scheduler_;
 
-  // Data to put into desk template.  Mutable because it is not part of the
-  // state but it can live between asynchronous calls.
-  // Because gathering the data is asynchronous, we maintain a map of requests
-  // identified by serial number of the request that comes from the UI.
-  mutable uint32_t serial_ = 0;
-  mutable base::flat_map<uint32_t, Call> calls_;
+  // Does the job for the `CaptureActiveDeskAsTemplate()` method.
+  mutable RestoreDataCollector restore_data_collector_;
 };
 
 }  // namespace ash

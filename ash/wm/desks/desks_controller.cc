@@ -49,7 +49,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/cxx17_backports.h"
-#include "base/guid.h"
 #include "base/i18n/number_formatting.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -265,12 +264,6 @@ class DesksController::DeskTraversalsMetricsHelper {
   // started.
   int count_ = 0;
 };
-
-DesksController::Call::Call()
-    : data(std::make_unique<app_restore::RestoreData>()) {}
-DesksController::Call::Call(DesksController::Call&&) = default;
-DesksController::Call& DesksController::Call::operator=(Call&&) = default;
-DesksController::Call::~Call() = default;
 
 DesksController::DesksController()
     : metrics_helper_(std::make_unique<DeskTraversalsMetricsHelper>(this)) {
@@ -914,54 +907,9 @@ void DesksController::CaptureActiveDeskAsTemplate(
     aura::Window* root_window_to_show) const {
   DCHECK(current_account_id_.is_valid());
 
-  // Construct RestoreData for |desk_template|.
-  const auto current_serial = serial_++;
-  auto emplace_result = calls_.emplace(current_serial, Call{});
-  DCHECK(emplace_result.second);
-  Call& call = emplace_result.first->second;
-
-  auto* shell = Shell::Get();
-  auto mru_windows =
-      shell->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
-  auto* delegate = shell->desks_templates_delegate();
-  for (auto* window : mru_windows) {
-    if (!delegate->IsWindowSupportedForDeskTemplate(window) &&
-        !wm::GetTransientParent(window)) {
-      call.unsupported_apps.push_back(window);
-      continue;
-    }
-
-    // Exclude window that does not asscociate with a full restore app id,
-    // silently omitting them.
-    const std::string app_id = full_restore::GetAppId(window);
-    if (app_id.empty())
-      continue;
-
-    // We need to copy |app_launch_info->app_id| to |app_id| as the below
-    // function AddAppLaunchInfo() will destroy |app_launch_info|.
-    const int32_t window_id = window->GetProperty(app_restore::kWindowIdKey);
-    std::unique_ptr<app_restore::WindowInfo> window_info = BuildWindowInfo(
-        window, /*activation_index=*/absl::nullopt, mru_windows);
-    // Clear WindowInfo's `desk_id` in the template. It will later be set to the
-    // id of a newly created desk when launching.
-    window_info->desk_id.reset();
-
-    // The delegate may call back OnAppLaunchDataReceived() synchronously, which
-    // will decrement the counter, that is why we should increment it before
-    // placing the call.
-    ++call.pending_request_count;
-    delegate->GetAppLaunchDataForDeskTemplate(
-        window, base::BindOnce(&DesksController::OnAppLaunchDataReceived,
-                               base::Unretained(this), current_serial, app_id,
-                               window_id, std::move(window_info)));
-  }
-
-  call.callback = std::move(callback);
-
-  // If all requests in the loop above returned data synchronously, then we have
-  // no pending requests and send the data right away.
-  if (call.pending_request_count == 0)
-    SendRestoreData(current_serial, root_window_to_show);
+  restore_data_collector_.CaptureActiveDeskAsTemplate(
+      std::move(callback), base::UTF16ToUTF8(active_desk_->name()),
+      root_window_to_show);
 }
 
 void DesksController::CreateAndActivateNewDeskForTemplate(
@@ -1631,65 +1579,6 @@ void DesksController::RecordAndResetNumberOfWeeklyActiveDesks() {
   weekly_active_desks_scheduler_.Start(
       FROM_HERE, base::Days(7), this,
       &DesksController::RecordAndResetNumberOfWeeklyActiveDesks);
-}
-
-void DesksController::OnAppLaunchDataReceived(
-    uint32_t serial,
-    const std::string app_id,
-    const int32_t window_id,
-    std::unique_ptr<app_restore::WindowInfo> window_info,
-    std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info) const {
-  auto call_it = calls_.find(serial);
-  DCHECK(call_it != calls_.end());
-  Call& call = call_it->second;
-
-  DCHECK(call.data);
-  DCHECK_GT(call.pending_request_count, 0u);
-
-  --call.pending_request_count;
-
-  // nullptr means that this app does not have data to save.
-  if (app_launch_info) {
-    call.data->AddAppLaunchInfo(std::move(app_launch_info));
-    call.data->ModifyWindowInfo(app_id, window_id, *window_info);
-  }
-
-  // Null callback here means that the loop in CaptureActiveDeskAsTemplate() has
-  // not yet finished polling the windows.  Non-zero pending request count means
-  // that some of preceding requests were asynchronous.
-  if (call.pending_request_count > 0 || call.callback.is_null())
-    return;
-
-  // TODO(crbug.com/1268741): get a better root window.  Originally it is taken
-  // from the desk template UI that is active when the user clicks the button,
-  // but here we are in the asynchronous handler, and that window may have been
-  // destroyed already.
-  SendRestoreData(serial, Shell::Get()->GetPrimaryRootWindow());
-}
-
-void DesksController::SendRestoreData(uint32_t serial,
-                                      aura::Window* root_window_to_show) const {
-  auto call_it = calls_.find(serial);
-  DCHECK(call_it != calls_.end());
-  Call& call = call_it->second;
-
-  auto desk_template = std::make_unique<DeskTemplate>(
-      base::GUID::GenerateRandomV4().AsLowercaseString(),
-      DeskTemplateSource::kUser, base::UTF16ToUTF8(active_desk_->name()),
-      base::Time::Now());
-  desk_template->set_desk_restore_data(std::move(call.data));
-
-  if (!call.unsupported_apps.empty() &&
-      Shell::Get()->overview_controller()->InOverviewSession()) {
-    // There were some unsupported apps in the active desk so open up a dialog
-    // to let the user know.
-    DesksTemplatesDialogController::Get()->ShowUnsupportedAppsDialog(
-        root_window_to_show, call.unsupported_apps, std::move(call.callback),
-        std::move(desk_template));
-  } else {
-    std::move(call.callback).Run(std::move(desk_template));
-  }
-  calls_.erase(serial);
 }
 
 }  // namespace ash
