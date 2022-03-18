@@ -761,4 +761,51 @@ TEST_F(AttributionDataHostManagerImplTest,
   histograms.ExpectTotalCount("Conversions.RegisteredTriggersPerDataHost", 0);
 }
 
+TEST_F(AttributionDataHostManagerImplTest,
+       SourceDataHost_NavigationSourceRegistered) {
+  const auto page_origin = url::Origin::Create(GURL("https://page.example"));
+  const auto destination_origin =
+      url::Origin::Create(GURL("https://trigger.example"));
+  const auto reporting_origin =
+      url::Origin::Create(GURL("https://reporter.example"));
+  EXPECT_CALL(mock_manager_,
+              HandleSource(AllOf(
+                  SourceTypeIs(AttributionSourceType::kNavigation),
+                  SourceEventIdIs(10), ConversionOriginIs(destination_origin),
+                  ImpressionOriginIs(page_origin), SourcePriorityIs(20),
+                  SourceDebugKeyIs(789),
+                  AggregatableSourceAre(AttributionAggregatableSource::Create(
+                      AggregatableSourceProtoBuilder()
+                          .AddKey("key", AggregatableKeyProtoBuilder()
+                                             .SetHighBits(5)
+                                             .SetLowBits(345)
+                                             .Build())
+                          .Build())))));
+
+  const blink::AttributionSrcToken attribution_src_token;
+
+  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+  data_host_manager_->RegisterNavigationDataHost(
+      data_host_remote.BindNewPipeAndPassReceiver(), attribution_src_token);
+
+  data_host_manager_->NotifyNavigationForDataHost(
+      attribution_src_token, page_origin, destination_origin);
+
+  auto source_data = blink::mojom::AttributionSourceData::New();
+  source_data->source_event_id = 10;
+  source_data->destination = destination_origin;
+  source_data->reporting_origin = reporting_origin;
+  source_data->priority = 20;
+  source_data->debug_key = blink::mojom::AttributionDebugKey::New(789);
+  source_data->filter_data = blink::mojom::AttributionFilterData::New();
+  source_data->aggregatable_source =
+      AggregatableSourceMojoBuilder()
+          .AddKey(/*key_id=*/"key",
+                  blink::mojom::AttributionAggregatableKey::New(
+                      /*high_bits=*/5, /*low_bits=*/345))
+          .Build();
+  data_host_remote->SourceDataAvailable(std::move(source_data));
+  data_host_remote.FlushForTesting();
+}
+
 }  // namespace content
