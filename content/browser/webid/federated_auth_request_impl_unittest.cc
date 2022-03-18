@@ -135,18 +135,10 @@ typedef struct {
 // absl::optional fields should be nullopt to prevent the corresponding
 // methods from having EXPECT_CALL set on the mocks.
 typedef struct {
-  std::string test_name;
   RequestParameters inputs;
   RequestExpectations expected;
   MockConfiguration config;
 } AuthRequestTestCase;
-
-std::ostream& operator<<(std::ostream& os,
-                         const AuthRequestTestCase& testcase) {
-  std::string name;
-  base::ReplaceChars(testcase.test_name, " ", "", &name);
-  return os << name;
-}
 
 static const MockMediatedConfiguration kMediatedNoop{absl::nullopt, kAccounts,
                                                      absl::nullopt};
@@ -165,8 +157,8 @@ static const MockClientIdConfiguration kClientMetadataInvalidResponse{
 static const MockClientIdConfiguration kClientMetadataNoPrivacyPolicyUrl{
     FetchStatus::kSuccess, "", ""};
 
+// Error parsing FedCM manifest due to missing token endpoint.
 static const AuthRequestTestCase kMissingTokenEndpoint{
-    "Error parsing FedCM manifest for Mediated mode missing token endpoint",
     {kIdpTestOrigin, kClientId, kNonce},
     {RequestIdTokenStatus::kError,
      FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse,
@@ -174,8 +166,8 @@ static const AuthRequestTestCase kMissingTokenEndpoint{
     {kToken, FetchStatus::kSuccess, absl::nullopt, kAccountsEndpoint, "",
      kClientMetadataEndpoint, kMediatedNoop}};
 
+// Error parsing FedCM manifest due to missing accounts endpoint.
 static const AuthRequestTestCase kMissingAccountsEndpoint{
-    "Error parsing FedCM manifest for Mediated mode missing accounts endpoint",
     {kIdpTestOrigin, kClientId, kNonce},
     {RequestIdTokenStatus::kError,
      FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse,
@@ -183,105 +175,14 @@ static const AuthRequestTestCase kMissingAccountsEndpoint{
     {kToken, FetchStatus::kSuccess, absl::nullopt, "", kTokenEndpoint,
      kClientMetadataEndpoint, kMediatedNoop}};
 
+// Error parsing FedCM manifest due to missing client metadata endpoint.
 static const AuthRequestTestCase kMissingClientMetadata{
-    "Error parsing FedCM manifest for Mediated mode missing client metadata "
-    "endpoint",
     {kIdpTestOrigin, kClientId, kNonce},
     {RequestIdTokenStatus::kError,
      FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse,
      kEmptyToken},
     {kToken, FetchStatus::kSuccess, absl::nullopt, kAccountsEndpoint,
      kTokenEndpoint, "", kMediatedNoop}};
-
-static const AuthRequestTestCase kMediatedTestCases[]{
-    kMissingTokenEndpoint,
-    kMissingAccountsEndpoint,
-    kMissingClientMetadata,
-
-    {"Error due to accounts endpoint in different origin than identity "
-     "provider",
-     {kIdpTestOrigin, kClientId, kNonce},
-     {RequestIdTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse,
-      kEmptyToken},
-     {kToken, FetchStatus::kSuccess, absl::nullopt,
-      kCrossOriginAccountsEndpoint, kTokenEndpoint, kClientMetadataEndpoint,
-      kMediatedNoop}},
-
-    {"Error reaching Accounts endpoint",
-     {kIdpTestOrigin, kClientId, kNonce},
-     {RequestIdTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorFetchingAccountsNoResponse,
-      kEmptyToken},
-     {kEmptyToken,
-      FetchStatus::kSuccess,
-      kSuccessfulClientId,
-      kAccountsEndpoint,
-      kTokenEndpoint,
-      kClientMetadataEndpoint,
-      {FetchStatus::kNoResponseError, kAccounts, absl::nullopt}}},
-
-    {"Error parsing Accounts response",
-     {kIdpTestOrigin, kClientId, kNonce},
-     {RequestIdTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorFetchingAccountsInvalidResponse,
-      kEmptyToken},
-     {kToken,
-      FetchStatus::kSuccess,
-      kSuccessfulClientId,
-      kAccountsEndpoint,
-      kTokenEndpoint,
-      kClientMetadataEndpoint,
-      {FetchStatus::kInvalidResponseError, kAccounts, absl::nullopt}}},
-
-    {"Successful Mediated flow",
-     {kIdpTestOrigin, kClientId, kNonce},
-     {RequestIdTokenStatus::kSuccess, FederatedAuthRequestResult::kSuccess,
-      kToken},
-     {kToken,
-      FetchStatus::kSuccess,
-      kSuccessfulClientId,
-      kAccountsEndpoint,
-      kTokenEndpoint,
-      kClientMetadataEndpoint,
-      {FetchStatus::kSuccess, kAccounts, FetchStatus::kSuccess}}},
-
-    {"Client metadata file not found",
-     {kIdpTestOrigin, kClientId, kNonce},
-     {RequestIdTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorFetchingClientMetadataHttpNotFound,
-      kEmptyToken},
-     {kToken, FetchStatus::kSuccess, kClientMetadataHttpNotFound,
-      kAccountsEndpoint, kTokenEndpoint, kClientMetadataEndpoint,
-      kMediatedNoop}},
-
-    {"Client metadata empty response",
-     {kIdpTestOrigin, kClientId, kNonce},
-     {RequestIdTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorFetchingClientMetadataNoResponse,
-      kEmptyToken},
-     {kToken, FetchStatus::kSuccess, kClientMetadataNoResponse,
-      kAccountsEndpoint, kTokenEndpoint, kClientMetadataEndpoint,
-      kMediatedNoop}},
-
-    {"Client metadata invalid response",
-     {kIdpTestOrigin, kClientId, kNonce},
-     {RequestIdTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorFetchingClientMetadataInvalidResponse,
-      kEmptyToken},
-     {kToken, FetchStatus::kSuccess, kClientMetadataInvalidResponse,
-      kAccountsEndpoint, kTokenEndpoint, kClientMetadataEndpoint,
-      kMediatedNoop}},
-
-    {"Client metadata has no privacy policy url",
-     {kIdpTestOrigin, kClientId, kNonce},
-     {RequestIdTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorClientMetadataMissingPrivacyPolicyUrl,
-      kEmptyToken},
-     {kToken, FetchStatus::kSuccess, kClientMetadataNoPrivacyPolicyUrl,
-      kAccountsEndpoint, kTokenEndpoint, kClientMetadataEndpoint,
-      kMediatedNoop}},
-};
 
 // Helper class for receiving the mojo method callback.
 class AuthRequestCallbackHelper {
@@ -420,6 +321,74 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
   }
   ~FederatedAuthRequestImplTest() override = default;
+
+  void RunAuthTest(const AuthRequestTestCase& test_case) {
+    CreateAuthRequest(GURL(test_case.inputs.provider));
+    SetMockExpectations(test_case);
+    auto auth_response =
+        PerformAuthRequest(test_case.inputs.client_id, test_case.inputs.nonce,
+                           test_case.inputs.prefer_auto_sign_in);
+    EXPECT_EQ(auth_response.first, test_case.expected.return_status);
+    EXPECT_EQ(auth_response.second, test_case.expected.token);
+
+    EXPECT_EQ(main_test_rfh()->GetFederatedAuthRequestIssueCount(
+                  test_case.expected.devtools_issue_status),
+              auth_response.first == RequestIdTokenStatus::kSuccess ? 0 : 1);
+    CheckConsoleMessages(test_case.expected.devtools_issue_status);
+  }
+
+  void CheckConsoleMessages(FederatedAuthRequestResult devtools_issue_status) {
+    static std::unordered_map<FederatedAuthRequestResult,
+                              absl::optional<std::string>>
+        status_to_message = {
+            {FederatedAuthRequestResult::kSuccess, absl::nullopt},
+            {FederatedAuthRequestResult::kApprovalDeclined,
+             "User declined the sign-in attempt."},
+            {FederatedAuthRequestResult::kErrorFetchingManifestHttpNotFound,
+             "The provider's FedCM manifest configuration cannot be found."},
+            {FederatedAuthRequestResult::kErrorFetchingManifestNoResponse,
+             "The provider's FedCM manifest configuration fetch resulted in an "
+             "error response code."},
+            {FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse,
+             "Provider's FedCM manifest configuration is invalid."},
+            {FederatedAuthRequestResult::kErrorFetchingSignin,
+             "Error attempting to reach the provider's sign-in endpoint."},
+            {FederatedAuthRequestResult::kErrorInvalidSigninResponse,
+             "Provider's sign-in response is invalid."},
+            {FederatedAuthRequestResult::kError,
+             "Error retrieving an id token."},
+            {FederatedAuthRequestResult::kErrorFetchingAccountsNoResponse,
+             "The provider's accounts list fetch resulted in an error response "
+             "code."},
+            {FederatedAuthRequestResult::kErrorFetchingAccountsInvalidResponse,
+             "Provider's accounts list is invalid. Should have received an "
+             "\"accounts\" list, where each account must "
+             "have at least \"id\", \"name\", and \"email\"."},
+            {FederatedAuthRequestResult::
+                 kErrorFetchingClientMetadataHttpNotFound,
+             "The provider's client metadata endpoint cannot be found."},
+            {FederatedAuthRequestResult::kErrorFetchingClientMetadataNoResponse,
+             "The provider's client metadata fetch resulted in an error "
+             "response "
+             "code."},
+            {FederatedAuthRequestResult::
+                 kErrorFetchingClientMetadataInvalidResponse,
+             "Provider's client metadata is invalid."},
+            {FederatedAuthRequestResult::
+                 kErrorClientMetadataMissingPrivacyPolicyUrl,
+             "Provider's client metadata is missing or has an invalid privacy "
+             "policy url."}};
+    std::vector<std::string> messages =
+        RenderFrameHostTester::For(main_rfh())->GetConsoleMessages();
+    absl::optional<std::string> expected_message =
+        status_to_message[devtools_issue_status];
+    if (!expected_message) {
+      EXPECT_EQ(0u, messages.size());
+    } else {
+      ASSERT_LE(1u, messages.size());
+      EXPECT_EQ(expected_message.value(), messages[messages.size() - 1]);
+    }
+  }
 
   FederatedAuthRequestImpl& CreateAuthRequest(const GURL& provider) {
     provider_ = provider;
@@ -727,93 +696,29 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
 };
 
-class BasicFederatedAuthRequestImplTest
-    : public FederatedAuthRequestImplTest,
-      public ::testing::WithParamInterface<AuthRequestTestCase> {};
+class BasicFederatedAuthRequestImplTest : public FederatedAuthRequestImplTest {
+};
 
-INSTANTIATE_TEST_SUITE_P(MediatedTests,
-                         BasicFederatedAuthRequestImplTest,
-                         ::testing::ValuesIn(kMediatedTestCases),
-                         ::testing::PrintToStringParamName());
-
-// Exercise the auth test case give the configuration.
-TEST_P(BasicFederatedAuthRequestImplTest, FederatedAuthRequests) {
-  AuthRequestTestCase test_case = GetParam();
-  CreateAuthRequest(GURL(test_case.inputs.provider));
-  SetMockExpectations(test_case);
-  auto auth_response =
-      PerformAuthRequest(test_case.inputs.client_id, test_case.inputs.nonce,
-                         test_case.inputs.prefer_auto_sign_in);
-  EXPECT_EQ(auth_response.first, test_case.expected.return_status);
-  EXPECT_EQ(auth_response.second, test_case.expected.token);
+// Test successful FedCM request.
+TEST_F(BasicFederatedAuthRequestImplTest, SuccessfulRequest) {
+  AuthRequestTestCase test_case = {
+      {kIdpTestOrigin, kClientId, kNonce},
+      {RequestIdTokenStatus::kSuccess, FederatedAuthRequestResult::kSuccess,
+       kToken},
+      {kToken,
+       FetchStatus::kSuccess,
+       kSuccessfulClientId,
+       kAccountsEndpoint,
+       kTokenEndpoint,
+       kClientMetadataEndpoint,
+       {FetchStatus::kSuccess, kAccounts, FetchStatus::kSuccess}}};
+  RunAuthTest(test_case);
 }
 
-TEST_P(BasicFederatedAuthRequestImplTest, FederatedAuthRequestIssue) {
-  AuthRequestTestCase test_case = GetParam();
-  CreateAuthRequest(GURL(test_case.inputs.provider));
-  SetMockExpectations(test_case);
-  auto auth_response =
-      PerformAuthRequest(test_case.inputs.client_id, test_case.inputs.nonce,
-                         test_case.inputs.prefer_auto_sign_in);
-  EXPECT_EQ(main_test_rfh()->GetFederatedAuthRequestIssueCount(
-                test_case.expected.devtools_issue_status),
-            auth_response.first == RequestIdTokenStatus::kSuccess ? 0 : 1);
-  static std::unordered_map<FederatedAuthRequestResult,
-                            absl::optional<std::string>>
-      status_to_message = {
-          {FederatedAuthRequestResult::kSuccess, absl::nullopt},
-          {FederatedAuthRequestResult::kApprovalDeclined,
-           "User declined the sign-in attempt."},
-          {FederatedAuthRequestResult::kErrorFetchingManifestHttpNotFound,
-           "The provider's FedCM manifest configuration cannot be found."},
-          {FederatedAuthRequestResult::kErrorFetchingManifestNoResponse,
-           "The provider's FedCM manifest configuration fetch resulted in an "
-           "error response code."},
-          {FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse,
-           "Provider's FedCM manifest configuration is invalid."},
-          {FederatedAuthRequestResult::kErrorFetchingSignin,
-           "Error attempting to reach the provider's sign-in endpoint."},
-          {FederatedAuthRequestResult::kErrorInvalidSigninResponse,
-           "Provider's sign-in response is invalid."},
-          {FederatedAuthRequestResult::kError, "Error retrieving an id token."},
-          {FederatedAuthRequestResult::kErrorFetchingAccountsNoResponse,
-           "The provider's accounts list fetch resulted in an error response "
-           "code."},
-          {FederatedAuthRequestResult::kErrorFetchingAccountsInvalidResponse,
-           "Provider's accounts list is invalid. Should have received an "
-           "\"accounts\" list, where each account must "
-           "have at least \"id\", \"name\", and \"email\"."},
-          {FederatedAuthRequestResult::kErrorFetchingClientMetadataHttpNotFound,
-           "The provider's client metadata endpoint cannot be found."},
-          {FederatedAuthRequestResult::kErrorFetchingClientMetadataNoResponse,
-           "The provider's client metadata fetch resulted in an error response "
-           "code."},
-          {FederatedAuthRequestResult::
-               kErrorFetchingClientMetadataInvalidResponse,
-           "Provider's client metadata is invalid."},
-          {FederatedAuthRequestResult::
-               kErrorClientMetadataMissingPrivacyPolicyUrl,
-           "Provider's client metadata is missing or has an invalid privacy "
-           "policy url."}};
-  std::vector<std::string> messages =
-      RenderFrameHostTester::For(main_rfh())->GetConsoleMessages();
-  absl::optional<std::string> expected_message =
-      status_to_message[test_case.expected.devtools_issue_status];
-  if (!expected_message) {
-    EXPECT_EQ(0u, messages.size());
-  } else {
-    ASSERT_LE(1u, messages.size());
-    EXPECT_EQ(expected_message.value(), messages[messages.size() - 1]);
-  }
-}
-
+// Test that request fails if manifest is missing token endpoint.
 TEST_F(BasicFederatedAuthRequestImplTest, MissingTokenEndpoint) {
-  const auto& test_case = kMissingTokenEndpoint;
-  CreateAuthRequest(GURL(test_case.inputs.provider));
-  SetMockExpectations(test_case);
-  auto auth_response =
-      PerformAuthRequest(test_case.inputs.client_id, test_case.inputs.nonce,
-                         test_case.inputs.prefer_auto_sign_in);
+  RunAuthTest(kMissingTokenEndpoint);
+
   std::vector<std::string> messages =
       RenderFrameHostTester::For(main_rfh())->GetConsoleMessages();
   ASSERT_EQ(2U, messages.size());
@@ -825,13 +730,10 @@ TEST_F(BasicFederatedAuthRequestImplTest, MissingTokenEndpoint) {
   EXPECT_EQ("Provider's FedCM manifest configuration is invalid.", messages[1]);
 }
 
+// Test that request fails if manifest is missing accounts endpoint.
 TEST_F(BasicFederatedAuthRequestImplTest, MissingAccountsEndpoint) {
-  const auto& test_case = kMissingAccountsEndpoint;
-  CreateAuthRequest(GURL(test_case.inputs.provider));
-  SetMockExpectations(test_case);
-  auto auth_response =
-      PerformAuthRequest(test_case.inputs.client_id, test_case.inputs.nonce,
-                         test_case.inputs.prefer_auto_sign_in);
+  RunAuthTest(kMissingAccountsEndpoint);
+
   std::vector<std::string> messages =
       RenderFrameHostTester::For(main_rfh())->GetConsoleMessages();
   ASSERT_EQ(2U, messages.size());
@@ -843,13 +745,10 @@ TEST_F(BasicFederatedAuthRequestImplTest, MissingAccountsEndpoint) {
   EXPECT_EQ("Provider's FedCM manifest configuration is invalid.", messages[1]);
 }
 
+// Test that request fails if manifest is missing client metadata endpoint.
 TEST_F(BasicFederatedAuthRequestImplTest, MissingClientMetadataEndpoint) {
-  const auto& test_case = kMissingClientMetadata;
-  CreateAuthRequest(GURL(test_case.inputs.provider));
-  SetMockExpectations(test_case);
-  auto auth_response =
-      PerformAuthRequest(test_case.inputs.client_id, test_case.inputs.nonce,
-                         test_case.inputs.prefer_auto_sign_in);
+  RunAuthTest(kMissingClientMetadata);
+
   std::vector<std::string> messages =
       RenderFrameHostTester::For(main_rfh())->GetConsoleMessages();
   ASSERT_EQ(2U, messages.size());
@@ -861,10 +760,111 @@ TEST_F(BasicFederatedAuthRequestImplTest, MissingClientMetadataEndpoint) {
   EXPECT_EQ("Provider's FedCM manifest configuration is invalid.", messages[1]);
 }
 
+// Test that request fails if the accounts endpoint is in a different origin
+// than identity provider.
+TEST_F(BasicFederatedAuthRequestImplTest, AccountEndpointDifferentOriginIdp) {
+  AuthRequestTestCase test_case = {
+      {kIdpTestOrigin, kClientId, kNonce},
+      {RequestIdTokenStatus::kError,
+       FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse,
+       kEmptyToken},
+      {kToken, FetchStatus::kSuccess, absl::nullopt,
+       kCrossOriginAccountsEndpoint, kTokenEndpoint, kClientMetadataEndpoint,
+       kMediatedNoop}};
+  RunAuthTest(test_case);
+}
+
+// Test that request fails if accounts endpoint cannot be reached.
+TEST_F(BasicFederatedAuthRequestImplTest, AccountEndpointCannotBeReached) {
+  AuthRequestTestCase test_case = {
+      {kIdpTestOrigin, kClientId, kNonce},
+      {RequestIdTokenStatus::kError,
+       FederatedAuthRequestResult::kErrorFetchingAccountsNoResponse,
+       kEmptyToken},
+      {kEmptyToken,
+       FetchStatus::kSuccess,
+       kSuccessfulClientId,
+       kAccountsEndpoint,
+       kTokenEndpoint,
+       kClientMetadataEndpoint,
+       {FetchStatus::kNoResponseError, kAccounts, absl::nullopt}}};
+  RunAuthTest(test_case);
+}
+
+// Test that request fails if account endpoint response cannot be parsed.
+TEST_F(BasicFederatedAuthRequestImplTest, AccountsCannotBeParsed) {
+  AuthRequestTestCase test_case = {
+      {kIdpTestOrigin, kClientId, kNonce},
+      {RequestIdTokenStatus::kError,
+       FederatedAuthRequestResult::kErrorFetchingAccountsInvalidResponse,
+       kEmptyToken},
+      {kToken,
+       FetchStatus::kSuccess,
+       kSuccessfulClientId,
+       kAccountsEndpoint,
+       kTokenEndpoint,
+       kClientMetadataEndpoint,
+       {FetchStatus::kInvalidResponseError, kAccounts, absl::nullopt}}};
+  RunAuthTest(test_case);
+}
+
+// Test that request fails if client metadata cannot be found.
+TEST_F(BasicFederatedAuthRequestImplTest, ClientMetadataNotFound) {
+  AuthRequestTestCase test_case = {
+      {kIdpTestOrigin, kClientId, kNonce},
+      {RequestIdTokenStatus::kError,
+       FederatedAuthRequestResult::kErrorFetchingClientMetadataHttpNotFound,
+       kEmptyToken},
+      {kToken, FetchStatus::kSuccess, kClientMetadataHttpNotFound,
+       kAccountsEndpoint, kTokenEndpoint, kClientMetadataEndpoint,
+       kMediatedNoop}};
+  RunAuthTest(test_case);
+}
+
+// Test that request fails if client metadata endpoint returns empty response.
+TEST_F(BasicFederatedAuthRequestImplTest, ClientMetadataEmptyResponse) {
+  AuthRequestTestCase test_case = {
+      {kIdpTestOrigin, kClientId, kNonce},
+      {RequestIdTokenStatus::kError,
+       FederatedAuthRequestResult::kErrorFetchingClientMetadataNoResponse,
+       kEmptyToken},
+      {kToken, FetchStatus::kSuccess, kClientMetadataNoResponse,
+       kAccountsEndpoint, kTokenEndpoint, kClientMetadataEndpoint,
+       kMediatedNoop}};
+  RunAuthTest(test_case);
+}
+
+// Test that request fails if client metadata returns invalid response.
+TEST_F(BasicFederatedAuthRequestImplTest, ClientMetadataInvalidResponse) {
+  AuthRequestTestCase test_case = {
+      {kIdpTestOrigin, kClientId, kNonce},
+      {RequestIdTokenStatus::kError,
+       FederatedAuthRequestResult::kErrorFetchingClientMetadataInvalidResponse,
+       kEmptyToken},
+      {kToken, FetchStatus::kSuccess, kClientMetadataInvalidResponse,
+       kAccountsEndpoint, kTokenEndpoint, kClientMetadataEndpoint,
+       kMediatedNoop}};
+  RunAuthTest(test_case);
+}
+
+// Test that request fails if client metadata does not contain a privacy policy
+// URL.
+TEST_F(BasicFederatedAuthRequestImplTest, ClientMetadataNoPrivacyUrl) {
+  AuthRequestTestCase test_case = {
+      {kIdpTestOrigin, kClientId, kNonce},
+      {RequestIdTokenStatus::kError,
+       FederatedAuthRequestResult::kErrorClientMetadataMissingPrivacyPolicyUrl,
+       kEmptyToken},
+      {kToken, FetchStatus::kSuccess, kClientMetadataNoPrivacyPolicyUrl,
+       kAccountsEndpoint, kTokenEndpoint, kClientMetadataEndpoint,
+       kMediatedNoop}};
+  RunAuthTest(test_case);
+}
+
+// Test that request fails if all of the endpoints in the manifest are invalid.
 TEST_F(BasicFederatedAuthRequestImplTest, AllInvalidEndpoints) {
   // Both an empty url and cross origin urls are invalid endpoints.
   AuthRequestTestCase test_case = {
-      "FedCM manifest missing all endpoints",
       {kIdpTestOrigin, kClientId, kNonce},
       {RequestIdTokenStatus::kError,
        FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse,
@@ -946,8 +946,8 @@ TEST_F(BasicFederatedAuthRequestImplTest, LogoutNoEndpoints) {
 
 // Tests for Login State
 
+// Successful mediated flow with one account.
 static const AuthRequestTestCase kSuccessfulMediatedSignUpTestCase{
-    "Successful mediated flow with one account",
     {kIdpTestOrigin, kClientId, kNonce, kNotPreferAutoSignIn},
     {RequestIdTokenStatus::kSuccess, FederatedAuthRequestResult::kSuccess,
      kToken},
@@ -959,8 +959,8 @@ static const AuthRequestTestCase kSuccessfulMediatedSignUpTestCase{
      kClientMetadataEndpoint,
      {FetchStatus::kSuccess, kAccounts, FetchStatus::kSuccess}}};
 
+// Failed mediated flow with one account.
 static const AuthRequestTestCase kFailedMediatedSignUpTestCase{
-    "Failed mediated flow with one account",
     {kIdpTestOrigin, kClientId, kNonce, kNotPreferAutoSignIn},
     {RequestIdTokenStatus::kSuccess, FederatedAuthRequestResult::kSuccess,
      kToken},
@@ -972,8 +972,8 @@ static const AuthRequestTestCase kFailedMediatedSignUpTestCase{
      kClientMetadataEndpoint,
      {FetchStatus::kSuccess, kAccounts, FetchStatus::kInvalidResponseError}}};
 
+// Successful mediated flow with one account.
 static const AuthRequestTestCase kSuccessfulMediatedAutoSignInTestCase{
-    "Successful mediated flow with one account",
     {kIdpTestOrigin, kClientId, kNonce, kPreferAutoSignIn},
     {RequestIdTokenStatus::kSuccess, FederatedAuthRequestResult::kSuccess,
      kToken},
@@ -1346,12 +1346,12 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForSuccessfulSignInCase) {
   ExpectRequestIdTokenStatusUKM(IdTokenStatus::kSuccess);
 }
 
+// Test that request fails if user does not select an account.
 TEST_F(BasicFederatedAuthRequestImplTest, MetricsForNotSelectingAccount) {
   base::HistogramTester histogram_tester_;
 
   AccountList displayed_accounts;
   const AuthRequestTestCase test_case = {
-      "Failed mediated flow due to user not selecting an account",
       {kIdpTestOrigin, kClientId, kNonce, kNotPreferAutoSignIn},
       {RequestIdTokenStatus::kSuccess, FederatedAuthRequestResult::kSuccess,
        kToken},
@@ -1440,6 +1440,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForWebContentsVisible) {
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.WebContentsVisible", 1, 1);
 }
 
+// Test that request fails if the web contents are hidden.
 TEST_F(BasicFederatedAuthRequestImplTest, MetricsForWebContentsInvisible) {
   base::HistogramTester histogram_tester;
   WebContentsImpl* web_contents_impl =
@@ -1448,7 +1449,6 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForWebContentsInvisible) {
   ASSERT_EQ(web_contents_impl->GetVisibility(), Visibility::VISIBLE);
 
   const AuthRequestTestCase test_case = {
-      "Failed mediated flow due to user leaving the page",
       {kIdpTestOrigin, kClientId, kNonce, kNotPreferAutoSignIn},
       {RequestIdTokenStatus::kSuccess, FederatedAuthRequestResult::kSuccess,
        kToken},
