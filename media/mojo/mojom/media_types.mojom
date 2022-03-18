@@ -6,6 +6,7 @@ module media.mojom;
 
 import "gpu/ipc/common/mailbox_holder.mojom";
 import "gpu/ipc/common/vulkan_ycbcr_info.mojom";
+import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
@@ -409,9 +410,8 @@ struct EosVideoFrameData {
 
 // This defines video frame data stored in a Mojo shared buffer.
 struct SharedBufferVideoFrameData {
-  // Reference to the shared memory containing the frame's data.
-  handle<shared_buffer> frame_data;
-  uint64 frame_data_size;
+  // Shared memory region for the frame data.
+  mojo_base.mojom.UnsafeSharedMemoryRegion frame_data;
 
   // Stride and offsets for each plane. Offsets are relative to the start
   // of |frame_data|.

@@ -7,6 +7,8 @@
 
 #include <cstring>
 
+#include "base/memory/shared_memory_mapping.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "media/base/video_frame.h"
 #include "media/cdm/api/content_decryption_module.h"
 #include "media/cdm/cdm_helpers.h"
@@ -34,12 +36,12 @@ class MojoCdmAllocatorTest : public testing::Test {
     return allocator_.CreateCdmVideoFrame();
   }
 
-  MojoHandle GetHandle(cdm::Buffer* buffer) {
-    return allocator_.GetHandleForTesting(buffer);
+  const base::UnsafeSharedMemoryRegion& GetRegion(cdm::Buffer* buffer) {
+    return allocator_.GetRegionForTesting(buffer);
   }
 
-  size_t GetAvailableBufferCount() {
-    return allocator_.GetAvailableBufferCountForTesting();
+  size_t GetAvailableRegionCount() {
+    return allocator_.GetAvailableRegionCountForTesting();
   }
 
  private:
@@ -57,15 +59,30 @@ TEST_F(MojoCdmAllocatorTest, CreateCdmBuffer) {
 TEST_F(MojoCdmAllocatorTest, ReuseCdmBuffer) {
   const size_t kRandomDataSize = 46;
 
+  const char kTestData[] = "reduce reuse recycle";
+
   // Create a small buffer.
   cdm::Buffer* buffer = CreateCdmBuffer(kRandomDataSize);
-  MojoHandle handle = GetHandle(buffer);
+  {
+    // Create a mapping and write some test data.
+    const auto& region = GetRegion(buffer);
+    base::WritableSharedMemoryMapping mapping = region.Map();
+    // Note: deliberately using sizeof() to include the null terminator.
+    memcpy(mapping.memory(), kTestData, sizeof(kTestData));
+  }
   buffer->Destroy();
 
   // Now allocate a new buffer of the same size, it should reuse the one
   // just freed.
   cdm::Buffer* new_buffer = CreateCdmBuffer(kRandomDataSize);
-  EXPECT_EQ(handle, GetHandle(new_buffer));
+  {
+    const auto& region = GetRegion(new_buffer);
+    // Unsafe regions are always mapped as writable.
+    base::WritableSharedMemoryMapping mapping = region.Map();
+    // Check that the test data that was written there is still there as a proxy
+    // signal for checking that the shmem region is reused.
+    EXPECT_STREQ(kTestData, mapping.GetMemoryAs<char>());
+  }
   new_buffer->Destroy();
 }
 
@@ -82,7 +99,7 @@ TEST_F(MojoCdmAllocatorTest, MaxFreeBuffers) {
     buffer_size += kBufferSizeIncrease;
     cdm::Buffer* buffer = CreateCdmBuffer(buffer_size);
     buffer->Destroy();
-    EXPECT_LE(GetAvailableBufferCount(), kMaxExpectedFreeBuffers);
+    EXPECT_LE(GetAvailableRegionCount(), kMaxExpectedFreeBuffers);
   }
 }
 
@@ -110,7 +127,7 @@ TEST_F(MojoCdmAllocatorTest, CreateCdmVideoFrame) {
 
   // Now create a buffer to hold the frame and assign it to the VideoFrameImpl.
   cdm::Buffer* buffer = CreateCdmBuffer(kBufferSize);
-  EXPECT_EQ(0u, GetAvailableBufferCount());
+  EXPECT_EQ(0u, GetAvailableRegionCount());
   buffer->SetSize(static_cast<uint32_t>(kBufferSize));
   video_frame->SetFrameBuffer(buffer);
   EXPECT_NE(nullptr, video_frame->FrameBuffer());
@@ -118,16 +135,16 @@ TEST_F(MojoCdmAllocatorTest, CreateCdmVideoFrame) {
   // Transform it into a VideoFrame and make sure the buffer is no longer owned.
   scoped_refptr<VideoFrame> frame = video_frame->TransformToVideoFrame(kSize);
   EXPECT_EQ(nullptr, video_frame->FrameBuffer());
-  EXPECT_EQ(0u, GetAvailableBufferCount());
+  EXPECT_EQ(0u, GetAvailableRegionCount());
   video_frame.reset();
 
   // Check that the buffer is still in use. It will be freed when |frame|
   // is destroyed.
-  EXPECT_EQ(0u, GetAvailableBufferCount());
+  EXPECT_EQ(0u, GetAvailableRegionCount());
   frame = nullptr;
 
   // Check that the buffer is now in the free list.
-  EXPECT_EQ(1u, GetAvailableBufferCount());
+  EXPECT_EQ(1u, GetAvailableRegionCount());
 }
 
 }  // namespace media

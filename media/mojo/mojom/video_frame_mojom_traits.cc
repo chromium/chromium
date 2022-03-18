@@ -9,6 +9,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "build/build_config.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/base/color_plane_layout.h"
@@ -40,15 +41,9 @@ media::mojom::VideoFrameDataPtr MakeVideoFrameData(
     const media::MojoSharedBufferVideoFrame* mojo_frame =
         static_cast<const media::MojoSharedBufferVideoFrame*>(input);
 
-    // Mojo shared buffer handles are always writable. For example,
-    // cdm_video_decoder in ToCdmVideoFrame maps a frame writable; these frames
-    // are returned via callback and reused in ToCdmVideoFrame. Since returning
-    // via callback involves a Clone(), and since cloning a region read-only
-    // makes both the source handle and the cloned handle read-only, it must be
-    // cloned writable.
-    mojo::ScopedSharedBufferHandle dup = mojo_frame->Handle().Clone(
-        mojo::SharedBufferHandle::AccessMode::READ_WRITE);
-    DCHECK(dup.is_valid());
+    base::UnsafeSharedMemoryRegion region =
+        mojo_frame->shmem_region().Duplicate();
+    DCHECK(region.IsValid());
     size_t num_planes = media::VideoFrame::NumPlanes(mojo_frame->format());
     std::vector<uint32_t> offsets(num_planes);
     std::vector<int32_t> strides(num_planes);
@@ -59,8 +54,7 @@ media::mojom::VideoFrameDataPtr MakeVideoFrameData(
 
     return media::mojom::VideoFrameData::NewSharedBufferData(
         media::mojom::SharedBufferVideoFrameData::New(
-            std::move(dup), mojo_frame->MappedSize(), std::move(strides),
-            std::move(offsets)));
+            std::move(region), std::move(strides), std::move(offsets)));
   }
 
   std::vector<gpu::MailboxHolder> mailbox_holder(media::VideoFrame::kMaxPlanes);
@@ -138,18 +132,19 @@ bool StructTraits<media::mojom::VideoFrameDataView,
     media::mojom::SharedBufferVideoFrameDataDataView shared_buffer_data;
     data.GetSharedBufferDataDataView(&shared_buffer_data);
 
-    std::vector<int32_t> strides;
-    if (!shared_buffer_data.ReadStrides(&strides))
+    base::UnsafeSharedMemoryRegion region;
+    if (!shared_buffer_data.ReadFrameData(&region))
       return false;
 
-    std::vector<uint32_t> offsets;
-    if (!shared_buffer_data.ReadOffsets(&offsets))
-      return false;
+    mojo::ArrayDataView<uint32_t> offsets;
+    shared_buffer_data.GetOffsetsDataView(&offsets);
+
+    mojo::ArrayDataView<int32_t> strides;
+    shared_buffer_data.GetStridesDataView(&strides);
+
     frame = media::MojoSharedBufferVideoFrame::Create(
-        format, coded_size, visible_rect, natural_size,
-        shared_buffer_data.TakeFrameData(),
-        shared_buffer_data.frame_data_size(), std::move(offsets),
-        std::move(strides), timestamp);
+        format, coded_size, visible_rect, natural_size, std::move(region),
+        offsets, strides, timestamp);
   } else if (data.is_gpu_memory_buffer_data()) {
     media::mojom::GpuMemoryBufferVideoFrameDataDataView gpu_memory_buffer_data;
     data.GetGpuMemoryBufferDataDataView(&gpu_memory_buffer_data);

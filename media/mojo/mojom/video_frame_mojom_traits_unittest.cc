@@ -94,7 +94,7 @@ TEST_F(VideoFrameStructTraitsTest, MojoSharedBufferVideoFrame) {
     ASSERT_EQ(frame->storage_type(), VideoFrame::STORAGE_MOJO_SHARED_BUFFER);
     MojoSharedBufferVideoFrame* mojo_shared_buffer_frame =
         static_cast<MojoSharedBufferVideoFrame*>(frame.get());
-    EXPECT_TRUE(mojo_shared_buffer_frame->Handle().is_valid());
+    EXPECT_TRUE(mojo_shared_buffer_frame->shmem_region().IsValid());
   }
 }
 

@@ -11,6 +11,7 @@
 #include <map>
 #include <memory>
 
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "media/cdm/cdm_allocator.h"
@@ -36,30 +37,29 @@ class MEDIA_MOJO_EXPORT MojoCdmAllocator final : public CdmAllocator {
  private:
   friend class MojoCdmAllocatorTest;
 
-  // Map of available buffers. Done as a mapping of capacity to
-  // ScopedSharedBufferHandle so that we can efficiently find an available
-  // buffer of a particular size. Any buffers in the map are unmapped.
-  using AvailableBufferMap =
-      std::multimap<size_t, mojo::ScopedSharedBufferHandle>;
+  // Map of available buffers. Done as a mapping of capacity to shmem regions to
+  // make it efficient to find an available buffer of a particular size.
+  // Regions in the map are unmapped.
+  using AvailableRegionMap =
+      std::multimap<size_t, base::UnsafeSharedMemoryRegion>;
 
-  // Allocates a mojo::SharedBufferHandle of at least |capacity| bytes.
-  // |capacity| will be changed to reflect the actual size of the buffer
-  // allocated.
-  mojo::ScopedSharedBufferHandle AllocateNewBuffer(size_t* capacity);
+  // Allocates a shmem region of at least |capacity| bytes.
+  base::UnsafeSharedMemoryRegion AllocateNewRegion(size_t capacity);
 
-  // Returns |buffer| to the map of available buffers, ready to be used the
+  // Returns |region| to the map of available buffers, ready to be used the
   // next time CreateCdmBuffer() is called.
-  void AddBufferToAvailableMap(mojo::ScopedSharedBufferHandle buffer,
-                               size_t capacity);
+  void AddRegionToAvailableMap(base::UnsafeSharedMemoryRegion region);
 
-  // Returns the MojoHandle for a cdm::Buffer allocated by this class.
-  MojoHandle GetHandleForTesting(cdm::Buffer* buffer);
+  // Returns the base::UnsafeSharedMemoryRegion for a cdm::Buffer allocated by
+  // this class.
+  const base::UnsafeSharedMemoryRegion& GetRegionForTesting(
+      cdm::Buffer* buffer) const;
 
-  // Returns the number of buffers in |available_buffers_|.
-  size_t GetAvailableBufferCountForTesting();
+  // Returns the number of buffers in |available_regions_|.
+  size_t GetAvailableRegionCountForTesting();
 
   // Map of available, already allocated buffers.
-  AvailableBufferMap available_buffers_;
+  AvailableRegionMap available_regions_;
 
   // Confirms single-threaded access.
   base::ThreadChecker thread_checker_;

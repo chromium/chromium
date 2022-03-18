@@ -11,9 +11,10 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/logging.h"
+#include "base/memory/shared_memory_mapping.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
-#include "mojo/public/cpp/system/platform_handle.h"
 
 namespace media {
 
@@ -40,9 +41,8 @@ MojoSharedBufferVideoFrame::CreateDefaultForTesting(
 
   // Allocate a shared memory buffer big enough to hold the desired frame.
   const size_t allocation_size = VideoFrame::AllocationSize(format, coded_size);
-  mojo::ScopedSharedBufferHandle handle =
-      mojo::SharedBufferHandle::Create(allocation_size);
-  if (!handle.is_valid()) {
+  auto region = base::UnsafeSharedMemoryRegion::Create(allocation_size);
+  if (!region.IsValid()) {
     DLOG(ERROR) << __func__ << " Unable to allocate memory.";
     return nullptr;
   }
@@ -58,13 +58,13 @@ MojoSharedBufferVideoFrame::CreateDefaultForTesting(
     //  - Yplane, full size (each element represents a 1x1 block)
     //  - Uplane, quarter size (each element represents a 2x2 block)
     //  - Vplane, quarter size (each element represents a 2x2 block)
-    return Create(
-        format, coded_size, visible_rect, dimensions, std::move(handle),
-        allocation_size,
-        {0 /* y_offset */, static_cast<uint32_t>(coded_size.GetArea()),
-         static_cast<uint32_t>(coded_size.GetArea() * 5 / 4)},
-        {coded_size.width(), coded_size.width() / 2, coded_size.width() / 2},
-        timestamp);
+    const uint32_t offsets[] = {
+        0 /* y_offset */, static_cast<uint32_t>(coded_size.GetArea()),
+        static_cast<uint32_t>(coded_size.GetArea() * 5 / 4)};
+    const int32_t strides[] = {coded_size.width(), coded_size.width() / 2,
+                               coded_size.width() / 2};
+    return Create(format, coded_size, visible_rect, dimensions,
+                  std::move(region), offsets, strides, timestamp);
   } else {
     // |format| is PIXEL_FORMAT_NV12.
     // Create and initialize the frame. As this is NV12 format, the UV plane
@@ -72,11 +72,11 @@ MojoSharedBufferVideoFrame::CreateDefaultForTesting(
     // as follows:
     //  - Yplane, full size (each element represents a 1x1 block)
     //  - UVplane, full width, half height (each pair represents a 2x2 block)
-    return Create(
-        format, coded_size, visible_rect, dimensions, std::move(handle),
-        allocation_size,
-        {0 /* y_offset */, static_cast<uint32_t>(coded_size.GetArea())},
-        {coded_size.width(), coded_size.width()}, timestamp);
+    const uint32_t offsets[] = {0 /* y_offset */,
+                                static_cast<uint32_t>(coded_size.GetArea())};
+    const int32_t strides[] = {coded_size.width(), coded_size.width()};
+    return Create(format, coded_size, visible_rect, dimensions,
+                  std::move(region), offsets, strides, timestamp);
   }
 }
 
@@ -99,13 +99,16 @@ MojoSharedBufferVideoFrame::CreateFromYUVFrame(VideoFrame& frame) {
     aggregate_size += sizes[i];
   }
 
-  mojo::ScopedSharedBufferHandle handle =
-      mojo::SharedBufferHandle::Create(aggregate_size);
-  if (!handle->is_valid()) {
+  auto region = base::UnsafeSharedMemoryRegion::Create(aggregate_size);
+  if (!region.IsValid()) {
     DLOG(ERROR) << "Can't create new frame backing memory";
     return nullptr;
   }
-  mojo::ScopedSharedBufferMapping dst_mapping = handle->Map(aggregate_size);
+  base::WritableSharedMemoryMapping dst_mapping = region.Map();
+  if (!dst_mapping.IsValid()) {
+    DLOG(ERROR) << "Can't create map frame backing memory";
+    return nullptr;
+  }
 
   // The data from |frame| may not be consecutive between planes. Copy data into
   // a shared memory buffer which is tightly packed. Padding inside each planes
@@ -113,8 +116,7 @@ MojoSharedBufferVideoFrame::CreateFromYUVFrame(VideoFrame& frame) {
   scoped_refptr<MojoSharedBufferVideoFrame> mojo_frame =
       MojoSharedBufferVideoFrame::Create(
           frame.format(), frame.coded_size(), frame.visible_rect(),
-          frame.natural_size(), std::move(handle), aggregate_size,
-          offsets /* don't move, we use it again */, std::move(strides),
+          frame.natural_size(), std::move(region), offsets, strides,
           frame.timestamp());
   CHECK(!!mojo_frame);
 
@@ -151,10 +153,9 @@ scoped_refptr<MojoSharedBufferVideoFrame> MojoSharedBufferVideoFrame::Create(
     const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
-    mojo::ScopedSharedBufferHandle handle,
-    size_t data_size,
-    std::vector<uint32_t> offsets,
-    std::vector<int32_t> strides,
+    base::UnsafeSharedMemoryRegion region,
+    base::span<const uint32_t> offsets,
+    base::span<const int32_t> strides,
     base::TimeDelta timestamp) {
   if (!IsValidConfig(format, STORAGE_MOJO_SHARED_BUFFER, coded_size,
                      visible_rect, natural_size)) {
@@ -184,6 +185,7 @@ scoped_refptr<MojoSharedBufferVideoFrame> MojoSharedBufferVideoFrame::Create(
   // range of an int) due to the IsValidConfig() check above.
   //
   // TODO(sandersd): Allow non-sequential formats.
+  const size_t data_size = region.GetSize();
   std::vector<ColorPlaneLayout> planes(num_planes);
   for (size_t i = 0; i < num_planes; ++i) {
     if (strides[i] < 0) {
@@ -227,8 +229,8 @@ scoped_refptr<MojoSharedBufferVideoFrame> MojoSharedBufferVideoFrame::Create(
   // Now allocate the frame and initialize it.
   scoped_refptr<MojoSharedBufferVideoFrame> frame(
       new MojoSharedBufferVideoFrame(*layout, visible_rect, natural_size,
-                                     std::move(handle), data_size, timestamp));
-  if (!frame->Init(std::move(offsets))) {
+                                     std::move(region), timestamp));
+  if (!frame->Init(offsets)) {
     DLOG(ERROR) << __func__ << " MojoSharedBufferVideoFrame::Init failed.";
     return nullptr;
   }
@@ -240,23 +242,21 @@ MojoSharedBufferVideoFrame::MojoSharedBufferVideoFrame(
     const VideoFrameLayout& layout,
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
-    mojo::ScopedSharedBufferHandle handle,
-    size_t mapped_size,
+    base::UnsafeSharedMemoryRegion region,
     base::TimeDelta timestamp)
     : VideoFrame(layout,
                  STORAGE_MOJO_SHARED_BUFFER,
                  visible_rect,
                  natural_size,
                  timestamp),
-      shared_buffer_handle_(std::move(handle)),
-      shared_buffer_size_(mapped_size) {
-  DCHECK(shared_buffer_handle_.is_valid());
+      region_(std::move(region)) {
+  DCHECK(region_.IsValid());
 }
 
-bool MojoSharedBufferVideoFrame::Init(std::vector<uint32_t> offsets) {
-  DCHECK(!shared_buffer_mapping_);
-  shared_buffer_mapping_ = shared_buffer_handle_->Map(shared_buffer_size_);
-  if (!shared_buffer_mapping_)
+bool MojoSharedBufferVideoFrame::Init(base::span<const uint32_t> offsets) {
+  DCHECK(!mapping_.IsValid());
+  mapping_ = region_.Map();
+  if (!mapping_.IsValid())
     return false;
   const size_t num_planes = NumPlanes(format());
   DCHECK_EQ(offsets.size(), num_planes);
@@ -271,8 +271,7 @@ MojoSharedBufferVideoFrame::~MojoSharedBufferVideoFrame() {
   // Call |mojo_shared_buffer_done_cb_| to take ownership of
   // |shared_buffer_handle_|.
   if (mojo_shared_buffer_done_cb_) {
-    std::move(mojo_shared_buffer_done_cb_)
-        .Run(std::move(shared_buffer_handle_), shared_buffer_size_);
+    std::move(mojo_shared_buffer_done_cb_).Run(std::move(region_));
   }
 }
 
@@ -284,14 +283,6 @@ size_t MojoSharedBufferVideoFrame::PlaneOffset(size_t plane) const {
 void MojoSharedBufferVideoFrame::SetMojoSharedBufferDoneCB(
     MojoSharedBufferDoneCB mojo_shared_buffer_done_cb) {
   mojo_shared_buffer_done_cb_ = std::move(mojo_shared_buffer_done_cb);
-}
-
-const mojo::SharedBufferHandle& MojoSharedBufferVideoFrame::Handle() const {
-  return shared_buffer_handle_.get();
-}
-
-size_t MojoSharedBufferVideoFrame::MappedSize() const {
-  return shared_buffer_size_;
 }
 
 }  // namespace media
