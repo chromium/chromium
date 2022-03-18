@@ -487,12 +487,6 @@ TEST_P(RecordHandlerImplTest, AssignsRequestIdForRecordUploads) {
           Invoke([&force_confirm_by_server](
                      base::Value::Dict request,
                      policy::CloudPolicyClient::ResponseCallback response_cb) {
-            // Validate request id is set
-            auto* request_id = request.FindString(
-                UploadEncryptedReportingRequestBuilder::kRequestId);
-            ASSERT_NE(request_id, nullptr);
-            EXPECT_THAT(*request_id, Not(IsEmpty()));
-
             // Trigger response callback to complete flow
             base::Value::Dict response;
             SucceedResponseFromRequest(request, force_confirm_by_server,
