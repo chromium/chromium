@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+const GC = async () => {
+  await TestRunner.evaluateInPageAsync(`new Promise(resolve =>
+    GCController.asyncCollectAll(resolve))`);
+};
+
 (async function () {
   TestRunner.addResult(`Verify that SourceMap sources are correctly displayed in navigator.\n`);
   await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');

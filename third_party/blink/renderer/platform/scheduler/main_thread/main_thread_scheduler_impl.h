@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/platform/scheduler/main_thread/user_model.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/rail_mode_observer.h"
+#include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -265,6 +266,16 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   base::TimeTicks NowTicks() const;
 
   scoped_refptr<base::SingleThreadTaskRunner> VirtualTimeControlTaskRunner();
+
+  TaskAttributionTracker* GetTaskAttributionTracker() override {
+    return main_thread_only().task_attribution_tracker.get();
+  }
+
+  void InitializeTaskAttributionTracker(
+      std::unique_ptr<TaskAttributionTracker> tracker) override {
+    DCHECK(!main_thread_only().task_attribution_tracker);
+    main_thread_only().task_attribution_tracker = std::move(tracker);
+  }
 
   // Returns a new task queue created with given params.
   scoped_refptr<MainThreadTaskQueue> NewTaskQueue(
@@ -909,6 +920,8 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     WTF::Vector<AgentGroupSchedulerScope> agent_group_scheduler_scope_stack;
 
     std::unique_ptr<power_scheduler::PowerModeVoter> audible_power_mode_voter;
+
+    std::unique_ptr<TaskAttributionTracker> task_attribution_tracker;
   };
 
   struct AnyThread {

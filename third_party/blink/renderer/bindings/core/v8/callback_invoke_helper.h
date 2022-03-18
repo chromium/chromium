@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_value_or_script_wrappable_adapter.h"
+#include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -94,6 +95,8 @@ class CallbackInvokeHelper final {
 
   ScriptState::Scope callback_relevant_context_scope_;
   v8::Context::BackupIncumbentScope backup_incumbent_scope_;
+  std::unique_ptr<scheduler::TaskAttributionTracker::TaskScope>
+      task_attribution_scope_;
 };
 
 extern template class CORE_EXTERN_TEMPLATE_EXPORT

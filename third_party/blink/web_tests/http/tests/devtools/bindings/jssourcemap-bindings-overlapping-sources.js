@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+const GC = async () => {
+  await TestRunner.evaluateInPageAsync(`new Promise(resolve =>
+    GCController.asyncCollectAll(resolve))`);
+};
+
 (async function () {
   TestRunner.addResult(`Verify that JavaScript SourceMap handle different sourcemap with overlapping sources.`);
   await TestRunner.loadTestModule('bindings_test_runner');

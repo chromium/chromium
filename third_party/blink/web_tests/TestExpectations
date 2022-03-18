@@ -4309,6 +4309,10 @@ crbug.com/626703 external/wpt/web-animations/timing-model/timelines/update-and-s
 crbug.com/626703 external/wpt/screen-orientation/orientation-reading.html [ Timeout ]
 crbug.com/626703 external/wpt/html/browsers/browsing-the-web/unloading-documents/prompt-and-unload-script-closeable.html [ Failure ]
 
+# Tests that rely on a non-exposed test-only API. Tested in virtual/task-tracking
+wpt_internal/task-tracking/* [ Skip Failure ]
+virtual/task-tracking/* [ Pass ]
+
 # navigation.sub.html fails or times out when run with run_web_tests.py but passes with run_wpt_tests.py
 crbug.com/626703 external/wpt/html/infrastructure/urls/resolving-urls/query-encoding/navigation.sub.html?encoding=windows-1252 [ Failure Timeout ]
 crbug.com/626703 external/wpt/html/infrastructure/urls/resolving-urls/query-encoding/navigation.sub.html?encoding=x-cp1251 [ Failure Timeout ]

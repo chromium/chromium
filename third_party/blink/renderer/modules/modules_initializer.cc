@@ -80,6 +80,7 @@
 #include "third_party/blink/renderer/modules/push_messaging/push_messaging_client.h"
 #include "third_party/blink/renderer/modules/remoteplayback/html_media_element_remote_playback.h"
 #include "third_party/blink/renderer/modules/remoteplayback/remote_playback.h"
+#include "third_party/blink/renderer/modules/scheduler/task_attribution_tracker_impl.h"
 #include "third_party/blink/renderer/modules/screen_enumeration/screen_details.h"
 #include "third_party/blink/renderer/modules/screen_enumeration/window_screens.h"
 #include "third_party/blink/renderer/modules/screen_orientation/screen_orientation_controller.h"
@@ -103,6 +104,7 @@
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/mojo/mojo_helper.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/widget/frame_widget.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -210,6 +212,9 @@ void ModulesInitializer::Initialize() {
       std::make_unique<ImageBitmapRenderingContext::Factory>());
   OffscreenCanvas::RegisterRenderingContextFactory(
       std::make_unique<GPUCanvasContext::Factory>());
+
+  ThreadScheduler::Current()->InitializeTaskAttributionTracker(
+      std::make_unique<scheduler::TaskAttributionTrackerImpl>());
 }
 
 void ModulesInitializer::InitLocalFrame(LocalFrame& frame) const {

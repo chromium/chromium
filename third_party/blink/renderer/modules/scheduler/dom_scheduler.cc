@@ -12,7 +12,8 @@
 #include "third_party/blink/renderer/modules/scheduler/dom_task.h"
 #include "third_party/blink/renderer/modules/scheduler/dom_task_signal.h"
 #include "third_party/blink/renderer/platform/bindings/enumeration_base.h"
-#include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_task_queue.h"
 
@@ -97,6 +98,40 @@ ScriptPromise DOMScheduler::postTask(
   MakeGarbageCollected<DOMTask>(resolver, callback_function, signal, task_queue,
                                 base::Milliseconds(options->delay()));
   return resolver->Promise();
+}
+
+scheduler::TaskIdType DOMScheduler::taskId(ScriptState* script_state) {
+  ThreadScheduler* scheduler = ThreadScheduler::Current();
+  DCHECK(scheduler);
+  DCHECK(scheduler->GetTaskAttributionTracker());
+  absl::optional<scheduler::TaskId> task_id =
+      scheduler->GetTaskAttributionTracker()->RunningTaskId(script_state);
+  // task_id cannot be unset here, as a task has presumably already ran in order
+  // for this API call to be called.
+  DCHECK(task_id);
+  return task_id.value().value();
+}
+
+AtomicString DOMScheduler::isAncestor(ScriptState* script_state,
+                                      scheduler::TaskIdType parentId) {
+  scheduler::TaskAttributionTracker::AncestorStatus status =
+      scheduler::TaskAttributionTracker::AncestorStatus::kNotAncestor;
+  ThreadScheduler* scheduler = ThreadScheduler::Current();
+  DCHECK(scheduler);
+  scheduler::TaskAttributionTracker* tracker =
+      scheduler->GetTaskAttributionTracker();
+  DCHECK(tracker);
+  status = tracker->IsAncestor(script_state, scheduler::TaskId(parentId));
+  switch (status) {
+    case scheduler::TaskAttributionTracker::AncestorStatus::kAncestor:
+      return "ancestor";
+    case scheduler::TaskAttributionTracker::AncestorStatus::kNotAncestor:
+      return "not ancestor";
+    case scheduler::TaskAttributionTracker::AncestorStatus::kUnknown:
+      return "unknown";
+  }
+  NOTREACHED();
+  return "not reached";
 }
 
 void DOMScheduler::CreateFixedPriorityTaskQueues(ExecutionContext* context) {

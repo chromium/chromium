@@ -1,0 +1,49 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Verify that setTimeout tasks can be properly tracked.</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<script>
+promise_test(async t => {
+  const scriptId = scheduler.taskId;
+
+  await scheduler.postTask(async () => {
+    // New task; ID should have changed.
+    const taskId1 = scheduler.taskId;
+    let taskId2;
+    assert_not_equals(scriptId, taskId1);
+    assert_equals(scheduler.isAncestor(scriptId), "ancestor");
+
+    await scheduler.postTask(() => {
+      // New task; IDs should have changed again.
+      taskId2 = scheduler.taskId;
+      assert_not_equals(taskId1, taskId2);
+      assert_equals(scheduler.isAncestor(scriptId), "ancestor");
+      assert_equals(scheduler.isAncestor(taskId1), "ancestor");
+    });
+
+    assert_equals(scheduler.isAncestor(taskId1), "ancestor");
+    assert_equals(scheduler.isAncestor(taskId2), "not ancestor");
+  });
+}, "postTask chain.");
+
+promise_test(async () => {
+    const initialId = scheduler.taskId;
+    await scheduler.postTask(async () => {
+      const currentTaskId = scheduler.taskId;
+      assert_equals(scheduler.isAncestor(initialId), "ancestor",
+                    "initialId is an ancestor of the currentTaskId");
+      await fetch("/resources/blank.html");
+      assert_equals(scheduler.isAncestor(initialId), "ancestor",
+                    "initialId is ancestor of fetch continuation.");
+      assert_equals(scheduler.isAncestor(currentTaskId), "ancestor",
+                    "currentTaskId is an ancestor of fetch continuation");
+    });
+}, "Single postTask with multiple internal awaited tasks");
+</script>
+</body>
+</html>

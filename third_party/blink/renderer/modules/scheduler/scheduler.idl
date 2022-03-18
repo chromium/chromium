@@ -6,10 +6,20 @@
 //
 // currentTaskSignal:
 // https://github.com/WICG/scheduling-apis/blob/main/explainers/post-task-propagation.md
+
+// https://docs.google.com/document/d/1_m-h9_KgDMddTS2OFP0CShr4zjU-C-up64DwCrCfBo4
+enum AncestorStatus {
+    "ancestor",
+    "not ancestor",
+    "unknown"
+};
+
 [
     Exposed=(Window,Worker),
     ImplementedAs=DOMScheduler,
     RuntimeEnabled=WebScheduler
 ] interface Scheduler {
     [CallWith=ScriptState, MeasureAs=SchedulerPostTask, RaisesException] Promise<any> postTask(SchedulerPostTaskCallback callback, optional SchedulerPostTaskOptions options = {});
+    [RuntimeEnabled=UnexposedTaskIds, CallWith=ScriptState, Exposed=Window] readonly attribute unsigned long taskId;
+    [RuntimeEnabled=UnexposedTaskIds, CallWith=ScriptState, Exposed=Window] AncestorStatus isAncestor(unsigned long parentId);
 };

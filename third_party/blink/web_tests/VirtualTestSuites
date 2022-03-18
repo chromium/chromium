@@ -1005,6 +1005,13 @@
     "args": ["--enable-features=SharedStorageAPI,FencedFrames:implementation_type/shadow_dom"]
   },
   {
+    "prefix": "task-tracking",
+    "bases": [
+      "wpt_internal/task-tracking"
+    ],
+    "args": ["--enable-blink-features=UnexposedTaskIds"]
+  },
+  {
     "prefix": "fenced-frame-mparch",
     "bases": [
       "http/tests/fenced_frame",

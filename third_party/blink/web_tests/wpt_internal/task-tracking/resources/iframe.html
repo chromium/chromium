@@ -1,0 +1,6 @@
+<script>
+window.onmessage = e => {
+  const port = e.ports[0];
+  port.postMessage("Got the port");
+};
+</script>

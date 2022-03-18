@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/scheduler/public/task_id.h"
 
 namespace blink {
 
@@ -82,6 +83,10 @@ class PLATFORM_EXPORT CallbackInterfaceBase
 
   DOMWrapperWorld& GetWorld() const { return incumbent_script_state_->World(); }
 
+  absl::optional<scheduler::TaskId> GetParentTaskId() const {
+    return parent_task_id_;
+  }
+
  protected:
   explicit CallbackInterfaceBase(v8::Local<v8::Object> callback_object,
                                  SingleOperationOrNot);
@@ -98,6 +103,8 @@ class PLATFORM_EXPORT CallbackInterfaceBase
   // converted to an IDL value.
   // https://webidl.spec.whatwg.org/#dfn-callback-context
   Member<ScriptState> incumbent_script_state_;
+
+  absl::optional<scheduler::TaskId> parent_task_id_;
 };
 
 }  // namespace blink

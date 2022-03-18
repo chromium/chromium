@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/platform/bindings/callback_function_base.h"
 #include "third_party/blink/renderer/platform/bindings/callback_interface_base.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 
 namespace blink {
 
@@ -88,6 +89,12 @@ bool CallbackInvokeHelper<CallbackBase, mode>::PrepareForCall(
     } else {
       callback_this_ =
           callback_this.V8Value(callback_->CallbackRelevantScriptState());
+    }
+    if (auto* tracker =
+            ThreadScheduler::Current()->GetTaskAttributionTracker()) {
+      task_attribution_scope_ =
+          tracker->CreateTaskScope(callback_->CallbackRelevantScriptState(),
+                                   callback_->GetParentTaskId());
     }
   }
 
