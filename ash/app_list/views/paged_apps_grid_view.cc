@@ -1040,12 +1040,32 @@ int PagedAppsGridView::GetPageFlipTargetForDrag(const gfx::Point& drag_point) {
 
   // Drag zones are at the edges of the scroll axis.
   if (IsScrollAxisVertical()) {
-    if (drag_point.y() < kPageFlipZoneSize + GetInsets().top()) {
-      new_page_flip_target = pagination_model_.selected_page() - 1;
-    } else if (container_delegate_->IsPointWithinBottomDragBuffer(
-                   drag_point, kPageFlipZoneSize)) {
-      // If the drag point is within the drag buffer, but not over the shelf.
-      new_page_flip_target = pagination_model_.selected_page() + 1;
+    if (features::IsProductivityLauncherEnabled()) {
+      if (background_cards_.empty() ||
+          !container_delegate_->IsPointWithinPageFlipBuffer(drag_point)) {
+        return new_page_flip_target;
+      }
+
+      gfx::RectF background_card_rect_in_grid(
+          background_cards_[GetSelectedPage()]->bounds());
+      View::ConvertRectToTarget(items_container(), this,
+                                &background_card_rect_in_grid);
+
+      // Set page flip target when the drag is above or below the background
+      // card of the currently selected page.
+      if (drag_point.y() < background_card_rect_in_grid.y()) {
+        new_page_flip_target = pagination_model_.selected_page() - 1;
+      } else if (drag_point.y() > background_card_rect_in_grid.bottom()) {
+        new_page_flip_target = pagination_model_.selected_page() + 1;
+      }
+    } else {
+      if (drag_point.y() < kPageFlipZoneSize + GetInsets().top()) {
+        new_page_flip_target = pagination_model_.selected_page() - 1;
+      } else if (container_delegate_->IsPointWithinBottomDragBuffer(
+                     drag_point, kPageFlipZoneSize)) {
+        // If the drag point is within the drag buffer, but not over the shelf.
+        new_page_flip_target = pagination_model_.selected_page() + 1;
+      }
     }
   } else {
     // TODO(xiyuan): Fix this for RTL.

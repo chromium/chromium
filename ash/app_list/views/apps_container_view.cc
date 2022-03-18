@@ -642,9 +642,7 @@ bool AppsContainerView::IsPointWithinBottomDragBuffer(
   const int kBottomDragBufferMin = scrollable_container_->bounds().bottom() -
                                    apps_grid_view_->GetInsets().bottom() -
                                    page_flip_zone_size;
-  // TODO(crbug.com/1234064): In ProductivityLauncher, with a variable row size,
-  // the size of the bottom drag buffer can visually change. Figure out how we
-  // want to handle this and update this code to reflect that.
+
   return point_in_parent.y() > kBottomDragBufferMin &&
          point_in_parent.y() < kBottomDragBufferMax;
 }

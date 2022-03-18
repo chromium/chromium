@@ -267,6 +267,113 @@ TEST_F(PagedAppsGridViewTest, DragItemToNextPage) {
   EXPECT_EQ(1, pagination_model->selected_page());
 }
 
+// Test that dragging an app item just above or just below the background card
+// of the selected page will trigger a page flip.
+TEST_F(PagedAppsGridViewTest, PageFlipBufferSizedByBackgroundCard) {
+  PaginationModel* pagination_model =
+      GetAppListTestHelper()->GetRootPagedAppsGridView()->pagination_model();
+
+  // Populate with enough apps to fill 2 pages.
+  GetAppListTestHelper()->AddAppItems(30);
+  EXPECT_EQ(2, pagination_model->total_pages());
+  GetPagedAppsGridView()->GetWidget()->LayoutRootViewIfNecessary();
+  auto page_flip_waiter = std::make_unique<PageFlipWaiter>(pagination_model);
+
+  // Drag down to the next page.
+  StartDragOnItemViewAtVisualIndex(0, 0);
+  GetEventGenerator()->MoveMouseBy(10, 10);
+
+  // Test that dragging an item to just past the bottom of the background card
+  // causes a page flip.
+  gfx::Point bottom_of_card = GetPagedAppsGridView()
+                                  ->GetBackgroundCardBoundsForTesting(0)
+                                  .bottom_left();
+  bottom_of_card.Offset(0, 1);
+  views::View::ConvertPointToScreen(GetPagedAppsGridView(), &bottom_of_card);
+  GetEventGenerator()->MoveMouseTo(bottom_of_card);
+  page_flip_waiter->Wait();
+  GetEventGenerator()->ReleaseLeftButton();
+
+  EXPECT_EQ(1, pagination_model->selected_page());
+
+  // Drag up to the previous page.
+  StartDragOnItemViewAtVisualIndex(1, 0);
+  GetEventGenerator()->MoveMouseBy(10, 10);
+
+  // Test that dragging an item to just past the top of the background card
+  // causes a page flip.
+  gfx::Point top_of_card =
+      GetPagedAppsGridView()->GetBackgroundCardBoundsForTesting(1).origin();
+  top_of_card.Offset(0, -1);
+  views::View::ConvertPointToScreen(GetPagedAppsGridView(), &top_of_card);
+  GetEventGenerator()->MoveMouseTo(top_of_card);
+  page_flip_waiter->Wait();
+  GetEventGenerator()->ReleaseLeftButton();
+
+  EXPECT_EQ(0, pagination_model->selected_page());
+}
+
+// Test that dragging an item to just past the top of the first page
+// background card does not cause a page flip.
+TEST_F(PagedAppsGridViewTest, NoPageFlipUpOnFirstPage) {
+  PaginationModel* pagination_model =
+      GetAppListTestHelper()->GetRootPagedAppsGridView()->pagination_model();
+
+  // Populate with enough apps to fill 2 pages.
+  GetAppListTestHelper()->AddAppItems(30);
+  EXPECT_EQ(2, pagination_model->total_pages());
+  GetPagedAppsGridView()->GetWidget()->LayoutRootViewIfNecessary();
+
+  StartDragOnItemViewAtVisualIndex(0, 0);
+  GetEventGenerator()->MoveMouseBy(10, 10);
+
+  // Drag an item to just past the top of the first page background card.
+  gfx::Point top_of_first_card =
+      GetPagedAppsGridView()->GetBackgroundCardBoundsForTesting(0).origin();
+  top_of_first_card.Offset(0, -1);
+
+  views::View::ConvertPointToScreen(GetPagedAppsGridView(), &top_of_first_card);
+  GetEventGenerator()->MoveMouseTo(top_of_first_card);
+  task_environment()->FastForwardBy(base::Seconds(2));
+  GetEventGenerator()->ReleaseLeftButton();
+
+  // Selected page should still be at the first page.
+  EXPECT_EQ(0, pagination_model->selected_page());
+}
+
+// Test that dragging an item to just past the bottom of the last background
+// card does not cause a page flip.
+TEST_F(PagedAppsGridViewTest, NoPageFlipDownOnLastPage) {
+  PaginationModel* pagination_model =
+      GetAppListTestHelper()->GetRootPagedAppsGridView()->pagination_model();
+
+  // Populate with enough apps to fill 2 pages.
+  GetAppListTestHelper()->AddAppItems(30);
+  EXPECT_EQ(2, pagination_model->total_pages());
+  GetPagedAppsGridView()->GetWidget()->LayoutRootViewIfNecessary();
+
+  // Select the last page.
+  pagination_model->SelectPage(pagination_model->total_pages() - 1, false);
+  EXPECT_EQ(1, pagination_model->selected_page());
+
+  StartDragOnItemViewAtVisualIndex(1, 0);
+  GetEventGenerator()->MoveMouseBy(10, 10);
+
+  // Drag an item to just past the bottom of the last background card.
+  gfx::Point bottom_of_last_card = GetPagedAppsGridView()
+                                       ->GetBackgroundCardBoundsForTesting(1)
+                                       .bottom_left();
+  bottom_of_last_card.Offset(0, 1);
+  views::View::ConvertPointToScreen(GetPagedAppsGridView(),
+                                    &bottom_of_last_card);
+  GetEventGenerator()->MoveMouseTo(bottom_of_last_card);
+  task_environment()->FastForwardBy(base::Seconds(2));
+  GetEventGenerator()->ReleaseLeftButton();
+
+  // Selected page should not have changed and should still be the last page.
+  EXPECT_EQ(1, pagination_model->selected_page());
+}
+
 // Test that the first page of the root level paged apps grid holds less apps to
 // accommodate the recent apps, which are shown at the top of the first page,
 // and the app list nudge, which is shown right above the apps grid view. Then
