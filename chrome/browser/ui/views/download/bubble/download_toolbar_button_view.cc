@@ -35,11 +35,12 @@ constexpr int kProgressRingRadius = 9;
 constexpr float kProgressRingStrokeWidth = 1.7f;
 
 std::unique_ptr<DownloadBubbleRowListView> CreateRowListView(
-    std::vector<DownloadUIModelPtr> model_list) {
+    std::vector<DownloadUIModelPtr> model_list,
+    DownloadBubbleUIController* bubble_controller) {
   auto row_list_view = std::make_unique<DownloadBubbleRowListView>();
   for (DownloadUIModelPtr& model : model_list) {
     row_list_view->AddChildView(std::make_unique<DownloadBubbleRowView>(
-        std::move(model), row_list_view.get()));
+        std::move(model), row_list_view.get(), bubble_controller));
   }
   return row_list_view;
 }
@@ -124,8 +125,8 @@ void DownloadToolbarButtonView::UpdateDownloadIcon() {
 void DownloadToolbarButtonView::ShowDetails() {
   if (!bubble_delegate_) {
     std::unique_ptr<views::BubbleDialogDelegate> bubble_delegate =
-        CreateBubbleDialogDelegate(
-            CreateRowListView(bubble_controller_->GetPartialView()));
+        CreateBubbleDialogDelegate(CreateRowListView(
+            bubble_controller_->GetPartialView(), bubble_controller_.get()));
     bubble_delegate_ = bubble_delegate.get();
     views::BubbleDialogDelegate::CreateBubble(std::move(bubble_delegate));
     bubble_delegate_->GetWidget()->Show();
@@ -196,7 +197,8 @@ void DownloadToolbarButtonView::ButtonPressed() {
   if (!bubble_delegate_) {
     std::unique_ptr<views::BubbleDialogDelegate> bubble_delegate =
         CreateBubbleDialogDelegate(std::make_unique<DownloadDialogView>(
-            browser_, CreateRowListView(bubble_controller_->GetMainView())));
+            browser_, CreateRowListView(bubble_controller_->GetMainView(),
+                                        bubble_controller_.get())));
     bubble_delegate_ = bubble_delegate.get();
     views::BubbleDialogDelegate::CreateBubble(std::move(bubble_delegate));
     bubble_delegate_->GetWidget()->Show();

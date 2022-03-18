@@ -51,9 +51,9 @@ class DownloadToolbarButtonView : public ToolbarButton, public DownloadDisplay {
   void OnBubbleDelegateDeleted();
 
   raw_ptr<Browser> browser_;
-  // Controller for the DownloadToolbarButton.
+  // Controller for the DownloadToolbarButton UI.
   std::unique_ptr<DownloadDisplayController> controller_;
-  // Controller for the DownloadBubbleUI, both main view and partial view.
+  // Controller for keeping track of items for both main view and partial view.
   std::unique_ptr<DownloadBubbleUIController> bubble_controller_;
   raw_ptr<views::BubbleDialogDelegate> bubble_delegate_ = nullptr;
 

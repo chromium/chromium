@@ -123,6 +123,9 @@ class DownloadBubbleUIControllerTest : public testing::Test {
     EXPECT_CALL(item(index), IsDone()).WillRepeatedly(Return(false));
     EXPECT_CALL(item(index), IsTransient())
         .WillRepeatedly(Return(is_transient));
+    EXPECT_CALL(item(index), GetDownloadCreationType())
+        .WillRepeatedly(Return(download::DownloadItem::DownloadCreationType::
+                                   TYPE_ACTIVE_DOWNLOAD));
     std::vector<download::DownloadItem*> items;
     for (size_t i = 0; i < items_.size(); ++i) {
       items.push_back(&item(i));
@@ -269,4 +272,19 @@ TEST_F(DownloadBubbleUIControllerTest, ListIsRecent) {
   for (unsigned long i = 0; i < models.size(); i++) {
     EXPECT_EQ(models[i]->GetContentId().id, sorted_ids[i]);
   }
+}
+
+TEST_F(DownloadBubbleUIControllerTest,
+       OpeningMainViewRemovesEntryFromPartialView) {
+  std::vector<std::string> ids = {"Download 1", "Offline 1"};
+  InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
+                   download::DownloadItem::IN_PROGRESS, ids[0]);
+  InitOfflineItem(OfflineItemState::IN_PROGRESS, ids[1]);
+  std::vector<DownloadUIModelPtr> partial_view = controller().GetPartialView();
+  EXPECT_EQ(partial_view.size(), 2ul);
+  std::vector<DownloadUIModelPtr> main_view = controller().GetMainView();
+  EXPECT_EQ(main_view.size(), 2ul);
+  std::vector<DownloadUIModelPtr> partial_view_empty =
+      controller().GetPartialView();
+  EXPECT_EQ(partial_view_empty.size(), 0ul);
 }

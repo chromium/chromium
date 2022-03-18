@@ -6,6 +6,7 @@
 
 #include "base/files/file_path.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/download/bubble/download_bubble_controller.h"
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/icon_manager.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -100,11 +101,13 @@ DownloadBubbleRowView::~DownloadBubbleRowView() {
 
 DownloadBubbleRowView::DownloadBubbleRowView(
     DownloadUIModel::DownloadUIModelPtr model,
-    DownloadBubbleRowListView* row_list_view)
+    DownloadBubbleRowListView* row_list_view,
+    DownloadBubbleUIController* bubble_controller)
     : model_(std::move(model)),
       context_menu_(
           std::make_unique<DownloadShelfContextMenuView>(model_->GetWeakPtr())),
-      row_list_view_(row_list_view) {
+      row_list_view_(row_list_view),
+      bubble_controller_(bubble_controller) {
   model_->AddObserver(this);
   set_context_menu_controller(this);
 
@@ -169,6 +172,7 @@ DownloadBubbleRowView::DownloadBubbleRowView(
 }
 
 void DownloadBubbleRowView::OnCancelButtonPressed() {
+  bubble_controller_->RemoveContentIdFromPartialView(model_->GetContentId());
   model_->Cancel(/*user_cancel=*/true);
 }
 
@@ -189,10 +193,15 @@ void DownloadBubbleRowView::OnDownloadUpdated() {
   // PreferredSizeChanged();
 }
 
-// TODO(bhatiarohit): Use these methods to update main and partial view.
-void DownloadBubbleRowView::OnDownloadOpened() {}
+void DownloadBubbleRowView::OnDownloadOpened() {
+  bubble_controller_->RemoveContentIdFromPartialView(model_->GetContentId());
+}
 
-void DownloadBubbleRowView::OnDownloadDestroyed() {}
+void DownloadBubbleRowView::OnDownloadDestroyed() {
+  // This will return ownership and destroy this object at the end of the
+  // method.
+  auto row_view_ptr = row_list_view_->RemoveChildViewT(this);
+}
 
 void DownloadBubbleRowView::ShowContextMenuForViewImpl(
     View* source,

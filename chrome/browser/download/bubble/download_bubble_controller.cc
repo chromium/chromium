@@ -16,6 +16,8 @@
 #include "components/offline_items_collection/core/offline_content_aggregator.h"
 #include "content/public/browser/download_manager.h"
 
+using DownloadCreationType = ::download::DownloadItem::DownloadCreationType;
+
 namespace {
 constexpr int kShowDownloadsInBubbleForNumDays = 1;
 
@@ -64,8 +66,8 @@ DownloadBubbleUIController::DownloadBubbleUIController(Profile* profile)
 
 DownloadBubbleUIController::~DownloadBubbleUIController() = default;
 
-bool DownloadBubbleUIController::MaybeAddNewOfflineItem(
-    const OfflineItem& item) {
+bool DownloadBubbleUIController::MaybeAddOfflineItem(const OfflineItem& item,
+                                                     bool is_new) {
   if (profile_->IsOffTheRecord() != item.is_off_the_record)
     return false;
 
@@ -82,14 +84,18 @@ bool DownloadBubbleUIController::MaybeAddNewOfflineItem(
     return false;
 
   offline_items_.push_back(item);
+  if (is_new) {
+    partial_view_ids_.insert(item.id);
+  }
   return true;
 }
 
-void DownloadBubbleUIController::MaybeAddNewOfflineItems(
+void DownloadBubbleUIController::MaybeAddOfflineItems(
     base::OnceCallback<void()> callback,
+    bool is_new,
     const OfflineItemList& offline_items) {
   for (const OfflineItem& item : offline_items) {
-    MaybeAddNewOfflineItem(item);
+    MaybeAddOfflineItem(item, is_new);
   }
   std::move(callback).Run();
 }
@@ -98,9 +104,9 @@ void DownloadBubbleUIController::InitOfflineItems(
     DownloadDisplayController* display_controller,
     base::OnceCallback<void()> callback) {
   display_controller_ = display_controller;
-  aggregator_->GetAllItems(
-      base::BindOnce(&DownloadBubbleUIController::MaybeAddNewOfflineItems,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
+  aggregator_->GetAllItems(base::BindOnce(
+      &DownloadBubbleUIController::MaybeAddOfflineItems,
+      weak_factory_.GetWeakPtr(), std::move(callback), /*is_new=*/false));
 }
 
 const OfflineItemList& DownloadBubbleUIController::GetOfflineItems() {
@@ -124,7 +130,7 @@ void DownloadBubbleUIController::OnItemsAdded(
   bool any_new = false;
   bool any_in_progress = false;
   for (const OfflineItem& item : items) {
-    if (MaybeAddNewOfflineItem(item)) {
+    if (MaybeAddOfflineItem(item, /*is_new=*/true)) {
       if (item.state == OfflineItemState::IN_PROGRESS) {
         any_in_progress = true;
       }
@@ -139,10 +145,12 @@ void DownloadBubbleUIController::OnItemsAdded(
 void DownloadBubbleUIController::OnDownloadCreated(
     content::DownloadManager* manager,
     download::DownloadItem* item) {
-  if (item &&
-      DownloadItemModel::Wrap(
-          item, std::make_unique<DownloadUIModel::BubbleStatusTextBuilder>())
-          ->ShouldShowInBubble()) {
+  DownloadUIModelPtr model = DownloadItemModel::Wrap(
+      item, std::make_unique<DownloadUIModel::BubbleStatusTextBuilder>());
+  if (item && model->ShouldShowInBubble() &&
+      model->download()->GetDownloadCreationType() !=
+          DownloadCreationType::TYPE_HISTORY_IMPORT) {
+    partial_view_ids_.insert(model->GetContentId());
     display_controller_->OnNewItem(item->GetState() ==
                                    download::DownloadItem::IN_PROGRESS);
   }
@@ -155,12 +163,17 @@ void DownloadBubbleUIController::OnItemRemoved(const ContentId& id) {
                        return FindOfflineItemByContentId(id, candidate);
                      }),
       offline_items_.end());
+  partial_view_ids_.erase(id);
   display_controller_->OnRemovedItem();
 }
 
 void DownloadBubbleUIController::OnDownloadRemoved(
     content::DownloadManager* manager,
     download::DownloadItem* item) {
+  partial_view_ids_.erase(
+      DownloadItemModel::Wrap(
+          item, std::make_unique<DownloadUIModel::BubbleStatusTextBuilder>())
+          ->GetContentId());
   display_controller_->OnRemovedItem();
 }
 
@@ -174,7 +187,7 @@ void DownloadBubbleUIController::OnItemUpdated(
                        return FindOfflineItemByContentId(item.id, candidate);
                      }),
       offline_items_.end());
-  MaybeAddNewOfflineItem(item);
+  MaybeAddOfflineItem(item, /*is_new=*/false);
   display_controller_->OnUpdatedItem(
       OfflineItemModel::Wrap(offline_manager_, item)->IsDone());
 }
@@ -188,6 +201,11 @@ void DownloadBubbleUIController::OnDownloadUpdated(
           ->IsDone());
 }
 
+void DownloadBubbleUIController::RemoveContentIdFromPartialView(
+    const ContentId& id) {
+  partial_view_ids_.erase(id);
+}
+
 void DownloadBubbleUIController::PruneOfflineItems() {
   base::Time cutoff_time =
       base::Time::Now() - base::Days(kShowDownloadsInBubbleForNumDays);
@@ -197,6 +215,7 @@ void DownloadBubbleUIController::PruneOfflineItems() {
     if (!DownloadUIModelIsRecent(
             OfflineItemModel::Wrap(offline_manager_, *item_iter),
             cutoff_time)) {
+      partial_view_ids_.erase(item_iter->id);
       item_iter = offline_items_.erase(item_iter);
     } else {
       item_iter++;
@@ -204,8 +223,8 @@ void DownloadBubbleUIController::PruneOfflineItems() {
   }
 }
 
-std::vector<DownloadUIModelPtr>
-DownloadBubbleUIController::GetDownloadUIModels() {
+std::vector<DownloadUIModelPtr> DownloadBubbleUIController::GetDownloadUIModels(
+    bool is_main_view) {
   // Prune just to keep the list of offline entries small.
   PruneOfflineItems();
 
@@ -234,7 +253,12 @@ DownloadBubbleUIController::GetDownloadUIModels() {
     // Partial view consists of only the entries in partial_view_ids_, which are
     // also removed if viewed on the main view.
     if (model->ShouldShowInBubble() &&
-        DownloadUIModelIsRecent(model, cutoff_time)) {
+        DownloadUIModelIsRecent(model, cutoff_time) &&
+        (is_main_view || partial_view_ids_.find(model->GetContentId()) !=
+                             partial_view_ids_.end())) {
+      if (is_main_view) {
+        partial_view_ids_.erase(model->GetContentId());
+      }
       filtered_models_list.push_front(std::move(model));
       sorted_ui_model_iters.insert(filtered_models_list.begin());
     }
@@ -249,11 +273,9 @@ DownloadBubbleUIController::GetDownloadUIModels() {
 }
 
 std::vector<DownloadUIModelPtr> DownloadBubbleUIController::GetMainView() {
-  return GetDownloadUIModels();
+  return GetDownloadUIModels(/*is_main_view=*/true);
 }
 
-// TODO(bhatiarohit): Refine this to remove actioned-upon items, and
-// items that have been displayed on the main view.
 std::vector<DownloadUIModelPtr> DownloadBubbleUIController::GetPartialView() {
-  return GetDownloadUIModels();
+  return GetDownloadUIModels(/*is_main_view=*/false);
 }
