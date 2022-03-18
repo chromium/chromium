@@ -37,11 +37,6 @@ class PendingAssociatedRemote {
                           uint32_t version)
       : handle_(std::move(handle)), version_(version) {}
 
-  // Temporary helper for transitioning away from old types. Intentionally an
-  // implicit constructor.
-  PendingAssociatedRemote(AssociatedInterfacePtrInfo<Interface>&& ptr_info)
-      : PendingAssociatedRemote(ptr_info.PassHandle(), ptr_info.version()) {}
-
   // Disabled on NaCl since it crashes old version of clang.
 #if !BUILDFLAG(IS_NACL)
   // Move conversion operator for custom remote types. Only participates in
@@ -73,12 +68,6 @@ class PendingAssociatedRemote {
   explicit operator bool() const { return is_valid(); }
 
   void reset() { handle_.reset(); }
-
-  // Temporary helper for transitioning away from old bindings types. This is
-  // intentionally an implicit conversion.
-  operator AssociatedInterfacePtrInfo<Interface>() {
-    return AssociatedInterfacePtrInfo<Interface>(PassHandle(), version());
-  }
 
   ScopedInterfaceEndpointHandle PassHandle() { return std::move(handle_); }
   const ScopedInterfaceEndpointHandle& handle() const { return handle_; }

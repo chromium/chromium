@@ -9,8 +9,6 @@
 namespace mojo {
 
 template <typename Interface>
-class InterfacePtrInfo;
-template <typename Interface>
 class AssociatedInterfacePtrInfo;
 
 }  // namespace mojo

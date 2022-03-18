@@ -28,33 +28,6 @@ namespace internal {
 
 template <typename Base, typename T>
 struct Serializer<AssociatedInterfacePtrInfoDataView<Base>,
-                  AssociatedInterfacePtrInfo<T>> {
-  static_assert(std::is_base_of<Base, T>::value, "Interface type mismatch.");
-
-  static void Serialize(AssociatedInterfacePtrInfo<T>& input,
-                        AssociatedInterface_Data* output,
-                        Message* message) {
-    DCHECK(!input.handle().is_valid() || input.handle().pending_association());
-    SerializeAssociatedInterfaceInfo(input.PassHandle(), input.version(),
-                                     *message, *output);
-  }
-
-  static bool Deserialize(AssociatedInterface_Data* input,
-                          AssociatedInterfacePtrInfo<T>* output,
-                          Message* message) {
-    auto handle = DeserializeAssociatedEndpointHandle(input->handle, *message);
-    if (!handle.is_valid()) {
-      *output = AssociatedInterfacePtrInfo<T>();
-    } else {
-      output->set_handle(std::move(handle));
-      output->set_version(input->version);
-    }
-    return true;
-  }
-};
-
-template <typename Base, typename T>
-struct Serializer<AssociatedInterfacePtrInfoDataView<Base>,
                   PendingAssociatedRemote<T>> {
   static_assert(std::is_base_of<Base, T>::value, "Interface type mismatch.");
 

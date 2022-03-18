@@ -1015,19 +1015,6 @@ _BANNED_MOJOM_PATTERNS : Sequence[BanRule] = (
     ),
 )
 
-# Format: Sequence of tuples containing:
-# * String pattern or, if starting with a slash, a regular expression.
-# * Sequence of strings to show when the pattern matches.
-_DEPRECATED_MOJO_TYPES : Sequence[BanRule] = (
-    BanRule(
-      r'/\bmojo::AssociatedInterfacePtrInfo\b',
-      (
-        'mojo::AssociatedInterfacePtrInfo<Interface> is deprecated.',
-        'Use mojo::PendingAssociatedRemote<Interface> instead.',
-      ),
-    ),
-)
-
 _IPC_ENUM_TRAITS_DEPRECATED = (
     'You are using IPC_ENUM_TRAITS() in your code. It has been deprecated.\n'
     'See http://www.chromium.org/Home/chromium-security/education/'
@@ -1729,48 +1716,6 @@ def _CheckAndroidNoBannedImports(input_api, output_api):
     if (errors):
         result.append(
             output_api.PresubmitError('Banned imports were used.\n' +
-                                      '\n'.join(errors)))
-    return result
-
-
-def CheckNoDeprecatedMojoTypes(input_api, output_api):
-    """Make sure that old Mojo types are not used."""
-    warnings = []
-    errors = []
-
-    # For any path that is not an "ok" or an "error" path, a warning will be
-    # raised if deprecated mojo types are found.
-    ok_paths = ['components/arc']
-    error_paths = ['third_party/blink', 'content']
-
-    file_filter = lambda f: f.LocalPath().endswith(('.cc', '.mm', '.h'))
-    for f in input_api.AffectedFiles(file_filter=file_filter):
-        # Don't check //components/arc, not yet migrated (see crrev.com/c/1868870).
-        if any(map(lambda path: f.LocalPath().startswith(path), ok_paths)):
-            continue
-
-        for line_num, line in f.ChangedContents():
-            for ban_rule in _DEPRECATED_MOJO_TYPES:
-                problems = _GetMessageForMatchingType(input_api, f, line_num,
-                                                      line, ban_rule)
-
-                if problems:
-                    # Raise errors inside |error_paths| and warnings everywhere else.
-                    if any(
-                            map(lambda path: f.LocalPath().startswith(path),
-                                error_paths)):
-                        errors.extend(problems)
-                    else:
-                        warnings.extend(problems)
-
-    result = []
-    if (warnings):
-        result.append(
-            output_api.PresubmitPromptWarning(
-                'Banned Mojo types were used.\n' + '\n'.join(warnings)))
-    if (errors):
-        result.append(
-            output_api.PresubmitError('Banned Mojo types were used.\n' +
                                       '\n'.join(errors)))
     return result
 
