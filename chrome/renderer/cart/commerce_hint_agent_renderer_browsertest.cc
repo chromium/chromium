@@ -6,6 +6,8 @@
 
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "third_party/blink/public/web/web_element.h"
+#include "third_party/blink/public/web/web_form_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 
 namespace {
