@@ -151,9 +151,7 @@ class HeaderView : public views::View {
     simple_site_name->SetID(SideSearchBrowserController::SideSearchViewID::
                                 VIEW_ID_SIDE_PANEL_TITLE_LABEL);
     simple_site_name->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    // TODO(tluk): Create a new text context to represent the side panel title
-    // that matches UX mocks.
-    simple_site_name->SetTextContext(views::style::CONTEXT_LABEL);
+    simple_site_name->SetTextContext(CONTEXT_SIDE_PANEL_TITLE);
     simple_site_name->SetTextStyle(views::style::STYLE_PRIMARY);
     simple_site_name->SetProperty(
         views::kFlexBehaviorKey,
