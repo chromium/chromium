@@ -17,6 +17,7 @@
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_debouncer.h"
@@ -97,6 +98,7 @@ class DocumentProvider : public AutocompleteProvider {
   FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest, CachingForAsyncMatches);
   FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest, CachingForSyncMatches);
   FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest, StartCallsStop);
+  FRIEND_TEST_ALL_PREFIXES(DocumentProviderTest, Logging);
 
   using MatchesCache = base::LRUCache<GURL, AutocompleteMatch>;
 
@@ -200,6 +202,12 @@ class DocumentProvider : public AutocompleteProvider {
 
   // Loader used to retrieve results.
   std::unique_ptr<network::SimpleURLLoader> loader_;
+
+  // The time `Run()` was invoked. Used for histogram logging.
+  base::TimeTicks time_run_invoked_;
+  // The time `OnDocumentSuggestionsLoaderAvailable()` was invoked and the
+  // remote request was sent. Used for histogram logging.
+  base::TimeTicks time_request_sent_;
 
   // Because the drive server is async and may intermittently provide a
   // particular suggestion for consecutive inputs, without caching, doc

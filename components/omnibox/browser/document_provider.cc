@@ -26,7 +26,6 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/omnibox/browser/autocomplete_input.h"
@@ -74,6 +73,32 @@ enum DocumentRequestsHistogramValue {
 void LogOmniboxDocumentRequest(DocumentRequestsHistogramValue request_value) {
   UMA_HISTOGRAM_ENUMERATION("Omnibox.DocumentSuggest.Requests", request_value,
                             DOCUMENT_MAX_REQUEST_HISTOGRAM_VALUE);
+}
+
+void LogTotalTime(base::TimeTicks start_time, bool interrupted) {
+  DCHECK(!start_time.is_null());
+  const base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time;
+  UMA_HISTOGRAM_TIMES("Omnibox.DocumentSuggest.TotalTime", elapsed_time);
+  if (interrupted) {
+    UMA_HISTOGRAM_TIMES("Omnibox.DocumentSuggest.TotalTime.Interrupted",
+                        elapsed_time);
+  } else {
+    UMA_HISTOGRAM_TIMES("Omnibox.DocumentSuggest.TotalTime.NotInterrupted",
+                        elapsed_time);
+  }
+}
+
+void LogRequestTime(base::TimeTicks start_time, bool interrupted) {
+  DCHECK(!start_time.is_null());
+  const base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time;
+  UMA_HISTOGRAM_TIMES("Omnibox.DocumentSuggest.RequestTime", elapsed_time);
+  if (interrupted) {
+    UMA_HISTOGRAM_TIMES("Omnibox.DocumentSuggest.RequestTime.Interrupted",
+                        elapsed_time);
+  } else {
+    UMA_HISTOGRAM_TIMES("Omnibox.DocumentSuggest.RequestTime.NotInterrupted",
+                        elapsed_time);
+  }
 }
 
 // MIME types sent by the server for different document types.
@@ -477,6 +502,7 @@ void DocumentProvider::Start(const AutocompleteInput& input,
 }
 
 void DocumentProvider::Run() {
+  time_run_invoked_ = base::TimeTicks::Now();
   client_->GetDocumentSuggestionsService(/*create_if_necessary=*/true)
       ->CreateDocumentSuggestionsRequest(
           input_.text(), client_->IsOffTheRecord(),
@@ -492,9 +518,26 @@ void DocumentProvider::Stop(bool clear_cached_results,
                             bool due_to_user_inactivity) {
   TRACE_EVENT0("omnibox", "DocumentProvider::Stop");
   debouncer_->CancelRequest();
-  if (loader_)
+
+  // If the request was sent, then log its duration and that it was invalidated.
+  if (loader_) {
+    DCHECK(!time_run_invoked_.is_null());
+    DCHECK(!time_request_sent_.is_null());
+    loader_.reset();
+    LogRequestTime(time_request_sent_, true);
+    time_request_sent_ = base::TimeTicks();
     LogOmniboxDocumentRequest(DOCUMENT_REQUEST_INVALIDATED);
-  loader_.reset();
+  }
+
+  // If `Run()` has been invoked, log its duration. It's possible `Stop()` is
+  // invoked before `Run()` has been invoked if 1) this is the first user input,
+  // 2) the previous call was debounced, or 3) the previous request was filtered
+  // (e.g. input too short).
+  if (!time_run_invoked_.is_null()) {
+    LogTotalTime(time_run_invoked_, true);
+    time_run_invoked_ = base::TimeTicks();
+  }
+
   auto* document_suggestions_service =
       client_->GetDocumentSuggestionsService(/*create_if_necessary=*/false);
   if (document_suggestions_service != nullptr) {
@@ -570,6 +613,7 @@ void DocumentProvider::OnURLLoadComplete(
   DCHECK(!done_);
   DCHECK_EQ(loader_.get(), source);
 
+  LogRequestTime(time_request_sent_, false);
   LogOmniboxDocumentRequest(DOCUMENT_REPLY_RECEIVED);
 
   int httpStatusCode = source->ResponseInfo() && source->ResponseInfo()->headers
@@ -583,6 +627,7 @@ void DocumentProvider::OnURLLoadComplete(
       response_body && source->NetError() == net::OK && httpStatusCode == 200 &&
       UpdateResults(SearchSuggestionParser::ExtractJsonData(
           source, std::move(response_body)));
+  LogTotalTime(time_run_invoked_, false);
   loader_.reset();
   done_ = true;
   listener_->OnProviderUpdate(results_updated);
@@ -624,6 +669,7 @@ bool DocumentProvider::UpdateResults(const std::string& json_data) {
 
 void DocumentProvider::OnDocumentSuggestionsLoaderAvailable(
     std::unique_ptr<network::SimpleURLLoader> loader) {
+  time_request_sent_ = base::TimeTicks::Now();
   loader_ = std::move(loader);
   LogOmniboxDocumentRequest(DOCUMENT_REQUEST_SENT);
 }

@@ -271,6 +271,60 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Omnibox.DocumentSuggest.RequestTime" units="ms"
+    expires_after="2022-08-14">
+  <owner>manukh@chromium.org</owner>
+  <owner>jdonnelly@chromium.org</owner>
+  <summary>
+    Measures the duration between when the async backend request was sent and
+    response received.
+
+    Recorded exactly once per backend request. This will be a subset of times
+    document suggestions were requested, as 1) the provider is debounced, 2) the
+    provider may be interrupted (e.g. due to a new input) before the request is
+    sent (i.e. before the oauth token is ready), and 3) some provider requests
+    are filtered (e.g. input too short).
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.DocumentSuggest.RequestTime.Interrupted" units="ms"
+    expires_after="2022-08-14">
+  <owner>manukh@chromium.org</owner>
+  <owner>jdonnelly@chromium.org</owner>
+  <summary>
+    Measures the duration between when the async backend request was sent and
+    response received.
+
+    Recorded at most once per backend request. This will be a subset of times
+    document suggestions were requested, as 1) the provider is debounced, 2) the
+    provider may be interrupted (e.g. due to a new input) before the request is
+    sent (i.e. before the oauth token is ready), and 3) some provider requests
+    are filtered (e.g. input too short).
+
+    Only recorded if the backend request was invalidated; i.e., the provider was
+    interrupted before the response was received.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.DocumentSuggest.RequestTime.NotInterrupted" units="ms"
+    expires_after="2022-08-14">
+  <owner>manukh@chromium.org</owner>
+  <owner>jdonnelly@chromium.org</owner>
+  <summary>
+    Measures the duration between when the async backend request was sent and
+    response received.
+
+    Recorded at most once per backend request. This will be a subset of times
+    document suggestions were requested, as 1) the provider is debounced, 2) the
+    provider may be interrupted (e.g. due to a new input) before the request is
+    sent (i.e. before the oauth token is ready), and 3) some provider requests
+    are filtered (e.g. input too short).
+
+    Only recorded if the backend request was not invalidated; i.e., the provider
+    was not interrupted before the response was received.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.DocumentSuggest.ResultCount" units="count"
     expires_after="2022-08-14">
   <owner>manukh@chromium.org</owner>
@@ -280,6 +334,55 @@ chromium-metrics-reviews@google.com.
   <summary>
     Number of results returned in each document suggestion reply. Logged for
     successful requests where the provider returned a parseable result set.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.DocumentSuggest.TotalTime" units="ms"
+    expires_after="2022-08-14">
+  <owner>manukh@chromium.org</owner>
+  <owner>jdonnelly@chromium.org</owner>
+  <summary>
+    Measures the duration between when the provider begins (after a debouncing
+    delay) and ends.
+
+    Recorded exactly once per processed provider request. This will be a subset
+    of times document suggestions were requested, as 1) the provider is
+    debounced, and 2) some provider requests are filtered (e.g. input too
+    short).
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.DocumentSuggest.TotalTime.Interrupted" units="ms"
+    expires_after="2022-08-14">
+  <owner>manukh@chromium.org</owner>
+  <owner>jdonnelly@chromium.org</owner>
+  <summary>
+    Measures the duration between when the provider begins (after a debouncing
+    delay) and ends.
+
+    Recorded at most once per processed provider request. This will be a subset
+    of times document suggestions were requested, as 1) the provider is
+    debounced, and 2) some provider requests are filtered (e.g. input too
+    short).
+
+    Only recorded if the provider was interrupted (e.g. due to a new input).
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.DocumentSuggest.TotalTime.NotInterrupted" units="ms"
+    expires_after="2022-08-14">
+  <owner>manukh@chromium.org</owner>
+  <owner>jdonnelly@chromium.org</owner>
+  <summary>
+    Measures the duration between when the provider begins (after a debouncing
+    delay) and ends.
+
+    Recorded at most once per processed provider request. This will be a subset
+    of times document suggestions were requested, as 1) the provider is
+    debounced, and 2) some provider requests are filtered (e.g. input too
+    short).
+
+    Only recorded if the provider was not interrupted (e.g. due to a new input).
   </summary>
 </histogram>
 

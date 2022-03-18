@@ -11,7 +11,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "base/time/time_to_iso8601.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -1159,4 +1161,81 @@ TEST_F(DocumentProviderTest, StartCallsStop) {
   provider_->done_ = false;
   provider_->Start(invalid_input, false);
   EXPECT_TRUE(provider_->done());
+}
+
+TEST_F(DocumentProviderTest, Logging) {
+  // The code flow is:
+  // 1) `Start()` is invoked when document matches are desired.
+  // 2) `Run()` is invoked from `Start()` after a potential debouncing delay.
+  // 3) A request is asyncly made to the document backend once an auth token is
+  //    ready.
+  // 4) A response is asyncly received from the document backend.
+  // At any point, the chain of events can be interrupted by a `Stop()`
+  // invocation; usually when there's a new input.
+  // The below 3 cases test the logged histograms when `Stop()` is invoked after
+  // steps 1, 2, and 3.
+
+  {
+    SCOPED_TRACE("Case: Stop() before Run().");
+    base::HistogramTester histogram_tester;
+    provider_->Stop(false, false);
+    histogram_tester.ExpectTotalCount("Omnibox.DocumentSuggest.Requests", 0);
+    histogram_tester.ExpectTotalCount("Omnibox.DocumentSuggest.TotalTime", 0);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.DocumentSuggest.TotalTime.Interrupted", 0);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.DocumentSuggest.TotalTime.NotInterrupted", 0);
+    histogram_tester.ExpectTotalCount("Omnibox.DocumentSuggest.RequestTime", 0);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.DocumentSuggest.RequestTime.Interrupted", 0);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.DocumentSuggest.RequestTime.NotInterrupted", 0);
+  }
+
+  {
+    SCOPED_TRACE("Case: Stop() before request.");
+    base::HistogramTester histogram_tester;
+    provider_->time_run_invoked_ = base::TimeTicks::Now();
+    provider_->Stop(false, false);
+    histogram_tester.ExpectTotalCount("Omnibox.DocumentSuggest.Requests", 0);
+    histogram_tester.ExpectTotalCount("Omnibox.DocumentSuggest.TotalTime", 1);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.DocumentSuggest.TotalTime.Interrupted", 1);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.DocumentSuggest.TotalTime.NotInterrupted", 0);
+    histogram_tester.ExpectTotalCount("Omnibox.DocumentSuggest.RequestTime", 0);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.DocumentSuggest.RequestTime.Interrupted", 0);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.DocumentSuggest.RequestTime.NotInterrupted", 0);
+  }
+
+  {
+    SCOPED_TRACE("Case: Stop() before response.");
+    base::HistogramTester histogram_tester;
+    provider_->time_run_invoked_ = base::TimeTicks::Now();
+    provider_->OnDocumentSuggestionsLoaderAvailable(
+        network::SimpleURLLoader::Create(
+            std::make_unique<network::ResourceRequest>(),
+            net::DefineNetworkTrafficAnnotation("test", "test")));
+    provider_->Stop(false, false);
+    histogram_tester.ExpectTotalCount("Omnibox.DocumentSuggest.Requests", 2);
+    histogram_tester.ExpectBucketCount("Omnibox.DocumentSuggest.Requests", 1,
+                                       1);
+    histogram_tester.ExpectBucketCount("Omnibox.DocumentSuggest.Requests", 2,
+                                       1);
+    histogram_tester.ExpectTotalCount("Omnibox.DocumentSuggest.TotalTime", 1);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.DocumentSuggest.TotalTime.Interrupted", 1);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.DocumentSuggest.TotalTime.NotInterrupted", 0);
+    histogram_tester.ExpectTotalCount("Omnibox.DocumentSuggest.RequestTime", 1);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.DocumentSuggest.RequestTime.Interrupted", 1);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.DocumentSuggest.RequestTime.NotInterrupted", 0);
+  }
+
+  // It's difficult to simulate a completed `SimpleURLLoader` response, so we
+  // don't test the "Case: Stop() after response" or "Case: No Stop()."
 }
