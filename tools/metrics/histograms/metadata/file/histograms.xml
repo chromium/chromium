@@ -220,7 +220,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.Downloads.DirectorySizeMiB" units="MiB"
-    expires_after="2022-04-17">
+    expires_after="2023-04-17">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
