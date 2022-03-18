@@ -433,6 +433,9 @@ class AutofillClient : public RiskDataLoader {
       base::OnceClosure decline_virtual_card_callback);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  // Hides the virtual card enroll bubble and icon if it is visible.
+  virtual void HideVirtualCardEnrollBubbleAndIconIfVisible();
+
   // Returns the list of allowed merchants and BIN ranges for virtual cards.
   virtual std::vector<std::string> GetAllowedMerchantsForVirtualCards() = 0;
   virtual std::vector<std::string> GetAllowedBinRangesForVirtualCards() = 0;

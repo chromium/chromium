@@ -91,6 +91,13 @@ void AutofillClient::ShowVirtualCardEnrollDialog(
   // ChromeAutofillClient (Chrome Desktop and Clank) implements this.
 }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+void AutofillClient::HideVirtualCardEnrollBubbleAndIconIfVisible() {
+  // This is overridden by platform subclasses. Currently only
+  // ChromeAutofillClient (Chrome Desktop) implements this.
+}
+#endif
+
 #if !BUILDFLAG(IS_IOS)
 std::unique_ptr<webauthn::InternalAuthenticator>
 AutofillClient::CreateCreditCardInternalAuthenticator(
