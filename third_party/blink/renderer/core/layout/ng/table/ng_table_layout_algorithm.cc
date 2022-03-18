@@ -278,11 +278,12 @@ scoped_refptr<const NGTableConstraintSpaceData> CreateConstraintSpaceData(
     const NGTableTypes::Rows& rows,
     const NGTableTypes::CellBlockConstraints& cell_block_constraints,
     const LogicalSize& border_spacing) {
+  bool is_table_block_size_specified = !style.LogicalHeight().IsAuto();
   scoped_refptr<NGTableConstraintSpaceData> data =
       base::MakeRefCounted<NGTableConstraintSpaceData>();
   data->table_writing_direction = style.GetWritingDirection();
   data->table_border_spacing = border_spacing;
-  data->is_table_block_size_specified = !style.LogicalHeight().IsAuto();
+  data->is_table_block_size_specified = is_table_block_size_specified;
   data->has_collapsed_borders =
       style.BorderCollapse() == EBorderCollapse::kCollapse;
   data->column_locations = column_locations;
@@ -306,31 +307,20 @@ scoped_refptr<const NGTableConstraintSpaceData> CreateConstraintSpaceData(
       const auto& row = rows[row_index];
       for (wtf_size_t cell_index = row.start_cell_index;
            cell_index < row.start_cell_index + row.cell_count; ++cell_index) {
-        const wtf_size_t effective_rowspan =
-            cell_block_constraints[cell_index].effective_rowspan;
+        const auto& cell_block_constraint = cell_block_constraints[cell_index];
+        const auto [cell_block_size, is_initial_block_size_indefinite] =
+            NGTableAlgorithmUtils::ComputeCellBlockSize(
+                cell_block_constraint, rows, row_index, border_spacing,
+                is_table_block_size_specified);
 
-        // Determine the cell's block-size.
-        LayoutUnit cell_block_size;
-        for (wtf_size_t i = 0; i < effective_rowspan; ++i) {
-          if (rows[row_index + i].is_collapsed)
-            continue;
-          cell_block_size += rows[row_index + i].block_size;
-          if (i != 0)
-            cell_block_size += border_spacing.block_size;
-        }
-
-        // Confusingly a rowspanned cell originating from a collapsed-row will
-        // have no block-size.
         LayoutUnit rowspan_block_size =
-            effective_rowspan > 1 && !row.is_collapsed ? cell_block_size
-                                                       : kIndefiniteSize;
+            cell_block_constraint.effective_rowspan > 1 ? cell_block_size
+                                                        : kIndefiniteSize;
 
-        data->cells.emplace_back(
-            cell_block_constraints[cell_index].borders, rowspan_block_size,
-            cell_block_constraints[cell_index].column_index,
-            /* has_grown */ cell_block_size >
-                cell_block_constraints[cell_index].min_block_size,
-            cell_block_constraints[cell_index].is_constrained);
+        data->cells.emplace_back(cell_block_constraint.borders,
+                                 rowspan_block_size,
+                                 cell_block_constraint.column_index,
+                                 is_initial_block_size_indefinite);
       }
     }
   }

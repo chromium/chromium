@@ -440,6 +440,38 @@ void ComputeSectionInlineConstraints(
 }  // namespace
 
 // static
+NGTableAlgorithmUtils::CellBlockSizeData
+NGTableAlgorithmUtils::ComputeCellBlockSize(
+    const NGTableTypes::CellBlockConstraint& cell_block_constraint,
+    const NGTableTypes::Rows& rows,
+    wtf_size_t row_index,
+    const LogicalSize& border_spacing,
+    bool is_table_block_size_specified) {
+  // NOTE: Confusingly rowspanned cells originating from a collapsed-row also
+  // have no block-size.
+  LayoutUnit cell_block_size;
+  if (!rows[row_index].is_collapsed) {
+    for (wtf_size_t i = 0; i < cell_block_constraint.effective_rowspan; ++i) {
+      if (rows[row_index + i].is_collapsed)
+        continue;
+      cell_block_size += rows[row_index + i].block_size;
+      if (i != 0)
+        cell_block_size += border_spacing.block_size;
+    }
+  }
+
+  bool has_grown = cell_block_size > cell_block_constraint.min_block_size;
+
+  // Our initial block-size is definite if this cell has a fixed block-size,
+  // or we have grown and the table has a specified block-size.
+  bool is_initial_block_size_definite =
+      cell_block_constraint.is_constrained ||
+      (has_grown && is_table_block_size_specified);
+
+  return {cell_block_size, !is_initial_block_size_definite};
+}
+
+// static
 NGConstraintSpaceBuilder
 NGTableAlgorithmUtils::CreateTableCellConstraintSpaceBuilder(
     const WritingDirectionMode table_writing_direction,

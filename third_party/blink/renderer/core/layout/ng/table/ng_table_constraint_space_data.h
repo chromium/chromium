@@ -74,20 +74,18 @@ class NGTableConstraintSpaceData
     Cell(NGBoxStrut borders,
          LayoutUnit rowspan_block_size,
          wtf_size_t start_column,
-         bool has_grown,
-         bool is_constrained)
+         bool is_initial_block_size_indefinite)
         : borders(borders),
           rowspan_block_size(rowspan_block_size),
           start_column(start_column),
-          has_grown(has_grown),
-          is_constrained(is_constrained) {}
+          is_initial_block_size_indefinite(is_initial_block_size_indefinite) {}
 
     bool operator==(const Cell& other) const {
       return borders == other.borders &&
              rowspan_block_size == other.rowspan_block_size &&
              start_column == other.start_column &&
-             has_grown == other.has_grown &&
-             is_constrained == other.is_constrained;
+             is_initial_block_size_indefinite ==
+                 other.is_initial_block_size_indefinite;
     }
     bool operator!=(const Cell& other) const { return !(*this == other); }
 
@@ -96,8 +94,7 @@ class NGTableConstraintSpaceData
     // Size of the cell. Need this for cells that span multiple rows.
     const LayoutUnit rowspan_block_size;
     const wtf_size_t start_column;
-    const bool has_grown;
-    const bool is_constrained;
+    const bool is_initial_block_size_indefinite;
   };
 
   bool IsTableSpecificDataEqual(const NGTableConstraintSpaceData& other) const {
