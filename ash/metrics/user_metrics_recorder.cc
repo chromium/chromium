@@ -147,36 +147,6 @@ void UserMetricsRecorder::RecordUserClickOnShelfButton(
   recorder->RecordUserShelfButtonClick(target);
 }
 
-// static
-void UserMetricsRecorder::RecordUserToggleDictation(
-    DictationToggleSource source) {
-  UMA_HISTOGRAM_ENUMERATION("Accessibility.CrosDictation.ToggleDictationMethod",
-                            source);
-}
-
-void UserMetricsRecorder::RecordUserMetricsAction(UserMetricsAction action) {
-  using base::RecordAction;
-  using base::UserMetricsAction;
-
-  switch (action) {
-    case UMA_DESKTOP_SWITCH_TASK:
-      RecordAction(UserMetricsAction("Desktop_SwitchTask"));
-      task_switch_metrics_recorder_.OnTaskSwitch(TaskSwitchSource::DESKTOP);
-      break;
-    case UMA_LAUNCHER_LAUNCH_TASK:
-      RecordAction(UserMetricsAction("Launcher_LaunchTask"));
-      task_switch_metrics_recorder_.OnTaskSwitch(TaskSwitchSource::SHELF);
-      break;
-    case UMA_LAUNCHER_MINIMIZE_TASK:
-      RecordAction(UserMetricsAction("Launcher_MinimizeTask"));
-      break;
-    case UMA_LAUNCHER_SWITCH_TASK:
-      RecordAction(UserMetricsAction("Launcher_SwitchTask"));
-      task_switch_metrics_recorder_.OnTaskSwitch(TaskSwitchSource::SHELF);
-      break;
-  }
-}
-
 void UserMetricsRecorder::StartDemoSessionMetricsRecording() {
   demo_session_metrics_recorder_ =
       std::make_unique<DemoSessionMetricsRecorder>();

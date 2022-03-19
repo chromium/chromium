@@ -11,7 +11,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/constants/ash_features.h"
-#include "ash/metrics/user_metrics_recorder.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/wm/system_modal_container_event_filter_delegate.h"
@@ -208,6 +207,7 @@ class ClipboardHistoryControllerImpl;
 class TouchDevicesController;
 class TrayAction;
 class TrayBluetoothHelper;
+class UserMetricsRecorder;
 class VideoActivityNotifier;
 class VideoDetector;
 class WallpaperControllerImpl;

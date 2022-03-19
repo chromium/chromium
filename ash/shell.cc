@@ -77,6 +77,7 @@
 #include "ash/marker/marker_controller.h"
 #include "ash/media/media_controller_impl.h"
 #include "ash/metrics/login_unlock_throughput_recorder.h"
+#include "ash/metrics/user_metrics_recorder.h"
 #include "ash/multi_device_setup/multi_device_notification_presenter.h"
 #include "ash/policy/policy_recommendation_restorer.h"
 #include "ash/projector/projector_controller_impl.h"

@@ -33,6 +33,7 @@
 #include "ash/login/ui/system_label_button.h"
 #include "ash/login/ui/views_utils.h"
 #include "ash/media/media_controller_impl.h"
+#include "ash/metrics/user_metrics_recorder.h"
 #include "ash/public/cpp/child_accounts/parent_access_controller.h"
 #include "ash/public/cpp/login_accelerators.h"
 #include "ash/public/cpp/smartlock_state.h"

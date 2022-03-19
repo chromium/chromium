@@ -6,7 +6,6 @@ ash/ash_export.h
 ash/constants/ash_switches.h
 ash/metrics/task_switch_metrics_recorder.h
 ash/metrics/task_switch_source.h
-ash/metrics/user_metrics_action.h
 ash/metrics/user_metrics_recorder.h
 ash/public/cpp/ash_public_export.h
 ash/public/cpp/shelf_types.h

@@ -13,6 +13,7 @@
 #include "base/location.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "components/fullscreen_control/subtle_notification_view.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/aura/window.h"

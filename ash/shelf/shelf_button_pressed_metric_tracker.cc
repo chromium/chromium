@@ -65,16 +65,17 @@ void ShelfButtonPressedMetricTracker::RecordButtonPressedAction(
     case SHELF_ACTION_APP_LIST_BACK:
       break;
     case SHELF_ACTION_NEW_WINDOW_CREATED:
-      Shell::Get()->metrics()->RecordUserMetricsAction(
-          UMA_LAUNCHER_LAUNCH_TASK);
+      base::RecordAction(base::UserMetricsAction("Launcher_LaunchTask"));
+      Shell::Get()->metrics()->task_switch_metrics_recorder().OnTaskSwitch(
+          TaskSwitchSource::SHELF);
       break;
     case SHELF_ACTION_WINDOW_ACTIVATED:
-      Shell::Get()->metrics()->RecordUserMetricsAction(
-          UMA_LAUNCHER_SWITCH_TASK);
+      base::RecordAction(base::UserMetricsAction("Launcher_SwitchTask"));
+      Shell::Get()->metrics()->task_switch_metrics_recorder().OnTaskSwitch(
+          TaskSwitchSource::SHELF);
       break;
     case SHELF_ACTION_WINDOW_MINIMIZED:
-      Shell::Get()->metrics()->RecordUserMetricsAction(
-          UMA_LAUNCHER_MINIMIZE_TASK);
+      base::RecordAction(base::UserMetricsAction("Launcher_MinimizeTask"));
       break;
   }
 }

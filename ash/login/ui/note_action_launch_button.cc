@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/metrics/user_metrics_recorder.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/mojom/tray_action.mojom.h"
 #include "ash/resources/vector_icons/vector_icons.h"
