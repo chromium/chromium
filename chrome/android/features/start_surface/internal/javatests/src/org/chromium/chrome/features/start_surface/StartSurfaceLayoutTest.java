@@ -186,7 +186,10 @@ public class StartSurfaceLayoutTest {
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
-            ChromeRenderTestRule.Builder.withPublicCorpus().setRevision(1).build();
+            ChromeRenderTestRule.Builder.withPublicCorpus()
+                    .setRevision(1)
+                    .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_START)
+                    .build();
 
     @SuppressWarnings("FieldCanBeLocal")
     private EmbeddedTestServer mTestServer;

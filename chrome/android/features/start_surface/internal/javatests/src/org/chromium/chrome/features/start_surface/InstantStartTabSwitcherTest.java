@@ -113,7 +113,10 @@ public class InstantStartTabSwitcherTest {
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
-            ChromeRenderTestRule.Builder.withPublicCorpus().setRevision(1).build();
+            ChromeRenderTestRule.Builder.withPublicCorpus()
+                    .setRevision(1)
+                    .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_START)
+                    .build();
 
     /**
      * {@link ParameterProvider} used for parameterized test that provides whether it's single tab

@@ -105,6 +105,7 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setRevision(RENDER_TEST_REVISION)
                     .setDescription(RENDER_TEST_REVISION_DESCRIPTION)
+                    .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_FIRST_RUN)
                     .build();
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();

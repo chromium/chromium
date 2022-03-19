@@ -124,6 +124,11 @@ public class RenderTestRule extends TestWatcher {
         // Default for now, likely to be removed once all existing uses have a valid component.
         String NONE = "N/A";
         String BLINK_FORMS_COLOR = "Blink>Forms>Color";
+        String UI_BROWSER_FIRST_RUN = "UI>Browser>FirstRun";
+        String UI_BROWSER_MOBILE_APP_MENU = "UI>Browser>Mobile>AppMenu";
+        String UI_BROWSER_MOBILE_CONTEXT_MENU = "UI>Browser>Mobile>ContextMenu";
+        String UI_BROWSER_MOBILE_MESSAGES = "UI>Browser>Mobile>Messages";
+        String UI_BROWSER_MOBILE_START = "UI>Browser>Mobile>Start";
     }
 
     // Skia Gold-specific constructor used by the builder.
