@@ -31,6 +31,7 @@
 <translation id="1201402288615127009">Volgende</translation>
 <translation id="1209796539517632982">Outomatiese naambedieners</translation>
 <translation id="1210831758834677569">Lao</translation>
+<translation id="1223825810409523901">Chrome-uitbreiding</translation>
 <translation id="1243314992276662751">Laai op</translation>
 <translation id="1249250836236328755">Genre</translation>
 <translation id="1254593899333212300">Direkte internetverbinding</translation>
@@ -80,6 +81,7 @@
 <translation id="166439687370499867">Gedeeldenetwerkopstellings mag nie verander word nie</translation>
 <translation id="1665611772925418501">Die lêer kon nie verander word nie.</translation>
 <translation id="1673103856845176271">Weens sekuriteitsredes kon daar nie by die lêer ingegaan word nie.</translation>
+<translation id="16762847117768727">ISO-prent</translation>
 <translation id="169515659049020177">Skuifsleutel</translation>
 <translation id="1715848075824334077">Persoon ry fiets</translation>
 <translation id="1722487484194605434">Kompakteer tans <ph name="NUMBER_OF_ITEMS" /> items …</translation>
@@ -810,6 +812,7 @@
 <translation id="7925686952655276919">Moenie mobiele data vir sinkronisering gebruik nie</translation>
 <translation id="7928710562641958568">Prop toestel uit</translation>
 <translation id="7943385054491506837">VSA Colemak</translation>
+<translation id="7948417415021769876">7z-argief</translation>
 <translation id="7953739707111622108">Hierdie toestel kan nie oopgemaak word nie, want sy lêerstelsel is nie herken nie.</translation>
 <translation id="7969525169268594403">Sloweens</translation>
 <translation id="7972920761225148017">Frans (Switserland)</translation>
@@ -859,6 +862,7 @@
 <translation id="8372369524088641025">Swak WEP-sleutel</translation>
 <translation id="8372852072747894550">Grieks</translation>
 <translation id="8386903983509584791">Skandering voltooi</translation>
+<translation id="8387733224523483503"><ph name="FILE_NAME" /> is onttrek.</translation>
 <translation id="8395901698320285466">Afmetings</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" />-netwerk; koppel tans</translation>
 <translation id="8425213833346101688">Verander</translation>
@@ -953,6 +957,7 @@
 <translation id="9174050671906956834">Items in asblik word na 30 dae vir ewig uitgevee.</translation>
 <translation id="9183302530794969518">Google Dokumente</translation>
 <translation id="9189836632794948435">Kasaks</translation>
+<translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> items is onttrek.</translation>
 <translation id="9213073329713032541">Installering is suksesvol begin.</translation>
 <translation id="9219103736887031265">Prente</translation>
 <translation id="9219908252191632183">Maanlandskap</translation>

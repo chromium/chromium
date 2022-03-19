@@ -52,6 +52,7 @@
 <translation id="1468664791493211953">ቅናሽ</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> ይህን መሣሪያ ያስተዳድራል እና እንቅስቃሴዎን ሊከታተለው ይችላል።</translation>
 <translation id="1478594628797167447">ቃኚ</translation>
+<translation id="1486019694341708158">የገጸ ማያ አሳራፊ አማራጮችን ለመምረጥ መቀያየሪያውን ያብሩ</translation>
 <translation id="1491076385728777984">በ<ph name="DEVICE_NAME" /> ላይ ፊርምዌርን በማዘመን ላይ</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> እኚህን ተጠቃሚ ያስተዳድራል ኣና በርቀት ቅንብሮችን ሊያስተዳድር እና የተጠቃሚ እንቅስቃሴን ሊቆጣጠር ይችላል።</translation>
 <translation id="150962533380566081">ልክ ያልኾነ PUK።</translation>
@@ -106,6 +107,7 @@
 <translation id="2105810540595158374">መሣሪያ የጨዋታ መቆጣጠሪያ ነው።</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />፣ ስሪት <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> ጊባ ከሚገኘው <ph name="TOTAL_MEMORY" /> ጊባ</translation>
+<translation id="2138109643290557664">ይንሳፈፉ በ</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> ፎቶዎች</translation>
 <translation id="2157959690810728433">ተሰልፏል</translation>
@@ -268,6 +270,7 @@
 <translation id="4271957103967917607">ሙሉ ማያ ገጽ ይመልከቱ</translation>
 <translation id="4275799948641988986">ከጥገና በኋላ መሳሪያውን ማን ይጠቀማል?</translation>
 <translation id="4289540628985791613">ማጠቃለያ</translation>
+<translation id="4289849978083912975">የተንሸራታች ትዕይንት</translation>
 <translation id="4297501883039923494">ቆሟል - ያልታወቀ ስህተት</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ምስሎች</translation>
 <translation id="4333390807948134856">የ<ph name="KEY_NAME" /> ቁልፍ ተጭኗል</translation>
@@ -539,10 +542,12 @@
 <translation id="7175037578838465313"><ph name="NAME" />ን አዋቅር</translation>
 <translation id="7177485034254901881">ይህ <ph name="DEVICE_TYPE" /> በ<ph name="MANAGER" /> የሚተዳደር ነው። አስተዳዳሪዎች መሣሪያውን ከርቀት ማዋቀር ይችላሉ።</translation>
 <translation id="7180611975245234373">አድስ</translation>
+<translation id="7191009787982536050">የገጸ ማያ አሳራፊ እነማ</translation>
 <translation id="7212734716605298123">ለውጫዊ መሳሪያዎች የፊርምዌር ዝማኔዎች</translation>
 <translation id="7216409898977639127">የተንቀሳቃሽ ስልክ አገልግሎት አቅራቢ</translation>
 <translation id="7271040990581020067">ቃኚ በአሁኑ ጊዜ ጥቅም ላይ እየዋለ ነው። ቆይተው እንደገና ይሞክሩ።</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7281657306185710294">ነፋሱ ይሰማዎት</translation>
 <translation id="7287310195820267359">የልጣፍ ስብስቦች</translation>
 <translation id="7297226631177386107">በኬላ በኩል ወደ ኤችቲቲፒኤስ ድር ጣቢያዎች መገናኘት አልተቻለም</translation>
 <translation id="7302860742311162920">ICCID</translation>

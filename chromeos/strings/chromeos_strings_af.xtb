@@ -52,6 +52,7 @@
 <translation id="1468664791493211953">Aanbiedings</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> bestuur hierdie toestel en sal dalk jou aktiwiteit kan monitor.</translation>
 <translation id="1478594628797167447">Skandeerder</translation>
+<translation id="1486019694341708158">Skakel die wisselaar aan om die sluimerskermopsies te kies</translation>
 <translation id="1491076385728777984">Dateer fermware op <ph name="DEVICE_NAME" /> op</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> bestuur hierdie gebruiker en kan oor 'n afstand instellings bestuur en gebruikeraktiwiteit monitor.</translation>
 <translation id="150962533380566081">Ongeldige PUK.</translation>
@@ -106,6 +107,7 @@
 <translation id="2105810540595158374">Toestel is 'n speletjiebeheerder.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, weergawe <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB van <ph name="TOTAL_MEMORY" /> GB beskibaar</translation>
+<translation id="2138109643290557664">Sweef verby</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> foto's</translation>
 <translation id="2157959690810728433">OP WAGLYS</translation>
@@ -268,6 +270,7 @@
 <translation id="4271957103967917607">Bekyk volskerm</translation>
 <translation id="4275799948641988986">Wie sal die toestel gebruik nadat dit herstel is?</translation>
 <translation id="4289540628985791613">Oorsig</translation>
+<translation id="4289849978083912975">Skyfievertoning</translation>
 <translation id="4297501883039923494">Gestop – onbekende fout</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> prente</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" />-sleutel is gedruk</translation>
@@ -539,10 +542,12 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="7175037578838465313">Stel <ph name="NAME" /> op</translation>
 <translation id="7177485034254901881">Hierdie <ph name="DEVICE_TYPE" /> word bestuur deur <ph name="MANAGER" />. Administrateurs kan die toestel oor 'n afstand opstel.</translation>
 <translation id="7180611975245234373">Herlaai</translation>
+<translation id="7191009787982536050">Sluimerskerm-animasie</translation>
 <translation id="7212734716605298123">Fermware-opdaterings vir eksterne toestelle</translation>
 <translation id="7216409898977639127">Sellulêre diensverskaffer</translation>
 <translation id="7271040990581020067">Skandeerder word tans gebruik Probeer later weer.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7281657306185710294">Voel die briesie</translation>
 <translation id="7287310195820267359">Muurpapierversamelings</translation>
 <translation id="7297226631177386107">Kan nie deur brandmuur aan HTTPS-webwerwe koppel nie</translation>
 <translation id="7302860742311162920">ICCID</translation>

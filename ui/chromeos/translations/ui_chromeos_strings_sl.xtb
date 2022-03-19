@@ -31,6 +31,7 @@
 <translation id="1201402288615127009">Naprej</translation>
 <translation id="1209796539517632982">Samodejni imenski strežniki</translation>
 <translation id="1210831758834677569">laoščina</translation>
+<translation id="1223825810409523901">Razširitev za Chrome</translation>
 <translation id="1243314992276662751">Prenesi</translation>
 <translation id="1249250836236328755">Zvrst</translation>
 <translation id="1254593899333212300">Neposredna internetna povezava</translation>
@@ -80,6 +81,7 @@
 <translation id="166439687370499867">Spreminjanje omrežnih konfiguracij v skupni rabi ni dovoljeno</translation>
 <translation id="1665611772925418501">Datoteke ni bilo mogoče spremeniti.</translation>
 <translation id="1673103856845176271">Do datoteke zaradi varnosti ni bilo mogoče dostopati.</translation>
+<translation id="16762847117768727">Slika ISO</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1715848075824334077">Kolesarjenje</translation>
 <translation id="1722487484194605434">Ustvarjanje arhiva zip s toliko elementi: <ph name="NUMBER_OF_ITEMS" /> …</translation>
@@ -811,6 +813,7 @@
 <translation id="7925686952655276919">Ne uporabi mobilnih podatkov za sinhronizacijo</translation>
 <translation id="7928710562641958568">Izpni napravo</translation>
 <translation id="7943385054491506837">Združene države – Colemak</translation>
+<translation id="7948417415021769876">Arhiv 7z</translation>
 <translation id="7953739707111622108">Naprave ni mogoče odpreti, ker njen datotečni sistem ni bil prepoznan.</translation>
 <translation id="7969525169268594403">slovenščina</translation>
 <translation id="7972920761225148017">francoščina (Švica)</translation>
@@ -860,6 +863,7 @@
 <translation id="8372369524088641025">Napačen ključ WEP</translation>
 <translation id="8372852072747894550">grščina</translation>
 <translation id="8386903983509584791">Iskanje je končano</translation>
+<translation id="8387733224523483503">Razširjeno: <ph name="FILE_NAME" />.</translation>
 <translation id="8395901698320285466">Mere</translation>
 <translation id="8408068190360279472">Omrežje <ph name="NETWORK_TYPE" />, vzpostavljanje povezave</translation>
 <translation id="8425213833346101688">Spremeni</translation>
@@ -954,6 +958,7 @@
 <translation id="9174050671906956834">Elementi v smetnjaku bodo dokončno izbrisani po 30 dneh.</translation>
 <translation id="9183302530794969518">Google Dokumenti</translation>
 <translation id="9189836632794948435">kazaščina</translation>
+<translation id="9200427192836333033">Št. razširjenih elementov: <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="9213073329713032541">Namestitev je bila uspešno začeta.</translation>
 <translation id="9219103736887031265">Slike</translation>
 <translation id="9219908252191632183">Mesečeva pokrajina</translation>

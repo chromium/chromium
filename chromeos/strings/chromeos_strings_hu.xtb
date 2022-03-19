@@ -52,6 +52,7 @@
 <translation id="1468664791493211953">Ajánlatok</translation>
 <translation id="1476467821656042872">A(z) <ph name="MANAGER" /> kezeli ezt az eszközt, és előfordulhat, hogy megfigyeli az Ön tevékenységeit.</translation>
 <translation id="1478594628797167447">Szkenner</translation>
+<translation id="1486019694341708158">Kapcsolja be a kapcsolót a képernyőkímélő beállításainak kiválasztásához</translation>
 <translation id="1491076385728777984">Firmware frissítése a következő eszközön: <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732">A(z) <ph name="MANAGER" /> kezeli ezt a felhasználót, és távolról kezelheti a beállításokat, illetve figyelheti a felhasználói tevékenységeket.</translation>
 <translation id="150962533380566081">Érvénytelen PUK-kód.</translation>
@@ -106,6 +107,7 @@
 <translation id="2105810540595158374">Az eszköz egy kontroller.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, verzió: <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" />/<ph name="AVAILABLE_MEMORY" /> GB áll rendelkezésre.</translation>
+<translation id="2138109643290557664">Lebegés</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> fotó</translation>
 <translation id="2157959690810728433">VÁRAKOZIK</translation>
@@ -268,6 +270,7 @@
 <translation id="4271957103967917607">Teljes képernyős nézet</translation>
 <translation id="4275799948641988986">A javítást követően ki fogja használni az eszközt?</translation>
 <translation id="4289540628985791613">Áttekintés</translation>
+<translation id="4289849978083912975">Diavetítés</translation>
 <translation id="4297501883039923494">Leállt – Ismeretlen hiba</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> kép</translation>
 <translation id="4333390807948134856">A következő gomb van megnyomva: <ph name="KEY_NAME" /></translation>
@@ -539,10 +542,12 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="7175037578838465313"><ph name="NAME" /> konfigurálása</translation>
 <translation id="7177485034254901881">Ezt a(z) <ph name="DEVICE_TYPE" /> eszközt a(z) <ph name="MANAGER" /> kezeli. A rendszergazdák távolról konfigurálhatják az eszközt.</translation>
 <translation id="7180611975245234373">Frissítés</translation>
+<translation id="7191009787982536050">Animált képernyőkímélő</translation>
 <translation id="7212734716605298123">Firmware-frissítések külső eszközökhöz</translation>
 <translation id="7216409898977639127">Mobilszolgáltató</translation>
 <translation id="7271040990581020067">A szkenner jelenleg használatban van. Próbálja újra később.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7281657306185710294">Érezze a szellő simogatását</translation>
 <translation id="7287310195820267359">Háttérképgyűjtemények</translation>
 <translation id="7297226631177386107">Nem lehet a tűzfalon keresztül HTTPS-protokollt használó webhelyekhez csatlakozni</translation>
 <translation id="7302860742311162920">ICCID</translation>
