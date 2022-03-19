@@ -4751,17 +4751,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(omnibox::kOmniboxPedalsBatch3NonEnglish)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-    {"omnibox-clobber-triggers-contextual-web-zero-suggest",
-     flag_descriptions::kOmniboxClobberTriggersContextualWebZeroSuggestName,
-     flag_descriptions::
-         kOmniboxClobberTriggersContextualWebZeroSuggestDescription,
-     kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         omnibox::kClobberTriggersContextualWebZeroSuggest,
-         // On-clobber has the same variations and forcing IDs as on-focus.
-         kOmniboxOnFocusSuggestionsContextualWebVariations,
-         "OmniboxGoogleOnContent")},
-
     {"omnibox-on-focus-suggestions-contextual-web",
      flag_descriptions::kOmniboxOnFocusSuggestionsContextualWebName,
      flag_descriptions::kOmniboxOnFocusSuggestionsContextualWebDescription,

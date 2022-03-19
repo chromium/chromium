@@ -990,9 +990,6 @@ extern const char kOmniboxBlurWithEscapeDescription[];
 extern const char kOmniboxBookmarkPathsName[];
 extern const char kOmniboxBookmarkPathsDescription[];
 
-extern const char kOmniboxClobberTriggersContextualWebZeroSuggestName[];
-extern const char kOmniboxClobberTriggersContextualWebZeroSuggestDescription[];
-
 extern const char kOmniboxClosePopupWithEscapeName[];
 extern const char kOmniboxClosePopupWithEscapeDescription[];
 

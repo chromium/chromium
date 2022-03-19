@@ -1738,13 +1738,6 @@ const char kOmniboxBookmarkPathsDescription[] =
     "suggest a bookmark titled 'Jupiter' with URL "
     "'en.wikipedia.org/wiki/Jupiter' located in a path containing 'planet.'";
 
-const char kOmniboxClobberTriggersContextualWebZeroSuggestName[] =
-    "Omnibox Clobber Triggers Contextual Web ZeroSuggest";
-const char kOmniboxClobberTriggersContextualWebZeroSuggestDescription[] =
-    "If enabled, when the user clears the whole omnibox text (i.e. via "
-    "Backspace), Chrome will request ZeroSuggest suggestions for the OTHER "
-    "page classification (contextual web).";
-
 const char kOmniboxClosePopupWithEscapeName[] =
     "Omnibox Close Popup with Escape";
 const char kOmniboxClosePopupWithEscapeDescription[] =
