@@ -271,11 +271,6 @@ void LayoutTheme::AdjustStyle(const Element* e, ComputedStyle& style) {
       return AdjustMenuListStyle(style);
     case kMenulistButtonPart:
       return AdjustMenuListButtonStyle(style);
-    case kSliderHorizontalPart:
-    case kSliderVerticalPart:
-    case kMediaSliderPart:
-    case kMediaVolumeSliderPart:
-      return AdjustSliderContainerStyle(*e, style);
     case kSliderThumbHorizontalPart:
     case kSliderThumbVerticalPart:
       return AdjustSliderThumbStyle(style);
@@ -284,6 +279,9 @@ void LayoutTheme::AdjustStyle(const Element* e, ComputedStyle& style) {
     default:
       break;
   }
+
+  if (IsSliderContainer(*e))
+    AdjustSliderContainerStyle(*e, style);
 }
 
 String LayoutTheme::ExtraDefaultStyleSheet() {
@@ -480,10 +478,8 @@ void LayoutTheme::AdjustMenuListButtonStyle(ComputedStyle&) const {}
 
 void LayoutTheme::AdjustSliderContainerStyle(const Element& e,
                                              ComputedStyle& style) const {
-  const AtomicString& pseudo = e.ShadowPseudoId();
-  if (pseudo != shadow_element_names::kPseudoMediaSliderContainer &&
-      pseudo != shadow_element_names::kPseudoSliderContainer)
-    return;
+  DCHECK(IsSliderContainer(e));
+
   if (style.EffectiveAppearance() == kSliderVerticalPart) {
     style.SetTouchAction(TouchAction::kPanX);
     style.SetWritingMode(WritingMode::kVerticalRl);
