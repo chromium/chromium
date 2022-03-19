@@ -377,19 +377,23 @@ AppListItemView::AppListItemView(const AppListConfig* app_list_config,
   SetAnimationDuration(base::TimeDelta());
 
   preview_circle_radius_ = 0;
+}
 
+void AppListItemView::InitializeIconLoader() {
+  DCHECK(item_weak_);
   // Creates app icon load helper. base::Unretained is safe because `this` owns
   // `icon_load_helper_` and `view_delegate_` outlives `this`.
   if (is_folder_) {
-    AppListFolderItem* folder_item = static_cast<AppListFolderItem*>(item);
+    AppListFolderItem* folder_item =
+        static_cast<AppListFolderItem*>(item_weak_);
     icon_load_helper_.emplace(
         folder_item->item_list(),
         base::BindRepeating(&AppListViewDelegate::LoadIcon,
                             base::Unretained(view_delegate_)));
   } else {
     icon_load_helper_.emplace(
-        item, base::BindRepeating(&AppListViewDelegate::LoadIcon,
-                                  base::Unretained(view_delegate_)));
+        item_weak_, base::BindRepeating(&AppListViewDelegate::LoadIcon,
+                                        base::Unretained(view_delegate_)));
   }
 }
 
