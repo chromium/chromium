@@ -2505,7 +2505,7 @@
   code: |
     assert_throws_js(RangeError, () => { ctx.roundRect(0, 0, 100, 50, [])});
 
-- name: 2d.path.roundrect.radius.noarugment
+- name: 2d.path.roundrect.radius.noargument
   desc: Check that roundRect draws a rectangle when no radii are provided.
   code: |
     ctx.fillStyle = '#f00';
