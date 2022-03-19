@@ -79,4 +79,5 @@ PanelCommandType = {
   OPEN_MENUS_MOST_RECENT: 'open_menus_most_recent',
   SEARCH: 'search',
   TUTORIAL: 'tutorial',
+  ENABLE_TEST_HOOKS: 'enable_test_hooks',
 };

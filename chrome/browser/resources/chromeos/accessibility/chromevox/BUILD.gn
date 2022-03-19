@@ -92,11 +92,6 @@ chromevox_modules = [
   "injected/loader.js",
   "injected/script_installer.js",
   "learn_mode/kbexplorer.js",
-  "panel/i_search.js",
-  "panel/panel.js",
-  "panel/panel_menu.js",
-  "panel/panel_menu_item.js",
-  "panel/panel_mode.js",
   "third_party/tamachiyomi/ja_phonetic_data.js",
   "third_party/tamachiyomi/ja_phonetic_map.js",
 ]
@@ -132,6 +127,12 @@ chromevox_es6_modules = [
   "common/tts_background.js",
   "common/tts_base.js",
   "options/options.js",
+  "panel/i_search.js",
+  "panel/panel.js",
+  "panel/panel_interface.js",
+  "panel/panel_menu.js",
+  "panel/panel_menu_item.js",
+  "panel/panel_mode.js",
 ]
 
 # Closure library modules needed by chromevox.

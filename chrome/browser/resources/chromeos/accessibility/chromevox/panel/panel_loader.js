@@ -7,4 +7,23 @@
  *
  */
 
-goog.require('Panel');
+goog.require('AutomationTreeWalker');
+goog.require('AutomationUtil');
+goog.require('BrailleCommandData');
+goog.require('ChromeVoxState');
+goog.require('CommandStore');
+goog.require('EventGenerator');
+goog.require('EventSourceType');
+goog.require('GestureCommandData');
+goog.require('KeyCode');
+goog.require('KeyMap');
+goog.require('KeyUtil');
+goog.require('LocaleOutputHelper');
+goog.require('Msgs');
+goog.require('Output');
+goog.require('Output');
+goog.require('PanelCommand');
+goog.require('QueueMode');
+goog.require('constants');
+goog.require('cursors.Cursor');
+goog.require('cursors.Range');

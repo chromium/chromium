@@ -6,11 +6,7 @@
  * @fileoverview An item in a drop-down menu in the ChromeVox panel.
  */
 
-goog.provide('PanelMenuItem');
-
-goog.require('EventSourceType');
-
-PanelMenuItem = class {
+export class PanelMenuItem {
   /**
    * @param {string} menuItemTitle The title of the menu item.
    * @param {string} menuItemShortcut The keystrokes to select this item.
@@ -101,4 +97,4 @@ PanelMenuItem = class {
     this.element.classList.add('disabled');
     this.element.setAttribute('aria-disabled', true);
   }
-};
+}

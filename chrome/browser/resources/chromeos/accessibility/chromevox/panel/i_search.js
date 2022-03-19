@@ -6,17 +6,8 @@
  * @fileoverview Objects related to incremental search.
  */
 
-goog.provide('ISearch');
-goog.provide('ISearchHandler');
-goog.provide('ISearchUI');
+import {PanelInterface} from './panel_interface.js';
 
-goog.require('AutomationUtil');
-goog.require('ChromeVoxState');
-goog.require('Output');
-goog.require('constants');
-goog.require('cursors.Cursor');
-
-goog.scope(function() {
 const AutomationNode = chrome.automation.AutomationNode;
 const Dir = constants.Dir;
 const RoleType = chrome.automation.RoleType;
@@ -26,7 +17,7 @@ const RoleType = chrome.automation.RoleType;
  * incremental search.
  * @interface
  */
-ISearchHandler = class {
+class ISearchHandler {
   constructor() {}
 
   /**
@@ -45,13 +36,13 @@ ISearchHandler = class {
    * @param {number} end The index into the name where the search match ends.
    */
   onSearchResultChanged(node, start, end) {}
-};
+}
 
 
 /**
  * Controls an incremental search.
  */
-ISearch = class {
+export class ISearch {
   /**
    * @param {!cursors.Cursor} cursor
    */
@@ -88,7 +79,7 @@ ISearch = class {
   /**
    * Performs a search.
    * @param {string} searchStr
-   * @param {Dir} dir
+   * @param {constants.Dir} dir
    * @param {boolean=} opt_nextObject
    */
   search(searchStr, dir, opt_nextObject) {
@@ -125,13 +116,13 @@ ISearch = class {
   clear() {
     clearTimeout(this.callbackId_);
   }
-};
+}
 
 
 /**
  * @implements {ISearchHandler}
  */
-ISearchUI = class {
+export class ISearchUI {
   /**
    * @param {Element} input
    */
@@ -184,10 +175,10 @@ ISearchUI = class {
         this.dir_ = Dir.FORWARD;
         break;
       case 'Escape':
-        Panel.closeMenusAndRestoreFocus();
+        PanelInterface.instance.closeMenusAndRestoreFocus();
         return false;
       case 'Enter':
-        Panel.setPendingCallback(function() {
+        PanelInterface.instance.setPendingCallback(function() {
           const node = this.iSearch_.cursor.node;
           if (!node) {
             return;
@@ -196,7 +187,7 @@ ISearchUI = class {
               .ChromeVoxState.instance['navigateToRange'](
                   cursors.Range.fromNode(node));
         }.bind(this));
-        Panel.closeMenusAndRestoreFocus();
+        PanelInterface.instance.closeMenusAndRestoreFocus();
         return false;
       default:
         return false;
@@ -268,5 +259,4 @@ ISearchUI = class {
     input.removeEventListener('keydown', this.onKeyDown, true);
     input.removeEventListener('textInput', this.onTextInput, false);
   }
-};
-});  // goog.scope
+}

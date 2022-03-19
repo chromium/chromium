@@ -6,40 +6,18 @@
  * @fileoverview The ChromeVox panel and menus.
  */
 
-goog.provide('Panel');
-
-goog.require('BrailleCommandData');
-goog.require('CommandStore');
-goog.require('EventGenerator');
-goog.require('EventSourceType');
-goog.require('GestureCommandData');
-goog.require('ISearchUI');
-goog.require('KeyCode');
-goog.require('KeyMap');
-goog.require('KeyUtil');
-goog.require('LocaleOutputHelper');
-goog.require('Msgs');
-goog.require('PanelCommand');
-goog.require('PanelMenu');
-goog.require('PanelMenuItem');
-goog.require('PanelMode');
-goog.require('PanelModeInfo');
-goog.require('QueueMode');
-goog.require('constants');
+import {ISearchUI} from './i_search.js';
+import {PanelInterface} from './panel_interface.js';
+import {PanelMenu, PanelNodeMenu, PanelSearchMenu} from './panel_menu.js';
+import {PanelMenuItem} from './panel_menu_item.js';
+import {PanelMode, PanelModeInfo} from './panel_mode.js';
 
 /**
  * Class to manage the panel.
  */
-Panel = class {
-  constructor() {}
-
-  /**
-   * A callback function to be executed to perform the action from selecting
-   * a menu item after the menu has been closed and focus has been restored
-   * to the page or wherever it was previously.
-   * @param {?Function} callback
-   */
-  static setPendingCallback(callback) {
+export class Panel extends PanelInterface {
+  /** @override */
+  setPendingCallback(callback) {
     /** @type {?Function} @private */
     Panel.pendingCallback_ = callback;
   }
@@ -110,7 +88,8 @@ Panel = class {
     /** @private {Object} */
     Panel.tutorial = null;
 
-    Panel.setPendingCallback(null);
+    PanelInterface.instance = new Panel();
+    PanelInterface.instance.setPendingCallback(null);
     Panel.updateFromPrefs();
 
     Msgs.addTranslatedMessagesToDom(document);
@@ -137,7 +116,7 @@ Panel = class {
         return;
       }
 
-      Panel.closeMenusAndRestoreFocus();
+      PanelInterface.instance.closeMenusAndRestoreFocus();
     }, false);
 
     /** @type {Window} */
@@ -236,6 +215,8 @@ Panel = class {
         break;
       case PanelCommandType.CLOSE_CHROMEVOX:
         Panel.onClose();
+      case PanelCommandType.ENABLE_TEST_HOOKS:
+        window.Panel = Panel;
         break;
     }
   }
@@ -945,7 +926,7 @@ Panel = class {
     if (target && Panel.activeMenu_) {
       Panel.pendingCallback_ = Panel.activeMenu_.getCallbackForElement(target);
     }
-    Panel.closeMenusAndRestoreFocus();
+    PanelInterface.instance.closeMenusAndRestoreFocus();
   }
 
   /**
@@ -1017,7 +998,7 @@ Panel = class {
         Panel.advanceItemBy(1);
         break;
       case 'Escape':
-        Panel.closeMenusAndRestoreFocus();
+        PanelInterface.instance.closeMenusAndRestoreFocus();
         break;
       case 'PageUp':
         Panel.advanceItemBy(10);
@@ -1034,7 +1015,7 @@ Panel = class {
       case 'Enter':
       case ' ':
         Panel.pendingCallback_ = Panel.getCallbackForCurrentItem();
-        Panel.closeMenusAndRestoreFocus();
+        PanelInterface.instance.closeMenusAndRestoreFocus();
         break;
       default:
         // Don't mark this event as handled.
@@ -1076,11 +1057,8 @@ Panel = class {
     return null;
   }
 
-  /**
-   * Close the menus and restore focus to the page. If a menu item's callback
-   * was queued, execute it once focus is restored.
-   */
-  static closeMenusAndRestoreFocus() {
+  /** @override */
+  closeMenusAndRestoreFocus() {
     const bkgnd = chrome.extension.getBackgroundPage();
     bkgnd.chrome.automation.getDesktop(function(desktop) {
       // Watch for a blur on the panel.
@@ -1296,7 +1274,7 @@ Panel = class {
     }
     Panel.searchMenu.activateItem(0);
   }
-};
+}
 
 /**
  * An observer that reacts to ChromeVox range changes.
@@ -1305,6 +1283,10 @@ Panel = class {
 Panel.PanelStateObserver = class {
   constructor() {}
 
+  /**
+   * @param {cursors.Range} range The new range.
+   * @param {boolean=} opt_fromEditing
+   */
   onCurrentRangeChanged(range, opt_fromEditing) {
     if (Panel.mode_ === PanelMode.FULLSCREEN_TUTORIAL) {
       if (Panel.tutorial && Panel.tutorial.restartNudges) {

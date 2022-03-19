@@ -6,18 +6,9 @@
  * @fileoverview A drop-down menu in the ChromeVox panel.
  */
 
-goog.provide('PanelMenu');
-goog.provide('PanelNodeMenu');
-goog.provide('PanelSearchMenu');
+import {PanelMenuItem} from './panel_menu_item.js';
 
-goog.require('AutomationTreeWalker');
-goog.require('Msgs');
-goog.require('Output');
-goog.require('PanelMenuItem');
-goog.require('constants');
-goog.require('cursors.Range');
-
-PanelMenu = class {
+export class PanelMenu {
   /**
    * @param {string} menuMsg The msg id of the menu.
    */
@@ -316,10 +307,10 @@ PanelMenu = class {
     }
     return -1;
   }
-};
+}
 
 
-PanelNodeMenu = class extends PanelMenu {
+export class PanelNodeMenu extends PanelMenu {
   /**
    * @param {string} menuMsg The msg id of the menu.
    * @param {chrome.automation.AutomationNode} node ChromeVox's current
@@ -436,7 +427,7 @@ PanelNodeMenu = class extends PanelMenu {
           Msgs.getMsg('panel_menu_item_none'), '', '', '', function() {});
     }
   }
-};
+}
 
 /**
  * The number of nodes to search before posting a task to finish
@@ -450,7 +441,7 @@ PanelNodeMenu.MAX_NODES_BEFORE_ASYNC = 100;
  * Implements a menu that allows users to dynamically search the contents of the
  * ChromeVox menus.
  */
-PanelSearchMenu = class extends PanelMenu {
+export class PanelSearchMenu extends PanelMenu {
   /**
    * @param {!string} menuMsg The msg id of the menu.
    */
@@ -600,4 +591,4 @@ PanelSearchMenu = class extends PanelMenu {
   scrollToBottom() {
     this.activateItem(this.items_.length - 1);
   }
-};
+}

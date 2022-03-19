@@ -6,13 +6,10 @@
  * @fileoverview The modes that the Chromevox panel can be in.
  */
 
-goog.provide('PanelMode');
-goog.provide('PanelModeInfo');
-
 /**
  * @enum {string}
  */
-PanelMode = {
+export const PanelMode = {
   COLLAPSED: 'collapsed',
   FOCUSED: 'focused',
   FULLSCREEN_MENUS: 'menus',
@@ -23,7 +20,8 @@ PanelMode = {
 /** @typedef {{title: string, location: (string|undefined)}} */
 let PanelModeData;
 
-PanelModeInfo = /** @type {!Object<string, PanelModeData>} */ ({
+/** @type {!Object<string, PanelModeData>} */
+export const PanelModeInfo = {
   [PanelMode.COLLAPSED]: {title: 'panel_title', location: '#'},
   [PanelMode.FOCUSED]: {title: 'panel_title', location: '#focus'},
   [PanelMode.FULLSCREEN_MENUS]:
@@ -31,4 +29,4 @@ PanelModeInfo = /** @type {!Object<string, PanelModeData>} */ ({
   [PanelMode.FULLSCREEN_TUTORIAL]:
       {title: 'panel_tutorial_title', location: '#fullscreen'},
   [PanelMode.SEARCH]: {title: 'panel_title', location: '#focus'},
-});
+};
