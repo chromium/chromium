@@ -307,7 +307,7 @@ void GPUCommandEncoder::copyBufferToTexture(GPUImageCopyBuffer* source,
                                             GPUImageCopyTexture* destination,
                                             const V8GPUExtent3D* copy_size) {
   WGPUExtent3D dawn_copy_size = AsDawnType(copy_size);
-  WGPUImageCopyTexture dawn_destination = AsDawnType(destination, device_);
+  WGPUImageCopyTexture dawn_destination = AsDawnType(destination);
 
   const char* error = nullptr;
   WGPUImageCopyBuffer dawn_source =
@@ -325,7 +325,7 @@ void GPUCommandEncoder::copyTextureToBuffer(GPUImageCopyTexture* source,
                                             GPUImageCopyBuffer* destination,
                                             const V8GPUExtent3D* copy_size) {
   WGPUExtent3D dawn_copy_size = AsDawnType(copy_size);
-  WGPUImageCopyTexture dawn_source = AsDawnType(source, device_);
+  WGPUImageCopyTexture dawn_source = AsDawnType(source);
 
   const char* error = nullptr;
   WGPUImageCopyBuffer dawn_destination =
@@ -342,8 +342,8 @@ void GPUCommandEncoder::copyTextureToBuffer(GPUImageCopyTexture* source,
 void GPUCommandEncoder::copyTextureToTexture(GPUImageCopyTexture* source,
                                              GPUImageCopyTexture* destination,
                                              const V8GPUExtent3D* copy_size) {
-  WGPUImageCopyTexture dawn_source = AsDawnType(source, device_);
-  WGPUImageCopyTexture dawn_destination = AsDawnType(destination, device_);
+  WGPUImageCopyTexture dawn_source = AsDawnType(source);
+  WGPUImageCopyTexture dawn_destination = AsDawnType(destination);
   WGPUExtent3D dawn_copy_size = AsDawnType(copy_size);
 
   GetProcs().commandEncoderCopyTextureToTexture(

@@ -381,7 +381,7 @@ ScriptPromise GPUDevice::createComputePipelineAsync(
   std::string label;
   OwnedProgrammableStageDescriptor computeStageDescriptor;
   WGPUComputePipelineDescriptor dawn_desc =
-      AsDawnType(descriptor, &label, &computeStageDescriptor, this);
+      AsDawnType(descriptor, &label, &computeStageDescriptor);
 
   auto* callback =
       BindDawnOnceCallback(&GPUDevice::OnCreateComputePipelineAsyncCallback,

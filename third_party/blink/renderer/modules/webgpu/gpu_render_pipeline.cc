@@ -31,8 +31,7 @@ namespace blink {
 
 namespace {
 
-WGPUBlendComponent AsDawnType(const GPUBlendComponent* webgpu_desc,
-                              GPUDevice* device) {
+WGPUBlendComponent AsDawnType(const GPUBlendComponent* webgpu_desc) {
   DCHECK(webgpu_desc);
 
   WGPUBlendComponent dawn_desc = {};
@@ -44,12 +43,12 @@ WGPUBlendComponent AsDawnType(const GPUBlendComponent* webgpu_desc,
   return dawn_desc;
 }
 
-WGPUBlendState AsDawnType(const GPUBlendState* webgpu_desc, GPUDevice* device) {
+WGPUBlendState AsDawnType(const GPUBlendState* webgpu_desc) {
   DCHECK(webgpu_desc);
 
   WGPUBlendState dawn_desc = {};
-  dawn_desc.color = AsDawnType(webgpu_desc->color(), device);
-  dawn_desc.alpha = AsDawnType(webgpu_desc->alpha(), device);
+  dawn_desc.color = AsDawnType(webgpu_desc->color());
+  dawn_desc.alpha = AsDawnType(webgpu_desc->alpha());
 
   return dawn_desc;
 }
@@ -245,8 +244,7 @@ void GPUFragmentStateAsWGPUFragmentState(GPUDevice* device,
   for (wtf_size_t i = 0; i < descriptor->targets().size(); ++i) {
     const GPUColorTargetState* color_target = descriptor->targets()[i];
     if (color_target->hasBlend()) {
-      dawn_fragment->blend_states[i] =
-          AsDawnType(color_target->blend(), device);
+      dawn_fragment->blend_states[i] = AsDawnType(color_target->blend());
       dawn_fragment->targets[i].blend = &dawn_fragment->blend_states[i];
     }
   }

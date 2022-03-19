@@ -396,7 +396,7 @@ void GPUQueue::WriteTextureImpl(GPUImageCopyTexture* destination,
                                 const V8GPUExtent3D* write_size,
                                 ExceptionState& exception_state) {
   WGPUExtent3D dawn_write_size = AsDawnType(write_size);
-  WGPUImageCopyTexture dawn_destination = AsDawnType(destination, device_);
+  WGPUImageCopyTexture dawn_destination = AsDawnType(destination);
 
   WGPUTextureDataLayout dawn_data_layout = {};
   {
@@ -471,7 +471,7 @@ void GPUQueue::copyExternalImageToTexture(
     return;
   }
 
-  WGPUImageCopyTexture dawn_destination = AsDawnType(destination, device_);
+  WGPUImageCopyTexture dawn_destination = AsDawnType(destination);
 
   if (!IsValidExternalImageDestinationFormat(
           destination->texture()->Format())) {

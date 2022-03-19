@@ -141,8 +141,7 @@ WGPUOrigin3D AsDawnType(const V8GPUOrigin3D* webgpu_origin) {
   return dawn_origin;
 }
 
-WGPUImageCopyTexture AsDawnType(const GPUImageCopyTexture* webgpu_view,
-                                GPUDevice* device) {
+WGPUImageCopyTexture AsDawnType(const GPUImageCopyTexture* webgpu_view) {
   DCHECK(webgpu_view);
   DCHECK(webgpu_view->texture());
 
