@@ -358,6 +358,13 @@ bool ShouldPaintCarets(const NGPhysicalBoxFragment& fragment) {
   return ShouldPaintCursorCaret(fragment) || ShouldPaintDragCaret(fragment);
 }
 
+PaintInfo FloatPaintInfo(const PaintInfo& paint_info) {
+  PaintInfo float_paint_info(paint_info);
+  if (paint_info.phase == PaintPhase::kFloat)
+    float_paint_info.phase = PaintPhase::kForeground;
+  return float_paint_info;
+}
+
 }  // anonymous namespace
 
 PhysicalRect NGBoxFragmentPainter::InkOverflowIncludingFilters() const {
@@ -805,7 +812,6 @@ void NGBoxFragmentPainter::PaintBlockChild(
 }
 
 void NGBoxFragmentPainter::PaintFloatingItems(const PaintInfo& paint_info,
-                                              const PaintInfo& float_paint_info,
                                               NGInlineCursor* cursor) {
   while (*cursor) {
     const NGFragmentItem* item = cursor->Current().Item();
@@ -820,6 +826,7 @@ void NGBoxFragmentPainter::PaintFloatingItems(const PaintInfo& paint_info,
       continue;
     }
     if (child_fragment->IsFloating()) {
+      PaintInfo float_paint_info = FloatPaintInfo(paint_info);
       if (child_fragment->CanTraverse()) {
         NGBoxFragmentPainter(*child_fragment).Paint(float_paint_info);
       } else {
@@ -839,17 +846,15 @@ void NGBoxFragmentPainter::PaintFloatingChildren(
     const NGPhysicalFragment& container,
     const PaintInfo& paint_info) {
   DCHECK(container.HasFloatingDescendantsForPaint());
+  const PaintInfo* local_paint_info = &paint_info;
+  absl::optional<ScopedPaintState> paint_state;
+  absl::optional<ScopedBoxContentsPaintState> contents_paint_state;
+  if (const auto* box = DynamicTo<LayoutBox>(container.GetLayoutObject())) {
+    paint_state.emplace(container, paint_info);
+    contents_paint_state.emplace(*paint_state, *box);
+    local_paint_info = &contents_paint_state->GetPaintInfo();
+  }
 
-  PaintInfo float_paint_info(paint_info);
-  if (paint_info.phase == PaintPhase::kFloat)
-    float_paint_info.phase = PaintPhase::kForeground;
-  PaintFloatingChildren(container, paint_info, float_paint_info);
-}
-
-void NGBoxFragmentPainter::PaintFloatingChildren(
-    const NGPhysicalFragment& container,
-    const PaintInfo& paint_info,
-    const PaintInfo& float_paint_info) {
   DCHECK(container.HasFloatingDescendantsForPaint());
 
   for (const NGLink& child : container.Children()) {
@@ -860,7 +865,7 @@ void NGBoxFragmentPainter::PaintFloatingChildren(
     if (child_fragment.CanTraverse()) {
       if (child_fragment.IsFloating()) {
         NGBoxFragmentPainter(To<NGPhysicalBoxFragment>(child_fragment))
-            .Paint(float_paint_info);
+            .Paint(FloatPaintInfo(*local_paint_info));
         continue;
       }
 
@@ -878,7 +883,7 @@ void NGBoxFragmentPainter::PaintFloatingChildren(
         // the first case when we're more stable.
 
         ObjectPainter(*child_fragment.GetLayoutObject())
-            .PaintAllPhasesAtomically(float_paint_info);
+            .PaintAllPhasesAtomically(FloatPaintInfo(*local_paint_info));
         continue;
       }
 
@@ -888,10 +893,10 @@ void NGBoxFragmentPainter::PaintFloatingChildren(
 
       // Drawing in SelectionDragImage phase can result in an exponential
       // paint time: crbug.com://1182106
-      if (paint_info.phase != PaintPhase::kSelectionDragImage &&
+      if (local_paint_info->phase != PaintPhase::kSelectionDragImage &&
           child_fragment.Type() == NGPhysicalFragment::kFragmentBox &&
           FragmentRequiresLegacyFallback(child_fragment)) {
-        child_fragment.GetLayoutObject()->Paint(paint_info);
+        child_fragment.GetLayoutObject()->Paint(*local_paint_info);
         continue;
       }
     }
@@ -899,7 +904,7 @@ void NGBoxFragmentPainter::PaintFloatingChildren(
     // The selection paint traversal is special. We will visit all fragments
     // (including floats) in the normal paint traversal. There isn't any point
     // performing the special float traversal here.
-    if (paint_info.phase == PaintPhase::kSelectionDragImage)
+    if (local_paint_info->phase == PaintPhase::kSelectionDragImage)
       continue;
 
     if (!child_fragment.HasFloatingDescendantsForPaint())
@@ -910,7 +915,7 @@ void NGBoxFragmentPainter::PaintFloatingChildren(
       // jumping directly to its children (which is what we normally do when
       // looking for floats), in order to set up the clip rectangle.
       NGBoxFragmentPainter(To<NGPhysicalBoxFragment>(child_fragment))
-          .Paint(paint_info);
+          .Paint(*local_paint_info);
       continue;
     }
 
@@ -922,9 +927,9 @@ void NGBoxFragmentPainter::PaintFloatingChildren(
       unsigned identifier = FragmentainerUniqueIdentifier(
           To<NGPhysicalBoxFragment>(child_fragment));
       ScopedDisplayItemFragment scope(paint_info.context, identifier);
-      PaintFloatingChildren(child_fragment, paint_info, float_paint_info);
+      PaintFloatingChildren(child_fragment, *local_paint_info);
     } else {
-      PaintFloatingChildren(child_fragment, paint_info, float_paint_info);
+      PaintFloatingChildren(child_fragment, *local_paint_info);
     }
   }
 
@@ -936,13 +941,13 @@ void NGBoxFragmentPainter::PaintFloatingChildren(
           DynamicTo<NGPhysicalBoxFragment>(&container)) {
     if (const NGFragmentItems* items = box->Items()) {
       NGInlineCursor cursor(*box, *items);
-      PaintFloatingItems(paint_info, float_paint_info, &cursor);
+      PaintFloatingItems(*local_paint_info, &cursor);
       return;
     }
     if (inline_box_cursor_) {
       DCHECK(box->IsInlineBox());
       NGInlineCursor descendants = inline_box_cursor_->CursorForDescendants();
-      PaintFloatingItems(paint_info, float_paint_info, &descendants);
+      PaintFloatingItems(*local_paint_info, &descendants);
       return;
     }
     DCHECK(!box->IsInlineBox());
