@@ -218,6 +218,13 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
             'eligibleForAccountStorage_)',
       },
 
+      isUnifiedPasswordManagerEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('unifiedPasswordManagerEnabled');
+        },
+      },
+
       showImportPasswords_: {
         type: Boolean,
         value() {
@@ -275,6 +282,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   private hasPasswordExceptions_: boolean;
   private shouldShowBanner_: boolean;
   private isAccountStoreUser_: boolean;
+  private isUnifiedPasswordManagerEnabled_: boolean;
   private shouldShowDevicePasswordsLink_: boolean;
   private trustedVaultBannerState_: TrustedVaultBannerState;
   private hasLeakedCredentials_: boolean;
@@ -474,6 +482,10 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
 
   private computeHasNeverCheckedPasswords_(): boolean {
     return !this.status.elapsedTimeSinceLastCheck;
+  }
+
+  private getPasswordToggleClass_(): string {
+    return this.isUnifiedPasswordManagerEnabled_ ? 'hr' : '';
   }
 
   /**

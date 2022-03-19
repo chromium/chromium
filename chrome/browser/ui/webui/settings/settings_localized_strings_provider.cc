@@ -873,7 +873,7 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
                         content::WebContents* web_contents) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"autofillPageTitle", IDS_SETTINGS_AUTOFILL},
-      {"passwords", IDS_SETTINGS_PASSWORDS},
+      {"passwordsDescription", IDS_SETTINGS_PASSWORD_MANAGER_DESCRIPTION},
       {"passwordsDevice", IDS_SETTINGS_DEVICE_PASSWORDS},
       {"checkPasswords", IDS_SETTINGS_CHECK_PASSWORDS},
       {"checkPasswordsCanceled", IDS_SETTINGS_CHECK_PASSWORDS_CANCELED},
@@ -1125,6 +1125,15 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
        IDS_AUTOFILL_VIRTUAL_CARD_UNENROLL_DIALOG_TITLE},
       {"unenrollVirtualCardDialogConfirm",
        IDS_AUTOFILL_VIRTUAL_CARD_UNENROLL_DIALOG_CONFIRM_BUTTON_LABEL}};
+
+  bool unifiedPasswordManagerEnabled = base::FeatureList::IsEnabled(
+      password_manager::features::kUnifiedPasswordManagerDesktop);
+  html_source->AddBoolean("unifiedPasswordManagerEnabled",
+                          unifiedPasswordManagerEnabled);
+  html_source->AddString(
+      "passwords", l10n_util::GetStringUTF16(unifiedPasswordManagerEnabled
+                                                 ? IDS_SETTINGS_PASSWORD_MANAGER
+                                                 : IDS_SETTINGS_PASSWORDS));
 
   GURL google_password_manager_url = GetGooglePasswordManagerURL(
       password_manager::ManagePasswordsReferrer::kChromeSettings);

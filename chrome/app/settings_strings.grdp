@@ -391,6 +391,12 @@
   <message name="IDS_SETTINGS_PASSWORDS" desc="Name for the password section and settings entry used for managing passwords.">
     Passwords
   </message>
+  <message name="IDS_SETTINGS_PASSWORD_MANAGER" desc="Name for the Password Manager section and settings entry used for managing passwords.">
+    Password Manager
+  </message>
+  <message name="IDS_SETTINGS_PASSWORD_MANAGER_DESCRIPTION" desc="Description for the password section and settings entry used for managing passwords.">
+    Create, save, and manage your passwords so you can easily sign in to sites and apps.
+  </message>
   <message name="IDS_SETTINGS_DEVICE_PASSWORDS" desc="Name for the passwords section used for managing passwords/exceptions stored on the device.">
     Passwords
   </message>
