@@ -104,11 +104,15 @@ class ShelfBackgroundLayerDelegate : public ui::LayerDelegate {
 
   void SetBackgroundColor(SkColor color) {
     background_color_ = color;
-    layer_->SchedulePaint(layer_->bounds());
+    layer_->SchedulePaint(gfx::Rect(layer_->size()));
   }
   void SetBorderType(HighlightBorder::Type type) {
     highlight_border_type_ = type;
-    layer_->SchedulePaint(layer_->bounds());
+    layer_->SchedulePaint(gfx::Rect(layer_->size()));
+  }
+  void SetRoundedCornerRadius(int corner_radius) {
+    corner_radius_ = corner_radius;
+    layer_->SchedulePaint(gfx::Rect(layer_->size()));
   }
   void SetLoginShelfView(LoginShelfView* view) { login_shelf_view_ = view; }
 
@@ -118,23 +122,19 @@ class ShelfBackgroundLayerDelegate : public ui::LayerDelegate {
     ui::PaintRecorder recorder(context, layer_->size());
     gfx::Canvas* canvas = recorder.canvas();
 
-    // Refer to the upper left corner radius of the shelf background layer to
-    // draw the border.
-    const int corner_radius = layer_->rounded_corner_radii().upper_left();
-
     // cc::PaintFlags flags for the background.
     cc::PaintFlags flags;
     flags.setColor(background_color_);
     flags.setAntiAlias(true);
     flags.setStyle(cc::PaintFlags::kFill_Style);
-    canvas->DrawRoundRect(gfx::Rect(layer_->size()), corner_radius, flags);
+    canvas->DrawRoundRect(gfx::Rect(layer_->size()), corner_radius_, flags);
 
     // Don't draw highlight border in login screen.
     if (login_shelf_view_ && login_shelf_view_->GetVisible())
       return;
 
     HighlightBorder::PaintBorderToCanvas(canvas, gfx::Rect(layer_->size()),
-                                         corner_radius, highlight_border_type_,
+                                         corner_radius_, highlight_border_type_,
                                          false);
   }
 
@@ -146,6 +146,7 @@ class ShelfBackgroundLayerDelegate : public ui::LayerDelegate {
   ui::Layer* const layer_;
   LoginShelfView* login_shelf_view_ = nullptr;
   SkColor background_color_;
+  int corner_radius_ = 0;
   HighlightBorder::Type highlight_border_type_ =
       HighlightBorder::Type::kHighlightBorder1;
 };
@@ -426,6 +427,8 @@ void ShelfWidget::DelegateView::UpdateOpaqueBackground() {
       background_type == ShelfBackgroundType::kInApp ||
       (tablet_mode && in_app)) {
     opaque_background()->SetRoundedCornerRadius({0, 0, 0, 0});
+    if (background_delegate_)
+      background_delegate_->SetRoundedCornerRadius(0);
   } else {
     opaque_background()->SetRoundedCornerRadius({
         shelf->SelectValueForShelfAlignment(radius, 0.0f, radius),
@@ -433,6 +436,8 @@ void ShelfWidget::DelegateView::UpdateOpaqueBackground() {
         shelf->SelectValueForShelfAlignment(0.0f, radius, 0.0f),
         shelf->SelectValueForShelfAlignment(0.0f, 0.0f, radius),
     });
+    if (background_delegate_)
+      background_delegate_->SetRoundedCornerRadius(radius);
   }
   opaque_background()->SetBounds(opaque_background_bounds);
 
