@@ -6,6 +6,7 @@
 
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
+#include "base/strings/string_piece.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -72,8 +73,6 @@ class AttributionSourceDisabledBrowserTest : public ContentBrowserTest {
  private:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
 };
-
-}  // namespace
 
 // Verifies that impressions are not logged when the Runtime feature isn't
 // enabled.
@@ -640,48 +639,62 @@ IN_PROC_BROWSER_TEST_F(AttributionSourceDeclarationBrowserTest,
   EXPECT_EQ(10, last_impression.priority);
 }
 
-// TODO(crbug.com/1215063): Flaky timeout on serveral builders.
-IN_PROC_BROWSER_TEST_F(
-    AttributionSourceDeclarationBrowserTest,
-    DISABLED_WindowOpenAttributionSourceFeatures_FeaturesHandled) {
-  struct {
-    std::string features;
-    bool expected;
-  } kTestCases[] = {
-      {"", false},
-      {"attributionsourceeventid=1", false},
-      {"attributiondestination=1", false},
-      {"attributionexpiry=1", false},
-      {"attributionsourcepriority=10", false},
-      {"attributionsourceeventid=1,attributiondestination=1234", false},
-      {"attributionsourceeventid=1,attributiondestination=abcdefg", false},
-      {"attributionsourceeventid=1,attributiondestination=http://a.com", false},
-      {"attributionsourceeventid=1,attributiondestination=https://a.com", true},
-      {"attributionsourceeventid=bb,attributiondestination=https://a.com",
-       true},
-      {"attributionsourceeventid=bb,attributiondestination=https://"
-       "a.com,attributionsourcepriority=10",
-       true},
-  };
+struct AttributionWindowOpenFeatureTestCase {
+  base::StringPiece features;
+  bool expected;
+};
 
-  for (const auto& test_case : kTestCases) {
-    SourceObserver source_observer(web_contents());
-    GURL page_url =
-        https_server()->GetURL("b.test", "/page_with_impression_creator.html");
-    EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
+const AttributionWindowOpenFeatureTestCase
+    kAttributionWindowOpenFeatureTestCases[] = {
+        {"", false},
+        {"attributionsourceeventid=1", false},
+        {"attributiondestination=1", false},
+        {"attributionexpiry=1", false},
+        {"attributionsourcepriority=10", false},
+        {"attributionsourceeventid=1,attributiondestination=1234", false},
+        {"attributionsourceeventid=1,attributiondestination=abcdefg", false},
+        {"attributionsourceeventid=1,attributiondestination=http://a.com",
+         false},
+        {"attributionsourceeventid=1,attributiondestination=https://a.com",
+         true},
+        {"attributionsourceeventid=bb,attributiondestination=https://a.com",
+         true},
+        {"attributionsourceeventid=bb,attributiondestination=https://"
+         "a.com,attributionsourcepriority=10",
+         true},
+};
 
-    // Navigate the page using window.open and set an impression.
-    EXPECT_TRUE(ExecJs(web_contents(),
-                       JsReplace(R"(window.open("https://a.com", "_top", $1);)",
-                                 test_case.features)));
+class AttributionSourceDeclarationWindowOpenFeaturesBrowserTest
+    : public AttributionSourceDeclarationBrowserTest,
+      public ::testing::WithParamInterface<
+          AttributionWindowOpenFeatureTestCase> {};
 
-    // Wait for the impression to be seen by the observer.
-    if (test_case.expected)
-      source_observer.Wait();
-    else
-      EXPECT_TRUE(source_observer.WaitForNavigationWithNoImpression());
-  }
+IN_PROC_BROWSER_TEST_P(
+    AttributionSourceDeclarationWindowOpenFeaturesBrowserTest,
+    FeaturesHandled) {
+  const AttributionWindowOpenFeatureTestCase& test_case = GetParam();
+
+  SourceObserver source_observer(web_contents());
+  GURL page_url =
+      https_server()->GetURL("b.test", "/page_with_impression_creator.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
+
+  // Navigate the page using window.open and set an impression.
+  EXPECT_TRUE(ExecJs(web_contents(),
+                     JsReplace(R"(window.open("https://a.com", "_top", $1);)",
+                               test_case.features)));
+
+  // Wait for the impression to be seen by the observer.
+  if (test_case.expected)
+    source_observer.Wait();
+  else
+    EXPECT_TRUE(source_observer.WaitForNavigationWithNoImpression());
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    AttributionSourceDeclarationWindowOpenFeatures,
+    AttributionSourceDeclarationWindowOpenFeaturesBrowserTest,
+    ::testing::ValuesIn(kAttributionWindowOpenFeatureTestCases));
 
 IN_PROC_BROWSER_TEST_F(AttributionSourceDeclarationBrowserTest,
                        WindowOpenNoUserGesture_NoImpression) {
@@ -769,4 +782,5 @@ IN_PROC_BROWSER_TEST_F(AttributionSourceDeclarationBrowserTest,
   EXPECT_TRUE(source_observer.WaitForNavigationWithNoImpression());
 }
 
+}  // namespace
 }  // namespace content
