@@ -180,9 +180,11 @@ AttributionSrcLoader::RegisterResult AttributionSrcLoader::RegisterSources(
 
 absl::optional<WebImpression> AttributionSrcLoader::RegisterNavigation(
     const KURL& src_url) {
+  // TODO(apaseltiner): Add tests to ensure that this method can't be used to
+  // register triggers.
   RegisterResult result;
   ResourceClient* client =
-      CreateAndSendRequest(src_url, nullptr, SrcType::kUndetermined,
+      CreateAndSendRequest(src_url, nullptr, SrcType::kSource,
                            /*associated_with_navigation=*/true, result);
   if (!client)
     return absl::nullopt;
