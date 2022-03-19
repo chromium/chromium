@@ -150,6 +150,7 @@ class TileTaskManagerImpl;
 namespace chrome {
 #if BUILDFLAG(IS_MAC)
 void DeveloperIDCertificateReauthorizeInApp();
+void PurgeStaleScreenCapturePermission();
 #endif  // BUILDFLAG(IS_MAC)
 }  // namespace chrome
 namespace chromecast {
@@ -492,6 +493,7 @@ class BASE_EXPORT ScopedAllowBlocking {
   friend bool PathProviderWin(int, FilePath*);
 #if BUILDFLAG(IS_MAC)
   friend void chrome::DeveloperIDCertificateReauthorizeInApp();
+  friend void chrome::PurgeStaleScreenCapturePermission();
 #endif  // BUILDFLAG(IS_MAC)
   friend bool chromeos::system::IsCoreSchedulingAvailable();
   friend int chromeos::system::NumberOfPhysicalCores();
