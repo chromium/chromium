@@ -5650,6 +5650,8 @@ static_library("browser") {
       "mac/mac_startup_profiler.h",
       "mac/nsprocessinfo_additions.h",
       "mac/nsprocessinfo_additions.mm",
+      "mac/purge_stale_screen_capture_permission.h",
+      "mac/purge_stale_screen_capture_permission.mm",
       "mac/relauncher.h",
       "mac/relauncher.mm",
       "media/webrtc/media_authorization_wrapper_mac.h",
