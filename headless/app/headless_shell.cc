@@ -635,6 +635,7 @@ void HeadlessShell::OnFileOpened(const protocol::Binary& data,
     LOG(ERROR) << "Writing to file " << file_name.value()
                << " was unsuccessful, could not open file: "
                << base::File::ErrorToString(error_code);
+    ShutdownSoon();
     return;
   }
   if (!file_proxy_->Write(
