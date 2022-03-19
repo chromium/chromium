@@ -27,7 +27,9 @@ foreach(ts_file, list_from_ts_sources_txt) {
 
   if (js_node_file != "src-node/common/runtime/wpt.js" &&
       js_node_file != "src-node/common/runtime/standalone.js" &&
-      js_node_file != "src-node/common/runtime/helper/test_worker.js") {
+      js_node_file != "src-node/common/runtime/helper/test_worker.js" &&
+      js_node_file !=
+      "src-node/webgpu/web_platform/worker/worker_launcher.js") {
     js_outputs += [ "$target_gen_dir/$js_node_file" ]
   }
 }

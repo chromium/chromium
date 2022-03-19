@@ -2187,6 +2187,10 @@
 <meta name=variant content='?q=webgpu:api,validation,encoding,cmds,setBindGroup:dynamic_offsets_passed_but_not_expected:*'>
 <meta name=variant content='?q=webgpu:api,validation,encoding,cmds,setBindGroup:dynamic_offsets_match_expectations_in_pass_encoder:*'>
 <meta name=variant content='?q=webgpu:api,validation,encoding,cmds,setBindGroup:u32array_start_and_length:*'>
+<meta name=variant content='?q=webgpu:api,validation,encoding,createRenderBundleEncoder:attachment_state:*'>
+<meta name=variant content='?q=webgpu:api,validation,encoding,createRenderBundleEncoder:valid_texture_formats:*'>
+<meta name=variant content='?q=webgpu:api,validation,encoding,createRenderBundleEncoder:depth_stencil_readonly:*'>
+<meta name=variant content='?q=webgpu:api,validation,encoding,createRenderBundleEncoder:depth_stencil_readonly_with_undefined_depth:*'>
 <meta name=variant content='?q=webgpu:api,validation,encoding,programmable,pipeline_bind_group_compat:bind_groups_and_pipeline_layout_mismatch:*'>
 <meta name=variant content='?q=webgpu:api,validation,encoding,programmable,pipeline_bind_group_compat:buffer_binding,render_pipeline:*'>
 <meta name=variant content='?q=webgpu:api,validation,encoding,programmable,pipeline_bind_group_compat:sampler_binding,render_pipeline:*'>
@@ -2209,7 +2213,12 @@
 <meta name=variant content='?q=webgpu:api,validation,encoding,queries,resolveQuerySet:destination_offset_alignment:*'>
 <meta name=variant content='?q=webgpu:api,validation,encoding,queries,resolveQuerySet:resolve_buffer_oob:*'>
 <meta name=variant content='?q=webgpu:api,validation,encoding,queries,resolveQuerySet:query_set_buffer,device_mismatch:*'>
-<meta name=variant content='?q=webgpu:api,validation,encoding,render_bundle:render_bundles,device_mismatch:*'>
+<meta name=variant content='?q=webgpu:api,validation,encoding,render_bundle:empty_bundle_list:*'>
+<meta name=variant content='?q=webgpu:api,validation,encoding,render_bundle:device_mismatch:*'>
+<meta name=variant content='?q=webgpu:api,validation,encoding,render_bundle:color_formats_mismatch:*'>
+<meta name=variant content='?q=webgpu:api,validation,encoding,render_bundle:depth_stencil_formats_mismatch:*'>
+<meta name=variant content='?q=webgpu:api,validation,encoding,render_bundle:depth_stencil_readonly_mismatch:*'>
+<meta name=variant content='?q=webgpu:api,validation,encoding,render_bundle:sample_count_mismatch:*'>
 <meta name=variant content='?q=webgpu:api,validation,error_scope:simple_case_where_the_error_scope_catches_an_error:*'>
 <meta name=variant content='?q=webgpu:api,validation,error_scope:errors_bubble_to_the_parent_scope_if_not_handled_by_the_current_scope:*'>
 <meta name=variant content='?q=webgpu:api,validation,error_scope:if_an_error_scope_matches_an_error_it_does_not_bubble_to_the_parent_scope:*'>
@@ -2577,6 +2586,7 @@
 <meta name=variant content='?q=webgpu:api,validation,resource_usages,texture,in_pass_encoder:validation_scope,different_draws_or_dispatches:*'>
 <meta name=variant content='?q=webgpu:api,validation,resource_usages,texture,in_pass_encoder:validation_scope,different_passes:*'>
 <meta name=variant content='?q=webgpu:api,validation,resource_usages,texture,in_render_common:subresources_from_same_texture_as_color_attachments:*'>
+<meta name=variant content='?q=webgpu:api,validation,resource_usages,texture,in_render_common:subresources_from_same_texture_as_color_attachment_and_in_bind_group:*'>
 <meta name=variant content='?q=webgpu:api,validation,texture,destroy:base:*'>
 <meta name=variant content='?q=webgpu:api,validation,texture,destroy:twice:*'>
 <meta name=variant content='?q=webgpu:api,validation,texture,destroy:submit_a_destroyed_texture_as_attachment:*'>
@@ -2706,6 +2716,11 @@
 <meta name=variant content='?q=webgpu:shader,execution,expression,binary,bitwise:bitwise_or:*'>
 <meta name=variant content='?q=webgpu:shader,execution,expression,binary,bitwise:bitwise_and:*'>
 <meta name=variant content='?q=webgpu:shader,execution,expression,binary,bitwise:bitwise_exclusive_or:*'>
+<meta name=variant content='?q=webgpu:shader,execution,expression,binary,f32_arithmetic:addition:*'>
+<meta name=variant content='?q=webgpu:shader,execution,expression,binary,f32_arithmetic:subtraction:*'>
+<meta name=variant content='?q=webgpu:shader,execution,expression,binary,f32_arithmetic:multiplication:*'>
+<meta name=variant content='?q=webgpu:shader,execution,expression,binary,f32_arithmetic:division:*'>
+<meta name=variant content='?q=webgpu:shader,execution,expression,binary,f32_arithmetic:modulus:*'>
 <meta name=variant content='?q=webgpu:shader,execution,expression,call,builtin,abs:u32:*'>
 <meta name=variant content='?q=webgpu:shader,execution,expression,call,builtin,abs:i32:*'>
 <meta name=variant content='?q=webgpu:shader,execution,expression,call,builtin,abs:f32:*'>
@@ -2793,6 +2808,7 @@
 <meta name=variant content='?q=webgpu:shader,execution,expression,call,builtin,select:vector:*'>
 <meta name=variant content='?q=webgpu:shader,execution,expression,call,builtin,sin:f32:*'>
 <meta name=variant content='?q=webgpu:shader,execution,expression,call,builtin,value_testing_built_in_functions:value_testing_builtin_functions,runtime_sized_array_length:*'>
+<meta name=variant content='?q=webgpu:shader,execution,expression,unary,f32_arithmetic:negation:*'>
 <meta name=variant content='?q=webgpu:shader,execution,memory_model,atomicity:atomicity:memType="atomic_storage";testType="inter_workgroup"'>
 <meta name=variant content='?q=webgpu:shader,execution,memory_model,atomicity:atomicity:memType="atomic_storage";testType="intra_workgroup";*'>
 <meta name=variant content='?q=webgpu:shader,execution,memory_model,atomicity:atomicity:memType="atomic_workgroup";*'>
@@ -3571,3 +3587,4 @@
 <meta name=variant content='?q=webgpu:web_platform,external_texture,video:importExternalTexture,sample:*'>
 <meta name=variant content='?q=webgpu:web_platform,external_texture,video:importExternalTexture,destroy:*'>
 <meta name=variant content='?q=webgpu:web_platform,external_texture,video:importExternalTexture,compute:*'>
+<meta name=variant content='?q=webgpu:web_platform,worker,worker:worker:*'>

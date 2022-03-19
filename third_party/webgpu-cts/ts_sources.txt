@@ -62,6 +62,7 @@ src/webgpu/util/texture/base.ts
 src/webgpu/util/texture/layout.ts
 src/webgpu/capability_info.ts
 src/webgpu/util/buffer.ts
+src/webgpu/util/pretty_diff_tables.ts
 src/webgpu/util/check_contents.ts
 src/webgpu/util/command_buffer_maker.ts
 src/webgpu/util/device_pool.ts
@@ -198,6 +199,7 @@ src/webgpu/api/validation/capability_checks/features/depth_clip_control.spec.ts
 src/webgpu/api/validation/capability_checks/features/query_types.spec.ts
 src/webgpu/api/validation/capability_checks/features/texture_formats.spec.ts
 src/webgpu/api/validation/encoding/beginRenderPass.spec.ts
+src/webgpu/api/validation/encoding/createRenderBundleEncoder.spec.ts
 src/webgpu/api/validation/encoding/encoder_state.spec.ts
 src/webgpu/api/validation/encoding/render_bundle.spec.ts
 src/webgpu/api/validation/encoding/cmds/buffer_texture_copies.spec.ts
@@ -255,6 +257,7 @@ src/webgpu/util/compare.ts
 src/webgpu/shader/execution/expression/expression.ts
 src/webgpu/shader/execution/expression/binary/binary.ts
 src/webgpu/shader/execution/expression/binary/bitwise.spec.ts
+src/webgpu/shader/execution/expression/binary/f32_arithmetic.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/builtin.ts
 src/webgpu/shader/execution/expression/call/builtin/abs.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/all.spec.ts
@@ -285,6 +288,8 @@ src/webgpu/shader/execution/expression/call/builtin/reverseBits.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/select.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/sin.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/value_testing_built_in_functions.spec.ts
+src/webgpu/shader/execution/expression/unary/unary.ts
+src/webgpu/shader/execution/expression/unary/f32_arithmetic.spec.ts
 src/webgpu/shader/execution/memory_model/memory_model_setup.ts
 src/webgpu/shader/execution/memory_model/atomicity.spec.ts
 src/webgpu/shader/execution/memory_model/barrier.spec.ts
@@ -320,3 +325,6 @@ src/webgpu/web_platform/reftests/canvas_clear.html.ts
 src/webgpu/web_platform/reftests/canvas_complex.html.ts
 src/webgpu/web_platform/reftests/canvas_composite_alpha.html.ts
 src/webgpu/web_platform/reftests/canvas_size_different_with_back_buffer_size.html.ts
+src/webgpu/web_platform/worker/worker.spec.ts
+src/webgpu/web_platform/worker/worker.ts
+src/webgpu/web_platform/worker/worker_launcher.ts
