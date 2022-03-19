@@ -75,9 +75,6 @@ NGSimplifiedLayoutAlgorithm::NGSimplifiedLayoutAlgorithm(
       container_builder_.SetIsPushedByFloats();
     container_builder_.SetAdjoiningObjectTypes(result.AdjoiningObjectTypes());
 
-    if (physical_fragment.LastBaseline())
-      container_builder_.SetLastBaseline(*physical_fragment.LastBaseline());
-
     if (ConstraintSpace().IsTableCell()) {
       container_builder_.SetHasCollapsedBorders(
           physical_fragment.HasCollapsedBorders());
@@ -106,8 +103,6 @@ NGSimplifiedLayoutAlgorithm::NGSimplifiedLayoutAlgorithm(
     DCHECK(!result.IsSelfCollapsing());
     DCHECK(!result.IsPushedByFloats());
     DCHECK_EQ(result.AdjoiningObjectTypes(), kAdjoiningNone);
-
-    DCHECK(!physical_fragment.LastBaseline());
 
     if (physical_fragment.IsFieldsetContainer())
       container_builder_.SetIsFieldsetContainer();
@@ -149,8 +144,10 @@ NGSimplifiedLayoutAlgorithm::NGSimplifiedLayoutAlgorithm(
   if (physical_fragment.IsHiddenForPaint())
     container_builder_.SetIsHiddenForPaint(true);
 
-  if (physical_fragment.Baseline())
-    container_builder_.SetBaseline(*physical_fragment.Baseline());
+  if (auto baseline = physical_fragment.Baseline())
+    container_builder_.SetBaseline(*baseline);
+  if (auto last_baseline = physical_fragment.LastBaseline())
+    container_builder_.SetLastBaseline(*last_baseline);
   if (physical_fragment.IsTableNGPart())
     container_builder_.SetIsTableNGPart();
 
