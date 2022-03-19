@@ -708,6 +708,10 @@
       status: "stable",
     },
     {
+      name: "CSSObjectViewBoxAndOverflow",
+      status: "experimental",
+    },
+    {
       name: "CSSOffsetPathRay",
       status: "experimental",
     },

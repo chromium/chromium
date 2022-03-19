@@ -59466,6 +59466,7 @@ Called by update_use_counter_css.py.-->
   <int value="710" label="base-palette"/>
   <int value="711" label="override-colors"/>
   <int value="712" label="page-transition-tag"/>
+  <int value="713" label="object-view-box"/>
 </enum>
 
 <enum name="MappedEditingCommands">

@@ -242,6 +242,7 @@ min-width: 0px
 mix-blend-mode: normal
 object-fit: fill
 object-position: 50% 50%
+object-view-box: none
 offset-anchor: auto
 offset-distance: 0px
 offset-path: none

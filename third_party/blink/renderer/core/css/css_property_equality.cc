@@ -205,6 +205,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.MinWidth() == b.MinWidth();
     case CSSPropertyID::kObjectPosition:
       return a.ObjectPosition() == b.ObjectPosition();
+    case CSSPropertyID::kObjectViewBox:
+      return a.ObjectViewBox() == b.ObjectViewBox();
     case CSSPropertyID::kOffsetAnchor:
       return a.OffsetAnchor() == b.OffsetAnchor();
     case CSSPropertyID::kOffsetDistance:
