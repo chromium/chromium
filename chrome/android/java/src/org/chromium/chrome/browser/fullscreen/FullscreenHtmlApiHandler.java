@@ -424,7 +424,7 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom,
                     int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                if ((bottom - top) < (oldBottom - oldTop)) {
+                if ((bottom - top) <= (oldBottom - oldTop)) {
                     // At this point, browser controls are hidden. Show browser controls only if
                     // it's permitted.
                     TabBrowserControlsConstraintsHelper.update(
