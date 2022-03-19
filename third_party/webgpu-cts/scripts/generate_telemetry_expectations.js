@@ -45,7 +45,11 @@ const { parseQuery } = require(`${ctsRoot}/common/internal/query/parseQuery`);
           outStream.write(' ] ')
         }
 
-        outStream.write(name);
+        if (entry.w) {
+          outStream.write(`worker_${name}`);
+        } else {
+          outStream.write(name);
+        }
 
         if (entry.e) {
           outStream.write(' [')

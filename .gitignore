@@ -215,6 +215,7 @@ vs-chromium-project.txt
 /content/test/data/gpu/mediapipe_zip/mediapipe_chromium_tests.zip
 /content/test/data/layout_tests/
 /content/test/data/plugin/
+/content/test/gpu/.webgpu_typescript/
 /content/web_ui_test_mojo_bindings.xml
 /data
 /delegate_execute

@@ -9969,6 +9969,7 @@ if (!is_android && !is_fuchsia) {
 
     data_deps = [
       "//content/test:telemetry_gpu_unittest_data",
+      "//content/test:webgpu_cts_scripts",
       "//testing:test_scripts_shared",
     ]
   }
