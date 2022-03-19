@@ -257,6 +257,16 @@ namespace autotestPrivate {
 
   callback IsLacrosPrimaryBrowserCallback = void (boolean primary);
 
+  dictionary LacrosInfo {
+    // True iff lacros is running currently.
+    boolean isRunning;
+    // Path to lacros-chrome directory. Note that this may change over time if
+    // omaha is used. This also may be empty if lacros is not running.
+    DOMString lacrosPath;
+  };
+
+  callback GetLacrosInfoCallback = void (LacrosInfo info);
+
   dictionary ArcAppDict {
     DOMString name;
     DOMString packageName;
@@ -744,6 +754,10 @@ namespace autotestPrivate {
     // be used only after profile initialization.
     [supportsPromises] static void isLacrosPrimaryBrowser(
         IsLacrosPrimaryBrowserCallback callback);
+
+    // Gets various information about the state of lacros on the system.
+    [supportsPromises] static void getLacrosInfo(
+        GetLacrosInfoCallback callback);
 
     // Gets information about the requested ARC app.
     [supportsPromises] static void getArcApp(DOMString appId,

@@ -1896,6 +1896,24 @@ AutotestPrivateIsLacrosPrimaryBrowserFunction::Run() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// AutotestPrivateGetLacrosInfoFunction
+///////////////////////////////////////////////////////////////////////////////
+
+AutotestPrivateGetLacrosInfoFunction::~AutotestPrivateGetLacrosInfoFunction() =
+    default;
+
+ExtensionFunction::ResponseAction AutotestPrivateGetLacrosInfoFunction::Run() {
+  DVLOG(1) << "AutotestPrivateGetLacrosInfoFunction";
+  auto* browser_manager = crosapi::BrowserManager::Get();
+  auto result = std::make_unique<base::DictionaryValue>();
+  result->SetBoolKey("isRunning", browser_manager->IsRunning());
+  result->SetStringKey("lacrosPath",
+                       browser_manager->lacros_path().MaybeAsASCII());
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // AutotestPrivateGetArcPackageFunction
 ///////////////////////////////////////////////////////////////////////////////
 

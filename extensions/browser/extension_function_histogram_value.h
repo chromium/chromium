@@ -1701,6 +1701,7 @@ enum HistogramValue {
   TERMINALPRIVATE_SETPREFS = 1638,
   AUTOTESTPRIVATE_GETCRYPTOHOMERECOVERYDATA = 1639,
   TERMINALPRIVATE_OPENSETTINGSSUBPAGE = 1640,
+  AUTOTESTPRIVATE_GETLACROSINFO = 1641,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

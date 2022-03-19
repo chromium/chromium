@@ -215,6 +215,8 @@ class BrowserManager : public session_manager::SessionManagerObserver,
     browser_version_ = version;
   }
 
+  const base::FilePath& lacros_path() const { return lacros_path_; }
+
   // Set the data of device account policy. It is the serialized blob of
   // PolicyFetchResponse received from the server, or parsed from the file after
   // is was validated by Ash.

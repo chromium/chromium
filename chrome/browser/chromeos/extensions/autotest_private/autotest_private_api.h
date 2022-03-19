@@ -315,6 +315,16 @@ class AutotestPrivateIsLacrosPrimaryBrowserFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
+class AutotestPrivateGetLacrosInfoFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("autotestPrivate.getLacrosInfo",
+                             AUTOTESTPRIVATE_GETLACROSINFO)
+
+ private:
+  ~AutotestPrivateGetLacrosInfoFunction() override;
+  ResponseAction Run() override;
+};
+
 class AutotestPrivateGetArcAppFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("autotestPrivate.getArcApp",
