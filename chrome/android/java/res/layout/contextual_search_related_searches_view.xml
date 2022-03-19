@@ -4,7 +4,7 @@
      found in the LICENSE file. -->
 
 <!-- Displays Related Searches suggestions in the Bar of the Overlay Panel. -->
-<FrameLayout
+<org.chromium.chrome.browser.compositor.bottombar.contextualsearch.NoSystemGestureFrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/contextual_search_related_searches_view_id"
     android:layout_width="wrap_content"
@@ -12,4 +12,4 @@
     android:background="@macro/overlay_panel_bar_background_color"
     android:visibility="invisible">
     <!-- ChipView elements and their container are dynamically added here. -->
-</FrameLayout>
+</org.chromium.chrome.browser.compositor.bottombar.contextualsearch.NoSystemGestureFrameLayout>
