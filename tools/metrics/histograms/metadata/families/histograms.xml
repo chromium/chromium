@@ -88,6 +88,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ChildAccountReconcilor.ForcedUserExitOnReconcileError"
+    enum="BooleanHit" expires_after="2023-01-20">
+  <owner>agawronska@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <summary>
+    Number of forced logouts for child accounts on an account reconciliation
+    error. Check `ChromeOSLimitedAccessAccountReconcilorDelegate`.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.FamilyLink.ChildStatusReportRequest.Size" units="KB"
     expires_after="2023-01-20">
   <owner>tobyhuang@chromium.org</owner>
