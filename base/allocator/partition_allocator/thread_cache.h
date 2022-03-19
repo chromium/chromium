@@ -18,11 +18,9 @@
 #include "base/allocator/partition_allocator/partition_stats.h"
 #include "base/allocator/partition_allocator/partition_tls.h"
 #include "base/base_export.h"
-#include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
-#include "base/no_destructor.h"
 #include "build/build_config.h"
 
 #if defined(ARCH_CPU_X86_64) && defined(PA_HAS_64_BITS_POINTERS)
@@ -150,7 +148,7 @@ class BASE_EXPORT ThreadCacheRegistry {
  private:
   friend class partition_alloc::internal::tools::ThreadCacheInspector;
   friend class partition_alloc::internal::tools::HeapDumper;
-  friend class NoDestructor<ThreadCacheRegistry>;
+
   // Not using base::Lock as the object's constructor must be constexpr.
   PartitionLock lock_;
   ThreadCache* list_head_ GUARDED_BY(GetLock()) = nullptr;
