@@ -14,6 +14,7 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/policy/messaging_layer/upload/fake_upload_client.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
+#include "chrome/browser/policy/messaging_layer/util/test.h"
 #include "chromeos/dbus/missive/missive_client.h"
 #include "chromeos/dbus/services/service_provider_test_helper.h"
 #include "components/policy/core/common/cloud/dm_token.h"
@@ -218,7 +219,16 @@ TEST_F(EncryptedReportingServiceProviderTest, SuccessfullyUploadsRecord) {
   EXPECT_CALL(*this, ReportSuccessfulUpload(
                          EqualsProto(record_.sequence_information()), _))
       .Times(1);
-  EXPECT_CALL(cloud_policy_client_, UploadEncryptedReport(_, _, _))
+  EXPECT_CALL(
+      cloud_policy_client_,
+      // TODO(b/225412986): IsDataUploadRequestValid() reports "requestId" is
+      // missing. Change the first matcher to IsDataUploadRequestValid() once
+      // fixed.
+      UploadEncryptedReport(
+          ::reporting::RequestValidityMatcherBuilder<>::CreateDataUpload()
+              .RemoveMatcher("request-id-matcher")
+              .Build(),
+          _, _))
       .WillOnce(WithArgs<0, 2>(
           Invoke([](base::Value::Dict request,
                     policy::CloudPolicyClient::ResponseCallback response_cb) {

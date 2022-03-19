@@ -13,6 +13,7 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/policy/messaging_layer/upload/fake_upload_client.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
+#include "chrome/browser/policy/messaging_layer/util/test.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/reporting/util/test_support_callbacks.h"
@@ -173,7 +174,15 @@ TEST_F(EncryptedReportingUploadProviderTest, SuccessfullyUploadsRecord) {
       .WillOnce([&uploaded_event](SequenceInformation seq_info, bool force) {
         std::move(uploaded_event.cb()).Run(std::move(seq_info), force);
       });
-  EXPECT_CALL(cloud_policy_client_, UploadEncryptedReport(_, _, _))
+  EXPECT_CALL(
+      cloud_policy_client_,
+      // TODO(b/225412986): IsDataUploadRequestValid() reports "requestId" is
+      // missing. Change the first matcher to IsDataUploadRequestValid() once
+      // fixed.
+      UploadEncryptedReport(RequestValidityMatcherBuilder<>::CreateDataUpload()
+                                .RemoveMatcher("request-id-matcher")
+                                .Build(),
+                            _, _))
       .WillOnce(WithArgs<0, 2>(
           Invoke([](base::Value::Dict request,
                     policy::CloudPolicyClient::ResponseCallback response_cb) {
