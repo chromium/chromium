@@ -572,8 +572,8 @@
   'CROS_ATLAS_DEV': {
     'skylab': {
       'cros_board': 'atlas',
-      'cros_chrome_version': '101.0.4928.0',
-      'cros_img': 'atlas-release/R101-14553.0.0',
+      'cros_chrome_version': '101.0.4937.0',
+      'cros_img': 'atlas-release/R101-14574.0.0',
     },
     'enabled': False,
     'identifier': 'ATLAS_DEV',
@@ -581,8 +581,8 @@
   'CROS_ATLAS_BETA': {
     'skylab': {
       'cros_board': 'atlas',
-      'cros_chrome_version': '100.0.4896.25',
-      'cros_img': 'atlas-release/R100-14526.16.0',
+      'cros_chrome_version': '100.0.4896.44',
+      'cros_img': 'atlas-release/R100-14526.28.0',
     },
     'enabled': False,
     'identifier': 'ATLAS_BETA',
@@ -608,8 +608,8 @@
   'CROS_EVE_DEV': {
     'skylab': {
       'cros_board': 'eve',
-      'cros_chrome_version': '101.0.4928.0',
-      'cros_img': 'eve-release/R101-14553.0.0',
+      'cros_chrome_version': '101.0.4937.0',
+      'cros_img': 'eve-release/R101-14574.0.0',
     },
     'enabled': False,
     'identifier': 'EVE_DEV',
@@ -617,8 +617,8 @@
   'CROS_EVE_BETA': {
     'skylab': {
       'cros_board': 'eve',
-      'cros_chrome_version': '100.0.4896.25',
-      'cros_img': 'eve-release/R100-14526.16.0',
+      'cros_chrome_version': '100.0.4896.44',
+      'cros_img': 'eve-release/R100-14526.28.0',
     },
     'enabled': False,
     'identifier': 'EVE_BETA',
@@ -662,8 +662,8 @@
   'CROS_OCTOPUS_DEV': {
     'skylab': {
       'cros_board': 'octopus',
-      'cros_chrome_version': '101.0.4918.0',
-      'cros_img': 'octopus-release/R101-14543.0.0',
+      'cros_chrome_version': '101.0.4937.0',
+      'cros_img': 'octopus-release/R101-14574.0.0',
     },
     'enabled': False,
     'identifier': 'OCTOPUS_DEV',
@@ -671,8 +671,8 @@
   'CROS_OCTOPUS_BETA': {
     'skylab': {
       'cros_board': 'octopus',
-      'cros_chrome_version': '100.0.4896.25',
-      'cros_img': 'octopus-release/R100-14526.16.0',
+      'cros_chrome_version': '100.0.4896.44',
+      'cros_img': 'octopus-release/R100-14526.28.0',
     },
     'enabled': False,
     'identifier': 'OCTOPUS_BETA',
