@@ -33,7 +33,9 @@ class X11EventWatcherFdWatch : public X11EventWatcher,
 
   X11EventSource* event_source_;
 
-  base::MessagePumpForUI::FdWatchController watcher_controller_;
+  int pipe_[2] = {-1, -1};
+  base::MessagePumpForUI::FdWatchController connection_watcher_;
+  base::MessagePumpForUI::FdWatchController pipe_watcher_;
   bool started_ = false;
 };
 
