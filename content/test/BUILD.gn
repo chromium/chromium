@@ -785,6 +785,9 @@ group("telemetry_gpu_integration_test_support") {
   data_deps = [
     ":telemetry_gpu_integration_test_data",
 
+    # For WebGPU CTS tests.
+    "//third_party/dawn/third_party/gn/webgpu-cts",
+
     # For anything using Skia Gold (pixel, maps).
     "//ui/base:goldctl",
   ]

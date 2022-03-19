@@ -213,6 +213,7 @@ builder.
 * [dawn-linux-x64-deps-rel](https://ci.chromium.org/p/chromium/builders/try/dawn-linux-x64-deps-rel) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""dawn-linux-x64-deps-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""dawn-linux-x64-deps-rel""))
 
   Path regular expressions:
+  * [`//content/test/gpu/.+`](https://cs.chromium.org/chromium/src/content/test/gpu/)
   * [`//gpu/.+`](https://cs.chromium.org/chromium/src/gpu/)
   * [`//testing/buildbot/chromium.dawn.json`](https://cs.chromium.org/search?q=+file:testing/buildbot/chromium.dawn.json)
   * [`//third_party/blink/renderer/modules/webgpu/.+`](https://cs.chromium.org/chromium/src/third_party/blink/renderer/modules/webgpu/)
@@ -227,6 +228,7 @@ builder.
 * [dawn-mac-x64-deps-rel](https://ci.chromium.org/p/chromium/builders/try/dawn-mac-x64-deps-rel) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""dawn-mac-x64-deps-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""dawn-mac-x64-deps-rel""))
 
   Path regular expressions:
+  * [`//content/test/gpu/.+`](https://cs.chromium.org/chromium/src/content/test/gpu/)
   * [`//gpu/.+`](https://cs.chromium.org/chromium/src/gpu/)
   * [`//testing/buildbot/chromium.dawn.json`](https://cs.chromium.org/search?q=+file:testing/buildbot/chromium.dawn.json)
   * [`//third_party/blink/renderer/modules/webgpu/.+`](https://cs.chromium.org/chromium/src/third_party/blink/renderer/modules/webgpu/)
@@ -241,6 +243,7 @@ builder.
 * [dawn-win10-x64-deps-rel](https://ci.chromium.org/p/chromium/builders/try/dawn-win10-x64-deps-rel) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""dawn-win10-x64-deps-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""dawn-win10-x64-deps-rel""))
 
   Path regular expressions:
+  * [`//content/test/gpu/.+`](https://cs.chromium.org/chromium/src/content/test/gpu/)
   * [`//gpu/.+`](https://cs.chromium.org/chromium/src/gpu/)
   * [`//testing/buildbot/chromium.dawn.json`](https://cs.chromium.org/search?q=+file:testing/buildbot/chromium.dawn.json)
   * [`//third_party/blink/renderer/modules/webgpu/.+`](https://cs.chromium.org/chromium/src/third_party/blink/renderer/modules/webgpu/)
@@ -255,6 +258,7 @@ builder.
 * [dawn-win10-x86-deps-rel](https://ci.chromium.org/p/chromium/builders/try/dawn-win10-x86-deps-rel) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""dawn-win10-x86-deps-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""dawn-win10-x86-deps-rel""))
 
   Path regular expressions:
+  * [`//content/test/gpu/.+`](https://cs.chromium.org/chromium/src/content/test/gpu/)
   * [`//gpu/.+`](https://cs.chromium.org/chromium/src/gpu/)
   * [`//testing/buildbot/chromium.dawn.json`](https://cs.chromium.org/search?q=+file:testing/buildbot/chromium.dawn.json)
   * [`//third_party/blink/renderer/modules/webgpu/.+`](https://cs.chromium.org/chromium/src/third_party/blink/renderer/modules/webgpu/)

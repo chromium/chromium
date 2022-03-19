@@ -30,6 +30,7 @@ try_.builder(
     os = os.LINUX_BIONIC_REMOVE,
     tryjob = try_.job(
         location_regexp = [
+            ".+/[+]/content/test/gpu/.+",
             ".+/[+]/gpu/.+",
             ".+/[+]/testing/buildbot/chromium.dawn.json",
             ".+/[+]/third_party/blink/renderer/modules/webgpu/.+",
@@ -51,6 +52,7 @@ try_.builder(
     os = os.MAC_ANY,
     tryjob = try_.job(
         location_regexp = [
+            ".+/[+]/content/test/gpu/.+",
             ".+/[+]/gpu/.+",
             ".+/[+]/testing/buildbot/chromium.dawn.json",
             ".+/[+]/third_party/blink/renderer/modules/webgpu/.+",
@@ -72,6 +74,7 @@ try_.builder(
     os = os.WINDOWS_ANY,
     tryjob = try_.job(
         location_regexp = [
+            ".+/[+]/content/test/gpu/.+",
             ".+/[+]/gpu/.+",
             ".+/[+]/testing/buildbot/chromium.dawn.json",
             ".+/[+]/third_party/blink/renderer/modules/webgpu/.+",
@@ -93,6 +96,7 @@ try_.builder(
     os = os.WINDOWS_ANY,
     tryjob = try_.job(
         location_regexp = [
+            ".+/[+]/content/test/gpu/.+",
             ".+/[+]/gpu/.+",
             ".+/[+]/testing/buildbot/chromium.dawn.json",
             ".+/[+]/third_party/blink/renderer/modules/webgpu/.+",
