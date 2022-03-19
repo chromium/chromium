@@ -808,4 +808,17 @@ TEST_F(AttributionDataHostManagerImplTest,
   data_host_remote.FlushForTesting();
 }
 
+// Ensures correct behavior in
+// `AttributionDataHostManagerImpl::OnDataHostDisconnected()` when a data host
+// is registered but disconnects before registering a source or trigger.
+TEST_F(AttributionDataHostManagerImplTest, NoSourceOrTrigger) {
+  auto page_origin = url::Origin::Create(GURL("https://page.example"));
+
+  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+  data_host_manager_->RegisterDataHost(
+      data_host_remote.BindNewPipeAndPassReceiver(), page_origin);
+  data_host_remote.reset();
+  task_environment_.RunUntilIdle();
+}
+
 }  // namespace content

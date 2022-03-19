@@ -276,10 +276,10 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
 
 void AttributionDataHostManagerImpl::OnDataHostDisconnected() {
   auto iter = receiver_data_.find(receivers_.current_receiver());
-  DCHECK(iter != receiver_data_.end());
+  if (iter == receiver_data_.end())
+    return;
 
   RecordRegisteredDataPerDataHost(iter->second);
-
   receiver_data_.erase(iter);
 }
 
