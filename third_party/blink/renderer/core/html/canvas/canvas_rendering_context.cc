@@ -47,7 +47,8 @@ CanvasRenderingContext::CanvasRenderingContext(
       canvas_rendering_type_(canvas_rendering_API) {}
 
 SkColorInfo CanvasRenderingContext::CanvasRenderingContextSkColorInfo() const {
-  return CanvasRenderingContextColorParams().GetSkColorInfo();
+  return SkColorInfo(kN32_SkColorType, kPremul_SkAlphaType,
+                     SkColorSpace::MakeSRGB());
 }
 
 void CanvasRenderingContext::Dispose() {

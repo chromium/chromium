@@ -75,7 +75,6 @@ class GLES2Interface;
 }
 
 namespace blink {
-class CanvasColorParams;
 class CanvasResource;
 class CanvasResourceProvider;
 class Extensions3DUtil;
@@ -141,7 +140,8 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
       WebGLVersion,
       ChromiumImageUsage,
       cc::PaintFlags::FilterQuality,
-      const CanvasColorParams&,
+      PredefinedColorSpace color_space,
+      CanvasPixelFormat pixel_format,
       gl::GpuPreference);
 
   DrawingBuffer(const DrawingBuffer&) = delete;
@@ -346,7 +346,8 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
                 bool wants_stencil,
                 ChromiumImageUsage,
                 cc::PaintFlags::FilterQuality,
-                const CanvasColorParams&,
+                PredefinedColorSpace color_space,
+                CanvasPixelFormat pixel_format,
                 gl::GpuPreference gpu_preference);
 
   bool Initialize(const gfx::Size&, bool use_multisampling);

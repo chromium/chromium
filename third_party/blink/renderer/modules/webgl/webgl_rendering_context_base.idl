@@ -465,6 +465,7 @@ interface mixin WebGLRenderingContextBase {
     readonly attribute GLsizei drawingBufferWidth;
     readonly attribute GLsizei drawingBufferHeight;
     [RuntimeEnabled=CanvasColorManagementV2] readonly attribute GLenum drawingBufferFormat;
+    [RuntimeEnabled=CanvasColorManagementV2] attribute PredefinedColorSpace colorSpace;
 
     void activeTexture(GLenum texture);
     void attachShader(WebGLProgram program, WebGLShader shader);

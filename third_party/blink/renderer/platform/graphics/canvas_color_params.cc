@@ -15,8 +15,6 @@
 
 namespace blink {
 
-namespace {
-
 // The PredefinedColorSpace value definitions are specified in the CSS Color
 // Level 4 specification.
 gfx::ColorSpace PredefinedColorSpaceToGfxColorSpace(
@@ -40,8 +38,6 @@ gfx::ColorSpace PredefinedColorSpaceToGfxColorSpace(
   }
   NOTREACHED();
 }
-
-}  // namespace
 
 sk_sp<SkColorSpace> PredefinedColorSpaceToSkColorSpace(
     PredefinedColorSpace color_space) {
@@ -67,6 +63,17 @@ PredefinedColorSpace PredefinedColorSpaceFromSkColorSpace(
     }
   }
   return PredefinedColorSpace::kSRGB;
+}
+
+SkColorType CanvasPixelFormatToSkColorType(CanvasPixelFormat pixel_format) {
+  switch (pixel_format) {
+    case CanvasPixelFormat::kF16:
+      return kRGBA_F16_SkColorType;
+    case CanvasPixelFormat::kUint8:
+      return kN32_SkColorType;
+  }
+  NOTREACHED();
+  return kN32_SkColorType;
 }
 
 CanvasColorParams::CanvasColorParams() = default;
@@ -102,14 +109,7 @@ String CanvasColorParams::GetPixelFormatAsString() const {
 }
 
 SkColorType CanvasColorParams::GetSkColorType() const {
-  switch (pixel_format_) {
-    case CanvasPixelFormat::kF16:
-      return kRGBA_F16_SkColorType;
-    case CanvasPixelFormat::kUint8:
-      return kN32_SkColorType;
-  }
-  NOTREACHED();
-  return kN32_SkColorType;
+  return CanvasPixelFormatToSkColorType(pixel_format_);
 }
 
 

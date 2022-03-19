@@ -184,6 +184,9 @@ class MODULES_EXPORT CanvasRenderingContext2D final
       const SkIRect& dirty_rect,
       CanvasPerformanceMonitor::DrawType) final;
 
+  SkColorInfo CanvasRenderingContextSkColorInfo() const override {
+    return color_params_.GetSkColorInfo();
+  }
   scoped_refptr<StaticBitmapImage> GetImage() final;
 
   sk_sp<PaintFilter> StateGetFilter() final;
@@ -232,9 +235,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   }
 
  protected:
-  CanvasColorParams CanvasRenderingContextColorParams() const override {
-    return color_params_;
-  }
   PredefinedColorSpace GetDefaultImageDataColorSpace() const final {
     return color_params_.ColorSpace();
   }

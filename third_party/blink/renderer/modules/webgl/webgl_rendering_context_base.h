@@ -88,6 +88,7 @@ class HTMLVideoElement;
 class ImageBitmap;
 class ImageData;
 class OESVertexArrayObject;
+class V8PredefinedColorSpace;
 class V8UnionHTMLCanvasElementOrOffscreenCanvas;
 class VideoFrame;
 class WebGLActiveInfo;
@@ -175,6 +176,8 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   int drawingBufferWidth() const;
   int drawingBufferHeight() const;
   GLenum drawingBufferFormat() const;
+  V8PredefinedColorSpace colorSpace() const;
+  void setColorSpace(const V8PredefinedColorSpace& color_space) const;
 
   void activeTexture(GLenum texture);
   void attachShader(WebGLProgram*, WebGLShader*);
@@ -636,9 +639,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
 
   // TODO(https://crbug.com/1208480): This function applies only to 2D rendering
   // contexts, and should be removed.
-  CanvasColorParams CanvasRenderingContextColorParams() const override {
-    return color_params_;
-  }
+  SkColorInfo CanvasRenderingContextSkColorInfo() const override;
   scoped_refptr<StaticBitmapImage> GetImage() override;
   void SetFilterQuality(cc::PaintFlags::FilterQuality) override;
 
@@ -1917,7 +1918,10 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
 
   bool has_been_drawn_to_ = false;
 
-  CanvasColorParams color_params_;
+  PredefinedColorSpace color_space_ = PredefinedColorSpace::kSRGB;
+  // The pixel format of the WebGL canvas. This is based on a deprecated
+  // specification that is being replaced by drawingBufferStorage.
+  CanvasPixelFormat pixel_format_deprecated_ = CanvasPixelFormat::kUint8;
 };
 
 template <>

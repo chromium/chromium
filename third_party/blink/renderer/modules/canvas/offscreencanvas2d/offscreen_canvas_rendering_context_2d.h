@@ -64,6 +64,9 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
   void ClearRect(double x, double y, double width, double height) override {
     BaseRenderingContext2D::clearRect(x, y, width, height);
   }
+  SkColorInfo CanvasRenderingContextSkColorInfo() const override {
+    return color_params_.GetSkColorInfo();
+  }
   scoped_refptr<StaticBitmapImage> GetImage() final;
   void Reset() override;
   void RestoreCanvasMatrixClipStack(cc::PaintCanvas* c) const override {
@@ -164,9 +167,6 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
   void FlushCanvas() override;
 
  protected:
-  CanvasColorParams CanvasRenderingContextColorParams() const override {
-    return color_params_;
-  }
   PredefinedColorSpace GetDefaultImageDataColorSpace() const final {
     return color_params_.ColorSpace();
   }

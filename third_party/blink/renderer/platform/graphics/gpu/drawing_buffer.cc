@@ -147,14 +147,16 @@ scoped_refptr<DrawingBuffer> DrawingBuffer::Create(
     WebGLVersion webgl_version,
     ChromiumImageUsage chromium_image_usage,
     cc::PaintFlags::FilterQuality filter_quality,
-    const CanvasColorParams& color_params,
+    PredefinedColorSpace color_space,
+    CanvasPixelFormat pixel_format,
     gl::GpuPreference gpu_preference) {
   if (g_should_fail_drawing_buffer_creation_for_testing) {
     g_should_fail_drawing_buffer_creation_for_testing = false;
     return nullptr;
   }
 
-  base::CheckedNumeric<int> data_size = color_params.BytesPerPixel();
+  base::CheckedNumeric<int> data_size =
+      SkColorTypeBytesPerPixel(CanvasPixelFormatToSkColorType(pixel_format));
   data_size *= size.width();
   data_size *= size.height();
   if (!data_size.IsValid() ||
@@ -199,7 +201,7 @@ scoped_refptr<DrawingBuffer> DrawingBuffer::Create(
           std::move(extensions_util), client, discard_framebuffer_supported,
           want_alpha_channel, premultiplied_alpha, preserve, webgl_version,
           want_depth_buffer, want_stencil_buffer, chromium_image_usage,
-          filter_quality, color_params, gpu_preference));
+          filter_quality, color_space, pixel_format, gpu_preference));
   if (!drawing_buffer->Initialize(size, multisample_supported)) {
     drawing_buffer->BeginDestruction();
     return scoped_refptr<DrawingBuffer>();
@@ -222,7 +224,8 @@ DrawingBuffer::DrawingBuffer(
     bool want_stencil,
     ChromiumImageUsage chromium_image_usage,
     cc::PaintFlags::FilterQuality filter_quality,
-    const CanvasColorParams& color_params,
+    PredefinedColorSpace color_space,
+    CanvasPixelFormat pixel_format,
     gl::GpuPreference gpu_preference)
     : client_(client),
       preserve_drawing_buffer_(preserve),
@@ -238,9 +241,8 @@ DrawingBuffer::DrawingBuffer(
       using_swap_chain_(using_swap_chain),
       want_depth_(want_depth),
       want_stencil_(want_stencil),
-      storage_color_space_(color_params.GetStorageGfxColorSpace()),
-      use_half_float_storage_(color_params.PixelFormat() ==
-                              CanvasPixelFormat::kF16),
+      storage_color_space_(PredefinedColorSpaceToGfxColorSpace(color_space)),
+      use_half_float_storage_(pixel_format == CanvasPixelFormat::kF16),
       filter_quality_(filter_quality),
       chromium_image_usage_(chromium_image_usage),
       opengl_flip_y_extension_(

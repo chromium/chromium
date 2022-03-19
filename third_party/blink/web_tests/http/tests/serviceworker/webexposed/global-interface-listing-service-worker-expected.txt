@@ -2184,6 +2184,7 @@ interface WebGL2RenderingContext
     attribute WAIT_FAILED
     attribute ZERO
     getter canvas
+    getter colorSpace
     getter drawingBufferFormat
     getter drawingBufferHeight
     getter drawingBufferWidth
@@ -2415,6 +2416,7 @@ interface WebGL2RenderingContext
     method vertexAttribPointer
     method viewport
     method waitSync
+    setter colorSpace
 interface WebGLActiveInfo
     attribute @@toStringTag
     getter name
@@ -2735,6 +2737,7 @@ interface WebGLRenderingContext
     attribute VIEWPORT
     attribute ZERO
     getter canvas
+    getter colorSpace
     getter drawingBufferFormat
     getter drawingBufferHeight
     getter drawingBufferWidth
@@ -2878,6 +2881,7 @@ interface WebGLRenderingContext
     method vertexAttrib4fv
     method vertexAttribPointer
     method viewport
+    setter colorSpace
 interface WebGLSampler
     attribute @@toStringTag
     method constructor

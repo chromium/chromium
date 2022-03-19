@@ -122,7 +122,7 @@ class CORE_EXPORT CanvasRenderingContext
       const ExecutionContext* execution_context);
 
   CanvasRenderingContextHost* Host() const { return host_; }
-  SkColorInfo CanvasRenderingContextSkColorInfo() const;
+  virtual SkColorInfo CanvasRenderingContextSkColorInfo() const;
 
   virtual scoped_refptr<StaticBitmapImage> GetImage() = 0;
   virtual bool IsComposited() const = 0;
@@ -280,12 +280,6 @@ class CORE_EXPORT CanvasRenderingContext
   CanvasRenderingContext(CanvasRenderingContextHost*,
                          const CanvasContextCreationAttributesCore&,
                          CanvasRenderingAPI);
-
-  // TODO(https://crbug.com/1208480): This function applies only to 2D rendering
-  // contexts, and should be removed.
-  virtual CanvasColorParams CanvasRenderingContextColorParams() const {
-    return CanvasColorParams();
-  }
 
   virtual void Dispose();
 

@@ -19,6 +19,10 @@ class ColorSpace;
 
 namespace blink {
 
+// Return the gfx::ColorSpace for the specified `predefined_color_space`.
+gfx::ColorSpace PLATFORM_EXPORT
+PredefinedColorSpaceToGfxColorSpace(PredefinedColorSpace color_space);
+
 // Return the SkColorSpace for the specified |color_space|.
 sk_sp<SkColorSpace> PLATFORM_EXPORT
 PredefinedColorSpaceToSkColorSpace(PredefinedColorSpace color_space);
@@ -26,6 +30,10 @@ PredefinedColorSpaceToSkColorSpace(PredefinedColorSpace color_space);
 // Return the named PredefinedColorSpace that best matches |sk_color_space|.
 PredefinedColorSpace PLATFORM_EXPORT
 PredefinedColorSpaceFromSkColorSpace(const SkColorSpace* sk_color_space);
+
+// Return the SkColorType that best matches the specified CanvasPixelFormat.
+SkColorType PLATFORM_EXPORT
+CanvasPixelFormatToSkColorType(CanvasPixelFormat pixel_format);
 
 class PLATFORM_EXPORT CanvasColorParams {
   DISALLOW_NEW();

@@ -1039,9 +1039,8 @@ WebGLRenderingContextBase::WebGLRenderingContextBase(
   // TODO(https://crbug.com/1208480): Move color space to being a read-write
   // attribute instead of a context creation attribute.
   if (RuntimeEnabledFeatures::CanvasColorManagementV2Enabled()) {
-    color_params_ = CanvasColorParams(requested_attributes.color_space,
-                                      requested_attributes.pixel_format,
-                                      requested_attributes.alpha);
+    color_space_ = requested_attributes.color_space;
+    pixel_format_deprecated_ = requested_attributes.pixel_format;
   }
 
   scoped_refptr<DrawingBuffer> buffer =
@@ -1124,7 +1123,7 @@ scoped_refptr<DrawingBuffer> WebGLRenderingContextBase::CreateDrawingBuffer(
       ClampedCanvasSize(), premultiplied_alpha, want_alpha_channel,
       want_depth_buffer, want_stencil_buffer, want_antialiasing, preserve,
       web_gl_version, chromium_image_usage, Host()->FilterQuality(),
-      CanvasRenderingContextColorParams(),
+      color_space_, pixel_format_deprecated_,
       PowerPreferenceToGpuPreference(attrs.power_preference));
 }
 
@@ -1843,6 +1842,15 @@ int WebGLRenderingContextBase::drawingBufferHeight() const {
 
 GLenum WebGLRenderingContextBase::drawingBufferFormat() const {
   return isContextLost() ? 0 : GetDrawingBuffer()->StorageFormat();
+}
+
+V8PredefinedColorSpace WebGLRenderingContextBase::colorSpace() const {
+  return V8PredefinedColorSpace(V8PredefinedColorSpace::Enum::kSRGB);
+}
+
+void WebGLRenderingContextBase::setColorSpace(
+    const V8PredefinedColorSpace& color_space) const {
+  NOTIMPLEMENTED();
 }
 
 void WebGLRenderingContextBase::activeTexture(GLenum texture) {
@@ -5204,6 +5212,18 @@ gfx::Rect WebGLRenderingContextBase::SafeGetImageSize(Image* image) {
     return gfx::Rect();
 
   return GetTextureSourceSize(image);
+}
+
+SkColorInfo WebGLRenderingContextBase::CanvasRenderingContextSkColorInfo()
+    const {
+  // This selection of alpha type disregards whether or not the drawing buffer
+  // is premultiplied. This is to match historical behavior that may or may not
+  // have been intentional.
+  const SkAlphaType alpha_type =
+      CreationAttributes().alpha ? kPremul_SkAlphaType : kOpaque_SkAlphaType;
+  return SkColorInfo(CanvasPixelFormatToSkColorType(pixel_format_deprecated_),
+                     alpha_type,
+                     PredefinedColorSpaceToSkColorSpace(color_space_));
 }
 
 gfx::Rect WebGLRenderingContextBase::GetImageDataSize(ImageData* pixels) {
