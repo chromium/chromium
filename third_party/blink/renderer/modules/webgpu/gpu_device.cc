@@ -134,6 +134,11 @@ void GPUDevice::AddConsoleWarning(const char* message) {
 
 void GPUDevice::OnUncapturedError(WGPUErrorType errorType,
                                   const char* message) {
+  // Suppress errors once the device is lost.
+  if (lost_property_->GetState() == LostProperty::kResolved) {
+    return;
+  }
+
   DCHECK_NE(errorType, WGPUErrorType_NoError);
   DCHECK_NE(errorType, WGPUErrorType_DeviceLost);
   LOG(ERROR) << "GPUDevice: " << message;
