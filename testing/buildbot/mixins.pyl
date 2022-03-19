@@ -428,6 +428,13 @@
       },
     },
   },
+  'gtest_run_disabled': {
+    '$mixin_append': {
+      'args': [
+        '--gtest_also_run_disabled_tests',
+      ],
+    },
+  },
   'gtest_run_disabled_only': {
     '$mixin_append': {
       'args': [

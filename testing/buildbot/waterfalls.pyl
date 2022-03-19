@@ -1202,6 +1202,7 @@
           'emulator-4-cores',
           'linux-xenial-or-bionic',
           'x86-64',
+          'gtest_run_disabled',
         ],
         'os_type': 'android',
         'test_suites': {
