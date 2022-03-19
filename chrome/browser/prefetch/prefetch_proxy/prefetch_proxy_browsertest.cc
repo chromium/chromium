@@ -85,6 +85,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_utils.h"
 #include "google_apis/google_api_keys.h"
@@ -4393,6 +4394,84 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyPrerenderBrowserTest,
 
   // Check if the prefetched URL is different from the prerendered frame.
   EXPECT_NE(tab_helper->after_srp_metrics()->url_, prerender_render_frame_url);
+}
+
+class PrefetchProxyFencedFrameBrowserTest : public PrefetchProxyBrowserTest {
+ public:
+  PrefetchProxyFencedFrameBrowserTest() = default;
+  ~PrefetchProxyFencedFrameBrowserTest() override = default;
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+    PrefetchProxyBrowserTest::SetUpOnMainThread();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    PrefetchProxyBrowserTest::SetUpCommandLine(command_line);
+    // |fenced_frame_helper_| has a ScopedFeatureList so we needed to delay
+    // its creation until now because PrefetchProxyBrowserTest also uses a
+    // ScopedFeatureList and initialization order matters.
+    fenced_frame_helper_ =
+        std::make_unique<content::test::FencedFrameTestHelper>();
+  }
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return *fenced_frame_helper_;
+  }
+
+ private:
+  std::unique_ptr<content::test::FencedFrameTestHelper> fenced_frame_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(PrefetchProxyFencedFrameBrowserTest,
+                       EnsureFencedFrameDoesNotAffectPrefetchProxyTabHelper) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  WaitForUpdatedCustomProxyConfig();
+
+  ASSERT_TRUE(content::SetCookie(browser()->profile(), GURL("https://foo.com"),
+                                 "type=PeanutButter"));
+
+  GURL initial_url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_NE(ui_test_utils::NavigateToURL(browser(), initial_url), nullptr);
+
+  PrefetchProxyTabHelper* tab_helper =
+      PrefetchProxyTabHelper::FromWebContents(GetWebContents());
+
+  // Create a fenced frame to check if it affects on the prefetch proxy.
+  GURL fenced_frame_url(
+      embedded_test_server()->GetURL("/fenced_frames/title1.html"));
+  content::RenderFrameHost* fenced_frame_host =
+      fenced_frame_test_helper().CreateFencedFrame(
+          GetWebContents()->GetMainFrame(), fenced_frame_url);
+  ASSERT_TRUE(fenced_frame_host);
+  ASSERT_EQ(fenced_frame_url, fenced_frame_host->GetLastCommittedURL());
+
+  ASSERT_FALSE(tab_helper->after_srp_metrics());
+  EXPECT_EQ(0U, tab_helper->srp_metrics().predicted_urls_count_);
+
+  GURL prefetch_url("https://m.foo.com");
+  GURL doc_url("https://www.google.com/search?q=test");
+  MakeNavigationPrediction(doc_url, {prefetch_url});
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(1U, tab_helper->srp_metrics().predicted_urls_count_);
+  EXPECT_EQ(0U, tab_helper->srp_metrics().prefetch_eligible_count_);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), prefetch_url));
+
+  ASSERT_TRUE(tab_helper->after_srp_metrics());
+  EXPECT_EQ(
+      absl::make_optional(
+          PrefetchProxyPrefetchStatus::kPrefetchNotEligibleUserHasCookies),
+      tab_helper->after_srp_metrics()->prefetch_status_);
+
+  // Check if the prefetched URL is different from the fenced frame.
+  EXPECT_NE(tab_helper->after_srp_metrics()->url_, fenced_frame_url);
 }
 
 class ZeroCacheTimePrefetchProxyBrowserTest : public PrefetchProxyBrowserTest {
