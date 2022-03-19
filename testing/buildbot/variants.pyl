@@ -878,7 +878,7 @@
       'cros_chrome_version': '101.0.4943.0',
       'cros_img': 'atlas-release/R101-14583.0.0',
     },
-    'enabled': True,
+    'enabled': False,
     'identifier': 'ATLAS_RELEASE_LKGM',
   },
   'CROS_ATLAS_RELEASE_DEV': {
@@ -914,7 +914,7 @@
       'cros_chrome_version': '101.0.4943.0',
       'cros_img': 'eve-release/R101-14583.0.0',
     },
-    'enabled': True,
+    'enabled': False,
     'identifier': 'EVE_RELEASE_LKGM',
   },
   'CROS_EVE_RELEASE_DEV': {
@@ -959,7 +959,7 @@
       'cros_chrome_version': '101.0.4943.0',
       'cros_img': 'kevin-release/R101-14583.0.0',
     },
-    'enabled': True,
+    'enabled': False,
     'identifier': 'KEVIN_RELEASE_LKGM',
   },
   'CROS_HANA_RELEASE_LKGM': {
@@ -968,7 +968,7 @@
       'cros_chrome_version': '101.0.4943.0',
       'cros_img': 'hana-release/R101-14583.0.0',
     },
-    'enabled': True,
+    'enabled': False,
     'identifier': 'HANA_RELEASE_LKGM',
   },
   'CROS_OCTOPUS_FULL': {
@@ -986,7 +986,7 @@
       'cros_chrome_version': '101.0.4943.0',
       'cros_img': 'octopus-release/R101-14583.0.0',
     },
-    'enabled': True,
+    'enabled': False,
     'identifier': 'OCTOPUS_RELEASE_LKGM',
   },
   'CROS_OCTOPUS_RELEASE_DEV': {
