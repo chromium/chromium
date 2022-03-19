@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/task/post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -30,11 +29,10 @@ void RenderAccessibilityHost::HandleAXEvents(
     int32_t reset_token,
     HandleAXEventsCallback callback) {
   // Post the HandleAXEvents task onto the UI thread, and then when that
-  // mojo contract).
-  base::PostTaskAndReply(
-      // finishes, post back the response callback onto this runner (to satisfy
-      // the
-      FROM_HERE, BrowserThread::ID::UI,
+  // finishes, post back the response callback onto this runner (to satisfy
+  // the mojo contract).
+  content::GetUIThreadTaskRunner({})->PostTaskAndReply(
+      FROM_HERE,
       base::BindOnce(&RenderFrameHostImpl::HandleAXEvents,
                      render_frame_host_impl_, tree_id_,
                      std::move(updates_and_events), reset_token),
@@ -43,8 +41,8 @@ void RenderAccessibilityHost::HandleAXEvents(
 
 void RenderAccessibilityHost::HandleAXLocationChanges(
     std::vector<content::mojom::LocationChangesPtr> changes) {
-  base::PostTask(
-      FROM_HERE, BrowserThread::ID::UI,
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(&RenderFrameHostImpl::HandleAXLocationChanges,
                      render_frame_host_impl_, tree_id_, std::move(changes)));
 }
