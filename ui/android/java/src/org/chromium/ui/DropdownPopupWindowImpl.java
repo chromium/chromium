@@ -83,7 +83,7 @@ class DropdownPopupWindowImpl
 
         ViewRectProvider rectProvider = new ViewRectProvider(mAnchorView);
         rectProvider.setIncludePadding(true);
-        mBackground = AppCompatResources.getDrawable(context, R.drawable.menu_bg_tinted);
+        mBackground = AppCompatResources.getDrawable(context, R.drawable.menu_bg_baseline);
         mAnchoredPopupWindow = new AnchoredPopupWindow(
                 context, mAnchorView, mBackground, mContentView, rectProvider);
         mAnchoredPopupWindow.addOnDismissListener(onDismissLitener);
@@ -118,7 +118,7 @@ class DropdownPopupWindowImpl
             boolean positionBelow, int x, int y, int width, int height, Rect anchorRect) {
         mBackground.setBounds(anchorRect);
         mAnchoredPopupWindow.setBackgroundDrawable(
-                AppCompatResources.getDrawable(mContext, R.drawable.menu_bg_tinted));
+                AppCompatResources.getDrawable(mContext, R.drawable.menu_bg_baseline));
     }
 
     /**
