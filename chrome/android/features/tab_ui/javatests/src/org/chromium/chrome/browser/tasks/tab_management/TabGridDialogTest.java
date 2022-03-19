@@ -106,6 +106,7 @@ import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.test.util.NightModeTestUtils;
@@ -1073,7 +1074,7 @@ public class TabGridDialogTest {
             return;
         }
         final @ColorInt int scrimDefaultColor = cta.getColor(R.color.default_scrim_color);
-        final @ColorInt int navigationBarColor = cta.getColor(R.color.bottom_system_nav_color);
+        final @ColorInt int navigationBarColor = SemanticColorUtils.getBottomSystemNavColor(cta);
         float scrimColorAlpha = (scrimDefaultColor >>> 24) / 255f;
         int scrimColorOpaque = scrimDefaultColor & 0xFF000000;
         int navigationBarColorWithScrimOverlay = ColorUtils.getColorWithOverlay(

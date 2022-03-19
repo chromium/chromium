@@ -45,7 +45,6 @@
         <item name="colorOnPrimaryContainer">@color/baseline_primary_900</item>
         <item name="colorPrimaryContainer">@color/baseline_primary_100</item>
         <!-- Supports dynamic colors now. -->
-        <item name="default_bg_color_dynamic">?attr/colorSurface</item>
         <item name="divider_line_bg_color_dynamic">?attr/colorSurfaceVariant</item>
     </style>
 

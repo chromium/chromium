@@ -89,6 +89,11 @@ public class SemanticColorUtils {
         return resolve(R.attr.colorSurfaceVariant, R.color.divider_line_bg_color_baseline, context);
     }
 
+    /** Returns the semantic color value that corresponds to bottom_system_nav_color. */
+    public static @ColorInt int getBottomSystemNavColor(Context context) {
+        return getDefaultBgColor(context);
+    }
+
     /** Returns the semantic color value that corresponds to bottom_system_nav_divider_color. */
     public static @ColorInt int getBottomSystemNavDividerColor(Context context) {
         return getDividerLineBgColor(context);

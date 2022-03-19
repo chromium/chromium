@@ -47,7 +47,6 @@
 
         <!-- Custom semantic names -->
         <!-- Supports dynamic colors now. -->
-        <item name="default_bg_color_dynamic">?attr/colorSurface</item>
         <item name="divider_line_bg_color_dynamic">?attr/colorSurfaceVariant</item>
 
         <!-- Baseline values for the theme attributes in ThemeOverlay.DynamicButtons, used to
@@ -140,7 +139,6 @@
 
         <!-- Custom semantic names -->
         <!-- Supports dynamic colors now. -->
-        <item name="default_bg_color_dynamic">?attr/colorSurface</item>
         <item name="divider_line_bg_color_dynamic">?attr/colorSurfaceVariant</item>
 
         <!-- Baseline values for the theme attributes in ThemeOverlay.DynamicButtons, used to

@@ -75,7 +75,7 @@
     <macro name="chip_state_layer_color">@color/chip_state_layer_color_baseline</macro>
     <macro name="chip_state_layer_selected_color">@color/chip_state_layer_selected_color_baseline</macro>
 
-    <macro name="toolbar_background_primary">@color/default_bg_color</macro>
+    <macro name="toolbar_background_primary">@color/default_bg_color_baseline</macro>
     -->
 
     <!-- Gated by full dynamic colors param, no fallback needed. -->

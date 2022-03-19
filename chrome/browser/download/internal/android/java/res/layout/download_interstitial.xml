@@ -7,7 +7,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@color/default_bg_color"
+    android:background="@macro/default_bg_color"
     android:fillViewport="true"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -66,7 +66,7 @@
             android:paddingEnd="4dp"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
-            android:background="@color/default_bg_color"
+            android:background="@macro/default_bg_color"
             app:stackedMargin="24dp"
             app:buttonAlignment="end"/>
     </FrameLayout>

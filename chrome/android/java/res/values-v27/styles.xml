@@ -5,23 +5,23 @@
 
 <resources>
     <style name="Theme.Chromium.WithWindowAnimation" parent="Base.Theme.Chromium.WithWindowAnimation">
-        <item name="android:navigationBarColor">@color/bottom_system_nav_color</item>
+        <item name="android:navigationBarColor">@macro/bottom_system_nav_color</item>
         <item name="android:navigationBarDividerColor">@macro/bottom_system_nav_divider_color</item>
         <item name="android:windowLightNavigationBar">@bool/window_light_navigation_bar</item>
     </style>
     <style name="Base.V27.Theme.Chromium.Settings" parent="Base.Theme.Chromium.Settings">
-        <item name="android:navigationBarColor">@color/bottom_system_nav_color</item>
+        <item name="android:navigationBarColor">@macro/bottom_system_nav_color</item>
         <item name="android:navigationBarDividerColor">@macro/bottom_system_nav_divider_color</item>
         <item name="android:windowLightNavigationBar">@bool/window_light_navigation_bar</item>
     </style>
     <style name="Theme.Chromium.DialogWhenLarge" parent="Base.Theme.Chromium.DialogWhenLarge">
-        <item name="android:navigationBarColor">@color/bottom_system_nav_color</item>
+        <item name="android:navigationBarColor">@macro/bottom_system_nav_color</item>
         <item name="android:navigationBarDividerColor">@macro/bottom_system_nav_divider_color</item>
         <item name="android:windowLightNavigationBar">@bool/window_light_navigation_bar</item>
     </style>
     <style name="Theme.Chromium.Activity.Fullscreen"
         parent="Base.Theme.Chromium.Activity.Fullscreen">
-        <item name="android:navigationBarColor">@color/bottom_system_nav_color</item>
+        <item name="android:navigationBarColor">@macro/bottom_system_nav_color</item>
         <item name="android:navigationBarDividerColor">@macro/bottom_system_nav_divider_color</item>
         <item name="android:windowLightNavigationBar">@bool/window_light_navigation_bar</item>
     </style>

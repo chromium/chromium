@@ -15,5 +15,5 @@
         android:color="@color/default_chip_ripple_color" android:state_focused="true"/>
     <item android:alpha="@dimen/default_hovered_alpha"
         android:color="@color/default_chip_ripple_color" android:state_hovered="true"/>
-    <item android:color="@color/default_bg_color" />
+    <item android:color="@macro/default_bg_color" />
 </selector>

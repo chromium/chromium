@@ -5,7 +5,7 @@
 
 <resources>
     <style name="Theme.Chromium.TabbedMode" parent="Base.Theme.Chromium.TabbedMode">
-        <item name="android:statusBarColor">@color/default_bg_color</item>
+        <item name="android:statusBarColor">@macro/default_bg_color</item>
         <item name="android:windowLightStatusBar">@bool/window_light_status_bar</item>
     </style>
 </resources>

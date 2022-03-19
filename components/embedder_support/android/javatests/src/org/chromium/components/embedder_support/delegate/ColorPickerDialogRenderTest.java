@@ -72,7 +72,7 @@ public class ColorPickerDialogRenderTest extends BlankUiTestActivityTestCase {
             ColorPickerDialog dialog =
                     new ColorPickerDialog(activity, (v) -> {}, Color.RED, suggestions);
             mView = dialog.getContentView();
-            mView.setBackgroundResource(R.color.default_bg_color);
+            mView.setBackgroundResource(R.color.default_bg_color_baseline);
             activity.setContentView(mView, new LayoutParams(WRAP_CONTENT, WRAP_CONTENT));
         });
     }

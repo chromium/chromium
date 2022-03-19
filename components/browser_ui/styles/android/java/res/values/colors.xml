@@ -11,7 +11,6 @@
 
     <!-- Toolbar colors -->
     <!-- Same as ?attr/colorSurface. -->
-    <color name="toolbar_background_primary">@color/default_bg_color</color>
     <color name="toolbar_background_primary_dark">@color/default_bg_color_dark</color>
 
     <!-- Infobar colors -->
@@ -33,13 +32,13 @@
     <color name="default_favicon_background_color">@color/default_control_color_normal_light</color>
 
     <!-- Navigation bar colors -->
-    <color name="bottom_system_nav_color">@color/toolbar_background_primary</color>
+    <macro name="bottom_system_nav_color" tools:ignore="UnusedResources">@macro/toolbar_background_primary</macro>
     <macro name="bottom_system_nav_divider_color">@macro/divider_line_bg_color</macro>
     <color name="bottom_system_nav_divider_color_light">@color/divider_line_bg_color_light</color>
 
     <!-- This is the color that will appear on the system recents UI. It is a neutral background
          color that adapts to dark/light modes but not a dynamic color. -->
-    <color name="default_task_description_color">@color/default_bg_color</color>
+    <color name="default_task_description_color">@color/default_bg_color_baseline</color>
 
     <!-- Progress Bar colors -->
     <macro name="progress_bar_foreground">@macro/default_control_color_active</macro>
