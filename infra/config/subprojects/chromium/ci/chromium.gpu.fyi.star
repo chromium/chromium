@@ -160,6 +160,31 @@ ci.gpu.linux_builder(
 )
 
 ci.gpu.linux_builder(
+    name = "gpu-fyi-chromeos-zork-exp",
+    builder_spec = builder_config.builder_spec(
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.CHROMEOS,
+            target_cros_boards = ["zork"],
+        ),
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["chromeos"],
+        ),
+        run_tests_serially = True,
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "ChromeOS|AMD",
+        short_name = "zrk",
+    ),
+    list_view = "chromium.gpu.experimental",
+)
+
+ci.gpu.linux_builder(
     name = "GPU FYI Android arm Builder",
     console_view_entry = consoles.console_view_entry(
         category = "Android|Builder",

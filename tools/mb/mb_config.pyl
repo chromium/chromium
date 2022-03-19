@@ -494,6 +494,7 @@
       'gpu-fyi-chromeos-jacuzzi-exp': 'gpu_tests_chromeos_jacuzzi_release_trybot',
       'ChromeOS FYI Release (kevin)': 'gpu_tests_chromeos_kevin_release_trybot_dcheck_off_no_symbols',
       'gpu-fyi-chromeos-octopus-exp': 'gpu_tests_chromeos_octopus_release_trybot',
+      'gpu-fyi-chromeos-zork-exp': 'gpu_tests_chromeos_zork_release_trybot',
       'GPU FYI Android arm Builder': 'gpu_tests_android_release_trybot_reclient',
       'GPU FYI Android arm64 Builder': 'gpu_tests_android_release_trybot_arm64_reclient',
       'GPU FYI Lacros x64 Builder': 'gpu_tests_ozone_linux_non_x11_release_trybot',
@@ -987,6 +988,7 @@
       'gpu-fyi-try-chromeos-jacuzzi-exp': 'gpu_tests_chromeos_jacuzzi_release_trybot',
       'gpu-fyi-try-chromeos-kevin': 'gpu_tests_chromeos_kevin_release_trybot_dcheck_off_no_symbols',
       'gpu-fyi-try-chromeos-octopus-exp': 'gpu_tests_chromeos_octopus_release_trybot',
+      'gpu-fyi-try-chromeos-zork-exp': 'gpu_tests_chromeos_zork_release_trybot',
       'lacros-amd64-generic-rel': 'chromeos_amd64-generic_lacros_rel_dchecks',
       'lacros-arm-generic-rel': 'chromeos_arm-generic_lacros_rel_dchecks',
       'linux-chromeos-inverse-fieldtrials-fyi-rel': 'chromeos_with_codecs_release_trybot_invert_fieldtrials',
@@ -2488,6 +2490,10 @@
 
     'gpu_tests_chromeos_octopus_release_trybot': [
       'gpu_tests', 'chromeos_device', 'octopus', 'release_trybot',
+    ],
+
+    'gpu_tests_chromeos_zork_release_trybot': [
+      'gpu_tests', 'chromeos_device', 'zork', 'release_trybot',
     ],
 
     'gpu_tests_debug_bot': [
@@ -4344,6 +4350,10 @@
 
     'x86_host': {
       'gn_args': 'host_cpu="x86"',
+    },
+
+    'zork': {
+      'args_file': '//build/args/chromeos/zork.gni',
     },
   },
 }

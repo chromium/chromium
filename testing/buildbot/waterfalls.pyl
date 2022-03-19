@@ -4926,6 +4926,22 @@
           'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
         },
       },
+      'gpu-fyi-chromeos-zork-exp': {
+        'additional_compile_targets': [
+          'chromiumos_preflight',
+        ],
+        'browser_config': 'cros-chrome',
+        'os_type': 'chromeos',
+        'skip_merge_script': True,
+        'mixins': [
+          'chromeos-zork',
+          'gpu-exp-swarming-pool',
+          'limited_capacity_bot',
+        ],
+        'test_suites': {
+          'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
+        },
+      },
     },
   },
   {

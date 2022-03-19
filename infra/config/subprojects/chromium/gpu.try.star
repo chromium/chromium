@@ -118,6 +118,12 @@ gpu_chromeos_builder(
     pool = "luci.chromium.gpu.chromeos.octopus.try",
 )
 
+gpu_chromeos_builder(
+    name = "gpu-fyi-try-chromeos-zork-exp",
+    mirrors = ["ci/gpu-fyi-chromeos-zork-exp"],
+    pool = "luci.chromium.gpu.chromeos.zork.try",
+)
+
 def gpu_linux_builder(*, name, **kwargs):
     return try_.builder(
         name = name,

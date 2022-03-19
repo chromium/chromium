@@ -69,6 +69,7 @@ ci/Win7 FYI Release (NVIDIA)
 ci/Win7 FYI x64 Release (NVIDIA)
 ci/gpu-fyi-chromeos-jacuzzi-exp
 ci/gpu-fyi-chromeos-octopus-exp
+ci/gpu-fyi-chromeos-zork-exp
 ci/linux-swangle-chromium-x64
 ci/linux-swangle-tot-angle-x64
 ci/linux-swangle-tot-swiftshader-x64
