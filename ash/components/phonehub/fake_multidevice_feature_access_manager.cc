@@ -15,7 +15,9 @@ FakeMultideviceFeatureAccessManager::FakeMultideviceFeatureAccessManager(
     : notification_access_status_(notification_access_status),
       camera_roll_access_status_(camera_roll_access_status),
       apps_access_status_(apps_access_status),
-      access_prohibited_reason_(reason) {}
+      access_prohibited_reason_(reason) {
+  ready_for_access_features_ = {};
+}
 
 FakeMultideviceFeatureAccessManager::~FakeMultideviceFeatureAccessManager() =
     default;
@@ -53,6 +55,18 @@ void FakeMultideviceFeatureAccessManager::SetAppsAccessStatusInternal(
 
   apps_access_status_ = apps_access_status;
   NotifyAppsAccessChanged();
+}
+
+void FakeMultideviceFeatureAccessManager::SetFeatureReadyForAccess(
+    multidevice_setup::mojom::Feature feature) {
+  ready_for_access_features_.push_back(feature);
+}
+
+bool FakeMultideviceFeatureAccessManager::IsAccessRequestAllowed(
+    multidevice_setup::mojom::Feature feature) {
+  const auto it = std::find(ready_for_access_features_.begin(),
+                            ready_for_access_features_.end(), feature);
+  return (it != ready_for_access_features_.end());
 }
 
 MultideviceFeatureAccessManager::AccessStatus

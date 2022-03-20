@@ -11,6 +11,7 @@
 #include "ash/components/phonehub/fake_message_sender.h"
 #include "ash/components/phonehub/notification_access_setup_operation.h"
 #include "ash/components/phonehub/pref_names.h"
+#include "ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "ash/webui/eche_app_ui/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -23,6 +24,8 @@ namespace {
 using AccessStatus = MultideviceFeatureAccessManager::AccessStatus;
 using AccessProhibitedReason =
     MultideviceFeatureAccessManager::AccessProhibitedReason;
+using FeatureState = multidevice_setup::mojom::FeatureState;
+using Feature = multidevice_setup::mojom::Feature;
 
 class FakeObserver : public MultideviceFeatureAccessManager::Observer {
  public:
@@ -76,6 +79,8 @@ class MultideviceFeatureAccessManagerImplTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
+    fake_multidevice_setup_client_ =
+        std::make_unique<multidevice_setup::FakeMultiDeviceSetupClient>();
     MultideviceFeatureAccessManagerImpl::RegisterPrefs(
         pref_service_.registry());
     fake_feature_status_provider_ =
@@ -101,8 +106,9 @@ class MultideviceFeatureAccessManagerImplTest : public testing::Test {
                              static_cast<int>(reason));
     SetNeedsOneTimeNotificationAccessUpdate(/*needs_update=*/false);
     manager_ = std::make_unique<MultideviceFeatureAccessManagerImpl>(
-        &pref_service_, fake_feature_status_provider_.get(),
-        fake_message_sender_.get(), fake_connection_scheduler_.get());
+        &pref_service_, fake_multidevice_setup_client_.get(),
+        fake_feature_status_provider_.get(), fake_message_sender_.get(),
+        fake_connection_scheduler_.get());
     manager_->AddObserver(&fake_observer_);
   }
 
@@ -194,16 +200,47 @@ class MultideviceFeatureAccessManagerImplTest : public testing::Test {
                              needs_update);
   }
 
+  void SetEcheFeatureState(FeatureState feature_state) {
+    fake_multidevice_setup_client_->SetFeatureState(
+        multidevice_setup::mojom::Feature::kEche, feature_state);
+  }
+
+  bool IsAccessRequestAllowed(Feature feature) {
+    return manager_->IsAccessRequestAllowed(feature);
+  }
+
  private:
   TestingPrefServiceSimple pref_service_;
 
   FakeObserver fake_observer_;
   FakeOperationDelegate fake_delegate_;
+  std::unique_ptr<multidevice_setup::FakeMultiDeviceSetupClient>
+      fake_multidevice_setup_client_;
   std::unique_ptr<FakeFeatureStatusProvider> fake_feature_status_provider_;
   std::unique_ptr<FakeMessageSender> fake_message_sender_;
   std::unique_ptr<FakeConnectionScheduler> fake_connection_scheduler_;
   std::unique_ptr<MultideviceFeatureAccessManager> manager_;
 };
+
+TEST_F(MultideviceFeatureAccessManagerImplTest, FeatureNotReadyForAccess) {
+  InitializeAccessStatus(AccessStatus::kAccessGranted,
+                         AccessStatus::kAccessGranted);
+  SetEcheFeatureState(FeatureState::kNotSupportedByChromebook);
+
+  EXPECT_FALSE(IsAccessRequestAllowed(Feature::kEche));
+}
+
+TEST_F(MultideviceFeatureAccessManagerImplTest, FeatureReadyForAccess) {
+  InitializeAccessStatus(AccessStatus::kAccessGranted,
+                         AccessStatus::kAccessGranted);
+  SetEcheFeatureState(FeatureState::kEnabledByUser);
+
+  EXPECT_TRUE(IsAccessRequestAllowed(Feature::kEche));
+
+  SetEcheFeatureState(FeatureState::kDisabledByUser);
+
+  EXPECT_TRUE(IsAccessRequestAllowed(Feature::kEche));
+}
 
 TEST_F(MultideviceFeatureAccessManagerImplTest, ShouldShowSetupRequiredUi) {
   // Notification setup is not dismissed initially even when access has been

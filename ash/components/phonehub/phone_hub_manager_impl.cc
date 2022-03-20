@@ -91,6 +91,7 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
       multidevice_feature_access_manager_(
           std::make_unique<MultideviceFeatureAccessManagerImpl>(
               pref_service,
+              multidevice_setup_client,
               feature_status_provider_.get(),
               message_sender_.get(),
               connection_scheduler_.get())),

@@ -5,10 +5,19 @@
 #ifndef ASH_COMPONENTS_PHONEHUB_FAKE_MULTIDEVICE_FEATURE_ACCESS_MANAGER_H_
 #define ASH_COMPONENTS_PHONEHUB_FAKE_MULTIDEVICE_FEATURE_ACCESS_MANAGER_H_
 
+#include <vector>
+
 #include "ash/components/phonehub/multidevice_feature_access_manager.h"
+#include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 
 namespace ash {
 namespace phonehub {
+
+namespace {
+
+using multidevice_setup::mojom::Feature;
+
+}  // namespace
 
 class FakeMultideviceFeatureAccessManager
     : public MultideviceFeatureAccessManager {
@@ -40,9 +49,11 @@ class FakeMultideviceFeatureAccessManager
       AccessStatus camera_roll_access_status) override;
   AccessStatus GetCameraRollAccessStatus() const override;
   AccessStatus GetAppsAccessStatus() const override;
+  bool IsAccessRequestAllowed(Feature feature) override;
 
   // Test-only.
   void SetAppsAccessStatusInternal(AccessStatus apps_access_status);
+  void SetFeatureReadyForAccess(Feature feature);
 
  private:
   AccessStatus notification_access_status_;
@@ -50,6 +61,7 @@ class FakeMultideviceFeatureAccessManager
   AccessStatus apps_access_status_;
   AccessProhibitedReason access_prohibited_reason_;
   bool has_notification_setup_ui_been_dismissed_ = false;
+  std::vector<Feature> ready_for_access_features_;
 };
 
 }  // namespace phonehub

@@ -8,6 +8,7 @@
 #include <ostream>
 
 #include "ash/components/phonehub/notification_access_setup_operation.h"
+#include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -88,6 +89,12 @@ class MultideviceFeatureAccessManager {
   virtual AccessStatus GetCameraRollAccessStatus() const = 0;
 
   virtual AccessStatus GetAppsAccessStatus() const = 0;
+
+  // Return true if the feature status is ready for requesting access. If the
+  // feature requires further access permission from phone side, we shouldn't
+  // send out the access request until the feature state is fuly synced.
+  virtual bool IsAccessRequestAllowed(
+      multidevice_setup::mojom::Feature feature) = 0;
 
   // Returns the reason notification access status is prohibited. The return
   // result is valid if the current access status (from GetAccessStatus())

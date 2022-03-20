@@ -19,6 +19,7 @@
 
 namespace ash {
 
+using multidevice_setup::mojom::Feature;
 using phone_hub_metrics::InterstitialScreenEvent;
 using phone_hub_metrics::LogInterstitialScreenEvent;
 
@@ -43,11 +44,15 @@ PermissionSetupMode GetPermissionSetupMode(
   bool can_request_apps_acess =
       features::IsEcheSWAEnabled() &&
       features::IsEchePhoneHubPermissionsOnboarding() &&
+      multidevice_feature_access_manager->IsAccessRequestAllowed(
+          Feature::kEche) &&
       multidevice_feature_access_manager->GetAppsAccessStatus() ==
           phonehub::MultideviceFeatureAccessManager::AccessStatus::
               kAvailableButNotGranted;
   bool can_request_camera_roll_access =
       features::IsPhoneHubCameraRollEnabled() &&
+      multidevice_feature_access_manager->IsAccessRequestAllowed(
+          Feature::kPhoneHubCameraRoll) &&
       multidevice_feature_access_manager->GetCameraRollAccessStatus() ==
           phonehub::MultideviceFeatureAccessManager::AccessStatus::
               kAvailableButNotGranted;

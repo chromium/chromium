@@ -10,6 +10,7 @@
 #include "ash/components/phonehub/pref_names.h"
 #include "ash/components/phonehub/util/histogram_util.h"
 #include "ash/constants/ash_features.h"
+#include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "ash/webui/eche_app_ui/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -18,6 +19,13 @@
 
 namespace ash {
 namespace phonehub {
+
+namespace {
+
+using multidevice_setup::mojom::Feature;
+using multidevice_setup::mojom::FeatureState;
+
+}  // namespace
 
 // static
 void MultideviceFeatureAccessManagerImpl::RegisterPrefs(
@@ -38,15 +46,18 @@ void MultideviceFeatureAccessManagerImpl::RegisterPrefs(
 
 MultideviceFeatureAccessManagerImpl::MultideviceFeatureAccessManagerImpl(
     PrefService* pref_service,
+    multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
     FeatureStatusProvider* feature_status_provider,
     MessageSender* message_sender,
     ConnectionScheduler* connection_scheduler)
     : pref_service_(pref_service),
+      multidevice_setup_client_(multidevice_setup_client),
       feature_status_provider_(feature_status_provider),
       message_sender_(message_sender),
       connection_scheduler_(connection_scheduler) {
   DCHECK(feature_status_provider_);
   DCHECK(message_sender_);
+  DCHECK(multidevice_setup_client_);
 
   current_feature_status_ = feature_status_provider_->GetStatus();
   feature_status_provider_->AddObserver(this);
@@ -71,6 +82,15 @@ bool MultideviceFeatureAccessManagerImpl::
 
 void MultideviceFeatureAccessManagerImpl::DismissSetupRequiredUi() {
   pref_service_->SetBoolean(prefs::kHasDismissedSetupRequiredUi, true);
+}
+
+bool MultideviceFeatureAccessManagerImpl::IsAccessRequestAllowed(
+    Feature feature) {
+  const FeatureState feature_state =
+      multidevice_setup_client_->GetFeatureState(feature);
+  bool result = feature_state == FeatureState::kDisabledByUser ||
+                feature_state == FeatureState::kEnabledByUser;
+  return result;
 }
 
 MultideviceFeatureAccessManagerImpl::AccessStatus

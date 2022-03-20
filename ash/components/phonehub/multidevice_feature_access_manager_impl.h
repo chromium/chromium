@@ -9,6 +9,8 @@
 
 #include "ash/components/phonehub/feature_status_provider.h"
 #include "ash/components/phonehub/message_receiver.h"
+#include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
+#include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class PrefRegistrySimple;
@@ -30,6 +32,7 @@ class MultideviceFeatureAccessManagerImpl
 
   explicit MultideviceFeatureAccessManagerImpl(
       PrefService* pref_service,
+      multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
       FeatureStatusProvider* feature_status_provider,
       MessageSender* message_sender,
       ConnectionScheduler* connection_scheduler);
@@ -48,6 +51,8 @@ class MultideviceFeatureAccessManagerImpl
       AccessStatus camera_roll_access_status) override;
   AccessStatus GetCameraRollAccessStatus() const override;
   AccessStatus GetAppsAccessStatus() const override;
+  bool IsAccessRequestAllowed(
+      multidevice_setup::mojom::Feature feature) override;
   void OnSetupRequested() override;
 
   bool HasMultideviceFeatureSetupUiBeenDismissed() const override;
@@ -63,6 +68,7 @@ class MultideviceFeatureAccessManagerImpl
 
   FeatureStatus current_feature_status_;
   PrefService* pref_service_;
+  multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
   FeatureStatusProvider* feature_status_provider_;
   MessageSender* message_sender_;
   ConnectionScheduler* connection_scheduler_;
