@@ -191,6 +191,8 @@ void AddAppManagementStrings(content::WebUIDataSource* html_source) {
        IDS_APP_MANAGEMENT_APP_DETAILS_INSTALL_SOURCE_BROWSER},
       {"appManagementAppDetailsTypeAndSourceCombined",
        IDS_APP_MANAGEMENT_APP_DETAILS_TYPE_AND_SOURCE_COMBINED},
+      {"appManagementAppDetailsVersion",
+       IDS_APP_MANAGEMENT_APP_DETAILS_VERSION},
       {"appManagementAppInstalledByPolicyLabel",
        IDS_APP_MANAGEMENT_POLICY_APP_POLICY_STRING},
       {"appManagementCameraPermissionLabel", IDS_APP_MANAGEMENT_CAMERA},

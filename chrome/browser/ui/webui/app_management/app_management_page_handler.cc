@@ -371,6 +371,8 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
   app->install_reason = update.InstallReason();
   app->install_source = update.InstallSource();
 
+  app->version = update.Version();
+
   app->description = update.Description();
 
   // On other OS's, is_pinned defaults to OptionalBool::kUnknown, which is

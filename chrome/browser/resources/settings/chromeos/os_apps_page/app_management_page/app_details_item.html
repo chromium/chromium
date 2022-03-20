@@ -8,3 +8,8 @@
 <div class="indented-permission-block" id="type">
   [[getTypeAndSourceString_(app)]]
 </div>
+<template is="dom-if" if="[[shouldShowVersion_(app)]]" restamp>
+  <div class="indented-permission-block" id="version">
+    [[getVersionString_(app)]]
+  </div>
+</template>

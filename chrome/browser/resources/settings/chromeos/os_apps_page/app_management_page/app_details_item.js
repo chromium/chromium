@@ -50,6 +50,27 @@ class AppManagementAppDetailsItem extends AppManagementAppDetailsItemBase {
   }
 
   /**
+   * The version is only shown for Android and Chrome apps.
+   *
+   * @param {!App} app
+   * @returns {boolean}
+   * @private
+   */
+  shouldShowVersion_(app) {
+    if (app.version === undefined || app.version === '') {
+      return false;
+    }
+
+    switch (app.type) {
+      case AppType.kChromeApp:
+      case AppType.kArc:
+        return true;
+      default:
+        return false;
+    }
+  }
+
+  /**
    * Returns the string for the app type.
    *
    * @param {!App} app
@@ -111,6 +132,19 @@ class AppManagementAppDetailsItem extends AppManagementAppDetailsItemBase {
     return this.i18n(
         'appManagementAppDetailsTypeAndSourceCombined',
         this.getTypeString_(app), this.getInstallSourceString_(app));
+  }
+
+  /**
+   * Returns the version string.
+   *
+   * @param {!App} app
+   * @returns {string}
+   * @private
+   */
+  getVersionString_(app) {
+    return this.i18n(
+        'appManagementAppDetailsVersion',
+        app.version ? app.version.toString() : '');
   }
 }
 
