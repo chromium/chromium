@@ -76,4 +76,5 @@ ts_library("build_ts") {
 
   definitions = ts_definitions
   deps = [ "//chrome/browser/resources/pdf:build_ts" ]
+  extra_deps = [ "../webui:generate_definitions" ]
 }
