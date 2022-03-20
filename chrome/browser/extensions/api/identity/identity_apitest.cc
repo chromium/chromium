@@ -2858,9 +2858,8 @@ class GetAuthTokenFunctionDeviceLocalAccountTest
 
   // Set up fake install attributes to make the device appeared as
   // enterprise-managed.
-  chromeos::ScopedStubInstallAttributes test_install_attributes_{
-      chromeos::StubInstallAttributes::CreateCloudManaged("example.com",
-                                                          "fake-id")};
+  ash::ScopedStubInstallAttributes test_install_attributes_{
+      ash::StubInstallAttributes::CreateCloudManaged("example.com", "fake-id")};
 
   // Owned by |user_manager_enabler|.
   ash::MockUserManager* user_manager_;

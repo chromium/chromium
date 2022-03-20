@@ -8,7 +8,7 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 
-namespace chromeos {
+namespace ash {
 
 // Asynchronously prepares TPM. To be specific, attempts to clear owner
 // password if TPM is owned to make sure the owner password is cleared if no
@@ -19,6 +19,6 @@ namespace chromeos {
 void COMPONENT_EXPORT(ASH_COMPONENTS_TPM)
     PrepareTpm(base::OnceClosure preparation_finished_callback);
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TPM_PREPARE_TPM_H_

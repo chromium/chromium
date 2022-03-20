@@ -19,6 +19,8 @@
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "chromeos/dbus/userdataauth/userdataauth_client.h"
 
+namespace ash {
+
 namespace {
 
 const int64_t kInitialRequestDelayMs = 100;
@@ -45,8 +47,6 @@ base::TimeDelta GetNextRequestDelayMs(base::TimeDelta last_delay) {
 }
 
 }  // namespace
-
-namespace chromeos {
 
 // static
 std::unique_ptr<TPMTokenInfoGetter> TPMTokenInfoGetter::CreateForUserToken(
@@ -168,4 +168,4 @@ void TPMTokenInfoGetter::OnPkcs11GetTpmTokenInfo(
   std::move(callback_).Run(token_info->token_info());
 }
 
-}  // namespace chromeos
+}  // namespace ash

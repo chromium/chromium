@@ -214,7 +214,7 @@ std::unique_ptr<base::ListValue> GetTimezoneList() {
 }
 
 bool HasSystemTimezonePolicy() {
-  if (!chromeos::InstallAttributes::Get()->IsEnterpriseManaged())
+  if (!InstallAttributes::Get()->IsEnterpriseManaged())
     return false;
 
   std::string policy_timezone;

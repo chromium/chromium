@@ -1713,7 +1713,7 @@ class SAMLDeviceAttestationTest
 
   attestation::MockMachineCertificateUploader mock_cert_uploader_;
   NiceMock<attestation::MockAttestationFlow> mock_attestation_flow_;
-  chromeos::ScopedStubInstallAttributes stub_install_attributes_;
+  ScopedStubInstallAttributes stub_install_attributes_;
 };
 
 void SAMLDeviceAttestationTest::SetUpInProcessBrowserTestFixture() {

@@ -257,7 +257,7 @@ class MetricsConsentHandlerTest : public testing::Test {
   std::unique_ptr<metrics::MetricsService> test_metrics_service_;
 
   // Set up stubs for StatsReportingController.
-  chromeos::ScopedStubInstallAttributes scoped_install_attributes_;
+  ScopedStubInstallAttributes scoped_install_attributes_;
   ash::FakeSessionManagerClient fake_session_manager_client_;
   ash::ScopedTestDeviceSettingsService scoped_device_settings_;
   ash::ScopedTestCrosSettings scoped_cros_settings_{

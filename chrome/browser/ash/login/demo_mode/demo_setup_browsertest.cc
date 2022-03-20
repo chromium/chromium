@@ -592,7 +592,7 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
       policy::EnrollmentConfig::MODE_ATTESTATION);
   enrollment_helper_.ExpectAttestationEnrollmentError(
       policy::EnrollmentStatus::ForLockError(
-          chromeos::InstallAttributes::LOCK_ALREADY_LOCKED));
+          InstallAttributes::LOCK_ALREADY_LOCKED));
   SimulateNetworkConnected();
 
   TriggerDemoModeOnWelcomeScreen();

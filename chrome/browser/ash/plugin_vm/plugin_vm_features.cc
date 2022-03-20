@@ -69,7 +69,7 @@ PolicyConfigured CheckPolicyConfigured(const Profile* profile) {
   }
 
   // Check that the device is enterprise enrolled.
-  if (!chromeos::InstallAttributes::Get()->IsEnterpriseManaged()) {
+  if (!ash::InstallAttributes::Get()->IsEnterpriseManaged()) {
     return PolicyConfigured::kErrorNotEnterpriseEnrolled;
   }
 

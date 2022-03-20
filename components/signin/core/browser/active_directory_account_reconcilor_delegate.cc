@@ -12,7 +12,7 @@ namespace signin {
 
 ActiveDirectoryAccountReconcilorDelegate::
     ActiveDirectoryAccountReconcilorDelegate() {
-  DCHECK(chromeos::InstallAttributes::Get()->IsActiveDirectoryManaged());
+  DCHECK(ash::InstallAttributes::Get()->IsActiveDirectoryManaged());
 }
 
 ActiveDirectoryAccountReconcilorDelegate::

@@ -13,12 +13,12 @@
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 
-namespace base {
-class SequencedTaskRunner;
+namespace ash {
+class InstallAttributes;
 }
 
-namespace chromeos {
-class InstallAttributes;
+namespace base {
+class SequencedTaskRunner;
 }
 
 namespace enterprise_management {
@@ -35,7 +35,7 @@ class DeviceCloudPolicyStoreAsh : public CloudPolicyStore,
  public:
   DeviceCloudPolicyStoreAsh(
       ash::DeviceSettingsService* device_settings_service,
-      chromeos::InstallAttributes* install_attributes,
+      ash::InstallAttributes* install_attributes,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner);
 
   DeviceCloudPolicyStoreAsh(const DeviceCloudPolicyStoreAsh&) = delete;
@@ -93,7 +93,7 @@ class DeviceCloudPolicyStoreAsh : public CloudPolicyStore,
   bool dm_token_checked_ = false;
 
   ash::DeviceSettingsService* device_settings_service_;
-  chromeos::InstallAttributes* install_attributes_;
+  ash::InstallAttributes* install_attributes_;
 
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 

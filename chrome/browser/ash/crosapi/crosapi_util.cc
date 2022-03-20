@@ -422,7 +422,7 @@ mojom::BrowserInitParamsPtr GetBrowserInitParams(
   params->ash_capabilities = {{kBrowserManagerReloadBrowserCapability}};
 
   params->is_device_enterprised_managed =
-      chromeos::InstallAttributes::Get()->IsEnterpriseManaged();
+      ash::InstallAttributes::Get()->IsEnterpriseManaged();
 
   params->device_type = ConvertDeviceType(chromeos::GetDeviceType());
 

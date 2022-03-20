@@ -6,7 +6,7 @@
 
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 StubInstallAttributes::StubInstallAttributes() : InstallAttributes(nullptr) {
   device_locked_ = true;
@@ -116,4 +116,4 @@ StubInstallAttributes* ScopedStubInstallAttributes::Get() {
   return install_attributes_.get();
 }
 
-}  // namespace chromeos
+}  // namespace ash

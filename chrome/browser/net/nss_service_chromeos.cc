@@ -69,14 +69,14 @@ namespace {
 //                   v---------------------------------------/
 //     GetTPMInfoForUserOnUIThread
 //                   |
-// chromeos::TPMTokenInfoGetter::Start
+//   ash::TPMTokenInfoGetter::Start
 //                   |
 //     DidGetTPMInfoForUserOnUIThread
 //                   \---------------------------------------v
 //                                          crypto::InitializeTPMForChromeOSUser
 
 void DidGetTPMInfoForUserOnUIThread(
-    std::unique_ptr<chromeos::TPMTokenInfoGetter> getter,
+    std::unique_ptr<ash::TPMTokenInfoGetter> getter,
     const std::string& username_hash,
     absl::optional<user_data_auth::TpmTokenInfo> token_info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -96,12 +96,11 @@ void GetTPMInfoForUserOnUIThread(const AccountId& account_id,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DVLOG(1) << "Getting TPM info from cryptohome for "
            << " " << account_id.Serialize() << " " << username_hash;
-  std::unique_ptr<chromeos::TPMTokenInfoGetter> scoped_token_info_getter =
-      chromeos::TPMTokenInfoGetter::CreateForUserToken(
+  std::unique_ptr<ash::TPMTokenInfoGetter> scoped_token_info_getter =
+      ash::TPMTokenInfoGetter::CreateForUserToken(
           account_id, chromeos::CryptohomePkcs11Client::Get(),
           base::ThreadTaskRunnerHandle::Get());
-  chromeos::TPMTokenInfoGetter* token_info_getter =
-      scoped_token_info_getter.get();
+  ash::TPMTokenInfoGetter* token_info_getter = scoped_token_info_getter.get();
 
   // Bind |token_info_getter| to the callback to ensure it does not go away
   // before TPM token info is fetched.

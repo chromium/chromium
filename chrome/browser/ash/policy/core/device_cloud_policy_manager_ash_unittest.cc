@@ -95,8 +95,8 @@ MATCHER_P(HasJobType, job_type, "matches job type") {
 }
 
 void CopyLockResult(base::RunLoop* loop,
-                    chromeos::InstallAttributes::LockResult* out,
-                    chromeos::InstallAttributes::LockResult result) {
+                    ash::InstallAttributes::LockResult* out,
+                    ash::InstallAttributes::LockResult result) {
   *out = result;
   loop->Quit();
 }
@@ -190,8 +190,8 @@ class DeviceCloudPolicyManagerAshTest
           std::vector<uint8_t>());
     }
 
-    chromeos::InstallAttributesClient::InitializeFake();
-    install_attributes_ = std::make_unique<chromeos::InstallAttributes>(
+    ash::InstallAttributesClient::InitializeFake();
+    install_attributes_ = std::make_unique<ash::InstallAttributes>(
         chromeos::FakeInstallAttributesClient::Get());
     store_ = new DeviceCloudPolicyStoreAsh(device_settings_service_.get(),
                                            install_attributes_.get(),
@@ -236,7 +236,7 @@ class DeviceCloudPolicyManagerAshTest
 
     DeviceOAuth2TokenServiceFactory::Shutdown();
     chromeos::SystemSaltGetter::Shutdown();
-    chromeos::InstallAttributesClient::Shutdown();
+    ash::InstallAttributesClient::Shutdown();
     TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
 
     DeviceSettingsTestBase::TearDown();
@@ -244,14 +244,14 @@ class DeviceCloudPolicyManagerAshTest
 
   void LockDevice() {
     base::RunLoop loop;
-    chromeos::InstallAttributes::LockResult result;
+    ash::InstallAttributes::LockResult result;
     install_attributes_->LockDevice(
         DEVICE_MODE_ENTERPRISE, PolicyBuilder::kFakeDomain,
         std::string(),  // realm
         PolicyBuilder::kFakeDeviceId,
         base::BindOnce(&CopyLockResult, &loop, &result));
     loop.Run();
-    ASSERT_EQ(chromeos::InstallAttributes::LOCK_SUCCESS, result);
+    ASSERT_EQ(ash::InstallAttributes::LOCK_SUCCESS, result);
   }
 
   void AddStateKeys() {
@@ -327,7 +327,7 @@ class DeviceCloudPolicyManagerAshTest
         *device_policy_->GetNewSigningKey());
   }
 
-  std::unique_ptr<chromeos::InstallAttributes> install_attributes_;
+  std::unique_ptr<ash::InstallAttributes> install_attributes_;
 
   net::HttpStatusCode url_fetcher_response_code_;
   std::string url_fetcher_response_string_;

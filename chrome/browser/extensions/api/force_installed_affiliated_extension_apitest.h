@@ -53,7 +53,7 @@ class ForceInstalledAffiliatedExtensionApiTest
                      const base::Value& custom_arg_value);
 
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
-  chromeos::ScopedStubInstallAttributes test_install_attributes_;
+  ash::ScopedStubInstallAttributes test_install_attributes_;
   policy::DevicePolicyCrosTestHelper test_helper_;
   policy::AffiliationMixin affiliation_mixin_{&mixin_host_, &test_helper_};
   ExtensionForceInstallMixin force_install_mixin_{&mixin_host_};

@@ -78,9 +78,8 @@ class TPMAutoUpdateModePolicyHandlerTest : public testing::Test {
   user_manager::ScopedUserManager user_manager_enabler_;
 
   // Set up fake install attributes to pretend the machine is enrolled.
-  chromeos::ScopedStubInstallAttributes test_install_attributes_{
-      chromeos::StubInstallAttributes::CreateCloudManaged("example.com",
-                                                          "fake-id")};
+  ash::ScopedStubInstallAttributes test_install_attributes_{
+      ash::StubInstallAttributes::CreateCloudManaged("example.com", "fake-id")};
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 
   base::WeakPtrFactory<TPMAutoUpdateModePolicyHandlerTest> weak_factory_{this};

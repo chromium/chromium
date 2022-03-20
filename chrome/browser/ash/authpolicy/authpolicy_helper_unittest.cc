@@ -59,10 +59,10 @@ class MockAuthPolicyClient : public chromeos::FakeAuthPolicyClient {
 
 // Check that helper calls RefreshDevicePolicy after JoinAdDomain.
 TEST(AuthPolicyHelper, JoinFollowedByRefreshDevicePolicy) {
-  chromeos::ScopedStubInstallAttributes scoped_stub_install_attributes;
+  ScopedStubInstallAttributes scoped_stub_install_attributes;
 
   auto* mock_client = new MockAuthPolicyClient;
-  chromeos::InstallAttributesClient::InitializeFake();
+  InstallAttributesClient::InitializeFake();
 
   AuthPolicyHelper helper;
   helper.set_dm_token(kDMToken);
@@ -76,7 +76,7 @@ TEST(AuthPolicyHelper, JoinFollowedByRefreshDevicePolicy) {
                       }));
   mock_client->CheckExpectations();
 
-  chromeos::InstallAttributesClient::Shutdown();
+  InstallAttributesClient::Shutdown();
   chromeos::AuthPolicyClient::Shutdown();
 }
 

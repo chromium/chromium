@@ -38,8 +38,8 @@ namespace policy {
 namespace {
 
 void CopyLockResult(base::RunLoop* loop,
-                    chromeos::InstallAttributes::LockResult* out,
-                    chromeos::InstallAttributes::LockResult result) {
+                    ash::InstallAttributes::LockResult* out,
+                    ash::InstallAttributes::LockResult result) {
   *out = result;
   loop->Quit();
 }
@@ -61,30 +61,30 @@ class DeviceCloudPolicyStoreAshTest : public ash::DeviceSettingsTestBase {
   void SetUp() override {
     DeviceSettingsTestBase::SetUp();
 
-    chromeos::InstallAttributesClient::InitializeFake();
-    install_attributes_ = std::make_unique<chromeos::InstallAttributes>(
-        chromeos::InstallAttributesClient::Get());
+    ash::InstallAttributesClient::InitializeFake();
+    install_attributes_ = std::make_unique<ash::InstallAttributes>(
+        ash::InstallAttributesClient::Get());
     store_ = std::make_unique<DeviceCloudPolicyStoreAsh>(
         device_settings_service_.get(), install_attributes_.get(),
         base::ThreadTaskRunnerHandle::Get());
     store_->AddObserver(&observer_);
 
     base::RunLoop loop;
-    chromeos::InstallAttributes::LockResult result;
+    ash::InstallAttributes::LockResult result;
     install_attributes_->LockDevice(
         DEVICE_MODE_ENTERPRISE, PolicyBuilder::kFakeDomain,
         std::string(),  // realm
         PolicyBuilder::kFakeDeviceId,
         base::BindOnce(&CopyLockResult, &loop, &result));
     loop.Run();
-    ASSERT_EQ(chromeos::InstallAttributes::LOCK_SUCCESS, result);
+    ASSERT_EQ(ash::InstallAttributes::LOCK_SUCCESS, result);
   }
 
   void TearDown() override {
     store_->RemoveObserver(&observer_);
     store_.reset();
     install_attributes_.reset();
-    chromeos::InstallAttributesClient::Shutdown();
+    ash::InstallAttributesClient::Shutdown();
     DeviceSettingsTestBase::TearDown();
   }
 
@@ -133,7 +133,7 @@ class DeviceCloudPolicyStoreAshTest : public ash::DeviceSettingsTestBase {
     store_.reset();
     chromeos::install_attributes_util::InstallAttributesSet("enterprise.owned",
                                                             std::string());
-    install_attributes_ = std::make_unique<chromeos::InstallAttributes>(
+    install_attributes_ = std::make_unique<ash::InstallAttributes>(
         chromeos::FakeInstallAttributesClient::Get());
     store_ = std::make_unique<DeviceCloudPolicyStoreAsh>(
         device_settings_service_.get(), install_attributes_.get(),
@@ -142,7 +142,7 @@ class DeviceCloudPolicyStoreAshTest : public ash::DeviceSettingsTestBase {
   }
 
   ScopedTestingLocalState local_state_;
-  std::unique_ptr<chromeos::InstallAttributes> install_attributes_;
+  std::unique_ptr<ash::InstallAttributes> install_attributes_;
 
   std::unique_ptr<DeviceCloudPolicyStoreAsh> store_;
   MockCloudPolicyStoreObserver observer_;

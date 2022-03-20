@@ -25,9 +25,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace ash {
 namespace {
 
-using TpmTokenInfo = user_data_auth::TpmTokenInfo;
+using ::user_data_auth::TpmTokenInfo;
 
 // On invocation, set |called| to true, and store the result |token_info|
 // to the |result|.
@@ -179,30 +180,27 @@ class TestCryptohomePkcs11Client : public chromeos::FakeCryptohomePkcs11Client {
 
 class SystemTPMTokenInfoGetterTest : public testing::Test {
  public:
-  SystemTPMTokenInfoGetterTest() {
-    chromeos::TpmManagerClient::Get()->InitializeFake();
-  }
+  SystemTPMTokenInfoGetterTest() { TpmManagerClient::Get()->InitializeFake(); }
 
   SystemTPMTokenInfoGetterTest(const SystemTPMTokenInfoGetterTest&) = delete;
   SystemTPMTokenInfoGetterTest& operator=(const SystemTPMTokenInfoGetterTest&) =
       delete;
 
   ~SystemTPMTokenInfoGetterTest() override {
-    chromeos::TpmManagerClient::Get()->Shutdown();
+    TpmManagerClient::Get()->Shutdown();
   }
 
   void SetUp() override {
     cryptohome_client_ =
         std::make_unique<TestCryptohomePkcs11Client>(EmptyAccountId());
-    tpm_token_info_getter_ =
-        chromeos::TPMTokenInfoGetter::CreateForSystemToken(
-            cryptohome_client_.get(),
-            scoped_refptr<base::TaskRunner>(new FakeTaskRunner(&delays_)));
+    tpm_token_info_getter_ = TPMTokenInfoGetter::CreateForSystemToken(
+        cryptohome_client_.get(),
+        scoped_refptr<base::TaskRunner>(new FakeTaskRunner(&delays_)));
   }
 
  protected:
   std::unique_ptr<TestCryptohomePkcs11Client> cryptohome_client_;
-  std::unique_ptr<chromeos::TPMTokenInfoGetter> tpm_token_info_getter_;
+  std::unique_ptr<TPMTokenInfoGetter> tpm_token_info_getter_;
   std::vector<int64_t> delays_;
 
  private:
@@ -213,7 +211,7 @@ class UserTPMTokenInfoGetterTest : public testing::Test {
  public:
   UserTPMTokenInfoGetterTest()
       : account_id_(AccountId::FromUserEmail("user@gmail.com")) {
-    chromeos::TpmManagerClient::Get()->InitializeFake();
+    TpmManagerClient::Get()->InitializeFake();
   }
 
   UserTPMTokenInfoGetterTest(const UserTPMTokenInfoGetterTest&) = delete;
@@ -221,13 +219,13 @@ class UserTPMTokenInfoGetterTest : public testing::Test {
       delete;
 
   ~UserTPMTokenInfoGetterTest() override {
-    chromeos::TpmManagerClient::Get()->Shutdown();
+    TpmManagerClient::Get()->Shutdown();
   }
 
   void SetUp() override {
     cryptohome_client_ =
         std::make_unique<TestCryptohomePkcs11Client>(account_id_);
-    tpm_token_info_getter_ = chromeos::TPMTokenInfoGetter::CreateForUserToken(
+    tpm_token_info_getter_ = TPMTokenInfoGetter::CreateForUserToken(
         account_id_, cryptohome_client_.get(),
         scoped_refptr<base::TaskRunner>(new FakeTaskRunner(&delays_)));
     tpm_token_info_getter_->set_nss_slots_software_fallback_for_testing(false);
@@ -235,7 +233,7 @@ class UserTPMTokenInfoGetterTest : public testing::Test {
 
  protected:
   std::unique_ptr<TestCryptohomePkcs11Client> cryptohome_client_;
-  std::unique_ptr<chromeos::TPMTokenInfoGetter> tpm_token_info_getter_;
+  std::unique_ptr<TPMTokenInfoGetter> tpm_token_info_getter_;
 
   const AccountId account_id_;
   std::vector<int64_t> delays_;
@@ -291,7 +289,7 @@ TEST_F(SystemTPMTokenInfoGetterTest, TokenSlotIdEqualsZero) {
 }
 
 TEST_F(SystemTPMTokenInfoGetterTest, TPMNotEnabled) {
-  chromeos::TpmManagerClient::Get()
+  TpmManagerClient::Get()
       ->GetTestInterface()
       ->mutable_nonsensitive_status_reply()
       ->set_is_enabled(false);
@@ -307,11 +305,11 @@ TEST_F(SystemTPMTokenInfoGetterTest, TPMNotEnabled) {
 }
 
 TEST_F(SystemTPMTokenInfoGetterTest, TPMNotOwnedSystemSlotFallbackEnabled) {
-  chromeos::TpmManagerClient::Get()
+  TpmManagerClient::Get()
       ->GetTestInterface()
       ->mutable_nonsensitive_status_reply()
       ->set_is_enabled(false);
-  chromeos::TpmManagerClient::Get()
+  TpmManagerClient::Get()
       ->GetTestInterface()
       ->mutable_nonsensitive_status_reply()
       ->set_is_owned(false);
@@ -340,11 +338,11 @@ TEST_F(SystemTPMTokenInfoGetterTest, TPMNotOwnedSystemSlotFallbackEnabled) {
 }
 
 TEST_F(SystemTPMTokenInfoGetterTest, TPMOwnedSystemSlotFallbackEnabled) {
-  chromeos::TpmManagerClient::Get()
+  TpmManagerClient::Get()
       ->GetTestInterface()
       ->mutable_nonsensitive_status_reply()
       ->set_is_enabled(true);
-  chromeos::TpmManagerClient::Get()
+  TpmManagerClient::Get()
       ->GetTestInterface()
       ->mutable_nonsensitive_status_reply()
       ->set_is_owned(true);
@@ -373,7 +371,7 @@ TEST_F(SystemTPMTokenInfoGetterTest, TPMOwnedSystemSlotFallbackEnabled) {
 }
 
 TEST_F(SystemTPMTokenInfoGetterTest, TpmEnabledCallFails) {
-  chromeos::TpmManagerClient::Get()
+  TpmManagerClient::Get()
       ->GetTestInterface()
       ->set_non_nonsensitive_status_dbus_error_count(1);
 
@@ -459,7 +457,7 @@ TEST_F(SystemTPMTokenInfoGetterTest, GetTpmTokenInfoInitiallyFails) {
 }
 
 TEST_F(SystemTPMTokenInfoGetterTest, RetryDelaysIncreaseExponentially) {
-  chromeos::TpmManagerClient::Get()
+  TpmManagerClient::Get()
       ->GetTestInterface()
       ->set_non_nonsensitive_status_dbus_error_count(2);
   cryptohome_client_->set_get_tpm_token_info_failure_count(1);
@@ -491,7 +489,7 @@ TEST_F(SystemTPMTokenInfoGetterTest, RetryDelaysIncreaseExponentially) {
 }
 
 TEST_F(SystemTPMTokenInfoGetterTest, RetryDelayBounded) {
-  chromeos::TpmManagerClient::Get()
+  TpmManagerClient::Get()
       ->GetTestInterface()
       ->set_non_nonsensitive_status_dbus_error_count(4);
   cryptohome_client_->set_get_tpm_token_info_failure_count(5);
@@ -608,3 +606,4 @@ TEST_F(UserTPMTokenInfoGetterTest, GetTpmTokenInfoInitiallyNotReady) {
 }
 
 }  // namespace
+}  // namespace ash

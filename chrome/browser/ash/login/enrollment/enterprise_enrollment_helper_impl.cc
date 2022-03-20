@@ -39,10 +39,8 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace ash {
-namespace {
 
-// TODO(https://crbug.com/1164001): remove when migrated to ash::
-using ::chromeos::InstallAttributes;
+namespace {
 
 // The OAuth token consumer name.
 const char kOAuthConsumerName[] = "enterprise_enrollment";

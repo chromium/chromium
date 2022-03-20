@@ -207,7 +207,7 @@ class BrowserWithTestWindowTest : public testing::Test {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::ScopedCrosSettingsTestHelper* GetCrosSettingsHelper();
-  chromeos::StubInstallAttributes* GetInstallAttributes();
+  ash::StubInstallAttributes* GetInstallAttributes();
 #endif
 
  private:

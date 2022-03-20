@@ -292,9 +292,8 @@ class ChromeOSManagedDeviceInfoPrivateTest : public ChromeOSInfoPrivateTest {
   ~ChromeOSManagedDeviceInfoPrivateTest() override = default;
 
  private:
-  chromeos::ScopedStubInstallAttributes test_install_attributes_{
-      chromeos::StubInstallAttributes::CreateCloudManaged("fake-domain",
-                                                          "fake-id")};
+  ash::ScopedStubInstallAttributes test_install_attributes_{
+      ash::StubInstallAttributes::CreateCloudManaged("fake-domain", "fake-id")};
 };
 
 IN_PROC_BROWSER_TEST_F(ChromeOSManagedDeviceInfoPrivateTest, Managed) {

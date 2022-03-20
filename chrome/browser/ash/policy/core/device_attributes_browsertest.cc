@@ -64,12 +64,12 @@ class DeviceAttributesTest : public DevicePolicyCrosBrowserTest {
   ~DeviceAttributesTest() override = default;
 
  protected:
-  chromeos::StubInstallAttributes* stub_install_attributes() {
+  ash::StubInstallAttributes* stub_install_attributes() {
     return install_attributes_.Get();
   }
 
   DeviceAttributesImpl attributes_;
-  chromeos::ScopedStubInstallAttributes install_attributes_;
+  ash::ScopedStubInstallAttributes install_attributes_;
 };
 
 IN_PROC_BROWSER_TEST_F(DeviceAttributesTest, ReturnsAttributes) {

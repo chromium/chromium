@@ -21,13 +21,14 @@
 
 class PrefService;
 
-namespace chromeos {
+namespace ash {
 class InstallAttributes;
+}
 
+namespace chromeos {
 namespace system {
 class StatisticsProvider;
 }
-
 }  // namespace chromeos
 
 namespace policy {
@@ -40,7 +41,7 @@ struct EnrollmentConfig;
 // for a given |DeviceManagementService|. It does so, once
 // - the `DeviceCloudPolicyStoreAsh` is initialized and has policy,
 // - the `ServerBackedStateKeysBroker` is available,
-// - `chromeos::InstallAttributes::IsActiveDirectoryManaged() == false`
+// - `ash::InstallAttributes::IsActiveDirectoryManaged()` == false.
 //
 // It is expected that the |DeviceCloudPolicyInitializer| will be
 // destroyed soon after it called |StartConnection|, but see
@@ -52,7 +53,7 @@ class DeviceCloudPolicyInitializer
   DeviceCloudPolicyInitializer(
       PrefService* local_state,
       DeviceManagementService* enterprise_service,
-      chromeos::InstallAttributes* install_attributes,
+      ash::InstallAttributes* install_attributes,
       ServerBackedStateKeysBroker* state_keys_broker,
       DeviceCloudPolicyStoreAsh* policy_store,
       DeviceCloudPolicyManagerAsh* policy_manager,
@@ -105,7 +106,7 @@ class DeviceCloudPolicyInitializer
 
   PrefService* local_state_;
   DeviceManagementService* enterprise_service_;
-  chromeos::InstallAttributes* install_attributes_;
+  ash::InstallAttributes* install_attributes_;
   ServerBackedStateKeysBroker* state_keys_broker_;
   DeviceCloudPolicyStoreAsh* policy_store_;
   DeviceCloudPolicyManagerAsh* policy_manager_;

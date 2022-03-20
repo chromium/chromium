@@ -1428,10 +1428,9 @@ class AccountReconcilorTestActiveDirectory : public AccountReconcilorTestTable {
   }
 
  private:
-  chromeos::ScopedStubInstallAttributes install_attributes_{
-      chromeos::StubInstallAttributes::CreateActiveDirectoryManaged(
-          "realm.com",
-          "device_id")};
+  ash::ScopedStubInstallAttributes install_attributes_{
+      ash::StubInstallAttributes::CreateActiveDirectoryManaged("realm.com",
+                                                               "device_id")};
 };
 
 // clang-format off

@@ -455,8 +455,7 @@ void AutoEnrollmentController::UpdateState(
   // attributes. In case that file is corrupted, this should prevent device
   // re-enabling.
   if (state_ == policy::AUTO_ENROLLMENT_STATE_DISABLED) {
-    policy::DeviceMode device_mode =
-        chromeos::InstallAttributes::Get()->GetMode();
+    policy::DeviceMode device_mode = InstallAttributes::Get()->GetMode();
     if (device_mode == policy::DeviceMode::DEVICE_MODE_PENDING ||
         device_mode == policy::DeviceMode::DEVICE_MODE_NOT_SET) {
       DeviceSettingsService::Get()->SetDeviceMode(

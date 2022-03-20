@@ -22,7 +22,7 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -388,4 +388,4 @@ TEST_F(InstallAttributesTest, ConsistencyCheckNotTriggeredDBusError) {
                                       1);
 }
 
-}  // namespace chromeos
+}  // namespace ash

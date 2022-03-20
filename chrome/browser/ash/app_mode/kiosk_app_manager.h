@@ -258,12 +258,12 @@ class KioskAppManager : public KioskAppManagerBase,
   void OnExtensionLoadedInCache(const extensions::ExtensionId& id) override;
   void OnExtensionDownloadFailed(const extensions::ExtensionId& id) override;
 
-  // Callback for chromeos::InstallAttributes::LockDevice() during
+  // Callback for `InstallAttributes::LockDevice()` during
   // EnableConsumerModeKiosk() call.
   void OnLockDevice(EnableKioskAutoLaunchCallback callback,
-                    chromeos::InstallAttributes::LockResult result);
+                    InstallAttributes::LockResult result);
 
-  // Callback for chromeos::InstallAttributes::ReadImmutableAttributes() during
+  // Callback for `InstallAttributes::ReadImmutableAttributes()` during
   // GetConsumerKioskModeStatus() call.
   void OnReadImmutableAttributes(
       GetConsumerKioskAutoLaunchStatusCallback callback);

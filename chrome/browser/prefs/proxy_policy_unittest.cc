@@ -131,7 +131,7 @@ class ProxyPolicyTest : public testing::Test {
   std::unique_ptr<PolicyServiceImpl> policy_service_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::ScopedStubInstallAttributes test_install_attributes_;
+  ash::ScopedStubInstallAttributes test_install_attributes_;
 #endif
 };
 

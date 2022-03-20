@@ -33,8 +33,8 @@ namespace extensions {
 ForceInstalledAffiliatedExtensionApiTest::
     ForceInstalledAffiliatedExtensionApiTest(bool is_affiliated)
     : test_install_attributes_(
-          chromeos::StubInstallAttributes::CreateCloudManaged("fake-domain",
-                                                              "fake-id")) {
+          ash::StubInstallAttributes::CreateCloudManaged("fake-domain",
+                                                         "fake-id")) {
   set_exit_when_last_browser_closes(false);
   set_chromeos_user_ = false;
   affiliation_mixin_.set_affiliated(is_affiliated);

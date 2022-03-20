@@ -109,7 +109,7 @@ class UpdateRequiredNotificationTest
   ScopedTestingLocalState local_state_;
   ScopedTestingCrosSettings scoped_testing_cros_settings_;
   std::unique_ptr<NotificationDisplayServiceTester> notification_service_;
-  chromeos::ScopedStubInstallAttributes scoped_stub_install_attributes_;
+  ScopedStubInstallAttributes scoped_stub_install_attributes_;
   chromeos::FakeUpdateEngineClient* fake_update_engine_client_;
   std::unique_ptr<base::Version> current_version_;
   std::unique_ptr<policy::MinimumVersionPolicyHandler>

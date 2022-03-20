@@ -180,7 +180,7 @@ AccountReconcilorFactory::CreateAccountReconcilorDelegate(Profile* profile) {
       // |IsAccountManagerAvailable| after fixing https://crbug.com/1008349 and
       // https://crbug.com/993317.
       if (ash::IsAccountManagerAvailable(profile) &&
-          chromeos::InstallAttributes::Get()->IsActiveDirectoryManaged()) {
+          ash::InstallAttributes::Get()->IsActiveDirectoryManaged()) {
         return std::make_unique<
             signin::ActiveDirectoryAccountReconcilorDelegate>();
       }

@@ -166,7 +166,7 @@ class UsersPrivateApiTest : public ExtensionApiTest {
   static TestDelegate* s_test_delegate_;
 
  private:
-  chromeos::ScopedStubInstallAttributes scoped_stub_install_attributes_;
+  ash::ScopedStubInstallAttributes scoped_stub_install_attributes_;
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 };
 

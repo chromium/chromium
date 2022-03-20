@@ -96,7 +96,7 @@ class MinimumVersionPolicyHandlerTest
   ScopedTestingLocalState local_state_;
   base::test::ScopedFeatureList feature_list_;
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
-  chromeos::ScopedStubInstallAttributes scoped_stub_install_attributes_;
+  ash::ScopedStubInstallAttributes scoped_stub_install_attributes_;
   chromeos::FakeUpdateEngineClient* fake_update_engine_client_;
   std::unique_ptr<chromeos::NetworkHandlerTestHelper>
       network_handler_test_helper_;

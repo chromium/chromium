@@ -44,4 +44,9 @@ void RegisterStubPathOverrides(const base::FilePath& stubs_dir);
 }  // namespace dbus_paths
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash::dbus_paths {
+using ::chromeos::dbus_paths::FILE_INSTALL_ATTRIBUTES;
+}
+
 #endif  // CHROMEOS_DBUS_CONSTANTS_DBUS_PATHS_H_

@@ -29,7 +29,7 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -622,4 +622,4 @@ void InstallAttributes::DecodeInstallAttributes(
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

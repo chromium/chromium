@@ -135,7 +135,7 @@ BrowserPolicyConnectorAsh::CreateBackgroundTaskRunner() {
 
 BrowserPolicyConnectorAsh::BrowserPolicyConnectorAsh()
     : attestation_flow_(CreateAttestationFlow()) {
-  DCHECK(chromeos::InstallAttributes::IsInitialized());
+  DCHECK(ash::InstallAttributes::IsInitialized());
 
   // DBusThreadManager or DeviceSettingsService may be
   // uninitialized on unit tests.
@@ -143,10 +143,10 @@ BrowserPolicyConnectorAsh::BrowserPolicyConnectorAsh()
       ash::DeviceSettingsService::IsInitialized()) {
     std::unique_ptr<DeviceCloudPolicyStoreAsh> device_cloud_policy_store =
         std::make_unique<DeviceCloudPolicyStoreAsh>(
-            ash::DeviceSettingsService::Get(),
-            chromeos::InstallAttributes::Get(), CreateBackgroundTaskRunner());
+            ash::DeviceSettingsService::Get(), ash::InstallAttributes::Get(),
+            CreateBackgroundTaskRunner());
 
-    if (chromeos::InstallAttributes::Get()->IsActiveDirectoryManaged()) {
+    if (ash::InstallAttributes::Get()->IsActiveDirectoryManaged()) {
       chromeos::UpstartClient::Get()->StartAuthPolicyService();
 
       device_active_directory_policy_manager_ =
@@ -206,7 +206,7 @@ void BrowserPolicyConnectorAsh::Init(
     RestartDeviceCloudPolicyInitializer();
   }
 
-  if (!chromeos::InstallAttributes::Get()->IsActiveDirectoryManaged()) {
+  if (!ash::InstallAttributes::Get()->IsActiveDirectoryManaged()) {
     device_local_account_policy_service_ =
         std::make_unique<DeviceLocalAccountPolicyService>(
             chromeos::SessionManagerClient::Get(),
@@ -390,7 +390,7 @@ void BrowserPolicyConnectorAsh::Shutdown() {
 }
 
 bool BrowserPolicyConnectorAsh::IsDeviceEnterpriseManaged() const {
-  return chromeos::InstallAttributes::Get()->IsEnterpriseManaged();
+  return ash::InstallAttributes::Get()->IsEnterpriseManaged();
 }
 
 bool BrowserPolicyConnectorAsh::HasMachineLevelPolicies() {
@@ -399,15 +399,15 @@ bool BrowserPolicyConnectorAsh::HasMachineLevelPolicies() {
 }
 
 bool BrowserPolicyConnectorAsh::IsCloudManaged() const {
-  return chromeos::InstallAttributes::Get()->IsCloudManaged();
+  return ash::InstallAttributes::Get()->IsCloudManaged();
 }
 
 bool BrowserPolicyConnectorAsh::IsActiveDirectoryManaged() const {
-  return chromeos::InstallAttributes::Get()->IsActiveDirectoryManaged();
+  return ash::InstallAttributes::Get()->IsActiveDirectoryManaged();
 }
 
 std::string BrowserPolicyConnectorAsh::GetEnterpriseEnrollmentDomain() const {
-  return chromeos::InstallAttributes::Get()->GetDomain();
+  return ash::InstallAttributes::Get()->GetDomain();
 }
 
 std::string BrowserPolicyConnectorAsh::GetEnterpriseDomainManager() const {
@@ -427,7 +427,7 @@ std::string BrowserPolicyConnectorAsh::GetSSOProfile() const {
 }
 
 std::string BrowserPolicyConnectorAsh::GetRealm() const {
-  return chromeos::InstallAttributes::Get()->GetRealm();
+  return ash::InstallAttributes::Get()->GetRealm();
 }
 
 std::string BrowserPolicyConnectorAsh::GetDeviceAssetID() const {
@@ -473,12 +473,12 @@ std::string BrowserPolicyConnectorAsh::GetCustomerLogoURL() const {
 }
 
 DeviceMode BrowserPolicyConnectorAsh::GetDeviceMode() const {
-  return chromeos::InstallAttributes::Get()->GetMode();
+  return ash::InstallAttributes::Get()->GetMode();
 }
 
-chromeos::InstallAttributes* BrowserPolicyConnectorAsh::GetInstallAttributes()
+ash::InstallAttributes* BrowserPolicyConnectorAsh::GetInstallAttributes()
     const {
-  return chromeos::InstallAttributes::Get();
+  return ash::InstallAttributes::Get();
 }
 
 EnrollmentConfig BrowserPolicyConnectorAsh::GetPrescribedEnrollmentConfig()
@@ -582,7 +582,7 @@ void BrowserPolicyConnectorAsh::RestartDeviceCloudPolicyInitializer() {
   device_cloud_policy_initializer_ =
       std::make_unique<DeviceCloudPolicyInitializer>(
           local_state_, device_management_service(),
-          chromeos::InstallAttributes::Get(), state_keys_broker_.get(),
+          ash::InstallAttributes::Get(), state_keys_broker_.get(),
           device_cloud_policy_manager_->device_store(),
           device_cloud_policy_manager_,
           chromeos::system::StatisticsProvider::GetInstance());

@@ -100,7 +100,7 @@ class StatsReportingControllerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       content::BrowserTaskEnvironment::IO_MAINLOOP};
   TestingPrefServiceSimple local_state_;
-  chromeos::ScopedStubInstallAttributes scoped_install_attributes_;
+  ScopedStubInstallAttributes scoped_install_attributes_;
   FakeSessionManagerClient fake_session_manager_client_;
   ScopedTestDeviceSettingsService scoped_device_settings_;
   ScopedTestCrosSettings scoped_cros_settings_{RegisterPrefs(&local_state_)};

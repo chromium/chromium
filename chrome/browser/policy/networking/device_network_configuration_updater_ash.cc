@@ -91,7 +91,7 @@ void DeviceNetworkConfigurationUpdaterAsh::Init() {
   // The highest authority regarding whether cellular data roaming should be
   // allowed is the Device Policy. If there is no Device Policy, then
   // data roaming should be allowed if this is a Cellular First device.
-  if (!chromeos::InstallAttributes::Get()->IsEnterpriseManaged() &&
+  if (!ash::InstallAttributes::Get()->IsEnterpriseManaged() &&
       ash::switches::IsCellularFirstDevice()) {
     network_device_handler_->SetCellularPolicyAllowRoaming(
         /*policy_allow_roaming=*/true);
@@ -103,7 +103,7 @@ void DeviceNetworkConfigurationUpdaterAsh::Init() {
   // Set up MAC address randomization if we are not enterprise managed.
 
   network_device_handler_->SetMACAddressRandomizationEnabled(
-      !chromeos::InstallAttributes::Get()->IsEnterpriseManaged());
+      !ash::InstallAttributes::Get()->IsEnterpriseManaged());
 }
 
 void DeviceNetworkConfigurationUpdaterAsh::ImportClientCertificates() {
@@ -166,7 +166,7 @@ void DeviceNetworkConfigurationUpdaterAsh::OnDataRoamingSettingChanged() {
   // Roaming is disabled by policy only when the device is both enterprise
   // managed and the value of |data_roaming_setting| is |false|.
   const bool policy_allow_roaming =
-      chromeos::InstallAttributes::Get()->IsEnterpriseManaged()
+      ash::InstallAttributes::Get()->IsEnterpriseManaged()
           ? data_roaming_setting
           : true;
 

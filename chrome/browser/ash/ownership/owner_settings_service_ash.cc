@@ -279,14 +279,14 @@ bool OwnerSettingsServiceAsh::HasPendingChanges() const {
 }
 
 bool OwnerSettingsServiceAsh::IsOwner() {
-  if (chromeos::InstallAttributes::Get()->IsEnterpriseManaged()) {
+  if (InstallAttributes::Get()->IsEnterpriseManaged()) {
     return false;
   }
   return OwnerSettingsService::IsOwner();
 }
 
 void OwnerSettingsServiceAsh::IsOwnerAsync(IsOwnerCallback callback) {
-  if (chromeos::InstallAttributes::Get()->IsEnterpriseManaged()) {
+  if (InstallAttributes::Get()->IsEnterpriseManaged()) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), false));
     return;

@@ -49,7 +49,7 @@ void SetupMockDemoModeOnlineEnrollmentHelper(DemoModeSetupResult result) {
           case DemoModeSetupResult::ERROR_POWERWASH_REQUIRED:
             mock_ptr->status_consumer()->OnEnrollmentError(
                 policy::EnrollmentStatus::ForLockError(
-                    chromeos::InstallAttributes::LOCK_ALREADY_LOCKED));
+                    InstallAttributes::LOCK_ALREADY_LOCKED));
             break;
           case DemoModeSetupResult::ERROR_DEFAULT:
             mock_ptr->status_consumer()->OnEnrollmentError(
@@ -79,7 +79,7 @@ void SetupMockDemoModeOfflineEnrollmentHelper(DemoModeSetupResult result) {
           case DemoModeSetupResult::ERROR_POWERWASH_REQUIRED:
             mock_ptr->status_consumer()->OnEnrollmentError(
                 policy::EnrollmentStatus::ForLockError(
-                    chromeos::InstallAttributes::LOCK_READBACK_ERROR));
+                    InstallAttributes::LOCK_READBACK_ERROR));
             break;
           case DemoModeSetupResult::ERROR_DEFAULT:
             mock_ptr->status_consumer()->OnEnrollmentError(

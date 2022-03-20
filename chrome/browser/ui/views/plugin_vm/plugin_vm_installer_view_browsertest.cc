@@ -148,7 +148,7 @@ class PluginVmInstallerViewBrowserTest : public DialogBrowserTest {
   }
 
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
-  chromeos::ScopedStubInstallAttributes scoped_stub_install_attributes_;
+  ash::ScopedStubInstallAttributes scoped_stub_install_attributes_;
 
   std::unique_ptr<network::TestNetworkConnectionTracker>
       network_connection_tracker_;

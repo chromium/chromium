@@ -36,7 +36,7 @@ class InstallLimiterTest
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  chromeos::ScopedStubInstallAttributes test_install_attributes_;
+  ash::ScopedStubInstallAttributes test_install_attributes_;
   user_manager::ScopedUserManager scoped_user_manager_;
 };
 

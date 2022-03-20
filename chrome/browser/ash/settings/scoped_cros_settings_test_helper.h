@@ -86,11 +86,10 @@ class ScopedCrosSettingsTestHelper {
 
   // Get the scoped install attributes to change them as needed for the
   // current test.
-  chromeos::StubInstallAttributes* InstallAttributes();
+  StubInstallAttributes* InstallAttributes();
 
  private:
-  std::unique_ptr<chromeos::ScopedStubInstallAttributes>
-      test_install_attributes_;
+  std::unique_ptr<ScopedStubInstallAttributes> test_install_attributes_;
   std::unique_ptr<ScopedTestDeviceSettingsService>
       test_device_settings_service_;
   std::unique_ptr<ScopedTestCrosSettings> test_cros_settings_;

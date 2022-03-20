@@ -182,7 +182,7 @@ class ScreenLockerUnitTest : public testing::Test {
   ScopedTestingCrosSettings scoped_testing_cros_settings_;
   system::ScopedFakeStatisticsProvider fake_statictics_provider_;
   // * ChromeUserSelectionScreen dependencies:
-  chromeos::ScopedStubInstallAttributes test_install_attributes_;
+  ScopedStubInstallAttributes test_install_attributes_;
 
   // ScreenLocker dependencies:
   // * AccessibilityManager dependencies:

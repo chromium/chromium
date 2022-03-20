@@ -26,7 +26,6 @@ namespace ash {
 namespace {
 
 using ::chromeos::AuthPolicyClient;
-using ::chromeos::InstallAttributes;
 
 constexpr char kDCPrefix[] = "DC=";
 constexpr char kOUPrefix[] = "OU=";

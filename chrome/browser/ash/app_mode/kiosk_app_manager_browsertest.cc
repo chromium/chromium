@@ -51,8 +51,6 @@ namespace ash {
 
 namespace {
 
-using ::chromeos::InstallAttributes;
-
 // An app to test local fs data persistence across app update. V1 app writes
 // data into local fs. V2 app reads and verifies the data.
 // Webstore data json is in

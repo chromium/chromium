@@ -68,7 +68,7 @@ class DeviceI18nShortcutsEnabledPolicyEnterpriseManagedTest
                                                            "fake-id")) {}
   ~DeviceI18nShortcutsEnabledPolicyEnterpriseManagedTest() override = default;
 
-  chromeos::ScopedStubInstallAttributes install_attributes_;
+  ash::ScopedStubInstallAttributes install_attributes_;
 };
 
 IN_PROC_BROWSER_TEST_F(DeviceI18nShortcutsEnabledPolicyEnterpriseManagedTest,

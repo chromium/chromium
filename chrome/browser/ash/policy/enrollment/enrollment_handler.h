@@ -66,7 +66,7 @@ class EnrollmentHandler : public CloudPolicyClient::Observer,
   // enrollment handler.
   EnrollmentHandler(
       DeviceCloudPolicyStoreAsh* store,
-      chromeos::InstallAttributes* install_attributes,
+      ash::InstallAttributes* install_attributes,
       ServerBackedStateKeysBroker* state_keys_broker,
       ash::attestation::AttestationFlow* attestation_flow,
       std::unique_ptr<SigningService> signing_service,
@@ -184,8 +184,7 @@ class EnrollmentHandler : public CloudPolicyClient::Observer,
   void StartLockDevice();
 
   // Handle callback from InstallAttributes::LockDevice() and retry on failure.
-  void HandleLockDeviceResult(
-      chromeos::InstallAttributes::LockResult lock_result);
+  void HandleLockDeviceResult(ash::InstallAttributes::LockResult lock_result);
 
   // Initiates storing DM token. For Active Directory devices only.
   void StartStoreDMToken();
@@ -219,7 +218,7 @@ class EnrollmentHandler : public CloudPolicyClient::Observer,
   void SetStep(EnrollmentStep step);
 
   DeviceCloudPolicyStoreAsh* store_;
-  chromeos::InstallAttributes* install_attributes_;
+  ash::InstallAttributes* install_attributes_;
   ServerBackedStateKeysBroker* state_keys_broker_;
   ash::attestation::AttestationFlow* attestation_flow_;
   // SigningService to be used by |client_| to register with.

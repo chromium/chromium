@@ -34,8 +34,8 @@ constexpr char kAllowlistCOILFallbackHistogram[] =
     "Login.AllowlistCOILFallback";
 
 // CrosSettingsProvider implementation that works with device settings.
-// Dependency: chromeos::InstallAttributes must be initialized while this class
-// is in use.
+// Dependency: `InstallAttributes` must be initialized while this class is in
+// use.
 //
 // Note that the write path is in the process of being migrated to
 // OwnerSettingsServiceAsh (crbug.com/230018).

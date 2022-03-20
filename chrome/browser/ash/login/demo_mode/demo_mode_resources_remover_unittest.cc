@@ -28,10 +28,6 @@
 namespace ash {
 namespace {
 
-// TODO(https://crbug.com/1164001): remove after moving to ash::
-using ::chromeos::ScopedStubInstallAttributes;
-using ::chromeos::StubInstallAttributes;
-
 // Key for the pref in local state that tracks accumulated device usage time in
 // seconds.
 constexpr char kAccumulatedUsagePref[] =

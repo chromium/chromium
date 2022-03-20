@@ -19,7 +19,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 // Brokers access to the installation-time attributes on Chrome OS.  When
 // initialized with kInstallAttributesFileName, the attributes are fully trusted
@@ -236,12 +236,11 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_TPM) InstallAttributes {
   base::WeakPtrFactory<InstallAttributes> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::InstallAttributes;
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos {
+using ::ash::InstallAttributes;
 }
 
 #endif  // ASH_COMPONENTS_TPM_INSTALL_ATTRIBUTES_H_

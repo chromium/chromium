@@ -240,8 +240,7 @@ BrowserWithTestWindowTest::GetCrosSettingsHelper() {
   return &cros_settings_test_helper_;
 }
 
-chromeos::StubInstallAttributes*
-BrowserWithTestWindowTest::GetInstallAttributes() {
+ash::StubInstallAttributes* BrowserWithTestWindowTest::GetInstallAttributes() {
   return GetCrosSettingsHelper()->InstallAttributes();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

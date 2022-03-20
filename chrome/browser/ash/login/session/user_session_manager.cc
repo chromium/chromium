@@ -1564,7 +1564,7 @@ void UserSessionManager::UserProfileInitialized(Profile* profile,
   }
 
   BootTimesRecorder::Get()->AddLoginTimeMarker("TPMOwn-Start", false);
-  chromeos::PrepareTpm(base::BindOnce(OnPrepareTpmDeviceFinished));
+  PrepareTpm(base::BindOnce(OnPrepareTpmDeviceFinished));
   FinalizePrepareProfile(profile);
 }
 
@@ -1572,7 +1572,7 @@ void UserSessionManager::CompleteProfileCreateAfterAuthTransfer(
     Profile* profile) {
   RestoreAuthSessionImpl(profile, has_auth_cookies_);
   BootTimesRecorder::Get()->AddLoginTimeMarker("TPMOwn-Start", false);
-  chromeos::PrepareTpm(base::BindOnce(OnPrepareTpmDeviceFinished));
+  PrepareTpm(base::BindOnce(OnPrepareTpmDeviceFinished));
   FinalizePrepareProfile(profile);
 }
 

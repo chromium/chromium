@@ -271,7 +271,7 @@ class MultiProfileSupportTest : public ChromeAshTestBase {
  private:
   std::string GetStatusImpl(bool follow_transients);
 
-  chromeos::ScopedStubInstallAttributes test_install_attributes_;
+  ScopedStubInstallAttributes test_install_attributes_;
 
   // These get created for each session.
   // TODO: convert to vector<std::unique_ptr<aura::Window>>.

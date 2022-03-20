@@ -18,7 +18,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "crypto/nss_util.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -198,4 +198,4 @@ void TPMTokenLoader::LoggedInStateChanged() {
   MaybeStartTokenInitialization();
 }
 
-}  // namespace chromeos
+}  // namespace ash

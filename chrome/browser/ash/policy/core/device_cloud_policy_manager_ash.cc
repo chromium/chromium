@@ -179,7 +179,7 @@ DeviceCloudPolicyManagerAsh::GetZeroTouchEnrollmentMode() {
 
 void DeviceCloudPolicyManagerAsh::StartConnection(
     std::unique_ptr<CloudPolicyClient> client_to_connect,
-    chromeos::InstallAttributes* install_attributes) {
+    ash::InstallAttributes* install_attributes) {
   CHECK(!service());
 
   // Set state keys here so the first policy fetch submits them to the server.
@@ -259,7 +259,7 @@ void DeviceCloudPolicyManagerAsh::StartConnection(
 }
 
 void DeviceCloudPolicyManagerAsh::OnPolicyStoreReady(
-    chromeos::InstallAttributes* install_attributes) {
+    ash::InstallAttributes* install_attributes) {
   if (!install_attributes->IsCloudManaged()) {
     return;
   }

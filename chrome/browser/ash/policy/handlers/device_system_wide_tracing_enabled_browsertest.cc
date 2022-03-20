@@ -69,7 +69,7 @@ class DeviceSystemWideTracingEnabledPolicyConsumerOwnedTest
   }
   ~DeviceSystemWideTracingEnabledPolicyConsumerOwnedTest() override = default;
 
-  chromeos::ScopedStubInstallAttributes install_attributes_;
+  ash::ScopedStubInstallAttributes install_attributes_;
 };
 
 // Test that system-wide tracing is enabled by default for a consumer-owned
@@ -90,7 +90,7 @@ class DeviceSystemWideTracingEnabledPolicyEnterpriseManagedTest
   ~DeviceSystemWideTracingEnabledPolicyEnterpriseManagedTest() override =
       default;
 
-  chromeos::ScopedStubInstallAttributes install_attributes_;
+  ash::ScopedStubInstallAttributes install_attributes_;
 };
 
 // Test that system-wide tracing is disabled by default for a managed device and

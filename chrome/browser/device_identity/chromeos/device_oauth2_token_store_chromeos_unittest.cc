@@ -112,7 +112,7 @@ class DeviceOAuth2TokenStoreChromeOSTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   ScopedTestingLocalState scoped_testing_local_state_;
-  chromeos::ScopedStubInstallAttributes scoped_stub_install_attributes_;
+  ash::ScopedStubInstallAttributes scoped_stub_install_attributes_;
   ash::ScopedTestDeviceSettingsService scoped_device_settings_service_;
   ash::ScopedTestCrosSettings scoped_test_cros_settings_{
       scoped_testing_local_state_.Get()};

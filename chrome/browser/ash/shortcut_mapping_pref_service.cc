@@ -10,11 +10,12 @@
 #include "components/prefs/pref_service.h"
 
 namespace ash {
+
 ShortcutMappingPrefService::ShortcutMappingPrefService() = default;
 ShortcutMappingPrefService::~ShortcutMappingPrefService() = default;
 
 bool ShortcutMappingPrefService::IsDeviceEnterpriseManaged() const {
-  return chromeos::InstallAttributes::Get()->IsEnterpriseManaged();
+  return InstallAttributes::Get()->IsEnterpriseManaged();
 }
 
 bool ShortcutMappingPrefService::IsI18nShortcutPrefEnabled() const {

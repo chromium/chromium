@@ -59,10 +59,8 @@
 #endif
 
 namespace ash {
-namespace {
 
-// TODO(https://crbug.com/1164001): remove when moved to ash::
-using ::chromeos::InstallAttributes;
+namespace {
 
 UserSessionInitializer* g_instance = nullptr;
 

@@ -45,10 +45,9 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
+
 namespace {
 
-// TODO(https://crbug.com/1164001): remove after moving to ash::
-using ::chromeos::InstallAttributes;
 using ErrorCode = DemoSetupController::DemoSetupError::ErrorCode;
 using RecoveryMethod = DemoSetupController::DemoSetupError::RecoveryMethod;
 

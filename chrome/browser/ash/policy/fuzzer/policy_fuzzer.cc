@@ -98,7 +98,7 @@ struct PerInputEnvironment {
 
   ~PerInputEnvironment() {
     ash::ShutdownDBus();
-    chromeos::InstallAttributes::Shutdown();
+    ash::InstallAttributes::Shutdown();
     ash::DeviceSettingsService::Shutdown();
   }
 

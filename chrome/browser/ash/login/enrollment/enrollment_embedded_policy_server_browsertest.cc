@@ -67,9 +67,6 @@ namespace {
 
 namespace em = enterprise_management;
 
-// TODO(https://crbug.com/1164001): remove when migrated to ash::
-using ::chromeos::InstallAttributes;
-
 constexpr test::UIPath kEnterprisePrimaryButton = {
     "enterprise-enrollment", "step-signin", "primary-action-button"};
 

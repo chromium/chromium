@@ -53,7 +53,7 @@ mojom::SessionType EnvironmentProvider::GetSessionType() {
 }
 
 mojom::DeviceMode EnvironmentProvider::GetDeviceMode() {
-  policy::DeviceMode mode = chromeos::InstallAttributes::Get()->GetMode();
+  policy::DeviceMode mode = ash::InstallAttributes::Get()->GetMode();
   switch (mode) {
     case policy::DEVICE_MODE_PENDING:
       // "Pending" is an internal detail of InstallAttributes and doesn't need

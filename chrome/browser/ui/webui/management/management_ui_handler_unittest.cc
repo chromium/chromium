@@ -398,9 +398,8 @@ class ManagementUIHandlerTests : public TestingBaseClass {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void SetUp() override {
     DeviceSettingsTestBase::SetUp();
-    install_attributes_ =
-        std::make_unique<chromeos::ScopedStubInstallAttributes>(
-            chromeos::StubInstallAttributes::CreateUnset());
+    install_attributes_ = std::make_unique<ash::ScopedStubInstallAttributes>(
+        ash::StubInstallAttributes::CreateUnset());
 
     crostini_features_ = std::make_unique<crostini::FakeCrostiniFeatures>();
     SetUpConnectManager();
@@ -584,7 +583,7 @@ class ManagementUIHandlerTests : public TestingBaseClass {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<chromeos::NetworkHandlerTestHelper>
       network_handler_test_helper_;
-  std::unique_ptr<chromeos::ScopedStubInstallAttributes> install_attributes_;
+  std::unique_ptr<ash::ScopedStubInstallAttributes> install_attributes_;
   std::unique_ptr<crostini::FakeCrostiniFeatures> crostini_features_;
   TestingPrefServiceSimple local_state_;
   TestingPrefServiceSimple user_prefs_;

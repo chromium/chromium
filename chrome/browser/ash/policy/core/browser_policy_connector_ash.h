@@ -24,16 +24,13 @@ class PrefService;
 namespace ash {
 namespace attestation {
 class AttestationFlow;
-}  // namespace attestation
+}
+class InstallAttributes;
 }  // namespace ash
 
 namespace enterprise_management {
 class PolicyData;
 }  // namespace enterprise_management
-
-namespace chromeos {
-class InstallAttributes;
-}  // namespace chromeos
 
 namespace policy {
 
@@ -142,8 +139,8 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
   // For other OSes the function will always return DEVICE_MODE_CONSUMER.
   DeviceMode GetDeviceMode() const;
 
-  // Delegates to chromeos::InstallAttributes::Get()
-  chromeos::InstallAttributes* GetInstallAttributes() const;
+  // Delegates to `ash::InstallAttributes::Get()`.
+  ash::InstallAttributes* GetInstallAttributes() const;
 
   // Get the enrollment configuration for the device as decided by various
   // factors. See DeviceCloudPolicyInitializer::GetPrescribedEnrollmentConfig()

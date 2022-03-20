@@ -23,7 +23,7 @@ namespace base {
 class SequencedTaskRunner;
 }
 
-namespace chromeos {
+namespace ash {
 
 // This class is responsible for loading the TPM backed token for the system
 // slot when the user logs in. It is expected to be constructed on the UI thread
@@ -136,11 +136,6 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_TPM) TPMTokenLoader
   base::WeakPtrFactory<TPMTokenLoader> weak_factory_{this};
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when //chromeos/test is moved to ash.
-namespace ash {
-using ::chromeos::TPMTokenLoader;
-}
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TPM_TPM_TOKEN_LOADER_H_

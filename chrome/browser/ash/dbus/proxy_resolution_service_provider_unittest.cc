@@ -92,9 +92,8 @@ class MockNetworkContext : public network::TestNetworkContext {
 
   LookupProxyForURLMockResult lookup_proxy_result_;
 
-  chromeos::ScopedStubInstallAttributes test_install_attributes_{
-      chromeos::StubInstallAttributes::CreateCloudManaged("fake-domain",
-                                                          "fake-id")};
+  ScopedStubInstallAttributes test_install_attributes_{
+      StubInstallAttributes::CreateCloudManaged("fake-domain", "fake-id")};
 };
 
 }  // namespace

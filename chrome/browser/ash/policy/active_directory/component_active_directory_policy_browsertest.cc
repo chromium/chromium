@@ -70,7 +70,7 @@ class ComponentActiveDirectoryPolicyTest
  protected:
   ComponentActiveDirectoryPolicyTest()
       : install_attributes_(
-            chromeos::StubInstallAttributes::CreateActiveDirectoryManaged(
+            ash::StubInstallAttributes::CreateActiveDirectoryManaged(
                 kTestDomain,
                 kTestDeviceId)) {
     builder_.policy_data().set_policy_type(
@@ -160,7 +160,7 @@ class ComponentActiveDirectoryPolicyTest
 
   scoped_refptr<const extensions::Extension> extension_;
   std::unique_ptr<ExtensionTestMessageListener> event_listener_;
-  chromeos::ScopedStubInstallAttributes install_attributes_;
+  ash::ScopedStubInstallAttributes install_attributes_;
   ComponentActiveDirectoryPolicyBuilder builder_;
 };
 

@@ -62,8 +62,6 @@ namespace ash {
 
 namespace {
 
-using ::chromeos::InstallAttributes;
-
 // Domain that is used for kiosk-app account IDs.
 constexpr char kKioskAppAccountDomain[] = "kiosk-apps";
 

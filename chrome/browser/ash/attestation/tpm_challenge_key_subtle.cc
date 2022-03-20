@@ -88,9 +88,10 @@ bool TpmChallengeKeySubtleFactory::WillReturnTestingInstance() {
 //===================== TpmChallengeKeySubtleImpl ==============================
 
 namespace {
+
 // Returns true if the device is enterprise managed.
 bool IsEnterpriseDevice() {
-  return chromeos::InstallAttributes::Get()->IsEnterpriseManaged();
+  return InstallAttributes::Get()->IsEnterpriseManaged();
 }
 
 // For personal devices, we don't need to check if remote attestation is
@@ -583,7 +584,7 @@ void TpmChallengeKeySubtleImpl::StartSignChallengeStep(
   request.set_key_label(key_name_for_challenge);
   request.set_key_name_for_spkac(key_name_for_spkac);
   request.set_domain(GetEmail());
-  request.set_device_id(chromeos::InstallAttributes::Get()->GetDeviceId());
+  request.set_device_id(InstallAttributes::Get()->GetDeviceId());
   request.set_include_signed_public_key(will_register_key_);
   request.set_challenge(challenge);
   request.set_va_type(AttestationClient::GetVerifiedAccessServerType());

@@ -146,7 +146,7 @@ class EPKChallengeKeyTestBase : public BrowserWithTestWindowTest {
   }
 
   scoped_refptr<const extensions::Extension> extension_;
-  chromeos::StubInstallAttributes stub_install_attributes_;
+  ash::StubInstallAttributes stub_install_attributes_;
   // fake_user_manager_ is owned by user_manager_enabler_.
   ash::FakeChromeUserManager* fake_user_manager_ = nullptr;
   user_manager::ScopedUserManager user_manager_enabler_;

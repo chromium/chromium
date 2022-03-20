@@ -157,7 +157,7 @@ void InitializeDBus() {
   // signals sent from the session manager. This needs to happen before
   // g_browser_process initializes BrowserPolicyConnector.
   chromeos::DeviceSettingsService::Initialize();
-  chromeos::InstallAttributes::Initialize();
+  InstallAttributes::Initialize();
 }
 
 void InitializeFeatureListDependentDBus() {

@@ -144,7 +144,7 @@ class CrosSettingsTest : public testing::Test {
       content::BrowserTaskEnvironment::IO_MAINLOOP};
 
   ScopedTestingLocalState local_state_;
-  chromeos::ScopedStubInstallAttributes scoped_install_attributes_;
+  ScopedStubInstallAttributes scoped_install_attributes_;
   ScopedTestDeviceSettingsService scoped_test_device_settings_;
   ScopedTestCrosSettings scoped_test_cros_settings_;
 

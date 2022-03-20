@@ -36,7 +36,7 @@ class ActiveDirectoryPolicyManagerTest : public testing::Test {
   ActiveDirectoryPolicyManagerTest()
       : user_manager_enabler_(std::make_unique<ash::FakeChromeUserManager>()),
         install_attributes_(
-            chromeos::StubInstallAttributes::CreateActiveDirectoryManaged(
+            ash::StubInstallAttributes::CreateActiveDirectoryManaged(
                 "realm.com",
                 "device_id")) {}
 
@@ -103,7 +103,7 @@ class ActiveDirectoryPolicyManagerTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  chromeos::ScopedStubInstallAttributes install_attributes_;
+  ash::ScopedStubInstallAttributes install_attributes_;
 };
 
 class UserActiveDirectoryPolicyManagerTest

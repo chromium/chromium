@@ -23,7 +23,7 @@ namespace base {
 class TaskRunner;
 }
 
-namespace chromeos {
+namespace ash {
 
 // Class for getting a user or the system TPM token info from cryptohome during
 // TPM token loading.
@@ -124,6 +124,6 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_TPM) TPMTokenInfoGetter {
   base::WeakPtrFactory<TPMTokenInfoGetter> weak_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_TPM_TPM_TOKEN_INFO_GETTER_H_

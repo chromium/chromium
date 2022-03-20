@@ -50,11 +50,8 @@ using ::chromeos::system::kRlzBrandCodeKey;
 using ::chromeos::system::ScopedFakeStatisticsProvider;
 }  // namespace
 }  // namespace system
-namespace {
 
-// TODO(https://crbug.com/1164001): remove when moved to ash::
-using ::chromeos::ScopedStubInstallAttributes;
-using ::chromeos::StubInstallAttributes;
+namespace {
 
 // Helper class to wait for user adding screen to finish.
 class UserAddingScreenWaiter : public UserAddingScreen::Observer {

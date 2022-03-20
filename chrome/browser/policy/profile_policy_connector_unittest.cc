@@ -146,7 +146,7 @@ class ProfilePolicyConnectorTest : public testing::Test {
   std::unique_ptr<CloudPolicyManager> cloud_policy_manager_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::ScopedStubInstallAttributes test_install_attributes_;
+  ash::ScopedStubInstallAttributes test_install_attributes_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 

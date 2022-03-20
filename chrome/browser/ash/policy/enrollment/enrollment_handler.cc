@@ -232,7 +232,7 @@ EnrollmentAttestationBasedCertificateStatus CertificateStatusToMetric(
 
 EnrollmentHandler::EnrollmentHandler(
     DeviceCloudPolicyStoreAsh* store,
-    chromeos::InstallAttributes* install_attributes,
+    ash::InstallAttributes* install_attributes,
     ServerBackedStateKeysBroker* state_keys_broker,
     ash::attestation::AttestationFlow* attestation_flow,
     std::unique_ptr<SigningService> signing_service,
@@ -814,17 +814,17 @@ void EnrollmentHandler::HandleDMTokenStoreResult(bool success) {
 }
 
 void EnrollmentHandler::HandleLockDeviceResult(
-    chromeos::InstallAttributes::LockResult lock_result) {
+    ash::InstallAttributes::LockResult lock_result) {
   DCHECK_EQ(STEP_LOCK_DEVICE, enrollment_step_);
   switch (lock_result) {
-    case chromeos::InstallAttributes::LOCK_SUCCESS:
+    case ash::InstallAttributes::LOCK_SUCCESS:
       if (device_mode_ == DEVICE_MODE_ENTERPRISE_AD) {
         StartStoreDMToken();
       } else {
         StartStoreRobotAuth();
       }
       break;
-    case chromeos::InstallAttributes::LOCK_NOT_READY:
+    case ash::InstallAttributes::LOCK_NOT_READY:
       // We wait up to |kLockRetryTimeoutMs| milliseconds and if it hasn't
       // succeeded by then show an error to the user and stop the enrollment.
       if (lockbox_init_duration_ < kLockRetryTimeoutMs) {
@@ -838,17 +838,17 @@ void EnrollmentHandler::HandleLockDeviceResult(
             base::Milliseconds(kLockRetryIntervalMs));
         lockbox_init_duration_ += kLockRetryIntervalMs;
       } else {
-        HandleLockDeviceResult(chromeos::InstallAttributes::LOCK_TIMEOUT);
+        HandleLockDeviceResult(ash::InstallAttributes::LOCK_TIMEOUT);
       }
       break;
-    case chromeos::InstallAttributes::LOCK_TIMEOUT:
-    case chromeos::InstallAttributes::LOCK_BACKEND_INVALID:
-    case chromeos::InstallAttributes::LOCK_ALREADY_LOCKED:
-    case chromeos::InstallAttributes::LOCK_SET_ERROR:
-    case chromeos::InstallAttributes::LOCK_FINALIZE_ERROR:
-    case chromeos::InstallAttributes::LOCK_READBACK_ERROR:
-    case chromeos::InstallAttributes::LOCK_WRONG_DOMAIN:
-    case chromeos::InstallAttributes::LOCK_WRONG_MODE:
+    case ash::InstallAttributes::LOCK_TIMEOUT:
+    case ash::InstallAttributes::LOCK_BACKEND_INVALID:
+    case ash::InstallAttributes::LOCK_ALREADY_LOCKED:
+    case ash::InstallAttributes::LOCK_SET_ERROR:
+    case ash::InstallAttributes::LOCK_FINALIZE_ERROR:
+    case ash::InstallAttributes::LOCK_READBACK_ERROR:
+    case ash::InstallAttributes::LOCK_WRONG_DOMAIN:
+    case ash::InstallAttributes::LOCK_WRONG_MODE:
       ReportResult(EnrollmentStatus::ForLockError(lock_result));
       break;
   }

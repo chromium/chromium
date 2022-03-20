@@ -32,15 +32,12 @@ class MachineCertificateUploader;
 namespace reporting {
 class LoginLogoutReporter;
 }
+class InstallAttributes;
 }  // namespace ash
 
 namespace base {
 class SequencedTaskRunner;
 }  // namespace base
-
-namespace chromeos {
-class InstallAttributes;
-}
 
 class PrefRegistrySimple;
 class PrefService;
@@ -110,10 +107,10 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager {
 
   // Starts the connection via |client_to_connect|.
   void StartConnection(std::unique_ptr<CloudPolicyClient> client_to_connect,
-                       chromeos::InstallAttributes* install_attributes);
+                       ash::InstallAttributes* install_attributes);
 
   // Called when policy store is ready.
-  void OnPolicyStoreReady(chromeos::InstallAttributes* install_attributes);
+  void OnPolicyStoreReady(ash::InstallAttributes* install_attributes);
 
   // Sends the unregister request. |callback| is invoked with a boolean
   // parameter indicating the result when done.

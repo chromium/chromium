@@ -174,7 +174,7 @@ class TpmChallengeKeySubtleTestBase : public ::testing::Test {
   TestingProfile* CreateUserProfile(bool is_affiliated);
   TestingProfile* GetProfile();
   ScopedCrosSettingsTestHelper* GetCrosSettingsHelper();
-  chromeos::StubInstallAttributes* GetInstallAttributes();
+  StubInstallAttributes* GetInstallAttributes();
 
   // Runs StartPrepareKeyStep and checks that the result is equal to
   // |public_key|.
@@ -312,8 +312,7 @@ TpmChallengeKeySubtleTestBase::GetCrosSettingsHelper() {
   return signin_profile_->ScopedCrosSettingsTestHelper();
 }
 
-chromeos::StubInstallAttributes*
-TpmChallengeKeySubtleTestBase::GetInstallAttributes() {
+StubInstallAttributes* TpmChallengeKeySubtleTestBase::GetInstallAttributes() {
   return GetCrosSettingsHelper()->InstallAttributes();
 }
 

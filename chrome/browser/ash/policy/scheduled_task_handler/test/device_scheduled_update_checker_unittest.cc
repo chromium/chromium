@@ -365,9 +365,8 @@ class DeviceScheduledUpdateCheckerTest : public testing::Test {
   device::TestWakeLockProvider wake_lock_provider_;
 
  private:
-  chromeos::ScopedStubInstallAttributes test_install_attributes_{
-      chromeos::StubInstallAttributes::CreateCloudManaged("fake-domain",
-                                                          "fake-id")};
+  ash::ScopedStubInstallAttributes test_install_attributes_{
+      ash::StubInstallAttributes::CreateCloudManaged("fake-domain", "fake-id")};
 };
 
 TEST_F(DeviceScheduledUpdateCheckerTest, CheckIfDailyUpdateCheckIsScheduled) {

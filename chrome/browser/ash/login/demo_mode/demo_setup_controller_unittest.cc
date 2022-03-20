@@ -39,8 +39,6 @@ using test::SetupDummyOfflinePolicyDir;
 using test::SetupMockDemoModeNoEnrollmentHelper;
 using test::SetupMockDemoModeOfflineEnrollmentHelper;
 using test::SetupMockDemoModeOnlineEnrollmentHelper;
-// TODO(https://crbug.com/1164001): remove after moving to ash::
-using ::chromeos::ScopedStubInstallAttributes;
 using ::testing::_;
 
 class DemoSetupControllerTestHelper {

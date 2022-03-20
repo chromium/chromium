@@ -56,7 +56,7 @@ class DeviceCloudPolicyInitializerTest
 
   chromeos::system::ScopedFakeStatisticsProvider statistics_provider_;
   TestingPrefServiceSimple local_state_;
-  chromeos::StubInstallAttributes install_attributes_;
+  ash::StubInstallAttributes install_attributes_;
   DeviceCloudPolicyInitializer device_cloud_policy_initializer_;
 };
 

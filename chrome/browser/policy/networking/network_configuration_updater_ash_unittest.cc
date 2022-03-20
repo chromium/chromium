@@ -427,7 +427,7 @@ class NetworkConfigurationUpdaterAshTest : public testing::Test {
   StrictMock<chromeos::MockManagedNetworkConfigurationHandler>
       network_config_handler_;
   FakeNetworkDeviceHandler network_device_handler_;
-  chromeos::ScopedStubInstallAttributes scoped_stub_install_attributes_;
+  ash::ScopedStubInstallAttributes scoped_stub_install_attributes_;
   ash::ScopedTestDeviceSettingsService scoped_device_settings_service_;
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
   chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
@@ -485,7 +485,7 @@ TEST_F(NetworkConfigurationUpdaterAshTest, CellularPolicyAllowRoamingManaged) {
   // Perform this test as though this "device" is enterprise managed.
   scoped_stub_install_attributes_.Get()->SetCloudManaged(
       policy::PolicyBuilder::kFakeDomain, policy::PolicyBuilder::kFakeDeviceId);
-  EXPECT_TRUE(chromeos::InstallAttributes::Get()->IsEnterpriseManaged());
+  EXPECT_TRUE(ash::InstallAttributes::Get()->IsEnterpriseManaged());
 
   CreateNetworkConfigurationUpdaterForDevicePolicy();
   MarkPolicyProviderInitialized();
@@ -505,7 +505,7 @@ TEST_F(NetworkConfigurationUpdaterAshTest,
 
   // Perform this test as though this "device" is unmanaged.
   scoped_stub_install_attributes_.Get()->SetConsumerOwned();
-  EXPECT_FALSE(chromeos::InstallAttributes::Get()->IsEnterpriseManaged());
+  EXPECT_FALSE(ash::InstallAttributes::Get()->IsEnterpriseManaged());
 
   CreateNetworkConfigurationUpdaterForDevicePolicy();
   MarkPolicyProviderInitialized();

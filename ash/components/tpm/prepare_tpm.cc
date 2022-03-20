@@ -12,7 +12,7 @@
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -62,4 +62,4 @@ void PrepareTpm(base::OnceClosure preparation_finished_callback) {
       base::BindOnce(OnGetTpmStatus, std::move(preparation_finished_callback)));
 }
 
-}  // namespace chromeos
+}  // namespace ash

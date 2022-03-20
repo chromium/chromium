@@ -33,7 +33,7 @@ FakeOwnerSettingsService::FakeOwnerSettingsService(
 FakeOwnerSettingsService::~FakeOwnerSettingsService() = default;
 
 bool FakeOwnerSettingsService::IsOwner() {
-  return !chromeos::InstallAttributes::Get()->IsEnterpriseManaged() &&
+  return !InstallAttributes::Get()->IsEnterpriseManaged() &&
          settings_provider_->current_user_is_owner();
 }
 

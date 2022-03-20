@@ -140,15 +140,13 @@ void ScopedCrosSettingsTestHelper::CopyStoredValue(const std::string& path) {
   }
 }
 
-chromeos::StubInstallAttributes*
-ScopedCrosSettingsTestHelper::InstallAttributes() {
+StubInstallAttributes* ScopedCrosSettingsTestHelper::InstallAttributes() {
   return test_install_attributes_->Get();
 }
 
 void ScopedCrosSettingsTestHelper::Initialize(bool create_settings_service) {
   if (create_settings_service) {
-    test_install_attributes_ =
-        std::make_unique<chromeos::ScopedStubInstallAttributes>();
+    test_install_attributes_ = std::make_unique<ScopedStubInstallAttributes>();
     CHECK(!DeviceSettingsService::IsInitialized());
     test_device_settings_service_ =
         std::make_unique<ScopedTestDeviceSettingsService>();

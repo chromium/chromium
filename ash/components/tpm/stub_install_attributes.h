@@ -9,7 +9,7 @@
 
 #include "ash/components/tpm/install_attributes.h"
 
-namespace chromeos {
+namespace ash {
 
 // This class allows tests to set specific configurations for testing.
 class StubInstallAttributes : public InstallAttributes {
@@ -55,9 +55,9 @@ class StubInstallAttributes : public InstallAttributes {
 };
 
 // Helper class to set install attributes in tests. Using one of the Create*
-// methods injects the generated StubInstallAttributes into the singleton
-// at chromeos::InstallAttributes::Get(). Scoping ensures that
-// chromes::InstallAttributes::Shutdown is called when this is destructed.
+// methods injects the generated `StubInstallAttributes` into the singleton
+// at `InstallAttributes::Get()`. Scoping ensures that
+// `InstallAttributes::Shutdown` is called when this is destructed.
 class ScopedStubInstallAttributes {
  public:
   // Scopes the default StubInstallAttributes, with a DeviceMode of PENDING.
@@ -81,13 +81,12 @@ class ScopedStubInstallAttributes {
   std::unique_ptr<StubInstallAttributes> install_attributes_;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::ScopedStubInstallAttributes;
-using ::chromeos::StubInstallAttributes;
 }  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos {
+using ::ash::ScopedStubInstallAttributes;
+using ::ash::StubInstallAttributes;
+}  // namespace chromeos
 
 #endif  // ASH_COMPONENTS_TPM_STUB_INSTALL_ATTRIBUTES_H_

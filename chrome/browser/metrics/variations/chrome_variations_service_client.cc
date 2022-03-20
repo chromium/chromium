@@ -79,7 +79,7 @@ bool ChromeVariationsServiceClient::IsEnterprise() {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   return base::IsMachineExternallyManaged();
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
-  return chromeos::InstallAttributes::Get()->IsEnterpriseManaged();
+  return ash::InstallAttributes::Get()->IsEnterpriseManaged();
 #else
   return false;
 #endif

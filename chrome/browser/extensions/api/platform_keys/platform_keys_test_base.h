@@ -107,7 +107,7 @@ class PlatformKeysTestBase : public extensions::MixinBasedExtensionApiTest {
       mock_policy_provider_;
   FakeGaia fake_gaia_;
   net::EmbeddedTestServer gaia_server_{net::EmbeddedTestServer::TYPE_HTTPS};
-  chromeos::ScopedStubInstallAttributes install_attributes_;
+  ash::ScopedStubInstallAttributes install_attributes_;
 };
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_PLATFORM_KEYS_PLATFORM_KEYS_TEST_BASE_H_

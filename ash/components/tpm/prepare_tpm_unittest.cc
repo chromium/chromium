@@ -10,7 +10,7 @@
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -83,4 +83,4 @@ TEST_F(PrepareTpmTest, PrepareTpmFailedToGetStatus) {
             0);
 }
 
-}  // namespace chromeos
+}  // namespace ash
