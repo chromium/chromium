@@ -1142,10 +1142,7 @@ TEST_P(PaintPropertyTreeUpdateTest, CompositingReasonForAnimation) {
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(transform->HasDirectCompositingReasons());
   EXPECT_TRUE(transform->HasActiveTransformAnimation());
-
-  // TODO(flackr): After https://crbug.com/900241 is fixed the filter effect
-  // should no longer have direct compositing reasons due to the animation.
-  EXPECT_TRUE(filter->HasDirectCompositingReasons());
+  EXPECT_FALSE(filter->HasDirectCompositingReasons());
 
   target->setAttribute(html_names::kStyleAttr,
                        "transform: translateX(11px); filter: opacity(40%)");

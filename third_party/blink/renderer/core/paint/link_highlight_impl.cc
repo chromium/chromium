@@ -83,11 +83,10 @@ EffectPaintPropertyNode::State LinkHighlightEffectNodeState(
   state.opacity = opacity;
   state.local_transform_space = &TransformPaintPropertyNode::Root();
   state.compositor_element_id = element_id;
-  state.direct_compositing_reasons = CompositingReason::kActiveOpacityAnimation;
   // EffectPaintPropertyNode::Update does not pay attention to changes in
-  // has_active_opacity_animation so we assume that the effect node is
-  // always animating.
-  state.has_active_opacity_animation = true;
+  // direct_compositing_reasons so we assume that the effect node is always
+  // animating.
+  state.direct_compositing_reasons = CompositingReason::kActiveOpacityAnimation;
   return state;
 }
 

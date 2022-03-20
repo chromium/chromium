@@ -707,10 +707,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateStickyTranslation() {
 static CompositingReasons CompositingReasonsForTransformProperty() {
   CompositingReasons reasons =
       CompositingReason::kDirectReasonsForTransformProperty;
-  // TODO(crbug.com/900241): Check for nodes for each KeyframeModel target
-  // property instead of creating all nodes and only create a transform/
-  // effect/filter node if needed.
-  reasons |= CompositingReason::kComboActiveAnimation;
+  reasons |= CompositingReason::kActiveTransformAnimation;
   // We also need to create a transform node if will-change creates other nodes,
   // to avoid raster invalidation caused by creating/deleting those nodes when
   // starting/stopping an animation. See: https://crbug.com/942681.
@@ -1064,10 +1061,8 @@ static bool NeedsClipPathClip(const LayoutObject& object,
 static CompositingReasons CompositingReasonsForEffectProperty() {
   CompositingReasons reasons =
       CompositingReason::kDirectReasonsForEffectProperty;
-  // TODO(crbug.com/900241): Check for nodes for each KeyframeModel target
-  // property instead of creating all nodes and only create a transform/
-  // effect/filter node if needed.
-  reasons |= CompositingReason::kComboActiveAnimation;
+  reasons |= CompositingReason::kActiveOpacityAnimation |
+             CompositingReason::kActiveBackdropFilterAnimation;
   // We also need to create an effect node if will-change creates other nodes,
   // to avoid raster invalidation caused by creating/deleting those nodes when
   // starting/stopping an animation. See: https://crbug.com/942681.
@@ -1279,12 +1274,6 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
             GetCompositorElementId(CompositorElementIdNamespace::kPrimary);
       }
 
-      // TODO(crbug.com/900241): Remove these setters when we can use
-      // state.direct_compositing_reasons to check for active animations.
-      state.has_active_opacity_animation = style.HasCurrentOpacityAnimation();
-      state.has_active_backdrop_filter_animation =
-          style.HasCurrentBackdropFilterAnimation();
-
       EffectPaintPropertyNode::AnimationState animation_state;
       animation_state.is_running_opacity_animation_on_compositor =
           style.IsRunningOpacityAnimationOnCompositor();
@@ -1412,10 +1401,7 @@ static bool IsLinkHighlighted(const LayoutObject& object) {
 static CompositingReasons CompositingReasonsForFilterProperty() {
   CompositingReasons reasons =
       CompositingReason::kDirectReasonsForFilterProperty;
-  // TODO(crbug.com/900241): Check for nodes for each KeyframeModel target
-  // property instead of creating all nodes and only create a transform/
-  // effect/filter node if needed.
-  reasons |= CompositingReason::kComboActiveAnimation;
+  reasons |= CompositingReason::kActiveFilterAnimation;
 
   // We also need to create a filter node if will-change creates other nodes,
   // to avoid raster invalidation caused by creating/deleting those nodes when
@@ -1506,11 +1492,6 @@ void FragmentPaintPropertyTreeBuilder::UpdateFilter() {
 
       UpdateFilterEffect(object_, properties_->Filter(), state.filter);
 
-      // TODO(crbug.com/900241): Remove the setter when we can use
-      // state.direct_compositing_reasons to check for active animations.
-      state.has_active_filter_animation =
-          object_.StyleRef().HasCurrentFilterAnimation();
-
       // The CSS filter spec didn't specify how filters interact with overflow
       // clips. The implementation here mimics the old Blink/WebKit behavior for
       // backward compatibility.
@@ -1529,7 +1510,9 @@ void FragmentPaintPropertyTreeBuilder::UpdateFilter() {
       // On the other hand, "B" should not be clipped because the overflow clip
       // is not in its containing block chain, but as the filter output will be
       // clipped, so a blurred "B" may still be invisible.
-      if (!state.filter.IsEmpty() || state.has_active_filter_animation)
+      if (!state.filter.IsEmpty() ||
+          (full_context_.direct_compositing_reasons &
+           CompositingReason::kActiveFilterAnimation))
         state.output_clip = context_.current.clip;
 
       // TODO(trchen): A filter may contain spatial operations such that an
@@ -2126,7 +2109,6 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
         effect_state.local_transform_space = context_.current.transform;
         effect_state.direct_compositing_reasons =
             CompositingReason::kActiveOpacityAnimation;
-        effect_state.has_active_opacity_animation = true;
         effect_state.compositor_element_id =
             scrollable_area->GetScrollbarElementId(
                 ScrollbarOrientation::kVerticalScrollbar);
@@ -2142,7 +2124,6 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
         effect_state.local_transform_space = context_.current.transform;
         effect_state.direct_compositing_reasons =
             CompositingReason::kActiveOpacityAnimation;
-        effect_state.has_active_opacity_animation = true;
         effect_state.compositor_element_id =
             scrollable_area->GetScrollbarElementId(
                 ScrollbarOrientation::kHorizontalScrollbar);

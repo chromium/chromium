@@ -732,23 +732,19 @@ TEST_P(PaintPropertyTreeBuilderTest,
 }
 
 TEST_P(PaintPropertyTreeBuilderTest,
-       TransformAnimationCreatesEffectAndFilterNodes) {
+       TransformAnimationDoesNotCreateEffectAndFilterNodes) {
   LoadTestData("transform-animation.html");
-  // TODO(flackr): Verify that after https://crbug.com/900241 is fixed we no
-  // longer create opacity or filter nodes for transform animations.
   EXPECT_NE(nullptr, PaintPropertiesForElement("target")->Transform());
-  EXPECT_NE(nullptr, PaintPropertiesForElement("target")->Effect());
-  EXPECT_NE(nullptr, PaintPropertiesForElement("target")->Filter());
+  EXPECT_EQ(nullptr, PaintPropertiesForElement("target")->Effect());
+  EXPECT_EQ(nullptr, PaintPropertiesForElement("target")->Filter());
 }
 
 TEST_P(PaintPropertyTreeBuilderTest,
-       OpacityAnimationCreatesTransformAndFilterNodes) {
+       OpacityAnimationDoesNotCreateTransformAndFilterNodes) {
   LoadTestData("opacity-animation.html");
-  // TODO(flackr): Verify that after https://crbug.com/900241 is fixed we no
-  // longer create transform or filter nodes for opacity animations.
-  EXPECT_NE(nullptr, PaintPropertiesForElement("target")->Transform());
+  EXPECT_EQ(nullptr, PaintPropertiesForElement("target")->Transform());
   EXPECT_NE(nullptr, PaintPropertiesForElement("target")->Effect());
-  EXPECT_NE(nullptr, PaintPropertiesForElement("target")->Filter());
+  EXPECT_EQ(nullptr, PaintPropertiesForElement("target")->Filter());
 }
 
 TEST_P(PaintPropertyTreeBuilderTest,

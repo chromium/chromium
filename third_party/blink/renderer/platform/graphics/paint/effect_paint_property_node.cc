@@ -49,7 +49,10 @@ PaintPropertyChangeType EffectPaintPropertyNode::State::ComputeChange(
       // The rule is because whether opacity is 1 affects whether the effect
       // should create a render surface if there is no active opacity animation.
       ((opacity != 1.f && other.opacity != 1.f) ||
-       (has_active_opacity_animation && other.has_active_opacity_animation));
+       ((direct_compositing_reasons &
+         CompositingReason::kActiveOpacityAnimation) &&
+        (other.direct_compositing_reasons &
+         CompositingReason::kActiveOpacityAnimation)));
   if (opacity_changed && !opacity_change_is_simple) {
     DCHECK(!animation_state.is_running_opacity_animation_on_compositor);
     return PaintPropertyChangeType::kChangedOnlyValues;

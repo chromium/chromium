@@ -108,9 +108,6 @@ class PLATFORM_EXPORT CompositingReason {
 
     // Various combinations of compositing reasons are defined here also, for
     // more intuitive and faster bitwise logic.
-    kComboActiveAnimation =
-        kActiveTransformAnimation | kActiveOpacityAnimation |
-        kActiveFilterAnimation | kActiveBackdropFilterAnimation,
     kComboScrollDependentPosition = kFixedPosition | kStickyPosition,
     kPreventingSubpixelAccumulationReasons = kWillChangeTransform,
     kDirectReasonsForPaintOffsetTranslationProperty =

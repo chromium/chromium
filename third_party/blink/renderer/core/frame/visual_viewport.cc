@@ -308,12 +308,11 @@ PaintPropertyChangeType VisualViewport::UpdatePaintPropertyNodesIfNeeded(
       EffectPaintPropertyNode::State state;
       state.output_clip = context.current.clip;
       state.local_transform_space = transform_parent;
+      // The filter will be animated on the compositor in response to
+      // overscroll.
       state.direct_compositing_reasons =
           CompositingReason::kActiveFilterAnimation;
       state.compositor_element_id = elasticity_effect_node_id_;
-      // The filter will be animated on the compositor in response to
-      // overscroll.
-      state.has_active_filter_animation = true;
       overscroll_elasticity_effect_node_ =
           EffectPaintPropertyNode::Create(*effect_parent, std::move(state));
     }
@@ -329,7 +328,6 @@ PaintPropertyChangeType VisualViewport::UpdatePaintPropertyNodesIfNeeded(
     state.local_transform_space = transform_parent;
     state.direct_compositing_reasons =
         CompositingReason::kActiveOpacityAnimation;
-    state.has_active_opacity_animation = true;
     state.compositor_element_id =
         GetScrollbarElementId(ScrollbarOrientation::kHorizontalScrollbar);
     if (!horizontal_scrollbar_effect_node_) {
@@ -347,7 +345,6 @@ PaintPropertyChangeType VisualViewport::UpdatePaintPropertyNodesIfNeeded(
     state.local_transform_space = transform_parent;
     state.direct_compositing_reasons =
         CompositingReason::kActiveOpacityAnimation;
-    state.has_active_opacity_animation = true;
     state.compositor_element_id =
         GetScrollbarElementId(ScrollbarOrientation::kVerticalScrollbar);
     if (!vertical_scrollbar_effect_node_) {

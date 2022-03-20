@@ -4242,26 +4242,6 @@ TEST_P(PaintArtifactCompositorTest,
   EXPECT_OPACITY(opacity_id, 1.f, kNoRenderSurface);
 }
 
-TEST_P(PaintArtifactCompositorTest,
-       ActiveAnimationCompositingReasonWithoutActiveAnimationFlag) {
-  // TODO(crbug.com/900241): This test tests no render surface should be created
-  // for an effect node with kActiveFilterAnimation compositing reason without
-  // active animation flag. This simulates the extra effect node created for
-  // filter animation, which should not create render surface.
-  // Remove this test when we fix the bug.
-  EffectPaintPropertyNode::State state;
-  state.local_transform_space = &t0();
-  state.direct_compositing_reasons = CompositingReason::kActiveFilterAnimation;
-  auto e1 = EffectPaintPropertyNode::Create(e0(), std::move(state));
-
-  Update(TestPaintArtifact()
-             .Chunk(t0(), c0(), *e1)
-             .RectDrawing(gfx::Rect(150, 150, 100, 100), Color::kWhite)
-             .Build());
-  ASSERT_EQ(1u, LayerCount());
-  EXPECT_OPACITY(LayerAt(0)->effect_tree_index(), 1.f, kNoRenderSurface);
-}
-
 TEST_P(PaintArtifactCompositorTest, FilterCreatesRenderSurface) {
   CompositorFilterOperations filter;
   filter.AppendBlurFilter(5);

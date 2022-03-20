@@ -506,8 +506,9 @@ bool CompositorAnimations::CompositorPropertyAnimationsHaveNoEffect(
   // they were optimized out due to not having an effect. An example of this is
   // hidden animations that do not paint.
   if (any_compositor_properties_missing) {
-    // Because animations create all properties (crbug.com/900241), we should
-    // either have all properties or be missing all properties.
+    // Because we're only considering properties that are animated on this
+    // element, we should either have all properties or be missing all
+    // properties.
     DCHECK(!any_compositor_properties_present);
     return true;
   }
@@ -554,9 +555,11 @@ CompositorAnimations::CheckCanStartElementOnCompositor(
                    layout_object->FirstFragment().PaintProperties()) {
       const auto* transform = paint_properties->Transform();
       const auto* effect = paint_properties->Effect();
+      const auto* filter = paint_properties->Filter();
       has_direct_compositing_reasons =
           (transform && transform->HasDirectCompositingReasons()) ||
-          (effect && effect->HasDirectCompositingReasons());
+          (effect && effect->HasDirectCompositingReasons()) ||
+          (filter && filter->HasDirectCompositingReasons());
     }
     if (!has_direct_compositing_reasons &&
         To<KeyframeEffectModelBase>(model).RequiresPropertyNode()) {

@@ -98,7 +98,6 @@ EffectPaintPropertyNode::State FrameCaret::CaretEffectNodeState(
   if (is_composited_caret_enabled_) {
     state.direct_compositing_reasons =
         CompositingReason::kActiveOpacityAnimation;
-    state.has_active_opacity_animation = true;
   }
   return state;
 }

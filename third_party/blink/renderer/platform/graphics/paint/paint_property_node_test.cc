@@ -392,7 +392,8 @@ TEST_F(PaintPropertyNodeTest, EffectAnimatingOpacityChangesToAndFromOne) {
     EffectPaintPropertyNode::State state{transform.ancestor.get(),
                                          clip.ancestor.get()};
     state.opacity = 0.5f;  // Same as the initial opacity of |effect.ancestor|.
-    state.has_active_opacity_animation = true;
+    state.direct_compositing_reasons |=
+        CompositingReason::kActiveOpacityAnimation;
     EXPECT_EQ(PaintPropertyChangeType::kChangedOnlyNonRerasterValues,
               effect.ancestor->Update(*effect.root, std::move(state)));
   }
@@ -400,7 +401,8 @@ TEST_F(PaintPropertyNodeTest, EffectAnimatingOpacityChangesToAndFromOne) {
     EffectPaintPropertyNode::State state1{transform.ancestor.get(),
                                           clip.ancestor.get()};
     state1.opacity = 1.f;
-    state1.has_active_opacity_animation = true;
+    state1.direct_compositing_reasons |=
+        CompositingReason::kActiveOpacityAnimation;
     EXPECT_EQ(PaintPropertyChangeType::kChangedOnlySimpleValues,
               effect.ancestor->Update(*effect.root, std::move(state1)));
   }
@@ -408,7 +410,8 @@ TEST_F(PaintPropertyNodeTest, EffectAnimatingOpacityChangesToAndFromOne) {
     EffectPaintPropertyNode::State state2{transform.ancestor.get(),
                                           clip.ancestor.get()};
     state2.opacity = 0.7f;
-    state2.has_active_opacity_animation = true;
+    state2.direct_compositing_reasons |=
+        CompositingReason::kActiveOpacityAnimation;
     EXPECT_EQ(PaintPropertyChangeType::kChangedOnlySimpleValues,
               effect.ancestor->Update(*effect.root, std::move(state2)));
   }
