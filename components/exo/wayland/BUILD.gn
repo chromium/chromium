@@ -252,11 +252,16 @@ static_library("weston_test_stub") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "server_unittest.cc" ]
+  sources = [
+    "server_unittest.cc",
+    "test/wayland_server_test_base.cc",
+    "test/wayland_server_test_base.h",
+  ]
 
   deps = [
     ":wayland",
     "//base",
+    "//base/test:test_support",
     "//build:chromeos_buildflags",
     "//components/exo",
     "//components/exo:test_support",

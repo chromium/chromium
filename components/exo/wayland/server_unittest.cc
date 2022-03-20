@@ -14,83 +14,30 @@
 #include "base/bind.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
-#include "base/files/scoped_temp_dir.h"
 #include "base/process/process_handle.h"
 #include "base/run_loop.h"
-#include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
-#include "base/threading/thread.h"
-#include "build/chromeos_buildflags.h"
+#include "base/test/bind.h"
 #include "components/exo/capabilities.h"
 #include "components/exo/display.h"
-#include "components/exo/test/exo_test_base_views.h"
 #include "components/exo/wayland/server_util.h"
+#include "components/exo/wayland/test/wayland_server_test_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "components/exo/test/exo_test_base.h"
-#endif
-
 namespace exo {
 namespace wayland {
-namespace {
 
-base::AtomicSequenceNumber g_next_socket_id;
-
-std::string GetUniqueSocketName() {
-  return base::StringPrintf("wayland-test-%d-%d", base::GetCurrentProcId(),
-                            g_next_socket_id.GetNext());
-}
-
-// Use ExoTestBase on Chrome OS because Server starts to depends on ash::Shell,
-// which is unavailable on other platforms so then ExoTestBaseViews instead.
-using TestBase =
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    test::ExoTestBase
-#else
-    test::ExoTestBaseViews
-#endif
-    ;
-
-class TestCapabilities : public Capabilities {
- public:
-  std::string GetSecurityContext() const override { return "test"; }
-};
-
-class ServerTest : public TestBase {
- public:
-  ServerTest() = default;
-  ServerTest(const ServerTest&) = delete;
-  ServerTest& operator=(const ServerTest&) = delete;
-  ~ServerTest() override = default;
-
-  void SetUp() override {
-    ASSERT_TRUE(xdg_temp_dir_.CreateUniqueTempDir());
-    setenv("XDG_RUNTIME_DIR", xdg_temp_dir_.GetPath().MaybeAsASCII().c_str(),
-           1 /* overwrite */);
-    TestBase::SetUp();
-  }
-
- protected:
-  base::ScopedTempDir xdg_temp_dir_;
-};
+using ServerTest = test::WaylandServerTestBase;
 
 TEST_F(ServerTest, AddSocket) {
-  std::unique_ptr<Display> display(new Display);
-  std::unique_ptr<Server> server(
-      new Server(display.get(), Capabilities::GetDefaultCapabilities()));
-  server->Initialize();
+  auto server = CreateServer(Capabilities::GetDefaultCapabilities());
   // Check that calling AddSocket() with a unique socket name succeeds.
   bool rv = server->AddSocket(GetUniqueSocketName());
   EXPECT_TRUE(rv);
 }
 
 TEST_F(ServerTest, GetFileDescriptor) {
-  std::unique_ptr<Display> display(new Display);
-  std::unique_ptr<Server> server(
-      new Server(display.get(), Capabilities::GetDefaultCapabilities()));
-  server->Initialize();
+  auto server = CreateServer(Capabilities::GetDefaultCapabilities());
   bool rv = server->AddSocket(GetUniqueSocketName());
   EXPECT_TRUE(rv);
 
@@ -104,19 +51,15 @@ TEST_F(ServerTest, CapabilityAssociation) {
       Capabilities::GetDefaultCapabilities();
   Capabilities* capability_ptr = capabilities.get();
 
-  Display display;
-  Server server(&display, std::move(capabilities));
-  server.Initialize();
+  auto server = CreateServer(std::move(capabilities));
 
-  EXPECT_EQ(GetCapabilities(server.GetWaylandDisplayForTesting()),
+  EXPECT_EQ(GetCapabilities(server->GetWaylandDisplayForTesting()),
             capability_ptr);
 }
 
 TEST_F(ServerTest, CreateAsync) {
   using MockServerFunction =
       testing::MockFunction<void(bool, const base::FilePath&)>;
-
-  std::unique_ptr<Display> display(new Display);
 
   base::ScopedTempDir non_xdg_dir;
   ASSERT_TRUE(non_xdg_dir.CreateUniqueTempDir());
@@ -132,8 +75,7 @@ TEST_F(ServerTest, CreateAsync) {
         run_loop.Quit();
       }));
 
-  std::unique_ptr<Server> server =
-      Server::Create(display.get(), std::make_unique<TestCapabilities>());
+  auto server = CreateServer();
   server->StartAsync(base::BindOnce(&MockServerFunction::Call,
                                     base::Unretained(&server_callback)));
   run_loop.Run();
@@ -147,49 +89,31 @@ TEST_F(ServerTest, CreateAsync) {
   EXPECT_FALSE(base::PathExists(server_socket));
 }
 
-void ConnectToServer(const std::string socket_name,
-                     bool* connected_to_server,
-                     base::WaitableEvent* event) {
-  wl_display* display = wl_display_connect(socket_name.c_str());
-  *connected_to_server = !!display;
-  event->Signal();
-  wl_display_disconnect(display);
-}
-
 TEST_F(ServerTest, Dispatch) {
-  std::unique_ptr<Display> display(new Display);
-  std::unique_ptr<Server> server(
-      new Server(display.get(), Capabilities::GetDefaultCapabilities()));
-  server->Initialize();
+  auto server = CreateServer(Capabilities::GetDefaultCapabilities());
 
   std::string socket_name = GetUniqueSocketName();
   bool rv = server->AddSocket(socket_name);
   EXPECT_TRUE(rv);
 
-  base::Thread client("client-" + socket_name);
-  ASSERT_TRUE(client.Start());
+  test::WaylandClientRunner client(server.get(), "client-" + socket_name);
+  wl_display* client_display;
 
   // Post a task that connects server on the created thread.
   bool connected_to_server = false;
-  base::WaitableEvent event(base::WaitableEvent::ResetPolicy::AUTOMATIC,
-                            base::WaitableEvent::InitialState::NOT_SIGNALED);
-  client.task_runner()->PostTask(FROM_HERE,
-                                 base::BindOnce(&ConnectToServer, socket_name,
-                                                &connected_to_server, &event));
+  client.RunAndWait(base::BindLambdaForTesting([&]() {
+    client_display = wl_display_connect(socket_name.c_str());
+    connected_to_server = !!client_display;
+  }));
 
-  // Call Dispatch() with a 5 second timeout.
-  server->Dispatch(base::Seconds(5));
-
-  // Check if client thread managed to connect to server.
-  event.Wait();
   EXPECT_TRUE(connected_to_server);
+
+  client.RunAndWait(base::BindLambdaForTesting(
+      [&]() { wl_display_disconnect(client_display); }));
 }
 
 TEST_F(ServerTest, Flush) {
-  std::unique_ptr<Display> display(new Display);
-  std::unique_ptr<Server> server(
-      new Server(display.get(), Capabilities::GetDefaultCapabilities()));
-  server->Initialize();
+  auto server = CreateServer(Capabilities::GetDefaultCapabilities());
 
   bool rv = server->AddSocket(GetUniqueSocketName());
   EXPECT_TRUE(rv);
@@ -198,6 +122,5 @@ TEST_F(ServerTest, Flush) {
   server->Flush();
 }
 
-}  // namespace
 }  // namespace wayland
 }  // namespace exo
