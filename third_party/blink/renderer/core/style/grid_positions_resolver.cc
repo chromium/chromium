@@ -74,7 +74,8 @@ NamedLineCollection::NamedLineCollection(
 
   insertion_point_ = computed_grid_track_list.auto_repeat_insertion_point;
   auto_repeat_track_list_length_ =
-      is_ng_grid ? computed_grid_track_list.TrackList().AutoRepeatTrackCount()
+      is_ng_grid ? computed_grid_track_list.track_sizes.NGTrackList()
+                       .AutoRepeatTrackCount()
                  : computed_grid_track_list.auto_repeat_track_sizes.size();
 }
 

@@ -1472,7 +1472,8 @@ CSSValue* ComputedStyleUtils::ValueForGridTrackList(
 
     // TODO(ansollan): Add support for track lists with auto and integer
     // repeaters.
-    const NGGridTrackList& ng_track_list = computed_grid_track_list.TrackList();
+    const NGGridTrackList& ng_track_list =
+        computed_grid_track_list.track_sizes.NGTrackList();
     wtf_size_t track_index = 0;
     auto AppendValues = [&](CSSValueList* list, const GridTrackSize& track_size,
                             GridTrackListSerializationType named_line_type) {

@@ -78,7 +78,6 @@ class CORE_EXPORT NGGridTrackList {
 
   void operator=(const NGGridTrackList& o);
   bool operator==(const NGGridTrackList& o) const;
-  bool operator!=(const NGGridTrackList& o) const { return !(*this == o); }
 
  private:
   // Returns the amount of tracks available before overflow.

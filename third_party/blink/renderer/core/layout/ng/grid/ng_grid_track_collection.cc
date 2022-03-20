@@ -70,9 +70,10 @@ NGGridBlockTrackCollection::NGGridBlockTrackCollection(
                         ? placement_data.column_start_offset
                         : placement_data.row_start_offset),
       track_indices_need_sort_(false),
-      explicit_tracks_((track_direction == kForColumns)
-                           ? grid_style.GridTemplateColumns().TrackList()
-                           : grid_style.GridTemplateRows().TrackList()),
+      explicit_tracks_(
+          (track_direction == kForColumns)
+              ? grid_style.GridTemplateColumns().track_sizes.NGTrackList()
+              : grid_style.GridTemplateRows().track_sizes.NGTrackList()),
       implicit_tracks_((track_direction == kForColumns)
                            ? grid_style.GridAutoColumns().NGTrackList()
                            : grid_style.GridAutoRows().NGTrackList()) {
@@ -454,14 +455,6 @@ bool NGGridLayoutTrackCollection::Range::IsCollapsed() const {
   return properties.HasProperty(TrackSpanProperties::kIsCollapsed);
 }
 
-bool NGGridLayoutTrackCollection::operator==(
-    const NGGridLayoutTrackCollection& other) const {
-  return gutter_size_ == other.gutter_size_ && ranges_ == other.ranges_ &&
-         major_baselines_ == other.minor_baselines_ &&
-         major_baselines_ == other.minor_baselines_ &&
-         sets_geometry_ == other.sets_geometry_;
-}
-
 wtf_size_t NGGridLayoutTrackCollection::RangeStartLine(
     wtf_size_t range_index) const {
   DCHECK_LT(range_index, ranges_.size());
@@ -568,63 +561,6 @@ LayoutUnit NGGridLayoutTrackCollection::ComputeSetSpanSize(
 
   DCHECK_GE(set_span_size, 0);
   return (set_span_size - gutter_size_).ClampNegativeToZero();
-}
-
-NGGridLayoutTrackCollection
-NGGridLayoutTrackCollection::CreateSubgridCollection(
-    wtf_size_t begin_range_index,
-    wtf_size_t end_range_index) const {
-  DCHECK_LE(begin_range_index, end_range_index);
-  DCHECK_LT(end_range_index, ranges_.size());
-
-  NGGridLayoutTrackCollection subgrid_collection(Direction());
-  subgrid_collection.ranges_.ReserveInitialCapacity(end_range_index -
-                                                    begin_range_index);
-
-  const wtf_size_t start_line_offset = ranges_[begin_range_index].start_line;
-  const wtf_size_t begin_set_index = ranges_[begin_range_index].begin_set_index;
-
-  for (wtf_size_t i = begin_range_index; i < end_range_index; ++i) {
-    Range translated_range = ranges_[i];
-    translated_range.start_line -= start_line_offset;
-    translated_range.begin_set_index -= begin_set_index;
-    subgrid_collection.ranges_.emplace_back(std::move(translated_range));
-  }
-
-  const wtf_size_t end_set_index = ranges_[end_range_index].begin_set_index +
-                                   ranges_[end_range_index].set_count;
-
-  DCHECK_LT(begin_set_index, end_set_index);
-  DCHECK_LT(end_set_index, sets_geometry_.size());
-
-  const wtf_size_t set_span_size = end_set_index - begin_set_index;
-  const auto first_set_offset = sets_geometry_[begin_set_index].offset;
-
-  subgrid_collection.sets_geometry_.ReserveInitialCapacity(set_span_size + 1);
-  subgrid_collection.sets_geometry_.emplace_back(/* offset */ LayoutUnit(),
-                                                 /* track_count */ 0);
-
-  for (wtf_size_t i = begin_set_index + 1; i <= end_set_index; ++i) {
-    subgrid_collection.sets_geometry_.emplace_back(
-        sets_geometry_[i].offset - first_set_offset,
-        sets_geometry_[i].track_count);
-  }
-
-  if (!major_baselines_.IsEmpty()) {
-    DCHECK_LE(end_set_index, major_baselines_.size());
-    DCHECK_LE(end_set_index, minor_baselines_.size());
-
-    subgrid_collection.major_baselines_.ReserveInitialCapacity(set_span_size);
-    subgrid_collection.minor_baselines_.ReserveInitialCapacity(set_span_size);
-
-    for (wtf_size_t i = begin_set_index; i < end_set_index; ++i) {
-      subgrid_collection.major_baselines_.emplace_back(major_baselines_[i]);
-      subgrid_collection.minor_baselines_.emplace_back(minor_baselines_[i]);
-    }
-  }
-
-  subgrid_collection.gutter_size_ = gutter_size_;
-  return subgrid_collection;
 }
 
 NGGridSizingTrackCollection::NGGridSizingTrackCollection(

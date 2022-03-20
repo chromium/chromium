@@ -147,7 +147,6 @@ class CORE_EXPORT NGGridLayoutAlgorithm
 
   const NGConstraintSpace CreateConstraintSpace(
       const GridItemData& grid_item,
-      const NGGridLayoutData& layout_data,
       const LogicalSize& containing_grid_area_size,
       NGCacheSlot cache_slot,
       absl::optional<LayoutUnit> opt_fixed_block_size,
@@ -156,8 +155,8 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       bool opt_min_block_size_should_encompass_intrinsic_size = false) const;
 
   const NGConstraintSpace CreateConstraintSpaceForLayout(
-      const GridItemData& grid_item,
       const NGGridLayoutData& layout_data,
+      const GridItemData& grid_item,
       LogicalRect* containing_grid_area,
       absl::optional<LayoutUnit> opt_fragment_relative_block_offset =
           absl::nullopt,
