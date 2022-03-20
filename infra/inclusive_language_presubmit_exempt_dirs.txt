@@ -499,7 +499,6 @@ third_party/libusb/src/libusb/os 1 1
 third_party/libxml/chromium 1 1
 third_party/libxml/fuzz/seed_corpus 1 1
 third_party/libxml/src 2 2
-third_party/libXNVCtrl 12 1
 third_party/libxslt/chromium 1 1
 third_party/libxslt/src/libxslt 7 1
 third_party/libzip/src 3 2
