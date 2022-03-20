@@ -10,6 +10,7 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/events/event.h"
 #include "ui/events/event_sink.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace aura {
 

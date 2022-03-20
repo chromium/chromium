@@ -10,6 +10,7 @@
 #include "ash/system/status_area_widget.h"
 #include "base/run_loop.h"
 #include "ui/compositor/layer_animation_observer.h"
+#include "ui/compositor/layer_animator.h"
 
 namespace ash {
 

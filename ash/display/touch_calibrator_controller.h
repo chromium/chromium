@@ -15,6 +15,7 @@
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/events/devices/touchscreen_device.h"
 #include "ui/events/event_handler.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
 namespace ui {

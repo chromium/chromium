@@ -9,6 +9,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/class_property.h"
 #include "ui/compositor/layer_animation_sequence.h"
+#include "ui/compositor/layer_animator.h"
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(ash::LayerCopyAnimator*)
 

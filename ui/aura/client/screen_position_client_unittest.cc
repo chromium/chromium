@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ui/aura/test/aura_test_base.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace aura {
 namespace client {

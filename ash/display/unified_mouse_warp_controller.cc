@@ -21,6 +21,7 @@
 #include "ui/display/manager/display_manager_utilities.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_utils.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {

@@ -20,6 +20,7 @@
 #include "ash/search_box/search_box_constants.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animator.h"
 #include "ui/views/layout/box_layout.h"
 
 namespace ash {

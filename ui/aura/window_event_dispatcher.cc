@@ -35,6 +35,7 @@
 #include "ui/events/gestures/gesture_recognizer.h"
 #include "ui/events/gestures/gesture_types.h"
 #include "ui/events/platform/platform_event_source.h"
+#include "ui/gfx/geometry/transform.h"
 
 typedef ui::EventDispatchDetails DispatchDetails;
 

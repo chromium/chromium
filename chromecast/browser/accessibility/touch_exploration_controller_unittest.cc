@@ -26,6 +26,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/events/test/events_test_utils.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gl/test/gl_surface_test_support.h"
 
 using EventList = std::vector<std::unique_ptr<ui::Event>>;
