@@ -13,6 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/threading/thread_checker.h"
 #include "base/token.h"
 #include "build/build_config.h"
 #include "media/base/video_frame.h"

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
+#include "base/threading/thread_checker.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/p2p/network_list_manager.h"
 #include "third_party/blink/renderer/platform/p2p/network_list_observer.h"
