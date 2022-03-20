@@ -252,7 +252,7 @@ TEST_F(WebAppDatabaseTest, BackwardCompatibility_WebAppWithOnlyRequiredFields) {
   const WebApp* app = registrar().GetAppById(app_id);
   EXPECT_EQ(app_id, app->app_id());
   EXPECT_EQ(start_url, app->start_url());
-  EXPECT_EQ(name, app->name());
+  EXPECT_EQ(name, app->untranslated_name());
   EXPECT_EQ(user_display_mode, app->user_display_mode());
   EXPECT_EQ(is_locally_installed, app->is_locally_installed());
   EXPECT_TRUE(app->IsSynced());
@@ -297,7 +297,7 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   // Let optional fields be empty:
   EXPECT_EQ(app->display_mode(), DisplayMode::kUndefined);
   EXPECT_TRUE(app->display_mode_override().empty());
-  EXPECT_TRUE(app->description().empty());
+  EXPECT_TRUE(app->untranslated_description().empty());
   EXPECT_TRUE(app->scope().is_empty());
   EXPECT_FALSE(app->theme_color().has_value());
   EXPECT_FALSE(app->dark_mode_theme_color().has_value());
@@ -341,7 +341,7 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   // Required fields were serialized:
   EXPECT_EQ(app_id, app_copy->app_id());
   EXPECT_EQ(start_url, app_copy->start_url());
-  EXPECT_EQ(name, app_copy->name());
+  EXPECT_EQ(name, app_copy->untranslated_name());
   EXPECT_EQ(user_display_mode, app_copy->user_display_mode());
   EXPECT_FALSE(app_copy->is_locally_installed());
 
@@ -365,7 +365,7 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   // No optional fields.
   EXPECT_EQ(app_copy->display_mode(), DisplayMode::kUndefined);
   EXPECT_TRUE(app_copy->display_mode_override().empty());
-  EXPECT_TRUE(app_copy->description().empty());
+  EXPECT_TRUE(app_copy->untranslated_description().empty());
   EXPECT_TRUE(app_copy->scope().is_empty());
   EXPECT_FALSE(app_copy->theme_color().has_value());
   EXPECT_FALSE(app_copy->dark_mode_theme_color().has_value());

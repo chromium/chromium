@@ -201,7 +201,8 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
       ExternallyInstalledWebAppPrefs(profile()->GetPrefs()).LookupAppId(url);
   ASSERT_TRUE(app_id.has_value());
   EXPECT_TRUE(registrar().IsPlaceholderApp(app_id.value()));
-  EXPECT_EQ(CUSTOM_NAME, registrar().GetAppById(app_id.value())->name());
+  EXPECT_EQ(CUSTOM_NAME,
+            registrar().GetAppById(app_id.value())->untranslated_name());
 }
 
 // Installing a placeholder app with a custom icon should succeed.

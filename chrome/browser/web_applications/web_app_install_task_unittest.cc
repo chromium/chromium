@@ -471,8 +471,8 @@ TEST_F(WebAppInstallTaskTest, InstallFromWebContents) {
   EXPECT_NE(nullptr, web_app);
 
   EXPECT_EQ(app_id, web_app->app_id());
-  EXPECT_EQ(manifest_name, web_app->name());
-  EXPECT_EQ(description, web_app->description());
+  EXPECT_EQ(manifest_name, web_app->untranslated_name());
+  EXPECT_EQ(description, web_app->untranslated_description());
   EXPECT_EQ(url, web_app->start_url());
   EXPECT_EQ(scope, web_app->scope());
   EXPECT_EQ(theme_color, web_app->theme_color());
@@ -516,8 +516,8 @@ TEST_F(WebAppInstallTaskTest, ForceReinstall) {
         EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, code);
         EXPECT_EQ(app_id, force_installed_app_id);
         const WebApp* web_app = registrar().GetAppById(app_id);
-        EXPECT_EQ(web_app->name(), "Manifest Name2");
-        EXPECT_EQ(web_app->description(), "Renderer Description2");
+        EXPECT_EQ(web_app->untranslated_name(), "Manifest Name2");
+        EXPECT_EQ(web_app->untranslated_description(), "Renderer Description2");
         callback_called = true;
         run_loop.Quit();
       }));
@@ -662,9 +662,9 @@ TEST_F(WebAppInstallTaskTest, InstallableCheck) {
 
   // Manifest data overrides Renderer data, except |description|.
   EXPECT_EQ(app_id, web_app->app_id());
-  EXPECT_EQ(manifest_name, web_app->name());
+  EXPECT_EQ(manifest_name, web_app->untranslated_name());
   EXPECT_EQ(manifest_start_url, web_app->start_url());
-  EXPECT_EQ(renderer_description, web_app->description());
+  EXPECT_EQ(renderer_description, web_app->untranslated_description());
   EXPECT_EQ(manifest_scope, web_app->scope());
   EXPECT_EQ(expected_theme_color, web_app->theme_color());
   EXPECT_EQ(display_mode, web_app->display_mode());
@@ -1475,7 +1475,7 @@ TEST_F(WebAppInstallTaskWithRunOnOsLoginTest,
   EXPECT_NE(nullptr, web_app);
 
   EXPECT_EQ(app_id, web_app->app_id());
-  EXPECT_EQ(description, web_app->description());
+  EXPECT_EQ(description, web_app->untranslated_description());
   EXPECT_EQ(url, web_app->start_url());
   EXPECT_EQ(scope, web_app->scope());
   EXPECT_EQ(theme_color, web_app->theme_color());

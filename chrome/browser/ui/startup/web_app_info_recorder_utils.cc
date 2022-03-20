@@ -144,7 +144,7 @@ base::Value GetWebApps::GetInstalledWebApps() {
     for (const web_app::WebApp& web_app :
          web_app_provider->registrar().GetApps()) {
       base::Value web_app_info(base::Value::Type::DICTIONARY);
-      web_app_info.SetStringKey("name", web_app.name());
+      web_app_info.SetStringKey("name", web_app.untranslated_name());
       web_app_info.SetStringKey("id", web_app.app_id());
       installed_apps_per_profile.Append(std::move(web_app_info));
     }

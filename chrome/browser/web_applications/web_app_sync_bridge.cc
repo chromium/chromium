@@ -49,10 +49,10 @@ namespace web_app {
 
 std::unique_ptr<syncer::EntityData> CreateSyncEntityData(const WebApp& app) {
   // The Sync System doesn't allow empty entity_data name.
-  DCHECK(!app.name().empty());
+  DCHECK(!app.untranslated_name().empty());
 
   auto entity_data = std::make_unique<syncer::EntityData>();
-  entity_data->name = app.name();
+  entity_data->name = app.untranslated_name();
   // TODO(crbug.com/1103570): Remove this fallback later.
   if (entity_data->name.empty())
     entity_data->name = app.start_url().spec();
@@ -427,12 +427,12 @@ void WebAppSyncBridge::CheckRegistryUpdateData(
 #if DCHECK_IS_ON()
   for (const std::unique_ptr<WebApp>& web_app : update_data.apps_to_create) {
     DCHECK(!registrar_->GetAppById(web_app->app_id()));
-    DCHECK(!web_app->name().empty());
+    DCHECK(!web_app->untranslated_name().empty());
   }
 
   for (const std::unique_ptr<WebApp>& web_app : update_data.apps_to_update) {
     DCHECK(registrar_->GetAppById(web_app->app_id()));
-    DCHECK(!web_app->name().empty());
+    DCHECK(!web_app->untranslated_name().empty());
   }
 
   for (const AppId& app_id : update_data.apps_to_delete)
@@ -630,7 +630,7 @@ void WebAppSyncBridge::ApplySyncDataChange(
     // the fallback sync data name:
     web_app->SetName(specifics.name());
     // Or use syncer::EntityData::name as a last resort.
-    if (web_app->name().empty())
+    if (web_app->untranslated_name().empty())
       web_app->SetName(change.data().name);
 
     ApplySyncDataToApp(specifics, web_app.get());

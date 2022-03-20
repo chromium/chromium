@@ -322,7 +322,7 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
   // Set sync data to sync proto.
   *(local_data->mutable_sync_data()) = WebAppToSyncProto(web_app);
 
-  local_data->set_name(web_app.name());
+  local_data->set_name(web_app.untranslated_name());
 
   DCHECK(web_app.sources_.any());
   local_data->mutable_sources()->set_system(web_app.sources_[Source::kSystem]);
@@ -350,7 +350,7 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
         ToWebAppProtoDisplayMode(display_mode));
   }
 
-  local_data->set_description(web_app.description());
+  local_data->set_description(web_app.untranslated_description());
   if (!web_app.scope().is_empty())
     local_data->set_scope(web_app.scope().spec());
   if (web_app.theme_color().has_value())

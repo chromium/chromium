@@ -194,8 +194,8 @@ TEST_F(WebAppRegistrarTest, CreateRegisterUnregister) {
   const WebApp* app = registrar().GetAppById(app_id);
 
   EXPECT_EQ(app_id, app->app_id());
-  EXPECT_EQ(name, app->name());
-  EXPECT_EQ(description, app->description());
+  EXPECT_EQ(name, app->untranslated_name());
+  EXPECT_EQ(description, app->untranslated_description());
   EXPECT_EQ(start_url, app->start_url());
   EXPECT_EQ(scope, app->scope());
   EXPECT_EQ(theme_color, app->theme_color());
@@ -664,7 +664,7 @@ TEST_F(WebAppRegistrarTest, BeginAndCommitUpdate) {
   EXPECT_EQ(ids.size(), registry_written.size());
 
   for (auto& kv : registry_written) {
-    EXPECT_EQ("New Name", kv.second->name());
+    EXPECT_EQ("New Name", kv.second->untranslated_name());
     ids.erase(kv.second->app_id());
   }
 
@@ -729,7 +729,7 @@ TEST_F(WebAppRegistrarTest, ScopedRegistryUpdate) {
   EXPECT_EQ(ids.size(), updated_registry.size());
 
   for (auto& kv : updated_registry) {
-    EXPECT_EQ(kv.second->description(), "New Description");
+    EXPECT_EQ(kv.second->untranslated_description(), "New Description");
     ids.erase(kv.second->app_id());
   }
 
@@ -756,8 +756,8 @@ TEST_F(WebAppRegistrarTest, CopyOnWrite) {
     EXPECT_NE(app_copy, app);
 
     app_copy->SetName("New Name");
-    EXPECT_EQ(app_copy->name(), "New Name");
-    EXPECT_EQ(app->name(), "Name");
+    EXPECT_EQ(app_copy->untranslated_name(), "New Name");
+    EXPECT_EQ(app->untranslated_name(), "Name");
 
     app_copy->AddSource(Source::kPolicy);
     app_copy->RemoveSource(Source::kSync);
@@ -774,7 +774,7 @@ TEST_F(WebAppRegistrarTest, CopyOnWrite) {
   // Pointer value stays the same.
   EXPECT_EQ(app, registrar().GetAppById(app_id));
 
-  EXPECT_EQ(app->name(), "New Name");
+  EXPECT_EQ(app->untranslated_name(), "New Name");
   EXPECT_FALSE(app->IsSynced());
   EXPECT_TRUE(app->HasAnySources());
 }

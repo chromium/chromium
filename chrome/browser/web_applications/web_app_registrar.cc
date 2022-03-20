@@ -538,7 +538,7 @@ std::string WebAppRegistrar::GetAppShortName(const AppId& app_id) const {
     }
   }
   auto* web_app = GetAppById(app_id);
-  return web_app ? web_app->name() : std::string();
+  return web_app ? web_app->untranslated_name() : std::string();
 }
 
 std::string WebAppRegistrar::GetAppDescription(const AppId& app_id) const {
@@ -551,7 +551,7 @@ std::string WebAppRegistrar::GetAppDescription(const AppId& app_id) const {
     }
   }
   auto* web_app = GetAppById(app_id);
-  return web_app ? web_app->description() : std::string();
+  return web_app ? web_app->untranslated_description() : std::string();
 }
 
 absl::optional<SkColor> WebAppRegistrar::GetAppThemeColor(

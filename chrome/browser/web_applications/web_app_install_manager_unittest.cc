@@ -69,7 +69,8 @@ std::unique_ptr<WebAppInstallInfo> ConvertWebAppToRendererWebAppInstallInfo(
   auto web_application_info = std::make_unique<WebAppInstallInfo>();
   // Most fields are expected to be populated by a manifest data in a subsequent
   // override install process data flow. TODO(loyso): Make it more robust.
-  web_application_info->description = base::UTF8ToUTF16(app.description());
+  web_application_info->description =
+      base::UTF8ToUTF16(app.untranslated_description());
   // |user_display_mode| is a user's display mode value and it is typically
   // populated by a UI dialog in production code. We set it here for testing
   // purposes.
@@ -98,7 +99,7 @@ blink::mojom::ManifestPtr ConvertWebAppToManifest(const WebApp& app) {
   manifest->start_url = app.start_url();
   manifest->scope = app.start_url();
   manifest->short_name = u"Short Name to be overriden.";
-  manifest->name = base::UTF8ToUTF16(app.name());
+  manifest->name = base::UTF8ToUTF16(app.untranslated_name());
   if (app.theme_color()) {
     manifest->has_theme_color = true;
     manifest->theme_color = *app.theme_color();
@@ -799,7 +800,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly, InstallWebAppsAfterSync_Fallback) {
 
   std::unique_ptr<const WebApp> app_in_sync_install =
       CreateWebAppFromSyncAndPendingInstallation(
-          expected_app->start_url(), expected_app->name(),
+          expected_app->start_url(), expected_app->untranslated_name(),
           expected_app->user_display_mode(),
           expected_app->theme_color().value(),
           expected_app->is_locally_installed(), expected_app->scope(),
@@ -1270,7 +1271,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
 
   ASSERT_TRUE(web_app->theme_color().has_value());
   EXPECT_EQ(SK_ColorWHITE, web_app->theme_color().value());
-  EXPECT_EQ("Name from APK", web_app->name());
+  EXPECT_EQ("Name from APK", web_app->untranslated_name());
   EXPECT_EQ("https://example.com/apk_scope", web_app->scope().spec());
 
   ASSERT_TRUE(web_app->sync_fallback_data().theme_color.has_value());
@@ -1332,7 +1333,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
 
   ASSERT_TRUE(web_app->theme_color().has_value());
   EXPECT_EQ(SK_ColorWHITE, web_app->theme_color().value());
-  EXPECT_EQ("Name from APK", web_app->name());
+  EXPECT_EQ("Name from APK", web_app->untranslated_name());
   EXPECT_EQ("https://example.com/apk_scope", web_app->scope().spec());
 
   ASSERT_TRUE(web_app->sync_fallback_data().theme_color.has_value());

@@ -89,7 +89,7 @@ void ExpectInitialManifestFieldsFromBasicWebApp(
     const GURL& expect_start_url,
     const GURL& expect_scope) {
   // Manifest fields:
-  EXPECT_EQ(web_app->name(), "Basic web app");
+  EXPECT_EQ(web_app->untranslated_name(), "Basic web app");
   EXPECT_EQ(web_app->start_url().spec(), expect_start_url);
   EXPECT_EQ(web_app->scope().spec(), expect_scope);
   EXPECT_EQ(web_app->display_mode(), DisplayMode::kStandalone);

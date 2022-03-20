@@ -80,13 +80,13 @@ base::Value BuildInstalledWebAppsJson(web_app::WebAppProvider& provider) {
        provider.registrar().GetAppsIncludingStubs()) {
     web_apps.push_back(&web_app);
   }
-  base::ranges::sort(web_apps, {}, &web_app::WebApp::name);
+  base::ranges::sort(web_apps, {}, &web_app::WebApp::untranslated_name);
 
   // Prefix with a ! so this appears at the top when serialized.
   base::Value& index = *installed_web_apps.SetKey(
       "!Index", base::Value(base::Value::Type::DICTIONARY));
   for (const web_app::WebApp* web_app : web_apps) {
-    const std::string& key = web_app->name();
+    const std::string& key = web_app->untranslated_name();
     base::Value* existing_entry = index.FindKey(key);
     if (!existing_entry) {
       index.SetStringKey(key, web_app->app_id());

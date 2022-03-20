@@ -434,7 +434,7 @@ void WebAppInstallFinalizer::FinalizeUpdate(
   CommitCallback commit_callback = base::BindOnce(
       &WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate,
       weak_ptr_factory_.GetWeakPtr(), std::move(callback), app_id,
-      existing_web_app->name(),
+      GetWebAppRegistrar().GetAppShortName(app_id),
       GetFileHandlerUpdateAction(app_id, web_app_info), web_app_info);
 
   // Prepare copy-on-write to update existing app.

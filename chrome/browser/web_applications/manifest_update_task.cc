@@ -337,8 +337,9 @@ bool ManifestUpdateTask::IsUpdateNeededForManifest() const {
   const WebApp* app = registrar_.GetAppById(app_id_);
   DCHECK(app);
 
-  bool title_changing =
-      web_application_info_->title != base::UTF8ToUTF16(app->name());
+  // TODO(crbug.com/1259777): Check whether translations have been updated.
+  bool title_changing = web_application_info_->title !=
+                        base::UTF8ToUTF16(app->untranslated_name());
   bool icons_changing =
       web_application_info_->manifest_icons != app->manifest_icons();
   if (!NeedsAppIdentityUpdateDialog(title_changing, icons_changing, app_id_,

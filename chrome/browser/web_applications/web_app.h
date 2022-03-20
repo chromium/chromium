@@ -45,10 +45,13 @@ class WebApp {
 
   const AppId& app_id() const { return app_id_; }
 
-  // UTF8 encoded application name.
-  const std::string& name() const { return name_; }
-  // UTF8 encoded long application description (a full application name).
-  const std::string& description() const { return description_; }
+  // UTF8 encoded application name. This name is not translated, use
+  // WebAppRegistrar.GetAppShortName to get the translated name.
+  const std::string& untranslated_name() const { return name_; }
+  // UTF8 encoded long application description (a full application name). This
+  // description is not translated, use WebAppRegistrar.GetAppDescription to get
+  // the translated description.
+  const std::string& untranslated_description() const { return description_; }
 
   const GURL& start_url() const { return start_url_; }
 
