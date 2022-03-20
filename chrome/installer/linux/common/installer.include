@@ -86,6 +86,7 @@ process_template() (
     -e "s#@@BUILDDIR@@#${OUTPUTDIR}#g" \
     -e "s#@@STAGEDIR@@#${STAGEDIR}#g" \
     -e "s#@@SCRIPTDIR@@#${SCRIPTDIR}#g" \
+    -e "s#@@ENROLLMENTDIR@@#${ENROLLMENTDIR}#g" \
     -e "s#@@MENUNAME@@#${MENUNAME}#g" \
     -e "s#@@PRODUCTURL@@#${PRODUCTURL}#g" \
     -e "s#@@PREDEPENDS@@#${PREDEPENDS}#g" \
@@ -145,6 +146,11 @@ stage_install_common() {
   # crashpad
   strippedfile="${OUTPUTDIR}/chrome_crashpad_handler.stripped"
   install -m 755 "${strippedfile}" "${STAGEDIR}/${INSTALLDIR}/chrome_crashpad_handler"
+
+  # Final permissions for the chrome-management-service will be set in
+  # postinst chrome_management_service_setup().
+  strippedfile="${OUTPUTDIR}/chrome_management_service.stripped"
+  install -m 755 "${strippedfile}" "${STAGEDIR}/${INSTALLDIR}/chrome-management-service"
 
   # resources
   install -m 644 "${OUTPUTDIR}/resources.pak" "${STAGEDIR}/${INSTALLDIR}/"
@@ -411,6 +417,8 @@ stage_install_common() {
         exit 1
       fi
       local expected_perms=777
+    elif [ "${base_name}" = "chrome-management-service" ]; then
+      local expected_perms=755
     elif [ "${base_name}" = "chrome-sandbox" ]; then
       local expected_perms=4755
     elif [[ "${base_name}" = "nacl_irt_"*".nexe" ]]; then

@@ -36,6 +36,7 @@ assert(is_linux || is_chromeos)
 packaging_files_executables = [
   "$root_out_dir/chrome",
   "$root_out_dir/chrome_crashpad_handler",
+  "$root_out_dir/chrome_management_service",
   "$root_out_dir/chrome_sandbox",
 ]
 packaging_files_shlibs = []
@@ -190,6 +191,11 @@ strip_binary("strip_chrome_binary") {
 strip_binary("strip_chrome_crashpad_handler") {
   binary_input = "$root_out_dir/chrome_crashpad_handler"
   deps = [ "//components/crash/core/app:chrome_crashpad_handler" ]
+}
+
+strip_binary("strip_chrome_management_service") {
+  binary_input = "$root_out_dir/chrome_management_service"
+  deps = [ "//chrome/browser/enterprise/connectors/device_trust/key_management/installer/management_service:chrome_management_service" ]
 }
 
 strip_binary("strip_chrome_sandbox") {
@@ -386,10 +392,12 @@ group("installer_deps") {
     ":save_build_info",
     ":strip_chrome_binary",
     ":strip_chrome_crashpad_handler",
+    ":strip_chrome_management_service",
     ":strip_chrome_sandbox",
     ":theme_files",
     "//chrome",
     "//chrome:packed_resources",
+    "//chrome/browser/enterprise/connectors/device_trust/key_management/installer/management_service:chrome_management_service",
     "//chrome/browser/resources/media/mei_preload:component",
     "//components/crash/core/app:chrome_crashpad_handler",
     "//sandbox/linux:chrome_sandbox",

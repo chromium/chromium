@@ -17,6 +17,9 @@ PROGNAME=chrome
 # Base directory for package installation.
 INSTALLDIR=/opt/chromium.org/chromium
 
+# Directory for device policy enrollments.
+ENROLLMENTDIR=/etc/chromium/policies/enrollment
+
 # Display string for desktop menu/icon.
 MENUNAME="Chromium Web Browser"
 
