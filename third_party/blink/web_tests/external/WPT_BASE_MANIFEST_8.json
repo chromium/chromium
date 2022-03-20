@@ -460883,7 +460883,7 @@
          }
         ]
        ],
-       "dialog-inert.tentative.html": [
+       "dialog-inert.html": [
         "864420b9d25e67745a497309252a6df8000a8b2f",
         [
          null,
@@ -470757,21 +470757,21 @@
     ]
    },
    "inert": {
-    "dynamic-inert-on-focused-element.tentative.html": [
+    "dynamic-inert-on-focused-element.html": [
      "0ddf5a995afad3e19f31b9f76ab67e704737355f",
      [
       null,
       {}
      ]
     ],
-    "inert-and-contenteditable.tentative.html": [
+    "inert-and-contenteditable.html": [
      "01091d1736e87b294c3ddf118227d93f129808fe",
      [
       null,
       {}
      ]
     ],
-    "inert-canvas-fallback-content.tentative.html": [
+    "inert-canvas-fallback-content.html": [
      "f22549b50377f17b3e03cb6c26c996122b7c8e2b",
      [
       null,
@@ -470785,14 +470785,14 @@
       {}
      ]
     ],
-    "inert-does-not-match-disabled-selector.tentative.html": [
+    "inert-does-not-match-disabled-selector.html": [
      "74b8ac3f7dd5c3447bf47fd732fade9220497c93",
      [
       null,
       {}
      ]
     ],
-    "inert-iframe-hittest.tentative.html": [
+    "inert-iframe-hittest.html": [
      "bcc542d35edff1bf93fdb7bcc6185fceb0d130d6",
      [
       null,
@@ -470801,7 +470801,7 @@
       }
      ]
     ],
-    "inert-iframe-tabbing.tentative.html": [
+    "inert-iframe-tabbing.html": [
      "a0146b74cc2abdb9590c322ec1a98d54c1adbf62",
      [
       null,
@@ -470810,14 +470810,14 @@
       }
      ]
     ],
-    "inert-in-shadow-dom.tentative.html": [
+    "inert-in-shadow-dom.html": [
      "ec825dbfdc985458cc7393d58b2efc2ce0796364",
      [
       null,
       {}
      ]
     ],
-    "inert-inlines.tentative.html": [
+    "inert-inlines.html": [
      "b056c6495d2c54733bee6ab796332ba89f01b379",
      [
       null,
@@ -470826,7 +470826,7 @@
       }
      ]
     ],
-    "inert-label-focus.tentative.html": [
+    "inert-label-focus.html": [
      "8bbe1eca15c7d8f2f9fd5ea48c33cd0a5d5098e0",
      [
       null,
@@ -470835,7 +470835,7 @@
       }
      ]
     ],
-    "inert-node-is-uneditable.tentative.html": [
+    "inert-node-is-uneditable.html": [
      "23182b937cde52e8d55a88dbc8b440219d07f34f",
      [
       null,
@@ -470844,35 +470844,35 @@
       }
      ]
     ],
-    "inert-node-is-unfocusable.tentative.html": [
+    "inert-node-is-unfocusable.html": [
      "8b5de37fdcadedb9d98ec44c9c3c20aea52a0400",
      [
       null,
       {}
      ]
     ],
-    "inert-node-is-unselectable.tentative.html": [
+    "inert-node-is-unselectable.html": [
      "b99af0d4cd142dcb051af51f42d1759142a00c5e",
      [
       null,
       {}
      ]
     ],
-    "inert-on-non-html.tentative.html": [
+    "inert-on-non-html.html": [
      "4d4fdd7059e013e55748615844ceee63c2d5c102",
      [
       null,
       {}
      ]
     ],
-    "inert-on-slots.tentative.html": [
+    "inert-on-slots.html": [
      "dd0d7ec6d46d1ef34417dcf099ce5156bb149bea",
      [
       null,
       {}
      ]
     ],
-    "inert-svg-hittest.tentative.html": [
+    "inert-svg-hittest.html": [
      "f743ed25f45f1243acf30a6fd430e707a928ebe6",
      [
       null,
@@ -470881,14 +470881,14 @@
       }
      ]
     ],
-    "inert-with-modal-dialog-001.tentative.html": [
+    "inert-with-modal-dialog-001.html": [
      "a31fa150147f5c86de5969225e978936bc80daca",
      [
       null,
       {}
      ]
     ],
-    "inert-with-modal-dialog-002.tentative.html": [
+    "inert-with-modal-dialog-002.html": [
      "499ac80d09e2c0a5080493e33cc2bd87a4c217f5",
      [
       null,
