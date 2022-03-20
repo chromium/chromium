@@ -1437,6 +1437,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2349896577940037438">Hvis indstillingen for yderligere web- og appaktivitet er aktiveret, gemmes disse data muligvis på din Google-konto. Du kan se dine data, slette dem, og ændre dine kontoindstillinger på account.google.com.</translation>
 <translation id="2350133097354918058">Genindlæst</translation>
 <translation id="2350182423316644347">Starter applikation...</translation>
+<translation id="235028206512346451">Hvis du bevæger dig væk fra din enhed, låser din skærm automatisk. Når du befinder dig foran din enhed, forbliver din skærm ulåst i længere tid. Hvis du ikke bruger en låseskærm, går din enhed i dvale i stedet for at låse.</translation>
 <translation id="2352495879228166246">{NUM_ITEMS,plural, =1{1 element}one{{NUM_ITEMS} element}other{{NUM_ITEMS} elementer}}</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2352810082280059586">Noter på låseskærmen gemmes automatisk i <ph name="LOCK_SCREEN_APP_NAME" />. Din seneste note forbliver på låseskærmen.</translation>
@@ -1979,6 +1980,7 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692"><ph name="DEVICE" /> og <ph name="NUMBER_OF_DEVICES" /> andre</translation>
 <translation id="2889064240420137087">Åbn link med...</translation>
+<translation id="2891566119238851894">Åbn søgning i sidepanel. Søgningen er ikke åben i sidepanelet.</translation>
 <translation id="2891922230654533301">Vil du logge ind på <ph name="APP_NAME" /> med din enhed?</translation>
 <translation id="2893168226686371498">Standardbrowser</translation>
 <translation id="2893180576842394309">Google kan bruge din historik til at tilpasse Søgning og andre Google-tjenester</translation>
@@ -2737,6 +2739,7 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="3677959414150797585">Omfatter apps, websider og mere. Sender kun statistik til forbedring af forslag, hvis du har valgt at dele dine brugsdata.</translation>
 <translation id="3678156199662914018">Udvidelse: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">De sider, du ser i dette vindue, vises ikke i browserhistorikken, og de efterlader ikke andre spor som f.eks. cookies på computeren, når du logger ud. De filer, du downloader, og bogmærker, du opretter, bliver ikke gemt.</translation>
+<translation id="368019053277764111">Åbn søgning i sidepanel</translation>
 <translation id="3680683624079082902">Stemme til oplæsning</translation>
 <translation id="3681311097828166361">Tak for din feedback. Du er offline nu, og din rapport sendes senere.</translation>
 <translation id="3682824389861648626">Grænse for bevægelse</translation>
@@ -4847,6 +4850,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5799478978078236781">Få tips, tilbud og opdateringer vedrørende <ph name="DEVICE_TYPE" />, og giv feedback.</translation>
 <translation id="5799508265798272974">Virtuel Linux-maskine: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">Destinationsfilen er blevet forkortet eller fjernet siden sidste download.</translation>
+<translation id="5800351251499368110">Luk søgning i sidepanel. Søgningen er åben i sidepanelet.</translation>
 <translation id="5801568494490449797">Præferencer</translation>
 <translation id="5804241973901381774">Tilladelser</translation>
 <translation id="5805697420284793859">Vinduesadministrator</translation>
@@ -6358,6 +6362,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="7356908624372060336">Netværkslogs</translation>
 <translation id="735745346212279324">VPN afbrudt</translation>
 <translation id="7358324924540718595">Minder skjules i dag</translation>
+<translation id="7358338787722390626">Luk søgning i sidepanel</translation>
 <translation id="735994578317267253">Få dine apps, indstillinger m.m. på enhver ChromeOS-enhed</translation>
 <translation id="7360233684753165754"><ph name="PAGE_NUMBER" /> sider til <ph name="PRINTER_NAME" /></translation>
 <translation id="7361297102842600584">Klik for at køre <ph name="PLUGIN_NAME" /></translation>

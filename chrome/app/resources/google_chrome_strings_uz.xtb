@@ -78,6 +78,7 @@
 <translation id="2665296953892887393">Google‘ga ishdan chiqishlar hisoboti va <ph name="UMA_LINK" />‘ni jo‘natib Google Chrome yaxshilanishiga yordam berish.</translation>
 <translation id="2689103672227170538">Bu kengaytma Chrome ishga tushganda ko‘rinadigan sahifani o‘zgartirdi.</translation>
 <translation id="2742320827292110288">Diqqat: Google Chrome kengaytmalar kezish tarixini yozib olishiga to‘sqinlik qilolmaydi. Bu kengaytmani inkognito rejimida o‘chirish uchun ushbu parametrdan belgini olib tashlang.</translation>
+<translation id="2746842245914314523">Bu funksiyalar haqida batafsil axborotni Chrome sozlamalari orqali olish mumkin. Sinov davrida saytlar bilan ishlash maxfiyligi yangi funksiyalar bilan biroz pasayishi mumkin.</translation>
 <translation id="2765403129283291972">Bu sayt mikrofoningizdan foydalanishi uchun Chrome brauzeriga ruxsat berishingiz lozim</translation>
 <translation id="2770231113462710648">Standart brauzer etib tayinlash:</translation>
 <translation id="2775140325783767197">Chrome parollaringizni tekshira olmadi. Internet aloqasini tekshiring.</translation>
@@ -132,11 +133,13 @@
 <translation id="3785324443014631273">Hisobga kirishdagi xatolik sababli ChromeOS Flex maʼlumotlarni sinxronlay olmadi.</translation>
 <translation id="3835168907083856002">Bunda <ph name="USER_EMAIL_ADDRESS" /> uchun yangi Chrome profili yaratiladi</translation>
 <translation id="386202838227397562">Barcha Google Chrome oynalarini yoping va qaytadan urinib ko‘ring.</translation>
+<translation id="3862592757180800623">Fikringiz oʻzgarsa, buni istalgan vaqt Chrome sozlamalari orqali oʻzgartirish mumkin. Sinov davrida saytlar bilan ishlash maxfiyligi yangi funksiyalar bilan biroz pasayishi mumkin.</translation>
 <translation id="3865754807470779944">Chrome <ph name="PRODUCT_VERSION" /> versiyasi oʻrnatilgan</translation>
 <translation id="3873044882194371212">Havolani &amp;inkognito oynada ochish</translation>
 <translation id="3889417619312448367">Google Chrome’ni o‘chirib tashlash</translation>
 <translation id="4050175100176540509">So‘nggi versiyada himoya devori yaxshilandi va yangi funksiyalar qo‘shildi.</translation>
 <translation id="4053720452172726777">Google Chrome’ni sozlash va boshqarish</translation>
+<translation id="4106587138345390261">Chrome saytlarga kamroq maʼlumotlaringiz bilan bir xil brauzer xizmatlarini taqdim etishiga imkon beruvchi yangi funksiyalarni oʻrganib chiqmoqda</translation>
 <translation id="4110895483821904099">Yangi Chrome profilini sozlang</translation>
 <translation id="4147555960264124640">Siz boshqaruvdagi hisobga kiryapsiz va uning administratoriga Google Chrome profilingizni boshqarishga ruxsat beryapsiz. Ilovalar, xatcho‘plar, brauzer tarixi, parollar va boshqa sozlamalar kabi barcha Chrome ma’lumotlaringiz <ph name="USER_NAME" /> hisobiga biriktiriladi. Siz bu ma’lumotlarni Google hisoblar shaxsiy kabinetidan o‘chirishingiz mumkin, lekin bu ma’lumotlarni boshqa hisob bilan bog‘lay olmaysiz. <ph name="LEARN_MORE" /></translation>
 <translation id="4149882025268051530">Fayllarni arxivdan chiqarib bo‘lmadi. Google Chrome‘ni qayta yuklab oling.</translation>
@@ -145,6 +148,7 @@
 <translation id="4242034826641750751">Chrome bu saytda kamera va mikrofondan foydalanishiga ruxsat kerak</translation>
 <translation id="424864128008805179">Chrome hisobidan chiqmoqchimisiz?</translation>
 <translation id="4251615635259297716">Chrome ma’lumotlari bu hisobga bog‘lansinmi?</translation>
+<translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Qanday maʼlumotlar ishlatilishi:<ph name="END_BOLD" /> Bu qurilmada Chrome orqali siz kirgan saytlar tarixidagi qaydlar.</translation>
 <translation id="4281844954008187215">Xizmat shartlari</translation>
 <translation id="4293420128516039005">Chrome brauzerini barcha qurilmalringizda sinxronlash va o‘zingizga moslab olish uchun hisobingizga kiring</translation>
 <translation id="4325083532956419387">Chrome OS versiyasi</translation>
@@ -305,10 +309,12 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="8290100596633877290">Google Chrome ishdan chiqdi. Qaytadan ishga tushirilsinmi?</translation>
 <translation id="8342675569599923794">Bu fayl zararli edi va u Chrome tomonidan bloklandi.</translation>
 <translation id="8370517070665726704">© Google LLC, <ph name="YEAR" /> Barcha huquqlar himoyalangan.</translation>
+<translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Bu axborotdan qanday foydalanamiz:<ph name="END_BOLD" /> Chrome qiziqishlaringizni taxmin qila oladi. Keyinchalik sayt sizga chiqadigan reklamani moslashtirish maqsadida Chromedan qiziqishlaringiz haqida soʻrashi mumkin.</translation>
 <translation id="8394720698884623075">URL manzillar Chrome bilgan zararli saytlar roʻyxati orqali tekshiriladi</translation>
 <translation id="840084489713044809">Google Chrome parollaringizni eksport qilmoqchi.</translation>
 <translation id="8433638294851456451">Bu yerdan Android telefoningizga raqam yuborish uchun ikkala qurilmada Chrome hisobingizga kiring.</translation>
 <translation id="8498858610309223613">Google Chrome xavfsizlik tizimiga maxsus yangilanish oʻrnatildi. Qayta ishga tushiring va ochiq sahifalarni tiklang.</translation>
+<translation id="8516431725144212809">Chrome taxmin qilgan qiziqishlaringiz</translation>
 <translation id="8521348052903287641">Google Chrome Dev mDNS trafigiga ruxsat berishiga oid kiruvchi qoida.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8550334526674375523">Bu ish profili shaxsiy profilingizdan butunlay ajratilgan.</translation>

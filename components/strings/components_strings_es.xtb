@@ -171,6 +171,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1436185428532214179">Puede solicitar permiso para editar archivos y carpetas de tu dispositivo</translation>
 <translation id="1442386063175183758">Plegado en ventana a la derecha</translation>
 <translation id="1442987760062738829">Perforar</translation>
+<translation id="1446396933673057385">Comprobación de la fiabilidad</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1453974140256777690">El texto que pegas o adjuntas se envía a Google Cloud o a terceros para que se analice. Por ejemplo, puede que se analice para buscar datos sensibles.</translation>
 <translation id="1455413310270022028">Goma de borrar</translation>
@@ -462,6 +463,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2318594867107319532">Última marca de tiempo de la política:</translation>
 <translation id="2328651992442742497">Permitido (predeterminado)</translation>
 <translation id="2329182534073751090">ubicación de ventanas</translation>
+<translation id="2329473609445770916">Este sitio define intereses que otros sitios pueden usar para mostrarte anuncios</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />; fecha de caducidad: <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Configuración controlada por el administrador</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> quiere emparejarse</translation>
@@ -739,6 +741,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />: pulsa Tabulador y, después, Intro para personalizar el diseño de tu navegador</translation>
 <translation id="3240791268468473923">Se ha abierto la hoja de credenciales de pago seguro con una credencial que no coincide</translation>
 <translation id="324180406144491771">Los enlaces de <ph name="HOST_NAME" /> se han bloqueado</translation>
+<translation id="3248611290851046188">Este sitio define intereses que otros sitios pueden usar para mostrarte anuncios. Este sitio también consulta tus intereses de Chrome para mostrarte anuncios más relevantes.</translation>
 <translation id="3249845759089040423">Estilosa</translation>
 <translation id="3252266817569339921">Francés</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y luego Intro para crear un nuevo evento en Google Calendar rápidamente</translation>
@@ -850,6 +853,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3586931643579894722">Ocultar detalles</translation>
 <translation id="3587738293690942763">Medio</translation>
 <translation id="3592413004129370115">Italian (sobre)</translation>
+<translation id="3595645257662173296">¿Qué pruebas la respaldan?</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Puedes restablecer tu grupo en cualquier momento. Se tarda alrededor de un día en unirse a un nuevo grupo.}=1{Puedes restablecer tu grupo en cualquier momento. Se tarda alrededor de un día en unirse a un nuevo grupo.}other{Puedes restablecer tu grupo en cualquier momento. Se tardan {NUM_DAYS} días en unirse a un nuevo grupo.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">Tu administrador ha bloqueado esta aplicación</translation>
@@ -1669,6 +1673,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6165508094623778733">Más información</translation>
 <translation id="6167577165590485365">Último intento de obtención:</translation>
 <translation id="6169916984152623906">Ahora puedes navegar de forma privada; las otras personas que usen este dispositivo no verán tu actividad. No obstante, se guardarán las descargas y los marcadores.</translation>
+<translation id="6176716740821145453">Piensa un momento en la fiabilidad</translation>
 <translation id="6177128806592000436">La conexión con este sitio web no es segura</translation>
 <translation id="6180316780098470077">Intervalo de reintentos</translation>
 <translation id="6196640612572343990">Bloquear cookies de terceros</translation>
@@ -1792,6 +1797,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6615297766614333076">Apilador 2</translation>
 <translation id="6624427990725312378">Información de contacto</translation>
 <translation id="6626291197371920147">Añadir un número de tarjeta válido</translation>
+<translation id="6627727261837091711">Mostrar detalles de la personalización de anuncios</translation>
 <translation id="6628463337424475685">Búsqueda de <ph name="ENGINE" /></translation>
 <translation id="6630043285902923878">Buscando dispositivos USB...</translation>
 <translation id="6630809736994426279">Es posible que los atacantes que se encuentren en <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> intenten instalar programas peligrosos en tu Mac para robar o eliminar tu información (por ejemplo, fotos, contraseñas, mensajes y tarjetas de crédito). <ph name="BEGIN_LEARN_MORE_LINK" />Más información<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -2061,6 +2067,7 @@ Más información:
 <translation id="7473891865547856676">No, gracias</translation>
 <translation id="7481312909269577407">Adelante</translation>
 <translation id="7485870689360869515">No se han encontrado datos.</translation>
+<translation id="7485948220959728508">¿Quién está detrás de esta información?</translation>
 <translation id="7495528107193238112">Este contenido está bloqueado. Para solucionar el problema, ponte en contacto con el propietario del sitio web.</translation>
 <translation id="7497998058912824456">Botón de crear documento, pulsa Intro para crear un nuevo Documento de Google rápidamente</translation>
 <translation id="7506488012654002225">Chromium <ph name="BEGIN_EMPHASIS" />no almacenará<ph name="END_EMPHASIS" /> la siguiente información:
@@ -2141,6 +2148,7 @@ Más información:
 <translation id="7682287625158474539">Dirección de envío</translation>
 <translation id="7687186412095877299">Rellena formularios de pago con tus métodos de pago guardados</translation>
 <translation id="7687305263118037187">Tiempo de espera de reintento agotado</translation>
+<translation id="7687451951329798396">¿Qué dicen otras fuentes?</translation>
 <translation id="7693583928066320343">Orden de páginas recibido</translation>
 <translation id="7697066736081121494">Prc8 (sobre)</translation>
 <translation id="769721561045429135">Tienes tarjetas que solo se pueden usar en este dispositivo. Haz clic en Continuar para revisarlas.</translation>
@@ -2385,6 +2393,7 @@ Más información:
 <translation id="8507227106804027148">Línea de comandos</translation>
 <translation id="8508648098325802031">Icono de búsqueda</translation>
 <translation id="8511402995811232419">Gestionar cookies</translation>
+<translation id="851353418319061866">Comprobación de la fiabilidad</translation>
 <translation id="8519753333133776369">Tu administrador permite el dispositivo de interfaz humana (HID)</translation>
 <translation id="8522552481199248698">Chrome puede ayudarte a proteger tu cuenta de Google y a cambiar tu contraseña.</translation>
 <translation id="8530813470445476232">Borra el historial de navegación, las cookies, la caché y más desde la configuración de Chrome</translation>

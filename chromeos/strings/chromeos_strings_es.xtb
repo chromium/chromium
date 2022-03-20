@@ -52,6 +52,7 @@
 <translation id="1468664791493211953">Ofertas</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> gestiona este dispositivo y es posible que monitorice tu actividad.</translation>
 <translation id="1478594628797167447">Escáner</translation>
+<translation id="1486019694341708158">Activa el interruptor para seleccionar las opciones del salvapantallas</translation>
 <translation id="1491076385728777984">Actualizando firmware de <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> gestiona a este usuario y es posible que gestione sus ajustes y supervise su actividad de forma remota.</translation>
 <translation id="150962533380566081">El PUK no es válido.</translation>
@@ -106,6 +107,7 @@
 <translation id="2105810540595158374">El dispositivo es un mando de juegos.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versión <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB de <ph name="TOTAL_MEMORY" /> GB disponibles.</translation>
+<translation id="2138109643290557664">Flotando</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> fotos</translation>
 <translation id="2157959690810728433">EN COLA</translation>
@@ -268,6 +270,7 @@
 <translation id="4271957103967917607">Ver en pantalla completa</translation>
 <translation id="4275799948641988986">Una vez reparado, ¿quién va a usar el dispositivo?</translation>
 <translation id="4289540628985791613">Vista general</translation>
+<translation id="4289849978083912975">Presentación</translation>
 <translation id="4297501883039923494">Detenido: error desconocido</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imágenes</translation>
 <translation id="4333390807948134856">Tecla <ph name="KEY_NAME" /> pulsada</translation>
@@ -538,10 +541,12 @@
 <translation id="7175037578838465313">Configurar <ph name="NAME" /></translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> gestiona este <ph name="DEVICE_TYPE" />. Los administradores pueden configurar el dispositivo de forma remota.</translation>
 <translation id="7180611975245234373">Actualizar</translation>
+<translation id="7191009787982536050">Animación del salvapantallas</translation>
 <translation id="7212734716605298123">Actualizaciones de firmware para dispositivos externos</translation>
 <translation id="7216409898977639127">Proveedor de servicios móviles</translation>
 <translation id="7271040990581020067">El escáner se está usando en este momento. Vuelve a intentarlo más tarde.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7281657306185710294">Siente la brisa</translation>
 <translation id="7287310195820267359">Colecciones de fondos de pantalla</translation>
 <translation id="7297226631177386107">No se puede conectar con sitios web HTTPS usando un cortafuegos</translation>
 <translation id="7302860742311162920">ICCID</translation>

@@ -31,6 +31,7 @@
 <translation id="1201402288615127009">Keyingisi</translation>
 <translation id="1209796539517632982">Avtomatik nom serverlari</translation>
 <translation id="1210831758834677569">Lao</translation>
+<translation id="1223825810409523901">Chrome kengaytmasi</translation>
 <translation id="1243314992276662751">Yuklash</translation>
 <translation id="1249250836236328755">Janri</translation>
 <translation id="1254593899333212300">Internetga to‘g‘ridan-to‘g‘ri ulanish</translation>
@@ -80,6 +81,7 @@
 <translation id="166439687370499867">Umumiy tarmoq sozlamalarini o‘zgartirib bo‘lmaydi</translation>
 <translation id="1665611772925418501">Faylni o‘zgartirib bo‘lmadi.</translation>
 <translation id="1673103856845176271">Faylga ruxsat havfsizlik maqsadlarida cheklangan.</translation>
+<translation id="16762847117768727">ISO tasvir</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1715848075824334077">Velosiped</translation>
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> ta element arxivlanmoqda...</translation>
@@ -810,6 +812,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="7925686952655276919">Sinxronlash uchun mobil internetdan foydalanmang</translation>
 <translation id="7928710562641958568">Qurilmani chiqarib olish</translation>
 <translation id="7943385054491506837">AQSH Colemak</translation>
+<translation id="7948417415021769876">7z arxivi</translation>
 <translation id="7953739707111622108">Qurilmani ochib bo‘lmadi, chunki undagi fayl tizimi aniqlanmadi.</translation>
 <translation id="7969525169268594403">Slovan Tili</translation>
 <translation id="7972920761225148017">Fransuz (Shveytsariya)</translation>
@@ -859,6 +862,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="8372369524088641025">WEP kaliti yaroqsiz</translation>
 <translation id="8372852072747894550">Grek</translation>
 <translation id="8386903983509584791">Tarmoq tekshirildi</translation>
+<translation id="8387733224523483503"><ph name="FILE_NAME" /> arxivdan chiqarildi.</translation>
 <translation id="8395901698320285466">O‘lchamlar</translation>
 <translation id="8408068190360279472">Tarmoq: <ph name="NETWORK_TYPE" />, ulanmoqda</translation>
 <translation id="8425213833346101688">O‘zgartirish</translation>
@@ -953,6 +957,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="9174050671906956834">Chiqitdondagi fayllar 30 kundan keyin butunlay tozalab tashlanadi.</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">Qozoq</translation>
+<translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> ta fayl arxivdan chiqarildi.</translation>
 <translation id="9213073329713032541">O‘rnatish muvaffaqiyatli boshlandi.</translation>
 <translation id="9219103736887031265">Rasmlar</translation>
 <translation id="9219908252191632183">Oy</translation>
