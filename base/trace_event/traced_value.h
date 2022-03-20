@@ -12,11 +12,13 @@
 #include <string>
 #include <vector>
 
+#include "base/base_export.h"
 #include "base/strings/string_piece.h"
-#include "base/trace_event/trace_event_impl.h"
+#include "base/trace_event/trace_arguments.h"
 
 namespace base {
 
+class TraceEventMemoryOverhead;
 class Value;
 
 namespace trace_event {

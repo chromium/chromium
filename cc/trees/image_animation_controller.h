@@ -22,6 +22,10 @@
 #include "cc/tiles/tile_priority.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 
+namespace base {
+class SingleThreadTaskRunner;
+}
+
 namespace cc {
 class PaintImage;
 

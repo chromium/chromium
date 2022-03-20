@@ -4,8 +4,8 @@
 
 #include "base/trace_event/traced_value.h"
 
-#include <stddef.h>
-
+#include <cmath>
+#include <cstddef>
 #include <utility>
 
 #include "base/strings/string_util.h"
