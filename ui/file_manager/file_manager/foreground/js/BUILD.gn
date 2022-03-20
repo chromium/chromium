@@ -797,6 +797,7 @@ js_unittest("file_transfer_controller_unittest.m") {
 js_library("file_type_filters_controller") {
   deps = [
     ":directory_model",
+    "ui:a11y_announce",
     "//ui/file_manager/file_manager/common/js:metrics",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/externs:directory_change_event",
@@ -808,6 +809,7 @@ js_unittest("file_type_filters_controller_unittest.m") {
   deps = [
     ":directory_model",
     ":file_type_filters_controller",
+    "ui:a11y_announce",
     "//chrome/test/data/webui:chai_assert",
     "//ui/file_manager/file_manager/common/js:files_app_entry_types",
     "//ui/file_manager/file_manager/common/js:metrics",

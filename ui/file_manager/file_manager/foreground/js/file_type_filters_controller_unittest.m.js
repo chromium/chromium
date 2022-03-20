@@ -15,6 +15,7 @@ import {FakeEntry} from '../../externs/files_app_entry_interfaces.js';
 
 import {DirectoryModel} from './directory_model.js';
 import {FileTypeFiltersController} from './file_type_filters_controller.js';
+import {A11yAnnounce} from './ui/a11y_announce.js';
 
 /**
  * @type {!HTMLElement}
@@ -56,6 +57,9 @@ export function setUp() {
     MEDIA_VIEW_AUDIO_ROOT_LABEL: 'Audio',
     MEDIA_VIEW_IMAGES_ROOT_LABEL: 'Images',
     MEDIA_VIEW_VIDEOS_ROOT_LABEL: 'Videos',
+    RECENT_VIEW_FILTER_ON: 'on',
+    RECENT_VIEW_FILTER_OFF: 'off',
+    RECENT_VIEW_FILTER_RESET: 'reset',
   });
 
   /**
@@ -109,6 +113,10 @@ export function setUp() {
     }
   }
 
+  const mockA11y = /** @type {!A11yAnnounce} */ ({
+    speakA11yMessage: () => {},
+  });
+
   // Create FileTypeFiltersController instance with dependencies.
   container = /** @type {!HTMLInputElement} */ (document.createElement('div'));
   directoryModel = MockDirectoryModel.create();
@@ -116,8 +124,8 @@ export function setUp() {
       'Recent', VolumeManagerCommon.RootType.RECENT,
       chrome.fileManagerPrivate.SourceRestriction.ANY_SOURCE,
       chrome.fileManagerPrivate.RecentFileType.ALL);
-  fileTypeFiltersController =
-      new FileTypeFiltersController(container, directoryModel, recentEntry);
+  fileTypeFiltersController = new FileTypeFiltersController(
+      container, directoryModel, recentEntry, mockA11y);
 
   // Create a directory entry which is not Recents to simulate directory change.
   myFilesEntry =

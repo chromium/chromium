@@ -420,3 +420,39 @@ testcase.recentsFilterResetToAll = async () => {
   chrome.test.assertEq('all', focusedElement.attributes['file-type-filter']);
   await verifyCurrentEntries(appId, RECENT_ENTRY_SET);
 };
+
+/**
+ * Tests when we switch the active filter button between All and others, the
+ * correct a11y messages will be announced.
+ */
+testcase.recentsA11yMessages = async () => {
+  const appId = await setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
+  await navigateToRecent(appId, RecentFilterType.IMAGE);
+  // Checks "images filter on" a11y message is announced.
+  let a11yMessages =
+      await remoteCall.callRemoteTestUtil('getA11yAnnounces', appId, []);
+  chrome.test.assertEq(
+      'Images filter is on.', a11yMessages[a11yMessages.length - 1]);
+
+  // Clicks the "Videos" filter button to activate it.
+  await remoteCall.waitAndClickElement(appId, ['[file-type-filter="video"]']);
+  await remoteCall.waitForElement(appId, ['[file-type-filter="video"].active']);
+  // Checks "video filter on" a11y message is announced.
+  a11yMessages =
+      await remoteCall.callRemoteTestUtil('getA11yAnnounces', appId, []);
+  chrome.test.assertEq(
+      'Images filter is off. Videos filter is on.',
+      a11yMessages[a11yMessages.length - 1]);
+
+  // Clicks the active "Videos" filter button again.
+  await remoteCall.waitAndClickElement(
+      appId, ['[file-type-filter="video"].active']);
+  await remoteCall.waitForElement(appId, ['[file-type-filter="all"].active']);
+  // Checks "filter reset" a11y message is announced.
+  a11yMessages =
+      await remoteCall.callRemoteTestUtil('getA11yAnnounces', appId, []);
+  chrome.test.assertEq(
+      'Videos filter is off. Filter is reset.',
+      a11yMessages[a11yMessages.length - 1]);
+};

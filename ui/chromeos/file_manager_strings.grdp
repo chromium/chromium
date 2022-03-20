@@ -86,6 +86,15 @@
   <message name="IDS_FILE_BROWSER_MEDIA_VIEW_AUDIO_ROOT_LABEL" desc="A label for the 'Audio' root of media views.">
     Audio
   </message>
+  <message name="IDS_FILE_BROWSER_RECENT_VIEW_FILTER_ON" desc="Message read by Chromevox/screenreader when curtain filter in Recent become active.">
+    <ph name="FILTER_NAME">$1<ex>Audio</ex></ph> filter is on.
+  </message>
+  <message name="IDS_FILE_BROWSER_RECENT_VIEW_FILTER_OFF" desc="Message read by Chromevox/screenreader when curtain filter in Recent become inactive.">
+    <ph name="FILTER_NAME">$1<ex>Vidoes</ex></ph> filter is off.
+  </message>
+  <message name="IDS_FILE_BROWSER_RECENT_VIEW_FILTER_RESET" desc="Message read by Chromevox/screenreader when the filter in Recent is reset to All.">
+    Filter is reset.
+  </message>
   <message name="IDS_FILE_BROWSER_PLUGIN_VM_DIRECTORY_LABEL" desc="Parallels local directory label.">
     Windows files
   </message>

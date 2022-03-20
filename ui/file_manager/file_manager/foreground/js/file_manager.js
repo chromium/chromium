@@ -1289,7 +1289,7 @@ export class FileManager extends EventTarget {
     if (util.isRecentsFilterEnabled()) {
       this.fileTypeFiltersController_ = new FileTypeFiltersController(
           this.ui_.fileTypeFilterContainer, this.directoryModel_,
-          this.recentEntry_);
+          this.recentEntry_, /** @type {!A11yAnnounce} */ (this.ui_));
     }
 
     return directoryTreePromise;

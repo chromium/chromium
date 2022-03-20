@@ -1545,6 +1545,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Recents, /* recents.js */
     FilesAppBrowserTest,
     ::testing::Values(
+        TestCase("recentsA11yMessages").EnableFiltersInRecents(),
+        TestCase("recentsA11yMessages").EnableFiltersInRecents().FilesSwa(),
         TestCase("recentsDownloads"),
         TestCase("recentsDownloads").FilesSwa(),
         TestCase("recentsDownloads").EnableFiltersInRecents(),
