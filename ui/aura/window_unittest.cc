@@ -3671,7 +3671,8 @@ class TestTouchWindowDelegate : public TestWindowDelegate {
 };
 
 // Test for use-after-free in crbug.com/1297643.
-TEST_F(WindowTest, DeleteWindowWhenCancellingTouch) {
+// TODO(crbug.com/1308221): Test fails on linux-ubsan-vptr.
+TEST_F(WindowTest, DISABLED_DeleteWindowWhenCancellingTouch) {
   TestTouchWindowDelegate window_delegate;
   auto window = std::make_unique<Window>(&window_delegate);
   window->Init(ui::LAYER_NOT_DRAWN);
