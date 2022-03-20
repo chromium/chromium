@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Directory information should not be read in the fenced frame. promise_test: Unhandled rejection with value: object "Error: button is not defined"
-Harness: the test ran to completion.
-

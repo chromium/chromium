@@ -3458,6 +3458,11 @@ crbug.com/626703 [ Win ] external/wpt/wasm/serialization/arraybuffer/transfer.wi
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac10.12 ] external/wpt/scroll-to-text-fragment/scroll-to-text-fragment.html [ Skip Timeout ]
+crbug.com/626703 [ Mac10.12 ] external/wpt/service-workers/service-worker/same-site-cookies.https.html [ Skip Timeout ]
+crbug.com/626703 [ Mac10.12 ] external/wpt/signed-exchange/subresource/sxg-subresource-header-integrity-mismatch.tentative.html [ Timeout ]
+crbug.com/626703 [ Mac10.12 ] virtual/scalefactor200/external/wpt/css/filter-effects/backdrop-filter-clip-rect.html [ Timeout ]
+crbug.com/626703 [ Mac10.12 ] virtual/shared-storage-fenced-frame-shadow-dom/wpt_internal/shared_storage/run-url-selection-operation.https.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/html/cross-origin-embedder-policy/reporting-subresource-corp.https.html [ Skip Timeout ]
 crbug.com/626703 [ Mac10.12 ] virtual/prerender/external/wpt/speculation-rules/prerender/opt-out.html [ Skip Timeout ]
 crbug.com/626703 external/wpt/css/css-grid/subgrid/subgrid-stretch.html [ Failure ]
