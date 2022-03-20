@@ -13,7 +13,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/bitrate.h"
-#include "media/base/media_util.h"
 #include "media/base/video_frame.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -327,11 +326,8 @@ void VEAEncoder::ConfigureEncoderOnEncodingTaskRunner(const gfx::Size& size,
           base::saturated_cast<uint32_t>(bits_per_second_)),
       absl::nullopt, absl::nullopt, level_, false, storage_type,
       media::VideoEncodeAccelerator::Config::ContentType::kCamera);
-  if (!video_encoder_ ||
-      !video_encoder_->Initialize(config, this,
-                                  std::make_unique<media::NullMediaLog>())) {
+  if (!video_encoder_ || !video_encoder_->Initialize(config, this))
     NotifyError(media::VideoEncodeAccelerator::kPlatformFailureError);
-  }
 }
 
 void VEAEncoder::DestroyOnEncodingTaskRunner(

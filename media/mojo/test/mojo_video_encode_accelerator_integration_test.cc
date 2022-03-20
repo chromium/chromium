@@ -14,7 +14,6 @@
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_preferences.h"
 #include "media/base/limits.h"
-#include "media/base/media_util.h"
 #include "media/mojo/clients/mojo_video_encode_accelerator.h"
 #include "media/mojo/mojom/video_encode_accelerator.mojom.h"
 #include "media/mojo/services/mojo_video_encode_accelerator_service.h"
@@ -118,8 +117,7 @@ class MojoVideoEncodeAcceleratorIntegrationTest : public ::testing::Test {
     const VideoEncodeAccelerator::Config config(
         PIXEL_FORMAT_I420, kInputVisibleSize, kValidOutputProfile,
         kInitialBitrate);
-    EXPECT_TRUE(mojo_vea()->Initialize(
-        config, mock_vea_client, std::make_unique<media::NullMediaLog>()));
+    EXPECT_TRUE(mojo_vea()->Initialize(config, mock_vea_client));
     base::RunLoop().RunUntilIdle();
   }
 
@@ -152,8 +150,7 @@ TEST_F(MojoVideoEncodeAcceleratorIntegrationTest,
   const VideoEncodeAccelerator::Config config(
       PIXEL_FORMAT_I420, kInputVisibleSize, kValidOutputProfile,
       kInitialBitrate);
-  EXPECT_FALSE(mojo_vea()->Initialize(config, invalid_client,
-                                      std::make_unique<media::NullMediaLog>()));
+  EXPECT_FALSE(mojo_vea()->Initialize(config, invalid_client));
   base::RunLoop().RunUntilIdle();
 }
 
@@ -168,8 +165,7 @@ TEST_F(MojoVideoEncodeAcceleratorIntegrationTest,
   const VideoEncodeAccelerator::Config config(
       PIXEL_FORMAT_I420, kInvalidInputVisibleSize, kValidOutputProfile,
       kInitialBitrate);
-  EXPECT_FALSE(mojo_vea()->Initialize(config, mock_vea_client.get(),
-                                      std::make_unique<media::NullMediaLog>()));
+  EXPECT_FALSE(mojo_vea()->Initialize(config, mock_vea_client.get()));
   base::RunLoop().RunUntilIdle();
 }
 // This test verifies that Initialize() fails when called with an invalid codec
@@ -184,8 +180,7 @@ TEST_F(MojoVideoEncodeAcceleratorIntegrationTest,
   const VideoEncodeAccelerator::Config config(
       PIXEL_FORMAT_I420, kInputVisibleSize, kInvalidOutputProfile,
       kInitialBitrate);
-  EXPECT_FALSE(mojo_vea()->Initialize(config, mock_vea_client.get(),
-                                      std::make_unique<media::NullMediaLog>()));
+  EXPECT_FALSE(mojo_vea()->Initialize(config, mock_vea_client.get()));
   base::RunLoop().RunUntilIdle();
 }
 

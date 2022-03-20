@@ -18,7 +18,6 @@
 #include "media/base/bitrate.h"
 #include "media/base/color_plane_layout.h"
 #include "media/base/format_utils.h"
-#include "media/base/media_log.h"
 #include "media/base/video_types.h"
 #include "media/gpu/buffer_validation.h"
 #include "media/gpu/gpu_video_encode_accelerator_factory.h"
