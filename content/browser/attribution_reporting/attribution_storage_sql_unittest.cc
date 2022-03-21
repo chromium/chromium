@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
@@ -22,6 +23,7 @@
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
+#include "sql/statement.h"
 #include "sql/test/scoped_error_expecter.h"
 #include "sql/test/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -925,6 +927,41 @@ TEST_F(AttributionStorageSqlTest,
 
   CloseDatabase();
   ExpectImpressionRows(1u);
+}
+
+TEST_F(AttributionStorageSqlTest,
+       InsecureImpressionOrigin_FailsDeserialization) {
+  static constexpr const char* kUpdateSqls[] = {
+      "UPDATE sources SET source_origin=?",
+      "UPDATE sources SET destination_origin=?",
+      "UPDATE sources SET reporting_origin=?",
+  };
+
+  for (const char* update_sql : kUpdateSqls) {
+    OpenDatabase();
+
+    SourceBuilder source_builder;
+    storage()->StoreSource(
+        source_builder.SetExpiry(base::Milliseconds(3)).Build());
+    ASSERT_THAT(storage()->GetActiveSources(), SizeIs(1)) << update_sql;
+
+    CloseDatabase();
+
+    {
+      sql::Database raw_db;
+      ASSERT_TRUE(raw_db.Open(db_path())) << update_sql;
+
+      sql::Statement statement(raw_db.GetUniqueStatement(update_sql));
+      statement.BindString(0, "http://insecure.test");
+      ASSERT_TRUE(statement.Run()) << update_sql;
+    }
+
+    OpenDatabase();
+    ASSERT_THAT(storage()->GetActiveSources(), IsEmpty()) << update_sql;
+    storage()->ClearData(base::Time::Min(), base::Time::Max(),
+                         base::NullCallback());
+    CloseDatabase();
+  }
 }
 
 }  // namespace content

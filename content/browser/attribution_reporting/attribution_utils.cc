@@ -13,6 +13,8 @@
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
+#include "content/common/url_utils.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 
 namespace content {
 
@@ -176,6 +178,11 @@ bool AttributionFiltersMatch(const AttributionFilterData& source_filter_data,
   }
 
   return true;
+}
+
+bool IsSourceOriginPotentiallyTrustworthy(const url::Origin& origin) {
+  return IsAndroidAppOrigin(origin) ||
+         network::IsOriginPotentiallyTrustworthy(origin);
 }
 
 }  // namespace content

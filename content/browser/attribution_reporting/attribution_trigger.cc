@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 
 namespace content {
 
@@ -36,8 +37,8 @@ AttributionTrigger::AttributionTrigger(
       debug_key_(debug_key),
       event_triggers_(std::move(event_triggers)),
       aggregatable_trigger_(std::move(aggregatable_trigger)) {
-  DCHECK(!reporting_origin_.opaque());
-  DCHECK(!destination_origin_.opaque());
+  DCHECK(network::IsOriginPotentiallyTrustworthy(reporting_origin_));
+  DCHECK(network::IsOriginPotentiallyTrustworthy(destination_origin_));
 }
 
 AttributionTrigger::AttributionTrigger(

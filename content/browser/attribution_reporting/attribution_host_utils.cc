@@ -12,9 +12,9 @@
 #include "content/browser/attribution_reporting/attribution_aggregatable_source.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
+#include "content/browser/attribution_reporting/attribution_utils.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/storable_source.h"
-#include "content/common/url_utils.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "url/gurl.h"
@@ -23,15 +23,6 @@
 namespace content {
 
 namespace attribution_host_utils {
-
-namespace {
-
-bool IsSourceOriginPotentiallyTrustworthy(const url::Origin& origin) {
-  return IsAndroidAppOrigin(origin) ||
-         network::IsOriginPotentiallyTrustworthy(origin);
-}
-
-}  // namespace
 
 void VerifyAndStoreImpression(AttributionSourceType source_type,
                               const url::Origin& impression_origin,
