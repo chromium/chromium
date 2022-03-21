@@ -160,14 +160,10 @@ static CompositingReasons DirectReasonsForSVGChildPaintProperties(
   return reasons;
 }
 
-static bool RequiresCompositingForAffectedByOuterViewportBoundsDelta(
+static CompositingReasons CompositingReasonsForViewportScrollEffect(
     const LayoutObject& layout_object) {
   if (!layout_object.IsBox())
-    return false;
-
-  if (layout_object.StyleRef().GetPosition() != EPosition::kFixed ||
-      !layout_object.StyleRef().IsFixedToBottom())
-    return false;
+    return CompositingReason::kNone;
 
   // Objects inside an iframe that's the root scroller should get the same
   // "pushed by top controls" behavior as for the main frame.
@@ -176,10 +172,24 @@ static bool RequiresCompositingForAffectedByOuterViewportBoundsDelta(
   if (!layout_object.GetFrame()->IsMainFrame() &&
       layout_object.GetFrame()->GetDocument() !=
           controller.GlobalRootScroller())
-    return false;
+    return CompositingReason::kNone;
+
+  CompositingReasons reasons = CompositingReason::kNone;
+  if (layout_object.StyleRef().GetPosition() == EPosition::kFixed) {
+    // This ensures that the compositor TransformNode gets created for fixed
+    // elements.
+    // TODO (arakeri): Add a new CompositingReason for fixed-position elements
+    // that are not fixed to the viewport and plumb that to cc::TransformNode.
+    if (RuntimeEnabledFeatures::FixedElementsDontOverscrollEnabled())
+      reasons |= CompositingReason::kFixedPosition;
+
+    if (layout_object.StyleRef().IsFixedToBottom())
+      reasons |= CompositingReason::kAffectedByOuterViewportBoundsDelta;
+  }
 
   // It's affected by viewport only if the container is the LayoutView.
-  return IsA<LayoutView>(layout_object.Container());
+  return IsA<LayoutView>(layout_object.Container()) ? reasons
+                                                    : CompositingReason::kNone;
 }
 
 CompositingReasons
@@ -224,8 +234,7 @@ CompositingReasonFinder::DirectReasonsForPaintPropertiesExceptScrolling(
 
   reasons |= CompositingReasonsForScrollDependentPosition(*layer);
 
-  if (RequiresCompositingForAffectedByOuterViewportBoundsDelta(object))
-    reasons |= CompositingReason::kAffectedByOuterViewportBoundsDelta;
+  reasons |= CompositingReasonsForViewportScrollEffect(object);
 
   if (style.HasBackdropFilter())
     reasons |= CompositingReason::kBackdropFilter;
