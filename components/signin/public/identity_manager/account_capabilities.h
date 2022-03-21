@@ -5,10 +5,10 @@
 #ifndef COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_ACCOUNT_CAPABILITIES_H_
 #define COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_ACCOUNT_CAPABILITIES_H_
 
-#include <map>
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "build/build_config.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -75,7 +75,7 @@ class AccountCapabilities {
   // Returns the list of account capability service names supported in Chrome.
   static const std::vector<std::string>& GetSupportedAccountCapabilityNames();
 
-  std::map<std::string, bool> capabilities_map_;
+  base::flat_map<std::string, bool> capabilities_map_;
 };
 
 #endif  // COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_ACCOUNT_CAPABILITIES_H_
