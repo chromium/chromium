@@ -185,6 +185,7 @@ public class IdentityManagerIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1294295")
     public void testUpdateAccountListTwoAccountsThenRemoveAll() {
         // Add accounts.
         mAccountManagerTestRule.addAccountAndWaitForSeeding(TEST_ACCOUNT1);
