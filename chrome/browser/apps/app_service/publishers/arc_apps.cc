@@ -395,7 +395,7 @@ arc::mojom::ActionType GetArcActionType(const std::string& action) {
 }
 
 // Constructs an OpenUrlsRequest to be passed to
-// FileSystemInstance.DEPRECATED_OpenUrlsWithPermission.
+// FileSystemInstance.OpenUrlsWithPermissionAndWindowInfo.
 arc::mojom::OpenUrlsRequestPtr ConstructOpenUrlsRequest(
     const apps::mojom::IntentPtr& intent,
     const arc::mojom::ActivityNamePtr& activity,
@@ -442,22 +442,13 @@ void OnContentUrlResolved(const base::FilePath& file_path,
   arc::mojom::FileSystemInstance* arc_file_system = ARC_GET_INSTANCE_FOR_METHOD(
       arc_service_manager->arc_bridge_service()->file_system(),
       OpenUrlsWithPermissionAndWindowInfo);
-  if (arc_file_system) {
-    arc_file_system->OpenUrlsWithPermissionAndWindowInfo(
-        ConstructOpenUrlsRequest(intent, activity, content_urls),
-        apps::MakeArcWindowInfo(std::move(window_info)), base::DoNothing());
-  } else {
-    arc_file_system = ARC_GET_INSTANCE_FOR_METHOD(
-        arc_service_manager->arc_bridge_service()->file_system(),
-        DEPRECATED_OpenUrlsWithPermission);
-    if (!arc_file_system) {
-      return;
-    }
-
-    arc_file_system->DEPRECATED_OpenUrlsWithPermission(
-        ConstructOpenUrlsRequest(intent, activity, content_urls),
-        base::DoNothing());
+  if (!arc_file_system) {
+    LOG(ERROR) << "Failed to open urls, ARC File System not found";
+    return;
   }
+  arc_file_system->OpenUrlsWithPermissionAndWindowInfo(
+      ConstructOpenUrlsRequest(intent, activity, content_urls),
+      apps::MakeArcWindowInfo(std::move(window_info)), base::DoNothing());
 
   ::full_restore::SaveAppLaunchInfo(
       file_path,

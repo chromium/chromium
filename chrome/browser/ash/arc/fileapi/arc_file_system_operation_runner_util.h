@@ -17,10 +17,6 @@ namespace arc {
 namespace file_system_operation_runner_util {
 
 using GetFileSizeCallback = ArcFileSystemOperationRunner::GetFileSizeCallback;
-using OpenFileToReadCallback =
-    ArcFileSystemOperationRunner::OpenFileToReadCallback;
-using OpenFileToWriteCallback =
-    ArcFileSystemOperationRunner::OpenFileToWriteCallback;
 using OpenFileSessionToWriteCallback =
     ArcFileSystemOperationRunner::OpenFileSessionToWriteCallback;
 using OpenFileSessionToReadCallback =
@@ -41,13 +37,10 @@ enum class CloseStatus : int {
 // These functions must be called on the IO thread. Callbacks and observers will
 // be called on the IO thread.
 void GetFileSizeOnIOThread(const GURL& url, GetFileSizeCallback callback);
-void OpenFileToReadOnIOThread(const GURL& url, OpenFileToReadCallback callback);
-void OpenFileToWriteOnIOThread(const GURL& url,
-                               OpenFileToWriteCallback callback);
 void OpenFileSessionToWriteOnIOThread(const GURL& url,
                                       OpenFileSessionToWriteCallback callback);
 void OpenFileSessionToReadOnIOThread(const GURL& url,
-                                     OpenFileSessionToWriteCallback callback);
+                                     OpenFileSessionToReadCallback callback);
 
 // Calls to OpenFileSession* must be followed up with a call to CloseFileSession
 // once the file is no longer in use to close the Android file descriptor.

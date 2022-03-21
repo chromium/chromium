@@ -49,32 +49,6 @@ void GetFileSizeOnUIThread(const GURL& url, GetFileSizeCallback callback) {
   runner->GetFileSize(url, std::move(callback));
 }
 
-void OpenFileToReadOnUIThread(const GURL& url,
-                              OpenFileToReadCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  auto* runner = GetArcFileSystemOperationRunner();
-  if (!runner) {
-    DLOG(ERROR) << "ArcFileSystemOperationRunner unavailable. "
-                << "File system operations are dropped.";
-    std::move(callback).Run(mojo::ScopedHandle());
-    return;
-  }
-  runner->OpenFileToRead(url, std::move(callback));
-}
-
-void OpenFileToWriteOnUIThread(const GURL& url,
-                               OpenFileToWriteCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  auto* runner = GetArcFileSystemOperationRunner();
-  if (!runner) {
-    DLOG(ERROR) << "ArcFileSystemOperationRunner unavailable. "
-                << "File system operations are dropped.";
-    std::move(callback).Run(mojo::ScopedHandle());
-    return;
-  }
-  runner->OpenFileToWrite(url, std::move(callback));
-}
-
 void OpenFileSessionToWriteOnUIThread(const GURL& url,
                                       OpenFileSessionToWriteCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -127,26 +101,6 @@ void GetFileSizeOnIOThread(const GURL& url, GetFileSizeCallback callback) {
       FROM_HERE, base::BindOnce(&GetFileSizeOnUIThread, url,
                                 base::BindOnce(&PostToIOThread<int64_t>,
                                                std::move(callback))));
-}
-
-void OpenFileToReadOnIOThread(const GURL& url,
-                              OpenFileToReadCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&OpenFileToReadOnUIThread, url,
-                     base::BindOnce(&PostToIOThread<mojo::ScopedHandle>,
-                                    std::move(callback))));
-}
-
-void OpenFileToWriteOnIOThread(const GURL& url,
-                               OpenFileToWriteCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&OpenFileToWriteOnUIThread, url,
-                     base::BindOnce(&PostToIOThread<mojo::ScopedHandle>,
-                                    std::move(callback))));
 }
 
 void OpenFileSessionToWriteOnIOThread(const GURL& url,

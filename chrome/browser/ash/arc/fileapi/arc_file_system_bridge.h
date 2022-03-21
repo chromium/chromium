@@ -41,6 +41,8 @@ class ArcFileSystemBridge
       public ConnectionObserver<mojom::FileSystemInstance>,
       public mojom::FileSystemHost {
  public:
+  using OpenFileToReadCallback = mojom::FileSystemHost::OpenFileToReadCallback;
+
   class Observer {
    public:
     virtual void OnDocumentChanged(int64_t watcher_id,

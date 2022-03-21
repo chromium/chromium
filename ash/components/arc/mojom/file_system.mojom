@@ -448,12 +448,6 @@ interface FileSystemInstance {
   // Establishes full-duplex communication with the host.
   [MinVersion=7] Init@10(pending_remote<FileSystemHost> host_remote) => ();
 
-  // DEPRECATED. Use OpenFileSessionToRead() instead.
-  [MinVersion=1] DEPRECATED_OpenFileToRead@2(string url) => (handle? fd);
-
-  // DEPRECATED. Use OpenFileSessionToWrite() instead.
-  [MinVersion=13] DEPRECATED_OpenFileToWrite@18(string url) => (handle? fd);
-
   // Asks the ContentResolver to get a FD to read the thumbnail of a
   // DocumentsProvider file specified by the URL. The thumbnail should be close
   // in size (width and height) but not necessarily the same as |size_hint|.

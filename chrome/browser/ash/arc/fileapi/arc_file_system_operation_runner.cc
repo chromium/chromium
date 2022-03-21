@@ -155,27 +155,6 @@ void ArcFileSystemOperationRunner::GetMimeType(const GURL& url,
   file_system_instance->GetMimeType(url.spec(), std::move(callback));
 }
 
-void ArcFileSystemOperationRunner::OpenFileToRead(
-    const GURL& url,
-    OpenFileToReadCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (should_defer_) {
-    deferred_operations_.emplace_back(base::BindOnce(
-        &ArcFileSystemOperationRunner::OpenFileToRead,
-        weak_ptr_factory_.GetWeakPtr(), url, std::move(callback)));
-    return;
-  }
-  auto* file_system_instance = ARC_GET_INSTANCE_FOR_METHOD(
-      arc_bridge_service_->file_system(), DEPRECATED_OpenFileToRead);
-  if (!file_system_instance) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), mojo::ScopedHandle()));
-    return;
-  }
-  file_system_instance->DEPRECATED_OpenFileToRead(url.spec(),
-                                                  std::move(callback));
-}
-
 void ArcFileSystemOperationRunner::OpenThumbnail(
     const GURL& url,
     const gfx::Size& size,
@@ -195,27 +174,6 @@ void ArcFileSystemOperationRunner::OpenThumbnail(
     return;
   }
   file_system_instance->OpenThumbnail(url.spec(), size, std::move(callback));
-}
-
-void ArcFileSystemOperationRunner::OpenFileToWrite(
-    const GURL& url,
-    OpenFileToWriteCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (should_defer_) {
-    deferred_operations_.emplace_back(base::BindOnce(
-        &ArcFileSystemOperationRunner::OpenFileToWrite,
-        weak_ptr_factory_.GetWeakPtr(), url, std::move(callback)));
-    return;
-  }
-  auto* file_system_instance = ARC_GET_INSTANCE_FOR_METHOD(
-      arc_bridge_service_->file_system(), DEPRECATED_OpenFileToWrite);
-  if (!file_system_instance) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), mojo::ScopedHandle()));
-    return;
-  }
-  file_system_instance->DEPRECATED_OpenFileToWrite(url.spec(),
-                                                   std::move(callback));
 }
 
 void ArcFileSystemOperationRunner::CloseFileSession(

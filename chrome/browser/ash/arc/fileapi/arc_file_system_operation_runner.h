@@ -68,12 +68,8 @@ class ArcFileSystemOperationRunner
  public:
   using GetFileSizeCallback = mojom::FileSystemInstance::GetFileSizeCallback;
   using GetMimeTypeCallback = mojom::FileSystemInstance::GetMimeTypeCallback;
-  using OpenFileToReadCallback =
-      mojom::FileSystemInstance::DEPRECATED_OpenFileToReadCallback;
   using OpenThumbnailCallback =
       mojom::FileSystemInstance::OpenThumbnailCallback;
-  using OpenFileToWriteCallback =
-      mojom::FileSystemInstance::DEPRECATED_OpenFileToWriteCallback;
   using OpenFileSessionToWriteCallback =
       mojom::FileSystemInstance::OpenFileSessionToWriteCallback;
   using OpenFileSessionToReadCallback =
@@ -142,13 +138,9 @@ class ArcFileSystemOperationRunner
   // Runs file system operations. See file_system.mojom for documentation.
   void GetFileSize(const GURL& url, GetFileSizeCallback callback);
   void GetMimeType(const GURL& url, GetMimeTypeCallback callback);
-  // TODO(b/220547241): Remove DEPRECATED function from file_system.mojom.
-  void OpenFileToRead(const GURL& url, OpenFileToReadCallback callback);
   void OpenThumbnail(const GURL& url,
                      const gfx::Size& size,
                      OpenThumbnailCallback callback);
-  // TODO(b/220547241): Remove DEPRECATED function from file_system.mojom.
-  void OpenFileToWrite(const GURL& url, OpenFileToWriteCallback callback);
   void CloseFileSession(const std::string& session_id,
                         const std::string& error_message);
   void OpenFileSessionToWrite(const GURL& url,
