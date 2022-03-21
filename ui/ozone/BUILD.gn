@@ -62,8 +62,6 @@ if (ozone_platform_x11) {
   ozone_platforms += [ "x11" ]
   ozone_platform_deps += [ "platform/x11" ]
   ozone_platform_ui_test_support_deps += [ "platform/x11:test_support" ]
-  ozone_platform_interactive_ui_tests_sources +=
-      [ "platform/x11:interactive_uitests" ]
 }
 
 if (ozone_platform_scenic) {

@@ -22,7 +22,6 @@
 #include "ui/base/x/x11_cursor.h"
 #include "ui/base/x/x11_os_exchange_data_provider.h"
 #include "ui/base/x/x11_pointer_grab.h"
-#include "ui/base/x/x11_topmost_window_finder.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/display/screen.h"
 #include "ui/events/devices/x11/touch_factory_x11.h"
@@ -41,7 +40,6 @@
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_util.h"
 #include "ui/ozone/platform/x11/hit_test_x11.h"
-#include "ui/ozone/platform/x11/x11_topmost_window_finder.h"
 #include "ui/ozone/platform/x11/x11_window_manager.h"
 #include "ui/platform_window/common/platform_window_defaults.h"
 #include "ui/platform_window/extensions/workspace_extension_delegate.h"
@@ -1154,17 +1152,6 @@ gfx::Rect X11Window::GetXRootWindowOuterBounds() const {
   return GetOuterBounds();
 }
 
-bool X11Window::ContainsPointInXRegion(const gfx::Point& point) const {
-  if (!shape())
-    return true;
-
-  for (const auto& rect : *shape()) {
-    if (gfx::Rect(rect.x, rect.y, rect.width, rect.height).Contains(point))
-      return true;
-  }
-  return false;
-}
-
 void X11Window::LowerXWindow() {
   ui::LowerWindow(xwindow_);
 }
@@ -1469,13 +1456,9 @@ void X11Window::CancelDrag() {
   QuitDragLoop();
 }
 
-std::unique_ptr<XTopmostWindowFinder> X11Window::CreateWindowFinder() {
+absl::optional<gfx::AcceleratedWidget> X11Window::GetDragWidget() {
   DCHECK(drag_handler_delegate_);
-  std::set<gfx::AcceleratedWidget> ignore;
-  auto drag_widget = drag_handler_delegate_->GetDragWidget();
-  if (drag_widget)
-    ignore.insert(*drag_widget);
-  return std::make_unique<X11TopmostWindowFinder>(ignore);
+  return drag_handler_delegate_->GetDragWidget();
 }
 
 int X11Window::UpdateDrag(const gfx::Point& screen_point) {

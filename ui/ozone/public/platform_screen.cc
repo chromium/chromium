@@ -6,6 +6,7 @@
 
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "ui/gfx/geometry/point.h"
 
 namespace ui {
 
@@ -17,6 +18,11 @@ gfx::AcceleratedWidget PlatformScreen::GetLocalProcessWidgetAtPoint(
     const std::set<gfx::AcceleratedWidget>& ignore) const {
   NOTIMPLEMENTED_LOG_ONCE();
   return gfx::kNullAcceleratedWidget;
+}
+
+bool PlatformScreen::IsAcceleratedWidgetUnderCursor(
+    gfx::AcceleratedWidget widget) const {
+  return GetAcceleratedWidgetAtScreenPoint(GetCursorScreenPoint()) == widget;
 }
 
 std::string PlatformScreen::GetCurrentWorkspace() {

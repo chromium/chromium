@@ -425,6 +425,9 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
       final;
   void CancelPresentationTimeRequestForHostAndDelegate() final;
 
+  // May be overridden in tests.
+  virtual bool ShouldSkipCursorUpdate() const;
+
  private:
   friend class DelegatedFrameHostClientAura;
   friend class FakeRenderWidgetHostViewAura;

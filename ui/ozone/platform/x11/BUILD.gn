@@ -42,8 +42,6 @@ source_set("x11") {
     "x11_screen_ozone.h",
     "x11_surface_factory.cc",
     "x11_surface_factory.h",
-    "x11_topmost_window_finder.cc",
-    "x11_topmost_window_finder.h",
     "x11_user_input_monitor.cc",
     "x11_user_input_monitor.h",
     "x11_utils.cc",
@@ -191,26 +189,5 @@ source_set("test_support") {
   deps = [
     "//ui/base/x",
     "//ui/base/x:test_support",
-  ]
-}
-
-source_set("interactive_uitests") {
-  testonly = true
-  sources = [ "x11_topmost_window_finder_interactive_uitest.cc" ]
-
-  deps = [
-    ":x11",
-    "//base",
-    "//base/test:test_support",
-    "//testing/gmock",
-    "//testing/gtest",
-    "//ui/base/x",
-    "//ui/base/x:test_support",
-    "//ui/events/platform/x11",
-    "//ui/gfx",
-    "//ui/gfx/x",
-    "//ui/ozone",
-    "//ui/ozone:platform",
-    "//ui/platform_window",
   ]
 }

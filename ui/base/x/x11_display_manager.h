@@ -86,10 +86,6 @@ class COMPONENT_EXPORT(UI_BASE_X) XDisplayManager
   // XRandR version. MAJOR * 100 + MINOR. Zero if no xrandr is present.
   const int xrandr_version_;
 
-  // The base of the event numbers used to represent XRandr events used in
-  // decoding events regarding output add/remove.
-  int xrandr_event_base_ = 0;
-
   // The task which fetches/updates display list info asynchronously.
   base::CancelableOnceClosure update_task_;
 

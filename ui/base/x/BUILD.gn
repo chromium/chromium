@@ -48,8 +48,6 @@ component("x") {
     "x11_shm_image_pool.h",
     "x11_software_bitmap_presenter.cc",
     "x11_software_bitmap_presenter.h",
-    "x11_topmost_window_finder.cc",
-    "x11_topmost_window_finder.h",
     "x11_user_input_monitor.cc",
     "x11_user_input_monitor.h",
     "x11_util.cc",

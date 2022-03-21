@@ -282,6 +282,8 @@ class FakeRenderWidgetHostViewAura : public RenderWidgetHostViewAura {
         metadata);
   }
 
+  bool ShouldSkipCursorUpdate() const override { return false; }
+
   gfx::Size last_frame_size_;
   raw_ptr<FakeWindowEventDispatcher> dispatcher_;
 };

@@ -68,6 +68,9 @@ class COMPONENT_EXPORT(OZONE_BASE) PlatformScreen {
   // TODO(rjkroege): Verify these semantics.
   virtual gfx::Point GetCursorScreenPoint() const = 0;
 
+  virtual bool IsAcceleratedWidgetUnderCursor(
+      gfx::AcceleratedWidget widget) const;
+
   virtual gfx::AcceleratedWidget GetAcceleratedWidgetAtScreenPoint(
       const gfx::Point& point) const = 0;
 

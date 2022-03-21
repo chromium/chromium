@@ -33,10 +33,6 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) X11Extension {
   // borders provided by the window manager (if any).
   virtual gfx::Rect GetXRootWindowOuterBounds() const = 0;
 
-  // Says if the X11 Root Window contains the point within its set shape. If
-  // shape is not set, returns true.
-  virtual bool ContainsPointInXRegion(const gfx::Point& point) const = 0;
-
   // Asks X11 to lower the Xwindow down the stack so that it does not obscure
   // any sibling windows.
   virtual void LowerXWindow() = 0;

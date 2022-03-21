@@ -4,6 +4,7 @@
 
 #include "ui/base/x/x11_drag_drop_client.h"
 
+#include "base/containers/flat_set.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -15,6 +16,7 @@
 #include "ui/base/x/x11_util.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/x/connection.h"
+#include "ui/gfx/x/window_cache.h"
 #include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_util.h"
@@ -597,8 +599,10 @@ x11::ClientMessageEvent XDragDropClient::PrepareXdndClientMessage(
 }
 
 x11::Window XDragDropClient::FindWindowFor(const gfx::Point& screen_point) {
-  auto finder = delegate_->CreateWindowFinder();
-  x11::Window target = finder->FindWindowAt(screen_point);
+  base::flat_set<x11::Window> ignore;
+  if (auto dragged_window = delegate_->GetDragWidget())
+    ignore.insert(static_cast<x11::Window>(*dragged_window));
+  auto target = x11::GetWindowAtPoint(screen_point, &ignore);
 
   if (target == x11::Window::None)
     return x11::Window::None;

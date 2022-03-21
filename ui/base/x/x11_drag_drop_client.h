@@ -12,8 +12,8 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/x/selection_utils.h"
 #include "ui/base/x/x11_drag_context.h"
-#include "ui/base/x/x11_topmost_window_finder.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/x/xproto.h"
 
 namespace ui {
@@ -39,8 +39,9 @@ class COMPONENT_EXPORT(UI_BASE_X) XDragDropClient {
   // Handlers and callbacks that should be implemented at the consumer side.
   class Delegate {
    public:
-    // Creates the window finder.
-    virtual std::unique_ptr<XTopmostWindowFinder> CreateWindowFinder() = 0;
+    // Get the window being dragged. This window should be ignored when finding
+    // the topmost window.
+    virtual absl::optional<gfx::AcceleratedWidget> GetDragWidget() = 0;
 
     // Updates the drag status by the new position. Returns the drag operations
     // possible at that position.

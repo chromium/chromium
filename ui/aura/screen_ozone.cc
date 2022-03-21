@@ -39,7 +39,9 @@ gfx::Point ScreenOzone::GetCursorScreenPoint() {
 }
 
 bool ScreenOzone::IsWindowUnderCursor(gfx::NativeWindow window) {
-  return GetWindowAtScreenPoint(GetCursorScreenPoint()) == window;
+  DCHECK(platform_screen_);
+  gfx::AcceleratedWidget widget = GetAcceleratedWidgetForWindow(window);
+  return platform_screen_->IsAcceleratedWidgetUnderCursor(widget);
 }
 
 gfx::NativeWindow ScreenOzone::GetWindowAtScreenPoint(const gfx::Point& point) {

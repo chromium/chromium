@@ -87,7 +87,6 @@ void X11WindowManager::RemoveWindow(X11Window* window) {
 }
 
 X11Window* X11WindowManager::GetWindow(gfx::AcceleratedWidget widget) const {
-  DCHECK_NE(gfx::kNullAcceleratedWidget, widget);
   auto it = windows_.find(widget);
   return it != windows_.end() ? it->second : nullptr;
 }
@@ -98,13 +97,6 @@ void X11WindowManager::MouseOnWindow(X11Window* window) {
 
   window_mouse_currently_on_ = window;
   window->OnMouseEnter();
-}
-
-std::vector<X11Window*> X11WindowManager::GetAllOpenWindows() const {
-  std::vector<X11Window*> all_windows;
-  for (const auto& item : windows_)
-    all_windows.push_back(item.second);
-  return all_windows;
 }
 
 }  // namespace ui

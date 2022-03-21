@@ -11,6 +11,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/circular_deque.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
@@ -20,6 +21,10 @@
 #include "ui/gfx/x/xproto.h"
 
 namespace x11 {
+
+COMPONENT_EXPORT(X11)
+Window GetWindowAtPoint(const gfx::Point& point_px,
+                        const base::flat_set<Window>* ignore = nullptr);
 
 class Connection;
 class XScopedEventSelector;
@@ -68,14 +73,25 @@ class COMPONENT_EXPORT(X11) WindowCache : public EventObserver {
 
   static WindowCache* instance() { return instance_; }
 
-  WindowCache(Connection* connection, Window root);
+  // If `track_events` is true, the WindowCache will keep the cache state synced
+  // with the server's state over time. It may be set to false if the cache is
+  // short-lived, if only a single GetWindowAtPoint call is made.
+  WindowCache(Connection* connection, Window root, bool track_events);
   WindowCache(const WindowCache&) = delete;
   WindowCache& operator=(const WindowCache&) = delete;
   ~WindowCache() override;
 
   // Returns the window at the specified point or Window::None if no match could
   // be found. `point_px` is in coordinates of the parent of `window`.
-  Window GetWindowAtPoint(gfx::Point point_px, Window window);
+  Window GetWindowAtPoint(gfx::Point point_px,
+                          Window window,
+                          const base::flat_set<Window>* ignore = nullptr);
+
+  // Returns true if the cache is fully built.
+  bool Ready();
+
+  // Blocks until all outstanding requests are processed.
+  void WaitUntilReady();
 
   void SyncForTest();
 
@@ -132,6 +148,7 @@ class COMPONENT_EXPORT(X11) WindowCache : public EventObserver {
 
   Connection* const connection_;
   const Window root_;
+  const bool track_events_;
   const Atom gtk_frame_extents_;
   std::unique_ptr<XScopedEventSelector> root_events_;
 

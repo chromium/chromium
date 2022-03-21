@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/cancelable_callback.h"
+#include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/base/x/x11_desktop_window_move_client.h"
@@ -62,7 +63,6 @@ class X11Window : public PlatformWindow,
   virtual void Initialize(PlatformWindowInitProperties properties);
 
   // X11WindowManager calls this.
-  // XWindow override:
   void OnXWindowLostCapture();
 
   void OnMouseEnter();
@@ -70,6 +70,8 @@ class X11Window : public PlatformWindow,
   gfx::AcceleratedWidget GetWidget() const;
   gfx::Rect GetOuterBounds() const;
   void SetTransientWindow(x11::Window window);
+
+  bool has_pointer() const { return has_pointer_; }
 
   // PlatformWindow:
   void Show(bool inactive) override;
@@ -128,7 +130,6 @@ class X11Window : public PlatformWindow,
   bool IsWmTiling() const override;
   void OnCompleteSwapAfterResize() override;
   gfx::Rect GetXRootWindowOuterBounds() const override;
-  bool ContainsPointInXRegion(const gfx::Point& point) const override;
   void LowerXWindow() override;
   void SetOverrideRedirect(bool override_redirect) override;
   bool CanResetOverrideRedirect() const override;
@@ -186,7 +187,7 @@ class X11Window : public PlatformWindow,
   void CancelDrag() override;
 
   // XDragDropClient::Delegate
-  std::unique_ptr<XTopmostWindowFinder> CreateWindowFinder() override;
+  absl::optional<gfx::AcceleratedWidget> GetDragWidget() override;
   int UpdateDrag(const gfx::Point& screen_point) override;
   void UpdateCursor(mojom::DragOperation negotiated_operation) override;
   void OnBeginForeignDrag(x11::Window window) override;

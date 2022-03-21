@@ -199,17 +199,6 @@ COMPONENT_EXPORT(UI_BASE_X)
 void SetHideTitlebarWhenMaximizedProperty(x11::Window window,
                                           HideTitlebarWhenMaximized property);
 
-// Returns true if |window| is visible.
-COMPONENT_EXPORT(UI_BASE_X) bool IsWindowVisible(x11::Window window);
-
-// Returns true if |window| contains the point |screen_loc|.
-COMPONENT_EXPORT(UI_BASE_X)
-bool WindowContainsPoint(x11::Window window, gfx::Point screen_loc);
-
-// Return true if |window| has any property with |property_name|.
-COMPONENT_EXPORT(UI_BASE_X)
-bool PropertyExists(x11::Window window, x11::Atom property);
-
 // Returns the raw bytes from a property with minimal
 // interpretation. |out_data| should be freed by XFree() after use.
 COMPONENT_EXPORT(UI_BASE_X)

@@ -34,8 +34,6 @@ XDisplayManager::~XDisplayManager() = default;
 void XDisplayManager::Init() {
   if (IsXrandrAvailable()) {
     auto& randr = connection_->randr();
-    xrandr_event_base_ = randr.first_event();
-
     randr.SelectInput(
         {x_root_window_, x11::RandR::NotifyMask::ScreenChange |
                              x11::RandR::NotifyMask::OutputChange |

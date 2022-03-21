@@ -20,7 +20,7 @@ class WindowCacheTest : public testing::Test {
  protected:
   void ResetCache() {
     cache_.reset();
-    cache_ = std::make_unique<WindowCache>(connection_, root_);
+    cache_ = std::make_unique<WindowCache>(connection_, root_, true);
     cache_->SyncForTest();
   }
 

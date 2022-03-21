@@ -133,58 +133,6 @@ bool IsX11ScreenSaverAvailable() {
                       version->server_minor_version >= 1));
 }
 
-// Returns the bounds of |window| in the screen before adjusting for the frame.
-bool GetUndecoratedWindowBounds(x11::Window window, gfx::Rect* rect) {
-  auto root = GetX11RootWindow();
-
-  x11::Connection* connection = x11::Connection::Get();
-  auto get_geometry = connection->GetGeometry(window);
-  auto translate_coords = connection->TranslateCoordinates({window, root});
-
-  // Sync after making both requests so only one round-trip is made.
-  // Flush so all requests are sent before waiting on any replies.
-  connection->Flush();
-  auto geometry = get_geometry.Sync();
-  auto coords = translate_coords.Sync();
-
-  if (!geometry || !coords)
-    return false;
-
-  *rect = gfx::Rect(coords->dst_x, coords->dst_y, geometry->width,
-                    geometry->height);
-  return true;
-}
-
-// Obtains the value of _{NET,GTK}_FRAME_EXTENTS as a gfx::Insets.  Returns an
-// empty gfx::Insets if the property doesn't exist or is malformed.
-gfx::Insets GetFrameExtentsProperty(x11::Window window, x11::Atom property) {
-  std::vector<int32_t> frame_extents;
-  GetArrayProperty(window, property, &frame_extents);
-  if (frame_extents.size() != 4)
-    return gfx::Insets();
-  return gfx::Insets(frame_extents[2] /* top */, frame_extents[0] /* left */,
-                     frame_extents[3] /* bottom */,
-                     frame_extents[1] /* right */);
-}
-
-// Returns the adjustment necessary to obtain the opaque bounds of |window|.
-gfx::Insets GetWindowDecorationAdjustment(x11::Window window) {
-  // _GTK_FRAME_EXTENTS is set by clients using client side decorations to
-  // subtract the window shadow from the bounds.  _NET_FRAME_EXTENTS is set by
-  // the WM to add the opaque portion of the frame to the bounds.
-  return GetFrameExtentsProperty(window, x11::GetAtom("_GTK_FRAME_EXTENTS")) -
-         GetFrameExtentsProperty(window, x11::GetAtom("_NET_FRAME_EXTENTS"));
-}
-
-// Returns the opaque bounds of |window| with it's frame.
-bool GetDecoratedWindowBounds(x11::Window window, gfx::Rect* rect) {
-  if (!GetUndecoratedWindowBounds(window, rect))
-    return false;
-
-  rect->Inset(GetWindowDecorationAdjustment(window));
-  return true;
-}
-
 // Returns true if the event has event_x and event_y fields.
 bool EventHasCoordinates(const x11::Event& event) {
   return event.As<x11::KeyEvent>() || event.As<x11::ButtonEvent>() ||
@@ -456,96 +404,6 @@ void SetHideTitlebarWhenMaximizedProperty(x11::Window window,
               x11::Atom::CARDINAL, static_cast<uint32_t>(property));
 }
 
-bool IsWindowVisible(x11::Window window) {
-  TRACE_EVENT0("ui", "IsWindowVisible");
-
-  auto response = x11::Connection::Get()->GetWindowAttributes({window}).Sync();
-  if (!response || response->map_state != x11::MapState::Viewable)
-    return false;
-
-  // Minimized windows are not visible.
-  std::vector<x11::Atom> wm_states;
-  if (GetArrayProperty(window, x11::GetAtom("_NET_WM_STATE"), &wm_states)) {
-    x11::Atom hidden_atom = x11::GetAtom("_NET_WM_STATE_HIDDEN");
-    if (base::Contains(wm_states, hidden_atom))
-      return false;
-  }
-
-  // Do not check _NET_CURRENT_DESKTOP/_NET_WM_DESKTOP since some
-  // window managers (eg. i3) have per-monitor workspaces where more
-  // than one workspace can be visible at once, but only one will be
-  // "active".
-  return true;
-}
-
-bool WindowContainsPoint(x11::Window window, gfx::Point screen_loc) {
-  TRACE_EVENT0("ui", "WindowContainsPoint");
-
-  gfx::Rect undecorated_bounds;
-  if (!GetUndecoratedWindowBounds(window, &undecorated_bounds))
-    return false;
-
-  gfx::Rect decorated_bounds = undecorated_bounds;
-  decorated_bounds.Inset(GetWindowDecorationAdjustment(window));
-  if (!decorated_bounds.Contains(screen_loc))
-    return false;
-
-  if (!IsShapeExtensionAvailable())
-    return true;
-
-  // According to http://www.x.org/releases/X11R7.6/doc/libXext/shapelib.html,
-  // if an X display supports the shape extension the bounds of a window are
-  // defined as the intersection of the window bounds and the interior
-  // rectangles. This means to determine if a point is inside a window for the
-  // purpose of input handling we have to check the rectangles in the ShapeInput
-  // list.
-  // According to http://www.x.org/releases/current/doc/xextproto/shape.html,
-  // we need to also respect the ShapeBounding rectangles.
-  // The effective input region of a window is defined to be the intersection
-  // of the client input region with both the default input region and the
-  // client bounding region. Any portion of the client input region that is not
-  // included in both the default input region and the client bounding region
-  // will not be included in the effective input region on the screen.
-  x11::Shape::Sk rectangle_kind[] = {x11::Shape::Sk::Input,
-                                     x11::Shape::Sk::Bounding};
-  for (auto kind : rectangle_kind) {
-    auto shape =
-        x11::Connection::Get()->shape().GetRectangles({window, kind}).Sync();
-    if (!shape)
-      return true;
-    if (shape->rectangles.empty()) {
-      // The shape can be empty when |window| is minimized.
-      return false;
-    }
-    bool is_in_shape_rects = false;
-    for (const auto& rect : shape->rectangles) {
-      // The ShapeInput and ShapeBounding rects are to be in window space, so we
-      // have to translate by the window_rect's offset to map to screen space.
-      gfx::Rect shape_rect =
-          gfx::Rect(rect.x + undecorated_bounds.x(),
-                    rect.y + undecorated_bounds.y(), rect.width, rect.height);
-      if (shape_rect.Contains(screen_loc)) {
-        is_in_shape_rects = true;
-        break;
-      }
-    }
-    if (!is_in_shape_rects)
-      return false;
-  }
-  return true;
-}
-
-bool PropertyExists(x11::Window window, x11::Atom property) {
-  auto response = x11::Connection::Get()
-                      ->GetProperty(x11::GetPropertyRequest{
-                          .window = window,
-                          .property = property,
-                          .long_length = 1,
-                      })
-                      .Sync();
-  return response && response->format;
-}
-
 bool GetRawBytesOfProperty(x11::Window window,
                            x11::Atom property,
                            scoped_refptr<base::RefCountedMemory>* out_data,
@@ -810,14 +668,18 @@ bool IsX11WindowFullScreen(x11::Window window) {
     }
   }
 
+  auto* connection = x11::Connection::Get();
   gfx::Rect window_rect;
-  if (!ui::GetDecoratedWindowBounds(window, &window_rect))
+  if (auto geometry = connection->GetGeometry(window).Sync()) {
+    window_rect =
+        gfx::Rect(geometry->x, geometry->y, geometry->width, geometry->height);
+  } else {
     return false;
+  }
 
   // TODO(thomasanderson): We should use
   // display::Screen::GetDisplayNearestWindow() instead of using the
   // connection screen size, which encompasses all displays.
-  auto* connection = x11::Connection::Get();
   int width = connection->default_screen().width_in_pixels;
   int height = connection->default_screen().height_in_pixels;
   return window_rect.size() == gfx::Size(width, height);

@@ -135,14 +135,6 @@ gfx::Rect DesktopWindowTreeHostLinux::GetXRootWindowOuterBounds() const {
   return GetX11Extension()->GetXRootWindowOuterBounds();
 }
 
-bool DesktopWindowTreeHostLinux::ContainsPointInXRegion(
-    const gfx::Point& point) const {
-  // TODO(msisov): must be removed as soon as all X11 low-level bits are moved
-  // to Ozone.
-  DCHECK(GetX11Extension());
-  return GetX11Extension()->ContainsPointInXRegion(point);
-}
-
 void DesktopWindowTreeHostLinux::LowerWindow() {
   if (GetX11Extension())
     GetX11Extension()->LowerXWindow();

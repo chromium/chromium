@@ -65,10 +65,6 @@ class VIEWS_EXPORT DesktopWindowTreeHostLinux
   // borders provided by the window manager (if any). Not in use for Wayland.
   gfx::Rect GetXRootWindowOuterBounds() const;
 
-  // Tells if the point is within X11 Root Window's region. Not in use for
-  // Wayland.
-  bool ContainsPointInXRegion(const gfx::Point& point) const;
-
   // Tells the window manager to lower the |platform_window()| owned by this
   // host down the stack so that it does not obscure any sibling windows.
   void LowerWindow();

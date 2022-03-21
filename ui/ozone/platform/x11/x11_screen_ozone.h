@@ -39,6 +39,8 @@ class X11ScreenOzone : public PlatformScreen,
   display::Display GetDisplayForAcceleratedWidget(
       gfx::AcceleratedWidget widget) const override;
   gfx::Point GetCursorScreenPoint() const override;
+  bool IsAcceleratedWidgetUnderCursor(
+      gfx::AcceleratedWidget widget) const override;
   gfx::AcceleratedWidget GetAcceleratedWidgetAtScreenPoint(
       const gfx::Point& point) const override;
   gfx::AcceleratedWidget GetLocalProcessWidgetAtPoint(
@@ -70,6 +72,7 @@ class X11ScreenOzone : public PlatformScreen,
 
   gfx::Point GetCursorLocation() const;
 
+  x11::Connection* const connection_;
   X11WindowManager* const window_manager_;
   std::unique_ptr<ui::XDisplayManager> x11_display_manager_;
 
