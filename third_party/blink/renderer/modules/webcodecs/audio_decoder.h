@@ -86,7 +86,7 @@ class MODULES_EXPORT AudioDecoder : public DecoderTemplate<AudioDecoderTraits> {
   static CodecConfigEval MakeMediaAudioDecoderConfig(
       const ConfigType& config,
       MediaConfigType& out_media_config,
-      String& out_console_message);
+      String& js_error_message);
 
   AudioDecoder(ScriptState*, const AudioDecoderInit*, ExceptionState&);
   ~AudioDecoder() override = default;
@@ -94,7 +94,7 @@ class MODULES_EXPORT AudioDecoder : public DecoderTemplate<AudioDecoderTraits> {
  protected:
   CodecConfigEval MakeMediaConfig(const ConfigType& config,
                                   MediaConfigType* out_media_config,
-                                  String* out_console_message) override;
+                                  String* js_error_message) override;
   media::DecoderStatus::Or<scoped_refptr<media::DecoderBuffer>>
   MakeDecoderBuffer(const InputType& chunk, bool verify_key_frame) override;
 };

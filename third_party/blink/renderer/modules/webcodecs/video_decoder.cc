@@ -86,7 +86,7 @@ void DecoderSupport_OnKnown(
 
 bool ParseCodecString(const String& codec_string,
                       media::VideoType& out_video_type,
-                      String& out_console_message) {
+                      String& js_error_message) {
   bool is_codec_ambiguous = true;
   media::VideoCodec codec = media::VideoCodec::kUnknown;
   media::VideoCodecProfile profile = media::VIDEO_CODEC_PROFILE_UNKNOWN;
@@ -97,12 +97,12 @@ bool ParseCodecString(const String& codec_string,
                                    &codec, &profile, &level, &color_space);
 
   if (!parse_succeeded) {
-    out_console_message = "Failed to parse codec string.";
+    js_error_message = "Failed to parse codec string.";
     return false;
   }
 
   if (is_codec_ambiguous) {
-    out_console_message = "Codec string is ambiguous.";
+    js_error_message = "Codec string is ambiguous.";
     return false;
   }
 
@@ -110,24 +110,23 @@ bool ParseCodecString(const String& codec_string,
   return true;
 }
 
-// TODO(crbug.com/1179970): rename out_console_message.
 // TODO(crbug.com/1181443): Make this a pure virtual in DecoderTemplate, and
 // refactor its uses.
 // TODO(crbug.com/1198324): Merge shared logic with VideoFramePlaneInit.
 bool IsValidConfig(const VideoDecoderConfig& config,
                    media::VideoType& out_video_type,
-                   String& out_console_message) {
-  if (!ParseCodecString(config.codec(), out_video_type, out_console_message))
+                   String& js_error_message) {
+  if (!ParseCodecString(config.codec(), out_video_type, js_error_message))
     return false;
 
   if (config.hasCodedWidth() || config.hasCodedHeight()) {
     if (!config.hasCodedWidth()) {
-      out_console_message =
+      js_error_message =
           "Invalid config, codedHeight specified without codedWidth.";
       return false;
     }
     if (!config.hasCodedHeight()) {
-      out_console_message =
+      js_error_message =
           "Invalid config, codedWidth specified without codedHeight.";
       return false;
     }
@@ -138,21 +137,21 @@ bool IsValidConfig(const VideoDecoderConfig& config,
         coded_height == 0 || coded_height > media::limits::kMaxDimension) {
       // TODO(crbug.com/1212865): Exceeding implementation limits should not
       // throw in isConfigSupported() (the config is valid, just unsupported).
-      out_console_message = String::Format("Invalid coded size (%u, %u).",
-                                           coded_width, coded_height);
+      js_error_message = String::Format("Invalid coded size (%u, %u).",
+                                        coded_width, coded_height);
       return false;
     }
   }
 
   if (config.hasDisplayAspectWidth() || config.hasDisplayAspectHeight()) {
     if (!config.hasDisplayAspectWidth()) {
-      out_console_message =
+      js_error_message =
           "Invalid config, displayAspectHeight specified without "
           "displayAspectWidth.";
       return false;
     }
     if (!config.hasDisplayAspectHeight()) {
-      out_console_message =
+      js_error_message =
           "Invalid config, displayAspectWidth specified without "
           "displayAspectHeight.";
       return false;
@@ -161,7 +160,7 @@ bool IsValidConfig(const VideoDecoderConfig& config,
     uint32_t display_aspect_width = config.displayAspectWidth();
     uint32_t display_aspect_height = config.displayAspectHeight();
     if (display_aspect_width == 0 || display_aspect_height == 0) {
-      out_console_message =
+      js_error_message =
           String::Format("Invalid display aspect (%u, %u).",
                          display_aspect_width, display_aspect_height);
       return false;
@@ -331,10 +330,10 @@ ScriptPromise VideoDecoder::isConfigSupported(ScriptState* script_state,
     return IsAcceleratedConfigSupported(script_state, config, exception_state);
 
   media::VideoType video_type;
-  String console_message;
+  String js_error_message;
 
-  if (!IsValidConfig(*config, video_type, console_message)) {
-    exception_state.ThrowTypeError(console_message);
+  if (!IsValidConfig(*config, video_type, js_error_message)) {
+    exception_state.ThrowTypeError(js_error_message);
     return ScriptPromise();
   }
 
@@ -357,7 +356,7 @@ ScriptPromise VideoDecoder::IsAcceleratedConfigSupported(
     ScriptState* script_state,
     const VideoDecoderConfig* config,
     ExceptionState& exception_state) {
-  String console_message;
+  String js_error_message;
   auto media_config = std::make_unique<MediaConfigType>();
   CodecConfigEval config_eval;
 
@@ -365,14 +364,14 @@ ScriptPromise VideoDecoder::IsAcceleratedConfigSupported(
   std::unique_ptr<media::H264ToAnnexBBitstreamConverter> h264_converter;
   std::unique_ptr<media::mp4::AVCDecoderConfigurationRecord> h264_avcc;
   config_eval = MakeMediaVideoDecoderConfig(
-      *config, *media_config, h264_converter, h264_avcc, console_message);
+      *config, *media_config, h264_converter, h264_avcc, js_error_message);
 #else
   config_eval =
-      MakeMediaVideoDecoderConfig(*config, *media_config, console_message);
+      MakeMediaVideoDecoderConfig(*config, *media_config, js_error_message);
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
   if (config_eval != CodecConfigEval::kSupported) {
-    exception_state.ThrowTypeError(console_message);
+    exception_state.ThrowTypeError(js_error_message);
     return ScriptPromise();
   }
 
@@ -407,7 +406,6 @@ void VideoDecoder::SetHardwarePreference(HardwarePreference preference) {
 }
 
 // static
-// TODO(crbug.com/1179970): rename out_console_message.
 CodecConfigEval VideoDecoder::MakeMediaVideoDecoderConfig(
     const ConfigType& config,
     MediaConfigType& out_media_config,
@@ -415,10 +413,10 @@ CodecConfigEval VideoDecoder::MakeMediaVideoDecoderConfig(
     std::unique_ptr<media::H264ToAnnexBBitstreamConverter>& out_h264_converter,
     std::unique_ptr<media::mp4::AVCDecoderConfigurationRecord>& out_h264_avcc,
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
-    String& out_console_message) {
+    String& js_error_message) {
   media::VideoType video_type;
 
-  if (!IsValidConfig(config, video_type, out_console_message))
+  if (!IsValidConfig(config, video_type, js_error_message))
     return CodecConfigEval::kInvalid;
 
   std::vector<uint8_t> extra_data;
@@ -441,7 +439,7 @@ CodecConfigEval VideoDecoder::MakeMediaVideoDecoderConfig(
     if (!out_h264_converter->ParseConfiguration(
             extra_data.data(), static_cast<uint32_t>(extra_data.size()),
             out_h264_avcc.get())) {
-      out_console_message = "Failed to parse avcC.";
+      js_error_message = "Failed to parse avcC.";
       return CodecConfigEval::kInvalid;
     }
   } else {
@@ -450,7 +448,7 @@ CodecConfigEval VideoDecoder::MakeMediaVideoDecoderConfig(
   }
 #else
   if (video_type.codec == media::VideoCodec::kH264) {
-    out_console_message = "H.264 decoding is not supported.";
+    js_error_message = "H.264 decoding is not supported.";
     return CodecConfigEval::kUnsupported;
   }
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
@@ -504,15 +502,15 @@ VideoDecoder::VideoDecoder(ScriptState* script_state,
 
 CodecConfigEval VideoDecoder::MakeMediaConfig(const ConfigType& config,
                                               MediaConfigType* out_media_config,
-                                              String* out_console_message) {
+                                              String* js_error_message) {
   DCHECK(out_media_config);
-  DCHECK(out_console_message);
+  DCHECK(js_error_message);
   auto result = MakeMediaVideoDecoderConfig(config, *out_media_config,
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
                                             h264_converter_ /* out */,
                                             h264_avcc_ /* out */,
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
-                                            *out_console_message);
+                                            *js_error_message);
   if (result == CodecConfigEval::kSupported)
     current_codec_ = out_media_config->codec();
   return result;

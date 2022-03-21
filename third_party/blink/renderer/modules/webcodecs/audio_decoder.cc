@@ -37,7 +37,7 @@ namespace blink {
 
 bool IsValidConfig(const AudioDecoderConfig& config,
                    media::AudioType& out_audio_type,
-                   String& out_console_message) {
+                   String& js_error_message) {
   // Match codec strings from the codec registry:
   // https://www.w3.org/TR/webcodecs-codec-registry/#audio-codec-registry
   if (config.codec() == "ulaw") {
@@ -55,7 +55,7 @@ bool IsValidConfig(const AudioDecoderConfig& config,
     description_required = true;
 
   if (description_required && !config.hasDescription()) {
-    out_console_message = "Description is required.";
+    js_error_message = "Description is required.";
     return false;
   }
 
@@ -65,12 +65,12 @@ bool IsValidConfig(const AudioDecoderConfig& config,
       "", config.codec().Utf8(), &is_codec_ambiguous, &codec);
 
   if (!parse_succeeded) {
-    out_console_message = "Failed to parse codec string.";
+    js_error_message = "Failed to parse codec string.";
     return false;
   }
 
   if (is_codec_ambiguous) {
-    out_console_message = "Codec string is ambiguous.";
+    js_error_message = "Codec string is ambiguous.";
     return false;
   }
 
@@ -186,10 +186,10 @@ ScriptPromise AudioDecoder::isConfigSupported(ScriptState* script_state,
                                               const AudioDecoderConfig* config,
                                               ExceptionState& exception_state) {
   media::AudioType audio_type;
-  String console_message;
+  String js_error_message;
 
-  if (!IsValidConfig(*config, audio_type, console_message)) {
-    exception_state.ThrowTypeError(console_message);
+  if (!IsValidConfig(*config, audio_type, js_error_message)) {
+    exception_state.ThrowTypeError(js_error_message);
     return ScriptPromise();
   }
 
@@ -206,10 +206,10 @@ ScriptPromise AudioDecoder::isConfigSupported(ScriptState* script_state,
 CodecConfigEval AudioDecoder::MakeMediaAudioDecoderConfig(
     const ConfigType& config,
     MediaConfigType& out_media_config,
-    String& out_console_message) {
+    String& js_error_message) {
   media::AudioType audio_type;
 
-  if (!IsValidConfig(config, audio_type, out_console_message))
+  if (!IsValidConfig(config, audio_type, js_error_message))
     return CodecConfigEval::kInvalid;
 
   std::vector<uint8_t> extra_data;
@@ -248,11 +248,11 @@ AudioDecoder::AudioDecoder(ScriptState* script_state,
 
 CodecConfigEval AudioDecoder::MakeMediaConfig(const ConfigType& config,
                                               MediaConfigType* out_media_config,
-                                              String* out_console_message) {
+                                              String* js_error_message) {
   DCHECK(out_media_config);
-  DCHECK(out_console_message);
+  DCHECK(js_error_message);
   return MakeMediaAudioDecoderConfig(config, *out_media_config,
-                                     *out_console_message);
+                                     *js_error_message);
 }
 
 media::DecoderStatus::Or<scoped_refptr<media::DecoderBuffer>>

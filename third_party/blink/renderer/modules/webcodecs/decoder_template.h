@@ -80,7 +80,7 @@ class MODULES_EXPORT DecoderTemplate
   // Convert a configuration to a DecoderConfig.
   virtual CodecConfigEval MakeMediaConfig(const ConfigType& config,
                                           MediaConfigType* out_media_config,
-                                          String* out_console_message) = 0;
+                                          String* js_error_message) = 0;
 
   // Gets the AccelerationPreference from a config.
   // If derived classes do not override this, this will default to kAllow.

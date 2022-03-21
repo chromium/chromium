@@ -135,17 +135,17 @@ void DecoderTemplate<Traits>::configure(const ConfigType* config,
     return;
 
   auto media_config = std::make_unique<MediaConfigType>();
-  String console_message;
+  String js_error_message;
 
   CodecConfigEval eval =
-      MakeMediaConfig(*config, media_config.get(), &console_message);
+      MakeMediaConfig(*config, media_config.get(), &js_error_message);
   switch (eval) {
     case CodecConfigEval::kInvalid:
-      exception_state.ThrowTypeError(console_message);
+      exception_state.ThrowTypeError(js_error_message);
       return;
     case CodecConfigEval::kUnsupported:
       exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                        console_message);
+                                        js_error_message);
       return;
     case CodecConfigEval::kSupported:
       // Good, lets proceed.

@@ -104,7 +104,7 @@ class MODULES_EXPORT VideoDecoder : public DecoderTemplate<VideoDecoderTraits> {
           out_h264_converter,
       std::unique_ptr<media::mp4::AVCDecoderConfigurationRecord>& out_h264_avcc,
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
-      String& out_console_message);
+      String& js_error_message);
 
   VideoDecoder(ScriptState*, const VideoDecoderInit*, ExceptionState&);
   ~VideoDecoder() override = default;
@@ -112,7 +112,7 @@ class MODULES_EXPORT VideoDecoder : public DecoderTemplate<VideoDecoderTraits> {
  protected:
   CodecConfigEval MakeMediaConfig(const ConfigType& config,
                                   MediaConfigType* out_media_config,
-                                  String* out_console_message) override;
+                                  String* js_error_message) override;
   media::DecoderStatus::Or<scoped_refptr<media::DecoderBuffer>>
   MakeDecoderBuffer(const InputType& input, bool verify_key_frame) override;
 
