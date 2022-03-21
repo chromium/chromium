@@ -7768,7 +7768,7 @@
             ],
             "experiments": [
                 {
-                    "name": "arm:SyncDecoding"
+                    "name": "arm:SyncDecoding,_Beta"
                 }
             ]
         }
