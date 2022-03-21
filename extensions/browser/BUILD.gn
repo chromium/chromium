@@ -625,7 +625,10 @@ source_set("browser_sources") {
   }
 
   if (is_chromeos_ash) {
-    deps += [ "//chromeos/login/login_state" ]
+    deps += [
+      "//chrome/browser/ash/crosapi:browser_util",
+      "//chromeos/login/login_state",
+    ]
   }
 
   if (is_chromeos) {
@@ -909,6 +912,7 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//components/cast_certificate",
     "//components/cast_certificate:test_support",
     "//components/content_settings/core/test:test_support",
@@ -974,6 +978,9 @@ source_set("unit_tests") {
     ]
 
     deps += [
+      "//ash/constants",
+      "//chrome/browser/ash/crosapi:browser_util",
+      "//chrome/common:constants",
       "//chromeos:test_support",
       "//chromeos/dbus:test_support",
       "//chromeos/dbus/audio",
@@ -985,6 +992,7 @@ source_set("unit_tests") {
       "//chromeos/login/login_state",
       "//chromeos/network:test_support",
       "//components/feedback",
+      "//components/prefs:prefs",
       "//extensions/shell:app_shell_lib",
     ]
   }

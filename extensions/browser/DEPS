@@ -1,4 +1,5 @@
 include_rules = [
+  "+chrome/browser/ash/crosapi/browser_util.h",
   "+chromeos",
   "+components/back_forward_cache",
   "+components/guest_view",
@@ -53,6 +54,8 @@ include_rules = [
 
 specific_include_rules = {
   ".*(test|test_util)\.(cc|h)$": [
+    "+ash/constants/ash_features.h",
+
     "+components/javascript_dialogs",
     "+components/user_prefs",
 
@@ -67,6 +70,7 @@ specific_include_rules = {
     "+chrome/browser/extensions/extension_function_test_utils.h",
     "+chrome/browser/extensions/extension_service_test_base.h",
     "+chrome/browser/ui/browser.h",
+    "+chrome/common/pref_names.h",
     "+chrome/common/chrome_switches.h",
     "+chrome/test/base/testing_profile.h",
     "+chrome/test/base/ui_test_utils.h",

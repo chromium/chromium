@@ -8,6 +8,7 @@
 
 #include "base/location.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/extension_prefs.h"
@@ -20,6 +21,15 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/common/pref_names.h"  // nogncheck
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace extensions {
 
@@ -261,6 +271,23 @@ class ExtensionRegistrarTest : public ExtensionsTest {
                                  disable_reason::DISABLE_USER_ACTION);
     ExpectInSet(ExtensionRegistry::DISABLED);
     EXPECT_FALSE(IsExtensionReady());
+  }
+
+  void TryDisablingNotAshKeeplistedExtension(bool expect_extension_disabled) {
+    if (expect_extension_disabled)
+      EXPECT_CALL(delegate_, PostDeactivateExtension(extension_));
+
+    // Disable extension because it is not in the ash keep list.
+    registrar_->DisableExtension(extension_->id(),
+                                 disable_reason::DISABLE_NOT_ASH_KEEPLISTED);
+
+    ExtensionRegistry::IncludeFlag include_flag =
+        expect_extension_disabled ? ExtensionRegistry::DISABLED
+                                  : ExtensionRegistry::ENABLED;
+    ExpectInSet(include_flag);
+    EXPECT_NE(IsExtensionReady(), expect_extension_disabled);
+
+    VerifyMock();
   }
 
   void TerminateExtension() {
@@ -523,5 +550,62 @@ TEST_F(ExtensionRegistrarTest, ReloadTerminatedExtension) {
   // it's disabled.
   AddEnabledExtension();
 }
+
+// Test that an extension which is not controlled (e.g. by policy) and which is
+// not on the ash keep-list can be disabled.
+TEST_F(ExtensionRegistrarTest, DisableNotAshKeeplistedExtension) {
+  ON_CALL(*delegate(), CanDisableExtension(extension().get()))
+      .WillByDefault(Return(true));
+  AddEnabledExtension();
+
+  TryDisablingNotAshKeeplistedExtension(/* expect_extension_disabled= */ true);
+}
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Test that a controlled extension that is not on the ash keep-list can be
+// disabled if ash is disabled.
+TEST_F(ExtensionRegistrarTest,
+       DisableNotAshKeeplistedForceInstalledExtensionIfAshDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(chromeos::features::kLacrosOnly);
+
+  crosapi::browser_util::SetLacrosPrimaryBrowserForTest(true);
+  static_cast<TestingPrefServiceSimple*>(pref_service())
+      ->registry()
+      ->RegisterIntegerPref(
+          prefs::kLacrosLaunchSwitch,
+          static_cast<int>(
+              crosapi::browser_util::LacrosAvailability::kLacrosOnly));
+  EXPECT_FALSE(crosapi::browser_util::IsAshWebBrowserEnabled());
+
+  // Prevent the extension from being disabled (by the user).
+  ON_CALL(*delegate(), CanDisableExtension(extension().get()))
+      .WillByDefault(Return(false));
+  AddEnabledExtension();
+
+  TryDisablingNotAshKeeplistedExtension(/* expect_extension_disabled= */ true);
+}
+
+// Test that a controlled extension that is not on the ash keep-list cannot be
+// disabled if ash is still enabled.
+TEST_F(ExtensionRegistrarTest,
+       NotDisableNotAshKeeplistedForceInstalledExtensionIfAshEnabled) {
+  crosapi::browser_util::SetLacrosPrimaryBrowserForTest(true);
+  static_cast<TestingPrefServiceSimple*>(pref_service())
+      ->registry()
+      ->RegisterIntegerPref(
+          prefs::kLacrosLaunchSwitch,
+          static_cast<int>(
+              crosapi::browser_util::LacrosAvailability::kLacrosPrimary));
+  EXPECT_TRUE(crosapi::browser_util::IsAshWebBrowserEnabled());
+
+  // Prevent the extension from being disabled (by the user).
+  ON_CALL(*delegate(), CanDisableExtension(extension().get()))
+      .WillByDefault(Return(false));
+  AddEnabledExtension();
+
+  TryDisablingNotAshKeeplistedExtension(/* expect_extension_disabled= */ false);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace extensions
