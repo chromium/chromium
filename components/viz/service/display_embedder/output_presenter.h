@@ -47,7 +47,7 @@ class VIZ_SERVICE_EXPORT OutputPresenter {
       return skia_representation_.get();
     }
 
-    void BeginWriteSkia();
+    void BeginWriteSkia(int sample_count);
     SkSurface* sk_surface();
     std::vector<GrBackendSemaphore> TakeEndWriteSkiaSemaphores();
     void EndWriteSkia(bool force_flush = false);
@@ -80,10 +80,9 @@ class VIZ_SERVICE_EXPORT OutputPresenter {
 
   virtual void InitializeCapabilities(
       OutputSurface::Capabilities* capabilities) = 0;
-  virtual bool Reshape(const gfx::Size& size,
-                       float device_scale_factor,
+  virtual bool Reshape(const SkSurfaceCharacterization& characterization,
                        const gfx::ColorSpace& color_space,
-                       gfx::BufferFormat format,
+                       float device_scale_factor,
                        gfx::OverlayTransform transform) = 0;
   virtual std::vector<std::unique_ptr<Image>> AllocateImages(
       gfx::ColorSpace color_space,

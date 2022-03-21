@@ -25,10 +25,9 @@ class SkiaOutputDeviceVulkanSecondaryCB final : public SkiaOutputDevice {
   std::unique_ptr<SkiaOutputDevice::ScopedPaint> BeginScopedPaint(
       bool allocate_frame_buffer) override;
   void Submit(bool sync_cpu, base::OnceClosure callback) override;
-  bool Reshape(const gfx::Size& size,
-               float device_scale_factor,
+  bool Reshape(const SkSurfaceCharacterization& characterization,
                const gfx::ColorSpace& color_space,
-               gfx::BufferFormat format,
+               float device_scale_factor,
                gfx::OverlayTransform transform) override;
   void SwapBuffers(BufferPresentedCallback feedback,
                    OutputSurfaceFrame frame) override;

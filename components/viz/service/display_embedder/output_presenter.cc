@@ -46,7 +46,7 @@ bool OutputPresenter::Image::Initialize(
   return true;
 }
 
-void OutputPresenter::Image::BeginWriteSkia() {
+void OutputPresenter::Image::BeginWriteSkia(int sample_count) {
   DCHECK(!scoped_skia_write_access_);
   DCHECK(!GetPresentCount());
   DCHECK(end_semaphores_.empty());
@@ -56,10 +56,8 @@ void OutputPresenter::Image::BeginWriteSkia() {
 
   // Buffer queue is internal to GPU proc and handles texture initialization,
   // so allow uncleared access.
-  // TODO(vasilyt): Props and MSAA
   scoped_skia_write_access_ = skia_representation_->BeginScopedWriteAccess(
-      /*final_msaa_count=*/1, surface_props, &begin_semaphores,
-      &end_semaphores_,
+      sample_count, surface_props, &begin_semaphores, &end_semaphores_,
       gpu::SharedImageRepresentation::AllowUnclearedAccess::kYes);
   DCHECK(scoped_skia_write_access_);
   if (!begin_semaphores.empty()) {

@@ -40,10 +40,9 @@ class SkiaOutputDeviceDawn : public SkiaOutputDevice {
   gpu::SurfaceHandle GetChildSurfaceHandle() const;
 
   // SkiaOutputDevice implementation:
-  bool Reshape(const gfx::Size& size,
-               float device_scale_factor,
+  bool Reshape(const SkSurfaceCharacterization& characterization,
                const gfx::ColorSpace& color_space,
-               gfx::BufferFormat format,
+               float device_scale_factor,
                gfx::OverlayTransform transform) override;
   void SwapBuffers(BufferPresentedCallback feedback,
                    OutputSurfaceFrame frame) override;
@@ -65,7 +64,7 @@ class SkiaOutputDeviceDawn : public SkiaOutputDevice {
 
   gfx::Size size_;
   sk_sp<SkColorSpace> sk_color_space_;
-  GrBackendTexture backend_texture_;
+  int sample_count_ = 1;
 
   // D3D12 requires that we use flip model swap chains. Flip swap chains
   // require that the swap chain be connected with DWM. DWM requires that

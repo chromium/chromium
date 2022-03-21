@@ -51,10 +51,9 @@ class SkiaOutputDeviceGL final : public SkiaOutputDevice {
   ~SkiaOutputDeviceGL() override;
 
   // SkiaOutputDevice implementation:
-  bool Reshape(const gfx::Size& size,
-               float device_scale_factor,
+  bool Reshape(const SkSurfaceCharacterization& characterization,
                const gfx::ColorSpace& color_space,
-               gfx::BufferFormat format,
+               float device_scale_factor,
                gfx::OverlayTransform transform) override;
   void SwapBuffers(BufferPresentedCallback feedback,
                    OutputSurfaceFrame frame) override;
@@ -90,6 +89,8 @@ class SkiaOutputDeviceGL final : public SkiaOutputDevice {
 
   scoped_refptr<gl::GLImage> GetGLImageForMailbox(const gpu::Mailbox& mailbox);
 
+  void CreateSkSurface();
+
   // Mailboxes of overlays scheduled in the current frame.
   base::flat_set<gpu::Mailbox> scheduled_overlay_mailboxes_;
 
@@ -105,9 +106,15 @@ class SkiaOutputDeviceGL final : public SkiaOutputDevice {
   scoped_refptr<gl::GLSurface> gl_surface_;
   const bool supports_async_swap_;
 
-  sk_sp<SkSurface> sk_surface_;
-
   uint64_t backbuffer_estimated_size_ = 0;
+
+  int alpha_bits_ = 0;
+  gfx::Size size_;
+  SkColorType color_type_;
+  gfx::ColorSpace color_space_;
+  GrGLFramebufferInfo framebuffer_info_ = {};
+  int sample_count_ = 1;
+  sk_sp<SkSurface> sk_surface_;
 
   base::WeakPtrFactory<SkiaOutputDeviceGL> weak_ptr_factory_{this};
 };

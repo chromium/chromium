@@ -84,6 +84,9 @@ ToWGPUFormat(ResourceFormat format);
 VIZ_RESOURCE_FORMAT_EXPORT unsigned int ToMTLPixelFormat(ResourceFormat format);
 #endif
 
+VIZ_RESOURCE_FORMAT_EXPORT size_t
+AlphaBitsForSkColorType(SkColorType color_type);
+
 }  // namespace viz
 
 #endif  // COMPONENTS_VIZ_COMMON_RESOURCES_RESOURCE_FORMAT_UTILS_H_

@@ -221,12 +221,12 @@ void OutputPresenterFuchsia::InitializeCapabilities(
       kRGBA_8888_SkColorType;
 }
 
-bool OutputPresenterFuchsia::Reshape(const gfx::Size& size,
-                                     float device_scale_factor,
-                                     const gfx::ColorSpace& color_space,
-                                     gfx::BufferFormat format,
-                                     gfx::OverlayTransform transform) {
-  frame_size_ = size;
+bool OutputPresenterFuchsia::Reshape(
+    const SkSurfaceCharacterization& characterization,
+    const gfx::ColorSpace& color_space,
+    float device_scale_factor,
+    gfx::OverlayTransform transform) {
+  frame_size_ = gfx::SkISizeToSize(characterization.dimensions());
   return true;
 }
 

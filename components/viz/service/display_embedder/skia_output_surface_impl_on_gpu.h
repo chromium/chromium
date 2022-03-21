@@ -133,11 +133,9 @@ class SkiaOutputSurfaceImplOnGpu
   }
   gl::GLSurface* gl_surface() const { return gl_surface_.get(); }
 
-  void Reshape(const gfx::Size& size,
-               float device_scale_factor,
+  void Reshape(const SkSurfaceCharacterization& characterization,
                const gfx::ColorSpace& color_space,
-               gfx::BufferFormat format,
-               bool use_stencil,
+               float device_scale_factor,
                gfx::OverlayTransform transform);
   void FinishPaintCurrentFrame(sk_sp<SkDeferredDisplayList> ddl,
                                sk_sp<SkDeferredDisplayList> overdraw_ddl,
@@ -443,7 +441,6 @@ class SkiaOutputSurfaceImplOnGpu
 
   gpu::GpuPreferences gpu_preferences_;
   gfx::Size size_;
-  gfx::ColorSpace color_space_;
   scoped_refptr<gl::GLSurface> gl_surface_;
   scoped_refptr<gpu::SharedContextState> context_state_;
   size_t max_resource_cache_bytes_ = 0u;

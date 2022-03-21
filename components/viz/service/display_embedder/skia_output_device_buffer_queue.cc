@@ -24,6 +24,7 @@
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image_factory.h"
 #include "gpu/command_buffer/service/shared_image_representation.h"
+#include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -227,7 +228,7 @@ void SkiaOutputDeviceBufferQueue::PageFlipComplete(
       if (!available_images_.front()->sk_surface()) {
         // BeginWriteSkia() may alter GL's state.
         context_state_->set_need_context_state_reset(true);
-        available_images_.front()->BeginWriteSkia();
+        available_images_.front()->BeginWriteSkia(sample_count_);
       }
     }
   }
@@ -320,9 +321,9 @@ const gpu::Mailbox SkiaOutputDeviceBufferQueue::GetImageMailboxForColor(
       solid_color =
           presenter_->AllocateSingleImage(color_space_, gfx::Size(4, 4));
     }
-    solid_color->BeginWriteSkia();
+    solid_color->BeginWriteSkia(/*sample_count=*/1);
     solid_color->sk_surface()->getCanvas()->clear(color);
-    solid_color->EndWriteSkia(/*force_flush*/ true);
+    solid_color->EndWriteSkia(/*force_flush=*/true);
   }
   DCHECK(solid_color);
   auto image_mailbox = solid_color->skia_representation()->mailbox();
@@ -640,13 +641,13 @@ gfx::Size SkiaOutputDeviceBufferQueue::GetSwapBuffersSize() {
   }
 }
 
-bool SkiaOutputDeviceBufferQueue::Reshape(const gfx::Size& size,
-                                          float device_scale_factor,
-                                          const gfx::ColorSpace& color_space,
-                                          gfx::BufferFormat format,
-                                          gfx::OverlayTransform transform) {
+bool SkiaOutputDeviceBufferQueue::Reshape(
+    const SkSurfaceCharacterization& characterization,
+    const gfx::ColorSpace& color_space,
+    float device_scale_factor,
+    gfx::OverlayTransform transform) {
   DCHECK(pending_overlay_mailboxes_.empty());
-  if (!presenter_->Reshape(size, device_scale_factor, color_space, format,
+  if (!presenter_->Reshape(characterization, color_space, device_scale_factor,
                            transform)) {
     LOG(ERROR) << "Failed to resize.";
     CheckForLoopFailuresBufferQueue();
@@ -656,11 +657,12 @@ bool SkiaOutputDeviceBufferQueue::Reshape(const gfx::Size& size,
   }
 
   overlay_transform_ = transform;
-
+  gfx::Size size = gfx::SkISizeToSize(characterization.dimensions());
   if (color_space_ == color_space && image_size_ == size)
     return true;
   color_space_ = color_space;
   image_size_ = size;
+  sample_count_ = characterization.sampleCount();
 
   bool success = RecreateImages();
   if (!success) {
@@ -738,7 +740,7 @@ SkSurface* SkiaOutputDeviceBufferQueue::BeginPaint(
   }
 
   if (!current_image_->sk_surface())
-    current_image_->BeginWriteSkia();
+    current_image_->BeginWriteSkia(sample_count_);
   *end_semaphores = current_image_->TakeEndWriteSkiaSemaphores();
   return current_image_->sk_surface();
 }

@@ -84,17 +84,17 @@ gpu::SurfaceHandle SkiaOutputDeviceVulkan::GetChildSurfaceHandle() {
 }
 #endif
 
-bool SkiaOutputDeviceVulkan::Reshape(const gfx::Size& size,
-                                     float device_scale_factor,
-                                     const gfx::ColorSpace& color_space,
-                                     gfx::BufferFormat format,
-                                     gfx::OverlayTransform transform) {
+bool SkiaOutputDeviceVulkan::Reshape(
+    const SkSurfaceCharacterization& characterization,
+    const gfx::ColorSpace& color_space,
+    float device_scale_factor,
+    gfx::OverlayTransform transform) {
   DCHECK(!scoped_write_);
 
   if (UNLIKELY(!vulkan_surface_))
     return false;
 
-  return RecreateSwapChain(size, color_space.ToSkColorSpace(), transform);
+  return RecreateSwapChain(characterization, transform);
 }
 
 void SkiaOutputDeviceVulkan::Submit(bool sync_cpu, base::OnceClosure callback) {
@@ -196,9 +196,8 @@ SkSurface* SkiaOutputDeviceVulkan::BeginPaint(
     vk_image_info.fCurrentQueueFamily = VK_QUEUE_FAMILY_IGNORED;
     vk_image_info.fProtected = GrProtected::kNo;
     const auto& vk_image_size = vulkan_surface_->image_size();
-    GrBackendRenderTarget render_target(vk_image_size.width(),
-                                        vk_image_size.height(),
-                                        0 /* sample_cnt */, vk_image_info);
+    GrBackendTexture backend_texture(vk_image_size.width(),
+                                     vk_image_size.height(), vk_image_info);
 
     // Estimate size of GPU memory needed for the GrBackendRenderTarget.
     VkMemoryRequirements requirements;
@@ -208,13 +207,10 @@ SkSurface* SkiaOutputDeviceVulkan::BeginPaint(
     sk_surface_size_pairs_[scoped_write_->image_index()].bytes_allocated =
         requirements.size;
     memory_type_tracker_->TrackMemAlloc(requirements.size);
-
-    auto sk_color_type = surface_format == VK_FORMAT_B8G8R8A8_UNORM
-                             ? kBGRA_8888_SkColorType
-                             : kRGBA_8888_SkColorType;
-    sk_surface = SkSurface::MakeFromBackendRenderTarget(
-        context_provider_->GetGrContext(), render_target,
-        kTopLeft_GrSurfaceOrigin, sk_color_type, color_space_, &surface_props);
+    sk_surface = SkSurface::MakeFromBackendTexture(
+        context_provider_->GetGrContext(), backend_texture,
+        kTopLeft_GrSurfaceOrigin, sample_count_, color_type_, color_space_,
+        &surface_props);
     DCHECK(sk_surface);
   } else {
     auto backend = sk_surface->getBackendRenderTarget(
@@ -329,18 +325,20 @@ bool SkiaOutputDeviceVulkan::Initialize() {
 }
 
 bool SkiaOutputDeviceVulkan::RecreateSwapChain(
-    const gfx::Size& size,
-    sk_sp<SkColorSpace> color_space,
+    const SkSurfaceCharacterization& characterization,
     gfx::OverlayTransform transform) {
   auto generation = vulkan_surface_->swap_chain_generation();
 
   // Call vulkan_surface_->Reshape() will recreate vulkan swapchain if it is
   // necessary.
-  if (UNLIKELY(!vulkan_surface_->Reshape(size, transform)))
+  if (UNLIKELY(!vulkan_surface_->Reshape(
+          gfx::SkISizeToSize(characterization.dimensions()), transform)))
     return false;
 
   bool recreate = vulkan_surface_->swap_chain_generation() != generation ||
-                  !SkColorSpace::Equals(color_space.get(), color_space_.get());
+                  !SkColorSpace::Equals(characterization.colorSpace(),
+                                        color_space_.get()) ||
+                  sample_count_ != characterization.sampleCount();
   if (LIKELY(recreate)) {
     // swapchain is changed, we need recreate all cached sk surfaces.
     for (const auto& sk_surface_size_pair : sk_surface_size_pairs_) {
@@ -349,7 +347,9 @@ bool SkiaOutputDeviceVulkan::RecreateSwapChain(
     auto num_images = vulkan_surface_->swap_chain()->num_images();
     sk_surface_size_pairs_.clear();
     sk_surface_size_pairs_.resize(num_images);
-    color_space_ = std::move(color_space);
+    color_type_ = characterization.colorType();
+    color_space_ = characterization.refColorSpace();
+    sample_count_ = characterization.sampleCount();
     damage_of_images_.resize(num_images);
     for (auto& damage : damage_of_images_)
       damage = gfx::Rect(vulkan_surface_->image_size());

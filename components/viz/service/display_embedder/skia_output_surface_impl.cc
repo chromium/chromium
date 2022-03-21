@@ -184,10 +184,10 @@ SkiaOutputSurfaceImpl::SkiaOutputSurfaceImpl(
       renderer_settings_(renderer_settings),
       debug_settings_(debug_settings),
       display_compositor_controller_(display_controller),
-      gpu_task_scheduler_(
-          display_compositor_controller_->gpu_task_scheduler()) {
+      gpu_task_scheduler_(display_compositor_controller_->gpu_task_scheduler()),
+      is_using_raw_draw_(features::IsUsingRawDraw()) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (features::IsUsingRawDraw()) {
+  if (is_using_raw_draw_) {
     auto* manager = dependency_->GetSharedImageManager();
     DCHECK(manager->is_thread_safe());
     representation_factory_ =
@@ -302,23 +302,31 @@ void SkiaOutputSurfaceImpl::Reshape(const gfx::Size& size,
     frame_buffer_damage_tracker_->FrameBuffersChanged(size);
   }
 
+  // TODO(penghuang): set sample count accordingly for RawDraw.
+  sample_count_ = 1;
+
+  const auto format_index = static_cast<int>(format);
+  const auto& color_type = capabilities_.sk_color_types[format_index];
+  DCHECK(color_type != kUnknown_SkColorType)
+      << "SkColorType is invalid for buffer format_index: " << format_index;
+
+  auto sk_color_space = color_space.ToSkColorSpace();
+  characterization_ = CreateSkSurfaceCharacterization(
+      size, color_type, /*mipmap=*/false, std::move(sk_color_space),
+      /*is_root_render_pass=*/true, /*is_overlay=*/false);
+
   // impl_on_gpu_ is released on the GPU thread by a posted task from
   // SkiaOutputSurfaceImpl::dtor. So it is safe to use base::Unretained.
-  auto task = base::BindOnce(&SkiaOutputSurfaceImplOnGpu::Reshape,
-                             base::Unretained(impl_on_gpu_.get()), size,
-                             device_scale_factor, color_space, format,
-                             use_stencil, GetDisplayTransform());
+  auto task =
+      base::BindOnce(&SkiaOutputSurfaceImplOnGpu::Reshape,
+                     base::Unretained(impl_on_gpu_.get()), characterization_,
+                     color_space, device_scale_factor, GetDisplayTransform());
   EnqueueGpuTask(std::move(task), {}, /*make_current=*/true,
                  /*need_framebuffer=*/!dependency_->IsOffscreen());
   FlushGpuTasks(SyncMode::kNoWait);
 
-  color_space_ = color_space;
-  is_hdr_ = color_space_.IsHDR();
   size_ = size;
   format_ = format;
-  characterization_ = CreateSkSurfaceCharacterization(
-      size, format, /*mipmap=*/false, color_space_.ToSkColorSpace(),
-      /*is_root_render_pass=*/true, /*is_overlay=*/false);
   RecreateRootRecorder();
 }
 
@@ -369,7 +377,8 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintCurrentFrame() {
   nway_canvas_->addCanvas(current_paint_->recorder()->getCanvas());
 
   SkSurfaceCharacterization characterization = CreateSkSurfaceCharacterization(
-      gfx::Size(characterization_.width(), characterization_.height()), format_,
+      gfx::Size(characterization_.width(), characterization_.height()),
+      characterization_.colorType(),
       /*mipmap=*/false, characterization_.refColorSpace(),
       /*is_root_render_pass=*/false, /*is_overlay=*/false);
   if (characterization.isValid()) {
@@ -607,8 +616,10 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintRenderPass(
   DCHECK(!current_paint_);
   DCHECK(resource_sync_tokens_.empty());
 
+  SkColorType color_type =
+      ResourceFormatToClosestSkColorType(true /* gpu_compositing */, format);
   SkSurfaceCharacterization characterization = CreateSkSurfaceCharacterization(
-      surface_size, BufferFormat(format), mipmap, std::move(color_space),
+      surface_size, color_type, mipmap, std::move(color_space),
       /*is_root_render_pass=*/false, /*is_overlay=*/false);
   if (!characterization.isValid())
     return nullptr;
@@ -626,9 +637,10 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintRenderPassOverlay(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // Make sure there is no unsubmitted PaintFrame or PaintRenderPass.
   DCHECK(!current_paint_);
-
+  SkColorType color_type =
+      ResourceFormatToClosestSkColorType(true /* gpu_compositing */, format);
   SkSurfaceCharacterization characterization = CreateSkSurfaceCharacterization(
-      size, BufferFormat(format), mipmap, std::move(color_space),
+      size, color_type, mipmap, std::move(color_space),
       /*is_root_render_pass=*/false, /*is_overlay=*/true);
   if (!characterization.isValid())
     return nullptr;
@@ -926,7 +938,7 @@ void SkiaOutputSurfaceImpl::InitializeOnGpuThread(
 SkSurfaceCharacterization
 SkiaOutputSurfaceImpl::CreateSkSurfaceCharacterization(
     const gfx::Size& surface_size,
-    gfx::BufferFormat format,
+    SkColorType color_type,
     bool mipmap,
     sk_sp<SkColorSpace> color_space,
     bool is_root_render_pass,
@@ -940,8 +952,9 @@ SkiaOutputSurfaceImpl::CreateSkSurfaceCharacterization(
   SkSurfaceProps surface_props{0, kUnknown_SkPixelGeometry};
   if (is_root_render_pass) {
     DCHECK(!is_overlay);
-    const auto format_index = static_cast<int>(format);
-    const auto& color_type = capabilities_.sk_color_types[format_index];
+    int sample_count = std::min(
+        sample_count_,
+        gr_context_thread_safe_->maxSurfaceSampleCountForColorType(color_type));
     auto backend_format = gr_context_thread_safe_->defaultBackendFormat(
         color_type, GrRenderable::kYes);
 #if BUILDFLAG(IS_MAC)
@@ -952,11 +965,8 @@ SkiaOutputSurfaceImpl::CreateSkSurfaceCharacterization(
         GrBackendFormat::MakeGL(backend_format.asGLFormatEnum(),
                                 gpu::GetPlatformSpecificTextureTarget());
 #endif
-    DCHECK(color_type != kUnknown_SkColorType)
-        << "SkColorType is invalid for buffer format_index: " << format_index;
     DCHECK(backend_format.isValid())
-        << "GrBackendFormat is invalid for buffer format_index: "
-        << format_index;
+        << "GrBackendFormat is invalid for color_type: " << color_type;
     auto surface_origin =
         capabilities_.output_surface_origin == gfx::SurfaceOrigin::kBottomLeft
             ? kBottomLeft_GrSurfaceOrigin
@@ -967,18 +977,24 @@ SkiaOutputSurfaceImpl::CreateSkSurfaceCharacterization(
     DCHECK((capabilities_.uses_default_gl_framebuffer &&
             dependency_->gr_context_type() == gpu::GrContextType::kGL) ||
            !capabilities_.uses_default_gl_framebuffer);
+    // Skia doesn't support set desired MSAA count for default gl framebuffer.
+    if (capabilities_.uses_default_gl_framebuffer)
+      sample_count = 1;
+    bool is_textureable =
+        !capabilities_.uses_default_gl_framebuffer &&
+        !capabilities_.root_is_vulkan_secondary_command_buffer;
     auto characterization = gr_context_thread_safe_->createCharacterization(
-        cache_max_resource_bytes, image_info, backend_format,
-        1 /* sampleCount */, surface_origin, surface_props, mipmap,
-        capabilities_.uses_default_gl_framebuffer, false /* isTextureable */,
-        GrProtected::kNo, false /* vkRTSupportsInputAttachment */,
+        cache_max_resource_bytes, image_info, backend_format, sample_count,
+        surface_origin, surface_props, mipmap,
+        capabilities_.uses_default_gl_framebuffer, is_textureable,
+        GrProtected::kNo, /*vkRTSupportsInputAttachment=*/false,
         capabilities_.root_is_vulkan_secondary_command_buffer);
 #if BUILDFLAG(ENABLE_VULKAN)
     VkFormat vk_format = VK_FORMAT_UNDEFINED;
 #endif
     LOG_IF(DFATAL, !characterization.isValid())
         << "\n  surface_size=" << surface_size.ToString()
-        << "\n  format=" << static_cast<int>(format)
+        << "\n  format=" << static_cast<int>(color_type)
         << "\n  color_type=" << static_cast<int>(color_type)
         << "\n  backend_format.isValid()=" << backend_format.isValid()
         << "\n  backend_format.backend()="
@@ -991,14 +1007,15 @@ SkiaOutputSurfaceImpl::CreateSkSurfaceCharacterization(
         << "\n  backend_format.asVkFormat() vk_format="
         << static_cast<int>(vk_format)
 #endif
+        << "\n  sample_count=" << sample_count
         << "\n  surface_origin=" << static_cast<int>(surface_origin)
         << "\n  willGlFBO0=" << capabilities_.uses_default_gl_framebuffer;
     return characterization;
   }
 
-  auto resource_format = GetResourceFormat(format);
-  auto color_type = ResourceFormatToClosestSkColorType(
-      true /* gpu_compositing */, resource_format);
+  const int sample_count = std::min(
+      sample_count_,
+      gr_context_thread_safe_->maxSurfaceSampleCountForColorType(color_type));
   auto backend_format = gr_context_thread_safe_->defaultBackendFormat(
       color_type, GrRenderable::kYes);
   DCHECK(backend_format.isValid());
@@ -1017,9 +1034,9 @@ SkiaOutputSurfaceImpl::CreateSkSurfaceCharacterization(
                         kPremul_SkAlphaType, std::move(color_space));
 
   auto characterization = gr_context_thread_safe_->createCharacterization(
-      cache_max_resource_bytes, image_info, backend_format, 1 /* sampleCount */,
+      cache_max_resource_bytes, image_info, backend_format, sample_count,
       kTopLeft_GrSurfaceOrigin, surface_props, mipmap,
-      false /* willUseGLFBO0 */, true /* isTextureable */, GrProtected::kNo);
+      /*willUseGLFBO0=*/false, /*isTextureable=*/true, GrProtected::kNo);
   DCHECK(characterization.isValid());
   return characterization;
 }

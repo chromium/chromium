@@ -266,14 +266,16 @@ void OutputPresenterGL::InitializeCapabilities(
       kRGBA_F16_SkColorType;
 }
 
-bool OutputPresenterGL::Reshape(const gfx::Size& size,
-                                float device_scale_factor,
-                                const gfx::ColorSpace& color_space,
-                                gfx::BufferFormat format,
-                                gfx::OverlayTransform transform) {
-  image_format_ = GetResourceFormat(format);
-  return gl_surface_->Resize(size, device_scale_factor, color_space,
-                             gfx::AlphaBitsForBufferFormat(format));
+bool OutputPresenterGL::Reshape(
+    const SkSurfaceCharacterization& characterization,
+    const gfx::ColorSpace& color_space,
+    float device_scale_factor,
+    gfx::OverlayTransform transform) {
+  gfx::Size size = gfx::SkISizeToSize(characterization.dimensions());
+  image_format_ = SkColorTypeToResourceFormat(characterization.colorType());
+  return gl_surface_->Resize(
+      size, device_scale_factor, color_space,
+      !!AlphaBitsForSkColorType(characterization.colorType()));
 }
 
 std::vector<std::unique_ptr<OutputPresenter::Image>>

@@ -193,7 +193,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
                              bool* result);
   SkSurfaceCharacterization CreateSkSurfaceCharacterization(
       const gfx::Size& surface_size,
-      gfx::BufferFormat format,
+      SkColorType color_type,
       bool mipmap,
       sk_sp<SkColorSpace> color_space,
       bool is_root_render_pass,
@@ -249,9 +249,8 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   gpu::Mailbox last_swapped_mailbox_;
 
   gfx::Size size_;
-  gfx::ColorSpace color_space_;
   gfx::BufferFormat format_;
-  bool is_hdr_ = false;
+  int sample_count_ = 1;
   SkSurfaceCharacterization characterization_;
   absl::optional<SkDeferredDisplayListRecorder> root_recorder_;
 
@@ -338,7 +337,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   // scheduler inside this class by having a unique_ptr.
   // TODO(weiliangc): After changing to proper initialization order for Android
   // WebView, remove this holder.
-  raw_ptr<DisplayCompositorMemoryAndTaskController>
+  const raw_ptr<DisplayCompositorMemoryAndTaskController>
       display_compositor_controller_;
 
   // |gpu_task_scheduler_| holds a gpu::SingleTaskSequence, and helps schedule
@@ -346,7 +345,10 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   // compositing and overlay processing are in order. A gpu::SingleTaskSequence
   // in regular Viz is implemented by SchedulerSequence. In Android WebView
   // gpu::SingleTaskSequence is implemented on top of WebView's task queue.
-  raw_ptr<gpu::GpuTaskSchedulerHelper> gpu_task_scheduler_;
+  const raw_ptr<gpu::GpuTaskSchedulerHelper> gpu_task_scheduler_;
+
+  // True if raw draw is being used.
+  const bool is_using_raw_draw_;
 
   // The display transform relative to the hardware natural orientation,
   // applied to the frame content. The transform can be rotations in 90 degree

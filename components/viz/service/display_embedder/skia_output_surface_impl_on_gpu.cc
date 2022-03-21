@@ -368,12 +368,11 @@ SkiaOutputSurfaceImplOnGpu::~SkiaOutputSurfaceImplOnGpu() {
   ReleaseAsyncReadResultHelpers();
 }
 
-void SkiaOutputSurfaceImplOnGpu::Reshape(const gfx::Size& size,
-                                         float device_scale_factor,
-                                         const gfx::ColorSpace& color_space,
-                                         gfx::BufferFormat format,
-                                         bool use_stencil,
-                                         gfx::OverlayTransform transform) {
+void SkiaOutputSurfaceImplOnGpu::Reshape(
+    const SkSurfaceCharacterization& characterization,
+    const gfx::ColorSpace& color_space,
+    float device_scale_factor,
+    gfx::OverlayTransform transform) {
   TRACE_EVENT0("viz", "SkiaOutputSurfaceImplOnGpu::Reshape");
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(gr_context());
@@ -381,10 +380,9 @@ void SkiaOutputSurfaceImplOnGpu::Reshape(const gfx::Size& size,
   if (context_is_lost_)
     return;
 
-  size_ = size;
-  color_space_ = color_space;
-  if (!output_device_->Reshape(size_, device_scale_factor, color_space, format,
-                               transform)) {
+  size_ = gfx::SkISizeToSize(characterization.dimensions());
+  if (!output_device_->Reshape(characterization, color_space,
+                               device_scale_factor, transform)) {
     MarkContextLost(CONTEXT_LOST_RESHAPE_FAILED);
   }
 }
@@ -2053,8 +2051,9 @@ SkiaOutputSurfaceImplOnGpu::GetOrCreateRenderPassOverlayBacking(
   }
 
   gfx::Size size(characterization.width(), characterization.height());
-  gfx::ColorSpace color_space(*characterization.colorSpace());
-
+  gfx::ColorSpace color_space;
+  if (characterization.colorSpace())
+    color_space = gfx::ColorSpace(*characterization.colorSpace());
   auto it = std::find_if(
       available_render_pass_overlay_backings_.begin(),
       available_render_pass_overlay_backings_.end(),
