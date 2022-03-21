@@ -30,6 +30,12 @@ void AccountCapabilitiesTestMutator::set_can_run_chrome_privacy_sandbox_trials(
       value;
 }
 
+void AccountCapabilitiesTestMutator::set_is_subject_to_parental_controls(
+    bool value) {
+  capabilities_->capabilities_map_[kIsSubjectToParentalControlsCapabilityName] =
+      value;
+}
+
 void AccountCapabilitiesTestMutator::SetAllSupportedCapabilities(bool value) {
   for (const std::string& name :
        AccountCapabilities::GetSupportedAccountCapabilityNames()) {
