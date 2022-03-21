@@ -15,6 +15,10 @@
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/webauthn/chrome_conditional_ui_delegate_android.h"
+#endif
+
 ChromeWebAuthnCredentialsDelegate::ChromeWebAuthnCredentialsDelegate(
     ChromePasswordManagerClient* client)
     : client_(client) {}
@@ -28,7 +32,17 @@ bool ChromeWebAuthnCredentialsDelegate::IsWebAuthnAutofillEnabled() const {
 
 void ChromeWebAuthnCredentialsDelegate::SelectWebAuthnCredential(
     std::string backend_id) {
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+  auto* credentials_delegate =
+      ChromeConditionalUiDelegateAndroid::GetConditionalUiDelegate(
+          client_->web_contents());
+  if (!credentials_delegate) {
+    std::move(retrieve_suggestions_callback_).Run();
+    return;
+  }
+  credentials_delegate->OnWebAuthnAccountSelected(
+      std::vector<uint8_t>(backend_id.begin(), backend_id.end()));
+#else
   ChromeAuthenticatorRequestDelegate* authenticator_delegate =
       AuthenticatorRequestScheduler::GetRequestDelegate(
           client_->web_contents());
@@ -37,7 +51,7 @@ void ChromeWebAuthnCredentialsDelegate::SelectWebAuthnCredential(
   }
   authenticator_delegate->dialog_model()->OnAccountPreselected(
       std::vector<uint8_t>(backend_id.begin(), backend_id.end()));
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 const std::vector<autofill::Suggestion>&
@@ -50,7 +64,16 @@ void ChromeWebAuthnCredentialsDelegate::RetrieveWebAuthnSuggestions(
   retrieve_suggestions_callback_ = std::move(callback);
 
 #if BUILDFLAG(IS_ANDROID)
-  std::move(retrieve_suggestions_callback_).Run();
+  auto* credentials_delegate =
+      ChromeConditionalUiDelegateAndroid::GetConditionalUiDelegate(
+          client_->web_contents());
+  if (!credentials_delegate) {
+    std::move(retrieve_suggestions_callback_).Run();
+    return;
+  }
+  credentials_delegate->RetrieveWebAuthnCredentials(
+      base::BindOnce(&ChromeWebAuthnCredentialsDelegate::OnCredentialsReceived,
+                     weak_ptr_factory_.GetWeakPtr()));
 #else
   ChromeAuthenticatorRequestDelegate* authenticator_delegate =
       AuthenticatorRequestScheduler::GetRequestDelegate(
