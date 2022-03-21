@@ -4672,16 +4672,22 @@
                     "name": "AndroidExperiments",
                     "params": {
                         "OmniboxDynamicMaxAutocompleteIncreasedLimit": "15",
+                        "OmniboxLocalZeroSuggestAgeThreshold": "14",
                         "OmniboxMaxURLMatches": "8",
-                        "UIMaxAutocompleteMatches": "15"
+                        "UIMaxAutocompleteMatches": "15",
+                        "ZeroSuggestCacheCounterfactual": "true",
+                        "ZeroSuggestCacheDurationSec": "180",
+                        "ZeroSuggestPrefetchBypassCache": "true"
                     },
                     "enable_features": [
                         "OmniboxDynamicMaxAutocomplete",
+                        "OmniboxLocalZeroSuggestAgeThreshold",
                         "OmniboxMaxURLMatches",
                         "OmniboxOnFocusSuggestionsContextualWebAllowSRP",
                         "OmniboxUIExperimentMaxAutocompleteMatches",
                         "QuickActionSearchWidgetAndroid",
-                        "QuickActionSearchWidgetAndroidDinoVariant"
+                        "QuickActionSearchWidgetAndroidDinoVariant",
+                        "ZeroSuggestPrefetching"
                     ]
                 }
             ]
