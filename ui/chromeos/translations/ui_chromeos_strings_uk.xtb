@@ -31,6 +31,7 @@
 <translation id="1201402288615127009">Далі</translation>
 <translation id="1209796539517632982">Імена серверів – автоматично</translation>
 <translation id="1210831758834677569">Лаоська</translation>
+<translation id="1223825810409523901">Розширення Chrome</translation>
 <translation id="1243314992276662751">Завантажити</translation>
 <translation id="1249250836236328755">Жанр</translation>
 <translation id="1254593899333212300">Пряме з'єднання з Інтернетом</translation>
@@ -80,6 +81,7 @@
 <translation id="166439687370499867">Заборонено змінювати налаштування спільної мережі</translation>
 <translation id="1665611772925418501">Файл неможливо змінити.</translation>
 <translation id="1673103856845176271">Доступ до файлу неможливо отримати з міркувань безпеки.</translation>
+<translation id="16762847117768727">ISO-образ</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1715848075824334077">Людина на велосипеді</translation>
 <translation id="1722487484194605434">Архівування елементів (<ph name="NUMBER_OF_ITEMS" />)…</translation>
@@ -811,6 +813,7 @@
 <translation id="7925686952655276919">Не використовувати мобільне передавання даних для синхронізації</translation>
 <translation id="7928710562641958568">Витягнути пристрій</translation>
 <translation id="7943385054491506837">Розкладка Colemak (США)</translation>
+<translation id="7948417415021769876">Архів 7z</translation>
 <translation id="7953739707111622108">Не вдається відкрити пристрій, оскільки його файлову систему не розпізнано.</translation>
 <translation id="7969525169268594403">Словенська</translation>
 <translation id="7972920761225148017">Французька (Швейцарія)</translation>
@@ -860,6 +863,7 @@
 <translation id="8372369524088641025">Поганий WEP-ключ</translation>
 <translation id="8372852072747894550">Грецька</translation>
 <translation id="8386903983509584791">Сканування завершено</translation>
+<translation id="8387733224523483503">Видобуто файл "<ph name="FILE_NAME" />".</translation>
 <translation id="8395901698320285466">Розміри</translation>
 <translation id="8408068190360279472">Мережа <ph name="NETWORK_TYPE" />: підключення</translation>
 <translation id="8425213833346101688">Змінити</translation>
@@ -954,6 +958,7 @@
 <translation id="9174050671906956834">Файли зберігаються в кошику 30 днів, а потім видаляються назавжди.</translation>
 <translation id="9183302530794969518">Google Документи</translation>
 <translation id="9189836632794948435">Казахська</translation>
+<translation id="9200427192836333033">Видобуто об’єктів: <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="9213073329713032541">Встановлення розпочато.</translation>
 <translation id="9219103736887031265">Зображення</translation>
 <translation id="9219908252191632183">Місячний ландшафт</translation>

@@ -31,6 +31,7 @@
 <translation id="1201402288615127009">İleri</translation>
 <translation id="1209796539517632982">Otomatik ad sunucuları</translation>
 <translation id="1210831758834677569">Laoca</translation>
+<translation id="1223825810409523901">Chrome uzantısı</translation>
 <translation id="1243314992276662751">Yükle</translation>
 <translation id="1249250836236328755">Tür</translation>
 <translation id="1254593899333212300">Doğrudan İnternet bağlantısı</translation>
@@ -80,6 +81,7 @@
 <translation id="166439687370499867">Paylaşılan ağ yapılandırmalarının değiştirilmesine izin verilmez</translation>
 <translation id="1665611772925418501">Dosya değiştirilemedi.</translation>
 <translation id="1673103856845176271">Güvenlik nedenleriyle dosyaya erişilemedi.</translation>
+<translation id="16762847117768727">ISO resmi</translation>
 <translation id="169515659049020177">ÜstKrktr</translation>
 <translation id="1715848075824334077">Bisiklet</translation>
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> öğe sıkıştırılıyor...</translation>
@@ -811,6 +813,7 @@
 <translation id="7925686952655276919">Senkronizasyon için mobil veri kullanma</translation>
 <translation id="7928710562641958568">Cihazı çıkar</translation>
 <translation id="7943385054491506837">ABD Colemak</translation>
+<translation id="7948417415021769876">7z arşivi</translation>
 <translation id="7953739707111622108">Bu cihaz, dosya sistemi tanınmadığından açılamıyor.</translation>
 <translation id="7969525169268594403">Slovence</translation>
 <translation id="7972920761225148017">Fransızca (İsviçre)</translation>
@@ -860,6 +863,7 @@
 <translation id="8372369524088641025">Hatalı WEP anahtarı</translation>
 <translation id="8372852072747894550">Yunanca</translation>
 <translation id="8386903983509584791">Tarama tamamlandı</translation>
+<translation id="8387733224523483503"><ph name="FILE_NAME" /> çıkarıldı.</translation>
 <translation id="8395901698320285466">Boyutlar</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> ağı, bağlanıyor</translation>
 <translation id="8425213833346101688">Değiştir</translation>
@@ -954,6 +958,7 @@
 <translation id="9174050671906956834">Çöp kutusundaki öğeler 30 gün sonunda tamamıyla silinir.</translation>
 <translation id="9183302530794969518">Google Dokümanlar</translation>
 <translation id="9189836632794948435">Kazakça</translation>
+<translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> öğe çıkarıldı.</translation>
 <translation id="9213073329713032541">Yükleme işlemi başarıyla başlatıldı.</translation>
 <translation id="9219103736887031265">Resimler</translation>
 <translation id="9219908252191632183">Ay</translation>

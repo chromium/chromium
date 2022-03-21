@@ -1436,6 +1436,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2349896577940037438">Nếu bạn bật tùy chọn cài đặt Hoạt động trên web và ứng dụng bổ sung, thì dữ liệu này có thể được lưu vào Tài khoản Google của bạn. Bạn có thể xem, xóa dữ liệu và thay đổi các tùy chọn cài đặt tài khoản của mình tại account.google.com.</translation>
 <translation id="2350133097354918058">Đã tải lại</translation>
 <translation id="2350182423316644347">Đang chạy ứng dụng...</translation>
+<translation id="235028206512346451">Nếu bạn rời khỏi thiết bị, màn hình của thiết bị sẽ tự động khoá. Khi bạn ở đối diện thiết bị, màn hình sẽ kéo dài thời gian không khoá. Nếu bạn không sử dụng màn hình khoá, thiết bị sẽ ngủ mà không khoá.</translation>
 <translation id="2352495879228166246">{NUM_ITEMS,plural, =1{1 mục}other{{NUM_ITEMS} mục}}</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2352810082280059586">Ghi chú trên màn hình khóa được tự động lưu vào <ph name="LOCK_SCREEN_APP_NAME" />. Ghi chú mới nhất của bạn sẽ vẫn còn trên màn hình khóa.</translation>
@@ -1978,6 +1979,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692"><ph name="DEVICE" /> và <ph name="NUMBER_OF_DEVICES" /> thiết bị khác</translation>
 <translation id="2889064240420137087">Mở đường liên kết bằng...</translation>
+<translation id="2891566119238851894">Mở thanh tìm kiếm trong bảng điều khiển bên. Thanh tìm kiếm hiện không mở trong bảng điều khiển bên.</translation>
 <translation id="2891922230654533301">Dùng thiết bị của bạn để đăng nhập vào <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Trình duyệt mặc định</translation>
 <translation id="2893180576842394309">Google có thể sử dụng lịch sử của bạn để điều chỉnh tính năng Tìm kiếm và các dịch vụ khác của Google cho phù hợp với bạn</translation>
@@ -2736,6 +2738,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3677959414150797585">Bao gồm ứng dụng, trang web và nhiều nội dung khác. Chỉ gửi số liệu thống kê để cải thiện nội dung đề xuất nếu bạn chọn chia sẻ dữ liệu sử dụng.</translation>
 <translation id="3678156199662914018">Tiện ích: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Những trang bạn xem trong cửa sổ này sẽ không xuất hiện trong nhật ký duyệt web của trình duyệt, cũng như không để lại dấu vết khác (chẳng hạn như cookie) trên máy tính sau khi bạn đăng xuất. Hệ thống sẽ không lưu giữ các tệp bạn tải xuống và dấu trang bạn tạo.</translation>
+<translation id="368019053277764111">Mở thanh tìm kiếm trong bảng điều khiển bên</translation>
 <translation id="3680683624079082902">Giọng nói của tính năng chuyển văn bản sang lời nói</translation>
 <translation id="3681311097828166361">Cảm ơn bạn đã phản hồi. Bạn hiện đang ngoại tuyến và báo cáo của bạn sẽ được gửi sau.</translation>
 <translation id="3682824389861648626">Ngưỡng chuyển động</translation>
@@ -4846,6 +4849,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5799478978078236781">Nhận các mẹo, ưu đãi và thông tin cập nhật về <ph name="DEVICE_TYPE" />, cũng như chia sẻ ý kiến phản hồi.</translation>
 <translation id="5799508265798272974">Máy ảo Linux: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">Tệp đích đã bị cắt bớt hoặc xóa kể từ lần tải xuống cuối cùng.</translation>
+<translation id="5800351251499368110">Đóng thanh tìm kiếm trong bảng điều khiển bên. Thanh tìm kiếm đang mở trong bảng điều khiển bên.</translation>
 <translation id="5801568494490449797">Tùy chọn</translation>
 <translation id="5804241973901381774">Quyền</translation>
 <translation id="5805697420284793859">Trình quản lý cửa sổ</translation>
@@ -6357,6 +6361,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="7356908624372060336">Nhật ký mạng</translation>
 <translation id="735745346212279324">Đã ngắt kết nối VPN</translation>
 <translation id="7358324924540718595">Đã ẩn những kỷ niệm cho hôm nay</translation>
+<translation id="7358338787722390626">Đóng thanh tìm kiếm trong bảng điều khiển bên</translation>
 <translation id="735994578317267253">Truy cập ứng dụng, chế độ cài đặt, v.v. trên mọi thiết bị ChromeOS</translation>
 <translation id="7360233684753165754"><ph name="PAGE_NUMBER" /> trang tới <ph name="PRINTER_NAME" /></translation>
 <translation id="7361297102842600584">Nhấp chuột phải để chạy <ph name="PLUGIN_NAME" /></translation>

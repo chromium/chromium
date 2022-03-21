@@ -1425,6 +1425,7 @@
 <translation id="2349896577940037438">ඔබේ අමතර වෙබ් සහ යෙදුම් ක්‍රියාකාරකම් සැකසීම සක්‍රීය නම්, මෙම දත්ත ඔබේ Google ගිණුුමට සුරකිනු ලැබේ. account.google.com හි ඔබට ඔබේ දත්ත බැලීමට, එය වෙනස් කිරීමට සහ ඔබේ ගිණුම් සැකසීම් වෙනස් කිරීමට හැකිය.</translation>
 <translation id="2350133097354918058">යළි පූරණ කළා</translation>
 <translation id="2350182423316644347">යෙදුම ආරම්භ කරමින්...</translation>
+<translation id="235028206512346451">ඔබ ඔබගේ උපාංගයෙන් ඉවතට ගියහොත්, ඔබගේ තිරය ස්වයංක්‍රීයව අගුලු වැටෙනු ඇත. ඔබ ඔබගේ උපාංගය ඉදිරිපිට සිටින විට, ඔබගේ තිරය වැඩි වේලාවක් අවදියෙන් පවතිනු ඇත. ඔබ අගුලු තිරයක් භාවිත නොකරන්නේ නම්, ඔබගේ උපාංගය අගුලු දැමීම වෙනුවට නිද්‍රාවට පත් වනු ඇත.</translation>
 <translation id="2352495879228166246">{NUM_ITEMS,plural, =1{1 අයිතමයක්}one{අයිතම {NUM_ITEMS} ක්}other{අයිතම {NUM_ITEMS} ක්}}</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2352810082280059586">අගුලු තිර සටහන් ස්වයංක්‍රියව <ph name="LOCK_SCREEN_APP_NAME" /> වෙත සුරැකේ. ඔබගේ වඩාත් මෑත සටහන අගුලු තිරය මත පවතිනු ඇත.</translation>
@@ -1966,6 +1967,7 @@
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692"><ph name="DEVICE" /> සහ තවත් <ph name="NUMBER_OF_DEVICES" /></translation>
 <translation id="2889064240420137087">සමඟ සබැඳිය විවෘත කරන්න...</translation>
+<translation id="2891566119238851894">පැති පැනලයේ සෙවීම විවෘත කරන්න. පැති පැනලයේ සෙවීම විවෘත නැත.</translation>
 <translation id="2891922230654533301"><ph name="APP_NAME" /> වෙත පිරීමට ඔබගේ උපාංගය භාවිත කරන්නද?</translation>
 <translation id="2893168226686371498">පෙරනිමි බ්‍රව්සරය</translation>
 <translation id="2893180576842394309">සෙවීම සහ අනෙකුත් Google සේවා පුද්ගලායන කිරීමට Google ඔබේ ඉතිහාසය භාවිත කළ හැක</translation>
@@ -2724,6 +2726,7 @@
 <translation id="3677959414150797585">යෙදුම්, වෙබ් පිටු, සහ තවත් දේ අන්තර්ගත වේ. ඔබ භාවිත දත්ත බෙදා ගැනීමට තෝරා ඇති නම් පමණක් යෝජනා වැඩි දියුණු කිරීමට සංඛ්‍යාන යවයි.</translation>
 <translation id="3678156199662914018">දිගුව: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">මෙම කවුළුව තුළ ඔබ නරඹන පිටු බ්‍රවුස් කිරීමේ ඉතිහාසය තුළ නොපෙන්වනු ඇති අතර ඔබ වැරීමෙන් පසුව ඒවා කුකි වැනි වෙනත් හෝඩුවාවල් පරිගණකයේ නොතබනු ඇත. ඔබ බාගන්නා ගොනු හෝ තනන පිටුසන් සංරක්ෂණය නොකරනු ඇත.</translation>
+<translation id="368019053277764111">පැති පැනලයේ සෙවීම විවෘත කරන්න</translation>
 <translation id="3680683624079082902">කථනයට පාඨය හඬ</translation>
 <translation id="3681311097828166361">ඔබගේ ප්‍රතිපෝෂණයට ස්තූතියි. ඔබ දැන් නොබැඳි වන අතර, ඔබේ වාර්තාව පසුව යවනු ඇත.</translation>
 <translation id="3682824389861648626">චලන සීමාන්තිකය</translation>
@@ -4835,6 +4838,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5799478978078236781"><ph name="DEVICE_TYPE" /> ඉඟි, දීමනා සහ යාවත්කාලීන ලබා ගන්න සහ ප්‍රතිපෝෂණ බෙදා ගන්න.</translation>
 <translation id="5799508265798272974">ලිනක්ස් අතථ්‍ය යන්ත්‍රය: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">අවසන් වරට බාගැනීමෙන් පසු අදාළ ගොනුව ලුප්ත කර හෝ වෙනත් තැනකට ගෙනගොස් ඇත.</translation>
+<translation id="5800351251499368110">පැති පැනලයේ සෙවීම වසන්න. පැති පැනලයේ සෙවීම විවෘතයි.</translation>
 <translation id="5801568494490449797">අභිරුචි</translation>
 <translation id="5804241973901381774">අවසර</translation>
 <translation id="5805697420284793859">කවුළු කළමනාකරු</translation>
@@ -6344,6 +6348,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7356908624372060336">ජාල ලොග</translation>
 <translation id="735745346212279324">VPN විසන්ධි විය</translation>
 <translation id="7358324924540718595">අද දිනය සඳහා මතක සඟවා ඇත</translation>
+<translation id="7358338787722390626">පැති පැනලයේ සෙවීම වසන්න</translation>
 <translation id="735994578317267253">ඕනෑම ChromeOS උපාංගයක ඔබගේ යෙදුම්, සැකසීම් සහ තවත් දේ ලබා ගන්න</translation>
 <translation id="7360233684753165754"><ph name="PRINTER_NAME" /> වෙත පිටු <ph name="PAGE_NUMBER" />ක්</translation>
 <translation id="7361297102842600584"><ph name="PLUGIN_NAME" /> ධාවනය කිරීමට දකුණු-ක්ලික් කරන්න</translation>

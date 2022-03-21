@@ -171,6 +171,7 @@
 <translation id="1436185428532214179">Може просити дозвіл змінювати файли та папки на пристрої</translation>
 <translation id="1442386063175183758">Зігнути за типом "ворота праворуч"</translation>
 <translation id="1442987760062738829">Пробити отвір</translation>
+<translation id="1446396933673057385">Перевірка достовірності</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
 <translation id="1453974140256777690">Текст, який ви вставляєте або долучаєте, надсилається на платформу Google Cloud або стороннім сервісам на аналіз. Наприклад, його можуть сканувати на наявність конфіденційних даних.</translation>
 <translation id="1455413310270022028">Гумка</translation>
@@ -462,6 +463,7 @@
 <translation id="2318594867107319532">Остання позначка часу для правила:</translation>
 <translation id="2328651992442742497">Дозволено (за умовчанням)</translation>
 <translation id="2329182534073751090">розміщення вікон</translation>
+<translation id="2329473609445770916">Цей сайт визначає інтереси, які можуть використовувати інші сайти для показу оголошень</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, діє до <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Налаштуванням керує ваш адміністратор</translation>
 <translation id="2340263603246777781">Сайт <ph name="ORIGIN" /> хоче підключитися до пристрою</translation>
@@ -739,6 +741,7 @@
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб налаштувати вигляд веб-переглядача</translation>
 <translation id="3240791268468473923">Відкрито нижній екран невідповідності облікових даних для безпечних платежів</translation>
 <translation id="324180406144491771">Посилання <ph name="HOST_NAME" /> заблоковано</translation>
+<translation id="3248611290851046188">Цей сайт визначає інтереси, які можуть використовувати інші сайти для показу оголошень. Цей сайт також використовує дані про ваші інтереси з Chrome, щоб показувати вам доречнішу рекламу.</translation>
 <translation id="3249845759089040423">Чудовий</translation>
 <translation id="3252266817569339921">Французька</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб швидко створити нову подію в Google Календарі</translation>
@@ -850,6 +853,7 @@
 <translation id="3586931643579894722">Сховати докладні дані</translation>
 <translation id="3587738293690942763">Середній</translation>
 <translation id="3592413004129370115">Italian (конверт)</translation>
+<translation id="3595645257662173296">Які є докази?</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Ви можете будь-коли скинути цю групу. Перехід у нову групу займає приблизно один день.}=1{Ви можете будь-коли скинути цю групу. Перехід у нову групу займає приблизно один день.}one{Ви можете будь-коли скинути цю групу. Перехід у нову групу займає {NUM_DAYS} день.}few{Ви можете будь-коли скинути цю групу. Перехід у нову групу займає {NUM_DAYS} дні.}many{Ви можете будь-коли скинути цю групу. Перехід у нову групу займає {NUM_DAYS} днів.}other{Ви можете будь-коли скинути цю групу. Перехід у нову групу займає {NUM_DAYS} дня.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">Додаток заблоковано адміністратором</translation>
@@ -1669,6 +1673,7 @@
 <translation id="6165508094623778733">Докладніше</translation>
 <translation id="6167577165590485365">Остання спроба отримання:</translation>
 <translation id="6169916984152623906">Тепер ви можете переглядати вміст анонімно. Інші користувачі вашого пристрою не бачитимуть дані про вашу активність. Однак завантаження та закладки зберігатимуться.</translation>
+<translation id="6176716740821145453">Оцінюйте наведену тут інформацію критично</translation>
 <translation id="6177128806592000436">Ваше з’єднання з цим сайтом не захищене</translation>
 <translation id="6180316780098470077">Інтервал між повторними спробами</translation>
 <translation id="6196640612572343990">Блокувати сторонні файли cookie</translation>
@@ -1792,6 +1797,7 @@
 <translation id="6615297766614333076">Накопичувач 2</translation>
 <translation id="6624427990725312378">Контактна інформація</translation>
 <translation id="6626291197371920147">Додати дійсний номер картки</translation>
+<translation id="6627727261837091711">Показати відомості про персоналізацію реклами</translation>
 <translation id="6628463337424475685">Пошук <ph name="ENGINE" /></translation>
 <translation id="6630043285902923878">Пошук пристроїв USB…</translation>
 <translation id="6630809736994426279">Зловмисники можуть використати сайт <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />, щоб установити на ваш комп’ютер Mac небезпечні програми, що викрадають або видаляють інформацію (фотографії, паролі, повідомленняб дані кредитних карток тощо). <ph name="BEGIN_LEARN_MORE_LINK" />Докладніше<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -2061,6 +2067,7 @@
 <translation id="7473891865547856676">Ні, дякую</translation>
 <translation id="7481312909269577407">Переслати</translation>
 <translation id="7485870689360869515">Даних не знайдено.</translation>
+<translation id="7485948220959728508">Звідки надійшла ця інформація?</translation>
 <translation id="7495528107193238112">Підключення заблоковано. Щоб вирішити проблему, зв'яжіться з власником сайту.</translation>
 <translation id="7497998058912824456">Кнопка "Створити документ"; натисніть Enter, щоб швидко створити новий документ Google</translation>
 <translation id="7506488012654002225">Chromium <ph name="BEGIN_EMPHASIS" />не зберігатиме<ph name="END_EMPHASIS" />:
@@ -2141,6 +2148,7 @@
 <translation id="7682287625158474539">Адреса для надсилання</translation>
 <translation id="7687186412095877299">Заповнює платіжні форми, використовуючи збережені способи оплати</translation>
 <translation id="7687305263118037187">Час для повторної спроби минув</translation>
+<translation id="7687451951329798396">Яку інформацію подають інші джерела?</translation>
 <translation id="7693583928066320343">Порядок сторінок отримано</translation>
 <translation id="7697066736081121494">Prc8 (конверт)</translation>
 <translation id="769721561045429135">Зараз у вас є картки, які можна використовувати лише на цьому пристрої. Натисніть "Продовжити", щоб переглянути їх.</translation>
@@ -2385,6 +2393,7 @@
 <translation id="8507227106804027148">Командний рядок</translation>
 <translation id="8508648098325802031">Значок пошуку</translation>
 <translation id="8511402995811232419">Керувати файлами cookie</translation>
+<translation id="851353418319061866">Перевірка достовірності</translation>
 <translation id="8519753333133776369">Адміністратор дозволив цей пристрій HID</translation>
 <translation id="8522552481199248698">Chrome допоможе захистити обліковий запис Google і змінити пароль.</translation>
 <translation id="8530813470445476232">Очистити історію веб-перегляду, файли cookie, кеш та інше в налаштуваннях Chrome</translation>

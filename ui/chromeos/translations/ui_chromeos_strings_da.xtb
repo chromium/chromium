@@ -31,6 +31,7 @@
 <translation id="1201402288615127009">Næste</translation>
 <translation id="1209796539517632982">Automatiske navneservere</translation>
 <translation id="1210831758834677569">Laotisk</translation>
+<translation id="1223825810409523901">Chrome-udvidelse</translation>
 <translation id="1243314992276662751">Upload</translation>
 <translation id="1249250836236328755">Genre</translation>
 <translation id="1254593899333212300">Direkte internetforbindelse</translation>
@@ -80,6 +81,7 @@
 <translation id="166439687370499867">Det er ikke tilladt at ændre delte netværkskonfigurationer</translation>
 <translation id="1665611772925418501">Filen kunne ikke ændres.</translation>
 <translation id="1673103856845176271">Der kunne ikke opnås adgang til filen af sikkerhedsmæssige årsager.</translation>
+<translation id="16762847117768727">ISO-billede</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1715848075824334077">Cykling</translation>
 <translation id="1722487484194605434">Komprimerer <ph name="NUMBER_OF_ITEMS" /> elementer...</translation>
@@ -811,6 +813,7 @@
 <translation id="7925686952655276919">Brug ikke mobildata til synkronisering</translation>
 <translation id="7928710562641958568">Skub enheden ud</translation>
 <translation id="7943385054491506837">Amerikansk (Colemak)</translation>
+<translation id="7948417415021769876">7z-arkiv</translation>
 <translation id="7953739707111622108">Denne enhed kan ikke åbnes, fordi dens filsystem ikke blev genkendt.</translation>
 <translation id="7969525169268594403">Slovensk</translation>
 <translation id="7972920761225148017">Fransk (Schweiz)</translation>
@@ -860,6 +863,7 @@
 <translation id="8372369524088641025">Ugyldig WEP-nøgle</translation>
 <translation id="8372852072747894550">Græsk</translation>
 <translation id="8386903983509584791">Scanningen er udført</translation>
+<translation id="8387733224523483503"><ph name="FILE_NAME" /> er pakket ud.</translation>
 <translation id="8395901698320285466">Mål</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" />-netværk, opretter forbindelse</translation>
 <translation id="8425213833346101688">Skift</translation>
@@ -954,6 +958,7 @@
 <translation id="9174050671906956834">Elementer i papirkurven slettes permanent efter 30 dage.</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">Kasakhisk</translation>
+<translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> elementer er pakket ud.</translation>
 <translation id="9213073329713032541">Installationen er startet.</translation>
 <translation id="9219103736887031265">Billeder</translation>
 <translation id="9219908252191632183">Måne</translation>
