@@ -318,7 +318,7 @@ public class AutofillAssistantUiController {
             boolean disabled, boolean sticky, boolean visible,
             @Nullable String contentDescription) {
         AssistantChip chip = AssistantChip.createHairlineAssistantChip(
-                icon, text, disabled, sticky, visible, contentDescription);
+                icon, text, disabled, sticky, visible, contentDescription, "action_" + actionIndex);
         chip.setSelectedListener(() -> safeNativeOnUserActionSelected(actionIndex));
         return chip;
     }
@@ -331,7 +331,7 @@ public class AutofillAssistantUiController {
             boolean disabled, boolean sticky, boolean visible,
             @Nullable String contentDescription) {
         AssistantChip chip = AssistantChip.createHighlightedAssistantChip(
-                icon, text, disabled, sticky, visible, contentDescription);
+                icon, text, disabled, sticky, visible, contentDescription, "action_" + actionIndex);
         chip.setSelectedListener(() -> safeNativeOnUserActionSelected(actionIndex));
         return chip;
     }
@@ -346,7 +346,7 @@ public class AutofillAssistantUiController {
             boolean disabled, boolean sticky, boolean visible,
             @Nullable String contentDescription) {
         AssistantChip chip = AssistantChip.createHairlineAssistantChip(
-                icon, text, disabled, sticky, visible, contentDescription);
+                icon, text, disabled, sticky, visible, contentDescription, "cancel_" + actionIndex);
         chip.setSelectedListener(() -> safeNativeOnCancelButtonClicked(actionIndex));
         return chip;
     }
@@ -358,7 +358,8 @@ public class AutofillAssistantUiController {
     private AssistantChip createCloseButton(int icon, String text, boolean disabled, boolean sticky,
             boolean visible, @Nullable String contentDescription) {
         AssistantChip chip = AssistantChip.createHairlineAssistantChip(
-                icon, text, disabled, sticky, visible, contentDescription);
+                icon, text, disabled, sticky, visible, contentDescription, "close");
+
         chip.setSelectedListener(() -> safeNativeOnCloseButtonClicked());
         return chip;
     }
@@ -371,8 +372,8 @@ public class AutofillAssistantUiController {
     private AssistantChip createFeedbackButton(int icon, String text, int actionIndex,
             boolean disabled, boolean sticky, boolean visible,
             @Nullable String contentDescription) {
-        AssistantChip chip = AssistantChip.createHairlineAssistantChip(
-                icon, text, disabled, sticky, visible, contentDescription);
+        AssistantChip chip = AssistantChip.createHairlineAssistantChip(icon, text, disabled, sticky,
+                visible, contentDescription, "feedback_" + actionIndex);
         chip.setSelectedListener(() -> safeNativeOnFeedbackButtonClicked(actionIndex));
         return chip;
     }

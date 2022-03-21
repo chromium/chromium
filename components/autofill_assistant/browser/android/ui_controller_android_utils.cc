@@ -497,7 +497,9 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaAssistantChip(
           chip.has_content_description()
               ? base::android::ConvertUTF8ToJavaString(
                     env, chip.content_description())
-              : nullptr);
+              : nullptr,
+          /* optionalIdentifier = */
+          base::android::ConvertUTF8ToJavaString(env, std::string()));
 
     case NORMAL_ACTION:
     case CANCEL_ACTION:
@@ -510,7 +512,9 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaAssistantChip(
           chip.has_content_description()
               ? base::android::ConvertUTF8ToJavaString(
                     env, chip.content_description())
-              : nullptr);
+              : nullptr,
+          /* optionalIdentifier= */
+          base::android::ConvertUTF8ToJavaString(env, std::string()));
   }
 }
 

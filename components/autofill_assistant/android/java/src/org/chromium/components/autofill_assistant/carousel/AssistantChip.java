@@ -93,15 +93,29 @@ public class AssistantChip {
     /** The content description for the chip. */
     private final @Nullable String mContentDescription;
 
+    /**
+     * Optional identifier used to distinguish two otherwise equal buttons (like close and cancel).
+     * It's only necessary when a chip in a container needs to update its listener without changing
+     * any other property or removing it first.
+     */
+    private final String mOptionalIdentifier;
+
     public AssistantChip(@Type int type, @Icon int icon, String text, boolean disabled,
-            boolean sticky, boolean visible, @Nullable String contentDescription) {
+            boolean sticky, boolean visible, @Nullable String contentDescription,
+            String optionalIdentifier) {
         mType = type;
         mIcon = icon;
         mText = text;
         mDisabled = disabled;
         mSticky = sticky;
         mVisible = visible;
+        mOptionalIdentifier = optionalIdentifier;
         mContentDescription = contentDescription;
+    }
+
+    public AssistantChip(@Type int type, @Icon int icon, String text, boolean disabled,
+            boolean sticky, boolean visible, @Nullable String contentDescription) {
+        this(type, icon, text, disabled, sticky, visible, contentDescription, "");
     }
 
     public AssistantChip(@Type int type, @Icon int icon, String text, boolean disabled,
@@ -169,6 +183,10 @@ public class AssistantChip {
         return mOnPopupItemSelected;
     }
 
+    public String getOptionalIdentifier() {
+        return mOptionalIdentifier;
+    }
+
     @Override
     public boolean equals(Object other) {
         if (!(other instanceof AssistantChip)) {
@@ -178,7 +196,8 @@ public class AssistantChip {
         AssistantChip that = (AssistantChip) other;
         return this.getType() == that.getType() && this.getText().equals(that.getText())
                 && this.getIcon() == that.getIcon() && this.isSticky() == that.isSticky()
-                && this.isDisabled() == that.isDisabled() && this.isVisible() == that.isVisible();
+                && this.isDisabled() == that.isDisabled() && this.isVisible() == that.isVisible()
+                && this.getOptionalIdentifier().equals(that.getOptionalIdentifier());
     }
 
     /**
@@ -187,9 +206,10 @@ public class AssistantChip {
      */
     @CalledByNative
     public static AssistantChip createHairlineAssistantChip(int icon, String text, boolean disabled,
-            boolean sticky, boolean visible, @Nullable String contentDescription) {
+            boolean sticky, boolean visible, @Nullable String contentDescription,
+            String optionalIdentifier) {
         return new AssistantChip(AssistantChip.Type.BUTTON_HAIRLINE, icon, text, disabled, sticky,
-                visible, contentDescription);
+                visible, contentDescription, optionalIdentifier);
     }
 
     /**
@@ -198,10 +218,10 @@ public class AssistantChip {
      */
     @CalledByNative
     public static AssistantChip createHighlightedAssistantChip(int icon, String text,
-            boolean disabled, boolean sticky, boolean visible,
-            @Nullable String contentDescription) {
-        return new AssistantChip(
-                Type.BUTTON_FILLED_BLUE, icon, text, disabled, sticky, visible, contentDescription);
+            boolean disabled, boolean sticky, boolean visible, @Nullable String contentDescription,
+            String optionalIdentifier) {
+        return new AssistantChip(Type.BUTTON_FILLED_BLUE, icon, text, disabled, sticky, visible,
+                contentDescription, optionalIdentifier);
     }
 
     @CalledByNative
