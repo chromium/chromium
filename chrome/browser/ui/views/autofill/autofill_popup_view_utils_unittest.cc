@@ -7,6 +7,75 @@
 #include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace autofill {
+
+TEST(AutofillPopupViewUtilsTest, GetOptimalArrowSide) {
+  const gfx::Size default_preferred_size{200, 600};
+
+  struct TestCase {
+    views::BubbleArrowSide expected_arrow_side;
+    gfx::Rect content_area_bounds;
+    gfx::Rect element_bounds;
+    gfx::Size preferred_size;
+  } test_cases[]{
+      // Default case where there is enough space on all sides.
+      // In this case, the popup is placed below meaning that the arrow is on
+      // top of the popup.
+      {
+          views::BubbleArrowSide::kTop,
+          gfx::Rect(0, 0, 1000, 2000),
+          gfx::Rect(400, 0, 200, 200),
+          default_preferred_size,
+      },
+      // The popup cannot be placed below the element and needs to be placed on
+      // top, meaning the arrow is on the bottom of the popup.
+      {
+          views::BubbleArrowSide::kBottom,
+          gfx::Rect(0, 0, 1000, 1000),
+          gfx::Rect(0, 800, 200, 200),
+          default_preferred_size,
+      },
+      // There is neither enough space on top nor below the element.
+      // It should be placed on the right side meaning the arrow is on the left
+      // of the popup.
+      {
+          views::BubbleArrowSide::kLeft,
+          gfx::Rect(0, 0, 1000, 1000),
+          gfx::Rect(0, 400, 200, 200),
+          default_preferred_size,
+      },
+      // There is neither enough space on top, below nor on the right side the
+      // element. It should be placed on the left side meaning the arrow is on
+      // the right of the popup.
+      {
+          views::BubbleArrowSide::kRight,
+          gfx::Rect(0, 0, 1000, 1000),
+          gfx::Rect(700, 400, 200, 200),
+          default_preferred_size,
+      },
+      // There is not enough space on any side, but there is more space below
+      // the element than above resulting in a placement below with the arrow on
+      // top of the popup.
+      {
+          views::BubbleArrowSide::kTop,
+          gfx::Rect(0, 0, 1000, 1000),
+          gfx::Rect(0, 100, 200, 200),
+          gfx::Size(1200, 1200),
+      },
+      // There is not enough space on any side, but there is more space above
+      // the element than below resulting in a placement above with the arrow
+      // below the popup.
+      {views::BubbleArrowSide::kBottom, gfx::Rect(0, 0, 1000, 1000),
+       gfx::Rect(0, 900, 200, 200), gfx::Size(1200, 1200)}};
+
+  for (auto& test_case : test_cases) {
+    EXPECT_EQ(test_case.expected_arrow_side,
+              GetOptimalArrowSide(test_case.content_area_bounds,
+                                  test_case.element_bounds,
+                                  test_case.preferred_size));
+  }
+}
+
 TEST(AutofillPopupViewUtilsTest, CalculatePopupBounds) {
   // Define the prompt sizes.
   const int desired_prompt_width = 40;
@@ -334,3 +403,5 @@ TEST(AutofillPopupViewUtilsTest, GetOptimalPopupPlacement) {
     EXPECT_EQ(popup_bounds, test_case.expected_popup_bounds);
   }
 }
+
+}  // namespace autofill
