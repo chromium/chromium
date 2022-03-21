@@ -1091,24 +1091,9 @@
     "expiry_milestone": 100
   },
   {
-    "name": "default-browser-fullscreen-promo-cta-experiment",
-    "owners": [ "rkgibson@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 93
-  },
-  {
     "name": "default-browser-fullscreen-promo-experiment",
     "owners": [ "thegreenfrog", "bling-flags@google.com" ],
     "expiry_milestone": 93
-  },
-  {
-    "name": "default-browser-promo-non-modal",
-    "owners": [ "rkgibson@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 97
-  },
-  {
-    "name": "default-browser-promo-tailored",
-    "owners": [ "rkgibson@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 97
   },
   {
     "name": "default-chrome-apps-migration",
