@@ -611,4 +611,5 @@ DOM_CODE_DECLARATION {
              KEYBOARD_LAYOUT_SELECT),
   DOM_CODE(0x0c029f, 0x0078, 0x0080, 0x0000, 0xffff, "ShowAllWindows",
              SHOW_ALL_WINDOWS),  // AC Desktop Show All Windows
+  DOM_CODE(0x0c02a2, 0x00cc, 0x00d4, 0x0000, 0xffff, NULL, ALL_APPLICATIONS),
 };

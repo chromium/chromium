@@ -624,6 +624,10 @@ const struct DomCodeToKeyboardCodeEntry {
     {DomCode::BROWSER_FAVORITES,
      VKEY_BROWSER_FAVORITES},           // 0x0C022A BrowserFavorites
     {DomCode::ZOOM_TOGGLE, VKEY_ZOOM},  // 0x0C0232 ZoomToggle
+#if BUILDFLAG(IS_POSIX)
+    {DomCode::ALL_APPLICATIONS,
+     VKEY_ALL_APPLICATIONS},  // 0x0C02A2 All Applications
+#endif
 };
 
 // This table, used by UsLayoutKeyboardCodeToDomCode(), maps legacy

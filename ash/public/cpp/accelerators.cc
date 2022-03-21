@@ -28,6 +28,7 @@ const AcceleratorData kAcceleratorData[] = {
      CYCLE_BACKWARD_MRU},
     {true, ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_NONE, TOGGLE_OVERVIEW},
     {true, ui::VKEY_BROWSER_SEARCH, ui::EF_NONE, TOGGLE_APP_LIST},
+    {true, ui::VKEY_ALL_APPLICATIONS, ui::EF_NONE, TOGGLE_APP_LIST},
     {true, ui::VKEY_BROWSER_SEARCH, ui::EF_SHIFT_DOWN,
      TOGGLE_APP_LIST_FULLSCREEN},
     {true, ui::VKEY_WLAN, ui::EF_NONE, TOGGLE_WIFI},
