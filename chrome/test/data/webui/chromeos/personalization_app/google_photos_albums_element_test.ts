@@ -114,8 +114,7 @@ export function GooglePhotosAlbumsTest() {
     });
   });
 
-  // TODO(dmblack): Re-enable after branch.
-  test.skip('incrementally loads albums', async () => {
+  test('incrementally loads albums', async () => {
     // Set photos count returned by |wallpaperProvider|.
     const photosCount = 200;
     wallpaperProvider.setGooglePhotosCount(photosCount);
