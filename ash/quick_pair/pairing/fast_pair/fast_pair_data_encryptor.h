@@ -8,20 +8,18 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
+
 #include "ash/services/quick_pair/public/cpp/decrypted_passkey.h"
 #include "ash/services/quick_pair/public/cpp/decrypted_response.h"
 #include "base/callback.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-
-#include <array>
-
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
 constexpr int kBlockSizeBytes = 16;
 
-}  // namespace
+} // namespace
 
 namespace ash {
 namespace quick_pair {
@@ -39,19 +37,16 @@ class FastPairDataEncryptor {
   // Decrypt and parse decrypted response bytes with the stored secret key.
   virtual void ParseDecryptedResponse(
       const std::vector<uint8_t>& encrypted_response_bytes,
-      base::OnceCallback<void(const absl::optional<DecryptedResponse>&)>
-          callback) = 0;
+      base::OnceCallback<void(const absl::optional<DecryptedResponse>&)> callback) = 0;
 
   // Decrypt and parse decrypted passkey bytes with the stored secret key.
-  virtual void ParseDecryptedPasskey(
-      const std::vector<uint8_t>& encrypted_passkey_bytes,
-      base::OnceCallback<void(const absl::optional<DecryptedPasskey>&)>
-          callback) = 0;
+  virtual void ParseDecryptedPasskey(const std::vector<uint8_t>& encrypted_passkey_bytes,
+                                     base::˝<void(const absl::optional<DecryptedPasskey>&)> callback) = 0;
 
   virtual ~FastPairDataEncryptor() = default;
 };
 
-}  // namespace quick_pair
-}  // namespace ash
+} // namespace quick_pair
+} // namespace ash
 
-#endif  // ASH_QUICK_PAIR_PAIRING_FAST_PAIR_FAST_PAIR_DATA_ENCRYPTOR_H_
+#endif // ASH_QUICK_PAIR_PAIRING_FAST_PAIR_FAST_PAIR_DATA_ENCRYPTOR_H_

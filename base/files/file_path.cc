@@ -44,15 +44,15 @@ using StringPieceType = FilePath::StringPieceType;
 namespace { // 匿名命名空间，是比static更好的源代码文件局部性语法
 
 const char* const kCommonDoubleExtensionSuffixes[] = {
-  "gz", 
-  "xz", 
-  "bz2", 
-  "z", 
+  "gz",
+  "xz",
+  "bz2",
+  "z",
   "bz"
 };
 
-const char* const kCommonDoubleExtensions[] = { 
-  "user.js" 
+const char* const kCommonDoubleExtensions[] = {
+  "user.js"
 };
 
 const FilePath::CharType kStringTerminator = FILE_PATH_LITERAL('\0');
@@ -176,8 +176,8 @@ StringType::size_type ExtensionSeparatorPosition(const StringType& path) {
 // Returns true if path is "", ".", or "..".
 bool IsEmptyOrSpecialCase(const StringType& path) {
   // Special cases "", ".", and ".."
-  if (path.empty() || 
-      path == FilePath::kCurrentDirectory || 
+  if (path.empty() ||
+      path == FilePath::kCurrentDirectory ||
       path == FilePath::kParentDirectory) {
     return true;
   }
@@ -273,9 +273,7 @@ bool FilePath::IsParent(const FilePath& child) const {
   return AppendRelativePath(child, nullptr);
 }
 
-bool FilePath::AppendRelativePath(const FilePath& child,
-                                  FilePath* path) const {
-                                          
+bool FilePath::AppendRelativePath(const FilePath& child, FilePath* path) const {
   std::vector<StringType> parent_components;
   std::vector<StringType> child_components;
   GetComponents(&parent_components);

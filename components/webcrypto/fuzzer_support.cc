@@ -175,10 +175,8 @@ void ImportRsaKeyFromDerFuzzData(const uint8_t* data,
 
   // These errors imply a bad setup of parameters, and means ImportKey() may not
   // be testing the actual parsing.
-  DCHECK_NE(status.error_details(),
-            Status::ErrorUnsupportedImportKeyFormat().error_details());
-  DCHECK_NE(status.error_details(),
-            Status::ErrorCreateKeyBadUsages().error_details());
+  DCHECK_NE(status.error_details(), Status::ErrorUnsupportedImportKeyFormat().error_details());
+  DCHECK_NE(status.error_details(), Status::ErrorCreateKeyBadUsages().error_details());
 }
 
 }  // namespace webcrypto

@@ -75,14 +75,14 @@ void SimpleThread::ThreadMain() {
   Run();
 }
 
-DelegateSimpleThread::DelegateSimpleThread(Delegate* delegate,
-                                           const std::string& name)
+DelegateSimpleThread::DelegateSimpleThread(Delegate* delegate, const std::string& name)
     : DelegateSimpleThread(delegate, name, Options()) {}
 
 DelegateSimpleThread::DelegateSimpleThread(Delegate* delegate,
                                            const std::string& name,
                                            const Options& options)
     : SimpleThread(name, options), delegate_(delegate) {
+
   DCHECK(delegate_);
 }
 

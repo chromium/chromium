@@ -15,19 +15,18 @@ namespace quick_pair {
 FakeFastPairGattServiceClient::FakeFastPairGattServiceClient(
     device::BluetoothDevice* device,
     scoped_refptr<device::BluetoothAdapter> adapter,
-    base::OnceCallback<void(absl::optional<PairFailure>)>
-        on_initialized_callback)
-    : on_initialized_callback_(std::move(on_initialized_callback)) {}
+    base::OnceCallback<void(absl::optional<PairFailure>)> on_initialized_callback)
+        : on_initialized_callback_(std::move(on_initialized_callback)) {}
 
 FakeFastPairGattServiceClient::~FakeFastPairGattServiceClient() = default;
 
 void FakeFastPairGattServiceClient::RunOnGattClientInitializedCallback(
     absl::optional<PairFailure> failure) {
+
   std::move(on_initialized_callback_).Run(failure);
 }
 
-device::BluetoothRemoteGattService*
-FakeFastPairGattServiceClient::gatt_service() {
+device::BluetoothRemoteGattService* FakeFastPairGattServiceClient::gatt_service() {
   return nullptr;
 }
 
@@ -37,8 +36,8 @@ void FakeFastPairGattServiceClient::WriteRequestAsync(
     const std::string& provider_address,
     const std::string& seekers_address,
     FastPairDataEncryptor* fast_pair_data_encryptor,
-    base::OnceCallback<void(std::vector<uint8_t>, absl::optional<PairFailure>)>
-        write_response_callback) {
+    base::OnceCallback<void(std::vector<uint8_t>, absl::optional<PairFailure>)> write_response_callback) {
+
   key_based_write_response_callback_ = std::move(write_response_callback);
 }
 

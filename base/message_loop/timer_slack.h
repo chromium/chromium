@@ -14,6 +14,7 @@ struct Feature;
 
 // Amount of timer slack to use for delayed timers.  Increasing timer slack
 // allows the OS to coalesce timers more effectively.
+// 用于延迟计时器的计时器松弛量。增加定时器松弛允许操作系统更有效地合并定时器。
 enum TimerSlack {
   // Lowest value for timer slack allowed by OS.
   TIMER_SLACK_NONE,

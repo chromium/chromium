@@ -182,6 +182,7 @@ void FilePathWatcherKQueue::HandleDeleteOrMoveChange(
     const EventVector::iterator& event,
     bool* target_file_affected,
     bool* update_watches) {
+
   *target_file_affected = true;
   *update_watches = true;
   EventVector::iterator local_event(event);
@@ -198,6 +199,7 @@ void FilePathWatcherKQueue::HandleCreateItemChange(
     const EventVector::iterator& event,
     bool* target_file_affected,
     bool* update_watches) {
+
   // Get the next item in the path.
   EventVector::iterator next_event = event + 1;
   // Check to see if it already has a valid file descriptor.

@@ -58,8 +58,7 @@ TEST_F(WebCryptoAesKwTest, ImportKeyJwkKeyOpsWrapUnwrap) {
   base::DictionaryValue dict;
   dict.SetString("kty", "oct");
   dict.SetString("k", "GADWrMRHwQfoNaXU5fZvTg");
-  base::Value* key_ops =
-      dict.SetKey("key_ops", base::Value(base::Value::Type::LIST));
+  base::Value* key_ops = dict.SetKey("key_ops", base::Value(base::Value::Type::LIST));
 
   key_ops->Append("wrapKey");
 
@@ -99,18 +98,18 @@ TEST_F(WebCryptoAesKwTest, ImportExportJwk) {
 
 TEST_F(WebCryptoAesKwTest, AesKwKeyImport) {
   blink::WebCryptoKey key;
-  blink::WebCryptoAlgorithm algorithm =
-      CreateAlgorithm(blink::kWebCryptoAlgorithmIdAesKw);
+  blink::WebCryptoAlgorithm algorithm = CreateAlgorithm(blink::kWebCryptoAlgorithmIdAesKw);
 
   // Import a 128-bit Key Encryption Key (KEK)
   std::string key_raw_hex_in = "025a8cf3f08b4f6c5f33bbc76a471939";
   ASSERT_EQ(Status::Success(),
             ImportKey(blink::kWebCryptoKeyFormatRaw,
-                      CryptoData(HexStringToBytes(key_raw_hex_in)), algorithm,
-                      true, blink::kWebCryptoKeyUsageWrapKey, &key));
+                      CryptoData(HexStringToBytes(key_raw_hex_in)),
+                      algorithm,
+                      true,
+                      blink::kWebCryptoKeyUsageWrapKey, &key));
   std::vector<uint8_t> key_raw_out;
-  EXPECT_EQ(Status::Success(),
-            ExportKey(blink::kWebCryptoKeyFormatRaw, key, &key_raw_out));
+  EXPECT_EQ(Status::Success(), ExportKey(blink::kWebCryptoKeyFormatRaw, key, &key_raw_out));
   EXPECT_BYTES_EQ_HEX(key_raw_hex_in, key_raw_out);
 
   // Import a 192-bit KEK

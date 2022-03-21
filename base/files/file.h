@@ -200,14 +200,18 @@ class BASE_EXPORT File { // BASE_EXPORT 是宏定义，用于定义跨平台的�
   // Returns true if a new file was created (or an old one truncated to zero
   // length to simulate a new file, which can happen with
   // FLAG_CREATE_ALWAYS), and false otherwise.
-  bool created() const { return created_; }
+  bool created() const {
+    return created_;
+  }
 
   // Returns the OS result of opening this file. Note that the way to verify
   // the success of the operation is to use IsValid(), not this method:
   //   File file(path, flags);
   //   if (!file.IsValid())
   //     return;
-  Error error_details() const { return error_details_; }
+  Error error_details() const {
+    return error_details_;
+  }
 
   PlatformFile GetPlatformFile() const;
   PlatformFile TakePlatformFile();

@@ -29,14 +29,17 @@ class BASE_EXPORT MessagePumpDefault : public MessagePump {
   void ScheduleWork() override;
   void ScheduleDelayedWork(const TimeTicks& delayed_work_time) override;
 #if defined(OS_APPLE)
+  // 设置定时器松弛
   void SetTimerSlack(TimerSlack timer_slack) override;
 #endif
 
  private:
   // This flag is set to false when Run should return.
+  // 当 Run 应该返回时，此标志设置为 false。
   bool keep_running_;
 
   // Used to sleep until there is more work to do.
+  // 用于休眠，直到有更多的工作要做。
   WaitableEvent event_;
 };
 

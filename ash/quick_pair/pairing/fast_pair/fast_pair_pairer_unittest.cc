@@ -225,8 +225,7 @@ class FastPairFakeDataEncryptor : public FastPairDataEncryptor {
   absl::optional<DecryptedPasskey> passkey_ = absl::nullopt;
 };
 
-class FastPairFakeDataEncryptorImplFactory
-    : public FastPairDataEncryptorImpl::Factory {
+class FastPairFakeDataEncryptorImplFactory : public FastPairDataEncryptorImpl::Factory {
  public:
   void CreateInstance(
       scoped_refptr<Device> device,

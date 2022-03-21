@@ -37,13 +37,11 @@ class BASE_EXPORT TaskExecutor {
 
   // Returns a TaskRunner whose PostTask invocations result in scheduling tasks
   // using |traits|. Tasks may run in any order and in parallel.
-  virtual scoped_refptr<TaskRunner> CreateTaskRunner(
-      const TaskTraits& traits) = 0;
+  virtual scoped_refptr<TaskRunner> CreateTaskRunner(const TaskTraits& traits) = 0;
 
   // Returns a SequencedTaskRunner whose PostTask invocations result in
   // scheduling tasks using |traits|. Tasks run one at a time in posting order.
-  virtual scoped_refptr<SequencedTaskRunner> CreateSequencedTaskRunner(
-      const TaskTraits& traits) = 0;
+  virtual scoped_refptr<SequencedTaskRunner> CreateSequencedTaskRunner(const TaskTraits& traits) = 0;
 
   // Returns a SingleThreadTaskRunner whose PostTask invocations result in
   // scheduling tasks using |traits|. Tasks run on a single thread in posting

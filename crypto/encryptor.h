@@ -46,8 +46,7 @@ class CRYPTO_EXPORT Encryptor {
   // Encrypts |plaintext| into |ciphertext|.  |plaintext| may only be empty if
   // the mode is CBC.
   bool Encrypt(base::StringPiece plaintext, std::string* ciphertext);
-  bool Encrypt(base::span<const uint8_t> plaintext,
-               std::vector<uint8_t>* ciphertext);
+  bool Encrypt(base::span<const uint8_t> plaintext, std::vector<uint8_t>* ciphertext);
 
   // Decrypts |ciphertext| into |plaintext|.  |ciphertext| must not be empty.
   //
@@ -59,8 +58,7 @@ class CRYPTO_EXPORT Encryptor {
   // care to not report decryption failure. Otherwise it could inadvertently
   // be used as a padding oracle to attack the cryptosystem.
   bool Decrypt(base::StringPiece ciphertext, std::string* plaintext);
-  bool Decrypt(base::span<const uint8_t> ciphertext,
-               std::vector<uint8_t>* plaintext);
+  bool Decrypt(base::span<const uint8_t> ciphertext, std::vector<uint8_t>* plaintext);
 
   // Sets the counter value when in CTR mode. Currently only 128-bits
   // counter value is supported.
@@ -75,22 +73,14 @@ class CRYPTO_EXPORT Encryptor {
   const SymmetricKey* key_;
   Mode mode_;
 
-  bool CryptString(bool do_encrypt,
-                   base::StringPiece input,
-                   std::string* output);
-  bool CryptBytes(bool do_encrypt,
-                  base::span<const uint8_t> input,
-                  std::vector<uint8_t>* output);
+  bool CryptString(bool do_encrypt, base::StringPiece input, std::string* output);
+  bool CryptBytes(bool do_encrypt, base::span<const uint8_t> input, std::vector<uint8_t>* output);
 
   // On success, these helper functions return the number of bytes written to
   // |output|.
   size_t MaxOutput(bool do_encrypt, size_t length);
-  absl::optional<size_t> Crypt(bool do_encrypt,
-                               base::span<const uint8_t> input,
-                               base::span<uint8_t> output);
-  absl::optional<size_t> CryptCTR(bool do_encrypt,
-                                  base::span<const uint8_t> input,
-                                  base::span<uint8_t> output);
+  absl::optional<size_t> Crypt(bool do_encrypt, base::span<const uint8_t> input, base::span<uint8_t> output);
+  absl::optional<size_t> CryptCTR(bool do_encrypt, base::span<const uint8_t> input, base::span<uint8_t> output);
 
   // In CBC mode, the IV passed to Init(). In CTR mode, the counter value passed
   // to SetCounter().

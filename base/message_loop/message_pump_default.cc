@@ -31,7 +31,7 @@ void MessagePumpDefault::Run(Delegate* delegate) {
   AutoReset<bool> auto_reset_keep_running(&keep_running_, true);
 
   for (;;) {
-#if defined(OS_APPLE)
+#if defined(OS_APPLE) // MAC独有的，其他平台为空实现
     mac::ScopedNSAutoreleasePool autorelease_pool;
 #endif
 
@@ -64,14 +64,17 @@ void MessagePumpDefault::Quit() {
   keep_running_ = false;
 }
 
+/**
+ * @brief 启动计划工作
+ */
 void MessagePumpDefault::ScheduleWork() {
   // Since this can be called on any thread, we need to ensure that our Run
   // loop wakes up.
+  // 由于这可以在任何线程上调用，我们需要确保我们的 Run 循环被唤醒。
   event_.Signal();
 }
 
-void MessagePumpDefault::ScheduleDelayedWork(
-    const TimeTicks& delayed_work_time) {
+void MessagePumpDefault::ScheduleDelayedWork(const TimeTicks& delayed_work_time) {
   // Since this is always called from the same thread as Run(), there is nothing
   // to do as the loop is already running. It will wait in Run() with the
   // correct timeout when it's out of immediate tasks.

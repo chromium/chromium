@@ -32,13 +32,10 @@ TEST_F(QuickPairProcessTest,
 
 TEST_F(QuickPairProcessTest,
        ParseDecryptedResponse_NoValueIfNoProcessManagerSet) {
-  ParseDecryptedResponse(
-      std::vector<uint8_t>(), std::vector<uint8_t>(),
-      base::BindLambdaForTesting(
-          [](const absl::optional<DecryptedResponse>& result) {
-            EXPECT_FALSE(result.has_value());
-          }),
-      base::DoNothing());
+  ParseDecryptedResponse(std::vector<uint8_t>(), std::vector<uint8_t>(),
+      base::BindLambdaForTesting([](const absl::optional<DecryptedResponse>& result) {
+        EXPECT_FALSE(result.has_value());
+      }), base::DoNothing());
 }
 
 TEST_F(QuickPairProcessTest,

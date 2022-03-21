@@ -75,6 +75,9 @@ class BASE_EXPORT MessagePumpForUI : public MessagePump {
   // Thread this pump belongs to alive. However, threads are expected to have an
   // active run loop, so we manage a RunLoop internally here, starting/stopping
   // it as necessary.
+  // 与其他平台不同，我们不控制消息循环，因为它由 Android Looper 控制，因此我们无法运行
+  // RunLoop 来保持该泵所属的线程处于活动状态。 但是，线程应该有一个活动的运行循环，所以
+  // 我们在这里内部管理一个运行循环，根据需要启动/停止它。
   std::unique_ptr<RunLoop> run_loop_;
 
   // See Abort().

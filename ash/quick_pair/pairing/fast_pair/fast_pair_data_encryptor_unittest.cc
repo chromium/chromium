@@ -62,12 +62,10 @@ class FastPairDataEncryptorTest : public testing::TestWithParam<TestParam> {
     repository_ = std::make_unique<FakeFastPairRepository>();
     // Not using the param here to control the type of device because only
     // the kFastPairInitial protocol can fail.
-    device_ = base::MakeRefCounted<Device>(kValidModelId, kTestAddress,
-                                           Protocol::kFastPairInitial);
+    device_ = base::MakeRefCounted<Device>(kValidModelId, kTestAddress, Protocol::kFastPairInitial);
     FastPairDataEncryptorImpl::Factory::CreateAsync(
         device_,
-        base::BindOnce(&FastPairDataEncryptorTest::OnDataEncryptorCreateAsync,
-                       weak_ptr_factory_.GetWeakPtr()));
+        base::BindOnce(&FastPairDataEncryptorTest::OnDataEncryptorCreateAsync, weak_ptr_factory_.GetWeakPtr()));
   }
 
   void SuccessfulSetUp() {
@@ -92,8 +90,7 @@ class FastPairDataEncryptorTest : public testing::TestWithParam<TestParam> {
 
     FastPairDataEncryptorImpl::Factory::CreateAsync(
         device_,
-        base::BindOnce(&FastPairDataEncryptorTest::OnDataEncryptorCreateAsync,
-                       weak_ptr_factory_.GetWeakPtr()));
+        base::BindOnce(&FastPairDataEncryptorTest::OnDataEncryptorCreateAsync,weak_ptr_factory_.GetWeakPtr()));
   }
 
   void OnDataEncryptorCreateAsync(
@@ -106,24 +103,19 @@ class FastPairDataEncryptorTest : public testing::TestWithParam<TestParam> {
   }
 
   void ParseDecryptedResponse() {
-    const std::array<uint8_t, kBlockSizeBytes> bytes =
-        data_encryptor_->EncryptBytes(kResponseBytes);
-
+    const std::array<uint8_t, kBlockSizeBytes> bytes = data_encryptor_->EncryptBytes(kResponseBytes);
     data_encryptor_->ParseDecryptedResponse(
         std::vector<uint8_t>(bytes.begin(), bytes.end()),
-        base::BindOnce(
-            &FastPairDataEncryptorTest::ParseDecryptedResponseCallback,
-            weak_ptr_factory_.GetWeakPtr()));
+        base::BindOnce(&FastPairDataEncryptorTest::ParseDecryptedResponseCallback,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 
-  void ParseDecryptedResponseCallback(
-      const absl::optional<DecryptedResponse>& response) {
+  void ParseDecryptedResponseCallback(const absl::optional<DecryptedResponse>& response) {
     response_ = response;
   }
 
   void ParseDecryptedPasskey() {
-    const std::array<uint8_t, kBlockSizeBytes> bytes =
-        data_encryptor_->EncryptBytes(kPasskeyBytes);
+    const std::array<uint8_t, kBlockSizeBytes> bytes = data_encryptor_->EncryptBytes(kPasskeyBytes);
 
     data_encryptor_->ParseDecryptedPasskey(
         std::vector<uint8_t>(bytes.begin(), bytes.end()),
@@ -132,8 +124,7 @@ class FastPairDataEncryptorTest : public testing::TestWithParam<TestParam> {
             weak_ptr_factory_.GetWeakPtr()));
   }
 
-  void ParseDecryptedPasskeyCallback(
-      const absl::optional<DecryptedPasskey>& passkey) {
+  void ParseDecryptedPasskeyCallback(const absl::optional<DecryptedPasskey>& passkey) {
     passkey_ = passkey;
   }
 
@@ -147,7 +138,8 @@ class FastPairDataEncryptorTest : public testing::TestWithParam<TestParam> {
   scoped_refptr<Device> device_;
   std::unique_ptr<FakeFastPairRepository> repository_;
   base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME
+  };
   base::WeakPtrFactory<FastPairDataEncryptorTest> weak_ptr_factory_{this};
 };
 

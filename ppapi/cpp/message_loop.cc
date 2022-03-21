@@ -69,8 +69,7 @@ int32_t MessageLoop::Run() {
   return get_interface<PPB_MessageLoop>()->Run(pp_resource());
 }
 
-int32_t MessageLoop::PostWork(const CompletionCallback& callback,
-                                  int64_t delay_ms) {
+int32_t MessageLoop::PostWork(const CompletionCallback& callback, int64_t delay_ms) {
   if (!has_interface<PPB_MessageLoop>())
     return PP_ERROR_NOINTERFACE;
   return get_interface<PPB_MessageLoop>()->PostWork(
@@ -82,8 +81,7 @@ int32_t MessageLoop::PostWork(const CompletionCallback& callback,
 int32_t MessageLoop::PostQuit(bool should_destroy) {
   if (!has_interface<PPB_MessageLoop>())
     return PP_ERROR_NOINTERFACE;
-  return get_interface<PPB_MessageLoop>()->PostQuit(
-      pp_resource(), PP_FromBool(should_destroy));
+  return get_interface<PPB_MessageLoop>()->PostQuit(pp_resource(), PP_FromBool(should_destroy));
 }
 
 }  // namespace pp

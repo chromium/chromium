@@ -55,10 +55,12 @@ class BASE_EXPORT WaitableEvent {
   // Indicates whether a WaitableEvent should automatically reset the event
   // state after a single waiting thread has been released or remain signaled
   // until Reset() is manually invoked.
+  // 指示 WaitableEvent 是否应在释放单个等待线程后，自动重置事件状态，或者在手动调用
+  // Reset() 之前保持信号状态。
   enum class ResetPolicy { MANUAL, AUTOMATIC };
 
   // Indicates whether a new WaitableEvent should start in a signaled state or
-  // not.
+  // not. 指示新的 WaitableEvent 是否应以信号状态开始。
   enum class InitialState { SIGNALED, NOT_SIGNALED };
 
   // Constructs a WaitableEvent with policy and initial state as detailed in

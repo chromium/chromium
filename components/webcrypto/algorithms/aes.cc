@@ -21,8 +21,7 @@ namespace {
 
 // Creates an AES algorithm name for the given key size (in bytes). For
 // instance "A128CBC" is the result of suffix="CBC", keylen_bytes=16.
-std::string MakeJwkAesAlgorithmName(const std::string& suffix,
-                                    size_t keylen_bytes) {
+std::string MakeJwkAesAlgorithmName(const std::string& suffix, size_t keylen_bytes) {
   if (keylen_bytes == 16)
     return std::string("A128") + suffix;
   if (keylen_bytes == 24)
@@ -36,8 +35,7 @@ std::string MakeJwkAesAlgorithmName(const std::string& suffix,
 // deserialization can re-use the ImportKey*() methods.
 blink::WebCryptoAlgorithm SynthesizeImportAlgorithmForClone(
     const blink::WebCryptoKeyAlgorithm& algorithm) {
-  return blink::WebCryptoAlgorithm::AdoptParamsAndCreate(algorithm.Id(),
-                                                         nullptr);
+  return blink::WebCryptoAlgorithm::AdoptParamsAndCreate(algorithm.Id(), nullptr);
 }
 
 }  // namespace
@@ -143,8 +141,7 @@ Status AesAlgorithm::ImportKeyJwk(const CryptoData& key_data,
 
   std::vector<uint8_t> raw_data;
   JwkReader jwk;
-  status = ReadSecretKeyNoExpectedAlgJwk(key_data, extractable, usages,
-                                         &raw_data, &jwk);
+  status = ReadSecretKeyNoExpectedAlgJwk(key_data, extractable, usages, &raw_data, &jwk);
   if (status.IsError())
     return status;
 
@@ -155,9 +152,7 @@ Status AesAlgorithm::ImportKeyJwk(const CryptoData& key_data,
     return status;
 
   if (has_jwk_alg) {
-    std::string expected_algorithm_name =
-        MakeJwkAesAlgorithmName(jwk_suffix_, raw_data.size());
-
+    std::string expected_algorithm_name = MakeJwkAesAlgorithmName(jwk_suffix_, raw_data.size());
     if (jwk_alg != expected_algorithm_name) {
       // Give a different error message if the key length was wrong.
       if (jwk_alg == MakeJwkAesAlgorithmName(jwk_suffix_, 16) ||

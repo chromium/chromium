@@ -69,21 +69,24 @@ class AwDebugCpuAffinity : public content::RenderProcessHostCreationObserver {
 };
 
 static void JNI_AwDebug_SetCpuAffinityToLittleCores(JNIEnv* env) {
-  static base::NoDestructor<AwDebugCpuAffinity> aw_debug_cpu_affinity(false, 1,
-                                                                      0, 0);
+  static base::NoDestructor<AwDebugCpuAffinity> aw_debug_cpu_affinity(false, 1, 0, 0);
 }
 
 static void JNI_AwDebug_EnableIdleThrottling(JNIEnv* env,
                                              int policy,
                                              int min_time_ms,
                                              float min_cputime_ratio) {
-  static base::NoDestructor<AwDebugCpuAffinity> aw_debug_cpu_affinity(
-      true, policy, min_time_ms, min_cputime_ratio);
+
+  static base::NoDestructor<AwDebugCpuAffinity> aw_debug_cpu_affinity(true,
+                                                                      policy,
+                                                                      min_time_ms,
+                                                                      min_cputime_ratio);
 }
 
 static void JNI_AwDebug_SetSupportLibraryWebkitVersionCrashKey(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& version) {
+
   static ::crash_reporter::CrashKeyString<32> crash_key(
       crash_keys::kSupportLibraryWebkitVersion);
   crash_key.Set(ConvertJavaStringToUTF8(env, version));
