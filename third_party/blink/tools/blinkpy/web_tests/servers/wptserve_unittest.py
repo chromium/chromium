@@ -5,6 +5,7 @@
 import json
 import logging
 import six
+import unittest
 
 from blinkpy.common.host_mock import MockHost
 from blinkpy.common.system.log_testing import LoggingTestCase
@@ -81,6 +82,10 @@ class TestWPTServe(LoggingTestCase):
             'local-dir': '/mock-checkout/out/Release/gen'
         })
 
+    @unittest.skipIf(
+        six.PY3,
+        'This test is flaky when run as part of the suite. See crbug.com/1308877'
+    )
     def test_start_with_stale_pid(self):
         # Allow asserting about debug logs.
         self.set_logging_level(logging.DEBUG)
@@ -111,6 +116,10 @@ class TestWPTServe(LoggingTestCase):
         self.assertEqual(logs[-1],
                          'DEBUG: wptserve successfully started (pid = 42)\n')
 
+    @unittest.skipIf(
+        six.PY3,
+        'This test is flaky when run as part of the suite. See crbug.com/1308877'
+    )
     def test_start_with_unkillable_zombie_process(self):
         # Allow asserting about debug logs.
         self.set_logging_level(logging.DEBUG)
