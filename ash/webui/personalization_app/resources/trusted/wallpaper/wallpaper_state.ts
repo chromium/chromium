@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 
-import {CurrentWallpaper, GooglePhotosAlbum, GooglePhotosPhoto, WallpaperCollection, WallpaperImage} from '../personalization_app.mojom-webui.js';
+import {CurrentWallpaper, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, WallpaperCollection, WallpaperImage} from '../personalization_app.mojom-webui.js';
 
 /**
  * Stores collections and images from backdrop server.
@@ -16,6 +16,8 @@ export interface BackdropState {
 
 /**
  * Stores Google Photos state.
+ * |enabled| is whether the user is allowed to access Google Photos. It is
+ * undefined only until it has been initialized.
  * |count| is the count of Google Photos photos. It is undefined only until it
  * has been initialized, then either null (in error state) or a valid integer.
  * |albums| is the list of Google Photos albums. It is undefined only until it
@@ -27,6 +29,7 @@ export interface BackdropState {
  * initialized, then either null (in error state) or a valid Array.
  */
 export interface GooglePhotosState {
+  enabled: GooglePhotosEnablementState|undefined;
   count: number|null|undefined;
   albums: GooglePhotosAlbum[]|null|undefined;
   photos: GooglePhotosPhoto[]|null|undefined;
@@ -60,7 +63,7 @@ export interface LoadingState {
   selected: boolean;
   setImage: number;
   googlePhotos: {
-    count: boolean; albums: boolean; photos: boolean;
+    enabled: boolean; count: boolean; albums: boolean; photos: boolean;
     photosByAlbumId: Record<string, boolean>;
   };
 }
@@ -100,6 +103,7 @@ export function emptyState(): WallpaperState {
       selected: false,
       setImage: 0,
       googlePhotos: {
+        enabled: false,
         count: false,
         albums: false,
         photos: false,
@@ -112,6 +116,7 @@ export function emptyState(): WallpaperState {
     dailyRefresh: {collectionId: null},
     fullscreen: false,
     googlePhotos: {
+      enabled: undefined,
       count: undefined,
       albums: undefined,
       photos: undefined,

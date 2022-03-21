@@ -183,6 +183,24 @@ function loadingReducer(
           count: false,
         },
       };
+    case WallpaperActionName.BEGIN_LOAD_GOOGLE_PHOTOS_ENABLED:
+      assert(state.googlePhotos.enabled === false);
+      return {
+        ...state,
+        googlePhotos: {
+          ...state.googlePhotos,
+          enabled: true,
+        },
+      };
+    case WallpaperActionName.SET_GOOGLE_PHOTOS_ENABLED:
+      assert(state.googlePhotos.enabled === true);
+      return {
+        ...state,
+        googlePhotos: {
+          ...state.googlePhotos,
+          enabled: false,
+        },
+      };
     case WallpaperActionName.BEGIN_LOAD_GOOGLE_PHOTOS_PHOTOS:
       assert(state.googlePhotos.photos === false);
       return {
@@ -387,6 +405,17 @@ function googlePhotosReducer(
       return {
         ...state,
         count: action.count,
+      };
+    case WallpaperActionName.BEGIN_LOAD_GOOGLE_PHOTOS_ENABLED:
+      // Whether the user is allowed to access Google Photos should be loaded
+      // only once.
+      assert(state.enabled === undefined);
+      return state;
+    case WallpaperActionName.SET_GOOGLE_PHOTOS_ENABLED:
+      assert(action.enabled !== undefined);
+      return {
+        ...state,
+        enabled: action.enabled,
       };
     case WallpaperActionName.BEGIN_LOAD_GOOGLE_PHOTOS_PHOTOS:
       // The list of photos should be loaded only while additional photos exist.

@@ -7,7 +7,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 
 import {isNonEmptyArray} from '../../common/utils.js';
-import {FetchGooglePhotosAlbumsResponse, FetchGooglePhotosPhotosResponse, GooglePhotosAlbum, GooglePhotosPhoto, WallpaperCollection, WallpaperImage, WallpaperLayout, WallpaperProviderInterface, WallpaperType} from '../personalization_app.mojom-webui.js';
+import {FetchGooglePhotosAlbumsResponse, FetchGooglePhotosPhotosResponse, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, WallpaperCollection, WallpaperImage, WallpaperLayout, WallpaperProviderInterface, WallpaperType} from '../personalization_app.mojom-webui.js';
 import {PersonalizationStore} from '../personalization_store.js';
 import {appendMaxResolutionSuffix, isFilePath, isGooglePhotosPhoto, isWallpaperImage} from '../utils.js';
 
@@ -126,6 +126,18 @@ export async function fetchGooglePhotosAlbums(
   }
 
   store.dispatch(action.appendGooglePhotosAlbumsAction(albums, resumeToken));
+}
+
+/** Fetches whether the user is allowed to access Google Photos. */
+async function fetchGooglePhotosEnabled(
+    provider: WallpaperProviderInterface,
+    store: PersonalizationStore): Promise<void> {
+  store.dispatch(action.beginLoadGooglePhotosEnabledAction());
+  const {state} = await provider.fetchGooglePhotosEnabled();
+  if (state === GooglePhotosEnablementState.kError) {
+    console.warn('Failed to fetch Google Photos enabled');
+  }
+  store.dispatch(action.setGooglePhotosEnabledAction(state));
 }
 
 /** Fetches the count of Google Photos photos and saves it to the store. */
@@ -348,7 +360,19 @@ export async function initializeBackdropData(
 export async function initializeGooglePhotosData(
     provider: WallpaperProviderInterface,
     store: PersonalizationStore): Promise<void> {
-  await fetchGooglePhotosCount(provider, store);
+  // Fetch whether the user is allowed to access Google Photos.
+  await fetchGooglePhotosEnabled(provider, store);
+
+  // Only proceed to fetch Google Photos data if the user is allowed.
+  const enabled = store.data.wallpaper.googlePhotos.enabled;
+  if (enabled === GooglePhotosEnablementState.kEnabled) {
+    await fetchGooglePhotosCount(provider, store);
+  } else {
+    store.beginBatchUpdate();
+    store.dispatch(action.beginLoadGooglePhotosCountAction());
+    store.dispatch(action.setGooglePhotosCountAction(null));
+    store.endBatchUpdate();
+  }
 
   // If the count of Google Photos photos is zero or null, it's not necesssary
   // to query the server for the list of albums/photos.

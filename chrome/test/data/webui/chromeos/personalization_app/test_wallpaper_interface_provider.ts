@@ -100,7 +100,7 @@ export class TestWallpaperProvider extends
   private googlePhotosAlbumsResumeToken_: string|undefined;
   private googlePhotosCount_: number = 0;
   private googlePhotosEnabled_: GooglePhotosEnablementState =
-      GooglePhotosEnablementState.kError;
+      GooglePhotosEnablementState.kEnabled;
   private googlePhotosPhotos_: GooglePhotosPhoto[]|undefined = [];
   private googlePhotosPhotosResumeToken_: string|undefined;
   private googlePhotosPhotosByAlbumId_:
@@ -269,7 +269,7 @@ export class TestWallpaperProvider extends
     this.googlePhotosCount_ = googlePhotosCount;
   }
 
-  setGooglePhotosEnabled(googlePhotosEnabled: number) {
+  setGooglePhotosEnabled(googlePhotosEnabled: GooglePhotosEnablementState) {
     this.googlePhotosEnabled_ = googlePhotosEnabled;
   }
 
