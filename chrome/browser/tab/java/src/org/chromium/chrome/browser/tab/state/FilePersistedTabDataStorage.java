@@ -254,10 +254,12 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
                 return null;
             }
             FileOutputStream outputStream = null;
+            AtomicFile atomicFile = null;
             boolean success = false;
             try {
                 long startTime = SystemClock.elapsedRealtime();
-                outputStream = new FileOutputStream(mFile);
+                atomicFile = new AtomicFile(mFile);
+                outputStream = atomicFile.startWrite();
                 FileChannel fileChannel = outputStream.getChannel();
                 fileChannel.write(data);
                 success = true;
@@ -279,6 +281,13 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
                                 mFile, e.getMessage()));
             } finally {
                 StreamUtil.closeQuietly(outputStream);
+                if (atomicFile != null) {
+                    if (success) {
+                        atomicFile.finishWrite(outputStream);
+                    } else {
+                        atomicFile.failWrite(outputStream);
+                    }
+                }
             }
             RecordHistogram.recordBooleanHistogram(
                     "Tabs.PersistedTabData.Storage.Save." + getUmaTag(), success);
@@ -425,7 +434,7 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
             }
             RecordHistogram.recordBooleanHistogram(
                     "Tabs.PersistedTabData.Storage.Restore." + getUmaTag(), success);
-            return res;
+            return success ? res : null;
         }
 
         @Override
