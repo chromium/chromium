@@ -424,6 +424,16 @@ NavigationEarlyHintsManager::~NavigationEarlyHintsManager() = default;
 void NavigationEarlyHintsManager::HandleEarlyHints(
     network::mojom::EarlyHintsPtr early_hints,
     const network::ResourceRequest& request_for_navigation) {
+  // Ignore the second and subsequent responses to avoid situations where
+  // policies such as CSP are inconsistent among the first and following
+  // responses.
+  // TODO(https://crbug.com/1305896): Refer to a relevant specification once the
+  // spec discussion is settled.
+  if (was_first_early_hints_received_)
+    return;
+
+  was_first_early_hints_received_ = true;
+
   net::ReferrerPolicy referrer_policy =
       Referrer::ReferrerPolicyForUrlRequest(early_hints->referrer_policy);
   bool enabled_by_origin_trial = IsPreloadForNavigationEnabledByOriginTrial(

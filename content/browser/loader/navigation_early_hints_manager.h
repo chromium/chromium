@@ -185,6 +185,9 @@ class CONTENT_EXPORT NavigationEarlyHintsManager {
 
   std::vector<GURL> preloaded_urls_;
 
+  // Set to true when HandleEarlyHints() is called for the first time. Used to
+  // ignore following responses.
+  bool was_first_early_hints_received_ = false;
   // Set to true when preload or preconnect Link headers are received. Used for
   // metrics recording.
   bool was_resource_hints_received_ = false;
