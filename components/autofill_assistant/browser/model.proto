@@ -87,7 +87,7 @@ message LoginOptionList {
 // a boolean field would have.
 message Empty {}
 
-// Next: 34
+// Next Id: 40
 enum ProcessedActionStatusProto {
   UNKNOWN_ACTION_STATUS = 0;
 
@@ -241,6 +241,9 @@ enum ProcessedActionStatusProto {
 
   // Requesting the user data from our data endpoint failed.
   USER_DATA_REQUEST_FAILED = 38;
+
+  // The js flow action forced an additional roundtrip.
+  JS_FORCED_ROUNDTRIP = 39;
 
   reserved 15, 23, 25, 32;
 }
