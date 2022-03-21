@@ -794,10 +794,7 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if ((base::FeatureList::IsEnabled(lens::features::kLensStandalone) &&
-       lens::features::kEnableSidePanelForLensImageSearch.Get()) ||
-      (base::FeatureList::IsEnabled(lens::features::kLensRegionSearch) &&
-       lens::features::kEnableSidePanelForLensRegionSearch.Get())) {
+  if (lens::features::IsLensSidePanelEnabled()) {
     lens_side_panel_ = AddChildView(std::make_unique<SidePanel>(this));
     // If the separator was not already created, create one.
     if (!right_aligned_side_panel_separator_)

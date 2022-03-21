@@ -38,14 +38,6 @@ const std::vector<LabInfo>& GetData() {
   static const base::NoDestructor<std::vector<LabInfo>> lab_info_([]() {
     std::vector<LabInfo> lab_info;
 
-    // Lens Region Search
-    lab_info.emplace_back(LabInfo(
-        flag_descriptions::kEnableLensRegionSearchFlagId,
-        l10n_util::GetStringUTF16(IDS_LENS_REGION_SEARCH_EXPERIMENT_NAME),
-        l10n_util::GetStringUTF16(
-            IDS_LENS_REGION_SEARCH_EXPERIMENT_DESCRIPTION),
-        "chrome-labs-lens-region-search", version_info::Channel::BETA));
-
     // Side Panel.
     lab_info.emplace_back(LabInfo(
         flag_descriptions::kSidePanelFlagId,

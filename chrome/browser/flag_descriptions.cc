@@ -1210,13 +1210,11 @@ const char kEnableAutomaticSnoozeName[] = "Enable Automatic Snooze";
 const char kEnableAutomaticSnoozeDescription[] =
     "Enables automatic snoozing on In-Product Help with no snooze button.";
 
-const char kEnableLensRegionSearchFlagId[] = "enable-lens-region-search";
-const char kEnableLensRegionSearchName[] =
-    "Search your screen with Google Lens";
-const char kEnableLensRegionSearchDescription[] =
-    "Right click and select \"Search images with Google Lens\" to "
-    "search any region of the site to learn more about the visual content you "
-    "see while you browse and shop on the web.";
+const char kEnableLensStandaloneFlagId[] = "enable-lens-standalone";
+const char kEnableLensStandaloneName[] = "Enable Lens features in Chrome.";
+const char kEnableLensStandaloneDescription[] =
+    "Enables Lens image and region search to learn about the visual content "
+    "you see while you browse and shop on the web.";
 
 const char kEnableLoginDetectionName[] = "Enable login detection";
 const char kEnableLoginDetectionDescription[] =

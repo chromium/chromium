@@ -663,9 +663,9 @@ extern const char kEnableFirmwareUpdaterAppDescription[];
 extern const char kEnableGamepadButtonAxisEventsName[];
 extern const char kEnableGamepadButtonAxisEventsDescription[];
 
-extern const char kEnableLensRegionSearchFlagId[];
-extern const char kEnableLensRegionSearchName[];
-extern const char kEnableLensRegionSearchDescription[];
+extern const char kEnableLensStandaloneFlagId[];
+extern const char kEnableLensStandaloneName[];
+extern const char kEnableLensStandaloneDescription[];
 
 extern const char kEnableLoginDetectionName[];
 extern const char kEnableLoginDetectionDescription[];

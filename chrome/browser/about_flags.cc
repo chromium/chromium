@@ -2834,6 +2834,13 @@ const FeatureEntry::FeatureVariation kGridTabSwitcherForTabletsVariations[] = {
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 
+constexpr FeatureEntry::FeatureParam kLensStandaloneWithSidePanel[] = {
+    {"enable-side-panel", "true"}};
+constexpr FeatureEntry::FeatureVariation kLensStandaloneVariations[] = {
+    {"With Side Panel", kLensStandaloneWithSidePanel,
+     std::size(kLensStandaloneWithSidePanel), nullptr},
+};
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -7458,10 +7465,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillSuggestVirtualCardsOnIncompleteForm)},
 
-    {flag_descriptions::kEnableLensRegionSearchFlagId,
-     flag_descriptions::kEnableLensRegionSearchName,
-     flag_descriptions::kEnableLensRegionSearchDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(lens::features::kLensRegionSearch)},
+    {flag_descriptions::kEnableLensStandaloneFlagId,
+     flag_descriptions::kEnableLensStandaloneName,
+     flag_descriptions::kEnableLensStandaloneDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(lens::features::kLensStandalone,
+                                    kLensStandaloneVariations,
+                                    "GoogleLensDesktopContextMenuSearch")},
 
     {"enable-penetrating-image-selection",
      flag_descriptions::kEnablePenetratingImageSelectionName,

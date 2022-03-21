@@ -1710,10 +1710,9 @@ class SearchByRegionBrowserTest : public InProcessBrowserTest {
   void SetUp() override {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeatureWithParameters(
-        lens::features::kLensRegionSearch,
+        lens::features::kLensStandalone,
         std::map<std::string, std::string>{
-            {lens::features::kEnableSidePanelForLensRegionSearch.name,
-             "false"}});
+            {lens::features::kEnableSidePanelForLens.name, "false"}});
 
     InProcessBrowserTest::SetUp();
   }
@@ -1759,7 +1758,7 @@ class SearchByRegionBrowserTest : public InProcessBrowserTest {
 
   GURL GetLensRegionSearchURL() {
     static const std::string kLensRegionSearchURL =
-        lens::features::GetHomepageURLForRegionSearch() + "upload?ep=crs";
+        lens::features::GetHomepageURLForLens() + "upload?ep=crs";
     return GURL(kLensRegionSearchURL);
   }
 
