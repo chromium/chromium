@@ -79,6 +79,15 @@ function setupSync({
   flush();
 }
 
+/**
+ * Returns a new promise that resolves after a window 'popstate' event.
+ */
+function whenPopState(causeEvent: () => void): Promise<void> {
+  const promise = eventToPromise('popstate', window);
+  causeEvent();
+  return promise;
+}
+
 suite('PrivacyGuidePage', function() {
   let page: SettingsPrivacyGuidePageElement;
   let syncBrowserProxy: TestSyncBrowserProxy;
@@ -142,16 +151,6 @@ suite('PrivacyGuidePage', function() {
     // the next test will be initialized to the same card as the previous test.
     Router.getInstance().navigateTo(routes.BASIC);
   });
-
-  /**
-   * Returns a new promise that resolves after a window 'popstate' event.
-   */
-  function whenPopState(causeEvent: () => void): Promise<void> {
-    const promise = eventToPromise('popstate', window);
-    causeEvent();
-    return promise;
-  }
-
 
   function assertQueryParameter(step: PrivacyGuideStep) {
     assertEquals(step, Router.getInstance().getQueryParameters().get('step'));
@@ -704,31 +703,6 @@ suite('PrivacyGuidePage', function() {
     const actionResult =
         await testMetricsBrowserProxy.whenCalled('recordAction');
     assertEquals(actionResult, 'Settings.PrivacyGuide.BackClickCompletion');
-  });
-
-  test('completionCardBackToSettingsNavigation', function() {
-    navigateToStep(PrivacyGuideStep.COMPLETION);
-    assertCompletionCardVisible();
-
-    return whenPopState(async function() {
-             const completionFragment = page.shadowRoot!.querySelector(
-                 '#' + PrivacyGuideStep.COMPLETION)!;
-             completionFragment.shadowRoot!
-                 .querySelector<HTMLElement>('#leaveButton')!.click();
-
-             const result = await testMetricsBrowserProxy.whenCalled(
-                 'recordPrivacyGuideNextNavigationHistogram');
-             assertEquals(
-                 PrivacyGuideInteractions.COMPLETION_NEXT_BUTTON, result);
-
-             const actionResult =
-                 await testMetricsBrowserProxy.whenCalled('recordAction');
-             assertEquals(
-                 actionResult, 'Settings.PrivacyGuide.NextClickCompletion');
-           })
-        .then(function() {
-          assertEquals(routes.PRIVACY, Router.getInstance().getCurrentRoute());
-        });
   });
 
   test('privacyGuideVisibilityChildAccount', function() {
@@ -1390,7 +1364,46 @@ suite('CompletionFragment', function() {
     document.body.innerHTML = '';
     page = document.createElement('privacy-guide-completion-fragment');
     document.body.appendChild(page);
+
+    // Simulates the route of the user entering the privacy guide from the S&P
+    // settings. This is necessary as tests seem to by default define the
+    // previous route as Settings "/". On a back navigation, "/" matches the
+    // criteria for a valid Settings parent no matter how deep the subpage is in
+    // the Settings tree. This would always navigate to Settings "/" instead of
+    // to the parent of the current subpage.
+    Router.getInstance().navigateTo(routes.PRIVACY);
+    // The user navigates to the completion step.
+    navigateToStep(PrivacyGuideStep.COMPLETION);
+
     return flushTasks();
+  });
+
+  teardown(function() {
+    page.remove();
+    // Reset route to default. The route is updated as we navigate through the
+    // cards, but the browser instance is shared among the tests, so otherwise
+    // the next test will be initialized to the same card as the previous test.
+    Router.getInstance().navigateTo(routes.BASIC);
+  });
+
+  test('backToSettingsNavigation', function() {
+    return whenPopState(async function() {
+             page.shadowRoot!.querySelector<HTMLElement>(
+                                 '#leaveButton')!.click();
+
+             const result = await testMetricsBrowserProxy.whenCalled(
+                 'recordPrivacyGuideNextNavigationHistogram');
+             assertEquals(
+                 PrivacyGuideInteractions.COMPLETION_NEXT_BUTTON, result);
+
+             const actionResult =
+                 await testMetricsBrowserProxy.whenCalled('recordAction');
+             assertEquals(
+                 actionResult, 'Settings.PrivacyGuide.NextClickCompletion');
+           })
+        .then(function() {
+          assertEquals(routes.PRIVACY, Router.getInstance().getCurrentRoute());
+        });
   });
 
   test('SWAALinkClick', async function() {
