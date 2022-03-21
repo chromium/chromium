@@ -44,7 +44,8 @@ const SiteDataDetailsSubpageElementBase =
       RouteObserverMixinInterface
     };
 
-class SiteDataDetailsSubpageElement extends SiteDataDetailsSubpageElementBase {
+export class SiteDataDetailsSubpageElement extends
+    SiteDataDetailsSubpageElementBase {
   static get is() {
     return 'site-data-details-subpage';
   }

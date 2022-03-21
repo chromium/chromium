@@ -4,8 +4,9 @@
 
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {LocalDataBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {LocalDataBrowserProxyImpl, SiteDataElement} from 'chrome://settings/lazy_load.js';
 import {MetricsBrowserProxyImpl, PrivacyElementInteractions, Router,routes} from 'chrome://settings/settings.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, flushTasks} from 'chrome://webui-test/test_util.js';
 
 import {TestLocalDataBrowserProxy} from './test_local_data_browser_proxy.js';
@@ -14,14 +15,11 @@ import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 // clang-format on
 
 suite('SiteDataTest', function() {
-  /** @type {SiteDataElement} */
-  let siteData;
+  let siteData: SiteDataElement;
 
-  /** @type {TestLocalDataBrowserProxy} */
-  let testBrowserProxy;
+  let testBrowserProxy: TestLocalDataBrowserProxy;
 
-  /** @type {!TestMetricsBrowserProxy} */
-  let testMetricsBrowserProxy;
+  let testMetricsBrowserProxy: TestMetricsBrowserProxy;
 
   setup(function() {
     Router.getInstance().navigateTo(routes.SITE_SETTINGS);
@@ -47,7 +45,9 @@ suite('SiteDataTest', function() {
 
     await eventToPromise('site-data-list-complete', siteData);
     flush();
-    const button = siteData.$$('site-data-entry').$$('.icon-delete-gray');
+    const button =
+        siteData.shadowRoot!.querySelector('site-data-entry')!.shadowRoot!
+            .querySelector<HTMLElement>('.icon-delete-gray');
     assertTrue(!!button);
     assertEquals('CR-ICON-BUTTON', button.tagName);
     button.click();
@@ -68,10 +68,10 @@ suite('SiteDataTest', function() {
     Router.getInstance().navigateTo(routes.SITE_SETTINGS_SITE_DATA);
 
     await eventToPromise('site-data-list-complete', siteData);
-    assertEquals(2, siteData.$.list.items.length);
+    assertEquals(2, siteData.$.list.items!.length);
     siteData.filter = 'Hello';
     await eventToPromise('site-data-list-complete', siteData);
-    assertEquals(1, siteData.$.list.items.length);
+    assertEquals(1, siteData.$.list.items!.length);
   });
 
   test('calls reloadCookies() when created', async function() {
@@ -106,10 +106,10 @@ suite('SiteDataTest', function() {
     // Check that the remove button correctly records an interaction metric
     // based on whether the list is filtered or not.
     document.body.appendChild(siteData);
-    siteData.$$('#removeShowingSites').click();
+    siteData.$.removeShowingSites.click();
     flush();
 
-    siteData.$$('.action-button').click();
+    siteData.shadowRoot!.querySelector<HTMLElement>('.action-button')!.click();
     let metric =
         await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
     assertEquals(PrivacyElementInteractions.SITE_DATA_REMOVE_ALL, metric);
@@ -117,10 +117,10 @@ suite('SiteDataTest', function() {
 
     // Add a filter and repeat.
     siteData.filter = 'Test';
-    siteData.$$('#removeShowingSites').click();
+    siteData.$.removeShowingSites.click();
     flush();
 
-    siteData.$$('.action-button').click();
+    siteData.shadowRoot!.querySelector<HTMLElement>('.action-button')!.click();
     metric =
         await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
     assertEquals(PrivacyElementInteractions.SITE_DATA_REMOVE_FILTERED, metric);
@@ -147,5 +147,4 @@ suite('SiteDataTest', function() {
     filter = await testBrowserProxy.whenCalled('getDisplayList');
     assertEquals('Test2', filter);
   });
-
 });

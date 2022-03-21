@@ -23,6 +23,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {ListPropertyUpdateMixin} from 'chrome://resources/js/list_property_update_mixin.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
+import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {DomRepeatEvent, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../base_mixin.js';
@@ -42,10 +43,11 @@ type SelectedItem = {
   index: number,
 };
 
-interface SiteDataElement {
+export interface SiteDataElement {
   $: {
     confirmDeleteDialog: CrDialogElement,
     confirmDeleteThirdPartyDialog: CrDialogElement,
+    list: IronListElement,
     removeShowingSites: HTMLElement,
     removeAllThirdPartyCookies: HTMLElement,
   };
@@ -54,7 +56,7 @@ interface SiteDataElement {
 const SiteDataElementBase = ListPropertyUpdateMixin(
     GlobalScrollTargetMixin(WebUIListenerMixin(BaseMixin(PolymerElement))));
 
-class SiteDataElement extends SiteDataElementBase {
+export class SiteDataElement extends SiteDataElementBase {
   static get is() {
     return 'site-data';
   }
@@ -308,6 +310,12 @@ class SiteDataElement extends SiteDataElementBase {
   private showRemoveThirdPartyCookies_(): boolean {
     return loadTimeData.getBoolean('enableRemovingAllThirdPartyCookies') &&
         this.sites.length > 0 && this.filter.length === 0;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'site-data': SiteDataElement;
   }
 }
 

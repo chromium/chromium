@@ -4,9 +4,10 @@
 
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {cookieInfo, LocalDataBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {CookieDetails, cookieInfo, LocalDataBrowserProxyImpl, SiteDataDetailsSubpageElement} from 'chrome://settings/lazy_load.js';
 import {MetricsBrowserProxyImpl, PrivacyElementInteractions, Router,routes} from 'chrome://settings/settings.js';
 
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/test_util.js';
 
 import {TestLocalDataBrowserProxy} from './test_local_data_browser_proxy.js';
@@ -16,17 +17,13 @@ import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 /** @fileoverview Suite of tests for site-data-details-subpage. */
 suite('SiteDataDetailsSubpage', function() {
-  /** @type {?SiteDataDetailsSubpageElement} */
-  let page = null;
+  let page: SiteDataDetailsSubpageElement;
 
-  /** @type {TestLocalDataBrowserProxy} */
-  let browserProxy = null;
+  let browserProxy: TestLocalDataBrowserProxy;
 
-  /** @type {!TestMetricsBrowserProxy} */
-  let testMetricsBrowserProxy;
+  let testMetricsBrowserProxy: TestMetricsBrowserProxy;
 
-  /** @type {!CookieDetails} */
-  const cookieDetails = {
+  const cookieDetails: CookieDetails&{[key: string]: string | boolean} = {
     accessibleToScript: 'Yes',
     content: 'dummy_cookie_contents',
     created: 'Tuesday, February 7, 2017 at 11:28:45 AM',
@@ -39,10 +36,11 @@ suite('SiteDataDetailsSubpage', function() {
     path: '/',
     sendfor: 'Any kind of connection',
     title: 'abcd',
+    totalUsage: '1kB',
     type: 'cookie'
   };
 
-  const site = 'foo.com';
+  const site: string = 'foo.com';
 
   setup(function() {
     browserProxy = new TestLocalDataBrowserProxy();
@@ -50,7 +48,7 @@ suite('SiteDataDetailsSubpage', function() {
     LocalDataBrowserProxyImpl.setInstance(browserProxy);
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     page = document.createElement('site-data-details-subpage');
     Router.getInstance().navigateTo(
         routes.SITE_SETTINGS_DATA_DETAILS, new URLSearchParams('site=' + site));
@@ -64,23 +62,24 @@ suite('SiteDataDetailsSubpage', function() {
 
   test('DetailsShownForCookie', function() {
     return browserProxy.whenCalled('getCookieDetails')
-        .then(function(actualSite) {
+        .then(function(actualSite: string) {
           assertEquals(site, actualSite);
 
           flush();
-          const entries = page.root.querySelectorAll('.cr-row');
+          const entries = page.shadowRoot!.querySelectorAll('.cr-row');
           assertEquals(1, entries.length);
 
-          const listItems = page.root.querySelectorAll('.list-item');
+          const listItems = page.shadowRoot!.querySelectorAll('.list-item');
           // |cookieInfo| is a global var defined in
           // site_settings/cookie_info.js, and specifies the fields that are
           // shown for a cookie.
-          assertEquals(cookieInfo.cookie.length, listItems.length);
+          assertEquals(cookieInfo['cookie']!.length, listItems.length);
 
           // Check that all the cookie information is presented in the DOM.
-          const cookieDetailValues = page.root.querySelectorAll('.secondary');
-          cookieDetailValues.forEach(function(div, i) {
-            const key = cookieInfo.cookie[i][0];
+          const cookieDetailValues =
+              page.shadowRoot!.querySelectorAll<HTMLElement>('.secondary');
+          cookieDetailValues.forEach(function(div: HTMLElement, i: number) {
+            const key = cookieInfo['cookie']![i]![0]!;
             assertEquals(cookieDetails[key], div.textContent);
           });
         });
@@ -89,7 +88,7 @@ suite('SiteDataDetailsSubpage', function() {
   test('InteractionMetrics', async function() {
     // Confirm that various page interactions record the appropriate metric.
     await flushTasks();
-    page.shadowRoot.querySelector('.icon-clear').click();
+    page.shadowRoot!.querySelector<HTMLElement>('.icon-clear')!.click();
     let metric =
         await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
     assertEquals(PrivacyElementInteractions.COOKIE_DETAILS_REMOVE_ITEM, metric);
@@ -104,5 +103,4 @@ suite('SiteDataDetailsSubpage', function() {
         await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
     assertEquals(PrivacyElementInteractions.COOKIE_DETAILS_REMOVE_ALL, metric);
   });
-
 });

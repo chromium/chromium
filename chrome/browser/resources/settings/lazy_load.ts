@@ -180,6 +180,8 @@ export {SettingsEditExceptionDialogElement} from './site_settings/edit_exception
 export {LocalDataBrowserProxy, LocalDataBrowserProxyImpl, LocalDataItem} from './site_settings/local_data_browser_proxy.js';
 export {AppHandlerEntry, AppProtocolEntry, HandlerEntry, ProtocolEntry, ProtocolHandlersElement} from './site_settings/protocol_handlers.js';
 export {SettingsCategoryDefaultRadioGroupElement} from './site_settings/settings_category_default_radio_group.js';
+export {SiteDataElement} from './site_settings/site_data.js';
+export {SiteDataDetailsSubpageElement} from './site_settings/site_data_details_subpage.js';
 export {SiteDetailsElement} from './site_settings/site_details.js';
 export {SiteDetailsPermissionElement} from './site_settings/site_details_permission.js';
 export {SiteEntryElement} from './site_settings/site_entry.js';
