@@ -103,15 +103,6 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
-                       CheckLaunchFromPlatformShortcut) {
-  helper_.InstallCreateShortcutWindowed("SiteA");
-  helper_.CheckWindowCreated();
-  helper_.ClosePwa();
-  helper_.LaunchFromPlatformShortcut("SiteA");
-  helper_.CheckWindowCreated();
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
                        CheckNavigateToAppSettingsFromChromeAppsWorks) {
   helper_.InstallCreateShortcutWindowed("SiteA");
   helper_.CheckAppInListWindowed("SiteA");
