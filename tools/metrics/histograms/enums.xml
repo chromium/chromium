@@ -94,6 +94,15 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="2" label="Restart caused network error"/>
 </enum>
 
+<enum name="AcceptLanguageAndContentLanguageUsage">
+  <int value="0" label="Empty Content-Language string"/>
+  <int value="1" label="Content-Language value is wildcard"/>
+  <int value="2" label="Content-Language matches any Accept-Language"/>
+  <int value="3" label="Content-Language matches primary Accept-Language"/>
+  <int value="4"
+      label="Child frame's Content-Language differs from parent frame"/>
+</enum>
+
 <enum name="AccessibilityAndroidAnimationsEnabled">
   <obsolete>
     Removed from code 2020/10.

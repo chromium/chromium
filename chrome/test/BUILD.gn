@@ -1638,6 +1638,7 @@ if (!is_android) {
       "../browser/client_hints/client_hints_browsertest.cc",
       "../browser/component_updater/component_patcher_operation_browsertest.cc",
       "../browser/content_index/content_index_browsertest.cc",
+      "../browser/content_language/content_language_browsertest.cc",
       "../browser/content_settings/mixed_content_settings_tab_helper_browsertest.cc",
       "../browser/content_settings/sound_content_setting_observer_browsertest.cc",
       "../browser/crash_recovery_browsertest.cc",
