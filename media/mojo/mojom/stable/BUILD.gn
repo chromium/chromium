@@ -13,9 +13,10 @@ mojom("stable_video_decoder") {
 
   public_deps = [
     ":native_pixmap_handle",
-    "//media/mojo/mojom",
+    "//media/mojo/mojom:encryption_pattern",
     "//mojo/public/mojom/base",
     "//ui/gfx/geometry/mojom",
+    "//ui/gfx/mojom",
   ]
 
   cpp_typemaps = [
@@ -124,7 +125,10 @@ mojom("stable_video_decoder") {
       ]
       traits_headers = [ "stable_video_decoder_types_mojom_traits.h" ]
       traits_sources = [ "stable_video_decoder_types_mojom_traits.cc" ]
-      traits_deps = [ "//media/gpu:buffer_validation" ]
+      traits_deps = [
+        "//gpu/ipc/common",
+        "//media/gpu:buffer_validation",
+      ]
 
       if (use_vaapi) {
         traits_deps += [ "//media/gpu/vaapi:vaapi_status" ]

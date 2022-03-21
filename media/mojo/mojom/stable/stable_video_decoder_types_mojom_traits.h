@@ -6,6 +6,8 @@
 #define MEDIA_MOJO_MOJOM_STABLE_STABLE_VIDEO_DECODER_TYPES_MOJOM_TRAITS_H_
 
 #include "base/notreached.h"
+#include "media/base/video_frame.h"
+#include "media/base/video_frame_metadata.h"
 #include "media/mojo/mojom/stable/stable_video_decoder_types.mojom.h"
 #include "mojo/public/cpp/bindings/optional_as_pointer.h"
 

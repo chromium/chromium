@@ -7,7 +7,7 @@
 
 #include "media/base/encryption_pattern.h"
 #include "media/base/ipc/media_param_traits.h"
-#include "media/mojo/mojom/media_types.mojom.h"
+#include "media/mojo/mojom/encryption_pattern.mojom.h"
 
 namespace mojo {
 

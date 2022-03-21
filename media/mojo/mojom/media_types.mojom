@@ -6,6 +6,7 @@ module media.mojom;
 
 import "gpu/ipc/common/mailbox_holder.mojom";
 import "gpu/ipc/common/vulkan_ycbcr_info.mojom";
+import "media/mojo/mojom/encryption_pattern.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/values.mojom";
@@ -107,14 +108,6 @@ enum MediaContainerName;
 // See media/base/media_status.h for description.
 [Native]
 enum MediaStatusState;
-
-// This defines a mojo transport format for media::EncryptionPattern
-// See media/base/encryption_pattern.h for description.
-[Stable]
-struct EncryptionPattern {
-  uint32 crypt_byte_block;
-  uint32 skip_byte_block;
-};
 
 // See media/base/encryption_scheme.h for description.
 [Native]

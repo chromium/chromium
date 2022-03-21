@@ -73,6 +73,7 @@ mojom("mojom") {
   }
 
   public_deps = [
+    ":encryption_pattern",
     "//gpu/ipc/common:interfaces",
     "//media/learning/mojo/public/mojom",
     "//mojo/public/mojom/base",
@@ -326,20 +327,6 @@ mojom("mojom") {
         },
       ]
       traits_headers = [ "//media/base/ipc/media_param_traits_macros.h" ]
-      traits_public_deps = [
-        "//media",
-        "//media/base/ipc",
-      ]
-    },
-    {
-      types = [
-        {
-          mojom = "media.mojom.EncryptionPattern"
-          cpp = "::media::EncryptionPattern"
-        },
-      ]
-      traits_headers = [ "encryption_pattern_mojom_traits.h" ]
-      traits_sources = [ "encryption_pattern_mojom_traits.cc" ]
       traits_public_deps = [
         "//media",
         "//media/base/ipc",
@@ -740,6 +727,27 @@ mojom("mojom") {
   export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
   export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
   export_header_blink = "third_party/blink/public/platform/web_common.h"
+}
+
+mojom("encryption_pattern") {
+  generate_java = true
+  sources = [ "encryption_pattern.mojom" ]
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "media.mojom.EncryptionPattern"
+          cpp = "::media::EncryptionPattern"
+        },
+      ]
+      traits_headers = [ "encryption_pattern_mojom_traits.h" ]
+      traits_sources = [ "encryption_pattern_mojom_traits.cc" ]
+      traits_public_deps = [
+        "//media",
+        "//media/base/ipc",
+      ]
+    },
+  ]
 }
 
 source_set("shared_mojom_traits") {

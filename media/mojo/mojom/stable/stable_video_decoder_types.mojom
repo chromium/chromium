@@ -4,7 +4,7 @@
 
 module media.stable.mojom;
 
-import "media/mojo/mojom/media_types.mojom";
+import "media/mojo/mojom/encryption_pattern.mojom";
 import "media/mojo/mojom/stable/native_pixmap_handle.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/values.mojom";
