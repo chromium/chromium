@@ -2283,8 +2283,8 @@
   },
   {
     "name": "enable-lacros-in-web-kiosk",
-    "owners": ["anqing", "apotapchuk"],
-    "expiry_milestone": 100
+    "owners": ["bfranz", "chromeos-kiosk-eng@google.com"],
+    "expiry_milestone": 110
   },
   {
     "name": "enable-launcher-app-paging",
