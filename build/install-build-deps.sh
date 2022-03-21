@@ -736,7 +736,7 @@ if [ "$do_inst_chromeos_fonts" != "0" ]; then
       echo "This is expected if your repo is installed on a remote file system."
     fi
     echo "It is recommended to install your repo on a local file system."
-    echo "You can skip the installation of the Chrome OS default founts with"
+    echo "You can skip the installation of the Chrome OS default fonts with"
     echo "the command line option: --no-chromeos-fonts."
     exit 1
   fi
