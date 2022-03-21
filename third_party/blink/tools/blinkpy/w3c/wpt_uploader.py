@@ -13,6 +13,7 @@ import tempfile
 
 from blinkpy.common.net.rpc import Rpc
 from blinkpy.common.system.log_utils import configure_logging
+from blinkpy.w3c.common import read_credentials
 
 _log = logging.getLogger(__name__)
 
@@ -21,6 +22,7 @@ class WptReportUploader(object):
     def __init__(self, host):
         self._host = host
         self._rpc = Rpc(host)
+        self.options = None
         self._dry_run = False
         configure_logging(logging_level=logging.INFO, include_time=True)
 
@@ -31,10 +33,10 @@ class WptReportUploader(object):
         Returns:
             A boolean: True if success, False if there were any failures.
         """
-        options = self.parse_args(argv)
-        if options.verbose:
+        self.options = self.parse_args(argv)
+        if self.options.verbose:
             configure_logging(logging_level=logging.DEBUG, include_time=True)
-        self._dry_run = options.dry_run
+        self._dry_run = self.options.dry_run
 
         rv = 0
 
@@ -89,13 +91,13 @@ class WptReportUploader(object):
                 ... more artifacts
             ]
         }
-        
+
         An example of the url as below:
         https://results.usercontent.cr.dev/invocations/ \
         task-chromium-swarm.appspot.com-58590ed6228fd611/ \
         artifacts/wpt_reports_android_webview_01.json? \
         token=AXsiX2kiOiIxNjQxNzYyNzU0MDkxIiwiX3giOiIzNjAwMDAwIn24WM72ciT_oYJG0hGx6MShOXu8SyVxfB_fw
-        
+
         Returns a sorted(based on shard number) list of URLs for wpt report
         """
 
@@ -170,16 +172,21 @@ class WptReportUploader(object):
         https://github.com/web-platform-tests/wpt.fyi/tree/main/api#results-creation
         """
         username = "chromium-ci-results-uploader"
-        password = "/!Lu:ahR%wrjb6B8x6cz"
         url = "https://staging.wpt.fyi/api/results/upload"
 
-        session = requests.Session()
-        session.auth = (username, password)
         with open(path_to_report, 'rb') as fp:
             files = {'result_file': fp}
             if self._dry_run:
                 _log.info("Dry run, no report uploaded.")
                 return 0
+            session = requests.Session()
+            credentials = read_credentials(self._host, self.options.credentials_json)
+            if not credentials.get('GH_TOKEN'):
+                _log.error("No password available, can not upload wpt reports.")
+                return 1
+
+            password = credentials['GH_TOKEN'][0:16]
+            session.auth = (username, password)
             res = session.post(url=url, files=files)
             if res.status_code == 200:
                 _log.info("Successfully uploaded wpt report with response: " + res.text.strip())
@@ -218,4 +225,7 @@ class WptReportUploader(object):
             '--dry-run',
             action='store_true',
             help='See what would be done without actually uploading any report.')
+        parser.add_argument(
+            '--credentials-json',
+            help='A JSON file with wpt.fyi credentials')
         return parser.parse_args(argv)
