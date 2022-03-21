@@ -106,6 +106,7 @@ PASS oldChildWindow.onanimationstart is newChildWindow.onanimationstart
 PASS oldChildWindow.onappinstalled is newChildWindow.onappinstalled
 PASS oldChildWindow.onauxclick is newChildWindow.onauxclick
 PASS oldChildWindow.onbeforeinstallprompt is newChildWindow.onbeforeinstallprompt
+PASS oldChildWindow.onbeforematch is newChildWindow.onbeforematch
 PASS oldChildWindow.onbeforeprint is newChildWindow.onbeforeprint
 PASS oldChildWindow.onbeforeunload is newChildWindow.onbeforeunload
 PASS oldChildWindow.onbeforexrselect is newChildWindow.onbeforexrselect

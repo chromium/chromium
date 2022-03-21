@@ -51,6 +51,7 @@ PASS childWindow.onanimationstart is null
 PASS childWindow.onappinstalled is null
 PASS childWindow.onauxclick is null
 PASS childWindow.onbeforeinstallprompt is null
+PASS childWindow.onbeforematch is null
 PASS childWindow.onbeforeprint is null
 PASS childWindow.onbeforeunload is null
 PASS childWindow.onbeforexrselect is null

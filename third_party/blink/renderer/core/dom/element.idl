@@ -150,7 +150,6 @@ callback ScrollStateCallback = void (ScrollState scrollState);
     attribute EventHandler onbeforecut;
     attribute EventHandler onbeforepaste;
     attribute EventHandler onsearch;
-    [RuntimeEnabled=BeforeMatchEvent] attribute EventHandler onbeforematch;
 
     // Element Timing
     [CEReactions, Reflect=elementtiming] attribute DOMString elementTiming;

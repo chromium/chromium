@@ -45,6 +45,7 @@ class GlobalEventHandlers {
                                          kAnimationiteration)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(animationstart, kAnimationstart)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(auxclick, kAuxclick)
+  DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(beforematch, kBeforematch)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(blur, kBlur)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(cancel, kCancel)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(canplay, kCanplay)
