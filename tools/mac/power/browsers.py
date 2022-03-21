@@ -28,7 +28,7 @@ class BrowserDriver(abc.ABC):
     self.executable_path = (os.path.join("/Applications",
                                          f"{self.process_name}.app"))
 
-    if not os.path.exists(executable_path):
+    if not os.path.exists(self.executable_path):
       raise ValueError(f"Application doesn't exist for {browser_name}.")
 
   @abc.abstractmethod
