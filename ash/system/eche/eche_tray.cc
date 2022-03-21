@@ -10,6 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_web_view.h"
 #include "ash/public/cpp/ash_web_view_factory.h"
+#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
@@ -245,7 +246,11 @@ void EcheTray::HideBubble() {
 void EcheTray::InitBubble() {
   TrayBubbleView::InitParams init_params;
   init_params.delegate = this;
-  init_params.parent_window = GetBubbleWindowContainer();
+  // Note: The container id must be smaller than `kShellWindowId_ShelfContainer`
+  // in order to let the notifications be shown on top of the eche window.
+  init_params.parent_window = Shell::GetContainer(
+      tray_container()->GetWidget()->GetNativeWindow()->GetRootWindow(),
+      kShellWindowId_AlwaysOnTopContainer);
   init_params.anchor_mode = TrayBubbleView::AnchorMode::kRect;
   init_params.anchor_rect = shelf()->GetSystemTrayAnchorRect();
   init_params.insets = GetTrayBubbleInsets();
