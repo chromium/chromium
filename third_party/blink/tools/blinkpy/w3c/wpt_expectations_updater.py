@@ -1079,7 +1079,7 @@ class WPTExpectationsUpdater(object):
             if not line.test or line.is_glob:
                 continue
             if (ResultType.Timeout in line.results and
-                    (ResultType.Skip not in line.results) and
+                    len(line.results) == 1 and
                     (test_expectations.get_expectations(line.test).is_slow_test or
                         port.is_slow_wpt_test(line.test))):
                 test_expectations.remove_expectations(path, [line])
