@@ -844,6 +844,45 @@ TEST_F(WebAppRegistrarTest, NotLocallyInstalledAppGetsDisplayModeBrowser) {
             registrar().GetAppEffectiveDisplayMode(app_id));
 }
 
+TEST_F(WebAppRegistrarTest,
+       NotLocallyInstalledAppGetsDisplayModeBrowserEvenForIsolatedApps) {
+  controller().Init();
+
+  auto web_app = test::CreateWebApp();
+  const AppId app_id = web_app->app_id();
+  web_app->SetDisplayMode(DisplayMode::kStandalone);
+  web_app->SetUserDisplayMode(DisplayMode::kStandalone);
+  web_app->SetIsLocallyInstalled(false);
+
+  // Not locally installed apps get browser display mode because they do not
+  // have information aboud isolation because manifest is not available.
+  web_app->SetStorageIsolated(true);
+
+  RegisterApp(std::move(web_app));
+
+  EXPECT_EQ(DisplayMode::kBrowser,
+            registrar().GetAppEffectiveDisplayMode(app_id));
+}
+
+TEST_F(WebAppRegistrarTest,
+       IsolatedAppsGetDisplayModeStandaloneRegardlessOfUserSettings) {
+  controller().Init();
+
+  std::unique_ptr<WebApp> web_app = test::CreateWebApp();
+  const AppId app_id = web_app->app_id();
+
+  // Valid manifest must have standalone display mode
+  web_app->SetDisplayMode(DisplayMode::kStandalone);
+  web_app->SetUserDisplayMode(DisplayMode::kBrowser);
+  web_app->SetIsLocallyInstalled(true);
+  web_app->SetStorageIsolated(true);
+
+  RegisterApp(std::move(web_app));
+
+  EXPECT_EQ(DisplayMode::kStandalone,
+            registrar().GetAppEffectiveDisplayMode(app_id));
+}
+
 TEST_F(WebAppRegistrarTest, NotLocallyInstalledAppGetsDisplayModeOverride) {
   controller().Init();
 

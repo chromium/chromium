@@ -65,7 +65,9 @@ std::ostream& operator<<(std::ostream& os, Source::Type type) {
 static_assert(OsHookType::kShortcuts == 0,
               "OsHookType enum should be zero based");
 
-DisplayMode ResolveEffectiveDisplayMode(
+namespace {
+
+DisplayMode ResolveNonIsolatedEffectiveDisplayMode(
     DisplayMode app_display_mode,
     const std::vector<DisplayMode>& app_display_mode_overrides,
     DisplayMode user_display_mode) {
@@ -97,6 +99,23 @@ DisplayMode ResolveEffectiveDisplayMode(
   }
 
   return ResolveAppDisplayModeForStandaloneLaunchContainer(app_display_mode);
+}
+
+}  // namespace
+
+DisplayMode ResolveEffectiveDisplayMode(
+    DisplayMode app_display_mode,
+    const std::vector<DisplayMode>& app_display_mode_overrides,
+    DisplayMode user_display_mode,
+    bool is_isolated) {
+  const DisplayMode resolved_display_mode =
+      ResolveNonIsolatedEffectiveDisplayMode(
+          app_display_mode, app_display_mode_overrides, user_display_mode);
+  if (is_isolated && resolved_display_mode == DisplayMode::kBrowser) {
+    return DisplayMode::kStandalone;
+  }
+
+  return resolved_display_mode;
 }
 
 apps::mojom::LaunchContainer ConvertDisplayModeToAppLaunchContainer(

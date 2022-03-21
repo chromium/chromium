@@ -360,7 +360,7 @@ DisplayMode WebAppRegistrar::GetAppEffectiveDisplayMode(
   std::vector<DisplayMode> display_mode_overrides =
       GetAppDisplayModeOverride(app_id);
   return ResolveEffectiveDisplayMode(app_display_mode, display_mode_overrides,
-                                     user_display_mode);
+                                     user_display_mode, IsIsolated(app_id));
 }
 
 DisplayMode WebAppRegistrar::GetEffectiveDisplayModeFromManifest(
@@ -459,6 +459,11 @@ bool WebAppRegistrar::IsLocallyInstalled(const AppId& app_id) const {
   return web_app
              ? !web_app->is_uninstalling() && web_app->is_locally_installed()
              : false;
+}
+
+bool WebAppRegistrar::IsIsolated(const AppId& app_id) const {
+  auto* web_app = GetAppById(app_id);
+  return web_app ? web_app->IsStorageIsolated() : false;
 }
 
 bool WebAppRegistrar::WasInstalledByDefaultOnly(const AppId& app_id) const {

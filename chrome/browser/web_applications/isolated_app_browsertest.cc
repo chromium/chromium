@@ -27,6 +27,7 @@
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/gcm_driver/common/gcm_message.h"
 #include "components/gcm_driver/fake_gcm_profile_service.h"
@@ -229,6 +230,33 @@ IN_PROC_BROWSER_TEST_F(IsolatedAppBrowserTest, AppsPartitioned) {
 IN_PROC_BROWSER_TEST_F(IsolatedAppBrowserTest,
                        OmniboxNavigationOpensNewPwaWindow) {
   AppId app_id = InstallIsolatedApp(kAppHost);
+
+  GURL app_url =
+      https_server()->GetURL(kAppHost, "/banners/isolated/simple.html");
+  auto* app_frame =
+      NavigateToURLInNewTab(browser(), app_url, WindowOpenDisposition::UNKNOWN);
+
+  // The browser shouldn't have opened the app's page.
+  EXPECT_EQ(GetMainFrame(browser())->GetLastCommittedURL(), GURL());
+
+  // The app's frame should belong to an isolated PWA browser window.
+  Browser* app_browser = GetBrowserFromFrame(app_frame);
+  EXPECT_NE(app_browser, browser());
+  EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser, app_id));
+  EXPECT_EQ(content::RenderFrameHost::WebExposedIsolationLevel::
+                kMaybeIsolatedApplication,
+            app_frame->GetWebExposedIsolationLevel());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    IsolatedAppBrowserTest,
+    OmniboxNavigationOpensNewPwaWindowEvenIfUserDisplayModeIsBrowser) {
+  AppId app_id = InstallIsolatedApp(kAppHost);
+
+  WebAppProvider::GetForTest(browser()->profile())
+      ->sync_bridge()
+      .SetAppUserDisplayMode(app_id, DisplayMode::kBrowser,
+                             /*is_user_action=*/false);
 
   GURL app_url =
       https_server()->GetURL(kAppHost, "/banners/isolated/simple.html");
