@@ -302,7 +302,7 @@ struct WebAppInstallInfo {
   absl::optional<blink::Manifest::LaunchHandler> launch_handler;
 
   // A mapping from locales to translated fields.
-  base::flat_map<std::u16string, blink::Manifest::TranslationItem> translations;
+  base::flat_map<std::string, blink::Manifest::TranslationItem> translations;
 
   // The declared permissions policy to apply as the baseline policy for all
   // documents belonging to the application.

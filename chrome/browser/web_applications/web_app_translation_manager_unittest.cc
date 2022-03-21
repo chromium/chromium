@@ -123,21 +123,21 @@ TEST_F(WebAppTranslationManagerTest, WriteReadAndDelete) {
   item1.name = "name 1";
   item1.short_name = "short name 1";
   item1.description = "description 1";
-  translations1[u"en"] = item1;
+  translations1["en"] = item1;
 
   blink::Manifest::TranslationItem item2;
   item2.name = "name 2";
   item2.description = "description 2";
-  translations1[u"fr"] = item2;
+  translations1["fr"] = item2;
 
   blink::Manifest::TranslationItem item3;
   item3.short_name = "short name 3";
-  translations2[u"en"] = item3;
+  translations2["en"] = item3;
 
   blink::Manifest::TranslationItem item4;
   item4.short_name = "short name 4";
   item4.description = "description 4";
-  translations2[u"fr"] = item4;
+  translations2["fr"] = item4;
 
   // Write translations for both apps.
   AwaitWriteTranslations(app_id1, translations1);
@@ -203,12 +203,12 @@ TEST_F(WebAppTranslationManagerTest, UpdateTranslations) {
   item1.name = "name 1";
   item1.short_name = "short name 1";
   item1.description = "description 1";
-  translations1[u"en"] = item1;
+  translations1["en"] = item1;
 
   blink::Manifest::TranslationItem item2;
   item2.name = "name 2";
   item2.description = "description 2";
-  translations2[u"en"] = item2;
+  translations2["en"] = item2;
 
   // Write translations for the app.
   AwaitWriteTranslations(app_id1, translations1);
@@ -242,7 +242,7 @@ TEST_F(WebAppTranslationManagerTest, InstallAndUninstall) {
   item1.name = "name 1";
   item1.short_name = "short name 1";
   item1.description = "description 1";
-  translations[u"en"] = item1;
+  translations["en"] = item1;
 
   auto app_info = std::make_unique<WebAppInstallInfo>();
   app_info->start_url = GURL("https://example.com/path");

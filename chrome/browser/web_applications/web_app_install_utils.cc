@@ -10,10 +10,12 @@
 #include <set>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
@@ -327,6 +329,20 @@ apps::FileHandler::LaunchType ToFileHandlerLaunchType(
   }
 }
 
+base::flat_map<std::string, blink::Manifest::TranslationItem>
+ToWebAppTranslations(
+    const base::flat_map<std::u16string, blink::Manifest::TranslationItem>&
+        manifest_translations) {
+  std::vector<std::pair<std::string, blink::Manifest::TranslationItem>>
+      translations_vector;
+  translations_vector.reserve(manifest_translations.size());
+  for (const auto& it : manifest_translations) {
+    translations_vector.emplace_back(base::UTF16ToUTF8(it.first), it.second);
+  }
+  return base::flat_map<std::string, blink::Manifest::TranslationItem>(
+      std::move(translations_vector));
+}
+
 }  // namespace
 
 apps::FileHandlers CreateFileHandlersFromManifest(
@@ -502,7 +518,7 @@ void UpdateWebAppInfoFromManifest(const blink::mojom::Manifest& manifest,
     web_app_info->description = manifest.description.value();
   }
 
-  web_app_info->translations = manifest.translations;
+  web_app_info->translations = ToWebAppTranslations(manifest.translations);
 
   web_app_info->permissions_policy.clear();
   for (const auto& decl : manifest.permissions_policy) {

@@ -116,8 +116,7 @@ bool WriteTranslationsBlocking(
 
   for (const auto& translation : translations) {
     (*locale_to_overrides_map
-          .mutable_locale_to_overrides_map())[base::UTF16ToUTF8(
-        translation.first)] =
+          .mutable_locale_to_overrides_map())[translation.first] =
         ConvertTranslationItemToLocaleOverrides(translation.second);
   }
   (*proto.mutable_id_to_translations_map())[app_id] = locale_to_overrides_map;
@@ -157,7 +156,7 @@ void WebAppTranslationManager::WriteTranslations(
   const std::string& locale = g_browser_process->GetApplicationLocale();
   // TODO(crbug.com/1259777): Check other matching locales. Eg if no name
   // defined in en-US, check en.
-  auto it = translations.find(base::UTF8ToUTF16(locale));
+  auto it = translations.find(locale);
   if (it != translations.end()) {
     translation_cache_[app_id] = it->second;
   }

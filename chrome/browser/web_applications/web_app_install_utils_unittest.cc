@@ -888,21 +888,19 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest_Translations) {
   UpdateWebAppInfoFromManifest(manifest, kAppManifestUrl, &web_app_info);
 
   EXPECT_EQ(3u, web_app_info.translations.size());
-  EXPECT_EQ(web_app_info.translations[u"language 1"].name, "name 1");
-  EXPECT_EQ(web_app_info.translations[u"language 1"].short_name,
-            "short name 1");
-  EXPECT_EQ(web_app_info.translations[u"language 1"].description,
+  EXPECT_EQ(web_app_info.translations["language 1"].name, "name 1");
+  EXPECT_EQ(web_app_info.translations["language 1"].short_name, "short name 1");
+  EXPECT_EQ(web_app_info.translations["language 1"].description,
             "description 1");
 
-  EXPECT_FALSE(web_app_info.translations[u"language 2"].name);
-  EXPECT_EQ(web_app_info.translations[u"language 2"].short_name,
-            "short name 2");
-  EXPECT_EQ(web_app_info.translations[u"language 2"].description,
+  EXPECT_FALSE(web_app_info.translations["language 2"].name);
+  EXPECT_EQ(web_app_info.translations["language 2"].short_name, "short name 2");
+  EXPECT_EQ(web_app_info.translations["language 2"].description,
             "description 2");
 
-  EXPECT_EQ(web_app_info.translations[u"language 3"].name, "name 3");
-  EXPECT_FALSE(web_app_info.translations[u"language 3"].short_name);
-  EXPECT_FALSE(web_app_info.translations[u"language 3"].description);
+  EXPECT_EQ(web_app_info.translations["language 3"].name, "name 3");
+  EXPECT_FALSE(web_app_info.translations["language 3"].short_name);
+  EXPECT_FALSE(web_app_info.translations["language 3"].description);
 }
 
 class FileHandlersFromManifestTest : public ::testing::TestWithParam<bool> {

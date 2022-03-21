@@ -20,7 +20,7 @@
 
 namespace web_app {
 
-using Locale = std::u16string;
+using Locale = std::string;
 
 // Handles reading and writing web app translations data to disk and caching
 // the translations for the current browser locale.
