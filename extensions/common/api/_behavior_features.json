@@ -176,7 +176,7 @@
     "channel": "stable",
     "extension_types": ["extension"],
     "location": "policy",
-    "platforms": ["chromeos"],
+    "platforms": ["chromeos", "lacros"],
     "allowlist": [
       "A24DE1B21A67E25FB62AC8491642038FE25DA75B",
       "6B25164FFE2BADB5F1DBBD301CC022170267022D",

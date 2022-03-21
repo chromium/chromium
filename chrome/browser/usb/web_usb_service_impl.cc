@@ -210,7 +210,7 @@ std::vector<uint8_t> WebUsbServiceImpl::GetProtectedInterfaceClasses() const {
       device::mojom::kUsbWirelessClass,
   };
 
-#if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(IS_CHROMEOS)
   // These extensions can claim the protected HID interface class (example: used
   // as badge readers)
   static constexpr auto kHidPrivilegedExtensionIds =
@@ -256,7 +256,7 @@ std::vector<uint8_t> WebUsbServiceImpl::GetProtectedInterfaceClasses() const {
       base::Contains(kHidPrivilegedExtensionIds, origin_.host())) {
     base::Erase(classes, device::mojom::kUsbHidClass);
   }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   if (origin_.scheme() == extensions::kExtensionScheme &&

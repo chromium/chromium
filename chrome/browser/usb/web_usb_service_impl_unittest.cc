@@ -529,7 +529,7 @@ INSTANTIATE_TEST_SUITE_P(
                     0x10,    // Audio/Video
                     0xE0));  // Wireless Controller (Bluetooth and Wireless USB)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(IS_CHROMEOS)
 TEST_F(WebUsbServiceImplTest, AllowlistedImprivataExtension) {
   extensions::DictionaryBuilder manifest;
   manifest.Set("name", "Fake Imprivata Extension")
@@ -584,7 +584,7 @@ TEST_F(WebUsbServiceImplTest, AllowlistedImprivataExtension) {
   device->ClaimInterface(0, claim_interface_future.GetCallback());
   EXPECT_EQ(claim_interface_future.Get(), UsbClaimInterfaceResult::kSuccess);
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 TEST_F(WebUsbServiceImplTest, AllowlistedSmartCardConnectorExtension) {
