@@ -204,7 +204,8 @@ void NetworkTelemetrySampler::HandleNetworkTelemetryResult(
 
         // wireless link info is only available when the device is
         // connected to the access point.
-        if (!wireless_info->wireless_link_info.is_null()) {
+        if (!wireless_info->wireless_link_info.is_null() &&
+            network->IsConnectedState()) {
           const auto& wireless_link_info = wireless_info->wireless_link_info;
           network_telemetry->set_tx_bit_rate_mbps(
               wireless_link_info->tx_bit_rate_mbps);

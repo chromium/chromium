@@ -43,6 +43,7 @@ constexpr int64_t kTxBitRateMbps = 8;
 constexpr int64_t kRxBitRateMbps = 4;
 constexpr int64_t kTxPowerDbm = 2;
 constexpr int64_t kLinkQuality = 1;
+constexpr int64_t kSignalStrength = 70;
 
 // Https latency constants.
 constexpr RoutineVerdict kVerdict = RoutineVerdict::PROBLEM;
@@ -242,7 +243,7 @@ TEST_F(NetworkTelemetrySamplerTest, CellularConnecting) {
 
 TEST_F(NetworkTelemetrySamplerTest, VpnInvisibleNotConnected) {
   const std::vector<FakeNetworkData> networks_data = {
-      {"guid1", shill::kStateOffline, shill::kTypeVPN, 0 /* signal_strength */,
+      {"guid1", shill::kStateIdle, shill::kTypeVPN, 0 /* signal_strength */,
        "vpn0", "192.168.86.25" /* ip_address */, "192.168.86.1" /* gateway */,
        false /* is_portal */, false /* is_visible */,
        true /* is_configured */}};
@@ -438,7 +439,6 @@ TEST_F(NetworkTelemetrySamplerTest, MixTypesAndConfigurations) {
 }
 
 TEST_F(NetworkTelemetrySamplerTest, FullNetworkTelemetryReportingDisabled) {
-  constexpr int64_t kSignalStrength = 70;
   const std::vector<FakeNetworkData> networks_data = {
       {"guid1", shill::kStateReady, shill::kTypeWifi, 10 /* signal_strength */,
        "wlan0", "192.168.86.25" /* ip_address */, "192.168.86.1" /* gateway */,
@@ -489,6 +489,61 @@ TEST_F(NetworkTelemetrySamplerTest, FullNetworkTelemetryReportingDisabled) {
             kEncryptionOn);
   EXPECT_EQ(result.networks_telemetry().network_telemetry(0).link_quality(),
             kLinkQuality);
+  EXPECT_EQ(result.networks_telemetry()
+                .network_telemetry(0)
+                .power_management_enabled(),
+            kPowerManagementOn);
+}
+
+TEST_F(NetworkTelemetrySamplerTest, WifiNotConnected) {
+  const std::vector<FakeNetworkData> networks_data = {
+      {"guid1", shill::kStateIdle, shill::kTypeWifi, kSignalStrength,
+       kInterfaceName, "" /* ip_address */, "" /* gateway */,
+       false /* is_portal */, true /* is_visible */, true /* is_configured */}};
+
+  SetNetworkData(networks_data);
+  NetworkTelemetrySampler network_telemetry_sampler(
+      https_latency_sampler_.get());
+  test::TestEvent<MetricData> metric_collect_event;
+  network_telemetry_sampler.Collect(metric_collect_event.cb());
+  TelemetryData result = metric_collect_event.result().telemetry_data();
+
+  // No online networks, no latency data should be collected.
+  EXPECT_FALSE(result.networks_telemetry().has_https_latency_data());
+
+  ASSERT_THAT(result.networks_telemetry().network_telemetry(),
+              ::testing::SizeIs(networks_data.size()));
+  EXPECT_EQ(result.networks_telemetry().network_telemetry(0).guid(),
+            networks_data[0].guid);
+  EXPECT_EQ(result.networks_telemetry().network_telemetry(0).connection_state(),
+            NetworkConnectionState::NOT_CONNECTED);
+  EXPECT_EQ(result.networks_telemetry().network_telemetry(0).signal_strength(),
+            kSignalStrength);
+  EXPECT_EQ(result.networks_telemetry().network_telemetry(0).device_path(),
+            DevicePath(networks_data[0].device_name));
+  EXPECT_FALSE(
+      result.networks_telemetry().network_telemetry(0).has_ip_address());
+  EXPECT_FALSE(result.networks_telemetry().network_telemetry(0).has_gateway());
+  EXPECT_EQ(result.networks_telemetry().network_telemetry(0).type(),
+            NetworkType::WIFI);
+
+  // Make sure wireless link info wasn't added since the network is not
+  // connected.
+  EXPECT_FALSE(
+      result.networks_telemetry().network_telemetry(0).has_tx_bit_rate_mbps());
+  EXPECT_FALSE(
+      result.networks_telemetry().network_telemetry(0).has_rx_bit_rate_mbps());
+  EXPECT_FALSE(
+      result.networks_telemetry().network_telemetry(0).has_tx_power_dbm());
+  EXPECT_FALSE(
+      result.networks_telemetry().network_telemetry(0).has_encryption_on());
+  EXPECT_FALSE(
+      result.networks_telemetry().network_telemetry(0).has_link_quality());
+
+  // Power management can still be added with non connected networks.
+  ASSERT_TRUE(result.networks_telemetry()
+                  .network_telemetry(0)
+                  .has_power_management_enabled());
   EXPECT_EQ(result.networks_telemetry()
                 .network_telemetry(0)
                 .power_management_enabled(),
