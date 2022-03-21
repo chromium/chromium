@@ -95,8 +95,6 @@ class ProfileShortcutManagerWin : public ProfileShortcutManager,
   ~ProfileShortcutManagerWin() override;
 
   // ProfileShortcutManager implementation:
-  void CreateIncognitoProfileShortcut(
-      const base::FilePath& profile_path) override;
   void CreateOrUpdateProfileIcon(const base::FilePath& profile_path) override;
   void CreateProfileShortcut(const base::FilePath& profile_path) override;
   void RemoveProfileShortcuts(const base::FilePath& profile_path) override;

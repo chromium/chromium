@@ -12088,9 +12088,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
         other {# open windows}
       }
     </message>
-    <message name="IDS_INCOGNITO_PROFILE_MENU_CREATE_SHORTCUT_BUTTON" desc="Label of the button to create a desktop shortcut for Incognito mode.">
-      Create shortcut
-    </message>
     <message name="IDS_INCOGNITO_PROFILE_MENU_CLOSE_BUTTON" desc="The text of the button offering to close all Incognito windows.">
       Exit Incognito
     </message>

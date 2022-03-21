@@ -2240,11 +2240,6 @@
     "expiry_milestone": 95
   },
   {
-    "name": "enable-incognito-shortcut-on-desktop",
-    "owners": [ "rhalavati", "chrome-privacy-core@google.com" ],
-    "expiry_milestone": 92
-  },
-  {
     "name": "enable-input-event-logging",
     "owners": [ "hcutts", "chromeos-tango@google.com" ],
     // Used to attach input device debugging information to feedback reports.

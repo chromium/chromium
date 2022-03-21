@@ -395,12 +395,6 @@ const base::Feature kElideTabPreloadAtStartup = {
 const base::Feature kEnableAllSystemWebApps{"EnableAllSystemWebApps",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
-#if BUILDFLAG(IS_WIN)
-// Enables users to create a desktop shortcut for incognito mode.
-const base::Feature kEnableIncognitoShortcutOnDesktop{
-    "EnableIncognitoShortcutOnDesktop", base::FEATURE_DISABLED_BY_DEFAULT};
-#endif
-
 // Enable the restricted web APIs for high-trusted apps.
 const base::Feature kEnableRestrictedWebApis{"EnableRestrictedWebApis",
                                              base::FEATURE_ENABLED_BY_DEFAULT};

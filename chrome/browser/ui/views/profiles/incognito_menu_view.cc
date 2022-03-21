@@ -68,19 +68,6 @@ void IncognitoMenuView::BuildMenu() {
           : std::u16string(),
       header_art_icon);
 
-#if BUILDFLAG(IS_WIN)
-  if (ProfileShortcutManager::IsFeatureEnabled() &&
-      base::FeatureList::IsEnabled(
-          features::kEnableIncognitoShortcutOnDesktop)) {
-    // TODO(crbug.com/1113162): Add desktop shortcut icon to the menu entry.
-    AddFeatureButton(
-        l10n_util::GetStringUTF16(
-            IDS_INCOGNITO_PROFILE_MENU_CREATE_SHORTCUT_BUTTON),
-        base::BindRepeating(&IncognitoMenuView::OnCreateShortcutButtonClicked,
-                            base::Unretained(this)));
-  }
-#endif
-
   AddFeatureButton(
       l10n_util::GetStringUTF16(IDS_INCOGNITO_PROFILE_MENU_CLOSE_BUTTON_NEW),
       base::BindRepeating(&IncognitoMenuView::OnExitButtonClicked,
@@ -94,19 +81,6 @@ std::u16string IncognitoMenuView::GetAccessibleWindowTitle() const {
       BrowserList::GetOffTheRecordBrowsersActiveForProfile(
           browser()->profile()));
 }
-
-#if BUILDFLAG(IS_WIN)
-void IncognitoMenuView::OnCreateShortcutButtonClicked() {
-  RecordClick(ActionableItem::kCreateIncognitoShortcutButton);
-  ProfileShortcutManager* shortcut_manager =
-      g_browser_process->profile_manager()->profile_shortcut_manager();
-
-  DCHECK(shortcut_manager);
-  if (shortcut_manager)
-    shortcut_manager->CreateIncognitoProfileShortcut(
-        browser()->profile()->GetPath());
-}
-#endif
 
 void IncognitoMenuView::OnExitButtonClicked() {
   RecordClick(ActionableItem::kExitProfileButton);

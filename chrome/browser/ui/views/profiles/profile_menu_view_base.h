@@ -65,8 +65,8 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
     kAddNewProfileButton = 15,
     kSyncSettingsButton = 16,
     kEditProfileButton = 17,
-    kCreateIncognitoShortcutButton = 18,
-    kMaxValue = kCreateIncognitoShortcutButton,
+    // DEPRECATED: kCreateIncognitoShortcutButton = 18,
+    kMaxValue = kEditProfileButton,
   };
 
   struct EditButtonParams {

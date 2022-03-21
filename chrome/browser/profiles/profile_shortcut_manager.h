@@ -32,11 +32,6 @@ class ProfileShortcutManager {
   // profile created.
   virtual void CreateProfileShortcut(const base::FilePath& profile_path) = 0;
 
-  // Create an incognito desktop shortcut for the profile with path
-  // |profile_path|
-  virtual void CreateIncognitoProfileShortcut(
-      const base::FilePath& profile_path) = 0;
-
   // Removes any desktop profile shortcuts for the profile corresponding to
   // |profile_path|.
   virtual void RemoveProfileShortcuts(const base::FilePath& profile_path) = 0;

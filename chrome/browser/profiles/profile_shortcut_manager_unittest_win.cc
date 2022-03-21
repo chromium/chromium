@@ -410,21 +410,6 @@ TEST_F(ProfileShortcutManagerTest, ShortcutFlags) {
             profiles::internal::CreateProfileShortcutFlags(profile_path));
 }
 
-// Test ensures that the incognito switch and parent profile are added when
-// creating profile shortcut flags for incognito mode.
-TEST_F(ProfileShortcutManagerTest, IncognitoShortcutFlags) {
-  const std::wstring kProfileName = L"MyProfileX";
-  const base::FilePath profile_path =
-      profile_manager_->profiles_dir().Append(kProfileName);
-  const std::wstring shortcut_flags =
-      profiles::internal::CreateProfileShortcutFlags(profile_path,
-                                                     /*incognito=*/true);
-  EXPECT_NE(
-      shortcut_flags.find(L"--profile-directory=\"" + kProfileName + L"\""),
-      shortcut_flags.size());
-  EXPECT_NE(shortcut_flags.find(L"--incognito"), shortcut_flags.size());
-}
-
 TEST_F(ProfileShortcutManagerTest, DesktopShortcutsCreate) {
   SetupDefaultProfileShortcut(FROM_HERE);
   // Validation is done by |ValidateProfileShortcutAtPath()| which is called

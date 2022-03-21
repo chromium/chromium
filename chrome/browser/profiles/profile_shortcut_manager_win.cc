@@ -861,16 +861,6 @@ void ProfileShortcutManagerWin::CreateOrUpdateProfileIcon(
       /*incognito=*/false);
 }
 
-// Creates an incognito desktop shortcut for the current profile.
-// TODO(crbug.com/1113162): Update the shortcut label and icon to chrome +
-// incognito.
-void ProfileShortcutManagerWin::CreateIncognitoProfileShortcut(
-    const base::FilePath& profile_path) {
-  CreateOrUpdateShortcutsForProfileAtPath(profile_path, CREATE_WHEN_NONE_FOUND,
-                                          IGNORE_NON_PROFILE_SHORTCUTS,
-                                          /*incognito=*/true);
-}
-
 void ProfileShortcutManagerWin::CreateProfileShortcut(
     const base::FilePath& profile_path) {
   CreateOrUpdateShortcutsForProfileAtPath(profile_path, CREATE_WHEN_NONE_FOUND,

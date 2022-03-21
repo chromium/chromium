@@ -6954,13 +6954,6 @@ const FeatureEntry kFeatureEntries[] = {
      MULTI_VALUE_TYPE(kFrameThrottleFpsChoices)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_WIN)
-    {"enable-incognito-shortcut-on-desktop",
-     flag_descriptions::kEnableIncognitoShortcutOnDesktopName,
-     flag_descriptions::kEnableIncognitoShortcutOnDesktopDescription, kOsWin,
-     FEATURE_VALUE_TYPE(features::kEnableIncognitoShortcutOnDesktop)},
-#endif  // BUILDFLAG(IS_WIN)
-
 #if BUILDFLAG(IS_ANDROID)
     {"incognito-brand-consistency-for-android",
      flag_descriptions::kIncognitoBrandConsistencyForAndroidName,

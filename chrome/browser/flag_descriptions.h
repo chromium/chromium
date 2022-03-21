@@ -2240,9 +2240,6 @@ extern const char kSCTAuditingDescription[];
 extern const char kCalculateNativeWinOcclusionName[];
 extern const char kCalculateNativeWinOcclusionDescription[];
 
-extern const char kEnableIncognitoShortcutOnDesktopName[];
-extern const char kEnableIncognitoShortcutOnDesktopDescription[];
-
 extern const char kEnableMediaFoundationVideoCaptureName[];
 extern const char kEnableMediaFoundationVideoCaptureDescription[];
 
