@@ -55,6 +55,7 @@
 #include "extensions/browser/install/sandboxed_unpacker_failure_reason.h"
 #include "extensions/browser/management_policy.h"
 #include "extensions/browser/notification_types.h"
+#include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
@@ -1140,8 +1141,10 @@ IN_PROC_BROWSER_TEST_P(ExtensionCrxInstallerTestWithWithholdingUI,
       GetInstalledExtension(mock_prompt->extension_id());
   ScriptingPermissionsModifier modifier(browser()->profile(), extension);
   EXPECT_EQ(should_check_box, modifier.HasWithheldHostPermissions());
-  const ScriptingPermissionsModifier::SiteAccess site_access =
-      modifier.GetSiteAccess(GURL("https://google.com"));
+
+  const PermissionsManager::ExtensionSiteAccess site_access =
+      PermissionsManager::Get(profile())->GetSiteAccess(
+          *extension, GURL("https://google.com"));
   EXPECT_EQ(should_check_box, site_access.withheld_site_access);
   EXPECT_EQ(!should_check_box, site_access.has_site_access);
 }

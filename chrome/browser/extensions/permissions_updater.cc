@@ -533,12 +533,12 @@ void PermissionsUpdater::GrantActivePermissions(const Extension* extension) {
 void PermissionsUpdater::InitializePermissions(const Extension* extension) {
   std::unique_ptr<const PermissionSet> bounded_wrapper;
   const PermissionSet* bounded_active = nullptr;
-  ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context_);
   // If |extension| is a transient dummy extension, we do not want to look for
   // it in preferences.
   if (init_flag_ & INIT_FLAG_TRANSIENT) {
     bounded_active = &extension->permissions_data()->active_permissions();
   } else {
+    ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context_);
     std::unique_ptr<const PermissionSet> active_permissions =
         prefs->GetActivePermissions(extension->id());
     bounded_wrapper =
@@ -547,8 +547,8 @@ void PermissionsUpdater::InitializePermissions(const Extension* extension) {
   }
 
   std::unique_ptr<const PermissionSet> granted_permissions =
-      ScriptingPermissionsModifier::WithholdPermissionsIfNecessary(
-          *extension, *prefs, *bounded_active);
+      ScriptingPermissionsModifier(browser_context_, extension)
+          .WithholdPermissionsIfNecessary(*bounded_active);
 
   if (GetDelegate())
     GetDelegate()->InitializePermissions(extension, &granted_permissions);

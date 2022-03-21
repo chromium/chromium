@@ -4,8 +4,12 @@
 
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_test.h"
 #include "extensions/browser/pref_types.h"
+#include "extensions/common/extension_builder.h"
+#include "extensions/common/extension_icon_set.h"
+#include "extensions/common/extensions_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/origin.h"
 
@@ -29,6 +33,10 @@ class PermissionsManagerUnittest : public ExtensionsTest {
   PermissionsManagerUnittest(const PermissionsManagerUnittest&) = delete;
   PermissionsManagerUnittest& operator=(const PermissionsManagerUnittest&) =
       delete;
+
+  scoped_refptr<const Extension> AddExtensionWithHostPermission(
+      const std::string& name,
+      const std::string& host_permission);
 
   // Returns the restricted sites stored in `manager_`.
   std::set<url::Origin> GetRestrictedSitesFromManager();
@@ -58,6 +66,24 @@ void PermissionsManagerUnittest::SetUp() {
           base::BindRepeating(&SetTestingPermissionsManager)));
 
   extension_prefs_ = ExtensionPrefs::Get(browser_context());
+}
+
+scoped_refptr<const Extension>
+PermissionsManagerUnittest::AddExtensionWithHostPermission(
+    const std::string& name,
+    const std::string& host_permission) {
+  scoped_refptr<const extensions::Extension> extension =
+      extensions::ExtensionBuilder(name)
+          .SetManifestVersion(3)
+          .SetManifestKey(
+              "host_permissions",
+              extensions::ListBuilder().Append(host_permission).Build())
+          .Build();
+
+  ExtensionRegistryFactory::GetForBrowserContext(browser_context())
+      ->AddEnabled(extension);
+
+  return extension;
 }
 
 const base::Value* PermissionsManagerUnittest::GetRestrictedSitesFromPrefs() {
@@ -199,6 +225,118 @@ TEST_F(PermissionsManagerUnittest,
     EXPECT_EQ(actual_permissions.permitted_sites, empty_set);
     EXPECT_EQ(manager_->GetUserSiteSetting(url),
               PermissionsManager::UserSiteSetting::kBlockAllExtensions);
+  }
+}
+
+TEST_F(PermissionsManagerUnittest, GetSiteAccess_AllUrls) {
+  auto extension =
+      AddExtensionWithHostPermission("AllUrls Extension", "<all_urls>");
+
+  const GURL non_restricted_url("https://www.non-restricted.com");
+  {
+    const PermissionsManager::ExtensionSiteAccess site_access =
+        manager_->GetSiteAccess(*extension, non_restricted_url);
+    EXPECT_TRUE(site_access.has_site_access);
+    EXPECT_FALSE(site_access.withheld_site_access);
+    EXPECT_TRUE(site_access.has_all_sites_access);
+    EXPECT_FALSE(site_access.withheld_all_sites_access);
+  }
+
+  // Chrome pages should be restricted, and the extension shouldn't have grant
+  // or withheld site access.
+  const GURL restricted_url("chrome://extensions");
+  {
+    const PermissionsManager::ExtensionSiteAccess site_access =
+        manager_->GetSiteAccess(*extension, restricted_url);
+    EXPECT_FALSE(site_access.has_site_access);
+    EXPECT_FALSE(site_access.withheld_site_access);
+    EXPECT_TRUE(site_access.has_all_sites_access);
+    EXPECT_FALSE(site_access.withheld_all_sites_access);
+  }
+}
+
+TEST_F(PermissionsManagerUnittest, GetSiteAccess_RequestedUrl) {
+  auto extension = AddExtensionWithHostPermission("RequestedUrl Extension",
+                                                  "*://*.requested.com/*");
+
+  const GURL requested_url("https://www.requested.com");
+  {
+    const PermissionsManager::ExtensionSiteAccess site_access =
+        manager_->GetSiteAccess(*extension, requested_url);
+    EXPECT_TRUE(site_access.has_site_access);
+    EXPECT_FALSE(site_access.withheld_site_access);
+    EXPECT_FALSE(site_access.has_all_sites_access);
+    EXPECT_FALSE(site_access.withheld_all_sites_access);
+  }
+
+  const GURL non_requested_url("https://non-requested.com");
+  {
+    const PermissionsManager::ExtensionSiteAccess site_access =
+        manager_->GetSiteAccess(*extension, non_requested_url);
+    EXPECT_FALSE(site_access.has_site_access);
+    EXPECT_FALSE(site_access.withheld_site_access);
+    EXPECT_FALSE(site_access.has_all_sites_access);
+    EXPECT_FALSE(site_access.withheld_all_sites_access);
+  }
+}
+
+// Tests that for the purposes of displaying an extension's site access to the
+// user (or granting/revoking permissions), we ignore paths in the URL. We
+// always strip the path from host permissions directly, but we don't strip the
+// path from content scripts.
+TEST_F(PermissionsManagerUnittest,
+       GetSiteAccess_ContentScript_RequestedUrlWithPath) {
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("extension")
+          .AddContentScript("foo.js", {"https://www.example.com/foo"})
+          .SetLocation(mojom::ManifestLocation::kInternal)
+          .Build();
+  ExtensionRegistryFactory::GetForBrowserContext(browser_context())
+      ->AddEnabled(extension);
+
+  const GURL other_path_url("https://www.example.com/bar");
+  {
+    const PermissionsManager::ExtensionSiteAccess site_access =
+        manager_->GetSiteAccess(*extension, other_path_url);
+    // Even though the path doesn't match the one requested, the domain does
+    // match and thus we treat it as if the site was requested.
+    EXPECT_TRUE(site_access.has_site_access);
+    EXPECT_FALSE(site_access.withheld_site_access);
+    EXPECT_FALSE(site_access.has_all_sites_access);
+    EXPECT_FALSE(site_access.withheld_all_sites_access);
+  }
+}
+
+TEST_F(PermissionsManagerUnittest, GetSiteAccess_ActiveTab) {
+  auto extension =
+      AddExtensionWithHostPermission("ActiveTab Extension", "activeTab");
+
+  const GURL url("https://example.com");
+  {
+    const PermissionsManager::ExtensionSiteAccess site_access =
+        manager_->GetSiteAccess(*extension, url);
+    // The site access computation does not take into account active tab, and
+    // therefore it does not have or withheld any access.
+    EXPECT_FALSE(site_access.has_site_access);
+    EXPECT_FALSE(site_access.withheld_site_access);
+    EXPECT_FALSE(site_access.has_all_sites_access);
+    EXPECT_FALSE(site_access.withheld_all_sites_access);
+  }
+}
+
+TEST_F(PermissionsManagerUnittest, GetSiteAccess_NoHostPermissions) {
+  auto extension = AddExtensionWithHostPermission("", "Extension");
+
+  const GURL url("https://example.com");
+  {
+    const PermissionsManager::ExtensionSiteAccess site_access =
+        manager_->GetSiteAccess(*extension, url);
+    // The site access computation does not take into account active tab, and
+    // therefore it does not have or withheld any access.
+    EXPECT_FALSE(site_access.has_site_access);
+    EXPECT_FALSE(site_access.withheld_site_access);
+    EXPECT_FALSE(site_access.has_all_sites_access);
+    EXPECT_FALSE(site_access.withheld_all_sites_access);
   }
 }
 

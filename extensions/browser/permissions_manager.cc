@@ -21,6 +21,8 @@
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/pref_types.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/permissions/permission_set.h"
+#include "extensions/common/permissions/permissions_data.h"
 
 namespace extensions {
 
@@ -220,6 +222,141 @@ PermissionsManager::UserSiteSetting PermissionsManager::GetUserSiteSetting(
     return UserSiteSetting::kBlockAllExtensions;
   }
   return UserSiteSetting::kCustomizeByExtension;
+}
+
+PermissionsManager::ExtensionSiteAccess PermissionsManager::GetSiteAccess(
+    const Extension& extension,
+    const GURL& url) const {
+  PermissionsManager::ExtensionSiteAccess extension_access;
+
+  // Awkward holder object because permission sets are immutable, and when
+  // return from prefs, ownership is passed.
+  std::unique_ptr<const PermissionSet> permission_holder;
+
+  const PermissionSet* granted_permissions = nullptr;
+  if (!HasWithheldHostPermissions(extension.id())) {
+    // If the extension doesn't have any withheld permissions, we look at the
+    // current active permissions.
+    // TODO(devlin): This is clunky. It would be nice to have runtime-granted
+    // permissions be correctly populated in all cases, rather than looking at
+    // two different sets.
+    // TODO(devlin): This won't account for granted permissions that aren't
+    // currently active, even though the extension may re-request them (and be
+    // silently granted them) at any time.
+    granted_permissions = &extension.permissions_data()->active_permissions();
+  } else {
+    permission_holder = GetRuntimePermissionsFromPrefs(extension);
+    granted_permissions = permission_holder.get();
+  }
+
+  DCHECK(granted_permissions);
+
+  const bool is_restricted_site =
+      extension.permissions_data()->IsRestrictedUrl(url, /*error=*/nullptr);
+
+  // For indicating whether an extension has access to a site, we look at the
+  // granted permissions, which could include patterns that weren't explicitly
+  // requested. However, we should still indicate they are granted, so that the
+  // user can revoke them (and because if the extension does request them and
+  // they are already granted, they are silently added).
+  // The extension should never have access to restricted sites (even if a
+  // pattern matches, as it may for e.g. the webstore).
+  if (!is_restricted_site &&
+      granted_permissions->effective_hosts().MatchesSecurityOrigin(url)) {
+    extension_access.has_site_access = true;
+  }
+
+  const PermissionSet& withheld_permissions =
+      extension.permissions_data()->withheld_permissions();
+
+  // Be sure to check |access.has_site_access| in addition to withheld
+  // permissions, so that we don't indicate we've withheld permission if an
+  // extension is granted https://a.com/*, but has *://*/* withheld.
+  // We similarly don't show access as withheld for restricted sites, since
+  // withheld permissions should only include those that are conceivably
+  // grantable.
+  if (!is_restricted_site && !extension_access.has_site_access &&
+      withheld_permissions.effective_hosts().MatchesSecurityOrigin(url)) {
+    extension_access.withheld_site_access = true;
+  }
+
+  constexpr bool include_api_permissions = false;
+  if (granted_permissions->ShouldWarnAllHosts(include_api_permissions))
+    extension_access.has_all_sites_access = true;
+
+  if (withheld_permissions.ShouldWarnAllHosts(include_api_permissions) &&
+      !extension_access.has_all_sites_access) {
+    extension_access.withheld_all_sites_access = true;
+  }
+
+  return extension_access;
+}
+
+bool PermissionsManager::HasWithheldHostPermissions(
+    const ExtensionId& extension_id) const {
+  return extension_prefs_->GetWithholdingPermissions(extension_id);
+}
+
+std::unique_ptr<const PermissionSet>
+PermissionsManager::GetRuntimePermissionsFromPrefs(
+    const Extension& extension) const {
+  std::unique_ptr<const PermissionSet> permissions =
+      extension_prefs_->GetRuntimeGrantedPermissions(extension.id());
+
+  // If there are no stored permissions, there's nothing to adjust.
+  if (!permissions)
+    return nullptr;
+
+  // If the extension is allowed to run on chrome:// URLs, then we don't have
+  // to adjust anything.
+  if (PermissionsData::AllUrlsIncludesChromeUrls(extension.id()))
+    return permissions;
+
+  // We need to adjust a pattern if it matches all URLs and includes the
+  // chrome:-scheme. These patterns would otherwise match hosts like
+  // chrome://settings, which should not be allowed.
+  // NOTE: We don't need to adjust for the file scheme, because
+  // ExtensionPrefs properly does that based on the extension's file access.
+  auto needs_chrome_scheme_adjustment = [](const URLPattern& pattern) {
+    return pattern.match_all_urls() &&
+           ((pattern.valid_schemes() & URLPattern::SCHEME_CHROMEUI) != 0);
+  };
+
+  // NOTE: We don't need to check scriptable_hosts, because the default
+  // scriptable_hosts scheme mask omits the chrome:-scheme in normal
+  // circumstances (whereas the default explicit scheme does not, in order to
+  // allow for patterns like chrome://favicon).
+
+  bool needs_adjustment = std::any_of(permissions->explicit_hosts().begin(),
+                                      permissions->explicit_hosts().end(),
+                                      needs_chrome_scheme_adjustment);
+  // If no patterns need adjustment, return the original set.
+  if (!needs_adjustment)
+    return permissions;
+
+  // Otherwise, iterate over the explicit hosts, and modify any that need to be
+  // tweaked, adding back in permitted chrome:-scheme hosts. This logic mirrors
+  // that in PermissionsParser, and is also similar to logic in
+  // permissions_api_helpers::UnpackOriginPermissions(), and has some overlap
+  // to URLPatternSet::Populate().
+  // TODO(devlin): ^^ Ouch. Refactor so that this isn't duplicated.
+  URLPatternSet new_explicit_hosts;
+  for (const auto& pattern : permissions->explicit_hosts()) {
+    if (!needs_chrome_scheme_adjustment(pattern)) {
+      new_explicit_hosts.AddPattern(pattern);
+      continue;
+    }
+
+    URLPattern new_pattern(pattern);
+    int new_valid_schemes =
+        pattern.valid_schemes() & ~URLPattern::SCHEME_CHROMEUI;
+    new_pattern.SetValidSchemes(new_valid_schemes);
+    new_explicit_hosts.AddPattern(std::move(new_pattern));
+  }
+
+  return std::make_unique<PermissionSet>(
+      permissions->apis().Clone(), permissions->manifest_permissions().Clone(),
+      std::move(new_explicit_hosts), permissions->scriptable_hosts().Clone());
 }
 
 void PermissionsManager::AddObserver(Observer* observer) {

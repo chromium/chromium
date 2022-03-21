@@ -43,6 +43,7 @@
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/browser/test_management_policy.h"
 #include "extensions/common/api/extension_action/action_info.h"
@@ -1494,8 +1495,8 @@ TEST_F(ExtensionContextMenuModelTest,
   }
 
   {
-    ScriptingPermissionsModifier::SiteAccess site_access =
-        modifier.GetSiteAccess(b_com);
+    PermissionsManager::ExtensionSiteAccess site_access =
+        PermissionsManager::Get(profile())->GetSiteAccess(*extension, b_com);
     EXPECT_FALSE(site_access.has_site_access);
     EXPECT_FALSE(site_access.withheld_site_access);
   }
@@ -1547,8 +1548,8 @@ TEST_F(ExtensionContextMenuModelTest,
   // TODO(devlin): We should fix that, so that toggling access on a.com doesn't
   // revoke access on b.com.
   const GURL b_com("https://b.com");
-  ScriptingPermissionsModifier::SiteAccess site_access =
-      modifier.GetSiteAccess(b_com);
+  PermissionsManager::ExtensionSiteAccess site_access =
+      PermissionsManager::Get(profile())->GetSiteAccess(*extension, b_com);
   EXPECT_FALSE(site_access.has_site_access);
   EXPECT_TRUE(site_access.withheld_site_access);
 }

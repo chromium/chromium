@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/permissions_manager.h"
 #include "extensions/common/extension.h"
 #include "url/gurl.h"
 
@@ -36,8 +37,9 @@ SitePermissionsHelper::SiteAccess SitePermissionsHelper::GetSiteAccess(
     return SiteAccess::kOnClick;
 
   DCHECK(modifier.CanAffectExtension());
-  ScriptingPermissionsModifier::SiteAccess site_access =
-      modifier.GetSiteAccess(gurl);
+
+  PermissionsManager::ExtensionSiteAccess site_access =
+      PermissionsManager::Get(profile_)->GetSiteAccess(extension, gurl);
   if (site_access.has_all_sites_access)
     return SiteAccess::kOnAllSites;
   if (site_access.has_site_access)
@@ -116,25 +118,25 @@ bool SitePermissionsHelper::CanSelectSiteAccess(const Extension& extension,
   if (!modifier.CanAffectExtension())
     return false;
 
-  ScriptingPermissionsModifier::SiteAccess current_access =
-      modifier.GetSiteAccess(url);
+  PermissionsManager::ExtensionSiteAccess extension_access =
+      PermissionsManager(profile_).GetSiteAccess(extension, url);
   switch (site_access) {
     case SitePermissionsHelper::SiteAccess::kOnClick:
       // The "on click" option is only enabled if the extension has active tab,
       // previously handled, or wants to always run on the site without user
       // interaction.
-      return current_access.has_site_access ||
-             current_access.withheld_site_access;
+      return extension_access.has_site_access ||
+             extension_access.withheld_site_access;
     case SitePermissionsHelper::SiteAccess::kOnSite:
       // The "on site" option is only enabled if the extension wants to
       // always run on the site without user interaction.
-      return current_access.has_site_access ||
-             current_access.withheld_site_access;
+      return extension_access.has_site_access ||
+             extension_access.withheld_site_access;
     case SitePermissionsHelper::SiteAccess::kOnAllSites:
       // The "on all sites" option is only enabled if the extension wants to be
       // able to run everywhere.
-      return current_access.has_all_sites_access ||
-             current_access.withheld_all_sites_access;
+      return extension_access.has_all_sites_access ||
+             extension_access.withheld_all_sites_access;
   }
 }
 

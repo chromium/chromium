@@ -17,6 +17,7 @@
 #include "components/crx_file/id_util.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
@@ -820,62 +821,38 @@ TEST_F(ScriptingPermissionsModifierUnitTest,
               testing::IsEmpty());
 }
 
-TEST_F(ScriptingPermissionsModifierUnitTest, GetSiteAccess_AllHostsExtension) {
+// TODO(crbug.com/1289441): Move test to PermissionsManager once permissions can
+// be withheld in the extensions directory since this test checks important part
+// of the PermissionsManager logic.
+TEST_F(ScriptingPermissionsModifierUnitTest, ChangeHostPermissions_AllHosts) {
   InitializeEmptyExtensionService();
 
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension").AddPermission("<all_urls>").Build();
   InitializeExtensionPermissions(profile(), *extension);
-  ScriptingPermissionsModifier modifier(profile(), extension.get());
+  auto* manager = PermissionsManager::Get(profile());
 
+  ScriptingPermissionsModifier modifier(profile(), extension.get());
+  modifier.SetWithholdHostPermissions(true);
+
+  // Verify a non-restricted site has wihthheld both site access and all sites
+  // access.
   const GURL example_com("https://www.example.com");
   {
-    const ScriptingPermissionsModifier::SiteAccess site_access =
-        modifier.GetSiteAccess(example_com);
-    EXPECT_TRUE(site_access.has_site_access);
-    EXPECT_FALSE(site_access.withheld_site_access);
-    EXPECT_TRUE(site_access.has_all_sites_access);
-    EXPECT_FALSE(site_access.withheld_all_sites_access);
-  }
-
-  // Chrome pages should be restricted, and the extension shouldn't have access
-  // to them granted or withheld.
-  const GURL chrome_extensions("chrome://extensions");
-  {
-    const ScriptingPermissionsModifier::SiteAccess site_access =
-        modifier.GetSiteAccess(chrome_extensions);
-    EXPECT_FALSE(site_access.has_site_access);
-    EXPECT_FALSE(site_access.withheld_site_access);
-    EXPECT_TRUE(site_access.has_all_sites_access);
-    EXPECT_FALSE(site_access.withheld_all_sites_access);
-  }
-
-  // Other restricted urls should also be protected, and the extension shouldn't
-  // have or want access.
-  const GURL webstore = ExtensionsClient::Get()->GetWebstoreBaseURL();
-  {
-    const ScriptingPermissionsModifier::SiteAccess site_access =
-        modifier.GetSiteAccess(webstore);
-    EXPECT_FALSE(site_access.has_site_access);
-    EXPECT_FALSE(site_access.withheld_site_access);
-    EXPECT_TRUE(site_access.has_all_sites_access);
-    EXPECT_FALSE(site_access.withheld_all_sites_access);
-  }
-
-  modifier.SetWithholdHostPermissions(true);
-  {
-    const ScriptingPermissionsModifier::SiteAccess site_access =
-        modifier.GetSiteAccess(example_com);
+    const PermissionsManager::ExtensionSiteAccess site_access =
+        manager->GetSiteAccess(*extension, example_com);
     EXPECT_FALSE(site_access.has_site_access);
     EXPECT_TRUE(site_access.withheld_site_access);
     EXPECT_FALSE(site_access.has_all_sites_access);
     EXPECT_TRUE(site_access.withheld_all_sites_access);
   }
 
-  // Restricted sites should not be considered "withheld".
+  // Verify a restricted site does not have site access withheld, but it has all
+  // sites withheld.
+  const GURL chrome_extensions("chrome://extensions");
   {
-    const ScriptingPermissionsModifier::SiteAccess site_access =
-        modifier.GetSiteAccess(chrome_extensions);
+    const PermissionsManager::ExtensionSiteAccess site_access =
+        manager->GetSiteAccess(*extension, chrome_extensions);
     EXPECT_FALSE(site_access.has_site_access);
     EXPECT_FALSE(site_access.withheld_site_access);
     EXPECT_FALSE(site_access.has_all_sites_access);
@@ -883,60 +860,51 @@ TEST_F(ScriptingPermissionsModifierUnitTest, GetSiteAccess_AllHostsExtension) {
   }
 
   modifier.GrantHostPermission(example_com);
+
+  // Verify the granted url has site access but all sites are still withheld.
   {
-    const ScriptingPermissionsModifier::SiteAccess site_access =
-        modifier.GetSiteAccess(example_com);
+    const PermissionsManager::ExtensionSiteAccess site_access =
+        manager->GetSiteAccess(*extension, example_com);
     EXPECT_TRUE(site_access.has_site_access);
     EXPECT_FALSE(site_access.withheld_site_access);
     EXPECT_FALSE(site_access.has_all_sites_access);
     EXPECT_TRUE(site_access.withheld_all_sites_access);
   }
 
+  // Verify the non-granted url has withheld both sites access and all sites
+  // access.
   const GURL google_com("https://google.com");
   {
-    const ScriptingPermissionsModifier::SiteAccess site_access =
-        modifier.GetSiteAccess(google_com);
-    EXPECT_TRUE(site_access.withheld_site_access);
+    const PermissionsManager::ExtensionSiteAccess site_access =
+        manager->GetSiteAccess(*extension, google_com);
     EXPECT_FALSE(site_access.has_site_access);
-    EXPECT_TRUE(site_access.withheld_all_sites_access);
+    EXPECT_TRUE(site_access.withheld_site_access);
     EXPECT_FALSE(site_access.has_all_sites_access);
+    EXPECT_TRUE(site_access.withheld_all_sites_access);
   }
 }
 
+// TODO(crbug.com/1289441): Move test to PermissionsManager once permissions can
+// be withheld in the extensions directory since this test checks important part
+// of the PermissionsManager logic.
 TEST_F(ScriptingPermissionsModifierUnitTest,
-       GetSiteAccess_AllHostsLikeExtension) {
+       ChangeHostPermissions_AllHostsLike) {
   InitializeEmptyExtensionService();
 
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension").AddPermission("*://*.com/*").Build();
   InitializeExtensionPermissions(profile(), *extension);
-  ScriptingPermissionsModifier modifier(profile(), extension.get());
 
+  ScriptingPermissionsModifier(profile(), extension.get())
+      .SetWithholdHostPermissions(true);
+
+  // Verify a non-restricted site has wihtheld both site access and all sites
+  // access.
   const GURL example_com("https://www.example.com");
   {
-    const ScriptingPermissionsModifier::SiteAccess site_access =
-        modifier.GetSiteAccess(example_com);
-    EXPECT_TRUE(site_access.has_site_access);
-    EXPECT_FALSE(site_access.withheld_site_access);
-    EXPECT_TRUE(site_access.has_all_sites_access);
-    EXPECT_FALSE(site_access.withheld_all_sites_access);
-  }
-
-  const GURL google_org("https://google.org");
-  {
-    const ScriptingPermissionsModifier::SiteAccess site_access =
-        modifier.GetSiteAccess(google_org);
-    EXPECT_FALSE(site_access.has_site_access);
-    EXPECT_FALSE(site_access.withheld_site_access);
-    EXPECT_TRUE(site_access.has_all_sites_access);
-    EXPECT_FALSE(site_access.withheld_all_sites_access);
-  }
-
-  modifier.SetWithholdHostPermissions(true);
-
-  {
-    const ScriptingPermissionsModifier::SiteAccess site_access =
-        modifier.GetSiteAccess(example_com);
+    const PermissionsManager::ExtensionSiteAccess site_access =
+        PermissionsManager::Get(profile())->GetSiteAccess(*extension,
+                                                          example_com);
     EXPECT_FALSE(site_access.has_site_access);
     EXPECT_TRUE(site_access.withheld_site_access);
     EXPECT_FALSE(site_access.has_all_sites_access);
@@ -944,7 +912,11 @@ TEST_F(ScriptingPermissionsModifierUnitTest,
   }
 }
 
-TEST_F(ScriptingPermissionsModifierUnitTest, GetSiteAccess_SpecificSites) {
+// TODO(crbug.com/1289441): Move test to PermissionsManager once permissions can
+// be withheld in the extensions directory since this test checks important part
+// of the PermissionsManager logic
+TEST_F(ScriptingPermissionsModifierUnitTest,
+       ChangeHostPermissions_SpecificSite) {
   InitializeEmptyExtensionService();
 
   scoped_refptr<const Extension> extension =
@@ -952,32 +924,17 @@ TEST_F(ScriptingPermissionsModifierUnitTest, GetSiteAccess_SpecificSites) {
           .AddPermission("*://*.example.com/*")
           .Build();
   InitializeExtensionPermissions(profile(), *extension);
-  ScriptingPermissionsModifier modifier(profile(), extension.get());
 
+  ScriptingPermissionsModifier(profile(), extension.get())
+      .SetWithholdHostPermissions(true);
+
+  // Verify a requested sited has wihtheld both site access and all sites
+  // access.
   const GURL example_com("https://www.example.com");
   {
-    const ScriptingPermissionsModifier::SiteAccess site_access =
-        modifier.GetSiteAccess(example_com);
-    EXPECT_TRUE(site_access.has_site_access);
-    EXPECT_FALSE(site_access.withheld_site_access);
-    EXPECT_FALSE(site_access.has_all_sites_access);
-    EXPECT_FALSE(site_access.withheld_all_sites_access);
-  }
-
-  const GURL google_com("https://google.com");
-  {
-    const ScriptingPermissionsModifier::SiteAccess site_access =
-        modifier.GetSiteAccess(google_com);
-    EXPECT_FALSE(site_access.has_site_access);
-    EXPECT_FALSE(site_access.withheld_site_access);
-    EXPECT_FALSE(site_access.has_all_sites_access);
-    EXPECT_FALSE(site_access.withheld_all_sites_access);
-  }
-
-  modifier.SetWithholdHostPermissions(true);
-  {
-    const ScriptingPermissionsModifier::SiteAccess site_access =
-        modifier.GetSiteAccess(example_com);
+    const PermissionsManager::ExtensionSiteAccess site_access =
+        PermissionsManager::Get(profile())->GetSiteAccess(*extension,
+                                                          example_com);
     EXPECT_FALSE(site_access.has_site_access);
     EXPECT_TRUE(site_access.withheld_site_access);
     EXPECT_FALSE(site_access.has_all_sites_access);
@@ -985,8 +942,10 @@ TEST_F(ScriptingPermissionsModifierUnitTest, GetSiteAccess_SpecificSites) {
   }
 }
 
-TEST_F(ScriptingPermissionsModifierUnitTest,
-       GetSiteAccess_GrantedButNotRequested) {
+// TODO(crbug.com/1289441): Move test to PermissionsManager once permissions can
+// be withheld in the extensions directory since this test checks important part
+// of the PermissionsManager logic
+TEST_F(ScriptingPermissionsModifierUnitTest, AddRuntimeGrantedHostPermission) {
   InitializeEmptyExtensionService();
 
   scoped_refptr<const Extension> extension =
@@ -1006,8 +965,8 @@ TEST_F(ScriptingPermissionsModifierUnitTest,
 
   const GURL google_com("https://google.com");
   {
-    const ScriptingPermissionsModifier::SiteAccess site_access =
-        modifier.GetSiteAccess(google_com);
+    const PermissionsManager::ExtensionSiteAccess site_access =
+        PermissionsManager(profile()).GetSiteAccess(*extension, google_com);
     // The has_access and withheld_access bits should be set appropriately, even
     // if the extension has access to a site it didn't request.
     EXPECT_TRUE(site_access.has_site_access);
@@ -1019,7 +978,11 @@ TEST_F(ScriptingPermissionsModifierUnitTest,
 
 // Tests that for the purposes of displaying an extension's site access to the
 // user (or granting/revoking permissions), we ignore paths in the URL.
-TEST_F(ScriptingPermissionsModifierUnitTest, GetSiteAccess_IgnorePaths) {
+// TODO(crbug.com/1289441): Move test to PermissionsManager once permissions can
+// be withheld in the extensions directory since this test checks important part
+// of the PermissionsManager logic
+TEST_F(ScriptingPermissionsModifierUnitTest,
+       ChangeHostPermissions_IgnorePaths) {
   InitializeEmptyExtensionService();
 
   scoped_refptr<const Extension> extension =
@@ -1029,12 +992,12 @@ TEST_F(ScriptingPermissionsModifierUnitTest, GetSiteAccess_IgnorePaths) {
           .Build();
   InitializeExtensionPermissions(profile(), *extension);
 
-  ScriptingPermissionsModifier modifier(profile(), extension.get());
+  auto* manager = PermissionsManager::Get(profile());
 
   const GURL example_com("https://www.example.com/bar");
   {
-    const ScriptingPermissionsModifier::SiteAccess site_access =
-        modifier.GetSiteAccess(example_com);
+    const PermissionsManager::ExtensionSiteAccess site_access =
+        manager->GetSiteAccess(*extension, example_com);
     // Even though the path doesn't exactly match one in the content scripts,
     // the domain is requested, and thus we treat it as if the site was
     // requested.
@@ -1044,10 +1007,11 @@ TEST_F(ScriptingPermissionsModifierUnitTest, GetSiteAccess_IgnorePaths) {
     EXPECT_FALSE(site_access.withheld_all_sites_access);
   }
 
-  modifier.SetWithholdHostPermissions(true);
+  ScriptingPermissionsModifier(profile(), extension.get())
+      .SetWithholdHostPermissions(true);
   {
-    const ScriptingPermissionsModifier::SiteAccess site_access =
-        modifier.GetSiteAccess(example_com);
+    const PermissionsManager::ExtensionSiteAccess site_access =
+        manager->GetSiteAccess(*extension, example_com);
     EXPECT_FALSE(site_access.has_site_access);
     EXPECT_TRUE(site_access.withheld_site_access);
     EXPECT_FALSE(site_access.has_all_sites_access);
