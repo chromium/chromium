@@ -485,6 +485,10 @@ more difficult to reason about system behavior (Chrome feature code + SQLite)
 when the database gets corrupted. Foreign key constraints also make it more
 difficult to reason about query performance.
 
+Foreign key constraints are not enforced by default on SQLite databases opened
+with Chrome's `sql::Database` infrastructure. This is intended to steer feature
+developers away from the discouraged feature.
+
 After
 [WebSQL](https://www.w3.org/TR/webdatabase/) is removed from Chrome, we plan
 to disable SQLite's foreign key support using
