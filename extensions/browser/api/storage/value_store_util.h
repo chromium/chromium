@@ -5,11 +5,14 @@
 #ifndef EXTENSIONS_BROWSER_API_STORAGE_VALUE_STORE_UTIL_H_
 #define EXTENSIONS_BROWSER_API_STORAGE_VALUE_STORE_UTIL_H_
 
-#include "base/files/file_util.h"
 #include "components/value_store/value_store.h"
 #include "components/value_store/value_store_factory.h"
 #include "extensions/browser/api/storage/settings_namespace.h"
 #include "extensions/common/extension_id.h"
+
+namespace base {
+class FilePath;
+}
 
 namespace extensions {
 

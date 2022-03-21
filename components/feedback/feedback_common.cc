@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
 #include "build/chromeos_buildflags.h"
 #include "components/feedback/feedback_report.h"

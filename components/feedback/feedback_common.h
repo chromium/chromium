@@ -14,9 +14,12 @@
 #include <utility>
 #include <vector>
 
-#include "base/files/file_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
+
+namespace base {
+class FilePath;
+}
 
 namespace userfeedback {
 class ExtensionSubmit;

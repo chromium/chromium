@@ -4,6 +4,7 @@
 
 #include "extensions/browser/api/storage/value_store_util.h"
 
+#include "base/files/file_path.h"
 #include "base/notreached.h"
 #include "components/value_store/value_store_factory.h"
 #include "extensions/browser/api/storage/settings_namespace.h"

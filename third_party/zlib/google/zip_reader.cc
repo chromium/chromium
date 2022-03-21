@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/files/file.h"
+#include "base/files/file_util.h"
 #include "base/i18n/icu_string_conversions.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"

@@ -45,7 +45,10 @@
 #include <stdint.h>
 
 #include "base/files/file.h"
-#include "base/files/file_util.h"
+
+namespace base {
+class FilePath;
+}
 
 namespace courgette {
 class SourceStream;
