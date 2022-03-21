@@ -649,9 +649,7 @@ void UiControllerAndroid::DestroySelf() {
   // among other things.
   //
   // TODO(mcarlen): refactor lifecycle and deps of ui_controller.
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ClientAndroid::DestroyUI, client_->GetWeakPtr()));
+  client_->DestroyUISoon();
 }
 
 void UiControllerAndroid::SetVisible(

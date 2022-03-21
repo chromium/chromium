@@ -113,10 +113,6 @@ ClientAndroid::~ClientAndroid() {
                                               java_object_);
 }
 
-base::WeakPtr<ClientAndroid> ClientAndroid::GetWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
-}
-
 base::android::ScopedJavaLocalRef<jobject> ClientAndroid::GetJavaObject() {
   return base::android::ScopedJavaLocalRef<jobject>(java_object_);
 }
@@ -464,6 +460,12 @@ void ClientAndroid::AttachUI(
     ui_controller_android_->Attach(GetWebContents(), this, controller_.get(),
                                    ui_controller_.get());
   }
+}
+
+void ClientAndroid::DestroyUISoon() {
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&ClientAndroid::DestroyUI,
+                                weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ClientAndroid::DestroyUI() {

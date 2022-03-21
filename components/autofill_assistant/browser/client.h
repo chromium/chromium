@@ -45,6 +45,9 @@ class Client {
   // call, there is a Controller associated with a UI.
   virtual void AttachUI() = 0;
 
+  // Posts a task to destroy the UI.
+  virtual void DestroyUISoon() = 0;
+
   // Destroys the UI immediately.
   virtual void DestroyUI() = 0;
 

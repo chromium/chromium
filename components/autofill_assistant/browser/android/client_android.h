@@ -49,8 +49,6 @@ class ClientAndroid : public Client,
 
   ~ClientAndroid() override;
 
-  base::WeakPtr<ClientAndroid> GetWeakPtr();
-
   // Returns the corresponding Java AutofillAssistantClient.
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
@@ -124,6 +122,7 @@ class ClientAndroid : public Client,
 
   // Overrides Client
   void AttachUI() override;
+  void DestroyUISoon() override;
   void DestroyUI() override;
   version_info::Channel GetChannel() const override;
   std::string GetEmailAddressForAccessTokenAccount() const override;

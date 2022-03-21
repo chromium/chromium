@@ -1827,7 +1827,7 @@ TEST_F(ControllerTest, NavigationWhileTrackingWithUi) {
   EXPECT_TRUE(controller_->NeedsUI());
 
   // Browser navigation will destroy the UI.
-  EXPECT_CALL(mock_client_, DestroyUI());
+  EXPECT_CALL(mock_client_, DestroyUISoon());
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("http://a.example.com/page"));
   EXPECT_EQ(AutofillAssistantState::TRACKING, controller_->GetState());

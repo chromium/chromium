@@ -314,7 +314,7 @@ void Controller::ShutdownIfNecessary() {
     client_->Shutdown(Metrics::DropOutReason::UI_CLOSED_UNEXPECTEDLY);
   } else if (NeedsUI()) {
     needs_ui_ = false;
-    client_->DestroyUI();
+    client_->DestroyUISoon();
   }
 }
 

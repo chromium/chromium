@@ -9,9 +9,12 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
+import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -25,6 +28,7 @@ import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toCss
 
 import android.os.Bundle;
 
+import androidx.test.espresso.matcher.ViewMatchers.Visibility;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
@@ -381,5 +385,60 @@ public class DirectActionsIntegrationTest {
         }
         throw new CriteriaNotSatisfiedException(
                 "Expected last tell message to be visible after stop");
+    }
+
+    /**
+     * Regression test for b/224759196.
+     */
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.DIRECT_ACTIONS, AssistantFeatures.AUTOFILL_ASSISTANT_NAME,
+            AssistantFeatures.AUTOFILL_ASSISTANT_DIRECT_ACTIONS_NAME})
+    public void
+    testCloseDirectAction() {
+        ArrayList<ActionProto> list = new ArrayList<>();
+        list.add(ActionProto.newBuilder()
+                         .setPrompt(PromptProto.newBuilder().addChoices(
+                                 PromptProto.Choice.newBuilder().setChip(
+                                         ChipProto.newBuilder().setText("Prompt"))))
+                         .build());
+        list.add(ActionProto.newBuilder()
+                         .setTell(TellProto.newBuilder().setMessage("Last tell message"))
+                         .build());
+        list.add(ActionProto.newBuilder().setStop(StopProto.newBuilder()).build());
+
+        AutofillAssistantTestScript script = new AutofillAssistantTestScript(
+                SupportedScriptProto.newBuilder()
+                        .setPath("autofill_assistant_target_website.html")
+                        .setPresentation(PresentationProto.newBuilder().setDirectAction(
+                                DirectActionProto.newBuilder()
+                                        .addNames("some_direct_action")
+                                        .build()))
+                        .build(),
+                list);
+        AutofillAssistantTestService testService =
+                new AutofillAssistantTestService(Collections.singletonList(script));
+        testService.scheduleForInjection();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mDirectActionHandler.reportAvailableDirectActions(mDirectActionReporter);
+            Assert.assertThat(mDirectActionReporter.getDirectActions(),
+                    containsInAnyOrder("fetch_website_actions"));
+            mDirectActionHandler.performDirectAction(
+                    "fetch_website_actions", new Bundle(), mDirectActionResultCallback);
+            verify(mDirectActionResultCallback)
+                    .onResult(argThat(bundle -> bundle.getBoolean("success")));
+
+            mDirectActionHandler.reportAvailableDirectActions(mDirectActionReporter);
+            Assert.assertThat(mDirectActionReporter.getDirectActions(),
+                    containsInAnyOrder("fetch_website_actions", "some_direct_action"));
+            mDirectActionHandler.performDirectAction(
+                    "some_direct_action", new Bundle(), mDirectActionResultCallback);
+        });
+        waitUntilViewMatchesCondition(withText("Prompt"), isDisplayed());
+        onView(withText("Prompt")).perform(click());
+        waitUntilViewMatchesCondition(withText("Last tell message"), isDisplayed());
+        onView(allOf(withContentDescription("Close"), withEffectiveVisibility(Visibility.VISIBLE)))
+                .perform(click());
     }
 }
