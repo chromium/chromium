@@ -86,7 +86,7 @@ class GrandfatheredEasyUnlockHostDisabler
   void DisableEasyUnlockHostIfNecessary();
   void OnDisableEasyUnlockHostResult(
       multidevice::RemoteDeviceRef device,
-      chromeos::device_sync::mojom::NetworkRequestResult result_code);
+      device_sync::mojom::NetworkRequestResult result_code);
   void SetPotentialEasyUnlockHostToDisable(
       absl::optional<multidevice::RemoteDeviceRef> device);
   absl::optional<multidevice::RemoteDeviceRef> GetEasyUnlockHostToDisable();

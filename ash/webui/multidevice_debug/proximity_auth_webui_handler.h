@@ -60,9 +60,8 @@ class ProximityAuthWebUIHandler
   void OnForceSyncNow(bool success);
   void OnSetSoftwareFeatureState(
       const std::string public_key,
-      chromeos::device_sync::mojom::NetworkRequestResult result_code);
-  void OnGetDebugInfo(
-      chromeos::device_sync::mojom::DebugInfoPtr debug_info_ptr);
+      device_sync::mojom::NetworkRequestResult result_code);
+  void OnGetDebugInfo(device_sync::mojom::DebugInfoPtr debug_info_ptr);
 
   void NotifyOnEnrollmentFinished(
       bool success,

@@ -43,22 +43,25 @@ class FakeDeviceSync : public DeviceSyncBase {
       const absl::optional<std::vector<multidevice::RemoteDevice>>&
           remote_devices);
   void InvokePendingSetSoftwareFeatureStateCallback(
-      mojom::NetworkRequestResult result_code);
+      ash::device_sync::mojom::NetworkRequestResult result_code);
   void InvokePendingSetFeatureStatusCallback(
-      mojom::NetworkRequestResult result_code);
+      ash::device_sync::mojom::NetworkRequestResult result_code);
   void InvokePendingFindEligibleDevicesCallback(
-      mojom::NetworkRequestResult result_code,
-      mojom::FindEligibleDevicesResponsePtr find_eligible_devices_response_ptr);
+      ash::device_sync::mojom::NetworkRequestResult result_code,
+      ash::device_sync::mojom::FindEligibleDevicesResponsePtr
+          find_eligible_devices_response_ptr);
   void InvokePendingNotifyDevicesCallback(
-      mojom::NetworkRequestResult result_code);
+      ash::device_sync::mojom::NetworkRequestResult result_code);
   void InvokePendingGetDevicesActivityStatusCallback(
-      mojom::NetworkRequestResult result_code,
-      absl::optional<std::vector<mojom::DeviceActivityStatusPtr>>
+      ash::device_sync::mojom::NetworkRequestResult result_code,
+      absl::optional<
+          std::vector<ash::device_sync::mojom::DeviceActivityStatusPtr>>
           get_devices_activity_status_response);
-  void InvokePendingGetDebugInfoCallback(mojom::DebugInfoPtr debug_info_ptr);
+  void InvokePendingGetDebugInfoCallback(
+      ash::device_sync::mojom::DebugInfoPtr debug_info_ptr);
 
  protected:
-  // mojom::DeviceSync:
+  // ash::device_sync::mojom::DeviceSync:
   void ForceEnrollmentNow(ForceEnrollmentNowCallback callback) override;
   void ForceSyncNow(ForceSyncNowCallback callback) override;
   void GetLocalDeviceMetadata(GetLocalDeviceMetadataCallback callback) override;

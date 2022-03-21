@@ -10,6 +10,9 @@ namespace chromeos {
 
 namespace device_sync {
 
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom = ::ash::device_sync::mojom;
+
 DeviceSyncClient::DeviceSyncClient() = default;
 
 DeviceSyncClient::~DeviceSyncClient() = default;

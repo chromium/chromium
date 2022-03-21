@@ -137,7 +137,7 @@ class GlobalStateFeatureManagerImpl
   void AttemptSetHostStateNetworkRequest(bool is_retry);
   void OnSetHostStateNetworkRequestFinished(
       bool attempted_to_enable,
-      chromeos::device_sync::mojom::NetworkRequestResult result_code);
+      device_sync::mojom::NetworkRequestResult result_code);
   bool ShouldEnableOnVerify();
   void ProcessEnableOnVerifyAttempt();
   bool ShouldAttemptToEnableAfterHostVerified();

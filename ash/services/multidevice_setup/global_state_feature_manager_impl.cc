@@ -37,9 +37,6 @@ namespace multidevice_setup {
 
 namespace {
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace device_sync = ::chromeos::device_sync;
-
 // This pref name is left in a legacy format to maintain compatibility.
 const char kWifiSyncPendingStatePrefName[] =
     "multidevice_setup.pending_set_wifi_sync_enabled_request";

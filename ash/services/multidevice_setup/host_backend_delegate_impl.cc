@@ -25,9 +25,6 @@ namespace multidevice_setup {
 
 namespace {
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace device_sync = ::chromeos::device_sync;
-
 // Name of the pref which stores the ID of the host which is pending being set
 // on the back-end.
 const char kPendingRequestHostIdPrefName[] =

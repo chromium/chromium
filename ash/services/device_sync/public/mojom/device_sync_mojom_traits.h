@@ -14,32 +14,32 @@
 namespace mojo {
 
 template <>
-class EnumTraits<chromeos::device_sync::mojom::ConnectivityStatus,
+class EnumTraits<ash::device_sync::mojom::ConnectivityStatus,
                  cryptauthv2::ConnectivityStatus> {
  public:
-  static chromeos::device_sync::mojom::ConnectivityStatus ToMojom(
+  static ash::device_sync::mojom::ConnectivityStatus ToMojom(
       cryptauthv2::ConnectivityStatus input);
-  static bool FromMojom(chromeos::device_sync::mojom::ConnectivityStatus input,
+  static bool FromMojom(ash::device_sync::mojom::ConnectivityStatus input,
                         cryptauthv2::ConnectivityStatus* out);
 };
 
 template <>
-class EnumTraits<chromeos::device_sync::mojom::FeatureStatusChange,
+class EnumTraits<ash::device_sync::mojom::FeatureStatusChange,
                  chromeos::device_sync::FeatureStatusChange> {
  public:
-  static chromeos::device_sync::mojom::FeatureStatusChange ToMojom(
+  static ash::device_sync::mojom::FeatureStatusChange ToMojom(
       chromeos::device_sync::FeatureStatusChange input);
-  static bool FromMojom(chromeos::device_sync::mojom::FeatureStatusChange input,
+  static bool FromMojom(ash::device_sync::mojom::FeatureStatusChange input,
                         chromeos::device_sync::FeatureStatusChange* out);
 };
 
 template <>
-class EnumTraits<chromeos::device_sync::mojom::CryptAuthService,
+class EnumTraits<ash::device_sync::mojom::CryptAuthService,
                  cryptauthv2::TargetService> {
  public:
-  static chromeos::device_sync::mojom::CryptAuthService ToMojom(
+  static ash::device_sync::mojom::CryptAuthService ToMojom(
       cryptauthv2::TargetService input);
-  static bool FromMojom(chromeos::device_sync::mojom::CryptAuthService input,
+  static bool FromMojom(ash::device_sync::mojom::CryptAuthService input,
                         cryptauthv2::TargetService* out);
 };
 

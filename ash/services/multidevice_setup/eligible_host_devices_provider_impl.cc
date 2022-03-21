@@ -14,9 +14,6 @@ namespace ash {
 
 namespace multidevice_setup {
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace device_sync = ::chromeos::device_sync;
-
 // static
 constexpr base::TimeDelta
     EligibleHostDevicesProviderImpl::kInactiveDeviceThresholdInDays;

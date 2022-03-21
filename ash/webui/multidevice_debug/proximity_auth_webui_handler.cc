@@ -30,9 +30,6 @@ namespace multidevice {
 
 namespace {
 
-// TODO(https://crbug.com/1164001): remove when device_sync moved to ash
-namespace device_sync = ::chromeos::device_sync;
-
 constexpr const multidevice::SoftwareFeature kAllSoftareFeatures[] = {
     multidevice::SoftwareFeature::kBetterTogetherHost,
     multidevice::SoftwareFeature::kBetterTogetherClient,

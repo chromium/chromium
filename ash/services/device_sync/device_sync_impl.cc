@@ -52,6 +52,9 @@ namespace device_sync {
 
 namespace {
 
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom = ::ash::device_sync::mojom;
+
 constexpr base::TimeDelta kSetFeatureEnabledTimeout = base::Seconds(5);
 
 // Timeout value for asynchronous operation.

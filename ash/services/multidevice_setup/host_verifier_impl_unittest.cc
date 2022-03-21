@@ -28,9 +28,6 @@ namespace multidevice_setup {
 
 namespace {
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace device_sync = ::chromeos::device_sync;
-
 // Parameterized test types, indicating the following test scenarios:
 enum class TestType {
   // Use v1 DeviceSync and host does not have an Instance ID.

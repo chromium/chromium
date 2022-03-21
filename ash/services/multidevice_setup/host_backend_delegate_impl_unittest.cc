@@ -27,9 +27,6 @@ namespace multidevice_setup {
 
 namespace {
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace device_sync = ::chromeos::device_sync;
-
 const char kPendingRequestHostIdPrefName[] =
     "multidevice_setup.pending_request_host_id";
 const char kPendingRemovalOfCurrentHost[] = "pendingRemovalOfCurrentHost";

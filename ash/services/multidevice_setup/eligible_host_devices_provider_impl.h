@@ -59,9 +59,8 @@ class EligibleHostDevicesProviderImpl
   void UpdateEligibleDevicesSet();
 
   void OnGetDevicesActivityStatus(
-      chromeos::device_sync::mojom::NetworkRequestResult,
-      absl::optional<
-          std::vector<chromeos::device_sync::mojom::DeviceActivityStatusPtr>>);
+      device_sync::mojom::NetworkRequestResult,
+      absl::optional<std::vector<device_sync::mojom::DeviceActivityStatusPtr>>);
 
   device_sync::DeviceSyncClient* device_sync_client_;
 

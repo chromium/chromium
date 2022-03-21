@@ -24,9 +24,6 @@ namespace multidevice_setup {
 
 namespace {
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace device_sync = ::chromeos::device_sync;
-
 // Software features which, when enabled, represent a verified host.
 constexpr const multidevice::SoftwareFeature kPotentialHostFeatures[] = {
     multidevice::SoftwareFeature::kSmartLockHost,

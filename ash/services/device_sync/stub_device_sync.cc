@@ -24,6 +24,9 @@ namespace device_sync {
 
 namespace {
 
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom = ::ash::device_sync::mojom;
+
 // Helper function for SetSoftwareFeatureState and SetFeatureStatus, sets the
 // |software_feature| to the correct |enabled| value for the |device| and
 // handles edge cases.

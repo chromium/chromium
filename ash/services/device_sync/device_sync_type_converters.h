@@ -12,9 +12,9 @@
 namespace mojo {
 
 template <>
-struct TypeConverter<chromeos::device_sync::mojom::NetworkRequestResult,
+struct TypeConverter<ash::device_sync::mojom::NetworkRequestResult,
                      chromeos::device_sync::NetworkRequestError> {
-  static chromeos::device_sync::mojom::NetworkRequestResult Convert(
+  static ash::device_sync::mojom::NetworkRequestResult Convert(
       chromeos::device_sync::NetworkRequestError type);
 };
 

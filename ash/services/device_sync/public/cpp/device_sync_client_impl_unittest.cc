@@ -41,6 +41,9 @@ namespace device_sync {
 
 namespace {
 
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom = ::ash::device_sync::mojom;
+
 const char kTestEmail[] = "example@gmail.com";
 const char kTestGcmDeviceInfoLongDeviceId[] = "longDeviceId";
 const size_t kNumTestDevices = 5u;

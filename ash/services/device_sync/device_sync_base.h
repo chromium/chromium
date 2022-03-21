@@ -16,20 +16,22 @@ namespace chromeos {
 namespace device_sync {
 
 // Base DeviceSync implementation.
-class DeviceSyncBase : public mojom::DeviceSync {
+class DeviceSyncBase : public ash::device_sync::mojom::DeviceSync {
  public:
   DeviceSyncBase(const DeviceSyncBase&) = delete;
   DeviceSyncBase& operator=(const DeviceSyncBase&) = delete;
 
   ~DeviceSyncBase() override;
 
-  // mojom::DeviceSync:
-  void AddObserver(mojo::PendingRemote<mojom::DeviceSyncObserver> observer,
-                   AddObserverCallback callback) override;
+  // ash::device_sync::mojom::DeviceSync:
+  void AddObserver(
+      mojo::PendingRemote<ash::device_sync::mojom::DeviceSyncObserver> observer,
+      AddObserverCallback callback) override;
 
   // Binds a receiver to this implementation. Should be called each time that
   // the service receives a receiver.
-  void BindReceiver(mojo::PendingReceiver<mojom::DeviceSync> receiver);
+  void BindReceiver(
+      mojo::PendingReceiver<ash::device_sync::mojom::DeviceSync> receiver);
 
   void CloseAllReceivers();
 
@@ -46,8 +48,8 @@ class DeviceSyncBase : public mojom::DeviceSync {
  private:
   void OnDisconnection();
 
-  mojo::RemoteSet<mojom::DeviceSyncObserver> observers_;
-  mojo::ReceiverSet<mojom::DeviceSync> receivers_;
+  mojo::RemoteSet<ash::device_sync::mojom::DeviceSyncObserver> observers_;
+  mojo::ReceiverSet<ash::device_sync::mojom::DeviceSync> receivers_;
 };
 
 }  // namespace device_sync

@@ -24,7 +24,7 @@ namespace device_sync {
 class CryptAuthDeviceActivityGetter {
  public:
   using DeviceActivityStatusResult =
-      std::vector<mojom::DeviceActivityStatusPtr>;
+      std::vector<ash::device_sync::mojom::DeviceActivityStatusPtr>;
   using GetDeviceActivityStatusAttemptFinishedCallback =
       base::OnceCallback<void(DeviceActivityStatusResult)>;
   using GetDeviceActivityStatusAttemptErrorCallback =

@@ -48,7 +48,7 @@ class DeviceSyncClient {
   };
 
   using FindEligibleDevicesCallback =
-      base::OnceCallback<void(mojom::NetworkRequestResult,
+      base::OnceCallback<void(ash::device_sync::mojom::NetworkRequestResult,
                               multidevice::RemoteDeviceRefList,
                               multidevice::RemoteDeviceRefList)>;
 
@@ -64,7 +64,8 @@ class DeviceSyncClient {
   virtual void Initialize(scoped_refptr<base::TaskRunner> task_runner) {}
 
   // Returns the DeviceSync mojo remote.
-  virtual mojo::Remote<mojom::DeviceSync>* GetDeviceSyncRemote();
+  virtual mojo::Remote<ash::device_sync::mojom::DeviceSync>*
+  GetDeviceSyncRemote();
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -75,9 +76,10 @@ class DeviceSyncClient {
   bool is_ready() { return is_ready_; }
 
   virtual void ForceEnrollmentNow(
-      mojom::DeviceSync::ForceEnrollmentNowCallback callback) = 0;
+      ash::device_sync::mojom::DeviceSync::ForceEnrollmentNowCallback
+          callback) = 0;
   virtual void ForceSyncNow(
-      mojom::DeviceSync::ForceSyncNowCallback callback) = 0;
+      ash::device_sync::mojom::DeviceSync::ForceSyncNowCallback callback) = 0;
   virtual multidevice::RemoteDeviceRefList GetSyncedDevices() = 0;
   virtual absl::optional<multidevice::RemoteDeviceRef>
   GetLocalDeviceMetadata() = 0;
@@ -90,12 +92,14 @@ class DeviceSyncClient {
       multidevice::SoftwareFeature software_feature,
       bool enabled,
       bool is_exclusive,
-      mojom::DeviceSync::SetSoftwareFeatureStateCallback callback) = 0;
+      ash::device_sync::mojom::DeviceSync::SetSoftwareFeatureStateCallback
+          callback) = 0;
   virtual void SetFeatureStatus(
       const std::string& device_instance_id,
       multidevice::SoftwareFeature feature,
       FeatureStatusChange status_change,
-      mojom::DeviceSync::SetFeatureStatusCallback callback) = 0;
+      ash::device_sync::mojom::DeviceSync::SetFeatureStatusCallback
+          callback) = 0;
   virtual void FindEligibleDevices(
       multidevice::SoftwareFeature software_feature,
       FindEligibleDevicesCallback callback) = 0;
@@ -103,11 +107,12 @@ class DeviceSyncClient {
       const std::vector<std::string>& device_instance_ids,
       cryptauthv2::TargetService target_service,
       multidevice::SoftwareFeature feature,
-      mojom::DeviceSync::NotifyDevicesCallback callback) = 0;
+      ash::device_sync::mojom::DeviceSync::NotifyDevicesCallback callback) = 0;
   virtual void GetDevicesActivityStatus(
-      mojom::DeviceSync::GetDevicesActivityStatusCallback callback) = 0;
+      ash::device_sync::mojom::DeviceSync::GetDevicesActivityStatusCallback
+          callback) = 0;
   virtual void GetDebugInfo(
-      mojom::DeviceSync::GetDebugInfoCallback callback) = 0;
+      ash::device_sync::mojom::DeviceSync::GetDebugInfoCallback callback) = 0;
 
  protected:
   void NotifyReady();

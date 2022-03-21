@@ -181,13 +181,13 @@ Polymer({
   },
 
   /**
-   * @param {!chromeos.deviceSync.mojom.ConnectivityStatus} connectivityStatus
+   * @param {!ash.deviceSync.mojom.ConnectivityStatus} connectivityStatus
    * @return {string} The classes to bind to the device name option.
    * @private
    */
   getDeviceOptionClass_(connectivityStatus) {
     return connectivityStatus ===
-            chromeos.deviceSync.mojom.ConnectivityStatus.kOffline ?
+            ash.deviceSync.mojom.ConnectivityStatus.kOffline ?
         'offline-device-name' :
         '';
   },
@@ -199,7 +199,7 @@ Polymer({
    */
   getDeviceNameWithConnectivityStatus_(device) {
     return device.connectivityStatus ===
-            chromeos.deviceSync.mojom.ConnectivityStatus.kOffline ?
+            ash.deviceSync.mojom.ConnectivityStatus.kOffline ?
         this.i18n(
             'startSetupPageOfflineDeviceOption',
             device.remoteDevice.deviceName) :

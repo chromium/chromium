@@ -27,6 +27,9 @@ namespace device_sync {
 
 namespace {
 
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom = ::ash::device_sync::mojom;
+
 // TODO(https://crbug.com/933656): Use async execution time metrics to tune
 // these timeout values.
 constexpr base::TimeDelta kWaitingForGetDevicesActivityStatusResponseTimeout =

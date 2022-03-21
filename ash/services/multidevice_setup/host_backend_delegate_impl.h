@@ -93,7 +93,7 @@ class HostBackendDelegateImpl : public HostBackendDelegate,
   void OnSetHostNetworkRequestFinished(
       multidevice::RemoteDeviceRef device_for_request,
       bool attempted_to_enable,
-      chromeos::device_sync::mojom::NetworkRequestResult result_code);
+      device_sync::mojom::NetworkRequestResult result_code);
 
   EligibleHostDevicesProvider* eligible_host_devices_provider_;
   PrefService* pref_service_;

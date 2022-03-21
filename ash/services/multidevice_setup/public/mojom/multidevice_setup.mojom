@@ -130,7 +130,7 @@ enum FeatureState {
 // features.
 struct HostDevice {
   chromeos.multidevice.mojom.RemoteDevice remote_device;
-  chromeos.device_sync.mojom.ConnectivityStatus connectivity_status;
+  ash.device_sync.mojom.ConnectivityStatus connectivity_status;
 };
 
 // Delegate used to notify Chrome OS UI (//ash) of multidevice account changes

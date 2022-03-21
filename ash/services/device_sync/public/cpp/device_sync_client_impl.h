@@ -36,8 +36,9 @@ class ExpiringRemoteDeviceCache;
 namespace device_sync {
 
 // Concrete implementation of DeviceSyncClient.
-class DeviceSyncClientImpl : public DeviceSyncClient,
-                             public mojom::DeviceSyncObserver {
+class DeviceSyncClientImpl
+    : public DeviceSyncClient,
+      public ash::device_sync::mojom::DeviceSyncObserver {
  public:
   class Factory {
    public:
@@ -60,12 +61,15 @@ class DeviceSyncClientImpl : public DeviceSyncClient,
   ~DeviceSyncClientImpl() override;
 
   void Initialize(scoped_refptr<base::TaskRunner> task_runner) override;
-  mojo::Remote<mojom::DeviceSync>* GetDeviceSyncRemote() override;
+  mojo::Remote<ash::device_sync::mojom::DeviceSync>* GetDeviceSyncRemote()
+      override;
 
   // DeviceSyncClient:
   void ForceEnrollmentNow(
-      mojom::DeviceSync::ForceEnrollmentNowCallback callback) override;
-  void ForceSyncNow(mojom::DeviceSync::ForceSyncNowCallback callback) override;
+      ash::device_sync::mojom::DeviceSync::ForceEnrollmentNowCallback callback)
+      override;
+  void ForceSyncNow(ash::device_sync::mojom::DeviceSync::ForceSyncNowCallback
+                        callback) override;
   multidevice::RemoteDeviceRefList GetSyncedDevices() override;
   absl::optional<multidevice::RemoteDeviceRef> GetLocalDeviceMetadata()
       override;
@@ -74,24 +78,28 @@ class DeviceSyncClientImpl : public DeviceSyncClient,
       multidevice::SoftwareFeature software_feature,
       bool enabled,
       bool is_exclusive,
-      mojom::DeviceSync::SetSoftwareFeatureStateCallback callback) override;
+      ash::device_sync::mojom::DeviceSync::SetSoftwareFeatureStateCallback
+          callback) override;
   void SetFeatureStatus(
       const std::string& device_instance_id,
       multidevice::SoftwareFeature feature,
       FeatureStatusChange status_change,
-      mojom::DeviceSync::SetFeatureStatusCallback callback) override;
+      ash::device_sync::mojom::DeviceSync::SetFeatureStatusCallback callback)
+      override;
   void FindEligibleDevices(multidevice::SoftwareFeature software_feature,
                            FindEligibleDevicesCallback callback) override;
-  void NotifyDevices(
-      const std::vector<std::string>& device_instance_ids,
-      cryptauthv2::TargetService target_service,
-      multidevice::SoftwareFeature feature,
-      mojom::DeviceSync::NotifyDevicesCallback callback) override;
+  void NotifyDevices(const std::vector<std::string>& device_instance_ids,
+                     cryptauthv2::TargetService target_service,
+                     multidevice::SoftwareFeature feature,
+                     ash::device_sync::mojom::DeviceSync::NotifyDevicesCallback
+                         callback) override;
   void GetDevicesActivityStatus(
-      mojom::DeviceSync::GetDevicesActivityStatusCallback callback) override;
-  void GetDebugInfo(mojom::DeviceSync::GetDebugInfoCallback callback) override;
+      ash::device_sync::mojom::DeviceSync::GetDevicesActivityStatusCallback
+          callback) override;
+  void GetDebugInfo(ash::device_sync::mojom::DeviceSync::GetDebugInfoCallback
+                        callback) override;
 
-  // mojom::DeviceSyncObserver:
+  // ash::device_sync::mojom::DeviceSyncObserver:
   void OnEnrollmentFinished() override;
   void OnNewDevicesSynced() override;
 
@@ -110,15 +118,17 @@ class DeviceSyncClientImpl : public DeviceSyncClient,
       const absl::optional<multidevice::RemoteDevice>& local_device_metadata);
   void OnFindEligibleDevicesCompleted(
       FindEligibleDevicesCallback callback,
-      mojom::NetworkRequestResult result_code,
-      mojom::FindEligibleDevicesResponsePtr response);
+      ash::device_sync::mojom::NetworkRequestResult result_code,
+      ash::device_sync::mojom::FindEligibleDevicesResponsePtr response);
 
-  mojo::PendingRemote<mojom::DeviceSyncObserver> GenerateRemote();
+  mojo::PendingRemote<ash::device_sync::mojom::DeviceSyncObserver>
+  GenerateRemote();
 
   void FlushForTesting();
 
-  mojo::Remote<mojom::DeviceSync> device_sync_;
-  mojo::Receiver<mojom::DeviceSyncObserver> observer_receiver_{this};
+  mojo::Remote<ash::device_sync::mojom::DeviceSync> device_sync_;
+  mojo::Receiver<ash::device_sync::mojom::DeviceSyncObserver>
+      observer_receiver_{this};
   std::unique_ptr<multidevice::ExpiringRemoteDeviceCache>
       expiring_device_cache_;
 

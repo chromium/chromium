@@ -14,7 +14,8 @@ namespace chromeos {
 namespace device_sync {
 
 // Fake DeviceSyncObserver implementation for tests.
-class FakeDeviceSyncObserver : public mojom::DeviceSyncObserver {
+class FakeDeviceSyncObserver
+    : public ash::device_sync::mojom::DeviceSyncObserver {
  public:
   FakeDeviceSyncObserver();
 
@@ -23,12 +24,13 @@ class FakeDeviceSyncObserver : public mojom::DeviceSyncObserver {
 
   ~FakeDeviceSyncObserver() override;
 
-  mojo::PendingRemote<mojom::DeviceSyncObserver> GenerateRemote();
+  mojo::PendingRemote<ash::device_sync::mojom::DeviceSyncObserver>
+  GenerateRemote();
 
   size_t num_enrollment_events() { return num_enrollment_events_; }
   size_t num_sync_events() { return num_sync_events_; }
 
-  // mojom::DeviceSyncObserver:
+  // ash::device_sync::mojom::DeviceSyncObserver:
   void OnEnrollmentFinished() override;
   void OnNewDevicesSynced() override;
 
@@ -36,7 +38,7 @@ class FakeDeviceSyncObserver : public mojom::DeviceSyncObserver {
   size_t num_enrollment_events_ = 0u;
   size_t num_sync_events_ = 0u;
 
-  mojo::ReceiverSet<mojom::DeviceSyncObserver> receivers_;
+  mojo::ReceiverSet<ash::device_sync::mojom::DeviceSyncObserver> receivers_;
 };
 
 }  // namespace device_sync

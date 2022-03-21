@@ -36,6 +36,9 @@ namespace device_sync {
 
 namespace {
 
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom = ::ash::device_sync::mojom;
+
 const char kAccessTokenUsed[] = "access token used by CryptAuthClient";
 const char kDeviceId[] = "device_id1";
 const int kLastActivityTimeSecs = 111;

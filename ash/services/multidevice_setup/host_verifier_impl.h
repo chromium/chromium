@@ -93,11 +93,10 @@ class HostVerifierImpl : public HostVerifier,
   void StartRetryTimer(const base::Time& time_to_fire);
   void AttemptHostVerification();
   void OnFindEligibleDevicesResult(
-      chromeos::device_sync::mojom::NetworkRequestResult result,
+      device_sync::mojom::NetworkRequestResult result,
       multidevice::RemoteDeviceRefList eligible_devices,
       multidevice::RemoteDeviceRefList ineligible_devices);
-  void OnNotifyDevicesFinished(
-      chromeos::device_sync::mojom::NetworkRequestResult result);
+  void OnNotifyDevicesFinished(device_sync::mojom::NetworkRequestResult result);
   void OnSyncTimerFired();
 
   HostBackendDelegate* host_backend_delegate_;

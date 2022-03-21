@@ -107,7 +107,7 @@ class DeviceSyncImpl : public DeviceSyncBase,
   ~DeviceSyncImpl() override;
 
  protected:
-  // mojom::DeviceSync:
+  // ash::device_sync::mojom::DeviceSync:
   void ForceEnrollmentNow(ForceEnrollmentNowCallback callback) override;
   void ForceSyncNow(ForceSyncNowCallback callback) override;
   void GetLocalDeviceMetadata(GetLocalDeviceMetadataCallback callback) override;
@@ -167,7 +167,7 @@ class DeviceSyncImpl : public DeviceSyncBase,
     // feature has been set according to the parameters used).
     bool IsFulfilled() const;
 
-    void InvokeCallback(mojom::NetworkRequestResult result);
+    void InvokeCallback(ash::device_sync::mojom::NetworkRequestResult result);
 
     multidevice::SoftwareFeature software_feature() const {
       return software_feature_;
@@ -197,7 +197,7 @@ class DeviceSyncImpl : public DeviceSyncBase,
     // agrees with the device data returned by CryptAuth.
     bool IsFulfilled() const;
 
-    void InvokeCallback(mojom::NetworkRequestResult result);
+    void InvokeCallback(ash::device_sync::mojom::NetworkRequestResult result);
 
    private:
     std::string device_instance_id_;
@@ -249,14 +249,15 @@ class DeviceSyncImpl : public DeviceSyncBase,
   void OnSetFeatureStatusError(const base::UnguessableToken& request_id,
                                NetworkRequestError error);
   void OnFindEligibleDevicesSuccess(
-      base::OnceCallback<void(mojom::NetworkRequestResult,
-                              mojom::FindEligibleDevicesResponsePtr)> callback,
+      base::OnceCallback<void(
+          ash::device_sync::mojom::NetworkRequestResult,
+          ash::device_sync::mojom::FindEligibleDevicesResponsePtr)> callback,
       const std::vector<cryptauth::ExternalDeviceInfo>& eligible_devices,
       const std::vector<cryptauth::IneligibleDevice>& ineligible_devices);
   void OnFindEligibleDevicesError(
-      const base::OnceCallback<void(mojom::NetworkRequestResult,
-                                    mojom::FindEligibleDevicesResponsePtr)>
-          callback,
+      const base::OnceCallback<void(
+          ash::device_sync::mojom::NetworkRequestResult,
+          ash::device_sync::mojom::FindEligibleDevicesResponsePtr)> callback,
       NetworkRequestError error);
   void OnNotifyDevicesSuccess(const base::UnguessableToken& request_id);
   void OnNotifyDevicesError(const base::UnguessableToken& request_id,

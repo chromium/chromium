@@ -20,9 +20,6 @@ namespace multidevice_setup {
 
 namespace {
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace device_sync = chromeos::device_sync;
-
 const char kEasyUnlockHostIdToDisablePrefName[] =
     "multidevice_setup.easy_unlock_host_id_to_disable";
 const char kEasyUnlockHostInstanceIdToDisablePrefName[] =

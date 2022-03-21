@@ -23,6 +23,9 @@ namespace device_sync {
 
 namespace {
 
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom = ::ash::device_sync::mojom;
+
 bool IsValidInstanceId(const std::string& instance_id) {
   if (instance_id.empty()) {
     PA_LOG(ERROR) << "Instance ID cannot be empty.";
