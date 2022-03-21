@@ -109,18 +109,18 @@ UploadEncryptedReportingRequestBuilder::SetRequestId(
     return *this;
   }
 
-  auto* request_id_key =
-      result_->FindString(UploadEncryptedReportingRequestBuilder::kRequestId);
-  if (!request_id_key) {
-    result_->Set(UploadEncryptedReportingRequestBuilder::kRequestId,
-                 request_id);
-  }
+  result_->Set(UploadEncryptedReportingRequestBuilder::kRequestId, request_id);
 
   return *this;
 }
 
 absl::optional<base::Value::Dict>
 UploadEncryptedReportingRequestBuilder::Build() {
+  if (result_.has_value() &&
+      result_->Find(UploadEncryptedReportingRequestBuilder::kRequestId) ==
+          nullptr) {
+    SetRequestId(base::Token::CreateRandom().ToString());
+  }
   return std::move(result_);
 }
 

@@ -221,14 +221,7 @@ TEST_F(EncryptedReportingServiceProviderTest, SuccessfullyUploadsRecord) {
       .Times(1);
   EXPECT_CALL(
       cloud_policy_client_,
-      // TODO(b/225412986): IsDataUploadRequestValid() reports "requestId" is
-      // missing. Change the first matcher to IsDataUploadRequestValid() once
-      // fixed.
-      UploadEncryptedReport(
-          ::reporting::RequestValidityMatcherBuilder<>::CreateDataUpload()
-              .RemoveMatcher("request-id-matcher")
-              .Build(),
-          _, _))
+      UploadEncryptedReport(::reporting::IsDataUploadRequestValid(), _, _))
       .WillOnce(WithArgs<0, 2>(
           Invoke([](base::Value::Dict request,
                     policy::CloudPolicyClient::ResponseCallback response_cb) {

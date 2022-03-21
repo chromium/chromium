@@ -43,8 +43,9 @@ namespace reporting {
 //         "priority": 1
 //       }
 //     }
-//   ]
-//   "attachEncryptionSettings": true  // optional field
+//   ],
+//   "attachEncryptionSettings": true,  // optional field
+//   "requestId": "SomeString"
 // }
 // TODO(b/159361496): Periodically add memory and disk space usage.
 //
@@ -76,6 +77,7 @@ class UploadEncryptedReportingRequestBuilder {
 
   UploadEncryptedReportingRequestBuilder& AddRecord(EncryptedRecord record);
 
+  // Set the requestId field.
   UploadEncryptedReportingRequestBuilder& SetRequestId(
       base::StringPiece request_id);
 

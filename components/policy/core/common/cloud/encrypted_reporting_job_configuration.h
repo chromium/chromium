@@ -49,6 +49,8 @@ namespace policy {
 //       }
 //     }
 //   ],
+//   "attachEncryptionSettings": true,  // optional field
+//   "requestId": "SomeString",
 //   "device": {
 //     "client_id": "abcdef1234",
 //     "dmToken": "abcdef1234",

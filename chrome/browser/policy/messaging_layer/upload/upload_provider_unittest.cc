@@ -174,15 +174,8 @@ TEST_F(EncryptedReportingUploadProviderTest, SuccessfullyUploadsRecord) {
       .WillOnce([&uploaded_event](SequenceInformation seq_info, bool force) {
         std::move(uploaded_event.cb()).Run(std::move(seq_info), force);
       });
-  EXPECT_CALL(
-      cloud_policy_client_,
-      // TODO(b/225412986): IsDataUploadRequestValid() reports "requestId" is
-      // missing. Change the first matcher to IsDataUploadRequestValid() once
-      // fixed.
-      UploadEncryptedReport(RequestValidityMatcherBuilder<>::CreateDataUpload()
-                                .RemoveMatcher("request-id-matcher")
-                                .Build(),
-                            _, _))
+  EXPECT_CALL(cloud_policy_client_,
+              UploadEncryptedReport(IsDataUploadRequestValid(), _, _))
       .WillOnce(WithArgs<0, 2>(
           Invoke([](base::Value::Dict request,
                     policy::CloudPolicyClient::ResponseCallback response_cb) {
