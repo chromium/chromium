@@ -11,4 +11,4 @@
 enterprise-policy-review@google.com
 
 per-file policy_templates.json=set noparent
-per-file policy_templates.json=file://components/policy/resources/ENTERPRISE_POLICY_OWNERS
+per-file policy_templates.json=file://components/policy/ENTERPRISE_POLICY_OWNERS

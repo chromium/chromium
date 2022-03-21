@@ -216,7 +216,7 @@ policy_templates.json instead of just being marked as no longer supported.
 In this case, please remember to add the deleted id to deleted_policy_ids.
 
 If you want to remove support for another reason, please reach out to someone in
-[ENTERPRISE_POLICY_OWNERS](https://cs.chromium.org/chromium/src/components/policy/resources/ENTERPRISE_POLICY_OWNERS)
+[ENTERPRISE_POLICY_OWNERS](https://cs.chromium.org/chromium/src/components/policyENTERPRISE_POLICY_OWNERS)
 to ensure this is okay. The general preference is to leave policies as
 deprecated, but still supported.
 
