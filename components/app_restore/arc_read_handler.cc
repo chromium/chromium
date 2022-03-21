@@ -8,8 +8,8 @@
 
 #include "base/containers/contains.h"
 #include "components/app_restore/app_launch_info.h"
+#include "components/app_restore/app_restore_info.h"
 #include "components/app_restore/app_restore_utils.h"
-#include "components/app_restore/full_restore_info.h"
 #include "components/app_restore/window_info.h"
 #include "components/app_restore/window_properties.h"
 #include "ui/aura/window.h"
@@ -205,8 +205,8 @@ void ArcReadHandler::UpdateWindowCandidates(int32_t task_id,
 
   // Remove the window from the hidden container.
   if ((*window_it)->GetProperty(kParentToHiddenContainerKey)) {
-    full_restore::FullRestoreInfo::GetInstance()
-        ->OnParentWindowToValidContainer(*window_it);
+    app_restore::AppRestoreInfo::GetInstance()->OnParentWindowToValidContainer(
+        *window_it);
   }
 
   arc_window_candidates_.erase(*window_it);

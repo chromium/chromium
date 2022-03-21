@@ -2,38 +2,38 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/app_restore/full_restore_info.h"
+#include "components/app_restore/app_restore_info.h"
 
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "components/account_id/account_id.h"
 
-namespace full_restore {
+namespace app_restore {
 
 // static
-FullRestoreInfo* FullRestoreInfo::GetInstance() {
-  static base::NoDestructor<FullRestoreInfo> full_restore_info;
-  return full_restore_info.get();
+AppRestoreInfo* AppRestoreInfo::GetInstance() {
+  static base::NoDestructor<AppRestoreInfo> app_restore_info;
+  return app_restore_info.get();
 }
 
-FullRestoreInfo::FullRestoreInfo() = default;
+AppRestoreInfo::AppRestoreInfo() = default;
 
-FullRestoreInfo::~FullRestoreInfo() = default;
+AppRestoreInfo::~AppRestoreInfo() = default;
 
-void FullRestoreInfo::AddObserver(Observer* observer) {
+void AppRestoreInfo::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
 
-void FullRestoreInfo::RemoveObserver(Observer* observer) {
+void AppRestoreInfo::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-bool FullRestoreInfo::ShouldRestore(const AccountId& account_id) {
+bool AppRestoreInfo::ShouldRestore(const AccountId& account_id) {
   return base::Contains(restore_flags_, account_id);
 }
 
-void FullRestoreInfo::SetRestoreFlag(const AccountId& account_id,
-                                     bool should_restore) {
+void AppRestoreInfo::SetRestoreFlag(const AccountId& account_id,
+                                    bool should_restore) {
   if (should_restore == ShouldRestore(account_id))
     return;
 
@@ -46,12 +46,12 @@ void FullRestoreInfo::SetRestoreFlag(const AccountId& account_id,
     observer.OnRestoreFlagChanged(account_id, should_restore);
 }
 
-bool FullRestoreInfo::CanPerformRestore(const AccountId& account_id) {
+bool AppRestoreInfo::CanPerformRestore(const AccountId& account_id) {
   return base::Contains(restore_prefs_, account_id);
 }
 
-void FullRestoreInfo::SetRestorePref(const AccountId& account_id,
-                                     bool could_restore) {
+void AppRestoreInfo::SetRestorePref(const AccountId& account_id,
+                                    bool could_restore) {
   if (could_restore == CanPerformRestore(account_id))
     return;
 
@@ -64,24 +64,24 @@ void FullRestoreInfo::SetRestorePref(const AccountId& account_id,
     observer.OnRestorePrefChanged(account_id, could_restore);
 }
 
-void FullRestoreInfo::OnAppLaunched(aura::Window* window) {
+void AppRestoreInfo::OnAppLaunched(aura::Window* window) {
   for (auto& observer : observers_)
     observer.OnAppLaunched(window);
 }
 
-void FullRestoreInfo::OnWindowInitialized(aura::Window* window) {
+void AppRestoreInfo::OnWindowInitialized(aura::Window* window) {
   for (auto& observer : observers_)
     observer.OnWindowInitialized(window);
 }
 
-void FullRestoreInfo::OnWidgetInitialized(views::Widget* widget) {
+void AppRestoreInfo::OnWidgetInitialized(views::Widget* widget) {
   for (auto& observer : observers_)
     observer.OnWidgetInitialized(widget);
 }
 
-void FullRestoreInfo::OnParentWindowToValidContainer(aura::Window* window) {
+void AppRestoreInfo::OnParentWindowToValidContainer(aura::Window* window) {
   for (auto& observer : observers_)
     observer.OnParentWindowToValidContainer(window);
 }
 
-}  // namespace full_restore
+}  // namespace app_restore

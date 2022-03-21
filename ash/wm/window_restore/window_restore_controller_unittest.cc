@@ -26,7 +26,7 @@
 #include "base/containers/flat_map.h"
 #include "base/scoped_observation.h"
 #include "components/account_id/account_id.h"
-#include "components/app_restore/full_restore_info.h"
+#include "components/app_restore/app_restore_info.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
@@ -262,7 +262,7 @@ class WindowRestoreControllerTest : public AshTestBase,
 
     // Turn on the user preference by default, so do not need to set
     // for all test cases all the time.
-    full_restore::FullRestoreInfo::GetInstance()->SetRestorePref(
+    app_restore::AppRestoreInfo::GetInstance()->SetRestorePref(
         Shell::Get()->session_controller()->GetActiveAccountId(), true);
   }
 
@@ -337,8 +337,7 @@ TEST_F(WindowRestoreControllerTest, WindowSaveDisabled) {
   ResetSaveWindowsCount();
 
   // Disable window restore.
-  full_restore::FullRestoreInfo::GetInstance()->SetRestorePref(account_id,
-                                                               false);
+  app_restore::AppRestoreInfo::GetInstance()->SetRestorePref(account_id, false);
 
   auto* window1_state = WindowState::Get(window1.get());
   auto* window2_state = WindowState::Get(window2.get());
@@ -351,8 +350,7 @@ TEST_F(WindowRestoreControllerTest, WindowSaveDisabled) {
   EXPECT_EQ(0, GetSaveWindowsCount(window2.get()));
 
   // Enable window restore.
-  full_restore::FullRestoreInfo::GetInstance()->SetRestorePref(account_id,
-                                                               true);
+  app_restore::AppRestoreInfo::GetInstance()->SetRestorePref(account_id, true);
 
   // Setting the user preference to true should trigger window save
   // immediately.

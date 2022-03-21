@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_APP_RESTORE_FULL_RESTORE_INFO_H_
-#define COMPONENTS_APP_RESTORE_FULL_RESTORE_INFO_H_
+#ifndef COMPONENTS_APP_RESTORE_APP_RESTORE_INFO_H_
+#define COMPONENTS_APP_RESTORE_APP_RESTORE_INFO_H_
 
 #include <set>
 
@@ -21,15 +21,15 @@ namespace views {
 class Widget;
 }
 
-namespace full_restore {
+namespace app_restore {
 
-// FullRestoreInfo is responsible for providing the information for
-// FullRestoreInfo::Observer, including:
+// AppRestoreInfo is responsible for providing the information for
+// AppRestoreInfo::Observer, including:
 // 1. Whether we should restore apps and browser windows for |account_id|.
 // 2. Notifies when the restore pref is changed for |account_id|.
 // 3. Notifies when |window| is ready to be restored, after we have the app
 // launch information, e.g. a task id for an ARC app
-class COMPONENT_EXPORT(APP_RESTORE) FullRestoreInfo {
+class COMPONENT_EXPORT(APP_RESTORE) AppRestoreInfo {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -51,15 +51,15 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreInfo {
     // save the window info.
     virtual void OnAppLaunched(aura::Window* window) {}
 
-    // If |window| is restored from the full restore file, notifies observers to
-    // restore |window|, when |window| has been initialized.
+    // If |window| is restored, notifies observers to restore |window|, when
+    // |window| has been initialized.
     //
     // For ARC app windows, when |window| is initialized, the task might not be
     // created yet, so we don't have the window info, |window| might be parent
     // to a hidden container based on the property kParentToHiddenContainerKey.
     virtual void OnWindowInitialized(aura::Window* window) {}
 
-    // Called once the widget associated with a full restored window is
+    // Called once the widget associated with an app restored window is
     // initialized. This is called sometime after OnWindowInitialized, and the
     // ARC task also may not be created yet at this point.
     virtual void OnWidgetInitialized(views::Widget* widget) {}
@@ -77,12 +77,12 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreInfo {
     ~Observer() override = default;
   };
 
-  static FullRestoreInfo* GetInstance();
+  static AppRestoreInfo* GetInstance();
 
-  FullRestoreInfo();
-  FullRestoreInfo(const FullRestoreInfo&) = delete;
-  FullRestoreInfo& operator=(const FullRestoreInfo&) = delete;
-  ~FullRestoreInfo();
+  AppRestoreInfo();
+  AppRestoreInfo(const AppRestoreInfo&) = delete;
+  AppRestoreInfo& operator=(const AppRestoreInfo&) = delete;
+  ~AppRestoreInfo();
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -94,6 +94,7 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreInfo {
 
   // Sets whether we should restore apps and pages, based on the restore setting
   // and the user's choice from the notification for |account_id|.
+  // TODO(sammiequon): Remove this unused function.
   void SetRestoreFlag(const AccountId& account_id, bool should_restore);
 
   // Returns true if the restore pref is 'Always' or 'Ask every time', as we
@@ -135,6 +136,6 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreInfo {
   std::set<AccountId> restore_prefs_;
 };
 
-}  // namespace full_restore
+}  // namespace app_restore
 
-#endif  // COMPONENTS_APP_RESTORE_FULL_RESTORE_INFO_H_
+#endif  // COMPONENTS_APP_RESTORE_APP_RESTORE_INFO_H_

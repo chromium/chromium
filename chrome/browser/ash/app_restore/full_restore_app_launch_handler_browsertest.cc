@@ -48,7 +48,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
-#include "components/app_restore/full_restore_info.h"
+#include "components/app_restore/app_restore_info.h"
 #include "components/app_restore/full_restore_read_handler.h"
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/window_info.h"
@@ -108,10 +108,10 @@ std::unique_ptr<::app_restore::AppLaunchInfo> GetArcAppLaunchInfo(
       ->GetArcAppLaunchInfo(app_id, session_id);
 }
 
-class TestFullRestoreInfoObserver
-    : public ::full_restore::FullRestoreInfo::Observer {
+class TestAppRestoreInfoObserver
+    : public ::app_restore::AppRestoreInfo::Observer {
  public:
-  // ::full_restore::FullRestoreInfo::Observer:
+  // ::app_restore::AppRestoreInfo::Observer:
   void OnAppLaunched(aura::Window* window) override {
     ++launched_windows_[window];
   }
@@ -1105,7 +1105,7 @@ class FullRestoreAppLaunchHandlerArcAppBrowserTest
     ::full_restore::FullRestoreSaveHandler::GetInstance()
         ->SetPrimaryProfilePath(profile()->GetPath());
     ::full_restore::SetActiveProfilePath(profile()->GetPath());
-    test_full_restore_info_observer_.Reset();
+    test_app_restore_info_observer_.Reset();
   }
 
   void SaveAppLaunchInfo(const std::string& app_id, int32_t session_id) {
@@ -1116,7 +1116,7 @@ class FullRestoreAppLaunchHandlerArcAppBrowserTest
   }
 
   void Restore() {
-    test_full_restore_info_observer_.Reset();
+    test_app_restore_info_observer_.Reset();
 
     auto* arc_task_handler =
         app_restore::AppRestoreArcTaskHandler::GetForProfile(profile());
@@ -1192,8 +1192,7 @@ class FullRestoreAppLaunchHandlerArcAppBrowserTest
   }
 
   void VerifyObserver(aura::Window* window, int launch_count, int init_count) {
-    auto& launched_windows =
-        test_full_restore_info_observer_.launched_windows();
+    auto& launched_windows = test_app_restore_info_observer_.launched_windows();
     if (launch_count == 0) {
       EXPECT_TRUE(launched_windows.find(window) == launched_windows.end());
     } else {
@@ -1201,7 +1200,7 @@ class FullRestoreAppLaunchHandlerArcAppBrowserTest
     }
 
     auto& initialized_windows =
-        test_full_restore_info_observer_.initialized_windows();
+        test_app_restore_info_observer_.initialized_windows();
     if (init_count == 0) {
       EXPECT_TRUE(initialized_windows.find(window) ==
                   initialized_windows.end());
@@ -1260,8 +1259,8 @@ class FullRestoreAppLaunchHandlerArcAppBrowserTest
     return app_launch_handler_.get();
   }
 
-  TestFullRestoreInfoObserver* test_full_restore_info_observer() {
-    return &test_full_restore_info_observer_;
+  TestAppRestoreInfoObserver* test_app_restore_info_observer() {
+    return &test_app_restore_info_observer_;
   }
 
   const std::map<int32_t, std::string>& task_id_to_app_id() {
@@ -1278,7 +1277,7 @@ class FullRestoreAppLaunchHandlerArcAppBrowserTest
 
  private:
   std::unique_ptr<FullRestoreAppLaunchHandler> app_launch_handler_;
-  TestFullRestoreInfoObserver test_full_restore_info_observer_;
+  TestAppRestoreInfoObserver test_app_restore_info_observer_;
 };
 
 // Test the not restored ARC window is not added to the hidden container.
@@ -1290,8 +1289,8 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
   const std::string app_id = GetTestApp1Id(kTestAppPackage);
   int32_t session_id1 =
       ::full_restore::FullRestoreSaveHandler::GetInstance()->GetArcSessionId();
-  ::full_restore::FullRestoreInfo::GetInstance()->AddObserver(
-      test_full_restore_info_observer());
+  ::app_restore::AppRestoreInfo::GetInstance()->AddObserver(
+      test_app_restore_info_observer());
 
   SaveAppLaunchInfo(app_id, session_id1);
 
@@ -1365,8 +1364,8 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
   app_host()->OnTaskDestroyed(kTaskId3);
   widget2->CloseNow();
 
-  ::full_restore::FullRestoreInfo::GetInstance()->RemoveObserver(
-      test_full_restore_info_observer());
+  ::app_restore::AppRestoreInfo::GetInstance()->RemoveObserver(
+      test_app_restore_info_observer());
   arc_helper_.StopInstance();
 }
 
@@ -1380,8 +1379,8 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
   const std::string app_id = GetTestApp1Id(kTestAppPackage);
   int32_t session_id1 =
       ::full_restore::FullRestoreSaveHandler::GetInstance()->GetArcSessionId();
-  ::full_restore::FullRestoreInfo::GetInstance()->AddObserver(
-      test_full_restore_info_observer());
+  ::app_restore::AppRestoreInfo::GetInstance()->AddObserver(
+      test_app_restore_info_observer());
 
   SaveAppLaunchInfo(app_id, session_id1);
 
@@ -1461,8 +1460,8 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
 
   ASSERT_FALSE(GetWindowInfo(kTaskId1));
 
-  ::full_restore::FullRestoreInfo::GetInstance()->RemoveObserver(
-      test_full_restore_info_observer());
+  ::app_restore::AppRestoreInfo::GetInstance()->RemoveObserver(
+      test_app_restore_info_observer());
   arc_helper_.StopInstance();
 
   RemoveInactiveDesks();
@@ -1478,8 +1477,8 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
   const std::string app_id = GetTestApp1Id(kTestAppPackage);
   int32_t session_id1 =
       ::full_restore::FullRestoreSaveHandler::GetInstance()->GetArcSessionId();
-  ::full_restore::FullRestoreInfo::GetInstance()->AddObserver(
-      test_full_restore_info_observer());
+  ::app_restore::AppRestoreInfo::GetInstance()->AddObserver(
+      test_app_restore_info_observer());
 
   SaveAppLaunchInfo(app_id, session_id1);
 
@@ -1545,8 +1544,8 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
   app_host()->OnTaskDestroyed(kTaskId2);
   widget->CloseNow();
 
-  ::full_restore::FullRestoreInfo::GetInstance()->RemoveObserver(
-      test_full_restore_info_observer());
+  ::app_restore::AppRestoreInfo::GetInstance()->RemoveObserver(
+      test_app_restore_info_observer());
   arc_helper_.StopInstance();
 
   RemoveInactiveDesks();
@@ -1561,8 +1560,8 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
   const std::string app_id = GetTestApp1Id(kTestAppPackage);
   int32_t session_id1 =
       ::full_restore::FullRestoreSaveHandler::GetInstance()->GetArcSessionId();
-  ::full_restore::FullRestoreInfo::GetInstance()->AddObserver(
-      test_full_restore_info_observer());
+  ::app_restore::AppRestoreInfo::GetInstance()->AddObserver(
+      test_app_restore_info_observer());
 
   SaveAppLaunchInfo(app_id, session_id1);
 
@@ -1649,8 +1648,8 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
   app_host()->OnTaskDestroyed(kTaskId2);
   widget->CloseNow();
 
-  ::full_restore::FullRestoreInfo::GetInstance()->RemoveObserver(
-      test_full_restore_info_observer());
+  ::app_restore::AppRestoreInfo::GetInstance()->RemoveObserver(
+      test_app_restore_info_observer());
   arc_helper_.StopInstance();
 
   RemoveInactiveDesks();
@@ -1669,8 +1668,8 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
       ::full_restore::FullRestoreSaveHandler::GetInstance()->GetArcSessionId();
   int32_t session_id2 =
       ::full_restore::FullRestoreSaveHandler::GetInstance()->GetArcSessionId();
-  ::full_restore::FullRestoreInfo::GetInstance()->AddObserver(
-      test_full_restore_info_observer());
+  ::app_restore::AppRestoreInfo::GetInstance()->AddObserver(
+      test_app_restore_info_observer());
 
   SaveAppLaunchInfo(app_id1, session_id1);
   SaveAppLaunchInfo(app_id2, session_id2);
@@ -1783,8 +1782,8 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
       ::full_restore::FullRestoreSaveHandler::GetInstance()->GetArcSessionId();
   int32_t session_id2 =
       ::full_restore::FullRestoreSaveHandler::GetInstance()->GetArcSessionId();
-  ::full_restore::FullRestoreInfo::GetInstance()->AddObserver(
-      test_full_restore_info_observer());
+  ::app_restore::AppRestoreInfo::GetInstance()->AddObserver(
+      test_app_restore_info_observer());
 
   SaveAppLaunchInfo(app_id1, session_id1);
   SaveAppLaunchInfo(app_id2, session_id2);
@@ -1864,8 +1863,8 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
   const std::string app_id = GetTestApp1Id(kTestAppPackage);
   int32_t session_id =
       ::full_restore::FullRestoreSaveHandler::GetInstance()->GetArcSessionId();
-  ::full_restore::FullRestoreInfo::GetInstance()->AddObserver(
-      test_full_restore_info_observer());
+  ::app_restore::AppRestoreInfo::GetInstance()->AddObserver(
+      test_app_restore_info_observer());
 
   SaveAppLaunchInfo(app_id, session_id);
 
@@ -1900,8 +1899,8 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
 
   app_host()->OnTaskDestroyed(kTaskId);
 
-  ::full_restore::FullRestoreInfo::GetInstance()->RemoveObserver(
-      test_full_restore_info_observer());
+  ::app_restore::AppRestoreInfo::GetInstance()->RemoveObserver(
+      test_app_restore_info_observer());
   arc_helper_.StopInstance();
 }
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/app_restore/full_restore_info.h"
+#include "components/app_restore/app_restore_info.h"
 
 #include <map>
 #include <set>
@@ -10,9 +10,9 @@
 #include "components/account_id/account_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace full_restore {
+namespace app_restore {
 
-class FakeFullRestoreInfoObserver : public FullRestoreInfo::Observer {
+class FakeAppRestoreInfoObserver : public AppRestoreInfo::Observer {
  public:
   void OnRestoreFlagChanged(const AccountId& account_id,
                             bool should_restore) override {
@@ -59,68 +59,68 @@ class FakeFullRestoreInfoObserver : public FullRestoreInfo::Observer {
   std::map<AccountId, int> restore_pref_changed_count_;
 };
 
-using FullRestoreInfoTest = testing::Test;
+using AppRestoreInfoTest = testing::Test;
 
 // Test the RestoreFlagChanged callback when the restore flag is reset.
-TEST_F(FullRestoreInfoTest, RestoreFlag) {
+TEST_F(AppRestoreInfoTest, RestoreFlag) {
   AccountId account_id1 = AccountId::FromUserEmail("aaa@gmail.com");
   AccountId account_id2 = AccountId::FromUserEmail("bbb@gmail.com");
 
-  FullRestoreInfo::GetInstance()->SetRestoreFlag(account_id1, true);
+  AppRestoreInfo::GetInstance()->SetRestoreFlag(account_id1, true);
 
-  FakeFullRestoreInfoObserver observer;
-  FullRestoreInfo::GetInstance()->AddObserver(&observer);
+  FakeAppRestoreInfoObserver observer;
+  AppRestoreInfo::GetInstance()->AddObserver(&observer);
 
   // Not change the restore flag.
-  FullRestoreInfo::GetInstance()->SetRestoreFlag(account_id1, true);
-  FullRestoreInfo::GetInstance()->SetRestoreFlag(account_id2, false);
+  AppRestoreInfo::GetInstance()->SetRestoreFlag(account_id1, true);
+  AppRestoreInfo::GetInstance()->SetRestoreFlag(account_id2, false);
   EXPECT_EQ(0, observer.RestoreFlagChangedCount(account_id1));
   EXPECT_EQ(0, observer.RestoreFlagChangedCount(account_id2));
-  EXPECT_TRUE(FullRestoreInfo::GetInstance()->ShouldRestore(account_id1));
-  EXPECT_FALSE(FullRestoreInfo::GetInstance()->ShouldRestore(account_id2));
+  EXPECT_TRUE(AppRestoreInfo::GetInstance()->ShouldRestore(account_id1));
+  EXPECT_FALSE(AppRestoreInfo::GetInstance()->ShouldRestore(account_id2));
 
   // Change the restore flag.
-  FullRestoreInfo::GetInstance()->SetRestoreFlag(account_id1, false);
-  FullRestoreInfo::GetInstance()->SetRestoreFlag(account_id2, true);
+  AppRestoreInfo::GetInstance()->SetRestoreFlag(account_id1, false);
+  AppRestoreInfo::GetInstance()->SetRestoreFlag(account_id2, true);
   EXPECT_EQ(1, observer.RestoreFlagChangedCount(account_id1));
   EXPECT_EQ(1, observer.RestoreFlagChangedCount(account_id2));
   EXPECT_FALSE(observer.ShouldRestore(account_id1));
   EXPECT_TRUE(observer.ShouldRestore(account_id2));
-  EXPECT_FALSE(FullRestoreInfo::GetInstance()->ShouldRestore(account_id1));
-  EXPECT_TRUE(FullRestoreInfo::GetInstance()->ShouldRestore(account_id2));
+  EXPECT_FALSE(AppRestoreInfo::GetInstance()->ShouldRestore(account_id1));
+  EXPECT_TRUE(AppRestoreInfo::GetInstance()->ShouldRestore(account_id2));
 
-  FullRestoreInfo::GetInstance()->RemoveObserver(&observer);
+  AppRestoreInfo::GetInstance()->RemoveObserver(&observer);
 }
 
 // Test the OnRestorePrefChanged callback when the restore pref is reset.
-TEST_F(FullRestoreInfoTest, RestorePref) {
+TEST_F(AppRestoreInfoTest, RestorePref) {
   AccountId account_id1 = AccountId::FromUserEmail("aaa@gmail.com");
   AccountId account_id2 = AccountId::FromUserEmail("bbb@gmail.com");
 
-  FullRestoreInfo::GetInstance()->SetRestorePref(account_id1, true);
+  AppRestoreInfo::GetInstance()->SetRestorePref(account_id1, true);
 
-  FakeFullRestoreInfoObserver observer;
-  FullRestoreInfo::GetInstance()->AddObserver(&observer);
+  FakeAppRestoreInfoObserver observer;
+  AppRestoreInfo::GetInstance()->AddObserver(&observer);
 
   // Not change the restore flag.
-  FullRestoreInfo::GetInstance()->SetRestorePref(account_id1, true);
-  FullRestoreInfo::GetInstance()->SetRestorePref(account_id2, false);
+  AppRestoreInfo::GetInstance()->SetRestorePref(account_id1, true);
+  AppRestoreInfo::GetInstance()->SetRestorePref(account_id2, false);
   EXPECT_EQ(0, observer.RestorePrefChangedCount(account_id1));
   EXPECT_EQ(0, observer.RestorePrefChangedCount(account_id2));
-  EXPECT_TRUE(FullRestoreInfo::GetInstance()->CanPerformRestore(account_id1));
-  EXPECT_FALSE(FullRestoreInfo::GetInstance()->CanPerformRestore(account_id2));
+  EXPECT_TRUE(AppRestoreInfo::GetInstance()->CanPerformRestore(account_id1));
+  EXPECT_FALSE(AppRestoreInfo::GetInstance()->CanPerformRestore(account_id2));
 
   // Change the restore flag.
-  FullRestoreInfo::GetInstance()->SetRestorePref(account_id1, false);
-  FullRestoreInfo::GetInstance()->SetRestorePref(account_id2, true);
+  AppRestoreInfo::GetInstance()->SetRestorePref(account_id1, false);
+  AppRestoreInfo::GetInstance()->SetRestorePref(account_id2, true);
   EXPECT_EQ(1, observer.RestorePrefChangedCount(account_id1));
   EXPECT_EQ(1, observer.RestorePrefChangedCount(account_id2));
   EXPECT_FALSE(observer.CanPerformRestore(account_id1));
   EXPECT_TRUE(observer.CanPerformRestore(account_id2));
-  EXPECT_FALSE(FullRestoreInfo::GetInstance()->CanPerformRestore(account_id1));
-  EXPECT_TRUE(FullRestoreInfo::GetInstance()->CanPerformRestore(account_id2));
+  EXPECT_FALSE(AppRestoreInfo::GetInstance()->CanPerformRestore(account_id1));
+  EXPECT_TRUE(AppRestoreInfo::GetInstance()->CanPerformRestore(account_id2));
 
-  FullRestoreInfo::GetInstance()->RemoveObserver(&observer);
+  AppRestoreInfo::GetInstance()->RemoveObserver(&observer);
 }
 
-}  // namespace full_restore
+}  // namespace app_restore

@@ -20,8 +20,8 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chromeos/ui/base/window_state_type.h"
+#include "components/app_restore/app_restore_info.h"
 #include "components/app_restore/app_restore_utils.h"
-#include "components/app_restore/full_restore_info.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
@@ -98,8 +98,7 @@ void BrowserFrameAsh::OnWidgetInitDone() {
   window_state->SetCanConsumeSystemKeys(browser->is_type_app() ||
                                         browser->is_type_app_popup());
 
-  full_restore::FullRestoreInfo::GetInstance()->OnWidgetInitialized(
-      GetWidget());
+  app_restore::AppRestoreInfo::GetInstance()->OnWidgetInitialized(GetWidget());
 }
 
 void BrowserFrameAsh::OnWindowTargetVisibilityChanged(bool visible) {

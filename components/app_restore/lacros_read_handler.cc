@@ -5,8 +5,8 @@
 #include "components/app_restore/lacros_read_handler.h"
 
 #include "ash/constants/app_types.h"
+#include "components/app_restore/app_restore_info.h"
 #include "components/app_restore/app_restore_utils.h"
-#include "components/app_restore/full_restore_info.h"
 #include "components/app_restore/full_restore_read_handler.h"
 #include "components/app_restore/window_info.h"
 #include "components/app_restore/window_properties.h"
@@ -149,7 +149,7 @@ void LacrosReadHandler::UpdateWindow(aura::Window* const window) {
   }
 
   // Remove the window from the hidden container.
-  full_restore::FullRestoreInfo::GetInstance()->OnParentWindowToValidContainer(
+  app_restore::AppRestoreInfo::GetInstance()->OnParentWindowToValidContainer(
       window);
 
   window_candidates_.erase(window);

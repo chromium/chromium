@@ -14,7 +14,7 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "components/account_id/account_id.h"
-#include "components/app_restore/full_restore_info.h"
+#include "components/app_restore/app_restore_info.h"
 #include "components/app_restore/window_info.h"
 #include "ui/aura/window_observer.h"
 
@@ -32,7 +32,7 @@ class WindowState;
 
 class ASH_EXPORT WindowRestoreController
     : public TabletModeObserver,
-      public full_restore::FullRestoreInfo::Observer,
+      public app_restore::AppRestoreInfo::Observer,
       public aura::WindowObserver {
  public:
   using SaveWindowCallback =
@@ -94,7 +94,7 @@ class ASH_EXPORT WindowRestoreController
   void OnTabletModeEnded() override;
   void OnTabletControllerDestroyed() override;
 
-  // full_restore::FullRestoreInfo::Observer:
+  // app_restore::AppRestoreInfo::Observer:
   void OnRestorePrefChanged(const AccountId& account_id,
                             bool could_restore) override;
   void OnAppLaunched(aura::Window* window) override;
@@ -163,9 +163,9 @@ class ASH_EXPORT WindowRestoreController
   base::ScopedObservation<TabletModeController, TabletModeObserver>
       tablet_mode_observation_{this};
 
-  base::ScopedObservation<full_restore::FullRestoreInfo,
-                          full_restore::FullRestoreInfo::Observer>
-      full_restore_info_observation_{this};
+  base::ScopedObservation<app_restore::AppRestoreInfo,
+                          app_restore::AppRestoreInfo::Observer>
+      app_restore_info_observation_{this};
 
   // Observes windows launched by window restore.
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>

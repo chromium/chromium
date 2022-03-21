@@ -6,8 +6,8 @@
 
 #include "base/containers/contains.h"
 #include "components/app_restore/app_launch_info.h"
+#include "components/app_restore/app_restore_info.h"
 #include "components/app_restore/app_restore_utils.h"
-#include "components/app_restore/full_restore_info.h"
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/window_info.h"
 #include "components/app_restore/window_properties.h"
@@ -53,7 +53,7 @@ void ArcSaveHandler::SaveAppLaunchInfo(AppLaunchInfoPtr app_launch_info) {
                    session_id;
           });
       if (window_it != arc_window_candidates_.end()) {
-        FullRestoreInfo::GetInstance()->OnAppLaunched(*window_it);
+        app_restore::AppRestoreInfo::GetInstance()->OnAppLaunched(*window_it);
         arc_window_candidates_.erase(*window_it);
       }
     }
@@ -130,7 +130,7 @@ void ArcSaveHandler::OnWindowInitialized(aura::Window* window) {
 
   // If the task has been created, call OnAppLaunched to save the window
   // information.
-  FullRestoreInfo::GetInstance()->OnAppLaunched(window);
+  app_restore::AppRestoreInfo::GetInstance()->OnAppLaunched(window);
 }
 
 void ArcSaveHandler::OnWindowDestroyed(aura::Window* window) {
@@ -201,7 +201,7 @@ void ArcSaveHandler::OnTaskCreated(const std::string& app_id,
         return window->GetProperty(app_restore::kWindowIdKey) == task_id;
       });
   if (window_it != arc_window_candidates_.end()) {
-    FullRestoreInfo::GetInstance()->OnAppLaunched(*window_it);
+    app_restore::AppRestoreInfo::GetInstance()->OnAppLaunched(*window_it);
     arc_window_candidates_.erase(*window_it);
   }
 }

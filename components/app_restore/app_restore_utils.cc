@@ -7,9 +7,9 @@
 #include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
+#include "components/app_restore/app_restore_info.h"
 #include "components/app_restore/desk_template_read_handler.h"
 #include "components/app_restore/features.h"
-#include "components/app_restore/full_restore_info.h"
 #include "components/app_restore/full_restore_read_handler.h"
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/window_info.h"
@@ -138,7 +138,7 @@ void ModifyWidgetParams(int32_t restore_window_id,
   if (delegate) {
     delegate->RegisterWidgetInitializedCallback(base::BindOnce(
         [](views::WidgetDelegate* delegate) {
-          full_restore::FullRestoreInfo::GetInstance()->OnWidgetInitialized(
+          app_restore::AppRestoreInfo::GetInstance()->OnWidgetInitialized(
               delegate->GetWidget());
         },
         delegate));

@@ -13,10 +13,10 @@
 #include "base/time/time.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
+#include "components/app_restore/app_restore_info.h"
 #include "components/app_restore/app_restore_utils.h"
 #include "components/app_restore/features.h"
 #include "components/app_restore/full_restore_file_handler.h"
-#include "components/app_restore/full_restore_info.h"
 #include "components/app_restore/full_restore_read_handler.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/restore_data.h"
@@ -160,7 +160,7 @@ void FullRestoreSaveHandler::OnWindowInitialized(aura::Window* window) {
 
   AddAppLaunchInfo(active_profile_path_, std::move(app_launch_info));
 
-  FullRestoreInfo::GetInstance()->OnAppLaunched(window);
+  app_restore::AppRestoreInfo::GetInstance()->OnAppLaunched(window);
 }
 
 void FullRestoreSaveHandler::OnWindowDestroyed(aura::Window* window) {

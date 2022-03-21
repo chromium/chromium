@@ -15,7 +15,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/desks_templates/desks_templates_app_launch_handler.h"
-#include "components/app_restore/full_restore_info.h"
+#include "components/app_restore/app_restore_info.h"
 #include "components/desks_storage/core/desk_model.h"
 
 class DesksTemplatesAppLaunchHandler;

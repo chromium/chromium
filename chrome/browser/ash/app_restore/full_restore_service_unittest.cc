@@ -25,7 +25,7 @@
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
-#include "components/app_restore/full_restore_info.h"
+#include "components/app_restore/app_restore_info.h"
 #include "components/app_restore/full_restore_read_handler.h"
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/full_restore_utils.h"
@@ -89,7 +89,7 @@ syncer::SyncData CreateRestoreAppsAndPagesPrefSyncData(RestoreOption value) {
 // Returns true if we should restore apps and pages based on the restore setting
 // and the user's choice from the notification. Otherwise, returns false.
 bool ShouldRestore(const AccountId& account_id) {
-  return ::full_restore::FullRestoreInfo::GetInstance()->ShouldRestore(
+  return ::app_restore::AppRestoreInfo::GetInstance()->ShouldRestore(
       account_id);
 }
 
@@ -98,7 +98,7 @@ bool ShouldRestore(const AccountId& account_id) {
 // notification for `account_id`. Otherwise, returns false, when the restore
 // pref is 'Do not restore'.
 bool CanPerformRestore(const AccountId& account_id) {
-  return ::full_restore::FullRestoreInfo::GetInstance()->CanPerformRestore(
+  return ::app_restore::AppRestoreInfo::GetInstance()->CanPerformRestore(
       account_id);
 }
 
@@ -130,10 +130,10 @@ class FullRestoreServiceTest : public testing::Test {
                                                             profile_.get());
 
     // Reset the restore flag and pref as the default value.
-    ::full_restore::FullRestoreInfo::GetInstance()->SetRestoreFlag(account_id_,
-                                                                   false);
-    ::full_restore::FullRestoreInfo::GetInstance()->SetRestorePref(account_id_,
-                                                                   false);
+    ::app_restore::AppRestoreInfo::GetInstance()->SetRestoreFlag(account_id_,
+                                                                 false);
+    ::app_restore::AppRestoreInfo::GetInstance()->SetRestorePref(account_id_,
+                                                                 false);
 
     display_service_ =
         std::make_unique<NotificationDisplayServiceTester>(profile_.get());
@@ -776,10 +776,10 @@ class FullRestoreServiceMultipleUsersTest
                                                             profile2_.get());
 
     // Reset the restore flag and pref as the default value.
-    ::full_restore::FullRestoreInfo::GetInstance()->SetRestoreFlag(account_id2_,
-                                                                   false);
-    ::full_restore::FullRestoreInfo::GetInstance()->SetRestorePref(account_id2_,
-                                                                   false);
+    ::app_restore::AppRestoreInfo::GetInstance()->SetRestoreFlag(account_id2_,
+                                                                 false);
+    ::app_restore::AppRestoreInfo::GetInstance()->SetRestorePref(account_id2_,
+                                                                 false);
 
     display_service2_ =
         std::make_unique<NotificationDisplayServiceTester>(profile2_.get());
