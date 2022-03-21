@@ -64,7 +64,7 @@ void UkmObserver::OnEntryAdded(ukm::mojom::UkmEntryPtr entry) {
       entry->metrics.erase(metric_and_value);
     }
   }
-  ukm_database_->UkmEntryAdded(std::move(entry));
+  ukm_database_->StoreUkmEntry(std::move(entry));
 }
 
 void UkmObserver::OnUpdateSourceURL(ukm::SourceId source_id,

@@ -37,32 +37,25 @@ class UkmDatabaseBackend {
 
   using SuccessCallback = base::OnceCallback<void(bool)>;
 
+  // UkmDatabase implementation. All callbacks will be posted to
+  // |callback_task_runner|.
   void InitDatabase(SuccessCallback callback);
-
-  // Called once when an UKM event is added. All metrics from the event will be
-  // added to the metrics table.
   void StoreUkmEntry(ukm::mojom::UkmEntryPtr ukm_entry);
-
-  // Called when URL for a source ID is updated. The URL will be written to the
-  // table only if `is_validated` is true. To validate an existing URL,
-  // OnUrlValidated() must be called to write pending URLs to disk.
   void UpdateUrlForUkmSource(ukm::SourceId source_id,
                              const GURL& url,
                              bool is_validated);
-
-  // Called to validate an URL. The URL will be written to table only if it was
-  // already associated with any source ID by calling UpdateUrlForUkmSource().
   void OnUrlValidated(const GURL& url);
-
-  // Removes all the URLs from URL table and all the associated metrics in
-  // metrics table, on best effort. Any new metrics added with the URL will
-  // still be stored in metrics table (without URLs).
   void RemoveUrls(const std::vector<GURL>& urls);
 
   sql::Database& db() { return db_; }
+
   UkmUrlTable& url_table_for_testing() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return url_table_;
+  }
+
+  base::WeakPtr<UkmDatabaseBackend> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
   }
 
  private:

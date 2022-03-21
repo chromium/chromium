@@ -82,7 +82,7 @@ class UkmObserverTest : public testing::Test {
   void ExpectUkmEventFromRecorder(ukm::mojom::UkmEntryPtr entry) {
     uint64_t event_hash = entry->event_hash;
     base::RunLoop wait_for_record;
-    EXPECT_CALL(ukm_database(), UkmEntryAdded(_))
+    EXPECT_CALL(ukm_database(), StoreUkmEntry(_))
         .WillOnce(
             [&wait_for_record, &event_hash](ukm::mojom::UkmEntryPtr ukm_entry) {
               EXPECT_EQ(ukm_entry->event_hash, event_hash);
@@ -110,7 +110,7 @@ TEST_F(UkmObserverTest, EmptyConfig) {
 
   // Empty config should not add anything to database.
   observer.StartObserving(UkmConfig());
-  EXPECT_CALL(ukm_database(), UkmEntryAdded(_)).Times(0);
+  EXPECT_CALL(ukm_database(), StoreUkmEntry(_)).Times(0);
 
   observer.OnEntryAdded(GetSamplePageLoadEntry());
   observer.OnEntryAdded(GetSamplePaintPreviewEntry());
@@ -133,7 +133,7 @@ TEST_F(UkmObserverTest, FilterEventsAndMetrics) {
                     TestMetric(PageLoad::kIsNewBookmarkNameHash)});
   observer.StartObserving(config1);
 
-  EXPECT_CALL(ukm_database(), UkmEntryAdded(_))
+  EXPECT_CALL(ukm_database(), StoreUkmEntry(_))
       .WillOnce(Invoke([](ukm::mojom::UkmEntryPtr entry) {
         EXPECT_EQ(entry->event_hash, PageLoad::kEntryNameHash);
         EXPECT_THAT(entry->metrics,
@@ -160,7 +160,7 @@ TEST_F(UkmObserverTest, FilterEventsAndMetrics) {
   // In addition to already added metrics.
   observer.StartObserving(config2);
 
-  EXPECT_CALL(ukm_database(), UkmEntryAdded(_))
+  EXPECT_CALL(ukm_database(), StoreUkmEntry(_))
       .WillOnce(Invoke([](ukm::mojom::UkmEntryPtr entry) {
         EXPECT_EQ(entry->event_hash, PaintPreviewCapture::kEntryNameHash);
         EXPECT_THAT(entry->metrics,
@@ -169,7 +169,7 @@ TEST_F(UkmObserverTest, FilterEventsAndMetrics) {
       }));
   observer.OnEntryAdded(GetSamplePaintPreviewEntry());
 
-  EXPECT_CALL(ukm_database(), UkmEntryAdded(_))
+  EXPECT_CALL(ukm_database(), StoreUkmEntry(_))
       .WillOnce(Invoke([](ukm::mojom::UkmEntryPtr entry) {
         EXPECT_EQ(entry->event_hash, PageLoad::kEntryNameHash);
         EXPECT_THAT(entry->metrics,
@@ -191,8 +191,8 @@ TEST_F(UkmObserverTest, PauseObservation) {
                    TestMetric(PageLoad::kIsNewBookmarkNameHash)});
   observer.StartObserving(config);
 
-  EXPECT_CALL(ukm_database(), UkmEntryAdded(_)).Times(0);
-  EXPECT_CALL(ukm_database(), UkmSourceUrlUpdated(_, _, _)).Times(0);
+  EXPECT_CALL(ukm_database(), StoreUkmEntry(_)).Times(0);
+  EXPECT_CALL(ukm_database(), UpdateUrlForUkmSource(_, _, _)).Times(0);
 
   observer.PauseOrResumeObservation(true);
 
@@ -217,7 +217,7 @@ TEST_F(UkmObserverTest, ObservationFromRecorder) {
   const GURL kUrl1("https://www.url1.com");
   base::RunLoop wait_for_source;
   EXPECT_CALL(ukm_database(),
-              UkmSourceUrlUpdated(kSourceId, kUrl1, /*is_validated=*/false))
+              UpdateUrlForUkmSource(kSourceId, kUrl1, /*is_validated=*/false))
       .WillOnce([&wait_for_source](ukm::SourceId, const GURL&, bool) {
         wait_for_source.QuitClosure().Run();
       });

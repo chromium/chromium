@@ -100,7 +100,7 @@ void UrlSignalHandler::OnCheckedHistory(ukm::SourceId source_id,
                                         const GURL& url,
                                         bool in_history) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  ukm_database_->UkmSourceUrlUpdated(source_id, url, in_history);
+  ukm_database_->UpdateUrlForUkmSource(source_id, url, in_history);
 }
 
 }  // namespace segmentation_platform

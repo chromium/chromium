@@ -16,9 +16,9 @@ class MockUkmDatabase : public UkmDatabase {
   MockUkmDatabase();
   ~MockUkmDatabase() override;
 
-  MOCK_METHOD1(UkmEntryAdded, void(ukm::mojom::UkmEntryPtr ukm_entry));
+  MOCK_METHOD1(StoreUkmEntry, void(ukm::mojom::UkmEntryPtr ukm_entry));
 
-  MOCK_METHOD3(UkmSourceUrlUpdated,
+  MOCK_METHOD3(UpdateUrlForUkmSource,
                void(ukm::SourceId source_id,
                     const GURL& url,
                     bool is_validated));

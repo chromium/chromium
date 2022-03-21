@@ -61,7 +61,7 @@ TEST_F(UrlSignalHandlerTest, TestNoHistoryDelegate) {
   const GURL kUrl1("https://www.url1.com");
   const ukm::SourceId kSourceId1 = 10;
 
-  EXPECT_CALL(ukm_database(), UkmSourceUrlUpdated(kSourceId1, kUrl1, false));
+  EXPECT_CALL(ukm_database(), UpdateUrlForUkmSource(kSourceId1, kUrl1, false));
   signal_handler().OnUkmSourceUpdated(kSourceId1, {kUrl1});
 }
 
@@ -72,7 +72,7 @@ TEST_F(UrlSignalHandlerTest, TestFastCheckSuccess) {
 
   EXPECT_CALL(history_delegate, FastCheckUrl(kUrl1)).WillOnce(Return(true));
   EXPECT_CALL(history_delegate, FindUrlInHistory(_, _)).Times(0);
-  EXPECT_CALL(ukm_database(), UkmSourceUrlUpdated(kSourceId1, kUrl1, true));
+  EXPECT_CALL(ukm_database(), UpdateUrlForUkmSource(kSourceId1, kUrl1, true));
 
   signal_handler().AddHistoryDelegate(&history_delegate);
   signal_handler().OnUkmSourceUpdated(kSourceId1, {kUrl1});
@@ -101,8 +101,8 @@ TEST_F(UrlSignalHandlerTest, TestMultipleDelegates) {
       .WillOnce(Return(false));
   EXPECT_CALL(history_delegate2, FastCheckUrl(kUrl2)).WillOnce(Return(true));
 
-  EXPECT_CALL(ukm_database(), UkmSourceUrlUpdated(kSourceId1, kUrl1, false));
-  EXPECT_CALL(ukm_database(), UkmSourceUrlUpdated(kSourceId1, kUrl2, true));
+  EXPECT_CALL(ukm_database(), UpdateUrlForUkmSource(kSourceId1, kUrl1, false));
+  EXPECT_CALL(ukm_database(), UpdateUrlForUkmSource(kSourceId1, kUrl2, true));
 
   signal_handler().AddHistoryDelegate(&history_delegate1);
   signal_handler().AddHistoryDelegate(&history_delegate2);
@@ -137,8 +137,8 @@ TEST_F(UrlSignalHandlerTest, FindInHistory) {
   EXPECT_CALL(history_delegate2, FindUrlInHistory(kUrl2, _))
       .WillOnce(&RunNotFoundCallback);
 
-  EXPECT_CALL(ukm_database(), UkmSourceUrlUpdated(kSourceId1, kUrl1, true));
-  EXPECT_CALL(ukm_database(), UkmSourceUrlUpdated(kSourceId1, kUrl2, false));
+  EXPECT_CALL(ukm_database(), UpdateUrlForUkmSource(kSourceId1, kUrl1, true));
+  EXPECT_CALL(ukm_database(), UpdateUrlForUkmSource(kSourceId1, kUrl2, false));
 
   signal_handler().AddHistoryDelegate(&history_delegate1);
   signal_handler().AddHistoryDelegate(&history_delegate2);
