@@ -767,7 +767,7 @@ TEST_F(NetworkContextTest, EnableReportingWithStore) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   base::FilePath database_path = temp_dir.GetPath().Append(kFilename);
   context_params->file_paths = mojom::NetworkContextFilePaths::New();
-  context_params->file_paths->data_path = database_path.DirName();
+  context_params->file_paths->data_directory = database_path.DirName();
   context_params->file_paths->reporting_and_nel_store_database_name =
       database_path.BaseName();
   std::unique_ptr<NetworkContext> network_context =
@@ -820,7 +820,8 @@ TEST_F(NetworkContextTest, EnableNetworkErrorLoggingWithStore) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   base::FilePath reporting_and_nel_store = temp_dir.GetPath().Append(kFilename);
   context_params->file_paths = mojom::NetworkContextFilePaths::New();
-  context_params->file_paths->data_path = reporting_and_nel_store.DirName();
+  context_params->file_paths->data_directory =
+      reporting_and_nel_store.DirName();
   context_params->file_paths->reporting_and_nel_store_database_name =
       reporting_and_nel_store.BaseName();
   std::unique_ptr<NetworkContext> network_context =
@@ -918,7 +919,7 @@ TEST_F(NetworkContextTest, DiskCache) {
 
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  context_params->http_cache_path = temp_dir.GetPath();
+  context_params->http_cache_directory = temp_dir.GetPath();
 
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(std::move(context_params));
@@ -960,7 +961,7 @@ class DiskCacheSizeTest : public NetworkContextTest {
 
     base::ScopedTempDir temp_dir;
     EXPECT_TRUE(temp_dir.CreateUniqueTempDir());
-    context_params->http_cache_path = temp_dir.GetPath();
+    context_params->http_cache_directory = temp_dir.GetPath();
 
     std::unique_ptr<NetworkContext> network_context =
         CreateContextWithParams(std::move(context_params));
@@ -1010,7 +1011,7 @@ TEST_F(NetworkContextTest, SimpleCache) {
 
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  context_params->http_cache_path = temp_dir.GetPath();
+  context_params->http_cache_directory = temp_dir.GetPath();
 
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(std::move(context_params));
@@ -1043,7 +1044,7 @@ TEST_F(NetworkContextTest, HttpServerPropertiesToDisk) {
   mojom::NetworkContextParamsPtr context_params =
       CreateNetworkContextParamsForTesting();
   context_params->file_paths = mojom::NetworkContextFilePaths::New();
-  context_params->file_paths->data_path = file_path.DirName();
+  context_params->file_paths->data_directory = file_path.DirName();
   context_params->file_paths->http_server_properties_file_name =
       file_path.BaseName();
   std::unique_ptr<NetworkContext> network_context =
@@ -1068,7 +1069,7 @@ TEST_F(NetworkContextTest, HttpServerPropertiesToDisk) {
   // Create a new NetworkContext using the same path for HTTP server properties.
   context_params = CreateNetworkContextParamsForTesting();
   context_params->file_paths = mojom::NetworkContextFilePaths::New();
-  context_params->file_paths->data_path = file_path.DirName();
+  context_params->file_paths->data_directory = file_path.DirName();
   context_params->file_paths->http_server_properties_file_name =
       file_path.BaseName();
   network_context = CreateContextWithParams(std::move(context_params));
@@ -1184,7 +1185,7 @@ TEST_F(NetworkContextTest, TransportSecurityStatePersisted) {
         CreateNetworkContextParamsForTesting();
     if (on_disk) {
       context_params->file_paths = mojom::NetworkContextFilePaths::New();
-      context_params->file_paths->data_path =
+      context_params->file_paths->data_directory =
           transport_security_persister_file_path.DirName();
       context_params->file_paths->transport_security_persister_file_name =
           transport_security_persister_file_path.BaseName();
@@ -1214,7 +1215,7 @@ TEST_F(NetworkContextTest, TransportSecurityStatePersisted) {
     context_params = CreateNetworkContextParamsForTesting();
     if (on_disk) {
       context_params->file_paths = mojom::NetworkContextFilePaths::New();
-      context_params->file_paths->data_path =
+      context_params->file_paths->data_directory =
           transport_security_persister_file_path.DirName();
       context_params->file_paths->transport_security_persister_file_name =
           transport_security_persister_file_path.BaseName();
@@ -1555,7 +1556,7 @@ TEST_F(NetworkContextTest, ClearHttpCache) {
 
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  context_params->http_cache_path = temp_dir.GetPath();
+  context_params->http_cache_directory = temp_dir.GetPath();
 
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(std::move(context_params));
@@ -1610,7 +1611,7 @@ TEST_F(NetworkContextTest, MultipleClearHttpCacheCalls) {
 
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  context_params->http_cache_path = temp_dir.GetPath();
+  context_params->http_cache_directory = temp_dir.GetPath();
 
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(std::move(context_params));
@@ -6870,7 +6871,7 @@ TEST_F(NetworkContextTestWithMockTime, EnableTrustTokensWithStoreOnDisk) {
   {
     auto params = CreateNetworkContextParamsForTesting();
     params->file_paths = mojom::NetworkContextFilePaths::New();
-    params->file_paths->data_path = dir.GetPath();
+    params->file_paths->data_directory = dir.GetPath();
     params->file_paths->trust_token_database_name = database_name;
     std::unique_ptr<NetworkContext> network_context =
         CreateContextWithParams(std::move(params));
@@ -6899,7 +6900,7 @@ TEST_F(NetworkContextTestWithMockTime, EnableTrustTokensWithStoreOnDisk) {
   {
     auto params = CreateNetworkContextParamsForTesting();
     params->file_paths = mojom::NetworkContextFilePaths::New();
-    params->file_paths->data_path = dir.GetPath();
+    params->file_paths->data_directory = dir.GetPath();
     params->file_paths->trust_token_database_name = database_name;
     std::unique_ptr<NetworkContext> network_context =
         CreateContextWithParams(std::move(params));

@@ -117,7 +117,7 @@ void PrefetchProxyNetworkContext::CreateIsolatedUrlLoaderFactory() {
       network::mojom::CookieManagerParams::New();
 
   context_params->http_cache_enabled = true;
-  DCHECK(!context_params->http_cache_path);
+  DCHECK(!context_params->http_cache_directory);
 
   if (use_proxy_) {
     context_params->initial_custom_proxy_config =

@@ -124,7 +124,7 @@ class SafeBrowsingNetworkContext::SharedURLLoaderFactory
 
     network_context_params->file_paths =
         network::mojom::NetworkContextFilePaths::New();
-    network_context_params->file_paths->data_path = user_data_dir_.Append(
+    network_context_params->file_paths->data_directory = user_data_dir_.Append(
         base::FilePath(base::FilePath::StringType(kSafeBrowsingBaseFilename) +
                        FILE_PATH_LITERAL(" Network")));
     network_context_params->file_paths->unsandboxed_data_path = user_data_dir_;

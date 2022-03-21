@@ -428,7 +428,7 @@ bool GetFullDataFilePath(
   // Path to a data file should always be a plain filename.
   DCHECK_EQ(relative_file_path->BaseName(), *relative_file_path);
 
-  full_path = file_paths->data_path.Append(relative_file_path->value());
+  full_path = file_paths->data_directory.Append(relative_file_path->value());
   return true;
 }
 
@@ -2366,11 +2366,11 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
   } else {
     net::URLRequestContextBuilder::HttpCacheParams cache_params;
     cache_params.max_size = params_->http_cache_max_size;
-    if (!params_->http_cache_path) {
+    if (!params_->http_cache_directory) {
       cache_params.type =
           net::URLRequestContextBuilder::HttpCacheParams::IN_MEMORY;
     } else {
-      cache_params.path = *params_->http_cache_path;
+      cache_params.path = *params_->http_cache_directory;
       cache_params.type = network_session_configurator::ChooseCacheType();
     }
     cache_params.reset_cache = params_->reset_http_cache_backend;

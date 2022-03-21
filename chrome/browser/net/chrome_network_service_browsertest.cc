@@ -104,7 +104,8 @@ class ChromeNetworkServiceBrowserTest
         network::mojom::NetworkContextParams::New();
     context_params->enable_encrypted_cookies = enable_encrypted_cookies;
     context_params->file_paths = network::mojom::NetworkContextFilePaths::New();
-    context_params->file_paths->data_path = browser()->profile()->GetPath();
+    context_params->file_paths->data_directory =
+        browser()->profile()->GetPath();
     context_params->file_paths->cookie_database_name =
         base::FilePath(FILE_PATH_LITERAL("cookies"));
     context_params->cert_verifier_params = content::GetCertVerifierParams(

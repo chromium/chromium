@@ -203,19 +203,18 @@ IN_PROC_BROWSER_TEST_F(NetworkQualityEstimatorPrefsBrowserTest,
   context_params->cert_verifier_params = content::GetCertVerifierParams(
       cert_verifier::mojom::CertVerifierCreationParams::New());
   context_params->file_paths = network::mojom::NetworkContextFilePaths::New();
-  context_params->file_paths->data_path =
-      browser()->profile()->GetPath().Append(
-          FILE_PATH_LITERAL("Network For Testing"));
+  const base::FilePath data_path = browser()->profile()->GetPath().Append(
+      FILE_PATH_LITERAL("Network For Testing"));
+  context_params->file_paths->data_directory = data_path;
   context_params->file_paths->unsandboxed_data_path =
       browser()->profile()->GetPath();
   context_params->file_paths->http_server_properties_file_name =
       base::FilePath(FILE_PATH_LITERAL("Temp Network Persistent State"));
   context_params->file_paths->trigger_migration = true;
 
-  base::CreateDirectory(context_params->file_paths->data_path);
-  auto state = base::MakeRefCounted<JsonPrefStore>(
-      context_params->file_paths->data_path.Append(
-          *context_params->file_paths->http_server_properties_file_name));
+  base::CreateDirectory(data_path);
+  auto state = base::MakeRefCounted<JsonPrefStore>(data_path.Append(
+      *context_params->file_paths->http_server_properties_file_name));
 
   base::DictionaryValue pref_value;
   base::Value value("2G");

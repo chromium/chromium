@@ -86,8 +86,8 @@ network::NetworkConnectionTracker* g_network_connection_tracker;
 bool g_network_service_is_responding = false;
 base::Time g_last_network_service_crash;
 
-// A filename that represents that the data contained within `data_path` has
-// been migrated successfully and the data in `unsandboxed_data_path` is now
+// A filename that represents that the data contained within `data_directory`
+// has been migrated successfully and the data in `unsandboxed_data_path` is now
 // invalid.
 const base::FilePath::CharType kCheckpointFileName[] =
     FILE_PATH_LITERAL("NetworkDataMigrated");
@@ -124,14 +124,15 @@ enum class SandboxGrantResult {
   // Failed to create the new data directory if it did not already exist.
   kFailedToCreateDataDirectory = 2,
   // Failed to copy a data file from the `unsandboxed_data_path` to the
-  // `data_path` during a migration operation.
+  // `data_directory` during a migration operation.
   kFailedToCopyData = 3,
   // Failed to delete a data file from the `unsandboxed_data_path` after
-  // successfully moving it to the `data_path` during a migration operation.
+  // successfully moving it to the `data_directory` during a migration
+  // operation.
   kFailedToDeleteOldData = 4,
-  // Failed to grant the sandbox access to the `http_cache_path`.
+  // Failed to grant the sandbox access to the `http_cache_directory`.
   kFailedToGrantSandboxAccessToCache = 5,
-  // Failed to grant the sandbox access to the `data_path` so
+  // Failed to grant the sandbox access to the `data_directory` so
   // `unsandboxed_data_path` should be used.
   kFailedToGrantSandboxAccessToData = 6,
   // No migration was attempted either because of platform constraints or
@@ -139,7 +140,7 @@ enum class SandboxGrantResult {
   // incognito), or `unsandboxed_data_path` was not specified.
   kDidNotAttemptToGrantSandboxAccess = 7,
   // Failed to create the checkpoint file that indicates that the files in
-  // `data_path` are valid.
+  // `data_directory` are valid.
   kFailedToCreateCheckpointFile = 8,
   // No migration was performed because the caller did not set
   // `trigger_migration`. The `unsandboxed_data_path` should be used.
@@ -211,7 +212,7 @@ void CreateInProcessNetworkServiceOnThread(
 // context instance depending on the various errors that can happen during data
 // migration.
 //
-// If this function returns 'true' then the `data_path` should be used (if
+// If this function returns 'true' then the `data_directory` should be used (if
 // specified in the network context params). If this function returns 'false'
 // then the `unsandboxed_data_path` should be used.
 bool IsSafeToUseDataPath(SandboxGrantResult result) {
@@ -222,7 +223,7 @@ bool IsSafeToUseDataPath(SandboxGrantResult result) {
     case SandboxGrantResult::kFailedToGrantSandboxAccessToCache:
     case SandboxGrantResult::kFailedToCreateCacheDirectory:
       // A failure to grant create or grant access to the cache dir does not
-      // affect the providence of the data contained in `data_path` as the
+      // affect the providence of the data contained in `data_directory` as the
       // migration could have still occurred.
       //
       // These cases are handled internally and so this case should never be
@@ -230,12 +231,13 @@ bool IsSafeToUseDataPath(SandboxGrantResult result) {
       IMMEDIATE_CRASH();
       return false;
     case SandboxGrantResult::kFailedToCreateDataDirectory:
-      // A failure to create the `data_path` is fatal, and the
+      // A failure to create the `data_directory` is fatal, and the
       // `unsandboxed_data_path` should be used.
       return false;
     case SandboxGrantResult::kFailedToCopyData:
       // A failure to copy the data from `unsandboxed_data_path` to the
-      // `data_path` is fatal, and the `unsandboxed_data_path` should be used.
+      // `data_directory` is fatal, and the `unsandboxed_data_path` should be
+      // used.
       return false;
     case SandboxGrantResult::kFailedToDeleteOldData:
       // This is not fatal, as the new data has been correctly migrated, and the
@@ -249,14 +251,14 @@ bool IsSafeToUseDataPath(SandboxGrantResult result) {
     case SandboxGrantResult::kDidNotAttemptToGrantSandboxAccess:
       // No migration was attempted either because of platform constraints or
       // because the network context had no valid data paths (e.g. in-memory or
-      // incognito), or `unsandboxed_data_path` was not specified. `data_path`
-      // should be used in this case (if present).
+      // incognito), or `unsandboxed_data_path` was not specified.
+      // `data_directory` should be used in this case (if present).
       return true;
     case SandboxGrantResult::kFailedToCreateCheckpointFile:
       // This is fatal, as a failure to create the checkpoint file means that
       // the next time the same network context is used, the data in
-      // `unsandboxed_data_path` will be re-copied to the new `data_path` and
-      // thus any changes to the data will be discarded. So in this case,
+      // `unsandboxed_data_path` will be re-copied to the new `data_directory`
+      // and thus any changes to the data will be discarded. So in this case,
       // `unsandboxed_data_path` should be used.
       return false;
     case SandboxGrantResult::kNoMigrationRequested:
@@ -264,14 +266,14 @@ bool IsSafeToUseDataPath(SandboxGrantResult result) {
       // migration so the data should be read from the `unsandboxed_data_path`.
       return false;
     case SandboxGrantResult::kMigrationAlreadySucceeded:
-      // Migration has already taken place, so `data_path` contains the valid
-      // data.
+      // Migration has already taken place, so `data_directory` contains the
+      // valid data.
       return true;
     case SandboxGrantResult::kMigrationAlreadySucceededWithNoAccess:
       // If the sandbox could not be granted access to the new data dir, but the
-      // migration has already happened to `data_path`. This means that the
-      // sandbox might not have access to the data but `data_path` should still
-      // be used because it's been migrated.
+      // migration has already happened to `data_directory`. This means that the
+      // sandbox might not have access to the data but `data_directory` should
+      // still be used because it's been migrated.
       return true;
   }
 }
@@ -320,31 +322,32 @@ void CreateNetworkContextInternal(
       grant_access_result != SandboxGrantResult::kMigrationAlreadySucceeded) {
     PLOG(ERROR) << "Encountered error while migrating network context data or "
                    "granting sandbox access for "
-                << (params->file_paths ? params->file_paths->data_path
+                << (params->file_paths ? params->file_paths->data_directory
                                        : base::FilePath())
                 << ". Result: " << static_cast<int>(grant_access_result);
   }
 
   if (!IsSafeToUseDataPath(grant_access_result)) {
-    // Unsafe to use new `data_path`. This means that a migration was attempted,
-    // and `unsandboxed_data_path` contains the still-valid set of data. Swap
-    // the parameters to instruct the network service to use this path for the
-    // network context. This of course will mean that if the network service is
-    // running sandboxed then this data might not be accessible, but does
-    // provide a pathway to user recovery, as the sandbox can just be disabled
-    // in this case.
+    // Unsafe to use new `data_directory`. This means that a migration was
+    // attempted, and `unsandboxed_data_path` contains the still-valid set of
+    // data. Swap the parameters to instruct the network service to use this
+    // path for the network context. This of course will mean that if the
+    // network service is running sandboxed then this data might not be
+    // accessible, but does provide a pathway to user recovery, as the sandbox
+    // can just be disabled in this case.
     DCHECK(params->file_paths->unsandboxed_data_path.has_value());
-    params->file_paths->data_path = *params->file_paths->unsandboxed_data_path;
+    params->file_paths->data_directory =
+        *params->file_paths->unsandboxed_data_path;
   }
-  if (params->http_cache_enabled && params->http_cache_path) {
+  if (params->http_cache_enabled && params->http_cache_directory) {
     // Delete any old data except for the "Cache_Data" directory.
     base::ThreadPool::PostTask(
         FROM_HERE,
         {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
          base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-        base::BindOnce(MaybeDeleteOldCache, *params->http_cache_path));
-    params->http_cache_path =
-        params->http_cache_path->Append(kCacheDataDirectoryName);
+        base::BindOnce(MaybeDeleteOldCache, *params->http_cache_directory));
+    params->http_cache_directory =
+        params->http_cache_directory->Append(kCacheDataDirectoryName);
   }
   GetNetworkService()->CreateNetworkContext(std::move(context),
                                             std::move(params));
@@ -502,7 +505,7 @@ SandboxGrantResult CleanUpOldData(
     network::mojom::NetworkContextParams* params) {
   // Never delete old data unless the checkpoint file exists.
   DCHECK(base::PathExists(
-      params->file_paths->data_path.Append(kCheckpointFileName)));
+      params->file_paths->data_directory.Append(kCheckpointFileName)));
 
   SandboxGrantResult last_error = SandboxGrantResult::kSuccess;
   SandboxGrantResult result = MaybeDeleteOldData(
@@ -669,29 +672,30 @@ net::NetLogCaptureMode GetNetCaptureModeFromCommandLine(
 
 // Attempts to grant the sandbox access to the file data specified in the
 // `params`. This function will also perform a migration of existing data from
-// `unsandboxed_data_path` to `data_path` as necessary.
+// `unsandboxed_data_path` to `data_directory` as necessary.
 //
 // This process has a few stages:
 // 1. Create and grant the sandbox access to the cache dir.
-// 2. If `data_path` is not specified then the caller is using in-memory storage
-// and so there's nothing to do. END.
+// 2. If `data_directory` is not specified then the caller is using in-memory
+// storage and so there's nothing to do. END.
 // 2. If `unsandboxed_data_path` is not specified then the caller is not aware
-// of the sandbox or migration, and the steps terminate here with `data_path`
-// used by the network context and END.
+// of the sandbox or migration, and the steps terminate here with
+// `data_directory` used by the network context and END.
 // 4. If migration has already taken place, regardless of whether it's requested
-// this time, grant the sandbox access to the `data_path` (since this needs to
-// be done every time), and terminate here with `data_path` being used. END.
+// this time, grant the sandbox access to the `data_directory` (since this needs
+// to be done every time), and terminate here with `data_directory` being used.
+// END.
 // 5. If migration is not requested, then terminate here with
 // `unsandboxed_data_path` being used. END.
 // 6. At this point, migration has been requested and hasn't already happened,
 // so begin a migration attempt. If any of these steps fail, then bail out, and
 // `unsandboxed_data_path` is used.
-// 7. Grant the sandbox access to the `data_path` (this is done before copying
-// the files to use inherited ACLs when copying files on Windows).
+// 7. Grant the sandbox access to the `data_directory` (this is done before
+// copying the files to use inherited ACLs when copying files on Windows).
 // 8. Copy all the data files one by one from the `unsandboxed_data_path` to the
-// `data_path`.
+// `data_directory`.
 // 9. Once all the files have been copied, lay down the Checkpoint file in the
-// `data_path`.
+// `data_directory`.
 // 10. Delete all the original files (if they exist) from
 // `unsandboxed_data_path`.
 //
@@ -707,13 +711,13 @@ SandboxGrantResult MaybeGrantSandboxAccessToNetworkContextData(
 #endif
 #endif  // BUILDFLAG(IS_WIN)
 
-  // HTTP cache path is special, and not under `data_path` so must also be
+  // HTTP cache path is special, and not under `data_directory` so must also be
   // granted access. Continue attempting to grant access to the other files if
   // this part fails.
-  if (params->http_cache_path && params->http_cache_enabled) {
+  if (params->http_cache_directory && params->http_cache_enabled) {
     SandboxGrantResult cache_result = SandboxGrantResult::kSuccess;
     // The path must exist for the cache ACL to be set. Create if needed.
-    if (!base::CreateDirectory(params->http_cache_path.value()))
+    if (!base::CreateDirectory(params->http_cache_directory.value()))
       cache_result = SandboxGrantResult::kFailedToCreateCacheDirectory;
     if (cache_result == SandboxGrantResult::kSuccess) {
       // Note, this code always grants access to the cache directory even when
@@ -723,9 +727,9 @@ SandboxGrantResult MaybeGrantSandboxAccessToNetworkContextData(
       // inherited ACE rather than having to set them manually later.
       SCOPED_UMA_HISTOGRAM_TIMER("NetworkService.TimeToGrantCacheAccess");
       if (!MaybeGrantAccessToDataPath(sandbox_params,
-                                      params->http_cache_path.value())) {
+                                      params->http_cache_directory.value())) {
         PLOG(ERROR) << "Failed to grant sandbox access to cache directory "
-                    << *params->http_cache_path;
+                    << *params->http_cache_directory;
         cache_result = SandboxGrantResult::kFailedToGrantSandboxAccessToCache;
       }
     }
@@ -740,7 +744,7 @@ SandboxGrantResult MaybeGrantSandboxAccessToNetworkContextData(
   if (!params->file_paths)
     return SandboxGrantResult::kDidNotAttemptToGrantSandboxAccess;
 
-  DCHECK(!params->file_paths->data_path.empty());
+  DCHECK(!params->file_paths->data_directory.empty());
 
   if (!params->file_paths->unsandboxed_data_path.has_value()) {
 #if BUILDFLAG(IS_WIN) && DCHECK_IS_ON()
@@ -758,7 +762,7 @@ SandboxGrantResult MaybeGrantSandboxAccessToNetworkContextData(
   // If these paths are ever the same then this is a mistake, as the file
   // permissions will be applied to the top level path which could contain other
   // data that should not be accessible by the network sandbox.
-  DCHECK_NE(params->file_paths->data_path,
+  DCHECK_NE(params->file_paths->data_directory,
             *params->file_paths->unsandboxed_data_path);
 
   // Four cases need to be handled here.
@@ -767,17 +771,17 @@ SandboxGrantResult MaybeGrantSandboxAccessToNetworkContextData(
   // `unsandboxed_data_path` and sandbox does not need to be granted access. No
   // migration happens.
   // 2. No Checkpoint file, and `trigger_migration` is true: Data is in
-  // `unsandboxed_data_path` and needs to be migrated to `data_path`, and the
-  // sandbox needs to be granted access to `data_path`.
+  // `unsandboxed_data_path` and needs to be migrated to `data_directory`, and
+  // the sandbox needs to be granted access to `data_directory`.
   // 3. Checkpoint file, and `trigger_migration` is false: Data is in
-  // `data_path` (already migrated) and sandbox needs to be granted access to
-  // `data_path`.
-  // 4. Checkpoint file, and `trigger_migration` is true: Data is in `data_path`
-  // (already migrated) and sandbox needs to be granted access to `data_path`.
-  // This is the same as above and `trigger_migration` changes nothing, as it's
-  // already happened.
+  // `data_directory` (already migrated) and sandbox needs to be granted access
+  // to `data_directory`.
+  // 4. Checkpoint file, and `trigger_migration` is true: Data is in
+  // `data_directory` (already migrated) and sandbox needs to be granted access
+  // to `data_directory`. This is the same as above and `trigger_migration`
+  // changes nothing, as it's already happened.
   base::FilePath checkpoint_filename =
-      params->file_paths->data_path.Append(kCheckpointFileName);
+      params->file_paths->data_directory.Append(kCheckpointFileName);
   bool migration_already_happened = base::PathExists(checkpoint_filename);
 
   // Case 1. above where nothing is done.
@@ -791,16 +795,16 @@ SandboxGrantResult MaybeGrantSandboxAccessToNetworkContextData(
     return SandboxGrantResult::kNoMigrationRequested;
   }
 
-  // Create the `data_path` if necessary so access can be granted to it. Note
-  // that if a migration has already happened then this does nothing, as the
-  // directory already exists.
-  if (!base::CreateDirectory(params->file_paths->data_path)) {
+  // Create the `data_directory` if necessary so access can be granted to it.
+  // Note that if a migration has already happened then this does nothing, as
+  // the directory already exists.
+  if (!base::CreateDirectory(params->file_paths->data_directory)) {
     PLOG(ERROR) << "Failed to create network context data directory "
-                << params->file_paths->data_path;
-    // This is a fatal error, if the `data_path` does not exist then migration
-    // cannot be attempted. In this case the network context will operate
-    // using `unsandboxed_data_path` and the migration attempt will be retried
-    // the next time the same network context is created with
+                << params->file_paths->data_directory;
+    // This is a fatal error, if the `data_directory` does not exist then
+    // migration cannot be attempted. In this case the network context will
+    // operate using `unsandboxed_data_path` and the migration attempt will be
+    // retried the next time the same network context is created with
     // `trigger_migration` set.
     return SandboxGrantResult::kFailedToCreateDataDirectory;
   }
@@ -817,10 +821,10 @@ SandboxGrantResult MaybeGrantSandboxAccessToNetworkContextData(
     // as they do not rely on filesystem permissions, but runtime sandbox broker
     // permissions.
     if (!MaybeGrantAccessToDataPath(sandbox_params,
-                                    params->file_paths->data_path)) {
+                                    params->file_paths->data_directory)) {
       PLOG(ERROR)
           << "Failed to grant sandbox access to network context data directory "
-          << params->file_paths->data_path;
+          << params->file_paths->data_directory;
       // If migration has already happened there isn't much that can be done
       // about this, the data has already moved, but the sandbox might not have
       // access.
@@ -837,8 +841,8 @@ SandboxGrantResult MaybeGrantSandboxAccessToNetworkContextData(
 
   // This covers cases 3. and 4. where a migration has already happened.
   if (migration_already_happened) {
-    // Migration succeeded in an earlier attempt and `data_path` is valid, but
-    // clean up any old data that might have failed to delete in the last
+    // Migration succeeded in an earlier attempt and `data_directory` is valid,
+    // but clean up any old data that might have failed to delete in the last
     // attempt.
     SandboxGrantResult cleanup_result = CleanUpOldData(params);
     if (cleanup_result != SandboxGrantResult::kSuccess)
@@ -851,8 +855,8 @@ SandboxGrantResult MaybeGrantSandboxAccessToNetworkContextData(
   // been requested.
   //
   // Now attempt to migrate the data from the `unsandboxed_data_path` to the new
-  // `data_path`. This code can be removed from content once migration has taken
-  // place.
+  // `data_directory`. This code can be removed from content once migration has
+  // taken place.
   //
   // This code has a three stage process.
   // 1. An attempt is made to copy all the data files from the old location to
@@ -869,14 +873,14 @@ SandboxGrantResult MaybeGrantSandboxAccessToNetworkContextData(
     // existing files if it was partially successful in an earlier attempt.
     SCOPED_UMA_HISTOGRAM_TIMER("NetworkService.TimeToMigrateData");
     result = MaybeCopyData(*params->file_paths->unsandboxed_data_path,
-                           params->file_paths->data_path,
+                           params->file_paths->data_directory,
                            params->file_paths->cookie_database_name,
                            /*is_sql=*/true);
     if (result != SandboxGrantResult::kSuccess)
       return result;
 
     result = MaybeCopyData(*params->file_paths->unsandboxed_data_path,
-                           params->file_paths->data_path,
+                           params->file_paths->data_directory,
                            params->file_paths->http_server_properties_file_name,
                            /*is_sql=*/false);
     if (result != SandboxGrantResult::kSuccess)
@@ -884,7 +888,7 @@ SandboxGrantResult MaybeGrantSandboxAccessToNetworkContextData(
 
     result = MaybeCopyData(
         *params->file_paths->unsandboxed_data_path,
-        params->file_paths->data_path,
+        params->file_paths->data_directory,
         params->file_paths->transport_security_persister_file_name,
         /*is_sql=*/false);
     if (result != SandboxGrantResult::kSuccess)
@@ -892,14 +896,14 @@ SandboxGrantResult MaybeGrantSandboxAccessToNetworkContextData(
 
     result =
         MaybeCopyData(*params->file_paths->unsandboxed_data_path,
-                      params->file_paths->data_path,
+                      params->file_paths->data_directory,
                       params->file_paths->reporting_and_nel_store_database_name,
                       /*is_sql=*/true);
     if (result != SandboxGrantResult::kSuccess)
       return result;
 
     result = MaybeCopyData(*params->file_paths->unsandboxed_data_path,
-                           params->file_paths->data_path,
+                           params->file_paths->data_directory,
                            params->file_paths->trust_token_database_name,
                            /*is_sql=*/true);
     if (result != SandboxGrantResult::kSuccess)

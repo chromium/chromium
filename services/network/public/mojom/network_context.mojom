@@ -206,29 +206,30 @@ struct NetworkContextFilePaths {
   // since the sandboxed network service will have full access to this path.
   // This should be a different path for each different network context running
   // inside the network service.
-  mojo_base.mojom.FilePath data_path;
+  mojo_base.mojom.FilePath data_directory;
 
   // Points to a path that might contain existing network service data files and
-  // databases from network contexts created with the same `data_path`.
+  // databases from network contexts created with the same `data_directory`.
   // This parameter must be specified if `perform_migration` is set to true.
   // Once migration has been successful (see below), data is no longer read from
   // this path. Data could continue to be read from this path if migration
   // fails, or if `trigger_migration` has never been set to true.
   // If this parameter is specified then the sandbox will be granted access to
-  // the `data_path` specified above.
+  // the `data_directory` specified above.
   // This parameter, along with `trigger_migration` parameter below will be
   // removed in the future, once migration of network context data to the new
-  // `data_path` has been completed. At this point the sandbox will be granted
-  // access to `data_path` unconditionally.
+  // `data_directory` has been completed. At this point the sandbox will be
+  // granted access to `data_directory` unconditionally.
   mojo_base.mojom.FilePath? unsandboxed_data_path;
 
-  // Points to the cookie database file name inside `data_path`. An in-memory
-  // cookie store is used if it's empty, or if `data_path` is empty.
+  // Points to the cookie database file name inside `data_directory`. An
+  // in-memory cookie store is used if it's empty, or if `data_directory` is
+  // empty.
   mojo_base.mojom.FilePath? cookie_database_name;
 
-  // Points to the Trust Token database file name inside `data_path`. An
-  // in-memory trust token store is used if it's empty, or if `data_path` is
-  // empty, or (through a fallback in the initialization logic; see
+  // Points to the Trust Token database file name inside `data_directory`. An
+  // in-memory trust token store is used if it's empty, or if `data_directory`
+  // is empty, or (through a fallback in the initialization logic; see
   // SQLiteTrustTokenPersister's comments) if initialization fails.
   //
   // Initializing the on-disk database takes place asynchronously, so requests
@@ -236,45 +237,46 @@ struct NetworkContextFilePaths {
   mojo_base.mojom.FilePath? trust_token_database_name;
 
   // The name of the file to store cached server properties (Like HTTP2 and QUIC
-  // support) inside `data_path`. This information is used as a performance
-  // optimization in connection logic. If empty, or if `data_path` is empty, an
-  // in-memory cache will be used instead.
+  // support) inside `data_directory`. This information is used as a performance
+  // optimization in connection logic. If empty, or if `data_directory` is
+  // empty, an in-memory cache will be used instead.
   mojo_base.mojom.FilePath? http_server_properties_file_name;
 
   // The name of the file to store cached transport security properties (like
-  // HSTS) inside `data_path`. If empty, or `data_path` is empty, or the file
-  // can't be opened, an in-memory store will be used instead.
+  // HSTS) inside `data_directory`. If empty, or `data_directory` is empty, or
+  // the file can't be opened, an in-memory store will be used instead.
   mojo_base.mojom.FilePath? transport_security_persister_file_name;
 
-  // Points to a sqlite database contained within `data_path` containing
+  // Points to a sqlite database contained within `data_directory` containing
   // persisted Reporting clients and NEL policies. If Reporting and NEL
   // persistence is disabled, then this field is ignored. If this field is
-  // empty, or `data_path` is empty, then persistence will be disabled
+  // empty, or `data_directory` is empty, then persistence will be disabled
   // regardless. This field should not be used if the ENABLE_REPORTING build
   // flag is false.
   mojo_base.mojom.FilePath? reporting_and_nel_store_database_name;
 
   // The name of the file to store pending SCT auditing reports inside
-  // `data_path`. If empty, or `data_path` is empty, or the file can't be
-  // opened, pending reports will instead be stored in-memory only.
+  // `data_directory`. If empty, or `data_directory` is empty, or the file can't
+  // be opened, pending reports will instead be stored in-memory only.
   mojo_base.mojom.FilePath? sct_auditing_pending_reports_file_name;
 
   // Specifies whether or not a migration of existing data should occur from
-  // `unsandboxed_data_path` to `data_path`. It is not valid to set this to true
-  // if an `unsandboxed_data_path` is not specified.
+  // `unsandboxed_data_path` to `data_directory`. It is not valid to set this
+  // to true if an `unsandboxed_data_path` is not specified.
   // If the migration is successful then network context data will operate from
-  // `data_path`, and the old data will be removed from `unsandboxed_data_path`.
+  // `data_directory`, and the old data will be removed from
+  // `unsandboxed_data_path`.
   // If migration is unsuccessful then data will continue to operate from
   // `unsandboxed_data_path` and migration will be re-attempted the next time
   // `trigger_migration` is set to true.
   // Since migration is a one-way operation, setting `trigger_migration` to
   // false does not move the data back to `unsandboxed_data_path`. The network
-  // context data will be read from `data_path` or `unsandboxed_data_path`
+  // context data will be read from `data_directory` or `unsandboxed_data_path`
   // depending on whether a migration has successfully occurred previously.
   // This parameter, along with `unsandboxed_data_path` parameter above will be
   // removed in the future, once migration of network context data to the new
-  // `data_path` has been completed. At this point the sandbox will be granted
-  // access to `data_path` unconditionally.
+  // `data_directory` has been completed. At this point the sandbox will be
+  // granted access to `data_directory` unconditionally.
   bool trigger_migration = false;
 };
 
@@ -338,7 +340,7 @@ struct NetworkContextParams {
   int32 http_cache_max_size = 0;
   // Points to the HTTP cache directory. Ignored if the cache is disabled.
   // If null and the cache is enabled, an in-memory database is used.
-  mojo_base.mojom.FilePath? http_cache_path;
+  mojo_base.mojom.FilePath? http_cache_directory;
 
   // A factory to broker file operations needed for the HTTP cache on some
   // platforms (depending on the sandboxing mechanism the platform provides).
@@ -511,11 +513,11 @@ struct NetworkContextParams {
   bool win_permissions_set = false;
 
   // The paths to data files used by this network context, except for the disk
-  // cache which is specified by the `http_cache_path` parameter. If empty then
-  // persistent storage for all of the files within this parameter will be
-  // disabled for the network context and some data may be stored in memory or
-  // disabled. See the above definition of each inner field for details of these
-  // behaviors.
+  // cache which is specified by the `http_cache_directory` parameter.
+  // If empty then persistent storage for all of the files within this
+  // parameter will be disabled for the network context and some data may be
+  // stored in memory or disabled. See the above definition of each inner field
+  // for details of these behaviors.
   NetworkContextFilePaths? file_paths;
 
   // Is true, Trust Token operations should be blocked.

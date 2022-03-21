@@ -126,7 +126,7 @@ CreateNetworkContextForPaths(network::mojom::NetworkContextFilePathsPtr paths,
   // Not passing in a key for simplicity, so disable encryption.
   context_params->enable_encrypted_cookies = false;
   context_params->http_cache_enabled = true;
-  context_params->http_cache_path = cache_path;
+  context_params->http_cache_directory = cache_path;
   mojo::PendingRemote<network::mojom::NetworkContext> network_context;
   content::CreateNetworkContextInNetworkService(
       network_context.InitWithNewPipeAndPassReceiver(),
@@ -344,7 +344,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest,
       network::mojom::NetworkContextParams::New();
   context_params->cert_verifier_params = GetCertVerifierParams(
       cert_verifier::mojom::CertVerifierCreationParams::New());
-  context_params->http_cache_path = GetCacheDirectory();
+  context_params->http_cache_directory = GetCacheDirectory();
   GetNetworkService()->CreateNetworkContext(
       network_context.BindNewPipeAndPassReceiver(), std::move(context_params));
 
@@ -661,7 +661,7 @@ class NetworkServiceBrowserCacheResetTest : public NetworkServiceBrowserTest {
                                    const GURL& url) {
     auto file_paths = network::mojom::NetworkContextFilePaths::New();
     base::FilePath context_path = GetNetworkContextPath();
-    file_paths->data_path = context_path.Append(FILE_PATH_LITERAL("Data"));
+    file_paths->data_directory = context_path.Append(FILE_PATH_LITERAL("Data"));
     file_paths->unsandboxed_data_path = context_path;
     file_paths->trigger_migration = true;
 
@@ -672,7 +672,7 @@ class NetworkServiceBrowserCacheResetTest : public NetworkServiceBrowserTest {
         cert_verifier::mojom::CertVerifierCreationParams::New());
     context_params->reset_http_cache_backend = reset_cache;
     context_params->http_cache_enabled = true;
-    context_params->http_cache_path = GetNetworkContextCachePath();
+    context_params->http_cache_directory = GetNetworkContextCachePath();
 
     mojo::Remote<network::mojom::NetworkContext> network_context;
     content::CreateNetworkContextInNetworkService(
@@ -883,8 +883,8 @@ class NetworkServiceDataMigrationBrowserTestWithFailures
 // |  |- Cookies-journal (copied from above)
 //
 // A new network context is then created with `unsandboxed_data_path` set to
-// root of tempdir 'two' and `data_path` set to a directory underneath tempdir
-// 'two' called 'Network' to initiate the migration. After a successful
+// root of tempdir 'two' and `data_directory` set to a directory underneath
+// tempdir 'two' called 'Network' to initiate the migration. After a successful
 // migration, the structure should look like this:
 //
 // BrowserContext/
@@ -905,7 +905,7 @@ void MigrationTestInternal(const base::FilePath& tempdir_one,
   EXPECT_FALSE(base::PathExists(tempdir_one.Append(kCookieDatabaseName)));
 
   auto file_paths = network::mojom::NetworkContextFilePaths::New();
-  file_paths->data_path = tempdir_one;
+  file_paths->data_directory = tempdir_one;
   file_paths->cookie_database_name = base::FilePath(kCookieDatabaseName);
 
   mojo::Remote<network::mojom::NetworkContext> network_context_one(
@@ -998,7 +998,7 @@ void MigrationTestInternal(const base::FilePath& tempdir_one,
   // 'two' into the new 'Network' directory underneath.
   auto new_file_paths = network::mojom::NetworkContextFilePaths::New();
   // Data path is now a new 'Network' directory under the tempdir 'two'.
-  new_file_paths->data_path = tempdir_two.Append(kNetworkSubpath);
+  new_file_paths->data_directory = tempdir_two.Append(kNetworkSubpath);
   new_file_paths->cookie_database_name = base::FilePath(kCookieDatabaseName);
   // Migrate data from the tempdir 'two' to the new path under 'Network'.
   new_file_paths->unsandboxed_data_path = tempdir_two;
@@ -1185,7 +1185,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceDataMigrationBrowserTest,
   // is requested, the migrated data is still read correctly and that migration
   // is a one-way operation.
   auto file_paths = network::mojom::NetworkContextFilePaths::New();
-  file_paths->data_path = real_tempdir_three.Append(kNetworkSubpath);
+  file_paths->data_directory = real_tempdir_three.Append(kNetworkSubpath);
   file_paths->unsandboxed_data_path = real_tempdir_three;
   file_paths->cookie_database_name = base::FilePath(kCookieDatabaseName);
   // If defaults are ever changed, this test will need to be updated.
@@ -1210,7 +1210,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceDataMigrationBrowserTest,
 
 // This test verifies that a new un-used data path will be initialized correctly
 // if `unsandboxed_data_path` is set. The Cookie file should be placed into the
-// `data_path` and not `unsandboxed_data_path`.
+// `data_directory` and not `unsandboxed_data_path`.
 IN_PROC_BROWSER_TEST_F(NetworkServiceDataMigrationBrowserTest,
                        NewDataDirWithMigrationTest) {
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -1223,7 +1223,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceDataMigrationBrowserTest,
   EXPECT_FALSE(base::PathExists(tempdir.Append(kCookieDatabaseName)));
 
   auto file_paths = network::mojom::NetworkContextFilePaths::New();
-  file_paths->data_path = tempdir.Append(FILE_PATH_LITERAL("Network"));
+  file_paths->data_directory = tempdir.Append(FILE_PATH_LITERAL("Network"));
   file_paths->unsandboxed_data_path = tempdir;
   file_paths->cookie_database_name = base::FilePath(kCookieDatabaseName);
   file_paths->trigger_migration = true;
@@ -1239,7 +1239,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceDataMigrationBrowserTest,
   SetCookie(cookie_manager);
   FlushCookies(cookie_manager);
 
-  // Verify that the cookie file exists in the `data_path` and not the
+  // Verify that the cookie file exists in the `data_directory` and not the
   // `unsandboxed_data_path`.
   EXPECT_FALSE(base::PathExists(tempdir.Append(kCookieDatabaseName)));
   EXPECT_TRUE(base::PathExists(tempdir.Append(FILE_PATH_LITERAL("Network"))
@@ -1255,9 +1255,9 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceDataMigrationBrowserTest,
   EXPECT_EQ(kCookieValue, cookies[0].Value());
 }
 
-// A test where a caller specifies both `data_path` and `unsandboxed_data_path`
-// but does not wish migration to occur. The data should be in
-// `unsandboxed_data_path` in this case.
+// A test where a caller specifies both `data_directory` and
+// `unsandboxed_data_path` but does not wish migration to occur. The data should
+// be in `unsandboxed_data_path` in this case.
 IN_PROC_BROWSER_TEST_F(NetworkServiceDataMigrationBrowserTest,
                        NewDataDirWithNoMigrationTest) {
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -1270,7 +1270,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceDataMigrationBrowserTest,
   EXPECT_FALSE(base::PathExists(tempdir.Append(kCookieDatabaseName)));
 
   auto file_paths = network::mojom::NetworkContextFilePaths::New();
-  file_paths->data_path = tempdir.Append(FILE_PATH_LITERAL("Network"));
+  file_paths->data_directory = tempdir.Append(FILE_PATH_LITERAL("Network"));
   file_paths->unsandboxed_data_path = tempdir;
   file_paths->cookie_database_name = base::FilePath(kCookieDatabaseName);
   file_paths->trigger_migration = false;
@@ -1288,7 +1288,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceDataMigrationBrowserTest,
 
   // Verify that the cookie file still exists in the `unsandboxed_data_path`.
   EXPECT_TRUE(base::PathExists(tempdir.Append(kCookieDatabaseName)));
-  // Verify that the cookie file has not been migrated to `data_path`.
+  // Verify that the cookie file has not been migrated to `data_directory`.
   EXPECT_FALSE(base::PathExists(tempdir.Append(FILE_PATH_LITERAL("Network"))
                                     .Append(kCookieDatabaseName)));
   // Verify no checkpoint file was written either.
@@ -1306,9 +1306,9 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceDataMigrationBrowserTest,
   EXPECT_EQ(kCookieValue, cookies[0].Value());
 }
 
-// A test where a caller specifies `data_path` but does not specify anything
-// else, including `unsandboxed_data_path`. This verifies that existing behavior
-// remains the same for call-sites that do not update anything.
+// A test where a caller specifies `data_directory` but does not specify
+// anything else, including `unsandboxed_data_path`. This verifies that existing
+// behavior remains the same for call-sites that do not update anything.
 IN_PROC_BROWSER_TEST_F(NetworkServiceDataMigrationBrowserTest, LegacyDataDir) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
@@ -1320,7 +1320,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceDataMigrationBrowserTest, LegacyDataDir) {
   EXPECT_FALSE(base::PathExists(tempdir.Append(kCookieDatabaseName)));
 
   auto file_paths = network::mojom::NetworkContextFilePaths::New();
-  file_paths->data_path = tempdir;
+  file_paths->data_directory = tempdir;
   file_paths->cookie_database_name = base::FilePath(kCookieDatabaseName);
 
   base::HistogramTester histogram_tester;
@@ -1405,7 +1405,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceDataMigrationBrowserTest,
 
   base::HistogramTester histogram_tester;
   auto file_paths = network::mojom::NetworkContextFilePaths::New();
-  file_paths->data_path = real_tempdir_three.Append(kNetworkSubpath);
+  file_paths->data_directory = real_tempdir_three.Append(kNetworkSubpath);
   file_paths->unsandboxed_data_path = real_tempdir_three;
   file_paths->cookie_database_name = base::FilePath(kCookieDatabaseName);
   file_paths->trigger_migration = true;
@@ -1419,9 +1419,9 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceDataMigrationBrowserTest,
 
   net::CookieList cookies = GetCookies(cookie_manager);
   // Success is reported here because although no files were copied from
-  // `unsandboxed_data_path` to `data_path`, the migration still succeeded
+  // `unsandboxed_data_path` to `data_directory`, the migration still succeeded
   // because a fresh Checkpoint file was placed down, and existing files were
-  // preserved in the `data_path`.
+  // preserved in the `data_directory`.
   histogram_tester.ExpectUniqueSample("NetworkService.GrantSandboxResult",
                                       /*sample=kSuccess=*/0,
                                       /*expected_bucket_count=*/1);

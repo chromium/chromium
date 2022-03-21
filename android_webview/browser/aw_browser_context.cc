@@ -544,13 +544,13 @@ void AwBrowserContext::ConfigureNetworkContextParams(
   // HTTP cache
   context_params->http_cache_enabled = true;
   context_params->http_cache_max_size = GetHttpCacheSize();
-  context_params->http_cache_path = GetCacheDir();
+  context_params->http_cache_directory = GetCacheDir();
 
   // WebView should persist and restore cookies between app sessions (including
   // session cookies).
   context_params->file_paths = network::mojom::NetworkContextFilePaths::New();
   base::FilePath cookie_path = AwBrowserContext::GetCookieStorePath();
-  context_params->file_paths->data_path = cookie_path.DirName();
+  context_params->file_paths->data_directory = cookie_path.DirName();
   context_params->file_paths->cookie_database_name = cookie_path.BaseName();
   context_params->restore_old_session_cookies = true;
   context_params->persist_session_cookies = true;
