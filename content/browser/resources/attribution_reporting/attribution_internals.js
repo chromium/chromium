@@ -591,7 +591,7 @@ class AggregatableAttributionReport extends Report {
     this.contributions = JSON.stringify(
         mojo.data.aggregatableAttributionData.contributions,
         (key, value) =>
-            typeof value === 'bigint' ? value.toString() : value);
+            typeof value === 'bigint' ? value.toString() : value, ' ');
   }
 }
 
