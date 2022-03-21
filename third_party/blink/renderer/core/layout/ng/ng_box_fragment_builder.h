@@ -666,6 +666,11 @@ class CORE_EXPORT NGBoxFragmentBuilder final
 
   bool HasForcedBreak() const { return has_forced_break_; }
 
+  const NGBreakToken* LastChildBreakToken() const {
+    DCHECK(!child_break_tokens_.IsEmpty());
+    return child_break_tokens_.back().Get();
+  }
+
   void InsertLegacyPositionedObject(const NGBlockNode& positioned) const {
     positioned.InsertIntoLegacyPositionedObjectsOf(
         To<LayoutBlock>(layout_object_));

@@ -1452,9 +1452,10 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
         }
       } else {
         has_container_separation =
-            (last_line_idx_to_process_first_child_ != kNotFound &&
-             last_line_idx_to_process_first_child_ >= flex_line_idx) ||
-            (!item_break_token && offset.block_offset > LayoutUnit());
+            !item_break_token &&
+            ((last_line_idx_to_process_first_child_ != kNotFound &&
+              last_line_idx_to_process_first_child_ >= flex_line_idx) ||
+             offset.block_offset > LayoutUnit());
 
         // We may switch back and forth between columns, so we need to make sure
         // to use the break-after for the current column.
@@ -2074,7 +2075,8 @@ LayoutUnit NGFlexLayoutAlgorithm::FragmentainerSpaceAvailable(
 void NGFlexLayoutAlgorithm::ConsumeRemainingFragmentainerSpace(
     LayoutUnit previously_consumed_block_size,
     NGFlexLine* flex_line) {
-  if (container_builder_.HasForcedBreak()) {
+  if (To<NGBlockBreakToken>(container_builder_.LastChildBreakToken())
+          ->IsForcedBreak()) {
     // This will be further adjusted by the total consumed block size once we
     // handle the break before in the next fragmentainer. This ensures that the
     // expansion is properly handled in the column balancing pass.
