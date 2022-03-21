@@ -917,7 +917,7 @@
       },
       'content_browsertests': {
         'android_swarming': {
-          'shards': 9,
+          'shards': 15,
         },
         'swarming': {
           'shards': 6,
