@@ -18,7 +18,7 @@
     </style>
 
     <style name="Theme.Chromium.ModalDialog.FilledPrimaryButton" parent="Theme.Chromium.ModalDialog">
-        <item name="buttonBarPositiveButtonStyle">@style/FilledButton</item>
+        <item name="buttonBarPositiveButtonStyle">@style/FilledButton.Flat</item>
         <item name="buttonBarNegativeButtonStyle">@style/TextButton</item>
         <item name="dualControlLayoutVerticalPadding">@dimen/modal_dialog_control_vertical_padding_filled</item>
         <item name="dualControlLayoutHorizontalPadding">@dimen/modal_dialog_control_horizontal_padding_filled</item>
@@ -26,7 +26,7 @@
 
     <style name="Theme.Chromium.ModalDialog.FilledNegativeButton" parent="Theme.Chromium.ModalDialog">
         <item name="buttonBarPositiveButtonStyle">@style/TextButton</item>
-        <item name="buttonBarNegativeButtonStyle">@style/FilledButton</item>
+        <item name="buttonBarNegativeButtonStyle">@style/FilledButton.Flat</item>
         <item name="dualControlLayoutVerticalPadding">@dimen/modal_dialog_control_vertical_padding_filled</item>
         <item name="dualControlLayoutHorizontalPadding">@dimen/modal_dialog_control_horizontal_padding_filled</item>
     </style>
@@ -38,7 +38,7 @@
     </style>
 
     <style name="ThemeOverlay.Chromium.ModalDialog.FilledPrimaryButton.Fullscreen" parent="ThemeOverlay.BrowserUI.Fullscreen">
-        <item name="buttonBarPositiveButtonStyle">@style/FilledButton</item>
+        <item name="buttonBarPositiveButtonStyle">@style/FilledButton.Flat</item>
         <item name="buttonBarNegativeButtonStyle">@style/TextButton</item>
         <item name="dualControlLayoutVerticalPadding">@dimen/modal_dialog_control_vertical_padding_filled</item>
         <item name="dualControlLayoutHorizontalPadding">@dimen/modal_dialog_control_horizontal_padding_filled</item>
@@ -46,7 +46,7 @@
 
     <style name="ThemeOverlay.Chromium.ModalDialog.FilledNegativeButton.Fullscreen" parent="ThemeOverlay.BrowserUI.Fullscreen">
         <item name="buttonBarPositiveButtonStyle">@style/TextButton</item>
-        <item name="buttonBarNegativeButtonStyle">@style/FilledButton</item>
+        <item name="buttonBarNegativeButtonStyle">@style/FilledButton.Flat</item>
         <item name="dualControlLayoutVerticalPadding">@dimen/modal_dialog_control_vertical_padding_filled</item>
         <item name="dualControlLayoutHorizontalPadding">@dimen/modal_dialog_control_horizontal_padding_filled</item>
     </style>
@@ -58,7 +58,7 @@
     </style>
 
     <style name="ThemeOverlay.Chromium.ModalDialog.FilledPrimaryButton.DialogWhenLarge" parent="ThemeOverlay.BrowserUI.Fullscreen.DialogWhenLarge">
-        <item name="buttonBarPositiveButtonStyle">@style/FilledButton</item>
+        <item name="buttonBarPositiveButtonStyle">@style/FilledButton.Flat</item>
         <item name="buttonBarNegativeButtonStyle">@style/TextButton</item>
         <item name="dualControlLayoutVerticalPadding">@dimen/modal_dialog_control_vertical_padding_filled</item>
         <item name="dualControlLayoutHorizontalPadding">@dimen/modal_dialog_control_horizontal_padding_filled</item>
@@ -66,7 +66,7 @@
 
     <style name="ThemeOverlay.Chromium.ModalDialog.FilledNegativeButton.DialogWhenLarge" parent="ThemeOverlay.BrowserUI.Fullscreen.DialogWhenLarge">
         <item name="buttonBarPositiveButtonStyle">@style/TextButton</item>
-        <item name="buttonBarNegativeButtonStyle">@style/FilledButton</item>
+        <item name="buttonBarNegativeButtonStyle">@style/FilledButton.Flat</item>
         <item name="dualControlLayoutVerticalPadding">@dimen/modal_dialog_control_vertical_padding_filled</item>
         <item name="dualControlLayoutHorizontalPadding">@dimen/modal_dialog_control_horizontal_padding_filled</item>
     </style>
