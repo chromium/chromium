@@ -22,7 +22,10 @@ component("user_manager") {
     "//ui/gfx",
   ]
 
-  deps = [ "//google_apis" ]
+  deps = [
+    "//components/crash/core/common",
+    "//google_apis",
+  ]
 
   defines = [ "USER_MANAGER_IMPLEMENTATION" ]
 

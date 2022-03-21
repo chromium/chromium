@@ -24,6 +24,7 @@ component("lacros") {
     "//chromeos/crosapi/mojom",
     "//chromeos/process_proxy",
     "//chromeos/startup",
+    "//components/crash/core/common",
     "//mojo/public/cpp/bindings",
     "//ui/native_theme",
   ]

@@ -73,6 +73,7 @@
 #include "chromeos/lacros/system_idle_cache.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "chromeos/startup/startup.h"
+#include "components/crash/core/common/crash_key.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
@@ -110,6 +111,25 @@ crosapi::mojom::BrowserInitParamsPtr ReadStartupBrowserInitParams() {
   }
 
   return result;
+}
+
+std::string SessionTypeToString(crosapi::mojom::SessionType session_type) {
+  switch (session_type) {
+    case crosapi::mojom::SessionType::kUnknown:
+      return "unknown";
+    case crosapi::mojom::SessionType::kRegularSession:
+      return "regular";
+    case crosapi::mojom::SessionType::kGuestSession:
+      return "guest";
+    case crosapi::mojom::SessionType::kPublicSession:
+      return "managed-guest-session";
+    case crosapi::mojom::SessionType::kWebKioskSession:
+      return "web-kiosk";
+    case crosapi::mojom::SessionType::kChildSession:
+      return "child";
+    case crosapi::mojom::SessionType::kAppKioskSession:
+      return "chrome-app-kiosk";
+  }
 }
 
 }  // namespace
@@ -187,6 +207,9 @@ LacrosService::LacrosService()
         FROM_HERE, base::BindOnce(&LacrosService::StartNativeThemeCache,
                                   weak_factory_.GetWeakPtr()));
   }
+
+  static crash_reporter::CrashKeyString<32> session_type("session-type");
+  session_type.Set(SessionTypeToString(init_params_->session_type));
 
   // Short term workaround: if --crosapi-mojo-platform-channel-handle is
   // available, close --mojo-platform-channel-handle, and remove it

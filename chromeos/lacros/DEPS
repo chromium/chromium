@@ -6,4 +6,5 @@ include_rules = [
   "-content",
 
   "+ui/native_theme",
+  "+components/crash/core/common",
 ]

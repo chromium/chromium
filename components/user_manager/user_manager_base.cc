@@ -22,6 +22,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
+#include "components/crash/core/common/crash_key.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -84,6 +85,30 @@ UserType GetStoredUserType(const base::Value* prefs_user_types,
     return USER_TYPE_REGULAR;
   }
   return static_cast<UserType>(int_user_type);
+}
+
+std::string UserTypeToString(UserType user_type) {
+  switch (user_type) {
+    case USER_TYPE_REGULAR:
+      return "regular";
+    case USER_TYPE_CHILD:
+      return "child";
+    case USER_TYPE_GUEST:
+      return "guest";
+    case USER_TYPE_PUBLIC_ACCOUNT:
+      return "managed-guest-session";
+    case USER_TYPE_KIOSK_APP:
+      return "chrome-app-kiosk";
+    case USER_TYPE_ARC_KIOSK_APP:
+      return "arc-kiosk";
+    case USER_TYPE_WEB_KIOSK_APP:
+      return "web-kiosk";
+    case USER_TYPE_ACTIVE_DIRECTORY:
+      return "active-directory";
+    case NUM_USER_TYPES:
+      NOTREACHED();
+      return "";
+  }
 }
 
 }  // namespace
@@ -234,6 +259,9 @@ void UserManagerBase::UserLoggedIn(const AccountId& account_id,
 
   UMA_HISTOGRAM_ENUMERATION(
       "UserManager.LoginUserType", active_user_->GetType(), NUM_USER_TYPES);
+
+  static crash_reporter::CrashKeyString<32> session_type("session-type");
+  session_type.Set(UserTypeToString(active_user_->GetType()));
 
   GetLocalState()->SetString(
       kLastLoggedInGaiaUser,
