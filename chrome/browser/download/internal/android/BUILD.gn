@@ -6,6 +6,8 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/download/DownloadMessageUiControllerFactory.java",
+    "java/src/org/chromium/chrome/browser/download/DownloadMessageUiControllerImpl.java",
     "java/src/org/chromium/chrome/browser/download/home/DownloadManagerCoordinatorFactory.java",
     "java/src/org/chromium/chrome/browser/download/home/DownloadManagerCoordinatorImpl.java",
     "java/src/org/chromium/chrome/browser/download/home/OfflineItemSource.java",
@@ -120,9 +122,11 @@ android_library("java") {
     "//components/browser_ui/widget/android:java",
     "//components/embedder_support/android:util_java",
     "//components/feature_engagement:feature_engagement_java",
+    "//components/messages/android:java",
     "//components/offline_items_collection/core:core_java",
     "//components/prefs/android:java",
     "//components/url_formatter/android:url_formatter_java",
+    "//components/user_prefs/android:java",
     "//content/public/android:content_java",
     "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -131,6 +135,7 @@ android_library("java") {
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/androidx:androidx_vectordrawable_vectordrawable_animated_java",
+    "//third_party/androidx:androidx_vectordrawable_vectordrawable_java",
     "//ui/android:ui_java",
     "//url:gurl_java",
   ]
@@ -154,9 +159,12 @@ android_resources("java_resources") {
     "java/res/drawable/circular_progress_bar_resume_tiny.xml",
     "java/res/drawable/circular_progress_bar_retry_tiny.xml",
     "java/res/drawable/download_interstitial_icon.xml",
+    "java/res/drawable/downloading_fill_animation_24dp.xml",
     "java/res/drawable/group_card_footer_curved_border.xml",
     "java/res/drawable/group_card_header_curved_border.xml",
     "java/res/drawable/group_card_item_border.xml",
+    "java/res/drawable/ic_file_download_scheduled_24dp.xml",
+    "java/res/drawable/infobar_download_complete_animation.xml",
     "java/res/layout/download_home_tabs.xml",
     "java/res/layout/download_home_toolbar.xml",
     "java/res/layout/download_interstitial.xml",
@@ -206,6 +214,7 @@ android_resources("java_resources") {
 android_library("javatests") {
   testonly = true
   sources = [
+    "java/src/org/chromium/chrome/browser/download/DownloadMessageUiControllerTest.java",
     "java/src/org/chromium/chrome/browser/download/home/DownloadActivityV2Test.java",
     "java/src/org/chromium/chrome/browser/download/home/StubbedOfflineContentProvider.java",
     "java/src/org/chromium/chrome/browser/download/home/StubbedProvider.java",
@@ -219,11 +228,13 @@ android_library("javatests") {
     "//chrome/browser/download/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
     "//chrome/browser/ui/messages/android:java",
     "//chrome/test/android:chrome_java_test_support",
     "//components/browser_ui/modaldialog/android:java",
     "//components/embedder_support/android:util_java",
     "//components/feature_engagement:feature_engagement_java",
+    "//components/messages/android:java",
     "//components/offline_items_collection/core:core_java",
     "//components/prefs/android:java",
     "//components/url_formatter/android:url_formatter_java",

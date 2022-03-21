@@ -11,9 +11,14 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.download.DownloadInfo;
+import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.download.DownloadMessageUiController;
+import org.chromium.chrome.browser.download.DownloadUtils;
+import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
+import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -61,5 +66,23 @@ public class DownloadMessageUiDelegate implements DownloadMessageUiController.De
         if (!shouldSwitchToFocusedActivity) return false;
         mActivity = new WeakReference<ChromeActivity>((ChromeActivity) focusedActivity);
         return true;
+    }
+
+    @Override
+    public void openDownloadsPage(OTRProfileID otrProfileID, int source) {
+        DownloadManagerService.openDownloadsPage(otrProfileID, source);
+    }
+
+    @Override
+    public void openDownload(
+            ContentId contentId, OTRProfileID otrProfileID, int source, Context context) {
+        DownloadUtils.openItem(contentId, otrProfileID, source, context);
+    }
+
+    @Override
+    public void removeNotification(int notificationId, DownloadInfo downloadInfo) {
+        DownloadManagerService.getDownloadManagerService()
+                .getDownloadNotifier()
+                .removeDownloadNotification(notificationId, downloadInfo);
     }
 }

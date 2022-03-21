@@ -8,6 +8,7 @@ import android.content.Context;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
@@ -45,6 +46,16 @@ public interface DownloadMessageUiController extends OfflineContentProvider.Obse
          * @return True if we did a switch to another activity, false otherwise.
          */
         boolean maybeSwitchToFocusedActivity();
+
+        /** Called to open the downloads page. */
+        void openDownloadsPage(OTRProfileID otrProfileID, @DownloadOpenSource int source);
+
+        /** Called to open the download associated with the given {@link contentId}.*/
+        void openDownload(ContentId contentId, OTRProfileID otrProfileID,
+                @DownloadOpenSource int source, Context context);
+
+        /** Called to remove a notification. */
+        void removeNotification(int notificationId, DownloadInfo downloadInfo);
     }
 
     /**

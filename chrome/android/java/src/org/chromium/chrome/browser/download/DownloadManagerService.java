@@ -361,7 +361,7 @@ public class DownloadManagerService implements DownloadController.Observer,
      */
     public void onActivityLaunched(DownloadMessageUiController.Delegate delegate) {
         if (!mActivityLaunched) {
-            mMessageUiController = new DownloadMessageUiControllerImpl(delegate);
+            mMessageUiController = DownloadMessageUiControllerFactory.create(delegate);
 
             DownloadNotificationService.clearResumptionAttemptLeft();
 

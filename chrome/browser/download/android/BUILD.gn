@@ -33,6 +33,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/download/DownloadLaterMetrics.java",
     "java/src/org/chromium/chrome/browser/download/DownloadLocationDialogMetrics.java",
     "java/src/org/chromium/chrome/browser/download/DownloadManagerBridge.java",
+    "java/src/org/chromium/chrome/browser/download/DownloadMessageUiController.java",
     "java/src/org/chromium/chrome/browser/download/DownloadStartupUtils.java",
     "java/src/org/chromium/chrome/browser/download/DownloadStatus.java",
     "java/src/org/chromium/chrome/browser/download/MediaStoreHelper.java",
@@ -91,6 +92,7 @@ android_library("java") {
     "//components/embedder_support/android:util_java",
     "//components/feature_engagement:feature_engagement_java",
     "//components/feed/core/shared_prefs:feed_shared_prefs",
+    "//components/messages/android:java",
     "//components/offline_items_collection/core:core_java",
     "//components/prefs/android:java",
     "//components/user_prefs/android:java",
@@ -127,6 +129,7 @@ android_library_factory("factory_java") {
   # This internal file will be replaced by a generated file so the resulting
   # android_library target does not actually depend on this internal file.
   sources = [
+    "//chrome/browser/download/internal/android/java/src/org/chromium/chrome/browser/download/DownloadMessageUiControllerFactory.java",
     "//chrome/browser/download/internal/android/java/src/org/chromium/chrome/browser/download/home/DownloadManagerCoordinatorFactory.java",
     "//chrome/browser/download/internal/android/java/src/org/chromium/chrome/browser/download/interstitial/DownloadInterstitialCoordinatorFactory.java",
   ]
@@ -217,6 +220,7 @@ android_library("junit_tests") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable/infobar_download_complete.xml",
     "java/res/layout/confirm_oma_download.xml",
     "java/res/layout/download_later_dialog.xml",
     "java/res/layout/download_location_dialog.xml",

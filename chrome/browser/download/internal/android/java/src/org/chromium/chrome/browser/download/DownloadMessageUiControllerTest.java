@@ -21,9 +21,11 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.messages.MessageDispatcher;
+import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemSchedule;
@@ -94,6 +96,16 @@ public class DownloadMessageUiControllerTest {
         public boolean maybeSwitchToFocusedActivity() {
             return false;
         }
+
+        @Override
+        public void openDownloadsPage(OTRProfileID otrProfileID, int source) {}
+
+        @Override
+        public void openDownload(
+                ContentId contentId, OTRProfileID otrProfileID, int source, Context context) {}
+
+        @Override
+        public void removeNotification(int notificationId, DownloadInfo downloadInfo) {}
     }
 
     static class TestDownloadMessageUiController extends DownloadMessageUiControllerImpl {
@@ -131,11 +143,6 @@ public class DownloadMessageUiControllerTest {
         void verifyMessageGone() {
             Assert.assertNull(mInfo);
         }
-    }
-
-    private static DownloadItem createDownloadItem(OfflineItem offlineItem) {
-        DownloadInfo downloadInfo = DownloadInfo.fromOfflineItem(offlineItem, null);
-        return new DownloadItem(false, downloadInfo);
     }
 
     private static OfflineItem createOfflineItem(@OfflineItemState int state) {

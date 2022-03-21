@@ -21,10 +21,10 @@ import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.DownloadLaterMetrics.DownloadLaterUiEvent;
 import org.chromium.chrome.browser.download.dialogs.DownloadLaterDialogHelper;
 import org.chromium.chrome.browser.download.dialogs.DownloadLaterDialogHelper.Source;
+import org.chromium.chrome.browser.download.internal.R;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorFactory;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -78,7 +78,8 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
             UmaInfobarShown.COMPLETE, UmaInfobarShown.FAILED, UmaInfobarShown.PENDING,
             UmaInfobarShown.MULTIPLE_DOWNLOADING, UmaInfobarShown.MULTIPLE_COMPLETE,
             UmaInfobarShown.MULTIPLE_FAILED, UmaInfobarShown.MULTIPLE_PENDING,
-            UmaInfobarShown.SCHEDULED, UmaInfobarShown.MULTIPLE_SCHEDULED})
+            UmaInfobarShown.SCHEDULED, UmaInfobarShown.MULTIPLE_SCHEDULED,
+            UmaInfobarShown.NUM_ENTRIES})
     @Retention(RetentionPolicy.SOURCE)
     private @interface UmaInfobarShown {
         int ANY_STATE = 0;
@@ -102,7 +103,8 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
      * enums.xml. Values should be number from 0 and can't have gaps.
      */
     @VisibleForTesting
-    @IntDef({UiState.INITIAL, UiState.DOWNLOADING, UiState.SHOW_RESULT, UiState.CANCELLED})
+    @IntDef({UiState.INITIAL, UiState.DOWNLOADING, UiState.SHOW_RESULT, UiState.CANCELLED,
+            UiState.NUM_ENTRIES})
     @Retention(RetentionPolicy.SOURCE)
     protected @interface UiState {
         // Default initial state. It is also the final state after all the downloads are paused or
@@ -376,8 +378,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
     }
 
     private boolean isVisibleToUser(OfflineItem offlineItem) {
-        if (offlineItem.isTransient
-                || offlineItem.isSuggested || offlineItem.isDangerous) {
+        if (offlineItem.isTransient || offlineItem.isSuggested || offlineItem.isDangerous) {
             return false;
         }
 
@@ -566,10 +567,12 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
             info.iconType = IconType.VECTOR_DRAWABLE;
         } else if (resultState == ResultState.FAILED) {
             stringRes = R.plurals.download_message_multiple_download_failed;
-            info.icon = R.drawable.ic_error_outline_googblue_24dp;
+            info.icon = org.chromium.components.browser_ui.widget.R.drawable
+                                .ic_error_outline_googblue_24dp;
         } else if (resultState == ResultState.PENDING) {
             stringRes = R.plurals.download_message_multiple_download_pending;
-            info.icon = R.drawable.ic_error_outline_googblue_24dp;
+            info.icon = org.chromium.components.browser_ui.widget.R.drawable
+                                .ic_error_outline_googblue_24dp;
         } else if (resultState == ResultState.SCHEDULED) {
             stringRes = R.plurals.download_message_multiple_download_scheduled;
             info.icon = R.drawable.ic_file_download_scheduled_24dp;
@@ -882,9 +885,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         if (!mNotificationIds.containsKey(contentId)) return;
 
         DownloadInfo downloadInfo = new DownloadInfo.Builder().setContentId(contentId).build();
-        DownloadManagerService.getDownloadManagerService()
-                .getDownloadNotifier()
-                .removeDownloadNotification(mNotificationIds.get(contentId), downloadInfo);
+        mDelegate.removeNotification(mNotificationIds.get(contentId), downloadInfo);
         mNotificationIds.remove(contentId);
     }
 
@@ -895,7 +896,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         if (itemId != null && schedule != null) {
             onChangeScheduleClicked(itemId, schedule);
         } else if (itemId != null) {
-            DownloadUtils.openItem(itemId,
+            mDelegate.openDownload(itemId,
                     OTRProfileID.deserializeWithoutVerify(
                             offlineItem == null ? null : offlineItem.otrProfileId),
                     DownloadOpenSource.DOWNLOAD_PROGRESS_MESSAGE, getContext());
@@ -903,7 +904,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         } else {
             // TODO(shaktisahu): Make a best guess for which profile, maybe from the last updated
             // item.
-            DownloadManagerService.openDownloadsPage(
+            mDelegate.openDownloadsPage(
                     getOTRProfileIDForTrackedItems(), DownloadOpenSource.DOWNLOAD_PROGRESS_MESSAGE);
             recordLinkClicked(false /*openItem*/);
         }

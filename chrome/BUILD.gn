@@ -1619,6 +1619,7 @@ if (is_android) {
 
   java_cpp_enum("download_enum_javagen") {
     sources = [
+      "browser/download/android/download_open_source.h",
       "browser/download/download_dialog_types.h",
       "browser/download/download_prompt_status.h",
     ]
