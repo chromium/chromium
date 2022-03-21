@@ -20,10 +20,9 @@ using base::android::JavaParamRef;
 
 UpdatePasswordInfoBar::UpdatePasswordInfoBar(
     std::unique_ptr<UpdatePasswordInfoBarDelegate> delegate,
-    absl::optional<AccountInfo> account_info)
-    : infobars::ConfirmInfoBar(std::move(delegate)) {
-  account_info_ = account_info;
-}
+    const AccountInfo& account_info)
+    : infobars::ConfirmInfoBar(std::move(delegate)),
+      account_info_(account_info) {}
 
 UpdatePasswordInfoBar::~UpdatePasswordInfoBar() {}
 
@@ -47,9 +46,8 @@ UpdatePasswordInfoBar::CreateRenderInfoBar(
   ScopedJavaLocalRef<jstring> details_message_text = ConvertUTF16ToJavaString(
       env, update_password_delegate->GetDetailsMessageText());
   ScopedJavaLocalRef<jobject> account_info =
-      account_info_.has_value()
-          ? ConvertToJavaAccountInfo(env, account_info_.value())
-          : nullptr;
+      !account_info_.IsEmpty() ? ConvertToJavaAccountInfo(env, account_info_)
+                               : nullptr;
   std::vector<std::u16string> usernames;
   unsigned int selected_username =
       update_password_delegate->GetDisplayUsernames(&usernames);

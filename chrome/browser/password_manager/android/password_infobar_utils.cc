@@ -13,41 +13,31 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 namespace password_manager {
-absl::optional<AccountInfo> GetAccountInfoForPasswordInfobars(Profile* profile,
-                                                              bool is_syncing) {
+AccountInfo GetAccountInfoForPasswordInfobars(Profile* profile,
+                                              bool is_syncing) {
   DCHECK(profile);
   if (!is_syncing) {
-    return absl::nullopt;
+    return AccountInfo();
   }
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   CoreAccountId account_id =
       identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSync);
-  AccountInfo account_info =
-      identity_manager->FindExtendedAccountInfoByAccountId(account_id);
-
-  return !account_info.IsEmpty()
-             ? absl::make_optional<AccountInfo>(account_info)
-             : absl::nullopt;
+  return identity_manager->FindExtendedAccountInfoByAccountId(account_id);
 }
 
-absl::optional<AccountInfo> GetAccountInfoForPasswordMessages(
-    Profile* profile) {
+AccountInfo GetAccountInfoForPasswordMessages(Profile* profile) {
   DCHECK(profile);
 
   if (!password_bubble_experiment::IsSmartLockUser(
           SyncServiceFactory::GetForProfile(profile))) {
-    return absl::nullopt;
+    return AccountInfo();
   }
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   CoreAccountId account_id =
       identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSync);
-  AccountInfo account_info =
-      identity_manager->FindExtendedAccountInfoByAccountId(account_id);
-  return account_info.IsEmpty()
-             ? absl::nullopt
-             : absl::make_optional<AccountInfo>(account_info);
+  return identity_manager->FindExtendedAccountInfoByAccountId(account_id);
 }
 
 }  // namespace password_manager
