@@ -59,9 +59,11 @@ FontFallbackList::~FontFallbackList() {
 
 FontSelector* FontFallbackList::GetFontSelector() const {
   // FontFallbackList objects are managed in FontFallbackMap, and should not be
-  // used after FontFallbackMap is destroyed.
-  DCHECK(font_fallback_map_);
-  return font_fallback_map_->GetFontSelector();
+  // used after FontFallbackMap is destroyed. FontFallbackList may outlive its
+  // FontFallbackMap if an external reference is held, for example by a Font
+  // object owned by a CanvasRenderContext2DState whose execution context was
+  // destroyed.
+  return font_fallback_map_ ? font_fallback_map_->GetFontSelector() : nullptr;
 }
 
 void FontFallbackList::ReleaseFontData() {
