@@ -43,6 +43,8 @@ extern const base::Feature kChromeWhatsNewInMainMenuNewBadge;
 extern const base::Feature kAccessCodeCastUI;
 #endif
 
+extern const base::Feature kDisplayOpenLinkAsProfile;
+
 extern const base::Feature kEvDetailsInPageInfo;
 
 extern const base::Feature kExtensionsMenuAccessControl;

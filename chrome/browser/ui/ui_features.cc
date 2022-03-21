@@ -57,6 +57,11 @@ const base::Feature kAccessCodeCastUI{"AccessCodeCastUI",
                                       base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
+// Enables displaying the submenu to open a link with a different profile
+// even if there is no other profile opened in a separate window
+const base::Feature kDisplayOpenLinkAsProfile{
+    "DisplayOpenLinkAsProfile", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables showing the EV certificate details in the Page Info bubble.
 const base::Feature kEvDetailsInPageInfo{"EvDetailsInPageInfo",
                                          base::FEATURE_ENABLED_BY_DEFAULT};

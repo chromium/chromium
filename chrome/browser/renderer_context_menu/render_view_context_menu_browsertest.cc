@@ -41,6 +41,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -322,6 +323,13 @@ class ContextMenuBrowserTest : public InProcessBrowserTest {
 
  private:
   web_app::OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
+};
+
+class ContextMenuWithProfileLinksBrowserTest : public ContextMenuBrowserTest {
+ public:
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kDisplayOpenLinkAsProfile};
 };
 
 class PdfPluginContextMenuBrowserTest : public InProcessBrowserTest {
@@ -1330,6 +1338,9 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenImageInNewTab) {
 
 // Functionality is not present on ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
+// TODO(https://crbug.com/1246393): delete this test when
+// `features::kDisplayOpenLinkAsProfile` is launched, as it is superseded by
+// `ContextMenuWithProfileLinksBrowserTest`.
 IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, DISABLED_OpenLinkInProfileEntryPresent) {
   {
     std::unique_ptr<TestRenderViewContextMenu> menu(
@@ -2135,4 +2146,81 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
   ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_COPY));
   EXPECT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_COPYLINKTOTEXT));
 }
+
+// Functionality is not present on ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+IN_PROC_BROWSER_TEST_F(ContextMenuWithProfileLinksBrowserTest,
+                       OpenLinkInProfileEntryPresent) {
+  {
+    std::unique_ptr<TestRenderViewContextMenu> menu(
+        CreateContextMenuMediaTypeNone(GURL("http://www.google.com/"),
+                                       GURL("http://www.google.com/")));
+
+    ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB));
+    ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW));
+    ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_COPYLINKLOCATION));
+    // With only one profile exists, we don't add any items to the context menu
+    // for opening links in other profiles.
+    ASSERT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPENLINKINPROFILE));
+    ASSERT_FALSE(menu->IsItemInRangePresent(IDC_OPEN_LINK_IN_PROFILE_FIRST,
+                                            IDC_OPEN_LINK_IN_PROFILE_LAST));
+  }
+
+  // Create one additional profile, but do not yet open windows in it.
+  Profile* profile = CreateSecondaryProfile(1);
+
+  {
+    std::unique_ptr<TestRenderViewContextMenu> menu(
+        CreateContextMenuMediaTypeNone(GURL("http://www.google.com/"),
+                                       GURL("http://www.google.com/")));
+
+    ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB));
+    ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW));
+    ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_COPYLINKLOCATION));
+    // With the second profile not open, an inline entry to open the link with
+    // the secondary profile is displayed.
+    ASSERT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPENLINKINPROFILE));
+    ASSERT_TRUE(menu->IsItemPresent(IDC_OPEN_LINK_IN_PROFILE_FIRST));
+  }
+
+  profiles::FindOrCreateNewWindowForProfile(
+      profile, chrome::startup::IsProcessStartup::kNo,
+      chrome::startup::IsFirstRun::kNo, false);
+
+  {
+    std::unique_ptr<TestRenderViewContextMenu> menu(
+        CreateContextMenuMediaTypeNone(GURL("http://www.google.com/"),
+                                       GURL("http://www.google.com/")));
+
+    ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB));
+    ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW));
+    ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_COPYLINKLOCATION));
+    // With the second profile open, an inline entry to open the link with the
+    // secondary profile is displayed.
+    ASSERT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPENLINKINPROFILE));
+    ASSERT_TRUE(menu->IsItemPresent(IDC_OPEN_LINK_IN_PROFILE_FIRST));
+  }
+
+  CreateSecondaryProfile(2);
+
+  {
+    std::unique_ptr<TestRenderViewContextMenu> menu(
+        CreateContextMenuMediaTypeNone(GURL("http://www.google.com/"),
+                                       GURL("http://www.google.com/")));
+
+    ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB));
+    ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW));
+    ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_COPYLINKLOCATION));
+    // With at least two secondary profiles, they are displayed in a submenu.
+    ui::MenuModel* model = nullptr;
+    int index = -1;
+    ASSERT_TRUE(menu->GetMenuModelAndItemIndex(IDC_OPEN_LINK_IN_PROFILE_FIRST,
+                                               &model, &index));
+    ASSERT_EQ(2, model->GetItemCount());
+    ASSERT_FALSE(menu->IsItemInRangePresent(IDC_OPEN_LINK_IN_PROFILE_FIRST,
+                                            IDC_OPEN_LINK_IN_PROFILE_LAST));
+  }
+}
+
+#endif
 }  // namespace

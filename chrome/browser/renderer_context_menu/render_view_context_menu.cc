@@ -87,6 +87,7 @@
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble_controller.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/history/foreign_session_handler.h"
@@ -1350,7 +1351,9 @@ void RenderViewContextMenu::AppendLinkItems() {
         }
       }
 
-      if (multiple_profiles_open_ && !target_profiles_entries.empty()) {
+      if ((multiple_profiles_open_ ||
+           base::FeatureList::IsEnabled(features::kDisplayOpenLinkAsProfile)) &&
+          !target_profiles_entries.empty()) {
         if (target_profiles_entries.size() == 1) {
           int menu_index = static_cast<int>(profile_link_paths_.size());
           ProfileAttributesEntry* entry = target_profiles_entries.front();
