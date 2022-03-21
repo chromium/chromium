@@ -12,7 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/task_manager/providers/task.h"
 #include "components/favicon/core/favicon_driver_observer.h"
-#include "content/public/browser/navigation_entry.h"
 
 class ProcessResourceUsage;
 
