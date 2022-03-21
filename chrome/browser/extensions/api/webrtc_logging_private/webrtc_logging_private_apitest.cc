@@ -88,17 +88,16 @@ std::string ParamsToString(const base::ListValue& parameters) {
 }
 
 void InitializeTestMetaData(base::ListValue* parameters) {
-  std::unique_ptr<base::DictionaryValue> meta_data_entry(
-      new base::DictionaryValue());
-  meta_data_entry->SetStringKey("key", kTestLoggingSessionIdKey);
-  meta_data_entry->SetStringKey("value", kTestLoggingSessionIdValue);
-  std::unique_ptr<base::ListValue> meta_data(new base::ListValue());
-  meta_data->Append(std::move(meta_data_entry));
-  meta_data_entry = std::make_unique<base::DictionaryValue>();
-  meta_data_entry->SetStringKey("key", "url");
-  meta_data_entry->SetStringKey("value", kTestLoggingUrl);
-  meta_data->Append(std::move(meta_data_entry));
-  parameters->Append(std::move(meta_data));
+  base::Value::Dict meta_data_entry;
+  meta_data_entry.Set("key", kTestLoggingSessionIdKey);
+  meta_data_entry.Set("value", kTestLoggingSessionIdValue);
+  base::Value::List meta_data;
+  meta_data.Append(meta_data_entry.Clone());
+  meta_data_entry.clear();
+  meta_data_entry.Set("key", "url");
+  meta_data_entry.Set("value", kTestLoggingUrl);
+  meta_data.Append(std::move(meta_data_entry));
+  parameters->Append(base::Value(std::move(meta_data)));
 }
 
 class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
@@ -148,11 +147,10 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
   }
 
   void AppendTabIdAndUrl(base::ListValue* parameters) {
-    std::unique_ptr<base::DictionaryValue> request_info(
-        new base::DictionaryValue());
-    request_info->SetIntKey(
-        "tabId", extensions::ExtensionTabUtil::GetTabId(web_contents()));
-    parameters->Append(std::move(request_info));
+    base::Value::Dict request_info;
+    request_info.Set("tabId",
+                     extensions::ExtensionTabUtil::GetTabId(web_contents()));
+    parameters->Append(base::Value(std::move(request_info)));
     parameters->Append(web_contents()
                            ->GetLastCommittedURL()
                            .DeprecatedGetOriginAsURL()
