@@ -37,6 +37,7 @@ class FakeFootprintsFetcher : public FootprintsFetcher {
 
  private:
   bool add_user_result_ = true;
+  bool response_set_ = false;
   absl::optional<nearby::fastpair::UserReadDevicesResponse> response_;
   nearby::fastpair::FastPairInfo opt_in_status_info_;
   base::flat_map<std::string, nearby::fastpair::FastPairInfo>

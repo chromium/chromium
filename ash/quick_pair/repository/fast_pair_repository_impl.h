@@ -74,6 +74,7 @@ class FastPairRepositoryImpl : public FastPairRepository {
   void CheckOptInStatus(CheckOptInStatusCallback callback) override;
   void UpdateOptInStatus(nearby::fastpair::OptInStatus opt_in_status,
                          UpdateOptInStatusCallback callback) override;
+  void GetSavedDevices(GetSavedDevicesCallback callback) override;
 
  private:
   void CheckAccountKeysImpl(const AccountKeyFilter& account_key_filter,
@@ -119,6 +120,9 @@ class FastPairRepositoryImpl : public FastPairRepository {
   void OnDeleteAssociatedDeviceByAccountKey(
       DeleteAssociatedDeviceByAccountKeyCallback callback,
       bool success);
+  void OnGetSavedDevices(
+      GetSavedDevicesCallback callback,
+      absl::optional<nearby::fastpair::UserReadDevicesResponse> user_devices);
 
   std::unique_ptr<DeviceMetadataFetcher> device_metadata_fetcher_;
   std::unique_ptr<FootprintsFetcher> footprints_fetcher_;

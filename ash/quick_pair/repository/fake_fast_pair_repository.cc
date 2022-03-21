@@ -111,5 +111,10 @@ FakeFastPairRepository::GetImagesForDevice(const std::string& device_id) {
   return absl::nullopt;
 }
 
+// Unimplemented.
+void FakeFastPairRepository::GetSavedDevices(GetSavedDevicesCallback callback) {
+
+}
+
 }  // namespace quick_pair
 }  // namespace ash

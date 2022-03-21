@@ -68,6 +68,7 @@ class FakeFastPairRepository : public FastPairRepository {
   void DeleteAssociatedDeviceByAccountKey(
       const std::vector<uint8_t>& account_key,
       DeleteAssociatedDeviceByAccountKeyCallback callback) override;
+  void GetSavedDevices(GetSavedDevicesCallback callback) override;
 
  private:
   static void SetInstance(FastPairRepository* instance);

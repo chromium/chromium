@@ -283,6 +283,46 @@ void FastPairRepositoryImpl::OnUpdateOptInStatusComplete(
   std::move(callback).Run(success);
 }
 
+void FastPairRepositoryImpl::GetSavedDevices(GetSavedDevicesCallback callback) {
+  footprints_fetcher_->GetUserDevices(
+      base::BindOnce(&FastPairRepositoryImpl::OnGetSavedDevices,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void FastPairRepositoryImpl::OnGetSavedDevices(
+    GetSavedDevicesCallback callback,
+    absl::optional<nearby::fastpair::UserReadDevicesResponse> user_devices) {
+  QP_LOG(INFO) << __func__;
+  if (!user_devices) {
+    QP_LOG(WARNING)
+        << __func__
+        << ": Missing UserReadDevicesResponse from call to Footprints";
+    std::move(callback).Run(nearby::fastpair::OptInStatus::STATUS_UNKNOWN, {});
+    return;
+  }
+
+  nearby::fastpair::OptInStatus opt_in_status =
+      nearby::fastpair::OptInStatus::STATUS_UNKNOWN;
+  std::vector<nearby::fastpair::StoredDiscoveryItem> saved_devices;
+  for (const auto& info : user_devices->fast_pair_info()) {
+    if (info.has_opt_in_status()) {
+      opt_in_status = info.opt_in_status();
+    }
+
+    nearby::fastpair::StoredDiscoveryItem device;
+    if (info.has_device() &&
+        device.ParseFromString(info.device().discovery_item_bytes())) {
+      saved_devices.push_back(device);
+    }
+  }
+
+  // If the opt in status is `STATUS_OPTED_OUT`, then we can expect the list of
+  // saved devices to be empty, since an opted out status removes all saved
+  // devices from the list, although there still might be saved devices, if
+  // an Android or Chromebook writes to the user's account against their wishes.
+  std::move(callback).Run(opt_in_status, std::move(saved_devices));
+}
+
 bool FastPairRepositoryImpl::DeleteAssociatedDevice(
     const device::BluetoothDevice* device) {
   absl::optional<const std::vector<uint8_t>> account_key =

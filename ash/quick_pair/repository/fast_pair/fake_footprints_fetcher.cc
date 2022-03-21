@@ -16,7 +16,7 @@ FakeFootprintsFetcher::FakeFootprintsFetcher() = default;
 FakeFootprintsFetcher::~FakeFootprintsFetcher() = default;
 
 void FakeFootprintsFetcher::GetUserDevices(UserReadDevicesCallback callback) {
-  if (response_.has_value()) {
+  if (response_set_) {
     std::move(callback).Run(std::move(response_));
     return;
   }
@@ -33,6 +33,7 @@ void FakeFootprintsFetcher::GetUserDevices(UserReadDevicesCallback callback) {
 
 void FakeFootprintsFetcher::SetGetUserDevicesResponse(
     absl::optional<nearby::fastpair::UserReadDevicesResponse> response) {
+  response_set_ = true;
   response_ = response;
 }
 
