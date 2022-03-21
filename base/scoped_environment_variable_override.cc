@@ -39,7 +39,7 @@ ScopedEnvironmentVariableOverride& ScopedEnvironmentVariableOverride::operator=(
     ScopedEnvironmentVariableOverride&&) = default;
 
 ScopedEnvironmentVariableOverride::~ScopedEnvironmentVariableOverride() {
-  if (overridden_) {
+  if (environment_ && overridden_) {
     if (was_set_)
       environment_->SetVar(variable_name_, old_value_);
     else
