@@ -1414,9 +1414,11 @@ NavigationRequest::NavigationRequest(
   // Navigations can't be a replacement and a reload at the same time.
   DCHECK(!common_params_->should_replace_current_entry ||
          !NavigationTypeUtils::IsReload(common_params_->navigation_type));
-  DCHECK(IsInMainFrame() || common_params_->base_url_for_data_url.is_empty());
+  DCHECK(!GetParentFrameOrOuterDocument() ||
+         common_params_->base_url_for_data_url.is_empty());
 #if BUILDFLAG(IS_ANDROID)
-  DCHECK(IsInMainFrame() || commit_params_->data_url_as_string.empty());
+  DCHECK(!GetParentFrameOrOuterDocument() ||
+         commit_params_->data_url_as_string.empty());
 #endif
   // If `rfh_restored_from_back_forward_cache` was set, it should not be
   // invalidated yet at this point.
