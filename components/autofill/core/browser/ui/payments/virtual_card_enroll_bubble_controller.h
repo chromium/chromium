@@ -53,6 +53,11 @@ class VirtualCardEnrollBubbleController {
   // nullptr if no bubble is visible.
   virtual AutofillBubbleBase* GetVirtualCardEnrollBubbleView() const = 0;
 
+#if !BUILDFLAG(IS_ANDROID)
+  // Hides the bubble and icon if it is showing.
+  virtual void HideIconAndBubble() = 0;
+#endif
+
   // Virtual card enroll button takes card information to enroll into a VCN.
   virtual void OnAcceptButton() = 0;
   virtual void OnDeclineButton() = 0;
