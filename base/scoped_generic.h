@@ -7,8 +7,7 @@
 
 #include <stdlib.h>
 
-#include <algorithm>
-#include <utility>
+#include <type_traits>
 
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
@@ -141,25 +140,6 @@ class ScopedGeneric {
     FreeIfNecessary();
     data_.generic = value;
     TrackAcquire(value);
-  }
-
-  void swap(ScopedGeneric& other) {
-    if (&other == this) {
-      return;
-    }
-
-    TrackRelease(data_.generic);
-    other.TrackRelease(other.data_.generic);
-
-    // Standard swap idiom: 'using std::swap' ensures that std::swap is
-    // present in the overload set, but we call swap unqualified so that
-    // any more-specific overloads can be used, if available.
-    using std::swap;
-    swap(static_cast<Traits&>(data_), static_cast<Traits&>(other.data_));
-    swap(data_.generic, other.data_.generic);
-
-    TrackAcquire(data_.generic);
-    other.TrackAcquire(other.data_.generic);
   }
 
   // Release the object. The return value is the current object held by this

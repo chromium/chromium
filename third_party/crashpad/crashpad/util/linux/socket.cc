@@ -46,8 +46,8 @@ bool UnixCredentialSocket::CreateCredentialSocketpair(ScopedFileHandle* sock1,
     return false;
   }
 
-  sock1->swap(local_sock1);
-  sock2->swap(local_sock2);
+  *sock1 = std::move(local_sock1);
+  *sock2 = std::move(local_sock2);
   return true;
 }
 

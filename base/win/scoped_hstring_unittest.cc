@@ -41,9 +41,7 @@ TEST(ScopedHStringTest, Init) {
   EXPECT_TRUE(hstring == nullptr);
   EXPECT_EQ(nullptr, hstring.get());
 
-  ScopedHString hstring2 = ScopedHString::Create(kTestString2);
-  hstring.swap(hstring2);
-  EXPECT_TRUE(hstring2 == nullptr);
+  hstring = ScopedHString::Create(kTestString2);
 
   buffer = hstring.GetAsUTF8();
   EXPECT_EQ(kTestString2, UTF8ToWide(buffer));

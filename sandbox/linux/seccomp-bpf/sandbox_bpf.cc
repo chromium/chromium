@@ -187,7 +187,8 @@ bool SandboxBPF::StartSandbox(SeccompLevel seccomp_level, bool enable_ibpb) {
 }
 
 void SandboxBPF::SetProcFd(base::ScopedFD proc_fd) {
-  proc_fd_.swap(proc_fd);
+  if (proc_fd_.get() != proc_fd.get())
+    proc_fd_ = std::move(proc_fd);
 }
 
 // static

@@ -88,7 +88,8 @@ void ChildProcessTaskPortProvider::OnTaskPortReceived(
       // single-process mode, tests, or if the PID is reused and this races the
       // DEAD_NAME notification. Self-reseting is not allowed on ScopedGeneric,
       // so test for that first.
-      it->second.swap(port);
+      if (it->second.get() != port.get())
+        it->second = std::move(port);
     }
   }
 

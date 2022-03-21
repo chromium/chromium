@@ -77,21 +77,6 @@ TEST(ScopedGenericTest, ScopedGeneric) {
   ASSERT_EQ(kSecond, values_freed[1]);
   values_freed.clear();
 
-  // Swap.
-  {
-    ScopedInt a(kFirst, traits);
-    ScopedInt b(kSecond, traits);
-    a.swap(b);
-    EXPECT_TRUE(values_freed.empty());  // Nothing should be freed.
-    EXPECT_EQ(kSecond, a.get());
-    EXPECT_EQ(kFirst, b.get());
-  }
-  // Values should be deleted in the opposite order.
-  ASSERT_EQ(2u, values_freed.size());
-  EXPECT_EQ(kFirst, values_freed[0]);
-  EXPECT_EQ(kSecond, values_freed[1]);
-  values_freed.clear();
-
   // Move constructor.
   {
     ScopedInt a(kFirst, traits);
@@ -295,24 +280,6 @@ TEST(ScopedGenericTest, OwnershipTracking) {
       ASSERT_OWNED(1, a);
       ASSERT_FREED(0);
     }
-    ASSERT_FREED(1);
-  }
-
-  owners.clear();
-  freed.clear();
-
-  // Swap.
-  {
-    {
-      ScopedTrackedInt a(0, traits);
-      ScopedTrackedInt b(1, traits);
-      ASSERT_OWNED(0, a);
-      ASSERT_OWNED(1, b);
-      a.swap(b);
-      ASSERT_OWNED(1, a);
-      ASSERT_OWNED(0, b);
-    }
-    ASSERT_FREED(0);
     ASSERT_FREED(1);
   }
 
