@@ -4746,7 +4746,7 @@
   {
     "name": "ozone-platform-hint",
     "owners": [ "rjkroege", "thomasanderson", "msisov@igalia.com", "nickdiego@igalia.com", "adunaev@igalia.com" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 105
   },
   {
     "name": "page-content-annotations",
