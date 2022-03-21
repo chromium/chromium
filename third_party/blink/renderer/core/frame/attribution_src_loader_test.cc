@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/frame/attribution_src_loader.h"
 
+#include <stddef.h>
+
 #include <memory>
 
 #include "base/test/metrics/histogram_tester.h"
@@ -48,6 +50,10 @@ class AttributionSrcLoaderTest : public testing::Test {
         dummy_page_holder_->GetDocument().GetFrame());
   }
 
+  void TearDown() override {
+    url_test_helpers::UnregisterAllURLsAndClearMemoryCache();
+  }
+
  protected:
   Persistent<AttributionSrcLoader> attribution_src_loader_;
   std::unique_ptr<DummyPageHolder> dummy_page_holder_;
@@ -77,6 +83,24 @@ TEST_F(AttributionSrcLoaderTest, AttributionSrcRequestStatusHistogram) {
 
   // kFailed = 2.
   histograms.ExpectBucketCount("Conversions.AttributionSrcRequestStatus", 2, 1);
+}
+
+TEST_F(AttributionSrcLoaderTest, TooManyConcurrentRequests_NewRequestDropped) {
+  KURL url = ToKURL("https://example1.com/foo.html");
+  RegisterMockedURLLoad(url, test::CoreTestDataPath("foo.html"));
+
+  for (size_t i = 0; i < AttributionSrcLoader::kMaxConcurrentRequests; ++i) {
+    EXPECT_EQ(attribution_src_loader_->RegisterSources(url),
+              AttributionSrcLoader::RegisterResult::kSuccess);
+  }
+
+  EXPECT_EQ(attribution_src_loader_->RegisterSources(url),
+            AttributionSrcLoader::RegisterResult::kFailedToRegister);
+
+  url_test_helpers::ServeAsynchronousRequests();
+
+  EXPECT_EQ(attribution_src_loader_->RegisterSources(url),
+            AttributionSrcLoader::RegisterResult::kSuccess);
 }
 
 }  // namespace blink

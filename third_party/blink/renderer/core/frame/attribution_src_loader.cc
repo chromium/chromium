@@ -204,7 +204,12 @@ AttributionSrcLoader::CreateAndSendRequest(
     RegisterResult& out_register_result) {
   // Detached frames cannot/should not register new attributionsrcs.
   if (!local_frame_->IsAttached()) {
-    out_register_result = RegisterResult::kSuccess;
+    out_register_result = RegisterResult::kFailedToRegister;
+    return nullptr;
+  }
+
+  if (resource_clients_.size() >= kMaxConcurrentRequests) {
+    out_register_result = RegisterResult::kFailedToRegister;
     return nullptr;
   }
 
