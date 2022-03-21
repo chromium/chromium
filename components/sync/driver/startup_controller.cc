@@ -41,11 +41,6 @@ base::TimeDelta GetDeferredInitDelay() {
   return kDefaultDeferredInitDelay;
 }
 
-bool IsDeferredStartupEnabled() {
-  return !base::CommandLine::ForCurrentProcess()->HasSwitch(
-      kSyncDisableDeferredStartup);
-}
-
 }  // namespace
 
 StartupController::StartupController(
@@ -89,7 +84,7 @@ void StartupController::StartUp(StartUpDeferredOption deferred_option) {
     start_up_time_ = base::Time::Now();
   }
 
-  if (deferred_option == STARTUP_DEFERRED && IsDeferredStartupEnabled() &&
+  if (deferred_option == STARTUP_DEFERRED &&
       get_preferred_data_types_callback_.Run().Has(SESSIONS)) {
     if (first_start) {
       base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
@@ -157,8 +152,6 @@ void StartupController::RecordTimeDeferred(DeferredInitTrigger trigger) {
 }
 
 void StartupController::OnFallbackStartupTimerExpired() {
-  DCHECK(IsDeferredStartupEnabled());
-
   if (!start_engine_time_.is_null()) {
     return;
   }
@@ -224,12 +217,6 @@ void StartupController::OnFirstPoliciesLoadedImpl(bool timeout) {
 }
 
 void StartupController::OnDataTypeRequestsSyncStartup(ModelType type) {
-  if (!IsDeferredStartupEnabled()) {
-    DVLOG(2) << "Ignoring data type request for sync startup: "
-             << ModelTypeToDebugString(type);
-    return;
-  }
-
   if (!start_engine_time_.is_null()) {
     return;
   }

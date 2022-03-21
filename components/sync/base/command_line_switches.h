@@ -14,11 +14,6 @@ inline constexpr char kDisableSync[] = "disable-sync";
 inline constexpr char kSyncDeferredStartupTimeoutSeconds[] =
     "sync-deferred-startup-timeout-seconds";
 
-// Enables deferring sync backend initialization until user initiated changes
-// occur.
-inline constexpr char kSyncDisableDeferredStartup[] =
-    "sync-disable-deferred-startup";
-
 // Controls whether the initial state of the "Capture Specifics" flag on
 // chrome://sync-internals is enabled.
 inline constexpr char kSyncIncludeSpecificsInProtocolLog[] =
