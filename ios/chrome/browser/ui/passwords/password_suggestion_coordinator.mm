@@ -20,6 +20,7 @@
 #include "ios/web/public/js_messaging/web_frame.h"
 #include "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/web_state.h"
+#include "ui/base/device_form_factor.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -88,6 +89,14 @@ constexpr CGFloat preferredCornerRadius = 20;
     self.viewController.modalPresentationStyle = UIModalPresentationFormSheet;
   }
 
+  // Immediately dismiss the keyboard (only on tablet) because the
+  // PasswordSuggestion view controller is incorrectly being displayed behind
+  // the keyboard. This issue does not happen on mobile devices.
+  // For more information, please see: https://www.crbug.com/1307759.
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    [self closeKeyboard];
+  }
+
   [self.baseViewController presentViewController:self.viewController
                                         animated:YES
                                       completion:nil];
@@ -140,27 +149,21 @@ constexpr CGFloat preferredCornerRadius = 20;
 }
 
 - (void)handleDecision:(BOOL)accept {
-  NSString* activeWebStateIdentifier = self.browser->GetWebStateList()
-                                           ->GetActiveWebState()
-                                           ->GetStableIdentifier();
-
-  __weak PasswordSuggestionCoordinator* weakSelf = self;
-
-  auto closeKeyboard = ^{
-    [weakSelf onCloseKeyboardWithIdentifier:activeWebStateIdentifier];
-  };
-
   if (self.decisionHandler) {
     self.decisionHandler(accept);
   }
-
-  // Close the keyboard when the user accepts a generated password
-  // suggestion. Otherwise, let them continue typing a new password.
-  if (accept) {
-    closeKeyboard();
-  }
 }
 
+// Closes the keyboard.
+- (void)closeKeyboard {
+  NSString* activeWebStateIdentifier = self.browser->GetWebStateList()
+                                           ->GetActiveWebState()
+                                           ->GetStableIdentifier();
+  __weak PasswordSuggestionCoordinator* weakSelf = self;
+  [weakSelf onCloseKeyboardWithIdentifier:activeWebStateIdentifier];
+}
+
+// Helper method which closes the keyboard.
 - (void)onCloseKeyboardWithIdentifier:(NSString*)identifier {
   Browser* browser = self.browser;
   if (!browser)
@@ -176,6 +179,7 @@ constexpr CGFloat preferredCornerRadius = 20;
     return;
   FormInputAccessoryViewHandler* handler =
       [[FormInputAccessoryViewHandler alloc] init];
+  handler.webState = webState;
   NSString* mainFrameID =
       base::SysUTF8ToNSString(web::GetMainWebFrameId(webState));
   [handler setLastFocusFormActivityWebFrameID:mainFrameID];
