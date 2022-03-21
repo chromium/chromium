@@ -62,9 +62,7 @@ GENERIC_CONDITIONS = OS_CONDITIONS + GPU_CONDITIONS
 VALID_BUG_REGEXES = [
     re.compile(r'crbug\.com\/\d+'),
     re.compile(r'crbug\.com\/angleproject\/\d+'),
-    re.compile(r'crbug\.com\/dawn\/\d+'),
     re.compile(r'crbug\.com\/swiftshader\/\d+'),
-    re.compile(r'crbug\.com\/tint\/\d+'),
     re.compile(r'skbug\.com\/\d+'),
 ]
 

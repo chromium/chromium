@@ -67,9 +67,7 @@ TAG_HEADER = """\
 # tags: [ display-server-wayland display-server-x ]
 # OOP-Canvas
 # tags: [ oop-c no-oop-c ]
-# WebGPU Backend Validation
-# tags: [ dawn-backend-validation dawn-no-backend-validation ]
-# results: [ Failure RetryOnFailure Skip Slow ]
+# results: [ Failure RetryOnFailure Skip ]
 """
 
 TAG_HEADER_BEGIN =\

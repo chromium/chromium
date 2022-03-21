@@ -2212,7 +2212,6 @@
           'linux_intel_hd_630_stable',
         ],
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_dawn_telemetry_cts_regular_and_validation',
           'gtest_tests': 'gpu_dawn_integration_gtests_passthrough',
           'isolated_scripts': 'gpu_dawn_isolated_scripts',
         },
@@ -2224,7 +2223,6 @@
           'linux_nvidia_gtx_1660_stable',
         ],
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_dawn_telemetry_cts_regular_and_validation',
           'gtest_tests': 'gpu_dawn_integration_gtests_passthrough',
           'isolated_scripts': 'gpu_dawn_isolated_scripts',
         },
@@ -2236,7 +2234,6 @@
           'linux_intel_hd_630_stable',
         ],
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_dawn_telemetry_cts_regular_and_validation',
           'gtest_tests': 'gpu_dawn_integration_gtests_passthrough',
           'isolated_scripts': 'gpu_dawn_isolated_scripts',
         },
@@ -2248,7 +2245,6 @@
           'linux_nvidia_gtx_1660_stable',
         ],
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_dawn_telemetry_cts_regular_and_validation',
           'gtest_tests': 'gpu_dawn_integration_gtests_passthrough',
           'isolated_scripts': 'gpu_dawn_isolated_scripts',
         },
@@ -2262,7 +2258,6 @@
           'mac_retina_amd_gpu_stable',
         ],
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_dawn_telemetry_cts_regular_and_validation',
           'gtest_tests': 'gpu_dawn_integration_gtests_passthrough',
           'isolated_scripts': 'gpu_dawn_isolated_scripts',
         },
@@ -2274,7 +2269,6 @@
           'mac_mini_intel_gpu_stable',
         ],
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_dawn_telemetry_cts_regular_and_validation',
           'gtest_tests': 'gpu_dawn_integration_gtests_validating',
           'isolated_scripts': 'gpu_dawn_isolated_scripts',
         },
@@ -2287,7 +2281,6 @@
           'mac_retina_amd_gpu_experimental',
         ],
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_dawn_telemetry_cts_regular_and_validation',
           'gtest_tests': 'gpu_dawn_integration_gtests_passthrough',
           'isolated_scripts': 'gpu_dawn_isolated_scripts',
         },
@@ -2313,7 +2306,6 @@
           'mac_retina_amd_gpu_stable',
         ],
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_dawn_telemetry_cts_regular_and_validation',
           'gtest_tests': 'gpu_dawn_integration_gtests_passthrough',
           'isolated_scripts': 'gpu_dawn_isolated_scripts',
         },
@@ -2325,7 +2317,6 @@
           'mac_mini_intel_gpu_stable',
         ],
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_dawn_telemetry_cts_regular_and_validation',
           'gtest_tests': 'gpu_dawn_integration_gtests_validating',
           'isolated_scripts': 'gpu_dawn_isolated_scripts',
         },
@@ -2338,7 +2329,6 @@
           'win10_intel_hd_630_stable_dimension_set',
         ],
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_dawn_telemetry_cts_tests',
           'gtest_tests': 'gpu_dawn_integration_asan_gtests_passthrough',
           'isolated_scripts': 'gpu_dawn_asan_isolated_scripts',
         },
@@ -2352,7 +2342,6 @@
           'win10_intel_hd_630_stable',
         ],
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_dawn_telemetry_cts_regular_and_partial_validation',
           'gtest_tests': 'gpu_dawn_integration_gtests_passthrough_win_intel',
           'isolated_scripts': 'gpu_dawn_isolated_scripts_win',
         },
@@ -2364,7 +2353,6 @@
           'win10_nvidia_gtx_1660_stable',
         ],
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_dawn_telemetry_cts_regular_and_partial_validation',
           'gtest_tests': 'gpu_dawn_integration_gtests_passthrough',
           'isolated_scripts': 'gpu_dawn_isolated_scripts_win',
         },
@@ -2376,7 +2364,6 @@
           'win10_intel_hd_630_stable',
         ],
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_dawn_telemetry_cts_regular_and_partial_validation',
           'gtest_tests': 'gpu_dawn_integration_gtests_passthrough_win_intel',
           'isolated_scripts': 'gpu_dawn_isolated_scripts_win',
         },
@@ -2388,7 +2375,6 @@
           'win10_nvidia_gtx_1660_stable',
         ],
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_dawn_telemetry_cts_regular_and_partial_validation',
           'gtest_tests': 'gpu_dawn_integration_gtests_passthrough',
           'isolated_scripts': 'gpu_dawn_isolated_scripts_win',
         },
@@ -2402,7 +2388,6 @@
           'win10_intel_hd_630_stable',
         ],
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_dawn_telemetry_cts_regular_and_partial_validation',
           'gtest_tests': 'gpu_dawn_integration_gtests_passthrough_win_intel',
           'isolated_scripts': 'gpu_dawn_isolated_scripts_win',
         },
@@ -2414,7 +2399,6 @@
           'win10_nvidia_gtx_1660_stable',
         ],
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_dawn_telemetry_cts_regular_and_partial_validation',
           'gtest_tests': 'gpu_dawn_integration_gtests_passthrough',
           'isolated_scripts': 'gpu_dawn_isolated_scripts_win',
         },
@@ -2426,7 +2410,6 @@
           'win10_intel_hd_630_stable',
         ],
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_dawn_telemetry_cts_regular_and_partial_validation',
           'gtest_tests': 'gpu_dawn_integration_gtests_passthrough_win_intel',
           'isolated_scripts': 'gpu_dawn_isolated_scripts_win',
         },
@@ -2438,7 +2421,6 @@
           'win10_nvidia_gtx_1660_stable',
         ],
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_dawn_telemetry_cts_regular_and_partial_validation',
           'gtest_tests': 'gpu_dawn_integration_gtests_passthrough',
           'isolated_scripts': 'gpu_dawn_isolated_scripts_win',
         },
