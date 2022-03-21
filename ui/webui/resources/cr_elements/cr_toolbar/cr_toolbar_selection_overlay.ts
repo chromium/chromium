@@ -21,6 +21,8 @@ import '../shared_vars_css.m.js';
 import {IronA11yAnnouncer} from '//resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import {Debouncer, html, microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {CrButtonElement} from '../cr_button/cr_button.m.js';
+
 export class CrToolbarSelectionOverlayElement extends PolymerElement {
   static get is() {
     return 'cr-toolbar-selection-overlay';
@@ -39,17 +41,10 @@ export class CrToolbarSelectionOverlayElement extends PolymerElement {
       },
 
       deleteLabel: String,
-
       cancelLabel: String,
-
       selectionLabel: String,
-
       deleteDisabled: Boolean,
-
-      /** @private */
       hasShown_: Boolean,
-
-      /** @private */
       selectionLabel_: String,
     };
   }
@@ -60,46 +55,38 @@ export class CrToolbarSelectionOverlayElement extends PolymerElement {
     ];
   }
 
-  constructor() {
-    super();
+  show: boolean;
+  deleteLabel: string;
+  cancelLabel: string;
+  selectionLabel: string;
+  deleteDisabled: boolean;
+  private hasShown_: boolean;
+  private selectionLabel_: string;
+  private debouncer_: Debouncer;
 
-    /** @private {Debouncer} */
-    this.debouncer_;
-  }
-
-  ready() {
+  override ready() {
     super.ready();
     this.setAttribute('role', 'toolbar');
   }
 
-  /** @return {HTMLElement} */
-  get deleteButton() {
-    return /** @type {HTMLElement} */ (
-        this.shadowRoot.querySelector('#delete'));
+  get deleteButton(): CrButtonElement {
+    return this.shadowRoot!.querySelector<CrButtonElement>('#delete')!;
   }
 
-  /**
-   * @param {string} eventName
-   * @param {*=} detail
-   * @private
-   */
-  fire_(eventName, detail) {
+  private fire_(eventName: string, detail?: any) {
     this.dispatchEvent(
         new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
   }
 
-  /** @private */
-  onClearSelectionClick_() {
+  private onClearSelectionClick_() {
     this.fire_('clear-selected-items');
   }
 
-  /** @private */
-  onDeleteClick_() {
+  private onDeleteClick_() {
     this.fire_('delete-selected-items');
   }
 
-  /** @private */
-  updateSelectionLabel_() {
+  private updateSelectionLabel_() {
     // Do this update in a microtask to ensure |show| and |selectionLabel|
     // are both updated.
     this.debouncer_ = Debouncer.debounce(this.debouncer_, microTask, () => {
@@ -112,11 +99,16 @@ export class CrToolbarSelectionOverlayElement extends PolymerElement {
     });
   }
 
-  /** @private */
-  onShowChanged_() {
+  private onShowChanged_() {
     if (this.show) {
       this.hasShown_ = true;
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'cr-toolbar-selection-overlay': CrToolbarSelectionOverlayElement;
   }
 }
 
