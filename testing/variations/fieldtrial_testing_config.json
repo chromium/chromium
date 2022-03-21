@@ -2979,22 +2979,6 @@
             ]
         }
     ],
-    "DragAndDropAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_M100",
-                    "enable_features": [
-                        "ContextMenuPopupStyle",
-                        "TouchDragAndContextMenu"
-                    ]
-                }
-            ]
-        }
-    ],
     "DriveFsBidirectionalNativeMessaging": [
         {
             "platforms": [
