@@ -10,10 +10,6 @@
 #include "base/scoped_observation.h"
 #include "ui/views/view.h"
 
-namespace views {
-class ImageButton;
-}  // namespace views
-
 namespace ash {
 
 // This view displays a scrollable list of `CalendarEventListItemView`.
@@ -43,7 +39,7 @@ class ASH_EXPORT CalendarEventListView
   CalendarViewController* calendar_view_controller_;
 
   // Owned by `CalendarEventListView`.
-  views::ImageButton* const close_button_;
+  views::View* const close_button_container_;
   views::ScrollView* const scroll_view_;
 
   // The content of the `scroll_view_`, which carries a list of

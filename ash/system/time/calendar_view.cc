@@ -777,9 +777,6 @@ void CalendarView::OnViewBoundsChanged(views::View* observed_view) {
   // observe it anymore.
   scoped_view_observer_.RemoveObservation(observed_view);
   ScrollToToday();
-  calendar_view_controller_->set_expanded_area_available_height(
-      scroll_view_->GetVisibleRect().height() -
-      calendar_view_controller_->row_height());
 }
 
 void CalendarView::OnViewFocused(View* observed_view) {
@@ -953,11 +950,11 @@ void CalendarView::OpenEventList() {
   event_list_view_ = AddChildView(
       std::make_unique<CalendarEventListView>(calendar_view_controller_.get()));
   event_list_view_->SetFocusBehavior(FocusBehavior::NEVER);
-  event_list_view_->SetBounds(
-      scroll_view_->GetVisibleRect().x(),
-      scroll_view_->GetVisibleRect().bottom(),
-      scroll_view_->GetVisibleRect().width(),
-      calendar_view_controller_->expanded_area_available_height());
+  event_list_view_->SetBounds(scroll_view_->GetVisibleRect().x(),
+                              scroll_view_->GetVisibleRect().bottom(),
+                              scroll_view_->GetVisibleRect().width(),
+                              scroll_view_->GetVisibleRect().height() -
+                                  calendar_view_controller_->row_height());
 
   if (!should_months_animate_) {
     OnOpenEventListAnimationComplete();
@@ -972,10 +969,13 @@ void CalendarView::OpenEventList() {
   month_moving.Translate(moving_up_location);
 
   gfx::Transform list_view_moving;
-  list_view_moving.Translate(gfx::Vector2dF(
-      0, -event_list_view_->GetBoundsInScreen().y() +
-             scroll_view_->GetBoundsInScreen().bottom() -
-             calendar_view_controller_->expanded_area_available_height()));
+
+  list_view_moving.Translate(
+      gfx::Vector2dF(0, -event_list_view_->GetBoundsInScreen().y() +
+                            scroll_view_->GetBoundsInScreen().bottom() -
+                            scroll_view_->GetVisibleRect().height() +
+                            calendar_view_controller_->row_height() +
+                            kContentVerticalPadding));
 
   // Tracks animation smoothness. For now, we only track animation smoothness
   // for 1 month and 1 label since all 2 month views and 2 label views are
@@ -1043,8 +1043,8 @@ void CalendarView::CloseEventList() {
   // out of the visible view.
   gfx::Transform list_view_moving;
   list_view_moving.Translate(gfx::Vector2dF(
-      0, calendar_view_controller_->expanded_area_available_height() +
-             init_position));
+      0, scroll_view_->GetVisibleRect().height() -
+             calendar_view_controller_->row_height() + init_position));
 
   auto event_list_reporter = calendar_metrics::CreateAnimationReporter(
       event_list_view_, kCloseEventListAnimationHistogram);

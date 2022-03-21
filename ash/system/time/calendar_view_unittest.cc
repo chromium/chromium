@@ -27,6 +27,7 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/view.h"
 
 namespace ash {
 
@@ -142,8 +143,9 @@ class CalendarViewTest : public AshTestBase {
   views::Button* settings_button() { return calendar_view_->settings_button_; }
   IconButton* up_button() { return calendar_view_->up_button_; }
   IconButton* down_button() { return calendar_view_->down_button_; }
-  views::ImageButton* close_button() {
-    return calendar_view_->event_list_view_->close_button_;
+  views::View* close_button() {
+    return calendar_view_->event_list_view_->close_button_container_
+        ->children()[0];
   }
   views::View* event_list_view() { return calendar_view_->event_list_view_; }
 
