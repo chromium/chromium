@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <unordered_map>
 
 #include "base/atomic_sequence_num.h"
 #include "base/auto_reset.h"
@@ -1537,12 +1538,20 @@ void LayerTreeHost::RegisterLayer(Layer* layer) {
   DCHECK(!LayerById(layer->id()));
   DCHECK(!in_paint_layer_contents_);
   layer_id_map_[layer->id()] = layer;
+  if (!IsUsingLayerLists() && layer->element_id()) {
+    mutator_host()->RegisterElementId(layer->element_id(),
+                                      ElementListType::ACTIVE);
+  }
 }
 
 void LayerTreeHost::UnregisterLayer(Layer* layer) {
   DCHECK(IsMainThread());
   DCHECK(LayerById(layer->id()));
   DCHECK(!in_paint_layer_contents_);
+  if (!IsUsingLayerLists() && layer->element_id()) {
+    mutator_host()->UnregisterElementId(layer->element_id(),
+                                        ElementListType::ACTIVE);
+  }
   pending_commit_state()->layers_that_should_push_properties.erase(layer);
   layer_id_map_.erase(layer->id());
 }
@@ -1678,14 +1687,20 @@ void LayerTreeHost::RegisterElement(ElementId element_id,
                                     Layer* layer) {
   DCHECK(IsMainThread());
   element_layers_map_[element_id] = layer;
+  if (!IsUsingLayerLists())
+    mutator_host()->RegisterElementId(element_id, ElementListType::ACTIVE);
 }
 
 void LayerTreeHost::UnregisterElement(ElementId element_id) {
   DCHECK(IsMainThread());
-  if (!IsUsingLayerLists()) {
-    mutator_host()->RemoveElementId(element_id);
-  }
+  if (!IsUsingLayerLists())
+    mutator_host()->UnregisterElementId(element_id, ElementListType::ACTIVE);
   element_layers_map_.erase(element_id);
+}
+
+void LayerTreeHost::UpdateActiveElements() {
+  DCHECK(IsUsingLayerLists());
+  mutator_host()->UpdateRegisteredElementIds(ElementListType::ACTIVE);
 }
 
 void LayerTreeHost::SetElementIdsForTesting() {
@@ -1821,8 +1836,7 @@ void LayerTreeHost::ElementIsAnimatingChanged(
     ElementListType list_type,
     const PropertyAnimationState& mask,
     const PropertyAnimationState& state) {
-  if (list_type == ElementListType::PENDING)
-    return;
+  DCHECK_EQ(ElementListType::ACTIVE, list_type);
   property_trees()->ElementIsAnimatingChanged(element_id_map, mask, state,
                                               true);
 }
@@ -1830,8 +1844,7 @@ void LayerTreeHost::ElementIsAnimatingChanged(
 void LayerTreeHost::MaximumScaleChanged(ElementId element_id,
                                         ElementListType list_type,
                                         float maximum_scale) {
-  if (list_type == ElementListType::PENDING)
-    return;
+  DCHECK_EQ(ElementListType::ACTIVE, list_type);
   property_trees()->MaximumAnimationScaleChanged(element_id, maximum_scale);
 }
 

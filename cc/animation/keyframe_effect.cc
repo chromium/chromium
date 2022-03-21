@@ -19,7 +19,6 @@
 #include "ui/gfx/animation/keyframe/animation_curve.h"
 #include "ui/gfx/animation/keyframe/target_property.h"
 #include "ui/gfx/geometry/transform_operations.h"
-#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace cc {
 
@@ -106,6 +105,9 @@ void KeyframeEffect::DetachElement() {
 
 void KeyframeEffect::Tick(base::TimeTicks monotonic_time) {
   DCHECK(has_bound_element_animations());
+  if (!element_animations_->has_element_in_any_list())
+    return;
+
   if (needs_to_start_keyframe_models_)
     StartKeyframeModels(monotonic_time);
 
@@ -148,12 +150,16 @@ void KeyframeEffect::UpdateState(bool start_ready_keyframe_models,
       PromoteStartedKeyframeModels(events);
     }
   }
+
+  if (!element_animations()->has_element_in_any_list())
+    RemoveFromTicking();
 }
 
 void KeyframeEffect::UpdateTickingState() {
   if (animation_->has_animation_host()) {
     bool was_ticking = is_ticking_;
-    is_ticking_ = HasNonDeletedKeyframeModel();
+    is_ticking_ = HasNonDeletedKeyframeModel() &&
+                  element_animations_->has_element_in_any_list();
 
     if (is_ticking_ && !was_ticking) {
       animation_->AddToTicking();
@@ -594,18 +600,19 @@ void KeyframeEffect::PushNewKeyframeModelsToImplThread(
         !ScrollOffsetAnimationCurve::ToScrollOffsetAnimationCurve(
              keyframe_model->curve())
              ->HasSetInitialValue()) {
-      absl::optional<gfx::PointF> current_scroll_offset;
-      // If the scroller was already composited, prefer using its current scroll
-      // offset.
-      current_scroll_offset = keyframe_effect_impl->ScrollOffsetForAnimation();
-      // Otherwise, take the scroll offset from the commit with the animation.
-      if (!current_scroll_offset.has_value())
+      gfx::PointF current_scroll_offset;
+      if (keyframe_effect_impl->HasElementInActiveList()) {
+        current_scroll_offset =
+            keyframe_effect_impl->ScrollOffsetForAnimation();
+      } else {
+        // The owning layer isn't yet in the active tree, so the main thread
+        // scroll offset will be up to date.
         current_scroll_offset = ScrollOffsetForAnimation();
-      DCHECK(current_scroll_offset);
+      }
       ScrollOffsetAnimationCurve* curve =
           ScrollOffsetAnimationCurve::ToScrollOffsetAnimationCurve(
               keyframe_model->curve());
-      curve->SetInitialValue(*current_scroll_offset);
+      curve->SetInitialValue(current_scroll_offset);
     }
 
     // The new keyframe_model should be set to run as soon as possible.
@@ -1016,7 +1023,13 @@ void KeyframeEffect::MarkFinishedKeyframeModels(
     element_animations_->UpdateClientAnimationState();
 }
 
-absl::optional<gfx::PointF> KeyframeEffect::ScrollOffsetForAnimation() const {
+bool KeyframeEffect::HasElementInActiveList() const {
+  DCHECK(has_bound_element_animations());
+  return element_animations_->has_element_in_active_list();
+}
+
+gfx::PointF KeyframeEffect::ScrollOffsetForAnimation() const {
+  DCHECK(has_bound_element_animations());
   return element_animations_->ScrollOffsetForAnimation();
 }
 
