@@ -468,12 +468,14 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   /**
    * hide the link to the user's Google Account if:
    *  a) the link is embedded in the account storage message OR
-   *  b) the user is signed out (or signed-in but has encrypted passwords)
+   *  b) the user is signed out (or signed-in but has encrypted passwords) OR
+   *  c) unified password manager for desktop is enabled.
    */
   private computeHidePasswordsLink_(): boolean {
     return this.eligibleForAccountStorage_ ||
         (!!this.syncStatus_ && !!this.syncStatus_.signedIn &&
-         !!this.syncPrefs_ && !!this.syncPrefs_.encryptAllData);
+         !!this.syncPrefs_ && !!this.syncPrefs_.encryptAllData) ||
+        this.isUnifiedPasswordManagerEnabled_;
   }
 
   private computeHasLeakedCredentials_(): boolean {

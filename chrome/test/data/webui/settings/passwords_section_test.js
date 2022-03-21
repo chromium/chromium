@@ -265,7 +265,10 @@ suite('PasswordsSection', function() {
 
     PasswordManagerImpl.setInstance(passwordManager);
     elementFactory = new PasswordSectionElementFactory(document);
-    loadTimeData.overrideValues({enablePasswordNotes: false});
+    loadTimeData.overrideValues({
+      enablePasswordNotes: false,
+      unifiedPasswordManagerEnabled: false,
+    });
   });
 
   test('testPasswordsExtensionIndicator', function() {
@@ -1585,6 +1588,13 @@ suite('PasswordsSection', function() {
     webUIListenerCallback('sync-prefs-changed', syncPrefs);
     flush();
     assertFalse(passwordsSection.$.manageLink.hidden);
+  });
+
+  test('hideLinkToPasswordManagerWhenUnifiedPasswordManagerEnabled', () => {
+    loadTimeData.overrideValues({unifiedPasswordManagerEnabled: true});
+    const passwordsSection =
+        elementFactory.createPasswordsSection(passwordManager, [], []);
+    assertTrue(passwordsSection.$.manageLink.hidden);
   });
 
   test('showLinkToPasswordManagerWhenNotSignedIn', function() {
