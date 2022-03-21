@@ -70,8 +70,37 @@ base::Time::Exploded GetExplodedLocal(const base::Time& date);
 // Gets the given `date`'s `Exploded` instance, in UTC time.
 base::Time::Exploded GetExplodedUTC(const base::Time& date);
 
-// Gets the given `date`'s month name in string in the current language.
-std::u16string GetMonthName(const base::Time date);
+// Gets the `date`'s month name, numeric day of month, and year.
+// (e.g. March 10, 2022)
+ASH_EXPORT std::u16string GetMonthDayYear(const base::Time date);
+
+// Gets the `date`'s month name in string in the current language.
+// (e.g. March)
+ASH_EXPORT std::u16string GetMonthName(const base::Time date);
+
+// Gets the `date`'s numeric day of month.
+// (e.g. 10)
+ASH_EXPORT std::u16string GetDayOfMonth(const base::Time date);
+
+// Gets the `date`'s month name and the numeric day of month.
+// (e.g. March 10)
+ASH_EXPORT std::u16string GetMonthNameAndDayOfMonth(const base::Time date);
+
+// Gets the `date`'s hour in twelve hour clock format.
+// (e.g. 2:31 AM)
+ASH_EXPORT std::u16string GetTwelveHourClockTime(const base::Time date);
+
+// Gets the `date`'s time zone.
+// (e.g. Greenwich Mean Time)
+ASH_EXPORT std::u16string GetTimeZone(const base::Time date);
+
+// Gets the `date`'s year.
+// (e.g 2022)
+ASH_EXPORT std::u16string GetYear(const base::Time date);
+
+// Gets the `date`'s month name and year.
+// (e.g. March 2022)
+ASH_EXPORT std::u16string GetMonthNameAndYear(const base::Time date);
 
 // Sets up the `TableLayout` to have 7 columns, which is one week row (7 days).
 void SetUpWeekColumns(views::TableLayout* layout);

@@ -15,7 +15,6 @@
 #include "ash/system/time/calendar_view_controller.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tri_view.h"
-#include "base/i18n/time_formatting.h"
 #include "calendar_event_list_item_view.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -194,8 +193,8 @@ void CalendarEventListView::UpdateListItems() {
   DCHECK(calendar_view_controller_->selected_date().has_value());
   empty_button->SetAccessibleName(l10n_util::GetStringFUTF16(
       IDS_ASH_CALENDAR_NO_EVENT_BUTTON_ACCESSIBLE_DESCRIPTION,
-      base::TimeFormatWithPattern(
-          calendar_view_controller_->selected_date().value(), "MMMMd")));
+      calendar_utils::GetMonthNameAndDayOfMonth(
+          calendar_view_controller_->selected_date().value())));
   empty_list_view_container->SetBorder(
       views::CreateEmptyBorder(kOpenGoogleCalendarContainerInsets));
   views::View* empty_list_view =

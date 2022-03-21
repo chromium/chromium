@@ -10,6 +10,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/system/time/date_formatter.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
@@ -31,8 +32,8 @@ bool IsTheSameDay(absl::optional<base::Time> date_a,
   if (!date_a.has_value() || !date_b.has_value())
     return false;
 
-  return base::TimeFormatWithPattern(date_a.value(), "dd MM YYYY") ==
-         base::TimeFormatWithPattern(date_b.value(), "dd MM YYYY");
+  return calendar_utils::GetMonthDayYear(date_a.value()) ==
+         calendar_utils::GetMonthDayYear(date_b.value());
 }
 
 ASH_EXPORT std::set<base::Time> GetSurroundingMonthsUTC(
@@ -71,8 +72,49 @@ base::Time::Exploded GetExplodedUTC(const base::Time& date) {
   return exploded;
 }
 
+std::u16string FormatDate(const icu::SimpleDateFormat& formatter,
+                          const base::Time date) {
+  return DateFormatter::GetInstance()->GetFormattedTime(&formatter, date);
+}
+
+std::u16string GetMonthDayYear(const base::Time date) {
+  return calendar_utils::FormatDate(
+      DateFormatter::GetInstance()->month_day_year_formatter(), date);
+}
+
 std::u16string GetMonthName(const base::Time date) {
-  return base::TimeFormatWithPattern(date, "MMMM");
+  return calendar_utils::FormatDate(
+      DateFormatter::GetInstance()->month_name_formatter(), date);
+}
+
+std::u16string GetDayOfMonth(const base::Time date) {
+  return calendar_utils::FormatDate(
+      DateFormatter::GetInstance()->day_of_month_formatter(), date);
+}
+
+std::u16string GetMonthNameAndDayOfMonth(const base::Time date) {
+  return calendar_utils::FormatDate(
+      DateFormatter::GetInstance()->month_day_formatter(), date);
+}
+
+std::u16string GetTwelveHourClockTime(const base::Time date) {
+  return calendar_utils::FormatDate(
+      DateFormatter::GetInstance()->twelve_hour_clock_formatter(), date);
+}
+
+std::u16string GetTimeZone(const base::Time date) {
+  return calendar_utils::FormatDate(
+      DateFormatter::GetInstance()->time_zone_formatter(), date);
+}
+
+std::u16string GetYear(const base::Time date) {
+  return calendar_utils::FormatDate(
+      DateFormatter::GetInstance()->year_formatter(), date);
+}
+
+std::u16string GetMonthNameAndYear(const base::Time date) {
+  return calendar_utils::FormatDate(
+      DateFormatter::GetInstance()->month_name_year_formatter(), date);
 }
 
 void SetUpWeekColumns(views::TableLayout* layout) {

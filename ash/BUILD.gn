@@ -1502,6 +1502,8 @@ component("ash") {
     "system/time/calendar_view.h",
     "system/time/calendar_view_controller.cc",
     "system/time/calendar_view_controller.h",
+    "system/time/date_formatter.cc",
+    "system/time/date_formatter.h",
     "system/time/time_of_day.cc",
     "system/time/time_of_day.h",
     "system/time/time_tray_item_view.cc",

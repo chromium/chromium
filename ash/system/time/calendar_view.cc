@@ -20,7 +20,6 @@
 #include "ash/system/tray/tri_view.h"
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/i18n/time_formatting.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "components/vector_icons/vector_icons.h"
@@ -375,8 +374,8 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
   // Add the header.
   header_ = new CalendarHeaderView(
       calendar_view_controller_->GetOnScreenMonthName(),
-      base::TimeFormatWithPattern(
-          calendar_view_controller_->currently_shown_date(), "YYYY"));
+      calendar_utils::GetYear(
+          calendar_view_controller_->currently_shown_date()));
 
   TriView* tri_view = TrayPopupUtils::CreateDefaultRowView();
   tri_view->SetBorder(views::CreateEmptyBorder(
@@ -498,7 +497,7 @@ views::Button* CalendarView::CreateInfoButton(
                      PillButton::Type::kIconless, /*icon=*/nullptr);
   button->SetAccessibleName(l10n_util::GetStringFUTF16(
       IDS_ASH_CALENDAR_INFO_BUTTON_ACCESSIBLE_DESCRIPTION,
-      base::TimeFormatWithPattern(base::Time::Now(), "MMMMdyyyy")));
+      calendar_utils::GetMonthDayYear(base::Time::Now())));
   return button;
 }
 
@@ -690,8 +689,8 @@ void CalendarView::FadeInCurrentMonth() {
 void CalendarView::UpdateHeaders() {
   header_->UpdateHeaders(
       calendar_view_controller_->GetOnScreenMonthName(),
-      base::TimeFormatWithPattern(
-          calendar_view_controller_->currently_shown_date(), "YYYY"));
+      calendar_utils::GetYear(
+          calendar_view_controller_->currently_shown_date()));
 }
 
 void CalendarView::RestoreHeadersStatus() {
@@ -946,9 +945,9 @@ void CalendarView::OpenEventList() {
       calendar_view_controller_->selected_date();
   scroll_view_->GetViewAccessibility().OverrideName(l10n_util::GetStringFUTF16(
       IDS_ASH_CALENDAR_CONTENT_ACCESSIBLE_DESCRIPTION,
-      base::TimeFormatWithPattern(
-          calendar_view_controller_->currently_shown_date(), "MMMM yyyy"),
-      base::TimeFormatWithPattern(selected_date.value(), "MMMMdyyyy")));
+      calendar_utils::GetMonthNameAndYear(
+          calendar_view_controller_->currently_shown_date()),
+      calendar_utils::GetMonthDayYear(selected_date.value())));
   scroll_view_->NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged,
                                          /*send_native_event=*/true);
   event_list_view_ = AddChildView(
@@ -1024,8 +1023,8 @@ void CalendarView::CloseEventList() {
   // Updates `scroll_view_`'s accessible name without the selected date.
   scroll_view_->GetViewAccessibility().OverrideName(l10n_util::GetStringFUTF16(
       IDS_ASH_CALENDAR_BUBBLE_ACCESSIBLE_DESCRIPTION,
-      base::TimeFormatWithPattern(
-          calendar_view_controller_->currently_shown_date(), "MMMM yyyy")));
+      calendar_utils::GetMonthNameAndYear(
+          calendar_view_controller_->currently_shown_date())));
   scroll_view_->NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged,
                                          /*send_native_event=*/true);
   scroll_view_->ClipHeightTo(0, INT_MAX);

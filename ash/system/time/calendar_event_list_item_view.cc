@@ -14,7 +14,6 @@
 #include "ash/system/time/calendar_view_controller.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tri_view.h"
-#include "base/i18n/time_formatting.h"
 #include "base/strings/utf_string_conversions.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -110,12 +109,12 @@ CalendarEventListItemView::CalendarEventListItemView(
 
   auto start_time = event.start_time().date_time();
   auto end_time = event.end_time().date_time();
-  auto start_time_string = base::TimeFormatWithPattern(start_time, "h:mm a");
-  auto end_time_string = base::TimeFormatWithPattern(end_time, "h:mm a");
+  auto start_time_string = calendar_utils::GetTwelveHourClockTime(start_time);
+  auto end_time_string = calendar_utils::GetTwelveHourClockTime(end_time);
   GetViewAccessibility().OverrideRole(ax::mojom::Role::kButton);
   SetAccessibleName(l10n_util::GetStringFUTF16(
       IDS_ASH_CALENDAR_EVENT_ENTRY_ACCESSIBLE_DESCRIPTION, start_time_string,
-      end_time_string, base::TimeFormatWithPattern(start_time, "zzzz"),
+      end_time_string, calendar_utils::GetTimeZone(start_time),
       base::UTF8ToUTF16(event.summary())));
   SetFocusBehavior(FocusBehavior::ALWAYS);
   summary_->SetText(event.summary().empty()

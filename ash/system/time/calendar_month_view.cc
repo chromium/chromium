@@ -4,8 +4,6 @@
 
 #include "ash/system/time/calendar_month_view.h"
 
-#include <codecvt>
-
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -17,7 +15,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
-#include "base/i18n/time_formatting.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -76,12 +73,11 @@ CalendarDateCellView::CalendarDateCellView(
     : views::LabelButton(views::Button::PressedCallback(base::BindRepeating(
                              &CalendarDateCellView::OnDateCellActivated,
                              base::Unretained(this))),
-                         base::TimeFormatWithPattern(date, "d"),
+                         calendar_utils::GetDayOfMonth(date),
                          CONTEXT_CALENDAR_DATE),
       date_(date),
       grayed_out_(is_grayed_out_date),
       row_index_(row_index),
-      tool_tip_(base::TimeFormatWithPattern(date, "MMMMdyyyy")),
       calendar_view_controller_(calendar_view_controller) {
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
   SetBorder(views::CreateEmptyBorder(calendar_utils::kDateCellInsets));
@@ -144,8 +140,8 @@ void CalendarDateCellView::OnPaintBackground(gfx::Canvas* canvas) {
 
     SetAccessibleName(l10n_util::GetStringFUTF16(
         IDS_ASH_CALENDAR_SELECTED_DATE_CELL_ACCESSIBLE_DESCRIPTION,
-        base::TimeFormatWithPattern(first_day_of_week, "MMMMdyyyy"),
-        base::TimeFormatWithPattern(date_, "d")));
+        calendar_utils::GetMonthDayYear(first_day_of_week),
+        calendar_utils::GetDayOfMonth(date_)));
   }
 
   if (is_selected_ && calendar_utils::IsActiveUser()) {
@@ -213,14 +209,15 @@ void CalendarDateCellView::DisableFocus() {
 }
 
 void CalendarDateCellView::SetTooltipAndAccessibleName() {
+  std::u16string formatted_date = calendar_utils::GetMonthDayYear(date_);
   if (!calendar_utils::IsActiveUser()) {
-    tool_tip_ = base::TimeFormatWithPattern(date_, "MMMMdyyyy");
+    tool_tip_ = formatted_date;
   } else {
     const int tooltip_id =
         event_number_ == 1 ? IDS_ASH_CALENDAR_DATE_CELL_TOOLTIP
                            : IDS_ASH_CALENDAR_DATE_CELL_PLURAL_EVENTS_TOOLTIP;
     tool_tip_ = l10n_util::GetStringFUTF16(
-        tooltip_id, base::TimeFormatWithPattern(date_, "MMMMdyyyy"),
+        tooltip_id, formatted_date,
         base::UTF8ToUTF16(base::NumberToString(event_number_)));
   }
   SetTooltipText(tool_tip_);
