@@ -1912,8 +1912,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     @CalledByNative
     private void setAccessibilityNodeInfoBaseAttributes(AccessibilityNodeInfoCompat node,
             boolean isRoot, String className, String role, String roleDescription, String hint,
-            String targetUrl, boolean canOpenPopup, boolean dismissable, boolean multiLine,
-            int inputType, int liveRegion, String errorMessage, int clickableScore) {
+            String targetUrl, boolean canOpenPopup, boolean multiLine, int inputType,
+            int liveRegion, String errorMessage, int clickableScore) {
         node.setClassName(className);
 
         Bundle bundle = node.getExtras();
@@ -1928,7 +1928,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         }
 
         node.setCanOpenPopup(canOpenPopup);
-        node.setDismissable(dismissable);
+        node.setDismissable(false); // No concept of "dismissable" on the web currently.
         node.setMultiLine(multiLine);
         node.setInputType(inputType);
 

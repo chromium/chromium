@@ -166,6 +166,18 @@ bool IsComboBox(const ax::mojom::Role role) {
   }
 }
 
+bool IsComboBoxContainer(const ax::mojom::Role role) {
+  switch (role) {
+    case ax::mojom::Role::kDialog:
+    case ax::mojom::Role::kGrid:
+    case ax::mojom::Role::kListBox:
+    case ax::mojom::Role::kTree:
+      return true;
+    default:
+      return false;
+  }
+}
+
 bool IsContainerWithSelectableChildren(const ax::mojom::Role role) {
   switch (role) {
     case ax::mojom::Role::kComboBoxGrouping:
@@ -773,6 +785,36 @@ bool IsTableHeader(ax::mojom::Role role) {
   }
 }
 
+bool IsTableItem(ax::mojom::Role role) {
+  switch (role) {
+    case ax::mojom::Role::kDescriptionListTerm:
+    case ax::mojom::Role::kListBoxOption:
+    case ax::mojom::Role::kListItem:
+    case ax::mojom::Role::kTreeItem:
+      return true;
+    default:
+      return IsCellOrTableHeader(role);
+  }
+}
+
+#if BUILDFLAG(IS_ANDROID)
+bool IsTableLike(const ax::mojom::Role role) {
+  switch (role) {
+    case ax::mojom::Role::kGrid:
+    case ax::mojom::Role::kDescriptionList:
+    case ax::mojom::Role::kDirectory:
+    case ax::mojom::Role::kList:
+    case ax::mojom::Role::kListBox:
+    case ax::mojom::Role::kListGrid:
+    case ax::mojom::Role::kTable:
+    case ax::mojom::Role::kTree:
+    case ax::mojom::Role::kTreeGrid:
+      return true;
+    default:
+      return false;
+  }
+}
+#else
 bool IsTableLike(const ax::mojom::Role role) {
   switch (role) {
     case ax::mojom::Role::kGrid:
@@ -786,6 +828,7 @@ bool IsTableLike(const ax::mojom::Role role) {
       return false;
   }
 }
+#endif
 
 bool IsTableRow(ax::mojom::Role role) {
   switch (role) {

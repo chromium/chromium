@@ -196,36 +196,12 @@ bool BrowserAccessibilityAndroid::IsCollapsed() const {
   return HasState(ax::mojom::State::kCollapsed);
 }
 
-// TODO(dougt) Move to ax_role_properties?
 bool BrowserAccessibilityAndroid::IsCollection() const {
-  return (ui::IsTableLike(GetRole()) || GetRole() == ax::mojom::Role::kList ||
-          GetRole() == ax::mojom::Role::kListBox ||
-          GetRole() == ax::mojom::Role::kDescriptionList ||
-          GetRole() == ax::mojom::Role::kDirectory ||
-          GetRole() == ax::mojom::Role::kTree);
+  return ui::IsTableLike(GetRole());
 }
 
 bool BrowserAccessibilityAndroid::IsCollectionItem() const {
-  return (GetRole() == ax::mojom::Role::kCell ||
-          GetRole() == ax::mojom::Role::kColumnHeader ||
-          GetRole() == ax::mojom::Role::kDescriptionListTerm ||
-          GetRole() == ax::mojom::Role::kListBoxOption ||
-          GetRole() == ax::mojom::Role::kListItem ||
-          GetRole() == ax::mojom::Role::kRowHeader ||
-          GetRole() == ax::mojom::Role::kTreeItem);
-}
-
-bool BrowserAccessibilityAndroid::IsCombobox() const {
-  return (GetRole() == ax::mojom::Role::kComboBoxGrouping ||
-          GetRole() == ax::mojom::Role::kTextFieldWithComboBox ||
-          GetRole() == ax::mojom::Role::kComboBoxMenuButton);
-}
-
-bool BrowserAccessibilityAndroid::IsComboboxControl() const {
-  return (GetRole() == ax::mojom::Role::kTree ||
-          GetRole() == ax::mojom::Role::kGrid ||
-          GetRole() == ax::mojom::Role::kDialog ||
-          GetRole() == ax::mojom::Role::kListBox);
+  return ui::IsTableItem(GetRole());
 }
 
 bool BrowserAccessibilityAndroid::IsContentInvalid() const {
@@ -252,10 +228,6 @@ bool BrowserAccessibilityAndroid::IsDisabledDescendant() const {
   }
 
   return false;
-}
-
-bool BrowserAccessibilityAndroid::IsDismissable() const {
-  return false;  // No concept of "dismissable" on the web currently.
 }
 
 bool BrowserAccessibilityAndroid::IsEnabled() const {
@@ -316,10 +288,6 @@ bool BrowserAccessibilityAndroid::IsHeading() const {
 
 bool BrowserAccessibilityAndroid::IsHierarchical() const {
   return (GetRole() == ax::mojom::Role::kTree || IsHierarchicalList());
-}
-
-bool BrowserAccessibilityAndroid::IsLink() const {
-  return ui::IsLink(GetRole());
 }
 
 bool BrowserAccessibilityAndroid::IsMultiLine() const {
@@ -430,7 +398,7 @@ bool BrowserAccessibilityAndroid::IsHeadingLink() const {
 
   BrowserAccessibilityAndroid* child =
       static_cast<BrowserAccessibilityAndroid*>(InternalChildrenBegin().get());
-  return child->IsLink();
+  return ui::IsLink(child->GetRole());
 }
 
 const BrowserAccessibilityAndroid*
@@ -556,7 +524,7 @@ bool BrowserAccessibilityAndroid::IsLeaf() const {
   }
 
   // Links are never leaves.
-  if (IsLink())
+  if (ui::IsLink(GetRole()))
     return false;
 
   BrowserAccessibilityManagerAndroid* manager_android =
@@ -627,10 +595,6 @@ bool BrowserAccessibilityAndroid::IsLeafConsideringChildren() const {
   return true;
 }
 
-// Note: In the Android accessibility API, the word "text" is used where other
-// platforms would use "name". The value returned here will appear in dump tree
-// tests as "name" in the ...-android.txt files, but as "text" in the
-// ...-android-external.txt files. On other platforms this may be ::GetName().
 std::u16string BrowserAccessibilityAndroid::GetTextContentUTF16() const {
   if (ui::IsIframe(GetRole()))
     return std::u16string();
@@ -753,11 +717,6 @@ std::u16string BrowserAccessibilityAndroid::GetValueForControl() const {
   return value;
 }
 
-// This method maps to the Android API's "hint" attribute. For nodes that have
-// chosen to expose their value in the name ("text") attribute, the hint must
-// contain the text that would otherwise have been present. The hint includes
-// the placeholder and describedby values for all nodes regardless of where the
-// value is placed. These pieces of content are concatenated for Android.
 std::u16string BrowserAccessibilityAndroid::GetHint() const {
   std::vector<std::u16string> strings;
 
@@ -1032,10 +991,10 @@ std::u16string BrowserAccessibilityAndroid::GetComboboxExpandedText() const {
   if (controls.size() != 1)
     return GetComboboxExpandedTextFallback();
 
-  // |controlled_node| needs to be a combobox control, if not, try fallbacks.
+  // |controlled_node| needs to be a combobox container, if not, try fallbacks.
   BrowserAccessibilityAndroid* controlled_node =
       static_cast<BrowserAccessibilityAndroid*>(controls[0]);
-  if (!controlled_node->IsComboboxControl())
+  if (!ui::IsComboBoxContainer(controlled_node->GetRole()))
     return GetComboboxExpandedTextFallback();
 
   // For dialogs, return special case string.
@@ -1922,11 +1881,6 @@ bool BrowserAccessibilityAndroid::HasListMarkerChild() const {
   return false;
 }
 
-// This method determines if a node should expose its value as a name, which is
-// placed in the Android API's "text" attribute. For controls that can take on
-// a value (e.g. a date time, or combobox), we wish to expose the value that
-// the user has chosen. When the value is exposed as the name, then the
-// accessible name is added to the Android API's "hint" attribute instead.
 bool BrowserAccessibilityAndroid::ShouldExposeValueAsName() const {
   switch (GetRole()) {
     case ax::mojom::Role::kDate:
@@ -1945,7 +1899,7 @@ bool BrowserAccessibilityAndroid::ShouldExposeValueAsName() const {
   if (IsTextField())
     return true;
 
-  if (IsCombobox())
+  if (ui::IsComboBox(GetRole()))
     return true;
 
   if (GetRole() == ax::mojom::Role::kPopUpButton &&

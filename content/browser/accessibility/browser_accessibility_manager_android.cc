@@ -247,7 +247,7 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
       break;
     }
     case ui::AXEventGenerator::Event::EXPANDED: {
-      if (android_node->IsCombobox() &&
+      if (ui::IsComboBox(android_node->GetRole()) &&
           GetFocus()->IsDescendantOf(android_node)) {
         wcax->AnnounceLiveRegionText(android_node->GetComboboxExpandedText());
       }

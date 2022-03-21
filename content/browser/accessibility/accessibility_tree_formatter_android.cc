@@ -17,6 +17,7 @@
 #include "content/browser/accessibility/accessibility_tree_formatter_blink.h"
 #include "content/browser/accessibility/browser_accessibility_android.h"
 #include "content/public/browser/ax_inspect_factory.h"
+#include "ui/accessibility/ax_role_properties.h"
 
 using base::StringPrintf;
 
@@ -33,7 +34,6 @@ const char* const BOOL_ATTRIBUTES[] = {
     "collection_item",
     "content_invalid",
     "disabled",
-    "dismissable",
     "editable_text",
     "expanded",
     "focusable",
@@ -173,7 +173,6 @@ void AccessibilityTreeFormatterAndroid::AddProperties(
   dict->SetBoolKey("collection_item", android_node->IsCollectionItem());
   dict->SetBoolKey("content_invalid", android_node->IsContentInvalid());
   dict->SetBoolKey("disabled", !android_node->IsEnabled());
-  dict->SetBoolKey("dismissable", android_node->IsDismissable());
   dict->SetBoolKey("editable_text", android_node->IsTextField());
   dict->SetBoolKey("expanded", android_node->IsExpanded());
   dict->SetBoolKey("focusable", android_node->IsFocusable());
@@ -185,7 +184,7 @@ void AccessibilityTreeFormatterAndroid::AddProperties(
   dict->SetBoolKey("heading", android_node->IsHeading());
   dict->SetBoolKey("hierarchical", android_node->IsHierarchical());
   dict->SetBoolKey("invisible", !android_node->IsVisibleToUser());
-  dict->SetBoolKey("link", android_node->IsLink());
+  dict->SetBoolKey("link", ui::IsLink(android_node->GetRole()));
   dict->SetBoolKey("multiline", android_node->IsMultiLine());
   dict->SetBoolKey("multiselectable", android_node->IsMultiselectable());
   dict->SetBoolKey("range", android_node->GetData().IsRangeValueSupported());
