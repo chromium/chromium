@@ -1,9 +1,4 @@
 {
-  "$build/chromium_tests": {
-    "project_trigger_overrides": {
-      "chromium": "chromium-m99"
-    }
-  },
   "$build/reclient": {
     "instance": "rbe-chromium-trusted",
     "jobs": 500,

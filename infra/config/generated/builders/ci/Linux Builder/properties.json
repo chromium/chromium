@@ -1,9 +1,4 @@
 {
-  "$build/chromium_tests": {
-    "project_trigger_overrides": {
-      "chromium": "chromium-m99"
-    }
-  },
   "$build/goma": {
     "enable_ats": true,
     "jobs": 500,
