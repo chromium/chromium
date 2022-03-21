@@ -186,6 +186,11 @@ IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest, StorageRecordedInSingleFrame) {
   EXPECT_FALSE(state_b.user_interaction_time().has_value());
 }
 
+#if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#define MAYBE_Histograms_StorageThenClick DISABLED_Histograms_StorageThenClick
+#else
+#define MAYBE_Histograms_StorageThenClick Histograms_StorageThenClick
+#endif
 IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest, Histograms_StorageThenClick) {
   base::HistogramTester histograms;
   GURL url = embedded_test_server()->GetURL("a.test", "/set-cookie?foo=bar");
@@ -211,6 +216,11 @@ IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest, Histograms_StorageThenClick) {
   histograms.ExpectUniqueTimeSample(kTimeToInteraction, base::Seconds(10), 1);
 }
 
+#if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#define MAYBE_Histograms_ClickThenStorage DISABLED_Histograms_ClickThenStorage
+#else
+#define MAYBE_Histograms_ClickThenStorage Histograms_ClickThenStorage
+#endif
 IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest, Histograms_ClickThenStorage) {
   base::HistogramTester histograms;
   base::Time time = base::Time::FromDoubleT(1);
