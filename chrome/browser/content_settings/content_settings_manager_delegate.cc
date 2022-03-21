@@ -29,7 +29,8 @@ void OnFileSystemAccessedInGuestViewContinuation(
     const GURL& url,
     base::OnceCallback<void(bool)> callback,
     bool allowed) {
-  content_settings::PageSpecificContentSettings::FileSystemAccessed(
+  content_settings::PageSpecificContentSettings::StorageAccessed(
+      content_settings::mojom::ContentSettingsManager::StorageType::FILE_SYSTEM,
       render_process_id, render_frame_id, url, !allowed);
   std::move(callback).Run(allowed);
 }

@@ -47,19 +47,6 @@ void OnStorageAccessed(int process_id,
   }
 }
 
-void OnDomStorageAccessed(int process_id,
-                          int frame_id,
-                          const GURL& origin_url,
-                          const GURL& top_origin_url,
-                          bool local,
-                          bool blocked_by_policy) {
-  PageSpecificContentSettings* settings =
-      PageSpecificContentSettings::GetForFrame(
-          content::RenderFrameHost::FromID(process_id, frame_id));
-  if (settings)
-    settings->OnDomStorageAccessed(origin_url, local, blocked_by_policy);
-}
-
 void NotifyStorageAccess(int render_process_id,
                          int32_t render_frame_id,
                          StorageType storage_type,
@@ -67,50 +54,49 @@ void NotifyStorageAccess(int render_process_id,
                          const url::Origin& top_frame_origin,
                          bool allowed) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  switch (storage_type) {
-    case StorageType::DATABASE:
-      PageSpecificContentSettings::WebDatabaseAccessed(
-          render_process_id, render_frame_id, url, !allowed);
-      break;
-    case StorageType::LOCAL_STORAGE:
-      OnDomStorageAccessed(render_process_id, render_frame_id, url,
-                           top_frame_origin.GetURL(), true, !allowed);
-      OnStorageAccessed(render_process_id, render_frame_id, url,
-                        top_frame_origin.GetURL(), !allowed,
-                        page_load_metrics::StorageType::kLocalStorage);
-      break;
-    case StorageType::SESSION_STORAGE:
-      OnDomStorageAccessed(render_process_id, render_frame_id, url,
-                           top_frame_origin.GetURL(), false, !allowed);
-      OnStorageAccessed(render_process_id, render_frame_id, url,
-                        top_frame_origin.GetURL(), !allowed,
-                        page_load_metrics::StorageType::kSessionStorage);
+  bool should_notify_pscs = ([storage_type]() {
+    switch (storage_type) {
+      case StorageType::DATABASE:
+      case StorageType::LOCAL_STORAGE:
+      case StorageType::SESSION_STORAGE:
+      case StorageType::FILE_SYSTEM:
+      case StorageType::INDEXED_DB:
+      case StorageType::CACHE:
+        return true;
+      case StorageType::WEB_LOCKS:
+        // State not persisted, no need to record anything;
+        return false;
+    }
+  })();
 
-      break;
-    case StorageType::FILE_SYSTEM:
-      PageSpecificContentSettings::FileSystemAccessed(
-          render_process_id, render_frame_id, url, !allowed);
-      OnStorageAccessed(render_process_id, render_frame_id, url,
-                        top_frame_origin.GetURL(), !allowed,
-                        page_load_metrics::StorageType::kFileSystem);
-      break;
-    case StorageType::INDEXED_DB:
-      PageSpecificContentSettings::IndexedDBAccessed(
-          render_process_id, render_frame_id, url, !allowed);
-      OnStorageAccessed(render_process_id, render_frame_id, url,
-                        top_frame_origin.GetURL(), !allowed,
-                        page_load_metrics::StorageType::kIndexedDb);
-      break;
-    case StorageType::CACHE:
-      PageSpecificContentSettings::CacheStorageAccessed(
-          render_process_id, render_frame_id, url, !allowed);
-      OnStorageAccessed(render_process_id, render_frame_id, url,
-                        top_frame_origin.GetURL(), !allowed,
-                        page_load_metrics::StorageType::kCacheStorage);
-      break;
-    case StorageType::WEB_LOCKS:
-      // State not persisted, no need to record anything.
-      break;
+  auto metrics_type =
+      ([storage_type]() -> absl::optional<page_load_metrics::StorageType> {
+        switch (storage_type) {
+          case StorageType::LOCAL_STORAGE:
+            return page_load_metrics::StorageType::kLocalStorage;
+          case StorageType::SESSION_STORAGE:
+            return page_load_metrics::StorageType::kSessionStorage;
+          case StorageType::FILE_SYSTEM:
+            return page_load_metrics::StorageType::kFileSystem;
+          case StorageType::INDEXED_DB:
+            return page_load_metrics::StorageType::kIndexedDb;
+          case StorageType::CACHE:
+            return page_load_metrics::StorageType::kCacheStorage;
+          case StorageType::DATABASE:
+          case StorageType::WEB_LOCKS:
+            return absl::nullopt;
+        }
+      })();
+
+  if (should_notify_pscs) {
+    PageSpecificContentSettings::StorageAccessed(
+        storage_type, render_process_id, render_frame_id, url, !allowed);
+  }
+
+  if (metrics_type) {
+    OnStorageAccessed(render_process_id, render_frame_id, url,
+                      top_frame_origin.GetURL(), !allowed,
+                      metrics_type.value());
   }
 }
 

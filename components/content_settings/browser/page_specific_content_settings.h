@@ -22,6 +22,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/browsing_data/content/cookie_helper.h"
 #include "components/browsing_data/content/local_shared_objects_container.h"
+#include "components/content_settings/common/content_settings_manager.mojom.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -139,33 +140,19 @@ class PageSpecificContentSettings
     // Notifies the delegate a particular content settings type was blocked.
     virtual void OnContentBlocked(ContentSettingsType type) = 0;
 
-    // Notifies the delegate that access was granted to cache storage for
-    // |origin|.
-    virtual void OnCacheStorageAccessAllowed(const url::Origin& origin) = 0;
+    // Notifies the delegate that access to storage of type |storage_type| was
+    // granted in |page|.
+    virtual void OnStorageAccessAllowed(
+        mojom::ContentSettingsManager::StorageType storage_type,
+        const url::Origin& origin) = 0;
 
     // Notifies the delegate that access was granted to |accessed_cookies|.
     virtual void OnCookieAccessAllowed(
         const net::CookieList& accessed_cookies) = 0;
 
-    // Notifies the delegate that access was granted to DOM storage for
-    // |origin|.
-    virtual void OnDomStorageAccessAllowed(const url::Origin& origin) = 0;
-
-    // Notifies the delegate that access was granted to file system storage for
-    // |origin|.
-    virtual void OnFileSystemAccessAllowed(const url::Origin& origin) = 0;
-
-    // Notifies the delegate that access was granted to Indexed DB storage for
-    // |origin|.
-    virtual void OnIndexedDBAccessAllowed(const url::Origin& origin) = 0;
-
     // Notifies the delegate that access was granted to service workers for
     // |origin|.
     virtual void OnServiceWorkerAccessAllowed(const url::Origin& origin) = 0;
-
-    // Notifies the delegate that access was granted to web database storage for
-    // |origin|.
-    virtual void OnWebDatabaseAccessAllowed(const url::Origin& origin) = 0;
   };
 
   // Classes that want to be notified about site data events must implement
@@ -220,41 +207,12 @@ class PageSpecificContentSettings
   static PageSpecificContentSettings::Delegate* GetDelegateForWebContents(
       content::WebContents* web_contents);
 
-  // Called when a specific Web database in the current page was accessed. If
-  // access was blocked due to the user's content settings,
-  // |blocked_by_policy| should be true, and this function should invoke
-  // OnContentBlocked.
-  static void WebDatabaseAccessed(int render_process_id,
-                                  int render_frame_id,
-                                  const GURL& url,
-                                  bool blocked_by_policy);
-
-  // Called when a specific indexed db factory in the current page was
-  // accessed. If access was blocked due to the user's content settings,
-  // |blocked_by_policy| should be true, and this function should invoke
-  // OnContentBlocked.
-  static void IndexedDBAccessed(int render_process_id,
-                                int render_frame_id,
-                                const GURL& url,
-                                bool blocked_by_policy);
-
-  // Called when CacheStorage::Open() is called in the current page.
-  // If access was blocked due to the user's content settings,
-  // |blocked_by_policy| should be true, and this function should invoke
-  // OnContentBlocked.
-  static void CacheStorageAccessed(int render_process_id,
-                                   int render_frame_id,
-                                   const GURL& url,
-                                   bool blocked_by_policy);
-
-  // Called when a specific file system in the current page was accessed.
-  // If access was blocked due to the user's content settings,
-  // |blocked_by_policy| should be true, and this function should invoke
-  // OnContentBlocked.
-  static void FileSystemAccessed(int render_process_id,
-                                 int render_frame_id,
-                                 const GURL& url,
-                                 bool blocked_by_policy);
+  static void StorageAccessed(
+      mojom::ContentSettingsManager::StorageType storage_type,
+      int render_process_id,
+      int render_frame_id,
+      const GURL& url,
+      bool blocked_by_policy);
 
   // Called when a specific Shared Worker was accessed.
   static void SharedWorkerAccessed(int render_process_id,
@@ -357,17 +315,10 @@ class PageSpecificContentSettings
   void OnContentBlocked(ContentSettingsType type);
   void OnContentAllowed(ContentSettingsType type);
 
-  // These methods are invoked on the UI thread forwarded from the
-  // ContentSettingsManagerImpl.
-  void OnDomStorageAccessed(const GURL& url,
-                            bool local,
-                            bool blocked_by_policy);
-
-  // These methods are invoked on the UI thread by the static functions above.
-  // Only public for tests.
-  void OnFileSystemAccessed(const GURL& url, bool blocked_by_policy);
-  void OnIndexedDBAccessed(const GURL& url, bool blocked_by_policy);
-  void OnCacheStorageAccessed(const GURL& url, bool blocked_by_policy);
+  void OnStorageAccessed(
+      mojom::ContentSettingsManager::StorageType storage_type,
+      const GURL& url,
+      bool blocked_by_policy);
   void OnSharedWorkerAccessed(const GURL& worker_url,
                               const std::string& name,
                               const blink::StorageKey& storage_key,
@@ -378,7 +329,6 @@ class PageSpecificContentSettings
                        bool blocked_by_policy,
                        privacy_sandbox::CanonicalTopic topic);
 
-  void OnWebDatabaseAccessed(const GURL& url, bool blocked_by_policy);
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
   void OnProtectedMediaIdentifierPermissionSet(const GURL& requesting_frame,
                                                bool allowed);

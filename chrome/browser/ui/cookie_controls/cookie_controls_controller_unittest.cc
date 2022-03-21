@@ -22,6 +22,9 @@
 
 namespace {
 
+using StorageType =
+    content_settings::mojom::ContentSettingsManager::StorageType;
+
 class MockCookieControlsView : public content_settings::CookieControlsView {
  public:
   MOCK_METHOD4(OnStatusChanged,
@@ -127,8 +130,9 @@ TEST_F(CookieControlsTest, SomeWebSite) {
 
   // Accessing cookies should be notified.
   EXPECT_CALL(*mock(), OnCookiesCountChanged(1, 0));
-  page_specific_content_settings()->OnWebDatabaseAccessed(
-      GURL("https://example.com"), /*blocked=*/false);
+  page_specific_content_settings()->OnStorageAccessed(
+      StorageType::DATABASE, GURL("https://example.com"),
+      /*blocked_by_policy=*/false);
   testing::Mock::VerifyAndClearExpectations(mock());
 
   // Manually trigger a full update to check that the cookie count changed.
@@ -140,8 +144,9 @@ TEST_F(CookieControlsTest, SomeWebSite) {
 
   // Blocking cookies should update the blocked cookie count.
   EXPECT_CALL(*mock(), OnCookiesCountChanged(1, 1));
-  page_specific_content_settings()->OnWebDatabaseAccessed(
-      GURL("https://thirdparty.com"), /*blocked=*/true);
+  page_specific_content_settings()->OnStorageAccessed(
+      StorageType::DATABASE, GURL("https://thirdparty.com"),
+      /*blocked_by_policy=*/true);
   testing::Mock::VerifyAndClearExpectations(mock());
 
   // Manually trigger a full update to check that the cookie count changed.

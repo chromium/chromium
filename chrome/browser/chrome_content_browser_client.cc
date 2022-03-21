@@ -2709,7 +2709,9 @@ void ChromeContentBrowserClient::FileSystemAccessed(
     bool allow) {
   // Record access to file system for potential display in UI.
   for (const auto& it : render_frames) {
-    content_settings::PageSpecificContentSettings::FileSystemAccessed(
+    content_settings::PageSpecificContentSettings::StorageAccessed(
+        content_settings::mojom::ContentSettingsManager::StorageType::
+            FILE_SYSTEM,
         it.child_id, it.frame_routing_id, url, !allow);
   }
   std::move(callback).Run(allow);

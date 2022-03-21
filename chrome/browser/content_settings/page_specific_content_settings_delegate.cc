@@ -195,40 +195,12 @@ void PageSpecificContentSettingsDelegate::OnContentBlocked(
   }
 }
 
-void PageSpecificContentSettingsDelegate::OnCacheStorageAccessAllowed(
-    const url::Origin& origin) {
-  RecordOriginStorageAccess(
-      origin, AccessContextAuditDatabase::StorageAPIType::kCacheStorage,
-      GetPage());
-}
-
 void PageSpecificContentSettingsDelegate::OnCookieAccessAllowed(
     const net::CookieList& accessed_cookies) {
   if (cookie_access_helper_) {
     cookie_access_helper_->RecordCookieAccess(
         accessed_cookies, GetPage().GetMainDocument().GetLastCommittedOrigin());
   }
-}
-
-void PageSpecificContentSettingsDelegate::OnDomStorageAccessAllowed(
-    const url::Origin& origin) {
-  RecordOriginStorageAccess(
-      origin, AccessContextAuditDatabase::StorageAPIType::kLocalStorage,
-      GetPage());
-}
-
-void PageSpecificContentSettingsDelegate::OnFileSystemAccessAllowed(
-    const url::Origin& origin) {
-  RecordOriginStorageAccess(
-      origin, AccessContextAuditDatabase::StorageAPIType::kFileSystem,
-      GetPage());
-}
-
-void PageSpecificContentSettingsDelegate::OnIndexedDBAccessAllowed(
-    const url::Origin& origin) {
-  RecordOriginStorageAccess(
-      origin, AccessContextAuditDatabase::StorageAPIType::kIndexedDB,
-      GetPage());
 }
 
 void PageSpecificContentSettingsDelegate::OnServiceWorkerAccessAllowed(
@@ -238,11 +210,29 @@ void PageSpecificContentSettingsDelegate::OnServiceWorkerAccessAllowed(
       GetPage());
 }
 
-void PageSpecificContentSettingsDelegate::OnWebDatabaseAccessAllowed(
+void PageSpecificContentSettingsDelegate::OnStorageAccessAllowed(
+    StorageType storage_type,
     const url::Origin& origin) {
-  RecordOriginStorageAccess(
-      origin, AccessContextAuditDatabase::StorageAPIType::kWebDatabase,
-      GetPage());
+  AccessContextAuditDatabase::StorageAPIType out_type = ([storage_type]() {
+    switch (storage_type) {
+      case StorageType::CACHE:
+        return AccessContextAuditDatabase::StorageAPIType::kCacheStorage;
+      case StorageType::DATABASE:
+        return AccessContextAuditDatabase::StorageAPIType::kWebDatabase;
+      case StorageType::FILE_SYSTEM:
+        return AccessContextAuditDatabase::StorageAPIType::kFileSystem;
+      case StorageType::INDEXED_DB:
+        return AccessContextAuditDatabase::StorageAPIType::kIndexedDB;
+      case StorageType::LOCAL_STORAGE:
+        return AccessContextAuditDatabase::StorageAPIType::kLocalStorage;
+      case StorageType::SESSION_STORAGE:
+        return AccessContextAuditDatabase::StorageAPIType::kSessionStorage;
+      case StorageType::WEB_LOCKS:
+        NOTREACHED();
+        return AccessContextAuditDatabase::StorageAPIType::kCacheStorage;
+    }
+  })();
+  RecordOriginStorageAccess(origin, out_type, GetPage());
 }
 
 void PageSpecificContentSettingsDelegate::PrimaryPageChanged(
