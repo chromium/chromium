@@ -218,11 +218,12 @@ std::unique_ptr<PasswordFormManager> ManagePasswordsTest::CreateFormManager() {
           /*account_form_saver=*/nullptr),
       /*metrics_recorder=*/nullptr);
 
-  password_manager::InsecureCredential credential(
-      password_form_.signon_realm, password_form_.username_value, base::Time(),
-      password_manager::InsecureType::kLeaked,
-      password_manager::IsMuted(false));
-  fetcher_.set_insecure_credentials({credential});
+  insecure_credential_ = password_form_;
+  insecure_credential_.password_issues.insert(
+      {password_manager::InsecureType::kLeaked,
+       password_manager::InsecurityMetadata(base::Time(),
+                                            password_manager::IsMuted(false))});
+  fetcher_.set_insecure_credentials({&insecure_credential_});
 
   fetcher_.NotifyFetchCompleted();
 

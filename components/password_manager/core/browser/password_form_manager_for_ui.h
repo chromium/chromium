@@ -10,7 +10,7 @@
 
 #include "base/containers/span.h"
 #include "base/memory/weak_ptr.h"
-#include "components/password_manager/core/browser/insecure_credentials_table.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 
 namespace password_manager {
@@ -52,7 +52,7 @@ class PasswordFormManagerForUI {
   virtual base::span<const InteractionsStats> GetInteractionsStats() const = 0;
 
   // List of insecure passwords for the current site.
-  virtual base::span<const InsecureCredential> GetInsecureCredentials()
+  virtual const std::vector<const PasswordForm*>& GetInsecureCredentials()
       const = 0;
 
   // Determines if the user opted to 'never remember' passwords for this form.

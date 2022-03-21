@@ -79,6 +79,7 @@ class ManagePasswordsTest : public InProcessBrowserTest {
   std::unique_ptr<password_manager::PasswordFormManager> CreateFormManager();
 
   password_manager::PasswordForm password_form_;
+  password_manager::PasswordForm insecure_credential_;
   base::HistogramTester histogram_tester_;
   password_manager::StubPasswordManagerClient client_;
   password_manager::StubPasswordManagerDriver driver_;

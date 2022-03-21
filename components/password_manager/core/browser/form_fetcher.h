@@ -9,10 +9,9 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/span.h"
 #include "base/observer_list_types.h"
 #include "components/autofill/core/common/gaia_id_hash.h"
-#include "components/password_manager/core/browser/insecure_credentials_table.h"
+#include "components/password_manager/core/browser/password_form.h"
 
 namespace password_manager {
 
@@ -67,8 +66,8 @@ class FormFetcher {
   virtual const std::vector<InteractionsStats>& GetInteractionsStats()
       const = 0;
 
-  // Insecure credentials records for the current site.
-  virtual base::span<const InsecureCredential> GetInsecureCredentials()
+  // Returns all PasswordForm entries that have insecure features.
+  virtual const std::vector<const PasswordForm*>& GetInsecureCredentials()
       const = 0;
 
   // Non-federated matches obtained from the backend. Valid only if GetState()

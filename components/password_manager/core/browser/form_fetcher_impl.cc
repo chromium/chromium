@@ -148,8 +148,8 @@ const std::vector<InteractionsStats>& FormFetcherImpl::GetInteractionsStats()
   return interactions_stats_;
 }
 
-base::span<const InsecureCredential> FormFetcherImpl::GetInsecureCredentials()
-    const {
+const std::vector<const PasswordForm*>&
+FormFetcherImpl::GetInsecureCredentials() const {
   return insecure_credentials_;
 }
 
@@ -240,22 +240,13 @@ std::unique_ptr<FormFetcher> FormFetcherImpl::Clone() {
 void FormFetcherImpl::FindMatchesAndNotifyConsumers(
     std::vector<std::unique_ptr<PasswordForm>> results) {
   DCHECK_EQ(State::WAITING, state_);
-  insecure_credentials_.clear();
-  for (const auto& form : results) {
-    for (const auto& issue : form->password_issues) {
-      insecure_credentials_.emplace_back(
-          form->signon_realm, form->username_value, issue.second.create_time,
-          issue.first, issue.second.is_muted);
-      insecure_credentials_.back().in_store = form->in_store;
-    }
-  }
-  state_ = State::NOT_WAITING;
   SplitResults(std::move(results));
 
   password_manager_util::FindBestMatches(
       MakeWeakCopies(non_federated_), form_digest_.scheme,
       &non_federated_same_scheme_, &best_matches_, &preferred_match_);
 
+  state_ = State::NOT_WAITING;
   for (auto& consumer : consumers_)
     consumer.OnFetchCompleted();
 }
@@ -266,6 +257,7 @@ void FormFetcherImpl::SplitResults(
   is_blocklisted_in_account_store_ = false;
   non_federated_.clear();
   federated_.clear();
+  insecure_credentials_.clear();
   for (auto& form : forms) {
     if (form->blocked_by_user) {
       // Ignore non-exact matches for blocklisted entries.
@@ -277,10 +269,14 @@ void FormFetcherImpl::SplitResults(
         else
           is_blocklisted_in_profile_store_ = true;
       }
-    } else if (form->IsFederatedCredential()) {
-      federated_.push_back(std::move(form));
     } else {
-      non_federated_.push_back(std::move(form));
+      if (!form->password_issues.empty())
+        insecure_credentials_.push_back(form.get());
+      if (form->IsFederatedCredential()) {
+        federated_.push_back(std::move(form));
+      } else {
+        non_federated_.push_back(std::move(form));
+      }
     }
   }
 }

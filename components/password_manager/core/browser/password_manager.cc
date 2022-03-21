@@ -189,12 +189,18 @@ void AddLocallySavedPredictions(FieldInfoManager* field_info_manager,
   }
 }
 
-bool HasMutedCredentials(base::span<const InsecureCredential> credentials,
+bool IsMutedInsecureCredential(const PasswordForm* credential,
+                               InsecureType insecure_type) {
+  auto it = credential->password_issues.find(insecure_type);
+  return it != credential->password_issues.end() && it->second.is_muted;
+}
+
+bool HasMutedCredentials(const std::vector<const PasswordForm*>& credentials,
                          const std::u16string& username) {
   return base::ranges::any_of(credentials, [&username](const auto& credential) {
-    return credential.username == username && credential.is_muted &&
-           (credential.insecure_type == InsecureType::kLeaked ||
-            credential.insecure_type == InsecureType::kPhished);
+    return credential->username_value == username &&
+           (IsMutedInsecureCredential(credential, InsecureType::kLeaked) ||
+            IsMutedInsecureCredential(credential, InsecureType::kPhished));
   });
 }
 

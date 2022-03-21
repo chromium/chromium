@@ -25,7 +25,6 @@
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/field_info_store.h"
-#include "components/password_manager/core/browser/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/password_form_digest.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store_backend.h"
@@ -141,9 +140,6 @@ class PasswordStore : public PasswordStoreInterface {
     // Removing passwords may still work.
     kFailure,
   };
-
-  using InsecureCredentialsTask =
-      base::OnceCallback<std::vector<InsecureCredential>()>;
 
   // Represents different triggers that may require requesting all logins from
   // the password store. Entries should not be renumbered and numeric values

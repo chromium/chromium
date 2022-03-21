@@ -49,7 +49,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using password_manager::InsecureCredential;
 using password_manager::MockPasswordFormManagerForUI;
 using password_manager::MockPasswordStoreInterface;
 using password_manager::PasswordForm;
@@ -211,11 +210,11 @@ password_manager::PasswordForm BuildFormFromLoginAndURL(
   return form;
 }
 
-InsecureCredential CreateInsecureCredential(const PasswordForm& form) {
-  return InsecureCredential(form.signon_realm, form.username_value,
-                            base::Time(),
-                            password_manager::InsecureType::kLeaked,
-                            password_manager::IsMuted(false));
+password_manager::PasswordForm CreateInsecureCredential(PasswordForm form) {
+  form.password_issues.insert(
+      {InsecureType::kLeaked,
+       InsecurityMetadata(base::Time(), password_manager::IsMuted(false))});
+  return form;
 }
 
 }  // namespace
@@ -256,6 +255,7 @@ class ManagePasswordsUIControllerTest : public ChromeRenderViewHostTestHarness {
   PasswordForm test_local_form_;
   PasswordForm test_federated_form_;
   PasswordForm submitted_form_;
+  std::vector<const PasswordForm*> insecure_credentials_;
   CredentialManagementDialogPromptMock dialog_prompt_;
 };
 
@@ -275,8 +275,6 @@ void ManagePasswordsUIControllerTest::SetUp() {
   test_local_form_.username_element = u"username_element";
   test_local_form_.password_value = u"12345";
   test_local_form_.password_element = u"password_element";
-  test_local_form_.password_issues =
-      base::flat_map<InsecureType, InsecurityMetadata>();
 
   test_federated_form_.url = GURL("http://example.com/login");
   test_federated_form_.signon_realm =
@@ -284,11 +282,6 @@ void ManagePasswordsUIControllerTest::SetUp() {
   test_federated_form_.username_value = u"username";
   test_federated_form_.federation_origin =
       url::Origin::Create(GURL("https://federation.test/"));
-  // TODO(crbug.com/1223022): Once all places that operate changes on forms
-  // via UpdateLogin properly set |password_issues|, setting them to an empty
-  // map should be part of the default constructor.
-  test_federated_form_.password_issues =
-      base::flat_map<InsecureType, InsecurityMetadata>();
 
   submitted_form_ = test_local_form_;
   submitted_form_.username_value = u"submitted_username";
@@ -336,7 +329,7 @@ ManagePasswordsUIControllerTest::CreateFormManagerWithBestMatches(
           Return(base::span<const password_manager::InteractionsStats>()));
   EXPECT_CALL(*form_manager, GetInsecureCredentials())
       .Times(AtMost(1))
-      .WillOnce(Return(base::span<const InsecureCredential>()));
+      .WillOnce(ReturnRef(insecure_credentials_));
   EXPECT_CALL(*form_manager, GetPendingCredentials())
       .WillRepeatedly(ReturnRef(submitted_form_));
   EXPECT_CALL(*form_manager, GetMetricsRecorder())
@@ -1574,12 +1567,12 @@ TEST_F(ManagePasswordsUIControllerTest, OpenSafeStateBubble) {
   controller()->OnPasswordSubmitted(std::move(test_form_manager));
 
   EXPECT_CALL(*test_form_manager_raw, Save());
-  std::vector<InsecureCredential> saved = {
-      CreateInsecureCredential(test_local_form())};
+  PasswordForm credential = CreateInsecureCredential(test_local_form());
+  std::vector<const PasswordForm*> saved = {&credential};
   // Pretend that the current credential was insecure but with the updated
   // password not anymore.
   EXPECT_CALL(*test_form_manager_raw, GetInsecureCredentials())
-      .WillOnce(Return(saved));
+      .WillOnce(ReturnRef(saved));
   base::WeakPtr<password_manager::PasswordStoreConsumer> post_save_helper;
 
   EXPECT_CALL(*client().GetProfilePasswordStore(), GetAutofillableLogins)
@@ -1617,10 +1610,10 @@ TEST_F(ManagePasswordsUIControllerTest, OpenMoreToFixBubble) {
 
   EXPECT_CALL(*test_form_manager_raw, Save());
   // Pretend that the current credential was insecure.
-  std::vector<InsecureCredential> saved = {
-      CreateInsecureCredential(test_local_form())};
+  PasswordForm credential = CreateInsecureCredential(test_local_form());
+  std::vector<const PasswordForm*> saved = {&credential};
   EXPECT_CALL(*test_form_manager_raw, GetInsecureCredentials())
-      .WillOnce(Return(saved));
+      .WillOnce(ReturnRef(saved));
 
   base::WeakPtr<password_manager::PasswordStoreConsumer> post_save_helper;
 
@@ -1666,11 +1659,11 @@ TEST_F(ManagePasswordsUIControllerTest, NoMoreToFixBubbleIfPromoStillOpen) {
   controller()->OnPasswordSubmitted(std::move(test_form_manager));
 
   EXPECT_CALL(*test_form_manager_raw, Save());
-  std::vector<InsecureCredential> saved = {
-      CreateInsecureCredential(test_local_form())};
+  PasswordForm credential = CreateInsecureCredential(test_local_form());
+  std::vector<const PasswordForm*> saved = {&credential};
   // Pretend that the current credential was insecure.
   EXPECT_CALL(*test_form_manager_raw, GetInsecureCredentials())
-      .WillOnce(Return(saved));
+      .WillOnce(ReturnRef(saved));
   controller()->SavePassword(submitted_form().username_value,
                              submitted_form().password_value);
   // The sign-in promo bubble stays open, the warning isn't shown.

@@ -14,7 +14,6 @@
 #include "base/observer_list.h"
 #include "components/password_manager/core/browser/form_fetcher.h"
 #include "components/password_manager/core/browser/http_password_store_migrator.h"
-#include "components/password_manager/core/browser/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
 
@@ -47,7 +46,8 @@ class FormFetcherImpl : public FormFetcher,
   void Fetch() override;
   State GetState() const override;
   const std::vector<InteractionsStats>& GetInteractionsStats() const override;
-  base::span<const InsecureCredential> GetInsecureCredentials() const override;
+  const std::vector<const PasswordForm*>& GetInsecureCredentials()
+      const override;
   std::vector<const PasswordForm*> GetNonFederatedMatches() const override;
   std::vector<const PasswordForm*> GetFederatedMatches() const override;
   bool IsBlocklisted() const override;
@@ -91,7 +91,7 @@ class FormFetcherImpl : public FormFetcher,
   std::vector<std::unique_ptr<PasswordForm>> federated_;
 
   // List of insecure credentials for the current domain.
-  std::vector<InsecureCredential> insecure_credentials_;
+  std::vector<const PasswordForm*> insecure_credentials_;
 
   // Indicates whether HTTP passwords should be migrated to HTTPS. This is
   // always false for non HTML forms.

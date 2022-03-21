@@ -18,11 +18,11 @@ namespace password_manager {
 constexpr auto kMaxTimeSinceLastCheck = base::Minutes(30);
 
 PostSaveCompromisedHelper::PostSaveCompromisedHelper(
-    base::span<const InsecureCredential> compromised,
+    const std::vector<const PasswordForm*>& compromised,
     const std::u16string& current_username) {
-  for (const InsecureCredential& credential : compromised) {
-    if (credential.username == current_username)
-      current_leak_ = credential;
+  for (const PasswordForm* credential : compromised) {
+    if (credential->username_value == current_username)
+      current_leak_ = *credential;
   }
 }
 
@@ -76,7 +76,8 @@ void PostSaveCompromisedHelper::AnalyzeLeakedCredentialsInternal() {
   bool compromised_password_changed = false;
 
   for (const auto& form : passwords_) {
-    if (current_leak_ && form->username_value == current_leak_->username &&
+    if (current_leak_ &&
+        form->username_value == current_leak_->username_value &&
         form->signon_realm == current_leak_->signon_realm) {
       if (form->password_issues.empty())
         compromised_password_changed = true;
