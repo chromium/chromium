@@ -16,6 +16,9 @@ import("//tools/grit/grit_rule.gni")
 #   copy_data_to_bundle [optional]
 #       Whether to define a bundle_data() for the resulting pak.
 #
+#   mark_as_data
+#       Whether to add the resulting pak to |data|.
+#
 #   bundle_output [optional]
 #       Path of the file in the application bundle, defaults to
 #       {{bundle_resources_dir}}/{{source_file_part}}.
@@ -64,6 +67,10 @@ template("repack") {
       invoker.output,
       "${invoker.output}.info",
     ]
+
+    if (defined(invoker.mark_as_data) && invoker.mark_as_data) {
+      data = [ invoker.output ]
+    }
 
     args = [ "repack" ]
     if (defined(invoker.repack_allowlist)) {
@@ -154,10 +161,11 @@ template("repack_locales") {
     repack(_current_name) {
       forward_variables_from(invoker,
                              [
-                               "copy_data_to_bundle",
                                "bundle_output",
                                "compress",
+                               "copy_data_to_bundle",
                                "deps",
+                               "mark_as_data",
                                "repack_allowlist",
                                "testonly",
                              ])
@@ -188,8 +196,5 @@ template("repack_locales") {
                              "testonly",
                            ])
     public_deps = _locale_targets
-    if (!defined(invoker.copy_data_to_bundle) || !invoker.copy_data_to_bundle) {
-      data_deps = public_deps
-    }
   }
 }

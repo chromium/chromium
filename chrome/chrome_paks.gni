@@ -28,6 +28,7 @@ template("chrome_repack_percent") {
     forward_variables_from(invoker,
                            [
                              "copy_data_to_bundle",
+                             "mark_as_data",
                              "repack_allowlist",
                              "visibility",
                            ])
@@ -89,6 +90,7 @@ template("chrome_extra_paks") {
     forward_variables_from(invoker,
                            [
                              "copy_data_to_bundle",
+                             "mark_as_data",
                              "repack_allowlist",
                              "visibility",
                            ])
@@ -418,6 +420,7 @@ template("chrome_extra_paks") {
 #     for.
 #   copy_data_to_bundle:
 #   deps:
+#   mark_as_data:
 #   output_dir:
 #   public_deps:
 #   repack_allowlist:
@@ -431,6 +434,7 @@ template("chrome_paks") {
                            [
                              "copy_data_to_bundle",
                              "deps",
+                             "mark_as_data",
                              "output_dir",
                              "repack_allowlist",
                              "visibility",
@@ -444,6 +448,7 @@ template("chrome_paks") {
                              [
                                "copy_data_to_bundle",
                                "deps",
+                               "mark_as_data",
                                "output_dir",
                                "repack_allowlist",
                                "visibility",
@@ -456,6 +461,7 @@ template("chrome_paks") {
                            [
                              "copy_data_to_bundle",
                              "deps",
+                             "mark_as_data",
                              "output_dir",
                              "repack_allowlist",
                              "visibility",
@@ -470,6 +476,7 @@ template("chrome_paks") {
                            [
                              "copy_data_to_bundle",
                              "deps",
+                             "mark_as_data",
                              "visibility",
                            ])
     if (defined(invoker.locale_allowlist)) {
@@ -497,9 +504,6 @@ template("chrome_paks") {
     ]
     if (enable_hidpi) {
       public_deps += [ ":${target_name}_200_percent" ]
-    }
-    if (!defined(invoker.copy_data_to_bundle) || !invoker.copy_data_to_bundle) {
-      data_deps = public_deps
     }
     if (defined(invoker.public_deps)) {
       public_deps += invoker.public_deps

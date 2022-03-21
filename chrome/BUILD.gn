@@ -1552,6 +1552,7 @@ if (!is_android) {
       copy_data_to_bundle = true
     } else {
       output_dir = root_out_dir
+      mark_as_data = true
     }
 
     if (enable_resource_allowlist_generation) {
