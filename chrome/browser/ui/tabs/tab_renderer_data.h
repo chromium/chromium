@@ -7,9 +7,9 @@
 
 #include <string>
 
+#include "base/process/kill.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_network_state.h"
-#include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_image.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
