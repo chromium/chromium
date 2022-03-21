@@ -706,9 +706,11 @@ void AppsContainerView::MoveFocusDownFromRecents(int column) {
 void AppsContainerView::UpdateForNewSortingOrder(
     const absl::optional<AppListSortOrder>& new_order,
     bool animate,
-    base::OnceClosure update_position_closure) {
+    base::OnceClosure update_position_closure,
+    base::OnceClosure animation_done_closure) {
   DCHECK(features::IsLauncherAppSortEnabled());
   DCHECK_EQ(animate, !update_position_closure.is_null());
+  DCHECK(!animation_done_closure || animate);
 
   if (new_order)
     toast_container_->AnnounceSortOrder(*new_order);
@@ -734,10 +736,12 @@ void AppsContainerView::UpdateForNewSortingOrder(
     pagination_model->FinishAnimation();
 
   // Abort the old reorder animation if any before closure update to avoid data
-  // races on the the closure.
+  // races on closures.
   apps_grid_view_->MaybeAbortReorderAnimation();
   DCHECK(!update_position_closure_);
   update_position_closure_ = std::move(update_position_closure);
+  DCHECK(!reorder_animation_done_closure_);
+  reorder_animation_done_closure_ = std::move(animation_done_closure);
 
   views::AnimationBuilder animation_builder =
       apps_grid_view_->FadeOutVisibleItemsForReorder(base::BindRepeating(
@@ -1613,6 +1617,9 @@ void AppsContainerView::OnAppsGridViewFadeInAnimationEnded(bool aborted) {
 
 void AppsContainerView::OnReorderAnimationEnded() {
   update_position_closure_.Reset();
+
+  if (reorder_animation_done_closure_)
+    std::move(reorder_animation_done_closure_).Run();
 }
 
 int AppsContainerView::GetSeparatorHeight() {

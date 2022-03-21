@@ -7,11 +7,15 @@
 #include <utility>
 
 #include "ash/app_list/test/app_list_test_helper.h"
+#include "ash/app_list/test/test_focus_change_listener.h"
 #include "ash/app_list/views/app_list_a11y_announcer.h"
 #include "ash/app_list/views/app_list_bubble_search_page.h"
 #include "ash/app_list/views/app_list_toast_container_view.h"
+#include "ash/app_list/views/apps_grid_view_test_api.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
+#include "ash/app_list/views/search_box_view.h"
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/app_list/app_list_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/layer_animation_stopped_waiter.h"
 #include "base/test/bind.h"
@@ -25,6 +29,7 @@
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/controls/textfield/textfield.h"
 
 namespace ash {
 namespace {
@@ -37,6 +42,26 @@ class AppListBubbleAppsPageTest : public AshTestBase {
     EXPECT_FALSE(aborted);
     EXPECT_EQ(AppListReorderAnimationStatus::kFadeInAnimation, status);
     std::move(closure).Run();
+  }
+
+  // Sorts app list with the specified order. If `wait` is true, wait for the
+  // reorder animation to complete.
+  void SortAppList(AppListSortOrder order, bool wait) {
+    AppListController::Get()->UpdateAppListWithNewTemporarySortOrder(
+        order,
+        /*animate=*/true, /*update_position_closure=*/base::DoNothing());
+
+    if (!wait)
+      return;
+
+    base::RunLoop run_loop;
+    GetAppListTestHelper()
+        ->GetBubbleAppsPage()
+        ->scrollable_apps_grid_view()
+        ->AddReorderCallbackForTest(base::BindRepeating(
+            &AppListBubbleAppsPageTest::OnReorderAnimationDone,
+            base::Unretained(this), run_loop.QuitClosure()));
+    run_loop.Run();
   }
 
  private:
@@ -223,10 +248,10 @@ TEST_F(AppListBubbleAppsPageTest, SortAppsMakesA11yAnnouncement) {
         run_loop.Quit();
       }));
 
-  // Simulate sorting the apps.
-  apps_page->UpdateForNewSortingOrder(AppListSortOrder::kNameAlphabetical,
-                                      /*animate=*/false,
-                                      /*update_position_closure=*/{});
+  // Simulate sorting the apps. Because `run_loop` waits for the a11y event,
+  // it is unnecessary to wait for app list sort.
+  SortAppList(AppListSortOrder::kNameAlphabetical, /*wait=*/false);
+
   run_loop.Run();
 
   // An alert fired with a message.
@@ -235,6 +260,31 @@ TEST_F(AppListBubbleAppsPageTest, SortAppsMakesA11yAnnouncement) {
   announcement_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
   EXPECT_EQ(node_data.GetStringAttribute(ax::mojom::StringAttribute::kName),
             "Apps are sorted by name");
+}
+
+// Verify that after sorting app list with animation the search box should
+// have focus.
+TEST_F(AppListBubbleAppsPageTest, SortAppsWithItemFocused) {
+  ui::ScopedAnimationDurationScaleMode scope_duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  auto* helper = GetAppListTestHelper();
+  helper->AddAppItems(5);
+  helper->ShowAppList();
+
+  views::View* first_item =
+      test::AppsGridViewTestApi(helper->GetScrollableAppsGridView())
+          .GetViewAtVisualIndex(/*page=*/0, /*slot=*/0);
+  first_item->RequestFocus();
+
+  TestFocusChangeListener listener(
+      helper->GetScrollableAppsGridView()->GetFocusManager());
+  SortAppList(AppListSortOrder::kNameAlphabetical, /*wait=*/true);
+
+  // Verify that focus only changes once from `first_item` to the search box.
+  EXPECT_EQ(1, listener.focus_change_count());
+  EXPECT_FALSE(first_item->HasFocus());
+  EXPECT_TRUE(helper->GetSearchBoxView()->search_box()->HasFocus());
 }
 
 class AppListBubbleAppsReorderTest
@@ -275,17 +325,7 @@ TEST_P(AppListBubbleAppsReorderTest, ScrollToShowUndoToastWhenSorting) {
   // Before sorting, the undo toast should be invisible.
   EXPECT_FALSE(reorder_undo_toast_container->is_toast_visible());
 
-  {
-    apps_page->UpdateForNewSortingOrder(
-        AppListSortOrder::kNameAlphabetical,
-        /*animate=*/true, /*update_position_closure=*/base::DoNothing());
-
-    base::RunLoop run_loop;
-    apps_page->scrollable_apps_grid_view()->AddReorderCallbackForTest(
-        base::BindRepeating(&AppListBubbleAppsPageTest::OnReorderAnimationDone,
-                            base::Unretained(this), run_loop.QuitClosure()));
-    run_loop.Run();
-  }
+  SortAppList(AppListSortOrder::kNameAlphabetical, /*wait=*/true);
 
   // After sorting, the undo toast should be visible.
   EXPECT_TRUE(reorder_undo_toast_container->is_toast_visible());
@@ -304,17 +344,7 @@ TEST_P(AppListBubbleAppsReorderTest, ScrollToShowUndoToastWhenSorting) {
   EXPECT_FALSE(scroll_view->GetVisibleRect().Contains(
       toast_container_bounds_in_scroll_view));
 
-  {
-    apps_page->UpdateForNewSortingOrder(
-        AppListSortOrder::kColor,
-        /*animate=*/true, /*update_position_closure=*/base::DoNothing());
-
-    base::RunLoop run_loop;
-    apps_page->scrollable_apps_grid_view()->AddReorderCallbackForTest(
-        base::BindRepeating(&AppListBubbleAppsPageTest::OnReorderAnimationDone,
-                            base::Unretained(this), run_loop.QuitClosure()));
-    run_loop.Run();
-  }
+  SortAppList(AppListSortOrder::kColor, /*wait=*/true);
 
   // Verify that after sorting again the undo toast is fully shown.
   origin = gfx::Point();

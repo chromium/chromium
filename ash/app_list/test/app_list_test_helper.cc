@@ -34,6 +34,20 @@
 
 namespace ash {
 
+namespace {
+
+// An app list should be either a bubble app list or a fullscreen app list.
+// Returns true if a bubble app list should be used under the current mode.
+bool ShouldUseBubbleAppList() {
+  // A bubble app list should be used only when:
+  // (1) It is in clamshell mode; and
+  // (2) The productivity launcher flag is enabled.
+  return !Shell::Get()->IsInTabletMode() &&
+         features::IsProductivityLauncherEnabled();
+}
+
+}  // namespace
+
 AppListTestHelper::AppListTestHelper() {
   // The app list controller is ready after Shell is created.
   app_list_controller_ = Shell::Get()->app_list_controller();
@@ -166,10 +180,9 @@ void AppListTestHelper::AddRecentApps(int num_apps) {
 }
 
 bool AppListTestHelper::IsInFolderView() {
-  if (!Shell::Get()->IsInTabletMode() &&
-      features::IsProductivityLauncherEnabled()) {
+  if (ShouldUseBubbleAppList())
     return GetBubbleView()->showing_folder_for_test();
-  }
+
   return GetAppListView()
       ->app_list_main_view()
       ->contents_view()
@@ -186,6 +199,9 @@ AppListView* AppListTestHelper::GetAppListView() {
 }
 
 SearchBoxView* AppListTestHelper::GetSearchBoxView() {
+  if (ShouldUseBubbleAppList())
+    return GetBubbleView()->search_box_view_for_test();
+
   return GetAppListView()->search_box_view();
 }
 

@@ -410,7 +410,8 @@ class AppListBubbleAndTabletTestBase : public AshTestBase {
               ->UpdateForNewSortingOrder(
                   order,
                   /*animate=*/true,
-                  /*update_position_closure=*/base::DoNothing())
+                  /*update_position_closure=*/base::DoNothing(),
+                  /*animation_done_closure=*/base::DoNothing())
         : GetAppListTestHelper()->GetBubbleView()->UpdateForNewSortingOrder(
               order,
               /*animate=*/true, /*update_position_closure=*/base::DoNothing());

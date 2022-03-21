@@ -3043,6 +3043,8 @@ static_library("test_support") {
     "app_list/app_list_test_api.cc",
     "app_list/test/app_list_test_helper.cc",
     "app_list/test/app_list_test_helper.h",
+    "app_list/test/test_focus_change_listener.cc",
+    "app_list/test/test_focus_change_listener.h",
     "app_list/test_app_list_client.cc",
     "app_list/test_app_list_client.h",
     "app_list/views/assistant/assistant_test_api_impl.cc",

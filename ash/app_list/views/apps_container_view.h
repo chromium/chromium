@@ -177,7 +177,8 @@ class ASH_EXPORT AppsContainerView
   void UpdateForNewSortingOrder(
       const absl::optional<AppListSortOrder>& new_order,
       bool animate,
-      base::OnceClosure update_position_closure);
+      base::OnceClosure update_position_closure,
+      base::OnceClosure animation_done_closure);
 
   // Called when the app list temporary sort order changes. If `new_order` is
   // null, the temporary sort order is cleared.
@@ -379,6 +380,9 @@ class ASH_EXPORT AppsContainerView
   // A closure to update item positions. It should run at the end of the fade
   // out animation when items are reordered.
   base::OnceClosure update_position_closure_;
+
+  // A closure that runs at the end of the reorder animation.
+  base::OnceClosure reorder_animation_done_closure_;
 
   base::WeakPtrFactory<AppsContainerView> weak_ptr_factory_{this};
 };

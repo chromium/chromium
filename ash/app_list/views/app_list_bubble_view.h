@@ -113,6 +113,7 @@ class ASH_EXPORT AppListBubbleView : public views::View,
   void ReparentDragEnded() override;
 
   ViewShadow* view_shadow_for_test() { return view_shadow_.get(); }
+  SearchBoxView* search_box_view_for_test() { return search_box_view_; }
   views::View* separator_for_test() { return separator_; }
   bool showing_folder_for_test() { return showing_folder_; }
   AppListBubbleAppsPage* apps_page_for_test() { return apps_page_; }
@@ -145,6 +146,9 @@ class ASH_EXPORT AppListBubbleView : public views::View,
   // item reparent user action (e.g. when dragging folder item out of the folder
   // view bounds).
   void HideFolderView(bool animate, bool hide_for_reparent);
+
+  // Called when the reorder animation completes.
+  void OnAppListReorderAnimationDone();
 
   AppListViewDelegate* const view_delegate_;
 

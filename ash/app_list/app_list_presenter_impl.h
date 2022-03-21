@@ -215,6 +215,9 @@ class ASH_EXPORT AppListPresenterImpl
   // https://crbug.com/884889).
   void SnapAppListBoundsToDisplayEdge();
 
+  // Called when the reorder animation completes.
+  void OnAppListReorderAnimationDone();
+
   // Owns |this|.
   AppListControllerImpl* const controller_;
 
@@ -245,6 +248,8 @@ class ASH_EXPORT AppListPresenterImpl
   // Data we need to store for metrics.
   absl::optional<base::Time> last_open_time_;
   absl::optional<AppListShowSource> last_open_source_;
+
+  base::WeakPtrFactory<AppListPresenterImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

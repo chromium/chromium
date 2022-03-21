@@ -97,7 +97,8 @@ class ASH_EXPORT AppListBubbleAppsPage : public views::View,
   void UpdateForNewSortingOrder(
       const absl::optional<AppListSortOrder>& new_order,
       bool animate,
-      base::OnceClosure update_position_closure);
+      base::OnceClosure update_position_closure,
+      base::OnceClosure animation_done_closure);
 
   // Scrolls to fully show the toast if the toast is partially shown or hidden
   // from the scroll view's perspective. Returns true if scrolling is performed.
@@ -194,6 +195,9 @@ class ASH_EXPORT AppListBubbleAppsPage : public views::View,
   // A closure to update item positions. It should run at the end of the fade
   // out animation when items are reordered.
   base::OnceClosure update_position_closure_;
+
+  // A closure that runs at the end of the reorder animation.
+  base::OnceClosure reorder_animation_done_closure_;
 
   base::WeakPtrFactory<AppListBubbleAppsPage> weak_factory_{this};
 };

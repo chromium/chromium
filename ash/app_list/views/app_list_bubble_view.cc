@@ -497,8 +497,26 @@ void AppListBubbleView::UpdateForNewSortingOrder(
   if (animate && showing_folder_)
     HideFolderView(/*animate=*/false, /*hide_for_reparent=*/false);
 
+  base::OnceClosure done_closure;
+  if (animate) {
+    // The search box to ignore a11y events during the reorder animation
+    // so that the announcement of app list reorder is made before that of
+    // focus change.
+    SetViewIgnoredForAccessibility(search_box_view_, true);
+
+    // Focus on the search box before starting the reorder animation to prevent
+    // focus moving through app list items as they're being hidden for order
+    // update animation.
+    search_box_view_->search_box()->RequestFocus();
+
+    done_closure =
+        base::BindOnce(&AppListBubbleView::OnAppListReorderAnimationDone,
+                       weak_factory_.GetWeakPtr());
+  }
+
   apps_page_->UpdateForNewSortingOrder(new_order, animate,
-                                       std::move(update_position_closure));
+                                       std::move(update_position_closure),
+                                       std::move(done_closure));
 }
 
 const char* AppListBubbleView::GetClassName() const {
@@ -703,6 +721,11 @@ void AppListBubbleView::HideFolderView(bool animate, bool hide_for_reparent) {
     folder_view_->HideViewImmediately();
   }
   DisableFocusForShowingActiveFolder(false);
+}
+
+void AppListBubbleView::OnAppListReorderAnimationDone() {
+  // Re-enable the search box to handle a11y events.
+  SetViewIgnoredForAccessibility(search_box_view_, false);
 }
 
 }  // namespace ash
