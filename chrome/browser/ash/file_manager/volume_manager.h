@@ -494,6 +494,11 @@ class VolumeManager : public KeyedService,
                       const std::string& display_name);
   void RemoveSmbFsVolume(const base::FilePath& mount_point);
 
+  void OnFuseboxAttachStorageMTP(const std::string& fsid,
+                                 const std::string& label,
+                                 bool read_only,
+                                 int error);
+
   SnapshotManager* snapshot_manager() { return snapshot_manager_.get(); }
 
   io_task::IOTaskController* io_task_controller() {
