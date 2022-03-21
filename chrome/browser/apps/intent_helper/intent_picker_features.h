@@ -12,6 +12,7 @@ namespace apps::features {
 extern const base::Feature kLinkCapturingUiUpdate;
 extern const base::Feature kLinkCapturingInfoBar;
 extern const base::Feature kIntentChipSkipsPicker;
+extern const base::Feature kIntentChipAppIcon;
 
 // Returns true if the overall link capturing UI update feature is enabled.
 bool LinkCapturingUiUpdateEnabled();
@@ -25,6 +26,11 @@ bool ShouldIntentChipSkipIntentPicker();
 // web app through the Intent Picker. Only returns true if
 // LinkCapturingUiUpdateEnabled() returns true.
 bool LinkCapturingInfoBarEnabled();
+
+// Returns true if the Intent Chip should show the app icon for the app which
+// can handle the current URL. If false, a generic icon should always be used.
+// Only returns true if LinkCapturingUiUpdateEnabled() returns true.
+bool AppIconInIntentChipEnabled();
 
 }  // namespace apps::features
 

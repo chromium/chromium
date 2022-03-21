@@ -8072,8 +8072,10 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
+    // TODO(crbug.com/1308294): Replace kOsLinux with Lacros in Link
+    // Capturing/Intent Chip flags.
     {"link-capturing-ui-update", flag_descriptions::kLinkCapturingUiUpdateName,
-     flag_descriptions::kLinkCapturingUiUpdateDescription, kOsCrOS,
+     flag_descriptions::kLinkCapturingUiUpdateDescription, kOsCrOS | kOsLinux,
      FEATURE_VALUE_TYPE(apps::features::kLinkCapturingUiUpdate)},
 #endif
 
@@ -8282,14 +8284,20 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(network::features::kOmitCorsClientCert)},
 
 #if BUILDFLAG(IS_CHROMEOS)
+    // TODO(crbug.com/1308294): Replace kOsLinux with Lacros in Link
+    // Capturing/Intent Chip flags.
     {"link-capturing-infobar", flag_descriptions::kLinkCapturingInfoBarName,
-     flag_descriptions::kLinkCapturingInfoBarDescription, kOsCrOS,
+     flag_descriptions::kLinkCapturingInfoBarDescription, kOsCrOS | kOsLinux,
      FEATURE_VALUE_TYPE(apps::features::kLinkCapturingInfoBar)},
 
     {"intent-chip-skips-intent-picker",
      flag_descriptions::kIntentChipSkipsPickerName,
-     flag_descriptions::kIntentChipSkipsPickerDescription, kOsCrOS,
+     flag_descriptions::kIntentChipSkipsPickerDescription, kOsCrOS | kOsLinux,
      FEATURE_VALUE_TYPE(apps::features::kIntentChipSkipsPicker)},
+
+    {"intent-chip-app-icon", flag_descriptions::kIntentChipAppIconName,
+     flag_descriptions::kIntentChipAppIconDescription, kOsCrOS | kOsLinux,
+     FEATURE_VALUE_TYPE(apps::features::kIntentChipAppIcon)},
 #endif
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

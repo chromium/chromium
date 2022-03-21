@@ -52468,6 +52468,7 @@ from previous Chrome versions.
   <int value="-1564232131"
       label="OmniboxOnDeviceHeadProviderNonIncognito:enabled"/>
   <int value="-1563280385" label="Floss:enabled"/>
+  <int value="-1562505975" label="AppIconInIntentChip:enabled"/>
   <int value="-1562065709" label="ForceEnableDevicesPage:enabled"/>
   <int value="-1561252720" label="AutofillCreditCardUploadFeedback:disabled"/>
   <int value="-1560729847" label="AutofillCacheQueryResponses:enabled"/>
@@ -57546,6 +57547,7 @@ from previous Chrome versions.
   <int value="1932732886" label="OpenVR:enabled"/>
   <int value="1933282728" label="OmniboxUICuesForSearchHistoryMatches:enabled"/>
   <int value="1933376478" label="IsolatePrerenders:enabled"/>
+  <int value="1934470615" label="AppIconInIntentChip:disabled"/>
   <int value="1935405622" label="AppServiceInstanceRegistry:disabled"/>
   <int value="1936810062" label="WebVrVsyncAlign:enabled"/>
   <int value="1937357350" label="MultilingualTyping:disabled"/>

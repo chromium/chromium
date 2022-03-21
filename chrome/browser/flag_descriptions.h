@@ -3208,6 +3208,9 @@ extern const char kEnableTtsLacrosSupportDescription[];
 extern const char kIntentChipSkipsPickerName[];
 extern const char kIntentChipSkipsPickerDescription[];
 
+extern const char kIntentChipAppIconName[];
+extern const char kIntentChipAppIconDescription[];
+
 extern const char kLinkCapturingInfoBarName[];
 extern const char kLinkCapturingInfoBarDescription[];
 

@@ -16,6 +16,9 @@ const base::Feature kLinkCapturingInfoBar{"LinkCapturingInfoBar",
 const base::Feature kIntentChipSkipsPicker{"IntentChipSkipsPicker",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kIntentChipAppIcon{"AppIconInIntentChip",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
+
 bool LinkCapturingUiUpdateEnabled() {
   return base::FeatureList::IsEnabled(kLinkCapturingUiUpdate);
 }
@@ -28,6 +31,11 @@ bool LinkCapturingInfoBarEnabled() {
 bool ShouldIntentChipSkipIntentPicker() {
   return LinkCapturingUiUpdateEnabled() &&
          base::FeatureList::IsEnabled(kIntentChipSkipsPicker);
+}
+
+bool AppIconInIntentChipEnabled() {
+  return LinkCapturingInfoBarEnabled() &&
+         base::FeatureList::IsEnabled(kIntentChipAppIcon);
 }
 
 }  // namespace apps::features

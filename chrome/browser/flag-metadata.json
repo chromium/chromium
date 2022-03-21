@@ -3699,6 +3699,11 @@
     "expiry_milestone": 95
   },
   {
+    "name": "intent-chip-app-icon",
+    "owners": ["tsergeant", "chromeos-apps-foundation-team@google.com"],
+    "expiry_milestone": 105
+  },
+  {
     "name": "intent-chip-skips-intent-picker",
     "owners": ["tsergeant", "chromeos-apps-foundation-team@google.com"],
     "expiry_milestone": 105
