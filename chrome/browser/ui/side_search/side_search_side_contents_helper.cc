@@ -17,12 +17,6 @@
 
 namespace {
 
-#if !BUILDFLAG(IS_CHROMEOS)
-constexpr char kChromeOSUserAgent[] =
-    "Mozilla/5.0 (X11; CrOS x86_64 14233.0.0) AppleWebKit/537.36 (KHTML, like "
-    "Gecko) Chrome/96.0.4650.0 Safari/537.36";
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-
 class SideSearchContentsThrottle : public content::NavigationThrottle {
  public:
   explicit SideSearchContentsThrottle(
@@ -188,13 +182,6 @@ SideSearchSideContentsHelper::SideSearchSideContentsHelper(
                         "SideSearch.LoadDocumentTime",
                         "SideSearch.LoadCompletedTime") {
   Observe(web_contents);
-
-#if !BUILDFLAG(IS_CHROMEOS)
-  web_contents->SetUserAgentOverride(
-      blink::UserAgentOverride::UserAgentOnly(kChromeOSUserAgent), true);
-  web_contents->SetRendererInitiatedUserAgentOverrideOption(
-      content::NavigationController::UA_OVERRIDE_TRUE);
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   web_contents->SetDelegate(this);
 }
