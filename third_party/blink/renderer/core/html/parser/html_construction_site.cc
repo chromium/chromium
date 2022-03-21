@@ -279,6 +279,11 @@ void HTMLConstructionSite::FlushPendingText(FlushMode mode) {
     unsigned break_index =
         FindBreakIndexBetween(string, current_position, proposed_break_index);
     DCHECK_LE(break_index, string.length());
+    if (!break_index) {
+      // FindBreakIndexBetween returns 0 if it cannot find a breakpoint. In this
+      // case, just keep the entire string.
+      break_index = string.length();
+    }
     String substring =
         string.Substring(current_position, break_index - current_position);
     substring = AtomizeIfAllWhitespace(substring, pending_text.whitespace_mode);
