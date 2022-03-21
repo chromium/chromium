@@ -11,6 +11,8 @@
 
 namespace x11 {
 
+class Event;
+
 class COMPONENT_EXPORT(X11) FutureBase {
  public:
   FutureBase();
@@ -19,10 +21,16 @@ class COMPONENT_EXPORT(X11) FutureBase {
   FutureBase& operator=(FutureBase&&);
   ~FutureBase();
 
+  // Block until this request is handled by the server.
+  void Wait();
+
   // Block until this request is handled by the server.  Unlike Sync(), this
   // method doesn't return the response.  Rather, it calls the response
   // handler installed for this request out-of-order.
-  void Wait();
+  void DispatchNow();
+
+  // Returns true iff the response for this request was received after `event`.
+  bool AfterEvent(const Event& event) const;
 
  protected:
   Connection::FutureImpl* impl() { return impl_.get(); }

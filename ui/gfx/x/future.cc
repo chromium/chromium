@@ -22,4 +22,13 @@ void FutureBase::Wait() {
     impl_->Wait();
 }
 
+void FutureBase::DispatchNow() {
+  if (impl_)
+    impl_->DispatchNow();
+}
+
+bool FutureBase::AfterEvent(const Event& event) const {
+  return impl_ ? impl_->AfterEvent(event) : false;
+}
+
 }  // namespace x11

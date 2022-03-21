@@ -13,6 +13,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/x/connection.h"
@@ -87,9 +88,6 @@ class COMPONENT_EXPORT(X11) WindowCache : public EventObserver {
                           Window window,
                           const base::flat_set<Window>* ignore = nullptr);
 
-  // Returns true if the cache is fully built.
-  bool Ready();
-
   // Blocks until all outstanding requests are processed.
   void WaitUntilReady();
 
@@ -155,6 +153,10 @@ class COMPONENT_EXPORT(X11) WindowCache : public EventObserver {
   std::unordered_map<Window, WindowInfo> windows_;
 
   base::circular_deque<FutureBase> pending_requests_;
+
+  // The latest event processed out-of-order, or nullopt if the latest event was
+  // processed in order.
+  absl::optional<uint32_t> last_processed_event_;
 
   // Although only one instance of WindowCache may be created at a time, the
   // instance will be created and destroyed as needed, so WeakPtrs are still

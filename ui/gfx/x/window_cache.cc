@@ -27,9 +27,11 @@ Window GetWindowAtPoint(const gfx::Point& point_px,
   auto* connection = Connection::Get();
   Window root = connection->default_root();
 
-  auto* instance = WindowCache::instance();
-  if (instance && instance->Ready())
+  if (auto* instance = WindowCache::instance()) {
+    instance->WaitUntilReady();
     return instance->GetWindowAtPoint(point_px, root, ignore);
+  }
+
   WindowCache cache(connection, connection->default_root(), false);
   cache.WaitUntilReady();
   return cache.GetWindowAtPoint(point_px, root, ignore);
@@ -82,16 +84,23 @@ WindowCache::~WindowCache() {
   instance_ = nullptr;
 }
 
-bool WindowCache::Ready() {
-  return pending_requests_.empty();
-}
-
 void WindowCache::WaitUntilReady() {
+  auto& events = connection_->events();
+  size_t event = 0;
   while (!pending_requests_.empty()) {
     connection_->Flush();
-    for (size_t pending = pending_requests_.size(); pending; --pending)
-      pending_requests_.front().Wait();
+    for (size_t pending = pending_requests_.size(); pending;) {
+      if (event < events.size() &&
+          pending_requests_.front().AfterEvent(events[event])) {
+        OnEvent(events[event++]);
+      } else {
+        pending_requests_.front().DispatchNow();
+        --pending;
+      }
+    }
   }
+  if (event)
+    last_processed_event_ = events[event - 1].sequence();
 }
 
 void WindowCache::SyncForTest() {
@@ -140,6 +149,13 @@ Window WindowCache::GetWindowAtPoint(gfx::Point point_px,
 }
 
 void WindowCache::OnEvent(const Event& event) {
+  // Ignore events that we've already processed.
+  if (last_processed_event_ &&
+      CompareSequenceIds(event.sequence(), *last_processed_event_) <= 0) {
+    return;
+  }
+  last_processed_event_ = absl::nullopt;
+
   // Ignore events sent by clients since the server will send everything
   // we need and client events may have different semantics (eg.
   // ConfigureNotifyEvents are parent-relative if sent by the server but
