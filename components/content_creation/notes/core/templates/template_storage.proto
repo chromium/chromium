@@ -58,7 +58,7 @@ message CollectionItem {
   NoteTemplate templateId = 1;
   Date activation = 2;
   Date expiration = 3;
-  repeated int32 geo = 4;
+  repeated string geo = 4;
 }
 // Specifies all visual characteristics for displaying a note.
 message NoteTemplate {

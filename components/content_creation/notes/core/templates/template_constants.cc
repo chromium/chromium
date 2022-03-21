@@ -87,8 +87,9 @@ NoteTemplate GetFriendlyTemplate() {
       /*id=*/NoteTemplateIds::kFriendly,
       l10n_util::GetStringUTF8(
           IDS_CONTENT_CREATION_NOTE_TEMPLATE_NAME_FRIENDLY),
-      Background(/*image_url=*/"https://www.gstatic.com/chrome/content/"
-                               "templates/FriendlyBackground@2x.png"),
+      Background(
+          /*image_url=*/"https://www.gstatic.com/chrome/content/"
+                        "webnotes/backgrounds/FriendlyBackground@2x.png"),
       TextStyle(kRockSaltFontName,
                 /*font_color=*/kGrey900Color, k400Weight,
                 /*all_caps=*/false, TextAlignment::kStart,

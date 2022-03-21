@@ -34,7 +34,8 @@ class TemplateStore {
  public:
   explicit TemplateStore(
       PrefService* pref_service,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader,
+      std::string country_code);
   virtual ~TemplateStore();
 
   // Not copyable or movable.
@@ -43,8 +44,12 @@ class TemplateStore {
 
   // Checks whether given template should be available based on activation and
   // expiration dates.
-  bool TemplateAvailable(proto::CollectionItem current_template,
-                         base::Time today);
+  bool TemplateDateAvailable(proto::CollectionItem current_template,
+                             base::Time today);
+
+  // Checks whether given template should be available based on the location of
+  // the user.
+  bool TemplateLocationAvailable(proto::CollectionItem current_template);
 
   // Calls Start() in TemplateFetcher to do a GET request and send the
   // data from the URL to OnFetchTemplateComplete.
@@ -76,6 +81,8 @@ class TemplateStore {
   // Task runner delegating tasks to the ThreadPool.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   raw_ptr<PrefService> pref_service_;
+
+  std::string country_code_;
 
   base::WeakPtrFactory<TemplateStore> weak_ptr_factory_{this};
 };

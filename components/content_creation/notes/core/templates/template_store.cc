@@ -44,10 +44,12 @@ bool ConvertProtoDateToTime(proto::Date date, base::Time& time_date) {
 
 TemplateStore::TemplateStore(
     PrefService* pref_service,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader)
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader,
+    std::string country_code)
     : task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_BLOCKING})),
-      pref_service_(pref_service) {
+      pref_service_(pref_service),
+      country_code_(country_code) {
   fetcher_ = std::make_unique<TemplateFetcher>(url_loader);
 }
 
@@ -60,6 +62,7 @@ void TemplateStore::FetchTemplates(GetTemplatesCallback callback) {
 
 void TemplateStore::GetTemplates(GetTemplatesCallback callback) {
   if (IsDynamicTemplatesEnabled()) {
+    LOG(ERROR) << "enabled";
     FetchTemplates(std::move(callback));
   } else {
     base::PostTaskAndReplyWithResult(
@@ -87,8 +90,9 @@ std::vector<NoteTemplate> TemplateStore::BuildDefaultTemplates() {
   return templates;
 }
 
-bool TemplateStore::TemplateAvailable(proto::CollectionItem current_template,
-                                      base::Time today) {
+bool TemplateStore::TemplateDateAvailable(
+    proto::CollectionItem current_template,
+    base::Time today) {
   base::Time activation;
   base::Time expiration;
 
@@ -107,24 +111,53 @@ bool TemplateStore::TemplateAvailable(proto::CollectionItem current_template,
   return true;
 }
 
+bool TemplateStore::TemplateLocationAvailable(
+    proto::CollectionItem current_template) {
+  // If there are no locations set, the template is considered available for all
+  // locations.
+  if (current_template.geo_size() == 0) {
+    return true;
+  }
+
+  // If a location is set, but the user's country code is empty, the template
+  // will not be available for the user.
+  if (country_code_.empty()) {
+    return false;
+  }
+
+  for (std::string template_location : current_template.geo()) {
+    if (country_code_ == template_location) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 std::vector<NoteTemplate> TemplateStore::ParseTemplatesFromString(
     std::string response_body) {
   std::vector<NoteTemplate> templates = {};
   proto::Collection collection;
+  // Time is set here so that all templates will be compared against the exact
+  // same date.
+  base::Time today = base::Time::NowFromSystemTime();
 
   if (!collection.ParseFromString(response_body)) {
     return BuildDefaultTemplates();
   }
 
   int numTemplates = 0;
-  base::Time today = base::Time::NowFromSystemTime();
 
   for (int i = 0; i < collection.templates_size() &&
                   numTemplates < collection.max_template_number();
        i++) {
     proto::CollectionItem current_template = collection.templates(i);
 
-    if (!TemplateAvailable(current_template, today)) {
+    if (!TemplateDateAvailable(current_template, today)) {
+      continue;
+    }
+
+    if (!TemplateLocationAvailable(current_template)) {
       continue;
     }
 
