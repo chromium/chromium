@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
@@ -98,8 +99,6 @@ absl::optional<FirstPartySetParser::ParseError> ParseSet(
   if (elements.contains(*canonical_owner))
     return FirstPartySetParser::ParseError::kNonDisjointSets;
 
-  elements.insert(*canonical_owner);
-
   // Confirm that the members field is present, and is an array of strings.
   const base::Value* maybe_members_list =
       value.FindListKey(kFirstPartySetMembersField);
@@ -121,15 +120,21 @@ absl::optional<FirstPartySetParser::ParseError> ParseSet(
     if (!member.has_value())
       return FirstPartySetParser::ParseError::kInvalidOrigin;
 
+    if (*member == *canonical_owner || base::Contains(members, member))
+      return FirstPartySetParser::ParseError::kRepeatedDomain;
+
     if (elements.contains(*member))
       return FirstPartySetParser::ParseError::kNonDisjointSets;
 
     members.push_back(*member);
-    elements.insert(std::move(*member));
   }
 
-  out_set = std::make_pair(*canonical_owner,
-                           base::flat_set<net::SchemefulSite>(members));
+  elements.insert(*canonical_owner);
+  for (const auto& member : members) {
+    elements.insert(member);
+  }
+
+  out_set = std::make_pair(*canonical_owner, members);
   return absl::nullopt;
 }
 

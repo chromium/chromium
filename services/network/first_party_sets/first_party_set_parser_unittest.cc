@@ -664,6 +664,28 @@ TEST(ParseFromEnterpriseSetsTest, SingletonSetError_EmptyMembers) {
   EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
 }
 
+TEST(ParseFromEnterpriseSetsTest, RepeatedDomainError_WithinReplacements) {
+  base::Value policy_value = base::JSONReader::Read(R"(
+              {
+                "replacements": [
+                  {
+                    "owner": "https://owner1.test",
+                    "members": ["https://owner1.test"]
+                  }
+                ],
+                "additions": []
+              }
+            )")
+                                 .value();
+  FirstPartySetParser::ParsedPolicySetLists out_sets;
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
+                                                                 out_sets),
+              FirstPartySetParser::PolicyParsingError(
+                  {FirstPartySetParser::ParseError::kRepeatedDomain,
+                   FirstPartySetParser::PolicySetType::kReplacement, 0}));
+  EXPECT_THAT(out_sets, FirstPartySetParser::ParsedPolicySetLists({}, {}));
+}
+
 TEST(ParseFromEnterpriseSetsTest, NonDisjointError_WithinReplacements) {
   base::Value policy_value = base::JSONReader::Read(R"(
                    {

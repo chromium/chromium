@@ -29,10 +29,16 @@ class FirstPartySetParser {
       std::pair<net::SchemefulSite, base::flat_set<net::SchemefulSite>>;
 
   enum class ParseError {
+    // The set definition was not the correct data type.
     kInvalidType,
+    // A string in the set was not a registrable domain.
     kInvalidOrigin,
+    // The set had no members.
     kSingletonSet,
-    kNonDisjointSets
+    // The set was non-disjoint with other pre-existing sets.
+    kNonDisjointSets,
+    // The set repeated the same domain more than once in its definition.
+    kRepeatedDomain,
   };
 
   enum class PolicySetType { kReplacement, kAddition };
