@@ -167,7 +167,7 @@ void AudioManagerFuchsia::InitOnAudioThread() {
 
   enumerator_.set_error_handler([this](zx_status_t status) {
     ZX_LOG(ERROR, status) << "AudioDeviceEnumerator disconnected. Audio "
-                             "devices will be disabbled.";
+                             "devices will be disabled";
     audio_devices_.clear();
   });
   base::ComponentContextForProcess()->svc()->Connect(enumerator_.NewRequest());
@@ -185,7 +185,7 @@ void AudioManagerFuchsia::InitOnAudioThread() {
   if (status != ZX_OK) {
     ZX_LOG(ERROR, status)
         << "Unable to retrieve audio devices from AudioDeviceEnumerator. Audio "
-           "devices will be disabbled.";
+           "devices will be disabled";
     return;
   }
   for (auto& info : devices) {
