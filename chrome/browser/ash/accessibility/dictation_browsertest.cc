@@ -1361,7 +1361,35 @@ class DictationUITest : public DictationExtensionTest {
 };
 
 // Consistently failing on Linux ChromiumOS MSan (https://crbug.com/1302688).
-#if BUILDFLAG(IS_CHROMEOS) && !defined(MEMORY_SANITIZER)
+#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#define MAYBE_ShownWhenSpeechRecognitionStarts \
+  DISABLED_ShownWhenSpeechRecognitionStarts
+#define MAYBE_DisplaysInterimSpeechResults DISABLED_DisplaysInterimSpeechResults
+#define MAYBE_DisplaysMacroSuccess DISABLED_DisplaysMacroSuccess
+#define MAYBE_ResetsToStandbyModeAfterFinalSpeechResult \
+  DISABLED_ResetsToStandbyModeAfterFinalSpeechResult
+#define MAYBE_DisplaysMacroSuccess DISABLED_DisplaysMacroSuccess
+#define MAYBE_HiddenWhenDictationDeactivates \
+  DISABLED_HiddenWhenDictationDeactivates
+#define MAYBE_StandbyHints DISABLED_StandbyHints
+#define MAYBE_HintsShownWhenTextCommitted DISABLED_HintsShownWhenTextCommitted
+#define MAYBE_HintsShownAfterTextSelected DISABLED_HintsShownAfterTextSelected
+#define MAYBE_HintsShownAfterCommandExecuted \
+  DISABLED_HintsShownAfterCommandExecuted
+#else
+#define MAYBE_ShownWhenSpeechRecognitionStarts ShownWhenSpeechRecognitionStarts
+#define MAYBE_DisplaysInterimSpeechResults DisplaysInterimSpeechResults
+#define MAYBE_DisplaysMacroSuccess DisplaysMacroSuccess
+#define MAYBE_ResetsToStandbyModeAfterFinalSpeechResult \
+  ResetsToStandbyModeAfterFinalSpeechResult
+#define MAYBE_DisplaysMacroSuccess DisplaysMacroSuccess
+#define MAYBE_HiddenWhenDictationDeactivates HiddenWhenDictationDeactivates
+#define MAYBE_StandbyHints StandbyHints
+#define MAYBE_HintsShownWhenTextCommitted HintsShownWhenTextCommitted
+#define MAYBE_HintsShownAfterTextSelected HintsShownAfterTextSelected
+#define MAYBE_HintsShownAfterCommandExecuted HintsShownAfterCommandExecuted
+#endif
+
 INSTANTIATE_TEST_SUITE_P(
     Network,
     DictationUITest,
@@ -1371,9 +1399,9 @@ INSTANTIATE_TEST_SUITE_P(
     OnDevice,
     DictationUITest,
     ::testing::Values(speech::SpeechRecognitionType::kOnDevice));
-#endif
 
-IN_PROC_BROWSER_TEST_P(DictationUITest, ShownWhenSpeechRecognitionStarts) {
+IN_PROC_BROWSER_TEST_P(DictationUITest,
+                       MAYBE_ShownWhenSpeechRecognitionStarts) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
   WaitForProperties(/*visible=*/true,
@@ -1382,7 +1410,7 @@ IN_PROC_BROWSER_TEST_P(DictationUITest, ShownWhenSpeechRecognitionStarts) {
                     /*hints=*/absl::optional<std::vector<std::u16string>>());
 }
 
-IN_PROC_BROWSER_TEST_P(DictationUITest, DisplaysInterimSpeechResults) {
+IN_PROC_BROWSER_TEST_P(DictationUITest, MAYBE_DisplaysInterimSpeechResults) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
   // Send an interim speech result.
@@ -1393,7 +1421,7 @@ IN_PROC_BROWSER_TEST_P(DictationUITest, DisplaysInterimSpeechResults) {
                     /*hints=*/absl::optional<std::vector<std::u16string>>());
 }
 
-IN_PROC_BROWSER_TEST_P(DictationUITest, DisplaysMacroSuccess) {
+IN_PROC_BROWSER_TEST_P(DictationUITest, MAYBE_DisplaysMacroSuccess) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
   // Perform a command.
@@ -1410,7 +1438,7 @@ IN_PROC_BROWSER_TEST_P(DictationUITest, DisplaysMacroSuccess) {
 }
 
 IN_PROC_BROWSER_TEST_P(DictationUITest,
-                       ResetsToStandbyModeAfterFinalSpeechResult) {
+                       MAYBE_ResetsToStandbyModeAfterFinalSpeechResult) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
   WaitForProperties(/*visible=*/true,
@@ -1431,7 +1459,7 @@ IN_PROC_BROWSER_TEST_P(DictationUITest,
                     /*hints=*/absl::optional<std::vector<std::u16string>>());
 }
 
-IN_PROC_BROWSER_TEST_P(DictationUITest, HiddenWhenDictationDeactivates) {
+IN_PROC_BROWSER_TEST_P(DictationUITest, MAYBE_HiddenWhenDictationDeactivates) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
   WaitForProperties(/*visible=*/true,
@@ -1447,7 +1475,7 @@ IN_PROC_BROWSER_TEST_P(DictationUITest, HiddenWhenDictationDeactivates) {
                     /*hints=*/absl::optional<std::vector<std::u16string>>());
 }
 
-IN_PROC_BROWSER_TEST_P(DictationUITest, StandbyHints) {
+IN_PROC_BROWSER_TEST_P(DictationUITest, MAYBE_StandbyHints) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
   WaitForProperties(/*visible=*/true,
@@ -1497,7 +1525,7 @@ IN_PROC_BROWSER_TEST_P(DictationUITest, MAYBE_ChromeVoxAnnouncesHints) {
   sm.Replay();
 }
 
-IN_PROC_BROWSER_TEST_P(DictationUITest, HintsShownWhenTextCommitted) {
+IN_PROC_BROWSER_TEST_P(DictationUITest, MAYBE_HintsShownWhenTextCommitted) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
 
@@ -1523,7 +1551,7 @@ IN_PROC_BROWSER_TEST_P(DictationUITest, HintsShownWhenTextCommitted) {
                                   kHelp});
 }
 
-IN_PROC_BROWSER_TEST_P(DictationUITest, HintsShownAfterTextSelected) {
+IN_PROC_BROWSER_TEST_P(DictationUITest, MAYBE_HintsShownAfterTextSelected) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
 
@@ -1549,7 +1577,7 @@ IN_PROC_BROWSER_TEST_P(DictationUITest, HintsShownAfterTextSelected) {
                                   kHelp});
 }
 
-IN_PROC_BROWSER_TEST_P(DictationUITest, HintsShownAfterCommandExecuted) {
+IN_PROC_BROWSER_TEST_P(DictationUITest, MAYBE_HintsShownAfterCommandExecuted) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
 
