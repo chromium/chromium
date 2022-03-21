@@ -130,6 +130,10 @@ void OneShotNavigationObserver::WaitForNavigation() {
   run_loop_.Run();
 }
 
+void OneShotNavigationObserver::NavigationStarted(Navigation* navigation) {
+  is_page_initiated_ = navigation->IsPageInitiated();
+}
+
 void OneShotNavigationObserver::NavigationCompleted(Navigation* navigation) {
   completed_ = true;
   Finish(navigation);

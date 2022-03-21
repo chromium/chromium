@@ -119,6 +119,10 @@ class NavigationBrowserTest : public WebLayerBrowserTest {
   NavigationController* GetNavigationController() {
     return shell()->tab()->GetNavigationController();
   }
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    content::SetupCrossSiteRedirector(embedded_test_server());
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, NoError) {
@@ -137,6 +141,35 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, NoError) {
   EXPECT_EQ(observer.load_error(), Navigation::kNoError);
   EXPECT_EQ(observer.http_status_code(), 200);
   EXPECT_EQ(observer.navigation_state(), NavigationState::kComplete);
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       IsPageInitiatedTrueForWindowHistoryBack) {
+  EXPECT_TRUE(embedded_test_server()->Start());
+
+  std::unique_ptr<OneShotNavigationObserver> observer =
+      std::make_unique<OneShotNavigationObserver>(shell());
+  GetNavigationController()->Navigate(
+      embedded_test_server()->GetURL("a.com", "/simple_page.html"));
+  observer->WaitForNavigation();
+  ASSERT_TRUE(observer->completed());
+  EXPECT_FALSE(observer->is_page_initiated());
+
+  observer = std::make_unique<OneShotNavigationObserver>(shell());
+  GetNavigationController()->Navigate(
+      embedded_test_server()->GetURL("b.com", "/simple_page.html"));
+  observer->WaitForNavigation();
+  ASSERT_TRUE(observer->completed());
+  EXPECT_FALSE(observer->is_page_initiated());
+
+  observer = std::make_unique<OneShotNavigationObserver>(shell());
+  shell()->tab()->ExecuteScript(
+      u"window.history.back();", false,
+      base::BindLambdaForTesting(
+          [&](base::Value value) { LOG(ERROR) << "executescript result"; }));
+  observer->WaitForNavigation();
+  ASSERT_TRUE(observer->completed());
+  EXPECT_TRUE(observer->is_page_initiated());
 }
 
 // Http client error when the server returns a non-empty response.

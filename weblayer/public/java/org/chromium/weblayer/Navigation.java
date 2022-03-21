@@ -361,9 +361,9 @@ public class Navigation extends IClientNavigation.Stub {
      * * changing window.location.href
      * * redirect via the <meta http-equiv="refresh"> tag
      * * using window.history.pushState
+     * * window.history.forward() or window.history.back()
      *
-     * This method returns false for navigations initiated by the WebLayer API, including using
-     *  window.history.forward() or window.history.back().
+     * This method returns false for navigations initiated by the WebLayer API.
      *
      * @return Whether the navigation was initiated by the page.
      */
