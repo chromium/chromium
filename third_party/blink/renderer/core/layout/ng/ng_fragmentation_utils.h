@@ -70,7 +70,7 @@ inline bool IsResumingLayout(const NGBlockBreakToken* token) {
 // already been fragmented (to resume layout correctly, but not break again).
 inline bool InvolvedInBlockFragmentation(const NGBoxFragmentBuilder& builder) {
   return builder.ConstraintSpace()->HasBlockFragmentation() ||
-         builder.PreviousBreakToken();
+         IsResumingLayout(builder.PreviousBreakToken());
 }
 
 // Calculate the final "break-between" value at a class A or C breakpoint. This

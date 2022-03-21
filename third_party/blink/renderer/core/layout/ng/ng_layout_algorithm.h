@@ -97,7 +97,8 @@ class CORE_EXPORT NGLayoutAlgorithm : public NGLayoutAlgorithmOperations {
     container_builder_.SetIsNewFormattingContext(
         params.space.IsNewFormattingContext());
     container_builder_.SetInitialFragmentGeometry(params.fragment_geometry);
-    if (UNLIKELY(params.space.HasBlockFragmentation() || params.break_token)) {
+    if (UNLIKELY(params.space.HasBlockFragmentation() ||
+                 IsResumingLayout(params.break_token))) {
       SetupFragmentBuilderForFragmentation(
           params.space, params.node, params.break_token, &container_builder_);
     }
