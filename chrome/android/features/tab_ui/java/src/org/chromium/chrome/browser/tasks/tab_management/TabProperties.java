@@ -16,6 +16,7 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelega
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 import java.lang.annotation.Retention;
@@ -53,6 +54,10 @@ public class TabProperties {
 
     public static final WritableObjectPropertyKey<TabListMediator.ThumbnailFetcher>
             THUMBNAIL_FETCHER = new WritableObjectPropertyKey<>(true);
+
+    public static final WritableIntPropertyKey GRID_CARD_WIDTH = new WritableIntPropertyKey();
+
+    public static final WritableIntPropertyKey GRID_CARD_HEIGHT = new WritableIntPropertyKey();
 
     public static final WritableObjectPropertyKey<TabListMediator.IphProvider> IPH_PROVIDER =
             new WritableObjectPropertyKey<>();
@@ -133,7 +138,7 @@ public class TabProperties {
             SEARCH_QUERY, PAGE_INFO_LISTENER, PAGE_INFO_ICON_DRAWABLE_ID, CARD_TYPE,
             CONTENT_DESCRIPTION_STRING, CLOSE_BUTTON_DESCRIPTION_STRING,
             SHOPPING_PERSISTED_TAB_DATA_FETCHER, STORE_PERSISTED_TAB_DATA_FETCHER,
-            SHOULD_SHOW_PRICE_DROP_TOOLTIP};
+            SHOULD_SHOW_PRICE_DROP_TOOLTIP, GRID_CARD_WIDTH, GRID_CARD_HEIGHT};
 
     public static final PropertyKey[] ALL_KEYS_TAB_STRIP =
             new PropertyKey[] {TAB_ID, TAB_SELECTED_LISTENER, TAB_CLOSED_LISTENER, FAVICON,

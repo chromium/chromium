@@ -5,6 +5,9 @@ package org.chromium.chrome.browser.tab;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import android.content.Context;
+import android.content.res.Configuration;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
@@ -40,7 +43,11 @@ public final class TabUtilsUnitTest {
     @Test
     @Config(qualifiers = "sw800dp-land")
     public void testGetTabThumbnailAspectRatio_withTabletLandscapeContext() {
-        assertThat(TabUtils.getTabThumbnailAspectRatio(ContextUtils.getApplicationContext()))
-                .isEqualTo(TabUtils.TABLET_LANDSCAPE_TAB_THUMBNAIL_ASPECT_RATIO);
+        final Context applicationContext = ContextUtils.getApplicationContext();
+        final Configuration configuration = applicationContext.getResources().getConfiguration();
+        float expectedAspectRatio =
+                (configuration.screenWidthDp * 1f) / (configuration.screenHeightDp * 1f);
+        assertThat(TabUtils.getTabThumbnailAspectRatio(applicationContext))
+                .isEqualTo(expectedAspectRatio);
     }
 }

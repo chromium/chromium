@@ -775,9 +775,7 @@ public class TabListMediatorUnitTest {
         doReturn(mTab2).when(mTabModelFilter).getTabAt(1);
         doReturn(newTab).when(mTabModelFilter).getTabAt(2);
         doReturn(3).when(mTabModelFilter).getCount();
-        doReturn(Arrays.asList(newTab))
-                .when(mTabModelFilter)
-                .getRelatedTabList(eq(TAB3_ID));
+        doReturn(Arrays.asList(newTab)).when(mTabModelFilter).getRelatedTabList(eq(TAB3_ID));
         assertThat(mModel.size(), equalTo(2));
 
         mTabModelObserverCaptor.getValue().didAddTab(
@@ -799,9 +797,7 @@ public class TabListMediatorUnitTest {
         doReturn(mTab1).when(mTabModelFilter).getTabAt(0);
         doReturn(mTab2).when(mTabModelFilter).getTabAt(1);
         doReturn(2).when(mTabModelFilter).getCount();
-        doReturn(Arrays.asList(mTab2, newTab))
-                .when(mTabModelFilter)
-                .getRelatedTabList(eq(TAB3_ID));
+        doReturn(Arrays.asList(mTab2, newTab)).when(mTabModelFilter).getRelatedTabList(eq(TAB3_ID));
         assertThat(mModel.size(), equalTo(2));
 
         mTabModelObserverCaptor.getValue().didAddTab(
@@ -821,9 +817,7 @@ public class TabListMediatorUnitTest {
         doReturn(newTab).when(mTabModelFilter).getTabAt(1);
         doReturn(mTab2).when(mTabModelFilter).getTabAt(2);
         doReturn(3).when(mTabModelFilter).getCount();
-        doReturn(Arrays.asList(newTab))
-                .when(mTabModelFilter)
-                .getRelatedTabList(eq(TAB3_ID));
+        doReturn(Arrays.asList(newTab)).when(mTabModelFilter).getRelatedTabList(eq(TAB3_ID));
         assertThat(mModel.size(), equalTo(2));
 
         mTabModelObserverCaptor.getValue().didAddTab(
@@ -1534,12 +1528,12 @@ public class TabListMediatorUnitTest {
     @Test
     @Features.EnableFeatures(GRID_TAB_SWITCHER_FOR_TABLETS)
     public void updateSpanCount_onTablet_multipleScreenWidths() {
-        initAndAssertAllProperties();
+        initAndAssertAllProperties(3);
         // Mock tablet
         when(mResources.getInteger(R.integer.min_screen_width_bucket))
                 .thenReturn(TabListCoordinator.MAX_SCREEN_WIDTH_MEDIUM_DP + 1);
         Configuration portraitConfiguration = new Configuration();
-        portraitConfiguration.orientation = Configuration.ORIENTATION_PORTRAIT;
+        portraitConfiguration.orientation = Configuration.ORIENTATION_LANDSCAPE;
 
         // Mock that we are in single window mode.
         MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(false);
@@ -1557,6 +1551,40 @@ public class TabListMediatorUnitTest {
         // Large width
         portraitConfiguration.screenWidthDp = TabListCoordinator.MAX_SCREEN_WIDTH_MEDIUM_DP + 1;
         mComponentCallbacksCaptor.getValue().onConfigurationChanged(portraitConfiguration);
+        verify(mGridLayoutManager).setSpanCount(TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_LARGE);
+    }
+
+    @Test
+    @Features.EnableFeatures(GRID_TAB_SWITCHER_FOR_TABLETS)
+    public void updateSpanCount_onLargeTabletWithThreeTabs_landscape() {
+        // Init 3 tabs
+        initAndAssertAllProperties(1);
+        // Mock large tablet
+        when(mResources.getInteger(R.integer.min_screen_width_bucket))
+                .thenReturn(TabListCoordinator.MAX_SCREEN_WIDTH_MEDIUM_DP + 1);
+
+        Configuration portraitConfiguration = new Configuration();
+        portraitConfiguration.orientation = Configuration.ORIENTATION_LANDSCAPE;
+        portraitConfiguration.screenWidthDp = TabListCoordinator.MAX_SCREEN_WIDTH_MEDIUM_DP + 1;
+        mComponentCallbacksCaptor.getValue().onConfigurationChanged(portraitConfiguration);
+
+        verify(mGridLayoutManager).setSpanCount(mTabModel.getCount());
+    }
+
+    @Test
+    @Features.EnableFeatures(GRID_TAB_SWITCHER_FOR_TABLETS)
+    public void updateSpanCount_onLargeTabletWithThreeTabs_portrait() {
+        // Init 3 tabs
+        initAndAssertAllProperties(1);
+        // Mock large tablet
+        when(mResources.getInteger(R.integer.min_screen_width_bucket))
+                .thenReturn(TabListCoordinator.MAX_SCREEN_WIDTH_MEDIUM_DP + 1);
+
+        Configuration portraitConfiguration = new Configuration();
+        portraitConfiguration.orientation = Configuration.ORIENTATION_PORTRAIT;
+        portraitConfiguration.screenWidthDp = TabListCoordinator.MAX_SCREEN_WIDTH_MEDIUM_DP + 1;
+        mComponentCallbacksCaptor.getValue().onConfigurationChanged(portraitConfiguration);
+
         verify(mGridLayoutManager).setSpanCount(TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_LARGE);
     }
 
@@ -3097,6 +3125,20 @@ public class TabListMediatorUnitTest {
         initAndAssertAllProperties(mMediator);
     }
 
+    // initAndAssertAllProperties called with regular mMediator
+    private void initAndAssertAllProperties(int extraTabCount) {
+        int index = mTabModel.getCount();
+        int totalCount = mTabModel.getCount() + extraTabCount;
+        while (index < totalCount) {
+            Tab tab = prepareTab(index, TAB1_TITLE, TAB1_URL);
+            doReturn(tab).when(mTabModel).getTabAt(index);
+            doReturn(index).when(mTabModel).indexOf(tab);
+            index++;
+        }
+        doReturn(totalCount).when(mTabModel).getCount();
+        initAndAssertAllProperties(mMediator);
+    }
+
     // initAndAssertAllProperties called with custom mMediator (e.g. if spy needs to be used)
     private void initAndAssertAllProperties(TabListMediator mediator) {
         List<Tab> tabs = new ArrayList<>();
@@ -3108,7 +3150,7 @@ public class TabListMediatorUnitTest {
             callback.onResult(mFavicon);
         }
 
-        assertThat(mModel.size(), equalTo(2));
+        assertThat(mModel.size(), equalTo(mTabModel.getCount()));
 
         assertThat(mModel.get(0).model.get(TabProperties.TAB_ID), equalTo(TAB1_ID));
         assertThat(mModel.get(1).model.get(TabProperties.TAB_ID), equalTo(TAB2_ID));
