@@ -17,6 +17,8 @@ per-file tast_control.gni=*
 per-file LACROS_OWNERS=file://chromeos/LACROS_OWNERS
 per-file LACROS_OWNERS=set noparent
 
+per-file TERMINAL_OWNERS=file://chromeos/TERMINAL_OWNERS
+
 # PST
 achuith@chromium.org
 alemate@chromium.org
