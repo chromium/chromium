@@ -45,10 +45,12 @@
 #include "chrome/browser/apps/app_service/publishers/web_apps_crosapi_factory.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/crosapi/fake_browser_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ui/app_list/internal_app/internal_app_metadata.h"
 #include "chrome/common/chrome_features.h"
+#include "chromeos/login/login_state/login_state.h"
 #include "components/user_manager/scoped_user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -198,6 +200,19 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
     InitializeExtensionService(ExtensionServiceInitParams());
     service_->Init();
     ConfigureWebAppProvider();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    browser_manager_ = std::make_unique<crosapi::FakeBrowserManager>();
+    ash::LoginState::Initialize();
+#endif
+  }
+
+  void TearDown() override {
+    extensions::ExtensionServiceTestBase::TearDown();
+    profile_.reset();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    ash::LoginState::Shutdown();
+    browser_manager_.reset();
+#endif
   }
 
   void ConfigureWebAppProvider() {
@@ -351,6 +366,9 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
 
  private:
   raw_ptr<web_app::TestWebAppUrlLoader> url_loader_ = nullptr;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::unique_ptr<crosapi::FakeBrowserManager> browser_manager_;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

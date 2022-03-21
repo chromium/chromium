@@ -30,6 +30,9 @@ StandaloneBrowserExtensionApps::StandaloneBrowserExtensionApps(
   }
   PublisherBase::Initialize(app_service,
                             apps::mojom::AppType::kStandaloneBrowserChromeApp);
+  login_observation_.Observe(chromeos::LoginState::Get());
+  // Check now in case login has already happened.
+  LoggedInStateChanged();
 }
 
 StandaloneBrowserExtensionApps::~StandaloneBrowserExtensionApps() = default;
@@ -51,11 +54,6 @@ void StandaloneBrowserExtensionApps::RegisterChromeAppsCrosapiHost(
   receiver_.set_disconnect_handler(
       base::BindOnce(&StandaloneBrowserExtensionApps::OnReceiverDisconnected,
                      weak_factory_.GetWeakPtr()));
-}
-
-void StandaloneBrowserExtensionApps::RegisterKeepAlive() {
-  keep_alive_ = crosapi::BrowserManager::Get()->KeepAlive(
-      crosapi::BrowserManager::Feature::kChromeApps);
 }
 
 void StandaloneBrowserExtensionApps::LoadIcon(const std::string& app_id,
@@ -308,6 +306,17 @@ void StandaloneBrowserExtensionApps::OnCapabilityAccesses(
     std::vector<apps::mojom::CapabilityAccessPtr> deltas) {
   // TODO(https://crbug.com/1225848): Implement.
   NOTIMPLEMENTED();
+}
+
+void StandaloneBrowserExtensionApps::LoggedInStateChanged() {
+  if (chromeos::LoginState::Get()->IsUserLoggedIn()) {
+    if (!keep_alive_) {
+      keep_alive_ = crosapi::BrowserManager::Get()->KeepAlive(
+          crosapi::BrowserManager::Feature::kChromeApps);
+    }
+  } else {
+    keep_alive_.reset();
+  }
 }
 
 void StandaloneBrowserExtensionApps::OnReceiverDisconnected() {

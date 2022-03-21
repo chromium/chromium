@@ -9,11 +9,13 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
+#include "chromeos/login/login_state/login_state.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
@@ -51,7 +53,8 @@ struct AppLaunchParams;
 class StandaloneBrowserExtensionApps : public KeyedService,
                                        public apps::PublisherBase,
                                        public AppPublisher,
-                                       public crosapi::mojom::AppPublisher {
+                                       public crosapi::mojom::AppPublisher,
+                                       public chromeos::LoginState::Observer {
  public:
   explicit StandaloneBrowserExtensionApps(AppServiceProxy* proxy);
   ~StandaloneBrowserExtensionApps() override;
@@ -65,10 +68,6 @@ class StandaloneBrowserExtensionApps : public KeyedService,
   // to publish chrome apps to the app service in ash-chrome.
   void RegisterChromeAppsCrosapiHost(
       mojo::PendingReceiver<crosapi::mojom::AppPublisher> receiver);
-
-  // Registers the keep alive, as the current implementation relies on the
-  // assumption that Lacros is always running.
-  void RegisterKeepAlive();
 
  private:
   friend class StandaloneBrowserPublisherTest;
@@ -123,6 +122,9 @@ class StandaloneBrowserExtensionApps : public KeyedService,
   void OnCapabilityAccesses(
       std::vector<apps::mojom::CapabilityAccessPtr> deltas) override;
 
+  // chromeos::LoginState::Observer
+  void LoggedInStateChanged() override;
+
   // Called when the crosapi termination is terminated [e.g. Lacros is closed].
   // The ordering of these two disconnect methods is non-deterministic. When
   // either is called we close both connections since this class requires both
@@ -152,6 +154,9 @@ class StandaloneBrowserExtensionApps : public KeyedService,
   mojo::Remote<crosapi::mojom::AppController> controller_;
 
   std::unique_ptr<crosapi::BrowserManager::ScopedKeepAlive> keep_alive_;
+
+  base::ScopedObservation<chromeos::LoginState, chromeos::LoginState::Observer>
+      login_observation_{this};
 
   base::WeakPtrFactory<StandaloneBrowserExtensionApps> weak_factory_{this};
 };
