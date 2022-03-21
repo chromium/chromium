@@ -90,6 +90,10 @@ class AppDownloadingScreenTest : public OobeBaseTest {
 };
 
 IN_PROC_BROWSER_TEST_F(AppDownloadingScreenTest, NoAppsSelected) {
+  LoginDisplayHost::default_host()
+      ->GetWizardContext()
+      ->defer_oobe_flow_finished_for_tests = true;
+
   Login();
   ShowAppDownloadingScreen();
 
@@ -104,6 +108,10 @@ IN_PROC_BROWSER_TEST_F(AppDownloadingScreenTest, NoAppsSelected) {
 }
 
 IN_PROC_BROWSER_TEST_F(AppDownloadingScreenTest, SingleAppSelected) {
+  LoginDisplayHost::default_host()
+      ->GetWizardContext()
+      ->defer_oobe_flow_finished_for_tests = true;
+
   Login();
   base::Value apps(base::Value::Type::LIST);
   apps.Append("app.test.package.1");
@@ -123,6 +131,10 @@ IN_PROC_BROWSER_TEST_F(AppDownloadingScreenTest, SingleAppSelected) {
 }
 
 IN_PROC_BROWSER_TEST_F(AppDownloadingScreenTest, MultipleAppsSelected) {
+  LoginDisplayHost::default_host()
+      ->GetWizardContext()
+      ->defer_oobe_flow_finished_for_tests = true;
+
   Login();
   base::Value apps(base::Value::Type::LIST);
   apps.Append("app.test.package.1");

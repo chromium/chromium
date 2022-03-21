@@ -249,6 +249,10 @@ class RecommendAppsScreenTest : public OobeBaseTest {
 };
 
 IN_PROC_BROWSER_TEST_F(RecommendAppsScreenTest, BasicSelection) {
+  LoginDisplayHost::default_host()
+      ->GetWizardContext()
+      ->defer_oobe_flow_finished_for_tests = true;
+
   ShowRecommendAppsScreen();
 
   OobeScreenWaiter(RecommendAppsScreenView::kScreenId).Wait();
@@ -300,6 +304,10 @@ IN_PROC_BROWSER_TEST_F(RecommendAppsScreenTest, BasicSelection) {
 }
 
 IN_PROC_BROWSER_TEST_F(RecommendAppsScreenTest, SelectionChange) {
+  LoginDisplayHost::default_host()
+      ->GetWizardContext()
+      ->defer_oobe_flow_finished_for_tests = true;
+
   ShowRecommendAppsScreen();
 
   OobeScreenWaiter(RecommendAppsScreenView::kScreenId).Wait();
@@ -352,6 +360,10 @@ IN_PROC_BROWSER_TEST_F(RecommendAppsScreenTest, SelectionChange) {
 }
 
 IN_PROC_BROWSER_TEST_F(RecommendAppsScreenTest, SkipWithSelectedApps) {
+  LoginDisplayHost::default_host()
+      ->GetWizardContext()
+      ->defer_oobe_flow_finished_for_tests = true;
+
   ShowRecommendAppsScreen();
 
   OobeScreenWaiter(RecommendAppsScreenView::kScreenId).Wait();
@@ -398,6 +410,10 @@ IN_PROC_BROWSER_TEST_F(RecommendAppsScreenTest, SkipWithSelectedApps) {
 }
 
 IN_PROC_BROWSER_TEST_F(RecommendAppsScreenTest, SkipWithNoAppsSelected) {
+  LoginDisplayHost::default_host()
+      ->GetWizardContext()
+      ->defer_oobe_flow_finished_for_tests = true;
+
   ShowRecommendAppsScreen();
 
   OobeScreenWaiter(RecommendAppsScreenView::kScreenId).Wait();
@@ -449,6 +465,10 @@ IN_PROC_BROWSER_TEST_F(RecommendAppsScreenTest, SkipWithNoAppsSelected) {
 }
 
 IN_PROC_BROWSER_TEST_F(RecommendAppsScreenTest, InstallWithNoAppsSelected) {
+  LoginDisplayHost::default_host()
+      ->GetWizardContext()
+      ->defer_oobe_flow_finished_for_tests = true;
+
   ShowRecommendAppsScreen();
 
   OobeScreenWaiter(RecommendAppsScreenView::kScreenId).Wait();
@@ -484,6 +504,10 @@ IN_PROC_BROWSER_TEST_F(RecommendAppsScreenTest, InstallWithNoAppsSelected) {
 }
 
 IN_PROC_BROWSER_TEST_F(RecommendAppsScreenTest, NoRecommendedApps) {
+  LoginDisplayHost::default_host()
+      ->GetWizardContext()
+      ->defer_oobe_flow_finished_for_tests = true;
+
   ShowRecommendAppsScreen();
 
   OobeScreenWaiter(RecommendAppsScreenView::kScreenId).Wait();
@@ -513,6 +537,10 @@ IN_PROC_BROWSER_TEST_F(RecommendAppsScreenTest, NoRecommendedApps) {
 }
 
 IN_PROC_BROWSER_TEST_F(RecommendAppsScreenTest, ParseError) {
+  LoginDisplayHost::default_host()
+      ->GetWizardContext()
+      ->defer_oobe_flow_finished_for_tests = true;
+
   ShowRecommendAppsScreen();
 
   OobeScreenWaiter(RecommendAppsScreenView::kScreenId).Wait();

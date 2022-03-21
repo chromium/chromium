@@ -3125,6 +3125,7 @@ class WizardControllerOnboardingResumeTest : public WizardControllerTest {
 
 IN_PROC_BROWSER_TEST_F(WizardControllerOnboardingResumeTest,
                        PRE_ControlFlowResumeInterruptedOnboarding) {
+  LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build = true;
   OobeScreenWaiter(UserCreationView::kScreenId).Wait();
   LoginManagerMixin::TestUserInfo test_user(user_);
   login_mixin_.LoginWithDefaultContext(test_user);
@@ -3136,6 +3137,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerOnboardingResumeTest,
 
 IN_PROC_BROWSER_TEST_F(WizardControllerOnboardingResumeTest,
                        ControlFlowResumeInterruptedOnboarding) {
+  LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build = true;
   login_mixin_.LoginAsNewRegularUser();
   OobeScreenWaiter(MarketingOptInScreenView::kScreenId).Wait();
 }

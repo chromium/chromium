@@ -314,6 +314,11 @@ class SyncConsentTest
 IN_PROC_BROWSER_TEST_F(SyncConsentTest, SkippedNotBrandedBuild) {
   LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build =
       false;
+
+  LoginDisplayHost::default_host()
+      ->GetWizardContext()
+      ->defer_oobe_flow_finished_for_tests = true;
+
   LoginAndShowSyncConsentScreenWithCapability();
 
   WaitForScreenExit();

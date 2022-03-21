@@ -1794,6 +1794,10 @@ void WizardController::OnPackagedLicenseScreenExit(
 }
 
 void WizardController::OnOobeFlowFinished() {
+  if (GetLoginDisplayHost()
+          ->GetWizardContext()
+          ->defer_oobe_flow_finished_for_tests)
+    return;
   SetCurrentScreen(nullptr);
 
   user_manager::KnownUser known_user(GetLocalState());

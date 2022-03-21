@@ -75,6 +75,10 @@ class WizardContext {
   // True if this is a branded build (i.e. Google Chrome).
   bool is_branded_build;
 
+  // Force that OOBE Login display isn't destroyed right after login due to all
+  // screens being skipped.
+  bool defer_oobe_flow_finished_for_tests = false;
+
   // Authorization data that is required by PinSetup screen to add PIN as
   // another possible auth factor. Can be empty (if PIN is not supported).
   // In future will be replaced by AuthSession.
