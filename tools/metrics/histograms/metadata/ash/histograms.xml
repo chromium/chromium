@@ -894,7 +894,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Clipboard.ConsecutiveCopies" units="times"
-    expires_after="2022-04-24">
+    expires_after="2022-10-25">
   <owner>ckincaid@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <summary>
@@ -905,7 +905,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Clipboard.ConsecutivePastes" units="times"
-    expires_after="2022-04-24">
+    expires_after="2022-10-25">
   <owner>ckincaid@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <summary>
@@ -915,7 +915,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.ClipboardHistory.ConsecutivePastes" units="times"
-    expires_after="2022-04-24">
+    expires_after="2022-10-25">
   <owner>ckincaid@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <summary>
@@ -928,7 +928,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.ClipboardHistory.ContextMenu.DisplayFormatDeleted"
-    enum="ClipboardHistoryDisplayFormat" expires_after="2022-04-24">
+    enum="ClipboardHistoryDisplayFormat" expires_after="2022-10-25">
   <owner>ckincaid@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <summary>
@@ -938,7 +938,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.ClipboardHistory.ContextMenu.DisplayFormatPasted"
-    enum="ClipboardHistoryDisplayFormat" expires_after="2022-04-24">
+    enum="ClipboardHistoryDisplayFormat" expires_after="2022-10-25">
   <owner>ckincaid@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <summary>
@@ -948,7 +948,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.ClipboardHistory.ContextMenu.DisplayFormatShown"
-    enum="ClipboardHistoryDisplayFormat" expires_after="2022-04-24">
+    enum="ClipboardHistoryDisplayFormat" expires_after="2022-10-25">
   <owner>ckincaid@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <summary>
@@ -958,7 +958,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.ClipboardHistory.ContextMenu.MenuOptionSelected"
-    units="index" expires_after="2022-04-24">
+    units="index" expires_after="2022-10-25">
   <owner>ckincaid@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <summary>
@@ -968,7 +968,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.ClipboardHistory.ContextMenu.NumberOfItemsShown"
-    units="Items Shown" expires_after="2022-04-24">
+    units="Items Shown" expires_after="2022-10-25">
   <owner>ckincaid@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <summary>
@@ -979,7 +979,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.ClipboardHistory.ContextMenu.ShowMenu"
-    enum="ClipboardHistoryTriggerType" expires_after="2022-04-24">
+    enum="ClipboardHistoryTriggerType" expires_after="2022-10-25">
   <owner>ckincaid@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <summary>
@@ -989,7 +989,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.ClipboardHistory.ContextMenu.ShowPlaceholderString"
-    enum="ClipboardHistoryPlaceholderStringType" expires_after="2022-04-24">
+    enum="ClipboardHistoryPlaceholderStringType" expires_after="2022-10-25">
   <owner>ckincaid@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <summary>
@@ -1000,7 +1000,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.ClipboardHistory.ContextMenu.UserJourneyTime" units="ms"
-    expires_after="2022-04-24">
+    expires_after="2022-10-25">
   <owner>ckincaid@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <summary>
@@ -1012,7 +1012,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.ClipboardHistory.ControlToVDelay" units="ms"
-    expires_after="2022-04-24">
+    expires_after="2022-10-25">
   <owner>ckincaid@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <summary>
@@ -1027,7 +1027,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.ClipboardHistory.ImageModelRequest.Lifetime" units="ms"
-    expires_after="2022-04-24">
+    expires_after="2022-10-25">
   <owner>ckincaid@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <summary>
@@ -1037,7 +1037,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.ClipboardHistory.ImageModelRequest.Runtime" units="ms"
-    expires_after="2022-04-24">
+    expires_after="2022-10-25">
   <owner>ckincaid@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <summary>
@@ -1047,7 +1047,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.ClipboardHistory.ImageModelRequest.StopReason"
-    enum="RequestStopReason" expires_after="2022-04-24">
+    enum="RequestStopReason" expires_after="2022-10-25">
   <owner>ckincaid@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <summary>
@@ -1057,7 +1057,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.ClipboardHistory.Nudges.{NudgeType}.ShownCount"
-    enum="BooleanHit" expires_after="2022-04-24">
+    enum="BooleanHit" expires_after="2022-10-25">
   <owner>ckincaid@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <summary>
@@ -1075,7 +1075,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.ClipboardHistory.Nudges.{NudgeType}.ToFeature{Action}Time"
-    units="seconds" expires_after="2022-04-24">
+    units="seconds" expires_after="2022-10-25">
   <owner>ckincaid@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <summary>
@@ -1098,7 +1098,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.ClipboardHistory.Operation"
-    enum="ClipboardHistoryOperation" expires_after="2022-04-24">
+    enum="ClipboardHistoryOperation" expires_after="2022-10-25">
   <owner>ckincaid@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <summary>
