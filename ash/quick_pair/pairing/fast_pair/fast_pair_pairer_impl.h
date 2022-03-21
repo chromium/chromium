@@ -8,6 +8,7 @@
 #include "ash/quick_pair/common/pair_failure.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_gatt_service_client.h"
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_pairer.h"
+#include "ash/quick_pair/proto/fastpair.pb.h"
 #include "ash/services/quick_pair/public/cpp/decrypted_passkey.h"
 #include "ash/services/quick_pair/public/cpp/decrypted_response.h"
 #include "base/callback.h"
@@ -119,6 +120,9 @@ class FastPairPairerImpl : public FastPairPairer,
   // FastPairDataEncryptor::ParseDecryptedPasskey callback
   void OnParseDecryptedPasskey(base::TimeTicks decrypt_start_time,
                                const absl::optional<DecryptedPasskey>& passkey);
+
+  // FastPairRepository::CheckOptInStatus callback
+  void OnCheckOptInStatus(nearby::fastpair::OptInStatus status);
 
   // Creates a 16-byte array of random bytes with a first byte of 0x04 to
   // signal Fast Pair account key, and then writes to the device.

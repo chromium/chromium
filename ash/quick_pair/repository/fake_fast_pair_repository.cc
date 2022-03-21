@@ -75,9 +75,16 @@ bool FakeFastPairRepository::DeleteAssociatedDevice(
   return saved_account_keys_.erase(device->GetAddress()) == 1;
 }
 
+void FakeFastPairRepository::SetOptInStatus(
+    nearby::fastpair::OptInStatus status) {
+  status_ = status;
+}
+
 // Unimplemented.
 void FakeFastPairRepository::CheckOptInStatus(
-    CheckOptInStatusCallback callback) {}
+    CheckOptInStatusCallback callback) {
+  std::move(callback).Run(status_);
+}
 
 // Unimplemented.
 void FakeFastPairRepository::DeleteAssociatedDeviceByAccountKey(

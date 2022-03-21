@@ -49,6 +49,8 @@ class FakeFastPairRepository : public FastPairRepository {
     is_network_connected_ = is_connected;
   }
 
+  void SetOptInStatus(nearby::fastpair::OptInStatus status);
+
   // FastPairRepository::
   void GetDeviceMetadata(const std::string& hex_model_id,
                          DeviceMetadataCallback callback) override;
@@ -73,6 +75,8 @@ class FakeFastPairRepository : public FastPairRepository {
  private:
   static void SetInstance(FastPairRepository* instance);
 
+  nearby::fastpair::OptInStatus status_ =
+      nearby::fastpair::OptInStatus::STATUS_UNKNOWN;
   bool is_network_connected_ = true;
   base::flat_map<std::string, std::unique_ptr<DeviceMetadata>> data_;
   base::flat_map<std::string, std::vector<uint8_t>> saved_account_keys_;

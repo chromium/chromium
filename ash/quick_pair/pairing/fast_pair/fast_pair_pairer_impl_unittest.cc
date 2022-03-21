@@ -22,6 +22,7 @@
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake_lookup.h"
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_pairer.h"
+#include "ash/quick_pair/proto/fastpair.pb.h"
 #include "ash/quick_pair/repository/fake_fast_pair_repository.h"
 #include "ash/services/quick_pair/public/cpp/decrypted_passkey.h"
 #include "ash/services/quick_pair/public/cpp/decrypted_response.h"
@@ -926,6 +927,8 @@ TEST_F(FastPairPairerImplTest, PairSuccess_Initial_FactoryCreate) {
 
 TEST_F(FastPairPairerImplTest, PairSuccess_Subsequent) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
+  fast_pair_repository_.SetOptInStatus(
+      nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::RunLoop().RunUntilIdle();
 
   histogram_tester().ExpectTotalCount(kConfirmPasskeyAskTime, 0);
@@ -955,6 +958,8 @@ TEST_F(FastPairPairerImplTest, PairSuccess_Subsequent) {
 
 TEST_F(FastPairPairerImplTest, WriteAccountKey_Initial) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
+  fast_pair_repository_.SetOptInStatus(
+      nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::RunLoop().RunUntilIdle();
 
   histogram_tester().ExpectTotalCount(
@@ -983,6 +988,8 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Initial) {
 
 TEST_F(FastPairPairerImplTest, WriteAccountKey_Initial_GuestLoggedIn) {
   Login(user_manager::UserType::USER_TYPE_GUEST);
+  fast_pair_repository_.SetOptInStatus(
+      nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::RunLoop().RunUntilIdle();
 
   histogram_tester().ExpectTotalCount(
@@ -1009,6 +1016,8 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Initial_GuestLoggedIn) {
 
 TEST_F(FastPairPairerImplTest, WriteAccountKey_Initial_KioskAppLoggedIn) {
   Login(user_manager::UserType::USER_TYPE_KIOSK_APP);
+  fast_pair_repository_.SetOptInStatus(
+      nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::RunLoop().RunUntilIdle();
 
   histogram_tester().ExpectTotalCount(
@@ -1080,6 +1089,8 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Initial_Locked) {
 
 TEST_F(FastPairPairerImplTest, WriteAccountKey_Retroactive) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
+  fast_pair_repository_.SetOptInStatus(
+      nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::RunLoop().RunUntilIdle();
 
   histogram_tester().ExpectTotalCount(
@@ -1097,6 +1108,8 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Retroactive) {
 
 TEST_F(FastPairPairerImplTest, WriteAccountKeyFailure_Initial_GattErrorFailed) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
+  fast_pair_repository_.SetOptInStatus(
+      nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::RunLoop().RunUntilIdle();
 
   histogram_tester().ExpectTotalCount(
@@ -1126,6 +1139,8 @@ TEST_F(FastPairPairerImplTest, WriteAccountKeyFailure_Initial_GattErrorFailed) {
 TEST_F(FastPairPairerImplTest,
        WriteAccountKeyFailure_Initial_GattErrorUnknown) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
+  fast_pair_repository_.SetOptInStatus(
+      nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::RunLoop().RunUntilIdle();
 
   histogram_tester().ExpectTotalCount(
@@ -1155,6 +1170,8 @@ TEST_F(FastPairPairerImplTest,
 TEST_F(FastPairPairerImplTest,
        WriteAccountKeyFailure_Initial_GattErrorInProgress) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
+  fast_pair_repository_.SetOptInStatus(
+      nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::RunLoop().RunUntilIdle();
 
   histogram_tester().ExpectTotalCount(
@@ -1184,6 +1201,8 @@ TEST_F(FastPairPairerImplTest,
 TEST_F(FastPairPairerImplTest,
        WriteAccountKeyFailure_Initial_GattErrorInvalidLength) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
+  fast_pair_repository_.SetOptInStatus(
+      nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::RunLoop().RunUntilIdle();
 
   histogram_tester().ExpectTotalCount(
@@ -1213,6 +1232,8 @@ TEST_F(FastPairPairerImplTest,
 TEST_F(FastPairPairerImplTest,
        WriteAccountKeyFailure_Initial_GattErrorNotPermitted) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
+  fast_pair_repository_.SetOptInStatus(
+      nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::RunLoop().RunUntilIdle();
 
   histogram_tester().ExpectTotalCount(
@@ -1242,6 +1263,8 @@ TEST_F(FastPairPairerImplTest,
 TEST_F(FastPairPairerImplTest,
        WriteAccountKeyFailure_Initial_GattErrorNotAuthorized) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
+  fast_pair_repository_.SetOptInStatus(
+      nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::RunLoop().RunUntilIdle();
 
   histogram_tester().ExpectTotalCount(
@@ -1271,6 +1294,8 @@ TEST_F(FastPairPairerImplTest,
 TEST_F(FastPairPairerImplTest,
        WriteAccountKeyFailure_Initial_GattErrorNotPaired) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
+  fast_pair_repository_.SetOptInStatus(
+      nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::RunLoop().RunUntilIdle();
 
   histogram_tester().ExpectTotalCount(
@@ -1299,6 +1324,8 @@ TEST_F(FastPairPairerImplTest,
 
 TEST_F(FastPairPairerImplTest,
        WriteAccountKeyFailure_Initial_GattErrorNotSupported) {
+  fast_pair_repository_.SetOptInStatus(
+      nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   Login(user_manager::UserType::USER_TYPE_REGULAR);
   base::RunLoop().RunUntilIdle();
 
@@ -1352,22 +1379,60 @@ TEST_F(FastPairPairerImplTest, FastPairVersionOne_DeviceUnpaired) {
   DeviceUnpaired();
 }
 
-TEST_F(FastPairPairerImplTest, WriteAccountKeyFailure_Retroactive) {
+TEST_F(FastPairPairerImplTest, WriteAccount_OptedOut) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
+  fast_pair_repository_.SetOptInStatus(
+      nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::RunLoop().RunUntilIdle();
 
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 0);
   SuccessfulDataEncryptorSetUp(/*fast_pair_v1=*/false,
-                               /*protocol=*/Protocol::kFastPairRetroactive);
+                               /*protocol=*/Protocol::kFastPairInitial);
+  SetPublicKey();
   SetGetDeviceConnectFailure();
   CreatePairer();
   base::RunLoop().RunUntilIdle();
-  EXPECT_CALL(account_key_failure_callback_, Run);
-  RunWriteAccountKeyCallback(
-      device::BluetoothGattService::GattErrorCode::GATT_ERROR_FAILED);
+  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_CALL(paired_callback_, Run);
+  SetDecryptPasskeyForSuccess();
+  SetGetDeviceInitialSuccess();
+  NotifyConfirmPasskey();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_CALL(pairing_procedure_complete_, Run).Times(0);
   histogram_tester().ExpectTotalCount(
-      kWriteAccountKeyCharacteristicResultMetric, 1);
+      kWriteAccountKeyCharacteristicResultMetric, 0);
+  RunWritePasskeyCallback(kResponseBytes);
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(FastPairPairerImplTest, WriteAccount_StatusUnknown) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  fast_pair_repository_.SetOptInStatus(
+      nearby::fastpair::OptInStatus::STATUS_UNKNOWN);
+  base::RunLoop().RunUntilIdle();
+
+  histogram_tester().ExpectTotalCount(
+      kWriteAccountKeyCharacteristicResultMetric, 0);
+  SuccessfulDataEncryptorSetUp(/*fast_pair_v1=*/false,
+                               /*protocol=*/Protocol::kFastPairInitial);
+  SetPublicKey();
+  SetGetDeviceConnectFailure();
+  CreatePairer();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_CALL(paired_callback_, Run);
+  SetDecryptPasskeyForSuccess();
+  SetGetDeviceInitialSuccess();
+  NotifyConfirmPasskey();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_CALL(pairing_procedure_complete_, Run).Times(0);
+  histogram_tester().ExpectTotalCount(
+      kWriteAccountKeyCharacteristicResultMetric, 0);
+  RunWritePasskeyCallback(kResponseBytes);
+  base::RunLoop().RunUntilIdle();
 }
 
 }  // namespace quick_pair
