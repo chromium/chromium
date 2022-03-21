@@ -17,6 +17,7 @@
 #include "ash/quick_pair/message_stream/message_stream.h"
 #include "ash/quick_pair/message_stream/message_stream_lookup.h"
 #include "ash/quick_pair/pairing/pairer_broker.h"
+#include "ash/quick_pair/proto/fastpair.pb.h"
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
@@ -110,6 +111,12 @@ class RetroactivePairingDetectorImpl final
   // Checks |device_pairing_information_| for a ble address and model id
   // needed for retroactive pairing, and notifies observers.
   void CheckPairingInformation(const std::string& device_address);
+
+  // FastPairRepository::CheckOptInStatus callback
+  void OnCheckOptInStatus(const std::string& model_id,
+                          const std::string& ble_address,
+                          const std::string& classic_address,
+                          nearby::fastpair::OptInStatus status);
 
   // Converts a Bluetooth device to a Fast Pair Device and notifies observers
   // that a device has been found to retroactively pair to.
