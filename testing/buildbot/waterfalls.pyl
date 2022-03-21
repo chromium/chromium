@@ -3109,6 +3109,9 @@
         },
       },
       'ios-asan': {
+        'additional_compile_targets': [
+          'ios_chrome_clusterfuzz_asan_build',
+        ],
         'mixins': [
           'has_native_resultdb_integration',
           'mac_11_x64',

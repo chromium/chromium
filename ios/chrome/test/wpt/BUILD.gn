@@ -17,6 +17,26 @@ group("all_tests") {
   ]
 }
 
+copy("copy_clusterfuzz_scripts") {
+  sources = [
+    "//ios/build/bots/scripts",
+    "//ios/chrome/test/wpt/tools",
+
+    # Variations test utilities used by variations_runner script.
+    "//testing/scripts/variations_seed_access_helper.py",
+  ]
+  outputs =
+      [ "$root_build_dir/{{source_root_relative_dir}}/{{source_file_part}}" ]
+}
+
+group("ios_chrome_clusterfuzz_asan_build") {
+  testonly = true
+  deps = [
+    ":all_tests",
+    ":copy_clusterfuzz_scripts",
+  ]
+}
+
 ios_chrome_xcuitest_app_host("ios_cwt_chromedriver_tests") {
   deps = [
     ":app_support",

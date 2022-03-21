@@ -983,6 +983,10 @@
     "label": "//ios/chrome/test/earl_grey:ios_chrome_bookmarks_egtests",
     "type": "generated_script",
   },
+  "ios_chrome_clusterfuzz_asan_build": {
+    "label": "//ios/chrome/test/wpt:ios_chrome_clusterfuzz_asan_build",
+    "type": "additional_compile_target",
+  },
   "ios_chrome_integration_egtests": {
     "label": "//ios/chrome/test/earl_grey:ios_chrome_integration_egtests",
     "type": "generated_script",

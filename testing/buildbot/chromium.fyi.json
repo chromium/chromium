@@ -26148,6 +26148,9 @@
     ]
   },
   "ios-asan": {
+    "additional_compile_targets": [
+      "ios_chrome_clusterfuzz_asan_build"
+    ],
     "isolated_scripts": [
       {
         "args": [
