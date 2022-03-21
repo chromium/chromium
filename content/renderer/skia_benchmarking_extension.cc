@@ -24,6 +24,7 @@
 #include "third_party/blink/public/web/web_array_buffer.h"
 #include "third_party/blink/public/web/web_array_buffer_converter.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColorPriv.h"
 #include "third_party/skia/include/core/SkGraphics.h"
