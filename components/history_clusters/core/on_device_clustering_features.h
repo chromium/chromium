@@ -23,6 +23,9 @@ extern const base::Feature kUseEngagementScoreCache;
 // Splits clustering task into smaller batches.
 extern const base::Feature kSplitClusteringTasksToSmallerBatches;
 
+// Specifies various blocklists for on-device clustering backend.
+extern const base::Feature kOnDeviceClusteringBlocklists;
+
 }  // namespace features
 }  // namespace history_clusters
 
