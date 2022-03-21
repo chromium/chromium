@@ -209,8 +209,9 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest, RouteToExistingClient) {
   EXPECT_EQ(AwaitNextLaunchParamsTargetUrl(browser_2), start_url.spec());
 }
 
+// TODO(crbug.com/1308334): Fix flakiness.
 IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
-                       RouteToExistingClientNavigateNever) {
+                       DISABLED_RouteToExistingClientNavigateNever) {
   AppId app_id = InstallTestWebApp(
       "/web_apps/"
       "get_manifest.html?route_to_existing_client_navigate_never.json");
