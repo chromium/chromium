@@ -353,6 +353,11 @@ void V8Initializer::Initialize(IsolateHolder::ScriptMode mode,
   if (v8_is_initialized)
     return;
 
+  // Flags need to be set before InitializePlatform as they are used for
+  // system instrumentation initialization.
+  // See https://crbug.com/v8/11043
+  SetFlags(mode, js_command_line_flags);
+
   v8::V8::InitializePlatform(V8Platform::Get());
 
   // Set this early on as some initialization steps, such as the initialization
@@ -393,8 +398,6 @@ void V8Initializer::Initialize(IsolateHolder::ScriptMode mode,
     base::UmaHistogramSparse("V8.VirtualMemoryCageSizeGB", sizeInGB);
   }
 #endif  // V8_SANDBOX
-
-  SetFlags(mode, js_command_line_flags);
 
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
   if (g_mapped_snapshot) {
