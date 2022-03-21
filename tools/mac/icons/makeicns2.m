@@ -76,6 +76,42 @@ FourCharCode PNGIconTypeFromSize(int size) {
   }
 }
 
+bool CGImageHasAlphaData(CGImageRef image) {
+  // If the image specifies that it has no alpha, early-out.
+  CGImageAlphaInfo alpha_info = CGImageGetAlphaInfo(image);
+  if (alpha_info == kCGImageAlphaNone ||
+      alpha_info == kCGImageAlphaNoneSkipFirst ||
+      alpha_info == kCGImageAlphaNoneSkipLast) {
+    return false;
+  }
+
+  // Otherwise, the image might specify that it is a full RGBA image but not
+  // actually contain alpha data. Extract the alpha channel and examine it.
+
+  size_t image_width = CGImageGetWidth(image);
+  size_t image_height = CGImageGetHeight(image);
+
+  CGContextRef context =
+      CGBitmapContextCreate(/*data=*/NULL, image_width, image_height,
+                            /*bitsPerComponent=*/8, /*bytesPerRow=*/image_width,
+                            /*space=*/NULL, kCGImageAlphaOnly);
+  CGContextDrawImage(context, CGRectMake(0, 0, image_width, image_height),
+                     image);
+  unsigned char* context_data = CGBitmapContextGetData(context);
+
+  bool alpha_observed = false;
+  for (size_t i = 0; i < image_width * image_height; ++i) {
+    if (context_data[i] == 0) {
+      alpha_observed = true;
+      break;
+    }
+  }
+
+  CGContextRelease(context);
+
+  return alpha_observed;
+}
+
 void CreateDataOrImageFromPNG(NSString* iconset,
                               int size,
                               NSData** out_png_data,
@@ -92,8 +128,8 @@ void CreateDataOrImageFromPNG(NSString* iconset,
     *out_png_data = png_data;
 
   // Even if the image isn't requested by the caller, still proceed to create
-  // the image in order to check its size and the fact that it correctly parses
-  // as a PNG file.
+  // the image in order to check its attributes and the general fact that it
+  // correctly parses as a PNG file.
 
   CGDataProviderRef data_provider =
       CGDataProviderCreateWithCFData((CFDataRef)png_data);
@@ -120,6 +156,12 @@ void CreateDataOrImageFromPNG(NSString* iconset,
             "Error: Expected %s to be of size %dx%d; found it to be of size "
             "%zdx%zd\n",
             png_pathname.UTF8String, size, size, image_width, image_height);
+    exit(EXIT_FAILURE);
+  }
+
+  if (!CGImageHasAlphaData(image)) {
+    fprintf(stderr, "Error: Expected %s to have alpha data but it does not\n",
+            png_pathname.UTF8String);
     exit(EXIT_FAILURE);
   }
 
