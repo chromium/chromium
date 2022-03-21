@@ -172,8 +172,21 @@ void Mediator::SetFastPairState(bool is_enabled) {
 
   if (is_enabled)
     scanner_broker_->StartScanning(Protocol::kFastPairInitial);
-  else
+  else {
     scanner_broker_->StopScanning(Protocol::kFastPairInitial);
+
+    // If we are midway through pairing, return early so we don't remove
+    // handshakes where they are required.
+    if (pairer_broker_->IsPairing()) {
+      return;
+    }
+
+    // Clear all existing handshakes.
+    FastPairHandshakeLookup::GetInstance()->Clear();
+
+    // Dismiss all UI notifications.
+    ui_broker_->RemoveNotifications();
+  }
 }
 
 void Mediator::OnDevicePaired(scoped_refptr<Device> device) {
@@ -262,25 +275,9 @@ void Mediator::OnHasAtLeastOneDiscoverySessionChanged(
   // If we have a discovery session via the Settings pairing dialog, stop
   // Fast Pair scanning. Else, start/stop scanning according to the feature
   // status tracker. Stopping scanning stops all GATT connections that
-  // haven't completed their handshake
+  // haven't completed their handshake.
   SetFastPairState(!has_at_least_one_discovery_session_ &&
                    feature_status_tracker_->IsFastPairEnabled());
-
-  if (!has_at_least_one_discovery_session_) {
-    return;
-  }
-
-  // If we are midway through pairing, return early so we don't remove
-  // handshakes where they are required.
-  if (pairer_broker_->IsPairing()) {
-    return;
-  }
-
-  // Clear all existing handshakes.
-  FastPairHandshakeLookup::GetInstance()->Clear();
-
-  // Dismiss all UI notifications.
-  ui_broker_->RemoveNotifications();
 }
 
 }  // namespace quick_pair

@@ -167,11 +167,10 @@ TEST_F(MediatorTest, TogglesScanningWhenFastPairEnabledChanges) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
   EXPECT_CALL(*mock_scanner_broker_, StopScanning);
   feature_status_tracker_->SetIsFastPairEnabled(false);
-}
 
-TEST_F(MediatorTest, ToggleScanningWhenHasAtLeastOneDiscoverySession) {
   // When one or more discovery sessions, are active, don't toggle
   // scanning when fast pair enabled changes.
+  EXPECT_CALL(*mock_scanner_broker_, StopScanning);
   SetHasAtLeastOneDiscoverySessionChanged(true);
   EXPECT_CALL(*mock_scanner_broker_, StopScanning);
   feature_status_tracker_->SetIsFastPairEnabled(true);
@@ -181,6 +180,62 @@ TEST_F(MediatorTest, ToggleScanningWhenHasAtLeastOneDiscoverySession) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
   EXPECT_CALL(*mock_scanner_broker_, StopScanning);
   feature_status_tracker_->SetIsFastPairEnabled(false);
+}
+
+TEST_F(MediatorTest, TogglesScanningWhenHasAtLeastOneDiscoverySessionChanges) {
+  EXPECT_CALL(*mock_scanner_broker_, StartScanning);
+  feature_status_tracker_->SetIsFastPairEnabled(true);
+  EXPECT_CALL(*mock_scanner_broker_, StopScanning);
+  SetHasAtLeastOneDiscoverySessionChanged(true);
+  EXPECT_CALL(*mock_scanner_broker_, StartScanning);
+  SetHasAtLeastOneDiscoverySessionChanged(false);
+  EXPECT_CALL(*mock_scanner_broker_, StopScanning);
+  SetHasAtLeastOneDiscoverySessionChanged(true);
+
+  // When fast pair is disabled, don't toggle scanning when "we have at
+  // least one discovery session" changes.
+  EXPECT_CALL(*mock_scanner_broker_, StopScanning);
+  feature_status_tracker_->SetIsFastPairEnabled(false);
+  EXPECT_CALL(*mock_scanner_broker_, StopScanning);
+  SetHasAtLeastOneDiscoverySessionChanged(false);
+  EXPECT_CALL(*mock_scanner_broker_, StopScanning);
+  SetHasAtLeastOneDiscoverySessionChanged(true);
+  EXPECT_CALL(*mock_scanner_broker_, StopScanning);
+  SetHasAtLeastOneDiscoverySessionChanged(false);
+}
+
+TEST_F(MediatorTest, DismissesHandshakesWhenFastPairEnabledChanges) {
+  // Start with fast pair enabled and one handshake in progress.
+  feature_status_tracker_->SetIsFastPairEnabled(true);
+  FastPairHandshakeLookup::GetInstance()->Create(adapter_, device_,
+                                                 base::DoNothing());
+  EXPECT_TRUE(FastPairHandshakeLookup::GetInstance()->Get(device_));
+
+  // If Fast Pair becomes disabled, stop scanning, clear existing
+  // handshakes, and dismiss notifications.
+  EXPECT_CALL(*mock_scanner_broker_, StopScanning);
+  EXPECT_CALL(*mock_ui_broker_, RemoveNotifications);
+  feature_status_tracker_->SetIsFastPairEnabled(false);
+  EXPECT_FALSE(FastPairHandshakeLookup::GetInstance()->Get(device_));
+
+  // If Fast Pair becomes enabled, resume scanning.
+  EXPECT_CALL(*mock_scanner_broker_, StartScanning);
+  feature_status_tracker_->SetIsFastPairEnabled(true);
+}
+
+TEST_F(MediatorTest, DoesntDismissHandshakesWhenFastPairEnabledChangesMidPair) {
+  // Start with fast pair enabled and one handshake in progress.
+  feature_status_tracker_->SetIsFastPairEnabled(true);
+  FastPairHandshakeLookup::GetInstance()->Create(adapter_, device_,
+                                                 base::DoNothing());
+  EXPECT_TRUE(FastPairHandshakeLookup::GetInstance()->Get(device_));
+
+  // If Fast Pair becomes disabled while we are mid pair, stop
+  // scanning but do not clear existing handshakes.
+  EXPECT_CALL(*mock_scanner_broker_, StopScanning);
+  EXPECT_CALL(*mock_pairer_broker_, IsPairing).WillOnce(Return(true));
+  feature_status_tracker_->SetIsFastPairEnabled(false);
+  EXPECT_TRUE(FastPairHandshakeLookup::GetInstance()->Get(device_));
 }
 
 TEST_F(MediatorTest, InvokesShowDiscoveryWhenDeviceFound) {
@@ -517,40 +572,6 @@ TEST_F(MediatorTest, FastPairBluetoothConfigDelegate) {
   delegate->SetDeviceNameManager(nullptr);
   EXPECT_TRUE(delegate);
   EXPECT_EQ(delegate->GetDeviceImageInfo(kTestMetadataId), absl::nullopt);
-}
-
-TEST_F(MediatorTest, HasAtLeastOneDiscoverySessionChanges) {
-  // Start with fast pair enabled and one handshake in progress.
-  feature_status_tracker_->SetIsFastPairEnabled(true);
-  FastPairHandshakeLookup::GetInstance()->Create(adapter_, device_,
-                                                 base::DoNothing());
-  EXPECT_TRUE(FastPairHandshakeLookup::GetInstance()->Get(device_));
-
-  // If a discovery session becomes active, stop scanning, clear existing
-  // handshakes, and dismiss notifications.
-  EXPECT_CALL(*mock_scanner_broker_, StopScanning);
-  EXPECT_CALL(*mock_ui_broker_, RemoveNotifications);
-  SetHasAtLeastOneDiscoverySessionChanged(true);
-  EXPECT_FALSE(FastPairHandshakeLookup::GetInstance()->Get(device_));
-
-  // If we now have 0 discovery sessions, resume scanning.
-  EXPECT_CALL(*mock_scanner_broker_, StartScanning);
-  SetHasAtLeastOneDiscoverySessionChanged(false);
-}
-
-TEST_F(MediatorTest, HasAtLeastOneDiscoverySessionMidPair) {
-  // Start with fast pair enabled and one handshake in progress.
-  feature_status_tracker_->SetIsFastPairEnabled(true);
-  FastPairHandshakeLookup::GetInstance()->Create(adapter_, device_,
-                                                 base::DoNothing());
-  EXPECT_TRUE(FastPairHandshakeLookup::GetInstance()->Get(device_));
-
-  // If a discovery session becomes active while we are mid pair, stop
-  // scanning but do not clear existing handshakes.
-  EXPECT_CALL(*mock_scanner_broker_, StopScanning);
-  EXPECT_CALL(*mock_pairer_broker_, IsPairing).WillOnce(Return(true));
-  SetHasAtLeastOneDiscoverySessionChanged(true);
-  EXPECT_TRUE(FastPairHandshakeLookup::GetInstance()->Get(device_));
 }
 
 }  // namespace quick_pair
