@@ -27,7 +27,7 @@ def CreateFile(fs, *args, **kwargs):
         fs.CreateFile(*args, **kwargs)
 
 
-@unittest.skipIf(six.PY2, 'Script and unittest are Python 3-only')
+@unittest.skip('Skipped due to crbug/1305104')
 class GetExpectationFilepathsUnittest(fake_filesystem_unittest.TestCase):
     def setUp(self):
         self.setUpPyfakefs()
@@ -76,7 +76,7 @@ class GetExpectationFilepathsUnittest(fake_filesystem_unittest.TestCase):
         self.assertEqual(filepaths, ['/foo', flag_filepath])
 
 
-@unittest.skipIf(six.PY2, 'Script and unittest are Python 3-only')
+@unittest.skip('Skipped due to crbug/1305104')
 class GetExpectationFileTagHeaderUnittest(fake_filesystem_unittest.TestCase):
     def setUp(self):
         self.setUpPyfakefs()
