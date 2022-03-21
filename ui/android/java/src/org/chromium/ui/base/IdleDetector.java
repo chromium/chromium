@@ -87,6 +87,7 @@ public class IdleDetector extends BroadcastReceiver {
         if (keyguardManager.inKeyguardRestrictedInputMode()) return true;
 
         PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+        if (powerManager == null) return false;
         return !powerManager.isInteractive();
     }
 }
