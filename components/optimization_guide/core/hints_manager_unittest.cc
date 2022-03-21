@@ -320,7 +320,7 @@ class HintsManagerTest : public ProtoDatabaseProviderTestBase {
 
     hint_store_ = std::make_unique<OptimizationGuideStore>(
         db_provider_.get(), temp_dir(),
-        task_environment_.GetMainThreadTaskRunner());
+        task_environment_.GetMainThreadTaskRunner(), pref_service_.get());
 
     tab_url_provider_ = std::make_unique<FakeTabUrlProvider>();
 

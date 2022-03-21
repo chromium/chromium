@@ -17,6 +17,7 @@ extern const char kHintsFetcherHostsSuccessfullyFetched[];
 extern const char kPendingHintsProcessingVersion[];
 extern const char kPreviouslyRegisteredOptimizationTypes[];
 extern const char kOptimizationGuideFetchingEnabled[];
+extern const char kStoreFilePathsToDelete[];
 
 // Registers the optimization guide's prefs.
 void RegisterProfilePrefs(PrefRegistrySimple* registry);

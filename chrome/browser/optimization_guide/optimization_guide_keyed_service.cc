@@ -226,7 +226,8 @@ void OptimizationGuideKeyedService::Initialize() {
                   profile_path.Append(
                       optimization_guide::kOptimizationGuideHintStore),
                   base::ThreadPool::CreateSequencedTaskRunner(
-                      {base::MayBlock(), base::TaskPriority::BEST_EFFORT}))
+                      {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
+                  profile->GetPrefs())
             : nullptr;
     hint_store = hint_store_ ? hint_store_->AsWeakPtr() : nullptr;
 
@@ -237,7 +238,8 @@ void OptimizationGuideKeyedService::Initialize() {
                 optimization_guide::
                     kOptimizationGuidePredictionModelAndFeaturesStore),
             base::ThreadPool::CreateSequencedTaskRunner(
-                {base::MayBlock(), base::TaskPriority::BEST_EFFORT}));
+                {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
+            profile->GetPrefs());
     prediction_model_and_features_store =
         prediction_model_and_features_store_->AsWeakPtr();
   }

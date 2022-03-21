@@ -53,6 +53,11 @@ const char kPreviouslyRegisteredOptimizationTypes[] =
 const char kOptimizationGuideFetchingEnabled[] =
     "optimization_guide.fetching_enabled";
 
+// A dictionary pref that stores the file paths that need to be deleted as keys.
+// The value will not be used.
+const char kStoreFilePathsToDelete[] =
+    "optimization_guide.store_file_paths_to_delete";
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterInt64Pref(
       kHintsFetcherLastFetchAttempt,
@@ -72,6 +77,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kPreviouslyRegisteredOptimizationTypes,
                                    PrefRegistry::LOSSY_PREF);
   registry->RegisterBooleanPref(kOptimizationGuideFetchingEnabled, true);
+  registry->RegisterDictionaryPref(kStoreFilePathsToDelete,
+                                   PrefRegistry::LOSSY_PREF);
 }
 
 }  // namespace prefs

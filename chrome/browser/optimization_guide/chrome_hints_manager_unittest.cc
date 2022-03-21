@@ -97,7 +97,7 @@ class ChromeHintsManagerFetchingTest
 
     hint_store_ = std::make_unique<optimization_guide::OptimizationGuideStore>(
         db_provider_.get(), temp_dir(),
-        task_environment_.GetMainThreadTaskRunner());
+        task_environment_.GetMainThreadTaskRunner(), /*pref_service=*/nullptr);
 
     tab_url_provider_ = std::make_unique<FakeTabUrlProvider>();
 

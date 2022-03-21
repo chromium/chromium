@@ -281,7 +281,9 @@ class TestOptimizationGuideStore : public OptimizationGuideStore {
   TestOptimizationGuideStore(
       std::unique_ptr<StoreEntryProtoDatabase> database,
       scoped_refptr<base::SequencedTaskRunner> store_task_runner)
-      : OptimizationGuideStore(std::move(database), store_task_runner) {}
+      : OptimizationGuideStore(std::move(database),
+                               store_task_runner,
+                               nullptr) {}
 
   ~TestOptimizationGuideStore() override = default;
 
