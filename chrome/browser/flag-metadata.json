@@ -2752,7 +2752,7 @@
   {
     "name": "enable-surface-control",
     "owners": [ "vikassoni", "vasilyt" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 110
   },
   {
     "name": "enable-sync-requires-policies-loaded",
@@ -5926,7 +5926,7 @@
   {
     "name": "use-real-color-space-for-android-video",
     "owners": [ "liberato", "vasilyt" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 110
   },
   {
     "name": "use-search-click-for-right-click",
