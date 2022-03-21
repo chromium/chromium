@@ -218,6 +218,7 @@ chrome_internal_verifier(
 
 chrome_internal_verifier(
     builder = "lacros-amd64-generic-chrome-skylab",
+    branch_selector = branches.STANDARD_MILESTONE,
 )
 
 chrome_internal_verifier(
