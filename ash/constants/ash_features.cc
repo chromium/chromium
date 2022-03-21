@@ -650,7 +650,7 @@ const base::Feature kFiltersInRecents{"FiltersInRecents",
 
 // Enables the firmware updater app.
 const base::Feature kFirmwareUpdaterApp = {"FirmwareUpdaterApp",
-                                           base::FEATURE_ENABLED_BY_DEFAULT};
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables or disables Floating Workspace feature on Chrome OS
 const base::Feature kFloatingWorkspace{"FloatingWorkspace",
