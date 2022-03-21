@@ -24,6 +24,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -68,6 +69,7 @@ public class TabbedNavigationBarColorControllerTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1308777")
     public void testToggleOverview() {
         assertEquals("Navigation bar should be white before entering overview mode.",
                 mLightNavigationColor, mWindow.getNavigationBarColor());
@@ -87,6 +89,7 @@ public class TabbedNavigationBarColorControllerTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1308777")
     public void testToggleIncognito() {
         assertEquals("Navigation bar should be white on normal tabs.", mLightNavigationColor,
                 mWindow.getNavigationBarColor());
@@ -106,6 +109,7 @@ public class TabbedNavigationBarColorControllerTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1308777")
     public void testToggleFullscreen() throws TimeoutException {
         assertEquals("Navigation bar should be white before entering fullscreen mode.",
                 mLightNavigationColor, mWindow.getNavigationBarColor());
