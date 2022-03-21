@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/status_bubble_views.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
@@ -12,6 +13,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/views/background.h"
@@ -41,9 +43,8 @@ StatusBubbleViews* ContentsWebView::GetStatusBubble() const {
   return status_bubble_;
 }
 
-void ContentsWebView::SetBackgroundColorOverride(
-    absl::optional<SkColor> background_color) {
-  background_color_override_ = background_color;
+void ContentsWebView::SetBackgroundVisible(bool background_visible) {
+  background_visible_ = background_visible;
   if (GetWidget())
     UpdateBackgroundColor();
 }
@@ -68,32 +69,19 @@ void ContentsWebView::OnLetterboxingChanged() {
 }
 
 void ContentsWebView::UpdateBackgroundColor() {
-  // TODO(pkasting): In a Color Pipeline world, COLOR_NTP_BACKGROUND should get
-  // overridden by PWA windows in their mixer chain as necessary.  Then the
-  // override here can go away, and the custom calculations for the letterboxing
-  // case can become a separate color (recipe) in the main chrome mixer.
-  SkColor ntp_background = background_color_override_.value_or(
-      GetThemeProvider()->GetColor(ThemeProperties::COLOR_NTP_BACKGROUND));
-  if (is_letterboxing()) {
-    // Set the background color to a dark tint of the new tab page's background
-    // color.  This is the color filled within the WebView's bounds when its
-    // child view is sized specially for fullscreen tab capture.  See WebView
-    // header file comments for more details.
-    constexpr SkAlpha kBackgroundBrightness = 0x33;  // 20%
-    // Make sure the background is opaque.
-    ntp_background = SkColorSetARGB(
-        SkColorGetA(ntp_background),
-        SkColorGetR(ntp_background) * kBackgroundBrightness / SK_AlphaOPAQUE,
-        SkColorGetG(ntp_background) * kBackgroundBrightness / SK_AlphaOPAQUE,
-        SkColorGetB(ntp_background) * kBackgroundBrightness / SK_AlphaOPAQUE);
-  }
-  SetBackground(views::CreateSolidBackground(ntp_background));
+  SkColor color = GetColorProvider()->GetColor(
+      is_letterboxing() ? kColorWebContentsBackgroundLetterboxing
+                        : kColorWebContentsBackground);
+  SetBackground(background_visible_ ? views::CreateSolidBackground(color)
+                                    : nullptr);
 
   if (web_contents()) {
     content::RenderWidgetHostView* rwhv =
         web_contents()->GetRenderWidgetHostView();
-    if (rwhv)
-      rwhv->SetBackgroundColor(ntp_background);
+    if (rwhv) {
+      rwhv->SetBackgroundColor(background_visible_ ? color
+                                                   : SK_ColorTRANSPARENT);
+    }
   }
 }
 

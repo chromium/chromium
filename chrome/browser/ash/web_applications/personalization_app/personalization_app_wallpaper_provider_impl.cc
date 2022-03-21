@@ -132,7 +132,7 @@ void PersonalizationAppWallpaperProviderImpl::MakeTransparent() {
   static_cast<ContentsWebView*>(BrowserView::GetBrowserViewForNativeWindow(
                                     web_contents->GetTopLevelNativeWindow())
                                     ->contents_web_view())
-      ->SetBackgroundColorOverride(SK_ColorTRANSPARENT);
+      ->SetBackgroundVisible(false);
 }
 
 void PersonalizationAppWallpaperProviderImpl::FetchCollections(

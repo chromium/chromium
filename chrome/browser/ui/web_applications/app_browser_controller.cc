@@ -431,6 +431,8 @@ void AppBrowserController::AddColorMixers(
 #endif
   mixer[kColorPwaToolbarBackground] = {ui::kColorEndpointBackground};
   mixer[kColorPwaToolbarForeground] = {ui::kColorEndpointForeground};
+  if (bg_color)
+    mixer[kColorWebContentsBackground] = {kColorPwaBackground};
 }
 
 void AppBrowserController::OnReceivedInitialURL() {

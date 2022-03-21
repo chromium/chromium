@@ -35,9 +35,8 @@ class ContentsWebView
   void SetStatusBubble(StatusBubbleViews* status_bubble);
   StatusBubbleViews* GetStatusBubble() const;
 
-  // Allow overriding the view background color. This is used to make a
-  // transparent background for SWAs.
-  void SetBackgroundColorOverride(absl::optional<SkColor> background_color);
+  // Toggles whether the background is visible.
+  void SetBackgroundVisible(bool background_visible);
 
   // WebView overrides:
   bool GetNeedsNotificationWhenVisibleBoundsChange() const override;
@@ -57,7 +56,7 @@ class ContentsWebView
   void UpdateBackgroundColor();
   StatusBubbleViews* status_bubble_;
 
-  absl::optional<SkColor> background_color_override_;
+  bool background_visible_ = true;
 
   std::unique_ptr<ui::LayerTreeOwner> cloned_layer_tree_;
 };

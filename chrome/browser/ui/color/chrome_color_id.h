@@ -340,7 +340,10 @@
     ThemeProperties::COLOR_TOOLBAR_TOP_SEPARATOR_FRAME_ACTIVE) \
   E(kColorToolbarTopSeparatorFrameInactive, \
     ThemeProperties::COLOR_TOOLBAR_TOP_SEPARATOR_FRAME_INACTIVE) \
-  /* Window control button background colors */ \
+  /* Web contents colors. */ \
+  E_CPONLY(kColorWebContentsBackground) \
+  E_CPONLY(kColorWebContentsBackgroundLetterboxing) \
+  /* Window control button background colors. */ \
   E(kColorWindowControlButtonBackgroundActive, \
     ThemeProperties::COLOR_WINDOW_CONTROL_BUTTON_BACKGROUND_ACTIVE) \
   E(kColorWindowControlButtonBackgroundInactive, \

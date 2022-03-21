@@ -225,9 +225,6 @@ class BrowserNonClientFrameViewChromeOS
   // fullscreen.
   bool GetHideCaptionButtonsForFullscreen() const;
 
-  // Called any time the background color may have changed.
-  void OnUpdateBackgroundColor();
-
   // Called any time the frame color may have changed.
   void OnUpdateFrameColor();
 
