@@ -199,12 +199,6 @@ const base::Feature kShortBookmarkSuggestionsByTotalInputLength{
     "OmniboxShortBookmarkSuggestionsByTotalInputLength",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// If disabled, updating shortcuts truncates their text to the user input. If
-// enabled, they preserve up to 3 additional chars. See `GetShortcutText()` in
-// shortcuts_backend.cc for details.
-const base::Feature kPreserveLongerShortcutsText{
-    "OmniboxPreserveLongerShortcutsText", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // If disabled, shortcuts to the same stripped destination URL are scored
 // independently, and only the highest scored shortcut is kept. If enabled,
 // duplicate shortcuts are given an aggregate score, as if they had been a

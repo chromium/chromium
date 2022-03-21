@@ -1766,12 +1766,6 @@ const char kOmniboxMostVisitedTilesDescription[] =
     "Display a list of frequently visited pages from history as a single row "
     "with a carousel instead of one URL per line.";
 
-const char kOmniboxPreserveLongerShortcutsTextName[] =
-    "Omnibox Preserve Longer Shortcuts Text";
-const char kOmniboxPreserveLongerShortcutsTextDescription[] =
-    "When disabled, updating shortcuts truncates its text to the user input. "
-    "When enabled, 3 additional characters are preserved.";
-
 const char kOmniboxTrendingZeroPrefixSuggestionsOnNTPName[] =
     "Omnibox Trending Zero Prefix Suggestions";
 const char kOmniboxTrendingZeroPrefixSuggestionsOnNTPDescription[] =

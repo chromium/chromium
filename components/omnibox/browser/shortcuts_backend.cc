@@ -142,19 +142,14 @@ void ShortcutsBackend::AddOrUpdateShortcut(const std::u16string& text,
                         base::CompareCase::SENSITIVE);
        ++it) {
     if (match.destination_url == it->second.match_core.destination_url) {
-      // By default, when a user navigates to a shortcut after typing a prefix
-      // of the shortcut, the shortcut text is replaced with the shorter user
-      // input. If `kPreserveLongerShortcutsText` is enabled, the
-      // shortcut keeps 3 additional chars to avoid unstable shortcuts. E.g. if
-      // the user creates a shortcut with text 'google.com', then navigates
-      // typing 'go', the shortcut should be suggested even if they type 'goo'
-      // next time.
-      auto long_text =
-          base::FeatureList::IsEnabled(omnibox::kPreserveLongerShortcutsText)
-              ? it->second.text.substr(0, text.length() + 3)
-              : text;
+      // When a user navigates to a shortcut after typing a prefix of the
+      // shortcut, the shortcut text is replaced with the shorter user input,
+      // plus an additional 3 chars to avoid unstable shortcuts. E.g. if the
+      // user creates a shortcut with text 'google.com', then navigates
+      // typing 'go', the shortcut text should be updated to 'googl'.
+      auto updated_shortcut_text = it->second.text.substr(0, text.length() + 3);
       UpdateShortcut(ShortcutsDatabase::Shortcut(
-          it->second.id, long_text,
+          it->second.id, updated_shortcut_text,
           MatchToMatchCore(match, template_url_service_,
                            search_terms_data_.get()),
           now, it->second.number_of_hits + 1));

@@ -1005,9 +1005,6 @@ extern const char kOmniboxExperimentalSuggestScoringDescription[];
 extern const char kOmniboxMostVisitedTilesName[];
 extern const char kOmniboxMostVisitedTilesDescription[];
 
-extern const char kOmniboxPreserveLongerShortcutsTextName[];
-extern const char kOmniboxPreserveLongerShortcutsTextDescription[];
-
 extern const char kOmniboxRichAutocompletionName[];
 extern const char kOmniboxRichAutocompletionDescription[];
 extern const char kOmniboxRichAutocompletionMinCharName[];

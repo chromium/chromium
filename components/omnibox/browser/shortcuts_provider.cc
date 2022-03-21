@@ -145,12 +145,10 @@ int CalculateScoreFromFactors(size_t typed_length,
   DCHECK_GT(typed_length, 0u);
   DCHECK_LE(typed_length, shortcut_text_length);
   // The initial score is based on how much of the shortcut the user has typed.
-  // If `kPreserveLongerShortcutsText` is enabled, `shortcut.text` may be up to
-  // 3 chars longer than previous inputs navigating to the shortcut.
+  // `shortcut.text` may be up to 3 chars longer than previous inputs navigating
+  // to the shortcut (see `ShortcutsBackend::AddOrUpdateShortcut`).
   const size_t adjusted_text_length =
-      base::FeatureList::IsEnabled(omnibox::kPreserveLongerShortcutsText)
-          ? std::max(shortcut_text_length, typed_length + 3) - 3
-          : shortcut_text_length;
+      std::max(shortcut_text_length, typed_length + 3) - 3;
   const double typed_fraction =
       static_cast<double>(typed_length) / adjusted_text_length;
 

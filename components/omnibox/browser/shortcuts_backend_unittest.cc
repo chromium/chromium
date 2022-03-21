@@ -84,10 +84,7 @@ class ShortcutsBackendTest : public testing::Test,
   bool changed_notified_ = false;
 };
 
-ShortcutsBackendTest::ShortcutsBackendTest() {
-  scoped_feature_list().InitAndDisableFeature(
-      omnibox::kPreserveLongerShortcutsText);
-}
+ShortcutsBackendTest::ShortcutsBackendTest() = default;
 
 ShortcutsDatabase::Shortcut::MatchCore
 ShortcutsBackendTest::MatchCoreForTesting(const std::string& url,
@@ -394,87 +391,47 @@ TEST_F(ShortcutsBackendTest, AddOrUpdateShortcut) {
 
   // Should not have a shortcut initially.
   EXPECT_EQ(shortcuts_map().size(), 0u);
-  EXPECT_FALSE(ShortcutExists(u"google"));
+  EXPECT_FALSE(ShortcutExists(u"we need very long text for this test"));
 
   // Should have shortcut after shortcut is added to a match.
-  backend()->AddOrUpdateShortcut(u"google", match);
+  backend()->AddOrUpdateShortcut(u"we need very long text for this test",
+                                 match);
   EXPECT_EQ(shortcuts_map().size(), 1u);
-  EXPECT_TRUE(ShortcutExists(u"google"));
+  EXPECT_TRUE(ShortcutExists(u"we need very long text for this test"));
+
+  // Should not shorten shortcut when a slightly shorter input (less than 3
+  // chars shorter) is used for the match.
+  backend()->AddOrUpdateShortcut(u"we need very long text for this t", match);
+  EXPECT_EQ(shortcuts_map().size(), 1u);
+  EXPECT_FALSE(ShortcutExists(u"we need very long text for this t"));
+  EXPECT_TRUE(ShortcutExists(u"we need very long text for this test"));
 
   // Should shorten shortcut when a shorter input is used for the match.
-  backend()->AddOrUpdateShortcut(u"goo", match);
+  backend()->AddOrUpdateShortcut(u"we need very long", match);
   EXPECT_EQ(shortcuts_map().size(), 1u);
-  EXPECT_TRUE(ShortcutExists(u"goo"));
-  EXPECT_FALSE(ShortcutExists(u"google"));
+  EXPECT_TRUE(ShortcutExists(u"we need very long te"));
+  EXPECT_FALSE(ShortcutExists(u"we need very long text for this test"));
 
   // Should add new shortcut when a longer input is used for the match.
-  backend()->AddOrUpdateShortcut(u"google", match);
+  backend()->AddOrUpdateShortcut(u"we need very long text for this test",
+                                 match);
   EXPECT_EQ(shortcuts_map().size(), 2u);
-  EXPECT_TRUE(ShortcutExists(u"goo"));
-  EXPECT_TRUE(ShortcutExists(u"google"));
+  EXPECT_TRUE(ShortcutExists(u"we need very long te"));
+  EXPECT_TRUE(ShortcutExists(u"we need very long text for this test"));
 
   // Should shorten shortcut when a shorter input is used for the match. The
   // shorter shortcut to the same match should remain.
-  backend()->AddOrUpdateShortcut(u"goog", match);
+  backend()->AddOrUpdateShortcut(u"we need very long text", match);
   EXPECT_EQ(shortcuts_map().size(), 2u);
-  EXPECT_TRUE(ShortcutExists(u"goo"));
-  EXPECT_TRUE(ShortcutExists(u"goog"));
-  EXPECT_FALSE(ShortcutExists(u"google"));
+  EXPECT_TRUE(ShortcutExists(u"we need very long te"));
+  EXPECT_TRUE(ShortcutExists(u"we need very long text fo"));
+  EXPECT_FALSE(ShortcutExists(u"we need very long text for this test"));
 
   // Should only touch the shortest shortcut. The longer shortcut to the same
   // match should remain.
-  backend()->AddOrUpdateShortcut(u"goo", match);
+  backend()->AddOrUpdateShortcut(u"we", match);
   EXPECT_EQ(shortcuts_map().size(), 2u);
-  EXPECT_TRUE(ShortcutExists(u"goo"));
-  EXPECT_TRUE(ShortcutExists(u"goog"));
-  EXPECT_FALSE(ShortcutExists(u"google"));
-
-  // Like above, should only touch the shortest shortcut. The longer shortcut
-  // to the same match should remain.
-  backend()->AddOrUpdateShortcut(u"go", match);
-  EXPECT_EQ(shortcuts_map().size(), 2u);
-  EXPECT_TRUE(ShortcutExists(u"go"));
-  EXPECT_FALSE(ShortcutExists(u"goo"));
-  EXPECT_TRUE(ShortcutExists(u"goog"));
-  EXPECT_FALSE(ShortcutExists(u"google"));
-}
-
-class ShortcutsBackendLongerShortcutsTest : public ShortcutsBackendTest {
- public:
-  ShortcutsBackendLongerShortcutsTest() {
-    scoped_feature_list().Reset();
-    scoped_feature_list().InitAndEnableFeature(
-        omnibox::kPreserveLongerShortcutsText);
-  }
-};
-TEST_F(ShortcutsBackendLongerShortcutsTest,
-       AddOrUpdateShortcut_LongTextFeature) {
-  InitBackend();
-
-  AutocompleteMatch match;
-  match.destination_url = GURL("https://www.google.com");
-
-  // Should not have a shortcut initially.
-  EXPECT_EQ(shortcuts_map().size(), 0u);
-  EXPECT_FALSE(ShortcutExists(u"google"));
-
-  // Should have shortcut after shortcut is added to a match.
-  backend()->AddOrUpdateShortcut(u"google", match);
-  EXPECT_EQ(shortcuts_map().size(), 1u);
-  EXPECT_TRUE(ShortcutExists(u"google"));
-
-  // Should not shorten shortcut when a shorter input is used shorter than the
-  // previous shortcut by no more than 3 chars.
-  backend()->AddOrUpdateShortcut(u"goo", match);
-  EXPECT_EQ(shortcuts_map().size(), 1u);
-  EXPECT_FALSE(ShortcutExists(u"goo"));
-  EXPECT_TRUE(ShortcutExists(u"google"));
-
-  // Should shorten shortcut when a shorter input is used shorter than the
-  // previous shortcut by more than 3 chars.
-  backend()->AddOrUpdateShortcut(u"go", match);
-  EXPECT_EQ(shortcuts_map().size(), 1u);
-  EXPECT_FALSE(ShortcutExists(u"go"));
-  EXPECT_TRUE(ShortcutExists(u"googl"));
-  EXPECT_FALSE(ShortcutExists(u"google"));
+  EXPECT_TRUE(ShortcutExists(u"we ne"));
+  EXPECT_FALSE(ShortcutExists(u"we need very long te"));
+  EXPECT_TRUE(ShortcutExists(u"we need very long text fo"));
 }

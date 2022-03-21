@@ -280,12 +280,7 @@ class ShortcutsProviderTest : public testing::Test {
   scoped_refptr<ShortcutsProvider> provider_;
 };
 
-ShortcutsProviderTest::ShortcutsProviderTest() {
-  // `scoped_feature_list_` needs to be initialized as early as possible, to
-  // avoid data races caused by tasks on other threads accessing it.
-  scoped_feature_list_.InitAndDisableFeature(
-      omnibox::kPreserveLongerShortcutsText);
-}
+ShortcutsProviderTest::ShortcutsProviderTest() = default;
 
 void ShortcutsProviderTest::SetUp() {
   client_ = std::make_unique<FakeAutocompleteProviderClient>();
@@ -551,10 +546,16 @@ TEST_F(ShortcutsProviderTest, DaysAgoMatches) {
 }
 
 TEST_F(ShortcutsProviderTest, CalculateScore) {
-  auto shortcut = MakeShortcut(u"test");
+  auto shortcut = MakeShortcut(u"test123");
 
   // Maximal score.
-  const int kMaxScore = CalculateScore("test", shortcut);
+  const int kMaxScore = CalculateScore("test123", shortcut);
+
+  // Score does not decrease when the input is at most 3 chars shorter than the
+  // shortcut text.
+  EXPECT_EQ(CalculateScore("test12", shortcut), kMaxScore);
+  EXPECT_EQ(CalculateScore("test1", shortcut), kMaxScore);
+  EXPECT_EQ(CalculateScore("test", shortcut), kMaxScore);
 
   // Score decreases as percent of the match is decreased.
   int score_three_quarters = CalculateScore("tes", shortcut);
@@ -592,31 +593,11 @@ TEST_F(ShortcutsProviderTest, CalculateScore) {
   EXPECT_LT(score_more_popular_two_weeks_old, kMaxScore);
 }
 
-class ShortcutsProviderPreserveLongerShortcutsTest
-    : public ShortcutsProviderTest {
- public:
-  ShortcutsProviderPreserveLongerShortcutsTest() {
-    // `scoped_feature_list_` needs to be initialized as early as possible, to
-    // avoid data races caused by tasks on other threads accessing it.
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitAndEnableFeature(
-        omnibox::kPreserveLongerShortcutsText);
-  }
-};
-
-TEST_F(ShortcutsProviderPreserveLongerShortcutsTest,
-       CalculateScore_LongTextFeature) {
-  auto long_shortcut = MakeShortcut(u"test Yerevan");
-  // Maximal score.
-  const int kMaxScore = CalculateScore("test Yerevan", long_shortcut);
-  // Score does not decrease when up to 3 chars are missing.
-  EXPECT_EQ(CalculateScore("test Yere", long_shortcut), kMaxScore);
-  // Score decreases if more than 3 chars are missing.
-  EXPECT_LT(CalculateScore("test Yer", long_shortcut), kMaxScore);
-
-  auto short_shortcut = MakeShortcut(u"ab");
+TEST_F(ShortcutsProviderTest, CalculateScore_ShortShortcutText) {
   // Make sure there's no negative or weird scores when the shortcut text is
   // shorter than the 3 char adjustment.
+  const int kMaxScore = CalculateScore("test", MakeShortcut(u"test"));
+  auto short_shortcut = MakeShortcut(u"ab");
   EXPECT_EQ(CalculateScore("ab", short_shortcut), kMaxScore);
   EXPECT_EQ(CalculateScore("a", short_shortcut), kMaxScore);
 }
