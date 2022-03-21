@@ -29,7 +29,12 @@ class ArcDigitalGoodsBridge : public KeyedService {
       base::OnceCallback<void(payments::mojom::BillingResponseCode)>;
   using ListPurchasesCallback = base::OnceCallback<void(
       payments::mojom::BillingResponseCode,
-      std::vector<payments::mojom::PurchaseDetailsPtr>)>;
+      std::vector<payments::mojom::PurchaseReferencePtr>)>;
+  using ListPurchaseHistoryCallback = base::OnceCallback<void(
+      payments::mojom::BillingResponseCode,
+      std::vector<payments::mojom::PurchaseReferencePtr>)>;
+  using ConsumeCallback =
+      base::OnceCallback<void(payments::mojom::BillingResponseCode)>;
 
   // Returns the instance owned by the given BrowserContext, or nullptr if the
   // browser |context| is not allowed to use ARC.
@@ -63,10 +68,23 @@ class ArcDigitalGoodsBridge : public KeyedService {
                    AcknowledgeCallback callback);
 
   // Queries a package for information on all items that are currently owned by
-  // the user.
+  // the user. May include unconfirmed purchases.
   void ListPurchases(const std::string& package_name,
                      const std::string& scope,
                      ListPurchasesCallback callback);
+
+  // Queries a package for information on the latest purchase for each item type
+  // ever purchased by the user. May include expired or consumed purchases.
+  void ListPurchaseHistory(const std::string& package_name,
+                           const std::string& scope,
+                           ListPurchaseHistoryCallback callback);
+
+  // Informs a package that the purchase identified by |purchase_token| was used
+  // up.
+  void Consume(const std::string& package_name,
+               const std::string& scope,
+               const std::string& purchase_token,
+               ConsumeCallback callback);
 
  private:
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.

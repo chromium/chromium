@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 1
+// Next MinVersion: 2
 
 module arc.mojom;
 
@@ -10,7 +10,7 @@ import "third_party/blink/public/mojom/digital_goods/digital_goods.mojom";
 
 // Allows the browser process to forward calls for the Digital Goods API to
 // ARC++
-// Next method ID: 3
+// Next method ID: 6
 [Stable]
 interface DigitalGoodsInstance {
   // Queries a specific package for SKU details by item IDs.
@@ -32,8 +32,27 @@ interface DigitalGoodsInstance {
 
   // Queries a package for information on all items that are currently owned by
   // the user.
-  [MinVersion=0] ListPurchases@2(string package_name,
+  [MinVersion=0] DeprecatedListPurchases@2(string package_name,
                                  string scope)
     => (payments.mojom.BillingResponseCode code,
         array<payments.mojom.PurchaseDetails> purchase_details_list);
+
+  // Queries a package for information on all items that are currently owned by
+  // the user. May include unconfirmed purchases.
+  [MinVersion=1] ListPurchases@3(string package_name, string scope)
+    => (payments.mojom.BillingResponseCode code,
+        array<payments.mojom.PurchaseReference> purchase_reference_list);
+
+  // Queries a package for information on the latest purchase for each item type
+  // ever purchased by the user. May include expired or consumed purchases.
+  [MinVersion=1] ListPurchaseHistory@4(string package_name, string scope)
+    => (payments.mojom.BillingResponseCode code,
+        array<payments.mojom.PurchaseReference> purchase_reference_list);
+
+  // Informs a package that the purchase identified by |purchase_token| was used
+  // up.
+  [MinVersion=1] Consume@5(string package_name,
+                           string scope,
+                           string purchase_token)
+    => (payments.mojom.BillingResponseCode code);
 };
