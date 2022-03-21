@@ -21,6 +21,7 @@ class FakeCameraRollManager : public CameraRollManager {
   void SetIsAndroidStorageGranted(bool granted);
   void SetSimulatedDownloadError(bool has_error);
   void SetSimulatedErrorType(Observer::DownloadErrorType error_type);
+  int GetDownloadRequestCount();
 
   bool is_camera_roll_enabled() const { return !is_avaiable_to_be_enabled_; }
 
@@ -33,6 +34,7 @@ class FakeCameraRollManager : public CameraRollManager {
   // CameraRollManager:
   void DownloadItem(
       const proto::CameraRollItemMetadata& item_metadata) override;
+  int download_request_count_ = 0;
   bool is_avaiable_to_be_enabled_ = true;
   bool is_camera_roll_accessible_ = true;
   bool is_android_storage_granted_ = true;

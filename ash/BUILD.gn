@@ -2638,6 +2638,7 @@ test("ash_unittests") {
     "system/palette/tools/create_note_unittest.cc",
     "system/palette/tools/metalayer_unittest.cc",
     "system/pcie_peripheral/pcie_peripheral_notification_controller_unittest.cc",
+    "system/phonehub/camera_roll_thumbnail_unittest.cc",
     "system/phonehub/camera_roll_view_unittest.cc",
     "system/phonehub/phone_hub_notification_controller_unittest.cc",
     "system/phonehub/phone_hub_recent_apps_view_unittest.cc",
