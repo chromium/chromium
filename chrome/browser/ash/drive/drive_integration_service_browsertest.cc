@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/test/bind.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/drive/drivefs_test_support.h"
@@ -466,7 +467,7 @@ IN_PROC_BROWSER_TEST_F(DriveIntegrationBrowserTestWithMirrorSyncEnabled,
 }
 
 IN_PROC_BROWSER_TEST_F(DriveIntegrationBrowserTestWithMirrorSyncEnabled,
-                       ToggleSyncForPath_MirroringEnabled) {
+                       ToggleSyncForPath_MirroringEnabledFileNotFound) {
   auto* drive_service =
       DriveIntegrationServiceFactory::FindForProfile(browser()->profile());
 
@@ -479,10 +480,43 @@ IN_PROC_BROWSER_TEST_F(DriveIntegrationBrowserTestWithMirrorSyncEnabled,
     drive_service->ToggleSyncForPath(
         base::FilePath("/fake/path"), drivefs::mojom::MirrorPathStatus::kStart,
         base::BindLambdaForTesting([quit_closure](FileError status) {
+          EXPECT_EQ(FILE_ERROR_NOT_FOUND, status);
+          quit_closure.Run();
+        }));
+    run_loop.Run();
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(DriveIntegrationBrowserTestWithMirrorSyncEnabled,
+                       ToggleSyncForPath_MirroringEnabled) {
+  auto* drive_service =
+      DriveIntegrationServiceFactory::FindForProfile(browser()->profile());
+
+  // Enable mirror sync.
+  ToggleMirrorSync(true);
+
+  base::ScopedTempDir temp_dir;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_TRUE(temp_dir.CreateUniqueTempDir());
+  }
+
+  {
+    base::FilePath sync_path = temp_dir.GetPath();
+    base::RunLoop run_loop;
+    auto quit_closure = run_loop.QuitClosure();
+    drive_service->ToggleSyncForPath(
+        sync_path, drivefs::mojom::MirrorPathStatus::kStart,
+        base::BindLambdaForTesting([quit_closure](FileError status) {
           EXPECT_EQ(FILE_ERROR_OK, status);
           quit_closure.Run();
         }));
     run_loop.Run();
+  }
+
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_TRUE(temp_dir.Delete());
   }
 }
 
@@ -510,14 +544,20 @@ IN_PROC_BROWSER_TEST_F(DriveIntegrationBrowserTestWithMirrorSyncEnabled,
   auto* drive_service =
       DriveIntegrationServiceFactory::FindForProfile(browser()->profile());
 
-  const base::FilePath sync_path("/fake/path");
-
   // Enable mirror sync and add |sync_path| that we expect to return from
   // |GetSyncingPaths|.
   ToggleMirrorSync(true);
-  AddSyncingPath(sync_path);
+
+  base::ScopedTempDir temp_dir;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_TRUE(temp_dir.CreateUniqueTempDir());
+  }
 
   {
+    base::FilePath sync_path = temp_dir.GetPath();
+    AddSyncingPath(sync_path);
+
     base::RunLoop run_loop;
     auto quit_closure = run_loop.QuitClosure();
     drive_service->GetSyncingPaths(base::BindLambdaForTesting(
@@ -529,6 +569,11 @@ IN_PROC_BROWSER_TEST_F(DriveIntegrationBrowserTestWithMirrorSyncEnabled,
           quit_closure.Run();
         }));
     run_loop.Run();
+  }
+
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_TRUE(temp_dir.Delete());
   }
 }
 

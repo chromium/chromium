@@ -344,6 +344,12 @@ class DriveIntegrationService : public KeyedService,
 
   void OnDisableMirroringStatusUpdate(drivefs::mojom::MirrorSyncStatus status);
 
+  // Toggle syncing for |path| if the the directory exists.
+  void ToggleSyncForPathIfDirectoryExists(
+      const base::FilePath& path,
+      drivefs::mojom::DriveFs::ToggleSyncForPathCallback callback,
+      bool exists);
+
   friend class DriveIntegrationServiceFactory;
 
   Profile* profile_;

@@ -1325,8 +1325,32 @@ void DriveIntegrationService::ToggleSyncForPath(
     return;
   }
 
+  if (status == drivefs::mojom::MirrorPathStatus::kStart) {
+    blocking_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE, base::BindOnce(&base::DirectoryExists, path),
+        base::BindOnce(
+            &DriveIntegrationService::ToggleSyncForPathIfDirectoryExists,
+            weak_ptr_factory_.GetWeakPtr(), path, std::move(callback)));
+    return;
+  }
+
   if (GetDriveFsInterface()) {
     GetDriveFsInterface()->ToggleSyncForPath(path, status, std::move(callback));
+  }
+}
+
+void DriveIntegrationService::ToggleSyncForPathIfDirectoryExists(
+    const base::FilePath& path,
+    drivefs::mojom::DriveFs::ToggleSyncForPathCallback callback,
+    bool exists) {
+  if (!exists) {
+    std::move(callback).Run(drive::FILE_ERROR_NOT_FOUND);
+    return;
+  }
+
+  if (GetDriveFsInterface()) {
+    GetDriveFsInterface()->ToggleSyncForPath(
+        path, drivefs::mojom::MirrorPathStatus::kStart, std::move(callback));
   }
 }
 
