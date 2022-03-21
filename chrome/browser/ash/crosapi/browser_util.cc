@@ -700,7 +700,7 @@ void CacheLacrosAvailability(const policy::PolicyMap& map) {
       value ? value->GetString() : base::StringPiece());
 }
 
-ComponentInfo GetLacrosComponentInfo() {
+ComponentInfo GetLacrosComponentInfoForChannel(version_info::Channel channel) {
   // We default to the Dev component for UNKNOWN channels.
   static const auto kChannelToComponentInfoMap =
       base::MakeFixedFlatMap<Channel, const ComponentInfo*>({
@@ -710,7 +710,11 @@ ComponentInfo GetLacrosComponentInfo() {
           {Channel::BETA, &kLacrosDogfoodBetaInfo},
           {Channel::STABLE, &kLacrosDogfoodStableInfo},
       });
-  return *kChannelToComponentInfoMap.at(GetStatefulLacrosChannel());
+  return *kChannelToComponentInfoMap.at(channel);
+}
+
+ComponentInfo GetLacrosComponentInfo() {
+  return GetLacrosComponentInfoForChannel(GetStatefulLacrosChannel());
 }
 
 Channel GetLacrosSelectionUpdateChannel(LacrosSelection selection) {

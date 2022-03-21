@@ -29,10 +29,10 @@
 
 namespace component_updater {
 
-namespace {
-
 // Root path where all components are stored.
 constexpr char kComponentsRootPath[] = "cros-components";
+
+namespace {
 
 // All downloadable Chrome OS components.
 const ComponentConfig kConfigs[] = {

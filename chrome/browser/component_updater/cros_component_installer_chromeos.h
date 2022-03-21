@@ -23,6 +23,10 @@ class TimeTicks;
 
 namespace component_updater {
 
+// The name of the directory under DIR_COMPONENT_USER that cros component
+// installers puts all of the installed components.
+extern const char kComponentsRootPath[];
+
 class ComponentUpdateService;
 class MetadataTable;
 class CrOSComponentInstaller;
