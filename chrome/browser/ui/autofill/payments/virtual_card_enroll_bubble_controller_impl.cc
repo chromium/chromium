@@ -109,6 +109,14 @@ VirtualCardEnrollBubbleControllerImpl::GetVirtualCardEnrollBubbleView() const {
   return bubble_view();
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+void VirtualCardEnrollBubbleControllerImpl::HideIconAndBubble() {
+  HideBubble();
+  bubble_state_ = BubbleState::kHidden;
+  UpdatePageActionIcon();
+}
+#endif
+
 void VirtualCardEnrollBubbleControllerImpl::OnAcceptButton() {
   std::move(accept_virtual_card_callback_).Run();
   decline_virtual_card_callback_.Reset();

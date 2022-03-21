@@ -59,6 +59,12 @@ void VirtualCardEnrollmentManager::OfferVirtualCardEnroll(
         virtual_card_enrollment_fields_loaded_callback) {
   Reset();
   DCHECK_NE(virtual_card_enrollment_source, VirtualCardEnrollmentSource::kNone);
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  // Hide the bubble and icon if it is already showing for a previous enrollment
+  // bubble.
+  DCHECK(autofill_client_);
+  autofill_client_->HideVirtualCardEnrollBubbleAndIconIfVisible();
+#endif
   state_.virtual_card_enrollment_fields.credit_card = credit_card;
   risk_assessment_function_ = std::move(risk_assessment_function);
   virtual_card_enrollment_fields_loaded_callback_ =
