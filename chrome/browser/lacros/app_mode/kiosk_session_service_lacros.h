@@ -9,6 +9,7 @@
 
 #include "chromeos/crosapi/mojom/kiosk_session_service.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "url/gurl.h"
 
 namespace chromeos {
 class AppSession;
@@ -29,9 +30,12 @@ class KioskSessionServiceLacros {
       delete;
   virtual ~KioskSessionServiceLacros();
 
-  // Initialize the current Web Kiosk session with the browser that is running
-  // the app.
-  void InitWebKioskSession(Browser* browser);
+  // Initialize the current Web Kiosk session with the |install_url| and the
+  // browser that is running the app.
+  void InitWebKioskSession(Browser* browser, const GURL& install_url);
+
+  // Get install URL for Web Kiosk session.
+  const GURL& GetInstallURL() const { return install_url_; }
 
   // Get app session object for testing purpose only.
   chromeos::AppSession* GetAppSessionForTesting() const {
@@ -43,6 +47,9 @@ class KioskSessionServiceLacros {
   // to the login screen by calling the API provided by
   // `kiosk_session_service_`. Virtual for tesitng.
   virtual void AttemptUserExit();
+
+  // The install URL used to initialize Web Kiosk session.
+  GURL install_url_;
 
   // The app session instance to observe the window status, and take action if
   // necessary.

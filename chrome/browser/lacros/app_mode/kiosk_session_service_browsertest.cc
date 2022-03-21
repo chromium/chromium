@@ -98,6 +98,10 @@ IN_PROC_BROWSER_TEST_F(KioskSessionServiceBrowserTest, AttemptUserExit) {
   SetSessionType(SessionType::kWebKioskSession);
   CreateKioskMainWindow();
 
+  // Verify the install URL stored in the service.
+  EXPECT_EQ(kiosk_session_service_lacros()->GetInstallURL(),
+            GURL(kNavigationUrl));
+
   // Close all browser windows, which should trigger `AttemptUserExit` API call.
   base::RunLoop run_loop;
   kiosk_session_service_lacros()->set_after_attempt_user_exit(

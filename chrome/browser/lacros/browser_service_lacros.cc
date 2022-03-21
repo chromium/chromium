@@ -436,7 +436,7 @@ void BrowserServiceLacros::NewFullscreenWindowWithProfile(
 
   if (chromeos::LacrosService::Get()->init_params()->session_type ==
       crosapi::mojom::SessionType::kWebKioskSession) {
-    KioskSessionServiceLacros::Get()->InitWebKioskSession(browser);
+    KioskSessionServiceLacros::Get()->InitWebKioskSession(browser, url);
   }
 
   // Report a success result to ash. Please note that showing Lacros window is

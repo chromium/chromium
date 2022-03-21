@@ -30,11 +30,13 @@ KioskSessionServiceLacros::~KioskSessionServiceLacros() {
   g_kiosk_session_service = nullptr;
 }
 
-void KioskSessionServiceLacros::InitWebKioskSession(Browser* browser) {
+void KioskSessionServiceLacros::InitWebKioskSession(Browser* browser,
+                                                    const GURL& install_url) {
   LOG_IF(FATAL, app_session_) << "Web Kiosk session is already initialized.";
   app_session_ = std::make_unique<chromeos::AppSession>(base::BindOnce(
       &KioskSessionServiceLacros::AttemptUserExit, weak_factory_.GetWeakPtr()));
   app_session_->InitForWebKiosk(browser);
+  install_url_ = install_url;
 }
 
 void KioskSessionServiceLacros::AttemptUserExit() {
