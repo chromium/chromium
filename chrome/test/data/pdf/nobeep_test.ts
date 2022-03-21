@@ -6,12 +6,11 @@ import {PDFScriptingAPI, PDFViewerElement} from 'chrome-extension://mhjfbmdgcfjb
 
 const tests = [
   /**
-   * Test that the JS was able to call back via "app.beep()"
+   * Test that blocked JS was not able to call back via "app.beep()"
    */
   function testHasCorrectBeepCount() {
-    const viewer = /** @type {!PDFViewerElement} */ (
-        document.body.querySelector('#viewer'));
-    chrome.test.assertEq(1, viewer.beepCount);
+    const viewer = document.body.querySelector<PDFViewerElement>('#viewer')!;
+    chrome.test.assertEq(0, viewer.beepCount);
     chrome.test.succeed();
   }
 ];
