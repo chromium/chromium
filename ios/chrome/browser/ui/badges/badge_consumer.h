@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_UI_BADGES_BADGE_CONSUMER_H_
 #define IOS_CHROME_BROWSER_UI_BADGES_BADGE_CONSUMER_H_
 
+#import <Foundation/Foundation.h>
+
 @protocol BadgeItem;
 
 // Consumer protocol for the view controller that displays badges.

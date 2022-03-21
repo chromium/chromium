@@ -4,6 +4,8 @@
 
 source_set("badges") {
   sources = [
+    "sc_badge_container_view_controller.h",
+    "sc_badge_container_view_controller.mm",
     "sc_badge_coordinator.h",
     "sc_badge_coordinator.mm",
   ]
@@ -13,6 +15,8 @@ source_set("badges") {
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/ui/badges",
     "//ios/chrome/browser/ui/badges:badges_popup_menu",
+    "//ios/chrome/browser/ui/badges:public",
+    "//ios/chrome/browser/ui/badges:util",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/common/ui/util",
     "//ios/showcase/common",

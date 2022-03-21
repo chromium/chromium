@@ -156,9 +156,6 @@ const CGFloat kSymbolImagePointSize = 18;
                           image:[[UIImage imageNamed:@"wrench_badge"]
                                     imageWithRenderingMode:
                                         UIImageRenderingModeAlwaysTemplate]];
-  [button addTarget:self.delegate
-                action:@selector(overflowBadgeButtonTapped:)
-      forControlEvents:UIControlEventTouchUpInside];
   button.accessibilityIdentifier = kBadgeButtonOverflowAccessibilityIdentifier;
   button.accessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_OVERFLOW_BADGE_HINT);
@@ -180,6 +177,7 @@ const CGFloat kSymbolImagePointSize = 18;
       [weakSelf.delegate showModalForBadgeType:badgeType];
     };
     void (^buttonTapHandler)(UIAction*) = ^(UIAction* action) {
+      [weakSelf.delegate overflowBadgeButtonTapped:weakButton];
       weakButton.menu = GetOverflowMenuFromBadgeTypes(
           weakSelf.delegate.badgeTypesForOverflowMenu, showModalFunction);
     };
@@ -192,6 +190,10 @@ const CGFloat kSymbolImagePointSize = 18;
     // Attach the action to the button.
     [button addAction:action
         forControlEvents:UIControlEventMenuActionTriggered];
+  } else {
+    [button addTarget:self.delegate
+                  action:@selector(overflowBadgeButtonTapped:)
+        forControlEvents:UIControlEventTouchUpInside];
   }
   return button;
 }
