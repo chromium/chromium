@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
 
+#include <ostream>
+
 #import "base/check.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

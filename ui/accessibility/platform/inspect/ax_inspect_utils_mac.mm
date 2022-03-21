@@ -4,6 +4,8 @@
 
 #include "ui/accessibility/platform/inspect/ax_inspect_utils_mac.h"
 
+#include <ostream>
+
 #include "base/callback.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/strings/pattern.h"

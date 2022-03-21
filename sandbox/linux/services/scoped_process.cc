@@ -12,6 +12,8 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+#include <ostream>
+
 #include "base/callback.h"
 #include "base/check_op.h"
 #include "base/notreached.h"

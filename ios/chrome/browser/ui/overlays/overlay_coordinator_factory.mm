@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/overlays/overlay_coordinator_factory.h"
 
+#include <ostream>
+
 #include "base/check.h"
 #include "base/notreached.h"
 #include "ios/chrome/browser/overlays/public/overlay_request_support.h"

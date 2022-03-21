@@ -6,6 +6,8 @@
 
 #import <UIKit/UIKit.h>
 
+#include <ostream>
+
 #include "base/check.h"
 #include "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"

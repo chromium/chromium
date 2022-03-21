@@ -4,6 +4,8 @@
 
 #include "chromecast/cast_core/grpc/server_reactor_tracker.h"
 
+#include <ostream>
+
 namespace cast {
 namespace utils {
 

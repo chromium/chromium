@@ -5,6 +5,7 @@
 #include "chromeos/dbus/shill/fake_modem_messaging_client.h"
 
 #include <algorithm>
+#include <ostream>
 #include <string>
 #include <vector>
 

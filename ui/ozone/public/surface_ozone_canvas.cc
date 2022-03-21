@@ -6,6 +6,8 @@
 
 #include "base/notreached.h"
 
+#include <ostream>
+
 namespace ui {
 
 SurfaceOzoneCanvas::~SurfaceOzoneCanvas() = default;

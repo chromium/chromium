@@ -6,7 +6,7 @@
 #define BASE_SYNCHRONIZATION_LOCK_IMPL_H_
 
 #include "base/base_export.h"
-#include "base/check_op.h"
+#include "base/check.h"
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
 
@@ -16,7 +16,6 @@
 #include <errno.h>
 #include <pthread.h>
 #include <string.h>
-#include <ostream>
 #endif
 
 namespace base {
@@ -108,18 +107,24 @@ void LockImpl::Unlock() {
 
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
-BASE_EXPORT std::string SystemErrorCodeToString(int error_code);
+#if DCHECK_IS_ON()
+BASE_EXPORT void dcheck_trylock_result(int rv);
+BASE_EXPORT void dcheck_unlock_result(int rv);
+#endif
 
 bool LockImpl::Try() {
   int rv = pthread_mutex_trylock(&native_handle_);
-  DCHECK(rv == 0 || rv == EBUSY)
-      << ". " << base::internal::SystemErrorCodeToString(rv);
+#if DCHECK_IS_ON()
+  dcheck_trylock_result(rv);
+#endif
   return rv == 0;
 }
 
 void LockImpl::Unlock() {
-  int rv = pthread_mutex_unlock(&native_handle_);
-  DCHECK_EQ(rv, 0) << ". " << strerror(rv);
+  [[maybe_unused]] int rv = pthread_mutex_unlock(&native_handle_);
+#if DCHECK_IS_ON()
+  dcheck_unlock_result(rv);
+#endif
 }
 #endif
 

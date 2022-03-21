@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/ui/overlays/overlay_request_mediator.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_mediator+subclassing.h"
 
+#include <ostream>
+
 #include "base/bind.h"
 #include "base/notreached.h"
 #include "ios/chrome/browser/overlays/public/overlay_callback_manager.h"

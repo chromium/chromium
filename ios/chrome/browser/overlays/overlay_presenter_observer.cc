@@ -4,6 +4,8 @@
 
 #include "ios/chrome/browser/overlays/public/overlay_presenter_observer.h"
 
+#include <ostream>
+
 #include "base/check.h"
 #include "ios/chrome/browser/overlays/public/overlay_request_support.h"
 

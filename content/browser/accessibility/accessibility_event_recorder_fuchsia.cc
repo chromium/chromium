@@ -4,6 +4,8 @@
 
 #include "content/browser/accessibility/accessibility_event_recorder_fuchsia.h"
 
+#include <ostream>
+
 namespace content {
 
 // static

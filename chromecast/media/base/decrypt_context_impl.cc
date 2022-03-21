@@ -5,6 +5,7 @@
 #include "chromecast/media/base/decrypt_context_impl.h"
 
 #include <memory>
+#include <ostream>
 #include <vector>
 
 #include "base/bind.h"

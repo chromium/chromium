@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/platform_keys/chaps_util.h"
 
+#include <ostream>
+
 #include "base/callback.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/platform_keys/chaps_slot_session.h"

@@ -6,6 +6,8 @@
 
 #import <Security/Security.h>
 
+#include <ostream>
+
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "device/fido/mac/authenticator_config.h"
