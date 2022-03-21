@@ -221,7 +221,7 @@
 
   if (self.firstRun) {
     base::UmaHistogramEnumeration("FirstRun.Stage",
-                                  first_run::kSignInScreenStart);
+                                  first_run::kSyncScreenStart);
   }
 }
 
@@ -362,7 +362,7 @@
     base::UmaHistogramEnumeration("FirstRun.Stage",
                                   first_run::kSyncScreenCompletionWithSync);
   }
-  [self.delegate willFinishPresenting];
+  [self finishPresentingAndSkipRemainingScreens:NO];
 }
 
 - (void)signinSyncMediatorDidSuccessfulyFinishSigninForAdvancedSettings:
@@ -374,8 +374,8 @@
     (SigninSyncMediator*)mediator {
   [self finishPresentingAndSkipRemainingScreens:NO];
   if (self.firstRun) {
-    base::UmaHistogramEnumeration(
-        "FirstRun.Stage", first_run::kSignInScreenCompletionWithoutSignIn);
+    base::UmaHistogramEnumeration("FirstRun.Stage",
+                                  first_run::kSyncScreenCompletionWithoutSync);
   }
 }
 

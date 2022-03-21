@@ -61,14 +61,14 @@ void SetupVariationForConfig(AppLaunchConfiguration& config,
                              std::string stringsSet) {
   config.additional_args.push_back(
       "--enable-features=" + std::string(kEnableFREUIModuleIOS.name) + "<" +
-      std::string(kFRESecondUITrialName));
+      std::string(kFREThirdUITrialName));
 
   config.additional_args.push_back(
-      "--force-fieldtrials=" + std::string(kFRESecondUITrialName) + "/" +
+      "--force-fieldtrials=" + std::string(kFREThirdUITrialName) + "/" +
       std::string(kIdentitySwitcherInTopAndOldStringsSetGroup));
 
   config.additional_args.push_back(
-      "--force-fieldtrial-params=" + std::string(kFRESecondUITrialName) + "." +
+      "--force-fieldtrial-params=" + std::string(kFREThirdUITrialName) + "." +
       std::string(kIdentitySwitcherInTopAndOldStringsSetGroup) + ":" +
       std::string(kFREUIIdentitySwitcherPositionParam) + "/" + position + "/" +
       std::string(kFREUIStringsSetParam) + "/" + stringsSet);

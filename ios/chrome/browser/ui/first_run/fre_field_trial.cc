@@ -25,7 +25,7 @@ const char kFREDefaultPromoTestingShortDelayParam[] =
 const char kFREUIIdentitySwitcherPositionParam[] =
     "signin_sync_screen_identity_position";
 const char kFREUIStringsSetParam[] = "signin_sync_screen_strings_set";
-const char kFRESecondUITrialName[] = "EnableFREUIModuleIOSV2";
+const char kFREThirdUITrialName[] = "EnableFREUIModuleIOSV3";
 
 // Group names for the second trial of the FRE UI.
 const char kIdentitySwitcherInTopAndOldStringsSetGroup[] =
@@ -96,15 +96,15 @@ const variations::VariationID
 // Group name for the FRE disabled group.
 const char kDisabledGroup[] = "Disabled";
 // Experiment IDs defined for the second trial of the FRE UI.
-const variations::VariationID kDisabledTrialID = 3344682;
+const variations::VariationID kDisabledTrialID = 3346917;
 const variations::VariationID kIdentitySwitcherInTopAndOldStringsSetID =
-    3344678;
+    3346918;
 const variations::VariationID kIdentitySwitcherInTopAndNewStringsSetID =
-    3344679;
+    3346919;
 const variations::VariationID kIdentitySwitcherInBottomAndOldStringsSetID =
-    3344680;
+    3346920;
 const variations::VariationID kIdentitySwitcherInBottomAndNewStringsSetID =
-    3344681;
+    3346921;
 
 // Default local state pref value.
 const int kDefaultPrefValue = -1;
@@ -326,7 +326,7 @@ int CreateFirstRunSecondTrial(
   }
 
   // Set up the trial and groups.
-  FirstRunFieldTrialConfig config(kFRESecondUITrialName);
+  FirstRunFieldTrialConfig config(kFREThirdUITrialName);
 
   config.AddGroup(kIdentitySwitcherInTopAndOldStringsSetGroup,
                   kIdentitySwitcherInTopAndOldStringsSetID,
@@ -476,7 +476,7 @@ void Create(const base::FieldTrial::EntropyProvider& low_entropy_provider,
             base::FeatureList* feature_list,
             PrefService* local_state) {
   int trial_group = local_state->GetInteger(kTrialGroupPrefName);
-  if (trial_group == kDefaultPrefValue && !FirstRun::IsChromeFirstRun()) {
+  if (trial_group != kDefaultPrefValue || !FirstRun::IsChromeFirstRun()) {
     // Do not bucket existing users that have not been already been grouped. The
     // experiment wants to only add users who have not seen the First Run
     // Experience yet.
@@ -488,7 +488,7 @@ void Create(const base::FieldTrial::EntropyProvider& low_entropy_provider,
   // This condition is to avoid having multiple trials overriding the same
   // feature. A trial might have also been created with the commandline
   // arugments.
-  if (!base::FieldTrialList::TrialExists(kFRESecondUITrialName) &&
+  if (!base::FieldTrialList::TrialExists(kFREThirdUITrialName) &&
       !base::FieldTrialList::TrialExists(kEnableFREUIModuleIOS.name) &&
       !base::FieldTrialList::TrialExists(
           signin::kNewMobileIdentityConsistencyFRE.name)) {
