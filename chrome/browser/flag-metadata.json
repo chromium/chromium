@@ -3263,7 +3263,7 @@
   {
     "name": "extensions-menu-access-control",
     "owners": [ "emiliapaz" ],
-    "expiry_milestone":  100
+    "expiry_milestone":  104
   },
   {
     "name": "extensions-on-chrome-urls",
