@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "ash/public/cpp/style/color_mode_observer.h"
+#include "ash/style/ash_color_provider.h"
 #include "base/scoped_observation.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -33,7 +35,8 @@ class FadeoutLayerDelegate;
 class MediaStringView : public views::View,
                         public views::ViewObserver,
                         public media_session::mojom::MediaControllerObserver,
-                        public ui::ImplicitAnimationObserver {
+                        public ui::ImplicitAnimationObserver,
+                        public ColorModeObserver {
  public:
   struct Settings {
     SkColor icon_light_mode_color;
@@ -71,6 +74,9 @@ class MediaStringView : public views::View,
 
   // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsCompleted() override;
+
+  // ColorModeObserver:
+  void OnColorModeChanged(bool dark_mode_enabled) override;
 
  private:
   friend class AmbientAshTestBase;
@@ -114,6 +120,9 @@ class MediaStringView : public views::View,
 
   base::ScopedObservation<views::View, views::ViewObserver> observed_view_{
       this};
+
+  base::ScopedObservation<AshColorProvider, ColorModeObserver>
+      color_provider_observer_{this};
 
   base::WeakPtrFactory<MediaStringView> weak_factory_{this};
 };

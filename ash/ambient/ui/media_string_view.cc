@@ -198,14 +198,23 @@ void MediaStringView::OnImplicitAnimationsCompleted() {
   ScheduleScrolling(/*is_initial=*/false);
 }
 
+void MediaStringView::OnColorModeChanged(bool dark_mode_enabled) {
+  DCHECK(icon_);
+  icon_->SetImage(gfx::CreateVectorIcon(kMusicNoteIcon, kMusicNoteIconSizeDip,
+                                        dark_mode_enabled
+                                            ? settings_.icon_dark_mode_color
+                                            : settings_.icon_light_mode_color));
+  DCHECK(media_text_);
+  media_text_->SetEnabledColor(dark_mode_enabled
+                                   ? settings_.text_dark_mode_color
+                                   : settings_.text_light_mode_color);
+}
+
 void MediaStringView::InitLayout() {
   // This view will be drawn on its own layer instead of the layer of
   // |PhotoView| which has a solid black background.
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
-
-  // TODO(b/223270660): Listen for dark/light mode changes.
-  bool dark_mode_enabled = AshColorProvider::Get()->IsDarkModeEnabled();
 
   constexpr int kChildSpacingDip = 8;
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -218,10 +227,6 @@ void MediaStringView::InitLayout() {
   icon_ = AddChildView(std::make_unique<views::ImageView>());
   icon_->SetPreferredSize(
       gfx::Size(kMusicNoteIconSizeDip, kMusicNoteIconSizeDip));
-  icon_->SetImage(gfx::CreateVectorIcon(kMusicNoteIcon, kMusicNoteIconSizeDip,
-                                        dark_mode_enabled
-                                            ? settings_.icon_dark_mode_color
-                                            : settings_.icon_light_mode_color));
 
   media_text_container_ = AddChildView(std::make_unique<views::View>());
   media_text_container_->SetPaintToLayer();
@@ -245,9 +250,6 @@ void MediaStringView::InitLayout() {
   media_text_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_TO_HEAD);
   media_text_->SetVerticalAlignment(gfx::VerticalAlignment::ALIGN_MIDDLE);
   media_text_->SetAutoColorReadabilityEnabled(false);
-  media_text_->SetEnabledColor(dark_mode_enabled
-                                   ? settings_.text_dark_mode_color
-                                   : settings_.text_light_mode_color);
   media_text_->SetFontList(
       ambient::util::GetDefaultFontlist()
           .DeriveWithSizeDelta(kMediaStringFontSizeDip - kDefaultFontSizeDip)
@@ -262,6 +264,10 @@ void MediaStringView::InitLayout() {
       /*left=*/0,
       /*bottom=*/-shadow_insets.top(),
       /*right=*/0));
+
+  color_provider_observer_.Observe(AshColorProvider::Get());
+  // Call OnColorModeChanged() directly to capture the initial dark-mode value.
+  OnColorModeChanged(AshColorProvider::Get()->IsDarkModeEnabled());
 
   BindMediaControllerObserver();
 }
