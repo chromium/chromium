@@ -12,8 +12,6 @@ Tests that window.rAF continues to fire during a non-immersive session.
     <script src="../resources/webxr_e2e.js"></script>
     <script src="../resources/webxr_boilerplate.js"></script>
     <script>
-      setup({single_test: true});
-
       onMagicWindowXRFrameCallback = function() {
         window.requestAnimationFrame( () => {
           done();

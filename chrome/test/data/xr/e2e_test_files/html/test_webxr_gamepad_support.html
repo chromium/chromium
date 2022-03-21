@@ -13,8 +13,6 @@ circumstances.
     <script src="../resources/webxr_e2e.js"></script>
     <script src="../resources/webxr_boilerplate.js"></script>
     <script>
-      setup({single_test: true});
-
       // We apparently need to register a listener, otherwise all gamepads are
       // always null.
       window.addEventListener("gamepadconnected", function(e) {});
