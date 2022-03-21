@@ -118,12 +118,28 @@ void FastPairPresenterImpl::OnDiscoveryMetadataRetrieved(
     RecordFastPairDiscoveredVersion(FastPairVersion::kVersion2);
   }
 
+  // Check if the user is opted in to saving devices to their account. If the
+  // user is not opted in, we will show the guest notification which does not
+  // mention saving devices to the user account.
+  FastPairRepository::Get()->CheckOptInStatus(
+      base::BindOnce(&FastPairPresenterImpl::OnCheckOptInStatus,
+                     weak_pointer_factory_.GetWeakPtr(), device,
+                     std::move(callback), device_metadata));
+}
+
+void FastPairPresenterImpl::OnCheckOptInStatus(
+    scoped_refptr<Device> device,
+    DiscoveryCallback callback,
+    DeviceMetadata* device_metadata,
+    nearby::fastpair::OptInStatus status) {
+  QP_LOG(INFO) << __func__;
+
   signin::IdentityManager* identity_manager =
       QuickPairBrowserDelegate::Get()->GetIdentityManager();
-
   if (!ShouldShowUserEmail(
           Shell::Get()->session_controller()->login_status()) ||
-      !identity_manager) {
+      !identity_manager ||
+      status != nearby::fastpair::OptInStatus::STATUS_OPTED_IN) {
     notification_controller_->ShowGuestDiscoveryNotification(
         base::ASCIIToUTF16(device_metadata->GetDetails().name()),
         device_metadata->image(),

@@ -194,6 +194,7 @@ TEST_F(FastPairPresenterImplTest, ShowDiscovery_User) {
       .WillByDefault(testing::Return(identity_manager_));
 
   Login(user_manager::UserType::USER_TYPE_REGULAR);
+  repository_->SetOptInStatus(nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
       device_,
@@ -205,6 +206,26 @@ TEST_F(FastPairPresenterImplTest, ShowDiscovery_User) {
       kFastPairDiscoveryUserNotificationId));
 }
 
+TEST_F(FastPairPresenterImplTest, ShowDiscovery_User_OptedOut) {
+  EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
+      kFastPairDiscoveryGuestNotificationId));
+
+  ON_CALL(*browser_delegate_, GetIdentityManager())
+      .WillByDefault(testing::Return(identity_manager_));
+
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  repository_->SetOptInStatus(nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
+  base::RunLoop().RunUntilIdle();
+  fast_pair_presenter_->ShowDiscovery(
+      device_,
+      base::BindRepeating(&FastPairPresenterImplTest::OnDiscoveryAction,
+                          weak_pointer_factory_.GetWeakPtr(), device_));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
+      kFastPairDiscoveryGuestNotificationId));
+}
+
 TEST_F(FastPairPresenterImplTest, ShowDiscovery_Child) {
   EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
       kFastPairDiscoveryUserNotificationId));
@@ -213,6 +234,7 @@ TEST_F(FastPairPresenterImplTest, ShowDiscovery_Child) {
       .WillByDefault(testing::Return(identity_manager_));
 
   Login(user_manager::UserType::USER_TYPE_CHILD);
+  repository_->SetOptInStatus(nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
       device_,
@@ -228,6 +250,7 @@ TEST_F(FastPairPresenterImplTest, RemoveNotifications) {
   ON_CALL(*browser_delegate_, GetIdentityManager())
       .WillByDefault(testing::Return(identity_manager_));
   Login(user_manager::UserType::USER_TYPE_REGULAR);
+  repository_->SetOptInStatus(nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
       device_,
@@ -253,6 +276,7 @@ TEST_F(FastPairPresenterImplTest, ShowDiscovery_NoDeviceMetadata) {
   repository_->ClearFakeMetadata(kValidModelId);
 
   Login(user_manager::UserType::USER_TYPE_REGULAR);
+  repository_->SetOptInStatus(nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
       device_,
@@ -278,6 +302,7 @@ TEST_F(FastPairPresenterImplTest, ShowDiscovery_V1Device) {
                                          Protocol::kFastPairInitial);
 
   Login(user_manager::UserType::USER_TYPE_REGULAR);
+  repository_->SetOptInStatus(nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
       device_,
@@ -297,6 +322,7 @@ TEST_F(FastPairPresenterImplTest, ShowDiscovery_Regular_NoIdentityManager) {
       .WillByDefault(testing::Return(nullptr));
 
   Login(user_manager::UserType::USER_TYPE_REGULAR);
+  repository_->SetOptInStatus(nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
       device_,
@@ -312,6 +338,7 @@ TEST_F(FastPairPresenterImplTest, ShowDiscovery_User_ConnectClicked) {
   ON_CALL(*browser_delegate_, GetIdentityManager())
       .WillByDefault(testing::Return(identity_manager_));
   Login(user_manager::UserType::USER_TYPE_REGULAR);
+  repository_->SetOptInStatus(nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
       device_,
@@ -332,6 +359,7 @@ TEST_F(FastPairPresenterImplTest, ShowDiscovery_User_LearnMoreClicked) {
   ON_CALL(*browser_delegate_, GetIdentityManager())
       .WillByDefault(testing::Return(identity_manager_));
   Login(user_manager::UserType::USER_TYPE_REGULAR);
+  repository_->SetOptInStatus(nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
       device_,
@@ -352,6 +380,7 @@ TEST_F(FastPairPresenterImplTest, ShowDiscovery_User_DismissedByUser) {
   ON_CALL(*browser_delegate_, GetIdentityManager())
       .WillByDefault(testing::Return(identity_manager_));
   Login(user_manager::UserType::USER_TYPE_REGULAR);
+  repository_->SetOptInStatus(nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
       device_,
@@ -372,6 +401,7 @@ TEST_F(FastPairPresenterImplTest, ShowDiscovery_User_DismissedByOS) {
   ON_CALL(*browser_delegate_, GetIdentityManager())
       .WillByDefault(testing::Return(identity_manager_));
   Login(user_manager::UserType::USER_TYPE_REGULAR);
+  repository_->SetOptInStatus(nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
       device_,
@@ -396,6 +426,7 @@ TEST_F(FastPairPresenterImplTest, ShowDiscovery_Guest) {
       .WillByDefault(testing::Return(identity_manager_));
 
   Login(user_manager::UserType::USER_TYPE_GUEST);
+  repository_->SetOptInStatus(nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
       device_,
@@ -415,6 +446,7 @@ TEST_F(FastPairPresenterImplTest, ShowDiscovery_KiostApp) {
       .WillByDefault(testing::Return(identity_manager_));
 
   Login(user_manager::UserType::USER_TYPE_KIOSK_APP);
+  repository_->SetOptInStatus(nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
       device_,
@@ -430,6 +462,7 @@ TEST_F(FastPairPresenterImplTest, ShowDiscovery_Guest_ConnectClicked) {
   ON_CALL(*browser_delegate_, GetIdentityManager())
       .WillByDefault(testing::Return(identity_manager_));
   Login(user_manager::UserType::USER_TYPE_GUEST);
+  repository_->SetOptInStatus(nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
       device_,
@@ -450,6 +483,7 @@ TEST_F(FastPairPresenterImplTest, ShowDiscovery_Guest_LearnMoreClicked) {
   ON_CALL(*browser_delegate_, GetIdentityManager())
       .WillByDefault(testing::Return(identity_manager_));
   Login(user_manager::UserType::USER_TYPE_GUEST);
+  repository_->SetOptInStatus(nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
       device_,
@@ -470,6 +504,7 @@ TEST_F(FastPairPresenterImplTest, ShowDiscovery_Guest_DismissedByUser) {
   ON_CALL(*browser_delegate_, GetIdentityManager())
       .WillByDefault(testing::Return(identity_manager_));
   Login(user_manager::UserType::USER_TYPE_GUEST);
+  repository_->SetOptInStatus(nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
       device_,
@@ -490,6 +525,7 @@ TEST_F(FastPairPresenterImplTest, ShowDiscovery_Guest_DismissedByOS) {
   ON_CALL(*browser_delegate_, GetIdentityManager())
       .WillByDefault(testing::Return(identity_manager_));
   Login(user_manager::UserType::USER_TYPE_GUEST);
+  repository_->SetOptInStatus(nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowDiscovery(
       device_,
@@ -514,6 +550,7 @@ TEST_F(FastPairPresenterImplTest, ShowPairing) {
       .WillByDefault(testing::Return(identity_manager_));
 
   Login(user_manager::UserType::USER_TYPE_REGULAR);
+  repository_->SetOptInStatus(nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::RunLoop().RunUntilIdle();
   fast_pair_presenter_->ShowPairing(device_);
   base::RunLoop().RunUntilIdle();
