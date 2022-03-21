@@ -12,6 +12,7 @@ import android.content.Context;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Log;
+import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
@@ -184,8 +185,8 @@ public class PageViewObserver extends EmptyTabObserver {
     private void reportToPlatformIfDomainIsTracked(String reportMethodName, String fqdn) {
         mTokenTracker.getTokenForFqdn(fqdn).then((token) -> {
             if (token == null) return;
-
-            try {
+            try (TraceEvent te = TraceEvent.scoped(
+                         "PageViewObserver.reportToPlatformIfDomainIsTracked")) {
                 UsageStatsManager instance =
                         (UsageStatsManager) mActivity.getSystemService(Context.USAGE_STATS_SERVICE);
                 Method reportMethod = UsageStatsManager.class.getDeclaredMethod(
