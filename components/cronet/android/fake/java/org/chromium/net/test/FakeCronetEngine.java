@@ -5,8 +5,10 @@
 package org.chromium.net.test;
 
 import android.content.Context;
+import android.net.Network;
 
 import androidx.annotation.GuardedBy;
+import androidx.annotation.Nullable;
 
 import org.chromium.net.BidirectionalStream;
 import org.chromium.net.CronetEngine;
@@ -185,6 +187,14 @@ final class FakeCronetEngine extends CronetEngineBase {
         return CONNECTION_METRIC_UNKNOWN;
     }
 
+    @SuppressWarnings("DoNotCallSuggester")
+    // TODO(stefanoduo): Swap with @Override once interface portion of the API has been merged.
+    public void bindToNetwork(@Nullable Network network) {
+        throw new UnsupportedOperationException(
+                "The multi-network API is not supported by the Fake implementation "
+                + "of Cronet Engine");
+    }
+
     @Override
     public void configureNetworkQualityEstimatorForTesting(boolean useLocalHostRequests,
             boolean useSmallerResponses, boolean disableOfflineCheck) {}
@@ -236,7 +246,13 @@ final class FakeCronetEngine extends CronetEngineBase {
             boolean disableCache, boolean disableConnectionMigration, boolean allowDirectExecutor,
             boolean trafficStatsTagSet, int trafficStatsTag, boolean trafficStatsUidSet,
             int trafficStatsUid, RequestFinishedInfo.Listener requestFinishedListener,
-            int idempotency) {
+            int idempotency, @Nullable Network network) {
+        if (network != null) {
+            throw new UnsupportedOperationException(
+                    "The multi-network API is not supported by the Fake implementation "
+                    + "of Cronet Engine");
+        }
+
         synchronized (mLock) {
             if (mIsShutdown) {
                 throw new IllegalStateException(
@@ -255,7 +271,12 @@ final class FakeCronetEngine extends CronetEngineBase {
             List<Map.Entry<String, String>> requestHeaders, @StreamPriority int priority,
             boolean delayRequestHeadersUntilFirstFlush, Collection<Object> connectionAnnotations,
             boolean trafficStatsTagSet, int trafficStatsTag, boolean trafficStatsUidSet,
-            int trafficStatsUid) {
+            int trafficStatsUid, @Nullable Network network) {
+        if (network != null) {
+            throw new UnsupportedOperationException(
+                    "The multi-network API is not supported by the Fake implementation "
+                    + "of Cronet Engine");
+        }
         synchronized (mLock) {
             if (mIsShutdown) {
                 throw new IllegalStateException(

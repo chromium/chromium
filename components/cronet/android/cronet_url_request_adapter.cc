@@ -71,7 +71,8 @@ static jlong JNI_CronetUrlRequest_CreateRequestAdapter(
     jint jtraffic_stats_tag,
     jboolean jtraffic_stats_uid_set,
     jint jtraffic_stats_uid,
-    jint jidempotency) {
+    jint jidempotency,
+    jlong jnetwork_handle) {
   CronetContextAdapter* context_adapter =
       reinterpret_cast<CronetContextAdapter*>(jurl_request_context_adapter);
   DCHECK(context_adapter);
@@ -86,7 +87,7 @@ static jlong JNI_CronetUrlRequest_CreateRequestAdapter(
       static_cast<net::RequestPriority>(jpriority), jdisable_cache,
       jdisable_connection_migration, jenable_metrics, jtraffic_stats_tag_set,
       jtraffic_stats_tag, jtraffic_stats_uid_set, jtraffic_stats_uid,
-      static_cast<net::Idempotency>(jidempotency));
+      static_cast<net::Idempotency>(jidempotency), jnetwork_handle);
 
   return reinterpret_cast<jlong>(adapter);
 }
@@ -104,7 +105,8 @@ CronetURLRequestAdapter::CronetURLRequestAdapter(
     jint jtraffic_stats_tag,
     jboolean jtraffic_stats_uid_set,
     jint jtraffic_stats_uid,
-    net::Idempotency idempotency)
+    net::Idempotency idempotency,
+    jlong network)
     : request_(
           new CronetURLRequest(context->cronet_url_request_context(),
                                std::unique_ptr<CronetURLRequestAdapter>(this),
@@ -117,7 +119,8 @@ CronetURLRequestAdapter::CronetURLRequestAdapter(
                                jtraffic_stats_tag,
                                jtraffic_stats_uid_set == JNI_TRUE,
                                jtraffic_stats_uid,
-                               idempotency)) {
+                               idempotency,
+                               network)) {
   owner_.Reset(env, jurl_request);
 }
 

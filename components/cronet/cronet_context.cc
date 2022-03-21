@@ -209,13 +209,11 @@ CronetContext::~CronetContext() {
 
 CronetContext::NetworkTasks::NetworkTasks(
     std::unique_ptr<URLRequestContextConfig> context_config,
-    std::unique_ptr<CronetContext::Callback> callback,
-    bool listen_to_network_changes)
+    std::unique_ptr<CronetContext::Callback> callback)
     : default_context_(nullptr),
       is_default_context_initialized_(false),
       context_config_(std::move(context_config)),
-      callback_(std::move(callback)),
-      listen_to_network_changes_(listen_to_network_changes) {
+      callback_(std::move(callback)) {
   DETACH_FROM_THREAD(network_thread_checker_);
 }
 
@@ -233,7 +231,7 @@ CronetContext::NetworkTasks::~NetworkTasks() {
     network_quality_estimator_->RemoveRTTAndThroughputEstimatesObserver(this);
   }
 
-  if (listen_to_network_changes_)
+  if (net::NetworkChangeNotifier::AreNetworkHandlesSupported())
     net::NetworkChangeNotifier::RemoveNetworkObserver(this);
 }
 
@@ -521,7 +519,7 @@ void CronetContext::NetworkTasks::Initialize(
       BuildDefaultURLRequestContext(std::move(proxy_config_service));
   default_context_ = contexts_[default_network].get();
 
-  if (listen_to_network_changes_)
+  if (net::NetworkChangeNotifier::AreNetworkHandlesSupported())
     net::NetworkChangeNotifier::AddNetworkObserver(this);
 
   callback_->OnInitNetworkThread();
@@ -723,7 +721,6 @@ void CronetContext::NetworkTasks::OnThroughputObservation(
 void CronetContext::NetworkTasks::OnNetworkDisconnected(
     net::NetworkChangeNotifier::NetworkHandle network) {
   DCHECK_CALLED_ON_VALID_THREAD(network_thread_checker_);
-  DCHECK(listen_to_network_changes_);
 
   // TODO(stefanoduo): Properly cancel pending requests before destroying the
   // context.

@@ -104,8 +104,7 @@ class NetworkTasksTest : public testing::Test {
         file_task_runner_(base::ThreadPool::CreateSingleThreadTaskRunner({})),
         network_tasks_(new CronetContext::NetworkTasks(
             CreateSimpleURLRequestContextConfig(),
-            std::make_unique<NoOpCronetContextCallback>(),
-            true /* listen_to_network_changes */)) {
+            std::make_unique<NoOpCronetContextCallback>())) {
     scoped_ncn_.mock_network_change_notifier()->ForceNetworkHandlesSupported();
     Initialize();
   }

@@ -76,7 +76,8 @@ class CronetBidirectionalStreamAdapter
       bool traffic_stats_tag_set,
       int32_t traffic_stats_tag,
       bool traffic_stats_uid_set,
-      int32_t traffic_stats_uid);
+      int32_t traffic_stats_uid,
+      net::NetworkChangeNotifier::NetworkHandle network);
 
   CronetBidirectionalStreamAdapter(const CronetBidirectionalStreamAdapter&) =
       delete;
@@ -183,6 +184,9 @@ class CronetBidirectionalStreamAdapter
   const bool traffic_stats_uid_set_;
   // UID to be applied to URLRequest.
   const int32_t traffic_stats_uid_;
+  // If not equal to net::NetworkChangeNotifier::kInvalidNetworkHandle, the
+  // network to be used to send this request.
+  const net::NetworkChangeNotifier::NetworkHandle network_;
 
   scoped_refptr<IOBufferWithByteBuffer> read_buffer_;
   std::unique_ptr<PendingWriteData> pending_write_data_;
