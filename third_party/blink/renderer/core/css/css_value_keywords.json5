@@ -214,6 +214,8 @@
     "infobackground",
     "infotext",
     "linktext",
+    "mark",
+    "marktext",
     "menutext",
     "scrollbar",
     "threeddarkshadow",

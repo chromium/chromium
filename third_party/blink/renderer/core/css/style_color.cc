@@ -73,8 +73,7 @@ bool StyleColor::IsSystemColorIncludingDeprecated(CSSValueID id) {
 
 bool StyleColor::IsSystemColor(CSSValueID id) {
   switch (id) {
-    // SelectedItem, SelectedItemText, Mark, MarkText not
-    // understood yet.
+    // SelectedItem, SelectedItemText not understood yet.
     case CSSValueID::kCanvas:
     case CSSValueID::kCanvastext:
     case CSSValueID::kLinktext:
@@ -88,6 +87,8 @@ bool StyleColor::IsSystemColor(CSSValueID id) {
     case CSSValueID::kHighlight:
     case CSSValueID::kHighlighttext:
     case CSSValueID::kGraytext:
+    case CSSValueID::kMark:
+    case CSSValueID::kMarktext:
       return true;
     default:
       return false;

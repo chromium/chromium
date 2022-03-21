@@ -1123,8 +1123,8 @@ pre, xmp, plaintext, listing {
 }
 
 mark {
-    background-color: yellow;
-    color: black
+    background-color: Mark;
+    color: MarkText;
 }
 
 big {

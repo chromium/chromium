@@ -652,6 +652,10 @@ Color LayoutTheme::DefaultSystemColor(
                                                               : 0xFF000000;
     case CSSValueID::kLinktext:
       return 0xFF0000EE;
+    case CSSValueID::kMark:
+      return 0xFFFFFF00;
+    case CSSValueID::kMarktext:
+      return 0xFF000000;
     case CSSValueID::kMenu:
       return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFF404040
                                                               : 0xFFF7F7F7;

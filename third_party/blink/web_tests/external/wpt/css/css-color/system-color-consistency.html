@@ -19,12 +19,16 @@
   <div id="buttons">
     <button name="button"></button><input type="submit" name="submit button"><input type="reset" name="reset button">
   </div>
+  <mark id="mark">Marked text</mark>
   <script>
     for (let element of document.getElementById("buttons").children) {
       style = document.defaultView.getComputedStyle(element);
       test_computed_value(`color`, `ButtonText`, style.getPropertyValue('color'), 'has the same color as text on a ' + element.name);
     }
-    // Test with no specified target contrast
+    // Mark and MarkText
+    style = document.defaultView.getComputedStyle(document.getElementById('mark'));
+    test_computed_value('color', 'Mark', style.getPropertyValue('background-color'), 'has the same color as the background-color of a mark element');
+    test_computed_value('color', 'MarkText', style.getPropertyValue('color'), 'has the same color as the color of a mark element');
   </script>
 </body>
 

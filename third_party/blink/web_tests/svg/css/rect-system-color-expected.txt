@@ -76,6 +76,12 @@ PASS computedStyleText.stroke is computedStyleDiv.get('color').toString()
 Testing system colorLinkText
 PASS computedStyleText.fill is computedStyleDiv.get('color').toString()
 PASS computedStyleText.stroke is computedStyleDiv.get('color').toString()
+Testing system colorMark
+PASS computedStyleText.fill is computedStyleDiv.get('color').toString()
+PASS computedStyleText.stroke is computedStyleDiv.get('color').toString()
+Testing system colorMarkText
+PASS computedStyleText.fill is computedStyleDiv.get('color').toString()
+PASS computedStyleText.stroke is computedStyleDiv.get('color').toString()
 Testing system colorMenu
 PASS computedStyleText.fill is computedStyleDiv.get('color').toString()
 PASS computedStyleText.stroke is computedStyleDiv.get('color').toString()
