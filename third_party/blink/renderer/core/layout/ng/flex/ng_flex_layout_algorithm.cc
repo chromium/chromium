@@ -1493,7 +1493,8 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
 
     if (break_status == NGBreakStatus::kBrokeBefore) {
       ConsumeRemainingFragmentainerSpace(previously_consumed_block_size,
-                                         &line_output);
+                                         &line_output,
+                                         current_column_break_info);
       // For column flex containers, continue to the next column. For rows,
       // continue until we've processed all items in the current row.
       has_inflow_child_break_inside_line[flex_line_idx] = true;
@@ -1537,11 +1538,12 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
       }
     }
 
-    if (!is_horizontal_flow_) {
-      line_output.line_intrinsic_block_size =
-          line_output.line_intrinsic_block_size.ClampIndefiniteToZero();
-      line_output.line_intrinsic_block_size +=
-          offset.block_offset + fragment.BlockSize();
+    if (current_column_break_info) {
+      DCHECK(!is_horizontal_flow_);
+      current_column_break_info->column_intrinsic_block_size +=
+          (offset.block_offset + fragment.BlockSize() -
+           current_column_break_info->column_intrinsic_block_size)
+              .ClampNegativeToZero();
     }
 
     // TODO(almaher): What to do in the case where the line extends past
@@ -2074,18 +2076,17 @@ LayoutUnit NGFlexLayoutAlgorithm::FragmentainerSpaceAvailable(
 
 void NGFlexLayoutAlgorithm::ConsumeRemainingFragmentainerSpace(
     LayoutUnit previously_consumed_block_size,
-    NGFlexLine* flex_line) {
+    NGFlexLine* flex_line,
+    const NGFlexColumnBreakInfo* column_break_info) {
   if (To<NGBlockBreakToken>(container_builder_.LastChildBreakToken())
           ->IsForcedBreak()) {
     // This will be further adjusted by the total consumed block size once we
     // handle the break before in the next fragmentainer. This ensures that the
     // expansion is properly handled in the column balancing pass.
     LayoutUnit intrinsic_block_size = intrinsic_block_size_;
-    if (flex_line->line_intrinsic_block_size != kIndefiniteSize) {
+    if (column_break_info) {
       DCHECK(!is_horizontal_flow_);
-      intrinsic_block_size = (flex_line->line_intrinsic_block_size -
-                              previously_consumed_block_size)
-                                 .ClampNegativeToZero();
+      intrinsic_block_size = column_break_info->column_intrinsic_block_size;
     }
     flex_line->item_offset_adjustment -=
         intrinsic_block_size + previously_consumed_block_size;

@@ -31,6 +31,7 @@ struct NGFlexColumnBreakInfo {
 
   void Trace(Visitor* visitor) const { visitor->Trace(early_break); }
 
+  LayoutUnit column_intrinsic_block_size;
   Member<NGEarlyBreak> early_break = nullptr;
   EBreakBetween break_after = EBreakBetween::kAuto;
 };

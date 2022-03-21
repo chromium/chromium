@@ -124,7 +124,8 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
   // https://www.w3.org/TR/css-break-3/#box-splitting
   void ConsumeRemainingFragmentainerSpace(
       LayoutUnit previously_consumed_block_size,
-      NGFlexLine* flex_line);
+      NGFlexLine* flex_line,
+      const NGFlexColumnBreakInfo* column_break_info = nullptr);
 
   // Insert a fragmentainer break before a row if necessary. Rows do not produce
   // a layout result, so when breaking before a row, we will insert a
