@@ -227,7 +227,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
             public AccountCapabilities doInBackground() {
                 Map<String, Integer> capabilitiesResponse = new HashMap<>();
                 for (String capabilityName :
-                        AccountCapabilities.SUPPORTED_ACCOUNT_CAPABILITY_NAMES) {
+                        AccountCapabilitiesConstants.SUPPORTED_ACCOUNT_CAPABILITY_NAMES) {
                     @CapabilityResponse
                     int capability = mDelegate.hasCapability(
                             account, getAndroidCapabilityName(capabilityName));

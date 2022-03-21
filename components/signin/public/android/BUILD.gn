@@ -73,9 +73,11 @@ generate_jni("jni_headers") {
   ]
 }
 
-java_cpp_strings("account_capabilities_constants_javagen") {
-  sources = [ "//components/signin/internal/identity_manager/account_capabilities_constants.cc" ]
-  template = "java_templates/AccountCapabilitiesConstants.java.tmpl"
+java_cpp_template("account_capabilities_constants_javagen") {
+  sources = [ "java_templates/AccountCapabilitiesConstants.template" ]
+  inputs = [
+    "//components/signin/internal/identity_manager/account_capabilities_list.h",
+  ]
 }
 
 java_cpp_enum("tribool_javagen") {

@@ -4,11 +4,7 @@
 
 #include "components/signin/internal/identity_manager/account_capabilities_constants.h"
 
-const char kIsSubjectToParentalControlsCapabilityName[] =
-    "accountcapabilities/guydolldmfya";
-
-const char kCanOfferExtendedChromeSyncPromosCapabilityName[] =
-    "accountcapabilities/gi2tklldmfya";
-
-const char kCanRunChromePrivacySandboxTrialsCapabilityName[] =
-    "accountcapabilities/gu2dqlldmfya";
+#define ACCOUNT_CAPABILITY(cpp_label, java_label, name) \
+  const char cpp_label[] = name;
+#include "components/signin/internal/identity_manager/account_capabilities_list.h"
+#undef ACCOUNT_CAPABILITY

@@ -5,11 +5,9 @@
 #ifndef COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_ACCOUNT_CAPABILITIES_CONSTANTS_H_
 #define COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_ACCOUNT_CAPABILITIES_CONSTANTS_H_
 
-// When changing this file, please ensure that the changes are reflected in the
-// SUPPORTED_ACCOUNT_CAPABILITY_NAMES array in AccountCapabilities.java.
-
-extern const char kCanOfferExtendedChromeSyncPromosCapabilityName[];
-extern const char kIsSubjectToParentalControlsCapabilityName[];
-extern const char kCanRunChromePrivacySandboxTrialsCapabilityName[];
+#define ACCOUNT_CAPABILITY(cpp_label, java_label, name) \
+  extern const char cpp_label[];
+#include "components/signin/internal/identity_manager/account_capabilities_list.h"
+#undef ACCOUNT_CAPABILITY
 
 #endif  // COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_ACCOUNT_CAPABILITIES_CONSTANTS_H_
