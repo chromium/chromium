@@ -26,8 +26,15 @@ import {record, UserAction} from '../metrics.js';
 
 import {getTemplate} from './viewer-toolbar.html.js';
 
+declare global {
+  interface HTMLElementEventMap {
+    'fit-to-changed': CustomEvent<FittingType>;
+  }
+}
+
 export interface ViewerToolbarElement {
   $: {
+    sidenavToggle: HTMLElement,
     menu: CrActionMenuElement,
   };
 }

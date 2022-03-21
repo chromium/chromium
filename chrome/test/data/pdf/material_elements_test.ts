@@ -2,10 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ViewerPageSelectorElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {Bookmark} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {createBookmarksForTest} from './test_util.js';
+
+// TODO(crbug.com/1305967): Remove this interface when test_util.js is
+// migrated to TypeScript.
+interface TestBookmarksElement extends HTMLElement {
+  bookmarks: Bookmark[];
+}
 
 /**
  * Standalone unit tests of the PDF Polymer elements.
@@ -18,20 +24,19 @@ const tests = [
    */
   function testPageSelectorChange() {
     document.body.innerHTML = '';
-    const selector = /** @type {!ViewerPageSelectorElement} */ (
-        document.createElement('viewer-page-selector'));
+    const selector = document.createElement('viewer-page-selector')!;
     selector.docLength = 1234;
     document.body.appendChild(selector);
 
     const input = selector.$.pageSelector;
     // Simulate entering text into `input` and pressing enter.
-    function changeInput(newValue) {
+    function changeInput(newValue: string) {
       input.value = newValue;
       input.dispatchEvent(new CustomEvent('input'));
       input.dispatchEvent(new CustomEvent('change'));
     }
 
-    const navigatedPages = [];
+    const navigatedPages: number[] = [];
     selector.addEventListener('change-page', function(e) {
       navigatedPages.push(e.detail.page);
       // A change-page handler is expected to set the pageNo to the new value.
@@ -66,7 +71,7 @@ const tests = [
     selector.docLength = 1234;
     document.body.appendChild(selector);
     chrome.test.assertEq(
-        '1234', selector.shadowRoot.querySelector('#pagelength').textContent);
+        '1234', selector.shadowRoot!.querySelector('#pagelength')!.textContent);
     chrome.test.assertEq(
         '4', selector.style.getPropertyValue('--page-length-digits'));
     chrome.test.succeed();
@@ -78,7 +83,7 @@ const tests = [
    */
   function testBookmarkStructure() {
     document.body.innerHTML = '';
-    const bookmarkContent = createBookmarksForTest();
+    const bookmarkContent = createBookmarksForTest() as TestBookmarksElement;
     bookmarkContent.bookmarks = [{
       title: 'Test 1',
       page: 1,
@@ -93,18 +98,18 @@ const tests = [
     flush();
 
     const rootBookmarks =
-        bookmarkContent.shadowRoot.querySelectorAll('viewer-bookmark');
+        bookmarkContent.shadowRoot!.querySelectorAll('viewer-bookmark');
     chrome.test.assertEq(1, rootBookmarks.length, 'one root bookmark');
-    const rootBookmark = rootBookmarks[0];
+    const rootBookmark = rootBookmarks[0]!;
     rootBookmark.$.expand.click();
 
     flush();
 
     const subBookmarks =
-        rootBookmark.shadowRoot.querySelectorAll('viewer-bookmark');
+        rootBookmark.shadowRoot!.querySelectorAll('viewer-bookmark');
     chrome.test.assertEq(2, subBookmarks.length, 'two sub bookmarks');
     chrome.test.assertEq(
-        1, subBookmarks[1].depth, 'sub bookmark depth correct');
+        1, subBookmarks[1]!.depth, 'sub bookmark depth correct');
 
     let lastPageChange;
     rootBookmark.addEventListener('change-page', function(e) {
@@ -114,7 +119,7 @@ const tests = [
     rootBookmark.$.item.click();
     chrome.test.assertEq(1, lastPageChange);
 
-    subBookmarks[1].$.item.click();
+    subBookmarks[1]!.$.item.click();
     chrome.test.assertEq(3, lastPageChange);
 
     chrome.test.succeed();

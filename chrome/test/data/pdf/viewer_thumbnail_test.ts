@@ -2,46 +2,38 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {eventToPromise} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/_test_resources/webui/test_util.js';
 import {ViewerThumbnailElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-/** @return {!ViewerThumbnailElement} */
 function createThumbnail() {
   document.body.innerHTML = '';
-  const thumbnail = /** @type {!ViewerThumbnailElement} */ (
-      document.createElement('viewer-thumbnail'));
+  const thumbnail = document.createElement('viewer-thumbnail');
   document.body.appendChild(thumbnail);
   return thumbnail;
 }
 
-/**
- * @param {!ViewerThumbnailElement} thumbnail
- * @param {!Array<number>} imageSize
- * @param {!Array<number>} canvasSize
- */
-function testThumbnailSize(thumbnail, imageSize, canvasSize) {
-  const imageData = new ImageData(imageSize[0], imageSize[1]);
+function testThumbnailSize(
+    thumbnail: ViewerThumbnailElement, imageSize: number[],
+    canvasSize: number[]) {
+  const imageData = new ImageData(imageSize[0]!, imageSize[1]!);
   thumbnail.image = imageData;
 
-  const canvas = thumbnail.shadowRoot.querySelector('canvas');
+  const canvas = thumbnail.shadowRoot!.querySelector('canvas')!;
   chrome.test.assertEq(`${canvasSize[0]}px`, canvas.style.width);
   chrome.test.assertEq(`${canvasSize[1]}px`, canvas.style.height);
 
   // The div containing the canvas should be resized to fit.
-  const div = canvas.parentElement;
+  const div = canvas.parentElement!;
   chrome.test.assertEq(canvasSize[0], div.offsetWidth);
   chrome.test.assertEq(canvasSize[1], div.offsetHeight);
 }
 
-/**
- * @param {!ViewerThumbnailElement} thumbnail
- * @param {number} clockwiseRotations
- * @param {!Array<number>} divSize
- */
-function testThumbnailRotation(thumbnail, clockwiseRotations, divSize) {
+function testThumbnailRotation(
+    thumbnail: ViewerThumbnailElement, clockwiseRotations: number,
+    divSize: number[]) {
   thumbnail.clockwiseRotations = clockwiseRotations;
 
-  const canvas = thumbnail.shadowRoot.querySelector('canvas');
+  const canvas = thumbnail.shadowRoot!.querySelector('canvas')!;
   const halfTurn = clockwiseRotations % 2 === 0;
   chrome.test.assertEq(
       `${halfTurn ? divSize[0] : divSize[1]}px`, canvas.style.width);
@@ -49,7 +41,7 @@ function testThumbnailRotation(thumbnail, clockwiseRotations, divSize) {
       `${halfTurn ? divSize[1] : divSize[0]}px`, canvas.style.height);
 
   // The div containing the rotated canvas should be resized to fit.
-  const div = canvas.parentElement;
+  const div = canvas.parentElement!;
   chrome.test.assertEq(divSize[0], div.offsetWidth);
   chrome.test.assertEq(divSize[1], div.offsetHeight);
 
@@ -57,18 +49,15 @@ function testThumbnailRotation(thumbnail, clockwiseRotations, divSize) {
       `rotate(${clockwiseRotations * 90}deg)`, canvas.style.transform);
 }
 
-/**
- * @param {!Array<number>} imageSize
- * @param {!Array<!Array<number>>} rotatedDivSizes
- */
-function testThumbnailRotations(imageSize, rotatedDivSizes) {
+function testThumbnailRotations(
+    imageSize: number[], rotatedDivSizes: number[][]) {
   const thumbnail = createThumbnail();
-  const imageData = new ImageData(imageSize[0], imageSize[1]);
+  const imageData = new ImageData(imageSize[0]!, imageSize[1]!);
   thumbnail.image = imageData;
 
   chrome.test.assertEq(4, rotatedDivSizes.length);
   for (let rotations = 0; rotations < rotatedDivSizes.length; rotations++) {
-    testThumbnailRotation(thumbnail, rotations, rotatedDivSizes[rotations]);
+    testThumbnailRotation(thumbnail, rotations, rotatedDivSizes[rotations]!);
   }
 }
 
@@ -191,8 +180,7 @@ const tests = [
     // Set some image data so a canvas is created inside the thumbnail.
     const thumbnail = createThumbnail();
     thumbnail.image = new ImageData(108, 140);
-    const canvas = /** @type {!HTMLCanvasElement} */ (
-        thumbnail.shadowRoot.querySelector('canvas'));
+    const canvas = thumbnail.shadowRoot!.querySelector('canvas')!;
 
     const whenContextMenu = eventToPromise('contextmenu', canvas);
     canvas.dispatchEvent(new CustomEvent('contextmenu', {cancelable: true}));

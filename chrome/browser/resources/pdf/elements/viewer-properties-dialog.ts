@@ -16,6 +16,7 @@ import {getTemplate} from './viewer-properties-dialog.html.js';
 export interface ViewerPropertiesDialogElement {
   $: {
     dialog: CrDialogElement,
+    close: HTMLElement,
   };
 }
 

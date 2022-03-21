@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {getFilenameFromURL, PDFViewerElement, shouldIgnoreKeyEvents, ViewerToolbarElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {getFilenameFromURL, shouldIgnoreKeyEvents} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 
 const tests = [
   /**
@@ -10,14 +10,13 @@ const tests = [
    * verifies that Polymer is working correctly.
    */
   function testHasElements() {
-    const viewer = /** @type {!PDFViewerElement} */ (
-        document.body.querySelector('pdf-viewer'));
+    const viewer = document.body.querySelector('pdf-viewer')!;
     const elementNames = ['viewer-pdf-sidenav', 'viewer-toolbar'];
 
-    for (let i = 0; i < elementNames.length; i++) {
-      const elements = viewer.shadowRoot.querySelectorAll(elementNames[i]);
+    for (const elementName of elementNames) {
+      const elements = viewer.shadowRoot!.querySelectorAll(elementName);
       chrome.test.assertEq(1, elements.length);
-      chrome.test.assertTrue(elements[0].shadowRoot !== null);
+      chrome.test.assertTrue(elements[0]!.shadowRoot !== null);
     }
     chrome.test.succeed();
   },
@@ -26,35 +25,32 @@ const tests = [
    * Test that the plugin element exists and is navigated to the correct URL.
    */
   function testPluginElement() {
-    const viewer = /** @type {!PDFViewerElement} */ (
-        document.body.querySelector('pdf-viewer'));
-    const plugin = viewer.shadowRoot.querySelector('#plugin');
+    const viewer = document.body.querySelector('pdf-viewer')!;
+    const plugin = viewer.shadowRoot!.querySelector('#plugin')!;
     chrome.test.assertEq('embed', plugin.localName);
 
     chrome.test.assertTrue(
-        plugin.getAttribute('original-url').indexOf('/pdf/test.pdf') !== -1);
+        plugin.getAttribute('original-url')!.indexOf('/pdf/test.pdf') !== -1);
     chrome.test.succeed();
   },
 
   function testShouldIgnoreKeyEvents() {
-    const viewer = /** @type {!PDFViewerElement} */ (
-        document.body.querySelector('pdf-viewer'));
-    const toolbar = /** @type {!ViewerToolbarElement} */ (
-        viewer.shadowRoot.querySelector('#toolbar'));
+    const viewer = document.body.querySelector('pdf-viewer')!;
+    const toolbar = viewer.$.toolbar;
 
     // Test case where an <input> field is focused.
-    toolbar.shadowRoot.querySelector('viewer-page-selector')
-        .$.pageSelector.focus();
+    toolbar.shadowRoot!.querySelector(
+                           'viewer-page-selector')!.$.pageSelector.focus();
     chrome.test.assertTrue(shouldIgnoreKeyEvents());
 
     // Test case where another field is focused.
-    const rotateButton = toolbar.shadowRoot.querySelector(
-        'cr-icon-button[iron-icon=\'pdf:rotate-left\']');
+    const rotateButton = toolbar.shadowRoot!.querySelector<HTMLElement>(
+        'cr-icon-button[iron-icon=\'pdf:rotate-left\']')!;
     rotateButton.focus();
     chrome.test.assertFalse(shouldIgnoreKeyEvents());
 
     // Test case where the plugin itself is focused.
-    viewer.shadowRoot.querySelector('#plugin').focus();
+    viewer.shadowRoot!.querySelector<HTMLElement>('#plugin')!.focus();
     chrome.test.assertFalse(shouldIgnoreKeyEvents());
 
     chrome.test.succeed();
@@ -64,7 +60,7 @@ const tests = [
    * Test that the PDF filename is correctly extracted from URLs with query
    * parameters and fragments.
    */
-  function testGetFilenameFromURL(url) {
+  function testGetFilenameFromURL() {
     chrome.test.assertEq(
         'path.pdf',
         getFilenameFromURL(

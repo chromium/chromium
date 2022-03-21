@@ -7,6 +7,7 @@ import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/paper-styles/shadow.js';
 
+import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getTemplate} from './viewer-toolbar-dropdown.html.js';
 
@@ -23,6 +24,7 @@ const MIN_DROPDOWN_HEIGHT: number = 200;
 
 export interface ViewerToolbarDropdownElement {
   $: {
+    button: CrIconButtonElement,
     dropdown: HTMLElement,
     'scroll-container': HTMLElement,
   };
@@ -218,6 +220,12 @@ export class ViewerToolbarDropdownElement extends PolymerElement {
           duration: 100,
           easing: 'cubic-bezier(0.4, 0, 1, 1)',
         });
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'viewer-toolbar-dropdown': ViewerToolbarDropdownElement;
   }
 }
 

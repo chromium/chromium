@@ -2,37 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {eventToPromise} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/_test_resources/webui/test_util.js';
 import {FittingType, ViewerToolbarElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-/** @return {!ViewerToolbarElement} */
 function createToolbar() {
   document.body.innerHTML = '';
-  const toolbar = /** @type {!ViewerToolbarElement} */ (
-      document.createElement('viewer-toolbar'));
+  const toolbar = document.createElement('viewer-toolbar');
   document.body.appendChild(toolbar);
   return toolbar;
 }
 
 /**
  * Returns the cr-icon-buttons in |toolbar|'s shadowRoot under |parentId|.
- * @param {!ViewerToolbarElement} toolbar
- * @param {string} parentId
- * @return {!NodeList<!CrIconButtonElement>}
  */
-function getCrIconButtons(toolbar, parentId) {
-  return /** @type {!NodeList<!CrIconButtonElement>} */ (
-      toolbar.shadowRoot.querySelectorAll(`#${parentId} cr-icon-button`));
+function getCrIconButtons(toolbar: ViewerToolbarElement, parentId: string) {
+  return toolbar.shadowRoot!.querySelector(`#${parentId}`)!.querySelectorAll(
+      'cr-icon-button');
 }
 
-/**
- * @param {!HTMLElement} button
- * @param {boolean} enabled
- */
-function assertCheckboxMenuButton(button, enabled) {
+function assertCheckboxMenuButton(button: HTMLElement, enabled: boolean) {
   chrome.test.assertEq(
       enabled ? 'true' : 'false', button.getAttribute('aria-checked'));
-  chrome.test.assertEq(enabled, !button.querySelector('iron-icon').hidden);
+  chrome.test.assertEq(enabled, !button.querySelector('iron-icon')!.hidden);
 }
 
 // Unit tests for the viewer-toolbar element.
@@ -43,7 +34,7 @@ const tests = [
    */
   function testFitButton() {
     const toolbar = createToolbar();
-    const fitButton = getCrIconButtons(toolbar, 'center')[2];
+    const fitButton = getCrIconButtons(toolbar, 'center')[2]!;
     const fitWidthIcon = 'pdf:fit-to-width';
     const fitHeightIcon = 'pdf:fit-to-height';
 
@@ -113,38 +104,39 @@ const tests = [
     toolbar.addEventListener('zoom-out', () => zoomOutCount++);
 
     const zoomButtons = getCrIconButtons(toolbar, 'zoom-controls');
-    chrome.test.assertFalse(zoomButtons[0].disabled);
-    chrome.test.assertFalse(zoomButtons[1].disabled);
+    chrome.test.assertEq(2, zoomButtons.length);
+    chrome.test.assertFalse(zoomButtons[0]!.disabled);
+    chrome.test.assertFalse(zoomButtons[1]!.disabled);
 
     // Zoom out
-    chrome.test.assertEq('pdf:remove', zoomButtons[0].ironIcon);
-    zoomButtons[0].click();
+    chrome.test.assertEq('pdf:remove', zoomButtons[0]!.ironIcon);
+    zoomButtons[0]!.click();
     chrome.test.assertEq(0, zoomInCount);
     chrome.test.assertEq(1, zoomOutCount);
 
     // Set zoom to min. Zoom out is disabled.
     toolbar.viewportZoom = .25;
-    chrome.test.assertTrue(zoomButtons[0].disabled);
-    chrome.test.assertFalse(zoomButtons[1].disabled);
+    chrome.test.assertTrue(zoomButtons[0]!.disabled);
+    chrome.test.assertFalse(zoomButtons[1]!.disabled);
 
     // Zoom in
-    chrome.test.assertEq('pdf:add', zoomButtons[1].ironIcon);
-    zoomButtons[1].click();
+    chrome.test.assertEq('pdf:add', zoomButtons[1]!.ironIcon);
+    zoomButtons[1]!.click();
     chrome.test.assertEq(1, zoomInCount);
     chrome.test.assertEq(1, zoomOutCount);
 
     // Set zoom to max. Zoom in is disabled.
     toolbar.zoomBounds = {min: 25, max: 500};
     toolbar.viewportZoom = 5;
-    chrome.test.assertFalse(zoomButtons[0].disabled);
-    chrome.test.assertTrue(zoomButtons[1].disabled);
+    chrome.test.assertFalse(zoomButtons[0]!.disabled);
+    chrome.test.assertTrue(zoomButtons[1]!.disabled);
 
     chrome.test.succeed();
   },
 
   async function testRotateButton() {
     const toolbar = createToolbar();
-    const rotateButton = getCrIconButtons(toolbar, 'center')[3];
+    const rotateButton = getCrIconButtons(toolbar, 'center')[3]!;
     chrome.test.assertEq('pdf:rotate-left', rotateButton.ironIcon);
 
     const whenRotateLeft = eventToPromise('rotate-left', toolbar);
@@ -157,7 +149,8 @@ const tests = [
     const toolbar = createToolbar();
     toolbar.viewportZoom = .8;
     toolbar.zoomBounds = {min: 25, max: 500};
-    const zoomField = toolbar.shadowRoot.querySelector('#zoom-controls input');
+    const zoomField = toolbar.shadowRoot!.querySelector<HTMLInputElement>(
+        '#zoom-controls input')!;
     chrome.test.assertEq('80%', zoomField.value);
 
     // Value is set based on viewport zoom.
@@ -210,8 +203,8 @@ const tests = [
     const menu = toolbar.$.menu;
     chrome.test.assertFalse(menu.open);
 
-    const more = toolbar.shadowRoot.querySelector('#more');
-    const buttons = menu.querySelectorAll('.dropdown-item');
+    const more = toolbar.shadowRoot!.querySelector<HTMLElement>('#more')!;
+    const buttons = menu.querySelectorAll<HTMLElement>('.dropdown-item');
     chrome.test.assertTrue(buttons.length > 0);
 
     for (const button of buttons) {
@@ -227,8 +220,8 @@ const tests = [
   async function testTwoPageViewToggle() {
     const toolbar = createToolbar();
     toolbar.twoUpViewEnabled = false;
-    const button = /** @type {!HTMLElement} */ (
-        toolbar.shadowRoot.querySelector('#two-page-view-button'));
+    const button = toolbar.shadowRoot!.querySelector<HTMLElement>(
+        '#two-page-view-button')!;
     assertCheckboxMenuButton(button, false);
 
     let whenChanged = eventToPromise('two-up-view-changed', toolbar);
@@ -252,8 +245,8 @@ const tests = [
 
   async function testShowAnnotationsToggle() {
     const toolbar = createToolbar();
-    const button = /** @type {!HTMLElement} */ (
-        toolbar.shadowRoot.querySelector('#show-annotations-button'));
+    const button = toolbar.shadowRoot!.querySelector<HTMLElement>(
+        '#show-annotations-button')!;
     assertCheckboxMenuButton(button, true);
 
     let whenChanged = eventToPromise('display-annotations-changed', toolbar);
@@ -275,7 +268,7 @@ const tests = [
     const toolbar = createToolbar();
     chrome.test.assertFalse(toolbar.sidenavCollapsed);
 
-    const toggleButton = toolbar.shadowRoot.querySelector('#sidenavToggle');
+    const toggleButton = toolbar.$.sidenavToggle;
     chrome.test.assertTrue(toggleButton.hasAttribute('aria-label'));
     chrome.test.assertTrue(toggleButton.hasAttribute('title'));
     chrome.test.assertEq('true', toggleButton.getAttribute('aria-expanded'));
@@ -290,22 +283,24 @@ const tests = [
 
   async function testPresentButton() {
     const toolbar = createToolbar();
-    const button = toolbar.shadowRoot.querySelector('#present-button');
+    const button =
+        toolbar.shadowRoot!.querySelector<HTMLElement>('#present-button');
     chrome.test.assertTrue(!!button);
 
     const whenFired = eventToPromise('present-click', toolbar);
-    button.click();
+    button!.click();
     await whenFired;
     chrome.test.succeed();
   },
 
   async function testPropertiesButton() {
     const toolbar = createToolbar();
-    const button = toolbar.shadowRoot.querySelector('#properties-button');
+    const button =
+        toolbar.shadowRoot!.querySelector<HTMLElement>('#properties-button');
     chrome.test.assertTrue(!!button);
 
     const whenFired = eventToPromise('properties-click', toolbar);
-    button.click();
+    button!.click();
     await whenFired;
     chrome.test.succeed();
   }

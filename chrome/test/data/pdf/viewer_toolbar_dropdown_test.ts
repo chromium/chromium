@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ViewerToolbarDropdownElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-
 const tests = [
   /**
    * Test that clicking the dropdown icon opens/closes the dropdown.
    */
   function testToolbarDropdownShowHide() {
     document.body.innerHTML = '';
-    const dropdown = /** @type {!ViewerToolbarDropdownElement} */ (
-        document.createElement('viewer-toolbar-dropdown'));
+    const dropdown = document.createElement('viewer-toolbar-dropdown');
     dropdown.header = 'Test Menu';
     dropdown.closedIcon = 'closedIcon';
     dropdown.openIcon = 'openIcon';

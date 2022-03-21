@@ -2,28 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {eventToPromise} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/_test_resources/webui/test_util.js';
-import {PDFViewerElement, ViewerPasswordDialogElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-const viewer = /** @type {!PDFViewerElement} */ (
-    document.body.querySelector('pdf-viewer'));
+const viewer = document.body.querySelector('pdf-viewer')!;
 
-/** @return {!ViewerPasswordDialogElement} */
 function getPasswordDialog() {
-  return /** @type {!ViewerPasswordDialogElement} */ (
-      viewer.shadowRoot.querySelector('#password-dialog'));
+  return viewer.shadowRoot!.querySelector('viewer-password-dialog')!;
 }
 
-/** @return {!CrInputElement} */
 function getPasswordInput() {
-  return /** @type {!CrInputElement} */ (
-      getPasswordDialog().shadowRoot.querySelector('#password'));
+  return getPasswordDialog().$.password;
 }
 
-/** @return {!CrButtonElement} */
 function getSubmitButton() {
-  return /** @type {!CrButtonElement} */ (
-      getPasswordDialog().shadowRoot.querySelector('#submit'));
+  return getPasswordDialog().$.submit;
 }
 
 function submitPassword() {
@@ -35,8 +27,7 @@ function submitPassword() {
   chrome.test.assertTrue(getPasswordInput().disabled);
 }
 
-/** @param {string} password */
-async function tryIncorrectPassword(password) {
+async function tryIncorrectPassword(password: string) {
   const input = getPasswordInput();
   input.value = password;
 
@@ -53,8 +44,7 @@ async function tryIncorrectPassword(password) {
   chrome.test.assertFalse(getSubmitButton().disabled);
 }
 
-/** @param {string} password */
-async function tryCorrectPassword(password) {
+async function tryCorrectPassword(password: string) {
   const input = getPasswordInput();
   input.value = password;
 
