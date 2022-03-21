@@ -8,6 +8,7 @@
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/bookmarks/common/bookmark_pref_names.h"
+#import "ios/chrome/browser/ui/recent_tabs/recent_tabs_constants.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
@@ -122,9 +123,22 @@ void WaitForTabGridFullscreen() {
   GREYAssertTrue(fullscreenAchieved, @"kRegularTabGridIdentifier not visible");
 }
 
+// Returns the matcher for the Recent Tabs table.
+id<GREYMatcher> RecentTabsTable() {
+  return grey_allOf(grey_accessibilityID(
+                        kRecentTabsTableViewControllerAccessibilityIdentifier),
+                    grey_sufficientlyVisible(), nil);
+}
+
 // Returns a matcher for the scrim view on the tab search.
 id<GREYMatcher> SearchScrim() {
   return grey_accessibilityID(kTabGridScrimIdentifier);
+}
+
+// Returns a matcher for the search bar text field containing |searchText|.
+id<GREYMatcher> SearchBarWithSearchText(NSString* searchText) {
+  return grey_accessibilityID([kTabGridSearchTextFieldIdentifierPrefix
+      stringByAppendingString:searchText]);
 }
 
 // Returns a matcher for the search results header with title set with
@@ -176,6 +190,13 @@ id<GREYMatcher> SearchRecentTabsSuggestedAction() {
       chrome_test_util::StaticTextWithAccessibilityLabelId(
           IDS_IOS_TABS_SEARCH_SUGGESTED_ACTION_SEARCH_RECENT_TABS),
       grey_sufficientlyVisible(), nil);
+}
+
+// Returns a matcher for the "Search recent tabs" suggested action.
+id<GREYMatcher> SearchOpenTabsSuggestedAction() {
+  return grey_allOf(chrome_test_util::StaticTextWithAccessibilityLabelId(
+                        IDS_IOS_TABS_SEARCH_SUGGESTED_ACTION_SEARCH_OPEN_TABS),
+                    grey_sufficientlyVisible(), nil);
 }
 
 // Returns a matcher for the "Search history" suggested action.
@@ -241,7 +262,9 @@ id<GREYMatcher> SearchSuggestedActionsSectionWithHistoryMatchesCount(
       @selector(testSuggestedActionsVisibleInSearchModeWhenSearchBarIsNotEmpty),
       @selector(testSearchSuggestedActionsDisplaysCorrectHistoryMatchesCount),
       @selector(testSearchSuggestedActionsSectionContentInRegularGrid),
-      @selector(testSuggestedActionsNotAvailableInIncognitoPageSearchMode)};
+      @selector(testSuggestedActionsNotAvailableInIncognitoPageSearchMode),
+      @selector(testSearchSuggestedActionsPageSwitch),
+      /* Add new tests for tab search above this line. */};
   for (SEL test : searchTests) {
     if ([self isRunningTest:test]) {
       config.features_enabled.push_back(kTabsSearch);
@@ -1349,8 +1372,7 @@ id<GREYMatcher> SearchSuggestedActionsSectionWithHistoryMatchesCount(
       performAction:grey_tap()];
 
   // Verify that search mode is active.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::TabGridSearchModeToolbar()]
+  [[EarlGrey selectElementWithMatcher:TabGridSearchModeToolbar()]
       assertWithMatcher:grey_notNil()];
 
   // Exit search mode.
@@ -1358,8 +1380,7 @@ id<GREYMatcher> SearchSuggestedActionsSectionWithHistoryMatchesCount(
       performAction:grey_tap()];
 
   // Verify that normal mode is active.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::TabGridNormalModePageControl()]
+  [[EarlGrey selectElementWithMatcher:TabGridNormalModePageControl()]
       assertWithMatcher:grey_notNil()];
 }
 
@@ -1371,7 +1392,7 @@ id<GREYMatcher> SearchSuggestedActionsSectionWithHistoryMatchesCount(
   // Enter search mode & search with a query that produce no results.
   [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridSearchBar()]
+  [[EarlGrey selectElementWithMatcher:TabGridSearchBar()]
       performAction:grey_typeText(@"hello")];
 
   // Verify that search reduced the number of visible tabs.
@@ -1751,6 +1772,8 @@ id<GREYMatcher> SearchSuggestedActionsSectionWithHistoryMatchesCount(
                   currentURL.spec().c_str());
 }
 
+// Tests that share action works successfully from the long press context menu
+// on search results.
 - (void)testSearchOpenTabsContextMenuShare {
   [self loadTestURLsInNewTabs];
   [ChromeEarlGrey showTabSwitcher];
@@ -1768,6 +1791,8 @@ id<GREYMatcher> SearchSuggestedActionsSectionWithHistoryMatchesCount(
   [ChromeEarlGrey verifyShareActionWithURL:_URL1 pageTitle:title2];
 }
 
+// Tests that add to reading list action works successfully from the long press
+// context menu on search results.
 - (void)testSearchOpenTabsContextMenuAddToReadingList {
   [self loadTestURLsInNewTabs];
   [ChromeEarlGrey showTabSwitcher];
@@ -1786,6 +1811,8 @@ id<GREYMatcher> SearchSuggestedActionsSectionWithHistoryMatchesCount(
       triggeredByTappingItemWithMatcher:AddToReadingListButton()];
 }
 
+// Tests that add to bookmarks action works successfully from the long press
+// context menu on search results.
 - (void)testSearchOpenTabsContextMenuAddToBookmarks {
   [self loadTestURLsInNewTabs];
   [ChromeEarlGrey showTabSwitcher];
@@ -1816,6 +1843,8 @@ id<GREYMatcher> SearchSuggestedActionsSectionWithHistoryMatchesCount(
       assertWithMatcher:grey_notNil()];
 }
 
+// Tests that close tab action works successfully from the long press context
+// menu on search results.
 - (void)testSearchOpenTabsContextMenuCloseTab {
   [self loadTestURLsInNewTabs];
   [ChromeEarlGrey showTabSwitcher];
@@ -1837,6 +1866,58 @@ id<GREYMatcher> SearchSuggestedActionsSectionWithHistoryMatchesCount(
   // Make sure that the tab is no longer present.
   [[EarlGrey selectElementWithMatcher:TabWithTitle(kTitle2)]
       assertWithMatcher:grey_nil()];
+}
+
+// Tests "search recent tabs" and "search open tabs" suggested actions switch
+// the tab grid page correctly while staying in the search mode.
+- (void)testSearchSuggestedActionsPageSwitch {
+  [self loadTestURLsInNewTabs];
+  [ChromeEarlGrey showTabSwitcher];
+  // Enter search mode & perform a seach.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
+      performAction:grey_tap()];
+  NSString* query = [NSString stringWithFormat:@"%s\n", kTitle2];
+  [[EarlGrey selectElementWithMatcher:TabGridSearchBar()]
+      performAction:grey_typeText(query)];
+  // Verify that the RegularGridView is visible, use 60% for the visibility
+  // percentage as in smaller devices the toolbars can occupy more space on the
+  // screen.
+  [[EarlGrey selectElementWithMatcher:RegularTabGrid()]
+      assertWithMatcher:grey_minimumVisiblePercent(0.6)];
+
+  // Tap on search recent tabs.
+  [[self scrollDownViewMatcher:RegularTabGrid()
+               toSelectMatcher:SearchRecentTabsSuggestedAction()]
+      performAction:grey_tap()];
+
+  // Verify successful transition to the recent tabs page with search mode on
+  // and search text set to the original query.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchModeToolbar()]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:SearchBarWithSearchText(
+                                          base::SysUTF8ToNSString(kTitle2))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:RecentTabsTable()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:RegularTabGrid()]
+      assertWithMatcher:grey_notVisible()];
+
+  // Tap on search open tabs to go back to regular tabs page.
+  [[self scrollDownViewMatcher:RecentTabsTable()
+               toSelectMatcher:SearchOpenTabsSuggestedAction()]
+      performAction:grey_tap()];
+
+  // Verify successful transition to the regular tab grid page with search mode
+  // on and search text set to the original query.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchModeToolbar()]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:SearchBarWithSearchText(
+                                          base::SysUTF8ToNSString(kTitle2))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:RegularTabGrid()]
+      assertWithMatcher:grey_minimumVisiblePercent(0.6)];
+  [[EarlGrey selectElementWithMatcher:RecentTabsTable()]
+      assertWithMatcher:grey_notVisible()];
 }
 
 #pragma mark - Helper Methods
@@ -2014,7 +2095,10 @@ id<GREYMatcher> SearchSuggestedActionsSectionWithHistoryMatchesCount(
 - (id<GREYInteraction>)scrollDownViewMatcher:(id<GREYMatcher>)viewMatcher
                              toSelectMatcher:(id<GREYMatcher>)matcher {
   return [[EarlGrey selectElementWithMatcher:matcher]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 50)
+         usingSearchAction:grey_scrollInDirectionWithStartPoint(
+                               kGREYDirectionDown, /*amount=*/100,
+                               /*xOriginStartPercentage=*/0.5,
+                               /*yOriginStartPercentage=*/0.5)
       onElementWithMatcher:viewMatcher];
 }
 
@@ -2023,7 +2107,10 @@ id<GREYMatcher> SearchSuggestedActionsSectionWithHistoryMatchesCount(
 - (id<GREYInteraction>)scrollUpViewMatcher:(id<GREYMatcher>)viewMatcher
                            toSelectMatcher:(id<GREYMatcher>)matcher {
   return [[EarlGrey selectElementWithMatcher:matcher]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionUp, 50)
+         usingSearchAction:grey_scrollInDirectionWithStartPoint(
+                               kGREYDirectionUp, /*amount=*/100,
+                               /*xOriginStartPercentage=*/0.5,
+                               /*yOriginStartPercentage=*/0.5)
       onElementWithMatcher:viewMatcher];
 }
 
