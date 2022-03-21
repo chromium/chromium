@@ -8,6 +8,7 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withChild;
@@ -30,6 +31,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import androidx.annotation.StringRes;
+import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.BaseMatcher;
@@ -134,6 +136,11 @@ public final class PrivacySandboxSettingsFragmentV3Test {
                 .perform(click());
     }
 
+    private void scrollToSetting(Matcher<View> matcher) {
+        onView(withId(R.id.recycler_view))
+                .perform(RecyclerViewActions.scrollTo(hasDescendant(matcher)));
+    }
+
     @Test
     @SmallTest
     @Feature({"RenderTest"})
@@ -192,6 +199,7 @@ public final class PrivacySandboxSettingsFragmentV3Test {
     @Feature({"RenderTest"})
     public void testRenderSpamFraudView() throws IOException {
         openPrivacySandboxSettings();
+        scrollToSetting(withText(R.string.privacy_sandbox_spam_fraud_title));
         onView(withText(R.string.privacy_sandbox_spam_fraud_title)).perform(click());
         mRenderTestRule.render(
                 getRootView(R.string.privacy_sandbox_spam_fraud_description_trials_on),
@@ -282,6 +290,7 @@ public final class PrivacySandboxSettingsFragmentV3Test {
     @SmallTest
     public void testSpamFraudView() {
         openPrivacySandboxSettings();
+        scrollToSetting(withText(R.string.privacy_sandbox_spam_fraud_title));
         onView(withText(R.string.privacy_sandbox_spam_fraud_title)).perform(click());
         onView(withText(R.string.privacy_sandbox_spam_fraud_description_trials_on))
                 .check(matches(isDisplayed()));
@@ -292,6 +301,7 @@ public final class PrivacySandboxSettingsFragmentV3Test {
     public void testSpamFraudViewTrialsOff() {
         PrivacySandboxBridge.setPrivacySandboxEnabled(false);
         openPrivacySandboxSettings();
+        scrollToSetting(withText(R.string.privacy_sandbox_spam_fraud_title));
         onView(withText(R.string.privacy_sandbox_spam_fraud_title)).perform(click());
         onView(withText(R.string.privacy_sandbox_spam_fraud_description_trials_off))
                 .check(matches(isDisplayed()));
