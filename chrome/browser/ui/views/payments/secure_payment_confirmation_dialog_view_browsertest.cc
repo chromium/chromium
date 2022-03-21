@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/payments/secure_payment_confirmation_dialog_view.h"
+#include "chrome/browser/ui/views/payments/secure_payment_confirmation_views_util.h"
 #include "chrome/browser/ui/views/payments/test_secure_payment_confirmation_payment_request_delegate.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/autofill/core/browser/test_event_waiter.h"
@@ -16,6 +17,7 @@
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -77,7 +79,9 @@ class SecurePaymentConfirmationDialogViewTest
 
     model_.set_merchant_label(
         l10n_util::GetStringUTF16(IDS_SECURE_PAYMENT_CONFIRMATION_STORE_LABEL));
-    model_.set_merchant_value(u"merchant.com");
+    model_.set_merchant_name(absl::optional<std::u16string>(u"Test Merchant"));
+    model_.set_merchant_origin(
+        absl::optional<std::u16string>(u"merchant1.com"));
 
     model_.set_instrument_label(l10n_util::GetStringUTF16(
         IDS_PAYMENT_REQUEST_PAYMENT_METHOD_SECTION_NAME));
@@ -151,7 +155,7 @@ class SecurePaymentConfirmationDialogViewTest
         model_.merchant_label(),
         SecurePaymentConfirmationDialogView::DialogViewID::MERCHANT_LABEL);
     ExpectLabelText(
-        model_.merchant_value(),
+        FormatMerchantLabel(model_.merchant_name(), model_.merchant_origin()),
         SecurePaymentConfirmationDialogView::DialogViewID::MERCHANT_VALUE);
 
     ExpectLabelText(
@@ -357,7 +361,9 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
 
   model_.set_title(u"Test Title");
   model_.set_merchant_label(u"Test merchant");
-  model_.set_merchant_value(u"Test merchant value");
+  model_.set_merchant_name(
+      absl::optional<std::u16string>(u"Test merchant value"));
+  model_.set_merchant_origin(absl::optional<std::u16string>(u"merchant2.com"));
   model_.set_instrument_label(u"Test instrument");
   model_.set_instrument_value(u"Test instrument value");
   model_.set_total_label(u"Test total");
@@ -425,6 +431,40 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
   InvokeSecurePaymentConfirmationUI();
 
   ExpectViewMatchesModel();
+
+  CloseDialogAndWait();
+}
+
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
+                       MerchantLabelFormat) {
+  CreateModel();
+
+  // Both merchant name and origin
+  model_.set_merchant_name(absl::optional<std::u16string>(u"Test Merchant"));
+  model_.set_merchant_origin(absl::optional<std::u16string>(u"merchant.com"));
+  InvokeSecurePaymentConfirmationUI();
+  ExpectViewMatchesModel();
+  ExpectLabelText(
+      u"Test Merchant (merchant.com)",
+      SecurePaymentConfirmationDialogView::DialogViewID::MERCHANT_VALUE);
+
+  // Only merchant name, no origin
+  model_.set_merchant_name(absl::optional<std::u16string>(u"Test Merchant 2"));
+  model_.set_merchant_origin(absl::optional<std::u16string>());
+  test_delegate_->dialog_view()->OnModelUpdated();
+  ExpectViewMatchesModel();
+  ExpectLabelText(
+      u"Test Merchant 2",
+      SecurePaymentConfirmationDialogView::DialogViewID::MERCHANT_VALUE);
+
+  // Only merchant origin, no name
+  model_.set_merchant_name(absl::optional<std::u16string>());
+  model_.set_merchant_origin(absl::optional<std::u16string>(u"merchant2.com"));
+  test_delegate_->dialog_view()->OnModelUpdated();
+  ExpectViewMatchesModel();
+  ExpectLabelText(
+      u"merchant2.com",
+      SecurePaymentConfirmationDialogView::DialogViewID::MERCHANT_VALUE);
 
   CloseDialogAndWait();
 }

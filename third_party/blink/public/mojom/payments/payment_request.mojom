@@ -150,7 +150,11 @@ struct SecurePaymentConfirmationRequest {
 
   // The origin of the payee that will be displayed in the payment confirmation
   // dialog and will be sent to the authenticator device for signing.
-  url.mojom.Origin payee_origin;
+  url.mojom.Origin? payee_origin;
+
+  // The name of the payee that will be displayed in the payment confirmation
+  // dialog and will be sent to the authenticator device for signing.
+  string? payee_name;
 
   // The relying party ID that must match the relying party of a credential.
   string rp_id;

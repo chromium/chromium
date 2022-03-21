@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace payments {
@@ -36,10 +37,21 @@ class SecurePaymentConfirmationModel {
     merchant_label_ = merchant_label;
   }
 
-  // Label for the merchant row value, e.g. "merchant.com"
-  const std::u16string& merchant_value() const { return merchant_value_; }
-  void set_merchant_value(const std::u16string& merchant_value) {
-    merchant_value_ = merchant_value;
+  // Label for the merchant name, e.g. "Merchant"
+  const absl::optional<std::u16string>& merchant_name() const {
+    return merchant_name_;
+  }
+  void set_merchant_name(const absl::optional<std::u16string>& merchant_name) {
+    merchant_name_ = merchant_name;
+  }
+
+  // Label for the merchant origin, e.g. "merchant.com"
+  const absl::optional<std::u16string>& merchant_origin() const {
+    return merchant_origin_;
+  }
+  void set_merchant_origin(
+      const absl::optional<std::u16string>& merchant_origin) {
+    merchant_origin_ = merchant_origin;
   }
 
   // Label for the instrument row, e.g. "Payment".
@@ -124,7 +136,8 @@ class SecurePaymentConfirmationModel {
   std::u16string title_;
 
   std::u16string merchant_label_;
-  std::u16string merchant_value_;
+  absl::optional<std::u16string> merchant_name_;
+  absl::optional<std::u16string> merchant_origin_;
 
   std::u16string instrument_label_;
   std::u16string instrument_value_;

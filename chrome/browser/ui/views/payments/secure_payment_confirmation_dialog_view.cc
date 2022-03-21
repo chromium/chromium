@@ -165,7 +165,9 @@ void SecurePaymentConfirmationDialogView::OnModelUpdated() {
   SetAccessibleTitle(model_->title());
   UpdateLabelView(DialogViewID::TITLE, model_->title());
   UpdateLabelView(DialogViewID::MERCHANT_LABEL, model_->merchant_label());
-  UpdateLabelView(DialogViewID::MERCHANT_VALUE, model_->merchant_value());
+  UpdateLabelView(
+      DialogViewID::MERCHANT_VALUE,
+      FormatMerchantLabel(model_->merchant_name(), model_->merchant_origin()));
   UpdateLabelView(DialogViewID::INSTRUMENT_LABEL, model_->instrument_label());
   UpdateLabelView(DialogViewID::INSTRUMENT_VALUE, model_->instrument_value());
 
@@ -259,9 +261,10 @@ SecurePaymentConfirmationDialogView::CreateBodyView() {
   title_text->SetID(static_cast<int>(DialogViewID::TITLE));
   body_view->AddChildView(std::move(title_text));
 
-  body_view->AddChildView(
-      CreateRowView(model_->merchant_label(), DialogViewID::MERCHANT_LABEL,
-                    model_->merchant_value(), DialogViewID::MERCHANT_VALUE));
+  body_view->AddChildView(CreateRowView(
+      model_->merchant_label(), DialogViewID::MERCHANT_LABEL,
+      FormatMerchantLabel(model_->merchant_name(), model_->merchant_origin()),
+      DialogViewID::MERCHANT_VALUE));
 
   body_view->AddChildView(
       CreateRowView(model_->instrument_label(), DialogViewID::INSTRUMENT_LABEL,

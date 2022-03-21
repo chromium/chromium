@@ -311,7 +311,8 @@ struct PRFValues {
 struct PaymentOptions {
   payments.mojom.PaymentCurrencyAmount total;
   PaymentCredentialInstrument instrument;
-  url.mojom.Origin payee_origin;
+  string? payee_name;
+  url.mojom.Origin? payee_origin;
 };
 
 // TODO(https://crbug.com/1239249): Move to payment_request.mojom after this

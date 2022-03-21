@@ -20,7 +20,8 @@ TEST_F(SecurePaymentConfirmationModelTest, SmokeTest) {
 
   std::u16string title(u"Use Touch ID to verify and complete your purchase?");
   std::u16string merchant_label(u"Store");
-  std::u16string merchant_value(u"merchant.com");
+  std::u16string merchant_name(u"Test Merchant");
+  std::u16string merchant_origin(u"merchant.com");
   std::u16string instrument_label(u"Payment");
   std::u16string instrument_value(u"Mastercard ****4444");
   SkBitmap instrument_icon;
@@ -35,8 +36,11 @@ TEST_F(SecurePaymentConfirmationModelTest, SmokeTest) {
   model.set_merchant_label(merchant_label);
   EXPECT_EQ(merchant_label, model.merchant_label());
 
-  model.set_merchant_value(merchant_value);
-  EXPECT_EQ(merchant_value, model.merchant_value());
+  model.set_merchant_name(merchant_name);
+  EXPECT_EQ(merchant_name, model.merchant_name());
+
+  model.set_merchant_origin(merchant_origin);
+  EXPECT_EQ(merchant_origin, model.merchant_origin());
 
   model.set_instrument_label(instrument_label);
   EXPECT_EQ(instrument_label, model.instrument_label());

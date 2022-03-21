@@ -80,11 +80,15 @@ void SecurePaymentConfirmationController::
       request_->spec()->method_data().front()->supported_method !=
           methods::kSecurePaymentConfirmation ||
       !request_->spec()->method_data().front()->secure_payment_confirmation ||
-      request_->spec()
-              ->method_data()
-              .front()
-              ->secure_payment_confirmation->payee_origin.scheme() !=
-          url::kHttpsScheme) {
+      (request_->spec()
+           ->method_data()
+           .front()
+           ->secure_payment_confirmation->payee_origin.has_value() &&
+       request_->spec()
+               ->method_data()
+               .front()
+               ->secure_payment_confirmation->payee_origin->scheme() !=
+           url::kHttpsScheme)) {
     OnCancel();
     return;
   }
@@ -99,12 +103,26 @@ void SecurePaymentConfirmationController::
 
   model_.set_merchant_label(
       l10n_util::GetStringUTF16(IDS_SECURE_PAYMENT_CONFIRMATION_STORE_LABEL));
-  model_.set_merchant_value(url_formatter::FormatUrlForSecurityDisplay(
+  absl::optional<std::string>& payee_name =
       request_->spec()
           ->method_data()
           .front()
-          ->secure_payment_confirmation->payee_origin.GetURL(),
-      url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
+          ->secure_payment_confirmation->payee_name;
+  if (payee_name.has_value()) {
+    model_.set_merchant_name(
+        absl::optional<std::u16string>(base::UTF8ToUTF16(payee_name.value())));
+  }
+  absl::optional<url::Origin>& origin =
+      request_->spec()
+          ->method_data()
+          .front()
+          ->secure_payment_confirmation->payee_origin;
+  if (origin.has_value()) {
+    model_.set_merchant_origin(absl::optional<std::u16string>(
+        url_formatter::FormatUrlForSecurityDisplay(
+            origin.value().GetURL(),
+            url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC)));
+  }
 
   model_.set_instrument_label(l10n_util::GetStringUTF16(
       IDS_PAYMENT_REQUEST_PAYMENT_METHOD_SECTION_NAME));

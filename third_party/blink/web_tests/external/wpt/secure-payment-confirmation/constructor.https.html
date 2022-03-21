@@ -303,7 +303,7 @@ test(() => {
     new PaymentRequest([{
       supportedMethods: 'secure-payment-confirmation',
       data: {
-        // Omitted payee origin.
+        // Omitted payee origin and payee name.
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
         challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
         timeout: 60000,
@@ -315,7 +315,86 @@ test(() => {
       },
     }], details);
   });
-}, 'Payee origin is required.');
+}, 'Omitting both payee origin and payee name throws exception.');
+
+test(() => {
+  new PaymentRequest([{
+    supportedMethods: 'secure-payment-confirmation',
+    data: {
+      credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
+      challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+      // Omitted payee origin, instead with payee name.
+      payeeName: 'Example Merchant',
+      timeout: 60000,
+      instrument: {
+        displayName: 'X',
+        icon: 'https://example.test/icon.png',
+      },
+      rpId: 'relying-party.example',
+    },
+  }], details);
+}, 'Payee name without payee origin is valid.');
+
+test(() => {
+  new PaymentRequest([{
+    supportedMethods: 'secure-payment-confirmation',
+    data: {
+      credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
+      challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+      // Both payee origin and payee name.
+      payeeName: 'Example Merchant',
+      payeeOrigin: window.location.origin,
+      timeout: 60000,
+      instrument: {
+        displayName: 'X',
+        icon: 'https://example.test/icon.png',
+      },
+      rpId: 'relying-party.example',
+    },
+  }], details);
+}, 'Providing both payee name and payee origin is valid.');
+
+test(() => {
+  assert_throws_js(TypeError, () => {
+    new PaymentRequest([{
+      supportedMethods: 'secure-payment-confirmation',
+      data: {
+        credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
+        challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+        // Empty payee name
+        payeeName: '',
+        payeeOrigin: window.location.origin,
+        timeout: 60000,
+        instrument: {
+          displayName: 'X',
+          icon: 'https://example.test/icon.png',
+        },
+        rpId: 'relying-party.example',
+      },
+    }], details);
+  });
+}, 'Empty payee name throws exception.');
+
+test(() => {
+  assert_throws_js(TypeError, () => {
+    new PaymentRequest([{
+      supportedMethods: 'secure-payment-confirmation',
+      data: {
+        credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
+        challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+        payeeName: 'Example Merchant',
+        // Empty payee origin
+        payeeOrigin: '',
+        timeout: 60000,
+        instrument: {
+          displayName: 'X',
+          icon: 'https://example.test/icon.png',
+        },
+        rpId: 'relying-party.example',
+      },
+    }], details);
+  });
+}, 'Empty payee origin throws exception.');
 
 test(() => {
   assert_throws_js(TypeError, () => {

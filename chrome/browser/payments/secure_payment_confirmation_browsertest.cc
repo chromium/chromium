@@ -763,6 +763,9 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
   ASSERT_TRUE(cross_origin.has_value()) << response;
   EXPECT_TRUE(cross_origin.value());
 
+  std::string* payee_name = value->FindStringPath("payment.payeeName");
+  ASSERT_EQ(nullptr, payee_name) << response;
+
   std::string* payee_origin = value->FindStringPath("payment.payeeOrigin");
   ASSERT_NE(nullptr, payee_origin) << response;
   EXPECT_EQ(GURL("https://example-payee-origin.test"), GURL(*payee_origin));
@@ -774,6 +777,118 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
   std::string* rp = value->FindStringPath("payment.rp");
   ASSERT_NE(nullptr, rp) << response;
   EXPECT_EQ("a.com", *rp);
+
+  int expected_enroll_histogram_value = 0;
+  ExpectEnrollDialogShown(SecurePaymentConfirmationEnrollDialogShown::kShown,
+                          expected_enroll_histogram_value);
+  ExpectEnrollDialogResult(
+      SecurePaymentConfirmationEnrollDialogResult::kAccepted,
+      expected_enroll_histogram_value);
+  ExpectEnrollSystemPromptResult(
+      SecurePaymentConfirmationEnrollSystemPromptResult::kAccepted, 1);
+  ExpectFunnelCount(SecurePaymentConfirmationSystemPromptResult::kAccepted, 1);
+  ExpectJourneyLoggerEvent(/*spc_confirm_logged=*/true);
+}
+
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
+                       ConfirmPaymentInCrossOriginIframeWithPayeeName) {
+  NavigateTo("a.com", "/secure_payment_confirmation.html");
+  ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
+  std::string credentialIdentifier =
+      content::EvalJs(
+          GetActiveWebContents(),
+          content::JsReplace("createCredentialAndReturnItsIdentifier($1)",
+                             GetDefaultIconURL()))
+          .ExtractString();
+
+  // Load a cross-origin iframe that can initiate SPC.
+  content::WebContents* tab = GetActiveWebContents();
+  GURL iframe_url = https_server()->GetURL(
+      "b.com", "/secure_payment_confirmation_iframe.html");
+  EXPECT_TRUE(content::NavigateIframeToURL(tab, "test", iframe_url));
+
+  test_controller()->SetHasAuthenticator(true);
+  confirm_payment_ = true;
+
+  // Trigger SPC and capture the response.
+  // EvalJs waits for JavaScript promise to resolve.
+  content::RenderFrameHost* iframe = content::FrameMatchingPredicate(
+      tab->GetPrimaryPage(),
+      base::BindRepeating(&content::FrameHasSourceUrl, iframe_url));
+  std::string response =
+      content::EvalJs(iframe,
+                      content::JsReplace("requestPaymentWithPayeeName($1);",
+                                         credentialIdentifier))
+          .ExtractString();
+
+  ASSERT_EQ(std::string::npos, response.find("Error"));
+  absl::optional<base::Value> value = base::JSONReader::Read(response);
+  ASSERT_TRUE(value.has_value());
+  ASSERT_TRUE(value->is_dict());
+
+  std::string* payee_name = value->FindStringPath("payment.payeeName");
+  ASSERT_NE(nullptr, payee_name) << response;
+  EXPECT_EQ("Example Payee", *payee_name);
+
+  std::string* payee_origin = value->FindStringPath("payment.payeeOrigin");
+  ASSERT_EQ(nullptr, payee_origin) << response;
+
+  int expected_enroll_histogram_value = 0;
+  ExpectEnrollDialogShown(SecurePaymentConfirmationEnrollDialogShown::kShown,
+                          expected_enroll_histogram_value);
+  ExpectEnrollDialogResult(
+      SecurePaymentConfirmationEnrollDialogResult::kAccepted,
+      expected_enroll_histogram_value);
+  ExpectEnrollSystemPromptResult(
+      SecurePaymentConfirmationEnrollSystemPromptResult::kAccepted, 1);
+  ExpectFunnelCount(SecurePaymentConfirmationSystemPromptResult::kAccepted, 1);
+  ExpectJourneyLoggerEvent(/*spc_confirm_logged=*/true);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SecurePaymentConfirmationCreationTest,
+    ConfirmPaymentInCrossOriginIframeWithPayeeNameAndOrigin) {
+  NavigateTo("a.com", "/secure_payment_confirmation.html");
+  ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
+  std::string credentialIdentifier =
+      content::EvalJs(
+          GetActiveWebContents(),
+          content::JsReplace("createCredentialAndReturnItsIdentifier($1)",
+                             GetDefaultIconURL()))
+          .ExtractString();
+
+  // Load a cross-origin iframe that can initiate SPC.
+  content::WebContents* tab = GetActiveWebContents();
+  GURL iframe_url = https_server()->GetURL(
+      "b.com", "/secure_payment_confirmation_iframe.html");
+  EXPECT_TRUE(content::NavigateIframeToURL(tab, "test", iframe_url));
+
+  test_controller()->SetHasAuthenticator(true);
+  confirm_payment_ = true;
+
+  // Trigger SPC and capture the response.
+  // EvalJs waits for JavaScript promise to resolve.
+  content::RenderFrameHost* iframe = content::FrameMatchingPredicate(
+      tab->GetPrimaryPage(),
+      base::BindRepeating(&content::FrameHasSourceUrl, iframe_url));
+  std::string response =
+      content::EvalJs(iframe, content::JsReplace(
+                                  "requestPaymentWithPayeeNameAndOrigin($1);",
+                                  credentialIdentifier))
+          .ExtractString();
+
+  ASSERT_EQ(std::string::npos, response.find("Error"));
+  absl::optional<base::Value> value = base::JSONReader::Read(response);
+  ASSERT_TRUE(value.has_value());
+  ASSERT_TRUE(value->is_dict());
+
+  std::string* payee_name = value->FindStringPath("payment.payeeName");
+  ASSERT_NE(nullptr, payee_name) << response;
+  EXPECT_EQ("Example Payee", *payee_name);
+
+  std::string* payee_origin = value->FindStringPath("payment.payeeOrigin");
+  ASSERT_NE(nullptr, payee_origin) << response;
+  EXPECT_EQ(GURL("https://example-payee-origin.test"), GURL(*payee_origin));
 
   int expected_enroll_histogram_value = 0;
   ExpectEnrollDialogShown(SecurePaymentConfirmationEnrollDialogShown::kShown,
