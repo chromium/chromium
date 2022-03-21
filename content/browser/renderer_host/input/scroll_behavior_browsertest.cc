@@ -467,8 +467,9 @@ IN_PROC_BROWSER_TEST_P(ScrollBehaviorBrowserTest,
 
 // This tests that a in-progress smooth scroll on a subframe stops when
 // interrupted by another smooth scroll.
+// Flaky on multiple platforms: crbug.com/1306980
 IN_PROC_BROWSER_TEST_P(ScrollBehaviorBrowserTest,
-                       OneSmoothScriptScrollAbortsAnother_Subframe) {
+                       DISABLED_OneSmoothScriptScrollAbortsAnother_Subframe) {
   LoadURL(kSubframeScrollDataURL);
 
   EXPECT_TRUE(ExecJs(
