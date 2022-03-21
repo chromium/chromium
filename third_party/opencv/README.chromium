@@ -1,12 +1,12 @@
 Name: OpenCV
 Short Name: opencv
 URL: https://opencv.org/releases/
-Version: 4.3.0
-Date: 2020/04/06
+Version: 4.5.5
+Date: 2021/12/30
 License: BSD
 License File: src/LICENSE
 Security Critical: Yes
-CPEPrefix: cpe:/a:opencv:opencv:4.3.0
+CPEPrefix: cpe:/a:opencv:opencv:4.5.5
 
 Description:
 This package includes the Earth Mover's Distance (EMD) implementation from
