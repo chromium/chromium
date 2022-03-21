@@ -2721,6 +2721,72 @@
       },
     },
 
+    'gpu_dawn_telemetry_cts_tests': {
+      'webgpu_cts': {
+        'args': [
+          '--extra-browser-args=--force_high_performance_gpu',
+        ],
+        'linux_args': [
+          '--extra-browser-args=--enable-features=UseSkiaRenderer,Vulkan',
+        ],
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
+        'swarming': {
+          'shards': 4,
+        },
+        # TODO(crbug.com/1297379): Remove this once we actually start running
+        # tests instead of skipping all of them.
+        'experiment_percentage': 100,
+      },
+    },
+
+    'gpu_dawn_telemetry_cts_tests_with_partial_validation': {
+      'webgpu_cts_with_validation': {
+        'args': [
+          '--extra-browser-args=--force_high_performance_gpu',
+          '--is-backend-validation',
+          '--override-timeout=30',
+        ],
+        'linux_args': [
+          '--extra-browser-args=--enable-features=UseSkiaRenderer,Vulkan',
+        ],
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
+        'swarming': {
+          'shards': 4,
+        },
+        'telemetry_test_name': 'webgpu_cts',
+        # TODO(crbug.com/1297379): Remove this once we actually start running
+        # tests instead of skipping all of them.
+        'experiment_percentage': 100,
+      },
+    },
+
+    'gpu_dawn_telemetry_cts_tests_with_validation': {
+      'webgpu_cts_with_validation': {
+        'args': [
+          '--extra-browser-args=--force_high_performance_gpu',
+          '--is-backend-validation',
+          '--override-timeout=30',
+        ],
+        'linux_args': [
+          '--extra-browser-args=--enable-features=UseSkiaRenderer,Vulkan',
+        ],
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
+        'swarming': {
+          'shards': 4,
+        },
+        'telemetry_test_name': 'webgpu_cts',
+        # TODO(crbug.com/1297379): Remove this once we actually start running
+        # tests instead of skipping all of them.
+        'experiment_percentage': 100,
+      },
+    },
+
     'gpu_default_and_optional_win_specific_gtests': {
       'xr_browser_tests': {
         # The Windows machines this is run on should always meet all the
@@ -6200,6 +6266,16 @@
       'gpu_dawn_perf_smoke_isolated_scripts',
       'gpu_webgpu_integration_isolated_scripts',
       'gpu_webgpu_integration_partial_backend_validation_isolated_scripts',
+    ],
+
+    'gpu_dawn_telemetry_cts_regular_and_partial_validation': [
+      'gpu_dawn_telemetry_cts_tests',
+      'gpu_dawn_telemetry_cts_tests_with_partial_validation',
+    ],
+
+    'gpu_dawn_telemetry_cts_regular_and_validation': [
+      'gpu_dawn_telemetry_cts_tests',
+      'gpu_dawn_telemetry_cts_tests_with_validation',
     ],
 
     'gpu_desktop_mac_gtests': [
