@@ -33,7 +33,17 @@ class ScopedSigStopper {
 
 base::ScopedFD OpenProcMem(pid_t pid);
 
+// Reads remove process memory from |fd| at |address| into |buffer|.
 bool ReadMemory(int fd, unsigned long address, size_t size, char* buffer);
+
+// Creates a RW memory mapping at |address|, or returns nullptr.
+char* CreateMappingAtAddress(uintptr_t address, size_t size);
+
+// Reads page-aligned memory from a remote process pointed at by |fd| at
+// |address| in both address spaces, or returns nullptr.
+char* ReadAtSameAddressInLocalMemory(int fd,
+                                     unsigned long address,
+                                     size_t size);
 
 uintptr_t IndexThreadCacheNeedleArray(pid_t pid, int mem_fd, size_t index);
 
@@ -56,6 +66,12 @@ class RawBuffer {
       return absl::nullopt;
 
     return {buf};
+  }
+
+  static RawBuffer<T> FromData(const void* data) {
+    RawBuffer<T> ret;
+    memcpy(ret.buffer_, data, sizeof(T));
+    return ret;
   }
 
  private:

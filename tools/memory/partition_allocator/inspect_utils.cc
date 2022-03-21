@@ -4,6 +4,8 @@
 
 #include "tools/memory/partition_allocator/inspect_utils.h"
 
+#include <sys/mman.h>
+
 #include "base/allocator/partition_allocator/thread_cache.h"
 #include "base/debug/proc_maps_linux.h"
 #include "base/logging.h"
@@ -27,6 +29,48 @@ bool ReadMemory(int fd, unsigned long address, size_t size, char* buffer) {
     return true;
   }
   return false;
+}
+
+char* CreateMappingAtAddress(uintptr_t address, size_t size) {
+  CHECK_EQ(0u, address % base::SystemPageSize());
+  CHECK_EQ(0u, size % base::SystemPageSize());
+  // Not using MAP_FIXED since it would *overwrite* an existing
+  // mapping. Instead, just provide a hint address, which will be used if
+  // possible.
+  void* local_memory =
+      mmap(reinterpret_cast<void*>(address), size, PROT_READ | PROT_WRITE,
+           MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
+  if (local_memory == MAP_FAILED) {
+    LOG(WARNING) << "Cannot map memory at required address";
+    return nullptr;
+  }
+  if (local_memory != reinterpret_cast<void*>(address)) {
+    LOG(WARNING) << "Mapping successful, but not at the desired address. "
+                 << "Retry to get better luck with ASLR?";
+    munmap(local_memory, size);
+    return nullptr;
+  }
+
+  return reinterpret_cast<char*>(local_memory);
+}
+
+char* ReadAtSameAddressInLocalMemory(int fd,
+                                     unsigned long address,
+                                     size_t size) {
+  // Try to allocate data in the local address space.
+  char* local_memory = CreateMappingAtAddress(address, size);
+  if (!local_memory)
+    return nullptr;
+
+  bool ok =
+      ReadMemory(fd, address, size, reinterpret_cast<char*>(local_memory));
+
+  if (!ok) {
+    munmap(local_memory, size);
+    return nullptr;
+  }
+
+  return reinterpret_cast<char*>(local_memory);
 }
 
 uintptr_t IndexThreadCacheNeedleArray(pid_t pid, int mem_fd, size_t index) {
