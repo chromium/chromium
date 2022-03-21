@@ -48,6 +48,21 @@ namespace {
 
 using ::testing::UnorderedElementsAre;
 
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+// Different platforms may execute float models slightly differently, and this
+// results in a pretty big difference in the scores. This matcher offers up to
+// 0.1 of absolute difference in score, but the topic itself must match.
+// See crbug.com/1307251.
+testing::Matcher<WeightedIdentifier> CrossPlatformMatcher(
+    const WeightedIdentifier& wi) {
+  return testing::AllOf(
+      testing::Property(&WeightedIdentifier::value, wi.value()),
+      testing::Property(
+          &WeightedIdentifier::weight,
+          testing::DoubleNear(wi.weight(), /*max_abs_error=*/0.1)));
+}
+#endif
+
 }  // namespace
 
 class FakePageTextService : public mojom::PageTextService {
@@ -255,29 +270,32 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServicePageTopicsBrowserTest,
   EXPECT_EQ(results[0].input(), "youtube com");
   EXPECT_EQ(results[0].type(), AnnotationType::kPageTopics);
   ASSERT_TRUE(results[0].topics());
-  EXPECT_THAT(*results[0].topics(), testing::ElementsAreArray({
-                                        WeightedIdentifier(250, 0.601997),
-                                        WeightedIdentifier(43, 0.915914),
-                                    }));
+  EXPECT_THAT(*results[0].topics(),
+              testing::ElementsAreArray({
+                  CrossPlatformMatcher(WeightedIdentifier(250, 0.601997)),
+                  CrossPlatformMatcher(WeightedIdentifier(43, 0.915914)),
+              }));
 
   EXPECT_EQ(results[1].input(), "chrome com");
   EXPECT_EQ(results[1].type(), AnnotationType::kPageTopics);
   ASSERT_TRUE(results[1].topics());
-  EXPECT_THAT(*results[1].topics(), testing::ElementsAreArray({
-                                        WeightedIdentifier(223, 0.209933),
-                                        WeightedIdentifier(43, 0.474946),
-                                        WeightedIdentifier(148, 0.881723),
-                                    }));
+  EXPECT_THAT(*results[1].topics(),
+              testing::ElementsAreArray({
+                  CrossPlatformMatcher(WeightedIdentifier(223, 0.209933)),
+                  CrossPlatformMatcher(WeightedIdentifier(43, 0.474946)),
+                  CrossPlatformMatcher(WeightedIdentifier(148, 0.881723)),
+              }));
 
   EXPECT_EQ(results[2].input(), "music youtube com");
   EXPECT_EQ(results[2].type(), AnnotationType::kPageTopics);
   ASSERT_TRUE(results[2].topics());
-  EXPECT_THAT(*results[2].topics(), testing::ElementsAreArray({
-                                        WeightedIdentifier(250, 0.450154),
-                                        WeightedIdentifier(1, 0.518014),
-                                        WeightedIdentifier(43, 0.596481),
-                                        WeightedIdentifier(23, 0.827426),
-                                    }));
+  EXPECT_THAT(*results[2].topics(),
+              testing::ElementsAreArray({
+                  CrossPlatformMatcher(WeightedIdentifier(250, 0.450154)),
+                  CrossPlatformMatcher(WeightedIdentifier(1, 0.518014)),
+                  CrossPlatformMatcher(WeightedIdentifier(43, 0.596481)),
+                  CrossPlatformMatcher(WeightedIdentifier(23, 0.827426)),
+              }));
 }
 #endif
 
