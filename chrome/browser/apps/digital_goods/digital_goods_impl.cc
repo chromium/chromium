@@ -60,29 +60,10 @@ void DigitalGoodsImpl::GetDetails(const std::vector<std::string>& item_ids,
                                     std::move(callback));
 }
 
-void DigitalGoodsImpl::Acknowledge(const std::string& purchase_token,
-                                   bool make_available_again,
-                                   AcknowledgeCallback callback) {
-  auto* digital_goods_service = GetArcDigitalGoodsBridge();
-
-  if (!digital_goods_service) {
-    std::move(callback).Run(
-        payments::mojom::BillingResponseCode::kClientAppUnavailable);
-    return;
-  }
-
-  const std::string package_name =
-      apps::GetTwaPackageName(&render_frame_host());
-  const std::string scope = apps::GetScope(&render_frame_host());
-  if (package_name.empty() || scope.empty()) {
-    LogErrorState(package_name, scope);
-    std::move(callback).Run(
-        payments::mojom::BillingResponseCode::kClientAppUnavailable);
-    return;
-  }
-
-  digital_goods_service->Acknowledge(package_name, scope, purchase_token,
-                                     make_available_again, std::move(callback));
+arc::ArcDigitalGoodsBridge::ListPurchasesCallback transform(
+    DigitalGoodsImpl::ListPurchasesCallback callback) {
+  // TODO(jshikaram)
+  return arc::ArcDigitalGoodsBridge::ListPurchasesCallback();
 }
 
 void DigitalGoodsImpl::ListPurchases(ListPurchasesCallback callback) {
@@ -107,7 +88,17 @@ void DigitalGoodsImpl::ListPurchases(ListPurchasesCallback callback) {
   }
 
   digital_goods_service->ListPurchases(package_name, scope,
-                                       std::move(callback));
+                                       transform(std::move(callback)));
+}
+
+void DigitalGoodsImpl::ListPurchaseHistory(
+    ListPurchaseHistoryCallback callback) {
+  // TODO(jshikaram)
+}
+
+void DigitalGoodsImpl::Consume(const std::string& purchase_token,
+                               ConsumeCallback callback) {
+  // TODO(jshikaram)
 }
 
 // Private methods:

@@ -17,10 +17,9 @@ import androidx.annotation.VisibleForTesting;
 import androidx.browser.trusted.TrustedWebActivityCallback;
 
 import org.chromium.base.Log;
-import org.chromium.mojo_base.mojom.TimeDelta;
 import org.chromium.payments.mojom.BillingResponseCode;
 import org.chromium.payments.mojom.DigitalGoods.ListPurchases_Response;
-import org.chromium.payments.mojom.PurchaseDetails;
+import org.chromium.payments.mojom.PurchaseReference;
 import org.chromium.payments.mojom.PurchaseState;
 
 /**
@@ -76,36 +75,23 @@ class ListPurchasesConverter {
                 int code = args.getInt(KEY_RESPONSE_CODE);
                 Parcelable[] array = args.getParcelableArray(KEY_PURCHASES_LIST);
 
-                PurchaseDetails[] details = convertParcelableArray(
+                PurchaseReference[] reference = convertParcelableArray(
                         array, ListPurchasesConverter::convertPurchaseDetails)
-                                                    .toArray(new PurchaseDetails[0]);
-                callback.call(convertResponseCode(code, args), details);
+                                                        .toArray(new PurchaseReference[0]);
+                callback.call(convertResponseCode(code, args), reference);
             }
         };
     }
 
-    static PurchaseDetails convertPurchaseDetails(Bundle purchase) {
+    /** Convert a PurchaseDetails bundle into a PurchaseReference object. */
+    static PurchaseReference convertPurchaseDetails(Bundle purchase) {
         if (!checkField(purchase, KEY_ITEM_ID, String.class)) return null;
         if (!checkField(purchase, KEY_PURCHASE_TOKEN, String.class)) return null;
-        if (!checkField(purchase, KEY_ACKNOWLEDGED, Boolean.class)) return null;
-        if (!checkField(purchase, KEY_PURCHASE_STATE, Integer.class)) return null;
-        if (!checkField(purchase, KEY_PURCHASE_TIME_MICROSECONDS_PAST_UNIX_EPOCH, Long.class)) {
-            return null;
-        }
-        if (!checkField(purchase, KEY_WILL_AUTO_RENEW, Boolean.class)) return null;
 
-        TimeDelta purchaseTime = new TimeDelta();
-        purchaseTime.microseconds =
-                purchase.getLong(KEY_PURCHASE_TIME_MICROSECONDS_PAST_UNIX_EPOCH);
-
-        PurchaseDetails result = new PurchaseDetails();
+        PurchaseReference result = new PurchaseReference();
 
         result.itemId = purchase.getString(KEY_ITEM_ID);
         result.purchaseToken = purchase.getString(KEY_PURCHASE_TOKEN);
-        result.acknowledged = purchase.getBoolean(KEY_ACKNOWLEDGED);
-        result.purchaseState = convertPurchaseState(purchase.getInt(KEY_PURCHASE_STATE));
-        result.purchaseTime = purchaseTime;
-        result.willAutoRenew = purchase.getBoolean(KEY_WILL_AUTO_RENEW);
 
         return result;
     }
@@ -122,11 +108,11 @@ class ListPurchasesConverter {
     }
 
     static void returnClientAppUnavailable(ListPurchases_Response callback) {
-        callback.call(BillingResponseCode.CLIENT_APP_UNAVAILABLE, new PurchaseDetails[0]);
+        callback.call(BillingResponseCode.CLIENT_APP_UNAVAILABLE, new PurchaseReference[0]);
     }
 
     static void returnClientAppError(ListPurchases_Response callback) {
-        callback.call(BillingResponseCode.CLIENT_APP_ERROR, new PurchaseDetails[0]);
+        callback.call(BillingResponseCode.CLIENT_APP_ERROR, new PurchaseReference[0]);
     }
 
     @VisibleForTesting

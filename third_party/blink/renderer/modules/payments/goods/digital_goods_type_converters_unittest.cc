@@ -108,23 +108,24 @@ TEST(DigitalGoodsTypeConvertersTest, NullMojoItemDetailsToIdl) {
   EXPECT_EQ(idl_item_details, nullptr);
 }
 
-TEST(DigitalGoodsTypeConvertersTest, MojoPurchaseDetailsToIdl) {
-  auto mojo_purchase_details = payments::mojom::blink::PurchaseDetails::New();
+TEST(DigitalGoodsTypeConvertersTest, MojoPurchaseReferenceToIdl) {
+  auto mojo_purchase_reference =
+      payments::mojom::blink::PurchaseReference::New();
   const String item_id = "shiny-sword-id";
   const String purchase_token = "purchase-token-for-shiny-sword";
 
-  mojo_purchase_details->item_id = item_id;
-  mojo_purchase_details->purchase_token = purchase_token;
+  mojo_purchase_reference->item_id = item_id;
+  mojo_purchase_reference->purchase_token = purchase_token;
 
-  auto* idl_purchase_details = mojo_purchase_details.To<PurchaseDetails*>();
+  auto* idl_purchase_details = mojo_purchase_reference.To<PurchaseDetails*>();
   EXPECT_EQ(idl_purchase_details->itemId(), item_id);
   EXPECT_EQ(idl_purchase_details->purchaseToken(), purchase_token);
 }
 
-TEST(DigitalGoodsTypeConvertersTest, NullMojoPurchaseDetailsToIdl) {
-  payments::mojom::blink::PurchaseDetailsPtr mojo_purchase_details;
+TEST(DigitalGoodsTypeConvertersTest, NullMojoPurchaseReferenceToIdl) {
+  payments::mojom::blink::PurchaseReferencePtr mojo_purchase_reference;
 
-  auto* idl_purchase_details = mojo_purchase_details.To<PurchaseDetails*>();
+  auto* idl_purchase_details = mojo_purchase_reference.To<PurchaseDetails*>();
   EXPECT_EQ(idl_purchase_details, nullptr);
 }
 

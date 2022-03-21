@@ -45,14 +45,15 @@ void OnGetDetailsResponse(
 void OnListPurchasesResponse(
     ScriptPromiseResolver* resolver,
     BillingResponseCode code,
-    Vector<payments::mojom::blink::PurchaseDetailsPtr> purchase_details_list) {
+    Vector<payments::mojom::blink::PurchaseReferencePtr>
+        purchase_reference_list) {
   if (code != BillingResponseCode::kOk) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kOperationError, mojo::ConvertTo<String>(code)));
     return;
   }
   HeapVector<Member<PurchaseDetails>> blink_purchase_details_list;
-  for (const auto& details : purchase_details_list) {
+  for (const auto& details : purchase_reference_list) {
     blink::PurchaseDetails* blink_details =
         details.To<blink::PurchaseDetails*>();
     if (blink_details) {
@@ -120,14 +121,8 @@ ScriptPromise DigitalGoodsService::consume(ScriptState* script_state,
     return promise;
   }
 
-  // Implement `consume` functionality using existing `acknowledge` mojo call
-  // with `make_available_again` always true. This is defined to use up an item
-  // in the same way as `consume`.
-  // TODO(crbug.com/1250604): Replace with `consume` mojo call when available.
-  bool make_available_again = true;
-  mojo_service_->Acknowledge(
-      purchase_token, make_available_again,
-      WTF::Bind(&OnConsumeResponse, WrapPersistent(resolver)));
+  mojo_service_->Consume(
+      purchase_token, WTF::Bind(&OnConsumeResponse, WrapPersistent(resolver)));
   return promise;
 }
 

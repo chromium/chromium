@@ -13,7 +13,6 @@ import org.chromium.base.Log;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClientWrappers;
 import org.chromium.components.embedder_support.util.Origin;
-import org.chromium.payments.mojom.DigitalGoods.Acknowledge_Response;
 import org.chromium.payments.mojom.DigitalGoods.GetDetails_Response;
 import org.chromium.payments.mojom.DigitalGoods.ListPurchases_Response;
 
@@ -43,16 +42,6 @@ public class DigitalGoodsAdapter {
         Runnable onUnavailable = () -> GetDetailsConverter.returnClientAppUnavailable(response);
 
         execute(scope, COMMAND_GET_DETAILS, args, callback, onError, onUnavailable);
-    }
-
-    public void acknowledge(Uri scope, String purchaseToken, boolean makeAvailableAgain,
-            Acknowledge_Response response) {
-        Bundle args = AcknowledgeConverter.convertParams(purchaseToken, makeAvailableAgain);
-        TrustedWebActivityCallback callback = AcknowledgeConverter.convertCallback(response);
-        Runnable onError = () -> AcknowledgeConverter.returnClientAppError(response);
-        Runnable onUnavailable = () -> AcknowledgeConverter.returnClientAppUnavailable(response);
-
-        execute(scope, COMMAND_ACKNOWLEDGE, args, callback, onError, onUnavailable);
     }
 
     public void listPurchases(Uri scope, ListPurchases_Response response) {

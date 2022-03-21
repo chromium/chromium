@@ -29,10 +29,10 @@ class DigitalGoodsImpl : public content::DocumentUserData<DigitalGoodsImpl>,
   // payments::mojom::DigitalGoods overrides.
   void GetDetails(const std::vector<std::string>& item_ids,
                   GetDetailsCallback callback) override;
-  void Acknowledge(const std::string& purchase_token,
-                   bool make_available_again,
-                   AcknowledgeCallback callback) override;
   void ListPurchases(ListPurchasesCallback callback) override;
+  void ListPurchaseHistory(ListPurchaseHistoryCallback callback) override;
+  void Consume(const std::string& purchase_token,
+               ConsumeCallback callback) override;
 
  private:
   explicit DigitalGoodsImpl(content::RenderFrameHost* render_frame_host);

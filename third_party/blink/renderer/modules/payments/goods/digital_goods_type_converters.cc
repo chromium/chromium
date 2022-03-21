@@ -12,7 +12,7 @@ namespace mojo {
 using payments::mojom::blink::BillingResponseCode;
 using payments::mojom::blink::CreateDigitalGoodsResponseCode;
 using payments::mojom::blink::ItemDetailsPtr;
-using payments::mojom::blink::PurchaseDetailsPtr;
+using payments::mojom::blink::PurchaseReferencePtr;
 
 WTF::String TypeConverter<WTF::String, CreateDigitalGoodsResponseCode>::Convert(
     const CreateDigitalGoodsResponseCode& input) {
@@ -78,8 +78,8 @@ WTF::String TypeConverter<WTF::String, BillingResponseCode>::Convert(
 }
 
 blink::PurchaseDetails*
-TypeConverter<blink::PurchaseDetails*, PurchaseDetailsPtr>::Convert(
-    const PurchaseDetailsPtr& input) {
+TypeConverter<blink::PurchaseDetails*, PurchaseReferencePtr>::Convert(
+    const PurchaseReferencePtr& input) {
   if (!input)
     return nullptr;
   blink::PurchaseDetails* output = blink::PurchaseDetails::Create();

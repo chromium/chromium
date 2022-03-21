@@ -154,8 +154,7 @@ digital_goods_test(async service => {
   const response = await service.consume('token1');
   assert_equals(response, undefined);
 }, {
-  // Consume should currently do "acknowledge repeatable" on mojo backend.
-  expectedAction: 'acknowledge:token1 true',
+  expectedAction: 'consume:token1',
   title: 'Consume a purchase token.'
 });
 
@@ -176,10 +175,14 @@ digital_goods_test(async service => {
 
   assert_equals(response[0].itemId, 'id:0');
   assert_equals(response[0].purchaseToken, 'purchaseToken:0');
+  // Should not have DGAPI v1 fields exposed.
+  assert_equals(response[0].acknowledged, undefined);
 
   assert_equals(response[1].itemId, 'id:1');
   assert_equals(response[1].purchaseToken, 'purchaseToken:1');
 }, {title: 'ListPurchases round trip.'});
+
+// TODO (crbug.com/1250604): Add ListPurchaseHistory test with blink impl.
 
 digital_goods_test(async service => {
   const response1 = await service.getDetails(['id1']);

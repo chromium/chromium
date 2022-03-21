@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.browserservices.digitalgoods;
 
 import org.chromium.mojo.system.MojoException;
 import org.chromium.payments.mojom.DigitalGoods;
-import org.chromium.payments.mojom.DigitalGoods.Acknowledge_Response;
 import org.chromium.payments.mojom.DigitalGoods.GetDetails_Response;
 import org.chromium.payments.mojom.DigitalGoods.ListPurchases_Response;
 import org.chromium.payments.mojom.ItemDetails;
@@ -54,11 +53,13 @@ class FakeDigitalGoods implements DigitalGoods {
     }
 
     @Override
-    public void acknowledge(
-            String purchaseToken, boolean makeAvailableAgain, Acknowledge_Response callback) {}
+    public void listPurchases(ListPurchases_Response callback) {}
 
     @Override
-    public void listPurchases(ListPurchases_Response callback) {}
+    public void listPurchaseHistory(ListPurchaseHistory_Response callback) {}
+
+    @Override
+    public void consume(String purchaseToken, Consume_Response callback) {}
 
     @Override
     public void close() {}

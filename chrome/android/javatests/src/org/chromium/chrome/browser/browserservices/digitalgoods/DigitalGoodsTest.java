@@ -9,7 +9,6 @@ import static org.junit.Assert.assertEquals;
 import static org.chromium.chrome.browser.browserservices.TestTrustedWebActivityService.COMMAND_SET_RESPONSE;
 import static org.chromium.chrome.browser.browserservices.TestTrustedWebActivityService.SET_RESPONSE_BUNDLE;
 import static org.chromium.chrome.browser.browserservices.TestTrustedWebActivityService.SET_RESPONSE_NAME;
-import static org.chromium.chrome.browser.browserservices.digitalgoods.AcknowledgeConverter.RESPONSE_ACKNOWLEDGE;
 
 import android.net.Uri;
 import android.os.Build;
@@ -165,40 +164,6 @@ public class DigitalGoodsTest {
         waitForNonNull("itemDetails");
 
         assertEquals("\"Item 1\"", exec("itemDetails[0].title"));
-    }
-
-    /**
-     * Tests that consume works correctly.
-     */
-    @Test
-    @MediumTest
-    public void consume() throws TimeoutException {
-        DigitalGoodsFactoryImpl.setDigitalGoodsForTesting(createFixedDigitalGoods());
-
-        // Consume JS method currently results in a mojo call to Acknowledge.
-        setTwaServiceResponse(RESPONSE_ACKNOWLEDGE, AcknowledgeConverter.createResponseBundle(0));
-
-        exec("populateDigitalGoodsService()");
-        waitForNonNull("digitalGoodsService");
-        exec("callConsume('sku')");
-        waitForNonNull("consumeFlag");
-    }
-
-    /**
-     * Tests that consume throws when acknowledge gives a non-zero response code.
-     */
-    @Test
-    @MediumTest
-    public void consume_failsOnNonZeroResponse() throws TimeoutException {
-        DigitalGoodsFactoryImpl.setDigitalGoodsForTesting(createFixedDigitalGoods());
-
-        // Consume JS method currently results in a mojo call to Acknowledge.
-        setTwaServiceResponse(RESPONSE_ACKNOWLEDGE, AcknowledgeConverter.createResponseBundle(1));
-
-        exec("populateDigitalGoodsService()");
-        waitForNonNull("digitalGoodsService");
-        exec("callConsume('sku')");
-        waitForNonNull("consumeError");
     }
 
     private DigitalGoodsImpl createFixedDigitalGoods() {

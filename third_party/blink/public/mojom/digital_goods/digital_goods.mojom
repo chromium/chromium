@@ -14,6 +14,7 @@ module payments.mojom;
 
 import "components/payments/mojom/payment_request_data.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "url/mojom/url.mojom";
 
 // https://github.com/WICG/digital-goods/blob/main/explainer.md
 
@@ -23,19 +24,22 @@ interface DigitalGoods {
   GetDetails(array<string> item_ids)
       => (BillingResponseCode code, array<ItemDetails> item_details_list);
 
-  // Informs the associated backend that the purchase identified by
-  // |purchase_token| was successfully acknowledged. If |make_available_again|
-  // is true, indicates that the purchase is repeatable (e.g. a consumable
-  // item). If it is false, indicates that the purchase is one-off (e.g. a
-  // permanent upgrade).
-  Acknowledge(string purchase_token, bool make_available_again)
-      => (BillingResponseCode code);
-
   // Queries the associated backend for information on all items that are
-  // currently owned by the user.
+  // currently owned by the user. May include unconfirmed purchases.
   ListPurchases()
       => (BillingResponseCode code,
-          array<PurchaseDetails> purchase_details_list);
+          array<PurchaseReference> purchase_reference_list);
+
+  // Queries the associated backend for information on the latest purchase for
+  // each item type ever purchased by the user. May include expired or consumed
+  // purchases.
+  ListPurchaseHistory()
+      => (BillingResponseCode code,
+          array<PurchaseReference> purchase_reference_list);
+
+  // Informs the associated backend that the purchase identified by
+  // |purchase_token| was used up.
+  Consume(string purchase_token) => (BillingResponseCode code);
 };
 
 // Allow the renderer to request a |DigitalGoods| instance. DigitalGoods
@@ -60,6 +64,13 @@ enum BillingResponseCode {
   kClientAppError,
 };
 
+[Extensible, Stable]
+enum ItemType {
+  kUnknown,
+  kProduct,
+  kSubscription,
+};
+
 [Stable]
 struct ItemDetails {
   string item_id;
@@ -72,6 +83,10 @@ struct ItemDetails {
   string? free_trial_period;
   PaymentCurrencyAmount? introductory_price;
   string? introductory_price_period;
+  // Set to 0 for no introductory cycles.
+  [MinVersion=1] uint32 introductory_price_cycles;
+  [MinVersion=1] ItemType type;
+  [MinVersion=1] array<url.mojom.Url>? icon_urls;
 };
 
 [Extensible]
@@ -82,6 +97,13 @@ enum CreateDigitalGoodsResponseCode {
   kUnsupportedContext,
 };
 
+[Stable]
+struct PurchaseReference {
+  string item_id;
+  string purchase_token;
+};
+
+// Deprecated, but still used by components/arc/mojom/digital_goods.mojom
 [Stable]
 struct PurchaseDetails {
   string item_id;

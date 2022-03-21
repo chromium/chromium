@@ -37,14 +37,14 @@ struct MODULES_EXPORT
       const payments::mojom::blink::BillingResponseCode& input);
 };
 
-// Converts a mojo PurchaseDetails into a WebIDL PurchaseDetails.
+// Converts a mojo PurchaseReference into a WebIDL PurchaseDetails.
 // Returns a null IDL struct when a null mojo struct is given as input.
 template <>
 struct MODULES_EXPORT
     TypeConverter<blink::PurchaseDetails*,
-                  payments::mojom::blink::PurchaseDetailsPtr> {
+                  payments::mojom::blink::PurchaseReferencePtr> {
   static blink::PurchaseDetails* Convert(
-      const payments::mojom::blink::PurchaseDetailsPtr& input);
+      const payments::mojom::blink::PurchaseReferencePtr& input);
 };
 
 }  // namespace mojo
