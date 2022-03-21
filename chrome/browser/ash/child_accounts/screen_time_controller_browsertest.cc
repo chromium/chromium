@@ -487,9 +487,8 @@ IN_PROC_BROWSER_TEST_F(ScreenTimeControllerTest, DefaultBedtime) {
   }
 }
 
-// Disabled because of flakiness crbug.com/1021505
 // Tests the default time window limit.
-IN_PROC_BROWSER_TEST_F(ScreenTimeControllerTest, DISABLED_DefaultDailyLimit) {
+IN_PROC_BROWSER_TEST_F(ScreenTimeControllerTest, DefaultDailyLimit) {
   LogInChildAndSetupClockWithTime("1 Jan 2018 10:00:00 GMT");
   ScreenLockerTester().Lock();
 
@@ -547,10 +546,8 @@ IN_PROC_BROWSER_TEST_F(ScreenTimeControllerTest, DISABLED_DefaultDailyLimit) {
   }
 }
 
-// Disabled because of flakiness crbug.com/1021505
 // Tests that the bedtime locks an active session when it is reached.
-IN_PROC_BROWSER_TEST_F(ScreenTimeControllerTest,
-                       DISABLED_ActiveSessionBedtime) {
+IN_PROC_BROWSER_TEST_F(ScreenTimeControllerTest, ActiveSessionBedtime) {
   LogInChildAndSetupClockWithTime("1 Jan 2018 10:00:00 PST");
 
   system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"PST");
@@ -580,10 +577,8 @@ IN_PROC_BROWSER_TEST_F(ScreenTimeControllerTest,
   EXPECT_TRUE(IsAuthEnabled());
 }
 
-// Disabled because of flakiness crbug.com/1021505
 // Tests that the daily limit locks the device when it is reached.
-IN_PROC_BROWSER_TEST_F(ScreenTimeControllerTest,
-                       DISABLED_ActiveSessionDailyLimit) {
+IN_PROC_BROWSER_TEST_F(ScreenTimeControllerTest, ActiveSessionDailyLimit) {
   LogInChildAndSetupClockWithTime("1 Jan 2018 10:00:00 PST");
 
   system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"PST");
@@ -715,9 +710,8 @@ IN_PROC_BROWSER_TEST_F(ScreenTimeControllerTest,
   EXPECT_FALSE(IsAuthEnabled());
 }
 
-// Disabled because of flakiness crbug.com/1021505
 // Tests if call the observers for usage time limit warning.
-IN_PROC_BROWSER_TEST_F(ScreenTimeControllerTest, DISABLED_CallObservers) {
+IN_PROC_BROWSER_TEST_F(ScreenTimeControllerTest, CallObservers) {
   LogInChildAndSetupClockWithTime("1 Jan 2018 10:00:00 PST");
 
   system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"PST");
