@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/task/common/task_annotator.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/host_port_pair.h"
@@ -52,6 +53,21 @@ void ResolveHostClientImpl::OnComplete(
     const absl::optional<net::AddressList>& resolved_addresses) {
   UMA_HISTOGRAM_TIMES("Navigation.Preconnect.ResolveHostLatency",
                       base::TimeTicks::Now() - resolve_host_start_time_);
+
+  auto* task = base::TaskAnnotator::CurrentTaskForThread();
+  // As this method is executed as a callback from a Mojo call, it should be
+  // executed via RunTask() and thus have a non-delayed PendingTask associated
+  // with it.
+  DCHECK(task);
+  DCHECK(task->delayed_run_time.is_null());
+
+  // The task will have a null |queue_time| if run synchronously (this happens
+  // in unit tests, for example).
+  base::TimeTicks queue_time =
+      !task->queue_time.is_null() ? task->queue_time : base::TimeTicks::Now();
+  UMA_HISTOGRAM_TIMES("Navigation.Preconnect.ResolveHostCallbackQueueingTime",
+                      base::TimeTicks::Now() - queue_time);
+
   std::move(callback_).Run(result == net::OK);
 }
 
