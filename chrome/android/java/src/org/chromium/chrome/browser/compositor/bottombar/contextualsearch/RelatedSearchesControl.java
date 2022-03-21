@@ -565,6 +565,7 @@ public class RelatedSearchesControl {
                 @Override
                 public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                     if (newState == RecyclerView.SCROLL_STATE_DRAGGING) mScrolled = true;
+                    if (newState == RecyclerView.SCROLL_STATE_IDLE) invalidate(false);
                 }
             });
         }
