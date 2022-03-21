@@ -201,8 +201,7 @@ sync_pb::AppListSpecifics::ColorGroup CalculateBackgroundColorGroup(
   sync_pb::AppListSpecifics::ColorGroup top_group = sync_pb::AppListSpecifics::
       ColorGroup::AppListSpecifics_ColorGroup_COLOR_BLACK;
   current = reinterpret_cast<SkColor*>(source.getAddr32(width / 2, 0));
-  const int row_bytes = source.rowBytes();
-  for (int y = 0; y < height; ++y, current += row_bytes) {
+  for (int y = 0; y < height; ++y, current += width) {
     if (SkColorGetA(*current) < SK_AlphaOPAQUE) {
       continue;
     } else {
