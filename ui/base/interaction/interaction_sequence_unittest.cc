@@ -1239,6 +1239,39 @@ TEST(InteractionSequenceTest, CustomEventDuringCallbackSameView) {
                           element2.Show());
 }
 
+TEST(InteractionSequenceTest, ElementHiddenDuringElementShownCallback) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+
+  test::TestElement element1(kTestIdentifier1, kTestContext1);
+  test::TestElement element2(kTestIdentifier2, kTestContext1);
+  element1.Show();
+
+  auto hide_element = [&](InteractionSequence*, TrackedElement*) {
+    element2.Hide();
+  };
+
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetAbortedCallback(aborted.Get())
+          .SetCompletedCallback(completed.Get())
+          .AddStep(InteractionSequence::WithInitialElement(&element1))
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element2.identifier())
+                       .SetType(InteractionSequence::StepType::kShown)
+                       .SetStartCallback(
+                           base::BindLambdaForTesting(std::move(hide_element)))
+                       .Build())
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element2.identifier())
+                       .SetType(InteractionSequence::StepType::kHidden)
+                       .Build())
+          .Build();
+
+  sequence->Start();
+  EXPECT_CALL_IN_SCOPE(completed, Run, element2.Show());
+}
+
 TEST(InteractionSequenceTest, HideAfterActivateDoesntAbort) {
   UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
   UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);

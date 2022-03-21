@@ -434,7 +434,16 @@ void InteractionSequence::OnElementHidden(TrackedElement* element) {
       if (it->second.get())
         return;
     }
-    DoStepTransition(element);
+
+    // We can get this situation when an element goes away during a step
+    // callback, before we've actually staged the following hide step. At this
+    // point it's not valid to do a transition, so we'll mark that the next
+    // transition has happened.
+    if (processing_step_) {
+      trigger_during_callback_ = true;
+    } else {
+      DoStepTransition(element);
+    }
   }
 }
 
@@ -627,7 +636,8 @@ void InteractionSequence::StageNextStep() {
 
   Step* const next = next_step();
   DCHECK(!trigger_during_callback_ || next->type == StepType::kActivated ||
-         next->type == StepType::kCustomEvent);
+         next->type == StepType::kCustomEvent ||
+         next->type == StepType::kHidden);
 
   // Note that if the target element for the next step was activated and then
   // hidden during the previous step transition, `next_element` could be null.
@@ -676,7 +686,9 @@ void InteractionSequence::StageNextStep() {
       }
       break;
     case StepType::kHidden:
-      if (!next_element && !next->transition_only_on_event) {
+      if (trigger_during_callback_ ||
+          (!next_element && !next->transition_only_on_event)) {
+        trigger_during_callback_ = false;
         DoStepTransition(nullptr);
       } else {
         DCHECK(next_element || !next->uses_named_element());
