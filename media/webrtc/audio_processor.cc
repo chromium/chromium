@@ -42,23 +42,17 @@ constexpr int kBuffersPerSecond = 100;  // 10 ms per buffer.
 // is the type webrtc::AudioProcessing deals in. The array is refreshed on every
 // channel_ptrs() call, and will be valid until the underlying AudioBus pointers
 // are changed, e.g. through calls to SetChannelData() or SwapChannels().
-// After construction, all methods are called on a single sequence.
 class AudioProcessorCaptureBus {
  public:
   AudioProcessorCaptureBus(int channels, int frames)
       : bus_(media::AudioBus::Create(channels, frames)),
         channel_ptrs_(new float*[channels]) {
     bus_->Zero();
-    DETACH_FROM_SEQUENCE(sequence_checker_);
   }
 
-  media::AudioBus* bus() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return bus_.get();
-  }
+  media::AudioBus* bus() { return bus_.get(); }
 
   float* const* channel_ptrs() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     for (int i = 0; i < bus_->channels(); ++i) {
       channel_ptrs_[i] = bus_->channel(i);
     }
@@ -66,7 +60,6 @@ class AudioProcessorCaptureBus {
   }
 
  private:
-  SEQUENCE_CHECKER(sequence_checker_);
   std::unique_ptr<media::AudioBus> bus_;
   std::unique_ptr<float*[]> channel_ptrs_;
 };
@@ -75,7 +68,7 @@ class AudioProcessorCaptureBus {
 // It avoids the FIFO when the source and destination frames match. If
 // |source_channels| is larger than |destination_channels|, only the first
 // |destination_channels| are kept from the source.
-// After construction, all methods are called sequentially.
+// Does not support concurrent access.
 class AudioProcessorCaptureFifo {
  public:
   AudioProcessorCaptureFifo(int source_channels,
@@ -108,12 +101,9 @@ class AudioProcessorCaptureFifo {
       fifo_ =
           std::make_unique<media::AudioFifo>(destination_channels, fifo_frames);
     }
-
-    DETACH_FROM_SEQUENCE(sequence_checker_);
   }
 
   void Push(const media::AudioBus& source, base::TimeDelta audio_delay) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #if DCHECK_IS_ON()
     DCHECK_EQ(source.channels(), source_channels_);
     DCHECK_EQ(source.frames(), source_frames_);
@@ -146,8 +136,6 @@ class AudioProcessorCaptureFifo {
   // consumed, and otherwise false.
   bool Consume(AudioProcessorCaptureBus** destination,
                base::TimeDelta* audio_delay) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
     if (fifo_) {
       if (fifo_->frames() < destination_->bus()->frames())
         return false;
@@ -169,7 +157,6 @@ class AudioProcessorCaptureFifo {
   }
 
  private:
-  SEQUENCE_CHECKER(sequence_checker_);
 #if DCHECK_IS_ON()
   const int source_channels_;
   const int source_frames_;
