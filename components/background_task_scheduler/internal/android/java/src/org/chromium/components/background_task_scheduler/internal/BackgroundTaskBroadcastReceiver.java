@@ -149,11 +149,12 @@ public class BackgroundTaskBroadcastReceiver extends BroadcastReceiver {
         }
 
         // Keep the CPU on through a wake lock.
+        PowerManager.WakeLock wakeLock = null;
         PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-        PowerManager.WakeLock wakeLock =
-                powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, WAKELOCK_TAG);
-        wakeLock.acquire(MAX_TIMEOUT_MS);
-
+        if (powerManager != null) {
+            wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, WAKELOCK_TAG);
+            wakeLock.acquire(MAX_TIMEOUT_MS);
+        }
         TaskExecutor taskExecutor = new TaskExecutor(context, wakeLock, taskParams, backgroundTask);
         PostTask.postTask(UiThreadTaskTraits.BEST_EFFORT, taskExecutor::execute);
     }
