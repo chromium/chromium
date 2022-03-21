@@ -83,11 +83,9 @@ class CaptureWindowActivationDelegate : public ::wm::ActivationDelegate {
 std::unique_ptr<aura::Window> CreateCaptureWindow(
     aura::Window* context_root,
     aura::WindowDelegate* delegate) {
-  static CaptureWindowActivationDelegate* activation_delegate_instance = NULL;
-  if (!activation_delegate_instance)
-    activation_delegate_instance = new CaptureWindowActivationDelegate;
-  std::unique_ptr<aura::Window> window =
-      std::make_unique<aura::Window>(delegate);
+  static CaptureWindowActivationDelegate* activation_delegate_instance =
+      new CaptureWindowActivationDelegate();
+  auto window = std::make_unique<aura::Window>(delegate);
   // Set type of window as popup to prevent different window manager codes
   // trying to manage this window.
   window->SetType(aura::client::WINDOW_TYPE_POPUP);
@@ -104,10 +102,9 @@ std::unique_ptr<aura::Window> CreateCaptureWindow(
 
 DragDropTracker::DragDropTracker(aura::Window* context_root,
                                  CancelDragDropCallback callback)
-    : tracker_window_delegate_(new DragDropTrackerDelegate(callback)) {
-  capture_window_ =
-      CreateCaptureWindow(context_root, tracker_window_delegate_.get());
-}
+    : tracker_window_delegate_(new DragDropTrackerDelegate(callback)),
+      capture_window_(
+          CreateCaptureWindow(context_root, tracker_window_delegate_.get())) {}
 
 DragDropTracker::~DragDropTracker() {
   capture_window_->ReleaseCapture();
