@@ -13022,7 +13022,7 @@ void RenderFrameHostImpl::DisableWebRtcEventLogOutput(int lid) {
   GetPeerConnectionTrackerHost().StopEventLog(lid);
 }
 
-bool RenderFrameHostImpl::IsDocumentOnLoadCompletedInPrimaryMainFrame() {
+bool RenderFrameHostImpl::IsDocumentOnLoadCompletedInMainFrame() {
   return GetPage().is_on_load_completed_in_main_document();
 }
 

@@ -164,7 +164,7 @@ void OomInterventionTabHelper::DidStartNavigation(
 }
 
 void OomInterventionTabHelper::PrimaryPageChanged(content::Page& page) {
-  if (!page.GetMainDocument().IsDocumentOnLoadCompletedInPrimaryMainFrame())
+  if (!page.GetMainDocument().IsDocumentOnLoadCompletedInMainFrame())
     return;
   if (IsLastVisibleWebContents(web_contents()))
     StartMonitoringIfNeeded();
