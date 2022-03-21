@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/session/user_session_initializer.h"
 
+#include "ash/components/audio/cras_audio_handler.h"
 #include "ash/components/peripheral_notification/peripheral_notification_manager.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -109,18 +110,6 @@ void OnGotNSSCertDatabaseForUser(net::NSSCertDatabase* database) {
     return;
 
   NetworkCertLoader::Get()->SetUserNSSDB(database);
-}
-
-void OnNoiseCancellationSupportedRetrieved(
-    absl::optional<bool> noise_cancellation_supported) {
-  if (noise_cancellation_supported.has_value() &&
-      noise_cancellation_supported.value()) {
-    PrefService* local_state = g_browser_process->local_state();
-    const bool noise_cancellation_enabled =
-        local_state->GetBoolean(prefs::kInputNoiseCancellationEnabled);
-    chromeos::CrasAudioClient::Get()->SetNoiseCancellationEnabled(
-        noise_cancellation_enabled);
-  }
 }
 
 }  // namespace
@@ -290,8 +279,7 @@ void UserSessionInitializer::OnUserSessionStarted(bool is_primary_user) {
     PciguardClient::Get()->SendExternalPciDevicesPermissionState(
         chromeos::settings::PeripheralDataAccessHandler::GetPrefState());
 
-    chromeos::CrasAudioClient::Get()->GetNoiseCancellationSupported(
-        base::BindOnce(&OnNoiseCancellationSupportedRetrieved));
+    CrasAudioHandler::Get()->RefreshNoiseCancellationState();
   }
 }
 

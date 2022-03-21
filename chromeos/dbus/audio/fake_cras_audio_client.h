@@ -120,6 +120,10 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
     notify_volume_change_with_delay_ = notify_with_delay;
   }
 
+  bool noise_cancellation_enabled() const {
+    return noise_cancellation_enabled_;
+  }
+
  private:
   // Finds a node in the list based on the id.
   AudioNodeList::iterator FindNode(uint64_t node_id);
@@ -134,6 +138,7 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
   bool noise_cancellation_supported_ = false;
   uint32_t battery_level_ = 0;
   uint32_t noise_cancellation_enabled_counter_ = 0;
+  bool noise_cancellation_enabled_ = false;
   // Maps audio client type to the number of active input streams for clients
   // with the type specified
   ClientTypeToInputStreamCount active_input_streams_;
