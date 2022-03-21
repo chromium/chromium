@@ -104,6 +104,10 @@ MockDataHostManager::MockDataHostManager() = default;
 
 MockDataHostManager::~MockDataHostManager() = default;
 
+MockAttributionObserver::MockAttributionObserver() = default;
+
+MockAttributionObserver::~MockAttributionObserver() = default;
+
 base::GUID DefaultExternalReportID() {
   return base::GUID::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e");
 }

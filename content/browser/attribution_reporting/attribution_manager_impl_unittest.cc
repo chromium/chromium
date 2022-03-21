@@ -101,38 +101,6 @@ AggregatableReport CreateExampleAggregatableReport() {
   return AggregatableReport(std::move(payloads), shared_info.SerializeAsJson());
 }
 
-class MockAttributionObserver : public AttributionObserver {
- public:
-  MOCK_METHOD(void, OnSourcesChanged, (), (override));
-
-  MOCK_METHOD(void,
-              OnReportsChanged,
-              (AttributionReport::ReportType report_type),
-              (override));
-
-  MOCK_METHOD(void,
-              OnSourceHandled,
-              (const StorableSource& source, StorableSource::Result result),
-              (override));
-
-  MOCK_METHOD(void,
-              OnSourceDeactivated,
-              (const DeactivatedSource& source),
-              (override));
-
-  MOCK_METHOD(void,
-              OnReportSent,
-              (const AttributionReport& report,
-               bool is_debug_report,
-               const SendResult& info),
-              (override));
-
-  MOCK_METHOD(void,
-              OnTriggerHandled,
-              (const CreateReportResult& result),
-              (override));
-};
-
 // Time after impression that a conversion can first be sent. See
 // AttributionStorageDelegateImpl::GetReportTimeForConversion().
 constexpr base::TimeDelta kFirstReportingWindow = base::Days(2);
