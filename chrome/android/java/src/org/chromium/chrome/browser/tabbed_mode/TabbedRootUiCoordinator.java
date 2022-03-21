@@ -129,8 +129,6 @@ import org.chromium.ui.util.TokenHolder;
  * A {@link RootUiCoordinator} variant that controls tabbed-mode specific UI.
  */
 public class TabbedRootUiCoordinator extends RootUiCoordinator {
-    private static boolean sEnableStatusIndicatorForTests;
-
     private final ObservableSupplierImpl<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
     private final RootUiTabObserver mRootUiTabObserver;
     private TabbedSystemUiCoordinator mSystemUiCoordinator;
@@ -732,9 +730,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private void initStatusIndicatorCoordinator(LayoutManagerImpl layoutManager) {
         // TODO(crbug.com/1035584): Disable on tablets for now as we need to do one or two extra
         // things for tablets.
-        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)
-                || (!ChromeFeatureList.isEnabled(ChromeFeatureList.OFFLINE_INDICATOR_V2)
-                        && !sEnableStatusIndicatorForTests)) {
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
             return;
         }
 
@@ -753,11 +749,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         };
         mStatusIndicatorCoordinator.addObserver(mStatusIndicatorObserver);
         mStatusIndicatorCoordinator.addObserver(mStatusBarColorController);
-
-        // Don't initialize the offline indicator controller if the feature is disabled.
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.OFFLINE_INDICATOR_V2)) {
-            return;
-        }
 
         ObservableSupplierImpl<Boolean> isUrlBarFocusedSupplier = new ObservableSupplierImpl<>();
         isUrlBarFocusedSupplier.set(mToolbarManager.isUrlBarFocused());
@@ -843,11 +834,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     @VisibleForTesting
     public StatusIndicatorCoordinator getStatusIndicatorCoordinatorForTesting() {
         return mStatusIndicatorCoordinator;
-    }
-
-    @VisibleForTesting
-    public static void setEnableStatusIndicatorForTests(boolean disable) {
-        sEnableStatusIndicatorForTests = disable;
     }
 
     @VisibleForTesting

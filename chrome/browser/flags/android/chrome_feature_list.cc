@@ -246,7 +246,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kLocationBarModelOptimizations,
     &kNewWindowAppMenu,
     &kNotificationPermissionVariant,
-    &kOfflineIndicatorV2,
     &kPageAnnotationsService,
     &kBookmarksImprovedSaveFlow,
     &kBookmarksRefresh,
@@ -683,9 +682,6 @@ const base::Feature kNotificationPermissionVariant{
 
 const base::Feature kInstanceSwitcher{"InstanceSwitcher",
                                       base::FEATURE_ENABLED_BY_DEFAULT};
-
-const base::Feature kOfflineIndicatorV2{"OfflineIndicatorV2",
-                                        base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kPageAnnotationsService{"PageAnnotationsService",
                                             base::FEATURE_DISABLED_BY_DEFAULT};

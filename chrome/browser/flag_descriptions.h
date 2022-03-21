@@ -1913,9 +1913,6 @@ extern const char kMessagesForAndroidUpdatePasswordDescription[];
 extern const char kNewWindowAppMenuName[];
 extern const char kNewWindowAppMenuDescription[];
 
-extern const char kOfflineIndicatorV2Name[];
-extern const char kOfflineIndicatorV2Description[];
-
 extern const char kOfflinePagesLivePageSharingName[];
 extern const char kOfflinePagesLivePageSharingDescription[];
 

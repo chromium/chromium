@@ -24,7 +24,6 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.hamcrest.TypeSafeMatcher;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -47,7 +46,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.RecentTabsPageTestUtils;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
@@ -59,7 +57,6 @@ import org.chromium.ui.test.util.UiRestriction;
 // clang-format off
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Features.DisableFeatures({ChromeFeatureList.OFFLINE_INDICATOR_V2})
 // TODO(crbug.com/1035584): Enable for tablets once we support them.
 @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
 public class StatusIndicatorTest {
@@ -75,7 +72,6 @@ public class StatusIndicatorTest {
 
     @Before
     public void setUp() throws InterruptedException {
-        TabbedRootUiCoordinator.setEnableStatusIndicatorForTests(true);
         mActivityTestRule.startMainActivityOnBlankPage();
         mStatusIndicatorCoordinator = ((TabbedRootUiCoordinator) mActivityTestRule.getActivity()
                                                .getRootUiCoordinatorForTesting())
@@ -83,11 +79,6 @@ public class StatusIndicatorTest {
         mStatusIndicatorSceneLayer = mStatusIndicatorCoordinator.getSceneLayer();
         mControlContainer = mActivityTestRule.getActivity().findViewById(R.id.control_container);
         mBrowserControlsStateProvider = mActivityTestRule.getActivity().getBrowserControlsManager();
-    }
-
-    @After
-    public void tearDown() {
-        TabbedRootUiCoordinator.setEnableStatusIndicatorForTests(false);
     }
 
     @Test
