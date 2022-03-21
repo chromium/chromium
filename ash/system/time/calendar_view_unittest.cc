@@ -971,7 +971,8 @@ class CalendarViewAnimationTest : public AshTestBase {
 };
 
 // The header should show the new header with animation when there's an update.
-TEST_F(CalendarViewAnimationTest, HeaderAnimation) {
+// TODO(https://crbug.com/1270161): test is flaky.
+TEST_F(CalendarViewAnimationTest, DISABLED_HeaderAnimation) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
