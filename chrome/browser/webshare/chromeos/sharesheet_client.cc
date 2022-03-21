@@ -111,8 +111,8 @@ void ScheduleSharedFileDirectoryDeletion(std::vector<base::FilePath> file_paths,
 crosapi::mojom::IntentPtr CreateCrosapiShareIntentFromFiles(
     const std::vector<base::FilePath>& file_paths,
     const std::vector<std::string>& mime_types,
-    const std::string& share_text,
-    const std::string& share_title) {
+    const std::string& text,
+    const std::string& title) {
   DCHECK_EQ(file_paths.size(), mime_types.size());
 
   std::vector<crosapi::mojom::IntentFilePtr> files;
@@ -121,6 +121,15 @@ crosapi::mojom::IntentPtr CreateCrosapiShareIntentFromFiles(
     files.push_back(
         crosapi::mojom::IntentFile::New(file_paths[index], mime_types[index]));
   }
+
+  // Always share text and/or files.
+  absl::optional<std::string> share_text;
+  if (!text.empty() || file_paths.empty())
+    share_text = text;
+
+  absl::optional<std::string> share_title;
+  if (!title.empty())
+    share_title = title;
 
   const char* action = file_paths.size() <= 1
                            ? apps_util::kIntentActionSend
@@ -348,6 +357,8 @@ void SharesheetClient::ShowSharesheet(
   }
   crosapi::mojom::IntentPtr intent =
       CreateCrosapiShareIntentFromFiles(file_paths, content_types, text, title);
+  DCHECK(intent->share_text.has_value() || !intent->files->empty());
+
   service->GetRemote<crosapi::mojom::Sharesheet>()->ShowBubble(
       lacros_window_utility::GetRootWindowUniqueId(
           web_contents->GetTopLevelNativeWindow()),
@@ -364,6 +375,7 @@ void SharesheetClient::ShowSharesheet(
       (*intent->files)[index]->file_size = file_sizes[index];
     }
   }
+  DCHECK(intent->share_text.has_value() || !intent->files->empty());
 
   sharesheet::SharesheetService* const sharesheet_service =
       sharesheet::SharesheetServiceFactory::GetForProfile(profile);
