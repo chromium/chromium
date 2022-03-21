@@ -261,12 +261,13 @@ TEST_F(PrefetchProxyCanaryCheckerTest, CacheHit) {
   EXPECT_FALSE(checker->IsActive());
 }
 
-#if BUILDFLAG(IS_WIN)
+#if (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX))
 #define MAYBE_NetworkConnectionShardsCache DISABLED_NetworkConnectionShardsCache
 #else
 #define MAYBE_NetworkConnectionShardsCache NetworkConnectionShardsCache
 #endif
 // TODO(crbug.com/1307697): Disabled due to failures on win-asan.
+// TODO(crbug.com/1307470): Disabled due to flakes on linux and chromeos.
 TEST_F(PrefetchProxyCanaryCheckerTest, MAYBE_NetworkConnectionShardsCache) {
   network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
       network::mojom::ConnectionType::CONNECTION_3G);
