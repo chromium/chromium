@@ -34,7 +34,7 @@ namespace {
 const char* usage_msg =
     "usage: image_processor_test\n"
     "[--gtest_help] [--help] [-v=<level>] [--vmodule=<config>] "
-    "[--save_images]\n";
+    "[--save_images] [--source_directory=<dir>]\n";
 
 const char* help_msg =
     "Run the image processor tests.\n\n"
@@ -44,9 +44,17 @@ const char* help_msg =
     "   -v                   enable verbose mode, e.g. -v=2.\n"
     "  --vmodule             enable verbose mode for the specified module.\n"
     "  --save_images         write images processed by a image processor to\n"
-    "                        the \"<testname>\" folder.\n";
+    "                        the \"<testname>\" folder.\n"
+    "  --source_directory    specify the directory that contains test source\n"
+    "                        files. Defaults to the current directory.\n";
 
 bool g_save_images = false;
+base::FilePath g_source_directory =
+    base::FilePath(base::FilePath::kCurrentDirectory);
+
+base::FilePath BuildSourceFilePath(const base::FilePath& filename) {
+  return media::g_source_directory.Append(filename);
+}
 
 media::test::VideoTestEnvironment* g_env;
 
@@ -247,8 +255,8 @@ class ImageProcessorParamTest
 TEST_P(ImageProcessorParamTest, ConvertOneTime_MemToMem) {
   // Load the test input image. We only need the output image's metadata so we
   // can compare checksums.
-  test::Image input_image(std::get<0>(GetParam()));
-  test::Image output_image(std::get<1>(GetParam()));
+  test::Image input_image(BuildSourceFilePath(std::get<0>(GetParam())));
+  test::Image output_image(BuildSourceFilePath(std::get<1>(GetParam())));
   ASSERT_TRUE(input_image.Load());
   ASSERT_TRUE(output_image.LoadMetadata());
   auto ip_client = CreateImageProcessorClient(
@@ -270,8 +278,8 @@ TEST_P(ImageProcessorParamTest, ConvertOneTime_MemToMem) {
 TEST_P(ImageProcessorParamTest, ConvertOneTime_DmabufToMem) {
   // Load the test input image. We only need the output image's metadata so we
   // can compare checksums.
-  test::Image input_image(std::get<0>(GetParam()));
-  test::Image output_image(std::get<1>(GetParam()));
+  test::Image input_image(BuildSourceFilePath(std::get<0>(GetParam())));
+  test::Image output_image(BuildSourceFilePath(std::get<1>(GetParam())));
   ASSERT_TRUE(input_image.Load());
   ASSERT_TRUE(output_image.LoadMetadata());
   if (!IsFormatTestedForDmabufAndGbm(input_image.PixelFormat()))
@@ -292,8 +300,8 @@ TEST_P(ImageProcessorParamTest, ConvertOneTime_DmabufToMem) {
 TEST_P(ImageProcessorParamTest, ConvertOneTime_DmabufToDmabuf) {
   // Load the test input image. We only need the output image's metadata so we
   // can compare checksums.
-  test::Image input_image(std::get<0>(GetParam()));
-  test::Image output_image(std::get<1>(GetParam()));
+  test::Image input_image(BuildSourceFilePath(std::get<0>(GetParam())));
+  test::Image output_image(BuildSourceFilePath(std::get<1>(GetParam())));
   ASSERT_TRUE(input_image.Load());
   ASSERT_TRUE(output_image.LoadMetadata());
   if (!IsFormatTestedForDmabufAndGbm(input_image.PixelFormat()))
@@ -318,8 +326,8 @@ TEST_P(ImageProcessorParamTest, ConvertOneTime_DmabufToDmabuf) {
 TEST_P(ImageProcessorParamTest, ConvertOneTime_GmbToGmb) {
   // Load the test input image. We only need the output image's metadata so we
   // can compare checksums.
-  test::Image input_image(std::get<0>(GetParam()));
-  test::Image output_image(std::get<1>(GetParam()));
+  test::Image input_image(BuildSourceFilePath(std::get<0>(GetParam())));
+  test::Image output_image(BuildSourceFilePath(std::get<1>(GetParam())));
   ASSERT_TRUE(input_image.Load());
   ASSERT_TRUE(output_image.LoadMetadata());
   if (!IsFormatTestedForDmabufAndGbm(input_image.PixelFormat())) {
@@ -437,6 +445,8 @@ int main(int argc, char** argv) {
 
     if (it->first == "save_images") {
       media::g_save_images = true;
+    } else if (it->first == "source_directory") {
+      media::g_source_directory = base::FilePath(it->second);
     } else {
       std::cout << "unknown option: --" << it->first << "\n"
                 << media::usage_msg;
