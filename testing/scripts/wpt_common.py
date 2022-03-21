@@ -128,31 +128,26 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
             os.path.join(layout_test_results, 'results.html'))
 
         if self.wptreport:
+            command = [
+                sys.executable,
+                os.path.join(BLINK_TOOLS_DIR, 'wpt_process_results.py'),
+                '--verbose',
+                '--web-tests-dir',
+                WEB_TESTS_DIR,
+                '--artifacts-dir',
+                os.path.join(os.path.dirname(self.wpt_output),
+                             self.layout_test_results_subdir),
+                '--wpt-report',
+                self.wptreport,
+            ]
+            common.run_command(command)
             self._process_wpt_report(self.wptreport)
-
-    def get_wpt_revision(self):
-        path_to_version = os.path.join(WEB_TESTS_DIR, 'external', 'Version')
-        with open(path_to_version) as f:
-            for line in f.readlines():
-                if line.startswith("Version:"):
-                    rev = line[len("Version:"):].strip()
-                    return rev
-        return None
 
     def _process_wpt_report(self, wptreport):
         layout_test_results = os.path.join(os.path.dirname(self.wpt_output),
                                            self.layout_test_results_subdir)
         dst = os.path.join(layout_test_results,
                            os.path.basename(wptreport))
-        with open(wptreport) as f_src, open(dst, "w") as f_dst:
-            data = json.load(f_src)
-            # update revision to use upstream revision
-            rev = self.get_wpt_revision()
-            if rev:
-                data["run_info"]["revision"] = rev
-            # dump the result to layout-test-results
-            json.dump(data, f_dst)
-
         # upload the report to ResultDB
         artifact = {
             os.path.basename(wptreport): {
