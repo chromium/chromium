@@ -307733,6 +307733,14 @@
        "59f67be3cf929d89ecc6ec8598ee7276b1648fa3",
        []
       ],
+      "multiple-early-hints-responses.h2.py": [
+       "70f2476016cf4715d7ec36b8ac136e6f6b4c3676",
+       []
+      ],
+      "multiple-early-hints-responses.html": [
+       "3be2852348ba800662fa2caf626654b2f40b5902",
+       []
+      ],
       "preload-initiator-type.html": [
        "0fdeb2b9037be8785880f71045a9facbc85fb394",
        []
@@ -312117,6 +312125,10 @@
      "906de0c95aeb58e24d1b7e779f1ed99de40d7af1",
      []
     ],
+    "link-header-preload-non-html-expected.txt": [
+     "9e7a1306db01759f0cbf99ef887f3632aa1c698b",
+     []
+    ],
     "link-header-preload-nonce.html.headers": [
      "a54b69378e9cc785ee02ec4a37694f90c366403b",
      []
@@ -312188,6 +312200,10 @@
      ],
      "dummy.xml.sub.headers": [
       "360e6686bfb65ed33d811d15e1ba7183a736d552",
+      []
+     ],
+     "echo-preload-header.py": [
+      "5cfb9e8c259a05d0b4646c49bea449b4244ae3b9",
       []
      ],
      "echo-with-cors.py": [
@@ -473999,6 +474015,24 @@
        }
       ]
      ],
+     "multiple-early-hints-responses.h2.window.js": [
+      "24230c07f503a2145ddccc575526426e9dd40e51",
+      [
+       "loading/early-hints/multiple-early-hints-responses.h2.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/early-hints-helpers.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
      "preload-initiator-type.h2.window.js": [
       "959aacef4978b935b44fec694d5f3ca3cb074485",
       [
@@ -485101,6 +485135,20 @@
        {}
       ]
      ],
+     "fcp-document-opacity-image.html": [
+      "7f211324761b4f63995ee00f40c0af0a7dc27488",
+      [
+       null,
+       {}
+      ]
+     ],
+     "fcp-document-opacity-text.html": [
+      "12384d5585ec9769606fc3e646ce17077b455188",
+      [
+       null,
+       {}
+      ]
+     ],
      "fcp-gradient.html": [
       "c1e147472ff076cb2aa72b7dfc45cd6d3a00ed34",
       [
@@ -489010,6 +489058,15 @@
      [
       null,
       {}
+     ]
+    ],
+    "link-header-preload-non-html.html": [
+     "c990e610d9c1f7305b85111e59d36b96352a8a03",
+     [
+      null,
+      {
+       "timeout": "long"
+      }
      ]
     ],
     "link-header-preload-nonce.html": [
