@@ -65,8 +65,11 @@ public class PowerMonitor {
         }, powerConnectedFilter);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            PowerMonitorForQ.addThermalStatusListener(
-                    (PowerManager) context.getSystemService(Context.POWER_SERVICE));
+            PowerManager powerManager =
+                    (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+            if (powerManager != null) {
+                PowerMonitorForQ.addThermalStatusListener(powerManager);
+            }
         }
     }
 
@@ -118,9 +121,11 @@ public class PowerMonitor {
         // created now.
         if (sInstance == null) create();
 
-        return ApiHelperForQ.getCurrentThermalStatus(
+        PowerManager powerManager =
                 (PowerManager) ContextUtils.getApplicationContext().getSystemService(
-                        Context.POWER_SERVICE));
+                        Context.POWER_SERVICE);
+        if (powerManager == null) return -1;
+        return ApiHelperForQ.getCurrentThermalStatus(powerManager);
     }
 
     @NativeMethods
