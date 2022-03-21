@@ -15,7 +15,8 @@ namespace blink {
 namespace {
 
 // 50ms is the overall best performing value in our experiments.
-const base::TimeDelta kMaxRenderingDelay = base::Milliseconds(50);
+const base::TimeDelta kMaxRenderingDelayForFontPreloads =
+    base::Milliseconds(50);
 
 class ImperativeFontLoadFinishedCallback final
     : public GarbageCollected<ImperativeFontLoadFinishedCallback>,
@@ -34,13 +35,13 @@ class ImperativeFontLoadFinishedCallback final
   void NotifyLoaded(FontFace*) final {
     DCHECK(document_->GetRenderBlockingResourceManager());
     document_->GetRenderBlockingResourceManager()
-        ->ImperativeFontLoadingFinished();
+        ->RemoveImperativeFontLoading();
   }
 
   void NotifyError(FontFace*) final {
     DCHECK(document_->GetRenderBlockingResourceManager());
     document_->GetRenderBlockingResourceManager()
-        ->ImperativeFontLoadingFinished();
+        ->RemoveImperativeFontLoading();
   }
 
   Member<Document> document_;
@@ -54,7 +55,7 @@ RenderBlockingResourceManager::RenderBlockingResourceManager(Document& document)
           document.GetTaskRunner(TaskType::kInternalFrameLifecycleControl),
           this,
           &RenderBlockingResourceManager::FontPreloadingTimerFired),
-      font_preload_timeout_(kMaxRenderingDelay) {}
+      font_preload_timeout_(kMaxRenderingDelayForFontPreloads) {}
 
 void RenderBlockingResourceManager::AddPendingPreload(
     const LinkLoaderClient& link,
@@ -72,7 +73,7 @@ void RenderBlockingResourceManager::AddPendingPreload(
   }
 }
 
-void RenderBlockingResourceManager::ImperativeFontLoadingStarted(
+void RenderBlockingResourceManager::AddImperativeFontLoading(
     FontFace* font_face) {
   if (font_face->LoadStatus() != FontFace::kLoading)
     return;
@@ -98,7 +99,7 @@ void RenderBlockingResourceManager::RemovePendingPreload(
   document_->RenderBlockingResourceUnblocked();
 }
 
-void RenderBlockingResourceManager::ImperativeFontLoadingFinished() {
+void RenderBlockingResourceManager::RemoveImperativeFontLoading() {
   if (font_preload_timer_has_fired_)
     return;
   DCHECK(imperative_font_loading_count_);

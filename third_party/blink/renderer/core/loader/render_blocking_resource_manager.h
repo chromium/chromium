@@ -56,10 +56,9 @@ class CORE_EXPORT RenderBlockingResourceManager final
   void AddPendingPreload(const LinkLoaderClient& link, PreloadType type);
   void RemovePendingPreload(const LinkLoaderClient& link);
 
-  // TODO(xiaochengh): Rename these methods to be consistent with the others.
+  void AddImperativeFontLoading(FontFace*);
+  void RemoveImperativeFontLoading();
   void FontPreloadingTimerFired(TimerBase*);
-  void ImperativeFontLoadingStarted(FontFace*);
-  void ImperativeFontLoadingFinished();
 
   void Trace(Visitor* visitor) const;
 

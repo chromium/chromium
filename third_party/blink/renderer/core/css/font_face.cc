@@ -949,7 +949,7 @@ void FontFace::DidBeginImperativeLoad() {
   DomWindow()
       ->document()
       ->GetRenderBlockingResourceManager()
-      ->ImperativeFontLoadingStarted(this);
+      ->AddImperativeFontLoading(this);
 }
 
 FontMetricsOverride FontFace::GetFontMetricsOverride() const {
