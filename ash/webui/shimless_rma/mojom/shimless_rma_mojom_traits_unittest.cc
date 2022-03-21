@@ -189,7 +189,13 @@ TEST_F(ShimlessRmaMojoToProtoTest, ErrorsMatch) {
        {mojom::RmadErrorCode::kDaemonInitializationFailed,
         rmad::RmadErrorCode::RMAD_ERROR_DAEMON_INITIALIZATION_FAILED},
        {mojom::RmadErrorCode::kUpdateRoFirmwareFailed,
-        rmad::RmadErrorCode::RMAD_ERROR_UPDATE_RO_FIRMWARE_FAILED}});
+        rmad::RmadErrorCode::RMAD_ERROR_UPDATE_RO_FIRMWARE_FAILED},
+       {mojom::RmadErrorCode::kWpEnabled,
+        rmad::RmadErrorCode::RMAD_ERROR_WP_ENABLED},
+       {mojom::RmadErrorCode::kCannotWrite,
+        rmad::RmadErrorCode::RMAD_ERROR_CANNOT_WRITE},
+       {mojom::RmadErrorCode::kCannotSaveLog,
+        rmad::RmadErrorCode::RMAD_ERROR_CANNOT_SAVE_LOG}});
 
   TestProtoToMojo(enums);
   TestMojoToProto(enums);

@@ -174,6 +174,15 @@ enum RmadErrorCode {
 
   // Update RO firmware failed.
   kUpdateRoFirmwareFailed = 40,
+
+  // WP is expected to be disabled, but it is enabled.
+  kWpEnabled = 41,
+
+  // Unable to write data.
+  kCannotWrite = 42,
+
+  // Failed to save logs.
+  kCannotSaveLog = 43,
 };
 
 // TODO(gavindodd): This is copied from

@@ -207,6 +207,12 @@ MojomRmadErrorCode EnumTraits<MojomRmadErrorCode, ProtoRmadErrorCode>::ToMojom(
       return MojomRmadErrorCode::kDaemonInitializationFailed;
     case ProtoRmadErrorCode::RMAD_ERROR_UPDATE_RO_FIRMWARE_FAILED:
       return MojomRmadErrorCode::kUpdateRoFirmwareFailed;
+    case ProtoRmadErrorCode::RMAD_ERROR_WP_ENABLED:
+      return MojomRmadErrorCode::kWpEnabled;
+    case ProtoRmadErrorCode::RMAD_ERROR_CANNOT_WRITE:
+      return MojomRmadErrorCode::kCannotWrite;
+    case ProtoRmadErrorCode::RMAD_ERROR_CANNOT_SAVE_LOG:
+      return MojomRmadErrorCode::kCannotSaveLog;
 
     case ProtoRmadErrorCode::RMAD_ERROR_NOT_SET:
     default:
@@ -348,6 +354,15 @@ bool EnumTraits<MojomRmadErrorCode, ProtoRmadErrorCode>::FromMojom(
       return true;
     case MojomRmadErrorCode::kUpdateRoFirmwareFailed:
       *out = ProtoRmadErrorCode::RMAD_ERROR_UPDATE_RO_FIRMWARE_FAILED;
+      return true;
+    case MojomRmadErrorCode::kWpEnabled:
+      *out = ProtoRmadErrorCode::RMAD_ERROR_WP_ENABLED;
+      return true;
+    case MojomRmadErrorCode::kCannotWrite:
+      *out = ProtoRmadErrorCode::RMAD_ERROR_CANNOT_WRITE;
+      return true;
+    case MojomRmadErrorCode::kCannotSaveLog:
+      *out = ProtoRmadErrorCode::RMAD_ERROR_CANNOT_SAVE_LOG;
       return true;
 
     case MojomRmadErrorCode::kNotSet:
