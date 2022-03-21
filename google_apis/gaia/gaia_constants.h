@@ -28,7 +28,6 @@ extern const char kDeviceManagementServiceOAuth[];
 extern const char kAnyApiOAuth2Scope[];
 extern const char kChromeSyncOAuth2Scope[];
 extern const char kChromeSyncSupervisedOAuth2Scope[];
-extern const char kKidManagementOAuth2Scope[];
 extern const char kKidManagementPrivilegedOAuth2Scope[];
 extern const char kKidsSupervisionSetupChildOAuth2Scope[];
 extern const char kGoogleTalkOAuth2Scope[];

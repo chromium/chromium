@@ -153,7 +153,6 @@ EduCoexistenceLoginHandler::EduCoexistenceLoginHandler(
 
   OAuth2AccessTokenManager::ScopeSet scopes;
   scopes.insert(GaiaConstants::kKidsSupervisionSetupChildOAuth2Scope);
-  scopes.insert(GaiaConstants::kKidManagementOAuth2Scope);
   scopes.insert(GaiaConstants::kAccountsReauthOAuth2Scope);
   scopes.insert(GaiaConstants::kAuditRecordingOAuth2Scope);
   scopes.insert(GaiaConstants::kClearCutOAuth2Scope);
