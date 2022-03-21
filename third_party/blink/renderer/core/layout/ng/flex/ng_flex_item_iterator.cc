@@ -85,6 +85,7 @@ NGFlexItemIterator::Entry NGFlexItemIterator::NextItem(bool broke_before_row) {
           //
           // Note: Rows don't produce a layout result, so if the row broke
           // before, the first item in the row will have a broken before.
+          break_token_ = nullptr;
           NextLine();
         } else if (!break_token_->HasSeenAllChildren()) {
           if (!is_horizontal_flow_) {
@@ -93,8 +94,8 @@ NGFlexItemIterator::Entry NGFlexItemIterator::NextItem(bool broke_before_row) {
             flex_item_idx_ = next_item_idx_for_line_[flex_line_idx_];
           }
           next_unstarted_item_ = FindNextItem();
+          break_token_ = nullptr;
         }
-        break_token_ = nullptr;
       }
     }
   } else {
@@ -150,7 +151,8 @@ void NGFlexItemIterator::NextLine() {
     return;
   flex_line_idx_++;
   AdjustItemIndexForNewLine();
-  next_unstarted_item_ = FindNextItem();
+  if (!break_token_)
+    next_unstarted_item_ = FindNextItem();
 }
 
 void NGFlexItemIterator::AdjustItemIndexForNewLine() {
