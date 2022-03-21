@@ -2944,13 +2944,6 @@ const char kAndroidForceAppLanguagePromptDescription[] =
     "When enabled the app language prompt to change the UI language will"
     "always be shown.";
 
-const char kAndroidLayoutChangeTabReparentingName[] =
-    "Android Chrome UI phone/tablet layout change tab reparenting";
-const char kAndroidLayoutChangeTabReparentingDescription[] =
-    "If enabled, when the screen size switches between phone and tablet size, "
-    "the UI layout updates to the proper one and the current tabs are "
-    "reparented instead of reloaded.";
-
 const char kAndroidSurfaceControlName[] = "Android SurfaceControl";
 const char kAndroidSurfaceControlDescription[] =
     " Enables SurfaceControl to manage the buffer queue for the "

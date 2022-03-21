@@ -1495,11 +1495,6 @@
     "expiry_milestone": 95
   },
   {
-    "name": "enable-android-layout-change-tab-reparenting",
-    "owners": [ "lazzzis@google.com", "twellington" ],
-    "expiry_milestone": 95
-  },
-  {
     "name": "enable-app-discovery-for-oobe",
     "owners": [ "melzhang", "tsergeant", "chromeos-apps-foundation-team" ],
     "expiry_milestone": 110

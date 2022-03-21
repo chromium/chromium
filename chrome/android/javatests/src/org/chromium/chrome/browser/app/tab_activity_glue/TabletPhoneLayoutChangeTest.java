@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.app.tab_activity_glue;
 
+import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
+
 import android.content.res.Configuration;
 
 import androidx.test.filters.MediumTest;
@@ -16,13 +18,12 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.RecreateObserver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 
@@ -33,7 +34,6 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@EnableFeatures({ChromeFeatureList.ANDROID_LAYOUT_CHANGE_TAB_REPARENT})
 public class TabletPhoneLayoutChangeTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -45,6 +45,7 @@ public class TabletPhoneLayoutChangeTest {
 
     @Test
     @MediumTest
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE) // See crbug.com/1302618.
     public void testIsRecreatedOnLayoutChange() throws TimeoutException {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         boolean isTestOnTablet = cta.isTablet();

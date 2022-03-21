@@ -215,8 +215,6 @@ public abstract class ChromeFeatureList {
             "AutofillEnableSupportForMoreStructureInNames";
     public static final String AUTOFILL_ENABLE_UPDATE_VIRTUAL_CARD_ENROLLMENT =
             "AutofillEnableUpdateVirtualCardEnrollment";
-    public static final String ANDROID_LAYOUT_CHANGE_TAB_REPARENT =
-            "AndroidLayoutChangeTabReparenting";
     public static final String ANDROID_SEARCH_ENGINE_CHOICE_NOTIFICATION =
             "AndroidSearchEngineChoiceNotification";
     public static final String ANONYMOUS_UPDATE_CHECKS = "AnonymousUpdateChecks";

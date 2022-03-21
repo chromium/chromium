@@ -160,7 +160,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAdaptiveButtonInTopToolbarCustomizationV2,
     &kAddToHomescreenIPH,
     &kAllowNewIncognitoTabIntents,
-    &kAndroidLayoutChangeTabReparenting,
     &kAndroidSearchEngineChoiceNotification,
     &kAssistantConsentModal,
     &kAssistantConsentSimplifiedText,
@@ -399,9 +398,6 @@ const base::Feature kAdaptiveButtonInTopToolbarCustomizationV2{
 
 const base::Feature kAddToHomescreenIPH{"AddToHomescreenIPH",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kAndroidLayoutChangeTabReparenting{
-    "AndroidLayoutChangeTabReparenting", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kAllowNewIncognitoTabIntents{
     "AllowNewIncognitoTabIntents", base::FEATURE_ENABLED_BY_DEFAULT};

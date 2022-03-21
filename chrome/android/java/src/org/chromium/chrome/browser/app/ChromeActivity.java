@@ -1748,32 +1748,30 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 AsyncTabParamsManagerSingleton.getInstance()));
 
         // This must be initialized after initialization of tab reparenting controller.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_LAYOUT_CHANGE_TAB_REPARENT)) {
-            DisplayAndroid display = getWindowAndroid().getDisplay();
-            mDisplayAndroidObserver = new DisplayAndroidObserver() {
-                @Override
-                public void onDisplayModesChanged(List<Mode> supportedModes) {
-                    maybeOnScreenSizeChange();
-                }
-
-                @Override
-                public void onCurrentModeChanged(Mode currentMode) {
-                    maybeOnScreenSizeChange();
-                }
-
-                private void maybeOnScreenSizeChange() {
-                    if (didChangeTabletMode()) {
-                        onScreenLayoutSizeChange();
-                    }
-                }
-            };
-            display.addObserver(mDisplayAndroidObserver);
-
-            CommerceSubscriptionsServiceFactory factory = new CommerceSubscriptionsServiceFactory();
-
-            if (ShoppingFeatures.isShoppingListEnabled()) {
-                mSubscriptionsManager = factory.getForLastUsedProfile().getSubscriptionsManager();
+        DisplayAndroid display = getWindowAndroid().getDisplay();
+        mDisplayAndroidObserver = new DisplayAndroidObserver() {
+            @Override
+            public void onDisplayModesChanged(List<Mode> supportedModes) {
+                maybeOnScreenSizeChange();
             }
+
+            @Override
+            public void onCurrentModeChanged(Mode currentMode) {
+                maybeOnScreenSizeChange();
+            }
+
+            private void maybeOnScreenSizeChange() {
+                if (didChangeTabletMode()) {
+                    onScreenLayoutSizeChange();
+                }
+            }
+        };
+        display.addObserver(mDisplayAndroidObserver);
+
+        CommerceSubscriptionsServiceFactory factory = new CommerceSubscriptionsServiceFactory();
+
+        if (ShoppingFeatures.isShoppingListEnabled()) {
+            mSubscriptionsManager = factory.getForLastUsedProfile().getSubscriptionsManager();
         }
 
         // Make sure the user is reporting into one of the feed spinner groups, so that we can
