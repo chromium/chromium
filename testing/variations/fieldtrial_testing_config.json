@@ -7753,6 +7753,26 @@
             ]
         }
     ],
+    "WebRTC-FrameBuffer3": [
+        {
+            "platforms": [
+                "windows",
+                "mac",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "ios",
+                "android",
+                "android_weblayer",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "arm:SyncDecoding"
+                }
+            ]
+        }
+    ],
     "WebRTC-VP8ConferenceTemporalLayers": [
         {
             "platforms": [
