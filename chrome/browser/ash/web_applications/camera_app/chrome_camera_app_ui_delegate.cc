@@ -22,7 +22,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
-#include "chrome/browser/web_applications/web_app_tab_helper.h"
 // TODO(b/174811949): Hide behind ChromeOS build flag.
 #include "chrome/browser/ash/web_applications/camera_app/chrome_camera_app_ui_constants.h"
 #include "chrome/browser/devtools/devtools_window.h"
@@ -33,9 +32,9 @@
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
-#include "chrome/browser/web_applications/web_app_launch_queue.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
+#include "chrome/browser/web_applications/web_launch_params_helper.h"
 #include "chromeos/constants/devicetype.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -208,14 +207,12 @@ void ChromeCameraAppUIDelegate::SetLaunchDirectory() {
   // `SystemWebAppDelegate::LaunchAndNavigateSystemWebApp()` to handle the case
   // of the app being opened to handle an Android intent, i.e. when it's shown
   // as a dialog via `CameraAppDialog`.
-  web_app::WebAppLaunchParams launch_params;
-  launch_params.started_new_navigation = true;
-  launch_params.app_id = *app_id;
-  launch_params.target_url = GURL(ash::kChromeUICameraAppMainURL);
-  launch_params.dir = my_files_folder_path;
-  web_app::WebAppTabHelper::FromWebContents(web_contents)
-      ->EnsureLaunchQueue()
-      .Enqueue(std::move(launch_params));
+  web_app::WebLaunchParamsHelper::EnqueueLaunchParams(
+      web_contents, provider->registrar(), *app_id,
+      /*await_navigation=*/true,
+      /*launch_url=*/GURL(ash::kChromeUICameraAppMainURL), my_files_folder_path,
+      /*launch_paths=*/{});
+  web_app::WebAppTabHelper::CreateForWebContents(web_contents);
 }
 
 void ChromeCameraAppUIDelegate::PopulateLoadTimeData(

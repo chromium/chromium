@@ -66,7 +66,7 @@ class WebAppLaunchProcess {
   void MaybeEnqueueWebLaunchParams(const GURL& launch_url,
                                    bool is_file_handling,
                                    content::WebContents* web_contents,
-                                   bool started_new_navigation);
+                                   bool is_navigating);
 
   Profile& profile_;
   WebAppProvider& provider_;
