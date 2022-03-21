@@ -253,6 +253,7 @@ absl::optional<Fourcc> Fourcc::ToSinglePlanar() const {
     case NV12:
     case NV21:
     case P010:
+    case MM21:
       return Fourcc(value_);
     case YM12:
       return Fourcc(YU12);
@@ -266,7 +267,6 @@ absl::optional<Fourcc> Fourcc::ToSinglePlanar() const {
     case YM16:
       return Fourcc(YU16);
     case MT21:
-    case MM21:
       return absl::nullopt;
   }
 }
