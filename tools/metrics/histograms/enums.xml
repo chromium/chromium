@@ -51643,6 +51643,8 @@ from previous Chrome versions.
   <int value="-2117169027" label="UpdateHoverAtBeginFrame:enabled"/>
   <int value="-2117048251" label="MediaApp:enabled"/>
   <int value="-2116440101" label="EnablePenetratingImageSelection:enabled"/>
+  <int value="-2115072824"
+      label="EnableLogControllerForDiagnosticsApp:disabled"/>
   <int value="-2114831248" label="disable-new-ntp"/>
   <int value="-2114756847" label="SideSearchClearCacheWhenClosed:disabled"/>
   <int value="-2113783491" label="ArcFilePickerExperiment:enabled"/>
@@ -54566,6 +54568,7 @@ from previous Chrome versions.
       label="OmniboxUIExperimentHideSteadyStateUrlPathQueryAndRef:disabled"/>
   <int value="-127666141" label="TabGroups:disabled"/>
   <int value="-127231994" label="VrBrowsingNativeAndroidUi:disabled"/>
+  <int value="-125941743" label="EnableLogControllerForDiagnosticsApp:enabled"/>
   <int value="-124472602" label="LeakDetectionUnauthenticated:enabled"/>
   <int value="-123599761" label="IncludeIpcOverheadInNavigationStart:disabled"/>
   <int value="-122492389" label="enable-browser-task-scheduler"/>

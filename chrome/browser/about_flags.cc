@@ -7537,6 +7537,15 @@ const FeatureEntry kFeatureEntries[] = {
                                     kLensStandaloneVariations,
                                     "GoogleLensDesktopContextMenuSearch")},
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"enable-log-controller-for-diagnostics-app",
+     flag_descriptions::kEnableLogControllerForDiagnosticsAppName,
+     flag_descriptions::kEnableLogControllerForDiagnosticsAppDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(
+         chromeos::features::kEnableLogControllerForDiagnosticsApp)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
     {"enable-penetrating-image-selection",
      flag_descriptions::kEnablePenetratingImageSelectionName,
      flag_descriptions::kEnablePenetratingImageSelectionDescription, kOsAll,

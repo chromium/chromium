@@ -541,6 +541,12 @@ const base::Feature kEnableLazyLoginWebUILoading{
 const base::Feature kEnableLocalSearchService{"EnableLocalSearchService",
                                               base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables using DiagnosticsLogController to manage lifetime of logs for the
+// diagnostics app routines, network events, and system snapshot.
+// TODO(ashleydp): Remove this after the feature is launched.
+const base::Feature kEnableLogControllerForDiagnosticsApp{
+    "EnableLogControllerForDiagnosticsApp", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, the networking cards will be shown in the diagnostics app.
 const base::Feature kEnableNetworkingInDiagnosticsApp{
     "EnableNetworkingInDiagnosticsApp", base::FEATURE_ENABLED_BY_DEFAULT};
@@ -1801,6 +1807,10 @@ bool IsLicensePackagedOobeFlowEnabled() {
 bool IsLockScreenHideSensitiveNotificationsSupported() {
   return base::FeatureList::IsEnabled(
       kLockScreenHideSensitiveNotificationsSupport);
+}
+
+bool IsLogControllerForDiagnosticsAppEnabled() {
+  return base::FeatureList::IsEnabled(kEnableLogControllerForDiagnosticsApp);
 }
 
 bool IsLockScreenInlineReplyEnabled() {

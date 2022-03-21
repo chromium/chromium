@@ -2309,6 +2309,11 @@
     "expiry_milestone": 80
   },
   {
+    "name": "enable-log-controller-for-diagnostics-app",
+    "owners": [ "//ash/webui/diagnostics_ui/OWNERS" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "enable-logging-js-console-messages",
     "owners": [ "hazems" ],
     // Never expires because it is used by developers to enable logging JS

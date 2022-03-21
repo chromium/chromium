@@ -4617,6 +4617,13 @@ const char kEnableLauncherSearchNormalizationDescription[] =
     "Enable normalization of scores from different providers to the "
     "launcher.";
 
+const char kEnableLogControllerForDiagnosticsAppName[] =
+    "Enable DiagnosticsLogController for Diagnostics App";
+const char kEnableLogControllerForDiagnosticsAppDescription[] =
+    "Uses DiagnosticsLogController to manage the lifetime of Diagnostics App "
+    "logs.  Enables creation of combined diagnostics log after Diagnostics "
+    "App is closed.";
+
 const char kEnableNeuralPalmAdaptiveHoldName[] = "Palm Rejection Adaptive Hold";
 const char kEnableNeuralPalmAdaptiveHoldDescription[] =
     "Enable adaptive hold in palm rejection.  Not compatible with all devices.";
