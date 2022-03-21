@@ -188,11 +188,19 @@ class CONTENT_EXPORT NavigationRequest
   // This enum is used in UMA histograms, so existing values should neither be
   // reordered or removed.
   enum class OriginAgentClusterEndResult {
+    // The first four enums are for use when OAC-by-default is disabled.
     kNotRequestedAndNotOriginKeyed,
     kNotRequestedButOriginKeyed,
     kRequestedButNotOriginKeyed,
     kRequestedAndOriginKeyed,
-    kMaxValue = kRequestedAndOriginKeyed
+    // The remaining enums are for use when OAC-by-default is enabled.
+    kExplicitlyNotRequestedAndNotOriginKeyed,
+    kExplicitlyNotRequestedButOriginKeyed,
+    kExplicitlyRequestedButNotOriginKeyed,
+    kExplicitlyRequestedAndOriginKeyed,
+    kNotExplicitlyRequestedButNotOriginKeyed,
+    kNotExplicitlyRequestedAndOriginKeyed,
+    kMaxValue = kNotExplicitlyRequestedAndOriginKeyed
   };
 
   // Creates a request for a browser-initiated navigation.
@@ -1006,6 +1014,10 @@ class CONTENT_EXPORT NavigationRequest
   // Returns whether this navigation request is requesting opt-in
   // origin-isolation.
   bool IsOptInIsolationRequested();
+
+  // Returns whether defaulting to origin-keyed agent cluster (without
+  // necessarily an origin-keyed process) is enabled.
+  bool AreOriginAgentClustersEnabledByDefault() const;
 
   // Returns whether this navigation request should use an origin-keyed
   // agent cluster (but not an origin-keyed process).

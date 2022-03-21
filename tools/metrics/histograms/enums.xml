@@ -67992,6 +67992,24 @@ Called by update_net_trust_anchors.py.-->
   <int value="1" label="Not requested but origin-keyed"/>
   <int value="2" label="Requested but not origin-keyed"/>
   <int value="3" label="Requested and origin-keyed"/>
+  <int value="4"
+      label="Explicitly not requested and not origin-keyed (with
+             OriginAgentCluster-by-default)"/>
+  <int value="5"
+      label="Explicitly not requested but origin-keyed (with
+             OriginAgentCluster-by-default)"/>
+  <int value="6"
+      label="Explicitly requested but not origin-keyed (with
+             OriginAgentCluster-by-default)"/>
+  <int value="7"
+      label="Explicitly requested and origin-keyed (with
+             OriginAgentCluster-by-default)"/>
+  <int value="8"
+      label="Not explicitly requested but not origin-keyed (with
+             OriginAgentCluster-by-default)"/>
+  <int value="9"
+      label="Not explicitly requested and origin-keyed (with
+             OriginAgentCluster-by-default)"/>
 </enum>
 
 <enum name="OriginTrialEnableResult">

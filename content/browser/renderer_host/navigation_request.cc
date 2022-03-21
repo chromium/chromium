@@ -2803,25 +2803,23 @@ bool NavigationRequest::IsOptInIsolationRequested() {
          network::mojom::OriginAgentClusterValue::kTrue;
 }
 
+bool NavigationRequest::AreOriginAgentClustersEnabledByDefault() const {
+  // OriginAgentClusters are enabled by default if OriginAgentCluster and
+  // kOriginAgentClusterDefaultEnabled are enabled, and if there is no
+  // enterprise policy forbidding it.
+  return SiteIsolationPolicy::IsOriginAgentClusterEnabled() &&
+         base::FeatureList::IsEnabled(
+             blink::features::kOriginAgentClusterDefaultEnabled) &&
+         !GetContentClient()->browser()->ShouldDisableOriginAgentClusterDefault(
+             frame_tree_node_->navigator().controller().GetBrowserContext());
+}
+
 bool NavigationRequest::IsIsolationImplied() {
   if (!response())
     return false;
 
-  // Do not attempt isolation if the feature is not enabled.
-  if (!SiteIsolationPolicy::IsOriginAgentClusterEnabled())
+  if (!AreOriginAgentClustersEnabledByDefault())
     return false;
-
-  // Do not default-isolate if the feature is not enabled.
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kOriginAgentClusterDefaultEnabled)) {
-    return false;
-  }
-
-  // Do not default-isolate if the enterprise policy forbids it.
-  if (GetContentClient()->browser()->ShouldDisableOriginAgentClusterDefault(
-          frame_tree_node_->navigator().controller().GetBrowserContext())) {
-    return false;
-  }
 
   return response_head_->parsed_headers->origin_agent_cluster ==
          network::mojom::OriginAgentClusterValue::kAbsent;
@@ -2859,16 +2857,54 @@ void NavigationRequest::DetermineOriginAgentClusterEndResult() {
                                                  requested_isolation_state)
           .is_origin_agent_cluster();
 
-  if (is_requested) {
-    origin_agent_cluster_end_result_ =
-        got_origin_agent_cluster
-            ? OriginAgentClusterEndResult::kRequestedAndOriginKeyed
-            : OriginAgentClusterEndResult::kRequestedButNotOriginKeyed;
+  if (AreOriginAgentClustersEnabledByDefault()) {
+    // When OAC is enabled by default, report enum values that distinguish
+    // between explicitly requesting OAC (on or off) and having no related
+    // header.
+    bool was_explicitly_requested =
+        response_head_->parsed_headers->origin_agent_cluster ==
+        network::mojom::OriginAgentClusterValue::kTrue;
+    bool was_explicitly_not_requested =
+        response_head_->parsed_headers->origin_agent_cluster ==
+        network::mojom::OriginAgentClusterValue::kFalse;
+
+    if (got_origin_agent_cluster) {
+      if (was_explicitly_requested) {
+        origin_agent_cluster_end_result_ =
+            OriginAgentClusterEndResult::kExplicitlyRequestedAndOriginKeyed;
+      } else if (was_explicitly_not_requested) {
+        origin_agent_cluster_end_result_ =
+            OriginAgentClusterEndResult::kExplicitlyNotRequestedButOriginKeyed;
+      } else {
+        origin_agent_cluster_end_result_ =
+            OriginAgentClusterEndResult::kNotExplicitlyRequestedAndOriginKeyed;
+      }
+    } else {
+      if (was_explicitly_requested) {
+        origin_agent_cluster_end_result_ =
+            OriginAgentClusterEndResult::kExplicitlyRequestedButNotOriginKeyed;
+      } else if (was_explicitly_not_requested) {
+        origin_agent_cluster_end_result_ = OriginAgentClusterEndResult::
+            kExplicitlyNotRequestedAndNotOriginKeyed;
+      } else {
+        origin_agent_cluster_end_result_ = OriginAgentClusterEndResult::
+            kNotExplicitlyRequestedButNotOriginKeyed;
+      }
+    }
   } else {
-    origin_agent_cluster_end_result_ =
-        got_origin_agent_cluster
-            ? OriginAgentClusterEndResult::kNotRequestedButOriginKeyed
-            : OriginAgentClusterEndResult::kNotRequestedAndNotOriginKeyed;
+    // When OAC is not enabled by default, report enum values that only indicate
+    // if OAC was requested or not vs whether it took effect.
+    if (is_requested) {
+      origin_agent_cluster_end_result_ =
+          got_origin_agent_cluster
+              ? OriginAgentClusterEndResult::kRequestedAndOriginKeyed
+              : OriginAgentClusterEndResult::kRequestedButNotOriginKeyed;
+    } else {
+      origin_agent_cluster_end_result_ =
+          got_origin_agent_cluster
+              ? OriginAgentClusterEndResult::kNotRequestedButOriginKeyed
+              : OriginAgentClusterEndResult::kNotRequestedAndNotOriginKeyed;
+    }
   }
 
   // This needs to be computed separately from origin.opaque() because, per
@@ -2883,12 +2919,9 @@ void NavigationRequest::DetermineOriginAgentClusterEndResult() {
   // cases (e.g., for data: URLs). origin_agent_cluster_end_result_ shouldn't be
   // modified since it's used for warnings and use counters, i.e. things that
   // don't apply to this sort of "automatic" origin-keying.
-  commit_params_->origin_agent_cluster =
-      is_opaque_origin_because_sandbox || origin.opaque() ||
-      origin_agent_cluster_end_result_ ==
-          OriginAgentClusterEndResult::kRequestedAndOriginKeyed ||
-      origin_agent_cluster_end_result_ ==
-          OriginAgentClusterEndResult::kNotRequestedButOriginKeyed;
+  commit_params_->origin_agent_cluster = is_opaque_origin_because_sandbox ||
+                                         origin.opaque() ||
+                                         got_origin_agent_cluster;
 
   // The origin_agent_cluster_left_as_default navigation commit parameter
   // communicates to the renderer whether the origin_agent_cluster decision
@@ -2906,15 +2939,22 @@ void NavigationRequest::ProcessOriginAgentClusterEndResult() {
   if (origin_agent_cluster_end_result_ ==
           OriginAgentClusterEndResult::kRequestedAndOriginKeyed ||
       origin_agent_cluster_end_result_ ==
-          OriginAgentClusterEndResult::kRequestedButNotOriginKeyed)
+          OriginAgentClusterEndResult::kRequestedButNotOriginKeyed ||
+      origin_agent_cluster_end_result_ ==
+          OriginAgentClusterEndResult::kExplicitlyRequestedAndOriginKeyed ||
+      origin_agent_cluster_end_result_ ==
+          OriginAgentClusterEndResult::kExplicitlyRequestedButNotOriginKeyed) {
     GetContentClient()->browser()->LogWebFeatureForCurrentPage(
         render_frame_host_,
         blink::mojom::WebFeature::kOriginAgentClusterHeader);
+  }
 
   const url::Origin origin = url::Origin::Create(GetURL());
 
   if (origin_agent_cluster_end_result_ ==
-      OriginAgentClusterEndResult::kRequestedButNotOriginKeyed)
+          OriginAgentClusterEndResult::kRequestedButNotOriginKeyed ||
+      origin_agent_cluster_end_result_ ==
+          OriginAgentClusterEndResult::kExplicitlyRequestedButNotOriginKeyed) {
     render_frame_host_->AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kWarning,
         base::StringPrintf(
@@ -2924,9 +2964,12 @@ void NavigationRequest::ProcessOriginAgentClusterEndResult() {
             "cluster. Update your headers to uniformly request origin-keying "
             "for all pages on the origin.",
             origin.Serialize().c_str()));
+  }
 
   if (origin_agent_cluster_end_result_ ==
-      OriginAgentClusterEndResult::kNotRequestedButOriginKeyed)
+          OriginAgentClusterEndResult::kNotRequestedButOriginKeyed ||
+      origin_agent_cluster_end_result_ ==
+          OriginAgentClusterEndResult::kExplicitlyNotRequestedButOriginKeyed) {
     render_frame_host_->AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kWarning,
         base::StringPrintf(
@@ -2935,6 +2978,7 @@ void NavigationRequest::ProcessOriginAgentClusterEndResult() {
             "placed in an origin-keyed agent cluster. Update your headers to "
             "uniformly request origin-keying for all pages on the origin.",
             origin.Serialize().c_str()));
+  }
 }
 
 bool NavigationRequest::HasCommittingOrigin(const url::Origin& origin) {

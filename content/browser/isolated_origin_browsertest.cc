@@ -617,6 +617,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationDefaultOACTest, Basic) {
   {
     // Explicitly request OriginAgentCluster via the header.
     SetHeaderValue("?1");
+    base::HistogramTester histograms;
     GURL isolated_suborigin_url(
         https_server()->GetURL("isolated.foo.com", "/isolate_origin"));
     EXPECT_TRUE(
@@ -626,11 +627,19 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationDefaultOACTest, Basic) {
     EXPECT_TRUE(DetermineOriginAgentClusterIsolation(site_instance,
                                                      isolated_suborigin_url)
                     .requires_origin_keyed_process());
+
+    EXPECT_THAT(
+        histograms.GetAllSamples("Navigation.OriginAgentCluster.Result"),
+        testing::ElementsAre(base::Bucket(
+            static_cast<int>(NavigationRequest::OriginAgentClusterEndResult::
+                                 kExplicitlyRequestedAndOriginKeyed),
+            1)));
   }
   {
     // Even though this request has no OriginAgentCluster header, it should get
     // OAC by default.
     SetHeaderValue("");
+    base::HistogramTester histograms;
     GURL default_isolated_url(
         https_server()->GetURL("isolated.bar.com", "/title1.html"));
     EXPECT_TRUE(
@@ -646,12 +655,20 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationDefaultOACTest, Basic) {
     // need to change to EXPECT_TRUE.
     EXPECT_TRUE(isolation_state.is_origin_agent_cluster());
     EXPECT_FALSE(isolation_state.requires_origin_keyed_process());
+
+    EXPECT_THAT(
+        histograms.GetAllSamples("Navigation.OriginAgentCluster.Result"),
+        testing::ElementsAre(base::Bucket(
+            static_cast<int>(NavigationRequest::OriginAgentClusterEndResult::
+                                 kNotExplicitlyRequestedAndOriginKeyed),
+            1)));
   }
   {
     // The "isolate_origin" path in the url will force the test framework to
     // include the OriginAgentCluster header. Here we explicitly request not to
     // have OAC.
     SetHeaderValue("?0");
+    base::HistogramTester histograms;
     GURL explicit_non_isolated_url(
         https_server()->GetURL("bar.com", "/isolate_origin"));
     EXPECT_TRUE(
@@ -662,6 +679,13 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationDefaultOACTest, Basic) {
     EXPECT_FALSE(DetermineOriginAgentClusterIsolation(site_instance,
                                                       explicit_non_isolated_url)
                      .is_origin_agent_cluster());
+
+    EXPECT_THAT(
+        histograms.GetAllSamples("Navigation.OriginAgentCluster.Result"),
+        testing::ElementsAre(base::Bucket(
+            static_cast<int>(NavigationRequest::OriginAgentClusterEndResult::
+                                 kExplicitlyNotRequestedAndNotOriginKeyed),
+            1)));
   }
 
   // The next three cases should all fail to get the isolation status they
@@ -674,6 +698,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationDefaultOACTest, Basic) {
     // isolation, the previous explicitly non-isolated visit to this origin
     // means that this origin will remain not origin keyed.
     SetHeaderValue("");
+    base::HistogramTester histograms;
     GURL url(https_server()->GetURL("bar.com", "/title1.html"));
     EXPECT_TRUE(NavigateToURLFromRenderer(child_frame_node, url));
     auto* site_instance =
@@ -681,12 +706,20 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationDefaultOACTest, Basic) {
 
     EXPECT_FALSE(DetermineOriginAgentClusterIsolation(site_instance, url)
                      .is_origin_agent_cluster());
+
+    EXPECT_THAT(
+        histograms.GetAllSamples("Navigation.OriginAgentCluster.Result"),
+        testing::ElementsAre(base::Bucket(
+            static_cast<int>(NavigationRequest::OriginAgentClusterEndResult::
+                                 kNotExplicitlyRequestedButNotOriginKeyed),
+            1)));
   }
 
   {
     // An explicit opt-out for isolated.bar.com should not be granted given the
     // previous default-opt-in above.
     SetHeaderValue("?0");
+    base::HistogramTester histograms;
     GURL explicit_non_isolated_url(
         https_server()->GetURL("isolated.bar.com", "/isolate_origin"));
     EXPECT_TRUE(
@@ -699,11 +732,19 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationDefaultOACTest, Basic) {
                                              explicit_non_isolated_url);
     EXPECT_TRUE(isolation_state.is_origin_agent_cluster());
     EXPECT_FALSE(isolation_state.requires_origin_keyed_process());
+
+    EXPECT_THAT(
+        histograms.GetAllSamples("Navigation.OriginAgentCluster.Result"),
+        testing::ElementsAre(base::Bucket(
+            static_cast<int>(NavigationRequest::OriginAgentClusterEndResult::
+                                 kExplicitlyNotRequestedButOriginKeyed),
+            1)));
   }
   {
     // Verify that we don't explicitly opt-in an origin that was explicitly
     // opted-out.
     SetHeaderValue("?1");
+    base::HistogramTester histograms;
     GURL explicit_isolated_url(
         https_server()->GetURL("bar.com", "/isolate_origin"));
     EXPECT_TRUE(
@@ -714,6 +755,13 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationDefaultOACTest, Basic) {
     EXPECT_FALSE(DetermineOriginAgentClusterIsolation(site_instance,
                                                       explicit_isolated_url)
                      .is_origin_agent_cluster());
+
+    EXPECT_THAT(
+        histograms.GetAllSamples("Navigation.OriginAgentCluster.Result"),
+        testing::ElementsAre(base::Bucket(
+            static_cast<int>(NavigationRequest::OriginAgentClusterEndResult::
+                                 kExplicitlyRequestedButNotOriginKeyed),
+            1)));
   }
 }
 

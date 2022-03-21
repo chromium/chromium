@@ -938,7 +938,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="Navigation.OriginAgentCluster.Result"
-    enum="OriginAgentClusterEndResult" expires_after="2022-08-14">
+    enum="OriginAgentClusterEndResult" expires_after="2023-03-09">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <owner>wjmaclean@chromium.org</owner>
@@ -946,7 +946,11 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
     For every successful cross-document commit, this logs whether or how
     OriginAgentCluster was involved. It tracks whether it was requested, as well
     as whether the isolation was granted, which can be affected by other
-    documents in the same browsing context group.
+    documents in the same browsing context group. If OriginAgentCluster-by-
+    default is not enabled, the first four enum values track this state. If
+    OriginAgentCluster-by-default is enabled, then the second (disjoint) set of
+    six enum values tracks this state, plus the two additional cases where
+    OriginAgentCluster was explicitly not requested, and was or wasn't granted.
   </summary>
 </histogram>
 
