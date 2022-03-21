@@ -24,6 +24,9 @@ const char kCrashServerUrl[] = "crash-server-url";
 // Switch to disable Crash reporting
 const char kDisableCrashReporter[] = "disable-crash-reporter";
 
+// Switch to dumpstate binary path.
+const char kDumpstateBinPath[] = "dumpstate-path";
+
 // Enable file accesses. It should not be enabled for most Cast devices.
 const char kEnableLocalFileAccesses[] = "enable-local-file-accesses";
 

@@ -22,6 +22,11 @@ extern const char kCrashServerUrl[];
 // Disable Crash Reporting
 extern const char kDisableCrashReporter[];
 
+// Path to dumpstate binary to be used for crash reporting.
+// This gives Chromium's crash reporter the flexibility to switch
+// between multiple implementations of dumpstate tool.
+extern const char kDumpstateBinPath[];
+
 // Content-implementation switches
 extern const char kEnableLocalFileAccesses[];
 
