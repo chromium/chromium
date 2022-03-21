@@ -3197,6 +3197,20 @@ bool BrowserView::CloseOpenRightAlignedSidePanel(bool exclude_lens,
   return false;
 }
 
+void BrowserView::MaybeClobberAllSideSearchSidePanels() {
+#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+  if (!base::FeatureList::IsEnabled(features::kSideSearchDSESupport) ||
+      !base::FeatureList::IsEnabled(
+          features::kClobberAllSideSearchSidePanels)) {
+    return;
+  }
+
+  if (side_search_controller_) {
+    side_search_controller_->ClobberAllInCurrentBrowser();
+  }
+#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
+}
+
 #if BUILDFLAG(ENABLE_SIDE_SEARCH)
 bool BrowserView::IsSideSearchPanelVisible() const {
   if (side_search_controller_)

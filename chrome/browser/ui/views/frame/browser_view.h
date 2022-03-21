@@ -726,6 +726,10 @@ class BrowserView : public BrowserWindow,
   bool CloseOpenRightAlignedSidePanel(bool exclude_lens = false,
                                       bool exclude_side_search = false);
 
+  // Clobbers all right aligned side search side panels if
+  // kClobberAllSideSearchSidePanels is enabled.
+  void MaybeClobberAllSideSearchSidePanels();
+
 #if BUILDFLAG(ENABLE_SIDE_SEARCH)
   bool IsSideSearchPanelVisible() const override;
   void MaybeRestoreSideSearchStatePerWindow(
