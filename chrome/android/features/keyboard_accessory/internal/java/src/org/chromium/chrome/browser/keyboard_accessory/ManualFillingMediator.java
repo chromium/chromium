@@ -486,8 +486,12 @@ class ManualFillingMediator extends EmptyTabObserver
         if (VrModuleProvider.getDelegate().isInVr()) return false;
 
         // Don't open the accessory inside the contextual search panel.
-        ContextualSearchManager contextualSearch = mActivity.getContextualSearchManager();
-        if (contextualSearch != null && contextualSearch.isSearchPanelOpened()) return false;
+        ObservableSupplier<ContextualSearchManager> contextualSearchSupplier =
+                mActivity.getContextualSearchManagerSupplier();
+        if (contextualSearchSupplier != null && contextualSearchSupplier.hasValue()
+                && contextualSearchSupplier.get().isSearchPanelOpened()) {
+            return false;
+        }
 
         // If an accessory sheet was opened, the accessory bar must be visible.
         if (mAccessorySheet.isShown()) return true;

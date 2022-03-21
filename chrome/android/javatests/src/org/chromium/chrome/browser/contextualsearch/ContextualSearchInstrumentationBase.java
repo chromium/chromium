@@ -426,7 +426,7 @@ public class ContextualSearchInstrumentationBase {
 
         sActivityTestRule.loadUrl(mTestServer.getURL(mTestPage));
 
-        mManager = sActivityTestRule.getActivity().getContextualSearchManager();
+        mManager = sActivityTestRule.getActivity().getContextualSearchManagerSupplier().get();
         mTestHost = new ContextualSearchInstrumentationTestHost();
 
         Assert.assertNotNull(mManager);

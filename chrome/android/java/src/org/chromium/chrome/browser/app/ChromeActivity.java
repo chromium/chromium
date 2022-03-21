@@ -328,7 +328,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             new ObservableSupplierImpl<>();
     protected final UnownedUserDataSupplier<InsetObserverView> mInsetObserverViewSupplier =
             new InsetObserverViewSupplier();
-    private ContextualSearchManager mContextualSearchManager;
+    private final ObservableSupplierImpl<ContextualSearchManager> mContextualSearchManagerSupplier =
+            new ObservableSupplierImpl<>();
     private SnackbarManager mSnackbarManager;
 
     // Timestamp in ms when initial layout inflation begins
@@ -520,7 +521,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         // clang-format off
         return new RootUiCoordinator(this, null, getShareDelegateSupplier(),
                 getActivityTabProvider(), mTabModelProfileSupplier, mBookmarkBridgeSupplier,
-                this::getContextualSearchManager, getTabModelSelectorSupplier(),
+                getContextualSearchManagerSupplier(), getTabModelSelectorSupplier(),
                 new OneshotSupplierImpl<>(), new OneshotSupplierImpl<>(),
                 new OneshotSupplierImpl<>(),
                 () -> null, mBrowserControlsManagerSupplier.get(), getWindowAndroid(),
@@ -991,10 +992,10 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         // TODO(1107916): Move contextual search initialization to the RootUiCoordinator.
         if (ContextualSearchFieldTrial.isEnabled()) {
-            mContextualSearchManager = new ContextualSearchManager(this, this,
+            mContextualSearchManagerSupplier.set(new ContextualSearchManager(this, this,
                     mRootUiCoordinator.getScrimCoordinator(), getActivityTabProvider(),
                     getFullscreenManager(), getBrowserControlsManager(), getWindowAndroid(),
-                    getTabModelSelectorSupplier().get(), () -> getLastUserInteractionTime());
+                    getTabModelSelectorSupplier().get(), () -> getLastUserInteractionTime()));
         }
 
         TraceEvent.end("ChromeActivity:CompositorInitialization");
@@ -1101,15 +1102,16 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         if (syncService != null && syncService.isSyncingUrlsWithKeystorePassphrase()) {
             ContextReporter.SelectionReporter controller =
-                    getContextualSearchManager() != null ? new ContextReporter.SelectionReporter() {
+                    getContextualSearchManagerSupplier().hasValue() ? new ContextReporter.SelectionReporter() {
                         @Override
                         public void enable(Callback<GSAContextDisplaySelection> callback) {
-                            getContextualSearchManager().enableContextReporting(callback);
+                            getContextualSearchManagerSupplier().get().enableContextReporting(
+                                    callback);
                         }
 
                         @Override
                         public void disable() {
-                            getContextualSearchManager().disableContextReporting();
+                            getContextualSearchManagerSupplier().get().disableContextReporting();
                         }
                     } : null;
             mContextReporter = AppHooks.get().createGsaHelper().getContextReporter(
@@ -1544,9 +1546,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     @SuppressLint("NewApi")
     @Override
     protected final void onDestroy() {
-        if (mContextualSearchManager != null) {
-            mContextualSearchManager.destroy();
-            mContextualSearchManager = null;
+        if (mContextualSearchManagerSupplier.hasValue()) {
+            mContextualSearchManagerSupplier.get().destroy();
+            mContextualSearchManagerSupplier.set(null);
         }
 
         if (mSnackbarManager != null) {
@@ -2165,8 +2167,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     /**
      * @return The {@code ContextualSearchManager} or {@code null} if none;
      */
-    public ContextualSearchManager getContextualSearchManager() {
-        return mContextualSearchManager;
+    public ObservableSupplier<ContextualSearchManager> getContextualSearchManagerSupplier() {
+        return mContextualSearchManagerSupplier;
     }
 
     /**
@@ -2212,8 +2214,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         mActivityTabProvider.setLayoutStateProvider(layoutManager);
 
-        if (mContextualSearchManager != null) {
-            mContextualSearchManager.initialize(contentContainer, layoutManager,
+        if (mContextualSearchManagerSupplier.hasValue()) {
+            mContextualSearchManagerSupplier.get().initialize(contentContainer, layoutManager,
                     mRootUiCoordinator.getBottomSheetController(), compositorViewHolder,
                     getControlContainerHeightResource() == ActivityUtils.NO_RESOURCE_ID
                             ? 0f
