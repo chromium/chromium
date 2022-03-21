@@ -419,6 +419,25 @@ class CrasAudioHandlerTest : public testing::TestWithParam<int> {
     base::RunLoop().RunUntilIdle();
   }
 
+  void SetUpCrasAudioHandlerWithPrimaryActiveNodeAndNoiseCancellationState(
+      const AudioNodeList& audio_nodes,
+      const AudioNode& primary_active_node,
+      bool noise_cancellation_enabled) {
+    CrasAudioClient::InitializeFake();
+    fake_cras_audio_client()->SetAudioNodesForTesting(audio_nodes);
+    fake_cras_audio_client()->SetActiveOutputNode(primary_active_node.id);
+    fake_cras_audio_client()->SetNoiseCancellationSupported(
+        /*noise_cancellation_supported=*/true);
+    audio_pref_handler_ = new AudioDevicesPrefHandlerStub();
+    audio_pref_handler_->SetNoiseCancellationState(noise_cancellation_enabled);
+    CrasAudioHandler::Initialize(fake_manager_->MakeRemote(),
+                                 audio_pref_handler_);
+    cras_audio_handler_ = CrasAudioHandler::Get();
+    test_observer_ = std::make_unique<TestObserver>();
+    cras_audio_handler_->AddAudioObserver(test_observer_.get());
+    base::RunLoop().RunUntilIdle();
+  }
+
   void ChangeAudioNodes(const AudioNodeList& audio_nodes) {
     fake_cras_audio_client()->SetAudioNodesAndNotifyObserversForTesting(
         audio_nodes);
@@ -1358,6 +1377,67 @@ TEST_P(CrasAudioHandlerTest, OneActiveAudioOutputAfterLoginNewUserSession) {
     if (audio_devices[i].id != kHeadphone->id)
       EXPECT_FALSE(audio_devices[i].active);
   }
+}
+
+TEST_P(CrasAudioHandlerTest, NoiseCancellationRefreshPrefEnabledNoNC) {
+  AudioNodeList audio_nodes = GenerateAudioNodeList({});
+  // Set up initial audio devices, only with internal mic.
+  AudioNode internalMic = GenerateAudioNode(kInternalMic);
+  // Clear the audio effect, no Noise Cancellation supported.
+  internalMic.audio_effect = 0u;
+  audio_nodes.push_back(internalMic);
+  // Simulate enable pref for noise cancellation.
+  SetUpCrasAudioHandlerWithPrimaryActiveNodeAndNoiseCancellationState(
+      audio_nodes, internalMic, /*noise_cancellation_enabled=*/true);
+
+  // Noise cancellation should still be disabled despite the pref being enabled
+  // since the audio_effect of the internal mic is unavailable.
+  EXPECT_FALSE(fake_cras_audio_client()->noise_cancellation_enabled());
+}
+
+TEST_P(CrasAudioHandlerTest, NoiseCancellationRefreshPrefEnabledWithNC) {
+  AudioNodeList audio_nodes = GenerateAudioNodeList({});
+  // Set up initial audio devices, only with internal mic.
+  AudioNode internalMic = GenerateAudioNode(kInternalMic);
+  // Enable noise cancellation effect.
+  internalMic.audio_effect = cras::EFFECT_TYPE_NOISE_CANCELLATION;
+  audio_nodes.push_back(internalMic);
+  // Simulate enable pref for noise cancellation.
+  SetUpCrasAudioHandlerWithPrimaryActiveNodeAndNoiseCancellationState(
+      audio_nodes, internalMic, /*noise_cancellation_enabled=*/true);
+
+  // Noise Cancellation is enabled.
+  EXPECT_TRUE(fake_cras_audio_client()->noise_cancellation_enabled());
+}
+
+TEST_P(CrasAudioHandlerTest, NoiseCancellationRefreshPrefDisableNoNC) {
+  AudioNodeList audio_nodes = GenerateAudioNodeList({});
+  // Set up initial audio devices, only with internal mic.
+  AudioNode internalMic = GenerateAudioNode(kInternalMic);
+  // Clear audio effect, no noise cancellation.
+  internalMic.audio_effect = 0u;
+  audio_nodes.push_back(internalMic);
+  // Simulate enable pref for noise cancellation.
+  SetUpCrasAudioHandlerWithPrimaryActiveNodeAndNoiseCancellationState(
+      audio_nodes, internalMic, /*noise_cancellation_enabled=*/false);
+
+  // Noise cancellation should still be disabled since the pref is disabled.
+  EXPECT_FALSE(fake_cras_audio_client()->noise_cancellation_enabled());
+}
+
+TEST_P(CrasAudioHandlerTest, NoiseCancellationRefreshPrefDisableWithNC) {
+  AudioNodeList audio_nodes = GenerateAudioNodeList({});
+  // Set up initial audio devices, only with internal mic.
+  AudioNode internalMic = GenerateAudioNode(kInternalMic);
+  // Enable noise cancellation effect.
+  internalMic.audio_effect = cras::EFFECT_TYPE_NOISE_CANCELLATION;
+  audio_nodes.push_back(internalMic);
+  // Simulate enable pref for noise cancellation.
+  SetUpCrasAudioHandlerWithPrimaryActiveNodeAndNoiseCancellationState(
+      audio_nodes, internalMic, /*noise_cancellation_enabled=*/false);
+
+  // Noise cancellation should still be disabled since the pref is disabled.
+  EXPECT_FALSE(fake_cras_audio_client()->noise_cancellation_enabled());
 }
 
 TEST_P(CrasAudioHandlerTest, BluetoothSpeakerIdChangedOnFly) {
