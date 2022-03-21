@@ -16,6 +16,7 @@
 #include "media/base/bitrate.h"
 #include "media/base/mac/video_frame_mac.h"
 #include "media/base/media_log.h"
+#include "media/base/media_util.h"
 
 // This is a min version of macOS where we want to support SVC encoding via
 // EnableLowLatencyRateControl flag. The flag is actually supported since 11.3,
@@ -162,6 +163,10 @@ bool VTVideoEncodeAccelerator::Initialize(const Config& config,
   DVLOG(3) << __func__ << ": " << config.AsHumanReadableString();
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
   DCHECK(client);
+
+  // NullMediaLog silently and safely does nothing.
+  if (!media_log)
+    media_log = std::make_unique<media::NullMediaLog>();
 
   // Clients are expected to call Flush() before reinitializing the encoder.
   DCHECK_EQ(pending_encodes_, 0);

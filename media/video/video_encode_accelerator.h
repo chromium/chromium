@@ -18,6 +18,7 @@
 #include "media/base/bitrate.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/media_export.h"
+#include "media/base/media_log.h"
 #include "media/base/svc_scalability_mode.h"
 #include "media/base/video_bitrate_allocation.h"
 #include "media/base/video_codecs.h"
@@ -369,7 +370,7 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
   // TODO(sheu): handle resolution changes.  http://crbug.com/249944
   virtual bool Initialize(const Config& config,
                           Client* client,
-                          std::unique_ptr<MediaLog> media_log) = 0;
+                          std::unique_ptr<MediaLog> media_log = nullptr) = 0;
 
   // Encodes the given frame.
   // The storage type of |frame| must be the |storage_type| if it is specified

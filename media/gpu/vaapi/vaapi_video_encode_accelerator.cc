@@ -35,6 +35,7 @@
 #include "media/base/format_utils.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
+#include "media/base/media_util.h"
 #include "media/base/unaligned_shared_memory.h"
 #include "media/base/video_bitrate_allocation.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
@@ -181,10 +182,15 @@ VaapiVideoEncodeAccelerator::~VaapiVideoEncodeAccelerator() {
 bool VaapiVideoEncodeAccelerator::Initialize(
     const Config& config,
     Client* client,
+
     std::unique_ptr<MediaLog> media_log) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(child_sequence_checker_);
   DCHECK_EQ(state_, kUninitialized);
   VLOGF(2) << "Initializing VAVEA, " << config.AsHumanReadableString();
+
+  // NullMediaLog silently and safely does nothing.
+  if (!media_log)
+    media_log = std::make_unique<media::NullMediaLog>();
 
   if (AttemptedInitialization()) {
     MEDIA_LOG(ERROR, media_log.get())

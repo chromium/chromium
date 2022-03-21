@@ -31,6 +31,7 @@
 #include "gpu/ipc/common/dxgi_helpers.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
+#include "media/base/media_util.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/base/win/mf_initializer.h"
 #include "media/gpu/gpu_video_encode_accelerator_helpers.h"
@@ -330,6 +331,10 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(
     std::unique_ptr<MediaLog> media_log) {
   DVLOG(3) << __func__ << ": " << config.AsHumanReadableString();
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // NullMediaLog silently and safely does nothing.
+  if (!media_log)
+    media_log = std::make_unique<media::NullMediaLog>();
 
   if (PIXEL_FORMAT_I420 != config.input_format &&
       PIXEL_FORMAT_NV12 != config.input_format) {
