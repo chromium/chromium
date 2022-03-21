@@ -4877,7 +4877,7 @@
   {
     "name": "performant-split-view-resizing",
     "owners": [ "dandersson", "riomat" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 110
   },
   {
     "name": "permission-chip",
