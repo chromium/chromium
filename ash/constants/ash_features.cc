@@ -1005,7 +1005,7 @@ const base::Feature kNotificationsRefresh{"NotificationsRefresh",
 
 // Controls whether to enable on-device grammar check service.
 const base::Feature kOnDeviceGrammarCheck{"OnDeviceGrammarCheck",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Whether the device supports on-device speech recognition.
 const base::Feature kOnDeviceSpeechRecognition{

@@ -4824,21 +4824,6 @@
             ]
         }
     ],
-    "OnDeviceGrammarCheck": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "OnDeviceGrammarCheck"
-                    ]
-                }
-            ]
-        }
-    ],
     "OneTimeGeolocationPermission": [
         {
             "platforms": [
