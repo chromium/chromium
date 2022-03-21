@@ -54,6 +54,7 @@ _SECONDS_TO_POLL_FOR_EMULATOR = 30
 
 _SUPPORTED_EMULATORS = {
     'generic_android23.textpb': 'x86',
+    'generic_android24.textpb': 'x86',
     'generic_android25.textpb': 'x86',
     'generic_android27.textpb': 'x86',
     'generic_android28.textpb': 'x86',
