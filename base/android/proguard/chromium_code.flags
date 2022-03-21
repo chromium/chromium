@@ -64,9 +64,9 @@
   static boolean isDebug() return false;
 }
 
-# Never inline classes, methods, or fields  with this annotation, but allow
+# Never inline classes, methods, or fields with this annotation, but allow
 # shrinking and obfuscation.
-# Relevant to fields when they are needed to store strong refrences to objects
+# Relevant to fields when they are needed to store strong references to objects
 # that are held as weak references by native code.
 -if @org.chromium.base.annotations.DoNotInline class * {
     *** *(...);
@@ -80,6 +80,10 @@
 -keepclassmembers,allowobfuscation,allowaccessmodification class * {
    @org.chromium.base.annotations.DoNotInline <fields>;
 }
+
+# Never merge classes horizontally or vertically with this annotation.
+# Relevant to classes being used as a key in maps or sets.
+-keep,allowaccessmodification,allowobfuscation,allowshrinking @DoNotClassMerge class *
 
 # Keep all CREATOR fields within Parcelable that are kept.
 -keepclassmembers class org.chromium.** implements android.os.Parcelable {

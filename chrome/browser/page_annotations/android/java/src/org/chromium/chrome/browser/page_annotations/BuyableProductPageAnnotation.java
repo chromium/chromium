@@ -8,13 +8,18 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import org.chromium.base.Log;
+import org.chromium.base.annotations.DoNotClassMerge;
 import org.chromium.chrome.browser.page_annotations.PageAnnotation.PageAnnotationType;
 
 import java.util.Locale;
 
 /**
  * {@link PageAnnotation} for products in a page.
+ *
+ * This class should not be merged because it is being used as a key in a Map
+ * in PageAnnotationUtils.java.
  */
+@DoNotClassMerge
 public class BuyableProductPageAnnotation extends PageAnnotation {
     private static final String TAG = "BPPA";
     private static final String BUYABLE_PRODUCT_KEY = "buyableProduct";
